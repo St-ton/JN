@@ -34,7 +34,7 @@ class ArticleDownloads extends NetSyncHandler
     {
         switch ($eRequest) {
             case NetSyncRequest::DownloadFolders:
-                $bPreview            = intval($_POST['bPreview']);
+                $bPreview            = (int)$_POST['bPreview'];
                 $oDownloadFolder_arr = getFolderStruct($bPreview ? PFAD_DOWNLOADS_PREVIEW : PFAD_DOWNLOADS);
                 self::throwResponse(NetSyncResponse::Ok, $oDownloadFolder_arr);
                 break;

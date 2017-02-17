@@ -37,7 +37,11 @@ class WidgetMarketplace extends WidgetBase
         $oRes             = Shop::DB()->query("SELECT cPluginID, nVersion FROM tplugin", 2);
         if (isset($oRes) && count($oRes) > 0) {
             foreach ($oRes as $oPlugin) {
-                if (isset($oPlugin->cPluginID) && isset($oPlugin->nVersion) && strlen($oPlugin->cPluginID) > 0 && is_numeric($oPlugin->nVersion)) {
+                if (isset($oPlugin->cPluginID) &&
+                    isset($oPlugin->nVersion) &&
+                    strlen($oPlugin->cPluginID) > 0 &&
+                    is_numeric($oPlugin->nVersion)
+                ) {
                     $cPluginCheck_arr[] = "{$oPlugin->cPluginID},{$oPlugin->nVersion}";
                 }
             }

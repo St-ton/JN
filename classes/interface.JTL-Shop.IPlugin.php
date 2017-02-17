@@ -7,7 +7,6 @@ interface IPlugin
 {
     /**
      * @param EventDispatcher $dispatcher
-     * @return mixed
      */
     public function boot(EventDispatcher $dispatcher);
 
@@ -35,7 +34,6 @@ interface IPlugin
      * @param int         $type
      * @param string      $title
      * @param null|string $description
-     * @return mixed
      */
     public function addNotify($type, $title, $description = null);
 }

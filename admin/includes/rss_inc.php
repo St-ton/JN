@@ -12,7 +12,7 @@ function generiereRSSXML()
     Jtllog::writeLog("RSS wird erstellt", JTLLOG_LEVEL_NOTICE);
     $shopURL = Shop::getURL();
     if (is_writable(PFAD_ROOT . FILE_RSS_FEED)) {
-        $Einstellungen = Shop::getSettings(array(CONF_RSS));
+        $Einstellungen = Shop::getSettings([CONF_RSS]);
         if ($Einstellungen['rss']['rss_nutzen'] !== 'Y') {
             return false;
         }
@@ -48,18 +48,22 @@ function generiereRSSXML()
         // Artikel beachten?
         if ($Einstellungen['rss']['rss_artikel_beachten'] === 'Y') {
             $artikelarr = Shop::DB()->query(
-                "SELECT tartikel.kArtikel, tartikel.cName, tartikel.cKurzBeschreibung, tseo.cSeo, tartikel.dLetzteAktualisierung,
-                    tartikel.dErstellt, DATE_FORMAT(tartikel.dErstellt, \"%a, %d %b %Y %H:%i:%s UTC\") as erstellt
+                "SELECT tartikel.kArtikel, tartikel.cName, tartikel.cKurzBeschreibung, tseo.cSeo, 
+                    tartikel.dLetzteAktualisierung, tartikel.dErstellt, 
+                    DATE_FORMAT(tartikel.dErstellt, \"%a, %d %b %Y %H:%i:%s UTC\") as erstellt
                     FROM tartikel
-                    LEFT JOIN tartikelsichtbarkeit ON tartikel.kArtikel=tartikelsichtbarkeit.kArtikel
+                    LEFT JOIN tartikelsichtbarkeit 
+                        ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                         AND tartikelsichtbarkeit.kKundengruppe = $stdKundengruppe->kKundengruppe
-                    LEFT JOIN tseo ON tseo.cKey = 'kArtikel'
+                    LEFT JOIN tseo 
+                        ON tseo.cKey = 'kArtikel'
                         AND tseo.kKey = tartikel.kArtikel
                         AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
                     WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                        AND tartikel.cNeu='Y'
+                        AND tartikel.cNeu = 'Y'
                         $lagerfilter
-                        AND cNeu='Y' AND DATE_SUB(now(),INTERVAL " . $alter_tage . " DAY) < dErstellt
+                        AND cNeu = 'Y' 
+                        AND DATE_SUB(now(), INTERVAL " . $alter_tage . " DAY) < dErstellt
                     ORDER BY dLetzteAktualisierung DESC", 2
             );
 

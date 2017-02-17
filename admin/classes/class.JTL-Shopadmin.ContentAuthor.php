@@ -63,10 +63,12 @@ class ContentAuthor
                     AND COALESCE(tadminlogin.dGueltigBis, NOW()) >= NOW()' : '';
 
         $author  = Shop::DB()->query(
-            "SELECT tcontentauthor.kContentAuthor, tcontentauthor.cRealm, tcontentauthor.kAdminlogin, tcontentauthor.kContentId,
-                    tadminlogin.cName, tadminlogin.cMail
+            "SELECT tcontentauthor.kContentAuthor, tcontentauthor.cRealm, 
+                tcontentauthor.kAdminlogin, tcontentauthor.kContentId,
+                tadminlogin.cName, tadminlogin.cMail
                 FROM tcontentauthor
-                INNER JOIN tadminlogin ON tadminlogin.kAdminlogin = tcontentauthor.kAdminlogin
+                INNER JOIN tadminlogin 
+                    ON tadminlogin.kAdminlogin = tcontentauthor.kAdminlogin
                 WHERE tcontentauthor.cRealm = '" . $realm . "'
                     AND tcontentauthor.kContentId = " . (int)$contentID . "
                     $filter", 1
@@ -74,7 +76,8 @@ class ContentAuthor
 
         if (is_object($author) && (int)$author->kAdminlogin > 0) {
             $attribs = Shop::DB()->query(
-                "SELECT tadminloginattribut.kAttribut, tadminloginattribut.cName, tadminloginattribut.cAttribValue, tadminloginattribut.cAttribText
+                "SELECT tadminloginattribut.kAttribut, tadminloginattribut.cName, 
+                    tadminloginattribut.cAttribValue, tadminloginattribut.cAttribText
                     FROM tadminloginattribut
                     WHERE tadminloginattribut.kAdminlogin = " . (int)$author->kAdminlogin, 2
             );

@@ -13,13 +13,12 @@ class PlausiTrennzeichen extends Plausi
     /**
      * @param null|string $cTyp
      * @param bool        $bUpdate
-     * @return bool|void
+     * @return bool
      */
     public function doPlausi($cTyp = null, $bUpdate = false)
     {
         if (count($this->xPostVar_arr) > 0) {
-            $nEinheit_arr = array(JTLSEPARATER_WEIGHT, JTLSEPARATER_AMOUNT);
-
+            $nEinheit_arr = [JTLSEPARATER_WEIGHT, JTLSEPARATER_AMOUNT];
             foreach ($nEinheit_arr as $nEinheit) {
                 // Anzahl Dezimalstellen
                 if (!isset($this->xPostVar_arr['nDezimal_' . $nEinheit]) || strlen($this->xPostVar_arr['nDezimal_' . $nEinheit]) === 0) {

@@ -85,7 +85,7 @@ class Notification implements IteratorAggregate, Countable
     {
         /** @var Status $status */
         $status     = Status::getInstance();
-        $confGlobal = Shop::getSettings(array(CONF_GLOBAL));
+        $confGlobal = Shop::getSettings([CONF_GLOBAL, CONF_ARTIKELUEBERSICHT]);
 
         if ($status->hasPendingUpdates()) {
             $this->add(NotificationEntry::TYPE_DANGER, 'Systemupdate', 'Ein Datenbank-Update ist zwingend notwendig', 'dbupdater.php');
@@ -127,6 +127,16 @@ class Notification implements IteratorAggregate, Countable
                     $this->add(NotificationEntry::TYPE_INFO, 'Subscription', "Ihre Subscription l&auml;uft in {$subscription->nDayDiff} Tagen ab.", 'http://jtl-url.de/subscription');
                 }
             }
+        }
+
+        if ($status->hasInvalidPollCoupons()) {
+            $this->add(NotificationEntry::TYPE_WARNING, 'Umfrage', 'In einer Umfrage wird ein Kupon verwendet, welcher inaktiv ist oder nicht mehr existiert.');
+        }
+
+        if ($confGlobal['artikeluebersicht']['suche_fulltext'] === 'Y'
+            && (!Shop::DB()->query("SHOW INDEX FROM tartikel WHERE KEY_NAME = 'idx_tartikel_fulltext'", 1)
+                || !Shop::DB()->query("SHOW INDEX FROM tartikelsprache WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'", 1))) {
+            $this->add(NotificationEntry::TYPE_WARNING, 'Der Volltextindex ist nicht vorhanden!', 'sucheinstellungen.php');
         }
     }
 }

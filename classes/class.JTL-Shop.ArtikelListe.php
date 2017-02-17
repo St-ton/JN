@@ -35,14 +35,17 @@ class ArtikelListe
      */
     public function getTopNeuArtikel($topneu, $anzahl = 3, $kKundengruppe = 0, $kSprache = 0)
     {
-        $this->elemente = array();
+        $this->elemente = [];
         if (!$_SESSION['Kundengruppe']->darfArtikelKategorienSehen) {
             return $this->elemente;
         }
         $kKundengruppe = (int)$kKundengruppe;
         $kSprache      = (int)$kSprache;
         $anzahl        = (int)$anzahl;
-        $cacheID       = 'jtl_tpnw_' . ((is_string($topneu)) ? $topneu : '') . '_' . $anzahl . '_' . $kSprache . '_' . $kKundengruppe;
+        $cacheID       = 'jtl_tpnw_' . ((is_string($topneu)) ? $topneu : '') .
+            '_' . $anzahl .
+            '_' . $kSprache .
+            '_' . $kKundengruppe;
         $objArr        = Shop::Cache()->get($cacheID);
         if ($objArr === false) {
             $qry = ($topneu === 'neu') ?
@@ -54,13 +57,14 @@ class ArtikelListe
             $objArr = Shop::DB()->query(
                 "SELECT tartikel.kArtikel
                     FROM tartikel
-                    LEFT JOIN tartikelsichtbarkeit ON tartikel.kArtikel=tartikelsichtbarkeit.kArtikel
+                    LEFT JOIN tartikelsichtbarkeit 
+                        ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                         AND tartikelsichtbarkeit.kKundengruppe = $kKundengruppe
                     WHERE tartikelsichtbarkeit.kArtikel IS NULL
                         AND $qry
                     ORDER BY rand() LIMIT " . $anzahl, 2
             );
-            Shop::Cache()->set($cacheID, $objArr, array(CACHING_GROUP_CATEGORY));
+            Shop::Cache()->set($cacheID, $objArr, [CACHING_GROUP_CATEGORY]);
         }
         if (is_array($objArr)) {
             $defaultOptions = Artikel::getDefaultOptions();
@@ -89,7 +93,7 @@ class ArtikelListe
      */
     public function getArtikelFromKategorie($kKategorie, $limitStart, $limitAnzahl, $order, $kKundengruppe = 0, $kSprache = 0)
     {
-        $this->elemente = array();
+        $this->elemente = [];
         if (!$_SESSION['Kundengruppe']->darfArtikelKategorienSehen || !$kKategorie) {
             return $this->elemente;
         }
@@ -110,7 +114,7 @@ class ArtikelListe
         } else {
             $hstSQL = '';
             if (isset($GLOBALS['NaviFilter']->Hersteller->kHersteller) && $GLOBALS['NaviFilter']->Hersteller->kHersteller > 0) {
-                $hstSQL = ' AND tartikel.kHersteller = ' . $GLOBALS['NaviFilter']->Hersteller->kHersteller . ' ';
+                $hstSQL = ' AND tartikel.kHersteller = ' . (int)$GLOBALS['NaviFilter']->Hersteller->kHersteller . ' ';
             }
             $lagerfilter = gibLagerfilter();
             $objArr      = Shop::DB()->query(
@@ -136,7 +140,11 @@ class ArtikelListe
                     $artikel->fuelleArtikel($obj->kArtikel, $defaultOptions);
                     $this->elemente[] = $artikel;
                 }
-                Shop::Cache()->set($cacheID, $this->elemente, array(CACHING_GROUP_CATEGORY, CACHING_GROUP_CATEGORY . '_' . $kKategorie));
+                Shop::Cache()->set(
+                    $cacheID,
+                    $this->elemente,
+                    [CACHING_GROUP_CATEGORY, CACHING_GROUP_CATEGORY . '_' . $kKategorie]
+                );
             }
         }
 
@@ -151,7 +159,7 @@ class ArtikelListe
      */
     public function getArtikelByKeys($kArtikel_arr, $start, $maxAnzahl)
     {
-        $this->elemente = array();
+        $this->elemente = [];
         if (!$_SESSION['Kundengruppe']->darfArtikelKategorienSehen) {
             return $this->elemente;
         }
@@ -179,7 +187,7 @@ class ArtikelListe
      */
     public function holeTopArtikel($katListe)
     {
-        $arr_kKategorie = array();
+        $arr_kKategorie = [];
         if (!empty($katListe->elemente)) {
             foreach ($katListe->elemente as $i => $kategorie) {
                 $arr_kKategorie[] = (int)$kategorie->kKategorie;
@@ -196,7 +204,7 @@ class ArtikelListe
             if (!$_SESSION['Kundengruppe']->darfArtikelKategorienSehen) {
                 return $this->elemente;
             }
-            $Einstellungen = Shop::getSettings(array(CONF_ARTIKELUEBERSICHT));
+            $Einstellungen = Shop::getSettings([CONF_ARTIKELUEBERSICHT]);
             $kKundengruppe = (int)$_SESSION['Kundengruppe']->kKundengruppe;
             $cLimitSql     = (isset($Einstellungen['artikeluebersicht']['artikelubersicht_topbest_anzahl'])) ?
                 ('LIMIT ' . (int)$Einstellungen['artikeluebersicht']['artikelubersicht_topbest_anzahl']) :
@@ -220,7 +228,7 @@ class ArtikelListe
                     {$cLimitSql}
                     ", 2
             );
-            $cacheTags = array(CACHING_GROUP_CATEGORY, CACHING_GROUP_OPTION);
+            $cacheTags = [CACHING_GROUP_CATEGORY, CACHING_GROUP_OPTION];
             foreach ($arr_kKategorie as $category) {
                 $cacheTags[] = CACHING_GROUP_CATEGORY . '_' . $category;
             }
@@ -247,7 +255,7 @@ class ArtikelListe
      */
     public function holeBestsellerArtikel($katListe, $topArtikelliste = null)
     {
-        $arr_kKategorie = array();
+        $arr_kKategorie = [];
         if (isset($katListe->elemente) && is_array($katListe->elemente)) {
             foreach ($katListe->elemente as $i => $kategorie) {
                 $arr_kKategorie[] = (int)$kategorie->kKategorie;
@@ -265,7 +273,7 @@ class ArtikelListe
                 return $this->elemente;
             }
             if (!isset($Einstellungen['artikeluebersicht'])) {
-                $Einstellungen = Shop::getSettings(array(CONF_ARTIKELUEBERSICHT));
+                $Einstellungen = Shop::getSettings([CONF_ARTIKELUEBERSICHT]);
             }
             $kKundengruppe = $_SESSION['Kundengruppe']->kKundengruppe;
             //top artikel nicht nochmal in den bestsellen vorkommen lassen
@@ -301,7 +309,7 @@ class ArtikelListe
                     {$cLimitSql}
                     ", 2
             );
-            $cacheTags = array(CACHING_GROUP_CATEGORY, CACHING_GROUP_OPTION);
+            $cacheTags = [CACHING_GROUP_CATEGORY, CACHING_GROUP_OPTION];
             foreach ($arr_kKategorie as $category) {
                 $cacheTags[] = CACHING_GROUP_CATEGORY . '_' . $category;
             }

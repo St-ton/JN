@@ -151,7 +151,7 @@ class SystemFolder
      * @param string $cBasePath
      * @param array  $oSubFolders
      */
-    public function __construct($cBaseName = '', $cBasePath = '', $oSubFolders = array())
+    public function __construct($cBaseName = '', $cBasePath = '', $oSubFolders = [])
     {
         $this->cBaseName   = $cBaseName;
         $this->cBasePath   = $cBasePath;
@@ -306,7 +306,7 @@ class NetSyncHandler
         if (!$this->isAuthed()) {
             $this->throwResponse(NetSyncResponse::ErrorLogin);
         }
-        $this->request(intval($_REQUEST['e']));
+        $this->request((int)$_REQUEST['e']);
     }
 
     /**
@@ -317,7 +317,7 @@ class NetSyncHandler
         if (is_null(self::$oInstance)) {
             if (class_exists($cClass)) {
                 new $cClass;
-                set_exception_handler(array($cClass, 'exception'));
+                set_exception_handler([$cClass, 'exception']);
             }
         }
     }
@@ -439,7 +439,7 @@ class NetSyncHandler
  */
 function getFolderStruct($cBaseDir)
 {
-    $oFolder_arr     = array();
+    $oFolder_arr     = [];
     $cBaseDir        = realpath($cBaseDir);
     $cFolderData_arr = scandir($cBaseDir);
     foreach ($cFolderData_arr as $cFolderItem) {
@@ -465,7 +465,7 @@ function getFolderStruct($cBaseDir)
 function getFilesStruct($cBaseDir, $bPreview = false)
 {
     $nIndex          = 0;
-    $oFiles_arr      = array();
+    $oFiles_arr      = [];
     $cBaseDir        = realpath($cBaseDir);
     $cFolderData_arr = scandir($cBaseDir);
     foreach ($cFolderData_arr as $cFile) {

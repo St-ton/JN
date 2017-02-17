@@ -1,31 +1,41 @@
-<li>
+<li class="table-responsive">
     {if $smarty.session.Warenkorb->PositionenArr|@count > 0}
         <table class="table table-striped dropdown-cart-items hyphens">
             <tbody>
             {foreach from=$smarty.session.Warenkorb->PositionenArr item=oPosition}
-                {if ($oPosition->nPosTyp == 1 || $oPosition->nPosTyp == 3 || $oPosition->nPosTyp == 7) && !$oPosition->istKonfigKind()}
-                    <tr>
-                        <td class="item-image">
-                            {if $oPosition->Artikel->Bilder[0]->cPfadNormal !== $BILD_KEIN_ARTIKELBILD_VORHANDEN}
-                                <img src="{$oPosition->Artikel->Bilder[0]->cPfadMini}" alt="" class="img-sm" />
-                            {/if}
-                        </td>
-                        <td class="item-quantity">
-                            {$oPosition->nAnzahl|replace_delim} {if $oPosition->cEinheit|strlen > 0} {$oPosition->cEinheit}{else} &times; {/if}
-                        </td>
-                        <td class="item-name">
-                            <a href="{$oPosition->Artikel->cURL}" title="{$oPosition->cName|trans|escape:"html"}">
-                                {$oPosition->cName|trans}
-                            </a>
-                        </td>
-                        <td class="item-price">
-                            {if $oPosition->istKonfigVater()}
-                                {$oPosition->cKonfigpreisLocalized[$NettoPreise][$smarty.session.cWaehrungName]}
-                            {else}
+                {if !$oPosition->istKonfigKind()}
+                    {if $oPosition->nPosTyp == 1}
+                        <tr>
+                            <td class="item-image">
+                                {if $oPosition->Artikel->Bilder[0]->cPfadNormal !== $BILD_KEIN_ARTIKELBILD_VORHANDEN}
+                                    <img src="{$oPosition->Artikel->Bilder[0]->cPfadMini}" alt="" class="img-sm" />
+                                {/if}
+                            </td>
+                            <td class="item-name" colspan="2">
+                                {$oPosition->nAnzahl|replace_delim}&nbsp;&times;&nbsp;
+                                <a href="{$oPosition->Artikel->cURL}" title="{$oPosition->cName|trans|escape:"html"}">
+                                    {$oPosition->cName|trans}
+                                </a>
+                            </td>
+                            <td class="item-price">
+                                {if $oPosition->istKonfigVater()}
+                                    {$oPosition->cKonfigpreisLocalized[$NettoPreise][$smarty.session.cWaehrungName]}
+                                {else}
+                                    {$oPosition->cEinzelpreisLocalized[$NettoPreise][$smarty.session.cWaehrungName]}
+                                {/if}
+                            </td>
+                        </tr>
+                    {else}
+                        <tr>
+                            <td></td>
+                            <td class="item-name" colspan="2">
+                                {$oPosition->nAnzahl|replace_delim}&nbsp;&times;&nbsp;{$oPosition->cName|trans}
+                            </td>
+                            <td class="item-price">
                                 {$oPosition->cEinzelpreisLocalized[$NettoPreise][$smarty.session.cWaehrungName]}
-                            {/if}
-                        </td>
-                    </tr>
+                            </td>
+                        </tr>
+                    {/if}
                 {/if}
             {/foreach}
             </tbody>
@@ -36,7 +46,7 @@
                     <td class="text-nowrap text-right"><strong>{$WarensummeLocalized[$NettoPreise]}</strong></td>
                 </tr>
             {/if}
-            {if $Einstellungen.global.global_steuerpos_anzeigen !== 'N' && $Steuerpositionen|@count > 0}
+            {if $Einstellungen.global.global_steuerpos_anzeigen !== 'N' && isset($Steuerpositionen) && $Steuerpositionen|@count > 0}
                 {foreach name=steuerpositionen from=$Steuerpositionen item=Steuerposition}
                     <tr class="text-muted tax">
                         <td colspan="3">{$Steuerposition->cName}</td>
@@ -51,7 +61,11 @@
             </tfoot>
         </table>
         {if !empty($WarenkorbVersandkostenfreiHinweis)}
-            <p class="small text-muted">{$WarenkorbVersandkostenfreiHinweis|truncate:120:"..."} <a href="{if !empty($oSpezialseiten_arr) && isset($oSpezialseiten_arr[6])}{$oSpezialseiten_arr[6]->cURL}{else}#{/if}" data-toggle="tooltip"  data-placement="bottom" title="{lang section="login" key="shippingInfo"}"><i class="fa fa-info-circle"></i></a></p>
+            <p class="small text-muted">{$WarenkorbVersandkostenfreiHinweis|truncate:120:"..."}
+                <a href="{if !empty($oSpezialseiten_arr) && isset($oSpezialseiten_arr[6])}{$oSpezialseiten_arr[6]->cURL}{else}#{/if}" data-toggle="tooltip"  data-placement="bottom" title="{lang section="login" key="shippingInfo"}">
+                    <i class="fa fa-info-circle"></i>
+                </a>
+            </p>
         {/if}
         <div class="btn-group btn-group-justified btn-group-full">
             <a href="{get_static_route id='warenkorb.php'}" class="btn btn-primary"><i class="fa fa-shopping-cart"></i> {lang key="gotoBasket"}</a>

@@ -3,17 +3,15 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/admininclude.php';
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'template_inc.php';
-
+require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('BOXES_VIEW', true, true);
 /** @global JTLSmarty $smarty */
-$oTemplate = Template::getInstance();
-$cHinweis  = '';
-$cFehler   = '';
-$nPage     = 0;
-$oBoxen    = Boxen::getInstance();
-$bOk       = false;
+
+$cHinweis = '';
+$cFehler  = '';
+$nPage    = 0;
+$oBoxen   = Boxen::getInstance();
+$bOk      = false;
 
 if (isset($_REQUEST['page'])) {
     $nPage = (int)$_REQUEST['page'];
@@ -123,7 +121,10 @@ if (isset($_REQUEST['action']) && validateToken()) {
             $boxCount  = count($box_arr);
             for ($i = 0; $i < $boxCount; $i++) {
                 $oBoxen->sortBox($box_arr[$i], $nPage, $sort_arr[$i], @in_array($box_arr[$i], $aktiv_arr) ? true : false);
-                $oBoxen->filterBoxVisibility((int)$box_arr[$i], (int)$nPage, (isset($_POST['box-filter-' . $box_arr[$i]])) ? $_POST['box-filter-' . $box_arr[$i]] : '');
+                $oBoxen->filterBoxVisibility(
+                    (int)$box_arr[$i], (int)$nPage,
+                    isset($_POST['box-filter-' . $box_arr[$i]]) ? $_POST['box-filter-' . $box_arr[$i]] : ''
+                );
             }
             // see jtlshop/jtl-shop/issues#544 && jtlshop/shop4#41
             if ($ePosition !== 'left' || (int)$nPage > 0) {
@@ -157,12 +158,12 @@ if (isset($_REQUEST['action']) && validateToken()) {
         default:
             break;
     }
-    $flushres = Shop::Cache()->flushTags(array(CACHING_GROUP_OBJECT, CACHING_GROUP_BOX, 'boxes'));
+    $flushres = Shop::Cache()->flushTags([CACHING_GROUP_OBJECT, CACHING_GROUP_BOX, 'boxes']);
     Shop::DB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
 }
 $oBoxen_arr      = $oBoxen->holeBoxen($nPage, false, true, true);
 $oVorlagen_arr   = $oBoxen->holeVorlagen($nPage);
-$oBoxenContainer = $oTemplate->getBoxLayoutXML();
+$oBoxenContainer = Template::getInstance()->getBoxLayoutXML();
 
 $smarty->assign('hinweis', $cHinweis)
        ->assign('fehler', $cFehler)
@@ -179,3 +180,4 @@ $smarty->assign('hinweis', $cHinweis)
        ->assign('nPage', $nPage)
        ->assign('invisibleBoxes', $oBoxen->getInvisibleBoxes())
        ->display('boxen.tpl');
+$i = 0;

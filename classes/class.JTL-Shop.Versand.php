@@ -332,7 +332,11 @@ class Versand
         $cVarUrl = $this->cLogistikURL;
 
         if (isset($this->oData->cPLZ)) {
-            $cVarUrl = str_replace(array('#PLZ#', '#IdentCode#'), array($this->oData->cPLZ, $this->cIdentCode), $this->cLogistikURL);
+            $cVarUrl = str_replace(
+                ['#PLZ#', '#IdentCode#'],
+                [$this->oData->cPLZ, $this->cIdentCode],
+                $this->cLogistikURL
+            );
         }
 
         return $cVarUrl;

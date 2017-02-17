@@ -1,6 +1,7 @@
-{if $hinweis}
-    <div class="alert alert-info">{$hinweis}</div>
-{/if}
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license http://jtl-url.de/jtlshoplicense
+ *}
 
 <form method="post" action="{get_static_route id='jtl.php'}" name="Wunschliste">
     {$jtl_token}
@@ -27,18 +28,19 @@
         <table class="table table-striped">
             <thead>
                 <tr>
-                    <th width="1%" class="text-center hidden-xs hidden-sm">{lang key="wishlistProduct" section="login"}</th>
-                    <th>&nbsp;</th>
-                    <th width="1%" class="text-center">{lang key="wishlistPosCount" section="login"}</th>
-                    <th width="1%"></th>
+                    <th>{lang key="wishlistProduct" section="login"}</th>
+                    <th class="hidden-xs hidden-sm">&nbsp;</th>
+                    <th>{lang key="wishlistComment" section="login"}</th>
+                    <th class="text-center">{lang key="wishlistPosCount" section="login"}</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
             {foreach name=wunschlistepos from=$CWunschliste->CWunschlistePos_arr item=CWunschlistePos}
                 <tr>
-                    <td class="img-col hidden-xs hidden-sm" width="1%">
+                    <td class="img-col hidden-xs hidden-sm">
                         <a href="{$CWunschlistePos->Artikel->cURL}">
-                            <img alt="{$CWunschlistePos->Artikel->cName}" src="{$CWunschlistePos->Artikel->cVorschaubild}" class="img-sm">
+                            <img alt="{$CWunschlistePos->Artikel->cName}" src="{$CWunschlistePos->Artikel->cVorschaubild}" class="img-responsive">
                         </a>
                     </td>
                     <td>
@@ -66,13 +68,15 @@
                                 {/if}
                             {/foreach}
                         </div>
-                        <div class="text-content hidden">
+                    </td>
+                    <td>
+                        <div class="text-content">
                             <textarea class="form-control" rows="2" name="Kommentar_{$CWunschlistePos->kWunschlistePos}">{$CWunschlistePos->cKommentar}</textarea>
                         </div>
                     </td>
                     {if $CWunschlistePos->Artikel->Preise->fVKNetto == 0 && $Einstellungen.global.global_preis0 === "N"}
                         <td width="1%"></td>
-                        <td class="text-right" width="1%">
+                        <td class="text-right">
                             <div class="btn-group-vertical">
                                 <a href="{get_static_route id='jtl.php'}?wl={$CWunschliste->kWunschliste}&wlplo={$CWunschlistePos->kWunschlistePos}{if isset($wlsearch)}&wlsearch=1&cSuche={$wlsearch}{/if}" class="btn btn-default" title="{lang key="wishlistremoveItem" section="login"}">
                                     <span class="fa fa-trash-o"></span>
@@ -87,18 +91,15 @@
                             <div class="btn-group-vertical">
                                 {* @todo: button href? *}
                                 {if $CWunschlistePos->Artikel->bHasKonfig}
-                                    <a href="{$CWunschlistePos->Artikel->cURL}" class="btn btn-xs btn-default" title="{lang key="product" section="global"} {lang key="configure" section="global"}">
+                                    <a href="{$CWunschlistePos->Artikel->cURL}" class="btn btn-default" title="{lang key="product" section="global"} {lang key="configure" section="global"}">
                                         <span class="fa fa-gears"></span>
                                     </a>
                                 {else}
-                                    <a href="{get_static_route id='jtl.php'}.php?wl={$CWunschliste->kWunschliste}&wlph={$CWunschlistePos->kWunschlistePos}{if isset($wlsearch)}&wlsearch=1&cSuche={$wlsearch}{/if}" class="btn btn-xs btn-default" title="{lang key="wishlistaddToCart" section="login"}">
+                                    <a href="{get_static_route id='jtl.php'}?wl={$CWunschliste->kWunschliste}&wlph={$CWunschlistePos->kWunschlistePos}{if isset($wlsearch)}&wlsearch=1&cSuche={$wlsearch}{/if}" class="btn btn-primary" title="{lang key="wishlistaddToCart" section="login"}">
                                         <span class="fa fa-shopping-cart"></span>
                                     </a>
                                 {/if}
-                                <a href="#toggle-comment" class="btn btn-xs {if $CWunschlistePos->cKommentar|count_characters > 0}btn-info{else}btn-default{/if}" title="{lang key="wishlistComment" section="login"}">
-                                    <i class="fa fa-comments-o" aria-hidden="true"></i>
-                                </a>
-                                <a href="{get_static_route id='jtl.php'}?wl={$CWunschliste->kWunschliste}&wlplo={$CWunschlistePos->kWunschlistePos}{if isset($wlsearch)}&wlsearch=1&cSuche={$wlsearch}{/if}" class="btn btn-xs btn-default" title="{lang key="wishlistremoveItem" section="login"}">
+                                <a href="{get_static_route id='jtl.php'}?wl={$CWunschliste->kWunschliste}&wlplo={$CWunschlistePos->kWunschlistePos}{if isset($wlsearch)}&wlsearch=1&cSuche={$wlsearch}{/if}" class="btn btn-default" title="{lang key="wishlistremoveItem" section="login"}">
                                     <span class="fa fa-trash-o"></span>
                                 </a>
                             </div>
@@ -109,10 +110,10 @@
             </tbody>
         </table>
         <div class="row">
-            <div class="col-xs-8 col-md-9">
+            <div class="col-xs-6 col-md-9">
                 {block name="wishlist-body"}
                     {if $CWunschliste->nOeffentlich == 1}
-                        <div class="input-group input-group-sm">
+                        <div class="input-group input-group">
                             <input type="text" name="wishlist-url" readonly="readonly" value="{$ShopURL}/index.php?wlid={$CWunschliste->cURLID}" class="form-control">
                             <span class="input-group-btn">
                                 {if $Einstellungen.global.global_wunschliste_freunde_aktiv === 'Y'}
@@ -126,18 +127,18 @@
                             </span>
                         </div>
                     {else}
-                        <button type="button" name="nstd" value="1" class="btn btn-sm btn-default">
-                            <span class="fa fa-eye"></span> {lang key="wishlistSetPublic" section="login"}
+                        <button type="submit" name="nstd" value="1" class="btn btn-default">
+                            <i class="fa fa-eye"></i> <span class="hidden-xs">{lang key="wishlistSetPublic" section="login"}</span>
                         </button>
                     {/if}
                 {/block}
             </div>
-            <div class="col-xs-4 col-md-3 text-right">
-                <div class="btn-group btn-group-sm">
+            <div class="col-xs-6 col-md-3 text-right">
+                <div class="btn-group">
+                    <a href="{get_static_route id='jtl.php'}?wl={$CWunschliste->kWunschliste}&wlpah=1{if isset($wlsearch)}&wlsearch=1&cSuche={$wlsearch}{/if}" class="btn btn-primary submit" title="{lang key="wishlistAddAllToCart" section="login"}"><i class="fa fa-shopping-cart"></i></a>
                     <button type="submit" title="{lang key="wishlistUpdate" section="login"}" class="btn btn-default">
                         <i class="fa fa-refresh"></i>
                     </button>
-                    <a href="{get_static_route id='jtl.php'}?wl={$CWunschliste->kWunschliste}&wlpah=1{if isset($wlsearch)}&wlsearch=1&cSuche={$wlsearch}{/if}" class="btn btn-default submit" title="{lang key="wishlistAddAllToCart" section="login"}"><i class="fa fa-shopping-cart"></i></a>
                     <a href="{get_static_route id='jtl.php'}?wl={$CWunschliste->kWunschliste}&wldl=1" class="btn btn-default submit" title="{lang key="wishlistDelAll" section="login"}"><i class="fa fa-trash-o"></i></a>
                 </div>
             </div>
@@ -146,13 +147,6 @@
 
     <script>
         $(function() {
-            $('a[href="#toggle-comment"]').click(function() {
-                $(this).closest('tr').find('td > .text-content').each(function(i, item) {
-                    $(item).toggleClass('hidden');
-                });
-                return false;
-            });
-
             $('input[name="wishlist-url"]').on('focus', function() {
                 $(this).select();
             });

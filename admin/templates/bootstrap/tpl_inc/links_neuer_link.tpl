@@ -303,7 +303,7 @@
             </div>
         </form>
         {if isset($Link->kLink)}
-            {getRevisions type='link' key=$Link->kLink show=['cContent'] secondary=true}
+            {getRevisions type='link' key=$Link->kLink show=['cContent'] secondary=true data=$Linkcontent}
         {/if}
     </div>
 </div>

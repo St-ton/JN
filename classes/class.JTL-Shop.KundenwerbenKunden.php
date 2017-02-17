@@ -1,4 +1,8 @@
 <?php
+/**
+ * @copyright (c) JTL-Software-GmbH
+ * @license http://jtl-url.de/jtlshoplicense
+ */
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
@@ -128,7 +132,7 @@ class KundenwerbenKunden
     public function insertBoniDB($kKunde)
     {
         if ($kKunde > 0) {
-            $Einstellungen = Shop::getSettings(array(CONF_GLOBAL, CONF_KUNDENWERBENKUNDEN));
+            $Einstellungen = Shop::getSettings([CONF_GLOBAL, CONF_KUNDENWERBENKUNDEN]);
 
             $oKundenWerbenKundenBoni                           = new stdClass();
             $oKundenWerbenKundenBoni->kKunde                   = (int)$kKunde;
@@ -158,7 +162,7 @@ class KundenwerbenKunden
                         AND tkundenwerbenkunden.nGuthabenVergeben = 0", 1
             );
             if (isset($oBestandskunde->kKunde) && $oBestandskunde->kKunde > 0) {
-                $Einstellungen = Shop::getSettings(array(CONF_GLOBAL, CONF_KUNDENWERBENKUNDEN));
+                $Einstellungen = Shop::getSettings([CONF_GLOBAL, CONF_KUNDENWERBENKUNDEN]);
                 if (isset($Einstellungen['kundenwerbenkunden']['kwk_nutzen']) && $Einstellungen['kundenwerbenkunden']['kwk_nutzen'] === 'Y') { //#8023
                     $oMail                 = new stdClass();
                     $oMail->tkunde         = new Kunde($oBestandskunde->kKunde);

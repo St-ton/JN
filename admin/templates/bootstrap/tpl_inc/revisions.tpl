@@ -9,7 +9,7 @@
                 {if $secondary === true}
                     {foreach $data as $foreignKey => $localized}
                         {foreach $show as $attribute}
-                            <div class="hidden" id="original-{$attribute}-{$foreignKey}">{$localized->$attribute}</div>
+                            <div class="hidden" id="original-{$attribute}-{$foreignKey}">{if isset($localized->$attribute)}{$localized->$attribute}{elseif is_string($localized)}{$localized}{/if}</div>
                         {/foreach}
                     {/foreach}
                 {else}
@@ -35,7 +35,7 @@
                                         {foreach $revision->content->references as $secondaryKey => $ref}
                                             {foreach $show as $attribute}
                                                 {if isset($ref->$attribute)}
-                                                    <h4>{$attribute}:</h4>
+                                                    <h4>{$attribute} ({$secondaryKey}):</h4>
                                                     <div id="diff-{$revision@iteration}-{$attribute}-{$secondaryKey}"></div>
                                                     <div class="hidden" data-references="{$attribute}" data-references-secondary="{$secondaryKey}">{$ref->$attribute|utf8_decode}</div>
                                                 {/if}
@@ -157,14 +157,13 @@
                 jelem     = $(elem);
                 reference = jelem.attr('data-references');
                 secondary = jelem.attr('data-references-secondary');
-                selector  = (typeof secondary !== 'undefined' && secondary !== '' && secondary !== null) ?
-                    ('diff-' + id + '-' + reference + '-' + secondary) :
-                    ('diff-' + id + '-' + reference);
+                selector  = (typeof secondary !== 'undefined' && secondary !== '' && secondary !== null)
+                    ? ('diff-' + id + '-' + reference + '-' + secondary)
+                    : ('diff-' + id + '-' + reference);
                 target    = document.getElementById(selector);
-                originalSelector = (typeof secondary !== 'undefined' && secondary !== '' && secondary !== null) ?
-                    ('#original-' + reference + '-' + secondary):
-                    ('#original-' + reference);
-
+                originalSelector = (typeof secondary !== 'undefined' && secondary !== '' && secondary !== null)
+                    ? ('#original-' + reference + '-' + secondary)
+                    : ('#original-' + reference);
                 initUI(target, $(originalSelector).text(), jelem.text());
             })
         });

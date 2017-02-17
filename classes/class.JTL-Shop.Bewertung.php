@@ -52,7 +52,16 @@ class Bewertung
         if ($nOption == 1) { // Hilfreich holen
             $this->holeHilfreichsteBewertung($kArtikel, $kSprache);
         } else {
-            $this->holeProduktBewertungen($kArtikel, $kSprache, $nAnzahlSeite, $nSeite, $nSterne, $cFreischalten, $nOption, $bAlleSprachen);
+            $this->holeProduktBewertungen(
+                $kArtikel,
+                $kSprache,
+                $nAnzahlSeite,
+                $nSeite,
+                $nSterne,
+                $cFreischalten,
+                $nOption,
+                $bAlleSprachen
+            );
         }
     }
 
@@ -63,7 +72,7 @@ class Bewertung
      */
     public function holeHilfreichsteBewertung($kArtikel, $kSprache)
     {
-        $this->oBewertung_arr = array();
+        $this->oBewertung_arr = [];
         if ($kArtikel > 0 && $kSprache > 0) {
             $oBewertungHilfreich = Shop::DB()->query(
                 "SELECT *, DATE_FORMAT(dDatum, '%d.%m.%Y') AS Datum
@@ -103,9 +112,9 @@ class Bewertung
         $nAnzahlSeite         = (int)$nAnzahlSeite;
         $nSeite               = (int)$nSeite;
         $nSterne              = (int)$nSterne;
-        $this->oBewertung_arr = array();
+        $this->oBewertung_arr = [];
         if ($kArtikel > 0 && $kSprache > 0) {
-            $oBewertungAnzahl_arr = array();
+            $oBewertungAnzahl_arr = [];
             $cSQL                 = '';
             // Sortierung beachten
             switch ($nOption) {
@@ -134,9 +143,9 @@ class Bewertung
             }
             executeHook(HOOK_BEWERTUNG_CLASS_SWITCH_SORTIERUNG);
 
-            $cSQLFreischalten = ($cFreischalten === 'Y') ?
-                ' AND nAktiv=1' :
-                '';
+            $cSQLFreischalten = ($cFreischalten === 'Y')
+                ? ' AND nAktiv = 1'
+                : '';
             // Bewertungen nur in einer bestimmten Sprache oder in allen Sprachen?
             $cSprachSQL = ' AND kSprache = ' . $kSprache;
             if ($bAlleSprachen) {
@@ -158,11 +167,9 @@ class Bewertung
             if ($nSeite > 0) {
                 $nLimit = '';
                 if ($nAnzahlSeite > 0) {
-                    if ($nSeite > 1) {
-                        $nLimit = ' LIMIT ' . (($nSeite - 1) * $nAnzahlSeite) . ', ' . $nAnzahlSeite;
-                    } else {
-                        $nLimit = ' LIMIT ' . $nAnzahlSeite;
-                    }
+                    $nLimit = ($nSeite > 1)
+                        ? ' LIMIT ' . (($nSeite - 1) * $nAnzahlSeite) . ', ' . $nAnzahlSeite
+                        : ' LIMIT ' . $nAnzahlSeite;
                 }
                 $this->oBewertung_arr = Shop::DB()->query(
                     "SELECT *, DATE_FORMAT(dDatum, '%d.%m.%Y') AS Datum
@@ -194,21 +201,21 @@ class Bewertung
                 $oBewertungGesamt->nAnzahl       = 0;
                 $this->oBewertungGesamt          = $oBewertungGesamt;
             }
-            $this->nAnzahlSprache = ((int)$oBewertungGesamtSprache->nAnzahlSprache > 0) ?
-                (int)$oBewertungGesamtSprache->nAnzahlSprache :
-                0;
+            $this->nAnzahlSprache = ((int)$oBewertungGesamtSprache->nAnzahlSprache > 0)
+                ? (int)$oBewertungGesamtSprache->nAnzahlSprache
+                : 0;
             if (is_array($this->oBewertung_arr) && count($this->oBewertung_arr) > 0) {
                 foreach ($this->oBewertung_arr as $i => $oBewertung) {
                     $this->oBewertung_arr[$i]->nAnzahlHilfreich = $oBewertung->nHilfreich + $oBewertung->nNichtHilfreich;
                 }
-                $nSterne_arr = array(0, 0, 0, 0, 0);
+                $nSterne_arr = [0, 0, 0, 0, 0];
                 foreach ($oBewertungAnzahl_arr as $oBewertungAnzahl) {
                     $nSterne_arr[5 - $oBewertungAnzahl->nSterne] = $oBewertungAnzahl->nAnzahl;
                 }
 
                 $this->nSterne_arr = $nSterne_arr;
             }
-            executeHook(HOOK_BEWERTUNG_CLASS_BEWERTUNG, array('oBewertung' => &$this));
+            executeHook(HOOK_BEWERTUNG_CLASS_BEWERTUNG, ['oBewertung' => &$this]);
         }
 
         return $this;

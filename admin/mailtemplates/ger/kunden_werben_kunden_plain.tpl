@@ -2,11 +2,11 @@
 
 Hallo {$Kunde->cVorname},
 
-anbei bekommst du ein Guthaben von {$Neukunde->fGuthaben} fÃ¼r {$Firma->cName}.
+anbei bekommst du ein Guthaben von {$Neukunde->fGuthaben} für {$Firma->cName}.
 
-Ãœbrigens, ich werbe Dich im Rahmen der {$Firma->cName} Kunden werben Kunden Aktion.
+Übrigens, ich werbe Dich im Rahmen der {$Firma->cName} Kunden werben Kunden Aktion.
 
-Viele GrÃ¼ÃŸe,
+Viele Grüße,
 {$Bestandskunde->cVorname} {$Bestandskunde->cNachname}
 
 {includeMailTemplate template=footer type=plain}

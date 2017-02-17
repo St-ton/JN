@@ -54,7 +54,9 @@ class HerstellerHelper
      */
     public static function getInstance()
     {
-        return (self::$_instance === null || (int)Shop::$kSprache !== self::$langID) ? new self() : self::$_instance;
+        return (self::$_instance === null || (int)Shop::$kSprache !== self::$langID)
+            ? new self()
+            : self::$_instance;
     }
 
     /**
@@ -67,13 +69,15 @@ class HerstellerHelper
                 $lagerfilter = gibLagerfilter();
                 //fixes for admin backend
                 $manufacturers   = Shop::DB()->query(
-                    "SELECT thersteller.kHersteller, thersteller.cName, thersteller.cHomepage, thersteller.nSortNr, thersteller.cBildpfad,
-                            therstellersprache.cMetaTitle, therstellersprache.cMetaKeywords, therstellersprache.cMetaDescription,
-                            therstellersprache.cBeschreibung, tseo.cSeo
+                    "SELECT thersteller.kHersteller, thersteller.cName, thersteller.cHomepage, thersteller.nSortNr, 
+                            thersteller.cBildpfad, therstellersprache.cMetaTitle, therstellersprache.cMetaKeywords, 
+                            therstellersprache.cMetaDescription, therstellersprache.cBeschreibung, tseo.cSeo
                         FROM thersteller
-                        LEFT JOIN therstellersprache ON therstellersprache.kHersteller = thersteller.kHersteller
+                        LEFT JOIN therstellersprache 
+                            ON therstellersprache.kHersteller = thersteller.kHersteller
                             AND therstellersprache.kSprache = " . self::$langID . "
-                        LEFT JOIN tseo ON tseo.kKey = thersteller.kHersteller
+                        LEFT JOIN tseo 
+                            ON tseo.kKey = thersteller.kHersteller
                             AND tseo.cKey = 'kHersteller'
                             AND tseo.kSprache = " . self::$langID . "
                         WHERE EXISTS (
@@ -87,7 +91,7 @@ class HerstellerHelper
                                         AND tartikelsichtbarkeit.kKundengruppe = " . Kundengruppe::getDefaultGroupID() . "
 							        )
                             )
-                        ORDER BY thersteller.cName", 2
+                        ORDER BY thersteller.nSortNr, thersteller.cName", 2
                 );
                 if (is_array($manufacturers) && count($manufacturers) > 0) {
                     foreach ($manufacturers as $i => $oHersteller) {
@@ -100,7 +104,19 @@ class HerstellerHelper
                         }
                     }
                 }
-                Shop::Cache()->set($this->cacheID, $manufacturers, [CACHING_GROUP_MANUFACTURER, CACHING_GROUP_CORE]);
+                $cacheTags = [CACHING_GROUP_MANUFACTURER, CACHING_GROUP_CORE];
+                executeHook(HOOK_GET_MANUFACTURERS, [
+                    'cached'        => false,
+                    'cacheTags'     => &$cacheTags,
+                    'manufacturers' => &$manufacturers
+                ]);
+                Shop::Cache()->set($this->cacheID, $manufacturers, $cacheTags);
+            } else {
+                executeHook(HOOK_GET_MANUFACTURERS, [
+                    'cached'        => true,
+                    'cacheTags'     => [],
+                    'manufacturers' => &$manufacturers
+                ]);
             }
             $this->manufacturers = $manufacturers;
         }

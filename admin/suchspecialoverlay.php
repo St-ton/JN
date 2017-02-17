@@ -14,7 +14,6 @@ $cFehler  = '';
 $step     = 'suchspecialoverlay_uebersicht';
 
 setzeSprache();
-
 if (verifyGPCDataInteger('suchspecialoverlay') === 1) {
     $step = 'suchspecialoverlay_detail';
 

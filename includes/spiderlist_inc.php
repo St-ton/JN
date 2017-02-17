@@ -9,7 +9,7 @@
  */
 function getSpiderArr()
 {
-    $cSpider_arr                                                       = array();
+    $cSpider_arr                                                       = [];
     $cSpider_arr['4anything.com LinkChecker v2.0']                     = '4Anything.com';
     $cSpider_arr['abcdatos']                                           = 'ABCdatos BotLink';
     $cSpider_arr['accoona']                                            = 'Accoona-AI-Agent';

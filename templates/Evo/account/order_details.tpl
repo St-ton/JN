@@ -1,3 +1,7 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license http://jtl-url.de/jtlshoplicense
+ *}
 <script type="text/javascript">
     if (top.location !== self.location) {ldelim}
         top.location = self.location.href;
@@ -103,74 +107,76 @@
 
 {block name="order-details-basket"}
 <h2>{lang key="basket"}</h2>
-<table class="table table-striped table-bordered" id="customerorder">
-    <thead>
-        <tr>
-            <th>{lang key="product" section="global"}</th>
-            <th>{lang key="shippingStatus" section="login"}</th>
-            <th class="text-right">{lang key="quantity" section="checkout"}</th>
-            <th class="text-right">{lang key="merchandiseValue" section="checkout"}</th>
-        </tr>
-    </thead>
-    <tbody>
-        {foreach name=positionen from=$Bestellung->Positionen item=Position}
-            {if !($Position->cUnique|strlen > 0 && $Position->kKonfigitem > 0)}
-                <tr>
-                    <td>
-                        {include file="account/order_item.tpl" Position=$Position bPreis=true bKonfig=true}
-                    </td>
-                    <td>
-                        {if $Position->nPosTyp == 1}
-                            {if $Position->bAusgeliefert}
-                                {lang key="statusShipped" section="order"}
-                            {elseif $Position->nAusgeliefert > 0}
-                                {if $Position->cUnique|strlen == 0}{lang key="statusShipped" section="order"}: {$Position->nAusgeliefertGesamt}{else}{lang key="statusPartialShipped" section="order"}{/if}
-                            {else}
-                                {lang key="notShippedYet" section="login"}
+<div class="table-responsive">
+    <table class="table table-striped table-bordered" id="customerorder">
+        <thead>
+            <tr>
+                <th>{lang key="product" section="global"}</th>
+                <th>{lang key="shippingStatus" section="login"}</th>
+                <th class="text-right">{lang key="quantity" section="checkout"}</th>
+                <th class="text-right">{lang key="merchandiseValue" section="checkout"}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {foreach name=positionen from=$Bestellung->Positionen item=Position}
+                {if !($Position->cUnique|strlen > 0 && $Position->kKonfigitem > 0)}
+                    <tr>
+                        <td>
+                            {include file="account/order_item.tpl" Position=$Position bPreis=true bKonfig=true}
+                        </td>
+                        <td>
+                            {if $Position->nPosTyp == 1}
+                                {if $Position->bAusgeliefert}
+                                    {lang key="statusShipped" section="order"}
+                                {elseif $Position->nAusgeliefert > 0}
+                                    {if $Position->cUnique|strlen == 0}{lang key="statusShipped" section="order"}: {$Position->nAusgeliefertGesamt}{else}{lang key="statusPartialShipped" section="order"}{/if}
+                                {else}
+                                    {lang key="notShippedYet" section="login"}
+                                {/if}
                             {/if}
-                        {/if}
-                    </td>
-                    <td class="text-right">
-                        {$Position->nAnzahl|replace_delim}
-                    </td>
-                    <td class="text-right">
-                        {if $Position->cUnique|strlen > 0 && $Position->kKonfigitem == 0}
-                            <p>{$Position->cKonfigpreisLocalized[$NettoPreise]}</p>
-                        {else}
-                            <p>{$Position->cGesamtpreisLocalized[$NettoPreise]}</p>
-                        {/if}
-                    </td>
+                        </td>
+                        <td class="text-right">
+                            {$Position->nAnzahl|replace_delim}
+                        </td>
+                        <td class="text-right">
+                            {if $Position->cUnique|strlen > 0 && $Position->kKonfigitem == 0}
+                                <p>{$Position->cKonfigpreisLocalized[$NettoPreise]}</p>
+                            {else}
+                                <p>{$Position->cGesamtpreisLocalized[$NettoPreise]}</p>
+                            {/if}
+                        </td>
+                    </tr>
+                {/if}
+            {/foreach}
+        </tbody>
+        <tfoot>
+            {if $NettoPreise}
+                <tr>
+                    <td colspan="3" class="text-right"><span class="price_label">{lang key="totalSum" section="global"}:</span></td>
+                    <td class="text-right"><span>{$Bestellung->WarensummeLocalized[$NettoPreise]}</span></td>
                 </tr>
             {/if}
-        {/foreach}
-    </tbody>
-    <tfoot>
-        {if $NettoPreise}
-            <tr>
-                <td colspan="3" class="text-right"><span class="price_label">{lang key="totalSum" section="global"}:</span></td>
-                <td class="text-right"><span>{$Bestellung->WarensummeLocalized[$NettoPreise]}</span></td>
-            </tr>
-        {/if}
-        {if $Einstellungen.global.global_steuerpos_anzeigen !== 'N'}
-            {foreach name=steuerpositionen from=$Bestellung->Steuerpositionen item=Steuerposition}
+            {if $Einstellungen.global.global_steuerpos_anzeigen !== 'N'}
+                {foreach name=steuerpositionen from=$Bestellung->Steuerpositionen item=Steuerposition}
+                    <tr>
+                        <td colspan="3" class="text-right">{$Steuerposition->cName}</td>
+                        <td class="text-right">{$Steuerposition->cPreisLocalized}</td>
+                    </tr>
+                {/foreach}
+            {/if}
+            {if $Bestellung->GuthabenNutzen == 1}
                 <tr>
-                    <td colspan="3" class="text-right">{$Steuerposition->cName}</td>
-                    <td class="text-right">{$Steuerposition->cPreisLocalized}</td>
+                    <td colspan="3" class="text-right"><span class="price_label">{lang key="useCredit" section="account data"}:</span></td>
+                    <td class="text-right">{$Bestellung->GutscheinLocalized}</span></td>
                 </tr>
-            {/foreach}
-        {/if}
-        {if $Bestellung->GuthabenNutzen == 1}
-            <tr>
-                <td colspan="3" class="text-right"><span class="price_label">{lang key="useCredit" section="account data"}:</span></td>
-                <td class="text-right">{$Bestellung->GutscheinLocalized}</span></td>
+            {/if}
+            <tr class="info">
+                <td colspan="3" class="text-right"><span class="price_label"><strong>{lang key="totalSum" section="global"}</strong>{if $NettoPreise} {lang key="gross" section="global"}{/if}:</span></td>
+                <td class="text-right"><span class="price">{$Bestellung->WarensummeLocalized[0]}</span></td>
             </tr>
-        {/if}
-        <tr class="info">
-            <td colspan="3" class="text-right"><span class="price_label"><strong>{lang key="totalSum" section="global"}</strong>{if $NettoPreise} {lang key="gross" section="global"}{/if}:</span></td>
-            <td class="text-right"><span class="price">{$Bestellung->WarensummeLocalized[0]}</span></td>
-        </tr>
-    </tfoot>
-</table>
+        </tfoot>
+    </table>
+</div>
 
 {include file="account/downloads.tpl"}
 {include file="account/uploads.tpl"}
@@ -179,24 +185,26 @@
 {if $Bestellung->oLieferschein_arr|@count > 0}
 {block name="order-details-delivery-note"}
     <h2>{if $Bestellung->cStatus == BESTELLUNG_STATUS_TEILVERSANDT}{lang key="partialShipped" section="order"}{else}{lang key="shipped" section="order"}{/if}</h2>
-    <table class="table table-striped table-bordered">
-        <thead>
-            <tr>
-                <th>{lang key="shippingOrder" section="order"}</th>
-                <th>{lang key="shippedOn" section="login"}</th>
-                <th class="text-right">{lang key="packageTracking" section="order"}</th>
-            </tr>
-        </thead>
-        <tbody>
-            {foreach from=$Bestellung->oLieferschein_arr item="oLieferschein"}
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered">
+            <thead>
                 <tr>
-                    <td><a class="popup-dep" id="{$oLieferschein->getLieferschein()}" href="#" title="{$oLieferschein->getLieferscheinNr()}">{$oLieferschein->getLieferscheinNr()}</a></td>
-                    <td>{$oLieferschein->getErstellt()|date_format:"%d.%m.%Y %H:%M"}</td>
-                    <td class="text-right">{foreach from=$oLieferschein->oVersand_arr name="versand" item="oVersand"}{if $oVersand->getIdentCode()}<p><a href="{$oVersand->getLogistikVarUrl()}" target="_blank" class="shipment" title="{$oVersand->getIdentCode()}">{lang key="packageTracking" section="order"}</a></p>{/if}{/foreach}</td>
+                    <th>{lang key="shippingOrder" section="order"}</th>
+                    <th>{lang key="shippedOn" section="login"}</th>
+                    <th class="text-right">{lang key="packageTracking" section="order"}</th>
                 </tr>
-            {/foreach}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                {foreach from=$Bestellung->oLieferschein_arr item="oLieferschein"}
+                    <tr>
+                        <td><a class="popup-dep" id="{$oLieferschein->getLieferschein()}" href="#" title="{$oLieferschein->getLieferscheinNr()}">{$oLieferschein->getLieferscheinNr()}</a></td>
+                        <td>{$oLieferschein->getErstellt()|date_format:"%d.%m.%Y %H:%M"}</td>
+                        <td class="text-right">{foreach from=$oLieferschein->oVersand_arr name="versand" item="oVersand"}{if $oVersand->getIdentCode()}<p><a href="{$oVersand->getLogistikVarUrl()}" target="_blank" class="shipment" title="{$oVersand->getIdentCode()}">{lang key="packageTracking" section="order"}</a></p>{/if}{/foreach}</td>
+                    </tr>
+                {/foreach}
+            </tbody>
+        </table>
+    </div>
 
     {* Lieferschein Popups *}
     {foreach from=$Bestellung->oLieferschein_arr item="oLieferschein"}
@@ -250,4 +258,3 @@
 {if !empty($oTrustedShopsBewertenButton->cPicURL)}
     <a href="{$oTrustedShopsBewertenButton->cURL}" target="_blank"><img src="{$oTrustedShopsBewertenButton->cPicURL}" /></a>
 {/if}
-

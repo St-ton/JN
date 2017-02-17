@@ -28,7 +28,8 @@ if (auth()) {
             $return = 0;
             foreach ($list as $i => $zip) {
                 if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                    Jtllog::writeLog('bearbeite: ' . $entzippfad . $zip['filename'] . ' size: ' . filesize($entzippfad . $zip['filename']), JTLLOG_LEVEL_DEBUG, false, 'Download_xml');
+                    Jtllog::writeLog('bearbeite: ' . $entzippfad . $zip['filename'] . ' size: ' .
+                        filesize($entzippfad . $zip['filename']), JTLLOG_LEVEL_DEBUG, false, 'Download_xml');
                 }
                 $d   = file_get_contents($entzippfad . $zip['filename']);
                 $xml = XML_unserialize($d);
@@ -69,7 +70,7 @@ function bearbeiteDeletes($xml)
             }
         }
     } elseif (intval($xml['del_downloads']['kDownload']) > 0) {
-        loescheDownload(intval($xml['del_downloads']['kDownload']));
+        loescheDownload($xml['del_downloads']['kDownload']);
     }
 }
 
@@ -93,9 +94,9 @@ function bearbeiteInsert($xml)
             if (is_array($oDownloadSprache_arr) && count($oDownloadSprache_arr) > 0) {
                 DBUpdateInsert('tdownload', $oDownload_arr, 'kDownload');
                 $lCount = count($oDownloadSprache_arr);
-                for ($i = 0; $i < $lCount; $i++) {
+                for ($i = 0; $i < $lCount; ++$i) {
                     $oDownloadSprache_arr[$i]->kDownload = $oDownload_arr[0]->kDownload;
-                    DBUpdateInsert('tdownloadsprache', array($oDownloadSprache_arr[$i]), 'kDownload', 'kSprache');
+                    DBUpdateInsert('tdownloadsprache', [$oDownloadSprache_arr[$i]], 'kDownload', 'kSprache');
                 }
             }
         }
@@ -113,11 +114,11 @@ function bearbeiteInsert($xml)
                     Jtllog::writeLog('oDownloadSprache_arr: ' . print_r($oDownloadSprache_arr, true), JTLLOG_LEVEL_DEBUG, false, 'Download_xml');
                 }
                 if (is_array($oDownloadSprache_arr) && count($oDownloadSprache_arr) > 0) {
-                    DBUpdateInsert('tdownload', array($oDownload), 'kDownload');
+                    DBUpdateInsert('tdownload', [$oDownload], 'kDownload');
                     $cdsaCount = count($oDownloadSprache_arr);
-                    for ($i = 0; $i < $cdsaCount; $i++) {
+                    for ($i = 0; $i < $cdsaCount; ++$i) {
                         $oDownloadSprache_arr[$i]->kDownload = $oDownload->kDownload;
-                        DBUpdateInsert('tdownloadsprache', array($oDownloadSprache_arr[$i]), 'kDownload', 'kSprache');
+                        DBUpdateInsert('tdownloadsprache', [$oDownloadSprache_arr[$i]], 'kDownload', 'kSprache');
                     }
                 }
             }

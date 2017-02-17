@@ -55,7 +55,7 @@
 				<tr>
 					<td align="right" valign="top">
 						<font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-							<strong>Email-adress of customer:</strong>
+							<strong>Email address of customer:</strong>
 						</font>
 					</td>
 				</tr>

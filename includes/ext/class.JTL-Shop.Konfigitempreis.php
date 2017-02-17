@@ -62,9 +62,19 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         private function loadFromDB($kKonfigitem = 0, $kKundengruppe = 0)
         {
-            $oObj = Shop::DB()->select('tkonfigitempreis', 'kKonfigitem', (int)$kKonfigitem, 'kKundengruppe', (int)$kKundengruppe);
+            $oObj = Shop::DB()->select(
+                'tkonfigitempreis',
+                'kKonfigitem',
+                (int)$kKonfigitem,
+                'kKundengruppe',
+                (int)$kKundengruppe
+            );
 
-            if (isset($oObj->kKonfigitem) && isset($oObj->kKundengruppe) && $oObj->kKonfigitem > 0 && $oObj->kKundengruppe > 0) {
+            if (isset($oObj->kKonfigitem) &&
+                isset($oObj->kKundengruppe) &&
+                $oObj->kKonfigitem > 0 &&
+                $oObj->kKundengruppe > 0
+            ) {
                 $cMember_arr = array_keys(get_object_vars($oObj));
                 foreach ($cMember_arr as $cMember) {
                     $this->$cMember = $oObj->$cMember;
@@ -113,7 +123,12 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
             $_upd->fPreis        = $this->fPreis;
             $_upd->nTyp          = $this->getTyp();
 
-            return Shop::DB()->update('tkonfigitempreis', array('kKonfigitem', 'kKundengruppe'), array($this->getKonfigitem(), $this->getKundengruppe()), $_upd);
+            return Shop::DB()->update(
+                'tkonfigitempreis',
+                ['kKonfigitem', 'kKundengruppe'],
+                [$this->getKonfigitem(), $this->getKundengruppe()],
+                $_upd
+            );
         }
 
         /**
@@ -124,7 +139,11 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         public function delete()
         {
-            return Shop::DB()->delete('tkonfigitempreis', ['kKonfigitem', 'kKundengruppe'], [(int)$this->kKonfigitem, (int)$this->kKundengruppe]);
+            return Shop::DB()->delete(
+                'tkonfigitempreis',
+                ['kKonfigitem', 'kKundengruppe'],
+                [(int)$this->kKonfigitem, (int)$this->kKundengruppe]
+            );
         }
 
         /**

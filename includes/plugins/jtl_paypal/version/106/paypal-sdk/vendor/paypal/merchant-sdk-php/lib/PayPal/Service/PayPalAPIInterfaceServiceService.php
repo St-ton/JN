@@ -62,7 +62,7 @@ use PayPal\PayPalAPI\ExternalRememberMeOptOutResponseType;
 class PayPalAPIInterfaceServiceService extends PPBaseService {
 
 	// Service Version
-	private static $SERVICE_VERSION = "106.0";
+	private static $SERVICE_VERSION = "116.0";
 
 	// Service Name
 	private static $SERVICE_NAME = "PayPalAPIInterfaceService";

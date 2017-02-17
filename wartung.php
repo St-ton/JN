@@ -6,26 +6,25 @@
 require_once dirname(__FILE__) . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
 /** @global JTLSmarty $smarty */
-/** @global array $GlobaleEinstellungen */
-if ($GlobaleEinstellungen['global']['wartungsmodus_aktiviert'] === 'N') {
-    header('Location: ' . Shop::getURL(), true, 307);
-    exit;
-}
-
 $AktuelleSeite = 'WARTUNG';
-$Einstellungen = Shop::getSettings(array(
+$Einstellungen = Shop::getSettings([
     CONF_GLOBAL,
     CONF_RSS,
     CONF_KUNDEN,
     CONF_KUNDENFELD,
     CONF_KUNDENWERBENKUNDEN,
     CONF_NEWSLETTER
-));
-
+]);
+if ($Einstellungen['global']['wartungsmodus_aktiviert'] === 'N') {
+    header('Location: ' . Shop::getURL(), true, 307);
+    exit;
+}
 Shop::setPageType(PAGE_WARTUNG);
 if (isset($Link)) {
     $requestURL = baueURL($Link, URLART_SEITE);
-    $sprachURL  = baueSprachURLS($Link, URLART_SEITE);
+    $sprachURL  = (isset($Link->languageURLs))
+        ? $Link->languageURLs
+        : baueSprachURLS($Link, URLART_SEITE);
 }
 //hole aktuelle Kategorie, falls eine gesetzt
 $AktuelleKategorie      = new Kategorie(verifyGPCDataInteger('kategorie'));

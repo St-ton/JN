@@ -64,7 +64,11 @@ function gibBestandskundeGutbaben($kKunde, $fGuthaben)
 {
     $kKunde = (int)$kKunde;
     if ($kKunde > 0) {
-        Shop::DB()->query("UPDATE tkunde SET fGuthaben = fGuthaben+" . doubleval($fGuthaben) . " WHERE kKunde = " . $kKunde, 3);
+        Shop::DB()->query("
+            UPDATE tkunde 
+                SET fGuthaben = fGuthaben+" . doubleval($fGuthaben) . " 
+                WHERE kKunde = " . $kKunde, 3
+        );
 
         return true;
     }

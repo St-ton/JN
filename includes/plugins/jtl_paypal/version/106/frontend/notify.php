@@ -7,9 +7,9 @@ ob_start();
 error_reporting(0);
 ini_set('display_errors', 0);
 
-$path         = str_replace('\\', '/', dirname(__FILE__));
-$basePath     = strstr($path, '/includes/plugins/', true);
-$bootstrapper = $basePath . '/includes/globalinclude.php';
+$path = str_replace('\\', '/', dirname(__FILE__));
+$basePath = strstr($path, '/includes/plugins/', true);
+$bootstrapper = $basePath.'/includes/globalinclude.php';
 
 $exit = function ($error = false) {
     ob_end_clean();
@@ -22,7 +22,7 @@ if (!file_exists($bootstrapper)) {
 }
 
 require_once $bootstrapper;
-require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
+require_once PFAD_ROOT.PFAD_INCLUDES_MODULES.'PaymentMethod.class.php';
 
 Jtllog::writeLog("PayPal Notify: Received an IPN from {$_SERVER['REMOTE_ADDR']}", JTLLOG_LEVEL_DEBUG, false);
 
@@ -37,12 +37,12 @@ $payment = null;
 
 switch (@$_GET['type']) {
     case 'basic':
-        require_once str_replace('frontend', 'paymentmethod', $oPlugin->cFrontendPfad) . '/class/PayPalBasic.class.php';
+        require_once str_replace('frontend', 'paymentmethod', $oPlugin->cFrontendPfad).'/class/PayPalBasic.class.php';
         $payment = new PayPalBasic();
         break;
 
     case 'express':
-        require_once str_replace('frontend', 'paymentmethod', $oPlugin->cFrontendPfad) . '/class/PayPalExpress.class.php';
+        require_once str_replace('frontend', 'paymentmethod', $oPlugin->cFrontendPfad).'/class/PayPalExpress.class.php';
         $payment = new PayPalExpress();
         break;
 }
@@ -52,7 +52,9 @@ if ($payment === null) {
     $exit(true);
 }
 
-$mode   = ucfirst($payment->getMode());
+require_once str_replace('frontend', 'paymentmethod', $oPlugin->cFrontendPfad).'/class/PayPal.helper.class.php';
+
+$mode = ucfirst($payment->getMode());
 $notify = $payment->handleNotify();
 $result = $notify->getRawData();
 
@@ -65,17 +67,13 @@ if ($payment->isLive() === true && $notify->validate() === false) {
 }
 
 $paymentStatus = $result['payment_status'];
-$txId          = $notify->getTransactionId();
-$invoice       = $result['invoice'];
+$txId = $notify->getTransactionId();
+$invoice = $result['invoice'];
 
 $payment->doLog("PayPal Notify: ({$mode}) Received new status '{$paymentStatus}' for transaction '{$txId}'", LOGLEVEL_NOTICE);
 
-if (strcasecmp($paymentStatus, 'Completed') !== 0) {
-    $exit();
-}
-
 $orderId = $result['custom'];
-$order   = new Bestellung((int) $orderId);
+$order = new Bestellung((int) $orderId);
 $order->fuelleBestellung(0, 0, false);
 
 if ((int) $order->kBestellung === 0) {
@@ -89,22 +87,35 @@ if (!in_array((int) $order->cStatus, [BESTELLUNG_STATUS_OFFEN, BESTELLUNG_STATUS
     $exit();
 }
 
-$payment->addIncomingPayment($order, [
-    'fBetrag'          => $result['mc_gross'],
-    'fZahlungsgebuehr' => $result['mc_fee'],
-    'cISO'             => $result['mc_currency'],
-    'cEmpfaenger'      => $result['receiver_email'],
-    'cZahler'          => $result['payer_email'],
-    'cHinweis'         => $notify->getTransactionId(),
-]);
+switch ($paymentStatus)
+{
+    case 'Completed':
+    {
+        $payment->addIncomingPayment($order, [
+            'fBetrag' => $result['mc_gross'],
+            'fZahlungsgebuehr' => $result['mc_fee'],
+            'cISO' => $result['mc_currency'],
+            'cEmpfaenger' => $result['receiver_email'],
+            'cZahler' => $result['payer_email'],
+            'cHinweis' => $notify->getTransactionId(),
+        ]);
 
-$diffAmount = abs(floatval($order->fGesamtsummeKundenwaehrung) - floatval($result['mc_gross']));
+        $diffAmount = abs(floatval($order->fGesamtsummeKundenwaehrung) - floatval($result['mc_gross']));
 
-if ($diffAmount <= 1) {
-    $payment->setOrderStatusToPaid($order);
-    $payment->doLog("PayPal Notify: Order status changed to 'paid'", LOGLEVEL_NOTICE);
-} else {
-    $payment->doLog('PayPal Notify: Order payment has been received', LOGLEVEL_NOTICE);
+        if ($diffAmount <= 1) {
+            $payment->setOrderStatusToPaid($order);
+            $payment->doLog("PayPal Notify: Order status changed to 'paid'", LOGLEVEL_NOTICE);
+        } else {
+            $payment->doLog('PayPal Notify: Order payment has been received', LOGLEVEL_NOTICE);
+        }
+        break;
+    }
+
+    case 'Declined':
+    {
+        PayPalHelper::sendPaymentDeniedMail($order->oKunde, $order);
+        break;
+    }
 }
 
 $exit();

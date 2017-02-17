@@ -12,7 +12,7 @@
                 <ul class="dropdown-menu" role="menu" aria-labelledby="dropdown-manufacturer">
                     {foreach name=hersteller from=$oBox->manufacturers item=hst}
                         <li role="presentation">
-                            <a role="menuitem" tabindex="-1" href="{$hst->cSeo}"">{$hst->cName|escape:"html"}</a></li>
+                            <a role="menuitem" tabindex="-1" href="{$hst->cSeo}">{$hst->cName|escape:"html"}</a></li>
                     {/foreach}
                 </ul>
             </div>

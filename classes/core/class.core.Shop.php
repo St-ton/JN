@@ -1039,9 +1039,24 @@ final class Shop
             //check path
             $cPath        = self::getRequestUri();
             $cRequestFile = '/' . ltrim($cPath, '/');
-            if ($cRequestFile === '/') { //special case: home page is accessible without seo url
+            if ($cRequestFile === '/') {
+                //special case: home page is accessible without seo url
+                $link        = null;
                 $linkHelper  = LinkHelper::getInstance();
-                self::$kLink = $linkHelper->getSpecialPageLinkKey(LINKTYP_STARTSEITE);
+                if (isset($_SESSION['Kundengruppe']->kKundengruppe)) {
+                    $link = Shop::DB()->query("
+                        SELECT kLink 
+                            FROM tlink
+                            WHERE nLinkart = " . LINKTYP_STARTSEITE . " 
+                            AND (ISNULL(cKundengruppen) 
+                                OR cKundengruppen = 'NULL' 
+                                OR cKundengruppen LIKE '" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";'
+                            )", 1
+                    );
+                }
+                self::$kLink = (isset($link->kLink))
+                    ? (int)$link->kLink
+                    : $linkHelper->getSpecialPageLinkKey(LINKTYP_STARTSEITE);
             } elseif (self::Media()->isValidRequest($cPath)) {
                 self::Media()->handleRequest($cPath);
             } else {

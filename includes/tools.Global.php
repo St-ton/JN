@@ -4575,9 +4575,10 @@ function loeseHttps()
                 if (!empty($lh->linkGroups->staticRoutes)) {
                     foreach ($lh->linkGroups->staticRoutes as $id => $languages) {
                         foreach ($languages as $link) {
-                            if ((int)$link->kLink === Shop::$kLink) {
-                                if ($id !== 'umfrage.php' && $id !== 'news.php' && $id !== 'vergleichsliste.php')
+                            if ((int)$link->kLink === (int)Shop::$kLink) {
+                                if ($id !== 'umfrage.php' && $id !== 'news.php' && $id !== 'vergleichsliste.php') {
                                     return;
+                                }
                             }
                         }
 

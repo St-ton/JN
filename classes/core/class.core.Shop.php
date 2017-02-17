@@ -901,7 +901,6 @@ final class Shop
                         $oSeo = false;
                     }
                 }
-
                 //mainwords
                 if (isset($oSeo->kKey) && strcasecmp($oSeo->cSeo, $seo) === 0) {
                     //canonical
@@ -909,51 +908,51 @@ final class Shop
 
                     switch ($oSeo->cKey) {
                         case 'kKategorie':
-                            self::$kKategorie = $oSeo->kKey;
+                            self::$kKategorie = (int)$oSeo->kKey;
                             break;
 
                         case 'kHersteller':
-                            self::$kHersteller = $oSeo->kKey;
+                            self::$kHersteller = (int)$oSeo->kKey;
                             break;
 
                         case 'kArtikel':
-                            self::$kArtikel = $oSeo->kKey;
+                            self::$kArtikel = (int)$oSeo->kKey;
                             break;
 
                         case 'kLink':
-                            self::$kLink = $oSeo->kKey;
+                            self::$kLink = (int)$oSeo->kKey;
                             break;
 
                         case 'kSuchanfrage':
-                            self::$kSuchanfrage = $oSeo->kKey;
+                            self::$kSuchanfrage = (int)$oSeo->kKey;
                             break;
 
                         case 'kMerkmalWert':
-                            self::$kMerkmalWert = $oSeo->kKey;
+                            self::$kMerkmalWert = (int)$oSeo->kKey;
                             break;
 
                         case 'kTag':
-                            self::$kTag = $oSeo->kKey;
+                            self::$kTag = (int)$oSeo->kKey;
                             break;
 
                         case 'suchspecial':
-                            self::$kSuchspecial = $oSeo->kKey;
+                            self::$kSuchspecial = (int)$oSeo->kKey;
                             break;
 
                         case 'kNews':
-                            self::$kNews = $oSeo->kKey;
+                            self::$kNews = (int)$oSeo->kKey;
                             break;
 
                         case 'kNewsMonatsUebersicht':
-                            self::$kNewsMonatsUebersicht = $oSeo->kKey;
+                            self::$kNewsMonatsUebersicht = (int)$oSeo->kKey;
                             break;
 
                         case 'kNewsKategorie':
-                            self::$kNewsKategorie = $oSeo->kKey;
+                            self::$kNewsKategorie = (int)$oSeo->kKey;
                             break;
 
                         case 'kUmfrage':
-                            self::$kUmfrage = $oSeo->kKey;
+                            self::$kUmfrage = (int)$oSeo->kKey;
                             break;
 
                     }

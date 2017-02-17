@@ -614,6 +614,14 @@ class Redirect
         $rebuiltUrl  = StringHandler::buildUrl($fullUrlParts);
         $cHeader_arr = get_headers($rebuiltUrl);
 
-        return $cHeader_arr !== false && preg_match('/^HTTP\\/\\d+\\.\\d+\\s+2\\d\\d\\s+.*$/', $cHeader_arr[0]);
+        if ($cHeader_arr !== false) {
+            foreach ($cHeader_arr as $header) {
+                if (preg_match('/^HTTP\\/\\d+\\.\\d+\\s+2\\d\\d\\s+.*$/', $header)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 }

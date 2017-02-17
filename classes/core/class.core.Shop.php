@@ -1050,7 +1050,7 @@ final class Shop
                             WHERE nLinkart = " . LINKTYP_STARTSEITE . " 
                             AND (ISNULL(cKundengruppen) 
                                 OR cKundengruppen = 'NULL' 
-                                OR cKundengruppen LIKE '" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";'
+                                OR cKundengruppen LIKE '%" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";%'
                             )", 1
                     );
                 }

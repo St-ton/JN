@@ -4,6 +4,7 @@
 * Bugfix: Weiterleitungslink kann bei Teilverschlüsselung nicht gespeichert werden, wenn Admin über https aufgerufen wird (#991)
 * Bugfix: Weiterleitungsschleife bei SSL-Teilverschlüsselung z.B. bei Mein-Konto oder Kontakt (#990)
 * Bugfix: Serverfehler 500, wenn Konfigurationsartikel im Warenkorb bearbeitet wird (#995)
+* Bugfix: Mehrere im Backend-CMS hinterlegte Startseiten (Typ Spezialseite Startseite) erzeugen Dauerschleife (#987)
 
 
 ## [4.05] - 2017-02-14

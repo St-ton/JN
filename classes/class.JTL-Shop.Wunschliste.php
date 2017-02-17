@@ -394,7 +394,7 @@ class Wunschliste
                     $WunschlistePos->kArtikel,
                     $WunschlistePos->cArtikelName,
                     $WunschlistePos->fAnzahl,
-                    $WunschlistePos->kWunschlist
+                    $WunschlistePos->kWunschliste
                 );
 
                 $cArtikelName                      = $CWunschlistePos->cArtikelName;

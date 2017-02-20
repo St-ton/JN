@@ -35,7 +35,7 @@ if (isset($_POST['content']) && intval($_POST['content']) === 1 && validateToken
         $spezialContent3->cTyp            = 'titel';
         $spezialContent1->cContent        = $_POST['cContentTop_' . $sprache->cISO];
         $spezialContent2->cContent        = $_POST['cContentBottom_' . $sprache->cISO];
-        $spezialContent3->cContent        = htmlspecialchars($_POST['cTitle_' . $sprache->cISO]);
+        $spezialContent3->cContent        = htmlspecialchars($_POST['cTitle_' . $sprache->cISO], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
 
         Shop::DB()->insert('tspezialcontentsprache', $spezialContent1);
         Shop::DB()->insert('tspezialcontentsprache', $spezialContent2);
@@ -51,7 +51,7 @@ if (isset($_POST['content']) && intval($_POST['content']) === 1 && validateToken
 if (isset($_POST['betreff']) && intval($_POST['betreff']) === 1 && validateToken()) {
     if ($_POST['cName'] && $_POST['cMail']) {
         $neuerBetreff        = new stdClass();
-        $neuerBetreff->cName = htmlspecialchars($_POST['cName']);
+        $neuerBetreff->cName = htmlspecialchars($_POST['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
         $neuerBetreff->cMail = $_POST['cMail'];
         if (is_array($_POST['cKundengruppen'])) {
             $neuerBetreff->cKundengruppen = implode(';', $_POST['cKundengruppen']) . ';';
@@ -85,7 +85,7 @@ if (isset($_POST['betreff']) && intval($_POST['betreff']) === 1 && validateToken
             $neuerBetreffSprache->cISOSprache = $sprache->cISO;
             $neuerBetreffSprache->cName       = $neuerBetreff->cName;
             if ($_POST['cName_' . $sprache->cISO]) {
-                $neuerBetreffSprache->cName = htmlspecialchars($_POST['cName_' . $sprache->cISO]);
+                $neuerBetreffSprache->cName = htmlspecialchars($_POST['cName_' . $sprache->cISO], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
             }
             Shop::DB()->delete(
                 'tkontaktbetreffsprache',

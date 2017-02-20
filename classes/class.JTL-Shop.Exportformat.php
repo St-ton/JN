@@ -1419,7 +1419,38 @@ class Exportformat
         $this->initSession()->initSmarty();
         $error = false;
         try {
-            $this->smarty->fetch('db:' . $this->kExportformat);
+            $article       = null;
+            $articleObject = Shop::DB()->query("
+                SELECT * 
+                    FROM tartikel 
+                    WHERE kVaterArtikel = 0 
+                    AND (cLagerBeachten = 'N' OR fLagerbestand > 0) LIMIT 1", 1);
+            if (!empty($articleObject->kArtikel)) {
+                $oArtikelOptionen                            = new stdClass();
+                $oArtikelOptionen->nMerkmale                 = 1;
+                $oArtikelOptionen->nAttribute                = 1;
+                $oArtikelOptionen->nArtikelAttribute         = 1;
+                $oArtikelOptionen->nKategorie                = 1;
+                $oArtikelOptionen->nKeinLagerbestandBeachten = 1;
+                $oArtikelOptionen->nMedienDatei              = 1;
+
+                $article = new Artikel();
+                $article->fuelleArtikel($articleObject->kArtikel, $oArtikelOptionen);
+                $article->cDeeplink             = '';
+                $article->Artikelbild           = '';
+                $article->Lieferbar             = '';
+                $article->Lieferbar_01          = '';
+                $article->Verfuegbarkeit_kelkoo = '';
+                $article->cBeschreibungHTML     = '';
+                $article->cKurzBeschreibungHTML = '';
+                $article->fUst                  = 0;
+                $article->Kategorie             = new Kategorie();
+                $article->Kategoriepfad         = '';
+                $article->Versandkosten         = -1;
+
+            }
+            $this->smarty->assign('Artikel', $article)
+                         ->fetch('db:' . $this->kExportformat);
         } catch (Exception $e) {
             $error = '<strong>Smarty-Syntaxfehler:</strong><br />';
             $error .= '<pre>' . $e->getMessage() . '</pre>';

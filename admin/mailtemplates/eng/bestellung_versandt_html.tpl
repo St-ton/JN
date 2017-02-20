@@ -1,8 +1,8 @@
 {includeMailTemplate template=header type=html}
 
-Dear {if $Kunde->cAnrede == "w"}geehrte{else}geehrter{/if} {$Kunde->cAnredeLocalized} {$Kunde->cNachname},<br>
+Dear {$Kunde->cAnredeLocalized} {$Kunde->cNachname},<br>
 <br>
-Your order dated {$Bestellung->dErstelldatum_de} mit Bestellnummer {$Bestellung->cBestellNr} has been shipped to you today.<br>
+Your order dated {$Bestellung->dErstelldatum_de} with order no. {$Bestellung->cBestellNr} has been shipped to you today.<br>
 <br>
 {foreach name=pos from=$Bestellung->oLieferschein_arr item=oLieferschein}
     {if $oLieferschein->oVersand_arr|count > 1}

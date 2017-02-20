@@ -1,6 +1,6 @@
 {includeMailTemplate template=header type=html}
 
-Dear {$Kunde->cVorname} {$Kunde->cNachname},<br>
+Dear {$Kunde->cAnredeLocalized} {$Kunde->cNachname},<br>
 <br>
 We are happy to inform you that a voucher has been deposited for you on your account.<br>
 <br>

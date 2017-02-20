@@ -996,6 +996,16 @@ class LinkHelper
      */
     public function getStaticRoute($id = 'kontakt.php', $full = true, $secure = false, $langISO = null)
     {
+        if ($secure === false) {
+            //@see #990
+            //@todo workaround entfernen, nachdem Teilverschlüsselung aus Shop entfernt wurde.
+            $conf = Shop::getSettings([CONF_GLOBAL]);
+            if ($conf['global']['kaufabwicklung_ssl_nutzen'] === 'Z' &&
+                ($id !== 'umfrage.php' && $id !== 'news.php' && $id !== 'vergleichsliste.php')
+            ) {
+                $secure = true;
+            }
+        }
         if (isset($this->linkGroups->staticRoutes[$id])) {
             $index = $this->linkGroups->staticRoutes[$id];
             if (is_array($index)) {

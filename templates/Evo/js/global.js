@@ -210,7 +210,7 @@ $(document).ready(function () {
             datumTokenizer: Bloodhound.tokenizers.obj.whitespace('keyword'),
             queryTokenizer: Bloodhound.tokenizers.whitespace,
             remote:         {
-                url:      'io.php?io={"name":"suggestions","params":["%QUERY"]}',
+                url:      'io.php?io={"name":"suggestions", "params":["%QUERY"]}',
                 wildcard: '%QUERY'
             }
         });
@@ -236,20 +236,20 @@ $(document).ready(function () {
         datumTokenizer: Bloodhound.tokenizers.obj.whitespace('keyword'),
         queryTokenizer: Bloodhound.tokenizers.whitespace,
         remote:         {
-            url:      'io.php?io={"name":"getCitiesByZip","params":["%QUERY","'+$('#country').val()+'","'+$('#plz').val()+'"]}',
+            url:      'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $('#country').val() + '", "' + $('#plz').val() + '"]}',
             wildcard: '%QUERY'
         },
         dataType: "json"
     });
 
-    $('#rechnungsdaten #plz').change(function(){
-        citySuggestion.remote.url = 'io.php?io={"name":"getCitiesByZip","params":["%QUERY","'+$('#country').val()+'","'+$('#plz').val()+'"]}';
+    $('#neukunde #plz, #new_customer #plz').change(function(){
+        citySuggestion.remote.url = 'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $('#country').val() + '", "' + $('#plz').val() + '"]}';
     });
-    $('#rechnungsdaten #country').change(function(){
-        citySuggestion.remote.url = 'io.php?io={"name":"getCitiesByZip","params":["%QUERY","'+$('#country').val()+'","'+$('#plz').val()+'"]}';
+    $('#neukunde #country, #new_customer #country').change(function(){
+        citySuggestion.remote.url = 'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $('#country').val() + '", "' + $('#plz').val() + '"]}';
     });
 
-    $('#rechnungsdaten #city').typeahead(
+    $('#neukunde #city, #new_customer #city').typeahead(
         {
             hint: true,
             minLength: 1

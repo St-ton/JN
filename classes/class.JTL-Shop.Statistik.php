@@ -150,8 +150,9 @@ class Statistik
 
     /**
      * @return array
+     * @param int $nLimit
      */
-    public function holeBotStats()
+    public function holeBotStats($nLimit = -1)
     {
         if ((count($this->cDatumVon_arr) > 0 && count($this->cDatumBis_arr) > 0) || ($this->nStampVon > 0 && $this->nStampBis > 0)) {
             $this->gibDifferenz();
@@ -174,7 +175,9 @@ class Statistik
                     ) AS t
                     JOIN tbesucherbot ON tbesucherbot.kBesucherBot = t.kBesucherBot
                     GROUP BY t.kBesucherBot
-                    ORDER BY nCount DESC", 2
+                    ORDER BY nCount DESC
+                    " . ($nLimit > -1 ? "LIMIT " . (int)$nLimit : ""),
+                2
             );
 
             return $oStatTMP_arr;

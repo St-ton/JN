@@ -13,6 +13,7 @@
             <p class="alert alert-info choose-variations">{lang key="chooseVariations" section="messages"}</p>
         {elseif $Artikel->inWarenkorbLegbar == 1 && !$Artikel->oKonfig_arr}
             {if !$showMatrix}
+                {block name="basket-form-inline"}
                 <div class="form-inline">
                     <div id="quantity-grp" class="choose_quantity input-group">
                         <input type="{if $Artikel->cTeilbar === 'Y' && $Artikel->fAbnahmeintervall == 0}text{else}number{/if}" min="0"{if $Artikel->fAbnahmeintervall > 0} required step="{$Artikel->fAbnahmeintervall}"{/if}
@@ -26,6 +27,7 @@
                         </span>
                     </div>
                 </div>
+                {/block}
             {/if}
         {/if}
         {if $Artikel->inWarenkorbLegbar == 1 && ($Artikel->fMindestbestellmenge > 1 || ($Artikel->fMindestbestellmenge > 0 && $Artikel->cTeilbar === 'Y') || $Artikel->fAbnahmeintervall > 0 || $Artikel->cTeilbar === 'Y' || (isset($Artikel->FunktionsAttribute[$FKT_ATTRIBUT_MAXBESTELLMENGE]) && $Artikel->FunktionsAttribute[$FKT_ATTRIBUT_MAXBESTELLMENGE] > 0))}
@@ -41,7 +43,7 @@
                     <p>{$minimumPurchase|replace:"%d":$Artikel->fMindestbestellmenge|replace:"%s":$units}</p>
                 {/if}
 
-                {if $Artikel->fAbnahmeintervall > 0}
+                {if $Artikel->fAbnahmeintervall > 0 && $Einstellungen.artikeldetails.artikeldetails_artikelintervall_anzeigen === 'Y'}
                     {lang key="takeHeedOfInterval" section="productDetails" assign="takeHeedOfInterval"}
                     <p>{$takeHeedOfInterval|replace:"%d":$Artikel->fAbnahmeintervall|replace:"%s":$units}</p>
                 {/if}

@@ -15,6 +15,21 @@ class ZahlungsLog
     public $cModulId;
 
     /**
+     * @var array
+     */
+    public $oLog_arr = [];
+
+    /**
+     * @var int
+     */
+    public $nEingangAnzahl = 0;
+
+    /**
+     * @var bool
+     */
+    public $hasError = false;
+
+    /**
      * @param string $cModulId
      */
     public function __construct($cModulId)
@@ -30,13 +45,14 @@ class ZahlungsLog
      */
     public function holeLog($nStart = 0, $nLimit = 100, $nLevel = -1)
     {
-        $nLevel    = intval($nLevel);
+        $nLevel    = (int)$nLevel;
         $cSQLLevel = ($nLevel >= 0) ? ('AND nLevel = ' . $nLevel) : '';
 
         return Shop::DB()->query(
             "SELECT * FROM tzahlungslog
                 WHERE cModulId = '" . $this->cModulId . "' " . $cSQLLevel . "
-                ORDER BY dDatum DESC, kZahlunglog DESC LIMIT " . intval($nStart) . ", " . intval($nLimit), 2
+                ORDER BY dDatum DESC, kZahlunglog DESC 
+                LIMIT " . (int)$nStart . ", " . (int)$nLimit, 2
         );
     }
 
@@ -45,9 +61,13 @@ class ZahlungsLog
      */
     public function logCount()
     {
-        $oCount = Shop::DB()->query("SELECT count(*) AS nCount FROM tzahlungslog WHERE cModulId = '" . $this->cModulId . "'", 1);
+        $oCount = Shop::DB()->query("
+            SELECT count(*) AS nCount 
+                FROM tzahlungslog 
+                WHERE cModulId = '" . $this->cModulId . "'", 1
+        );
 
-        return (isset($oCount->nCount)) ? intval($oCount->nCount) : 0;
+        return (isset($oCount->nCount)) ? (int)$oCount->nCount : 0;
     }
 
     /**
@@ -101,9 +121,9 @@ class ZahlungsLog
      */
     public static function getLog($cModulId_arr, $nStart = 0, $nLimit = 100, $nLevel = -1)
     {
-        $nLevel = intval($nLevel);
+        $nLevel = (int)$nLevel;
         if (!is_array($cModulId_arr)) {
-            $cModulId_arr = (array) $cModulId_arr;
+            $cModulId_arr = (array)$cModulId_arr;
         }
         array_walk($cModulId_arr, function (&$value, $key) {
             $value = sprintf("'%s'", $value);
@@ -114,7 +134,8 @@ class ZahlungsLog
         return Shop::DB()->query(
             "SELECT * FROM tzahlungslog
                 WHERE cModulId IN(" . $cSQLModulId . ") " . $cSQLLevel . "
-                ORDER BY dDatum DESC, kZahlunglog DESC LIMIT " . intval($nStart) . ", " . intval($nLimit), 2
+                ORDER BY dDatum DESC, kZahlunglog DESC 
+                LIMIT " . (int)$nStart . ", " . (int)$nLimit, 2
         );
     }
 }

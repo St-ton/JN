@@ -61,7 +61,6 @@ class MerkmalWert
      */
     public function __construct($kMerkmalWert = 0)
     {
-        $kMerkmalWert = intval($kMerkmalWert);
         if ($kMerkmalWert > 0) {
             $this->loadFromDB($kMerkmalWert);
         }
@@ -78,22 +77,25 @@ class MerkmalWert
     {
         $kSprache = null;
         if (isset($_SESSION['kSprache'])) {
-            $kSprache = $_SESSION['kSprache'];
+            $kSprache = (int)$_SESSION['kSprache'];
         }
         if (!$kSprache) {
             $oSprache = gibStandardsprache();
             if (isset($oSprache->kSprache) && $oSprache->kSprache > 0) {
-                $kSprache = $oSprache->kSprache;
+                $kSprache = (int)$oSprache->kSprache;
             }
         }
         $kSprache     = (int)$kSprache;
+        $kMerkmalWert = (int)$kMerkmalWert;
         $oMerkmalWert = Shop::DB()->query(
             "SELECT tmerkmalwert.*, tmerkmalwertsprache.kSprache, tmerkmalwertsprache.cWert,
-                tmerkmalwertsprache.cMetaTitle, tmerkmalwertsprache.cMetaKeywords, tmerkmalwertsprache.cMetaDescription,
-                tmerkmalwertsprache.cBeschreibung, tseo.cSeo
+                tmerkmalwertsprache.cMetaTitle, tmerkmalwertsprache.cMetaKeywords, 
+                tmerkmalwertsprache.cMetaDescription, tmerkmalwertsprache.cBeschreibung, tseo.cSeo
                 FROM tmerkmalwert
-                JOIN tmerkmalwertsprache ON tmerkmalwertsprache.kMerkmalWert = tmerkmalwert.kMerkmalWert
-                LEFT JOIN tseo ON tseo.cKey = 'kMerkmalWert'
+                JOIN tmerkmalwertsprache 
+                    ON tmerkmalwertsprache.kMerkmalWert = tmerkmalwert.kMerkmalWert
+                LEFT JOIN tseo 
+                    ON tseo.cKey = 'kMerkmalWert'
                     AND tseo.kKey = tmerkmalwertsprache.kMerkmalWert
                     AND tseo.kSprache = tmerkmalwertsprache.kSprache
                 WHERE tmerkmalwertsprache.kSprache = " . $kSprache . "
@@ -105,7 +107,7 @@ class MerkmalWert
                 $this->$cMember = $oMerkmalWert->$cMember;
             }
             $this->cURL = baueURL($this, URLART_MERKMAL);
-            executeHook(HOOK_MERKMALWERT_CLASS_LOADFROMDB, array('oMerkmalWert' => &$this));
+            executeHook(HOOK_MERKMALWERT_CLASS_LOADFROMDB, ['oMerkmalWert' => &$this]);
         }
 
         $this->cBildpfadKlein       = BILD_KEIN_MERKMALWERTBILD_VORHANDEN;
@@ -132,26 +134,28 @@ class MerkmalWert
      */
     public function holeAlleMerkmalWerte($kMerkmal)
     {
-        $oMerkmalWert_arr = array();
+        $oMerkmalWert_arr = [];
         if ($kMerkmal > 0) {
-            $kSprache = Shop::$kSprache;
+            $kSprache = Shop::getLanguage();
             if (!$kSprache) {
                 $oSprache = gibStandardsprache();
                 if (isset($oSprache->kSprache) && $oSprache->kSprache > 0) {
-                    $kSprache = $oSprache->kSprache;
+                    $kSprache = (int)$oSprache->kSprache;
                 }
             }
             $oMerkmalWert_arr = Shop::DB()->query(
-                "SELECT tmerkmalwert.*, tmerkmalwertsprache.kMerkmalWert, tmerkmalwertsprache.kSprache, tmerkmalwertsprache.cWert,
-                    tmerkmalwertsprache.cMetaTitle, tmerkmalwertsprache.cMetaKeywords, tmerkmalwertsprache.cMetaDescription,
-                    tmerkmalwertsprache.cBeschreibung, tseo.cSeo
+                "SELECT tmerkmalwert.*, tmerkmalwertsprache.kMerkmalWert, tmerkmalwertsprache.kSprache, 
+                    tmerkmalwertsprache.cWert, tmerkmalwertsprache.cMetaTitle, tmerkmalwertsprache.cMetaKeywords, 
+                    tmerkmalwertsprache.cMetaDescription, tmerkmalwertsprache.cBeschreibung, tseo.cSeo
                     FROM tmerkmalwert
-                    JOIN tmerkmalwertsprache ON tmerkmalwertsprache.kMerkmalWert = tmerkmalwert.kMerkmalWert
-                    LEFT JOIN tseo ON tseo.cKey = 'kMerkmalWert'
+                    JOIN tmerkmalwertsprache 
+                        ON tmerkmalwertsprache.kMerkmalWert = tmerkmalwert.kMerkmalWert
+                    LEFT JOIN tseo 
+                        ON tseo.cKey = 'kMerkmalWert'
                         AND tseo.kKey = tmerkmalwertsprache.kMerkmalWert
                         AND tseo.kSprache = tmerkmalwertsprache.kSprache
-                    WHERE tmerkmalwertsprache.kSprache = " . (int)$kSprache . "
-                        AND tmerkmalwert.kMerkmal = " . (int)$kMerkmal . "
+                    WHERE tmerkmalwertsprache.kSprache = " . $kSprache . "
+                        AND tmerkmalwert.kMerkmal = " . $kMerkmal . "
                     GROUP BY tmerkmalwert.kMerkmalWert
                     ORDER BY tmerkmalwert.nSort", 2
             );

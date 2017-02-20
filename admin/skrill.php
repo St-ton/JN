@@ -44,9 +44,11 @@ if (isset($_POST['actionValidateEmail']) && validateToken()) {
             $sql        = "INSERT INTO tskrill SET cEmail = '$email', cCustomerId = '$customerId'";
             Shop::DB()->query($sql, 10);
 
-            Jtllog::writeLog('Validierung der Skrill-Freischaltung erfolgreich => URL: ' . $url . ' - Return: ' . print_r($arr, true), JTLLOG_LEVEL_DEBUG, false, 'Skrill');
+            Jtllog::writeLog('Validierung der Skrill-Freischaltung erfolgreich => URL: ' .
+                $url . ' - Return: ' . print_r($arr, true), JTLLOG_LEVEL_DEBUG, false, 'Skrill');
         } else {
-            Jtllog::writeLog('Validierung der Skrill-Freischaltung fehlgeschlagen => URL: ' . $url . ' - Return: ' . print_r($arr, true), JTLLOG_LEVEL_ERROR, false, 'Skrill');
+            Jtllog::writeLog('Validierung der Skrill-Freischaltung fehlgeschlagen => URL: ' .
+                $url . ' - Return: ' . print_r($arr, true), JTLLOG_LEVEL_ERROR, false, 'Skrill');
             $actionError = 1;
         }
     } else {
@@ -88,13 +90,16 @@ if (isset($_POST['actionActivate']) && validateToken()) {
         . "Shop URL : " . Shop::getURL() . "\n";
 
     // Content
-    $mail            = new stdClass();
-    $mail->toEmail   = MONEYBOOKERS_ACTIVATION_EMAIL_ADDRESS;
-    $mail->toName    = MONEYBOOKERS_ACTIVATION_EMAIL_ADDRESS;
-    $mail->fromEmail = $Einstellungen['emails']['email_master_absender'];
-    $mail->fromName  = $Einstellungen['emails']['email_master_absender_name'];
-    $mail->subject   = MONEYBOOKERS_ACTIVATION_EMAIL_SUBJECT;
-    $mail->bodyText  = $body;
+    $mail               = new stdClass();
+    $mail->lang         = 'ger';
+    $mail->toEmail      = MONEYBOOKERS_ACTIVATION_EMAIL_ADDRESS;
+    $mail->toName       = MONEYBOOKERS_ACTIVATION_EMAIL_ADDRESS;
+    $mail->fromEmail    = $Einstellungen['emails']['email_master_absender'];
+    $mail->replyToEmail = $Einstellungen['emails']['email_master_absender'];
+    $mail->fromName     = $Einstellungen['emails']['email_master_absender_name'];
+    $mail->replyToName  = $Einstellungen['emails']['email_master_absender_name'];
+    $mail->subject      = MONEYBOOKERS_ACTIVATION_EMAIL_SUBJECT;
+    $mail->bodyText     = $body;
 
     // Method
     $mail->methode       = $Einstellungen['emails']['email_methode'];
@@ -133,10 +138,12 @@ if (isset($_POST['actionValidateSecretWord']) && validateToken()) {
             Shop::DB()->query($sql, 10);
         } elseif ($answer === 'VELOCITY_CHECK_EXCEEDED') {
             $actionError = 2;
-            Jtllog::writeLog('Validierung des Skrill-Geheimworts fehlgeschlagen => URL: ' . $url . ' - Answer: ' . $answer, JTLLOG_LEVEL_ERROR, false, 'Skrill');
+            Jtllog::writeLog('Validierung des Skrill-Geheimworts fehlgeschlagen => URL: ' .
+                $url . ' - Answer: ' . $answer, JTLLOG_LEVEL_ERROR, false, 'Skrill');
         } else {
             $actionError = 3;
-            Jtllog::writeLog('Validierung des Skrill-Geheimworts fehlgeschlagen => URL: ' . $url . ' - Answer: ' . $answer, JTLLOG_LEVEL_ERROR, false, 'Skrill');
+            Jtllog::writeLog('Validierung des Skrill-Geheimworts fehlgeschlagen => URL: ' .
+                $url . ' - Answer: ' . $answer, JTLLOG_LEVEL_ERROR, false, 'Skrill');
         }
     } else {
         $actionError = 99;
@@ -167,15 +174,15 @@ if ($data === false || $data === null) {
     if ($data->dActivationRequest === '0000-00-00 00:00:00') {
         $smarty->assign('showActivationButton', true);
     } else {
-        $smarty->assign('showActivationButton', false);
-        $smarty->assign('activationRequest', $data->dActivationRequest);
+        $smarty->assign('showActivationButton', false)
+               ->assign('activationRequest', $data->dActivationRequest);
     }
 
     if ($data->cSecretWord === '') {
         $smarty->assign('showSecretWordValidation', true);
     } else {
-        $smarty->assign('showSecretWordValidation', false);
-        $smarty->assign('secretWord', $data->cSecretWord);
+        $smarty->assign('showSecretWordValidation', false)
+               ->assign('secretWord', $data->cSecretWord);
     }
 }
 $smarty->assign('actionError', $actionError)

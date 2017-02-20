@@ -1,4 +1,5 @@
 {include file='tpl_inc/header.tpl'}
+{config_load file="$lang.conf" section='systemcheck'}
 
 <script>
 {literal}
@@ -80,27 +81,22 @@ $(function() {
                                     <h3 style="margin-top:10px;margin-bottom:0">Deaktiviert</h3>
                                     <span style="color:#c7c7c7">System-Cache</span>
                                 {/if}
-                                
+
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="text-center">
                                 {$imageCache = $status->getImageCache()}
-                                {if $imageCache->corrupted == 0}
-                                    <i class="fa fa-check-circle text-four-times text-success"></i>
-                                    <h3 style="margin-top:10px;margin-bottom:0">{$imageCache->total|number_format} Bilder</h3>
-                                {else}
-                                    <i class="fa fa-exclamation-circle text-four-times text-danger"></i>
-                                    <h3 style="margin-top:10px;margin-bottom:0">{$imageCache->corrupted|number_format} Fehlerhaft</h3>
-                                {/if}
-                                <span style="color:#c7c7c7">Bilder-Cache</span>
+                                <i class="fa fa-file-image-o text-four-times text-success"></i>
+                                <h3 style="margin-top:10px;margin-bottom:0">{$imageCache->total|number_format}</h3>
+                                <span style="color:#c7c7c7">Bilder im Cache</span>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        
+
         <div class="grid-item">
             <div class="panel panel-default">
                 <div class="panel-heading">
@@ -117,12 +113,13 @@ $(function() {
                             {render_item title='Template-Version' val=!$status->hasDifferentTemplateVersion()}
                             {render_item title='Profiler aktiv' val=!$status->hasActiveProfiler() more='profiler.php'}
                             {render_item title='Server' val=$status->hasValidEnvironment() more='systemcheck.php'}
+                            {render_item title='Verwaiste Kategorien' val=$status->getOrphanedCategories() more='categorycheck.php'}
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
-        
+
         <div class="grid-item">
             <div class="panel panel-default">
                 <div class="panel-heading">
@@ -177,7 +174,7 @@ $(function() {
                 </div>
             </div>
         </div>
-        
+
         {$incorrectPaymentMethods = $status->getPaymentMethodsWithError()}
         {if count($incorrectPaymentMethods) > 0}
             <div class="grid-item">
@@ -273,7 +270,7 @@ $(function() {
                                     <td>
                                         <div class="test-name">
                                             {if $test->getDescription()|@count_characters > 0}
-                                                <abbr title="{$test->getDescription()|utf8_decode}">{$test->getName()|utf8_decode}</abbr>
+                                                <abbr title="{$test->getDescription()|utf8_decode|escape:'html'}">{$test->getName()|utf8_decode}</abbr>
                                             {else}
                                                 {$test->getName()|utf8_decode}
                                             {/if}
@@ -290,27 +287,11 @@ $(function() {
                             <p>Alle Vorraussetzungen wurden erf&uuml;llt</p>
                         </div>
                     {/if}
-                </div>
-            </div>
-        </div>
-
-        {$mysql = $status->getMySQLStats()}
-        <div class="grid-item">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h4 class="panel-title">MySQL</h4>
-                </div>
-                <div class="panel-body">
-                    <table class="table table-condensed table-hover table-striped table-blank last-child">
-                        <tbody>
-                            {foreach $mysql as $m}
-                            <tr>
-                                <td class="text-muted text-right" width="50%"><strong>{$m.key}</strong></td>
-                                <td width="50%">{$m.value}</td>
-                            </tr>
-                            {/foreach}
-                        </tbody>
-                    </table>
+                    {if isset($phpLT55) && $phpLT55}
+                        <div class="alert alert-warning">
+                            <p class="small">{#systemcheckPHPLT55#|sprintf:phpversion()}</p>
+                        </div>
+                    {/if}
                 </div>
             </div>
         </div>

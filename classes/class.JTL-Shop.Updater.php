@@ -270,7 +270,7 @@ class Updater
             return $this->updateToNextVersion();
         }
 
-        return;
+        return null;
     }
 
     /**
@@ -316,7 +316,7 @@ class Updater
             $code  = (int)$e->errorInfo[1];
             $error = Shop::DB()->escape($e->errorInfo[2]);
 
-            if (!in_array($code, array(1062, 1060, 1267))) {
+            if (!in_array($code, [1062, 1060, 1267])) {
                 Shop::DB()->rollback();
 
                 $errorCountForLine = 1;
@@ -357,7 +357,7 @@ class Updater
             return $targetVersion;
         }
 
-        $id = end($pendingMigrations);
+        $id = reset($pendingMigrations);
 
         $migration = $manager->getMigrationById($id);
         $manager->executeMigration($migration, IMigration::UP);
@@ -436,7 +436,7 @@ class Updater
             ];
         }
 
-        return;
+        return null;
     }
 
     /**
@@ -456,7 +456,7 @@ class Updater
             }
         }
 
-        return;
+        return null;
     }
 
     /**
@@ -467,7 +467,7 @@ class Updater
         $directories = [];
         $dir         = PFAD_ROOT . PFAD_UPDATE;
         foreach (scandir($dir) as $key => $value) {
-            if (!in_array($value, array(".", "..")) && is_dir($dir . DIRECTORY_SEPARATOR . $value)) {
+            if (!in_array($value, ['.', '..']) && is_dir($dir . DIRECTORY_SEPARATOR . $value)) {
                 if (is_numeric($value) && (int)$value > 300 && (int)$value < 500) {
                     $directories[] = $value;
                 }

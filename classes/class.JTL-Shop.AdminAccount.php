@@ -56,7 +56,7 @@ class AdminAccount
                 $originalHash = $timestampAndHash[1];
                 //check if the link is not expired (=24 hours valid)
                 $createdAt = new DateTime();
-                $createdAt->setTimestamp((int) $timeStamp);
+                $createdAt->setTimestamp((int)$timeStamp);
                 $now  = new DateTime();
                 $diff = $now->diff($createdAt);
                 $secs = ($diff->format('%a') * (60 * 60 * 24)); //total days
@@ -112,7 +112,17 @@ class AdminAccount
      */
     public function login($cLogin, $cPass)
     {
-        $oAdmin = Shop::DB()->select('tadminlogin', 'cLogin', $cLogin, null, null, null, null, false, '*, UNIX_TIMESTAMP(dGueltigBis) AS dGueltigTS');
+        $oAdmin = Shop::DB()->select(
+            'tadminlogin',
+            'cLogin',
+            $cLogin,
+            null,
+            null,
+            null,
+            null,
+            false,
+            '*, UNIX_TIMESTAMP(dGueltigBis) AS dGueltigTS'
+        );
         if (!is_object($oAdmin)) {
             return -3;
         }
@@ -143,7 +153,17 @@ class AdminAccount
             $_SESSION['AdminAccount']->cLogin = $cLogin;
             $verified                         = true;
             if ($this->checkAndUpdateHash($cPass) === true) {
-                $oAdmin = Shop::DB()->select('tadminlogin', 'cLogin', $cLogin, null, null, null, null, false, '*, UNIX_TIMESTAMP(dGueltigBis) AS dGueltigTS');
+                $oAdmin = Shop::DB()->select(
+                    'tadminlogin',
+                    'cLogin',
+                    $cLogin,
+                    null,
+                    null,
+                    null,
+                    null,
+                    false,
+                    '*, UNIX_TIMESTAMP(dGueltigBis) AS dGueltigTS'
+                );
             }
         } elseif (strlen($oAdmin->cPass) === 40) {
             //default login until Shop4
@@ -283,7 +303,7 @@ class AdminAccount
             $cHost .= ':' . $xParse_arr['port'];
         }
 
-        if (isset($_SERVER['HTTP_HOST']) && strlen($_SERVER['HTTP_HOST']) > 0 && $cHost != $_SERVER['HTTP_HOST']) {
+        if (isset($_SERVER['HTTP_HOST']) && strlen($_SERVER['HTTP_HOST']) > 0 && $cHost !== $_SERVER['HTTP_HOST']) {
             header("Location: {$cUrl}");
             exit;
         }
@@ -295,12 +315,18 @@ class AdminAccount
     private function _validateSession()
     {
         $this->_bLogged = false;
-        if (isset($_SESSION['AdminAccount']->cLogin) && isset($_SESSION['AdminAccount']->cPass) && isset($_SESSION['AdminAccount']->cURL) &&
-            $_SESSION['AdminAccount']->cURL == Shop::getURL()) {
-            $oAccount                 = Shop::DB()->select('tadminlogin', 'cLogin', $_SESSION['AdminAccount']->cLogin, 'cPass', $_SESSION['AdminAccount']->cPass);
-            $this->twoFaAuthenticated = (isset($oAccount->b2FAauth) && $oAccount->b2FAauth === '1') ?
-                (isset($_SESSION['AdminAccount']->TwoFA_valid) && true === $_SESSION['AdminAccount']->TwoFA_valid) :
-                true;
+        if (isset($_SESSION['AdminAccount']->cLogin) && isset($_SESSION['AdminAccount']->cPass) &&
+            isset($_SESSION['AdminAccount']->cURL) && $_SESSION['AdminAccount']->cURL == Shop::getURL()) {
+            $oAccount                 = Shop::DB()->select(
+                'tadminlogin',
+                'cLogin',
+                $_SESSION['AdminAccount']->cLogin,
+                'cPass',
+                $_SESSION['AdminAccount']->cPass
+            );
+            $this->twoFaAuthenticated = (isset($oAccount->b2FAauth) && $oAccount->b2FAauth === '1')
+                ? (isset($_SESSION['AdminAccount']->TwoFA_valid) && true === $_SESSION['AdminAccount']->TwoFA_valid)
+                : true;
             $this->_bLogged = isset($oAccount->cLogin);
         }
 
@@ -351,7 +377,7 @@ class AdminAccount
             $_SESSION['AdminAccount']->cMail       = $oAdmin->cMail;
             $_SESSION['AdminAccount']->cPass       = $oAdmin->cPass;
 
-            $_SESSION['KCFINDER']             = array();
+            $_SESSION['KCFINDER']             = [];
             $_SESSION['KCFINDER']['disabled'] = false;
 
             if (!is_object($oGroup)) {
@@ -394,10 +420,10 @@ class AdminAccount
             $_upd->nLoginVersuch = 0;
             Shop::DB()->update('tadminlogin', 'cLogin', $cLogin, $_upd);
         } else {
-            Shop::DB()->query("
+            Shop::DB()->executeQueryPrepared("
                 UPDATE tadminlogin
                     SET nLoginVersuch = nLoginVersuch+1
-                    WHERE cLogin = '" . $cLogin . "'", 3
+                    WHERE cLogin = :login", ['login' => $cLogin], 3
             );
         }
 
@@ -406,16 +432,21 @@ class AdminAccount
 
     /**
      * @param int $kAdminlogingruppe
-     * @return bool
+     * @return bool|object
      */
     private function _getPermissionsByGroup($kAdminlogingruppe)
     {
         $kAdminlogingruppe = (int)$kAdminlogingruppe;
         $oGroup            = Shop::DB()->select('tadminlogingruppe', 'kAdminlogingruppe', $kAdminlogingruppe);
         if (isset($oGroup->kAdminlogingruppe)) {
-            $oPermission_arr = Shop::DB()->selectAll('tadminrechtegruppe', 'kAdminlogingruppe', $kAdminlogingruppe, 'cRecht');
+            $oPermission_arr = Shop::DB()->selectAll(
+                'tadminrechtegruppe',
+                'kAdminlogingruppe',
+                $kAdminlogingruppe,
+                'cRecht'
+            );
             if (is_array($oPermission_arr)) {
-                $oGroup->oPermission_arr = array();
+                $oGroup->oPermission_arr = [];
                 foreach ($oPermission_arr as $oPermission) {
                     $oGroup->oPermission_arr[] = $oPermission->cRecht;
                 }
@@ -444,7 +475,8 @@ class AdminAccount
      */
     private function checkAndUpdateHash($password)
     {
-        if (version_compare(Shop::getShopVersion(), 400, '>=') === true && //only update hash if the db update to 4.00+ was already executed
+        //only update hash if the db update to 4.00+ was already executed
+        if (version_compare(Shop::getShopVersion(), 400, '>=') === true &&
             isset($_SESSION['AdminAccount']->cPass) && isset($_SESSION['AdminAccount']->cLogin) &&
             password_needs_rehash($_SESSION['AdminAccount']->cPass, PASSWORD_DEFAULT)) {
             $_upd        = new stdClass();

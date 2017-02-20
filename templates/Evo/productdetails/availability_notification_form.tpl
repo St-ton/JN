@@ -4,7 +4,7 @@
  *}
 <div class="panel-wrap">
     {if isset($position) && $position === 'popup'}
-        {if count($Artikelhinweise) > 0}
+        {if isset($Artikelhinweise) && count($Artikelhinweise) > 0}
             <div class="alert alert-danger alert-dismissible">
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                     <span aria-hidden="true">&times;</span>

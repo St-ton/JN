@@ -1,9 +1,7 @@
 <h1>{lang key="deleteAccount" section="login"}</h1>
 
-{if !$hinweis}
+{if empty($hinweis)}
     <div class="alert alert-danger">{lang key="reallyDeleteAccount" section="login"}</div>
-{else}
-    <div class="alert alert-danger">{$hinweis}</div>
 {/if}
 
 <form id="delete_account" action="{get_static_route id='jtl.php'}" method="post">

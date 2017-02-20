@@ -163,7 +163,7 @@ switch ($action) {
 
     case 'migration':
         $id        = isset($_GET['id']) ? $_GET['id'] : null;
-        $version   = isset($_GET['version']) ? (int) $_GET['version'] : null;
+        $version   = isset($_GET['version']) ? (int)$_GET['version'] : null;
         $direction = isset($_GET['dir']) ? $_GET['dir'] : null;
 
         try {

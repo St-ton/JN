@@ -26,7 +26,7 @@ interface IMigration
     public function down();
 
     /**
-     * @return bigint
+     * @return int
      */
     public function getId();
 

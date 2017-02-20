@@ -3,7 +3,7 @@
         <h3 class="panel-title">{lang section="productDownloads" key="downloadSection"}</h3>
     </div>
     <div class="tab-content-wrapper">
-        <div class="panel-body">
+        <div class="panel-body table-responsive">
             <table class="table table-striped table-bordered">
                 <thead>
                 <tr>

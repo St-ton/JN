@@ -11,11 +11,11 @@ require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
 //jtl2
-$format  = array('cAnrede', 'cVorname', 'cNachname', 'cEmail');
+$format  = ['cAnrede', 'cVorname', 'cNachname', 'cEmail'];
 $hinweis = '';
 $fehler  = '';
 
-if (isset($_POST['newsletterimport']) && intval($_POST['newsletterimport']) === 1 && $_FILES['csv'] && validateToken()) {
+if (isset($_POST['newsletterimport']) && (int)$_POST['newsletterimport'] === 1 && $_FILES['csv'] && validateToken()) {
     if (isset($_FILES['csv']['tmp_name']) && strlen($_FILES['csv']['tmp_name']) > 0) {
         $file = fopen($_FILES['csv']['tmp_name'], 'r');
         if ($file !== false) {
@@ -91,9 +91,13 @@ function generatePW($length = 8, $myseed = 1)
  */
 function pruefeNLEBlacklist($cMail)
 {
-    $oNEB = Shop::DB()->select('tnewsletterempfaengerblacklist', 'cMail',  StringHandler::filterXSS(strip_tags($cMail)));
+    $oNEB = Shop::DB()->select(
+        'tnewsletterempfaengerblacklist',
+        'cMail',
+        StringHandler::filterXSS(strip_tags($cMail))
+    );
 
-    return (isset($oNEB->cMail) && strlen($oNEB->cMail) > 0);
+    return (!empty($oNEB->cMail));
 }
 
 /**
@@ -102,7 +106,7 @@ function pruefeNLEBlacklist($cMail)
  */
 function checkformat($data)
 {
-    $fmt = array();
+    $fmt = [];
     $cnt = count($data);
     for ($i = 0; $i < $cnt; $i++) {
         // jtl-shop/issues#296
@@ -172,7 +176,8 @@ function processImport($fmt, $data)
     }
     // NewsletterEmpfaengerBlacklist
     if (pruefeNLEBlacklist($newsletterempfaenger->cEmail)) {
-        return "keine g&uuml;ltige Email ($newsletterempfaenger->cEmail)! Kunde hat sich auf die Blacklist setzen lassen! &Uuml;bergehe diesen Datensatz.";
+        return "keine g&uuml;ltige Email ($newsletterempfaenger->cEmail)! " .
+            "Kunde hat sich auf die Blacklist setzen lassen! &Uuml;bergehe diesen Datensatz.";
     }
 
     if (!$newsletterempfaenger->cNachname) {
@@ -181,7 +186,8 @@ function processImport($fmt, $data)
 
     $old_mail = Shop::DB()->select('tnewsletterempfaenger', 'cEmail', $newsletterempfaenger->cEmail);
     if (isset($old_mail->kNewsletterEmpfaenger) && $old_mail->kNewsletterEmpfaenger > 0) {
-        return "Newsletterempf&auml;nger mit dieser Emailadresse bereits vorhanden: ($newsletterempfaenger->cEmail)! &Uuml;bergehe Datensatz.";
+        return "Newsletterempf&auml;nger mit dieser Emailadresse bereits vorhanden: (" .
+            $newsletterempfaenger->cEmail . ")! &Uuml;bergehe Datensatz.";
     }
 
     if ($newsletterempfaenger->cAnrede === 'f') {
@@ -229,7 +235,9 @@ function processImport($fmt, $data)
         $oTMP->cAktion      = 'Daten-Import';
         $res                = Shop::DB()->insert('tnewsletterempfaengerhistory', $oTMP);
         if ($res) {
-            return 'Datensatz OK. Importiere: ' . $newsletterempfaenger->cVorname . ' ' . $newsletterempfaenger->cNachname;
+            return 'Datensatz OK. Importiere: ' .
+                $newsletterempfaenger->cVorname . ' ' .
+                $newsletterempfaenger->cNachname;
         }
     }
 

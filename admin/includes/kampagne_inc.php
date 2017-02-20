@@ -48,11 +48,7 @@ function holeKampagneDef($kKampagneDef)
 {
     $kKampagneDef = (int)$kKampagneDef;
     if ($kKampagneDef > 0) {
-        return Shop::DB()->query(
-            "SELECT *
-                FROM tkampagnedef
-                WHERE kKampagneDef = " . $kKampagneDef, 1
-        );
+        return Shop::DB()->select('tkampagnedef', 'kKampagneDef', $kKampagneDef);
     }
 
     return new stdClass();
@@ -65,23 +61,30 @@ function holeKampagneDef($kKampagneDef)
  */
 function holeKampagneGesamtStats($oKampagne_arr, $oKampagneDef_arr)
 {
-    $oKampagneStat_arr = array();
+    $oKampagneStat_arr = [];
     $cSQL              = '';
     $cDatum_arr        = gibDatumTeile($_SESSION['Kampagne']->cStamp);
     switch (intval($_SESSION['Kampagne']->nAnsicht)) {
         case 1:    // Monat
-            $cSQL = "WHERE '" . $cDatum_arr['cJahr'] . "-" . $cDatum_arr['cMonat'] . "' = DATE_FORMAT(dErstellt, '%Y-%m')";
+            $cSQL = "WHERE '" . $cDatum_arr['cJahr'] . "-" . 
+                $cDatum_arr['cMonat'] . "' = DATE_FORMAT(dErstellt, '%Y-%m')";
             break;
         case 2:    // Woche
-            $cDatum_arr = ermittleDatumWoche($cDatum_arr['cJahr'] . "-" . $cDatum_arr['cMonat'] . "-" . $cDatum_arr['cTag']);
-            $cSQL       = "WHERE dErstellt BETWEEN FROM_UNIXTIME(" . $cDatum_arr[0] . ", '%Y-%m-%d %H:%i:%s') AND FROM_UNIXTIME(" . $cDatum_arr[1] . ", '%Y-%m-%d %H:%i:%s')";
+            $cDatum_arr = ermittleDatumWoche($cDatum_arr['cJahr'] . "-" . 
+                $cDatum_arr['cMonat'] . "-" . $cDatum_arr['cTag']);
+            $cSQL       = "WHERE dErstellt BETWEEN FROM_UNIXTIME(" . 
+                $cDatum_arr[0] . ", '%Y-%m-%d %H:%i:%s') AND FROM_UNIXTIME(" . 
+                $cDatum_arr[1] . ", '%Y-%m-%d %H:%i:%s')";
             break;
         case 3:    // Tag
-            $cSQL = "WHERE '" . $cDatum_arr['cJahr'] . '-' . $cDatum_arr['cMonat'] . '-' . $cDatum_arr['cTag'] . "' = DATE_FORMAT(dErstellt, '%Y-%m-%d')";
+            $cSQL = "WHERE '" . $cDatum_arr['cJahr'] . '-' . 
+                $cDatum_arr['cMonat'] . '-' . 
+                $cDatum_arr['cTag'] . "' = DATE_FORMAT(dErstellt, '%Y-%m-%d')";
             break;
     }
 
-    if (is_array($oKampagne_arr) && count($oKampagne_arr) > 0 && is_array($oKampagneDef_arr) && count($oKampagneDef_arr)) {
+    if (is_array($oKampagne_arr) && count($oKampagne_arr) > 0 && 
+        is_array($oKampagneDef_arr) && count($oKampagneDef_arr)) {
         foreach ($oKampagne_arr as $oKampagne) {
             foreach ($oKampagneDef_arr as $oKampagneDef) {
                 $oKampagneStat_arr[$oKampagne->kKampagne][$oKampagneDef->kKampagneDef] = 0;
@@ -104,7 +107,7 @@ function holeKampagneGesamtStats($oKampagne_arr, $oKampagneDef_arr)
     }
     // Sortierung
     if (isset($_SESSION['Kampagne']->nSort) && $_SESSION['Kampagne']->nSort > 0) {
-        $oSort_arr = array();
+        $oSort_arr = [];
         if (intval($_SESSION['Kampagne']->nSort) > 0) {
             if (count($oKampagneStat_arr) > 0) {
                 foreach ($oKampagneStat_arr as $i => $oKampagneStatDef_arr) {
@@ -117,7 +120,7 @@ function holeKampagneGesamtStats($oKampagne_arr, $oKampagneDef_arr)
         } else {
             uasort($oSort_arr, 'kampagneSortDESC');
         }
-        $oKampagneStatTMP_arr = array();
+        $oKampagneStatTMP_arr = [];
         foreach ($oSort_arr as $i => $oSort_arrTmp) {
             $oKampagneStatTMP_arr[$i] = $oKampagneStat_arr[$i];
         }
@@ -170,7 +173,14 @@ function holeKampagneDetailStats($kKampagne, $oKampagneDef_arr)
 {
     // Zeitraum
     $cSQLWHERE           = '';
-    $nAnzahlTageProMonat = date('t', mktime(0, 0, 0, $_SESSION['Kampagne']->cFromDate_arr['nMonat'], 1, $_SESSION['Kampagne']->cFromDate_arr['nJahr']));
+    $nAnzahlTageProMonat = date('t', mktime(
+        0,
+        0,
+        0,
+        $_SESSION['Kampagne']->cFromDate_arr['nMonat'],
+        1,
+        $_SESSION['Kampagne']->cFromDate_arr['nJahr'])
+    );
     // Int String Work Around
     $cMonat = $_SESSION['Kampagne']->cFromDate_arr['nMonat'];
     if ($cMonat < 10) {
@@ -184,31 +194,39 @@ function holeKampagneDetailStats($kKampagne, $oKampagneDef_arr)
     switch (intval($_SESSION['Kampagne']->nDetailAnsicht)) {
         case 1:    // Jahr
             $cSQLWHERE = " WHERE dErstellt BETWEEN '" . $_SESSION['Kampagne']->cFromDate_arr['nJahr'] . "-" .
-                $_SESSION['Kampagne']->cFromDate_arr['nMonat'] . "-01' AND '" . $_SESSION['Kampagne']->cToDate_arr['nJahr'] . "-" .
+                $_SESSION['Kampagne']->cFromDate_arr['nMonat'] . "-01' AND '" .
+                $_SESSION['Kampagne']->cToDate_arr['nJahr'] . "-" .
                 $_SESSION['Kampagne']->cToDate_arr['nMonat'] . "-" . $nAnzahlTageProMonat . "'";
             if ($_SESSION['Kampagne']->cFromDate_arr['nJahr'] == $_SESSION['Kampagne']->cToDate_arr['nJahr']) {
-                $cSQLWHERE = " WHERE DATE_FORMAT(dErstellt, '%Y') = '" . $_SESSION['Kampagne']->cFromDate_arr['nJahr'] . "'";
+                $cSQLWHERE = " WHERE DATE_FORMAT(dErstellt, '%Y') = '" .
+                    $_SESSION['Kampagne']->cFromDate_arr['nJahr'] . "'";
             }
             break;
         case 2:    // Monat
             $cSQLWHERE = " WHERE dErstellt BETWEEN '" . $_SESSION['Kampagne']->cFromDate_arr['nJahr'] . "-" .
-                $_SESSION['Kampagne']->cFromDate_arr['nMonat'] . "-01' AND '" . $_SESSION['Kampagne']->cToDate_arr['nJahr'] . "-" .
+                $_SESSION['Kampagne']->cFromDate_arr['nMonat'] .
+                "-01' AND '" . $_SESSION['Kampagne']->cToDate_arr['nJahr'] . "-" .
                 $_SESSION['Kampagne']->cToDate_arr['nMonat'] . "-" . $nAnzahlTageProMonat . "'";
             if ($_SESSION['Kampagne']->cFromDate_arr['nJahr'] == $_SESSION['Kampagne']->cToDate_arr['nJahr'] &&
                 $_SESSION['Kampagne']->cFromDate_arr['nMonat'] == $_SESSION['Kampagne']->cToDate_arr['nMonat']
             ) {
-                $cSQLWHERE = " WHERE DATE_FORMAT(dErstellt, '%Y-%m') = '" . $_SESSION['Kampagne']->cFromDate_arr['nJahr'] . "-" . $cMonat . "'";
+                $cSQLWHERE = " WHERE DATE_FORMAT(dErstellt, '%Y-%m') = '" .
+                    $_SESSION['Kampagne']->cFromDate_arr['nJahr'] . "-" . $cMonat . "'";
             }
             break;
         case 3:    // Woche
             $cDatumWocheAnfang_arr = ermittleDatumWoche($_SESSION['Kampagne']->cFromDate);
             $cDatumWocheEnde_arr   = ermittleDatumWoche($_SESSION['Kampagne']->cToDate);
-            $cSQLWHERE             = " WHERE dErstellt BETWEEN '" . date('Y-m-d H:i:s', $cDatumWocheAnfang_arr[0]) . "' AND '" . date('Y-m-d H:i:s', $cDatumWocheEnde_arr[1]) . "'";
+            $cSQLWHERE             = " WHERE dErstellt BETWEEN '" .
+                date('Y-m-d H:i:s', $cDatumWocheAnfang_arr[0]) . "' AND '" .
+                date('Y-m-d H:i:s', $cDatumWocheEnde_arr[1]) . "'";
             break;
         case 4:    // Tag
-            $cSQLWHERE = " WHERE dErstellt BETWEEN '" . $_SESSION['Kampagne']->cFromDate . "' AND '" . $_SESSION['Kampagne']->cToDate . "'";
+            $cSQLWHERE = " WHERE dErstellt BETWEEN '" . $_SESSION['Kampagne']->cFromDate .
+                "' AND '" . $_SESSION['Kampagne']->cToDate . "'";
             if ($_SESSION['Kampagne']->cFromDate == $_SESSION['Kampagne']->cToDate) {
-                $cSQLWHERE = " WHERE DATE_FORMAT(dErstellt, '%Y-%m-%d') = '" . $_SESSION['Kampagne']->cFromDate_arr['nJahr'] . "-" . $cMonat . "-" . $cTag . "'";
+                $cSQLWHERE = " WHERE DATE_FORMAT(dErstellt, '%Y-%m-%d') = '" .
+                    $_SESSION['Kampagne']->cFromDate_arr['nJahr'] . "-" . $cMonat . "-" . $cTag . "'";
             }
             break;
     }
@@ -244,8 +262,9 @@ function holeKampagneDetailStats($kKampagne, $oKampagneDef_arr)
             " . $cSQLGROUPBY . ", kKampagneDef", 2
     );
     // Vorbelegen
-    $oStatsAssoc_arr = array();
-    if (is_array($cZeitraum_arr['cDatum']) && count($cZeitraum_arr['cDatum']) > 0 && is_array($oKampagneDef_arr) && count($oKampagneDef_arr) > 0) {
+    $oStatsAssoc_arr = [];
+    if (is_array($cZeitraum_arr['cDatum']) && count($cZeitraum_arr['cDatum']) > 0 &&
+        is_array($oKampagneDef_arr) && count($oKampagneDef_arr) > 0) {
         foreach ($cZeitraum_arr['cDatum'] as $i => $cZeitraum) {
             if (!isset($oStatsAssoc_arr[$cZeitraum]['cDatum'])) {
                 $oStatsAssoc_arr[$cZeitraum]['cDatum'] = $cZeitraum_arr['cDatumFull'][$i];
@@ -257,8 +276,9 @@ function holeKampagneDetailStats($kKampagne, $oKampagneDef_arr)
         }
     }
     // Finde den maximalen Wert heraus, um die Höhe des Graphen zu ermitteln
-    $nGraphMaxAssoc_arr = array(); // Assoc Array key = kKampagneDef
-    if (is_array($oStats_arr) && count($oStats_arr) > 0 && is_array($oKampagneDef_arr) && count($oKampagneDef_arr) > 0) {
+    $nGraphMaxAssoc_arr = []; // Assoc Array key = kKampagneDef
+    if (is_array($oStats_arr) && count($oStats_arr) > 0 &&
+        is_array($oKampagneDef_arr) && count($oKampagneDef_arr) > 0) {
         foreach ($oStats_arr as $oStats) {
             foreach ($oKampagneDef_arr as $oKampagneDef) {
                 if (isset($oStatsAssoc_arr[$oStats->cDatum][$oKampagneDef->kKampagneDef])) {
@@ -283,7 +303,7 @@ function holeKampagneDetailStats($kKampagne, $oKampagneDef_arr)
     if (count($_SESSION['Kampagne']->oKampagneDetailGraph->oKampagneDetailGraph_arr) > 31) {
         $nVonKey = count($_SESSION['Kampagne']->oKampagneDetailGraph->oKampagneDetailGraph_arr) - 31;
 
-        $oTMP_arr = array();
+        $oTMP_arr = [];
         foreach ($_SESSION['Kampagne']->oKampagneDetailGraph->oKampagneDetailGraph_arr as $i => $oKampagneDetailGraph) {
             if ($nVonKey <= 0) {
                 $oTMP_arr[$i] = $oKampagneDetailGraph;
@@ -322,7 +342,7 @@ function holeKampagneDetailStats($kKampagne, $oKampagneDef_arr)
  */
 function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStampText, &$cMember_arr, $cBlaetterSQL1)
 {
-    $oDaten_arr = array();
+    $oDaten_arr = [];
     if (intval($kKampagne) > 0 && intval($oKampagneDef->kKampagneDef) > 0 && strlen($cStamp) > 0) {
         $cSQLSELECT = '';
         $cSQLWHERE  = '';
@@ -612,8 +632,10 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                         IF(tartikel.cArtNr IS NULL, 'n.v.', tartikel.cArtNr) AS cArtNr,
                         DATE_FORMAT(tverfuegbarkeitsbenachrichtigung.dErstellt, '%d.%m.%Y %H:%i') AS dErstellt_DE
                         FROM tkampagnevorgang
-                        LEFT JOIN tverfuegbarkeitsbenachrichtigung ON tverfuegbarkeitsbenachrichtigung.kVerfuegbarkeitsbenachrichtigung = tkampagnevorgang.kKey
-                        LEFT JOIN tartikel ON tartikel.kArtikel = tverfuegbarkeitsbenachrichtigung.kArtikel
+                        LEFT JOIN tverfuegbarkeitsbenachrichtigung 
+                                ON tverfuegbarkeitsbenachrichtigung.kVerfuegbarkeitsbenachrichtigung = tkampagnevorgang.kKey
+                        LEFT JOIN tartikel 
+                                ON tartikel.kArtikel = tverfuegbarkeitsbenachrichtigung.kArtikel
                         " . $cSQLWHERE . "
                             AND kKampagne = " . (int)$kKampagne . "
                             AND kKampagneDef = " . (int)$oKampagneDef->kKampagneDef . "
@@ -644,7 +666,8 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                         IF(tkunde.nRegistriert IS NULL, 'n.v.', tkunde.nRegistriert) AS nRegistriert,
                         DATE_FORMAT(tkunde.dErstellt, '%d.%m.%Y') AS dErstellt_DE
                         FROM tkampagnevorgang
-                        LEFT JOIN tkunde ON tkunde.kKunde = tkampagnevorgang.kKey
+                        LEFT JOIN tkunde 
+                                ON tkunde.kKunde = tkampagnevorgang.kKey
                         " . $cSQLWHERE . "
                             AND kKampagne = " . (int)$kKampagne . "
                             AND kKampagneDef = " . (int)$oKampagneDef->kKampagneDef . "
@@ -844,9 +867,9 @@ function baueDefDetailSELECTWHERE(&$cSQLSELECT, &$cSQLWHERE, $cStamp)
  */
 function gibDetailDatumZeitraum()
 {
-    $cZeitraum_arr               = array();
-    $cZeitraum_arr['cDatum']     = array();
-    $cZeitraum_arr['cDatumFull'] = array();
+    $cZeitraum_arr               = [];
+    $cZeitraum_arr['cDatum']     = [];
+    $cZeitraum_arr['cDatumFull'] = [];
     switch (intval($_SESSION['Kampagne']->nDetailAnsicht)) {
         case 1:    // Jahr
             $nFromStamp          = mktime(0, 0, 0, $_SESSION['Kampagne']->cFromDate_arr['nMonat'], 1, $_SESSION['Kampagne']->cFromDate_arr['nJahr']);
@@ -994,7 +1017,7 @@ function gibStamp($cStampOld, $nSprung, $nAnsicht)
 }
 
 /**
- * @param object $oKampagne
+ * @param Kampagne $oKampagne
  * @return int
  *
  * Returncodes:
@@ -1164,13 +1187,17 @@ function setzeDetailZeitraum($cDatumNow_arr)
             $_SESSION['Kampagne']->cFromDate_arr['nJahr']  = intval($_POST['cFromYear']);
             $_SESSION['Kampagne']->cFromDate_arr['nMonat'] = intval($_POST['cFromMonth']);
             $_SESSION['Kampagne']->cFromDate_arr['nTag']   = intval($_POST['cFromDay']);
-            $_SESSION['Kampagne']->cFromDate               = intval($_POST['cFromYear']) . '-' . intval($_POST['cFromMonth']) . '-' . intval($_POST['cFromDay']);
+            $_SESSION['Kampagne']->cFromDate               = intval($_POST['cFromYear']) . '-' .
+                intval($_POST['cFromMonth']) . '-' .
+                intval($_POST['cFromDay']);
         }
-        if (isset($_POST['cToDay']) && intval($_POST['cToDay']) > 0 && isset($_POST['cToMonth']) && intval($_POST['cToMonth']) > 0 && isset($_POST['cToYear']) && intval($_POST['cToYear']) > 0) {
+        if (isset($_POST['cToDay']) && intval($_POST['cToDay']) > 0 && isset($_POST['cToMonth']) &&
+            intval($_POST['cToMonth']) > 0 && isset($_POST['cToYear']) && intval($_POST['cToYear']) > 0) {
             $_SESSION['Kampagne']->cToDate_arr['nJahr']  = intval($_POST['cToYear']);
             $_SESSION['Kampagne']->cToDate_arr['nMonat'] = intval($_POST['cToMonth']);
             $_SESSION['Kampagne']->cToDate_arr['nTag']   = intval($_POST['cToDay']);
-            $_SESSION['Kampagne']->cToDate               = intval($_POST['cToYear']) . '-' . intval($_POST['cToMonth']) . '-' . intval($_POST['cToDay']);
+            $_SESSION['Kampagne']->cToDate               = intval($_POST['cToYear']) . '-' .
+                intval($_POST['cToMonth']) . '-' . intval($_POST['cToDay']);
         }
     }
 
@@ -1243,7 +1270,8 @@ function checkGesamtStatZeitParam()
                 break;
             case 3: // Tag
                 $_SESSION['Kampagne']->nDetailAnsicht = 4;
-                $cStamp                               = $_SESSION['Kampagne']->cFromDate_arr['nJahr'] . '-' . $cMonat . '-' . $cTag;
+                $cStamp                               = $_SESSION['Kampagne']->cFromDate_arr['nJahr'] . '-' .
+                    $cMonat . '-' . $cTag;
                 break;
         }
     }
@@ -1350,7 +1378,7 @@ function PrepareLineChartKamp($Stats, $Type)
 
     if (is_array($Stats) && count($Stats) > 0) {
         $chart->setActive(true);
-        $data = array();
+        $data = [];
         foreach ($Stats as $Date => $Dates) {
             if (strpos($Date, 'Gesamt') === false) {
                 $x = '';

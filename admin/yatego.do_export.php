@@ -20,11 +20,13 @@ define('PATH', PFAD_ROOT . PFAD_EXPORT_YATEGO);
 define('DESCRIPTION_TAGS', '<a><b><i><u><p><br><hr><h1><h2><h3><h4><h5><h6><ul><ol><li><span><font><table><colgroup>');
 
 $exportformat = Shop::DB()->query(
-    "SELECT texportformat.*, tkampagne.cParameter AS tkampagne_cParameter, tkampagne.cWert AS tkampagne_cWert
+    "SELECT texportformat.*, tkampagne.cParameter AS tkampagne_cParameter, 
+        tkampagne.cWert AS tkampagne_cWert
         FROM texportformat
-        LEFT JOIN tkampagne ON tkampagne.kKampagne = texportformat.kKampagne
+        LEFT JOIN tkampagne 
+            ON tkampagne.kKampagne = texportformat.kKampagne
             AND tkampagne.nAktiv = 1
-        WHERE texportformat.nSpecial=1", 1
+        WHERE texportformat.nSpecial = 1", 1
 );
 
 $queue = Shop::DB()->select('texportqueue', 'kExportformat', (int)$exportformat->kExportformat);
@@ -56,9 +58,9 @@ if ($queue->nLimit_n == 0 && file_exists(PATH . 'lager.csv')) {
 $ExportEinstellungen = getEinstellungenExport($exportformat->kExportformat);
 
 // Global Array
-$oGlobal_arr          = array();
-$oGlobal_arr['lager'] = array();
-$KategorieListe       = array();
+$oGlobal_arr          = [];
+$oGlobal_arr['lager'] = [];
+$KategorieListe       = [];
 
 setzeSteuersaetze();
 $_SESSION['Kundengruppe']->darfPreiseSehen            = 1;
@@ -70,17 +72,23 @@ $_SESSION['Kundengruppe']->kKundengruppe              = $exportformat->kKundengr
 $res = Shop::DB()->query(
     "SELECT tartikel.kArtikel
         FROM tartikel
-        JOIN tartikelattribut ON tartikelattribut.kArtikel = tartikel.kArtikel
-        WHERE tartikelattribut.cName='yategokat'
+        JOIN tartikelattribut 
+            ON tartikelattribut.kArtikel = tartikel.kArtikel
+        WHERE tartikelattribut.cName = 'yategokat'
             AND tartikel.kVaterArtikel = 0
         ORDER BY tartikel.kArtikel
         LIMIT " . $queue->nLimit_n . ", " . $queue->nLimit_m, 2
 );
-$oArtikelOptionen = Artikel::getDefaultOptions();
+$defaultOptions = Artikel::getDefaultOptions();
 foreach ($res as $tartikel) {
     $Artikel = new Artikel();
-    $Artikel->fuelleArtikel($tartikel->kArtikel, $oArtikelOptionen, $exportformat->kKundengruppe, $exportformat->kSprache, true);
-
+    $Artikel->fuelleArtikel(
+        $tartikel->kArtikel,
+        $defaultOptions,
+        $exportformat->kKundengruppe,
+        $exportformat->kSprache,
+        true
+    );
     verarbeiteYategoExport($Artikel, $exportformat, $ExportEinstellungen, $KategorieListe, $oGlobal_arr);
 }
 
@@ -89,12 +97,14 @@ $oGlobal_arr['shopkategorien'] = getCats($KategorieListe);
 
 if ($exportformat->cKodierung === 'UTF-8') {
     $cHeader = "\xEF\xBB\xBF";
-    writeFile(PATH . 'varianten.csv', $cHeader . utf8_encode(makecsv($oGlobal_arr['varianten']) . CRLF . makecsv($oGlobal_arr['variantenwerte'])));
+    writeFile(PATH . 'varianten.csv', $cHeader . utf8_encode(makecsv($oGlobal_arr['varianten']) .
+            CRLF . makecsv($oGlobal_arr['variantenwerte'])));
     writeFile(PATH . 'artikel.csv', $cHeader . utf8_encode(makecsv($oGlobal_arr['artikel'])));
     writeFile(PATH . 'shopkategorien.csv', $cHeader . utf8_encode(makecsv($oGlobal_arr['shopkategorien'])));
     writeFile(PATH . 'lager.csv', $cHeader . utf8_encode(makecsv($oGlobal_arr['lager'])));
 } else {
-    writeFile(PATH . 'varianten.csv', makecsv($oGlobal_arr['varianten']) . CRLF . makecsv($oGlobal_arr['variantenwerte']));
+    writeFile(PATH . 'varianten.csv', makecsv($oGlobal_arr['varianten']) .
+        CRLF . makecsv($oGlobal_arr['variantenwerte']));
     writeFile(PATH . 'artikel.csv', makecsv($oGlobal_arr['artikel']));
     writeFile(PATH . 'shopkategorien.csv', makecsv($oGlobal_arr['shopkategorien']));
     writeFile(PATH . 'lager.csv', makecsv($oGlobal_arr['lager']));
@@ -108,14 +118,20 @@ $max_artikel = Shop::DB()->query(
 );
 
 if ($max_artikel->cnt > $queue->nLimit_n + $queue->nLimit_m) {
-    Shop::DB()->query("UPDATE texportqueue SET nLimit_n = nLimit_n+" . $queue->nLimit_m . " WHERE kExportqueue = " . (int)$queue->kExportqueue, 4);
-    header('Location: http://' . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'] . '?back=admin&token=' . $_SESSION['jtl_token']);
+    Shop::DB()->query("
+        UPDATE texportqueue 
+            SET nLimit_n = nLimit_n+" . $queue->nLimit_m . " 
+            WHERE kExportqueue = " . (int)$queue->kExportqueue, 4
+    );
+    header('Location: http://' . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'] .
+        '?back=admin&token=' . $_SESSION['jtl_token']);
     exit;
 } else {
     Shop::DB()->query("UPDATE texportformat SET dZuletztErstellt = now() WHERE nSpecial = 1", 4);
     Shop::DB()->delete('texportqueue', 'kExportqueue', (int)$queue->kExportqueue);
     if ($_GET['back'] === 'admin') {
-        header('Location: yatego.export.php?token=' . $_SESSION['jtl_token'] . '&rdy=' . base64_encode(intval($max_artikel->cnt)));
+        header('Location: yatego.export.php?token=' . $_SESSION['jtl_token'] .
+            '&rdy=' . base64_encode(intval($max_artikel->cnt)));
         exit;
     }
 }
@@ -178,21 +194,17 @@ function makecsv($cGlobalAssoc_arr)
  */
 function getCats($catlist)
 {
-    $shopcats = array();
-
+    $shopcats = [];
     if (is_array($catlist) && count($catlist)) {
         // fetch all categories in $cats with index kKategorie
-        $cats = array();
+        $cats = [];
         $res  = Shop::DB()->query("SELECT kKategorie, cName, kOberKategorie, nSort FROM tkategorie", 10);
-
         while ($row = $res->fetch(PDO::FETCH_OBJ)) {
             $cats[$row->kKategorie] = $row;
         }
-
         foreach ($catlist as $cat_id) {
             $this_cat = &$cats[$cat_id];
-            $catdir   = array();
-
+            $catdir   = [];
             // create category path
             while (isset($this_cat)) {
                 array_unshift($catdir, new stdClass());
@@ -202,14 +214,15 @@ function getCats($catlist)
                 $this_cat = &$cats[$this_cat->kOberKategorie];
             }
 
-            $shopcats[] = array(
+            $shopcats[] = [
                 'foreign_id_h' => isset($catdir[0]) ? $catdir[0]->cId : null,
                 'foreign_id_m' => isset($catdir[1]) ? $catdir[1]->cId : null,
                 'foreign_id_l' => isset($catdir[2]) ? $catdir[2]->cId : null,
                 'title_h'      => isset($catdir[0]) ? $catdir[0]->cName : null,
                 'title_m'      => isset($catdir[1]) ? $catdir[1]->cName : null,
                 'title_l'      => isset($catdir[2]) ? $catdir[2]->cName : null,
-                'sorting'      => $cats[$cat_id]->nSort);
+                'sorting'      => $cats[$cat_id]->nSort
+            ];
         }
     }
 

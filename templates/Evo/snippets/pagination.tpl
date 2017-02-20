@@ -18,23 +18,22 @@
 
 {get_static_route id=$cThisUrl assign=cThisUrl}
 
-<div class=pagination-wrapper>
+<div class="pagination-wrapper clearfix">
     {if $oPagination->getPageCount() > 1}
         {if in_array('label', $parts) || in_array('pagi', $parts)}
-            <div class="form-group pagination-group">
+            <div class="form-group pagination-group pull-left">
                 {if in_array('label', $parts)}
                     <span class="text-muted">
                         {lang key='paginationEntryPagination' section='global' printf={$oPagination->getFirstPageItem() + 1}|cat:':::'|cat:{$oPagination->getFirstPageItem() + $oPagination->getPageItemCount()}|cat:':::'|cat:{$oPagination->getItemCount()}}
                     </span>
                 {/if}
-
                 {if in_array('pagi', $parts)}
                     <ul class="pagination btn-group">
-                        <li>
-                            <a {if $oPagination->getPrevPage() != $oPagination->getPage()}
-                                href="{$cThisUrl}?{$oPagination->getId()}_nPage={$oPagination->getPrevPage()}{$cUrlAppend}{$cAnchor}"
-                            {/if}>&laquo;</a>
-                        </li>
+                        {if $oPagination->getPage() > 0}
+                            <li>
+                                <a href="{$cThisUrl}?{$oPagination->getId()}_nPage={$oPagination->getPrevPage()}{$cUrlAppend}{$cAnchor}"}>&laquo;</a>
+                            </li>
+                        {/if}
                         {if $oPagination->getLeftRangePage() > 0}
                             <li>
                                 <a href="{$cThisUrl}?{$oPagination->getId()}_nPage=0{$cUrlAppend}{$cAnchor}">1</a>
@@ -60,28 +59,37 @@
                                 <a href="{$cThisUrl}?{$oPagination->getId()}_nPage={$oPagination->getPageCount() - 1}{$cUrlAppend}{$cAnchor}">{$oPagination->getPageCount()}</a>
                             </li>
                         {/if}
-                        <li>
-                            <a {if $oPagination->getNextPage() != $oPagination->getPage()}
-                                href="{$cThisUrl}?{$oPagination->getId()}_nPage={$oPagination->getNextPage()}{$cUrlAppend}{$cAnchor}"
-                            {/if}>&raquo;</a>
-                        </li>
+                        {if $oPagination->getPage() < $oPagination->getPageCount() - 1}
+                            <li>
+                                <a href="{$cThisUrl}?{$oPagination->getId()}_nPage={$oPagination->getNextPage()}{$cUrlAppend}{$cAnchor}">&raquo;</a>
+                            </li>
+                        {/if}
                     </ul>
                 {/if}
             </div>
         {/if}
+    {else}
+        <div class="form-group pull-left">
+            <span class="text-muted">
+                {lang key='paginationTotalEntries' section='global'}
+            </span>
+            <span class="btn disabled">
+                {$oPagination->getItemCount()}
+            </span>
+        </div>
     {/if}
 
     {if $showFilter === true && (in_array('count', $parts) || in_array('sort', $parts))}
-        <form action="{$cThisUrl}{$cAnchor}" method="get" class="form-inline">
+        <form action="{$cThisUrl}{$cAnchor}" method="get" class="form-inline form-group pull-right">
             {foreach $cParam_arr as $cParamName => $cParamValue}
                 <input type="hidden" name="{$cParamName}" value="{$cParamValue}" />
             {/foreach}
             {if in_array('count', $parts)}
                 <div class="form-group items-per-page-group">
-                    <label for="{$oPagination->getId()}_nItemsPerPage">
-                        {lang key='paginationEntriesPerPage' section='global'}
-                    </label>
-                    <select class="form-control" name="{$oPagination->getId()}_nItemsPerPage" id="{$oPagination->getId()}_nItemsPerPage">
+                    <select class="form-control" name="{$oPagination->getId()}_nItemsPerPage"
+                            id="{$oPagination->getId()}_nItemsPerPage" onchange="this.form.submit()"
+                            title="{lang key='paginationEntriesPerPage' section='global'}">
+                        <option disabled>{lang key='paginationEntriesPerPage' section='global'}</option>
                         {foreach $oPagination->getItemsPerPageOptions() as $nItemsPerPageOption}
                             <option value="{$nItemsPerPageOption}"{if $oPagination->getItemsPerPage() == $nItemsPerPageOption} selected="selected"{/if}>
                                 {$nItemsPerPageOption}
@@ -95,26 +103,21 @@
             {/if}
             {if $oPagination->getSortByOptions()|@count > 0 && in_array('sort', $parts)}
                 <div class="form-group filter-group">
-                    <label for="{$oPagination->getId()}_nSortBy">{lang key='sorting' section='productOverview'}</label>
-                    <select class="form-control" name="{$oPagination->getId()}_nSortBy" id="{$oPagination->getId()}_nSortBy">
+                    <select class="form-control" name="{$oPagination->getId()}_nSortByDir"
+                            id="{$oPagination->getId()}_nSortByDir" onchange="this.form.submit()"
+                            title="{lang key='sorting' section='productOverview'}">
+                        <option disabled>{lang key='sorting' section='productOverview'}</option>
                         {foreach $oPagination->getSortByOptions() as $i => $cSortByOption}
-                            <option value="{$i}"{if $i == $oPagination->getSortBy()} selected="selected"{/if}>
-                                {$cSortByOption[1]}
+                            <option value="{$i * 2}"
+                                    {if $i * 2 == $oPagination->getSortByDir()} selected="selected"{/if}>
+                                {$cSortByOption[1]} {lang key='asc' section='global'}
+                            </option>
+                            <option value="{$i * 2 + 1}"
+                                    {if $i * 2 + 1 == $oPagination->getSortByDir()} selected="selected"{/if}>
+                                {$cSortByOption[1]} {lang key='desc' section='global'}
                             </option>
                         {/foreach}
                     </select>
-                    <select class="form-control" name="{$oPagination->getId()}_nSortDir" id="{$oPagination->getId()}_nSortDir">
-                        <option value="0"{if $oPagination->getSortDir() == 0} selected{/if}>{lang key='asc' section='global'}</option>
-                        <option value="1"{if $oPagination->getSortDir() == 1} selected{/if}>{lang key='desc' section='global'}</option>
-                    </select>
-                </div>
-            {/if}
-            <button type="submit" class="btn btn-primary">
-                <i class="fa fa-refresh"></i>
-            </button>
-            {if $oPagination->getPageCount() == 1}
-                <div class="form-group">
-                    <label>{lang key='paginationTotalEntries' section='global'} {$oPagination->getItemCount()}</label>
                 </div>
             {/if}
         </form>

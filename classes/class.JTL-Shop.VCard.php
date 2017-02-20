@@ -175,7 +175,7 @@ class VCard
             } else {
                 switch ($param[0]) {
                     case 'encoding':
-                        if (in_array($param[1], array('quoted-printable', 'b', 'base64'))) {
+                        if (in_array($param[1], ['quoted-printable', 'b', 'base64'])) {
                             $result['encoding'] = $param[1] == 'base64' ? 'b' : $param[1];
                         }
                         break;
@@ -312,10 +312,10 @@ class VCard
             }
 
             if ($type && isset($value)) {
-                $value = array(
+                $value = [
                     'Value' => $value,
                     'Type'  => $type
-                );
+                ];
             }
         }
 

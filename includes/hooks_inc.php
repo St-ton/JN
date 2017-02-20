@@ -812,6 +812,7 @@ define('HOOK_ATTRIBUT_CLASS_LOADFROMDB', 111);
  * at the end of Bestellung::fuelleBestellung()
  *
  * @file class.JTL-Shop.Bestellung.php
+ * @param Bestellung - oBestellung (@since 4.05)
  */
 define('HOOK_BESTELLUNG_CLASS_FUELLEBESTELLUNG', 112);
 
@@ -1426,14 +1427,6 @@ define('HOOK_FILTER_INC_BAUFILTERSQL', 184);
 define('HOOK_CACHE_FLUSH_AFTER', 200);
 
 /**
- * after flushing of page cache
- *
- * @since 4.0
- * @file class.JTL-Shop.JTLCache.php
- */
-define('HOOK_PAGE_CACHE_FLUSH_AFTER', 201);
-
-/**
  * after flushing cache ID/tag
  *
  * @since 4.0
@@ -1663,3 +1656,14 @@ define('HOOK_BOXEN_HOME', 224);
  * @param oArtikel
  */
 define('HOOK_QUICKSYNC_XML_BEARBEITEINSERT', 225);
+
+/**
+ * after getting list of all manufacturers
+ *
+ * @since 4.05
+ * @file class.helper.Hersteller.php
+ * @param bool  - cached
+ * @param array - cacheTags
+ * @param array - manufacturers
+ */
+define('HOOK_GET_MANUFACTURERS', 226);

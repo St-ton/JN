@@ -61,3 +61,183 @@ button.paypalexpress {
 a.paypalexpress {
     float: left;
 }
+
+/**
+.ppf-container a {
+    border-color: #bc3726 !important;
+}
+
+.ppf-container .show-details {
+    color: #bc3726 !important;
+}
+
+.table-financing-option .badge {
+    background: #bc3726 !important;
+}
+**/
+
+/*
+.ppf-container a {
+    color: #333;
+    border: 2px solid rgb(0,156,222);
+
+    display: block;
+    padding: 10px 0;
+    text-align: center;
+    margin: 0 0 20px 0;
+}
+
+.ppf-container a:active,
+.ppf-container a:focus,
+.ppf-container a:hover {
+    text-decoration: none;
+}
+.ppf-container a:hover {
+    border-color: rgb(119, 119, 119);
+    background-color: #f6f6f6;
+}
+*/
+
+@media (min-width: 1125px) {
+    #ppf-modal .modal-dialog {
+        width: 1100px;
+    }
+}
+
+.ppf-container {
+    color: #333;
+    border: 2px solid rgb(0,156,222);
+
+    display: block;
+    padding: 10px;
+    margin: 0 0 20px 0;
+}
+
+.ppf-details .price,
+.ppf-container .price {
+    font-size: 100%;
+    font-weight: bold;
+}
+
+.table-financing-option .value {
+    text-align: right;
+    font-family: "Merriweather", Georgia, "Times New Roman", Times, serif;
+}
+
+.ppf-container p {
+    margin-bottom: 0px;
+}
+
+.ppf-container a.show-details {
+    font-size: 95%;
+    color: rgb(0,156,222);
+    margin: 2px 0 0 0;
+	display: block;
+	text-align: center;
+}
+
+.ppf-container a.show-details:hover {
+    color: #666;
+}
+
+.ppf-image {
+    max-width: 200px;
+    margin-top: 10px;
+}
+
+.legal-info {
+	opacity: 0.9;
+	font-size: 85%;
+}
+
+.table-financing-option {
+    margin: 10px 0;
+	font-size: 90%;
+}
+
+.ppf-details .table-financing-option {
+	font-size: 100%;
+}
+
+.table-financing-option:hover,
+.table-financing-option:hover tfoot {
+    background: #f3f3f3;
+}
+
+.table-financing-option:hover tfoot {
+    color: #fff;
+    background: rgb(0,156,222);
+}
+
+.table-financing-option .total {
+    background: #f3f3f3;
+}
+
+.table-financing-option .badge {
+    min-width: 2em;
+    font-size: 110%;
+    padding: 4px 6px;
+    border-radius: 0px;
+    background: rgb(0,156,222);
+}
+
+.table-financing-option .rate-label {
+    text-transform: uppercase;
+}
+
+.ppf-details .info {
+    background: #f3f3f3;
+    text-align: center;
+    padding: 10px;
+    margin: 0 0 20px 0;
+}
+
+.ppf-details .info p.desc {
+    margin: 5px 0;
+    font-size: 0.9em;
+}
+
+.ppf-details .info p.title,
+.ppf-details .info p.loan {
+    margin: 0;
+    font-size: 1em;
+    font-weight: bold;
+}
+
+.ppf-details .legal {
+    font-size: 0.9em;
+    text-align: center;
+}
+
+.ppf-star {
+    color: #a94442;
+    font-style: normal;
+}
+
+.ppf-star:before {
+    content: '\2605';
+}
+
+.modal.modal-center {
+  text-align: center;
+  padding: 0!important;
+}
+
+.modal.modal-center:before {
+  content: '';
+  display: inline-block;
+  height: 100%;
+  vertical-align: middle;
+  margin-right: -4px;
+}
+
+.modal.modal-center .modal-dialog {
+  display: inline-block;
+  text-align: left;
+  vertical-align: middle;
+}
+
+#pp-loading-body {
+    margin: 20px;
+    text-align: center;
+}

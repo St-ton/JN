@@ -87,11 +87,11 @@ class Merkmal
      */
     public function loadFromDB($kMerkmal, $bMMW = false)
     {
-        $kSprache = Shop::$kSprache;
+        $kSprache = Shop::getLanguage();
         if (!$kSprache) {
             $oSprache = Shop::DB()->select('tsprache', 'cShopStandard', 'Y');
             if ($oSprache->kSprache > 0) {
-                $kSprache = $oSprache->kSprache;
+                $kSprache = (int)$oSprache->kSprache;
             }
         }
         $kSprache             = (int)$kSprache;
@@ -107,7 +107,7 @@ class Merkmal
             "SELECT tmerkmal.* " . $oSQLMerkmal->cSELECT . "
                 FROM tmerkmal
                 " . $oSQLMerkmal->cJOIN . "
-                WHERE tmerkmal.kMerkmal = " . intval($kMerkmal) . "
+                WHERE tmerkmal.kMerkmal = " . (int)$kMerkmal . "
                 ORDER BY tmerkmal.nSort", 1
         );
         if (isset($oMerkmal->kMerkmal) && $oMerkmal->kMerkmal > 0) {
@@ -120,14 +120,15 @@ class Merkmal
             $oMerkmalWertTMP_arr = Shop::DB()->query(
                 "SELECT tmw.kMerkmalWert
                     FROM tmerkmalwert tmw
-                    JOIN tmerkmalwertsprache tmws ON tmws.kMerkmalWert = tmw.kMerkmalWert
+                    JOIN tmerkmalwertsprache tmws 
+                        ON tmws.kMerkmalWert = tmw.kMerkmalWert
                         AND tmws.kSprache = {$kSprache}
                     WHERE kMerkmal = {$this->kMerkmal}
                     ORDER BY tmw.nSort, tmws.cWert", 2
             );
 
             if (is_array($oMerkmalWertTMP_arr) && count($oMerkmalWertTMP_arr) > 0) {
-                $this->oMerkmalWert_arr = array();
+                $this->oMerkmalWert_arr = [];
                 foreach ($oMerkmalWertTMP_arr as $oMerkmalWertTMP) {
                     $this->oMerkmalWert_arr[] = new MerkmalWert($oMerkmalWertTMP->kMerkmalWert);
                 }
@@ -164,7 +165,7 @@ class Merkmal
      */
     public function holeMerkmale($kMerkmal_arr, $bMMW = false)
     {
-        $oMerkmal_arr = array();
+        $oMerkmal_arr = [];
         $oSQLMerkmal  = new stdClass();
 
         if (is_array($kMerkmal_arr) && count($kMerkmal_arr) > 0) {

@@ -277,6 +277,16 @@ hr.hr-sm {
     .center-sm {
         text-align: center;
     }
+    /* Fix for form-group buttons with icon inside */
+    .btn .fa.visible-xs,
+    .btn i.glyphicon{
+        line-height: 22px;
+    }
+    .tags .label,
+    .active-filters .label{
+        display: inline-block;
+        margin-bottom: 5px;
+    }
 }
 
 .attr-label {
@@ -565,6 +575,32 @@ ul.filter_state li a.active:before {
     > .carousel.slide {
         overflow: hidden;
         text-align: center;
+    }
+}
+
+.theme-dark, .theme-light {
+    &.slider-wrapper.control-nav,
+    &.slider-wrapper.direction-nav {
+        position: relative;
+        padding-bottom: 30px;
+
+        .nivo-controlNav {
+            position: absolute;
+            bottom: 5px;
+        }
+    }
+
+    &.slider-wrapper.thumbnail-nav {
+        padding-bottom: 10px;
+
+        .nivo-controlNav {
+            position: relative;
+            bottom: auto;
+
+            a {
+                margin-bottom: 0;
+            }
+        }
     }
 }
 
@@ -1148,6 +1184,10 @@ table.matrix tbody>tr>td {
     .dropdown-menu {
         padding: @modal-inner-padding;
     }
+
+    .cart-dropdown li.table-responsive{
+        max-height: 800px;
+    }
 }
 
 /* Navbar text fix */
@@ -1170,6 +1210,11 @@ table.matrix tbody>tr>td {
     .form-group {
         margin-top: @panel-body-padding;
     }
+}
+
+#navbar-filter .dropdown-menu span.value,
+.box .nav-list span.value{
+    padding-right:45px;
 }
 
 @media(max-width: 480px) {
@@ -1532,6 +1577,12 @@ fieldset {
 
 .popover-content,.pop-div,.popover {
     width: 500px;
+    @media (max-width: 500px){
+        width: 400px;
+    }
+    @media (max-width: 400px){
+        width: 300px;
+    }
 }
 
 .popover {
@@ -2802,6 +2853,10 @@ div#add-to-cart {
 }
 */
 
+.dropdown-menu {
+    font-size: @font-size-small;
+}
+
 #evo-main-nav {
     margin-bottom: 0;
     z-index: 20;
@@ -2812,6 +2867,16 @@ div#add-to-cart {
         overflow: hidden;
         white-space: nowrap;
         vertical-align: middle;
+    }
+
+    .dropdown-cart-items .item-price,
+    .dropdown-cart-items .item-quantity {
+        text-align: right;
+        vertical-align: middle;
+    }
+
+    .dropdown-cart-items {
+        word-break: break-word;
     }
 }
 
@@ -3000,7 +3065,23 @@ header.fixed-navbar {
 /*Artikel Bilder Slider Start*/
 .slick-up:before {content: '\2190';}
 .stick-down:before {content: '\2192';}
-.slick-up, .stick-down {outline: none;font-family: "slick";background:transparent;border:none;font-size: 20px;line-height: 1;padding:0px;width:19px;height:19px;color: #ccc;opacity: 0.75;}
+.slick-up, .stick-down {
+    outline: none;
+    font-family: "slick";
+    background: transparent;
+    border: none;
+    font-size: 20px;
+    line-height: 1;
+    padding: 0;
+    width: 19px;
+    height: 19px;
+    color: #ccc;
+    opacity: 0.75;
+
+    &:hover{
+        opacity: 1;
+    }
+}
 .btn-gallery-left {left:0px;z-index:5;position:absolute;}
 .btn-gallery-right {right:0px;z-index:5;position:absolute;}
 .btn-gallery-up {top:0px;z-index:5;position:absolute;transform:rotate(90deg);}
@@ -3023,4 +3104,9 @@ header.fixed-navbar {
 
 .hide-overflow {
     overflow: hidden;
+}
+
+.pagination-wrapper .pagination {
+    margin-top: 0;
+    margin-bottom: 0;
 }

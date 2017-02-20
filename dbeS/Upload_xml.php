@@ -37,9 +37,9 @@ class Uploader extends NetSyncHandler
         }
         switch ($eRequest) {
             case NetSyncRequest::UploadFiles:
-                $kBestellung = intval($_POST['kBestellung']);
+                $kBestellung = (int)$_POST['kBestellung'];
                 if ($kBestellung > 0) {
-                    $oSystemFiles_arr = array();
+                    $oSystemFiles_arr = [];
                     $oUpload_arr      = Upload::gibBestellungUploads($kBestellung);
                     if (is_array($oUpload_arr) && count($oUpload_arr)) {
                         foreach ($oUpload_arr as $oUpload) {
@@ -66,7 +66,7 @@ class Uploader extends NetSyncHandler
                 break;
 
             case NetSyncRequest::UploadFileData:
-                $kUpload = intval($_GET['kFileID']);
+                $kUpload = (int)$_GET['kFileID'];
                 if ($kUpload > 0) {
                     $oUploadDatei = new UploadDatei();
                     if ($oUploadDatei->loadFromDB($kUpload)) {

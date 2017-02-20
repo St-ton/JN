@@ -34,28 +34,29 @@ class cache_apc implements ICachingMethod
      * @param string   $cacheID
      * @param mixed    $content
      * @param int|null $expiration
-     *
      * @return bool
      */
     public function store($cacheID, $content, $expiration = null)
     {
-        return apc_store($this->options['prefix'] . $cacheID, $content, ($expiration === null) ? $this->options['lifetime'] : $expiration);
+        return apc_store($this->options['prefix'] . $cacheID, $content, ($expiration === null)
+            ? $this->options['lifetime']
+            : $expiration);
     }
 
     /**
      * @param array    $keyValue
      * @param int|null $expiration
-     *
      * @return bool
      */
     public function storeMulti($keyValue, $expiration = null)
     {
-        return apc_store($this->prefixArray($keyValue), null, ($expiration === null) ? $this->options['lifetime'] : $expiration);
+        return apc_store($this->prefixArray($keyValue), null, ($expiration === null)
+            ? $this->options['lifetime']
+            : $expiration);
     }
 
     /**
      * @param string $cacheID
-     *
      * @return bool|mixed
      */
     public function load($cacheID)
@@ -65,7 +66,6 @@ class cache_apc implements ICachingMethod
 
     /**
      * @param array $cacheIDs
-     *
      * @return bool|mixed
      */
     public function loadMulti($cacheIDs)
@@ -73,7 +73,7 @@ class cache_apc implements ICachingMethod
         if (!is_array($cacheIDs)) {
             return false;
         }
-        $prefixedKeys = array();
+        $prefixedKeys = [];
         foreach ($cacheIDs as $_cid) {
             $prefixedKeys[] = $this->options['prefix'] . $_cid;
         }
@@ -93,7 +93,6 @@ class cache_apc implements ICachingMethod
 
     /**
      * @param string $cacheID
-     *
      * @return bool
      */
     public function flush($cacheID)
@@ -111,7 +110,6 @@ class cache_apc implements ICachingMethod
 
     /**
      * @param string $cacheID
-     *
      * @return bool|string[]
      */
     public function keyExists($cacheID)
@@ -126,15 +124,15 @@ class cache_apc implements ICachingMethod
     {
         try {
             $tmp   = apc_cache_info('user');
-            $stats = array(
+            $stats = [
                 'entries' => (isset($tmp['num_entries'])) ? $tmp['num_entries'] : 0,
                 'hits'    => (isset($tmp['num_hits'])) ? $tmp['num_hits'] : 0,
                 'misses'  => (isset($tmp['num_misses'])) ? $tmp['num_misses'] : 0,
                 'inserts' => (isset($tmp['num_inserts'])) ? $tmp['num_inserts'] : 0,
                 'mem'     => (isset($tmp['mem_size'])) ? $tmp['mem_size'] : 0
-            );
+            ];
         } catch (Exception $e) {
-            $stats = array();
+            $stats = [];
         }
 
         return $stats;

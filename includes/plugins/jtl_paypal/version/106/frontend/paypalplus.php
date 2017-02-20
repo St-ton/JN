@@ -9,6 +9,7 @@ ini_set('display_errors', 0);
 
 require_once realpath(dirname(__FILE__) . '/../paymentmethod/class') . '/PayPalPlus.class.php';
 
+use PayPal\Api\Error;
 use PayPal\Api\Payment;
 use PayPal\Api\WebhookEvent;
 
@@ -54,8 +55,8 @@ switch ($action) {
         if (!isset($_GET['id'])) {
             _exit(400);
         }
-		
-		Shop::setPageType(PAGE_BESTELLVORGANG);
+
+        Shop::setPageType(PAGE_BESTELLVORGANG);
 
         require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';
 
@@ -93,29 +94,45 @@ switch ($action) {
             _exit(400);
         }
 
+        $maps = [
+            'city'  => 'city',
+            'state' => 'state',
+            'zip'   => 'plz',
+            'line1' => 'street',
+        ];
+
+        $data = [
+            'city'  => 'city',
+            'state' => 'state',
+            'zip'   => 'postal_code',
+            'line1' => 'line1',
+        ];
+
         PayPalHelper::addSurcharge($api->getPaymentId());
 
-        $basket = PayPalHelper::getBasket();
-        $shippingAddress = clone $_SESSION['Lieferadresse'];
+        $basket       = PayPalHelper::getBasket();
+        $patchRequest = new \PayPal\Api\PatchRequest();
 
-        $amount = $api->prepareAmount($basket, $basket->currency->cISO);
         $shippingAddress = $api->prepareShippingAddress($_SESSION['Lieferadresse']);
-
-        $patchShipping = new \PayPal\Api\Patch();
-        $patchShipping->setOp('add')
-            ->setPath('/transactions/0/item_list/shipping_address')
-            ->setValue($shippingAddress);
-
-        $patchAmount = new \PayPal\Api\Patch();
-        $patchAmount->setOp('replace')
-            ->setPath('/transactions/0/amount')
-            ->setValue($amount);
+        $amount          = $api->prepareAmount($basket);
 
         try {
-            $payment = Payment::get($_GET['id'], $apiContext);
-
+            $payment      = Payment::get($_GET['id'], $apiContext);
             $patchRequest = new \PayPal\Api\PatchRequest();
-            $patchRequest->setPatches([$patchShipping, $patchAmount]);
+
+            $patchShipping = new \PayPal\Api\Patch();
+            $patchShipping->setOp('add')
+                ->setPath('/transactions/0/item_list/shipping_address')
+                ->setValue($shippingAddress);
+            $patchRequest->addPatch($patchShipping);
+
+            if ((float) $payment->getTransactions()[0]->getAmount()->getTotal() != (float) $amount->getTotal()) {
+                $patchAmount = new \PayPal\Api\Patch();
+                $patchAmount->setOp('replace')
+                    ->setPath('/transactions/0/amount')
+                    ->setValue($amount);
+                $patchRequest->addPatch($patchAmount);
+            }
 
             $payment->update($patchRequest, $apiContext);
             $api->logResult('Patch', $patchRequest, $payment);
@@ -123,7 +140,36 @@ switch ($action) {
             _exit(200);
         } catch (Exception $ex) {
             $api->handleException('Patch', $patchRequest, $ex);
-            _exit(500, $ex->getData());
+
+            try {
+                $error = new Error($ex->getData());
+
+                if ($error->getName() !== 'VALIDATION_ERROR') {
+                    throw $ex;
+                }
+
+                $address = $shippingAddress->toArray();
+
+                foreach ($error->getDetails() as $detail) {
+                    $field = end(explode('.', $detail->getField()));
+                    if (!in_array($field, array_keys($maps))) {
+                        throw $ex;
+                    }
+                    $detail->setField($maps[$field]);
+                    $detail->setIssue($address[$data[$field]]);
+                }
+
+                Shop::Smarty()
+                    ->assign('error', $error);
+            } catch (Exception $ex) {
+            }
+
+            $tplData = Shop::Smarty()
+                ->assign('l10n', $oPlugin->oPluginSprachvariableAssoc_arr)
+                ->assign('sameAsBilling', $_SESSION['Bestellung']->kLieferadresse == 0)
+                ->fetch($oPlugin->cFrontendPfad . 'template/paypalplus-patch.tpl');
+
+            _exit(500, $tplData);
         }
     }
 

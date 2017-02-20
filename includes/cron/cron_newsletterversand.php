@@ -15,7 +15,7 @@ function bearbeiteNewsletterversand($oJobQueue)
 {
     $oJobQueue->nInArbeit = 1;
     $oNewsletter          = $oJobQueue->holeJobArt();
-    $Einstellungen        = Shop::getSettings(array(CONF_NEWSLETTER));
+    $Einstellungen        = Shop::getSettings([CONF_NEWSLETTER]);
     $mailSmarty           = bereiteNewsletterVor($Einstellungen);
     // Baue Arrays mit kKeys
     $kArtikel_arr      = gibAHKKeys($oNewsletter->cArtikel, true);
@@ -34,22 +34,27 @@ function bearbeiteNewsletterversand($oJobQueue)
     }
 
     // Baue Arrays von Objekten
-    $oArtikel_arr   = array();
-    $oKategorie_arr = array();
+    $oArtikel_arr   = [];
+    $oKategorie_arr = [];
 
     $cSQL = '';
     if (is_array($kKundengruppe_arr) && count($kKundengruppe_arr) > 0) {
         foreach ($kKundengruppe_arr as $kKundengruppe) {
-            $oArtikel_arr[$kKundengruppe]   = gibArtikelObjekte($kArtikel_arr, $oKampagne, $kKundengruppe, $oNewsletter->kSprache);
+            $oArtikel_arr[$kKundengruppe]   = gibArtikelObjekte(
+                $kArtikel_arr,
+                $oKampagne,
+                $kKundengruppe,
+                $oNewsletter->kSprache
+            );
             $oKategorie_arr[$kKundengruppe] = gibKategorieObjekte($kKategorie_arr, $oKampagne);
         }
 
         $cSQL = "AND (";
         foreach ($kKundengruppe_arr as $i => $kKundengruppe) {
             if ($i > 0) {
-                $cSQL .= " OR tkunde.kKundengruppe=" . intval($kKundengruppe);
+                $cSQL .= " OR tkunde.kKundengruppe = " . (int)$kKundengruppe;
             } else {
-                $cSQL .= "tkunde.kKundengruppe=" . intval($kKundengruppe);
+                $cSQL .= "tkunde.kKundengruppe = " . (int)$kKundengruppe;
             }
         }
     }
@@ -65,12 +70,16 @@ function bearbeiteNewsletterversand($oJobQueue)
 
     $oHersteller_arr           = gibHerstellerObjekte($kHersteller_arr, $oKampagne, $oNewsletter->kSprache);
     $oNewsletterEmpfaenger_arr = Shop::DB()->query(
-        "SELECT tkunde.kKundengruppe, tkunde.kKunde, tsprache.cISO, tnewsletterempfaenger.kNewsletterEmpfaenger, tnewsletterempfaenger.cAnrede, tnewsletterempfaenger.cVorname, tnewsletterempfaenger.cNachname, tnewsletterempfaenger.cEmail, tnewsletterempfaenger.cLoeschCode
+        "SELECT tkunde.kKundengruppe, tkunde.kKunde, tsprache.cISO, tnewsletterempfaenger.kNewsletterEmpfaenger, 
+            tnewsletterempfaenger.cAnrede, tnewsletterempfaenger.cVorname, tnewsletterempfaenger.cNachname, 
+            tnewsletterempfaenger.cEmail, tnewsletterempfaenger.cLoeschCode
             FROM tnewsletterempfaenger
-            LEFT JOIN tsprache ON tsprache.kSprache = tnewsletterempfaenger.kSprache
-            LEFT JOIN tkunde ON tkunde.kKunde = tnewsletterempfaenger.kKunde
-            WHERE tnewsletterempfaenger.kSprache=" . $oNewsletter->kSprache . "
-                AND tnewsletterempfaenger.nAktiv=1 " . $cSQL . "
+            LEFT JOIN tsprache 
+                ON tsprache.kSprache = tnewsletterempfaenger.kSprache
+            LEFT JOIN tkunde 
+                ON tkunde.kKunde = tnewsletterempfaenger.kKunde
+            WHERE tnewsletterempfaenger.kSprache = " . (int)$oNewsletter->kSprache . "
+                AND tnewsletterempfaenger.nAktiv = 1 " . $cSQL . "
             ORDER BY tnewsletterempfaenger.kKunde
             LIMIT " . $oJobQueue->nLimitN . ", " . $oJobQueue->nLimitM, 2
     );
@@ -80,18 +89,28 @@ function bearbeiteNewsletterversand($oJobQueue)
         $shopURL = Shop::getURL();
         foreach ($oNewsletterEmpfaenger_arr as $oNewsletterEmpfaenger) {
             unset($oKunde);
-            $oNewsletterEmpfaenger->cLoeschURL = $shopURL . '/newsletter.php?lang=' . $oNewsletterEmpfaenger->cISO . '&lc=' . $oNewsletterEmpfaenger->cLoeschCode;
+            $oNewsletterEmpfaenger->cLoeschURL = $shopURL . '/newsletter.php?lang=' .
+                $oNewsletterEmpfaenger->cISO . '&lc=' . $oNewsletterEmpfaenger->cLoeschCode;
             if ($oNewsletterEmpfaenger->kKunde > 0) {
                 $oKunde = new Kunde($oNewsletterEmpfaenger->kKunde);
             }
 
             $kKundengruppeTMP = 0;
             if (intval($oNewsletterEmpfaenger->kKundengruppe) > 0) {
-                $kKundengruppeTMP = intval($oNewsletterEmpfaenger->kKundengruppe);
+                $kKundengruppeTMP = (int)$oNewsletterEmpfaenger->kKundengruppe;
             }
 
-            versendeNewsletter($mailSmarty, $oNewsletter, $Einstellungen, $oNewsletterEmpfaenger, $oArtikel_arr[$kKundengruppeTMP], $oHersteller_arr, $oKategorie_arr[$kKundengruppeTMP], $oKampagne, ((isset($oKunde)) ? $oKunde : null));
-
+            versendeNewsletter(
+                $mailSmarty,
+                $oNewsletter,
+                $Einstellungen,
+                $oNewsletterEmpfaenger,
+                $oArtikel_arr[$kKundengruppeTMP],
+                $oHersteller_arr,
+                $oKategorie_arr[$kKundengruppeTMP],
+                $oKampagne,
+                ((isset($oKunde)) ? $oKunde : null)
+            );
             // Newsletterempfaenger updaten
             Shop::DB()->query(
                 "UPDATE tnewsletterempfaenger
@@ -109,4 +128,6 @@ function bearbeiteNewsletterversand($oJobQueue)
         Shop::DB()->delete('tnewsletterqueue', 'kNewsletter', (int)$oJobQueue->kKey);
         unset($oJobQueue);
     }
+
+    return true;
 }

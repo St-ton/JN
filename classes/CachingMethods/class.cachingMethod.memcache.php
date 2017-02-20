@@ -31,28 +31,25 @@ class cache_memcache implements ICachingMethod
             $this->setMemcache($options['memcache_host'], $options['memcache_port']);
             $this->isInitialized = true;
             $this->journalID     = 'memcache_journal';
-            $maxLifeTime         = 60 * 60 * 24 * 30;
-            if ($options['lifetime'] > $maxLifeTime) {
-                //@see http://php.net/manual/de/memcached.expiration.php
-                $options['lifetime'] = $maxLifeTime;
-            }
-            $this->options = $options;
+            //@see http://php.net/manual/de/memcached.expiration.php
+            $options['lifetime'] = min(60 * 60 * 24 * 30, $options['lifetime']);
+            $this->options       = $options;
+            self::$instance      = $this;
         }
     }
 
     /**
      * @param string $host
      * @param int    $port
-     *
      * @return $this
      */
-    public function setMemcache($host, $port)
+    private function setMemcache($host, $port)
     {
         if ($this->_memcache !== null) {
             $this->_memcache->close();
         }
         $m = new Memcache();
-        $m->addServer($host, $port);
+        $m->addServer($host, (int)$port);
         $this->_memcache = $m;
 
         return $this;
@@ -62,28 +59,29 @@ class cache_memcache implements ICachingMethod
      * @param string   $cacheID
      * @param mixed    $content
      * @param int|null $expiration
-     *
      * @return bool
      */
     public function store($cacheID, $content, $expiration = null)
     {
-        return $this->_memcache->set($this->options['prefix'] . $cacheID, $content, 0, ($expiration === null) ? $this->options['lifetime'] : $expiration);
+        return $this->_memcache->set($this->options['prefix'] . $cacheID, $content, 0, ($expiration === null)
+            ? $this->options['lifetime']
+            : $expiration);
     }
 
     /**
      * @param array    $keyValue
      * @param int|null $expiration
-     *
      * @return bool
      */
     public function storeMulti($keyValue, $expiration = null)
     {
-        return $this->_memcache->set($this->prefixArray($keyValue), ($expiration === null) ? $this->options['lifetime'] : $expiration);
+        return $this->_memcache->set($this->prefixArray($keyValue), ($expiration === null)
+            ? $this->options['lifetime']
+            : $expiration);
     }
 
     /**
      * @param string $cacheID
-     *
      * @return mixed
      */
     public function load($cacheID)
@@ -93,7 +91,6 @@ class cache_memcache implements ICachingMethod
 
     /**
      * @param array $cacheIDs
-     *
      * @return bool|mixed
      */
     public function loadMulti($cacheIDs)
@@ -101,7 +98,7 @@ class cache_memcache implements ICachingMethod
         if (!is_array($cacheIDs)) {
             return false;
         }
-        $prefixedKeys = array();
+        $prefixedKeys = [];
         foreach ($cacheIDs as $_cid) {
             $prefixedKeys[] = $this->options['prefix'] . $_cid;
         }
@@ -121,7 +118,6 @@ class cache_memcache implements ICachingMethod
 
     /**
      * @param string $cacheID
-     *
      * @return bool
      */
     public function flush($cacheID)
@@ -144,12 +140,12 @@ class cache_memcache implements ICachingMethod
     {
         $stats = $this->_memcache->getStats();
 
-        return array(
+        return [
             'entries' => $stats['curr_items'],
             'hits'    => $stats['get_hits'],
             'misses'  => $stats['get_misses'],
             'inserts' => $stats['cmd_set'],
             'mem'     => $stats['bytes']
-        );
+        ];
     }
 }

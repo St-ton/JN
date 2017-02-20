@@ -1,6 +1,6 @@
 {includeMailTemplate template=header type=html}
 
-Sehr {if $Kunde->cAnrede == "w"}geehrte{else}geehrter{/if} {$Kunde->cAnredeLocalized} {$Kunde->cNachname},<br>
+Sehr {if $Kunde->cAnrede == "w"}geehrte{elseif $Kunde->cAnrede == "m"}geehrter{else}geehrte(r){/if} {$Kunde->cAnredeLocalized} {$Kunde->cNachname},<br>
 <br>
 vielen Dank für Ihre Bestellung bei {$Einstellungen.global.global_shopname}.<br>
 <br>
@@ -22,7 +22,7 @@ Ihre Bestellung mit Bestellnummer {$Bestellung->cBestellNr} umfasst folgende Pos
         <tr>
             <td class="column" {if $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === "Y"}width="50%"{else}width="70%"{/if} align="left" valign="top">
                 {if $Position->nPosTyp==1}
-                    {if !empty($Position->kKonfigitem)}• {/if}<strong>{$Position->cName}</strong> {if $Position->cArtNr}({$Position->cArtNr}){/if}
+                    {if !empty($Position->kKonfigitem)} * {/if}<strong>{$Position->cName}</strong> {if $Position->cArtNr}({$Position->cArtNr}){/if}
                     {if isset($Position->Artikel->nErscheinendesProdukt) && $Position->Artikel->nErscheinendesProdukt}
                         <br>Verfügbar ab: <strong>{$Position->Artikel->Erscheinungsdatum_de}</strong>
                     {/if}
@@ -571,7 +571,7 @@ Sie haben folgende Zahlungsart gewählt: {$Bestellung->cZahlungsartName}<br>
 {elseif $Bestellung->Zahlungsart->cModulId === "za_paypal_jtl"}
 {elseif $Bestellung->Zahlungsart->cModulId === "za_moneybookers_jtl"}
 {/if}
-{if isset($Zahlungsart->cHinweisText) && $Zahlungsart->cHinweisText|count_characters > 0}
+{if isset($Zahlungsart->cHinweisText) && $Zahlungsart->cHinweisText|strlen > 0}
     {$Zahlungsart->cHinweisText}<br>
     <br>
 {/if}

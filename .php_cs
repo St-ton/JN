@@ -8,7 +8,7 @@ return Symfony\CS\Config\Config::create()
         'double_arrow_multiline_whitespaces',
         'duplicate_semicolon',
         'elseif',
-        'empty_return',
+//      'empty_return',
         'encoding',
         'eof_ending',
         'extra_empty_lines',

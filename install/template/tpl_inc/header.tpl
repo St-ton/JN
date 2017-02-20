@@ -13,7 +13,7 @@
         <link rel="stylesheet" href="{$URL_SHOP}{$PFAD_ADMIN_TEMPLATE}css/custom.css" type="text/css">
         <link rel="stylesheet" href="{$URL_SHOP}install/template/css/style.css" type="text/css">
         <script src="{$URL_SHOP}{$PFAD_ADMIN_TEMPLATE}js/jquery-1.11.3.min.js" type="text/javascript"></script>
-        <title>JTL-Shop4 Installation</title>
+        <title>JTL-Shop Installation</title>
 
         {literal}
         <style>
@@ -42,17 +42,4 @@
                         </span>
                     </h1>
                 </div>
-            {* additionally headline - maybe removed
-                <div class="col-xs-12">
-                    <h3 class="step-header">
-                    {if $step === 'schritt0'}
-                        System-Check
-                    {elseif $step === 'schritt1'}
-                        Benutzerdaten
-                    {elseif $step === 'schritt2'}
-                        Installation abgeschlossen
-                    {/if}
-                    </h3>
-                </div>
-            *}
             </div>

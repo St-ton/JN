@@ -1,4 +1,8 @@
 <?php
+/**
+ * @copyright (c) JTL-Software-GmbH
+ * @license http://jtl-url.de/jtlshoplicense
+ */
 
 /**
  * Class Kupon
@@ -140,6 +144,12 @@ class Kupon
     public $nGanzenWKRabattieren;
 
     /**
+     * @access public
+     * @var array
+     */
+    public $translationList;
+
+    /**
      * Constructor
      *
      * @param int $kKupon - primarykey
@@ -156,21 +166,24 @@ class Kupon
      * Loads database member into class member
      *
      * @param int $kKupon
-     * @return $this
+     * @return bool|Kupon
      * @access private
      */
     private function loadFromDB($kKupon = 0)
     {
-        $oObj = Shop::DB()->select('tkupon', 'kKupon', (int)$kKupon);
+        $couponResult = Shop::DB()->select('tkupon', 'kKupon', (int)$kKupon);
 
-        if (isset($oObj->kKupon) && $oObj->kKupon > 0) {
-            $cMember_arr = array_keys(get_object_vars($oObj));
+        if (isset($couponResult->kKupon) && $couponResult->kKupon > 0) {
+            $couponResult->translationList = self::getTranslation($couponResult->kKupon);
+            $cMember_arr                   = array_keys(get_object_vars($couponResult));
             foreach ($cMember_arr as $cMember) {
-                $this->$cMember = $oObj->$cMember;
+                $this->$cMember = $couponResult->$cMember;
             }
+
+            return $this;
         }
 
-        return $this;
+        return false;
     }
 
     /**
@@ -543,7 +556,7 @@ class Kupon
      */
     public function setGanzenWKRabattieren($nGanzenWKRabattieren)
     {
-        $this->nGanzenWKRabattieren = intval($nGanzenWKRabattieren);
+        $this->nGanzenWKRabattieren = (int)$nGanzenWKRabattieren;
 
         return $this;
     }
@@ -791,24 +804,116 @@ class Kupon
     }
 
     /**
-     * @param int $hashLength
-     * @param bool $lowerCase
-     * @param bool $upperCase
-     * @param bool $numberHash
+     * Gets coupon by cCode
+     *
+     * @access public
+     * @param string $cCode
+     * @return bool|Kupon
+     */
+    public function getByCode($cCode = '')
+    {
+        $couponResult = Shop::DB()->select('tkupon', 'cCode', $cCode);
+
+        if (isset($couponResult->kKupon) && $couponResult->kKupon > 0) {
+            $couponResult->translationList = self::getTranslation($couponResult->kKupon);
+            $cMember_arr                   = array_keys(get_object_vars($couponResult));
+            foreach ($cMember_arr as $cMember) {
+                $this->$cMember = $couponResult->$cMember;
+            }
+
+            return $this;
+        }
+
+        return false;
+    }
+
+    /**
+     * Gets translation for Coupon
+     *
+     * @access public
+     * @param int $kKupon
+     * @return array $translationList
+     */
+    public function getTranslation($kKupon = 0)
+    {
+        //dump($_SESSION);
+        $translationList = [];
+        if(isset($_SESSION['Sprachen'])){
+            foreach ($_SESSION['Sprachen'] as $Sprache) {
+                $name_spr = Shop::DB()->select(
+                    'tkuponsprache',
+                    'kKupon',
+                    (int)$kKupon,
+                    'cISOSprache',
+                    $Sprache->cISO,
+                    null,
+                    null,
+                    false,
+                    'cName'
+                );
+                $translationList[$Sprache->cISO] = $name_spr->cName;
+            }
+        }
+
+        return $translationList;
+    }
+
+    /**
+     * Gets new customer coupon
+     *
+     * @access public
+     * @return array|bool
+     */
+    public function getNewCustomerCoupon()
+    {
+        $newCustomerCoupons = Shop::DB()->selectAll(
+            'tkupon',
+            ['cKuponTyp', 'cAktiv'],
+            ['neukundenkupon', 'Y'],
+            '*',
+            'fWert DESC'
+        );
+
+        foreach ($newCustomerCoupons as $newCustomerCoupon) {
+            if (isset($newCustomerCoupon->kKupon) && $newCustomerCoupon->kKupon > 0) {
+                $newCustomerCoupon->translationList = self::getTranslation($newCustomerCoupon->kKupon);
+                $cMember_arr                        = array_keys(get_object_vars($newCustomerCoupon));
+                foreach ($cMember_arr as $cMember) {
+                    $this->$cMember = $newCustomerCoupon->$cMember;
+                }
+
+                $newCustomerCoupons_arr[] = $this;
+
+                return $newCustomerCoupons_arr;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @param int $len
+     * @param bool $lower
+     * @param bool $upper
+     * @param bool $numbers
      * @param string $prefix
      * @param string $suffix
      * @return string
      */
-    public function generateCode($hashLength = 7, $lowerCase = true, $upperCase = true, $numberHash = true, $prefix = '', $suffix = '')
+    public function generateCode($len = 7, $lower = true, $upper = true, $numbers = true, $prefix = '', $suffix = '')
     {
-        $lowerCaseString  = $lowerCase ? 'abcdefghijklmnopqrstuvwxyz' : null;
-        $upperCaseString  = $upperCase ? 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' : null;
-        $numberHashString = $numberHash ? '0123456789' : null;
-
-        $cCode      = '';
-        $allCoupons = Shop::DB()->query("SELECT * FROM tkupon", 2);
-        while (empty($cCode) || ((count($allCoupons) == 0) ? empty($cCode) : Shop::DB()->select('tkupon', 'cCode', $cCode))) {
-            $cCode = $prefix . substr(str_shuffle(str_repeat($lowerCaseString . $upperCaseString . $numberHashString, $hashLength)), 0, $hashLength) . $suffix;
+        $lowerString   = $lower ? 'abcdefghijklmnopqrstuvwxyz' : null;
+        $upperString   = $upper ? 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' : null;
+        $numbersString = $numbers ? '0123456789' : null;
+        $cCode         = '';
+        $allCoupons    = Shop::DB()->query("SELECT * FROM tkupon", 2);
+        while (empty($cCode) || ((count($allCoupons) == 0) 
+                ? empty($cCode) 
+                : Shop::DB()->select('tkupon', 'cCode', $cCode))) {
+            $cCode = $prefix . substr(str_shuffle(str_repeat(
+                $lowerString . $upperString . $numbersString, 
+                    $len
+                )), 0, $len) . $suffix;
         }
 
         return $cCode;

@@ -13,7 +13,7 @@ setzeSprache();
 
 $hinweis           = '';
 $fehler            = '';
-$settingsIDs       = array(423, 425, 422, 437, 438);
+$settingsIDs       = [423, 425, 422, 437, 438];
 
 // Tabs
 if (strlen(verifyGPDataString('tab')) > 0) {
@@ -120,7 +120,7 @@ if (isset($_POST['livesuche']) && intval($_POST['livesuche']) === 1) { //Formula
             if (isset($_POST['nAktiv']) && is_array($_POST['nAktiv'])) {
                 foreach ($_POST['nAktiv'] as $i => $nAktiv) {
                     $oSuchanfrage = Shop::DB()->select('tsuchanfrage', 'kSuchanfrage', (int)$nAktiv);
-                    Shop::DB()->delete('tseo', array('cKey', 'kKey', 'kSprache'), array('kSuchanfrage', (int)$nAktiv, (int)$_SESSION['kSprache']));
+                    Shop::DB()->delete('tseo', ['cKey', 'kKey', 'kSprache'], ['kSuchanfrage', (int)$nAktiv, (int)$_SESSION['kSprache']]);
                     // Aktivierte Suchanfragen in tseo eintragen
                     $oSeo           = new stdClass();
                     $oSeo->cSeo     = checkSeo(getSeo($oSuchanfrage->cSuche));
@@ -139,33 +139,36 @@ if (isset($_POST['livesuche']) && intval($_POST['livesuche']) === 1) { //Formula
 
         if (count($Suchanfragen) > 0) {
             foreach ($Suchanfragen as $sucheanfrage) {
-                if (strtolower($sucheanfrage->cSuche) != strtolower($_POST['mapping_' . $sucheanfrage->kSuchanfrage])) {
-                    if (strlen($_POST['mapping_' . $sucheanfrage->kSuchanfrage]) > 0) {
+                if (!isset($_POST['mapping_' . $sucheanfrage->kSuchanfrage]) ||
+                    strtolower($sucheanfrage->cSuche) !== strtolower($_POST['mapping_' . $sucheanfrage->kSuchanfrage])) {
+                    if (!empty($_POST['mapping_' . $sucheanfrage->kSuchanfrage])) {
                         $nMappingVorhanden                      = 1;
                         $suchanfragemapping_obj                 = new stdClass();
                         $suchanfragemapping_obj->kSprache       = $_SESSION['kSprache'];
                         $suchanfragemapping_obj->cSuche         = $sucheanfrage->cSuche;
                         $suchanfragemapping_obj->cSucheNeu      = $_POST['mapping_' . $sucheanfrage->kSuchanfrage];
                         $suchanfragemapping_obj->nAnzahlGesuche = $sucheanfrage->nAnzahlGesuche;
-
                         $Neuesuche = Shop::DB()->select('tsuchanfrage', 'cSuche', $suchanfragemapping_obj->cSucheNeu);
-                        if ($Neuesuche->kSuchanfrage > 0) {
+                        if (isset($Neuesuche->kSuchanfrage) && $Neuesuche->kSuchanfrage > 0) {
                             Shop::DB()->insert('tsuchanfragemapping', $suchanfragemapping_obj);
                             Shop::DB()->query(
                                 "UPDATE tsuchanfrage
                                     SET nAnzahlGesuche = nAnzahlGesuche+" . $sucheanfrage->nAnzahlGesuche . "
                                     WHERE kSprache = " . (int)$_SESSION['kSprache'] . "
-                                        AND cSuche = '" . Shop::DB()->escape($_POST['mapping_' . $sucheanfrage->kSuchanfrage]) . "'", 4);
+                                        AND cSuche = '" . Shop::DB()->escape($_POST['mapping_' . $sucheanfrage->kSuchanfrage]) . "'", 4
+                            );
                             Shop::DB()->delete('tsuchanfrage', 'kSuchanfrage', (int)$sucheanfrage->kSuchanfrage);
                             $upd       = new stdClass();
                             $upd->kKey = (int)$Neuesuche->kSuchanfrage;
                             Shop::DB()->update('tseo', ['cKey', 'kKey'], ['kSuchanfrage', (int)$sucheanfrage->kSuchanfrage], $upd);
 
-                            $hinweis .= 'Die Suchanfrage "' . $suchanfragemapping_obj->cSuche . '" wurde erfolgreich auf "' . $suchanfragemapping_obj->cSucheNeu . '" gemappt.<br />';
+                            $hinweis .= 'Die Suchanfrage "' . $suchanfragemapping_obj->cSuche .
+                                '" wurde erfolgreich auf "' . $suchanfragemapping_obj->cSucheNeu . '" gemappt.<br />';
                         }
                     }
                 } else {
-                    $fehler .= 'Die Suchanfrage "' . $sucheanfrage->cSuche . '" kann nicht auf den gleichen Suchebegriff gemappt werden.';
+                    $fehler .= 'Die Suchanfrage "' . $sucheanfrage->cSuche .
+                        '" kann nicht auf den gleichen Suchebegriff gemappt werden.';
                 }
             }
         }
@@ -180,7 +183,7 @@ if (isset($_POST['livesuche']) && intval($_POST['livesuche']) === 1) { //Formula
                     $oSuchanfrage = Shop::DB()->select('tsuchanfrage', 'kSuchanfrage', (int)$kSuchanfrage);
 
                     if ($oSuchanfrage->kSuchanfrage > 0) {
-                        if (strtolower($oSuchanfrage->cSuche) != strtolower($cMapping)) {
+                        if (strtolower($oSuchanfrage->cSuche) !== strtolower($cMapping)) {
                             $oSuchanfrageNeu = Shop::DB()->select('tsuchanfrage', 'cSuche', Shop::DB()->escape($cMapping));
                             if (isset($oSuchanfrageNeu->kSuchanfrage) && $oSuchanfrageNeu->kSuchanfrage > 0) {
                                 $oSuchanfrageMapping                 = new stdClass();
@@ -250,10 +253,17 @@ if (isset($_POST['livesuche']) && intval($_POST['livesuche']) === 1) { //Formula
     if (isset($_POST['erfolglosEdit'])) { // Editieren
         $smarty->assign('nErfolglosEditieren', 1);
     } elseif (isset($_POST['erfolglosUpdate'])) { // Update
-        $Suchanfragenerfolglos = Shop::DB()->selectAll('tsuchanfrageerfolglos', 'kSprache', (int)$_SESSION['kSprache'], '*', 'nAnzahlGesuche DESC');
+        $Suchanfragenerfolglos = Shop::DB()->selectAll(
+            'tsuchanfrageerfolglos',
+            'kSprache',
+            (int)$_SESSION['kSprache'],
+            '*',
+            'nAnzahlGesuche DESC'
+        );
         if (count($Suchanfragenerfolglos) > 0) {
             foreach ($Suchanfragenerfolglos as $Suchanfrageerfolglos) {
-                if (isset($_POST['mapping_' . $Suchanfrageerfolglos->kSuchanfrageErfolglos]) && strlen($_POST['mapping_' . $Suchanfrageerfolglos->kSuchanfrageErfolglos]) > 0) {
+                if (isset($_POST['mapping_' . $Suchanfrageerfolglos->kSuchanfrageErfolglos]) &&
+                    strlen($_POST['mapping_' . $Suchanfrageerfolglos->kSuchanfrageErfolglos]) > 0) {
                     if (strtolower($Suchanfrageerfolglos->cSuche) != strtolower($_POST['mapping_' . $Suchanfrageerfolglos->kSuchanfrageErfolglos])) {
                         if (strlen($_POST['mapping_' . $Suchanfrageerfolglos->kSuchanfrageErfolglos]) > 0) {
                             $suchanfragemapping_obj                 = new stdClass();
@@ -267,11 +277,13 @@ if (isset($_POST['livesuche']) && intval($_POST['livesuche']) === 1) { //Formula
                                 Shop::DB()->insert('tsuchanfragemapping', $suchanfragemapping_obj);
                                 Shop::DB()->delete('tsuchanfrageerfolglos', 'kSuchanfrageErfolglos', (int)$oAlteSuche->kSuchanfrageErfolglos);
 
-                                $hinweis .= 'Die Suchanfrage "' . $suchanfragemapping_obj->cSuche . '" wurde erfolgreich auf "' . $suchanfragemapping_obj->cSucheNeu . '" gemappt.<br />';
+                                $hinweis .= 'Die Suchanfrage "' . $suchanfragemapping_obj->cSuche .
+                                    '" wurde erfolgreich auf "' . $suchanfragemapping_obj->cSucheNeu . '" gemappt.<br />';
                             }
                         }
                     } else {
-                        $fehler .= 'Die Suchanfrage "' . $Suchanfrageerfolglos->cSuche . '" kann nicht auf den gleichen Suchbegriff gemappt werden.';
+                        $fehler .= 'Die Suchanfrage "' . $Suchanfrageerfolglos->cSuche .
+                            '" kann nicht auf den gleichen Suchbegriff gemappt werden.';
                     }
                 } elseif (intval($_POST['nErfolglosEditieren']) === 1) {
                     $Suchanfrageerfolglos->cSuche = StringHandler::filterXSS($_POST['cSuche_' . $Suchanfrageerfolglos->kSuchanfrageErfolglos]);

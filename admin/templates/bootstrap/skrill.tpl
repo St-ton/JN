@@ -49,30 +49,30 @@
             <div class="panel-footer">
                 <form method="post" action="">
                     {$jtl_token}
-                    <button class="btn btn-danger" type="submit" name="actionDelete" value="{#mbDelete#}">{#mbDelete#}</button>
+                    <button class="btn btn-danger" type="submit" name="actionDelete" value="{#mbDelete#}"><i class="fa fa-trash"></i> {#mbDelete#}</button>
                 </form>
             </div>
         </div>
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">{#mbHeaderActivation#}</h3>
-            </div>
-            {if $showActivationButton}
-                <div class="panel-body">
-                    <p>{#mbActivationText#} {#mbActivationDescription#}</p>
-                </div>
-                <div class="panel-footer">
-                    <form method="post" action="">
-                        {$jtl_token}
-                        <input class="btn btn-primary" type="submit" name="actionActivate" value="{#mbActivate#}" />
-                    </form>
-                </div>
-            {else}
-                <div class="panel-body">
-                    <p>{#mbActivationRequestText#|sprintf:$activationRequest} {#mbActivationDescription#}</p>
-                </div>
-            {/if}
-        </div>
+        {*<div class="panel panel-default">*}
+            {*<div class="panel-heading">*}
+                {*<h3 class="panel-title">{#mbHeaderActivation#}</h3>*}
+            {*</div>*}
+            {*{if $showActivationButton}*}
+                {*<div class="panel-body">*}
+                    {*<p>{#mbActivationText#} {#mbActivationDescription#}</p>*}
+                {*</div>*}
+                {*<div class="panel-footer">*}
+                    {*<form method="post" action="">*}
+                        {*{$jtl_token}*}
+                        {*<input class="btn btn-primary" type="submit" name="actionActivate" value="{#mbActivate#}" />*}
+                    {*</form>*}
+                {*</div>*}
+            {*{else}*}
+                {*<div class="panel-body">*}
+                    {*<p>{#mbActivationRequestText#|sprintf:$activationRequest} {#mbActivationDescription#}</p>*}
+                {*</div>*}
+            {*{/if}*}
+        {*</div>*}
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h3 class="panel-title">{#mbSecretWord#}</h3>
@@ -99,7 +99,7 @@
                 <div class="panel-footer">
                     <form method="post" action="">
                         {$jtl_token}
-                        <button class="btn btn-danger" type="submit" name="actionDeleteSecretWord" value="{#mbDelete#}">{#mbDelete#}</button>
+                        <button class="btn btn-danger" type="submit" name="actionDeleteSecretWord" value="{#mbDelete#}"><i class="fa fa-trash"></i> {#mbDelete#}</button>
                     </form>
                 </div>
             {/if}

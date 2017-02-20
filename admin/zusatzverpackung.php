@@ -45,7 +45,8 @@ if (isset($_POST['eintragen']) && intval($_POST['eintragen']) === 1 && validateT
                 Shop::DB()->query(
                     "DELETE tverpackung, tverpackungsprache
                         FROM tverpackung
-                        LEFT JOIN tverpackungsprache ON tverpackungsprache.kVerpackung = tverpackung.kVerpackung
+                        LEFT JOIN tverpackungsprache 
+                            ON tverpackungsprache.kVerpackung = tverpackung.kVerpackung
                         WHERE tverpackung.kVerpackung = " . $kVerpackung, 3
                 );
 
@@ -71,15 +72,19 @@ if (isset($_POST['eintragen']) && intval($_POST['eintragen']) === 1 && validateT
             }
 
             unset($oVerpackung);
-            $cHinweis .= 'Die Verpackung "' . $_POST['cName_' . $oSprache_arr[0]->cISO] . '" wurde erfolgreich gespeichert.<br />';
+            $cHinweis .= 'Die Verpackung "' . $_POST['cName_' .
+                $oSprache_arr[0]->cISO] . '" wurde erfolgreich gespeichert.<br />';
         } else {
             $cFehler .= 'Fehler: Bitte w&auml;hlen Sie mindestens eine Kundengruppe aus.<br />';
         }
     } else {
         $cFehler .= 'Fehler: Bitte geben Sie der Verpackung einen Namen.<br />';
     }
-} elseif (isset($_POST['bearbeiten']) && intval($_POST['bearbeiten']) === 1 && validateToken()) { // Verpackungen bearbeiten (aktualisieren / loeschen)
-    if (isset($_POST['loeschen']) && ($_POST['loeschen'] === 'Löschen' || utf8_decode($_POST['loeschen'] === 'Löschen') || $_POST['loeschen'] === utf8_decode('Löschen'))) {
+} elseif (isset($_POST['bearbeiten']) && intval($_POST['bearbeiten']) === 1 && validateToken()) {
+    // Verpackungen bearbeiten (aktualisieren / loeschen)
+    if (isset($_POST['loeschen']) && ($_POST['loeschen'] === 'Löschen' ||
+            utf8_decode($_POST['loeschen'] === 'Löschen') ||
+            $_POST['loeschen'] === utf8_decode('Löschen'))) {
         if (is_array($_POST['kVerpackung']) && count($_POST['kVerpackung']) > 0) {
             foreach ($_POST['kVerpackung'] as $kVerpackung) {
                 $kVerpackung = intval($kVerpackung);
@@ -93,7 +98,9 @@ if (isset($_POST['eintragen']) && intval($_POST['eintragen']) === 1 && validateT
         } else {
             $cFehler .= 'Fehler: Bitte markieren Sie mindestens eine Verpackung.<br />';
         }
-    } elseif (isset($_POST['aktualisieren']) && $_POST['aktualisieren'] === 'Aktualisieren' && validateToken()) { // Aktualisieren
+    } elseif (isset($_POST['aktualisieren']) &&
+        $_POST['aktualisieren'] === 'Aktualisieren' && validateToken()) {
+        // Aktualisieren
         // Alle Verpackungen deaktivieren
         Shop::DB()->query("UPDATE tverpackung SET nAktiv = 0", 3);
         if (is_array($_POST['nAktiv']) && count($_POST['nAktiv']) > 0) {
@@ -111,7 +118,12 @@ if (isset($_POST['eintragen']) && intval($_POST['eintragen']) === 1 && validateT
 
     if ($oVerpackung->kVerpackung > 0) {
         $oVerpackung->oSprach_arr = array();
-        $oVerpackungSprach_arr    = Shop::DB()->selectAll('tverpackungsprache', 'kVerpackung', $kVerpackung, 'cISOSprache, cName, cBeschreibung');
+        $oVerpackungSprach_arr    = Shop::DB()->selectAll(
+            'tverpackungsprache',
+            'kVerpackung',
+            $kVerpackung,
+            'cISOSprache, cName, cBeschreibung'
+        );
         if (is_array($oVerpackungSprach_arr) && count($oVerpackungSprach_arr) > 0) {
             foreach ($oVerpackungSprach_arr as $oVerpackungSprach) {
                 $oVerpackung->oSprach_arr[$oVerpackungSprach->cISOSprache] = $oVerpackungSprach;

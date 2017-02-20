@@ -11,7 +11,6 @@ interface ICachingMethod
      * @param string   $cacheID - key to identify the value
      * @param mixed    $content - the content to save
      * @param int|null $expiration - expiration time in seconds
-     *
      * @return bool - success
      */
     public function store($cacheID, $content, $expiration);
@@ -29,10 +28,17 @@ interface ICachingMethod
      * get value from cache
      *
      * @param string $cacheID
-     *
      * @return mixed|bool - the loaded data or false if not found
      */
     public function load($cacheID);
+
+    /**
+     * check if key exists
+     *
+     * @param string $key
+     * @return bool
+     */
+    public function keyExists($key);
 
     /**
      * get multiple values at once from cache
@@ -43,9 +49,41 @@ interface ICachingMethod
     public function loadMulti($cacheIDs);
 
     /**
+     * add cache tags to cached value
+     *
+     * @param string|array $tags
+     * @param string       $cacheID
+     * @return bool
+     */
+    public function setCacheTag($tags, $cacheID);
+
+    /**
+     * get cache IDs by cache tag(s)
+     *
+     * @param array|string $tags
+     * @return array
+     */
+    public function getKeysByTag($tags);
+
+    /**
+     * removes cache IDs associated with given tags from cache
+     *
+     * @param array $tags
+     * @return int
+     */
+    public function flushTags($tags);
+
+    /**
+     * load journal
+     *
+     * @return array
+     */
+    public function getJournal();
+
+    /**
      * class singleton getter
      *
-     * @param $options
+     * @param array $options
      * @return mixed
      */
     public static function getInstance($options);
@@ -58,10 +96,16 @@ interface ICachingMethod
     public function isAvailable();
 
     /**
+     * check if method was successfully initialized
+     *
+     * @return bool
+     */
+    public function isInitialized();
+
+    /**
      * clear cache by cid or gid
      *
      * @param string $cacheID
-     *
      * @return bool - success
      */
     public function flush($cacheID);

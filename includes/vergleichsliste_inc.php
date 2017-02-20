@@ -10,9 +10,9 @@
  */
 function baueMerkmalundVariation($oVergleichsliste)
 {
-    $Tmp_arr          = array();
-    $oMerkmale_arr    = array();
-    $oVariationen_arr = array();
+    $Tmp_arr          = [];
+    $oMerkmale_arr    = [];
+    $oVariationen_arr = [];
     // Falls es min. einen Artikel in der Vergleichsliste gibt ...
     if (isset($oVergleichsliste->oArtikel_arr) && count($oVergleichsliste->oArtikel_arr) > 0) {
         // Alle Artikel in der Vergleichsliste durchgehen

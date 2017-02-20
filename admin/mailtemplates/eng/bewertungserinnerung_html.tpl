@@ -1,6 +1,6 @@
 {includeMailTemplate template=header type=html}
 
-Dear {if $Kunde->cAnrede=="w"}Mrs.{else}Mr.{/if} {$Kunde->cNachname},<br>
+Dear {$Kunde->cAnredeLocalized} {$Kunde->cNachname},<br>
 <br>
 We would love it if you could write a rating and share your experience with your recently products.<br>
 <br>

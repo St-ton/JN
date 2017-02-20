@@ -32,7 +32,7 @@
                             <tr class="tab_bg{$smarty.foreach.wunschliste.iteration%2}">
                                 <td class="TD1">
                                     {if $CWunschliste->nOeffentlich == 1}
-                                        <a href="../../index.php?wlid={$CWunschliste->cURLID}" rel="external">{$CWunschliste->cName}</a>
+                                        <a href="{$shopURL}/index.php?wlid={$CWunschliste->cURLID}" rel="external">{$CWunschliste->cName}</a>
                                     {else}
                                         <span>{$CWunschliste->cName}</span>
                                     {/if}
@@ -61,7 +61,7 @@
                         {foreach name=wunschlistepos from=$CWunschlistePos_arr item=CWunschlistePos}
                             <tr class="tab_bg{$smarty.foreach.wunschlistepos.iteration%2}">
                                 <td class="TD1">
-                                    <a href="../../index.php?a={$CWunschlistePos->kArtikel}&" rel="external">{$CWunschlistePos->cArtikelName}</a>
+                                    <a href="{$shopURL}/index.php?a={$CWunschlistePos->kArtikel}&" rel="external">{$CWunschlistePos->cArtikelName}</a>
                                 </td>
                                 <td class="tcenter">{$CWunschlistePos->Anzahl}</td>
                                 <td class="tcenter">{$CWunschlistePos->Datum}</td>
@@ -88,7 +88,7 @@
                         {foreach name=wunschlisteversand from=$CWunschlisteVersand_arr item=CWunschlisteVersand}
                             <tr class="tab_bg{$smarty.foreach.wunschlisteversand.iteration%2}">
                                 <td class="TD1">
-                                    <a href="../../index.php?wlid={$CWunschlisteVersand->cURLID}" rel="external">{$CWunschlisteVersand->cName}</a>
+                                    <a href="{$shopURL}/index.php?wlid={$CWunschlisteVersand->cURLID}" rel="external">{$CWunschlisteVersand->cName}</a>
                                 </td>
                                 <td class="TD2">{$CWunschlisteVersand->cVorname} {$CWunschlisteVersand->cNachname}</td>
                                 <td class="tcenter">{$CWunschlisteVersand->nAnzahlEmpfaenger}</td>

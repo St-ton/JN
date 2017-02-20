@@ -14,7 +14,7 @@ class DBManager
      */
     public static function getTables()
     {
-        $tables = array();
+        $tables = [];
         $rows   = Shop::DB()->query("SHOW FULL TABLES WHERE Table_type='BASE TABLE'", 2);
 
         foreach ($rows as $row) {
@@ -30,8 +30,8 @@ class DBManager
      */
     public static function getColumns($table)
     {
+        $list    = [];
         $table   = Shop::DB()->escape($table);
-        $list    = array();
         $columns = Shop::DB()->query("SHOW FULL COLUMNS FROM `{$table}`", 2);
 
         foreach ($columns as $column) {
@@ -48,9 +48,8 @@ class DBManager
      */
     public static function getIndexes($table)
     {
-        $table = Shop::DB()->escape($table);
-
-        $list    = array();
+        $list    = [];
+        $table   = Shop::DB()->escape($table);
         $indexes = Shop::DB()->query("SHOW INDEX FROM `{$table}`", 2);
 
         foreach ($indexes as $index) {
@@ -96,7 +95,7 @@ class DBManager
             return Shop::DB()->query("SHOW TABLE STATUS FROM `{$database}` WHERE name='{$table}'", 1);
         }
 
-        $list   = array();
+        $list   = [];
         $status = Shop::DB()->query("SHOW TABLE STATUS FROM `{$database}`", 2);
         foreach ($status as $s) {
             $list[$s->Name] = $s;

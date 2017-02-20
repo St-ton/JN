@@ -13,6 +13,7 @@ define('JOBQUEUE_LOCKFILE', PFAD_LOGFILES . 'jobqueue.lock');
 
 if (file_exists(JOBQUEUE_LOCKFILE)) {
     if ((time() - filemtime(JOBQUEUE_LOCKFILE)) < 600) {
+        Jtllog::cronLog('Cron currently locked', 2);
         exit;
     } else {
         touch(JOBQUEUE_LOCKFILE);
@@ -26,7 +27,8 @@ $oCron_arr = Shop::DB()->query(
     "SELECT tcron.*
         FROM tcron
         LEFT JOIN tjobqueue ON tjobqueue.kCron = tcron.kCron
-        WHERE (tcron.dLetzterStart = '0000-00-00 00:00:00' OR (UNIX_TIMESTAMP(now()) > (UNIX_TIMESTAMP(tcron.dLetzterStart) + (3600 * tcron.nAlleXStd))))
+        WHERE (tcron.dLetzterStart = '0000-00-00 00:00:00' 
+            OR (UNIX_TIMESTAMP(now()) > (UNIX_TIMESTAMP(tcron.dLetzterStart) + (3600 * tcron.nAlleXStd))))
             AND tcron.dStart < now()
             AND tjobqueue.kJobQueue IS NULL", 2
 );
@@ -79,12 +81,14 @@ if (is_array($oCron_arr) && count($oCron_arr) > 0) {
                 break;
 
         }
-        executeHook(HOOK_CRON_INC_SWITCH, array('nLimitM' => &$nLimitM));
+        executeHook(HOOK_CRON_INC_SWITCH, ['nLimitM' => &$nLimitM]);
 
         $oCron->dLetzterStart = date('Y-m-d H:i');
         $oCron->speicherInJobQueue($oCron->cJobArt, $oCron->dStart, $nLimitM);
         $oCron->updateCronDB();
     }
+} else {
+    Jtllog::cronLog('No cron jobs found', 2);
 }
 // JobQueue include
 require_once PFAD_ROOT . PFAD_INCLUDES . 'jobqueue_inc.php';

@@ -13,7 +13,7 @@ require_once PFAD_ROOT . PFAD_INCLUDES_EXT . 'class.JTL-Shop.UploadDatei.php';
  */
 function retCode($bOk)
 {
-    die($bOk ? json_encode(array('status' => 'ok')) : json_encode(array('status' => 'error')));
+    die($bOk ? json_encode(['status' => 'ok']) : json_encode(['status' => 'error']));
 }
 
 // session
@@ -29,26 +29,27 @@ if (!validateToken()) {
 }
 // upload file
 if (!empty($_FILES)) {
-    $cUnique     = (isset($_REQUEST['uniquename'])) ?
-        $_REQUEST['uniquename'] :
-        null;
+    $cUnique     = (isset($_REQUEST['uniquename']))
+        ? $_REQUEST['uniquename']
+        : null;
     $cTargetFile = PFAD_UPLOADS . $cUnique;
-    $fileData    = (isset($_FILES['Filedata']['tmp_name'])) ?
-        $_FILES['Filedata'] :
-        $_FILES['file_data'];
+    $fileData    = (isset($_FILES['Filedata']['tmp_name']))
+        ? $_FILES['Filedata']
+        : $_FILES['file_data'];
     $cTempFile   = $fileData['tmp_name'];
 
     if (isset($fileData['error']) && $fileData['error'] == 0) {
         if (move_uploaded_file($cTempFile, $cTargetFile)) {
             $oFile         = new stdClass();
-            $oFile->cName = !empty($_REQUEST['variation']) ? $_REQUEST['cname'] . '_' . $_REQUEST['variation'] . '_' . $fileData['name'] : $_REQUEST['cname'] . '_' . $fileData['name'];
+            $oFile->cName = !empty($_REQUEST['variation'])
+                ? $_REQUEST['cname'] . '_' . $_REQUEST['variation'] . '_' . $fileData['name']
+                : $_REQUEST['cname'] . '_' . $fileData['name'];
             $oFile->nBytes = $fileData['size'];
             $oFile->cKB    = round($fileData['size'] / 1024, 2);
 
             if (!isset($_SESSION['Uploader'])) {
-                $_SESSION['Uploader'] = array();
+                $_SESSION['Uploader'] = [];
             }
-
             $_SESSION['Uploader'][$cUnique] = $oFile;
             if (isset($_REQUEST['uploader'])) {
                 die(json_encode($oFile));

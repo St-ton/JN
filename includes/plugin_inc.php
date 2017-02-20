@@ -9,7 +9,7 @@ require_once PFAD_ROOT . PFAD_CLASSES . 'interface.JTL-Shop.PluginLizenz.php';
  * @param int   $nHook
  * @param array $args_arr
  */
-function executeHook($nHook, $args_arr = array())
+function executeHook($nHook, $args_arr = [])
 {
     global $smarty;
 
@@ -46,19 +46,24 @@ function executeHook($nHook, $args_arr = array())
             } elseif ($nHook == HOOK_CHECKBOX_CLASS_TRIGGERSPECIALFUNCTION) {
                 // Work Around, falls der Hook auf geht => CheckBox Trigger Special Function
                 if ($oPlugin->kPlugin == $args_arr['oCheckBox']->oCheckBoxFunktion->kPlugin) {
-                    include PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/' . PFAD_PLUGIN_VERSION . $oPlugin->nVersion . '/' . PFAD_PLUGIN_FRONTEND . $cDateiname;
+                    include PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/' .
+                        PFAD_PLUGIN_VERSION . $oPlugin->nVersion . '/' . PFAD_PLUGIN_FRONTEND . $cDateiname;
                 }
-            } elseif (is_file(PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/' . PFAD_PLUGIN_VERSION . $oPlugin->nVersion . '/' . PFAD_PLUGIN_FRONTEND . $cDateiname)) {
+            } elseif (is_file(PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/' .
+                PFAD_PLUGIN_VERSION . $oPlugin->nVersion . '/' . PFAD_PLUGIN_FRONTEND . $cDateiname)) {
                 $start = microtime(true);
-                include PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/' . PFAD_PLUGIN_VERSION . $oPlugin->nVersion . '/' . PFAD_PLUGIN_FRONTEND . $cDateiname;
+                include PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/' .
+                    PFAD_PLUGIN_VERSION . $oPlugin->nVersion . '/' . PFAD_PLUGIN_FRONTEND . $cDateiname;
                 if (PROFILE_PLUGINS === true) {
-                    $runData = array(
+                    $runData = [
                         'runtime'   => (microtime(true) - $start),
                         'timestamp' => microtime(true),
-                        'hookID'    => (int) $nHook,
+                        'hookID'    => (int)$nHook,
                         'runcount'  => 1,
-                        'file'      => $oPlugin->cVerzeichnis . '/' . PFAD_PLUGIN_VERSION . $oPlugin->nVersion . '/' . PFAD_PLUGIN_FRONTEND . $cDateiname
-                    );
+                        'file'      => $oPlugin->cVerzeichnis . '/' .
+                            PFAD_PLUGIN_VERSION . $oPlugin->nVersion . '/' .
+                            PFAD_PLUGIN_FRONTEND . $cDateiname
+                    ];
                     Profiler::setPluginProfile($runData);
                 }
             }
@@ -71,9 +76,13 @@ function executeHook($nHook, $args_arr = array())
  * @param array  $xParam_arr
  * @return bool
  */
-function pluginLizenzpruefung(&$oPlugin, $xParam_arr = array())
+function pluginLizenzpruefung(&$oPlugin, $xParam_arr = [])
 {
-    if (isset($oPlugin->cLizenzKlasse) && strlen($oPlugin->cLizenzKlasse) > 0 && isset($oPlugin->cLizenzKlasseName) && strlen($oPlugin->cLizenzKlasseName) > 0) {
+    if (isset($oPlugin->cLizenzKlasse) &&
+        strlen($oPlugin->cLizenzKlasse) > 0 &&
+        isset($oPlugin->cLizenzKlasseName) &&
+        strlen($oPlugin->cLizenzKlasseName) > 0
+    ) {
         require_once $oPlugin->cLicencePfad . $oPlugin->cLizenzKlasseName;
         $oPluginLicence = new $oPlugin->cLizenzKlasse();
         $cLicenceMethod = PLUGIN_LICENCE_METHODE;
@@ -83,7 +92,8 @@ function pluginLizenzpruefung(&$oPlugin, $xParam_arr = array())
             $oPlugin->cFehler = 'Lizenzschl&uuml;ssel ist ung&uuml;ltig';
             $oPlugin->updateInDB();
             Jtllog::writeLog(
-                utf8_decode('Plugin Lizenzprüfung: Das Plugin "' . $oPlugin->cName . '" hat keinen gültigen Lizenzschlüssel und wurde daher deaktiviert!'),
+                utf8_decode('Plugin Lizenzprüfung: Das Plugin "' . $oPlugin->cName .
+                    '" hat keinen gültigen Lizenzschlüssel und wurde daher deaktiviert!'),
                 JTLLOG_LEVEL_ERROR,
                 false,
                 'kPlugin',
@@ -123,21 +133,23 @@ function aenderPluginZahlungsartStatus(&$oPlugin, $nStatus)
  */
 function gibPluginEinstellungen($kPlugin)
 {
-    $oPluginEinstellungen_arr = array();
+    $oPluginEinstellungen_arr = [];
     if ($kPlugin > 0) {
         $oPluginEinstellungenTMP_arr = Shop::DB()->query(
             "SELECT tplugineinstellungen.*, tplugineinstellungenconf.cConf
                 FROM tplugin
-                JOIN tplugineinstellungen ON tplugineinstellungen.kPlugin = tplugin.kPlugin
-                LEFT JOIN tplugineinstellungenconf ON tplugineinstellungenconf.kPlugin = tplugin.kPlugin 
+                JOIN tplugineinstellungen 
+                    ON tplugineinstellungen.kPlugin = tplugin.kPlugin
+                LEFT JOIN tplugineinstellungenconf 
+                    ON tplugineinstellungenconf.kPlugin = tplugin.kPlugin 
                     AND tplugineinstellungen.cName = tplugineinstellungenconf.cWertName
                 WHERE tplugin.kPlugin = " . (int)$kPlugin, 2
         );
         if (is_array($oPluginEinstellungenTMP_arr) && count($oPluginEinstellungenTMP_arr) > 0) {
             foreach ($oPluginEinstellungenTMP_arr as $oPluginEinstellungenTMP) {
-                $oPluginEinstellungen_arr[$oPluginEinstellungenTMP->cName] = ($oPluginEinstellungenTMP->cConf === 'M') ?
-                    unserialize($oPluginEinstellungenTMP->cWert) :
-                    $oPluginEinstellungenTMP->cWert;
+                $oPluginEinstellungen_arr[$oPluginEinstellungenTMP->cName] = ($oPluginEinstellungenTMP->cConf === 'M')
+                    ? unserialize($oPluginEinstellungenTMP->cWert)
+                    : $oPluginEinstellungenTMP->cWert;
             }
         }
     }
@@ -152,7 +164,7 @@ function gibPluginEinstellungen($kPlugin)
  */
 function gibPluginSprachvariablen($kPlugin, $cISO = '')
 {
-    $return  = array();
+    $return  = [];
     $cSQL    = '';
     $kPlugin = (int)$kPlugin;
     if (strlen($cISO) > 0) {
@@ -165,7 +177,8 @@ function gibPluginSprachvariablen($kPlugin, $cISO = '')
             tpluginsprachvariable.cName,
             tpluginsprachvariable.cBeschreibung,
             tpluginsprachvariablesprache.cISO,
-            IF (tpluginsprachvariablecustomsprache.cName IS NOT NULL, tpluginsprachvariablecustomsprache.cName, tpluginsprachvariablesprache.cName) AS customValue
+            IF (tpluginsprachvariablecustomsprache.cName IS NOT NULL, 
+              tpluginsprachvariablecustomsprache.cName, tpluginsprachvariablesprache.cName) AS customValue
             FROM tpluginsprachvariable
                 LEFT JOIN tpluginsprachvariablesprache
                     ON  tpluginsprachvariable.kPluginSprachvariable = tpluginsprachvariablesprache.kPluginSprachvariable
@@ -222,7 +235,7 @@ function gibPlugincModulId($kPlugin, $cNameZahlungsmethode)
 {
     $kPlugin = (int)$kPlugin;
     if ($kPlugin > 0 && strlen($cNameZahlungsmethode) > 0) {
-        return 'kPlugin_' . $kPlugin . '_' . strtolower(str_replace(array(' ', '-', '_'), '', $cNameZahlungsmethode));
+        return 'kPlugin_' . $kPlugin . '_' . strtolower(str_replace([' ', '-', '_'], '', $cNameZahlungsmethode));
     }
 
     return '';
@@ -258,7 +271,7 @@ function gibkPluginAuscPluginID($cPluginID)
  */
 function gibPluginExtendedTemplates()
 {
-    $cTemplate_arr = array();
+    $cTemplate_arr = [];
     $oTemplate_arr = Shop::DB()->query("
         SELECT tplugintemplate.cTemplate, tplugin.cVerzeichnis, tplugin.nVersion
             FROM tplugintemplate

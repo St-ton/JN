@@ -123,7 +123,12 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
             $_upd->cName         = $this->getName();
             $_upd->cBeschreibung = $this->getBeschreibung();
 
-            return Shop::DB()->update('tkonfigitemsprache', array('kKonfigitem', 'kSprache'), array($this->getKonfigitem(), $this->getSprache()), $_upd);
+            return Shop::DB()->update(
+                'tkonfigitemsprache',
+                ['kKonfigitem', 'kSprache'],
+                [$this->getKonfigitem(), $this->getSprache()],
+                $_upd
+            );
         }
 
         /**
@@ -134,7 +139,11 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         public function delete()
         {
-            return Shop::DB()->delete('tkonfigitemsprache', ['kKonfigitem', 'kSprache'], [(int)$this->kKonfigitem, (int)$this->kSprache]);
+            return Shop::DB()->delete(
+                'tkonfigitemsprache',
+                ['kKonfigitem', 'kSprache'],
+                [(int)$this->kKonfigitem, (int)$this->kSprache]
+            );
         }
 
         /**

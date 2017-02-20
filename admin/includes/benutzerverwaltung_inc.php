@@ -295,8 +295,8 @@ function benutzerverwaltungActionAccountEdit(JTLSmarty $smarty, array &$messages
         $oTmpAcc->kAdminlogin = (isset($_POST['kAdminlogin']))
             ? (int)$_POST['kAdminlogin']
             : 0;
-        $oTmpAcc->cName       = htmlspecialchars(trim($_POST['cName']));
-        $oTmpAcc->cMail       = htmlspecialchars(trim($_POST['cMail']));
+        $oTmpAcc->cName       = htmlspecialchars(trim($_POST['cName']), ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
+        $oTmpAcc->cMail       = htmlspecialchars(trim($_POST['cMail']), ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
         $oTmpAcc->cLogin      = trim($_POST['cLogin']);
         $oTmpAcc->cPass       = trim($_POST['cPass']);
         $oTmpAcc->b2FAauth    = (int)$_POST['b2FAauth'];
@@ -534,8 +534,8 @@ function benutzerverwaltungActionGroupEdit(JTLSmarty $smarty, array &$messages)
         $oAdminGroup->kAdminlogingruppe = (isset($_POST['kAdminlogingruppe']))
             ? (int)$_POST['kAdminlogingruppe']
             : 0;
-        $oAdminGroup->cGruppe           = htmlspecialchars(trim($_POST['cGruppe']));
-        $oAdminGroup->cBeschreibung     = htmlspecialchars(trim($_POST['cBeschreibung']));
+        $oAdminGroup->cGruppe           = htmlspecialchars(trim($_POST['cGruppe']), ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
+        $oAdminGroup->cBeschreibung     = htmlspecialchars(trim($_POST['cBeschreibung']), ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
         $oAdminGroupPermission_arr      = $_POST['perm'];
 
         if (strlen($oAdminGroup->cGruppe) === 0) {

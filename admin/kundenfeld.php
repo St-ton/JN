@@ -52,7 +52,7 @@ if (isset($_POST['einstellungen']) && intval($_POST['einstellungen']) > 0) {
             $cHinweis .= 'Ihre Kundenfelder wurden erfolgreich aktualisiert.';
         }
     } else { // Speichern
-        $cName           = htmlspecialchars($_POST['cName']);
+        $cName           = htmlspecialchars($_POST['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
         $cWawi           = str_replace(['"',"'"], '',$_POST['cWawi']);
         $cTyp            = $_POST['cTyp'];
         $nSort           = intval($_POST['nSort']);

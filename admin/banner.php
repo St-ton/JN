@@ -16,7 +16,7 @@ if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && 
     $cPlausi_arr = array();
     $oBanner     = new ImageMap();
     $kImageMap   = (isset($_POST['kImageMap']) ? (int)$_POST['kImageMap'] : null);
-    $cName       = htmlspecialchars($_POST['cName']);
+    $cName       = htmlspecialchars($_POST['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
     if (strlen($cName) === 0) {
         $cPlausi_arr['cName'] = 1;
     }

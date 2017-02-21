@@ -178,7 +178,7 @@ if (isset($_POST['neuerZuschlag']) && intval($_POST['neuerZuschlag']) === 1 && v
 
     $Zuschlag->kVersandart = intval($_POST['kVersandart']);
     $Zuschlag->cISO        = $_POST['cISO'];
-    $Zuschlag->cName       = htmlspecialchars($_POST['cName']);
+    $Zuschlag->cName       = htmlspecialchars($_POST['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
     $Zuschlag->fZuschlag   = floatval(str_replace(',', '.', $_POST['fZuschlag']));
     if ($Zuschlag->cName && $Zuschlag->fZuschlag != 0) {
         $kVersandzuschlag = 0;
@@ -225,7 +225,7 @@ if (isset($_POST['neueVersandart']) && intval($_POST['neueVersandart']) > 0 && v
     if (!isset($Versandart)) {
         $Versandart = new stdClass();
     }
-    $Versandart->cName                    = htmlspecialchars($_POST['cName']);
+    $Versandart->cName                    = htmlspecialchars($_POST['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
     $Versandart->kVersandberechnung       = intval($_POST['kVersandberechnung']);
     $Versandart->cAnzeigen                = $_POST['cAnzeigen'];
     $Versandart->cBild                    = $_POST['cBild'];
@@ -395,15 +395,15 @@ if (isset($_POST['neueVersandart']) && intval($_POST['neueVersandart']) > 0 && v
                 $versandSprache->cISOSprache = $sprache->cISO;
                 $versandSprache->cName       = $Versandart->cName;
                 if ($_POST['cName_' . $sprache->cISO]) {
-                    $versandSprache->cName = htmlspecialchars($_POST['cName_' . $sprache->cISO]);
+                    $versandSprache->cName = htmlspecialchars($_POST['cName_' . $sprache->cISO], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
                 }
                 $versandSprache->cLieferdauer = '';
                 if ($_POST['cLieferdauer_' . $sprache->cISO]) {
-                    $versandSprache->cLieferdauer = htmlspecialchars($_POST['cLieferdauer_' . $sprache->cISO]);
+                    $versandSprache->cLieferdauer = htmlspecialchars($_POST['cLieferdauer_' . $sprache->cISO], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
                 }
                 $versandSprache->cHinweistext = '';
                 if ($_POST['cHinweistext_' . $sprache->cISO]) {
-                    $versandSprache->cHinweistext = htmlspecialchars($_POST['cHinweistext_' . $sprache->cISO]);
+                    $versandSprache->cHinweistext = htmlspecialchars($_POST['cHinweistext_' . $sprache->cISO], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
                 }
                 Shop::DB()->delete('tversandartsprache', ['kVersandart', 'cISOSprache'], [$kVersandart, $sprache->cISO]);
                 Shop::DB()->insert('tversandartsprache', $versandSprache);

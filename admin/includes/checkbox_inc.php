@@ -97,7 +97,7 @@ function speicherCheckBox($cPost_arr, $oSprache_arr)
         $oCheckBox->kLink = (int)$cPost_arr['kLink'];
     }
     $oCheckBox->kCheckBoxFunktion = (int)$cPost_arr['kCheckBoxFunktion'];
-    $oCheckBox->cName             = htmlspecialchars($cPost_arr['cName']);
+    $oCheckBox->cName             = htmlspecialchars($cPost_arr['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
     $oCheckBox->cKundengruppe     = gibKeyStringFuerKeyArray($cPost_arr['kKundengruppe'], ';');
     $oCheckBox->cAnzeigeOrt       = gibKeyStringFuerKeyArray($cPost_arr['cAnzeigeOrt'], ';');
     $oCheckBox->nAktiv            = 0;

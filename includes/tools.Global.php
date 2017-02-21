@@ -57,7 +57,7 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
             $ele                = new stdClass();
             $ele->name          = $Artikel->cKurzbezeichnung;
             $ele->url           = $Artikel->cURLFull;
-            if (!empty($Artikel->kVaterArtikel)){
+            if ($Artikel->isChild()){
                 $Vater = new Artikel();
                 $oArtikelOptionen        = new stdClass();
                 $oArtikelOptionen->nMain = 1;

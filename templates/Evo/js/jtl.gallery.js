@@ -130,7 +130,7 @@
                         .attr('width', item.xs.size.width)
                         .attr('height', item.xs.size.height)
                 );
-                thumb = thumb.append($('<meta>').attr('itemprop', 'image').attr('content', item.xs.src));
+                thumb = thumb.append($('<meta>').attr('itemprop', 'image').attr('content', item.lg.src));
                 $(template).find('.image-thumbs')
                     .append(thumb);
             }

@@ -178,11 +178,12 @@ if (!isset($AktuellerArtikel->Bewertungen) || $bewertung_sterne > 0) {
     $AktuellerArtikel->holehilfreichsteBewertung(Shop::getLanguage());
 }
 
-if(isset($AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich) &&
+if (isset($AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich) &&
     isset($AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->kBewertung) &&
-    (int)$AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich > 0)
-{
-    $oBewertung_arr = array_filter($AktuellerArtikel->Bewertungen->oBewertung_arr,
+    (int)$AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich > 0
+) {
+    $oBewertung_arr = array_filter(
+        $AktuellerArtikel->Bewertungen->oBewertung_arr,
         function ($oBewertung) use (&$AktuellerArtikel) {
             return
                 (int)$AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->kBewertung !== (int)$oBewertung->kBewertung;
@@ -206,8 +207,8 @@ $pagination = (new Pagination('ratings'))
 $AktuellerArtikel->Bewertungen->Sortierung = $nSortierung;
 
 $nAnzahlBewertungen = ($bewertung_sterne == 0)
-    ? $AktuellerArtikel->Bewertungen->nAnzahlSprache :
-    $AktuellerArtikel->Bewertungen->nSterne_arr[5 - $bewertung_sterne];
+    ? $AktuellerArtikel->Bewertungen->nAnzahlSprache
+    : $AktuellerArtikel->Bewertungen->nSterne_arr[5 - $bewertung_sterne];
 // Baue Blaetter Navigation
 $oBlaetterNavi = baueBewertungNavi(
     $bewertung_seite,

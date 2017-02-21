@@ -801,7 +801,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
                         AND kKunde = " . (int)$_SESSION['Kunde']->kKunde, 1
             );
 
-            if (empty($oBestellung->countBestellung)) {
+            if (isset($oBestellung->countBestellung) && $oBestellung->countBestellung == 0) {
                 // Keine Bestellungen die noch nicht verschickt oder storniert wurden mehr vorhanden - die Kundendaten werden gelöscht
                 $cText = utf8_decode('Der Kunde ' . $_SESSION['Kunde']->cVorname . ' ' .
                     $_SESSION['Kunde']->cNachname . ' (' . $_SESSION['Kunde']->kKunde . ') hat am ' . date('d.m.Y') .

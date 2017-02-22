@@ -568,6 +568,8 @@ class Bestellung
                             }
                         }
                     }
+
+                    WarenkorbPos::setEstimatedDelivery($this->Positionen[$i], $this->Positionen[$i]->nLongestMinDelivery, $this->Positionen[$i]->nLongestMaxDelivery);
                 }
                 if (!isset($this->Positionen[$i]->kSteuerklasse)) {
                     $taxClass = Shop::DB()->select('tsteuersatz', 'fSteuersatz', $this->Positionen[$i]->fMwSt);

@@ -57,6 +57,15 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
             $ele                = new stdClass();
             $ele->name          = $Artikel->cKurzbezeichnung;
             $ele->url           = $Artikel->cURLFull;
+            if ($Artikel->isChild()){
+                $Vater = new Artikel();
+                $oArtikelOptionen        = new stdClass();
+                $oArtikelOptionen->nMain = 1;
+                $Vater->fuelleArtikel($Artikel->kVaterArtikel, $oArtikelOptionen);
+                $ele->name          = $Vater->cKurzbezeichnung;
+                $ele->url           = $Vater->cURLFull;
+                $ele->hasChild      = true;
+            }
             $brotnavi[]         = $ele;
             $SieSindHierString .= '<br />';
             break;

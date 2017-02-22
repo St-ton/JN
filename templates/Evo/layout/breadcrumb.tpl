@@ -13,7 +13,11 @@
                         {elseif $smarty.foreach.navi.last}
                             <li class="breadcrumb-item last">
                                 {if $oItem->name !== null}
-                                    {$oItem->name}
+                                    {if $oItem->hasChild === true}
+                                        <a href="{$oItem->url}" title="{$oItem->name|escape:"html"}">{$oItem->name}</a>
+                                    {else}
+                                        {$oItem->name}
+                                    {/if}
                                 {elseif isset($Suchergebnisse->SuchausdruckWrite)}
                                     {$Suchergebnisse->SuchausdruckWrite}
                                 {/if}

@@ -304,10 +304,10 @@ function generateSitemapXML()
         $andWhere .= ' AND tartikel.kVaterArtikel = 0';
     }
     // Artikelanzeigefilter
-    if ($conf['global']['artikel_artikelanzeigefilter'] === '2') {
+    if ((int)$conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER) {
         // 'Nur Artikel mit Lagerbestand>0 anzeigen'
         $andWhere .= " AND (tartikel.cLagerBeachten = 'N' OR tartikel.fLagerbestand > 0)";
-    } elseif ($conf['global']['artikel_artikelanzeigefilter'] === '3') {
+    } elseif ((int)$conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL) {
         // 'Nur Artikel mit Lagerbestand>0 oder deren Lagerbestand<0 werden darf'
         $andWhere .= " AND (tartikel.cLagerBeachten = 'N' OR tartikel.cLagerKleinerNull = 'Y' OR
             tartikel.fLagerbestand > 0)";

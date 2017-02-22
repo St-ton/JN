@@ -348,6 +348,22 @@ class Status
     }
 
     /**
+     * @return bool
+     */
+    protected function usesDeprecatedPriceImages()
+    {
+        $grafikPreise = Shop::DB()->selectAll('teinstellungen', 'kEinstellungenSektion', 118);
+
+        foreach ($grafikPreise as $preis) {
+            if ($preis->cWert === 'Y') {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * @param bool $has
      * @return array|bool
      */

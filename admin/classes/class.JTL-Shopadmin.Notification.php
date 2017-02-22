@@ -138,5 +138,11 @@ class Notification implements IteratorAggregate, Countable
                 || !Shop::DB()->query("SHOW INDEX FROM tartikelsprache WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'", 1))) {
             $this->add(NotificationEntry::TYPE_WARNING, 'Der Volltextindex ist nicht vorhanden!', 'sucheinstellungen.php');
         }
+
+        if ($status->usesDeprecatedPriceImages()) {
+            $this->add(NotificationEntry::TYPE_WARNING, 'Konfiguration',
+                'Sie nutzen Grafikpreise. Diese Funktion ist als "deprecated" markiert.<br/>Bitte beachten Sie die Hinweise unter "Storefront->Artikel->Preisanzeige".',
+                'preisanzeige.php');
+        }
     }
 }

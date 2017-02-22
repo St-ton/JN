@@ -323,6 +323,7 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
         $oNewsUebersicht_arr = getNewsOverview($oSQL, $oPagination->getLimitSQL());
         $oDatum_arr          = getNewsDateArray($oSQL);
         $cKeywords           = '';
+        $shopURL             = Shop::getURL() . '/';
         if (is_array($oNewsUebersicht_arr) && count($oNewsUebersicht_arr) > 0) {
             foreach ($oNewsUebersicht_arr as $i => $oNewsUebersicht) {
                 if ($i > 0) {

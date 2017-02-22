@@ -114,7 +114,7 @@ class MerkmalWert
         $this->nBildKleinVorhanden  = 0;
         $this->cBildpfadNormal      = BILD_KEIN_MERKMALWERTBILD_VORHANDEN;
         $this->nBildNormalVorhanden = 0;
-        if (isset($this->cBildpfad) && strlen($this->cBildpfad) > 0) {
+        if ($this->cBildpfad !== null && strlen($this->cBildpfad) > 0) {
             if (file_exists(PFAD_MERKMALWERTBILDER_KLEIN . $this->cBildpfad)) {
                 $this->cBildpfadKlein      = PFAD_MERKMALWERTBILDER_KLEIN . $this->cBildpfad;
                 $this->nBildKleinVorhanden = 1;
@@ -160,7 +160,7 @@ class MerkmalWert
                     ORDER BY tmerkmalwert.nSort", 2
             );
 
-            if (isset($oMerkmalWert_arr) && is_array($oMerkmalWert_arr) && count($oMerkmalWert_arr) > 0) {
+            if (is_array($oMerkmalWert_arr) && count($oMerkmalWert_arr) > 0) {
                 foreach ($oMerkmalWert_arr as $i => $oMerkmalWert) {
                     $oMerkmalWert_arr[$i]->cURL = baueURL($oMerkmalWert, URLART_MERKMAL);
 

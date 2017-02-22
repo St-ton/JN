@@ -235,13 +235,11 @@ class ArtikelListe
             Shop::Cache()->set($cacheID, $objArr, $cacheTags);
         }
         if (is_array($objArr)) {
-            $res            = [];
             $defaultOptions = Artikel::getDefaultOptions();
             foreach ($objArr as $obj) {
                 $artikel = new Artikel();
                 $artikel->fuelleArtikel($obj->kArtikel, $defaultOptions);
                 $this->elemente[] = $artikel;
-                $res[]            = $artikel;
             }
         }
 
@@ -278,18 +276,16 @@ class ArtikelListe
             $kKundengruppe = $_SESSION['Kundengruppe']->kKundengruppe;
             //top artikel nicht nochmal in den bestsellen vorkommen lassen
             $sql_artikelExclude = '';
-            if ($topArtikelliste) {
-                if (isset($topArtikelliste->elemente) && is_array($topArtikelliste->elemente)) {
-                    foreach ($topArtikelliste->elemente as $ele) {
-                        if ($ele->kArtikel > 0) {
-                            $sql_artikelExclude .= ' AND tartikel.kArtikel != ' . (int)$ele->kArtikel;
-                        }
+            if (isset($topArtikelliste->elemente) && is_array($topArtikelliste->elemente)) {
+                foreach ($topArtikelliste->elemente as $ele) {
+                    if ($ele->kArtikel > 0) {
+                        $sql_artikelExclude .= ' AND tartikel.kArtikel != ' . (int)$ele->kArtikel;
                     }
                 }
             }
-            $cLimitSql = (isset($Einstellungen['artikeluebersicht']['artikelubersicht_topbest_anzahl'])) ?
-                ('LIMIT ' . (int)$Einstellungen['artikeluebersicht']['artikelubersicht_topbest_anzahl']) :
-                'LIMIT 6';
+            $cLimitSql = (isset($Einstellungen['artikeluebersicht']['artikelubersicht_topbest_anzahl']))
+                ? ('LIMIT ' . (int)$Einstellungen['artikeluebersicht']['artikelubersicht_topbest_anzahl'])
+                : 'LIMIT 6';
             //top-Artikel
             $lagerfilter = gibLagerfilter();
             $objArr      = Shop::DB()->query(
@@ -315,14 +311,12 @@ class ArtikelListe
             }
             Shop::Cache()->set($cacheID, $objArr, $cacheTags);
         }
-        $res = [];
         if (is_array($objArr)) {
             $defaultOptions = Artikel::getDefaultOptions();
             foreach ($objArr as $obj) {
                 $artikel = new Artikel();
                 $artikel->fuelleArtikel($obj->kArtikel, $defaultOptions);
                 $this->elemente[] = $artikel;
-                $res[]            = $artikel;
             }
         }
 

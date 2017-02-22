@@ -5,7 +5,7 @@
  */
 use Imanee\Imanee;
 
-require_once 'core/class.core.Shop.php';
+require_once __DIR__ . '/core/class.core.Shop.php';
 
 /**
  * Class Image
@@ -381,7 +381,7 @@ class Image
             $imanee = $container;
         }
 
-        if ($req->getSize()->getType() == self::SIZE_LG && isset($settings['branding']) && $settings['branding'] !== null) {
+        if (isset($settings['branding']) && $req->getSize()->getType() === self::SIZE_LG) {
             $branding   = $settings['branding'];
             $brandImage = new Imanee($branding->path);
             $brandSize  = $brandImage->getSize();
@@ -406,14 +406,12 @@ class Image
         $thumbnail = $req->getThumb(null, true);
         $directory  = pathinfo($thumbnail, PATHINFO_DIRNAME);
 
-        if (!is_dir($directory)) {
-            if (!mkdir($directory, 0777, true)) {
-                $error = error_get_last();
-                if (empty($error)) {
-                    $error = "Unable to create directory {$directory}";
-                }
-                throw new Exception(is_array($error) ? $error['message'] : $error);
+        if (!is_dir($directory) && !mkdir($directory, 0777, true)) {
+            $error = error_get_last();
+            if (empty($error)) {
+                $error = "Unable to create directory {$directory}";
             }
+            throw new Exception(is_array($error) ? $error['message'] : $error);
         }
 
         $imanee->setFormat($settings['format']);

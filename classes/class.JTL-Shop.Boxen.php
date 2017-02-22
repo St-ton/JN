@@ -148,10 +148,11 @@ class Boxen
         $cPluginAktiv     = $bAktiv
             ? " AND (tplugin.nStatus IS NULL OR tplugin.nStatus = 2  OR tboxvorlage.eTyp != 'plugin')"
             : "";
-        $oBoxen_arr       = Shop::DB()->query(
-            "SELECT tboxen.kBox, tboxen.kBoxvorlage, tboxen.kCustomID, tboxen.kContainer, tboxen.cTitel, tboxen.ePosition,
-                    tboxensichtbar.kSeite, tboxensichtbar.nSort, tboxensichtbar.bAktiv, tboxensichtbar.cFilter,
-                    tboxvorlage.eTyp, tboxvorlage.cName, tboxvorlage.cTemplate, tplugin.nStatus AS pluginStatus
+        $oBoxen_arr       = Shop::DB()->query("
+            SELECT tboxen.kBox, tboxen.kBoxvorlage, tboxen.kCustomID, tboxen.kContainer, 
+                   tboxen.cTitel, tboxen.ePosition, tboxensichtbar.kSeite, tboxensichtbar.nSort, 
+                   tboxensichtbar.bAktiv, tboxensichtbar.cFilter, tboxvorlage.eTyp, 
+                   tboxvorlage.cName, tboxvorlage.cTemplate, tplugin.nStatus AS pluginStatus
                 FROM tboxen
                 LEFT JOIN tboxensichtbar
                     ON tboxen.kBox = tboxensichtbar.kBox
@@ -169,7 +170,9 @@ class Boxen
                 if ($oBox->eTyp === 'plugin') {
                     $cacheTags[] = CACHING_GROUP_PLUGIN . '_' . $oBox->kCustomID;
                 }
-                if ($force === true || isset($this->visibility[$oBox->ePosition]) && $this->visibility[$oBox->ePosition] === true) {
+                if ($force === true ||
+                    (isset($this->visibility[$oBox->ePosition]) && $this->visibility[$oBox->ePosition] === true)
+                ) {
                     $kContainer           = (int)$oBox->kBox;
                     $oBox->oContainer_arr = [];
                     $oBox->nContainer     = 0;
@@ -247,14 +250,42 @@ class Boxen
                                         $filterEntry       = [];
                                         $filterEntry['id'] = $_filterValue;
                                         $name              = null;
-                                        if ($nSeite == PAGE_ARTIKELLISTE) { //map category name
-                                            $name = Shop::DB()->select('tkategorie', 'kKategorie', (int)$_filterValue, null, null, null, null, false, 'cName');
-                                        } elseif ($nSeite == PAGE_ARTIKEL) { //map article name
-                                            $name = Shop::DB()->select('tartikel', 'kArtikel', (int)$_filterValue, null, null, null, null, false, 'cName');
-                                        } elseif ($nSeite == PAGE_HERSTELLER) { //map manufacturer name
-                                            $name = Shop::DB()->select('thersteller', 'kHersteller', (int)$_filterValue, null, null, null, null, false, 'cName');
-                                        } elseif ($nSeite == PAGE_EIGENE) { //map page name
-                                            $name = Shop::DB()->select('tlink', 'kLink', (int)$_filterValue, null, null, null, null, false, 'cName');
+                                        if ($nSeite === PAGE_ARTIKELLISTE) { //map category name
+                                            $name = Shop::DB()->select(
+                                                'tkategorie',
+                                                'kKategorie', (int)$_filterValue,
+                                                null, null,
+                                                null, null,
+                                                false,
+                                                'cName'
+                                            );
+                                        } elseif ($nSeite === PAGE_ARTIKEL) { //map article name
+                                            $name = Shop::DB()->select(
+                                                'tartikel',
+                                                'kArtikel', (int)$_filterValue,
+                                                null, null,
+                                                null, null,
+                                                false,
+                                                'cName'
+                                            );
+                                        } elseif ($nSeite === PAGE_HERSTELLER) { //map manufacturer name
+                                            $name = Shop::DB()->select(
+                                                'thersteller',
+                                                'kHersteller', (int)$_filterValue,
+                                                null, null,
+                                                null, null,
+                                                false,
+                                                'cName'
+                                            );
+                                        } elseif ($nSeite === PAGE_EIGENE) { //map page name
+                                            $name = Shop::DB()->select(
+                                                'tlink',
+                                                'kLink', (int)$_filterValue,
+                                                null, null,
+                                                null, null,
+                                                false,
+                                                'cName'
+                                            );
                                         }
                                         $filterEntry['name'] = (!empty($name->cName)) ? $name->cName : '???';
                                         $filterOptions[]     = $filterEntry;
@@ -323,7 +354,9 @@ class Boxen
     {
         $kKundengruppe     = (int)$_SESSION['Kundengruppe']->kKundengruppe;
         $kBoxVorlage       = (int)$kBoxVorlage;
-        $currencyCachePart = (isset($_SESSION['Waehrung']->kWaehrung)) ? '_cur_' . $_SESSION['Waehrung']->kWaehrung : '';
+        $currencyCachePart = (isset($_SESSION['Waehrung']->kWaehrung))
+            ? '_cur_' . $_SESSION['Waehrung']->kWaehrung
+            : '';
         $kSprache          = Shop::getLanguage();
         switch ($kBoxVorlage) {
             case BOX_BESTSELLER :
@@ -351,7 +384,8 @@ class Boxen
                     $menge = Shop::DB()->query(
                         "SELECT tartikel.kArtikel
                             FROM tbestseller, tartikel
-                            LEFT JOIN tartikelsichtbarkeit ON tartikel.kArtikel=tartikelsichtbarkeit.kArtikel
+                            LEFT JOIN tartikelsichtbarkeit 
+                                ON tartikel.kArtikel=tartikelsichtbarkeit.kArtikel
                                 AND tartikelsichtbarkeit.kKundengruppe = $kKundengruppe
                             WHERE tartikelsichtbarkeit.kArtikel IS NULL
                                 AND tbestseller.kArtikel = tartikel.kArtikel
@@ -393,12 +427,13 @@ class Boxen
                 $oBox->compatName = 'TrustedShopsSiegelbox';
                 if ($this->boxConfig['trustedshops']['trustedshops_siegelbox_anzeigen'] === 'Y') {
                     $oTrustedShops    = new TrustedShops(-1, StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
-                    if (strlen($oTrustedShops->tsId) > 0 && $oTrustedShops->nAktiv == 1) {
+                    $shopURL          = Shop::getURL(true) . '/';
+                    if ($oTrustedShops->nAktiv == 1 && strlen($oTrustedShops->tsId) > 0) {
                         $oBox->anzeigen          = 'Y';
                         $oBox->cLogoURL          = $oTrustedShops->cLogoURL;
                         $oBox->cLogoSiegelBoxURL = $oTrustedShops->cLogoSiegelBoxURL[StringHandler::convertISO2ISO639($_SESSION['cISOSprache'])];
-                        $oBox->cBild             = Shop::getURL(true) . '/' . PFAD_GFX_TRUSTEDSHOPS . 'trustedshops_m.png';
-                        $oBox->cBGBild           = Shop::getURL(true) . '/' . PFAD_GFX_TRUSTEDSHOPS . 'bg_yellow.jpg';
+                        $oBox->cBild             = $shopURL . PFAD_GFX_TRUSTEDSHOPS . 'trustedshops_m.png';
+                        $oBox->cBGBild           = $shopURL . PFAD_GFX_TRUSTEDSHOPS . 'bg_yellow.jpg';
                     }
                 }
                 break;
@@ -410,7 +445,10 @@ class Boxen
                     in_array(StringHandler::convertISO2ISO639($_SESSION['cISOSprache']), $cValidSprachISO_arr)) {
                     $oTrustedShops                = new TrustedShops(-1, StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
                     $oTrustedShopsKundenbewertung = $oTrustedShops->holeKundenbewertungsstatus(StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
-                    if (isset($oTrustedShopsKundenbewertung->cTSID) && strlen($oTrustedShopsKundenbewertung->cTSID) > 0 && $oTrustedShopsKundenbewertung->nStatus == 1) {
+                    if (isset($oTrustedShopsKundenbewertung->cTSID) &&
+                        $oTrustedShopsKundenbewertung->nStatus == 1 &&
+                        strlen($oTrustedShopsKundenbewertung->cTSID) > 0
+                    ) {
                         $cURLSprachISO_arr = [
                             'de' => 'https://www.trustedshops.com/bewertung/info_' . $oTrustedShopsKundenbewertung->cTSID . '.html',
                             'en' => 'https://www.trustedshops.com/buyerrating/info_' . $oTrustedShopsKundenbewertung->cTSID . '.html',
@@ -420,7 +458,7 @@ class Boxen
                         ];
                         $oBox->anzeigen = 'Y';
                         if (!$this->cachecheck($filename = $oTrustedShopsKundenbewertung->cTSID . '.gif', 10800)) {
-                            if (!$oTrustedShops->ladeKundenbewertungsWidgetNeu($filename)) {
+                            if (!$oTrustedShops::ladeKundenbewertungsWidgetNeu($filename)) {
                                 $oBox->anzeigen = 'N';
                             }
                             // Prüft alle X Stunden ob ein Zertifikat noch gültig ist
@@ -436,26 +474,35 @@ class Boxen
                 $oBox->compatName = 'Umfrage';
                 $oBox->anzeigen   = 'N';
                 $cSQL             = '';
-                if (isset($this->boxConfig['umfrage']['news_anzahl_box']) && (int)$this->boxConfig['umfrage']['news_anzahl_box'] > 0) {
+                if (isset($this->boxConfig['umfrage']['news_anzahl_box']) &&
+                    (int)$this->boxConfig['umfrage']['news_anzahl_box'] > 0
+                ) {
                     $cSQL = ' LIMIT ' . (int)$this->boxConfig['umfrage']['umfrage_box_anzahl'];
                 }
                 $cacheID = 'bu_' . $kSprache . '_' . $_SESSION['Kundengruppe']->kKundengruppe . md5($cSQL);
                 if (($oUmfrage_arr = Shop::Cache()->get($cacheID)) === false) {
                     // Umfrage Übersicht
                     $oUmfrage_arr = Shop::DB()->query(
-                        "SELECT tumfrage.kUmfrage, tumfrage.kSprache, tumfrage.kKupon, tumfrage.cKundengruppe, tumfrage.cName, tumfrage.cBeschreibung,
-                            tumfrage.fGuthaben, tumfrage.nBonuspunkte, tumfrage.nAktiv, tumfrage.dGueltigVon, tumfrage.dGueltigBis, tumfrage.dErstellt, tseo.cSeo,
+                        "SELECT tumfrage.kUmfrage, tumfrage.kSprache, tumfrage.kKupon, tumfrage.cKundengruppe, 
+                            tumfrage.cName, tumfrage.cBeschreibung, tumfrage.fGuthaben, tumfrage.nBonuspunkte, 
+                            tumfrage.nAktiv, tumfrage.dGueltigVon, tumfrage.dGueltigBis, tumfrage.dErstellt, tseo.cSeo,
                             DATE_FORMAT(tumfrage.dGueltigVon, '%d.%m.%Y  %H:%i') AS dGueltigVon_de,
-                            DATE_FORMAT(tumfrage.dGueltigBis, '%d.%m.%Y  %H:%i') AS dGueltigBis_de, count(tumfragefrage.kUmfrageFrage) AS nAnzahlFragen
+                            DATE_FORMAT(tumfrage.dGueltigBis, '%d.%m.%Y  %H:%i') AS dGueltigBis_de, 
+                            count(tumfragefrage.kUmfrageFrage) AS nAnzahlFragen
                             FROM tumfrage
-                            JOIN tumfragefrage ON tumfragefrage.kUmfrage = tumfrage.kUmfrage
-                            LEFT JOIN tseo ON tseo.cKey = 'kUmfrage'
+                            JOIN tumfragefrage 
+                                ON tumfragefrage.kUmfrage = tumfrage.kUmfrage
+                            LEFT JOIN tseo 
+                                ON tseo.cKey = 'kUmfrage'
                                 AND tseo.kKey = tumfrage.kUmfrage
                                 AND tseo.kSprache = " . $kSprache . "
                             WHERE tumfrage.nAktiv = 1
                                 AND tumfrage.kSprache = " . $kSprache . "
-                                AND (cKundengruppe LIKE '%;-1;%' OR cKundengruppe LIKE '%;" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";%')
-                                AND ((dGueltigVon <= now() AND dGueltigBis >= now()) || (dGueltigVon <= now() AND dGueltigBis = '0000-00-00 00:00:00'))
+                                AND (cKundengruppe LIKE '%;-1;%' 
+                                    OR cKundengruppe LIKE '%;" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";%')
+                                AND ((dGueltigVon <= now() 
+                                    AND dGueltigBis >= now()) || (dGueltigVon <= now() 
+                                    AND dGueltigBis = '0000-00-00 00:00:00'))
                             GROUP BY tumfrage.kUmfrage
                             ORDER BY tumfrage.dGueltigVon DESC" . $cSQL, 2
                     );
@@ -690,7 +737,9 @@ class Boxen
                         if ($nPosWD) {
                             $cRequestURI = substr($cRequestURI, 0, $nPosWD);
                         }
-                        if ($nPosAnd == strlen($cRequestURI) - 1) {
+                        // z.b. index.php
+                        $cDeleteParam = '?vlplo=';
+                        if ($nPosAnd === strlen($cRequestURI) - 1) {
                             // z.b. index.php?a=4&
                             $cDeleteParam = 'vlplo=';
                         } elseif ($nPosAnd) {
@@ -699,12 +748,9 @@ class Boxen
                         } elseif ($nPosQuest) {
                             // z.b. index.php?a=4
                             $cDeleteParam = '&vlplo=';
-                        } elseif ($nPosQuest == strlen($cRequestURI) - 1) {
+                        } elseif ($nPosQuest === strlen($cRequestURI) - 1) {
                             // z.b. index.php?
                             $cDeleteParam = 'vlplo=';
-                        } else {
-                            // z.b. index.php
-                            $cDeleteParam = '?vlplo=';
                         }
                         if (TEMPLATE_COMPATIBILITY === false) {
                             $artikel = new Artikel();
@@ -748,10 +794,13 @@ class Boxen
                     }
                     $cZusatzParams = StringHandler::filterXSS($cZusatzParams);
                     foreach ($CWunschlistePos_arr as $CWunschlistePos) {
-                        $cRequestURI = (isset($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : $_SERVER['SCRIPT_NAME'];
-                        $nPosAnd     = strrpos($cRequestURI, '&');
-                        $nPosQuest   = strrpos($cRequestURI, '?');
-                        $nPosWD      = strpos($cRequestURI, 'wlplo=');
+                        $cRequestURI  = (isset($_SERVER['REQUEST_URI']))
+                            ? $_SERVER['REQUEST_URI']
+                            : $_SERVER['SCRIPT_NAME'];
+                        $nPosAnd      = strrpos($cRequestURI, '&');
+                        $nPosQuest    = strrpos($cRequestURI, '?');
+                        $nPosWD       = strpos($cRequestURI, 'wlplo=');
+                        $cDeleteParam = '?wlplo='; // z.b. index.php
                         if ($nPosWD) {
                             $cRequestURI = substr($cRequestURI, 0, $nPosWD);
                         }
@@ -767,12 +816,12 @@ class Boxen
                         } elseif ($nPosQuest == strlen($cRequestURI) - 1) {
                             // z.b. index.php?
                             $cDeleteParam = 'wlplo=';
-                        } else {
-                            // z.b. index.php
-                            $cDeleteParam = '?wlplo=';
                         }
-                        $CWunschlistePos->cURL = $cRequestURI . $cDeleteParam . $CWunschlistePos->kWunschlistePos . $cZusatzParams;
-                        if (intval($_SESSION['Kundengruppe']->nNettoPreise) > 0) {
+                        $CWunschlistePos->cURL = $cRequestURI .
+                            $cDeleteParam .
+                            $CWunschlistePos->kWunschlistePos .
+                            $cZusatzParams;
+                        if ((int)$_SESSION['Kundengruppe']->nNettoPreise > 0) {
                             $fPreis = (isset($CWunschlistePos->Artikel->Preise->fVKNetto))
                                 ? (int)$CWunschlistePos->fAnzahl * $CWunschlistePos->Artikel->Preise->fVKNetto
                                 : 0;
@@ -801,7 +850,8 @@ class Boxen
                 if (($oBoxCached = Shop::Cache()->get($cacheID)) === false) {
                     $Tagwolke_arr  = [];
                     $tagwolke_objs = Shop::DB()->query(
-                        "SELECT ttag.kTag,ttag.cName, tseo.cSeo,sum(ttagartikel.nAnzahlTagging) AS Anzahl FROM ttag
+                        "SELECT ttag.kTag,ttag.cName, tseo.cSeo,sum(ttagartikel.nAnzahlTagging) AS Anzahl 
+                            FROM ttag
                             JOIN ttagartikel 
                                 ON ttagartikel.kTag = ttag.kTag
                             LEFT JOIN tseo 
@@ -847,10 +897,12 @@ class Boxen
                 $cacheID          = 'box_search_tags_' . $currencyCachePart . $kSprache . '_' . $nWolkenLimit;
                 if (($oBoxCached = Shop::Cache()->get($cacheID)) === false) {
                     $oSuchwolke_arr = Shop::DB()->query(
-                        "SELECT tsuchanfrage.kSuchanfrage, tsuchanfrage.kSprache, tsuchanfrage.cSuche, tsuchanfrage.nAktiv, 
-                            tsuchanfrage.nAnzahlTreffer, tsuchanfrage.nAnzahlGesuche, tsuchanfrage.dZuletztGesucht, tseo.cSeo
+                        "SELECT tsuchanfrage.kSuchanfrage, tsuchanfrage.kSprache, tsuchanfrage.cSuche, 
+                            tsuchanfrage.nAktiv, tsuchanfrage.nAnzahlTreffer, tsuchanfrage.nAnzahlGesuche, 
+                            tsuchanfrage.dZuletztGesucht, tseo.cSeo
                             FROM tsuchanfrage
-                            LEFT JOIN tseo ON tseo.cKey = 'kSuchanfrage'
+                            LEFT JOIN tseo 
+                                ON tseo.cKey = 'kSuchanfrage'
                                 AND tseo.kKey = tsuchanfrage.kSuchanfrage
                                 AND tseo.kSprache = " . $kSprache . "
                             WHERE tsuchanfrage.kSprache = " . $kSprache . "
@@ -899,7 +951,8 @@ class Boxen
                     $menge = Shop::DB()->query(
                         "SELECT tartikel.kArtikel
                             FROM tartikel
-                            LEFT JOIN tartikelsichtbarkeit ON tartikel.kArtikel=tartikelsichtbarkeit.kArtikel
+                            LEFT JOIN tartikelsichtbarkeit 
+                                ON tartikel.kArtikel=tartikelsichtbarkeit.kArtikel
                                 AND tartikelsichtbarkeit.kKundengruppe = $kKundengruppe
                             WHERE tartikelsichtbarkeit.kArtikel IS NULL
                                 $this->lagerFilter
@@ -934,7 +987,10 @@ class Boxen
                     $oBox->anzeigen = 'N';
                     break;
                 }
-                if (isset($_SESSION['ZuletztBesuchteArtikel']) && is_array($_SESSION['ZuletztBesuchteArtikel']) && count($_SESSION['ZuletztBesuchteArtikel']) > 0) {
+                if (isset($_SESSION['ZuletztBesuchteArtikel']) &&
+                    is_array($_SESSION['ZuletztBesuchteArtikel']) &&
+                    count($_SESSION['ZuletztBesuchteArtikel']) > 0
+                ) {
                     $oTMP_arr       = [];
                     $defaultOptions = Artikel::getDefaultOptions();
                     foreach ($_SESSION['ZuletztBesuchteArtikel'] as $i => $oArtikel) {
@@ -970,7 +1026,8 @@ class Boxen
                     $menge = Shop::DB()->query(
                         "SELECT tartikel.kArtikel
                             FROM tartikel
-                            LEFT JOIN tartikelsichtbarkeit ON tartikel.kArtikel=tartikelsichtbarkeit.kArtikel
+                            LEFT JOIN tartikelsichtbarkeit 
+                                ON tartikel.kArtikel=tartikelsichtbarkeit.kArtikel
                                 AND tartikelsichtbarkeit.kKundengruppe = $kKundengruppe
                             WHERE tartikelsichtbarkeit.kArtikel IS NULL
                                 AND tartikel.cTopArtikel = 'Y'
@@ -1021,13 +1078,15 @@ class Boxen
                     $menge = Shop::DB()->query(
                         "SELECT tartikel.kArtikel
                             FROM tartikel
-                            LEFT JOIN tartikelsichtbarkeit ON tartikel.kArtikel=tartikelsichtbarkeit.kArtikel
+                            LEFT JOIN tartikelsichtbarkeit 
+                                ON tartikel.kArtikel=tartikelsichtbarkeit.kArtikel
                                 AND tartikelsichtbarkeit.kKundengruppe = $kKundengruppe
                             WHERE tartikelsichtbarkeit.kArtikel IS NULL
                                 AND tartikel.cNeu = 'Y'
                                 $this->lagerFilter
                                 $this->cVaterSQL
-                                AND cNeu = 'Y' AND DATE_SUB(now(),INTERVAL $alter_tage DAY) < dErstellt
+                                AND cNeu = 'Y' 
+                                AND DATE_SUB(now(),INTERVAL $alter_tage DAY) < dErstellt
                             ORDER BY rand() LIMIT " . $limit, 2
                     );
                     if (is_array($menge) && count($menge) > 0) {
@@ -1069,16 +1128,20 @@ class Boxen
                     $menge = Shop::DB()->query(
                         "SELECT tartikel.kArtikel, tsonderpreise.fNettoPreis
                             FROM tartikel
-                            JOIN tartikelsonderpreis ON tartikelsonderpreis.kArtikel = tartikel.kArtikel
-                            JOIN tsonderpreise ON tsonderpreise.kArtikelSonderpreis = tartikelsonderpreis.kArtikelSonderpreis
-                            LEFT JOIN tartikelsichtbarkeit ON tartikel.kArtikel=tartikelsichtbarkeit.kArtikel
+                            JOIN tartikelsonderpreis 
+                                ON tartikelsonderpreis.kArtikel = tartikel.kArtikel
+                            JOIN tsonderpreise 
+                                ON tsonderpreise.kArtikelSonderpreis = tartikelsonderpreis.kArtikelSonderpreis
+                            LEFT JOIN tartikelsichtbarkeit 
+                                ON tartikel.kArtikel=tartikelsichtbarkeit.kArtikel
                                 AND tartikelsichtbarkeit.kKundengruppe = $kKundengruppe
                             WHERE tartikelsichtbarkeit.kArtikel IS NULL
                                 AND tartikelsonderpreis.kArtikel = tartikel.kArtikel
                                 AND tsonderpreise.kKundengruppe = $kKundengruppe
                                 AND tartikelsonderpreis.cAktiv = 'Y'
                                 AND tartikelsonderpreis.dStart <= now()
-                                AND (tartikelsonderpreis.dEnde >= CURDATE() OR tartikelsonderpreis.dEnde = '0000-00-00')
+                                AND (tartikelsonderpreis.dEnde >= CURDATE() 
+                                    OR tartikelsonderpreis.dEnde = '0000-00-00')
                                 $this->lagerFilter
                                 $this->cVaterSQL
                             ORDER BY rand() LIMIT " . $limit, 2
@@ -1106,7 +1169,7 @@ class Boxen
 
             case BOX_WARENKORB :
                 $oBox->compatName = 'Warenkorb';
-                if (isset($_SESSION['Warenkorb']) && isset($_SESSION['Warenkorb']->PositionenArr)) {
+                if (isset($_SESSION['Warenkorb'], $_SESSION['Warenkorb']->PositionenArr)) {
                     $oArtikel_arr = [];
                     foreach ($_SESSION['Warenkorb']->PositionenArr as $oPosition) {
                         $oArtikel_arr[] = $oPosition;
@@ -1183,8 +1246,8 @@ class Boxen
             $smarty->assign('NettoPreise', $_SESSION['Kundengruppe']->nNettoPreise);
         }
         //check whether filters should be displayed after a box
-        $filterAfter = (isset($this->boxConfig) && isset($GLOBALS['NaviFilter']) && isset($GLOBALS['oSuchergebnisse']))
-            ? ($this->gibBoxenFilterNach(Shop::$NaviFilter, $GLOBALS['oSuchergebnisse']))
+        $filterAfter = (!empty($this->boxConfig) && isset($GLOBALS['NaviFilter']) && isset($GLOBALS['oSuchergebnisse']))
+            ? $this->gibBoxenFilterNach(Shop::$NaviFilter, $GLOBALS['oSuchergebnisse'])
             : 0;
         $path              = 'boxes/';
         $this->lagerFilter = gibLagerfilter();
@@ -1542,7 +1605,8 @@ class Boxen
             "SELECT tboxen.kBox, tboxen.kBoxvorlage, tboxen.kCustomID, tboxen.cTitel, tboxen.ePosition,
                 tboxvorlage.eTyp, tboxvorlage.cName, tboxvorlage.cVerfuegbar, tboxvorlage.cTemplate
                 FROM tboxen
-                LEFT JOIN tboxvorlage ON tboxen.kBoxvorlage = tboxvorlage.kBoxvorlage
+                LEFT JOIN tboxvorlage 
+                    ON tboxen.kBoxvorlage = tboxvorlage.kBoxvorlage
                 WHERE kBox = " . $kBox, 1
         );
 
@@ -1769,18 +1833,25 @@ class Boxen
                 $conf['global']['global_sichtbarkeit'] == 1)
             || (isset($NaviFilter->BewertungFilter->nSterne) && $NaviFilter->BewertungFilter->nSterne > 0 &&
                 $this->boxConfig['navigationsfilter']['bewertungsfilter_benutzen'] !== 'N')
-            || (isset($NaviFilter->TagFilter) && count($NaviFilter->TagFilter) > 0 && $this->boxConfig['navigationsfilter']['allgemein_tagfilter_benutzen'] === 'Y')
+            || (isset($NaviFilter->TagFilter) &&
+                count($NaviFilter->TagFilter) > 0 &&
+                $this->boxConfig['navigationsfilter']['allgemein_tagfilter_benutzen'] === 'Y')
             || (isset($oSuchergebnisse->MerkmalFilter) &&
-                count($oSuchergebnisse->MerkmalFilter) > 0 && $this->boxConfig['navigationsfilter']['merkmalfilter_verwenden'] === 'box')
+                count($oSuchergebnisse->MerkmalFilter) > 0 &&
+                $this->boxConfig['navigationsfilter']['merkmalfilter_verwenden'] === 'box')
             || (isset($NaviFilter->MerkmalFilter) &&
-                count($NaviFilter->MerkmalFilter) > 0 && $this->boxConfig['navigationsfilter']['merkmalfilter_verwenden'] === 'box')
+                count($NaviFilter->MerkmalFilter) > 0 &&
+                $this->boxConfig['navigationsfilter']['merkmalfilter_verwenden'] === 'box')
             || (isset($oSuchergebnisse->Bewertung) &&
-                count($oSuchergebnisse->Bewertung) > 0 && $this->boxConfig['navigationsfilter']['bewertungsfilter_benutzen'] === 'box')
+                count($oSuchergebnisse->Bewertung) > 0 &&
+                $this->boxConfig['navigationsfilter']['bewertungsfilter_benutzen'] === 'box')
             || (isset($oSuchergebnisse->Preisspanne) &&
-                count($oSuchergebnisse->Preisspanne) > 0 && $this->boxConfig['navigationsfilter']['preisspannenfilter_benutzen'] === 'box' &&
+                count($oSuchergebnisse->Preisspanne) > 0 &&
+                $this->boxConfig['navigationsfilter']['preisspannenfilter_benutzen'] === 'box' &&
                 $conf['global']['global_sichtbarkeit'] == 1)
             || (isset($NaviFilter->SuchspecialFilter->kKey) &&
-                $NaviFilter->SuchspecialFilter->kKey > 0 && $this->boxConfig['navigationsfilter']['allgemein_suchspecialfilter_benutzen'] === 'Y')
+                $NaviFilter->SuchspecialFilter->kKey > 0 &&
+                $this->boxConfig['navigationsfilter']['allgemein_suchspecialfilter_benutzen'] === 'Y')
             || (isset($NaviFilter->SuchFilter) && count($NaviFilter->SuchFilter) > 0 &&
                 $this->boxConfig['navigationsfilter']['suchtrefferfilter_nutzen'] === 'Y')
         );
@@ -1870,14 +1941,12 @@ class Boxen
             $oTags_arr['tags'][] = [
                 'name'  => $cName,
                 'url'   => $oCloud->cURL,
-                'size'  => (count($oCloud_arr) <= 5) ? '100' : (string) ($oCloud->Klasse * 10), /* 10 bis 100 */
-                'color' => $cColor ? $cColor : $cRandomColor,
-                'hover' => $cColorHover ? $cColorHover : $cRandomColor
+                'size'  => (count($oCloud_arr) <= 5) ? '100' : (string)($oCloud->Klasse * 10), /* 10 bis 100 */
+                'color' => $cColor ?: $cRandomColor,
+                'hover' => $cColorHover ?: $cRandomColor
             ];
         }
-        $json = urlencode(json_encode($oTags_arr));
-
-        return $json;
+        return urlencode(json_encode($oTags_arr));
     }
 
     /**
@@ -1893,7 +1962,7 @@ class Boxen
             if ($_boxes !== null) {
                 $class .= (($i !== 0) ? ' ' : '') . 'panel_' . $position;
             }
-            $i++;
+            ++$i;
         }
 
         return $class;
@@ -1913,10 +1982,10 @@ class Boxen
                 if ($box !== null && isset($box->kBox)) {
                     $boxes = Shop::DB()->query("
                         SELECT tboxen.*, tboxvorlage.eTyp, tboxvorlage.cName, tboxvorlage.cTemplate 
-                          FROM tboxen 
-                            LEFT JOIN tboxvorlage
-                              ON tboxen.kBoxvorlage = tboxvorlage.kBoxvorlage
-                          WHERE ePosition = '" . $position . "'", 2
+                            FROM tboxen 
+                                LEFT JOIN tboxvorlage
+                                ON tboxen.kBoxvorlage = tboxvorlage.kBoxvorlage
+                            WHERE ePosition = '" . $position . "'", 2
                     );
                     foreach ($boxes as $box) {
                         $invisibleBoxes[] = $box;

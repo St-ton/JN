@@ -63,9 +63,9 @@ class Statistik
         if (strlen($cDatumVon) > 0 && strlen($cDatumBis) > 0) {
             $this->cDatumVon_arr = gibDatumTeile($cDatumVon);
             $this->cDatumBis_arr = gibDatumTeile($cDatumBis);
-        } elseif (intval($nStampVon) > 0 && intval($nStampBis) > 0) {
-            $this->nStampVon = intval($nStampVon);
-            $this->nStampBis = intval($nStampBis);
+        } elseif ((int)$nStampVon > 0 && (int)$nStampBis > 0) {
+            $this->nStampVon = (int)$nStampVon;
+            $this->nStampBis = (int)$nStampBis;
         }
     }
 
@@ -75,29 +75,34 @@ class Statistik
      */
     public function holeBesucherStats($nAnzeigeIntervall = 0)
     {
-        if ((count($this->cDatumVon_arr) > 0 && count($this->cDatumBis_arr) > 0) || ($this->nStampVon > 0 && $this->nStampBis > 0)) {
+        if (($this->nStampVon > 0 && $this->nStampBis > 0) ||
+            (count($this->cDatumVon_arr) > 0 && count($this->cDatumBis_arr) > 0)
+        ) {
             $this->gibDifferenz();
             $this->gibAnzeigeIntervall();
-
             if ($nAnzeigeIntervall > 0) {
-                $this->nAnzeigeIntervall = $nAnzeigeIntervall;
+                $this->nAnzeigeIntervall = (int)$nAnzeigeIntervall;
             }
-
-            $oDatumSQL = $this->baueDatumSQL('dZeit');
-
+            $oDatumSQL    = $this->baueDatumSQL('dZeit');
             $oStatTMP_arr = Shop::DB()->query(
                 "SELECT * , sum( t.nCount ) AS nCount
                     FROM (
                     SELECT dZeit, DATE_FORMAT( dZeit, '%d.%m.%Y' ) AS dTime, 
-                        DATE_FORMAT( dZeit, '%m' ) AS nMonth, DATE_FORMAT( dZeit, '%H' ) AS nHour,
-                        DATE_FORMAT( dZeit, '%d' ) AS nDay, DATE_FORMAT( dZeit, '%Y' ) AS nYear, COUNT( dZeit ) AS nCount
+                        DATE_FORMAT( dZeit, '%m' ) AS nMonth, 
+                        DATE_FORMAT( dZeit, '%H' ) AS nHour,
+                        DATE_FORMAT( dZeit, '%d' ) AS nDay, 
+                        DATE_FORMAT( dZeit, '%Y' ) AS nYear, 
+                        COUNT( dZeit ) AS nCount
                     FROM tbesucherarchiv
                     " . $oDatumSQL->cWhere . "
                         AND kBesucherBot = 0
                         " . $oDatumSQL->cGroupBy . "
                         UNION SELECT dZeit, DATE_FORMAT( dZeit, '%d.%m.%Y' ) AS dTime, 
-                            DATE_FORMAT( dZeit, '%m' ) AS nMonth, DATE_FORMAT( dZeit, '%H' ) AS nHour,
-                            DATE_FORMAT( dZeit, '%d' ) AS nDay, DATE_FORMAT( dZeit, '%Y' ) AS nYear, COUNT( dZeit ) AS nCount
+                            DATE_FORMAT( dZeit, '%m' ) AS nMonth, 
+                            DATE_FORMAT( dZeit, '%H' ) AS nHour,
+                            DATE_FORMAT( dZeit, '%d' ) AS nDay, 
+                            DATE_FORMAT( dZeit, '%Y' ) AS nYear, 
+                            COUNT( dZeit ) AS nCount
                         FROM tbesucher
                         " . $oDatumSQL->cWhere . "
                             AND kBesucherBot = 0
@@ -118,7 +123,9 @@ class Statistik
      */
     public function holeKundenherkunftStats()
     {
-        if ((count($this->cDatumVon_arr) > 0 && count($this->cDatumBis_arr) > 0) || ($this->nStampVon > 0 && $this->nStampBis > 0)) {
+        if (($this->nStampVon > 0 && $this->nStampBis > 0) ||
+            (count($this->cDatumVon_arr) > 0 && count($this->cDatumBis_arr) > 0)
+        ) {
             $this->gibDifferenz();
             $this->gibAnzeigeIntervall();
 
@@ -127,12 +134,14 @@ class Statistik
             $oStatTMP_arr = Shop::DB()->query(
                 "SELECT * , sum( t.nCount ) AS nCount
                     FROM (
-                        SELECT if(cReferer = '', 'direkter Einstieg', cReferer) AS cReferer, count(dZeit) AS nCount
+                        SELECT if(cReferer = '', 'direkter Einstieg', cReferer) AS cReferer, 
+                        count(dZeit) AS nCount
                         FROM tbesucher
                         " . $oDatumSQL->cWhere . "
                         AND kBesucherBot = 0
                         GROUP BY cReferer
-                        UNION SELECT IF(cReferer = '', 'direkter Einstieg', cReferer) AS cReferer, COUNT(dZeit) AS nCount
+                        UNION SELECT IF(cReferer = '', 'direkter Einstieg', cReferer) AS cReferer, 
+                        COUNT(dZeit) AS nCount
                         FROM tbesucherarchiv
                         " . $oDatumSQL->cWhere . "
                             AND kBesucherBot = 0
@@ -153,7 +162,9 @@ class Statistik
      */
     public function holeBotStats()
     {
-        if ((count($this->cDatumVon_arr) > 0 && count($this->cDatumBis_arr) > 0) || ($this->nStampVon > 0 && $this->nStampBis > 0)) {
+        if (($this->nStampVon > 0 && $this->nStampBis > 0) ||
+            (count($this->cDatumVon_arr) > 0 && count($this->cDatumBis_arr) > 0)
+        ) {
             $this->gibDifferenz();
             $this->gibAnzeigeIntervall();
 
@@ -188,7 +199,9 @@ class Statistik
      */
     public function holeUmsatzStats()
     {
-        if ((count($this->cDatumVon_arr) > 0 && count($this->cDatumBis_arr) > 0) || ($this->nStampVon > 0 && $this->nStampBis > 0)) {
+        if (($this->nStampVon > 0 && $this->nStampBis > 0) ||
+            (count($this->cDatumVon_arr) > 0 && count($this->cDatumBis_arr) > 0)
+        ) {
             $this->gibDifferenz();
             $this->gibAnzeigeIntervall();
 
@@ -196,7 +209,8 @@ class Statistik
 
             $oStatTMP_arr = Shop::DB()->query(
                 "SELECT tbestellung.dErstellt AS dZeit, SUM(tbestellung.fGesamtsumme) AS nCount,
-                    DATE_FORMAT(tbestellung.dErstellt, '%m') AS nMonth, DATE_FORMAT(tbestellung.dErstellt, '%H') AS nHour,
+                    DATE_FORMAT(tbestellung.dErstellt, '%m') AS nMonth, 
+                    DATE_FORMAT(tbestellung.dErstellt, '%H') AS nHour,
                     DATE_FORMAT(tbestellung.dErstellt, '%d') AS nDay,
                     DATE_FORMAT(tbestellung.dErstellt, '%Y') AS nYear
                     FROM tbestellung
@@ -217,12 +231,13 @@ class Statistik
      */
     public function holeEinstiegsseiten()
     {
-        if ((count($this->cDatumVon_arr) > 0 && count($this->cDatumBis_arr) > 0) || ($this->nStampVon > 0 && $this->nStampBis > 0)) {
+        if (($this->nStampVon > 0 && $this->nStampBis > 0) ||
+            (count($this->cDatumVon_arr) > 0 && count($this->cDatumBis_arr) > 0)
+        ) {
             $this->gibDifferenz();
             $this->gibAnzeigeIntervall();
 
-            $oDatumSQL = $this->baueDatumSQL('dZeit');
-
+            $oDatumSQL    = $this->baueDatumSQL('dZeit');
             $oStatTMP_arr = Shop::DB()->query(
                 "SELECT *, sum(t.nCount) AS nCount
                     FROM
@@ -260,7 +275,7 @@ class Statistik
             );
 
             if (isset($oDay->nTage)) {
-                $this->nTage = intval($oDay->nTage) + 1;
+                $this->nTage = (int)$oDay->nTage + 1;
             }
         } elseif ($this->nStampVon > 0 && $this->nStampBis > 0) {
             $nDiff       = $this->nStampBis - $this->nStampVon;
@@ -401,8 +416,8 @@ class Statistik
                     $nYearFrom = date('Y', $this->nStampVon);
                     $nYearTo   = date('Y', $this->nStampBis);
                 } else {
-                    $nYearFrom = intval(date('Y')) - 1;
-                    $nYearTo   = intval(date('Y')) + 10;
+                    $nYearFrom = (int)date('Y') - 1;
+                    $nYearTo   = (int)date('Y') + 10;
                 }
                 for ($i = ($nYearFrom); $i <= ($nYearTo); $i++) {
                     $oStat         = new stdClass();
@@ -451,8 +466,8 @@ class Statistik
             }
 
             foreach ($oStat_arr as $i => $oStat) {
-                if (intval($oStat->dZeit) < $start ||
-                    intval($oStat->dZeit) > $end) {
+                $time = (int)$oStat->dZeit;
+                if ($time < $start || $time > $end) {
                     unset($oStat_arr[$i]);
                 }
             }
@@ -557,7 +572,7 @@ class Statistik
      */
     public function setDatumStampVon($nDatumVon)
     {
-        $this->nStampVon = intval($nDatumVon);
+        $this->nStampVon = (int)$nDatumVon;
 
         return $this;
     }
@@ -568,7 +583,7 @@ class Statistik
      */
     public function setDatumStampBis($nDatumBis)
     {
-        $this->nStampBis = intval($nDatumBis);
+        $this->nStampBis = (int)$nDatumBis;
 
         return $this;
     }
@@ -578,7 +593,7 @@ class Statistik
      */
     public function getAnzeigeIntervall()
     {
-        if ($this->nAnzeigeIntervall == 0) {
+        if ($this->nAnzeigeIntervall === 0) {
             if ($this->nTage == 0) {
                 $this->gibDifferenz();
             }

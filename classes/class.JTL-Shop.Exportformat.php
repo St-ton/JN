@@ -146,7 +146,7 @@ class Exportformat
      */
     public function __construct($kExportformat = 0)
     {
-        if (intval($kExportformat) > 0) {
+        if ((int)$kExportformat > 0) {
             $this->loadFromDB((int)$kExportformat);
         }
     }
@@ -632,7 +632,7 @@ class Exportformat
     public function insertEinstellungen($einstellungenAssoc_arr)
     {
         $ok = false;
-        if (isset($einstellungenAssoc_arr) && is_array($einstellungenAssoc_arr)) {
+        if (is_array($einstellungenAssoc_arr)) {
             $ok = true;
             foreach ($einstellungenAssoc_arr as $einstellungAssoc_arr) {
                 $oObj        = new stdClass();
@@ -657,7 +657,7 @@ class Exportformat
     public function updateEinstellungen($einstellungenAssoc_arr)
     {
         $ok = false;
-        if (isset($einstellungenAssoc_arr) && is_array($einstellungenAssoc_arr)) {
+        if (is_array($einstellungenAssoc_arr)) {
             $ok = true;
             foreach ($einstellungenAssoc_arr as $einstellungAssoc_arr) {
                 //Array mit zu importierenden Exportformateinstellungen
@@ -869,10 +869,10 @@ class Exportformat
         $header = $this->getKopfzeile();
         if (strlen($header) > 0) {
             $encoding = $this->getKodierung();
+            if ($encoding === 'UTF-8') {
+                fwrite($handle, "\xEF\xBB\xBF");
+            }
             if ($encoding === 'UTF-8' || $encoding === 'UTF-8noBOM') {
-                if ($encoding === 'UTF-8') {
-                    fwrite($handle, "\xEF\xBB\xBF");
-                }
                 $header = utf8_encode($header);
             }
 
@@ -1022,7 +1022,7 @@ class Exportformat
                 global $queue;
                 $queue = $queueObject;
             }
-            global $exportformat, $ExportEinstellungen;
+            global $exportformat;
             $exportformat                   = new stdClass();
             $exportformat->kKundengruppe    = $this->getKundengruppe();
             $exportformat->kExportformat    = $this->getExportformat();
@@ -1041,7 +1041,6 @@ class Exportformat
             $exportformat->nSplitgroesse    = $this->getSplitgroesse();
             $exportformat->dZuletztErstellt = $this->getZuletztErstellt();
             $exportformat->nUseCache        = $this->getCaching();
-            $ExportEinstellungen            = $this->getConfig();
             include $oPlugin->cAdminmenuPfad . PFAD_PLUGIN_EXPORTFORMAT .
                 str_replace(PLUGIN_EXPORTFORMAT_CONTENTFILE, '', $this->getContent());
 
@@ -1310,7 +1309,7 @@ class Exportformat
             $queueObject->updateExportformatQueueBearbeitet();
             $queueObject->setDZuletztGelaufen(date('Y-m-d H:i'))->setNInArbeit(0)->updateJobInDB();
             //finalize job when there are no more articles to export
-            if (!(is_array($articles) && count($articles) > 0) || ($queueObject->nLimitN >= $max)) {
+            if (($queueObject->nLimitN >= $max) || !(is_array($articles) && count($articles) > 0)) {
                 Jtllog::cronLog('Finalizing job.', 2);
                 $upd                   = new stdClass();
                 $upd->dZuletztErstellt = 'now()';
@@ -1330,7 +1329,6 @@ class Exportformat
                 }
                 // Versucht (falls so eingestellt) die erstellte Exportdatei in mehrere Dateien zu splitten
                 $this->splitFile();
-                unset($queueObject);
             }
             Jtllog::cronLog('Finished after ' . round(microtime(true) - $start, 4) .
                 's. Article cache hits: ' . $cacheHits . ', misses: ' . $cacheMisses);
@@ -1372,19 +1370,19 @@ class Exportformat
             $this->setContent(str_replace('<tab>', "\t", $post['cContent']));
         }
         // Sprache
-        if (!isset($post['kSprache']) || intval($post['kSprache']) === 0) {
+        if (!isset($post['kSprache']) || (int)$post['kSprache'] === 0) {
             $cPlausiValue_arr['kSprache'] = 1;
         } else {
             $this->setSprache($post['kSprache']);
         }
         // Sprache
-        if (!isset($post['kWaehrung']) || intval($post['kWaehrung']) === 0) {
+        if (!isset($post['kWaehrung']) || (int)$post['kWaehrung'] === 0) {
             $cPlausiValue_arr['kWaehrung'] = 1;
         } else {
             $this->setWaehrung($post['kWaehrung']);
         }
         // Kundengruppe
-        if (!isset($post['kKundengruppe']) || intval($post['kKundengruppe']) === 0) {
+        if (!isset($post['kKundengruppe']) || (int)$post['kKundengruppe'] === 0) {
             $cPlausiValue_arr['kKundengruppe'] = 1;
         } else {
             $this->setKundengruppe($post['kKundengruppe']);

@@ -518,8 +518,8 @@ class LinkHelper
 
             $staticRoutes_arr = Shop::DB()->query(
                 "SELECT tspezialseite.kSpezialseite, tspezialseite.cName AS baseName, tspezialseite.cDateiname, 
-                        tspezialseite.nLinkart, tlink.kLink, tlinksprache.cName AS seoName, tseo.cSeo, 
-                        tsprache.cISO, tsprache.kSprache
+                        tspezialseite.nLinkart, tlink.kLink, tlinksprache.cName AS seoName, tlink.cKundengruppen, 
+                        tseo.cSeo, tsprache.cISO, tsprache.kSprache
                     FROM tspezialseite
                         LEFT JOIN tlink 
                             ON tlink.nLinkart = tspezialseite.nLinkart
@@ -539,20 +539,40 @@ class LinkHelper
                 if (empty($link->cSeo)) {
                     continue;
                 }
-                $link->cURLFull    = $shopURL . '/' . $link->cSeo;
-                $link->cURLFullSSL = $shopURLSSL . '/' . $link->cSeo;
-                $currentIndex      = $link->cDateiname;
+                $customerGroups  = (strpos($link->cKundengruppen, ';') === false)
+                    ? [$link->cKundengruppen]
+                    : explode(';', $link->cKundengruppen);
+
+                foreach ($customerGroups as $idx => &$customerGroup) {
+                    if ($customerGroup === 'NULL') {
+                        $customerGroup = 0;
+                    } elseif (empty($customerGroup)) {
+                        unset($customerGroups[$idx]);
+                    } else {
+                        $customerGroup = (int)$customerGroup;
+                    }
+                }
+                $link->customerGroups = $customerGroups;
+                $link->cURLFull       = $shopURL . '/' . $link->cSeo;
+                $link->cURLFullSSL    = $shopURLSSL . '/' . $link->cSeo;
+                $currentIndex         = $link->cDateiname;
                 if (!isset($linkGroups->staticRoutes[$link->cDateiname])) {
                     $linkGroups->staticRoutes[$currentIndex] = [];
                 }
                 unset($link->cDateiname);
                 if (!empty($link->cISO)) {
-                    $linkGroups->staticRoutes[$currentIndex][$link->cISO] = $link;
+                    if (!isset($linkGroups->staticRoutes[$currentIndex][$link->cISO])) {
+                        $linkGroups->staticRoutes[$currentIndex][$link->cISO] = [];
+                    }
+                    foreach ($customerGroups as $customerGroup) {
+                        $linkGroups->staticRoutes[$currentIndex][$link->cISO][$customerGroup] = $link;
+                    }
                 } else {
-                    $linkGroups->staticRoutes[$currentIndex][] = $link;
+                    foreach ($customerGroups as $customerGroup) {
+                        $linkGroups->staticRoutes[$currentIndex][$customerGroup] = $link;
+                    }
                 }
             }
-
             $this->linkGroups = $linkGroups;
             executeHook(HOOK_BUILD_LINK_GROUPS, [
                 'linkGroups' => &$linkGroups,
@@ -1017,25 +1037,37 @@ class LinkHelper
         if (isset($this->linkGroups->staticRoutes[$id])) {
             $index = $this->linkGroups->staticRoutes[$id];
             if (is_array($index)) {
-                $language  = ($langISO !== null) ? $langISO : $_SESSION['cISOSprache'];
-                $localized = (isset($index[$language])) ?
-                    $index[$language] :
-                    null;
+                $language  = ($langISO !== null)
+                    ? $langISO
+                    : $_SESSION['cISOSprache'];
+                $localized = (isset($index[$language]))
+                    ? $index[$language]
+                    : null;
+                $customerGroupID = (isset($_SESSION['Kundengruppe']->kKundengruppe))
+                    ? (int)$_SESSION['Kundengruppe']->kKundengruppe
+                    : 0;
                 if ($full === true) {
                     if ($secure === true) {
-                        return (!empty($localized->cURLFullSSL))
-                            ? $localized->cURLFullSSL
-                            : (Shop::getURL(true) . '/' . $id);
+                        if (!is_array($localized)) {
+                            return Shop::getURL(true) . '/' . $id;
+                        }
+                        return (empty($localized[$customerGroupID]->cURLFullSSL))
+                            ? $localized[0]->cURLFullSSL
+                            : $localized[$customerGroupID]->cURLFullSSL;
                     }
-
-                    return (!empty($localized->cURLFull))
-                        ? $localized->cURLFull
-                        : (Shop::getURL() . '/' . $id);
+                    if (!is_array($localized)) {
+                        return Shop::getURL() . '/' . $id;
+                    }
+                    return (empty($localized[$customerGroupID]->cURLFull))
+                        ? $localized[0]->cURLFull
+                        : $localized[$customerGroupID]->cURLFull;
                 }
-
-                return (!empty($localized->cSeo))
-                    ? $localized->cSeo
-                    : $id;
+                if (!is_array($localized)) {
+                    return $id;
+                }
+                return (empty($localized[$customerGroupID]->cSeo))
+                    ? $localized[0]->cSeo
+                    : $localized[$customerGroupID]->cSeo;
             }
 
             return $index;

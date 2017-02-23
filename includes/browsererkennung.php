@@ -30,7 +30,9 @@ function getBrowser($cUserAgent = null)
     $oBrowser->cVersion  = '0';
 
     // agent
-    $cUserAgent       = (isset($_SERVER['HTTP_USER_AGENT']) && is_null($cUserAgent)) ? $_SERVER['HTTP_USER_AGENT'] : $cUserAgent;
+    $cUserAgent       = (isset($_SERVER['HTTP_USER_AGENT']) && $cUserAgent === null)
+        ? $_SERVER['HTTP_USER_AGENT']
+        : $cUserAgent;
     $oBrowser->cAgent = $cUserAgent;
     // mobile
     $oBrowser->bMobile = (preg_match('/android|avantgo|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i', $oBrowser->cAgent, $cMatch_arr)) ||

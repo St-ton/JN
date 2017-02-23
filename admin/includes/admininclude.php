@@ -28,6 +28,16 @@ require PFAD_ROOT . PFAD_CLASSES_CORE . 'class.core.Nice.php';
 require PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'benutzerverwaltung_inc.php';
 require PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'admin_tools.php';
 
+if (!function_exists('Shop')) {
+    /**
+     * @return Shop
+     */
+    function Shop()
+    {
+        return Shop::getInstance();
+    }
+}
+
 // Datenbankverbindung aufbauen - ohne Debug Modus
 $DB = new NiceDB(DB_HOST, DB_USER, DB_PASS, DB_NAME, true);
 

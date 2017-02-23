@@ -469,6 +469,14 @@ final class Shop
     {
         return new Jtllog();
     }
+    
+    /**
+     * @return PHPSettingsHelper
+     */
+    public function PHPSettingsHelper()
+    {
+        return PHPSettingsHelper::getInstance();
+    }
 
     /**
      * get cache instance

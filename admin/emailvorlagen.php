@@ -497,7 +497,6 @@ if (isset($_POST['preview']) && intval($_POST['preview']) > 0) {
         }
         $Emailvorlagesprache[$Sprache->kSprache] = Shop::DB()->select($cTableSprache, ['kEmailvorlage', 'kSprache'], [(int)$Emailvorlage->kEmailvorlage, (int)$Sprache->kSprache]);
         if (!empty($Emailvorlagesprache[$Sprache->kSprache])) {
-
             $cModulId = $Emailvorlage->cModulId;
             if (verifyGPCDataInteger('kPlugin') > 0) {
                 $cModulId = 'kPlugin_' . verifyGPCDataInteger('kPlugin') . '_' . $cModulId;

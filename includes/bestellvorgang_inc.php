@@ -2818,7 +2818,7 @@ function getArtikelQry($PositionenArr)
     if (is_array($PositionenArr) && count($PositionenArr) > 0) {
         foreach ($PositionenArr as $Pos) {
             if (isset($Pos->Artikel->cArtNr) && strlen($Pos->Artikel->cArtNr) > 0) {
-                $ret .= " OR cArtikel like '%;" . str_replace("%", "\%", Shop::DB()->escape($Pos->Artikel->cArtNr)) . ";%'";
+                $ret .= " OR cArtikel RLIKE '^([0-9;]+;)?" . str_replace("%", "\%", Shop::DB()->escape($Pos->Artikel->cArtNr)) . ";'";
             }
         }
     }
@@ -2853,7 +2853,7 @@ function kuponMoeglich()
     if (is_array($_SESSION['Warenkorb']->PositionenArr) && count($_SESSION['Warenkorb']->PositionenArr) > 0) {
         foreach ($_SESSION['Warenkorb']->PositionenArr as $Pos) {
             if (isset($Pos->Artikel->cArtNr) && strlen($Pos->Artikel->cArtNr) > 0) {
-                $Artikel_qry .= " OR cArtikel LIKE '%;" . str_replace('%', '\%', Shop::DB()->escape($Pos->Artikel->cArtNr)) . ";%'";
+                $Artikel_qry .= " OR cArtikel RLIKE '^([0-9;]+;)?" . str_replace('%', '\%', Shop::DB()->escape($Pos->Artikel->cArtNr)) . ";'";
             }
             if ($Pos->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL) {
                 if (isset($Pos->Artikel->kArtikel) && $Pos->Artikel->kArtikel > 0) {
@@ -2874,12 +2874,12 @@ function kuponMoeglich()
             }
         }
         foreach ($Kats as $Kat) {
-            $Kategorie_qry .= " OR cKategorien like '%;" . $Kat . ";%'";
+            $Kategorie_qry .= " OR cKategorien RLIKE '^([0-9;]+;)?" . $Kat . ";'";
         }
     }
 
     if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
-        $Kunden_qry = " OR cKunden LIKE '%;" . $_SESSION['Kunde']->kKunde . ";%'";
+        $Kunden_qry = " OR cKunden RLIKE '^([0-9;]+;)?" . $_SESSION['Kunde']->kKunde . ";'";
     }
     $kupons_mgl = Shop::DB()->query(
         "SELECT * FROM tkupon

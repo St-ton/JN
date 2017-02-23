@@ -1492,7 +1492,7 @@ function checkeKuponWKPos($oWKPosition, $Kupon)
     if ($oWKPosition->nPosTyp != C_WARENKORBPOS_TYP_ARTIKEL) {
         return $oWKPosition;
     }
-    $Artikel_qry    = " OR cArtikel LIKE '%" . str_replace('%', '\%', Shop::DB()->escape($oWKPosition->Artikel->cArtNr)) . ";%'";
+    $Artikel_qry    = " OR cArtikel RLIKE '^([0-9;]+;)?" . str_replace('%', '\%', Shop::DB()->escape($oWKPosition->Artikel->cArtNr)) . ";'";
     $Kategorie_qry  = '';
     $Kunden_qry     = '';
     $kKategorie_arr = [];
@@ -1513,10 +1513,10 @@ function checkeKuponWKPos($oWKPosition, $Kupon)
         }
     }
     foreach ($kKategorie_arr as $kKategorie) {
-        $Kategorie_qry .= " OR cKategorien LIKE '%;" . $kKategorie . ";%'";
+        $Kategorie_qry .= " OR cKategorien RLIKE '^([0-9;]+;)?" . $kKategorie . ";'";
     }
     if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
-        $Kunden_qry = " OR cKunden like '%;" . (int)$_SESSION['Kunde']->kKunde . ";%'";
+        $Kunden_qry = " OR cKunden RLIKE '^([0-9;]+;)?" . (int)$_SESSION['Kunde']->kKunde . ";'";
     }
     $kupons_mgl = Shop::DB()->query(
         "SELECT *
@@ -1592,7 +1592,7 @@ function checkSetPercentCouponWKPos($oWKPosition, $Kupon)
     if ($oWKPosition->nPosTyp != C_WARENKORBPOS_TYP_ARTIKEL) {
         return $wkPos;
     }
-    $Artikel_qry    = " OR cArtikel LIKE '%" . str_replace('%', '\%', Shop::DB()->escape($oWKPosition->Artikel->cArtNr)) . ";%'";
+    $Artikel_qry    = " OR cArtikel RLIKE '^([0-9;]+;)?" . str_replace('%', '\%', Shop::DB()->escape($oWKPosition->Artikel->cArtNr)) . ";'";
     $Kategorie_qry  = '';
     $Kunden_qry     = '';
     $kKategorie_arr = [];
@@ -1613,10 +1613,10 @@ function checkSetPercentCouponWKPos($oWKPosition, $Kupon)
         }
     }
     foreach ($kKategorie_arr as $kKategorie) {
-        $Kategorie_qry .= " OR cKategorien LIKE '%;" . $kKategorie . ";%'";
+        $Kategorie_qry .= " OR cKategorien RLIKE '^([0-9;]+;)?" . $kKategorie . ";'";
     }
     if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
-        $Kunden_qry = " OR cKunden like '%;" . (int)$_SESSION['Kunde']->kKunde . ";%'";
+        $Kunden_qry = " OR cKunden RLIKE '^([0-9;]+;)?" . (int)$_SESSION['Kunde']->kKunde . ";'";
     }
     $kupons_mgl = Shop::DB()->query(
         "SELECT *

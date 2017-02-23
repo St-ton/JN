@@ -25,29 +25,10 @@ ifndef('PROFILE_SHOP', false);
 ifndef('PROFILE_QUERIES', false);
 ifndef('PROFILE_QUERIES_ECHO', false);
 ifndef('IO_LOG_CONSOLE', false);
-
 // PHP memory_limit work around
-$memory_limit = function () {
-    $shorthand = ini_get('memory_limit');
-    switch (substr($shorthand, -1)) {
-        case 'M':
-        case 'm':
-            return (int) $shorthand * 1048576;
-        case 'K':
-        case 'k':
-            return (int) $shorthand * 1024;
-        case 'G':
-        case 'g':
-            return (int) $shorthand * 1073741824;
-        default:
-            return $shorthand;
-    }
-};
-
-if ($memory_limit() < 64) {
+if (intval(str_replace('M', '', ini_get('memory_limit'))) < 64) {
     ini_set('memory_limit', '64M');
 }
-
 ini_set('session.use_trans_sid', 0);
 // Logging (in logs/) 0 => aus, 1 => nur errors, 2 => errors, notifications, 3 => errors, notifications, debug
 ifndef('ES_LOGGING', 1);

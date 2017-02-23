@@ -97,7 +97,7 @@ class VersandartHelper
                         AND (cVersandklassen = '-1'
                         OR (cVersandklassen LIKE '% " . $versandklasse . " %'
                         OR cVersandklassen LIKE '% " . $versandklasse . "'))
-                        AND (cKundengruppen = '-1' OR cKundengruppen RLIKE '^([0-9;]+;)?" . (int)$kKundengruppe . ";')", 2
+                        AND (cKundengruppen = '-1' OR cKundengruppen RLIKE '^([0-9;]*;)?" . (int)$kKundengruppe . ";')", 2
             );
         }
         $shippingFreeCountries = [];
@@ -184,8 +184,8 @@ class VersandartHelper
                     OR (cVersandklassen LIKE '% " . addcslashes($versandklassen, '%_') . " %'
                     OR cVersandklassen LIKE '% " . addcslashes($versandklassen, '%_') . "'))
                     AND (cKundengruppen = '-1'
-                    OR cKundengruppen RLIKE '^([0-9;]+;)?" . $kKundengruppe . ";')
-                ORDER BY nSort", 2
+                    OR cKundengruppen RLIKE '^([0-9;]*;)?" . $kKundengruppe . ";')
+                ORDER BY nSort", 2, true
         );
         $cnt             = count($versandarten);
         $netPricesActive = $_SESSION['Kundengruppe']->nNettoPreise === '1';
@@ -265,7 +265,7 @@ class VersandartHelper
                      WHERE tversandartzahlungsart.kVersandart = " . (int)$versandarten[$i]->kVersandart . "
                          AND tversandartzahlungsart.kZahlungsart = tzahlungsart.kZahlungsart
                          AND (tzahlungsart.cKundengruppen IS NULL OR tzahlungsart.cKundengruppen=''
-                         OR tzahlungsart.cKundengruppen RLIKE '^([0-9;]+;)?" . $kKundengruppe . ";')
+                         OR tzahlungsart.cKundengruppen RLIKE '^([0-9;]*;)?" . $kKundengruppe . ";')
                          AND tzahlungsart.nActive = 1
                          AND tzahlungsart.nNutzbar = 1
                      ORDER BY tzahlungsart.nSort", 2

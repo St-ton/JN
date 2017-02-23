@@ -73,7 +73,7 @@ if (pruefeBetreffVorhanden()) {
         "SELECT *
             FROM tkontaktbetreff
             WHERE (cKundengruppen = 0
-            OR cKundengruppen RLIKE '^([0-9;]+;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";') 
+            OR cKundengruppen RLIKE '^([0-9;]*;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";') 
             ORDER BY nSort", 2
     );
     $bCount = count($betreffs);

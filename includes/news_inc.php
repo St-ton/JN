@@ -443,7 +443,7 @@ function getNewsArchive($kNews, $bActiveOnly = false)
                 AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
             WHERE tnews.kNews = " . (int)$kNews . " 
                 AND (tnews.cKundengruppe LIKE '%;-1;%' 
-                    OR tnews.cKundengruppe RLIKE '^([0-9;]+;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";')
+                    OR tnews.cKundengruppe RLIKE '^([0-9;]*;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";')
                 AND tnews.kSprache = " . (int)$_SESSION['kSprache']
                 . $activeFilter, 1
     );
@@ -582,7 +582,7 @@ function getNewsOverview($oSQL, $cLimitSQL)
             WHERE tnews.nAktiv = 1
                 AND tnews.dGueltigVon <= now()
                 AND (tnews.cKundengruppe LIKE '%;-1;%' 
-                    OR tnews.cKundengruppe RLIKE '^([0-9;]+;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";')
+                    OR tnews.cKundengruppe RLIKE '^([0-9;]*;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";')
                 AND tnews.kSprache = " . (int)$_SESSION['kSprache'] . "
                 " . $oSQL->cDatumSQL . "
             GROUP BY tnews.kNews
@@ -604,7 +604,7 @@ function getFullNewsOverview($oSQL)
             WHERE tnews.nAktiv = 1
                 AND tnews.dGueltigVon <= now()
                 AND (tnews.cKundengruppe LIKE '%;-1;%' 
-                    OR tnews.cKundengruppe RLIKE '^([0-9;]+;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";')
+                    OR tnews.cKundengruppe RLIKE '^([0-9;]*;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";')
                 " . $oSQL->cDatumSQL . "
                 AND tnews.kSprache = " . (int)$_SESSION['kSprache'], 1
     );
@@ -623,7 +623,7 @@ function getNewsDateArray($oSQL)
             WHERE tnews.nAktiv = 1
                 AND tnews.dGueltigVon <= now()
                 AND (tnews.cKundengruppe LIKE '%;-1;%' 
-                    OR tnews.cKundengruppe RLIKE '^([0-9;]+;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";')
+                    OR tnews.cKundengruppe RLIKE '^([0-9;]*;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";')
                 AND tnews.kSprache = " . (int)$_SESSION['kSprache'] . "
             GROUP BY nJahr, nMonat
             ORDER BY dGueltigVon DESC", 2

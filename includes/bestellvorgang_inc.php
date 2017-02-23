@@ -1490,7 +1490,7 @@ function gibZahlungsarten($kVersandart, $kKundengruppe)
                 WHERE tversandartzahlungsart.kVersandart = {$kVersandart}
                     AND tversandartzahlungsart.kZahlungsart=tzahlungsart.kZahlungsart
                     AND (tzahlungsart.cKundengruppen IS NULL OR tzahlungsart.cKundengruppen=''
-                    OR tzahlungsart.cKundengruppen RLIKE '^([0-9;]+;)?{$kKundengruppe};')
+                    OR tzahlungsart.cKundengruppen RLIKE '^([0-9;]*;)?{$kKundengruppe};')
                     AND tzahlungsart.nActive = 1
                     AND tzahlungsart.nNutzbar = 1
                 ORDER BY tzahlungsart.nSort", 2
@@ -1741,7 +1741,7 @@ function versandartKorrekt($kVersandart, $aFormValues = 0)
                     FROM tverpackung
                     WHERE kVerpackung = " . (int)$kVerpackung . "
                         AND (tverpackung.cKundengruppe = '-1'
-                            OR tverpackung.cKundengruppe RLIKE '^([0-9;]+;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";')
+                            OR tverpackung.cKundengruppe RLIKE '^([0-9;]*;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";')
                         AND " . $fSummeWarenkorb . " >= tverpackung.fMindestbestellwert
                         AND nAktiv = 1", 1
             );
@@ -2818,7 +2818,7 @@ function getArtikelQry($PositionenArr)
     if (is_array($PositionenArr) && count($PositionenArr) > 0) {
         foreach ($PositionenArr as $Pos) {
             if (isset($Pos->Artikel->cArtNr) && strlen($Pos->Artikel->cArtNr) > 0) {
-                $ret .= " OR cArtikel RLIKE '^([0-9;]+;)?" . str_replace("%", "\%", Shop::DB()->escape($Pos->Artikel->cArtNr)) . ";'";
+                $ret .= " OR cArtikel RLIKE '^([0-9;]*;)?" . str_replace("%", "\%", Shop::DB()->escape($Pos->Artikel->cArtNr)) . ";'";
             }
         }
     }
@@ -2853,7 +2853,7 @@ function kuponMoeglich()
     if (is_array($_SESSION['Warenkorb']->PositionenArr) && count($_SESSION['Warenkorb']->PositionenArr) > 0) {
         foreach ($_SESSION['Warenkorb']->PositionenArr as $Pos) {
             if (isset($Pos->Artikel->cArtNr) && strlen($Pos->Artikel->cArtNr) > 0) {
-                $Artikel_qry .= " OR cArtikel RLIKE '^([0-9;]+;)?" . str_replace('%', '\%', Shop::DB()->escape($Pos->Artikel->cArtNr)) . ";'";
+                $Artikel_qry .= " OR cArtikel RLIKE '^([0-9;]*;)?" . str_replace('%', '\%', Shop::DB()->escape($Pos->Artikel->cArtNr)) . ";'";
             }
             if ($Pos->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL) {
                 if (isset($Pos->Artikel->kArtikel) && $Pos->Artikel->kArtikel > 0) {
@@ -2874,12 +2874,12 @@ function kuponMoeglich()
             }
         }
         foreach ($Kats as $Kat) {
-            $Kategorie_qry .= " OR cKategorien RLIKE '^([0-9;]+;)?" . $Kat . ";'";
+            $Kategorie_qry .= " OR cKategorien RLIKE '^([0-9;]*;)?" . $Kat . ";'";
         }
     }
 
     if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
-        $Kunden_qry = " OR cKunden RLIKE '^([0-9;]+;)?" . $_SESSION['Kunde']->kKunde . ";'";
+        $Kunden_qry = " OR cKunden RLIKE '^([0-9;]*;)?" . $_SESSION['Kunde']->kKunde . ";'";
     }
     $kupons_mgl = Shop::DB()->query(
         "SELECT * FROM tkupon
@@ -3151,9 +3151,9 @@ function pruefeAjaxEinKlick()
                 FROM tbestellung
                 JOIN tzahlungsart ON tzahlungsart.kZahlungsart = tbestellung.kZahlungsart
                     AND (tzahlungsart.cKundengruppen IS NULL OR tzahlungsart.cKundengruppen = ''
-                    OR tzahlungsart.cKundengruppen RLIKE '^([0-9;]+;)?{$_SESSION['Kunde']->kKundengruppe};')
+                    OR tzahlungsart.cKundengruppen RLIKE '^([0-9;]*;)?{$_SESSION['Kunde']->kKundengruppe};')
                 JOIN tversandart ON tversandart.kVersandart = tbestellung.kVersandart
-                    AND tversandart.cKundengruppen = '-1' OR tversandart.cKundengruppen RLIKE '^([0-9;]+;)?{$_SESSION['Kunde']->kKundengruppe};'
+                    AND tversandart.cKundengruppen = '-1' OR tversandart.cKundengruppen RLIKE '^([0-9;]*;)?{$_SESSION['Kunde']->kKundengruppe};'
                     AND tbestellung.kVersandart = tversandart.kVersandart
                 JOIN tversandartzahlungsart ON tversandartzahlungsart.kVersandart = tversandart.kVersandart
                     AND tversandartzahlungsart.kZahlungsart = tzahlungsart.kZahlungsart

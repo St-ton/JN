@@ -52,7 +52,7 @@ class Lieferscheinpos
      */
     public function __construct($kLieferscheinPos = 0)
     {
-        if (intval($kLieferscheinPos) > 0) {
+        if ((int)$kLieferscheinPos > 0) {
             $this->loadFromDB($kLieferscheinPos);
         }
     }
@@ -94,8 +94,7 @@ class Lieferscheinpos
             }
         }
 
-        unset($oObj->kLieferscheinPos);
-        unset($oObj->oLieferscheinPosInfo_arr);
+        unset($oObj->kLieferscheinPos, $oObj->oLieferscheinPosInfo_arr);
         $kPrim = Shop::DB()->insert('tlieferscheinpos', $oObj);
 
         if ($kPrim > 0) {
@@ -198,7 +197,7 @@ class Lieferscheinpos
      */
     public function setAnzahl($fAnzahl)
     {
-        $this->fAnzahl = floatval($fAnzahl);
+        $this->fAnzahl = (float)$fAnzahl;
 
         return $this;
     }

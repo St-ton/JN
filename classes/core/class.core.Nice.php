@@ -98,11 +98,12 @@ class Nice
      */
     public function checkErweiterung($kShopModulCheck)
     {
-        return (isset($this->cAPIKey) && strlen($this->cAPIKey) > 0 &&
+        return ($this->cAPIKey !== '' &&
+            strlen($this->cAPIKey) > 0 &&
             !empty($this->cDomain) &&
             count($this->kShopModul_arr) > 0
         )
-            ? in_array(intval($kShopModulCheck), $this->kShopModul_arr, true)
+            ? in_array((int)$kShopModulCheck, $this->kShopModul_arr, true)
             : false;
     }
 

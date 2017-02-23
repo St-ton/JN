@@ -666,7 +666,7 @@ class Exportformat
                     'exportformate_equot',
                     'exportformate_quot'
                 ];
-                if (in_array($einstellungAssoc_arr['cName'], $cExportEinstellungenToImport_arr)) {
+                if (in_array($einstellungAssoc_arr['cName'], $cExportEinstellungenToImport_arr, true)) {
                     $_upd        = new stdClass();
                     $_upd->cWert = $einstellungAssoc_arr['cWert'];
                     $ok          = $ok && (Shop::DB()->update(
@@ -793,8 +793,8 @@ class Exportformat
         }
 
         $select = ($countOnly === true)
-            ? ('count(*) AS nAnzahl')
-            : ('tartikel.kArtikel');
+            ? 'count(*) AS nAnzahl'
+            : 'tartikel.kArtikel';
         $limit  = ($countOnly === true)
             ? ''
             : (" ORDER BY kArtikel LIMIT " . $this->getQueue()->nLimitN . ", " . $this->getQueue()->nLimitM);
@@ -1022,7 +1022,7 @@ class Exportformat
                 global $queue;
                 $queue = $queueObject;
             }
-            global $exportformat;
+            global $exportformat, $ExportEinstellungen;
             $exportformat                   = new stdClass();
             $exportformat->kKundengruppe    = $this->getKundengruppe();
             $exportformat->kExportformat    = $this->getExportformat();
@@ -1041,6 +1041,8 @@ class Exportformat
             $exportformat->nSplitgroesse    = $this->getSplitgroesse();
             $exportformat->dZuletztErstellt = $this->getZuletztErstellt();
             $exportformat->nUseCache        = $this->getCaching();
+            //needed for plugin exports
+            $ExportEinstellungen            = $this->getConfig();
             include $oPlugin->cAdminmenuPfad . PFAD_PLUGIN_EXPORTFORMAT .
                 str_replace(PLUGIN_EXPORTFORMAT_CONTENTFILE, '', $this->getContent());
 
@@ -1060,8 +1062,7 @@ class Exportformat
         $cacheHits   = 0;
         $cacheMisses = 0;
         $cOutput     = '';
-
-        if ($this->queue->nLimitN == 0 && file_exists(PFAD_ROOT . PFAD_EXPORT . $this->cDateiname)) {
+        if ((int)$this->queue->nLimitN === 0 && file_exists(PFAD_ROOT . PFAD_EXPORT . $this->cDateiname)) {
             unlink(PFAD_ROOT . PFAD_EXPORT . $this->cDateiname);
         }
 
@@ -1078,7 +1079,7 @@ class Exportformat
             ' with caching ' . ((Shop::Cache()->isActive() && $this->useCache()) ? 'enabled' : 'disabled') .
              ' - ' . $queueObject->nLimitN . '/' . $max . ' products exported');
         // Kopfzeile schreiben
-        if ($this->queue->nLimitN == 0) {
+        if ((int)$this->queue->nLimitN === 0) {
             $this->writeHeader($datei);
         }
         $content                                     = $this->getContent();
@@ -1199,7 +1200,7 @@ class Exportformat
                     ? $Artikel->Kategorie->cKategoriePfad
                     : gibKategoriepfad($Artikel->Kategorie, $this->kKundengruppe, $this->kSprache);
                 $Artikel->Versandkosten         = gibGuenstigsteVersandkosten(
-                    (isset($this->config['exportformate_lieferland']))
+                    isset($this->config['exportformate_lieferland'])
                         ? $this->config['exportformate_lieferland']
                         : '',
                     $Artikel,
@@ -1262,7 +1263,7 @@ class Exportformat
                     $oCallback->nMax          = $max;
                     $oCallback->nCurrent      = $this->queue->nLimitN + $this->queue->nLimitM;
                     $oCallback->bFinished     = false;
-                    $oCallback->bFirst        = ($this->queue->nLimitN == 0);
+                    $oCallback->bFirst        = ((int)$this->queue->nLimitN === 0);
                     $oCallback->cURL          = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'];
                     $oCallback->cacheMisses   = $cacheMisses;
                     $oCallback->cacheHits     = $cacheHits;
@@ -1350,13 +1351,13 @@ class Exportformat
     {
         $cPlausiValue_arr = [];
         // Name
-        if (!isset($post['cName']) || strlen($post['cName']) === 0) {
+        if (empty($post['cName'])) {
             $cPlausiValue_arr['cName'] = 1;
         } else {
             $this->setName($post['cName']);
         }
         // Dateiname
-        if (!isset($post['cDateiname']) || strlen($post['cDateiname']) === 0) {
+        if (empty($post['cDateiname'])) {
             $cPlausiValue_arr['cDateiname'] = 1;
         } elseif (strpos($post['cDateiname'], '.') === false) { // Dateiendung fehlt
             $cPlausiValue_arr['cDateiname'] = 2;
@@ -1364,7 +1365,7 @@ class Exportformat
             $this->setDateiname($post['cDateiname']);
         }
         // Content
-        if (!isset($post['cContent']) || strlen($post['cContent']) === 0) {
+        if (empty($post['cContent'])) {
             $cPlausiValue_arr['cContent'] = 1;
         } else {
             $this->setContent(str_replace('<tab>', "\t", $post['cContent']));
@@ -1393,9 +1394,9 @@ class Exportformat
                  ->setSplitgroesse($post['nSplitgroesse'])
                  ->setSpecial(0)
                  ->setKodierung($post['cKodierung'])
-                 ->setPlugin((isset($post['kPlugin'])) ? $post['kPlugin'] : 0)
+                 ->setPlugin(isset($post['kPlugin']) ? $post['kPlugin'] : 0)
                  ->setExportformat((!empty($post['kExportformat'])) ? $post['kExportformat'] : 0)
-                 ->setKampagne((isset($post['kKampagne'])) ? $post['kKampagne'] : 0);
+                 ->setKampagne(isset($post['kKampagne']) ? $post['kKampagne'] : 0);
             if (isset($post['cFusszeile'])) {
                 $this->setFusszeile(str_replace('<tab>', "\t", $post['cFusszeile']));
             }

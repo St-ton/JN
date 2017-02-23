@@ -34,8 +34,6 @@ class cache_apc implements ICachingMethod
         $this->options       = $options;
         $this->u             = function_exists('apcu_store');
         self::$instance      = $this;
-
-        return $this;
     }
 
     /**

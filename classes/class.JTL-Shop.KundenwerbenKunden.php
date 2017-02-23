@@ -113,9 +113,7 @@ class KundenwerbenKunden
     public function insertDB($bLoadDB = false)
     {
         $oObj = kopiereMembers($this);
-        unset($oObj->fGuthabenLocalized);
-        unset($oObj->oNeukunde);
-        unset($oObj->oBestandskunde);
+        unset($oObj->fGuthabenLocalized, $oObj->oNeukunde, $oObj->oBestandskunde);
 
         $this->kKundenWerbenKunden = Shop::DB()->insert('tkundenwerbenkunden', $oObj);
         if ($bLoadDB) {

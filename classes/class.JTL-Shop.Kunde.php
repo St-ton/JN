@@ -265,11 +265,22 @@ class Kunde
     {
         $conf          = Shop::getSettings([CONF_KUNDEN]);
         $cBenutzername = $post['email'];
-        if (isset($conf['kunden']['kundenlogin_max_loginversuche']) && $conf['kunden']['kundenlogin_max_loginversuche'] !== '' &&
-            $conf['kunden']['kundenlogin_max_loginversuche'] > 1 && strlen($cBenutzername) > 0
+        if (isset($conf['kunden']['kundenlogin_max_loginversuche']) &&
+            $conf['kunden']['kundenlogin_max_loginversuche'] !== '' &&
+            $conf['kunden']['kundenlogin_max_loginversuche'] > 1 &&
+            strlen($cBenutzername) > 0
         ) {
-            $attempts = Shop::DB()->select('tkunde', 'cMail', StringHandler::filterXSS($cBenutzername), 'nRegistriert', 1, null, null, false, 'nLoginversuche');
-            if (isset($attempts->nLoginversuche) && intval($attempts->nLoginversuche) >= intval($conf['kunden']['kundenlogin_max_loginversuche'])) {
+            $attempts = Shop::DB()->select(
+                'tkunde',
+                'cMail', StringHandler::filterXSS($cBenutzername),
+                'nRegistriert', 1,
+                null, null,
+                false,
+                'nLoginversuche'
+            );
+            if (isset($attempts->nLoginversuche) &&
+                (int)$attempts->nLoginversuche >= (int)$conf['kunden']['kundenlogin_max_loginversuche']
+            ) {
                 if (validateCaptcha($_POST)) {
                     return true;
                 }
@@ -309,7 +320,9 @@ class Kunde
                 $this->angezeigtesLand = ISO2land($this->cLand);
                 $this->holeKundenattribute();
                 //check if password has to be updated because of PASSWORD_DEFAULT method changes or using old md5 hash
-                if (version_compare(Shop::getShopVersion(), 350, '>=') === true && (isset($oUser->cPasswort) && password_needs_rehash($oUser->cPasswort, PASSWORD_DEFAULT))) {
+                if ((isset($oUser->cPasswort) && password_needs_rehash($oUser->cPasswort, PASSWORD_DEFAULT)) &&
+                    version_compare(Shop::getShopVersion(), 350, '>=') === true
+                ) {
                     $_upd            = new stdClass();
                     $_upd->cPasswort = password_hash($cPasswort, PASSWORD_DEFAULT);
                     Shop::DB()->update('tkunde', 'kKunde', (int)$oUser->kKunde, $_upd);
@@ -408,7 +421,7 @@ class Kunde
             $obj = false;
             if (isset($oUser->nLoginversuche)) {
                 //increment unsuccessful login attempts
-                $this->nLoginversuche = (intval($oUser->nLoginversuche) + 1);
+                $this->nLoginversuche = (int)$oUser->nLoginversuche + 1;
                 $_upd                 = new stdClass();
                 $_upd->nLoginversuche = $this->nLoginversuche;
                 Shop::DB()->update('tkunde', 'kKunde', (int)$oUser->kKunde, $_upd);
@@ -456,7 +469,9 @@ class Kunde
                 $this->dGeburtstag_formatted = date_format(date_create($this->dGeburtstag), 'd.m.Y');
                 $this->cGuthabenLocalized    = $this->gibGuthabenLocalized();
                 $cDatum_arr                  = gibDatumTeile($this->dErstellt);
-                $this->dErstellt_DE          = $cDatum_arr['cTag'] . '.' . $cDatum_arr['cMonat'] . '.' . $cDatum_arr['cJahr'];
+                $this->dErstellt_DE          = $cDatum_arr['cTag'] . '.' .
+                    $cDatum_arr['cMonat'] . '.' .
+                    $cDatum_arr['cJahr'];
                 executeHook(HOOK_KUNDE_CLASS_LOADFROMDB);
             }
         }
@@ -542,10 +557,10 @@ class Kunde
         $obj->nRegistriert   = $this->nRegistriert;
         $obj->nLoginversuche = $this->nLoginversuche;
 
-        if ($obj->dGeburtstag === '' || $obj->dGeburtstag === null) {
+        if (empty($obj->dGeburtstag)) {
             $obj->dGeburtstag = '0000-00-00';
         }
-        if (!isset($obj->dVeraendert) || $obj->dVeraendert === '' || $obj->dVeraendert === null) {
+        if (empty($obj->dVeraendert)) {
             $obj->dVeraendert = 'now()';
         }
         $obj->cLand   = $this->pruefeLandISO($obj->cLand);
@@ -581,15 +596,17 @@ class Kunde
             $cKundenattribut_arr = $obj->cKundenattribut_arr;
         }
 
-        unset($obj->cKundenattribut_arr);
-        unset($obj->cPasswort);
-        unset($obj->angezeigtesLand);
-        unset($obj->dGeburtstag_formatted);
-        unset($obj->Anrede);
-        unset($obj->cAnredeLocalized);
-        unset($obj->cGuthabenLocalized);
-        unset($obj->dErstellt_DE);
-        unset($obj->cPasswortKlartext);
+        unset(
+            $obj->cKundenattribut_arr,
+            $obj->cPasswort,
+            $obj->angezeigtesLand,
+            $obj->dGeburtstag_formatted,
+            $obj->Anrede,
+            $obj->cAnredeLocalized,
+            $obj->cGuthabenLocalized,
+            $obj->dErstellt_DE,
+            $obj->cPasswortKlartext
+        );
         if ($obj->dGeburtstag === '') {
             $obj->dGeburtstag = '0000-00-00';
         }
@@ -619,7 +636,12 @@ class Kunde
     public function holeKundenattribute()
     {
         $this->cKundenattribut_arr = [];
-        $oKundenattribut_arr       = Shop::DB()->selectAll('tkundenattribut', 'kKunde', (int)$this->kKunde, '*', 'kKundenAttribut');
+        $oKundenattribut_arr       = Shop::DB()->selectAll(
+            'tkundenattribut',
+            'kKunde',
+            (int)$this->kKunde,
+            '*', 'kKundenAttribut'
+        );
         if (is_array($oKundenattribut_arr) && count($oKundenattribut_arr) > 0) {
             foreach ($oKundenattribut_arr as $oKundenattribut) {
                 $this->cKundenattribut_arr[$oKundenattribut->kKundenfeld] = $oKundenattribut;
@@ -641,7 +663,7 @@ class Kunde
         preg_match('/[a-zA-Z]{2}/', $cLandISO, $cTreffer1_arr);
         if (strlen($cTreffer1_arr[0]) !== strlen($cLandISO)) {
             $cISO = landISO($cLandISO);
-            if (strlen($cISO) > 0 && $cISO !== 'noISO') {
+            if ($cISO !== 'noISO' && strlen($cISO) > 0) {
                 $cLandISO = $cISO;
             }
         }
@@ -824,9 +846,9 @@ class Kunde
                 $now  = new DateTime();
                 $diff = $now->diff($createdAt);
                 $secs = $diff->format('%a') * (60 * 60 * 24); //total days
-                $secs += intval($diff->format('%h')) * (60 * 60); //hours
-                $secs += intval($diff->format('%i')) * 60; //minutes
-                $secs += intval($diff->format('%s')); //seconds
+                $secs += (int)$diff->format('%h') * (60 * 60); //hours
+                $secs += (int)$diff->format('%i') * 60; //minutes
+                $secs += (int)$diff->format('%s'); //seconds
                 if ($secs > (60 * 60 * 24)) {
                     return false;
                 }

@@ -462,15 +462,17 @@ class CheckBox
     {
         if (is_array($cTextAssoc_arr) && count($cTextAssoc_arr) > 0) {
             $oCheckBox = kopiereMembers($this);
-            unset($oCheckBox->cID);
-            unset($oCheckBox->kKundengruppe_arr);
-            unset($oCheckBox->kAnzeigeOrt_arr);
-            unset($oCheckBox->oCheckBoxFunktion);
-            unset($oCheckBox->dErstellt_DE);
-            unset($oCheckBox->oLink);
-            unset($oCheckBox->cKundengruppeAssoc_arr);
-            unset($oCheckBox->oCheckBoxSprache_arr);
-            unset($oCheckBox->cLink);
+            unset(
+                $oCheckBox->cID,
+                $oCheckBox->kKundengruppe_arr,
+                $oCheckBox->kAnzeigeOrt_arr,
+                $oCheckBox->oCheckBoxFunktion,
+                $oCheckBox->dErstellt_DE,
+                $oCheckBox->oLink,
+                $oCheckBox->cKundengruppeAssoc_arr,
+                $oCheckBox->oCheckBoxSprache_arr,
+                $oCheckBox->cLink
+            );
 
             $kCheckBox       = Shop::DB()->insert('tcheckbox', $oCheckBox);
             $this->kCheckBox = !empty($oCheckBox->kCheckBox) ? $oCheckBox->kCheckBox : $kCheckBox;
@@ -555,7 +557,7 @@ class CheckBox
      */
     public function sfCheckBoxMailToAdmin($oKunde, $oCheckBox, $nAnzeigeOrt)
     {
-        if (!isset($oKunde->cVorname) || !isset($oKunde->cNachname) || !isset($oKunde->cMail)) {
+        if (!isset($oKunde->cVorname, $oKunde->cNachname, $oKunde->cMail)) {
             return false;
         }
         $Einstellungen = Shop::getSettings([CONF_EMAILS]);

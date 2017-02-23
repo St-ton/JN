@@ -73,7 +73,8 @@ class WarenkorbHelper
                         $item->name = sprintf(
                             '%g %s %s',
                             (float)$oPosition->nAnzahl,
-                            $oPosition->Artikel->cEinheit ? $oPosition->Artikel->cEinheit : 'x', $item->name
+                            $oPosition->Artikel->cEinheit ?: 'x',
+                            $item->name
                         );
                     } else {
                         $item->quantity = (int)$oPosition->nAnzahl;
@@ -105,7 +106,7 @@ class WarenkorbHelper
                         $info->surcharge[self::NET] += $amount * $oPosition->nAnzahl;
                         $info->surcharge[self::GROSS] += $amountGross * $oPosition->nAnzahl;
                     } else {
-                        $amount = $amount * -1;
+                        $amount *= -1;
                         $info->discount[self::NET] += $amount * $oPosition->nAnzahl;
                         $info->discount[self::GROSS] += $amountGross * $oPosition->nAnzahl;
                     }
@@ -118,9 +119,9 @@ class WarenkorbHelper
             }
         }
 
-        if (isset($_SESSION['Bestellung']) &&
-            isset($_SESSION['Bestellung']->GuthabenNutzen) &&
-            $_SESSION['Bestellung']->GuthabenNutzen === 1) {
+        if (isset($_SESSION['Bestellung'], $_SESSION['Bestellung']->GuthabenNutzen) &&
+            $_SESSION['Bestellung']->GuthabenNutzen === 1
+        ) {
             $amountGross = $_SESSION['Bestellung']->fGuthabenGenutzt * -1;
             $amount      = $amountGross;
 
@@ -133,8 +134,14 @@ class WarenkorbHelper
         $info->discount[self::GROSS] *= -1;
 
         // total
-        $info->total[self::NET]   = $info->article[self::NET] + $info->shipping[self::NET] - $info->discount[self::NET] + $info->surcharge[self::NET];
-        $info->total[self::GROSS] = $info->article[self::GROSS] + $info->shipping[self::GROSS] - $info->discount[self::GROSS] + $info->surcharge[self::GROSS];
+        $info->total[self::NET]   = $info->article[self::NET] +
+            $info->shipping[self::NET] -
+            $info->discount[self::NET] +
+            $info->surcharge[self::NET];
+        $info->total[self::GROSS] = $info->article[self::GROSS] +
+            $info->shipping[self::GROSS] -
+            $info->discount[self::GROSS] +
+            $info->surcharge[self::GROSS];
 
         $formatter = function ($prop) use ($decimals) {
             return [
@@ -255,7 +262,7 @@ class WarenkorbHelper
      */
     public static function setVariationPicture(WarenkorbPos $wkPos, $variation)
     {
-        if (!isset($wkPos->variationPicturesArr)) {
+        if ($wkPos->variationPicturesArr === null) {
             $wkPos->variationPicturesArr = [];
         }
 

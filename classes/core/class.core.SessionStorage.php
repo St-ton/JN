@@ -23,7 +23,7 @@ class SessionStorage
     public function __construct($handler = null, array $options = [], $start = true)
     {
         ini_set('session.use_cookies', 1);
-        if (version_compare(phpversion(), '5.4.0', '>=')) {
+        if (version_compare(PHP_VERSION, '5.4.0', '>=')) {
             session_register_shutdown();
         } else {
             register_shutdown_function('session_write_close');
@@ -48,7 +48,7 @@ class SessionStorage
             $res = true;
         } elseif ($this->_handler instanceof SessionHandlerInterface) {
             ini_set('session.save_handler', 'user');
-            if (version_compare(phpversion(), '5.4.0', '>=')) {
+            if (version_compare(PHP_VERSION, '5.4.0', '>=')) {
                 $res = session_set_save_handler($this->_handler, true);
             } else {
                 $res = session_set_save_handler(
@@ -111,8 +111,9 @@ class SessionStorage
                 }
                 //EXPERIMENTAL_MULTILANG_SHOP END
             }
-            if (isset($conf['global']['global_cookie_lifetime']) && is_numeric($conf['global']['global_cookie_lifetime']) &&
-                intval($conf['global']['global_cookie_lifetime']) > 0
+            if (isset($conf['global']['global_cookie_lifetime']) &&
+                is_numeric($conf['global']['global_cookie_lifetime']) &&
+                (int)$conf['global']['global_cookie_lifetime'] > 0
             ) {
                 $set      = true;
                 $lifetime = (int)$conf['global']['global_cookie_lifetime'];
@@ -123,7 +124,8 @@ class SessionStorage
             }
             // only set secure if SSL is enabled
             if ($set === true) {
-                $secure = $secure && ($conf['global']['kaufabwicklung_ssl_nutzen'] === 'P' || strpos(URL_SHOP, 'https://') === 0);
+                $secure = $secure &&
+                    ($conf['global']['kaufabwicklung_ssl_nutzen'] === 'P' || strpos(URL_SHOP, 'https://') === 0);
             }
             if ($set === true) {
                 session_set_cookie_params($lifetime, $path, $domain, $secure, $httpOnly);

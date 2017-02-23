@@ -107,7 +107,7 @@ class Redirect
         $cDestination = (isset($xPath_arr['path'])) ? $xPath_arr['path'] . '/' . $cDestination : $cDestination;
         $oObj         = Shop::DB()->select('tredirect', 'cFromUrl', $cDestination, 'cToUrl', $cSource);
 
-        return (isset($oObj->kRedirect) && intval($oObj->kRedirect) > 0);
+        return (isset($oObj->kRedirect) && (int)$oObj->kRedirect > 0);
     }
 
     /**
@@ -122,9 +122,11 @@ class Redirect
             $cSource = '/' . $cSource;
         }
 
-        if (self::checkAvailability($cDestination) &&
-            strlen($cSource) > 1 && strlen($cDestination) > 1 && $cSource !== $cDestination || $bForce)
-        {
+        if ($bForce || (self::checkAvailability($cDestination) &&
+                strlen($cSource) > 1 &&
+                strlen($cDestination) > 1 &&
+                $cSource !== $cDestination)
+        ) {
             if ($this->isDeadlock($cSource, $cDestination)) {
                 Shop::DB()->delete('tredirect', ['cToUrl', 'cFromUrl'], [$cSource, $cDestination]);
             }
@@ -143,7 +145,7 @@ class Redirect
                 $oObj->cToUrl   = StringHandler::convertISO($cDestination);
 
                 $kRedirect = Shop::DB()->insert('tredirect', $oObj);
-                if (intval($kRedirect) > 0) {
+                if ((int)$kRedirect > 0) {
                     return true;
                 }
             }
@@ -317,8 +319,12 @@ class Redirect
             $lastPath = $exploded[count($exploded) - 1];
             $filename = strtok($lastPath, '?');
             $seoPath  = Shop::DB()->select('tseo', 'cSeo', $lastPath);
-            if ((isset($seoPath->cSeo) && strlen($seoPath->cSeo) > 0) || $filename === 'jtl.php' ||
-                $filename === 'warenkorb.php' || $filename === 'kontakt.php' || $filename === 'news.php') {
+            if ($filename === 'jtl.php' ||
+                $filename === 'warenkorb.php' ||
+                $filename === 'kontakt.php' ||
+                $filename === 'news.php' ||
+                (isset($seoPath->cSeo) && strlen($seoPath->cSeo) > 0)
+            ) {
                 return $lastPath;
             }
         }
@@ -338,58 +344,56 @@ class Redirect
         }
         $cRedirectUrl = false;
         $cUrl         = $this->normalize($cUrl);
-        if ($this->isValid($cUrl)) {
-            if (is_string($cUrl) && strlen($cUrl) > 0) {
-                $parsedUrl       = parse_url($cUrl);
-                $cUrlQueryString = null;
-                if (isset($parsedUrl['query']) && isset($parsedUrl['path'])) {
-                    $cUrl            = $parsedUrl['path'];
-                    $cUrlQueryString = $parsedUrl['query'];
+        if (is_string($cUrl) && strlen($cUrl) > 0 && $this->isValid($cUrl)) {
+            $parsedUrl       = parse_url($cUrl);
+            $cUrlQueryString = null;
+            if (isset($parsedUrl['query'], $parsedUrl['path'])) {
+                $cUrl            = $parsedUrl['path'];
+                $cUrlQueryString = $parsedUrl['query'];
+            }
+            $oItem = $this->find($cUrl);
+            if (!is_object($oItem)) {
+                $conf = Shop::getSettings([CONF_GLOBAL]);
+                if (!isset($_GET['notrack']) && (!isset($conf['global']['redirect_save_404']) || $conf['global']['redirect_save_404'] === 'Y')) {
+                    $oItem           = new self();
+                    $oItem->cFromUrl = $cUrl;
+                    $oItem->cToUrl   = '';
+                    unset($oItem->kRedirect);
+                    $oItem->kRedirect = Shop::DB()->insert('tredirect', $oItem);
                 }
-                $oItem = $this->find($cUrl);
-                if (!is_object($oItem)) {
-                    $conf = Shop::getSettings([CONF_GLOBAL]);
-                    if (!isset($_GET['notrack']) && (!isset($conf['global']['redirect_save_404']) || $conf['global']['redirect_save_404'] === 'Y')) {
-                        $oItem           = new self();
-                        $oItem->cFromUrl = $cUrl;
-                        $oItem->cToUrl   = '';
-                        unset($oItem->kRedirect);
-                        $oItem->kRedirect = Shop::DB()->insert('tredirect', $oItem);
+            } elseif (strlen($oItem->cToUrl) > 0) {
+                $cRedirectUrl = $oItem->cToUrl . (($cUrlQueryString !== null) ? ('?' . $cUrlQueryString) : '');
+            }
+            $cReferer = (isset($_SERVER['HTTP_REFERER'])) ? $_SERVER['HTTP_REFERER'] : '';
+            if (strlen($cReferer) > 0) {
+                $cReferer = $this->normalize($cReferer);
+            }
+            $cIP = getRealIp();
+            // Eintrag für diese IP bereits vorhanden?
+            $oEntry = Shop::DB()->query(
+                "SELECT *
+                    FROM tredirectreferer tr
+                    LEFT JOIN tredirect t 
+                        ON t.kRedirect = tr.kRedirect
+                    WHERE tr.cIP = '{$cIP}'
+                    AND t.cFromUrl = '{$cUrl}' LIMIT 1", 1
+            );
+            if ($oEntry === false || $oEntry === null || (is_object($oEntry) && $oItem->nCount == 0)) {
+                $oReferer               = new stdClass();
+                $oReferer->kRedirect    = (isset($oItem->kRedirect)) ? $oItem->kRedirect : 0;
+                $oReferer->kBesucherBot = (isset($_SESSION['oBesucher']->kBesucherBot))
+                    ? (int)$_SESSION['oBesucher']->kBesucherBot
+                    : 0;
+                $oReferer->cRefererUrl  = (is_string($cReferer)) ? $cReferer : '';
+                $oReferer->cIP          = $cIP;
+                $oReferer->dDate        = time();
+                Shop::DB()->insert('tredirectreferer', $oReferer);
+                if (is_object($oItem)) {
+                    if (!isset($oItem->nCount)) {
+                        $oItem->nCount = 0;
                     }
-                } elseif (strlen($oItem->cToUrl) > 0) {
-                    $cRedirectUrl = $oItem->cToUrl . (($cUrlQueryString !== null) ? ('?' . $cUrlQueryString) : '');
-                }
-                $cReferer = (isset($_SERVER['HTTP_REFERER'])) ? $_SERVER['HTTP_REFERER'] : '';
-                if (strlen($cReferer) > 0) {
-                    $cReferer = $this->normalize($cReferer);
-                }
-                $cIP = getRealIp();
-                // Eintrag für diese IP bereits vorhanden?
-                $oEntry = Shop::DB()->query(
-                    "SELECT *
-                        FROM tredirectreferer tr
-                        LEFT JOIN tredirect t 
-                            ON t.kRedirect = tr.kRedirect
-                        WHERE tr.cIP = '{$cIP}'
-                        AND t.cFromUrl = '{$cUrl}' LIMIT 1", 1
-                );
-                if ($oEntry === false || $oEntry === null || (is_object($oEntry) && $oItem->nCount == 0)) {
-                    $oReferer               = new stdClass();
-                    $oReferer->kRedirect    = (isset($oItem->kRedirect)) ? $oItem->kRedirect : 0;
-                    $oReferer->kBesucherBot = (isset($_SESSION['oBesucher']->kBesucherBot))
-                        ? (int)$_SESSION['oBesucher']->kBesucherBot
-                        : 0;
-                    $oReferer->cRefererUrl  = (is_string($cReferer)) ? $cReferer : '';
-                    $oReferer->cIP          = $cIP;
-                    $oReferer->dDate        = time();
-                    Shop::DB()->insert('tredirectreferer', $oReferer);
-                    if (is_object($oItem)) {
-                        if (!isset($oItem->nCount)) {
-                            $oItem->nCount = 0;
-                        }
-                        $oItem->nCount++;
-                        Shop::DB()->update('tredirect', 'kRedirect', $oItem->kRedirect, $oItem);
-                    }
+                    ++$oItem->nCount;
+                    Shop::DB()->update('tredirect', 'kRedirect', $oItem->kRedirect, $oItem);
                 }
             }
         }

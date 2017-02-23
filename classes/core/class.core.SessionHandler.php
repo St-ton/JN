@@ -64,8 +64,10 @@ class SessionHandler
      */
     public static function array_set(&$array, $key, $value)
     {
-        if (is_null($key)) {
-            return $array = $value;
+        if ($key === null) {
+            $array = $value;
+
+            return $array;
         }
         $keys = explode('.', $key);
         while (count($keys) > 1) {

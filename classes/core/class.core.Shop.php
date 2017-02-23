@@ -1043,8 +1043,7 @@ final class Shop
                 $link        = null;
                 $linkHelper  = LinkHelper::getInstance();
                 if (!empty($_SESSION['Kundengruppe']->kKundengruppe)) {
-                    $cKundengruppenSQL = " AND (cKundengruppen LIKE '" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";%'
-                        OR cKundengruppen LIKE '%;" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";%'
+                    $cKundengruppenSQL = " AND (cKundengruppen RLIKE '^([0-9;]+;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";'
                         OR cKundengruppen IS NULL 
                         OR cKundengruppen = 'NULL' 
                         OR tlink.cKundengruppen = '')";

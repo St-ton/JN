@@ -4,10 +4,10 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 define('JTL_INCLUDE_ONLY_DB', 1);
-require_once dirname(__FILE__) . '/globalinclude.php';
+require_once __DIR__ . '/globalinclude.php';
 include PFAD_ROOT . PFAD_INCLUDES . 'spiderlist_inc.php';
 
-$cDatei = (isset($_GET['datei']))
+$cDatei = isset($_GET['datei'])
     ? getRequestFile($_GET['datei'])
     : null;
 
@@ -22,7 +22,7 @@ $nFloodProtection = (int)Shop::DB()->query("
     SELECT * 
         FROM `tsitemaptracker` 
         WHERE `cIP` = '{$cIP}' 
-          AND DATE_ADD(`dErstellt`, INTERVAL 2 MINUTE) >= NOW() 
+            AND DATE_ADD(`dErstellt`, INTERVAL 2 MINUTE) >= NOW() 
         ORDER BY `dErstellt` DESC", 3
 );
 
@@ -69,7 +69,7 @@ function getRequestFile($cDatei)
 {
     $cDateiInfo_arr = pathinfo($cDatei);
 
-    if (!isset($cDateiInfo_arr['extension']) || !in_array($cDateiInfo_arr['extension'], ['xml', 'txt', 'gz'])) {
+    if (!isset($cDateiInfo_arr['extension']) || !in_array($cDateiInfo_arr['extension'], ['xml', 'txt', 'gz'], true)) {
         return null;
     }
 
@@ -110,8 +110,7 @@ function sendRequestFile($cFile)
     if (file_exists($cAbsoluteFile)) {
         header('Content-Type: ' . $cContentType);
         header('Content-Length: ' . filesize($cAbsoluteFile));
-        header('Last-Modified: ' . gmdate('D, d M Y H:i:s',
-                filemtime($cAbsoluteFile)) . ' GMT');
+        header('Last-Modified: ' . gmdate('D, d M Y H:i:s', filemtime($cAbsoluteFile)) . ' GMT');
 
         if ($cContentType === 'application/octet-stream') {
             header('Content-Description: File Transfer');

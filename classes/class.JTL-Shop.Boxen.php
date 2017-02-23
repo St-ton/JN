@@ -499,10 +499,11 @@ class Boxen
                             WHERE tumfrage.nAktiv = 1
                                 AND tumfrage.kSprache = " . $kSprache . "
                                 AND (cKundengruppe LIKE '%;-1;%' 
-                                    OR cKundengruppe LIKE '%;" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";%')
+                                    OR cKundengruppe RLIKE '^([0-9;]+;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";')
                                 AND ((dGueltigVon <= now() 
                                     AND dGueltigBis >= now()) || (dGueltigVon <= now() 
                                     AND dGueltigBis = '0000-00-00 00:00:00'))
+
                             GROUP BY tumfrage.kUmfrage
                             ORDER BY tumfrage.dGueltigVon DESC" . $cSQL, 2
                     );
@@ -584,7 +585,7 @@ class Boxen
                                 AND tnews.nAktiv = 1
                                 AND tnews.dGueltigVon <= now()
                                 AND (tnews.cKundengruppe LIKE '%;-1;%' 
-                                    OR tnews.cKundengruppe LIKE '%;" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";%')
+                                    OR tnews.cKundengruppe RLIKE '^([0-9;]+;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";')
                                 AND tnews.kSprache = " . $kSprache . "
                             GROUP BY tnewskategorienews.kNewsKategorie
                             ORDER BY tnewskategorie.nSort DESC" . $cSQL, 2

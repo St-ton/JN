@@ -4,21 +4,18 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-require_once dirname(__FILE__) . '/syncinclude.php';
-// mail tools
+require_once __DIR__ . '/syncinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
-// xml lib
 require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.SimpleXML.php';
-// payment
 require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
-
 
 if (auth()) {
     checkFile();
-    if (isset($_POST['kBestellung']) && isset($_POST['dRechnungErstellt']) && isset($_POST['kSprache'])) {
+    if (isset($_POST['kBestellung'], $_POST['dRechnungErstellt'], $_POST['kSprache'])) {
         handleData($_POST['kBestellung'], $_POST['dRechnungErstellt'], $_POST['kSprache']);
     } else {
-        pushError("Invoice Auth: POST-Parameter konnten nicht verarbeitet werden (kBestellung: {$_POST['kBestellung']}, dRechnungErstellt: {$_POST['dRechnungErstellt']}, kSprache: {$_POST['kSprache']}).");
+        pushError("Invoice Auth: POST-Parameter konnten nicht verarbeitet werden " .
+            "(kBestellung: {$_POST['kBestellung']}, dRechnungErstellt: {$_POST['dRechnungErstellt']}, kSprache: {$_POST['kSprache']}).");
     }
 } else {
     pushError("Invoice Auth: Anmeldung fehlgeschlagen.");

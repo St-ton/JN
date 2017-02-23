@@ -300,7 +300,7 @@ class Lieferschein
      */
     public function setEmailVerschickt($bEmailVerschickt)
     {
-        $this->bEmailVerschickt = (bool) $bEmailVerschickt;
+        $this->bEmailVerschickt = (bool)$bEmailVerschickt;
 
         return $this;
     }

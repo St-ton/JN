@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-require_once dirname(__FILE__) . '/syncinclude.php';
+require_once __DIR__ . '/syncinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
 $return = 3;
@@ -66,7 +66,12 @@ function aktiviereKunden($xml)
             $kunde_db = new Kunde($kunde->kKunde);
 
             if ($kunde_db->kKunde > 0 && $kunde_db->kKundengruppe != $kunde->kKundenGruppe) {
-                Shop::DB()->update('tkunde', 'kKunde', (int)$kunde->kKunde, (object)['kKundengruppe' => (int)$kunde->kKundenGruppe]);
+                Shop::DB()->update(
+                    'tkunde',
+                    'kKunde',
+                    (int)$kunde->kKunde,
+                    (object)['kKundengruppe' => (int)$kunde->kKundenGruppe]
+                );
                 //mail
                 $kunde_db->kKundengruppe = (int)$kunde->kKundenGruppe;
                 $obj                     = new stdClass();
@@ -92,7 +97,7 @@ function generiereNeuePasswoerter($xml)
             if ($oKunde->nRegistriert == 1 && $oKunde->cMail) {
                 $oKunde->prepareResetPassword($oKunde->cMail);
             } else {
-                syncException("Kunde hat entweder keine Emailadresse oder es ist ein unregistrierter Kunde", 8);
+                syncException('Kunde hat entweder keine Emailadresse oder es ist ein unregistrierter Kunde', 8);
             }
         }
     }
@@ -143,7 +148,8 @@ function bearbeiteAck($xml)
                 if ($kKunde > 0) {
                     Shop::DB()->update('tkunde', 'kKunde', $kKunde, (object)['cAbgeholt' => 'Y']);
                     if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                        Jtllog::writeLog('Kunde erfolgreich abgeholt: ' . $kKunde, JTLLOG_LEVEL_DEBUG, false, 'Kunden_xml');
+                        Jtllog::writeLog('Kunde erfolgreich abgeholt: ' .
+                            $kKunde, JTLLOG_LEVEL_DEBUG, false, 'Kunden_xml');
                     }
                 }
             }
@@ -170,13 +176,14 @@ function bearbeiteGutscheine($xml)
                     //kundenkto erhöhen
                     Shop::DB()->query("
                         UPDATE tkunde 
-                          SET fGuthaben = fGuthaben+" . floatval($gutschein->fWert) . " 
+                          SET fGuthaben = fGuthaben+" . (float)$gutschein->fWert . " 
                           WHERE kKunde = " . (int)$gutschein->kKunde, 4
                     );
                     Shop::DB()->query("
                         UPDATE tkunde 
                           SET fGuthaben = 0 
-                          WHERE kKunde = " . (int)$gutschein->kKunde . " AND fGuthaben < 0", 3
+                          WHERE kKunde = " . (int)$gutschein->kKunde . " 
+                          AND fGuthaben < 0", 3
                     );
                     //mail
                     $kunde           = new Kunde((int)$gutschein->kKunde);
@@ -185,7 +192,8 @@ function bearbeiteGutscheine($xml)
                     $obj->tgutschein = $gutschein;
                     if ($kunde->cMail) {
                         if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                            Jtllog::writeLog('Gutschein Email wurde an ' . $kunde->cMail . ' versendet.', JTLLOG_LEVEL_DEBUG, 'kGutschein', $kGutschein);
+                            Jtllog::writeLog('Gutschein Email wurde an ' . $kunde->cMail .
+                                ' versendet.', JTLLOG_LEVEL_DEBUG, 'kGutschein', $kGutschein);
                         }
                         sendeMail(MAILTEMPLATE_GUTSCHEIN, $obj);
                     }

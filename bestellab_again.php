@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/globalinclude.php';
+require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellabschluss_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
@@ -22,10 +22,9 @@ $kBestellung   = (int)$_REQUEST['kBestellung'];
 $linkHelper    = LinkHelper::getInstance();
 $bestellung    = new Bestellung($kBestellung);
 $bestellung->fuelleBestellung();
-
 //abfragen, ob diese Bestellung dem Kunden auch gehoert
 //bei Gastbestellungen ist ggf das Kundenobjekt bereits entfernt bzw nRegistriert = 0
-if (isset($bestellung->oKunde) && (int)$bestellung->oKunde->nRegistriert === 1) {
+if ($bestellung->oKunde !== null && (int)$bestellung->oKunde->nRegistriert === 1) {
     if ((int)$bestellung->kKunde !== (int)$_SESSION['Kunde']->kKunde) {
         header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true), true, 303);
         exit;
@@ -257,12 +256,14 @@ $smarty->assign('Navigation', createNavigation($AktuelleSeite))
        ->assign('Einstellungen', $Einstellungen)
        ->assign('Bestellung', $bestellung);
 
-unset($_SESSION['Zahlungsart']);
-unset($_SESSION['Versandart']);
-unset($_SESSION['Lieferadresse']);
-unset($_SESSION['VersandKupon']);
-unset($_SESSION['NeukundenKupon']);
-unset($_SESSION['Kupon']);
+unset(
+    $_SESSION['Zahlungsart'],
+    $_SESSION['Versandart'],
+    $_SESSION['Lieferadresse'],
+    $_SESSION['VersandKupon'],
+    $_SESSION['NeukundenKupon'],
+    $_SESSION['Kupon']
+);
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 $smarty->display('checkout/order_completed.tpl');

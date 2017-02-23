@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/globalinclude.php';
+require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'news_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'seite_inc.php';
@@ -56,7 +56,7 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
         $_SESSION['NewsNaviFilter']->cDatum = (count($_date) > 1)
             ? StringHandler::filterXSS($cParameter_arr['cDatum'])
             : -1;
-    } elseif (intval($cParameter_arr['cDatum']) === -1) {
+    } elseif ((int)$cParameter_arr['cDatum'] === -1) {
         $_SESSION['NewsNaviFilter']->cDatum = -1;
     }
     if ($cParameter_arr['nNewsKat'] > 0) {
@@ -64,7 +64,7 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
     } elseif ($cParameter_arr['nNewsKat'] === -1) {
         $_SESSION['NewsNaviFilter']->nNewsKat = -1;
     }
-    if ($cParameter_arr['kNews'] > 0 || isset($kNews) && $kNews > 0) { // Detailansicht anzeigen
+    if ($cParameter_arr['kNews'] > 0 || (isset($kNews) && $kNews > 0)) { // Detailansicht anzeigen
         Shop::$AktuelleSeite = 'NEWSDETAIL';
         $AktuelleSeite       = 'NEWSDETAIL';
         $step                = 'news_detailansicht';
@@ -99,9 +99,8 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
                    ->assign('oNewsKategorie_arr', $oNewsKategorie_arr);
 
             // Kommentar hinzufügen
-            if (isset($_POST['kommentar_einfuegen']) &&
-                intval($_POST['kommentar_einfuegen']) > 0 &&
-                isset($Einstellungen['news']['news_kommentare_nutzen']) &&
+            if (isset($_POST['kommentar_einfuegen'], $Einstellungen['news']['news_kommentare_nutzen']) &&
+                (int)$_POST['kommentar_einfuegen'] > 0 &&
                 $Einstellungen['news']['news_kommentare_nutzen'] === 'Y'
             ) {
                 // Plausi

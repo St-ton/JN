@@ -5,7 +5,7 @@
  */
 ob_start();
 
-require_once dirname(__FILE__) . '/includes/globalinclude.php';
+require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'io_inc.php';
 require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.IO.php';
 require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.IOResponse.php';

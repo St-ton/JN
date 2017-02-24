@@ -85,7 +85,7 @@ class FilterItemPriceRange extends AbstractFilter implements IFilter
     }
 
     /**
-     * @param int   $id
+     * @param int|string|null $id
      * @return $this
      */
     public function init($id)
@@ -94,8 +94,8 @@ class FilterItemPriceRange extends AbstractFilter implements IFilter
             $id = '0_0';
         }
         list($fVon, $fBis) = explode('_', $id);
-        $this->fVon  = doubleval($fVon);
-        $this->fBis  = doubleval($fBis);
+        $this->fVon  = (float)$fVon;
+        $this->fBis  = (float)$fBis;
         $this->cWert = ($id === '0_0') ? 0 : ($this->fVon . '_' . $this->fBis);
         //localize prices
         $this->cVonLocalized = gibPreisLocalizedOhneFaktor($this->fVon);
@@ -103,15 +103,22 @@ class FilterItemPriceRange extends AbstractFilter implements IFilter
         $this->isInitialized = true;
 
         $oFilter         = new stdClass();
-        $oFilter->cJoin  = "JOIN tpreise ON tartikel.kArtikel = tpreise.kArtikel AND tpreise.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
-                            LEFT JOIN tartikelkategorierabatt ON tartikelkategorierabatt.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
-                                AND tartikelkategorierabatt.kArtikel = tartikel.kArtikel
-                            LEFT JOIN tartikelsonderpreis ON tartikelsonderpreis.kArtikel = tartikel.kArtikel
-                                AND tartikelsonderpreis.cAktiv = 'Y'
-                                AND tartikelsonderpreis.dStart <= now()
-                                AND (tartikelsonderpreis.dEnde >= curDATE() OR tartikelsonderpreis.dEnde = '0000-00-00')
-                            LEFT JOIN tsonderpreise ON tartikelsonderpreis.kArtikelSonderpreis = tsonderpreise.kArtikelSonderpreis
-                                ANd tsonderpreise.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe;
+        $oFilter->cJoin  = "
+            JOIN tpreise 
+                ON tartikel.kArtikel = tpreise.kArtikel 
+                AND tpreise.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
+            LEFT JOIN tartikelkategorierabatt 
+                ON tartikelkategorierabatt.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
+                AND tartikelkategorierabatt.kArtikel = tartikel.kArtikel
+            LEFT JOIN tartikelsonderpreis 
+                ON tartikelsonderpreis.kArtikel = tartikel.kArtikel
+                AND tartikelsonderpreis.cAktiv = 'Y'
+                AND tartikelsonderpreis.dStart <= now()
+                AND (tartikelsonderpreis.dEnde >= curDATE() 
+                    OR tartikelsonderpreis.dEnde = '0000-00-00')
+            LEFT JOIN tsonderpreise 
+                ON tartikelsonderpreis.kArtikelSonderpreis = tsonderpreise.kArtikelSonderpreis
+                AND tsonderpreise.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe;
         $oFilter->cWhere = '';
 
         $fKundenrabatt = 0.0;
@@ -121,45 +128,51 @@ class FilterItemPriceRange extends AbstractFilter implements IFilter
 
         $nSteuersatzKeys_arr = array_keys($_SESSION['Steuersatz']);
         // bis
-        if (isset($_SESSION['Kundengruppe']->nNettoPreise) && intval($_SESSION['Kundengruppe']->nNettoPreise) > 0) {
-            $oFilter->cWhere .= " ROUND(LEAST((tpreise.fVKNetto * " . $_SESSION['Waehrung']->fFaktor . ") * ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), " .
-                $_SESSION['Kundengruppe']->fRabatt . ", " . $fKundenrabatt . ", 0)) / 100), IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * " . $_SESSION['Waehrung']->fFaktor . "))), 2)";
+        if (isset($_SESSION['Kundengruppe']->nNettoPreise) && (int)$_SESSION['Kundengruppe']->nNettoPreise > 0) {
+            $oFilter->cWhere .= " ROUND(LEAST((tpreise.fVKNetto * " .
+                $_SESSION['Waehrung']->fFaktor . ") * ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), " .
+                $_SESSION['Kundengruppe']->fRabatt . ", " . $fKundenrabatt .
+                ", 0)) / 100), IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * " .
+                $_SESSION['Waehrung']->fFaktor . "))), 2)";
         } else {
             foreach ($nSteuersatzKeys_arr as $nSteuersatzKeys) {
-                $fSteuersatz = floatval($_SESSION['Steuersatz'][$nSteuersatzKeys]);
+                $fSteuersatz = (float)$_SESSION['Steuersatz'][$nSteuersatzKeys];
                 $oFilter->cWhere .= " IF(tartikel.kSteuerklasse = " . $nSteuersatzKeys . ",
                             ROUND(LEAST(tpreise.fVKNetto * ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), " .
-                    $_SESSION['Kundengruppe']->fRabatt . ", " . $fKundenrabatt . ", 0)) / 100), IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * " .
+                    $_SESSION['Kundengruppe']->fRabatt . ", " . $fKundenrabatt .
+                    ", 0)) / 100), IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * " .
                     $_SESSION['Waehrung']->fFaktor . "))) * ((100 + " . $fSteuersatz . ") / 100
                         ), 2),";
             }
         }
 
-        if (intval($_SESSION['Kundengruppe']->nNettoPreise) === 0) {
+        if ((int)$_SESSION['Kundengruppe']->nNettoPreise === 0) {
             $oFilter->cWhere .= "0";
 
             $count = count($nSteuersatzKeys_arr);
-            for ($x = 0; $x < $count; $x++) {
+            for ($x = 0; $x < $count; ++$x) {
                 $oFilter->cWhere .= ")";
             }
         }
         $oFilter->cWhere .= " < " . $this->fBis . " AND ";
         // von
-        if (intval($_SESSION['Kundengruppe']->nNettoPreise) > 0) {
+        if ((int)$_SESSION['Kundengruppe']->nNettoPreise > 0) {
             $oFilter->cWhere .= " ROUND(LEAST(tpreise.fVKNetto * ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), " .
-                $_SESSION['Kundengruppe']->fRabatt . ", " . $fKundenrabatt . ", 0)) / 100), IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * " .
+                $_SESSION['Kundengruppe']->fRabatt . ", " . $fKundenrabatt .
+                ", 0)) / 100), IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * " .
                 $_SESSION['Waehrung']->fFaktor . "))), 2)";
         } else {
             foreach ($nSteuersatzKeys_arr as $nSteuersatzKeys) {
-                $fSteuersatz = floatval($_SESSION['Steuersatz'][$nSteuersatzKeys]);
+                $fSteuersatz = (float)$_SESSION['Steuersatz'][$nSteuersatzKeys];
                 $oFilter->cWhere .= " IF(tartikel.kSteuerklasse = " . $nSteuersatzKeys . ",
                             ROUND(LEAST(tpreise.fVKNetto * ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), " .
-                    $_SESSION['Kundengruppe']->fRabatt . ", " . $fKundenrabatt . ", 0)) / 100), IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * " .
+                    $_SESSION['Kundengruppe']->fRabatt . ", " . $fKundenrabatt .
+                    ", 0)) / 100), IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * " .
                     $_SESSION['Waehrung']->fFaktor . "))) * ((100 + " . $fSteuersatz . ") / 100
                         ), 2),";
             }
         }
-        if (intval($_SESSION['Kundengruppe']->nNettoPreise) === 0) {
+        if ((int)$_SESSION['Kundengruppe']->nNettoPreise === 0) {
             $oFilter->cWhere .= "0";
             $count = count($nSteuersatzKeys_arr);
             for ($x = 0; $x < $count; $x++) {
@@ -208,14 +221,16 @@ class FilterItemPriceRange extends AbstractFilter implements IFilter
         $join->setComment('join1 from FilterItemPriceRange')
              ->setType('JOIN')
              ->setTable('tpreise')
-             ->setOn('tartikel.kArtikel = tpreise.kArtikel AND tpreise.kKundengruppe = ' . (int)$_SESSION['Kundengruppe']->kKundengruppe);
+             ->setOn('tartikel.kArtikel = tpreise.kArtikel 
+                          AND tpreise.kKundengruppe = ' . (int)$_SESSION['Kundengruppe']->kKundengruppe);
         $res[] = $join;
 
         $join = new FilterJoin();
         $join->setComment('join2 from FilterItemPriceRange')
              ->setType('LEFT JOIN')
              ->setTable('tartikelkategorierabatt')
-             ->setOn('tartikelkategorierabatt.kKundengruppe = ' . (int)$_SESSION['Kundengruppe']->kKundengruppe . ' AND tartikelkategorierabatt.kArtikel = tartikel.kArtikel');
+             ->setOn('tartikelkategorierabatt.kKundengruppe = ' . (int)$_SESSION['Kundengruppe']->kKundengruppe .
+                       ' AND tartikelkategorierabatt.kArtikel = tartikel.kArtikel');
         $res[] = $join;
 
         $join = new FilterJoin();
@@ -232,7 +247,8 @@ class FilterItemPriceRange extends AbstractFilter implements IFilter
         $join->setComment('join4 from FilterItemPriceRange')
              ->setType('LEFT JOIN')
              ->setTable('tsonderpreise')
-             ->setOn('tartikelsonderpreis.kArtikelSonderpreis = tsonderpreise.kArtikelSonderpreis AND tsonderpreise.kKundengruppe = ' . (int)$_SESSION['Kundengruppe']->kKundengruppe);
+             ->setOn('tartikelsonderpreis.kArtikelSonderpreis = tsonderpreise.kArtikelSonderpreis 
+                          AND tsonderpreise.kKundengruppe = ' . (int)$_SESSION['Kundengruppe']->kKundengruppe);
         $res[] = $join;
 
         return $res;
@@ -271,13 +287,15 @@ class FilterItemPriceRange extends AbstractFilter implements IFilter
 
                 $nBis = $oPreisspannenfilter->nBis;
                 // Finde den höchsten und kleinsten Steuersatz
-                if (is_array($_SESSION['Steuersatz']) && intval($_SESSION['Kundengruppe']->nNettoPreise) === 0) {
+                if (is_array($_SESSION['Steuersatz']) && (int)$_SESSION['Kundengruppe']->nNettoPreise === 0) {
                     $nSteuersatzKeys_arr = array_keys($_SESSION['Steuersatz']);
                     foreach ($nSteuersatzKeys_arr as $nSteuersatzKeys) {
-                        $fSteuersatz = floatval($_SESSION['Steuersatz'][$nSteuersatzKeys]);
+                        $fSteuersatz = (float)$_SESSION['Steuersatz'][$nSteuersatzKeys];
                         $cSQL .= "IF(tartikel.kSteuerklasse = " . $nSteuersatzKeys . ",
-                            ROUND(LEAST((tpreise.fVKNetto * " . $currency->fFaktor . ") * ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), " .
-                            $_SESSION['Kundengruppe']->fRabatt . ", " . $fKundenrabatt . ", 0)) / 100), IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * " .
+                            ROUND(LEAST((tpreise.fVKNetto * " . $currency->fFaktor .
+                            ") * ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), " .
+                            $_SESSION['Kundengruppe']->fRabatt . ", " . $fKundenrabatt .
+                            ", 0)) / 100), IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * " .
                             $currency->fFaktor . "))) * ((100 + " . $fSteuersatz . ") / 100)
                         , 2),";
                     }
@@ -287,8 +305,11 @@ class FilterItemPriceRange extends AbstractFilter implements IFilter
                         $cSQL .= ")";
                     }
                 } elseif ($_SESSION['Kundengruppe']->nNettoPreise > 0) {
-                    $cSQL .= "ROUND(LEAST((tpreise.fVKNetto * " . $currency->fFaktor . ") * ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), " .
-                        $_SESSION['Kundengruppe']->fRabatt . ", " . $fKundenrabatt . ", 0)) / 100), IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * " . $currency->fFaktor . "))), 2)";
+                    $cSQL .= "ROUND(LEAST((tpreise.fVKNetto * " . $currency->fFaktor .
+                        ") * ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), " .
+                        $_SESSION['Kundengruppe']->fRabatt . ", " . $fKundenrabatt .
+                        ", 0)) / 100), IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * " .
+                        $currency->fFaktor . "))), 2)";
                 }
 
                 $cSQL .= " < " . $nBis . ", tartikel.kArtikel, NULL)
@@ -311,10 +332,12 @@ class FilterItemPriceRange extends AbstractFilter implements IFilter
         $oPreisspanne_arr = [];
         // Prüfe ob es nur einen Artikel in der Artikelübersicht gibt, falls ja und es ist noch kein Preisspannenfilter gesetzt
         // dürfen keine Preisspannenfilter angezeigt werden
-        if ($this->getConfig()['navigationsfilter']['preisspannenfilter_benutzen'] === 'N' || ($productCount === 1 && !$this->isInitialized())) {
+        if (($productCount === 1 && !$this->isInitialized()) ||
+            $this->getConfig()['navigationsfilter']['preisspannenfilter_benutzen'] === 'N'
+        ) {
             return $oPreisspanne_arr;
         }
-        $currency = (isset($_SESSION['Waehrung']))
+        $currency = isset($_SESSION['Waehrung'])
             ? $_SESSION['Waehrung']
             : null;
         if (!isset($currency->kWaehrung)) {
@@ -409,11 +432,15 @@ class FilterItemPriceRange extends AbstractFilter implements IFilter
                     SELECT ROUND(
                         LEAST(
                             (tpreise.fVKNetto * " . $currency->fFaktor . ") *
-                            ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), " . $_SESSION['Kundengruppe']->fRabatt . ", " . $fKundenrabatt . ", 0)) / 100),
-                            IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * " . $currency->fFaktor . "))) * ((100 + " . $fSteuersatzMax . ") / 100), 2) AS fMax,
+                            ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), " .
+                $_SESSION['Kundengruppe']->fRabatt . ", " . $fKundenrabatt . ", 0)) / 100),
+                            IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * " .
+                $currency->fFaktor . "))) * ((100 + " . $fSteuersatzMax . ") / 100), 2) AS fMax,
                  ROUND(LEAST((tpreise.fVKNetto * " . $currency->fFaktor . ") *
-                 ((100 - greatest(IFNULL(tartikelkategorierabatt.fRabatt, 0), " . $_SESSION['Kundengruppe']->fRabatt . ", " . $fKundenrabatt . ", 0)) / 100),
-                 IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * " . $currency->fFaktor . "))) * ((100 + " . $fSteuersatzMin . ") / 100), 2) AS fMin
+                 ((100 - greatest(IFNULL(tartikelkategorierabatt.fRabatt, 0), " .
+                $_SESSION['Kundengruppe']->fRabatt . ", " . $fKundenrabatt . ", 0)) / 100),
+                 IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * " .
+                $currency->fFaktor . "))) * ((100 + " . $fSteuersatzMin . ") / 100), 2) AS fMin
                 FROM tartikel
                 " . $state->joins . "
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
@@ -459,7 +486,7 @@ class FilterItemPriceRange extends AbstractFilter implements IFilter
                 for ($i = 0; $i < $oPreis->nAnzahlSpannen; ++$i) {
                     $sub                         = ($i === 0)
                         ? 0
-                        : ($nPreisspannenAnzahl_arr['anz' . ($i - 1)]);
+                        : $nPreisspannenAnzahl_arr['anz' . ($i - 1)];
                     $oPreisspannenFilterDB_arr[] = ($nPreisspannenAnzahl_arr['anz' . $i] - $sub);
                 }
                 $nPreisMax      = $oPreis->fMaxPreis;
@@ -545,7 +572,7 @@ class FilterItemPriceRange extends AbstractFilter implements IFilter
                     for ($i = 0; $i < $count; ++$i) {
                         $sub                         = ($i === 0)
                             ? 0
-                            : ($nPreisspannenAnzahl_arr['anz' . ($i - 1)]);
+                            : $nPreisspannenAnzahl_arr['anz' . ($i - 1)];
                         $oPreisspannenFilterDB_arr[] = ($nPreisspannenAnzahl_arr['anz' . $i] - $sub);
                     }
                 }
@@ -570,16 +597,16 @@ class FilterItemPriceRange extends AbstractFilter implements IFilter
             }
         }
         // Preisspannen ohne Artikel ausblenden (falls im Backend eingestellt)
-        if ($this->getConfig()['navigationsfilter']['preisspannenfilter_spannen_ausblenden'] === 'Y') {
-            if (count($oPreisspanne_arr) > 0) {
-                $oPreisspanneTMP_arr = [];
-                foreach ($oPreisspanne_arr as $oPreisspanne) {
-                    if ($oPreisspanne->nAnzahlArtikel > 0) {
-                        $oPreisspanneTMP_arr[] = $oPreisspanne;
-                    }
+        if (count($oPreisspanne_arr) > 0 &&
+            $this->getConfig()['navigationsfilter']['preisspannenfilter_spannen_ausblenden'] === 'Y'
+        ) {
+            $oPreisspanneTMP_arr = [];
+            foreach ($oPreisspanne_arr as $oPreisspanne) {
+                if ($oPreisspanne->nAnzahlArtikel > 0) {
+                    $oPreisspanneTMP_arr[] = $oPreisspanne;
                 }
-                $oPreisspanne_arr = $oPreisspanneTMP_arr;
             }
+            $oPreisspanne_arr = $oPreisspanneTMP_arr;
         }
 
         return $oPreisspanne_arr;

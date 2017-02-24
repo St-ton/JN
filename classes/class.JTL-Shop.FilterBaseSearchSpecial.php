@@ -54,19 +54,19 @@ class FilterBaseSearchSpecial extends AbstractFilter implements IFilter
      */
     public function setSeo($languages)
     {
-        $oSeo_arr = Shop::DB()->query("
-                SELECT cSeo, kSprache
-                    FROM tseo
-                    WHERE cKey = 'suchspecial'
-                        AND kKey = " . $this->getValue() . "
-                    ORDER BY kSprache", 2
+        $oSeo_arr = Shop::DB()->selectAll(
+            'tseo',
+            ['cKey', 'kKey'],
+            ['suchspecial', $this->getValue()],
+            'cSeo, kSprache',
+            'kSprache'
         );
-
         foreach ($languages as $language) {
             $this->cSeo[$language->kSprache] = '';
             if (is_array($oSeo_arr)) {
                 foreach ($oSeo_arr as $oSeo) {
-                    if ($language->kSprache == $oSeo->kSprache) {
+                    $oSeo->kSprache = (int)$oSeo->kSprache;
+                    if ($language->kSprache === $oSeo->kSprache) {
                         $this->cSeo[$language->kSprache] = $oSeo->cSeo;
                     }
                 }
@@ -195,7 +195,8 @@ class FilterBaseSearchSpecial extends AbstractFilter implements IFilter
                     $join = new FilterJoin();
                     $join->setType('JOIN')
                          ->setTable('tartikelsonderpreis AS tasp')
-                         ->setOn('tasp.kArtikel = tartikel.kArtikel JOIN tsonderpreise AS tsp ON tsp.kArtikelSonderpreis = tasp.kArtikelSonderpreis')
+                         ->setOn('tasp.kArtikel = tartikel.kArtikel JOIN tsonderpreise AS tsp 
+                                      ON tsp.kArtikelSonderpreis = tasp.kArtikelSonderpreis')
                          ->setComment('JOIN from FilterBaseSearchSpecial special offers');
 
                     return $join;

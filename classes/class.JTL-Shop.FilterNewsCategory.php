@@ -59,7 +59,7 @@ class FilterNewsCategory extends AbstractFilter implements IFilter
         );
         foreach ($languages as $language) {
             $this->cSeo[$language->kSprache] = '';
-            if ($language->kSprache == $oSeo_obj->kSprache) {
+            if ($language->kSprache === (int)$oSeo_obj->kSprache) {
                 $this->cSeo[$language->kSprache] = $oSeo_obj->cSeo;
             }
         }

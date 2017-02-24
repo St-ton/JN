@@ -70,14 +70,15 @@ class FilterBaseCategory extends AbstractFilter implements IFilter
             $this->cSeo[$language->kSprache] = '';
             if (is_array($oSeo_arr)) {
                 foreach ($oSeo_arr as $oSeo) {
-                    if ($language->kSprache == $oSeo->kSprache) {
+                    $oSeo->kSprache = (int)$oSeo->kSprache;
+                    if ($language->kSprache === $oSeo->kSprache) {
                         $this->cSeo[$language->kSprache] = $oSeo->cSeo;
                     }
                 }
             }
         }
         foreach ($oSeo_arr as $item) {
-            if ((int)$item->kSprache === (int)Shop::getLanguage()) {
+            if ((int)$item->kSprache === Shop::getLanguage()) {
                 if (!empty($item->cName)) {
                     $this->cName = $item->cName;
                 } elseif (!empty($item->cKatName)) {

@@ -82,7 +82,7 @@ class FilterSearch extends AbstractFilter implements IFilter
         );
         foreach ($languages as $language) {
             $this->cSeo[$language->kSprache] = '';
-            if (isset($oSeo_obj->kSprache) && $language->kSprache == $oSeo_obj->kSprache) {
+            if (isset($oSeo_obj->kSprache) && $language->kSprache === $oSeo_obj->kSprache) {
                 $this->cSeo[$language->kSprache] = $oSeo_obj->cSeo;
             }
         }
@@ -202,9 +202,15 @@ class FilterSearch extends AbstractFilter implements IFilter
 
             $state->conditions[] = "tsuchanfrage.nAktiv = 1";
 
-            $query = $naviFilter->getBaseQuery(['tsuchanfrage.kSuchanfrage', 'tsuchanfrage.cSuche', 'tartikel.kArtikel'],
-                $state->joins, $state->conditions, $state->having, $order->orderBy, '',
-                ['tsuchanfrage.kSuchanfrage', 'tartikel.kArtikel']);
+            $query = $naviFilter->getBaseQuery(
+                ['tsuchanfrage.kSuchanfrage', 'tsuchanfrage.cSuche', 'tartikel.kArtikel'],
+                $state->joins,
+                $state->conditions,
+                $state->having,
+                $order->orderBy,
+                '',
+                ['tsuchanfrage.kSuchanfrage', 'tartikel.kArtikel']
+            );
 
             $query = "SELECT ssMerkmal.kSuchanfrage, ssMerkmal.cSuche, count(*) AS nAnzahl
                 FROM (" . $query . ") AS ssMerkmal

@@ -122,10 +122,10 @@ class FilterItemAttribute extends FilterBaseAttribute
     public function getOptions($mixed = null)
     {
         $naviFilter                  = Shop::getNaviFilter();
-        $oAktuelleKategorie          = (isset($mixed['oAktuelleKategorie']))
+        $oAktuelleKategorie          = isset($mixed['oAktuelleKategorie'])
             ? $mixed['oAktuelleKategorie']
             : null;
-        $bForce                      = (isset($mixed['bForce']))
+        $bForce                      = isset($mixed['bForce'])
             ? $mixed['bForce']
             : false;
         $oMerkmalFilter_arr          = [];
@@ -149,7 +149,7 @@ class FilterItemAttribute extends FilterBaseAttribute
             $state->joins[] = $order->join;
 
             $select = 'tmerkmal.cName';
-            if (!$naviFilter->MerkmalWert->isInitialized() && count($naviFilter->MerkmalFilter) === 0) {
+            if (true || (!$naviFilter->MerkmalWert->isInitialized() && count($naviFilter->MerkmalFilter) === 0)) {
                 $join = new FilterJoin();
                 $join->setComment('join1 from FilterItemAttribute::getOptions()')
                      ->setType('JOIN')
@@ -324,7 +324,7 @@ class FilterItemAttribute extends FilterBaseAttribute
             if (count($cKatAttribMerkmalFilter_arr) > 0) {
                 $nKatFilter = count($oMerkmalFilter_arr);
                 for ($i = 0; $i < $nKatFilter; ++$i) {
-                    if (!in_array($oMerkmalFilter_arr[$i]->cName, $cKatAttribMerkmalFilter_arr)) {
+                    if (!in_array($oMerkmalFilter_arr[$i]->cName, $cKatAttribMerkmalFilter_arr, true)) {
                         unset($oMerkmalFilter_arr[$i]);
                     }
                 }

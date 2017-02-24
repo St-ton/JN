@@ -99,13 +99,4 @@ class FilterDummyState extends AbstractFilter implements IFilter
     {
         return [];
     }
-
-    /**
-     * @param int $mixed
-     * @return array
-     */
-    public function getOptions($mixed = null)
-    {
-        return [];
-    }
 }

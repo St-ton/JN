@@ -33,7 +33,8 @@ class FilterItemCategory extends FilterBaseCategory
     {
         $conf = Shop::getSettings([CONF_NAVIGATIONSFILTER]);
         if ($conf['navigationsfilter']['kategoriefilter_anzeigen_als'] === 'HF') {
-            return '(tkategorieartikelgesamt.kOberKategorie = ' . $this->getValue() . ' OR tkategorieartikelgesamt.kKategorie = ' . $this->getValue() . ') ';
+            return '(tkategorieartikelgesamt.kOberKategorie = ' . $this->getValue() .
+                ' OR tkategorieartikelgesamt.kKategorie = ' . $this->getValue() . ') ';
         }
 
         return ' tkategorieartikel.kKategorie = ' . $this->getValue();
@@ -74,7 +75,7 @@ class FilterItemCategory extends FilterBaseCategory
             // Kategoriefilter anzeige
             if ($categoryFilterType === 'HF' && (!$naviFilter->Kategorie->isInitialized())) {
                 //@todo: $this instead of $naviFilter->KategorieFilter?
-                $kKatFilter = ($naviFilter->KategorieFilter->isInitialized())
+                $kKatFilter = $naviFilter->KategorieFilter->isInitialized()
                     ? ''
                     : " AND tkategorieartikelgesamt.kOberKategorie = 0";
 
@@ -127,15 +128,24 @@ class FilterItemCategory extends FilterBaseCategory
                 $join->setComment('join5 from FilterItemCategory::getOptions()')
                      ->setType('JOIN')
                      ->setTable('tkategoriesprache')
-                     ->setOn('tkategoriesprache.kKategorie = tkategorie.kKategorie AND tkategoriesprache.kSprache = ' . $this->getLanguageID());
+                     ->setOn('tkategoriesprache.kKategorie = tkategorie.kKategorie 
+                                  AND tkategoriesprache.kSprache = ' . $this->getLanguageID());
                 $state->joins[] = $join;
             } else {
                 $select[] = "tkategorie.cName";
             }
 
-            $query                  = $naviFilter->getBaseQuery($select, $state->joins, $state->conditions, $state->having,
-                $order->orderBy, '', ['tkategorie.kKategorie', 'tartikel.kArtikel']);
-            $query                  = "SELECT tseo.cSeo, ssMerkmal.kKategorie, ssMerkmal.cName, ssMerkmal.nSort, COUNT(*) AS nAnzahl
+            $query                  = $naviFilter->getBaseQuery(
+                $select,
+                $state->joins,
+                $state->conditions,
+                $state->having,
+                $order->orderBy,
+                '',
+                ['tkategorie.kKategorie', 'tartikel.kArtikel']
+            );
+            $query                  = "SELECT tseo.cSeo, ssMerkmal.kKategorie, ssMerkmal.cName, 
+                ssMerkmal.nSort, COUNT(*) AS nAnzahl
                 FROM (" . $query . " ) AS ssMerkmal
                     LEFT JOIN tseo ON tseo.kKey = ssMerkmal.kKategorie
                         AND tseo.cKey = 'kKategorie'
@@ -144,14 +154,18 @@ class FilterItemCategory extends FilterBaseCategory
                     ORDER BY ssMerkmal.nSort, ssMerkmal.cName";
             $oKategorieFilterDB_arr = Shop::DB()->query($query, 2);
             //baue URL
-            $count                          = (is_array($oKategorieFilterDB_arr)) ? count($oKategorieFilterDB_arr) : 0;
+            $count                          = is_array($oKategorieFilterDB_arr) ? count($oKategorieFilterDB_arr) : 0;
             $oZusatzFilter                  = new stdClass();
             $oZusatzFilter->KategorieFilter = new stdClass();
             for ($i = 0; $i < $count; ++$i) {
                 // Anzeigen als KategoriePfad
                 if ($categoryFilterType === 'KP') {
                     $oKategorie                        = new Kategorie($oKategorieFilterDB_arr[$i]->kKategorie);
-                    $oKategorieFilterDB_arr[$i]->cName = gibKategoriepfad($oKategorie, $this->getCustomerGroupID(), $this->getLanguageID());
+                    $oKategorieFilterDB_arr[$i]->cName = gibKategoriepfad(
+                        $oKategorie,
+                        $this->getCustomerGroupID(),
+                        $this->getLanguageID()
+                    );
                 }
                 $oZusatzFilter->KategorieFilter->kKategorie = (int)$oKategorieFilterDB_arr[$i]->kKategorie;
                 $oZusatzFilter->KategorieFilter->cSeo       = $oKategorieFilterDB_arr[$i]->cSeo;

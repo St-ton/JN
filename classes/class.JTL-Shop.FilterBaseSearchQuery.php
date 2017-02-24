@@ -95,7 +95,7 @@ class FilterBaseSearchQuery extends AbstractFilter implements IFilter
         );
         foreach ($languages as $language) {
             $this->cSeo[$language->kSprache] = '';
-            if (isset($oSeo_obj->kSprache) && $language->kSprache == $oSeo_obj->kSprache) {
+            if (isset($oSeo_obj->kSprache) && $language->kSprache === (int)$oSeo_obj->kSprache) {
                 $this->cSeo[$language->kSprache] = $oSeo_obj->cSeo;
             }
         }

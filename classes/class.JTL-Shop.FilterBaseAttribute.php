@@ -48,17 +48,19 @@ class FilterBaseAttribute extends AbstractFilter implements IFilter
      */
     public function setSeo($languages)
     {
-        $oSeo_arr = Shop::DB()->query("
-                SELECT cSeo, kSprache
-                    FROM tseo
-                    WHERE cKey = 'kMerkmalWert' AND kKey = " . $this->getValue() . "
-                    ORDER BY kSprache", 2
+        $oSeo_arr = Shop::DB()->selectAll(
+            'tseo',
+            ['cKey', 'kKey'],
+            ['kMerkmalWert', $this->getValue()],
+            'cSeo, kSprache',
+            'kSprache'
         );
         foreach ($languages as $language) {
             $this->cSeo[$language->kSprache] = '';
             if (is_array($oSeo_arr)) {
                 foreach ($oSeo_arr as $oSeo) {
-                    if ($language->kSprache == $oSeo->kSprache) {
+                    $oSeo->kSprache = (int)$oSeo->kSprache;
+                    if ($language->kSprache === $oSeo->kSprache) {
                         $this->cSeo[$language->kSprache] = $oSeo->cSeo;
                     }
                 }
@@ -71,11 +73,14 @@ class FilterBaseAttribute extends AbstractFilter implements IFilter
         if (Shop::getLanguage() > 0 && !standardspracheAktiv()) {
             $oSQL->cMMSelect = "tmerkmalsprache.cName, tmerkmal.cName AS cMMName";
             $oSQL->cMMJOIN   = " JOIN tmerkmalsprache ON tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal
-                                        AND tmerkmalsprache.kSprache = " . Shop::getLanguage();
+                                     AND tmerkmalsprache.kSprache = " . Shop::getLanguage();
         }
         $oSQL->cMMWhere = "tmerkmalwert.kMerkmalWert = " . $this->getValue();
 
-//        if (isset($cParameter_arr['MerkmalFilter_arr']) && is_array($cParameter_arr['MerkmalFilter_arr']) && count($cParameter_arr['MerkmalFilter_arr']) > 0) {
+//        if (isset($cParameter_arr['MerkmalFilter_arr']) &&
+//            is_array($cParameter_arr['MerkmalFilter_arr']) &&
+//            count($cParameter_arr['MerkmalFilter_arr']) > 0
+//        ) {
 //            foreach ($cParameter_arr['MerkmalFilter_arr'] as $kMerkmalWert) {
 //                $oSQL->cMMWhere .= " OR tmerkmalwert.kMerkmalWert = " . (int)$kMerkmalWert . " ";
 //            }
@@ -89,7 +94,7 @@ class FilterBaseAttribute extends AbstractFilter implements IFilter
                 " . $oSQL->cMMJOIN . "
                 WHERE " . $oSQL->cMMWhere, 2
         );
-        if (is_array($oMerkmalWert_arr) && (count($oMerkmalWert_arr)) > 0) {
+        if (is_array($oMerkmalWert_arr) && count($oMerkmalWert_arr) > 0) {
             $oMerkmalWert = $oMerkmalWert_arr[0];
             unset($oMerkmalWert_arr[0]);
             if (isset($oMerkmalWert->cWert) && strlen($oMerkmalWert->cWert) > 0) {
@@ -112,7 +117,6 @@ class FilterBaseAttribute extends AbstractFilter implements IFilter
 
         return $this;
     }
-
 
     /**
      * @return string
@@ -159,25 +163,5 @@ class FilterBaseAttribute extends AbstractFilter implements IFilter
 //              ->setOn('ttagartikel.kTag = ttag.kTag');
 
         return $join;
-
-
-        $oFilter->cJoin = "JOIN (
-                                SELECT kArtikel
-                                FROM tartikelmerkmal
-                                WHERE kMerkmalWert IN (" . implode(',', $kMerkmalWert_arr) . ")
-                                GROUP BY tartikelmerkmal.kArtikel
-                                HAVING count(*) = " . count($kMerkmalWert_arr) . "
-                                ) AS tmerkmaljoin ON tmerkmaljoin.kArtikel = tartikel.kArtikel ";
-
-        $oFilter->cJoinMMW = " JOIN (
-                                    SELECT kArtikel
-                                    FROM tartikelmerkmal
-                                    WHERE kMerkmalWert IN (" . implode(',', $kMerkmalWert_arr) . " )
-                                    GROUP BY kArtikel
-                                    HAVING count(*) = " . count($kMerkmalWert_arr) . "
-                                    ) AS ssj1 ON tartikel.kArtikel = ssj1.kArtikel";
-
-        $oFilter->cHavingCount = count($kMerkmalWert_arr);
-        $oFilter->cHavingMMW   = "HAVING count(*) >= " . count($kMerkmalWert_arr);
     }
 }

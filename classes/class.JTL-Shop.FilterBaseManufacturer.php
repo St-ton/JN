@@ -59,14 +59,16 @@ class FilterBaseManufacturer extends AbstractFilter implements IFilter
                     FROM tseo
                         LEFT JOIN thersteller
                         ON thersteller.kHersteller = tseo.kKey
-                    WHERE cKey = 'kHersteller' AND kKey = " . $this->getValue() . "
+                    WHERE cKey = 'kHersteller' 
+                        AND kKey = " . $this->getValue() . "
                     ORDER BY kSprache", 2
         );
         foreach ($languages as $language) {
             $this->cSeo[$language->kSprache] = '';
             if (is_array($oSeo_arr)) {
                 foreach ($oSeo_arr as $oSeo) {
-                    if ($language->kSprache == $oSeo->kSprache) {
+                    $oSeo->kSprache = (int)$oSeo->kSprache;
+                    if ($language->kSprache === $oSeo->kSprache) {
                         $this->cSeo[$language->kSprache] = $oSeo->cSeo;
                     }
                 }

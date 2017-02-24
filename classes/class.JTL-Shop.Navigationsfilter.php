@@ -897,6 +897,7 @@ class Navigationsfilter
         $sort->orderBy = 'tartikel.nSort, tartikel.cName';
         switch ((int)$Artikelsortierung) {
             case SEARCH_SORT_STANDARD:
+                $sort->orderBy = 'tartikel.nSort, tartikel.cName';
                 if ($this->Kategorie->kKategorie > 0) {
                     $sort->orderBy = 'tartikel.nSort, tartikel.cName';
                 } elseif (isset($_SESSION['Usersortierung']) &&
@@ -904,8 +905,6 @@ class Navigationsfilter
                     $this->Suche->isInitialized()
                 ) {
                     $sort->orderBy = 'tsuchcachetreffer.nSort';
-                } else {
-                    $sort->orderBy = 'tartikel.nSort, tartikel.cName';
                 }
                 break;
             case SEARCH_SORT_NAME_ASC:
@@ -1184,7 +1183,17 @@ class Navigationsfilter
     public function getActiveFilters($byType = false)
     {
         $filters = ($byType !== false)
-            ? ['kf' => [], 'mm' => [], 'ssf' => [], 'tf' => [], 'sf' => [], 'hf' => [], 'bf' => [], 'custom' => [], 'misc' => []]
+            ? [
+                'kf'     => [],
+                'mm'     => [],
+                'ssf'    => [],
+                'tf'     => [],
+                'sf'     => [],
+                'hf'     => [],
+                'bf'     => [],
+                'custom' => [],
+                'misc'   => []
+            ]
             : [];
         foreach ($this->activeFilters as $activeFilter) {
             //get custom filters
@@ -1316,7 +1325,8 @@ class Navigationsfilter
                             }
                             if ($filter->getType() === AbstractFilter::FILTER_TYPE_AND) {
                                 //filters that decrease the total amount of articles must have a "HAVING" clause
-                                $data->having[] = 'HAVING COUNT(' . $filter->getTableName() . '.' . $filter->getPrimaryKeyRow() . ') = ' . $count;
+                                $data->having[] = 'HAVING COUNT(' . $filter->getTableName() . '.' .
+                                    $filter->getPrimaryKeyRow() . ') = ' . $count;
                             }
                         }
                         $singleConditions[] = $filter->getSQLCondition();
@@ -1418,8 +1428,16 @@ class Navigationsfilter
     public function getAttributePosition($oMerkmalauswahl_arr, $kMerkmal)
     {
         if (is_array($oMerkmalauswahl_arr)) {
+            //@todo: remove test
+            if ($kMerkmal !== (int)$kMerkmal) {
+                die('fix type check 1 @getAttributePosition');
+            }
             foreach ($oMerkmalauswahl_arr as $i => $oMerkmalauswahl) {
-                if ($oMerkmalauswahl->kMerkmal == $kMerkmal) {
+                //@todo: remove test
+                if ($oMerkmalauswahl->kMerkmal !== (int)$oMerkmalauswahl->kMerkmal) {
+                    die('fix type check 2 @getAttributePosition');
+                }
+                if ($oMerkmalauswahl->kMerkmal === $kMerkmal) {
                     return $i;
                 }
             }
@@ -1578,14 +1596,16 @@ class Navigationsfilter
             $_SESSION['Usersortierung'] = (int)$this->conf['artikeluebersicht']['artikeluebersicht_artikelsortierung'];
         }
         // Eine Suche wurde ausgeführt und die Suche wird auf die Suchtreffersuche eingestellt
-        if (isset($this->Suche->kSuchCache) && $this->Suche->kSuchCache > 0 && !isset($_SESSION['nUsersortierungWahl'])) {
+        if ($this->Suche->kSuchCache > 0 && !isset($_SESSION['nUsersortierungWahl'])) {
             // nur bei initialsuche Sortierung zurücksetzen
             $_SESSION['UsersortierungVorSuche'] = $_SESSION['Usersortierung'];
             $_SESSION['Usersortierung']         = SEARCH_SORT_STANDARD;
         }
         // Kategorie Funktionsattribut
         if (!empty($currentCategory->categoryFunctionAttributes[KAT_ATTRIBUT_ARTIKELSORTIERUNG])) {
-            $_SESSION['Usersortierung'] = $this->mapUserSorting($currentCategory->categoryFunctionAttributes[KAT_ATTRIBUT_ARTIKELSORTIERUNG]);
+            $_SESSION['Usersortierung'] = $this->mapUserSorting(
+                $currentCategory->categoryFunctionAttributes[KAT_ATTRIBUT_ARTIKELSORTIERUNG]
+            );
         }
         // Wurde zuvor etwas gesucht? Dann die Einstellung des Users vor der Suche wiederherstellen
         if (isset($_SESSION['UsersortierungVorSuche']) && (int)$_SESSION['UsersortierungVorSuche'] > 0) {
@@ -1750,7 +1770,9 @@ class Navigationsfilter
                 $config,
                 $this->oSprache_arr)
             )->init($extraFilter->FilterLoesen->SuchFilter);
-        } elseif (isset($extraFilter->FilterLoesen->Erscheinungsdatum) && $extraFilter->FilterLoesen->Erscheinungsdatum === true) {
+        } elseif (isset($extraFilter->FilterLoesen->Erscheinungsdatum) && 
+            $extraFilter->FilterLoesen->Erscheinungsdatum === true
+        ) {
             //@todo@todo@todo
             return $filter;
         } else {
@@ -1925,7 +1947,9 @@ class Navigationsfilter
             $this->URL->cAlleMerkmalWerte[$oMerkmal->kMerkmalWert] = $this->getURL($bSeo, $oZusatzFilter);
         }
         // kinda hacky: try to build url that removes a merkmalwert url from merkmalfilter url
-        if ($this->MerkmalWert->isInitialized() && !isset($this->URL->cAlleMerkmalWerte[$this->MerkmalWert->getValue()])) {
+        if ($this->MerkmalWert->isInitialized() && 
+            !isset($this->URL->cAlleMerkmalWerte[$this->MerkmalWert->getValue()])
+        ) {
             // the url should be <shop>/<merkmalwert-url>__<merkmalfilter>[__<merkmalfilter>]
             $_mmwSeo = str_replace($this->MerkmalWert->getSeo($this->getLanguageID()) . SEP_MERKMAL, '',
                 $this->URL->cAlleKategorien);
@@ -1994,7 +2018,7 @@ class Navigationsfilter
             }
         }
         // Filter reset
-        $cSeite = (isset($oSuchergebnisse->Seitenzahlen->AktuelleSeite) && $oSuchergebnisse->Seitenzahlen->AktuelleSeite > 1)
+        $cSeite = ($oSuchergebnisse->Seitenzahlen->AktuelleSeite > 1)
             ? SEP_SEITE . $oSuchergebnisse->Seitenzahlen->AktuelleSeite
             : '';
 
@@ -2094,11 +2118,11 @@ class Navigationsfilter
     /**
      * @param object         $oMeta
      * @param object         $oSuchergebnisse
-     * @param array          $GlobaleMetaAngaben_arr
+     * @param array          $globalMeta
      * @param Kategorie|null $oKategorie
      * @return string
      */
-    public function getMetaTitle($oMeta, $oSuchergebnisse, $GlobaleMetaAngaben_arr, $oKategorie = null)
+    public function getMetaTitle($oMeta, $oSuchergebnisse, $globalMeta, $oKategorie = null)
     {
         executeHook(HOOK_FILTER_INC_GIBNAVIMETATITLE);
         $append = $this->conf['metaangaben']['global_meta_title_anhaengen'] === 'Y';
@@ -2106,8 +2130,11 @@ class Navigationsfilter
         if (strlen($oMeta->cMetaTitle) > 0) {
             $oMeta->cMetaTitle = strip_tags($oMeta->cMetaTitle);
             // Globalen Meta Title anhaengen
-            if ($append === true && !empty($GlobaleMetaAngaben_arr[$this->getLanguageID()]->Title)) {
-                return $this->truncateMetaTitle($oMeta->cMetaTitle . ' ' . $GlobaleMetaAngaben_arr[$this->getLanguageID()]->Title);
+            if ($append === true && !empty($globalMeta[$this->getLanguageID()]->Title)) {
+                return $this->truncateMetaTitle(
+                    $oMeta->cMetaTitle . ' ' . 
+                    $globalMeta[$this->getLanguageID()]->Title
+                );
             }
 
             return $this->truncateMetaTitle($oMeta->cMetaTitle);
@@ -2144,8 +2171,8 @@ class Navigationsfilter
                 $oSuchergebnisse->Seitenzahlen->AktuelleSeite;
         }
         // Globalen Meta Title ueberall anhaengen
-        if ($append === true && !empty($GlobaleMetaAngaben_arr[$this->getLanguageID()]->Title)) {
-            $cMetaTitle .= ' - ' . $GlobaleMetaAngaben_arr[$this->getLanguageID()]->Title;
+        if ($append === true && !empty($globalMeta[$this->getLanguageID()]->Title)) {
+            $cMetaTitle .= ' - ' . $globalMeta[$this->getLanguageID()]->Title;
         }
 
         return $this->truncateMetaTitle($cMetaTitle);
@@ -2155,11 +2182,11 @@ class Navigationsfilter
      * @param object         $oMeta
      * @param array          $oArtikel_arr
      * @param object         $oSuchergebnisse
-     * @param array          $GlobaleMetaAngaben_arr
+     * @param array          $globalMeta
      * @param Kategorie|null $oKategorie
      * @return string
      */
-    public function getMetaDescription($oMeta, $oArtikel_arr, $oSuchergebnisse, $GlobaleMetaAngaben_arr, $oKategorie = null ) {
+    public function getMetaDescription($oMeta, $oArtikel_arr, $oSuchergebnisse, $globalMeta, $oKategorie = null ) {
         executeHook(HOOK_FILTER_INC_GIBNAVIMETADESCRIPTION);
         // Prüfen ob bereits eingestellte Metas gesetzt sind
         if (strlen($oMeta->cMetaDescription) > 0) {
@@ -2207,8 +2234,8 @@ class Navigationsfilter
             if (strlen($cKatDescription) > 1) {
                 $cKatDescription  = str_replace('"', '', $cKatDescription);
                 $cKatDescription  = StringHandler::htmlentitydecode($cKatDescription, ENT_NOQUOTES);
-                $cMetaDescription = (!empty($GlobaleMetaAngaben_arr[$this->getLanguageID()]->Meta_Description_Praefix))
-                    ? trim(strip_tags($GlobaleMetaAngaben_arr[$this->getLanguageID()]->Meta_Description_Praefix) . ' ' . $cKatDescription)
+                $cMetaDescription = !empty($globalMeta[$this->getLanguageID()]->Meta_Description_Praefix)
+                    ? trim(strip_tags($globalMeta[$this->getLanguageID()]->Meta_Description_Praefix) . ' ' . $cKatDescription)
                     : trim($cKatDescription);
                 // Seitenzahl anhaengen ab Seite 2 (Doppelte Meta-Descriptions vermeiden, #5992)
                 if ($oSuchergebnisse->Seitenzahlen->AktuelleSeite > 1 && $oSuchergebnisse->ArtikelVon > 0 && $oSuchergebnisse->ArtikelBis > 0) {
@@ -2236,10 +2263,10 @@ class Navigationsfilter
             $cArtikelName = str_replace('"', '', $cArtikelName);
             $cArtikelName = StringHandler::htmlentitydecode($cArtikelName, ENT_NOQUOTES);
 
-            $cMetaDescription = (!empty($GlobaleMetaAngaben_arr[$this->getLanguageID()]->Meta_Description_Praefix))
+            $cMetaDescription = (!empty($globalMeta[$this->getLanguageID()]->Meta_Description_Praefix))
                 ? $this->getMetaStart($oSuchergebnisse) .
                     ': ' .
-                    $GlobaleMetaAngaben_arr[$this->getLanguageID()]->Meta_Description_Praefix .
+                    $globalMeta[$this->getLanguageID()]->Meta_Description_Praefix .
                     ' ' . $cArtikelName
                 : $this->getMetaStart($oSuchergebnisse) . ': ' . $cArtikelName;
             // Seitenzahl anhaengen ab Seite 2 (Doppelte Meta-Descriptions vermeiden, #5992)

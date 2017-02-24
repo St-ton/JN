@@ -807,6 +807,9 @@ class Sprache
             $cacheID = 'langobj';
             if (($this->oSprache_arr = Shop::Cache()->get($cacheID)) === false) {
                 $this->oSprache_arr = Shop::DB()->query("SELECT kSprache FROM tsprache", 2);
+                foreach ($this->oSprache_arr as $lang) {
+                    $lang->kSprache = (int)$lang->kSprache;
+                }
                 Shop::Cache()->set($cacheID, $this->oSprache_arr, [CACHING_GROUP_LANGUAGE]);
             }
         }

@@ -59,11 +59,12 @@ class FilterBaseTag extends AbstractFilter implements IFilter
                     FROM tseo
                     LEFT JOIN ttag
                         ON tseo.kKey = ttag.kTag
-                    WHERE tseo.cKey = 'kTag' AND tseo.kKey = " . $this->getValue(), 1
+                    WHERE tseo.cKey = 'kTag' 
+                        AND tseo.kKey = " . $this->getValue(), 1
         );
         foreach ($languages as $language) {
             $this->cSeo[$language->kSprache] = '';
-            if (isset($oSeo_obj->kSprache) && $language->kSprache == $oSeo_obj->kSprache) {
+            if (isset($oSeo_obj->kSprache) && $language->kSprache === (int)$oSeo_obj->kSprache) {
                 $this->cSeo[$language->kSprache] = $oSeo_obj->cSeo;
             }
         }
@@ -166,7 +167,8 @@ class FilterBaseTag extends AbstractFilter implements IFilter
             ], $state->joins, $state->conditions, $state->having, $order->orderBy, '',
                 ['ttag.kTag', 'tartikel.kArtikel']);
 
-            $query            = "SELECT tseo.cSeo, ssMerkmal.kTag, ssMerkmal.cName, COUNT(*) AS nAnzahl, SUM(ssMerkmal.nAnzahlTagging) AS nAnzahlTagging
+            $query            = "SELECT tseo.cSeo, ssMerkmal.kTag, ssMerkmal.cName, 
+                COUNT(*) AS nAnzahl, SUM(ssMerkmal.nAnzahlTagging) AS nAnzahlTagging
                     FROM (" . $query . ") AS ssMerkmal
                 LEFT JOIN tseo ON tseo.kKey = ssMerkmal.kTag
                     AND tseo.cKey = 'kTag'

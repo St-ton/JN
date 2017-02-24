@@ -63,7 +63,8 @@ class FilterItemSearchSpecial extends AbstractFilter implements IFilter
             $this->cSeo[$language->kSprache] = '';
             if (is_array($oSeo_arr)) {
                 foreach ($oSeo_arr as $oSeo) {
-                    if ($language->kSprache == $oSeo->kSprache) {
+                    $oSeo->kSprache = (int)$oSeo->kSprache;
+                    if ($language->kSprache === $oSeo->kSprache) {
                         $this->cSeo[$language->kSprache] = $oSeo->cSeo;
                     }
                 }
@@ -124,7 +125,7 @@ class FilterItemSearchSpecial extends AbstractFilter implements IFilter
         switch ($this->kKey) {
             case SEARCHSPECIALS_BESTSELLER:
                 $nAnzahl = (isset($conf['global']['global_bestseller_minanzahl'])
-                    && intval($conf['global']['global_bestseller_minanzahl'] > 0))
+                    && (int)$conf['global']['global_bestseller_minanzahl'] > 0)
                     ? (int)$conf['global']['global_bestseller_minanzahl']
                     : 100;
 
@@ -162,7 +163,7 @@ class FilterItemSearchSpecial extends AbstractFilter implements IFilter
 
             case SEARCHSPECIALS_TOPREVIEWS:
                 if (!Shop::getNaviFilter()->BewertungFilter->isInitialized()) {
-                    $nMindestSterne = (intval($conf['boxen']['boxen_topbewertet_minsterne'] > 0))
+                    $nMindestSterne = ((int)$conf['boxen']['boxen_topbewertet_minsterne'] > 0)
                         ? (int)$conf['boxen']['boxen_topbewertet_minsterne']
                         : 4;
 
@@ -301,10 +302,16 @@ class FilterItemSearchSpecial extends AbstractFilter implements IFilter
                                  ->setOn('tartikelext.kArtikel = tartikel.kArtikel');
                             $state->joins[] = $join;
                         }
-                        $state->conditions[] = "ROUND(tartikelext.fDurchschnittsBewertung) >= " . (int)$this->getConfig()['boxen']['boxen_topbewertet_minsterne'];
+                        $state->conditions[] = "ROUND(tartikelext.fDurchschnittsBewertung) >= " .
+                            (int)$this->getConfig()['boxen']['boxen_topbewertet_minsterne'];
                         break;
                 }
-                $qry                   = $naviFilter->getBaseQuery(['tartikel.kArtikel'], $state->joins, $state->conditions, $state->having);
+                $qry                   = $naviFilter->getBaseQuery(
+                    ['tartikel.kArtikel'],
+                    $state->joins,
+                    $state->conditions,
+                    $state->having
+                );
                 $oSuchspecialFilterDB  = Shop::DB()->query($qry, 2);
                 $oSuchspecial          = new stdClass();
                 $oSuchspecial->nAnzahl = count($oSuchspecialFilterDB);

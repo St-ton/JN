@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 $bExtern = true;
-require_once dirname(__FILE__) . '/admininclude.php';
+require_once __DIR__ . '/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'benutzerverwaltung_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'admininclude.php';
 require_once PFAD_ROOT . PFAD_GRAPHCLASS . 'graph.php';

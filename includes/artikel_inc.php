@@ -126,7 +126,7 @@ function gibArtikelXSelling($kArtikel, $isParent = null)
                 );
             }
         }
-        $xsellCount2 = (is_array($xsell)) ? count($xsell) : 0;
+        $xsellCount2 = is_array($xsell) ? count($xsell) : 0;
         if ($xsellCount2 > 0) {
             if (!isset($xSelling->Kauf)) {
                 $xSelling->Kauf = new stdClass();
@@ -142,7 +142,10 @@ function gibArtikelXSelling($kArtikel, $isParent = null)
             }
         }
     }
-    executeHook(HOOK_ARTIKEL_INC_XSELLING, ['kArtikel' => $kArtikel, 'xSelling' => &$xSelling]);
+    executeHook(HOOK_ARTIKEL_INC_XSELLING, [
+        'kArtikel' => $kArtikel,
+        'xSelling' => &$xSelling
+    ]);
 
     return $xSelling;
 }
@@ -161,7 +164,7 @@ function bearbeiteFrageZumProdukt()
         executeHook(HOOK_ARTIKEL_INC_FRAGEZUMPRODUKT_PLAUSI);
 
         if ($nReturnValue) {
-            if (!floodSchutzProduktanfrage(intval($conf['artikeldetails']['produktfrage_sperre_minuten']))) {
+            if (!floodSchutzProduktanfrage((int)$conf['artikeldetails']['produktfrage_sperre_minuten'])) {
                 $oCheckBox     = new CheckBox();
                 $kKundengruppe = Kundengruppe::getCurrent();
                 $oAnfrage      = baueProduktanfrageFormularVorgaben();
@@ -257,15 +260,15 @@ function gibFehlendeEingabenProduktanfrageformular()
 function baueProduktanfrageFormularVorgaben()
 {
     $msg             = new stdClass();
-    $msg->cNachricht = (isset($_POST['nachricht'])) ? StringHandler::filterXSS($_POST['nachricht']) : null;
-    $msg->cAnrede    = (isset($_POST['anrede'])) ? StringHandler::filterXSS($_POST['anrede']) : null;
-    $msg->cVorname   = (isset($_POST['vorname'])) ? StringHandler::filterXSS($_POST['vorname']) : null;
-    $msg->cNachname  = (isset($_POST['nachname'])) ? StringHandler::filterXSS($_POST['nachname']) : null;
-    $msg->cFirma     = (isset($_POST['firma'])) ? StringHandler::filterXSS($_POST['firma']) : null;
-    $msg->cMail      = (isset($_POST['email'])) ? StringHandler::filterXSS($_POST['email']) : null;
-    $msg->cFax       = (isset($_POST['fax'])) ? StringHandler::filterXSS($_POST['fax']) : null;
-    $msg->cTel       = (isset($_POST['tel'])) ? StringHandler::filterXSS($_POST['tel']) : null;
-    $msg->cMobil     = (isset($_POST['mobil'])) ? StringHandler::filterXSS($_POST['mobil']) : null;
+    $msg->cNachricht = isset($_POST['nachricht']) ? StringHandler::filterXSS($_POST['nachricht']) : null;
+    $msg->cAnrede    = isset($_POST['anrede']) ? StringHandler::filterXSS($_POST['anrede']) : null;
+    $msg->cVorname   = isset($_POST['vorname']) ? StringHandler::filterXSS($_POST['vorname']) : null;
+    $msg->cNachname  = isset($_POST['nachname']) ? StringHandler::filterXSS($_POST['nachname']) : null;
+    $msg->cFirma     = isset($_POST['firma']) ? StringHandler::filterXSS($_POST['firma']) : null;
+    $msg->cMail      = isset($_POST['email']) ? StringHandler::filterXSS($_POST['email']) : null;
+    $msg->cFax       = isset($_POST['fax']) ? StringHandler::filterXSS($_POST['fax']) : null;
+    $msg->cTel       = isset($_POST['tel']) ? StringHandler::filterXSS($_POST['tel']) : null;
+    $msg->cMobil     = isset($_POST['mobil']) ? StringHandler::filterXSS($_POST['mobil']) : null;
     if (strlen($msg->cAnrede) === 1) {
         if ($msg->cAnrede === 'm') {
             $msg->cAnredeLocalized = Shop::Lang()->get('salutationM', 'global');
@@ -320,7 +323,7 @@ function sendeProduktanfrage()
     if (isset($conf['artikeldetails']['artikeldetails_fragezumprodukt_email'])) {
         $mail->toEmail = $conf['artikeldetails']['artikeldetails_fragezumprodukt_email'];
     }
-    if (strlen($mail->toEmail) === 0) {
+    if (empty($mail->toEmail)) {
         $mail->toEmail = $conf['emails']['email_master_absender'];
     }
     $mail->toName       = $conf['global']['global_shopname'];
@@ -404,9 +407,9 @@ function floodSchutzArtikelWeiterempfehlen($min = 0)
 function bearbeiteBenachrichtigung()
 {
     $conf = Shop::getSettings([CONF_ARTIKELDETAILS]);
-    if (isset($conf['artikeldetails']['benachrichtigung_nutzen']) &&
-        $conf['artikeldetails']['benachrichtigung_nutzen'] !== 'N' &&
-        intval($_POST['a']) > 0
+    if ((int)$_POST['a'] > 0 &&
+        isset($conf['artikeldetails']['benachrichtigung_nutzen']) &&
+        $conf['artikeldetails']['benachrichtigung_nutzen'] !== 'N'
     ) {
         $fehlendeAngaben = gibFehlendeEingabenBenachrichtigungsformular();
         Shop::Smarty()->assign('fehlendeAngaben_benachrichtigung', $fehlendeAngaben);
@@ -486,10 +489,10 @@ function gibFehlendeEingabenBenachrichtigungsformular()
     if (pruefeEmailblacklist($_POST['email'])) {
         $ret['email'] = 3;
     }
-    if ($conf['artikeldetails']['benachrichtigung_abfragen_vorname'] === 'Y' && !$_POST['vorname']) {
+    if (empty($_POST['vorname']) && $conf['artikeldetails']['benachrichtigung_abfragen_vorname'] === 'Y') {
         $ret['vorname'] = 1;
     }
-    if ($conf['artikeldetails']['benachrichtigung_abfragen_nachname'] === 'Y' && !$_POST['nachname']) {
+    if (empty($_POST['nachname']) && $conf['artikeldetails']['benachrichtigung_abfragen_nachname'] === 'Y') {
         $ret['nachname'] = 1;
     }
     if ($conf['artikeldetails']['benachrichtigung_abfragen_captcha'] !== 'N' && !validateCaptcha($_POST)) {
@@ -550,10 +553,10 @@ function gibNaviBlaettern($kArtikel, $kKategorie)
     $kKategorie = (int)$kKategorie;
     $navi       = new stdClass();
     // Wurde der Artikel von der Artikelübersicht aus angeklickt?
-    if (isset($_SESSION['oArtikelUebersichtKey_arr']) &&
+    if ($kArtikel > 0 &&
+        isset($_SESSION['oArtikelUebersichtKey_arr']) &&
         is_array($_SESSION['oArtikelUebersichtKey_arr']) &&
         count($_SESSION['oArtikelUebersichtKey_arr']) > 0
-        && $kArtikel > 0
     ) {
         // Such die Position des aktuellen Artikels im Array der Artikelübersicht
         $nArrayPos          = -1;
@@ -567,22 +570,22 @@ function gibNaviBlaettern($kArtikel, $kKategorie)
         }
         if ($nArrayPos === 0) {
             // Artikel ist an der ersten Position => es gibt nur einen nächsten Artikel (oder keinen :))
-            $kArtikelNaechster = (isset($_SESSION['oArtikelUebersichtKey_arr'][$nArrayPos + 1]))
-                ? $_SESSION['oArtikelUebersichtKey_arr'][$nArrayPos + 1]
+            $kArtikelNaechster = isset($_SESSION['oArtikelUebersichtKey_arr'][$nArrayPos + 1]->kArtikel)
+                ? $_SESSION['oArtikelUebersichtKey_arr'][$nArrayPos + 1]->kArtikel
                 : null;
         } elseif ($nArrayPos === (count($_SESSION['oArtikelUebersichtKey_arr']) - 1)) {
             // Artikel ist an der letzten Position => es gibt nur einen voherigen Artikel
-            $kArtikelVorheriger = $_SESSION['oArtikelUebersichtKey_arr'][$nArrayPos - 1];
+            $kArtikelVorheriger = $_SESSION['oArtikelUebersichtKey_arr'][$nArrayPos - 1]->kArtikel;
         } elseif ($nArrayPos !== -1) {
-            $kArtikelNaechster  = $_SESSION['oArtikelUebersichtKey_arr'][$nArrayPos + 1];
-            $kArtikelVorheriger = $_SESSION['oArtikelUebersichtKey_arr'][$nArrayPos - 1];
+            $kArtikelNaechster  = $_SESSION['oArtikelUebersichtKey_arr'][$nArrayPos + 1]->kArtikel;
+            $kArtikelVorheriger = $_SESSION['oArtikelUebersichtKey_arr'][$nArrayPos - 1]->kArtikel;
         }
         // Nächster Artikel
         if ($kArtikelNaechster > 0) {
             $navi->naechsterArtikel = new Artikel();
             $navi->naechsterArtikel->fuelleArtikel($kArtikelNaechster, Artikel::getDefaultOptions());
 
-            if (!isset($navi->naechsterArtikel->kArtikel) || $navi->naechsterArtikel->kArtikel == 0) {
+            if (!$navi->naechsterArtikel->kArtikel > 0) {
                 unset($navi->naechsterArtikel);
             }
         }
@@ -591,7 +594,7 @@ function gibNaviBlaettern($kArtikel, $kKategorie)
             $navi->vorherigerArtikel = new Artikel();
             $navi->vorherigerArtikel->fuelleArtikel($kArtikelVorheriger, Artikel::getDefaultOptions());
 
-            if (!isset($navi->vorherigerArtikel->kArtikel) || $navi->vorherigerArtikel->kArtikel == 0) {
+            if (!$navi->vorherigerArtikel->kArtikel > 0) {
                 unset($navi->vorherigerArtikel);
             }
         }
@@ -675,11 +678,11 @@ function gibNichtErlaubteEigenschaftswerte($nEigenschaftWert)
 }
 
 /**
- * @param null|string  $cRedirectParam
- * @param bool         $bRenew
- * @param null|Artikel $oArtikel
- * @param null|float   $fAnzahl
- * @param int          $kKonfigitem
+ * @param null|string|array $cRedirectParam
+ * @param bool              $bRenew
+ * @param null|Artikel      $oArtikel
+ * @param null|float        $fAnzahl
+ * @param int               $kKonfigitem
  * @return array
  */
 function baueArtikelhinweise($cRedirectParam = null, $bRenew = false, $oArtikel = null, $fAnzahl = null, $kKonfigitem = 0)
@@ -687,10 +690,10 @@ function baueArtikelhinweise($cRedirectParam = null, $bRenew = false, $oArtikel 
     if ($cRedirectParam === null && isset($_GET['r'])) {
         $cRedirectParam = $_GET['r'];
     }
-    if (!isset($GLOBALS['Artikelhinweise']) || !is_array($GLOBALS['Artikelhinweise']) || $bRenew) {
+    if ($bRenew || !isset($GLOBALS['Artikelhinweise']) || !is_array($GLOBALS['Artikelhinweise'])) {
         $GLOBALS['Artikelhinweise'] = [];
     }
-    if (!isset($GLOBALS['PositiveFeedback']) || !is_array($GLOBALS['PositiveFeedback']) || $bRenew) {
+    if ($bRenew || !isset($GLOBALS['PositiveFeedback']) || !is_array($GLOBALS['PositiveFeedback'])) {
         $GLOBALS['PositiveFeedback'] = [];
     }
     if ($cRedirectParam) {
@@ -767,7 +770,7 @@ function bearbeiteProdukttags($AktuellerArtikel)
         if (strlen($tag) > 0) {
             $conf = Shop::getSettings([CONF_ARTIKELDETAILS]);
             // Prüfe ob Kunde eingeloggt
-            if ($conf['artikeldetails']['tagging_freischaltung'] === 'Y' && empty($_SESSION['Kunde']->kKunde)) {
+            if (empty($_SESSION['Kunde']->kKunde) && $conf['artikeldetails']['tagging_freischaltung'] === 'Y') {
                 $linkHelper = LinkHelper::getInstance();
                 header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true) .
                     '?a=' . (int)$_POST['a'] . '&tag=' .
@@ -792,7 +795,7 @@ function bearbeiteProdukttags($AktuellerArtikel)
                             WHERE dZeit > DATE_SUB(now(),INTERVAL 1 DAY)
                                 AND kKunde = " . (int)$_SESSION['Kunde']->kKunde, 1
                     );
-                    $kKunde = $_SESSION['Kunde']->kKunde;
+                    $kKunde = (int)$_SESSION['Kunde']->kKunde;
                 } else { // Wenn nicht, dann hat ein anonymer Besucher ein Tag gepostet
                     $count_tag_postings = Shop::DB()->query(
                         "SELECT count(kTagKunde) AS Anzahl FROM ttagkunde
@@ -803,8 +806,8 @@ function bearbeiteProdukttags($AktuellerArtikel)
                     $kKunde = 0;
                 }
                 // Wenn die max. eingestellte Anzahl der Posts pro Tag nicht überschritten wurde
-                if ($count_tag_postings->Anzahl < intval($conf['artikeldetails']['tagging_max_ip_count'])) {
-                    if ($conf['artikeldetails']['tagging_freischaltung'] === 'Y' && $kKunde == 0) {
+                if ($count_tag_postings->Anzahl < (int)$conf['artikeldetails']['tagging_max_ip_count']) {
+                    if ($kKunde === 0 && $conf['artikeldetails']['tagging_freischaltung'] === 'Y') {
                         return Shop::Lang()->get('pleaseLoginToAddTags', 'messages');
                     }
                     // Prüfe, ob der Tag bereits gemappt wurde
@@ -908,12 +911,12 @@ function baueBewertungNavi($bewertung_seite, $bewertung_sterne, $nAnzahlBewertun
     if ((int)$nAnzahlBewertungen > (int)$nAnzahlSeiten) {
         $nBlaetterAnzahl_arr = [];
         // Anzahl an Seiten
-        $nSeiten     = ceil(intval($nAnzahlBewertungen) / intval($nAnzahlSeiten));
+        $nSeiten     = ceil((int)$nAnzahlBewertungen / (int)$nAnzahlSeiten);
         $nMaxAnzeige = 5; // Zeige in der Navigation nur maximal X Seiten an
         $nAnfang     = 0; // Wenn die aktuelle Seite - $nMaxAnzeige größer 0 ist, wird nAnfang gesetzt
         $nEnde       = 0; // Wenn die aktuelle Seite + $nMaxAnzeige <= $nSeitenist, wird nEnde gesetzt
         $nVoherige   = $bewertung_seite - 1; // Zum zurück blättern in der Navigation
-        if ($nVoherige == 0) {
+        if ($nVoherige === 0) {
             $nVoherige = 1;
         }
         $nNaechste = $bewertung_seite + 1; // Zum vorwärts blättern in der Navigation
@@ -966,7 +969,7 @@ function baueBewertungNavi($bewertung_seite, $bewertung_sterne, $nAnzahlBewertun
     $oBlaetterNavi->nBis           = $oBlaetterNavi->nAktuelleSeite * $nAnzahlSeiten;
 
     if ($oBlaetterNavi->nBis > $nAnzahlBewertungen) {
-        $oBlaetterNavi->nBis -= 1;
+        --$oBlaetterNavi->nBis;
     }
 
     return $oBlaetterNavi;
@@ -1003,7 +1006,7 @@ function mappingFehlerCode($cCode, $fGuthaben = 0.0)
             $error = Shop::Lang()->get('bewertungHilfchange', 'messages');
             break;
         case 'h04':
-            $error = sprintf(Shop::Lang()->get('bewertungBewaddCredits', 'messages'), strval($fGuthaben));
+            $error = sprintf(Shop::Lang()->get('bewertungBewaddCredits', 'messages'), (string)$fGuthaben);
             break;
         case 'h05':
             $error = Shop::Lang()->get('bewertungBewaddacitvate', 'messages');
@@ -1032,18 +1035,18 @@ function fasseVariVaterUndKindZusammen($oVaterArtikel, $oKindArtikel)
     $oArtikel->kEigenschaftKombi                = $oVaterArtikel->kEigenschaftKombi;
     $oArtikel->kEigenschaftKombi_arr            = $oVaterArtikel->kEigenschaftKombi_arr;
     $oArtikel->fDurchschnittsBewertung          = $oVaterArtikel->fDurchschnittsBewertung;
-    $oArtikel->Bewertungen                      = (isset($oVaterArtikel->Bewertungen))
+    $oArtikel->Bewertungen                      = isset($oVaterArtikel->Bewertungen)
         ? $oVaterArtikel->Bewertungen
         : null;
-    $oArtikel->HilfreichsteBewertung            = (isset($oVaterArtikel->HilfreichsteBewertung))
+    $oArtikel->HilfreichsteBewertung            = isset($oVaterArtikel->HilfreichsteBewertung)
         ? $oVaterArtikel->HilfreichsteBewertung
         : null;
-    $oArtikel->oVariationKombiVorschau_arr      = (isset($oVaterArtikel->oVariationKombiVorschau_arr))
+    $oArtikel->oVariationKombiVorschau_arr      = isset($oVaterArtikel->oVariationKombiVorschau_arr)
         ? $oVaterArtikel->oVariationKombiVorschau_arr
         : [];
     $oArtikel->oVariationDetailPreis_arr        = $oVaterArtikel->oVariationDetailPreis_arr;
     $oArtikel->nVariationKombiNichtMoeglich_arr = $oVaterArtikel->nVariationKombiNichtMoeglich_arr;
-    $oArtikel->oVariationKombiVorschauText      = (isset($oVaterArtikel->oVariationKombiVorschauText))
+    $oArtikel->oVariationKombiVorschauText      = isset($oVaterArtikel->oVariationKombiVorschauText)
         ? $oVaterArtikel->oVariationKombiVorschauText
         : null;
     $oArtikel->cVaterURL                        = $oVaterArtikel->cURL;
@@ -1075,7 +1078,8 @@ function holeAehnlicheArtikel($kArtikel)
         foreach ($oXSeller->Standard->XSellGruppen as $oXSeller) {
             if (is_array($oXSeller->Artikel) && count($oXSeller->Artikel) > 0) {
                 foreach ($oXSeller->Artikel as $oArtikel) {
-                    if (!in_array($oArtikel->kArtikel, $kArtikelXSellerKey_arr)) {
+                    $oArtikel->kArtikel = (int)$oArtikel->kArtikel;
+                    if (!in_array($oArtikel->kArtikel, $kArtikelXSellerKey_arr, true)) {
                         $kArtikelXSellerKey_arr[] = $oArtikel->kArtikel;
                     }
                 }
@@ -1089,7 +1093,8 @@ function holeAehnlicheArtikel($kArtikel)
         foreach ($oXSeller->Kauf->XSellGruppen as $oXSeller) {
             if (is_array($oXSeller->Artikel) && count($oXSeller->Artikel) > 0) {
                 foreach ($oXSeller->Artikel as $oArtikel) {
-                    if (!in_array($oArtikel->kArtikel, $kArtikelXSellerKey_arr)) {
+                    $oArtikel->kArtikel = (int)$oArtikel->kArtikel;
+                    if (!in_array($oArtikel->kArtikel, $kArtikelXSellerKey_arr, true)) {
                         $kArtikelXSellerKey_arr[] = $oArtikel->kArtikel;
                     }
                 }
@@ -1103,7 +1108,7 @@ function holeAehnlicheArtikel($kArtikel)
     }
 
     if ($kArtikel > 0) {
-        if (intval($conf['artikeldetails']['artikeldetails_aehnlicheartikel_anzahl']) > 0) {
+        if ((int)$conf['artikeldetails']['artikeldetails_aehnlicheartikel_anzahl'] > 0) {
             $cLimit = " LIMIT " . (int)$conf['artikeldetails']['artikeldetails_aehnlicheartikel_anzahl'];
         }
         $lagerFilter         = gibLagerfilter();
@@ -1228,14 +1233,15 @@ function holeAehnlicheArtikel($kArtikel)
     }
     executeHook(HOOK_ARTIKEL_INC_AEHNLICHEARTIKEL, ['oArtikel_arr' => &$oArtikel_arr]);
 
-    if (is_array($oArtikel_arr) && count($oArtikel_arr) > 0) {
-        // X-Seller aus Menge werfen
-        if (is_array($kArtikelXSellerKey_arr) && count($kArtikelXSellerKey_arr) > 0) {
-            foreach ($oArtikel_arr as $i => $oArtikel) {
-                foreach ($kArtikelXSellerKey_arr as $kArtikelXSellerKey) {
-                    if ($oArtikel->kArtikel == $kArtikelXSellerKey) {
-                        unset($oArtikel_arr[$i]);
-                    }
+    if (is_array($oArtikel_arr) &&
+        is_array($kArtikelXSellerKey_arr) &&
+        count($oArtikel_arr) > 0 &&
+        count($kArtikelXSellerKey_arr) > 0
+    ) {
+        foreach ($oArtikel_arr as $i => $oArtikel) {
+            foreach ($kArtikelXSellerKey_arr as $kArtikelXSellerKey) {
+                if ($oArtikel->kArtikel == $kArtikelXSellerKey) {
+                    unset($oArtikel_arr[$i]);
                 }
             }
         }
@@ -1320,7 +1326,7 @@ function buildConfig($kArtikel, $fAnzahl, $nVariation_arr, $nKonfiggruppe_arr, $
     foreach ($oKonfig->oKonfig_arr as $i => &$oKonfiggruppe) {
         $oKonfiggruppe->bAktiv = false;
         $kKonfiggruppe         = $oKonfiggruppe->getKonfiggruppe();
-        $nKonfigitem_arr       = (isset($nKonfiggruppe_arr[$kKonfiggruppe])) ? $nKonfiggruppe_arr[$kKonfiggruppe] : [];
+        $nKonfigitem_arr       = isset($nKonfiggruppe_arr[$kKonfiggruppe]) ? $nKonfiggruppe_arr[$kKonfiggruppe] : [];
         foreach ($oKonfiggruppe->oItem_arr as $j => &$oKonfigitem) {
             /** @var Konfigitem $oKonfigitem */
             $kKonfigitem          = $oKonfigitem->getKonfigitem();

@@ -474,6 +474,14 @@ final class Shop
     {
         return new Jtllog();
     }
+    
+    /**
+     * @return PHPSettingsHelper
+     */
+    public function PHPSettingsHelper()
+    {
+        return PHPSettingsHelper::getInstance();
+    }
 
     /**
      * get cache instance
@@ -694,7 +702,7 @@ final class Shop
             self::$cSuche = StringHandler::xssClean(verifyGPDataString('suche'));
         }
         //avoid redirect loops for surveys that require logged in customers
-        if (self::$kUmfrage > 0 && verifyGPCDataInteger('r') !== '' && empty($_SESSION['Kunde']->kKunde)) {
+        if (self::$kUmfrage > 0 && empty($_SESSION['Kunde']->kKunde) && verifyGPCDataInteger('r') !== 0) {
             self::$kUmfrage = 0;
         }
 
@@ -714,7 +722,10 @@ final class Shop
                 //but we wont to go to the login page, not to the article page
                 self::$kArtikel = 0;
             }
-        } elseif (self::$kArtikel > 0 && ((int)$redirect === R_LOGIN_BEWERTUNG || (int)$redirect === R_LOGIN_TAG) && empty($_SESSION['Kunde']->kKunde)) {
+        } elseif (self::$kArtikel > 0 &&
+            ((int)$redirect === R_LOGIN_BEWERTUNG || (int)$redirect === R_LOGIN_TAG) &&
+            empty($_SESSION['Kunde']->kKunde)
+        ) {
             //avoid redirect to article page for ratings that require logged in customers
             self::$kArtikel = 0;
         }
@@ -748,7 +759,7 @@ final class Shop
             'kArtikel'               => self::$kArtikel,
             'kVariKindArtikel'       => self::$kVariKindArtikel,
             'kSeite'                 => self::$kSeite,
-            'kLink'                  => (intval(self::$kSeite) > 0) ? self::$kSeite : self::$kLink,
+            'kLink'                  => self::$kSeite > 0 ? self::$kSeite : self::$kLink,
             'kSuchanfrage'           => self::$kSuchanfrage,
             'kMerkmalWert'           => self::$kMerkmalWert,
             'kTag'                   => self::$kTag,
@@ -765,11 +776,11 @@ final class Shop
             'nSortierung'            => self::$nSortierung,
             'nSort'                  => self::$nSort,
             'MerkmalFilter_arr'      => self::$MerkmalFilter,
-            'TagFilter_arr'          => (isset(self::$TagFilter)) ? self::$TagFilter : [],
-            'SuchFilter_arr'         => (isset(self::$SuchFilter)) ? self::$SuchFilter : [],
-            'nArtikelProSeite'       => (isset(self::$nArtikelProSeite)) ? self::$nArtikelProSeite : null,
-            'cSuche'                 => (isset(self::$cSuche)) ? self::$cSuche : null,
-            'seite'                  => (isset(self::$seite)) ? self::$seite : null,
+            'TagFilter_arr'          => self::$TagFilter !== null ? self::$TagFilter : [],
+            'SuchFilter_arr'         => self::$SuchFilter !== null ? self::$SuchFilter : [],
+            'nArtikelProSeite'       => self::$nArtikelProSeite !== null ? self::$nArtikelProSeite : null,
+            'cSuche'                 => self::$cSuche !== null ? self::$cSuche : null,
+            'seite'                  => self::$seite !== null ? self::$seite : null,
             'show'                   => self::$show,
             'is404'                  => self::$is404,
             'kSuchFilter'            => self::$kSuchFilter,
@@ -821,12 +832,12 @@ final class Shop
                     $seo = substr($seo, 0, strlen($seo) - 1);
                 }
                 $nMatch = preg_match('/[^_](' . SEP_SEITE . '([0-9]+))/', $seo, $cMatch_arr, PREG_OFFSET_CAPTURE);
-                if ($nMatch !== false && $nMatch == 1) {
+                if ($nMatch === 1) {
                     $seite = (int)$cMatch_arr[2][0];
                     $seo   = substr($seo, 0, $cMatch_arr[1][1]);
                 }
                 //double content work around
-                if (strlen($seo) > 0 && $seite === 1) {
+                if ($seite === 1 && strlen($seo) > 0) {
                     http_response_code(301);
                     header('Location: ' . self::getURL() . '/' . $seo);
                     exit();
@@ -911,7 +922,7 @@ final class Shop
                 } else {
                     $seo = $oKategorie_arr[0];
                 }
-                if (intval($seite) > 0) {
+                if ((int)$seite > 0) {
                     $_GET['seite'] = (int)$seite;
                 }
                 //split attribute/attribute value
@@ -943,7 +954,7 @@ final class Shop
                     $nMerkmalZaehler = 1;
                     $_GET['mf'] = [];
                     foreach ($cSEOMerkmal_arr as $i => $cSEOMerkmal) {
-                        if (strlen($cSEOMerkmal) > 0 && $i > 0) {
+                        if ($i > 0 && strlen($cSEOMerkmal) > 0) {
                             $oSeo = self::DB()->select('tseo', 'cKey', 'kMerkmalWert', 'cSeo', $cSEOMerkmal);
                             if (isset($oSeo->kKey) && strcasecmp($oSeo->cSeo, $cSEOMerkmal) === 0) {
                                 //haenge an GET, damit baueMerkmalFilter die Merkmalfilter setzen kann - @todo?
@@ -1051,9 +1062,10 @@ final class Shop
      */
     public static function getEntryPoint()
     {
-        $fileName = null;
         self::setPageType(PAGE_UNBEKANNT);
-        if (((self::$kArtikel > 0 && !self::$kKategorie) || (self::$kArtikel > 0 && self::$kKategorie > 0 && self::$show == 1))) {
+        if ((self::$kArtikel > 0 && !self::$kKategorie) ||
+            (self::$kArtikel > 0 && self::$kKategorie > 0 && self::$show === 1)
+        ) {
             $kVaterArtikel = ArtikelHelper::getParent(self::$kArtikel);
             if ($kVaterArtikel > 0) {
                 $kArtikel = $kVaterArtikel;
@@ -1116,8 +1128,7 @@ final class Shop
                 $link        = null;
                 $linkHelper  = LinkHelper::getInstance();
                 if (!empty($_SESSION['Kundengruppe']->kKundengruppe)) {
-                    $cKundengruppenSQL = " AND (cKundengruppen LIKE '" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";%'
-                        OR cKundengruppen LIKE '%;" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";%'
+                    $cKundengruppenSQL = " AND (cKundengruppen RLIKE '^([0-9;]*;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";'
                         OR cKundengruppen IS NULL 
                         OR cKundengruppen = 'NULL' 
                         OR tlink.cKundengruppen = '')";
@@ -1266,7 +1277,7 @@ final class Shop
     {
         $oVersion = self::DB()->query("SELECT nVersion FROM tversion", 1);
 
-        return (isset($oVersion->nVersion) && intval($oVersion->nVersion) > 0)
+        return (isset($oVersion->nVersion) && (int)$oVersion->nVersion > 0)
             ? (int)$oVersion->nVersion
             : 0;
     }
@@ -1383,7 +1394,7 @@ final class Shop
         $xShopurl_arr = parse_url(self::getURL());
         $xBaseurl_arr = parse_url($uri);
 
-        if (!isset($xShopurl_arr['path']) || strlen($xShopurl_arr['path']) === 0) {
+        if (empty($xShopurl_arr['path'])) {
             $xShopurl_arr['path'] = '/';
         }
 

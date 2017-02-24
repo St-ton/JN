@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/admininclude.php';
+require_once __DIR__ . '/includes/admininclude.php';
 /** @global JTLSmarty $smarty */
 $oAccount->permission('EXTENSION_VOTE_VIEW', true, true);
 $cFehler  = '';
@@ -20,7 +20,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
     }
     if (isset($_POST['a']) && $_POST['a'] === 'addQuest') {
         $oAuswahlAssistentFrage                          = new AuswahlAssistentFrage();
-        $oAuswahlAssistentFrage->cFrage                  = htmlspecialchars($_POST['cFrage']);
+        $oAuswahlAssistentFrage->cFrage                  = htmlspecialchars($_POST['cFrage'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
         $oAuswahlAssistentFrage->kMerkmal                = (int)$_POST['kMerkmal'];
         $oAuswahlAssistentFrage->kAuswahlAssistentGruppe = (int)$_POST['kAuswahlAssistentGruppe'];
         $oAuswahlAssistentFrage->nSort                   = (int)$_POST['nSort'];

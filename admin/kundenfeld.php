@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/admininclude.php';
+require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('ORDER_CUSTOMERFIELDS_VIEW', true, true);
 
@@ -52,7 +52,7 @@ if (isset($_POST['einstellungen']) && intval($_POST['einstellungen']) > 0) {
             $cHinweis .= 'Ihre Kundenfelder wurden erfolgreich aktualisiert.';
         }
     } else { // Speichern
-        $cName           = htmlspecialchars($_POST['cName']);
+        $cName           = htmlspecialchars($_POST['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
         $cWawi           = str_replace(['"',"'"], '',$_POST['cWawi']);
         $cTyp            = $_POST['cTyp'];
         $nSort           = intval($_POST['nSort']);

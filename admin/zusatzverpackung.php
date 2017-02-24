@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/admininclude.php';
+require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('ORDER_PACKAGE_VIEW', true, true);
 
@@ -29,7 +29,7 @@ if (isset($_POST['eintragen']) && intval($_POST['eintragen']) === 1 && validateT
                 $oVerpackung = new stdClass();
             }
             $oVerpackung->kSteuerklasse = $kSteuerklasse;
-            $oVerpackung->cName         = htmlspecialchars(strip_tags(trim($_POST['cName_' . $oSprache_arr[0]->cISO])));
+            $oVerpackung->cName         = htmlspecialchars(strip_tags(trim($_POST['cName_' . $oSprache_arr[0]->cISO])), ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
 
             if ($kKundengruppe_arr[0] == '-1') {
                 $oVerpackung->cKundengruppe = '-1';
@@ -62,11 +62,11 @@ if (isset($_POST['eintragen']) && intval($_POST['eintragen']) === 1 && validateT
                     $oVerpackungSprache->kVerpackung   = $kVerpackung;
                     $oVerpackungSprache->cISOSprache   = $oSprache->cISO;
                     $oVerpackungSprache->cName         = (!empty($_POST['cName_' . $oSprache->cISO]))
-                        ? htmlspecialchars($_POST['cName_' . $oSprache->cISO])
-                        : htmlspecialchars($_POST['cName_' . $oSprache_arr[0]->cISO]);
+                        ? htmlspecialchars($_POST['cName_' . $oSprache->cISO], ENT_COMPAT | ENT_HTML401, JTL_CHARSET)
+                        : htmlspecialchars($_POST['cName_' . $oSprache_arr[0]->cISO], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
                     $oVerpackungSprache->cBeschreibung = (!empty($_POST['cBeschreibung_' . $oSprache->cISO]))
-                        ? htmlspecialchars($_POST['cBeschreibung_' . $oSprache->cISO])
-                        : htmlspecialchars($_POST['cBeschreibung_' . $oSprache_arr[0]->cISO]);
+                        ? htmlspecialchars($_POST['cBeschreibung_' . $oSprache->cISO], ENT_COMPAT | ENT_HTML401, JTL_CHARSET)
+                        : htmlspecialchars($_POST['cBeschreibung_' . $oSprache_arr[0]->cISO], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
                     Shop::DB()->insert('tverpackungsprache', $oVerpackungSprache);
                 }
             }

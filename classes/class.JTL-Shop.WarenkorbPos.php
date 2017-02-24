@@ -175,7 +175,7 @@ class WarenkorbPos
      */
     public function __construct($kWarenkorbPos = 0)
     {
-        if (intval($kWarenkorbPos) > 0) {
+        if ((int)$kWarenkorbPos > 0) {
             $this->loadFromDB($kWarenkorbPos);
         }
     }
@@ -200,7 +200,11 @@ class WarenkorbPos
         $NeueWarenkorbPosEigenschaft->kEigenschaftWert   = $kEigenschaftWert;
         $NeueWarenkorbPosEigenschaft->fGewichtsdifferenz = $EigenschaftWert->fGewichtDiff;
         $NeueWarenkorbPosEigenschaft->fAufpreis          = $EigenschaftWert->fAufpreisNetto;
-        $Aufpreis_obj                                    = Shop::DB()->select('teigenschaftwertaufpreis', 'kEigenschaftWert', (int)$NeueWarenkorbPosEigenschaft->kEigenschaftWert, 'kKundengruppe', (int)$_SESSION['Kundengruppe']->kKundengruppe);
+        $Aufpreis_obj                                    = Shop::DB()->select(
+            'teigenschaftwertaufpreis',
+            'kEigenschaftWert',  (int)$NeueWarenkorbPosEigenschaft->kEigenschaftWert,
+            'kKundengruppe',  (int)$_SESSION['Kundengruppe']->kKundengruppe
+        );
         if (isset($Aufpreis_obj->fAufpreisNetto) && $Aufpreis_obj->fAufpreisNetto) {
             if ($this->Artikel->Preise->rabatt > 0) {
                 $NeueWarenkorbPosEigenschaft->fAufpreis = $Aufpreis_obj->fAufpreisNetto - (($this->Artikel->Preise->rabatt / 100) * $Aufpreis_obj->fAufpreisNetto);
@@ -219,11 +223,19 @@ class WarenkorbPos
             $NeueWarenkorbPosEigenschaft->cEigenschaftWertName[$Sprache->cISO] = $EigenschaftWert->cName;
 
             if ($Sprache->cStandard !== 'Y') {
-                $eigenschaft_spr = Shop::DB()->select('teigenschaftsprache', 'kEigenschaft', (int)$NeueWarenkorbPosEigenschaft->kEigenschaft, 'kSprache', (int)$Sprache->kSprache);
+                $eigenschaft_spr = Shop::DB()->select(
+                    'teigenschaftsprache',
+                    'kEigenschaft', (int)$NeueWarenkorbPosEigenschaft->kEigenschaft,
+                    'kSprache', (int)$Sprache->kSprache
+                );
                 if (isset($eigenschaft_spr->cName) && $eigenschaft_spr->cName) {
                     $NeueWarenkorbPosEigenschaft->cEigenschaftName[$Sprache->cISO] = $eigenschaft_spr->cName;
                 }
-                $eigenschaftwert_spr = Shop::DB()->select('teigenschaftwertsprache', 'kEigenschaftWert', (int)$NeueWarenkorbPosEigenschaft->kEigenschaftWert, 'kSprache', (int)$Sprache->kSprache);
+                $eigenschaftwert_spr = Shop::DB()->select(
+                    'teigenschaftwertsprache',
+                    'kEigenschaftWert', (int)$NeueWarenkorbPosEigenschaft->kEigenschaftWert,
+                    'kSprache', (int)$Sprache->kSprache
+                );
                 if (isset($eigenschaftwert_spr->cName) && $eigenschaftwert_spr->cName) {
                     $NeueWarenkorbPosEigenschaft->cEigenschaftWertName[$Sprache->cISO] = $eigenschaftwert_spr->cName;
                 }
@@ -382,12 +394,9 @@ class WarenkorbPos
         foreach ($members as $member) {
             $this->$member = $obj->$member;
         }
-
-        if (isset($this->nLongestMinDelivery) && isset($this->nLongestMaxDelivery)) {
+        if (isset($this->nLongestMinDelivery, $this->nLongestMaxDelivery)) {
             self::setEstimatedDelivery($this, $this->nLongestMinDelivery, $this->nLongestMaxDelivery);
-
-            unset($this->nLongestMinDelivery);
-            unset($this->nLongestMaxDelivery);
+            unset($this->nLongestMinDelivery, $this->nLongestMaxDelivery);
         } else {
             self::setEstimatedDelivery($this);
         }
@@ -422,7 +431,7 @@ class WarenkorbPos
         $obj->kBestellpos               = $this->kBestellpos;
         $obj->fLagerbestandVorAbschluss = $this->fLagerbestandVorAbschluss;
 
-        if (isset($this->oEstimatedDelivery)) {
+        if (isset($this->oEstimatedDelivery->longestMin)) {
             // Lieferzeiten nur speichern, wenn sie gesetzt sind, also z.B. nicht bei Versandkosten etc.
             $obj->nLongestMinDelivery = $this->oEstimatedDelivery->longestMin;
             $obj->nLongestMaxDelivery = $this->oEstimatedDelivery->longestMax;
@@ -438,7 +447,7 @@ class WarenkorbPos
      */
     public function istKonfigVater()
     {
-        return (is_string($this->cUnique) && strlen($this->cUnique) === 10 && intval($this->kKonfigitem) === 0);
+        return (is_string($this->cUnique) && strlen($this->cUnique) === 10 && (int)$this->kKonfigitem === 0);
     }
 
     /**
@@ -446,7 +455,7 @@ class WarenkorbPos
      */
     public function istKonfigKind()
     {
-        return (is_string($this->cUnique) && strlen($this->cUnique) === 10 && intval($this->kKonfigitem) > 0);
+        return (is_string($this->cUnique) && strlen($this->cUnique) === 10 && (int)$this->kKonfigitem > 0);
     }
 
     /**
@@ -458,9 +467,9 @@ class WarenkorbPos
     }
 
     /**
-     * @param object $oWarenkorbPos
-     * @param int|null $nMinDelivery
-     * @param int|null $nMaxDelivery
+     * @param WarenkorbPos $oWarenkorbPos
+     * @param int|null     $nMinDelivery
+     * @param int|null     $nMaxDelivery
      */
     public static function setEstimatedDelivery($oWarenkorbPos, $nMinDelivery = null, $nMaxDelivery = null)
     {
@@ -469,15 +478,17 @@ class WarenkorbPos
             'longestMin' => 0,
             'longestMax' => 0,
         ];
-        if (isset($nMinDelivery) && isset($nMaxDelivery)) {
+        if ($nMinDelivery !== null && $nMaxDelivery !== null) {
             $oWarenkorbPos->oEstimatedDelivery->longestMin = (int)$nMinDelivery;
             $oWarenkorbPos->oEstimatedDelivery->longestMax = (int)$nMaxDelivery;
 
-            if (!empty($oWarenkorbPos->oEstimatedDelivery->longestMin) && !empty($oWarenkorbPos->oEstimatedDelivery->longestMax)) {
-                $oWarenkorbPos->oEstimatedDelivery->localized = getDeliverytimeEstimationText($oWarenkorbPos->oEstimatedDelivery->longestMin, $oWarenkorbPos->oEstimatedDelivery->longestMax);
-            } else {
-                $oWarenkorbPos->oEstimatedDelivery->localized = '';
-            }
+            $oWarenkorbPos->oEstimatedDelivery->localized = (!empty($oWarenkorbPos->oEstimatedDelivery->longestMin) &&
+                !empty($oWarenkorbPos->oEstimatedDelivery->longestMax))
+                ? getDeliverytimeEstimationText(
+                    $oWarenkorbPos->oEstimatedDelivery->longestMin,
+                    $oWarenkorbPos->oEstimatedDelivery->longestMax
+                )
+                : '';
         }
         $oWarenkorbPos->cEstimatedDelivery = &$oWarenkorbPos->oEstimatedDelivery->localized;
     }

@@ -4,7 +4,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/admininclude.php';
+require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . 'toolsajax.server.php';
 $oAccount->permission('SLIDER_VIEW', true, true);
 /** @global JTLSmarty $smarty */
@@ -30,9 +30,9 @@ switch ($cAction) {
                 ? $aSlideKey[$i]
                 : null;
             $oSlide->kSlider      = $kSlider;
-            $oSlide->cTitel       = htmlspecialchars($aSlide['cTitel']);
+            $oSlide->cTitel       = htmlspecialchars($aSlide['cTitel'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
             $oSlide->cBild        = $aSlide['cBild'];
-            $oSlide->cText        = htmlspecialchars($aSlide['cText']);
+            $oSlide->cText        = htmlspecialchars($aSlide['cText'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
             $oSlide->cLink        = $aSlide['cLink'];
             $oSlide->nSort        = $aSlide['nSort'];
             if ($aSlide['delete'] == 1) {

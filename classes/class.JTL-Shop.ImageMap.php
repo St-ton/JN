@@ -99,7 +99,7 @@ class ImageMap implements IExtensionPoint
             }
 
             $oArea->oArtikel = null;
-            if (intval($oArea->kArtikel) > 0) {
+            if ((int)$oArea->kArtikel > 0) {
                 $oArea->oArtikel = new Artikel();
                 if ($fill === true) {
                     $oArea->oArtikel->fuelleArtikel(

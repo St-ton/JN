@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/admininclude.php';
+require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('CONTENT_PAGE_VIEW', true, true);
 require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
@@ -97,7 +97,7 @@ if (isset($_POST['neu_link']) && (int)($_POST['neu_link']) === 1 && validateToke
         $link->kLink              = (int)$_POST['kLink'];
         $link->kLinkgruppe        = (int)$_POST['kLinkgruppe'];
         $link->kPlugin            = (int)$_POST['kPlugin'];
-        $link->cName              = htmlspecialchars($_POST['cName']);
+        $link->cName              = htmlspecialchars($_POST['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
         $link->nLinkart           = (int)$_POST['nLinkart'];
         $link->cURL               = (isset($_POST['cURL'])) ? $_POST['cURL'] : null;
         $link->nSort              = !empty($_POST['nSort']) ? $_POST['nSort'] : 0;
@@ -178,10 +178,10 @@ if (isset($_POST['neu_link']) && (int)($_POST['neu_link']) === 1 && validateToke
             $linkSprache->cTitle      = '';
             $linkSprache->cContent    = '';
             if (!empty($_POST['cName_' . $sprache->cISO])) {
-                $linkSprache->cName = htmlspecialchars($_POST['cName_' . $sprache->cISO]);
+                $linkSprache->cName = htmlspecialchars($_POST['cName_' . $sprache->cISO], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
             }
             if (!empty($_POST['cTitle_' . $sprache->cISO])) {
-                $linkSprache->cTitle = htmlspecialchars($_POST['cTitle_' . $sprache->cISO]);
+                $linkSprache->cTitle = htmlspecialchars($_POST['cTitle_' . $sprache->cISO], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
             }
             if (!empty($_POST['cContent_' . $sprache->cISO])) {
                 $linkSprache->cContent = parseText($_POST['cContent_' . $sprache->cISO], $kLink);
@@ -192,10 +192,10 @@ if (isset($_POST['neu_link']) && (int)($_POST['neu_link']) === 1 && validateToke
             }
             $linkSprache->cMetaTitle = $linkSprache->cTitle;
             if (isset($_POST['cMetaTitle_' . $sprache->cISO])) {
-                $linkSprache->cMetaTitle = htmlspecialchars($_POST['cMetaTitle_' . $sprache->cISO]);
+                $linkSprache->cMetaTitle = htmlspecialchars($_POST['cMetaTitle_' . $sprache->cISO], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
             }
-            $linkSprache->cMetaKeywords    = htmlspecialchars($_POST['cMetaKeywords_' . $sprache->cISO]);
-            $linkSprache->cMetaDescription = htmlspecialchars($_POST['cMetaDescription_' . $sprache->cISO]);
+            $linkSprache->cMetaKeywords    = htmlspecialchars($_POST['cMetaKeywords_' . $sprache->cISO], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
+            $linkSprache->cMetaDescription = htmlspecialchars($_POST['cMetaDescription_' . $sprache->cISO], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
             Shop::DB()->delete('tlinksprache', ['kLink', 'cISOSprache'], [$kLink, $sprache->cISO]);
             $linkSprache->cSeo = getSeo($linkSprache->cSeo);
             Shop::DB()->insert('tlinksprache', $linkSprache);
@@ -282,8 +282,8 @@ if (isset($_POST['neu_linkgruppe']) && (int)($_POST['neu_linkgruppe']) === 1 && 
             $linkgruppe = new stdClass();
         }
         $linkgruppe->kLinkgruppe   = (int)$_POST['kLinkgruppe'];
-        $linkgruppe->cName         = htmlspecialchars($_POST['cName']);
-        $linkgruppe->cTemplatename = htmlspecialchars($_POST['cTemplatename']);
+        $linkgruppe->cName         = htmlspecialchars($_POST['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
+        $linkgruppe->cTemplatename = htmlspecialchars($_POST['cTemplatename'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
 
         $kLinkgruppe = 0;
         if ((int)($_POST['kLinkgruppe']) === 0) {
@@ -307,7 +307,7 @@ if (isset($_POST['neu_linkgruppe']) && (int)($_POST['neu_linkgruppe']) === 1 && 
             $linkgruppeSprache->cISOSprache = $sprache->cISO;
             $linkgruppeSprache->cName       = $linkgruppe->cName;
             if ($_POST['cName_' . $sprache->cISO]) {
-                $linkgruppeSprache->cName = htmlspecialchars($_POST['cName_' . $sprache->cISO]);
+                $linkgruppeSprache->cName = htmlspecialchars($_POST['cName_' . $sprache->cISO], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
             }
 
             Shop::DB()->delete('tlinkgruppesprache', ['kLinkgruppe', 'cISOSprache'], [$kLinkgruppe, $sprache->cISO]);

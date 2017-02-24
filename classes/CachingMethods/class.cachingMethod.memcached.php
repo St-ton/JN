@@ -29,7 +29,7 @@ class cache_memcached implements ICachingMethod
      */
     public function __construct($options)
     {
-        if ($this->isAvailable() && !empty($options['memcache_host']) && !empty($options['memcache_port'])) {
+        if (!empty($options['memcache_host']) && !empty($options['memcache_port']) && $this->isAvailable()) {
             $this->setMemcached($options['memcache_host'], $options['memcache_port']);
             $this->isInitialized = true;
             $this->journalID     = 'memcached_journal';

@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/admininclude.php';
+require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'umfrage_inc.php';
 
@@ -101,7 +101,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                 intval($_POST['umfrage_edit_speichern']) === 1 && intval($_POST['kUmfrage']) > 0) {
                 $kUmfrage = (int)$_POST['kUmfrage'];
             }
-            $cName  = htmlspecialchars($_POST['cName']);
+            $cName  = htmlspecialchars($_POST['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
             $kKupon = (isset($_POST['kKupon'])) ? (int)$_POST['kKupon'] : 0;
             if ($kKupon <= 0 || !isset($kKupon)) {
                 $kKupon = 0;
@@ -196,7 +196,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
         } elseif (isset($_POST['umfrage_frage_speichern']) && intval($_POST['umfrage_frage_speichern']) === 1 && validateToken()) { // Frage speichern
             $kUmfrage                 = (int)$_POST['kUmfrage'];
             $kUmfrageFrage            = (isset($_POST['kUmfrageFrage'])) ? (int)$_POST['kUmfrageFrage'] : 0;
-            $cName                    = htmlspecialchars($_POST['cName']);
+            $cName                    = htmlspecialchars($_POST['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
             $cTyp                     = $_POST['cTyp'];
             $nSort                    = (isset($_POST['nSort'])) ? (int)$_POST['nSort'] : 0;
             $cBeschreibung            = (isset($_POST['cBeschreibung'])) ? $_POST['cBeschreibung'] : '';

@@ -55,7 +55,7 @@ class Emailhistory
      */
     public function __construct($kEmailhistory = null, $oObj = null)
     {
-        if (intval($kEmailhistory) > 0) {
+        if ((int)$kEmailhistory > 0) {
             $this->loadFromDB($kEmailhistory);
         } elseif ($oObj !== null && is_object($oObj)) {
             $cMember_arr = array_keys(get_object_vars($oObj));
@@ -100,7 +100,7 @@ class Emailhistory
                 $oObj->$cMember = $this->$cMember;
             }
         }
-        if (isset($oObj->kEmailhistory) && intval($oObj->kEmailhistory) > 0) {
+        if (isset($oObj->kEmailhistory) && (int)$oObj->kEmailhistory > 0) {
             return $this->update();
         }
         unset($oObj->kEmailhistory);
@@ -134,9 +134,8 @@ class Emailhistory
             }
             $cQuery .= implode(', ', $cSet_arr);
             $cQuery .= " WHERE kEmailhistory = {$this->getEmailhistory()}";
-            $result = Shop::DB()->query($cQuery, 3);
 
-            return $result;
+            return Shop::DB()->query($cQuery, 3);
         } else {
             throw new Exception('ERROR: Object has no members!');
         }

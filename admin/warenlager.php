@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/admininclude.php';
+require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Warenlager.php';
 
 $oAccount->permission('WAREHOUSE_VIEW', true, true);
@@ -32,7 +32,7 @@ switch ($cAction) {
                         $oObj              = new stdClass();
                         $oObj->kWarenlager = (int)$kWarenlager;
                         $oObj->kSprache    = (int)$kSprache;
-                        $oObj->cName       = htmlspecialchars(trim($cName));
+                        $oObj->cName       = htmlspecialchars(trim($cName), ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
 
                         Shop::DB()->insert('twarenlagersprache', $oObj);
                     }

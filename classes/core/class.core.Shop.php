@@ -1159,7 +1159,8 @@ final class Shop
                         LEFT JOIN tkategoriesprache
                             ON tkategoriesprache.kKategorie = tkategorie.kKategorie
                             AND tkategoriesprache.kSprache = tseo.kSprache
-                    WHERE cKey = 'kKategorie' AND kKey = " . $NaviFilter->Kategorie->kKategorie . "
+                    WHERE cKey = 'kKategorie' 
+                        AND kKey = " . $NaviFilter->Kategorie->kKategorie . "
                     ORDER BY tseo.kSprache", 2
             );
             if ($bSprache) {

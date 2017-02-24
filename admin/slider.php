@@ -30,9 +30,9 @@ switch ($cAction) {
                 ? $aSlideKey[$i]
                 : null;
             $oSlide->kSlider      = $kSlider;
-            $oSlide->cTitel       = htmlspecialchars($aSlide['cTitel']);
+            $oSlide->cTitel       = htmlspecialchars($aSlide['cTitel'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
             $oSlide->cBild        = $aSlide['cBild'];
-            $oSlide->cText        = htmlspecialchars($aSlide['cText']);
+            $oSlide->cText        = htmlspecialchars($aSlide['cText'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
             $oSlide->cLink        = $aSlide['cLink'];
             $oSlide->nSort        = $aSlide['nSort'];
             if ($aSlide['delete'] == 1) {

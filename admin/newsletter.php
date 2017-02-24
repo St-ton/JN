@@ -3,19 +3,19 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/admininclude.php';
+require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('MODULE_NEWSLETTER_VIEW', true, true);
 /** @global JTLSmarty $smarty */
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'newsletter_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 
-$Einstellungen = Shop::getSettings([CONF_NEWSLETTER]);
-
-$cHinweis = '';
-$cFehler  = '';
-$step     = 'uebersicht';
-$cOption  = '';
+$oNewsletterVorlage = null;
+$Einstellungen      = Shop::getSettings([CONF_NEWSLETTER]);
+$cHinweis           = '';
+$cFehler            = '';
+$step               = 'uebersicht';
+$cOption            = '';
 // Suche
 $cInaktiveSucheSQL         = new stdClass();
 $cInaktiveSucheSQL->cJOIN  = '';
@@ -23,7 +23,6 @@ $cInaktiveSucheSQL->cWHERE = '';
 $cAktiveSucheSQL           = new stdClass();
 $cAktiveSucheSQL->cJOIN    = '';
 $cAktiveSucheSQL->cWHERE   = '';
-
 // Standardkundengruppe Work Around
 $oKundengruppe = Shop::DB()->select('tkundengruppe', 'cStandard', 'Y');
 if (!isset($_SESSION['Kundengruppe'])) {
@@ -32,44 +31,47 @@ if (!isset($_SESSION['Kundengruppe'])) {
 $_SESSION['Kundengruppe']->kKundengruppe = $oKundengruppe->kKundengruppe;
 
 setzeSprache();
-
 // Tabs
 if (strlen(verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', verifyGPDataString('tab'));
 }
-
 // Einstellungen
-if (isset($_POST['einstellungen']) && intval($_POST['einstellungen']) === 1) {
+if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1) {
     if (isset($_POST['speichern'])) {
         $step = 'uebersicht';
         $cHinweis .= saveAdminSectionSettings(CONF_NEWSLETTER, $_POST);
     }
 } elseif ((isset($_POST['newsletterabonnent_loeschen']) &&
-        intval($_POST['newsletterabonnent_loeschen']) === 1 &&
+        (int)$_POST['newsletterabonnent_loeschen'] === 1 &&
         validateToken()) ||
-    (verifyGPCDataInteger('inaktiveabonnenten') === 1 && isset($_POST['abonnentloeschenSubmit']) && validateToken())) {
+    (verifyGPCDataInteger('inaktiveabonnenten') === 1 && isset($_POST['abonnentloeschenSubmit']) && validateToken())
+) {
     if (loescheAbonnenten($_POST['kNewsletterEmpfaenger'])) { // Newsletterabonnenten loeschen
         $cHinweis .= 'Ihre markierten Newsletter-Abonnenten wurden erfolgreich gel&ouml;scht.<br />';
     } else {
         $cFehler .= 'Fehler: Bitte markieren Sie mindestens einen Newsletter-Abonnenten.<br />';
     }
-} elseif (verifyGPCDataInteger('inaktiveabonnenten') === 1 &&
-    isset($_POST['abonnentfreischaltenSubmit']) &&
-    validateToken()) { // Newsletterabonnenten freischalten
+} elseif (isset($_POST['abonnentfreischaltenSubmit']) &&
+    verifyGPCDataInteger('inaktiveabonnenten') === 1 &&
+    validateToken()
+) {
+    // Newsletterabonnenten freischalten
     if (aktiviereAbonnenten($_POST['kNewsletterEmpfaenger'])) {
         $cHinweis .= 'Ihre markierten Newsletter-Abonnenten wurden erfolgreich freigeschaltet.<br />';
     } else {
         $cFehler .= 'Fehler: Bitte markieren Sie mindestens einen Newsletter-Abonnenten.<br />';
     }
 } elseif (isset($_POST['newsletterabonnent_neu']) &&
-    intval($_POST['newsletterabonnent_neu']) === 1 &&
-    validateToken()) { // Newsletterabonnenten hinzufuegen
+    (int)$_POST['newsletterabonnent_neu'] === 1 &&
+    validateToken()
+) {
+    // Newsletterabonnenten hinzufuegen
     $oNewsletter               = new stdClass();
     $oNewsletter->cAnrede      = $_POST['cAnrede'];
     $oNewsletter->cVorname     = $_POST['cVorname'];
     $oNewsletter->cNachname    = $_POST['cNachname'];
     $oNewsletter->cEmail       = $_POST['cEmail'];
-    $oNewsletter->kSprache     = intval($_POST['kSprache']);
+    $oNewsletter->kSprache     = (int)$_POST['kSprache'];
     $oNewsletter->dEingetragen = 'now()';
     $oNewsletter->cOptCode     = create_NewsletterCode('cOptCode', $oNewsletter->cEmail);
     $oNewsletter->cLoeschCode  = create_NewsletterCode('cLoeschCode', $oNewsletter->cEmail);
@@ -88,7 +90,7 @@ if (isset($_POST['einstellungen']) && intval($_POST['einstellungen']) === 1) {
         $cFehler = 'Bitte f&uuml;llen Sie das Feld Email aus.';
         $smarty->assign('oNewsletter', $oNewsletter);
     }
-} elseif (isset($_POST['newsletterqueue']) && intval($_POST['newsletterqueue']) === 1 && validateToken()) { // Queue
+} elseif (isset($_POST['newsletterqueue']) && (int)$_POST['newsletterqueue'] === 1 && validateToken()) { // Queue
     // Loeschen
     if (isset($_POST['loeschen'])) {
         if (is_array($_POST['kNewsletterQueue'])) {
@@ -118,8 +120,8 @@ if (isset($_POST['einstellungen']) && intval($_POST['einstellungen']) === 1) {
             $cFehler .= 'Fehler: Bitte markieren Sie mindestens einen Newsletter.<br />';
         }
     }
-} elseif ((isset($_POST['newsletterhistory']) && intval($_POST['newsletterhistory']) === 1 && validateToken()) ||
-    (isset($_GET['newsletterhistory']) && intval($_GET['newsletterhistory']) === 1 && validateToken())) { // History
+} elseif ((isset($_POST['newsletterhistory']) && (int)$_POST['newsletterhistory'] === 1 && validateToken()) ||
+    (isset($_GET['newsletterhistory']) && (int)$_GET['newsletterhistory'] === 1 && validateToken())) { // History
     if (isset($_POST['loeschen'])) {
         if (is_array($_POST['kNewsletterHistory'])) {
             $cHinweis = 'Die Newsletterhistory ';
@@ -186,8 +188,8 @@ if (isset($_POST['einstellungen']) && intval($_POST['einstellungen']) === 1) {
         $preview                   = baueNewsletterVorschau($oNewsletterVorlage);
     }
     $smarty->assign('oNewsletterVorlage', $oNewsletterVorlage)
-           ->assign('cFehler', (is_string($preview)) ? $preview : null)
-           ->assign('NettoPreise', (isset($_SESSION['Kundengruppe']->nNettoPreise))
+           ->assign('cFehler', is_string($preview) ? $preview : null)
+           ->assign('NettoPreise', isset($_SESSION['Kundengruppe']->nNettoPreise)
                ? $_SESSION['Kundengruppe']->nNettoPreise
                : null);
 } elseif (verifyGPCDataInteger('newslettervorlagenstd') === 1) { // Vorlagen Std
@@ -251,14 +253,12 @@ if (isset($_POST['einstellungen']) && intval($_POST['einstellungen']) === 1) {
                ->assign('kKundengruppe_arr', $kKundengruppe_arr);
     }
     // Vorlage Std erstellen
-    if (verifyGPCDataInteger('vorlage_std_erstellen') === 1) {
-        if (verifyGPCDataInteger('kNewsletterVorlageStd') > 0) {
-            $step                  = 'vorlage_std_erstellen';
-            $kNewsletterVorlageStd = verifyGPCDataInteger('kNewsletterVorlageStd');
-            // Hole Std Vorlage
-            $oNewslettervorlageStd = holeNewslettervorlageStd($kNewsletterVorlageStd);
-            $smarty->assign('oNewslettervorlageStd', $oNewslettervorlageStd);
-        }
+    if (verifyGPCDataInteger('vorlage_std_erstellen') === 1 && verifyGPCDataInteger('kNewsletterVorlageStd') > 0) {
+        $step                  = 'vorlage_std_erstellen';
+        $kNewsletterVorlageStd = verifyGPCDataInteger('kNewsletterVorlageStd');
+        // Hole Std Vorlage
+        $oNewslettervorlageStd = holeNewslettervorlageStd($kNewsletterVorlageStd);
+        $smarty->assign('oNewslettervorlageStd', $oNewslettervorlageStd);
     }
 } elseif (verifyGPCDataInteger('newslettervorlagen') === 1) {
     // Vorlagen
@@ -270,10 +270,10 @@ if (isset($_POST['einstellungen']) && intval($_POST['einstellungen']) === 1) {
     $smarty->assign('oKundengruppe_arr', $oKundengruppe_arr)
            ->assign('oKampagne_arr', holeAlleKampagnen(false, true));
 
-    $cArtNr_arr        = (isset($_POST['cArtNr']))
+    $cArtNr_arr        = isset($_POST['cArtNr'])
         ? $_POST['cArtNr']
         : null;
-    $kKundengruppe_arr = (isset($_POST['kKundengruppe']))
+    $kKundengruppe_arr = isset($_POST['kKundengruppe'])
         ? $_POST['kKundengruppe']
         : null;
     $cKundengruppe     = '';
@@ -287,12 +287,12 @@ if (isset($_POST['einstellungen']) && intval($_POST['einstellungen']) === 1) {
     if (isset($_POST['vorlage_erstellen'])) {
         $step    = 'vorlage_erstellen';
         $cOption = 'erstellen';
-    } elseif ((isset($_GET['editieren']) && intval($_GET['editieren']) > 0) ||
-        (isset($_GET['vorbereiten']) && intval($_GET['vorbereiten']) > 0)) {
+    } elseif ((isset($_GET['editieren']) && (int)$_GET['editieren'] > 0) ||
+        (isset($_GET['vorbereiten']) && (int)$_GET['vorbereiten'] > 0)) {
         // Vorlage editieren/vorbereiten
         $step               = 'vorlage_erstellen';
         $kNewsletterVorlage = verifyGPCDataInteger('vorbereiten');
-        if ($kNewsletterVorlage == 0) {
+        if ($kNewsletterVorlage === 0) {
             $kNewsletterVorlage = verifyGPCDataInteger('editieren');
         }
         // Infos der Vorlage aus DB holen
@@ -327,7 +327,6 @@ if (isset($_POST['einstellungen']) && intval($_POST['einstellungen']) === 1) {
                    ->assign('kKundengruppe_arr', $kKundengruppe_arr);
         }
         $smarty->assign('oNewsletterVorlage', $oNewsletterVorlage);
-
         if (isset($_GET['editieren'])) {
             $cOption = 'editieren';
         }
@@ -341,10 +340,7 @@ if (isset($_POST['einstellungen']) && intval($_POST['einstellungen']) === 1) {
                    ->assign('oNewsletterVorlage', $oNewsletterVorlage);
         }
     } elseif (isset($_POST['speichern_und_senden']) && validateToken()) { // Vorlage speichern und senden
-        unset($oNewsletterVorlage);
-        unset($oNewsletter);
-        unset($oKunde);
-        unset($oEmailempfaenger);
+        unset($oNewsletterVorlage, $oNewsletter, $oKunde, $oEmailempfaenger);
 
         $oNewsletterVorlage = speicherVorlage($_POST);
 
@@ -486,7 +482,7 @@ if (isset($_POST['einstellungen']) && intval($_POST['einstellungen']) === 1) {
         $kHersteller_arr = gibAHKKeys($oNewsletterVorlage->cHersteller);
         $kKategorie_arr  = gibAHKKeys($oNewsletterVorlage->cKategorie);
         // Baue Kampagnenobjekt, falls vorhanden in der Newslettervorlage
-        $oKampagne = new Kampagne(intval($oNewsletterVorlage->kKampagne));
+        $oKampagne = new Kampagne($oNewsletterVorlage->kKampagne);
         // Baue Arrays von Objekten
         $oArtikel_arr    = gibArtikelObjekte($kArtikel_arr, $oKampagne);
         $oHersteller_arr = gibHerstellerObjekte($kHersteller_arr, $oKampagne);

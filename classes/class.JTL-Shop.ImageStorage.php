@@ -5,13 +5,16 @@
  */
 use Imanee\Imanee;
 
-require_once 'class.JTL-Shop.Image.php';
+require_once __DIR__ . '/class.JTL-Shop.Image.php';
 
 /**
  * Class ImageStorage
  */
 class ImageStorage
 {
+    /**
+     * @var ImageReq
+     */
     private $req;
 
     /**
@@ -64,7 +67,7 @@ class ImageStorage
 
         $imanee->resize($width, $height);
 
-        if ($this->req->getSize()->getType() == Image::SIZE_LG && isset($settings['branding']) && $settings['branding'] !== null) {
+        if (isset($settings['branding']) & $this->req->getSize()->getType() === Image::SIZE_LG) {
             $branding   = $settings['branding'];
             $brandImage = new Imanee($branding->path);
 

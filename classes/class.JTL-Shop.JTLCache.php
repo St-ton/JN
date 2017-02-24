@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-define('CACHING_ROOT_DIR', dirname(__FILE__) . '/');
+define('CACHING_ROOT_DIR', __DIR__ . '/');
 define('CACHING_METHODS_DIR', CACHING_ROOT_DIR . 'CachingMethods/');
 define('CACHING_GROUP_ARTICLE', 'art');
 define('CACHING_GROUP_CATEGORY', 'cat');
@@ -748,10 +748,10 @@ class JTLCache
                 Profiler::setCacheProfile('flush', (($res !== false) ? 'success' : 'failure'), $cacheID);
             }
         }
-        if ($hookInfo !== null && function_exists('executeHook') && defined('HOOK_CACHE_FLUSH_AFTER')) {
+        if ($hookInfo !== null && defined('HOOK_CACHE_FLUSH_AFTER') && function_exists('executeHook')) {
             executeHook(HOOK_CACHE_FLUSH_AFTER, $hookInfo);
         }
-        $this->resultCode = (is_int($res)) ? self::RES_FAIL : self::RES_SUCCESS;
+        $this->resultCode = is_int($res) ? self::RES_FAIL : self::RES_SUCCESS;
 
         return $res;
     }
@@ -766,7 +766,7 @@ class JTLCache
     public function _flushTags($tags, $hookInfo = null)
     {
         $deleted = $this->_method->flushTags($tags);
-        if ($hookInfo !== null && function_exists('executeHook') && defined('HOOK_CACHE_FLUSH_AFTER')) {
+        if ($hookInfo !== null && defined('HOOK_CACHE_FLUSH_AFTER') && function_exists('executeHook')) {
             executeHook(HOOK_CACHE_FLUSH_AFTER, $hookInfo);
         }
 
@@ -937,8 +937,9 @@ class JTLCache
         //add language ID
         if ($languageID === true) {
             $baseID .= '_lid';
-            if (isset(Shop::$kSprache)) {
-                $baseID .= Shop::$kSprache;
+            $lang = Shop::getLanguage();
+            if ($lang > 0) {
+                $baseID .= $lang;
             } elseif (isset($_SESSION['kSprache'])) {
                 $baseID .= $_SESSION['kSprache'];
             } else {
@@ -1048,8 +1049,8 @@ class JTLCache
                 //calculate averages
                 $rpsGet   = ($runCount * $repeat / $timesGet);
                 $rpsSet   = ($runCount * $repeat / $timesSet);
-                $timesSet = ($timesSet / $repeat);
-                $timesGet = ($timesGet / $repeat);
+                $timesSet /= $repeat;
+                $timesGet /= $repeat;
                 if ($format === true) {
                     $timesSet = number_format($timesSet, 4, ',', '.');
                     $timesGet = number_format($timesGet, 4, ',', '.');

@@ -66,7 +66,7 @@ class cache_file implements ICachingMethod
                             : $expiration
                     ]
                 )
-            ) !== false) ? true : false;
+            ) !== false);
     }
 
     /**

@@ -163,7 +163,7 @@ class Kupon
      */
     public function __construct($kKupon = 0)
     {
-        if (intval($kKupon) > 0) {
+        if ((int)$kKupon > 0) {
             $this->loadFromDB($kKupon);
         }
     }
@@ -180,7 +180,7 @@ class Kupon
         $couponResult = Shop::DB()->select('tkupon', 'kKupon', (int)$kKupon);
 
         if (isset($couponResult->kKupon) && $couponResult->kKupon > 0) {
-            $couponResult->translationList = self::getTranslation($couponResult->kKupon);
+            $couponResult->translationList = $this->getTranslation($couponResult->kKupon);
             $cMember_arr                   = array_keys(get_object_vars($couponResult));
             foreach ($cMember_arr as $cMember) {
                 $this->$cMember = $couponResult->$cMember;
@@ -381,7 +381,7 @@ class Kupon
      */
     public function setMindestbestellwert($fMindestbestellwert)
     {
-        $this->fMindestbestellwert = floatval($fMindestbestellwert);
+        $this->fMindestbestellwert = (float)$fMindestbestellwert;
 
         return $this;
     }
@@ -847,7 +847,7 @@ class Kupon
         $couponResult = Shop::DB()->select('tkupon', 'cCode', $cCode);
 
         if (isset($couponResult->kKupon) && $couponResult->kKupon > 0) {
-            $couponResult->translationList = self::getTranslation($couponResult->kKupon);
+            $couponResult->translationList = $this->getTranslation($couponResult->kKupon);
             $cMember_arr                   = array_keys(get_object_vars($couponResult));
             foreach ($cMember_arr as $cMember) {
                 $this->$cMember = $couponResult->$cMember;
@@ -908,7 +908,7 @@ class Kupon
 
         foreach ($newCustomerCoupons as $newCustomerCoupon) {
             if (isset($newCustomerCoupon->kKupon) && $newCustomerCoupon->kKupon > 0) {
-                $newCustomerCoupon->translationList = self::getTranslation($newCustomerCoupon->kKupon);
+                $newCustomerCoupon->translationList = $this->getTranslation($newCustomerCoupon->kKupon);
                 $cMember_arr                        = array_keys(get_object_vars($newCustomerCoupon));
                 foreach ($cMember_arr as $cMember) {
                     $this->$cMember = $newCustomerCoupon->$cMember;

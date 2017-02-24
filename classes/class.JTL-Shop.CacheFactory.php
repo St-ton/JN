@@ -128,7 +128,7 @@ class CacheFactory
      */
     public function getStats()
     {
-        return;
+        return null;
     }
 
     /**

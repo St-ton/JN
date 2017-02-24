@@ -94,7 +94,11 @@ class Merkmal
                 $kSprache = (int)$oSprache->kSprache;
             }
         }
-        $kSprache             = (int)$kSprache;
+        $kSprache = (int)$kSprache;
+        $id       = 'mm_' . $kSprache . '_' . (($bMMW === false) ? 'b' : '');
+        if (Shop::has($id)) {
+            return Shop::get($id);
+        }
         $oSQLMerkmal          = new stdClass();
         $oSQLMerkmal->cSELECT = '';
         $oSQLMerkmal->cJOIN   = '';
@@ -151,9 +155,10 @@ class Merkmal
         }
 
         if ($kSprache > 0 && !standardspracheAktiv()) {
-            $this->cName = (isset($this->cName_tmerkmalsprache)) ? $this->cName_tmerkmalsprache : null;
+            $this->cName = isset($this->cName_tmerkmalsprache) ? $this->cName_tmerkmalsprache : null;
         }
         executeHook(HOOK_MERKMAL_CLASS_LOADFROMDB);
+        Shop::set($id, $this);
 
         return $this;
     }

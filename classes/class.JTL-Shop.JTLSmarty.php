@@ -358,9 +358,7 @@ class JTLSmarty extends SmartyBC
         if ($config === null) {
             $config = Shop::getSettings([CONF_CACHING]);
         }
-        $compileCheck = (isset($config['caching']['compile_check']) && $config['caching']['compile_check'] === 'N')
-            ? false
-            : true;
+        $compileCheck = !(isset($config['caching']['compile_check']) && $config['caching']['compile_check'] === 'N');
         $this->setCaching(self::CACHING_OFF)
              ->setCompileCheck($compileCheck);
 
@@ -386,14 +384,15 @@ class JTLSmarty extends SmartyBC
     public function __outputFilter($tplOutput)
     {
         $hookList = Plugin::getHookList();
-        if ((isset($hookList[HOOK_SMARTY_OUTPUTFILTER]) &&
+        $isMobile = $this->template->isMobileTemplateActive();
+        if ($isMobile ||
+            (isset($hookList[HOOK_SMARTY_OUTPUTFILTER]) &&
                 is_array($hookList[HOOK_SMARTY_OUTPUTFILTER]) &&
-                count($hookList[HOOK_SMARTY_OUTPUTFILTER]) > 0) ||
-            $this->template->isMobileTemplateActive()
+                count($hookList[HOOK_SMARTY_OUTPUTFILTER]) > 0)
         ) {
             $this->unregisterFilter('output', [$this, '__outputFilter']);
             $GLOBALS['doc'] = phpQuery::newDocumentHTML($tplOutput, JTL_CHARSET);
-            if ($this->template->isMobileTemplateActive()) {
+            if ($isMobile) {
                 executeHook(HOOK_SMARTY_OUTPUTFILTER_MOBILE);
             } else {
                 executeHook(HOOK_SMARTY_OUTPUTFILTER);
@@ -485,7 +484,7 @@ class JTLSmarty extends SmartyBC
         if (!isset($params['section'])) {
             $params['section'] = 'global';
         }
-        if (isset($params['section']) && isset($params['key'])) {
+        if (isset($params['section'], $params['key'])) {
             $cValue = Shop::Lang()->get($params['key'], $params['section']);
             // Für vsprintf ein String der :: exploded wird
             if (isset($params['printf']) && strlen($params['printf']) > 0) {
@@ -588,7 +587,7 @@ class JTLSmarty extends SmartyBC
     public function replaceDelimiters($cText)
     {
         $cReplace = $this->config['global']['global_dezimaltrennzeichen_sonstigeangaben'];
-        if (strlen($cReplace) === 0 || $cReplace !== ',' || $cReplace !== '.') {
+        if ($cReplace !== ',' || $cReplace !== '.' || $cReplace === '') {
             $cReplace = ',';
         }
 
@@ -622,10 +621,13 @@ class JTLSmarty extends SmartyBC
      */
     public function getFallbackFile($cFilename)
     {
-        if (!self::$isChildTemplate && TEMPLATE_COMPATIBILITY === true && !file_exists($this->getTemplateDir($this->context) . $cFilename)) {
-            if (isset(self::$_replacer[$cFilename])) {
-                $cFilename = self::$_replacer[$cFilename];
-            }
+        if (
+            !self::$isChildTemplate &&
+            TEMPLATE_COMPATIBILITY === true &&
+            isset(self::$_replacer[$cFilename]) &&
+            !file_exists($this->getTemplateDir($this->context) . $cFilename)
+        ) {
+            $cFilename = self::$_replacer[$cFilename];
         }
 
         return $cFilename;

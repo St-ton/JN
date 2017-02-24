@@ -64,7 +64,7 @@ if (isset($_POST['einstellungen']) && intval($_POST['einstellungen']) > 0 && val
             $oNewsMonatsPraefix           = new stdClass();
             $oNewsMonatsPraefix->kSprache = $oSpracheTMP->kSprache;
             if (strlen($_POST['praefix_' . $oSpracheTMP->cISO]) > 0) {
-                $oNewsMonatsPraefix->cPraefix = htmlspecialchars($_POST['praefix_' . $oSpracheTMP->cISO]);
+                $oNewsMonatsPraefix->cPraefix = htmlspecialchars($_POST['praefix_' . $oSpracheTMP->cISO], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
             } else {
                 $oNewsMonatsPraefix->cPraefix = ($oSpracheTMP->cISO === 'ger')
                     ? 'Newsuebersicht'
@@ -159,13 +159,13 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
             $oNews                   = new stdClass();
             $oNews->kSprache         = $_SESSION['kSprache'];
             $oNews->cKundengruppe    = ';' . implode(';', $kKundengruppe_arr) . ';';
-            $oNews->cBetreff         = htmlspecialchars($cBetreff);
+            $oNews->cBetreff         = htmlspecialchars($cBetreff, ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
             $oNews->cText            = $cText;
             $oNews->cVorschauText    = $cVorschauText;
             $oNews->nAktiv           = $nAktiv;
-            $oNews->cMetaTitle       = htmlspecialchars($cMetaTitle);
-            $oNews->cMetaDescription = htmlspecialchars($cMetaDescription);
-            $oNews->cMetaKeywords    = htmlspecialchars($cMetaKeywords);
+            $oNews->cMetaTitle       = htmlspecialchars($cMetaTitle, ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
+            $oNews->cMetaDescription = htmlspecialchars($cMetaDescription, ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
+            $oNews->cMetaKeywords    = htmlspecialchars($cMetaKeywords, ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
             $oNews->dErstellt        = 'now()';
             $oNews->dGueltigVon      = convertDate($dGueltigVon);
             $oNews->cPreviewImage    = $cPreviewImage;
@@ -406,13 +406,13 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
     } elseif (isset($_POST['news_kategorie_speichern']) && (int)$_POST['news_kategorie_speichern'] === 1) {
         //Newskategorie speichern
         $step             = 'news_uebersicht';
-        $cName            = htmlspecialchars($_POST['cName']);
+        $cName            = htmlspecialchars($_POST['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
         $cSeo             = $_POST['cSeo'];
         $nSort            = $_POST['nSort'];
         $nAktiv           = $_POST['nAktiv'];
-        $cMetaTitle       = htmlspecialchars($_POST['cMetaTitle']);
-        $cMetaDescription = htmlspecialchars($_POST['cMetaDescription']);
-        $cBeschreibung    = htmlspecialchars($_POST['cBeschreibung']);
+        $cMetaTitle       = htmlspecialchars($_POST['cMetaTitle'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
+        $cMetaDescription = htmlspecialchars($_POST['cMetaDescription'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
+        $cBeschreibung    = htmlspecialchars($_POST['cBeschreibung'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
         $cPreviewImage    = $_POST['previewImage'];
         $cPlausiValue_arr = pruefeNewsKategorie($_POST['cName'], (isset($_POST['newskategorie_edit_speichern']))
             ? intval($_POST['newskategorie_edit_speichern'])

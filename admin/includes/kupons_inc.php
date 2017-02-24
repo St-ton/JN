@@ -265,7 +265,7 @@ function createCouponFromInput()
 {
     $oKupon                        = new Kupon((int)$_POST['kKuponBearbeiten']);
     $oKupon->cKuponTyp             = $_POST['cKuponTyp'];
-    $oKupon->cName                 = htmlspecialchars($_POST['cName']);
+    $oKupon->cName                 = htmlspecialchars($_POST['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
     $oKupon->fWert                 = !empty($_POST['fWert']) ? (float)str_replace(',', '.', $_POST['fWert']) : null;
     $oKupon->cWertTyp              = !empty($_POST['cWertTyp']) ? $_POST['cWertTyp'] : null;
     $oKupon->cZusatzgebuehren      = !empty($_POST['cZusatzgebuehren']) ? $_POST['cZusatzgebuehren'] : 'N';
@@ -498,7 +498,7 @@ function saveCoupon($oKupon, $oSprache_arr)
                 foreach ($oSprache_arr as $oSprache) {
                     $cKuponSpracheName =
                         (isset($_POST['cName_' . $oSprache->cISO]) && $_POST['cName_' . $oSprache->cISO] !== '')
-                            ? htmlspecialchars($_POST['cName_' . $oSprache->cISO])
+                            ? htmlspecialchars($_POST['cName_' . $oSprache->cISO], ENT_COMPAT | ENT_HTML401, JTL_CHARSET)
                             : $oKupon->cName;
 
                     $kuponSprache              = new stdClass();
@@ -514,7 +514,7 @@ function saveCoupon($oKupon, $oSprache_arr)
             foreach ($oSprache_arr as $oSprache) {
                 $cKuponSpracheName =
                     (isset($_POST['cName_' . $oSprache->cISO]) && $_POST['cName_' . $oSprache->cISO] !== '')
-                        ? htmlspecialchars($_POST['cName_' . $oSprache->cISO])
+                        ? htmlspecialchars($_POST['cName_' . $oSprache->cISO], ENT_COMPAT | ENT_HTML401, JTL_CHARSET)
                         : $oKupon->cName;
 
                 $kuponSprache              = new stdClass();
@@ -549,7 +549,7 @@ function informCouponCustomers($oKupon)
         ? gibPreisStringLocalized($oKupon->fWert, $oStdWaehrung, 0)
         : $oKupon->fWert . ' %';
     $oKupon->cLocalizedMBW  = gibPreisStringLocalized($oKupon->fMindestbestellwert, $oStdWaehrung, 0);
-    // kKunde-Array aller auserwählten Kunden
+    // kKunde-Array aller auserwaehlten Kunden
     $kKunde_arr   = StringHandler::parseSSK($oKupon->cKunden);
     $oKundeDB_arr = Shop::DB()->query(
         "SELECT kKunde

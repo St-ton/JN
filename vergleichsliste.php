@@ -3,20 +3,23 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/globalinclude.php';
+require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'vergleichsliste_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
 /** @global JTLSmarty $smarty */
 Shop::setPageType(PAGE_VERGLEICHSLISTE);
-$AktuelleSeite  = 'VERGLEICHSLISTE';
-$conf           = Shop::getSettings([CONF_VERGLEICHSLISTE, CONF_ARTIKELDETAILS]);
-$cExclude       = [];
-$oMerkVaria_arr = [[], []];
+$AktuelleSeite    = 'VERGLEICHSLISTE';
+$oVergleichsliste = null;
+$conf             = Shop::getSettings([CONF_VERGLEICHSLISTE, CONF_ARTIKELDETAILS]);
+$cExclude         = [];
+$oMerkVaria_arr   = [[], []];
 loeseHttps();
 
 if (isset($Link)) {
     $requestURL = baueURL($Link, URLART_SEITE);
-    $sprachURL  = (isset($Link->languageURLs)) ? $Link->languageURLs : baueSprachURLS($Link, URLART_SEITE);
+    $sprachURL  = isset($Link->languageURLs)
+        ? $Link->languageURLs
+        : baueSprachURLS($Link, URLART_SEITE);
 } else {
     $sprachURL  = null;
     $requestURL = null;
@@ -28,7 +31,7 @@ $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 $startKat             = new Kategorie();
 $startKat->kKategorie = -1;
 // VergleichslistePos in den Warenkorb adden
-if (isset($_GET['vlph']) && intval($_GET['vlph']) === 1) {
+if (isset($_GET['vlph']) && (int)$_GET['vlph'] === 1) {
     $kArtikel = verifyGPCDataInteger('a');
 
     if ($kArtikel > 0) {
@@ -67,10 +70,10 @@ if (isset($oVergleichsliste->oArtikel_arr)) {
     $oVergleichsliste->oArtikel_arr = $oArtikel_arr;
 }
 // Spaltenbreite
-$nBreiteAttribut = (intval($conf['vergleichsliste']['vergleichsliste_spaltengroesseattribut']) > 0)
+$nBreiteAttribut = ($conf['vergleichsliste']['vergleichsliste_spaltengroesseattribut'] > 0)
     ? (int)$conf['vergleichsliste']['vergleichsliste_spaltengroesseattribut']
     : 100;
-$nBreiteArtikel = (intval($conf['vergleichsliste']['vergleichsliste_spaltengroesse']) > 0)
+$nBreiteArtikel = ($conf['vergleichsliste']['vergleichsliste_spaltengroesse'] > 0)
     ? (int)$conf['vergleichsliste']['vergleichsliste_spaltengroesse']
     : 200;
 $nBreiteTabelle = $nBreiteArtikel * count($oVergleichsliste->oArtikel_arr) + $nBreiteAttribut;

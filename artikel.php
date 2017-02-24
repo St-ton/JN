@@ -34,23 +34,24 @@ $fBelohnung = (isset($_GET['fB']) && doubleval($_GET['fB']) > 0) ? doubleval($_G
 // Hinweise und Fehler sammeln - Nur wenn bisher kein Fehler gesetzt wurde!
 $cHinweis = $smarty->getTemplateVars('hinweis');
 $shopURL  = Shop::getURL() . '/';
-if (strlen($cHinweis) === 0) {
+if (empty($cHinweis)) {
     $cHinweis = mappingFehlerCode(verifyGPDataString('cHinweis'), $fBelohnung);
 }
 $cFehler = $smarty->getTemplateVars('fehler');
-if (strlen($cFehler) === 0) {
+if (empty($cFehler)) {
     $cFehler = mappingFehlerCode(verifyGPDataString('cFehler'));
 }
 // Product Bundle in WK?
-if (verifyGPCDataInteger('addproductbundle') === 1 && isset($_POST['a'])) {
-    if (ProductBundleWK($_POST['a'])) {
+if (isset($_POST['a']) &&
+    verifyGPCDataInteger('addproductbundle') === 1 &&
+    ProductBundleWK($_POST['a'])
+) {
         $cHinweis       = Shop::Lang()->get('basketAllAdded', 'messages');
         Shop::$kArtikel = (int)$_POST['aBundle'];
-    }
 }
 $AktuellerArtikel = new Artikel();
 $AktuellerArtikel->fuelleArtikel(Shop::$kArtikel, Artikel::getDetailOptions());
-if (isset($AktuellerArtikel->nIstVater) && $AktuellerArtikel->nIstVater == 1) {
+if ($AktuellerArtikel->nIstVater == 1) {
     $_SESSION['oVarkombiAuswahl']                               = new stdClass();
     $_SESSION['oVarkombiAuswahl']->kGesetzteEigeschaftWert_arr  = [];
     $_SESSION['oVarkombiAuswahl']->nVariationOhneFreifeldAnzahl = $AktuellerArtikel->nVariationOhneFreifeldAnzahl;
@@ -94,7 +95,7 @@ if (!$AktuellerArtikel->kArtikel) {
 
     return;
 }
-$similarArticles = ((int)($Einstellungen['artikeldetails']['artikeldetails_aehnlicheartikel_anzahl']) > 0)
+$similarArticles = (int)$Einstellungen['artikeldetails']['artikeldetails_aehnlicheartikel_anzahl'] > 0
     ? $AktuellerArtikel->holeAehnlicheArtikel()
     : [];
 // Lade VariationKombiKind
@@ -114,8 +115,8 @@ if (Shop::$kVariKindArtikel > 0) {
 }
 // Hat Artikel einen Preisverlauf?
 $smarty->assign('bPreisverlauf', !empty($_SESSION['Kundengruppe']->darfPreiseSehen));
-if ($Einstellungen['preisverlauf']['preisverlauf_anzeigen'] === 'Y' &&
-    !empty($_SESSION['Kundengruppe']->darfPreiseSehen)
+if (!empty($_SESSION['Kundengruppe']->darfPreiseSehen) &&
+    $Einstellungen['preisverlauf']['preisverlauf_anzeigen'] === 'Y'
 ) {
     Shop::$kArtikel = Shop::$kVariKindArtikel > 0
         ? Shop::$kVariKindArtikel
@@ -163,10 +164,10 @@ $nSortierung = verifyGPCDataInteger('sortierreihenfolge');
 $bewertung_anzeigen    = verifyGPCDataInteger('bewertung_anzeigen');
 $bAlleSprachen         = verifyGPCDataInteger('moreRating');
 $BewertungsTabAnzeigen = ($bewertung_seite || $bewertung_sterne || $bewertung_anzeigen || $bAlleSprachen) ? 1 : 0;
-if ($bewertung_seite == 0) {
+if ($bewertung_seite === 0) {
     $bewertung_seite = 1;
 }
-if (!isset($AktuellerArtikel->Bewertungen) || $bewertung_sterne > 0) {
+if ($AktuellerArtikel->Bewertungen === null || $bewertung_sterne > 0) {
     $AktuellerArtikel->holeBewertung(
         Shop::getLanguage(),
         $Einstellungen['bewertung']['bewertung_anzahlseite'],
@@ -206,7 +207,7 @@ $pagination = (new Pagination('ratings'))
 
 $AktuellerArtikel->Bewertungen->Sortierung = $nSortierung;
 
-$nAnzahlBewertungen = ($bewertung_sterne == 0)
+$nAnzahlBewertungen = ($bewertung_sterne === 0)
     ? $AktuellerArtikel->Bewertungen->nAnzahlSprache
     : $AktuellerArtikel->Bewertungen->nSterne_arr[5 - $bewertung_sterne];
 // Baue Blaetter Navigation

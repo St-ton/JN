@@ -19,11 +19,14 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
     $SieSindHierString = Shop::Lang()->get('youarehere', 'breadcrumb') .
         ': <a href="' . Shop::getURL() . '">' .
         Shop::Lang()->get('startpage', 'breadcrumb') . '</a>';
-    $ele        = new stdClass();
-    $ele->name  = Shop::Lang()->get('startpage', 'breadcrumb');
-    $ele->url   = Shop::getURL();
-    $linkHelper = LinkHelper::getInstance();
-    $brotnavi[] = $ele;
+    $ele0               = new stdClass();
+    $ele0->name         = Shop::Lang()->get('startpage', 'breadcrumb');
+    $ele0->url          = Shop::getURL();
+    $ele0->hasChild     = false;
+    $brotnavi[]        = $ele0;
+    $linkHelper        = LinkHelper::getInstance();
+    $ele               = new stdClass();
+    $ele->hasChild     = false;
     switch ($seite) {
         case 'STARTSEITE':
             $SieSindHierString .= '<br />';
@@ -47,16 +50,27 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
                         $cntchr            -= strlen($KategorieListe->elemente[$i]->cKurzbezeichnung);
                         $SieSindHierString .= ' &gt; ...';
                     }
-                    $ele        = new stdClass();
-                    $ele->name  = $KategorieListe->elemente[$i]->cKurzbezeichnung;
-                    $ele->url   = $KategorieListe->elemente[$i]->cURL;
-                    $brotnavi[] = $ele;
+                    $ele           = new stdClass();
+                    $ele->hasChild = false;
+                    $ele->name     = $KategorieListe->elemente[$i]->cKurzbezeichnung;
+                    $ele->url      = $KategorieListe->elemente[$i]->cURL;
+                    $brotnavi[]    = $ele;
                 }
             }
             $SieSindHierString .= ' &gt; <a href="' . $Artikel->cURLFull . '">' . $Artikel->cKurzbezeichnung . '</a>';
-            $ele                = new stdClass();
-            $ele->name          = $Artikel->cKurzbezeichnung;
-            $ele->url           = $Artikel->cURLFull;
+            $ele           = new stdClass();
+            $ele->hasChild = false;
+            $ele->name     = $Artikel->cKurzbezeichnung;
+            $ele->url      = $Artikel->cURLFull;
+            if ($Artikel->isChild()) {
+                $Vater = new Artikel();
+                $oArtikelOptionen        = new stdClass();
+                $oArtikelOptionen->nMain = 1;
+                $Vater->fuelleArtikel($Artikel->kVaterArtikel, $oArtikelOptionen);
+                $ele->name          = $Vater->cKurzbezeichnung;
+                $ele->url           = $Vater->cURLFull;
+                $ele->hasChild      = true;
+            }
             $brotnavi[]         = $ele;
             $SieSindHierString .= '<br />';
             break;
@@ -75,10 +89,11 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
                     $cntchr            -= strlen($KategorieListe->elemente[$i]->cKurzbezeichnung);
                     $SieSindHierString .= ' &gt; ...';
                 }
-                $ele        = new stdClass();
-                $ele->name  = $KategorieListe->elemente[$i]->cKurzbezeichnung;
-                $ele->url   = $KategorieListe->elemente[$i]->cURL;
-                $brotnavi[] = $ele;
+                $ele           = new stdClass();
+                $ele->hasChild = false;
+                $ele->name     = $KategorieListe->elemente[$i]->cKurzbezeichnung;
+                $ele->url      = $KategorieListe->elemente[$i]->cURL;
+                $brotnavi[]    = $ele;
             }
 
             $SieSindHierString .= '<br />';
@@ -87,17 +102,15 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
         case 'WARENKORB':
             $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('warenkorb.php') . '">' .
                 Shop::Lang()->get('basket', 'breadcrumb') . '</a>';
-            $ele        = new stdClass();
-            $ele->name  = Shop::Lang()->get('basket', 'breadcrumb');
-            $ele->url   = $linkHelper->getStaticRoute('warenkorb.php');
-            $brotnavi[] = $ele;
+            $ele->name     = Shop::Lang()->get('basket', 'breadcrumb');
+            $ele->url      = $linkHelper->getStaticRoute('warenkorb.php');
+            $brotnavi[]    = $ele;
             $SieSindHierString .= '<br />';
             break;
 
         case 'PASSWORT VERGESSEN':
             $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('pass.php') . '">' .
                 Shop::Lang()->get('forgotpassword', 'breadcrumb') . '</a>';
-            $ele        = new stdClass();
             $ele->name  = Shop::Lang()->get('forgotpassword', 'breadcrumb');
             $ele->url   = $linkHelper->getStaticRoute('pass.php');
             $brotnavi[] = $ele;
@@ -109,7 +122,6 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
                 ? Shop::Lang()->get('account', 'breadcrumb')
                 : Shop::Lang()->get('login', 'breadcrumb');
             $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('jtl.php') . '">' . $cText . '</a>';
-            $ele        = new stdClass();
             $ele->name  = $cText;
             $ele->url   = 'jtl.php';
             $brotnavi[] = $ele;
@@ -119,7 +131,6 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
         case 'BESTELLVORGANG':
             $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('bestellvorgang.php') . '">' .
                 Shop::Lang()->get('checkout', 'breadcrumb') . '</a>';
-            $ele        = new stdClass();
             $ele->name  = Shop::Lang()->get('checkout', 'breadcrumb');
             $ele->url   = $linkHelper->getStaticRoute('bestellvorgang.php');
             $brotnavi[] = $ele;
@@ -129,7 +140,6 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
         case 'REGISTRIEREN':
             $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('registrieren.php') . '">' .
                 Shop::Lang()->get('register', 'breadcrumb') . '</a>';
-            $ele        = new stdClass();
             $ele->name  = Shop::Lang()->get('register', 'breadcrumb');
             $ele->url   = $linkHelper->getStaticRoute('registrieren.php');
             $brotnavi[] = $ele;
@@ -139,7 +149,6 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
         case 'KONTAKT':
             $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('kontakt.php') . '">' .
                 Shop::Lang()->get('contact', 'breadcrumb') . '</a>';
-            $ele        = new stdClass();
             $ele->name  = Shop::Lang()->get('contact', 'breadcrumb');
             $ele->url   = $linkHelper->getStaticRoute('kontakt.php');
             $brotnavi[] = $ele;
@@ -149,7 +158,6 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
         case 'WARTUNG':
             $SieSindHierString .= ' &gt; <a href="wartung.php">' .
                 Shop::Lang()->get('maintainance', 'breadcrumb') . '</a>';
-            $ele        = new stdClass();
             $ele->name  = Shop::Lang()->get('maintainance', 'breadcrumb');
             $ele->url   = 'wartung.php';
             $brotnavi[] = $ele;
@@ -159,7 +167,6 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
         case 'NEWSLETTER':
             $SieSindHierString .= ' &gt; <a href="' . $linkURL . '">' .
                 Shop::Lang()->get('newsletter', 'breadcrumb') . '</a>';
-            $ele        = new stdClass();
             $ele->name  = $linkname;
             $ele->url   = $linkURL;
             $brotnavi[] = $ele;
@@ -168,7 +175,6 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
 
         case 'NEWS':
             $SieSindHierString .= ' &gt; <a href="' . $linkURL . '">' . $linkname . '</a>';
-            $ele        = new stdClass();
             $ele->name  = $linkname;
             $ele->url   = $linkURL;
             $brotnavi[] = $ele;
@@ -178,54 +184,53 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
         case 'NEWSDETAIL':
             $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('news.php') . '">' .
                 Shop::Lang()->get('news', 'breadcrumb') . '</a>';
-            $ele        = new stdClass();
             $ele->name  = Shop::Lang()->get('news', 'breadcrumb');
             $ele->url   = $linkHelper->getStaticRoute('news.php');
             $brotnavi[] = $ele;
 
             $SieSindHierString .= ' &gt; <a href="' . $linkURL . '">' . $linkname . '</a>';
-            $ele        = new stdClass();
-            $ele->name  = $linkname;
-            $ele->url   = $linkURL;
-            $brotnavi[] = $ele;
+            $ele           = new stdClass();
+            $ele->hasChild = false;
+            $ele->name     = $linkname;
+            $ele->url      = $linkURL;
+            $brotnavi[]    = $ele;
             $SieSindHierString .= '<br />';
             break;
 
         case 'NEWSKATEGORIE':
             $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('news.php') . '">' .
                 Shop::Lang()->get('newskat', 'breadcrumb') . '</a>';
-            $ele        = new stdClass();
             $ele->name  = Shop::Lang()->get('newskat', 'breadcrumb');
             $ele->url   = $linkHelper->getStaticRoute('news.php');
             $brotnavi[] = $ele;
 
             $SieSindHierString .= ' &gt; <a href="' . $linkURL . '">' . $linkname . '</a>';
-            $ele        = new stdClass();
-            $ele->name  = $linkname;
-            $ele->url   = $linkURL;
-            $brotnavi[] = $ele;
+            $ele           = new stdClass();
+            $ele->hasChild = false;
+            $ele->name     = $linkname;
+            $ele->url      = $linkURL;
+            $brotnavi[]    = $ele;
             $SieSindHierString .= '<br />';
             break;
 
         case 'NEWSMONAT':
             $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('news.php') . '">' .
                 Shop::Lang()->get('newsmonat', 'breadcrumb') . '</a>';
-            $ele        = new stdClass();
             $ele->name  = Shop::Lang()->get('newsmonat', 'breadcrumb');
             $ele->url   = $linkHelper->getStaticRoute('news.php');
             $brotnavi[] = $ele;
 
             $SieSindHierString .= ' &gt; <a href="' . $linkURL . '">' . $linkname . '</a>';
-            $ele        = new stdClass();
-            $ele->name  = $linkname;
-            $ele->url   = $linkURL;
-            $brotnavi[] = $ele;
+            $ele           = new stdClass();
+            $ele->hasChild = false;
+            $ele->name     = $linkname;
+            $ele->url      = $linkURL;
+            $brotnavi[]    = $ele;
             $SieSindHierString .= '<br />';
             break;
 
         case 'UMFRAGE':
             $SieSindHierString .= ' &gt; <a href="' . $linkURL . '">' . $linkname . '</a>';
-            $ele        = new stdClass();
             $ele->name  = $linkname;
             $ele->url   = $linkURL;
             $brotnavi[] = $ele;
@@ -235,7 +240,6 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
         case 'VERGLEICHSLISTE':
             $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('vergleichsliste.php') . '">' .
                 Shop::Lang()->get('compare', 'global') . '</a>';
-            $ele        = new stdClass();
             $ele->name  = Shop::Lang()->get('compare', 'global');
             $ele->url   = $linkHelper->getStaticRoute('vergleichsliste.php');
             $brotnavi[] = $ele;
@@ -249,7 +253,7 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
             $kVaterLink = (isset($oLink->kVaterLink)) ? (int)$oLink->kVaterLink : null;
             $elems      = [];
             do {
-                if ($kVaterLink == 0) {
+                if ($kVaterLink === 0) {
                     break;
                 }
                 $oItem = Shop::DB()->select('tlink', 'kLink', $kVaterLink);
@@ -261,13 +265,13 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
                 $itm            = new stdClass();
                 $itm->name      = $oItem->Sprache->cName;
                 $itm->url       = baueURL($oItem, URLART_SEITE);
+                $itm->hasChild  = false;
                 $elems[]        = $itm;
-                $kVaterLink     = $oItem->kVaterLink;
+                $kVaterLink     = (int)$oItem->kVaterLink;
             } while (true);
 
             $elems      = array_reverse($elems);
             $brotnavi   = array_merge($brotnavi, $elems);
-            $ele        = new stdClass();
             $ele->name  = $linkname;
             $ele->url   = $linkURL;
             $brotnavi[] = $ele;

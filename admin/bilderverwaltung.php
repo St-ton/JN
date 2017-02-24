@@ -6,7 +6,7 @@
 ob_start();
 set_time_limit(0);
 
-require_once dirname(__FILE__) . '/includes/admininclude.php';
+require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Updater.php';
 
 $hasPermission = $oAccount->permission('DISPLAY_IMAGES_VIEW', false, false);

@@ -4,14 +4,14 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-require_once dirname(__FILE__) . '/syncinclude.php';
+require_once __DIR__ . '/syncinclude.php';
 $return  = 3;
 $xml_obj = [];
 
 if (auth()) {
     $return                      = 0;
-    $xml_obj['kunden']['tkunde'] = Shop::DB()->query(
-        "SELECT kKunde, kKundengruppe, kSprache, cKundenNr, cPasswort, cAnrede, cTitel, cVorname,
+    $xml_obj['kunden']['tkunde'] = Shop::DB()->query("
+        SELECT kKunde, kKundengruppe, kSprache, cKundenNr, cPasswort, cAnrede, cTitel, cVorname,
             cNachname, cFirma, cStrasse, cHausnummer, cAdressZusatz, cPLZ, cOrt, cBundesland, cLand, cTel,
             cMobil, cFax, cMail, cUSTID, cWWW, fGuthaben, cNewsletter, dGeburtstag, fRabatt,
             cHerkunft, dErstellt, dVeraendert, cAktiv, cAbgeholt,
@@ -33,8 +33,7 @@ if (auth()) {
 
             //Strasse und Hausnummer zusammenfuehren
             $xml_obj['kunden']['tkunde'][$i]['cStrasse'] .= ' ' . trim($xml_obj['kunden']['tkunde'][$i]['cHausnummer']);
-            unset($xml_obj['kunden']['tkunde'][$i]['cHausnummer']);
-            unset($xml_obj['kunden']['tkunde'][$i]['cPasswort']);
+            unset($xml_obj['kunden']['tkunde'][$i]['cHausnummer'], $xml_obj['kunden']['tkunde'][$i]['cPasswort']);
             $xml_obj['kunden']['tkunde'][$i . ' attr'] = buildAttributes($xml_obj['kunden']['tkunde'][$i]);
             $cZusatz                                   = $xml_obj['kunden']['tkunde'][$i]['cZusatz'];
             unset($xml_obj['kunden']['tkunde'][$i]['cZusatz']);

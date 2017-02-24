@@ -6,7 +6,7 @@
 
 // Defines
 if (!isset($bExtern) || !$bExtern) {
-    define('DEFINES_PFAD', dirname(__FILE__) . '/../../includes/');
+    define('DEFINES_PFAD', __DIR__ . '/../../includes/');
     require DEFINES_PFAD . 'config.JTL-Shop.ini.php';
     require DEFINES_PFAD . 'defines.php';
     require PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'admindefines.php';

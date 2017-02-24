@@ -45,7 +45,7 @@ class SimpleMail
      *
      * @var array
      */
-    private $cAnhang_arr = array();
+    private $cAnhang_arr = [];
 
     /**
      * Versandmethode
@@ -101,19 +101,19 @@ class SimpleMail
      *
      * @var array
      */
-    private $cErrorLog = array();
+    private $cErrorLog = [];
 
     /**
      *
      * @param bool  $bShopMail
      * @param array $cMailEinstellungen_arr
      */
-    public function __construct($bShopMail = true, $cMailEinstellungen_arr = array())
+    public function __construct($bShopMail = true, $cMailEinstellungen_arr = [])
     {
         $bValid = true;
 
         if ($bShopMail === true) {
-            $Einstellungen = Shop::getSettings(array(CONF_EMAILS));
+            $Einstellungen = Shop::getSettings([CONF_EMAILS]);
 
             $this->cMethod       = $Einstellungen['emails']['email_methode'];
             $this->cSendMailPfad = $Einstellungen['emails']['email_sendmail_pfad'];
@@ -167,8 +167,8 @@ class SimpleMail
      */
     public function addAttachment($cName, $cPath, $cEncoding = 'base64', $cType = 'application/octet-stream')
     {
-        if (file_exists($cPath) && !empty($cName)) {
-            $cAnhang_arr              = array();
+        if (!empty($cName) && file_exists($cPath)) {
+            $cAnhang_arr              = [];
             $cAnhang_arr['cName']     = $cName;
             $cAnhang_arr['cPath']     = $cPath;
             $cAnhang_arr['cEncoding'] = $cEncoding;
@@ -238,7 +238,7 @@ class SimpleMail
      * @param array $cReply_arr
      * @return bool
      */
-    public function send(array $cEmpfaenger_arr, $cCC_arr = array(), $cBCC_arr = array(), $cReply_arr = array())
+    public function send(array $cEmpfaenger_arr, $cCC_arr = [], $cBCC_arr = [], $cReply_arr = [])
     {
         if ($this->validate() === true) {
             $oPHPMailer            = new PHPMailer();
@@ -425,11 +425,11 @@ class SimpleMail
     }
 
     /**
-     * @return mixed
+     * @return null
      */
     public function getErrorInfo()
     {
-        return;
+        return null;
     }
 
     /**

@@ -32,7 +32,7 @@ class Nice
     /**
      * @var array
      */
-    private $kShopModul_arr = array();
+    private $kShopModul_arr = [];
 
     /**
      * @return Nice
@@ -55,11 +55,18 @@ class Nice
             if (!empty($oBrocken->cBrocken)) {
                 // Brocken encrypten
                 $cPassA         = substr(base64_decode($oBrocken->cBrocken), 0, 9);
-                $cPassE         = substr(base64_decode($oBrocken->cBrocken), (strlen(base64_decode($oBrocken->cBrocken)) - 11));
+                $cPassE         = substr(
+                    base64_decode($oBrocken->cBrocken),
+                    (strlen(base64_decode($oBrocken->cBrocken)) - 11)
+                );
                 $cBlowfishKey   = $cPassA . $cPassE;
                 $oXTEA          = new XTEA($cBlowfishKey);
-                $this->cBrocken = $oXTEA->decrypt(str_replace(array($cPassA, $cPassE), array('', ''), base64_decode($oBrocken->cBrocken)));
-                Shop::Cache()->set('cbrocken', $this->cBrocken, array(CACHING_GROUP_CORE));
+                $this->cBrocken = $oXTEA->decrypt(str_replace(
+                        [$cPassA, $cPassE],
+                        ['', ''],
+                        base64_decode($oBrocken->cBrocken))
+                );
+                Shop::Cache()->set('cbrocken', $this->cBrocken, [CACHING_GROUP_CORE]);
             }
         }
         // Brocken zerlegen
@@ -91,11 +98,13 @@ class Nice
      */
     public function checkErweiterung($kShopModulCheck)
     {
-        if (isset($this->cAPIKey) && strlen($this->cAPIKey) > 0 && !empty($this->cDomain) && count($this->kShopModul_arr) > 0) {
-            return in_array(intval($kShopModulCheck), $this->kShopModul_arr, true);
-        }
-
-        return false;
+        return ($this->cAPIKey !== '' &&
+            strlen($this->cAPIKey) > 0 &&
+            !empty($this->cDomain) &&
+            count($this->kShopModul_arr) > 0
+        )
+            ? in_array((int)$kShopModulCheck, $this->kShopModul_arr, true)
+            : false;
     }
 
     /**
@@ -130,7 +139,7 @@ class Nice
      */
     public function gibAlleMoeglichenModule()
     {
-        $oModul_arr = array();
+        $oModul_arr = [];
         if (!defined(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
             $this->ladeDefines();
         }

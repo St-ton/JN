@@ -74,7 +74,17 @@ if (isset($_POST['zuruecksetzen']) && intval($_POST['zuruecksetzen']) === 1 && v
                     Shop::DB()->query("TRUNCATE twarenlager", 4);
                     Shop::DB()->query("TRUNCATE twarenlagersprache", 4);
 
-                    Shop::DB()->query("DELETE FROM tseo WHERE cKey = 'kArtikel' OR cKey = 'kKategorie' OR cKey = 'kMerkmalWert' OR cKey = 'kHersteller'", 4);
+                    Shop::DB()->query("
+                        DELETE FROM tseo 
+                            WHERE cKey = 'kArtikel' 
+                            OR cKey = 'kKategorie' 
+                            OR cKey = 'kMerkmalWert' 
+                            OR cKey = 'kHersteller'", 4
+                    );
+                    break;
+
+                case 'revisions':
+                    Shop::DB()->query("TRUNCATE trevisions", 4);
                     break;
 
                 // Shopinhalte
@@ -90,7 +100,12 @@ if (isset($_POST['zuruecksetzen']) && intval($_POST['zuruecksetzen']) === 1 && v
                     Shop::DB()->query("TRUNCATE tnewskommentar", 4);
                     Shop::DB()->query("TRUNCATE tnewsmonatsuebersicht", 4);
 
-                    Shop::DB()->query("DELETE FROM tseo WHERE cKey = 'kNews' OR cKey = 'kNewsKategorie' OR cKey = 'kNewsMonatsUebersicht'", 4);
+                    Shop::DB()->query("
+                        DELETE FROM tseo 
+                            WHERE cKey = 'kNews' 
+                              OR cKey = 'kNewsKategorie' 
+                              OR cKey = 'kNewsMonatsUebersicht'", 4
+                    );
                     break;
 
                 case 'bestseller':

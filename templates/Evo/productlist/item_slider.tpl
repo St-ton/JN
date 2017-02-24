@@ -11,7 +11,8 @@
         {*include file="snippets/image.tpl" src=$Artikel->Bilder[0]->cPfadKlein alt=$alt*}
         <img src="{$Artikel->Bilder[0]->cPfadKlein}" alt="{$alt}" />
         {if isset($Artikel->oSuchspecialBild) && !isset($hideOverlays)}
-            <img class="overlay-img hidden-xs" src="{$Artikel->oSuchspecialBild->cPfadKlein}" alt="{if isset($Artikel->oSuchspecialBild->cSuchspecial)}{$Artikel->oSuchspecialBild->cSuchspecial}{else}{$Artikel->cName}{/if}">
+            <img class="overlay-img hidden-xs" src="{$Artikel->oSuchspecialBild->cPfadKlein}"
+                 alt="{if isset($Artikel->oSuchspecialBild->cSuchspecial)}{$Artikel->oSuchspecialBild->cSuchspecial}{else}{$Artikel->cName}{/if}">
         {/if}
     </a>
     <div class="caption">
@@ -21,7 +22,7 @@
                     <span class="bundle-amount">{$Artikel->fAnzahl_stueckliste}</span> <span class="bundle-times">x</span>
                 </span>
             {/if}
-            <a href="{$Artikel->cURL}">{$Artikel->cName}</a>
+            <a href="{$Artikel->cURL}">{$Artikel->cKurzbezeichnung}</a>
         </h4>
         {if $Einstellungen.bewertung.bewertung_anzeigen === 'Y' && $Artikel->fDurchschnittsBewertung > 0}<small>{include file='productdetails/rating.tpl' stars=$Artikel->fDurchschnittsBewertung}</small>{/if}
         {if isset($Artikel->Preise->strPreisGrafik_Suche)}

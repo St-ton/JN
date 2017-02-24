@@ -10,7 +10,6 @@ ifndef('MAX_REVISIONS', 5);
  */
 class Revision
 {
-
     /**
      * @var array
      */
@@ -53,9 +52,9 @@ class Revision
      */
     private function getMapping($type)
     {
-        return (isset($this->mapping[$type])) ?
-            $this->mapping[$type] :
-            null;
+        return (isset($this->mapping[$type]))
+            ? $this->mapping[$type]
+            : null;
     }
 
     /**
@@ -96,9 +95,9 @@ class Revision
         $key = (int)$key;
         if (($mapping = $this->getMapping($type)) !== null && !empty($key)) {
             if ($author === null) {
-                $author = (isset($_SESSION['AdminAccount']->cLogin)) ?
-                    $_SESSION['AdminAccount']->cLogin :
-                    '?';
+                $author = (isset($_SESSION['AdminAccount']->cLogin))
+                    ? $_SESSION['AdminAccount']->cLogin
+                    : '?';
             }
             $field           = $mapping['id'];
             $currentRevision = Shop::DB()->select($mapping['table'], $mapping['id'], $key);

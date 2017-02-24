@@ -13,7 +13,7 @@
  */
 function pruefeNewsPost($cBetreff, $cText, $kKundengruppe_arr, $kNewsKategorie_arr)
 {
-    $cPlausiValue_arr = array();
+    $cPlausiValue_arr = [];
     // Betreff prüfen
     if (strlen($cBetreff) === 0) {
         $cPlausiValue_arr['cBetreff'] = 1;
@@ -41,7 +41,7 @@ function pruefeNewsPost($cBetreff, $cText, $kKundengruppe_arr, $kNewsKategorie_a
  */
 function pruefeNewsKategorie($cName, $nNewskategorieEditSpeichern = 0)
 {
-    $cPlausiValue_arr = array();
+    $cPlausiValue_arr = [];
     // Name prüfen
     if (strlen($cName) === 0) {
         $cPlausiValue_arr['cName'] = 1;
@@ -82,7 +82,7 @@ function gibLetzteBildNummer($kNews)
 {
     $cUploadVerzeichnis = PFAD_ROOT . PFAD_NEWSBILDER;
 
-    $cBild_arr = array();
+    $cBild_arr = [];
     if (is_dir($cUploadVerzeichnis . $kNews)) {
         $DirHandle = opendir($cUploadVerzeichnis . $kNews);
         while (false !== ($Datei = readdir($DirHandle))) {
@@ -255,7 +255,8 @@ function holeNewskategorie($kSprache = null, $cLimitSQL = '')
     $kSprache = (int)$kSprache;
 
     return Shop::DB()->query(
-        "SELECT" . (!empty($cLimitSQL) ? " SQL_CALC_FOUND_ROWS" : '') . " *, DATE_FORMAT(dLetzteAktualisierung, '%d.%m.%Y %H:%i') AS dLetzteAktualisierung_de
+        "SELECT" . (!empty($cLimitSQL) ? " SQL_CALC_FOUND_ROWS" : '') . 
+            " *, DATE_FORMAT(dLetzteAktualisierung, '%d.%m.%Y %H:%i') AS dLetzteAktualisierung_de
             FROM tnewskategorie
             WHERE kSprache = " . $kSprache . "
             ORDER BY nSort DESC" . (!empty($cLimitSQL) ? " " . $cLimitSQL : ''), 2
@@ -269,7 +270,7 @@ function holeNewskategorie($kSprache = null, $cLimitSQL = '')
  */
 function holeNewsBilder($kNews, $cUploadVerzeichnis)
 {
-    $oDatei_arr = array();
+    $oDatei_arr = [];
     $kNews      = (int)$kNews;
     if ($kNews > 0) {
         if (is_dir($cUploadVerzeichnis . $kNews)) {
@@ -373,7 +374,7 @@ function editiereNewskategorie($kNewsKategorie, $kSprache)
 function parseText($cText, $kNews)
 {
     $cUploadVerzeichnis = PFAD_ROOT . PFAD_NEWSBILDER;
-    $cBild_arr          = array();
+    $cBild_arr          = [];
     if (is_dir($cUploadVerzeichnis . $kNews)) {
         $DirHandle = opendir($cUploadVerzeichnis . $kNews);
         while (false !== ($Datei = readdir($DirHandle))) {
@@ -388,10 +389,14 @@ function parseText($cText, $kNews)
 
     $shopURL = Shop::getURL() . '/';
     for ($i = 1; $i <= count($cBild_arr); $i++) {
-        $cText = str_replace("$#Bild" . $i . "#$", '<img alt="" src="' . $shopURL . PFAD_NEWSBILDER . $kNews . '/' . $cBild_arr[$i - 1] . '" />', $cText);
+        $cText = str_replace("$#Bild" . $i . "#$", '<img alt="" src="' . 
+            $shopURL . PFAD_NEWSBILDER . $kNews . '/' . $cBild_arr[$i - 1] . 
+            '" />', $cText);
     }
     if (strpos(end($cBild_arr), 'preview') !== false) {
-        $cText = str_replace("$#preview#$", '<img alt="" src="' . $shopURL . PFAD_NEWSBILDER . $kNews . '/' . $cBild_arr[count($cBild_arr) - 1] . '" />', $cText);
+        $cText = str_replace("$#preview#$", '<img alt="" src="' . 
+            $shopURL . PFAD_NEWSBILDER . $kNews . '/' . $cBild_arr[count($cBild_arr) - 1] . 
+            '" />', $cText);
     }
 
     return $cText;
@@ -448,16 +453,17 @@ function newsRedirect($cTab = '', $cHinweis = '', $urlParams = null)
 
     if (!empty($cTab)) {
         if (!is_array($urlParams)) {
-            $urlParams = array();
+            $urlParams = [];
         }
-
         $urlParams['tab'] = $cTab;
-
-        if (isset($tabPageMapping[$cTab]) && verifyGPCDataInteger($tabPageMapping[$cTab]) > 1 && !array_key_exists($tabPageMapping[$cTab], $urlParams)) {
+        if (isset($tabPageMapping[$cTab]) && verifyGPCDataInteger($tabPageMapping[$cTab]) > 1 && 
+            !array_key_exists($tabPageMapping[$cTab], $urlParams)) {
             $urlParams[$tabPageMapping[$cTab]] = verifyGPCDataInteger($tabPageMapping[$cTab]);
         }
     }
 
-    header('Location: news.php' . (is_array($urlParams) ? '?' . http_build_query($urlParams, '', '&') : ''));
+    header('Location: news.php' . (is_array($urlParams) 
+            ? '?' . http_build_query($urlParams, '', '&') 
+            : ''));
     exit;
 }

@@ -39,6 +39,18 @@ jQuery.fn.set_search = function (type, assign) {
                 $('.ajax_list_picker.' + type).fadeOut(500);
                 return false;
             });
+            $('#' + type + '_list_add').click(function () {
+                $('select[name="' + type + '_list_found"] option:selected').each(function (i, e) {
+                    $('select[name="' + type + '_list_selected"]').append($(e));
+                });
+                return false;
+            });
+            $('#' + type + '_list_remove').click(function () {
+                $('select[name="' + type + '_list_selected"] option:selected').each(function (i, e) {
+                    $(e).remove();
+                });
+                return false;
+            });
             // mark as initialized
             $(this).addClass('init');
         }
@@ -181,6 +193,7 @@ function init_simple_search(callback) {
             callback(type, res);
         }
         browser.find('.button.remove').trigger('click');
+        return false;
     });
 }
 
@@ -263,7 +276,7 @@ function AllMessagesExcept(form, IDs) {
     var x,
         y;
     // check, if we got an array here
-    if (Object.prototype.toString.call(IDs)) {
+    if (IDs instanceof Object || IDs instanceof Array) {
         for (x = 0; x < form.elements.length; x++) {
             // iterate over all checkboxes, except the one with the name "ALLMSGS"
             if ('checkbox' === form.elements[x].type && 'ALLMSGS' !== form.elements[x].name) {
@@ -487,6 +500,8 @@ function updateNotifyDrop() {
         else if(!result.error) {
             if (result.data.tpl) {
                 $('#notify-drop').html(result.data.tpl);
+            } else {
+                $('#notify-drop').html('');
             }
         }
     });

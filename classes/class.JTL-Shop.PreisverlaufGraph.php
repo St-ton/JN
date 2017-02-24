@@ -85,7 +85,7 @@ class PreisverlaufGraph
      * PreisverlaufGraph Members
      *
      * @access public
-     * @var image
+     * @var string image
      */
     public $image; // Bild vom Graphen
 
@@ -144,12 +144,12 @@ class PreisverlaufGraph
         $this->fMinPreis       = 0.0;
         $this->fDiffPreis      = 0.0;
         $this->nStep           = 0;
-        $this->fStepWert_arr   = array(0.25, 0.5, 1.0, 2.5, 5.0, 7.5, 10.0, 12.5, 15.0, 25.0, 50.0, 100.0, 250.0, 2500.0, 25000.0);
-        $this->ColorBackground = array(255, 255, 255);
-        $this->ColorGrid       = array(255, 255, 255);
-        $this->ColorGraph      = array(255, 255, 255);
-        $this->ColorBox        = array(255, 255, 255);
-        $this->ColorText       = array(255, 255, 255);
+        $this->fStepWert_arr   = [0.25, 0.5, 1.0, 2.5, 5.0, 7.5, 10.0, 12.5, 15.0, 25.0, 50.0, 100.0, 250.0, 2500.0, 25000.0];
+        $this->ColorBackground = [255, 255, 255];
+        $this->ColorGrid       = [255, 255, 255];
+        $this->ColorGraph      = [255, 255, 255];
+        $this->ColorBox        = [255, 255, 255];
+        $this->ColorText       = [255, 255, 255];
         $this->nSchriftgroesse = 8;
         //$this->cSchriftart = 'arial.ttf';
         //$this->cSchriftverzeichnis = dirname(__FILE__) . '/';
@@ -164,7 +164,7 @@ class PreisverlaufGraph
         $this->berechneFarbHexNachDec();
         imagecolorallocate($this->image, $this->ColorBackground[0], $this->ColorBackground[1], $this->ColorBackground[2]);
 
-        if ($this->berechneMinMaxPreis(intval($kArtikel), intval($kKundegruppe), intval($nMonat))) {
+        if ($this->berechneMinMaxPreis((int)$kArtikel, (int)$kKundegruppe, (int)$nMonat)) {
             $this->berechneYPreisStep();
         }
     }
@@ -217,9 +217,9 @@ class PreisverlaufGraph
     /**
      * Berechnet für den aktuellen Artikel den maximalen und minimalen Preis
      *
-     * @param $kArtikel
-     * @param $kKundegruppe
-     * @param $nMonat
+     * @param int $kArtikel
+     * @param int $kKundegruppe
+     * @param int $nMonat
      * @return bool
      */
     public function berechneMinMaxPreis($kArtikel, $kKundegruppe, $nMonat)
@@ -227,7 +227,7 @@ class PreisverlaufGraph
         $this->oPreisverlaufData_arr = $this->holePreisverlauf($kArtikel, $kKundegruppe, $nMonat);
 
         if (is_array($this->oPreisverlaufData_arr) && count($this->oPreisverlaufData_arr) > 1) {
-            $fVKNetto_arr = array();
+            $fVKNetto_arr = [];
 
             foreach ($this->oPreisverlaufData_arr as $oPreisverlauf) {
                 $fVKNetto_arr[] = $oPreisverlauf->fVKNetto;
@@ -236,7 +236,7 @@ class PreisverlaufGraph
             $this->fMaxPreis  = round(floatval(max($fVKNetto_arr)), 2);
             $this->fMinPreis  = round(floatval(min($fVKNetto_arr)), 2);
             $this->fDiffPreis = $this->fMaxPreis - $this->fMinPreis;
-        } elseif (count($this->oPreisverlaufData_arr) === 1 && $this->oPreisverlaufData_arr != null) {
+        } elseif ($this->oPreisverlaufData_arr !== null && count($this->oPreisverlaufData_arr) === 1) {
             $this->fMaxPreis = $this->oPreisverlaufData_arr[0]->fVKNetto;
             $this->fMinPreis = $this->fMaxPreis;
         } else {
@@ -263,8 +263,19 @@ class PreisverlaufGraph
                 }
                 imagecolorallocate($this->image, $this->ColorText[0], $this->ColorText[1], $this->ColorText[2]);
 
-                $this->fMaxPreis = round(((($this->fMaxPreis * 100) - (($this->fMaxPreis * 100) % ($this->fStepWert_arr[$this->nStep] * 100))) + ($this->fStepWert_arr[$this->nStep] * 100)) / 100, 2);
-                $this->fMinPreis = round(((($this->fMinPreis * 100) - (($this->fMinPreis * 100) % ($this->fStepWert_arr[$this->nStep] * 100)))) / 100, 2);
+                $this->fMaxPreis = round(
+                    (
+                        (($this->fMaxPreis * 100) - (($this->fMaxPreis * 100) % ($this->fStepWert_arr[$this->nStep] * 100))) +
+                        ($this->fStepWert_arr[$this->nStep] * 100)
+                    ) / 100,
+                    2
+                );
+                $this->fMinPreis = round(
+                    (
+                        (($this->fMinPreis * 100) - (($this->fMinPreis * 100) % ($this->fStepWert_arr[$this->nStep] * 100)))
+                    ) / 100,
+                    2
+                );
 
                 $this->fDiffPreis    = $this->fMaxPreis - $this->fMinPreis;
                 $this->nAnzahlPreise = intval($this->fDiffPreis / $this->fStepWert_arr[$this->nStep]);
@@ -281,10 +292,38 @@ class PreisverlaufGraph
     {
         $BoxColor = imagecolorallocate($this->image, $this->ColorBox[0], $this->ColorBox[1], $this->ColorBox[2]);
 
-        imageline($this->image, $this->nAussenRahmenLinks, $this->nAussenRahmenOben, $this->nAussenRahmenRechts, $this->nAussenRahmenOben, $BoxColor); // Oben
-        imageline($this->image, $this->nAussenRahmenRechts, $this->nAussenRahmenOben, $this->nAussenRahmenRechts, $this->nAussenRahmenUnten, $BoxColor); // Rechts
-        imageline($this->image, $this->nAussenRahmenLinks, $this->nAussenRahmenOben, $this->nAussenRahmenLinks, $this->nAussenRahmenUnten, $BoxColor); // Links
-        imageline($this->image, $this->nAussenRahmenLinks, $this->nAussenRahmenUnten, $this->nAussenRahmenRechts, $this->nAussenRahmenUnten, $BoxColor); // Unten
+        imageline
+        ($this->image,
+            $this->nAussenRahmenLinks,
+            $this->nAussenRahmenOben,
+            $this->nAussenRahmenRechts,
+            $this->nAussenRahmenOben,
+            $BoxColor
+        ); // Oben
+        imageline(
+            $this->image,
+            $this->nAussenRahmenRechts,
+            $this->nAussenRahmenOben,
+            $this->nAussenRahmenRechts,
+            $this->nAussenRahmenUnten,
+            $BoxColor
+        ); // Rechts
+        imageline(
+            $this->image,
+            $this->nAussenRahmenLinks,
+            $this->nAussenRahmenOben,
+            $this->nAussenRahmenLinks,
+            $this->nAussenRahmenUnten,
+            $BoxColor
+        ); // Links
+        imageline(
+            $this->image,
+            $this->nAussenRahmenLinks,
+            $this->nAussenRahmenUnten,
+            $this->nAussenRahmenRechts,
+            $this->nAussenRahmenUnten,
+            $BoxColor
+        ); // Unten
     }
 
     /**
@@ -298,11 +337,9 @@ class PreisverlaufGraph
         //$nTimestampXWert = time();
         $nTimestampXWert = $this->nMaxTimestamp;
         // Y-Achsen Ausrichtung der Beschriftung
-        if ($this->fMaxPreis > 1000) {
-            $nBeschriftungsEinzug = 75;
-        } else {
-            $nBeschriftungsEinzug = 65;
-        }
+        $nBeschriftungsEinzug = ($this->fMaxPreis > 1000)
+            ? 75
+            : 65;
         if ($this->nAnzahlPreise > 1) {
             // Pixel pro Schritt Y Achse
             $nPixelProSchrittY = $this->nInnenRahmenHoehe / $this->nAnzahlPreise;
@@ -331,7 +368,14 @@ class PreisverlaufGraph
                 $this->cSchriftverzeichnis . $this->cSchriftart,
                 date('j. M', $nTimestampXWert)
             );
-            imageline($this->image, $this->nInnenRahmenRechts, $this->nAussenRahmenOben, $this->nInnenRahmenRechts, $this->nAussenRahmenUnten, $GridColor);
+            imageline(
+                $this->image,
+                $this->nInnenRahmenRechts,
+                $this->nAussenRahmenOben,
+                $this->nInnenRahmenRechts,
+                $this->nAussenRahmenUnten,
+                $GridColor
+            );
 
             $this->nStepX = $this->nInnenRahmenRechts;
 
@@ -349,7 +393,14 @@ class PreisverlaufGraph
                     $this->cSchriftverzeichnis . $this->cSchriftart,
                     date('j. M', $nTimestampXWert)
                 );
-                imageline($this->image, $this->nStepX, $this->nAussenRahmenOben, $this->nStepX, $this->nAussenRahmenUnten, $GridColor);
+                imageline(
+                    $this->image,
+                    $this->nStepX,
+                    $this->nAussenRahmenOben,
+                    $this->nStepX,
+                    $this->nAussenRahmenUnten,
+                    $GridColor
+                );
             }
 
             // Grid Y
@@ -366,7 +417,13 @@ class PreisverlaufGraph
                 $this->cSchriftverzeichnis . $this->cSchriftart,
                 round($fPreis, 2) . ' ' . $this->oPreisConfig->Waehrung
             );
-            imageline($this->image, $this->nAussenRahmenLinks, $this->nStepY, $this->nAussenRahmenRechts, $this->nStepY, $GridColor);
+            imageline($this->image,
+                $this->nAussenRahmenLinks,
+                $this->nStepY,
+                $this->nAussenRahmenRechts,
+                $this->nStepY,
+                $GridColor
+            );
 
             for ($i = 0; $i < $this->nAnzahlPreise; $i++) {
                 $this->nStepY += $nPixelProSchrittY;
@@ -381,7 +438,14 @@ class PreisverlaufGraph
                     $this->cSchriftverzeichnis . $this->cSchriftart,
                     round($fPreis, 2) . ' ' . $this->oPreisConfig->Waehrung
                 );
-                imageline($this->image, $this->nAussenRahmenLinks, $this->nStepY, $this->nAussenRahmenRechts, $this->nStepY, $GridColor);
+                imageline(
+                    $this->image,
+                    $this->nAussenRahmenLinks,
+                    $this->nStepY,
+                    $this->nAussenRahmenRechts,
+                    $this->nStepY,
+                    $GridColor
+                );
             }
         } elseif ($this->nAnzahlPreise == 1) {
             // Grid X
@@ -452,7 +516,6 @@ class PreisverlaufGraph
                 // Zeichne X Linie
                 imageline($this->image, $nXWertNow, $nYWertNext, $nXWertNow - $nPixelBreite, $nYWertNext, $GraphColor);
                 // Zeichne Y Linie
-                //imageline($this->image, $nXWertNow - $nPixelBreite, $nYWert, $nXWertNow - $nPixelBreite, $nYWertNext, $GraphColor);
                 imageline($this->image, $nXWertNow, $nYWert, $nXWertNow, $nYWertNext, $GraphColor);
 
                 $nXEnd = $nXWertNow - $nPixelBreite;
@@ -462,7 +525,14 @@ class PreisverlaufGraph
             }
 
             // Ränderspitzen
-            imageline($this->image, $nXStartWert + 5, $this->holeYPreis($fXStartPreis), $nXStartWert, $this->holeYPreis($fXStartPreis), $GraphColor); // Rechts
+            imageline(
+                $this->image,
+                $nXStartWert + 5,
+                $this->holeYPreis($fXStartPreis),
+                $nXStartWert,
+                $this->holeYPreis($fXStartPreis),
+                $GraphColor
+            ); // Rechts
             imageline($this->image, $nXEnd, $nYEnd, $nXEnd - 5, $nYEnd, $GraphColor); // Links
         } elseif (is_array($this->oPreisverlaufData_arr) && count($this->oPreisverlaufData_arr) == 1) {
             imageline(
@@ -486,7 +556,9 @@ class PreisverlaufGraph
     {
         $nPixelProCent = ($this->nStepY - $this->nInnenRahmenOben) / (($this->fMaxPreis - $this->fMinPreis) * 100);
 
-        return ($this->nInnenRahmenOben + ($this->nStepY - $this->nInnenRahmenOben)) - ((($fVKNetto - $this->fMinPreis) * 100) * $nPixelProCent);
+        return ($this->nInnenRahmenOben +
+                ($this->nStepY - $this->nInnenRahmenOben)) -
+            ((($fVKNetto - $this->fMinPreis) * 100) * $nPixelProCent);
     }
 
     /**
@@ -497,7 +569,7 @@ class PreisverlaufGraph
         if (count($this->oConfig_arr) > 0) {
             foreach ($this->oConfig_arr as $i => $oConfig) {
                 if (preg_match("/#[A-Fa-f0-9]{6}/", $oConfig->cWert) == 1) {
-                    $nDecZahl_arr = array();
+                    $nDecZahl_arr = [];
 
                     $cWertSub       = substr($oConfig->cWert, 1, strlen($oConfig->cWert) - 1);
                     $nDecZahl_arr[] = hexdec(substr($cWertSub, 0, 2));

@@ -82,7 +82,7 @@
                         <span class="value text-nowrap">{$Artikel->cUVPLocalized}</span>
                     </div>
                     {* Preisersparnis zur UVP anzeigen? *}
-                    {if isset($Artikel->SieSparenX) && $Artikel->SieSparenX->anzeigen == 1 && $Artikel->SieSparenX->nProzent > 0 && !$NettoPreise}
+                    {if isset($Artikel->SieSparenX) && $Artikel->SieSparenX->anzeigen == 1 && $Artikel->SieSparenX->nProzent > 0 && !$NettoPreise && $Artikel->taxData['tax'] > 0}
                         <div class="yousave">({lang key="youSave" section="productDetails"}
                             <span class="percent">{$Artikel->SieSparenX->nProzent}%</span>, {lang key="thatIs" section="productDetails"}
                             <span class="value text-nowrap">{$Artikel->SieSparenX->cLocalizedSparbetrag}</span>)
@@ -92,8 +92,8 @@
                 
                 {* --- Staffelpreise? --- *}
                 {if !empty($Artikel->staffelPreis_arr)}
-                    <div class="differential-price">
-                        {block name="detail-differential-price"}
+                    <div class="bulk-price">
+                        {block name="detail-bulk-price"}
                         <table class="table table-condensed table-hover">
                             <thead>
                                 <tr>
@@ -103,19 +103,19 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                {foreach $Artikel->staffelPreis_arr as $differentialPrice}
-                                    {if $differentialPrice.nAnzahl > 0}
-                                        <tr>
-                                            <td class="text-right">{$differentialPrice.nAnzahl}</td>
-                                            <td class="text-right">{$differentialPrice.cPreisLocalized[$NettoPreise]}</td>
-                                            {if !empty($differentialPrice.cBasePriceLocalized)}<td class="text-muted">{$differentialPrice.cBasePriceLocalized[$NettoPreise]}</td>{/if}
+                                {foreach $Artikel->staffelPreis_arr as $bulkPrice}
+                                    {if $bulkPrice.nAnzahl > 0}
+                                        <tr class="bulk-price-{$bulkPrice.nAnzahl}">
+                                            <td class="text-right">{$bulkPrice.nAnzahl}</td>
+                                            <td class="text-right bulk-price">{$bulkPrice.cPreisLocalized[$NettoPreise]}</td>
+                                            {if !empty($bulkPrice.cBasePriceLocalized)}<td class="text-muted bulk-base-price">{$bulkPrice.cBasePriceLocalized[$NettoPreise]}</td>{/if}
                                         </tr>
                                     {/if}
                                 {/foreach}
                             </tbody>
                         </table>
                         {/block}
-                    </div>{* /differential-price *}
+                    </div>{* /bulk-price *}
                 {/if}
             </div>{* /price-note *}
         {else}{* scope productlist *}

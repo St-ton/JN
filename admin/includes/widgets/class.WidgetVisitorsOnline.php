@@ -24,10 +24,13 @@ class WidgetVisitorsOnline extends WidgetBase
     public function getVisitors()
     {
         $oVisitors_arr = Shop::DB()->query(
-            "SELECT tbesucher.*, tbestellung.fGesamtsumme, tkunde.cVorname, tkunde.cNachname, tkunde.dErstellt, tkunde.cNewsletter
+            "SELECT tbesucher.*, tbestellung.fGesamtsumme, tkunde.cVorname, 
+                tkunde.cNachname, tkunde.dErstellt, tkunde.cNewsletter
                 FROM tbesucher
-                LEFT JOIN tbestellung ON tbesucher.kBestellung = tbestellung.kBestellung
-                LEFT JOIN tkunde ON tbesucher.kKunde = tkunde.kKunde
+                LEFT JOIN tbestellung 
+                    ON tbesucher.kBestellung = tbestellung.kBestellung
+                LEFT JOIN tkunde 
+                    ON tbesucher.kKunde = tkunde.kKunde
                 WHERE tbesucher.kBesucherBot = 0", 2
         );
         if (is_array($oVisitors_arr)) {

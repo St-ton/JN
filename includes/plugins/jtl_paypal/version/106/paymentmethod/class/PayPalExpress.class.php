@@ -3,10 +3,10 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
+require_once PFAD_ROOT.PFAD_INCLUDES_MODULES.'PaymentMethod.class.php';
 
-require_once str_replace('frontend', '', $oPlugin->cFrontendPfad) . 'paypal-sdk/vendor/autoload.php';
-require_once str_replace('frontend', 'paymentmethod', $oPlugin->cFrontendPfad) . 'class/PayPal.helper.class.php';
+require_once str_replace('frontend', '', $oPlugin->cFrontendPfad).'paypal-sdk/vendor/autoload.php';
+require_once str_replace('frontend', 'paymentmethod', $oPlugin->cFrontendPfad).'class/PayPal.helper.class.php';
 
 use PayPal\CoreComponentTypes\BasicAmountType;
 use PayPal\EBLBaseComponents\PaymentDetailsType;
@@ -98,38 +98,38 @@ class PayPalExpress extends PaymentMethod
      */
     public function __construct()
     {
-        $plugin             = Plugin::getPluginById('jtl_paypal');
-        $oPlugin            = new Plugin($plugin->kPlugin);
-        $sql                = "SELECT cName, kZahlungsart FROM tzahlungsart WHERE cModulId='kPlugin_" . $oPlugin->kPlugin . "_paypalexpress'";
+        $plugin = Plugin::getPluginById('jtl_paypal');
+        $oPlugin = new Plugin($plugin->kPlugin);
+        $sql = "SELECT cName, kZahlungsart FROM tzahlungsart WHERE cModulId='kPlugin_".$oPlugin->kPlugin."_paypalexpress'";
         $this->tZahlungsart = (class_exists('Shop')) ? Shop::DB()->query($sql, 1) : $GLOBALS['DB']->executeQuery($sql, 1);
-        $this->oPlugin      = $oPlugin;
-        $this->pluginbez    = 'kPlugin_' . $oPlugin->kPlugin . '_paypalexpress';
-        $this->currencyISO  = (isset($_SESSION['Waehrung'])) ? $_SESSION['Waehrung']->cISO : null;
-        $this->cISOSprache  = (isset($_SESSION['cISOSprache'])) ? $_SESSION['cISOSprache'] : null;
-        if ($oPlugin->oPluginEinstellungAssoc_arr[$this->pluginbez . '_api_live_sandbox'] === 'live') {
+        $this->oPlugin = $oPlugin;
+        $this->pluginbez = 'kPlugin_'.$oPlugin->kPlugin.'_paypalexpress';
+        $this->currencyISO = (isset($_SESSION['Waehrung'])) ? $_SESSION['Waehrung']->cISO : null;
+        $this->cISOSprache = (isset($_SESSION['cISOSprache'])) ? $_SESSION['cISOSprache'] : null;
+        if ($oPlugin->oPluginEinstellungAssoc_arr[$this->pluginbez.'_api_live_sandbox'] === 'live') {
             $this->PayPalURL = 'https://www.paypal.com/checkoutnow?useraction=continue&token=';
-            $this->endPoint  = 'https://api-3t.paypal.com/nvp';
-            $this->benutzer  = $oPlugin->oPluginEinstellungAssoc_arr[$this->pluginbez . '_api_user'];
-            $this->passwort  = $oPlugin->oPluginEinstellungAssoc_arr[$this->pluginbez . '_api_pass'];
-            $this->signatur  = $oPlugin->oPluginEinstellungAssoc_arr[$this->pluginbez . '_api_signatur'];
-            $this->mode      = 'live';
+            $this->endPoint = 'https://api-3t.paypal.com/nvp';
+            $this->benutzer = $oPlugin->oPluginEinstellungAssoc_arr[$this->pluginbez.'_api_user'];
+            $this->passwort = $oPlugin->oPluginEinstellungAssoc_arr[$this->pluginbez.'_api_pass'];
+            $this->signatur = $oPlugin->oPluginEinstellungAssoc_arr[$this->pluginbez.'_api_signatur'];
+            $this->mode = 'live';
         } else {
             $this->PayPalURL = 'https://www.sandbox.paypal.com/checkoutnow?useraction=continue&token=';
-            $this->endPoint  = 'https://api-3t.sandbox.paypal.com/nvp';
-            $this->benutzer  = $oPlugin->oPluginEinstellungAssoc_arr[$this->pluginbez . '_api_sandbox_user'];
-            $this->passwort  = $oPlugin->oPluginEinstellungAssoc_arr[$this->pluginbez . '_api_sandbox_pass'];
-            $this->signatur  = $oPlugin->oPluginEinstellungAssoc_arr[$this->pluginbez . '_api_sandbox_signatur'];
-            $this->mode      = 'sandbox';
+            $this->endPoint = 'https://api-3t.sandbox.paypal.com/nvp';
+            $this->benutzer = $oPlugin->oPluginEinstellungAssoc_arr[$this->pluginbez.'_api_sandbox_user'];
+            $this->passwort = $oPlugin->oPluginEinstellungAssoc_arr[$this->pluginbez.'_api_sandbox_pass'];
+            $this->signatur = $oPlugin->oPluginEinstellungAssoc_arr[$this->pluginbez.'_api_sandbox_signatur'];
+            $this->mode = 'sandbox';
         }
         $this->config = [
-            'mode'            => $this->mode,
-            
-            'acct1.UserName'  => $this->benutzer,
-            'acct1.Password'  => $this->passwort,
+            'mode' => $this->mode,
+
+            'acct1.UserName' => $this->benutzer,
+            'acct1.Password' => $this->passwort,
             'acct1.Signature' => $this->signatur,
-            
-            'cache.enabled'   => true,
-            'cache.FileName'  => PFAD_ROOT . PFAD_COMPILEDIR . 'paypalexpress.auth.cache'
+
+            'cache.enabled' => true,
+            'cache.FileName' => PFAD_ROOT.PFAD_COMPILEDIR.'paypalexpress.auth.cache',
         ];
         parent::__construct($this->pluginbez);
     }
@@ -199,51 +199,51 @@ class PayPalExpress extends PaymentMethod
     {
         $basket = PayPalHelper::getBasket();
 
-        $paymentDetails                     = new PaymentDetailsType();
+        $paymentDetails = new PaymentDetailsType();
         $paymentDetails->PaymentDetailsItem = [];
 
         foreach ($basket->items as $item) {
-            $itemPaymentDetails           = new \PayPal\EBLBaseComponents\PaymentDetailsItemType();
+            $itemPaymentDetails = new \PayPal\EBLBaseComponents\PaymentDetailsItemType();
             $itemPaymentDetails->Quantity = $item->quantity;
-            $itemPaymentDetails->Name     = $item->name;
-            $itemPaymentDetails->Amount   = new BasicAmountType($basket->currency->cISO, $item->amount[WarenkorbHelper::GROSS]);
-            $itemPaymentDetails->Tax      = new BasicAmountType($basket->currency->cISO, '0.00');
+            $itemPaymentDetails->Name = $item->name;
+            $itemPaymentDetails->Amount = new BasicAmountType($basket->currency->cISO, $item->amount[WarenkorbHelper::GROSS]);
+            $itemPaymentDetails->Tax = new BasicAmountType($basket->currency->cISO, '0.00');
 
             $paymentDetails->PaymentDetailsItem[] = $itemPaymentDetails;
         }
 
-        $link     = PayPalHelper::getLinkByName($this->oPlugin, 'PayPalExpress');
-        $shopLogo = $this->oPlugin->oPluginEinstellungAssoc_arr[$this->pluginbez . '_shoplogo'];
+        $link = PayPalHelper::getLinkByName($this->oPlugin, 'PayPalExpress');
+        $shopLogo = $this->oPlugin->oPluginEinstellungAssoc_arr[$this->pluginbez.'_shoplogo'];
         if (strlen($shopLogo) > 0 && strpos($shopLogo, 'http') !== 0) {
-            $shopLogo = Shop::getURL() . '/' . $shopLogo;
+            $shopLogo = Shop::getURL().'/'.$shopLogo;
         }
-        $borderColor = str_replace('#', '', $this->oPlugin->oPluginEinstellungAssoc_arr[$this->pluginbez . '_bordercolor']);
-        $brandName   = utf8_encode($this->oPlugin->oPluginEinstellungAssoc_arr[$this->pluginbez . '_brand']);
+        $borderColor = str_replace('#', '', $this->oPlugin->oPluginEinstellungAssoc_arr[$this->pluginbez.'_bordercolor']);
+        $brandName = utf8_encode($this->oPlugin->oPluginEinstellungAssoc_arr[$this->pluginbez.'_brand']);
 
-        $paymentDetails->PaymentAction    = 'Sale';
-        $paymentDetails->ItemTotal        = new BasicAmountType($basket->currency->cISO, $basket->article[WarenkorbHelper::GROSS]);
-        $paymentDetails->TaxTotal         = new BasicAmountType($basket->currency->cISO, '0.00'); // $basket->diff[WarenkorbHelper::GROSS]
-        $paymentDetails->ShippingTotal    = new BasicAmountType($basket->currency->cISO, $basket->shipping[WarenkorbHelper::GROSS]);
-        $paymentDetails->OrderTotal       = new BasicAmountType($basket->currency->cISO, $basket->total[WarenkorbHelper::GROSS]);
-        $paymentDetails->HandlingTotal    = new BasicAmountType($basket->currency->cISO, $basket->surcharge[WarenkorbHelper::GROSS]);
+        $paymentDetails->PaymentAction = 'Sale';
+        $paymentDetails->ItemTotal = new BasicAmountType($basket->currency->cISO, $basket->article[WarenkorbHelper::GROSS]);
+        $paymentDetails->TaxTotal = new BasicAmountType($basket->currency->cISO, '0.00');
+        $paymentDetails->ShippingTotal = new BasicAmountType($basket->currency->cISO, $basket->shipping[WarenkorbHelper::GROSS]);
+        $paymentDetails->OrderTotal = new BasicAmountType($basket->currency->cISO, $basket->total[WarenkorbHelper::GROSS]);
+        $paymentDetails->HandlingTotal = new BasicAmountType($basket->currency->cISO, $basket->surcharge[WarenkorbHelper::GROSS]);
         $paymentDetails->ShippingDiscount = new BasicAmountType($basket->currency->cISO, $basket->discount[WarenkorbHelper::GROSS] * -1);
 
-        $setExpressCheckoutRequestDetails                       = new \PayPal\EBLBaseComponents\SetExpressCheckoutRequestDetailsType();
-        $setExpressCheckoutRequestDetails->ReturnURL            = Shop::getURL() . '/index.php?s=' . $link->kLink . '&return=1';
-        $setExpressCheckoutRequestDetails->CancelURL            = Shop::getURL() . '/warenkorb.php';
-        $setExpressCheckoutRequestDetails->BrandName            = $brandName;
-        $setExpressCheckoutRequestDetails->cpplogoimage         = $shopLogo;
-        $setExpressCheckoutRequestDetails->cppheaderimage       = $shopLogo;
+        $setExpressCheckoutRequestDetails = new \PayPal\EBLBaseComponents\SetExpressCheckoutRequestDetailsType();
+        $setExpressCheckoutRequestDetails->ReturnURL = Shop::getURL().'/index.php?s='.$link->kLink.'&return=1';
+        $setExpressCheckoutRequestDetails->CancelURL = Shop::getURL().'/warenkorb.php';
+        $setExpressCheckoutRequestDetails->BrandName = $brandName;
+        $setExpressCheckoutRequestDetails->cpplogoimage = $shopLogo;
+        $setExpressCheckoutRequestDetails->cppheaderimage = $shopLogo;
         $setExpressCheckoutRequestDetails->cppheaderbordercolor = $borderColor;
-        $setExpressCheckoutRequestDetails->PaymentDetails       = [$paymentDetails];
-        $setExpressCheckoutRequestDetails->LocaleCode           = strtoupper(StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
+        $setExpressCheckoutRequestDetails->PaymentDetails = [$paymentDetails];
+        $setExpressCheckoutRequestDetails->LocaleCode = strtoupper(StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
 
-        $setExpressCheckoutRequestType                    = new PayPalAPI\SetExpressCheckoutRequestType($setExpressCheckoutRequestDetails);
-        $setExpressCheckoutReq                            = new PayPalAPI\SetExpressCheckoutReq();
+        $setExpressCheckoutRequestType = new PayPalAPI\SetExpressCheckoutRequestType($setExpressCheckoutRequestDetails);
+        $setExpressCheckoutReq = new PayPalAPI\SetExpressCheckoutReq();
         $setExpressCheckoutReq->SetExpressCheckoutRequest = $setExpressCheckoutRequestType;
 
         $redirect = $exception = $response = null;
-        $service  = new \PayPal\Service\PayPalAPIInterfaceServiceService($this->config);
+        $service = new \PayPal\Service\PayPalAPIInterfaceServiceService($this->config);
 
         try {
             $r = print_r($setExpressCheckoutReq, true);
@@ -259,13 +259,13 @@ class PayPalExpress extends PaymentMethod
 
         if (isset($response->Ack) && $response->Ack === 'Success') {
             $_SESSION['reshash'] = [
-                'Token'         => $response->Token,
-                'Ack'           => $response->Ack,
-                'Timestamp'     => $response->Timestamp,
+                'Token' => $response->Token,
+                'Ack' => $response->Ack,
+                'Timestamp' => $response->Timestamp,
                 'CorrelationID' => $response->CorrelationID,
             ];
 
-            $redirect = $this->PayPalURL . $response->Token;
+            $redirect = $this->PayPalURL.$response->Token;
         } else {
             $r = $exception !== null ? $exception->getMessage() : print_r($response, true);
             $this->doLog("Error: SetExpressCheckout:\n\n<pre>{$r}</pre>", LOGLEVEL_ERROR);
@@ -286,7 +286,7 @@ class PayPalExpress extends PaymentMethod
     {
         parent::init($nAgainCheckout);
 
-        $this->name    = 'PayPal Express';
+        $this->name = 'PayPal Express';
         $this->caption = 'PayPal Express';
 
         return $this;
@@ -299,10 +299,10 @@ class PayPalExpress extends PaymentMethod
      */
     public function zahlungsartsession($kVersandart = false)
     {
-        $_SESSION['Zahlungsart']           = $this->tZahlungsart;
+        $_SESSION['Zahlungsart'] = $this->tZahlungsart;
         $_SESSION['Zahlungsart']->cModulId = gibPlugincModulId($this->oPlugin->kPlugin, $this->tZahlungsart->cName);
-        $sql                               = "SELECT cName, cISOSprache FROM tzahlungsartsprache WHERE kZahlungsart='" . $this->tZahlungsart->kZahlungsart . "'";
-        $sprache_arr                       = Shop::DB()->query($sql, 2);
+        $sql = "SELECT cName, cISOSprache FROM tzahlungsartsprache WHERE kZahlungsart='".$this->tZahlungsart->kZahlungsart."'";
+        $sprache_arr = Shop::DB()->query($sql, 2);
 
         foreach ($sprache_arr as $sprache) {
             $_SESSION['Zahlungsart']->angezeigterName[$sprache->cISOSprache] = $sprache->cName;
@@ -318,26 +318,27 @@ class PayPalExpress extends PaymentMethod
     {
         $basket = PayPalHelper::getBasket();
 
-        $doExpressCheckoutPaymentReq                          = new PayPalAPI\DoExpressCheckoutPaymentReq();
-        $doExpressCheckoutPaymentRequestDetails               = new \PayPal\EBLBaseComponents\DoExpressCheckoutPaymentRequestDetailsType();
-        $doExpressCheckoutPaymentRequestDetails->Token        = $_SESSION['reshash']['Token'];
-        $doExpressCheckoutPaymentRequestDetails->PayerID      = $_SESSION['reshash']['PayerID'];
+        $doExpressCheckoutPaymentReq = new PayPalAPI\DoExpressCheckoutPaymentReq();
+        $doExpressCheckoutPaymentRequestDetails = new \PayPal\EBLBaseComponents\DoExpressCheckoutPaymentRequestDetailsType();
+        $doExpressCheckoutPaymentRequestDetails->Token = $_SESSION['reshash']['Token'];
+        $doExpressCheckoutPaymentRequestDetails->PayerID = $_SESSION['reshash']['PayerID'];
         $doExpressCheckoutPaymentRequestDetails->ButtonSource = 'JTL_Cart_ECS_CPI';
 
-        $paymentDetails                   = new PaymentDetailsType();
-        $paymentDetails->PaymentAction    = 'Sale';
-        $paymentDetails->ItemTotal        = new BasicAmountType($basket->currency->cISO, $basket->article[WarenkorbHelper::GROSS]);
-        $paymentDetails->TaxTotal         = new BasicAmountType($basket->currency->cISO, '0.00'); // $basket->diff[WarenkorbHelper::GROSS]
-        $paymentDetails->ShippingTotal    = new BasicAmountType($basket->currency->cISO, $basket->shipping[WarenkorbHelper::GROSS]);
-        $paymentDetails->OrderTotal       = new BasicAmountType($basket->currency->cISO, $basket->total[WarenkorbHelper::GROSS]);
+        $paymentDetails = new PaymentDetailsType();
+        $paymentDetails->PaymentAction = 'Sale';
+        $paymentDetails->ItemTotal = new BasicAmountType($basket->currency->cISO, $basket->article[WarenkorbHelper::GROSS]);
+        $paymentDetails->TaxTotal = new BasicAmountType($basket->currency->cISO, '0.00'); // $basket->diff[WarenkorbHelper::GROSS]
+        $paymentDetails->ShippingTotal = new BasicAmountType($basket->currency->cISO, $basket->shipping[WarenkorbHelper::GROSS]);
+        $paymentDetails->OrderTotal = new BasicAmountType($basket->currency->cISO, $basket->total[WarenkorbHelper::GROSS]);
         $paymentDetails->ShippingDiscount = new BasicAmountType($basket->currency->cISO, $basket->discount[WarenkorbHelper::GROSS] * -1);
-        $paymentDetails->HandlingTotal    = new BasicAmountType($basket->currency->cISO, $basket->surcharge[WarenkorbHelper::GROSS]);
-        $paymentDetails->InvoiceID        = $order->cBestellNr; // jtlshop/jtl-shop#249
-        $paymentDetails->Custom           = $order->kBestellung;
-        $paymentDetails->NotifyURL        = $this->oPlugin->cFrontendPfadURLSSL . 'notify.php?type=express';
+        $paymentDetails->HandlingTotal = new BasicAmountType($basket->currency->cISO, $basket->surcharge[WarenkorbHelper::GROSS]);
 
-        $doExpressCheckoutPaymentRequestDetails->PaymentDetails       = [$paymentDetails];
-        $doExpressCheckoutPaymentRequest                              = new PayPalAPI\DoExpressCheckoutPaymentRequestType($doExpressCheckoutPaymentRequestDetails);
+        $paymentDetails->InvoiceID = $order->cBestellNr;
+        $paymentDetails->Custom = $order->kBestellung;
+        $paymentDetails->NotifyURL = $this->oPlugin->cFrontendPfadURLSSL.'notify.php?type=express';
+
+        $doExpressCheckoutPaymentRequestDetails->PaymentDetails = [$paymentDetails];
+        $doExpressCheckoutPaymentRequest = new PayPalAPI\DoExpressCheckoutPaymentRequestType($doExpressCheckoutPaymentRequestDetails);
         $doExpressCheckoutPaymentReq->DoExpressCheckoutPaymentRequest = $doExpressCheckoutPaymentRequest;
 
         $service = new \PayPal\Service\PayPalAPIInterfaceServiceService($this->config);
@@ -362,11 +363,11 @@ class PayPalExpress extends PaymentMethod
 
             if (strcasecmp($paymentInfo->PaymentStatus, 'Completed') === 0) {
                 $this->addIncomingPayment($order, [
-                    'fBetrag'          => $basket->total[WarenkorbHelper::GROSS],
+                    'fBetrag' => $basket->total[WarenkorbHelper::GROSS],
                     'fZahlungsgebuehr' => $basket->surcharge[WarenkorbHelper::GROSS],
-                    'cISO'             => $basket->currency->cISO,
-                    'cZahler'          => $_SESSION['reshash']['Payer'],
-                    'cHinweis'         => $paymentInfo->TransactionID,
+                    'cISO' => $basket->currency->cISO,
+                    'cZahler' => $_SESSION['reshash']['Payer'],
+                    'cHinweis' => $paymentInfo->TransactionID,
                 ]);
 
                 $this->setOrderStatusToPaid($order);
@@ -389,10 +390,10 @@ class PayPalExpress extends PaymentMethod
      */
     public function GetExpressCheckoutDetails($token)
     {
-        $getExpressCheckoutDetailsReq                                   = new PayPalAPI\GetExpressCheckoutDetailsReq();
-        $getExpressCheckoutDetailsRequest                               = new PayPalAPI\GetExpressCheckoutDetailsRequestType($token);
+        $getExpressCheckoutDetailsReq = new PayPalAPI\GetExpressCheckoutDetailsReq();
+        $getExpressCheckoutDetailsRequest = new PayPalAPI\GetExpressCheckoutDetailsRequestType($token);
         $getExpressCheckoutDetailsReq->GetExpressCheckoutDetailsRequest = $getExpressCheckoutDetailsRequest;
-        $service                                                        = new \PayPal\Service\PayPalAPIInterfaceServiceService($this->config);
+        $service = new \PayPal\Service\PayPalAPIInterfaceServiceService($this->config);
         try {
             $response = $service->GetExpressCheckoutDetails($getExpressCheckoutDetailsReq);
         } catch (Exception $e) {
@@ -414,37 +415,21 @@ class PayPalExpress extends PaymentMethod
      */
     public function zahlungErlaubt($oArtikel_arr = [])
     {
-        $versandklassen = VersandartHelper::getShippingClasses($_SESSION['Warenkorb']);
         foreach ($oArtikel_arr as $oArtikel) {
             if ($oArtikel !== null) {
                 if (isset($oArtikel->FunktionsAttribute['no_paypalexpress']) && intval($oArtikel->FunktionsAttribute['no_paypalexpress']) === 1) {
                     return false;
                 }
-
-                $kKundengruppe = (isset($_SESSION['Kunde']->kKundengruppe)) ? $_SESSION['Kunde']->kKundengruppe : null;
-                if (!$kKundengruppe) {
-                    if (method_exists('Kundengruppe', 'getDefaultGroupID')) {
-                        $kKundengruppe = Kundengruppe::getDefaultGroupID();
-                    } else {
-                        $kKundengruppe = gibStandardKundenGruppe();
-                    }
-                }
-                $sql = 'SELECT tversandart.kVersandart, tversandartzahlungsart.kZahlungsart
-                                                    FROM tversandart
-                                                    LEFT JOIN tversandartzahlungsart
-                                                        ON tversandartzahlungsart.kVersandart = tversandart.kVersandart
-                                                    WHERE tversandartzahlungsart.kZahlungsart = ' . $this->tZahlungsart->kZahlungsart . "
-                AND (cVersandklassen='-1' OR (cVersandklassen LIKE '% " . $versandklassen . " %' OR cVersandklassen LIKE '% " . $versandklassen . "'))
-                                                       AND (cKundengruppen='-1' OR cKundengruppen LIKE '%;" . $kKundengruppe . ";%')";
-                $oVersandart_arr = (class_exists('Shop')) ? Shop::DB()->query($sql,
-                    2) : $GLOBALS['DB']->executeQuery($sql,
-                    2);
-                $oVersandart_arr = $this->pruefeobVersandartPayPalExpressenthaelt($oVersandart_arr);
-
-                if (count($oVersandart_arr) <= 0) {
-                    return false;
-                }
             }
+        }
+
+        $versandklassen = VersandartHelper::getShippingClasses($_SESSION['Warenkorb']);
+
+        $oVersandart_arr = VersandartHelper::getPossibleShippingMethods($_SESSION['Kunde']->cLand, $_SESSION['Kunde']->cPLZ, $versandklassen, $_SESSION['Kunde']->kKundengruppe);
+        $oVersandart_arr = $this->pruefeobVersandartPayPalExpressenthaelt($oVersandart_arr);
+
+        if (count($oVersandart_arr) <= 0) {
+            return false;
         }
 
         return true;
@@ -461,9 +446,9 @@ class PayPalExpress extends PaymentMethod
             if (!isset($oVersandart->kZahlungsart)) {
                 $sql = 'SELECT kZahlungsart
                                                 FROM tversandartzahlungsart
-                                                	WHERE tversandartzahlungsart.kVersandart = ' . $oVersandart->kVersandart . '
-                                                	AND tversandartzahlungsart.kZahlungsart = ' . $this->tZahlungsart->kZahlungsart;
-                $oVersandartzahlungsart    = Shop::DB()->query($sql, 1);
+                                                	WHERE tversandartzahlungsart.kVersandart = '.$oVersandart->kVersandart.'
+                                                	AND tversandartzahlungsart.kZahlungsart = '.$this->tZahlungsart->kZahlungsart;
+                $oVersandartzahlungsart = Shop::DB()->query($sql, 1);
                 $oVersandart->kZahlungsart = $oVersandartzahlungsart->kZahlungsart;
             }
 

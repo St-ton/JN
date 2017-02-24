@@ -1,4 +1,6 @@
+{block name="content-closingtag"}
 </div>{* /content *}
+{/block}
 
 {has_boxes position='left' assign='hasLeftBox'}
 {if !$bExclusive && $hasLeftBox && isset($boxes) && !empty($boxes.left)}
@@ -10,9 +12,16 @@
     {/block}
 {/if}
 </div>{* /row *}
-</div>
+
+{block name="content-container-block-closingtag"}
+</div>{* /container-block *}
+{/block}
+
 </div>{* /container *}
-</div>{* /container-wrapper*}
+
+{block name="content-wrapper-closingtag"}
+</div>{* /content-wrapper*}
+{/block}
 
 {if !$bExclusive}
     <div class="clearfix"></div>
@@ -22,11 +31,12 @@
                 <div class="container-block clearfix">
             {/if}
 
+            {block name="footer-boxes"}
             {load_boxes_raw type='bottom' assign='arrBoxBottom' array=true}
             {if isset($arrBoxBottom) && count($arrBoxBottom) > 0}
                 <div class="row" id="footer-boxes">
                     {foreach name=bottomBoxes from=$arrBoxBottom item=box}
-                        <div class="col-xs-6 col-md-3">
+                        <div class="{block name="footer-boxes-class"}col-xs-6 col-md-3{/block}">
                             {if isset($box.obj) && isset($box.tpl)}
                                 {if $smarty.foreach.bottomBoxes.iteration < 10}
                                     {assign var=oBox value=$box.obj}
@@ -37,6 +47,7 @@
                     {/foreach}
                 </div>
             {/if}
+            {/block}
 
             {block name="footer-additional"}
             {if $Einstellungen.template.footer.socialmedia_footer === 'Y' || $Einstellungen.template.footer.newsletter_footer === 'Y'}
@@ -55,7 +66,7 @@
                                 <form method="post" action="{get_static_route id='newsletter.php'}" class="form col-xs-12 col-sm-6">
                                     <fieldset>
                                         {$jtl_token}
-                                        <input type="hidden" name="abonnieren" value="1"/>
+                                        <input type="hidden" name="abonnieren" value="2"/>
                                         <div class="form-group">
                                             <label class="control-label sr-only" for="newsletter_email">{lang key="emailadress"}</label>
                                             <div class="input-group">
@@ -115,7 +126,52 @@
             </div>{* /row footer-additional *}
             {/if}
             {/block}{* /footer-additional *}
-
+            <div class="row">
+                {if isset($smarty.session.Sprachen) && $smarty.session.Sprachen|@count > 1}
+                    <div class="language-dropdown dropdown visible-xs col-xs-6 text-center">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            <i class="fa fa-language"></i>
+                            <span class="caret"></span>
+                        </a>
+                        <ul id="language-dropdown-small" class="dropdown-menu dropdown-menu-right">
+                            {foreach from=$smarty.session.Sprachen item=Sprache}
+                                {if $Sprache->kSprache == $smarty.session.kSprache}
+                                    <li class="active lang-{$lang} visible-xs"><a>{if $lang === 'ger'}{$Sprache->cNameDeutsch}{else}{$Sprache->cNameEnglisch}{/if}</a></li>
+                                {/if}
+                            {/foreach}
+                            {foreach from=$smarty.session.Sprachen item=oSprache}
+                                {if $oSprache->kSprache != $smarty.session.kSprache}
+                                    <li>
+                                        <a href="{$oSprache->cURL}" class="link_lang {$oSprache->cISO}" rel="nofollow">{if $lang === 'ger'}{$oSprache->cNameDeutsch}{else}{$oSprache->cNameEnglisch}{/if}</a>
+                                    </li>
+                                {/if}
+                            {/foreach}
+                        </ul>
+                    </div>
+                {/if}
+                {if isset($smarty.session.Waehrungen) && $smarty.session.Waehrungen|@count > 1}
+                    <div class="currency-dropdown dropdown visible-xs col-xs-6 text-center">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            {if $smarty.session.Waehrung->cISO === 'EUR'}
+                                <i class="fa fa-eur" title="{$smarty.session.Waehrung->cName}"></i>
+                            {elseif $smarty.session.Waehrung->cISO === 'USD'}
+                                <i class="fa fa-usd" title="{$smarty.session.Waehrung->cName}"></i>
+                            {elseif $smarty.session.Waehrung->cISO === 'GBP'}
+                                <i class="fa fa-gbp" title="{$smarty.session.Waehrung->cName}"></i>
+                            {else}
+                                else{$smarty.session.Waehrung->cName}
+                            {/if} <span class="caret"></span>
+                        </a>
+                        <ul id="currency-dropdown-small" class="dropdown-menu dropdown-menu-right">
+                            {foreach from=$smarty.session.Waehrungen item=oWaehrung}
+                                <li>
+                                    <a href="{$oWaehrung->cURL}" rel="nofollow">{$oWaehrung->cName}</a>
+                                </li>
+                            {/foreach}
+                        </ul>
+                    </div>
+                {/if}
+            </div>
             <div class="footnote-vat text-center">
                 {if $NettoPreise == 1}
                     {lang key="footnoteExclusiveVat" section="global" assign="footnoteVat"}

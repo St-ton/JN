@@ -73,9 +73,10 @@
                                         {#to#}: {$oKupon->cGueltigBisShort}
                                     </td>
                                     <td>
-                                        <button type="submit" class="btn btn-default" name="kKuponBearbeiten" value="{$oKupon->kKupon}" title="{#modify#}">
+                                        <a href="kupons.php?kKupon={$oKupon->kKupon}&token={$smarty.session.jtl_token}"
+                                           class="btn btn-default" title="{#modify#}">
                                             <i class="fa fa-edit"></i>
-                                        </button>
+                                        </a>
                                     </td>
                                 </tr>
                             {/foreach}
@@ -97,7 +98,10 @@
                 {/if}
                 <div class="panel-footer">
                     <div class="btn-group">
-                        <button type="submit" class="btn btn-primary" name="kKuponBearbeiten" value="0"><i class="fa fa-share"></i> {$cKuponTypName} {#create#}</button>
+                        <a href="kupons.php?kKupon=0&cKuponTyp={$cKuponTyp}&token={$smarty.session.jtl_token}"
+                           class="btn btn-primary" title="{#modify#}">
+                            <i class="fa fa-share"></i> {$cKuponTypName} {#create#}
+                        </a>
                         {if $oKupon_arr|@count > 0}
                             <button type="submit" class="btn btn-danger" name="action" value="loeschen"><i class="fa fa-trash"></i> {#delete#}</button>
                             {include file='tpl_inc/csv_export_btn.tpl' exporterId=$cKuponTyp}

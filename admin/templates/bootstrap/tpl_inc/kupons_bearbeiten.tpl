@@ -1,4 +1,4 @@
-{if $action === 'erstellen'}
+{if $oKupon->kKupon === 0}
     {assign var=cTitel value=#newCoupon#}
 {else}
     {assign var=cTitel value=#modifyCoupon#}
@@ -13,31 +13,42 @@
 {/if}
 
 {include file='tpl_inc/seite_header.tpl' cTitel=$cTitel cBeschreibung=#couponsDesc# cDokuURL=#couponsURL#}
+{include file='tpl_inc/customer_search.tpl' cUrl='kupons.php' kKundeSelected_arr=$kKunde_arr
+         onSave='onApplySelectedCustomers'}
 
 <script>
-    {literal}
-        $(function () {
-            {/literal}{if $oKupon->cKuponTyp == 'standard' || $oKupon->cKuponTyp == 'neukundenkupon'}
-                makeCurrencyTooltip('fWert');
-            {/if}{literal}
-            makeCurrencyTooltip('fMindestbestellwert');
-            $('#bOpenEnd').change(onEternalCheckboxChange);
-            onEternalCheckboxChange();
-        });
+    $(function () {
+        {if $oKupon->cKuponTyp == 'standard' || $oKupon->cKuponTyp == 'neukundenkupon'}
+            makeCurrencyTooltip('fWert');
+        {/if}
+        makeCurrencyTooltip('fMindestbestellwert');
+        $('#bOpenEnd').change(onEternalCheckboxChange);
+        onEternalCheckboxChange();
+        onApplySelectedCustomers();
+    });
 
-        function onEternalCheckboxChange () {
-            var elem = $('#bOpenEnd');
-            var bOpenEnd = elem[0].checked;
-            $('#dGueltigBis').prop('disabled', bOpenEnd);
-            $('#dDauerTage').prop('disabled', bOpenEnd);
-            if ($('#bOpenEnd').prop('checked')) {
-                $('#dDauerTage').val('Ende offen');
-                $('#dGueltigBis').val('');
-            } else {
-                $('#dDauerTage').val('');
-            }
+    function onEternalCheckboxChange () {
+        var elem = $('#bOpenEnd');
+        var bOpenEnd = elem[0].checked;
+        $('#dGueltigBis').prop('disabled', bOpenEnd);
+        $('#dDauerTage').prop('disabled', bOpenEnd);
+        if ($('#bOpenEnd').prop('checked')) {
+            $('#dDauerTage').val('Ende offen');
+            $('#dGueltigBis').val('');
+        } else {
+            $('#dDauerTage').val('');
         }
-    {/literal}
+    }
+
+    function onApplySelectedCustomers () {
+        if (selectedCustomers.length > 0) {
+            $('#customerSelectionInfo').val(selectedCustomers.length + ' Kunden');
+            $('#cKunden').val(selectedCustomers.join(';'));
+        } else {
+            $('#customerSelectionInfo').val('Alle Kunden');
+            $('#cKunden').val('-1');
+        }
+    }
 </script>
 
 <div id="content" class="container-fluid">
@@ -279,7 +290,7 @@
                         <label for="dDauerTage">{#periodOfValidity#}</label>
                     </span>
                     <span class="input-group-wrap">
-                        <input type="text" class="form-control" name="dDauerTage" id="dDauerTage" value="">
+                        <input type="text" class="form-control" name="dDauerTage" id="dDauerTage">
                     </span>
                     <span class="input-group-addon">{getHelpDesc cDesc=#periodOfValidityHelp#}</span>
                 </div>
@@ -359,21 +370,18 @@
                 {if $oKupon->cKuponTyp === 'standard' || $oKupon->cKuponTyp === 'versandkupon'}
                     <div class="input-group{if isset($oKupon->massCreationCoupon)} hidden{/if}" id="limitedByCustomers">
                         <span class="input-group-addon">
-                            <label for="kKunden">{#restrictedToCustomers#}</label>
+                            <label for="customerSelectionInfo">{#restrictedToCustomers#}</label>
                         </span>
                         <span class="input-group-wrap">
-                            <select multiple name="kKunden[]" id="kKunden" class="form-control combo">
-                                <option value="-1"{if $oKupon->cKunden === '-1'} selected{/if}>
-                                    {#allCustomers#}
-                                </option>
-                                {foreach $oKunde_arr as $oKunde}
-                                    <option value="{$oKunde->kKunde}"{if $oKunde->selected == 1} selected{/if}>
-                                        {$oKunde->cNachname}, {$oKunde->cVorname}
-                                    </option>
-                                {/foreach}
-                            </select>
+                            <input type="text" class="form-control" readonly="readonly" id="customerSelectionInfo">
+                            <input type="hidden" id="cKunden" name="cKunden" value="{$oKupon->cKunden}">
                         </span>
-                        <span class="input-group-addon">{getHelpDesc cDesc=#multipleChoice#}</span>
+                        <span class="input-group-addon">
+                            <button type="button" class="btn btn-info btn-xs"
+                                    data-toggle="modal" data-target="#customer-search-modal">
+                                <i class="fa fa-edit"></i>
+                            </button>
+                        </span>
                     </div>
                     <div class="input-group{if isset($oKupon->massCreationCoupon)} hidden{/if}" id="informCustomers">
                         <span class="input-group-addon">

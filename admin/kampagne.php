@@ -51,7 +51,8 @@ if (verifyGPCDataInteger('neu') === 1 && validateToken()) {
     $kKampagne = verifyGPCDataInteger('kKampagne');
     // Zeitraum / Ansicht
     setzeDetailZeitraum($cDatumNow_arr);
-} elseif (verifyGPCDataInteger('defdetail') === 1 && verifyGPCDataInteger('kKampagne') > 0 && verifyGPCDataInteger('kKampagneDef') > 0 && validateToken()) { // Def Detail
+} elseif (verifyGPCDataInteger('defdetail') === 1 && verifyGPCDataInteger('kKampagne') > 0 &&
+    verifyGPCDataInteger('kKampagneDef') > 0 && validateToken()) { // Def Detail
     $step         = 'kampagne_defdetail';
     $kKampagne    = verifyGPCDataInteger('kKampagne');
     $kKampagneDef = verifyGPCDataInteger('kKampagneDef');
@@ -141,7 +142,7 @@ if ($step === 'kampagne_uebersicht') {
 
         $Stats = holeKampagneDetailStats($kKampagne, $oKampagneDef_arr);
         // Highchart
-        $Charts = array();
+        $Charts = [];
         for ($i = 1; $i <= 10; $i++) {
             $Charts[$i] = PrepareLineChartKamp($Stats, $i);
         }
@@ -161,7 +162,7 @@ if ($step === 'kampagne_uebersicht') {
 
     if ($kKampagne > 0 && $kKampagneDef > 0 && strlen($cStamp) > 0) {
         $oKampagneDef = holeKampagneDef($kKampagneDef);
-        $cMember_arr  = array();
+        $cMember_arr  = [];
         $cStampText   = '';
         $cSQLSELECT   = '';
         $cSQLWHERE    = '';
@@ -196,7 +197,8 @@ $cDatum_arr = gibDatumTeile($_SESSION['Kampagne']->cStamp);
 switch (intval($_SESSION['Kampagne']->nAnsicht)) {
     case 1:    // Monat
         $cZeitraum = '01.' . $cDatum_arr['cMonat'] . '.' . $cDatum_arr['cJahr'] . ' - ' .
-            date('t', mktime(0, 0, 0, intval($cDatum_arr['cMonat']), 1, intval($cDatum_arr['cJahr']))) . '.' . $cDatum_arr['cMonat'] . '.' . $cDatum_arr['cJahr'];
+            date('t', mktime(0, 0, 0, intval($cDatum_arr['cMonat']), 1, intval($cDatum_arr['cJahr']))) .
+            '.' . $cDatum_arr['cMonat'] . '.' . $cDatum_arr['cJahr'];
         $smarty->assign('cZeitraum', $cZeitraum)
                ->assign('cZeitraumParam', base64_encode($cZeitraum));
         break;
@@ -214,7 +216,8 @@ switch (intval($_SESSION['Kampagne']->nAnsicht)) {
 }
 
 if (intval($cDatumNow_arr['cTag']) === intval($cDatum_arr['cTag']) &&
-    intval($cDatumNow_arr['cMonat']) === intval($cDatum_arr['cMonat']) && intval($cDatumNow_arr['cJahr']) === intval($cDatum_arr['cJahr'])) {
+    intval($cDatumNow_arr['cMonat']) === intval($cDatum_arr['cMonat']) &&
+    intval($cDatumNow_arr['cJahr']) === intval($cDatum_arr['cJahr'])) {
     $smarty->assign('nGreaterNow', 1);
 }
 $smarty->assign('PFAD_ADMIN', PFAD_ADMIN)

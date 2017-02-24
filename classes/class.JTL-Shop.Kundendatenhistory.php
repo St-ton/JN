@@ -150,22 +150,20 @@ class Kundendatenhistory extends MainModel
     }
 
     /**
-     * @param $dErstellt
+     * @param string $dErstellt
      * @return $this
      */
     public function setErstellt($dErstellt)
     {
-        if ($dErstellt === 'now()') {
-            $this->dErstellt = date('Y-m-d H:i:s');
-        } else {
-            $this->dErstellt = $dErstellt;
-        }
+        $this->dErstellt = ($dErstellt === 'now()')
+            ? date('Y-m-d H:i:s')
+            : $dErstellt;
 
         return $this;
     }
 
     /**
-     * @param int $kKey
+     * @param int  $kKey
      * @param null $oObj
      * @param null $xOption
      * @return $this
@@ -209,14 +207,14 @@ class Kundendatenhistory extends MainModel
     public function update()
     {
         $cQuery      = 'UPDATE tkundendatenhistory SET ';
-        $cSet_arr    = array();
+        $cSet_arr    = [];
         $cMember_arr = array_keys(get_object_vars($this));
         if (is_array($cMember_arr) && count($cMember_arr) > 0) {
             foreach ($cMember_arr as $cMember) {
                 $cMethod = 'get' . substr($cMember, 1);
                 if (method_exists($this, $cMethod)) {
-                    $mValue = "'" . Shop::DB()->escape(call_user_func(array(&$this, $cMethod))) . "'";
-                    if (call_user_func(array(&$this, $cMethod)) === null) {
+                    $mValue = "'" . Shop::DB()->escape(call_user_func([&$this, $cMethod])) . "'";
+                    if (call_user_func([&$this, $cMethod]) === null) {
                         $mValue = 'NULL';
                     }
                     $cSet_arr[] = "{$cMember} = {$mValue}";
@@ -224,9 +222,8 @@ class Kundendatenhistory extends MainModel
             }
             $cQuery .= implode(', ', $cSet_arr);
             $cQuery .= " WHERE kKundendatenHistory = {$this->getKundendatenHistory()}";
-            $result = Shop::DB()->query($cQuery, 3);
 
-            return $result;
+            return Shop::DB()->query($cQuery, 3);
         } else {
             throw new Exception('ERROR: Object has no members!');
         }

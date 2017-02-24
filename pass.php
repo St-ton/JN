@@ -3,14 +3,14 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/globalinclude.php';
+require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 /** @global JTLSmarty $smarty */
 Shop::setPageType(PAGE_PASSWORTVERGESSEN);
 $AktuelleSeite                   = 'PASSWORT VERGESSEN';
 Shop::$AktuelleSeite             = 'PASSWORT VERGESSEN';
-$Einstellungen                   = Shop::getSettings(array(CONF_GLOBAL, CONF_RSS));
+$Einstellungen                   = Shop::getSettings([CONF_GLOBAL, CONF_RSS]);
 $GLOBALS['GlobaleEinstellungen'] = array_merge($GLOBALS['GlobaleEinstellungen'], $Einstellungen);
 
 pruefeHttps();
@@ -26,8 +26,18 @@ $step                 = 'formular';
 $hinweis              = '';
 $cFehler              = '';
 //loginbenutzer?
-if (isset($_POST['passwort_vergessen']) && intval($_POST['passwort_vergessen']) === 1 && isset($_POST['email'])) {
-    $kunde = Shop::DB()->select('tkunde', 'cMail', $_POST['email'], 'nRegistriert', 1, null, null, false, 'kKunde, cSperre');
+if (isset($_POST['passwort_vergessen'], $_POST['email']) && (int)$_POST['passwort_vergessen'] === 1) {
+    $kunde = Shop::DB()->select(
+        'tkunde',
+        'cMail',
+        $_POST['email'],
+        'nRegistriert',
+        1,
+        null,
+        null,
+        false,
+        'kKunde, cSperre'
+    );
     if (isset($kunde->kKunde) && $kunde->kKunde > 0 && $kunde->cSperre !== 'Y') {
         $step   = 'passwort versenden';
         $oKunde = new Kunde($kunde->kKunde);
@@ -39,9 +49,19 @@ if (isset($_POST['passwort_vergessen']) && intval($_POST['passwort_vergessen']) 
     } else {
         $hinweis = Shop::Lang()->get('incorrectEmail', 'global');
     }
-} elseif (isset($_POST['pw_new']) && isset($_POST['pw_new_confirm']) && isset($_POST['fpm']) && isset($_POST['fpwh'])) {
+} elseif (isset($_POST['pw_new'], $_POST['pw_new_confirm'], $_POST['fpm'], $_POST['fpwh'])) {
     if ($_POST['pw_new'] === $_POST['pw_new_confirm']) {
-        $kunde = Shop::DB()->select('tkunde', 'cMail', $_POST['fpm'], 'nRegistriert', 1, null, null, false, 'kKunde, cSperre');
+        $kunde = Shop::DB()->select(
+            'tkunde',
+            'cMail',
+            $_POST['fpm'],
+            'nRegistriert',
+            1,
+            null,
+            null,
+            false,
+            'kKunde, cSperre'
+        );
         if (isset($kunde->kKunde) && $kunde->kKunde > 0 && $kunde->cSperre !== 'Y') {
             $oKunde   = new Kunde($kunde->kKunde);
             $verified = $oKunde->verifyResetPasswordHash($_POST['fpwh'], $_POST['fpm']);
@@ -65,9 +85,7 @@ if (isset($_POST['passwort_vergessen']) && intval($_POST['passwort_vergessen']) 
            ->assign('fpm', $_GET['mail']);
     $step = 'confirm';
 }
-// Canonical
-$cCanonicalURL = $linkHelper->getStaticRoute('pass.php', true);
-// Metaangaben
+$cCanonicalURL    = $linkHelper->getStaticRoute('pass.php', true);
 $oMeta            = $linkHelper->buildSpecialPageMeta(LINKTYP_PASSWORD_VERGESSEN);
 $cMetaTitle       = $oMeta->cTitle;
 $cMetaDescription = $oMeta->cDesc;

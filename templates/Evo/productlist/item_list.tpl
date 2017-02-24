@@ -149,10 +149,7 @@
                                     {if $Artikel->cEinheit}
                                         <div class="input-group input-group-sm">
                                             <input type="number" min="0"{if $Artikel->fAbnahmeintervall > 0} step="{$Artikel->fAbnahmeintervall}"{/if} size="2" onfocus="this.setAttribute('autocomplete', 'off');" id="quantity{$Artikel->kArtikel}" class="quantity form-control text-right" name="anzahl" value="{if $Artikel->fAbnahmeintervall > 0}{if $Artikel->fMindestbestellmenge > $Artikel->fAbnahmeintervall}{$Artikel->fMindestbestellmenge}{else}{$Artikel->fAbnahmeintervall}{/if}{else}1{/if}" />
-
-                                            {if $Artikel->cEinheit}
-                                                <span class="input-group-addon unit">{$Artikel->cEinheit}</span>
-                                            {/if}
+                                            <span class="input-group-addon unit">{$Artikel->cEinheit}</span>
                                         </div>
                                         <div class="input-group input-group-sm">
                                             <span class="change_quantity input-group-btn">
@@ -218,7 +215,7 @@
                 {/block}
             </form>
 
-            <form action="navi.php" method="post" class="hidden-sm hidden-xs product-actions">
+            <form action="navi.php" method="post" class="hidden-sm hidden-xs product-actions" data-toggle="product-actions">
                 {$jtl_token}
                 <div class="actions btn-group btn-group-xs btn-group-justified" role="group" aria-label="...">
                 {block name="product-actions"}

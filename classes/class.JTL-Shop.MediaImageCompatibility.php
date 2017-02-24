@@ -27,8 +27,7 @@ class MediaImageCompatibility implements IMedia
      */
     public function handle($request)
     {
-        $req = $this->parse($request);
-
+        $req      = $this->parse($request);
         $path     = strtolower(Shop::DB()->escape($req['path']));
         $fallback = Shop::DB()->executeQuery("
           SELECT h.kArtikel, h.nNr, a.cSeo, a.cName, a.cArtNr, a.cBarcode 
@@ -94,15 +93,15 @@ class MediaImageCompatibility implements IMedia
      */
     private function replaceVowelMutation($str)
     {
-        $src = array('ä', 'ö', 'ü', 'ß', 'Ä', 'Ö', 'Ü', utf8_decode('ä'), utf8_decode('ö'), utf8_decode('ü'), utf8_decode('ß'), utf8_decode('Ä'), utf8_decode('Ö'), utf8_decode('Ü'));
-        $rpl = array('ae', 'oe', 'ue', 'ss', 'AE', 'OE', 'UE', 'ae', 'oe', 'ue', 'ss', 'AE', 'OE', 'UE');
+        $src = ['ä', 'ö', 'ü', 'ß', 'Ä', 'Ö', 'Ü', utf8_decode('ä'), utf8_decode('ö'), utf8_decode('ü'), utf8_decode('ß'), utf8_decode('Ä'), utf8_decode('Ö'), utf8_decode('Ü')];
+        $rpl = ['ae', 'oe', 'ue', 'ss', 'AE', 'OE', 'UE', 'ae', 'oe', 'ue', 'ss', 'AE', 'OE', 'UE'];
 
         return str_replace($rpl, $src, $str);
     }
 
     /**
      * @param string $request
-     * @return MediaImageRequest|null
+     * @return array|null
      */
     private function parse($request)
     {

@@ -92,17 +92,22 @@ class ImageMap implements IExtensionPoint
             $oArea->oCoords = new stdClass();
             $aMap           = explode(',', $oArea->cCoords);
             if (count($aMap) === 4) {
-                $oArea->oCoords->x = intval($aMap[0]);
-                $oArea->oCoords->y = intval($aMap[1]);
-                $oArea->oCoords->w = intval($aMap[2]);
-                $oArea->oCoords->h = intval($aMap[3]);
+                $oArea->oCoords->x = (int)$aMap[0];
+                $oArea->oCoords->y = (int)$aMap[1];
+                $oArea->oCoords->w = (int)$aMap[2];
+                $oArea->oCoords->h = (int)$aMap[3];
             }
 
             $oArea->oArtikel = null;
-            if (intval($oArea->kArtikel) > 0) {
+            if ((int)$oArea->kArtikel > 0) {
                 $oArea->oArtikel = new Artikel();
                 if ($fill === true) {
-                    $oArea->oArtikel->fuelleArtikel($oArea->kArtikel, $defaultOptions, $this->kKundengruppe, $this->kSprache);
+                    $oArea->oArtikel->fuelleArtikel(
+                        $oArea->kArtikel,
+                        $defaultOptions,
+                        $this->kKundengruppe,
+                        $this->kSprache
+                    );
                 } else {
                     $oArea->oArtikel->kArtikel = $oArea->kArtikel;
                 }

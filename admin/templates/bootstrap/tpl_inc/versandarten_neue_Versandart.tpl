@@ -169,6 +169,19 @@
 
                         <li class="input-group">
                             <span class="input-group-addon">
+                                <label for="eSteuer">{#taxshippingcosts#}</label>
+                            </span>
+                            <span class="input-group-wrap">
+                                <select name="eSteuer" id="eSteuer" class="combo form-control">
+                                    <option value="brutto" {if isset($Versandart->eSteuer) && $Versandart->eSteuer === 'brutto'}selected{/if}>{#gross#}</option>
+                                    <option value="netto" {if isset($Versandart->eSteuer) && $Versandart->eSteuer === 'netto'}selected{/if}>{#net#}</option>
+                                </select>
+                            </span>
+                            <span class="input-group-addon">{getHelpDesc cDesc=#taxshippingcostsDesc#}</span>
+                        </li>
+
+                        <li class="input-group">
+                            <span class="input-group-addon">
                                 <label for="cSendConfirmationMail">Versandbest&auml;tigung senden?</label>
                             </span>
                             <span class="input-group-wrap">
@@ -208,7 +221,19 @@
                             {if isset($oVersandartSpracheAssoc_arr[$cISO])}
                                 <li class="input-group">
                                     <span class="input-group-addon">
-                                        <label for="cHinweistext_{$cISO}">{#shippingNote#} ({$sprache->cNameDeutsch})</label>
+                                        <label for="cHinweistextShop_{$cISO}">{#shippingNoteShop#} ({$sprache->cNameDeutsch})</label>
+                                    </span>
+                                    <textarea id="cHinweistextShop_{$cISO}" class="form-control combo" name="cHinweistextShop_{$cISO}">{if isset($oVersandartSpracheAssoc_arr[$cISO]->cHinweistextShop)}{$oVersandartSpracheAssoc_arr[$cISO]->cHinweistextShop}{/if}</textarea>
+                                </li>
+                            {/if}
+                        {/foreach}
+
+                        {foreach name=sprachen from=$sprachen item=sprache}
+                            {assign var="cISO" value=$sprache->cISO}
+                            {if isset($oVersandartSpracheAssoc_arr[$cISO])}
+                                <li class="input-group">
+                                    <span class="input-group-addon">
+                                        <label for="cHinweistext_{$cISO}">{#shippingNoteEmail#} ({$sprache->cNameDeutsch})</label>
                                     </span>
                                     <textarea id="cHinweistext_{$cISO}" class="form-control combo" name="cHinweistext_{$cISO}">{if isset($oVersandartSpracheAssoc_arr[$cISO]->cHinweistext)}{$oVersandartSpracheAssoc_arr[$cISO]->cHinweistext}{/if}</textarea>
                                 </li>
@@ -285,7 +310,6 @@
                     <ul class="jtl-list-group">
 
                         <li class="input-group2">
-                            <!--<div style="padding-left: 490px;">{#gross#} ({#grossValue#})<font style="padding-left: 15px;">{#net#}</font></div><br>-->
                             <table class="list table">
                                 <thead>
                                 <tr>
@@ -349,19 +373,6 @@
                         <li class="input-group">
                             <span class="input-group-addon"><label>{#amount#}</label></span>
                             <input type="text" id="fVersandkostenfreiAbX" name="fVersandkostenfreiAbX" class="form-control price_large" value="{if isset($Versandart->fVersandkostenfreiAbX)}{$Versandart->fVersandkostenfreiAbX}{/if}">{* onKeyUp="setzePreisAjax(false, 'ajaxversandkostenfrei', this)" /> <span id="ajaxversandkostenfrei"></span>*}
-                            <span class="input-group-addon">{getHelpDesc cDesc=#taxshippingcostsDesc#}</span>
-                        </li>
-                        <li class="input-group">
-                            <span class="input-group-addon">
-                                <label for="eSteuer">{#taxshippingcosts#}</label>
-                            </span>
-                            <span class="input-group-wrap">
-                                <select name="eSteuer" id="eSteuer" class="combo form-control">
-                                    <option value="brutto" {if isset($Versandart->eSteuer) && $Versandart->eSteuer === 'brutto'}selected{/if}>{#gross#}</option>
-                                    <option value="netto" {if isset($Versandart->eSteuer) && $Versandart->eSteuer === 'netto'}selected{/if}>{#net#}</option>
-                                </select>
-                            </span>
-                            <span class="input-group-addon">{getHelpDesc cDesc=#taxshippingcostsDesc#}</span>
                         </li>
                     </ul>
                 </div>

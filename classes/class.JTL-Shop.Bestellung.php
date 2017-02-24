@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -366,11 +365,9 @@ class Bestellung
             }
         }
 
-        if (isset($this->nLongestMinDelivery) && isset($this->nLongestMaxDelivery)) {
+        if (isset($this->nLongestMinDelivery, $this->nLongestMaxDelivery)) {
             $this->setEstimatedDelivery($this->nLongestMinDelivery, $this->nLongestMaxDelivery);
-
-            unset($this->nLongestMinDelivery);
-            unset($this->nLongestMaxDelivery);
+            unset($this->nLongestMinDelivery, $this->nLongestMaxDelivery);
         } else {
             $this->setEstimatedDelivery();
         }
@@ -389,36 +386,39 @@ class Bestellung
     {
         if ($this->kWarenkorb > 0 || $nZahlungExtern > 0) {
             $warenwert = null;
+            $date      = null;
             if ($this->kWarenkorb > 0) {
-                $this->Positionen = Shop::DB()->selectAll('twarenkorbpos', 'kWarenkorb', (int)$this->kWarenkorb, '*', 'kWarenkorbPos');
-                if (isset($this->kLieferadresse) && $this->kLieferadresse > 0) {
+                $this->Positionen = Shop::DB()->selectAll(
+                    'twarenkorbpos',
+                    'kWarenkorb',
+                    (int)$this->kWarenkorb,
+                    '*',
+                    'kWarenkorbPos'
+                );
+                if ($this->kLieferadresse !== null && $this->kLieferadresse > 0) {
                     $this->Lieferadresse = new Lieferadresse($this->kLieferadresse);
                 }
                 // Rechnungsadresse holen
-                if (isset($this->kRechnungsadresse) && $this->kRechnungsadresse > 0) {
+                if ($this->kRechnungsadresse !== null && $this->kRechnungsadresse > 0) {
                     $oRechnungsadresse = new Rechnungsadresse($this->kRechnungsadresse);
-
                     if ($oRechnungsadresse->kRechnungsadresse > 0) {
                         $this->oRechnungsadresse = $oRechnungsadresse;
                     }
                 }
                 // Versandart holen
-                if (isset($this->kVersandart) && $this->kVersandart > 0) {
+                if ($this->kVersandart !== null && $this->kVersandart > 0) {
                     $oVersandart = new Versandart($this->kVersandart);
 
-                    if (isset($oVersandart->kVersandart) && $oVersandart->kVersandart > 0) {
+                    if ($oVersandart->kVersandart !== null && $oVersandart->kVersandart > 0) {
                         $this->oVersandart = $oVersandart;
                     }
                 }
                 // Kunde holen
-                if (isset($this->kKunde) && $this->kKunde > 0) {
+                if ($this->kKunde !== null && $this->kKunde > 0) {
                     $oKunde = new Kunde($this->kKunde);
 
-                    if (isset($oKunde->kKunde) && $oKunde->kKunde > 0) {
-                        unset($oKunde->cPasswort);
-                        unset($oKunde->fRabatt);
-                        unset($oKunde->fGuthaben);
-                        unset($oKunde->cUSTID);
+                    if ($oKunde->kKunde !== null && $oKunde->kKunde > 0) {
+                        unset($oKunde->cPasswort, $oKunde->fRabatt, $oKunde->fGuthaben, $oKunde->cUSTID);
                         $this->oKunde = $oKunde;
                     }
                 }
@@ -430,7 +430,7 @@ class Bestellung
                         FROM twarenkorbpos
                         WHERE kWarenkorb = " . (int)$this->kWarenkorb, 1
                 );
-                $Datum = Shop::DB()->query(
+                $date = Shop::DB()->query(
                     "SELECT date_format(dVersandDatum,'%d.%m.%Y') AS dVersanddatum_de,
                         date_format(dBezahltDatum,'%d.%m.%Y') AS dBezahldatum_de,
                         date_format(dErstellt,'%d.%m.%Y %H:%i:%s') AS dErstelldatum_de,
@@ -440,13 +440,13 @@ class Bestellung
                         FROM tbestellung WHERE kBestellung = " . (int)$this->kBestellung, 1
                 );
             }
-            if (isset($Datum) && is_object($Datum)) {
-                $this->dVersanddatum_de = $Datum->dVersanddatum_de;
-                $this->dBezahldatum_de  = $Datum->dBezahldatum_de;
-                $this->dErstelldatum_de = $Datum->dErstelldatum_de;
-                $this->dVersanddatum_en = $Datum->dVersanddatum_en;
-                $this->dBezahldatum_en  = $Datum->dBezahldatum_en;
-                $this->dErstelldatum_en = $Datum->dErstelldatum_en;
+            if ($date !== null && is_object($date)) {
+                $this->dVersanddatum_de = $date->dVersanddatum_de;
+                $this->dBezahldatum_de  = $date->dBezahldatum_de;
+                $this->dErstelldatum_de = $date->dErstelldatum_de;
+                $this->dVersanddatum_en = $date->dVersanddatum_en;
+                $this->dBezahldatum_en  = $date->dBezahldatum_en;
+                $this->dErstelldatum_en = $date->dErstelldatum_en;
             }
             // Hole Netto- oder Bruttoeinstellung der Kundengruppe
             $nNettoPreis = 0;
@@ -454,8 +454,10 @@ class Bestellung
                 $oKundengruppeBestellung = Shop::DB()->query(
                     "SELECT tkundengruppe.nNettoPreise
                         FROM tkundengruppe
-                        JOIN tbestellung ON tbestellung.kBestellung = " . (int)$this->kBestellung . "
-                        JOIN tkunde ON tkunde.kKunde = tbestellung.kKunde
+                        JOIN tbestellung 
+                            ON tbestellung.kBestellung = " . (int)$this->kBestellung . "
+                        JOIN tkunde 
+                            ON tkunde.kKunde = tbestellung.kKunde
                         WHERE tkunde.kKundengruppe = tkundengruppe.kKundengruppe", 1
                 );
                 if (isset($oKundengruppeBestellung->nNettoPreise) && $oKundengruppeBestellung->nNettoPreise > 0) {
@@ -466,7 +468,7 @@ class Bestellung
             $this->Status                = lang_bestellstatus($this->cStatus);
             if ($this->kWaehrung > 0) {
                 $this->Waehrung = Shop::DB()->select('twaehrung', 'kWaehrung', (int)$this->kWaehrung);
-                if (isset($this->fWaehrungsFaktor) && $this->fWaehrungsFaktor !== 1 && isset($this->Waehrung->fFaktor)) {
+                if ($this->fWaehrungsFaktor !== null && $this->fWaehrungsFaktor != 1 && isset($this->Waehrung->fFaktor)) {
                     $this->Waehrung->fFaktor = $this->fWaehrungsFaktor;
                 }
                 if ($disableFactor === true) {
@@ -479,7 +481,7 @@ class Bestellung
                 $this->Zahlungsart = Shop::DB()->select('tzahlungsart', 'kZahlungsart', (int)$this->kZahlungsart);
                 if ($this->Zahlungsart !== false) {
                     $oPaymentMethod = new PaymentMethod($this->Zahlungsart->cModulId, 1);
-                    $oZahlungsart   = $oPaymentMethod->create($this->Zahlungsart->cModulId);
+                    $oZahlungsart   = $oPaymentMethod::create($this->Zahlungsart->cModulId);
                     if ($oZahlungsart !== null) {
                         $this->Zahlungsart->bPayAgain = $oZahlungsart->canPayAgain();
                     }
@@ -530,14 +532,18 @@ class Bestellung
                     }
                     // Downloads
                     if (class_exists('Download')) {
-                        $this->oDownload_arr = Download::getDownloads(array('kBestellung' => $this->kBestellung), $kSprache);
+                        $this->oDownload_arr = Download::getDownloads(['kBestellung' => $this->kBestellung], $kSprache);
                     }
                     // Uploads
                     if (class_exists('Upload')) {
                         $this->oUpload_arr = Upload::gibBestellungUploads($this->kBestellung);
                     }
                     if ($this->Positionen[$i]->kWarenkorbPos > 0) {
-                        $this->Positionen[$i]->WarenkorbPosEigenschaftArr = Shop::DB()->selectAll('twarenkorbposeigenschaft', 'kWarenkorbPos', (int)$this->Positionen[$i]->kWarenkorbPos);
+                        $this->Positionen[$i]->WarenkorbPosEigenschaftArr = Shop::DB()->selectAll(
+                            'twarenkorbposeigenschaft',
+                            'kWarenkorbPos',
+                            (int)$this->Positionen[$i]->kWarenkorbPos
+                        );
                         $fpositionCount = count($this->Positionen[$i]->WarenkorbPosEigenschaftArr);
                         for ($o = 0; $o < $fpositionCount; $o++) {
                             if ($this->Positionen[$i]->WarenkorbPosEigenschaftArr[$o]->fAufpreis) {
@@ -557,6 +563,8 @@ class Bestellung
                             }
                         }
                     }
+
+                    WarenkorbPos::setEstimatedDelivery($this->Positionen[$i], $this->Positionen[$i]->nLongestMinDelivery, $this->Positionen[$i]->nLongestMaxDelivery);
                 }
                 if (!isset($this->Positionen[$i]->kSteuerklasse)) {
                     $taxClass = Shop::DB()->select('tsteuersatz', 'fSteuersatz', $this->Positionen[$i]->fMwSt);
@@ -588,7 +596,10 @@ class Bestellung
                     );
 
                     // Konfigurationsartikel: mapto: 9a87wdgad
-                    if (is_string($this->Positionen[$i]->cUnique) && strlen($this->Positionen[$i]->cUnique) === 10 && (int)$this->Positionen[$i]->kKonfigitem > 0) {
+                    if ((int)$this->Positionen[$i]->kKonfigitem > 0 &&
+                        is_string($this->Positionen[$i]->cUnique) &&
+                        strlen($this->Positionen[$i]->cUnique) === 10
+                    ) {
                         $fPreisNetto  = 0;
                         $fPreisBrutto = 0;
                         $nVaterPos    = null;
@@ -596,9 +607,14 @@ class Bestellung
                         foreach ($this->Positionen as $nPos => $oPosition) {
                             if ($this->Positionen[$i]->cUnique == $oPosition->cUnique) {
                                 $fPreisNetto += $oPosition->fPreis * $oPosition->nAnzahl;
-                                $ust = (isset($oPosition->kSteuerklasse)) ? gibUst($oPosition->kSteuerklasse) : gibUst(null);
+                                $ust = (isset($oPosition->kSteuerklasse))
+                                    ? gibUst($oPosition->kSteuerklasse)
+                                    : gibUst(null);
                                 $fPreisBrutto += berechneBrutto($oPosition->fPreis * $oPosition->nAnzahl, $ust);
-                                if (is_string($oPosition->cUnique) && strlen($oPosition->cUnique) === 10 && (int)$oPosition->kKonfigitem === 0) {
+                                if ((int)$oPosition->kKonfigitem === 0 &&
+                                    is_string($oPosition->cUnique) &&
+                                    strlen($oPosition->cUnique) === 10
+                                ) {
                                     $nVaterPos = $nPos;
                                 }
                             }
@@ -632,12 +648,10 @@ class Bestellung
             $this->fSteuern                   = $this->fGesamtsumme - $this->fGesamtsummeNetto;
             $this->fGesamtsummeKundenwaehrung = optionaleRundung($this->fWarensummeKundenwaehrung + $this->fVersandKundenwaehrung);
 
-            $oData = new stdClass();
-            if (!isset($this->Lieferadresse) || is_null($this->Lieferadresse)) {
-                $oData->cPLZ = $this->oRechnungsadresse->cPLZ;
-            } else {
-                $oData->cPLZ = $this->Lieferadresse->cPLZ;
-            }
+            $oData       = new stdClass();
+            $oData->cPLZ = isset($this->oRechnungsadresse->cPLZ)
+                ? $this->oRechnungsadresse->cPLZ
+                : $this->Lieferadresse->cPLZ;
             $this->oLieferschein_arr = [];
             $kLieferschein_arr       = Shop::DB()->selectAll('tlieferschein', 'kInetBestellung', (int)$this->kBestellung, 'kLieferschein');
             foreach ($kLieferschein_arr as $oLieferschein) {
@@ -646,7 +660,7 @@ class Bestellung
                 /** @var Lieferscheinpos $oLieferscheinPos */
                 foreach ($oLieferschein->oLieferscheinPos_arr as &$oLieferscheinPos) {
                     foreach ($this->Positionen as &$oPosition) {
-                        if (in_array($oPosition->nPosTyp, array(C_WARENKORBPOS_TYP_ARTIKEL, C_WARENKORBPOS_TYP_GRATISGESCHENK))) {
+                        if (in_array($oPosition->nPosTyp, [C_WARENKORBPOS_TYP_ARTIKEL, C_WARENKORBPOS_TYP_GRATISGESCHENK])) {
                             if ($oLieferscheinPos->getBestellPos() == $oPosition->kBestellpos) {
                                 $oPosition->kLieferschein_arr[] = $oLieferschein->getLieferschein();
                                 $oPosition->nAusgeliefert       = $oLieferscheinPos->getAnzahl();
@@ -666,31 +680,35 @@ class Bestellung
                     if (isset($oLieferscheinPos->oPosition) && is_object($oLieferscheinPos->oPosition)) {
                         /** @var Lieferscheinposinfo $oLieferscheinPosInfo */
                         foreach ($oLieferscheinPos->oLieferscheinPosInfo_arr as $oLieferscheinPosInfo) {
-                            if (strlen($oLieferscheinPosInfo->getChargeNr()) > 0) {
-                                $oLieferscheinPos->oPosition->cChargeNr = $oLieferscheinPosInfo->getChargeNr();
+                            $mhd    = $oLieferscheinPosInfo->getMHD();
+                            $serial = $oLieferscheinPosInfo->getSeriennummer();
+                            $charge = $oLieferscheinPosInfo->getChargeNr();
+                            if (strlen($charge) > 0) {
+                                $oLieferscheinPos->oPosition->cChargeNr = $charge;
                             }
-                            if (strlen($oLieferscheinPosInfo->getMHD()) > 0 && $oLieferscheinPosInfo->getMHD() !== '0000-00-00 00:00:00') {
-                                $oLieferscheinPos->oPosition->dMHD    = $oLieferscheinPosInfo->getMHD();
-                                $oLieferscheinPos->oPosition->dMHD_de = date_format(date_create($oLieferscheinPosInfo->getMHD()), 'd.m.Y');
+                            if ($mhd !== '0000-00-00 00:00:00' && strlen($mhd) > 0) {
+                                $oLieferscheinPos->oPosition->dMHD    = $mhd;
+                                $oLieferscheinPos->oPosition->dMHD_de = date_format(date_create($mhd), 'd.m.Y');
                             }
-                            if (strlen($oLieferscheinPosInfo->getSeriennummer()) > 0) {
-                                $oLieferscheinPos->oPosition->cSeriennummer = $oLieferscheinPosInfo->getSeriennummer();
+                            if (strlen($serial) > 0) {
+                                $oLieferscheinPos->oPosition->cSeriennummer = $serial;
                             }
                         }
                     }
                 }
                 $this->oLieferschein_arr[] = $oLieferschein;
             }
-            // Wenn Konfig-Vater, alle Kinder ?berpr?fen
+            // Wenn Konfig-Vater, alle Kinder ueberpruefen
             foreach ($this->oLieferschein_arr as &$oLieferschein) {
                 foreach ($oLieferschein->oPosition_arr as &$oPosition) {
-                    if (strlen($oPosition->cUnique) > 0 && $oPosition->kKonfigitem == 0) {
+                    if ($oPosition->kKonfigitem == 0 && strlen($oPosition->cUnique) > 0) {
                         $bAlleAusgeliefert = true;
                         foreach ($this->Positionen as $oKind) {
-                            if ($oKind->cUnique == $oPosition->cUnique && $oKind->kKonfigitem > 0) {
-                                if (!$oKind->bAusgeliefert) {
-                                    $bAlleAusgeliefert = false;
-                                }
+                            if ($oKind->cUnique == $oPosition->cUnique &&
+                                $oKind->kKonfigitem > 0 &&
+                                !$oKind->bAusgeliefert
+                            ) {
+                                $bAlleAusgeliefert = false;
                             }
                         }
                         $oPosition->bAusgeliefert = $bAlleAusgeliefert;
@@ -711,7 +729,9 @@ class Bestellung
                 $this->berechneEstimatedDelivery();
             }
 
-            executeHook(HOOK_BESTELLUNG_CLASS_FUELLEBESTELLUNG);
+            executeHook(HOOK_BESTELLUNG_CLASS_FUELLEBESTELLUNG, [
+                'oBestellung' => $this
+            ]);
         }
 
         return $this;
@@ -725,7 +745,6 @@ class Bestellung
         $positionCount = count($this->Positionen);
         for ($i = 0; $i < $positionCount; $i++) {
             if ($this->Positionen[$i]->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL && $this->Positionen[$i]->kArtikel > 0) {
-                //$artikel = new Artikel($this->Positionen[$i]->kArtikel);
                 $artikel                = new Artikel();
                 $artikel->kArtikel      = $this->Positionen[$i]->kArtikel;
                 $AufgeklappteKategorien = new KategorieListe();
@@ -877,7 +896,17 @@ class Bestellung
     {
         $kBestellung = (int)$kBestellung;
         if ($kBestellung > 0) {
-            $oObj = Shop::DB()->select('tbestellung', 'kBestellung', $kBestellung, null, null, null, null, false, 'cBestellNr');
+            $oObj = Shop::DB()->select(
+                'tbestellung',
+                'kBestellung',
+                $kBestellung,
+                null,
+                null,
+                null,
+                null,
+                false,
+                'cBestellNr'
+            );
             if (isset($oObj->cBestellNr) && strlen($oObj->cBestellNr) > 0) {
                 return $oObj->cBestellNr;
             }
@@ -923,15 +952,17 @@ class Bestellung
             'longestMin' => 0,
             'longestMax' => 0,
         ];
-        if (isset($nMinDelivery) && isset($nMaxDelivery)) {
+        if ($nMinDelivery !== null && $nMaxDelivery !== null) {
             $this->oEstimatedDelivery->longestMin = (int)$nMinDelivery;
             $this->oEstimatedDelivery->longestMax = (int)$nMaxDelivery;
 
-            if (!empty($this->oEstimatedDelivery->longestMin) && !empty($this->oEstimatedDelivery->longestMax)) {
-                $this->oEstimatedDelivery->localized = getDeliverytimeEstimationText($this->oEstimatedDelivery->longestMin, $this->oEstimatedDelivery->longestMax);
-            } else {
-                $this->oEstimatedDelivery->localized = '';
-            }
+            $this->oEstimatedDelivery->localized = (!empty($this->oEstimatedDelivery->longestMin) &&
+                !empty($this->oEstimatedDelivery->longestMax))
+                ? getDeliverytimeEstimationText(
+                    $this->oEstimatedDelivery->longestMin,
+                    $this->oEstimatedDelivery->longestMax
+                )
+                : '';
         }
         $this->cEstimatedDelivery = &$this->oEstimatedDelivery->localized;
     }
@@ -947,7 +978,10 @@ class Bestellung
             //Lookup language iso
             $lang = Shop::DB()->select('tsprache', 'kSprache', (int)$this->kSprache);
             foreach ($this->Positionen as $i => $oPosition) {
-                if ($oPosition->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL && isset($oPosition->Artikel) && get_class($oPosition->Artikel) === 'Artikel') {
+                if ($oPosition->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL &&
+                    isset($oPosition->Artikel) &&
+                    get_class($oPosition->Artikel) === 'Artikel'
+                ) {
                     $oPosition->Artikel->getDeliveryTime(
                         (isset($this->Lieferadresse->cLand) ? $this->Lieferadresse->cLand : null),
                         $oPosition->nAnzahl,
@@ -979,7 +1013,7 @@ class Bestellung
      */
     public function getEstimatedDeliveryTime()
     {
-        if (!isset($this->oEstimatedDelivery) || empty($this->oEstimatedDelivery->localized)) {
+        if (empty($this->oEstimatedDelivery->localized)) {
             $this->berechneEstimatedDelivery();
         }
 

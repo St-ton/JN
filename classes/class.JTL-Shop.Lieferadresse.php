@@ -36,7 +36,6 @@ class Lieferadresse extends Adresse
      */
     public function __construct($kLieferadresse = 0)
     {
-        $kLieferadresse = intval($kLieferadresse);
         if ($kLieferadresse > 0) {
             $this->loadFromDB($kLieferadresse);
         }
@@ -47,11 +46,11 @@ class Lieferadresse extends Adresse
      *
      * @access public
      * @param int $kLieferadresse
-     * @return $this|int
+     * @return Lieferadresse|int
      */
     public function loadFromDB($kLieferadresse)
     {
-        $kLieferadresse = intval($kLieferadresse);
+        $kLieferadresse = (int)$kLieferadresse;
         $obj            = Shop::DB()->select('tlieferadresse', 'kLieferadresse', $kLieferadresse);
 
         if (!isset($obj->kLieferadresse)) {
@@ -85,13 +84,10 @@ class Lieferadresse extends Adresse
 
         $obj->cLand = $this->pruefeLandISO($obj->cLand);
 
-        unset($obj->kLieferadresse);
-        unset($obj->angezeigtesLand);
-        unset($obj->cAnredeLocalized);
+        unset($obj->kLieferadresse, $obj->angezeigtesLand, $obj->cAnredeLocalized);
 
         $this->kLieferadresse = Shop::DB()->insert('tlieferadresse', $obj);
         $this->decrypt();
-
         // Anrede mappen
         $this->cAnredeLocalized = $this->mappeAnrede($this->cAnrede);
 
@@ -111,8 +107,7 @@ class Lieferadresse extends Adresse
 
         $obj->cLand = $this->pruefeLandISO($obj->cLand);
 
-        unset($obj->angezeigtesLand);
-        unset($obj->cAnredeLocalized);
+        unset($obj->angezeigtesLand, $obj->cAnredeLocalized);
 
         $cReturn = Shop::DB()->update('tlieferadresse', 'kLieferadresse', $obj->kLieferadresse, $obj);
         $this->decrypt();

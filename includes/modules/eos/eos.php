@@ -97,7 +97,7 @@ function eosSendeFehlerMail($Body)
     global $Einstellungen;
 
     // Mail Einstellungen nachladen
-    $Einstellungen = array_merge($Einstellungen, Shop::getSettings(array(CONF_EMAILS)));
+    $Einstellungen = array_merge($Einstellungen, Shop::getSettings([CONF_EMAILS]));
 
     // Inhalt
     $Mail            = new stdClass();

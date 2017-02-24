@@ -3,7 +3,10 @@
         {assign var=kSuchanfrage value=$oSuchFilter->kSuchanfrage}
         <li>
             <a rel="nofollow" href="{$NaviFilter->URL->cAlleSuchFilter[$kSuchanfrage]}" class="active">
-                <i class="fa fa-check-square-o text-muted"></i> {$oSuchFilter->cSuche}
+                <span class="value">
+                    <i class="fa fa-square-o text-muted"></i> {$oSuchFilter->cSuche}
+                    <span class="badge pull-right">{$oSuchFilter->nAnzahl}</span>
+                </span>
             </a>
         </li>
     {/foreach}

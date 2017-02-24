@@ -5,7 +5,7 @@
  */
 
 // Version
-define('JTL_VERSION', 405);
+define('JTL_VERSION', 406);
 define('JTL_MIN_WAWI_VERSION', 99713);
 define('JTL_MINOR_VERSION', '#JTL_MINOR_VERSION#');
 define('JTL_BUILD_TIMESTAMP', '#JTL_BUILD_TIMESTAMP#');
@@ -224,6 +224,7 @@ define('ART_ATTRIBUT_GRATISGESCHENKAB', 'gratisgeschenk ab');
 define('ART_ATTRIBUT_AMPELTEXT_GRUEN', 'ampel_text_gruen');
 define('ART_ATTRIBUT_AMPELTEXT_GELB', 'ampel_text_gelb');
 define('ART_ATTRIBUT_AMPELTEXT_ROT', 'ampel_text_rot');
+define('ART_ATTRIBUT_SHORTNAME', 'shortname');
 define('KNDGRP_ATTRIBUT_MINDESTBESTELLWERT', 'mindestbestellwert');
 // Fkt Attribute
 define('FKT_ATTRIBUT_KEINE_PREISSUCHMASCHINEN', 'keine preissuchmaschinen');
@@ -335,6 +336,7 @@ define('LASTJOBS_BEWERTUNGSERINNNERUNG', 1); // Bewertungserinnerungskey
 define('LASTJOBS_SITEMAP', 2); // Sitemapkey
 define('LASTJOBS_RSS', 3); // RSSkey
 define('LASTJOBS_GARBAGECOLLECTOR', 4); // GarbageCollector
+define('LASTJOBS_KATEGORIEUPDATE', 5); // Kategorielevel update, nested set build
 // Seitentypen
 define('PAGE_UNBEKANNT', 0);
 define('PAGE_ARTIKEL', 1); // Artikeldetails
@@ -486,3 +488,5 @@ define('TEMPLATE_XML', 'template.xml');
 define('SHOP_SEO', true);
 // Sessionspeicherung 1 => DB, sonst => Dateien
 define('ES_SESSIONS', 0);
+//Max Anzahl an Variationswerten für Warenkorbmatrix
+define('ART_MATRIX_MAX', 250);

@@ -18,7 +18,7 @@ $step     = 'uebersicht';
 
 setzeSpracheTrustedShops();
 
-$Einstellungen = Shop::getSettings(array(CONF_TRUSTEDSHOPS));
+$Einstellungen = Shop::getSettings([CONF_TRUSTEDSHOPS]);
 
 if (isset($_POST['kaeuferschutzeinstellungen']) && intval($_POST['kaeuferschutzeinstellungen']) === 1 && validateToken()) {
     // Lpesche das Zertifikat
@@ -39,7 +39,7 @@ if (isset($_POST['kaeuferschutzeinstellungen']) && intval($_POST['kaeuferschutze
                 $aktWert->cName                 = 'trustedshops_nutzen';
                 $aktWert->kEinstellungenSektion = CONF_TRUSTEDSHOPS;
                 Shop::DB()->insert('teinstellungen', $aktWert);
-                Shop::Cache()->flushTags(array(CACHING_GROUP_OPTION));
+                Shop::Cache()->flushTags([CACHING_GROUP_OPTION]);
             } else {
                 $cFehler .= 'Fehler: Es wurde kein Zertifikat f&uuml; die aktuelle Sprache gefunden.';
             }
@@ -86,7 +86,8 @@ if (isset($_POST['kaeuferschutzeinstellungen']) && intval($_POST['kaeuferschutze
             $settings->reset();
         }
 
-        if (strlen($_POST['tsId']) > 0 && (strlen($_POST['wsUser']) > 0 && strlen($_POST['wsPassword']) > 0 || $_POST['eType'] === TS_BUYERPROT_CLASSIC)) {
+        if (strlen($_POST['tsId']) > 0 && (strlen($_POST['wsUser']) > 0 &&
+                strlen($_POST['wsPassword']) > 0 || $_POST['eType'] === TS_BUYERPROT_CLASSIC)) {
             $oZertifikat              = new stdClass();
             $oZertifikat->cTSID       = StringHandler::htmlentities(StringHandler::filterXSS(trim($_POST['tsId'])));
             $oZertifikat->cWSUser     = StringHandler::htmlentities(StringHandler::filterXSS($_POST['wsUser']));
@@ -109,7 +110,7 @@ if (isset($_POST['kaeuferschutzeinstellungen']) && intval($_POST['kaeuferschutze
         }
 
         $cHinweis .= 'Ihre Einstellungen wurden &uuml;bernommen.';
-        Shop::Cache()->flushTags(array(CACHING_GROUP_OPTION));
+        Shop::Cache()->flushTags([CACHING_GROUP_OPTION]);
         unset($oConfig_arr);
     }
 } elseif (isset($_POST['kaeuferschutzupdate']) && intval($_POST['kaeuferschutzupdate']) === 1 && validateToken()) {
@@ -128,7 +129,13 @@ if (isset($_POST['kaeuferschutzeinstellungen']) && intval($_POST['kaeuferschutze
     $oTrustedShops = new TrustedShops(-1, $_SESSION['TrustedShops']->oSprache->cISOSprache);
     $cPreStatus    = $Einstellungen['trustedshops']['trustedshops_kundenbewertung_anzeigen'];
 
-    $oConfig_arr = Shop::DB()->selectAll('teinstellungenconf', ['kEinstellungenSektion', 'cConf', 'cWertName'], [CONF_TRUSTEDSHOPS, 'Y', 'trustedshops_kundenbewertung_anzeigen'], '*', 'nSort');
+    $oConfig_arr = Shop::DB()->selectAll(
+        'teinstellungenconf',
+        ['kEinstellungenSektion', 'cConf', 'cWertName'],
+        [CONF_TRUSTEDSHOPS, 'Y', 'trustedshops_kundenbewertung_anzeigen'],
+        '*',
+        'nSort'
+    );
     $configCount = count($oConfig_arr);
     for ($i = 0; $i < $configCount; $i++) {
         $aktWert                        = new stdClass();
@@ -152,13 +159,17 @@ if (isset($_POST['kaeuferschutzeinstellungen']) && intval($_POST['kaeuferschutze
         }
 
         if ($oConfig_arr[$i]->cInputTyp !== 'listbox') {
-            Shop::DB()->delete('teinstellungen', ['kEinstellungenSektion', 'cName'], [CONF_TRUSTEDSHOPS, $oConfig_arr[$i]->cWertName]);
+            Shop::DB()->delete(
+                'teinstellungen',
+                ['kEinstellungenSektion', 'cName'],
+                [CONF_TRUSTEDSHOPS, $oConfig_arr[$i]->cWertName]
+            );
             Shop::DB()->insert('teinstellungen', $aktWert);
         }
     }
     $settings = Shopsetting::getInstance();
     $settings->reset();
-    $Einstellungen = Shop::getConfig([CONF_TRUSTEDSHOPS]);
+    $Einstellungen = Shop::getSettings([CONF_TRUSTEDSHOPS]);
     if ($Einstellungen['trustedshops']['trustedshops_kundenbewertung_anzeigen'] === 'N') {
         $oTrustedShops->aenderKundenbewertungsstatusDB(0, $_SESSION['TrustedShops']->oSprache->cISOSprache);
         $oTrustedShops->aenderKundenbewertungsstatus(0, $_SESSION['TrustedShops']->oSprache->cISOSprache);
@@ -170,7 +181,7 @@ if (isset($_POST['kaeuferschutzeinstellungen']) && intval($_POST['kaeuferschutze
     } else {
         $cFehler .= 'Fehler: Bitte geben Sie eine tsID ein!<br>';
     }
-    Shop::Cache()->flushTags(array(CACHING_GROUP_OPTION));
+    Shop::Cache()->flushTags([CACHING_GROUP_OPTION]);
 } elseif (isset($_POST['kundenbewertungupdate']) && intval($_POST['kundenbewertungupdate']) === 1) { // Kundenbewertung update
     if (isset($_POST['tsKundenbewertungActive']) || isset($_POST['tsKundenbewertungDeActive'])) {
         $nStatus = 0;
@@ -262,7 +273,8 @@ if ($step === 'uebersicht') {
 
     $oTrustedShops = new TrustedShops(-1, $_SESSION['TrustedShops']->oSprache->cISOSprache);
 
-    if (isset($_POST['kaeuferschutzupdate']) && intval($_POST['kaeuferschutzupdate']) === 1 && $Einstellungen['trustedshops']['trustedshops_nutzen'] === 'Y' && isset($_POST['tsupdate'])) {
+    if (isset($_POST['kaeuferschutzupdate']) && intval($_POST['kaeuferschutzupdate']) === 1 &&
+        $Einstellungen['trustedshops']['trustedshops_nutzen'] === 'Y' && isset($_POST['tsupdate'])) {
         $smarty->assign('oKaeuferschutzProdukteDB', $oTrustedShops->oKaeuferschutzProdukteDB);
         $smarty->assign('oZertifikat', $oTrustedShops->gibTrustedShopsZertifikatISO($_SESSION['TrustedShops']->oSprache->cISOSprache));
 
@@ -273,14 +285,15 @@ if ($step === 'uebersicht') {
         }
 
         // Kundenbewertungs URL zur Uebersicht
-        $cURLKundenBewertung_arr = array(
+        $cURLKundenBewertung_arr = [
             'de' => 'https://www.trustedshops.de/shopbetreiber/?shopsw=' . SHOP_SOFTWARE . '&partnerPackage=' . PARTNER_PACKAGE,
             'en' => 'https://www.trustedshops.co.uk/merchants/partners/?shopsw=' . SHOP_SOFTWARE . '&partnerPackage=' . PARTNER_PACKAGE,
             'fr' => 'https://www.trustedshops.fr/marchands/partenaires/?shopsw=' . SHOP_SOFTWARE . '&partnerPackage=' . PARTNER_PACKAGE,
             'es' => 'https://www.trustedshops.es/comerciante/partner/?shopsw=' . SHOP_SOFTWARE . '&partnerPackage=' . PARTNER_PACKAGE,
             'nl' => '',
             'it' => '',
-            'pl' => 'https://www.trustedshops.pl/handlowcy/?shopsw=' . SHOP_SOFTWARE . '&partnerPackage=' . PARTNER_PACKAGE);
+            'pl' => 'https://www.trustedshops.pl/handlowcy/?shopsw=' . SHOP_SOFTWARE . '&partnerPackage=' . PARTNER_PACKAGE
+        ];
     }
 
     if ($Einstellungen['trustedshops']['trustedshops_nutzen'] === 'Y') {
@@ -297,31 +310,40 @@ if ($step === 'uebersicht') {
     }
 
     // Kundenbewertungs URL zur Uebersicht
-    $cURLKundenBewertung_arr = array(
+    $cURLKundenBewertung_arr = [
         'de' => 'https://www.trustedshops.de/shopbetreiber/?shopsw=' . SHOP_SOFTWARE . '&partnerPackage=' . PARTNER_PACKAGE,
         'en' => 'https://www.trustedshops.co.uk/merchants/partners/?shopsw=' . SHOP_SOFTWARE . '&partnerPackage=' . PARTNER_PACKAGE,
         'fr' => 'https://www.trustedshops.fr/marchands/partenaires/?shopsw=' . SHOP_SOFTWARE . '&partnerPackage=' . PARTNER_PACKAGE,
         'es' => 'https://www.trustedshops.es/comerciante/partner/?shopsw=' . SHOP_SOFTWARE . '&partnerPackage=' . PARTNER_PACKAGE,
         'nl' => '',
         'it' => '',
-        'pl' => 'https://www.trustedshops.pl/handlowcy/?shopsw=' . SHOP_SOFTWARE . '&partnerPackage=' . PARTNER_PACKAGE);
+        'pl' => 'https://www.trustedshops.pl/handlowcy/?shopsw=' . SHOP_SOFTWARE . '&partnerPackage=' . PARTNER_PACKAGE
+    ];
 
-    $cURLKundenBewertungUebersicht_arr = array();
+    $cURLKundenBewertungUebersicht_arr = [];
     if (isset($oTrustedShopsKundenbewertung->cTSID) && strlen($oTrustedShopsKundenbewertung->cTSID) > 0) {
-        $cURLKundenBewertungUebersicht_arr = array(
+        $cURLKundenBewertungUebersicht_arr = [
             'de' => 'https://www.trustedshops.com/bewertung/info_' . $oTrustedShopsKundenbewertung->cTSID . '.html',
             'en' => 'https://www.trustedshops.com/buyerrating/info_' . $oTrustedShopsKundenbewertung->cTSID . '.html',
             'fr' => 'https://www.trustedshops.com/evaluation/info_' . $oTrustedShopsKundenbewertung->cTSID . '.html',
             'es' => 'https://www.trustedshops.com/evaluacion/info_' . $oTrustedShopsKundenbewertung->cTSID . '.html',
             'pl' => 'https://www.trustedshops.pl/opinia/info_' . $oTrustedShopsKundenbewertung->cTSID . '.html',
             'nl' => 'https://www.trustedshops.nl/verkopersbeoordeling/info_' . $oTrustedShopsKundenbewertung->cTSID . '.html',
-            'it' => 'https://www.trustedshops.it/valutazione-del-negozio/info_' . $oTrustedShopsKundenbewertung->cTSID . '.html',
-        );
+            'it' => 'https://www.trustedshops.it/valutazione-del-negozio/info_' . $oTrustedShopsKundenbewertung->cTSID . '.html'
+        ];
     }
 
-    $oSprach_arr   = array('de' => 'Deutsch', 'en' => 'Englisch', 'fr' => 'Franz&ouml;sisch', 'nl' => 'Niederl&auml;ndisch', 'it' => 'Italienisch', 'pl' => 'Polnisch', 'es' => 'Spanisch');
+    $oSprach_arr = [
+        'de' => 'Deutsch',
+        'en' => 'Englisch',
+        'fr' => 'Franz&ouml;sisch',
+        'nl' => 'Niederl&auml;ndisch',
+        'it' => 'Italienisch',
+        'pl' => 'Polnisch',
+        'es' => 'Spanisch'
+    ];
     $cMember_arr   = array_keys($oSprach_arr);
-    $oSprachen_arr = array();
+    $oSprachen_arr = [];
     foreach ($oSprach_arr as $i => $oSprach) {
         $oSprachen_arr[$i]                      = new stdClass();
         $oSprachen_arr[$i]->cISOSprache         = $i;

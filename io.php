@@ -5,7 +5,7 @@
  */
 ob_start();
 
-require_once dirname(__FILE__) . '/includes/globalinclude.php';
+require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'io_inc.php';
 require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.IO.php';
 require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.IOResponse.php';
@@ -29,10 +29,10 @@ if (!isset($_REQUEST['io'])) {
 
 $request = $_REQUEST['io'];
 
-executeHook(HOOK_IO_HANDLE_REQUEST, array(
+executeHook(HOOK_IO_HANDLE_REQUEST, [
     'io'      => &$io,
     'request' => &$request
-));
+]);
 
 try {
     $data = $io->handleRequest($request);

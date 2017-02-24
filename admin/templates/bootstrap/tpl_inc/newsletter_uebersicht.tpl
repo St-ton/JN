@@ -317,13 +317,12 @@
             {/if}
         </div>
         <div id="newslettervorlagen" class="tab-pane fade{if isset($cTab) && $cTab == 'newslettervorlagen'} active in{/if}">
-            <form method="post" action="newsletter.php">
-                {$jtl_token}
-                <input name="newslettervorlagen" type="hidden" value="1">
-                <input name="tab" type="hidden" value="newslettervorlagen">
-
-                {if isset($oNewsletterVorlage_arr) && $oNewsletterVorlage_arr|@count > 0}
-                    {include file='tpl_inc/pagination.tpl' oPagination=$oPagiVorlagen cAnchor='newslettervorlagen'}
+            {if isset($oNewsletterVorlage_arr) && $oNewsletterVorlage_arr|@count > 0}
+                {include file='tpl_inc/pagination.tpl' oPagination=$oPagiVorlagen cAnchor='newslettervorlagen'}
+                <form method="post" action="newsletter.php">
+                    {$jtl_token}
+                    <input name="newslettervorlagen" type="hidden" value="1">
+                    <input name="tab" type="hidden" value="newslettervorlagen">
                     <div id="newsletter-vorlagen-content">
                         <div class="panel panel-default">
                             <div class="panel-heading">
@@ -381,16 +380,21 @@
                             </div>
                         </div>
                     </div>
-                {else}
-                    <div class="alert alert-info" role="alert">{#noDataAvailable#}</div>
-                    <div class="submit {if isset($oNewsletterVorlage_arr) && $oNewsletterVorlage_arr|@count > 0}btn-group{/if}">
-                        <button name="vorlage_erstellen" class="btn btn-primary" type="submit">{#newsletterdraftcreate#}</button>
-                        {if isset($oNewsletterVorlage_arr) && $oNewsletterVorlage_arr|@count > 0}
-                            <button class="btn btn-danger" name="loeschen" type="submit" value="{#newsletterdelete#}"><i class="fa fa-trash"></i> {#newsletterdelete#}</button>
-                        {/if}
-                    </div>
-                {/if}
-            </form>
+                </form>
+            {else}
+                <form method="post" action="newsletter.php">
+                    {$jtl_token}
+                    <input name="newslettervorlagen" type="hidden" value="1">
+                    <input name="tab" type="hidden" value="newslettervorlagen">
+                        <div class="alert alert-info" role="alert">{#noDataAvailable#}</div>
+                        <div class="submit {if isset($oNewsletterVorlage_arr) && $oNewsletterVorlage_arr|@count > 0}btn-group{/if}">
+                            <button name="vorlage_erstellen" class="btn btn-primary" type="submit">{#newsletterdraftcreate#}</button>
+                            {if isset($oNewsletterVorlage_arr) && $oNewsletterVorlage_arr|@count > 0}
+                                <button class="btn btn-danger" name="loeschen" type="submit" value="{#newsletterdelete#}"><i class="fa fa-trash"></i> {#newsletterdelete#}</button>
+                            {/if}
+                        </div>
+                </form>
+            {/if}
         </div>
         <div id="newslettervorlagenstd" class="tab-pane fade{if isset($cTab) && $cTab == 'newslettervorlagenstd'} active in{/if}">
             {if isset($oNewslettervorlageStd_arr) && $oNewslettervorlageStd_arr|@count > 0}
@@ -420,7 +424,7 @@
                                 {/foreach}
                             </table>
                             <div class="panel-footer">
-                                <button name="submitVorlageStd" type="submit" value="{#newsletterdraftStdUse#}" class="btn btn-default">{#newsletterdraftStdUse#}</button>
+                                <button name="submitVorlageStd" type="submit" value="{#newsletterdraftStdUse#}" class="btn btn-primary"><i class="fa fa-share"></i> {#newsletterdraftStdUse#}</button>
                             </div>
                         </div>
                     </div>

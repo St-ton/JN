@@ -71,8 +71,47 @@
                                         $(function () {
                                             var $datepicker = $('#{$oFilter->getId()}_{$oField->getId()}');
                                             $datepicker.daterangepicker({
-                                                locale: { format: 'DD.MM.YYYY', separator: ' - ' },
+                                                locale: {
+                                                    format: 'DD.MM.YYYY', separator: ' - ', applyLabel: 'Übernehmen',
+                                                    cancelLabel: 'Abbrechen', customRangeLabel: 'Benutzerdefiniert',
+                                                    daysOfWeek: ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'],
+                                                    monthNames: ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni',
+                                                        'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
+                                                    firstDay: 1
+                                                },
+                                                alwaysShowCalendars: true,
                                                 autoUpdateInput: false,
+                                                autoApply: false,
+                                                applyClass: 'btn btn-primary',
+                                                cancelClass: 'btn btn-danger',
+                                                ranges: {
+                                                    'Heute': [moment(), moment()],
+                                                    'Gestern': [
+                                                        moment().subtract(1, 'days'),
+                                                        moment().subtract(1, 'days')
+                                                    ],
+                                                    'Diese Woche': [
+                                                        moment().startOf('week').add(1, 'day'),
+                                                        moment().endOf('week').add(1, 'day')
+                                                    ],
+                                                    'Letzte Woche': [
+                                                        moment().subtract(1, 'week').startOf('week').add(1, 'day'),
+                                                        moment().subtract(1, 'week').endOf('week').add(1, 'day')
+                                                    ],
+                                                    'Dieser Monat': [
+                                                        moment().startOf('month'),
+                                                        moment().endOf('month')
+                                                    ],
+                                                    'Letzter Monat': [
+                                                        moment().subtract(1, 'month').startOf('month'),
+                                                        moment().subtract(1, 'month').endOf('month')
+                                                    ],
+                                                    'Dieses Jahr': [moment().startOf('year'), moment().endOf('year')],
+                                                    'Letztes Jahr': [
+                                                        moment().subtract(1, 'year').startOf('year'),
+                                                        moment().subtract(1, 'year').endOf('year')
+                                                    ]
+                                                }
                                             });
                                             $datepicker.on('apply.daterangepicker', function(ev, picker) {
                                                 $(this).val(picker.startDate.format('DD.MM.YYYY') + ' - '

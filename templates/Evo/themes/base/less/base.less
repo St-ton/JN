@@ -103,7 +103,7 @@ header {
                 .language-dropdown,
                 .currency-dropdown,
                 #search {
-                    display: table-cell!important;
+                    display: table-cell !important;
                     vertical-align: middle;
                     float: none;
                     a { white-space: nowrap; }
@@ -276,6 +276,16 @@ hr.hr-sm {
 @media (max-width: @screen-xs-max) {
     .center-sm {
         text-align: center;
+    }
+    /* Fix for form-group buttons with icon inside */
+    .btn .fa.visible-xs,
+    .btn i.glyphicon{
+        line-height: 22px;
+    }
+    .tags .label,
+    .active-filters .label{
+        display: inline-block;
+        margin-bottom: 5px;
     }
 }
 
@@ -1174,6 +1184,10 @@ table.matrix tbody>tr>td {
     .dropdown-menu {
         padding: @modal-inner-padding;
     }
+
+    .cart-dropdown li.table-responsive{
+        max-height: 800px;
+    }
 }
 
 /* Navbar text fix */
@@ -1196,6 +1210,11 @@ table.matrix tbody>tr>td {
     .form-group {
         margin-top: @panel-body-padding;
     }
+}
+
+#navbar-filter .dropdown-menu span.value,
+.box .nav-list span.value{
+    padding-right:45px;
 }
 
 @media(max-width: 480px) {
@@ -1312,11 +1331,11 @@ table.matrix tbody>tr>td {
     }
 
     @media (min-width: @screen-md-min) {
-        max-width: 18em;
+        max-width: 20em;
     }
 
     @media (min-width: @screen-sm-min) and (max-width: @screen-sm-max) {
-        max-width: 12em;
+        max-width: 20em;
     }
 
 }
@@ -1558,6 +1577,12 @@ fieldset {
 
 .popover-content,.pop-div,.popover {
     width: 500px;
+    @media (max-width: 500px){
+        width: 400px;
+    }
+    @media (max-width: 400px){
+        width: 300px;
+    }
 }
 
 .popover {
@@ -2828,6 +2853,10 @@ div#add-to-cart {
 }
 */
 
+.dropdown-menu {
+    font-size: @font-size-small;
+}
+
 #evo-main-nav {
     margin-bottom: 0;
     z-index: 20;
@@ -2838,6 +2867,16 @@ div#add-to-cart {
         overflow: hidden;
         white-space: nowrap;
         vertical-align: middle;
+    }
+
+    .dropdown-cart-items .item-price,
+    .dropdown-cart-items .item-quantity {
+        text-align: right;
+        vertical-align: middle;
+    }
+
+    .dropdown-cart-items {
+        word-break: break-word;
     }
 }
 
@@ -3063,6 +3102,17 @@ header.fixed-navbar {
     z-index: 1050;
 }
 
+.notification-alert {
+    padding: @modal-inner-padding;
+    margin-bottom: @line-height-computed;
+    border-radius: @alert-border-radius;
+}
+
 .hide-overflow {
     overflow: hidden;
+}
+
+.pagination-wrapper .pagination {
+    margin-top: 0;
+    margin-bottom: 0;
 }

@@ -82,10 +82,6 @@ ul .fa-check-circle-o, ul.fa-exclamation-circle {
     font-size: 18px;
 }
 
-.alert-danger{
-    background-color: #f2dede;
-}
-
 .input-group-addon.fixed-addon {
     width: 150px;
     text-align: right;
@@ -98,4 +94,8 @@ ul .fa-check-circle-o, ul.fa-exclamation-circle {
 .backend-wrapper.container {
     margin: 0 auto;
     padding: 50px 15px 20px;
+}
+
+.page-header h4 {
+    margin-left: 8px;
 }

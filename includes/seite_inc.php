@@ -12,20 +12,20 @@ function gibStartBoxen()
 {
     $kKundengruppe = $_SESSION['Kundengruppe']->kKundengruppe;
     if (!$kKundengruppe || !$_SESSION['Kundengruppe']->darfArtikelKategorienSehen) {
-        return array();
+        return [];
     }
     $cURL          = 0;
-    $Boxliste      = array();
-    $schon_drin    = array();
-    $Einstellungen = Shop::getSettings(array(CONF_STARTSEITE));
+    $Boxliste      = [];
+    $schon_drin    = [];
+    $Einstellungen = Shop::getSettings([CONF_STARTSEITE]);
     while ($obj = gibNextBoxPrio($schon_drin, $Einstellungen)) {
         $schon_drin[] = $obj->name;
         $Boxliste[]   = $obj;
     }
     $Boxliste = array_reverse($Boxliste);
     $boxCount = count($Boxliste);
-    for ($i = 0; $i < $boxCount; $i++) {
-        $kArtikel_arr = array();
+    for ($i = 0; $i < $boxCount; ++$i) {
+        $kArtikel_arr = [];
         $limit_nr     = $Boxliste[$i]->anzahl;
         $menge        = null;
         switch ($Boxliste[$i]->name) {
@@ -69,7 +69,7 @@ function gibStartBoxen()
             $Boxliste[$i]->Artikel->getArtikelByKeys($kArtikel_arr, 0, count($kArtikel_arr));
         }
     }
-    executeHook(HOOK_BOXEN_HOME, array('boxes' => &$Boxliste));
+    executeHook(HOOK_BOXEN_HOME, ['boxes' => &$Boxliste]);
 
     return $Boxliste;
 }
@@ -102,9 +102,11 @@ function gibAuswahlAssistentFragen($Einstellungen)
 function gibNews($Einstellungen)
 {
     $cSQL      = '';
-    $oNews_arr = array();
+    $oNews_arr = [];
     // Sollen keine News auf der Startseite angezeigt werden?
-    if (!isset($Einstellungen['news']['news_anzahl_content']) || (int)$Einstellungen['news']['news_anzahl_content'] === 0) {
+    if (!isset($Einstellungen['news']['news_anzahl_content']) ||
+        (int)$Einstellungen['news']['news_anzahl_content'] === 0
+    ) {
         return $oNews_arr;
     }
     $cacheID = 'news_' . md5(json_encode($Einstellungen['news']) . '_' . (int)$_SESSION['kSprache']);
@@ -114,15 +116,20 @@ function gibNews($Einstellungen)
             $cSQL = ' LIMIT ' . (int)$Einstellungen['news']['news_anzahl_content'];
         }
         $oNews_arr = Shop::DB()->query(
-            "SELECT tnews.kNews, tnews.kSprache, tnews.cKundengruppe, tnews.cBetreff, tnews.cText, tnews.cVorschauText, tnews.cMetaTitle,
-                tnews.cMetaDescription, tnews.cMetaKeywords, tnews.nAktiv, tnews.dErstellt, tnews.cPreviewImage, tseo.cSeo,
-                count(tnewskommentar.kNewsKommentar) AS nNewsKommentarAnzahl, DATE_FORMAT(tnews.dGueltigVon, '%d.%m.%Y  %H:%i') AS dErstellt_de,
+            "SELECT tnews.kNews, tnews.kSprache, tnews.cKundengruppe, tnews.cBetreff, tnews.cText, 
+                tnews.cVorschauText, tnews.cMetaTitle, tnews.cMetaDescription, tnews.cMetaKeywords, 
+                tnews.nAktiv, tnews.dErstellt, tnews.cPreviewImage, tseo.cSeo,
+                count(tnewskommentar.kNewsKommentar) AS nNewsKommentarAnzahl, 
+                DATE_FORMAT(tnews.dGueltigVon, '%d.%m.%Y  %H:%i') AS dErstellt_de,
                 DATE_FORMAT(tnews.dGueltigVon, '%d.%m.%Y  %H:%i') AS dGueltigVon_de
                 FROM tnews
-                JOIN tnewskategorienews ON tnewskategorienews.kNews = tnews.kNews
-                JOIN tnewskategorie ON tnewskategorie.kNewsKategorie = tnewskategorienews.kNewsKategorie
+                JOIN tnewskategorienews 
+                    ON tnewskategorienews.kNews = tnews.kNews
+                JOIN tnewskategorie 
+                    ON tnewskategorie.kNewsKategorie = tnewskategorienews.kNewsKategorie
                      AND tnewskategorie.nAktiv = 1
-                LEFT JOIN tnewskommentar ON tnewskommentar.kNews = tnews.kNews
+                LEFT JOIN tnewskommentar 
+                    ON tnewskommentar.kNews = tnews.kNews
                     AND tnewskommentar.nAktiv = 1
                 LEFT JOIN tseo ON tseo.cKey = 'kNews'
                     AND tseo.kKey = tnews.kNews
@@ -130,33 +137,46 @@ function gibNews($Einstellungen)
                 WHERE tnews.kSprache = " . (int)$_SESSION['kSprache'] . "
                     AND tnews.nAktiv = 1
                     AND tnews.dGueltigVon <= now()
-                    AND (tnews.cKundengruppe LIKE '%;-1;%' OR tnews.cKundengruppe LIKE '%;" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";%')
+                    AND (
+                        tnews.cKundengruppe LIKE '%;-1;%' 
+                        OR tnews.cKundengruppe RLIKE '^([0-9;]+;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";'
+                        )
                 GROUP BY tnews.kNews
                 ORDER BY tnews.dGueltigVon DESC" . $cSQL, 2
         );
         // URLs bauen
+        $shopURL = Shop::getURL() . '/';
         if (is_array($oNews_arr) && count($oNews_arr) > 0) {
             foreach ($oNews_arr as $i => $oNews) {
-                $oNews_arr[$i]->cText    = parseNewsText($oNews_arr[$i]->cText);
-                $oNews_arr[$i]->cURL     = baueURL($oNews, URLART_NEWS);
-                $oNews_arr[$i]->cMehrURL = '<a href="' . $oNews_arr[$i]->cURL . '">' . Shop::Lang()->get('moreLink', 'news') . '</a>';
+                $oNews_arr[$i]->cPreviewImageFull = (empty($oNews_arr[$i]->cPreviewImage))
+                    ? ''
+                    : $shopURL . $oNews_arr[$i]->cPreviewImage;
+                $oNews_arr[$i]->cText             = parseNewsText($oNews_arr[$i]->cText);
+                $oNews_arr[$i]->cURL              = baueURL($oNews, URLART_NEWS);
+                $oNews_arr[$i]->cURLFull          = $shopURL . $oNews_arr[$i]->cURL;
+                $oNews_arr[$i]->cMehrURL          = '<a href="' . $oNews_arr[$i]->cURL . '">' .
+                    Shop::Lang()->get('moreLink', 'news') .
+                    '</a>';
+                $oNews_arr[$i]->cMehrURLFull      = '<a href="' . $oNews_arr[$i]->cURLFull . '">' .
+                    Shop::Lang()->get('moreLink', 'news') .
+                    '</a>';
             }
         }
-        $cacheTags = array(CACHING_GROUP_NEWS, CACHING_GROUP_OPTION);
-        executeHook(HOOK_GET_NEWS, array(
+        $cacheTags = [CACHING_GROUP_NEWS, CACHING_GROUP_OPTION];
+        executeHook(HOOK_GET_NEWS, [
             'cached'    => false,
             'cacheTags' => &$cacheTags,
             'oNews_arr' => &$oNews_arr
-        ));
+        ]);
         Shop::Cache()->set($cacheID, $oNews_arr, $cacheTags);
 
         return $oNews_arr;
     }
-    executeHook(HOOK_GET_NEWS, array(
+    executeHook(HOOK_GET_NEWS, [
         'cached'    => true,
-        'cacheTags' => array(),
+        'cacheTags' => [],
         'oNews_arr' => &$oNews_arr
-    ));
+    ]);
 
     return $oNews_arr;
 }
@@ -216,14 +236,19 @@ function gibNextBoxPrio($search, $Einstellungen)
  */
 function gibLivesucheTop($Einstellungen)
 {
-    $limit = (isset($Einstellungen['sonstiges']['sonstiges_livesuche_all_top_count']) && intval($Einstellungen['sonstiges']['sonstiges_livesuche_all_top_count']) > 0) ?
-        (int)$Einstellungen['sonstiges']['sonstiges_livesuche_all_top_count'] :
-        100;
+    $limit = (isset($Einstellungen['sonstiges']['sonstiges_livesuche_all_top_count']) &&
+        intval($Einstellungen['sonstiges']['sonstiges_livesuche_all_top_count']) > 0)
+        ? (int)$Einstellungen['sonstiges']['sonstiges_livesuche_all_top_count']
+        : 100;
     $suchwolke_objs = Shop::DB()->query(
-        "SELECT tsuchanfrage.kSuchanfrage, tsuchanfrage.kSprache, tsuchanfrage.cSuche, tsuchanfrage.nAktiv, tsuchanfrage.nAnzahlTreffer,
-            tsuchanfrage.nAnzahlGesuche, DATE_FORMAT(tsuchanfrage.dZuletztGesucht, '%d.%m.%Y  %H:%i') AS dZuletztGesucht_de, tseo.cSeo
+        "SELECT tsuchanfrage.kSuchanfrage, tsuchanfrage.kSprache, tsuchanfrage.cSuche, tseo.cSeo, 
+            tsuchanfrage.nAktiv, tsuchanfrage.nAnzahlTreffer, tsuchanfrage.nAnzahlGesuche, 
+            DATE_FORMAT(tsuchanfrage.dZuletztGesucht, '%d.%m.%Y  %H:%i') AS dZuletztGesucht_de
             FROM tsuchanfrage
-            LEFT JOIN tseo ON tseo.cKey = 'kSuchanfrage' AND tseo.kKey = tsuchanfrage.kSuchanfrage AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
+            LEFT JOIN tseo 
+                ON tseo.cKey = 'kSuchanfrage' 
+                AND tseo.kKey = tsuchanfrage.kSuchanfrage 
+                AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
             WHERE tsuchanfrage.kSprache = " . (int)$_SESSION['kSprache'] . "
                 AND tsuchanfrage.nAktiv = 1
             ORDER BY tsuchanfrage.nAnzahlGesuche DESC
@@ -231,7 +256,7 @@ function gibLivesucheTop($Einstellungen)
     );
     // Priorität berechnen
     $count         = count($suchwolke_objs);
-    $Suchwolke_arr = array();
+    $Suchwolke_arr = [];
     $prio_step     = ($count > 0) ?
         (($suchwolke_objs[0]->nAnzahlGesuche - $suchwolke_objs[$count - 1]->nAnzahlGesuche) / 9) :
         0;
@@ -247,7 +272,7 @@ function gibLivesucheTop($Einstellungen)
         }
     }
 
-    return (count($Suchwolke_arr) > 0) ? $Suchwolke_arr : array();
+    return (count($Suchwolke_arr) > 0) ? $Suchwolke_arr : [];
 }
 
 /**
@@ -273,14 +298,19 @@ function wolkesort($a, $b)
  */
 function gibLivesucheLast($Einstellungen)
 {
-    $limit = (isset($Einstellungen['sonstiges']['sonstiges_livesuche_all_last_count']) && intval($Einstellungen['sonstiges']['sonstiges_livesuche_all_last_count']) > 0) ?
-        intval($Einstellungen['sonstiges']['sonstiges_livesuche_all_last_count']) :
-        100;
+    $limit = (isset($Einstellungen['sonstiges']['sonstiges_livesuche_all_last_count']) &&
+        intval($Einstellungen['sonstiges']['sonstiges_livesuche_all_last_count']) > 0)
+        ? (int)$Einstellungen['sonstiges']['sonstiges_livesuche_all_last_count']
+        : 100;
     $suchwolke_objs = Shop::DB()->query(
-        "SELECT tsuchanfrage.kSuchanfrage, tsuchanfrage.kSprache, tsuchanfrage.cSuche, tsuchanfrage.nAktiv, tsuchanfrage.nAnzahlTreffer,
-            tsuchanfrage.nAnzahlGesuche, DATE_FORMAT(tsuchanfrage.dZuletztGesucht, '%d.%m.%Y  %H:%i') AS dZuletztGesucht_de, tseo.cSeo
+        "SELECT tsuchanfrage.kSuchanfrage, tsuchanfrage.kSprache, tsuchanfrage.cSuche, tseo.cSeo, 
+            tsuchanfrage.nAktiv, tsuchanfrage.nAnzahlTreffer, tsuchanfrage.nAnzahlGesuche, 
+            DATE_FORMAT(tsuchanfrage.dZuletztGesucht, '%d.%m.%Y  %H:%i') AS dZuletztGesucht_de
             FROM tsuchanfrage
-            LEFT JOIN tseo ON tseo.cKey = 'kSuchanfrage' AND tseo.kKey = tsuchanfrage.kSuchanfrage AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
+            LEFT JOIN tseo 
+                ON tseo.cKey = 'kSuchanfrage' 
+                AND tseo.kKey = tsuchanfrage.kSuchanfrage 
+                AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
             WHERE tsuchanfrage.kSprache = " . (int)$_SESSION['kSprache'] . "
                 AND tsuchanfrage.nAktiv = 1
             ORDER BY tsuchanfrage.dZuletztGesucht DESC
@@ -288,7 +318,7 @@ function gibLivesucheLast($Einstellungen)
     );
     // Priorität berechnen
     $count         = count($suchwolke_objs);
-    $Suchwolke_arr = array();
+    $Suchwolke_arr = [];
     $prio_step     = ($count > 0) ?
         (($suchwolke_objs[0]->nAnzahlGesuche - $suchwolke_objs[$count - 1]->nAnzahlGesuche) / 9) :
         0;
@@ -304,7 +334,7 @@ function gibLivesucheLast($Einstellungen)
         }
     }
 
-    return (count($Suchwolke_arr) > 0) ? $Suchwolke_arr : array();
+    return (count($Suchwolke_arr) > 0) ? $Suchwolke_arr : [];
 }
 
 /**
@@ -313,23 +343,27 @@ function gibLivesucheLast($Einstellungen)
  */
 function gibTagging($Einstellungen)
 {
-    $limit = (isset($Einstellungen['sonstiges']['sonstiges_tagging_all_count']) && intval($Einstellungen['sonstiges']['sonstiges_tagging_all_count']) > 0) ?
-        (int)$Einstellungen['sonstiges']['sonstiges_tagging_all_count'] :
-        100;
-    $limit         = ' LIMIT ' . $limit;
+    $limit = (isset($Einstellungen['sonstiges']['sonstiges_tagging_all_count']) &&
+        intval($Einstellungen['sonstiges']['sonstiges_tagging_all_count']) > 0)
+        ? (int)$Einstellungen['sonstiges']['sonstiges_tagging_all_count']
+        : 100;
     $tagwolke_objs = Shop::DB()->query(
         "SELECT ttag.kTag, ttag.cName, tseo.cSeo, sum(ttagartikel.nAnzahlTagging) AS Anzahl
             FROM ttag
-            JOIN ttagartikel ON ttagartikel.kTag = ttag.kTag
-            LEFT JOIN tseo ON tseo.cKey = 'kTag' AND tseo.kKey = ttag.kTag AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
+            JOIN ttagartikel 
+                ON ttagartikel.kTag = ttag.kTag
+            LEFT JOIN tseo 
+                ON tseo.cKey = 'kTag' 
+                AND tseo.kKey = ttag.kTag 
+                AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
             WHERE ttag.nAktiv = 1
                 AND ttag.kSprache = " . (int)$_SESSION['kSprache'] . "
             GROUP BY ttag.cName
-            ORDER BY Anzahl DESC" . $limit, 2
+            ORDER BY Anzahl DESC LIMIT " . $limit, 2
     );
     // Priorität berechnen
     $count        = count($tagwolke_objs);
-    $Tagwolke_arr = array();
+    $Tagwolke_arr = [];
     $prio_step    = ($count > 0) ?
         (($tagwolke_objs[0]->Anzahl - $tagwolke_objs[$count - 1]->Anzahl) / 9) :
         0;
@@ -350,7 +384,7 @@ function gibTagging($Einstellungen)
         return $Tagwolke_arr;
     }
 
-    return array();
+    return [];
 }
 
 /**
@@ -358,7 +392,13 @@ function gibTagging($Einstellungen)
  */
 function gibNewsletterHistory()
 {
-    $oNewsletterHistory_arr = Shop::DB()->selectAll('tnewsletterhistory', 'kSprache', (int)$_SESSION['kSprache'], 'kNewsletterHistory, cBetreff, DATE_FORMAT(dStart, \'%d.%m.%Y %H:%i\') AS Datum, cHTMLStatic', 'dStart DESC');
+    $oNewsletterHistory_arr = Shop::DB()->selectAll(
+        'tnewsletterhistory',
+        'kSprache',
+        (int)$_SESSION['kSprache'],
+        'kNewsletterHistory, cBetreff, DATE_FORMAT(dStart, \'%d.%m.%Y %H:%i\') AS Datum, cHTMLStatic',
+        'dStart DESC'
+    );
     // URLs bauen
     if (is_array($oNewsletterHistory_arr) && count($oNewsletterHistory_arr) > 0) {
         foreach ($oNewsletterHistory_arr as $i => $oNewsletterHistory) {
@@ -389,7 +429,7 @@ function gibSitemapGlobaleMerkmale()
     $isDefaultLanguage = standardspracheAktiv();
     $cacheID           = 'gsgm_' . (($isDefaultLanguage === true) ? 'd_' : '') . (int)$_SESSION['kSprache'];
     if (($oMerkmal_arr = Shop::Cache()->get($cacheID)) === false) {
-        $oMerkmal_arr    = array();
+        $oMerkmal_arr    = [];
         $cDatei          = 'navi.php';
         $cMerkmalTabelle = 'tmerkmal';
         $cSQL            = " JOIN tmerkmalwert ON tmerkmalwert.kMerkmal = tmerkmal.kMerkmal";
@@ -403,21 +443,26 @@ function gibSitemapGlobaleMerkmale()
             $cMerkmalWhere = " AND tmerkmalsprache.kSprache = " . (int)$_SESSION['kSprache'];
         }
         $oMerkmalTMP_arr = Shop::DB()->query(
-            "SELECT {$cMerkmalTabelle}.*, tmerkmalwertsprache.cWert, tseo.cSeo, tmerkmalwertsprache.kMerkmalWert, tmerkmal.nSort, tmerkmal.nGlobal, tmerkmal.cTyp, tmerkmalwert.cBildPfad AS cBildPfadMW, tmerkmal.cBildpfad
+            "SELECT {$cMerkmalTabelle}.*, tmerkmalwertsprache.cWert, tseo.cSeo, tmerkmalwertsprache.kMerkmalWert, 
+                tmerkmal.nSort, tmerkmal.nGlobal, tmerkmal.cTyp, tmerkmalwert.cBildPfad AS cBildPfadMW, 
+                tmerkmal.cBildpfad
                 FROM {$cMerkmalTabelle}
                 {$cSQL}
-                JOIN tartikelmerkmal ON tartikelmerkmal.kMerkmalWert = tmerkmalwertsprache.kMerkmalWert
-                LEFT JOIN tseo ON tseo.cKey = 'kMerkmalWert'
+                JOIN tartikelmerkmal 
+                    ON tartikelmerkmal.kMerkmalWert = tmerkmalwertsprache.kMerkmalWert
+                LEFT JOIN tseo 
+                    ON tseo.cKey = 'kMerkmalWert'
                     AND tseo.kKey = tmerkmalwertsprache.kMerkmalWert
-                    AND tseo.kSprache = {$_SESSION['kSprache']}
+                    AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
                 WHERE tmerkmal.nGlobal = 1
-                    AND tmerkmalwertsprache.kSprache = {$_SESSION['kSprache']}
+                    AND tmerkmalwertsprache.kSprache = " . (int)$_SESSION['kSprache'] . "
                     {$cMerkmalWhere}
                 GROUP BY tmerkmalwertsprache.kMerkmalWert
                 ORDER BY tmerkmal.nSort, {$cMerkmalTabelle}.cName, tmerkmalwert.nSort, tmerkmalwertsprache.cWert", 2
         );
         $nPos = 0;
         if (is_array($oMerkmalTMP_arr) && count($oMerkmalTMP_arr) > 0) {
+            $shopURL = Shop::getURL() . '/';
             foreach ($oMerkmalTMP_arr as $i => &$oMerkmalTMP) {
                 $oMerkmalWert = new stdClass();
                 $oMerkmal     = new stdClass();
@@ -431,9 +476,9 @@ function gibSitemapGlobaleMerkmale()
 
                         verarbeiteMerkmalWertBild($oMerkmalWert);
                         // cURL bauen
-                        $oMerkmalWert->cURL = (strlen($oMerkmalWert->cSeo) > 0) ?
-                            Shop::getURL() . '/' . $oMerkmalWert->cSeo :
-                            Shop::getURL() . '/' . $cDatei . '?m=' . $oMerkmalWert->kMerkmalWert;
+                        $oMerkmalWert->cURL = (strlen($oMerkmalWert->cSeo) > 0)
+                            ? $shopURL . $oMerkmalWert->cSeo
+                            : $shopURL . $cDatei . '?m=' . $oMerkmalWert->kMerkmalWert;
 
                         $oMerkmal_arr[$nPos]->oMerkmalWert_arr[] = $oMerkmalWert;
                     } else {
@@ -452,14 +497,14 @@ function gibSitemapGlobaleMerkmale()
 
                         verarbeiteMerkmalWertBild($oMerkmalWert);
                         // cURL bauen
-                        $oMerkmalWert->cURL = (strlen($oMerkmalWert->cSeo) > 0) ?
-                            Shop::getURL() . '/' . $oMerkmalWert->cSeo :
-                            Shop::getURL() . '/' . $cDatei . '?m=' . $oMerkmalWert->kMerkmalWert;
+                        $oMerkmalWert->cURL = (strlen($oMerkmalWert->cSeo) > 0)
+                            ? $shopURL . $oMerkmalWert->cSeo
+                            : $shopURL . $cDatei . '?m=' . $oMerkmalWert->kMerkmalWert;
 
                         $oMerkmal->oMerkmalWert_arr[] = $oMerkmalWert;
                         $oMerkmal_arr[]               = $oMerkmal;
 
-                        $nPos++;
+                        ++$nPos;
                     }
                 } else { // Erster Durchlauf
                     $oMerkmal->kMerkmal         = (isset($oMerkmalTMP->kMerkmal)) ? $oMerkmalTMP->kMerkmal : null;
@@ -468,7 +513,7 @@ function gibSitemapGlobaleMerkmale()
                     $oMerkmal->nGlobal          = (isset($oMerkmalTMP->nGlobal)) ? $oMerkmalTMP->nGlobal : null;
                     $oMerkmal->cBildpfad        = (isset($oMerkmalTMP->cBildpfad)) ? $oMerkmalTMP->cBildpfad : null;
                     $oMerkmal->cTyp             = (isset($oMerkmalTMP->cTyp)) ? $oMerkmalTMP->cTyp : null;
-                    $oMerkmal->oMerkmalWert_arr = array();
+                    $oMerkmal->oMerkmalWert_arr = [];
 
                     verarbeiteMerkmalBild($oMerkmal);
                     $oMerkmalWert->kMerkmalWert = $oMerkmalTMP->kMerkmalWert;
@@ -478,15 +523,15 @@ function gibSitemapGlobaleMerkmale()
 
                     verarbeiteMerkmalWertBild($oMerkmalWert);
                     // cURL bauen
-                    $oMerkmalWert->cURL = (strlen($oMerkmalWert->cSeo) > 0) ?
-                        Shop::getURL() . '/' . $oMerkmalWert->cSeo :
-                        Shop::getURL() . '/' . $cDatei . '?m=' . $oMerkmalWert->kMerkmalWert;
+                    $oMerkmalWert->cURL = (strlen($oMerkmalWert->cSeo) > 0)
+                        ? $shopURL . $oMerkmalWert->cSeo
+                        : $shopURL . $cDatei . '?m=' . $oMerkmalWert->kMerkmalWert;
                     $oMerkmal->oMerkmalWert_arr[] = $oMerkmalWert;
                     $oMerkmal_arr[]               = $oMerkmal;
                 }
             }
         }
-        Shop::Cache()->set($cacheID, $oMerkmal_arr, array(CACHING_GROUP_CATEGORY));
+        Shop::Cache()->set($cacheID, $oMerkmal_arr, [CACHING_GROUP_CATEGORY]);
     }
 
     return $oMerkmal_arr;
@@ -540,16 +585,20 @@ function verarbeiteMerkmalWertBild(&$oMerkmalWert)
  */
 function gibBoxNews($BoxenEinstellungen)
 {
-    $nBoxenLimit = (intval($BoxenEinstellungen['news']['news_anzahl_box']) > 0) ?
-        (int)$BoxenEinstellungen['news']['news_anzahl_box'] :
-        3;
+    $nBoxenLimit = (intval($BoxenEinstellungen['news']['news_anzahl_box']) > 0)
+        ? (int)$BoxenEinstellungen['news']['news_anzahl_box']
+        : 3;
 
     return Shop::DB()->query(
-        "SELECT DATE_FORMAT(dErstellt, '%M, %Y') AS Datum, count(*) AS nAnzahl, DATE_FORMAT(dErstellt, '%m') AS nMonat
+        "SELECT DATE_FORMAT(dErstellt, '%M, %Y') AS Datum, count(*) AS nAnzahl, 
+            DATE_FORMAT(dErstellt, '%m') AS nMonat
             FROM tnews
             WHERE kSprache = " . (int)$_SESSION['kSprache'] . "
                 AND nAktiv = 1
-                AND (cKundengruppe LIKE '%;-1;%' OR cKundengruppe LIKE '%;" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";%')
+                AND (
+                    cKundengruppe LIKE '%;-1;%' 
+                    OR cKundengruppe RLIKE '^([0-9;]+;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";'
+                    )
             GROUP BY DATE_FORMAT(dErstellt, '%M')
             ORDER BY dErstellt DESC
             LIMIT " . $nBoxenLimit, 2
@@ -564,7 +613,8 @@ function gibSitemapNews()
     $cacheID = 'sitemap_news';
     if (($oNewsMonatsUebersicht_arr = Shop::Cache()->get($cacheID)) === false) {
         $oNewsMonatsUebersicht_arr = Shop::DB()->query(
-            "SELECT tseo.cSeo, tnewsmonatsuebersicht.cName, tnewsmonatsuebersicht.kNewsMonatsUebersicht, month(tnews.dGueltigVon) AS nMonat, year( tnews.dGueltigVon ) AS nJahr, count(*) AS nAnzahl
+            "SELECT tseo.cSeo, tnewsmonatsuebersicht.cName, tnewsmonatsuebersicht.kNewsMonatsUebersicht, 
+                month(tnews.dGueltigVon) AS nMonat, year(tnews.dGueltigVon) AS nJahr, count(*) AS nAnzahl
                 FROM tnews
                 JOIN tnewsmonatsuebersicht ON tnewsmonatsuebersicht.nMonat = month(tnews.dGueltigVon)
                     AND tnewsmonatsuebersicht.nJahr = year(tnews.dGueltigVon)
@@ -581,19 +631,28 @@ function gibSitemapNews()
         if (is_array($oNewsMonatsUebersicht_arr) && count($oNewsMonatsUebersicht_arr) > 0) {
             foreach ($oNewsMonatsUebersicht_arr as $i => $oNewsMonatsUebersicht) {
                 $oNews_arr = Shop::DB()->query(
-                    "SELECT tnews.kNews, tnews.kSprache, tnews.cKundengruppe, tnews.cBetreff, tnews.cText, tnews.cVorschauText, tnews.cMetaTitle,
-                        tnews.cMetaDescription, tnews.cMetaKeywords, tnews.nAktiv, tnews.dErstellt, tseo.cSeo,
-                        count(tnewskommentar.kNewsKommentar) AS nNewsKommentarAnzahl, DATE_FORMAT(tnews.dGueltigVon, '%d.%m.%Y  %H:%i') AS dGueltigVon_de
+                    "SELECT tnews.kNews, tnews.kSprache, tnews.cKundengruppe, tnews.cBetreff, tnews.cText, 
+                        tnews.cVorschauText, tnews.cMetaTitle, tnews.cMetaDescription, tnews.cMetaKeywords,
+                        tnews.nAktiv, tnews.dErstellt, tseo.cSeo,
+                        count(tnewskommentar.kNewsKommentar) AS nNewsKommentarAnzahl, 
+                        DATE_FORMAT(tnews.dGueltigVon, '%d.%m.%Y  %H:%i') AS dGueltigVon_de
                         FROM tnews
-                        LEFT JOIN tnewskommentar ON tnews.kNews = tnewskommentar.kNews
-                        LEFT JOIN tseo ON tseo.cKey = 'kNews'
+                        LEFT JOIN tnewskommentar 
+                            ON tnews.kNews = tnewskommentar.kNews
+                        LEFT JOIN tseo 
+                            ON tseo.cKey = 'kNews'
                             AND tseo.kKey = tnews.kNews
                             AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
                         WHERE tnews.kSprache = " . (int)$_SESSION['kSprache'] . "
                             AND tnews.nAktiv = 1
-                            AND (tnews.cKundengruppe LIKE '%;-1;%' OR tnews.cKundengruppe LIKE '%;" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";%')
-                            AND (MONTH(tnews.dGueltigVon) = '" . $oNewsMonatsUebersicht->nMonat . "') && (tnews.dGueltigVon <= now())
-                            AND (YEAR(tnews.dGueltigVon) = '" . $oNewsMonatsUebersicht->nJahr . "') && (tnews.dGueltigVon <= now())
+                            AND (
+                                tnews.cKundengruppe LIKE '%;-1;%' 
+                                OR tnews.cKundengruppe RLIKE '^([0-9;]+;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";'
+                                )
+                            AND (MONTH(tnews.dGueltigVon) = '" . $oNewsMonatsUebersicht->nMonat . "') 
+                            && (tnews.dGueltigVon <= now())
+                            AND (YEAR(tnews.dGueltigVon) = '" . $oNewsMonatsUebersicht->nJahr . "') 
+                            && (tnews.dGueltigVon <= now())
                         GROUP BY tnews.kNews
                         ORDER BY dGueltigVon DESC", 2
                 );
@@ -609,7 +668,7 @@ function gibSitemapNews()
                 $oNewsMonatsUebersicht_arr[$i]->cURLFull  = baueURL($oNewsMonatsUebersicht, URLART_NEWSMONAT, 0, false, true);
             }
         }
-        Shop::Cache()->set($cacheID, $oNewsMonatsUebersicht_arr, array(CACHING_GROUP_NEWS));
+        Shop::Cache()->set($cacheID, $oNewsMonatsUebersicht_arr, [CACHING_GROUP_NEWS]);
     }
 
     return $oNewsMonatsUebersicht_arr;
@@ -629,39 +688,50 @@ function gibNewsKategorie()
                 tnewskategorie.cPreviewImage, tseo.cSeo,
                 count(DISTINCT(tnewskategorienews.kNews)) AS nAnzahlNews
                 FROM tnewskategorie
-                LEFT JOIN tnewskategorienews ON tnewskategorienews.kNewsKategorie = tnewskategorie.kNewsKategorie
-                LEFT JOIN tnews ON tnews.kNews = tnewskategorienews.kNews
-                LEFT JOIN tseo ON tseo.cKey = 'kNewsKategorie'
+                LEFT JOIN tnewskategorienews 
+                    ON tnewskategorienews.kNewsKategorie = tnewskategorie.kNewsKategorie
+                LEFT JOIN tnews 
+                    ON tnews.kNews = tnewskategorienews.kNews
+                LEFT JOIN tseo 
+                    ON tseo.cKey = 'kNewsKategorie'
                     AND tseo.kKey = tnewskategorie.kNewsKategorie
                     AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
                 WHERE tnewskategorie.kSprache = " . (int)$_SESSION['kSprache'] . "
                     AND tnewskategorie.nAktiv = 1
                     AND tnews.nAktiv = 1
                     AND tnews.dGueltigVon <= now()
-                    AND (tnews.cKundengruppe LIKE '%;-1;%' OR tnews.cKundengruppe LIKE '%;" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";%')
+                    AND (
+                            tnews.cKundengruppe LIKE '%;-1;%' 
+                            OR tnews.cKundengruppe RLIKE '^([0-9;]+;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";'
+                        )
                 GROUP BY tnewskategorienews.kNewsKategorie
                 ORDER BY tnewskategorie.nSort DESC", 2
         );
         if (is_array($oNewsKategorie_arr) && count($oNewsKategorie_arr) > 0) {
             foreach ($oNewsKategorie_arr as $i => $oNewsKategorie) {
-                $oNewsKategorie_arr[$i]->oNews_arr = array();
+                $oNewsKategorie_arr[$i]->oNews_arr = [];
                 $oNewsKategorie_arr[$i]->cURL      = baueURL($oNewsKategorie, URLART_NEWSKATEGORIE);
                 $oNewsKategorie_arr[$i]->cURLFull  = baueURL($oNewsKategorie, URLART_NEWSKATEGORIE, 0, false, true);
 
                 $oNews_arr = Shop::DB()->query(
-                    "SELECT tnews.kNews, tnews.kSprache, tnews.cKundengruppe, tnews.cBetreff, tnews.cText, tnews.cVorschauText, tnews.cMetaTitle,
-                        tnews.cMetaDescription, tnews.cMetaKeywords, tnews.nAktiv, tnews.dErstellt, tseo.cSeo,
-                        DATE_FORMAT(tnews.dGueltigVon, '%d.%m.%Y  %H:%i') AS dGueltigVon_de
+                    "SELECT tnews.kNews, tnews.kSprache, tnews.cKundengruppe, tnews.cBetreff, tnews.cText, tnews.cVorschauText, 
+                        tnews.cMetaTitle, tnews.cMetaDescription, tnews.cMetaKeywords, tnews.nAktiv, tnews.dErstellt, 
+                        tseo.cSeo, DATE_FORMAT(tnews.dGueltigVon, '%d.%m.%Y  %H:%i') AS dGueltigVon_de
                         FROM tnews
-                        JOIN tnewskategorienews ON tnewskategorienews.kNews = tnews.kNews
-                        LEFT JOIN tseo ON tseo.cKey = 'kNews'
+                        JOIN tnewskategorienews 
+                            ON tnewskategorienews.kNews = tnews.kNews
+                        LEFT JOIN tseo 
+                            ON tseo.cKey = 'kNews'
                             AND tseo.kKey = tnews.kNews
                             AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
                         WHERE tnews.kSprache = " . (int)$_SESSION['kSprache'] . "
-                            AND tnewskategorienews.kNewsKategorie = " . $oNewsKategorie->kNewsKategorie . "
+                            AND tnewskategorienews.kNewsKategorie = " . (int)$oNewsKategorie->kNewsKategorie . "
                             AND tnews.nAktiv = 1
                             AND tnews.dGueltigVon <= now()
-                            AND (tnews.cKundengruppe LIKE '%;-1;%' OR tnews.cKundengruppe LIKE '%;" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";%')
+                            AND (
+                                    tnews.cKundengruppe LIKE '%;-1;%' 
+                                    OR tnews.cKundengruppe RLIKE '^([0-9;]+;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";'
+                                )
                         GROUP BY tnews.kNews
                         ORDER BY tnews.dGueltigVon DESC", 2
                 );
@@ -676,7 +746,7 @@ function gibNewsKategorie()
                 $oNewsKategorie_arr[$i]->oNews_arr = $oNews_arr;
             }
         }
-        Shop::Cache()->set($cacheID, $oNewsKategorie_arr, array(CACHING_GROUP_NEWS));
+        Shop::Cache()->set($cacheID, $oNewsKategorie_arr, [CACHING_GROUP_NEWS]);
     }
 
     return $oNewsKategorie_arr;
@@ -688,7 +758,7 @@ function gibNewsKategorie()
  */
 function gibGratisGeschenkArtikel($Einstellungen)
 {
-    $oArtikelGeschenk_arr = array();
+    $oArtikelGeschenk_arr = [];
     $cSQLSort             = " ORDER BY CAST(tartikelattribut.cWert AS DECIMAL) DESC";
     if ($Einstellungen['sonstiges']['sonstiges_gratisgeschenk_sortierung'] === 'N') {
         $cSQLSort = " ORDER BY tartikel.cName";
@@ -701,11 +771,16 @@ function gibGratisGeschenkArtikel($Einstellungen)
     $oArtikelGeschenkTMP_arr = Shop::DB()->query(
         "SELECT tartikel.kArtikel, tartikelattribut.cWert
             FROM tartikel
-            JOIN tartikelattribut ON tartikelattribut.kArtikel = tartikel.kArtikel
-            LEFT JOIN tartikelsichtbarkeit ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                    AND tartikelsichtbarkeit.kKundengruppe = {$_SESSION['Kundengruppe']->kKundengruppe}
+            JOIN tartikelattribut 
+                ON tartikelattribut.kArtikel = tartikel.kArtikel
+            LEFT JOIN tartikelsichtbarkeit 
+                ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
+                AND tartikelsichtbarkeit.kKundengruppe = {$_SESSION['Kundengruppe']->kKundengruppe}
             WHERE tartikelsichtbarkeit.kArtikel IS NULL
-            AND tartikelattribut.cName = '" . FKT_ATTRIBUT_GRATISGESCHENK . "' " . gibLagerfilter() . $cSQLSort . $cSQLLimit, 2
+            AND tartikelattribut.cName = '" . FKT_ATTRIBUT_GRATISGESCHENK . "' " .
+            gibLagerfilter() .
+            $cSQLSort .
+            $cSQLLimit, 2
     );
 
     if (is_array($oArtikelGeschenkTMP_arr) && count($oArtikelGeschenkTMP_arr) > 0) {
@@ -715,7 +790,10 @@ function gibGratisGeschenkArtikel($Einstellungen)
             $oArtikel->fuelleArtikel($oArtikelGeschenkTMP->kArtikel, $defaultOptions);
             $oArtikel->cBestellwert = gibPreisStringLocalized(doubleval($oArtikelGeschenkTMP->cWert));
 
-            if ($oArtikel->kEigenschaftKombi > 0 || !is_array($oArtikel->Variationen) || count($oArtikel->Variationen) === 0) {
+            if ($oArtikel->kEigenschaftKombi > 0 ||
+                !is_array($oArtikel->Variationen) ||
+                count($oArtikel->Variationen) === 0
+            ) {
                 $oArtikelGeschenk_arr[] = $oArtikel;
             }
         }
@@ -734,7 +812,7 @@ function pruefeSpezialseite($nLinkart)
         $cacheID = 'special_page_n_' . $nLinkart;
         if (($oSeite = Shop::Cache()->get($cacheID)) === false) {
             $oSeite = Shop::DB()->select('tspezialseite', 'nLinkart', (int)$nLinkart);
-            Shop::Cache()->set($cacheID, $oSeite, array(CACHING_GROUP_CORE));
+            Shop::Cache()->set($cacheID, $oSeite, [CACHING_GROUP_CORE]);
         }
         if (isset($oSeite->cDateiname) && strlen($oSeite->cDateiname) > 0) {
             $linkHelper = LinkHelper::getInstance();
@@ -755,7 +833,7 @@ function gibSeiteSitemap($Einstellungen, &$smarty)
     Shop::setPageType(PAGE_SITEMAP);
     $linkHelper             = LinkHelper::getInstance();
     $linkGroups             = $linkHelper->getLinkGroups();
-    $cLinkgruppenMember_arr = array();
+    $cLinkgruppenMember_arr = [];
     if (isset($linkGroups) && is_object($linkGroups)) {
         $cLinkgruppenMemberTMP_arr = get_object_vars($linkGroups);
         if (is_array($cLinkgruppenMemberTMP_arr) && count($cLinkgruppenMemberTMP_arr) > 0) {
@@ -825,19 +903,26 @@ function holeSeitenLinkSprache($kLink)
 function gibNewsArchiv()
 {
     return Shop::DB()->query(
-        "SELECT tnews.kNews, tnews.kSprache, tnews.cKundengruppe, tnews.cBetreff, tnews.cText, tnews.cVorschauText, tnews.cMetaTitle,
-            tnews.cMetaDescription, tnews.cMetaKeywords, tnews.nAktiv, tnews.dErstellt, tseo.cSeo,
-            count(tnewskommentar.kNewsKommentar) AS nNewsKommentarAnzahl, DATE_FORMAT(tnews.dErstellt, '%d.%m.%Y  %H:%i') AS dErstellt_de,
-            DATE_FORMAT(tnews.dGueltigVon, '%d.%m.%Y  %H:%i') AS dGueltigVon_de, DATE_FORMAT(tnews.dGueltigBis, '%d.%m.%Y  %H:%i') AS dGueltigBis_de
+        "SELECT tnews.kNews, tnews.kSprache, tnews.cKundengruppe, tnews.cBetreff, tnews.cText, tnews.cVorschauText, 
+            tnews.cMetaTitle, tnews.cMetaDescription, tnews.cMetaKeywords, tnews.nAktiv, tnews.dErstellt, tseo.cSeo,
+            count(tnewskommentar.kNewsKommentar) AS nNewsKommentarAnzahl, 
+            DATE_FORMAT(tnews.dErstellt, '%d.%m.%Y  %H:%i') AS dErstellt_de,
+            DATE_FORMAT(tnews.dGueltigVon, '%d.%m.%Y  %H:%i') AS dGueltigVon_de, 
+            DATE_FORMAT(tnews.dGueltigBis, '%d.%m.%Y  %H:%i') AS dGueltigBis_de
             FROM tnews
-            LEFT JOIN tnewskommentar ON tnewskommentar.kNews = tnews.kNews
-            LEFT JOIN tseo ON tseo.cKey = 'kNews'
+            LEFT JOIN tnewskommentar 
+                ON tnewskommentar.kNews = tnews.kNews
+            LEFT JOIN tseo 
+                ON tseo.cKey = 'kNews'
                 AND tseo.kKey = tnews.kNews
                 AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
             WHERE tnews.kSprache = " . (int)$_SESSION['kSprache'] . "
                 AND tnews.nAktiv = 1
-                AND MONTH(tnews.dErstellt)='" . date('m') . "'
-                AND (tnews.cKundengruppe LIKE '%;-1;%' OR tnews.cKundengruppe LIKE '%;" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";%')
+                AND MONTH(tnews.dErstellt) = '" . date('m') . "'
+                AND (
+                        tnews.cKundengruppe LIKE '%;-1;%' 
+                        OR tnews.cKundengruppe RLIKE '^([0-9;]+;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";'
+                    )
             GROUP BY tnews.kNews
             ORDER BY tnews.dErstellt DESC", 2
     );

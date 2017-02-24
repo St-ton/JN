@@ -178,7 +178,9 @@ class SofortUeberweisung extends PaymentMethod
                 echo "currency_id: " . $order->Waehrung->cISO . "<br/>";
             }
 
-            if (!($this->sofortueberweisung_id && $this->sofortueberweisung_project_id && $this->name && $this->strSenderCountryID && $this->strAmount && $order->Waehrung->cISO)) {
+            if (!($this->sofortueberweisung_id && $this->sofortueberweisung_project_id &&
+                $this->name && $this->strSenderCountryID && $this->strAmount && $order->Waehrung->cISO)
+            ) {
                 if ($this->bDebug === false) {
                     return 'Es ist ein Datenbankfehler aufgetreten!';
                 } else {
@@ -256,7 +258,7 @@ class SofortUeberweisung extends PaymentMethod
         //Sonderzeichen entfernen
         $this->removeEntities();
         //Sicherheits-Hash erstellen
-        $data = array(
+        $data = [
             $this->sofortueberweisung_id,           // user_id
             $this->sofortueberweisung_project_id,   // project_id
             $this->name,                            // sender_holder
@@ -274,7 +276,7 @@ class SofortUeberweisung extends PaymentMethod
             $this->user_variable_4,                 // user_variable_4
             $this->user_variable_5,                 // user_variable_5
             $this->getProjectPassword(),            // Project Password
-        );
+        ];
         $data_implode = implode('|', $data);
         $this->hash   = sha1(utf8_encode($data_implode));
 
@@ -518,25 +520,25 @@ class SofortUeberweisung extends PaymentMethod
      * @param array $args_arr
      * @return bool
      */
-    public function isValidIntern($args_arr = array())
+    public function isValidIntern($args_arr = [])
     {
         if (strlen($this->paymentConfig['zahlungsart_sofortueberweisung_id']) === 0) {
-            ZahlungsLog::add($this->moduleID, "Pflichtparameter 'User-ID' ist nicht gesetzt!", null, LOGLEVEL_ERROR);
+            ZahlungsLog::add($this->moduleID, 'Pflichtparameter "User-ID" ist nicht gesetzt!', null, LOGLEVEL_ERROR);
 
             return false;
         }
         if (strlen($this->paymentConfig['zahlungsart_sofortueberweisung_project_id']) === 0) {
-            ZahlungsLog::add($this->moduleID, "Pflichtparameter 'Projekt-ID' ist nicht gesetzt!", null, LOGLEVEL_ERROR);
+            ZahlungsLog::add($this->moduleID, 'Pflichtparameter "Projekt-ID" ist nicht gesetzt!', null, LOGLEVEL_ERROR);
 
             return false;
         }
         if (strlen($this->getNotificationPassword()) === 0) {
-            ZahlungsLog::add($this->moduleID, "Pflichtparameter 'Projekt Passwort' ist nicht gesetzt!", null, LOGLEVEL_ERROR);
+            ZahlungsLog::add($this->moduleID, 'Pflichtparameter "Projekt Passwort" ist nicht gesetzt!', null, LOGLEVEL_ERROR);
 
             return false;
         }
         if (strlen($this->getProjectPassword()) == 0) {
-            ZahlungsLog::add($this->moduleID, "Pflichtparameter 'Benachrichtigungspasswort' ist nicht gesetzt!", null, LOGLEVEL_ERROR);
+            ZahlungsLog::add($this->moduleID, 'Pflichtparameter "Benachrichtigungspasswort" ist nicht gesetzt!', null, LOGLEVEL_ERROR);
 
             return false;
         }

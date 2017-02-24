@@ -64,11 +64,11 @@ class DirManager
                             $this->getData($path . $file, $userfunc, $parameters);
                         }
                         // Last level dir?
-                        $options = array(
+                        $options = [
                             'filename' => $file,
                             'path'     => $path,
                             'isdir'    => false
-                        );
+                        ];
                         if (is_dir($path . $file)) {
                             $options['isdir'] = true;
                         }

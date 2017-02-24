@@ -2067,7 +2067,7 @@ function installierePlugin($XML_arr, $cVerzeichnis, $oPluginOld)
                 // 26 = SQL Datei ist leer oder konnte nicht geparsed werden
                 */
                 $nReturnValue       = logikSQLDatei($cSQLDatei, $nVersionTMP, $oPlugin);
-                $nSQLFehlerCode_arr = array(1 => 1, 2 => 22, 3 => 23, 4 => 24, 5 => 25, 6 => 26);
+                $nSQLFehlerCode_arr = [1 => 1, 2 => 22, 3 => 23, 4 => 24, 5 => 25, 6 => 26];
                 $nReturnValue       = $nSQLFehlerCode_arr[$nReturnValue];
 
                 if ($nReturnValue != 1) {
@@ -2103,14 +2103,14 @@ function installierePlugin($XML_arr, $cVerzeichnis, $oPluginOld)
             if (isset($oPluginOld->kPlugin) && $oPluginOld->kPlugin > 0 && $nReturnValue == 1) {
                 // Update erfolgreich => sync neue Version auf altes Plugin
                 $nReturnValue       = syncPluginUpdate($oPlugin->kPlugin, $oPluginOld, $nXMLVersion);
-                $nSQLFehlerCode_arr = array(1 => 1, 2 => 27, 3 => 28);
+                $nSQLFehlerCode_arr = [1 => 1, 2 => 27, 3 => 28];
                 $nReturnValue       = $nSQLFehlerCode_arr[$nReturnValue];
             }
         } else {
             if (isset($oPluginOld->kPlugin) && $oPluginOld->kPlugin && ($nReturnValue === 126 || $nReturnValue === 1)) {
                 // Update erfolgreich => sync neue Version auf altes Plugin
                 $nReturnValue       = syncPluginUpdate($oPlugin->kPlugin, $oPluginOld, $nXMLVersion);
-                $nSQLFehlerCode_arr = array(1 => 1, 2 => 27, 3 => 28);
+                $nSQLFehlerCode_arr = [1 => 1, 2 => 27, 3 => 28];
                 $nReturnValue       = $nSQLFehlerCode_arr[$nReturnValue];
             }
         }
@@ -3687,7 +3687,7 @@ function doSQLDelete($kPlugin, $bUpdate, $kPluginNew = null)
                 WHERE tpluginsprachvariable.kPlugin = " . $kPlugin, 3
         );
 
-        Shop::DB()->delete('tboxvorlage', array('kCustomID', 'eTyp'), array($kPlugin, 'plugin'));
+        Shop::DB()->delete('tboxvorlage', ['kCustomID', 'eTyp'], [$kPlugin, 'plugin']);
         Shop::DB()->delete('tpluginlinkdatei', 'kPlugin', $kPlugin);
         Shop::DB()->query(
             "DELETE tpluginemailvorlage, tpluginemailvorlagespracheoriginal

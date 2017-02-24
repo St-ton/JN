@@ -23,7 +23,7 @@ $oKupon       = null;
 $res = handleCsvImportAction('kupon', 'tkupon');
 
 if ($res > 0) {
-    $cFehler = 'Konnte CSV Datei nicht importieren.';
+    $cFehler = 'Konnte CSV-Datei nicht importieren.';
 } elseif ($res === 0) {
     $cHinweis = 'CSV-Datei wurde erfolgreich importiert.';
 }

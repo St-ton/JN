@@ -16,14 +16,15 @@ $cRedirectUrl = Shop::getURL() . '/' . PFAD_ADMIN . 'slider.php';
 $cAction      = (isset($_REQUEST['action']) && validateToken())
     ? $_REQUEST['action']
     : 'view';
-$kSlider      = (isset($_REQUEST['id']))
+$kSlider      = isset($_REQUEST['id'])
     ? (int)$_REQUEST['id']
     : 0;
 
 switch ($cAction) {
     case 'slide_set':
         $aSlideKey = array_keys((array)$_REQUEST['aSlide']);
-        for ($i = 0;$i < count($aSlideKey);$i++) {
+        $count     = count($aSlideKey);
+        for ($i = 0; $i < $count; $i++) {
             $oSlide               = new Slide();
             $aSlide               = $_REQUEST['aSlide'][$aSlideKey[$i]];
             $oSlide->kSlide       = (strpos($aSlideKey[$i], 'neu') === false)
@@ -53,16 +54,16 @@ switch ($cAction) {
             // extensionpoint
             $kSprache      = (int)$_POST['kSprache'];
             $kKundengruppe = $_POST['kKundengruppe'];
-            $nSeite        = $_POST['nSeitenTyp'];
+            $nSeite        = (int)$_POST['nSeitenTyp'];
             $cKey          = $_POST['cKey'];
 
             $cKeyValue = '';
             $cValue    = '';
-            if ($nSeite == PAGE_ARTIKEL) {
+            if ($nSeite === PAGE_ARTIKEL) {
                 $cKey      = 'kArtikel';
                 $cKeyValue = 'article_key';
                 $cValue    = $_POST[$cKeyValue];
-            } elseif ($nSeite == PAGE_ARTIKELLISTE) {
+            } elseif ($nSeite === PAGE_ARTIKELLISTE) {
                 // data mapping
                 $aFilter_arr = [
                     'kTag'         => 'tag_key',
@@ -74,11 +75,11 @@ switch ($cAction) {
 
                 $cKeyValue = $aFilter_arr[$cKey];
                 $cValue    = $_POST[$cKeyValue];
-            } elseif ($nSeite == PAGE_HERSTELLER) {
+            } elseif ($nSeite === PAGE_HERSTELLER) {
                 $cKey      = 'kHersteller';
                 $cKeyValue = 'manufacturer_key';
                 $cValue    = $_POST[$cKeyValue];
-            } elseif ($nSeite == PAGE_EIGENE) {
+            } elseif ($nSeite === PAGE_EIGENE) {
                 $cKey      = 'kLink';
                 $cKeyValue = 'link_key';
                 $cValue    = $_POST[$cKeyValue];
@@ -173,7 +174,7 @@ switch ($cAction) {
     case 'delete':
         $oSlider  = new Slider();
         $bSuccess = $oSlider->delete($kSlider);
-        if ($bSuccess == true) {
+        if ($bSuccess === true) {
             header('Location: ' . $cRedirectUrl);
             exit;
         } else {

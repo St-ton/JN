@@ -21,7 +21,7 @@ if (strlen(verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', verifyGPDataString('tab'));
 }
 // KwK
-if (isset($_POST['einstellungen']) && intval($_POST['einstellungen']) > 0) {
+if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
     $cHinweis .= saveAdminSectionSettings(CONF_KUNDENWERBENKUNDEN, $_POST);
 }
 // KwK

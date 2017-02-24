@@ -27,7 +27,7 @@ if (verifyGPCDataInteger('save') === 1 && validateToken()) {
     if (count($xPlausiVar_arr) === 0) {
         if (speicherTrennzeichen($_POST)) {
             $cHinweis = 'Ihre Einstellungen wurden erfolgreich gespeichert.';
-            Shop::Cache()->flushTags(array(CACHING_GROUP_OPTION, CACHING_GROUP_CORE));
+            Shop::Cache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_CORE]);
         } else {
             $cFehler = 'Fehler: Ihr Einstellungen konnten nicht gespeichert werden!';
             $smarty->assign('xPostVar_arr', $oPlausiTrennzeichen->getPostVar());

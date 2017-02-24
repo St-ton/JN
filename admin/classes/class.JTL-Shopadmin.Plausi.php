@@ -17,8 +17,8 @@ class Plausi
      */
     public function __construct()
     {
-        $this->xPostVar_arr   = array();
-        $this->xPlausiVar_arr = array();
+        $this->xPostVar_arr   = [];
+        $this->xPlausiVar_arr = [];
     }
 
     /**

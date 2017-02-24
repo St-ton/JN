@@ -1791,10 +1791,8 @@ function versandartKorrekt($kVersandart, $aFormValues = 0)
                 WHERE cLaender LIKE '%" . $cISO . "%'
                     AND cNurAbhaengigeVersandart = '" . $cNurAbhaengigeVersandart . "'
                     AND (
-                            cVersandklassen = '-1' OR (
-                                cVersandklassen LIKE '% " . $versandklassen . " %' 
-                                OR cVersandklassen LIKE '% " . $versandklassen . "'
-                            )
+                            cVersandklassen = '-1' OR 
+                            cVersandklassen RLIKE '^([0-9- ]* )?" . $versandklassen . " '
                         )
                     AND kVersandart = " . $kVersandart, 1
         );

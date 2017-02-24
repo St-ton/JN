@@ -322,7 +322,7 @@ if (isset($_POST['neueVersandart']) && intval($_POST['neueVersandart']) > 0 && v
         }
     }
     //Versandklassen
-    $Versandart->cVersandklassen = ((!empty($_POST['kVersandklasse']))? ' ' . $_POST['kVersandklasse'] . ' ' : '-1');
+    $Versandart->cVersandklassen = ((!empty($_POST['kVersandklasse'])) ? ' ' . $_POST['kVersandklasse'] . ' ' : '-1');
 
     if (count($_POST['land']) >= 1 && count($_POST['kZahlungsart']) >= 1 &&
         $Versandart->cName && $staffelDa && $bVersandkostenfreiGueltig) {

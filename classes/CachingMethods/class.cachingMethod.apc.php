@@ -18,6 +18,13 @@ class cache_apc implements ICachingMethod
     public static $instance = null;
 
     /**
+     * check whether apc_ or apcu_ functions should be used
+     *
+     * @var bool
+     */
+    private $u = false;
+
+    /**
      * @param $options
      */
     public function __construct($options)
@@ -25,9 +32,8 @@ class cache_apc implements ICachingMethod
         $this->isInitialized = true;
         $this->journalID     = 'apc_journal';
         $this->options       = $options;
+        $this->u             = function_exists('apcu_store');
         self::$instance      = $this;
-
-        return $this;
     }
 
     /**
@@ -38,7 +44,11 @@ class cache_apc implements ICachingMethod
      */
     public function store($cacheID, $content, $expiration = null)
     {
-        return apc_store($this->options['prefix'] . $cacheID, $content, ($expiration === null) ? $this->options['lifetime'] : $expiration);
+        $func = $this->u ? 'apcu_store' : 'apc_store';
+
+        return $func($this->options['prefix'] . $cacheID, $content, ($expiration === null)
+            ? $this->options['lifetime']
+            : $expiration);
     }
 
     /**
@@ -48,7 +58,11 @@ class cache_apc implements ICachingMethod
      */
     public function storeMulti($keyValue, $expiration = null)
     {
-        return apc_store($this->prefixArray($keyValue), null, ($expiration === null) ? $this->options['lifetime'] : $expiration);
+        $func = $this->u ? 'apcu_store' : 'apc_store';
+
+        return $func($this->prefixArray($keyValue), null, ($expiration === null)
+            ? $this->options['lifetime']
+            : $expiration);
     }
 
     /**
@@ -57,7 +71,9 @@ class cache_apc implements ICachingMethod
      */
     public function load($cacheID)
     {
-        return apc_fetch($this->options['prefix'] . $cacheID);
+        $func = $this->u ? 'apcu_fetch' : 'apc_fetch';
+
+        return $func($this->options['prefix'] . $cacheID);
     }
 
     /**
@@ -69,11 +85,12 @@ class cache_apc implements ICachingMethod
         if (!is_array($cacheIDs)) {
             return false;
         }
+        $func         = $this->u ? 'apcu_fetch' : 'apc_fetch';
         $prefixedKeys = [];
         foreach ($cacheIDs as $_cid) {
             $prefixedKeys[] = $this->options['prefix'] . $_cid;
         }
-        $res = $this->dePrefixArray(apc_fetch($prefixedKeys));
+        $res = $this->dePrefixArray($func($prefixedKeys));
 
         //fill up with false values
         return array_merge(array_fill_keys($cacheIDs, false), $res);
@@ -84,7 +101,8 @@ class cache_apc implements ICachingMethod
      */
     public function isAvailable()
     {
-        return function_exists('apc_store') && function_exists('apc_exists');
+        return ((function_exists('apc_store') && function_exists('apc_exists')) ||
+                (function_exists('apcu_store') && function_exists('apcu_exists')));
     }
 
     /**
@@ -93,7 +111,9 @@ class cache_apc implements ICachingMethod
      */
     public function flush($cacheID)
     {
-        return apc_delete($this->options['prefix'] . $cacheID);
+        $func = $this->u ? 'apcu_delete' : 'apc_delete';
+
+        return $func($this->options['prefix'] . $cacheID);
     }
 
     /**
@@ -101,7 +121,7 @@ class cache_apc implements ICachingMethod
      */
     public function flushAll()
     {
-        return apc_clear_cache('user');
+        return $this->u ? apcu_clear_cache() : apc_clear_cache('user');
     }
 
     /**
@@ -110,7 +130,9 @@ class cache_apc implements ICachingMethod
      */
     public function keyExists($cacheID)
     {
-        return apc_exists($this->options['prefix'] . $cacheID);
+        $func = $this->u ? 'apcu_exists' : 'apc_exists';
+
+        return $func($this->options['prefix'] . $cacheID);
     }
 
     /**
@@ -119,7 +141,7 @@ class cache_apc implements ICachingMethod
     public function getStats()
     {
         try {
-            $tmp   = apc_cache_info('user');
+            $tmp   = $this->u ? apcu_cache_info() : apc_cache_info('user');
             $stats = [
                 'entries' => (isset($tmp['num_entries'])) ? $tmp['num_entries'] : 0,
                 'hits'    => (isset($tmp['num_hits'])) ? $tmp['num_hits'] : 0,

@@ -1,4 +1,4 @@
-<div id="pushed-success" class="alert alert-info panel-wrap{if isset($inline)} no-margin{/if}">
+<div id="pushed-success" class="notification-alert bg-info panel-wrap{if isset($inline)} no-margin{/if}">
     {if isset($zuletztInWarenkorbGelegterArtikel)}
         {assign var=pushedArtikel value=$zuletztInWarenkorbGelegterArtikel}
     {else}

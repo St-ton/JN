@@ -11,6 +11,7 @@
                 {$jtl_token}
                 <input type="hidden" name="aender_linkgruppe" value="1" />
                 <input type="hidden" name="kLink" value="{$link->kLink}" />
+                <input type="hidden" name="kLinkgruppeAlt" value="{$link->kLinkgruppe}" />
                 {if isset($kPlugin) && $kPlugin > 0}
                     <input type="hidden" name="kPlugin" value="{$kPlugin}" />
                 {/if}
@@ -43,6 +44,7 @@
                 {$jtl_token}
                 <input type="hidden" name="aender_linkvater" value="1" />
                 <input type="hidden" name="kLink" value="{$link->kLink}" />
+                <input type="hidden" name="kLinkgruppe" value="{$link->kLinkgruppe}" />
                 {if isset($kPlugin) && $kPlugin > 0}
                     <input type="hidden" name="kPlugin" value="{$kPlugin}" />
                 {/if}

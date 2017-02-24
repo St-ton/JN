@@ -27,7 +27,7 @@ class cache_memcache implements ICachingMethod
      */
     public function __construct($options)
     {
-        if ($this->isAvailable() && !empty($options['memcache_host']) && !empty($options['memcache_port'])) {
+        if (!empty($options['memcache_host']) && !empty($options['memcache_port']) && $this->isAvailable()) {
             $this->setMemcache($options['memcache_host'], $options['memcache_port']);
             $this->isInitialized = true;
             $this->journalID     = 'memcache_journal';
@@ -63,7 +63,9 @@ class cache_memcache implements ICachingMethod
      */
     public function store($cacheID, $content, $expiration = null)
     {
-        return $this->_memcache->set($this->options['prefix'] . $cacheID, $content, 0, ($expiration === null) ? $this->options['lifetime'] : $expiration);
+        return $this->_memcache->set($this->options['prefix'] . $cacheID, $content, 0, ($expiration === null)
+            ? $this->options['lifetime']
+            : $expiration);
     }
 
     /**
@@ -73,7 +75,9 @@ class cache_memcache implements ICachingMethod
      */
     public function storeMulti($keyValue, $expiration = null)
     {
-        return $this->_memcache->set($this->prefixArray($keyValue), ($expiration === null) ? $this->options['lifetime'] : $expiration);
+        return $this->_memcache->set($this->prefixArray($keyValue), ($expiration === null)
+            ? $this->options['lifetime']
+            : $expiration);
     }
 
     /**

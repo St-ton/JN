@@ -53,7 +53,7 @@ class Jtllog
      */
     public function __construct($kLog = 0)
     {
-        if (intval($kLog) > 0) {
+        if ((int)$kLog > 0) {
             $this->loadFromDB($kLog);
         }
     }
@@ -144,7 +144,7 @@ class Jtllog
     public static function doLog($nLevel = JTLLOG_LEVEL_ERROR)
     {
         $nSystemlogFlag = 0;
-        if (isset($GLOBALS['nSystemlogFlag']) && intval($GLOBALS['nSystemlogFlag']) > 0) {
+        if (isset($GLOBALS['nSystemlogFlag']) && (int)$GLOBALS['nSystemlogFlag'] > 0) {
             $nSystemlogFlag = $GLOBALS['nSystemlogFlag'];
         }
         if ($nSystemlogFlag === 0) {
@@ -204,7 +204,7 @@ class Jtllog
     {
         $oJtllog_arr = [];
         $cSQLWhere   = '';
-        if (intval($nLevel) > 0) {
+        if ((int)$nLevel > 0) {
             $cSQLWhere = " WHERE nLevel = " . (int)$nLevel;
         }
         if (strlen($cFilter) > 0 && strlen($cSQLWhere) === 0) {
@@ -222,7 +222,7 @@ class Jtllog
         );
         if (is_array($oLog_arr) && count($oLog_arr) > 0) {
             foreach ($oLog_arr as $oLog) {
-                if (isset($oLog->kLog) && intval($oLog->kLog) > 0) {
+                if (isset($oLog->kLog) && (int)$oLog->kLog > 0) {
                     $oJtllog_arr[] = new self($oLog->kLog);
                 }
             }
@@ -242,7 +242,7 @@ class Jtllog
     public static function getLogCount($cFilter, $nLevel = 0)
     {
         $cSQLWhere = '';
-        if (intval($nLevel) > 0) {
+        if ((int)$nLevel > 0) {
             $cSQLWhere = " WHERE nLevel = " . (int)$nLevel;
         }
 
@@ -272,7 +272,7 @@ class Jtllog
         Shop::DB()->query("DELETE FROM tjtllog WHERE DATE_ADD(dErstellt, INTERVAL 30 DAY) < now()", 3);
         $oObj = Shop::DB()->query("SELECT count(*) AS nCount FROM tjtllog", 1);
 
-        if (isset($oObj->nCount) && intval($oObj->nCount) > JTLLOG_MAX_LOGSIZE) {
+        if (isset($oObj->nCount) && (int)$oObj->nCount > JTLLOG_MAX_LOGSIZE) {
             $nLimit = (int)$oObj->nCount - JTLLOG_MAX_LOGSIZE;
             Shop::DB()->query("DELETE FROM tjtllog ORDER BY dErstellt LIMIT {$nLimit}", 4);
         }
@@ -397,7 +397,7 @@ class Jtllog
 
         if (is_array($nFlag_arr) && count($nFlag_arr) > 0) {
             foreach ($nFlag_arr as $nFlag) {
-                $nVal = $nVal | $nFlag;
+                $nVal |= $nFlag;
             }
         }
 
@@ -490,7 +490,7 @@ class Jtllog
      */
     public static function cronLog($string, $level = 1)
     {
-        if (php_sapi_name() === 'cli' && defined('VERBOSE_CRONJOBS') && (int)VERBOSE_CRONJOBS >= $level) {
+        if (defined('VERBOSE_CRONJOBS') && (int)VERBOSE_CRONJOBS >= $level && PHP_SAPI === 'cli') {
             $now = new DateTime();
             echo $now->format('Y-m-d H:i:s') . ' ' . $string . PHP_EOL;
 

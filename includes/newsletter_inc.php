@@ -63,7 +63,7 @@ function fuegeNewsletterEmpfaengerEin($oKunde, $bPruefeDaten = false)
         $oPlausi->cPost_arr['cVorname']  = $oKunde->cVorname;
         $oPlausi->cPost_arr['cNachname'] = $oKunde->cNachname;
         $oPlausi->cPost_arr['cEmail']    = $oKunde->cEmail;
-        $oPlausi->cPost_arr['captcha']   = (isset($_POST['captcha']))
+        $oPlausi->cPost_arr['captcha']   = isset($_POST['captcha'])
             ? StringHandler::htmlentities(StringHandler::filterXSS($_POST['captcha']))
             : null;
         if (count($oPlausi->nPlausi_arr) === 0 || !$bPruefeDaten) {
@@ -145,6 +145,7 @@ function fuegeNewsletterEmpfaengerEin($oKunde, $bPruefeDaten = false)
                 $oNewsletterEmpfaengerHistory->dEingetragen = 'now()';
                 $oNewsletterEmpfaengerHistory->dAusgetragen = '0000-00-00';
                 $oNewsletterEmpfaengerHistory->dOptCode     = '0000-00-00';
+                $oNewsletterEmpfaengerHistory->cRegIp       = $oKunde->cRegIp;
 
                 $kNewsletterEmpfaengerHistory = Shop::DB()->insert(
                     'tnewsletterempfaengerhistory',
@@ -250,8 +251,8 @@ function pruefeNLHistoryKundengruppe($kKundengruppe, $cKundengruppeKey)
         if (in_array(0, $kKundengruppe_arr)) {
             return true;
         }
-        if (intval($kKundengruppe) > 0) {
-            if (in_array(intval($kKundengruppe), $kKundengruppe_arr)) {
+        if ((int)$kKundengruppe > 0) {
+            if (in_array((int)$kKundengruppe, $kKundengruppe_arr)) {
                 return true;
             }
         }

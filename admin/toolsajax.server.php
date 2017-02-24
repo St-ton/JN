@@ -614,6 +614,8 @@ function getCustomerList($searchString, $kKundeSelected_arr)
 {
     global $smarty;
 
+    $searchString = utf8_decode($searchString);
+
     if ($searchString === '') {
         if (count($kKundeSelected_arr) === 0) {
             $oKunde_arr = [];

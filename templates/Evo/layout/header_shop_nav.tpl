@@ -1,49 +1,5 @@
 {strip}
 <ul class="header-shop-nav nav navbar-nav force-float horizontal pull-right">
-    {if isset($smarty.session.Sprachen) && $smarty.session.Sprachen|@count > 1}
-        <li class="language-dropdown dropdown visible-xs">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                <i class="fa fa-language"></i>
-                <span class="caret"></span>
-            </a>
-            <ul id="language-dropdown-small" class="dropdown-menu dropdown-menu-right">
-            {foreach from=$smarty.session.Sprachen item=Sprache}
-                {if $Sprache->kSprache == $smarty.session.kSprache}
-                    <li class="active lang-{$lang} visible-xs"><a>{if $lang === 'ger'}{$Sprache->cNameDeutsch}{else}{$Sprache->cNameEnglisch}{/if}</a></li>
-                {/if}
-            {/foreach}
-            {foreach from=$smarty.session.Sprachen item=oSprache}
-                {if $oSprache->kSprache != $smarty.session.kSprache}
-                    <li>
-                        <a href="{$oSprache->cURL}" class="link_lang {$oSprache->cISO}" rel="nofollow">{if $lang === 'ger'}{$oSprache->cNameDeutsch}{else}{$oSprache->cNameEnglisch}{/if}</a>
-                    </li>
-                {/if}
-            {/foreach}
-            </ul>
-        </li>
-    {/if}
-    {if isset($smarty.session.Waehrungen) && $smarty.session.Waehrungen|@count > 1}
-        <li class="currency-dropdown dropdown visible-xs">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                {if $smarty.session.Waehrung->cISO === 'EUR'}
-                    <i class="fa fa-eur" title="{$smarty.session.Waehrung->cName}"></i>
-                {elseif $smarty.session.Waehrung->cISO === 'USD'}
-                    <i class="fa fa-usd" title="{$smarty.session.Waehrung->cName}"></i>
-                {elseif $smarty.session.Waehrung->cISO === 'GBP'}
-                    <i class="fa fa-gbp" title="{$smarty.session.Waehrung->cName}"></i>
-                {else}
-                    else{$smarty.session.Waehrung->cName}
-                {/if} <span class="caret"></span>
-            </a>
-            <ul id="currency-dropdown-small" class="dropdown-menu dropdown-menu-right">
-                {foreach from=$smarty.session.Waehrungen item=oWaehrung}
-                    <li>
-                        <a href="{$oWaehrung->cURL}" rel="nofollow">{$oWaehrung->cName}</a>
-                    </li>
-                {/foreach}
-            </ul>
-        </li>
-    {/if}
     {block name="navbar-productsearch"}
         <li id="search">
             <form action="navi.php" method="GET">

@@ -5,8 +5,8 @@
  */
 $nStartzeit = microtime(true);
 
-if (file_exists(dirname(__FILE__) . '/config.JTL-Shop.ini.php')) {
-    require_once dirname(__FILE__) . '/config.JTL-Shop.ini.php';
+if (file_exists(__DIR__ . '/config.JTL-Shop.ini.php')) {
+    require_once __DIR__ . '/config.JTL-Shop.ini.php';
 }
 
 if (defined('PFAD_ROOT')) {
@@ -64,6 +64,7 @@ if ($conf['global']['kaufabwicklung_ssl_nutzen'] === 'P' &&
     $https = false;
     if ((isset($_SERVER['HTTP_X_FORWARDED_HOST']) && $_SERVER['HTTP_X_FORWARDED_HOST'] === 'ssl.webpack.de') ||
         (isset($_SERVER['SCRIPT_URI']) && preg_match('/^ssl-id/', $_SERVER['SCRIPT_URI'])) ||
+        (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') ||
         (isset($_SERVER['HTTP_X_FORWARDED_HOST']) && preg_match('/^ssl/', $_SERVER['HTTP_X_FORWARDED_HOST']))) {
         $https = true;
     }

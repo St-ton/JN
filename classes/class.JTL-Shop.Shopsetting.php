@@ -98,14 +98,13 @@ final class Shopsetting implements ArrayAccess
     public function offsetGet($offset)
     {
         if (!isset($this->_container[$offset])) {
-            $section = $this->mapSettingName(null, $offset);
+            $section = static::mapSettingName(null, $offset);
 
             if ($section === false || $section === null) {
                 return null;
             }
             $cacheID = 'setting_' . $section;
-
-            // Dirty Template work around
+            // Template work around
             if ($section === CONF_TEMPLATE) {
                 if (($templateSettings = Shop::Cache()->get($cacheID)) === false) {
                     $template         = Template::getInstance();

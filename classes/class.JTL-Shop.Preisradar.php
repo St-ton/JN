@@ -82,7 +82,7 @@ class Preisradar
             foreach ($xHelperAssoc_arr as $kArtikel => $xHelper_arr) {
                 // Der neue Preis muss niedriger sein als der vorige,
                 // nur dann ist das Produkt günstiger geworden und nur das wollen wir anzeigen
-                if (isset($xHelper_arr[0]->fVKNetto) && isset($xHelper_arr[1]->fVKNetto) &&
+                if (isset($xHelper_arr[0]->fVKNetto, $xHelper_arr[1]->fVKNetto) &&
                     $xHelper_arr[0]->fVKNetto < $xHelper_arr[1]->fVKNetto
                 ) {
                     $fProzentDiff           = round(

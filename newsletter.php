@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/globalinclude.php';
+require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'newsletter_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'seite_inc.php';
@@ -120,6 +120,7 @@ if (isset($_GET['fc']) && strlen($_GET['fc']) > 0) {
         $oNewsletterEmpfaengerHistory->dEingetragen = $oNewsletterEmpfaenger->dEingetragen;
         $oNewsletterEmpfaengerHistory->dAusgetragen = 'now()';
         $oNewsletterEmpfaengerHistory->dOptCode     = '0000-00-00';
+        $oNewsletterEmpfaengerHistory->cRegIp       = gibIP(); // IP of the current event-issuer
 
         Shop::DB()->insert('tnewsletterempfaengerhistory', $oNewsletterEmpfaengerHistory);
 
@@ -139,7 +140,7 @@ if (isset($_GET['fc']) && strlen($_GET['fc']) > 0) {
     }
 }
 // Abonnieren
-if (isset($_POST['abonnieren']) && intval($_POST['abonnieren']) === 1) {
+if (isset($_POST['abonnieren']) && (int)$_POST['abonnieren'] === 1) {
     require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
     require_once PFAD_ROOT . PFAD_INCLUDES . 'newsletter_inc.php';
 
@@ -156,6 +157,7 @@ if (isset($_POST['abonnieren']) && intval($_POST['abonnieren']) === 1) {
     $oKunde->cEmail    = (isset($_POST['cEmail']))
         ? StringHandler::filterXSS(Shop::DB()->escape(strip_tags($_POST['cEmail'])))
         : null;
+    $oKunde->cRegIp    = gibIP(); // IP of the current event-issuer
 
     if (!pruefeEmailblacklist($oKunde->cEmail)) {
         $smarty->assign('oPlausi', fuegeNewsletterEmpfaengerEin($oKunde, true));
@@ -167,13 +169,13 @@ if (isset($_POST['abonnieren']) && intval($_POST['abonnieren']) === 1) {
     }
 
     $smarty->assign('cPost_arr', StringHandler::filterXSS($_POST));
-} elseif (isset($_POST['abonnieren']) && intval($_POST['abonnieren']) === 2) {
+} elseif (isset($_POST['abonnieren']) && (int)$_POST['abonnieren'] === 2) {
     // weiterleitung vom Footer zu newsletter.php
     $oPlausi->cPost_arr['cEmail'] = (isset($_POST['cEmail']))
         ? StringHandler::filterXSS(Shop::DB()->escape(strip_tags($_POST['cEmail'])))
         : null;
     $smarty->assign('oPlausi', $oPlausi);
-} elseif (isset($_POST['abmelden']) && intval($_POST['abmelden']) === 1) { // Abmelden
+} elseif (isset($_POST['abmelden']) && (int)$_POST['abmelden'] === 1) { // Abmelden
     if (valid_email($_POST['cEmail'])) {
         // Pruefen, ob Email bereits vorhanden
         $oNewsletterEmpfaenger = Shop::DB()->select(
@@ -206,6 +208,7 @@ if (isset($_POST['abonnieren']) && intval($_POST['abonnieren']) === 1) {
             $oNewsletterEmpfaengerHistory->dEingetragen = $oNewsletterEmpfaenger->dEingetragen;
             $oNewsletterEmpfaengerHistory->dAusgetragen = 'now()';
             $oNewsletterEmpfaengerHistory->dOptCode     = '0000-00-00';
+            $oNewsletterEmpfaengerHistory->cRegIp       = gibIP(); // IP of the current event-issuer
 
             Shop::DB()->insert('tnewsletterempfaengerhistory', $oNewsletterEmpfaengerHistory);
 
@@ -226,7 +229,7 @@ if (isset($_POST['abonnieren']) && intval($_POST['abonnieren']) === 1) {
     } else {
         $cFehler = Shop::Lang()->get('newsletterWrongemail', 'errorMessages');
     }
-} elseif (isset($_GET['show']) && intval($_GET['show']) > 0) { // History anzeigen
+} elseif (isset($_GET['show']) && (int)$_GET['show'] > 0) { // History anzeigen
     $cOption            = 'anzeigen';
     $kNewsletterHistory = (int)$_GET['show'];
     $oNewsletterHistory = Shop::DB()->query(

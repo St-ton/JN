@@ -70,9 +70,9 @@ class BestellungHelper extends WarenkorbHelper
 
                         $item->name = sprintf('%g %s %s',
                             (float)$oPosition->nAnzahl,
-                            $oPosition->Artikel->cEinheit
-                                ? $oPosition->Artikel->cEinheit
-                                : 'x', $item->name);
+                            $oPosition->Artikel->cEinheit ?: 'x',
+                            $item->name
+                        );
                     } else {
                         $item->quantity = (int)$oPosition->nAnzahl;
                     }

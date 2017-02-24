@@ -38,7 +38,7 @@ if (validateToken()) {
             // Kupons loeschen
             $action = 'loeschen';
         }
-    } elseif (isset($_GET['kKupon']) && verifyGPCDataInteger('kKupon') > 0) {
+    } elseif (isset($_GET['kKupon']) && verifyGPCDataInteger('kKupon') >= 0) {
         // Kupon bearbeiten
         $action = 'bearbeiten';
     }
@@ -47,12 +47,11 @@ if (validateToken()) {
 // Aktion behandeln
 if ($action === 'bearbeiten') {
     // Kupon bearbeiten
-    $kKupon    = isset($_GET['kKupon']) ? (int)$_GET['kKupon'] : (int)$_POST['kKuponBearbeiten'];
-    $cKuponTyp = $_POST['cKuponTyp'];
+    $kKupon = isset($_GET['kKupon']) ? (int)$_GET['kKupon'] : (int)$_POST['kKuponBearbeiten'];
     if ($kKupon > 0) {
         $oKupon = getCoupon($kKupon);
     } else {
-        $oKupon = createNewCoupon($cKuponTyp);
+        $oKupon = createNewCoupon($_REQUEST['cKuponTyp']);
     }
 } elseif ($action === 'speichern') {
     // Kupon speichern
@@ -161,18 +160,19 @@ if ($action === 'bearbeiten') {
     $oAktivSelect->addSelectOption('inaktiv', 'N', 4);
     $oFilterNeukunden->assemble();
 
-    $cSortByOption_arr    = [
+    $cSortByOption_arr = [
         ['cName', 'Name'],
         ['cCode', 'Code'],
         ['nVerwendungenBisher', 'Verwendungen'],
         ['dLastUse', 'Zuletzt verwendet']
     ];
-    $oKuponStandard_arr   = getCoupons('standard', $oFilterStandard->getWhereSQL());
-    $oKuponVersand_arr    = getCoupons('versandkupon', $oFilterVersand->getWhereSQL());
-    $oKuponNeukunden_arr  = getCoupons('neukundenkupon', $oFilterNeukunden->getWhereSQL());
-    $nKuponStandardCount  = getCouponCount('standard');
-    $nKuponVersandCount   = getCouponCount('versandkupon');
-    $nKuponNeukundenCount = getCouponCount('neukundenkupon');
+
+    $nKuponStandardCount  = getCouponCount('standard', $oFilterStandard->getWhereSQL());
+    $nKuponVersandCount   = getCouponCount('versandkupon', $oFilterVersand->getWhereSQL());
+    $nKuponNeukundenCount = getCouponCount('neukundenkupon', $oFilterNeukunden->getWhereSQL());
+    $nKuponStandardTotal  = getCouponCount('standard');
+    $nKuponVersandTotal   = getCouponCount('versandkupon');
+    $nKuponNeukundenTotal = getCouponCount('neukundenkupon');
 
     handleCsvExportAction('standard', 'standard.csv', function () use ($oFilterStandard) {
             return getRawCoupons('standard', [], $oFilterStandard->getWhereSQL());
@@ -184,20 +184,25 @@ if ($action === 'bearbeiten') {
             return getRawCoupons('neukundenkupon', [], $oFilterNeukunden->getWhereSQL());
         }, [], ['kKupon']);
 
-    $oPaginationStandard = (new Pagination('standard'))
+    $oPaginationStandard  = (new Pagination('standard'))
         ->setSortByOptions($cSortByOption_arr)
-        ->setItemArray($oKuponStandard_arr)
+        ->setItemCount($nKuponStandardCount)
         ->assemble();
-
-    $oPaginationVersand = (new Pagination('versand'))
+    $oPaginationVersand   = (new Pagination('versand'))
         ->setSortByOptions($cSortByOption_arr)
-        ->setItemArray($oKuponVersand_arr)
+        ->setItemCount($nKuponVersandCount)
         ->assemble();
-
     $oPaginationNeukunden = (new Pagination('neukunden'))
         ->setSortByOptions($cSortByOption_arr)
-        ->setItemArray($oKuponNeukunden_arr)
+        ->setItemCount($nKuponNeukundenCount)
         ->assemble();
+
+    $oKuponStandard_arr  = getCoupons('standard', $oFilterStandard->getWhereSQL(), $oPaginationStandard->getOrderSQL(),
+        $oPaginationStandard->getLimitSQL());
+    $oKuponVersand_arr   = getCoupons('versandkupon', $oFilterVersand->getWhereSQL(), $oPaginationVersand->getOrderSQL(),
+        $oPaginationVersand->getLimitSQL());
+    $oKuponNeukunden_arr = getCoupons('neukundenkupon', $oFilterNeukunden->getWhereSQL(), $oPaginationNeukunden->getOrderSQL(),
+        $oPaginationNeukunden->getLimitSQL());
 
     $smarty->assign('tab', $tab)
         ->assign('oFilterStandard', $oFilterStandard)
@@ -206,12 +211,12 @@ if ($action === 'bearbeiten') {
         ->assign('oPaginationStandard', $oPaginationStandard)
         ->assign('oPaginationVersandkupon', $oPaginationVersand)
         ->assign('oPaginationNeukundenkupon', $oPaginationNeukunden)
-        ->assign('oKuponStandard_arr', $oPaginationStandard->getPageItems())
-        ->assign('oKuponVersandkupon_arr', $oPaginationVersand->getPageItems())
-        ->assign('oKuponNeukundenkupon_arr', $oPaginationNeukunden->getPageItems())
-        ->assign('nKuponStandardCount', $nKuponStandardCount)
-        ->assign('nKuponVersandCount', $nKuponVersandCount)
-        ->assign('nKuponNeukundenCount', $nKuponNeukundenCount);
+        ->assign('oKuponStandard_arr', $oKuponStandard_arr)
+        ->assign('oKuponVersandkupon_arr', $oKuponVersand_arr)
+        ->assign('oKuponNeukundenkupon_arr', $oKuponNeukunden_arr)
+        ->assign('nKuponStandardCount', $nKuponStandardTotal)
+        ->assign('nKuponVersandCount', $nKuponVersandTotal)
+        ->assign('nKuponNeukundenCount', $nKuponNeukundenTotal);
 }
 
 $smarty->assign('action', $action)

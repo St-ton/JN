@@ -1,7 +1,18 @@
 # JTL-Shop Changelog
 
+## [4.05.1]
+* Bugfix: Weiterleitungslink kann bei Teilverschlüsselung nicht gespeichert werden, wenn Admin über https aufgerufen wird (#991)
+* Bugfix: Weiterleitungsschleife bei SSL-Teilverschlüsselung z.B. bei Mein-Konto oder Kontakt (#990)
+* Bugfix: Serverfehler 500, wenn Konfigurationsartikel im Warenkorb bearbeitet wird (#995)
+* Bugfix: Mehrere im Backend-CMS hinterlegte Startseiten (Typ Spezialseite Startseite) erzeugen Dauerschleife (#987)
 
-## [4.05]
+
+## [4.05] - 2017-02-14
+
+Die nachfolgende Auflistung informiert Sie über die wichtigsten Änderungen in JTL-Shop Version 4.05. <br>
+Eine vollständige Liste aller in dieser Version gelöster Issues finden Sie [hier](https://gitlab.jtl-software.de/jtlshop/shop4/issues?scope=all&utf8=%E2%9C%93&state=closed&milestone_title=4.05).
+
+Änderungen innerhalb des PayPal-Plugins werden in einer separaten [CHANGELOG.md](https://gitlab.jtl-software.de/jtlshop/shop4/blob/release/4.05/includes/plugins/jtl_paypal/CHANGELOG.md) aufgeführt.    
 
 ### Neue Features
 * SEO-URLs ersetzen warenkorb.php, bestellvorgang.php, bestellabschluss.php, pass.php, newsletter.php, wunschliste.php und jtl.php (#31)

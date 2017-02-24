@@ -9,7 +9,7 @@
                 {if $secondary === true}
                     {foreach $data as $foreignKey => $localized}
                         {foreach $show as $attribute}
-                            <div class="hidden" id="original-{$attribute}-{$foreignKey}">{if is_array($localized)}{$localized->$attribute}{elseif is_string($localized)}{$localized}{/if}</div>
+                            <div class="hidden" id="original-{$attribute}-{$foreignKey}">{if isset($localized->$attribute)}{$localized->$attribute}{elseif is_string($localized)}{$localized}{/if}</div>
                         {/foreach}
                     {/foreach}
                 {else}
@@ -164,7 +164,6 @@
                 originalSelector = (typeof secondary !== 'undefined' && secondary !== '' && secondary !== null)
                     ? ('#original-' + reference + '-' + secondary)
                     : ('#original-' + reference);
-                console.log('originalSelector: ', originalSelector);
                 initUI(target, $(originalSelector).text(), jelem.text());
             })
         });

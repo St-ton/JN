@@ -78,9 +78,8 @@ function executeHook($nHook, $args_arr = [])
  */
 function pluginLizenzpruefung(&$oPlugin, $xParam_arr = [])
 {
-    if (isset($oPlugin->cLizenzKlasse) &&
+    if (isset($oPlugin->cLizenzKlasse, $oPlugin->cLizenzKlasseName) &&
         strlen($oPlugin->cLizenzKlasse) > 0 &&
-        isset($oPlugin->cLizenzKlasseName) &&
         strlen($oPlugin->cLizenzKlasseName) > 0
     ) {
         require_once $oPlugin->cLicencePfad . $oPlugin->cLizenzKlasseName;
@@ -116,13 +115,14 @@ function pluginLizenzpruefung(&$oPlugin, $xParam_arr = [])
  */
 function aenderPluginZahlungsartStatus(&$oPlugin, $nStatus)
 {
-    if (isset($oPlugin->kPlugin) && $oPlugin->kPlugin > 0) {
-        if (isset($oPlugin->oPluginZahlungsmethodeAssoc_arr) && count($oPlugin->oPluginZahlungsmethodeAssoc_arr) > 0) {
-            foreach ($oPlugin->oPluginZahlungsmethodeAssoc_arr as $cModulId => $oPluginZahlungsmethodeAssoc) {
-                $_upd          = new stdClass();
-                $_upd->nActive = (int)$nStatus;
-                Shop::DB()->update('tzahlungsart', 'cModulId', $cModulId, $_upd);
-            }
+    if (isset($oPlugin->kPlugin, $oPlugin->oPluginZahlungsmethodeAssoc_arr) &&
+        $oPlugin->kPlugin > 0 &&
+        count($oPlugin->oPluginZahlungsmethodeAssoc_arr) > 0
+    ) {
+        foreach ($oPlugin->oPluginZahlungsmethodeAssoc_arr as $cModulId => $oPluginZahlungsmethodeAssoc) {
+            $_upd          = new stdClass();
+            $_upd->nActive = (int)$nStatus;
+            Shop::DB()->update('tzahlungsart', 'cModulId', $cModulId, $_upd);
         }
     }
 }
@@ -170,35 +170,33 @@ function gibPluginSprachvariablen($kPlugin, $cISO = '')
     if (strlen($cISO) > 0) {
         $cSQL = " AND tpluginsprachvariablesprache.cISO = '" . strtoupper($cISO) . "'";
     }
-    $oPluginSprachvariablen = Shop::DB()->query(
-        "SELECT
-            tpluginsprachvariable.kPluginSprachvariable,
-            tpluginsprachvariable.kPlugin,
-            tpluginsprachvariable.cName,
-            tpluginsprachvariable.cBeschreibung,
-            tpluginsprachvariablesprache.cISO,
-            IF (tpluginsprachvariablecustomsprache.cName IS NOT NULL, 
-              tpluginsprachvariablecustomsprache.cName, tpluginsprachvariablesprache.cName) AS customValue
+    $oPluginSprachvariablen = Shop::DB()->query("
+        SELECT tpluginsprachvariable.kPluginSprachvariable,
+                tpluginsprachvariable.kPlugin,
+                tpluginsprachvariable.cName,
+                tpluginsprachvariable.cBeschreibung,
+                tpluginsprachvariablesprache.cISO,
+                IF (tpluginsprachvariablecustomsprache.cName IS NOT NULL, 
+                tpluginsprachvariablecustomsprache.cName, tpluginsprachvariablesprache.cName) AS customValue
             FROM tpluginsprachvariable
                 LEFT JOIN tpluginsprachvariablesprache
                     ON  tpluginsprachvariable.kPluginSprachvariable = tpluginsprachvariablesprache.kPluginSprachvariable
                 LEFT JOIN tpluginsprachvariablecustomsprache
                     ON tpluginsprachvariablecustomsprache.kPlugin = tpluginsprachvariable.kPlugin
-                        AND tpluginsprachvariablecustomsprache.kPluginSprachvariable = tpluginsprachvariable.kPluginSprachvariable
-                        AND tpluginsprachvariablesprache.cISO = tpluginsprachvariablecustomsprache.cISO
+                    AND tpluginsprachvariablecustomsprache.kPluginSprachvariable = tpluginsprachvariable.kPluginSprachvariable
+                    AND tpluginsprachvariablesprache.cISO = tpluginsprachvariablecustomsprache.cISO
                 WHERE tpluginsprachvariable.kPlugin = " . $kPlugin . $cSQL, 9
     );
     if (!is_array($oPluginSprachvariablen) || count($oPluginSprachvariablen) < 1) {
-        $oPluginSprachvariablen = Shop::DB()->query(
-            "SELECT
-                tpluginsprachvariable.kPluginSprachvariable,
-                tpluginsprachvariable.kPlugin,
-                tpluginsprachvariable.cName,
-                tpluginsprachvariable.cBeschreibung,
-                concat('#', tpluginsprachvariable.cName, '#') AS customValue, '" .
-                strtoupper($cISO) . "' AS cISO
+        $oPluginSprachvariablen = Shop::DB()->query("
+             SELECT tpluginsprachvariable.kPluginSprachvariable,
+                    tpluginsprachvariable.kPlugin,
+                    tpluginsprachvariable.cName,
+                    tpluginsprachvariable.cBeschreibung,
+                    concat('#', tpluginsprachvariable.cName, '#') AS customValue, '" .
+                    strtoupper($cISO) . "' AS cISO
                 FROM tpluginsprachvariable
-                    WHERE tpluginsprachvariable.kPlugin = " . $kPlugin, 9
+                WHERE tpluginsprachvariable.kPlugin = " . $kPlugin, 9
         );
     }
     if (is_array($oPluginSprachvariablen) && count($oPluginSprachvariablen) > 0) {
@@ -249,7 +247,7 @@ function gibkPluginAuscModulId($cModulId)
 {
     $kPlugin = 0;
     if (preg_match('/^kPlugin_(\d+)_/', $cModulId, $cMatch_arr)) {
-        $kPlugin = intval($cMatch_arr[1]);
+        $kPlugin = (int)$cMatch_arr[1];
     }
 
     return $kPlugin;
@@ -263,7 +261,7 @@ function gibkPluginAuscPluginID($cPluginID)
 {
     $oPlugin = Shop::DB()->select('tplugin', 'cPluginID', $cPluginID);
 
-    return (isset($oPlugin->kPlugin)) ? (int)$oPlugin->kPlugin : 0;
+    return isset($oPlugin->kPlugin) ? (int)$oPlugin->kPlugin : 0;
 }
 
 /**

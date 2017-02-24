@@ -147,7 +147,7 @@
                 size: params.size,
                 buttons: [
                     { close: true, click: click, text: label1, style: "danger" },
-                    { close: true, click: click, text: label2 }
+                    { close: true, click: click, text: label2, success: true }
                 ]
 
             });
@@ -164,8 +164,10 @@
                 close();
 
                 if (typeof fn === "function") {
-                    var key = $(ev.currentTarget).html();
-                    return fn(label[key] ? true : false);
+                    var target = $(ev.currentTarget);
+                    var key = target.html();
+                    var success = (target.attr('data-success') === 'true') || label[key];
+                    return fn(success);
                 }
 
                 throw new Error("No callback provided to execute confim modal action.");
@@ -359,6 +361,9 @@
                                     break;
                                 case "text":
                                     btn.html(btnOp[index]);
+                                    break;
+                                case 'success':
+                                    btn.attr('data-success', btnOp.success);
                                     break;
                                 default:
                                     //all other possible html attributes to button element

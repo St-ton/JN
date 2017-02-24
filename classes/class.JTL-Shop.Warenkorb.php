@@ -82,13 +82,17 @@ class Warenkorb
         foreach ($this->PositionenArr as $i => $Position) {
             $delete = false;
             if (!empty($Position->Artikel)) {
-                if (isset($Position->Artikel->fLagerbestand) && isset($Position->Artikel->cLagerBeachten) && isset($Position->Artikel->cLagerKleinerNull) &&
-                    isset($Position->Artikel->cLagerVariation) && $Position->Artikel->fLagerbestand <= 0 && $Position->Artikel->cLagerBeachten === 'Y' &&
+                if (isset($Position->Artikel->fLagerbestand, $Position->Artikel->cLagerBeachten, $Position->Artikel->cLagerKleinerNull, $Position->Artikel->cLagerVariation) &&
+                    $Position->Artikel->fLagerbestand <= 0 && $Position->Artikel->cLagerBeachten === 'Y' &&
                     $Position->Artikel->cLagerKleinerNull !== 'Y' && $Position->Artikel->cLagerVariation !== 'Y') {
                     $delete = true;
-                } elseif (empty($Position->kKonfigitem) && $Position->nPosTyp !== C_WARENKORBPOS_TYP_GRATISGESCHENK &&
-                    isset($Position->fPreisEinzelNetto) && $Position->fPreisEinzelNetto == 0 &&
-                    isset($conf['global']['global_preis0']) && $conf['global']['global_preis0'] === 'N') {
+                } elseif (empty($Position->kKonfigitem) &&
+                    $Position->fPreisEinzelNetto == 0 &&
+                    !$Position->Artikel->bHasKonfig &&
+                    $Position->nPosTyp !== C_WARENKORBPOS_TYP_GRATISGESCHENK &&
+                    isset($Position->fPreisEinzelNetto, $conf['global']['global_preis0']) &&
+                    $conf['global']['global_preis0'] === 'N'
+                ) {
                     $delete = true;
                 } elseif (isset($Position->Artikel->FunktionsAttribute[FKT_ATTRIBUT_UNVERKAEUFLICH]) &&
                     $Position->Artikel->FunktionsAttribute[FKT_ATTRIBUT_UNVERKAEUFLICH]) {
@@ -152,10 +156,10 @@ class Warenkorb
                         //gleiche Eigenschaft suchen
                         if ($oEigenschaftwerte->kEigenschaft == $WKEigenschaft->kEigenschaft) {
                             //ist es ein Freifeld mit unterschieldichem Inhalt oder eine Eigenschaft mit unterschielichem Wert?
-                            if ((($WKEigenschaft->cTyp === 'FREIFELD' || $WKEigenschaft->cTyp === 'PFLICHT-FREIFELD') &&
+                            if (($WKEigenschaft->kEigenschaftWert > 0 &&
+                                    $WKEigenschaft->kEigenschaftWert != $oEigenschaftwerte->kEigenschaftWert) ||
+                                (($WKEigenschaft->cTyp === 'FREIFELD' || $WKEigenschaft->cTyp === 'PFLICHT-FREIFELD') &&
                                     $WKEigenschaft->cEigenschaftWertName[$_SESSION['cISOSprache']] != $oEigenschaftwerte->cFreifeldWert)
-                                ||
-                                ($WKEigenschaft->kEigenschaftWert > 0 && $WKEigenschaft->kEigenschaftWert != $oEigenschaftwerte->kEigenschaftWert)
                             ) {
                                 $neuePos = true;
                                 break;
@@ -269,7 +273,10 @@ class Warenkorb
                             } else {
                                 if ($Eigenschaft->kArtikel == $NeuePosition->kArtikel) {
                                     // Variationswert hat eigene Artikelnummer und der Artikel hat nur eine Dimension als Variation?
-                                    if (count($NeuePosition->Artikel->Variationen) === 1 && isset($EigenschaftWert->cArtNr) && strlen($EigenschaftWert->cArtNr) > 0) {
+                                    if (isset($EigenschaftWert->cArtNr) &&
+                                        count($NeuePosition->Artikel->Variationen) === 1 &&
+                                        strlen($EigenschaftWert->cArtNr) > 0
+                                    ) {
                                         $NeuePosition->cArtNr          = $EigenschaftWert->cArtNr;
                                         $NeuePosition->Artikel->cArtNr = $EigenschaftWert->cArtNr;
                                     }
@@ -401,6 +408,18 @@ class Warenkorb
                 }
             }
             $this->PositionenArr = array_merge($this->PositionenArr);
+            if (!empty($_POST['Kuponcode'])) {
+                if ($typ == C_WARENKORBPOS_TYP_KUPON) {
+                    if (!empty($_SESSION['Kupon'])) {
+                        unset($_SESSION['Kupon']);
+                    } elseif (!empty($_SESSION['oVersandfreiKupon'])) {
+                        unset($_SESSION['oVersandfreiKupon']);
+                        if (!empty($_SESSION['VersandKupon'])) {
+                            unset($_SESSION['VersandKupon']);
+                        }
+                    }
+                }
+            }
         }
 
         return $this;
@@ -409,17 +428,17 @@ class Warenkorb
     /**
      * erstellt eine Spezialposition im Warenkorb
      *
-     * @param string $name Positionsname
-     * @param string $anzahl Positionsanzahl
-     * @param string $preis Positionspreis
-     * @param string $kSteuerklasse Positionsmwst
-     * @param string $typ Positionstyp
-     * @param bool   $delSamePosType
-     * @param bool   $brutto
-     * @param string $hinweis
-     * @param bool   $cUnique
-     * @param int    $kKonfigitem
-     * @param int    $kArtikel
+     * @param string|array $name Positionsname
+     * @param string       $anzahl Positionsanzahl
+     * @param string       $preis Positionspreis
+     * @param string       $kSteuerklasse Positionsmwst
+     * @param string       $typ Positionstyp
+     * @param bool         $delSamePosType
+     * @param bool         $brutto
+     * @param string       $hinweis
+     * @param bool         $cUnique
+     * @param int          $kKonfigitem
+     * @param int          $kArtikel
      * @return $this
      */
     public function erstelleSpezialPos($name, $anzahl, $preis, $kSteuerklasse, $typ, $delSamePosType = true, $brutto = true, $hinweis = '', $cUnique = false, $kKonfigitem = 0, $kArtikel = 0)
@@ -455,10 +474,18 @@ class Warenkorb
         }
 
         $NeuePosition->fPreisEinzelNetto = $NeuePosition->fPreis;
-        if (is_array($name)) {
-            $NeuePosition->cName = $name;
+        if ($typ == C_WARENKORBPOS_TYP_KUPON && isset($name->cName)) {
+            $NeuePosition->cName = is_array($name->cName)
+                ? $name->cName
+                : [$_SESSION['cISOSprache'] => $name->cName];
+            if (isset($name->cArticleNameAffix, $name->discountForArticle)) {
+                $NeuePosition->cArticleNameAffix  = $name->cArticleNameAffix;
+                $NeuePosition->discountForArticle = $name->discountForArticle;
+            }
         } else {
-            $NeuePosition->cName = [$_SESSION['cISOSprache'] => $name];
+            $NeuePosition->cName = is_array($name)
+                ? $name
+                : [$_SESSION['cISOSprache'] => $name];
         }
         $NeuePosition->nPosTyp  = $typ;
         $NeuePosition->cHinweis = $hinweis;
@@ -467,23 +494,33 @@ class Warenkorb
 
         foreach ($_SESSION['Waehrungen'] as $Waehrung) {
             // Standardartikel
-            $NeuePosition->cGesamtpreisLocalized[0][$Waehrung->cName] = gibPreisStringLocalized(berechneBrutto($NeuePosition->fPreis * $NeuePosition->nAnzahl, gibUst($NeuePosition->kSteuerklasse)), $Waehrung);
-            $NeuePosition->cGesamtpreisLocalized[1][$Waehrung->cName] = gibPreisStringLocalized($NeuePosition->fPreis * $NeuePosition->nAnzahl, $Waehrung);
-            $NeuePosition->cEinzelpreisLocalized[0][$Waehrung->cName] = gibPreisStringLocalized(berechneBrutto($NeuePosition->fPreis, gibUst($NeuePosition->kSteuerklasse)), $Waehrung);
-            $NeuePosition->cEinzelpreisLocalized[1][$Waehrung->cName] = gibPreisStringLocalized($NeuePosition->fPreis, $Waehrung);
+            $NeuePosition->cGesamtpreisLocalized[0][$Waehrung->cName] =
+                gibPreisStringLocalized(berechneBrutto($NeuePosition->fPreis * $NeuePosition->nAnzahl, gibUst($NeuePosition->kSteuerklasse)), $Waehrung);
+            $NeuePosition->cGesamtpreisLocalized[1][$Waehrung->cName] =
+                gibPreisStringLocalized($NeuePosition->fPreis * $NeuePosition->nAnzahl, $Waehrung);
+            $NeuePosition->cEinzelpreisLocalized[0][$Waehrung->cName] =
+                gibPreisStringLocalized(berechneBrutto($NeuePosition->fPreis, gibUst($NeuePosition->kSteuerklasse)), $Waehrung);
+            $NeuePosition->cEinzelpreisLocalized[1][$Waehrung->cName] =
+                gibPreisStringLocalized($NeuePosition->fPreis, $Waehrung);
 
             // Konfigurationsartikel: mapto: 9a87wdgad
-            if (is_string($NeuePosition->cUnique) && strlen($NeuePosition->cUnique) === 10 && intval($NeuePosition->kKonfigitem) > 0) {
+            if ((int)$NeuePosition->kKonfigitem > 0 &&
+                is_string($NeuePosition->cUnique) &&
+                strlen($NeuePosition->cUnique) === 10
+            ) {
                 $fPreisNetto  = 0;
                 $fPreisBrutto = 0;
                 $nVaterPos    = null;
 
                 foreach ($this->PositionenArr as $nPos => $oPosition) {
-                    if ($NeuePosition->cUnique == $oPosition->cUnique) {
+                    if ($NeuePosition->cUnique === $oPosition->cUnique) {
                         $fPreisNetto += $oPosition->fPreis * $oPosition->nAnzahl;
                         $fPreisBrutto += berechneBrutto($oPosition->fPreis * $oPosition->nAnzahl, gibUst($oPosition->kSteuerklasse));
 
-                        if (is_string($oPosition->cUnique) && strlen($oPosition->cUnique) === 10 && intval($oPosition->kKonfigitem) === 0) {
+                        if ((int)$oPosition->kKonfigitem === 0 &&
+                            is_string($oPosition->cUnique) &&
+                            strlen($oPosition->cUnique) === 10
+                        ) {
                             $nVaterPos = $nPos;
                         }
                     }
@@ -730,7 +767,10 @@ class Warenkorb
                         self::addUpdatedPosition($updatedPosition);
                     }
                     unset($this->PositionenArr[$i]->cHinweis);
-                    if (isset($_SESSION['Kupon']->kKupon) && $_SESSION['Kupon']->kKupon > 0 && intval($_SESSION['Kupon']->nGanzenWKRabattieren) === 0) {
+                    if (isset($_SESSION['Kupon']->kKupon) &&
+                        $_SESSION['Kupon']->kKupon > 0 &&
+                        (int)$_SESSION['Kupon']->nGanzenWKRabattieren === 0
+                    ) {
                         $this->PositionenArr[$i] = checkeKuponWKPos($this->PositionenArr[$i], $_SESSION['Kupon']);
                         $this->PositionenArr[$i]->setzeGesamtpreisLocalized();
                     }
@@ -752,7 +792,7 @@ class Warenkorb
     public function setzeKonfig(&$oPosition, $bPreise = true, $bName = true)
     {
         // Falls Konfigitem gesetzt Preise + Name ueberschreiben
-        if (intval($oPosition->kKonfigitem) > 0 && class_exists('Konfigitem')) {
+        if ((int)$oPosition->kKonfigitem > 0 && class_exists('Konfigitem')) {
             $oKonfigitem = new Konfigitem($oPosition->kKonfigitem);
             if ($oKonfigitem->getKonfigitem() > 0) {
                 if ($bPreise) {
@@ -862,10 +902,10 @@ class Warenkorb
     public function gibGesamtsummeWaren($Brutto = false, $gutscheinBeruecksichtigen = true)
     {
         $waehrung = (isset($_SESSION['Waehrung'])) ? $_SESSION['Waehrung'] : null;
-        if (is_null($waehrung) || !isset($waehrung->kWaehrung)) {
+        if ($waehrung === null || !isset($waehrung->kWaehrung)) {
             $waehrung = $this->Waehrung;
         }
-        if (is_null($waehrung) || !isset($waehrung->kWaehrung)) {
+        if ($waehrung === null || !isset($waehrung->kWaehrung)) {
             $waehrung = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
         }
         $gesamtsumme = 0;
@@ -937,10 +977,10 @@ class Warenkorb
         }
         $gesamtsumme = 0;
         $waehrung    = (isset($_SESSION['Waehrung'])) ? $_SESSION['Waehrung'] : null;
-        if (is_null($waehrung) || !isset($waehrung->kWaehrung)) {
+        if ($waehrung === null || !isset($waehrung->kWaehrung)) {
             $waehrung = $this->Waehrung;
         }
-        if (is_null($waehrung) || !isset($waehrung->kWaehrung)) {
+        if ($waehrung === null || !isset($waehrung->kWaehrung)) {
             $waehrung = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
         }
         foreach ($this->PositionenArr as $i => $Position) {
@@ -970,10 +1010,10 @@ class Warenkorb
         $conf = Shop::getSettings([CONF_KAUFABWICKLUNG]);
         if (isset($conf['kaufabwicklung']['bestellabschluss_runden5']) && $conf['kaufabwicklung']['bestellabschluss_runden5'] == 1) {
             $waehrung = (isset($_SESSION['Waehrung'])) ? $_SESSION['Waehrung'] : null;
-            if (is_null($waehrung) || !isset($waehrung->kWaehrung)) {
+            if ($waehrung === null || !isset($waehrung->kWaehrung)) {
                 $waehrung = $this->Waehrung;
             }
-            if (is_null($waehrung) || !isset($waehrung->kWaehrung)) {
+            if ($waehrung === null || !isset($waehrung->kWaehrung)) {
                 $waehrung = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
             }
             $faktor = $waehrung->fFaktor;
@@ -1112,15 +1152,19 @@ class Warenkorb
     {
         $bRedirect     = false;
         $positionCount = count($this->PositionenArr);
+
         for ($i = 0; $i < $positionCount; $i++) {
-            if (isset($this->PositionenArr[$i]->WarenkorbPosEigenschaftArr) && count($this->PositionenArr[$i]->WarenkorbPosEigenschaftArr) > 0 &&
-                !$this->PositionenArr[$i]->Artikel->kVaterArtikel && !$this->PositionenArr[$i]->Artikel->nIstVater
+            if ($this->PositionenArr[$i]->kArtikel > 0 && $this->PositionenArr[$i]->Artikel->cLagerBeachten === 'Y' &&
+                $this->PositionenArr[$i]->Artikel->cLagerKleinerNull !== 'Y'
             ) {
-                //Position mit Variationen
-                if ($this->PositionenArr[$i]->Artikel->cLagerBeachten === 'Y' && $this->PositionenArr[$i]->Artikel->cLagerVariation === 'Y' &&
-                    $this->PositionenArr[$i]->Artikel->cLagerKleinerNull !== 'Y'
+                // Lagerbestand beachten und keine Überverkäufe möglich
+                if (isset($this->PositionenArr[$i]->WarenkorbPosEigenschaftArr) &&
+                    !$this->PositionenArr[$i]->Artikel->kVaterArtikel &&
+                    !$this->PositionenArr[$i]->Artikel->nIstVater &&
+                    $this->PositionenArr[$i]->Artikel->cLagerVariation === 'Y' &&
+                    count($this->PositionenArr[$i]->WarenkorbPosEigenschaftArr) > 0
                 ) {
-                    //Lagerbestand in Variationen wird beachtet
+                    // Position mit Variationen, Lagerbestand in Variationen wird beachtet
                     foreach ($this->PositionenArr[$i]->WarenkorbPosEigenschaftArr as $oWarenkorbPosEigenschaft) {
                         if ($oWarenkorbPosEigenschaft->kEigenschaftWert > 0 && $this->PositionenArr[$i]->nAnzahl > 0) {
                             //schaue in DB, ob Lagerbestand ausreichend
@@ -1140,13 +1184,9 @@ class Warenkorb
                             }
                         }
                     }
-                }
-            } else {
-                //Position ohne Variationen
-                if ($this->PositionenArr[$i]->kArtikel > 0 && $this->PositionenArr[$i]->Artikel->cLagerBeachten === 'Y' &&
-                    $this->PositionenArr[$i]->Artikel->cLagerKleinerNull !== 'Y'
-                ) {
-                    //schaue in DB, ob Lagerbestand ausreichend
+                } else {
+                    // Position ohne Variationen bzw. Variationen ohne eigenen Lagerbestand
+                    // schaue in DB, ob Lagerbestand ausreichend
                     $oArtikelLagerbestand = Shop::DB()->query(
                         "SELECT kArtikel, fLagerbestand >= " . $this->PositionenArr[$i]->nAnzahl . " AS bAusreichend, fLagerbestand
                             FROM tartikel
@@ -1163,6 +1203,7 @@ class Warenkorb
                 }
             }
         }
+
         if ($bRedirect) {
             $this->setzePositionsPreise();
             $linkHelper = LinkHelper::getInstance();
@@ -1204,7 +1245,7 @@ class Warenkorb
             'kLieferadresse' => $this->kLieferadresse,
             'kZahlungsInfo'  => $this->kZahlungsInfo,
         ];
-        if (!isset($obj->kZahlungsInfo) || $obj->kZahlungsInfo === '' || $obj->kZahlungsInfo === null) {
+        if (!isset($obj->kZahlungsInfo) || $obj->kZahlungsInfo === '') {
             $obj->kZahlungsInfo = 0;
         }
         $this->kWarenkorb = Shop::DB()->insert('twarenkorb', $obj);
@@ -1312,7 +1353,11 @@ class Warenkorb
     public function redirectTo($isRedirect = false, $unique = false)
     {
         $conf = Shop::getSettings([CONF_GLOBAL]);
-        if (!isset($_SESSION['variBoxAnzahl_arr']) && $conf['global']['global_warenkorb_weiterleitung'] === 'Y' && !$isRedirect && !$unique) {
+        if (!$isRedirect &&
+            !$unique &&
+            !isset($_SESSION['variBoxAnzahl_arr']) &&
+            $conf['global']['global_warenkorb_weiterleitung'] === 'Y'
+        ) {
             $linkHelper = LinkHelper::getInstance();
             header('Location: ' . $linkHelper->getStaticRoute('warenkorb.php'), true, 303);
             exit;
@@ -1359,11 +1404,10 @@ class Warenkorb
             } elseif (isset($_SESSION['Kupon']->nGanzenWKRabattieren) && $_SESSION['Kupon']->nGanzenWKRabattieren === '0' &&
                 $_SESSION['Kupon']->cKuponTyp === 'standard' && $_SESSION['Kupon']->cWertTyp === 'prozent') {
                 if (isset($_SESSION['Warenkorb']) && $this->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]) > 0) {
-                    $Kupon = Shop::DB()->select('tkupon', 'kKupon', (int)$_SESSION['Kupon']->kKupon);
+                    $Kupon   = Shop::DB()->select('tkupon', 'kKupon', (int)$_SESSION['Kupon']->kKupon);
+                    $isValid = false;
                     if (isset($Kupon->kKupon) && $Kupon->kKupon > 0 && $Kupon->cKuponTyp === 'standard') {
                         $isValid = (1 === angabenKorrekt(checkeKupon($Kupon)));
-                    } else {
-                        $isValid = false;
                     }
                 }
                 if ($isValid === false) {
@@ -1371,8 +1415,10 @@ class Warenkorb
                     $this->loescheSpezialPos(C_WARENKORBPOS_TYP_KUPON)
                         ->setzePositionsPreise();
                 }
-            } elseif (isset($_SESSION['Kupon']->nGanzenWKRabattieren) && $_SESSION['Kupon']->nGanzenWKRabattieren === '0' &&
-                $_SESSION['Kupon']->cKuponTyp === 'standard') {
+            } elseif (isset($_SESSION['Kupon']->nGanzenWKRabattieren) &&
+                $_SESSION['Kupon']->nGanzenWKRabattieren === '0' &&
+                $_SESSION['Kupon']->cKuponTyp === 'standard'
+            ) {
                 //we have a coupon in the current session but none in the cart.
                 //this happens with coupons tied to special articles that are no longer valid.
                 unset($_SESSION['Kupon']);
@@ -1394,9 +1440,7 @@ class Warenkorb
             if ($Kupon->fWert > $_SESSION['Warenkorb']->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true)) {
                 $maxPreisKupon = $_SESSION['Warenkorb']->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true);
             }
-            if (!isset($Spezialpos)) {
-                $Spezialpos = new stdClass();
-            }
+            $Spezialpos = new stdClass();
             $Spezialpos->cName = [];
             foreach ($_SESSION['Sprachen'] as $Sprache) {
                 $name_spr                          = Shop::DB()->select('tkuponsprache', 'kKupon', (int)$Kupon->kKupon, 'cISOSprache', $Sprache->cISO, null, null, false, 'cName');

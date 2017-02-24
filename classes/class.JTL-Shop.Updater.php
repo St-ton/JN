@@ -357,7 +357,7 @@ class Updater
             return $targetVersion;
         }
 
-        $id = end($pendingMigrations);
+        $id = reset($pendingMigrations);
 
         $migration = $manager->getMigrationById($id);
         $manager->executeMigration($migration, IMigration::UP);
@@ -450,9 +450,7 @@ class Updater
 
         if ((int)$version->nFehler > 0) {
             if (array_key_exists($version->nZeileBis, $sqls)) {
-                $errorSql = trim($sqls[$version->nZeileBis]);
-
-                return $errorSql;
+                return trim($sqls[$version->nZeileBis]);
             }
         }
 
@@ -467,10 +465,14 @@ class Updater
         $directories = [];
         $dir         = PFAD_ROOT . PFAD_UPDATE;
         foreach (scandir($dir) as $key => $value) {
-            if (!in_array($value, ['.', '..']) && is_dir($dir . DIRECTORY_SEPARATOR . $value)) {
-                if (is_numeric($value) && (int)$value > 300 && (int)$value < 500) {
-                    $directories[] = $value;
-                }
+            if (
+                is_numeric($value) &&
+                (int)$value > 300 &&
+                (int)$value < 500 &&
+                !in_array($value, ['.', '..'], true) &&
+                is_dir($dir . DIRECTORY_SEPARATOR . $value)
+            ) {
+                $directories[] = $value;
             }
         }
 

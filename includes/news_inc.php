@@ -226,7 +226,7 @@ function mappeDatumName($cMonat, $nJahr, $cISOSprache)
 {
     $cName = '';
 
-    if ($cISOSprache == 'ger') {
+    if ($cISOSprache === 'ger') {
         switch ($cMonat) {
             case '01':
                 $cName .= Shop::Lang()->get('january', 'news') . ', ' . $nJahr;
@@ -395,7 +395,7 @@ function baueNewsKruemel($smarty, $AktuelleSeite, &$cCanonicalURL)
         //url
         global $sprachURL, $requestURL;
         $requestURL = baueURL($Link, URLART_SEITE);
-        $sprachURL  = (isset($Link->languageURLs))
+        $sprachURL  = isset($Link->languageURLs)
             ? $Link->languageURLs
             : baueSprachURLS($Link, URLART_SEITE);
         // Canonical
@@ -443,7 +443,7 @@ function getNewsArchive($kNews, $bActiveOnly = false)
                 AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
             WHERE tnews.kNews = " . (int)$kNews . " 
                 AND (tnews.cKundengruppe LIKE '%;-1;%' 
-                    OR tnews.cKundengruppe LIKE '%;" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";%')
+                    OR tnews.cKundengruppe RLIKE '^([0-9;]+;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";')
                 AND tnews.kSprache = " . (int)$_SESSION['kSprache']
                 . $activeFilter, 1
     );
@@ -458,8 +458,8 @@ function getCurrentNewsCategory($kNewsKategorie, $bActiveOnly = false)
 {
     $activeFilter = $bActiveOnly ? ' AND tnewskategorie.nAktiv = 1 ' : '';
 
-    return Shop::DB()->query(
-        "SELECT tnewskategorie.cName, tnewskategorie.cMetaTitle, tnewskategorie.cMetaDescription, tseo.cSeo
+    return Shop::DB()->query("
+        SELECT tnewskategorie.cName, tnewskategorie.cMetaTitle, tnewskategorie.cMetaDescription, tseo.cSeo
             FROM tnewskategorie
             LEFT JOIN tseo 
                 ON tseo.cKey = 'kNewsKategorie'
@@ -492,8 +492,8 @@ function getNewsCategory($kNews)
         }
     }
 
-    return Shop::DB()->query(
-        "SELECT tnewskategorie.kNewsKategorie, tnewskategorie.kSprache, tnewskategorie.cName,
+    return Shop::DB()->query("
+        SELECT tnewskategorie.kNewsKategorie, tnewskategorie.kSprache, tnewskategorie.cName,
             tnewskategorie.cBeschreibung, tnewskategorie.cMetaTitle, tnewskategorie.cMetaDescription,
             tnewskategorie.nSort, tnewskategorie.nAktiv, tnewskategorie.dLetzteAktualisierung,
             tnewskategorie.cPreviewImage, tseo.cSeo,
@@ -520,8 +520,8 @@ function getNewsCategory($kNews)
  */
 function getNewsComments($kNews, $cLimitSQL)
 {
-    return Shop::DB()->query(
-        "SELECT *, DATE_FORMAT(tnewskommentar.dErstellt, '%d.%m.%Y %H:%i') AS dErstellt_de
+    return Shop::DB()->query("
+        SELECT *, DATE_FORMAT(tnewskommentar.dErstellt, '%d.%m.%Y %H:%i') AS dErstellt_de
             FROM tnewskommentar
             WHERE tnewskommentar.kNews = " . (int)$kNews . "
                 AND tnewskommentar.nAktiv = 1
@@ -536,8 +536,8 @@ function getNewsComments($kNews, $cLimitSQL)
  */
 function getCommentCount($kNews)
 {
-    return Shop::DB()->query(
-        "SELECT count(*) AS nAnzahl
+    return Shop::DB()->query("
+        SELECT count(*) AS nAnzahl
             FROM tnewskommentar
             WHERE kNews = " . (int)$kNews . "
             AND nAktiv = 1", 1
@@ -550,8 +550,8 @@ function getCommentCount($kNews)
  */
 function getMonthOverview($kNewsMonatsUebersicht)
 {
-    return Shop::DB()->query(
-        "SELECT tnewsmonatsuebersicht.*, tseo.cSeo
+    return Shop::DB()->query("
+        SELECT tnewsmonatsuebersicht.*, tseo.cSeo
             FROM tnewsmonatsuebersicht
             LEFT JOIN tseo 
                 ON tseo.cKey = 'kNewsMonatsUebersicht'
@@ -568,8 +568,8 @@ function getMonthOverview($kNewsMonatsUebersicht)
  */
 function getNewsOverview($oSQL, $cLimitSQL)
 {
-    return Shop::DB()->query(
-        "SELECT tseo.cSeo, tnews.*, DATE_FORMAT(tnews.dGueltigVon, '%d.%m.%Y %H:%i') AS dErstellt_de, 
+    return Shop::DB()->query("
+        SELECT tseo.cSeo, tnews.*, DATE_FORMAT(tnews.dGueltigVon, '%d.%m.%Y %H:%i') AS dErstellt_de, 
             count(*) AS nAnzahl, count(DISTINCT(tnewskommentar.kNewsKommentar)) AS nNewsKommentarAnzahl
             FROM tnews
             LEFT JOIN tseo ON tseo.cKey = 'kNews'
@@ -582,7 +582,7 @@ function getNewsOverview($oSQL, $cLimitSQL)
             WHERE tnews.nAktiv = 1
                 AND tnews.dGueltigVon <= now()
                 AND (tnews.cKundengruppe LIKE '%;-1;%' 
-                    OR tnews.cKundengruppe LIKE '%;" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";%')
+                    OR tnews.cKundengruppe RLIKE '^([0-9;]+;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";')
                 AND tnews.kSprache = " . (int)$_SESSION['kSprache'] . "
                 " . $oSQL->cDatumSQL . "
             GROUP BY tnews.kNews
@@ -597,14 +597,14 @@ function getNewsOverview($oSQL, $cLimitSQL)
  */
 function getFullNewsOverview($oSQL)
 {
-    return Shop::DB()->query(
-        "SELECT count(DISTINCT(tnews.kNews)) AS nAnzahl
+    return Shop::DB()->query("
+        SELECT count(DISTINCT(tnews.kNews)) AS nAnzahl
             FROM tnews
             " . $oSQL->cNewsKatSQL . "
             WHERE tnews.nAktiv = 1
                 AND tnews.dGueltigVon <= now()
                 AND (tnews.cKundengruppe LIKE '%;-1;%' 
-                    OR tnews.cKundengruppe LIKE '%;" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";%')
+                    OR tnews.cKundengruppe RLIKE '^([0-9;]+;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";')
                 " . $oSQL->cDatumSQL . "
                 AND tnews.kSprache = " . (int)$_SESSION['kSprache'], 1
     );
@@ -616,14 +616,14 @@ function getFullNewsOverview($oSQL)
  */
 function getNewsDateArray($oSQL)
 {
-    return Shop::DB()->query(
-        "SELECT month(tnews.dGueltigVon) AS nMonat, year(tnews.dGueltigVon) AS nJahr
+    return Shop::DB()->query("
+      SELECT month(tnews.dGueltigVon) AS nMonat, year(tnews.dGueltigVon) AS nJahr
             FROM tnews
             " . $oSQL->cNewsKatSQL . "
             WHERE tnews.nAktiv = 1
                 AND tnews.dGueltigVon <= now()
                 AND (tnews.cKundengruppe LIKE '%;-1;%' 
-                    OR tnews.cKundengruppe LIKE '%;" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";%')
+                    OR tnews.cKundengruppe RLIKE '^([0-9;]+;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";')
                 AND tnews.kSprache = " . (int)$_SESSION['kSprache'] . "
             GROUP BY nJahr, nMonat
             ORDER BY dGueltigVon DESC", 2

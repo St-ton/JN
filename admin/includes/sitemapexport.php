@@ -414,12 +414,12 @@ function generateSitemapXML()
                      JOIN tlinksprache 
                         ON tlinksprache.kLink = tlink.kLink
                      WHERE tlink.cSichtbarNachLogin = 'N'
+                        AND tlink.cNoFollow = 'N'
                         AND tlinkgruppe.cName != 'hidden'
                         AND tlinkgruppe.cTemplatename != 'hidden'
                         AND (tlink.cKundengruppen IS NULL
                           OR tlink.cKundengruppen = 'NULL'
-                          OR tlink.cKundengruppen LIKE '" . $stdKundengruppe->kKundengruppe . ";%'
-                          OR tlink.cKundengruppen LIKE '%;" . $stdKundengruppe->kKundengruppe . ";%')
+                          OR tlink.cKundengruppen RLIKE '^([0-9;]+;)?" . $stdKundengruppe->kKundengruppe . ";')
                      ORDER BY tlinksprache.kLink";
 
         $res = Shop::DB()->query($strSQL, 10);
@@ -874,7 +874,7 @@ function generateSitemapXML()
                 WHERE tnews.nAktiv = 1
                     AND tnews.dGueltigVon <= now()
                     AND (tnews.cKundengruppe LIKE '%;-1;%'
-                    OR tnews.cKundengruppe LIKE '%;" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";%') 
+                    OR tnews.cKundengruppe RLIKE '^([0-9;]+;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";') 
                     ORDER BY tnews.dErstellt", 10
         );
         while ($oNews = $res->fetch(PDO::FETCH_OBJ)) {

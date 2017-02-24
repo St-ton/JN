@@ -90,7 +90,6 @@ class MerkmalWert
         $kSprache     = (int)$kSprache;
         $id           = 'mmw_' . $kMerkmalWert . '_' . $kSprache;
         if (Shop::has($id)) {
-            echo '<br>has MMW!';
             return Shop::get($id);
         }
         $oMerkmalWert = Shop::DB()->query(

@@ -4,6 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';
+
 /**
  * @param array $nPos_arr
  * @return null|void
@@ -86,8 +87,7 @@ function loescheWarenkorbPosition($nPos)
 function uebernehmeWarenkorbAenderungen()
 {
     /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
-    unset($_SESSION['cPlausi_arr']);
-    unset($_SESSION['cPost_arr']);
+    unset($_SESSION['cPlausi_arr'], $_SESSION['cPost_arr']);
     // Gratis Geschenk wurde hinzugefuegt
     if (isset($_POST['gratishinzufuegen'])) {
         return;
@@ -328,7 +328,7 @@ function checkeSchnellkauf()
             $oArtikel = new Artikel();
             $oArtikel->fuelleArtikel($artikel->kArtikel, Artikel::getDefaultOptions());
 
-            if (isset($oArtikel->kArtikel) && $oArtikel->kArtikel > 0 && fuegeEinInWarenkorb(
+            if ($oArtikel->kArtikel > 0 && fuegeEinInWarenkorb(
                 $artikel->kArtikel,
                 1,
                 ArtikelHelper::getSelectedPropertiesForArticle($artikel->kArtikel)
@@ -357,12 +357,14 @@ function loescheAlleSpezialPos()
                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERPACKUNG)
                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_TRUSTEDSHOPS)
                           ->checkIfCouponIsStillValid();
-    unset($_SESSION['Versandart']);
-    unset($_SESSION['VersandKupon']);
-    unset($_SESSION['oVersandfreiKupon']);
-    unset($_SESSION['Verpackungen']);
-    unset($_SESSION['TrustedShops']);
-    unset($_SESSION['Zahlungsart']);
+    unset(
+        $_SESSION['Versandart'],
+        $_SESSION['VersandKupon'],
+        $_SESSION['oVersandfreiKupon'],
+        $_SESSION['Verpackungen'],
+        $_SESSION['TrustedShops'],
+        $_SESSION['Zahlungsart']
+    );
     resetNeuKundenKupon();
     altenKuponNeuBerechnen();
 
@@ -461,10 +463,10 @@ function gibGratisGeschenke($Einstellungen)
                 $oArtikel->fuelleArtikel($oArtikelGeschenkeTMP->kArtikel, Artikel::getDefaultOptions());
                 $oArtikel->cBestellwert = gibPreisStringLocalized(doubleval($oArtikelGeschenkeTMP->cWert));
 
-                if (($oArtikel->kEigenschaftKombi > 0 ||
+                if ($oArtikel->kArtikel > 0 &&
+                    ($oArtikel->kEigenschaftKombi > 0 ||
                         !is_array($oArtikel->Variationen) ||
-                        count($oArtikel->Variationen) === 0) &&
-                    $oArtikel->kArtikel > 0
+                        count($oArtikel->Variationen) === 0)
                 ) {
                     $oArtikelGeschenke_arr[] = $oArtikel;
                 }

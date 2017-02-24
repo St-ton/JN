@@ -19,9 +19,7 @@ function kundeSpeichern($cPost_arr)
            $knd,
            $cKundenattribut_arr;
 
-    unset($_SESSION['Lieferadresse']);
-    unset($_SESSION['Versandart']);
-    unset($_SESSION['Zahlungsart']);
+    unset($_SESSION['Lieferadresse'], $_SESSION['Versandart'], $_SESSION['Zahlungsart']);
     /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
     $_SESSION['Warenkorb']->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS)
                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART);
@@ -29,11 +27,9 @@ function kundeSpeichern($cPost_arr)
     $editRechnungsadresse = (int)$cPost_arr['editRechnungsadresse'];
     $step                 = 'formular';
     $smarty->assign('cPost_arr', StringHandler::filterXSS($cPost_arr));
-    if (!$editRechnungsadresse) {
-        $fehlendeAngaben = checkKundenFormular(1);
-    } else {
-        $fehlendeAngaben = checkKundenFormular(1, 0);
-    }
+    $fehlendeAngaben     = (!$editRechnungsadresse)
+        ? checkKundenFormular(1)
+        : checkKundenFormular(1, 0);
     $knd                 = getKundendaten($cPost_arr, 1, 0);
     $cKundenattribut_arr = getKundenattribute($cPost_arr);
     $kKundengruppe       = Kundengruppe::getCurrent();
@@ -104,9 +100,9 @@ function kundeSpeichern($cPost_arr)
             // Guthaben des Neukunden aufstocken insofern er geworben wurde
             $oNeukunde = Shop::DB()->select('tkundenwerbenkunden', 'cEmail', $knd->cMail, 'nRegistriert', 0);
             $kKundengruppe = $_SESSION['Kundengruppe']->kKundengruppe;
-            if (isset($oNeukunde->kKundenWerbenKunden) && $oNeukunde->kKundenWerbenKunden > 0 &&
-                isset($Einstellungen['kundenwerbenkunden']['kwk_kundengruppen']) &&
-                intval($Einstellungen['kundenwerbenkunden']['kwk_kundengruppen']) > 0
+            if ($oNeukunde->kKundenWerbenKunden > 0 &&
+                isset($oNeukunde->kKundenWerbenKunden, $Einstellungen['kundenwerbenkunden']['kwk_kundengruppen']) &&
+                (int)$Einstellungen['kundenwerbenkunden']['kwk_kundengruppen'] > 0
             ) {
                 $kKundengruppe = (int)$Einstellungen['kundenwerbenkunden']['kwk_kundengruppen'];
             }
@@ -134,8 +130,7 @@ function kundeSpeichern($cPost_arr)
             sendeMail(MAILTEMPLATE_NEUKUNDENREGISTRIERUNG, $obj);
 
             $knd->cLand = $cLand;
-            unset($knd->cPasswortKlartext);
-            unset($knd->Anrede);
+            unset($knd->cPasswortKlartext, $knd->Anrede);
 
             $knd->kKunde = $knd->insertInDB();
             // Kampagne
@@ -185,7 +180,7 @@ function kundeSpeichern($cPost_arr)
             $linkHelper = LinkHelper::getInstance();
             header('Location: ' . $linkHelper->getStaticRoute('bestellvorgang.php', true) . '?reg=1', true, 303);
             exit;
-        } elseif (isset($cPost_arr['ajaxcheckout_return']) && intval($cPost_arr['ajaxcheckout_return']) === 1) {
+        } elseif (isset($cPost_arr['ajaxcheckout_return']) && (int)$cPost_arr['ajaxcheckout_return'] === 1) {
             return 1;
         } elseif ($GlobaleEinstellungen['global']['global_kundenkonto_aktiv'] !== 'A') {
             //weiterleitung zu mein Konto
@@ -211,7 +206,7 @@ function gibFormularDaten($nCheckout = 0)
     global $smarty, $cKundenattribut_arr, $Kunde, $Einstellungen;
 
     if (count($cKundenattribut_arr) === 0) {
-        $cKundenattribut_arr = (isset($_SESSION['Kunde']->cKundenattribut_arr))
+        $cKundenattribut_arr = isset($_SESSION['Kunde']->cKundenattribut_arr)
             ? $_SESSION['Kunde']->cKundenattribut_arr
             : [];
     }
@@ -229,7 +224,7 @@ function gibFormularDaten($nCheckout = 0)
            ->assign('warning_passwortlaenge', lang_passwortlaenge($Einstellungen['kunden']['kundenregistrierung_passwortlaenge']))
            ->assign('oKundenfeld_arr', gibSelbstdefKundenfelder());
 
-    if (intval($nCheckout) === 1) {
+    if ((int)$nCheckout === 1) {
         $smarty->assign('checkout', 1)
                ->assign('bestellschritt', [1 => 1, 2 => 3, 3 => 3, 4 => 3, 5 => 3]); // Rechnungsadresse ändern
     }

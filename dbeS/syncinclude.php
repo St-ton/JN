@@ -115,7 +115,8 @@ function html2rgb($color)
 function checkFile()
 {
     if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-        Jtllog::writeLog('incoming: ' . $_FILES['data']['name'] . ' size:' . $_FILES['data']['size'], JTLLOG_LEVEL_DEBUG, false, 'syncinclude_xml');
+        Jtllog::writeLog('incoming: ' . $_FILES['data']['name'] .
+            ' size:' . $_FILES['data']['size'], JTLLOG_LEVEL_DEBUG, false, 'syncinclude_xml');
     }
     if ($_FILES['data']['error'] || (isset($_FILES['data']['size']) && $_FILES['data']['size'] == 0)) {
         if (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
@@ -162,7 +163,7 @@ function checkFile()
  */
 function auth()
 {
-    if (!isset($_POST['userID']) || !isset($_POST['userPWD'])) {
+    if (!isset($_POST['userID'], $_POST['userPWD'])) {
         return false;
     }
     $cName      = $_POST['userID'];
@@ -280,7 +281,8 @@ function getObjectArray($elements, $child)
                     foreach ($keys as $key) {
                         if (!$elements[$child][$i . ' attr'][$key]) {
                             if (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-                                Jtllog::writeLog($child . '[' . $i . ']->' . $key . ' fehlt! XML:' . $elements[$child], JTLLOG_LEVEL_ERROR, false, 'syncinclude');
+                                Jtllog::writeLog($child . '[' . $i . ']->' . $key .
+                                    ' fehlt! XML:' . $elements[$child], JTLLOG_LEVEL_ERROR, false, 'syncinclude');
                             }
                         }
 
@@ -377,7 +379,8 @@ function mapAttributes(&$obj, $xml)
             }
         }
     } elseif (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-        Jtllog::writeLog('mapAttributes kein Array: XML:' . print_r($xml, true), JTLLOG_LEVEL_ERROR, false, 'syncinclude');
+        Jtllog::writeLog('mapAttributes kein Array: XML:' .
+            print_r($xml, true), JTLLOG_LEVEL_ERROR, false, 'syncinclude');
     }
 }
 
@@ -408,7 +411,7 @@ function mappe(&$obj, $xml, $map)
     } else {
         foreach ($map as $key => $value) {
             $val = null;
-            if (empty($xml[$key]) && isset($value)) {
+            if (isset($value) && empty($xml[$key])) {
                 $val = $value;
             } elseif (isset($xml[$key])) {
                 $val = $xml[$key];
@@ -427,7 +430,9 @@ function mappe(&$obj, $xml, $map)
 function mapArray($xml, $name, $map)
 {
     $obj_arr = [];
-    if ((isset($xml[$name]) && is_array($xml[$name])) || (isset($xml[$name . ' attr']) && is_array($xml[$name . ' attr']))) {
+    if ((isset($xml[$name]) && is_array($xml[$name])) ||
+        (isset($xml[$name . ' attr']) && is_array($xml[$name . ' attr']))
+    ) {
         if (isset($xml[$name . ' attr']) && is_array($xml[$name . ' attr'])) {
             $obj = new stdClass();
             mapAttributes($obj, $xml[$name . ' attr']);
@@ -493,7 +498,9 @@ function XML2DB($xml, $tabelle, $map, $del = 1)
  */
 function updateXMLinDB($xml, $tabelle, $map, $pk1, $pk2 = 0)
 {
-    if ((isset($xml[$tabelle]) && is_array($xml[$tabelle])) || (isset($xml[$tabelle . ' attr']) && is_array($xml[$tabelle . ' attr']))) {
+    if ((isset($xml[$tabelle]) && is_array($xml[$tabelle])) ||
+        (isset($xml[$tabelle . ' attr']) && is_array($xml[$tabelle . ' attr']))
+    ) {
         $obj_arr = mapArray($xml, $tabelle, $map);
 
         DBUpdateInsert($tabelle, $obj_arr, $pk1, $pk2);
@@ -513,7 +520,8 @@ function fuelleArtikelKategorieRabatt($oArtikel, $oKundengruppe_arr)
             $oMaxRabatt = Shop::DB()->query(
                 "SELECT tkategoriekundengruppe.fRabatt, tkategoriekundengruppe.kKategorie
                     FROM tkategoriekundengruppe
-                    JOIN tkategorieartikel ON tkategorieartikel.kKategorie = tkategoriekundengruppe.kKategorie
+                    JOIN tkategorieartikel 
+                        ON tkategorieartikel.kKategorie = tkategoriekundengruppe.kKategorie
                         AND tkategorieartikel.kArtikel = {$oArtikel->kArtikel}
                     LEFT JOIN tkategoriesichtbarkeit
                         ON tkategoriesichtbarkeit.kKategorie = tkategoriekundengruppe.kKategorie
@@ -546,7 +554,11 @@ function fuelleArtikelKategorieRabatt($oArtikel, $oKundengruppe_arr)
 function versendeVerfuegbarkeitsbenachrichtigung($oArtikel)
 {
     if ($oArtikel->fLagerbestand > 0 && $oArtikel->kArtikel) {
-        $Benachrichtigungen = Shop::DB()->selectAll('tverfuegbarkeitsbenachrichtigung', ['nStatus', 'kArtikel'], [0, $oArtikel->kArtikel]);
+        $Benachrichtigungen = Shop::DB()->selectAll(
+            'tverfuegbarkeitsbenachrichtigung',
+            ['nStatus', 'kArtikel'],
+            [0, $oArtikel->kArtikel]
+        );
         if (is_array($Benachrichtigungen) && count($Benachrichtigungen) > 0) {
             require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
             require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Bestellung.php';
@@ -569,8 +581,8 @@ function versendeVerfuegbarkeitsbenachrichtigung($oArtikel)
                 $obj->tartikel->cName                  = StringHandler::htmlentitydecode($obj->tartikel->cName);
                 $mail                                  = new stdClass();
                 $mail->toEmail                         = $Benachrichtigung->cMail;
-                $mail->toName                          = ($Benachrichtigung->cVorname || $Benachrichtigung->cNachname) ?
-                    ($Benachrichtigung->cVorname . ' ' . $Benachrichtigung->cNachname)
+                $mail->toName                          = ($Benachrichtigung->cVorname || $Benachrichtigung->cNachname)
+                    ? ($Benachrichtigung->cVorname . ' ' . $Benachrichtigung->cNachname)
                     : $Benachrichtigung->cMail;
                 $obj->mail                             = $mail;
                 sendeMail(MAILTEMPLATE_PRODUKT_WIEDER_VERFUEGBAR, $obj);
@@ -579,7 +591,12 @@ function versendeVerfuegbarkeitsbenachrichtigung($oArtikel)
                 $upd->nStatus           = 1;
                 $upd->dBenachrichtigtAm = 'now()';
                 $upd->cAbgeholt         = 'N';
-                Shop::DB()->update('tverfuegbarkeitsbenachrichtigung', 'kVerfuegbarkeitsbenachrichtigung', $Benachrichtigung->kVerfuegbarkeitsbenachrichtigung, $upd);
+                Shop::DB()->update(
+                    'tverfuegbarkeitsbenachrichtigung',
+                    'kVerfuegbarkeitsbenachrichtigung',
+                    $Benachrichtigung->kVerfuegbarkeitsbenachrichtigung,
+                    $upd
+                );
             }
         }
     }
@@ -602,16 +619,27 @@ function setzePreisverlauf($kArtikel, $kKundengruppe, $fVKNetto)
                 LIMIT 1", 1
     );
     // gleicher Wert wie letzter Eintrag?
-    if (!isset($oPreis->fVKNetto) || isset($oPreis->fVKNetto) && (int)($oPreis->fVKNetto * 100) !== (int)($fVKNetto * 100)) {
+    if (!isset($oPreis->fVKNetto) ||
+        (isset($oPreis->fVKNetto) && (int)($oPreis->fVKNetto * 100) !== (int)($fVKNetto * 100))
+    ) {
         $oPreisverlauf                = new stdClass();
         $oPreisverlauf->fVKNetto      = $fVKNetto;
-        $nReihen                      = Shop::DB()->update('tpreisverlauf', ['kArtikel', 'kKundengruppe', 'dDate'], [$kArtikel, $kKundengruppe, date('Y-m-d')], $oPreisverlauf);
+        $nReihen                      = Shop::DB()->update(
+            'tpreisverlauf',
+            ['kArtikel', 'kKundengruppe', 'dDate'],
+            [$kArtikel, $kKundengruppe, date('Y-m-d')],
+            $oPreisverlauf
+        );
     } else {
         // Eintrag entfernen um Dopplung zu vermeiden
-        $nReihen = Shop::DB()->delete('tpreisverlauf', ['kArtikel', 'kKundengruppe', 'dDate'], [$kArtikel, $kKundengruppe, date('Y-m-d')]);
+        $nReihen = Shop::DB()->delete(
+            'tpreisverlauf',
+            ['kArtikel', 'kKundengruppe', 'dDate'],
+            [$kArtikel, $kKundengruppe, date('Y-m-d')]
+        );
     }
 
-    if ($nReihen == 0) {
+    if ((int)$nReihen === 0) {
         $oPreisverlauf                = new stdClass();
         $oPreisverlauf->kArtikel      = $kArtikel;
         $oPreisverlauf->kKundengruppe = $kKundengruppe;
@@ -627,7 +655,9 @@ function setzePreisverlauf($kArtikel, $kKundengruppe, $fVKNetto)
                 LIMIT 1", 1
         );
         //no pricehistory or price changed?
-        if (!isset($oPreis->fVKNetto) || isset($oPreis->fVKNetto) && (int)($oPreis->fVKNetto * 100) !== (int)($fVKNetto * 100)) {
+        if (!isset($oPreis->fVKNetto) ||
+            (isset($oPreis->fVKNetto) && (int)($oPreis->fVKNetto * 100) !== (int)($fVKNetto * 100))
+        ) {
             Shop::DB()->insert('tpreisverlauf', $oPreisverlauf);
             // Clear Artikel Cache
             $cache = Shop::Cache();
@@ -707,7 +737,7 @@ function deleteArticleImage($oArtikelPict = null, $kArtikel = 0, $kArtikelPict =
     $kArtikelPict = (int)$kArtikelPict;
     if ($oArtikelPict === null && $kArtikelPict > 0) {
         $oArtikelPict = Shop::DB()->select('tartikelpict', 'kArtikelPict', $kArtikelPict);
-        $kArtikel     = (isset($oArtikelPict->kArtikel)) ? (int)$oArtikelPict->kArtikel : 0;
+        $kArtikel     = isset($oArtikelPict->kArtikel) ? (int)$oArtikelPict->kArtikel : 0;
     }
     // Das Bild ist eine Verknüpfung
     if (isset($oArtikelPict->kMainArtikelBild) && $oArtikelPict->kMainArtikelBild > 0 && $kArtikel > 0) {
@@ -718,8 +748,8 @@ function deleteArticleImage($oArtikelPict = null, $kArtikel = 0, $kArtikelPict =
                 WHERE kArtikel =
                 (
                     SELECT kArtikel
-                    FROM tartikelpict
-                    WHERE kArtikelPict = " . (int)$oArtikelPict->kMainArtikelBild . "
+                        FROM tartikelpict
+                        WHERE kArtikelPict = " . (int)$oArtikelPict->kMainArtikelBild . "
                 )", 1
         );
         // Main Artikel existiert nicht mehr
@@ -744,7 +774,8 @@ function deleteArticleImage($oArtikelPict = null, $kArtikel = 0, $kArtikelPict =
         }
         // Bildverknüpfung aus DB löschen
         Shop::DB()->delete('tartikelpict', 'kArtikelPict', (int)$oArtikelPict->kArtikelPict);
-    } elseif (isset($oArtikelPict->kMainArtikelBild) && $oArtikelPict->kMainArtikelBild == 0) { // Das Bild ist ein Hauptbild
+    } elseif (isset($oArtikelPict->kMainArtikelBild) && $oArtikelPict->kMainArtikelBild == 0) {
+        // Das Bild ist ein Hauptbild
         // Gibt es Artikel die auf Bilder des zu löschenden Artikel verknüpfen?
         $oVerknuepfteArtikel_arr = Shop::DB()->query(
             "SELECT kArtikelPict
@@ -769,9 +800,19 @@ function deleteArticleImage($oArtikelPict = null, $kArtikel = 0, $kArtikelPict =
             //Reorder linked images because master imagelink will be deleted
             $kArtikelPictNext = $oVerknuepfteArtikel_arr[0]->kArtikelPict;
             //this will be the next masterimage
-            Shop::DB()->update('tartikelpict', 'kArtikelPict', (int)$kArtikelPictNext, (object)['kMainArtikelBild' => 0]);
+            Shop::DB()->update(
+                'tartikelpict',
+                'kArtikelPict',
+                (int)$kArtikelPictNext,
+                (object)['kMainArtikelBild' => 0]
+            );
             //now link other images to the new masterimage
-            Shop::DB()->update('tartikelpict', 'kMainArtikelBild', (int)$oArtikelPict->kArtikelPict, (object)['kMainArtikelBild' => (int)$kArtikelPictNext]);
+            Shop::DB()->update(
+                'tartikelpict',
+                'kMainArtikelBild',
+                (int)$oArtikelPict->kArtikelPict,
+                (object)['kMainArtikelBild' => (int)$kArtikelPictNext]
+            );
         }
         // Bild aus DB löschen
         Shop::DB()->delete('tartikelpict', 'kArtikelPict', (int)$oArtikelPict->kArtikelPict);
@@ -802,7 +843,7 @@ function extractStreet(&$oObject)
 function checkDbeSXmlRedirect($cSeoOld, $cSeoNew)
 {
     // Insert into tredirect weil sich das SEO von der Kategorie geändert hat
-    if (strlen($cSeoOld) > 0 && strlen($cSeoNew) > 0 && $cSeoOld !== $cSeoNew) {
+    if ($cSeoOld !== $cSeoNew && strlen($cSeoOld) > 0 && strlen($cSeoNew) > 0) {
         require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Redirect.php';
         $oRedirect = new Redirect();
         $xPath_arr = parse_url(Shop::getURL());
@@ -823,7 +864,7 @@ function checkDbeSXmlRedirect($cSeoOld, $cSeoNew)
  * @param string      $cKey
  * @param int|null    $kSprache
  * @param string|null $cAssoc
- * @return array|null
+ * @return array|null|stdClass
  */
 function getSeoFromDB($kKey, $cKey, $kSprache = null, $cAssoc = null)
 {
@@ -934,7 +975,8 @@ function handleNewPriceFormat($xml)
             Shop::DB()->query(
                 "DELETE p, d
                     FROM tpreis AS p
-                    LEFT JOIN tpreisdetail AS d ON d.kPreis = p.kPreis
+                    LEFT JOIN tpreisdetail AS d 
+                        ON d.kPreis = p.kPreis
                     WHERE p.kArtikel = {$kArtikel}", 3
             );
             $customerGroupHandled = [];
@@ -966,14 +1008,14 @@ function handleNewPriceFormat($xml)
                     ];
                     Shop::DB()->insert('tpreisdetail', $o);
                 }
-                $customerGroupHandled[] = $preis->kKundenGruppe;
+                $customerGroupHandled[] = (int)$preis->kKundenGruppe;
             }
             //any customergroups with missing tpreis node left?
             $kKundengruppen_arr = Kundengruppe::getGroups();
             /** @var Kundengruppe $customergroup */
             foreach ($kKundengruppen_arr as $customergroup) {
                 $kKundengruppe = $customergroup->getKundengruppe();
-                if (!in_array($kKundengruppe, $customerGroupHandled) && isset($xml['fStandardpreisNetto'])) {
+                if (isset($xml['fStandardpreisNetto']) && !in_array($kKundengruppe, $customerGroupHandled, true)) {
                     $kPreis       = handlePriceFormat($kArtikel, $kKundengruppe);
                     $o            = (object)[
                         'kPreis'    => $kPreis,
@@ -1006,7 +1048,8 @@ function handleOldPriceFormat($objs)
         Shop::DB()->query(
             "DELETE p, d
                 FROM tpreis AS p
-                LEFT JOIN tpreisdetail AS d ON d.kPreis = p.kPreis
+                LEFT JOIN tpreisdetail AS d 
+                    ON d.kPreis = p.kPreis
                 WHERE p.kArtikel = {$kArtikel}", 3
         );
         foreach ($objs as $obj) {
@@ -1078,7 +1121,7 @@ function mappeWawiAnrede2ShopAnrede($cAnrede)
 function syncException($msg, $wawiExceptionCode = null)
 {
     $output = '';
-    if (isset($wawiExceptionCode)) {
+    if ($wawiExceptionCode !== null) {
         $output .= $wawiExceptionCode . '\n';
     }
     $output .= $msg;

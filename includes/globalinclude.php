@@ -5,8 +5,8 @@
  */
 $nStartzeit = microtime(true);
 
-if (file_exists(dirname(__FILE__) . '/config.JTL-Shop.ini.php')) {
-    require_once dirname(__FILE__) . '/config.JTL-Shop.ini.php';
+if (file_exists(__DIR__ . '/config.JTL-Shop.ini.php')) {
+    require_once __DIR__ . '/config.JTL-Shop.ini.php';
 }
 
 if (defined('PFAD_ROOT')) {

@@ -120,7 +120,7 @@ function lang_steuerposition($ust, $netto)
     if ($ust == intval($ust)) {
         $ust = (int)$ust;
     }
-    return ($netto)
+    return $netto
         ? Shop::Lang()->get('plus', 'productDetails') . ' ' . $ust . '% ' . Shop::Lang()->get('vat', 'productDetails')
         : Shop::Lang()->get('incl', 'productDetails') . ' ' . $ust . '% ' . Shop::Lang()->get('vat', 'productDetails');
 }

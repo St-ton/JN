@@ -6,7 +6,7 @@
 defined('JTLCRON') || define('JTLCRON', true);
 
 if (!isset($bCronManuell) || !$bCronManuell) {
-    require_once dirname(__FILE__) . '/globalinclude.php';
+    require_once __DIR__ . '/globalinclude.php';
 }
 require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.JobQueue.php';
 

@@ -17,7 +17,7 @@ class FilterJoin
     /**
      * @var string
      */
-    private $table = null;
+    private $table;
 
     /**
      * @var string

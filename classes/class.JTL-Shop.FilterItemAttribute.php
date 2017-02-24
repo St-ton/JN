@@ -130,21 +130,26 @@ class FilterItemAttribute extends FilterBaseAttribute
             : false;
         $oMerkmalFilter_arr          = [];
         $cKatAttribMerkmalFilter_arr = [];
-        if (isset($this->getConfig()['navigationsfilter']['merkmalfilter_verwenden']) && $this->getConfig()['navigationsfilter']['merkmalfilter_verwenden'] !== 'N' || $bForce) {
+        if ($bForce ||
+            (isset($this->getConfig()['navigationsfilter']['merkmalfilter_verwenden']) &&
+                $this->getConfig()['navigationsfilter']['merkmalfilter_verwenden'] !== 'N')
+        ) {
             // Ist Kategorie Mainword, dann prüfe die Kategorie-Funktionsattribute auf merkmalfilter
-            if ($naviFilter->KategorieFilter->isInitialized()) {
-                if (isset($oAktuelleKategorie->categoryFunctionAttributes) && is_array($oAktuelleKategorie->categoryFunctionAttributes) && count($oAktuelleKategorie->categoryFunctionAttributes) > 0) {
-                    if (!empty($oAktuelleKategorie->categoryFunctionAttributes[KAT_ATTRIBUT_MERKMALFILTER])) {
-                        $cKatAttribMerkmalFilter_arr = explode(';', $oAktuelleKategorie->categoryFunctionAttributes[KAT_ATTRIBUT_MERKMALFILTER]);
-                    }
-                }
+            if (isset($oAktuelleKategorie->categoryFunctionAttributes) &&
+                is_array($oAktuelleKategorie->categoryFunctionAttributes) &&
+                count($oAktuelleKategorie->categoryFunctionAttributes) > 0 &&
+                !empty($oAktuelleKategorie->categoryFunctionAttributes[KAT_ATTRIBUT_MERKMALFILTER]) &&
+                $naviFilter->KategorieFilter->isInitialized()
+            ) {
+                $cKatAttribMerkmalFilter_arr =
+                    explode(';', $oAktuelleKategorie->categoryFunctionAttributes[KAT_ATTRIBUT_MERKMALFILTER]);
             }
             $order          = $naviFilter->getOrder();
             $state          = $naviFilter->getCurrentStateData('FilterItemAttribute');
             $state->joins[] = $order->join;
 
             $select = 'tmerkmal.cName';
-            if (true || !$naviFilter->MerkmalWert->isInitialized() && count($naviFilter->MerkmalFilter) === 0) {
+            if (!$naviFilter->MerkmalWert->isInitialized() && count($naviFilter->MerkmalFilter) === 0) {
                 $join = new FilterJoin();
                 $join->setComment('join1 from FilterItemAttribute::getOptions()')
                      ->setType('JOIN')
@@ -163,7 +168,8 @@ class FilterItemAttribute extends FilterBaseAttribute
             $join->setComment('join3 from FilterItemAttribute::getOptions()')
                  ->setType('JOIN')
                  ->setTable('tmerkmalwertsprache')
-                 ->setOn('tmerkmalwertsprache.kMerkmalWert = tartikelmerkmal.kMerkmalWert AND tmerkmalwertsprache.kSprache = ' . $this->getLanguageID());
+                 ->setOn('tmerkmalwertsprache.kMerkmalWert = tartikelmerkmal.kMerkmalWert 
+                              AND tmerkmalwertsprache.kSprache = ' . $this->getLanguageID());
             $state->joins[] = $join;
 
             $join = new FilterJoin();
@@ -179,7 +185,8 @@ class FilterItemAttribute extends FilterBaseAttribute
                 $join->setComment('join5 from FilterItemAttribute::getOptions()')
                      ->setType('JOIN')
                      ->setTable('tmerkmalsprache')
-                     ->setOn('tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal AND tmerkmalsprache.kSprache = ' . $this->getLanguageID());
+                     ->setOn('tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal 
+                                  AND tmerkmalsprache.kSprache = ' . $this->getLanguageID());
                 $state->joins[] = $join;
             }
 
@@ -239,7 +246,8 @@ class FilterItemAttribute extends FilterBaseAttribute
                     $oMerkmalWerte->kMerkmalWert = (int)$oMerkmalFilterDB->kMerkmalWert;
                     $oMerkmalWerte->cWert        = $oMerkmalFilterDB->cWert;
                     $oMerkmalWerte->nAnzahl      = (int)$oMerkmalFilterDB->nAnzahl;
-                    $oMerkmalWerte->nAktiv       = ($naviFilter->MerkmalWert->getValue() === $oMerkmalWerte->kMerkmalWert || ($naviFilter->attributeValueIsActive($oMerkmalWerte->kMerkmalWert)))
+                    $oMerkmalWerte->nAktiv       = ($naviFilter->MerkmalWert->getValue() === $oMerkmalWerte->kMerkmalWert ||
+                        $naviFilter->attributeValueIsActive($oMerkmalWerte->kMerkmalWert))
                         ? 1
                         : 0;
 

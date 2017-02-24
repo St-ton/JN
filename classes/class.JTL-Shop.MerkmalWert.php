@@ -5,10 +5,15 @@
  */
 
 /**
- * Class MerkmalWertWert
+ * Class MerkmalWert
  */
 class MerkmalWert
 {
+    /**
+     * @var int
+     */
+    public $kSprache;
+
     /**
      * @var int
      */
@@ -20,11 +25,6 @@ class MerkmalWert
     public $kMerkmal;
 
     /**
-     * @var string
-     */
-    public $cBildpfad;
-
-    /**
      * @var int
      */
     public $nSort;
@@ -32,7 +32,37 @@ class MerkmalWert
     /**
      * @var string
      */
+    public $cWert;
+
+    /**
+     * @var string
+     */
+    public $cMetaKeywords;
+
+    /**
+     * @var string
+     */
+    public $cMetaDescription;
+
+    /**
+     * @var string
+     */
+    public $cBeschreibung;
+
+    /**
+     * @var string
+     */
+    public $cSeo;
+
+    /**
+     * @var string
+     */
     public $cURL;
+
+    /**
+     * @var string
+     */
+    public $cBildpfad;
 
     /**
      * @var string
@@ -90,7 +120,11 @@ class MerkmalWert
         $kSprache     = (int)$kSprache;
         $id           = 'mmw_' . $kMerkmalWert . '_' . $kSprache;
         if (Shop::has($id)) {
-            return Shop::get($id);
+            foreach (get_object_vars(Shop::get($id)) as $k => $v) {
+                $this->$k = $v;
+            }
+
+            return $this;
         }
         $oMerkmalWert = Shop::DB()->query(
             "SELECT tmerkmalwert.*, tmerkmalwertsprache.kSprache, tmerkmalwertsprache.cWert,
@@ -119,6 +153,10 @@ class MerkmalWert
         $this->nBildKleinVorhanden  = 0;
         $this->cBildpfadNormal      = BILD_KEIN_MERKMALWERTBILD_VORHANDEN;
         $this->nBildNormalVorhanden = 0;
+        $this->nSort                = (int)$this->nSort;
+        $this->kSprache             = (int)$this->kSprache;
+        $this->kMerkmal             = (int)$this->kMerkmal;
+        $this->kMerkmalWert         = (int)$this->kMerkmalWert;
         if ($this->cBildpfad !== null && strlen($this->cBildpfad) > 0) {
             if (file_exists(PFAD_MERKMALWERTBILDER_KLEIN . $this->cBildpfad)) {
                 $this->cBildpfadKlein      = PFAD_MERKMALWERTBILDER_KLEIN . $this->cBildpfad;

@@ -62,7 +62,12 @@ class Merkmal
     /**
      * @var array
      */
-    public $oMerkmalWert_arr;
+    public $oMerkmalWert_arr = [];
+
+    /**
+     * @var string
+     */
+    public $cTyp;
 
     /**
      * Konstruktor
@@ -95,17 +100,22 @@ class Merkmal
             }
         }
         $kSprache = (int)$kSprache;
-        $id       = 'mm_' . $kSprache . '_' . (($bMMW === false) ? 'b' : '');
-        if (Shop::has($id)) {
-            return Shop::get($id);
+        $id       = 'mm_' . $kMerkmal . '_' . $kSprache;
+        if ($bMMW === false && Shop::has($id)) {
+            foreach (get_object_vars(Shop::get($id)) as $k => $v) {
+                $this->$k = $v;
+            }
+
+            return $this;
         }
         $oSQLMerkmal          = new stdClass();
         $oSQLMerkmal->cSELECT = '';
         $oSQLMerkmal->cJOIN   = '';
         if ($kSprache > 0 && !standardspracheAktiv()) {
             $oSQLMerkmal->cSELECT = " , tmerkmalsprache.cName as cName_tmerkmalsprache";
-            $oSQLMerkmal->cJOIN   = " JOIN tmerkmalsprache ON tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal
-                                            AND tmerkmalsprache.kSprache = " . $kSprache;
+            $oSQLMerkmal->cJOIN   = " JOIN tmerkmalsprache 
+                                          ON tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal
+                                          AND tmerkmalsprache.kSprache = " . $kSprache;
         }
         $oMerkmal = Shop::DB()->query(
             "SELECT tmerkmal.* " . $oSQLMerkmal->cSELECT . "
@@ -186,8 +196,9 @@ class Merkmal
             $kSprache             = (int)$kSprache;
             if ($kSprache > 0 && !standardspracheAktiv()) {
                 $oSQLMerkmal->cSELECT = " , tmerkmalsprache.cName AS cName_tmerkmalsprache";
-                $oSQLMerkmal->cJOIN   = " JOIN tmerkmalsprache ON tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal
-                                                AND tmerkmalsprache.kSprache = " . $kSprache;
+                $oSQLMerkmal->cJOIN   = " JOIN tmerkmalsprache 
+                                              ON tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal
+                                              AND tmerkmalsprache.kSprache = " . $kSprache;
             }
 
             $cSQL = ' IN(';

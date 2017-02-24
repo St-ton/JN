@@ -48,7 +48,7 @@ class WidgetServerSettings extends WidgetBase
      */
     public function checkMaxExecutionTime()
     {
-        return (ini_get('max_execution_time') >= 60 || ini_get('max_execution_time') <= 0);
+        return Shop()->PHPSettingsHelper()->hasMinExecutionTime(60);
     }
 
     /**
@@ -56,10 +56,7 @@ class WidgetServerSettings extends WidgetBase
      */
     public function checkMaxFilesize()
     {
-        $upload_max_filesize = ini_get('upload_max_filesize');
-        $cLast               = substr($upload_max_filesize, -1);
-
-        return !(substr($upload_max_filesize, 0, strrpos($upload_max_filesize, $cLast)) < 5 && (strtolower($cLast) === 'm' || strtolower($cLast) === 'g'));
+        return Shop()->PHPSettingsHelper()->hasMinUploadSize(5);
     }
 
     /**
@@ -67,10 +64,7 @@ class WidgetServerSettings extends WidgetBase
      */
     public function checkMemoryLimit()
     {
-        $memory_limit = ini_get('memory_limit');
-        $cLast        = substr($memory_limit, -1);
-
-        return ($memory_limit == -1 || substr($memory_limit, 0, strrpos($memory_limit, $cLast)) >= 64);
+        return Shop()->PHPSettingsHelper()->hasMinLimit(64);
     }
 
     /**
@@ -78,10 +72,7 @@ class WidgetServerSettings extends WidgetBase
      */
     public function checkPostMaxSize()
     {
-        $post_max_size = ini_get('post_max_size');
-        $cLast         = substr($post_max_size, -1);
-
-        return !(substr($post_max_size, 0, strrpos($post_max_size, $cLast)) < 8 && (strtolower($cLast) === 'm' || strtolower($cLast) === 'g'));
+        return Shop()->PHPSettingsHelper()->hasMinPostSize(8);
     }
 
     /**
@@ -89,6 +80,6 @@ class WidgetServerSettings extends WidgetBase
      */
     public function checkAllowUrlFopen()
     {
-        return (ini_get('allow_url_fopen') > 0);
+        return Shop()->PHPSettingsHelper()->fopenWrapper();
     }
 }

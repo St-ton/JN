@@ -3,8 +3,9 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-if (intval($_GET['kArtikel']) > 0 && intval($_GET['kKundengruppe']) > 0 && intval($_GET['kSteuerklasse']) > 0) {
-    require_once dirname(__FILE__) . '/globalinclude.php';
+
+if ((int)$_GET['kArtikel'] > 0 && (int)$_GET['kKundengruppe'] > 0 && (int)$_GET['kSteuerklasse'] > 0) {
+    require_once __DIR__ . '/globalinclude.php';
     require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.PreisverlaufGraph.php';
     //session starten
     $session       = Session::getInstance();
@@ -16,16 +17,12 @@ if (intval($_GET['kArtikel']) > 0 && intval($_GET['kKundengruppe']) > 0 && intva
     $nMonat        = (int)$Einstellungen['preisverlauf']['preisverlauf_anzahl_monate'];
 
     if (count($oConfig_arr) > 0) {
-        if (!isset($oPreisConfig)) {
-            $oPreisConfig = new stdClass();
-        }
+        $oPreisConfig           = new stdClass();
         $oPreisConfig->Waehrung = $_SESSION['Waehrung']->cName;
-        if ($_SESSION['Kundengruppe']->nNettoPreise == 1) {
-            $oPreisConfig->Netto = 0;
-        } else {
-            $oPreisConfig->Netto = $_SESSION['Steuersatz'][$kSteuerklasse];
-        }
-        $oPreisverlauf = Shop::DB()->query(
+        $oPreisConfig->Netto    = ($_SESSION['Kundengruppe']->nNettoPreise == 1)
+            ? 0
+            : $_SESSION['Steuersatz'][$kSteuerklasse];
+        $oPreisverlauf          = Shop::DB()->query(
             "SELECT kPreisverlauf
                 FROM tpreisverlauf
                 WHERE kArtikel = " . $kArtikel . "

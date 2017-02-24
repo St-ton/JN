@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/globalinclude.php';
+require_once __DIR__ . '/globalinclude.php';
 require_once PFAD_ROOT . PFAD_FLASHCHART . 'php-ofc-library/open-flash-chart.php';
 require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Preisverlauf.php';
 
@@ -44,11 +44,9 @@ if (isset($_GET['kArtikel'])) {
     if (count($Einstellungen) > 0) {
         $oPreisConfig           = new stdClass();
         $oPreisConfig->Waehrung = $_SESSION['Waehrung']->cName;
-        if ($_SESSION['Kundengruppe']->nNettoPreise == 1) {
-            $oPreisConfig->Netto = 0;
-        } else {
-            $oPreisConfig->Netto = $_GET['fMwSt'];
-        }
+        $oPreisConfig->Netto    = ($_SESSION['Kundengruppe']->nNettoPreise == 1)
+            ? 0
+            : $_GET['fMwSt'];
         $oVerlauf     = new Preisverlauf();
         $oVerlauf_arr = $oVerlauf->gibPreisverlauf($kArtikel, $kKundengruppe, $nMonat);
         // Array drehen :D
@@ -94,11 +92,10 @@ if (isset($_GET['kArtikel'])) {
         if ($fMinPreis < 0) {
             $fMinPreis = 0;
         }
-        $y->set_range(intval($fMinPreis), intval($fMaxPreis), 10);
+        $y->set_range((int)$fMinPreis, (int)$fMaxPreis, 10);
 
         // chart
         $chart = new open_flash_chart();
-        //$chart->add_element( $line );
         $chart->add_element($bar);
         $chart->set_x_axis($x);
         $chart->set_y_axis($y);

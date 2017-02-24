@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/syncinclude.php';
+require_once __DIR__ . '/syncinclude.php';
 $return        = 3;
 $Einstellungen = null;
 $oBranding_arr = null;
@@ -186,7 +186,7 @@ if (auth()) {
     }
 }
 
-if ($return == 1) {
+if ($return === 2) {
     syncException('RET Error : ' . $archive->errorInfo(true));
 }
 echo $return;
@@ -253,7 +253,12 @@ function bearbeite($xml, $unzipPath)
                 $oArtikelBild = Shop::DB()->select('tartikelpict', 'kArtikelPict', (int)$img->kArtikelPict);
                 //update all references, if img is used by other products
                 if (isset($oArtikelBild->cPfad) && strlen($oArtikelBild->cPfad) > 0) {
-                    Shop::DB()->update('tartikelpict', 'kMainArtikelBild', (int)$oArtikelBild->kArtikelPict, (object)['cPfad' => $oArtikelBild->cPfad]);
+                    Shop::DB()->update(
+                        'tartikelpict',
+                        'kMainArtikelBild',
+                        (int)$oArtikelBild->kArtikelPict,
+                        (object)['cPfad' => $oArtikelBild->cPfad]
+                    );
                 }
                 erstelleArtikelBild($img, $Bildformat, $unzipPath, $imgFilename);
             }
@@ -401,7 +406,12 @@ function bearbeite($xml, $unzipPath)
                 $GLOBALS['Einstellungen']['bilder']['container_verwenden']
             )) {
                 //thersteller updaten
-                Shop::DB()->update('thersteller', 'kHersteller', (int)$Herstellerbild->kHersteller, (object)['cBildpfad' => $Herstellerbild->cPfad]);
+                Shop::DB()->update(
+                    'thersteller',
+                    'kHersteller',
+                    (int)$Herstellerbild->kHersteller,
+                    (object)['cBildpfad' => $Herstellerbild->cPfad]
+                );
             }
             $cacheTags = [];
             foreach (Shop::DB()->selectAll('tartikel', 'kHersteller', (int)$Herstellerbild->kHersteller, 'kArtikel') as $article) {
@@ -446,7 +456,12 @@ function bearbeite($xml, $unzipPath)
                 $GLOBALS['Einstellungen']['bilder']['container_verwenden']
             )) {
                 //tmerkmal updaten
-                Shop::DB()->update('tmerkmal', 'kMerkmal', (int)$Merkmalbild->kMerkmal, (object)['cBildpfad' => $Merkmalbild->cPfad]);
+                Shop::DB()->update(
+                    'tmerkmal',
+                    'kMerkmal',
+                    (int)$Merkmalbild->kMerkmal,
+                    (object)['cBildpfad' => $Merkmalbild->cPfad]
+                );
             }
             unlink($unzipPath . $imgFilename);
         }
@@ -486,7 +501,12 @@ function bearbeite($xml, $unzipPath)
                 $GLOBALS['Einstellungen']['bilder']['container_verwenden']
             )) {
                 //tmerkmalwert updaten
-                Shop::DB()->update('tmerkmalwert', 'kMerkmalWert', (int)$Merkmalwertbild->kMerkmalWert, (object)['cBildpfad' => $Merkmalwertbild->cPfad]);
+                Shop::DB()->update(
+                    'tmerkmalwert',
+                    'kMerkmalWert',
+                    (int)$Merkmalwertbild->kMerkmalWert,
+                    (object)['cBildpfad' => $Merkmalwertbild->cPfad]
+                );
                 $oMerkmalwertbild               = new stdClass();
                 $oMerkmalwertbild->kMerkmalWert = (int)$Merkmalwertbild->kMerkmalWert;
                 $oMerkmalwertbild->cBildpfad    = $Merkmalwertbild->cPfad;
@@ -531,7 +551,12 @@ function bearbeite($xml, $unzipPath)
                 1,
                 $GLOBALS['Einstellungen']['bilder']['container_verwenden']
             )) {
-                Shop::DB()->update('tkonfiggruppe', 'kKonfiggruppe', (int)$oKonfig->kKonfiggruppe, (object)['cBildPfad' => $oKonfig->cBildPfad]);
+                Shop::DB()->update(
+                    'tkonfiggruppe',
+                    'kKonfiggruppe',
+                    (int)$oKonfig->kKonfiggruppe,
+                    (object)['cBildPfad' => $oKonfig->cBildPfad]
+                );
             }
             unlink($unzipPath . $imgFilename);
         }
@@ -550,10 +575,10 @@ function bearbeite($xml, $unzipPath)
 }
 
 /**
- * @param object $img
- * @param string $Bildformat
- * @param string $unzipPath
- * @param string $imgFilename
+ * @param stdClass $img
+ * @param string   $Bildformat
+ * @param string   $unzipPath
+ * @param string   $imgFilename
  */
 function erstelleArtikelBild($img, $Bildformat, $unzipPath, $imgFilename)
 {
@@ -613,7 +638,7 @@ function gibEigenschaftwertbildname($Eigenschaftwertbild, $Bildformat)
 {
     global $cSQL;
 
-    if (!$GLOBALS['Einstellungen']['bilder']['bilder_variation_namen'] || !$Eigenschaftwertbild->kEigenschaftWert) {
+    if (!$Eigenschaftwertbild->kEigenschaftWert || !$GLOBALS['Einstellungen']['bilder']['bilder_variation_namen']) {
         return (stripos(strrev($Eigenschaftwertbild->cPfad), strrev($Bildformat)) === 0)
             ? $Eigenschaftwertbild->cPfad
             : $Eigenschaftwertbild->cPfad . '.' . $Bildformat;
@@ -641,7 +666,7 @@ function gibEigenschaftwertbildname($Eigenschaftwertbild, $Bildformat)
                             AND tseo.kKey = tartikel.kArtikel
                             " . $cSQL . "
                         WHERE teigenschaftwert.kEigenschaft=teigenschaft.kEigenschaft
-                            AND teigenschaft.kArtikel=tartikel.kArtikel
+                            AND teigenschaft.kArtikel = tartikel.kArtikel
                             AND teigenschaftwert.kEigenschaftWert = " . (int)$Eigenschaftwertbild->kEigenschaftWert, 1
                 );
                 if (!empty($Artikel->cArtNr) && !empty($Eigenschaftwert->cArtNr)) {
@@ -657,8 +682,8 @@ function gibEigenschaftwertbildname($Eigenschaftwertbild, $Bildformat)
                             ON tseo.cKey = 'kArtikel'
                             AND tseo.kKey = tartikel.kArtikel
                             " . $cSQL . "
-                        WHERE teigenschaftwert.kEigenschaft=teigenschaft.kEigenschaft
-                            AND teigenschaft.kArtikel=tartikel.kArtikel
+                        WHERE teigenschaftwert.kEigenschaft = teigenschaft.kEigenschaft
+                            AND teigenschaft.kArtikel = tartikel.kArtikel
                             AND teigenschaftwert.kEigenschaftWert = " . $Eigenschaftwertbild->kEigenschaftWert, 1
                 );
 
@@ -691,12 +716,19 @@ function gibKategoriebildname($Kategoriebild, $Bildformat)
 {
     global $cSQL;
 
-    if (!$GLOBALS['Einstellungen']['bilder']['bilder_kategorie_namen'] || !$Kategoriebild->kKategorie) {
+    if (!$Kategoriebild->kKategorie || !$GLOBALS['Einstellungen']['bilder']['bilder_kategorie_namen']) {
         return (stripos(strrev($Kategoriebild->cPfad), strrev($Bildformat)) === 0)
             ? $Kategoriebild->cPfad
             : $Kategoriebild->cPfad . '.' . $Bildformat;
     }
-    $attr = Shop::DB()->select('tkategorieattribut', 'kKategorie', (int)$Kategoriebild->kKategorie, 'cName', KAT_ATTRIBUT_BILDNAME, null, null, false, 'cWert');
+    $attr = Shop::DB()->select(
+        'tkategorieattribut',
+        'kKategorie', (int)$Kategoriebild->kKategorie,
+        'cName', KAT_ATTRIBUT_BILDNAME,
+        null, null,
+        false,
+        'cWert'
+    );
     if (!empty($attr->cWert)) {
         return $attr->cWert . '.' . $Bildformat;
     }
@@ -742,7 +774,14 @@ function gibArtikelbildname($img, $Bildformat)
 
     if ($img->kArtikel) {
         //Bildname Attribut als Funktionsattribut beim Artikel?
-        $attr = Shop::DB()->select('tkategorieattribut', 'kArtikel', (int)$img->kArtikel, 'cName', FKT_ATTRIBUT_BILDNAME, null, null, false, 'cWert');
+        $attr = Shop::DB()->select(
+            'tkategorieattribut',
+            'kArtikel', (int)$img->kArtikel,
+            'cName', FKT_ATTRIBUT_BILDNAME,
+            null, null,
+            false,
+            'cWert'
+        );
         if (isset($attr->cWert)) {
             if ($img->nNr > 1) {
                 $attr->cWert .= '_' . $img->nNr;
@@ -752,7 +791,7 @@ function gibArtikelbildname($img, $Bildformat)
         }
     }
 
-    if (!$GLOBALS['Einstellungen']['bilder']['bilder_artikel_namen'] || !$img->kArtikel) {
+    if (!$img->kArtikel || !$GLOBALS['Einstellungen']['bilder']['bilder_artikel_namen']) {
         //keine Einstellung bzw Einstellung = PK vom Artikel oder kein PK gesetzt
         return $img->cPfad . '.' . $Bildformat;
     }
@@ -811,7 +850,7 @@ function gibArtikelbildname($img, $Bildformat)
     if ($img->nNr > 1 && $Bildname != $img->cPfad) {
         $Bildname .= '_b' . $img->nNr;
     }
-    if ($GLOBALS['Einstellungen']['bilder']['bilder_artikel_namen'] != 5 && $Bildname != $img->cPfad) {
+    if ($Bildname !== $img->cPfad && $GLOBALS['Einstellungen']['bilder']['bilder_artikel_namen'] != 5) {
         $Bildname = streicheSonderzeichen($Bildname) . '.' . $Bildformat;
     } else {
         $Bildname .= '.' . $Bildformat;
@@ -998,11 +1037,11 @@ function bearbeiteDeletes($xml)
     if (isset($xml['del_bilder']['kArtikelPict'])) {
         if (is_array($xml['del_bilder']['kArtikelPict'])) {
             foreach ($xml['del_bilder']['kArtikelPict'] as $kArtikelPict) {
-                if (intval($kArtikelPict) > 0) {
+                if ((int)$kArtikelPict > 0) {
                     loescheArtikelPict((int)$kArtikelPict);
                 }
             }
-        } elseif (intval($xml['del_bilder']['kArtikelPict']) > 0) {
+        } elseif ((int)$xml['del_bilder']['kArtikelPict'] > 0) {
             loescheArtikelPict((int)$xml['del_bilder']['kArtikelPict']);
         }
     }
@@ -1023,18 +1062,18 @@ function bearbeiteDeletes($xml)
     if (isset($xml['del_bilder']['kKategoriePict'])) {
         if (is_array($xml['del_bilder']['kKategoriePict'])) {
             foreach ($xml['del_bilder']['kKategoriePict'] as $kKategoriePict) {
-                if (intval($kKategoriePict) > 0) {
+                if ((int)$kKategoriePict > 0) {
                     loescheKategoriePict($kKategoriePict);
                 }
             }
-        } elseif (intval($xml['del_bilder']['kKategoriePict']) > 0) {
+        } elseif ((int)$xml['del_bilder']['kKategoriePict'] > 0) {
             loescheKategoriePict((int)$xml['del_bilder']['kKategoriePict']);
         }
     }
     //Kategoriebilder löschen Wawi > .99923
     if (isset($xml['del_bilder']['kKategorie'])) {
         foreach ((array)$xml['del_bilder']['kKategorie'] as $kKategorie) {
-            if (intval($kKategorie) > 0) {
+            if ((int)$kKategorie > 0) {
                 loescheKategoriePict(null, $kKategorie);
             }
         }
@@ -1043,11 +1082,11 @@ function bearbeiteDeletes($xml)
     if (isset($xml['del_bilder']['kEigenschaftWertPict'])) {
         if (is_array($xml['del_bilder']['kEigenschaftWertPict'])) {
             foreach ($xml['del_bilder']['kEigenschaftWertPict'] as $kEigenschaftWertPict) {
-                if (intval($kEigenschaftWertPict) > 0) {
+                if ((int)$kEigenschaftWertPict > 0) {
                     loescheEigenschaftwertPict($kEigenschaftWertPict);
                 }
             }
-        } elseif (intval($xml['del_bilder']['kEigenschaftWertPict']) > 0) {
+        } elseif ((int)$xml['del_bilder']['kEigenschaftWertPict'] > 0) {
             loescheEigenschaftwertPict($xml['del_bilder']['kEigenschaftWertPict']);
         }
     }
@@ -1055,11 +1094,11 @@ function bearbeiteDeletes($xml)
     if (isset($xml['del_bilder']['kEigenschaftWert'])) {
         if (is_array($xml['del_bilder']['kEigenschaftWert'])) {
             foreach ($xml['del_bilder']['kEigenschaftWert'] as $kEigenschaftWert) {
-                if (intval($kEigenschaftWert) > 0) {
+                if ((int)$kEigenschaftWert > 0) {
                     loescheEigenschaftwertPict(null, $kEigenschaftWert);
                 }
             }
-        } elseif (intval($xml['del_bilder']['kEigenschaftWert']) > 0) {
+        } elseif ((int)$xml['del_bilder']['kEigenschaftWert'] > 0) {
             loescheEigenschaftwertPict(null, $xml['del_bilder']['kEigenschaftWert']);
         }
     }
@@ -1094,7 +1133,7 @@ function bearbeiteDeletes($xml)
                     Shop::DB()->update('tmerkmal', 'kMerkmal', (int)$kMerkmal, (object)['cBildpfad' => '']);
                 }
             }
-        } elseif (intval($xml['del_bilder']['kMerkmal']) > 0) {
+        } elseif ((int)$xml['del_bilder']['kMerkmal'] > 0) {
             Shop::DB()->update('tmerkmal', 'kMerkmal', (int)$xml['del_bilder']['kMerkmal'], (object)['cBildpfad' => '']);
         }
     }
@@ -1123,7 +1162,7 @@ function loescheArtikelPict($kArtikelPict, $nNr = null)
     $kArtikelPict = (int)$kArtikelPict;
     if ($kArtikelPict > 0) {
         $oArtikelPict = null;
-        if (intval($nNr) > 0) {
+        if ((int)$nNr > 0) {
             $oArtikelPict = Shop::DB()->select('tartikelpict', 'kArtikel', $kArtikelPict, 'nNr', (int)$nNr);
             $kArtikelPict = isset($oArtikelPict->kArtikelPict) ? $oArtikelPict->kArtikelPict : 0;
         }
@@ -1140,7 +1179,7 @@ function loescheArtikelPict($kArtikelPict, $nNr = null)
  */
 function loescheKategoriePict($kKategoriePict, $kKategorie = null)
 {
-    if (!is_null($kKategoriePict)) {
+    if ($kKategoriePict !== null) {
         $kKategoriePict = (int)$kKategoriePict;
         if ($kKategoriePict > 0) {
             Shop::DB()->delete('tkategoriepict', 'kKategoriePict', $kKategoriePict);
@@ -1361,15 +1400,16 @@ function imagecopymerge_alpha($dst_im, $src_im, $dst_x, $dst_y, $src_x, $src_y, 
 }
 
 /**
- * @param $dst_im
- * @param $src_im
- * @param $dst_x
- * @param $dst_y
- * @param $src_x
- * @param $src_y
- * @param $src_w
- * @param $src_h
- * @param $pct
+ * @param resource $dst_im
+ * @param resource $src_im
+ * @param int      $dst_x
+ * @param int      $dst_y
+ * @param int      $src_x
+ * @param int      $src_y
+ * @param int      $src_w
+ * @param int      $src_h
+ * @param int      $pct
+ * @return bool
  */
 function imagecopymerge_alpha_fast($dst_im, $src_im, $dst_x, $dst_y, $src_x, $src_y, $src_w, $src_h, $pct)
 {
@@ -1615,7 +1655,11 @@ function holeBilderEinstellungen()
             $oBranding_arr[$oBrandingTMP->cBildKategorie] = $oBrandingTMP;
         }
         foreach ($oBranding_arr as $i => $oBranding) {
-            $oBranding_arr[$i]->oBrandingEinstellung = Shop::DB()->select('tbrandingeinstellung', 'kBranding', (int)$oBranding->kBranding);
+            $oBranding_arr[$i]->oBrandingEinstellung = Shop::DB()->select(
+                'tbrandingeinstellung',
+                'kBranding',
+                (int)$oBranding->kBranding
+            );
         }
     }
 

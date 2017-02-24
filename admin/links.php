@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/admininclude.php';
+require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('CONTENT_PAGE_VIEW', true, true);
 require_once PFAD_ROOT . PFAD_DBES . 'seo.php';

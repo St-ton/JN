@@ -5,7 +5,7 @@
  *
  * @global smarty
  */
-require_once dirname(__FILE__) . '/includes/admininclude.php';
+require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('LANGUAGE_VIEW', true, true);
 /** @global JTLSmarty $smarty */

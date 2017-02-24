@@ -183,7 +183,7 @@ class VersandartHelper
                     OR cVersandklassen RLIKE '^([0-9- ]* )?" . addcslashes($versandklassen, '%_') . " ')
                     AND (cKundengruppen = '-1'
                     OR cKundengruppen RLIKE '^([0-9;]*;)?" . $kKundengruppe . ";')
-                ORDER BY nSort", 2, true
+                ORDER BY nSort", 2
         );
         $cnt             = count($versandarten);
         $netPricesActive = $_SESSION['Kundengruppe']->nNettoPreise === '1';

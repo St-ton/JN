@@ -249,5 +249,5 @@ function shop_writeable_paths()
  */
 
 // Static defines (do not edit)
-require_once dirname(__FILE__) . '/defines_inc.php';
-require_once dirname(__FILE__) . '/hooks_inc.php';
+require_once __DIR__ . '/defines_inc.php';
+require_once __DIR__ . '/hooks_inc.php';

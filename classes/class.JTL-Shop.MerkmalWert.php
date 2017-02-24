@@ -63,6 +63,7 @@ class MerkmalWert
     {
         if ($kMerkmalWert > 0) {
             $this->loadFromDB($kMerkmalWert);
+            Shop::set('mmw_' . $kMerkmalWert, $this);
         }
     }
 
@@ -85,8 +86,13 @@ class MerkmalWert
                 $kSprache = (int)$oSprache->kSprache;
             }
         }
-        $kSprache     = (int)$kSprache;
         $kMerkmalWert = (int)$kMerkmalWert;
+        $kSprache     = (int)$kSprache;
+        $id           = 'mmw_' . $kMerkmalWert . '_' . $kSprache;
+        if (Shop::has($id)) {
+            echo '<br>has MMW!';
+            return Shop::get($id);
+        }
         $oMerkmalWert = Shop::DB()->query(
             "SELECT tmerkmalwert.*, tmerkmalwertsprache.kSprache, tmerkmalwertsprache.cWert,
                 tmerkmalwertsprache.cMetaTitle, tmerkmalwertsprache.cMetaKeywords, 
@@ -124,6 +130,7 @@ class MerkmalWert
                 $this->nBildNormalVorhanden = 1;
             }
         }
+        Shop::set($id, $this);
 
         return $this;
     }

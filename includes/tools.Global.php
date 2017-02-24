@@ -2617,8 +2617,7 @@ function gibGuenstigsteVersandart($lieferland, $versandklassen, $kKundengruppe, 
             WHERE cNurAbhaengigeVersandart = '" . $cNurAbhaengigeVersandart . "'
                 AND cLaender LIKE '%" . $cISO . "%'
                 AND (cVersandklassen = '-1' 
-                    OR (cVersandklassen LIKE '% " . $versandklassen . " %' 
-                    OR cVersandklassen LIKE '% " . $versandklassen . "'))
+                    OR cVersandklassen RLIKE '^([0-9- ]* )?" . $versandklassen . " ')
                 AND (cKundengruppen = '-1' 
                     OR cKundengruppen RLIKE '^([0-9;]+;)?" . $kKundengruppe . ";') 
             ORDER BY nSort", 2
@@ -2891,8 +2890,7 @@ function gibGuenstigsteVersandkosten($cISO, $Artikel, $barzahlungZulassen, $kKun
             FROM tversandart
             WHERE cLaender LIKE '%" . $cISO . "%'
                 AND (cVersandklassen = '-1' 
-                    OR (cVersandklassen LIKE '% " . $Artikel->kVersandklasse . " %' 
-                    OR cVersandklassen LIKE '% " . $Artikel->kVersandklasse . "'))
+                    OR cVersandklassen RLIKE '^([0-9- ]* )?" . $Artikel->kVersandklasse . " ')
                 AND (cKundengruppen = '-1' 
                     OR cKundengruppen RLIKE '^([0-9;]+;)?" . $kKundengruppe . ";')", 2
     );
@@ -3567,8 +3565,7 @@ function gibVersandkostenfreiAb($kKundengruppe, $cLand = '')
                     AND tversandartsprache.cISOSprache = '" . $_SESSION['cISOSprache'] . "'
                 WHERE fVersandkostenfreiAbX > 0
                     AND (cVersandklassen = '-1' 
-                        OR (cVersandklassen LIKE '% " . $versandklassen . " %' 
-                        OR cVersandklassen LIKE '% " . $versandklassen . "'))
+                        OR cVersandklassen RLIKE '^([0-9- ]* )?" . $versandklassen . " ')
                     AND (cKundengruppen = '-1' 
                         OR cKundengruppen RLIKE '^([0-9;]+;)?" . $kKundengruppe . ";')
                     " . $cKundeSQLWhere . "

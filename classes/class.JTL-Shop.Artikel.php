@@ -4943,7 +4943,7 @@ class Artikel
             "SELECT va.kVersandart, IF(vas.fPreis IS NOT NULL, vas.fPreis, va.fPreis) AS minPrice FROM tversandart va
                 LEFT JOIN tversandartstaffel vas ON vas.kVersandart = va.kVersandart
                 WHERE va.cLaender like '%{$countryCode}%'
-                AND (va.cVersandklassen='-1' OR (va.cVersandklassen LIKE '% {$this->kVersandklasse} %' OR va.cVersandklassen LIKE '% {$this->kVersandklasse}'))
+                AND (va.cVersandklassen='-1' OR va.cVersandklassen RLIKE '^([0-9- ]* )?{$this->kVersandklasse} ')
                 AND (va.cKundengruppen='-1' OR va.cKundengruppen RLIKE '^([0-9;]+;)?{$_SESSION['Kundengruppe']->kKundengruppe};')
                 AND va.kVersandart NOT IN (SELECT vaza.kVersandart FROM tversandartzahlungsart vaza WHERE kZahlungsart = 6)
                 AND (

@@ -403,11 +403,11 @@ if (isset($_POST['neueVersandart']) && intval($_POST['neueVersandart']) > 0 && v
                 }
                 $versandSprache->cHinweistext = '';
                 if ($_POST['cHinweistext_' . $sprache->cISO]) {
-                    $versandSprache->cHinweistext = htmlspecialchars($_POST['cHinweistext_' . $sprache->cISO], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
+                    $versandSprache->cHinweistext =$_POST['cHinweistext_' . $sprache->cISO];
                 }
                 $versandSprache->cHinweistextShop = '';
                 if ($_POST['cHinweistextShop_' . $sprache->cISO]) {
-                    $versandSprache->cHinweistextShop = htmlspecialchars($_POST['cHinweistextShop_' . $sprache->cISO], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
+                    $versandSprache->cHinweistextShop = $_POST['cHinweistextShop_' . $sprache->cISO];
                 }
                 Shop::DB()->delete('tversandartsprache', ['kVersandart', 'cISOSprache'], [$kVersandart, $sprache->cISO]);
                 Shop::DB()->insert('tversandartsprache', $versandSprache);

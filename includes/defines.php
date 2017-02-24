@@ -173,8 +173,6 @@ ifndef('CATEGORY_FULL_LOAD_MAX_LEVEL', 3);
 //maximum number of entries in category filter, -1 for no limit
 ifndef('CATEGORY_FILTER_ITEM_LIMIT', -1);
 
-ifndef('UNIFY_CACHE_IDS', false);
-
 /**
  * @param string     $constant
  * @param string|int $value

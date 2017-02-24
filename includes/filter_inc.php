@@ -305,17 +305,13 @@ function gibArtikelKeys($FilterSQL, $nArtikelProSeite, $NaviFilter, $bExtern, $o
             exit;
         }
 
-        if (UNIFY_CACHE_IDS === true) {
-            $oArtikelOptionen = Artikel::getDetailOptions();
-        } else {
-            $oArtikelOptionen                        = new stdClass();
-            $oArtikelOptionen->nMerkmale             = 1;
-            $oArtikelOptionen->nKategorie            = 1;
-            $oArtikelOptionen->nAttribute            = 1;
-            $oArtikelOptionen->nArtikelAttribute     = 1;
-            $oArtikelOptionen->nVariationKombiKinder = 1;
-            $oArtikelOptionen->nWarenlager           = 1;
-        }
+        $oArtikelOptionen                        = new stdClass();
+        $oArtikelOptionen->nMerkmale             = 1;
+        $oArtikelOptionen->nKategorie            = 1;
+        $oArtikelOptionen->nAttribute            = 1;
+        $oArtikelOptionen->nArtikelAttribute     = 1;
+        $oArtikelOptionen->nVariationKombiKinder = 1;
+        $oArtikelOptionen->nWarenlager           = 1;
 
         foreach ($oArtikelKey_arr as $i => $oArtikelKey) {
             $nLaufLimitN = $i + $nLimitNBlaetter;

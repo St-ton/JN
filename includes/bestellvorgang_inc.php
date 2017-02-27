@@ -1974,7 +1974,7 @@ function checkKundenFormularArray($data, $kundenaccount, $checkpass = 1)
         $conf['kunden']['kundenregistrierung_abfragen_ustid'] === 'Y'
     ) {
         //skip
-    } elseif (empty($data['ustid'] && $conf['kunden']['kundenregistrierung_abfragen_ustid'] === 'Y')) {
+    } elseif (empty($data['ustid']) && $conf['kunden']['kundenregistrierung_abfragen_ustid'] === 'Y') {
         $ret['ustid'] = 1;
     } elseif ($conf['kunden']['kundenregistrierung_abfragen_ustid'] !== 'N' &&
         isset($data['ustid']) && $data['ustid'] !== ''

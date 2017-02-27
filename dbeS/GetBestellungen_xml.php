@@ -10,8 +10,8 @@ $return  = 3;
 $xml_obj = [];
 if (auth()) {
     $return = 0;
-    $oBestellung_arr = Shop::DB()->query("
-        SELECT tbestellung.kBestellung, tbestellung.kWarenkorb, tbestellung.kKunde, tbestellung.kLieferadresse, 
+    $oBestellung_arr = Shop::DB()->query(
+        "SELECT tbestellung.kBestellung, tbestellung.kWarenkorb, tbestellung.kKunde, tbestellung.kLieferadresse,
             tbestellung.kRechnungsadresse,  tbestellung.kZahlungsart, tbestellung.kVersandart, tbestellung.kSprache, 
             tbestellung.kWaehrung, '0' AS nZahlungsTyp, tbestellung.fGuthaben,  tbestellung.cSession, 
             tbestellung.cZahlungsartName, tbestellung.cBestellNr, tbestellung.cVersandInfo, tbestellung.dVersandDatum, 
@@ -101,6 +101,7 @@ if (auth()) {
                 "SELECT *
                     FROM tzahlungsinfo
                     WHERE kBestellung = " . (int)$xml_obj['bestellungen']['tbestellung'][$i . ' attr']['kBestellung'] . "
+                        AND cAbgeholt = 'N'
                     ORDER BY kZahlungsInfo DESC LIMIT 1", 8
             );
             // Entschlüsseln

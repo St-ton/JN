@@ -403,7 +403,7 @@ if (isset($_POST['neueVersandart']) && intval($_POST['neueVersandart']) > 0 && v
                 }
                 $versandSprache->cHinweistext = '';
                 if ($_POST['cHinweistext_' . $sprache->cISO]) {
-                    $versandSprache->cHinweistext =$_POST['cHinweistext_' . $sprache->cISO];
+                    $versandSprache->cHinweistext = $_POST['cHinweistext_' . $sprache->cISO];
                 }
                 $versandSprache->cHinweistextShop = '';
                 if ($_POST['cHinweistextShop_' . $sprache->cISO]) {

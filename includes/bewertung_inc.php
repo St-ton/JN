@@ -156,7 +156,7 @@ function speicherHilfreich($kArtikel, $kKunde, $kSprache, $bewertung_seite = 1, 
                         $oBewertungHilfreich->kKunde     = $kKunde;
                         $oBewertungHilfreich->nBewertung = 0;
                         // Wenn Hilfreich neu für eine Bewertung eingetragen wird und diese positiv ist
-                        if ($bHilfreich == 1) {
+                        if ($bHilfreich === 1) {
                             $oBewertungHilfreich->nBewertung = 1;
                             Shop::DB()->query(
                                 "UPDATE tbewertung
@@ -182,14 +182,14 @@ function speicherHilfreich($kArtikel, $kKunde, $kSprache, $bewertung_seite = 1, 
                     }
                 } elseif ((int)$oBewertungHilfreich->kKunde > 0) {
                     // Wenn Hilfreich nicht neu (wechsel) für eine Bewertung eingetragen wird und diese positiv ist
-                    if ($bHilfreich == 1 && $oBewertungHilfreich->nBewertung != $bHilfreich) {
+                    if ($bHilfreich === 1 && $oBewertungHilfreich->nBewertung != $bHilfreich) {
                         Shop::DB()->query(
                             "UPDATE tbewertung
                                 SET nHilfreich = nHilfreich+1, nNichtHilfreich = nNichtHilfreich-1
                                 WHERE kBewertung = " . $kBewertung, 3
                         );
                     } // Wenn Hilfreich neu für (wechsel) eine Bewertung eingetragen wird und diese negativ ist
-                    elseif ($bHilfreich == 0 && $oBewertungHilfreich->nBewertung != $bHilfreich) {
+                    elseif ($bHilfreich === 0 && $oBewertungHilfreich->nBewertung != $bHilfreich) {
                         Shop::DB()->query(
                             "UPDATE tbewertung
                                 SET nHilfreich = nHilfreich-1, nNichtHilfreich = nNichtHilfreich+1

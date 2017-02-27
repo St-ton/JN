@@ -146,7 +146,6 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
     //füge alle Warenkorbpositionen ein
     if (is_array($_SESSION['Warenkorb']->PositionenArr) && count($_SESSION['Warenkorb']->PositionenArr) > 0) {
         $nArtikelAnzeigefilter = (int)$conf['global']['artikel_artikelanzeigefilter'];
-        $kArtikel_arr          = [];
         /** @var WarenkorbPos $Position */
         foreach ($_SESSION['Warenkorb']->PositionenArr as $i => $Position) {
             if ($Position->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL) {
@@ -293,7 +292,7 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
         $Bestellung->dBezahltDatum    = 'now()';
         $Bestellung->cZahlungsartName = '-';
     }
-    $Bestellung->cIP = (isset($_SESSION['IP']->cIP)) ? $_SESSION['IP']->cIP : gibIP(true);
+    $Bestellung->cIP = isset($_SESSION['IP']->cIP) ? $_SESSION['IP']->cIP : gibIP(true);
     //#8544
     $Bestellung->fWaehrungsFaktor = $_SESSION['Waehrung']->fFaktor;
 
@@ -952,6 +951,7 @@ function setzeSmartyWeiterleitung($bestellung)
                 $oPlugin->nVersion . '/' . PFAD_PLUGIN_PAYMENTMETHOD .
                 $oPlugin->oPluginZahlungsKlasseAssoc_arr[$_SESSION['Zahlungsart']->cModulId]->cClassPfad;
             $pluginClass             = $oPlugin->oPluginZahlungsKlasseAssoc_arr[$_SESSION['Zahlungsart']->cModulId]->cClassName;
+            /** @var PaymentMethod $paymentMethod */
             $paymentMethod           = new $pluginClass($_SESSION['Zahlungsart']->cModulId);
             $paymentMethod->cModulId = $_SESSION['Zahlungsart']->cModulId;
             $paymentMethod->preparePaymentProcess($bestellung);

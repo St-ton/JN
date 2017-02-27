@@ -17,7 +17,7 @@
  * @param string $cEncoding
  * @return array|null
  */
-function XML_unserialize(&$xml, $cEncoding = "UTF-8")
+function XML_unserialize(&$xml, $cEncoding = 'UTF-8')
 {
     $xml_parser = new XML($cEncoding);
     $data       = $xml_parser->parse($xml);
@@ -47,7 +47,7 @@ function XML_serialize(&$data, $level = 0, $prior_key = null)
             # that has attributes you still need to set the element to NULL
 
         {
-            if (is_array($value) and array_key_exists(0, $value)) {
+            if (is_array($value) && array_key_exists(0, $value)) {
                 XML_serialize($value, $level, $key);
             } else {
                 $tag = $prior_key ? $prior_key : $key;
@@ -96,7 +96,7 @@ class XML
      * XML constructor.
      * @param string $cEncoding
      */
-    function __construct($cEncoding)
+    public function __construct($cEncoding)
     {
         //$this->parser = &xml_parser_create("UTF-8");
         $this->parser = xml_parser_create($cEncoding);
@@ -111,7 +111,7 @@ class XML
     /**
      *
      */
-    function destruct()
+    public function destruct()
     {
         xml_parser_free($this->parser);
     }
@@ -120,7 +120,7 @@ class XML
      * @param mixed $data
      * @return array|null
      */
-    function parse(&$data)
+    public function parse(&$data)
     {
         $this->document = [];
         $this->stack    = [];
@@ -134,7 +134,7 @@ class XML
      * @param mixed  $tag
      * @param mixed  $attributes
      */
-    function open(&$parser, $tag, $attributes)
+    public function open(&$parser, $tag, $attributes)
     {
         $this->data            = ''; #stores temporary cdata
         $this->last_opened_tag = $tag;
@@ -169,7 +169,7 @@ class XML
      * @param resource $parser
      * @param string $data
      */
-    function data(&$parser, $data)
+    public function data(&$parser, $data)
     {
         if ($this->last_opened_tag != null) #you don't need to store whitespace in between tags
         {
@@ -181,7 +181,7 @@ class XML
      * @param resource $parser
      * @param string $tag
      */
-    function close(&$parser, $tag)
+    public function close(&$parser, $tag)
     {
         if ($this->last_opened_tag == $tag) {
             $this->parent          = $this->data;

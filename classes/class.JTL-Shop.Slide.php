@@ -70,18 +70,21 @@ class Slide
     }
 
     /**
-     * @param string $kSlider
-     * @param string $kSlide
+     * @param int $kSlider
+     * @param int $kSlide
      * @return bool
      */
-    public function load($kSlider = '', $kSlide = '')
+    public function load($kSlider = 0, $kSlide = 0)
     {
-        if (isset($kSlider) && intval($kSlider !== 0) || !empty($this->kSlider) && intval($this->kSlider !== 0) &&
-            isset($kSlide) && intval($kSlide !== 0) || !empty($this->kSlide) && intval($this->kSlide !== 0)) {
-            if (empty($kSlider) || intval($kSlider) === 0) {
+        if (
+            ((int)$kSlider > 0) ||
+            (!empty($this->kSlider) && (int)$this->kSlider > 0 && (int)$kSlide > 0) ||
+            (!empty($this->kSlide) && (int)$this->kSlide > 0)
+        ) {
+            if (empty($kSlider) || (int)$kSlider === 0) {
                 $kSlider = $this->kSlider;
             }
-            if (empty($kSlide) || intval($kSlide) === 0) {
+            if (empty($kSlide) || (int)$kSlide === 0) {
                 $kSlide = $this->kSlide;
             }
 
@@ -132,13 +135,13 @@ class Slide
      */
     public function save()
     {
-        if (isset($this->cBild) && !empty($this->cBild)) {
+        if (!empty($this->cBild)) {
             $cShopUrl  = Shop::getURL();
             $cShopUrl2 = URL_SHOP;
-            if (strrpos($cShopUrl, '/') != (strlen($cShopUrl) - 1)) {
+            if (strrpos($cShopUrl, '/') !== (strlen($cShopUrl) - 1)) {
                 $cShopUrl .= '/';
             }
-            if (strrpos($cShopUrl2, '/') != (strlen($cShopUrl2) - 1)) {
+            if (strrpos($cShopUrl2, '/') !== (strlen($cShopUrl2) - 1)) {
                 $cShopUrl2 .= '/';
             }
             $cPfad  = $cShopUrl . PFAD_MEDIAFILES;
@@ -154,7 +157,7 @@ class Slide
             }
         }
 
-        if (isset($this->kSlide)) {
+        if ($this->kSlide !== null) {
             return $this->update();
         }
 
@@ -170,9 +173,7 @@ class Slide
         if (empty($oSlide->cThumbnail)) {
             unset($oSlide->cThumbnail);
         }
-        unset($oSlide->cBildAbsolut);
-        unset($oSlide->cThumbnailAbsolut);
-        unset($oSlide->kSlide);
+        unset($oSlide->cBildAbsolut, $oSlide->cThumbnailAbsolut, $oSlide->kSlide);
 
         return Shop::DB()->update('tslide', 'kSlide', (int)$this->kSlide, $oSlide);
     }
@@ -184,10 +185,8 @@ class Slide
     {
         if (!empty($this->cBild)) {
             $oSlide = clone $this;
-            unset($oSlide->cBildAbsolut);
-            unset($oSlide->cThumbnailAbsolut);
-            unset($oSlide->kSlide);
-            if (!isset($this->nSort)) {
+            unset($oSlide->cBildAbsolut, $oSlide->cThumbnailAbsolut, $oSlide->kSlide);
+            if ($this->nSort === null) {
                 $oSort = Shop::DB()->query("
                 SELECT nSort
                     FROM tslide
@@ -212,10 +211,10 @@ class Slide
      */
     public function delete()
     {
-        if (isset($this->kSlide) && (int)$this->kSlide > 0) {
+        if ($this->kSlide !== null && (int)$this->kSlide > 0) {
             $bSuccess = Shop::DB()->delete('tslide', 'kSlide', (int)$this->kSlide);
 
-            return ($bSuccess != 0);
+            return (int)$bSuccess !== 0;
         }
 
         return false;

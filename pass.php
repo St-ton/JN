@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/globalinclude.php';
+require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 /** @global JTLSmarty $smarty */
@@ -26,7 +26,7 @@ $step                 = 'formular';
 $hinweis              = '';
 $cFehler              = '';
 //loginbenutzer?
-if (isset($_POST['passwort_vergessen']) && (int)$_POST['passwort_vergessen'] === 1 && isset($_POST['email'])) {
+if (isset($_POST['passwort_vergessen'], $_POST['email']) && (int)$_POST['passwort_vergessen'] === 1) {
     $kunde = Shop::DB()->select(
         'tkunde',
         'cMail',
@@ -49,7 +49,7 @@ if (isset($_POST['passwort_vergessen']) && (int)$_POST['passwort_vergessen'] ===
     } else {
         $hinweis = Shop::Lang()->get('incorrectEmail', 'global');
     }
-} elseif (isset($_POST['pw_new']) && isset($_POST['pw_new_confirm']) && isset($_POST['fpm']) && isset($_POST['fpwh'])) {
+} elseif (isset($_POST['pw_new'], $_POST['pw_new_confirm'], $_POST['fpm'], $_POST['fpwh'])) {
     if ($_POST['pw_new'] === $_POST['pw_new_confirm']) {
         $kunde = Shop::DB()->select(
             'tkunde',

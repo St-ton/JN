@@ -62,7 +62,7 @@ class Versand
      */
     public function __construct($kVersand = 0, $oData = null)
     {
-        if (intval($kVersand) > 0) {
+        if ((int)$kVersand > 0) {
             $this->loadFromDB($kVersand, $oData);
         }
     }

@@ -5,7 +5,7 @@
  *
  * @global $smarty
  */
-require_once dirname(__FILE__) . '/includes/globalinclude.php';
+require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
 
 $linkHelper = LinkHelper::getInstance();

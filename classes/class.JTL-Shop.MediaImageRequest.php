@@ -65,7 +65,7 @@ class MediaImageRequest
      * @param MediaImageRequest $new
      * @return MediaImageRequest
      */
-    public function copy(&$mixed, MediaImageRequest &$new)
+    public function copy(&$mixed, MediaImageRequest $new)
     {
         $mixed = (object)$mixed;
         foreach ($mixed as $property => &$value) {

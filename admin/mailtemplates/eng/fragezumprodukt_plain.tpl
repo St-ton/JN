@@ -4,7 +4,7 @@ Shop: {$Einstellungen.global.global_shopname}
 
 Product: {$Artikel->cName}
 
-Email-adress of customer: {$Nachricht->cMail}
+Email address of customer: {$Nachricht->cMail}
 
 Question: {$Nachricht->cNachricht}
 

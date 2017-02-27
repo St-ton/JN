@@ -84,13 +84,10 @@ class Lieferadresse extends Adresse
 
         $obj->cLand = $this->pruefeLandISO($obj->cLand);
 
-        unset($obj->kLieferadresse);
-        unset($obj->angezeigtesLand);
-        unset($obj->cAnredeLocalized);
+        unset($obj->kLieferadresse, $obj->angezeigtesLand, $obj->cAnredeLocalized);
 
         $this->kLieferadresse = Shop::DB()->insert('tlieferadresse', $obj);
         $this->decrypt();
-
         // Anrede mappen
         $this->cAnredeLocalized = $this->mappeAnrede($this->cAnrede);
 
@@ -110,8 +107,7 @@ class Lieferadresse extends Adresse
 
         $obj->cLand = $this->pruefeLandISO($obj->cLand);
 
-        unset($obj->angezeigtesLand);
-        unset($obj->cAnredeLocalized);
+        unset($obj->angezeigtesLand, $obj->cAnredeLocalized);
 
         $cReturn = Shop::DB()->update('tlieferadresse', 'kLieferadresse', $obj->kLieferadresse, $obj);
         $this->decrypt();

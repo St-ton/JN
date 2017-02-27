@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/admininclude.php';
+require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_XAJAX . 'xajax_core/xajax.inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dashboard_inc.php';
 require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Artikel.php';
@@ -13,7 +13,7 @@ require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Kategorie.php';
 $url = null;
 if (isset($_SERVER['REQUEST_URI'])) {
     $protocol = 'http://';
-    if (isset($_SERVER['HTTPS']) && (strtolower($_SERVER['HTTPS']) === 'on' || $_SERVER['HTTPS'] === '1') ||
+    if ((isset($_SERVER['HTTPS']) && (strtolower($_SERVER['HTTPS']) === 'on' || $_SERVER['HTTPS'] === '1')) ||
         (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') ||
         (isset($_SERVER['HTTP_HTTPS']) && (strtolower($_SERVER['HTTP_HTTPS']) === 'on' || $_SERVER['HTTP_HTTPS'] === '1'))
     ) {
@@ -202,8 +202,8 @@ function getArticleList($cSearch, $aParam)
     global $oAccount;
     $cSearch      = Shop::DB()->escape($cSearch);
     $cSearch      = utf8_decode($cSearch);
-    $limit        = ((isset($aParam['cLimit'])) ? "LIMIT " . ((int)$aParam['cLimit']) : 'LIMIT 50');
-    $oArticle_arr = array();
+    $limit        = isset($aParam['cLimit']) ? "LIMIT " . ((int)$aParam['cLimit']) : 'LIMIT 50';
+    $oArticle_arr = [];
     if (strlen($cSearch) >= 2 && $oAccount->logged()) {
         $oArticle_arr = Shop::DB()->query(
             "SELECT kArtikel AS kPrimary, cArtNr AS cBase, kArtikel, cName
@@ -245,7 +245,7 @@ function getArticleListFromString($cArray)
     $cArray         = Shop::DB()->escape($cArray);
     $cArray         = utf8_decode($cArray);
     $cArticleID_arr = explode(';', $cArray);
-    $oArticle_arr   = array();
+    $oArticle_arr   = [];
     $oResponse      = new xajaxResponse();
     if (count($cArticleID_arr) && $oAccount->logged()) {
         $cSQL = '';
@@ -281,10 +281,10 @@ function getManufacturerList($cSearch, $aParam)
     global $oAccount;
     $cSearch           = Shop::DB()->escape($cSearch);
     $cSearch           = utf8_decode($cSearch);
-    $limit             = ((isset($aParam['cLimit']))
+    $limit             = (isset($aParam['cLimit'])
         ? "LIMIT " . ((int)$aParam['cLimit'])
         : 'LIMIT 50');
-    $oManufacturer_arr = array();
+    $oManufacturer_arr = [];
     $shopURL           = Shop::getURL();
     if (strlen($cSearch) >= 2 && $oAccount->logged()) {
         $oManufacturer_arr = Shop::DB()->query(
@@ -320,7 +320,7 @@ function getManufacturerListFromString($cArray)
     $cArray            = utf8_decode($cArray);
     $cManufacturer_arr = explode(';', $cArray);
     $oResponse         = new xajaxResponse();
-    $oManufacturer_arr = array();
+    $oManufacturer_arr = [];
     if (count($cManufacturer_arr) && $oAccount->logged()) {
         $cSQL = '';
         foreach ($cManufacturer_arr as $cManufacturerID) {
@@ -355,10 +355,10 @@ function getCategoryList($cSearch, $aParam)
     global $oAccount;
     $cSearch       = Shop::DB()->escape($cSearch);
     $cSearch       = utf8_decode($cSearch);
-    $limit         = ((isset($aParam['cLimit']))
+    $limit         = (isset($aParam['cLimit'])
         ? "LIMIT " . ((int)$aParam['cLimit'])
         : 'LIMIT 50');
-    $oCategory_arr = array();
+    $oCategory_arr = [];
     if (strlen($cSearch) >= 2 && $oAccount->logged()) {
         $oCategory_arr = Shop::DB()->query(
             "SELECT kKategorie AS kPrimary, kKategorie AS cBase, cName
@@ -393,7 +393,7 @@ function getCategoryListFromString($cArray)
     $cArray         = Shop::DB()->escape($cArray);
     $cArray         = utf8_decode($cArray);
     $cArticleID_arr = explode(';', $cArray);
-    $oArticle_arr   = array();
+    $oArticle_arr   = [];
     $oResponse      = new xajaxResponse();
     if (count($cArticleID_arr) && $oAccount->logged()) {
         $cSQL = '';
@@ -430,7 +430,7 @@ function getTagList($cSearch, $cWrapperID)
 
     $cSearch      = Shop::DB()->escape($cSearch);
     $cSearch      = utf8_decode($cSearch);
-    $oArticle_arr = array();
+    $oArticle_arr = [];
     $oResponse    = new xajaxResponse();
     if (strlen($cSearch) >= 2 && $oAccount->logged()) {
         $oArticle_arr = Shop::DB()->query("
@@ -459,7 +459,7 @@ function getAttributeList($cSearch, $cWrapperID)
 
     $cSearch      = Shop::DB()->escape($cSearch);
     $cSearch      = utf8_decode($cSearch);
-    $oArticle_arr = array();
+    $oArticle_arr = [];
     $oResponse    = new xajaxResponse();
     if (strlen($cSearch) >= 2 && $oAccount->logged()) {
         $oArticle_arr = Shop::DB()->query(
@@ -492,7 +492,7 @@ function getLinkList($cSearch, $aParam)
 {
     $cSearch      = Shop::DB()->escape($cSearch);
     $cSearch      = utf8_decode($cSearch);
-    $oArticle_arr = array();
+    $oArticle_arr = [];
     $oResponse    = new xajaxResponse();
     if (strlen($cSearch) >= 2) {
         $oArticle_arr = Shop::DB()->query("
@@ -663,7 +663,7 @@ function getCustomerList($searchString, $kKundeSelected_arr)
     return $oResponse;
 }
 
-executeHook(HOOK_TOOLSAJAX_SERVER_ADMIN, array('xajax' => &$xajax));
+executeHook(HOOK_TOOLSAJAX_SERVER_ADMIN, ['xajax' => &$xajax]);
 
 $xajax->registerFunction('reloadAdminLoginCaptcha');
 $xajax->registerFunction('getCurrencyConversionAjax');

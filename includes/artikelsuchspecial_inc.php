@@ -10,7 +10,7 @@
 function gibVaterSQL()
 {
     // Muss ein VaterArtikel sein!
-    return $cVaterSQL = ' AND tartikel.kVaterArtikel = 0';
+    return ' AND tartikel.kVaterArtikel = 0';
 }
 
 /**
@@ -76,8 +76,8 @@ function gibBestseller($nLimit, $kKundengruppe = 0)
         $kKundengruppe = Kundengruppe::getDefaultGroupID();
     }
     $oGlobalnEinstellung_arr = Shop::getSettings([CONF_GLOBAL]);
-    $nSchwelleBestseller     = (isset($oGlobalnEinstellung_arr['global']['global_bestseller_minanzahl']))
-        ? doubleval($oGlobalnEinstellung_arr['global']['global_bestseller_minanzahl'])
+    $nSchwelleBestseller     = isset($oGlobalnEinstellung_arr['global']['global_bestseller_minanzahl'])
+        ? (float)$oGlobalnEinstellung_arr['global']['global_bestseller_minanzahl']
         : 10;
     $bestsellers = Shop::DB()->query(
         "SELECT tartikel.kArtikel, tbestseller.fAnzahl

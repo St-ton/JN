@@ -386,10 +386,10 @@ class Link extends MainModel
     }
 
     /**
-     * @param null $kKey
-     * @param null $oObj
-     * @param null $xOption
-     * @param int  $kLinkgruppe
+     * @param null|int    $kKey
+     * @param null|object $oObj
+     * @param null|mixed  $xOption
+     * @param nulll|int   $kLinkgruppe
      */
     public function __construct($kKey = null, $oObj = null, $xOption = null, $kLinkgruppe = null)
     {
@@ -560,11 +560,9 @@ class Link extends MainModel
                 }
             }
 
-            if ($bSub) {
-                if (isset($this->oSub_arr) && count($this->oSub_arr) > 0) {
-                    foreach ($this->oSub_arr as $oSub) {
-                        $oSub->delete(true, $kLinkgruppe);
-                    }
+            if ($bSub && count($this->oSub_arr) > 0) {
+                foreach ($this->oSub_arr as $oSub) {
+                    $oSub->delete(true, $kLinkgruppe);
                 }
             }
         }

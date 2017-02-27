@@ -49,7 +49,7 @@ class Kundengruppe
      */
     public function __construct($kKundengruppe = 0)
     {
-        if (intval($kKundengruppe) > 0) {
+        if ((int)$kKundengruppe > 0) {
             $this->loadFromDB($kKundengruppe);
         }
     }
@@ -165,7 +165,7 @@ class Kundengruppe
      */
     public function setRabatt($fRabatt)
     {
-        $this->fRabatt = floatval($fRabatt);
+        $this->fRabatt = (float)$fRabatt;
 
         return $this;
     }

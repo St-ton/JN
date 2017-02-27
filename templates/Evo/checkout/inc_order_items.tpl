@@ -103,6 +103,13 @@
                             {if $Einstellungen.kaufabwicklung.bestellvorgang_artikelkurzbeschreibung == 'Y' && $oPosition->Artikel->cKurzBeschreibung|strlen > 0}
                                 <li class="shortdescription">{$oPosition->Artikel->cKurzBeschreibung}</li>
                             {/if}
+
+                            {if isset($oPosition->Artikel->cGewicht) && $Einstellungen.artikeldetails.artikeldetails_gewicht_anzeigen === 'Y' && $oPosition->Artikel->fGewicht > 0}
+                                <li class="weight">
+                                    <strong>{lang key="shippingWeight" section="global"}: </strong>
+                                    <span class="value">{$oPosition->Artikel->cGewicht} {lang key="weightUnit" section="global"}</span>
+                                </li>
+                            {/if}
                         </ul>
                     {else}
                         {$oPosition->cName|trans}{if isset($oPosition->discountForArticle)}{$oPosition->discountForArticle|trans}{/if}

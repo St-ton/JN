@@ -36,7 +36,7 @@ class SuchStrings
      */
     public function __construct($kSuchStrings = 0)
     {
-        if (intval($kSuchStrings) > 0) {
+        if ((int)$kSuchStrings > 0) {
             $this->loadFromDB($kSuchStrings);
         }
     }

@@ -246,10 +246,10 @@ Referenznummer: %reference_number%]]></VariableLocalized>
                 </Setting>
             </Method>
             <Method>
-                <Name>PayPal Ratenzahlung</Name>
+                <Name>PayPal Finance</Name>
                 <PictureURL>images/de-ppcc-logo-175px.png</PictureURL>
                 <Sort>1</Sort>
-                <SendMail>1</SendMail>
+                <SendMail>16</SendMail>
                 <Provider>PayPal</Provider>
                 <TSCode>PAYPAL</TSCode>
                 <PreOrder>1</PreOrder>
@@ -296,55 +296,24 @@ Referenznummer: %reference_number%]]></VariableLocalized>
                     <ValueName>bordercolor</ValueName>
                 </Setting>
                 <Setting type="text" initialValue="" sort="6" conf="Y">
-                    <Name>PayPal-API-Client-ID (Rest) (Live)</Name>
+                    <Name>PayPal-API-Client-ID (Live)</Name>
                     <Description>Tragen Sie hier die Client-ID ein</Description>
                     <ValueName>api_live_client_id</ValueName>
                 </Setting>
                 <Setting type="password" initialValue="" sort="7" conf="Y">
-                    <Name>PayPal-API-Secret (Rest) (Live)</Name>
+                    <Name>PayPal-API-Secret (Live)</Name>
                     <Description>Tragen Sie hier den Secret-Key ein</Description>
                     <ValueName>api_live_secret</ValueName>
                 </Setting>
                 <Setting type="text" initialValue="" sort="8" conf="Y">
-                    <Name>PayPal-API-Client-ID (Rest) (Sandbox)</Name>
+                    <Name>PayPal-API-Client-ID (Sandbox)</Name>
                     <Description>Tragen Sie hier die Client-ID ein</Description>
                     <ValueName>api_sandbox_client_id</ValueName>
                 </Setting>
                 <Setting type="password" initialValue="" sort="9" conf="Y">
-                    <Name>PayPal-API-Secret (Rest) (Sandbox)</Name>
+                    <Name>PayPal-API-Secret (Sandbox)</Name>
                     <Description>Tragen Sie hier den Secret-Key ein</Description>
                     <ValueName>api_sandbox_secret</ValueName>
-                </Setting>
-                
-                <Setting type="text" initialValue="" sort="10" conf="Y">
-                    <Name>PayPal-API-Benutzer (NVP) (Live)</Name>
-                    <Description>Tragen Sie hier den Benutzernamen ein</Description>
-                    <ValueName>api_live_user</ValueName>
-                </Setting>
-                <Setting type="password" initialValue="" sort="11" conf="Y">
-                    <Name>PayPal-API-Passwort (NVP) (Live)</Name>
-                    <Description>Tragen Sie hier das Passwort ein</Description>
-                    <ValueName>api_live_pass</ValueName>
-                </Setting>
-                <Setting type="password" initialValue="" sort="12" conf="Y">
-                    <Name>PayPal-API-Signatur (NVP) (Live)</Name>
-                    <Description>Tragen Sie hier API Signatur ein</Description>
-                    <ValueName>api_live_signatur</ValueName>
-                </Setting>
-                <Setting type="text" initialValue="" sort="13" conf="Y">
-                    <Name>PayPal-API-Benutzer (NVP) (Sandbox)</Name>
-                    <Description>Tragen Sie hier den Benutzernamen ein</Description>
-                    <ValueName>api_sandbox_user</ValueName>
-                </Setting>
-                <Setting type="password" initialValue="" sort="14" conf="Y">
-                    <Name>PayPal-API-Passwort (NVP) (Sandbox)</Name>
-                    <Description>Tragen Sie hier das Passwort ein</Description>
-                    <ValueName>api_sandbox_pass</ValueName>
-                </Setting>
-                <Setting type="password" initialValue="" sort="15" conf="Y">
-                    <Name>PayPal-API-Signatur (NVP) (Sandbox)</Name>
-                    <Description>Tragen Sie hier API Signatur ein</Description>
-                    <ValueName>api_sandbox_signatur</ValueName>
                 </Setting>
             </Method>
             <Method>

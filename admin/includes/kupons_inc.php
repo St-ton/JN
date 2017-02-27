@@ -77,26 +77,6 @@ function getCategories($selKats = '', $kKategorie = 0, $tiefe = 0)
 }
 
 /**
- * @param string $selCustomers
- * @return array
- */
-function getCustomers($selCustomers = '')
-{
-    $selected  = StringHandler::parseSSK($selCustomers);
-    $customers = Shop::DB()->query("SELECT kKunde FROM tkunde", 2);
-
-    foreach ($customers as $i => $customer) {
-        $oKunde                   = new Kunde($customer->kKunde);
-        $customers[$i]->cVorname  = $oKunde->cVorname;
-        $customers[$i]->cNachname = $oKunde->cNachname;
-        $customers[$i]->selected  = in_array($customers[$i]->kKunde, $selected) ? 1 : 0;
-        unset($oKunde);
-    }
-
-    return $customers;
-}
-
-/**
  * Parse Datumsstring und formatiere ihn im DB-kompatiblen Standardformat
  * 
  * @param string $string
@@ -285,7 +265,7 @@ function createCouponFromInput()
 {
     $oKupon                        = new Kupon((int)$_POST['kKuponBearbeiten']);
     $oKupon->cKuponTyp             = $_POST['cKuponTyp'];
-    $oKupon->cName                 = htmlspecialchars($_POST['cName']);
+    $oKupon->cName                 = htmlspecialchars($_POST['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
     $oKupon->fWert                 = !empty($_POST['fWert']) ? (float)str_replace(',', '.', $_POST['fWert']) : null;
     $oKupon->cWertTyp              = !empty($_POST['cWertTyp']) ? $_POST['cWertTyp'] : null;
     $oKupon->cZusatzgebuehren      = !empty($_POST['cZusatzgebuehren']) ? $_POST['cZusatzgebuehren'] : 'N';
@@ -518,7 +498,7 @@ function saveCoupon($oKupon, $oSprache_arr)
                 foreach ($oSprache_arr as $oSprache) {
                     $cKuponSpracheName =
                         (isset($_POST['cName_' . $oSprache->cISO]) && $_POST['cName_' . $oSprache->cISO] !== '')
-                            ? htmlspecialchars($_POST['cName_' . $oSprache->cISO])
+                            ? htmlspecialchars($_POST['cName_' . $oSprache->cISO], ENT_COMPAT | ENT_HTML401, JTL_CHARSET)
                             : $oKupon->cName;
 
                     $kuponSprache              = new stdClass();
@@ -534,7 +514,7 @@ function saveCoupon($oKupon, $oSprache_arr)
             foreach ($oSprache_arr as $oSprache) {
                 $cKuponSpracheName =
                     (isset($_POST['cName_' . $oSprache->cISO]) && $_POST['cName_' . $oSprache->cISO] !== '')
-                        ? htmlspecialchars($_POST['cName_' . $oSprache->cISO])
+                        ? htmlspecialchars($_POST['cName_' . $oSprache->cISO], ENT_COMPAT | ENT_HTML401, JTL_CHARSET)
                         : $oKupon->cName;
 
                 $kuponSprache              = new stdClass();
@@ -569,18 +549,20 @@ function informCouponCustomers($oKupon)
         ? gibPreisStringLocalized($oKupon->fWert, $oStdWaehrung, 0)
         : $oKupon->fWert . ' %';
     $oKupon->cLocalizedMBW  = gibPreisStringLocalized($oKupon->fMindestbestellwert, $oStdWaehrung, 0);
-    // kKunde-array aller Kunden
-    if ($oKupon->cKunden === '-1') {
-        $oKundeDB_arr = Shop::DB()->query("
-            SELECT kKunde
-                FROM tkunde" .
-                ((int)$oKupon->kKundengruppe == -1
-                    ? ""
-                    : " WHERE kKundengruppe = " . (int)$oKupon->kKundengruppe),
-            2);
-    } else {
-        $oKundeDB_arr = getCustomers($oKupon->cKunden);
-    }
+    // kKunde-Array aller auserwaehlten Kunden
+    $kKunde_arr   = StringHandler::parseSSK($oKupon->cKunden);
+    $oKundeDB_arr = Shop::DB()->query(
+        "SELECT kKunde
+            FROM tkunde
+            WHERE TRUE
+                " . ((int)$oKupon->kKundengruppe === -1
+                    ? "AND TRUE"
+                    : "AND kKundengruppe = " . (int)$oKupon->kKundengruppe) . "
+                " . ($oKupon->cKunden === '-1'
+                    ? "AND TRUE"
+                    : "AND kKunde IN (" . implode(',', $kKunde_arr) . ")"),
+        2
+    );
     // Artikel-Nummern
     $oArtikelDB_arr = [];
     $cArtNr_arr     = StringHandler::parseSSK($oKupon->cArtikel);

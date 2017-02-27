@@ -14,12 +14,12 @@ class PremiumPlugin
     /**
      * @var array
      */
-    private $advantages = array();
+    private $advantages = [];
 
     /**
      * @var array
      */
-    private $howTos = array();
+    private $howTos = [];
 
     /**
      * @var string
@@ -39,7 +39,7 @@ class PremiumPlugin
     /**
      * @var array
      */
-    private $badges = array();
+    private $badges = [];
 
     /**
      * @var string
@@ -49,7 +49,7 @@ class PremiumPlugin
     /**
      * @var array
      */
-    private $buttons = array();
+    private $buttons = [];
 
     /**
      * @var bool
@@ -84,7 +84,7 @@ class PremiumPlugin
     /**
      * @var array
      */
-    private $screenShots = array();
+    private $screenShots = [];
 
     /**
      * @var string

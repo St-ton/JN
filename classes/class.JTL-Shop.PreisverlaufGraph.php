@@ -164,7 +164,7 @@ class PreisverlaufGraph
         $this->berechneFarbHexNachDec();
         imagecolorallocate($this->image, $this->ColorBackground[0], $this->ColorBackground[1], $this->ColorBackground[2]);
 
-        if ($this->berechneMinMaxPreis(intval($kArtikel), intval($kKundegruppe), intval($nMonat))) {
+        if ($this->berechneMinMaxPreis((int)$kArtikel, (int)$kKundegruppe, (int)$nMonat)) {
             $this->berechneYPreisStep();
         }
     }
@@ -217,9 +217,9 @@ class PreisverlaufGraph
     /**
      * Berechnet für den aktuellen Artikel den maximalen und minimalen Preis
      *
-     * @param $kArtikel
-     * @param $kKundegruppe
-     * @param $nMonat
+     * @param int $kArtikel
+     * @param int $kKundegruppe
+     * @param int $nMonat
      * @return bool
      */
     public function berechneMinMaxPreis($kArtikel, $kKundegruppe, $nMonat)
@@ -236,7 +236,7 @@ class PreisverlaufGraph
             $this->fMaxPreis  = round(floatval(max($fVKNetto_arr)), 2);
             $this->fMinPreis  = round(floatval(min($fVKNetto_arr)), 2);
             $this->fDiffPreis = $this->fMaxPreis - $this->fMinPreis;
-        } elseif (count($this->oPreisverlaufData_arr) === 1 && $this->oPreisverlaufData_arr != null) {
+        } elseif ($this->oPreisverlaufData_arr !== null && count($this->oPreisverlaufData_arr) === 1) {
             $this->fMaxPreis = $this->oPreisverlaufData_arr[0]->fVKNetto;
             $this->fMinPreis = $this->fMaxPreis;
         } else {
@@ -337,11 +337,9 @@ class PreisverlaufGraph
         //$nTimestampXWert = time();
         $nTimestampXWert = $this->nMaxTimestamp;
         // Y-Achsen Ausrichtung der Beschriftung
-        if ($this->fMaxPreis > 1000) {
-            $nBeschriftungsEinzug = 75;
-        } else {
-            $nBeschriftungsEinzug = 65;
-        }
+        $nBeschriftungsEinzug = ($this->fMaxPreis > 1000)
+            ? 75
+            : 65;
         if ($this->nAnzahlPreise > 1) {
             // Pixel pro Schritt Y Achse
             $nPixelProSchrittY = $this->nInnenRahmenHoehe / $this->nAnzahlPreise;

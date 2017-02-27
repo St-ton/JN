@@ -1,3 +1,57 @@
+<style type="text/css">
+#paypal-test-credentials button.btn {
+    display: table;
+    vertical-align: middle;
+}
+
+#paypal-test-credentials button.btn-basic {
+    white-space: nowrap;
+    overflow: hidden;
+    display: inline-block;
+    min-width: 60px;
+    padding-left: 60px;
+    line-height: 18px;
+    padding: 8px;
+    background: url(../includes/plugins/jtl_paypal/version/106/paymentmethod/images/paypal32.png) no-repeat 8px center;
+    background-size: contain;
+    opacity: 0.8;
+}
+
+/*
+#paypal-test-credentials button.btn,
+#paypal-test-credentials button.btn i {
+    color: #337ab7;
+}
+
+#paypal-test-credentials button.btn i {
+    color: #113984;
+    line-height: inherit;
+    text-rendering: auto;
+    display: inline-flex;
+    -webkit-font-smoothing: antialiased;
+    font: normal normal normal 14px/1 FontAwesome;
+}
+
+#paypal-test-credentials button.btn i
+#paypal-test-credentials button.btn span {
+    display: table-cell;
+}
+
+#paypal-test-credentials i.paypal:before {
+    text-indent: -9999%;
+    white-space: nowrap;
+    overflow: hidden;
+    display: inline-block;
+    content: "\f1ed";
+    
+    width: 60px;
+    line-height: 16px;
+    background: url(../includes/plugins/jtl_paypal/version/106/paymentmethod/images/paypal32.png) no-repeat center center;
+    background-size: contain;
+}
+*/
+</style>
+
 <div class="container-fluid">
 
     <h2>Anmelden. Fertig. Starten.</h2>
@@ -14,6 +68,10 @@
         <h3>PayPal Basis</h3>
         <p> 
             Ihre Kunden gehen wie gewohnt zur Kasse und können als Bezahlmethode PayPal wählen. Genau wie bei PayPal Express werden bei PayPal Basis alle relevanten Kundendaten Über eine API-Schnittstelle übermittelt.
+        </p>
+        <h3>Ratenzahlung Powered by PayPal</h3>
+        <p> 
+            Bieten Sie Ihren Kunden Ratenzahlung über einen Zeitraum von 6, 12, 18 oder 24 Monaten bei einem Warenkorb im Wert von 99,-- Euro bis 5.000,-- Euro an.
         </p> 
     </blockquote>
 
@@ -32,7 +90,7 @@
         <a href="https://www.paypal.com/us/cgi-bin/webscr?cmd=_get-api-signature&generic-flow=true" class="btn btn-primary" target="_blank">Live-Zugangsdaten</a>
         <a href="https://www.sandbox.paypal.com/de/cgi-bin/webscr?cmd=_get-api-signature&generic-flow=true" class="btn btn-default" target="_blank">Sandbox-Zugangsdaten</a>
     </p>
-    
+    https://www.sandbox.paypal.com/businessprofile/mytools/apiaccess
     <h2>Konfiguration validieren</h2>
 
     <p>
@@ -47,9 +105,10 @@
     {/if}
     <form id="paypal-test-credentials" method="post" action="{$post_url}">
         <div class="btn-group" role="group">
-            <button class="btn btn-{if $type == 'basic'}{$class}{else}default{/if}" name="validate" value="basic">Paypal Basic</button>
-            <button class="btn btn-{if $type == 'express'}{$class}{else}default{/if}" name="validate" value="express">Paypal Express</button>
-            <button class="btn btn-{if $type == 'plus'}{$class}{else}default{/if}" name="validate" value="plus">Paypal PLUS</button>
+            <button class="btn btn-basic btn-{if $type == 'basic'}{$class}{else}default{/if}" name="validate" value="basic">Basic</button>
+            <button class="btn btn-express btn-{if $type == 'express'}{$class}{else}default{/if}" name="validate" value="express"><i class="paypal"></i> Express</button>
+            <button class="btn btn-plus btn-{if $type == 'plus'}{$class}{else}default{/if}" name="validate" value="plus"><i class="paypal"></i> PLUS</button>
+            <button class="btn btn-finance btn-{if $type == 'finance'}{$class}{else}default{/if}" name="validate" value="finance"><i class="paypal"></i> Ratenzahlung</button>
         </div>
     </form>
 

@@ -6,10 +6,10 @@
 class Filter
 {
     protected $cId          = 'filter';
-    protected $oField_arr   = array();
+    protected $oField_arr   = [];
     protected $cWhereSQL    = '';
     protected $cAction      = '';
-    protected $cSession_arr = array();
+    protected $cSession_arr = [];
 
     /**
      * Filter constructor.
@@ -142,7 +142,7 @@ class Filter
      */
     public function loadSessionStore()
     {
-        $this->cSession_arr = isset($_SESSION['filter_' . $this->cId]) ? $_SESSION['filter_' . $this->cId] : array();
+        $this->cSession_arr = isset($_SESSION['filter_' . $this->cId]) ? $_SESSION['filter_' . $this->cId] : [];
     }
 
     /**

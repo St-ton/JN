@@ -8,7 +8,7 @@ class LessParser
     /**
      * @var array
      */
-    private $_stack = array();
+    private $_stack = [];
 
     /**
      * @param string $file
@@ -54,7 +54,7 @@ class LessParser
      */
     public function getColors()
     {
-        $colors = array();
+        $colors = [];
         foreach ($this->_stack as $key => $value) {
             $color = $this->getAs($value, 'color');
             if ($color) {
@@ -104,7 +104,7 @@ class LessParser
      */
     protected function getAs($value, $type)
     {
-        $matches = array();
+        $matches = [];
 
         switch (strtolower($type)) {
             case 'color':
@@ -120,10 +120,10 @@ class LessParser
             case 'size':
                 // 1.2em 15% '12 px'
                 if (preg_match('/([\d\.]+)(.*)/', $value, $matches)) {
-                    $pair = array(
+                    $pair = [
                         'numeric' => floatval($matches[1]),
                         'unit'    => trim($matches[2])
-                    );
+                    ];
 
                     return $pair['numeric'];
                 }

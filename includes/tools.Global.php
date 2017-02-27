@@ -6321,7 +6321,7 @@ function getDefaultLanguageID()
     $kSprache = isset($_SESSION['kSprache']) ? $_SESSION['kSprache'] : 0;
     if ($kSprache === 0) {
         if (Shop::$kSprache !== null) {
-            $kSprache = Shop::$kSprache;
+            $kSprache = Shop::getLanguage();
         } else {
             $oSpracheTMP = Shop::DB()->select('tsprache', 'cShopStandard', 'Y');
             if (isset($oSpracheTMP->kSprache) && $oSpracheTMP->kSprache > 0) {

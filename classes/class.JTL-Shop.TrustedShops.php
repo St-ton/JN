@@ -1028,7 +1028,7 @@ class TrustedShops
             writeLog(PFAD_LOGFILES . 'trustedshops.log', 'SOAP could not be loaded.', 1);
         }
 
-        if ($returnValue == 'OK') {
+        if ($returnValue === 'OK') {
             $this->aenderKundenbewertungsstatusDB($nStatus, $cISOSprache);
 
             return 1;

@@ -71,10 +71,10 @@ class WidgetVisitors extends WidgetBase
             }
         }
 
-        $Series = array(
+        $Series = [
             'Letzter Monat' => $oLastMonth_arr,
             'Dieser Monat'  => $oCurrentMonth_arr
-        );
+        ];
 
         return prepareLineChartStatsMulti($Series, getAxisNames(STATS_ADMIN_TYPE_BESUCHER), 2);
     }

@@ -117,7 +117,7 @@ class Cron
      */
     public function speicherInJobQueue($cJobArt, $dStart, $nLimitM)
     {
-        if (strlen($cJobArt) > 0 && $dStart && $nLimitM > 0) {
+        if ($dStart && $nLimitM > 0 && strlen($cJobArt) > 0) {
             $oJobQueue             = new stdClass();
             $oJobQueue->kCron      = $this->kCron;
             $oJobQueue->kKey       = $this->kKey;

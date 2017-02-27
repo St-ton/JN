@@ -1,6 +1,6 @@
 {includeMailTemplate template=header type=plain}
 
-Dear {$Kunde->cVorname} {$Kunde->cNachname},
+Dear {$Kunde->cAnredeLocalized} {$Kunde->cNachname},
 
 Thank you very much for registering in our online shop at {$ShopURL}
 
@@ -17,7 +17,7 @@ Please review your account details:
 {/if}{if $Kunde->cFax}Fax: {$Kunde->cFax}
 {/if}
 Email: {$Kunde->cMail}
-{if $Kunde->cUSTID}UstID: {$Kunde->cUSTID}
+{if $Kunde->cUSTID}VAT ID: {$Kunde->cUSTID}
 {/if}
 
 Using these account details you can log into your personal account in future and track the current status of your order.

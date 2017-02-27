@@ -1,4 +1,4 @@
-<div class="alert alert-{if isset($type)}{$type}{else}info{/if} panel-wrap{if isset($inline)} no-margin{/if}">
+<div class="notification-alert bg-{if isset($type)}{$type}{else}info{/if} panel-wrap{if isset($inline)} no-margin{/if}">
     <div class="panel panel-default clearfix">
         {if isset($title)}<div class="panel-heading">{$title}</div>{/if}
         <div class="panel-body">{$body}</div>

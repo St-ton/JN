@@ -236,7 +236,7 @@ class Profiler
     public static function saveSQLProfile()
     {
         self::$stopProfiling = true;
-        if (count(self::$sqlProfile) > 0 && PROFILE_QUERIES_ECHO !== true) {
+        if (PROFILE_QUERIES_ECHO !== true && count(self::$sqlProfile) > 0) {
             //create run object
             $run        = new stdClass();
             $run->url   = (isset($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : '';
@@ -258,11 +258,11 @@ class Profiler
                         : null;
                     $filtered[$_queryRun->hash] = $obj;
                 } else {
-                    $filtered[$_queryRun->hash]->runtime = $filtered[$_queryRun->hash]->runtime + $_queryRun->time;
-                    $filtered[$_queryRun->hash]->runcount++;
+                    $filtered[$_queryRun->hash]->runtime += $_queryRun->time;
+                    ++$filtered[$_queryRun->hash]->runcount;
                 }
                 $run->total_time += $_queryRun->time;
-                $run->total_count++;
+                ++$run->total_count;
             }
             //insert profiler run into DB - return a new primary key
             $runID = Shop::DB()->insert('tprofiler', $run);
@@ -394,7 +394,7 @@ class Profiler
      * get plugin profiler data from DB
      *
      * @param bool $combined
-     * @return mixed
+     * @return array
      */
     public static function getPluginProfiles($combined = false)
     {
@@ -423,9 +423,9 @@ class Profiler
             return Shop::DB()->query("
                 SELECT *
                     FROM tprofiler
-                    WHERE ptype = '" . $type . "'
                     JOIN tprofiler_runs 
                         ON tprofiler.runID = tprofiler_runs.runID
+                    WHERE ptype = '" . $type . "'
                     ORDER BY runID DESC", 2
             );
         }
@@ -602,7 +602,7 @@ class Profiler
                 if (isset($_query->statement)) {
                     echo '<pre class="sql-statement">' . $_query->statement . '</pre>';
                 }
-                if (isset($_query->backtrace) && $_query->backtrace !== null) {
+                if (!empty($_query->backtrace)) {
                     echo '<ul class="backtrace">';
                     foreach ($_query->backtrace as $_bt) {
                         echo '<li class="backtrace-item">' .

@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/admininclude.php';
+require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('ORDER_COUPON_VIEW', true, true);
 /** @global JTLSmarty $smarty */
@@ -23,7 +23,7 @@ $oKupon       = null;
 $res = handleCsvImportAction('kupon', 'tkupon');
 
 if ($res > 0) {
-    $cFehler = 'Konnte CSV Datei nicht importieren.';
+    $cFehler = 'Konnte CSV-Datei nicht importieren.';
 } elseif ($res === 0) {
     $cHinweis = 'CSV-Datei wurde erfolgreich importiert.';
 }

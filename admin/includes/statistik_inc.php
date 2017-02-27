@@ -443,13 +443,13 @@ function gibMappingDaten($nTyp)
  */
 function GetTypeNameStats($type)
 {
-    $names = array(
+    $names = [
         1 => 'Besucher',
         2 => 'Kundenherkunft',
         3 => 'Suchmaschinen',
         4 => 'Umsatz',
         5 => 'Einstiegsseite'
-    );
+    ];
 
     if (isset($names[$type])) {
         return $names[$type];
@@ -585,7 +585,7 @@ function preparePieChartStats($stats, $name = 'Serie', $axis, $maxEntries = 6)
 
         foreach ($stats as $stat) {
             $value  = (float) $stat->$y;
-            $data[] = array($stat->$x, $value);
+            $data[] = [$stat->$x, $value];
         }
 
         $chart->addSerie($name, $data);
@@ -645,10 +645,10 @@ function prepareLineChartStatsMulti($Series, $axis, $mod = 1)
  */
 function GetLineChartColors($Number)
 {
-    $Colors = array(
-        array('#EDEDED', '#EDEDED'),
-        array('#989898', '#F78D23')
-    );
+    $Colors = [
+        ['#EDEDED', '#EDEDED'],
+        ['#989898', '#F78D23']
+    ];
 
     if (isset($Colors[$Number])) {
         return $Colors[$Number];

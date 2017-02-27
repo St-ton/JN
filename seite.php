@@ -98,7 +98,7 @@ if ($link->nLinkart == LINKTYP_STARTSEITE) {
     $smarty->assign('WRB', gibAGBWRB(Shop::getLanguage(), $_SESSION['Kundengruppe']->kKundengruppe));
 } elseif ($link->nLinkart == LINKTYP_VERSAND) {
     Shop::setPageType(PAGE_VERSAND);
-    if (isset($_POST['land']) && isset($_POST['plz'])) {
+    if (isset($_POST['land'], $_POST['plz'])) {
         if (!VersandartHelper::getShippingCosts($_POST['land'], $_POST['plz'])) {
             $smarty->assign('fehler', Shop::Lang()->get('missingParamShippingDetermination', 'errorMessages'));
         }

@@ -41,7 +41,7 @@ class WidgetVisitorsOnline extends WidgetBase
                 }
             }
         } else {
-            $oVisitors_arr = array();
+            $oVisitors_arr = [];
         }
 
         return $oVisitors_arr;

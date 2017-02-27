@@ -167,7 +167,7 @@ class SimpleMail
      */
     public function addAttachment($cName, $cPath, $cEncoding = 'base64', $cType = 'application/octet-stream')
     {
-        if (file_exists($cPath) && !empty($cName)) {
+        if (!empty($cName) && file_exists($cPath)) {
             $cAnhang_arr              = [];
             $cAnhang_arr['cName']     = $cName;
             $cAnhang_arr['cPath']     = $cPath;
@@ -425,11 +425,11 @@ class SimpleMail
     }
 
     /**
-     * @return mixed
+     * @return null
      */
     public function getErrorInfo()
     {
-        return;
+        return null;
     }
 
     /**

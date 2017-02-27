@@ -15,7 +15,7 @@
  * @method int insert(string $tableName, object $object, int|bool $echo = false, bool $bExecuteHook = false)
  * @method int delete(string $tableName, string|array $keyname, string|int|array $keyvalue, bool|int $echo = false)
  * @method int update(string $tableName, string|array $keyname, string|int|array $keyvalue, object $object, int|bool $echo = false)
- * @method int|array selectAll(string $tableName, string|array $keys, string|int|array $values, string $select = '*', string $orderBy = '', string $limit = '')
+ * @method array selectAll(string $tableName, string|array $keys, string|int|array $values, string $select = '*', string $orderBy = '', string $limit = '')
  * @method string realEscape($string)
  * @method string pdoEscape($string)
  * @method string info()
@@ -157,8 +157,6 @@ class NiceDB
         }
         $this->isConnected = true;
         self::$instance    = $this;
-
-        return $this;
     }
 
     /**
@@ -311,7 +309,11 @@ class NiceDB
                 if (!isset($_bt['function'])) {
                     $_bt['function'] = '';
                 }
-                if (isset($_bt['file']) && strpos($_bt['file'], 'class.core.NiceDB.php') === false && !($_bt['class'] === 'NiceDB' && $_bt['function'] === '__call')) {
+                if (
+                    isset($_bt['file']) &&
+                    !($_bt['class'] === 'NiceDB' && $_bt['function'] === '__call') &&
+                    strpos($_bt['file'], 'class.core.NiceDB.php') === false
+                ) {
                     $strippedBacktrace[] = [
                         'file'     => $_bt['file'],
                         'line'     => $_bt['line'],
@@ -1040,11 +1042,12 @@ class NiceDB
      */
     public function deleteRow($tableName, $keyname, $keyvalue, $echo = false)
     {
+        $start = 0;
         if ($this->debug === true || $this->collectData === true) {
             $start = microtime(true);
         }
         $assigns = [];
-        if (is_array($keyvalue) && is_array($keyvalue)) {
+        if (is_array($keyname) && is_array($keyvalue)) {
             if (count($keyname) !== count($keyvalue)) {
                 if ($this->logErrors && $this->logfileName) {
                     $this->writeLog('deleteRow: Anzahl an Schluesseln passt nicht zu Anzahl an Werten - Tablename:' . $tableName);
@@ -1185,9 +1188,7 @@ class NiceDB
         $quotedString = $this->quote($string);
 
         // remove outer single quotes
-        $nonQuotedString = preg_replace('/^\'(.*)\'$/', '$1', $quotedString);
-
-        return $nonQuotedString;
+        return preg_replace('/^\'(.*)\'$/', '$1', $quotedString);
     }
 
     /**
@@ -1287,7 +1288,7 @@ class NiceDB
      * @param mixed        $value
      * @param null         $type
      */
-    protected function _bind(PDOStatement &$stmt, $parameter, $value, $type = null)
+    protected function _bind(PDOStatement $stmt, $parameter, $value, $type = null)
     {
         $parameter = $this->_bindName($parameter);
 

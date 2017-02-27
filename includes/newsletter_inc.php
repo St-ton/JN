@@ -63,7 +63,7 @@ function fuegeNewsletterEmpfaengerEin($oKunde, $bPruefeDaten = false)
         $oPlausi->cPost_arr['cVorname']  = $oKunde->cVorname;
         $oPlausi->cPost_arr['cNachname'] = $oKunde->cNachname;
         $oPlausi->cPost_arr['cEmail']    = $oKunde->cEmail;
-        $oPlausi->cPost_arr['captcha']   = (isset($_POST['captcha']))
+        $oPlausi->cPost_arr['captcha']   = isset($_POST['captcha'])
             ? StringHandler::htmlentities(StringHandler::filterXSS($_POST['captcha']))
             : null;
         if (count($oPlausi->nPlausi_arr) === 0 || !$bPruefeDaten) {
@@ -101,14 +101,14 @@ function fuegeNewsletterEmpfaengerEin($oKunde, $bPruefeDaten = false)
                 // Neuen Newsletterempfaenger hinzufuegen
                 $oNewsletterEmpfaenger           = new stdClass();
                 $oNewsletterEmpfaenger->kSprache = (int)$_SESSION['kSprache'];
-                $oNewsletterEmpfaenger->kKunde   = (isset($_SESSION['Kunde']->kKunde))
+                $oNewsletterEmpfaenger->kKunde   = isset($_SESSION['Kunde']->kKunde)
                     ? (int)$_SESSION['Kunde']->kKunde
                     : 0;
                 $oNewsletterEmpfaenger->nAktiv   = 0;
                 // Double OPT nur für unregistrierte? --> Kunden brauchen nichts bestaetigen
-                if ($Einstellungen['newsletter']['newsletter_doubleopt'] === 'U' &&
-                    isset($_SESSION['Kunde']->kKunde) &&
-                    $_SESSION['Kunde']->kKunde > 0
+                if (isset($_SESSION['Kunde']->kKunde) &&
+                    $_SESSION['Kunde']->kKunde > 0 &&
+                    $Einstellungen['newsletter']['newsletter_doubleopt'] === 'U'
                 ) {
                     $oNewsletterEmpfaenger->nAktiv = 1;
                 }
@@ -132,8 +132,8 @@ function fuegeNewsletterEmpfaengerEin($oKunde, $bPruefeDaten = false)
                 // Protokollieren (hinzufuegen)
                 $oNewsletterEmpfaengerHistory               = new stdClass();
                 $oNewsletterEmpfaengerHistory->kSprache     = (int)$_SESSION['kSprache'];
-                $oNewsletterEmpfaengerHistory->kKunde       = (isset($_SESSION['Kunde']->kKunde))
-                    ? $_SESSION['Kunde']->kKunde
+                $oNewsletterEmpfaengerHistory->kKunde       = isset($_SESSION['Kunde']->kKunde)
+                    ? (int)$_SESSION['Kunde']->kKunde
                     : 0;
                 $oNewsletterEmpfaengerHistory->cAnrede      = $oKunde->cAnrede;
                 $oNewsletterEmpfaengerHistory->cVorname     = $oKunde->cVorname;
@@ -169,7 +169,7 @@ function fuegeNewsletterEmpfaengerEin($oKunde, $bPruefeDaten = false)
                     if (!isset($oObjekt)) {
                         $oObjekt = new stdClass();
                     }
-                    $oObjekt->tkunde               = (isset($_SESSION['Kunde']))
+                    $oObjekt->tkunde               = isset($_SESSION['Kunde'])
                         ? $_SESSION['Kunde']
                         : null;
                     $oObjekt->NewsletterEmpfaenger = $oNewsletterEmpfaenger;
@@ -241,20 +241,18 @@ function pruefeNLHistoryKundengruppe($kKundengruppe, $cKundengruppeKey)
         $kKundengruppe_arr    = [];
         $cKundengruppeKey_arr = explode(';', $cKundengruppeKey);
         if (is_array($cKundengruppeKey_arr) && count($cKundengruppeKey_arr) > 0) {
-            foreach ($cKundengruppeKey_arr as $cKundengruppeKey) {
-                if ((int)$cKundengruppeKey > 0 || (strlen($cKundengruppeKey) > 0 && (int)$cKundengruppeKey === 0)) {
-                    $kKundengruppe_arr[] = (int)$cKundengruppeKey;
+            foreach ($cKundengruppeKey_arr as $_cKundengruppeKey) {
+                if ((int)$_cKundengruppeKey > 0 || (strlen($_cKundengruppeKey) > 0 && (int)$_cKundengruppeKey === 0)) {
+                    $kKundengruppe_arr[] = (int)$_cKundengruppeKey;
                 }
             }
         }
         // Für alle sichtbar
-        if (in_array(0, $kKundengruppe_arr)) {
+        if (in_array(0, $kKundengruppe_arr, true)) {
             return true;
         }
-        if (intval($kKundengruppe) > 0) {
-            if (in_array(intval($kKundengruppe), $kKundengruppe_arr)) {
-                return true;
-            }
+        if ((int)$kKundengruppe > 0 && in_array((int)$kKundengruppe, $kKundengruppe_arr, true)) {
+            return true;
         }
     }
 

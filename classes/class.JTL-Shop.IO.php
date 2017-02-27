@@ -51,7 +51,7 @@ class IO
             throw new Exception("Error {$errno} while decoding data");
         }
 
-        if (!(isset($request['name']) && isset($request['params']))) {
+        if (!(isset($request['name'], $request['params']))) {
             throw new Exception("Missing request property");
         }
 

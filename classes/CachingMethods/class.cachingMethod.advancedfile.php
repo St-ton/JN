@@ -67,7 +67,7 @@ class cache_advancedfile implements ICachingMethod
                             $expiration
                     ]
                 )
-            ) !== false) ? true : false;
+            ) !== false);
     }
 
     /**
@@ -220,8 +220,8 @@ class cache_advancedfile implements ICachingMethod
     }
 
     /**
-     * @param array  $tags
-     * @param string $cacheID
+     * @param array|string $tags
+     * @param string       $cacheID
      * @return bool
      */
     public function setCacheTag($tags = [], $cacheID)
@@ -260,7 +260,7 @@ class cache_advancedfile implements ICachingMethod
     /**
      * removes cache IDs associated with tag from cache
      *
-     * @param array $tags
+     * @param array|string $tags
      * @return int
      */
     public function flushTags($tags)

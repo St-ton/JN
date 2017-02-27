@@ -95,7 +95,7 @@ function versendeNewsletter(
         $nKey = $oNewsletter->kNewsletter;
     }
     //fetch
-    if (($oNewsletter->cArt === 'text/html' || $oNewsletter->cArt === 'html')) {
+    if ($oNewsletter->cArt === 'text/html' || $oNewsletter->cArt === 'html') {
         try {
             $bodyHtml = $mailSmarty->fetch('db:' . $cTyp . '_' . $nKey . '_html') . $cPixel;
         } catch (Exception $e) {
@@ -116,19 +116,19 @@ function versendeNewsletter(
         $mail = new stdClass();
     }
     $mail->toEmail = $oEmailempfaenger->cEmail;
-    $mail->toName  = ((isset($oEmailempfaenger->cVorname))
+    $mail->toName  = (isset($oEmailempfaenger->cVorname)
             ? $oEmailempfaenger->cVorname
             : ''
         ) . ' ' .
-        ((isset($oEmailempfaenger->cNachname))
+        (isset($oEmailempfaenger->cNachname)
             ? $oEmailempfaenger->cNachname
             : ''
         );
     if (isset($oKunde->kKunde) && $oKunde->kKunde > 0) {
-        $mail->toName = ((isset($oKunde->cVorname))
+        $mail->toName = (isset($oKunde->cVorname)
                 ? $oKunde->cVorname
                 : '') . ' ' . (
-            (isset($oKunde->cNachname))
+            isset($oKunde->cNachname)
                 ? $oKunde->cNachname
                 : ''
             );
@@ -187,7 +187,7 @@ function gibStaticHtml(
                ->assign('Kampagne', $oKampagne);
 
     $cTyp = 'VL';
-    $nKey = (isset($oNewsletter->kNewsletterVorlage))
+    $nKey = isset($oNewsletter->kNewsletterVorlage)
         ? $oNewsletter->kNewsletterVorlage
         : null;
     if ($oNewsletter->kNewsletter > 0) {
@@ -204,7 +204,6 @@ function gibStaticHtml(
  */
 function speicherVorlage($cPost_arr)
 {
-    unset($oArtikel_arr);
     $oNewsletterVorlage = null;
     $cPlausiValue_arr   = pruefeVorlage(
         $cPost_arr['cName'],
@@ -227,7 +226,7 @@ function speicherVorlage($cPost_arr)
         $dZeitDB = $dJahr . '-' . $dMonat . '-' . $dTag . ' ' . $dStunde . ':' . $dMinute . ':00';
         $oZeit   = baueZeitAusDB($dZeitDB);
 
-        $kNewsletterVorlage = (isset($cPost_arr['kNewsletterVorlage']))
+        $kNewsletterVorlage = isset($cPost_arr['kNewsletterVorlage'])
             ? (int)$cPost_arr['kNewsletterVorlage']
             : null;
         $kKampagne          = (int)$cPost_arr['kKampagne'];
@@ -263,7 +262,7 @@ function speicherVorlage($cPost_arr)
         $oNewsletterVorlage->dStartZeit = ($dt > $now)
             ? $dt->format('Y-m-d H:i:s')
             : $now->format('Y-m-d H:i:s');
-        if (isset($cPost_arr['kNewsletterVorlage']) && intval($cPost_arr['kNewsletterVorlage']) > 0) {
+        if (isset($cPost_arr['kNewsletterVorlage']) && (int)$cPost_arr['kNewsletterVorlage'] > 0) {
             $_upd                = new stdClass();
             $_upd->cName         = $oNewsletterVorlage->cName;
             $_upd->kKampagne     = $oNewsletterVorlage->kKampagne;
@@ -368,35 +367,26 @@ function speicherVorlageStd($oNewslettervorlageStd, $kNewslettervorlageStd, $cPo
                 $oNewslettervorlageStd->oNewslettervorlageStdVar_arr,
                 true
             );
-
-            // CKEditor fix...
-            if (preg_match('/\$([\w\d]+)-&gt;/', $oNewsletterVorlage->cInhaltHTML, $matches)) {
-                $oNewsletterVorlage->cInhaltHTML = str_replace(
-                    $matches[0],
-                    '$' . $matches[1] . '->',
-                    $oNewsletterVorlage->cInhaltHTML
-                );
-            }
             $dt  = new DateTime($oZeit->dZeit);
             $now = new DateTime();
-            if ($dt > $now) {
-                $oNewsletterVorlage->dStartZeit = $dt->format('Y-m-d H:i:s');
-            } else {
-                $oNewsletterVorlage->dStartZeit = $now->format('Y-m-d H:i:s');
-            }
+
+            $oNewsletterVorlage->dStartZeit = ($dt > $now)
+                ? $dt->format('Y-m-d H:i:s')
+                : $now->format('Y-m-d H:i:s');
+
             if ($kNewslettervorlage > 0) {
                 $upd                = new stdClass();
-                $upd->cName         = Shop::DB()->escape($oNewsletterVorlage->cName);
-                $upd->cBetreff      = Shop::DB()->escape($oNewsletterVorlage->cBetreff);
+                $upd->cName         = $oNewsletterVorlage->cName;
+                $upd->cBetreff      = $oNewsletterVorlage->cBetreff;
                 $upd->kKampagne     = (int)$oNewsletterVorlage->kKampagne;
-                $upd->cArt          = Shop::DB()->escape($oNewsletterVorlage->cArt);
-                $upd->cArtikel      = Shop::DB()->escape($oNewsletterVorlage->cArtikel);
-                $upd->cHersteller   = Shop::DB()->escape($oNewsletterVorlage->cHersteller);
-                $upd->cKategorie    = Shop::DB()->escape($oNewsletterVorlage->cKategorie);
-                $upd->cKundengruppe = Shop::DB()->escape($oNewsletterVorlage->cKundengruppe);
-                $upd->cInhaltHTML   = Shop::DB()->escape($oNewsletterVorlage->cInhaltHTML);
-                $upd->cInhaltText   = Shop::DB()->escape($oNewsletterVorlage->cInhaltText);
-                $upd->dStartZeit    = Shop::DB()->escape($oNewsletterVorlage->dStartZeit);
+                $upd->cArt          = $oNewsletterVorlage->cArt;
+                $upd->cArtikel      = $oNewsletterVorlage->cArtikel;
+                $upd->cHersteller   = $oNewsletterVorlage->cHersteller;
+                $upd->cKategorie    = $oNewsletterVorlage->cKategorie;
+                $upd->cKundengruppe = $oNewsletterVorlage->cKundengruppe;
+                $upd->cInhaltHTML   = $oNewsletterVorlage->cInhaltHTML;
+                $upd->cInhaltText   = $oNewsletterVorlage->cInhaltText;
+                $upd->dStartZeit    = $oNewsletterVorlage->dStartZeit;
                 Shop::DB()->update('tnewslettervorlage', 'kNewsletterVorlage', (int)$kNewslettervorlage, $upd);
             } else {
                 $kNewslettervorlage = Shop::DB()->insert('tnewslettervorlage', $oNewsletterVorlage);
@@ -616,7 +606,7 @@ function pruefeVorlageStd($cName, $kKundengruppe_arr, $cBetreff, $cArt)
 {
     $cPlausiValue_arr = [];
     // Vorlagennamen pruefen
-    if (strlen($cName) === 0) {
+    if (empty($cName)) {
         $cPlausiValue_arr['cName'] = 1;
     }
     // Kundengruppen pruefen
@@ -624,11 +614,11 @@ function pruefeVorlageStd($cName, $kKundengruppe_arr, $cBetreff, $cArt)
         $cPlausiValue_arr['kKundengruppe_arr'] = 1;
     }
     // Betreff pruefen
-    if (strlen($cBetreff) === 0) {
+    if (empty($cBetreff)) {
         $cPlausiValue_arr['cBetreff'] = 1;
     }
     // Art pruefen
-    if (strlen($cArt) === 0) {
+    if (empty($cArt)) {
         $cPlausiValue_arr['cArt'] = 1;
     }
 
@@ -648,7 +638,7 @@ function pruefeVorlage($cName, $kKundengruppe_arr, $cBetreff, $cArt, $cHtml, $cT
 {
     $cPlausiValue_arr = [];
     // Vorlagennamen pruefen
-    if (strlen($cName) === 0) {
+    if (empty($cName)) {
         $cPlausiValue_arr['cName'] = 1;
     }
     // Kundengruppen pruefen
@@ -656,19 +646,19 @@ function pruefeVorlage($cName, $kKundengruppe_arr, $cBetreff, $cArt, $cHtml, $cT
         $cPlausiValue_arr['kKundengruppe_arr'] = 1;
     }
     // Betreff pruefen
-    if (strlen($cBetreff) === 0) {
+    if (empty($cBetreff)) {
         $cPlausiValue_arr['cBetreff'] = 1;
     }
     // Art pruefen
-    if (strlen($cArt) === 0) {
+    if (empty($cArt)) {
         $cPlausiValue_arr['cArt'] = 1;
     }
     // HTML pruefen
-    if (strlen($cHtml) === 0) {
+    if (empty($cHtml)) {
         $cPlausiValue_arr['cHtml'] = 1;
     }
     // Text pruefen
-    if (strlen($cText) === 0) {
+    if (empty($cText)) {
         $cPlausiValue_arr['cText'] = 1;
     }
 
@@ -686,8 +676,8 @@ function pruefeVorlage($cName, $kKundengruppe_arr, $cBetreff, $cArt, $cHtml, $cT
  */
 function holeNewslettervorlageStd($kNewsletterVorlageStd, $kNewsletterVorlage = 0)
 {
-    $kNewsletterVorlageStd = intval($kNewsletterVorlageStd);
-    $kNewsletterVorlage    = intval($kNewsletterVorlage);
+    $kNewsletterVorlageStd = (int)$kNewsletterVorlageStd;
+    $kNewsletterVorlage    = (int)$kNewsletterVorlage;
     if ($kNewsletterVorlageStd > 0 || $kNewsletterVorlage > 0) {
         $oNewslettervorlage = new stdClass();
         if ($kNewsletterVorlage > 0) {
@@ -737,14 +727,14 @@ function holeNewslettervorlageStd($kNewsletterVorlageStd, $kNewsletterVorlage = 
                     $nlTplContent = new stdClass();
                     if (isset($nlTplStdVar->kNewslettervorlageStdVar) && $nlTplStdVar->kNewslettervorlageStdVar > 0) {
                         $cSQL = " AND kNewslettervorlage IS NULL";
-                        if (isset($kNewsletterVorlage) && intval($kNewsletterVorlage) > 0) {
+                        if (isset($kNewsletterVorlage) && (int)$kNewsletterVorlage > 0) {
                             $cSQL = " AND kNewslettervorlage = " . $kNewsletterVorlage;
                         }
 
                         $nlTplContent = Shop::DB()->query(
                             "SELECT *
                                 FROM tnewslettervorlagestdvarinhalt
-                                WHERE kNewslettervorlageStdVar = " . $nlTplStdVar->kNewslettervorlageStdVar .
+                                WHERE kNewslettervorlageStdVar = " . (int)$nlTplStdVar->kNewslettervorlageStdVar .
                                 $cSQL, 1
                         );
                     }
@@ -980,7 +970,7 @@ function baueZeitAusDB($dZeitDB)
 }
 
 /**
- * @param object $cAktiveSucheSQL
+ * @param stdClass $cAktiveSucheSQL
  * @return int
  */
 function holeAbonnentenAnzahl($cAktiveSucheSQL)
@@ -991,12 +981,14 @@ function holeAbonnentenAnzahl($cAktiveSucheSQL)
             WHERE kSprache = " . (int)$_SESSION['kSprache'] . $cAktiveSucheSQL->cWHERE, 1
     );
 
-    return (isset($oAbonnentenMaxAnzahl->nAnzahl)) ? intval($oAbonnentenMaxAnzahl->nAnzahl) : 0;
+    return isset($oAbonnentenMaxAnzahl->nAnzahl)
+        ? (int)$oAbonnentenMaxAnzahl->nAnzahl
+        : 0;
 }
 
 /**
- * @param string $cSQL
- * @param object $cAktiveSucheSQL
+ * @param string   $cSQL
+ * @param stdClass $cAktiveSucheSQL
  * @return mixed
  */
 function holeAbonnenten($cSQL, $cAktiveSucheSQL)
@@ -1263,14 +1255,13 @@ function gibAHKKeys($cKey, $bArtikelnummer = false)
 {
     $kKey_arr = [];
     $cKey_arr = explode(';', $cKey);
-
     if (is_array($cKey_arr) && count($cKey_arr) > 0) {
-        foreach ($cKey_arr as $cKey) {
-            if (strlen($cKey) > 0) {
+        foreach ($cKey_arr as $_cKey) {
+            if (strlen($_cKey) > 0) {
                 if ($bArtikelnummer) {
-                    $kKey_arr[] = "'" . $cKey . "'";
+                    $kKey_arr[] = "'" . $_cKey . "'";
                 } else {
-                    $kKey_arr[] = (int)$cKey;
+                    $kKey_arr[] = (int)$_cKey;
                 }
             }
         }
@@ -1319,12 +1310,12 @@ function gibArtikelObjekte($kArtikel_arr, $oKampagne = '', $kKundengruppe = 0, $
         require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Artikel.php';
         $defaultOptions = Artikel::getDefaultOptions();
         foreach ($kArtikel_arr as $kArtikel) {
-            if (intval($kArtikel) > 0) {
+            if ((int)$kArtikel > 0) {
                 $_SESSION['Kundengruppe']->darfPreiseSehen = 1;
                 $oArtikel                                  = new Artikel();
-                $oArtikel->fuelleArtikel((int)$kArtikel, $defaultOptions, $kKundengruppe, $kSprache);
+                $oArtikel->fuelleArtikel($kArtikel, $defaultOptions, $kKundengruppe, $kSprache);
 
-                if (!isset($oArtikel->kArtikel) || intval($oArtikel->kArtikel) === 0) {
+                if (!$oArtikel->kArtikel > 0) {
                     Jtllog::writeLog(
                         "Newsletter Cron konnte den Artikel ({$kArtikel}) f&uuml;r Kundengruppe " . 
                         "({$kKundengruppe}) und Sprache ({$kSprache}) nicht laden (Sichtbarkeit?)",
@@ -1376,7 +1367,8 @@ function gibHerstellerObjekte($kHersteller_arr, $oKampagne = 0, $kSprache = 0)
     if (is_array($kHersteller_arr) && count($kHersteller_arr) > 0) {
         require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Hersteller.php';
         foreach ($kHersteller_arr as $kHersteller) {
-            if (intval($kHersteller) > 0) {
+            $kHersteller = (int)$kHersteller;
+            if ($kHersteller > 0) {
                 $oHersteller = new Hersteller($kHersteller);
                 if (strpos($oHersteller->cURL, $shopURL) === false) {
                     $oHersteller->cURL = $oHersteller->cURL = $shopURL . $oHersteller->cURL;
@@ -1416,8 +1408,9 @@ function gibKategorieObjekte($kKategorie_arr, $oKampagne = 0)
     if (is_array($kKategorie_arr) && count($kKategorie_arr) > 0) {
         $shopURL = Shop::getURL() . '/';
         foreach ($kKategorie_arr as $kKategorie) {
-            if (intval($kKategorie) > 0) {
-                $oKategorie = new Kategorie((int)$kKategorie);
+            $kKategorie = (int)$kKategorie;
+            if ($kKategorie > 0) {
+                $oKategorie = new Kategorie($kKategorie);
                 if (strpos($oKategorie->cURL, $shopURL) === false) {
                     $oKategorie->cURL = $shopURL . $oKategorie->cURL;
                 }

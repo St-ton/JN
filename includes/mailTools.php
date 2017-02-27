@@ -658,7 +658,7 @@ function verschickeMail($mail)
 {
     $kEmailvorlage = null;
     if (isset($mail->kEmailvorlage)) {
-        if (intval($mail->kEmailvorlage) > 0) {
+        if ((int)$mail->kEmailvorlage > 0) {
             $kEmailvorlage = (int)$mail->kEmailvorlage;
         }
         unset($mail->kEmailvorlage);
@@ -720,9 +720,9 @@ function verschickeMail($mail)
                 $phpmailer->Username      = $mail->smtp_user;
                 $phpmailer->Password      = $mail->smtp_pass;
                 $phpmailer->SMTPSecure    = $mail->SMTPSecure;
-                $phpmailer->SMTPAutoTLS   = (isset($mail->SMTPAutoTLS))
-                    ? $mail->SMTPAutoTLS :
-                    ((empty($mail->SMTPSecure))
+                $phpmailer->SMTPAutoTLS   = isset($mail->SMTPAutoTLS)
+                    ? $mail->SMTPAutoTLS
+                    : (empty($mail->SMTPSecure)
                         ? false
                         : true);
                 break;

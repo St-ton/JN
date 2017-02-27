@@ -56,7 +56,7 @@ function executeHook($nHook, $args_arr = [])
                     PFAD_PLUGIN_VERSION . $oPlugin->nVersion . '/' . PFAD_PLUGIN_FRONTEND . $cDateiname;
                 if (PROFILE_PLUGINS === true) {
                     $runData = [
-                        'runtime'   => (microtime(true) - $start),
+                        'runtime'   => microtime(true) - $start,
                         'timestamp' => microtime(true),
                         'hookID'    => (int)$nHook,
                         'runcount'  => 1,

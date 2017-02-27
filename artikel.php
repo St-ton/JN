@@ -178,13 +178,20 @@ if (!isset($AktuellerArtikel->Bewertungen) || $bewertung_sterne > 0) {
     $AktuellerArtikel->holehilfreichsteBewertung(Shop::getLanguage());
 }
 
-$oBewertung_arr = array_filter($AktuellerArtikel->Bewertungen->oBewertung_arr,
-    function ($oBewertung) use (&$AktuellerArtikel) {
-        return
-            !isset($AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->kBewertung) ||
-            (int)$AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->kBewertung !== (int)$oBewertung->kBewertung;
-    }
-);
+if (isset($AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich) &&
+    isset($AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->kBewertung) &&
+    (int)$AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich > 0
+) {
+    $oBewertung_arr = array_filter(
+        $AktuellerArtikel->Bewertungen->oBewertung_arr,
+        function ($oBewertung) use (&$AktuellerArtikel) {
+            return
+                (int)$AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->kBewertung !== (int)$oBewertung->kBewertung;
+        }
+    );
+} else {
+    $oBewertung_arr = $AktuellerArtikel->Bewertungen->oBewertung_arr;
+}
 
 $pagination = (new Pagination('ratings'))
     ->setItemArray($oBewertung_arr)

@@ -4,9 +4,12 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+/**
+ * Class FilterField
+ */
 abstract class FilterField
 {
-    protected $oFilter    = null;
+    protected $oFilter;
     protected $cType      = '';
     protected $cTitle     = '';
     protected $cTitleLong = '';

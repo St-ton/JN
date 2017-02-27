@@ -101,6 +101,7 @@ if ($action === 'bearbeiten') {
     // Seite: Bearbeiten
     $oSteuerklasse_arr = Shop::DB()->query("SELECT kSteuerklasse, cName FROM tsteuerklasse", 2);
     $oKundengruppe_arr = Shop::DB()->query("SELECT kKundengruppe, cName FROM tkundengruppe", 2);
+    $oHersteller_arr   = getManufacturers($oKupon->cHersteller);
     $oKategorie_arr    = getCategories($oKupon->cKategorien);
     $kKunde_arr        = array_filter(StringHandler::parseSSK($oKupon->cKunden),
         function ($kKunde) { return (int)$kKunde > 0; });
@@ -118,8 +119,9 @@ if ($action === 'bearbeiten') {
 
     $smarty->assign('oSteuerklasse_arr', $oSteuerklasse_arr)
            ->assign('oKundengruppe_arr', $oKundengruppe_arr)
+           ->assign('oHersteller_arr', $oHersteller_arr)
            ->assign('oKategorie_arr', $oKategorie_arr)
-           ->assign('kKunde_arr', $kKunde_arr)
+           ->assign('oKunde_arr', $oKunde_arr)
            ->assign('oSprache_arr', $oSprache_arr)
            ->assign('oKuponName_arr', $oKuponName_arr)
            ->assign('oKupon', $oKupon);

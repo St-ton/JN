@@ -28,6 +28,7 @@
                                 <th>{#curmaxusage#} {call sortControls oPagination=$oPagination nSortBy=2}</th>
                                 <th>{#customerGroup#}</th>
                                 <th>{#restrictions#}</th>
+                                <th>{#restrictionsManufacturers#}</th>
                                 <th>{#validityPeriod#}</th>
                                 <th></th>
                             </tr>
@@ -68,6 +69,7 @@
                                         {/if}
                                     <td>{$oKupon->cKundengruppe}</td>
                                     <td>{$oKupon->cArtikelInfo}</td>
+                                    <td>{$oKupon->cHerstellerInfo}</td>
                                     <td>
                                         {#from#}: {$oKupon->cGueltigAbShort}<br>
                                         {#to#}: {$oKupon->cGueltigBisShort}

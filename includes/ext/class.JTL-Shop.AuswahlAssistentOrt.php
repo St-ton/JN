@@ -87,8 +87,7 @@ if (class_exists('AuswahlAssistent')) {
                     switch ($this->cKey) {
                         case AUSWAHLASSISTENT_ORT_KATEGORIE:
                             if ($bBackend) {
-                                unset($_SESSION['oKategorie_arr']);
-                                unset($_SESSION['oKategorie_arr_new']);
+                                unset($_SESSION['oKategorie_arr'], $_SESSION['oKategorie_arr_new']);
                             }
                             $oKategorie = new Kategorie(
                                 $this->kKey,
@@ -115,7 +114,7 @@ if (class_exists('AuswahlAssistent')) {
                                 false,
                                 'cName'
                             );
-                            $this->cOrt = (isset($oLink->cName)) ? ($oLink->cName . '(CMS)') : null;
+                            $this->cOrt = isset($oLink->cName) ? ($oLink->cName . '(CMS)') : null;
                             break;
 
                         case AUSWAHLASSISTENT_ORT_STARTSEITE:
@@ -140,7 +139,7 @@ if (class_exists('AuswahlAssistent')) {
                     $cKategorie_arr = explode(';', $cParam_arr['cKategorie']);
                     if (is_array($cKategorie_arr) && count($cKategorie_arr) > 0) {
                         foreach ($cKategorie_arr as $cKategorie) {
-                            if (strlen($cKategorie) > 0 && intval($cKategorie) > 0) {
+                            if (strlen($cKategorie) > 0 && (int)$cKategorie > 0) {
                                 $oOrt                          = new stdClass();
                                 $oOrt->kAuswahlAssistentGruppe = $kAuswahlAssistentGruppe;
                                 $oOrt->cKey                    = AUSWAHLASSISTENT_ORT_KATEGORIE;
@@ -157,7 +156,7 @@ if (class_exists('AuswahlAssistent')) {
                     count($cParam_arr['kLink_arr']) > 0
                 ) {
                     foreach ($cParam_arr['kLink_arr'] as $kLink) {
-                        if (intval($kLink) > 0) {
+                        if ((int)$kLink > 0) {
                             $oOrt                          = new stdClass();
                             $oOrt->kAuswahlAssistentGruppe = $kAuswahlAssistentGruppe;
                             $oOrt->cKey                    = AUSWAHLASSISTENT_ORT_LINK;
@@ -168,7 +167,7 @@ if (class_exists('AuswahlAssistent')) {
                     }
                 }
                 // Startseite
-                if (isset($cParam_arr['nStartseite']) && intval($cParam_arr['nStartseite']) === 1) {
+                if (isset($cParam_arr['nStartseite']) && (int)$cParam_arr['nStartseite'] === 1) {
                     $oOrt                          = new stdClass();
                     $oOrt->kAuswahlAssistentGruppe = $kAuswahlAssistentGruppe;
                     $oOrt->cKey                    = AUSWAHLASSISTENT_ORT_STARTSEITE;
@@ -235,7 +234,7 @@ if (class_exists('AuswahlAssistent')) {
                 }
 
                 foreach ($cKategorie_arr as $cKategorie) {
-                    if (strlen($cKategorie) > 0 && intval($cKategorie) > 0) {
+                    if (strlen($cKategorie) > 0 && (int)$cKategorie > 0) {
                         if ($bUpdate) {
                             if (self::isCategoryTaken(
                                 $cKategorie,
@@ -258,7 +257,7 @@ if (class_exists('AuswahlAssistent')) {
                 count($cParam_arr['kLink_arr']) > 0
             ) {
                 foreach ($cParam_arr['kLink_arr'] as $kLink) {
-                    if (intval($kLink) > 0) {
+                    if ((int)$kLink > 0) {
                         if ($bUpdate) {
                             if (self::isLinkTaken
                             ($kLink,
@@ -276,7 +275,7 @@ if (class_exists('AuswahlAssistent')) {
                 }
             }
             // Ort Startseite
-            if (isset($cParam_arr['nStartseite']) && intval($cParam_arr['nStartseite']) === 1) {
+            if (isset($cParam_arr['nStartseite']) && (int)$cParam_arr['nStartseite'] === 1) {
                 if ($bUpdate) {
                     if (self::isStartPageTaken(
                         $cParam_arr['kSprache'],
@@ -302,7 +301,7 @@ if (class_exists('AuswahlAssistent')) {
          */
         public static function isCategoryTaken($kKategorie, $kSprache, $kAuswahlAssistentGruppe = 0)
         {
-            if (intval($kKategorie) === 0 || intval($kSprache) === 0) {
+            if ((int)$kKategorie === 0 || (int)$kSprache === 0) {
                 return false;
             }
             $cOrtSQL = '';
@@ -331,7 +330,7 @@ if (class_exists('AuswahlAssistent')) {
          */
         public static function isLinkTaken($kLink, $kSprache, $kAuswahlAssistentGruppe = 0)
         {
-            if (intval($kLink) === 0 || intval($kSprache) === 0) {
+            if ((int)$kLink === 0 || (int)$kSprache === 0) {
                 return false;
             }
             $cOrtSQL = '';
@@ -359,7 +358,7 @@ if (class_exists('AuswahlAssistent')) {
          */
         public static function isStartPageTaken($kSprache, $kAuswahlAssistentGruppe = 0)
         {
-            if (intval($kSprache) === 0) {
+            if ((int)$kSprache === 0) {
                 return false;
             }
             $cOrtSQL = '';
@@ -390,7 +389,7 @@ if (class_exists('AuswahlAssistent')) {
          */
         public static function getLocation($cKey, $kKey, $kSprache, $bBackend = false)
         {
-            if (strlen($cKey) > 0 && intval($kKey) > 0 && intval($kSprache) > 0) {
+            if ((int)$kKey > 0 && (int)$kSprache > 0 && strlen($cKey) > 0) {
                 $oOrt = Shop::DB()->query(
                     "SELECT kAuswahlAssistentOrt
                         FROM tauswahlassistentort

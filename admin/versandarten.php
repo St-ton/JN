@@ -14,7 +14,8 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 setzeSteuersaetze();
 $standardwaehrung   = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
 $versandberechnung  = null;
-$hinweis            = '';
+$cHinweis           = '';
+$cFehler            = '';
 $step               = 'uebersicht';
 $Versandart         = null;
 $nSteuersatzKey_arr = array_keys($_SESSION['Steuersatz']);
@@ -28,7 +29,7 @@ if (isset($_POST['kVersandberechnung']) && intval($_POST['kVersandberechnung']) 
 //we need to flush the options caching group because of gibVersandkostenfreiAb(), baueVersandkostenfreiLaenderString() etc.
 if (isset($_POST['del']) && intval($_POST['del']) > 0 && validateToken()) {
     if (Versandart::deleteInDB(intval($_POST['del']))) {
-        $hinweis .= 'Versandart erfolgreich gel&ouml;scht!';
+        $cHinweis .= 'Versandart erfolgreich gel&ouml;scht!';
         Shop::Cache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
     }
 }
@@ -48,7 +49,7 @@ if (isset($_POST['edit']) && intval($_POST['edit']) > 0 && validateToken()) {
 if (isset($_POST['clone']) && intval($_POST['clone']) > 0 && validateToken()) {
     $step = 'uebersicht';
     if (Versandart::cloneShipping(intval($_POST['clone']))) {
-        $hinweis .= 'Versandart wurde erfolgreich dupliziert';
+        $cHinweis .= 'Versandart wurde erfolgreich dupliziert';
         Shop::Cache()->flushTags([CACHING_GROUP_OPTION]);
     } else {
         $cFehler .= 'Versandart konnte nicht dupliziert werden!';
@@ -71,7 +72,7 @@ if (isset($_GET['delzus']) && intval($_GET['delzus']) > 0 && validateToken()) {
     );
     Shop::DB()->delete('tversandzuschlagplz', 'kVersandzuschlag', (int)$_GET['delzus']);
     Shop::Cache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
-    $hinweis .= 'Zuschlagsliste erfolgreich gel&ouml;scht!';
+    $cHinweis .= 'Zuschlagsliste erfolgreich gel&ouml;scht!';
 }
 // Zuschlagliste editieren
 if (verifyGPCDataInteger('editzus') > 0 && validateToken()) {
@@ -102,7 +103,7 @@ if (isset($_GET['delplz']) && intval($_GET['delplz']) > 0 && validateToken()) {
     $step = 'Zuschlagsliste';
     Shop::DB()->delete('tversandzuschlagplz', 'kVersandzuschlagPlz', (int)$_GET['delplz']);
     Shop::Cache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
-    $hinweis .= 'PLZ/PLZ-Bereich erfolgreich gel&ouml;scht.';
+    $cHinweis .= 'PLZ/PLZ-Bereich erfolgreich gel&ouml;scht.';
 }
 
 if (isset($_POST['neueZuschlagPLZ']) && intval($_POST['neueZuschlagPLZ']) === 1 && validateToken()) {
@@ -158,7 +159,7 @@ if (isset($_POST['neueZuschlagPLZ']) && intval($_POST['neueZuschlagPLZ']) === 1 
             $cFehler .= "<p>Die PLZ $ZuschlagPLZ->cPLZ bzw der PLZ Bereich $ZuschlagPLZ->cPLZAb - $ZuschlagPLZ->cPLZBis &uuml;berschneidet sich mit PLZ $plz_x->cPLZ bzw.
                PLZ-Bereichen $plz_x->cPLZAb - $plz_x->cPLZBis einer anderen Zuschlagsliste! Bitte geben Sie eine andere PLZ / PLZ Bereich an.</p>";
         } elseif (Shop::DB()->insert('tversandzuschlagplz', $ZuschlagPLZ)) {
-            $hinweis .= "PLZ wurde erfolgreich hinzugef&uuml;gt.";
+            $cHinweis .= "PLZ wurde erfolgreich hinzugef&uuml;gt.";
         }
         Shop::Cache()->flushTags([CACHING_GROUP_OPTION]);
     } else {
@@ -186,7 +187,7 @@ if (isset($_POST['neuerZuschlag']) && intval($_POST['neuerZuschlag']) === 1 && v
             Shop::DB()->delete('tversandzuschlag', 'kVersandzuschlag', (int)$Zuschlag->kVersandzuschlag);
         }
         if ($kVersandzuschlag = Shop::DB()->insert('tversandzuschlag', $Zuschlag)) {
-            $hinweis .= 'Zuschlagsliste wurde erfolgreich hinzugef&uuml;gt.';
+            $cHinweis .= 'Zuschlagsliste wurde erfolgreich hinzugef&uuml;gt.';
         }
         if (isset($Zuschlag->kVersandzuschlag) && $Zuschlag->kVersandzuschlag > 0) {
             $kVersandzuschlag = $Zuschlag->kVersandzuschlag;
@@ -367,14 +368,14 @@ if (isset($_POST['neueVersandart']) && intval($_POST['neueVersandart']) > 0 && v
         $kVersandart = 0;
         if (intval($_POST['kVersandart']) === 0) {
             $kVersandart = Shop::DB()->insert('tversandart', $Versandart);
-            $hinweis .= "Die Versandart <strong>$Versandart->cName</strong> wurde erfolgreich hinzugef&uuml;gt. ";
+            $cHinweis .= "Die Versandart <strong>$Versandart->cName</strong> wurde erfolgreich hinzugef&uuml;gt. ";
         } else {
             //updaten
             $kVersandart = intval($_POST['kVersandart']);
             Shop::DB()->update('tversandart', 'kVersandart', $kVersandart, $Versandart);
             Shop::DB()->delete('tversandartzahlungsart', 'kVersandart', $kVersandart);
             Shop::DB()->delete('tversandartstaffel', 'kVersandart', $kVersandart);
-            $hinweis .= "Die Versandart <strong>$Versandart->cName</strong> wurde erfolgreich ge&auml;ndert.";
+            $cHinweis .= "Die Versandart <strong>$Versandart->cName</strong> wurde erfolgreich ge&auml;ndert.";
         }
         if ($kVersandart > 0) {
             foreach ($VersandartZahlungsarten as $versandartzahlungsart) {
@@ -435,7 +436,7 @@ if (isset($_POST['neueVersandart']) && intval($_POST['neueVersandart']) > 0 && v
         if (intval($_POST['kVersandart']) > 0) {
             $Versandart = Shop::DB()->select('tversandart', 'kVersandart', (int)$_POST['kVersandart']);
         }
-        $smarty->assign('hinweis', $hinweis)
+        $smarty->assign('cHinweis', $cHinweis)
                ->assign('cFehler', $cFehler)
                ->assign('VersandartZahlungsarten', reorganizeObjectArray($VersandartZahlungsarten, 'kZahlungsart'))
                ->assign('VersandartStaffeln', $VersandartStaffeln)
@@ -598,8 +599,8 @@ if ($step === 'uebersicht') {
     $smarty->assign('versandberechnungen', $versandberechnungen)
            ->assign('versandarten', $versandarten)
            ->assign('waehrung', $standardwaehrung->cName)
-           ->assign('hinweis', $hinweis)
-           ->assign('$cFehler', $cFehler);
+           ->assign('cHinweis', $cHinweis)
+           ->assign('cFehler', $cFehler);
 }
 
 if ($step === 'Zuschlagsliste') {
@@ -632,7 +633,7 @@ if ($step === 'Zuschlagsliste') {
            ->assign('Zuschlaege', $Zuschlaege)
            ->assign('waehrung', $standardwaehrung->cName)
            ->assign('Land', Shop::DB()->select('tland', 'cISO', $cISO))
-           ->assign('hinweis', $hinweis)
+           ->assign('cHinweis', $cHinweis)
            ->assign('cFehler', $cFehler)
            ->assign('sprachen', gibAlleSprachen());
 }

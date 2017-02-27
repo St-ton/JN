@@ -52,14 +52,14 @@ function erstelleUmsatzGraph($oY1_arr, $oY2_arr, $nYmax, $nDiagrammTyp)
         $CGraph->parameter['shadow']            = 'none';
         $CGraph->parameter['title']             = 'Umsatzstatistik';
         $CGraph->parameter['x_label']           = 'Monate';
-        $CGraph->x_data                         = array('Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember');
-        $CGraph->y_data['alpha']                = array();
-        $CGraph->y_data['beta']                 = array();
+        $CGraph->x_data                         = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
+        $CGraph->y_data['alpha']                = [];
+        $CGraph->y_data['beta']                 = [];
 
         // Monatsumsatz?
         if ($nDiagrammTyp == 2) {
             $CGraph->parameter['x_label'] = 'Tage';
-            $CGraph->x_data               = array();
+            $CGraph->x_data               = [];
 
             for ($i = 1; $i <= 31; $i++) {
                 $CGraph->x_data[] = $i;
@@ -92,10 +92,10 @@ function erstelleUmsatzGraph($oY1_arr, $oY2_arr, $nYmax, $nDiagrammTyp)
         }
 
         if (count($CGraph->y_data['alpha']) > 1 && count($CGraph->y_data['beta']) > 1 && count($CGraph->x_data) > 1) {
-            $CGraph->y_format['alpha'] = array('colour' => 'blue', 'bar' => 'fill', 'bar_size' => 0.8, 'y_axis' => 'right');
-            $CGraph->y_format['beta']  = array('colour' => 'red', 'bar' => 'fill', 'bar_size' => 0.3, 'y_axis' => 'right');
+            $CGraph->y_format['alpha'] = ['colour' => 'blue', 'bar' => 'fill', 'bar_size' => 0.8, 'y_axis' => 'right'];
+            $CGraph->y_format['beta']  = ['colour' => 'red', 'bar' => 'fill', 'bar_size' => 0.3, 'y_axis' => 'right'];
 
-            $CGraph->y_order = array('alpha', 'beta');
+            $CGraph->y_order = ['alpha', 'beta'];
 
             $CGraph->draw_stack();
         }
@@ -123,8 +123,8 @@ function erstelleTop10Graph($oGraphData_arr, $nYmax, $cGraphFilter)
         $CGraph->parameter['shadow']            = 'none';
         $CGraph->parameter['title']             = 'Top10 ' . $cGraphFilter;
         $CGraph->parameter['x_label']           = $cGraphFilter;
-        $CGraph->x_data                         = array();
-        $CGraph->y_data['alpha']                = array();
+        $CGraph->x_data                         = [];
+        $CGraph->y_data['alpha']                = [];
 
         if (count($oGraphData_arr) > 0) {
             // Array sortieren
@@ -143,8 +143,8 @@ function erstelleTop10Graph($oGraphData_arr, $nYmax, $cGraphFilter)
         }
 
         if (count($CGraph->x_data) > 1 && count($CGraph->y_data['alpha']) > 1) {
-            $CGraph->y_format['alpha'] = array('colour' => 'blue', 'bar' => 'fill', 'bar_size' => 0.8, 'y_axis' => 'right');
-            $CGraph->y_order           = array('alpha');
+            $CGraph->y_format['alpha'] = ['colour' => 'blue', 'bar' => 'fill', 'bar_size' => 0.8, 'y_axis' => 'right'];
+            $CGraph->y_order           = ['alpha'];
 
             $CGraph->draw_stack();
         }
@@ -172,8 +172,8 @@ function erstelleTopVergleichslisteGraph($oGraphData_arr, $nYmax, $nAnzahl)
         $CGraph->parameter['shadow']            = 'none';
         $CGraph->parameter['title']             = 'Top' . $nAnzahl . ' Artikel die verglichen wurden';
         $CGraph->parameter['x_label']           = 'Artikel';
-        $CGraph->x_data                         = array();
-        $CGraph->y_data['alpha']                = array();
+        $CGraph->x_data                         = [];
+        $CGraph->y_data['alpha']                = [];
 
         foreach ($oGraphData_arr as $oGraphData) {
             $CGraph->x_data[]          = $oGraphData->cArtikelName;
@@ -181,8 +181,8 @@ function erstelleTopVergleichslisteGraph($oGraphData_arr, $nYmax, $nAnzahl)
         }
 
         if (count($CGraph->x_data) > 1 && count($CGraph->y_data['alpha']) > 1) {
-            $CGraph->y_format['alpha'] = array('colour' => 'blue', 'bar' => 'fill', 'bar_size' => 0.8, 'y_axis' => 'right');
-            $CGraph->y_order           = array('alpha');
+            $CGraph->y_format['alpha'] = ['colour' => 'blue', 'bar' => 'fill', 'bar_size' => 0.8, 'y_axis' => 'right'];
+            $CGraph->y_order           = ['alpha'];
 
             $CGraph->draw_stack();
         }
@@ -207,8 +207,8 @@ function erstelleKampagneDetailGraph($oKampagneDetailGraph, $kKampagneDef)
     $CGraph->parameter['y_axis_text_right'] = 2;  //print a tick every 2nd grid line
     $CGraph->parameter['shadow']            = 'none';
     $CGraph->parameter['title']             = $oKampagneDetailGraph->oKampagneDef_arr[$kKampagneDef]->cName;
-    $CGraph->x_data                         = array();
-    $CGraph->y_data['alpha']                = array();
+    $CGraph->x_data                         = [];
+    $CGraph->y_data['alpha']                = [];
 
     if (is_array($oKampagneDetailGraph->oKampagneDetailGraph_arr) && count($oKampagneDetailGraph->oKampagneDetailGraph_arr) > 0) {
         foreach ($oKampagneDetailGraph->oKampagneDetailGraph_arr as $oKampagneDetailGraphDef_arr) {
@@ -218,8 +218,8 @@ function erstelleKampagneDetailGraph($oKampagneDetailGraph, $kKampagneDef)
     }
     // Balken 1 (Umsatz pro Monat) Werte Array aufbauen
     if (count($CGraph->y_data['alpha']) > 1 && count($CGraph->x_data) > 1) {
-        $CGraph->y_format['alpha'] = array('colour' => 'blue', 'bar' => 'fill', 'bar_size' => 0.8, 'y_axis' => 'right');
-        $CGraph->y_order           = array('alpha');
+        $CGraph->y_format['alpha'] = ['colour' => 'blue', 'bar' => 'fill', 'bar_size' => 0.8, 'y_axis' => 'right'];
+        $CGraph->y_order           = ['alpha'];
         $CGraph->draw_stack();
     }
 }

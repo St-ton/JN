@@ -6,7 +6,7 @@
 
 class FilterSelectField extends FilterField
 {
-    public $oOption_arr = array();
+    public $oOption_arr = [];
 
     /**
      * FilterSelectField constructor.

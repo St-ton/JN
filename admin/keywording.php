@@ -8,7 +8,7 @@ require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('SETTINGS_META_KEYWORD_BLACKLIST_VIEW', true, true);
 /** @global JTLSmarty $smarty */
 $sprachen = gibAlleSprachen();
-if (isset($_POST['keywording']) && intval($_POST['keywording']) === 1 && validateToken()) {
+if (isset($_POST['keywording']) && (int)$_POST['keywording'] === 1 && validateToken()) {
     foreach ($sprachen as $sprache) {
         $text              = new stdClass();
         $text->cISOSprache = $sprache->cISO;
@@ -16,9 +16,9 @@ if (isset($_POST['keywording']) && intval($_POST['keywording']) === 1 && validat
         Shop::DB()->delete('texcludekeywords', 'cISOSprache', $text->cISOSprache);
         Shop::DB()->insert('texcludekeywords', $text);
     }
-    Shop::Cache()->flushTags(array(CACHING_GROUP_OPTION));
+    Shop::Cache()->flushTags([CACHING_GROUP_OPTION]);
 }
-$keywords = array();
+$keywords = [];
 foreach ($sprachen as $sprache) {
     $text                     = Shop::DB()->select('texcludekeywords', 'cISOSprache', $sprache->cISO);
     $keywords[$sprache->cISO] = (!empty($text->cKeywords)) ? $text->cKeywords : '';

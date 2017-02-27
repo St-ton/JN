@@ -33,7 +33,7 @@ if (strlen(verifyGPDataString('cSuche')) > 0) {
     $smarty->assign('cSuche', $cSuche);
 }
 // Einstellungen
-if (isset($_POST['einstellungen']) && intval($_POST['einstellungen']) === 1) {
+if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1) {
     if (isset($_POST['speichern']) || isset($_POST['a']) && $_POST['a'] === 'speichern') {
         $step = 'uebersicht';
         $cHinweis .= saveAdminSettings($settingsIDs, $_POST);
@@ -41,8 +41,8 @@ if (isset($_POST['einstellungen']) && intval($_POST['einstellungen']) === 1) {
     }
 }
 
-if (isset($_GET['l']) && intval($_GET['l']) > 0 && validateToken()) {
-    $kKunde         = intval($_GET['l']);
+if (isset($_GET['l']) && (int)$_GET['l'] > 0 && validateToken()) {
+    $kKunde         = (int)$_GET['l'];
     $oWarenkorbPers = new WarenkorbPers($kKunde);
 
     if ($oWarenkorbPers->entferneSelf()) {
@@ -102,7 +102,7 @@ $smarty->assign('oKunde_arr', $oKunde_arr)
     ->assign('oPagiKunden', $oPagiKunden);
 
 // Anzeigen
-if (isset($_GET['a']) && intval($_GET['a']) > 0) {
+if (isset($_GET['a']) && (int)$_GET['a'] > 0) {
     $step   = 'anzeigen';
     $kKunde = (int)$_GET['a'];
 

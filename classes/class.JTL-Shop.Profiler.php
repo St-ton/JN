@@ -394,7 +394,7 @@ class Profiler
      * get plugin profiler data from DB
      *
      * @param bool $combined
-     * @return mixed
+     * @return array
      */
     public static function getPluginProfiles($combined = false)
     {

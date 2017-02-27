@@ -11,10 +11,10 @@ $oAccount->permission('PLZ_ORT_IMPORT_VIEW', true, true);
 /** @global JTLSmarty $smarty */
 
 $cAction  = 'index';
-$messages = array(
+$messages = [
     'notice' => '',
     'error'  => '',
-);
+];
 
 if (isset($_REQUEST['action']) && validateToken()) {
     $cAction = StringHandler::filterXSS($_REQUEST['action']);

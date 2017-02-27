@@ -24,7 +24,7 @@ switch ($action) {
     case 'stats':
         $items = getItems(true);
 
-        if ($type === null || in_array($type, $items)) {
+        if ($type === null || in_array($type, $items, true)) {
             makeResponse(null, 'Invalid argument request', 500);
         }
 
@@ -130,8 +130,7 @@ switch ($action) {
     case 'clear':
         if ($type !== null && preg_match('/[a-z]*/', $type)) {
             MediaImage::clearCache($type);
-            unset($_SESSION['image_count']);
-            unset($_SESSION['renderedImages']);
+            unset($_SESSION['image_count'], $_SESSION['renderedImages']);
             if (isset($_GET['isAjax']) && $_GET['isAjax'] === 'true') {
                 makeResponse((object)['success' => 'Cache wurde erfolgreich zur&uuml;ckgesetzt']);
             }

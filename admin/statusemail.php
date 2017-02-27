@@ -19,7 +19,7 @@ if (validateToken()) {
     if (isset($_POST['action']) && $_POST['action'] === 'sendnow') {
         sendStatusMail();
     }
-    elseif (isset($_POST['einstellungen']) && intval($_POST['einstellungen']) === 1) {
+    elseif (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1) {
         if (speicherStatusemailEinstellungen()) {
             $cHinweis .= 'Ihre Einstellungen wurden &uuml;bernommen.<br>';
         } else {

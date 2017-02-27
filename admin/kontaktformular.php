@@ -10,14 +10,14 @@ $oAccount->permission('SETTINGS_CONTACTFORM_VIEW', true, true);
 $cHinweis = '';
 $cTab     = 'config';
 $step     = 'uebersicht';
-if (isset($_GET['del']) && intval($_GET['del']) > 0 && validateToken()) {
+if (isset($_GET['del']) && (int)$_GET['del'] > 0 && validateToken()) {
     Shop::DB()->delete('tkontaktbetreff', 'kKontaktBetreff', (int)$_GET['del']);
     Shop::DB()->delete('tkontaktbetreffsprache', 'kKontaktBetreff', (int)$_GET['del']);
 
     $cHinweis = 'Der Betreff wurde erfolgreich gel&ouml;scht';
 }
 
-if (isset($_POST['content']) && intval($_POST['content']) === 1 && validateToken()) {
+if (isset($_POST['content']) && (int)$_POST['content'] === 1 && validateToken()) {
     Shop::DB()->delete('tspezialcontentsprache', 'nSpezialContent', SC_KONTAKTFORMULAR);
     $sprachen = gibAlleSprachen();
     foreach ($sprachen as $sprache) {
@@ -35,20 +35,22 @@ if (isset($_POST['content']) && intval($_POST['content']) === 1 && validateToken
         $spezialContent3->cTyp            = 'titel';
         $spezialContent1->cContent        = $_POST['cContentTop_' . $sprache->cISO];
         $spezialContent2->cContent        = $_POST['cContentBottom_' . $sprache->cISO];
-        $spezialContent3->cContent        = htmlspecialchars($_POST['cTitle_' . $sprache->cISO], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
+        $spezialContent3->cContent        = htmlspecialchars(
+            $_POST['cTitle_' . $sprache->cISO],
+            ENT_COMPAT | ENT_HTML401,
+            JTL_CHARSET
+        );
 
         Shop::DB()->insert('tspezialcontentsprache', $spezialContent1);
         Shop::DB()->insert('tspezialcontentsprache', $spezialContent2);
         Shop::DB()->insert('tspezialcontentsprache', $spezialContent3);
-        unset($spezialContent1);
-        unset($spezialContent2);
-        unset($spezialContent3);
+        unset($spezialContent1, $spezialContent2, $spezialContent3);
     }
     $cHinweis .= 'Inhalt wurde erfolgreich gespeichert.';
     $cTab = 'content';
 }
 
-if (isset($_POST['betreff']) && intval($_POST['betreff']) === 1 && validateToken()) {
+if (isset($_POST['betreff']) && (int)$_POST['betreff'] === 1 && validateToken()) {
     if ($_POST['cName'] && $_POST['cMail']) {
         $neuerBetreff        = new stdClass();
         $neuerBetreff->cName = htmlspecialchars($_POST['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
@@ -60,32 +62,34 @@ if (isset($_POST['betreff']) && intval($_POST['betreff']) === 1 && validateToken
             $neuerBetreff->cKundengruppen = 0;
         }
         $neuerBetreff->nSort = 0;
-        if (intval($_POST['nSort']) > 0) {
-            $neuerBetreff->nSort = intval($_POST['nSort']);
+        if ((int)$_POST['nSort'] > 0) {
+            $neuerBetreff->nSort = (int)$_POST['nSort'];
         }
 
         $kKontaktBetreff = 0;
 
-        if (intval($_POST['kKontaktBetreff']) === 0) {
+        if ((int)$_POST['kKontaktBetreff'] === 0) {
             //einfuegen
             $kKontaktBetreff = Shop::DB()->insert('tkontaktbetreff', $neuerBetreff);
             $cHinweis .= 'Betreff wurde erfolgreich hinzugef&uuml;gt.';
         } else {
             //updaten
-            $kKontaktBetreff = intval($_POST['kKontaktBetreff']);
+            $kKontaktBetreff = (int)$_POST['kKontaktBetreff'];
             Shop::DB()->update('tkontaktbetreff', 'kKontaktBetreff', $kKontaktBetreff, $neuerBetreff);
             $cHinweis .= "Der Betreff <strong>$neuerBetreff->cName</strong> wurde erfolgreich ge&auml;ndert.";
         }
-        $sprachen = gibAlleSprachen();
-        if (!isset($neuerBetreffSprache)) {
-            $neuerBetreffSprache = new stdClass();
-        }
+        $sprachen            = gibAlleSprachen();
+        $neuerBetreffSprache = new stdClass();
         $neuerBetreffSprache->kKontaktBetreff = $kKontaktBetreff;
         foreach ($sprachen as $sprache) {
             $neuerBetreffSprache->cISOSprache = $sprache->cISO;
             $neuerBetreffSprache->cName       = $neuerBetreff->cName;
             if ($_POST['cName_' . $sprache->cISO]) {
-                $neuerBetreffSprache->cName = htmlspecialchars($_POST['cName_' . $sprache->cISO], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
+                $neuerBetreffSprache->cName = htmlspecialchars(
+                    $_POST['cName_' . $sprache->cISO],
+                    ENT_COMPAT | ENT_HTML401,
+                    JTL_CHARSET
+                );
             }
             Shop::DB()->delete(
                 'tkontaktbetreffsprache',
@@ -104,13 +108,14 @@ if (isset($_POST['betreff']) && intval($_POST['betreff']) === 1 && validateToken
     $cTab = 'subjects';
 }
 
-if (isset($_POST['einstellungen']) && intval($_POST['einstellungen']) === 1) {
+if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1) {
     $cHinweis .= saveAdminSectionSettings(CONF_KONTAKTFORMULAR, $_POST);
     $cTab = 'config';
 }
 
-if (((isset($_GET['kKontaktBetreff']) && intval($_GET['kKontaktBetreff']) > 0) ||
-        (isset($_GET['neu']) && intval($_GET['neu']) === 1)) && validateToken()) {
+if (((isset($_GET['kKontaktBetreff']) && (int)$_GET['kKontaktBetreff'] > 0) ||
+        (isset($_GET['neu']) && (int)$_GET['neu'] === 1)) && validateToken()
+) {
     $step = 'betreff';
 }
 
@@ -168,7 +173,7 @@ if ($step === 'uebersicht') {
 
 if ($step === 'betreff') {
     $neuerBetreff = null;
-    if (isset($_GET['kKontaktBetreff']) && intval($_GET['kKontaktBetreff']) > 0) {
+    if (isset($_GET['kKontaktBetreff']) && (int)$_GET['kKontaktBetreff'] > 0) {
         $neuerBetreff = Shop::DB()->select('tkontaktbetreff', 'kKontaktBetreff', (int)$_GET['kKontaktBetreff']);
     }
 

@@ -10,7 +10,7 @@ if (!ini_get('safe_mode')) {
     @ini_set('max_execution_time', 0);
 }
 
-if (!isset($_GET['e']) || !intval($_GET['e']) > 0 || !validateToken()) {
+if (!isset($_GET['e']) || !((int)$_GET['e'] > 0) || !validateToken()) {
     die('0');
 }
 
@@ -23,4 +23,10 @@ if (!$ef->isOK()) {
     die('2');
 }
 
-$ef->startExport($queue, isset($_GET['ajax']), (isset($_GET['back']) && $_GET['back'] === 'admin'), false, (isset($_GET['max']) ? (int)$_GET['max'] : null));
+$ef->startExport(
+    $queue,
+    isset($_GET['ajax']),
+    isset($_GET['back']) && $_GET['back'] === 'admin',
+    false,
+    (isset($_GET['max']) ? (int)$_GET['max'] : null)
+);

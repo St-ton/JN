@@ -113,7 +113,8 @@ if ($exportformat->cKodierung === 'UTF-8') {
 $max_artikel = Shop::DB()->query(
     "SELECT count(*) AS cnt
         FROM tartikel
-        JOIN tartikelattribut ON tartikelattribut.kArtikel = tartikel.kArtikel
+        JOIN tartikelattribut 
+            ON tartikelattribut.kArtikel = tartikel.kArtikel
         WHERE tartikelattribut.cName = 'yategokat'", 1
 );
 

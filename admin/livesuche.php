@@ -21,9 +21,7 @@ if (strlen(verifyGPDataString('tab')) > 0) {
 }
 
 // Suchanfrage Suche
-if (!isset($cLivesucheSQL)) {
-    $cLivesucheSQL = new stdClass();
-}
+$cLivesucheSQL = new stdClass();
 $cLivesucheSQL->cWhere = '';
 $cLivesucheSQL->cOrder = ' tsuchanfrage.nAnzahlGesuche DESC ';
 if (strlen(verifyGPDataString('cSuche')) > 0) {
@@ -71,12 +69,12 @@ if (verifyGPCDataInteger('nSort') > 0) {
     $smarty->assign('nSort', -1);
 }
 
-if (isset($_POST['livesuche']) && intval($_POST['livesuche']) === 1) { //Formular wurde abgeschickt
+if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular wurde abgeschickt
     // Suchanfragen aktualisieren
     if (isset($_POST['suchanfragenUpdate'])) {
         if (is_array($_POST['kSuchanfrageAll']) && count($_POST['kSuchanfrageAll']) > 0) {
             foreach ($_POST['kSuchanfrageAll'] as $kSuchanfrage) {
-                if (strlen($_POST['nAnzahlGesuche_' . $kSuchanfrage]) > 0 && intval($_POST['nAnzahlGesuche_' . $kSuchanfrage]) > 0) {
+                if (strlen($_POST['nAnzahlGesuche_' . $kSuchanfrage]) > 0 && (int)$_POST['nAnzahlGesuche_' . $kSuchanfrage] > 0) {
                     $_upd                 = new stdClass();
                     $_upd->nAnzahlGesuche = (int)$_POST['nAnzahlGesuche_' . $kSuchanfrage];
                     Shop::DB()->update('tsuchanfrage', 'kSuchanfrage', (int)$kSuchanfrage, $_upd);
@@ -241,7 +239,7 @@ if (isset($_POST['livesuche']) && intval($_POST['livesuche']) === 1) { //Formula
                 Shop::DB()->delete('tsuchanfrage', 'kSuchanfrage', (int)$kSuchanfrage);
                 Shop::DB()->insert('tsuchanfrageblacklist', $obj);
                 // Aus tseo loeschen
-                Shop::DB()->delete('tseo', array('cKey', 'kKey'), array('kSuchanfrage', (int)$kSuchanfrage));
+                Shop::DB()->delete('tseo', ['cKey', 'kKey'], ['kSuchanfrage', (int)$kSuchanfrage]);
                 $hinweis .= 'Die Suchanfrage "' . $kSuchanfrage_obj->cSuche . '" wurde erfolgreich gel&ouml;scht.<br />';
                 $hinweis .= 'Die Suchanfrage "' . $kSuchanfrage_obj->cSuche . '" wurde auf die Blacklist hinzugef&uuml;gt.<br />';
             }
@@ -249,7 +247,7 @@ if (isset($_POST['livesuche']) && intval($_POST['livesuche']) === 1) { //Formula
             $fehler .= 'Bitte w&auml;hlen Sie mindestens eine Suchanfrage aus.<br />';
         }
     }
-} elseif (isset($_POST['livesuche']) && intval($_POST['livesuche']) === 2) { // Erfolglos mapping
+} elseif (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 2) { // Erfolglos mapping
     if (isset($_POST['erfolglosEdit'])) { // Editieren
         $smarty->assign('nErfolglosEditieren', 1);
     } elseif (isset($_POST['erfolglosUpdate'])) { // Update
@@ -285,7 +283,7 @@ if (isset($_POST['livesuche']) && intval($_POST['livesuche']) === 1) { //Formula
                         $fehler .= 'Die Suchanfrage "' . $Suchanfrageerfolglos->cSuche .
                             '" kann nicht auf den gleichen Suchbegriff gemappt werden.';
                     }
-                } elseif (intval($_POST['nErfolglosEditieren']) === 1) {
+                } elseif ((int)$_POST['nErfolglosEditieren'] === 1) {
                     $Suchanfrageerfolglos->cSuche = StringHandler::filterXSS($_POST['cSuche_' . $Suchanfrageerfolglos->kSuchanfrageErfolglos]);
                     $upd                          = new stdClass();
                     $upd->cSuche                  = $Suchanfrageerfolglos->cSuche;
@@ -306,7 +304,7 @@ if (isset($_POST['livesuche']) && intval($_POST['livesuche']) === 1) { //Formula
         }
     }
     $smarty->assign('tab', 'erfolglos');
-} elseif (isset($_POST['livesuche']) && intval($_POST['livesuche']) === 3) { // Blacklist
+} elseif (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 3) { // Blacklist
     $suchanfragenblacklist = $_POST['suchanfrageblacklist'];
     $suchanfragenblacklist = explode(';', $suchanfragenblacklist);
     $count                 = count($suchanfragenblacklist);
@@ -322,7 +320,7 @@ if (isset($_POST['livesuche']) && intval($_POST['livesuche']) === 1) { //Formula
     }
     $smarty->assign('tab', 'blacklist');
     $hinweis .= 'Die Blacklist wurde erfolgreich aktualisiert.';
-} elseif (isset($_POST['livesuche']) && intval($_POST['livesuche']) === 4) { // Mappinglist
+} elseif (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 4) { // Mappinglist
     if (isset($_POST['delete'])) {
         if (is_array($_POST['kSuchanfrageMapping'])) {
             foreach ($_POST['kSuchanfrageMapping'] as $kSuchanfrageMapping) {
@@ -433,7 +431,7 @@ for ($i = 0; $i < $configCount; $i++) {
                 AND cName = '" . $oConfig_arr[$i]->cWertName . "'", 1
     );
 
-    $oConfig_arr[$i]->gesetzterWert = (isset($oSetValue->cWert)) ? $oSetValue->cWert : null;
+    $oConfig_arr[$i]->gesetzterWert = isset($oSetValue->cWert) ? $oSetValue->cWert : null;
 }
 $smarty->assign('oConfig_arr', $oConfig_arr)
     ->assign('Sprachen', $Sprachen)

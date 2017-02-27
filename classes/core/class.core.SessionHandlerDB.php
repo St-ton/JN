@@ -99,12 +99,7 @@ class SessionHandlerDB extends \JTL\core\SessionHandler implements SessionHandle
     public function destroy($sessID)
     {
         //if session was deleted, return true,
-        if (Shop::DB()->query("DELETE FROM tsession WHERE cSessionId = '{$sessID}'", 3) > 0) {
-            return true;
-        }
-
-        //otherwise return false
-        return false;
+        return Shop::DB()->delete('tsession', 'cSessionId', $sessID) > 0;
     }
 
     /**

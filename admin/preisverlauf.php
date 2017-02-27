@@ -3,14 +3,14 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/admininclude.php';
+require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('MODULE_PRICECHART_VIEW', true, true);
 /** @global JTLSmarty $smarty */
 $cHinweis = '';
 $cfehler  = '';
 
-if (isset($_POST['einstellungen']) && intval($_POST['einstellungen']) === 1) {
+if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1) {
     $cHinweis .= saveAdminSectionSettings(CONF_PREISVERLAUF, $_POST);
 }
 

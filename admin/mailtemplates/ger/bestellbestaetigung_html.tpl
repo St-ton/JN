@@ -1,6 +1,6 @@
 {includeMailTemplate template=header type=html}
 
-Sehr {if $Kunde->cAnrede == "w"}geehrte{else}geehrter{/if} {$Kunde->cAnredeLocalized} {$Kunde->cNachname},<br>
+Sehr {if $Kunde->cAnrede == "w"}geehrte{elseif $Kunde->cAnrede == "m"}geehrter{else}geehrte(r){/if} {$Kunde->cAnredeLocalized} {$Kunde->cNachname},<br>
 <br>
 vielen Dank für Ihre Bestellung bei {$Einstellungen.global.global_shopname}.<br>
 <br>
@@ -571,7 +571,7 @@ Sie haben folgende Zahlungsart gewählt: {$Bestellung->cZahlungsartName}<br>
 {elseif $Bestellung->Zahlungsart->cModulId === "za_paypal_jtl"}
 {elseif $Bestellung->Zahlungsart->cModulId === "za_moneybookers_jtl"}
 {/if}
-{if isset($Zahlungsart->cHinweisText) && $Zahlungsart->cHinweisText|count_characters > 0}
+{if isset($Zahlungsart->cHinweisText) && $Zahlungsart->cHinweisText|strlen > 0}
     {$Zahlungsart->cHinweisText}<br>
     <br>
 {/if}

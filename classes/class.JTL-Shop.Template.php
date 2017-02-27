@@ -116,7 +116,10 @@ class Template
             return $this;
         }
         $bMobil  = (isset($_COOKIE['bMobil']) && $_COOKIE['bMobil']);
-        $cacheID = 'current_template_' . (($bMobil === true) ? 'mobile' : 'nonmobile') . ((self::$isAdmin === true) ? '_admin' : '');
+        $cacheID = 'current_template_' . (($bMobil === true)
+                ? 'mobile'
+                : 'nonmobile') .
+            ((self::$isAdmin === true) ? '_admin' : '');
         if (($oTemplate = Shop::Cache()->get($cacheID)) !== false) {
             self::$cTemplate   = $oTemplate->cTemplate;
             self::$parent      = $oTemplate->parent;
@@ -353,14 +356,20 @@ class Template
                         /** @var SimpleXMLElement $oFile */
                         foreach ($oCSS->File as $oFile) {
                             $cFile     = (string)$oFile->attributes()->Path;
-                            $cFilePath = (self::$isAdmin === false) ?
-                                PFAD_ROOT . PFAD_TEMPLATES . $oXML->Ordner . '/' . $cFile :
-                                PFAD_ROOT . PFAD_ADMIN . PFAD_TEMPLATES . $oXML->Ordner . '/' . $cFile;
-                            if (file_exists($cFilePath) && (empty($oFile->attributes()->DependsOnSetting) || $this->checkCondition($oFile) === true)) {
+                            $cFilePath = (self::$isAdmin === false)
+                                ? PFAD_ROOT . PFAD_TEMPLATES . $oXML->Ordner . '/' . $cFile
+                                : PFAD_ROOT . PFAD_ADMIN . PFAD_TEMPLATES . $oXML->Ordner . '/' . $cFile;
+                            if (file_exists($cFilePath) &&
+                                (empty($oFile->attributes()->DependsOnSetting) || $this->checkCondition($oFile) === true)
+                            ) {
                                 $_file           = PFAD_TEMPLATES . $cOrdner . '/' . (string)$oFile->attributes()->Path;
                                 $cCustomFilePath = str_replace('.css', '_custom.css', $cFilePath);
                                 if (file_exists($cCustomFilePath)) { //add _custom file if existing
-                                    $_file                  = str_replace('.css', '_custom.css', PFAD_TEMPLATES . $cOrdner . '/' . (string)$oFile->attributes()->Path);
+                                    $_file                  = str_replace(
+                                        '.css',
+                                        '_custom.css',
+                                        PFAD_TEMPLATES . $cOrdner . '/' . (string)$oFile->attributes()->Path
+                                    );
                                     $tplGroups_arr[$name][] = [
                                         'idx' => str_replace('.css', '_custom.css', (string)$oFile->attributes()->Path),
                                         'abs' => realpath(PFAD_ROOT  . $_file),
@@ -387,7 +396,9 @@ class Template
                             $tplGroups_arr[$name] = [];
                         }
                         foreach ($oJS->File as $oFile) {
-                            if (empty($oFile->attributes()->DependsOnSetting) || $this->checkCondition($oFile) === true) {
+                            if (empty($oFile->attributes()->DependsOnSetting) ||
+                                $this->checkCondition($oFile) === true
+                            ) {
                                 $_file    = PFAD_TEMPLATES . $cOrdner . '/' . (string)$oFile->attributes()->Path;
                                 $newEntry = [
                                     'idx' => (string)$oFile->attributes()->Path,
@@ -395,7 +406,9 @@ class Template
                                     'rel' => $_file
                                 ];
                                 $found    = false;
-                                if (!empty($oFile->attributes()->override) && (string)$oFile->attributes()->override === 'true') {
+                                if (!empty($oFile->attributes()->override) &&
+                                    (string)$oFile->attributes()->override === 'true'
+                                ) {
                                     $idxToOverride = (string)$oFile->attributes()->Path;
                                     $max           = count($tplGroups_arr[$name]);
                                     for ($i = 0; $i < $max; $i++) {
@@ -512,11 +525,8 @@ class Template
     public function isMobileTemplateActive()
     {
         $oTemplate = $this->getMobileTemplate();
-        if ($oTemplate && $oTemplate->cTemplate === $_SESSION['cTemplate']) {
-            return true;
-        }
 
-        return false;
+        return (isset($oTemplate->cTemplate) && $oTemplate->cTemplate === $_SESSION['cTemplate']);
     }
 
     /**
@@ -526,7 +536,12 @@ class Template
      */
     public function getSkin()
     {
-        $cSkin = Shop::DB()->select('ttemplateeinstellungen', ['cName', 'cSektion', 'cTemplate'], ['theme_default', 'theme', self::$cTemplate]);
+        $cSkin = Shop::DB()->select(
+            'ttemplateeinstellungen',
+            ['cName', 'cSektion', 'cTemplate'],
+            ['theme_default', 'theme',
+             self::$cTemplate]
+        );
 
         return (isset($cSkin->cWert)) ? $cSkin->cWert : null;
     }
@@ -542,8 +557,7 @@ class Template
         }
         setcookie('bMobil', $bMobil);
         self::$bMobil = $bMobil;
-        unset($_SESSION['template']);
-        unset($_SESSION['cTemplate']);
+        unset($_SESSION['template'], $_SESSION['cTemplate']);
         $this->init();
 
         return $this;
@@ -566,7 +580,7 @@ class Template
         $ignoredSettings = []; //list of settings that are overridden by child
         foreach ($folder as $cOrdner) {
             $oXML = self::$helper->getXML($cOrdner);
-            if ($oXML && isset($oXML->Settings) && isset($oXML->Settings->Section)) {
+            if ($oXML && isset($oXML->Settings, $oXML->Settings->Section)) {
                 /** @var SimpleXMLElement $oXMLSection */
                 foreach ($oXML->Settings->Section as $oXMLSection) {
                     $oSection  = null;
@@ -625,7 +639,8 @@ class Template
                                 if ('Resizable' === (string)$_key) {
                                     in_array($_val, $vToggleValues)
                                         ? $oSetting->vTextAreaAttr_arr[$_key] = 'none'
-                                        : $oSetting->vTextAreaAttr_arr[$_key] = 'vertical'; // only vertical, because horizontal breaks the layout
+                                        : $oSetting->vTextAreaAttr_arr[$_key] = 'vertical';
+                                    // only vertical, because horizontal breaks the layout
                                 } else {
                                     $oSetting->vTextAreaAttr_arr[$_key] = $_val;
                                 }
@@ -633,7 +648,7 @@ class Template
                             // get the tag-content of "TextAreaValue"; trim leading and trailing spaces
                             $vszTextLines = mb_split("\n", (string)$XMLSetting->TextAreaValue);
                             array_walk($vszTextLines, function (&$szLine) { $szLine = trim($szLine); });
-                            $oSetting->cTextAreaValue = join("\n", $vszTextLines);
+                            $oSetting->cTextAreaValue = implode("\n", $vszTextLines);
                         }
                         foreach ($oSection->oSettings_arr as $_setting) {
                             if ($_setting->cKey === $oSetting->cKey) {
@@ -642,8 +657,10 @@ class Template
                                 break;
                             }
                         }
-                        $oSetting->bEditable = (strlen($oSetting->bEditable) === 0) ? true : (boolean)intval($oSetting->bEditable);
-                        if (isset($oDBSettings[$oSection->cKey][$oSetting->cKey]) && $oSetting->bEditable) {
+                        $oSetting->bEditable = (strlen($oSetting->bEditable) === 0)
+                            ? true
+                            : (boolean)intval($oSetting->bEditable);
+                        if ($oSetting->bEditable && isset($oDBSettings[$oSection->cKey][$oSetting->cKey])) {
                             $oSetting->cValue = $oDBSettings[$oSection->cKey][$oSetting->cKey];
                         }
                         if (isset($XMLSetting->Option)) {
@@ -703,10 +720,13 @@ class Template
      */
     public function getBoxLayoutXML($cOrdner = null)
     {
-        $cOrdner   = ($cOrdner !== null) ? $cOrdner : self::$cTemplate;
-        $oItem_arr = [];
-        if (self::$parent !== null) {
-            $oXML = self::$helper->getXML(self::$parent);
+        $oItem_arr     = [];
+        $cOrdner_arr   = self::$parent !== null ? [self::$parent] : [];
+        $cOrdner_arr[] = $cOrdner !== null ? $cOrdner : self::$cTemplate;
+
+        foreach ($cOrdner_arr as $dir) {
+            $oXML = self::$helper->getXML($dir);
+
             if ($oXML && isset($oXML->Boxes) && count($oXML->Boxes) === 1) {
                 $oXMLBoxes_arr = $oXML->Boxes[0];
                 /** @var SimpleXMLElement $oXMLContainer */
@@ -717,17 +737,8 @@ class Template
                 }
             }
         }
-        $oXML = self::$helper->getXML($cOrdner);
-        if ($oXML && isset($oXML->Boxes) && count($oXML->Boxes) === 1) {
-            $oXMLBoxes_arr = $oXML->Boxes[0];
-            foreach ($oXMLBoxes_arr as $oXMLContainer) {
-                $cPosition             = (string)$oXMLContainer->attributes()->Position;
-                $bAvailable            = (boolean)intval($oXMLContainer->attributes()->Available);
-                $oItem_arr[$cPosition] = $bAvailable;
-            }
-        }
 
-        return (count($oItem_arr) > 0) ? $oItem_arr : false;
+        return count($oItem_arr) > 0 ? $oItem_arr : false;
     }
 
     /**
@@ -883,7 +894,7 @@ class Template
      */
     public function getVersion()
     {
-        return floatval($this->version);
+        return (float)$this->version;
     }
 
     /**
@@ -936,7 +947,10 @@ class Template
             $cUrlShop_arr    = parse_url(Shop::getURL());
             $ref             = (isset($_SERVER['HTTP_REFERER'])) ? $_SERVER['HTTP_REFERER'] : '';
             $cUrlReferer_arr = parse_url($ref);
-            if ($bRedirect && $ref !== '' && (strtolower($cUrlShop_arr['host']) === strtolower($cUrlReferer_arr['host']))) {
+            if ($bRedirect &&
+                $ref !== '' &&
+                (strtolower($cUrlShop_arr['host']) === strtolower($cUrlReferer_arr['host']))
+            ) {
                 $cReferer = preg_replace('/&?mt=[^&]*/', '', $_SERVER['HTTP_REFERER']);
                 header('Location: ' . $cReferer);
                 exit;

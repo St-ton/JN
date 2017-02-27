@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-require_once dirname(__FILE__) . '/syncinclude.php';
+require_once __DIR__ . '/syncinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Artikel.php';
 require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Bestellung.php';
@@ -23,18 +23,20 @@ if (auth()) {
 
     $oLastJob_arr = getJobs();
     if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-        Jtllog::writeLog('LastJob Job Array: ' . print_r($oLastJob_arr, true), JTLLOG_LEVEL_DEBUG, false, 'LastJob Job Array');
+        Jtllog::writeLog('LastJob Job Array: ' .
+            print_r($oLastJob_arr, true), JTLLOG_LEVEL_DEBUG, false, 'LastJob Job Array');
     }
 
     if (is_array($oLastJob_arr) && count($oLastJob_arr) > 0) {
         $conf = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_SITEMAP]);
 
         foreach ($oLastJob_arr as $oLastJob) {
-            if (isset($oLastJob->nJob) && intval($oLastJob->nJob) > 0) {
+            if (isset($oLastJob->nJob) && (int)$oLastJob->nJob > 0) {
                 if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                    Jtllog::writeLog('Lastjobs Job: ' . print_r($oLastJob, true), JTLLOG_LEVEL_DEBUG, false, 'nJob', $oLastJob->nJob);
+                    Jtllog::writeLog('Lastjobs Job: ' .
+                        print_r($oLastJob, true), JTLLOG_LEVEL_DEBUG, false, 'nJob', $oLastJob->nJob);
                 }
-                switch (intval($oLastJob->nJob)) {
+                switch ((int)$oLastJob->nJob) {
                     // Bewertungserinnerung
                     case LASTJOBS_BEWERTUNGSERINNNERUNG:
                         require_once PFAD_ROOT . PFAD_ADMIN . 'includes/bewertungserinnerung.php';
@@ -44,7 +46,9 @@ if (auth()) {
 
                     // Sitemap
                     case LASTJOBS_SITEMAP:
-                        if (isset($conf['sitemap']['sitemap_wawiabgleich']) && $conf['sitemap']['sitemap_wawiabgleich'] === 'Y') {
+                        if (isset($conf['sitemap']['sitemap_wawiabgleich']) &&
+                            $conf['sitemap']['sitemap_wawiabgleich'] === 'Y'
+                        ) {
                             require_once PFAD_ROOT . PFAD_ADMIN . 'includes/sitemapexport.php';
                             generateSitemapXML();
                             updateJob(LASTJOBS_SITEMAP);
@@ -53,7 +57,9 @@ if (auth()) {
 
                     // RSS
                     case LASTJOBS_RSS:
-                        if (isset($conf['rss']['rss_wawiabgleich']) && $conf['rss']['rss_wawiabgleich'] === 'Y') {
+                        if (isset($conf['rss']['rss_wawiabgleich']) &&
+                            $conf['rss']['rss_wawiabgleich'] === 'Y'
+                        ) {
                             require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'rss_inc.php';
                             generiereRSSXML();
                             updateJob(LASTJOBS_RSS);
@@ -62,7 +68,9 @@ if (auth()) {
 
                     // GarbageCollector
                     case LASTJOBS_GARBAGECOLLECTOR:
-                        if (isset($conf['global']['garbagecollector_wawiabgleich']) && $conf['global']['garbagecollector_wawiabgleich'] === 'Y') {
+                        if (isset($conf['global']['garbagecollector_wawiabgleich']) &&
+                            $conf['global']['garbagecollector_wawiabgleich'] === 'Y'
+                        ) {
                             require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.GarbageCollector.php';
                             $oGarbageCollector = new GarbageCollector();
                             $oGarbageCollector->run();
@@ -87,7 +95,7 @@ die('3');
  */
 function getJobs()
 {
-    $GLOBALS['nIntervall'] = (defined('LASTJOBS_INTERVALL')) ? LASTJOBS_INTERVALL : 12;
+    $GLOBALS['nIntervall'] = defined('LASTJOBS_INTERVALL') ? LASTJOBS_INTERVALL : 12;
     executeHook(HOOK_LASTJOBS_HOLEJOBS);
 
     return LastJob::getInstance()->getRepeatedJobs($GLOBALS['nIntervall']);

@@ -1,8 +1,8 @@
 {includeMailTemplate template=header type=plain}
 
-Dear {if $Kunde->cAnrede == "w"}geehrte{else}geehrter{/if} {$Kunde->cAnredeLocalized} {$Kunde->cNachname},
+Dear {$Kunde->cAnredeLocalized} {$Kunde->cNachname},
 
-Your order dated {$Bestellung->dErstelldatum_de} mit Bestellnummer {$Bestellung->cBestellNr} has been shipped to you today.
+Your order dated {$Bestellung->dErstelldatum_de} with order no. {$Bestellung->cBestellNr} has been shipped to you today.
 
 {foreach name=pos from=$Bestellung->oLieferschein_arr item=oLieferschein}
     {if $oLieferschein->oVersand_arr|count > 1}
@@ -12,9 +12,9 @@ Your order dated {$Bestellung->dErstelldatum_de} mit Bestellnummer {$Bestellung-
     {/if}
 
     {foreach from=$oLieferschein->oVersand_arr item=oVersand}
-        {if $oVersand->getIdentCode()|@count_characters > 0}
+        {if $oVersand->getIdentCode()|strlen > 0}
             Tracking URL: {$oVersand->getLogistikVarUrl()}
-            {if $oVersand->getHinweis()|@count_characters > 0}
+            {if $oVersand->getHinweis()|strlen > 0}
                 Tracking notice: {$oVersand->getHinweis()}
             {/if}
         {/if}

@@ -79,7 +79,7 @@ class VCard
     {
         $this->rawVCard = $vcardData;
 
-        if (isset($options)) {
+        if ($options !== null) {
             $this->options = array_merge($this->options, $options);
         }
 
@@ -144,7 +144,7 @@ class VCard
         $result = [];
         $type   = [];
 
-        if (!isset($rawParams)) {
+        if ($rawParams === null) {
             return $result;
         }
 
@@ -160,10 +160,11 @@ class VCard
                 continue;
             }
 
-            if (count($param) == 1) {
+            if (count($param) === 1) {
                 // prüfen ob der typ für den Parameter erlaubt ist (Ausnahme: email)
-                if ((isset(self::$elementsType[$key]) && in_array($param[0], self::$elementsType[$key])) ||
-                    ($key == 'email' && is_scalar($param[0]))) {
+                if (($key === 'email' && is_scalar($param[0])) ||
+                    (isset(self::$elementsType[$key]) && in_array($param[0], self::$elementsType[$key]))
+                ) {
                     $type[] = $param[0];
                 }
             } elseif (count($param) > 2) {
@@ -175,8 +176,8 @@ class VCard
             } else {
                 switch ($param[0]) {
                     case 'encoding':
-                        if (in_array($param[1], ['quoted-printable', 'b', 'base64'])) {
-                            $result['encoding'] = $param[1] == 'base64' ? 'b' : $param[1];
+                        if (in_array($param[1], ['quoted-printable', 'b', 'base64'], true)) {
+                            $result['encoding'] = $param[1] === 'base64' ? 'b' : $param[1];
                         }
                         break;
                     case 'charset':
@@ -237,7 +238,7 @@ class VCard
         list($key, $rawValue) = explode(':', $line, 2);
 
         $key = strtolower(trim(self::unescape($key)));
-        if (in_array($key, ['begin', 'end'])) {
+        if (in_array($key, ['begin', 'end'], true)) {
             // begin und end müssen nicht weiter geparst werden
             return;
         }
@@ -273,14 +274,14 @@ class VCard
                     case 'encoding':
                         $encoding = $paramValue;
 
-                        if (in_array($paramValue, ['b', 'base64'])) {
+                        if (in_array($paramValue, ['b', 'base64'], true)) {
                             //$rawValue = base64_decode($Value);
-                        } elseif ($paramValue == 'quoted-printable') { // v2.1
+                        } elseif ($paramValue === 'quoted-printable') { // v2.1
                             $rawValue = quoted_printable_decode($rawValue);
                         }
                         break;
                     case 'charset': // v2.1
-                        if ($paramValue != 'utf-8' && $paramValue != 'utf8') {
+                        if ($paramValue !== 'utf-8' && $paramValue !== 'utf8') {
                             $rawValue = mb_convert_encoding($rawValue, 'UTF-8', $paramValue);
                         }
                         break;
@@ -292,8 +293,12 @@ class VCard
         }
 
         // prüfe auf zusätzliche Doppelpunk getrennte parameter (z.B. Apples "X-ABCROP-RECTANGLE" für photos)
-        if (in_array($key, self::$elementsFile) && isset($params['encoding']) && in_array($params['encoding'], ['b', 'base64'])) {
-            // wenn ein Doppelpunkt vorhanden ist, dann gibt es zusätzliche Address Book paremeter, da ein : kein gültiges Zeichen in Base64 ist
+        if (isset($params['encoding']) &&
+            in_array($key, self::$elementsFile, true) &&
+            in_array($params['encoding'], ['b', 'base64'], true)
+        ) {
+            // wenn ein Doppelpunkt vorhanden ist, dann gibt es zusätzliche Address Book paremeter,
+            // da ein ":" kein gültiges Zeichen in Base64 ist
             if (strpos($rawValue, ':') !== false) {
                 $rawValue = array_pop(explode(':', $rawValue));
             }
@@ -305,7 +310,7 @@ class VCard
                 $value['Type'] = $type;
             }
         } else {
-            if (in_array($key, self::$elementsMultiple)) {
+            if (in_array($key, self::$elementsMultiple, true)) {
                 $value = self::parseMultipleTextValue($rawValue);
             } else {
                 $value = $rawValue;
@@ -339,14 +344,14 @@ class VCard
         $beginCount = preg_match_all('{^BEGIN\:VCARD}miS', $this->rawVCard);
         $endCount   = preg_match_all('{^END\:VCARD}miS', $this->rawVCard);
 
-        if (($beginCount != $endCount) || !$beginCount) {
+        if (($beginCount !== $endCount) || !$beginCount) {
             if ($this->options['handling'] == self::OPT_ERR_RAISE) {
                 throw new Exception('vCard: invalid vCard', self::ERR_INVALID);
             }
 
             $this->mode = self::MODE_UNKNOWN;
         } else {
-            $this->mode = $beginCount == 1 ? self::MODE_SINGLE : self::MODE_MULTIPLE;
+            $this->mode = $beginCount === 1 ? self::MODE_SINGLE : self::MODE_MULTIPLE;
         }
 
         if ($this->mode !== self::MODE_UNKNOWN) {
@@ -497,7 +502,7 @@ class VCard
             if ($sub === '*' && (is_array($item) || is_object($item))) {
                 foreach ($item as $key => $value) {
                     // nur den ersten Eintrag zurückgeben
-                    $sub  = $key;
+                    $sub = $key;
                     break;
                 }
             }
@@ -512,7 +517,7 @@ class VCard
                 if (is_string($item->$sub)) {
                     return $item->$sub;
                 }
-                if (isset($item->$sub) && $checkSelf) {
+                if ($checkSelf) {
                     return $item->$sub;
                 }
             }

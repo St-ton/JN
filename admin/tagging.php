@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/admininclude.php';
+require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('MODULE_PRODUCTTAGS_VIEW', true, true);
 
@@ -15,12 +15,12 @@ setzeSprache();
 $cHinweis          = '';
 $cFehler           = '';
 $step              = 'uebersicht';
-$settingsIDs       = array(427, 428, 431, 433, 434, 435, 430);
+$settingsIDs       = [427, 428, 431, 433, 434, 435, 430];
 // Tabs
 if (strlen(verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', verifyGPDataString('tab'));
 }
-if (isset($_POST['tagging']) && intval($_POST['tagging']) === 1 && validateToken()) {
+if (isset($_POST['tagging']) && (int)$_POST['tagging'] === 1 && validateToken()) {
     //Formular wurde abgeschickt
     if (!isset($_POST['delete'])) {
         if (is_array($_POST['kTagAll']) && count($_POST['kTagAll']) > 0) {
@@ -60,7 +60,7 @@ if (isset($_POST['tagging']) && intval($_POST['tagging']) === 1 && validateToken
                     );
                     // Aktivierten Tag in tseo eintragen
                     $oSeo           = new stdClass();
-                    $oSeo->cSeo     = (isset($oTag->cName))
+                    $oSeo->cSeo     = isset($oTag->cName)
                         ? checkSeo(getSeo($oTag->cName))
                         : '';
                     $oSeo->cKey     = 'kTag';
@@ -78,7 +78,7 @@ if (isset($_POST['tagging']) && intval($_POST['tagging']) === 1 && validateToken
         }
         // Eintragen in die Mapping Tabelle
         $Tags = Shop::DB()->query(
-            "SELECT ttag.kTag, ttag.cName,ttag.nAktiv, sum(ttagartikel.nAnzahlTagging) AS Anzahl 
+            "SELECT ttag.kTag, ttag.cName, ttag.nAktiv, sum(ttagartikel.nAnzahlTagging) AS Anzahl 
                 FROM ttag
                 JOIN ttagartikel 
                     ON ttagartikel.kTag = ttag.kTag
@@ -88,7 +88,7 @@ if (isset($_POST['tagging']) && intval($_POST['tagging']) === 1 && validateToken
         );
         if (is_array($Tags) && count($Tags) > 0) {
             foreach ($Tags as $tag) {
-                if ($tag->cName != $_POST['mapping_' . $tag->kTag]) {
+                if ($tag->cName !== $_POST['mapping_' . $tag->kTag]) {
                     if (strlen($_POST['mapping_' . $tag->kTag]) > 0) {
                         $tagmapping_obj           = new stdClass();
                         $tagmapping_obj->kSprache = (int)$_SESSION['kSprache'];
@@ -170,7 +170,7 @@ if (isset($_POST['tagging']) && intval($_POST['tagging']) === 1 && validateToken
             $cFehler .= 'Bitte w&auml;hlen Sie mindestens einen Tag aus.<br />';
         }
     }
-} elseif (isset($_POST['tagging']) && intval($_POST['tagging']) === 2 && validateToken()) { // Mappinglist
+} elseif (isset($_POST['tagging']) && (int)$_POST['tagging'] === 2 && validateToken()) { // Mappinglist
     if (isset($_POST['delete'])) {
         if (is_array($_POST['kTagMapping'])) {
             foreach ($_POST['kTagMapping'] as $kTagMapping) {
@@ -189,7 +189,7 @@ if (isset($_POST['tagging']) && intval($_POST['tagging']) === 1 && validateToken
         }
     }
 } elseif ((isset($_POST['a']) && $_POST['a'] === 'saveSettings') ||
-    isset($_POST['tagging']) && intval($_POST['tagging']) === 3) { // Einstellungen
+    (isset($_POST['tagging']) && (int)$_POST['tagging'] === 3)) { // Einstellungen
     $cHinweis .= saveAdminSettings($settingsIDs, $_POST);
 }
 // Tagdetail
@@ -284,7 +284,7 @@ if (verifyGPCDataInteger('kTag') > 0 && verifyGPCDataInteger('tagdetail') === 1)
             'cName',
             $oConfig_arr[$i]->cWertName
         );
-        $oConfig_arr[$i]->gesetzterWert = (isset($oSetValue->cWert))
+        $oConfig_arr[$i]->gesetzterWert = isset($oSetValue->cWert)
             ? $oSetValue->cWert
             : null;
     }

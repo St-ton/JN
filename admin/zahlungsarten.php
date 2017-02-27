@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/admininclude.php';
+require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('ORDER_PAYMENT_VIEW', true, true);
 
@@ -45,7 +45,7 @@ if (verifyGPCDataInteger('kZahlungsart') > 0 && $action !== 'logreset' && valida
     }
 }
 
-if (isset($_POST['einstellungen_bearbeiten']) && isset($_POST['kZahlungsart']) &&
+if (isset($_POST['einstellungen_bearbeiten'], $_POST['kZahlungsart']) &&
     (int)$_POST['einstellungen_bearbeiten'] === 1 && (int)$_POST['kZahlungsart'] > 0 && validateToken()) {
     $step              = 'uebersicht';
     $zahlungsart       = Shop::DB()->select('tzahlungsart', 'kZahlungsart', (int)$_POST['kZahlungsart']);
@@ -159,8 +159,9 @@ if (isset($_POST['einstellungen_bearbeiten']) && isset($_POST['kZahlungsart']) &
         if ($_POST['cName_' . $sprache->cISO]) {
             $zahlungsartSprache->cName = $_POST['cName_' . $sprache->cISO];
         }
-        $zahlungsartSprache->cGebuehrname = $_POST['cGebuehrname_' . $sprache->cISO];
-        $zahlungsartSprache->cHinweisText = $_POST['cHinweisText_' . $sprache->cISO];
+        $zahlungsartSprache->cGebuehrname      = $_POST['cGebuehrname_' . $sprache->cISO];
+        $zahlungsartSprache->cHinweisText      = $_POST['cHinweisText_' . $sprache->cISO];
+        $zahlungsartSprache->cHinweisTextShop  = $_POST['cHinweisTextShop_' . $sprache->cISO];
 
         Shop::DB()->delete(
             'tzahlungsartsprache',
@@ -169,6 +170,7 @@ if (isset($_POST['einstellungen_bearbeiten']) && isset($_POST['kZahlungsart']) &
         );
         Shop::DB()->insert('tzahlungsartsprache', $zahlungsartSprache);
     }
+
     Shop::Cache()->flushAll();
     $hinweis = 'Zahlungsart gespeichert.';
     $step    = 'uebersicht';
@@ -240,7 +242,7 @@ if ($step === 'einstellen') {
                     'cName',
                     $Conf[$i]->cWertName
                 );
-                $Conf[$i]->gesetzterWert = (isset($setValue->cWert))
+                $Conf[$i]->gesetzterWert = isset($setValue->cWert)
                     ? $setValue->cWert
                     : null;
             }
@@ -255,6 +257,7 @@ if ($step === 'einstellen') {
                 ->assign('Zahlungsartname', getNames($zahlungsart->kZahlungsart))
                 ->assign('Gebuehrname', getshippingTimeNames($zahlungsart->kZahlungsart))
                 ->assign('cHinweisTexte_arr', getHinweisTexte($zahlungsart->kZahlungsart))
+                ->assign('cHinweisTexteShop_arr', getHinweisTexteShop($zahlungsart->kZahlungsart))
                 ->assign('ZAHLUNGSART_MAIL_EINGANG', ZAHLUNGSART_MAIL_EINGANG)
                 ->assign('ZAHLUNGSART_MAIL_STORNO', ZAHLUNGSART_MAIL_STORNO);
     }
@@ -270,8 +273,10 @@ if ($step === 'einstellen') {
                ->assign('kZahlungsart', $kZahlungsart);
     }
 } elseif ($step === 'payments') {
-    if (isset($_POST['action']) && $_POST['action'] === 'paymentwawireset' &&
-        isset($_POST['kEingang_arr']) && validateToken()) {
+    if (isset($_POST['action'], $_POST['kEingang_arr']) &&
+        $_POST['action'] === 'paymentwawireset' &&
+        validateToken()
+    ) {
         $kEingang_arr = $_POST['kEingang_arr'];
         array_walk($kEingang_arr, function (&$i) {
             $i = (int)$i;

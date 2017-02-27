@@ -206,7 +206,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
         {
             $nMaxUpload   = intval(ini_get('upload_max_filesize'));
             $nMaxPost     = intval(ini_get('post_max_size'));
-            $nMemoryLimit = intval(ini_get('memory_limit'));
+            $nMemoryLimit = Shop()->PHPSettingsHelper()->limit();
             $nUploadMax   = min($nMaxUpload, $nMaxPost, $nMemoryLimit);
             $nUploadMax *= (1024 * 1024);
 

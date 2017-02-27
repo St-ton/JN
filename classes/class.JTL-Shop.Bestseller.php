@@ -228,7 +228,7 @@ class Bestseller
     public static function ignoreProducts(&$products, $bestsellers)
     {
         $ignoredkeys = [];
-        if (is_array($products) && count($products) > 0 && is_array($bestsellers) && count($bestsellers) > 0) {
+        if (is_array($products) && is_array($bestsellers) && count($products) > 0 && count($bestsellers) > 0) {
             foreach ($products as $i => $product) {
                 if (count($products) === 1) {
                     break;

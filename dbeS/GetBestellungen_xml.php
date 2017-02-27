@@ -4,18 +4,21 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-require_once dirname(__FILE__) . '/syncinclude.php';
+require_once __DIR__ . '/syncinclude.php';
 
 $return  = 3;
 $xml_obj = [];
 if (auth()) {
     $return = 0;
-    $oBestellung_arr = Shop::DB()->query(
-        "SELECT tbestellung.kBestellung, tbestellung.kWarenkorb, tbestellung.kKunde, tbestellung.kLieferadresse, tbestellung.kRechnungsadresse, 
-            tbestellung.kZahlungsart, tbestellung.kVersandart, tbestellung.kSprache, tbestellung.kWaehrung, '0' AS nZahlungsTyp, tbestellung.fGuthaben, 
-            tbestellung.cSession, tbestellung.cZahlungsartName, tbestellung.cBestellNr, tbestellung.cVersandInfo, tbestellung.dVersandDatum, tbestellung.cTracking, 
-            tbestellung.cKommentar, tbestellung.cAbgeholt, tbestellung.cStatus, date_format(tbestellung.dErstellt, \"%d.%m.%Y\") AS dErstellt_formatted, 
-            tbestellung.dErstellt, tzahlungsart.cModulId, tbestellung.cPUIZahlungsdaten, tbestellung.nLongestMinDelivery, tbestellung.nLongestMaxDelivery
+    $oBestellung_arr = Shop::DB()->query("
+        SELECT tbestellung.kBestellung, tbestellung.kWarenkorb, tbestellung.kKunde, tbestellung.kLieferadresse, 
+            tbestellung.kRechnungsadresse,  tbestellung.kZahlungsart, tbestellung.kVersandart, tbestellung.kSprache, 
+            tbestellung.kWaehrung, '0' AS nZahlungsTyp, tbestellung.fGuthaben,  tbestellung.cSession, 
+            tbestellung.cZahlungsartName, tbestellung.cBestellNr, tbestellung.cVersandInfo, tbestellung.dVersandDatum, 
+            tbestellung.cTracking, tbestellung.cKommentar, tbestellung.cAbgeholt, tbestellung.cStatus, 
+            date_format(tbestellung.dErstellt, \"%d.%m.%Y\") AS dErstellt_formatted,  tbestellung.dErstellt, 
+            tzahlungsart.cModulId, tbestellung.cPUIZahlungsdaten, tbestellung.nLongestMinDelivery, 
+            tbestellung.nLongestMaxDelivery
             FROM tbestellung
             LEFT JOIN tzahlungsart
                 ON tzahlungsart.kZahlungsart = tbestellung.kZahlungsart
@@ -25,7 +28,9 @@ if (auth()) {
     );
 
     foreach ($oBestellung_arr as $i => $oBestellung) {
-        if (strlen($oBestellung['cPUIZahlungsdaten']) > 0 && preg_match('/^kPlugin_(\d+)_paypalexpress$/', $oBestellung['cModulId'], $matches)) {
+        if (strlen($oBestellung['cPUIZahlungsdaten']) > 0 &&
+            preg_match('/^kPlugin_(\d+)_paypalexpress$/', $oBestellung['cModulId'], $matches)
+        ) {
             $oBestellung_arr[$i]['cModulId'] = 'za_paypal_pui_jtl';
         }
 

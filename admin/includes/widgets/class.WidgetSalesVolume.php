@@ -67,10 +67,10 @@ class WidgetSalesVolume extends WidgetBase
                 $oLastMonth->dZeit = substr($oLastMonth->dZeit, 0, 2);
             }
         }
-        $Series = array(
+        $Series = [
             'Letzter Monat' => $oLastMonth_arr,
             'Dieser Monat'  => $oCurrentMonth_arr
-        );
+        ];
 
         return prepareLineChartStatsMulti($Series, getAxisNames(STATS_ADMIN_TYPE_UMSATZ), 2);
     }

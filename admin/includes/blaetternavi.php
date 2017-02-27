@@ -23,7 +23,7 @@ function baueBlaetterNavi($nAktuelleSeite, $nAnzahl, $nAnzahlProSeite)
     $oBlaetterNavi->nAktiv = 0;
 
     if ($nAnzahl > $nAnzahlProSeite) {
-        $nBlaetterAnzahl_arr = array();
+        $nBlaetterAnzahl_arr = [];
 
         $nSeiten     = ceil($nAnzahl / $nAnzahlProSeite);
         $nMaxAnzeige = 5; // Zeige in der Navigation nur maximal X Seiten an

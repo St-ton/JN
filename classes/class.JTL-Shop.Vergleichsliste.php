@@ -92,7 +92,7 @@ class Vergleichsliste
             }
             if ($kKonfigitem > 0) {
                 // Falls Konfigitem gesetzt Preise + Name überschreiben
-                if (intval($kKonfigitem) > 0 && class_exists('Konfigitem')) {
+                if ((int)$kKonfigitem > 0 && class_exists('Konfigitem')) {
                     $oKonfigitem = new Konfigitem($kKonfigitem);
                     if ($oKonfigitem->getKonfigitem() > 0) {
                         $oArtikel->Preise->cVKLocalized[0] = $oKonfigitem->getPreisLocalized(true, false);
@@ -126,12 +126,10 @@ class Vergleichsliste
     public function artikelVorhanden($kArtikel)
     {
         $kArtikel = (int)$kArtikel;
-        if ($kArtikel > 0) {
-            if (count($this->oArtikel_arr) > 0) {
-                foreach ($this->oArtikel_arr as $oArtikel) {
-                    if ((int)$oArtikel->kArtikel === $kArtikel) {
-                        return true;
-                    }
+        if ($kArtikel > 0 && count($this->oArtikel_arr) > 0) {
+            foreach ($this->oArtikel_arr as $oArtikel) {
+                if ((int)$oArtikel->kArtikel === $kArtikel) {
+                    return true;
                 }
             }
         }

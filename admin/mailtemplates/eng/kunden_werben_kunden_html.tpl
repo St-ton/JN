@@ -1,12 +1,12 @@
 {includeMailTemplate template=header type=html}
 
-Hallo {$Kunde->cVorname},<br><br>
+Hello {$Kunde->cVorname},<br><br>
 
-anbei bekommst du ein Guthaben von {$Neukunde->fGuthaben} für {$Firma->cName}.<br><br>
+Please find attached a voucher worth {$Neukunde->fGuthaben} for {$Firma->cName}.<br><br>
 
-Übrigens, ich werbe Dich im Rahmen der {$Firma->cName} Kunden werben Kunden Aktion.<br><br>
+By the way, I'm recommending you as part of {$Firma->cName}'s customer recommendation program.<br><br>
 
-Viele Grüße,<br>
+Yours sincerely,<br>
 {$Bestandskunde->cVorname} {$Bestandskunde->cNachname}
 
 {includeMailTemplate template=footer type=html}

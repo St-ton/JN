@@ -9,24 +9,36 @@ $security = isset($_POST['security']) ? $_POST['security'] : null;
 
 if ($type) {
     $module = "kPlugin_{$oPlugin->kPlugin}_paypal";
+    $method = "/" . str_replace('frontend', 'paymentmethod', $oPlugin->cFrontendPfad);
 
     switch ($type) {
         case 'basic':
             $module = "{$module}{$type}";
-            require_once str_replace('frontend', 'paymentmethod', $oPlugin->cFrontendPfad) . 'class/PayPalBasic.class.php';
+            require_once $method . 'class/PayPalBasic.class.php';
             $payPal  = new PayPalBasic($oPlugin->oPluginZahlungsmethodeAssoc_arr[$module]->cModulId);
             $results = $payPal->test();
             break;
         case 'express':
             $module = "{$module}{$type}";
-            require_once str_replace('frontend', 'paymentmethod', $oPlugin->cFrontendPfad) . 'class/PayPalExpress.class.php';
+            require_once $method . 'class/PayPalExpress.class.php';
             $payPal  = new PayPalExpress($oPlugin->oPluginZahlungsmethodeAssoc_arr[$module]->cModulId);
             $results = $payPal->test();
             break;
         case 'plus':
             $module = "{$module}{$type}";
-            require_once str_replace('frontend', 'paymentmethod', $oPlugin->cFrontendPfad) . 'class/PayPalPlus.class.php';
+            require_once $method . 'class/PayPalPlus.class.php';
             $payPal  = new PayPalPlus($oPlugin->oPluginZahlungsmethodeAssoc_arr[$module]->cModulId);
+            $results = ['status' => 'success', 'msg' => ''];
+            try {
+                $payPal->isConfigured();
+            } catch (Exception $ex) {
+                $results = ['status' => 'Error', 'msg' => $ex->getMessage()];
+            }
+            break;
+        case 'finance':
+            $module = "{$module}{$type}";
+            require_once $method . 'class/PayPalFinance.class.php';
+            $payPal  = new PayPalFinance($oPlugin->oPluginZahlungsmethodeAssoc_arr[$module]->cModulId);
             $results = ['status' => 'success', 'msg' => ''];
             try {
                 $payPal->isConfigured();

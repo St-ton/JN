@@ -20,7 +20,36 @@ $oSprache_arr = gibAlleSprachen();
 $oKupon       = null;
 
 // CSV Import ausgeloest?
-$res = handleCsvImportAction('kupon', 'tkupon');
+//$res = handleCsvImportAction('kupon', 'tkupon');
+$res = handleCsvImportAction('kupon', function ($obj) {
+    $couponNames = [];
+
+    foreach (get_object_vars($obj) as $key => $val) {
+        if (substr($key, 0, 6) === 'cName_') {
+            $couponNames[substr($key, 6)] = $val;
+            unset($obj->$key);
+        }
+    }
+
+    $kKupon = Shop::DB()->insert('tkupon', $obj);
+
+    if ($kKupon === 0) {
+        return false;
+    }
+
+    foreach ($couponNames as $key => $val) {
+        $res = Shop::DB()->insert(
+            'tkuponsprache',
+            (object)['kKupon' => (int)$kKupon, 'cISOSprache' => $key, 'cName' => $val]
+        );
+
+        if ($res === 0) {
+            return false;
+        }
+    }
+
+    return true;
+});
 
 if ($res > 0) {
     $cFehler = 'Konnte CSV-Datei nicht importieren.';
@@ -175,13 +204,13 @@ if ($action === 'bearbeiten') {
     $nKuponNeukundenTotal = getCouponCount('neukundenkupon');
 
     handleCsvExportAction('standard', 'standard.csv', function () use ($oFilterStandard) {
-            return getRawCoupons('standard', [], $oFilterStandard->getWhereSQL());
+            return getExportableCoupons('standard', $oFilterStandard->getWhereSQL());
         }, [], ['kKupon']);
     handleCsvExportAction('versandkupon', 'versandkupon.csv', function () use ($oFilterVersand) {
-            return getRawCoupons('versandkupon', [], $oFilterVersand->getWhereSQL());
+            return getExportableCoupons('versandkupon', $oFilterVersand->getWhereSQL());
         }, [], ['kKupon']);
     handleCsvExportAction('neukundenkupon', 'neukundenkupon.csv', function () use ($oFilterNeukunden) {
-            return getRawCoupons('neukundenkupon', [], $oFilterNeukunden->getWhereSQL());
+            return getExportableCoupons('neukundenkupon', $oFilterNeukunden->getWhereSQL());
         }, [], ['kKupon']);
 
     $oPaginationStandard  = (new Pagination('standard'))

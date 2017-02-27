@@ -141,6 +141,23 @@ function getCoupons($cKuponTyp = 'standard', $cWhereSQL = '', $cOrderSQL = '', $
 }
 
 /**
+ * @param string $cKuponTyp
+ * @param string $cWhereSQL
+ */
+function getExportableCoupons($cKuponTyp = 'standard', $cWhereSQL = '')
+{
+    $coupons = getRawCoupons($cKuponTyp, [], $cWhereSQL);
+
+    foreach ($coupons as $rawCoupon) {
+        foreach (getCouponNames($rawCoupon->kKupon) as $iso => $name) {
+            $rawCoupon->{'cName_' . $iso} = $name;
+        }
+    }
+
+    return $coupons;
+}
+
+/**
  * Get an instance of an existing coupon with some enhanced information that can be displayed
  *
  * @param int $kKupon

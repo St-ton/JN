@@ -40,7 +40,7 @@ function gibTrustedShops()
         $oTrustedShopsTMP->cSpeicherungURL          = $oTrustedShops->cSpeicherungURL;
         $oTrustedShopsTMP->cBedingungURL            = $oTrustedShops->cBedingungURL;
         $oTrustedShopsTMP->cBoxText                 = $oTrustedShops->cBoxText;
-        $oTrustedShopsTMP->cVorausgewaehltesProdukt = (isset($oTrustedShops->oKaeuferschutzProdukte->item))
+        $oTrustedShopsTMP->cVorausgewaehltesProdukt = isset($oTrustedShops->oKaeuferschutzProdukte->item)
             ? gibVorausgewaehltesProdukt(
                 $oTrustedShops->oKaeuferschutzProdukte->item,
                 $_SESSION['Warenkorb']->gibGesamtsummeWaren(false) *

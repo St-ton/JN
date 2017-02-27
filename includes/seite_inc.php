@@ -18,7 +18,7 @@ function gibStartBoxen()
     $Boxliste      = [];
     $schon_drin    = [];
     $Einstellungen = Shop::getSettings([CONF_STARTSEITE]);
-    while ($obj = gibNextBoxPrio($schon_drin, $Einstellungen)) {
+    while (($obj = gibNextBoxPrio($schon_drin, $Einstellungen)) !== null) {
         $schon_drin[] = $obj->name;
         $Boxliste[]   = $obj;
     }
@@ -765,9 +765,9 @@ function gibGratisGeschenkArtikel($Einstellungen)
     } elseif ($Einstellungen['sonstiges']['sonstiges_gratisgeschenk_sortierung'] === 'L') {
         $cSQLSort = " ORDER BY tartikel.fLagerbestand DESC";
     }
-    $cSQLLimit = (intval($Einstellungen['sonstiges']['sonstiges_gratisgeschenk_anzahl']) > 0) ?
-        " LIMIT " . (int)$Einstellungen['sonstiges']['sonstiges_gratisgeschenk_anzahl'] :
-        '';
+    $cSQLLimit = ((int)$Einstellungen['sonstiges']['sonstiges_gratisgeschenk_anzahl'] > 0)
+        ? " LIMIT " . (int)$Einstellungen['sonstiges']['sonstiges_gratisgeschenk_anzahl']
+        : '';
     $oArtikelGeschenkTMP_arr = Shop::DB()->query("
         SELECT tartikel.kArtikel, tartikelattribut.cWert
             FROM tartikel

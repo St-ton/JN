@@ -56,7 +56,7 @@ function speicherEinstellung($kSuchspecialOverlay, $cPost_arr, $cFiles_arr)
     $oSuchspecialoverlaySprache->nAktiv              = (int)$cPost_arr['nAktiv'];
     $oSuchspecialoverlaySprache->nTransparenz        = (int)$cPost_arr['nTransparenz'];
     $oSuchspecialoverlaySprache->nGroesse            = (int)$cPost_arr['nGroesse'];
-    $oSuchspecialoverlaySprache->nPosition           = (isset($cPost_arr['nPosition']))
+    $oSuchspecialoverlaySprache->nPosition           = isset($cPost_arr['nPosition'])
         ? (int)$cPost_arr['nPosition']
         : 0;
 
@@ -182,7 +182,7 @@ function imageload_alpha($img, $width, $height)
 
     $new = imagecreatetruecolor($width, $height);
 
-    if (($imgInfo[2] == 1) or ($imgInfo[2] == 3)) {
+    if ($imgInfo[2] == 1 || $imgInfo[2] == 3) {
         imagealphablending($new, false);
         imagesavealpha($new, true);
         $transparent = imagecolorallocatealpha($new, 255, 255, 255, 127);

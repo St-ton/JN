@@ -22,8 +22,8 @@ class WidgetBots extends WidgetBase
      */
     public function init()
     {
-        $nYear           = intval(date('Y'));
-        $nMonth          = intval(date('m'));
+        $nYear           = (int)date('Y');
+        $nMonth          = (int)date('m');
         $this->oBots_arr = $this->getBotsOfMonth($nYear, $nMonth);
     }
 
@@ -36,9 +36,8 @@ class WidgetBots extends WidgetBase
     public function getBotsOfMonth($nYear, $nMonth, $nLimit = 10)
     {
         $oStatistik = new Statistik(firstDayOfMonth(), time());
-        $oBots_arr  = $oStatistik->holeBotStats();
 
-        return $oBots_arr;
+        return $oStatistik->holeBotStats();
     }
 
     /**

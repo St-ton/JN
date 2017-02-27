@@ -18,7 +18,8 @@ $io->register('suggestions')
     ->register('buildConfiguration')
     ->register('getBasketItems')
     ->register('getCategoryMenu')
-    ->register('getRegionsByCountry');
+    ->register('getRegionsByCountry')
+    ->register('getCitiesByZip');
 
 /**
  * @param string $keyword
@@ -47,6 +48,33 @@ function suggestions($keyword)
             foreach ($results as &$result) {
                 $result->suggestion = utf8_encode($smarty->assign('result', $result)->fetch('snippets/suggestion.tpl'));
             }
+        }
+    }
+
+    return $results;
+}
+
+/**
+ * @param string $cityQuery
+ * @param string $country
+ * @param string $zip
+ * @return array
+ */
+function getCitiesByZip($cityQuery, $country, $zip)
+{
+    $results    = [];
+    if (!empty($country) && !empty($zip) && strlen($cityQuery) >= 1) {
+        $cityQuery = "%" . $cityQuery . "%";
+        $cities = Shop::DB()->queryPrepared("
+            SELECT cOrt
+            FROM tplz
+            WHERE cLandISO = :country
+                AND cPLZ = :zip
+                AND cOrt LIKE :cityQuery",
+            ['country' => $country, 'zip' => $zip, 'cityQuery' => $cityQuery],
+            2);
+        foreach ($cities as $result) {
+            $results[] = $result->cOrt;
         }
     }
 

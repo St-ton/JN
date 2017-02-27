@@ -34,7 +34,7 @@ if (isset($_POST['actionValidateEmail']) && validateToken()) {
         $email      = urlencode($_POST['email']);
         $url        = sprintf(MONEYBOOKERS_EMAIL_VALIDATAION_URL, $email, $customerId, $password);
         $arr        = @file($url);
-        $answer     = (is_array($arr)) ? implode('', $arr) : 'NOK';
+        $answer     = is_array($arr) ? implode('', $arr) : 'NOK';
 
         // Answer is NOK or OK,customerId
         $arr = explode(',', $answer);
@@ -72,7 +72,7 @@ if (isset($_POST['actionActivate']) && validateToken()) {
     global $Einstellungen;
 
     if (is_array($Einstellungen) == false) {
-        $Einstellungen = array();
+        $Einstellungen = [];
     }
     $Einstellungen = array_merge($Einstellungen, Shop::getSettings(array(CONF_EMAILS)));
 

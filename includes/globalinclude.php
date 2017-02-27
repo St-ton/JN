@@ -65,8 +65,8 @@ $cache->setJtlCacheConfig();
 $conf = Shop::getSettings([CONF_GLOBAL]);
 
 if ($conf['global']['kaufabwicklung_ssl_nutzen'] === 'P' &&
-    (!isset($_SERVER['HTTPS']) || (strtolower($_SERVER['HTTPS']) !== 'on' && intval($_SERVER['HTTPS'] !== 1))) &&
-    PHP_SAPI !== 'cli'
+    PHP_SAPI !== 'cli' &&
+    (!isset($_SERVER['HTTPS']) || (strtolower($_SERVER['HTTPS']) !== 'on' && (int)$_SERVER['HTTPS'] !== 1))
 ) {
     $https = false;
     if ((isset($_SERVER['HTTP_X_FORWARDED_HOST']) && $_SERVER['HTTP_X_FORWARDED_HOST'] === 'ssl.webpack.de') ||

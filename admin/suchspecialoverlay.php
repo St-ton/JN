@@ -17,9 +17,9 @@ setzeSprache();
 if (verifyGPCDataInteger('suchspecialoverlay') === 1) {
     $step = 'suchspecialoverlay_detail';
 
-    if (isset($_POST['speicher_einstellung']) && intval($_POST['speicher_einstellung']) === 1 && validateToken()) {
+    if (isset($_POST['speicher_einstellung']) && (int)$_POST['speicher_einstellung'] === 1 && validateToken()) {
         if (speicherEinstellung(verifyGPCDataInteger('kSuchspecialOverlay'), $_POST, $_FILES)) {
-            Shop::Cache()->flushTags(array(CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE));
+            Shop::Cache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
             $cHinweis .= 'Ihre Einstellung wurde erfolgreich gespeichert.<br />';
         } else {
             $cFehler .= 'Fehler: Bitte f&uuml;llen Sie alle Felder komplett aus.<br />';
@@ -34,7 +34,7 @@ if (verifyGPCDataInteger('suchspecialoverlay') === 1) {
 }
 $oSuchspecialOverlay_arr = gibAlleSuchspecialOverlays();
 $nMaxFileSize            = getMaxFileSize(ini_get('upload_max_filesize'));
-if ((int)($_SESSION['template']->version) >= 4) {
+if ((int)$_SESSION['template']->version >= 4) {
     $smarty->assign('isDeprecated', true);
 }
 

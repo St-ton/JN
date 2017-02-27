@@ -53,7 +53,7 @@ function getRequestBot()
             if (stripos($_SERVER['HTTP_USER_AGENT'], $cBotUserAgent) !== false) {
                 $oBesucherBot = Shop::DB()->select('tbesucherbot', 'cUserAgent', $cBotUserAgent);
 
-                return (isset($oBesucherBot->kBesucherBot)) ? $oBesucherBot->kBesucherBot : 0;
+                return isset($oBesucherBot->kBesucherBot) ? (int)$oBesucherBot->kBesucherBot : 0;
             }
         }
     }

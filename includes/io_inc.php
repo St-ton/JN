@@ -88,7 +88,7 @@ function pushToBasket($kArtikel, $anzahl, $oEigenschaftwerte_arr = '')
         if ($Artikel->kEigenschaftKombi > 0) {
             $oEigenschaftwerte_arr = gibVarKombiEigenschaftsWerte($Artikel->kArtikel);
         }
-        if (intval($anzahl) != $anzahl && $Artikel->cTeilbar !== 'Y') {
+        if ((int)$anzahl != $anzahl && $Artikel->cTeilbar !== 'Y') {
             $anzahl = max((int)$anzahl, 1);
         }
         // Prüfung
@@ -286,9 +286,10 @@ function removeFromComparelist($kArtikel)
     $_GET['vlplo']           = $kArtikel;
 
     Session::getInstance()->setStandardSessionVars();
-    $oResponse->nType  = 2;
-    $oResponse->nCount = count($_SESSION['Vergleichsliste']->oArtikel_arr);
-    $oResponse->cTitle = utf8_encode(Shop::Lang()->get('compare', 'global'));
+    $oResponse->nType     = 2;
+    $oResponse->nCount    = count($_SESSION['Vergleichsliste']->oArtikel_arr);
+    $oResponse->cTitle    = utf8_encode(Shop::Lang()->get('compare', 'global'));
+    $oResponse->cNavBadge = '';
 
     if ($oResponse->nCount > 1) {
         $oResponse->cNavBadge = utf8_encode(
@@ -296,8 +297,6 @@ function removeFromComparelist($kArtikel)
                 ->assign('Einstellungen', $Einstellungen)
                 ->fetch('layout/header_shop_nav_compare.tpl')
         );
-    } else {
-        $oResponse->cNavBadge     = '';
     }
 
     $boxes = Boxen::getInstance();
@@ -448,7 +447,7 @@ function checkDependencies($aValues)
 {
     $objResponse   = new IOResponse();
     $kVaterArtikel = (int)$aValues['a'];
-    $fAnzahl       = floatval($aValues['anzahl']);
+    $fAnzahl       = (float)$aValues['anzahl'];
     $valueID_arr   = array_filter((array)$aValues['eigenschaftwert']);
 
     if ($kVaterArtikel > 0) {
@@ -727,15 +726,16 @@ function checkVarkombiDependencies($aValues, $kEigenschaft = 0, $kEigenschaftWer
                         $kMoeglicheEigeschaftWert_arr
                     );
 
-                    if ($oKindArtikel !== null && $oKindArtikel->status == 0) {
-                        if (!in_array($kVerfuegbareEigenschaftWert, $kGesetzteEigeschaftWert_arr)) {
-                            $objResponse->jsfunc(
-                                '$.evo.article().variationInfo',
-                                $kVerfuegbareEigenschaftWert,
-                                $oKindArtikel->status,
-                                $oKindArtikel->text
-                            );
-                        }
+                    if ($oKindArtikel !== null &&
+                        $oKindArtikel->status == 0 &&
+                        !in_array($kVerfuegbareEigenschaftWert, $kGesetzteEigeschaftWert_arr)
+                    ) {
+                        $objResponse->jsfunc(
+                            '$.evo.article().variationInfo',
+                            $kVerfuegbareEigenschaftWert,
+                            $oKindArtikel->status,
+                            $oKindArtikel->text
+                        );
                     }
                 }
             }

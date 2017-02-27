@@ -67,7 +67,11 @@ if ($bSuche) {
     $step = 'einstellungen bearbeiten';
 }
 
-if (isset($_POST['einstellungen_bearbeiten']) && (int)$_POST['einstellungen_bearbeiten'] === 1 && $kSektion > 0 && validateToken()) {
+if (isset($_POST['einstellungen_bearbeiten']) &&
+    (int)$_POST['einstellungen_bearbeiten'] === 1 &&
+    $kSektion > 0 &&
+    validateToken()
+) {
     // Einstellungssuche
     $oSQL = new stdClass();
     if ($bSuche) {
@@ -105,7 +109,7 @@ if (isset($_POST['einstellungen_bearbeiten']) && (int)$_POST['einstellungen_bear
                     break;
                 case 'zahl':
                 case 'number':
-                    $aktWert->cWert = intval($aktWert->cWert);
+                    $aktWert->cWert = (int)$aktWert->cWert;
                     break;
                 case 'text':
                     $aktWert->cWert = substr($aktWert->cWert, 0, 255);
@@ -222,7 +226,7 @@ if ($step === 'einstellungen bearbeiten') {
                 'cName',
                 $Conf[$i]->cWertName
             );
-            $Conf[$i]->gesetzterWert = (isset($setValue->cWert))
+            $Conf[$i]->gesetzterWert = isset($setValue->cWert)
                 ? StringHandler::htmlentities($setValue->cWert)
                 : null;
         }

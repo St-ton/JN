@@ -10,7 +10,7 @@ $oAccount->permission('WAWI_SYNC_VIEW', true, true);
 $cFehler  = '';
 $cHinweis = '';
 
-if (isset($_POST['wawi-pass']) && isset($_POST['wawi-user']) && validateToken()) {
+if (isset($_POST['wawi-pass'], $_POST['wawi-user']) && validateToken()) {
     $upd = new stdClass();
     $upd->cName = $_POST['wawi-user'];
     $upd->cPass = $_POST['wawi-pass'];

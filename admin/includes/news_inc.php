@@ -239,7 +239,7 @@ function calcRatio($cDatei, $nMaxBreite, $nMaxHoehe)
     }
     $f = min($nMaxBreite / $ImageBreite, $nMaxHoehe / $ImageHoehe, 1);
 
-    return array(round($f * $nMaxBreite), round($f * $nMaxHoehe));
+    return [round($f * $nMaxBreite), round($f * $nMaxHoehe)];
 }
 
 /**
@@ -327,7 +327,7 @@ function loescheNewsKategorie($kNewsKategorie_arr)
             $kNewsKategorie = (int)$kNewsKategorie;
             Shop::DB()->delete('tnewskategorie', 'kNewsKategorie', $kNewsKategorie);
             // tseo löschen
-            Shop::DB()->delete('tseo', array('cKey', 'kKey'), array('kNewsKategorie', $kNewsKategorie));
+            Shop::DB()->delete('tseo', ['cKey', 'kKey'], ['kNewsKategorie', $kNewsKategorie]);
             // tnewskategorienews löschen
             Shop::DB()->delete('tnewskategorienews', 'kNewsKategorie', $kNewsKategorie);
         }
@@ -440,11 +440,11 @@ function loescheNewsBild($cBildname, $kNews, $cUploadVerzeichnis)
  */
 function newsRedirect($cTab = '', $cHinweis = '', $urlParams = null)
 {
-    $tabPageMapping = array(
+    $tabPageMapping = [
         'inaktiv'    => 's1',
         'aktiv'      => 's2',
         'kategorien' => 's3',
-    );
+    ];
     if (empty($cHinweis)) {
         unset($_SESSION['news.cHinweis']);
     } else {

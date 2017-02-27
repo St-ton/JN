@@ -15,31 +15,33 @@ $format  = ['cAnrede', 'cVorname', 'cNachname', 'cEmail'];
 $hinweis = '';
 $fehler  = '';
 
-if (isset($_POST['newsletterimport']) && (int)$_POST['newsletterimport'] === 1 && $_FILES['csv'] && validateToken()) {
-    if (isset($_FILES['csv']['tmp_name']) && strlen($_FILES['csv']['tmp_name']) > 0) {
-        $file = fopen($_FILES['csv']['tmp_name'], 'r');
-        if ($file !== false) {
-            $row      = 0;
-            $formatId = -1;
-            $fmt      = [];
-            while ($data = fgetcsv($file, 2000, ';', '"')) {
-                if ($row == 0) {
-                    $hinweis .= 'Checke Kopfzeile ...';
-                    $fmt = checkformat($data);
-                    if ($fmt === -1) {
-                        $fehler = 'Format nicht erkannt!';
-                        break;
-                    } else {
-                        $hinweis .= '<br /><br />Importiere...<br />';
-                    }
+if ((int)$_POST['newsletterimport'] === 1 &&
+    isset($_POST['newsletterimport'], $_FILES['csv']['tmp_name']) &&
+    validateToken() &&
+    strlen($_FILES['csv']['tmp_name']) > 0
+) {
+    $file = fopen($_FILES['csv']['tmp_name'], 'r');
+    if ($file !== false) {
+        $row      = 0;
+        $formatId = -1;
+        $fmt      = [];
+        while ($data = fgetcsv($file, 2000, ';', '"')) {
+            if ($row == 0) {
+                $hinweis .= 'Checke Kopfzeile ...';
+                $fmt = checkformat($data);
+                if ($fmt === -1) {
+                    $fehler = 'Format nicht erkannt!';
+                    break;
                 } else {
-                    $hinweis .= '<br />Zeile ' . $row . ': ' . processImport($fmt, $data);
+                    $hinweis .= '<br /><br />Importiere...<br />';
                 }
-
-                $row++;
+            } else {
+                $hinweis .= '<br />Zeile ' . $row . ': ' . processImport($fmt, $data);
             }
-            fclose($file);
+
+            $row++;
         }
+        fclose($file);
     }
 }
 
@@ -110,11 +112,11 @@ function checkformat($data)
     $cnt = count($data);
     for ($i = 0; $i < $cnt; $i++) {
         // jtl-shop/issues#296
-        if (!empty($data[$i]) && in_array($data[$i], $GLOBALS['format'])) {
+        if (!empty($data[$i]) && in_array($data[$i], $GLOBALS['format'], true)) {
             $fmt[$i] = $data[$i];
         }
     }
-    if (!in_array('cEmail', $fmt)) {
+    if (!in_array('cEmail', $fmt, true)) {
         return -1;
     }
 

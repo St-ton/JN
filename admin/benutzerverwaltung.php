@@ -10,10 +10,10 @@ $oAccount->permission('ACCOUNT_VIEW', true, true);
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 /** @global JTLSmarty $smarty */
 $cAction  = 'account_view';
-$messages = array(
+$messages = [
     'notice' => '',
     'error'  => '',
-);
+];
 
 if (isset($_REQUEST['action']) && validateToken()) {
     $cAction = StringHandler::filterXSS($_REQUEST['action']);

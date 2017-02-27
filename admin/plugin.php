@@ -13,7 +13,7 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 $cHinweis           = '';
 $cFehler            = '';
 $step               = 'plugin_uebersicht';
-$customPluginTabs   = array();
+$customPluginTabs   = [];
 $invalidateCache    = false;
 $pluginTemplateFile = 'plugin.tpl';
 if ($step === 'plugin_uebersicht') {
@@ -25,7 +25,7 @@ if ($step === 'plugin_uebersicht') {
                 $bError = true;
             } else {
                 $bError                     = false;
-                $oPluginEinstellungConf_arr = array();
+                $oPluginEinstellungConf_arr = [];
                 if (isset($_POST['kPluginAdminMenu'])) {
                     $oPluginEinstellungConf_arr = Shop::DB()->query(
                         "SELECT *

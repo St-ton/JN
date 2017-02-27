@@ -20,14 +20,22 @@ if (verifyGPCDataInteger('agbwrb') === 1 && validateToken()) {
     if (verifyGPCDataInteger('agbwrb_edit') === 1) {
         if (verifyGPCDataInteger('kKundengruppe') > 0) {
             $step    = 'agbwrb_editieren';
-            $oAGBWRB = Shop::DB()->select('ttext', 'kSprache', (int)$_SESSION['kSprache'], 'kKundengruppe', verifyGPCDataInteger('kKundengruppe'));
+            $oAGBWRB = Shop::DB()->select(
+                'ttext',
+                'kSprache', (int)$_SESSION['kSprache'],
+                'kKundengruppe', verifyGPCDataInteger('kKundengruppe')
+            );
             $smarty->assign('kKundengruppe', verifyGPCDataInteger('kKundengruppe'))
                    ->assign('oAGBWRB', $oAGBWRB);
         } else {
             $cFehler .= 'Fehler: Bitte geben Sie eine g&uuml;ltige Kundengruppe an.<br />';
         }
     } elseif (verifyGPCDataInteger('agbwrb_editieren_speichern') === 1) { // Speichern
-        if (speicherAGBWRB(verifyGPCDataInteger('kKundengruppe'), $_SESSION['kSprache'], $_POST, verifyGPCDataInteger('kText'))) {
+        if (speicherAGBWRB(
+            verifyGPCDataInteger('kKundengruppe'),
+            $_SESSION['kSprache'],
+            $_POST, verifyGPCDataInteger('kText'))
+        ) {
             $cHinweis .= 'Ihre AGB bzw. WRB wurde erfolgreich gespeichert.<br />';
         } else {
             $cFehler .= 'Fehler: Ihre AGB/WRB konnte nicht gespeichert werden.<br />';
@@ -39,7 +47,7 @@ if ($step === 'agbwrb_uebersicht') {
     // Kundengruppen holen
     $oKundengruppe_arr = Shop::DB()->selectAll('tkundengruppe', [], [], 'kKundengruppe, cName', 'cStandard DESC');
     // AGB fuer jeweilige Sprache holen
-    $oAGBWRB_arr    = array();
+    $oAGBWRB_arr    = [];
     $oAGBWRBTMP_arr = Shop::DB()->selectAll('ttext', 'kSprache', (int)$_SESSION['kSprache']);
     // Assoc Array mit kKundengruppe machen
     if (is_array($oAGBWRBTMP_arr) && count($oAGBWRBTMP_arr) > 0) {

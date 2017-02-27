@@ -9,11 +9,11 @@
  */
 function getDBStruct()
 {
-    $cDBStruct_arr = array();
+    $cDBStruct_arr = [];
     $oData_arr     = Shop::DB()->query("SHOW TABLES", 10);
     foreach ($oData_arr as $oData) {
         $cTable                 = $oData[0];
-        $cDBStruct_arr[$cTable] = array();
+        $cDBStruct_arr[$cTable] = [];
         $oCol_arr               = Shop::DB()->query("SHOW COLUMNS FROM " . $cTable, 2);
         if ($oCol_arr !== false && is_array($oCol_arr)) {
             foreach ($oCol_arr as $oCol) {
@@ -51,7 +51,7 @@ function getDBFileStruct()
  */
 function compareDBStruct($cDBFileStruct_arr, $cDBStruct_arr)
 {
-    $cDBError_arr = array();
+    $cDBError_arr = [];
     foreach ($cDBFileStruct_arr as $cTable => $cColumn_arr) {
         if (!array_key_exists($cTable, $cDBStruct_arr)) {
             $cDBError_arr[$cTable] = 'Tabelle nicht vorhanden';

@@ -68,7 +68,7 @@ function mpInjectFilters(&$smarty, &$query, &$currentPage)
         $smarty->assign('search', $_REQUEST['search']);
     }
     // Category
-    if (isset($_REQUEST['cat']) && intval($_REQUEST['cat']) > 0) {
+    if (isset($_REQUEST['cat']) && (int)$_REQUEST['cat'] > 0) {
         $query->setCategoryId($_REQUEST['cat']);
         $smarty->assign('cat', $_REQUEST['cat']);
     }
@@ -83,7 +83,7 @@ function mpInjectFilters(&$smarty, &$query, &$currentPage)
         $smarty->assign('sort', $_REQUEST['sort']);
     }
     // Page
-    if (isset($_REQUEST['page']) && intval($_REQUEST['page']) > 0) {
+    if (isset($_REQUEST['page']) && (int)$_REQUEST['page'] > 0) {
         $query->setPage($_REQUEST['page']);
         $currentPage = (int)$_REQUEST['page'];
     }

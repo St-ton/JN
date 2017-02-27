@@ -11,7 +11,7 @@
  */
 function plausiCheckBox($cPost_arr, $oSprache_arr)
 {
-    $cPlausi_arr = array();
+    $cPlausi_arr = [];
     if (!is_array($oSprache_arr) || count($oSprache_arr) === 0) {
         $cPlausi_arr['oSprache_arr'] = 1;
 
@@ -114,8 +114,8 @@ function speicherCheckBox($cPost_arr, $oSprache_arr)
     }
     $oCheckBox->nSort       = (int)$cPost_arr['nSort'];
     $oCheckBox->dErstellt   = 'now()';
-    $cTextAssoc_arr         = array();
-    $cBeschreibungAssoc_arr = array();
+    $cTextAssoc_arr         = [];
+    $cBeschreibungAssoc_arr = [];
     foreach ($oSprache_arr as $oSprache) {
         $cTextAssoc_arr[$oSprache->cISO]         = str_replace('"', '&quot;', $cPost_arr['cText_' . $oSprache->cISO]);
         $cBeschreibungAssoc_arr[$oSprache->cISO] = str_replace('"', '&quot;', $cPost_arr['cBeschreibung_' . $oSprache->cISO]);

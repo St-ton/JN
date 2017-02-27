@@ -558,7 +558,7 @@ function pruefeYategoExportPfad()
 function getEinstellungenExport($kExportformat)
 {
     $kExportformat = (int)$kExportformat;
-    $ret           = array();
+    $ret           = [];
     if ($kExportformat > 0) {
         $einst = Shop::DB()->selectAll(
             'texportformateinstellungen',
@@ -583,7 +583,7 @@ function getEinstellungenExport($kExportformat)
  */
 function baueArtikelExportSQL(&$oExportformat)
 {
-    $cSQL_arr          = array();
+    $cSQL_arr          = [];
     $cSQL_arr['Where'] = '';
     $cSQL_arr['Join']  = '';
 

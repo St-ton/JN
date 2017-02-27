@@ -10,7 +10,7 @@ $oAccount->redirectOnFailure();
 $phpInfo = '';
 /** @global JTLSmarty $smarty */
 if (isset($_GET['phpinfo'])) {
-    if (in_array('phpinfo', explode(',', ini_get('disable_functions')))) {
+    if (in_array('phpinfo', explode(',', ini_get('disable_functions')), true)) {
         return;
     }
     ob_start();

@@ -33,7 +33,7 @@ class WidgetMarketplace extends WidgetBase
      */
     public function assignPluginCheck()
     {
-        $cPluginCheck_arr = array();
+        $cPluginCheck_arr = [];
         $oRes             = Shop::DB()->query("SELECT cPluginID, nVersion FROM tplugin", 2);
         if (isset($oRes) && count($oRes) > 0) {
             foreach ($oRes as $oPlugin) {

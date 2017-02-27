@@ -8,7 +8,7 @@ $oAccount->permission('DISPLAY_OWN_LOGO_VIEW', true, true);
 /** @global JTLSmarty $smarty */
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'shoplogouploader_inc.php';
 
-if (isset($_POST['key']) && isset($_POST['logo'])) {
+if (isset($_POST['key'], $_POST['logo'])) {
     $currentLogo = Shop::getLogo();
     $response    = new stdClass();
     if ($currentLogo === $_POST['logo']) {

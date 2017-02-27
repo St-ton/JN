@@ -79,8 +79,7 @@ switch ($action) {
         try {
             if ($template->xmlData->cShopVersion != $template->shopVersion) {
                 if ($template->setTemplate($template->xmlData->cName, $template->xmlData->eTyp)) {
-                    unset($_SESSION['cTemplate']);
-                    unset($_SESSION['template']);
+                    unset($_SESSION['cTemplate'], $_SESSION['template']);
                 }
             }
 
@@ -169,7 +168,7 @@ switch ($action) {
         try {
             $migration = new MigrationManager($version);
 
-            if ($id !== null && in_array($direction, [IMigration::UP, IMigration::DOWN])) {
+            if ($id !== null && in_array($direction, [IMigration::UP, IMigration::DOWN], true)) {
                 $migration->executeMigrationById($id, $direction);
             }
 

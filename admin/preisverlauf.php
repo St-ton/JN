@@ -10,7 +10,7 @@ $oAccount->permission('MODULE_PRICECHART_VIEW', true, true);
 $cHinweis = '';
 $cfehler  = '';
 
-if (isset($_POST['einstellungen']) && intval($_POST['einstellungen']) === 1) {
+if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1) {
     $cHinweis .= saveAdminSectionSettings(CONF_PREISVERLAUF, $_POST);
 }
 

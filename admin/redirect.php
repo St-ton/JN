@@ -14,9 +14,9 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'csv_importer_inc.php';
 
 handleCsvImportAction('redirects', 'tredirect');
 
-$aData     = (isset($_POST['aData'])) ? $_POST['aData'] : null;
+$aData     = isset($_POST['aData']) ? $_POST['aData'] : null;
 $oRedirect = new Redirect();
-$urls      = array();
+$urls      = [];
 $cHinweis  = '';
 $cFehler   = '';
 $shopURL   = Shop::getURL();
@@ -25,9 +25,9 @@ if (isset($aData['action']) && validateToken()) {
     switch ($aData['action']) {
         case 'search':
             $ret = [
-                'article'      => getArticleList($aData['search'], array('cLimit' => 10, 'return' => 'object')),
-                'category'     => getCategoryList($aData['search'], array('cLimit' => 10, 'return' => 'object')),
-                'manufacturer' => getManufacturerList($aData['search'], array('cLimit' => 10, 'return' => 'object')),
+                'article'      => getArticleList($aData['search'], ['cLimit' => 10, 'return' => 'object']),
+                'category'     => getCategoryList($aData['search'], ['cLimit' => 10, 'return' => 'object']),
+                'manufacturer' => getManufacturerList($aData['search'], ['cLimit' => 10, 'return' => 'object']),
             ];
             exit(json_encode($ret));
             break;

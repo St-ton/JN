@@ -14,10 +14,10 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'template_inc.php';
 $cHinweis       = '';
 $cFehler        = '';
 $cTab           = 'sprachvariablen';
-$cISO           = (isset($_REQUEST['cISO']))
+$cISO           = isset($_REQUEST['cISO'])
     ? $_REQUEST['cISO']
     : null;
-$kSprachsektion = (isset($_REQUEST['kSprachsektion']))
+$kSprachsektion = isset($_REQUEST['kSprachsektion'])
     ? (int)$_REQUEST['kSprachsektion']
     : null;
 $oSprache       = Sprache::getInstance(false);
@@ -191,7 +191,7 @@ foreach ($oInstallierteSprachen as $ilang) {
     }
 }
 foreach ($oVerfuegbareSprachen as $vlang) {
-    $vlang->isImported = (in_array($vlang, $oInstallierteSprachen));
+    $vlang->isImported = in_array($vlang, $oInstallierteSprachen, true);
 }
 
 $smarty->assign('hinweis', $cHinweis)

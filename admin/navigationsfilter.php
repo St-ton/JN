@@ -7,7 +7,7 @@ require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('SETTINGS_NAVIGATION_FILTER_VIEW', true, true);
 /** @global JTLSmarty $smarty */
-$Einstellungen = Shop::getSettings(array(CONF_NAVIGATIONSFILTER));
+$Einstellungen = Shop::getSettings([CONF_NAVIGATIONSFILTER]);
 $cHinweis      = '';
 $cFehler       = '';
 
@@ -39,7 +39,7 @@ for ($i = 0; $i < $configCount; $i++) {
         $oConfig_arr[$i]->ConfWerte = Shop::DB()->selectAll('teinstellungenconfwerte', 'kEinstellungenConf', (int)$oConfig_arr[$i]->kEinstellungenConf, '*', 'nSort');
     }
     $oSetValue = Shop::DB()->select('teinstellungen', 'kEinstellungenSektion', CONF_NAVIGATIONSFILTER, 'cName', $oConfig_arr[$i]->cWertName);
-    $oConfig_arr[$i]->gesetzterWert = (isset($oSetValue->cWert)) ? $oSetValue->cWert : null;
+    $oConfig_arr[$i]->gesetzterWert = isset($oSetValue->cWert) ? $oSetValue->cWert : null;
 }
 $oPreisspannenfilter_arr = Shop::DB()->query("SELECT * FROM tpreisspannenfilter", 2);
 

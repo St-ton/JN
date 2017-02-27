@@ -74,10 +74,10 @@ class PayPal extends PaymentMethod
                 $cISOSprache = StringHandler::convertISO2ISO639($oSprache->cISO);
             }
         }
-        if (!in_array(strtoupper($cISOSprache), $cISOSprache_arr)) {
+        if (!in_array(strtoupper($cISOSprache), $cISOSprache_arr, true)) {
             $cISOSprache = 'DE';
         }
-        if (isset($order->kLieferadresse) && intval($order->kLieferadresse) > 0 && isset($order->Lieferadresse)) {
+        if (isset($order->kLieferadress, $order->Lieferadresse) && (int)$order->kLieferadresse > 0) {
             $oLieferadresse = $order->Lieferadresse;
         } else {
             $oLieferadresse = $order->oRechnungsadresse;
@@ -134,7 +134,7 @@ class PayPal extends PaymentMethod
         }
 
         Shop::Smarty()->assign('fields', $fields)
-            ->assign('url', PP_MODE == 1 ? URL_TEST : URL_LIVE);
+            ->assign('url', PP_MODE === 1 ? URL_TEST : URL_LIVE);
     }
 
     /**
@@ -147,14 +147,14 @@ class PayPal extends PaymentMethod
         if ($this->verifyNotification($order, $paymentHash, $args)) {
             $zahlungsid = Shop::DB()->select('tzahlungsid', 'cId', $args['custom']);
 
-            if (PP_D_MODE == 1) {
+            if (PP_D_MODE === 1) {
                 writeLog(PP_D_PFAD, ' zahlungsid= ' . var_export($zahlungsid, true), 1);
             }
 
             // Zahlungseingang darf nur einmal gesetzt werden.
             // Falls jedoch mehrere Notifications ankommen, darf nur einmal
             // der Zahlungseingang gesetzt werden
-            if (isset($zahlungsid->kBestellung) && intval($zahlungsid->kBestellung) > 0) {
+            if (isset($zahlungsid->kBestellung) && (int)$zahlungsid->kBestellung > 0) {
                 $oZahlungseingang = Shop::DB()->query(
                     "SELECT kZahlungseingang
                         FROM tzahlungseingang
@@ -186,8 +186,8 @@ class PayPal extends PaymentMethod
 
             $bestellung = new Bestellung($zahlungsid->kBestellung);
             $bestellung->fuelleBestellung(0);
-            if ($bestellung->Waehrung->cISO != $_POST['mc_currency']) {
-                if (PP_D_MODE == 1) {
+            if ($bestellung->Waehrung->cISO !== $_POST['mc_currency']) {
+                if (PP_D_MODE === 1) {
                     writeLog(PP_D_PFAD, 'Falsche Waehrung: ' . $bestellung->Waehrung->cISO . ' != ' . 
                         StringHandler::filterXSS($_POST['mc_currency']), 1);
                 }
@@ -244,19 +244,19 @@ class PayPal extends PaymentMethod
         // post back to PayPal system to validate
         $header .= "POST /cgi-bin/webscr HTTP/1.1\r\n";
         $header .= "Content-Type: application/x-www-form-urlencoded\r\n";
-        $header .= "Host: " . (PP_MODE == 1 ? URLHOST_TEST : URLHOST_LIVE) . "\r\n";
+        $header .= "Host: " . (PP_MODE === 1 ? URLHOST_TEST : URLHOST_LIVE) . "\r\n";
         $header .= "Content-Length: " . strlen($req) . "\r\n";
         $header .= "Connection: Close\r\n\r\n";
-        $fp       = @fsockopen(PP_MODE == 1 ? URLVALID_TEST : URLVALID_LIVE, 443, $errno, $errstr, 30);
+        $fp       = @fsockopen(PP_MODE === 1 ? URLVALID_TEST : URLVALID_LIVE, 443, $errno, $errstr, 30);
         $verified = false;
 
         if (!$fp) {
             // HTTP ERROR
-            if (PP_D_MODE == 1) {
+            if (PP_D_MODE === 1) {
                 writeLog(PP_D_PFAD, "Paypal verifyNotification HTTP ERROR!\n" . $errstr . "(" . $errno . ")", 1);
             }
         } else {
-            fputs($fp, $header . $req);
+            fwrite($fp, $header . $req);
             while (!feof($fp)) {
                 $res = fgets($fp, 1024);
                 if (strpos($res, 'VERIFIED') !== false) {
@@ -267,7 +267,7 @@ class PayPal extends PaymentMethod
 
                     // check the payment_status is Completed
                     if ($args['payment_status'] !== 'Completed') {
-                        if (PP_D_MODE == 1) {
+                        if (PP_D_MODE === 1) {
                             writeLog(PP_D_PFAD, $args['payment_status'] . 
                                 ' erwartet "Completed", ist "' . $args['payment_status'] . '"', 1);
                         }
@@ -277,7 +277,7 @@ class PayPal extends PaymentMethod
                     // check that txn_id has not been previously processed
                     $txn_id_obj = Shop::DB()->select('tzahlungsid', 'txn_id', $args['txn_id']);
                     if (isset($txn_id_obj->kBestellung) && $txn_id_obj->kBestellung > 0) {
-                        if (PP_D_MODE == 1) {
+                        if (PP_D_MODE === 1) {
                             writeLog(PP_D_PFAD, "ZahlungsID " . $args['txn_id'] . " bereits gehabt.", 1);
                         }
 
@@ -285,12 +285,12 @@ class PayPal extends PaymentMethod
                     }
                     // check that receiver_email is your Primary PayPal email
                     $Einstellungen = Shop::getSettings([CONF_ZAHLUNGSARTEN]);
-                    if (strtolower($Einstellungen['zahlungsarten']['zahlungsart_paypal_empfaengermail']) != 
+                    if (strtolower($Einstellungen['zahlungsarten']['zahlungsart_paypal_empfaengermail']) !==
                             strtolower($args['receiver_email']) &&
-                        strtolower($Einstellungen['zahlungsarten']['zahlungsart_paypal_empfaengermail']) != 
+                        strtolower($Einstellungen['zahlungsarten']['zahlungsart_paypal_empfaengermail']) !==
                             strtolower($args['business'])
                     ) {
-                        if (PP_D_MODE == 1) {
+                        if (PP_D_MODE === 1) {
                             writeLog(PP_D_PFAD, "Falscher Emailempfaenger: " . $args['receiver_email'] . " != " . 
                                 $Einstellungen['zahlungsarten']['zahlungsart_paypal_empfaengermail'], 1);
                         }
@@ -304,7 +304,7 @@ class PayPal extends PaymentMethod
                     } else {
                         $zahlungsid = Shop::DB()->select('tzahlungsid', 'cId', $args['custom']);
                         if (!$zahlungsid->kBestellung) {
-                            if (PP_D_MODE == 1) {
+                            if (PP_D_MODE === 1) {
                                 writeLog(PP_D_PFAD, 'ZahlungsID ist unbekannt: ' . $args['custom'], 1);
                             }
 
@@ -318,10 +318,8 @@ class PayPal extends PaymentMethod
 
         if ($verified) {
             return true;
-        } else {
-            if (PP_D_MODE == 1) {
-                writeLog(PP_D_PFAD, 'PayPal verifyNotification fehlgeschlagen!', 1);
-            }
+        } elseif (PP_D_MODE === 1) {
+            writeLog(PP_D_PFAD, 'PayPal verifyNotification fehlgeschlagen!', 1);
         }
 
         return false;

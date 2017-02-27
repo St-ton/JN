@@ -1,6 +1,6 @@
 <?php
 
-require_once dirname(__FILE__) . '/ipl_xml_request.php';
+require_once __DIR__. '/ipl_xml_request.php';
 
 /**
  * @author Jan Wehrs (jan.wehrs@billpay.de)
@@ -9,117 +9,270 @@ require_once dirname(__FILE__) . '/ipl_xml_request.php';
  */
 class ipl_invoice_created_request extends ipl_xml_request
 {
-    private $_invoice_params      = array();
-    private $_payment_info_params = array();
-    private $_article_data        = array();
+    /**
+     * @var array
+     */
+    private $_invoice_params      = [];
 
-    // bank account
+    /**
+     * @var array
+     */
+    private $_payment_info_params = [];
+
+    /**
+     * @var array
+     */
+    private $_article_data        = [];
+
+    /**
+     * @var
+     */
     private $account_holder;
+
+    /**
+     * @var
+     */
     private $account_number;
+
+    /**
+     * @var
+     */
     private $bank_code;
+
+    /**
+     * @var
+     */
     private $bank_name;
+
+    /**
+     * @var
+     */
     private $invoice_reference;
+
+    /**
+     * @var
+     */
     private $invoice_duedate;
+
+    /**
+     * @var
+     */
     private $activation_performed;
 
+    /**
+     * @var
+     */
     private $payment_info_html;
+
+    /**
+     * @var
+     */
     private $payment_info_plain;
 
-    // rate payment specific
+    /**
+     * @var
+     */
     private $instalment_count;
+
+    /**
+     * @var
+     */
     private $duration;
+
+    /**
+     * @var
+     */
     private $fee_percent;
+
+    /**
+     * @var
+     */
     private $fee_total;
+
+    /**
+     * @var
+     */
     private $async_amount;
+
+    /**
+     * @var
+     */
     private $total_amount;
+
+    /**
+     * @var
+     */
     private $effective_annual;
+
+    /**
+     * @var
+     */
     private $nominal_annual;
+
+    /**
+     * @var
+     */
     private $base_amount;
+
+    /**
+     * @var
+     */
     private $cart_amount;
+
+    /**
+     * @var
+     */
     private $surcharge;
+
+    /**
+     * @var
+     */
     private $interest;
 
-    private $dues = array();
+    /**
+     * @var array
+     */
+    private $dues = [];
 
+    /**
+     * @return mixed
+     */
     public function get_account_holder()
     {
         return $this->account_holder;
     }
+
+    /**
+     * @return mixed
+     */
     public function get_account_number()
     {
         return $this->account_number;
     }
+
+    /**
+     * @return mixed
+     */
     public function get_bank_code()
     {
         return $this->bank_code;
     }
+
+    /**
+     * @return mixed
+     */
     public function get_bank_name()
     {
         return $this->bank_name;
     }
+
+    /**
+     * @return mixed
+     */
     public function get_invoice_reference()
     {
         return $this->invoice_reference;
     }
+
+    /**
+     * @return mixed
+     */
     public function get_invoice_duedate()
     {
         return $this->invoice_duedate;
     }
+
+    /**
+     * @return mixed
+     */
     public function get_activation_performed()
     {
         return $this->activation_performed;
     }
+
+    /**
+     * @return mixed
+     */
     public function get_payment_info_html()
     {
         return $this->payment_info_html;
     }
+
+    /**
+     * @return mixed
+     */
     public function get_payment_info_plain()
     {
         return $this->payment_info_plain;
     }
 
+    /**
+     * @return array
+     */
     public function get_dues()
     {
         return $this->dues;
     }
 
-    // ------------------ paylater specific ------------------ //
-
+    /**
+     * @return mixed
+     */
     public function get_instalment_count()
     {
         return $this->instalment_count;
     }
 
+    /**
+     * @return mixed
+     */
     public function get_duration()
     {
         return $this->duration;
     }
 
+    /**
+     * @return mixed
+     */
     public function get_fee_percent()
     {
         return $this->fee_percent;
     }
 
+    /**
+     * @return mixed
+     */
     public function get_fee_total()
     {
         return $this->fee_total;
     }
 
+    /**
+     * @return mixed
+     */
     public function get_prepayment_amount()
     {
         return $this->async_amount;
     }
 
+    /**
+     * @return mixed
+     */
     public function get_total_amount()
     {
         return $this->total_amount;
     }
 
+    /**
+     * @return mixed
+     */
     public function get_effective_annual()
     {
         return $this->effective_annual;
     }
 
+    /**
+     * @return mixed
+     */
     public function get_nominal_annual()
     {
         return $this->nominal_annual;
@@ -162,6 +315,20 @@ class ipl_invoice_created_request extends ipl_xml_request
         return (int) $this->interest;
     }
 
+    /**
+     * @param        $carttotalgross
+     * @param        $currency
+     * @param        $reference
+     * @param int    $delayindays
+     * @param int    $is_partial
+     * @param int    $invoice_number
+     * @param int    $rebate
+     * @param int    $rebate_gross
+     * @param string $shipping_name
+     * @param int    $shipping_price
+     * @param int    $shipping_price_gross
+     * @param int    $cart_total_price
+     */
     public function set_invoice_params($carttotalgross, $currency, $reference,
                 $delayindays = 0, $is_partial = 0, $invoice_number = 0,
                 $rebate = 0, $rebate_gross = 0, $shipping_name = "", $shipping_price = 0,
@@ -184,10 +351,18 @@ class ipl_invoice_created_request extends ipl_xml_request
         }
     }
 
+    /**
+     * @param $articleid
+     * @param $articlequantity
+     * @param $articlename
+     * @param $articledescription
+     * @param $article_price
+     * @param $article_price_gross
+     */
     public function add_article($articleid, $articlequantity, $articlename, $articledescription,
             $article_price, $article_price_gross)
     {
-        $article                       = array();
+        $article                       = [];
         $article['articleid']          = $articleid;
         $article['articlequantity']    = $articlequantity;
         $article['articlename']        = $articlename;
@@ -198,12 +373,19 @@ class ipl_invoice_created_request extends ipl_xml_request
         $this->_article_data[] = $article;
     }
 
+    /**
+     * @param $showhtmlinfo
+     * @param $showplaininfo
+     */
     public function set_payment_info_params($showhtmlinfo, $showplaininfo)
     {
         $this->_payment_info_params['htmlinfo']  = $showhtmlinfo ? "1" : "0";
         $this->_payment_info_params['plaininfo'] = $showplaininfo ? "1" : "0";
     }
 
+    /**
+     * @return array|bool
+     */
     protected function _send()
     {
         return ipl_core_send_invoice_request(
@@ -216,6 +398,9 @@ class ipl_invoice_created_request extends ipl_xml_request
         );
     }
 
+    /**
+     * @param $data
+     */
     protected function _process_response_xml($data)
     {
         foreach ($data as $key => $value) {

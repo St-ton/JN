@@ -91,7 +91,7 @@ if (strlen($cSh) > 0) {
     pruefeEOSServerCom($cSh);
 
     Jtllog::writeLog('Session Hash: ' . $cSh . ' ergab cModulId aus Session: ' .
-        ((isset($_SESSION['Zahlungsart']->cModulId))
+        (isset($_SESSION['Zahlungsart']->cModulId)
             ? $_SESSION['Zahlungsart']->cModulId
             : '---'),
         JTLLOG_LEVEL_DEBUG,
@@ -102,10 +102,10 @@ if (strlen($cSh) > 0) {
         // Generate fake Order and ask PaymentMethod if order should be finalized
         $order = fakeBestellung();
         include_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
-        $paymentMethod = (isset($_SESSION['Zahlungsart']->cModulId))
+        $paymentMethod = isset($_SESSION['Zahlungsart']->cModulId)
             ? PaymentMethod::create($_SESSION['Zahlungsart']->cModulId)
             : null;
-        if (isset($paymentMethod)) {
+        if ($paymentMethod !== null) {
             if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
                 Jtllog::writeLog(
                     'Session Hash: ' . $cSh . ' ergab Methode: ' . print_r($paymentMethod, true),
@@ -149,9 +149,10 @@ if (strlen($cSh) > 0) {
                 Jtllog::writeLog('finalizeOrder failed -> zurueck zur Zahlungsauswahl.', JTLLOG_LEVEL_DEBUG, false, 'Notify');
                 $linkHelper = LinkHelper::getInstance();
                 // UOS Work Around
-                if ($paymentMethod->redirectOnCancel() || strpos($_SESSION['Zahlungsart']->cModulId, 'za_uos_') !== false ||
-                    strpos($_SESSION['Zahlungsart']->cModulId, 'za_ut_') !== false ||
-                    $_SESSION['Zahlungsart']->cModulId === 'za_sofortueberweisung_jtl'
+                if ($_SESSION['Zahlungsart']->cModulId === 'za_sofortueberweisung_jtl' ||
+                    $paymentMethod->redirectOnCancel() ||
+                    strpos($_SESSION['Zahlungsart']->cModulId, 'za_uos_') !== false ||
+                    strpos($_SESSION['Zahlungsart']->cModulId, 'za_ut_') !== false
                 ) {
                     // Go to 'Edit PaymentMethod' Page
                     $header = 'Location: ' . $linkHelper->getStaticRoute('bestellvorgang.php') .
@@ -217,7 +218,7 @@ if (strlen($cPh) > 0) {
     );
 
     if ($paymentId === false) {
-        if (NO_MODE == 1) {
+        if (NO_MODE === 1) {
             writeLog(NO_PFAD, 'Payment Hash ' . $cPh . ' ergab keine Bestellung aus tzahlungsid.', 1);
         }
         die(); // Payment Hash does not exist
@@ -237,8 +238,8 @@ if (strlen($cPh) > 0) {
 // Let PaymentMethod handle Notification
 include_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
 $paymentMethod = PaymentMethod::create($moduleId);
-if (isset($paymentMethod)) {
-    if (NO_MODE == 1) {
+if ($paymentMethod !== null) {
+    if (NO_MODE === 1) {
         writeLog(NO_PFAD, 'Payment Hash ' . $cPh . ' ergab ' . print_r($paymentMethod, true), 1);
     }
 

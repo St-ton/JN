@@ -3077,7 +3077,7 @@ function gibNaviURL($NaviFilter, $bSeo, $oZusatzFilter, $kSprache = 0, $bCanonic
                     ($oZusatzFilter->FilterLoesen->Merkmale != $oMerkmalFilter->kMerkmal &&
                         !isset($oZusatzFilter->FilterLoesen->MerkmalWert) &&
                         isset($oMerkmalFilter->kMerkmalWert)) ||
-                    $oZusatzFilter->FilterLoesen->MerkmalWert != $oMerkmalFilter->kMerkmalWert
+                    isset($oZusatzFilter->FilterLoesen->MerkmalWert) && $oZusatzFilter->FilterLoesen->MerkmalWert != $oMerkmalFilter->kMerkmalWert
                 ) {
                     if (strlen($oMerkmalFilter->cSeo[$kSprache]) === 0) {
                         $bSeo = false;
@@ -3367,7 +3367,7 @@ function gibBrotNaviName()
 {
     global $NaviFilter;
     if (isset($NaviFilter->Kategorie->kKategorie, $NaviFilter->Kategorie->cName) && $NaviFilter->Kategorie->kKategorie > 0) {
-        return sset($NaviFilter->Kategorie->cName) ? $NaviFilter->Kategorie->cName : null;
+        return isset($NaviFilter->Kategorie->cName) ? $NaviFilter->Kategorie->cName : null;
     }
     if (isset($NaviFilter->Hersteller->kHersteller) && $NaviFilter->Hersteller->kHersteller > 0) {
         return isset($NaviFilter->Hersteller->cName) ? $NaviFilter->Hersteller->cName : null;

@@ -65,9 +65,9 @@ class Filter
      * @param string $cColumn - the column name to be compared
      * @return FilterSelectField
      */
-    public function addSelectfield($cTitle, $cColumn)
+    public function addSelectfield($cTitle, $cColumn, $nDefaultOption = 0)
     {
-        $oField                               = new FilterSelectField($this, $cTitle, $cColumn);
+        $oField                               = new FilterSelectField($this, $cTitle, $cColumn, $nDefaultOption);
         $this->oField_arr[]                   = $oField;
         $this->cSession_arr[$oField->getId()] = $oField->getValue();
 
@@ -112,6 +112,14 @@ class Filter
     public function getFields()
     {
         return $this->oField_arr;
+    }
+
+    /**
+     * @return array
+     */
+    public function getField($i)
+    {
+        return $this->oField_arr[$i];
     }
 
     /**

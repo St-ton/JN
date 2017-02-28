@@ -99,6 +99,12 @@ class Kupon
      * @access public
      * @var string
      */
+    public $cHersteller;
+
+    /**
+     * @access public
+     * @var string
+     */
     public $cKategorien;
 
     /**
@@ -236,6 +242,7 @@ class Kupon
         $_upd->nVerwendungenBisher   = $this->nVerwendungenBisher;
         $_upd->nVerwendungenProKunde = $this->nVerwendungenProKunde;
         $_upd->cArtikel              = $this->cArtikel;
+        $_upd->cHersteller           = $this->cHersteller;
         $_upd->cKategorien           = $this->cKategorien;
         $_upd->cKunden               = $this->cKunden;
         $_upd->cKuponTyp             = $this->cKuponTyp;
@@ -445,6 +452,20 @@ class Kupon
     public function setArtikel($cArtikel)
     {
         $this->cArtikel = Shop::DB()->escape($cArtikel);
+
+        return $this;
+    }
+
+    /**
+     * Sets the cHersteller
+     *
+     * @access public
+     * @param string $cHersteller
+     * @return $this
+     */
+    public function setHersteller($cHersteller)
+    {
+        $this->cHersteller = Shop::DB()->escape($cHersteller);
 
         return $this;
     }
@@ -713,6 +734,17 @@ class Kupon
     public function getArtikel()
     {
         return $this->cArtikel;
+    }
+
+    /**
+     * Gets the cHersteller
+     *
+     * @access public
+     * @return string
+     */
+    public function getHersteller()
+    {
+        return $this->cHersteller;
     }
 
     /**

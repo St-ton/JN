@@ -326,19 +326,31 @@ function holeBewertungserinnerungSettings()
  */
 function setzeSprache()
 {
-    //setze std Sprache als aktuelle Sprache
-    if (!isset($_SESSION['kSprache'])) {
-        $StdSprache = Shop::DB()->select('tsprache', 'cShopStandard', 'Y');
-        if ($StdSprache->kSprache > 0) {
-            $_SESSION['kSprache'] = $StdSprache->kSprache;
+    if (validateToken() && verifyGPCDataInteger('sprachwechsel') === 1) {
+        // Wähle explizit gesetzte Sprache als aktuelle Sprache
+        $oSprache = Shop::DB()->select('tsprache', 'kSprache', (int)$_POST['kSprache']);
+
+        if ((int)$oSprache->kSprache > 0) {
+            $_SESSION['kSprache']    = (int)$oSprache->kSprache;
+            $_SESSION['cISOSprache'] = $oSprache->cISO;
         }
     }
-    //setze explizit ausgewählte Sprache
-    if (isset($_POST['sprachwechsel']) && (int)$_POST['sprachwechsel'] === 1) {
-        $StdSprache = Shop::DB()->select('tsprache', 'kSprache', (int)$_POST['kSprache']);
-        if ($StdSprache->kSprache > 0) {
-            $_SESSION['kSprache']    = $StdSprache->kSprache;
-            $_SESSION['cISOSprache'] = $StdSprache->cISO;
+
+    if (!isset($_SESSION['kSprache'])) {
+        // Wähle Standardsprache als aktuelle Sprache
+        $oSprache = Shop::DB()->select('tsprache', 'cShopStandard', 'Y');
+
+        if ((int)$oSprache->kSprache > 0) {
+            $_SESSION['kSprache']    = (int)$oSprache->kSprache;
+            $_SESSION['cISOSprache'] = $oSprache->cISO;
+        }
+    }
+    if (isset($_SESSION['kSprache']) && empty($_SESSION['cISOSprache'])) {
+        // Fehlendes cISO ergänzen
+        $oSprache = Shop::DB()->select('tsprache', 'kSprache', (int)$_SESSION['kSprache']);
+
+        if ((int)$oSprache->kSprache > 0) {
+            $_SESSION['cISOSprache'] = $oSprache->cISO;
         }
     }
 }

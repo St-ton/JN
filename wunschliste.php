@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once __DIR__) . '/includes/globalinclude.php';
+require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'wunschliste_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
 /** @global JTLSmarty $smarty */
@@ -13,7 +13,7 @@ $cURLID           = StringHandler::filterXSS(verifyGPDataString('wlid'));
 $Einstellungen    = Shop::getSettings([CONF_GLOBAL, CONF_RSS]);
 $kWunschliste     = (verifyGPCDataInteger('wl') > 0 && verifyGPCDataInteger('wlvm') === 0)
     ? verifyGPCDataInteger('wl') //one of multiple customer wishlists
-    : ((isset($cParameter_arr['kWunschliste']))
+    : (isset($cParameter_arr['kWunschliste'])
         ? $cParameter_arr['kWunschliste'] //default wishlist from Shop class
         : $cURLID); //public link
 $AktuelleSeite    = 'WUNSCHLISTE';

@@ -1498,6 +1498,7 @@ function checkeKuponWKPos($oWKPosition, $Kupon)
         return $oWKPosition;
     }
     $Artikel_qry    = " OR cArtikel RLIKE '^([0-9;]*;)?" . str_replace('%', '\%', Shop::DB()->escape($oWKPosition->Artikel->cArtNr)) . ";'";
+    $Hersteller_qry = " OR cHersteller RLIKE '^([0-9;]*;)?" . str_replace('%', '\%', Shop::DB()->escape($oWKPosition->Artikel->kHersteller)) . ";'";
     $Kategorie_qry  = '';
     $Kunden_qry     = '';
     $kKategorie_arr = [];
@@ -1535,6 +1536,7 @@ function checkeKuponWKPos($oWKPosition, $Kupon)
                 AND (nVerwendungen = 0 
                     OR nVerwendungen > nVerwendungenBisher)
                 AND (cArtikel = '' {$Artikel_qry})
+                AND (cHersteller = '-1' {$Hersteller_qry})
                 AND (cKategorien = '' OR cKategorien = '-1' {$Kategorie_qry})
                 AND (cKunden = '' OR cKunden = '-1' {$Kunden_qry})
                 AND kKupon = " . (int)$Kupon->kKupon, 1

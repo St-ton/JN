@@ -77,8 +77,9 @@ class Filter
     /**
      * Add a DateRange field to the filter object.
      *
-     * @param $cTitle
-     * @param $cColumn
+     * @param string $cTitle
+     * @param string $cColumn
+     * @param string $cDefValue
      * @return FilterDateRangeField
      */
     public function addDaterangefield($cTitle, $cColumn, $cDefValue = '')

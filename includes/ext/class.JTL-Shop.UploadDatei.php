@@ -45,7 +45,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
          */
         public function __construct($kUpload = 0)
         {
-            if (intval($kUpload) > 0) {
+            if ((int)$kUpload > 0) {
                 $this->loadFromDB($kUpload);
             }
         }
@@ -57,7 +57,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
         public function loadFromDB($kUpload)
         {
             $oUpload = Shop::DB()->select('tuploaddatei', 'kUpload', (int)$kUpload);
-            if (isset($oUpload->kUpload) && intval($oUpload->kUpload) > 0) {
+            if (isset($oUpload->kUpload) && (int)$oUpload->kUpload > 0) {
                 self::copyMembers($oUpload, $this);
 
                 return true;
@@ -122,8 +122,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
         }
 
         /**
-         * @param object $objFrom
-         * @param null   $objTo
+         * @param object        $objFrom
+         * @param null|stdClass $objTo
          * @return null|stdClass
          */
         private static function copyMembers($objFrom, &$objTo = null)
@@ -154,11 +154,10 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
                 $filename = str_replace($file, '', $filename);
                 $filename .= utf8_encode($file);
             }
-            if (!empty($_SERVER['HTTP_USER_AGENT'])) {
-                $HTTP_USER_AGENT = $_SERVER['HTTP_USER_AGENT'];
-            } else {
-                $HTTP_USER_AGENT = '';
-            }
+            $browser_agent   = 'other';
+            $HTTP_USER_AGENT = (!empty($_SERVER['HTTP_USER_AGENT']))
+                ? $_SERVER['HTTP_USER_AGENT']
+                : '';
             if (preg_match('/Opera\/([0-9].[0-9]{1,2})/', $HTTP_USER_AGENT, $log_version)) {
                 $browser_agent = 'opera';
             } elseif (preg_match('/MSIE ([0-9].[0-9]{1,2})/', $HTTP_USER_AGENT, $log_version)) {
@@ -171,15 +170,11 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
                 $browser_agent = 'mozilla';
             } elseif (preg_match('/Konqueror\/([0-9].[0-9]{1,2})/', $HTTP_USER_AGENT, $log_version)) {
                 $browser_agent = 'konqueror';
-            } else {
-                $browser_agent = 'other';
             }
             if (($mimetype === 'application/octet-stream') || ($mimetype === 'application/octetstream')) {
-                if (($browser_agent === 'ie') || ($browser_agent === 'opera')) {
-                    $mimetype = 'application/octetstream';
-                } else {
-                    $mimetype = 'application/octet-stream';
-                }
+                $mimetype = ($browser_agent === 'ie' || $browser_agent === 'opera')
+                    ? 'application/octetstream'
+                    : 'application/octet-stream';
             }
 
             @ob_end_clean();

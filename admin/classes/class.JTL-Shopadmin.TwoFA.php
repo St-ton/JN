@@ -13,9 +13,9 @@ use qrcodegenerator\QRCode\Output\QRString;
 class TwoFA
 {
     /**
-     * @var null|PHPGangsta_GoogleAuthenticator
+     * @var PHPGangsta_GoogleAuthenticator
      */
-    private $oGA = null;
+    private $oGA;
 
     /**
      * @var object

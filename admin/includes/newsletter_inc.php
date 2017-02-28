@@ -81,15 +81,15 @@ function versendeNewsletter(
     if (isset($oKampagne->kKampagne) && $oKampagne->kKampagne > 0) {
         $cPixel = '<br /><img src="' . Shop::getURL() . '/' . PFAD_INCLUDES .
             'newslettertracker.php?kK=' . $oKampagne->kKampagne .
-            '&kN=' . ((isset($oNewsletter->kNewsletter)) ? $oNewsletter->kNewsletter : 0) . '&kNE=' .
-            ((isset($oEmailempfaenger->kNewsletterEmpfaenger))
+            '&kN=' . (isset($oNewsletter->kNewsletter) ? $oNewsletter->kNewsletter : 0) . '&kNE=' .
+            (isset($oEmailempfaenger->kNewsletterEmpfaenger)
                 ? $oEmailempfaenger->kNewsletterEmpfaenger
                 : 0
             ) . '" alt="Newsletter" />';
     }
 
     $cTyp = 'VL';
-    $nKey = (isset($oNewsletter->kNewsletterVorlage)) ? $oNewsletter->kNewsletterVorlage : 0;
+    $nKey = isset($oNewsletter->kNewsletterVorlage) ? $oNewsletter->kNewsletterVorlage : 0;
     if (isset($oNewsletter->kNewsletter) && $oNewsletter->kNewsletter > 0) {
         $cTyp = 'NL';
         $nKey = $oNewsletter->kNewsletter;
@@ -699,17 +699,17 @@ function holeNewslettervorlageStd($kNewsletterVorlageStd, $kNewsletterVorlage = 
                 $oNewslettervorlageStd->cArtikel           = substr(
                     substr($oNewslettervorlage->cArtikel, 1), 
                     0, 
-                    (strlen(substr($oNewslettervorlage->cArtikel, 1)) - 1)
+                    strlen(substr($oNewslettervorlage->cArtikel, 1)) - 1
                 );
                 $oNewslettervorlageStd->cHersteller        = substr(
                     substr($oNewslettervorlage->cHersteller, 1), 
                     0, 
-                    (strlen(substr($oNewslettervorlage->cHersteller, 1)) - 1)
+                    strlen(substr($oNewslettervorlage->cHersteller, 1)) - 1
                 );
                 $oNewslettervorlageStd->cKategorie         = substr(
                     substr($oNewslettervorlage->cKategorie, 1), 
                     0, 
-                    (strlen(substr($oNewslettervorlage->cKategorie, 1)) - 1)
+                    strlen(substr($oNewslettervorlage->cKategorie, 1)) - 1
                 );
                 $oNewslettervorlageStd->cKundengruppe      = $oNewslettervorlage->cKundengruppe;
                 $oNewslettervorlageStd->dStartZeit         = $oNewslettervorlage->dStartZeit;
@@ -878,11 +878,11 @@ function holeArtikelnummer($kArtikel)
     $cArtNr   = '';
     $oArtikel = null;
 
-    if (intval($kArtikel) > 0) {
+    if ((int)$kArtikel > 0) {
         $oArtikel = Shop::DB()->select('tartikel', 'kArtikel', (int)$kArtikel);
     }
 
-    return (isset($oArtikel->cArtNr)) ? $oArtikel->cArtNr : $cArtNr;
+    return isset($oArtikel->cArtNr) ? $oArtikel->cArtNr : $cArtNr;
 }
 
 /**
@@ -1278,7 +1278,7 @@ function gibAHKKeys($cKey, $bArtikelnummer = false)
             // Existieren Artikel zu den entsprechenden Artikelnummern?
             if (is_array($oArtikelNummer_arr) && count($oArtikelNummer_arr) > 0) {
                 foreach ($oArtikelNummer_arr as $oArtikelNummer) {
-                    if (isset($oArtikelNummer->kArtikel) && intval($oArtikelNummer->kArtikel)) {
+                    if (isset($oArtikelNummer->kArtikel) && (int)$oArtikelNummer->kArtikel) {
                         $kArtikel_arr[] = $oArtikelNummer->kArtikel;
                     }
                 }

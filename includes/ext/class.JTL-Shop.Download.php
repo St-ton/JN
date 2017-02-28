@@ -98,7 +98,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
         {
             $oDownload = Shop::DB()->select('tdownload', 'kDownload', (int)$kDownload);
             $kBestellung = (int)$kBestellung;
-            if (isset($oDownload->kDownload) && intval($oDownload->kDownload) > 0) {
+            if (isset($oDownload->kDownload) && (int)$oDownload->kDownload > 0) {
                 $cMember_arr = array_keys(get_object_vars($oDownload));
                 if (is_array($cMember_arr) && count($cMember_arr) > 0) {
                     foreach ($cMember_arr as &$cMember) {
@@ -157,13 +157,15 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
         public function save($bPrimary = false)
         {
             $oObj = $this->kopiereMembers();
-            unset($oObj->kDownload);
-            unset($oObj->oDownloadSprache);
-            unset($oObj->oDownloadHistory_arr);
-            unset($oObj->oArtikelDownload_arr);
-            unset($oObj->cLimit);
-            unset($oObj->dGueltigBis);
-            unset($oObj->kBestellung);
+            unset(
+                $oObj->kDownload,
+                $oObj->oDownloadSprache,
+                $oObj->oDownloadHistory_arr,
+                $oObj->oArtikelDownload_arr,
+                $oObj->cLimit,
+                $oObj->dGueltigBis,
+                $oObj->kBestellung
+            );
             $kDownload = Shop::DB()->insert('tdownload', $oObj);
             if ($kDownload > 0) {
                 return $bPrimary ? $kDownload : true;
@@ -213,10 +215,10 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
          */
         public static function getDownloads($kKey_arr = [], $kSprache)
         {
-            $kArtikel      = (isset($kKey_arr['kArtikel'])) ? (int)$kKey_arr['kArtikel'] : 0;
-            $kBestellung   = (isset($kKey_arr['kBestellung'])) ? (int)$kKey_arr['kBestellung'] : 0;
-            $kKunde        = (isset($kKey_arr['kKunde'])) ? (int)$kKey_arr['kKunde'] : 0;
-            $kSprache      = (isset($kSprache)) ? (int)$kSprache : 0;
+            $kArtikel      = isset($kKey_arr['kArtikel']) ? (int)$kKey_arr['kArtikel'] : 0;
+            $kBestellung   = isset($kKey_arr['kBestellung']) ? (int)$kKey_arr['kBestellung'] : 0;
+            $kKunde        = isset($kKey_arr['kKunde']) ? (int)$kKey_arr['kKunde'] : 0;
+            $kSprache      = isset($kSprache) ? (int)$kSprache : 0;
             $oDownload_arr = [];
             if (($kArtikel > 0 || $kBestellung > 0 || $kKunde > 0) && $kSprache > 0) {
                 $cSQLSelect = "tartikeldownload.kDownload";
@@ -256,7 +258,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
                         if (($kBestellung > 0 || $kKunde > 0) && $oDownload_arr[$i]->getAnzahl() > 0) {
                             $oDownloadHistory_arr = DownloadHistory::getOrderHistory($oDown->kKunde, $oDown->kBestellung);
                             $kDownload            = $oDownload_arr[$i]->getDownload();
-                            $count                = (isset($oDownloadHistory_arr[$kDownload]))
+                            $count                = isset($oDownloadHistory_arr[$kDownload])
                                 ? count($oDownloadHistory_arr[$kDownload])
                                 : 0;
                             $oDownload_arr[$i]->cLimit      = $count . ' / ' . $oDownload_arr[$i]->getAnzahl();
@@ -301,8 +303,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
             $kBestellung = (int)$kBestellung;
             if ($kDownload > 0 && $kKunde > 0 && $kBestellung > 0) {
                 $oDownload = new self($kDownload, 0, false);
-                $nReturn   = $oDownload->checkFile($oDownload->kDownload, $kKunde, $kBestellung);
-                if ($nReturn == 1) {
+                $nReturn   = $oDownload::checkFile($oDownload->kDownload, $kKunde, $kBestellung);
+                if ($nReturn === 1) {
                     $oDownloadHistory = new DownloadHistory();
                     $oDownloadHistory->setDownload($kDownload);
                     $oDownloadHistory->setKunde($kKunde);
@@ -352,7 +354,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
                     ($oBestellung->dBezahltDatum !== '0000-00-00' || $oBestellung->dBezahltDatum !== null)
                 ) {
                     // Stimmt der Kunde?
-                    if ($oBestellung->kKunde == $kKunde) {
+                    if ((int)$oBestellung->kKunde === $kKunde) {
                         $oBestellung->fuelleBestellung();
                         $oDownload = new self($kDownload, 0, false);
                         // Gibt es einen Artikel der zum Download passt?
@@ -410,8 +412,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
         public static function mapGetFileErrorCode($nErrorCode)
         {
             $cError = '';
-            if (intval($nErrorCode) > 0) {
-                switch (intval($nErrorCode)) {
+            if ((int)$nErrorCode > 0) {
+                switch ((int)$nErrorCode) {
                     case 2: // Bestellung nicht gefunden
                         $cError = Shop::Lang()->get('dlErrorOrderNotFound', 'global');
                         break;
@@ -687,11 +689,10 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
                 $filename = str_replace($file, '', $filename);
                 $filename .= utf8_encode($file);
             }
-            if (!empty($_SERVER['HTTP_USER_AGENT'])) {
-                $HTTP_USER_AGENT = $_SERVER['HTTP_USER_AGENT'];
-            } else {
-                $HTTP_USER_AGENT = '';
-            }
+            $browser_agent   = 'other';
+            $HTTP_USER_AGENT = (!empty($_SERVER['HTTP_USER_AGENT']))
+                ? $_SERVER['HTTP_USER_AGENT']
+                : '';
             if (preg_match('/Opera\/([0-9].[0-9]{1,2})/', $HTTP_USER_AGENT, $log_version)) {
                 $browser_agent = 'opera';
             } elseif (preg_match('/MSIE ([0-9].[0-9]{1,2})/', $HTTP_USER_AGENT, $log_version)) {
@@ -704,15 +705,11 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
                 $browser_agent = 'mozilla';
             } elseif (preg_match('/Konqueror\/([0-9].[0-9]{1,2})/', $HTTP_USER_AGENT, $log_version)) {
                 $browser_agent = 'konqueror';
-            } else {
-                $browser_agent = 'other';
             }
             if (($mimetype === 'application/octet-stream') || ($mimetype === 'application/octetstream')) {
-                if (($browser_agent === 'ie') || ($browser_agent === 'opera')) {
-                    $mimetype = 'application/octetstream';
-                } else {
-                    $mimetype = 'application/octet-stream';
-                }
+                $mimetype = ($browser_agent === 'ie' || $browser_agent === 'opera')
+                    ? 'application/octetstream'
+                    : 'application/octet-stream';
             }
 
             @ob_end_clean();

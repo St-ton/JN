@@ -67,17 +67,15 @@ function deleteShopLogo($logo)
  */
 function loescheAlleShopBilder()
 {
-    if (is_dir(PFAD_ROOT . PFAD_SHOPLOGO)) {
-        if ($dh = opendir(PFAD_ROOT . PFAD_SHOPLOGO)) {
-            while (($file = readdir($dh)) !== false) {
-                if ($file !== '.' && $file !== '..' && $file !== '.gitkeep') {
-                    @unlink(PFAD_ROOT . PFAD_SHOPLOGO . $file);
-                }
+    if (is_dir(PFAD_ROOT . PFAD_SHOPLOGO) && $dh = opendir(PFAD_ROOT . PFAD_SHOPLOGO)) {
+        while (($file = readdir($dh)) !== false) {
+            if ($file !== '.' && $file !== '..' && $file !== '.gitkeep') {
+                @unlink(PFAD_ROOT . PFAD_SHOPLOGO . $file);
             }
-            closedir($dh);
-
-            return true;
         }
+        closedir($dh);
+
+        return true;
     }
 
     return false;

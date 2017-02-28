@@ -19,16 +19,16 @@ function baueSitemap($nDatei, $data)
         if (function_exists('gzopen')) {
             // Sitemap-Dateien anlegen
             $gz = gzopen(PFAD_ROOT . PFAD_EXPORT . 'sitemap_' . $nDatei . '.xml.gz', 'w9');
-            fputs($gz, getXMLHeader($conf['sitemap']['sitemap_googleimage_anzeigen']) . "\n");
-            fputs($gz, $data);
-            fputs($gz, '</urlset>');
+            fwrite($gz, getXMLHeader($conf['sitemap']['sitemap_googleimage_anzeigen']) . "\n");
+            fwrite($gz, $data);
+            fwrite($gz, '</urlset>');
             gzclose($gz);
         } else {
             // Sitemap-Dateien anlegen
             $file = fopen(PFAD_ROOT . PFAD_EXPORT . 'sitemap_' . $nDatei . '.xml', 'w+');
-            fputs($file, getXMLHeader($conf['sitemap']['sitemap_googleimage_anzeigen']) . "\n");
-            fputs($file, $data);
-            fputs($file, '</urlset>');
+            fwrite($file, getXMLHeader($conf['sitemap']['sitemap_googleimage_anzeigen']) . "\n");
+            fwrite($file, $data);
+            fwrite($file, '</urlset>');
             fclose($file);
         }
     }
@@ -139,12 +139,12 @@ function makeURL(
  */
 function spracheEnthalten($cISO, $Sprachen)
 {
-    if ($_SESSION['cISOSprache'] == $cISO) {
+    if ($_SESSION['cISOSprache'] === $cISO) {
         return true;
     }
     if (is_array($Sprachen)) {
         foreach ($Sprachen as $SpracheTMP) {
-            if ($SpracheTMP->cISO == $cISO) {
+            if ($SpracheTMP->cISO === $cISO) {
                 return true;
             }
         }
@@ -261,14 +261,14 @@ function generateSitemapXML()
         'newskategorie'    => 0
     ];
     // Artikelübersicht - max. Artikel pro Seite
-    $nArtikelProSeite = (intval($conf['artikeluebersicht']['artikeluebersicht_artikelproseite']) > 0) ?
-        intval($conf['artikeluebersicht']['artikeluebersicht_artikelproseite']) :
-        20;
+    $nArtikelProSeite = ((int)$conf['artikeluebersicht']['artikeluebersicht_artikelproseite'] > 0)
+        ? (int)$conf['artikeluebersicht']['artikeluebersicht_artikelproseite']
+        : 20;
     if (isset($conf['artikeluebersicht']['artikeluebersicht_erw_darstellung']) &&
         $conf['artikeluebersicht']['artikeluebersicht_erw_darstellung'] === 'Y'
     ) {
         $nStdDarstellung = (isset($conf['artikeluebersicht']['artikeluebersicht_erw_darstellung_stdansicht']) &&
-            intval($conf['artikeluebersicht']['artikeluebersicht_erw_darstellung_stdansicht']) > 0)
+                (int)$conf['artikeluebersicht']['artikeluebersicht_erw_darstellung_stdansicht'] > 0)
             ? (int)$conf['artikeluebersicht']['artikeluebersicht_erw_darstellung_stdansicht']
             : ERWDARSTELLUNG_ANSICHT_LISTE;
         if ($nStdDarstellung > 0) {
@@ -336,18 +336,17 @@ function generateSitemapXML()
         // GoogleImages einbinden?
         $cGoogleImage = '';
         if (isset($conf['sitemap']['sitemap_googleimage_anzeigen']) &&
-            $conf['sitemap']['sitemap_googleimage_anzeigen'] === 'Y'
+            $conf['sitemap']['sitemap_googleimage_anzeigen'] === 'Y' &&
+            MediaImage::hasImage(Image::TYPE_PRODUCT, $oArtikel->kArtikel)
         ) {
-            if (MediaImage::hasImage(Image::TYPE_PRODUCT, $oArtikel->kArtikel)) {
-                $cGoogleImage = MediaImage::getThumb(
-                    Image::TYPE_PRODUCT,
-                    $oArtikel->kArtikel,
-                    $oArtikel,
-                    Image::SIZE_LG
-                );
-                if (strlen($cGoogleImage) > 0) {
-                    $cGoogleImage = $shopURL . '/' . $cGoogleImage;
-                }
+            $cGoogleImage = MediaImage::getThumb(
+                Image::TYPE_PRODUCT,
+                $oArtikel->kArtikel,
+                $oArtikel,
+                Image::SIZE_LG
+            );
+            if (strlen($cGoogleImage) > 0) {
+                $cGoogleImage = $shopURL . '/' . $cGoogleImage;
             }
         }
         $cUrl = baueURL($oArtikel, URLART_ARTIKEL);
@@ -457,17 +456,17 @@ function generateSitemapXML()
                         $sitemap_data            = '';
                     }
 
-                    $tlink->cLocalizedSeo[$tlink->cISOSprache] = (isset($tlink->cSeo)) ? $tlink->cSeo : null;
+                    $tlink->cLocalizedSeo[$tlink->cISOSprache] = isset($tlink->cSeo) ? $tlink->cSeo : null;
                     $link                                      = baueURL($tlink, URLART_SEITE);
 
-                    if ($_SESSION['cISOSprache'] != $tlink->cISOSprache) {
+                    if ($_SESSION['cISOSprache'] !== $tlink->cISOSprache) {
                         $link .= '&lang=' . $tlink->cISOSprache;
                     }
                     if ($seoAktiv && strlen($tlink->cSeo) > 0) {
                         $link = $tlink->cSeo;
                     }
                     if (!isSitemapBlocked($link)) {
-                        $sitemap_data .= makeURL($link, null, FREQ_MONTHLY, PRIO_LOW, '', (intval($tlink->bSSL) === 2));
+                        $sitemap_data .= makeURL($link, null, FREQ_MONTHLY, PRIO_LOW, '', (int)$tlink->bSSL === 2);
                         ++$nSitemap;
                         ++$nAnzahlURL_arr[$nDatei];
                         ++$nStat_arr['link'];
@@ -493,7 +492,7 @@ function generateSitemapXML()
                  WHERE tkategoriesichtbarkeit.kKategorie IS NULL
                  ORDER BY tkategorie.kKategorie";
         $res = Shop::DB()->query($strSQL, 10);
-        while ($tkategorie = $res->fetch(PDO::FETCH_OBJ)) {
+        while (($tkategorie = $res->fetch(PDO::FETCH_OBJ)) !== false) {
             if (($seoAktiv && strlen($tkategorie->cSeo) > 0) || !$seoAktiv) {
                 $cURL_arr = baueExportURL(
                     $tkategorie->kKategorie,
@@ -1006,7 +1005,7 @@ function generateSitemapXML()
         $bGZ = function_exists('gzopen');
         // Sitemap Index Datei anlegen
         $file = fopen(PFAD_ROOT . PFAD_EXPORT . 'sitemap_index.xml', 'w+');
-        fputs($file, baueSitemapIndex($nDatei, $bGZ));
+        fwrite($file, baueSitemapIndex($nDatei, $bGZ));
         fclose($file);
         $nEndzeit   = microtime(true);
         $fTotalZeit = $nEndzeit - $nStartzeit;
@@ -1095,18 +1094,16 @@ function holeGoogleImage($artikel)
  */
 function loescheSitemaps()
 {
-    if (is_dir(PFAD_ROOT . PFAD_EXPORT)) {
-        if ($dh = opendir(PFAD_ROOT . PFAD_EXPORT)) {
-            while (($file = readdir($dh)) !== false) {
-                if (strpos($file, 'sitemap_') !== false || $file === 'sitemap_index.xml') {
-                    unlink(PFAD_ROOT . PFAD_EXPORT . $file);
-                }
+    if (is_dir(PFAD_ROOT . PFAD_EXPORT) && $dh = opendir(PFAD_ROOT . PFAD_EXPORT)) {
+        while (($file = readdir($dh)) !== false) {
+            if ($file === 'sitemap_index.xml' || strpos($file, 'sitemap_') !== false) {
+                unlink(PFAD_ROOT . PFAD_EXPORT . $file);
             }
-
-            closedir($dh);
-
-            return true;
         }
+
+        closedir($dh);
+
+        return true;
     }
 
     return false;
@@ -1135,12 +1132,12 @@ function baueSitemapReport($nAnzahlURL_arr, $fTotalZeit)
             if ($nAnzahlURL > 0) {
                 $oSitemapReportFile                 = new stdClass();
                 $oSitemapReportFile->kSitemapReport = $kSitemapReport;
-                $oSitemapReportFile->cDatei         = ($bGZ)
+                $oSitemapReportFile->cDatei         = $bGZ
                     ? ('sitemap_' . $i . '.xml.gz')
                     : ('sitemap_' . $i . '.xml');
                 $oSitemapReportFile->nAnzahlURL = $nAnzahlURL;
                 $file                           = PFAD_ROOT . PFAD_EXPORT . $oSitemapReportFile->cDatei;
-                $oSitemapReportFile->fGroesse   = (is_file($file))
+                $oSitemapReportFile->fGroesse   = is_file($file)
                     ? number_format(filesize(PFAD_ROOT . PFAD_EXPORT . $oSitemapReportFile->cDatei) / 1024, 2)
                     : 0;
                 Shop::DB()->insert('tsitemapreportfile', $oSitemapReportFile);

@@ -59,7 +59,7 @@ if (isset($cParameter_arr['kKategorie']) && $cParameter_arr['kKategorie'] > 0) {
 if ($NaviFilter->hasCategory()) {
     $kKategorie        = $NaviFilter->getActiveState()->getValue();
     $AktuelleKategorie = new Kategorie($kKategorie);
-    if (!isset($AktuelleKategorie->kKategorie) || $AktuelleKategorie->kKategorie === null) {
+    if ($AktuelleKategorie->kKategorie === null) {
         //temp. workaround: do not return 404 when non-localized existing category is loaded
         if (KategorieHelper::categoryExists($kKategorie)) {
             $AktuelleKategorie->kKategorie = $kKategorie;
@@ -95,10 +95,10 @@ if ($Einstellungen['artikeluebersicht']['artikelubersicht_bestseller_gruppieren'
     $productsIDs = $oSuchergebnisse->Artikel->elemente->map(function ($article) {
         return (int)$article->kArtikel;
     });
-    $limit       = (isset($Einstellungen['artikeluebersicht']['artikeluebersicht_bestseller_anzahl']))
+    $limit       = isset($Einstellungen['artikeluebersicht']['artikeluebersicht_bestseller_anzahl'])
         ? (int)$Einstellungen['artikeluebersicht']['artikeluebersicht_bestseller_anzahl']
         : 3;
-    $minsells    = (isset($Einstellungen['global']['global_bestseller_minanzahl']))
+    $minsells    = isset($Einstellungen['global']['global_bestseller_minanzahl'])
         ? (int)$Einstellungen['global']['global_bestseller_minanzahl']
         : 10;
     $bestsellers = Bestseller::buildBestsellers(
@@ -116,12 +116,20 @@ if (verifyGPCDataInteger('zahl') > 0) {
     $_SESSION['ArtikelProSeite'] = verifyGPCDataInteger('zahl');
     setFsession(0, 0, $_SESSION['ArtikelProSeite']);
 }
-if (!isset($_SESSION['ArtikelProSeite']) && $Einstellungen['artikeluebersicht']['artikeluebersicht_erw_darstellung'] === 'N') {
-    $_SESSION['ArtikelProSeite'] = min((int)$Einstellungen['artikeluebersicht']['artikeluebersicht_artikelproseite'], ARTICLES_PER_PAGE_HARD_LIMIT);
+if (!isset($_SESSION['ArtikelProSeite']) &&
+    $Einstellungen['artikeluebersicht']['artikeluebersicht_erw_darstellung'] === 'N'
+) {
+    $_SESSION['ArtikelProSeite'] = min(
+        (int)$Einstellungen['artikeluebersicht']['artikeluebersicht_artikelproseite'],
+        ARTICLES_PER_PAGE_HARD_LIMIT
+    );
 }
 // Verfügbarkeitsbenachrichtigung pro Artikel
 $oSuchergebnisse->Artikel->elemente->transform(function ($article) use ($Einstellungen) {
-    $article->verfuegbarkeitsBenachrichtigung = gibVerfuegbarkeitsformularAnzeigen($article, $Einstellungen['artikeldetails']['benachrichtigung_nutzen']);
+    $article->verfuegbarkeitsBenachrichtigung = gibVerfuegbarkeitsformularAnzeigen(
+        $article,
+        $Einstellungen['artikeldetails']['benachrichtigung_nutzen']
+    );
 
     return $article;
 });
@@ -134,14 +142,20 @@ if ($oSuchergebnisse->Artikel->elemente->count() === 0) {
         $KategorieInhalt->Unterkategorien->getAllCategoriesOnLevel($NaviFilter->Kategorie->getValue());
         // wenn keine eigenen Artikel in dieser Kat, Top Angebote / Bestseller
         // aus unterkats + unterunterkats rausholen und anzeigen?
-        if ($Einstellungen['artikeluebersicht']['topbest_anzeigen'] === 'Top' || $Einstellungen['artikeluebersicht']['topbest_anzeigen'] === 'TopBest') {
+        if ($Einstellungen['artikeluebersicht']['topbest_anzeigen'] === 'Top' ||
+            $Einstellungen['artikeluebersicht']['topbest_anzeigen'] === 'TopBest'
+        ) {
             $KategorieInhalt->TopArtikel = new ArtikelListe();
             $KategorieInhalt->TopArtikel->holeTopArtikel($KategorieInhalt->Unterkategorien);
         }
-        if ($Einstellungen['artikeluebersicht']['topbest_anzeigen'] === 'Bestseller' || $Einstellungen['artikeluebersicht']['topbest_anzeigen'] === 'TopBest') {
+        if ($Einstellungen['artikeluebersicht']['topbest_anzeigen'] === 'Bestseller' ||
+            $Einstellungen['artikeluebersicht']['topbest_anzeigen'] === 'TopBest'
+        ) {
             $KategorieInhalt->BestsellerArtikel = new ArtikelListe();
-            $KategorieInhalt->BestsellerArtikel->holeBestsellerArtikel($KategorieInhalt->Unterkategorien,
-                (isset($KategorieInhalt->TopArtikel)) ? $KategorieInhalt->TopArtikel : 0);
+            $KategorieInhalt->BestsellerArtikel->holeBestsellerArtikel(
+                $KategorieInhalt->Unterkategorien,
+                isset($KategorieInhalt->TopArtikel) ? $KategorieInhalt->TopArtikel : 0
+            );
         }
         $smarty->assign('KategorieInhalt', $KategorieInhalt);
     } else {
@@ -249,7 +263,8 @@ $smarty->assign('SEARCHSPECIALS_TOPREVIEWS', SEARCHSPECIALS_TOPREVIEWS)
         ->assign('sprachURL', (isset($sprachURL)) ? $sprachURL : null)
         ->assign('oNavigationsinfo', $oNavigationsinfo)
         ->assign('SEO', true)
-        ->assign('nMaxAnzahlArtikel', (int)($oSuchergebnisse->GesamtanzahlArtikel >= (int)$Einstellungen['artikeluebersicht']['suche_max_treffer']))
+        ->assign('nMaxAnzahlArtikel', (int)($oSuchergebnisse->GesamtanzahlArtikel >=
+            (int)$Einstellungen['artikeluebersicht']['suche_max_treffer']))
         ->assign('SESSION_NOTWENDIG', false);
 
 executeHook(HOOK_FILTER_PAGE);

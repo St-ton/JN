@@ -203,11 +203,12 @@ if ($oAccount->getIsAuthenticated()) {
             if ($oAccount->doTwoFA()) {
                 $_SESSION['AdminAccount']->TwoFA_expired = false;
                 $_SESSION['loginIsValid']                = true; // "enable" the "header.tpl"-navigation again
+                $smarty->assign('cFehler', ''); // reset a previously (falsely arised) error-message
 
                 if (isset($_REQUEST['uri']) && strlen(trim($_REQUEST['uri'])) > 0) {
                     redirectToURI($_REQUEST['uri']);
                 }
-                openDashboard();
+                openDashboard(); // and exit here
             }
         } else {
             $_SESSION['AdminAccount']->TwoFA_expired = true;

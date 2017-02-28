@@ -7,7 +7,7 @@ include PFAD_ROOT . PFAD_INCLUDES . 'spiderlist_inc.php';
 
 //besucherzähler
 if (!isset($_SESSION['oBesucher'])) {
-    $userAgent    = (isset($_SERVER['HTTP_USER_AGENT'])) ? $_SERVER['HTTP_USER_AGENT'] : '';
+    $userAgent    = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
     $kBesucherBot = istSpider($userAgent);
     if ($kBesucherBot > 0) {
         Shop::DB()->query("UPDATE tbesucherbot SET dZeit = now() WHERE kBesucherBot = " . $kBesucherBot, 4);
@@ -60,7 +60,7 @@ if (isset($_SESSION['oBesucher']->kBesucher) && $_SESSION['oBesucher']->kBesuche
  */
 function gibBrowser()
 {
-    $agent = (isset($_SERVER['HTTP_USER_AGENT'])) ? strtolower($_SERVER['HTTP_USER_AGENT']) : '';
+    $agent = isset($_SERVER['HTTP_USER_AGENT']) ? strtolower($_SERVER['HTTP_USER_AGENT']) : '';
     if (strpos($agent, 'msie') !== false) {
         $pos = strpos($agent, 'msie');
 
@@ -176,7 +176,7 @@ function werteRefererAus($kBesucher, $referer)
     }
     if ($param !== '') {
         preg_match("/(\?$param|&$param)=[^&]+/i", $roh, $treffer);
-        $ausdruck->cSuchanfrage = (isset($treffer[0])) ? utf8_decode(urldecode(substr($treffer[0], 3))) : null;
+        $ausdruck->cSuchanfrage = isset($treffer[0]) ? utf8_decode(urldecode(substr($treffer[0], 3))) : null;
         if ($ausdruck->cSuchanfrage) {
             Shop::DB()->insert('tbesuchersuchausdruecke', $ausdruck);
         }
@@ -229,7 +229,7 @@ function istSpider($cUserAgent)
         }
     }
 
-    return (isset($oBesucherBot->kBesucherBot) && intval($oBesucherBot->kBesucherBot) > 0)
+    return (isset($oBesucherBot->kBesucherBot) && (int)$oBesucherBot->kBesucherBot > 0)
         ? (int)$oBesucherBot->kBesucherBot
         : 0;
 }

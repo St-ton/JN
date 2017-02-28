@@ -24,13 +24,13 @@ function gibFehlendeEingabenKontaktformular()
     if (pruefeEmailblacklist($_POST['email'])) {
         $ret['email'] = 3;
     }
-    if ($conf['kontakt']['kontakt_abfragen_vorname'] === 'Y' && !$_POST['vorname']) {
+    if (!$_POST['vorname'] && $conf['kontakt']['kontakt_abfragen_vorname'] === 'Y') {
         $ret['vorname'] = 1;
     }
-    if ($conf['kontakt']['kontakt_abfragen_nachname'] === 'Y' && !$_POST['nachname']) {
+    if (!$_POST['nachname'] && $conf['kontakt']['kontakt_abfragen_nachname'] === 'Y') {
         $ret['nachname'] = 1;
     }
-    if ($conf['kontakt']['kontakt_abfragen_firma'] === 'Y' && !$_POST['firma']) {
+    if (!$_POST['firma'] && $conf['kontakt']['kontakt_abfragen_firma'] === 'Y') {
         $ret['firma'] = 1;
     }
     if ($conf['kontakt']['kontakt_abfragen_fax'] === 'Y') {
@@ -65,10 +65,10 @@ function baueKontaktFormularVorgaben()
         $Nachricht->cMobil    = $_SESSION['Kunde']->cMobil;
         $Nachricht->cFax      = $_SESSION['Kunde']->cFax;
     }
-    $Nachricht->kKontaktBetreff = (isset($_POST['subject']))
-        ? intval($_POST['subject'])
+    $Nachricht->kKontaktBetreff = isset($_POST['subject'])
+        ? (int)$_POST['subject']
         : null;
-    $Nachricht->cNachricht      = (isset($_POST['nachricht']))
+    $Nachricht->cNachricht      = isset($_POST['nachricht'])
         ? StringHandler::filterXSS($_POST['nachricht'])
         : null;
 
@@ -168,7 +168,7 @@ function pruefeBetreffVorhanden()
     $oBetreff_arr = Shop::DB()->query(
         "SELECT kKontaktBetreff
             FROM tkontaktbetreff
-            WHERE cKundengruppen LIKE '%" . $kKundengruppe . "%'
+            WHERE cKundengruppen RLIKE '^([0-9;]*;)?" . (int)$kKundengruppe . ";'
                 OR cKundengruppen = '0'", 2
     );
 
@@ -180,7 +180,7 @@ function pruefeBetreffVorhanden()
  */
 function bearbeiteNachricht()
 {
-    $betreff = (isset($_POST['subject']))
+    $betreff = isset($_POST['subject'])
         ? Shop::DB()->select('tkontaktbetreff', 'kKontaktBetreff', (int)$_POST['subject'])
         : null;
     if (!empty($betreff->kKontaktBetreff)) {
@@ -198,9 +198,7 @@ function bearbeiteNachricht()
         $conf     = Shop::getSettings([CONF_KONTAKTFORMULAR, CONF_GLOBAL]);
         $from     = new stdClass();
         $from_arr = Shop::DB()->selectAll('temailvorlageeinstellungen', 'kEmailvorlage', 11);
-        if (!isset($mail)) {
-            $mail = new stdClass();
-        }
+        $mail     = new stdClass();
         if (is_array($from_arr) && count($from_arr)) {
             foreach ($from_arr as $f) {
                 $from->{$f->cKey} = $f->cValue;
@@ -256,31 +254,31 @@ function bearbeiteNachricht()
         $KontaktHistory                  = new stdClass();
         $KontaktHistory->kKontaktBetreff = $betreff->kKontaktBetreff;
         $KontaktHistory->kSprache        = $_SESSION['kSprache'];
-        $KontaktHistory->cAnrede         = (isset($Objekt->tnachricht->cAnrede))
+        $KontaktHistory->cAnrede         = isset($Objekt->tnachricht->cAnrede)
             ? $Objekt->tnachricht->cAnrede
             : null;
-        $KontaktHistory->cVorname        = (isset($Objekt->tnachricht->cVorname))
+        $KontaktHistory->cVorname        = isset($Objekt->tnachricht->cVorname)
             ? $Objekt->tnachricht->cVorname
             : null;
-        $KontaktHistory->cNachname       = (isset($Objekt->tnachricht->cNachname))
+        $KontaktHistory->cNachname       = isset($Objekt->tnachricht->cNachname)
             ? $Objekt->tnachricht->cNachname
             : null;
-        $KontaktHistory->cFirma          = (isset($Objekt->tnachricht->cFirma))
+        $KontaktHistory->cFirma          = isset($Objekt->tnachricht->cFirma)
             ? $Objekt->tnachricht->cFirma
             : null;
-        $KontaktHistory->cTel            = (isset($Objekt->tnachricht->cTel))
+        $KontaktHistory->cTel            = isset($Objekt->tnachricht->cTel)
             ? $Objekt->tnachricht->cTel
             : null;
-        $KontaktHistory->cMobil          = (isset($Objekt->tnachricht->cMobil))
+        $KontaktHistory->cMobil          = isset($Objekt->tnachricht->cMobil)
             ? $Objekt->tnachricht->cMobil
             : null;
-        $KontaktHistory->cFax            = (isset($Objekt->tnachricht->cFax))
+        $KontaktHistory->cFax            = isset($Objekt->tnachricht->cFax)
             ? $Objekt->tnachricht->cFax
             : null;
-        $KontaktHistory->cMail           = (isset($Objekt->tnachricht->cMail))
+        $KontaktHistory->cMail           = isset($Objekt->tnachricht->cMail)
             ? $Objekt->tnachricht->cMail
             : null;
-        $KontaktHistory->cNachricht      = (isset($Objekt->tnachricht->cNachricht))
+        $KontaktHistory->cNachricht      = isset($Objekt->tnachricht->cNachricht)
             ? $Objekt->tnachricht->cNachricht
             : null;
         $KontaktHistory->cIP             = gibIP();
@@ -306,7 +304,7 @@ function floodSchutz($min)
         SELECT kKontaktHistory 
             FROM tkontakthistory 
             WHERE cIP = '" . Shop::DB()->escape(gibIP()) . "' 
-            AND date_sub(now(), INTERVAL $min MINUTE) < dErstellt", 1
+                AND date_sub(now(), INTERVAL $min MINUTE) < dErstellt", 1
     );
 
     return (isset($history->kKontaktHistory) && $history->kKontaktHistory > 0);

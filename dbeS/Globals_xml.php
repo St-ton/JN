@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-require_once dirname(__FILE__) . '/syncinclude.php';
+require_once __DIR__ . '/syncinclude.php';
 
 $return = 3;
 if (auth()) {
@@ -41,7 +41,7 @@ if (auth()) {
     }
 }
 
-if ($return == 1) {
+if ($return === 2) {
     syncException('Error : ' . $archive->errorInfo(true));
 }
 
@@ -56,11 +56,11 @@ function bearbeiteDeletes($xml)
     // Warengruppe
     if (is_array($xml['del_globals_wg']['kWarengruppe'])) {
         foreach ($xml['del_globals_wg']['kWarengruppe'] as $kWarengruppe) {
-            if (intval($kWarengruppe) > 0) {
+            if ((int)$kWarengruppe > 0) {
                 loescheWarengruppe($kWarengruppe);
             }
         }
-    } elseif (intval($xml['del_globals_wg']['kWarengruppe']) > 0) {
+    } elseif ((int)$xml['del_globals_wg']['kWarengruppe'] > 0) {
         loescheWarengruppe($xml['del_globals_wg']['kWarengruppe']);
     }
 }
@@ -70,7 +70,7 @@ function bearbeiteDeletes($xml)
  */
 function bearbeiteUpdates($xml)
 {
-    if (isset($xml['globals']['tfirma']) && isset($xml['globals']['tfirma attr']['kFirma']) &&
+    if (isset($xml['globals']['tfirma'], $xml['globals']['tfirma attr']['kFirma']) &&
         is_array($xml['globals']['tfirma']) && $xml['globals']['tfirma attr']['kFirma'] > 0) {
         mappe($Firma, $xml['globals']['tfirma'], $GLOBALS['mFirma']);
         DBDelInsert('tfirma', [$Firma], 1);
@@ -100,7 +100,8 @@ function bearbeiteUpdates($xml)
             $steuerzonen_arr = mapArray($xml['globals'], 'tsteuerzone', $GLOBALS['mSteuerzone']);
             DBDelInsert('tsteuerzone', $steuerzonen_arr, 1);
             Shop::DB()->query("DELETE FROM tsteuerzoneland", 4);
-            for ($i = 0; $i < count($steuerzonen_arr); $i++) {
+            $taxCount = count($steuerzonen_arr);
+            for ($i = 0; $i < $taxCount; $i++) {
                 if (count($steuerzonen_arr) < 2) {
                     XML2DB($xml['globals']['tsteuerzone'], 'tsteuerzoneland', $GLOBALS['mSteuerzoneland'], 0);
                 } else {

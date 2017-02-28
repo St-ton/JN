@@ -30,7 +30,9 @@ function getBrowser($cUserAgent = null)
     $oBrowser->cVersion  = '0';
 
     // agent
-    $cUserAgent       = (isset($_SERVER['HTTP_USER_AGENT']) && is_null($cUserAgent)) ? $_SERVER['HTTP_USER_AGENT'] : $cUserAgent;
+    $cUserAgent       = (isset($_SERVER['HTTP_USER_AGENT']) && $cUserAgent === null)
+        ? $_SERVER['HTTP_USER_AGENT']
+        : $cUserAgent;
     $oBrowser->cAgent = $cUserAgent;
     // mobile
     $oBrowser->bMobile = (preg_match('/android|avantgo|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i', $oBrowser->cAgent, $cMatch_arr)) ||
@@ -41,11 +43,9 @@ function getBrowser($cUserAgent = null)
     } elseif (preg_match('/macintosh|mac os x/i', $cUserAgent)) {
         $oBrowser->cPlatform = 'mac';
     } elseif (preg_match('/windows|win32/i', $cUserAgent)) {
-        if (preg_match('/windows mobile|wce/i', $cUserAgent)) {
-            $oBrowser->cPlatform = 'mobile';
-        } else {
-            $oBrowser->cPlatform = 'windows';
-        }
+        $oBrowser->cPlatform = preg_match('/windows mobile|wce/i', $cUserAgent)
+            ? 'mobile'
+            : 'windows';
     }
     // browser
     if (preg_match('/MSIE/i', $cUserAgent) && !preg_match('/Opera/i', $cUserAgent)) {
@@ -94,12 +94,11 @@ function getBrowser($cUserAgent = null)
     $cPattern = '/(?<browser>' . implode('|', $cKnown) . ')[\/ ]+(?<version>[0-9.|a-zA-Z.]*)/i';
     preg_match_all($cPattern, $cUserAgent, $aMatches);
     if (count($aMatches['browser']) !== 1) {
+        $oBrowser->cVersion = '0';
         if (strripos($cUserAgent, 'Version') < strripos($cUserAgent, $oBrowser->cBrowser)) {
             $oBrowser->cVersion = $aMatches['version'][0];
         } elseif (isset($aMatches['version'][1])) {
             $oBrowser->cVersion = $aMatches['version'][1];
-        } else {
-            $oBrowser->cVersion = '0';
         }
     } else {
         $oBrowser->cVersion = $aMatches['version'][0];

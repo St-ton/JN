@@ -11,7 +11,7 @@ $bMobilAktiv           = $oTemplate->isMobileTemplateActive();
 $currentTemplateFolder = $oTemplate->getDir();
 $currentTemplateDir    = PFAD_TEMPLATES . $currentTemplateFolder . '/';
 $bMobile               = false;
-$cart                  = (isset($_SESSION['Warenkorb'])) ? $_SESSION['Warenkorb'] : new Warenkorb();
+$cart                  = isset($_SESSION['Warenkorb']) ? $_SESSION['Warenkorb'] : new Warenkorb();
 $EinstellungenTmp      = Shop::getSettings([
     CONF_TEMPLATE,
     CONF_ARTIKELDETAILS,
@@ -26,7 +26,7 @@ $EinstellungenTmp      = Shop::getSettings([
     CONF_VERGLEICHSLISTE,
     CONF_KAUFABWICKLUNG
 ]);
-$Einstellungen = (isset($Einstellungen)) ? array_merge($Einstellungen, $EinstellungenTmp) : $EinstellungenTmp;
+$Einstellungen = isset($Einstellungen) ? array_merge($Einstellungen, $EinstellungenTmp) : $EinstellungenTmp;
 $themeDir      = (!empty($Einstellungen['template']['theme']['theme_default']))
     ? $Einstellungen['template']['theme']['theme_default']
     : 'evo';
@@ -34,13 +34,13 @@ $cShopName     = (!empty($Einstellungen['global']['global_shopname']))
     ? $Einstellungen['global']['global_shopname']
     : 'JTL-Shop';
 //Wechsel auf Mobil-Template
-if ($oTemplate->hasMobileTemplate() && !$bMobilAktiv && $oBrowser->bMobile && !isset($_SESSION['bAskMobil'])) {
+if (!$bMobilAktiv && $oBrowser->bMobile && !isset($_SESSION['bAskMobil']) && $oTemplate->hasMobileTemplate()) {
     $_SESSION['bAskMobil'] = true;
     $bMobile               = true;
 }
 $cMinify_arr = $oTemplate->getMinifyArray();
-$cCSS_arr    = (isset($cMinify_arr["{$themeDir}.css"])) ? $cMinify_arr["{$themeDir}.css"] : [];
-$cJS_arr     = (isset($cMinify_arr['jtl3.js'])) ? $cMinify_arr['jtl3.js'] : [];
+$cCSS_arr    = isset($cMinify_arr["{$themeDir}.css"]) ? $cMinify_arr["{$themeDir}.css"] : [];
+$cJS_arr     = isset($cMinify_arr['jtl3.js']) ? $cMinify_arr['jtl3.js'] : [];
 if (!$bMobilAktiv) {
     executeHook(HOOK_LETZTERINCLUDE_CSS_JS, [
         'cCSS_arr'                  => &$cCSS_arr,
@@ -62,7 +62,7 @@ $warensumme[1]         = gibPreisStringLocalized($cart->gibGesamtsummeWarenExt([
 $gesamtsumme[0]        = gibPreisStringLocalized($cart->gibGesamtsummeWaren(true, true));
 $gesamtsumme[1]        = gibPreisStringLocalized($cart->gibGesamtsummeWaren(false, true));
 $oVersandartKostenfrei = gibVersandkostenfreiAb($kKundengruppe, $cKundenherkunft);
-$oGlobaleMetaAngaben   = (isset($oGlobaleMetaAngabenAssoc_arr[$_SESSION['kSprache']]))
+$oGlobaleMetaAngaben   = isset($oGlobaleMetaAngabenAssoc_arr[$_SESSION['kSprache']])
     ? $oGlobaleMetaAngabenAssoc_arr[$_SESSION['kSprache']]
     : null;
 $pagetType             = Shop::getPageType();
@@ -124,13 +124,13 @@ $smarty->assign('cPluginCss_arr', $cMinify_arr['plugin_css'])
        ->assign('Warenkorbtext', lang_warenkorb_warenkorbEnthaeltXArtikel($cart))
        ->assign('zuletztInWarenkorbGelegterArtikel', $cart->gibLetztenWKArtikel())
        ->assign('WarenkorbVersandkostenfreiHinweis', baueVersandkostenfreiString($oVersandartKostenfrei,
-           ($cart->gibGesamtsummeWarenExt(
+           $cart->gibGesamtsummeWarenExt(
                [C_WARENKORBPOS_TYP_ARTIKEL, C_WARENKORBPOS_TYP_KUPON, C_WARENKORBPOS_TYP_NEUKUNDENKUPON],
                true
-           ))))
-       ->assign('meta_title', (isset($cMetaTitle)) ? $cMetaTitle : '')
-       ->assign('meta_description', (isset($cMetaDescription)) ? $cMetaDescription : '')
-       ->assign('meta_keywords', (isset($cMetaKeywords)) ? $cMetaKeywords : '')
+           )))
+       ->assign('meta_title', isset($cMetaTitle) ? $cMetaTitle : '')
+       ->assign('meta_description', isset($cMetaDescription) ? $cMetaDescription : '')
+       ->assign('meta_keywords', isset($cMetaKeywords) ? $cMetaKeywords : '')
        ->assign('meta_publisher', $Einstellungen['metaangaben']['global_meta_publisher'])
        ->assign('meta_copyright', $Einstellungen['metaangaben']['global_meta_copyright'])
        ->assign('meta_language', StringHandler::convertISO2ISO639($_SESSION['cISOSprache']))
@@ -160,7 +160,7 @@ $smarty->assign('cPluginCss_arr', $cMinify_arr['plugin_css'])
        ->assign('CHECKBOX_ORT_KONTAKT', CHECKBOX_ORT_KONTAKT)
        ->assign('nSeitenTyp', $pagetType)
        ->assign('bExclusive', isset($_GET['exclusive_content']))
-       ->assign('bAdminWartungsmodus', ((isset($bAdminWartungsmodus)) ? $bAdminWartungsmodus : false))
+       ->assign('bAdminWartungsmodus', (isset($bAdminWartungsmodus) ? $bAdminWartungsmodus : false))
        ->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())
        ->assign('Steuerpositionen', $cart->gibSteuerpositionen())
        ->assign('Einstellungen', $Einstellungen)
@@ -171,7 +171,7 @@ $smarty->assign('cPluginCss_arr', $cMinify_arr['plugin_css'])
        ->assign('BILD_KEIN_HERSTELLERBILD_VORHANDEN', BILD_KEIN_HERSTELLERBILD_VORHANDEN)
        ->assign('BILD_KEIN_MERKMALBILD_VORHANDEN', BILD_KEIN_MERKMALBILD_VORHANDEN)
        ->assign('BILD_KEIN_MERKMALWERTBILD_VORHANDEN', BILD_KEIN_MERKMALWERTBILD_VORHANDEN)
-       ->assign('cCanonicalURL', (isset($cCanonicalURL)) ? $cCanonicalURL : null)
+       ->assign('cCanonicalURL', isset($cCanonicalURL) ? $cCanonicalURL : null)
        ->assign('AktuelleKategorie', $AktuelleKategorie);
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'besucher.php';
@@ -181,7 +181,7 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'filter_inc.php';
 pruefeKampagnenParameter();
 // Währungs- und Sprachlinks (um die Sprache oder Währung zu wechseln ohne die aktuelle Seite zu verlieren)
 setzeSpracheUndWaehrungLink();
-$linkGroups = ($pagetType) ? $linkHelper->activate($pagetType) : $smarty->getTemplateVars('linkGroups');
+$linkGroups = $pagetType ? $linkHelper->activate($pagetType) : $smarty->getTemplateVars('linkGroups');
 // Extension Point
 if (!isset($cParameter_arr)) {
     $cParameter_arr = [];
@@ -204,5 +204,5 @@ $smarty->assign('bCookieErlaubt', isset($_COOKIE['JTLSHOP']))
        ->assign('nIsSSL', pruefeSSL())
        ->assign('boxes', $boxesToShow)
        ->assign('linkgroups', $linkGroups)
-       ->assign('nZeitGebraucht', (isset($nStartzeit)) ? (microtime(true) - $nStartzeit) : 0)
+       ->assign('nZeitGebraucht', isset($nStartzeit) ? (microtime(true) - $nStartzeit) : 0)
        ->assign('Besucherzaehler', (!empty($besucherzaehler->nZaehler)) ? (int)$besucherzaehler->nZaehler : 0);

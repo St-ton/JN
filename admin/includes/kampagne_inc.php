@@ -407,14 +407,15 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                         $oDaten_arr[$i]->cReferer        = $cReferer;
                     }
 
-                    $cMember_arr = array(
+                    $cMember_arr = [
                         'cIP'                 => 'IP-Adresse',
                         'cReferer'            => 'Referer',
                         'cEinstiegsseite'     => 'Einstiegsseite',
                         'cBrowser'            => 'Browser',
                         'cUserAgent'          => 'Suchmaschine',
                         'dErstellt_DE'        => 'Datum',
-                        'dErstelltVorgang_DE' => 'Vorgangsdatum');
+                        'dErstelltVorgang_DE' => 'Vorgangsdatum'
+                    ];
                 }
                 break;
             case KAMPAGNE_DEF_VERKAUF:    // VERKAUF
@@ -465,7 +466,7 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                         }
                     }
 
-                    $cMember_arr = array(
+                    $cMember_arr = [
                         'cZahlungsartName'    => 'Zahlungsart',
                         'cVersandartName'     => 'Versandart',
                         'nRegistriert'        => 'Registrierter Kunde',
@@ -475,7 +476,8 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                         'cBestellNr'          => 'BestellNr',
                         'fGesamtsumme'        => 'Bestellwert',
                         'dErstellt_DE'        => 'Bestelldatum',
-                        'dErstelltVorgang_DE' => 'Vorgangsdatum');
+                        'dErstelltVorgang_DE' => 'Vorgangsdatum'
+                    ];
                 }
                 break;
             case KAMPAGNE_DEF_ANMELDUNG:    // ANMELDUNG
@@ -513,14 +515,15 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                         }
                     }
 
-                    $cMember_arr = array(
+                    $cMember_arr = [
                         'cVorname'            => 'Vorname',
                         'cNachname'           => 'Nachname',
                         'cFirma'              => 'Firma',
                         'cMail'               => 'eMail',
                         'nRegistriert'        => 'Registriert',
                         'dErstellt_DE'        => 'Anmeldedatum',
-                        'dErstelltVorgang_DE' => 'Vorgangsdatum');
+                        'dErstelltVorgang_DE' => 'Vorgangsdatum'
+                    ];
                 }
                 break;
             case KAMPAGNE_DEF_VERKAUFSSUMME:    // VERKAUFSSUMME
@@ -570,7 +573,7 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                         }
                     }
 
-                    $cMember_arr = array(
+                    $cMember_arr = [
                         'cZahlungsartName'    => 'Zahlungsart',
                         'cVersandartName'     => 'Versandart',
                         'nRegistriert'        => 'Registrierter Kunde',
@@ -580,7 +583,8 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                         'cBestellNr'          => 'BestellNr',
                         'fGesamtsumme'        => 'Bestellwert',
                         'dErstellt_DE'        => 'Bestelldatum',
-                        'dErstelltVorgang_DE' => 'Vorgangsdatum');
+                        'dErstelltVorgang_DE' => 'Vorgangsdatum'
+                    ];
                 }
                 break;
             case KAMPAGNE_DEF_FRAGEZUMPRODUKT:    // FRAGEZUMPRODUKT
@@ -606,7 +610,7 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                 );
 
                 if (is_array($oDaten_arr) && count($oDaten_arr) > 0) {
-                    $cMember_arr = array(
+                    $cMember_arr = [
                         'cArtikelname'        => 'Artikel',
                         'cArtNr'              => 'Artikelnummer',
                         'cVorname'            => 'Vorname',
@@ -616,7 +620,8 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                         'cMail'               => 'eMail',
                         'cNachricht'          => 'Nachricht',
                         'dErstellt_DE'        => 'Erstellt am',
-                        'dErstelltVorgang_DE' => 'Vorgangsdatum');
+                        'dErstelltVorgang_DE' => 'Vorgangsdatum'
+                    ];
                 }
 
                 break;
@@ -643,7 +648,7 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                 );
 
                 if (is_array($oDaten_arr) && count($oDaten_arr) > 0) {
-                    $cMember_arr = array(
+                    $cMember_arr = [
                         'cArtikelname'        => 'Artikel',
                         'cArtNr'              => 'Artikelnummer',
                         'cVorname'            => 'Vorname',
@@ -651,7 +656,8 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                         'cMail'               => 'eMail',
                         'cAbgeholt'           => 'Abgeholt durch Wawi',
                         'dErstellt_DE'        => 'Erstellt am',
-                        'dErstelltVorgang_DE' => 'Vorgangsdatum');
+                        'dErstelltVorgang_DE' => 'Vorgangsdatum'
+                    ];
                 }
 
                 break;
@@ -692,14 +698,15 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                         }
                     }
 
-                    $cMember_arr = array(
+                    $cMember_arr = [
                         'cVorname'            => 'Vorname',
                         'cNachname'           => 'Nachname',
                         'cFirma'              => 'Firma',
                         'cMail'               => 'eMail',
                         'nRegistriert'        => 'Registriert',
                         'dErstellt_DE'        => 'Anmeldedatum',
-                        'dErstelltVorgang_DE' => 'Vorgangsdatum');
+                        'dErstelltVorgang_DE' => 'Vorgangsdatum'
+                    ];
                 }
                 break;
             case KAMPAGNE_DEF_WUNSCHLISTE:    // WUNSCHLISTE
@@ -743,7 +750,7 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                         }
                     }
 
-                    $cMember_arr = array(
+                    $cMember_arr = [
                         'cArtikelname'        => 'Artikel',
                         'cArtNr'              => 'Artikelnummer',
                         'cVorname'            => 'Vorname',
@@ -752,7 +759,8 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                         'cMail'               => 'eMail',
                         'nRegistriert'        => 'Registriert',
                         'dErstellt_DE'        => 'Anmeldedatum',
-                        'dErstelltVorgang_DE' => 'Vorgangsdatum');
+                        'dErstelltVorgang_DE' => 'Vorgangsdatum'
+                    ];
                 }
                 break;
             case KAMPAGNE_DEF_WARENKORB:    // WARENKORB
@@ -789,14 +797,15 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                         }
                     }
 
-                    $cMember_arr = array(
+                    $cMember_arr = [
                         'cName'                    => 'Artikel',
                         'cArtNr'                   => 'Artikelnummer',
                         'fVKNetto'                 => 'Netto Preis',
                         'fMwSt'                    => 'MwSt',
                         'fLagerbestand'            => 'Lagerbestand',
                         'dLetzteAktualisierung_DE' => 'Letzte Aktualisierung',
-                        'dErstelltVorgang_DE'      => 'Vorgangsdatum');
+                        'dErstelltVorgang_DE'      => 'Vorgangsdatum'
+                    ];
                 }
                 break;
             case KAMPAGNE_DEF_NEWSLETTER:    // NEWSLETTER
@@ -819,14 +828,15 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                 );
 
                 if (is_array($oDaten_arr) && count($oDaten_arr) > 0) {
-                    $cMember_arr = array(
+                    $cMember_arr = [
                         'cName'               => 'Newsletter',
                         'cBetreff'            => 'Betreff',
                         'cVorname'            => 'Vorname',
                         'cNachname'           => 'Nachname',
                         'cEmail'              => 'eMail',
                         'dErstelltTrack_DE'   => 'Datum der &Ouml;ffnung',
-                        'dErstelltVorgang_DE' => 'Vorgangsdatum');
+                        'dErstelltVorgang_DE' => 'Vorgangsdatum'
+                    ];
                 }
                 break;
         }
@@ -1335,7 +1345,7 @@ function mappeENGMonat($cMonat)
  */
 function GetTypes()
 {
-    $Serienames = array(
+    $Serienames = [
         1  => 'Hit',
         2  => 'Verkauf',
         3  => 'Anmeldung',
@@ -1346,7 +1356,7 @@ function GetTypes()
         8  => 'Produkt auf Wunschliste',
         9  => 'Produkt in den Warenkorb',
         10 => 'Angeschaute Newsletter'
-    );
+    ];
 
     return $Serienames;
 }

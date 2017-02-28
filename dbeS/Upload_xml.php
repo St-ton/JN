@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-require_once dirname(__FILE__) . '/NetSync_inc.php';
+require_once __DIR__ . '/NetSync_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES_EXT . 'class.JTL-Shop.Upload.php';
 
 /**
@@ -17,14 +17,6 @@ class Uploader extends NetSyncHandler
      */
     protected function init()
     {
-    }
-
-    /**
-     * @param $oException
-     */
-    public static function exception($oException)
-    {
-        parent::exception($oException);
     }
 
     /**
@@ -72,7 +64,7 @@ class Uploader extends NetSyncHandler
                     if ($oUploadDatei->loadFromDB($kUpload)) {
                         $cFilePath = PFAD_UPLOADS . $oUploadDatei->cPfad;
                         if (file_exists($cFilePath)) {
-                            self::streamFile($cFilePath, 'application/octet-stream', $oUploadDatei->cName);
+                            $this->streamFile($cFilePath, 'application/octet-stream', $oUploadDatei->cName);
                             exit;
                         }
                     }

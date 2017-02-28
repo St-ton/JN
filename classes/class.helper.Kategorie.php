@@ -239,8 +239,7 @@ class KategorieHelper
                         $_cat->cBeschreibung = $_cat->cBeschreibung_spr;
                     }
                 }
-                unset($_cat->cBeschreibung_spr);
-                unset($_cat->cName_spr);
+                unset($_cat->cBeschreibung_spr, $_cat->cName_spr);
                 // Attribute holen
                 $_cat->categoryFunctionAttributes = (isset($functionAttributes[$_cat->kKategorie]))
                     ? $functionAttributes[$_cat->kKategorie]
@@ -361,9 +360,7 @@ class KategorieHelper
         $nameSelect           = ($isDefaultLang === true)
             ? ", parent.cName"
             : ", parent.cName, tkategoriesprache.cName AS cName_spr";
-        $seoSelect            = ($isDefaultLang === true)
-            ? ", parent.cSeo"
-            : ", parent.cSeo";
+        $seoSelect            = ", parent.cSeo";
         $langJoin             = ($isDefaultLang === true)
             ? ""
             : " LEFT JOIN tkategoriesprache
@@ -460,8 +457,7 @@ class KategorieHelper
                     $_cat->cBeschreibung = $_cat->cBeschreibung_spr;
                 }
             }
-            unset($_cat->cBeschreibung_spr);
-            unset($_cat->cName_spr);
+            unset($_cat->cBeschreibung_spr, $_cat->cName_spr);
             // Attribute holen
             $_cat->categoryFunctionAttributes = (isset($functionAttributes[$_cat->kKategorie]))
                 ? $functionAttributes[$_cat->kKategorie]
@@ -514,7 +510,7 @@ class KategorieHelper
     private function removeRelicts(&$catList)
     {
         foreach ($catList as $i => $_cat) {
-            if ($_cat->bUnterKategorien === 1 && count($_cat->Unterkategorien) === 0 && $_cat->cnt == 0) {
+            if ($_cat->cnt == 0 && $_cat->bUnterKategorien === 1 && count($_cat->Unterkategorien) === 0) {
                 unset($catList[$i]);
             } elseif ($_cat->bUnterKategorien === 1) {
                 $this->removeRelicts($_cat->Unterkategorien);
@@ -579,7 +575,7 @@ class KategorieHelper
         if ($next === false && self::$depth !== 0) {
             //we have an incomplete category tree (because of high category count)
             //and did not find the desired category
-            return self::getFallBackFlatTree($id);
+            return $this->getFallBackFlatTree($id);
         }
         if (isset($next->kKategorie)) {
             if ($noChildren === true) {

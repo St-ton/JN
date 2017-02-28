@@ -80,6 +80,11 @@ class ZahlungsInfo
     public $cVerwendungszweck;
 
     /**
+     * @var string
+     */
+    public $cAbgeholt;
+
+    /**
      * @param int $kZahlungsInfo
      * @param int $kBestellung
      */
@@ -167,6 +172,7 @@ class ZahlungsInfo
      */
     public function insertInDB()
     {
+        $this->cAbgeholt = 'N';
         $this->verschluesselZahlungsinfo();
         $obj = kopiereMembers($this);
         unset($obj->kZahlungsInfo);

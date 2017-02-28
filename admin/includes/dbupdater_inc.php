@@ -13,7 +13,7 @@ function resetteUpdateDB()
 {
     $oColumns_arr = Shop::DB()->query("SHOW COLUMNS FROM tversion", 2);
     if (is_array($oColumns_arr) && count($oColumns_arr) > 0) {
-        $cColumns_arr = array();
+        $cColumns_arr = [];
         foreach ($oColumns_arr as $oColumns) {
             $cColumns_arr[] = $oColumns->Field;
         }

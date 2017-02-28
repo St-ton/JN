@@ -3,15 +3,15 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/admininclude.php';
+require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'filecheck_inc.php';
 
 $oAccount->permission('FILECHECK_VIEW', true, true);
 /** @global JTLSmarty $smarty */
 $cHinweis     = '';
 $cFehler      = '';
-$oDatei_arr   = array();
-$nStat_arr    = array();
+$oDatei_arr   = [];
+$nStat_arr    = [];
 $nReturnValue = getAllFiles($oDatei_arr, $nStat_arr);
 
 if ($nReturnValue !== 1) {

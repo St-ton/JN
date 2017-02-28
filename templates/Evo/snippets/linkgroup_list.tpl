@@ -2,9 +2,9 @@
 {strip}
     {get_navigation linkgroupIdentifier=$linkgroupIdentifier assign='links'}
     {if !empty($links)}
-        {if isset($Link) && intval($Link->kLink) > 0}
+        {if isset($Link) && (int)$Link->kLink > 0}
             {assign var='activeId' value=$Link->kLink}
-        {else}
+        {elseif Shop::$kLink > 0}
             {assign var='activeId' value=Shop::$kLink}
             {assign var='Link' value=LinkHelper::getInstance()->getPageLink($activeId)}
         {/if}

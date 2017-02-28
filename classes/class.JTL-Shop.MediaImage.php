@@ -486,4 +486,39 @@ class MediaImage implements IMedia
         return (!empty($imageCount));
         
     }
+
+    /**
+     * @param string $type
+     * @param string $id
+     * @param object $mixed
+     * @param string $size
+     * @param int    $number
+     * @return string
+     */
+    public static function getRawOrFilesize($type, $id, $mixed, $size, $number = 1)
+    {
+        $name     = Image::getCustomName($type, $mixed);
+        $settings = Image::getSettings();
+        $req      = MediaImageRequest::create([
+            'id'     => $id,
+            'type'   => $type,
+            'number' => $number,
+            'name'   => $name,
+            'ext'    => $settings['format']
+        ]);
+        $thumb    = $req->getThumb($size);
+        $thumbAbs = PFAD_ROOT . $thumb;
+        $rawAbs   = PFAD_ROOT . $req->getRaw();
+
+        if (!file_exists($thumbAbs) && !file_exists($rawAbs)) {
+            $fallback = $req->getFallbackThumb($size);
+            $thumb    = (file_exists(PFAD_ROOT . $fallback))
+                ? PFAD_ROOT . $fallback
+                : BILD_KEIN_ARTIKELBILD_VORHANDEN;
+
+            return filesize($thumb);
+        }
+
+        return $req->path;
+    }
 }

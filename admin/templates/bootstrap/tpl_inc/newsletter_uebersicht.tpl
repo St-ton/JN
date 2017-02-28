@@ -424,7 +424,7 @@
                                 {/foreach}
                             </table>
                             <div class="panel-footer">
-                                <button name="submitVorlageStd" type="submit" value="{#newsletterdraftStdUse#}" class="btn btn-default">{#newsletterdraftStdUse#}</button>
+                                <button name="submitVorlageStd" type="submit" value="{#newsletterdraftStdUse#}" class="btn btn-primary"><i class="fa fa-share"></i> {#newsletterdraftStdUse#}</button>
                             </div>
                         </div>
                     </div>

@@ -11,7 +11,7 @@
  */
 function mappingBeachten($Suchausdruck, $kSpracheExt = 0)
 {
-    $kSprache = (intval($kSpracheExt) > 0) ? intval($kSpracheExt) : getDefaultLanguageID();
+    $kSprache = ((int)$kSpracheExt > 0) ? (int)$kSpracheExt : getDefaultLanguageID();
     if (strlen($Suchausdruck) > 0) {
         $SuchausdruckmappingTMP = Shop::DB()->select(
             'tsuchanfragemapping',
@@ -94,11 +94,12 @@ function suchausdruckVorbereiten($cSuche)
 function suchausdruckAlleKombis($cSuch_arr)
 {
     $cSuchTMP_arr = [];
-    if (count($cSuch_arr) > 3 || count($cSuch_arr) === 1) {
+    $cnt          = count($cSuch_arr);
+    if ($cnt > 3 || $cnt === 1) {
         return [];
     }
 
-    switch (count($cSuch_arr)) {
+    switch ($cnt) {
         case 2:
             $cSuchTMP_arr[] = $cSuch_arr[0] . ' ' . $cSuch_arr[1];
             $cSuchTMP_arr[] = $cSuch_arr[1] . ' ' . $cSuch_arr[0];
@@ -154,43 +155,43 @@ function gibMaxPrioSpalte($exclude)
     if (!standardspracheAktiv()) {
         $cTabellenPrefix = 'tartikelsprache.';
     }
-    if (!in_array($cTabellenPrefix . 'cName', $exclude) && $conf['artikeluebersicht']['suche_prio_name'] > $max) {
+    if (!in_array($cTabellenPrefix . 'cName', $exclude, true) && $conf['artikeluebersicht']['suche_prio_name'] > $max) {
         $max    = $conf['artikeluebersicht']['suche_prio_name'];
         $aktEle = $cTabellenPrefix . 'cName';
     }
-    if (!in_array($cTabellenPrefix . 'cSeo', $exclude) && $conf['artikeluebersicht']['suche_prio_name'] > $max) {
+    if (!in_array($cTabellenPrefix . 'cSeo', $exclude, true) && $conf['artikeluebersicht']['suche_prio_name'] > $max) {
         $max    = $conf['artikeluebersicht']['suche_prio_name'];
         $aktEle = $cTabellenPrefix . 'cSeo';
     }
-    if (!in_array('tartikel.cSuchbegriffe', $exclude) && $conf['artikeluebersicht']['suche_prio_suchbegriffe'] > $max) {
+    if (!in_array('tartikel.cSuchbegriffe', $exclude, true) && $conf['artikeluebersicht']['suche_prio_suchbegriffe'] > $max) {
         $max    = $conf['artikeluebersicht']['suche_prio_suchbegriffe'];
         $aktEle = 'tartikel.cSuchbegriffe';
     }
-    if (!in_array('tartikel.cArtNr', $exclude) && $conf['artikeluebersicht']['suche_prio_artikelnummer'] > $max) {
+    if (!in_array('tartikel.cArtNr', $exclude, true) && $conf['artikeluebersicht']['suche_prio_artikelnummer'] > $max) {
         $max    = $conf['artikeluebersicht']['suche_prio_artikelnummer'];
         $aktEle = 'tartikel.cArtNr';
     }
-    if (!in_array($cTabellenPrefix . 'cKurzBeschreibung', $exclude) && $conf['artikeluebersicht']['suche_prio_kurzbeschreibung'] > $max) {
+    if (!in_array($cTabellenPrefix . 'cKurzBeschreibung', $exclude, true) && $conf['artikeluebersicht']['suche_prio_kurzbeschreibung'] > $max) {
         $max    = $conf['artikeluebersicht']['suche_prio_kurzbeschreibung'];
         $aktEle = $cTabellenPrefix . 'cKurzBeschreibung';
     }
-    if (!in_array($cTabellenPrefix . 'cBeschreibung', $exclude) && $conf['artikeluebersicht']['suche_prio_beschreibung'] > $max) {
+    if (!in_array($cTabellenPrefix . 'cBeschreibung', $exclude, true) && $conf['artikeluebersicht']['suche_prio_beschreibung'] > $max) {
         $max    = $conf['artikeluebersicht']['suche_prio_beschreibung'];
         $aktEle = $cTabellenPrefix . 'cBeschreibung';
     }
-    if (!in_array('tartikel.cBarcode', $exclude) && $conf['artikeluebersicht']['suche_prio_ean'] > $max) {
+    if (!in_array('tartikel.cBarcode', $exclude, true) && $conf['artikeluebersicht']['suche_prio_ean'] > $max) {
         $max    = $conf['artikeluebersicht']['suche_prio_ean'];
         $aktEle = 'tartikel.cBarcode';
     }
-    if (!in_array('tartikel.cISBN', $exclude) && $conf['artikeluebersicht']['suche_prio_isbn'] > $max) {
+    if (!in_array('tartikel.cISBN', $exclude, true) && $conf['artikeluebersicht']['suche_prio_isbn'] > $max) {
         $max    = $conf['artikeluebersicht']['suche_prio_isbn'];
         $aktEle = 'tartikel.cISBN';
     }
-    if (!in_array('tartikel.cHAN', $exclude) && $conf['artikeluebersicht']['suche_prio_han'] > $max) {
+    if (!in_array('tartikel.cHAN', $exclude, true) && $conf['artikeluebersicht']['suche_prio_han'] > $max) {
         $max    = $conf['artikeluebersicht']['suche_prio_han'];
         $aktEle = 'tartikel.cHAN';
     }
-    if (!in_array('tartikel.cAnmerkung', $exclude) && $conf['artikeluebersicht']['suche_prio_anmerkung'] > $max) {
+    if (!in_array('tartikel.cAnmerkung', $exclude, true) && $conf['artikeluebersicht']['suche_prio_anmerkung'] > $max) {
         $aktEle = 'tartikel.cAnmerkung';
     }
 
@@ -239,14 +240,17 @@ function gibSuchspaltenKlassen($cSuchspalten_arr)
  */
 function pruefeSuchspaltenKlassen($cSuchspaltenKlasse_arr, $cSuchspalte, $nNichtErlaubteKlasse_arr)
 {
-    if (is_array($cSuchspaltenKlasse_arr) && count($cSuchspaltenKlasse_arr) > 0) {
-        if (strlen($cSuchspalte) > 0 && is_array($nNichtErlaubteKlasse_arr) && count($nNichtErlaubteKlasse_arr) > 0) {
-            foreach ($nNichtErlaubteKlasse_arr as $nNichtErlaubteKlasse) {
-                if (isset($cSuchspaltenKlasse_arr[$nNichtErlaubteKlasse]) && count($cSuchspaltenKlasse_arr[$nNichtErlaubteKlasse]) > 0) {
-                    foreach ($cSuchspaltenKlasse_arr[$nNichtErlaubteKlasse] as $cSuchspaltenKlasse) {
-                        if ($cSuchspaltenKlasse == $cSuchspalte) {
-                            return false;
-                        }
+    if (is_array($cSuchspaltenKlasse_arr) &&
+        is_array($nNichtErlaubteKlasse_arr) &&
+        count($cSuchspaltenKlasse_arr) > 0 &&
+        strlen($cSuchspalte) > 0 &&
+        count($nNichtErlaubteKlasse_arr) > 0
+    ) {
+        foreach ($nNichtErlaubteKlasse_arr as $nNichtErlaubteKlasse) {
+            if (isset($cSuchspaltenKlasse_arr[$nNichtErlaubteKlasse]) && count($cSuchspaltenKlasse_arr[$nNichtErlaubteKlasse]) > 0) {
+                foreach ($cSuchspaltenKlasse_arr[$nNichtErlaubteKlasse] as $cSuchspaltenKlasse) {
+                    if ($cSuchspaltenKlasse == $cSuchspalte) {
+                        return false;
                     }
                 }
             }
@@ -268,7 +272,7 @@ function suchanfragenSpeichern($cSuche, $nAnzahlTreffer, $bEchteSuche = false, $
 {
     if (strlen($cSuche) > 0) {
         $Suchausdruck = str_replace(["'", "\\", "*", "%"], '', $cSuche);
-        $kSprache     = (intval($kSpracheExt) > 0) ? (int)$kSpracheExt : getDefaultLanguageID();
+        $kSprache     = ((int)$kSpracheExt > 0) ? (int)$kSpracheExt : getDefaultLanguageID();
         //db füllen für auswertugnen / suggest, dabei Blacklist beachten
         $Suchausdruck_tmp_arr = explode(';', $Suchausdruck);
         $blacklist_erg        = Shop::DB()->select(
@@ -328,12 +332,9 @@ function suchanfragenSpeichern($cSuche, $nAnzahlTreffer, $bEchteSuche = false, $
                     $suchanfrage->cSeo            = checkSeo($suchanfrage->cSeo);
                     $suchanfrage_old              = Shop::DB()->select(
                         'tsuchanfrage',
-                        'kSprache',
-                        (int)$suchanfrage->kSprache,
-                        'cSuche',
-                        $Suchausdruck,
-                        null,
-                        null,
+                        'kSprache', (int)$suchanfrage->kSprache,
+                        'cSuche', $Suchausdruck,
+                        null, null,
                         false,
                         'kSuchanfrage'
                     );
@@ -364,12 +365,9 @@ function suchanfragenSpeichern($cSuche, $nAnzahlTreffer, $bEchteSuche = false, $
                     $suchanfrageerfolglos->dZuletztGesucht = 'now()';
                     $suchanfrageerfolglos_old              = Shop::DB()->select(
                         'tsuchanfrageerfolglos',
-                        'kSprache',
-                        (int)$suchanfrageerfolglos->kSprache,
-                        'cSuche',
-                        $Suchausdruck,
-                        null,
-                        null,
+                        'kSprache', (int)$suchanfrageerfolglos->kSprache,
+                        'cSuche', $Suchausdruck,
+                        null, null,
                         false,
                         'kSuchanfrageErfolglos'
                     );

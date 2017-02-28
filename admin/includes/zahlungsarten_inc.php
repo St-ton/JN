@@ -68,7 +68,7 @@ function getHinweisTexte($kZahlungsart)
  */
 function getHinweisTexteShop($kZahlungsart)
 {
-    $cHinweisTexte_arr = array();
+    $cHinweisTexte_arr = [];
     if (!$kZahlungsart) {
         return $cHinweisTexte_arr;
     }

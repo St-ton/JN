@@ -20,6 +20,7 @@ class FilterDateRangeField extends FilterField
      * @param Filter $oFilter
      * @param string $cTitle
      * @param string $cColumn
+     * @param string $cDefValue
      */
     public function __construct($oFilter, $cTitle, $cColumn, $cDefValue = '')
     {

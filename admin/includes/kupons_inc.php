@@ -180,8 +180,8 @@ function getCoupon($kKupon)
  */
 function augmentCoupon($oKupon)
 {
-    $oKupon->cLocalizedValue = $oKupon->cWertTyp == 'festpreis' ?
-        gibPreisStringLocalized($oKupon->fWert)
+    $oKupon->cLocalizedValue = $oKupon->cWertTyp === 'festpreis'
+        ? gibPreisStringLocalized($oKupon->fWert)
         : '';
     $oKupon->cLocalizedMbw   = isset($oKupon->fMindestbestellwert)
         ? gibPreisStringLocalized($oKupon->fMindestbestellwert)
@@ -210,7 +210,7 @@ function augmentCoupon($oKupon)
         $oKupon->cGueltigBisLong  = date_create($oKupon->dGueltigBis)->format('d.m.Y H:i');
     }
 
-    if ((int)$oKupon->kKundengruppe == -1) {
+    if ((int)$oKupon->kKundengruppe === -1) {
         $oKupon->cKundengruppe = 'Alle';
     } else {
         $oKundengruppe         = Shop::DB()->query("
@@ -221,9 +221,12 @@ function augmentCoupon($oKupon)
         $oKupon->cKundengruppe = $oKundengruppe->cName;
     }
 
-    $oKupon->cArtikelInfo = ($oKupon->cArtikel === '') ? 'Alle' : 'eingeschr&auml;nkt';
-
-    $oKupon->cHerstellerInfo = (empty($oKupon->cHersteller) || $oKupon->cHersteller === '-1') ? 'Alle' : 'eingeschr&auml;nkt';
+    $oKupon->cArtikelInfo    = ($oKupon->cArtikel === '')
+        ? 'Alle'
+        : 'eingeschr&auml;nkt';
+    $oKupon->cHerstellerInfo = (empty($oKupon->cHersteller) || $oKupon->cHersteller === '-1')
+        ? 'Alle'
+        : 'eingeschr&auml;nkt';
 
     $oMaxErstelltDB   = Shop::DB()->query("
         SELECT max(dErstellt) as dLastUse
@@ -331,25 +334,19 @@ function createCouponFromInput()
         $massCreationCoupon->cActiv          = (!empty($_POST['couponCreation']))
             ? (int)$_POST['couponCreation']
             : 0;
-        $massCreationCoupon->numberOfCoupons = ($massCreationCoupon->cActiv == 1 && !empty($_POST['numberOfCoupons']))
+        $massCreationCoupon->numberOfCoupons = ($massCreationCoupon->cActiv === 1 && !empty($_POST['numberOfCoupons']))
             ? (int)$_POST['numberOfCoupons']
             : 2;
-        $massCreationCoupon->lowerCase       = ($massCreationCoupon->cActiv == 1 && !empty($_POST['lowerCase']))
-            ? true
-            : false;
-        $massCreationCoupon->upperCase       = ($massCreationCoupon->cActiv == 1 && !empty($_POST['upperCase']))
-            ? true
-            : false;
-        $massCreationCoupon->numbersHash     = ($massCreationCoupon->cActiv == 1 && !empty($_POST['numbersHash']))
-            ? true
-            : false;
-        $massCreationCoupon->hashLength      = ($massCreationCoupon->cActiv == 1 && !empty($_POST['hashLength']))
+        $massCreationCoupon->lowerCase       = ($massCreationCoupon->cActiv === 1 && !empty($_POST['lowerCase']));
+        $massCreationCoupon->upperCase       = ($massCreationCoupon->cActiv === 1 && !empty($_POST['upperCase']));
+        $massCreationCoupon->numbersHash     = ($massCreationCoupon->cActiv === 1 && !empty($_POST['numbersHash']));
+        $massCreationCoupon->hashLength      = ($massCreationCoupon->cActiv === 1 && !empty($_POST['hashLength']))
             ? $_POST['hashLength']
             : 4;
-        $massCreationCoupon->prefixHash      = ($massCreationCoupon->cActiv == 1 && !empty($_POST['prefixHash']))
+        $massCreationCoupon->prefixHash      = ($massCreationCoupon->cActiv === 1 && !empty($_POST['prefixHash']))
             ? $_POST['prefixHash']
             : '';
-        $massCreationCoupon->suffixHash      = ($massCreationCoupon->cActiv == 1 && !empty($_POST['suffixHash']))
+        $massCreationCoupon->suffixHash      = ($massCreationCoupon->cActiv === 1 && !empty($_POST['suffixHash']))
             ? $_POST['suffixHash']
             : '';
 

@@ -485,7 +485,7 @@ function mappeLiveSuche($kSuchanfrage_arr, $cMapping)
         foreach ($kSuchanfrage_arr as $kSuchanfrage) {
             $oSuchanfrage = Shop::DB()->select('tsuchanfrage', 'kSuchanfrage', (int)$kSuchanfrage);
             if (isset($oSuchanfrage->kSuchanfrage) && $oSuchanfrage->kSuchanfrage > 0) {
-                if (strtolower($oSuchanfrage->cSuche) != strtolower($cMapping)) {
+                if (strtolower($oSuchanfrage->cSuche) !== strtolower($cMapping)) {
                     $oSuchanfrageNeu = Shop::DB()->select('tsuchanfrage', 'cSuche', Shop::DB()->escape($cMapping));
                     if (isset($oSuchanfrageNeu->kSuchanfrage) && $oSuchanfrageNeu->kSuchanfrage > 0) {
                         $oSuchanfrageMapping                 = new stdClass();
@@ -542,7 +542,7 @@ function gibMaxBewertungen()
                 AND kSprache = " . (int)$_SESSION['kSprache'], 1
     );
 
-    return (isset($oTMP->nAnzahl)) ? (int)$oTMP->nAnzahl : 0;
+    return isset($oTMP->nAnzahl) ? (int)$oTMP->nAnzahl : 0;
 }
 
 /**
@@ -557,7 +557,7 @@ function gibMaxSuchanfragen()
                 AND kSprache = " . (int)$_SESSION['kSprache'], 1
     );
 
-    return (isset($oTMP->nAnzahl)) ? (int)$oTMP->nAnzahl : 0;
+    return isset($oTMP->nAnzahl) ? (int)$oTMP->nAnzahl : 0;
 }
 
 /**
@@ -572,7 +572,7 @@ function gibMaxTags()
                 AND kSprache = " . (int)$_SESSION['kSprache'], 1
     );
 
-    return (isset($oTMP->nAnzahl)) ? (int)$oTMP->nAnzahl : 0;
+    return isset($oTMP->nAnzahl) ? (int)$oTMP->nAnzahl : 0;
 }
 
 /**
@@ -588,7 +588,7 @@ function gibMaxNewskommentare()
                 AND tnews.kSprache = " . (int)$_SESSION['kSprache'], 1
     );
 
-    return (isset($oTMP->nAnzahl)) ? (int)$oTMP->nAnzahl : 0;
+    return isset($oTMP->nAnzahl) ? (int)$oTMP->nAnzahl : 0;
 }
 
 /**
@@ -603,5 +603,5 @@ function gibMaxNewsletterEmpfaenger()
                 AND kSprache = " . (int)$_SESSION['kSprache'], 1
     );
 
-    return (isset($oTMP->nAnzahl)) ? (int)$oTMP->nAnzahl : 0;
+    return isset($oTMP->nAnzahl) ? (int)$oTMP->nAnzahl : 0;
 }

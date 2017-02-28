@@ -198,8 +198,8 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1) {
             FROM tkundengruppe
             ORDER BY cStandard DESC", 2
     );
-    $cArtNr_arr        = (isset($_POST['cArtNr'])) ? $_POST['cArtNr'] : null;
-    $kKundengruppe_arr = (isset($_POST['kKundengruppe'])) ? $_POST['kKundengruppe'] : null;
+    $cArtNr_arr        = isset($_POST['cArtNr']) ? $_POST['cArtNr'] : null;
+    $kKundengruppe_arr = isset($_POST['kKundengruppe']) ? $_POST['kKundengruppe'] : null;
     $cKundengruppe     = '';
     // Kundengruppen in einen String bauen
     if (is_array($kKundengruppe_arr) && count($kKundengruppe_arr) > 0) {
@@ -388,7 +388,7 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1) {
             $kHersteller_arr = gibAHKKeys($oNewsletterVorlage->cHersteller);
             $kKategorie_arr  = gibAHKKeys($oNewsletterVorlage->cKategorie);
             // Baue Kampagnenobjekt, falls vorhanden in der Newslettervorlage
-            $oKampagne = new Kampagne(intval($oNewsletterVorlage->kKampagne));
+            $oKampagne = new Kampagne($oNewsletterVorlage->kKampagne);
             // Baue Arrays von Objekten
             $oArtikel_arr    = gibArtikelObjekte($kArtikel_arr, $oKampagne);
             $oHersteller_arr = gibHerstellerObjekte($kHersteller_arr, $oKampagne);

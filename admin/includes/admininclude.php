@@ -6,7 +6,7 @@
 
 // Defines
 if (!isset($bExtern) || !$bExtern) {
-    define('DEFINES_PFAD', dirname(__FILE__) . '/../../includes/');
+    define('DEFINES_PFAD', __DIR__ . '/../../includes/');
     require DEFINES_PFAD . 'config.JTL-Shop.ini.php';
     require DEFINES_PFAD . 'defines.php';
     require PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'admindefines.php';
@@ -27,6 +27,16 @@ require PFAD_ROOT . PFAD_CLASSES_CORE . 'class.core.NiceDB.php';
 require PFAD_ROOT . PFAD_CLASSES_CORE . 'class.core.Nice.php';
 require PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'benutzerverwaltung_inc.php';
 require PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'admin_tools.php';
+
+if (!function_exists('Shop')) {
+    /**
+     * @return Shop
+     */
+    function Shop()
+    {
+        return Shop::getInstance();
+    }
+}
 
 // Datenbankverbindung aufbauen - ohne Debug Modus
 $DB = new NiceDB(DB_HOST, DB_USER, DB_PASS, DB_NAME, true);

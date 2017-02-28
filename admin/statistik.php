@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/admininclude.php';
+require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'statistik_inc.php';
 
 $nStatsType = verifyGPCDataInteger('s');
@@ -70,7 +70,7 @@ if ($_SESSION['Statistik']->nTyp == STATS_ADMIN_TYPE_KUNDENHERKUNFT ||
     $smarty->assign('ylabel', $member_arr['nCount']);
 }
 // Table
-$cMember_arr = array();
+$cMember_arr = [];
 if (is_array($oStat_arr) && count($oStat_arr) > 0) {
     foreach ($oStat_arr as $oStat) {
         $cMember_arr[] = array_keys(get_object_vars($oStat));

@@ -469,6 +469,14 @@ final class Shop
     {
         return new Jtllog();
     }
+    
+    /**
+     * @return PHPSettingsHelper
+     */
+    public function PHPSettingsHelper()
+    {
+        return PHPSettingsHelper::getInstance();
+    }
 
     /**
      * get cache instance
@@ -1047,7 +1055,7 @@ final class Shop
                 $link        = null;
                 $linkHelper  = LinkHelper::getInstance();
                 if (!empty($_SESSION['Kundengruppe']->kKundengruppe)) {
-                    $cKundengruppenSQL = " AND (cKundengruppen RLIKE '^([0-9;]+;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";'
+                    $cKundengruppenSQL = " AND (cKundengruppen RLIKE '^([0-9;]*;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";'
                         OR cKundengruppen IS NULL 
                         OR cKundengruppen = 'NULL' 
                         OR tlink.cKundengruppen = '')";
@@ -1159,7 +1167,8 @@ final class Shop
                         LEFT JOIN tkategoriesprache
                             ON tkategoriesprache.kKategorie = tkategorie.kKategorie
                             AND tkategoriesprache.kSprache = tseo.kSprache
-                    WHERE cKey = 'kKategorie' AND kKey = " . $NaviFilter->Kategorie->kKategorie . "
+                    WHERE cKey = 'kKategorie' 
+                        AND kKey = " . $NaviFilter->Kategorie->kKategorie . "
                     ORDER BY tseo.kSprache", 2
             );
             if ($bSprache) {

@@ -25,10 +25,6 @@ ifndef('PROFILE_SHOP', false);
 ifndef('PROFILE_QUERIES', false);
 ifndef('PROFILE_QUERIES_ECHO', false);
 ifndef('IO_LOG_CONSOLE', false);
-// PHP memory_limit work around
-if (intval(str_replace('M', '', ini_get('memory_limit'))) < 64) {
-    ini_set('memory_limit', '64M');
-}
 ini_set('session.use_trans_sid', 0);
 // Logging (in logs/) 0 => aus, 1 => nur errors, 2 => errors, notifications, 3 => errors, notifications, debug
 ifndef('ES_LOGGING', 1);
@@ -172,8 +168,7 @@ ifndef('CATEGORY_FULL_LOAD_LIMIT', 10000);
 ifndef('CATEGORY_FULL_LOAD_MAX_LEVEL', 3);
 //maximum number of entries in category filter, -1 for no limit
 ifndef('CATEGORY_FILTER_ITEM_LIMIT', -1);
-
-ifndef('UNIFY_CACHE_IDS', false);
+ifndef('PRODUCT_LIST_SHOW_RATINGS', false);
 
 /**
  * @param string     $constant
@@ -254,5 +249,5 @@ function shop_writeable_paths()
  */
 
 // Static defines (do not edit)
-require_once dirname(__FILE__) . '/defines_inc.php';
-require_once dirname(__FILE__) . '/hooks_inc.php';
+require_once __DIR__ . '/defines_inc.php';
+require_once __DIR__ . '/hooks_inc.php';

@@ -17,9 +17,9 @@ function getWidgets($bActive = true)
             $cClass                    = 'Widget' . $oWidget->cClass;
             $cClassFile                = 'class.' . $cClass . '.php';
             $cClassPath                = PFAD_ROOT . PFAD_ADMIN . 'includes/widgets/' . $cClassFile;
-            $oWidget->cNiceTitle       = str_replace(array('--', ' '), '-', $oWidget->cTitle);
+            $oWidget->cNiceTitle       = str_replace(['--', ' '], '-', $oWidget->cTitle);
             $oWidget->cNiceTitle       = strtolower(str_replace(
-                array('ä', 'Ä', 'ü', 'Ü', 'ö', 'Ö', 'ß', utf8_decode('ü'), utf8_decode('Ü'), utf8_decode('ä'), utf8_decode('Ä'), utf8_decode('ö'), utf8_decode('Ö'), '(', ')', '/', '\\'),
+                ['ä', 'Ä', 'ü', 'Ü', 'ö', 'Ö', 'ß', utf8_decode('ü'), utf8_decode('Ü'), utf8_decode('ä'), utf8_decode('Ä'), utf8_decode('ö'), utf8_decode('Ö'), '(', ')', '/', '\\'],
                 '',
                 $oWidget->cNiceTitle)
             );

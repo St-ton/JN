@@ -30,7 +30,7 @@ $Einstellungen = Shop::getSettings([
 loeseHttps();
 $oGlobaleMetaAngabenAssoc_arr = holeGlobaleMetaAngaben();
 // Bewertungsguthaben
-$fBelohnung = (isset($_GET['fB']) && doubleval($_GET['fB']) > 0) ? doubleval($_GET['fB']) : 0.0;
+$fBelohnung = (isset($_GET['fB']) && (float)$_GET['fB'] > 0) ? (float)$_GET['fB'] : 0.0;
 // Hinweise und Fehler sammeln - Nur wenn bisher kein Fehler gesetzt wurde!
 $cHinweis = $smarty->getTemplateVars('hinweis');
 $shopURL  = Shop::getURL() . '/';
@@ -46,12 +46,12 @@ if (isset($_POST['a']) &&
     verifyGPCDataInteger('addproductbundle') === 1 &&
     ProductBundleWK($_POST['a'])
 ) {
-        $cHinweis       = Shop::Lang()->get('basketAllAdded', 'messages');
-        Shop::$kArtikel = (int)$_POST['aBundle'];
+    $cHinweis       = Shop::Lang()->get('basketAllAdded', 'messages');
+    Shop::$kArtikel = (int)$_POST['aBundle'];
 }
 $AktuellerArtikel = new Artikel();
 $AktuellerArtikel->fuelleArtikel(Shop::$kArtikel, Artikel::getDetailOptions());
-if ($AktuellerArtikel->nIstVater == 1) {
+if ($AktuellerArtikel->nIstVater === 1) {
     $_SESSION['oVarkombiAuswahl']                               = new stdClass();
     $_SESSION['oVarkombiAuswahl']->kGesetzteEigeschaftWert_arr  = [];
     $_SESSION['oVarkombiAuswahl']->nVariationOhneFreifeldAnzahl = $AktuellerArtikel->nVariationOhneFreifeldAnzahl;
@@ -80,8 +80,8 @@ if (isset($AktuellerArtikel->FunktionsAttribute['warenkorbmatrixanzeigeformat'])
 //404
 if (!$AktuellerArtikel->kArtikel) {
     //#6317 - send 301 redirect when filtered
-    if (($Einstellungen['global']['artikel_artikelanzeigefilter'] == EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER) ||
-        ($Einstellungen['global']['artikel_artikelanzeigefilter'] == EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL)
+    if (((int)$Einstellungen['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER) ||
+        ((int)$Einstellungen['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL)
     ) {
         http_response_code(301);
         header('Location: ' . $shopURL);
@@ -179,13 +179,20 @@ if ($AktuellerArtikel->Bewertungen === null || $bewertung_sterne > 0) {
     $AktuellerArtikel->holehilfreichsteBewertung(Shop::getLanguage());
 }
 
-$oBewertung_arr = array_filter($AktuellerArtikel->Bewertungen->oBewertung_arr,
-    function ($oBewertung) use (&$AktuellerArtikel) {
-        return
-            !isset($AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->kBewertung) ||
-            (int)$AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->kBewertung !== (int)$oBewertung->kBewertung;
-    }
-);
+if (isset($AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich) &&
+    isset($AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->kBewertung) &&
+    (int)$AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich > 0
+) {
+    $oBewertung_arr = array_filter(
+        $AktuellerArtikel->Bewertungen->oBewertung_arr,
+        function ($oBewertung) use (&$AktuellerArtikel) {
+            return
+                (int)$AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->kBewertung !== (int)$oBewertung->kBewertung;
+        }
+    );
+} else {
+    $oBewertung_arr = $AktuellerArtikel->Bewertungen->oBewertung_arr;
+}
 
 $pagination = (new Pagination('ratings'))
     ->setItemArray($oBewertung_arr)

@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/admininclude.php';
+require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Warenlager.php';
 
 $oAccount->permission('WAREHOUSE_VIEW', true, true);
@@ -17,7 +17,7 @@ switch ($cAction) {
     case 'update':
         Shop::DB()->query("UPDATE twarenlager SET nAktiv = 0", 3);
         if (isset($_REQUEST['kWarenlager']) && is_array($_REQUEST['kWarenlager']) && count($_REQUEST['kWarenlager']) > 0) {
-            $wl = array();
+            $wl = [];
             foreach ($_REQUEST['kWarenlager'] as $_wl) {
                 $wl[] = (int)$_wl;
             }

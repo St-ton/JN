@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/admininclude.php';
+require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'umfrage_inc.php';
 
@@ -32,15 +32,15 @@ $oSpracheTMP = Shop::DB()->select('tsprache', 'kSprache', (int)$_SESSION['kSprac
 $oNice = Nice::getInstance();
 if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
     // Umfrage
-    if (isset($_POST['einstellungen']) && intval($_POST['einstellungen']) > 0) {
+    if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
         $cHinweis .= saveAdminSectionSettings(CONF_UMFRAGE, $_POST);
     }
     // Umfrage
     if (verifyGPCDataInteger('umfrage') === 1 && validateToken()) {
         // Umfrage erstellen
-        if (isset($_POST['umfrage_erstellen']) && intval($_POST['umfrage_erstellen']) === 1) {
+        if (isset($_POST['umfrage_erstellen']) && (int)$_POST['umfrage_erstellen'] === 1) {
             $step = 'umfrage_erstellen';
-        } elseif (isset($_GET['umfrage_editieren']) && intval($_GET['umfrage_editieren']) === 1) { 
+        } elseif (isset($_GET['umfrage_editieren']) && (int)$_GET['umfrage_editieren'] === 1) {
             // Umfrage editieren
             $step     = 'umfrage_editieren';
             $kUmfrage = (int)$_GET['kUmfrage'];
@@ -94,28 +94,28 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
         }
 
         // Umfrage speichern
-        if (isset($_POST['umfrage_speichern']) && intval($_POST['umfrage_speichern'])) {
+        if (isset($_POST['umfrage_speichern']) && (int)$_POST['umfrage_speichern']) {
             $step = 'umfrage_erstellen';
 
-            if (isset($_POST['umfrage_edit_speichern']) && isset($_POST['kUmfrage']) && 
-                intval($_POST['umfrage_edit_speichern']) === 1 && intval($_POST['kUmfrage']) > 0) {
+            if (isset($_POST['umfrage_edit_speichern'], $_POST['kUmfrage']) &&
+                (int)$_POST['umfrage_edit_speichern'] === 1 && (int)$_POST['kUmfrage'] > 0) {
                 $kUmfrage = (int)$_POST['kUmfrage'];
             }
             $cName  = htmlspecialchars($_POST['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
-            $kKupon = (isset($_POST['kKupon'])) ? (int)$_POST['kKupon'] : 0;
+            $kKupon = isset($_POST['kKupon']) ? (int)$_POST['kKupon'] : 0;
             if ($kKupon <= 0 || !isset($kKupon)) {
                 $kKupon = 0;
             }
             $cSeo              = $_POST['cSeo'];
             $kKundengruppe_arr = $_POST['kKundengruppe'];
             $cBeschreibung     = $_POST['cBeschreibung'];
-            $fGuthaben         = (isset($_POST['fGuthaben'])) ? 
+            $fGuthaben         = isset($_POST['fGuthaben']) ? 
                 floatval(str_replace(',', '.', $_POST['fGuthaben'])) 
                 : 0;
             if ($fGuthaben <= 0 || !isset($kKupon)) {
                 $fGuthaben = 0;
             }
-            $nBonuspunkte = (isset($_POST['nBonuspunkte'])) 
+            $nBonuspunkte = isset($_POST['nBonuspunkte'])
                 ? (int)$_POST['nBonuspunkte'] 
                 : 0;
             if ($nBonuspunkte <= 0 || !isset($kKupon)) {
@@ -193,21 +193,21 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
             } else {
                 $cFehler .= 'Fehler: Bitte geben Sie einen Namen, mindestens eine Kundengruppe und ein g&uuml;ltiges Anfangsdatum ein.<br />';
             }
-        } elseif (isset($_POST['umfrage_frage_speichern']) && intval($_POST['umfrage_frage_speichern']) === 1 && validateToken()) { // Frage speichern
+        } elseif (isset($_POST['umfrage_frage_speichern']) && (int)$_POST['umfrage_frage_speichern'] === 1 && validateToken()) { // Frage speichern
             $kUmfrage                 = (int)$_POST['kUmfrage'];
-            $kUmfrageFrage            = (isset($_POST['kUmfrageFrage'])) ? (int)$_POST['kUmfrageFrage'] : 0;
+            $kUmfrageFrage            = isset($_POST['kUmfrageFrage']) ? (int)$_POST['kUmfrageFrage'] : 0;
             $cName                    = htmlspecialchars($_POST['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
             $cTyp                     = $_POST['cTyp'];
-            $nSort                    = (isset($_POST['nSort'])) ? (int)$_POST['nSort'] : 0;
-            $cBeschreibung            = (isset($_POST['cBeschreibung'])) ? $_POST['cBeschreibung'] : '';
-            $cNameOption              = (isset($_POST['cNameOption'])) ? $_POST['cNameOption'] : null;
-            $cNameAntwort             = (isset($_POST['cNameAntwort'])) ? $_POST['cNameAntwort'] : null;
-            $nFreifeld                = (isset($_POST['nFreifeld'])) ? $_POST['nFreifeld'] : null;
-            $nNotwendig               = (isset($_POST['nNotwendig'])) ? $_POST['nNotwendig'] : null;
-            $kUmfrageFrageAntwort_arr = (isset($_POST['kUmfrageFrageAntwort'])) ? $_POST['kUmfrageFrageAntwort'] : null;
-            $kUmfrageMatrixOption_arr = (isset($_POST['kUmfrageMatrixOption'])) ? $_POST['kUmfrageMatrixOption'] : null;
-            $nSortAntwort_arr         = (isset($_POST['nSortAntwort'])) ? $_POST['nSortAntwort'] : 0;
-            $nSortOption_arr          = (isset($_POST['nSortOption'])) ? $_POST['nSortOption'] : null;
+            $nSort                    = isset($_POST['nSort']) ? (int)$_POST['nSort'] : 0;
+            $cBeschreibung            = isset($_POST['cBeschreibung']) ? $_POST['cBeschreibung'] : '';
+            $cNameOption              = isset($_POST['cNameOption']) ? $_POST['cNameOption'] : null;
+            $cNameAntwort             = isset($_POST['cNameAntwort']) ? $_POST['cNameAntwort'] : null;
+            $nFreifeld                = isset($_POST['nFreifeld']) ? $_POST['nFreifeld'] : null;
+            $nNotwendig               = isset($_POST['nNotwendig']) ? $_POST['nNotwendig'] : null;
+            $kUmfrageFrageAntwort_arr = isset($_POST['kUmfrageFrageAntwort']) ? $_POST['kUmfrageFrageAntwort'] : null;
+            $kUmfrageMatrixOption_arr = isset($_POST['kUmfrageMatrixOption']) ? $_POST['kUmfrageMatrixOption'] : null;
+            $nSortAntwort_arr         = isset($_POST['nSortAntwort']) ? $_POST['nSortAntwort'] : 0;
+            $nSortOption_arr          = isset($_POST['nSortOption']) ? $_POST['nSortOption'] : null;
 
             if (isset($_POST['nocheinefrage'])) {
                 $step = 'umfrage_frage_erstellen';
@@ -225,7 +225,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                 $oUmfrageFrage->nNotwendig    = $nNotwendig;
 
                 $nNewsOld = 0;
-                if (isset($_POST['umfrage_frage_edit_speichern']) && intval($_POST['umfrage_frage_edit_speichern']) === 1) {
+                if (isset($_POST['umfrage_frage_edit_speichern']) && (int)$_POST['umfrage_frage_edit_speichern'] === 1) {
                     $nNewsOld      = 1;
                     $step          = 'umfrage_vorschau';
                     $kUmfrageFrage = (int)$_POST['kUmfrageFrage'];
@@ -275,7 +275,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                 $step = 'umfrage_frage_erstellen';
                 $cFehler .= 'Fehler: Bitte tragen Sie mindestens einen Namen und einen Typ ein.<br />';
             }
-        } elseif (isset($_POST['umfrage_loeschen']) && intval($_POST['umfrage_loeschen']) === 1 && validateToken()) {
+        } elseif (isset($_POST['umfrage_loeschen']) && (int)$_POST['umfrage_loeschen'] === 1 && validateToken()) {
             // Umfrage loeschen
             if (is_array($_POST['kUmfrage']) && count($_POST['kUmfrage']) > 0) {
                 foreach ($_POST['kUmfrage'] as $kUmfrage) {
@@ -310,7 +310,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                 $cFehler .= 'Fehler: Bitte markieren Sie mindestens eine Umfrage.<br />';
             }
         } // Frage loeschen
-        elseif (isset($_POST['umfrage_frage_loeschen']) && intval($_POST['umfrage_frage_loeschen']) === 1 && validateToken()) {
+        elseif (isset($_POST['umfrage_frage_loeschen']) && (int)$_POST['umfrage_frage_loeschen'] === 1 && validateToken()) {
             $step = 'umfrage_vorschau';
             // Ganze Frage loeschen mit allen Antworten und Matrixen
             if (is_array($_POST['kUmfrageFrage']) && count($_POST['kUmfrageFrage']) > 0) {
@@ -356,7 +356,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
             }
             Shop::Cache()->flushTags([CACHING_GROUP_CORE]);
         } elseif (isset($_POST['umfrage_frage_hinzufuegen']) &&
-            intval($_POST['umfrage_frage_hinzufuegen']) === 1 && validateToken()) { // Frage hinzufuegen
+            (int)$_POST['umfrage_frage_hinzufuegen'] === 1 &&
+            validateToken()
+        ) { // Frage hinzufuegen
             $step = 'umfrage_frage_erstellen';
             $smarty->assign('kUmfrageTMP', $kUmfrageTMP);
         } elseif (verifyGPCDataInteger('umfrage_statistik') === 1) {
@@ -385,8 +387,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                 $step = 'umfrage_statistik_sonstige_texte';
                 $smarty->assign('oUmfrageFrage', holeSonstigeTextAntworten($kUmfrageFrage, $nAnzahlAnwort, $nMaxAntworten));
             }
-        } elseif ((isset($_GET['fe']) && intval($_GET['fe']) === 1) ||
-            $step === 'umfrage_frage_bearbeiten' && validateToken()) { // Frage bearbeiten
+        } elseif ((isset($_GET['fe']) && (int)$_GET['fe'] === 1) ||
+            ($step === 'umfrage_frage_bearbeiten' && validateToken())
+        ) { // Frage bearbeiten
             $step = 'umfrage_frage_erstellen';
 
             if (verifyGPCDataInteger('kUmfrageFrage') > 0) {
@@ -483,8 +486,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
             }
         }
 
-        if ($kUmfrageTMP > 0 && (!isset($_POST['umfrage_frage_edit_speichern']) || intval($_POST['umfrage_frage_edit_speichern']) !== 1) &&
-            (!isset($_GET['fe']) || intval($_GET['fe']) !== 1) && validateToken()) {
+        if ($kUmfrageTMP > 0 && (!isset($_POST['umfrage_frage_edit_speichern']) || (int)$_POST['umfrage_frage_edit_speichern'] !== 1) &&
+            (!isset($_GET['fe']) || (int)$_GET['fe']) !== 1 && validateToken()) {
             $smarty->assign('oUmfrageFrage_arr', Shop::DB()->selectAll(
                 'tumfragefrage',
                 'kUmfrage',

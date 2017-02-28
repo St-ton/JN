@@ -35,7 +35,7 @@ function setzeKwKinDB($cPost_arr, $Einstellungen)
             return false;
         }
         $oKwK = new KundenwerbenKunden($cEmail);
-        if (intval($oKwK->kKundenWerbenKunden) > 0) {
+        if ((int)$oKwK->kKundenWerbenKunden > 0) {
             return false;
         }
         // Setze in tkundenwerbenkunden
@@ -44,7 +44,7 @@ function setzeKwKinDB($cPost_arr, $Einstellungen)
         $oKwK->cNachname    = $cNachname;
         $oKwK->cEmail       = $cEmail;
         $oKwK->nRegistriert = 0;
-        $oKwK->fGuthaben    = doubleval($Einstellungen['kundenwerbenkunden']['kwk_neukundenguthaben']);
+        $oKwK->fGuthaben    = (float)$Einstellungen['kundenwerbenkunden']['kwk_neukundenguthaben'];
         $oKwK->dErstellt    = 'now()';
         $oKwK->insertDB();
         $oKwK->sendeEmailanNeukunde();

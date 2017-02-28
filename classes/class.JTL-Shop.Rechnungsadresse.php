@@ -94,7 +94,7 @@ class Rechnungsadresse extends Adresse
 
         $obj->cLand = $this->pruefeLandISO($obj->cLand);
 
-        unset($obj->kRechnungsadresse, $obj->angezeigtesLan, $obj->cAnredeLocalized);
+        unset($obj->kRechnungsadresse, $obj->angezeigtesLand, $obj->cAnredeLocalized);
 
         $this->kRechnungsadresse = Shop::DB()->insert('trechnungsadresse', $obj);
         $this->decrypt();

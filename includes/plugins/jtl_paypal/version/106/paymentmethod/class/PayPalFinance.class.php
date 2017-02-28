@@ -127,7 +127,7 @@ class PayPalFinance extends PaymentMethod
         }
 
         $items      = PayPalHelper::getProducts();
-        $shippingId = $_SESSION['Versandart']->kVersandart;
+        $shippingId = @$_SESSION['Versandart']->kVersandart;
 
         if (!$this->isUseable($items, $shippingId)) {
             return false;
@@ -608,7 +608,6 @@ class PayPalFinance extends PaymentMethod
             $details->setShipping($basket->shipping[WarenkorbHelper::GROSS])
                 ->setSubtotal($basket->article[WarenkorbHelper::GROSS] - $basket->discount[WarenkorbHelper::GROSS])
                 ->setHandlingFee($basket->surcharge[WarenkorbHelper::GROSS])
-                //->setShippingDiscount($basket->discount[WarenkorbHelper::GROSS] * -1)
                 ->setTax(0.00);
 
             $amount = new Amount();
@@ -627,9 +626,24 @@ class PayPalFinance extends PaymentMethod
             $order           = finalisiereBestellung($orderNumber, false);
             $order->cSession = $paymentId;
             $order->updateInDB();
+            
+            if ($payment->getState() == 'approved') {
+                $ip = new stdClass();
 
-            // $payment->getState() === 'approved'
-            $this->sendConfirmationMail($order);
+                $ip->cISO = $basket->currency->cISO;
+                $ip->fBetrag = $basket->total[WarenkorbHelper::GROSS];
+
+                $ip->cEmpfaenger = '';
+                $ip->cZahler = $payment->getPayer()->getPayerInfo()->getEmail();
+
+                $ip->cHinweis = $this->getSaleId($payment);
+                $ip->fZahlungsgebuehr = $basket->surcharge[WarenkorbHelper::GROSS];
+
+                $this->setOrderStatusToPaid($order);
+                $this->addIncomingPayment($order, $ip);
+
+                $this->sendConfirmationMail($order);
+            }
 
             // smarty
             Shop::Smarty()->assign('abschlussseite', 1);
@@ -691,6 +705,21 @@ class PayPalFinance extends PaymentMethod
         }
 
         PayPalHelper::addSurcharge();
+    }
+    
+    public function getSaleId(PayPal\Api\Payment &$payment)
+    {
+        $transactions = $payment->getTransactions();
+        if (count($transactions) > 0) {
+            $relatedResources = $transactions[0]->getRelatedResources();
+            if (count($relatedResources) > 0) {
+                $sale = $relatedResources[0]->getSale();
+
+                return $sale->getId();
+            }
+        }
+
+        return;
     }
 
     public function duringCheckout()

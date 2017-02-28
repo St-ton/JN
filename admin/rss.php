@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/admininclude.php';
+require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'rss_inc.php';
 
 $oAccount->permission('EXPORT_RSSFEED_VIEW', true, true);
@@ -11,24 +11,30 @@ $oAccount->permission('EXPORT_RSSFEED_VIEW', true, true);
 $cHinweis = '';
 $cFehler  = '';
 
-if (isset($_GET['f']) && intval($_GET['f']) === 1 && validateToken()) {
+if (isset($_GET['f']) && (int)$_GET['f'] === 1 && validateToken()) {
     if (generiereRSSXML()) {
         $cHinweis = 'RSS Feed wurde erstellt!';
     } else {
         $cFehler = 'RSS Feed konnte nicht erstellt werden!';
     }
 }
-if (isset($_POST['einstellungen']) && intval($_POST['einstellungen']) > 0) {
+if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
     $cHinweis .= saveAdminSectionSettings(CONF_RSS, $_POST);
 }
 $oConfig_arr = Shop::DB()->selectAll('teinstellungenconf', 'kEinstellungenSektion', CONF_RSS, '*', 'nSort');
 $count = count($oConfig_arr);
 for ($i = 0; $i < $count; $i++) {
     if ($oConfig_arr[$i]->cInputTyp === 'selectbox') {
-        $oConfig_arr[$i]->ConfWerte = Shop::DB()->selectAll('teinstellungenconfwerte', 'kEinstellungenConf', $oConfig_arr[$i]->kEinstellungenConf, '*', 'nSort');
+        $oConfig_arr[$i]->ConfWerte = Shop::DB()->selectAll(
+            'teinstellungenconfwerte',
+            'kEinstellungenConf',
+            $oConfig_arr[$i]->kEinstellungenConf,
+            '*',
+            'nSort'
+        );
     }
     $oSetValue = Shop::DB()->select('teinstellungen', 'kEinstellungenSektion', CONF_RSS, 'cName', $oConfig_arr[$i]->cWertName);
-    $oConfig_arr[$i]->gesetzterWert = (isset($oSetValue->cWert)) ? $oSetValue->cWert : null;
+    $oConfig_arr[$i]->gesetzterWert = isset($oSetValue->cWert) ? $oSetValue->cWert : null;
 }
 
 if (!is_writable(PFAD_ROOT . FILE_RSS_FEED)) {

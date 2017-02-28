@@ -4,11 +4,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-require_once dirname(__FILE__) . '/syncinclude.php';
+require_once __DIR__ . '/syncinclude.php';
 
 global $smarty;
 
-if (!isset($smarty)) {
+if ($smarty === null) {
     require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
     $smarty = Shop::Smarty();
 }
@@ -49,7 +49,7 @@ if (auth()) {
     }
 }
 
-if ($return == 1) {
+if ($return === 2) {
     syncException('Error : ' . $archive->errorInfo(true));
 }
 
@@ -61,7 +61,7 @@ echo $return;
 function bearbeiteHerstellerDeletes($xml)
 {
     $cacheTags = [];
-    if (isset($xml['del_hersteller']['kHersteller']) && intval($xml['del_hersteller']['kHersteller']) > 0) {
+    if (isset($xml['del_hersteller']['kHersteller']) && (int)$xml['del_hersteller']['kHersteller'] > 0) {
         $xml['del_hersteller']['kHersteller'] = [$xml['del_hersteller']['kHersteller']];
     }
     if (isset($xml['del_hersteller']['kHersteller']) && is_array($xml['del_hersteller']['kHersteller'])) {
@@ -106,8 +106,14 @@ function bearbeiteHersteller($xml)
                     $hersteller_arr[$i]->cSeo = getFlatSeoPath($hersteller_arr[$i]->cName);
                 }
                 //alten Bildpfad merken
-                $oHerstellerBild               = Shop::DB()->query("SELECT cBildPfad FROM thersteller WHERE kHersteller = " . (int)$hersteller_arr[$i]->kHersteller, 1);
-                $hersteller_arr[$i]->cBildPfad = (isset($oHerstellerBild->cBildPfad)) ? $oHerstellerBild->cBildPfad : '';
+                $oHerstellerBild               = Shop::DB()->query("
+                    SELECT cBildPfad 
+                        FROM thersteller 
+                        WHERE kHersteller = " . (int)$hersteller_arr[$i]->kHersteller, 1
+                );
+                $hersteller_arr[$i]->cBildPfad = isset($oHerstellerBild->cBildPfad)
+                    ? $oHerstellerBild->cBildPfad
+                    : '';
                 //seo checken
                 $hersteller_arr[$i]->cSeo = getSeo($hersteller_arr[$i]->cSeo);
                 $hersteller_arr[$i]->cSeo = checkSeo($hersteller_arr[$i]->cSeo);

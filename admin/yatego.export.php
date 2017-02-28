@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/admininclude.php';
+require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'exportformat_inc.php';
 
 $oAccount->permission('EXPORT_YATEGO_VIEW', true, true);
@@ -110,28 +110,28 @@ function setzeEinstellung($cPost_arr, $kWaehrung)
             $exportformat = new stdClass();
         }
         $exportformat->cName           = $cPost_arr['cName'];
-        $exportformat->cContent        = (isset($cPost_arr['cContent']))
+        $exportformat->cContent        = isset($cPost_arr['cContent'])
             ? str_replace("<tab>", "\t", $cPost_arr['cContent'])
             : null;
-        $exportformat->cDateiname      = (isset($cPost_arr['cDateiname']))
+        $exportformat->cDateiname      = isset($cPost_arr['cDateiname'])
             ? $cPost_arr['cDateiname']
             : null;
-        $exportformat->cKopfzeile      = (isset($cPost_arr['cKopfzeile']))
+        $exportformat->cKopfzeile      = isset($cPost_arr['cKopfzeile'])
             ? str_replace("<tab>", "\t", $cPost_arr['cKopfzeile'])
             : null;
-        $exportformat->cFusszeile      = (isset($cPost_arr['cFusszeile']))
+        $exportformat->cFusszeile      = isset($cPost_arr['cFusszeile'])
             ? str_replace("<tab>", "\t", $cPost_arr['cFusszeile'])
             : null;
-        $exportformat->kSprache        = intval($cPost_arr['kSprache']);
-        $exportformat->kWaehrung       = intval($kWaehrung);
-        $exportformat->kKampagne       = intval($cPost_arr['kKampagne']);
-        $exportformat->kKundengruppe   = intval($cPost_arr['kKundengruppe']);
+        $exportformat->kSprache        = (int)$cPost_arr['kSprache'];
+        $exportformat->kWaehrung       = (int)$kWaehrung;
+        $exportformat->kKampagne       = (int)$cPost_arr['kKampagne'];
+        $exportformat->kKundengruppe   = (int)$cPost_arr['kKundengruppe'];
         $exportformat->cKodierung      = Shop::DB()->escape($cPost_arr['cKodierung']);
-        $exportformat->nVarKombiOption = (isset($cPost_arr['nVarKombiOption']))
+        $exportformat->nVarKombiOption = isset($cPost_arr['nVarKombiOption'])
             ? (int)$cPost_arr['nVarKombiOption']
             : 0;
         //update
-        $kExportformat = intval($cPost_arr['kExportformat']);
+        $kExportformat = (int)$cPost_arr['kExportformat'];
         Shop::DB()->update('texportformat', 'kExportformat', $kExportformat, $exportformat);
         Shop::DB()->delete('texportformateinstellungen', 'kExportformat', $kExportformat);
         $Conf      = Shop::DB()->selectAll(
@@ -175,7 +175,7 @@ function setzeEinstellung($cPost_arr, $kWaehrung)
  */
 function exportiereYatego($cPost_arr)
 {
-    if (intval($cPost_arr['kExportformat'])) {
+    if ((int)$cPost_arr['kExportformat']) {
         $queue                = new stdClass();
         $queue->kExportformat = (int)$cPost_arr['kExportformat'];
         $queue->nLimit_n      = 0;

@@ -18,7 +18,8 @@ $io->register('suggestions')
     ->register('buildConfiguration')
     ->register('getBasketItems')
     ->register('getCategoryMenu')
-    ->register('getRegionsByCountry');
+    ->register('getRegionsByCountry')
+    ->register('getCitiesByZip');
 
 /**
  * @param string $keyword
@@ -30,7 +31,7 @@ function suggestions($keyword)
 
     $results    = [];
     $language   = Shop::getLanguage();
-    $maxResults = (intval($Einstellungen['artikeluebersicht']['suche_ajax_anzahl']) > 0)
+    $maxResults = ((int)$Einstellungen['artikeluebersicht']['suche_ajax_anzahl'] > 0)
         ? (int)$Einstellungen['artikeluebersicht']['suche_ajax_anzahl']
         : 10;
     if (strlen($keyword) >= 2) {
@@ -47,6 +48,33 @@ function suggestions($keyword)
             foreach ($results as &$result) {
                 $result->suggestion = utf8_encode($smarty->assign('result', $result)->fetch('snippets/suggestion.tpl'));
             }
+        }
+    }
+
+    return $results;
+}
+
+/**
+ * @param string $cityQuery
+ * @param string $country
+ * @param string $zip
+ * @return array
+ */
+function getCitiesByZip($cityQuery, $country, $zip)
+{
+    $results    = [];
+    if (!empty($country) && !empty($zip) && strlen($cityQuery) >= 1) {
+        $cityQuery = "%" . $cityQuery . "%";
+        $cities = Shop::DB()->queryPrepared("
+            SELECT cOrt
+            FROM tplz
+            WHERE cLandISO = :country
+                AND cPLZ = :zip
+                AND cOrt LIKE :cityQuery",
+            ['country' => $country, 'zip' => $zip, 'cityQuery' => $cityQuery],
+            2);
+        foreach ($cities as $result) {
+            $results[] = $result->cOrt;
         }
     }
 
@@ -85,10 +113,10 @@ function pushToBasket($kArtikel, $anzahl, $oEigenschaftwerte_arr = '')
         $oArtikelOptionen->nDownload         = 1;
         $Artikel->fuelleArtikel($kArtikel, $oArtikelOptionen);
         // Falls der Artikel ein Variationskombikind ist, hole direkt seine Eigenschaften
-        if (isset($Artikel->kEigenschaftKombi) && $Artikel->kEigenschaftKombi > 0) {
+        if ($Artikel->kEigenschaftKombi > 0) {
             $oEigenschaftwerte_arr = gibVarKombiEigenschaftsWerte($Artikel->kArtikel);
         }
-        if (intval($anzahl) != $anzahl && $Artikel->cTeilbar !== 'Y') {
+        if ((int)$anzahl != $anzahl && $Artikel->cTeilbar !== 'Y') {
             $anzahl = max((int)$anzahl, 1);
         }
         // Prüfung
@@ -117,15 +145,16 @@ function pushToBasket($kArtikel, $anzahl, $oEigenschaftwerte_arr = '')
              ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR)
              ->loescheSpezialPos(C_WARENKORBPOS_TYP_TRUSTEDSHOPS);
 
-        unset($_SESSION['VersandKupon']);
-        unset($_SESSION['NeukundenKupon']);
-        unset($_SESSION['Versandart']);
-        unset($_SESSION['Zahlungsart']);
-        unset($_SESSION['TrustedShops']);
+        unset(
+            $_SESSION['VersandKupon'],
+            $_SESSION['NeukundenKupon'],
+            $_SESSION['Versandart'],
+            $_SESSION['Zahlungsart'],
+            $_SESSION['TrustedShops']
+        );
         // Wenn Kupon vorhanden und prozentual auf ganzen Warenkorb,
         // dann verwerfen und neu anlegen
         altenKuponNeuBerechnen();
-
         setzeLinks();
         // Persistenter Warenkorb
         if (!isset($_POST['login'])) {
@@ -185,10 +214,14 @@ function pushToBasket($kArtikel, $anzahl, $oEigenschaftwerte_arr = '')
     return $objResponse;
 }
 
+/**
+ * @param int $kArtikel
+ * @return IOResponse
+ */
 function pushToComparelist($kArtikel)
 {
     global $Einstellungen;
-
+    $kArtikel = (int)$kArtikel;
     if (!isset($Einstellungen['vergleichsliste'])) {
         if (isset($Einstellungen)) {
             $Einstellungen = array_merge($Einstellungen, Shop::getSettings([CONF_VERGLEICHSLISTE]));
@@ -234,15 +267,13 @@ function pushToComparelist($kArtikel)
             ->assign('buttons', $buttons)
             ->fetch('snippets/notification.tpl')
     );
-
+    $oResponse->cNavBadge = '';
     if ($oResponse->nCount > 1) {
         $oResponse->cNavBadge = utf8_encode(
             Shop::Smarty()
                 ->assign('Einstellungen', $Einstellungen)
                 ->fetch('layout/header_shop_nav_compare.tpl')
         );
-    } else {
-        $oResponse->cNavBadge     = '';
     }
 
     $boxes = Boxen::getInstance();
@@ -259,10 +290,15 @@ function pushToComparelist($kArtikel)
     return $objResponse;
 }
 
+/**
+ * @param int $kArtikel
+ * @return IOResponse
+ */
 function removeFromComparelist($kArtikel)
 {
     global $Einstellungen;
 
+    $kArtikel = (int)$kArtikel;
     if (!isset($Einstellungen['vergleichsliste'])) {
         if (isset($Einstellungen)) {
             $Einstellungen = array_merge($Einstellungen, Shop::getSettings([CONF_VERGLEICHSLISTE]));
@@ -278,9 +314,10 @@ function removeFromComparelist($kArtikel)
     $_GET['vlplo']           = $kArtikel;
 
     Session::getInstance()->setStandardSessionVars();
-    $oResponse->nType  = 2;
-    $oResponse->nCount = count($_SESSION['Vergleichsliste']->oArtikel_arr);
-    $oResponse->cTitle = utf8_encode(Shop::Lang()->get('compare', 'global'));
+    $oResponse->nType     = 2;
+    $oResponse->nCount    = count($_SESSION['Vergleichsliste']->oArtikel_arr);
+    $oResponse->cTitle    = utf8_encode(Shop::Lang()->get('compare', 'global'));
+    $oResponse->cNavBadge = '';
 
     if ($oResponse->nCount > 1) {
         $oResponse->cNavBadge = utf8_encode(
@@ -288,8 +325,6 @@ function removeFromComparelist($kArtikel)
                 ->assign('Einstellungen', $Einstellungen)
                 ->fetch('layout/header_shop_nav_compare.tpl')
         );
-    } else {
-        $oResponse->cNavBadge     = '';
     }
 
     $boxes = Boxen::getInstance();
@@ -440,7 +475,7 @@ function checkDependencies($aValues)
 {
     $objResponse   = new IOResponse();
     $kVaterArtikel = (int)$aValues['a'];
-    $fAnzahl       = floatval($aValues['anzahl']);
+    $fAnzahl       = (float)$aValues['anzahl'];
     $valueID_arr   = array_filter((array)$aValues['eigenschaftwert']);
 
     if ($kVaterArtikel > 0) {
@@ -719,15 +754,16 @@ function checkVarkombiDependencies($aValues, $kEigenschaft = 0, $kEigenschaftWer
                         $kMoeglicheEigeschaftWert_arr
                     );
 
-                    if ($oKindArtikel !== null && $oKindArtikel->status == 0) {
-                        if (!in_array($kVerfuegbareEigenschaftWert, $kGesetzteEigeschaftWert_arr)) {
-                            $objResponse->jsfunc(
-                                '$.evo.article().variationInfo',
-                                $kVerfuegbareEigenschaftWert,
-                                $oKindArtikel->status,
-                                $oKindArtikel->text
-                            );
-                        }
+                    if ($oKindArtikel !== null &&
+                        $oKindArtikel->status == 0 &&
+                        !in_array($kVerfuegbareEigenschaftWert, $kGesetzteEigeschaftWert_arr)
+                    ) {
+                        $objResponse->jsfunc(
+                            '$.evo.article().variationInfo',
+                            $kVerfuegbareEigenschaftWert,
+                            $oKindArtikel->status,
+                            $oKindArtikel->text
+                        );
                     }
                 }
             }
@@ -846,7 +882,7 @@ function getRegionsByCountry($country)
 {
     $response = new IOResponse();
 
-    if (strlen($country) == 2) {
+    if (strlen($country) === 2) {
         $regions = Staat::getRegions($country);
         $regions = utf8_convert_recursive($regions);
         $response->script("this.response = " . json_encode($regions) . ";");

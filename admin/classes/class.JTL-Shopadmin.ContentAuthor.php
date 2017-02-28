@@ -81,7 +81,7 @@ class ContentAuthor
                     FROM tadminloginattribut
                     WHERE tadminloginattribut.kAdminlogin = " . (int)$author->kAdminlogin, 2
             );
-            $author->extAttribs = array();
+            $author->extAttribs = [];
             foreach ($attribs as $attrib) {
                 $author->extAttribs[$attrib->cName] = $attrib;
             }

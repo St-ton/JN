@@ -210,7 +210,7 @@ $(document).ready(function () {
             datumTokenizer: Bloodhound.tokenizers.obj.whitespace('keyword'),
             queryTokenizer: Bloodhound.tokenizers.whitespace,
             remote:         {
-                url:      'io.php?io={"name":"suggestions","params":["%QUERY"]}',
+                url:      'io.php?io={"name":"suggestions", "params":["%QUERY"]}',
                 wildcard: '%QUERY'
             }
         });
@@ -231,6 +231,34 @@ $(document).ready(function () {
             }
         );
     }
+
+    var citySuggestion = new Bloodhound({
+        datumTokenizer: Bloodhound.tokenizers.obj.whitespace('keyword'),
+        queryTokenizer: Bloodhound.tokenizers.whitespace,
+        remote:         {
+            url:      'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $('#country').val() + '", "' + $('#plz').val() + '"]}',
+            wildcard: '%QUERY'
+        },
+        dataType: "json"
+    });
+
+    $('#neukunde #plz, #new_customer #plz').change(function(){
+        citySuggestion.remote.url = 'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $('#country').val() + '", "' + $('#plz').val() + '"]}';
+    });
+    $('#neukunde #country, #new_customer #country').change(function(){
+        citySuggestion.remote.url = 'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $('#country').val() + '", "' + $('#plz').val() + '"]}';
+    });
+
+    $('#neukunde #city, #new_customer #city').typeahead(
+        {
+            hint: true,
+            minLength: 1
+        },
+        {
+            name:       'cities',
+            source:     citySuggestion
+        }
+    );
 
     $('.btn-offcanvas').click(function() {
         $('body').click();

@@ -378,15 +378,13 @@ class ArtikelHelper
                 }
             }
 
-            if (!$nVorhanden) {
-                if (!isset($_SESSION['variBoxAnzahl_arr'])) {
-                    //redirekt zum artikel, weil variation nicht vorhanden
-                    header('Location: ' . Shop::getURL() .
-                        '/index.php?a=' . $kArtikel .
-                        '&n=' . (int)$_POST['anzahl'] .
-                        '&r=' . R_VARWAEHLEN, true, 301);
-                    exit();
-                }
+            if (!$nVorhanden && !isset($_SESSION['variBoxAnzahl_arr'])) {
+                //redirekt zum artikel, weil variation nicht vorhanden
+                header('Location: ' . Shop::getURL() .
+                    '/index.php?a=' . $kArtikel .
+                    '&n=' . (int)$_POST['anzahl'] .
+                    '&r=' . R_VARWAEHLEN, true, 301);
+                exit();
             }
         }
         // Wie beim Artikel die Variationen aufbauen
@@ -498,15 +496,13 @@ class ArtikelHelper
             }
         }
 
-        if (!$nVorhanden && $bRedirect) {
-            if (!isset($_SESSION['variBoxAnzahl_arr'])) {
-                //redirekt zum artikel, weil variation nicht vorhanden
-                header('Location: ' . Shop::getURL() .
-                    '/index.php?a=' . $kArtikel .
-                    '&n=' . (int)$_POST['anzahl'] .
-                    '&r=' . R_VARWAEHLEN, true, 302);
-                exit();
-            }
+        if (!$nVorhanden && $bRedirect && !isset($_SESSION['variBoxAnzahl_arr'])) {
+            //redirect zum artikel, weil variation nicht vorhanden
+            header('Location: ' . Shop::getURL() .
+                '/index.php?a=' . $kArtikel .
+                '&n=' . (int)$_POST['anzahl'] .
+                '&r=' . R_VARWAEHLEN, true, 302);
+            exit();
         }
 
         return $oProperties;

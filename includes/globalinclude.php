@@ -5,8 +5,8 @@
  */
 $nStartzeit = microtime(true);
 
-if (file_exists(dirname(__FILE__) . '/config.JTL-Shop.ini.php')) {
-    require_once dirname(__FILE__) . '/config.JTL-Shop.ini.php';
+if (file_exists(__DIR__ . '/config.JTL-Shop.ini.php')) {
+    require_once __DIR__ . '/config.JTL-Shop.ini.php';
 }
 
 if (defined('PFAD_ROOT')) {
@@ -26,12 +26,19 @@ defined('DB_PASS') || die('Kein MySql-Datenbank Passwort angegeben. Bitte config
 
 $shop = Shop::getInstance();
 
-/**
- * @return Shop
- */
-function Shop()
-{
-    return Shop::getInstance();
+if (!function_exists('Shop')) {
+    /**
+     * @return Shop
+     */
+    function Shop()
+    {
+        return Shop::getInstance();
+    }
+}
+
+// PHP memory_limit work around
+if (!Shop()->PHPSettingsHelper()->hasMinLimit(64)) {
+    ini_set('memory_limit', '64M');
 }
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'tools.Global.php';
@@ -58,8 +65,8 @@ $cache->setJtlCacheConfig();
 $conf = Shop::getSettings([CONF_GLOBAL]);
 
 if ($conf['global']['kaufabwicklung_ssl_nutzen'] === 'P' &&
-    (!isset($_SERVER['HTTPS']) || (strtolower($_SERVER['HTTPS']) !== 'on' && intval($_SERVER['HTTPS'] !== 1))) &&
-    PHP_SAPI !== 'cli'
+    PHP_SAPI !== 'cli' &&
+    (!isset($_SERVER['HTTPS']) || (strtolower($_SERVER['HTTPS']) !== 'on' && (int)$_SERVER['HTTPS'] !== 1))
 ) {
     $https = false;
     if ((isset($_SERVER['HTTP_X_FORWARDED_HOST']) && $_SERVER['HTTP_X_FORWARDED_HOST'] === 'ssl.webpack.de') ||

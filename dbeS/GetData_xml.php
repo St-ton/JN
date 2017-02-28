@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-require_once dirname(__FILE__) . '/syncinclude.php';
+require_once __DIR__ . '/syncinclude.php';
 
 $return  = 3;
 $xml_obj = [];
@@ -17,7 +17,8 @@ if (auth()) {
             WHERE cAbgeholt = 'N'
             LIMIT " . LIMIT_VERFUEGBARKEITSBENACHRICHTIGUNGEN, 9
     );
-    $xml_obj['tverfuegbarkeitsbenachrichtigung attr']['anzahl'] = count($xml_obj['queueddata']['verfuegbarkeitsbenachrichtigungen']['tverfuegbarkeitsbenachrichtigung']);
+    $xml_obj['tverfuegbarkeitsbenachrichtigung attr']['anzahl'] =
+        count($xml_obj['queueddata']['verfuegbarkeitsbenachrichtigungen']['tverfuegbarkeitsbenachrichtigung']);
     for ($i = 0; $i < $xml_obj['tverfuegbarkeitsbenachrichtigung attr']['anzahl']; $i++) {
         $xml_obj['queueddata']['verfuegbarkeitsbenachrichtigungen']['tverfuegbarkeitsbenachrichtigung'][$i . ' attr'] =
             buildAttributes($xml_obj['queueddata']['verfuegbarkeitsbenachrichtigungen']['tverfuegbarkeitsbenachrichtigung'][$i]);

@@ -69,8 +69,10 @@ class WarenkorbPers
                     break;
                 }
                 if ($oWarenkorbPersPos->kArtikel == $kArtikel &&
-                    count($oWarenkorbPersPos->oWarenkorbPersPosEigenschaft_arr) > 0 &&
-                    (int)$oWarenkorbPersPos->kKonfigitem === (int)$kKonfigitem) {
+                    $oWarenkorbPersPos->cUnique === $cUnique &&
+                    (int)$oWarenkorbPersPos->kKonfigitem === (int)$kKonfigitem &&
+                    count($oWarenkorbPersPos->oWarenkorbPersPosEigenschaft_arr) > 0
+                ) {
                     $nPosition         = $i;
                     $bBereitsEnthalten = true;
                     foreach ($oEigenschaftwerte_arr as $oEigenschaftwerte) {
@@ -86,9 +88,11 @@ class WarenkorbPers
                             break;
                         }
                     }
-                } elseif ($oWarenkorbPersPos->kArtikel == $kArtikel && $cUnique !== '' &&
+                } elseif ($oWarenkorbPersPos->kArtikel == $kArtikel &&
+                    $cUnique !== '' &&
                     $oWarenkorbPersPos->cUnique === $cUnique &&
-                    (int)$oWarenkorbPersPos->kKonfigitem === (int)$kKonfigitem) {
+                    (int)$oWarenkorbPersPos->kKonfigitem === (int)$kKonfigitem
+                ) {
                     $nPosition         = $i;
                     $bBereitsEnthalten = true;
                     break;

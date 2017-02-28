@@ -73,7 +73,9 @@
         </div>{* /reviews-overview *}
         {/block}
 
-        {if isset($Artikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich) && $Artikel->HilfreichsteBewertung->oBewertung_arr|@count > 0 && $Artikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich > 0}
+        {if isset($Artikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich) &&
+            $Artikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich > 0
+        }
             <div class="review-wrapper reviews-mosthelpful panel">
                 <form method="post" action="{get_static_route id='bewertung.php'}#tab-votes">
                     {$jtl_token}

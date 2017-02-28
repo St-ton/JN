@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 ob_start();
-require_once dirname(__FILE__) . '/includes/globalinclude.php';
+require_once __DIR__ . '/includes/globalinclude.php';
 
 $robotsContent = file_get_contents(PFAD_ROOT . 'robots.txt');
 

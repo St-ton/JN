@@ -160,7 +160,7 @@ $(document).ready(function() {
                         <div class="category">Neue Weiterleitung</div>
                         <div class="item">
                             <strong>Quell Url:</strong> <input name="cSource" type="text" style="width: 25%;" placeholder="Quell Url" value="{if isset($cPost_arr.cSource)}{$cPost_arr.cSource}{/if}" />
-                            <strong>Ziel Url:</strong> <input name="cDestiny" type="text" class="cToUrl" style="width: 25%;" placeholder="Ziel Url" value="{if isset($cPost_arr.cDestiny)}{$cPost_arr.cDestiny}{/if}" />
+                            <strong>Ziel Url:</strong> <input name="cDestination" type="text" class="cToUrl" style="width: 25%;" placeholder="Ziel Url" value="{if isset($cPost_arr.cDestination)}{$cPost_arr.cDestination}{/if}" />
                             <a href="#" class="button edit showEditor" id="article">Artikel</a>
                             <a href="#" class="button edit showEditor" id="manufacturer">Hersteller</a>
                             <a href="#" class="button edit showEditor" id="categories">Kategorien</a>
@@ -309,7 +309,7 @@ $(document).ready(function() {
                         <div class="category">Neue Weiterleitung</div>
                         <div class="item">
                             <strong>Quell Url:</strong> <input name="cSource" type="text" style="width: 25%;" placeholder="Quell Url" value="{$cPost_arr.cSource}" />
-                            <strong>Ziel Url:</strong> <input name="cDestiny" type="text" class="cToUrl" style="width: 25%;" placeholder="Ziel Url" value="{$cPost_arr.cDestiny}" />
+                            <strong>Ziel Url:</strong> <input name="cDestination" type="text" class="cToUrl" style="width: 25%;" placeholder="Ziel Url" value="{$cPost_arr.cDestination}" />
                             <a href="#" class="button edit showEditor" id="article">Artikel</a>
                             <a href="#" class="button edit showEditor" id="manufacturer">Hersteller</a>
                             <a href="#" class="button edit showEditor" id="categories">Kategorien</a>

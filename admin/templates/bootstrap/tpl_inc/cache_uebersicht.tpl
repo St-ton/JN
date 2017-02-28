@@ -52,9 +52,9 @@
                         <thead>
                         <tr>
                             <th class="tleft">
-                                <input type="checkbox" class="massaction-checkboxx" id="massaction-main-switch" />
+                                <input type="checkbox" class="massaction-checkbox" id="massaction-main-switch" />
                             </th>
-                            <th class="tleft">{#type#}</th>
+                            <th class="tleft"><label style="margin-bottom:0;" for="massaction-main-switch">{#type#}</label></th>
                             <th class="tleft">{#description#}</th>
                             <th class="tleft">{#status#}</th>
                         </tr>
@@ -62,10 +62,12 @@
                         <tbody>
                         {foreach name=cgfe from=$caching_groups item=cg}
                             <tr class="{if ($smarty.foreach.cgfe.index % 2) === 0}even{else}odd{/if}">
-                                <td><input type="checkbox" class="massaction-checkbox" value="{$cg.value}" name="cache-types[]"></td>
+                                <td>
+                                    <input type="checkbox" class="massaction-checkbox" value="{$cg.value}" name="cache-types[]" id="group-cb-{$smarty.foreach.cgfe.index}">
+                                </td>
                                 <td>
                                     {assign var=nicename value=$cg.nicename}
-                                    {$smarty.config.$nicename}
+                                    <label for="group-cb-{$smarty.foreach.cgfe.index}">{$smarty.config.$nicename}</label>
                                 </td>
                                 <td>
                                     {assign var=description value=$cg.description}

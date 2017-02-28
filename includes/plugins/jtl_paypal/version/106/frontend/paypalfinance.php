@@ -58,30 +58,30 @@ switch ($action) {
         $success = isset($_GET['r']) && $_GET['r'] === 'true';
 
         if ($success) {
-			$paymentId = $_GET['paymentId'];
-			$token     = $_GET['token'];
-			$payerId   = $_GET['PayerID'];
+            $paymentId = $_GET['paymentId'];
+            $token     = $_GET['token'];
+            $payerId   = $_GET['PayerID'];
 
-			$api->addCache('paymentId', $paymentId)
-				->addCache('token', $token)
-				->addCache('payerId', $payerId);
+            $api->addCache('paymentId', $paymentId)
+                ->addCache('token', $token)
+                ->addCache('payerId', $payerId);
 
-			try {
-				$payment = Payment::get($paymentId, $apiContext);
-				
-				$api->logResult('GetPayment', $paymentId, $payment);
-				
-				if ($offer = $payment->getCreditFinancingOffered()) {
-					$api->createPaymentSession();
-					$api->addSurcharge($offer);
-					_redirect('bestellvorgang.php');
-				}
-			} catch (Exception $ex) {
-				$api->handleException('GetPayment', $paymentId, $ex);
-			}
+            try {
+                $payment = Payment::get($paymentId, $apiContext);
+                
+                $api->logResult('GetPayment', $paymentId, $payment);
+                
+                if ($offer = $payment->getCreditFinancingOffered()) {
+                    $api->createPaymentSession();
+                    $api->addSurcharge($offer);
+                    _redirect('bestellvorgang.php');
+                }
+            } catch (Exception $ex) {
+                $api->handleException('GetPayment', $paymentId, $ex);
+            }
         }
 
-		_redirect('bestellvorgang.php?editZahlungsart=1');
+        _redirect('bestellvorgang.php?editZahlungsart=1');
     }
 
     case 'webhook':
@@ -100,6 +100,7 @@ switch ($action) {
         break;
     }
     
+    /*
     case 'capture':
     {
         try {
@@ -144,6 +145,7 @@ switch ($action) {
         
         break;
     }
+    */
 }
 
 _exit(400);

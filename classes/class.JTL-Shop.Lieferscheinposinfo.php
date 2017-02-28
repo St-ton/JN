@@ -47,7 +47,7 @@ class Lieferscheinposinfo
      */
     public function __construct($kLieferscheinPosInfo = 0)
     {
-        if (intval($kLieferscheinPosInfo) > 0) {
+        if ((int)$kLieferscheinPosInfo > 0) {
             $this->loadFromDB($kLieferscheinPosInfo);
         }
     }

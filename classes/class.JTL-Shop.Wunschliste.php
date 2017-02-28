@@ -198,49 +198,50 @@ class Wunschliste
     {
         $kWunschliste = (int)$kWunschliste;
         $conf         = Shop::getSettings([CONF_GLOBAL]);
-        if ($conf['global']['global_wunschliste_artikel_loeschen_nach_kauf'] === 'Y' && $kWunschliste > 0) {
+        if ($kWunschliste > 0 && $conf['global']['global_wunschliste_artikel_loeschen_nach_kauf'] === 'Y') {
             $nCount        = 0;
             $oWunschzettel = new self($kWunschliste);
-            if (isset($oWunschzettel->kWunschliste) && $oWunschzettel->kWunschliste > 0) {
-                if (isset($oWunschzettel->CWunschlistePos_arr) && count($oWunschzettel->CWunschlistePos_arr) > 0 && 
-                    is_array($oWarenkorbpositionen_arr) && count($oWarenkorbpositionen_arr) > 0
-                ) {
-                    foreach ($oWunschzettel->CWunschlistePos_arr as $i => $oWunschlistePos) {
-                        foreach ($oWarenkorbpositionen_arr as $oArtikel) {
-                            if ($oWunschlistePos->kArtikel == $oArtikel->kArtikel) {
-                                //mehrfache Variationen beachten
-                                if (!empty($oWunschlistePos->CWunschlistePosEigenschaft_arr) && !empty($oArtikel->WarenkorbPosEigenschaftArr)) {
-                                    $nMatchesFound = 0;
-                                    $index = 0;
-                                    foreach ($oWunschlistePos->CWunschlistePosEigenschaft_arr as $oWPEigenschaft){
-                                        if ($index === $nMatchesFound) {
-                                            foreach ($oArtikel->WarenkorbPosEigenschaftArr as $oAEigenschaft){
-                                                if ($oWPEigenschaft->kEigenschaftWert != 0 && $oWPEigenschaft->kEigenschaftWert === $oAEigenschaft->kEigenschaftWert){
-                                                    $nMatchesFound++;
-                                                    break;
-                                                } elseif ($oWPEigenschaft->kEigenschaftWert === 0 && $oAEigenschaft->kEigenschaftWert === 0 &&
-                                                    !empty($oWPEigenschaft->cFreifeldWert) && !empty($oAEigenschaft->cFreifeldWert) &&
-                                                    $oWPEigenschaft->cFreifeldWert === $oAEigenschaft->cFreifeldWert) {
-                                                    $nMatchesFound++;
-                                                    break;
-                                                }
+            if (
+                $oWunschzettel->kWunschliste > 0 &&
+                is_array($oWarenkorbpositionen_arr) &&
+                count($oWunschzettel->CWunschlistePos_arr) > 0 &&
+                count($oWarenkorbpositionen_arr) > 0
+            ) {
+                foreach ($oWunschzettel->CWunschlistePos_arr as $i => $oWunschlistePos) {
+                    foreach ($oWarenkorbpositionen_arr as $oArtikel) {
+                        if ($oWunschlistePos->kArtikel == $oArtikel->kArtikel) {
+                            //mehrfache Variationen beachten
+                            if (!empty($oWunschlistePos->CWunschlistePosEigenschaft_arr) && !empty($oArtikel->WarenkorbPosEigenschaftArr)) {
+                                $nMatchesFound = 0;
+                                $index = 0;
+                                foreach ($oWunschlistePos->CWunschlistePosEigenschaft_arr as $oWPEigenschaft){
+                                    if ($index === $nMatchesFound) {
+                                        foreach ($oArtikel->WarenkorbPosEigenschaftArr as $oAEigenschaft){
+                                            if ($oWPEigenschaft->kEigenschaftWert != 0 && $oWPEigenschaft->kEigenschaftWert === $oAEigenschaft->kEigenschaftWert){
+                                                $nMatchesFound++;
+                                                break;
+                                            } elseif ($oWPEigenschaft->kEigenschaftWert === 0 && $oAEigenschaft->kEigenschaftWert === 0 &&
+                                                !empty($oWPEigenschaft->cFreifeldWert) && !empty($oAEigenschaft->cFreifeldWert) &&
+                                                $oWPEigenschaft->cFreifeldWert === $oAEigenschaft->cFreifeldWert) {
+                                                $nMatchesFound++;
+                                                break;
                                             }
                                         }
-                                        $index++;
                                     }
-                                    if ($nMatchesFound === count($oArtikel->WarenkorbPosEigenschaftArr)) {
-                                        $oWunschzettel->entfernePos($oWunschlistePos->kWunschlistePos);
-                                    }
-                                } else {
+                                    $index++;
+                                }
+                                if ($nMatchesFound === count($oArtikel->WarenkorbPosEigenschaftArr)) {
                                     $oWunschzettel->entfernePos($oWunschlistePos->kWunschlistePos);
                                 }
-                                $nCount++;
+                            } else {
+                                $oWunschzettel->entfernePos($oWunschlistePos->kWunschlistePos);
                             }
+                            $nCount++;
                         }
                     }
-
-                    return $nCount;
                 }
+
+                return $nCount;
             }
         }
 
@@ -315,11 +316,14 @@ class Wunschliste
                     $oWunschlistePosSuche_arr[$i]->Artikel->fuelleArtikel($oSuchergebnis->kArtikel, Artikel::getDefaultOptions());
                     $oWunschlistePosSuche_arr[$i]->cArtikelName = $oWunschlistePosSuche_arr[$i]->Artikel->cName;
 
-                    if (intval($_SESSION['Kundengruppe']->nNettoPreise) > 0) {
-                        $fPreis = intval($oWunschlistePosSuche_arr[$i]->fAnzahl) * $oWunschlistePosSuche_arr[$i]->Artikel->Preise->fVKNetto;
+                    if ((int)$_SESSION['Kundengruppe']->nNettoPreise > 0) {
+                        $fPreis = (int)$oWunschlistePosSuche_arr[$i]->fAnzahl *
+                            $oWunschlistePosSuche_arr[$i]->Artikel->Preise->fVKNetto;
                     } else {
-                        $fPreis = intval($oWunschlistePosSuche_arr[$i]->fAnzahl) * ($oWunschlistePosSuche_arr[$i]->Artikel->Preise->fVKNetto *
-                                (100 + $_SESSION['Steuersatz'][$oWunschlistePosSuche_arr[$i]->Artikel->kSteuerklasse]) / 100);
+                        $fPreis = (int)$oWunschlistePosSuche_arr[$i]->fAnzahl *
+                            ($oWunschlistePosSuche_arr[$i]->Artikel->Preise->fVKNetto *
+                                (100 + $_SESSION['Steuersatz'][$oWunschlistePosSuche_arr[$i]->Artikel->kSteuerklasse]) /
+                                100);
                     }
 
                     $oWunschlistePosSuche_arr[$i]->cPreis = gibPreisStringLocalized($fPreis, $_SESSION['Waehrung']);
@@ -370,12 +374,9 @@ class Wunschliste
         $this->dErstellt    = $oWunschliste->dErstellt;
         $this->dErstellt_DE = $oWunschliste->dErstellt_DE;
         // Kunde holen
-        if (intval($this->kKunde) > 0) {
+        if ((int)$this->kKunde > 0) {
             $this->oKunde = new Kunde($this->kKunde);
-            unset($this->oKunde->cPasswort);
-            unset($this->oKunde->fRabatt);
-            unset($this->oKunde->fGuthaben);
-            unset($this->oKunde->cUSTID);
+            unset($this->oKunde->cPasswort, $this->oKunde->fRabatt, $this->oKunde->fGuthaben, $this->oKunde->cUSTID);
         }
 
         // Hole alle Positionen für eine Wunschliste
@@ -394,7 +395,7 @@ class Wunschliste
                     $WunschlistePos->kArtikel,
                     $WunschlistePos->cArtikelName,
                     $WunschlistePos->fAnzahl,
-                    $WunschlistePos->kWunschlist
+                    $WunschlistePos->kWunschliste
                 );
 
                 $cArtikelName                      = $CWunschlistePos->cArtikelName;

@@ -1,6 +1,6 @@
 {includeMailTemplate template=header type=plain}
 
-Sehr {if $Kunde->cAnrede == "w"}geehrte{else}geehrter{/if} {$Kunde->cAnredeLocalized} {$Kunde->cNachname},
+Sehr {if $Kunde->cAnrede == "w"}geehrte{elseif $Kunde->cAnrede == "m"}geehrter{else}geehrte(r){/if} {$Kunde->cAnredeLocalized} {$Kunde->cNachname},
 
 vielen Dank für Ihre Bestellung bei {$Einstellungen.global.global_shopname}.
 
@@ -82,8 +82,8 @@ Bitte führen Sie die folgende Überweisung durch:
 
 Kontoinhaber:{$Firma->cKontoinhaber}
 Bankinstitut:{$Firma->cBank}
-IBAN.:{$Firma->cIBAN}
-BIC.:{$Firma->cBIC}
+IBAN:{$Firma->cIBAN}
+BIC:{$Firma->cBIC}
 
 Verwendungszweck:{$Bestellung->cBestellNr}
 Gesamtsumme:{$Bestellung->WarensummeLocalized[0]}

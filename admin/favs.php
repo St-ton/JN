@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/admininclude.php';
+require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_CLASSES . 'class.JTL-Shopadmin.AjaxResponse.php';
 /** @global JTLSmarty $smarty */
 $response = new AjaxResponse();
@@ -56,11 +56,11 @@ switch ($action) {
         break;
 
     default:
-        if (isset($_POST['title']) && isset($_POST['url'])) {
+        if (isset($_POST['title'], $_POST['url'])) {
             $titles = $_POST['title'];
             $urls   = $_POST['url'];
 
-            if (is_array($titles) && is_array($urls) && count($titles) == count($urls)) {
+            if (is_array($titles) && is_array($urls) && count($titles) === count($urls)) {
                 AdminFavorite::remove($kAdminlogin);
                 foreach ($titles as $i => $title) {
                     AdminFavorite::add($kAdminlogin, $title, $urls[$i], $i);

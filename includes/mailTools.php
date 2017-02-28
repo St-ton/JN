@@ -13,7 +13,7 @@ require_once PFAD_ROOT . PFAD_PHPMAILER . 'PHPMailerAutoload.php';
  */
 function includeMailTemplate($params, &$smarty)
 {
-    if (isset($params['template']) && isset($params['type']) &&
+    if (isset($params['template'], $params['type']) &&
         ($params['type'] === 'text' || $params['type'] === 'plain' || $params['type'] === 'html') &&
         $smarty->getTemplateVars('int_lang') !== null) {
         $res            = null;
@@ -46,9 +46,9 @@ function includeMailTemplate($params, &$smarty)
 }
 
 /**
- * @param string      $ModulId
- * @param object      $Object
- * @param null|object $mail
+ * @param string        $ModulId
+ * @param stdClass      $Object
+ * @param null|stdClass $mail
  * @return null|bool|stdClass
  */
 function sendeMail($ModulId, $Object, $mail = null)
@@ -99,7 +99,7 @@ function sendeMail($ModulId, $Object, $mail = null)
             'kSprache',
             (int)$Object->tkunde->kSprache
         );
-        if (isset($kundengruppensprache->cName) && $kundengruppensprache->cName != $Object->tkundengruppe->cName) {
+        if (isset($kundengruppensprache->cName) && $kundengruppensprache->cName !== $Object->tkundengruppe->cName) {
             $Object->tkundengruppe->cName = $kundengruppensprache->cName;
         }
     }
@@ -110,7 +110,7 @@ function sendeMail($ModulId, $Object, $mail = null)
     if (isset($Object->NewsletterEmpfaenger->kSprache) && $Object->NewsletterEmpfaenger->kSprache > 0) {
         $Sprache = Shop::DB()->select('tsprache', 'kSprache', $Object->NewsletterEmpfaenger->kSprache);
     }
-    if (!isset($Sprache) || !$Sprache) {
+    if (empty($Sprache)) {
         $Sprache = Shop::DB()->select('tsprache', 'cShopStandard', 'Y');
     }
     $oKunde = lokalisiereKunde($Sprache, $Object->tkunde);
@@ -186,7 +186,7 @@ function sendeMail($ModulId, $Object, $mail = null)
         }
     }
 
-    if (!isset($Emailvorlage->kEmailvorlage) || intval($Emailvorlage->kEmailvorlage) === 0) {
+    if (!isset($Emailvorlage->kEmailvorlage) || (int)$Emailvorlage->kEmailvorlage === 0) {
         Jtllog::writeLog(
             'Keine Emailvorlage mit der ModulId ' . $ModulId . ' vorhanden oder diese Emailvorlage ist nicht aktiv!',
             JTLLOG_LEVEL_ERROR,
@@ -223,7 +223,7 @@ function sendeMail($ModulId, $Object, $mail = null)
 
         case MAILTEMPLATE_BESTELLBESTAETIGUNG:
             $mailSmarty->assign('Bestellung', $Object->tbestellung)
-                       ->assign('Verfuegbarkeit_arr', (isset($Object->cVerfuegbarkeit_arr))
+                       ->assign('Verfuegbarkeit_arr', isset($Object->cVerfuegbarkeit_arr)
                            ? $Object->cVerfuegbarkeit_arr
                            : null)
                        ->assign('oTrustedShopsBewertenButton', null);
@@ -246,7 +246,7 @@ function sendeMail($ModulId, $Object, $mail = null)
             }
             // Trusted Shops
             if ($Einstellungen['trustedshops']['trustedshops_kundenbewertung_anzeigen'] === 'Y') {
-                $langID = (isset($_SESSION['cISOSprache']))
+                $langID = isset($_SESSION['cISOSprache'])
                     ? $_SESSION['cISOSprache']
                     : 'ger'; //workaround for testmails from backend
                 require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.TrustedShops.php';
@@ -442,7 +442,9 @@ function sendeMail($ModulId, $Object, $mail = null)
                        ->assign('oKunde', $Object->oKunde)
                        ->assign('cAnzeigeOrt', $Object->cAnzeigeOrt)
                        ->assign('oSprache', $Sprache);
-            $Emailvorlage->cBetreff = $Object->oCheckBox->cName . ' - ' . $Object->oKunde->cVorname . ' ' . $Object->oKunde->cNachname;
+            $Emailvorlage->cBetreff = $Object->oCheckBox->cName .
+                ' - ' . $Object->oKunde->cVorname .
+                ' ' . $Object->oKunde->cNachname;
             break;
 
         case MAILTEMPLATE_RMA_ABGESENDET:
@@ -472,7 +474,7 @@ function sendeMail($ModulId, $Object, $mail = null)
         $cPluginBody = '_' . $Emailvorlage->kPlugin;
     }
     //fetch
-    if (($Emailvorlage->cMailTyp === 'text/html' || $Emailvorlage->cMailTyp === 'html')) {
+    if ($Emailvorlage->cMailTyp === 'text/html' || $Emailvorlage->cMailTyp === 'html') {
         $bodyHtml = $mailSmarty->fetch('db:html_' . $Emailvorlage->kEmailvorlage . '_' . $Sprache->kSprache . $cPluginBody);
     }
     $bodyText = $mailSmarty->fetch('db:text_' . $Emailvorlage->kEmailvorlage . '_' . $Sprache->kSprache . $cPluginBody);
@@ -558,7 +560,7 @@ function sendeMail($ModulId, $Object, $mail = null)
     $mail->smtp_user     = $Einstellungen['emails']['email_smtp_user'];
     $mail->smtp_pass     = $Einstellungen['emails']['email_smtp_pass'];
     $mail->SMTPSecure    = $Einstellungen['emails']['email_smtp_verschluesselung'];
-    $mail->SMTPAutoTLS   = (empty($mail->SMTPSecure)) ? false : true;
+    $mail->SMTPAutoTLS   = !empty($mail->SMTPSecure);
 
     $mailSmarty->assign('absender_name', $absender_name)
                ->assign('absender_mail', $absender_mail);
@@ -605,16 +607,14 @@ function sendeMail($ModulId, $Object, $mail = null)
         verschickeMail($mail);
     }
     // Kopie Plugin
-    if (isset($Object->oKopie)) {
-        if (isset($Object->oKopie->cToMail) && strlen($Object->oKopie->cToMail) > 0) {
-            $mail->toEmail      = $Object->oKopie->cToMail;
-            $mail->toName       = $Object->oKopie->cToMail;
-            $mail->fromEmail    = $absender_mail;
-            $mail->fromName     = $absender_name;
-            $mail->replyToEmail = $Object->tkunde->cMail;
-            $mail->replyToName  = $Object->tkunde->cVorname . ' ' . $Object->tkunde->cNachname;
-            verschickeMail($mail);
-        }
+    if (isset($Object->oKopie, $Object->oKopie->cToMail) && strlen($Object->oKopie->cToMail) > 0) {
+        $mail->toEmail      = $Object->oKopie->cToMail;
+        $mail->toName       = $Object->oKopie->cToMail;
+        $mail->fromEmail    = $absender_mail;
+        $mail->fromName     = $absender_name;
+        $mail->replyToEmail = $Object->tkunde->cMail;
+        $mail->replyToName  = $Object->tkunde->cVorname . ' ' . $Object->tkunde->cNachname;
+        verschickeMail($mail);
     }
 
     return $mail;
@@ -648,7 +648,7 @@ function verschickeMail($mail)
 {
     $kEmailvorlage = null;
     if (isset($mail->kEmailvorlage)) {
-        if (intval($mail->kEmailvorlage) > 0) {
+        if ((int)$mail->kEmailvorlage > 0) {
             $kEmailvorlage = (int)$mail->kEmailvorlage;
         }
         unset($mail->kEmailvorlage);
@@ -710,9 +710,9 @@ function verschickeMail($mail)
                 $phpmailer->Username      = $mail->smtp_user;
                 $phpmailer->Password      = $mail->smtp_pass;
                 $phpmailer->SMTPSecure    = $mail->SMTPSecure;
-                $phpmailer->SMTPAutoTLS   = (isset($mail->SMTPAutoTLS))
-                    ? $mail->SMTPAutoTLS :
-                    ((empty($mail->SMTPSecure))
+                $phpmailer->SMTPAutoTLS   = isset($mail->SMTPAutoTLS)
+                    ? $mail->SMTPAutoTLS
+                    : (empty($mail->SMTPSecure)
                         ? false
                         : true);
                 break;
@@ -725,6 +725,7 @@ function verschickeMail($mail)
             $phpmailer->isHTML(false);
             $phpmailer->Body = $mail->bodyText;
         }
+
         if (isset($mail->cPDFS_arr) && count($mail->cPDFS_arr) > 0) {
             $cUploadVerzeichnis = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_EMAILPDFS;
 
@@ -807,9 +808,8 @@ function injectSubject($Object, $Betreff)
             }
         }
     }
-    $subject = str_replace($a, $b, $Betreff);
 
-    return $subject;
+    return str_replace($a, $b, $Betreff);
 }
 
 /**
@@ -867,7 +867,7 @@ function lokalisiereKunde($sprache, $kunde)
             $kunde->cLand = $land->cName;
         }
     }
-    if (isset($_SESSION['Kunde']) && isset($cISOLand)) {
+    if (isset($_SESSION['Kunde'], $cISOLand)) {
         $_SESSION['Kunde']->cLand = $cISOLand;
     }
 
@@ -884,12 +884,9 @@ function lokalisiereLieferadresse($oSprache, $oLieferadresse)
     $langRow = (strtolower($oSprache->cISO) === 'ger') ? 'cDeutsch' : 'cEnglisch';
     $land    = Shop::DB()->select(
         'tland',
-        'cISO',
-        $oLieferadresse->cLand,
-        null,
-        null,
-        null,
-        null,
+        'cISO', $oLieferadresse->cLand,
+        null, null,
+        null, null,
         false,
         $langRow . ' AS cName, cISO'
     );

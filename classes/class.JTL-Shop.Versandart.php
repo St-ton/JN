@@ -10,7 +10,6 @@
 class Versandart
 {
     /**
-     * @access public
      * @var int
      */
     public $kVersandart;
@@ -112,7 +111,7 @@ class Versandart
      */
     public function __construct($kVersandart = 0)
     {
-        if (intval($kVersandart) > 0) {
+        if ((int)$kVersandart > 0) {
             $this->loadFromDB($kVersandart);
         }
     }
@@ -160,11 +159,13 @@ class Versandart
     public function insertInDB()
     {
         $obj = kopiereMembers($this);
-        unset($obj->oVersandartSprache_arr);
-        unset($obj->oVersandartStaffel_arr);
-        unset($obj->kRechnungsadresse);
-        unset($obj->nMinLiefertage);
-        unset($obj->nMaxLiefertage);
+        unset(
+            $obj->oVersandartSprache_arr,
+            $obj->oVersandartStaffel_arr,
+            $obj->kRechnungsadresse,
+            $obj->nMinLiefertage,
+            $obj->nMaxLiefertage
+        );
         $this->kRechnungsadresse = Shop::DB()->insert('tversandart', $obj);
 
         return $this->kVersandart;
@@ -179,11 +180,13 @@ class Versandart
     public function updateInDB()
     {
         $obj = kopiereMembers($this);
-        unset($obj->oVersandartSprache_arr);
-        unset($obj->oVersandartStaffel_arr);
-        unset($obj->kRechnungsadresse);
-        unset($obj->nMinLiefertage);
-        unset($obj->nMaxLiefertage);
+        unset(
+            $obj->oVersandartSprache_arr,
+            $obj->oVersandartStaffel_arr,
+            $obj->kRechnungsadresse,
+            $obj->nMinLiefertage,
+            $obj->nMaxLiefertage
+        );
 
         return Shop::DB()->update('tversandart', 'kVersandart', $obj->kVersandart, $obj);
     }
@@ -259,7 +262,7 @@ class Versandart
     {
         $value = (int)$value;
 
-        if (strlen($table) > 0 && strlen($key) > 0 && $value > 0) {
+        if ($value > 0 && strlen($table) > 0 && strlen($key) > 0) {
             $Objs = Shop::DB()->selectAll($table, $key, $value);
 
             if (is_array($Objs)) {
@@ -281,7 +284,7 @@ class Versandart
     {
         $value = (int)$value;
 
-        if (is_array($objectArr) && count($objectArr) > 0 && strlen($key) > 0 && $value > 0) {
+        if ($value > 0 && is_array($objectArr) && count($objectArr) > 0 && strlen($key) > 0) {
             foreach ($objectArr as $Obj) {
                 $kKeyPrim = $Obj->$unsetKey;
                 if ($unsetKey !== null) {
@@ -293,7 +296,7 @@ class Versandart
                 }
                 $kKey = Shop::DB()->insert($table, $Obj);
 
-                if (intval($kKey) > 0 && $table === 'tversandzuschlag') {
+                if ((int)$kKey > 0 && $table === 'tversandzuschlag') {
                     self::cloneShippingSectionSpecial($kKeyPrim, $kKey);
                 }
             }

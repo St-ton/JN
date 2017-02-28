@@ -94,13 +94,10 @@ class Rechnungsadresse extends Adresse
 
         $obj->cLand = $this->pruefeLandISO($obj->cLand);
 
-        unset($obj->kRechnungsadresse);
-        unset($obj->angezeigtesLand);
-        unset($obj->cAnredeLocalized);
+        unset($obj->kRechnungsadresse, $obj->angezeigtesLand, $obj->cAnredeLocalized);
 
         $this->kRechnungsadresse = Shop::DB()->insert('trechnungsadresse', $obj);
         $this->decrypt();
-
         // Anrede mappen
         $this->cAnredeLocalized = $this->mappeAnrede($this->cAnrede);
 
@@ -120,12 +117,10 @@ class Rechnungsadresse extends Adresse
 
         $obj->cLand = $this->pruefeLandISO($obj->cLand);
 
-        unset($obj->angezeigtesLand);
-        unset($obj->cAnredeLocalized);
+        unset($obj->angezeigtesLand, $obj->cAnredeLocalized);
 
         $cReturn = Shop::DB()->update('trechnungsadresse', 'kRechnungsadresse', $obj->kRechnungsadresse, $obj);
         $this->decrypt();
-
         // Anrede mappen
         $this->cAnredeLocalized = $this->mappeAnrede($this->cAnrede);
 

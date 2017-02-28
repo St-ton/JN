@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/admininclude.php';
+require_once __DIR__ . '/includes/admininclude.php';
 
 if (!ini_get('safe_mode')) {
     @ini_set('max_execution_time', 0);
@@ -113,7 +113,8 @@ if ($exportformat->cKodierung === 'UTF-8') {
 $max_artikel = Shop::DB()->query(
     "SELECT count(*) AS cnt
         FROM tartikel
-        JOIN tartikelattribut ON tartikelattribut.kArtikel = tartikel.kArtikel
+        JOIN tartikelattribut 
+            ON tartikelattribut.kArtikel = tartikel.kArtikel
         WHERE tartikelattribut.cName = 'yategokat'", 1
 );
 

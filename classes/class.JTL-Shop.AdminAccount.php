@@ -299,11 +299,11 @@ class AdminAccount
         $xParse_arr = parse_url($cUrl);
         $cHost      = $xParse_arr['host'];
 
-        if (!empty($xParse_arr['port']) && intval($xParse_arr['port']) > 0) {
+        if (!empty($xParse_arr['port']) && (int)$xParse_arr['port'] > 0) {
             $cHost .= ':' . $xParse_arr['port'];
         }
 
-        if (isset($_SERVER['HTTP_HOST']) && strlen($_SERVER['HTTP_HOST']) > 0 && $cHost !== $_SERVER['HTTP_HOST']) {
+        if (isset($_SERVER['HTTP_HOST']) && $cHost !== $_SERVER['HTTP_HOST'] && strlen($_SERVER['HTTP_HOST']) > 0) {
             header("Location: {$cUrl}");
             exit;
         }
@@ -315,14 +315,13 @@ class AdminAccount
     private function _validateSession()
     {
         $this->_bLogged = false;
-        if (isset($_SESSION['AdminAccount']->cLogin) && isset($_SESSION['AdminAccount']->cPass) &&
-            isset($_SESSION['AdminAccount']->cURL) && $_SESSION['AdminAccount']->cURL == Shop::getURL()) {
+        if (isset($_SESSION['AdminAccount']->cLogin, $_SESSION['AdminAccount']->cPass, $_SESSION['AdminAccount']->cURL) &&
+            $_SESSION['AdminAccount']->cURL === Shop::getURL()
+        ) {
             $oAccount                 = Shop::DB()->select(
                 'tadminlogin',
-                'cLogin',
-                $_SESSION['AdminAccount']->cLogin,
-                'cPass',
-                $_SESSION['AdminAccount']->cPass
+                'cLogin', $_SESSION['AdminAccount']->cLogin,
+                'cPass', $_SESSION['AdminAccount']->cPass
             );
             $this->twoFaAuthenticated = (isset($oAccount->b2FAauth) && $oAccount->b2FAauth === '1')
                 ? (isset($_SESSION['AdminAccount']->TwoFA_valid) && true === $_SESSION['AdminAccount']->TwoFA_valid)
@@ -338,7 +337,7 @@ class AdminAccount
      */
     public function doTwoFA()
     {
-        if (isset($_SESSION['AdminAccount']->cLogin) && isset($_POST['TwoFA_code'])) {
+        if (isset($_SESSION['AdminAccount']->cLogin, $_POST['TwoFA_code'])) {
             $oTwoFA = new TwoFA();
             $oTwoFA->setUserByName($_SESSION['AdminAccount']->cLogin);
             // check the 2fa-code here really
@@ -476,9 +475,10 @@ class AdminAccount
     private function checkAndUpdateHash($password)
     {
         //only update hash if the db update to 4.00+ was already executed
-        if (version_compare(Shop::getShopVersion(), 400, '>=') === true &&
-            isset($_SESSION['AdminAccount']->cPass) && isset($_SESSION['AdminAccount']->cLogin) &&
-            password_needs_rehash($_SESSION['AdminAccount']->cPass, PASSWORD_DEFAULT)) {
+        if (isset($_SESSION['AdminAccount']->cPass, $_SESSION['AdminAccount']->cLogin) &&
+            password_needs_rehash($_SESSION['AdminAccount']->cPass, PASSWORD_DEFAULT) &&
+            version_compare(Shop::getShopVersion(), 400, '>=') === true
+        ) {
             $_upd        = new stdClass();
             $_upd->cPass = password_hash($password, PASSWORD_DEFAULT);
             Shop::DB()->update('tadminlogin', 'cLogin', $_SESSION['AdminAccount']->cLogin, $_upd);

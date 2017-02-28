@@ -315,7 +315,13 @@ class JobQueue
      */
     public function speicherJobInDB()
     {
-        if ($this->kKey > 0 && strlen($this->cJobArt) > 0 && strlen($this->cKey) > 0 && strlen($this->cTabelle) > 0 && $this->nLimitM > 0 && strlen($this->dStartZeit) > 0) {
+        if ($this->kKey > 0 &&
+            $this->nLimitM > 0 &&
+            strlen($this->cJobArt) > 0 &&
+            strlen($this->cKey) > 0 &&
+            strlen($this->cTabelle) > 0 &&
+            strlen($this->dStartZeit) > 0
+        ) {
             $queue = kopiereMembers($this);
             unset($queue->kJobQueue);
 

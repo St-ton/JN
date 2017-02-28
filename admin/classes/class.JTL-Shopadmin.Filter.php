@@ -6,10 +6,10 @@
 class Filter
 {
     protected $cId          = 'filter';
-    protected $oField_arr   = array();
+    protected $oField_arr   = [];
     protected $cWhereSQL    = '';
     protected $cAction      = '';
-    protected $cSession_arr = array();
+    protected $cSession_arr = [];
 
     /**
      * Filter constructor.
@@ -65,9 +65,9 @@ class Filter
      * @param string $cColumn - the column name to be compared
      * @return FilterSelectField
      */
-    public function addSelectfield($cTitle, $cColumn)
+    public function addSelectfield($cTitle, $cColumn, $nDefaultOption = 0)
     {
-        $oField                               = new FilterSelectField($this, $cTitle, $cColumn);
+        $oField                               = new FilterSelectField($this, $cTitle, $cColumn, $nDefaultOption);
         $this->oField_arr[]                   = $oField;
         $this->cSession_arr[$oField->getId()] = $oField->getValue();
 
@@ -114,6 +114,14 @@ class Filter
     }
 
     /**
+     * @return array
+     */
+    public function getField($i)
+    {
+        return $this->oField_arr[$i];
+    }
+
+    /**
      * @return string
      */
     public function getAction()
@@ -134,7 +142,7 @@ class Filter
      */
     public function loadSessionStore()
     {
-        $this->cSession_arr = isset($_SESSION['filter_' . $this->cId]) ? $_SESSION['filter_' . $this->cId] : array();
+        $this->cSession_arr = isset($_SESSION['filter_' . $this->cId]) ? $_SESSION['filter_' . $this->cId] : [];
     }
 
     /**

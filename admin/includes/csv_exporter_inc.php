@@ -18,7 +18,8 @@
  * @param array $excluded - array of property/column names to be excluded
  * @return bool - false = failure or exporter-id-mismatch
  */
-function handleCsvExportAction ($exporterId, $csvFilename, $source, $fields = [], $excluded = [])
+function handleCsvExportAction($exporterId, $csvFilename, $source, $fields = [], $excluded = [], $delim = ',',
+    $bHead = true)
 {
     if (validateToken() && verifyGPDataString('exportcsv') === $exporterId) {
         if (is_callable($source)) {
@@ -36,7 +37,10 @@ function handleCsvExportAction ($exporterId, $csvFilename, $source, $fields = []
         header('Content-Disposition: attachment; filename=' . $csvFilename);
         header('Content-Type: text/csv');
         $fs = fopen('php://output', 'w');
-        fputcsv($fs, $fields);
+
+        if ($bHead) {
+            fputcsv($fs, $fields);
+        }
 
         foreach ($arr as $elem) {
             $csvRow = [];
@@ -45,7 +49,7 @@ function handleCsvExportAction ($exporterId, $csvFilename, $source, $fields = []
                 $csvRow[] = (string)$elem->$field;
             }
 
-            fputcsv($fs, $csvRow);
+            fputcsv($fs, $csvRow, $delim);
         }
         exit();
     }

@@ -184,7 +184,7 @@ function generateSitemapXML()
 {
     Jtllog::writeLog('Sitemap wird erstellt', JTLLOG_LEVEL_NOTICE);
     $nStartzeit = microtime(true);
-    $conf       = Shop::getSettings([CONF_ARTIKELUEBERSICHT, CONF_SITEMAP]);
+    $conf       = Shop::getSettings([CONF_ARTIKELUEBERSICHT, CONF_SITEMAP, CONF_GLOBAL]);
     require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Artikel.php';
     require_once PFAD_ROOT . PFAD_INCLUDES . 'filter_inc.php';
     if (!isset($conf['sitemap']['sitemap_insert_lastmod'])) {
@@ -295,11 +295,23 @@ function generateSitemapXML()
     $sitemap_data .= makeURL('', null, FREQ_ALWAYS, PRIO_VERYHIGH);
     //Alte Sitemaps löschen
     loescheSitemaps();
+    // Where-Clause
+    $andWhere = '';
     // Kindartikel?
-    $andWhere = (isset($conf['sitemap']['sitemap_varkombi_children_export']) &&
-        $conf['sitemap']['sitemap_varkombi_children_export'] === 'Y')
-        ? ''
-        : ' AND tartikel.kVaterArtikel = 0';
+    if (!isset($conf['sitemap']['sitemap_varkombi_children_export']) ||
+        $conf['sitemap']['sitemap_varkombi_children_export'] !== 'Y'
+    ) {
+        $andWhere .= ' AND tartikel.kVaterArtikel = 0';
+    }
+    // Artikelanzeigefilter
+    if ((int)$conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER) {
+        // 'Nur Artikel mit Lagerbestand>0 anzeigen'
+        $andWhere .= " AND (tartikel.cLagerBeachten = 'N' OR tartikel.fLagerbestand > 0)";
+    } elseif ((int)$conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL) {
+        // 'Nur Artikel mit Lagerbestand>0 oder deren Lagerbestand<0 werden darf'
+        $andWhere .= " AND (tartikel.cLagerBeachten = 'N' OR tartikel.cLagerKleinerNull = 'Y' OR
+            tartikel.fLagerbestand > 0)";
+    }
     //Artikel STD Sprache
     $modification = ($conf['sitemap']['sitemap_insert_lastmod'] === 'Y') ?
         ', tartikel.dLetzteAktualisierung' :
@@ -311,7 +323,7 @@ function generateSitemapXML()
             " LEFT JOIN tseo ON tseo.cKey = 'kArtikel'
                AND tseo.kKey = tartikel.kArtikel
                 AND tseo.kSprache = " . $Sprache->kSprache . "
-            WHERE tartikelsichtbarkeit.kArtikel IS NULL{$andWhere}";
+            WHERE tartikelsichtbarkeit.kArtikel IS NULL" . $andWhere;
     $res = Shop::DB()->query($strSQL, 10);
     while ($oArtikel = $res->fetch(PDO::FETCH_OBJ)) {
         if ($nSitemap > $nSitemapLimit) {
@@ -419,8 +431,7 @@ function generateSitemapXML()
                         AND tlinkgruppe.cTemplatename != 'hidden'
                         AND (tlink.cKundengruppen IS NULL
                           OR tlink.cKundengruppen = 'NULL'
-                          OR tlink.cKundengruppen LIKE '" . $stdKundengruppe->kKundengruppe . ";%'
-                          OR tlink.cKundengruppen LIKE '%;" . $stdKundengruppe->kKundengruppe . ";%')
+                          OR tlink.cKundengruppen RLIKE '^([0-9;]*;)?" . $stdKundengruppe->kKundengruppe . ";')
                      ORDER BY tlinksprache.kLink";
 
         $res = Shop::DB()->query($strSQL, 10);
@@ -875,7 +886,7 @@ function generateSitemapXML()
                 WHERE tnews.nAktiv = 1
                     AND tnews.dGueltigVon <= now()
                     AND (tnews.cKundengruppe LIKE '%;-1;%'
-                    OR tnews.cKundengruppe LIKE '%;" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";%') 
+                    OR tnews.cKundengruppe RLIKE '^([0-9;]*;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";') 
                     ORDER BY tnews.dErstellt", 10
         );
         while ($oNews = $res->fetch(PDO::FETCH_OBJ)) {

@@ -626,11 +626,7 @@ class Preise
         $this->fPreisHaendler = Shop::DB()->escape($_POST['ArtikelVKHaendlerBrutto']);
         $this->dDate = 'now()';
          */
-        if ($this->kArtikel > 0) {
-            return true;
-        }
-
-        return false;
+        return $this->kArtikel > 0;
     }
 
     /**

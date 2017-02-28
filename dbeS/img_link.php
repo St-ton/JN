@@ -5,7 +5,7 @@
  */
 
 ob_start();
-require_once dirname(__FILE__) . '/syncinclude.php';
+require_once __DIR__ . '/syncinclude.php';
 
 $return = 3;
 if (auth()) {
@@ -23,7 +23,8 @@ if (auth()) {
             $return = 0;
             foreach ($list as $zip) {
                 if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                    Jtllog::writeLog('bearbeite: ' . PFAD_SYNC_TMP . $zip['filename'] . ' size: ' . filesize(PFAD_SYNC_TMP . $zip['filename']),
+                    Jtllog::writeLog('bearbeite: ' . PFAD_SYNC_TMP . $zip['filename'] .
+                        ' size: ' . filesize(PFAD_SYNC_TMP . $zip['filename']),
                         JTLLOG_LEVEL_DEBUG, false, 'img_link_xml');
                 }
                 $xml = simplexml_load_file(PFAD_SYNC_TMP . $zip['filename']);

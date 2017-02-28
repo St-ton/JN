@@ -415,23 +415,36 @@ class PayPalExpress extends PaymentMethod
      */
     public function zahlungErlaubt($oArtikel_arr = [])
     {
+        $versandklassen = VersandartHelper::getShippingClasses($_SESSION['Warenkorb']);
         foreach ($oArtikel_arr as $oArtikel) {
             if ($oArtikel !== null) {
                 if (isset($oArtikel->FunktionsAttribute['no_paypalexpress']) && intval($oArtikel->FunktionsAttribute['no_paypalexpress']) === 1) {
                     return false;
                 }
+                $kKundengruppe = (isset($_SESSION['Kunde']->kKundengruppe)) ? $_SESSION['Kunde']->kKundengruppe : null;
+                if (!$kKundengruppe) {
+                    if (method_exists('Kundengruppe', 'getDefaultGroupID')) {
+                        $kKundengruppe = Kundengruppe::getDefaultGroupID();
+                    } else {
+                        $kKundengruppe = gibStandardKundenGruppe();
+                    }
+                }
+                $sql = 'SELECT tversandart.kVersandart, tversandartzahlungsart.kZahlungsart
+                                                    FROM tversandart
+                                                    LEFT JOIN tversandartzahlungsart
+                                                        ON tversandartzahlungsart.kVersandart = tversandart.kVersandart
+                                                    WHERE tversandartzahlungsart.kZahlungsart = ' . $this->tZahlungsart->kZahlungsart . "
+                AND (cVersandklassen='-1' OR (cVersandklassen LIKE '% " . $versandklassen . " %' OR cVersandklassen LIKE '% " . $versandklassen . "'))
+                                                       AND (cKundengruppen='-1' OR cKundengruppen LIKE '%;" . $kKundengruppe . ";%')";
+                $oVersandart_arr = (class_exists('Shop')) ? Shop::DB()->query($sql,
+                    2) : $GLOBALS['DB']->executeQuery($sql,
+                    2);
+                $oVersandart_arr = $this->pruefeobVersandartPayPalExpressenthaelt($oVersandart_arr);
+                if (count($oVersandart_arr) <= 0) {
+                    return false;
+                }
             }
         }
-
-        $versandklassen = VersandartHelper::getShippingClasses($_SESSION['Warenkorb']);
-
-        $oVersandart_arr = VersandartHelper::getPossibleShippingMethods($_SESSION['Kunde']->cLand, $_SESSION['Kunde']->cPLZ, $versandklassen, $_SESSION['Kunde']->kKundengruppe);
-        $oVersandart_arr = $this->pruefeobVersandartPayPalExpressenthaelt($oVersandart_arr);
-
-        if (count($oVersandart_arr) <= 0) {
-            return false;
-        }
-
         return true;
     }
 

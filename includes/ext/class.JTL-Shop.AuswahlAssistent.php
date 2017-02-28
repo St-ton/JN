@@ -198,21 +198,23 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
             $FilterSQL->oKategorieFilterSQL = gibKategorieFilterSQL($NaviFilter);
             $oMerkmalFilter_arr             = gibMerkmalFilterOptionen($FilterSQL, $NaviFilter, null, true);
 
-            foreach ($oMerkmalFilter_arr as &$oMerkmalFilter) {
-                $oFrage                    = $this->oFrage_assoc[(int)$oMerkmalFilter->kMerkmal];
-                $oFrage->oWert_arr         = $oMerkmalFilter->oMerkmalWerte_arr;
-                $oFrage->nTotalResultCount = 0;
+            foreach ($oMerkmalFilter_arr as $oMerkmalFilter) {
+                if (array_key_exists((int)$oMerkmalFilter->kMerkmal, $this->oFrage_assoc)) {
+                    $oFrage                    = $this->oFrage_assoc[(int)$oMerkmalFilter->kMerkmal];
+                    $oFrage->oWert_arr         = $oMerkmalFilter->oMerkmalWerte_arr;
+                    $oFrage->nTotalResultCount = 0;
 
-                if (TEMPLATE_COMPATIBILITY === true) {
-                    // Used by old AWA
-                    $oFrage->oMerkmalWert_arr = $oFrage->oWert_arr;
-                }
+                    if (TEMPLATE_COMPATIBILITY === true) {
+                        // Used by old AWA
+                        $oFrage->oMerkmalWert_arr = $oFrage->oWert_arr;
+                    }
 
-                foreach ($oMerkmalFilter->oMerkmalWerte_arr as &$oWert) {
-                    $oWert->kMerkmalWert                       = (int)$oWert->kMerkmalWert;
-                    $oWert->nAnzahl                            = (int)$oWert->nAnzahl;
-                    $oFrage->nTotalResultCount                += $oWert->nAnzahl;
-                    $oFrage->oWert_assoc[$oWert->kMerkmalWert] = $oWert;
+                    foreach ($oMerkmalFilter->oMerkmalWerte_arr as $oWert) {
+                        $oWert->kMerkmalWert                       = (int)$oWert->kMerkmalWert;
+                        $oWert->nAnzahl                            = (int)$oWert->nAnzahl;
+                        $oFrage->nTotalResultCount                += $oWert->nAnzahl;
+                        $oFrage->oWert_assoc[$oWert->kMerkmalWert] = $oWert;
+                    }
                 }
             }
 

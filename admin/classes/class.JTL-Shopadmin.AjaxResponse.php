@@ -21,9 +21,9 @@ if (!function_exists('getallheaders')) {
             'CONTENT_MD5'    => 'Content-Md5',
         ];
         foreach ($_SERVER as $key => $value) {
-            if (substr($key, 0, 5) === 'HTTP_') {
+            if (strpos($key, 'HTTP_') === 0) {
                 $key = substr($key, 5);
-                if (!isset($copy_server[$key]) || !isset($_SERVER[$key])) {
+                if (!isset($copy_server[$key], $_SERVER[$key])) {
                     $key           = str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', $key))));
                     $headers[$key] = $value;
                 }
@@ -138,7 +138,7 @@ class AjaxResponse
         }
         $accept = explode(',', getallheaders()['Accept']);
 
-        return in_array('application/json', $accept);
+        return in_array('application/json', $accept, true);
     }
 
     /**
@@ -168,11 +168,9 @@ class AjaxResponse
         }
 
         if (($mimetype === 'application/octet-stream') || ($mimetype === 'application/octetstream')) {
-            if (($browserAgent === 'ie') || ($browserAgent === 'opera')) {
-                $mimetype = 'application/octetstream';
-            } else {
-                $mimetype = 'application/octet-stream';
-            }
+            $mimetype = ($browserAgent === 'ie' || $browserAgent === 'opera')
+                ? 'application/octetstream'
+                : 'application/octet-stream';
         }
 
         @ob_end_clean();

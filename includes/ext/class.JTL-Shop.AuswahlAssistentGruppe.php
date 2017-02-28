@@ -170,11 +170,13 @@ if (class_exists('AuswahlAssistent')) {
             $cPlausi_arr = $this->checkGroup($cParam_arr);
             if (count($cPlausi_arr) === 0) {
                 $oObj = kopiereMembers($this);
-                unset($oObj->cSprache);
-                unset($oObj->nStartseite);
-                unset($oObj->cKategorie);
-                unset($oObj->oAuswahlAssistentOrt_arr);
-                unset($oObj->oAuswahlAssistentFrage_arr);
+                unset(
+                    $oObj->cSprache,
+                    $oObj->nStartseite,
+                    $oObj->cKategorie,
+                    $oObj->oAuswahlAssistentOrt_arr,
+                    $oObj->oAuswahlAssistentFrage_arr
+                );
                 $kAuswahlAssistentGruppe = Shop::DB()->insert('tauswahlassistentgruppe', $oObj);
                 if ($kAuswahlAssistentGruppe > 0) {
                     AuswahlAssistentOrt::saveLocation($cParam_arr, $kAuswahlAssistentGruppe);

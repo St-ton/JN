@@ -176,7 +176,7 @@ function mappeDatumName($cMonat, $nJahr, $cISOSprache)
                 break;
         }
     } else {
-        $cName .= date('F', mktime(0, 0, 0, intval($cMonat), 1, $nJahr)) . ', ' . $nJahr;
+        $cName .= date('F', mktime(0, 0, 0, (int)$cMonat, 1, $nJahr)) . ', ' . $nJahr;
     }
 
     return $cName;
@@ -191,9 +191,9 @@ function gibJahrMonatVonDateTime($cDateTimeStr)
     list($dDatum, $dUhrzeit)     = explode(' ', $cDateTimeStr);
     list($dJahr, $dMonat, $dTag) = explode('-', $dDatum);
     $oDatum                      = new stdClass();
-    $oDatum->Jahr                = intval($dJahr);
-    $oDatum->Monat               = intval($dMonat);
-    $oDatum->Tag                 = intval($dTag);
+    $oDatum->Jahr                = (int)$dJahr;
+    $oDatum->Monat               = (int)$dMonat;
+    $oDatum->Tag                 = (int)$dTag;
 
     return $oDatum;
 }
@@ -388,7 +388,8 @@ function parseText($cText, $kNews)
     usort($cBild_arr, 'cmp');
 
     $shopURL = Shop::getURL() . '/';
-    for ($i = 1; $i <= count($cBild_arr); $i++) {
+    $count   = count($cBild_arr);
+    for ($i = 1; $i <= $count; $i++) {
         $cText = str_replace("$#Bild" . $i . "#$", '<img alt="" src="' . 
             $shopURL . PFAD_NEWSBILDER . $kNews . '/' . $cBild_arr[$i - 1] . 
             '" />', $cText);
@@ -410,21 +411,22 @@ function parseText($cText, $kNews)
  */
 function loescheNewsBild($cBildname, $kNews, $cUploadVerzeichnis)
 {
-    if (intval($kNews) > 0 && strlen($cBildname) > 0 && is_dir($cUploadVerzeichnis)) {
-        if (is_dir($cUploadVerzeichnis . $kNews)) {
-            $DirHandle = opendir($cUploadVerzeichnis . $kNews);
-            while (false !== ($Datei = readdir($DirHandle))) {
-                if ($Datei !== '.' && $Datei !== '..' && substr($Datei, 0, strpos($Datei, '.')) == $cBildname) {
-                    unlink($cUploadVerzeichnis . $kNews . '/' . $Datei);
-                    closedir($DirHandle);
-                    if ($cBildname === 'preview') {
-                        $upd                = new stdClass();
-                        $upd->cPreviewImage = '';
-                        Shop::DB()->update('tnews', 'kNews', $kNews, $upd);
-                    }
-
-                    return true;
+    if ((int)$kNews > 0 && strlen($cBildname) > 0 &&
+        is_dir($cUploadVerzeichnis) &&
+        is_dir($cUploadVerzeichnis . $kNews)
+    ) {
+        $DirHandle = opendir($cUploadVerzeichnis . $kNews);
+        while (false !== ($Datei = readdir($DirHandle))) {
+            if ($Datei !== '.' && $Datei !== '..' && substr($Datei, 0, strpos($Datei, '.')) === $cBildname) {
+                unlink($cUploadVerzeichnis . $kNews . '/' . $Datei);
+                closedir($DirHandle);
+                if ($cBildname === 'preview') {
+                    $upd                = new stdClass();
+                    $upd->cPreviewImage = '';
+                    Shop::DB()->update('tnews', 'kNews', $kNews, $upd);
                 }
+
+                return true;
             }
         }
     }

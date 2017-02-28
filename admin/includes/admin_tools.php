@@ -37,7 +37,7 @@ function getAdminSectionSettings($kEinstellungenSektion)
                     ['kEinstellungenSektion', 'cName'],
                     [$kEinstellungenSektion, $oConfig_arr[$i]->cWertName]
                 );
-                $oConfig_arr[$i]->gesetzterWert = (isset($oSetValue->cWert))
+                $oConfig_arr[$i]->gesetzterWert = isset($oSetValue->cWert)
                     ? $oSetValue->cWert
                     : null;
             }
@@ -68,7 +68,7 @@ function saveAdminSettings($settingsIDs, &$cPost_arr, $tags = [CACHING_GROUP_OPT
     if (is_array($oConfig_arr) && count($oConfig_arr) > 0) {
         for ($i = 0; $i < $configCount; $i++) {
             $aktWert                        = new stdClass();
-            $aktWert->cWert                 = (isset($cPost_arr[$oConfig_arr[$i]->cWertName]))
+            $aktWert->cWert                 = isset($cPost_arr[$oConfig_arr[$i]->cWertName])
                 ? $cPost_arr[$oConfig_arr[$i]->cWertName]
                 : null;
             $aktWert->cName                 = $oConfig_arr[$i]->cWertName;
@@ -79,7 +79,7 @@ function saveAdminSettings($settingsIDs, &$cPost_arr, $tags = [CACHING_GROUP_OPT
                     break;
                 case 'zahl':
                 case 'number':
-                    $aktWert->cWert = intval($aktWert->cWert);
+                    $aktWert->cWert = (int)$aktWert->cWert;
                     break;
                 case 'text':
                     $aktWert->cWert = substr($aktWert->cWert, 0, 255);
@@ -112,7 +112,7 @@ function saveAdminSettings($settingsIDs, &$cPost_arr, $tags = [CACHING_GROUP_OPT
  */
 function bearbeiteListBox($cListBox_arr, $cWertName, $kEinstellungenSektion)
 {
-    $kEinstellungenSektion = intval($kEinstellungenSektion);
+    $kEinstellungenSektion = (int)$kEinstellungenSektion;
     if (is_array($cListBox_arr) && count($cListBox_arr) > 0) {
         Shop::DB()->delete('teinstellungen', ['kEinstellungenSektion', 'cName'], [$kEinstellungenSektion, $cWertName]);
         foreach ($cListBox_arr as $cListBox) {
@@ -156,7 +156,7 @@ function saveAdminSectionSettings($kEinstellungenSektion, &$cPost_arr, $tags = [
     if (!validateToken()) {
         return 'Fehler: Cross site request forgery.';
     }
-    $kEinstellungenSektion = intval($kEinstellungenSektion);
+    $kEinstellungenSektion = (int)$kEinstellungenSektion;
     $oConfig_arr           = Shop::DB()->selectAll(
         'teinstellungenconf',
         ['kEinstellungenSektion', 'cConf'],
@@ -169,7 +169,7 @@ function saveAdminSectionSettings($kEinstellungenSektion, &$cPost_arr, $tags = [
         $count = count($oConfig_arr);
         for ($i = 0; $i < $count; $i++) {
             $aktWert                        = new stdClass();
-            $aktWert->cWert                 = (isset($cPost_arr[$oConfig_arr[$i]->cWertName]))
+            $aktWert->cWert                 = isset($cPost_arr[$oConfig_arr[$i]->cWertName])
                 ? $cPost_arr[$oConfig_arr[$i]->cWertName]
                 : null;
             $aktWert->cName                 = $oConfig_arr[$i]->cWertName;
@@ -180,7 +180,7 @@ function saveAdminSectionSettings($kEinstellungenSektion, &$cPost_arr, $tags = [
                     break;
                 case 'zahl':
                 case 'number':
-                    $aktWert->cWert = intval($aktWert->cWert);
+                    $aktWert->cWert = (int)$aktWert->cWert;
                     break;
                 case 'text':
                     $aktWert->cWert = substr($aktWert->cWert, 0, 255);
@@ -219,7 +219,7 @@ function saveAdminSectionSettings($kEinstellungenSektion, &$cPost_arr, $tags = [
  */
 function holeAlleKampagnen($bInterneKampagne = false, $bAktivAbfragen = true)
 {
-    $cAktivSQL  = ($bAktivAbfragen) ? " WHERE nAktiv = 1" : '';
+    $cAktivSQL  = $bAktivAbfragen ? " WHERE nAktiv = 1" : '';
     $cInternSQL = '';
     if (!$bInterneKampagne && $bAktivAbfragen) {
         $cInternSQL = " AND kKampagne >= 1000";
@@ -262,7 +262,7 @@ function getArrangedArray($oXML_arr, $nLevel = 1)
                 //attribut array -> nicht beachten -> weiter
                 continue;
             } else {
-                if (intval($cArrayKeys[$i]) > 0 || $cArrayKeys[$i] == '0' || $nLevel == 0) {
+                if ((int)$cArrayKeys[$i] > 0 || $cArrayKeys[$i] == '0' || $nLevel == 0) {
                     //int Arrayelement -> in die Tiefe gehen
                     $oXML_arr[$cArrayKeys[$i]] = getArrangedArray($oXML_arr[$cArrayKeys[$i]]);
                 } else {
@@ -275,12 +275,11 @@ function getArrangedArray($oXML_arr, $nLevel = 1)
                         }
                         //kein Attributzweig, kein numerischer Anfang
                         $tmp_arr           = [];
-                        $tmp_arr['0 attr'] = (isset($oXML_arr[$cArrayKeys[$i] . ' attr']))
+                        $tmp_arr['0 attr'] = isset($oXML_arr[$cArrayKeys[$i] . ' attr'])
                             ? $oXML_arr[$cArrayKeys[$i] . ' attr']
                             : null;
                         $tmp_arr['0']      = $oXML_arr[$cArrayKeys[$i]];
-                        unset($oXML_arr[$cArrayKeys[$i]]);
-                        unset($oXML_arr[$cArrayKeys[$i] . ' attr']);
+                        unset($oXML_arr[$cArrayKeys[$i]], $oXML_arr[$cArrayKeys[$i] . ' attr']);
                         $oXML_arr[$cArrayKeys[$i]] = $tmp_arr;
                         if (is_array($oXML_arr[$cArrayKeys[$i]]['0'])) {
                             $oXML_arr[$cArrayKeys[$i]]['0'] = getArrangedArray($oXML_arr[$cArrayKeys[$i]]['0']);
@@ -346,7 +345,6 @@ function setzeSprache()
             $_SESSION['cISOSprache'] = $oSprache->cISO;
         }
     }
-
     if (isset($_SESSION['kSprache']) && empty($_SESSION['cISOSprache'])) {
         // Fehlendes cISO ergänzen
         $oSprache = Shop::DB()->select('tsprache', 'kSprache', (int)$_SESSION['kSprache']);
@@ -380,7 +378,7 @@ function setzeSpracheTrustedShops()
     }
 
     //setze explizit ausgewählte Sprache
-    if (isset($_POST['sprachwechsel']) && intval($_POST['sprachwechsel']) === 1) {
+    if (isset($_POST['sprachwechsel']) && (int)$_POST['sprachwechsel'] === 1) {
         if (strlen($_POST['cISOSprache']) > 0) {
             $_SESSION['TrustedShops']->oSprache->cISOSprache  =
                 StringHandler::htmlentities(StringHandler::filterXSS($_POST['cISOSprache']));
@@ -438,23 +436,23 @@ function ermittleDatumWoche($cDatum)
     if (strlen($cDatum) > 0) {
         list($cJahr, $cMonat, $cTag) = explode('-', $cDatum);
         // So = 0, SA = 6
-        $nWochentag = intval(date('w', mktime(0, 0, 0, intval($cMonat), intval($cTag), intval($cJahr))));
+        $nWochentag = intval(date('w', mktime(0, 0, 0, (int)$cMonat, (int)$cTag, (int)$cJahr)));
         // Woche soll Montag starten - also So = 6, Mo = 0
-        if ($nWochentag == 0) {
+        if ($nWochentag === 0) {
             $nWochentag = 6;
         } else {
             $nWochentag--;
         }
         // Wochenstart ermitteln
-        $nTagOld = intval($cTag);
-        $nTag    = intval($cTag) - $nWochentag;
-        $nMonat  = intval($cMonat);
-        $nJahr   = intval($cJahr);
+        $nTagOld = (int)$cTag;
+        $nTag    = (int)$cTag - $nWochentag;
+        $nMonat  = (int)$cMonat;
+        $nJahr   = (int)$cJahr;
         if ($nTag <= 0) {
-            $nMonat -= 1;
-            if ($nMonat == 0) {
+            --$nMonat;
+            if ($nMonat === 0) {
                 $nMonat = 12;
-                $nJahr += 1;
+                ++$nJahr;
             }
 
             $nAnzahlTageProMonat = date('t', mktime(0, 0, 0, $nMonat, 1, $nJahr));
@@ -466,11 +464,11 @@ function ermittleDatumWoche($cDatum)
         $nAnzahlTageProMonat = date('t', mktime(0, 0, 0, $nMonat, 1, $nJahr));
         $nTag += $nTage;
         if ($nTag > $nAnzahlTageProMonat) {
-            $nTag = $nTag - $nAnzahlTageProMonat;
-            $nMonat += 1;
+            $nTag -= $nAnzahlTageProMonat;
+            ++$nMonat;
             if ($nMonat > 12) {
                 $nMonat = 1;
-                $nJahr += 1;
+                ++$nJahr;
             }
         }
 
@@ -493,7 +491,7 @@ function getJTLVersionDB($bDate = false)
     $nRet     = 0;
     $nVersion = Shop::DB()->query("SELECT nVersion, dAktualisiert FROM tversion", 1);
     if (isset($nVersion->nVersion) && is_numeric($nVersion->nVersion)) {
-        $nRet = intval($nVersion->nVersion);
+        $nRet = (int)$nVersion->nVersion;
     }
     if ($bDate) {
         $nRet = $nVersion->dAktualisiert;

@@ -41,7 +41,7 @@ function generiereRSSXML()
 		</image>';
         //Artikel STD Sprache
         $lagerfilter = gibLagerfilter();
-        $alter_tage  = intval($Einstellungen['rss']['rss_alterTage']);
+        $alter_tage  = (int)$Einstellungen['rss']['rss_alterTage'];
         if (!$alter_tage) {
             $alter_tage = 14;
         }
@@ -50,7 +50,7 @@ function generiereRSSXML()
             $artikelarr = Shop::DB()->query(
                 "SELECT tartikel.kArtikel, tartikel.cName, tartikel.cKurzBeschreibung, tseo.cSeo, 
                     tartikel.dLetzteAktualisierung, tartikel.dErstellt, 
-                    DATE_FORMAT(tartikel.dErstellt, \"%a, %d %b %Y %H:%i:%s UTC\") as erstellt
+                    DATE_FORMAT(tartikel.dErstellt, \"%a, %d %b %Y %H:%i:%s UTC\") AS erstellt
                     FROM tartikel
                     LEFT JOIN tartikelsichtbarkeit 
                         ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
@@ -133,7 +133,7 @@ function generiereRSSXML()
 		';
 
         $file = fopen(PFAD_ROOT . FILE_RSS_FEED, 'w+');
-        fputs($file, $xml);
+        fwrite($file, $xml);
         fclose($file);
     } else {
         Jtllog::writeLog('RSS Verzeichnis nicht beschreibbar!', JTLLOG_LEVEL_ERROR);

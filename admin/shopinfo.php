@@ -11,8 +11,8 @@ if (!ini_get('safe_mode')) {
 
 $oAccount->permission('EXPORT_SHOPINFO_VIEW', true, true);
 
-$arMapping       = array();
-$arKategorien    = array();
+$arMapping       = [];
+$arKategorien    = [];
 $arEinstellungen = Shop::getSettings(array(CONF_GLOBAL));
 
 if (isset($_POST['post']) && intval($_POST['post']) === 1) {

@@ -56,11 +56,11 @@ switch ($action) {
         break;
 
     default:
-        if (isset($_POST['title']) && isset($_POST['url'])) {
+        if (isset($_POST['title'], $_POST['url'])) {
             $titles = $_POST['title'];
             $urls   = $_POST['url'];
 
-            if (is_array($titles) && is_array($urls) && count($titles) == count($urls)) {
+            if (is_array($titles) && is_array($urls) && count($titles) === count($urls)) {
                 AdminFavorite::remove($kAdminlogin);
                 foreach ($titles as $i => $title) {
                     AdminFavorite::add($kAdminlogin, $title, $urls[$i], $i);

@@ -12,7 +12,7 @@ $oAccount->permission('BOXES_VIEW', true, true);
 
 $jsonAPI = new JSONAPI();
 
-if (isset($_GET['query']) && isset($_GET['type']) && validateToken()) {
+if (isset($_GET['query'], $_GET['type']) && validateToken()) {
     switch ($_GET['type']) {
         case 'product' :
             die($jsonAPI->getProducts());

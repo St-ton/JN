@@ -10,8 +10,8 @@ $oAccount->permission('FILECHECK_VIEW', true, true);
 /** @global JTLSmarty $smarty */
 $cHinweis     = '';
 $cFehler      = '';
-$oDatei_arr   = array();
-$nStat_arr    = array();
+$oDatei_arr   = [];
+$nStat_arr    = [];
 $nReturnValue = getAllFiles($oDatei_arr, $nStat_arr);
 
 if ($nReturnValue !== 1) {

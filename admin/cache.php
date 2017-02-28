@@ -158,26 +158,26 @@ switch ($action) {
                     $availableMethods = [];
                     $allMethods       = $cache->checkAvailability();
                     foreach ($allMethods as $_name => $_status) {
-                        if (isset($_status['available']) && isset($_status['functional']) &&
+                        if (isset($_status['available'], $_status['functional']) &&
                             $_status['available'] === true && $_status['functional'] === true
                         ) {
                             $availableMethods[] = $_name;
                         }
                     }
                     if (count($availableMethods) > 0) {
-                        if (in_array('redis', $availableMethods)) {
+                        if (in_array('redis', $availableMethods, true)) {
                             $value->cWert = 'redis';
-                        } elseif (in_array('memcache', $availableMethods)) {
+                        } elseif (in_array('memcache', $availableMethods, true)) {
                             $value->cWert = 'memcache';
-                        } elseif (in_array('memcached', $availableMethods)) {
+                        } elseif (in_array('memcached', $availableMethods, true)) {
                             $value->cWert = 'memcached';
-                        } elseif (in_array('apc', $availableMethods)) {
+                        } elseif (in_array('apc', $availableMethods, true)) {
                             $value->cWert = 'apc';
-                        } elseif (in_array('xcache', $availableMethods)) {
+                        } elseif (in_array('xcache', $availableMethods, true)) {
                             $value->cWert = 'xcache';
-                        } elseif (in_array('advancedfile', $availableMethods)) {
+                        } elseif (in_array('advancedfile', $availableMethods, true)) {
                             $value->cWert = 'advancedfile';
-                        }  elseif (in_array('file', $availableMethods)) {
+                        }  elseif (in_array('file', $availableMethods, true)) {
                             $value->cWert = 'file';
                         } else {
                             $value->cWert = 'null';
@@ -271,7 +271,9 @@ switch ($action) {
         $dirMan      = new DirManager();
         $dirMan->getData(PFAD_ROOT . PFAD_COMPILEDIR . $templateDir, $callback, $cbParameters);
         $dirMan->getData(PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR, $callback, $cbParameters);
-        $notice .= 'Es wurden <strong>' . number_format($cbParameters['count']) . '</strong> Dateien im Templatecache gel&ouml;scht!';
+        $notice .= 'Es wurden <strong>' .
+            number_format($cbParameters['count']) .
+            '</strong> Dateien im Templatecache gel&ouml;scht!';
         break;
     default:
         break;
@@ -305,7 +307,7 @@ for ($i = 0; $i < $settingsCount; ++$i) {
         ['kEinstellungenSektion', 'cName'],
         [CONF_CACHING, $settings[$i]->cWertName]
     );
-    $settings[$i]->gesetzterWert = (isset($oSetValue->cWert))
+    $settings[$i]->gesetzterWert = isset($oSetValue->cWert)
         ? $oSetValue->cWert
         : null;
 }
@@ -332,7 +334,7 @@ for ($i = 0; $i < $settingsCount; ++$i) {
         ['kEinstellungenSektion', 'cName'],
         [CONF_CACHING, $advancedSettings[$i]->cWertName]
     );
-    $advancedSettings[$i]->gesetzterWert = (isset($oSetValue->cWert))
+    $advancedSettings[$i]->gesetzterWert = isset($oSetValue->cWert)
         ? $oSetValue->cWert
         : null;
 }
@@ -391,7 +393,7 @@ $allMethods          = $cache->checkAvailability();
 $availableMethods    = [];
 $nonAvailableMethods = [];
 foreach ($allMethods as $_name => $_status) {
-    if (isset($_status['available']) && isset($_status['functional']) &&
+    if (isset($_status['available'], $_status['functional']) &&
         $_status['available'] === true && $_status['functional'] === true
     ) {
         $availableMethods[] = $_name;

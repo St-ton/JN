@@ -86,7 +86,7 @@ function loescheWarenkorbPosition($nPos)
  */
 function uebernehmeWarenkorbAenderungen()
 {
-    /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
+    /** @var array('Warenkorb' => Warenkorb) $_SESSION */
     unset($_SESSION['cPlausi_arr'], $_SESSION['cPost_arr']);
     // Gratis Geschenk wurde hinzugefuegt
     if (isset($_POST['gratishinzufuegen'])) {
@@ -135,7 +135,7 @@ function uebernehmeWarenkorbAenderungen()
 
                 $_POST['anzahl'][$i] = str_replace(',', '.', $_POST['anzahl'][$i]);
 
-                if (intval($_POST['anzahl'][$i]) != $_POST['anzahl'][$i] && $Artikel->cTeilbar !== 'Y') {
+                if ((int)$_POST['anzahl'][$i] != $_POST['anzahl'][$i] && $Artikel->cTeilbar !== 'Y') {
                     $_POST['anzahl'][$i] = min((int)$_POST['anzahl'][$i], 1);
                 }
                 $gueltig = true;
@@ -308,7 +308,7 @@ function uebernehmeWarenkorbAenderungen()
 function checkeSchnellkauf()
 {
     $hinweis = '';
-    if (isset($_POST['schnellkauf']) && intval($_POST['schnellkauf']) > 0 && !empty($_POST['ean'])) {
+    if (isset($_POST['schnellkauf']) && (int)$_POST['schnellkauf'] > 0 && !empty($_POST['ean'])) {
         $hinweis = Shop::Lang()->get('eanNotExist', 'global') . ' ' .
             StringHandler::htmlentities(StringHandler::filterXSS($_POST['ean']));
         //gibts artikel mit dieser artnr?

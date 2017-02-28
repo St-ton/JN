@@ -21,10 +21,10 @@ if (!isset($_SESSION['Vergleichsliste'])) {
 $_SESSION['Vergleichsliste']->nZeitFilter = 1;
 $_SESSION['Vergleichsliste']->nAnzahl     = 10;
 if (isset($_POST['zeitfilter']) && (int)$_POST['zeitfilter'] === 1) {
-    $_SESSION['Vergleichsliste']->nZeitFilter = (isset($_POST['nZeitFilter']))
+    $_SESSION['Vergleichsliste']->nZeitFilter = isset($_POST['nZeitFilter'])
         ? (int)$_POST['nZeitFilter']
         : 0;
-    $_SESSION['Vergleichsliste']->nAnzahl     = (isset($_POST['nAnzahl']))
+    $_SESSION['Vergleichsliste']->nAnzahl     = isset($_POST['nAnzahl'])
         ? (int)$_POST['nAnzahl']
         : 0;
 }
@@ -53,7 +53,7 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1 && vali
                 break;
             case 'zahl':
             case 'number':
-                $aktWert->cWert = intval($aktWert->cWert);
+                $aktWert->cWert = (int)$aktWert->cWert;
                 break;
             case 'text':
                 $aktWert->cWert = substr($aktWert->cWert, 0, 255);
@@ -163,9 +163,7 @@ $smarty->assign('Letzten20Vergleiche', $oLetzten20Vergleichsliste_arr)
  */
 function erstelleDiagrammTopVergleiche($oTopVergleichsliste_arr)
 {
-    unset($_SESSION['oGraphData_arr']);
-    unset($_SESSION['nYmax']);
-    unset($_SESSION['nDiagrammTyp']);
+    unset($_SESSION['oGraphData_arr'], $_SESSION['nYmax'], $_SESSION['nDiagrammTyp']);
 
     $oGraphData_arr = [];
     if (is_array($oTopVergleichsliste_arr) && count($oTopVergleichsliste_arr) > 0) {
@@ -180,7 +178,7 @@ function erstelleDiagrammTopVergleiche($oTopVergleichsliste_arr)
             $nYmax_arr[]        = $oTopVergleichsliste->nAnzahl;
             unset($oTop);
 
-            if ($i >= intval($_SESSION['Vergleichsliste']->nAnzahl)) {
+            if ($i >= (int)$_SESSION['Vergleichsliste']->nAnzahl) {
                 break;
             }
         }

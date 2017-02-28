@@ -88,7 +88,7 @@ function bearbeiteAck($xml)
                     [$kBestellung, BESTELLUNG_STATUS_OFFEN],
                     (object)['cStatus' => BESTELLUNG_STATUS_IN_BEARBEITUNG]
                 );
-                Shop::DB()->delete('tzahlungsinfo', 'kBestellung', $kBestellung);
+                Shop::DB()->update('tzahlungsinfo', 'kBestellung', $kBestellung, (object)['cAbgeholt' => 'Y']);
             }
         }
     }

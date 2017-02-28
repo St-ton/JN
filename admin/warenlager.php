@@ -17,7 +17,7 @@ switch ($cAction) {
     case 'update':
         Shop::DB()->query("UPDATE twarenlager SET nAktiv = 0", 3);
         if (isset($_REQUEST['kWarenlager']) && is_array($_REQUEST['kWarenlager']) && count($_REQUEST['kWarenlager']) > 0) {
-            $wl = array();
+            $wl = [];
             foreach ($_REQUEST['kWarenlager'] as $_wl) {
                 $wl[] = (int)$_wl;
             }

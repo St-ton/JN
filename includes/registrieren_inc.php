@@ -169,7 +169,7 @@ function kundeSpeichern($cPost_arr)
                 Shop::DB()->update('tkundenwerbenkunden', 'cEmail', $knd->cMail, $_upd);
             }
         }
-        if ((isset($_SESSION['Warenkorb']->kWarenkorb)) &&
+        if (isset($_SESSION['Warenkorb']->kWarenkorb) &&
             $_SESSION['Warenkorb']->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]) > 0
         ) {
             setzeSteuersaetze();

@@ -91,6 +91,14 @@ function setzeAbgeholtZurueck($kBestellung_arr)
                     AND cAbgeholt = 'Y'", 3
         );
 
+        // Zahlungsinfo cAbgeholt zurücksetzen
+        Shop::DB()->query(
+            "UPDATE tzahlungsinfo
+                SET cAbgeholt = 'N'
+                WHERE kBestellung IN(" . implode(',', $kBestellung_arr) . ")
+                    AND cAbgeholt = 'Y'", 3
+        );
+
         return -1;
     }
 

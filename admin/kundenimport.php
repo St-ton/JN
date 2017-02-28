@@ -12,39 +12,43 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'tools.Global.php';
 
 //jtl2
-$format = array(
+$format = [
     'cPasswort', 'cAnrede', 'cTitel', 'cVorname', 'cNachname', 'cFirma',
     'cStrasse', 'cHausnummer', 'cAdressZusatz', 'cPLZ', 'cOrt', 'cBundesland',
     'cLand', 'cTel', 'cMobil', 'cFax', 'cMail', 'cUSTID', 'cWWW', 'fGuthaben',
-    'cNewsletter', 'dGeburtstag', 'fRabatt', 'cHerkunft', 'dErstellt', 'cAktiv');
+    'cNewsletter', 'dGeburtstag', 'fRabatt', 'cHerkunft', 'dErstellt', 'cAktiv'
+];
 
-if (isset($_POST['kundenimport']) && $_POST['kundenimport'] == 1 && $_FILES['csv'] && validateToken()) {
-    if (isset($_FILES['csv']['tmp_name']) && strlen($_FILES['csv']['tmp_name']) > 0) {
-        $delimiter = guessCsvDelimiter($_FILES['csv']['tmp_name']);
-        $file = fopen($_FILES['csv']['tmp_name'], 'r');
-        if ($file !== false) {
-            $row      = 0;
-            $fmt      = [];
-            $formatId = -1;
-            $hinweis  = '';
-            while ($data = fgetcsv($file, 2000, $delimiter, '"')) {
-                if ($row === 0) {
-                    $hinweis .= 'Checke Kopfzeile ...';
-                    $fmt = checkformat($data);
-                    if ($fmt === -1) {
-                        $hinweis .= ' - Format nicht erkannt!';
-                        break;
-                    } else {
-                        $hinweis .= '<br><br>Importiere...<br>';
-                    }
+if (isset($_POST['kundenimport'], $_FILES['csv']['tmp_name']) &&
+    $_POST['kundenimport'] == 1 &&
+    $_FILES['csv'] &&
+    validateToken() &&
+    strlen($_FILES['csv']['tmp_name']) > 0
+) {
+    $delimiter = guessCsvDelimiter($_FILES['csv']['tmp_name']);
+    $file = fopen($_FILES['csv']['tmp_name'], 'r');
+    if ($file !== false) {
+        $row      = 0;
+        $fmt      = [];
+        $formatId = -1;
+        $hinweis  = '';
+        while ($data = fgetcsv($file, 2000, $delimiter, '"')) {
+            if ($row === 0) {
+                $hinweis .= 'Checke Kopfzeile ...';
+                $fmt = checkformat($data);
+                if ($fmt === -1) {
+                    $hinweis .= ' - Format nicht erkannt!';
+                    break;
                 } else {
-                    $hinweis .= '<br>Zeile ' . $row . ': ' . processImport($fmt, $data);
+                    $hinweis .= '<br><br>Importiere...<br>';
                 }
-
-                $row++;
+            } else {
+                $hinweis .= '<br>Zeile ' . $row . ': ' . processImport($fmt, $data);
             }
-            fclose($file);
+
+            $row++;
         }
+        fclose($file);
     }
 }
 
@@ -80,10 +84,10 @@ function generatePW($length = 8, $myseed = 1)
  */
 function checkformat($data)
 {
-    $fmt = array();
+    $fmt = [];
     $cnt = count($data);
     for ($i = 0; $i < $cnt; $i++) {
-        if (in_array($data[$i], $GLOBALS['format'])) {
+        if (in_array($data[$i], $GLOBALS['format'], true)) {
             $fmt[$i] = $data[$i];
         } else {
             $fmt[$i] = '';
@@ -91,11 +95,11 @@ function checkformat($data)
     }
 
     if (!intval($_POST['PasswortGenerieren']) === 1) {
-        if (!in_array('cPasswort', $fmt) || !in_array('cMail', $fmt)) {
+        if (!in_array('cPasswort', $fmt, true) || !in_array('cMail', $fmt, true)) {
             return -1;
         }
     } else {
-        if (!in_array('cMail', $fmt)) {
+        if (!in_array('cMail', $fmt, true)) {
             return -1;
         }
     }
@@ -127,7 +131,7 @@ function processImport($fmt, $data)
     if (!valid_email($kunde->cMail)) {
         return 'keine g&uuml;ltige Email ($kunde->cMail) ! &Uuml;bergehe diesen Datensatz.';
     }
-    if (intval($_POST['PasswortGenerieren']) !== 1) {
+    if ((int)$_POST['PasswortGenerieren'] !== 1) {
         if (!$kunde->cPasswort || $kunde->cPasswort === 'd41d8cd98f00b204e9800998ecf8427e') {
             return 'kein Passwort! &Uuml;bergehe diesen Datensatz. (Kann unregstrierter JTL Shop Kunde sein)';
         }
@@ -169,7 +173,7 @@ function processImport($fmt, $data)
         }
     }
     $cPasswortKlartext = '';
-    if (intval($_POST['PasswortGenerieren']) === 1) {
+    if ((int)$_POST['PasswortGenerieren'] === 1) {
         $cPasswortKlartext = $kunde->generatePassword(12);
         $kunde->cPasswort  = $kunde->generatePasswordHash($cPasswortKlartext);
     }
@@ -179,7 +183,7 @@ function processImport($fmt, $data)
     $oTMP->cStrasse    = $kunde->cStrasse;
     $oTMP->cHausnummer = $kunde->cHausnummer;
     if ($kunde->insertInDB()) {
-        if (intval($_POST['PasswortGenerieren']) === 1) {
+        if ((int)$_POST['PasswortGenerieren'] === 1) {
             $kunde->cPasswortKlartext = $cPasswortKlartext;
             $kunde->cNachname         = $oTMP->cNachname;
             $kunde->cFirma            = $oTMP->cFirma;

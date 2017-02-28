@@ -136,7 +136,7 @@ class Bestellung
      *      longestMax: int,
      * }
      */
-    public $oEstimatedDelivery = null;
+    public $oEstimatedDelivery;
 
     /**
      * @var WarenkorbPos[]
@@ -166,7 +166,7 @@ class Bestellung
     /**
      * @var null|string
      */
-    public $dBewertungErinnerung = null;
+    public $dBewertungErinnerung;
 
     /**
      * @var string

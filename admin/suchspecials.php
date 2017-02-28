@@ -23,7 +23,7 @@ if (strlen(verifyGPDataString('tab')) > 0) {
 // Einstellungen
 if (verifyGPCDataInteger('einstellungen') === 1) {
     $cHinweis .= saveAdminSectionSettings(CONF_SUCHSPECIAL, $_POST);
-} elseif (isset($_POST['suchspecials']) && intval($_POST['suchspecials']) === 1 && validateToken()) {
+} elseif (isset($_POST['suchspecials']) && (int)$_POST['suchspecials'] === 1 && validateToken()) {
     // Suchspecials aus der DB holen und in smarty assignen
     $oSuchSpecials_arr       = Shop::DB()->selectAll(
         'tseo',
@@ -36,7 +36,7 @@ if (verifyGPCDataInteger('einstellungen') === 1) {
     $oSuchSpecialsTMP_arr    = [];
     $nSuchSpecialsLoesch_arr = [];
     $cBestSellerSeo          = strip_tags(Shop::DB()->escape($_POST['bestseller']));
-    $cSonderangeboteSeo      = (Shop::DB()->escape($_POST['sonderangebote']));
+    $cSonderangeboteSeo      = Shop::DB()->escape($_POST['sonderangebote']);
     $cNeuImSortimentSeo      = strip_tags(Shop::DB()->escape($_POST['neu_im_sortiment']));
     $cTopAngeboteSeo         = strip_tags(Shop::DB()->escape($_POST['top_angebote']));
     $cInKuerzeVerfuegbarSeo  = strip_tags(Shop::DB()->escape($_POST['in_kuerze_verfuegbar']));
@@ -50,7 +50,7 @@ if (verifyGPCDataInteger('einstellungen') === 1) {
     ) {
         $cBestSellerSeo = checkSeo(getSeo($cBestSellerSeo));
 
-        if ($cBestSellerSeo != $_POST['bestseller']) {
+        if ($cBestSellerSeo !== $_POST['bestseller']) {
             $cHinweis .= 'Das BestSeller Seo "' . strip_tags(Shop::DB()->escape($_POST['bestseller'])) .
                 '" war bereits vorhanden und wurde in "' . $cBestSellerSeo . '" umbenannt.<br />';
         }
@@ -74,7 +74,7 @@ if (verifyGPCDataInteger('einstellungen') === 1) {
     ) {
         $cSonderangeboteSeo = checkSeo(getSeo($cSonderangeboteSeo));
 
-        if ($cSonderangeboteSeo != $_POST['sonderangebote']) {
+        if ($cSonderangeboteSeo !== $_POST['sonderangebote']) {
             $cHinweis .= 'Das Sonderangebot Seo "' . strip_tags(Shop::DB()->escape($_POST['sonderangebote'])) .
                 '" war bereits vorhanden und wurde auf "' . $cSonderangeboteSeo . '" umbenannt.<br />';
         }
@@ -97,7 +97,7 @@ if (verifyGPCDataInteger('einstellungen') === 1) {
     ) {
         $cNeuImSortimentSeo = checkSeo(getSeo($cNeuImSortimentSeo));
 
-        if ($cNeuImSortimentSeo != $_POST['neu_im_sortiment']) {
+        if ($cNeuImSortimentSeo !== $_POST['neu_im_sortiment']) {
             $cHinweis .= 'Das Neu im Sortiment Seo "' . strip_tags(Shop::DB()->escape($_POST['neu_im_sortiment'])) .
                 '" war bereits vorhanden und wurde auf "' . $cNeuImSortimentSeo . '" umbenannt.<br />';
         }
@@ -120,7 +120,7 @@ if (verifyGPCDataInteger('einstellungen') === 1) {
     ) {
         $cTopAngeboteSeo = checkSeo(getSeo($cTopAngeboteSeo));
 
-        if ($cTopAngeboteSeo != $_POST['top_angebote']) {
+        if ($cTopAngeboteSeo !== $_POST['top_angebote']) {
             $cHinweis .= 'Das Top Angebote Seo "' . strip_tags(Shop::DB()->escape($_POST['top_angebote'])) .
                 '" war bereits vorhanden und wurde auf "' . $cTopAngeboteSeo . '" umbenannt.<br />';
         }
@@ -142,7 +142,7 @@ if (verifyGPCDataInteger('einstellungen') === 1) {
             SEARCHSPECIALS_UPCOMINGPRODUCTS)
     ) {
         $cInKuerzeVerfuegbarSeo = checkSeo(getSeo($cInKuerzeVerfuegbarSeo));
-        if ($cInKuerzeVerfuegbarSeo != $_POST['in_kuerze_verfuegbar']) {
+        if ($cInKuerzeVerfuegbarSeo !== $_POST['in_kuerze_verfuegbar']) {
             $cHinweis .= 'Das In k&uuml;rze Verf&uuml;gbar Seo "' .
                 strip_tags(Shop::DB()->escape($_POST['in_kuerze_verfuegbar'])) .
                 '" war bereits vorhanden und wurde auf "' . $cInKuerzeVerfuegbarSeo . '" umbenannt.<br />';
@@ -164,7 +164,7 @@ if (verifyGPCDataInteger('einstellungen') === 1) {
     ) {
         $cTopBewertetSeo = checkSeo(getSeo($cTopBewertetSeo));
 
-        if ($cTopBewertetSeo != $_POST['top_bewertet']) {
+        if ($cTopBewertetSeo !== $_POST['top_bewertet']) {
             $cHinweis .= 'Das In k&uuml;rze Verf&uuml;gbar Seo "' .
                 strip_tags(Shop::DB()->escape($_POST['top_bewertet'])) .
                 '" war bereits vorhanden und wurde auf "' . $cTopBewertetSeo . '" umbenannt.<br />';
@@ -269,7 +269,7 @@ for ($i = 0; $i < $configCount; $i++) {
         'cName',
         $oConfig_arr[$i]->cWertName
     );
-    $oConfig_arr[$i]->gesetzterWert = (isset($oSetValue->cWert))
+    $oConfig_arr[$i]->gesetzterWert = isset($oSetValue->cWert)
         ? $oSetValue->cWert
         : null;
 }
@@ -294,7 +294,7 @@ function pruefeSuchspecialSeo($oSuchSpecials_arr, $cSeo, $kKey)
 {
     if (is_array($oSuchSpecials_arr) && count($oSuchSpecials_arr) > 0 && strlen($cSeo) && $kKey > 0) {
         foreach ($oSuchSpecials_arr as $oSuchSpecials) {
-            if ($oSuchSpecials->kKey == $kKey && $oSuchSpecials->cSeo == $cSeo) {
+            if ($oSuchSpecials->kKey == $kKey && $oSuchSpecials->cSeo === $cSeo) {
                 return true;
             }
         }

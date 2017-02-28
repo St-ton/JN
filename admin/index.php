@@ -26,7 +26,7 @@ if ($oUpdater->getCurrentDatabaseVersion() < 308) {
     }
 }
 // Login
-if (isset($_POST['adminlogin']) && intval($_POST['adminlogin']) === 1) {
+if (isset($_POST['adminlogin']) && (int)$_POST['adminlogin'] === 1) {
     $ret['captcha'] = 0;
     $ret['csrf']    = 0;
     if (file_exists(CAPTCHA_LOCKFILE)) {
@@ -90,11 +90,9 @@ if (isset($_POST['adminlogin']) && intval($_POST['adminlogin']) === 1) {
                 if (file_exists(CAPTCHA_LOCKFILE)) {
                     unlink(CAPTCHA_LOCKFILE);
                 }
-                if ($oAccount->permission('SHOP_UPDATE_VIEW')) {
-                    if ($oUpdater->hasPendingUpdates()) {
-                        header('Location: ' . Shop::getURL(true) . '/' . PFAD_ADMIN . 'dbupdater.php');
-                        exit;
-                    }
+                if ($oAccount->permission('SHOP_UPDATE_VIEW') && $oUpdater->hasPendingUpdates()) {
+                    header('Location: ' . Shop::getURL(true) . '/' . PFAD_ADMIN . 'dbupdater.php');
+                    exit;
                 }
                 if (isset($_REQUEST['uri']) && strlen(trim($_REQUEST['uri'])) > 0) {
                     redirectToURI($_REQUEST['uri']);
@@ -104,7 +102,7 @@ if (isset($_POST['adminlogin']) && intval($_POST['adminlogin']) === 1) {
 
                 break;
         }
-    } elseif ($ret['captcha'] != 0) {
+    } elseif ($ret['captcha'] !== 0) {
         $cFehler = 'Captcha-Code falsch';
     } elseif ($ret['csrf'] !== 0) {
         $cFehler = 'Cross site request forgery!';
@@ -197,17 +195,20 @@ if ($oAccount->getIsAuthenticated()) {
     if (!$oAccount->getIsTwoFaAuthenticated()) {
         // activate the 2FA-code input-field in the login-template(-page)
         $_SESSION['AdminAccount']->TwoFA_active = true;
-        $_SESSION['jtl_token']                  = isset($_POST['jtl_token']) ? $_POST['jtl_token'] : ''; // restore first generated token from POST!
+        $_SESSION['jtl_token']                  = isset($_POST['jtl_token'])
+            ? $_POST['jtl_token']
+            : ''; // restore first generated token from POST!
         // if our check failed, we redirect to login
         if (isset($_POST['TwoFA_code']) && '' !== $_POST['TwoFA_code']) {
             if ($oAccount->doTwoFA()) {
                 $_SESSION['AdminAccount']->TwoFA_expired = false;
                 $_SESSION['loginIsValid']                = true; // "enable" the "header.tpl"-navigation again
+                $smarty->assign('cFehler', ''); // reset a previously (falsely arised) error-message
 
                 if (isset($_REQUEST['uri']) && strlen(trim($_REQUEST['uri'])) > 0) {
                     redirectToURI($_REQUEST['uri']);
                 }
-                openDashboard();
+                openDashboard(); // and exit here
             }
         } else {
             $_SESSION['AdminAccount']->TwoFA_expired = true;

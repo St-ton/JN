@@ -26,8 +26,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
         $oAuswahlAssistentFrage->nSort                   = (int)$_POST['nSort'];
         $oAuswahlAssistentFrage->nAktiv                  = (int)$_POST['nAktiv'];
 
-        $cPlausi_arr = array();
-        if (isset($_POST['kAuswahlAssistentFrage']) && intval($_POST['kAuswahlAssistentFrage']) > 0) {
+        $cPlausi_arr = [];
+        if (isset($_POST['kAuswahlAssistentFrage']) && (int)$_POST['kAuswahlAssistentFrage'] > 0) {
             $oAuswahlAssistentFrage->kAuswahlAssistentFrage = (int)$_POST['kAuswahlAssistentFrage'];
             $cPlausi_arr                                    = $oAuswahlAssistentFrage->updateQuestion();
         } else {
@@ -43,13 +43,13 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
                    ->assign('cPlausi_arr', $cPlausi_arr)
                    ->assign('kAuswahlAssistentFrage', (isset($_POST['kAuswahlAssistentFrage']) ? (int)$_POST['kAuswahlAssistentFrage'] : 0));
         }
-    } elseif (isset($_GET['a']) && $_GET['a'] === 'delQuest' && isset($_GET['q']) && intval($_GET['q']) > 0 && validateToken()) {
-        if (AuswahlAssistentFrage::deleteQuestion(array('kAuswahlAssistentFrage_arr' => array($_GET['q'])))) {
+    } elseif (isset($_GET['a'], $_GET['q']) && $_GET['a'] === 'delQuest' && (int)$_GET['q'] > 0 && validateToken()) {
+        if (AuswahlAssistentFrage::deleteQuestion(['kAuswahlAssistentFrage_arr' => [$_GET['q']]])) {
             $cHinweis = 'Ihre ausgew&auml;hlte Frage wurden erfolgreich gel&ouml;scht.';
         } else {
             $cFehler = 'Fehler: Ihre ausgew&auml;hlte Frage konnten nicht gel&ouml;scht werden.';
         }
-    } elseif (isset($_GET['a']) && $_GET['a'] === 'editQuest' && intval($_GET['q']) > 0 && validateToken()) {
+    } elseif (isset($_GET['a']) && $_GET['a'] === 'editQuest' && (int)$_GET['q'] > 0 && validateToken()) {
         $cTab = 'frage';
         $smarty->assign('oFrage', new AuswahlAssistentFrage((int)$_GET['q'], false));
     }
@@ -60,9 +60,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
         $oAuswahlAssistentGruppe->cBeschreibung = htmlspecialchars($_POST['cBeschreibung']);
         $oAuswahlAssistentGruppe->nAktiv        = $_POST['nAktiv'];
 
-        $cPlausi_arr = array();
-        if (isset($_POST['kAuswahlAssistentGruppe']) && intval($_POST['kAuswahlAssistentGruppe']) > 0) {
-            $oAuswahlAssistentGruppe->kAuswahlAssistentGruppe = intval($_POST['kAuswahlAssistentGruppe']);
+        $cPlausi_arr = [];
+        if (isset($_POST['kAuswahlAssistentGruppe']) && (int)$_POST['kAuswahlAssistentGruppe'] > 0) {
+            $oAuswahlAssistentGruppe->kAuswahlAssistentGruppe = (int)$_POST['kAuswahlAssistentGruppe'];
             $cPlausi_arr                                      = $oAuswahlAssistentGruppe->updateGroup($_POST);
         } else {
             $cPlausi_arr = $oAuswahlAssistentGruppe->saveGroup($_POST);
@@ -82,7 +82,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
         } else {
             $cFehler = 'Fehler: Ihre ausgew&auml;hlten Gruppen konnten nicht gel&ouml;scht werden.';
         }
-    } elseif (isset($_GET['a']) && isset($_GET['g']) && $_GET['a'] === 'editGrp' && intval($_GET['g']) > 0 && validateToken()) {
+    } elseif (isset($_GET['a']) && isset($_GET['g']) && $_GET['a'] === 'editGrp' && (int)$_GET['g'] > 0 && validateToken()) {
         $cTab = 'gruppe';
         $smarty->assign('oGruppe', new AuswahlAssistentGruppe(intval($_GET['g']), false, false, true));
     } elseif (isset($_POST['a']) && $_POST['a'] === 'saveSettings') {

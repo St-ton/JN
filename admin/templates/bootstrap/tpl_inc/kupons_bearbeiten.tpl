@@ -326,6 +326,24 @@
                 </div>
                 <div class="input-group">
                     <span class="input-group-addon">
+                        <label for="kHersteller">{#restrictedToManufacturers#}</label>
+                    </span>
+                    <span class="input-group-wrap">
+                        <select multiple size="10" name="kHersteller[]" id="kHersteller" class="form-control combo">
+                            <option value="-1"{if $oKupon->cHersteller === '-1'} selected{/if}>
+                                Alle Hersteller
+                            </option>
+                            {foreach $oHersteller_arr as $oHersteller}
+                                <option value="{$oHersteller->kHersteller}"{if $oHersteller->selected == 1} selected{/if}>
+                                    {$oHersteller->cName}
+                                </option>
+                            {/foreach}
+                        </select>
+                    </span>
+                    <span class="input-group-addon">{getHelpDesc cDesc=#multipleChoice#}</span>
+                </div>
+                <div class="input-group">
+                    <span class="input-group-addon">
                         <label for="kKundengruppe">{#restrictionToCustomerGroup#}</label>
                     </span>
                     <span class="input-group-wrap">

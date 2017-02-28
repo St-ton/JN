@@ -156,43 +156,43 @@ function gibMaxPrioSpalte($exclude)
     if (!standardspracheAktiv()) {
         $cTabellenPrefix = 'tartikelsprache.';
     }
-    if (!in_array($cTabellenPrefix . 'cName', $exclude) && $conf['artikeluebersicht']['suche_prio_name'] > $max) {
+    if (!in_array($cTabellenPrefix . 'cName', $exclude, true) && $conf['artikeluebersicht']['suche_prio_name'] > $max) {
         $max    = $conf['artikeluebersicht']['suche_prio_name'];
         $aktEle = $cTabellenPrefix . 'cName';
     }
-    if (!in_array($cTabellenPrefix . 'cSeo', $exclude) && $conf['artikeluebersicht']['suche_prio_name'] > $max) {
+    if (!in_array($cTabellenPrefix . 'cSeo', $exclude, true) && $conf['artikeluebersicht']['suche_prio_name'] > $max) {
         $max    = $conf['artikeluebersicht']['suche_prio_name'];
         $aktEle = $cTabellenPrefix . 'cSeo';
     }
-    if (!in_array('tartikel.cSuchbegriffe', $exclude) && $conf['artikeluebersicht']['suche_prio_suchbegriffe'] > $max) {
+    if (!in_array('tartikel.cSuchbegriffe', $exclude, true) && $conf['artikeluebersicht']['suche_prio_suchbegriffe'] > $max) {
         $max    = $conf['artikeluebersicht']['suche_prio_suchbegriffe'];
         $aktEle = 'tartikel.cSuchbegriffe';
     }
-    if (!in_array('tartikel.cArtNr', $exclude) && $conf['artikeluebersicht']['suche_prio_artikelnummer'] > $max) {
+    if (!in_array('tartikel.cArtNr', $exclude, true) && $conf['artikeluebersicht']['suche_prio_artikelnummer'] > $max) {
         $max    = $conf['artikeluebersicht']['suche_prio_artikelnummer'];
         $aktEle = 'tartikel.cArtNr';
     }
-    if (!in_array($cTabellenPrefix . 'cKurzBeschreibung', $exclude) && $conf['artikeluebersicht']['suche_prio_kurzbeschreibung'] > $max) {
+    if (!in_array($cTabellenPrefix . 'cKurzBeschreibung', $exclude, true) && $conf['artikeluebersicht']['suche_prio_kurzbeschreibung'] > $max) {
         $max    = $conf['artikeluebersicht']['suche_prio_kurzbeschreibung'];
         $aktEle = $cTabellenPrefix . 'cKurzBeschreibung';
     }
-    if (!in_array($cTabellenPrefix . 'cBeschreibung', $exclude) && $conf['artikeluebersicht']['suche_prio_beschreibung'] > $max) {
+    if (!in_array($cTabellenPrefix . 'cBeschreibung', $exclude, true) && $conf['artikeluebersicht']['suche_prio_beschreibung'] > $max) {
         $max    = $conf['artikeluebersicht']['suche_prio_beschreibung'];
         $aktEle = $cTabellenPrefix . 'cBeschreibung';
     }
-    if (!in_array('tartikel.cBarcode', $exclude) && $conf['artikeluebersicht']['suche_prio_ean'] > $max) {
+    if (!in_array('tartikel.cBarcode', $exclude, true) && $conf['artikeluebersicht']['suche_prio_ean'] > $max) {
         $max    = $conf['artikeluebersicht']['suche_prio_ean'];
         $aktEle = 'tartikel.cBarcode';
     }
-    if (!in_array('tartikel.cISBN', $exclude) && $conf['artikeluebersicht']['suche_prio_isbn'] > $max) {
+    if (!in_array('tartikel.cISBN', $exclude, true) && $conf['artikeluebersicht']['suche_prio_isbn'] > $max) {
         $max    = $conf['artikeluebersicht']['suche_prio_isbn'];
         $aktEle = 'tartikel.cISBN';
     }
-    if (!in_array('tartikel.cHAN', $exclude) && $conf['artikeluebersicht']['suche_prio_han'] > $max) {
+    if (!in_array('tartikel.cHAN', $exclude, true) && $conf['artikeluebersicht']['suche_prio_han'] > $max) {
         $max    = $conf['artikeluebersicht']['suche_prio_han'];
         $aktEle = 'tartikel.cHAN';
     }
-    if (!in_array('tartikel.cAnmerkung', $exclude) && $conf['artikeluebersicht']['suche_prio_anmerkung'] > $max) {
+    if (!in_array('tartikel.cAnmerkung', $exclude, true) && $conf['artikeluebersicht']['suche_prio_anmerkung'] > $max) {
         $aktEle = 'tartikel.cAnmerkung';
     }
 

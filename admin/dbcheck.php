@@ -13,7 +13,7 @@ $cHinweis          = '';
 $cFehler           = '';
 $cDBStruct_arr     = getDBStruct();
 $cDBFileStruct_arr = getDBFileStruct();
-$cDBError_arr      = array();
+$cDBError_arr      = [];
 $maintenanceResult = null;
 
 if (!empty($_POST['action']) && !empty($_POST['check'])) {

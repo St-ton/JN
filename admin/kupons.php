@@ -20,7 +20,6 @@ $oSprache_arr = gibAlleSprachen();
 $oKupon       = null;
 
 // CSV Import ausgeloest?
-//$res = handleCsvImportAction('kupon', 'tkupon');
 $res = handleCsvImportAction('kupon', function ($obj) {
     $couponNames = [];
 
@@ -29,6 +28,10 @@ $res = handleCsvImportAction('kupon', function ($obj) {
             $couponNames[substr($key, 6)] = $val;
             unset($obj->$key);
         }
+    }
+
+    if (isset($obj->cCode) && Shop::DB()->select('tkupon', 'cCode', $obj->cCode) !== null) {
+        return false;
     }
 
     $kKupon = Shop::DB()->insert('tkupon', $obj);
@@ -52,7 +55,8 @@ $res = handleCsvImportAction('kupon', function ($obj) {
 });
 
 if ($res > 0) {
-    $cFehler = 'Konnte CSV-Datei nicht importieren.';
+    $cFehler  = 'Konnte CSV-Datei nicht vollst&auml;ndig importieren. ';
+    $cFehler .= ($res === 1 ? '1 Zeile ist' : $res . ' Zeilen sind') . ' nicht importierbar.';
 } elseif ($res === 0) {
     $cHinweis = 'CSV-Datei wurde erfolgreich importiert.';
 }

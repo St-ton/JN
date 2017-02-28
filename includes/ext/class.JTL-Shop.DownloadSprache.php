@@ -36,7 +36,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
          */
         public function __construct($kDownload = 0, $kSprache = 0)
         {
-            if (intval($kDownload) > 0 && intval($kSprache) > 0) {
+            if ((int)$kDownload > 0 && (int)$kSprache > 0) {
                 $this->loadFromDB($kDownload, $kSprache);
             }
         }
@@ -54,13 +54,15 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
                 'kSprache',
                 (int)$kSprache
             );
-            if (isset($oDownloadSprache->kDownload) && intval($oDownloadSprache->kDownload) > 0) {
+            if (isset($oDownloadSprache->kDownload) && (int)$oDownloadSprache->kDownload > 0) {
                 $cMember_arr = array_keys(get_object_vars($oDownloadSprache));
                 if (is_array($cMember_arr) && count($cMember_arr) > 0) {
                     foreach ($cMember_arr as $cMember) {
                         $this->$cMember = $oDownloadSprache->$cMember;
                     }
                 }
+                $this->kSprache  = (int)$this->kSprache;
+                $this->kDownload = (int)$this->kDownload;
             }
         }
 

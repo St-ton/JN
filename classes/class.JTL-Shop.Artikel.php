@@ -1608,16 +1608,13 @@ class Artikel
         $kSprache               = (int)$kSprache;
         $this->oMedienDatei_arr = [];
         // Funktionsattribut gesetzt? Tab oder Beschreibung
-        if (isset($this->FunktionsAttribute[FKT_ATTRIBUT_MEDIENDATEIEN]) &&
-            $this->FunktionsAttribute[FKT_ATTRIBUT_MEDIENDATEIEN] === 'tab'
-        ) {
-            $this->cMedienDateiAnzeige = 'tab';
-        } elseif (isset($this->FunktionsAttribute[FKT_ATTRIBUT_MEDIENDATEIEN]) &&
-            $this->FunktionsAttribute[FKT_ATTRIBUT_MEDIENDATEIEN] === 'beschreibung'
-        ) {
-            $this->cMedienDateiAnzeige = 'beschreibung';
+        if (isset($this->FunktionsAttribute[FKT_ATTRIBUT_MEDIENDATEIEN])) {
+            if ($this->FunktionsAttribute[FKT_ATTRIBUT_MEDIENDATEIEN] === 'tab') {
+                $this->cMedienDateiAnzeige = 'tab';
+            } elseif ($this->FunktionsAttribute[FKT_ATTRIBUT_MEDIENDATEIEN] === 'beschreibung') {
+                $this->cMedienDateiAnzeige = 'beschreibung';
+            }
         }
-
         if ($this->kArtikel > 0) {
             $cSQL = "SELECT tmediendatei.kMedienDatei, tmediendatei.cPfad, tmediendatei.cURL, tmediendatei.cTyp, 
                             tmediendatei.nSort, tmediendateisprache.cName, tmediendateisprache.cBeschreibung, 
@@ -5367,7 +5364,9 @@ class Artikel
             $defaultOptions = self::getDefaultOptions();
             foreach ($products as $oProduct) {
                 $oArtikel = new self();
-                $oArtikel->fuelleArtikel(($oProduct->kVaterArtikel > 0) ? $oProduct->kVaterArtikel : $oProduct->kArtikel, $defaultOptions);
+                $oArtikel->fuelleArtikel(($oProduct->kVaterArtikel > 0)
+                    ? $oProduct->kVaterArtikel
+                    : $oProduct->kArtikel, $defaultOptions);
                 if ($oArtikel->kArtikel > 0) {
                     $oArtikel_arr[] = $oArtikel;
                 }

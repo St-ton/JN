@@ -58,7 +58,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         public function __construct($kRMAGrund = 0)
         {
-            if (intval($kRMAGrund) > 0) {
+            if ((int)$kRMAGrund > 0) {
                 $this->loadFromDB($kRMAGrund);
             }
         }
@@ -74,7 +74,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
             $oObj = Shop::DB()->query(
                 "SELECT *
                   FROM trmagrund
-                  WHERE kRMAGrund = " . intval($kRMAGrund), 1
+                  WHERE kRMAGrund = " . (int)$kRMAGrund, 1
             );
 
             if ($oObj->kRMAGrund > 0) {
@@ -153,7 +153,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         public function setRMAGrund($kRMAGrund)
         {
-            $this->kRMAGrund = intval($kRMAGrund);
+            $this->kRMAGrund = (int)$kRMAGrund;
 
             return $this;
         }
@@ -167,7 +167,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         public function setSprache($kSprache)
         {
-            $this->kSprache = intval($kSprache);
+            $this->kSprache = (int)$kSprache;
 
             return $this;
         }
@@ -181,7 +181,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         public function setSort($nSort)
         {
-            $this->nSort = intval($nSort);
+            $this->nSort = (int)$nSort;
 
             return $this;
         }
@@ -223,7 +223,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         public function setAktiv($nAktiv)
         {
-            $this->nAktiv = intval($nAktiv);
+            $this->nAktiv = (int)$nAktiv;
 
             return $this;
         }
@@ -358,8 +358,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         public static function getAll($kSprache, $bAktiv = true)
         {
-            $oRMAGrund_arr = array();
-            $kSprache      = intval($kSprache);
+            $oRMAGrund_arr = [];
+            $kSprache      = (int)$kSprache;
 
             if ($kSprache > 0) {
                 $cSQL = '';

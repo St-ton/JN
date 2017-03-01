@@ -32,9 +32,9 @@ class PremiumPlugin
     private $shortDescription = '';
 
     /**
-     * @var null
+     * @var string
      */
-    private $author = null;
+    private $author;
 
     /**
      * @var array
@@ -67,9 +67,9 @@ class PremiumPlugin
     private $exists = false;
 
     /**
-     * @var null|string
+     * @var string
      */
-    private $pluginID = null;
+    private $pluginID;
 
     /**
      * @var int
@@ -77,9 +77,9 @@ class PremiumPlugin
     private $kPlugin = 0;
 
     /**
-     * @var null|stdClass
+     * @var stdClass
      */
-    private $servicePartner = null;
+    private $servicePartner;
 
     /**
      * @var array
@@ -92,9 +92,9 @@ class PremiumPlugin
     private $headerColor = '#313131';
 
     /**
-     * @var null|string
+     * @var string
      */
-    private $downloadLink = null;
+    private $downloadLink;
     
     /**
      * PremiumPlugin constructor.
@@ -104,10 +104,10 @@ class PremiumPlugin
     {
         $plugin            = Plugin::getPluginById($pluginID);
         $this->pluginID    = $pluginID;
-        $this->exists      = (file_exists(PFAD_ROOT . PFAD_PLUGIN . $pluginID . '/info.xml'));
-        $this->isInstalled = (isset($plugin->kPlugin) && $plugin->kPlugin > 0);
+        $this->exists      = file_exists(PFAD_ROOT . PFAD_PLUGIN . $pluginID . '/info.xml');
+        $this->isInstalled = ($plugin !== null && $plugin->kPlugin > 0);
         $this->isActivated = ($this->isInstalled && (int)$plugin->nStatus === 2);
-        $this->kPlugin     = ($this->isInstalled) ? (int)$plugin->kPlugin : 0;
+        $this->kPlugin     = $this->isInstalled ? (int)$plugin->kPlugin : 0;
     }
 
     /**
@@ -392,7 +392,9 @@ class PremiumPlugin
      */
     public function addBadge($url, $relative = true)
     {
-        $this->badges[] = ($relative) ? (Shop::getURL() . '/' . PFAD_ADMIN . PFAD_GFX . 'PremiumPlugins/' . $url) : $url;
+        $this->badges[] = $relative
+            ? (Shop::getURL() . '/' . PFAD_ADMIN . PFAD_GFX . 'PremiumPlugins/' . $url)
+            : $url;
         
         return $this;
     }

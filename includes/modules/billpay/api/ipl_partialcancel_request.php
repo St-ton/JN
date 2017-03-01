@@ -1,35 +1,68 @@
 <?php
 
-require_once dirname(__FILE__) . '/ipl_xml_request.php';
+require_once __DIR__. '/ipl_xml_request.php';
 
 /**
+ * class ipl_partialcancel_request
+ * 
  * @author Jan Wehrs (jan.wehrs@billpay.de)
  * @copyright Copyright 2010 Billpay GmbH
  * @license commercial 
  */
 class ipl_partialcancel_request extends ipl_xml_request
 {
-    private $_cancel_params     = array();
-    private $_canceled_articles = array();
+    /**
+     * @var array
+     */
+    private $_cancel_params     = [];
 
+    /**
+     * @var array
+     */
+    private $_canceled_articles = [];
+
+    /**
+     * @var
+     */
     private $due_update;
+
+    /**
+     * @var
+     */
     private $number_of_rates;
 
+    /**
+     * @return mixed
+     */
     public function is_transaction_credit_order()
     {
         return $this->due_update;
     }
 
+    /**
+     * @return mixed
+     */
     public function get_due_update()
     {
         return $this->due_update;
     }
 
+    /**
+     * @return mixed
+     */
     public function get_number_of_rates()
     {
         return $this->number_of_rates;
     }
 
+    /**
+     * @param $reference
+     * @param $rebatedecrease
+     * @param $rebatedecreasegross
+     * @param $shippingdecrease
+     * @param $shippingdecreasegross
+     * @param $currency
+     */
     public function set_cancel_params($reference, $rebatedecrease, $rebatedecreasegross, $shippingdecrease, $shippingdecreasegross, $currency)
     {
         $this->_cancel_params['reference']             = $reference;
@@ -40,15 +73,22 @@ class ipl_partialcancel_request extends ipl_xml_request
         $this->_cancel_params['currency']              = $currency;
     }
 
+    /**
+     * @param $articleid
+     * @param $articlequantity
+     */
     public function add_canceled_article($articleid, $articlequantity)
     {
-        $article                    = array();
+        $article                    = [];
         $article['articleid']       = $articleid;
         $article['articlequantity'] = $articlequantity;
 
         $this->_canceled_articles[] = $article;
     }
 
+    /**
+     * @return array|bool
+     */
     protected function _send()
     {
         return ipl_core_send_partialcancel_request(
@@ -60,6 +100,9 @@ class ipl_partialcancel_request extends ipl_xml_request
         );
     }
 
+    /**
+     * @param $data
+     */
     protected function _process_response_xml($data)
     {
         foreach ($data as $key => $value) {

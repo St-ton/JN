@@ -44,7 +44,7 @@ if (!defined('__PHP_SHA256_NANO_')) {
         /**
          *
          */
-        public function shaHelper()
+        public function __construct()
         {
             // nothing to construct here...
         }
@@ -72,10 +72,10 @@ if (!defined('__PHP_SHA256_NANO_')) {
             }
 
             // append the last 32-bits representing the # of bits from input string ($l)
-            $tmpStr .= chr((($l >> 24) & 0xFF));
-            $tmpStr .= chr((($l >> 16) & 0xFF));
-            $tmpStr .= chr((($l >> 8) & 0xFF));
-            $tmpStr .= chr(($l & 0xFF));
+            $tmpStr .= chr(($l >> 24) & 0xFF);
+            $tmpStr .= chr(($l >> 16) & 0xFF);
+            $tmpStr .= chr(($l >> 8) & 0xFF);
+            $tmpStr .= chr($l & 0xFF);
 
             return $tmpStr;
         }
@@ -110,7 +110,7 @@ if (!defined('__PHP_SHA256_NANO_')) {
                 }
             }
 
-            return (int) $r;
+            return (int)$r;
         }
 
         /**
@@ -125,23 +125,23 @@ if (!defined('__PHP_SHA256_NANO_')) {
             if ($n >= 32) {
                 // impose some limits to keep it 32-bit
 
-                return (int) 0;
+                return (int)0;
             }
 
             if ($n <= 0) {
-                return (int) $x;
+                return (int)$x;
             }
 
             $mask = 0x40000000;
 
             if ($x < 0) {
                 $x &= 0x7FFFFFFF;
-                $mask = $mask >> ($n - 1);
+                $mask >>= ($n - 1);
 
                 return ($x >> $n) | $mask;
             }
 
-            return (int) $x >> (int) $n;
+            return (int)$x >> (int)$n;
         }
 
         /**
@@ -151,7 +151,7 @@ if (!defined('__PHP_SHA256_NANO_')) {
          */
         public function ROTR($x, $n)
         {
-            return (int) ($this->SHR($x, $n) | ($x << (32 - $n)));
+            return (int)($this->SHR($x, $n) | ($x << (32 - $n)));
         }
 
         /**
@@ -182,7 +182,7 @@ if (!defined('__PHP_SHA256_NANO_')) {
          */
         public function Sigma0($x)
         {
-            return (int) ($this->ROTR($x, 2) ^ $this->ROTR($x, 13) ^ $this->ROTR($x, 22));
+            return (int)($this->ROTR($x, 2) ^ $this->ROTR($x, 13) ^ $this->ROTR($x, 22));
         }
 
         /**
@@ -191,7 +191,7 @@ if (!defined('__PHP_SHA256_NANO_')) {
          */
         public function Sigma1($x)
         {
-            return (int) ($this->ROTR($x, 6) ^ $this->ROTR($x, 11) ^ $this->ROTR($x, 25));
+            return (int)($this->ROTR($x, 6) ^ $this->ROTR($x, 11) ^ $this->ROTR($x, 25));
         }
 
         /**
@@ -200,7 +200,7 @@ if (!defined('__PHP_SHA256_NANO_')) {
          */
         public function sigma_0($x)
         {
-            return (int) ($this->ROTR($x, 7) ^ $this->ROTR($x, 18) ^ $this->SHR($x, 3));
+            return (int)($this->ROTR($x, 7) ^ $this->ROTR($x, 18) ^ $this->SHR($x, 3));
         }
 
         /**
@@ -209,7 +209,7 @@ if (!defined('__PHP_SHA256_NANO_')) {
          */
         public function sigma_1($x)
         {
-            return (int) ($this->ROTR($x, 17) ^ $this->ROTR($x, 19) ^ $this->SHR($x, 10));
+            return (int)($this->ROTR($x, 17) ^ $this->ROTR($x, 19) ^ $this->SHR($x, 10));
         }
 
         /**
@@ -225,7 +225,7 @@ if (!defined('__PHP_SHA256_NANO_')) {
             if ($l <= 0) {
                 // right...
 
-                return (int) 0;
+                return (int)0;
             }
 
             if (($l % 4) != 0) {
@@ -238,7 +238,7 @@ if (!defined('__PHP_SHA256_NANO_')) {
                 $int_build = (ord($input[$i]) << 24);
                 $int_build += (ord($input[$i + 1]) << 16);
                 $int_build += (ord($input[$i + 2]) << 8);
-                $int_build += (ord($input[$i + 3]));
+                $int_build += ord($input[$i + 3]);
 
                 $result[] = $int_build;
             }
@@ -250,8 +250,8 @@ if (!defined('__PHP_SHA256_NANO_')) {
     // Compatability with older versions of PHP < 5
     if (!function_exists('str_split')) {
         /**
-         * @param     $string
-         * @param int $split_length
+         * @param string $string
+         * @param int    $split_length
          * @return array|bool
          */
         function str_split($string, $split_length = 1)
@@ -273,7 +273,7 @@ if (!defined('__PHP_SHA256_NANO_')) {
                     $i--;
                     $i = (($sign < 0) ? $i : $i + $length);
 
-                    if (($i + $split_length) > ($strlen)) {
+                    if (($i + $split_length) > $strlen) {
                         $length = $strlen - ($i + 1);
                     } else {
                         $length = $split_length;
@@ -306,9 +306,9 @@ if (!defined('__PHP_SHA256_NANO_')) {
         unset($hexStr);     // 256-bit message digest in readable hex format
 
         // check for php 5.1.2's internal sha256 function, ignore if ig_func is true
-        if ($ig_func == false) {
-            if (function_exists("hash")) {
-                return hash("sha256", $str, false);
+        if ($ig_func === false) {
+            if (function_exists('hash')) {
+                return hash('sha256', $str, false);
             }
         }
 
@@ -322,23 +322,24 @@ if (!defined('__PHP_SHA256_NANO_')) {
         // SHA-256 Constants
         // sequence of sixty-four constant 32-bit words representing the first thirty-two bits
         // of the fractional parts of the cube roots of the first sixtyfour prime numbers.
-        $K = array(
-            (int) 0x428a2f98, (int) 0x71374491, (int) 0xb5c0fbcf, (int) 0xe9b5dba5,
-            (int) 0x3956c25b, (int) 0x59f111f1, (int) 0x923f82a4, (int) 0xab1c5ed5,
-            (int) 0xd807aa98, (int) 0x12835b01, (int) 0x243185be, (int) 0x550c7dc3,
-            (int) 0x72be5d74, (int) 0x80deb1fe, (int) 0x9bdc06a7, (int) 0xc19bf174,
-            (int) 0xe49b69c1, (int) 0xefbe4786, (int) 0x0fc19dc6, (int) 0x240ca1cc,
-            (int) 0x2de92c6f, (int) 0x4a7484aa, (int) 0x5cb0a9dc, (int) 0x76f988da,
-            (int) 0x983e5152, (int) 0xa831c66d, (int) 0xb00327c8, (int) 0xbf597fc7,
-            (int) 0xc6e00bf3, (int) 0xd5a79147, (int) 0x06ca6351, (int) 0x14292967,
-            (int) 0x27b70a85, (int) 0x2e1b2138, (int) 0x4d2c6dfc, (int) 0x53380d13,
-            (int) 0x650a7354, (int) 0x766a0abb, (int) 0x81c2c92e, (int) 0x92722c85,
-            (int) 0xa2bfe8a1, (int) 0xa81a664b, (int) 0xc24b8b70, (int) 0xc76c51a3,
-            (int) 0xd192e819, (int) 0xd6990624, (int) 0xf40e3585, (int) 0x106aa070,
-            (int) 0x19a4c116, (int) 0x1e376c08, (int) 0x2748774c, (int) 0x34b0bcb5,
-            (int) 0x391c0cb3, (int) 0x4ed8aa4a, (int) 0x5b9cca4f, (int) 0x682e6ff3,
-            (int) 0x748f82ee, (int) 0x78a5636f, (int) 0x84c87814, (int) 0x8cc70208,
-            (int) 0x90befffa, (int) 0xa4506ceb, (int) 0xbef9a3f7, (int) 0xc67178f2);
+        $K = [
+            (int)0x428a2f98, (int)0x71374491, (int)0xb5c0fbcf, (int)0xe9b5dba5,
+            (int)0x3956c25b, (int)0x59f111f1, (int)0x923f82a4, (int)0xab1c5ed5,
+            (int)0xd807aa98, (int)0x12835b01, (int)0x243185be, (int)0x550c7dc3,
+            (int)0x72be5d74, (int)0x80deb1fe, (int)0x9bdc06a7, (int)0xc19bf174,
+            (int)0xe49b69c1, (int)0xefbe4786, (int)0x0fc19dc6, (int)0x240ca1cc,
+            (int)0x2de92c6f, (int)0x4a7484aa, (int)0x5cb0a9dc, (int)0x76f988da,
+            (int)0x983e5152, (int)0xa831c66d, (int)0xb00327c8, (int)0xbf597fc7,
+            (int)0xc6e00bf3, (int)0xd5a79147, (int)0x06ca6351, (int)0x14292967,
+            (int)0x27b70a85, (int)0x2e1b2138, (int)0x4d2c6dfc, (int)0x53380d13,
+            (int)0x650a7354, (int)0x766a0abb, (int)0x81c2c92e, (int)0x92722c85,
+            (int)0xa2bfe8a1, (int)0xa81a664b, (int)0xc24b8b70, (int)0xc76c51a3,
+            (int)0xd192e819, (int)0xd6990624, (int)0xf40e3585, (int)0x106aa070,
+            (int)0x19a4c116, (int)0x1e376c08, (int)0x2748774c, (int)0x34b0bcb5,
+            (int)0x391c0cb3, (int)0x4ed8aa4a, (int)0x5b9cca4f, (int)0x682e6ff3,
+            (int)0x748f82ee, (int)0x78a5636f, (int)0x84c87814, (int)0x8cc70208,
+            (int)0x90befffa, (int)0xa4506ceb, (int)0xbef9a3f7, (int)0xc67178f2
+        ];
 
         // Pre-processing: Padding the string
         $binStr = $sh->char_pad($str);
@@ -347,14 +348,14 @@ if (!defined('__PHP_SHA256_NANO_')) {
         $M = str_split($binStr, 64);
 
         // Set the initial hash values
-        $h[0] = (int) 0x6a09e667;
-        $h[1] = (int) 0xbb67ae85;
-        $h[2] = (int) 0x3c6ef372;
-        $h[3] = (int) 0xa54ff53a;
-        $h[4] = (int) 0x510e527f;
-        $h[5] = (int) 0x9b05688c;
-        $h[6] = (int) 0x1f83d9ab;
-        $h[7] = (int) 0x5be0cd19;
+        $h[0] = (int)0x6a09e667;
+        $h[1] = (int)0xbb67ae85;
+        $h[2] = (int)0x3c6ef372;
+        $h[3] = (int)0xa54ff53a;
+        $h[4] = (int)0x510e527f;
+        $h[5] = (int)0x9b05688c;
+        $h[6] = (int)0x1f83d9ab;
+        $h[7] = (int)0x5be0cd19;
 
         // loop through message blocks and compute hash. ( For i=1 to N : )
         for ($i = 0; $i < count($M); $i++) {
@@ -362,19 +363,16 @@ if (!defined('__PHP_SHA256_NANO_')) {
             $MI = $sh->int_split($M[$i]);
 
             // Initialize working variables
-            $_a = (int) $h[0];
-            $_b = (int) $h[1];
-            $_c = (int) $h[2];
-            $_d = (int) $h[3];
-            $_e = (int) $h[4];
-            $_f = (int) $h[5];
-            $_g = (int) $h[6];
-            $_h = (int) $h[7];
-            unset($_s0);
-            unset($_s1);
-            unset($_T1);
-            unset($_T2);
-            $W = array();
+            $_a = (int)$h[0];
+            $_b = (int)$h[1];
+            $_c = (int)$h[2];
+            $_d = (int)$h[3];
+            $_e = (int)$h[4];
+            $_f = (int)$h[5];
+            $_g = (int)$h[6];
+            $_h = (int)$h[7];
+            unset($_s0, $_s1, $_T1, $_T2);
+            $W = [];
 
             // Compute the hash and update
             for ($t = 0; $t < 16; $t++) {

@@ -50,7 +50,7 @@ if (class_exists('AuswahlAssistent')) {
          */
         public function __construct($kAuswahlAssistentFrage = 0, $bAktiv = true)
         {
-            if (intval($kAuswahlAssistentFrage) > 0) {
+            if ((int)$kAuswahlAssistentFrage > 0) {
                 $this->loadFromDB($kAuswahlAssistentFrage, $bAktiv);
             }
         }
@@ -81,7 +81,12 @@ if (class_exists('AuswahlAssistent')) {
                             $this->$cMember = $oFrage->$cMember;
                         }
                     }
-                    $this->oMerkmal = self::getMerkmal($this->kMerkmal, true);
+                    $this->nSort                   = (int)$this->nSort;
+                    $this->nAktiv                  = (int)$this->nAktiv;
+                    $this->kMerkmal                = (int)$this->kMerkmal;
+                    $this->kAuswahlAssistentFrage  = (int)$this->kAuswahlAssistentFrage;
+                    $this->kAuswahlAssistentGruppe = (int)$this->kAuswahlAssistentGruppe;
+                    $this->oMerkmal                = self::getMerkmal($this->kMerkmal, true);
                 }
             }
         }
@@ -94,7 +99,7 @@ if (class_exists('AuswahlAssistent')) {
         public static function getQuestions($kAuswahlAssistentGruppe, $bAktiv = true)
         {
             $oAuswahlAssistentFrage_arr = [];
-            if (intval($kAuswahlAssistentGruppe) > 0) {
+            if ((int)$kAuswahlAssistentGruppe > 0) {
                 $cAktivSQL = '';
                 if ($bAktiv) {
                     $cAktivSQL = " AND nAktiv = 1";
@@ -143,7 +148,7 @@ if (class_exists('AuswahlAssistent')) {
         public function updateQuestion()
         {
             $cPlausi_arr = $this->checkQuestion(true);
-            if (count($cPlausi_arr) == 0) {
+            if (count($cPlausi_arr) === 0) {
                 $_upd                          = new stdClass();
                 $_upd->kAuswahlAssistentGruppe = $this->kAuswahlAssistentGruppe;
                 $_upd->kMerkmal                = $this->kMerkmal;
@@ -199,24 +204,22 @@ if (class_exists('AuswahlAssistent')) {
                 $cPlausi_arr['cFrage'] = 1;
             }
             // Gruppe
-            if ($this->kAuswahlAssistentGruppe == 0 || $this->kAuswahlAssistentGruppe == -1) {
+            if ($this->kAuswahlAssistentGruppe === null || $this->kAuswahlAssistentGruppe === 0 || $this->kAuswahlAssistentGruppe === -1) {
                 $cPlausi_arr['kAuswahlAssistentGruppe'] = 1;
             }
             // Merkmal
-            if ($this->kMerkmal == 0 || $this->kMerkmal == -1) {
+            if ($this->kMerkmal === null || $this->kMerkmal === 0 || $this->kMerkmal === -1) {
                 $cPlausi_arr['kMerkmal'] = 1;
             }
-            if (!$bUpdate) {
-                if ($this->isMerkmalTaken($this->kMerkmal, $this->kAuswahlAssistentGruppe)) {
-                    $cPlausi_arr['kMerkmal'] = 2;
-                }
+            if (!$bUpdate && $this->isMerkmalTaken($this->kMerkmal, $this->kAuswahlAssistentGruppe)) {
+                $cPlausi_arr['kMerkmal'] = 2;
             }
             // Sortierung
             if ($this->nSort <= 0) {
                 $cPlausi_arr['nSort'] = 1;
             }
             // Aktiv
-            if ($this->nAktiv != 0 && $this->nAktiv != 1) {
+            if ($this->nAktiv !== 0 && $this->nAktiv !== 1) {
                 $cPlausi_arr['nAktiv'] = 1;
             }
 

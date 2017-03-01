@@ -9,8 +9,12 @@
  */
 function speicherStatusemailEinstellungen()
 {
-    if ((int)$_POST['nAktiv'] === 0 || valid_email($_POST['cEmail']) && is_array($_POST['cIntervall_arr']) &&
-        count($_POST['cIntervall_arr']) > 0 && is_array($_POST['cInhalt_arr']) && count($_POST['cInhalt_arr']) > 0
+    if ((int)$_POST['nAktiv'] === 0 ||
+        (valid_email($_POST['cEmail']) &&
+            is_array($_POST['cIntervall_arr']) &&
+            count($_POST['cIntervall_arr']) > 0 &&
+            is_array($_POST['cInhalt_arr']) &&
+            count($_POST['cInhalt_arr']) > 0)
     ) {
         if (erstelleStatusemailCron(24)) {
             // Erstellt den Cron Eintrag
@@ -79,10 +83,10 @@ function ladeStatusemailEinstellungen()
     }
     $oStatusemailEinstellungen->cIntervallMoeglich_arr = gibIntervallMoeglichkeiten();
     $oStatusemailEinstellungen->cInhaltMoeglich_arr    = gibInhaltMoeglichkeiten();
-    $oStatusemailEinstellungen->nIntervall_arr         = (isset($oStatusemailEinstellungen->cIntervall)) 
+    $oStatusemailEinstellungen->nIntervall_arr         = isset($oStatusemailEinstellungen->cIntervall)
         ? gibKeyArrayFuerKeyString($oStatusemailEinstellungen->cIntervall, ';') 
         : [];
-    $oStatusemailEinstellungen->nInhalt_arr            = (isset($oStatusemailEinstellungen->cInhalt)) 
+    $oStatusemailEinstellungen->nInhalt_arr            = isset($oStatusemailEinstellungen->cInhalt)
         ? gibKeyArrayFuerKeyString($oStatusemailEinstellungen->cInhalt, ';') 
         : [];
 
@@ -1054,10 +1058,10 @@ function baueStatusEmail($oStatusemail, $dVon, $dBis)
             $oAttachment->cFilePath = $cLogFilePath;
 
             if ($cMailTyp === 'text') {
-                fputs($fileStream, $smarty->fetch(PFAD_ROOT . PFAD_EMAILVORLAGEN . 'ger/email_bericht_plain_log.tpl'));
+                fwrite($fileStream, $smarty->fetch(PFAD_ROOT . PFAD_EMAILVORLAGEN . 'ger/email_bericht_plain_log.tpl'));
                 $oAttachment->cName = 'jtl-log-digest.txt';
             } else {
-                fputs($fileStream, $smarty->fetch(PFAD_ROOT . PFAD_EMAILVORLAGEN . 'ger/email_bericht_html_log.tpl'));
+                fwrite($fileStream, $smarty->fetch(PFAD_ROOT . PFAD_EMAILVORLAGEN . 'ger/email_bericht_html_log.tpl'));
                 $oAttachment->cName = 'jtl-log-digest.html';
             }
 

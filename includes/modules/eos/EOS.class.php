@@ -54,11 +54,11 @@ class EOS extends ServerPaymentMethod
 
         if (!isset($Einstellungen['zahlungsarten']['zahlungsart_' . $this->payment . '_haendlerid'])) {
             $cSetting_arr = Shop::getSettings([CONF_ZAHLUNGSARTEN]);
-            $cSetting     = (isset($cSetting_arr['zahlungsarten']['zahlungsart_' . $this->payment . '_haendlerid']))
+            $cSetting     = isset($cSetting_arr['zahlungsarten']['zahlungsart_' . $this->payment . '_haendlerid'])
                 ? $cSetting_arr['zahlungsarten']['zahlungsart_' . $this->payment . '_haendlerid']
                 : null;
         } else {
-            $cSetting = (isset($Einstellungen['zahlungsarten']['zahlungsart_' . $this->payment . '_haendlerid']))
+            $cSetting = isset($Einstellungen['zahlungsarten']['zahlungsart_' . $this->payment . '_haendlerid'])
                 ? $Einstellungen['zahlungsarten']['zahlungsart_' . $this->payment . '_haendlerid']
                 : null;
         }
@@ -67,7 +67,7 @@ class EOS extends ServerPaymentMethod
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getHaendlerCode()
     {
@@ -84,7 +84,7 @@ class EOS extends ServerPaymentMethod
     }
 
     /**
-     * @param $cStrasse
+     * @param string $cStrasse
      * @return string
      */
     public function getStreet($cStrasse)
@@ -100,7 +100,7 @@ class EOS extends ServerPaymentMethod
     }
 
     /**
-     * @param $cStrasse
+     * @param string $cStrasse
      * @return string
      */
     public function getStreetNumber($cStrasse)
@@ -149,7 +149,7 @@ class EOS extends ServerPaymentMethod
         $this->switchModule();
 
         if (EOS_D_MODE === 1) {
-            $cDC = ($this->duringCheckout) ? '1' : '0';
+            $cDC = $this->duringCheckout ? '1' : '0';
             writeLog(EOS_D_PFAD, 'preparePaymentProcess duringCheckout: ' . $cDC, 1);
         }
 
@@ -307,11 +307,11 @@ class EOS extends ServerPaymentMethod
             $cParemHash = $ph;
         }
 
-        if (strlen($cParemHash) == 0) {
+        if (strlen($cParemHash) === 0) {
             return false;
         }
 
-        if ($paymentHash != $cParemHash) {
+        if ($paymentHash !== $cParemHash) {
             return false;
         }
 
@@ -342,12 +342,12 @@ class EOS extends ServerPaymentMethod
             writeLog(EOS_D_PFAD, 'finalizeOrder hash = sh: ' . $hash . ' = ' . $sh, 1);
         }
 
-        if ($hash == $sh && $nStatus > 0) {
+        if ($hash === $sh && $nStatus > 0) {
             if (EOS_D_MODE === 1) {
                 writeLog(EOS_D_PFAD, 'finalizeOrder switch nStatus...', 1);
             }
 
-            switch (intval($nStatus)) {
+            switch ((int)$nStatus) {
                 case EOS_BACKURL_CODE:
                     $cEditZahlungHinweis = EOS_BACKURL_CODE;
 
@@ -375,7 +375,7 @@ class EOS extends ServerPaymentMethod
     /**
      * EOS Server to Server
      *
-     * @param $cSh
+     * @param string $cSh
      * @return int
      */
     public function getEOSServerCom($cSh)
@@ -383,7 +383,7 @@ class EOS extends ServerPaymentMethod
         if (strlen($cSh) > 0) {
             $oZahlungbackground = Shop::DB()->select('tzahlungbackground', 'cSID', StringHandler::filterXSS($cSh));
 
-            return (isset($oZahlungbackground->kKey)) ? $oZahlungbackground->kKey : 0;
+            return isset($oZahlungbackground->kKey) ? (int)$oZahlungbackground->kKey : 0;
         }
 
         return 0;
@@ -418,14 +418,14 @@ class EOS extends ServerPaymentMethod
      */
     public function isValidIntern($args_arr = [])
     {
-        if (strlen($this->getHaendlerID()) == 0) {
-            ZahlungsLog::add($this->moduleID, "Pflichtparameter 'HaendlerID' ist nicht gesetzt!", null, LOGLEVEL_ERROR);
+        if (strlen($this->getHaendlerID()) === 0) {
+            ZahlungsLog::add($this->moduleID, 'Pflichtparameter "HaendlerID" ist nicht gesetzt!', null, LOGLEVEL_ERROR);
 
             return false;
         }
 
-        if (strlen($this->getHaendlerCode()) == 0) {
-            ZahlungsLog::add($this->moduleID, "Pflichtparameter 'HaendlerCode' ist nicht gesetzt!", null, LOGLEVEL_ERROR);
+        if (strlen($this->getHaendlerCode()) === 0) {
+            ZahlungsLog::add($this->moduleID, 'Pflichtparameter "HaendlerCode" ist nicht gesetzt!', null, LOGLEVEL_ERROR);
 
             return false;
         }

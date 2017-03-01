@@ -1,6 +1,6 @@
 <?php
 
-require_once dirname(__FILE__) . '/ipl_xml_request.php';
+require_once __DIR__. '/ipl_xml_request.php';
 
 /**
  * @author Jan Wehrs (jan.wehrs@billpay.de)
@@ -9,22 +9,42 @@ require_once dirname(__FILE__) . '/ipl_xml_request.php';
  */
 class ipl_calculate_rates_request extends ipl_xml_request
 {
-    private $_rate_params = array();
+    /**
+     * @var array
+     */
+    private $_rate_params = [];
+    /**
+     * @var
+     */
     private $options;
+    /**
+     * @var array
+     */
+    private $_locale = [];
 
-    private $_locale = array();
-
+    /**
+     * @return mixed
+     */
     public function get_options()
     {
         return $this->options;
     }
 
+    /**
+     * @param $baseamount
+     * @param $carttotalgross
+     */
     public function set_rate_request_params($baseamount, $carttotalgross)
     {
         $this->_rate_params['baseamount']     = $baseamount;
         $this->_rate_params['carttotalgross'] = $carttotalgross;
     }
 
+    /**
+     * @param $country
+     * @param $currency
+     * @param $language
+     */
     public function set_locale($country, $currency, $language)
     {
         $this->_locale['country']  = $country;
@@ -32,6 +52,9 @@ class ipl_calculate_rates_request extends ipl_xml_request
         $this->_locale['language'] = $language;
     }
 
+    /**
+     * @return array|bool
+     */
     protected function _send()
     {
         return ipl_core_send_calculate_rates_request(
@@ -43,6 +66,9 @@ class ipl_calculate_rates_request extends ipl_xml_request
         );
     }
 
+    /**
+     * @param $data
+     */
     protected function _process_response_xml($data)
     {
         $this->options = $data['options'];

@@ -12,14 +12,14 @@ class ContentAuthor
     use SingletonTrait;
 
     /**
-     * @param string $realm
-     * @param int $contentID
-     * @param mixed int|null $authorID
-     * @return mixed int|boolean
+     * @param string   $realm
+     * @param int      $contentID
+     * @param int|null $authorID
+     * @return int|boolean
      */
     public function setAuthor($realm, $contentID, $authorID = null)
     {
-        if (!isset($authorID) || (int)$authorID === 0) {
+        if ($authorID === null || (int)$authorID === 0) {
             $account = $GLOBALS['oAccount']->account();
 
             if ($account !== false) {
@@ -96,7 +96,8 @@ class ContentAuthor
      */
     public function getPossibleAuthors(array $adminRights = null)
     {
-        if (isset($adminRights) && is_array($adminRights)) {
+        $filter = '';
+        if ($adminRights !== null && is_array($adminRights)) {
             $filter = "AND (tadminlogin.kAdminlogingruppe = 1
                         OR EXISTS (
                             SELECT 1 
@@ -104,8 +105,6 @@ class ContentAuthor
                             WHERE tadminrechtegruppe.kAdminlogingruppe = tadminlogin.kAdminlogingruppe
                                 AND tadminrechtegruppe.cRecht IN ('" . implode("', '", $adminRights) . "')
                         ))";
-        } else {
-            $filter = '';
         }
 
         return Shop::DB()->query(

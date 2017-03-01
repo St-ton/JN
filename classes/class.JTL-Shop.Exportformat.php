@@ -716,9 +716,12 @@ class Exportformat
             ? Shop::DB()->select('twaehrung', 'kWaehrung', $this->kWaehrung)
             : Shop::DB()->select('twaehrung', 'cStandard', 'Y');
         setzeSteuersaetze();
+        $net = Shop::DB()->select('tkundengruppe', 'kKundengruppe', $this->getKundengruppe());
+
         $_SESSION['Kundengruppe']->darfPreiseSehen            = 1;
         $_SESSION['Kundengruppe']->darfArtikelKategorienSehen = 1;
         $_SESSION['Kundengruppe']->kKundengruppe              = $this->getKundengruppe();
+        $_SESSION['Kundengruppe']->nNettoPreise               = (int)$net->nNettoPreise;
         $_SESSION['kKundengruppe']                            = $this->getKundengruppe();
         $_SESSION['kSprache']                                 = $this->getSprache();
         $_SESSION['Sprachen']                                 = Shop::DB()->query("SELECT * FROM tsprache", 2);

@@ -95,7 +95,7 @@ function getInfoInUse($cRow, $cValue)
 {
     $oAdmin = Shop::DB()->select('tadminlogin', $cRow, $cValue, null, null, null, null, false, $cRow);
 
-    return (is_object($oAdmin));
+    return is_object($oAdmin);
 }
 
 /**
@@ -111,7 +111,7 @@ function benutzerverwaltungGetAttributes($kAdminlogin)
         'kAttribut, cName, cAttribValue, cAttribText',
         'cName ASC'
     );
-    if (version_compare(phpversion(), '7.0', '<')) {
+    if (version_compare(PHP_VERSION, '7.0', '<')) {
         $result = [];
         foreach ($extAttribs as $attrib) {
             $result[$attrib->cName] = $attrib;
@@ -193,7 +193,7 @@ function benutzerverwaltungSaveAttributes(stdClass $oAccount, array $extAttribs,
  */
 function benutzerverwaltungDeleteAttributes(stdClass $oAccount)
 {
-    return Shop::DB()->delete('tadminloginattribut', 'kAdminlogin', (int)$oAccount->kAdminlogin) < 0 ? false : true;
+    return Shop::DB()->delete('tadminloginattribut', 'kAdminlogin', (int)$oAccount->kAdminlogin) >= 0;
 }
 
 /**
@@ -209,7 +209,7 @@ function benutzerverwaltungActionAccountLock(JTLSmarty $smarty, array &$messages
     if (!empty($oAccount->kAdminlogin) && $oAccount->kAdminlogin == $_SESSION['AdminAccount']->kAdminlogin) {
         $messages['error'] .= 'Sie k&ouml;nnen sich nicht selbst sperren.';
     } elseif (is_object($oAccount)) {
-        if ($oAccount->kAdminlogingruppe == ADMINGROUP) {
+        if ((int)$oAccount->kAdminlogingruppe === ADMINGROUP) {
             $messages['error'] .= 'Administratoren k&ouml;nnen nicht gesperrt werden.';
         } else {
             $result = true;
@@ -292,7 +292,7 @@ function benutzerverwaltungActionAccountEdit(JTLSmarty $smarty, array &$messages
     if (isset($_POST['save'])) {
         $cError_arr           = [];
         $oTmpAcc              = new stdClass();
-        $oTmpAcc->kAdminlogin = (isset($_POST['kAdminlogin']))
+        $oTmpAcc->kAdminlogin = isset($_POST['kAdminlogin'])
             ? (int)$_POST['kAdminlogin']
             : 0;
         $oTmpAcc->cName       = htmlspecialchars(trim($_POST['cName']), ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
@@ -325,15 +325,15 @@ function benutzerverwaltungActionAccountEdit(JTLSmarty $smarty, array &$messages
         if (strlen($oTmpAcc->cMail) === 0) {
             $cError_arr['cMail'] = 1;
         }
-        if (strlen($oTmpAcc->cPass) === 0 && $oTmpAcc->kAdminlogin == 0) {
+        if (strlen($oTmpAcc->cPass) === 0 && $oTmpAcc->kAdminlogin === 0) {
             $cError_arr['cPass'] = 1;
         }
         if (strlen($oTmpAcc->cLogin) === 0) {
             $cError_arr['cLogin'] = 1;
-        } elseif ($oTmpAcc->kAdminlogin == 0 && getInfoInUse('cLogin', $oTmpAcc->cLogin)) {
+        } elseif ($oTmpAcc->kAdminlogin === 0 && getInfoInUse('cLogin', $oTmpAcc->cLogin)) {
             $cError_arr['cLogin'] = 2;
         }
-        if ($dGueltigBisAktiv && $oTmpAcc->kAdminlogingruppe != ADMINGROUP) {
+        if ($dGueltigBisAktiv && $oTmpAcc->kAdminlogingruppe !== ADMINGROUP) {
             if (strlen($oTmpAcc->dGueltigBis) === 0) {
                 $cError_arr['dGueltigBis'] = 1;
             }
@@ -345,8 +345,8 @@ function benutzerverwaltungActionAccountEdit(JTLSmarty $smarty, array &$messages
                     FROM tadminlogin 
                     WHERE kAdminlogingruppe = 1", 1
             );
-            if ($oOldAcc->kAdminlogingruppe == ADMINGROUP &&
-                $oTmpAcc->kAdminlogingruppe != ADMINGROUP &&
+            if ((int)$oOldAcc->kAdminlogingruppe === ADMINGROUP &&
+                (int)$oTmpAcc->kAdminlogingruppe !== ADMINGROUP &&
                 $oCount->nCount <= 1) {
                 $cError_arr['bMinAdmin'] = 1;
             }
@@ -354,7 +354,7 @@ function benutzerverwaltungActionAccountEdit(JTLSmarty $smarty, array &$messages
         if (count($cError_arr) > 0) {
             $smarty->assign('cError_arr', $cError_arr);
             $messages['error'] .= 'Bitte alle Pflichtfelder ausf&uuml;llen.';
-            if (isset($cError_arr['bMinAdmin']) && intval($cError_arr['bMinAdmin']) === 1) {
+            if (isset($cError_arr['bMinAdmin']) && (int)$cError_arr['bMinAdmin'] === 1) {
                 $messages['error'] .= 'Es muss mindestens ein Administrator im System vorhanden sein.';
             }
         } else {
@@ -378,7 +378,7 @@ function benutzerverwaltungActionAccountEdit(JTLSmarty $smarty, array &$messages
                 }
 
                 if (Shop::DB()->update('tadminlogin', 'kAdminlogin', $oTmpAcc->kAdminlogin, $oTmpAcc) >= 0
-                    && (benutzerverwaltungSaveAttributes($oTmpAcc, $tmpAttribs, $messages, $cError_arr))
+                    && benutzerverwaltungSaveAttributes($oTmpAcc, $tmpAttribs, $messages, $cError_arr)
                 ) {
                     $result = true;
                     executeHook(HOOK_BACKEND_ACCOUNT_EDIT, [
@@ -489,10 +489,10 @@ function benutzerverwaltungActionAccountDelete(JTLSmarty $smarty, array &$messag
     );
     $oAccount    = Shop::DB()->select('tadminlogin', 'kAdminlogin', $kAdminlogin);
 
-    if (isset($oAccount->kAdminlogin) && $oAccount->kAdminlogin == $_SESSION['AdminAccount']->kAdminlogin) {
+    if (isset($oAccount->kAdminlogin) && (int)$oAccount->kAdminlogin === (int)$_SESSION['AdminAccount']->kAdminlogin) {
         $messages['error'] .= 'Sie k&ouml;nnen sich nicht selbst l&ouml;schen';
     } elseif (is_object($oAccount)) {
-        if ($oAccount->kAdminlogingruppe == ADMINGROUP && $oCount->nCount <= 1) {
+        if ((int)$oAccount->kAdminlogingruppe === ADMINGROUP && $oCount->nCount <= 1) {
             $messages['error'] .= 'Es muss mindestens ein Administrator im System vorhanden sein.';
         } elseif (benutzerverwaltungDeleteAttributes($oAccount) &&
             Shop::DB()->delete('tadminlogin', 'kAdminlogin', $kAdminlogin)) {
@@ -525,13 +525,13 @@ function benutzerverwaltungActionAccountDelete(JTLSmarty $smarty, array &$messag
 function benutzerverwaltungActionGroupEdit(JTLSmarty $smarty, array &$messages)
 {
     $bDebug            = isset($_POST['debug']);
-    $kAdminlogingruppe = (isset($_POST['id']))
+    $kAdminlogingruppe = isset($_POST['id'])
         ? (int)$_POST['id']
         : null;
     if (isset($_POST['save'])) {
         $cError_arr                     = [];
         $oAdminGroup                    = new stdClass();
-        $oAdminGroup->kAdminlogingruppe = (isset($_POST['kAdminlogingruppe']))
+        $oAdminGroup->kAdminlogingruppe = isset($_POST['kAdminlogingruppe'])
             ? (int)$_POST['kAdminlogingruppe']
             : 0;
         $oAdminGroup->cGruppe           = htmlspecialchars(trim($_POST['cGruppe']), ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
@@ -601,7 +601,7 @@ function benutzerverwaltungActionGroupEdit(JTLSmarty $smarty, array &$messages)
             }
         }
     } elseif ($kAdminlogingruppe > 0) {
-        if ($kAdminlogingruppe == 1) {
+        if ((int)$kAdminlogingruppe === 1) {
             header('location: benutzerverwaltung.php?action=group_view&token=' . $_SESSION['jtl_token']);
         }
         $smarty->assign('bDebug', $bDebug)

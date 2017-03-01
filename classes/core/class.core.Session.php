@@ -28,7 +28,7 @@ class Session
     /**
      * @var SessionHandlerInterface
      */
-    protected static $_handler = null;
+    protected static $_handler;
 
     /**
      * @var SessionStorage
@@ -175,11 +175,11 @@ class Session
             $ts                     = Shop::DB()->query("SELECT dLetzteAenderung FROM tglobals", 1);
             $_SESSION['Globals_TS'] = $ts->dLetzteAenderung;
         }
-        if (isset($_GET['lang']) && (!isset($_SESSION['cISOSprache']) || $_GET['lang'] != $_SESSION['cISOSprache'])) {
+        if (isset($_GET['lang']) && (!isset($_SESSION['cISOSprache']) || $_GET['lang'] !== $_SESSION['cISOSprache'])) {
             $globalsAktualisieren = true;
             $updateLanguage       = true;
         }
-        $lang    = (isset($_GET['lang'])) ? $_GET['lang'] : '';
+        $lang    = isset($_GET['lang']) ? $_GET['lang'] : '';
         $checked = false;
         if (isset($_SESSION['kSprache'])) {
             checkeSpracheWaehrung($lang);
@@ -250,10 +250,10 @@ class Session
                 $_SESSION['Kundengruppe']->darfPreiseSehen            = 1;
                 $_SESSION['Kundengruppe']->darfArtikelKategorienSehen = 1;
                 $conf                                                 = Shop::getSettings([CONF_GLOBAL]);
-                if ($_SESSION['Kundengruppe']->cStandard === 'Y' && $conf['global']['global_sichtbarkeit'] == 2) {
+                if ($_SESSION['Kundengruppe']->cStandard === 'Y' && (int)$conf['global']['global_sichtbarkeit'] === 2) {
                     $_SESSION['Kundengruppe']->darfPreiseSehen = 0;
                 }
-                if ($_SESSION['Kundengruppe']->cStandard === 'Y' && $conf['global']['global_sichtbarkeit'] == 3) {
+                if ($_SESSION['Kundengruppe']->cStandard === 'Y' && (int)$conf['global']['global_sichtbarkeit'] === 3) {
                     $_SESSION['Kundengruppe']->darfPreiseSehen            = 0;
                     $_SESSION['Kundengruppe']->darfArtikelKategorienSehen = 0;
                 }
@@ -372,7 +372,7 @@ class Session
             ) {
                 // Wunschliste Position aus der Session löschen
                 foreach ($_SESSION['Vergleichsliste']->oArtikel_arr as $i => $oArtikel) {
-                    if ($oArtikel->kArtikel == $kVergleichlistePos) {
+                    if ((int)$oArtikel->kArtikel === $kVergleichlistePos) {
                         unset($_SESSION['Vergleichsliste']->oArtikel_arr[$i]);
                     }
                 }
@@ -401,7 +401,7 @@ class Session
      */
     public function getBrowserLanguage($cAllowed_arr, $cDefault)
     {
-        $cLanguage = (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) ? $_SERVER['HTTP_ACCEPT_LANGUAGE'] : null;
+        $cLanguage = isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) ? $_SERVER['HTTP_ACCEPT_LANGUAGE'] : null;
 
         if (empty($cLanguage)) {
             return $cDefault;
@@ -424,7 +424,7 @@ class Session
                 ? (float)$cMatch_arr[2]
                 : 1.0;
             while (count($cLangeCode)) {
-                if (in_array(strtolower(implode('-', $cLangeCode)), $cAllowed_arr)) {
+                if (in_array(strtolower(implode('-', $cLangeCode)), $cAllowed_arr, true)) {
                     if ($nLangQuality > $nCurrentQuality) {
                         $cCurrentLang    = strtolower(implode('-', $cLangeCode));
                         $nCurrentQuality = $nLangQuality;

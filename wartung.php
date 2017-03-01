@@ -22,7 +22,7 @@ if ($Einstellungen['global']['wartungsmodus_aktiviert'] === 'N') {
 Shop::setPageType(PAGE_WARTUNG);
 if (isset($Link)) {
     $requestURL = baueURL($Link, URLART_SEITE);
-    $sprachURL  = (isset($Link->languageURLs))
+    $sprachURL  = isset($Link->languageURLs)
         ? $Link->languageURLs
         : baueSprachURLS($Link, URLART_SEITE);
 }

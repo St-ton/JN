@@ -40,7 +40,7 @@ function holeAktiveGeschenke($cSQL)
  */
 function holeHaeufigeGeschenke($cSQL)
 {
-    $oHaeufigGeschenk_arr = array();
+    $oHaeufigGeschenk_arr = [];
 
     if (strlen($cSQL) > 0) {
         $oHaeufigGeschenkTMP_arr = Shop::DB()->query(
@@ -74,7 +74,7 @@ function holeHaeufigeGeschenke($cSQL)
  */
 function holeLetzten100Geschenke($cSQL)
 {
-    $oLetzten100Geschenk_arr = array();
+    $oLetzten100Geschenk_arr = [];
 
     if (strlen($cSQL) > 0) {
         $oLetzten100GeschenkTMP_arr = Shop::DB()->query(

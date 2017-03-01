@@ -11,13 +11,10 @@
 function bestimmeAnzahlSeiten($oUmfrageFrage_arr)
 {
     $nAnzahlSeiten = 1;
-
     if (is_array($oUmfrageFrage_arr) && count($oUmfrageFrage_arr) > 0) {
         foreach ($oUmfrageFrage_arr as $i => $oUmfrageFrage) {
-            if ($i > 0) {
-                if ($oUmfrageFrage->cTyp === 'text_statisch_seitenwechsel') {
-                    $nAnzahlSeiten++;
-                }
+            if ($i > 0 && $oUmfrageFrage->cTyp === 'text_statisch_seitenwechsel') {
+                ++$nAnzahlSeiten;
             }
         }
     }
@@ -32,14 +29,11 @@ function bestimmeAnzahlSeiten($oUmfrageFrage_arr)
 function baueSeitenAnfaenge($oUmfrageFrage_arr)
 {
     $nSeitenAnfang_arr = [];
-
     if (is_array($oUmfrageFrage_arr) && count($oUmfrageFrage_arr) > 0) {
         $nSeitenAnfang_arr[] = 0;
         foreach ($oUmfrageFrage_arr as $i => $oUmfrageFrage) {
-            if ($i > 0) {
-                if ($oUmfrageFrage->cTyp === 'text_statisch_seitenwechsel') {
-                    $nSeitenAnfang_arr[] = $i;
-                }
+            if ($i > 0 && $oUmfrageFrage->cTyp === 'text_statisch_seitenwechsel') {
+                $nSeitenAnfang_arr[] = $i;
             }
         }
     }
@@ -62,15 +56,13 @@ function baueSeitenNavi($oUmfrageFrage_arr, $nAnzahlFragen)
             if (!isset($oNavi_arr[$i])) {
                 $oNavi_arr[$i] = new stdClass();
             }
-            $oNavi_arr[$i]->nSeite = $i + 1;
-            $oNavi_arr[$i]->nVon   = (isset($nSeitenAnfang_arr[$i])) ? $nSeitenAnfang_arr[$i] : 0;
-
-            if ($i == (count($nSeitenAnfang_arr) - 1)) {
+            $oNavi_arr[$i]->nSeite  = $i + 1;
+            $oNavi_arr[$i]->nVon    = isset($nSeitenAnfang_arr[$i]) ? $nSeitenAnfang_arr[$i] : 0;
+            $oNavi_arr[$i]->nAnzahl = 0;
+            if ($i === (count($nSeitenAnfang_arr) - 1)) {
                 $oNavi_arr[$i]->nAnzahl = $nAnzahlFragen - $nSeitenAnfang_arr[$i];
             } elseif (!empty($nSeitenAnfang_arr)) {
                 $oNavi_arr[$i]->nAnzahl = $nSeitenAnfang_arr[$i + 1] - $oNavi_arr[$i]->nVon;
-            } else {
-                $oNavi_arr[$i]->nAnzahl = 0;
             }
         }
     }
@@ -201,47 +193,50 @@ function setzeUmfrageErgebnisse()
 
         // Daten der Umfrage in die Datenbank (tumfragedurchfuehrungantwort) speichern
         foreach ($_SESSION['Umfrage']->oUmfrageFrage_arr as $j => $oUmfrageFrage) {
-            if ($oUmfrageFrage->cTyp !== 'text_statisch' && $oUmfrageFrage->cTyp !== 'text_statisch_seitenwechsel') {
-                if (is_array($oUmfrageFrage->oUmfrageFrageAntwort_arr) && count($oUmfrageFrage->oUmfrageFrageAntwort_arr) > 0) {
-                    foreach ($oUmfrageFrage->oUmfrageFrageAntwort_arr as $i => $cUmfrageFrageAntwort) {
-                        if (isset($cUmfrageFrageAntwort) &&
-                            isset($oUmfrageFrage->oUmfrageFrageAntwort_arr[$i]) &&
-                            strlen($cUmfrageFrageAntwort) > 0 &&
-                            $oUmfrageFrage->oUmfrageFrageAntwort_arr[$i] != '-1'
-                        ) {
-                            unset($oUmfrageDurchfuehrungAntwort);
-                            $oUmfrageDurchfuehrungAntwort                        = new stdClass();
-                            $oUmfrageDurchfuehrungAntwort->kUmfrageDurchfuehrung = $kUmfrageDurchfuehrung;
-                            $oUmfrageDurchfuehrungAntwort->kUmfrageFrage         = $oUmfrageFrage->kUmfrageFrage;
+            if ($oUmfrageFrage->cTyp !== 'text_statisch' &&
+                $oUmfrageFrage->cTyp !== 'text_statisch_seitenwechsel' &&
+                is_array($oUmfrageFrage->oUmfrageFrageAntwort_arr) &&
+                count($oUmfrageFrage->oUmfrageFrageAntwort_arr) > 0
+            ) {
+                foreach ($oUmfrageFrage->oUmfrageFrageAntwort_arr as $i => $cUmfrageFrageAntwort) {
+                    if (isset($cUmfrageFrageAntwort, $oUmfrageFrage->oUmfrageFrageAntwort_arr[$i]) &&
+                        strlen($cUmfrageFrageAntwort) > 0 &&
+                        $oUmfrageFrage->oUmfrageFrageAntwort_arr[$i] != '-1'
+                    ) {
+                        unset($oUmfrageDurchfuehrungAntwort);
+                        $oUmfrageDurchfuehrungAntwort                        = new stdClass();
+                        $oUmfrageDurchfuehrungAntwort->kUmfrageDurchfuehrung = $kUmfrageDurchfuehrung;
+                        $oUmfrageDurchfuehrungAntwort->kUmfrageFrage         = $oUmfrageFrage->kUmfrageFrage;
 
-                            if ($oUmfrageFrage->cTyp === 'text_klein' || $oUmfrageFrage->cTyp === 'text_gross') {
+                        if ($oUmfrageFrage->cTyp === 'text_klein' || $oUmfrageFrage->cTyp === 'text_gross') {
+                            $oUmfrageDurchfuehrungAntwort->kUmfrageFrageAntwort = 0;
+                            $oUmfrageDurchfuehrungAntwort->kUmfrageMatrixOption = 0;
+                            $oUmfrageDurchfuehrungAntwort->cText                = (!empty($cUmfrageFrageAntwort)) ?
+                                StringHandler::htmlentities(StringHandler::filterXSS(ltrim($cUmfrageFrageAntwort)))
+                                : '';
+                        } elseif ($oUmfrageFrage->cTyp === 'matrix_single' || $oUmfrageFrage->cTyp === 'matrix_multi') {
+                            list($kUmfrageFrageAntwort, $kUmfrageMatrixOption)  = explode('_', $cUmfrageFrageAntwort);
+                            $oUmfrageDurchfuehrungAntwort->kUmfrageFrageAntwort = $kUmfrageFrageAntwort;
+                            $oUmfrageDurchfuehrungAntwort->kUmfrageMatrixOption = $kUmfrageMatrixOption;
+                            $oUmfrageDurchfuehrungAntwort->cText                = '';
+                        } else {
+                            if ($cUmfrageFrageAntwort == '-1') {
                                 $oUmfrageDurchfuehrungAntwort->kUmfrageFrageAntwort = 0;
                                 $oUmfrageDurchfuehrungAntwort->kUmfrageMatrixOption = 0;
-                                $oUmfrageDurchfuehrungAntwort->cText                = (!empty($cUmfrageFrageAntwort)) ?
-                                    StringHandler::htmlentities(StringHandler::filterXSS(ltrim($cUmfrageFrageAntwort)))
+                                $oUmfrageDurchfuehrungAntwort->cText                = (!empty($oUmfrageFrage->oUmfrageFrageAntwort_arr[$i + 1]))
+                                    ? StringHandler::htmlentities(StringHandler::filterXSS($oUmfrageFrage->oUmfrageFrageAntwort_arr[$i + 1]))
                                     : '';
-                            } elseif ($oUmfrageFrage->cTyp === 'matrix_single' || $oUmfrageFrage->cTyp === 'matrix_multi') {
-                                list($kUmfrageFrageAntwort, $kUmfrageMatrixOption)  = explode('_', $cUmfrageFrageAntwort);
-                                $oUmfrageDurchfuehrungAntwort->kUmfrageFrageAntwort = $kUmfrageFrageAntwort;
-                                $oUmfrageDurchfuehrungAntwort->kUmfrageMatrixOption = $kUmfrageMatrixOption;
-                                $oUmfrageDurchfuehrungAntwort->cText                = '';
+                                array_pop($_SESSION['Umfrage']->oUmfrageFrage_arr[$j]->oUmfrageFrageAntwort_arr);
                             } else {
-                                if ($cUmfrageFrageAntwort == '-1') {
-                                    $oUmfrageDurchfuehrungAntwort->kUmfrageFrageAntwort = 0;
-                                    $oUmfrageDurchfuehrungAntwort->kUmfrageMatrixOption = 0;
-                                    $oUmfrageDurchfuehrungAntwort->cText                = (!empty($oUmfrageFrage->oUmfrageFrageAntwort_arr[$i + 1]))
-                                        ? StringHandler::htmlentities(StringHandler::filterXSS($oUmfrageFrage->oUmfrageFrageAntwort_arr[$i + 1]))
-                                        : '';
-                                    array_pop($_SESSION['Umfrage']->oUmfrageFrage_arr[$j]->oUmfrageFrageAntwort_arr);
-                                } else {
-                                    $oUmfrageDurchfuehrungAntwort->kUmfrageFrageAntwort = $cUmfrageFrageAntwort;
-                                    $oUmfrageDurchfuehrungAntwort->kUmfrageMatrixOption = 0;
-                                    $oUmfrageDurchfuehrungAntwort->cText                = ($oUmfrageFrage->nFreifeld) ? $cUmfrageFrageAntwort : '';
-                                }
+                                $oUmfrageDurchfuehrungAntwort->kUmfrageFrageAntwort = $cUmfrageFrageAntwort;
+                                $oUmfrageDurchfuehrungAntwort->kUmfrageMatrixOption = 0;
+                                $oUmfrageDurchfuehrungAntwort->cText                = $oUmfrageFrage->nFreifeld
+                                    ? $cUmfrageFrageAntwort
+                                    : '';
                             }
-
-                            Shop::DB()->insert('tumfragedurchfuehrungantwort', $oUmfrageDurchfuehrungAntwort);
                         }
+
+                        Shop::DB()->insert('tumfragedurchfuehrungantwort', $oUmfrageDurchfuehrungAntwort);
                     }
                 }
             }
@@ -260,7 +255,7 @@ function pruefeEingabe($cPost_arr)
 {
     if (is_array($cPost_arr['kUmfrageFrage']) && count($cPost_arr['kUmfrageFrage']) > 0) {
         foreach ($cPost_arr['kUmfrageFrage'] as $i => $kUmfrageFrage) {
-            $kUmfrageFrage = intval($kUmfrageFrage);
+            $kUmfrageFrage = (int)$kUmfrageFrage;
             $oUmfrageFrage = Shop::DB()->select('tumfragefrage', 'kUmfrageFrage', $kUmfrageFrage);
             if ($oUmfrageFrage->nNotwendig == 1) {
                 $oUmfrageFrageAntwort_arr = Shop::DB()->selectAll(
@@ -303,12 +298,11 @@ function pruefeEingabe($cPost_arr)
                     ) {
                         return $oUmfrageFrage->kUmfrageFrage;
                     }
-                } else {
-                    if (is_array($oUmfrageFrageAntwort_arr) && count($oUmfrageFrageAntwort_arr) > 0) {
-                        if (!isset($cPost_arr[$oUmfrageFrage->kUmfrageFrage])) {
-                            return $oUmfrageFrage->kUmfrageFrage;
-                        }
-                    }
+                } elseif (is_array($oUmfrageFrageAntwort_arr) &&
+                    !isset($cPost_arr[$oUmfrageFrage->kUmfrageFrage]) &&
+                    count($oUmfrageFrageAntwort_arr) > 0
+                ) {
+                    return $oUmfrageFrage->kUmfrageFrage;
                 }
             }
         }
@@ -372,7 +366,7 @@ function gibKundeGuthaben($fGuthaben, $kKunde)
     if ($kKunde > 0) {
         Shop::DB()->query(
             "UPDATE tkunde
-                SET fGuthaben = fGuthaben + " . doubleval($fGuthaben) . "
+                SET fGuthaben = fGuthaben + " . floatval($fGuthaben) . "
                 WHERE kKunde = " . (int)$kKunde, 4
         );
 
@@ -390,7 +384,7 @@ function holeAktuelleUmfrage($kUmfrage)
 {
     // Modulprüfung
     $oNice = Nice::getInstance();
-    if (!$oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE) || !$kUmfrage) {
+    if (!$kUmfrage || !$oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
         return null;
     }
     // Umfrage holen
@@ -410,7 +404,7 @@ function holeAktuelleUmfrage($kUmfrage)
                 AND tumfrage.kSprache = " . (int)$_SESSION['kSprache'] . "
                 AND (
                     cKundengruppe LIKE '%;-1;%' 
-                    OR cKundengruppe LIKE '%;" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";%'
+                    OR cKundengruppe RLIKE '^([0-9;]*;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";'
                     )
                 AND (
                     (dGueltigVon <= now() 
@@ -449,7 +443,7 @@ function holeUmfrageUebersicht()
                 AND tumfrage.kSprache = " . (int)$_SESSION['kSprache'] . "
                 AND (
                     cKundengruppe LIKE '%;-1;%' 
-                    OR cKundengruppe LIKE '%;" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";%'
+                    OR cKundengruppe RLIKE '^([0-9;]*;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";'
                     )
                 AND (
                     (dGueltigVon <= now() 

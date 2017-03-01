@@ -14,8 +14,6 @@ function bearbeiteClearCache($oJobQueue)
 {
     $oJobQueue->nInArbeit = 1;
     $oJobQueue->updateJobInDB();
-
-    //$oJobQueue->nLimitN += removeFiles(PFAD_ROOT . PFAD_DBES . PFAD_SYNC_TMP, DELETE_CACHE_FILES, $nMaxSingle);
     $oJobQueue->nLimitN = removeFiles(PFAD_ROOT . 'session/', DELETE_CACHE_FILES, $oJobQueue->nLimitM);
 
     if ($oJobQueue->nLimitN > 0) {
@@ -42,7 +40,7 @@ function removeFiles($cDir, $nTimeOff, $nMax)
         $cDir .= '/';
     }
 
-    if ($nHandle = opendir($cDir)) {
+    if (($nHandle = opendir($cDir)) !== false) {
         while (($cFile = readdir($nHandle)) !== false) {
             if ($nDelCount >= $nMax) {
                 break;
@@ -53,14 +51,14 @@ function removeFiles($cDir, $nTimeOff, $nMax)
                 if (is_file($cFilePath)) {
                     $nCreated = filemtime($cFilePath);
                     if (($nCreated + $nTimeOff) <= time()) {
-                        if ($bDeleted = @unlink($cFilePath)) {
+                        if (($bDeleted = @unlink($cFilePath)) !== false) {
                             $nDelCount++;
                         }
                     }
                 } elseif (is_dir($cFilePath)) {
                     $nDelCount += removeFiles($cFilePath, $nTimeOff, $nMax - $nDelCount);
                     if ($nDelCount < $nMax) {
-                        if ($bDeleted = @rmdir($cFilePath)) {
+                        if (($bDeleted = @rmdir($cFilePath)) !== false) {
                             $nDelCount++;
                         }
                     }

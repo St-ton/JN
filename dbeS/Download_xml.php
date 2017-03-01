@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-require_once dirname(__FILE__) . '/syncinclude.php';
+require_once __DIR__ . '/syncinclude.php';
 
 $return = 3;
 if (auth()) {
@@ -49,7 +49,7 @@ if (auth()) {
     }
 }
 
-if ($return == 1) {
+if ($return === 2) {
     syncException('Error : ' . $archive->errorInfo(true));
 }
 
@@ -65,11 +65,11 @@ function bearbeiteDeletes($xml)
 {
     if (is_array($xml['del_downloads']['kDownload'])) {
         foreach ($xml['del_downloads']['kDownload'] as $kDownload) {
-            if (intval($kDownload) > 0) {
+            if ((int)$kDownload > 0) {
                 loescheDownload($kDownload);
             }
         }
-    } elseif (intval($xml['del_downloads']['kDownload']) > 0) {
+    } elseif ((int)$xml['del_downloads']['kDownload'] > 0) {
         loescheDownload($xml['del_downloads']['kDownload']);
     }
 }
@@ -79,9 +79,8 @@ function bearbeiteDeletes($xml)
  */
 function bearbeiteInsert($xml)
 {
-    // 1 Download
     if (isset($xml['tDownloads']['tDownload attr']) && is_array($xml['tDownloads']['tDownload attr'])) {
-        // Download
+        // 1 Download
         $oDownload_arr = mapArray($xml['tDownloads'], 'tDownload', $GLOBALS['mDownload']);
         if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
             Jtllog::writeLog('Single download, oDownload_arr: ' . print_r($oDownload_arr, true), JTLLOG_LEVEL_DEBUG);
@@ -100,8 +99,8 @@ function bearbeiteInsert($xml)
                 }
             }
         }
-    } else { // N-Downloads
-        // Download
+    } else {
+        // N-Downloads
         $oDownload_arr = mapArray($xml['tDownloads'], 'tDownload', $GLOBALS['mDownload']);
         if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
             Jtllog::writeLog('Multiple downloads, oDownload_arr: ' . print_r($oDownload_arr, 1), JTLLOG_LEVEL_DEBUG, false, 'Download_xml');

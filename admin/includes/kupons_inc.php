@@ -50,6 +50,25 @@ function getCouponNames($kKupon)
 }
 
 /**
+ * @param string $selHerst
+ * @return array
+ */
+function getManufacturers($selHerst = '')
+{
+    $selected       = StringHandler::parseSSK($selHerst);
+    $hersteller_arr = Shop::DB()->query("SELECT kHersteller, cName FROM thersteller", 2);
+
+    foreach ($hersteller_arr as $i => $hersteller) {
+        $oHersteller                  = new Hersteller($hersteller->kHersteller);
+        $hersteller_arr[$i]->cName    = $oHersteller->cName;
+        $hersteller_arr[$i]->selected = in_array($hersteller_arr[$i]->kHersteller, $selected) ? 1 : 0;
+        unset($oHersteller);
+    }
+
+    return $hersteller_arr;
+}
+
+/**
  * @param string $selKats
  * @param int    $kKategorie
  * @param int    $tiefe
@@ -161,8 +180,8 @@ function getCoupon($kKupon)
  */
 function augmentCoupon($oKupon)
 {
-    $oKupon->cLocalizedValue = $oKupon->cWertTyp == 'festpreis' ?
-        gibPreisStringLocalized($oKupon->fWert)
+    $oKupon->cLocalizedValue = $oKupon->cWertTyp === 'festpreis'
+        ? gibPreisStringLocalized($oKupon->fWert)
         : '';
     $oKupon->cLocalizedMbw   = isset($oKupon->fMindestbestellwert)
         ? gibPreisStringLocalized($oKupon->fMindestbestellwert)
@@ -191,7 +210,7 @@ function augmentCoupon($oKupon)
         $oKupon->cGueltigBisLong  = date_create($oKupon->dGueltigBis)->format('d.m.Y H:i');
     }
 
-    if ((int)$oKupon->kKundengruppe == -1) {
+    if ((int)$oKupon->kKundengruppe === -1) {
         $oKupon->cKundengruppe = 'Alle';
     } else {
         $oKundengruppe         = Shop::DB()->query("
@@ -202,11 +221,12 @@ function augmentCoupon($oKupon)
         $oKupon->cKundengruppe = $oKundengruppe->cName;
     }
 
-    if ($oKupon->cArtikel === '') {
-        $oKupon->cArtikelInfo = 'Alle';
-    } else {
-        $oKupon->cArtikelInfo = 'eingeschr&auml;nkt';
-    }
+    $oKupon->cArtikelInfo    = ($oKupon->cArtikel === '')
+        ? 'Alle'
+        : 'eingeschr&auml;nkt';
+    $oKupon->cHerstellerInfo = (empty($oKupon->cHersteller) || $oKupon->cHersteller === '-1')
+        ? 'Alle'
+        : 'eingeschr&auml;nkt';
 
     $oMaxErstelltDB   = Shop::DB()->query("
         SELECT max(dErstellt) as dLastUse
@@ -247,6 +267,7 @@ function createNewCoupon($cKuponTyp)
     $oKupon->dGueltigAb            = date_create()->format('Y-m-d H:i');
     $oKupon->dGueltigBis           = '';
     $oKupon->cAktiv                = 'Y';
+    $oKupon->cHersteller           = '-1';
     $oKupon->cKategorien           = '-1';
     $oKupon->cKunden               = '-1';
     $oKupon->kKupon                = 0;
@@ -277,6 +298,7 @@ function createCouponFromInput()
     $oKupon->nVerwendungen         = !empty($_POST['nVerwendungen']) ? (int)$_POST['nVerwendungen'] : 0;
     $oKupon->nVerwendungenProKunde = !empty($_POST['nVerwendungenProKunde']) ? (int)$_POST['nVerwendungenProKunde'] : 0;
     $oKupon->cArtikel              = !empty($_POST['cArtikel']) ? ';' . trim($_POST['cArtikel'], ';\t\n\r') . ';' : '';
+    $oKupon->cHersteller           = '-1';
     $oKupon->kKundengruppe         = (int)$_POST['kKundengruppe'];
     $oKupon->dGueltigAb            = normalizeDate(!empty($_POST['dGueltigAb']) ? $_POST['dGueltigAb'] : date_create()->format('Y-m-d H:i') . ':00');
     $oKupon->dGueltigBis           = normalizeDate(!empty($_POST['dGueltigBis']) ? $_POST['dGueltigBis'] : '');
@@ -294,6 +316,11 @@ function createCouponFromInput()
         $setDays                 = new DateInterval('P' . $_POST['dDauerTage'] . 'D');
         $oKupon->dGueltigBis     = date_add($actualTimestampEndofDay, $setDays)->format('Y-m-d H:i:s');
     }
+    if (!empty($_POST['kHersteller']) &&
+        is_array($_POST['kHersteller']) && count($_POST['kHersteller']) > 0 &&
+        !in_array('-1', $_POST['kHersteller'])) {
+        $oKupon->cHersteller = StringHandler::createSSK($_POST['kHersteller']);
+    }
     if (!empty($_POST['kKategorien']) &&
         is_array($_POST['kKategorien']) && count($_POST['kKategorien']) > 0 &&
         !in_array('-1', $_POST['kKategorien'])) {
@@ -307,25 +334,19 @@ function createCouponFromInput()
         $massCreationCoupon->cActiv          = (!empty($_POST['couponCreation']))
             ? (int)$_POST['couponCreation']
             : 0;
-        $massCreationCoupon->numberOfCoupons = ($massCreationCoupon->cActiv == 1 && !empty($_POST['numberOfCoupons']))
+        $massCreationCoupon->numberOfCoupons = ($massCreationCoupon->cActiv === 1 && !empty($_POST['numberOfCoupons']))
             ? (int)$_POST['numberOfCoupons']
             : 2;
-        $massCreationCoupon->lowerCase       = ($massCreationCoupon->cActiv == 1 && !empty($_POST['lowerCase']))
-            ? true
-            : false;
-        $massCreationCoupon->upperCase       = ($massCreationCoupon->cActiv == 1 && !empty($_POST['upperCase']))
-            ? true
-            : false;
-        $massCreationCoupon->numbersHash     = ($massCreationCoupon->cActiv == 1 && !empty($_POST['numbersHash']))
-            ? true
-            : false;
-        $massCreationCoupon->hashLength      = ($massCreationCoupon->cActiv == 1 && !empty($_POST['hashLength']))
+        $massCreationCoupon->lowerCase       = ($massCreationCoupon->cActiv === 1 && !empty($_POST['lowerCase']));
+        $massCreationCoupon->upperCase       = ($massCreationCoupon->cActiv === 1 && !empty($_POST['upperCase']));
+        $massCreationCoupon->numbersHash     = ($massCreationCoupon->cActiv === 1 && !empty($_POST['numbersHash']));
+        $massCreationCoupon->hashLength      = ($massCreationCoupon->cActiv === 1 && !empty($_POST['hashLength']))
             ? $_POST['hashLength']
             : 4;
-        $massCreationCoupon->prefixHash      = ($massCreationCoupon->cActiv == 1 && !empty($_POST['prefixHash']))
+        $massCreationCoupon->prefixHash      = ($massCreationCoupon->cActiv === 1 && !empty($_POST['prefixHash']))
             ? $_POST['prefixHash']
             : '';
-        $massCreationCoupon->suffixHash      = ($massCreationCoupon->cActiv == 1 && !empty($_POST['suffixHash']))
+        $massCreationCoupon->suffixHash      = ($massCreationCoupon->cActiv === 1 && !empty($_POST['suffixHash']))
             ? $_POST['suffixHash']
             : '';
 

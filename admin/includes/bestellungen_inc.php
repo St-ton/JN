@@ -73,8 +73,9 @@ function setzeAbgeholtZurueck($kBestellung_arr)
         if (is_array($oKunde_arr) && count($oKunde_arr) > 0) {
             $kKunde_arr = [];
             foreach ($oKunde_arr as $oKunde) {
-                if (!in_array($oKunde->kKunde, $kKunde_arr)) {
-                    $kKunde_arr[] = (int)$oKunde->kKunde;
+                $oKunde->kKunde = (int)$oKunde->kKunde;
+                if (!in_array($oKunde->kKunde, $kKunde_arr, true)) {
+                    $kKunde_arr[] = $oKunde->kKunde;
                 }
             }
             Shop::DB()->query(
@@ -86,6 +87,14 @@ function setzeAbgeholtZurueck($kBestellung_arr)
         // Bestellungen cAbgeholt zurücksetzen
         Shop::DB()->query(
             "UPDATE tbestellung
+                SET cAbgeholt = 'N'
+                WHERE kBestellung IN(" . implode(',', $kBestellung_arr) . ")
+                    AND cAbgeholt = 'Y'", 3
+        );
+
+        // Zahlungsinfo cAbgeholt zurücksetzen
+        Shop::DB()->query(
+            "UPDATE tzahlungsinfo
                 SET cAbgeholt = 'N'
                 WHERE kBestellung IN(" . implode(',', $kBestellung_arr) . ")
                     AND cAbgeholt = 'Y'", 3

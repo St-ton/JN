@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/admininclude.php';
+require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('SETTINGS_SITEMAP_VIEW', true, true);
 /** @global JTLSmarty $smarty */
@@ -21,7 +21,7 @@ if (isset($_POST['speichern']) && validateToken()) {
         Shop::DB()->query("TRUNCATE TABLE tpreisspannenfilter", 3);
         for ($i = 0; $i < 10; $i++) {
             // Neue Werte in die DB einfuegen
-            if (intval($_POST['nVon'][$i]) >= 0 && intval($_POST['nBis'][$i]) > 0) {
+            if ((int)$_POST['nVon'][$i] >= 0 && (int)$_POST['nBis'][$i] > 0) {
                 $oPreisspannenfilter       = new stdClass();
                 $oPreisspannenfilter->nVon = (int)$_POST['nVon'][$i];
                 $oPreisspannenfilter->nBis = (int)$_POST['nBis'][$i];
@@ -57,7 +57,7 @@ for ($i = 0; $i < $configCount; $i++) {
         'cName',
         $oConfig_arr[$i]->cWertName
     );
-    $oConfig_arr[$i]->gesetzterWert = (isset($oSetValue->cWert))
+    $oConfig_arr[$i]->gesetzterWert = isset($oSetValue->cWert)
         ? $oSetValue->cWert
         : null;
 }

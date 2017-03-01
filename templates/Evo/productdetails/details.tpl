@@ -3,7 +3,7 @@
 {/if}
 {if !empty($hinweis)}
     {if isset($bWarenkorbHinzugefuegt) && $bWarenkorbHinzugefuegt}
-        {include file='productdetails/pushed_success.tpl' type='alert'}
+        {include file='productdetails/pushed_success.tpl'}
     {else}
         <div class="alert alert-success">
             {$hinweis}

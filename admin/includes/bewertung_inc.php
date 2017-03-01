@@ -28,7 +28,7 @@ function editiereBewertung($cPost_arr)
         !empty($cPost_arr['cName']) &&
         !empty($cPost_arr['cTitel']) &&
         isset($cPost_arr['nSterne']) &&
-        intval($cPost_arr['nSterne']) > 0
+        (int)$cPost_arr['nSterne'] > 0
     ) {
         $oBewertung = holeBewertung($kBewertung);
         if (isset($oBewertung->kBewertung) && $oBewertung->kBewertung > 0) {

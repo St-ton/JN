@@ -317,7 +317,7 @@ class Warenlager extends MainModel
                 $cSqlSelect = '';
                 $cSqlJoin   = '';
                 // $xOption = kSprache
-                if ($xOption !== null && intval($xOption) > 0) {
+                if ($xOption !== null && (int)$xOption > 0) {
                     $xOption    = (int)$xOption;
                     $cSqlSelect = ", IF (twarenlagersprache.cName IS NOT NULL, twarenlagersprache.cName, twarenlager.cName) AS cName";
                     $cSqlJoin   = "LEFT JOIN twarenlagersprache ON twarenlagersprache.kWarenlager = twarenlager.kWarenlager

@@ -170,15 +170,16 @@ class Kuponneukunde
      * Sets the dErstellt
      *
      * @access public
-     * @var datetime
+     * @param string $dErstellt
+     * @return $this
      */
     public function setErstellt($dErstellt)
     {
-        if ($dErstellt === 'now()') {
-            $this->dErstellt = date('Y-m-d H:i:s');
-        } else {
-            $this->dErstellt = $dErstellt;
-        }
+        $this->dErstellt = ($dErstellt === 'now()')
+            ? date('Y-m-d H:i:s')
+            : $dErstellt;
+
+        return $this;
     }
 
     /**
@@ -186,11 +187,13 @@ class Kuponneukunde
      *
      * @access public
      * @param string $cVerwendet
-     * @var string
+     * @return $this
      */
     public function setVerwendet($cVerwendet)
     {
         $this->cVerwendet = $cVerwendet;
+
+        return $this;
     }
 
     /**

@@ -190,8 +190,9 @@ class JTLFont
     {
         $list = [];
         $this->calcMax($cText);
+        $max = strlen($cText);
 
-        for ($i = 0; $i < strlen($cText); $i++) {
+        for ($i = 0; $i < $max; $i++) {
             if ($cText[$i] === ' ') {
                 $list[] = false;
             } else {

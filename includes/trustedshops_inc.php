@@ -9,8 +9,7 @@
  */
 function gibTrustedShops()
 {
-    unset($_SESSION['TrustedShops']);
-    unset($oTrustedShops);
+    unset($_SESSION['TrustedShops'], $oTrustedShops);
     require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.TrustedShops.php';
     $oTrustedShops = new TrustedShops(-1, StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
     $oTrustedShops->holeKaeuferschutzProdukteDB(StringHandler::convertISO2ISO639($_SESSION['cISOSprache']), true);
@@ -22,7 +21,7 @@ function gibTrustedShops()
         $cLandISO = $_SESSION['Kunde']->cLand;
     }
     // Prüfe, ob TS ID noch gültig ist
-    if ($oTrustedShops->pruefeZertifikat(StringHandler::convertISO2ISO639($_SESSION['cISOSprache'])) == 1) {
+    if ($oTrustedShops->pruefeZertifikat(StringHandler::convertISO2ISO639($_SESSION['cISOSprache'])) === 1) {
         // Gib nur die Informationen weiter, die das Template auch braucht
         $oTrustedShopsTMP->nAktiv                       = $oTrustedShops->nAktiv;
         $oTrustedShopsTMP->eType                        = $oTrustedShops->eType;
@@ -41,7 +40,7 @@ function gibTrustedShops()
         $oTrustedShopsTMP->cSpeicherungURL          = $oTrustedShops->cSpeicherungURL;
         $oTrustedShopsTMP->cBedingungURL            = $oTrustedShops->cBedingungURL;
         $oTrustedShopsTMP->cBoxText                 = $oTrustedShops->cBoxText;
-        $oTrustedShopsTMP->cVorausgewaehltesProdukt = (isset($oTrustedShops->oKaeuferschutzProdukte->item))
+        $oTrustedShopsTMP->cVorausgewaehltesProdukt = isset($oTrustedShops->oKaeuferschutzProdukte->item)
             ? gibVorausgewaehltesProdukt(
                 $oTrustedShops->oKaeuferschutzProdukte->item,
                 $_SESSION['Warenkorb']->gibGesamtsummeWaren(false) *

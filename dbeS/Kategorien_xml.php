@@ -3,11 +3,11 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/syncinclude.php';
+require_once __DIR__ . '/syncinclude.php';
 //smarty lib
 global $smarty;
 
-if (!isset($smarty)) {
+if ($smarty === null) {
     require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
     $smarty = Shop::Smarty();
 }
@@ -58,7 +58,7 @@ if (auth()) {
     }
 }
 
-if ($return == 1) {
+if ($return === 2) {
     syncException('Error : ' . $archive->errorInfo(true));
 }
 
@@ -72,7 +72,7 @@ function bearbeiteDeletes($xml)
     if (isset($xml['del_kategorien']['kKategorie'])) {
         // Alle Shop Kundengruppen holen
         $oKundengruppe_arr = Shop::DB()->query("SELECT kKundengruppe FROM tkundengruppe", 2);
-        if (!is_array($xml['del_kategorien']['kKategorie']) && intval($xml['del_kategorien']['kKategorie']) > 0) {
+        if (!is_array($xml['del_kategorien']['kKategorie']) && (int)$xml['del_kategorien']['kKategorie'] > 0) {
             $xml['del_kategorien']['kKategorie'] = [$xml['del_kategorien']['kKategorie']];
         }
         if (is_array($xml['del_kategorien']['kKategorie'])) {
@@ -117,7 +117,7 @@ function bearbeiteInsert($xml)
     }
     if (is_array($xml['tkategorie'])) {
         // Altes SEO merken => falls sich es bei der aktualisierten Kategorie ändert => Eintrag in tredirect
-        $oSeoOld       = Shop::DB()->query("SELECT cSeo FROM tkategorie WHERE kKategorie = {$Kategorie->kKategorie}", 1);
+        $oSeoOld       = Shop::DB()->query("SELECT cSeo FROM tkategorie WHERE kKategorie = " . $Kategorie->kKategorie, 1);
         $oSeoAssoc_arr = getSeoFromDB($Kategorie->kKategorie, 'kKategorie', null, 'kSprache');
 
         loescheKategorie($Kategorie->kKategorie);
@@ -171,7 +171,11 @@ function bearbeiteInsert($xml)
                 $kategoriesprache_arr[$i]->cSeo = checkSeo($kategoriesprache_arr[$i]->cSeo);
                 DBUpdateInsert('tkategoriesprache', [$kategoriesprache_arr[$i]], 'kKategorie', 'kSprache');
 
-                Shop::DB()->delete('tseo', ['cKey', 'kKey', 'kSprache'], ['kKategorie', (int)$kategoriesprache_arr[$i]->kKategorie, (int)$kategoriesprache_arr[$i]->kSprache]);
+                Shop::DB()->delete(
+                    'tseo',
+                    ['cKey', 'kKey', 'kSprache'],
+                    ['kKategorie', (int)$kategoriesprache_arr[$i]->kKategorie, (int)$kategoriesprache_arr[$i]->kSprache]
+                );
                 //insert in tseo
                 $oSeo           = new stdClass();
                 $oSeo->cSeo     = $kategoriesprache_arr[$i]->cSeo;

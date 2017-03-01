@@ -206,8 +206,8 @@ class cache_redis implements ICachingMethod
     }
 
     /**
-     * @param array  $tags
-     * @param string $cacheID
+     * @param array|string $tags
+     * @param string       $cacheID
      * @return bool
      */
     public function setCacheTag($tags = [], $cacheID)
@@ -333,9 +333,10 @@ class cache_redis implements ICachingMethod
         } catch (RedisException $e) {
             echo 'Redis exception: ' . $e->getMessage();
         }
-        $db = $this->_redis->getDBNum();
-        if (isset($stats['db' . $db])) {
-            $dbStats = explode(',', $stats['db' . $db]);
+        $db  = $this->_redis->getDBNum();
+        $idx = 'db' . $db;
+        if (isset($stats[$idx])) {
+            $dbStats = explode(',', $stats[$idx]);
             foreach ($dbStats as $stat) {
                 if (strpos($stat, 'keys=') !== false) {
                     $numEntries = str_replace('keys=', '', $stat);
@@ -347,7 +348,7 @@ class cache_redis implements ICachingMethod
             if (isset($_slow[1])) {
                 $slowLogDataEntry['date'] = date('d.m.Y H:i:s', $_slow[1]);
             }
-            if (isset($_slow[3]) && isset($_slow[3][0])) {
+            if (isset($_slow[3][0])) {
                 $slowLogDataEntry['cmd'] = $_slow[3][0];
             }
             if (isset($_slow[2]) && $_slow[2] > 0) {

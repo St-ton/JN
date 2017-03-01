@@ -3,12 +3,12 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/admininclude.php';
+require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('DISPLAY_OWN_LOGO_VIEW', true, true);
 /** @global JTLSmarty $smarty */
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'shoplogouploader_inc.php';
 
-if (isset($_POST['key']) && isset($_POST['logo'])) {
+if (isset($_POST['key'], $_POST['logo'])) {
     $currentLogo = Shop::getLogo();
     $response    = new stdClass();
     if ($currentLogo === $_POST['logo']) {

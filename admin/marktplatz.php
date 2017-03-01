@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/admininclude.php';
+require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_CLASSES . 'class.JTL-Shopadmin.Marketplace.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_CLASSES . 'class.JTL-Shopadmin.MarketplaceQuery.php';
 /** @global JTLSmarty $smarty */
@@ -68,7 +68,7 @@ function mpInjectFilters(&$smarty, &$query, &$currentPage)
         $smarty->assign('search', $_REQUEST['search']);
     }
     // Category
-    if (isset($_REQUEST['cat']) && intval($_REQUEST['cat']) > 0) {
+    if (isset($_REQUEST['cat']) && (int)$_REQUEST['cat'] > 0) {
         $query->setCategoryId($_REQUEST['cat']);
         $smarty->assign('cat', $_REQUEST['cat']);
     }
@@ -83,7 +83,7 @@ function mpInjectFilters(&$smarty, &$query, &$currentPage)
         $smarty->assign('sort', $_REQUEST['sort']);
     }
     // Page
-    if (isset($_REQUEST['page']) && intval($_REQUEST['page']) > 0) {
+    if (isset($_REQUEST['page']) && (int)$_REQUEST['page'] > 0) {
         $query->setPage($_REQUEST['page']);
         $currentPage = (int)$_REQUEST['page'];
     }

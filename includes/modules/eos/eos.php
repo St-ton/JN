@@ -71,7 +71,7 @@ function eosNeueZahlung($Bestellung)
     parse_str($Antwort);
 
     // Error: Syntax, HaendlerID, HaendlerCode, ..
-    if ($status != 'OK') {
+    if ($status !== 'OK') {
         Shop::Smarty()->assign('eosStatus', 'Error')
             ->assign('eosError', Shop::Lang()->get('errorText', 'paymentMethods'));
         $Error = sprintf(Shop::Lang()->get('eosError', 'paymentMethods'), $Antwort);
@@ -147,18 +147,18 @@ function eosServerAnfrage($Path)
     $Header = "GET $Path HTTP/1.1\r\n"
         . "Host: $Host\r\n"
         . "Connection: close\r\n\r\n";
-    fputs($Socket, $Header);
+    fwrite($Socket, $Header);
 
     // Empfangen (ohne Header)
     $Antwort = '';
     $Inhalt  = false;
-    while (feof($Socket) == false) {
+    while (feof($Socket) === false) {
         $Zeile = fgetss($Socket, 1024); // 1024 = komplette URL bekommen
         $Zeile = trim($Zeile);
         if ($Inhalt) {
             $Antwort .= $Zeile;
         }
-        $Inhalt = (($Zeile == '') && ($Inhalt == false));
+        $Inhalt = ($Zeile === '' && $Inhalt === false);
     }
     fclose($Socket);
 
@@ -174,10 +174,9 @@ function eosZahlungsHash($Bestellung)
     // In DB einfuegen
     $Zahlung              = new stdClass();
     $Zahlung->kBestellung = (int)$Bestellung->kBestellung;
-    $Zahlung->cId         = gibUID(40, strval($Bestellung->kBestellung));
-    $Result               = Shop::DB()->insert('tzahlungsid', $Zahlung);
+    $Zahlung->cId         = gibUID(40, (string)$Bestellung->kBestellung);
 
-    return $Result;
+    return Shop::DB()->insert('tzahlungsid', $Zahlung);
 }
 
 /**
@@ -194,7 +193,7 @@ function eosZahlungsNachricht($Bestellung)
         // Da versucht doch eine(r) was. Zur Strafe keine neue BestellID!
         return false;
     }
-    if ($_GET['state'] != 'success') {
+    if ($_GET['state'] !== 'success') {
         // Falls die Bezahlung nicht erfolgreich war, wird eine neue BestellID
         // generiert, damit der Kunde spaeter bezahlen kann.
         $BestellID              = new stdClass();

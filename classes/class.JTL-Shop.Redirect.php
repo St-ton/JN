@@ -382,7 +382,7 @@ class Redirect
                     WHERE tr.cIP = '{$cIP}'
                     AND t.cFromUrl = '{$cUrl}' LIMIT 1", 1
             );
-            if ($oEntry === false || $oEntry === null || (is_object($oEntry) && $oItem->nCount == 0)) {
+            if ($oEntry === false || $oEntry === null || (is_object($oEntry) && (int)$oEntry->nCount === 0)) {
                 $oReferer               = new stdClass();
                 $oReferer->kRedirect    = isset($oItem->kRedirect) ? $oItem->kRedirect : 0;
                 $oReferer->kBesucherBot = isset($_SESSION['oBesucher']->kBesucherBot)

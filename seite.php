@@ -49,20 +49,20 @@ if (!isset($link->bHideContent) || !$link->bHideContent) {
 $requestURL = baueURL($link, URLART_SEITE);
 $smarty->assign('cmsurl', $requestURL);
 // Canonical
-if ($link->nLinkart == LINKTYP_STARTSEITE) {
+if ($link->nLinkart === LINKTYP_STARTSEITE) {
     // Work Around für die Startseite
     $cCanonicalURL = Shop::getURL() . '/';
 } elseif (strpos($requestURL, '.php') === false) {
     $cCanonicalURL = Shop::getURL() . '/' . $requestURL;
 }
-$sprachURL = (isset($link->languageURLs)) ? $link->languageURLs : baueSprachURLS($link, URLART_SEITE);
+$sprachURL = isset($link->languageURLs) ? $link->languageURLs : baueSprachURLS($link, URLART_SEITE);
 //hole aktuelle Kategorie, falls eine gesetzt
 $AufgeklappteKategorien = new KategorieListe();
 $startKat               = new Kategorie();
 $startKat->kKategorie   = 0;
 // Gehört der kLink zu einer Spezialseite? Wenn ja, leite um
 pruefeSpezialseite($link->nLinkart);
-if ($link->nLinkart == LINKTYP_STARTSEITE) {
+if ($link->nLinkart === LINKTYP_STARTSEITE) {
     Shop::setPageType(PAGE_STARTSEITE);
     if ($link->nHTTPRedirectCode > 0) {
         header('Location: ' . $cCanonicalURL, true, $link->nHTTPRedirectCode);
@@ -88,42 +88,40 @@ if ($link->nLinkart == LINKTYP_STARTSEITE) {
     if ($Einstellungen['news']['news_benutzen'] === 'Y') {
         $smarty->assign('oNews_arr', gibNews($Einstellungen));
     }
-} elseif ($link->nLinkart == LINKTYP_DATENSCHUTZ) {
+} elseif ($link->nLinkart === LINKTYP_DATENSCHUTZ) {
     Shop::setPageType(PAGE_DATENSCHUTZ);
-} elseif ($link->nLinkart == LINKTYP_AGB) {
+} elseif ($link->nLinkart === LINKTYP_AGB) {
     Shop::setPageType(PAGE_AGB);
     $smarty->assign('AGB', gibAGBWRB(Shop::getLanguage(), $_SESSION['Kundengruppe']->kKundengruppe));
-} elseif ($link->nLinkart == LINKTYP_WRB) {
+} elseif ($link->nLinkart === LINKTYP_WRB) {
     Shop::setPageType(PAGE_WRB);
     $smarty->assign('WRB', gibAGBWRB(Shop::getLanguage(), $_SESSION['Kundengruppe']->kKundengruppe));
-} elseif ($link->nLinkart == LINKTYP_VERSAND) {
+} elseif ($link->nLinkart === LINKTYP_VERSAND) {
     Shop::setPageType(PAGE_VERSAND);
-    if (isset($_POST['land'], $_POST['plz'])) {
-        if (!VersandartHelper::getShippingCosts($_POST['land'], $_POST['plz'])) {
-            $smarty->assign('fehler', Shop::Lang()->get('missingParamShippingDetermination', 'errorMessages'));
-        }
+    if (isset($_POST['land'], $_POST['plz']) && !VersandartHelper::getShippingCosts($_POST['land'], $_POST['plz'])) {
+        $smarty->assign('fehler', Shop::Lang()->get('missingParamShippingDetermination', 'errorMessages'));
     }
     if (!isset($kKundengruppe)) {
         $kKundengruppe = Kundengruppe::getDefaultGroupID();
     }
     $smarty->assign('laender', gibBelieferbareLaender($kKundengruppe));
-} elseif ($link->nLinkart == LINKTYP_LIVESUCHE) {
+} elseif ($link->nLinkart === LINKTYP_LIVESUCHE) {
     Shop::setPageType(PAGE_LIVESUCHE);
     $smarty->assign('LivesucheTop', gibLivesucheTop($Einstellungen))
            ->assign('LivesucheLast', gibLivesucheLast($Einstellungen));
-} elseif ($link->nLinkart == LINKTYP_TAGGING) {
+} elseif ($link->nLinkart === LINKTYP_TAGGING) {
     Shop::setPageType(PAGE_TAGGING);
     $smarty->assign('Tagging', gibTagging($Einstellungen));
-} elseif ($link->nLinkart == LINKTYP_HERSTELLER) {
+} elseif ($link->nLinkart === LINKTYP_HERSTELLER) {
     Shop::setPageType(PAGE_HERSTELLER);
     $smarty->assign('oHersteller_arr', Hersteller::getAll());
-} elseif ($link->nLinkart == LINKTYP_NEWSLETTERARCHIV) {
+} elseif ($link->nLinkart === LINKTYP_NEWSLETTERARCHIV) {
     Shop::setPageType(PAGE_NEWSLETTERARCHIV);
     $smarty->assign('oNewsletterHistory_arr', gibNewsletterHistory());
-} elseif ($link->nLinkart == LINKTYP_SITEMAP) {
+} elseif ($link->nLinkart === LINKTYP_SITEMAP) {
     Shop::setPageType(PAGE_SITEMAP);
     gibSeiteSitemap($Einstellungen, $smarty);
-} elseif ($link->nLinkart == LINKTYP_GRATISGESCHENK) {
+} elseif ($link->nLinkart === LINKTYP_GRATISGESCHENK) {
     Shop::setPageType(PAGE_GRATISGESCHENK);
     if ($Einstellungen['sonstiges']['sonstiges_gratisgeschenk_nutzen'] === 'Y') {
         $oArtikelGeschenk_arr = gibGratisGeschenkArtikel($Einstellungen);
@@ -133,7 +131,7 @@ if ($link->nLinkart == LINKTYP_STARTSEITE) {
             $cFehler .= Shop::Lang()->get('freegiftsNogifts', 'errorMessages');
         }
     }
-} elseif ($link->nLinkart == LINKTYP_AUSWAHLASSISTENT) {
+} elseif ($link->nLinkart === LINKTYP_AUSWAHLASSISTENT) {
     Shop::setPageType(PAGE_AUSWAHLASSISTENT);
     // Auswahlassistent
     if (TEMPLATE_COMPATIBILITY === true && function_exists('starteAuswahlAssistent')) {
@@ -147,7 +145,7 @@ if ($link->nLinkart == LINKTYP_STARTSEITE) {
     } elseif (class_exists('AuswahlAssistent')) {
         AuswahlAssistent::startIfRequired(AUSWAHLASSISTENT_ORT_LINK, $link->kLink, Shop::getLanguage(), $smarty);
     }
-} elseif ($link->nLinkart == LINKTYP_404) {
+} elseif ($link->nLinkart === LINKTYP_404) {
     Shop::setPageType(PAGE_404);
     gibSeiteSitemap($Einstellungen, $smarty);
 }
@@ -171,7 +169,7 @@ if ($bFileNotFound) {
         $AktuelleSeite,
         0,
         0,
-        ((isset($link->Sprache->cName)) ? $link->Sprache->cName : ''),
+        (isset($link->Sprache->cName) ? $link->Sprache->cName : ''),
         $requestURL,
         Shop::$kLink
     );
@@ -185,23 +183,23 @@ $smarty->assign('Navigation', $Navigation)
        ->assign('cFehler', !empty($cFehler) ? $cFehler : null)
        ->assign('meta_language', StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
 
-$cMetaTitle       = (isset($link->Sprache->cMetaTitle)) ? $link->Sprache->cMetaTitle : null;
-$cMetaDescription = (isset($link->Sprache->cMetaDescription)) ? $link->Sprache->cMetaDescription : null;
-$cMetaKeywords    = (isset($link->Sprache->cMetaKeywords)) ? $link->Sprache->cMetaKeywords : null;
-if (strlen($cMetaTitle) === 0 || strlen($cMetaDescription) === 0 || strlen($cMetaKeywords) === 0) {
+$cMetaTitle       = isset($link->Sprache->cMetaTitle) ? $link->Sprache->cMetaTitle : null;
+$cMetaDescription = isset($link->Sprache->cMetaDescription) ? $link->Sprache->cMetaDescription : null;
+$cMetaKeywords    = isset($link->Sprache->cMetaKeywords) ? $link->Sprache->cMetaKeywords : null;
+if (empty($cMetaTitle) || empty($cMetaDescription) || empty($cMetaKeywords)) {
     $kSprache            = Shop::getLanguage();
-    $oGlobaleMetaAngaben = (isset($oGlobaleMetaAngabenAssoc_arr[$kSprache]))
+    $oGlobaleMetaAngaben = isset($oGlobaleMetaAngabenAssoc_arr[$kSprache])
         ? $oGlobaleMetaAngabenAssoc_arr[$kSprache]
         : null;
 
     if (is_object($oGlobaleMetaAngaben)) {
-        if (strlen($cMetaTitle) === 0) {
+        if (empty($cMetaTitle)) {
             $cMetaTitle = $oGlobaleMetaAngaben->Title;
         }
-        if (strlen($cMetaDescription) === 0) {
+        if (empty($cMetaDescription)) {
             $cMetaDescription = $oGlobaleMetaAngaben->Meta_Description;
         }
-        if (strlen($cMetaKeywords) === 0) {
+        if (empty($cMetaKeywords)) {
             $cMetaKeywords = $oGlobaleMetaAngaben->Meta_Keywords;
         }
     }

@@ -7,7 +7,7 @@ require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
 /** @global JTLSmarty $smarty */
 Shop::setPageType(PAGE_UNBEKANNT);
-$Einstellungen = Shop::getSettings(array(CONF_GLOBAL, CONF_RSS));
+$Einstellungen = Shop::getSettings([CONF_GLOBAL, CONF_RSS]);
 $cAction       = strtolower($_GET['a']);
 $kCustom       = (int)$_GET['k'];
 $bNoData       = false;

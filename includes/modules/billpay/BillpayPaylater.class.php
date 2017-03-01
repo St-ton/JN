@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-include_once 'Billpay.class.php';
+include_once __DIR__ . '/Billpay.class.php';
 
 /**
  * Billpay implementation
@@ -30,10 +30,11 @@ class BillpayPaylater extends Billpay
      */
     public function preparePaymentProcess($oOrder)
     {
-        $oPaymentEx = isset($_SESSION['za_billpay_jtl']['oOrderEx']) ?
-            $_SESSION['za_billpay_jtl']['oOrderEx'] : null;
+        $oPaymentEx = isset($_SESSION['za_billpay_jtl']['oOrderEx'])
+            ? $_SESSION['za_billpay_jtl']['oOrderEx']
+            : null;
 
-        if (is_null($oPaymentEx)) {
+        if ($oPaymentEx === null) {
             BPHelper::log("canceled capture, invalid session information");
             header("location: bestellvorgang.php?editZahlungsart=1");
         }
@@ -50,14 +51,17 @@ class BillpayPaylater extends Billpay
 
         $nState = $this->preAuthorize($oCustomer, $oShipAddr, $oBasket, $oShipment, $cOrderNumber);
 
-        if ($nState == 1) {
+        if ($nState === 1) {
             $oOrder = finalisiereBestellung($cOrderNumber, true);
 
             // set order status to paid
             if ($this->getCoreSetting('aspaid') === 'Y') {
-                $oIncomingPayment          = new stdClass();
-                $oIncomingPayment->fBetrag = $oBasketInfo->fTotal[AMT_GROSS]  + $oBasket->gibGesamtsummeWarenExt(array(C_WARENKORBPOS_TYP_ZINSAUFSCHLAG, C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR), true);
-                $oIncomingPayment->cISO    = $oBasketInfo->cCurrency->cISO;
+                $oIncomingPayment = new stdClass();
+                $oIncomingPayment->fBetrag = $oBasketInfo->fTotal[AMT_GROSS] + $oBasket->gibGesamtsummeWarenExt([
+                        C_WARENKORBPOS_TYP_ZINSAUFSCHLAG,
+                        C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR
+                    ], true);
+                $oIncomingPayment->cISO = $oBasketInfo->cCurrency->cISO;
                 $this->addIncomingPayment($oOrder, $oIncomingPayment);
                 $this->setOrderStatusToPaid($oOrder);
             }
@@ -66,8 +70,6 @@ class BillpayPaylater extends Billpay
 
             $session = Session::getInstance();
             $session->cleanUp();
-        } elseif ($nState == 2) {
-            // nothing todo...
         }
 
         Shop::Smarty()->assign('oOrder', $oOrder)
@@ -82,13 +84,22 @@ class BillpayPaylater extends Billpay
      */
     public function preauthRequest()
     {
-        $oPaymentEx = isset($_SESSION['za_billpay_jtl']['oOrderEx']) ?
-            $_SESSION['za_billpay_jtl']['oOrderEx'] : null;
+        $oPaymentEx = isset($_SESSION['za_billpay_jtl']['oOrderEx'])
+            ? $_SESSION['za_billpay_jtl']['oOrderEx']
+            : null;
 
         if ($oPaymentEx !== null) {
             $cName['ger'] = 'Bearbeitungsgeb&uuml;hr';
             $cName['eng'] = 'Processing fee';
-            $this->addSpecialPosition($cName, 1, BPHelper::fmtAmountX($oPaymentEx->nFeeTotal), C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR, true, true, '');
+            $this->addSpecialPosition(
+                $cName,
+                1,
+                BPHelper::fmtAmountX($oPaymentEx->nFeeTotal),
+                C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR,
+                true,
+                true,
+                ''
+            );
         }
 
         return true;

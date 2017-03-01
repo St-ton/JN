@@ -592,7 +592,7 @@ function sendeMail($ModulId, $Object, $mail = null)
         $mail->cPDFS_arr = bauePDFArrayZumVeschicken($Emailvorlagesprache->cPDFS);
     }
     if (isset($Emailvorlagesprache->cDateiname) && strlen($Emailvorlagesprache->cDateiname) > 0) {
-        $mail->cDateiname_arr = StringHandler::parseSSK($Emailvorlagesprache->cDateiname);
+        $mail->cDateiname_arr = baueDateinameArrayZumVeschicken($Emailvorlagesprache->cDateiname);
     }
     executeHook(HOOK_MAILTOOLS_SENDEMAIL_ENDE, [
         'mailsmarty'    => &$mailSmarty,

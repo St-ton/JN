@@ -2,6 +2,8 @@
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
+ * @deprecated since 4.06
+ * TODO remove image prices in version 4.06+
  */
 require_once __DIR__ . '/includes/admininclude.php';
 

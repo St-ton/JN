@@ -21,7 +21,7 @@ final class Shop
     /**
      * @var int
      */
-    public static $kSprache = null;
+    public static $kSprache;
 
     /**
      * @var string

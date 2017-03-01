@@ -203,22 +203,25 @@ class Jtllog
     public static function getLog($cFilter = '', $nLevel = 0, $nLimitN = 0, $nLimitM = 1000)
     {
         $oJtllog_arr = [];
-        $cSQLWhere   = '';
+        $conditions  = [];
+        $values      = ['limitfrom' => $nLimitN, 'limitto' => $nLimitM];
+        if (strlen($cFilter) > 0) {
+            $conditions[]   = "cLog LIKE :clog";
+            $values['clog'] = '%' . $cFilter . '%';
+        }
         if ((int)$nLevel > 0) {
-            $cSQLWhere = " WHERE nLevel = " . (int)$nLevel;
+            $conditions[]     = "nLevel = :nlevel";
+            $values['nlevel'] = (int)$nLevel;
         }
-        if (strlen($cFilter) > 0 && strlen($cSQLWhere) === 0) {
-            $cSQLWhere .= " WHERE cLog LIKE '%" . $cFilter . "%'";
-        } elseif (strlen($cFilter) > 0 && strlen($cSQLWhere) > 0) {
-            $cSQLWhere .= " AND cLog LIKE '%" . $cFilter . "%'";
-        }
-
-        $oLog_arr = Shop::DB()->query(
-            "SELECT kLog
+        $cSQLWhere = count($conditions) > 0
+            ? ' WHERE ' . implode(' AND ', $conditions)
+            : '';
+        $oLog_arr  = Shop::DB()->executeQueryPrepared("
+            SELECT kLog
                 FROM tjtllog
                 " . $cSQLWhere . "
                 ORDER BY dErstellt DESC, kLog DESC
-                LIMIT " . (int)$nLimitN . ", " . (int)$nLimitM, 2
+                LIMIT :limitfrom, :limitto", $values, 2
         );
         if (is_array($oLog_arr) && count($oLog_arr) > 0) {
             foreach ($oLog_arr as $oLog) {

@@ -75,7 +75,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
         /**
          * @var stdClass
          */
-        private $oNaviFilter = null;
+        private $oNaviFilter;
 
         /**
          * @var array
@@ -106,23 +106,22 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
         }
 
         /**
-         * @param $cKey
-         * @param $kKey
-         * @param int $kSprache
-         * @param bool $bOnlyActive
+         * @param string $cKey
+         * @param int    $kKey
+         * @param int    $kSprache
+         * @param bool   $bOnlyActive
          */
         private function loadFromDB($cKey, $kKey, $kSprache, $bOnlyActive = true)
         {
-            $oDbResult = Shop::DB()->query(
-                "SELECT *
+            $oDbResult = Shop::DB()->query("
+                SELECT *
                     FROM tauswahlassistentort AS ao
                         JOIN tauswahlassistentgruppe AS ag
                             ON ao.kAuswahlAssistentGruppe = ag.kAuswahlAssistentGruppe
                                 AND ao.cKey = '" . Shop::DB()->escape($cKey) . "'
                                 AND ao.kKey = " . $kKey . "
-                                AND ag.kSprache = " . $kSprache . "
-                                " . ($bOnlyActive ? "AND ag.nAktiv = 1" : ""),
-                1
+                                AND ag.kSprache = " . $kSprache .
+                                ($bOnlyActive ? " AND ag.nAktiv = 1" : ""), 1
             );
 
             if ($oDbResult !== null && $oDbResult !== false) {
@@ -163,7 +162,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
         {
             if ($this->nCurQuestion < count($this->oFrage_arr)) {
                 $this->kSelection_arr[] = $kWert;
-                $this->nCurQuestion    += 1;
+                ++$this->nCurQuestion;
             }
 
             return $this;
@@ -224,17 +223,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
         }
 
         /**
-         * @param Smarty $smarty
-         * @return $this
-         */
-        public function assignToSmarty($smarty)
-        {
-            $smarty->assign('AWA', $this);
-
-            return $this;
-        }
-
-        /**
          * Return the HTML for this selection wizard in its current state
          *
          * @param Smarty $smarty
@@ -242,9 +230,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
          */
         public function fetchForm($smarty)
         {
-            $this->assignToSmarty($smarty);
-
-            return $smarty->fetch('selectionwizard/form.tpl');
+            return $smarty->assign('AWA', $this)->fetch('selectionwizard/form.tpl');
         }
 
         /**
@@ -304,6 +290,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
         }
 
         /**
+         * @param int $nFrage
          * @return AuswahlAssistentFrage
          */
         public function getQuestion($nFrage)
@@ -375,7 +362,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
         }
 
         /**
-         * @param $cName
+         * @param string $cName
          * @return mixed
          */
         public function getConf($cName)
@@ -390,15 +377,15 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
          */
         public static function isRequired()
         {
-            return Shop::getSettings(CONF_AUSWAHLASSISTENT)['auswahlassistent']['auswahlassistent_nutzen'] === 'Y';
+            return Shop::getSettings([CONF_AUSWAHLASSISTENT])['auswahlassistent']['auswahlassistent_nutzen'] === 'Y';
         }
 
         /**
-         * @param $cKey
-         * @param $kKey
-         * @param int $kSprache
+         * @param string    $cKey
+         * @param int       $kKey
+         * @param int       $kSprache
          * @param JTLSmarty $smarty
-         * @param array $nSelection_arr
+         * @param array     $nSelection_arr
          * @return self|null
          */
         public static function startIfRequired($cKey, $kKey, $kSprache = 0, $smarty = null, $nSelection_arr = [])
@@ -420,7 +407,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
                         $AWA->filter();
 
                         if ($smarty !== null) {
-                            $AWA->assignToSmarty($smarty);
+                            $smarty->assign('AWA', $AWA);
                         }
 
                         return $AWA;
@@ -448,15 +435,15 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
          */
         public static function getGroupsByLocation($cKey, $kKey, $kSprache)
         {
-            if (strlen($cKey) > 0 && (int)$kKey > 0 && (int)$kSprache > 0) {
+            if ((int)$kKey > 0 && (int)$kSprache > 0 && strlen($cKey) > 0) {
                 $oOrt = Shop::DB()->query(
-                    "SELECT tauswahlassistentort.kAuswahlAssistentGruppe
-                        FROM tauswahlassistentort
-                        JOIN tauswahlassistentgruppe 
-                            ON tauswahlassistentgruppe.kAuswahlAssistentGruppe = tauswahlassistentort.kAuswahlAssistentGruppe
-                            AND tauswahlassistentgruppe.kSprache = " . (int)$kSprache . "
-                        WHERE tauswahlassistentort.cKey = '" . Shop::DB()->escape($cKey) . "'
-                            AND tauswahlassistentort.kKey = " . (int)$kKey, 1
+                    "SELECT tao.kAuswahlAssistentGruppe
+                        FROM tauswahlassistentort tao
+                        JOIN tauswahlassistentgruppe  tag
+                            ON tag.kAuswahlAssistentGruppe = tao.kAuswahlAssistentGruppe
+                            AND tag.kSprache = " . (int)$kSprache . "
+                        WHERE tao.cKey = '" . Shop::DB()->escape($cKey) . "'
+                            AND tao.kKey = " . (int)$kKey, 1
                 );
 
                 if (isset($oOrt->kAuswahlAssistentGruppe) && $oOrt->kAuswahlAssistentGruppe > 0) {

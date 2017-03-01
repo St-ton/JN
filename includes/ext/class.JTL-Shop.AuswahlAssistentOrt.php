@@ -58,12 +58,14 @@ if (class_exists('AuswahlAssistent')) {
          */
         private function loadFromDB($kAuswahlAssistentOrt, $kAuswahlAssistentGruppe, $bBackend)
         {
+            $kAuswahlAssistentGruppe = (int)$kAuswahlAssistentGruppe;
+            $kAuswahlAssistentOrt    = (int)$kAuswahlAssistentOrt;
             if ($kAuswahlAssistentGruppe > 0) {
                 $this->oOrt_arr = [];
                 $oOrtTMP_arr    = Shop::DB()->selectAll(
                     'tauswahlassistentort',
                     'kAuswahlAssistentGruppe',
-                    (int)$kAuswahlAssistentGruppe
+                    $kAuswahlAssistentGruppe
                 );
                 if (is_array($oOrtTMP_arr) && count($oOrtTMP_arr) > 0) {
                     foreach ($oOrtTMP_arr as $oOrtTMP) {
@@ -74,7 +76,7 @@ if (class_exists('AuswahlAssistent')) {
                 $oOrt = Shop::DB()->select(
                     'tauswahlassistentort',
                     'kAuswahlAssistentOrt',
-                    (int)$kAuswahlAssistentOrt
+                    $kAuswahlAssistentOrt
                 );
                 if (isset($oOrt->kAuswahlAssistentOrt) && $oOrt->kAuswahlAssistentOrt > 0) {
                     $cMember_arr = array_keys(get_object_vars($oOrt));
@@ -83,6 +85,9 @@ if (class_exists('AuswahlAssistent')) {
                             $this->$cMember = $oOrt->$cMember;
                         }
                     }
+                    $this->kAuswahlAssistentGruppe = (int)$this->kAuswahlAssistentGruppe;
+                    $this->kAuswahlAssistentOrt    = (int)$this->kAuswahlAssistentOrt;
+                    $this->kKey                    = (int)$this->kKey;
                     // cKey Mapping
                     switch ($this->cKey) {
                         case AUSWAHLASSISTENT_ORT_KATEGORIE:
@@ -133,13 +138,13 @@ if (class_exists('AuswahlAssistent')) {
         public static function saveLocation($cParam_arr, $kAuswahlAssistentGruppe)
         {
             $kAuswahlAssistentGruppe = (int)$kAuswahlAssistentGruppe;
-            if (is_array($cParam_arr) && count($cParam_arr) > 0 && $kAuswahlAssistentGruppe > 0) {
+            if ($kAuswahlAssistentGruppe > 0 && is_array($cParam_arr) && count($cParam_arr) > 0) {
                 // Kategorie
                 if (isset($cParam_arr['cKategorie']) && strlen($cParam_arr['cKategorie']) > 0) {
                     $cKategorie_arr = explode(';', $cParam_arr['cKategorie']);
                     if (is_array($cKategorie_arr) && count($cKategorie_arr) > 0) {
                         foreach ($cKategorie_arr as $cKategorie) {
-                            if (strlen($cKategorie) > 0 && (int)$cKategorie > 0) {
+                            if ((int)$cKategorie > 0 && strlen($cKategorie) > 0) {
                                 $oOrt                          = new stdClass();
                                 $oOrt->kAuswahlAssistentGruppe = $kAuswahlAssistentGruppe;
                                 $oOrt->cKey                    = AUSWAHLASSISTENT_ORT_KATEGORIE;
@@ -188,7 +193,7 @@ if (class_exists('AuswahlAssistent')) {
         public static function updateLocation($cParam_arr, $kAuswahlAssistentGruppe)
         {
             $kAuswahlAssistentGruppe = (int)$kAuswahlAssistentGruppe;
-            if (is_array($cParam_arr) && count($cParam_arr) > 0 && $kAuswahlAssistentGruppe > 0) {
+            if ($kAuswahlAssistentGruppe > 0 && is_array($cParam_arr) && count($cParam_arr) > 0) {
                 $nRow = Shop::DB()->delete(
                     'tauswahlassistentort',
                     'kAuswahlAssistentGruppe',
@@ -234,7 +239,7 @@ if (class_exists('AuswahlAssistent')) {
                 }
 
                 foreach ($cKategorie_arr as $cKategorie) {
-                    if (strlen($cKategorie) > 0 && (int)$cKategorie > 0) {
+                    if ((int)$cKategorie > 0 && strlen($cKategorie) > 0) {
                         if ($bUpdate) {
                             if (self::isCategoryTaken(
                                 $cKategorie,

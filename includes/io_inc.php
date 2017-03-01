@@ -9,18 +9,18 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'artikel_inc.php';
 $io = new IO();
 
 $io->register('suggestions')
-    ->register('pushToBasket')
-    ->register('pushToComparelist')
-    ->register('removeFromComparelist')
-    ->register('checkDependencies')
-    ->register('checkVarkombiDependencies')
-    ->register('generateToken')
-    ->register('buildConfiguration')
-    ->register('getBasketItems')
-    ->register('getCategoryMenu')
-    ->register('getRegionsByCountry')
-    ->register('setSelectionWizardAnswers')
-    ->register('getCitiesByZip');
+   ->register('pushToBasket')
+   ->register('pushToComparelist')
+   ->register('removeFromComparelist')
+   ->register('checkDependencies')
+   ->register('checkVarkombiDependencies')
+   ->register('generateToken')
+   ->register('buildConfiguration')
+   ->register('getBasketItems')
+   ->register('getCategoryMenu')
+   ->register('getRegionsByCountry')
+   ->register('setSelectionWizardAnswers')
+   ->register('getCitiesByZip');
 
 /**
  * @param string $keyword
@@ -615,6 +615,8 @@ function checkDependencies($aValues)
  */
 function checkVarkombiDependencies($aValues, $kEigenschaft = 0, $kEigenschaftWert = 0)
 {
+    $kEigenschaft                = (int)$kEigenschaft;
+    $kEigenschaftWert            = (int)$kEigenschaftWert;
     $oArtikel                    = null;
     $objResponse                 = new IOResponse();
     $kVaterArtikel               = (int)$aValues['a'];
@@ -688,7 +690,7 @@ function checkVarkombiDependencies($aValues, $kEigenschaft = 0, $kEigenschaftWer
         if (count($kGesetzteEigeschaftWert_arr) >= $oArtikel->nVariationOhneFreifeldAnzahl) {
             $oArtikelTMP = getArticleByVariations($kVaterArtikel, $kGesetzteEigeschaftWert_arr);
 
-            if ($kArtikelKind != $oArtikelTMP->kArtikel) {
+            if ($kArtikelKind !== (int)$oArtikelTMP->kArtikel) {
                 $oGesetzteEigeschaftWerte_arr = [];
                 foreach ($kFreifeldEigeschaftWert_arr as $cKey => $cValue) {
                     $oGesetzteEigeschaftWerte_arr[] = (object)[
@@ -783,36 +785,37 @@ function checkVarkombiDependencies($aValues, $kEigenschaft = 0, $kEigenschaftWer
  */
 function getArticleByVariations($kArtikel, $kVariationKombi_arr)
 {
-    $cSQL1 = '';
-    $cSQL2 = '';
+    $kArtikel = (int)$kArtikel;
+    $cSQL1    = '';
+    $cSQL2    = '';
     if (is_array($kVariationKombi_arr) && count($kVariationKombi_arr) > 0) {
         $j = 0;
         foreach ($kVariationKombi_arr as $i => $kVariationKombi) {
             if ($j > 0) {
                 $cSQL1 .= ',' . $i;
-                $cSQL2 .= ',' . $kVariationKombi;
+                $cSQL2 .= ',' . (int)$kVariationKombi;
             } else {
                 $cSQL1 .= $i;
-                $cSQL2 .= $kVariationKombi;
+                $cSQL2 .= (int)$kVariationKombi;
             }
-
             $j++;
         }
     }
 
     $kSprache    = Shop::getLanguage();
-    $oArtikelTMP = Shop::DB()->query(
-        "SELECT a.kArtikel, tseo.kKey AS kSeoKey, IF (tseo.cSeo IS NULL, a.cSeo, tseo.cSeo) AS cSeo, 
+    $oArtikelTMP = Shop::DB()->query("
+        SELECT a.kArtikel, tseo.kKey AS kSeoKey, IF (tseo.cSeo IS NULL, a.cSeo, tseo.cSeo) AS cSeo, 
             a.fLagerbestand, a.cLagerBeachten, a.cLagerKleinerNull
             FROM teigenschaftkombiwert
-            JOIN tartikel a ON a.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
+            JOIN tartikel a 
+                ON a.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
             LEFT JOIN tseo 
                 ON tseo.cKey = 'kArtikel' 
                 AND tseo.kKey = a.kArtikel 
                 AND tseo.kSprache = " . $kSprache .  "
             LEFT JOIN tartikelsichtbarkeit 
                 ON a.kArtikel = tartikelsichtbarkeit.kArtikel
-                AND tartikelsichtbarkeit.kKundengruppe = " . $_SESSION['Kundengruppe']->kKundengruppe . "
+                AND tartikelsichtbarkeit.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
         WHERE teigenschaftkombiwert.kEigenschaft IN (" . $cSQL1 . ")
             AND teigenschaftkombiwert.kEigenschaftWert IN (" . $cSQL2 . ")
             AND tartikelsichtbarkeit.kArtikel IS NULL
@@ -910,7 +913,7 @@ function setSelectionWizardAnswers($cKey, $kKey, $kSprache, $kSelection_arr)
         $oLastSelectedValue = $AWA->getLastSelectedValue();
         $NaviFilter         = $AWA->getNaviFilter();
 
-        if ($oLastSelectedValue !== null && $oLastSelectedValue->nAnzahl === 1 ||
+        if (($oLastSelectedValue !== null && $oLastSelectedValue->nAnzahl === 1) ||
             $AWA->getCurQuestion() === $AWA->getQuestionCount() ||
             $AWA->getQuestion($AWA->getCurQuestion())->nTotalResultCount === 0)
         {

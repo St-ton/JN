@@ -57,7 +57,7 @@ function compareDBStruct($cDBFileStruct_arr, $cDBStruct_arr)
             $cDBError_arr[$cTable] = 'Tabelle nicht vorhanden';
         } else {
             foreach ($cColumn_arr as $cColumn) {
-                if (!in_array($cColumn, $cDBStruct_arr[$cTable])) {
+                if (!in_array($cColumn, $cDBStruct_arr[$cTable], true)) {
                     $cDBError_arr[$cTable] = "Spalte $cColumn in $cTable nicht vorhanden";
                     break;
                 }
@@ -75,7 +75,7 @@ function compareDBStruct($cDBFileStruct_arr, $cDBStruct_arr)
  */
 function doDBMaintenance($action, array $tables)
 {
-    $tables = implode(', ', $tables);
+    $tableString = implode(', ', $tables);
 
     switch ($action) {
         case 'optimize' :
@@ -95,6 +95,6 @@ function doDBMaintenance($action, array $tables)
     }
 
     return (count($tables) > 0)
-        ? Shop::DB()->query($cmd . $tables, 2)
+        ? Shop::DB()->query($cmd . $tableString, 2)
         : false;
 }

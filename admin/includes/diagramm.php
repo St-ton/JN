@@ -11,7 +11,7 @@ require_once PFAD_ROOT . PFAD_GRAPHCLASS . 'graph.php';
 
 //### Prüfung welcher Graph angezeigt werden soll
 if (isset($_SESSION['nDiagrammTyp'])) {
-    switch (intval($_SESSION['nDiagrammTyp'])) {
+    switch ((int)$_SESSION['nDiagrammTyp']) {
         case 1: // Umsatz - Jahr
             erstelleUmsatzGraph($_SESSION['oY1_arr'], $_SESSION['oY2_arr'], $_SESSION['nYmax'], 1);
             break;
@@ -71,7 +71,7 @@ function erstelleUmsatzGraph($oY1_arr, $oY2_arr, $nYmax, $nDiagrammTyp)
             $tmpUmsatz = 0;
 
             foreach ($oY1_arr as $oY1) {
-                if (intval($oY1->ZeitWert) === ($i + 1)) {
+                if ((int)$oY1->ZeitWert === ($i + 1)) {
                     $tmpUmsatz = $oY1->Umsatz;
                 }
             }
@@ -83,7 +83,7 @@ function erstelleUmsatzGraph($oY1_arr, $oY2_arr, $nYmax, $nDiagrammTyp)
             $tmpUmsatz = 0;
 
             foreach ($oY2_arr as $oY2) {
-                if (intval($oY2->ZeitWert) === $i + 1) {
+                if ((int)$oY2->ZeitWert === $i + 1) {
                     $tmpUmsatz = $oY2->Umsatz;
                 }
             }
@@ -202,7 +202,7 @@ function erstelleKampagneDetailGraph($oKampagneDetailGraph, $kKampagneDef)
     $CGraph->parameter['x_grid']            = 'none';
     $CGraph->parameter['y_decimal_right']   = 2;
     $CGraph->parameter['y_min_right']       = 0;
-    $CGraph->parameter['y_max_right']       = ceil(intval($oKampagneDetailGraph->nGraphMaxAssoc_arr[$kKampagneDef]) * 1.1);
+    $CGraph->parameter['y_max_right']       = ceil((int)$oKampagneDetailGraph->nGraphMaxAssoc_arr[$kKampagneDef] * 1.1);
     $CGraph->parameter['y_axis_gridlines']  = 11;
     $CGraph->parameter['y_axis_text_right'] = 2;  //print a tick every 2nd grid line
     $CGraph->parameter['shadow']            = 'none';

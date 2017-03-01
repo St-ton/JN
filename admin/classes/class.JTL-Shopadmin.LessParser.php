@@ -87,7 +87,7 @@ class LessParser
         $value = isset($this->_stack[$key]) ?
             $this->_stack[$key] : null;
 
-        if (!is_null($value) && !is_null($type)) {
+        if ($value !== null && !$type !== null) {
             $typedValue = $this->getAs($value, $type);
             if ($typedValue !== false) {
                 return $typedValue;
@@ -110,7 +110,7 @@ class LessParser
             case 'color':
                 // rgb(255,255,255)
                 if (preg_match('/rgb(\s*)\(([\d\s]+),([\d\s]+),([\d\s]+)\)/', $value, $matches)) {
-                    return $this->rgb2html(intval($matches[2]), intval($matches[3]), intval($matches[4]));
+                    return $this->rgb2html((int)$matches[2], (int)$matches[3], (int)$matches[4]);
                 } // #fff or #ffffff
                 elseif (preg_match('/#([\w\d]+)/', $value, $matches)) {
                     return trim($matches[0]);
@@ -137,20 +137,20 @@ class LessParser
     }
 
     /**
-     * @param int $r
-     * @param int $g
-     * @param int $b
+     * @param int|array $r
+     * @param int       $g
+     * @param int       $b
      * @return string
      */
     protected function rgb2html($r, $g, $b)
     {
-        if (is_array($r) && sizeof($r) == 3) {
+        if (is_array($r) && count($r) === 3) {
             list($r, $g, $b) = $r;
         }
 
-        $r = intval($r);
-        $g = intval($g);
-        $b = intval($b);
+        $r = (int)$r;
+        $g = (int)$g;
+        $b = (int)$b;
 
         $r = dechex($r < 0 ? 0 : ($r > 255 ? 255 : $r));
         $g = dechex($g < 0 ? 0 : ($g > 255 ? 255 : $g));

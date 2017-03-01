@@ -13,9 +13,9 @@ class cache_apc implements ICachingMethod
     use JTLCacheTrait;
     
     /**
-     * @var cache_apc|null
+     * @var cache_apc
      */
-    public static $instance = null;
+    public static $instance;
 
     /**
      * check whether apc_ or apcu_ functions should be used
@@ -143,11 +143,11 @@ class cache_apc implements ICachingMethod
         try {
             $tmp   = $this->u ? apcu_cache_info() : apc_cache_info('user');
             $stats = [
-                'entries' => (isset($tmp['num_entries'])) ? $tmp['num_entries'] : 0,
-                'hits'    => (isset($tmp['num_hits'])) ? $tmp['num_hits'] : 0,
-                'misses'  => (isset($tmp['num_misses'])) ? $tmp['num_misses'] : 0,
-                'inserts' => (isset($tmp['num_inserts'])) ? $tmp['num_inserts'] : 0,
-                'mem'     => (isset($tmp['mem_size'])) ? $tmp['mem_size'] : 0
+                'entries' => isset($tmp['num_entries']) ? $tmp['num_entries'] : 0,
+                'hits'    => isset($tmp['num_hits']) ? $tmp['num_hits'] : 0,
+                'misses'  => isset($tmp['num_misses']) ? $tmp['num_misses'] : 0,
+                'inserts' => isset($tmp['num_inserts']) ? $tmp['num_inserts'] : 0,
+                'mem'     => isset($tmp['mem_size']) ? $tmp['mem_size'] : 0
             ];
         } catch (Exception $e) {
             $stats = [];

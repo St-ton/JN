@@ -15,14 +15,14 @@ class cache_memcached implements ICachingMethod
     use JTLCacheTrait;
     
     /**
-     * @var cache_memcached|null
+     * @var cache_memcached
      */
-    public static $instance = null;
+    public static $instance;
 
     /**
-     * @var Memcached|null
+     * @var Memcached
      */
-    private $_memcached = null;
+    private $_memcached;
 
     /**
      * @param array $options
@@ -143,7 +143,7 @@ class cache_memcached implements ICachingMethod
     {
         $res = $this->_memcached->get($this->options['prefix'] . $cacheID);
 
-        return (($res !== false || $this->_memcached->getResultCode() === Memcached::RES_SUCCESS));
+        return ($res !== false || $this->_memcached->getResultCode() === Memcached::RES_SUCCESS);
     }
 
     /**

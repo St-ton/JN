@@ -15,7 +15,7 @@ class cache_null implements ICachingMethod
     /**
      * @var cache_null|null
      */
-    public static $instance = null;
+    public static $instance;
 
     /**
      * @param array $options

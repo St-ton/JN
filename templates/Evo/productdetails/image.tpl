@@ -2,7 +2,7 @@
     {block name="product-image"}
     {foreach $Artikel->Bilder as $image}
         {strip}
-            <a itemprop="image" href="{$image->cPfadGross}" title="{$image->cAltAttribut|escape:"html"}">
+            <a href="{$image->cPfadGross}" title="{$image->cAltAttribut|escape:"html"}">
                 <img src="{$image->cPfadNormal}" alt="{$image->cAltAttribut|escape:"html"}" data-list='{$image->galleryJSON|replace:"'":"&apos;"}' />
             </a>
         {/strip}

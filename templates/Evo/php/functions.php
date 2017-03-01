@@ -242,11 +242,11 @@ function get_img_tag($params, &$smarty)
     }
     $oImgSize = get_image_size($params['src']);
 
-    $imageURL   = $params['src'];
-    $imageID    = isset($params['id']) ? ' id="' . $params['id'] . '"' : '';
-    $imageALT   = isset($params['alt']) ? ' alt="' . truncate($params['alt'], 75) . '"' : '';
-    $imageTITLE = isset($params['title']) ? ' title="' . truncate($params['title'], 75) . '"' : '';
-    $imageCLASS = isset($params['class']) ? ' class="' . truncate($params['class'], 75) . '"' : '';
+    $imageURL      = $params['src'];
+    $imageID       = isset($params['id']) ? ' id="' . $params['id'] . '"' : '';
+    $imageALT      = isset($params['alt']) ? ' alt="' . truncate($params['alt'], 75) . '"' : '';
+    $imageTITLE    = isset($params['title']) ? ' title="' . truncate($params['title'], 75) . '"' : '';
+    $imageCLASS    = isset($params['class']) ? ' class="' . truncate($params['class'], 75) . '"' : '';
     if ($oImgSize != null && $oImgSize->size->width > 0 && $oImgSize->size->height > 0) {
         return '<img src="' . $imageURL . '" width="' . $oImgSize->size->width . '" height="' .
             $oImgSize->size->height . '"' . $imageID . $imageALT . $imageTITLE . $imageCLASS . ' />';

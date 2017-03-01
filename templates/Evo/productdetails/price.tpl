@@ -27,8 +27,8 @@
         {/if}
         {if $tplscope === 'detail'}
             {block name="price-snippets"}
-            <meta itemprop="price" content="{$Artikel->Preise->fVKBrutto}">
-            <meta itemprop="priceCurrency" content="{$smarty.session.Waehrung->cName}">
+                <meta itemprop="price" content="{$Artikel->Preise->fVKBrutto}">
+                <meta itemprop="priceCurrency" content="{$smarty.session.Waehrung->cName}">
             {/block}
             <div class="price-note">
                 {if $Artikel->cEinheit && ($Artikel->fMindestbestellmenge > 1 || $Artikel->fAbnahmeintervall > 1)}

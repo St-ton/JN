@@ -38,7 +38,7 @@ $kLink                = $linkHelper->getSpecialPageLinkKey(LINKTYP_REGISTRIEREN)
 $step                 = 'formular';
 $hinweis              = '';
 $titel                = Shop::Lang()->get('newAccount', 'login');
-$editRechnungsadresse = (isset($_GET['editRechnungsadresse']))
+$editRechnungsadresse = isset($_GET['editRechnungsadresse'])
     ? (int)$_GET['editRechnungsadresse']
     : 0;
 if (isset($_POST['editRechnungsadresse'])) {

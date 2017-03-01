@@ -343,7 +343,7 @@ class Redirect
     public function test($cUrl)
     {
         //Fallback e.g. if last URL-Path exists in tseo --> do not track 404 hit, instant redirect!
-        if ($fallbackPath = $this->checkFallbackRedirect($cUrl)) {
+        if (($fallbackPath = $this->checkFallbackRedirect($cUrl)) !== false) {
             return $fallbackPath;
         }
         $cRedirectUrl = false;

@@ -168,6 +168,24 @@ $(window).load(function(){
 });
 
 $(document).ready(function () {
+    var forms = $('form');
+    for (var i = 0; i < forms.length; i++) {
+        forms[i].addEventListener('invalid', function (event) {
+            event.preventDefault();
+            $(event.target).closest('.form-group').find('p.form-error-msg').remove('p.form-error-msg');
+            $(event.target).closest('.form-group').addClass('has-error').append('<p class="form-error-msg">' + event.target.validationMessage + '</p>');
+        }, true);
+
+        forms[i].addEventListener('blur', function (event) {
+            $(event.target).closest('.form-group').find('p.form-error-msg').remove('p.form-error-msg');
+            if (event.target.validity.valid) {
+                $(event.target).closest('.form-group').removeClass('has-error');
+            } else {
+                $(event.target).closest('.form-group').addClass('has-error').append('<p class="form-error-msg">' + event.target.validationMessage + '</p>');
+            }
+        }, true);
+    }
+
     $('#complete-order-button').click(function () {
         var commentField = $('#comment'),
             commentFieldHidden = $('#comment-hidden');

@@ -579,6 +579,8 @@ function checkDependencies($aValues)
  */
 function checkVarkombiDependencies($aValues, $kEigenschaft = 0, $kEigenschaftWert = 0)
 {
+    $kEigenschaft                = (int)$kEigenschaft;
+    $kEigenschaftWert            = (int)$kEigenschaftWert;
     $oArtikel                    = null;
     $objResponse                 = new IOResponse();
     $kVaterArtikel               = (int)$aValues['a'];
@@ -746,17 +748,18 @@ function checkVarkombiDependencies($aValues, $kEigenschaft = 0, $kEigenschaftWer
  */
 function getArticleByVariations($kArtikel, $kVariationKombi_arr)
 {
-    $cSQL1 = '';
-    $cSQL2 = '';
+    $kArtikel = (int)$kArtikel;
+    $cSQL1    = '';
+    $cSQL2    = '';
     if (is_array($kVariationKombi_arr) && count($kVariationKombi_arr) > 0) {
         $j = 0;
         foreach ($kVariationKombi_arr as $i => $kVariationKombi) {
             if ($j > 0) {
-                $cSQL1 .= ',' . $i;
-                $cSQL2 .= ',' . $kVariationKombi;
+                $cSQL1 .= ',' . (int)$i;
+                $cSQL2 .= ',' . (int)$kVariationKombi;
             } else {
-                $cSQL1 .= $i;
-                $cSQL2 .= $kVariationKombi;
+                $cSQL1 .= (int)$i;
+                $cSQL2 .= (int)$kVariationKombi;
             }
 
             $j++;
@@ -775,7 +778,7 @@ function getArticleByVariations($kArtikel, $kVariationKombi_arr)
                 AND tseo.kSprache = " . $kSprache .  "
             LEFT JOIN tartikelsichtbarkeit 
                 ON a.kArtikel = tartikelsichtbarkeit.kArtikel
-                AND tartikelsichtbarkeit.kKundengruppe = " . $_SESSION['Kundengruppe']->kKundengruppe . "
+                AND tartikelsichtbarkeit.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
         WHERE teigenschaftkombiwert.kEigenschaft IN (" . $cSQL1 . ")
             AND teigenschaftkombiwert.kEigenschaftWert IN (" . $cSQL2 . ")
             AND tartikelsichtbarkeit.kArtikel IS NULL

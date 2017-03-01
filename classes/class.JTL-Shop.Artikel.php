@@ -6185,9 +6185,11 @@ class Artikel
     {
         $nPossibleVariation_arr = [];
         foreach ($nEigenschaft_arr as $kEigenschaft => $nEigenschaftWert_arr) {
-            $i    = 2;
-            $cSQL = [];
+            $kEigenschaft = (int)$kEigenschaft;
+            $i            = 2;
+            $cSQL         = [];
             foreach ($kGesetzteEigeschaftWert_arr as $kGesetzteEigenschaft => $kEigenschaftWert) {
+                $kEigenschaftWert = (int)$kEigenschaftWert;
                 if ($kEigenschaft != $kGesetzteEigenschaft) {
                     $cSQL[] = "INNER JOIN teigenschaftkombiwert e{$i} 
                                     ON e1.kEigenschaftKombi = e{$i}.kEigenschaftKombi 

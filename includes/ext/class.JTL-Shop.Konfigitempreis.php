@@ -48,7 +48,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         public function __construct($kKonfigitem = 0, $kKundengruppe = 0)
         {
-            if (intval($kKonfigitem) > 0 && intval($kKundengruppe) > 0) {
+            if ((int)$kKonfigitem > 0 && (int)$kKundengruppe > 0) {
                 $this->loadFromDB($kKonfigitem, $kKundengruppe);
             }
         }
@@ -70,8 +70,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 (int)$kKundengruppe
             );
 
-            if (isset($oObj->kKonfigitem) &&
-                isset($oObj->kKundengruppe) &&
+            if (isset($oObj->kKonfigitem, $oObj->kKundengruppe) &&
                 $oObj->kKonfigitem > 0 &&
                 $oObj->kKundengruppe > 0
             ) {
@@ -98,8 +97,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                     $oObj->$cMember = $this->$cMember;
                 }
             }
-            unset($oObj->kKonfigitem);
-            unset($oObj->kKundengruppe);
+            unset($oObj->kKonfigitem, $oObj->kKundengruppe);
 
             $kPrim = Shop::DB()->insert('tkonfigitempreis', $oObj);
 

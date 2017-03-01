@@ -3,13 +3,13 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/admininclude.php';
+require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('ORDER_CUSTOMERFIELDS_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_CLASSES . 'class.JTL-Shopadmin.PlausiKundenfeld.php';
 /** @global JTLSmarty $smarty */
-$Einstellungen = Shop::getSettings(array(CONF_KUNDENFELD));
+$Einstellungen = Shop::getSettings([CONF_KUNDENFELD]);
 $cHinweis      = '';
 $cFehler       = '';
 $step          = 'uebersicht';
@@ -23,10 +23,10 @@ if (strlen(verifyGPDataString('tab')) > 0) {
 }
 
 // Einstellungen
-if (isset($_POST['einstellungen']) && intval($_POST['einstellungen']) > 0) {
+if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
     $cHinweis .= saveAdminSectionSettings(CONF_KUNDENFELD, $_POST);
-} elseif (isset($_POST['kundenfelder']) && intval($_POST['kundenfelder']) === 1 && validateToken()) { // Kundenfelder
-    if (isset($_POST['loeschen']) && validateToken()) {
+} elseif (isset($_POST['kundenfelder']) && (int)$_POST['kundenfelder'] === 1 && validateToken()) { // Kundenfelder
+    if (isset($_POST['loeschen'])) {
         $kKundenfeld_arr = $_POST['kKundenfeld'];
 
         if (is_array($kKundenfeld_arr) && count($kKundenfeld_arr) > 0) {
@@ -55,16 +55,16 @@ if (isset($_POST['einstellungen']) && intval($_POST['einstellungen']) > 0) {
         $cName           = htmlspecialchars($_POST['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
         $cWawi           = str_replace(['"',"'"], '',$_POST['cWawi']);
         $cTyp            = $_POST['cTyp'];
-        $nSort           = intval($_POST['nSort']);
+        $nSort           = (int)$_POST['nSort'];
         $nPflicht        = $_POST['nPflicht'];
         $nEdit           = $_POST['nEdit'];
-        $cWert_arr       = (isset($_POST['cWert'])) ? $_POST['cWert'] : null;
-        $oKundenfeld_arr = array();
+        $cWert_arr       = isset($_POST['cWert']) ? $_POST['cWert'] : null;
+        $oKundenfeld_arr = [];
 
         // Plausi
         $oPlausi = new PlausiKundenfeld();
         $oPlausi->setPostVar($_POST);
-        $oPlausi->doPlausi($cTyp, verifyGPCDataInteger('kKundenfeld') > 0 ? true : false);
+        $oPlausi->doPlausi($cTyp, verifyGPCDataInteger('kKundenfeld') > 0);
 
         if (count($oPlausi->getPlausiVar()) === 0) {
             // Update?
@@ -127,10 +127,22 @@ $oConfig_arr = Shop::DB()->selectAll('teinstellungenconf', 'kEinstellungenSektio
 $configCount = count($oConfig_arr);
 for ($i = 0; $i < $configCount; $i++) {
     if ($oConfig_arr[$i]->cInputTyp === 'selectbox') {
-        $oConfig_arr[$i]->ConfWerte = Shop::DB()->selectAll('teinstellungenconfwerte', 'kEinstellungenConf', (int)$oConfig_arr[$i]->kEinstellungenConf, '*', 'nSort');
+        $oConfig_arr[$i]->ConfWerte = Shop::DB()->selectAll
+        ('teinstellungenconfwerte',
+            'kEinstellungenConf',
+            (int)$oConfig_arr[$i]->kEinstellungenConf,
+            '*',
+            'nSort'
+        );
     }
 
-    $oSetValue = Shop::DB()->select('teinstellungen', 'kEinstellungenSektion', CONF_KUNDENFELD, 'cName', $oConfig_arr[$i]->cWertName);
+    $oSetValue = Shop::DB()->select(
+        'teinstellungen',
+        'kEinstellungenSektion',
+        CONF_KUNDENFELD,
+        'cName',
+        $oConfig_arr[$i]->cWertName
+    );
     $oConfig_arr[$i]->gesetzterWert = (isset($oSetValue->cWert) ? $oSetValue->cWert : null);
 }
 // Kundenfelder auslesen und in Smarty assignen

@@ -259,7 +259,7 @@ function holeExportformatQueueBearbeitet($nStunden)
     } else {
         $nStunden = (int)$nStunden;
     }
-    $kSprache = (isset($_SESSION['kSprache'])) ? (int)$_SESSION['kSprache'] : null;
+    $kSprache = isset($_SESSION['kSprache']) ? (int)$_SESSION['kSprache'] : null;
     if (!$kSprache) {
         $oSpracheTMP = Shop::DB()->select('tsprache', 'cShopStandard', 'Y');
         if (isset($oSpracheTMP->kSprache) && $oSpracheTMP->kSprache > 0) {
@@ -420,18 +420,16 @@ function exportformatQueueActionErstellenEintragen(JTLSmarty $smarty, array &$me
     if ($kExportformat > 0) {
         if (dStartPruefen($dStart)) {
             if ($nAlleXStunden >= 1) {
-                if (isset($_POST['kCron']) && intval($_POST['kCron']) > 0) {
-                    $kCron = (int)$_POST['kCron'];
-                } else { // Editieren
-                    $kCron = null;
-                }
+                $kCron = (isset($_POST['kCron']) && (int)$_POST['kCron'] > 0)
+                    ? (int)$_POST['kCron']
+                    : null;
                 // Speicher Cron mit Exportformat in Datenbank
                 $nStatus = erstelleExportformatCron($kExportformat, $dStart, $nAlleXStunden, $kCron);
 
-                if ($nStatus == 1) {
+                if ($nStatus === 1) {
                     $messages['notice'] .= 'Ihre neue Exportwarteschlange wurde erfolgreich angelegt.';
                     $step                = 'erstellen_success';
-                } elseif ($nStatus == -1) {
+                } elseif ($nStatus === -1) {
                     $messages['error'] .= 'Fehler: Das Exportformat ist bereits in der Warteschlange vorhanden.<br />';
                     $step               = 'erstellen';
                 } else {

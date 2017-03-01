@@ -34,7 +34,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
          */
         public static function getGroupsByLocation($cKey, $kKey, $kSprache)
         {
-            if (strlen($cKey) > 0 && intval($kKey) > 0 && intval($kSprache) > 0) {
+            if (strlen($cKey) > 0 && (int)$kKey > 0 && (int)$kSprache > 0) {
                 $oOrt = Shop::DB()->query(
                     "SELECT tauswahlassistentort.kAuswahlAssistentGruppe
                         FROM tauswahlassistentort

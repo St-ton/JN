@@ -64,7 +64,7 @@ function holeKampagneGesamtStats($oKampagne_arr, $oKampagneDef_arr)
     $oKampagneStat_arr = [];
     $cSQL              = '';
     $cDatum_arr        = gibDatumTeile($_SESSION['Kampagne']->cStamp);
-    switch (intval($_SESSION['Kampagne']->nAnsicht)) {
+    switch ((int)$_SESSION['Kampagne']->nAnsicht) {
         case 1:    // Monat
             $cSQL = "WHERE '" . $cDatum_arr['cJahr'] . "-" . 
                 $cDatum_arr['cMonat'] . "' = DATE_FORMAT(dErstellt, '%Y-%m')";
@@ -108,11 +108,9 @@ function holeKampagneGesamtStats($oKampagne_arr, $oKampagneDef_arr)
     // Sortierung
     if (isset($_SESSION['Kampagne']->nSort) && $_SESSION['Kampagne']->nSort > 0) {
         $oSort_arr = [];
-        if (intval($_SESSION['Kampagne']->nSort) > 0) {
-            if (count($oKampagneStat_arr) > 0) {
-                foreach ($oKampagneStat_arr as $i => $oKampagneStatDef_arr) {
-                    $oSort_arr[$i] = $oKampagneStatDef_arr[$_SESSION['Kampagne']->nSort];
-                }
+        if ((int)$_SESSION['Kampagne']->nSort > 0 && count($oKampagneStat_arr) > 0) {
+            foreach ($oKampagneStat_arr as $i => $oKampagneStatDef_arr) {
+                $oSort_arr[$i] = $oKampagneStatDef_arr[$_SESSION['Kampagne']->nSort];
             }
         }
         if ($_SESSION['Kampagne']->cSort === 'ASC') {
@@ -191,7 +189,7 @@ function holeKampagneDetailStats($kKampagne, $oKampagneDef_arr)
         $cTag = '0' . $cTag;
     }
 
-    switch (intval($_SESSION['Kampagne']->nDetailAnsicht)) {
+    switch ((int)$_SESSION['Kampagne']->nDetailAnsicht) {
         case 1:    // Jahr
             $cSQLWHERE = " WHERE dErstellt BETWEEN '" . $_SESSION['Kampagne']->cFromDate_arr['nJahr'] . "-" .
                 $_SESSION['Kampagne']->cFromDate_arr['nMonat'] . "-01' AND '" .
@@ -231,7 +229,7 @@ function holeKampagneDetailStats($kKampagne, $oKampagneDef_arr)
             break;
     }
 
-    switch (intval($_SESSION['Kampagne']->nDetailAnsicht)) {
+    switch ((int)$_SESSION['Kampagne']->nDetailAnsicht) {
         case 1:    // Jahr
             $cSQLSELECT  = "DATE_FORMAT(dErstellt, '%Y') AS cDatum";
             $cSQLGROUPBY = "GROUP BY YEAR(dErstellt)";
@@ -343,7 +341,7 @@ function holeKampagneDetailStats($kKampagne, $oKampagneDef_arr)
 function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStampText, &$cMember_arr, $cBlaetterSQL1)
 {
     $oDaten_arr = [];
-    if (intval($kKampagne) > 0 && intval($oKampagneDef->kKampagneDef) > 0 && strlen($cStamp) > 0) {
+    if ((int)$kKampagne > 0 && (int)$oKampagneDef->kKampagneDef > 0 && strlen($cStamp) > 0) {
         $cSQLSELECT = '';
         $cSQLWHERE  = '';
         baueDefDetailSELECTWHERE($cSQLSELECT, $cSQLWHERE, $cStamp);
@@ -356,7 +354,7 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                     AND kKampagneDef = " . (int)$oKampagneDef->kKampagneDef . $cBlaetterSQL1, 2
         );
         // Stamp Text
-        switch (intval($_SESSION['Kampagne']->nDetailAnsicht)) {
+        switch ((int)$_SESSION['Kampagne']->nDetailAnsicht) {
             case 1:    // Jahr
                 $cStampText = $oStats_arr[0]->cStampText;
                 break;
@@ -376,7 +374,7 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
         }
 
         // Kampagnendefinitionen
-        switch (intval($oKampagneDef->kKampagneDef)) {
+        switch ((int)$oKampagneDef->kKampagneDef) {
             case KAMPAGNE_DEF_HIT:    // HIT
                 $oDaten_arr = Shop::DB()->query(
                     "SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey " . $cSQLSELECT . ",
@@ -407,14 +405,15 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                         $oDaten_arr[$i]->cReferer        = $cReferer;
                     }
 
-                    $cMember_arr = array(
+                    $cMember_arr = [
                         'cIP'                 => 'IP-Adresse',
                         'cReferer'            => 'Referer',
                         'cEinstiegsseite'     => 'Einstiegsseite',
                         'cBrowser'            => 'Browser',
                         'cUserAgent'          => 'Suchmaschine',
                         'dErstellt_DE'        => 'Datum',
-                        'dErstelltVorgang_DE' => 'Vorgangsdatum');
+                        'dErstelltVorgang_DE' => 'Vorgangsdatum'
+                    ];
                 }
                 break;
             case KAMPAGNE_DEF_VERKAUF:    // VERKAUF
@@ -451,11 +450,9 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                             $oDaten_arr[$i]->cFirma = trim(entschluesselXTEA($oDaten_arr[$i]->cFirma));
                         }
                         if ($oDaten_arr[$i]->nRegistriert !== 'n.v.') {
-                            if ($oDaten_arr[$i]->nRegistriert == 1) {
-                                $oDaten_arr[$i]->nRegistriert = 'Ja';
-                            } else {
-                                $oDaten_arr[$i]->nRegistriert = 'Nein';
-                            }
+                            $oDaten_arr[$i]->nRegistriert = (int)$oDaten_arr[$i]->nRegistriert === 1
+                                ? 'Ja'
+                                : 'Nein';
                         }
                         if ($oDaten_arr[$i]->fGesamtsumme !== 'n.v.') {
                             $oDaten_arr[$i]->fGesamtsumme = gibPreisStringLocalized($oDaten_arr[$i]->fGesamtsumme);
@@ -465,7 +462,7 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                         }
                     }
 
-                    $cMember_arr = array(
+                    $cMember_arr = [
                         'cZahlungsartName'    => 'Zahlungsart',
                         'cVersandartName'     => 'Versandart',
                         'nRegistriert'        => 'Registrierter Kunde',
@@ -475,7 +472,8 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                         'cBestellNr'          => 'BestellNr',
                         'fGesamtsumme'        => 'Bestellwert',
                         'dErstellt_DE'        => 'Bestelldatum',
-                        'dErstelltVorgang_DE' => 'Vorgangsdatum');
+                        'dErstelltVorgang_DE' => 'Vorgangsdatum'
+                    ];
                 }
                 break;
             case KAMPAGNE_DEF_ANMELDUNG:    // ANMELDUNG
@@ -497,7 +495,8 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                 );
 
                 if (is_array($oDaten_arr) && count($oDaten_arr) > 0) {
-                    for ($i = 0; $i < count($oDaten_arr); $i++) {
+                    $count = count($oDaten_arr);
+                    for ($i = 0; $i < $count; $i++) {
                         if ($oDaten_arr[$i]->cNachname !== 'n.v.') {
                             $oDaten_arr[$i]->cNachname = trim(entschluesselXTEA($oDaten_arr[$i]->cNachname));
                         }
@@ -505,22 +504,21 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                             $oDaten_arr[$i]->cFirma = trim(entschluesselXTEA($oDaten_arr[$i]->cFirma));
                         }
                         if ($oDaten_arr[$i]->nRegistriert !== 'n.v.') {
-                            if ($oDaten_arr[$i]->nRegistriert == 1) {
-                                $oDaten_arr[$i]->nRegistriert = 'Ja';
-                            } else {
-                                $oDaten_arr[$i]->nRegistriert = 'Nein';
-                            }
+                            $oDaten_arr[$i]->nRegistriert = ((int)$oDaten_arr[$i]->nRegistriert === 1)
+                                ? 'Ja'
+                                : 'Nein';
                         }
                     }
 
-                    $cMember_arr = array(
+                    $cMember_arr = [
                         'cVorname'            => 'Vorname',
                         'cNachname'           => 'Nachname',
                         'cFirma'              => 'Firma',
                         'cMail'               => 'eMail',
                         'nRegistriert'        => 'Registriert',
                         'dErstellt_DE'        => 'Anmeldedatum',
-                        'dErstelltVorgang_DE' => 'Vorgangsdatum');
+                        'dErstelltVorgang_DE' => 'Vorgangsdatum'
+                    ];
                 }
                 break;
             case KAMPAGNE_DEF_VERKAUFSSUMME:    // VERKAUFSSUMME
@@ -556,11 +554,9 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                             $oDaten_arr[$i]->cFirma = trim(entschluesselXTEA($oDaten_arr[$i]->cFirma));
                         }
                         if ($oDaten_arr[$i]->nRegistriert !== 'n.v.') {
-                            if ($oDaten_arr[$i]->nRegistriert == 1) {
-                                $oDaten_arr[$i]->nRegistriert = 'Ja';
-                            } else {
-                                $oDaten_arr[$i]->nRegistriert = 'Nein';
-                            }
+                            $oDaten_arr[$i]->nRegistriert = ((int)$oDaten_arr[$i]->nRegistriert === 1)
+                                ? 'Ja'
+                                : 'Nein';
                         }
                         if ($oDaten_arr[$i]->fGesamtsumme !== 'n.v.') {
                             $oDaten_arr[$i]->fGesamtsumme = gibPreisStringLocalized($oDaten_arr[$i]->fGesamtsumme);
@@ -570,7 +566,7 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                         }
                     }
 
-                    $cMember_arr = array(
+                    $cMember_arr = [
                         'cZahlungsartName'    => 'Zahlungsart',
                         'cVersandartName'     => 'Versandart',
                         'nRegistriert'        => 'Registrierter Kunde',
@@ -580,7 +576,8 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                         'cBestellNr'          => 'BestellNr',
                         'fGesamtsumme'        => 'Bestellwert',
                         'dErstellt_DE'        => 'Bestelldatum',
-                        'dErstelltVorgang_DE' => 'Vorgangsdatum');
+                        'dErstelltVorgang_DE' => 'Vorgangsdatum'
+                    ];
                 }
                 break;
             case KAMPAGNE_DEF_FRAGEZUMPRODUKT:    // FRAGEZUMPRODUKT
@@ -606,7 +603,7 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                 );
 
                 if (is_array($oDaten_arr) && count($oDaten_arr) > 0) {
-                    $cMember_arr = array(
+                    $cMember_arr = [
                         'cArtikelname'        => 'Artikel',
                         'cArtNr'              => 'Artikelnummer',
                         'cVorname'            => 'Vorname',
@@ -616,7 +613,8 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                         'cMail'               => 'eMail',
                         'cNachricht'          => 'Nachricht',
                         'dErstellt_DE'        => 'Erstellt am',
-                        'dErstelltVorgang_DE' => 'Vorgangsdatum');
+                        'dErstelltVorgang_DE' => 'Vorgangsdatum'
+                    ];
                 }
 
                 break;
@@ -643,7 +641,7 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                 );
 
                 if (is_array($oDaten_arr) && count($oDaten_arr) > 0) {
-                    $cMember_arr = array(
+                    $cMember_arr = [
                         'cArtikelname'        => 'Artikel',
                         'cArtNr'              => 'Artikelnummer',
                         'cVorname'            => 'Vorname',
@@ -651,7 +649,8 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                         'cMail'               => 'eMail',
                         'cAbgeholt'           => 'Abgeholt durch Wawi',
                         'dErstellt_DE'        => 'Erstellt am',
-                        'dErstelltVorgang_DE' => 'Vorgangsdatum');
+                        'dErstelltVorgang_DE' => 'Vorgangsdatum'
+                    ];
                 }
 
                 break;
@@ -684,22 +683,21 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                         }
 
                         if ($oDaten_arr[$i]->nRegistriert !== 'n.v.') {
-                            if ($oDaten_arr[$i]->nRegistriert == 1) {
-                                $oDaten_arr[$i]->nRegistriert = 'Ja';
-                            } else {
-                                $oDaten_arr[$i]->nRegistriert = 'Nein';
-                            }
+                            $oDaten_arr[$i]->nRegistriert = ((int)$oDaten_arr[$i]->nRegistriert === 1)
+                                ? 'Ja'
+                                : 'Nein';
                         }
                     }
 
-                    $cMember_arr = array(
+                    $cMember_arr = [
                         'cVorname'            => 'Vorname',
                         'cNachname'           => 'Nachname',
                         'cFirma'              => 'Firma',
                         'cMail'               => 'eMail',
                         'nRegistriert'        => 'Registriert',
                         'dErstellt_DE'        => 'Anmeldedatum',
-                        'dErstelltVorgang_DE' => 'Vorgangsdatum');
+                        'dErstelltVorgang_DE' => 'Vorgangsdatum'
+                    ];
                 }
                 break;
             case KAMPAGNE_DEF_WUNSCHLISTE:    // WUNSCHLISTE
@@ -735,15 +733,13 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                         }
 
                         if ($oDaten_arr[$i]->nRegistriert !== 'n.v.') {
-                            if ($oDaten_arr[$i]->nRegistriert == 1) {
-                                $oDaten_arr[$i]->nRegistriert = 'Ja';
-                            } else {
-                                $oDaten_arr[$i]->nRegistriert = 'Nein';
-                            }
+                            $oDaten_arr[$i]->nRegistriert = ((int)$oDaten_arr[$i]->nRegistriert === 1)
+                                ? 'Ja'
+                                : 'Nein';
                         }
                     }
 
-                    $cMember_arr = array(
+                    $cMember_arr = [
                         'cArtikelname'        => 'Artikel',
                         'cArtNr'              => 'Artikelnummer',
                         'cVorname'            => 'Vorname',
@@ -752,7 +748,8 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                         'cMail'               => 'eMail',
                         'nRegistriert'        => 'Registriert',
                         'dErstellt_DE'        => 'Anmeldedatum',
-                        'dErstelltVorgang_DE' => 'Vorgangsdatum');
+                        'dErstelltVorgang_DE' => 'Vorgangsdatum'
+                    ];
                 }
                 break;
             case KAMPAGNE_DEF_WARENKORB:    // WARENKORB
@@ -779,8 +776,8 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
 
                 if (is_array($oDaten_arr) && count($oDaten_arr) > 0) {
                     $_SESSION['Kundengruppe']->darfPreiseSehen = 1;
-
-                    for ($i = 0; $i < count($oDaten_arr); $i++) {
+                    $count = count($oDaten_arr);
+                    for ($i = 0; $i < $count; $i++) {
                         if (isset($oDaten_arr[$i]->fVKNetto) && $oDaten_arr[$i]->fVKNetto > 0) {
                             $oDaten_arr[$i]->fVKNetto = gibPreisStringLocalized($oDaten_arr[$i]->fVKNetto);
                         }
@@ -789,14 +786,15 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                         }
                     }
 
-                    $cMember_arr = array(
+                    $cMember_arr = [
                         'cName'                    => 'Artikel',
                         'cArtNr'                   => 'Artikelnummer',
                         'fVKNetto'                 => 'Netto Preis',
                         'fMwSt'                    => 'MwSt',
                         'fLagerbestand'            => 'Lagerbestand',
                         'dLetzteAktualisierung_DE' => 'Letzte Aktualisierung',
-                        'dErstelltVorgang_DE'      => 'Vorgangsdatum');
+                        'dErstelltVorgang_DE'      => 'Vorgangsdatum'
+                    ];
                 }
                 break;
             case KAMPAGNE_DEF_NEWSLETTER:    // NEWSLETTER
@@ -819,14 +817,15 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                 );
 
                 if (is_array($oDaten_arr) && count($oDaten_arr) > 0) {
-                    $cMember_arr = array(
+                    $cMember_arr = [
                         'cName'               => 'Newsletter',
                         'cBetreff'            => 'Betreff',
                         'cVorname'            => 'Vorname',
                         'cNachname'           => 'Nachname',
                         'cEmail'              => 'eMail',
                         'dErstelltTrack_DE'   => 'Datum der &Ouml;ffnung',
-                        'dErstelltVorgang_DE' => 'Vorgangsdatum');
+                        'dErstelltVorgang_DE' => 'Vorgangsdatum'
+                    ];
                 }
                 break;
         }
@@ -842,7 +841,7 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
  */
 function baueDefDetailSELECTWHERE(&$cSQLSELECT, &$cSQLWHERE, $cStamp)
 {
-    switch (intval($_SESSION['Kampagne']->nDetailAnsicht)) {
+    switch ((int)$_SESSION['Kampagne']->nDetailAnsicht) {
         case 1:    // Jahr
             $cSQLSELECT = ", DATE_FORMAT(tkampagnevorgang.dErstellt, '%Y') AS cStampText";
             $cSQLWHERE  = " WHERE DATE_FORMAT(tkampagnevorgang.dErstellt, '%Y') = '" . $cStamp . "'";
@@ -870,35 +869,35 @@ function gibDetailDatumZeitraum()
     $cZeitraum_arr               = [];
     $cZeitraum_arr['cDatum']     = [];
     $cZeitraum_arr['cDatumFull'] = [];
-    switch (intval($_SESSION['Kampagne']->nDetailAnsicht)) {
+    switch ((int)$_SESSION['Kampagne']->nDetailAnsicht) {
         case 1:    // Jahr
             $nFromStamp          = mktime(0, 0, 0, $_SESSION['Kampagne']->cFromDate_arr['nMonat'], 1, $_SESSION['Kampagne']->cFromDate_arr['nJahr']);
             $nAnzahlTageProMonat = date('t', mktime(0, 0, 0, $_SESSION['Kampagne']->cToDate_arr['nMonat'], 1, $_SESSION['Kampagne']->cToDate_arr['nJahr']));
-            $nToStamp            = mktime(0, 0, 0, $_SESSION['Kampagne']->cToDate_arr['nMonat'], intval($nAnzahlTageProMonat), $_SESSION['Kampagne']->cToDate_arr['nJahr']);
+            $nToStamp            = mktime(0, 0, 0, $_SESSION['Kampagne']->cToDate_arr['nMonat'], (int)$nAnzahlTageProMonat, $_SESSION['Kampagne']->cToDate_arr['nJahr']);
             $nTMPStamp           = $nFromStamp;
             while ($nTMPStamp <= $nToStamp) {
                 $cZeitraum_arr['cDatum'][]     = date('Y', $nTMPStamp);
                 $cZeitraum_arr['cDatumFull'][] = date('Y', $nTMPStamp);
-                $nDiff                         = mktime(0, 0, 0, intval(date('m', $nTMPStamp)), intval(date('d', $nTMPStamp)), intval(date('Y', $nTMPStamp)) + 1) - $nTMPStamp;
+                $nDiff                         = mktime(0, 0, 0, (int)date('m', $nTMPStamp), (int)date('d', $nTMPStamp), (int)date('Y', $nTMPStamp) + 1) - $nTMPStamp;
                 $nTMPStamp += $nDiff;
             }
             break;
         case 2:    // Monat
             $nFromStamp          = mktime(0, 0, 0, $_SESSION['Kampagne']->cFromDate_arr['nMonat'], 1, $_SESSION['Kampagne']->cFromDate_arr['nJahr']);
             $nAnzahlTageProMonat = date('t', mktime(0, 0, 0, $_SESSION['Kampagne']->cToDate_arr['nMonat'], 1, $_SESSION['Kampagne']->cToDate_arr['nJahr']));
-            $nToStamp            = mktime(0, 0, 0, $_SESSION['Kampagne']->cToDate_arr['nMonat'], intval($nAnzahlTageProMonat), $_SESSION['Kampagne']->cToDate_arr['nJahr']);
+            $nToStamp            = mktime(0, 0, 0, $_SESSION['Kampagne']->cToDate_arr['nMonat'], (int)$nAnzahlTageProMonat, $_SESSION['Kampagne']->cToDate_arr['nJahr']);
             $nTMPStamp           = $nFromStamp;
             while ($nTMPStamp <= $nToStamp) {
                 $cZeitraum_arr['cDatum'][]     = date('Y-m', $nTMPStamp);
                 $cZeitraum_arr['cDatumFull'][] = mappeENGMonat(date('m', $nTMPStamp)) . ' ' . date('Y', $nTMPStamp);
-                $nMonat                        = intval(date('m', $nTMPStamp)) + 1;
-                $nJahr                         = intval(date('Y', $nTMPStamp));
+                $nMonat                        = (int)date('m', $nTMPStamp) + 1;
+                $nJahr                         = (int)date('Y', $nTMPStamp);
                 if ($nMonat > 12) {
                     $nMonat = 1;
                     $nJahr++;
                 }
 
-                $nDiff = mktime(0, 0, 0, $nMonat, intval(date('d', $nTMPStamp)), $nJahr) - $nTMPStamp;
+                $nDiff = mktime(0, 0, 0, $nMonat, (int)date('d', $nTMPStamp), $nJahr) - $nTMPStamp;
 
                 $nTMPStamp += $nDiff;
             }
@@ -914,9 +913,9 @@ function gibDetailDatumZeitraum()
                 $cZeitraum_arr['cDatumFull'][] = date('d.m.Y', $nDatumWoche_arr[0]) . ' - ' . date('d.m.Y', $nDatumWoche_arr[1]);
                 $nAnzahlTageProMonat           = date('t', $nTMPStamp);
 
-                $nTag   = intval(date('d', $nDatumWoche_arr[1])) + 1;
-                $nMonat = intval(date('m', $nDatumWoche_arr[1]));
-                $nJahr  = intval(date('Y', $nDatumWoche_arr[1]));
+                $nTag   = (int)date('d', $nDatumWoche_arr[1]) + 1;
+                $nMonat = (int)date('m', $nDatumWoche_arr[1]);
+                $nJahr  = (int)date('Y', $nDatumWoche_arr[1]);
 
                 if ($nTag > $nAnzahlTageProMonat) {
                     $nTag = 1;
@@ -976,7 +975,7 @@ function gibStamp($cStampOld, $nSprung, $nAnsicht)
     if (strlen($cStampOld) > 0 && ($nSprung == -1 || $nSprung == 1) && $nAnsicht > 0) {
         $cFkt = ($nSprung == 1) ? 'DATE_ADD' : 'DATE_SUB';
 
-        switch (intval($nAnsicht)) {
+        switch ((int)$nAnsicht) {
             case 1:    // Monat
                 $oDate = Shop::DB()->query("SELECT " . $cFkt . "('" . $cStampOld . "', INTERVAL 1 MONTH) AS cStampNew, if(" . $cFkt . "('" . $cStampOld . "', INTERVAL 1 MONTH) > now(), 1, 0) AS nGroesser", 1);
 
@@ -1036,7 +1035,7 @@ function speicherKampagne($oKampagne)
         $oKampagneTMP = Shop::DB()->query(
             "SELECT *
                 FROM tkampagne
-                WHERE kKampagne = " . intval($oKampagne->kKampagne), 1
+                WHERE kKampagne = " . (int)$oKampagne->kKampagne, 1
         );
 
         if (isset($oKampagneTMP->kKampagne)) {
@@ -1096,8 +1095,8 @@ function speicherKampagne($oKampagne)
  */
 function mappeFehlerCodeSpeichern($nReturnValue)
 {
-    if (intval($nReturnValue) > 0) {
-        switch (intval($nReturnValue)) {
+    if ((int)$nReturnValue > 0) {
+        switch ((int)$nReturnValue) {
             case 2:
                 return 'Fehler: Kampagne konnte nicht gespeichert werden';
                 break;
@@ -1134,7 +1133,7 @@ function loescheGewaehlteKampagnen($kKampagne_arr)
                 // Nur alle externen Kampagnen sind löschbar
 
                 $oKampagne = new Kampagne($kKampagne);
-                if (isset($oKampagne->kKampagne) && $oKampagne->kKampagne > 0) {
+                if ($oKampagne->kKampagne !== null && $oKampagne->kKampagne > 0) {
                     $oKampagne->deleteInDB();
                 }
             }
@@ -1160,44 +1159,50 @@ function setzeDetailZeitraum($cDatumNow_arr)
         $_SESSION['Kampagne']->nDetailAnsicht = 2;
     }
     if (!isset($_SESSION['Kampagne']->cFromDate_arr)) {
-        $_SESSION['Kampagne']->cFromDate_arr['nJahr']  = intval($cDatumNow_arr['cJahr']);
-        $_SESSION['Kampagne']->cFromDate_arr['nMonat'] = intval($cDatumNow_arr['cMonat']);
-        $_SESSION['Kampagne']->cFromDate_arr['nTag']   = intval($cDatumNow_arr['cTag']);
+        $_SESSION['Kampagne']->cFromDate_arr['nJahr']  = (int)$cDatumNow_arr['cJahr'];
+        $_SESSION['Kampagne']->cFromDate_arr['nMonat'] = (int)$cDatumNow_arr['cMonat'];
+        $_SESSION['Kampagne']->cFromDate_arr['nTag']   = (int)$cDatumNow_arr['cTag'];
     }
     if (!isset($_SESSION['Kampagne']->cToDate_arr)) {
-        $_SESSION['Kampagne']->cToDate_arr['nJahr']  = intval($cDatumNow_arr['cJahr']);
-        $_SESSION['Kampagne']->cToDate_arr['nMonat'] = intval($cDatumNow_arr['cMonat']);
-        $_SESSION['Kampagne']->cToDate_arr['nTag']   = intval($cDatumNow_arr['cTag']);
+        $_SESSION['Kampagne']->cToDate_arr['nJahr']  = (int)$cDatumNow_arr['cJahr'];
+        $_SESSION['Kampagne']->cToDate_arr['nMonat'] = (int)$cDatumNow_arr['cMonat'];
+        $_SESSION['Kampagne']->cToDate_arr['nTag']   = (int)$cDatumNow_arr['cTag'];
     }
     if (!isset($_SESSION['Kampagne']->cFromDate)) {
-        $_SESSION['Kampagne']->cFromDate = intval($cDatumNow_arr['cJahr']) . '-' . intval($cDatumNow_arr['cMonat']) . '-' . intval($cDatumNow_arr['cTag']);
+        $_SESSION['Kampagne']->cFromDate = (int)$cDatumNow_arr['cJahr'] . '-' . (int)$cDatumNow_arr['cMonat'] . '-' . (int)$cDatumNow_arr['cTag'];
     }
     if (!isset($_SESSION['Kampagne']->cToDate)) {
-        $_SESSION['Kampagne']->cToDate = intval($cDatumNow_arr['cJahr']) . '-' . intval($cDatumNow_arr['cMonat']) . '-' . intval($cDatumNow_arr['cTag']);
+        $_SESSION['Kampagne']->cToDate = (int)$cDatumNow_arr['cJahr'] . '-' . (int)$cDatumNow_arr['cMonat'] . '-' . (int)$cDatumNow_arr['cTag'];
     }
     // Ansicht und Zeitraum
     if (verifyGPCDataInteger('zeitraum') === 1) {
         // Ansicht
-        if (isset($_POST['nAnsicht']) && intval($_POST['nAnsicht']) > 0) {
+        if (isset($_POST['nAnsicht']) && (int)$_POST['nAnsicht'] > 0) {
             $_SESSION['Kampagne']->nDetailAnsicht = $_POST['nAnsicht'];
         }
         // Zeitraum
-        if (isset($_POST['cFromDay']) && intval($_POST['cFromDay']) > 0 && isset($_POST['cFromMonth']) && intval($_POST['cFromMonth']) > 0 &&
-            isset($_POST['cFromYear']) && intval($_POST['cFromYear']) > 0) {
-            $_SESSION['Kampagne']->cFromDate_arr['nJahr']  = intval($_POST['cFromYear']);
-            $_SESSION['Kampagne']->cFromDate_arr['nMonat'] = intval($_POST['cFromMonth']);
-            $_SESSION['Kampagne']->cFromDate_arr['nTag']   = intval($_POST['cFromDay']);
-            $_SESSION['Kampagne']->cFromDate               = intval($_POST['cFromYear']) . '-' .
-                intval($_POST['cFromMonth']) . '-' .
-                intval($_POST['cFromDay']);
+        if (isset($_POST['cFromDay'], $_POST['cFromMonth'], $_POST['cFromYear']) &&
+            (int)$_POST['cFromDay'] > 0 &&
+            (int)$_POST['cFromMonth'] > 0 &&
+            (int)$_POST['cFromYear'] > 0
+        ) {
+            $_SESSION['Kampagne']->cFromDate_arr['nJahr']  = (int)$_POST['cFromYear'];
+            $_SESSION['Kampagne']->cFromDate_arr['nMonat'] = (int)$_POST['cFromMonth'];
+            $_SESSION['Kampagne']->cFromDate_arr['nTag']   = (int)$_POST['cFromDay'];
+            $_SESSION['Kampagne']->cFromDate               = (int)$_POST['cFromYear'] . '-' .
+                (int)$_POST['cFromMonth'] . '-' .
+                (int)$_POST['cFromDay'];
         }
-        if (isset($_POST['cToDay']) && intval($_POST['cToDay']) > 0 && isset($_POST['cToMonth']) &&
-            intval($_POST['cToMonth']) > 0 && isset($_POST['cToYear']) && intval($_POST['cToYear']) > 0) {
-            $_SESSION['Kampagne']->cToDate_arr['nJahr']  = intval($_POST['cToYear']);
-            $_SESSION['Kampagne']->cToDate_arr['nMonat'] = intval($_POST['cToMonth']);
-            $_SESSION['Kampagne']->cToDate_arr['nTag']   = intval($_POST['cToDay']);
-            $_SESSION['Kampagne']->cToDate               = intval($_POST['cToYear']) . '-' .
-                intval($_POST['cToMonth']) . '-' . intval($_POST['cToDay']);
+        if (isset($_POST['cToDay'], $_POST['cToMonth'], $_POST['cToYear']) &&
+            (int)$_POST['cToDay'] > 0 &&
+            (int)$_POST['cToMonth'] > 0 &&
+            (int)$_POST['cToYear'] > 0
+        ) {
+            $_SESSION['Kampagne']->cToDate_arr['nJahr']  = (int)$_POST['cToYear'];
+            $_SESSION['Kampagne']->cToDate_arr['nMonat'] = (int)$_POST['cToMonth'];
+            $_SESSION['Kampagne']->cToDate_arr['nTag']   = (int)$_POST['cToDay'];
+            $_SESSION['Kampagne']->cToDate               = (int)$_POST['cToYear'] . '-' .
+                (int)$_POST['cToMonth'] . '-' . (int)$_POST['cToDay'];
         }
     }
 
@@ -1222,28 +1227,28 @@ function checkGesamtStatZeitParam()
         if (strlen($cEndDatum) === 0) {
             list($cTagStart, $cMonatStart, $cJahrStart) = explode('.', $cStartDatum);
 
-            $_SESSION['Kampagne']->cFromDate_arr['nJahr']  = intval($cJahrStart);
-            $_SESSION['Kampagne']->cFromDate_arr['nMonat'] = intval($cMonatStart);
-            $_SESSION['Kampagne']->cFromDate_arr['nTag']   = intval($cTagStart);
-            $_SESSION['Kampagne']->cFromDate               = intval($cJahrStart) . '-' . intval($cMonatStart) . '-' . intval($cTagStart);
+            $_SESSION['Kampagne']->cFromDate_arr['nJahr']  = (int)$cJahrStart;
+            $_SESSION['Kampagne']->cFromDate_arr['nMonat'] = (int)$cMonatStart;
+            $_SESSION['Kampagne']->cFromDate_arr['nTag']   = (int)$cTagStart;
+            $_SESSION['Kampagne']->cFromDate               = (int)$cJahrStart . '-' . (int)$cMonatStart . '-' . (int)$cTagStart;
 
-            $_SESSION['Kampagne']->cToDate_arr['nJahr']  = intval($cJahrStart);
-            $_SESSION['Kampagne']->cToDate_arr['nMonat'] = intval($cMonatStart);
-            $_SESSION['Kampagne']->cToDate_arr['nTag']   = intval($cTagStart);
-            $_SESSION['Kampagne']->cToDate               = intval($cJahrStart) . '-' . intval($cMonatStart) . '-' . intval($cTagStart);
+            $_SESSION['Kampagne']->cToDate_arr['nJahr']  = (int)$cJahrStart;
+            $_SESSION['Kampagne']->cToDate_arr['nMonat'] = (int)$cMonatStart;
+            $_SESSION['Kampagne']->cToDate_arr['nTag']   = (int)$cTagStart;
+            $_SESSION['Kampagne']->cToDate               = (int)$cJahrStart . '-' . (int)$cMonatStart . '-' . (int)$cTagStart;
         } else {
             list($cTagStart, $cMonatStart, $cJahrStart) = explode('.', $cStartDatum);
             list($cTagEnde, $cMonatEnde, $cJahrEnde)    = explode('.', $cEndDatum);
 
-            $_SESSION['Kampagne']->cFromDate_arr['nJahr']  = intval($cJahrStart);
-            $_SESSION['Kampagne']->cFromDate_arr['nMonat'] = intval($cMonatStart);
-            $_SESSION['Kampagne']->cFromDate_arr['nTag']   = intval($cTagStart);
-            $_SESSION['Kampagne']->cFromDate               = intval($cJahrStart) . '-' . intval($cMonatStart) . '-' . intval($cTagStart);
+            $_SESSION['Kampagne']->cFromDate_arr['nJahr']  = (int)$cJahrStart;
+            $_SESSION['Kampagne']->cFromDate_arr['nMonat'] = (int)$cMonatStart;
+            $_SESSION['Kampagne']->cFromDate_arr['nTag']   = (int)$cTagStart;
+            $_SESSION['Kampagne']->cFromDate               = (int)$cJahrStart . '-' . (int)$cMonatStart . '-' . (int)$cTagStart;
 
-            $_SESSION['Kampagne']->cToDate_arr['nJahr']  = intval($cJahrEnde);
-            $_SESSION['Kampagne']->cToDate_arr['nMonat'] = intval($cMonatEnde);
-            $_SESSION['Kampagne']->cToDate_arr['nTag']   = intval($cTagEnde);
-            $_SESSION['Kampagne']->cToDate               = intval($cJahrEnde) . '-' . intval($cMonatEnde) . '-' . intval($cTagEnde);
+            $_SESSION['Kampagne']->cToDate_arr['nJahr']  = (int)$cJahrEnde;
+            $_SESSION['Kampagne']->cToDate_arr['nMonat'] = (int)$cMonatEnde;
+            $_SESSION['Kampagne']->cToDate_arr['nTag']   = (int)$cTagEnde;
+            $_SESSION['Kampagne']->cToDate               = (int)$cJahrEnde . '-' . (int)$cMonatEnde . '-' . (int)$cTagEnde;
         }
 
         // Int String Work Around
@@ -1257,7 +1262,7 @@ function checkGesamtStatZeitParam()
             $cTag = '0' . $cTag;
         }
 
-        switch (intval($_SESSION['Kampagne']->nAnsicht)) {
+        switch ((int)$_SESSION['Kampagne']->nAnsicht) {
             case 1:    // Monat
                 $_SESSION['Kampagne']->nDetailAnsicht = 2;
                 $cStamp                               = $_SESSION['Kampagne']->cFromDate_arr['nJahr'] . '-' . $cMonat;
@@ -1335,7 +1340,7 @@ function mappeENGMonat($cMonat)
  */
 function GetTypes()
 {
-    $Serienames = array(
+    $Serienames = [
         1  => 'Hit',
         2  => 'Verkauf',
         3  => 'Anmeldung',
@@ -1346,7 +1351,7 @@ function GetTypes()
         8  => 'Produkt auf Wunschliste',
         9  => 'Produkt in den Warenkorb',
         10 => 'Angeschaute Newsletter'
-    );
+    ];
 
     return $Serienames;
 }

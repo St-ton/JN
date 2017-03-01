@@ -40,7 +40,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
          */
         public function __construct($kDownloadHistory = 0)
         {
-            if (intval($kDownloadHistory) > 0) {
+            if ((int)$kDownloadHistory > 0) {
                 $this->loadFromDB((int)$kDownloadHistory);
             }
         }

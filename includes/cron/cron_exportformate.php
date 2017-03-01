@@ -35,7 +35,7 @@ function bearbeiteExportformate($oJobQueue)
         return;
     }
     // Special Export?
-    if ($oExportformat->nSpecial == SPECIAL_EXPORTFORMAT_YATEGO) {
+    if ((int)$oExportformat->nSpecial === SPECIAL_EXPORTFORMAT_YATEGO) {
         // Kampagne
         if (isset($oExportformat->kKampagne) && $oExportformat->kKampagne > 0) {
             $oKampagne = Shop::DB()->select('tkampagne', ['kKampagne', 'nAktiv'], [(int)$oExportformat->kKampagne, 1]);
@@ -93,7 +93,7 @@ function getNum($n)
  */
 function getURL($img)
 {
-    return ($img) ? Shop::getURL() . '/' . $img : '';
+    return $img ? Shop::getURL() . '/' . $img : '';
 }
 
 /**
@@ -119,8 +119,9 @@ function makecsv($cGlobalAssoc_arr, $nLimitN = 0)
     if (isset($queue->nLimit_n)) {
         $nLimitN = $queue->nLimit_n;
     }
+    $nLimitN = (int)$nLimitN;
     if (is_array($cGlobalAssoc_arr) && count($cGlobalAssoc_arr) > 0) {
-        if ($nLimitN == 0) {
+        if ($nLimitN === 0) {
             $fieldnames = array_keys($cGlobalAssoc_arr[0]);
             $out        = ESC . implode(ESC . DELIMITER . ESC, $fieldnames) . ESC . CRLF;
         }
@@ -252,17 +253,18 @@ function gibYategoExport($exportformat, $oJobQueue, $ExportEinstellungen)
 
         return false;
     }
+    $oJobQueue->nLimitN = (int)$oJobQueue->nLimitN;
     //falls dateien existieren, löschen
-    if ($oJobQueue->nLimitN == 0 && file_exists(PATH . 'varianten.csv')) {
+    if ($oJobQueue->nLimitN === 0 && file_exists(PATH . 'varianten.csv')) {
         unlink(PATH . 'varianten.csv');
     }
-    if ($oJobQueue->nLimitN == 0 && file_exists(PATH . 'artikel.csv')) {
+    if ($oJobQueue->nLimitN === 0 && file_exists(PATH . 'artikel.csv')) {
         unlink(PATH . 'artikel.csv');
     }
-    if ($oJobQueue->nLimitN == 0 && file_exists(PATH . 'shopkategorien.csv')) {
+    if ($oJobQueue->nLimitN === 0 && file_exists(PATH . 'shopkategorien.csv')) {
         unlink(PATH . 'shopkategorien.csv');
     }
-    if ($oJobQueue->nLimitN == 0 && file_exists(PATH . 'lager.csv')) {
+    if ($oJobQueue->nLimitN === 0 && file_exists(PATH . 'lager.csv')) {
         unlink(PATH . 'lager.csv');
     }
     // Global Array

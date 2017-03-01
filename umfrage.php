@@ -70,10 +70,6 @@ if (isset($cParameter_arr['kUmfrage']) && $cParameter_arr['kUmfrage'] > 0) {
                         $cParameter_arr['kSeite']
                     );
                 }
-                // Canonical
-                if (strpos(baueURL($oUmfrage, URLART_UMFRAGE), '.php') === false && !SHOP_SEO) {
-                    $cCanonicalURL = Shop::getURL() . '/' . baueURL($oUmfrage, URLART_UMFRAGE);
-                }
                 $_SESSION['Umfrage']->kUmfrage = $oUmfrage->kUmfrage;
                 $smarty->assign('oUmfrage', $oUmfrage)
                        ->assign('Navigation', createNavigation(

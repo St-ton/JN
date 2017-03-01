@@ -3073,11 +3073,11 @@ function gibNaviURL($NaviFilter, $bSeo, $oZusatzFilter, $kSprache = 0, $bCanonic
         $oMerkmalWert_arr        = [];
         if (isset($NaviFilter->MerkmalFilter) && is_array($NaviFilter->MerkmalFilter) && count($NaviFilter->MerkmalFilter) > 0) {
             foreach ($NaviFilter->MerkmalFilter as $i => $oMerkmalFilter) {
-                if (($oMerkmalFilter->kMerkmalWert > 0 &&  !isset($oZusatzFilter->FilterLoesen->Merkmale)) ||
+                if (($oMerkmalFilter->kMerkmalWert > 0 && !isset($oZusatzFilter->FilterLoesen->Merkmale)) ||
                     ($oZusatzFilter->FilterLoesen->Merkmale != $oMerkmalFilter->kMerkmal &&
-                        !isset($oZusatzFilter->FilterLoesen->MerkmalWert) &&
-                        isset($oMerkmalFilter->kMerkmalWert)) ||
-                    $oZusatzFilter->FilterLoesen->MerkmalWert != $oMerkmalFilter->kMerkmalWert
+                        !isset($oZusatzFilter->FilterLoesen->MerkmalWert) && isset($oMerkmalFilter->kMerkmalWert)) ||
+                    (!isset($oZusatzFilter->FilterLoesen->MerkmalWert) && isset($oMerkmalFilter->kMerkmalWert) ||
+                        ($oZusatzFilter->FilterLoesen->MerkmalWert != $oMerkmalFilter->kMerkmalWert))
                 ) {
                     if (strlen($oMerkmalFilter->cSeo[$kSprache]) === 0) {
                         $bSeo = false;

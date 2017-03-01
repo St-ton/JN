@@ -559,7 +559,7 @@ class NiceDB
                         } elseif ($object->$property === 'now()') {
                             $values .= $object->$property . ')';
                         } else {
-                            $values .= '' . $this->pdoEscape($object->$property) . ')';
+                            $values .= '"' . $this->pdoEscape($object->$property) . '")';
                         }
                     } else {
                         $columns .= $property . ', ';
@@ -568,12 +568,11 @@ class NiceDB
                         } elseif ($object->$property === 'now()') {
                             $values .= $object->$property . ', ';
                         } else {
-                            $values .= '' . $this->pdoEscape($object->$property) . ', ';
+                            $values .= '"' . $this->pdoEscape($object->$property) . '", ';
                         }
                     }
                 }
-                $stmt = "INSERT INTO $tableName $columns $values";
-                $this->analyzeQuery('insert', $stmt, $end - $start, $backtrace);
+                $this->analyzeQuery('insert', "INSERT INTO $tableName $columns $values", $end - $start, $backtrace);
             }
 
             return ($id > 0) ? $id : 1;

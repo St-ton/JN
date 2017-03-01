@@ -253,7 +253,7 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
             $kVaterLink = isset($oLink->kVaterLink) ? (int)$oLink->kVaterLink : null;
             $elems      = [];
             do {
-                if ($kVaterLink === 0) {
+                if ($kVaterLink === 0 || $kVaterLink === null) {
                     break;
                 }
                 $oItem = Shop::DB()->select('tlink', 'kLink', $kVaterLink);

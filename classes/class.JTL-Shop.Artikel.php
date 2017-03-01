@@ -6274,24 +6274,29 @@ class Artikel
     {
         $nPossibleVariation_arr = [];
         foreach ($nEigenschaft_arr as $kEigenschaft => $nEigenschaftWert_arr) {
-            $i    = 2;
-            $cSQL = [];
+            $i            = 2;
+            $cSQL         = [];
+            $kEigenschaft = (int)$kEigenschaft;
+            $prepvalues   = ['where' => $kEigenschaft];
             foreach ($kGesetzteEigeschaftWert_arr as $kGesetzteEigenschaft => $kEigenschaftWert) {
-                if ($kEigenschaft != $kGesetzteEigenschaft) {
+                $kGesetzteEigenschaft = (int)$kGesetzteEigenschaft;
+                $kEigenschaftWert     = (int)$kEigenschaftWert;
+                if ($kEigenschaft !== $kGesetzteEigenschaft) {
                     $cSQL[] = "INNER JOIN teigenschaftkombiwert e{$i} 
                                     ON e1.kEigenschaftKombi = e{$i}.kEigenschaftKombi 
-                                    AND e{$i}.kEigenschaftWert ={$kEigenschaftWert}";
-                    $i++;
+                                    AND e{$i}.kEigenschaftWert = :kev{$i}";
+                    $prepvalues['kev' . $i] = $kEigenschaftWert;
+                    ++$i;
                 }
             }
             $cSQLStr          = implode(' ', $cSQL);
-            $oEigenschaft_arr = Shop::DB()->query(
+            $oEigenschaft_arr = Shop::DB()->executeQueryPrepared(
                 "SELECT e1.*, k.cName, k.cLagerBeachten, k.cLagerKleinerNull, k.fLagerbestand 
                     FROM teigenschaftkombiwert e1
                     INNER JOIN tartikel k 
                         ON e1.kEigenschaftKombi = k.kEigenschaftKombi
                     {$cSQLStr}
-                    WHERE e1.kEigenschaft = {$kEigenschaft}", 2
+                    WHERE e1.kEigenschaft = :where", $prepvalues, 2
             );
             foreach ($oEigenschaft_arr as $oEigenschaft) {
                 $oEigenschaft->kEigenschaftWert = (int)$oEigenschaft->kEigenschaftWert;

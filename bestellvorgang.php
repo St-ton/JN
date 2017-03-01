@@ -72,7 +72,7 @@ if (verifyGPCDataInteger('wk') === 1) {
 pruefeHttps();
 
 if (isset($_POST['versandartwahl']) && (int)$_POST['versandartwahl'] === 1) {
-    pruefeVersandartWahl((isset($_POST['Versandart'])) ? $_POST['Versandart'] : null);
+    pruefeVersandartWahl(isset($_POST['Versandart']) ? $_POST['Versandart'] : null);
 }
 if (isset($_POST['unreg_form']) && (int)$_POST['unreg_form'] === 1 &&
     $Einstellungen['kaufabwicklung']['bestellvorgang_unregistriert'] === 'Y'
@@ -92,14 +92,14 @@ if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']) {
     $step = 'Lieferadresse';
 }
 //Download-Artikel vorhanden?
-if (class_exists('Download') && Download::hasDownloads($_SESSION['Warenkorb'])) {
+if ($step !== 'accountwahl' &&
+    class_exists('Download') &&
+    Download::hasDownloads($_SESSION['Warenkorb']) &&
+    (!isset($_SESSION['Kunde']->cPasswort) || strlen($_SESSION['Kunde']->cPasswort) === 0)
+) {
     // Falls unregistrierter Kunde bereits im Checkout war und einen Downloadartikel hinzugefuegt hat
-    if ($step !== 'accountwahl' &&
-        (!isset($_SESSION['Kunde']->cPasswort) || strlen($_SESSION['Kunde']->cPasswort) === 0)
-    ) {
-        $step = 'accountwahl';
-        unset($_SESSION['Kunde']);
-    }
+    $step = 'accountwahl';
+    unset($_SESSION['Kunde']);
 }
 //autom. step ermitteln
 pruefeVersandkostenStep();
@@ -165,6 +165,7 @@ if (isset($_SESSION['Zahlungsart']) &&
     $_SESSION['Zahlungsart']->cModulId === 'za_billpay_jtl' &&
     $step === 'Bestaetigung'
 ) {
+    /** @var Billpay $paymentMethod */
     $paymentMethod = PaymentMethod::create('za_billpay_jtl');
     $paymentMethod->handleConfirmation();
 }

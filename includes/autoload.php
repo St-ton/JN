@@ -26,7 +26,7 @@ function ShopAutoload($class)
 
     $endsWith = function ($haystack, $needle) {
         $length = strlen($needle);
-        if ($length == 0) {
+        if ($length === 0) {
             return true;
         }
 
@@ -82,7 +82,9 @@ function ShopAutoload($class)
     return false;
 }
 
-if (function_exists('spl_autoload_functions') && !spl_autoload_functions() || !in_array('ShopAutoload', spl_autoload_functions())) {
+if ((function_exists('spl_autoload_functions') && !spl_autoload_functions()) ||
+    !in_array('ShopAutoload', spl_autoload_functions(), true)
+) {
     spl_autoload_extensions('.php');
     spl_autoload_register('ShopAutoload');
 }

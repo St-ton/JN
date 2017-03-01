@@ -12,21 +12,12 @@ class IOResponse implements JsonSerializable
     /**
      * @var array
      */
-    private $assigns;
+    private $assigns = [];
 
     /**
      * @var array
      */
-    private $scripts;
-
-    /**
-     *
-     */
-    public function __constructor()
-    {
-        $this->assigns = [];
-        $this->scripts = [];
-    }
+    private $scripts = [];
 
     /**
      * @param $target

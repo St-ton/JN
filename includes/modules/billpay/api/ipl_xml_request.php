@@ -1,53 +1,102 @@
 <?php
 
-require_once dirname(__FILE__) . '/ipl_xml_api.php';
+require_once __DIR__. '/ipl_xml_api.php';
 
 /**
+ * class ipl_xml_request
+ * 
  * @author Jan Wehrs (jan.wehrs@billpay.de)
  * @copyright Copyright 2010 Billpay GmbH
  * @license commercial 
  */
 class ipl_xml_request
 {
+    /**
+     * @var string
+     */
     private $request_xml  = '';
+
+    /**
+     * @var string
+     */
     private $response_xml = '';
 
+    /**
+     * @var string
+     */
     protected $_ipl_request_url   = '';
-    protected $_default_params    = array();
-    protected $_status_info       = array();
-    protected $_validation_errors = array();
 
+    /**
+     * @var array
+     */
+    protected $_default_params    = [];
+
+    /**
+     * @var array
+     */
+    protected $_status_info       = [];
+
+    /**
+     * @var array
+     */
+    protected $_validation_errors = [];
+
+    /**
+     * @var
+     */
     public $status;
 
     /**
      * used for extended logging purpose
      * @var array
      */
-    protected $aTraceData = array();
+    protected $aTraceData = [];
 
+    /**
+     * @var
+     */
     private $_username;
+
+    /**
+     * @var
+     */
     private $_password;
 
+    /**
+     * @return bool
+     */
     public function has_error()
     {
         return $this->_status_info['error_code'] > 0;
     }
 
+    /**
+     * @return mixed
+     */
     public function get_error_code()
     {
         return $this->_status_info['error_code'];
     }
 
+    /**
+     * @return mixed
+     */
     public function get_customer_error_message()
     {
         return $this->_status_info['customer_message'];
     }
 
+    /**
+     * @return mixed
+     */
     public function get_merchant_error_message()
     {
         return $this->_status_info['merchant_message'];
     }
 
+    /**
+     * @return bool
+     */
     public function has_validation_errors()
     {
         return count($this->_validation_errors['customer']) > 0;
@@ -71,21 +120,36 @@ class ipl_xml_request
         return $this->_validation_errors['merchant'];
     }
 
+    /**
+     * @return string
+     */
     public function get_request_xml()
     {
         return $this->request_xml;
     }
 
+    /**
+     * @return string
+     */
     public function get_response_xml()
     {
         return $this->response_xml;
     }
 
+    /**
+     * ipl_xml_request constructor.
+     * @param $ipl_request_url
+     */
     public function __construct($ipl_request_url)
     {
         $this->_ipl_request_url = $ipl_request_url;
     }
 
+    /**
+     * @param $mid
+     * @param $pid
+     * @param $bpsecure
+     */
     public function set_default_params($mid, $pid, $bpsecure)
     {
         $this->_default_params['mid']      = $mid;
@@ -93,12 +157,20 @@ class ipl_xml_request
         $this->_default_params['bpsecure'] = $bpsecure;
     }
 
+    /**
+     * @param $username
+     * @param $password
+     */
     public function set_basic_auth_params($username, $password)
     {
         $this->_username = $username;
         $this->_password = $password;
     }
 
+    /**
+     * @param $sTraceId
+     * @return $this
+     */
     public function setTraceId($sTraceId)
     {
         $this->aTraceData['trace_id'] = $sTraceId;
@@ -129,11 +201,12 @@ class ipl_xml_request
         return $this;
     }
 
+    /**
+     * @return array
+     */
     protected function getTraceData()
     {
-        if (isset($this->aTraceData['trace_id']) === false
-            && isset($_SESSION) === true
-        ) {
+        if ($_SESSION !== null && !isset($this->aTraceData['trace_id'])) {
             $this->aTraceData['trace_id'] = ipl_create_hash(session_id());
         }
         ksort($this->aTraceData);
@@ -169,6 +242,9 @@ class ipl_xml_request
     {
     }
 
+    /**
+     * @return string
+     */
     public function get_internal_error_msg()
     {
         return ipl_core_get_internal_error_msg();

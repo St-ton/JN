@@ -120,7 +120,7 @@ if ($Result['ErrorManager']['ErrorNumber'] == '0') {
         $txtGetNewPaidOrders .= 'No New Paid Orders';
     }
 
-    if ($nCounter == 0) {
+    if ($nCounter === 0) {
         echo 'No registrations processed';
     } else {
         echo "<center><b>" . (string) $nCounter . " verarbeitete Datens&auml;tze";

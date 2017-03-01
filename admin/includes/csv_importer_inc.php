@@ -6,15 +6,23 @@
 
 /**
  * If the "Import CSV" button was clicked with the id $importerId, try to insert entries from the CSV file uploaded
- * into to the table $cTable. Call this function before you read the data from the table again! Make sure, the CSV
- * contains all important fields to form a valid row in your DB-table! Missing fields in the CSV will be set to the
- * DB-tables default value if your DB is configured so.
+ * into to the table $target or call a function for each row to be imported. Call this function before you read the
+ * data from the table again! Make sure, the CSV contains all important fields to form a valid row in your DB-table!
+ * Missing fields in the CSV will be set to the DB-tables default value if your DB is configured so.
  *
  * @param string $importerId
- * @param string $cTable
+ * @param string|callable $target - either target table name or callback function that takes an object to be
+ *      imported
+ * @param string[] $fields - array of names of the fields in the order they appear in one data row. If and only if this
+ *      array is empty, a header line of field names is expected, otherwise not.
+ * @param string|null $cDelim - delimiter character or null to guess it from the first row
+ * @param int $importType -
+ *      0 = reset table, then import (careful!!! again: this will clear the table denoted by $target)
+ *      1 = insert new, overwrite existing
+ *      2 = insert only non-existing
  * @return int - -1 if importer-id-mismatch / 0 on success / >1 import error count
  */
-function handleCsvImportAction ($importerId, $cTable)
+function handleCsvImportAction ($importerId, $target, $fields = [], $cDelim = null, $importType = 2)
 {
     if (validateToken() && verifyGPDataString('importcsv') === $importerId) {
         if (isset($_FILES['csvfile']['type']) &&
@@ -26,11 +34,25 @@ function handleCsvImportAction ($importerId, $cTable)
             )
         ) {
             $csvFilename = $_FILES['csvfile']['tmp_name'];
-            $cDelim      = guessCsvDelimiter($csvFilename);
             $fs          = fopen($_FILES['csvfile']['tmp_name'], 'r');
-            $row         = fgetcsv($fs, 0, $cDelim);
-            $fields      = $row;
             $nErrors     = 0;
+
+            if ($cDelim === null) {
+                $cDelim = guessCsvDelimiter($csvFilename);
+            }
+
+            if (count($fields) === 0) {
+                $row    = fgetcsv($fs, 0, $cDelim);
+                $fields = $row;
+            }
+
+            if (isset($_REQUEST['importType'])) {
+                $importType = verifyGPCDataInteger('importType');
+            }
+
+            if ($importType === 0 && is_string($target)) {
+                Shop::DB()->delete($target, [], []);
+            }
 
             while($row = fgetcsv($fs, 0, $cDelim)) {
                 $obj = new stdClass();
@@ -39,10 +61,29 @@ function handleCsvImportAction ($importerId, $cTable)
                     $obj->$field = $row[$i];
                 }
 
-                $res = Shop::DB()->insert($cTable, $obj);
+                if (is_callable($target)) {
+                    $res = $target($obj);
 
-                if ($res === 0) {
-                    $nErrors ++;
+                    if ($res === false) {
+                        $nErrors ++;
+                    }
+                } elseif (is_string($target)) {
+                    $cTable = $target;
+
+                    if ($importType === 0 || $importerId === 2) {
+                        $res = Shop::DB()->insert($cTable, $obj);
+
+                        if ($res === 0) {
+                            $nErrors ++;
+                        }
+                    } elseif ($importType === 1) {
+                        Shop::DB()->query(
+                            "REPLACE INTO " . $target. "
+                                (" . implode(',', $fields). ")
+                                VALUES (" . implode(',', $row) . ")",
+                            4
+                        );
+                    }
                 }
             }
 

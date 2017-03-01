@@ -1,6 +1,6 @@
 {includeMailTemplate template=header type=html}
 
-Dear {$Kunde->cVorname} {$Kunde->cNachname},<br>
+Dear {$Kunde->cAnredeLocalized} {$Kunde->cNachname},<br>
 <br>
 As requested we have created an account for you in our online shop at <strong><a href="{$ShopURL}" target="_blank" style="color: #313131;">{$ShopURL}</a></strong>.<br>
 <br>
@@ -13,7 +13,7 @@ Please review your account details:<br>
 				<tr>
 					<td>
 						<font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-							<strong>Anschrift:</strong>
+							<strong>Address:</strong>
 						</font>
 					</td>
 				</tr>
@@ -169,7 +169,7 @@ Please review your account details:<br>
 				<tr>
 					<td>
 						<font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-							<strong>UstID:</strong>
+							<strong>VAT ID:</strong>
 						</font>
 					</td>
 				</tr>

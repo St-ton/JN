@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/admininclude.php';
+require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('MODULE_VOTESYSTEM_VIEW', true, true);
 
@@ -11,7 +11,7 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'bewertung_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'bewertung_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 /** @global JTLSmarty $smarty */
-$Einstellungen = Shop::getSettings(array(CONF_BEWERTUNG));
+$Einstellungen = Shop::getSettings([CONF_BEWERTUNG]);
 $cHinweis      = '';
 $cFehler       = '';
 $step          = 'bewertung_uebersicht';
@@ -82,23 +82,21 @@ if (verifyGPCDataInteger('bewertung_editieren') === 1) {
         $smarty->assign('cArtNr', $_POST['cArtNr']);
     }
     // Bewertungen loeschen
-    if (isset($_POST['loeschen'])) {
-        if (is_array($_POST['kBewertung']) && count($_POST['kBewertung']) > 0) {
-            $kArtikel_arr = $_POST['kArtikel'];
-            foreach ($_POST['kBewertung'] as $i => $kBewertung) {
-                // Loesche Guthaben aus tbewertungguthabenbonus und aktualisiere tkunde
-                BewertungsGuthabenBonusLoeschen($kBewertung);
+    if (isset($_POST['loeschen']) && is_array($_POST['kBewertung']) && count($_POST['kBewertung']) > 0) {
+        $kArtikel_arr = $_POST['kArtikel'];
+        foreach ($_POST['kBewertung'] as $i => $kBewertung) {
+            // Loesche Guthaben aus tbewertungguthabenbonus und aktualisiere tkunde
+            BewertungsGuthabenBonusLoeschen($kBewertung);
 
-                Shop::DB()->delete('tbewertung', 'kBewertung', (int)$kBewertung);
-                // Durchschnitt neu berechnen
-                aktualisiereDurchschnitt($kArtikel_arr[$i], $Einstellungen['bewertung']['bewertung_freischalten']);
-                $cacheTags[] = $kArtikel_arr[$i];
-            }
-            array_walk($cacheTags, function(&$i) { $i = CACHING_GROUP_ARTICLE . '_' . $i; });
-            Shop::Cache()->flushTags($cacheTags);
-
-            $cHinweis .= count($_POST['kBewertung']) . ' Bewertung(en) wurde(n) erfolgreich gel&ouml;scht.';
+            Shop::DB()->delete('tbewertung', 'kBewertung', (int)$kBewertung);
+            // Durchschnitt neu berechnen
+            aktualisiereDurchschnitt($kArtikel_arr[$i], $Einstellungen['bewertung']['bewertung_freischalten']);
+            $cacheTags[] = $kArtikel_arr[$i];
         }
+        array_walk($cacheTags, function(&$i) { $i = CACHING_GROUP_ARTICLE . '_' . $i; });
+        Shop::Cache()->flushTags($cacheTags);
+
+        $cHinweis .= count($_POST['kBewertung']) . ' Bewertung(en) wurde(n) erfolgreich gel&ouml;scht.';
     }
 }
 
@@ -114,17 +112,37 @@ if ((isset($_GET['a']) && $_GET['a'] === 'editieren') || $step === 'bewertung_ed
     $configCount = count($oConfig_arr);
     for ($i = 0; $i < $configCount; $i++) {
         if ($oConfig_arr[$i]->cInputTyp === 'selectbox') {
-            $oConfig_arr[$i]->ConfWerte = Shop::DB()->selectAll('teinstellungenconfwerte', 'kEinstellungenConf', (int)$oConfig_arr[$i]->kEinstellungenConf, '*', 'nSort');
+            $oConfig_arr[$i]->ConfWerte = Shop::DB()->selectAll(
+                'teinstellungenconfwerte',
+                'kEinstellungenConf',
+                (int)$oConfig_arr[$i]->kEinstellungenConf,
+                '*', 'nSort'
+            );
         } elseif ($oConfig_arr[$i]->cInputTyp === 'listbox') {
-            $oConfig_arr[$i]->ConfWerte = Shop::DB()->selectAll('tkundengruppe', [], [], 'kKundengruppe, cName', 'cStandard DESC');
+            $oConfig_arr[$i]->ConfWerte = Shop::DB()->selectAll(
+                'tkundengruppe',
+                [],
+                [],
+                'kKundengruppe, cName',
+                'cStandard DESC'
+            );
         }
 
         if ($oConfig_arr[$i]->cInputTyp === 'listbox') {
-            $oSetValue = Shop::DB()->selectAll('teinstellungen', ['kEinstellungenSektion', 'cName'], [CONF_BEWERTUNG, $oConfig_arr[$i]->cWertName], 'cWert');
+            $oSetValue = Shop::DB()->selectAll(
+                'teinstellungen',
+                ['kEinstellungenSektion', 'cName'],
+                [CONF_BEWERTUNG, $oConfig_arr[$i]->cWertName],
+                'cWert'
+            );
             $oConfig_arr[$i]->gesetzterWert = $oSetValue;
         } else {
-            $oSetValue = Shop::DB()->select('teinstellungen', ['kEinstellungenSektion', 'cName'], [CONF_BEWERTUNG, $oConfig_arr[$i]->cWertName]);
-            $oConfig_arr[$i]->gesetzterWert = (isset($oSetValue->cWert)) ? $oSetValue->cWert : null;
+            $oSetValue = Shop::DB()->select(
+                'teinstellungen',
+                ['kEinstellungenSektion', 'cName'],
+                [CONF_BEWERTUNG, $oConfig_arr[$i]->cWertName]
+            );
+            $oConfig_arr[$i]->gesetzterWert = isset($oSetValue->cWert) ? $oSetValue->cWert : null;
         }
     }
 
@@ -155,7 +173,8 @@ if ((isset($_GET['a']) && $_GET['a'] === 'editieren') || $step === 'bewertung_ed
     $oBewertung_arr = Shop::DB()->query(
         "SELECT tbewertung.*, DATE_FORMAT(tbewertung.dDatum, '%d.%m.%Y') AS Datum, tartikel.cName AS ArtikelName
             FROM tbewertung
-            LEFT JOIN tartikel ON tbewertung.kArtikel = tartikel.kArtikel
+            LEFT JOIN tartikel 
+                ON tbewertung.kArtikel = tartikel.kArtikel
             WHERE tbewertung.kSprache = " . (int)$_SESSION['kSprache'] . "
                 AND tbewertung.nAktiv = 0
             ORDER BY tbewertung.kArtikel, tbewertung.dDatum DESC
@@ -165,7 +184,8 @@ if ((isset($_GET['a']) && $_GET['a'] === 'editieren') || $step === 'bewertung_ed
     $oBewertungLetzten50_arr = Shop::DB()->query(
         "SELECT tbewertung.*, DATE_FORMAT(tbewertung.dDatum, '%d.%m.%Y') AS Datum, tartikel.cName AS ArtikelName
             FROM tbewertung
-            LEFT JOIN tartikel ON tbewertung.kArtikel = tartikel.kArtikel
+            LEFT JOIN tartikel 
+                ON tbewertung.kArtikel = tartikel.kArtikel
             WHERE tbewertung.kSprache = " . (int)$_SESSION['kSprache'] . "
                 AND tbewertung.nAktiv = 1
             ORDER BY tbewertung.dDatum DESC

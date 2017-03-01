@@ -19,7 +19,11 @@
                             <li class="breadcrumb-item last" itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
                                 <span itemprop="name">
                                     {if $oItem->name !== null}
-                                        {$oItem->name}
+                                        {if $oItem->hasChild === true}
+                                            <a href="{$oItem->url}" title="{$oItem->name|escape:"html"}">{$oItem->name}</a>
+                                        {else}
+                                            {$oItem->name}
+                                        {/if}
                                     {elseif isset($Suchergebnisse->SuchausdruckWrite)}
                                         {$Suchergebnisse->SuchausdruckWrite}
                                     {/if}

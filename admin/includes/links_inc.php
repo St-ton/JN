@@ -201,7 +201,7 @@ function getGesetzteKundengruppen($link)
     }
     $kdgrp = explode(';', $link->cKundengruppen);
     foreach ($kdgrp as $kKundengruppe) {
-        if (intval($kKundengruppe) > 0) {
+        if ((int)$kKundengruppe > 0) {
             $ret[$kKundengruppe] = true;
         }
     }
@@ -252,6 +252,7 @@ function holeSpezialseiten()
 /**
  * @param array $oSub_arr
  * @param int   $kLinkgruppe
+ * @param int   $kLinkgruppeAlt
  */
 function aenderLinkgruppeRek($oSub_arr, $kLinkgruppe, $kLinkgruppeAlt)
 {

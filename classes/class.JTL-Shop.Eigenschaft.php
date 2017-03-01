@@ -43,7 +43,7 @@ class Eigenschaft
      */
     public function __construct($kEigenschaft = 0)
     {
-        if (intval($kEigenschaft) > 0) {
+        if ((int)$kEigenschaft > 0) {
             $this->loadFromDB($kEigenschaft);
         }
     }

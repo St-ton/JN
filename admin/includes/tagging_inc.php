@@ -11,7 +11,7 @@
  */
 function holeTagDetailAnzahl($kTag, $kSprache)
 {
-    if (intval($kTag) > 0 && intval($kSprache) > 0) {
+    if ((int)$kTag > 0 && (int)$kSprache > 0) {
         $oTagArtikel = Shop::DB()->query(
             "SELECT count(*) AS nAnzahl
                 FROM ttagartikel
@@ -21,7 +21,7 @@ function holeTagDetailAnzahl($kTag, $kSprache)
                 WHERE ttagartikel.kTag = " . (int)$kTag, 1
         );
 
-        return (isset($oTagArtikel->nAnzahl))
+        return isset($oTagArtikel->nAnzahl)
             ? (int)$oTagArtikel->nAnzahl
             : 0;
     }
@@ -83,7 +83,7 @@ function holeTagDetail($kTag, $kSprache, $cLimit)
 function loescheTagsVomArtikel($kArtikel_arr, $kTag)
 {
     $kTag = (int)$kTag;
-    if (is_array($kArtikel_arr) && count($kArtikel_arr) > 0 && $kTag > 0) {
+    if ($kTag > 0 && is_array($kArtikel_arr) && count($kArtikel_arr) > 0) {
         foreach ($kArtikel_arr as $kArtikel) {
             $kArtikel = (int)$kArtikel;
             Shop::DB()->delete('ttagartikel', ['kArtikel', 'kTag'], [$kArtikel, $kTag]);

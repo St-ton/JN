@@ -213,7 +213,7 @@ function plzimportDoDownload($target, array $sessData, $result)
             return;
         }
 
-        if ($ioLength != 0) {
+        if ($ioLength !== 0) {
             $sessData['step'] = round(50 / $ioLength * $written);
             plzimportWriteSession('Import', $sessData);
         }

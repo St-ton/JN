@@ -74,7 +74,7 @@ class StringHandler
      */
     public static function gethtmltranslationtable($cFlag = ENT_QUOTES, $cEncoding = JTL_CHARSET)
     {
-        if (floatval(phpversion()) >= 5.4) {
+        if (version_compare(PHP_VERSION, '5.4.0', '>=')) {
             return get_html_translation_table(HTML_ENTITIES, $cFlag, $cEncoding);
         }
 

@@ -199,9 +199,9 @@ class Adresse
     public function pruefeLandISO($iso)
     {
         preg_match('/[a-zA-Z]{2}/', $iso, $matches);
-        if (strlen($matches[0]) != strlen($iso)) {
+        if (strlen($matches[0]) !== strlen($iso)) {
             $o = landISO($iso);
-            if (strlen($o) > 0 && $o !== 'noISO') {
+            if ($o !== 'noISO' && strlen($o) > 0) {
                 $iso = $o;
             }
         }

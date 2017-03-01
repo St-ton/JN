@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-require_once dirname(__FILE__) . '/syncinclude.php';
+require_once __DIR__ . '/syncinclude.php';
 $return  = 3;
 $xml_obj = [];
 if (auth()) {
@@ -17,7 +17,8 @@ if (auth()) {
     );
     $xml_obj['zahlungseingaenge attr']['anzahl']      = count($xml_obj['zahlungseingaenge']['tzahlungseingang']);
     for ($i = 0; $i < $xml_obj['zahlungseingaenge attr']['anzahl']; $i++) {
-        $xml_obj['zahlungseingaenge']['tzahlungseingang'][$i . ' attr'] = buildAttributes($xml_obj['zahlungseingaenge']['tzahlungseingang'][$i]);
+        $xml_obj['zahlungseingaenge']['tzahlungseingang'][$i . ' attr'] =
+            buildAttributes($xml_obj['zahlungseingaenge']['tzahlungseingang'][$i]);
     }
 }
 

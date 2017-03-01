@@ -13,7 +13,7 @@ class Revision
     /**
      * @var array
      */
-    var $mapping;
+    private $mapping;
 
     /**
      * Revision constructor.
@@ -52,7 +52,7 @@ class Revision
      */
     private function getMapping($type)
     {
-        return (isset($this->mapping[$type]))
+        return isset($this->mapping[$type])
             ? $this->mapping[$type]
             : null;
     }
@@ -93,9 +93,9 @@ class Revision
             return false;
         }
         $key = (int)$key;
-        if (($mapping = $this->getMapping($type)) !== null && !empty($key)) {
+        if (!empty($key) && ($mapping = $this->getMapping($type)) !== null) {
             if ($author === null) {
-                $author = (isset($_SESSION['AdminAccount']->cLogin))
+                $author = isset($_SESSION['AdminAccount']->cLogin)
                     ? $_SESSION['AdminAccount']->cLogin
                     : '?';
             }
@@ -112,7 +112,7 @@ class Revision
             $revision->custom_table       = $mapping['table'];
             $revision->custom_primary_key = $mapping['id'];
 
-            if (!empty($mapping['reference']) && $secondary !== false) {
+            if ($secondary !== false && !empty($mapping['reference'])) {
                 $field               = $mapping['reference_key'];
                 $referencedRevisions = Shop::DB()->selectAll($mapping['reference'], $mapping['reference_id'], $key);
                 if (empty($referencedRevisions)) {
@@ -196,13 +196,12 @@ class Revision
             if ($secondary === false) {
                 return Shop::DB()->update($mapping['table'], $primaryRow, $primaryKey, $oldCOntent) === 1;
             }
-            if ($secondary === true && isset($mapping['reference_key']) && isset($oldCOntent->references)) {
+            if ($secondary === true && isset($mapping['reference_key'], $oldCOntent->references)) {
                 $tableToUpdate = $mapping['reference'];
                 $secondaryRow  = $mapping['reference_key']; //most likely something like "kSprache"
                 foreach ($oldCOntent->references as $key => $value) {
                     //$key is the index in the reference array - which corresponds to the foreign key
-                    unset($value->$primaryRow);
-                    unset($value->$secondaryRow);
+                    unset($value->$primaryRow, $value->$secondaryRow);
                     if ($utf8 === true) {
                         $value = utf8_convert_recursive($value, false);
                     }

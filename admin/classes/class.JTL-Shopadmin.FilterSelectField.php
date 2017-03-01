@@ -6,7 +6,8 @@
 
 class FilterSelectField extends FilterField
 {
-    public $oOption_arr = array();
+    public $oOption_arr     = [];
+    public $bReloadOnChange = false;
 
     /**
      * FilterSelectField constructor.
@@ -15,9 +16,9 @@ class FilterSelectField extends FilterField
      * @param string $cTitle
      * @param string $cColumn
      */
-    public function __construct($oFilter, $cTitle, $cColumn)
+    public function __construct($oFilter, $cTitle, $cColumn, $nDefaultOption = 0)
     {
-        parent::__construct($oFilter, 'select', $cTitle, $cColumn, '0');
+        parent::__construct($oFilter, 'select', $cTitle, $cColumn, $nDefaultOption);
     }
 
     /**

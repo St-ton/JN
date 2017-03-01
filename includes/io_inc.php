@@ -19,6 +19,7 @@ $io->register('suggestions')
     ->register('getBasketItems')
     ->register('getCategoryMenu')
     ->register('getRegionsByCountry')
+    ->register('setSelectionWizardAnswers')
     ->register('getCitiesByZip');
 
 /**
@@ -886,6 +887,38 @@ function getRegionsByCountry($country)
         $regions = Staat::getRegions($country);
         $regions = utf8_convert_recursive($regions);
         $response->script("this.response = " . json_encode($regions) . ";");
+    }
+
+    return $response;
+}
+
+/**
+ * @param string $cKey
+ * @param int $kKey
+ * @param int $kSprache
+ * @param array $kSelection_arr
+ * @return IOResponse
+ */
+function setSelectionWizardAnswers($cKey, $kKey, $kSprache, $kSelection_arr)
+{
+    global $smarty;
+
+    $response = new IOResponse();
+    $AWA      = AuswahlAssistent::startIfRequired($cKey, $kKey, $kSprache, $smarty, $kSelection_arr);
+
+    if ($AWA !== null) {
+        $oLastSelectedValue = $AWA->getLastSelectedValue();
+        $NaviFilter         = $AWA->getNaviFilter();
+
+        if ($oLastSelectedValue !== null && $oLastSelectedValue->nAnzahl === 1 ||
+            $AWA->getCurQuestion() === $AWA->getQuestionCount() ||
+            $AWA->getQuestion($AWA->getCurQuestion())->nTotalResultCount === 0)
+        {
+            $response->script("window.location.href='" .
+                StringHandler::htmlentitydecode(gibNaviURL($NaviFilter, true, null)) . "';");
+        } else {
+            $response->assign('selectionwizard', 'innerHTML', utf8_encode($AWA->fetchForm($smarty)));
+        }
     }
 
     return $response;

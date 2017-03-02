@@ -276,23 +276,23 @@ class ArtikelHelper
                                                 AND teigenschaftwertsprache.kSprache = " . $kSprache;
             }
 
-            $oEigenschaft_arr = Shop::DB()->query("
-                SELECT teigenschaftwert.kEigenschaftWert, teigenschaftwert.cName, " . $oSQLEigenschaftWert->cSELECT . " 
-                teigenschaftwertsichtbarkeit.kKundengruppe, teigenschaftwert.kEigenschaft, teigenschaft.cTyp, " .
-                $oSQLEigenschaft->cSELECT . " teigenschaft.cName AS cNameEigenschaft, teigenschaft.kArtikel
-                FROM teigenschaftwert
-                LEFT JOIN teigenschaftwertsichtbarkeit 
-                    ON teigenschaftwertsichtbarkeit.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
-                    AND teigenschaftwertsichtbarkeit.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
-                JOIN teigenschaft ON teigenschaft.kEigenschaft = teigenschaftwert.kEigenschaft
-                LEFT JOIN teigenschaftsichtbarkeit ON teigenschaft.kEigenschaft = teigenschaftsichtbarkeit.kEigenschaft
-                    AND teigenschaftsichtbarkeit.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
-                " . $oSQLEigenschaft->cJOIN . "
-                " . $oSQLEigenschaftWert->cJOIN . "
-                WHERE teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL
-                    AND teigenschaftsichtbarkeit.kEigenschaft IS NULL
-                    AND teigenschaftwert.kEigenschaft IN (" . $cSQL1 . ")
-                    AND teigenschaftwert.kEigenschaftWert IN (" . $cSQL2 . ")", 2
+            $oEigenschaft_arr = Shop::DB()->query(
+                "SELECT teigenschaftwert.kEigenschaftWert, teigenschaftwert.cName, " . $oSQLEigenschaftWert->cSELECT . "
+                    teigenschaftwertsichtbarkeit.kKundengruppe, teigenschaftwert.kEigenschaft, teigenschaft.cTyp, " .
+                    $oSQLEigenschaft->cSELECT . " teigenschaft.cName AS cNameEigenschaft, teigenschaft.kArtikel
+                    FROM teigenschaftwert
+                    LEFT JOIN teigenschaftwertsichtbarkeit
+                        ON teigenschaftwertsichtbarkeit.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
+                        AND teigenschaftwertsichtbarkeit.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
+                    JOIN teigenschaft ON teigenschaft.kEigenschaft = teigenschaftwert.kEigenschaft
+                    LEFT JOIN teigenschaftsichtbarkeit ON teigenschaft.kEigenschaft = teigenschaftsichtbarkeit.kEigenschaft
+                        AND teigenschaftsichtbarkeit.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
+                    " . $oSQLEigenschaft->cJOIN . "
+                    " . $oSQLEigenschaftWert->cJOIN . "
+                    WHERE teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL
+                        AND teigenschaftsichtbarkeit.kEigenschaft IS NULL
+                        AND teigenschaftwert.kEigenschaft IN (" . $cSQL1 . ")
+                        AND teigenschaftwert.kEigenschaftWert IN (" . $cSQL2 . ")", 2
             );
 
             $oEigenschaftTMP_arr = Shop::DB()->query(
@@ -624,5 +624,88 @@ class ArtikelHelper
 
             $artikel->cVorschaubild = $artikel->Bilder[0]->cPfadKlein;
         }
+    }
+
+    /**
+     * @param Artikel $artikel
+     * @param float $fPreis
+     * @param int $nAnzahl
+     * @return stdClass
+     */
+    public static function getBasePriceUnit(Artikel $artikel, $fPreis, $nAnzahl)
+    {
+        static $unitMappings = [];
+
+        $result = (object)[
+            'fGrundpreisMenge'   => $artikel->fGrundpreisMenge,
+            'fMassMenge'         => $artikel->fMassMenge * $nAnzahl,
+            'fBasePreis'         => $fPreis / $artikel->fVPEWert,
+            'fVPEWert'           => (float)$artikel->fVPEWert,
+            'cVPEEinheit'        => $artikel->cVPEEinheit,
+            'kMassEinheit'       => $artikel->kMassEinheit,
+        ];
+
+        if (count($unitMappings) === 0) {
+            $unitMappings_tmp = Shop::DB()->query(
+                "SELECT kMassEinheit, cCode
+                    FROM tmasseinheit
+                    WHERE cCode IN ('mg', 'g', 'mL', 'cL', 'dL')", 2
+            );
+
+            if (isset($unitMappings_tmp)) {
+                foreach ($unitMappings_tmp as $unitMapping) {
+                    $unitMappings[$unitMapping->kMassEinheit] = $unitMapping;
+                }
+            }
+        }
+
+        if (isset($unitMappings[$artikel->kGrundpreisEinheit], $unitMappings[$result->kMassEinheit])) {
+            $nAmount = 1;
+            switch ($unitMappings[$result->kMassEinheit]->cCode) {
+                case 'mg':
+                    $threshold  = 250000;
+                    $fFactor    = 1000000;
+                    $mappedCode = 'kg';
+                    break;
+                case 'g':
+                    $threshold  = 250;
+                    $fFactor    = 1000;
+                    $mappedCode = 'kg';
+                    break;
+                case 'mL':
+                    $threshold  = 250;
+                    $fFactor    = 1000;
+                    $mappedCode = 'L';
+                    break;
+                case 'cL':
+                    $threshold  = 25;
+                    $fFactor    = 100;
+                    $mappedCode = 'L';
+                    break;
+                case 'dL':
+                    $threshold  = 2.5;
+                    $fFactor    = 10;
+                    $mappedCode = 'L';
+                    break;
+                default:
+                    $threshold  = 0;
+                    $fFactor    = 1;
+                    $mappedCode = $result->cCode;
+            }
+
+            if ($threshold > 0 && $result->fMassMenge > $threshold) {
+                $result->fGrundpreisMenge = $nAmount;
+                $result->fMassMenge       = $result->fMassMenge / $fFactor;
+                $result->fVPEWert         = $result->fMassMenge / $nAnzahl / $result->fGrundpreisMenge;
+                $result->fBasePreis       = $fPreis / $result->fVPEWert;
+                $result->cVPEEinheit      = $result->fGrundpreisMenge . ' ' . $mappedCode;
+
+                $result->kMassEinheit = (int)array_reduce($unitMappings, function ($carry, $item) use ($mappedCode) {
+                    return $item->cCode === $mappedCode ? $item->kMassEinheit : $carry;
+                }, $result->kMassEinheit);
+            }
+        }
+
+        return $result;
     }
 }

@@ -3148,6 +3148,7 @@ function berechnePreisspannenSQL($oPreis, $oPreisspannenfilter_arr = null)
  */
 function berechneMaxMinStep($fMax, $fMin)
 {
+    die('berechneMaxMinStep');
     $fStepWert_arr = [
         0.001, 0.005, 0.01, 0.05, 0.10, 0.25, 0.5, 1.0, 2.5, 5.0, 7.5,
         10.0, 12.5, 15.0, 20.0, 25.0, 50.0, 100.0, 250.0, 300.0, 350.0,

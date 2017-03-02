@@ -78,6 +78,10 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 foreach ($cMember_arr as $cMember) {
                     $this->$cMember = $oObj->$cMember;
                 }
+                $this->kKonfigitem   = (int)$this->kKonfigitem;
+                $this->kKundengruppe = (int)$this->kKundengruppe;
+                $this->kSteuerklasse = (int)$this->kSteuerklasse;
+                $this->nTyp          = (int)$this->nTyp;
             }
         }
 
@@ -254,7 +258,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * @return mixed
+         * @return int
          */
         public function getTyp()
         {

@@ -152,9 +152,9 @@ function db_get_template($tpl_name, &$tpl_source, $smarty)
 }
 
 /**
- * @param string $tpl_name
- * @param string $tpl_timestamp
- * @param JTLSmarty $smarty
+ * @param string     $tpl_name
+ * @param string|int $tpl_timestamp
+ * @param JTLSmarty  $smarty
  * @return bool
  */
 function db_get_timestamp($tpl_name, &$tpl_timestamp, $smarty)

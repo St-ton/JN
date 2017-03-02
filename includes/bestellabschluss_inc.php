@@ -702,10 +702,10 @@ function AktualisiereAndereStuecklisten($kArtikelKomponente, $nAnzahl, $kStueckl
 }
 
 /**
- * @param int   $kStueckliste
- * @param float $fPackeinheitSt
- * @param float $fLagerbestandSt
- * @param int   $nAnzahl
+ * @param int       $kStueckliste
+ * @param float     $fPackeinheitSt
+ * @param float     $fLagerbestandSt
+ * @param int|float $nAnzahl
  */
 function AktualisiereStueckliste($kStueckliste, $fPackeinheitSt, $fLagerbestandSt, $nAnzahl)
 {

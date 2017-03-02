@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once '../../includes/globalinclude.php';
+require_once __DIR__ . '/../../includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Bestellung.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
@@ -12,6 +12,7 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 define('NO_MODE', 0); // 1 = An / 0 = Aus
 define('NO_PFAD', PFAD_LOGFILES . 'notify.log');
 
+$moduleId            = null;
 $Sprache             = Shop::DB()->select('tsprache', 'cShopStandard', 'Y');
 $Einstellungen       = Shop::getSettings([
     CONF_GLOBAL,
@@ -235,17 +236,19 @@ if (strlen($cPh) > 0) {
         writeLog(NO_PFAD, 'Payment Hash ' . $cPh . ' ergab ' . print_r($order, true), 1);
     }
 }
-// Let PaymentMethod handle Notification
-include_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
-$paymentMethod = PaymentMethod::create($moduleId);
-if ($paymentMethod !== null) {
-    if (NO_MODE === 1) {
-        writeLog(NO_PFAD, 'Payment Hash ' . $cPh . ' ergab ' . print_r($paymentMethod, true), 1);
-    }
+if ($moduleId !== null) {
+    // Let PaymentMethod handle Notification
+    include_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
+    $paymentMethod = PaymentMethod::create($moduleId);
+    if ($paymentMethod !== null) {
+        if (NO_MODE === 1) {
+            writeLog(NO_PFAD, 'Payment Hash ' . $cPh . ' ergab ' . print_r($paymentMethod, true), 1);
+        }
 
-    $paymentMethod->handleNotification($order, $paymentHash, $_REQUEST);
-    if ($paymentMethod->redirectOnPaymentSuccess() === true) {
-        header('Location: ' . $paymentMethod->getReturnURL($order));
-        exit();
+        $paymentMethod->handleNotification($order, $paymentHash, $_REQUEST);
+        if ($paymentMethod->redirectOnPaymentSuccess() === true) {
+            header('Location: ' . $paymentMethod->getReturnURL($order));
+            exit();
+        }
     }
 }

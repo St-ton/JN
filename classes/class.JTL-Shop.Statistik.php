@@ -422,7 +422,7 @@ class Statistik
                     $nYearFrom = (int)date('Y') - 1;
                     $nYearTo   = (int)date('Y') + 10;
                 }
-                for ($i = ($nYearFrom); $i <= ($nYearTo); $i++) {
+                for ($i = $nYearFrom; $i <= $nYearTo; $i++) {
                     $oStat         = new stdClass();
                     $oStat->dZeit  = mktime(0, 0, 0, 1, 1, $i);
                     $oStat->nCount = 0;

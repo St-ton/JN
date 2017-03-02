@@ -12,7 +12,7 @@ final class Shopsetting implements ArrayAccess
     /**
      * @var Shopsetting
      */
-    private static $_instance = null;
+    private static $_instance;
 
     /**
      * @var array
@@ -155,7 +155,7 @@ final class Shopsetting implements ArrayAccess
             }
         }
 
-        return (isset($this->_container[$offset])) ? $this->_container[$offset] : null;
+        return isset($this->_container[$offset]) ? $this->_container[$offset] : null;
     }
 
     /**
@@ -188,7 +188,7 @@ final class Shopsetting implements ArrayAccess
         $settings    = $this->getSettings([$section]);
         $sectionName = self::mapSettingName($section);
 
-        return (isset($settings[$sectionName][$option]))
+        return isset($settings[$sectionName][$option])
             ? $settings[$sectionName][$option]
             : null;
     }
@@ -207,7 +207,7 @@ final class Shopsetting implements ArrayAccess
         if ($section !== null && isset($mappings[$section])) {
             return $mappings[$section];
         }
-        if ($name !== null && ($key = array_search($name, $mappings)) !== false) {
+        if ($name !== null && ($key = array_search($name, $mappings, true)) !== false) {
             return $key;
         }
 
@@ -250,7 +250,7 @@ final class Shopsetting implements ArrayAccess
     }
 
     /**
-     * @return array
+     * @return string[]
      */
     private static function getMappings()
     {

@@ -268,7 +268,7 @@ class KategorieListe
         $kSprache      = (int)$kSprache;
         $kKundengruppe = (int)$kKundengruppe;
         $categoryList  = self::getCategoryList($kKundengruppe, $kSprache);
-        $subCategories = (isset($categoryList['kKategorieVonUnterkategorien_arr'][$kKategorie]))
+        $subCategories = isset($categoryList['kKategorieVonUnterkategorien_arr'][$kKategorie])
             ? $categoryList['kKategorieVonUnterkategorien_arr'][$kKategorie]
             : null;
 

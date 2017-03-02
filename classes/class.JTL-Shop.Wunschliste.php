@@ -69,7 +69,7 @@ class Wunschliste
             $this->kWunschliste = $kWunschliste;
             $this->ladeWunschliste();
         } else {
-            $this->kKunde       = (isset($_SESSION['Kunde']->kKunde)) ? (int)$_SESSION['Kunde']->kKunde : 0;
+            $this->kKunde       = isset($_SESSION['Kunde']->kKunde) ? (int)$_SESSION['Kunde']->kKunde : 0;
             $this->nStandard    = 1;
             $this->nOeffentlich = 0;
             $this->cName        = Shop::Lang()->get('wishlist', 'global');

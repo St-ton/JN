@@ -404,9 +404,9 @@ class TrustedShops
         if (isset($this->oKaeuferschutzProdukte->item) && is_array($this->oKaeuferschutzProdukte->item) && count($this->oKaeuferschutzProdukte->item) > 0) {
             $cLandISO = isset($_SESSION['Lieferadresse']->cLand) ? $_SESSION['Lieferadresse']->cLand : null;
             if (!$cLandISO) {
-                $cLandISO = (isset($_SESSION['TrustedShops']->oSprache->cISOSprache)) ?
-                    $_SESSION['TrustedShops']->oSprache->cISOSprache :
-                    $_SESSION['Kunde']->cLand;
+                $cLandISO = isset($_SESSION['TrustedShops']->oSprache->cISOSprache)
+                    ? $_SESSION['TrustedShops']->oSprache->cISOSprache
+                    : $_SESSION['Kunde']->cLand;
             }
 
             require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Warenkorb.php';
@@ -787,8 +787,8 @@ class TrustedShops
     // 10 = Falsche Käuferschutzvariante
     // 11 = SOAP Fehler
     /**
-     * @param object $oZertifikat
-     * @param int    $kTrustedShopsZertifikat
+     * @param stdClass $oZertifikat
+     * @param int      $kTrustedShopsZertifikat
      * @return int
      */
     public function speicherTrustedShopsZertifikat($oZertifikat, $kTrustedShopsZertifikat = 0)
@@ -1050,7 +1050,7 @@ class TrustedShops
     }
 
     /**
-     * @param object $oZertifikat
+     * @param stdClass $oZertifikat
      * @return stdClass
      */
     public function verschluesselTSDaten($oZertifikat)
@@ -1065,7 +1065,7 @@ class TrustedShops
     }
 
     /**
-     * @param object $oZertifikat
+     * @param stdClass $oZertifikat
      * @return stdClass
      */
     public function entschluesselTSDaten($oZertifikat)

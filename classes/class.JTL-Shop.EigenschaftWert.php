@@ -98,7 +98,7 @@ class EigenschaftWert
         $obj = kopiereMembers($this);
         unset($obj->fAufpreis);
 
-        return (Shop::DB()->insert('teigenschaftwert', $obj));
+        return Shop::DB()->insert('teigenschaftwert', $obj);
     }
 
     /**

@@ -48,9 +48,9 @@ class Sprache
     public $kSprachISO = 0;
 
     /**
-     * @var array|null
+     * @var array
      */
-    public $langVars = null;
+    public $langVars;
 
     /**
      * @var string
@@ -58,9 +58,9 @@ class Sprache
     public $cacheID;
 
     /**
-     * @var array|null
+     * @var array
      */
-    public $oSprache_arr = null;
+    public $oSprache_arr;
 
     /**
      * @var array
@@ -85,7 +85,7 @@ class Sprache
     /**
      * @var Sprache
      */
-    private static $instance = null;
+    private static $instance;
 
     /**
      * @param bool $bAutoload
@@ -176,7 +176,7 @@ class Sprache
             'getIsoFromLangID' => '_getIsoFromLangID'
         ];
 
-        return (isset($mapping[$method])) ? $mapping[$method] : null;
+        return isset($mapping[$method]) ? $mapping[$method] : null;
     }
 
     /**
@@ -339,7 +339,7 @@ class Sprache
             $oSprachISO              = $this->getLangIDFromIso($cISO);
             $this->oSprachISO[$cISO] = $oSprachISO;
 
-            return (isset($oSprachISO->kSprachISO)) ? (int)$oSprachISO->kSprachISO : false;
+            return isset($oSprachISO->kSprachISO) ? (int)$oSprachISO->kSprachISO : false;
         }
 
         return false;
@@ -672,7 +672,7 @@ class Sprache
 
         foreach ($oWerte_arr as $oWert) {
             if (strlen($oWert->cWert) === 0) {
-                $oWert->cWert = (isset($oWert->cStandard))
+                $oWert->cWert = isset($oWert->cStandard)
                     ? $oWert->cStandard
                     : null;
             }
@@ -827,7 +827,7 @@ class Sprache
                 $oShopSpracheAssoc_arr = gibAlleSprachen(1);
             }
 
-            return (isset($oShopSpracheAssoc_arr[$kSprache]));
+            return isset($oShopSpracheAssoc_arr[$kSprache]);
         }
 
         return false;

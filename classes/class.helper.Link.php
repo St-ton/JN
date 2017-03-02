@@ -248,14 +248,14 @@ class LinkHelper
                     if ($oLinkLvl_arr[$i]->kLink === $oLink->kLink) {
                         switch ($nEvent) {
                             case 1: // Previous
-                                if (isset($oLinkLvl_arr[($i - 1)])) {
-                                    return $oLinkLvl_arr[($i - 1)];
+                                if (isset($oLinkLvl_arr[$i - 1])) {
+                                    return $oLinkLvl_arr[$i - 1];
                                 }
                                 break;
 
                             case 2: // Next
-                                if (isset($oLinkLvl_arr[($i + 1)])) {
-                                    return $oLinkLvl_arr[($i + 1)];
+                                if (isset($oLinkLvl_arr[$i + 1])) {
+                                    return $oLinkLvl_arr[$i + 1];
                                 }
                                 break;
                             default:

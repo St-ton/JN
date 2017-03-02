@@ -8,8 +8,8 @@ ob_start();
 
 require_once __DIR__ . '/syncinclude.php';
 // configuration
-require_once '../includes/config.JTL-Shop.ini.php';
-require_once '../includes/defines.php';
+require_once __DIR__ . '/../includes/config.JTL-Shop.ini.php';
+require_once __DIR__ . '/../includes/defines.php';
 error_reporting(SYNC_LOG_LEVEL);
 // basic classes
 require_once PFAD_ROOT . PFAD_CLASSES_CORE . 'class.core.NiceDB.php';
@@ -268,9 +268,9 @@ class CronjobHistory
 class NetSyncHandler
 {
     /**
-     * @var null|NetSyncHandler
+     * @var NetSyncHandler
      */
-    private static $oInstance = null;
+    private static $oInstance;
 
     /**
      *
@@ -380,11 +380,10 @@ class NetSyncHandler
      */
     public function streamFile($filename, $mimetype, $outname = '')
     {
-        if (!empty($_SERVER['HTTP_USER_AGENT'])) {
-            $HTTP_USER_AGENT = $_SERVER['HTTP_USER_AGENT'];
-        } else {
-            $HTTP_USER_AGENT = '';
-        }
+        $HTTP_USER_AGENT = (!empty($_SERVER['HTTP_USER_AGENT']))
+            ? $_SERVER['HTTP_USER_AGENT']
+            : '';
+        $browser_agent   = 'other';
         if (preg_match('/^Opera(\/| )([0-9].[0-9]{1,2})/', $HTTP_USER_AGENT) === 1) {
             $browser_agent = 'opera';
         } elseif (preg_match('/^MSIE ([0-9].[0-9]{1,2})/', $HTTP_USER_AGENT) === 1) {
@@ -397,8 +396,6 @@ class NetSyncHandler
             $browser_agent = 'mozilla';
         } elseif (preg_match('/^Konqueror\/([0-9].[0-9]{1,2})/', $HTTP_USER_AGENT) === 1) {
             $browser_agent = 'konqueror';
-        } else {
-            $browser_agent = 'other';
         }
         if (($mimetype === 'application/octet-stream') || ($mimetype === 'application/octetstream')) {
             $mimetype = 'application/octet-stream';

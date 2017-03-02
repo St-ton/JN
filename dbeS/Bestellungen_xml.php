@@ -400,7 +400,7 @@ function bearbeiteUpdate($xml)
         $defaultCurrency = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
         if (isset($currentCurrency->kWaehrung) && isset($defaultCurrency->kWaehrung)) {
             $correctionFactor = (float)$currentCurrency->fFaktor;
-            $oBestellung->fGesamtsumme = $oBestellung->fGesamtsumme / $correctionFactor;
+            $oBestellung->fGesamtsumme /= $correctionFactor;
         }
     }
     //aktualisiere bestellung

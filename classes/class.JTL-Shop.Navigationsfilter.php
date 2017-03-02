@@ -2925,4 +2925,15 @@ class Navigationsfilter
 
         return (int)$kSuchCache;
     }
+
+    /**
+     * @return array
+     */
+    public function __debugInfo()
+    {
+        $res           = get_object_vars($this);
+        $res['conf']   = '*truncated*';
+
+        return $res;
+    }
 }

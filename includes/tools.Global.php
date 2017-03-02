@@ -307,7 +307,7 @@ function gibPreisStringLocalized($preis, $waehrung = 0, $html = 1, $nNachkommast
     if (!isset($waehrung->kWaehrung) || !$waehrung->kWaehrung) {
         $waehrung = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
     }
-    $preis        = number_format(
+    $localized    = number_format(
         $preis * $waehrung->fFaktor,
         $nNachkommastellen,
         $waehrung->cTrennzeichenCent,
@@ -316,8 +316,8 @@ function gibPreisStringLocalized($preis, $waehrung = 0, $html = 1, $nNachkommast
     $waherungname = (!$html) ? $waehrung->cName : $waehrung->cNameHTML;
 
     return ($waehrung->cVorBetrag === 'Y')
-        ? ($waherungname . ' ' . $preis)
-        : ($preis . ' ' . $waherungname);
+        ? ($waherungname . ' ' . $localized)
+        : ($localized . ' ' . $waherungname);
 }
 
 /**
@@ -339,7 +339,7 @@ function berechneBrutto($preis, $MwSt, $nGenauigkeit = 2)
  */
 function berechneNetto($fPreisBrutto, $fMwSt, $nGenauigkeit = 2)
 {
-    return round($fPreisBrutto / (100 + doubleval($fMwSt)) * 100, $nGenauigkeit);
+    return round($fPreisBrutto / (100 + floatval($fMwSt)) * 100, $nGenauigkeit);
 }
 
 /**
@@ -687,7 +687,7 @@ function checkeWarenkorbEingang()
                             ) {
                                 $bSchonVorhanden = false;
                                 foreach ($_SESSION['Vergleichsliste']->oArtikel_arr as $oArtikel) {
-                                    if ($oArtikel->kArtikel == $oVergleichsliste->oArtikel_arr[0]->kArtikel) {
+                                    if ($oArtikel->kArtikel === $oVergleichsliste->oArtikel_arr[0]->kArtikel) {
                                         $bSchonVorhanden = true;
                                         break;
                                     }
@@ -809,7 +809,7 @@ function checkeWarenkorbEingang()
                         }
                         $oKonfigitem_arr[] = $oKonfigitem;
                         // Alle Artikel können in den WK gelegt werden?
-                        if ($oKonfigitem->getPosTyp() == KONFIG_ITEM_TYP_ARTIKEL) {
+                        if ($oKonfigitem->getPosTyp() === KONFIG_ITEM_TYP_ARTIKEL) {
                             // Varikombi
                             /** @var Artikel $oTmpArtikel */
                             $oKonfigitem->oEigenschaftwerte_arr = [];
@@ -936,14 +936,14 @@ function fuegeVariBoxInWK($variBoxAnzahl_arr, $kArtikel, $bIstVater, $bExtern = 
         unset($_SESSION['variBoxAnzahl_arr']);
         // Es ist min. eine Anzahl vorhanden
         foreach ($cKeys_arr as $cKeys) {
-            if (doubleval($variBoxAnzahl_arr[$cKeys]) > 0) {
+            if (floatval($variBoxAnzahl_arr[$cKeys]) > 0) {
                 // Switch zwischen 1 Vari und 2
                 if ($cKeys[0] === '_') { // 1
                     $cVariation0                             = substr($cKeys, 1);
                     list($kEigenschaft0, $kEigenschaftWert0) = explode(':', $cVariation0);
                     // In die Session einbauen
                     $oVariKombi                                 = new stdClass();
-                    $oVariKombi->fAnzahl                        = doubleval($variBoxAnzahl_arr[$cKeys]);
+                    $oVariKombi->fAnzahl                        = floatval($variBoxAnzahl_arr[$cKeys]);
                     $oVariKombi->cVariation0                    = StringHandler::filterXSS($cVariation0);
                     $oVariKombi->kEigenschaft0                  = (int)$kEigenschaft0;
                     $oVariKombi->kEigenschaftWert0              = (int)$kEigenschaftWert0;
@@ -953,7 +953,7 @@ function fuegeVariBoxInWK($variBoxAnzahl_arr, $kArtikel, $bIstVater, $bExtern = 
                     if ($bExtern) {
                         $cComb_arr                        = explode('_', $cKeys);
                         $oVariKombi                       = new stdClass();
-                        $oVariKombi->fAnzahl              = doubleval($variBoxAnzahl_arr[$cKeys]);
+                        $oVariKombi->fAnzahl              = floatval($variBoxAnzahl_arr[$cKeys]);
                         $oVariKombi->kEigenschaft_arr     = [];
                         $oVariKombi->kEigenschaftWert_arr = [];
                         foreach ($cComb_arr as $cComb) {
@@ -969,7 +969,7 @@ function fuegeVariBoxInWK($variBoxAnzahl_arr, $kArtikel, $bIstVater, $bExtern = 
                         list($kEigenschaft1, $kEigenschaftWert1) = explode(':', $cVariation1);
                         // In die Session einbauen
                         $oVariKombi                                 = new stdClass();
-                        $oVariKombi->fAnzahl                        = doubleval($variBoxAnzahl_arr[$cKeys]);
+                        $oVariKombi->fAnzahl                        = floatval($variBoxAnzahl_arr[$cKeys]);
                         $oVariKombi->cVariation0                    = StringHandler::filterXSS($cVariation0);
                         $oVariKombi->cVariation1                    = StringHandler::filterXSS($cVariation1);
                         $oVariKombi->kEigenschaft0                  = (int)$kEigenschaft0;
@@ -1005,7 +1005,7 @@ function fuegeVariBoxInWK($variBoxAnzahl_arr, $kArtikel, $bIstVater, $bExtern = 
                 // Prüfe ob er Artikel in den Warenkorb gelegt werden darf
                 $nRedirect_arr = pruefeFuegeEinInWarenkorb(
                     $Artikel,
-                    doubleval($variBoxAnzahl_arr[$i]),
+                    floatval($variBoxAnzahl_arr[$i]),
                     $oAlleEigenschaftPre->oEigenschaft_arr
                 );
 
@@ -1035,7 +1035,7 @@ function fuegeVariBoxInWK($variBoxAnzahl_arr, $kArtikel, $bIstVater, $bExtern = 
                         //#8224, #7482 -> do not call setzePositionsPreise() in loop @ Wanrekob::fuegeEin()
                         fuegeEinInWarenkorb(
                             $oAlleEigenschaftPost->kArtikel,
-                            doubleval($variBoxAnzahl_arr[$i]),
+                            floatval($variBoxAnzahl_arr[$i]),
                             $oAlleEigenschaftPost->oEigenschaft_arr,
                             0,
                             false,
@@ -1064,7 +1064,7 @@ function pruefeVariBoxAnzahl($variBoxAnzahl_arr)
         // Wurde die variBox überhaupt mit einer Anzahl gefüllt?
         $bAnzahlEnthalten = false;
         foreach ($cKeys_arr as $cKeys) {
-            if (doubleval($variBoxAnzahl_arr[$cKeys]) > 0) {
+            if (floatval($variBoxAnzahl_arr[$cKeys]) > 0) {
                 $bAnzahlEnthalten = true;
                 break;
             }
@@ -1224,7 +1224,7 @@ function pruefeFuegeEinInWarenkorb($Artikel, $anzahl, $oEigenschaftwerte_arr, $n
         $redirectParam[] = R_LAGER;
     }
     //darf preise sehen und somit einkaufen?
-    if ($_SESSION['Kundengruppe']->darfPreiseSehen != 1 || $_SESSION['Kundengruppe']->darfArtikelKategorienSehen != 1) {
+    if ($_SESSION['Kundengruppe']->darfPreiseSehen !== 1 || $_SESSION['Kundengruppe']->darfArtikelKategorienSehen !== 1) {
         $redirectParam[] = R_LOGIN;
     }
     //kein vorbestellbares Produkt, aber mit Erscheinungsdatum in Zukunft
@@ -1278,44 +1278,43 @@ function pruefeFuegeEinInWarenkorb($Artikel, $anzahl, $oEigenschaftwerte_arr, $n
             //schau, ob diese Eigenschaft auch gewählt wurde
             $bEigenschaftWertDa = false;
             foreach ($oEigenschaftwerte_arr as $oEigenschaftwerte) {
-                if ($var->cTyp === 'PFLICHT-FREIFELD' && $oEigenschaftwerte->kEigenschaft == $var->kEigenschaft) {
+                $oEigenschaftwerte->kEigenschaft = (int)$oEigenschaftwerte->kEigenschaft;
+                if ($var->cTyp === 'PFLICHT-FREIFELD' && $oEigenschaftwerte->kEigenschaft === $var->kEigenschaft) {
                     if (strlen($oEigenschaftwerte->cFreifeldWert) > 0) {
                         $bEigenschaftWertDa = true;
                     } else {
                         $redirectParam[] = R_VARWAEHLEN;
                         break;
                     }
-                } elseif ($var->cTyp !== 'PFLICHT-FREIFELD') {
-                    if ($oEigenschaftwerte->kEigenschaft == $var->kEigenschaft) {
-                        $bEigenschaftWertDa = true;
-                        //schau, ob auch genug davon auf Lager
-                        $EigenschaftWert = new EigenschaftWert($oEigenschaftwerte->kEigenschaftWert);
-                        //ist der Eigenschaftwert überhaupt gültig?
-                        if ($EigenschaftWert->kEigenschaft != $oEigenschaftwerte->kEigenschaft) {
-                            $redirectParam[] = R_VARWAEHLEN;
-                            break;
-                        }
-                        //schaue, ob genug auf Lager von jeder var
-                        if ($Artikel->cLagerBeachten === 'Y' &&
-                            $Artikel->cLagerVariation === 'Y' &&
-                            $Artikel->cLagerKleinerNull !== 'Y'
-                        ) {
-                            if ($EigenschaftWert->fPackeinheit == 0) {
-                                $EigenschaftWert->fPackeinheit = 1;
-                            }
-                            if ($EigenschaftWert->fPackeinheit *
-                                ($anzahl +
-                                    $_SESSION['Warenkorb']->gibAnzahlEinerVariation(
-                                        $kArtikel,
-                                        $EigenschaftWert->kEigenschaftWert
-                                    )
-                                ) > $EigenschaftWert->fLagerbestand
-                            ) {
-                                $redirectParam[] = R_LAGERVAR;
-                            }
-                        }
+                } elseif ($var->cTyp !== 'PFLICHT-FREIFELD' && $oEigenschaftwerte->kEigenschaft === $var->kEigenschaft) {
+                    $bEigenschaftWertDa = true;
+                    //schau, ob auch genug davon auf Lager
+                    $EigenschaftWert = new EigenschaftWert($oEigenschaftwerte->kEigenschaftWert);
+                    //ist der Eigenschaftwert überhaupt gültig?
+                    if ($EigenschaftWert->kEigenschaft !== $oEigenschaftwerte->kEigenschaft) {
+                        $redirectParam[] = R_VARWAEHLEN;
                         break;
                     }
+                    //schaue, ob genug auf Lager von jeder var
+                    if ($Artikel->cLagerBeachten === 'Y' &&
+                        $Artikel->cLagerVariation === 'Y' &&
+                        $Artikel->cLagerKleinerNull !== 'Y'
+                    ) {
+                        if ($EigenschaftWert->fPackeinheit == 0) {
+                            $EigenschaftWert->fPackeinheit = 1;
+                        }
+                        if ($EigenschaftWert->fPackeinheit *
+                            ($anzahl +
+                                $_SESSION['Warenkorb']->gibAnzahlEinerVariation(
+                                    $kArtikel,
+                                    $EigenschaftWert->kEigenschaftWert
+                                )
+                            ) > $EigenschaftWert->fLagerbestand
+                        ) {
+                            $redirectParam[] = R_LAGERVAR;
+                        }
+                    }
+                    break;
                 }
             }
             if (!$bEigenschaftWertDa) {
@@ -1406,7 +1405,7 @@ function fuegeEinInWarenkorb($kArtikel, $anzahl, $oEigenschaftwerte_arr = [], $n
             if (isset($_SESSION['variBoxAnzahl_arr'])) {
                 return false;
             }
-            if ($nWeiterleitung == 0) {
+            if ($nWeiterleitung === 0) {
                 $con = (strpos($Artikel->cURLFull, '?') === false) ? '?' : '&';
                 if ($Artikel->kEigenschaftKombi > 0) {
                     $url = (!empty($Artikel->cURLFull))
@@ -1540,8 +1539,8 @@ function checkeKuponWKPos($oWKPosition, $Kupon)
     );
     if (isset($kupons_mgl->kKupon) &&
         $kupons_mgl->kKupon > 0 &&
-        !$_SESSION['Warenkorb']->posTypEnthalten(C_WARENKORBPOS_TYP_KUPON) &&
-        $kupons_mgl->cWertTyp === 'prozent'
+        $kupons_mgl->cWertTyp === 'prozent' &&
+        !$_SESSION['Warenkorb']->posTypEnthalten(C_WARENKORBPOS_TYP_KUPON)
     ) {
         $oWKPosition->fPreisEinzelNetto -= ($oWKPosition->fPreisEinzelNetto / 100) * $Kupon->fWert;
         $oWKPosition->fPreis -= ($oWKPosition->fPreis / 100) * $Kupon->fWert;
@@ -2733,7 +2732,7 @@ function gibVersandZuschlag($versandart, $cISO, $plz)
  *       kein Netto sein darf, sondern der Preis muss in Brutto angegeben werden.
  * @param Versandart|object $versandart
  * @param String            $cISO
- * @param Artikel           $oZusatzArtikel
+ * @param Artikel|stdClass  $oZusatzArtikel
  * @param Artikel|int       $Artikel
  * @return int
  */
@@ -2911,10 +2910,10 @@ function gibGuenstigsteVersandkosten($cISO, $Artikel, $barzahlungZulassen, $kKun
             }
         }
         $vp = berechneVersandpreis($versandarten[$i], $cISO, null, $Artikel);
-        if ($vp != -1 && $vp < $versandpreis) {
+        if ($vp !== -1 && $vp < $versandpreis) {
             $versandpreis = $vp;
         }
-        if ($vp == 0) {
+        if ($vp === 0) {
             break;
         }
     }
@@ -3705,35 +3704,30 @@ function baueVersandkostenfreiString($oVersandart, $fWarenkorbSumme)
  */
 function baueVersandkostenfreiLaenderString($oVersandart, $fWarenkorbSumme = 0.0)
 {
-    if (is_object($oVersandart) && floatval($oVersandart->fVersandkostenfreiAbX) > 0) {
-        $cacheID = 'bvkfls_' . $oVersandart->fVersandkostenfreiAbX .
-            strlen($oVersandart->cLaender) . '_' . (int)$_SESSION['kSprache'];
+    if (is_object($oVersandart) && (float)$oVersandart->fVersandkostenfreiAbX > 0) {
+        $cacheID = 'bvkfls_' .
+            $oVersandart->fVersandkostenfreiAbX .
+            strlen($oVersandart->cLaender) . '_' .
+            (int)$_SESSION['kSprache'];
         if (($vkfls = Shop::Cache()->get($cacheID)) === false) {
-            $cLaender_arr = explode(' ', $oVersandart->cLaender);
-            if (strlen($cLaender_arr[count($cLaender_arr) - 1]) === 0) {
-                unset($cLaender_arr[count($cLaender_arr) - 1]);
-            }
-            $cSQL     = '';
-            $nLaender = count($cLaender_arr);
-            for ($i = 0; $i < $nLaender; $i++) {
-                $cSQL .= "cISO='" . $cLaender_arr[$i] . "'";
-                if ($nLaender > ($i + 1)) {
-                    $cSQL .= " OR ";
-                }
-            }
+            // remove empty strings
+            $cLaender_arr = array_filter(explode(' ', $oVersandart->cLaender));
+            $resultString = '';
+            // only select the needed row
+            $select       = $_SESSION['cISOSprache'] === 'ger'
+                ? 'cDeutsch'
+                : 'cEnglisch';
+            // generate IN sql statement with stringified country isos
+            $sql          = " cISO IN (" . implode(', ', array_map(function ($iso) {
+                    return "'" . $iso . "'";
+                }, $cLaender_arr)) . ')';
+            $countries    = Shop::DB()->query("SELECT " . $select . " AS name FROM tland WHERE " . $sql, 2);
+            // re-concatinate isos with "," for the final output
+            $resultString = implode(', ', array_map(function ($e) {
+                return $e->name;
+            }, $countries));
 
-            $cLaender  = '';
-            $oLand_arr = Shop::DB()->query("SELECT cISO, cDeutsch, cEnglisch FROM tland WHERE " . $cSQL, 2);
-
-            for ($i = 0; $i < $nLaender; $i++) {
-                $cLaender .= $_SESSION['cISOSprache'] === 'ger'
-                    ? $oLand_arr[$i]->cDeutsch
-                    : $oLand_arr[$i]->cEnglisch;
-                if ($nLaender > ($i + 1)) {
-                    $cLaender .= ', ';
-                }
-            }
-            $vkfls = sprintf(Shop::Lang()->get('noShippingCostsAtExtended', 'basket'), $cLaender);
+            $vkfls = sprintf(Shop::Lang()->get('noShippingCostsAtExtended', 'basket'), $resultString);
             Shop::Cache()->set($cacheID, $vkfls, [CACHING_GROUP_OPTION]);
         }
 
@@ -3757,10 +3751,12 @@ function gibPreisLocalizedOhneFaktor($preis, $waehrung = 0, $html = 1)
     if (!isset($waehrung->kWaehrung)) {
         $waehrung = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
     }
-    $preis        = number_format($preis, 2, $waehrung->cTrennzeichenCent, $waehrung->cTrennzeichenTausend);
+    $localized    = number_format($preis, 2, $waehrung->cTrennzeichenCent, $waehrung->cTrennzeichenTausend);
     $waherungname = (!$html) ? $waehrung->cName : $waehrung->cNameHTML;
 
-    return ($waehrung->cVorBetrag === 'Y') ? $waherungname . ' ' . $preis : $preis . ' ' . $waherungname;
+    return $waehrung->cVorBetrag === 'Y'
+        ? $waherungname . ' ' . $localized
+        : $localized . ' ' . $waherungname;
 }
 
 /**
@@ -5166,7 +5162,7 @@ function gibKategoriepfad($Kategorie, $kKundengruppe, $kSprache, $bString = true
  */
 function formatCurrency($fSumme)
 {
-    $fSumme    = doubleval($fSumme);
+    $fSumme    = floatval($fSumme);
     $fSummeABS = null;
     $fCents    = null;
     if ($fSumme > 0) {
@@ -5831,7 +5827,7 @@ function make_http_request($cURL, $nTimeout = 15, $cPost = null, $bReturnStatus 
         curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
         curl_setopt($curl, CURLOPT_REFERER, Shop::getURL());
 
-        if (!is_null($cPost)) {
+        if ($cPost !== null) {
             curl_setopt($curl, CURLOPT_POST, true);
             curl_setopt($curl, CURLOPT_POSTFIELDS, $cPost);
         }
@@ -5948,7 +5944,7 @@ function doMainwordRedirect($NaviFilter, $nAnzahl, $bSeo = false)
             foreach ($cMainword_arr as $cMainword => $cInfo_arr) {
                 $cKey   = $cInfo_arr['cKey'];
                 $cParam = $cInfo_arr['cParam'];
-                if (isset($NaviFilter->$cMainword) && intval($NaviFilter->$cMainword->$cKey) > 0) {
+                if (isset($NaviFilter->$cMainword) && (int)$NaviFilter->$cMainword->$cKey > 0) {
                     $cUrl = "index.php?{$cParam}={$NaviFilter->$cMainword->$cKey}";
                     if ($bSeo && isset($NaviFilter->$cMainword->cSeo) && is_array($NaviFilter->$cMainword->cSeo)) {
                         $cUrl = "{$NaviFilter->$cMainword->cSeo[$kSprache]}";
@@ -6182,13 +6178,14 @@ function holeKonfigBearbeitenModus($kKonfig, &$smarty)
 
             /** @var WarenkorbPos $oPosition */
             foreach ($_SESSION['Warenkorb']->PositionenArr as &$oPosition) {
-                if ($oPosition->istKonfigKind() && $oPosition->cUnique == $oBasePosition->cUnique) {
+                if ($oPosition->cUnique === $oBasePosition->cUnique && $oPosition->istKonfigKind()) {
                     $oKonfigitem                                              = new Konfigitem($oPosition->kKonfigitem);
                     $nKonfigitem_arr[]                                        = $oKonfigitem->getKonfigitem();
                     $nKonfigitemAnzahl_arr[$oKonfigitem->getKonfigitem()]     = $oPosition->nAnzahl / $oBasePosition->nAnzahl;
                     $nKonfiggruppeAnzahl_arr[$oKonfigitem->getKonfiggruppe()] = $oPosition->nAnzahl / $oBasePosition->nAnzahl;
                 }
             }
+            unset($oPosition);
 
             $smarty->assign('fAnzahl', $oBasePosition->nAnzahl)
                    ->assign('kEditKonfig', $kKonfig)
@@ -6888,7 +6885,7 @@ function dateAddWeekday($date, $weekdays)
             $resDate->setTimestamp($date);
         } elseif (is_object($date) && is_a($date, 'DateTime')) {
             /** @var DateTime $date */
-            $resDate = new DateTime($date->format(DateTime::ISO8601));
+            $resDate = new DateTime($date->format(DateTime::ATOM));
         } else {
             $resDate = new DateTime();
         }

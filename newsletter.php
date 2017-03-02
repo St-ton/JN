@@ -227,7 +227,10 @@ if (isset($_POST['abonnieren']) && (int)$_POST['abonnieren'] === 1) {
             $cFehler = Shop::Lang()->get('newsletterNoexists', 'errorMessages');
         }
     } else {
-        $cFehler = Shop::Lang()->get('newsletterWrongemail', 'errorMessages');
+        $cFehler          = Shop::Lang()->get('newsletterWrongemail', 'errorMessages');
+        $oFehlendeAngaben = new stdClass();
+        $oFehlendeAngaben->cUnsubscribeEmail = 1;
+        $smarty->assign('oFehlendeAngaben', $oFehlendeAngaben);
     }
 } elseif (isset($_GET['show']) && (int)$_GET['show'] > 0) { // History anzeigen
     $cOption            = 'anzeigen';

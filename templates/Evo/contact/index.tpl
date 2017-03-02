@@ -33,7 +33,7 @@
                     <div class="row">
                         {if $Einstellungen.kontakt.kontakt_abfragen_anrede !== 'N'}
                             <div class="col-xs-12 col-md-6">
-                                <div class="form-group float-label-control required">
+                                <div class="form-group float-label-control">
                                     <select name="anrede" id="salutation" class="form-control" required>
                                         <option value="" selected="selected" disabled>{lang key="salutation" section="account data"}</option>
                                         <option value="w" {if isset($Vorgaben->cAnrede) && $Vorgaben->cAnrede === 'w'}selected="selected"{/if}>{$Anrede_w}</option>
@@ -134,7 +134,7 @@
                         {/if}
                         <div class="row">
                             <div class="col-xs-12 col-md-6">
-                                <div class="form-group float-label-control{if isset($fehlendeAngaben.betreff)} has-error{/if} required">
+                                <div class="form-group float-label-control{if isset($fehlendeAngaben.subject)} has-error{/if} required">
                                     <label for="subject" class="control-label">{lang key="subject" section="contact"}{* <span class="fa fa-asterisk required"></span>*}</label>
                                     <select class="form-control" name="subject" id="subject" required>
                                         <option value="" selected disabled>{lang key="subject" section="contact"}</option>
@@ -142,6 +142,11 @@
                                             <option value="{$betreff->kKontaktBetreff}" {if $Vorgaben->kKontaktBetreff==$betreff->kKontaktBetreff}selected{/if}>{$betreff->AngezeigterName}</option>
                                         {/foreach}
                                     </select>
+                                    {if !empty($fehlendeAngaben.subject)}
+                                        <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
+                                            {lang key="fillOut" section="global"}
+                                        </div>
+                                    {/if}
                                 </div>
                             </div>
                         </div>
@@ -151,6 +156,11 @@
                             <div class="form-group float-label-control{if isset($fehlendeAngaben.nachricht)} has-error{/if} required">
                                 <label for="message" class="control-label">{lang key="message" section="contact"}{* <span class="fa fa-asterisk required"></span>*}</label>
                                 <textarea name="nachricht" class="form-control" rows="10" id="message" required>{if isset($Vorgaben->cNachricht)}{$Vorgaben->cNachricht}{/if}</textarea>
+                                {if !empty($fehlendeAngaben.nachricht)}
+                                    <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
+                                        {lang key="fillOut" section="global"}
+                                    </div>
+                                {/if}
                             </div>
                         </div>
                     </div>
@@ -161,10 +171,10 @@
                     <hr>
                     <div class="row">
                         <div class="col-xs-12 col-md-12">
-                            {if !empty($fehlendeAngaben.captcha)}
-                                <div class="alert alert-danger" role="alert">{lang key="invalidToken" section="global"}</div>
-                            {/if}
                             <div class="g-recaptcha" data-sitekey="{$Einstellungen.global.global_google_recaptcha_public}"></div>
+                            {if !empty($fehlendeAngaben.captcha)}
+                                <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>{lang key="invalidToken" section="global"}</div>
+                            {/if}
                             <hr>
                         </div>
                     </div>

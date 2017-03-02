@@ -314,6 +314,7 @@
                                 });
                             }
                         }
+                        addValidationListener();
                     }
                 });
                 return false;

@@ -6085,8 +6085,8 @@ class Artikel
     public function getTags()
     {
         $conf      = Shop::getSettings([CONF_ARTIKELDETAILS]);
-        $tag_limit = (int)$conf['artikeldetails']['tagging_max_count'];
-        $tag_limit = ($tag_limit > 0) ? ' LIMIT ' . $tag_limit : '';
+        $nLimit    = (int)$conf['artikeldetails']['tagging_max_count'];
+        $tag_limit = ($nLimit > 0) ? ' LIMIT ' . $nLimit : '';
         $kSprache  = null;
         if (Shop::$kSprache) {
             $kSprache = Shop::getLanguage();
@@ -6099,7 +6099,9 @@ class Artikel
         }
         $kSprache = (int)$kSprache;
         $tags     = Shop::DB()->query("
-            SELECT ttag.kTag, ttag.cName, tseo.cSeo
+            SELECT ttag.kTag, ttag.cName, tseo.cSeo, (SELECT COUNT(*)
+                                                        FROM ttagartikel
+                                                          WHERE kTag = ttag.kTag) AS Anzahl
                 FROM ttag
                 JOIN ttagartikel 
                     ON ttagartikel.kTag = ttag.kTag
@@ -6113,15 +6115,9 @@ class Artikel
                 GROUP BY ttag.kTag 
                 ORDER BY ttagartikel.nAnzahlTagging DESC {$tag_limit}", 2
         );
-        $tagCount = count($tags);
-        for ($i = 0; $i < $tagCount; $i++) {
-            $tag_sum = Shop::DB()->query("
-                SELECT count(*) AS Anzahl
-                    FROM ttagartikel
-                    WHERE kTag = " . (int)$tags[$i]->kTag,
-                1
-            );
-            $tags[$i]->Anzahl = $tag_sum->Anzahl;
+        foreach ($tags as $i => $tag) {
+            $tags[$i]->kTag   = (int)$tags[$i]->kTag;
+            $tags[$i]->Anzahl = (int)$tags[$i]->Anzahl;
             $tags[$i]->cURL   = baueURL($tags[$i], URLART_TAG);
         }
         executeHook(HOOK_ARTIKEL_INC_PRODUKTTAGGING, [

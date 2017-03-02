@@ -1199,7 +1199,7 @@ class Exportformat
                     !$this->useCache()
                 );
                 // calling gibKategoriepfad() should not be necessary since it has already been called in Kategorie::loadFromDB()
-                $Artikel->Kategoriepfad         = (isset($Artikel->Kategorie->cKategoriePfad))
+                $Artikel->Kategoriepfad         = isset($Artikel->Kategorie->cKategoriePfad)
                     ? $Artikel->Kategorie->cKategoriePfad
                     : gibKategoriepfad($Artikel->Kategorie, $this->kKundengruppe, $this->kSprache);
                 $Artikel->Versandkosten         = gibGuenstigsteVersandkosten(
@@ -1223,7 +1223,7 @@ class Exportformat
                 }
 
                 $Artikel->cDeeplink             = $shopURL . '/' . $Artikel->cURL;
-                $Artikel->Artikelbild           = ($Artikel->Bilder[0]->cPfadGross)
+                $Artikel->Artikelbild           = $Artikel->Bilder[0]->cPfadGross
                     ? $shopURL . '/' . $Artikel->Bilder[0]->cPfadGross
                     : '';
                 $Artikel->Lieferbar             = ($Artikel->fLagerbestand <= 0) ? 'N' : 'Y';

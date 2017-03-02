@@ -120,7 +120,7 @@ function bearbeiteInsert($xml)
             }
 
             $oMerkmal                   = merkeBildPfad($merkmal_arr[$i]->kMerkmal);
-            $merkmal_arr[$i]->cBildpfad = (isset($oMerkmal->cBildpfad)) ? $oMerkmal->cBildpfad : '';
+            $merkmal_arr[$i]->cBildpfad = isset($oMerkmal->cBildpfad) ? $oMerkmal->cBildpfad : '';
             $oMM_arr[$i]->oMMW_arr      = [];
 
             if ($mmCount < 2) {

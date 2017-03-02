@@ -268,15 +268,13 @@ function bearbeite($xml, $unzipPath)
     if (count($img_arr) > 0) {
         $dir_handle = @opendir($unzipPath);
         while (false !== ($file = readdir($dir_handle))) {
-            if ($file !== '.' && $file !== '..' && $file !== 'bilder_a.xml') {
-                if (file_exists($unzipPath . $file)) {
-                    if (unlink($unzipPath . $file)) {
-                        if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                            Jtllog::writeLog('Artikelbild wurde geloescht: ' . $file, JTLLOG_LEVEL_DEBUG);
-                        }
-                    } elseif (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-                        Jtllog::writeLog('Artikelbild konnte nicht geloescht werden: ' . $file, JTLLOG_LEVEL_ERROR, false, 'Bilder_xml');
+            if ($file !== '.' && $file !== '..' && $file !== 'bilder_a.xml' && file_exists($unzipPath . $file)) {
+                if (unlink($unzipPath . $file)) {
+                    if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
+                        Jtllog::writeLog('Artikelbild wurde geloescht: ' . $file, JTLLOG_LEVEL_DEBUG);
                     }
+                } elseif (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
+                    Jtllog::writeLog('Artikelbild konnte nicht geloescht werden: ' . $file, JTLLOG_LEVEL_ERROR, false, 'Bilder_xml');
                 }
             }
         }
@@ -1024,13 +1022,13 @@ function erstelleThumbnail($oBranding, $imgFilename, $zielbild, $breite, $hoehe,
 function bearbeiteDeletes($xml)
 {
     executeHook(HOOK_BILDER_XML_BEARBEITEDELETES, [
-        'Artikel'          => (isset($xml['del_bilder']['kArtikelPict'])) ? $xml['del_bilder']['kArtikelPict'] : [],
-        'Kategorie'        => (isset($xml['del_bilder']['kKategoriePict'])) ? $xml['del_bilder']['kKategoriePict'] : [],
-        'KategoriePK'      => (isset($xml['del_bilder']['kKategorie'])) ? $xml['del_bilder']['kKategorie'] : [],
-        'Eigenschaftswert' => (isset($xml['del_bilder']['kEigenschaftWertPict'])) ? $xml['del_bilder']['kEigenschaftWertPict'] : [],
-        'Hersteller'       => (isset($xml['del_bilder']['kHersteller'])) ? $xml['del_bilder']['kHersteller'] : [],
-        'Merkmal'          => (isset($xml['del_bilder']['kMerkmal'])) ? $xml['del_bilder']['kMerkmal'] : [],
-        'Merkmalwert'      => (isset($xml['del_bilder']['kMerkmalWert'])) ? $xml['del_bilder']['kMerkmalWert'] : [],
+        'Artikel'          => isset($xml['del_bilder']['kArtikelPict']) ? $xml['del_bilder']['kArtikelPict'] : [],
+        'Kategorie'        => isset($xml['del_bilder']['kKategoriePict']) ? $xml['del_bilder']['kKategoriePict'] : [],
+        'KategoriePK'      => isset($xml['del_bilder']['kKategorie']) ? $xml['del_bilder']['kKategorie'] : [],
+        'Eigenschaftswert' => isset($xml['del_bilder']['kEigenschaftWertPict']) ? $xml['del_bilder']['kEigenschaftWertPict'] : [],
+        'Hersteller'       => isset($xml['del_bilder']['kHersteller']) ? $xml['del_bilder']['kHersteller'] : [],
+        'Merkmal'          => isset($xml['del_bilder']['kMerkmal']) ? $xml['del_bilder']['kMerkmal'] : [],
+        'Merkmalwert'      => isset($xml['del_bilder']['kMerkmalWert']) ? $xml['del_bilder']['kMerkmalWert'] : [],
     ]);
 
     //Artikelbilder löschen Wawi <= .99923
@@ -1489,7 +1487,7 @@ function imageload_container($img, $nWidth, $nHeight, $nContainerWidth, $nContai
 
     }
 
-    if (($nWidth == 0 && $nHeight == 0)) {
+    if ($nWidth == 0 && $nHeight == 0) {
         $nHeight = $imgInfo[1];
         $nWidth  = $imgInfo[0];
     }
@@ -1541,7 +1539,7 @@ function imageload_alpha($img, $nWidth = 0, $nHeight = 0)
 
     }
 
-    if (($nWidth == 0 && $nHeight == 0)) {
+    if ($nWidth == 0 && $nHeight == 0) {
         $nHeight = $imgInfo[1];
         $nWidth  = $imgInfo[0];
     }

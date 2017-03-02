@@ -17,9 +17,9 @@ class cache_advancedfile implements ICachingMethod
     }
 
     /**
-     * @var cache_advancedfile|null
+     * @var cache_advancedfile
      */
-    public static $instance = null;
+    public static $instance;
 
     /**
      * @param array $options
@@ -38,7 +38,7 @@ class cache_advancedfile implements ICachingMethod
      */
     private function getFileName($cacheID)
     {
-        return (is_string($cacheID))
+        return is_string($cacheID)
             ? $this->options['cache_dir'] . $cacheID . $this->options['file_extension']
             : false;
     }

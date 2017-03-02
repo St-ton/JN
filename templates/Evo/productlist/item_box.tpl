@@ -9,26 +9,28 @@
                 {assign var="alt" value=$Artikel->cName}
             {/if}
 
-            {include file="snippets/image.tpl" src=$Artikel->Bilder[0]->cPfadNormal alt=$alt}
+        {include file="snippets/image.tpl" src=$Artikel->Bilder[0]->cPfadNormal alt=$alt}
 
-            {if isset($Artikel->oSuchspecialBild)}
-                <img class="overlay-img hidden-xs" src="{$Artikel->oSuchspecialBild->cPfadKlein}"
-                     alt="{if isset($Artikel->oSuchspecialBild->cSuchspecial)}{$Artikel->oSuchspecialBild->cSuchspecial}{else}{$Artikel->cName}{/if}">
-            {/if}
-        </a>
+        {if isset($Artikel->oSuchspecialBild)}
+            <img class="overlay-img hidden-xs" src="{$Artikel->oSuchspecialBild->cPfadKlein}"
+                 alt="{if isset($Artikel->oSuchspecialBild->cSuchspecial)}{$Artikel->oSuchspecialBild->cSuchspecial}{else}{$Artikel->cName}{/if}" />
+        {/if}
+    </a>
     {/block}
     {block name="productlist-image-caption"}
-        <div class="caption">
-            <h4 class="title"><a href="{$Artikel->cURL}">{$Artikel->cKurzbezeichnung}</a></h4>
-            {if $Einstellungen.bewertung.bewertung_anzeigen === 'Y' && $Artikel->fDurchschnittsBewertung > 0}
-                {include file='productdetails/rating.tpl' stars=$Artikel->fDurchschnittsBewertung}<br>
-            {/if}
-            {assign var=price_image value=""}
-            {if isset($Artikel->Preise->strPreisGrafik_Suche)}
-                {assign var=$price_image value=$Artikel->Preise->strPreisGrafik_Suche}
-            {/if}
-            {include file="productdetails/price.tpl" Artikel=$Artikel price_image=$price_image tplscope=$tplscope}
-        </div>{* /caption *}
+    <div class="caption">
+        <h4 class="title" itemprop="name"><a href="{$Artikel->cURL}">{$Artikel->cKurzbezeichnung}</a></h4>
+        {if $Artikel->cName !== $Artikel->cKurzbezeichnung}<meta itemprop="alternateName" content="{$Artikel->cName}">{/if}
+        <meta itemprop="url" content="{$ShopURL}/{$Artikel->cURL}">
+        {if $Einstellungen.bewertung.bewertung_anzeigen === 'Y' && $Artikel->fDurchschnittsBewertung > 0}
+            {include file='productdetails/rating.tpl' stars=$Artikel->fDurchschnittsBewertung}<br>
+        {/if}
+        {assign var=price_image value=""}
+        {if isset($Artikel->Preise->strPreisGrafik_Suche)}
+            {assign var=$price_image value=$Artikel->Preise->strPreisGrafik_Suche}
+        {/if}
+        {include file="productdetails/price.tpl" Artikel=$Artikel price_image=$price_image tplscope=$tplscope}
+    </div>{* /caption *}
     {/block}
     <form action="index.php" method="post" class="form form-basket" data-toggle="basket-add">
         {$jtl_token}

@@ -12,7 +12,7 @@ class Nice
     /**
      * @var null|Nice
      */
-    private static $instance = null;
+    private static $instance;
 
     /**
      * @var string
@@ -57,7 +57,7 @@ class Nice
                 $cPassA         = substr(base64_decode($oBrocken->cBrocken), 0, 9);
                 $cPassE         = substr(
                     base64_decode($oBrocken->cBrocken),
-                    (strlen(base64_decode($oBrocken->cBrocken)) - 11)
+                    strlen(base64_decode($oBrocken->cBrocken)) - 11
                 );
                 $cBlowfishKey   = $cPassA . $cPassE;
                 $oXTEA          = new XTEA($cBlowfishKey);

@@ -39,12 +39,12 @@ class Boxen
     /**
      * @var array
      */
-    public $visibility = null;
+    public $visibility;
 
     /**
      * @var Boxen
      */
-    private static $_instance = null;
+    private static $_instance;
 
     /**
      * @return Boxen
@@ -354,7 +354,7 @@ class Boxen
     {
         $kKundengruppe     = (int)$_SESSION['Kundengruppe']->kKundengruppe;
         $kBoxVorlage       = (int)$kBoxVorlage;
-        $currencyCachePart = (isset($_SESSION['Waehrung']->kWaehrung))
+        $currencyCachePart = isset($_SESSION['Waehrung']->kWaehrung)
             ? '_cur_' . $_SESSION['Waehrung']->kWaehrung
             : '';
         $kSprache          = Shop::getLanguage();
@@ -442,7 +442,7 @@ class Boxen
                 $oBox->compatName    = 'TrustedShopsKundenbewertung';
                 $cValidSprachISO_arr = ['de', 'en', 'fr', 'pl', 'es'];
                 if ($this->boxConfig['trustedshops']['trustedshops_kundenbewertung_anzeigen'] === 'Y' &&
-                    in_array(StringHandler::convertISO2ISO639($_SESSION['cISOSprache']), $cValidSprachISO_arr)) {
+                    in_array(StringHandler::convertISO2ISO639($_SESSION['cISOSprache']), $cValidSprachISO_arr, true)) {
                     $oTrustedShops                = new TrustedShops(-1, StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
                     $oTrustedShopsKundenbewertung = $oTrustedShops->holeKundenbewertungsstatus(StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
                     if (isset($oTrustedShopsKundenbewertung->cTSID) &&
@@ -688,7 +688,7 @@ class Boxen
                             foreach ($oTopBewertet_arr as $oTopBewertet) {
                                 foreach ($oArtikel_arr as $j => $oArtikel) {
                                     if ($oTopBewertet->kArtikel == $oArtikel->kArtikel) {
-                                        $oArtikel_arr[$j]->fDurchschnittsBewertung = round(($oTopBewertet->fDurchschnittsBewertung * 2)) / 2;
+                                        $oArtikel_arr[$j]->fDurchschnittsBewertung = round($oTopBewertet->fDurchschnittsBewertung * 2) / 2;
                                     }
                                 }
                             }
@@ -794,7 +794,7 @@ class Boxen
                     }
                     $cZusatzParams = StringHandler::filterXSS($cZusatzParams);
                     foreach ($CWunschlistePos_arr as $CWunschlistePos) {
-                        $cRequestURI  = (isset($_SERVER['REQUEST_URI']))
+                        $cRequestURI  = isset($_SERVER['REQUEST_URI'])
                             ? $_SERVER['REQUEST_URI']
                             : $_SERVER['SCRIPT_NAME'];
                         $nPosAnd      = strrpos($cRequestURI, '&');
@@ -822,11 +822,11 @@ class Boxen
                             $CWunschlistePos->kWunschlistePos .
                             $cZusatzParams;
                         if ((int)$_SESSION['Kundengruppe']->nNettoPreise > 0) {
-                            $fPreis = (isset($CWunschlistePos->Artikel->Preise->fVKNetto))
+                            $fPreis = isset($CWunschlistePos->Artikel->Preise->fVKNetto)
                                 ? (int)$CWunschlistePos->fAnzahl * $CWunschlistePos->Artikel->Preise->fVKNetto
                                 : 0;
                         } else {
-                            $fPreis = (isset($CWunschlistePos->Artikel->Preise->fVKNetto))
+                            $fPreis = isset($CWunschlistePos->Artikel->Preise->fVKNetto)
                                 ? (int)$CWunschlistePos->fAnzahl * ($CWunschlistePos->Artikel->Preise->fVKNetto *
                                     (100 + $_SESSION['Steuersatz'][$CWunschlistePos->Artikel->kSteuerklasse]) / 100)
                                 : 0;
@@ -1189,7 +1189,7 @@ class Boxen
                 $oBox->compatName = 'oGlobalMerkmal_arr';
                 $oBox->anzeigen   = 'Y';
                 require_once PFAD_ROOT . PFAD_INCLUDES . 'seite_inc.php';
-                $oBox->globaleMerkmale = ($_SESSION['Kundengruppe']->darfArtikelKategorienSehen)
+                $oBox->globaleMerkmale = $_SESSION['Kundengruppe']->darfArtikelKategorienSehen
                     ? gibSitemapGlobaleMerkmale()
                     : [];
                 break;
@@ -1503,9 +1503,9 @@ class Boxen
     }
 
     /**
-     * @param int    $nSeite
-     * @param string $ePosition
-     * @param bool   $bAnzeigen
+     * @param int      $nSeite
+     * @param string   $ePosition
+     * @param bool|int $bAnzeigen
      * @return bool
      */
     public function setzeBoxAnzeige($nSeite, $ePosition, $bAnzeigen)
@@ -1704,10 +1704,10 @@ class Boxen
     }
 
     /**
-     * @param int  $kBox
-     * @param int  $nSeite
-     * @param int  $nSort
-     * @param bool $bAktiv
+     * @param int      $kBox
+     * @param int      $nSeite
+     * @param int      $nSort
+     * @param bool|int $bAktiv
      * @return bool
      */
     public function sortBox($kBox, $nSeite, $nSort, $bAktiv = true)
@@ -1749,9 +1749,9 @@ class Boxen
     }
 
     /**
-     * @param int  $kBox
-     * @param int  $nSeite
-     * @param bool $bAktiv
+     * @param int      $kBox
+     * @param int      $nSeite
+     * @param bool|int $bAktiv
      * @return bool
      */
     public function aktiviereBox($kBox, $nSeite, $bAktiv = true)
@@ -1784,9 +1784,9 @@ class Boxen
         $kBox = (int)$kBox;
         $bOk  = Shop::DB()->delete('tboxen', 'kBox', $kBox) > 0;
 
-        return ($bOk) ?
-            (Shop::DB()->delete('tboxensichtbar', 'kBox', $kBox) > 0) :
-            false;
+        return $bOk
+            ? (Shop::DB()->delete('tboxensichtbar', 'kBox', $kBox) > 0)
+            : false;
     }
 
     /**
@@ -1924,7 +1924,7 @@ class Boxen
             $cColor = '';
             $cCodes = ['00', '33', '66', '99', 'CC', 'FF'];
             for ($i = 0; $i < 3; $i++) {
-                $cColor .= $cCodes[rand(0, (count($cCodes) - 1))];
+                $cColor .= $cCodes[rand(0, count($cCodes) - 1)];
             }
 
             return '0x' . $cColor;

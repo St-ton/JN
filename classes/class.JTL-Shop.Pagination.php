@@ -120,14 +120,14 @@ class Pagination
     private $cOrderSQL = '';
 
     /**
-     * @var null|array
+     * @var array
      */
-    private $oItem_arr = null;
+    private $oItem_arr;
 
     /**
-     * @var null|array
+     * @var array
      */
-    private $oPageItem_arr = null;
+    private $oPageItem_arr;
 
     /**
      * @var int

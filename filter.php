@@ -236,13 +236,20 @@ if (strpos(basename($NaviFilter->getURL(true, null)), '.php') === false) {
     $cCanonicalURL = $NaviFilter->getURL(true, null, true) . $cSeite;
 }
 // Auswahlassistent
-if (function_exists('starteAuswahlAssistent')) {
+if (TEMPLATE_COMPATIBILITY === true && function_exists('starteAuswahlAssistent')) {
     starteAuswahlAssistent(
         AUSWAHLASSISTENT_ORT_KATEGORIE,
         $cParameter_arr['kKategorie'],
         Shop::getLanguage(),
         $smarty,
         $Einstellungen['auswahlassistent']
+    );
+} elseif (class_exists('AuswahlAssistent')) {
+    AuswahlAssistent::startIfRequired(
+        AUSWAHLASSISTENT_ORT_KATEGORIE,
+        $cParameter_arr['kKategorie'],
+        Shop::getLanguage(),
+        $smarty
     );
 }
 $smarty->assign('SEARCHSPECIALS_TOPREVIEWS', SEARCHSPECIALS_TOPREVIEWS)

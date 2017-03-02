@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-include '../config.JTL-Shop.ini.php';
+include __DIR__ . '/../config.JTL-Shop.ini.php';
 
 /**
  * @param string $font

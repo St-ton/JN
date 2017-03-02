@@ -10,9 +10,9 @@
 class TemplateHelper
 {
     /**
-     * @var null|string
+     * @var string
      */
-    public $templateDir = null;
+    public $templateDir;
 
     /**
      * @var bool
@@ -20,7 +20,7 @@ class TemplateHelper
     public $isAdmin = false;
 
     /**
-     * @var null|TemplateHelper
+     * @var []TemplateHelper
      */
     public static $instances = [];
 
@@ -35,7 +35,7 @@ class TemplateHelper
     public function __construct($isAdmin = false)
     {
         $this->isAdmin         = $isAdmin;
-        $idx                   = ($isAdmin) ? 'admin' : 'frontend';
+        $idx                   = $isAdmin ? 'admin' : 'frontend';
         self::$instances[$idx] = $this;
     }
 
@@ -45,7 +45,7 @@ class TemplateHelper
      */
     public static function getInstance($isAdmin = false)
     {
-        $idx = ($isAdmin) ? 'admin' : 'frontend';
+        $idx = $isAdmin ? 'admin' : 'frontend';
 
         return (!empty(self::$instances[$idx])) ? self::$instances[$idx] : new self($isAdmin);
     }
@@ -299,7 +299,7 @@ class TemplateHelper
     public function getData($cOrdner, $isAdmin = null)
     {
         $isAdmin = ($isAdmin !== null) ? $isAdmin : $this->isAdmin;
-        $cacheID = 'tpl_' . $cOrdner . (($isAdmin) ? '_admin' : '');
+        $cacheID = 'tpl_' . $cOrdner . ($isAdmin ? '_admin' : '');
         if ($this->cachingEnabled === true && ($oTemplate = Shop::Cache()->get($cacheID)) !== false) {
             return $oTemplate;
         }

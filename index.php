@@ -64,7 +64,7 @@ if ($cParameter_arr['kKategorie'] > 0 &&
 ) {
     $cParameter_arr['kKategorie'] = 0;
     $oLink                        = Shop::DB()->select('tlink', 'nLinkart', LINKTYP_404);
-    $kLink                        = $oLink->kLink;
+    $kLink                        = (int)$oLink->kLink;
     Shop::$kLink                  = $kLink;
 }
 Shop::getEntryPoint();

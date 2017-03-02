@@ -12,12 +12,12 @@ class VersandartHelper
     /**
      * @var VersandartHelper
      */
-    private static $_instance = null;
+    private static $_instance;
 
     /**
      * @var string
      */
-    public $cacheID = null;
+    public $cacheID;
 
     /**
      * @var array
@@ -368,7 +368,7 @@ class VersandartHelper
         if (!is_array($oArtikel_arr) || count($oArtikel_arr) === 0) {
             return null;
         }
-        $cLandISO = (isset($_SESSION['cLieferlandISO'])) ? $_SESSION['cLieferlandISO'] : false;
+        $cLandISO = isset($_SESSION['cLieferlandISO']) ? $_SESSION['cLieferlandISO'] : false;
         if (!$cLandISO) {
             //Falls kein Land in tfirma da
             $cLandISO = 'DE';

@@ -22,7 +22,7 @@ function stp_GetCurrencies($proxySTP, $languageShop, $Currency, $txtAmount, &$tx
                 if ($txtToCurrency == $value['Code']) {
                     $txtToCurrency = $value['Code'];
                     $optionsCurrencies .=  '<option value="' . $value['Code'] . '" selected>' . $value['Name'] . "</option>\n";
-                } elseif (($value['Code'] == 'USD') && ($key == 0)) {
+                } elseif ($value['Code'] === 'USD' && $key == 0) {
                     $txtToCurrency = $value['Code'];
                     $optionsCurrencies .=  '<option value="' . $value['Code'] . '" selected>' . $value['Name'] . "</option>\n";
                 } else {

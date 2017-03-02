@@ -75,7 +75,7 @@ if ($bWaehrungsCheck) {
                     'cName',
                     $Conf[$i]->cWertName
                 );
-                $Conf[$i]->gesetzterWert = (isset($setValue->cWert))
+                $Conf[$i]->gesetzterWert = isset($setValue->cWert)
                     ? $setValue->cWert
                     : null;
             }

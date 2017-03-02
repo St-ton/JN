@@ -169,7 +169,7 @@ if (isset($_GET['a']) && (int)$_GET['a'] > 0) {
             'cName',
             $oConfig_arr[$i]->cWertName
         );
-        $oConfig_arr[$i]->gesetzterWert = (isset($oSetValue->cWert))
+        $oConfig_arr[$i]->gesetzterWert = isset($oSetValue->cWert)
             ? $oSetValue->cWert
             : null;
     }

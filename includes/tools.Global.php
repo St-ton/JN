@@ -253,7 +253,7 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
             $kVaterLink = isset($oLink->kVaterLink) ? (int)$oLink->kVaterLink : null;
             $elems      = [];
             do {
-                if ($kVaterLink === 0) {
+                if ($kVaterLink === 0 || $kVaterLink === null) {
                     break;
                 }
                 $oItem = Shop::DB()->select('tlink', 'kLink', $kVaterLink);
@@ -1373,14 +1373,14 @@ function gibVarKombiEigenschaftsWerte($kArtikel, $bSichtbarkeitBeachten = true)
 }
 
 /**
- * @param int    $kArtikel
- * @param int    $anzahl
- * @param array  $oEigenschaftwerte_arr
- * @param int    $nWeiterleitung
- * @param bool   $cUnique
- * @param int    $kKonfigitem
- * @param null   $oArtikelOptionen
- * @param bool   $setzePositionsPreise
+ * @param int           $kArtikel
+ * @param int           $anzahl
+ * @param array         $oEigenschaftwerte_arr
+ * @param int           $nWeiterleitung
+ * @param bool          $cUnique
+ * @param int           $kKonfigitem
+ * @param stdClass|null $oArtikelOptionen
+ * @param bool          $setzePositionsPreise
  * @return bool
  */
 function fuegeEinInWarenkorb($kArtikel, $anzahl, $oEigenschaftwerte_arr = [], $nWeiterleitung = 0, $cUnique = false, $kKonfigitem = 0, $oArtikelOptionen = null, $setzePositionsPreise = true)
@@ -2363,8 +2363,8 @@ function gibAlleKategorienNoHTML($nKategorieBox = 0)
 }
 
 /**
- * @param object $src
- * @param object $dest
+ * @param stdClass|object $src
+ * @param stdClass|object $dest
  */
 function memberCopy($src, &$dest)
 {

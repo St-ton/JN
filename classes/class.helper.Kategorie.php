@@ -40,9 +40,9 @@ class KategorieHelper
     private static $config;
 
     /**
-     * @var null|array
+     * @var array
      */
-    private static $fullCategories = null;
+    private static $fullCategories;
 
     /**
      * @var bool
@@ -221,12 +221,12 @@ class KategorieHelper
                 $_cat->kOberKategorie = (int)$_cat->kOberKategorie;
                 $_cat->cnt            = (int)$_cat->cnt;
                 //Bildpfad setzen
-                $_cat->cBildURL     = (empty($_cat->cPfad))
+                $_cat->cBildURL     = empty($_cat->cPfad)
                     ? BILD_KEIN_KATEGORIEBILD_VORHANDEN
                     : PFAD_KATEGORIEBILDER . $_cat->cPfad;
                 $_cat->cBildURLFull = $shopURL . '/' . $_cat->cBildURL;
                 // URL bauen
-                $_cat->cURL     = (empty($_cat->cSeo))
+                $_cat->cURL     = empty($_cat->cSeo)
                     ? baueURL($_cat, URLART_KATEGORIE, 0, true)
                     : baueURL($_cat, URLART_KATEGORIE);
                 $_cat->cURLFull = $shopURL . '/' . $_cat->cURL;
@@ -241,10 +241,10 @@ class KategorieHelper
                 }
                 unset($_cat->cBeschreibung_spr, $_cat->cName_spr);
                 // Attribute holen
-                $_cat->categoryFunctionAttributes = (isset($functionAttributes[$_cat->kKategorie]))
+                $_cat->categoryFunctionAttributes = isset($functionAttributes[$_cat->kKategorie])
                     ? $functionAttributes[$_cat->kKategorie]
                     : [];
-                $_cat->categoryAttributes         = (isset($localizedAttributes[$_cat->kKategorie]))
+                $_cat->categoryAttributes         = isset($localizedAttributes[$_cat->kKategorie])
                     ? $localizedAttributes[$_cat->kKategorie]
                     : [];
                 /** @deprecated since version 4.05 - usage of KategorieAttribute is deprecated, use categoryFunctionAttributes instead */
@@ -439,12 +439,12 @@ class KategorieHelper
             $_cat->kOberKategorie = (int)$_cat->kOberKategorie;
             $_cat->cnt            = (int)$_cat->cnt;
             //Bildpfad setzen
-            $_cat->cBildURL     = (empty($_cat->cPfad))
+            $_cat->cBildURL     = empty($_cat->cPfad)
                 ? BILD_KEIN_KATEGORIEBILD_VORHANDEN
                 : PFAD_KATEGORIEBILDER . $_cat->cPfad;
             $_cat->cBildURLFull = $shopURL . '/' . $_cat->cBildURL;
             // URL bauen
-            $_cat->cURL     = (empty($_cat->cSeo))
+            $_cat->cURL     = empty($_cat->cSeo)
                 ? baueURL($_cat, URLART_KATEGORIE, 0, true)
                 : baueURL($_cat, URLART_KATEGORIE);
             $_cat->cURLFull = $shopURL . '/' . $_cat->cURL;
@@ -459,10 +459,10 @@ class KategorieHelper
             }
             unset($_cat->cBeschreibung_spr, $_cat->cName_spr);
             // Attribute holen
-            $_cat->categoryFunctionAttributes = (isset($functionAttributes[$_cat->kKategorie]))
+            $_cat->categoryFunctionAttributes = isset($functionAttributes[$_cat->kKategorie])
                 ? $functionAttributes[$_cat->kKategorie]
                 : [];
-            $_cat->categoryAttributes         = (isset($localizedAttributes[$_cat->kKategorie]))
+            $_cat->categoryAttributes         = isset($localizedAttributes[$_cat->kKategorie])
                 ? $localizedAttributes[$_cat->kKategorie]
                 : [];
             /** @deprecated since version 4.05 - usage of KategorieAttribute is deprecated, use categoryFunctionAttributes instead */
@@ -555,7 +555,7 @@ class KategorieHelper
     {
         $current = $this->getCategoryById((int)$id);
 
-        return (isset($current->Unterkategorien)) ? array_values($current->Unterkategorien) : [];
+        return isset($current->Unterkategorien) ? array_values($current->Unterkategorien) : [];
     }
 
     /**

@@ -61,7 +61,7 @@ for ($i = 0; $i < $configCount; $i++) {
         'cName',
         $oConfig_arr[$i]->cWertName
     );
-    $oConfig_arr[$i]->gesetzterWert = (isset($oSetValue->cWert))
+    $oConfig_arr[$i]->gesetzterWert = isset($oSetValue->cWert)
         ? $oSetValue->cWert
         : null;
 }
@@ -69,16 +69,16 @@ for ($i = 0; $i < $configCount; $i++) {
 // Emails auslesen und in Smarty assignen
 $oEmailBlacklist_arr = Shop::DB()->query("SELECT * FROM temailblacklist", 2);
 // Geblockte Emails auslesen und assignen
-$oEmailBlacklistBlock_arr = Shop::DB()->query(
-    "SELECT *, DATE_FORMAT(dLetzterBlock, '%d.%m.%Y %H:%i') AS Datum
+$oEmailBlacklistBlock_arr = Shop::DB()->query("
+    SELECT *, DATE_FORMAT(dLetzterBlock, '%d.%m.%Y %H:%i') AS Datum
         FROM temailblacklistblock
         ORDER BY dLetzterBlock DESC
         LIMIT 100", 2
 );
 
 $smarty->assign('Sprachen', gibAlleSprachen())
-       ->assign('oEmailBlacklist_arr', (is_array($oEmailBlacklist_arr)) ? $oEmailBlacklist_arr : [])
-       ->assign('oEmailBlacklistBlock_arr', (is_array($oEmailBlacklistBlock_arr)) ? $oEmailBlacklistBlock_arr : [])
+       ->assign('oEmailBlacklist_arr', is_array($oEmailBlacklist_arr) ? $oEmailBlacklist_arr : [])
+       ->assign('oEmailBlacklistBlock_arr', is_array($oEmailBlacklistBlock_arr) ? $oEmailBlacklistBlock_arr : [])
        ->assign('oConfig_arr', $oConfig_arr)
        ->assign('hinweis', $cHinweis)
        ->assign('fehler', $cFehler)

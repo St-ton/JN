@@ -61,7 +61,7 @@ class KategorieArtikel
      */
     public function insertInDB()
     {
-        return (Shop::DB()->insert('tkategorieartikel', kopiereMembers($this)));
+        return Shop::DB()->insert('tkategorieartikel', kopiereMembers($this));
     }
 
     /**

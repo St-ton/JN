@@ -12,22 +12,22 @@ class HerstellerHelper
     /**
      * @var HerstellerHelper
      */
-    private static $_instance = null;
+    private static $_instance;
 
     /**
      * @var string
      */
-    public $cacheID = null;
+    public $cacheID;
 
     /**
      * @var array|mixed
      */
-    public $manufacturers = null;
+    public $manufacturers;
 
     /**
      * @var int
      */
-    private static $langID = null;
+    private static $langID;
 
     /**
      *

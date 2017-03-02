@@ -552,7 +552,7 @@ class Preise
      */
     public function berechneVKs()
     {
-        $waehrung = (isset($_SESSION['Waehrung'])) ? $_SESSION['Waehrung'] : null;
+        $waehrung = isset($_SESSION['Waehrung']) ? $_SESSION['Waehrung'] : null;
         if (!isset($waehrung->kWaehrung)) {
             $waehrung = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
         }
@@ -579,7 +579,7 @@ class Preise
         foreach ($this->fPreis_arr as $fPreis) {
             $this->fStaffelpreis_arr[] = [
                 berechneBrutto($fPreis * $waehrung->fFaktor, $this->fUst),
-                ($fPreis * $waehrung->fFaktor)
+                $fPreis * $waehrung->fFaktor
             ];
         }
 

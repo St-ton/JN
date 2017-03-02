@@ -414,7 +414,7 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
         $cMetaDescription = htmlspecialchars($_POST['cMetaDescription'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
         $cBeschreibung    = htmlspecialchars($_POST['cBeschreibung'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
         $cPreviewImage    = $_POST['previewImage'];
-        $cPlausiValue_arr = pruefeNewsKategorie($_POST['cName'], (isset($_POST['newskategorie_edit_speichern']))
+        $cPlausiValue_arr = pruefeNewsKategorie($_POST['cName'], isset($_POST['newskategorie_edit_speichern'])
             ? (int)$_POST['newskategorie_edit_speichern']
             : 0
         );
@@ -569,7 +569,7 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
         if ($kNews > 0 && count($oNewsKategorie_arr) > 0) {
             $smarty->assign('oNewsKategorie_arr', $oNewsKategorie_arr)
                    ->assign('oAuthor', ContentAuthor::getInstance()->getAuthor('NEWS', $kNews))
-                   ->assign('oPossibleAuthors_arr', ContentAuthor::getInstance()->getPossibleAuthors(['CONTENT_NEWS_SYSTEM_VIEW']));;
+                   ->assign('oPossibleAuthors_arr', ContentAuthor::getInstance()->getPossibleAuthors(['CONTENT_NEWS_SYSTEM_VIEW']));
             $step  = 'news_editieren';
             $oNews = Shop::DB()->query(
                 "SELECT DATE_FORMAT(tnews.dErstellt, '%d.%m.%Y %H:%i') AS Datum, 

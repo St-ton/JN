@@ -17,7 +17,7 @@ class Template
     /**
      * @var string
      */
-    public static $cTemplate = null;
+    public static $cTemplate;
 
     /**
      * @var int
@@ -27,7 +27,7 @@ class Template
     /**
      * @var Template
      */
-    private static $frontEndInstance = null;
+    private static $frontEndInstance;
 
     /**
      * @var bool
@@ -35,49 +35,49 @@ class Template
     private static $isAdmin = false;
 
     /**
-     * @var string|null
+     * @var string
      */
-    private static $parent = null;
+    private static $parent;
 
     /**
      * @var TemplateHelper
      */
-    private static $helper = null;
+    private static $helper;
 
     /**
      * @var string
      */
-    public $xmlData = null;
+    public $xmlData;
 
     /**
      * @var string
      */
-    public $name = null;
+    public $name;
 
     /**
      * @var string
      */
-    public $author = null;
+    public $author;
 
     /**
      * @var string
      */
-    public $url = null;
+    public $url;
 
     /**
      * @var int
      */
-    public $version = null;
+    public $version;
 
     /**
      * @var int
      */
-    public $shopVersion = null;
+    public $shopVersion;
 
     /**
      * @var string
      */
-    public $preview = null;
+    public $preview;
 
     /**
      *
@@ -297,7 +297,7 @@ class Template
             $_settingComparison = '==';
         }
         foreach ($hierarchy as $_h) {
-            $conf = (isset($conf[$_h])) ? $conf[$_h] : null;
+            $conf = isset($conf[$_h]) ? $conf[$_h] : null;
             if ($conf === null) {
                 return false;
             }
@@ -543,7 +543,7 @@ class Template
              self::$cTemplate]
         );
 
-        return (isset($cSkin->cWert)) ? $cSkin->cWert : null;
+        return isset($cSkin->cWert) ? $cSkin->cWert : null;
     }
 
     /**
@@ -572,13 +572,13 @@ class Template
     {
         self::$cTemplate = $folder;
         $oDBSettings     = $this->getConfig();
-        $folder          = [$folder];
+        $folders         = [$folder];
         if ($parent !== null) {
-            $folder[] = $parent;
+            $folders[] = $parent;
         }
         $oSection_arr    = [];
         $ignoredSettings = []; //list of settings that are overridden by child
-        foreach ($folder as $cOrdner) {
+        foreach ($folders as $cOrdner) {
             $oXML = self::$helper->getXML($cOrdner);
             if ($oXML && isset($oXML->Settings, $oXML->Settings->Section)) {
                 /** @var SimpleXMLElement $oXMLSection */
@@ -606,7 +606,7 @@ class Template
                         $oSetting->rawAttributes = [];
                         $settingExists           = false;
                         $atts                    = $XMLSetting->attributes();
-                        if (in_array($key, $ignoredSettings)) {
+                        if (in_array($key, $ignoredSettings, true)) {
                             continue;
                         }
                         foreach ($atts as $_k => $_attr) {
@@ -637,7 +637,7 @@ class Template
                                 // multiple values of 'disable resizing' are allowed,
                                 // but only vertical is ok, if 'resizable' is required
                                 if ('Resizable' === (string)$_key) {
-                                    in_array($_val, $vToggleValues)
+                                    in_array($_val, $vToggleValues, true)
                                         ? $oSetting->vTextAreaAttr_arr[$_key] = 'none'
                                         : $oSetting->vTextAreaAttr_arr[$_key] = 'vertical';
                                     // only vertical, because horizontal breaks the layout
@@ -803,8 +803,8 @@ class Template
             if (!$dh = @opendir(PFAD_ROOT . PFAD_COMPILEDIR)) {
                 return false;
             }
-            while (($obj = readdir($dh))) {
-                if ($obj{0} == '.') {
+            while (($obj = readdir($dh)) !== false) {
+                if ($obj{0} === '.') {
                     continue;
                 }
                 if (!is_dir(PFAD_ROOT . PFAD_COMPILEDIR . $obj)) {
@@ -870,7 +870,7 @@ class Template
      */
     public function getDir($absolute = false)
     {
-        return ($absolute) ? (PFAD_ROOT . PFAD_TEMPLATES . self::$cTemplate) : self::$cTemplate;
+        return $absolute ? (PFAD_ROOT . PFAD_TEMPLATES . self::$cTemplate) : self::$cTemplate;
     }
 
     /**
@@ -945,7 +945,7 @@ class Template
         if (isset($_GET['mt'])) {
             $this->setzeKundenTemplate((boolean)intval($_GET['mt']));
             $cUrlShop_arr    = parse_url(Shop::getURL());
-            $ref             = (isset($_SERVER['HTTP_REFERER'])) ? $_SERVER['HTTP_REFERER'] : '';
+            $ref             = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
             $cUrlReferer_arr = parse_url($ref);
             if ($bRedirect &&
                 $ref !== '' &&

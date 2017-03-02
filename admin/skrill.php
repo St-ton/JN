@@ -126,7 +126,7 @@ if (isset($_POST['actionValidateSecretWord']) && validateToken()) {
         $secret = urlencode(md5(md5($_POST['secretWord']) . MONEYBOOKERS_JTL_SECRET_WORD_MD5));
         $url    = sprintf(MONEYBOOKERS_SECRET_WORD_VALIDATION_URL, $email, $secret, MONEYBOOKERS_JTL_CUSTOMER_ID);
         $arr    = @file($url);
-        $answer = (is_array($arr)) ? implode('', $arr) : 'NOK';
+        $answer = is_array($arr) ? implode('', $arr) : 'NOK';
 
         // Answer is NOK or OK,customerId
         if ($answer === 'OK') {

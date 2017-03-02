@@ -271,9 +271,8 @@ class PreisverlaufGraph
                     2
                 );
                 $this->fMinPreis = round(
-                    (
-                        (($this->fMinPreis * 100) - (($this->fMinPreis * 100) % ($this->fStepWert_arr[$this->nStep] * 100)))
-                    ) / 100,
+                    (($this->fMinPreis * 100) - (($this->fMinPreis * 100) % ($this->fStepWert_arr[$this->nStep] * 100)))
+                     / 100,
                     2
                 );
 

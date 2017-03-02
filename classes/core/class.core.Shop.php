@@ -21,7 +21,7 @@ final class Shop
     /**
      * @var int
      */
-    public static $kSprache = null;
+    public static $kSprache;
 
     /**
      * @var string
@@ -216,7 +216,7 @@ final class Shop
     /**
      * @var null|Shop
      */
-    private static $_instance = null;
+    private static $_instance;
 
     /**
      * @var Navigationsfilter
@@ -226,17 +226,17 @@ final class Shop
     /**
      * @var string
      */
-    public static $fileName = null;
+    public static $fileName;
 
     /**
      * @var
      */
-    public static $AktuelleSeite = null;
+    public static $AktuelleSeite;
 
     /**
      * @var string
      */
-    public static $pageType = null;
+    public static $pageType;
 
     /**
      * @var bool
@@ -301,7 +301,7 @@ final class Shop
     /**
      * @var bool
      */
-    private static $_logged = null;
+    private static $_logged;
 
     /**
      * @var array
@@ -364,7 +364,7 @@ final class Shop
      */
     public function _get($key)
     {
-        return (isset($this->registry[$key]))
+        return isset($this->registry[$key])
             ? $this->registry[$key]
             : null;
     }
@@ -410,7 +410,7 @@ final class Shop
             'get'      => '_get'
         ];
 
-        return (isset($mapping[$method]))
+        return isset($mapping[$method])
             ? $mapping[$method]
             : null;
     }
@@ -640,7 +640,7 @@ final class Shop
         }
 
         foreach ($plugins as $plugin) {
-            if ($p = Plugin::bootstrapper($plugin->kPlugin)) {
+            if (($p = Plugin::bootstrapper($plugin->kPlugin)) !== null) {
                 $p->boot(EventDispatcher::getInstance());
             }
         }
@@ -686,7 +686,7 @@ final class Shop
 
         self::$nSterne = verifyGPCDataInteger('nSterne');
 
-        self::$isSeoMainword = !(!isset($oSeo) || !is_object($oSeo) || !isset($oSeo->cSeo) || strlen(trim($oSeo->cSeo)) === 0);
+        self::$isSeoMainword = !(!isset($oSeo) || !is_object($oSeo) || !isset($oSeo->cSeo) || trim($oSeo->cSeo) === '');
 
         self::$kWunschliste = checkeWunschlisteParameter();
 
@@ -819,8 +819,8 @@ final class Shop
             $katseo       = '';
             $xShopurl_arr = parse_url(self::getURL());
             $xBaseurl_arr = parse_url($uri);
-            $seo          = (isset($xBaseurl_arr['path']))
-                ? substr($xBaseurl_arr['path'], (isset($xShopurl_arr['path']))
+            $seo          = isset($xBaseurl_arr['path'])
+                ? substr($xBaseurl_arr['path'], isset($xShopurl_arr['path'])
                     ? (strlen($xShopurl_arr['path']) + 1)
                     : 1)
                 : false;
@@ -1039,10 +1039,10 @@ final class Shop
                 }
                 if (isset($oSeo->kSprache) && $oSeo->kSprache > 0) {
                     $kSprache = (int)$oSeo->kSprache;
-                    $spr      = (class_exists('Sprache'))
+                    $spr      = class_exists('Sprache')
                         ? self::Lang()->getIsoFromLangID($kSprache)
                         : self::DB()->select('tsprache', 'kSprache', $kSprache);
-                    $cLang = (isset($spr->cISO)) ? $spr->cISO : null;
+                    $cLang = isset($spr->cISO) ? $spr->cISO : null;
                     if ($cLang !== $_SESSION['cISOSprache']) {
                         checkeSpracheWaehrung($cLang);
                         setzeSteuersaetze();
@@ -1138,7 +1138,7 @@ final class Shop
                             WHERE nLinkart = " . LINKTYP_STARTSEITE . $cKundengruppenSQL, 1
                     );
                 }
-                self::$kLink = (isset($link->kLink))
+                self::$kLink = isset($link->kLink)
                     ? (int)$link->kLink
                     : $linkHelper->getSpecialPageLinkKey(LINKTYP_STARTSEITE);
             } elseif (self::Media()->isValidRequest($cPath)) {
@@ -1302,7 +1302,7 @@ final class Shop
     {
         $ret  = null;
         $conf = self::getSettings([CONF_LOGO]);
-        $file = (isset($conf['logo']['shop_logo'])) ? $conf['logo']['shop_logo'] : null;
+        $file = isset($conf['logo']['shop_logo']) ? $conf['logo']['shop_logo'] : null;
         if ($file !== null && $file !== '') {
             $ret = PFAD_SHOPLOGO . $file;
         } elseif (is_dir(PFAD_ROOT . PFAD_SHOPLOGO)) {

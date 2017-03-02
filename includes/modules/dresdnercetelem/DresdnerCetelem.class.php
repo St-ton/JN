@@ -40,7 +40,7 @@ class DresdnerCetelem extends PaymentMethod
             if ($this->gibAnzahlungMoeglich() === 'Y') {
                 $cAnzahlung = '&/CreditCalculator/firstPayment=0';
             }
-            $fGesamtsummeKundenWaehrung = str_replace(".", ",", round(strval($order->fGesamtsummeKundenwaehrung), 2));
+            $fGesamtsummeKundenWaehrung = str_replace('.', ',', round(strval($order->fGesamtsummeKundenwaehrung), 2));
 
             $cURL = 'https://finanzierung.commerzfinanz.com/ecommerce/entry?vendorid=' . $this->Haendlernummer  .
                 '&order_amount=' . $fGesamtsummeKundenWaehrung . $cAnzahlung . '&order_id=' .
@@ -60,7 +60,7 @@ class DresdnerCetelem extends PaymentMethod
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getHaendlernummer()
     {
@@ -70,7 +70,7 @@ class DresdnerCetelem extends PaymentMethod
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function gibAnzahlungMoeglich()
     {
@@ -85,8 +85,8 @@ class DresdnerCetelem extends PaymentMethod
     public function gibMindestArtikelwert()
     {
         global $Einstellungen;
-        $fMinWert = (isset($Einstellungen['zahlungsarten']['zahlungsart_dresdnercetelem_min']))
-            ? intval($Einstellungen['zahlungsarten']['zahlungsart_dresdnercetelem_min'])
+        $fMinWert = isset($Einstellungen['zahlungsarten']['zahlungsart_dresdnercetelem_min'])
+            ? (int)$Einstellungen['zahlungsarten']['zahlungsart_dresdnercetelem_min']
             : null;
         if ($fMinWert < 100) {
             $fMinWert = 100;

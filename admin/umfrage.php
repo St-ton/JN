@@ -569,7 +569,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                 'cName',
                 $oConfig_arr[$i]->cWertName
             );
-            $oConfig_arr[$i]->gesetzterWert = (isset($oSetValue->cWert))
+            $oConfig_arr[$i]->gesetzterWert = isset($oSetValue->cWert)
                 ? $oSetValue->cWert
                 : null;
         }

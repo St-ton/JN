@@ -23,25 +23,25 @@ class Wirecard extends PaymentMethod
     }
 
     /**
-     * @return null
+     * @return string|null
      */
     public function getCustomerId()
     {
         global $Einstellungen;
 
-        return (isset($Einstellungen['zahlungsarten']['zahlungsart_wirecard_customer_id']))
+        return isset($Einstellungen['zahlungsarten']['zahlungsart_wirecard_customer_id'])
             ? $Einstellungen['zahlungsarten']['zahlungsart_wirecard_customer_id']
             : null;
     }
 
     /**
-     * @return null
+     * @return string|null
      */
     public function getSecret()
     {
         global $Einstellungen;
 
-        return (isset($Einstellungen['zahlungsarten']['zahlungsart_wirecard_secret']))
+        return isset($Einstellungen['zahlungsarten']['zahlungsart_wirecard_secret'])
             ? $Einstellungen['zahlungsarten']['zahlungsart_wirecard_secret']
             : null;
     }
@@ -60,7 +60,7 @@ class Wirecard extends PaymentMethod
         }
 
         $cReturnUrl = $this->getReturnURL($order);
-        if (strlen($cReturnUrl) == 0) {
+        if (strlen($cReturnUrl) === 0) {
             $cReturnUrl = Shop::getURL() . '/bestellabschluss.php?i=' . $paymentHash;
         }
 
@@ -145,16 +145,16 @@ class Wirecard extends PaymentMethod
         for ($i = 0; $i < $wcCount; $i++) {
             $key = $wcOrder[$i];
             // check if there are enough fields in den responsefingerprint
-            if ((strcmp($key, 'paymentState')) == 0 && (strlen($args[$wcOrder[$i]]) > 0)) {
+            if (strcmp($key, 'paymentState') === 0 && strlen($args[$wcOrder[$i]]) > 0) {
                 $mandatoryFingerPrintFields++;
             }
-            if ((strcmp($key, 'orderNumber')) == 0 && (strlen($args[$wcOrder[$i]]) > 0)) {
+            if (strcmp($key, 'orderNumber') === 0 && strlen($args[$wcOrder[$i]]) > 0) {
                 $mandatoryFingerPrintFields++;
             }
-            if ((strcmp($key, 'paymentType')) == 0 && (strlen($args[$wcOrder[$i]]) > 0)) {
+            if (strcmp($key, 'paymentType') === 0 && strlen($args[$wcOrder[$i]]) > 0) {
                 $mandatoryFingerPrintFields++;
             }
-            if (strcmp($key, 'secret') == 0) {
+            if (strcmp($key, 'secret') === 0) {
                 $str4responseFingerprint .= $this->getSecret();
                 $secretUsed = 1;
             } else {
@@ -165,14 +165,10 @@ class Wirecard extends PaymentMethod
         // recalc the fingerprint
         $responseFingerprintCalc = md5($str4responseFingerprint);
 
-        if ((strcmp($responseFingerprintCalc, $responseFingerprint) == 0)
-            && ($mandatoryFingerPrintFields == 3)
-            && ($secretUsed == 1)
-        ) {
-            return true;
-        }
-
-        return false;
+        return (strcmp($responseFingerprintCalc, $responseFingerprint) === 0 &&
+            $mandatoryFingerPrintFields == 3 &&
+            $secretUsed == 1
+        );
     }
 
     /**
@@ -181,13 +177,13 @@ class Wirecard extends PaymentMethod
      */
     public function isValidIntern($args_arr = [])
     {
-        if (strlen($this->getCustomerId()) == 0) {
+        if (strlen($this->getCustomerId()) === 0) {
             ZahlungsLog::add($this->moduleID, 'Pflichtparameter "Kundennummer" ist nicht gesetzt!', null, LOGLEVEL_ERROR);
 
             return false;
         }
 
-        if (strlen($this->getSecret()) == 0) {
+        if (strlen($this->getSecret()) === 0) {
             ZahlungsLog::add($this->moduleID, 'Pflichtparameter "Secret" ist nicht gesetzt!', null, LOGLEVEL_ERROR);
 
             return false;

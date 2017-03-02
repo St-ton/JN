@@ -12,7 +12,7 @@ class HerstellerHelper
     /**
      * @var HerstellerHelper
      */
-    private static $_instance
+    private static $_instance;
 
     /**
      * @var string

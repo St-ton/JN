@@ -453,7 +453,7 @@ class FilterItemPriceRange extends AbstractFilter implements IFilter
             $oPreisspannenFilterMaxMin = Shop::DB()->query($qry, 1);
             if (isset($oPreisspannenFilterMaxMin->fMax) && $oPreisspannenFilterMaxMin->fMax > 0) {
                 // Berechnet Max, Min, Step, Anzahl, Diff und liefert diese Werte in einem Objekt
-                $oPreis = berechneMaxMinStep($oPreisspannenFilterMaxMin->fMax * $currency->fFaktor,
+                $oPreis = $this->calculateSteps($oPreisspannenFilterMaxMin->fMax * $currency->fFaktor,
                     $oPreisspannenFilterMaxMin->fMin * $currency->fFaktor);
                 // Begrenzung der Preisspannen bei zu großen Preisdifferenzen
                 $oPreis->nAnzahlSpannen = min(20, (int)$oPreis->nAnzahlSpannen);
@@ -529,7 +529,7 @@ class FilterItemPriceRange extends AbstractFilter implements IFilter
             $oPreisspannenfilter_arr = Shop::DB()->query("SELECT * FROM tpreisspannenfilter", 2);
             if (is_array($oPreisspannenfilter_arr) && count($oPreisspannenfilter_arr) > 0) {
                 // Berechnet Max, Min, Step, Anzahl, Diff
-                $oPreis = berechneMaxMinStep(
+                $oPreis = $this->calculateSteps(
                     $oPreisspannenfilter_arr[count($oPreisspannenfilter_arr) - 1]->nBis * $currency->fFaktor,
                     $oPreisspannenfilter_arr[0]->nVon * $currency->fFaktor
                 );
@@ -610,5 +610,52 @@ class FilterItemPriceRange extends AbstractFilter implements IFilter
         }
 
         return $oPreisspanne_arr;
+    }
+
+    /**
+     * @param float $fMax
+     * @param float $fMin
+     * @return stdClass
+     * @former berechneMaxMinStep
+     */
+    private function calculateSteps($fMax, $fMin)
+    {
+        $fStepWert_arr = [
+            0.001, 0.005, 0.01, 0.05, 0.10, 0.25, 0.5, 1.0, 2.5, 5.0, 7.5,
+            10.0, 12.5, 15.0, 20.0, 25.0, 50.0, 100.0, 250.0, 300.0, 350.0,
+            400.0, 500.0, 750.0, 1000.0, 1500.0, 2500.0, 5000.0, 10000.0,
+            25000.0, 30000.0, 40000.0, 50000.0, 60000.0, 75000.0, 100000.0,
+            150000.0, 250000.0, 350000.0, 400000.0, 500000.0, 550000.0,
+            600000.0, 750000.0, 1000000.0, 1500000.0, 5000000.0, 7500000.0,
+            10000000.0, 12500000.0, 15000000.0, 25000000.0, 50000000.0,
+            100000000.0
+        ];
+        $nStep      = 10;
+        $fDiffPreis = (float)($fMax - $fMin) * 1000;
+        $nMaxSteps  = ($this->getConfig()['navigationsfilter']['preisspannenfilter_anzeige_berechnung'] === 'M')
+            ? 10
+            : 5;
+        foreach ($fStepWert_arr as $i => $fStepWert) {
+            if (($fDiffPreis / (float)($fStepWert * 1000)) < $nMaxSteps) {
+                $nStep = $i;
+                break;
+            }
+        }
+        $fStepWert = $fStepWert_arr[$nStep] * 1000;
+        $fMax *= 1000;
+        $fMin *= 1000;
+        $fMaxPreis      = round(((($fMax * 100) - (($fMax * 100) % ($fStepWert * 100))) + ($fStepWert * 100)) / 100, 0);
+        $fMinPreis      = round((($fMin * 100) - (($fMin * 100) % ($fStepWert * 100))) / 100, 0);
+        $fDiffPreis     = $fMaxPreis - $fMinPreis;
+        $nAnzahlSpannen = round($fDiffPreis / $fStepWert, 0);
+
+        $oObject                 = new stdClass();
+        $oObject->fMaxPreis      = $fMaxPreis / 1000;
+        $oObject->fMinPreis      = $fMinPreis / 1000;
+        $oObject->fStep          = $fStepWert_arr[$nStep];
+        $oObject->fDiffPreis     = $fDiffPreis / 1000;
+        $oObject->nAnzahlSpannen = $nAnzahlSpannen;
+
+        return $oObject;
     }
 }

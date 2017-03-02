@@ -364,7 +364,7 @@ if ($step === 'uebersicht') {
 
     $oNice = Nice::getInstance();
     $smarty->assign('zahlungsarten', $oZahlungsart_arr)
-           ->assign('nFinanzierungAktiv', ($oNice->checkErweiterung(SHOP_ERWEITERUNG_FINANZIERUNG)) ? 1 : 0);
+           ->assign('nFinanzierungAktiv', $oNice->checkErweiterung(SHOP_ERWEITERUNG_FINANZIERUNG) ? 1 : 0);
 }
 $smarty->assign('step', $step)
        ->assign('waehrung', $standardwaehrung->cName)

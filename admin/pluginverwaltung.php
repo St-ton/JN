@@ -534,7 +534,7 @@ if ($step === 'pluginverwaltung_uebersicht') {
             }
             // only if we found something, we add it to our array
             if ('' !== $vPossibleLicenseNames[$j]) {
-                $vLicenseFiles[$PluginVerfuebar_arr[$i]->cVerzeichnis] = $szFolder.$vPossibleLicenseNames[$j];;
+                $vLicenseFiles[$PluginVerfuebar_arr[$i]->cVerzeichnis] = $szFolder.$vPossibleLicenseNames[$j];
             }
         }
         if (!empty($vLicenseFiles)) {
@@ -569,7 +569,7 @@ if ($reload === true) {
 if (defined('PLUGIN_DEV_MODE') && PLUGIN_DEV_MODE === true) {
     $pluginDevNotice = 'Ihr Shop befindet sich im Plugin-Entwicklungsmodus. ' .
         '&Auml;nderungen an der XML-Datei eines aktivierten Plugins bewirken ein automatisches Update.';
-    $cHinweis        = (empty($cHinweis))
+    $cHinweis        = empty($cHinweis)
         ? $pluginDevNotice
         : $pluginDevNotice . '<br>' . $cHinweis;
 }

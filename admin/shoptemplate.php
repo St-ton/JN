@@ -193,13 +193,13 @@ if (isset($_GET['settings']) && strlen($_GET['settings']) > 0 && validateToken()
                         count($_themeConf->oOptions_arr) > 0
                     ) {
                         foreach ($_themeConf->oOptions_arr as $_theme) {
-                            $previewImage = (isset($_theme->cOrdner)) ?
-                                PFAD_ROOT . PFAD_TEMPLATES . $_theme->cOrdner . '/themes/' . $_theme->cValue . '/preview.png' :
-                                PFAD_ROOT . PFAD_TEMPLATES . $cOrdner . '/themes/' . $_theme->cValue . '/preview.png';
+                            $previewImage = isset($_theme->cOrdner)
+                                ? PFAD_ROOT . PFAD_TEMPLATES . $_theme->cOrdner . '/themes/' . $_theme->cValue . '/preview.png'
+                                : PFAD_ROOT . PFAD_TEMPLATES . $cOrdner . '/themes/' . $_theme->cValue . '/preview.png';
                             if (file_exists($previewImage)) {
-                                $preview[$_theme->cValue] = (isset($_theme->cOrdner)) ?
-                                    $shopURL . PFAD_TEMPLATES . $_theme->cOrdner . '/themes/' . $_theme->cValue . '/preview.png' :
-                                    $shopURL . PFAD_TEMPLATES . $cOrdner . '/themes/' . $_theme->cValue . '/preview.png';
+                                $preview[$_theme->cValue] = isset($_theme->cOrdner)
+                                    ? $shopURL . PFAD_TEMPLATES . $_theme->cOrdner . '/themes/' . $_theme->cValue . '/preview.png'
+                                    : $shopURL . PFAD_TEMPLATES . $cOrdner . '/themes/' . $_theme->cValue . '/preview.png';
                             }
                         }
                         break;

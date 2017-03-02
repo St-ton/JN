@@ -63,6 +63,7 @@ class Filter
      *
      * @param string|array $cTitle - either title-string for this field or a pair of short title and long title
      * @param string $cColumn - the column name to be compared
+     * @param int    $nDefaultOption
      * @return FilterSelectField
      */
     public function addSelectfield($cTitle, $cColumn, $nDefaultOption = 0)
@@ -115,6 +116,7 @@ class Filter
     }
 
     /**
+     * @param int $i
      * @return array
      */
     public function getField($i)

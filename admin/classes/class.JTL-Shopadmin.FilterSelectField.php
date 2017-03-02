@@ -15,6 +15,7 @@ class FilterSelectField extends FilterField
      * @param Filter $oFilter
      * @param string $cTitle
      * @param string $cColumn
+     * @param int    $nDefaultOption
      */
     public function __construct($oFilter, $cTitle, $cColumn, $nDefaultOption = 0)
     {

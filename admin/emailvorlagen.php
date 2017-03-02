@@ -575,10 +575,10 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage']) && (int)$_POST['Aendern'] 
         // PDFs hochladen
         $cDateiname_arr    = [];
         $cPDFS_arr         = [];
-        $cPDFSTMP_arr      = (isset($oEmailvorlageSprache_arr[$Sprache->kSprache]->cPDFS))
+        $cPDFSTMP_arr      = isset($oEmailvorlageSprache_arr[$Sprache->kSprache]->cPDFS)
             ? bauePDFArray($oEmailvorlageSprache_arr[$Sprache->kSprache]->cPDFS)
             : [];
-        $cDateinameTMP_arr = (isset($oEmailvorlageSprache_arr[$Sprache->kSprache]->cDateiname))
+        $cDateinameTMP_arr = isset($oEmailvorlageSprache_arr[$Sprache->kSprache]->cDateiname)
             ? baueDateinameArray($oEmailvorlageSprache_arr[$Sprache->kSprache]->cDateiname)
             : [];
         if (!isset($oEmailvorlageSprache_arr[$Sprache->kSprache]->cPDFS) ||
@@ -674,6 +674,7 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage']) && (int)$_POST['Aendern'] 
                 }
             }
         }
+        $Emailvorlagesprache->cDateiname   = '';
         $Emailvorlagesprache->kSprache     = $Sprache->kSprache;
         $Emailvorlagesprache->cBetreff     = isset($_POST['cBetreff_' . $Sprache->kSprache])
             ? $_POST['cBetreff_' . $Sprache->kSprache]
@@ -698,8 +699,6 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage']) && (int)$_POST['Aendern'] 
         } elseif (isset($oEmailvorlageSprache_arr[$Sprache->kSprache]->cDateiname) &&
             strlen($oEmailvorlageSprache_arr[$Sprache->kSprache]->cDateiname) > 0) {
             $Emailvorlagesprache->cDateiname = $oEmailvorlageSprache_arr[$Sprache->kSprache]->cDateiname;
-        } else {
-            $Emailvorlagesprache->cDateiname = '';
         }
         if ($nFehler == 0) {
             Shop::DB()->delete(

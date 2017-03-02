@@ -190,12 +190,14 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
                     }
                 }
             }
-
-            $NaviFilter                     = Shop::buildNaviFilter($cParameter_arr);
-            $FilterSQL                      = new stdClass();
-            $FilterSQL->oMerkmalFilterSQL   = gibMerkmalFilterSQL($NaviFilter);
-            $FilterSQL->oKategorieFilterSQL = gibKategorieFilterSQL($NaviFilter);
-            $oMerkmalFilter_arr             = gibMerkmalFilterOptionen($FilterSQL, $NaviFilter, null, true);
+            $NaviFilter                           = Shop::buildNaviFilter($cParameter_arr);
+            $oSuchergebnisse                      = new stdClass();
+            $oSuchergebnisse->GesamtanzahlArtikel = 0;
+            $AktuelleKategorie                    = isset($cParameter_arr['kKategorie'])
+                ? new Kategorie($cParameter_arr['kKategorie'])
+                : null;
+            $oMerkmalFilter_arr                   = $NaviFilter->setFilterOptions($oSuchergebnisse,
+                $AktuelleKategorie)->MerkmalFilter;
 
             foreach ($oMerkmalFilter_arr as $oMerkmalFilter) {
                 if (array_key_exists((int)$oMerkmalFilter->kMerkmal, $this->oFrage_assoc)) {
@@ -343,7 +345,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
         }
 
         /**
-         * @return stdClass
+         * @return Navigationsfilter
          */
         public function getNaviFilter()
         {

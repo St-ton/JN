@@ -150,7 +150,7 @@ function setzeEinstellung($cPost_arr, $kWaehrung)
             $aktWert->kExportformat = $kExportformat;
             switch ($Conf[$i]->cInputTyp) {
                 case 'kommazahl':
-                    $aktWert->cWert = floatval($aktWert->cWert);
+                    $aktWert->cWert = (float)$aktWert->cWert;
                     break;
                 case 'zahl':
                 case 'number':

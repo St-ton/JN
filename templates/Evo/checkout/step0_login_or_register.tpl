@@ -49,7 +49,7 @@
                                         <label class="control-label" for="email">{lang key="emailadress" section="global"}</label>
                                         <input
                                         class="form-control"
-                                        type="text"
+                                        type="email"
                                         name="userLogin"
                                         id="email"
                                         placeholder="{lang key="emailadress" section="global"}"

@@ -406,10 +406,10 @@ class ipl_prescore_request extends ipl_xml_request
      */
     public function add_order_history_attributes($iMerchantCustomerLimit, $iRepeatCustomer)
     {
-        $this->_order_history_attr = array(
+        $this->_order_history_attr = [
             'merchant_customer_limit' => (int)$iMerchantCustomerLimit,
             'repeat_customer'         => (int)$iRepeatCustomer,
-        );
+        ];
 
         return $this;
     }

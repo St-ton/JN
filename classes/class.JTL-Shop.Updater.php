@@ -316,7 +316,7 @@ class Updater
             $code  = (int)$e->errorInfo[1];
             $error = Shop::DB()->escape($e->errorInfo[2]);
 
-            if (!in_array($code, [1062, 1060, 1267])) {
+            if (!in_array($code, [1062, 1060, 1267], true)) {
                 Shop::DB()->rollback();
 
                 $errorCountForLine = 1;

@@ -33,7 +33,7 @@ function gibTrustedShops()
             $oTrustedShopsTMP->oKaeuferschutzProdukte->item = filterNichtGebrauchteKaeuferschutzProdukte(
                 $oTrustedShops->oKaeuferschutzProdukte->item,
                 $_SESSION['Warenkorb']->gibGesamtsummeWaren(false) *
-                ((100 + doubleval($_SESSION['Steuersatz'][$_SESSION['Warenkorb']->gibVersandkostenSteuerklasse($cLandISO)])) / 100)
+                ((100 + (float)$_SESSION['Steuersatz'][$_SESSION['Warenkorb']->gibVersandkostenSteuerklasse($cLandISO)]) / 100)
             );
         }
         $oTrustedShopsTMP->cLogoURL                 = $oTrustedShops->cLogoURL;
@@ -44,7 +44,7 @@ function gibTrustedShops()
             ? gibVorausgewaehltesProdukt(
                 $oTrustedShops->oKaeuferschutzProdukte->item,
                 $_SESSION['Warenkorb']->gibGesamtsummeWaren(false) *
-                ((100 + doubleval($_SESSION['Steuersatz'][$_SESSION['Warenkorb']->gibVersandkostenSteuerklasse($cLandISO)])) / 100)
+                ((100 + (float)$_SESSION['Steuersatz'][$_SESSION['Warenkorb']->gibVersandkostenSteuerklasse($cLandISO)]) / 100)
             )
             : '';
     }
@@ -73,7 +73,7 @@ function filterNichtGebrauchteKaeuferschutzProdukte($oKaeuferschutzProdukte_arr,
     if (is_array($oKaeuferschutzProdukte_arr) && count($oKaeuferschutzProdukte_arr) > 0) {
         foreach ($oKaeuferschutzProdukte_arr as $oKaeuferschutzProdukte) {
             $oKaeuferschutzProdukteFilter_arr[] = $oKaeuferschutzProdukte;
-            if (doubleval($fGesamtSumme) < doubleval($oKaeuferschutzProdukte->protectedAmountDecimal)) {
+            if ((float)$fGesamtSumme < (float)$oKaeuferschutzProdukte->protectedAmountDecimal) {
                 break;
             }
         }
@@ -113,10 +113,10 @@ function gibVorausgewaehltesProdukt($oKaeuferschutzProdukte_arr, $fGesamtSumme)
     $fLetzterWert = 0.0;
     if (is_array($oKaeuferschutzProdukte_arr) && count($oKaeuferschutzProdukte_arr) > 0) {
         foreach ($oKaeuferschutzProdukte_arr as $oKaeuferschutzProdukte) {
-            if (doubleval($fGesamtSumme) <= doubleval($oKaeuferschutzProdukte->protectedAmountDecimal) &&
-                (doubleval($oKaeuferschutzProdukte->protectedAmountDecimal) < $fLetzterWert || $fLetzterWert == 0.0)) {
+            if ((float)$fGesamtSumme <= (float)$oKaeuferschutzProdukte->protectedAmountDecimal &&
+                ((float)$oKaeuferschutzProdukte->protectedAmountDecimal < $fLetzterWert || $fLetzterWert === 0.0)) {
                 $tsProductID  = $oKaeuferschutzProdukte->tsProductID;
-                $fLetzterWert = doubleval($oKaeuferschutzProdukte->protectedAmountDecimal);
+                $fLetzterWert = (float)$oKaeuferschutzProdukte->protectedAmountDecimal;
             }
         }
     }

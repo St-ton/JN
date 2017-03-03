@@ -568,7 +568,7 @@ class PaymentMethod
      */
     public function unsetCache($cKey = null)
     {
-        if (is_null($cKey)) {
+        if ($cKey === null) {
             unset($_SESSION[$this->moduleID]);
         } else {
             unset($_SESSION[$this->moduleID][$cKey]);
@@ -583,7 +583,7 @@ class PaymentMethod
      */
     public function getCache($cKey = null)
     {
-        if (is_null($cKey)) {
+        if ($cKey === null) {
             return isset($_SESSION[$this->moduleID])
                 ? $_SESSION[$this->moduleID]
                 : null;

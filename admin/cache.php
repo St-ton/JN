@@ -141,7 +141,7 @@ switch ($action) {
                 $value->kEinstellungenSektion = CONF_CACHING;
                 switch ($settings[$i]->cInputTyp) {
                     case 'kommazahl' :
-                        $value->cWert = floatval($value->cWert);
+                        $value->cWert = (float)$value->cWert;
                         break;
                     case 'zahl' :
                     case 'number':

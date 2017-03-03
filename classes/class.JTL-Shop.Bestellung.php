@@ -490,7 +490,7 @@ class Bestellung
             if ($this->kBestellung > 0) {
                 $this->Zahlungsinfo = new ZahlungsInfo(0, $this->kBestellung);
             }
-            if (doubleval($this->fGuthaben)) {
+            if ((float)$this->fGuthaben) {
                 $this->GuthabenNutzen = 1;
             }
             $this->GutscheinLocalized = gibPreisStringLocalized($this->fGuthaben, $htmlWaehrung);

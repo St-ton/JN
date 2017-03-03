@@ -122,7 +122,8 @@ if (isset($_REQUEST['action']) && validateToken()) {
             for ($i = 0; $i < $boxCount; $i++) {
                 $oBoxen->sortBox($box_arr[$i], $nPage, $sort_arr[$i], in_array($box_arr[$i], $aktiv_arr) ? true : false);
                 $oBoxen->filterBoxVisibility(
-                    (int)$box_arr[$i], (int)$nPage,
+                    (int)$box_arr[$i],
+                    (int)$nPage,
                     isset($_POST['box-filter-' . $box_arr[$i]]) ? $_POST['box-filter-' . $box_arr[$i]] : ''
                 );
             }
@@ -135,7 +136,7 @@ if (isset($_REQUEST['action']) && validateToken()) {
 
         case 'activate':
             $kBox    = (int)$_REQUEST['item'];
-            $bActive = (boolean) intval($_REQUEST['value']);
+            $bActive = (boolean)$_REQUEST['value'];
             $bOk     = $oBoxen->aktiviereBox($kBox, 0, $bActive);
             if ($bOk) {
                 $cHinweis = 'Box wurde erfolgreich bearbeitet.';
@@ -146,7 +147,7 @@ if (isset($_REQUEST['action']) && validateToken()) {
 
         case 'container':
             $ePosition = $_REQUEST['position'];
-            $bValue    = (boolean) intval($_GET['value']);
+            $bValue    = (boolean)$_GET['value'];
             $bOk       = $oBoxen->setzeBoxAnzeige(0, $ePosition, $bValue);
             if ($bOk) {
                 $cHinweis = 'Box wurde erfolgreich bearbeitet.';

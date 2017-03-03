@@ -166,6 +166,13 @@ class Boxen
         );
         if (is_array($oBoxen_arr)) {
             foreach ($oBoxen_arr as $oBox) {
+                $oBox->kBox        = (int)$oBox->kBox;
+                $oBox->kBoxvorlage = (int)$oBox->kBoxvorlage;
+                $oBox->kCustomID   = (int)$oBox->kCustomID;
+                $oBox->kContainer  = (int)$oBox->kContainer;
+                $oBox->kSeite      = (int)$oBox->kSeite;
+                $oBox->nSort       = (int)$oBox->nSort;
+                $oBox->bAktiv      = (int)$oBox->bAktiv;
                 unset($oBox->pluginStatus);
                 if ($oBox->eTyp === 'plugin') {
                     $cacheTags[] = CACHING_GROUP_PLUGIN . '_' . $oBox->kCustomID;
@@ -177,8 +184,8 @@ class Boxen
                     $oBox->oContainer_arr = [];
                     $oBox->nContainer     = 0;
                     if ($kContainer > 0) {
-                        $oContainerBoxen_arr = Shop::DB()->query(
-                            "SELECT tboxen.kBox, tboxen.kBoxvorlage, tboxen.kCustomID, tboxen.kContainer, tboxen.cTitel, 
+                        $oContainerBoxen_arr = Shop::DB()->query("
+                            SELECT tboxen.kBox, tboxen.kBoxvorlage, tboxen.kCustomID, tboxen.kContainer, tboxen.cTitel, 
                                 tboxen.ePosition, tboxensichtbar.kSeite, tboxensichtbar.nSort, tboxensichtbar.bAktiv, 
                                 tboxvorlage.eTyp, tboxvorlage.cName, tboxvorlage.cTemplate
                                 FROM tboxen
@@ -191,11 +198,21 @@ class Boxen
                                     ORDER BY tboxensichtbar.nSort ASC", 2
                         );
                         if (count($oContainerBoxen_arr) > 0) {
+                            foreach ($oContainerBoxen_arr as $childBox) {
+                                $childBox->bContainer  = 0;
+                                $childBox->kBox        = (int)$childBox->kBox;
+                                $childBox->kBoxvorlage = (int)$childBox->kBoxvorlage;
+                                $childBox->kCustomID   = (int)$childBox->kCustomID;
+                                $childBox->kContainer  = (int)$childBox->kContainer;
+                                $childBox->kSeite      = (int)$childBox->kSeite;
+                                $childBox->nSort       = (int)$childBox->nSort;
+                                $childBox->bAktiv      = (int)$childBox->bAktiv;
+                            }
                             $oBox->oContainer_arr = $oContainerBoxen_arr;
                             $oBox->nContainer     = count($oContainerBoxen_arr);
                         }
                     }
-                    if (strlen($oBox->cTitel) === 0) {
+                    if (empty($oBox->cTitel)) {
                         $oBox->cTitel = $oBox->cName;
                     }
                     if ($bAktiv && ($oBox->eTyp === 'text' || $oBox->eTyp === 'catbox')) {
@@ -209,7 +226,7 @@ class Boxen
                             $oBox->cTitel  = $oSpracheInhalt->cTitel;
                             $oBox->cInhalt = $oSpracheInhalt->cInhalt;
                         }
-                    } elseif ($bAktiv && $oBox->kBoxvorlage == 0 && !empty($oBox->oContainer_arr)) { //container
+                    } elseif ($bAktiv && $oBox->kBoxvorlage === 0 && !empty($oBox->oContainer_arr)) { //container
                         foreach ($oBox->oContainer_arr as $_box) {
                             if (isset($_box->eTyp) && ($_box->eTyp === 'text' || $_box->eTyp === 'catbox')) {
                                 $cISO           = isset($_SESSION['cISOSprache']) && strlen($_SESSION['cISOSprache'])
@@ -225,7 +242,7 @@ class Boxen
                             }
                         }
                     }
-                    $oBox->bContainer = ($oBox->kBoxvorlage == 0);
+                    $oBox->bContainer = $oBox->kBoxvorlage === 0;
                     if ($bVisible) {
                         $oBox->cVisibleOn = '';
                         $oVisible_arr     = Shop::DB()->selectAll('tboxensichtbar', 'kBox', (int)$oBox->kBox);
@@ -242,7 +259,7 @@ class Boxen
                         }
                         //add the filter for admin backend
                         foreach ($oVisible_arr as $oVisible) {
-                            if ($nSeite == $oVisible->kSeite) {
+                            if ($nSeite === $oVisible->kSeite) {
                                 if (!empty($oVisible->cFilter)) {
                                     $_tmp          = explode(',', $oVisible->cFilter);
                                     $filterOptions = [];
@@ -327,7 +344,7 @@ class Boxen
     /**
      * read linkgroup array and search for specific ID
      *
-     * @param int|string $id
+     * @param int $id
      * @return array|null
      */
     private function getLinkGroupByID($id)
@@ -335,7 +352,7 @@ class Boxen
         $linkHelper = LinkHelper::getInstance();
         $linkGroups = $linkHelper->getLinkGroups();
         foreach ($linkGroups as $_tpl => $_lnkgrp) {
-            if (isset($_lnkgrp->kLinkgruppe) && $_lnkgrp->kLinkgruppe == $id) {
+            if (isset($_lnkgrp->kLinkgruppe) && $_lnkgrp->kLinkgruppe === $id) {
                 return ['tpl' => $_tpl, 'grp' => $_lnkgrp];
             }
         }
@@ -716,10 +733,8 @@ class Boxen
                     $cZusatzParams         = '';
                     $cPostMembers_arr      = array_keys($_REQUEST);
                     foreach ($cPostMembers_arr as $cPostMember) {
-                        if (in_array($cPostMember, $cGueltigePostVars_arr)) {
-                            if (intval($_REQUEST[$cPostMember]) > 0) {
-                                $cZusatzParams .= '&' . $cPostMember . '=' . $_REQUEST[$cPostMember];
-                            }
+                        if ((int)$_REQUEST[$cPostMember] > 0 && in_array($cPostMember, $cGueltigePostVars_arr, true)) {
+                            $cZusatzParams .= '&' . $cPostMember . '=' . $_REQUEST[$cPostMember];
                         }
                     }
                     $cZusatzParams = StringHandler::filterXSS($cZusatzParams);
@@ -786,10 +801,8 @@ class Boxen
                     $cZusatzParams         = '';
                     $cPostMembers_arr      = array_keys($_REQUEST);
                     foreach ($cPostMembers_arr as $cPostMember) {
-                        if (in_array($cPostMember, $cGueltigePostVars_arr)) {
-                            if (intval($_REQUEST[$cPostMember]) > 0) {
-                                $cZusatzParams .= '&' . $cPostMember . '=' . $_REQUEST[$cPostMember];
-                            }
+                        if ((int)$_REQUEST[$cPostMember] > 0 && in_array($cPostMember, $cGueltigePostVars_arr, true)) {
+                            $cZusatzParams .= '&' . $cPostMember . '=' . $_REQUEST[$cPostMember];
                         }
                     }
                     $cZusatzParams = StringHandler::filterXSS($cZusatzParams);
@@ -804,7 +817,7 @@ class Boxen
                         if ($nPosWD) {
                             $cRequestURI = substr($cRequestURI, 0, $nPosWD);
                         }
-                        if ($nPosAnd == strlen($cRequestURI) - 1) {
+                        if ($nPosAnd === strlen($cRequestURI) - 1) {
                             // z.b. index.php?a=4&
                             $cDeleteParam = 'wlplo=';
                         } elseif ($nPosAnd) {
@@ -813,7 +826,7 @@ class Boxen
                         } elseif ($nPosQuest) {
                             // z.b. index.php?a=4
                             $cDeleteParam = '&wlplo=';
-                        } elseif ($nPosQuest == strlen($cRequestURI) - 1) {
+                        } elseif ($nPosQuest === strlen($cRequestURI) - 1) {
                             // z.b. index.php?
                             $cDeleteParam = 'wlplo=';
                         }

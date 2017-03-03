@@ -203,7 +203,7 @@ class SimpleCSS
             case 'size': {
                 // 1.2em 15% '12 px'
                 if (preg_match('/([\d\.]+)(.*)/', $cValue, $cMatch_arr)) {
-                    $cOut['numeric'] = floatval($cMatch_arr[1]);
+                    $cOut['numeric'] = (float)$cMatch_arr[1];
                     $cOut['unit']    = trim($cMatch_arr[2]);
 
                     return $cOut;

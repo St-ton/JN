@@ -942,7 +942,7 @@ function setzeFehler($kEmailvorlage, $bFehler = true, $bForce = false)
  */
 function saveEmailSetting($cTableSetting, $kEmailvorlage, $cKey, $cValue)
 {
-    if (strlen($cTableSetting) > 0 && intval($kEmailvorlage) > 0 && strlen($cKey) > 0 && strlen($cValue) > 0) {
+    if ((int)$kEmailvorlage > 0 && strlen($cTableSetting) > 0 && strlen($cKey) > 0 && strlen($cValue) > 0) {
         $oEmailvorlageEinstellung                = new stdClass();
         $oEmailvorlageEinstellung->kEmailvorlage = (int)$kEmailvorlage;
         $oEmailvorlageEinstellung->cKey          = $cKey;

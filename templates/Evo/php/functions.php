@@ -361,11 +361,11 @@ function truncate($text, $numb)
 function gibPreisStringLocalizedSmarty($params, &$smarty)
 {
     $oAufpreis = new stdClass();
-    if (doubleval($params['fAufpreisNetto']) != 0) {
-        $fAufpreisNetto         = doubleval($params['fAufpreisNetto']);
-        $fVKNetto               = doubleval($params['fVKNetto']);
+    if ((float)$params['fAufpreisNetto'] != 0) {
+        $fAufpreisNetto         = (float)$params['fAufpreisNetto'];
+        $fVKNetto               = (float)$params['fVKNetto'];
         $kSteuerklasse          = (int)$params['kSteuerklasse'];
-        $fVPEWert               = doubleval($params['fVPEWert']);
+        $fVPEWert               = (float)$params['fVPEWert'];
         $cVPEEinheit            = $params['cVPEEinheit'];
         $FunktionsAttribute_arr = $params['FunktionsAttribute'];
         $nGenauigkeit = (isset($FunktionsAttribute_arr[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT]) &&

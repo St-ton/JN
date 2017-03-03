@@ -18,6 +18,9 @@ function gibFehlendeEingabenKontaktformular()
     if (!$_POST['email']) {
         $ret['email'] = 1;
     }
+    if (!$_POST['subject']) {
+        $ret['subject'] = 1;
+    }
     if (!valid_email($_POST['email'])) {
         $ret['email'] = 2;
     }

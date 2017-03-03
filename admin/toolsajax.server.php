@@ -157,7 +157,7 @@ function getRemoteDataAjax($cURL, $cDataName, $cTpl, $cWrapperID, $cPost = null,
     $cWrapper = Shop::Smarty()->fetch('tpl_inc/' . $cTpl);
     $objResponse->assign($cWrapperID, 'innerHTML', $cWrapper);
 
-    if (!is_null($oCallback)) {
+    if ($oCallback !== null) {
         $objResponse->script("if(typeof {$oCallback} === 'function') {$oCallback}({$cData});");
     }
 

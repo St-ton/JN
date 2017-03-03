@@ -33,7 +33,7 @@
                     <div class="form-group float-label-control required">
                         <label for="email" class="control-label">{lang key="emailadress" section="global"}</label>
                         <input
-                        type="text"
+                        type="email"
                         name="email"
                         id="email"
                         class="form-control"
@@ -55,7 +55,7 @@
 
                     {if $showLoginCaptcha}
                         <div class="form-group text-center float-label-control">
-                            <div class="g-recaptcha" data-sitekey="{$Einstellungen.global.global_google_recaptcha_public}"></div>
+                            <div class="g-recaptcha" data-sitekey="{$Einstellungen.global.global_google_recaptcha_public}" data-callback="captcha_filled"></div>
                         </div>
                     {/if}
 

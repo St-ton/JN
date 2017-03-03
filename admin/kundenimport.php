@@ -94,7 +94,7 @@ function checkformat($data)
         }
     }
 
-    if (!intval($_POST['PasswortGenerieren']) === 1) {
+    if ((int)$_POST['PasswortGenerieren'] !== 1) {
         if (!in_array('cPasswort', $fmt, true) || !in_array('cMail', $fmt, true)) {
             return -1;
         }

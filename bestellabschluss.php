@@ -82,7 +82,7 @@ if (isset($_GET['i'])) {
             $bestellid  = (isset($bestellung->kBestellung) && $bestellung->kBestellung > 0)
                 ? Shop::DB()->select('tbestellid', 'kBestellung', $bestellung->kBestellung)
                 : false;
-            if (is_null($bestellung->Lieferadresse) &&
+            if ($bestellung->Lieferadresse === null &&
                 isset($_SESSION['Lieferadresse']) &&
                 strlen($_SESSION['Lieferadresse']->cVorname) > 0
             ) {

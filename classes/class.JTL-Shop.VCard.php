@@ -564,9 +564,9 @@ class VCard
             if (!empty($this->N->Prefixes)) {
                 if (is_array($this->N->Prefixes)) {
                     // Workaround fals prefix für Anrede genutzt wird
-                    if (in_array(Shop::Lang()->get('salutationM', 'global'), $this->N->Prefixes)) {
+                    if (in_array(Shop::Lang()->get('salutationM', 'global'), $this->N->Prefixes, true)) {
                         $Kunde->cAnrede = 'm';
-                    } elseif (in_array(Shop::Lang()->get('salutationW', 'global'), $this->N->Prefixes)) {
+                    } elseif (in_array(Shop::Lang()->get('salutationW', 'global'), $this->N->Prefixes, true)) {
                         $Kunde->cAnrede = 'w';
                     } else {
                         $Kunde->cTitel = implode(' ', $this->N->Prefixes);

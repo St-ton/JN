@@ -339,7 +339,7 @@ function berechneBrutto($preis, $MwSt, $nGenauigkeit = 2)
  */
 function berechneNetto($fPreisBrutto, $fMwSt, $nGenauigkeit = 2)
 {
-    return round($fPreisBrutto / (100 + floatval($fMwSt)) * 100, $nGenauigkeit);
+    return round($fPreisBrutto / (100 + (float)$fMwSt) * 100, $nGenauigkeit);
 }
 
 /**
@@ -788,13 +788,13 @@ function checkeWarenkorbEingang()
                             continue;
                         }
                         $oKonfigitem          = new Konfigitem($kKonfigitem);
-                        $oKonfigitem->fAnzahl = floatval(
+                        $oKonfigitem->fAnzahl = (float)(
                             isset($nKonfiggruppeAnzahl_arr[$oKonfigitem->getKonfiggruppe()])
                                 ? $nKonfiggruppeAnzahl_arr[$oKonfigitem->getKonfiggruppe()]
                                 : $oKonfigitem->getInitial()
                         );
                         if ($nKonfigitemAnzahl_arr && isset($nKonfigitemAnzahl_arr[$oKonfigitem->getKonfigitem()])) {
-                            $oKonfigitem->fAnzahl = floatval($nKonfigitemAnzahl_arr[$oKonfigitem->getKonfigitem()]);
+                            $oKonfigitem->fAnzahl = (float)$nKonfigitemAnzahl_arr[$oKonfigitem->getKonfigitem()];
                         }
                         // Todo: Mindestbestellanzahl / Abnahmeinterval beachten
                         if ($oKonfigitem->fAnzahl < 1) {
@@ -936,14 +936,14 @@ function fuegeVariBoxInWK($variBoxAnzahl_arr, $kArtikel, $bIstVater, $bExtern = 
         unset($_SESSION['variBoxAnzahl_arr']);
         // Es ist min. eine Anzahl vorhanden
         foreach ($cKeys_arr as $cKeys) {
-            if (floatval($variBoxAnzahl_arr[$cKeys]) > 0) {
+            if ((float)$variBoxAnzahl_arr[$cKeys] > 0) {
                 // Switch zwischen 1 Vari und 2
                 if ($cKeys[0] === '_') { // 1
                     $cVariation0                             = substr($cKeys, 1);
                     list($kEigenschaft0, $kEigenschaftWert0) = explode(':', $cVariation0);
                     // In die Session einbauen
                     $oVariKombi                                 = new stdClass();
-                    $oVariKombi->fAnzahl                        = floatval($variBoxAnzahl_arr[$cKeys]);
+                    $oVariKombi->fAnzahl                        = (float)$variBoxAnzahl_arr[$cKeys];
                     $oVariKombi->cVariation0                    = StringHandler::filterXSS($cVariation0);
                     $oVariKombi->kEigenschaft0                  = (int)$kEigenschaft0;
                     $oVariKombi->kEigenschaftWert0              = (int)$kEigenschaftWert0;
@@ -953,7 +953,7 @@ function fuegeVariBoxInWK($variBoxAnzahl_arr, $kArtikel, $bIstVater, $bExtern = 
                     if ($bExtern) {
                         $cComb_arr                        = explode('_', $cKeys);
                         $oVariKombi                       = new stdClass();
-                        $oVariKombi->fAnzahl              = floatval($variBoxAnzahl_arr[$cKeys]);
+                        $oVariKombi->fAnzahl              = (float)$variBoxAnzahl_arr[$cKeys];
                         $oVariKombi->kEigenschaft_arr     = [];
                         $oVariKombi->kEigenschaftWert_arr = [];
                         foreach ($cComb_arr as $cComb) {
@@ -969,7 +969,7 @@ function fuegeVariBoxInWK($variBoxAnzahl_arr, $kArtikel, $bIstVater, $bExtern = 
                         list($kEigenschaft1, $kEigenschaftWert1) = explode(':', $cVariation1);
                         // In die Session einbauen
                         $oVariKombi                                 = new stdClass();
-                        $oVariKombi->fAnzahl                        = floatval($variBoxAnzahl_arr[$cKeys]);
+                        $oVariKombi->fAnzahl                        = (float)$variBoxAnzahl_arr[$cKeys];
                         $oVariKombi->cVariation0                    = StringHandler::filterXSS($cVariation0);
                         $oVariKombi->cVariation1                    = StringHandler::filterXSS($cVariation1);
                         $oVariKombi->kEigenschaft0                  = (int)$kEigenschaft0;
@@ -1005,7 +1005,7 @@ function fuegeVariBoxInWK($variBoxAnzahl_arr, $kArtikel, $bIstVater, $bExtern = 
                 // Prüfe ob er Artikel in den Warenkorb gelegt werden darf
                 $nRedirect_arr = pruefeFuegeEinInWarenkorb(
                     $Artikel,
-                    floatval($variBoxAnzahl_arr[$i]),
+                    (float)$variBoxAnzahl_arr[$i],
                     $oAlleEigenschaftPre->oEigenschaft_arr
                 );
 
@@ -1035,7 +1035,7 @@ function fuegeVariBoxInWK($variBoxAnzahl_arr, $kArtikel, $bIstVater, $bExtern = 
                         //#8224, #7482 -> do not call setzePositionsPreise() in loop @ Wanrekob::fuegeEin()
                         fuegeEinInWarenkorb(
                             $oAlleEigenschaftPost->kArtikel,
-                            floatval($variBoxAnzahl_arr[$i]),
+                            (float)$variBoxAnzahl_arr[$i],
                             $oAlleEigenschaftPost->oEigenschaft_arr,
                             0,
                             false,
@@ -1064,7 +1064,7 @@ function pruefeVariBoxAnzahl($variBoxAnzahl_arr)
         // Wurde die variBox überhaupt mit einer Anzahl gefüllt?
         $bAnzahlEnthalten = false;
         foreach ($cKeys_arr as $cKeys) {
-            if (floatval($variBoxAnzahl_arr[$cKeys]) > 0) {
+            if ((float)$variBoxAnzahl_arr[$cKeys] > 0) {
                 $bAnzahlEnthalten = true;
                 break;
             }
@@ -1550,8 +1550,8 @@ function checkeKuponWKPos($oWKPosition, $Kupon)
 
         if (is_array($oWKPosition->WarenkorbPosEigenschaftArr)) {
             foreach ($oWKPosition->WarenkorbPosEigenschaftArr as $oWarenkorbPosEigenschaft) {
-                if (isset($oWarenkorbPosEigenschaft->fAufpreis) && floatval($oWarenkorbPosEigenschaft->fAufpreis) > 0) {
-                    $oWarenkorbPosEigenschaft->fAufpreis -= (floatval($oWarenkorbPosEigenschaft->fAufpreis) / 100) * $Kupon->fWert;
+                if (isset($oWarenkorbPosEigenschaft->fAufpreis) && (float)$oWarenkorbPosEigenschaft->fAufpreis > 0) {
+                    $oWarenkorbPosEigenschaft->fAufpreis -= ((float)$oWarenkorbPosEigenschaft->fAufpreis / 100) * $Kupon->fWert;
                 }
             }
         }
@@ -5162,7 +5162,7 @@ function gibKategoriepfad($Kategorie, $kKundengruppe, $kSprache, $bString = true
  */
 function formatCurrency($fSumme)
 {
-    $fSumme    = floatval($fSumme);
+    $fSumme    = (float)$fSumme;
     $fSummeABS = null;
     $fCents    = null;
     if ($fSumme > 0) {

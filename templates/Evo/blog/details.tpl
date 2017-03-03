@@ -103,7 +103,7 @@
                                                                 <label class="control-label commentForm" for="comment-name">{lang key="newsName" section="news"}</label>
                                                                 <input class="form-control" required id="comment-name" name="cName" type="text" value="{if !empty($cPostVar_arr.cName)}{$cPostVar_arr.cName}{/if}" />
                                                                 {if isset($nPlausiValue_arr.cName)}
-                                                                    <div class="alert alert-danger">
+                                                                    <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
                                                                         {lang key="fillOut" section="global"}
                                                                     </div>
                                                                 {/if}
@@ -114,7 +114,7 @@
                                                                 <label class="control-label commentForm" for="comment-email">{lang key="newsEmail" section="news"}</label>
                                                                 <input class="form-control" required id="comment-email" name="cEmail" type="email" value="{if !empty($cPostVar_arr.cEmail)}{$cPostVar_arr.cEmail}{/if}" />
                                                                 {if isset($nPlausiValue_arr.cEmail)}
-                                                                    <div class="alert alert-danger">
+                                                                    <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
                                                                         {lang key="fillOut" section="global"}
                                                                     </div>
                                                                 {/if}
@@ -127,7 +127,7 @@
                                                     <label class="control-label commentForm" for="comment-text">{lang key="newsComment" section="news"}</label>
                                                     <textarea id="comment-text" required class="form-control" name="cKommentar">{if !empty($cPostVar_arr.cKommentar)}{$cPostVar_arr.cKommentar}{/if}</textarea>
                                                     {if isset($nPlausiValue_arr.cKommentar)}
-                                                        <div class="alert alert-danger">
+                                                        <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
                                                             {lang key="fillOut" section="global"}
                                                         </div>
                                                     {/if}
@@ -137,18 +137,25 @@
                                                     {if (!isset($smarty.session.bAnti_spam_already_checked) || $smarty.session.bAnti_spam_already_checked !== true) &&
                                                         isset($Einstellungen.global.anti_spam_method) && $Einstellungen.global.anti_spam_method !== 'N' &&
                                                         isset($Einstellungen.news.news_sicherheitscode) && $Einstellungen.news.news_sicherheitscode !== 'N' && empty($smarty.session.Kunde->kKunde)}
+                                                        <div class="g-recaptcha" data-sitekey="{$Einstellungen.global.global_google_recaptcha_public}" data-callback="captcha_filled"></div>
                                                         {if !empty($nPlausiValue_arr.captcha)}
-                                                            <div class="alert alert-danger" role="alert">{lang key="invalidToken" section="global"}</div>
+                                                            <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
+                                                                {lang key="invalidToken" section="global"}
+                                                            </div>
                                                         {/if}
-                                                        <div class="g-recaptcha" data-sitekey="{$Einstellungen.global.global_google_recaptcha_public}"></div>
                                                     {/if}
                                                 </div>
 
                                                 <input class="btn btn-primary" name="speichern" type="submit" value="{lang key="newsCommentSave" section="news"}" />
                                             {elseif $Einstellungen.news.news_kommentare_eingeloggt === 'Y' && !empty($smarty.session.Kunde->kKunde)}
-                                                <div class="form-group float-label-control required">
+                                                <div class="form-group float-label-control{if isset($nPlausiValue_arr.cKommentar)} has-error{/if} required">
                                                     <label class="control-label" for="comment-text"><strong>{lang key="newsComment" section="news"}</strong></label>
                                                     <textarea id="comment-text" class="form-control" name="cKommentar" required></textarea>
+                                                    {if isset($nPlausiValue_arr.cKommentar)}
+                                                        <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
+                                                            {lang key="fillOut" section="global"}
+                                                        </div>
+                                                    {/if}
                                                 </div>
                                                 <input class="btn btn-primary" name="speichern" type="submit" value="{lang key="newsCommentSave" section="news"}" />
                                             {/if}

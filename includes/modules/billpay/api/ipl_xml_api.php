@@ -102,7 +102,7 @@ function ipl_core_send($requestUrl, $requestData)
         return false;
     }
 
-    return array($resultXml, $transformedData);
+    return [$resultXml, $transformedData];
 }
 
 /**
@@ -592,11 +592,11 @@ function ipl_core_get_api_error_info()
     global $ipl_core_api_customer_message;
     global $ipl_core_api_merchant_message;
 
-    $info = array(
+    $info = [
         'error_code'       => $ipl_core_api_error_code,
         'customer_message' => $ipl_core_api_customer_message,
         'merchant_message' => $ipl_core_api_merchant_message
-    );
+    ];
 
     return $info;
 }
@@ -1145,10 +1145,10 @@ function ipl_core_parse_preauthorize_response($xml)
             $data = ipl_core_parse_payment_infos($xml, $data);
 
             if (isset($xml->validation_errors[0])) {
-                $validation_errors = array(
+                $validation_errors = [
                     'customer'  => [],
                     'merchant'  => [],
-                );
+                ];
                 foreach ($xml->validation_errors[0]->tagChildren as $error) {
                     $validation_errors['customer'][] = $error->tagAttrs['customer_message'];
                     $validation_errors['merchant'][] = $error->tagAttrs['merchant_message'];
@@ -1259,11 +1259,11 @@ function ipl_core_parse_prescore_response($xml)
                             }
 
                             foreach ($rate_info->dues[0]->tagChildren as $tag) {
-                                $array_dues[] = array(
+                                $array_dues[] = [
                                     'type'  => ipl_core_decode((string)$tag->tagAttrs['type']),
                                     'date'  => '0',
                                     'value' => ipl_core_decode((string)$tag->tagData)
-                                );
+                                ];
                             }
 
                             $term     = ipl_core_decode((string)$rate_info->tagAttrs['term']);
@@ -1521,11 +1521,11 @@ function ipl_core_parse_instalment_information($xml, $data)
         $instalments    = [];
 
         foreach ($instalmentList->instl as $instalment) {
-            $instalments[] = array(
+            $instalments[] = [
                 'type'  => (string)$instalment->tagAttrs['type'],
                 'date'  => (string)$instalment->tagAttrs['date'],
                 'value' => (int)$instalment->tagData,
-            );
+            ];
         }
 
         $data['dues'] = $instalments;
@@ -1796,10 +1796,10 @@ function ipl_core_parse_calculate_rates_response($xml)
 
                         $dues = [];
                         foreach ($duesTag->children() as $dueTag) {
-                            $dues[] = array(
+                            $dues[] = [
                                 'type'  => (string)$dueTag['type'],
                                 'value' => (int)$dueTag
-                            );
+                            ];
                         }
 
                         $option['dues'] = $dues;
@@ -1868,7 +1868,7 @@ function ipl_core_parse_transaction_credit_option($optionTag)
     $term                = (int)$optionTag->tagAttrs['term'];
     $option['rateCount'] = (int)$optionTag->tagAttrs['ratecount'];
 
-    return array('key' => $term, 'value' => $option);
+    return ['key' => $term, 'value' => $option];
 }
 
 /**
@@ -2005,7 +2005,7 @@ function ipl_core_send_prescore_request($requestUrlBase, $attributes, $aTraceDat
             $requestUrlBase,
             'prescore',
             $attributes,
-            array(
+            [
                     $sTraceDataXml,
                     $defaultParamsXml,
                     $customerDetailsXml,
@@ -2016,7 +2016,7 @@ function ipl_core_send_prescore_request($requestUrlBase, $attributes, $aTraceDat
                     $historyDataXml,
                     $paymentInfoXml,
                     $fraudDetectionXml
-            ),
+            ],
             'ipl_core_parse_prescore_response'
     );
 }
@@ -2041,12 +2041,12 @@ function ipl_core_send_validation_request($requestUrlBase, $aTraceData, $default
         $requestUrlBase,
         'validate',
         [],
-        array(
+        [
             $sTraceDataXml,
             $defaultParamsXml,
             $customerDetaisXml,
             $shippingDetailsXml,
-        ),
+        ],
         'ipl_core_parse_validation_response'
     );
 }
@@ -2118,12 +2118,12 @@ function ipl_core_send_invoice_request($requestUrlBase, $aTraceData, $defaultPar
             $requestUrlBase,
             'invoiceCreated',
             [],
-            array(
+            [
                 $sTraceDataXml,
                 $defaultParamsXml,
                 $invoiceParamsXml,
                 $paymentInfoParamsXml,
-            ),
+            ],
             'ipl_core_parse_invoice_response'
         );
     }
@@ -2550,7 +2550,7 @@ class XMLParser
             $this->document = new XMLTag($name, $attrs);
 
             //And start out the stack with the document tag
-            $this->stack = array('document');
+            $this->stack = ['document'];
         }
         //If it isn't root level, use the stack to find the parent
         else {
@@ -2562,7 +2562,7 @@ class XMLParser
 
             //If the cleanTagName feature is on, replace colons and dashes with underscores
             if ($this->cleanTagNames) {
-                $name = str_replace(array(':', '-'), '_', $name);
+                $name = str_replace([':', '-'], '_', $name);
             }
 
             //Update the stack

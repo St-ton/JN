@@ -5,9 +5,7 @@
  */
 require_once __DIR__ . '/includes/admininclude.php';
 
-if (!ini_get('safe_mode')) {
-    @ini_set('max_execution_time', 0);
-}
+@ini_set('max_execution_time', 0);
 
 $oAccount->permission('EXPORT_YATEGO_VIEW', true, true);
 
@@ -132,7 +130,7 @@ if ($max_artikel->cnt > $queue->nLimit_n + $queue->nLimit_m) {
     Shop::DB()->delete('texportqueue', 'kExportqueue', (int)$queue->kExportqueue);
     if ($_GET['back'] === 'admin') {
         header('Location: yatego.export.php?token=' . $_SESSION['jtl_token'] .
-            '&rdy=' . base64_encode(intval($max_artikel->cnt)));
+            '&rdy=' . base64_encode((int)$max_artikel->cnt));
         exit;
     }
 }

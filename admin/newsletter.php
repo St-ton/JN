@@ -425,7 +425,7 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1) {
                             }
                             $nCount_arr[0]++;
                         }
-                        if (intval($oKundengruppeTMP->kKundengruppe) > 0) {
+                        if ((int)$oKundengruppeTMP->kKundengruppe > 0) {
                             if ($nCount_arr[1] > 0) {
                                 $cKundengruppeKey .= ';' . $oKundengruppeTMP->kKundengruppe;
                             } else {

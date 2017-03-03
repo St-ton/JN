@@ -255,10 +255,8 @@ class CheckBox
         $cPlausi_arr   = [];
         if (count($oCheckBox_arr) > 0) {
             foreach ($oCheckBox_arr as $oCheckBox) {
-                if (intval($oCheckBox->nPflicht) === 1) {
-                    if (!isset($cPost_arr[$oCheckBox->cID])) {
-                        $cPlausi_arr[$oCheckBox->cID] = 1;
-                    }
+                if ((int)$oCheckBox->nPflicht === 1 && !isset($cPost_arr[$oCheckBox->cID])) {
+                    $cPlausi_arr[$oCheckBox->cID] = 1;
                 }
             }
         }

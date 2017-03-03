@@ -75,7 +75,7 @@ function saveAdminSettings($settingsIDs, &$cPost_arr, $tags = [CACHING_GROUP_OPT
             $aktWert->kEinstellungenSektion = (int)$oConfig_arr[$i]->kEinstellungenSektion;
             switch ($oConfig_arr[$i]->cInputTyp) {
                 case 'kommazahl':
-                    $aktWert->cWert = floatval($aktWert->cWert);
+                    $aktWert->cWert = (float)$aktWert->cWert;
                     break;
                 case 'zahl':
                 case 'number':
@@ -176,7 +176,7 @@ function saveAdminSectionSettings($kEinstellungenSektion, &$cPost_arr, $tags = [
             $aktWert->kEinstellungenSektion = $kEinstellungenSektion;
             switch ($oConfig_arr[$i]->cInputTyp) {
                 case 'kommazahl':
-                    $aktWert->cWert = floatval(str_replace(',', '.', $aktWert->cWert));
+                    $aktWert->cWert = (float)str_replace(',', '.', $aktWert->cWert);
                     break;
                 case 'zahl':
                 case 'number':
@@ -436,7 +436,7 @@ function ermittleDatumWoche($cDatum)
     if (strlen($cDatum) > 0) {
         list($cJahr, $cMonat, $cTag) = explode('-', $cDatum);
         // So = 0, SA = 6
-        $nWochentag = intval(date('w', mktime(0, 0, 0, (int)$cMonat, (int)$cTag, (int)$cJahr)));
+        $nWochentag = (int)date('w', mktime(0, 0, 0, (int)$cMonat, (int)$cTag, (int)$cJahr));
         // Woche soll Montag starten - also So = 6, Mo = 0
         if ($nWochentag === 0) {
             $nWochentag = 6;

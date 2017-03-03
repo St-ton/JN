@@ -88,7 +88,7 @@ function speicherCheckBox($cPost_arr, $oSprache_arr)
 {
     if (isset($cPost_arr['kCheckBox']) && (int)$cPost_arr['kCheckBox'] > 0) {
         $oCheckBox = new CheckBox((int)$cPost_arr['kCheckBox']);
-        $oCheckBox->deleteCheckBox(array((int)$cPost_arr['kCheckBox']));
+        $oCheckBox->deleteCheckBox([(int)$cPost_arr['kCheckBox']]);
     } else {
         $oCheckBox = new CheckBox();
     }

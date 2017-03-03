@@ -43,9 +43,7 @@ function getRevisions($params, &$smarty)
  */
 function getCurrencyConversionSmarty($params, &$smarty)
 {
-    $bForceSteuer = (isset($params['bSteuer']) && $params['bSteuer'] == false)
-        ? false
-        : true;
+    $bForceSteuer = !(isset($params['bSteuer']) && $params['bSteuer'] == false);
     if (!isset($params['fPreisBrutto'])) {
         $params['fPreisBrutto'] = 0;
     }

@@ -632,7 +632,7 @@ function baueArtikelExportSQL(&$oExportformat)
 function holeMaxExportArtikelAnzahl(&$oExportformat)
 {
     $cSQL_arr = baueArtikelExportSQL($oExportformat);
-    $conf     = Shop::getSettings(array(CONF_GLOBAL));
+    $conf     = Shop::getSettings([CONF_GLOBAL]);
     $sql      = 'AND NOT (DATE(tartikel.dErscheinungsdatum) > DATE(NOW()))';
     if (isset($conf['global']['global_erscheinende_kaeuflich']) &&
         $conf['global']['global_erscheinende_kaeuflich'] === 'Y') {

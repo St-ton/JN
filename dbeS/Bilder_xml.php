@@ -875,8 +875,7 @@ function gibAusgeschriebeneUmlaute($str)
  */
 function streicheSonderzeichen($str)
 {
-    $str = str_replace('/', '-', $str);
-    $str = str_replace(' ', '-', $str);
+    $str = str_replace(['/', ' '], '-', $str);
 
     return preg_replace('/[^a-zA-Z0-9\.\-_]/', '', $str);
 }

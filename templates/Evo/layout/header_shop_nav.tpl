@@ -28,10 +28,10 @@
                         {$jtl_token}
                         <fieldset id="quick-login">
                             <div class="form-group">
-                                <input type="text" name="email" id="email_quick" class="form-control" placeholder="{lang key='emailadress'}"/>
+                                <input type="email" name="email" id="email_quick" class="form-control" placeholder="{lang key='emailadress'}" required/>
                             </div>
                             <div class="form-group">
-                                <input type="password" name="passwort" id="password_quick" class="form-control" placeholder="{lang key='password'}"/>
+                                <input type="password" name="passwort" id="password_quick" class="form-control" placeholder="{lang key='password'}" required/>
                             </div>
                             <div class="form-group">
                                 <input type="hidden" name="login" value="1"/>

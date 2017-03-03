@@ -1379,7 +1379,7 @@ function PrepareLineChartKamp($Stats, $Type)
 {
     require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Linechart.php';
 
-    $chart = new Linechart(array('active' => false));
+    $chart = new Linechart(['active' => false]);
 
     if (is_array($Stats) && count($Stats) > 0) {
         $chart->setActive(true);

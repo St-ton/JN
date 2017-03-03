@@ -70,7 +70,7 @@
                                         <div class="form-group">
                                             <label class="control-label sr-only" for="newsletter_email">{lang key="emailadress"}</label>
                                             <div class="input-group">
-                                                <input type="text" size="20" name="cEmail" id="newsletter_email" class="form-control" placeholder="{lang key="emailadress"}">
+                                                <input type="email" size="20" name="cEmail" id="newsletter_email" class="form-control" placeholder="{lang key="emailadress"}">
                                                 <span class="input-group-btn">
                                                     <button type="submit" class="btn btn-primary submit">
                                                         <span>{lang key="newsletterSendSubscribe" section="newsletter"}</span>

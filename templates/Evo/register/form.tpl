@@ -26,14 +26,13 @@
     {$jtl_token}
     {include file='checkout/inc_billing_address_form.tpl'}
     {if !$editRechnungsadresse}
-        <hr>
         <div class="row">
             <div class="col-xs-6">
                 <div class="form-group float-label-control{if isset($fehlendeAngaben.pass_zu_kurz) || isset($fehlendeAngaben.pass_ungleich)} has-error{/if} required">
                     <label for="password" class="control-label">{lang key="password" section="account data"}</label>
                     <input type="password" name="pass" maxlength="20" id="password" class="form-control" placeholder="{lang key="password" section="account data"}" required>
                     {if isset($fehlendeAngaben.pass_zu_kurz)}
-                        <div class="alert alert-danger">{$warning_passwortlaenge}</div>
+                        <div class="form-error-msg text-danger"><i class="fa fa-warning"></i> {$warning_passwortlaenge}</div>
                     {/if}
                 </div>
             </div>
@@ -42,7 +41,7 @@
                     <label for="password2" class="control-label">{lang key="passwordRepeat" section="account data"}</label>
                     <input type="password" name="pass2" maxlength="20" id="password2" class="form-control" placeholder="{lang key="passwordRepeat" section="account data"}" required>
                     {if isset($fehlendeAngaben.pass_ungleich)}
-                        <div class="alert alert-danger">{lang key="passwordsMustBeEqual" section="account data"}</div>
+                        <div class="form-error-msg text-danger"><i class="fa fa-warning"></i> {lang key="passwordsMustBeEqual" section="account data"}</div>
                     {/if}
                 </div>
             </div>

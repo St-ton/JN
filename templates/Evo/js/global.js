@@ -163,6 +163,34 @@ function navigation()
     }
 }
 
+function addValidationListener() {
+    var forms = $('form');
+    var inputs = $('input,select,textarea');
+
+    for (var i = 0; i < forms.length; i++) {
+        forms[i].addEventListener('invalid', function (event) {
+            event.preventDefault();
+            $(event.target).closest('.form-group').find('div.form-error-msg').remove();
+            $(event.target).closest('.form-group').addClass('has-error').append('<div class="form-error-msg text-danger"><i class="fa fa-warning"></i> ' + event.target.validationMessage + '</div>');
+        }, true);
+    }
+
+    for (var i = 0; i < inputs.length; i++) {
+        inputs[i].addEventListener('blur', function (event) {
+            $(event.target).closest('.form-group').find('div.form-error-msg').remove();
+            if (event.target.validity.valid) {
+                $(event.target).closest('.form-group').removeClass('has-error');
+            } else {
+                $(event.target).closest('.form-group').addClass('has-error').append('<div class="form-error-msg text-danger"><i class="fa fa-warning"></i> ' + event.target.validationMessage + '</div>');
+            }
+        }, true);
+    }
+}
+
+function captcha_filled() {
+    $('.g-recaptcha').closest('.form-group').find('div.form-error-msg').remove();
+}
+
 $(window).load(function(){
     navigation();
 });
@@ -321,4 +349,5 @@ $(document).ready(function () {
     categoryMenu();
     regionsToState();
     compatibility();
+    addValidationListener();
 });

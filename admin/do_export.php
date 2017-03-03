@@ -6,9 +6,7 @@
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'exportformat_inc.php';
 
-if (!ini_get('safe_mode')) {
-    @ini_set('max_execution_time', 0);
-}
+@ini_set('max_execution_time', 0);
 
 if (!isset($_GET['e']) || !((int)$_GET['e'] > 0) || !validateToken()) {
     die('0');

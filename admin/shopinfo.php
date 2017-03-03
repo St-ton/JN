@@ -5,9 +5,7 @@
  */
 require_once __DIR__ . '/includes/admininclude.php';
 
-if (!ini_get('safe_mode')) {
-    @ini_set('max_execution_time', 0);
-}
+@ini_set('max_execution_time', 0);
 
 $oAccount->permission('EXPORT_SHOPINFO_VIEW', true, true);
 

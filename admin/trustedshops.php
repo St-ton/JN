@@ -64,7 +64,7 @@ if (isset($_POST['kaeuferschutzeinstellungen']) && (int)$_POST['kaeuferschutzein
             $aktWert->kEinstellungenSektion = CONF_TRUSTEDSHOPS;
             switch ($oConfig_arr[$i]->cInputTyp) {
                 case 'kommazahl':
-                    $aktWert->cWert = (float)($aktWert->cWert;
+                    $aktWert->cWert = (float)$aktWert->cWert;
                     break;
                 case 'zahl':
                 case 'number':

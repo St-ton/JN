@@ -161,7 +161,7 @@ if (isset($_POST['neu_link']) && (int)$_POST['neu_link'] === 1 && validateToken(
                         substr(
                             $_FILES['Bilder']['type'][$i - $nZaehler],
                             strpos($_FILES['Bilder']['type'][$i - $nZaehler], '/') + 1,
-                            strlen($_FILES['Bilder']['type'][$i - $nZaehler] - (strpos($_FILES['Bilder']['type'][$i - $nZaehler], '/'))) + 1
+                            strlen($_FILES['Bilder']['type'][$i - $nZaehler] - strpos($_FILES['Bilder']['type'][$i - $nZaehler], '/')) + 1
                         );
                     move_uploaded_file($_FILES['Bilder']['tmp_name'][$i - $nZaehler], $cUploadDatei);
                 }
@@ -262,7 +262,7 @@ if ($continue && ((isset($_POST['kLink']) && (int)$_POST['kLink'] > 0) ||
                 $oDatei->cName     = substr($Datei, 0, strpos($Datei, '.'));
                 $oDatei->cNameFull = $Datei;
                 $oDatei->cURL      = '<img class="link_image" src="' . $shopURL . PFAD_BILDER . PFAD_LINKBILDER . $link->kLink . '/' . $Datei . '" />';
-                $oDatei->nBild     = (int)(substr(str_replace('Bild', '', $Datei), 0, strpos(str_replace('Bild', '', $Datei), '.')));
+                $oDatei->nBild     = (int)substr(str_replace('Bild', '', $Datei), 0, strpos(str_replace('Bild', '', $Datei), '.'));
                 $cDatei_arr[]      = $oDatei;
             }
         }

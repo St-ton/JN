@@ -176,7 +176,7 @@ function saveAdminSectionSettings($kEinstellungenSektion, &$cPost_arr, $tags = [
             $aktWert->kEinstellungenSektion = $kEinstellungenSektion;
             switch ($oConfig_arr[$i]->cInputTyp) {
                 case 'kommazahl':
-                    $aktWert->cWert = floatval(str_replace(',', '.', $aktWert->cWert));
+                    $aktWert->cWert = (float)str_replace(',', '.', $aktWert->cWert);
                     break;
                 case 'zahl':
                 case 'number':

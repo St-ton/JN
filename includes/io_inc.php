@@ -34,14 +34,21 @@ function suggestions($keyword)
         ? (int)$Einstellungen['artikeluebersicht']['suche_ajax_anzahl']
         : 10;
     if (strlen($keyword) >= 2) {
-        $results = Shop::DB()->query("
-          SELECT cSuche AS keyword, nAnzahlTreffer AS quantity
-            FROM tsuchanfrage
-            WHERE SOUNDEX(cSuche) LIKE CONCAT(TRIM(TRAILING '0' FROM SOUNDEX('" . $keyword . "')), '%')
-                AND nAktiv = 1
-                AND kSprache = " . $language . "
+        $results = Shop::DB()->executeQueryPrepared("
+            SELECT cSuche AS keyword, nAnzahlTreffer AS quantity
+              FROM tsuchanfrage
+              WHERE SOUNDEX(cSuche) LIKE CONCAT(TRIM(TRAILING '0' FROM SOUNDEX(:keyword)), '%')
+                  AND nAktiv = 1
+                  AND kSprache = :lang
             ORDER BY nAnzahlGesuche DESC, cSuche
-            LIMIT " . $maxResults, 2);
+            LIMIT :maxres",
+            [
+                'keyword' => $keyword,
+                'maxres'  => $maxResults,
+                'lang'    => $language
+            ],
+            2
+        );
 
         if (is_array($results) && count($results) > 0) {
             foreach ($results as &$result) {

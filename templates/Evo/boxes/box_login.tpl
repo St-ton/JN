@@ -16,11 +16,9 @@
                     <input type="password" name="passwort" id="password" class="form-control" placeholder="{lang key="password" section="account data"}" required />
                 </div>
 
-                {if isset($showLoginCaptcha) && $showLoginCaptcha}
-                    {*@todo: remove/use reCaptcha*}
+                {if $showLoginCaptcha}
                     <div class="form-group text-center float-label-control">
-                        <img src="{$code_login->codeURL}" alt="Captcha" />
-                        <input type="text" name="code_login" id="code_login" class="form-control" placeholder="{lang key="code" section="global"}*" />
+                        <div class="g-recaptcha" data-sitekey="{$Einstellungen.global.global_google_recaptcha_public}" data-callback="captcha_filled"></div>
                     </div>
                 {/if}
 

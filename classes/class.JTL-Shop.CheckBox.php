@@ -218,8 +218,8 @@ class CheckBox
         }
         $oCheckBoxTMP_arr = Shop::DB()->query(
             "SELECT kCheckBox FROM tcheckbox
-                WHERE cAnzeigeOrt LIKE '%;" . (int)$nAnzeigeOrt . ";%'
-                    AND cKundengruppe LIKE  '%;" . $kKundengruppe . ";%'
+                WHERE cAnzeigeOrt RLIKE '^([0-9;]*;)?" . (int)$nAnzeigeOrt . ";'
+                    AND cKundengruppe RLIKE '^([0-9;]*;)?" . $kKundengruppe . ";'
                     " . $cSQL . "
                 ORDER BY nSort", 2
         );

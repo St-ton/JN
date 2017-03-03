@@ -2601,7 +2601,7 @@ function gibGuenstigsteVersandart($lieferland, $versandklassen, $kKundengruppe, 
                     OR (cVersandklassen LIKE '% " . $versandklassen . " %' 
                     OR cVersandklassen LIKE '% " . $versandklassen . "'))
                 AND (cKundengruppen = '-1' 
-                    OR cKundengruppen LIKE '%;" . $kKundengruppe . ";%') 
+                    OR cKundengruppen RLIKE '^([0-9;]*;)?" . $kKundengruppe . ";') 
             ORDER BY nSort", 2
     );
 
@@ -2636,7 +2636,7 @@ function gibMoeglicheVerpackungen($kKundengruppe)
                 ON tverpackung.kVerpackung = tverpackungsprache.kVerpackung
             WHERE tverpackungsprache.cISOSprache = '" . $_SESSION['cISOSprache'] . "'
             AND (tverpackung.cKundengruppe = '-1' 
-                OR tverpackung.cKundengruppe LIKE '%;" . (int)$kKundengruppe . ";%')
+                OR tverpackung.cKundengruppe RLIKE '^([0-9;]*;)?" . (int)$kKundengruppe . ";')
             AND " . $fSummeWarenkorb . " >= tverpackung.fMindestbestellwert
             AND tverpackung.nAktiv = 1
             ORDER BY tverpackung.kVerpackung", 2
@@ -2877,7 +2877,7 @@ function gibGuenstigsteVersandkosten($cISO, $Artikel, $barzahlungZulassen, $kKun
                     OR (cVersandklassen LIKE '% " . $Artikel->kVersandklasse . " %' 
                     OR cVersandklassen LIKE '% " . $Artikel->kVersandklasse . "'))
                 AND (cKundengruppen = '-1' 
-                    OR cKundengruppen LIKE '%;" . $kKundengruppe . ";%')", 2
+                    OR cKundengruppen RLIKE '^([0-9;]*;)?" . $kKundengruppe . ";')", 2
     );
     $cnt = count($versandarten);
     for ($i = 0; $i < $cnt; $i++) {
@@ -2926,7 +2926,7 @@ function gibBelieferbareLaender($kKundengruppe = 0, $bIgnoreSetting = false, $bF
             SELECT cLaender 
                 FROM tversandart 
                 WHERE (cKundengruppen = '-1' 
-                  OR cKundengruppen LIKE '%;" . $kKundengruppe . ";%')", 2
+                  OR cKundengruppen RLIKE '^([0-9;]*;)?" . $kKundengruppe . ";')", 2
         );
         $where       = '';
         foreach ($ll_obj_arr as $cLaender) {
@@ -3554,7 +3554,7 @@ function gibVersandkostenfreiAb($kKundengruppe, $cLand = '')
                         OR (cVersandklassen LIKE '% " . $versandklassen . " %' 
                         OR cVersandklassen LIKE '% " . $versandklassen . "'))
                     AND (cKundengruppen = '-1' 
-                        OR cKundengruppen LIKE '%;" . $kKundengruppe . ";%')
+                        OR cKundengruppen RLIKE '^([0-9;]*;)?" . $kKundengruppe . ";')
                     " . $cKundeSQLWhere . "
                 ORDER BY fVersandkostenfreiAbX
                 LIMIT 1", 1

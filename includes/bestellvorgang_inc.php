@@ -1486,7 +1486,7 @@ function gibZahlungsarten($kVersandart, $kKundengruppe)
                 WHERE tversandartzahlungsart.kVersandart = {$kVersandart}
                     AND tversandartzahlungsart.kZahlungsart=tzahlungsart.kZahlungsart
                     AND (tzahlungsart.cKundengruppen IS NULL OR tzahlungsart.cKundengruppen=''
-                    OR tzahlungsart.cKundengruppen LIKE '%;{$kKundengruppe};%')
+                    OR tzahlungsart.cKundengruppen RLIKE '^([0-9;]*;)?{$kKundengruppe};')
                     AND tzahlungsart.nActive = 1
                     AND tzahlungsart.nNutzbar = 1
                 ORDER BY tzahlungsart.nSort", 2
@@ -1737,7 +1737,7 @@ function versandartKorrekt($kVersandart, $aFormValues = 0)
                     FROM tverpackung
                     WHERE kVerpackung = " . (int)$kVerpackung . "
                         AND (tverpackung.cKundengruppe = '-1'
-                            OR tverpackung.cKundengruppe LIKE '%;" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";%')
+                            OR tverpackung.cKundengruppe RLIKE '^([0-9;]*;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";')
                         AND " . $fSummeWarenkorb . " >= tverpackung.fMindestbestellwert
                         AND nAktiv = 1", 1
             );
@@ -3147,9 +3147,9 @@ function pruefeAjaxEinKlick()
                 FROM tbestellung
                 JOIN tzahlungsart ON tzahlungsart.kZahlungsart = tbestellung.kZahlungsart
                     AND (tzahlungsart.cKundengruppen IS NULL OR tzahlungsart.cKundengruppen = ''
-                    OR tzahlungsart.cKundengruppen LIKE '%{$_SESSION['Kunde']->kKundengruppe};%')
+                    OR tzahlungsart.cKundengruppen RLIKE '^([0-9;]*;)?{$_SESSION['Kunde']->kKundengruppe};')
                 JOIN tversandart ON tversandart.kVersandart = tbestellung.kVersandart
-                    AND tversandart.cKundengruppen = '-1' OR tversandart.cKundengruppen LIKE '%;{$_SESSION['Kunde']->kKundengruppe};%'
+                    AND tversandart.cKundengruppen = '-1' OR tversandart.cKundengruppen RLIKE '^([0-9;]*;)?{$_SESSION['Kunde']->kKundengruppe};'
                     AND tbestellung.kVersandart = tversandart.kVersandart
                 JOIN tversandartzahlungsart ON tversandartzahlungsart.kVersandart = tversandart.kVersandart
                     AND tversandartzahlungsart.kZahlungsart = tzahlungsart.kZahlungsart

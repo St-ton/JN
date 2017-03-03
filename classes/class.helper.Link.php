@@ -334,8 +334,7 @@ class LinkHelper
                             AND tlink.kLinkgruppe = " . (int)$Linkgruppe->kLinkgruppe . $loginSichtbarkeit . "
                             AND (tlink.cKundengruppen IS NULL
                             OR tlink.cKundengruppen = 'NULL'
-                            OR tlink.cKundengruppen LIKE '" . $customerGroupID . ";%'
-                            OR tlink.cKundengruppen LIKE '%;" . $customerGroupID . ";%')
+                            OR tlink.cKundengruppen RLIKE '^([0-9;]*;)?" . $customerGroupID . ";')
                         ORDER BY tlink.nSort, tlink.cName", 2
                 );
                 $linkCount = count($Links);
@@ -418,8 +417,7 @@ class LinkHelper
             //versand
             $cKundengruppenSQL = '';
             if (isset($_SESSION['Kundengruppe']->kKundengruppe) && $_SESSION['Kundengruppe']->kKundengruppe > 0) {
-                $cKundengruppenSQL = " AND (tlink.cKundengruppen LIKE '" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";%'
-                    OR tlink.cKundengruppen LIKE '%;" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";%'
+                $cKundengruppenSQL = " AND (tlink.cKundengruppen RLIKE '^([0-9;]*;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";'
                     OR tlink.cKundengruppen IS NULL OR tlink.cKundengruppen = 'NULL' OR tlink.cKundengruppen = '')";
             }
             $versand_arr = Shop::DB()->query(
@@ -847,8 +845,7 @@ class LinkHelper
                         $loginSichtbarkeit . "
                         AND (tlink.cKundengruppen IS NULL
                         OR tlink.cKundengruppen = 'NULL'
-                        OR tlink.cKundengruppen LIKE '" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";%'
-                        OR tlink.cKundengruppen LIKE '%;" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";%')", 2
+                        OR tlink.cKundengruppen RLIKE '^([0-9;]*;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";')", 2
             );
             $link = new stdClass();
             if (!empty($links)) {

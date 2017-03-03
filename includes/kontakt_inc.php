@@ -168,7 +168,7 @@ function pruefeBetreffVorhanden()
     $oBetreff_arr = Shop::DB()->query(
         "SELECT kKontaktBetreff
             FROM tkontaktbetreff
-            WHERE cKundengruppen LIKE '%" . $kKundengruppe . "%'
+            WHERE cKundengruppen RLIKE '^([0-9;]*;)?" . (int)$kKundengruppe . ";'
                 OR cKundengruppen = '0'", 2
     );
 

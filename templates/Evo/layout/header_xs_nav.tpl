@@ -72,7 +72,7 @@
                                         <ul class="dropdown-menu keepopen">
                                             {foreach name='hersteller' from=$manufacturers item='hst'}
                                                 <li role="presentation">
-                                                    <a role="menuitem" tabindex="-1" href="{$hst->cSeo}"">{$hst->cName|escape:"html"}</a>
+                                                    <a role="menuitem" tabindex="-1" href="{$hst->cSeo}">{$hst->cName|escape:"html"}</a>
                                                 </li>
                                             {/foreach}
                                         </ul>

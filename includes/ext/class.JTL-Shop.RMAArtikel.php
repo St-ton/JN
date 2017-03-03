@@ -368,7 +368,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         public static function getProductsByOrder($kBestellung)
         {
             $kBestellung  = (int)$kBestellung;
-            $kArtikel_arr = array();
+            $kArtikel_arr = [];
 
             if ($kBestellung > 0) {
                 $oObj_arr = Shop::DB()->query(

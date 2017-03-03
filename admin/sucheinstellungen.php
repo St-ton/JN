@@ -135,7 +135,7 @@ if (isset($_POST['einstellungen_bearbeiten']) && (int)$_POST['einstellungen_bear
         $cHinweis .= ' Volltextsuche wurde deaktiviert.';
     }
 
-    $Einstellungen = Shop::getSettings(array($kSektion));
+    $Einstellungen = Shop::getSettings([$kSektion]);
 } else {
     $smarty->assign('createIndex', false);
 }

@@ -34,7 +34,7 @@ if (auth()) {
                 Jtllog::writeLog('Zip entpackt in ' . $entzippfad, JTLLOG_LEVEL_DEBUG, false, 'Artikel_xml');
             }
             $return        = 0;
-            $conf = Shop::getSettings(array(CONF_GLOBAL));
+            $conf = Shop::getSettings([CONF_GLOBAL]);
             foreach ($list as $i => $zip) {
                 if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
                     Jtllog::writeLog('bearbeite: ' . $entzippfad . $zip['filename'] . ' size: ' .

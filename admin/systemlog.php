@@ -35,7 +35,7 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1 && vali
         ? Jtllog::setBitFlag(array_map('cleanSystemFlag', $_POST['nFlag']))
         : 0;
     Shop::DB()->insert('teinstellungen', $ins);
-    Shop::Cache()->flushTags(array(CACHING_GROUP_OPTION));
+    Shop::Cache()->flushTags([CACHING_GROUP_OPTION]);
 
     $cHinweis = 'Ihre Einstellungen wurden erfolgreich gespeichert.';
 } elseif (isset($_POST['a']) && $_POST['a'] === 'del' && validateToken()) {

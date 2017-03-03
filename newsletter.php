@@ -46,7 +46,7 @@ if (isset($oLink->kLink) && $oLink->kLink > 0) {
 $cHinweis      = '';
 $cFehler       = '';
 $cCanonicalURL = '';
-$Einstellungen = Shop::getSettings(array(CONF_GLOBAL, CONF_RSS, CONF_NEWSLETTER));
+$Einstellungen = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_NEWSLETTER]);
 
 pruefeHttps();
 //hole alle OberKategorien

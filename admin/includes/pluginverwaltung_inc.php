@@ -3867,7 +3867,7 @@ function deaktivierePlugin($kPlugin)
         $_upd_lnk->bIsActive = 0;
         Shop::DB()->update('tlink', 'kPlugin', $kPlugin, $_upd_lnk);
 
-        Shop::Cache()->flushTags(array(CACHING_GROUP_PLUGIN . '_' . $kPlugin));
+        Shop::Cache()->flushTags([CACHING_GROUP_PLUGIN . '_' . $kPlugin]);
 
         return 1;
     }
@@ -3970,7 +3970,7 @@ function logikSQLDatei($cSQLDatei, $nVersion, $oPlugin)
                     //when using "drop table if exists" statement, the table name is at index 5, otherwise at 2
                     $tableNameAtIndex = (strpos(strtolower($cSQL), 'drop table if exists') !== false) ? 4 : 2;
                     $cSQLTMP_arr      = explode(' ', removeNumerousWhitespaces($cSQL));
-                    $cTabelle         = str_replace(array("'", "`"), '', $cSQLTMP_arr[$tableNameAtIndex]);
+                    $cTabelle         = str_replace(["'", "`"], '', $cSQLTMP_arr[$tableNameAtIndex]);
                     preg_match("/xplugin[_]{1}" . $oPlugin->cPluginID . "[_]{1}[a-zA-Z0-9]+/", $cTabelle, $cTreffer_arr);
                     if (strlen($cTreffer_arr[0]) !== strlen($cTabelle)) {
                         return 4;// Versuch eine nicht Plugintabelle zu löschen

@@ -70,14 +70,14 @@ class ipl_get_installment_request extends ipl_xml_request
     {
         # requestXml, resultXml, data
 
-        $data = array(
+        $data = [
             'apiKey'            => $this->_getApiKey(),
             'cartTotalGross'    => $this->cartTotalGross,
             'baseAmount'        => $this->baseAmount,
             'billingCountry'    => $this->billingCountry,
             'orderCurrency'     => $this->orderCurrency,
             'lang'              => $this->lang,
-        );
+        ];
         $a = [];
         foreach ($data as $key => $val) {
             $a[] = implode('=', [$key, $val]);
@@ -92,7 +92,7 @@ class ipl_get_installment_request extends ipl_xml_request
             $response = file_get_contents($url);
         }
 
-        return array($url, $response, $response);
+        return [$url, $response, $response];
     }
 
     /**

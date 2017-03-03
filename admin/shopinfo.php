@@ -11,7 +11,7 @@ $oAccount->permission('EXPORT_SHOPINFO_VIEW', true, true);
 
 $arMapping       = [];
 $arKategorien    = [];
-$arEinstellungen = Shop::getSettings(array(CONF_GLOBAL));
+$arEinstellungen = Shop::getSettings([CONF_GLOBAL]);
 
 if (isset($_POST['post']) && (int)$_POST['post'] === 1) {
     $oTmpConf = Shop::DB()->query("SELECT * FROM teinstellungen WHERE cName = 'shopInfo_updateInterval'", 1);
@@ -203,7 +203,7 @@ if (isset($_POST['post']) && (int)$_POST['post'] === 1) {
         $strSQL          = "INSERT INTO tkategoriemapping SET kKategorie = " . (int)$ar[0] . ", cName = '" . $ar[1] . "'";
         Shop::DB()->query($strSQL, 4);
     }
-    Shop::Cache()->flushTags(array(CACHING_GROUP_OPTION));
+    Shop::Cache()->flushTags([CACHING_GROUP_OPTION]);
 
     $strSQL       = "SELECT kKategorie, cName FROM tkategorie WHERE kOberkategorie <= 0 ";
     $arKategorien = Shop::DB()->query($strSQL, 2);

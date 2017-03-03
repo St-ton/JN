@@ -71,10 +71,10 @@ if (isset($_POST['actionActivate']) && validateToken()) {
     // Load Settings
     global $Einstellungen;
 
-    if (is_array($Einstellungen) == false) {
+    if (!is_array($Einstellungen)) {
         $Einstellungen = [];
     }
-    $Einstellungen = array_merge($Einstellungen, Shop::getSettings(array(CONF_EMAILS)));
+    $Einstellungen = array_merge($Einstellungen, Shop::getSettings([CONF_EMAILS]));
 
     $sql  = 'SELECT * FROM tskrill';
     $data = Shop::DB()->query($sql, 1);

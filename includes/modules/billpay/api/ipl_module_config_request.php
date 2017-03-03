@@ -251,7 +251,7 @@ class ipl_module_config_request extends ipl_xml_request
      */
     public function get_config_data()
     {
-        return array(
+        return [
             'is_active'                    => $this->is_active(),
             'is_allowed_invoice'           => $this->is_invoice_allowed(),
             'is_allowed_invoicebusiness'   => $this->is_invoicebusiness_allowed(),
@@ -273,7 +273,7 @@ class ipl_module_config_request extends ipl_xml_request
             'maxvalue_transactioncredit'   => $this->get_static_limit_hire_purchase(),
             'maxvalue_paylater'            => $this->get_static_limit_hire_purchase(),
             'maxvalue_paylaterbusiness'    => $this->get_static_limit_hire_purchase(),
-        );
+        ];
     }
 
     /**

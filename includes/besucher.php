@@ -90,7 +90,7 @@ function gibReferer()
     if (isset($_SERVER['HTTP_REFERER'])) {
         $teile = explode('/', $_SERVER['HTTP_REFERER']);
 
-        return strtolower($teile[2]);
+        return StringHandler::filterXSS(strtolower($teile[2]));
     }
 
     return '';

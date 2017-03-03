@@ -85,12 +85,12 @@ function XML_serialize(&$data, $level = 0, $prior_key = null)
  */
 class XML
 {
-    var $parser;   #a reference to the XML parser
-    var $document; #the entire XML structure built up so far
-    var $parent;   #a pointer to the current parent - the parent will be an array
-    var $stack;    #a stack of the most recent parent at each nesting level
-    var $last_opened_tag; #keeps track of the last tag opened.
-    var $data;
+    public $parser;   #a reference to the XML parser
+    public $document; #the entire XML structure built up so far
+    public $parent;   #a pointer to the current parent - the parent will be an array
+    public $stack;    #a stack of the most recent parent at each nesting level
+    public $last_opened_tag; #keeps track of the last tag opened.
+    public $data;
 
     /**
      * XML constructor.

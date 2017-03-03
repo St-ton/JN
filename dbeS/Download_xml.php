@@ -115,9 +115,9 @@ function bearbeiteInsert($xml)
                 if (is_array($oDownloadSprache_arr) && count($oDownloadSprache_arr) > 0) {
                     DBUpdateInsert('tdownload', [$oDownload], 'kDownload');
                     $cdsaCount = count($oDownloadSprache_arr);
-                    for ($i = 0; $i < $cdsaCount; ++$i) {
-                        $oDownloadSprache_arr[$i]->kDownload = $oDownload->kDownload;
-                        DBUpdateInsert('tdownloadsprache', [$oDownloadSprache_arr[$i]], 'kDownload', 'kSprache');
+                    for ($j = 0; $j < $cdsaCount; ++$i) {
+                        $oDownloadSprache_arr[$j]->kDownload = $oDownload->kDownload;
+                        DBUpdateInsert('tdownloadsprache', [$oDownloadSprache_arr[$j]], 'kDownload', 'kSprache');
                     }
                 }
             }

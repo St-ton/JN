@@ -121,6 +121,7 @@ if ($kPlugin > 0) {
         require_once PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/' .
             PFAD_PLUGIN_VERSION . $oPlugin->nVersion . '/' . PFAD_PLUGIN_PAYMENTMETHOD .
             $oPlugin->oPluginZahlungsKlasseAssoc_arr[$bestellung->Zahlungsart->cModulId]->cClassPfad;
+        /** @var PaymentMethod $paymentMethod */
         $pluginName              = $oPlugin->oPluginZahlungsKlasseAssoc_arr[$bestellung->Zahlungsart->cModulId]->cClassName;
         $paymentMethod           = new $pluginName($bestellung->Zahlungsart->cModulId);
         $paymentMethod->cModulId = $bestellung->Zahlungsart->cModulId;

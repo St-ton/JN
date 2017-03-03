@@ -515,57 +515,47 @@
 <fieldset>
     <div class="row">
         <div class="col-xs-12 col-md-6">
-            {foreach name=kundenfeld from=$oKundenfeld_arr item=oKundenfeld}
-                {if $step === 'formular' || $step === 'unregistriert bestellen' || $step === 'rechnungsdaten'}
-                    {if empty($smarty.session.Kunde->kKunde) || $smarty.session.Kunde->kKunde == 0 || $smarty.session.Kunde->kKunde > 0}
-                        {assign var=kKundenfeld value=$oKundenfeld->kKundenfeld}
-                        <div class="form-group float-label-control{if isset($fehlendeAngaben.custom[$kKundenfeld])} has-error{/if}{if $oKundenfeld->nPflicht == 1} required{/if}">
-                            {if $oKundenfeld->cTyp !== 'auswahl'}
-                                <label class="control-label" for="custom_{$kKundenfeld}">{$oKundenfeld->cName}</label>
-                                <input
-                                type="{if $oKundenfeld->cTyp === 'zahl'}number{elseif $oKundenfeld->cTyp === 'datum'}date{else}text{/if}"
-                                name="custom_{$kKundenfeld}"
-                                id="custom_{$kKundenfeld}"
-                                value="{if isset($cKundenattribut_arr[$kKundenfeld]->cWert) && ($step === 'formular' || $step === 'unregistriert bestellen')}{$cKundenattribut_arr[$kKundenfeld]->cWert}{elseif isset($Kunde->cKundenattribut_arr[$kKundenfeld]->cWert)}{$Kunde->cKundenattribut_arr[$kKundenfeld]->cWert}{/if}"
-                                class="form-control"
-                                placeholder="{$oKundenfeld->cName}"
-                                {if ($oKundenfeld->nPflicht == 1 && $oKundenfeld->nEditierbar == 1) || ($oKundenfeld->nEditierbar == 0 && !empty($cKundenattribut_arr[$kKundenfeld]->cWert))} required{/if}
-                                data-toggle="floatLabel"
-                                data-value="no-js"
-                                {if $oKundenfeld->nEditierbar == 0 && !empty($cKundenattribut_arr[$kKundenfeld]->cWert)}readonly{/if}/>
-                                {if isset($fehlendeAngaben.custom[$kKundenfeld])}
-                                    <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
-                                        {if $fehlendeAngaben.custom[$kKundenfeld] === 1}
-                                            {lang key="fillOut" section="global"}
-                                        {elseif $fehlendeAngaben.custom[$kKundenfeld] === 2}
-                                            {lang key="invalidDateformat" section="global"}
-                                        {elseif $fehlendeAngaben.custom[$kKundenfeld] === 3}
-                                            {lang key="invalidDate" section="global"}
-                                        {elseif $fehlendeAngaben.custom[$kKundenfeld] === 4}
-                                            {lang key="invalidInteger" section="global"}
-                                        {/if}
-                                    </div>
+            {if ($step === 'formular' || $step === 'unregistriert bestellen' || $step === 'rechnungsdaten') && empty($smarty.session.Kunde->kKunde)}
+                {foreach name=kundenfeld from=$oKundenfeld_arr item=oKundenfeld}
+                    {assign var=kKundenfeld value=$oKundenfeld->kKundenfeld}
+                    <div class="form-group float-label-control{if isset($fehlendeAngaben.custom[$kKundenfeld])} has-error{/if}{if $oKundenfeld->nPflicht == 1} required{/if}">
+                        <label class="control-label" for="custom_{$kKundenfeld}">{$oKundenfeld->cName}</label>
+                        {if $oKundenfeld->cTyp !== 'auswahl'}
+                            <input
+                            type="{if $oKundenfeld->cTyp === 'zahl'}number{elseif $oKundenfeld->cTyp === 'datum'}date{else}text{/if}"
+                            name="custom_{$kKundenfeld}"
+                            id="custom_{$kKundenfeld}"
+                            value="{if isset($cKundenattribut_arr[$kKundenfeld]->cWert) && ($step === 'formular' || $step === 'unregistriert bestellen')}{$cKundenattribut_arr[$kKundenfeld]->cWert}{elseif isset($Kunde->cKundenattribut_arr[$kKundenfeld]->cWert)}{$Kunde->cKundenattribut_arr[$kKundenfeld]->cWert}{/if}"
+                            class="form-control"
+                            placeholder="{$oKundenfeld->cName}"
+                            {if ($oKundenfeld->nPflicht == 1 && $oKundenfeld->nEditierbar == 1) || ($oKundenfeld->nEditierbar == 0 && !empty($cKundenattribut_arr[$kKundenfeld]->cWert))} required{/if}
+                            data-toggle="floatLabel"
+                            data-value="no-js"
+                            {if $oKundenfeld->nEditierbar == 0 && !empty($cKundenattribut_arr[$kKundenfeld]->cWert)}readonly{/if}/>
+                        {else}
+                            <select name="custom_{$kKundenfeld}" class="form-control{if $oKundenfeld->nPflicht == 1} required{/if}" {if $oKundenfeld->nEditierbar == 0 && !empty($cKundenattribut_arr[$kKundenfeld]->cWert)}disabled{/if}{if $oKundenfeld->nPflicht == 1} required{/if}>
+                                <option value="" selected disabled>{lang key="pleaseChoose" section="global"}</option>
+                                {foreach name=select from=$oKundenfeld->oKundenfeldWert_arr item=oKundenfeldWert}
+                                    <option value="{$oKundenfeldWert->cWert}" {if $step == 'formular' && isset($cKundenattribut_arr[$kKundenfeld]->cWert) && ($oKundenfeldWert->cWert == $cKundenattribut_arr[$kKundenfeld]->cWert)}selected{elseif isset($Kunde->cKundenattribut_arr[$kKundenfeld]->cWert) && ($oKundenfeldWert->cWert == $Kunde->cKundenattribut_arr[$kKundenfeld]->cWert)}selected{/if}>{$oKundenfeldWert->cWert}</option>
+                                {/foreach}
+                            </select>
+                        {/if}
+                        {if isset($fehlendeAngaben.custom[$kKundenfeld])}
+                            <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
+                                {if $fehlendeAngaben.custom[$kKundenfeld] === 1}
+                                    {lang key="fillOut" section="global"}
+                                {elseif $fehlendeAngaben.custom[$kKundenfeld] === 2}
+                                    {lang key="invalidDateformat" section="global"}
+                                {elseif $fehlendeAngaben.custom[$kKundenfeld] === 3}
+                                    {lang key="invalidDate" section="global"}
+                                {elseif $fehlendeAngaben.custom[$kKundenfeld] === 4}
+                                    {lang key="invalidInteger" section="global"}
                                 {/if}
-                            {else}
-                                <label class="control-label" for="custom_{$kKundenfeld}">{$oKundenfeld->cName}</label>
-                                <select name="custom_{$kKundenfeld}" class="form-control{if $oKundenfeld->nPflicht == 1} required{/if}" {if $oKundenfeld->nEditierbar == 0 && !empty($cKundenattribut_arr[$kKundenfeld]->cWert)}disabled{/if}{if $oKundenfeld->nPflicht == 1} required{/if}>
-                                    <option value="" selected disabled>{lang key="pleaseChoose" section="global"}</option>
-                                    {foreach name=select from=$oKundenfeld->oKundenfeldWert_arr item=oKundenfeldWert}
-                                        <option value="{$oKundenfeldWert->cWert}" {if $step == 'formular' && isset($cKundenattribut_arr[$kKundenfeld]->cWert) && ($oKundenfeldWert->cWert == $cKundenattribut_arr[$kKundenfeld]->cWert)}selected{elseif isset($Kunde->cKundenattribut_arr[$kKundenfeld]->cWert) && ($oKundenfeldWert->cWert == $Kunde->cKundenattribut_arr[$kKundenfeld]->cWert)}selected{/if}>{$oKundenfeldWert->cWert}</option>
-                                    {/foreach}
-                                </select>
-                                {if isset($fehlendeAngaben.custom[$kKundenfeld])}
-                                    <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
-                                        {if $fehlendeAngaben.custom[$kKundenfeld] === 1}
-                                            {lang key="fillOut" section="global"}
-                                        {/if}
-                                    </div>
-                                {/if}
-                            {/if}
-                        </div>
-                    {/if}
-                {/if}
-            {/foreach}
+                            </div>
+                        {/if}
+                    </div>
+                {/foreach}
+            {/if}
         </div>
     </div>
 </fieldset>

@@ -44,7 +44,7 @@ for ($i = 0; $i < $configCount; $i++) {
         'cName',
         $oConfig_arr[$i]->cWertName
     );
-    $oConfig_arr[$i]->gesetzterWert = (isset($oSetValue->cWert))
+    $oConfig_arr[$i]->gesetzterWert = isset($oSetValue->cWert)
         ? $oSetValue->cWert
         : null;
 }

@@ -137,7 +137,7 @@ class UstID
      */
     public function pruefePHPEinstellung()
     {
-        return (ini_get('allow_url_fopen'));
+        return ini_get('allow_url_fopen');
     }
 
     /**

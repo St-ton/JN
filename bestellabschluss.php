@@ -120,13 +120,13 @@ $smarty->assign('Navigation', createNavigation($AktuelleSeite))
        ->assign('WarensummeLocalized', $_SESSION['Warenkorb']->gibGesamtsummeWarenLocalized())
        ->assign('Einstellungen', $Einstellungen)
        ->assign('Bestellung', $bestellung)
-       ->assign('Kunde', (isset($_SESSION['Kunde'])) ? $_SESSION['Kunde'] : null)
+       ->assign('Kunde', isset($_SESSION['Kunde']) ? $_SESSION['Kunde'] : null)
        ->assign('bOrderConf', true)
        ->assign('C_WARENKORBPOS_TYP_ARTIKEL', C_WARENKORBPOS_TYP_ARTIKEL)
        ->assign('C_WARENKORBPOS_TYP_GRATISGESCHENK', C_WARENKORBPOS_TYP_GRATISGESCHENK);
 
 // Plugin Zahlungsmethode beachten
-$kPlugin = (isset($bestellung->Zahlungsart->cModulId)) ? gibkPluginAuscModulId($bestellung->Zahlungsart->cModulId) : 0;
+$kPlugin = isset($bestellung->Zahlungsart->cModulId) ? gibkPluginAuscModulId($bestellung->Zahlungsart->cModulId) : 0;
 if ($kPlugin > 0) {
     $oPlugin = new Plugin($kPlugin);
     $smarty->assign('oPlugin', $oPlugin);

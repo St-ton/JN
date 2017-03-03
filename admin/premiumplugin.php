@@ -121,7 +121,7 @@ if (!empty($pluginID)) {
         $sp->kServicePartner       = 0;
         $sp->marketPlaceURL        = null;
         $sp->oZertifizierungen_arr = [];
-        $sp->cLogoPfad             = $baseURL . 'agws_ts_features_logo.png';;
+        $sp->cLogoPfad             = $baseURL . 'agws_ts_features_logo.png';
         $sp->cFirma                = 'Trusted Shops GmbH';
         $sp->cPLZ                  = '50823';
         $sp->cOrt                  = utf8_decode('Köln');

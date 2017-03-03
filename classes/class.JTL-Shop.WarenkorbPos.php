@@ -166,7 +166,7 @@ class WarenkorbPos
      *      longestMax: int,
      * }
      */
-    public $oEstimatedDelivery = null;
+    public $oEstimatedDelivery;
 
     /**
      * Konstruktor

@@ -185,7 +185,7 @@ class ArtikelHelper
         if (!$kKundengruppe) {
             $kKundengruppe = Kundengruppe::getDefaultGroupID();
         }
-        $cGroupBy = ($bGroupBy) ? "GROUP BY teigenschaftkombiwert.kEigenschaftWert" : '';
+        $cGroupBy = $bGroupBy ? "GROUP BY teigenschaftkombiwert.kEigenschaftWert" : '';
 
         return Shop::DB()->query(
             "SELECT teigenschaftkombiwert.*
@@ -255,7 +255,7 @@ class ArtikelHelper
                     $j++;
                 }
             }
-            $kSprache                     = (isset($_SESSION['kSprache']))
+            $kSprache                     = isset($_SESSION['kSprache'])
                 ? (int)$_SESSION['kSprache']
                 : Shop::getLanguage();
             $oSQLEigenschaft              = new stdClass();
@@ -563,7 +563,7 @@ class ArtikelHelper
         if ($kArtikel > 0) {
             $oObj = Shop::DB()->select('tstueckliste', 'kArtikel', $kArtikel);
             if (isset($oObj->kStueckliste) && $oObj->kStueckliste > 0) {
-                return ($bInfo) ? $oObj : true;
+                return $bInfo ? $oObj : true;
             }
         }
 

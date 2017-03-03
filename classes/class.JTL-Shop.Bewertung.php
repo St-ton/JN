@@ -192,7 +192,7 @@ class Bewertung
                     WHERE kArtikel = " . $kArtikel . $cSprachSQL . $cSQLFreischalten, 1
             );
             if (isset($oBewertungGesamt->fDurchschnitt) && intval($oBewertungGesamt->fDurchschnitt) > 0) {
-                $oBewertungGesamt->fDurchschnitt = (round($oBewertungGesamt->fDurchschnitt * 2)) / 2;
+                $oBewertungGesamt->fDurchschnitt = round($oBewertungGesamt->fDurchschnitt * 2) / 2;
                 $oBewertungGesamt->nAnzahl       = (int)$oBewertungGesamt->nAnzahl;
                 $this->oBewertungGesamt          = $oBewertungGesamt;
             } else {

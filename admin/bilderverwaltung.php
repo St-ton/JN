@@ -73,8 +73,7 @@ switch ($action) {
         $result->nextIndex      = $index;
         $result->renderedImages = $_SESSION['renderedImages'];
         if ($_SESSION['renderedImages'] >= $total) {
-            unset($_SESSION['image_count']);
-            unset($_SESSION['renderedImages']);
+            unset($_SESSION['image_count'], $_SESSION['renderedImages']);
         }
 
         /*

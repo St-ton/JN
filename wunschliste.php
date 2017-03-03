@@ -57,7 +57,7 @@ if ($action !== null && isset($_POST['kWunschliste'], $_SESSION['Kunde']->kKunde
         case 'addToCart':
             $oWunschlistePos = giboWunschlistePos($kWunschlistePos);
             if (isset($oWunschlistePos->kArtikel) && $oWunschlistePos->kArtikel > 0) {
-                $oEigenschaftwerte_arr = (ArtikelHelper::isVariChild($oWunschlistePos->kArtikel))
+                $oEigenschaftwerte_arr = ArtikelHelper::isVariChild($oWunschlistePos->kArtikel)
                     ? gibVarKombiEigenschaftsWerte($oWunschlistePos->kArtikel)
                     : gibEigenschaftenZuWunschliste($kWunschliste, $oWunschlistePos->kWunschlistePos);
                 if (!$oWunschlistePos->bKonfig) {
@@ -98,7 +98,7 @@ if ($action !== null && isset($_POST['kWunschliste'], $_SESSION['Kunde']->kKunde
             $oWunschliste = new Wunschliste($kWunschliste);
             if (count($oWunschliste->CWunschlistePos_arr) > 0) {
                 foreach ($oWunschliste->CWunschlistePos_arr as $oWunschlistePos) {
-                    $oEigenschaftwerte_arr = (ArtikelHelper::isVariChild($oWunschlistePos->kArtikel))
+                    $oEigenschaftwerte_arr = ArtikelHelper::isVariChild($oWunschlistePos->kArtikel)
                         ? gibVarKombiEigenschaftsWerte($oWunschlistePos->kArtikel)
                         : gibEigenschaftenZuWunschliste($kWunschliste, $oWunschlistePos->kWunschlistePos);
                     if (!$oWunschlistePos->Artikel->bHasKonfig && empty($oWunschlistePos->bKonfig) &&
@@ -148,7 +148,7 @@ if ($action !== null && isset($_POST['kWunschliste'], $_SESSION['Kunde']->kKunde
                     (int)$oWunschliste->kKunde === (int)$_SESSION['Kunde']->kKunde
                 ) {
                     $cHinweis .= wunschlisteAktualisieren($kWunschliste);
-                    $CWunschliste            = (isset($_SESSION['Wunschliste']->kWunschliste))
+                    $CWunschliste            = isset($_SESSION['Wunschliste']->kWunschliste)
                         ? new Wunschliste($_SESSION['Wunschliste']->kWunschliste)
                         : new Wunschliste($kWunschliste);
                     $_SESSION['Wunschliste'] = $CWunschliste;
@@ -247,8 +247,7 @@ if (verifyGPCDataInteger('wlidmsg') > 0) {
 if (verifyGPCDataInteger('error') === 1) {
     if (strlen($cURLID) > 0) {
         $oWunschliste = Shop::DB()->select('twunschliste', 'cURLID', $cURLID);
-        if (!isset($oWunschliste->kWunschliste) ||
-            !isset($oWunschliste->nOeffentlich) ||
+        if (!isset($oWunschliste->kWunschliste, $oWunschliste->nOeffentlich) ||
             $oWunschliste->kWunschliste >= 0 ||
             $oWunschliste->nOeffentlich <= 0
         ) {
@@ -263,7 +262,7 @@ if (verifyGPCDataInteger('error') === 1) {
         //try to find active wishlist
         foreach ($wishLists as $wishList) {
             if ($wishList->nStandard === '1') {
-                $kWunschliste = (isset($wishList->kWunschliste))
+                $kWunschliste = isset($wishList->kWunschliste)
                     ? (int)$wishList->kWunschliste
                     : 0;
                 break;
@@ -287,7 +286,7 @@ if (verifyGPCDataInteger('error') === 1) {
 }
 $link       = ($cParameter_arr['kLink'] > 0) ? $linkHelper->getPageLink($cParameter_arr['kLink']) : null;
 $requestURL = baueURL($link, URLART_SEITE);
-$sprachURL  = (isset($link->languageURLs)) ? $link->languageURLs : baueSprachURLS($link, URLART_SEITE);
+$sprachURL  = isset($link->languageURLs) ? $link->languageURLs : baueSprachURLS($link, URLART_SEITE);
 // Wunschliste aufbauen und cPreis setzen (Artikelanzahl mit eingerechnet)
 if (empty($CWunschliste)) {
     $CWunschliste = bauecPreis(new Wunschliste($kWunschliste));
@@ -305,9 +304,9 @@ $smarty->assign('CWunschliste', $CWunschliste)
        ->assign('oWunschliste_arr', $oWunschliste_arr)
        ->assign('wlsearch', $cSuche)
        ->assign('hasItems', !empty($CWunschliste->CWunschlistePos_arr))
-       ->assign('isCurrenctCustomer', (isset($CWunschliste->kKunde) &&
+       ->assign('isCurrenctCustomer', isset($CWunschliste->kKunde) &&
            isset($_SESSION['Kunde']->kKunde) &&
-           (int)$CWunschliste->kKunde === (int)$_SESSION['Kunde']->kKunde))
+           (int)$CWunschliste->kKunde === (int)$_SESSION['Kunde']->kKunde)
        ->assign('Einstellungen', $Einstellungen)
        ->assign('cURLID', $cURLID)
        ->assign('step', $step)

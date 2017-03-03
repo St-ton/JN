@@ -261,7 +261,7 @@ class AdminAccount
      */
     public function account()
     {
-        return ($this->getIsAuthenticated()) ? $_SESSION['AdminAccount'] : false;
+        return $this->getIsAuthenticated() ? $_SESSION['AdminAccount'] : false;
     }
 
     /**

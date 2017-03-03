@@ -2081,12 +2081,12 @@ function ipl_core_send_capture_request($requestUrlBase, $aTraceData, $defaultPar
 }
 
 /**
- * @param      $requestUrlBase
- * @param      $aTraceData
- * @param      $defaultParams
- * @param      $invoiceParams
- * @param      $paymentInfoParams
- * @param null $articleData
+ * @param string     $requestUrlBase
+ * @param string     $aTraceData
+ * @param string     $defaultParams
+ * @param string     $invoiceParams
+ * @param string     $paymentInfoParams
+ * @param null|array $articleData
  * @return array|bool
  */
 function ipl_core_send_invoice_request($requestUrlBase, $aTraceData, $defaultParams, $invoiceParams, $paymentInfoParams,

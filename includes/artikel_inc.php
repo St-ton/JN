@@ -1272,12 +1272,12 @@ function ProductBundleWK($Productkey)
 }
 
 /**
- * @param int   $kArtikel
- * @param float $fAnzahl
- * @param array $nVariation_arr
- * @param array $nKonfiggruppe_arr
- * @param array $nKonfiggruppeAnzahl_arr
- * @param array $nKonfigitemAnzahl_arr
+ * @param int       $kArtikel
+ * @param float|int $fAnzahl
+ * @param array     $nVariation_arr
+ * @param array     $nKonfiggruppe_arr
+ * @param array     $nKonfiggruppeAnzahl_arr
+ * @param array     $nKonfigitemAnzahl_arr
  * @return stdClass|null
  */
 function buildConfig($kArtikel, $fAnzahl, $nVariation_arr, $nKonfiggruppe_arr, $nKonfiggruppeAnzahl_arr, $nKonfigitemAnzahl_arr)

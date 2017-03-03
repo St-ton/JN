@@ -80,7 +80,7 @@ if (isset($_POST['passwort_vergessen'], $_POST['email']) && (int)$_POST['passwor
     $step = 'confirm';
     $smarty->assign('fpwh', $_POST['fpwh'])
            ->assign('fpm', $_POST['fpm']);
-} elseif (isset($_GET['fpwh']) && isset($_GET['mail'])) {
+} elseif (isset($_GET['fpwh'], $_GET['mail'])) {
     $smarty->assign('fpwh', $_GET['fpwh'])
            ->assign('fpm', $_GET['mail']);
     $step = 'confirm';
@@ -95,7 +95,7 @@ $smarty->assign('step', $step)
        ->assign('hinweis', $hinweis)
        ->assign('cFehler', $cFehler)
        ->assign('Navigation', createNavigation($AktuelleSeite))
-       ->assign('requestURL', (isset($requestURL)) ? $requestURL : null)
+       ->assign('requestURL', isset($requestURL) ? $requestURL : null)
        ->assign('Einstellungen', $GLOBALS['GlobaleEinstellungen']);
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';

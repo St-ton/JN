@@ -227,7 +227,7 @@ if (isset($_POST['neueVersandart']) && (int)$_POST['neueVersandart'] > 0 && vali
     $Versandart->nMinLiefertage           = (int)$_POST['nMinLiefertage'];
     $Versandart->nMaxLiefertage           = (int)$_POST['nMaxLiefertage'];
     $Versandart->cNurAbhaengigeVersandart = $_POST['cNurAbhaengigeVersandart'];
-    $Versandart->cSendConfirmationMail    = (isset($_POST['cSendConfirmationMail'])) 
+    $Versandart->cSendConfirmationMail    = isset($_POST['cSendConfirmationMail'])
         ? $_POST['cSendConfirmationMail'] 
         : 'Y';
     $Versandart->eSteuer                  = $_POST['eSteuer'];
@@ -468,10 +468,10 @@ if ($step === 'neue Versandart') {
            ->assign('waehrung', $standardwaehrung->cName)
            ->assign('kundengruppen', Shop::DB()->query("SELECT kKundengruppe, cName FROM tkundengruppe ORDER BY kKundengruppe", 2))
            ->assign('oVersandartSpracheAssoc_arr', getShippingLanguage($kVersandartTMP, $sprachen))
-           ->assign('gesetzteVersandklassen', (isset($Versandart->cVersandklassen))
+           ->assign('gesetzteVersandklassen', isset($Versandart->cVersandklassen)
                ? gibGesetzteVersandklassen($Versandart->cVersandklassen)
                : null)
-           ->assign('gesetzteKundengruppen', (isset($Versandart->cKundengruppen))
+           ->assign('gesetzteKundengruppen', isset($Versandart->cKundengruppen)
                ? gibGesetzteKundengruppen($Versandart->cKundengruppen)
                : null);
 }

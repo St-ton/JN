@@ -10,9 +10,9 @@
 class Updater
 {
     /**
-     * @var null|array
+     * @var array
      */
-    protected static $availableVersions = null;
+    protected static $availableVersions;
 
     /**
      * @var boolean

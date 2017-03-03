@@ -152,7 +152,7 @@ function getNum($n)
  */
 function getURL($img)
 {
-    return ($img) ? Shop::getURL() . '/' . $img : '';
+    return $img ? Shop::getURL() . '/' . $img : '';
 }
 
 /**

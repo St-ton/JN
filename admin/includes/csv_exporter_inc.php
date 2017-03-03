@@ -16,6 +16,8 @@
  * @param array $fields - array of property/column names to be included or empty array for all columns (taken from
  *      first item of $source)
  * @param array $excluded - array of property/column names to be excluded
+ * @param string $delim
+ * @param bool   $bHead
  * @return bool - false = failure or exporter-id-mismatch
  */
 function handleCsvExportAction($exporterId, $csvFilename, $source, $fields = [], $excluded = [], $delim = ',',

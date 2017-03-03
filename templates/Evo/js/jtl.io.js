@@ -57,7 +57,7 @@
 
             for (var i = 0; i < csslist.length; i++) {
                 var item = csslist[i];
-                var value = item.data.replace(/'/g, "\\'");
+                var value = item.data.replace(/'/g, "\\'").replace(/\n/g, "\\n");
                 var js = "if ($('#" + item.target + "').length > 0) $('#" + item.target + "')[0]['" + item.attr + "'] = '" + value + "';";
                 jslist.push(js);
             }

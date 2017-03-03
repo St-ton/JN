@@ -213,8 +213,8 @@ function eosZahlungsNachricht($Bestellung)
 }
 
 /**
- * @param object $zahlung
- * @param object $bestellung
+ * @param object            $zahlung
+ * @param object|Bestellung $bestellung
  */
 function eosZahlungVerbuchen($zahlung, $bestellung)
 {

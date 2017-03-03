@@ -152,13 +152,13 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 'cBeschreibung'     => $this->getBeschreibung(),
                 'cKurzBeschreibung' => $this->getKurzBeschreibung(),
                 'bAnzahl'           => $this->getMin() != $this->getMax(),
-                'fInitial'          => (float) $this->getInitial(),
-                'fMin'              => (float) $this->getMin(),
-                'fMax'              => (float) $this->getMax(),
+                'fInitial'          => (float)$this->getInitial(),
+                'fMin'              => (float)$this->getMin(),
+                'fMax'              => (float)$this->getMax(),
                 'cBildPfad'         => $this->getBildPfad(),
                 'fPreis'            => [
-                    (float) $this->getPreis(),
-                    (float) $this->getPreis(true)
+                    (float)$this->getPreis(),
+                    (float)$this->getPreis(true)
                 ],
                 'fPreisLocalized' => [
                     gibPreisStringLocalized($this->getPreis()),
@@ -369,7 +369,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * @param $nPosTyp
+         * @param int $nPosTyp
          * @return $this
          */
         public function setPosTyp($nPosTyp)
@@ -432,7 +432,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * @return mixed
+         * @return int
          */
         public function getSelektiert()
         {
@@ -440,7 +440,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * @return mixed
+         * @return int
          */
         public function getEmpfohlen()
         {

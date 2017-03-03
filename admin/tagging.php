@@ -218,7 +218,7 @@ if (verifyGPCDataInteger('kTag') > 0 && verifyGPCDataInteger('tagdetail') === 1)
     $smarty->assign('oTagArtikel_arr', $oTagArtikel_arr)
         ->assign('oPagiTagDetail', $oPagiTagDetail)
         ->assign('kTag', verifyGPCDataInteger('kTag'))
-        ->assign('cTagName', (isset($oTagArtikel_arr[0]->cName))
+        ->assign('cTagName', isset($oTagArtikel_arr[0]->cName)
             ? $oTagArtikel_arr[0]->cName
             : '');
 } else {

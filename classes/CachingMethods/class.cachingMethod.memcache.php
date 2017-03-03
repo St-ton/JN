@@ -13,14 +13,14 @@ class cache_memcache implements ICachingMethod
     use JTLCacheTrait;
     
     /**
-     * @var cache_memcache|null
+     * @var cache_memcache
      */
-    public static $instance = null;
+    public static $instance;
 
     /**
-     * @var Memcache|null
+     * @var Memcache
      */
-    private $_memcache = null;
+    private $_memcache;
 
     /**
      * @param array $options

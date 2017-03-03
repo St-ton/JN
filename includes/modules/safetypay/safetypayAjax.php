@@ -113,7 +113,7 @@ if (strlen($GetTOCurr) === 0) {
 // SAFETYPAY_APIKEY, SAFETYPAY_SIGNTATURE_KEY und Umgebungseinstellung aus der DB laden
 if (empty($GLOBALS['DB'])) {
     //einstellungen holen
-    require_once '../../config.JTL-Shop.ini.php';
+    require_once __DIR__ . '/../../config.JTL-Shop.ini.php';
 
     //existiert Konfiguration?
     if (!defined('DB_HOST')) {
@@ -130,7 +130,7 @@ if (empty($GLOBALS['DB'])) {
     }
 
     //datenbankverbindung aufbauen
-    require_once '../../../classes/core/class.core.NiceDB.php';
+    require_once __DIR__ . '/../../../classes/core/class.core.NiceDB.php';
     $DB = new NiceDB(DB_HOST, DB_USER, DB_PASS, DB_NAME);
 
     $einstellungApiKey       = $DB->executeQuery("SELECT cWert FROM teinstellungen WHERE cName = 'zahlungsart_safetypay_apikey'", 1);

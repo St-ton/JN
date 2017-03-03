@@ -3328,14 +3328,14 @@ function berechneMaxMinStep($fMax, $fMin)
         100000000.0
     ];
     $nStep      = 10;
-    $fDiffPreis = doubleval($fMax - $fMin) * 1000;
+    $fDiffPreis = floatval($fMax - $fMin) * 1000;
     $nMaxSteps  = 5;
     $conf       = Shop::getSettings([CONF_NAVIGATIONSFILTER]);
     if ($conf['navigationsfilter']['preisspannenfilter_anzeige_berechnung'] === 'M') {
         $nMaxSteps = 10;
     }
     foreach ($fStepWert_arr as $i => $fStepWert) {
-        if (($fDiffPreis / doubleval($fStepWert * 1000)) < $nMaxSteps) {
+        if (($fDiffPreis / floatval($fStepWert * 1000)) < $nMaxSteps) {
             $nStep = $i;
             break;
         }

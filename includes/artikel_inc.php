@@ -1331,7 +1331,7 @@ function buildConfig($kArtikel, $fAnzahl, $nVariation_arr, $nKonfiggruppe_arr, $
         foreach ($oKonfiggruppe->oItem_arr as $j => &$oKonfigitem) {
             /** @var Konfigitem $oKonfigitem */
             $kKonfigitem          = $oKonfigitem->getKonfigitem();
-            $oKonfigitem->fAnzahl = floatval(
+            $oKonfigitem->fAnzahl = (float)(
                 isset($nKonfiggruppeAnzahl_arr[$oKonfigitem->getKonfiggruppe()])
                     ? $nKonfiggruppeAnzahl_arr[$oKonfigitem->getKonfiggruppe()]
                     : $oKonfigitem->getInitial()
@@ -1340,7 +1340,7 @@ function buildConfig($kArtikel, $fAnzahl, $nVariation_arr, $nKonfiggruppe_arr, $
                 $oKonfigitem->fAnzahl = $oKonfigitem->getInitial();
             }
             if ($nKonfigitemAnzahl_arr && isset($nKonfigitemAnzahl_arr[$oKonfigitem->getKonfigitem()])) {
-                $oKonfigitem->fAnzahl = floatval($nKonfigitemAnzahl_arr[$oKonfigitem->getKonfigitem()]);
+                $oKonfigitem->fAnzahl = (float)$nKonfigitemAnzahl_arr[$oKonfigitem->getKonfigitem()];
             }
             if ($oKonfigitem->fAnzahl <= 0) {
                 $oKonfigitem->fAnzahl = 1;

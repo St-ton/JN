@@ -806,7 +806,7 @@ class Billpay extends PaymentMethod
             if ($oPosition->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL || $oPosition->nPosTyp == C_WARENKORBPOS_TYP_GRATISGESCHENK) {
                 $oPreAuth->add_article(
                     (int)$oPosition->kArtikel,                                       // articleid
-                    floatval($oPosition->nAnzahl),                                   // articlequantity
+                    (float)$oPosition->nAnzahl,                                      // articlequantity
                     BPHelper::strEncode($oPosition->cName[$cISOSprache], 50),        // articlename
                     BPHelper::strEncode($oPosition->Artikel->cKurzBeschreibung, 50), // articledescription
                     BPHelper::fmtAmount($fAmount[AMT_NET], true),                    // articleprice

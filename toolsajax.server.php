@@ -142,10 +142,10 @@ function gibVergleichsliste($nVLKeys = 0, $bWarenkorb = true)
         }
     }
     // Spaltenbreite
-    $nBreiteAttribut = (intval($Einstellungen_Vergleichsliste['vergleichsliste']['vergleichsliste_spaltengroesseattribut']) > 0)
+    $nBreiteAttribut = ((int)$Einstellungen_Vergleichsliste['vergleichsliste']['vergleichsliste_spaltengroesseattribut'] > 0)
         ? (int)$Einstellungen_Vergleichsliste['vergleichsliste']['vergleichsliste_spaltengroesseattribut']
         : 100;
-    $nBreiteArtikel  = (intval($Einstellungen_Vergleichsliste['vergleichsliste']['vergleichsliste_spaltengroesse']) > 0)
+    $nBreiteArtikel  = ((int)$Einstellungen_Vergleichsliste['vergleichsliste']['vergleichsliste_spaltengroesse'] > 0)
         ? (int)$Einstellungen_Vergleichsliste['vergleichsliste']['vergleichsliste_spaltengroesse']
         : 200;
     $nBreiteTabelle  = $nBreiteArtikel * count($oVergleichsliste->oArtikel_arr) + $nBreiteAttribut;
@@ -212,10 +212,11 @@ function ermittleVersandkostenAjax($oArtikel_arr)
  */
 function loescheWarenkorbPosAjax($nPos)
 {
+    /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
     $objResponse = new xajaxResponse();
     //wurden Positionen gelöscht?
-    if ($_SESSION['Warenkorb']->PositionenArr[intval($nPos)]->nPosTyp == 1) {
-        unset($_SESSION['Warenkorb']->PositionenArr[intval($nPos)]);
+    if ($_SESSION['Warenkorb']->PositionenArr[(int)$nPos]->nPosTyp == 1) {
+        unset($_SESSION['Warenkorb']->PositionenArr[(int)$nPos]);
         $_SESSION['Warenkorb']->PositionenArr = array_merge($_SESSION['Warenkorb']->PositionenArr);
         loescheAlleSpezialPos();
         if (!$_SESSION['Warenkorb']->enthaltenSpezialPos(C_WARENKORBPOS_TYP_ARTIKEL)) {
@@ -549,12 +550,12 @@ function suggestions($cValue)
     $cSuch_arr   = [];
     $cValue      = Shop::DB()->escape(StringHandler::filterXSS($cValue));
     $objResponse = new xajaxResponse();
-    $nMaxAnzahl  = (intval($Einstellungen['artikeluebersicht']['suche_ajax_anzahl']) > 0)
+    $nMaxAnzahl  = ((int)$Einstellungen['artikeluebersicht']['suche_ajax_anzahl'] > 0)
         ? (int)$Einstellungen['artikeluebersicht']['suche_ajax_anzahl']
         : 10;
     if (strlen($cValue) >= 3) {
-        $oSuchanfrage_arr = Shop::DB()->query(
-            "SELECT cSuche, nAnzahlTreffer
+        $oSuchanfrage_arr = Shop::DB()->query("
+            SELECT cSuche, nAnzahlTreffer
                 FROM tsuchanfrage
                 WHERE cSuche LIKE '" . $cValue . "%'
                     AND nAktiv = 1
@@ -687,10 +688,10 @@ function tauscheVariationKombi($aFormValues, $nVater = 0, $kEigenschaft = 0, $kE
                 $oArtikelOptionen->nMain                     = 1;
                 $oArtikelOptionen->nWarenlager               = 1;
                 // Warenkorbmatrix nötig? => Varikinder mit Preisen holen
-                $oArtikelOptionen->nWarenkorbmatrix = intval($Einstellungen['artikeldetails']['artikeldetails_warenkorbmatrix_anzeige'] === 'Y');
+                $oArtikelOptionen->nWarenkorbmatrix = (int)($Einstellungen['artikeldetails']['artikeldetails_warenkorbmatrix_anzeige'] === 'Y');
                 // Stückliste nötig? => Stücklistenkomponenten  holen
-                $oArtikelOptionen->nStueckliste   = intval($Einstellungen['artikeldetails']['artikeldetails_stueckliste_anzeigen'] === 'Y');
-                $oArtikelOptionen->nProductBundle = intval($Einstellungen['artikeldetails']['artikeldetails_produktbundle_nutzen'] === 'Y');
+                $oArtikelOptionen->nStueckliste   = (int)($Einstellungen['artikeldetails']['artikeldetails_stueckliste_anzeigen'] === 'Y');
+                $oArtikelOptionen->nProductBundle = (int)($Einstellungen['artikeldetails']['artikeldetails_produktbundle_nutzen'] === 'Y');
                 $oArtikel->fuelleArtikel($oArtikelTMP->kArtikel, $oArtikelOptionen, $aFormValues['kKundengruppe'], $aFormValues['kSprache']);
                 $oArtikel->kArtikelVariKombi = $oArtikel->kArtikel;
 
@@ -848,7 +849,11 @@ function tauscheVariationKombi($aFormValues, $nVater = 0, $kEigenschaft = 0, $kE
                                 $oTestArtikel->cLagerKleinerNull !== 'Y' &&
                                 $oTestArtikel->fLagerbestand == 0
                             ) {
-                                $objResponse->script("setzeVarInfo({$oEigenschaftWert->kEigenschaftWert}, '{$oTestArtikel->Lageranzeige->AmpelText}', '{$oTestArtikel->Lageranzeige->nStatus}');");
+                                $objResponse->script(
+                                    "setzeVarInfo({$oEigenschaftWert->kEigenschaftWert}, 
+                                    '{$oTestArtikel->Lageranzeige->AmpelText}', 
+                                    '{$oTestArtikel->Lageranzeige->nStatus}');"
+                                );
                             }
                         }
                     }
@@ -902,7 +907,7 @@ function baueArtikelDetail($oArtikel, $xPost_arr)
     $Artikelhinweise = [];
     baueArtikelhinweise();
 
-    if (isset($xPost_arr['fragezumprodukt']) && intval($xPost_arr['fragezumprodukt']) === 1) {
+    if (isset($xPost_arr['fragezumprodukt']) && (int)$xPost_arr['fragezumprodukt'] === 1) {
         bearbeiteFrageZumProdukt();
     } elseif (isset($xPost_arr['benachrichtigung_verfuegbarkeit']) && (int)$xPost_arr['benachrichtigung_verfuegbarkeit'] === 1) {
         bearbeiteBenachrichtigung();
@@ -1277,7 +1282,11 @@ function checkVarkombiDependencies($kVaterArtikel, $cVaterURL, $kEigenschaft = 0
                         $oTestArtikel->cLagerKleinerNull !== 'Y' &&
                         $oTestArtikel->fLagerbestand == 0
                     ) {
-                        $objResponse->script("setzeVarInfo({$oEigenschaftWert->kEigenschaftWert}, '{$oTestArtikel->Lageranzeige->AmpelText}', '{$oTestArtikel->Lageranzeige->nStatus}');");
+                        $objResponse->script(
+                            "setzeVarInfo({$oEigenschaftWert->kEigenschaftWert}, 
+                            '{$oTestArtikel->Lageranzeige->AmpelText}', 
+                            '{$oTestArtikel->Lageranzeige->nStatus}');"
+                        );
                     }
                 }
             }
@@ -1319,8 +1328,8 @@ function gibMoeglicheVariationen($kVaterArtikel, $oEigenschaftWert_arr, $kGesetz
             }
         }
         $cSQLStr          = implode(' ', $cSQL);
-        $oEigenschaft_arr = Shop::DB()->query(
-            "SELECT e1.* FROM teigenschaftkombiwert e1
+        $oEigenschaft_arr = Shop::DB()->query("
+            SELECT e1.* FROM teigenschaftkombiwert e1
                 {$cSQLStr}
                 WHERE e1.kEigenschaft ={$group[0]->kEigenschaft}
                 GROUP BY e1.kEigenschaft, e1.kEigenschaftWert", 2
@@ -1355,8 +1364,8 @@ function gibArtikelByVariationen($kArtikel, $kVariationKombi_arr)
     } else {
         return;
     }
-    $oArtikelTMP = Shop::DB()->query(
-        "SELECT tartikel.kArtikel
+    $oArtikelTMP = Shop::DB()->query("
+        SELECT tartikel.kArtikel
             FROM teigenschaftkombiwert
             JOIN tartikel 
                 ON tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi

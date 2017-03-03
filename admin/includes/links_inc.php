@@ -64,10 +64,10 @@ function parseText($cText, $kLink)
         $DirHandle = opendir($cUploadVerzeichnis . $kLink);
         while (false !== ($Datei = readdir($DirHandle))) {
             if ($Datei !== '.' && $Datei !== '..') {
-                $nBild             = intval(substr(
+                $nBild             = (int)substr(
                     str_replace('Bild', '', $Datei),
                     0,
-                    strpos(str_replace('Bild', '', $Datei), '.'))
+                    strpos(str_replace('Bild', '', $Datei), '.')
                 );
                 $cBild_arr[$nBild] = $Datei;
                 $nSort_arr[]       = $nBild;

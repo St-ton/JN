@@ -606,31 +606,31 @@ class PreisverlaufGraph
             foreach ($this->oConfig_arr as $oConfig) {
                 switch ($oConfig->cName) {
                     case 'preisverlauf_breite':
-                        $this->nBreite = intval($oConfig->cWert);
+                        $this->nBreite = (int)$oConfig->cWert;
                         break;
                     case 'preisverlauf_hoehe':
-                        $this->nHoehe = intval($oConfig->cWert);
+                        $this->nHoehe = (int)$oConfig->cWert;
                         break;
                     case 'preisverlauf_schriftgroesse':
-                        $this->nSchriftgroesse = intval($oConfig->cWert);
+                        $this->nSchriftgroesse = (int)$oConfig->cWert;
                         break;
                     case 'preisverlauf_padding_oben':
-                        $this->nPolsterOben = intval($oConfig->cWert);
+                        $this->nPolsterOben = (int)$oConfig->cWert;
                         break;
                     case 'preisverlauf_padding_links':
-                        $this->nPolsterLinks = intval($oConfig->cWert);
+                        $this->nPolsterLinks = (int)$oConfig->cWert;
                         break;
                     case 'preisverlauf_padding_unten':
-                        $this->nPolsterUnten = intval($oConfig->cWert);
+                        $this->nPolsterUnten = (int)$oConfig->cWert;
                         break;
                     case 'preisverlauf_padding_rechts':
-                        $this->nPolsterRechts = intval($oConfig->cWert);
+                        $this->nPolsterRechts = (int)$oConfig->cWert;
                         break;
                     case 'preisverlauf_padding_x':
-                        $this->nInternPolsterX = intval($oConfig->cWert);
+                        $this->nInternPolsterX = (int)$oConfig->cWert;
                         break;
                     case 'preisverlauf_padding_y':
-                        $this->nInternPolsterY = intval($oConfig->cWert);
+                        $this->nInternPolsterY = (int)$oConfig->cWert;
                         break;
                 }
             }

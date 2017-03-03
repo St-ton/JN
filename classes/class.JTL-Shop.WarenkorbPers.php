@@ -311,7 +311,7 @@ class WarenkorbPers
 
                             $fWarenwert += $oWarenkorbPersPos->Artikel->Preise->fVK[$oWarenkorbPersPos->Artikel->kSteuerklasse];
                         }
-                        $oWarenkorbPersPos->fAnzahl = floatval($oWarenkorbPersPos->fAnzahl);
+                        $oWarenkorbPersPos->fAnzahl = (float)$oWarenkorbPersPos->fAnzahl;
                         $this->oWarenkorbPersPos_arr[] = $oWarenkorbPersPos;
                     }
                     $this->cWarenwertLocalized = gibPreisStringLocalized($fWarenwert);

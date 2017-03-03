@@ -358,7 +358,7 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
     } elseif (isset($_POST['news_loeschen']) && (int)$_POST['news_loeschen'] === 1) { // News loeschen
         if (is_array($_POST['kNews']) && count($_POST['kNews']) > 0) {
             foreach ($_POST['kNews'] as $kNews) {
-                $kNews = intval($kNews);
+                $kNews = (int)$kNews;
 
                 if ($kNews > 0) {
                     ContentAuthor::getInstance()->clearAuthor('NEWS', $kNews);

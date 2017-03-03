@@ -56,7 +56,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         public function __construct($kRMA = 0, $kArtikel = 0, $bProductName = false, $bProductObject = false, $kSprache = 0, $kKundengruppe = 0)
         {
-            if ((int)$kRMA) > 0 && (int)$kArtikel > 0) {
+            if ((int)$kRMA > 0 && (int)$kArtikel > 0) {
                 $this->loadFromDB($kRMA, $kArtikel, $bProductName, $bProductObject, $kSprache, $kKundengruppe);
             }
         }
@@ -223,7 +223,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         public function setAnzahl($fAnzahl)
         {
-            $this->fAnzahl = floatval($fAnzahl);
+            $this->fAnzahl = (float)$fAnzahl;
 
             return $this;
         }
@@ -331,7 +331,12 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         public static function isOrderExisting($kBestellung, $kArtikel_arr, &$cRMAPostAssoc_arr)
         {
             $kBestellung = (int)$kBestellung;
-            if ($kBestellung > 0 && is_array($kArtikel_arr) && count($kArtikel_arr) > 0 && is_array($cRMAPostAssoc_arr) && count($cRMAPostAssoc_arr) > 0) {
+            if ($kBestellung > 0 &&
+                is_array($kArtikel_arr) &&
+                is_array($cRMAPostAssoc_arr) &&
+                count($kArtikel_arr) > 0 &&
+                count($cRMAPostAssoc_arr) > 0
+            ) {
                 require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Bestellung.php';
 
                 foreach ($kArtikel_arr as $kArtikel) {
@@ -340,7 +345,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
                     if ($fRMAArtikelQuantity && $fRMAArtikelQuantity > 0) {
                         // TODO: Anzahl checken
                         $kRMAGrund  = (int)$cRMAPostAssoc_arr['cGrund'][$kArtikel];
-                        $fAnzahlNow = floatval($cRMAPostAssoc_arr['fAnzahl'][$kArtikel][$kRMAGrund]); // Aktuelle Anzahl
+                        $fAnzahlNow = (float)$cRMAPostAssoc_arr['fAnzahl'][$kArtikel][$kRMAGrund]; // Aktuelle Anzahl
 
                         $fAnzahlBestellung = Bestellung::getProductAmount($kBestellung, $kArtikel);
                         if ($fAnzahlBestellung) {
@@ -409,8 +414,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
             $kBestellung = (int)$kBestellung;
             $kArtikel    = (int)$kArtikel;
             if ($kBestellung > 0 && $kArtikel > 0) {
-                $oObj = Shop::DB()->query(
-                    "SELECT SUM(fAnzahl) AS fAnzahlSum
+                $oObj = Shop::DB()->query("
+                    SELECT SUM(fAnzahl) AS fAnzahlSum
                         FROM trmaartikel
                         WHERE kArtikel = " . $kArtikel . "
                             AND kBestellung = " . $kBestellung, 1

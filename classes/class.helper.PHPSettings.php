@@ -137,6 +137,6 @@ class PHPSettingsHelper
      */
     public function isTempWriteable()
     {
-        return is_writeable($this->tempDir());
+        return is_writable($this->tempDir());
     }
 }

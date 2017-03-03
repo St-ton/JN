@@ -98,7 +98,7 @@ if (isset($_POST['einstellungen_bearbeiten'], $_POST['kZahlungsart']) &&
 
             switch ($Conf[$i]->cInputTyp) {
                 case 'kommazahl':
-                    $aktWert->cWert = floatval(str_replace(',', '.', $aktWert->cWert));
+                    $aktWert->cWert = (float)str_replace(',', '.', $aktWert->cWert);
                     break;
                 case 'zahl':
                 case 'number':
@@ -129,7 +129,7 @@ if (isset($_POST['einstellungen_bearbeiten'], $_POST['kZahlungsart']) &&
 
             switch ($Conf[$i]->cInputTyp) {
                 case 'kommazahl':
-                    $aktWert->cWert = floatval(str_replace(',', '.', $aktWert->cWert));
+                    $aktWert->cWert = (float)str_replace(',', '.', $aktWert->cWert);
                     break;
                 case 'zahl':
                 case 'number':

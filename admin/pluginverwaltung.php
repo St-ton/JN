@@ -97,7 +97,7 @@ if (!empty($_FILES['file_data'])) {
             $nVersion = $PluginInstalliert->getCurrentVersion();
             if ($nVersion > $PluginInstalliert->nVersion) {
                 $nReturnValue                       = pluginPlausi($PluginInstalliert->kPlugin);
-                $PluginInstalliert_arr[$i]->dUpdate = number_format(doubleval($nVersion) / 100, 2);
+                $PluginInstalliert_arr[$i]->dUpdate = number_format((float)$nVersion / 100, 2);
 
                 if ($nReturnValue === 1 || $nReturnValue === 90) {
                     $PluginInstalliert_arr[$i]->cUpdateFehler = 1;
@@ -106,7 +106,7 @@ if (!empty($_FILES['file_data'])) {
                         StringHandler::htmlentities(mappePlausiFehler($nReturnValue, $PluginInstalliert));
                 }
             }
-            $PluginInstalliert_arr[$i]->dVersion = number_format(doubleval($PluginInstalliert->nVersion) / 100, 2);
+            $PluginInstalliert_arr[$i]->dVersion = number_format((float)$PluginInstalliert->nVersion / 100, 2);
             $PluginInstalliert_arr[$i]->cStatus  = $PluginInstalliert->mapPluginStatus($PluginInstalliert->nStatus);
         }
     }
@@ -507,13 +507,13 @@ if ($step === 'pluginverwaltung_uebersicht') {
             $nVersion = $PluginInstalliert->getCurrentVersion();
             if ($nVersion > $PluginInstalliert->nVersion) {
                 $nReturnValue                       = pluginPlausi($PluginInstalliert->kPlugin);
-                $PluginInstalliert_arr[$i]->dUpdate = number_format(doubleval($nVersion) / 100, 2);
+                $PluginInstalliert_arr[$i]->dUpdate = number_format((float)$nVersion / 100, 2);
 
                 $PluginInstalliert_arr[$i]->cUpdateFehler = ($nReturnValue === 1 || $nReturnValue === 90)
                     ? 1
                     : StringHandler::htmlentities(mappePlausiFehler($nReturnValue, $PluginInstalliert));
             }
-            $PluginInstalliert_arr[$i]->dVersion = number_format(doubleval($PluginInstalliert->nVersion) / 100, 2);
+            $PluginInstalliert_arr[$i]->dVersion = number_format((float)$PluginInstalliert->nVersion / 100, 2);
             $PluginInstalliert_arr[$i]->cStatus  = $PluginInstalliert->mapPluginStatus($PluginInstalliert->nStatus);
         }
     }

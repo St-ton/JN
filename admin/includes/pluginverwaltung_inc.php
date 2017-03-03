@@ -3387,7 +3387,7 @@ function syncPluginUpdate($kPlugin, $oPluginOld, $nXMLVersion)
             foreach ($oPluginEinstellung_arr as $oPluginEinstellung) {
                 $cName = str_replace(
                     ['kPlugin_' . $kPluginOld . '_', 'kPlugin_' . $kPlugin . '_'],
-                    ['', ''],
+                    '',
                     $oPluginEinstellung->cName
                 );
                 if (!isset($oEinstellung_arr[$cName])) {

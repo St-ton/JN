@@ -50,7 +50,7 @@ function XML_serialize(&$data, $level = 0, $prior_key = null)
             if (is_array($value) && array_key_exists(0, $value)) {
                 XML_serialize($value, $level, $key);
             } else {
-                $tag = $prior_key ? $prior_key : $key;
+                $tag = $prior_key ?: $key;
                 echo str_repeat("\t", $level), '<', $tag;
                 if (array_key_exists("$key attr", $data)) { #if there's an attribute for this element
                     while (list($attr_name, $attr_value) = each($data["$key attr"])) {

@@ -162,6 +162,7 @@ function getCoupons($cKuponTyp = 'standard', $cWhereSQL = '', $cOrderSQL = '', $
 /**
  * @param string $cKuponTyp
  * @param string $cWhereSQL
+ * @return array
  */
 function getExportableCoupons($cKuponTyp = 'standard', $cWhereSQL = '')
 {

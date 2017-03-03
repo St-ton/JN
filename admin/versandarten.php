@@ -286,8 +286,8 @@ if (isset($_POST['neueVersandart']) && (int)$_POST['neueVersandart'] > 0 && vali
                 if (isset($_POST['preis'][$i]) && strlen($fBis) > 0) {
                     unset($oVersandstaffel);
                     $oVersandstaffel         = new stdClass();
-                    $oVersandstaffel->fBis   = doubleval(str_replace(',', '.', $fBis));
-                    $oVersandstaffel->fPreis = doubleval(str_replace(',', '.', $_POST['preis'][$i]));
+                    $oVersandstaffel->fBis   = floatval(str_replace(',', '.', $fBis));
+                    $oVersandstaffel->fPreis = floatval(str_replace(',', '.', $_POST['preis'][$i]));
 
                     $VersandartStaffeln[]        = $oVersandstaffel;
                     $fVersandartStaffelBis_arr[] = $oVersandstaffel->fBis;

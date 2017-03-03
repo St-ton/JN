@@ -134,7 +134,7 @@ class KundenwerbenKunden
 
             $oKundenWerbenKundenBoni                           = new stdClass();
             $oKundenWerbenKundenBoni->kKunde                   = (int)$kKunde;
-            $oKundenWerbenKundenBoni->fGuthaben                = doubleval($Einstellungen['kundenwerbenkunden']['kwk_bestandskundenguthaben']);
+            $oKundenWerbenKundenBoni->fGuthaben                = (float)$Einstellungen['kundenwerbenkunden']['kwk_bestandskundenguthaben'];
             $oKundenWerbenKundenBoni->nBonuspunkte             = 0;
             $oKundenWerbenKundenBoni->dErhalten                = 'now()';
             $oKundenWerbenKundenBoni->kKundenWerbenKundenBonus = Shop::DB()->insert('tkundenwerbenkundenbonus', $oKundenWerbenKundenBoni);
@@ -169,9 +169,9 @@ class KundenwerbenKunden
                     $oMail->oBestandskunde = $oMail->tkunde;
                     $oMail->Einstellungen  = $Einstellungen;
                     // Update das Guthaben vom Bestandskunden
-                    Shop::DB()->query(
-                        "UPDATE tkunde
-                            SET fGuthaben = fGuthaben+" . doubleval($Einstellungen['kundenwerbenkunden']['kwk_bestandskundenguthaben']) . "
+                    Shop::DB()->query("
+                        UPDATE tkunde
+                            SET fGuthaben = fGuthaben + " . (float)$Einstellungen['kundenwerbenkunden']['kwk_bestandskundenguthaben'] . "
                             WHERE kKunde = " . (int)$oBestandskunde->kKunde, 3
                     );
                     // in tkundenwerbenkundenboni eintragen
@@ -181,7 +181,7 @@ class KundenwerbenKunden
                     $_upd->nGuthabenVergeben = 1;
                     Shop::DB()->update('tkundenwerbenkunden', 'cEmail', StringHandler::filterXSS($cMail), $_upd);
 
-                    $oKundenWerbenKundenBoni->fGuthaben = gibPreisStringLocalized(doubleval($Einstellungen['kundenwerbenkunden']['kwk_bestandskundenguthaben']));
+                    $oKundenWerbenKundenBoni->fGuthaben = gibPreisStringLocalized((float)$Einstellungen['kundenwerbenkunden']['kwk_bestandskundenguthaben']);
                     $oMail->BestandskundenBoni          = $oKundenWerbenKundenBoni;
                     // verschicke Email an Bestandskunden
                     sendeMail(MAILTEMPLATE_KUNDENWERBENKUNDENBONI, $oMail);

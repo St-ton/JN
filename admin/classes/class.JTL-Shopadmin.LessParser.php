@@ -121,7 +121,7 @@ class LessParser
                 // 1.2em 15% '12 px'
                 if (preg_match('/([\d\.]+)(.*)/', $value, $matches)) {
                     $pair = [
-                        'numeric' => floatval($matches[1]),
+                        'numeric' => (float)$matches[1],
                         'unit'    => trim($matches[2])
                     ];
 

@@ -29,7 +29,7 @@ class IO
             throw new Exception("Function already registered");
         }
 
-        if (is_null($function)) {
+        if ($function === null) {
             $function = $name;
         }
 

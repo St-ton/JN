@@ -560,7 +560,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 } else {
                     $waehrung = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
                 }
-                $fVKPreis *= floatval($waehrung->fFaktor);
+                $fVKPreis *= (float)$waehrung->fFaktor;
             }
             if (!$_SESSION['Kundengruppe']->nNettoPreise && !$bForceNetto) {
                 $fVKPreis = berechneBrutto($fVKPreis, gibUst($this->getSteuerklasse()), 4);

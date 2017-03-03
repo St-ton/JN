@@ -109,8 +109,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
             $cSeo              = $_POST['cSeo'];
             $kKundengruppe_arr = $_POST['kKundengruppe'];
             $cBeschreibung     = $_POST['cBeschreibung'];
-            $fGuthaben         = isset($_POST['fGuthaben']) ? 
-                floatval(str_replace(',', '.', $_POST['fGuthaben'])) 
+            $fGuthaben         = isset($_POST['fGuthaben']) ?
+                (float)str_replace(',', '.', $_POST['fGuthaben'])
                 : 0;
             if ($fGuthaben <= 0 || !isset($kKupon)) {
                 $fGuthaben = 0;
@@ -419,7 +419,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                    ->assign('kUmfrageTMP', $kUmfrageTMP);
         }
         // Umfrage Detail
-        if ((isset($_GET['ud']) && intval($_GET['ud']) === 1) || $step === 'umfrage_vorschau') {
+        if ((isset($_GET['ud']) && (int)$_GET['ud'] === 1) || $step === 'umfrage_vorschau') {
             $kUmfrage = verifyGPCDataInteger('kUmfrage');
 
             if ($kUmfrage > 0) {

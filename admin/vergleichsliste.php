@@ -49,7 +49,7 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1 && vali
         $aktWert->kEinstellungenSektion = $oConfig_arr[$i]->kEinstellungenSektion;
         switch ($oConfig_arr[$i]->cInputTyp) {
             case 'kommazahl':
-                $aktWert->cWert = floatval($aktWert->cWert);
+                $aktWert->cWert = (float)$aktWert->cWert;
                 break;
             case 'zahl':
             case 'number':
@@ -184,7 +184,7 @@ function erstelleDiagrammTopVergleiche($oTopVergleichsliste_arr)
         }
         // Naechst hoehere Zahl berechnen fuer die Y-Balkenbeschriftung
         if (count($nYmax_arr) > 0) {
-            $fMax = floatval(max($nYmax_arr));
+            $fMax = (float)max($nYmax_arr);
             if ($fMax > 10) {
                 $temp  = pow(10, floor(log10($fMax)));
                 $nYmax = ceil($fMax / $temp) * $temp;

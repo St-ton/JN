@@ -27,7 +27,7 @@ if (strlen(verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', verifyGPDataString('tab'));
 }
 
-if (isset($_POST['einstellungen']) && intval($_POST['einstellungen']) > 0) {
+if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
     $cHinweis .= saveAdminSectionSettings(CONF_SITEMAP, $_POST);
 } elseif (verifyGPCDataInteger('download_edit') === 1) { // Sitemap Downloads loeschen
     $kSitemapTracker_arr = sichereArrayKeys($_POST['kSitemapTracker']);

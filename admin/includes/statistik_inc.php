@@ -189,8 +189,8 @@ function getJSON($oStat_arr, $nAnzeigeIntervall, $nTyp)
         $data[] = (int)$oStat->nCount;
     }
     // min und max berechnen
-    $fMax = round(floatval(max($data)), 2);
-    $fMin = round(floatval(min($data)), 2);
+    $fMax = round((float)max($data), 2);
+    $fMin = round((float)min($data), 2);
     // padding
     $fMin -= $fMin * 0.25;
     $fMax += $fMax * 0.25;
@@ -365,7 +365,7 @@ function setPie($data_arr, $x_labels_arr)
     }
     $x_labels_arr[$nPosSonstiges] = 'Sonstige';
     foreach ($data_arr as $i => $data) {
-        $cLabel      = $x_labels_arr[$i] . '(' . number_format(floatval($data), 0, ',', '.') . ')';
+        $cLabel      = $x_labels_arr[$i] . '(' . number_format((float)$data, 0, ',', '.') . ')';
         $merge_arr[] = new pie_value($data, $cLabel);
     }
 

@@ -15,7 +15,7 @@ $arMapping       = [];
 $arKategorien    = [];
 $arEinstellungen = Shop::getSettings(array(CONF_GLOBAL));
 
-if (isset($_POST['post']) && intval($_POST['post']) === 1) {
+if (isset($_POST['post']) && (int)$_POST['post'] === 1) {
     $oTmpConf = Shop::DB()->query("SELECT * FROM teinstellungen WHERE cName = 'shopInfo_updateInterval'", 1);
     if ($oTmpConf) {
         $strSQL = "UPDATE teinstellungen SET cWert = '" . $_POST['shopInfo_updateInterval'] . "' WHERE cName = 'shopInfo_updateInterval'";
@@ -480,15 +480,15 @@ if ($bWrite) {
     if (isset($_REQUEST['update']) && $_REQUEST['update'] == '1') {
         $file = fopen(PFAD_ROOT . $fileShopFeed, "w+");
 
-        fputs(
+        fwrite(
             $file, '<?xml version="1.0" encoding="' . JTL_CHARSET . '"?>
                         <osp:Shop xmlns:osp="http://elektronischer-markt.de/schema"
                                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                                 xsi:schemaLocation="http://elektronischer-markt.de/schema
                                                     http://kuhlins.de/elmar/schema/shop.xsd">'
         );
-        fputs($file, $XML);
-        fputs($file, "</osp:Shop>");
+        fwrite($file, $XML);
+        fwrite($file, "</osp:Shop>");
         fclose($file);
     }
 

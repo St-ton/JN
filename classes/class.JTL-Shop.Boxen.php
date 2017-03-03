@@ -733,10 +733,8 @@ class Boxen
                     $cZusatzParams         = '';
                     $cPostMembers_arr      = array_keys($_REQUEST);
                     foreach ($cPostMembers_arr as $cPostMember) {
-                        if (in_array($cPostMember, $cGueltigePostVars_arr)) {
-                            if (intval($_REQUEST[$cPostMember]) > 0) {
-                                $cZusatzParams .= '&' . $cPostMember . '=' . $_REQUEST[$cPostMember];
-                            }
+                        if ((int)$_REQUEST[$cPostMember] > 0 && in_array($cPostMember, $cGueltigePostVars_arr, true)) {
+                            $cZusatzParams .= '&' . $cPostMember . '=' . $_REQUEST[$cPostMember];
                         }
                     }
                     $cZusatzParams = StringHandler::filterXSS($cZusatzParams);
@@ -803,10 +801,8 @@ class Boxen
                     $cZusatzParams         = '';
                     $cPostMembers_arr      = array_keys($_REQUEST);
                     foreach ($cPostMembers_arr as $cPostMember) {
-                        if (in_array($cPostMember, $cGueltigePostVars_arr)) {
-                            if (intval($_REQUEST[$cPostMember]) > 0) {
-                                $cZusatzParams .= '&' . $cPostMember . '=' . $_REQUEST[$cPostMember];
-                            }
+                        if ((int)$_REQUEST[$cPostMember] > 0 && in_array($cPostMember, $cGueltigePostVars_arr, true)) {
+                            $cZusatzParams .= '&' . $cPostMember . '=' . $_REQUEST[$cPostMember];
                         }
                     }
                     $cZusatzParams = StringHandler::filterXSS($cZusatzParams);
@@ -821,7 +817,7 @@ class Boxen
                         if ($nPosWD) {
                             $cRequestURI = substr($cRequestURI, 0, $nPosWD);
                         }
-                        if ($nPosAnd == strlen($cRequestURI) - 1) {
+                        if ($nPosAnd === strlen($cRequestURI) - 1) {
                             // z.b. index.php?a=4&
                             $cDeleteParam = 'wlplo=';
                         } elseif ($nPosAnd) {
@@ -830,7 +826,7 @@ class Boxen
                         } elseif ($nPosQuest) {
                             // z.b. index.php?a=4
                             $cDeleteParam = '&wlplo=';
-                        } elseif ($nPosQuest == strlen($cRequestURI) - 1) {
+                        } elseif ($nPosQuest === strlen($cRequestURI) - 1) {
                             // z.b. index.php?
                             $cDeleteParam = 'wlplo=';
                         }

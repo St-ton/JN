@@ -196,7 +196,6 @@ $(window).load(function(){
 });
 
 $(document).ready(function () {
-
     $('#complete-order-button').click(function () {
         var commentField = $('#comment'),
             commentFieldHidden = $('#comment-hidden');

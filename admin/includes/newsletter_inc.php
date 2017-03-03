@@ -1253,44 +1253,33 @@ function baueNewsletterVorschau(&$oNewsletterVorlage)
  */
 function gibAHKKeys($cKey, $bArtikelnummer = false)
 {
-    $kKey_arr = [];
+    $result   = [];
     $cKey_arr = explode(';', $cKey);
     if (is_array($cKey_arr) && count($cKey_arr) > 0) {
-        foreach ($cKey_arr as $_cKey) {
-            if (strlen($_cKey) > 0) {
-                if ($bArtikelnummer) {
-                    $kKey_arr[] = "'" . $_cKey . "'";
-                } else {
-                    $kKey_arr[] = (int)$_cKey;
-                }
-            }
-        }
-        // Ausnahme: Wurden Artikelnummern uebergebenn?
+        // Wurden Artikelnummern uebergeben?
         // Wenn ja, dann hole fuer die Artikelnummern die entsprechenden kArtikel
-        if ($bArtikelnummer && count($kKey_arr) > 0) {
-            $kArtikel_arr       = [];
-            $oArtikelNummer_arr = Shop::DB()->query(
-                "SELECT kArtikel
+        if ($bArtikelnummer) {
+            $in   = implode(',', array_fill(0, count($cKey_arr), '?'));
+            $prep = Shop::DB()->DB()->prepare("
+                SELECT kArtikel
                     FROM tartikel
-                    WHERE cArtNr IN (" . implode(',', $kKey_arr) . ")
-                        AND kEigenschaftKombi = 0", 2
-            );
-            // Existieren Artikel zu den entsprechenden Artikelnummern?
-            if (is_array($oArtikelNummer_arr) && count($oArtikelNummer_arr) > 0) {
-                foreach ($oArtikelNummer_arr as $oArtikelNummer) {
-                    if (isset($oArtikelNummer->kArtikel) && intval($oArtikelNummer->kArtikel)) {
-                        $kArtikel_arr[] = $oArtikelNummer->kArtikel;
-                    }
-                }
-
-                if (count($kArtikel_arr) > 0) {
-                    $kKey_arr = $kArtikel_arr;
-                }
+                    WHERE cArtNr IN (" . $in . ")
+                        AND kEigenschaftKombi = 0");
+            foreach ($cKey_arr as $i => $artnr) {
+                $prep->bindValue($i + 1, $artnr, PDO::PARAM_STR);
             }
+            $prep->execute();
+            while (($row = $prep->fetchObject()) !== false) {
+                $result[] = $row->kArtikel;
+            }
+        } else {
+            $result = $cKey_arr;
         }
+        $result = array_map(function ($e) {
+            return (int)$e;
+        }, $result);
     }
-
-    return $kKey_arr;
+    return $result;
 }
 
 /**

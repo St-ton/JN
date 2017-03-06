@@ -23,21 +23,24 @@ function checkSeo($cSeo)
         return '';
     }
 
-    $i             = 0;
-    $obj           = new stdClass();
-    $cSeo_original = $cSeo;
-    $obj->cSeo     = $cSeo;
+    Shop::DB()->query("SET @IKEY := 0", 10);
+    $obj = Shop::DB()->query(
+        "SELECT oseo.newSeo
+            FROM (
+	            SELECT CONCAT('{$cSeo}', '_', @IKEY:=@IKEY+1) newSeo, @IKEY nOrder
+	            FROM tseo AS iseo
+                WHERE iseo.cSEO RLIKE '^{$cSeo}(_[0-9]+)?$'
+            ) AS oseo
+            WHERE oseo.newSeo NOT IN (
+	            SELECT iseo.cSeo
+	            FROM tseo AS iseo
+	            WHERE iseo.cSEO RLIKE '^{$cSeo}_[0-9]+$'
+            )
+            ORDER BY oseo.nOrder
+            LIMIT 1", 1
+    );
 
-    while (isset($obj->cSeo) && $obj->cSeo) {
-        if ($i > 0) {
-            $cSeo = $cSeo_original . '_' . $i;
-        }
-
-        $i++;
-        $obj = Shop::DB()->select('tseo', 'cSeo', $cSeo);
-    }
-
-    return $cSeo;
+    return isset($obj->newSeo) ? $obj->newSeo : $cSeo;
 }
 
 /**

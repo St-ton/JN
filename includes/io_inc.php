@@ -509,12 +509,9 @@ function checkDependencies($aValues)
                 ? $currentValue->cArtNr
                 : $oArtikel->cArtNr;
         }
-        $weightTotal      = Trennzeichen::getUnit(
-            JTLSEPARATER_WEIGHT,
-            $_SESSION['kSprache'],
-            $oArtikel->fGewicht + $weightDiff
-        );
-        $cUnitWeightLabel = Shop::Lang()->get('weightUnit', 'global');
+        $weightTotal        = Trennzeichen::getUnit(JTLSEPARATER_WEIGHT, $_SESSION['kSprache'], $oArtikel->fGewicht + $weightDiff);
+        $weightArticleTotal = Trennzeichen::getUnit(JTLSEPARATER_WEIGHT, $_SESSION['kSprache'], $oArtikel->fArtikelgewicht + $weightDiff);
+        $cUnitWeightLabel   = Shop::Lang()->get('weightUnit', 'global');
 
         // Alle Variationen ohne Freifeld
         $nKeyValueVariation_arr = $oArtikel->keyValueVariations($oArtikel->VariationenOhneFreifeld);
@@ -550,11 +547,10 @@ function checkDependencies($aValues)
             $cVKLocalized[$nNettoPreise],
             $cPriceLabel
         );
-        $objResponse->jsfunc(
-            '$.evo.article().setUnitWeight',
-            $oArtikel->fGewicht,
-            $weightTotal . ' ' . $cUnitWeightLabel
-        );
+        $objResponse->jsfunc('$.evo.article().setArticleWeight', [
+            [$oArtikel->fGewicht, $weightTotal . ' ' . $cUnitWeightLabel],
+            [$oArtikel->fArtikelgewicht, $weightArticleTotal . ' ' . $cUnitWeightLabel],
+        ]);
 
         if (!empty($oArtikel->staffelPreis_arr)) {
             $fStaffelVK = [0 => [], 1 => []];

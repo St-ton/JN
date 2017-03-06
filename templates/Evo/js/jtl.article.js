@@ -537,6 +537,26 @@
             $('#article-tabs .product-attributes .weight-unit').html(newUnitWeight);
         },
 
+        setArticleWeight: function(ArticleWeight) {
+            var $wrapper,
+                selector;
+            if ($.isArray(ArticleWeight)) {
+                $wrapper = $('#article-tabs');
+                selector = [
+                    '.product-attributes .weight-unit',
+                    '.product-attributes .weight-unit-article'
+                ];
+
+                if ($wrapper.length == 1) {
+                    for (var i = 0; i < 2; i++) {
+                        $(selector[i], $wrapper).html(ArticleWeight[i][1]);
+                    }
+                }
+            } else {
+                this.setUnitWeight(0, ArticleWeight);
+            }
+        },
+
         setProductNumber: function(productNumber){
             $('#product-offer span[itemprop="sku"]').html(productNumber);
         },

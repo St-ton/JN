@@ -49,8 +49,8 @@
                                         <label class="control-label" for="email">{lang key="emailadress" section="global"}</label>
                                         <input
                                         class="form-control"
-                                        type="email"
-                                        name="userLogin"
+                                        type="text"
+                                        name="email"
                                         id="email"
                                         placeholder="{lang key="emailadress" section="global"}"
                                         required
@@ -63,7 +63,7 @@
                                         <input
                                         class="form-control"
                                         type="password"
-                                        name="passLogin"
+                                        name="passwort"
                                         id="password"
                                         placeholder="{lang key="password" section="account data"}"
                                         required

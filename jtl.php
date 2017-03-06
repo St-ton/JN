@@ -76,186 +76,8 @@ if (isset($_GET['updated_pw']) && $_GET['updated_pw'] === 'true') {
     $cHinweis .= Shop::Lang()->get('changepasswordSuccess', 'login');
 }
 //loginbenutzer?
-if (isset($_POST['login'], $_POST['email'], $_POST['passwort']) && (int)$_POST['login'] === 1) {
-    $Kunde    = new Kunde();
-    $csrfTest = validateToken();
-    if ($csrfTest === false) {
-        $cHinweis .= Shop::Lang()->get('csrfValidationFailed', 'global');
-        Jtllog::writeLog('CSRF-Warnung fuer Login: ' . $_POST['login'], JTLLOG_LEVEL_ERROR);
-    } else {
-        $loginCaptchaOK = $Kunde->verifyLoginCaptcha($_POST);
-        if ($loginCaptchaOK === true) {
-            $nReturnValue   = $Kunde->holLoginKunde($_POST['email'], $_POST['passwort']);
-            $nLoginversuche = $Kunde->nLoginversuche;
-        } else {
-            $nReturnValue   = 4;
-            $nLoginversuche = $loginCaptchaOK;
-        }
-        if ($Kunde->kKunde > 0) {
-            //create new session id to prevent session hijacking
-            session_regenerate_id(false);
-            //in tbesucher kKunde setzen
-            if (isset($_SESSION['oBesucher']->kBesucher) && $_SESSION['oBesucher']->kBesucher > 0) {
-                Shop::DB()->update(
-                    'tbesucher',
-                    'kBesucher',
-                    (int)$_SESSION['oBesucher']->kBesucher,
-                    (object)['kKunde' => $Kunde->kKunde]
-                );
-            }
-            if ($Kunde->cAktiv === 'Y') {
-                unset(
-                    $_SESSION['Zahlungsart'],
-                    $_SESSION['Versandart'],
-                    $_SESSION['Lieferadresse'],
-                    $_SESSION['ks'],
-                    $_SESSION['VersandKupon'],
-                    $_SESSION['NeukundenKupon'],
-                    $_SESSION['Kupon'],
-                    // Lösche kompletten Kategorie Cache
-                    $_SESSION['kKategorieVonUnterkategorien_arr'],
-                    $_SESSION['oKategorie_arr'],
-                    $_SESSION['oKategorie_arr_new']
-                );
-                // Kampagne
-                if (isset($_SESSION['Kampagnenbesucher'])) {
-                    setzeKampagnenVorgang(KAMPAGNE_DEF_LOGIN, $Kunde->kKunde, 1.0); // Login
-                }
-                $session->setCustomer($Kunde);
-                // Setzt aktuelle Wunschliste (falls vorhanden) vom Kunden in die Session
-                setzeWunschlisteInSession();
-                // Redirect URL
-                $cURL = StringHandler::filterXSS(verifyGPDataString('cURL'));
-                // Lade WarenkorbPers
-                $bPersWarenkorbGeladen = false;
-                if ($Einstellungen['global']['warenkorbpers_nutzen'] === 'Y' && 
-                    count($_SESSION['Warenkorb']->PositionenArr) === 0
-                ) {
-                    $oWarenkorbPers = new WarenkorbPers($Kunde->kKunde);
-                    $oWarenkorbPers->ueberpruefePositionen(true);
-                    if (count($oWarenkorbPers->oWarenkorbPersPos_arr) > 0) {
-                        foreach ($oWarenkorbPers->oWarenkorbPersPos_arr as $oWarenkorbPersPos) {
-                            if (!isset($oWunschlistePos->Artikel->bHasKonfig) || !$oWunschlistePos->Artikel->bHasKonfig) {
-                                // Gratisgeschenk in Warenkorb legen
-                                if ((int)$oWarenkorbPersPos->nPosTyp === (int)C_WARENKORBPOS_TYP_GRATISGESCHENK) {
-                                    $kArtikelGeschenk = (int)$oWarenkorbPersPos->kArtikel;
-                                    $oArtikelGeschenk = Shop::DB()->query(
-                                        "SELECT tartikelattribut.kArtikel, tartikel.fLagerbestand, 
-                                            tartikel.cLagerKleinerNull, tartikel.cLagerBeachten
-                                            FROM tartikelattribut
-                                            JOIN tartikel 
-                                                ON tartikel.kArtikel = tartikelattribut.kArtikel
-                                            WHERE tartikelattribut.kArtikel = " . $kArtikelGeschenk . "
-                                                AND tartikelattribut.cName = '" . FKT_ATTRIBUT_GRATISGESCHENK . "'
-                                                AND CAST(tartikelattribut.cWert AS DECIMAL) <= " .
-                                        $_SESSION['Warenkorb']->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true), 1
-                                    );
-
-                                    if (isset($oArtikelGeschenk->kArtikel) && $oArtikelGeschenk->kArtikel > 0) {
-                                        if ($oArtikelGeschenk->fLagerbestand <= 0 && 
-                                            $oArtikelGeschenk->cLagerKleinerNull === 'N' && 
-                                            $oArtikelGeschenk->cLagerBeachten === 'Y'
-                                        ) {
-                                            $MsgWarning = Shop::Lang()->get('freegiftsNostock', 'errorMessages');
-                                        } else {
-                                            executeHook(HOOK_WARENKORB_PAGE_GRATISGESCHENKEINFUEGEN);
-                                            $_SESSION['Warenkorb']->loescheSpezialPos(C_WARENKORBPOS_TYP_GRATISGESCHENK)
-                                                ->fuegeEin($kArtikelGeschenk, 1, [], C_WARENKORBPOS_TYP_GRATISGESCHENK);
-                                        }
-                                    }
-                                // Konfigitems ohne Artikelbezug
-                                } elseif ($oWarenkorbPersPos->kArtikel === 0 && !empty($oWarenkorbPersPos->kKonfigitem) ) {
-                                    $oKonfigitem = new Konfigitem($oWarenkorbPersPos->kKonfigitem);
-                                    $_SESSION['Warenkorb']->erstelleSpezialPos(
-                                        $oKonfigitem->getName(),
-                                        $oWarenkorbPersPos->fAnzahl,
-                                        $oKonfigitem->getPreis(),
-                                        $oKonfigitem->getSteuerklasse(),
-                                        C_WARENKORBPOS_TYP_ARTIKEL,
-                                        false,
-                                        !$_SESSION['Kundengruppe']->nNettoPreise,
-                                        '',
-                                        $oWarenkorbPersPos->cUnique,
-                                        $oWarenkorbPersPos->kKonfigitem,
-                                        $oWarenkorbPersPos->kArtikel
-                                    );
-                                //Artikel in den Warenkorb einfügen
-                                } else {
-                                    fuegeEinInWarenkorb(
-                                        $oWarenkorbPersPos->kArtikel,
-                                        $oWarenkorbPersPos->fAnzahl,
-                                        $oWarenkorbPersPos->oWarenkorbPersPosEigenschaft_arr,
-                                        1,
-                                        $oWarenkorbPersPos->cUnique,
-                                        $oWarenkorbPersPos->kKonfigitem,
-                                        null,
-                                        false
-                                    );
-                                }
-                            }
-                        }
-                        $_SESSION['Warenkorb']->setzePositionsPreise();
-                        $bPersWarenkorbGeladen = true;
-                    }
-                }
-                // Pruefe, ob Artikel im Warenkorb vorhanden sind,
-                // welche für den aktuellen Kunden nicht mehr sichtbar sein duerfen
-                pruefeWarenkorbArtikelSichtbarkeit($_SESSION['Kunde']->kKundengruppe);
-                executeHook(HOOK_JTL_PAGE_REDIRECT);
-
-                if (strlen($cURL) > 0) {
-                    if (substr($cURL, 0, 4) !== 'http') {
-                        header('Location: ' . $cURL, true, 301);
-                        exit();
-                    }
-                } else {
-                    // Existiert ein pers. Warenkorb?
-                    // Wenn ja => frag Kunde ob er einen eventuell vorhandenen Warenkorb mergen möchte
-                    if ($Einstellungen['global']['warenkorbpers_nutzen'] === 'Y' && 
-                        $Einstellungen['kaufabwicklung']['warenkorb_warenkorb2pers_merge'] === 'Y' && 
-                        !$bPersWarenkorbGeladen
-                    ) {
-                        setzeWarenkorbPersInWarenkorb($_SESSION['Kunde']->kKunde);
-                    } elseif ($Einstellungen['global']['warenkorbpers_nutzen'] === 'Y' && 
-                        $Einstellungen['kaufabwicklung']['warenkorb_warenkorb2pers_merge'] === 'P' && 
-                        !$bPersWarenkorbGeladen
-                    ) {
-                        $oWarenkorbPers = new WarenkorbPers($Kunde->kKunde);
-                        if (count($oWarenkorbPers->oWarenkorbPersPos_arr) > 0) {
-                            $smarty->assign('nWarenkorb2PersMerge', 1);
-                        }
-                    }
-                }
-
-                // setzte Sprache auf Sprache des Kunden
-                $oISOSprache = Shop::Lang()->getIsoFromLangID($Kunde->kSprache);
-                if ((int)$_SESSION['kSprache'] !== (int)$Kunde->kSprache && !empty($oISOSprache->cISO)) {
-                    $_SESSION['kSprache']        = (int)$Kunde->kSprache;
-                    $_SESSION['cISOSprache']     = $oISOSprache->cISO;
-                    $_SESSION['currentLanguage'] = gibAlleSprachen(1)[$Kunde->kSprache];
-                    Shop::setLanguage($Kunde->kSprache, $oISOSprache->cISO);
-                    Shop::Lang()->setzeSprache($oISOSprache->cISO);
-                }
-            } else {
-                $cHinweis .= Shop::Lang()->get('loginNotActivated', 'global');
-            }
-        } elseif ($nReturnValue === 2) { // Kunde ist gesperrt
-            $cHinweis .= Shop::Lang()->get('accountLocked', 'global');
-        } elseif ($nReturnValue === 3) { // Kunde ist nicht aktiv
-            $cHinweis .= Shop::Lang()->get('accountInactive', 'global');
-        } else {
-            if (isset($Einstellungen['kunden']['kundenlogin_max_loginversuche']) && 
-                $Einstellungen['kunden']['kundenlogin_max_loginversuche'] !== ''
-            ) {
-                $maxAttempts = (int)$Einstellungen['kunden']['kundenlogin_max_loginversuche'];
-                if ($maxAttempts > 1 && $nLoginversuche >= $maxAttempts) {
-                    $showLoginCaptcha = true;
-                    $smarty->assign('code_login', generiereCaptchaCode(3));
-                }
-            }
-            $cHinweis .= Shop::Lang()->get('incorrectLogin', 'global');
-        }
-    }
+if (isset($_POST['login']) && intval($_POST['login']) === 1 && !empty($_POST['email']) && !empty($_POST['passwort'])) {
+    fuehreLoginAus($_POST['email'], $_POST['passwort']);
 }
 
 $AktuelleKategorie      = new Kategorie(verifyGPCDataInteger('kategorie'));
@@ -1023,11 +845,12 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
         $smarty->assign('oKundenfeld_arr', $oKundenfeld_arr);
     }
 
+
     if (isset($_SESSION['Kunde']->kKunde) && (int)$_SESSION['Kunde']->kKunde > 0) {
-        $Kunde->cGuthabenLocalized = gibPreisStringLocalized($Kunde->fGuthaben);
+        $_SESSION['Kunde']->cGuthabenLocalized = gibPreisStringLocalized($_SESSION['Kunde']->fGuthaben);
         krsort($_SESSION['Kunde']->cKundenattribut_arr);
         $smarty->assign('Kunde', $_SESSION['Kunde'])
-            ->assign('customerAttribute_arr', $_SESSION['Kunde']->cKundenattribut_arr);
+               ->assign('customerAttribute_arr', $_SESSION['Kunde']->cKundenattribut_arr);
     }
 }
 if (empty($cBrotNavi)) {

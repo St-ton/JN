@@ -33,7 +33,7 @@ if (isset($_POST['adminlogin']) && (int)$_POST['adminlogin'] === 1) {
         if (!isset($_POST['captcha']) || !$_POST['captcha']) {
             $ret['captcha'] = 1;
         }
-        if ((!isset($_POST['md5']) || !$_POST['md5'] || ($_POST['md5'] !== md5(PFAD_ROOT . strtoupper($_POST['captcha']))))) {
+        if (!isset($_POST['md5']) || !$_POST['md5'] || ($_POST['md5'] !== md5(PFAD_ROOT . strtoupper($_POST['captcha'])))) {
             $ret['captcha'] = 2;
         }
     }
@@ -142,7 +142,7 @@ if (file_exists(CAPTCHA_LOCKFILE)) {
 }
 $smarty->assign('bProfilerActive', $profilerState !== 0)
        ->assign('profilerType', $type)
-       ->assign('pw_updated', (isset($_GET['pw_updated']) && $_GET['pw_updated'] === 'true'))
+       ->assign('pw_updated', isset($_GET['pw_updated']) && $_GET['pw_updated'] === 'true')
        ->assign('cFehler', $cFehler)
        ->assign('updateMessage', (isset($updateMessage) ? $updateMessage : null));
 
@@ -203,11 +203,12 @@ if ($oAccount->getIsAuthenticated()) {
             if ($oAccount->doTwoFA()) {
                 $_SESSION['AdminAccount']->TwoFA_expired = false;
                 $_SESSION['loginIsValid']                = true; // "enable" the "header.tpl"-navigation again
+                $smarty->assign('cFehler', ''); // reset a previously (falsely arised) error-message
 
                 if (isset($_REQUEST['uri']) && strlen(trim($_REQUEST['uri'])) > 0) {
                     redirectToURI($_REQUEST['uri']);
                 }
-                openDashboard();
+                openDashboard(); // and exit here
             }
         } else {
             $_SESSION['AdminAccount']->TwoFA_expired = true;

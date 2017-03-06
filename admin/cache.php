@@ -66,7 +66,7 @@ switch ($action) {
             case 'activate' :
                 if (isset($_POST['cache-types']) && is_array($_POST['cache-types'])) {
                     foreach ($_POST['cache-types'] as $cacheType) {
-                        $index = array_search($cacheType, $currentlyDisabled);
+                        $index = array_search($cacheType, $currentlyDisabled, true);
                         if (is_int($index)) {
                             unset($currentlyDisabled[$index]);
                         }
@@ -141,7 +141,7 @@ switch ($action) {
                 $value->kEinstellungenSektion = CONF_CACHING;
                 switch ($settings[$i]->cInputTyp) {
                     case 'kommazahl' :
-                        $value->cWert = floatval($value->cWert);
+                        $value->cWert = (float)$value->cWert;
                         break;
                     case 'zahl' :
                     case 'number':
@@ -165,6 +165,7 @@ switch ($action) {
                         }
                     }
                     if (count($availableMethods) > 0) {
+                        $value->cWert = 'null';
                         if (in_array('redis', $availableMethods, true)) {
                             $value->cWert = 'redis';
                         } elseif (in_array('memcache', $availableMethods, true)) {
@@ -179,8 +180,6 @@ switch ($action) {
                             $value->cWert = 'advancedfile';
                         }  elseif (in_array('file', $availableMethods, true)) {
                             $value->cWert = 'file';
-                        } else {
-                            $value->cWert = 'null';
                         }
                     } else {
                         $value->cWert = 'null';
@@ -394,7 +393,8 @@ $availableMethods    = [];
 $nonAvailableMethods = [];
 foreach ($allMethods as $_name => $_status) {
     if (isset($_status['available'], $_status['functional']) &&
-        $_status['available'] === true && $_status['functional'] === true
+        $_status['available'] === true &&
+        $_status['functional'] === true
     ) {
         $availableMethods[] = $_name;
     } elseif ($_name !== 'null') {
@@ -403,7 +403,7 @@ foreach ($allMethods as $_name => $_status) {
 }
 $smarty->assign('settings', $settings)
        ->assign('caching_groups', (($cache !== null) ? $cache->getCachingGroups() : []))
-       ->assign('cache_enabled', (isset($options['activated']) && $options['activated'] === true))
+       ->assign('cache_enabled', isset($options['activated']) && $options['activated'] === true)
        ->assign('show_page_cache', $settings)
        ->assign('options', $options)
        ->assign('opcache_stats', $opcacheStats)

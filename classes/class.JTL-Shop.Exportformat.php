@@ -716,9 +716,12 @@ class Exportformat
             ? Shop::DB()->select('twaehrung', 'kWaehrung', $this->kWaehrung)
             : Shop::DB()->select('twaehrung', 'cStandard', 'Y');
         setzeSteuersaetze();
+        $net = Shop::DB()->select('tkundengruppe', 'kKundengruppe', $this->getKundengruppe());
+
         $_SESSION['Kundengruppe']->darfPreiseSehen            = 1;
         $_SESSION['Kundengruppe']->darfArtikelKategorienSehen = 1;
         $_SESSION['Kundengruppe']->kKundengruppe              = $this->getKundengruppe();
+        $_SESSION['Kundengruppe']->nNettoPreise               = (int)$net->nNettoPreise;
         $_SESSION['kKundengruppe']                            = $this->getKundengruppe();
         $_SESSION['kSprache']                                 = $this->getSprache();
         $_SESSION['Sprachen']                                 = Shop::DB()->query("SELECT * FROM tsprache", 2);
@@ -1196,7 +1199,7 @@ class Exportformat
                     !$this->useCache()
                 );
                 // calling gibKategoriepfad() should not be necessary since it has already been called in Kategorie::loadFromDB()
-                $Artikel->Kategoriepfad         = (isset($Artikel->Kategorie->cKategoriePfad))
+                $Artikel->Kategoriepfad         = isset($Artikel->Kategorie->cKategoriePfad)
                     ? $Artikel->Kategorie->cKategoriePfad
                     : gibKategoriepfad($Artikel->Kategorie, $this->kKundengruppe, $this->kSprache);
                 $Artikel->Versandkosten         = gibGuenstigsteVersandkosten(
@@ -1220,7 +1223,7 @@ class Exportformat
                 }
 
                 $Artikel->cDeeplink             = $shopURL . '/' . $Artikel->cURL;
-                $Artikel->Artikelbild           = ($Artikel->Bilder[0]->cPfadGross)
+                $Artikel->Artikelbild           = $Artikel->Bilder[0]->cPfadGross
                     ? $shopURL . '/' . $Artikel->Bilder[0]->cPfadGross
                     : '';
                 $Artikel->Lieferbar             = ($Artikel->fLagerbestand <= 0) ? 'N' : 'Y';

@@ -22,7 +22,7 @@ class BillpayData
     /**
      * @var object
      */
-    public $oBasketInfo = null;
+    public $oBasketInfo;
 
     /**
      * @var string

@@ -4,70 +4,6 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-/**
- * @param string $userLogin
- * @param string $passLogin
- * @return int
- */
-function fuehreLoginAus($userLogin, $passLogin)
-{
-    global $hinweis, $Kunde;
-    /** @var array('Warenkorb' => Warenkorb) $_SESSION */
-    if (strlen($userLogin) > 0 && strlen($passLogin) > 0) {
-        $csrfTest = validateToken();
-        if ($csrfTest === false) {
-            $hinweis = Shop::Lang()->get('csrfValidationFailed', 'global');
-            Jtllog::writeLog('CSRF-Warnung fuer Login: ' . $_POST['login'], JTLLOG_LEVEL_ERROR);
-
-            return 0;
-        }
-        $Kunde = new Kunde();
-        $Kunde->holLoginKunde($userLogin, $passLogin);
-        if (isset($Kunde->kKunde) && $Kunde->kKunde > 0) {
-            $_customer         = new stdClass();
-            $_customer->kKunde = (int)$Kunde->kKunde;
-            Shop::DB()->update('tbesucher', 'cIP', gibIP(), $_customer);
-            unset($_SESSION['Zahlungsart'], $_SESSION['Versandart']);
-            $_SESSION['Warenkorb']->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR)
-                                  ->loescheSpezialPos(C_WARENKORBPOS_TYP_NEUKUNDENKUPON)
-                                  ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR)
-                                  ->loescheSpezialPos(C_WARENKORBPOS_TYP_KUPON);
-            unset(
-                $_SESSION['Lieferadresse'],
-                $_SESSION['ks'],
-                $_SESSION['VersandKupon'],
-                $_SESSION['oVersandfreiKupon'],
-                $_SESSION['NeukundenKupon'],
-                $_SESSION['Kupon']
-            );
-            $Kunde->angezeigtesLand = ISO2land($Kunde->cLand);
-            $session                = Session::getInstance();
-            $session->setCustomer($Kunde);
-            // Prüfe ob Artikel im Warenkorb vorhanden sind,
-            // welche für den aktuellen Kunden nicht mehr sichtbar sein dürfen
-            require_once PFAD_ROOT . PFAD_INCLUDES . 'jtl_inc.php';
-            pruefeWarenkorbArtikelSichtbarkeit($_SESSION['Kunde']->kKundengruppe);
-            $conf = Shop::getSettings([CONF_GLOBAL, CONF_KAUFABWICKLUNG]);
-            if ($conf['global']['warenkorbpers_nutzen'] === 'Y' &&
-                $conf['kaufabwicklung']['warenkorb_warenkorb2pers_merge'] === 'Y'
-            ) {
-                setzeWarenkorbPersInWarenkorb($_SESSION['Kunde']->kKunde);
-            } elseif ($conf['global']['warenkorbpers_nutzen'] === 'Y' &&
-                $conf['kaufabwicklung']['warenkorb_warenkorb2pers_merge'] === 'P'
-            ) {
-                $oWarenkorbPers = new WarenkorbPers($Kunde->kKunde);
-                if (count($oWarenkorbPers->oWarenkorbPersPos_arr) > 0) {
-                    Shop::Smarty()->assign('nWarenkorb2PersMerge', 1);
-                }
-            }
-
-            return 1;
-        }
-    }
-    $hinweis = Shop::Lang()->get('incorrectLogin', 'global');
-
-    return 0;
-}
 
 /**
  *
@@ -746,8 +682,8 @@ function gibStepBestaetigung($cGet_arr)
     }
     // Bei Standardzahlungsarten mit Zahlungsinformationen prüfen ob Daten vorhanden sind
     if (isset($_SESSION['Zahlungsart']) &&
-        !is_object($_SESSION['Zahlungsart']->ZahlungsInfo) &&
-        in_array($_SESSION['Zahlungsart']->cModulId, ['za_lastschrift_jtl', 'za_kreditkarte_jtl'], true)
+        in_array($_SESSION['Zahlungsart']->cModulId, ['za_lastschrift_jtl', 'za_kreditkarte_jtl'], true) &&
+        (empty($_SESSION['Zahlungsart']->ZahlungsInfo) || !is_object($_SESSION['Zahlungsart']->ZahlungsInfo))
     ) {
         header('Location: ' . $linkHelper->getStaticRoute('bestellvorgang.php') . '?editZahlungsart=1', true, 303);
     }
@@ -2308,6 +2244,10 @@ function checkeKupon($Kupon)
             $ret['ungueltig'] = 11;
         }
     }
+    //Hersteller
+    if ($Kupon->cHersteller != -1 && !warenkorbKuponFaehigHersteller($Kupon, $_SESSION['Warenkorb']->PositionenArr)) {
+        $ret['ungueltig'] = 12;
+    }
     $alreadyUsedSQL = '';
     if (!empty($_SESSION['Kunde']->kKunde) && !empty($_SESSION['Kunde']->cMail)) {
         $alreadyUsedSQL = "SELECT SUM(nVerwendungen) AS nVerwendungen 
@@ -2486,6 +2426,24 @@ function warenkorbKuponFaehigArtikel($Kupon, $PositionenArr)
             if ($Pos->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL &&
                 preg_match('/;' . preg_quote($Pos->Artikel->cArtNr, '/') . ';/i', $Kupon->cArtikel)
             ) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+/**
+ * @param Kupon|object $Kupon
+ * @param array $PositionenArr
+ * @return bool
+ */
+function warenkorbKuponFaehigHersteller($Kupon, $PositionenArr)
+{
+    if (is_array($PositionenArr)) {
+        foreach ($PositionenArr as $Pos) {
+            if ($Pos->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL && preg_match('/;' . preg_quote($Pos->Artikel->kHersteller, '/') . ';/i', $Kupon->cHersteller)) {
                 return true;
             }
         }
@@ -2857,11 +2815,12 @@ function guthabenMoeglich()
  */
 function kuponMoeglich()
 {
-    $moeglich      = 0;
-    $Artikel_qry   = '';
-    $Kats          = [];
-    $Kategorie_qry = '';
-    $Kunden_qry    = '';
+    $moeglich       = 0;
+    $Artikel_qry    = '';
+    $Hersteller_qry = '';
+    $Kats           = [];
+    $Kategorie_qry  = '';
+    $Kunden_qry     = '';
     /** @var array('Warenkorb' => Warenkorb) $_SESSION */
     if (isset($_SESSION['Zahlungsart']->cModulId) &&
         substr($_SESSION['Zahlungsart']->cModulId, 0, 10) === 'za_billpay'
@@ -2873,6 +2832,9 @@ function kuponMoeglich()
             if (isset($Pos->Artikel->cArtNr) && strlen($Pos->Artikel->cArtNr) > 0) {
                 $Artikel_qry .= " OR cArtikel RLIKE '^([0-9;]*;)?" .
                     str_replace('%', '\%', Shop::DB()->escape($Pos->Artikel->cArtNr)) . ";'";
+            }
+            if (isset($Pos->Artikel->cHersteller) && strlen($Pos->Artikel->cHersteller) > 0) {
+                $Hersteller_qry .= " OR cHersteller LIKE '%;" . str_replace('%', '\%', Shop::DB()->escape($Pos->Artikel->kHersteller)) . ";%'";
             }
             if ($Pos->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL) {
                 if (isset($Pos->Artikel->kArtikel) && $Pos->Artikel->kArtikel > 0) {
@@ -2916,6 +2878,7 @@ function kuponMoeglich()
                 AND (nVerwendungen = 0 
                     OR nVerwendungen > nVerwendungenBisher)
                 AND (cArtikel = '' $Artikel_qry)
+                AND (cHersteller = '-1' $Hersteller_qry) 
                 AND (cKategorien = '' 
                     OR cKategorien = '-1' $Kategorie_qry)
                 AND (cKunden = '' 
@@ -2977,7 +2940,7 @@ function valid_plzort($plz, $ort, $land)
             "SELECT kPLZ
                 FROM tplz
                 WHERE cPLZ = '" . Shop::DB()->escape($plz) . "'
-                AND cOrt LIKE '" . Shop::DB()->escape($ort) . "'
+                AND cOrt LIKE '%" . Shop::DB()->escape($ort) . "%'
                 AND cLandISO = '" . Shop::DB()->escape($land) . "'", 1
         );
         if (isset($obj->kPLZ) && $obj->kPLZ > 0) {

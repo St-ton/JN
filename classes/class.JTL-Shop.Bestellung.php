@@ -136,7 +136,7 @@ class Bestellung
      *      longestMax: int,
      * }
      */
-    public $oEstimatedDelivery = null;
+    public $oEstimatedDelivery;
 
     /**
      * @var WarenkorbPos[]
@@ -166,7 +166,7 @@ class Bestellung
     /**
      * @var null|string
      */
-    public $dBewertungErinnerung = null;
+    public $dBewertungErinnerung;
 
     /**
      * @var string
@@ -490,7 +490,7 @@ class Bestellung
             if ($this->kBestellung > 0) {
                 $this->Zahlungsinfo = new ZahlungsInfo(0, $this->kBestellung);
             }
-            if (doubleval($this->fGuthaben)) {
+            if ((float)$this->fGuthaben) {
                 $this->GuthabenNutzen = 1;
             }
             $this->GutscheinLocalized = gibPreisStringLocalized($this->fGuthaben, $htmlWaehrung);
@@ -605,9 +605,9 @@ class Bestellung
                         $nVaterPos    = null;
 
                         foreach ($this->Positionen as $nPos => $oPosition) {
-                            if ($this->Positionen[$i]->cUnique == $oPosition->cUnique) {
+                            if ($this->Positionen[$i]->cUnique === $oPosition->cUnique) {
                                 $fPreisNetto += $oPosition->fPreis * $oPosition->nAnzahl;
-                                $ust = (isset($oPosition->kSteuerklasse))
+                                $ust = isset($oPosition->kSteuerklasse)
                                     ? gibUst($oPosition->kSteuerklasse)
                                     : gibUst(null);
                                 $fPreisBrutto += berechneBrutto($oPosition->fPreis * $oPosition->nAnzahl, $ust);
@@ -983,10 +983,10 @@ class Bestellung
                     get_class($oPosition->Artikel) === 'Artikel'
                 ) {
                     $oPosition->Artikel->getDeliveryTime(
-                        (isset($this->Lieferadresse->cLand) ? $this->Lieferadresse->cLand : null),
+                        isset($this->Lieferadresse->cLand) ? $this->Lieferadresse->cLand : null,
                         $oPosition->nAnzahl,
                         $oPosition->fLagerbestandVorAbschluss,
-                        (isset($lang->cISOSprache)) ? $lang->cISOSprache : null,
+                        isset($lang->cISOSprache) ? $lang->cISOSprache : null,
                         $this->kVersandart
                     );
                     WarenkorbPos::setEstimatedDelivery($oPosition, $oPosition->Artikel->nMinDeliveryDays, $oPosition->Artikel->nMaxDeliveryDays);

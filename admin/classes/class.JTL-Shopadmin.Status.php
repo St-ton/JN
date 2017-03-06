@@ -23,7 +23,7 @@ class Status
      */
     public function __call($name, $arguments)
     {
-        if (!isset($this->cache[$name]) || $this->cache[$name] !== null) {
+        if (!isset($this->cache[$name])) {
             $this->cache[$name] = call_user_func_array([&$this, $name], $arguments);
         }
 
@@ -184,7 +184,7 @@ class Status
     protected function hasMobileTemplateIssue()
     {
         $oTemplate = Shop::DB()->select('ttemplate', 'eTyp', 'standard');
-        if (isset($oTemplate)) {
+        if (isset($oTemplate->cTemplate)) {
             $oTplData = TemplateHelper::getInstance(false)->getData($oTemplate->cTemplate);
             if ($oTplData->bResponsive) {
                 $oMobileTpl = Shop::DB()->select('ttemplate', 'eTyp', 'mobil');
@@ -219,7 +219,7 @@ class Status
      */
     protected function getSubscription()
     {
-        if (!isset($_SESSION['subscription']) || $_SESSION['subscription'] === null) {
+        if (!isset($_SESSION['subscription'])) {
             $_SESSION['subscription'] = jtlAPI::getSubscription();
         }
         if (is_object($_SESSION['subscription']) &&
@@ -305,7 +305,7 @@ class Status
                 }
 
                 foreach ($logs as $entry) {
-                    if (intval($entry->nLevel) === JTLLOG_LEVEL_ERROR) {
+                    if ((int)$entry->nLevel === JTLLOG_LEVEL_ERROR) {
                         $method->logs              = $logs;
                         $incorrectPaymentMethods[] = $method;
                         break;
@@ -345,6 +345,22 @@ class Status
         }
 
         return $invalidCouponsFound;
+    }
+
+    /**
+     * @return bool
+     */
+    protected function usesDeprecatedPriceImages()
+    {
+        $grafikPreise = Shop::DB()->selectAll('teinstellungen', 'kEinstellungenSektion', 118);
+
+        foreach ($grafikPreise as $preis) {
+            if ($preis->cWert === 'Y') {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

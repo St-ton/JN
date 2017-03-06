@@ -19,7 +19,7 @@ if (isset($_POST['key'], $_POST['logo'])) {
         $option->cName                 = 'shop_logo';
         $option->cWert                 = null;
         Shop::DB()->update('teinstellungen', 'cName', 'shop_logo', $option);
-        Shop::Cache()->flushTags(array(CACHING_GROUP_OPTION));
+        Shop::Cache()->flushTags([CACHING_GROUP_OPTION]);
     } else {
         $response->status = 'FAILED';
     }

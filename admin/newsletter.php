@@ -309,17 +309,17 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1) {
             $oNewsletterVorlage->cArtikel    = substr(
                 substr($oNewsletterVorlage->cArtikel, 1),
                 0,
-                (strlen(substr($oNewsletterVorlage->cArtikel, 1)) - 1)
+                strlen(substr($oNewsletterVorlage->cArtikel, 1)) - 1
             );
             $oNewsletterVorlage->cHersteller = substr(
                 substr($oNewsletterVorlage->cHersteller, 1),
                 0,
-                (strlen(substr($oNewsletterVorlage->cHersteller, 1)) - 1)
+                strlen(substr($oNewsletterVorlage->cHersteller, 1)) - 1
             );
             $oNewsletterVorlage->cKategorie  = substr(
                 substr($oNewsletterVorlage->cKategorie, 1),
                 0,
-                (strlen(substr($oNewsletterVorlage->cKategorie, 1)) - 1)
+                strlen(substr($oNewsletterVorlage->cKategorie, 1)) - 1
             );
             $kKundengruppe_arr               = explodecKundengruppe($oNewsletterVorlage->cKundengruppe);
             $smarty->assign('kArtikel_arr', $oExplodedArtikel->kArtikel_arr)
@@ -425,7 +425,7 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1) {
                             }
                             $nCount_arr[0]++;
                         }
-                        if (intval($oKundengruppeTMP->kKundengruppe) > 0) {
+                        if ((int)$oKundengruppeTMP->kKundengruppe > 0) {
                             if ($nCount_arr[1] > 0) {
                                 $cKundengruppeKey .= ';' . $oKundengruppeTMP->kKundengruppe;
                             } else {
@@ -720,7 +720,7 @@ if ($step === 'uebersicht') {
             ['kEinstellungenSektion', 'cName'],
             [CONF_NEWSLETTER,  $oConfig_arr[$i]->cWertName]
         );
-        $oConfig_arr[$i]->gesetzterWert = (isset($oSetValue->cWert))
+        $oConfig_arr[$i]->gesetzterWert = isset($oSetValue->cWert)
             ? $oSetValue->cWert
             : null;
     }

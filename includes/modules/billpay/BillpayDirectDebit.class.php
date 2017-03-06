@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-include_once 'Billpay.class.php';
+include_once __DIR__ . '/Billpay.class.php';
 
 /**
  * Billpay implementation

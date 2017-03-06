@@ -56,7 +56,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         public function __construct($kRMA = 0, $kArtikel = 0, $bProductName = false, $bProductObject = false, $kSprache = 0, $kKundengruppe = 0)
         {
-            if (intval($kRMA) > 0 && intval($kArtikel) > 0) {
+            if ((int)$kRMA > 0 && (int)$kArtikel > 0) {
                 $this->loadFromDB($kRMA, $kArtikel, $bProductName, $bProductObject, $kSprache, $kKundengruppe);
             }
         }
@@ -82,27 +82,27 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
             if ($bProductName) {
                 $oSprache = gibStandardsprache();
                 if (($kSprache > 0 && $kSprache == $oSprache->kSprache) || !$kSprache) {
-                    $oObj = Shop::DB()->query("SELECT cName FROM tartikel WHERE kArtikel = " . intval($kArtikel), 1);
+                    $oObj = Shop::DB()->query("SELECT cName FROM tartikel WHERE kArtikel = " . (int)$kArtikel, 1);
                     if (isset($oObj->cName) && strlen($oObj->cName) > 0) {
                         $this->cArtikelName = $oObj->cName;
                     }
                 } else {
-                    $oObj = Shop::DB()->query("SELECT cName FROM tartikelsprache WHERE kArtikel = " . intval($kArtikel) . " AND kSprache = " . intval($kSprache), 1);
+                    $oObj = Shop::DB()->query("SELECT cName FROM tartikelsprache WHERE kArtikel = " . (int)$kArtikel . " AND kSprache = " . (int)$kSprache, 1);
                     if (isset($oObj->cName) && strlen($oObj->cName) > 0) {
                         $this->cArtikelName = $oObj->cName;
                     } else {
-                        $oObj = Shop::DB()->query("SELECT cName FROM tartikel WHERE kArtikel = " . intval($kArtikel), 1);
+                        $oObj = Shop::DB()->query("SELECT cName FROM tartikel WHERE kArtikel = " . (int)$kArtikel, 1);
                         if (isset($oObj->cName) && strlen($oObj->cName) > 0) {
                             $this->cArtikelName = $oObj->cName;
                         }
                     }
                 }
 
-                $oTMP = Shop::DB()->query("SELECT cSeo FROM tseo WHERE cKey = 'kArtikel' AND kKey = " . intval($kArtikel), 1);
+                $oTMP = Shop::DB()->query("SELECT cSeo FROM tseo WHERE cKey = 'kArtikel' AND kKey = " . (int)$kArtikel, 1);
                 if (isset($oTMP->cSeo) && strlen($oTMP->cSeo) > 0) {
                     $this->cArtikelURL = Shop::getURL() . '/' . $oTMP->cSeo;
                 } else {
-                    $this->cArtikelURL = Shop::getURL() . '/index.php?a=' . intval($kArtikel);
+                    $this->cArtikelURL = Shop::getURL() . '/index.php?a=' . (int)$kArtikel;
                 }
             }
 
@@ -130,10 +130,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
                     $oObj->$cMember = $this->$cMember;
                 }
             }
-
-            unset($oObj->cArtikelName);
-            unset($oObj->cArtikelURL);
-            unset($oObj->oArtikel);
+            unset($oObj->cArtikelName, $oObj->cArtikelURL, $oObj->oArtikel);
 
             $kPrim = Shop::DB()->insert('trmaartikel', $oObj);
 
@@ -198,7 +195,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         public function setBestellung($kBestellung)
         {
-            $this->kBestellung = intval($kBestellung);
+            $this->kBestellung = (int)$kBestellung;
 
             return $this;
         }
@@ -212,7 +209,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         public function setArtikel($kArtikel)
         {
-            $this->kArtikel = intval($kArtikel);
+            $this->kArtikel = (int)$kArtikel;
 
             return $this;
         }
@@ -226,7 +223,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         public function setAnzahl($fAnzahl)
         {
-            $this->fAnzahl = floatval($fAnzahl);
+            $this->fAnzahl = (float)$fAnzahl;
 
             return $this;
         }
@@ -333,9 +330,13 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         public static function isOrderExisting($kBestellung, $kArtikel_arr, &$cRMAPostAssoc_arr)
         {
-            $kBestellung = intval($kBestellung);
-
-            if ($kBestellung > 0 && is_array($kArtikel_arr) && count($kArtikel_arr) > 0 && is_array($cRMAPostAssoc_arr) && count($cRMAPostAssoc_arr) > 0) {
+            $kBestellung = (int)$kBestellung;
+            if ($kBestellung > 0 &&
+                is_array($kArtikel_arr) &&
+                is_array($cRMAPostAssoc_arr) &&
+                count($kArtikel_arr) > 0 &&
+                count($cRMAPostAssoc_arr) > 0
+            ) {
                 require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Bestellung.php';
 
                 foreach ($kArtikel_arr as $kArtikel) {
@@ -343,17 +344,13 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
 
                     if ($fRMAArtikelQuantity && $fRMAArtikelQuantity > 0) {
                         // TODO: Anzahl checken
-                        $kRMAGrund  = intval($cRMAPostAssoc_arr['cGrund'][$kArtikel]);
-                        $fAnzahlNow = floatval($cRMAPostAssoc_arr['fAnzahl'][$kArtikel][$kRMAGrund]); // Aktuelle Anzahl
+                        $kRMAGrund  = (int)$cRMAPostAssoc_arr['cGrund'][$kArtikel];
+                        $fAnzahlNow = (float)$cRMAPostAssoc_arr['fAnzahl'][$kArtikel][$kRMAGrund]; // Aktuelle Anzahl
 
                         $fAnzahlBestellung = Bestellung::getProductAmount($kBestellung, $kArtikel);
                         if ($fAnzahlBestellung) {
                             // Aktuelle Anzahl - Bereits zurueckgeschickte Anzahl > Bestellte Anzahl
-                            if ($fAnzahlNow - $fRMAArtikelQuantity > $fAnzahlBestellung) {
-                                return true;
-                            }
-
-                            return false;
+                            return ($fAnzahlNow - $fRMAArtikelQuantity > $fAnzahlBestellung);
                         }
                     } else {
                         return false;
@@ -370,8 +367,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         public static function getProductsByOrder($kBestellung)
         {
-            $kBestellung  = intval($kBestellung);
-            $kArtikel_arr = array();
+            $kBestellung  = (int)$kBestellung;
+            $kArtikel_arr = [];
 
             if ($kBestellung > 0) {
                 $oObj_arr = Shop::DB()->query(
@@ -396,7 +393,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         public static function hasOrderProducts($kBestellung)
         {
-            $kBestellung = intval($kBestellung);
+            $kBestellung = (int)$kBestellung;
             if ($kBestellung > 0) {
                 $kArtikel_arr = self::getProductsByOrder($kBestellung);
                 if (count($kArtikel_arr) > 0) {
@@ -414,11 +411,11 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         public static function getRMAQuantity($kBestellung, $kArtikel)
         {
-            $kBestellung = intval($kBestellung);
-            $kArtikel    = intval($kArtikel);
+            $kBestellung = (int)$kBestellung;
+            $kArtikel    = (int)$kArtikel;
             if ($kBestellung > 0 && $kArtikel > 0) {
-                $oObj = Shop::DB()->query(
-                    "SELECT SUM(fAnzahl) AS fAnzahlSum
+                $oObj = Shop::DB()->query("
+                    SELECT SUM(fAnzahl) AS fAnzahlSum
                         FROM trmaartikel
                         WHERE kArtikel = " . $kArtikel . "
                             AND kBestellung = " . $kBestellung, 1

@@ -39,8 +39,8 @@ class WorldPay extends PaymentMethod
             $worldpay_id    = $GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_worldpay_id'];
             $worldpay_modus = $GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_worldpay_modus'];
 
-            $cURL    = WP_MODE == 1 ? WP_URL_TEST : WP_URL_LIVE;
-            $cHidden = WP_MODE == 1 ? '<input type=hidden name="name" value="AUTHORISED">' : "";
+            $cURL    = WP_MODE === 1 ? WP_URL_TEST : WP_URL_LIVE;
+            $cHidden = WP_MODE === 1 ? '<input type=hidden name="name" value="AUTHORISED">' : "";
 
             $cPost = '
                 <form action="' . $cURL . '" name="BuyForm" method="POST">
@@ -76,7 +76,7 @@ class WorldPay extends PaymentMethod
         $this->doLog(print_r($args, true));
 
         if ($this->verifyNotification($order, $paymentHash, $args)) {
-            if (D_MODE == 1) {
+            if (D_MODE === 1) {
                 writeLog(WP_D_PFAD, "Verified!", 1);
             }
 
@@ -114,12 +114,12 @@ class WorldPay extends PaymentMethod
             $ACCEPTANCE . $STATUS . $CARDNO . $PAYID .
             $NCERROR . $BRAND . $this->getSHA1OutSignature();
 
-        if (WP_D_MODE == 1) {
+        if (WP_D_MODE === 1) {
             writeLog(WP_D_PFAD, "SecurityString: " . $str, 1);
         }
-        if (strtolower($SHASIGN) != sha1($str)) {
+        if (strtolower($SHASIGN) !== sha1($str)) {
             $this->doLog('SHASign falsch');
-            if (WP_D_MODE == 1) {
+            if (WP_D_MODE === 1) {
                 writeLog(WP_D_PFAD, "SHASign falsch: " . strtolower($SHASIGN) . " != " . sha1($str), 1);
             }
 
@@ -127,15 +127,15 @@ class WorldPay extends PaymentMethod
         }
         if ($order->fGesamtsummeKundenwaehrung != $amount) {
             $this->doLog('Summe falsch');
-            if (WP_D_MODE == 1) {
+            if (WP_D_MODE === 1) {
                 writeLog(WP_D_PFAD, "Summe falsch: " . $order->fGesamtsummeKundenwaehrung . " != " . $amount, 1);
             }
 
             return false;
         }
-        if ($order->Waehrung->cISO != $currency) {
+        if ($order->Waehrung->cISO !== $currency) {
             $this->doLog('Waehrung falsch');
-            if (WP_D_MODE == 1) {
+            if (WP_D_MODE === 1) {
                 writeLog(WP_D_PFAD, "Waehrung falsch: " . $order->Waehrung->cISO . " != " . $currency, 1);
             }
 

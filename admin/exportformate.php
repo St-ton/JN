@@ -60,7 +60,7 @@ if (isset($_POST['neu_export']) && (int)$_POST['neu_export'] === 1 && validateTo
             $aktWert->kExportformat = $kExportformat;
             switch ($Conf[$i]->cInputTyp) {
                 case 'kommazahl':
-                    $aktWert->cWert = floatval($aktWert->cWert);
+                    $aktWert->cWert = (float)$aktWert->cWert;
                     break;
                 case 'zahl':
                 case 'number':
@@ -219,7 +219,7 @@ if ($step === 'neuer Export') {
                 ['kExportformat', 'cName'],
                 [(int)$exportformat->kExportformat, $Conf[$i]->cWertName]
             );
-            $Conf[$i]->gesetzterWert = (isset($setValue->cWert))
+            $Conf[$i]->gesetzterWert = isset($setValue->cWert)
                 ? $setValue->cWert
                 : null;
         }

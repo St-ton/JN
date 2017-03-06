@@ -3073,11 +3073,11 @@ function gibNaviURL($NaviFilter, $bSeo, $oZusatzFilter, $kSprache = 0, $bCanonic
         $oMerkmalWert_arr        = [];
         if (isset($NaviFilter->MerkmalFilter) && is_array($NaviFilter->MerkmalFilter) && count($NaviFilter->MerkmalFilter) > 0) {
             foreach ($NaviFilter->MerkmalFilter as $i => $oMerkmalFilter) {
-                if (($oMerkmalFilter->kMerkmalWert > 0 &&  !isset($oZusatzFilter->FilterLoesen->Merkmale)) ||
+                if (($oMerkmalFilter->kMerkmalWert > 0 && !isset($oZusatzFilter->FilterLoesen->Merkmale)) ||
                     ($oZusatzFilter->FilterLoesen->Merkmale != $oMerkmalFilter->kMerkmal &&
-                        !isset($oZusatzFilter->FilterLoesen->MerkmalWert) &&
-                        isset($oMerkmalFilter->kMerkmalWert)) ||
-                    isset($oZusatzFilter->FilterLoesen->MerkmalWert) && $oZusatzFilter->FilterLoesen->MerkmalWert != $oMerkmalFilter->kMerkmalWert
+                        !isset($oZusatzFilter->FilterLoesen->MerkmalWert) && isset($oMerkmalFilter->kMerkmalWert)) ||
+                    (!isset($oZusatzFilter->FilterLoesen->MerkmalWert) && isset($oMerkmalFilter->kMerkmalWert) ||
+                        ($oZusatzFilter->FilterLoesen->MerkmalWert != $oMerkmalFilter->kMerkmalWert))
                 ) {
                     if (strlen($oMerkmalFilter->cSeo[$kSprache]) === 0) {
                         $bSeo = false;
@@ -3215,7 +3215,7 @@ function gibNaviURL($NaviFilter, $bSeo, $oZusatzFilter, $kSprache = 0, $bCanonic
  * @param object|array $oPreisspannenfilter_arr
  * @return string
  */
-function berechnePreisspannenSQL($oPreis, $oPreisspannenfilter_arr = 0)
+function berechnePreisspannenSQL($oPreis, $oPreisspannenfilter_arr = null)
 {
     $cSQL          = '';
     $fKundenrabatt = 0.0;
@@ -3268,45 +3268,43 @@ function berechnePreisspannenSQL($oPreis, $oPreisspannenfilter_arr = 0)
         }
 
         $cSQL = substr($cSQL, 0, strlen($cSQL) - 2);
-    } else {
-        if (is_array($oPreisspannenfilter_arr)) {
-            foreach ($oPreisspannenfilter_arr as $i => $oPreisspannenfilter) {
-                $cSQL .= "COUNT(
-                        IF(";
+    } elseif (is_array($oPreisspannenfilter_arr)) {
+        foreach ($oPreisspannenfilter_arr as $i => $oPreisspannenfilter) {
+            $cSQL .= "COUNT(
+                    IF(";
 
-                $nBis = $oPreisspannenfilter->nBis;
-                // Finde den höchsten und kleinsten Steuersatz
-                if (is_array($_SESSION['Steuersatz']) && (int)$_SESSION['Kundengruppe']->nNettoPreise === 0) {
-                    $nSteuersatzKeys_arr = array_keys($_SESSION['Steuersatz']);
-                    foreach ($nSteuersatzKeys_arr as $nSteuersatzKeys) {
-                        $fSteuersatz = (float)$_SESSION['Steuersatz'][$nSteuersatzKeys];
-                        $cSQL .= "IF(tartikel.kSteuerklasse = " . $nSteuersatzKeys . ",
-                                ROUND(LEAST((tpreise.fVKNetto * " . $_SESSION['Waehrung']->fFaktor .
-                            ") * ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), " .
-                            $_SESSION['Kundengruppe']->fRabatt . ", " .
-                            $fKundenrabatt . ", 0)) / 100), IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * " .
-                            $_SESSION['Waehrung']->fFaktor . "))) * ((100 + " . $fSteuersatz . ") / 100)
-                            , 2),";
-                    }
-                    $cSQL .= "0";
-                    $count = count($nSteuersatzKeys_arr);
-                    for ($x = 0; $x < $count; ++$x) {
-                        $cSQL .= ")";
-                    }
-                } elseif ((int)$_SESSION['Kundengruppe']->nNettoPreise > 0) {
-                    $cSQL .= "ROUND(LEAST((tpreise.fVKNetto * " . $_SESSION['Waehrung']->fFaktor .
+            $nBis = $oPreisspannenfilter->nBis;
+            // Finde den höchsten und kleinsten Steuersatz
+            if (is_array($_SESSION['Steuersatz']) && (int)$_SESSION['Kundengruppe']->nNettoPreise === 0) {
+                $nSteuersatzKeys_arr = array_keys($_SESSION['Steuersatz']);
+                foreach ($nSteuersatzKeys_arr as $nSteuersatzKeys) {
+                    $fSteuersatz = (float)$_SESSION['Steuersatz'][$nSteuersatzKeys];
+                    $cSQL .= "IF(tartikel.kSteuerklasse = " . $nSteuersatzKeys . ",
+                            ROUND(LEAST((tpreise.fVKNetto * " . $_SESSION['Waehrung']->fFaktor .
                         ") * ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), " .
-                        $_SESSION['Kundengruppe']->fRabatt . ", " . $fKundenrabatt .
-                        ", 0)) / 100), IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * " .
-                        $_SESSION['Waehrung']->fFaktor . "))), 2)";
+                        $_SESSION['Kundengruppe']->fRabatt . ", " .
+                        $fKundenrabatt . ", 0)) / 100), IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * " .
+                        $_SESSION['Waehrung']->fFaktor . "))) * ((100 + " . $fSteuersatz . ") / 100)
+                        , 2),";
                 }
-
-                $cSQL .= " < " . $nBis . ", 1, NULL)
-                        ) AS anz" . $i . ", ";
+                $cSQL .= "0";
+                $count = count($nSteuersatzKeys_arr);
+                for ($x = 0; $x < $count; ++$x) {
+                    $cSQL .= ")";
+                }
+            } elseif ((int)$_SESSION['Kundengruppe']->nNettoPreise > 0) {
+                $cSQL .= "ROUND(LEAST((tpreise.fVKNetto * " . $_SESSION['Waehrung']->fFaktor .
+                    ") * ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), " .
+                    $_SESSION['Kundengruppe']->fRabatt . ", " . $fKundenrabatt .
+                    ", 0)) / 100), IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * " .
+                    $_SESSION['Waehrung']->fFaktor . "))), 2)";
             }
 
-            $cSQL = substr($cSQL, 0, strlen($cSQL) - 2);
+            $cSQL .= " < " . $nBis . ", 1, NULL)
+                    ) AS anz" . $i . ", ";
         }
+
+        $cSQL = substr($cSQL, 0, strlen($cSQL) - 2);
     }
 
     return $cSQL;
@@ -3330,14 +3328,14 @@ function berechneMaxMinStep($fMax, $fMin)
         100000000.0
     ];
     $nStep      = 10;
-    $fDiffPreis = doubleval($fMax - $fMin) * 1000;
+    $fDiffPreis = floatval($fMax - $fMin) * 1000;
     $nMaxSteps  = 5;
     $conf       = Shop::getSettings([CONF_NAVIGATIONSFILTER]);
     if ($conf['navigationsfilter']['preisspannenfilter_anzeige_berechnung'] === 'M') {
         $nMaxSteps = 10;
     }
     foreach ($fStepWert_arr as $i => $fStepWert) {
-        if (($fDiffPreis / doubleval($fStepWert * 1000)) < $nMaxSteps) {
+        if (($fDiffPreis / floatval($fStepWert * 1000)) < $nMaxSteps) {
             $nStep = $i;
             break;
         }

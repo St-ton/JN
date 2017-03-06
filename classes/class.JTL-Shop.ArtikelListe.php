@@ -42,7 +42,7 @@ class ArtikelListe
         $kKundengruppe = (int)$kKundengruppe;
         $kSprache      = (int)$kSprache;
         $anzahl        = (int)$anzahl;
-        $cacheID       = 'jtl_tpnw_' . ((is_string($topneu)) ? $topneu : '') .
+        $cacheID       = 'jtl_tpnw_' . (is_string($topneu) ? $topneu : '') .
             '_' . $anzahl .
             '_' . $kSprache .
             '_' . $kKundengruppe;
@@ -206,14 +206,13 @@ class ArtikelListe
             }
             $Einstellungen = Shop::getSettings([CONF_ARTIKELUEBERSICHT]);
             $kKundengruppe = (int)$_SESSION['Kundengruppe']->kKundengruppe;
-            $cLimitSql     = (isset($Einstellungen['artikeluebersicht']['artikelubersicht_topbest_anzahl'])) ?
-                ('LIMIT ' . (int)$Einstellungen['artikeluebersicht']['artikelubersicht_topbest_anzahl']) :
-                'LIMIT 6';
-
+            $cLimitSql     = isset($Einstellungen['artikeluebersicht']['artikelubersicht_topbest_anzahl'])
+                ? ('LIMIT ' . (int)$Einstellungen['artikeluebersicht']['artikelubersicht_topbest_anzahl'])
+                : 'LIMIT 6';
             //top-Artikel
             $lagerfilter = gibLagerfilter();
-            $objArr      = Shop::DB()->query(
-                "SELECT DISTINCT (tartikel.kArtikel)
+            $objArr      = Shop::DB()->query("
+                SELECT DISTINCT (tartikel.kArtikel)
                     FROM tkategorieartikel, tartikel
                     LEFT JOIN tartikelsichtbarkeit
                         ON tartikel.kArtikel=tartikelsichtbarkeit.kArtikel
@@ -283,13 +282,13 @@ class ArtikelListe
                     }
                 }
             }
-            $cLimitSql = (isset($Einstellungen['artikeluebersicht']['artikelubersicht_topbest_anzahl']))
+            $cLimitSql = isset($Einstellungen['artikeluebersicht']['artikelubersicht_topbest_anzahl'])
                 ? ('LIMIT ' . (int)$Einstellungen['artikeluebersicht']['artikelubersicht_topbest_anzahl'])
                 : 'LIMIT 6';
             //top-Artikel
             $lagerfilter = gibLagerfilter();
-            $objArr      = Shop::DB()->query(
-                "SELECT DISTINCT (tartikel.kArtikel)
+            $objArr      = Shop::DB()->query("
+                SELECT DISTINCT (tartikel.kArtikel)
                     FROM tkategorieartikel, tbestseller, tartikel
                     LEFT JOIN tartikelsichtbarkeit
                         ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel

@@ -34,7 +34,7 @@ if (auth()) {
                 Jtllog::writeLog('Zip entpackt in ' . $entzippfad, JTLLOG_LEVEL_DEBUG, false, 'Artikel_xml');
             }
             $return        = 0;
-            $conf = Shop::getSettings(array(CONF_GLOBAL));
+            $conf = Shop::getSettings([CONF_GLOBAL]);
             foreach ($list as $i => $zip) {
                 if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
                     Jtllog::writeLog('bearbeite: ' . $entzippfad . $zip['filename'] . ' size: ' .
@@ -190,7 +190,7 @@ function bearbeiteInsert($xml, array $conf)
                 $newArticleCategories[] = (int)$newArticleCategory->kKategorie;
             }
             foreach ($newArticleCategories as $newArticleCategory) {
-                if (!in_array($newArticleCategory, $currentArticleCategories)) {
+                if (!in_array($newArticleCategory, $currentArticleCategories, true)) {
                     // the article was previously not associated with this category
                     $articleCount = Shop::DB()->query(
                         "SELECT count(tkategorieartikel.kArtikel) AS count
@@ -210,7 +210,7 @@ function bearbeiteInsert($xml, array $conf)
             if ($flush === false) {
                 foreach ($currentArticleCategories as $category) {
                     // check if the article is removed from an existing category
-                    if (!in_array($category, $newArticleCategories)) {
+                    if (!in_array($category, $newArticleCategories, true)) {
                         // check if the article was the only one in at least one of these categories
                         $articleCount = Shop::DB()->query(
                             "SELECT count(tkategorieartikel.kArtikel) AS count
@@ -354,7 +354,7 @@ function bearbeiteInsert($xml, array $conf)
                 );
                 if ($delta->totalquantity > 0) {
                     //subtract delta from stocklevel
-                    $artikel_arr[0]->fLagerbestand = $artikel_arr[0]->fLagerbestand - $delta->totalquantity;
+                    $artikel_arr[0]->fLagerbestand -= $delta->totalquantity;
                     if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
                         Jtllog::writeLog("Artikel-Sync: Lagerbestand von kArtikel {$artikel_arr[0]->kArtikel} wurde " .
                             "wegen nicht-abgeholter Bestellungen " .
@@ -512,8 +512,7 @@ function bearbeiteInsert($xml, array $conf)
                 $oArtikelUpload->kUploadSchema = $oArtikelUpload->kArtikelUpload;
                 $oArtikelUpload->kCustomID     = $oArtikelUpload->kArtikel;
 
-                unset($oArtikelUpload->kArtikelUpload);
-                unset($oArtikelUpload->kArtikel);
+                unset($oArtikelUpload->kArtikelUpload, $oArtikelUpload->kArtikel);
             }
             if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
                 Jtllog::writeLog('oArtikelUpload_arr: ' . print_r($oArtikelUpload_arr, true), JTLLOG_LEVEL_DEBUG, false, 'Artikel_xml');

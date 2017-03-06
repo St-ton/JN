@@ -22,8 +22,8 @@ class WidgetBots extends WidgetBase
      */
     public function init()
     {
-        $nYear           = intval(date('Y'));
-        $nMonth          = intval(date('m'));
+        $nYear           = (int)date('Y');
+        $nMonth          = (int)date('m');
         $this->oBots_arr = $this->getBotsOfMonth($nYear, $nMonth);
     }
 
@@ -35,10 +35,9 @@ class WidgetBots extends WidgetBase
      */
     public function getBotsOfMonth($nYear, $nMonth, $nLimit = 10)
     {
-        $oStatistik = new Statistik(firstDayOfMonth(), time());
-        $oBots_arr  = $oStatistik->holeBotStats();
+        $oStatistik = new Statistik(firstDayOfMonth($nMonth, $nYear), time());
 
-        return $oBots_arr;
+        return $oStatistik->holeBotStats($nLimit);
     }
 
     /**
@@ -51,8 +50,8 @@ class WidgetBots extends WidgetBase
         $pie->set_start_angle(35);
         $pie->add_animation(new pie_fade());
         $pie->set_tooltip('#val# of #total#<br>#percent# of 100%');
-        $pie->set_colours(array('#1C9E05', '#FF368D'));
-        $pie->set_values(array(2, 3, 4, new pie_value(6.5, "hello (6.5)")));
+        $pie->set_colours(['#1C9E05', '#FF368D']);
+        $pie->set_values([2, 3, 4, new pie_value(6.5, "hello (6.5)")]);
 
         // chart
         $chart = new open_flash_chart();

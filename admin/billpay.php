@@ -142,7 +142,7 @@ if (isset($_POST['einstellungen_bearbeiten'])) {
         }
     }
     Shop::DB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
-    Shop::Cache()->flushTags(array(CACHING_GROUP_OPTION));
+    Shop::Cache()->flushTags([CACHING_GROUP_OPTION]);
 
     $smarty->assign('saved', true);
 }

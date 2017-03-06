@@ -77,7 +77,7 @@ class PHPSettingsHelper
      */
     public function safeMode()
     {
-        return (bool) ini_get('safe_mode');
+        return (bool)ini_get('safe_mode');
     }
     
     /**
@@ -93,29 +93,29 @@ class PHPSettingsHelper
      */
     public function fopenWrapper()
     {
-        return (bool) ini_get('allow_url_fopen');
+        return (bool)ini_get('allow_url_fopen');
     }
     
     /**
-     * @param $limit - in MB
+     * @param int $limit - in MB
      * @return bool
      */
     public function hasMinLimit($limit)
     {
-        return ($this->limit() >= $limit || $this->limit() == 0);
+        return ($this->limit() >= $limit || $this->limit() === 0);
     }
     
     /**
-     * @param $limit - in S
+     * @param int $limit - in S
      * @return bool
      */
     public function hasMinExecutionTime($limit)
     {
-        return ($this->executionTime() >= $limit || $this->executionTime() == 0);
+        return ($this->executionTime() >= $limit || $this->executionTime() === 0);
     }
     
     /**
-     * @param $limit - in MB
+     * @param int $limit - in MB
      * @return bool
      */
     public function hasMinPostSize($limit)
@@ -124,7 +124,7 @@ class PHPSettingsHelper
     }
     
     /**
-     * @param $limit - in MB
+     * @param int $limit - in MB
      * @return bool
      */
     public function hasMinUploadSize($limit)
@@ -137,6 +137,6 @@ class PHPSettingsHelper
      */
     public function isTempWriteable()
     {
-        return is_writeable($this->tempDir());
+        return is_writable($this->tempDir());
     }
 }

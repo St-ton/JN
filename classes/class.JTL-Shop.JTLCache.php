@@ -92,7 +92,7 @@ class JTLCache
      *
      * @var ICachingMethod
      */
-    private $_method = null;
+    private $_method;
 
     /**
      * caching options
@@ -104,9 +104,9 @@ class JTLCache
     /**
      * plugin instance
      *
-     * @var null|JTLCache
+     * @var JTLCache
      */
-    private static $instance = null;
+    private static $instance;
 
     /**
      * get/set result code
@@ -209,7 +209,7 @@ class JTLCache
             'benchmark'          => '_benchmark',
         ];
 
-        return (isset($mapping[$method])) ? $mapping[$method] : null;
+        return isset($mapping[$method]) ? $mapping[$method] : null;
     }
 
     /**
@@ -314,7 +314,7 @@ class JTLCache
             'redis_persistent' => false, //optional redis database id, null or 0 for default
             'memcache_port'    => self::DEFAULT_MEMCACHE_PORT, //port for memcache(d) server
             'memcache_host'    => self::DEFAULT_MEMCACHE_HOST, //host of memcache(d) server
-            'prefix'           => 'jc_' . ((defined('DB_NAME')) ? DB_NAME . '_' : ''), //try to make a quite unique prefix if multiple shops are used
+            'prefix'           => 'jc_' . (defined('DB_NAME') ? DB_NAME . '_' : ''), //try to make a quite unique prefix if multiple shops are used
             'lifetime'         => self::DEFAULT_LIFETIME, //cache lifetime in seconds
             'collect_stats'    => false, //used to tell caching methods to collect statistical data or not (if not provided transparently)
             'debug'            => false, //enable or disable collecting of debug data
@@ -636,7 +636,7 @@ class JTLCache
      * check if cache for selected group id is active
      * this allows the disabling of certain cache types
      *
-     * @param string $groupID
+     * @param string|array $groupID
      * @return bool
      */
     public function _isCacheGroupActive($groupID)
@@ -647,13 +647,13 @@ class JTLCache
         }
         if (is_string($groupID) &&
             is_array($this->options['types_disabled']) &&
-            in_array($groupID, $this->options['types_disabled'])
+            in_array($groupID, $this->options['types_disabled'], true)
         ) {
             return false;
         }
         if (is_array($groupID)) {
             foreach ($groupID as $group) {
-                if (in_array($group, $this->options['types_disabled'])) {
+                if (in_array($group, $this->options['types_disabled'], true)) {
                     return false;
                 }
             }
@@ -921,16 +921,16 @@ class JTLCache
         //add customer ID
         if ($customerID === true) {
             $baseID .= '_cid';
-            $baseID .= (isset($_SESSION['Kunde']->kKunde)) ?
-                $_SESSION['Kunde']->kKunde :
-                '-1';
+            $baseID .= isset($_SESSION['Kunde']->kKunde)
+                ? $_SESSION['Kunde']->kKunde
+                : '-1';
         }
         //add customer group
         if ($customerGroup === true) {
             $baseID .= '_cgid';
-            $baseID .= (isset($_SESSION['Kundengruppe']->kKundengruppe)) ?
-                $_SESSION['Kundengruppe']->kKundengruppe :
-                Kundengruppe::getDefaultGroupID();
+            $baseID .= isset($_SESSION['Kundengruppe']->kKundengruppe)
+                ? $_SESSION['Kundengruppe']->kKundengruppe
+                : Kundengruppe::getDefaultGroupID();
         } elseif (is_numeric($customerGroup)) {
             $baseID .= '_cgid' . (int)$customerGroup;
         }
@@ -951,9 +951,9 @@ class JTLCache
         //add currency ID
         if ($currencyID === true) {
             $baseID .= '_curid';
-            $baseID .= (isset($_SESSION['Waehrung']->kWaehrung)) ?
-                $_SESSION['Waehrung']->kWaehrung :
-                '0';
+            $baseID .= isset($_SESSION['Waehrung']->kWaehrung)
+                ? $_SESSION['Waehrung']->kWaehrung
+                : '0';
         } elseif (is_numeric($currencyID)) {
             $baseID .= '_curid' . (int)$currencyID;
         }

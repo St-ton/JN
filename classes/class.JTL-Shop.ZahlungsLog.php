@@ -67,7 +67,7 @@ class ZahlungsLog
                 WHERE cModulId = '" . $this->cModulId . "'", 1
         );
 
-        return (isset($oCount->nCount)) ? (int)$oCount->nCount : 0;
+        return isset($oCount->nCount) ? (int)$oCount->nCount : 0;
     }
 
     /**

@@ -470,7 +470,7 @@ class Kategorie
                         AND kKategorie = " . (int)$this->kKategorie, 1
             );
 
-            return (isset($oObj->kOberKategorie)) ? (int)$oObj->kOberKategorie : false;
+            return isset($oObj->kOberKategorie) ? (int)$oObj->kOberKategorie : false;
         }
 
         return false;

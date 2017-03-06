@@ -103,8 +103,8 @@ if (verifyGPCDataInteger('neu') === 1 && validateToken()) {
     // Vergangenheit
     if (verifyGPCDataInteger('nStamp') == -1) {
         $_SESSION['Kampagne']->cStamp = gibStamp($_SESSION['Kampagne']->cStamp, -1, $_SESSION['Kampagne']->nAnsicht);
-    } // Zukunft
-    elseif (verifyGPCDataInteger('nStamp') === 1) {
+    } elseif (verifyGPCDataInteger('nStamp') === 1) {
+        // Zukunft
         $_SESSION['Kampagne']->cStamp = gibStamp($_SESSION['Kampagne']->cStamp, 1, $_SESSION['Kampagne']->nAnsicht);
     }
 } elseif (verifyGPCDataInteger('nSort') > 0) { // Sortierung

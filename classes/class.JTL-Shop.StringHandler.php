@@ -130,7 +130,7 @@ class StringHandler
         if ($res === false) {
             //some kind of pcre error happend - probably PREG_JIT_STACKLIMIT_ERROR.
             //we could check this via preg_last_error()
-            $res = (function_exists('mb_detect_encoding'))
+            $res = function_exists('mb_detect_encoding')
                 ? (int)(mb_detect_encoding($string, 'UTF-8', true) === 'UTF-8')
                 : 0;
         }
@@ -181,7 +181,7 @@ class StringHandler
         } while ($old_data !== $data);
 
         // we are done...
-        return ($convert) ? utf8_decode($data) : $data;
+        return $convert ? utf8_decode($data) : $data;
     }
 
     /**
@@ -490,12 +490,12 @@ class StringHandler
         if ((function_exists('mb_detect_encoding') && mb_detect_encoding($input) !== 'UTF-8') || !self::is_utf8($input)) {
             $input = utf8_encode($input);
         }
-        $input     = (function_exists('idn_to_ascii')) ? idn_to_ascii($input) : $input;
+        $input     = function_exists('idn_to_ascii') ? idn_to_ascii($input) : $input;
         $sanitized = filter_var($input, FILTER_SANITIZE_EMAIL);
 
-        return ($validate) ?
-            filter_var($sanitized, FILTER_VALIDATE_EMAIL) :
-            $sanitized;
+        return $validate
+            ? filter_var($sanitized, FILTER_VALIDATE_EMAIL)
+            : $sanitized;
     }
 
     /**
@@ -511,12 +511,12 @@ class StringHandler
         if ((function_exists('mb_detect_encoding') && mb_detect_encoding($input) !== 'UTF-8') || !self::is_utf8($input)) {
             $input = utf8_encode($input);
         }
-        $input     = (function_exists('idn_to_ascii')) ? idn_to_ascii($input) : $input;
+        $input     = function_exists('idn_to_ascii') ? idn_to_ascii($input) : $input;
         $sanitized = filter_var($input, FILTER_SANITIZE_URL);
 
-        return ($validate) ?
-            filter_var($sanitized, FILTER_VALIDATE_URL) :
-            $sanitized;
+        return $validate
+            ? filter_var($sanitized, FILTER_VALIDATE_URL)
+            : $sanitized;
     }
 
     /**

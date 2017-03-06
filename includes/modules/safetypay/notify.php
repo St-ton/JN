@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once '../../../includes/globalinclude.php';
+require_once __DIR__ . '/../../../includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Bestellung.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
@@ -22,7 +22,7 @@ $einstellungSignatureKey = Shop::DB()->query("
 define('SAFETYPAY_APIKEY', $einstellungApiKey->cWert);
 define('SAFETYPAY_SIGNTATURE_KEY', $einstellungSignatureKey->cWert);
 
-require_once 'class/safetypayProxyAPI.php';
+require_once __DIR__ . '/class/safetypayProxyAPI.php';
 
 // Create instance of Class
 $proxySTP = new SafetyPayProxy();
@@ -120,7 +120,7 @@ if ($Result['ErrorManager']['ErrorNumber'] == '0') {
         $txtGetNewPaidOrders .= 'No New Paid Orders';
     }
 
-    if ($nCounter == 0) {
+    if ($nCounter === 0) {
         echo 'No registrations processed';
     } else {
         echo "<center><b>" . (string) $nCounter . " verarbeitete Datens&auml;tze";

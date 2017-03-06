@@ -12,7 +12,7 @@ class Media
     /**
      * @var Media
      */
-    private static $_instance = null;
+    private static $_instance;
 
     /**
      * @var MediaImage[]|MediaImageCompatibility[]

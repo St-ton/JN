@@ -143,7 +143,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         public static function validateBasket($kArtikel, $oKonfigitem_arr)
         {
-            if (intval($kArtikel) === 0 || !is_array($oKonfigitem_arr)) {
+            if ((int)$kArtikel === 0 || !is_array($oKonfigitem_arr)) {
                 Jtllog::writeLog(utf8_decode('Validierung der Konfiguration fehlgeschlagen - Ungültige Daten'), JTLLOG_LEVEL_ERROR);
 
                 return false;
@@ -154,7 +154,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
             $oArtikel = new Artikel();
             $oArtikel->fuelleArtikel($kArtikel, Artikel::getDefaultOptions());
             // Grundpreis
-            if ($oArtikel && intval($oArtikel->kArtikel) > 0) {
+            if ($oArtikel && (int)$oArtikel->kArtikel > 0) {
                 $fFinalPrice += $oArtikel->Preise->fVKNetto;
             }
             // Anzahl
@@ -219,7 +219,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         private static function langComponent($bPlural = false, $bSpace = true)
         {
             $cComponent = $bSpace ? ' ' : '';
-            $cComponent .= ($bPlural)
+            $cComponent .= $bPlural
                 ? Shop::Lang()->get('configComponents', 'productDetails')
                 : Shop::Lang()->get('configComponent', 'productDetails');
 

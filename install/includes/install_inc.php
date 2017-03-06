@@ -90,13 +90,12 @@ function gibVorhandeneIniDateien()
  */
 function pruefeSchritt1Eingaben()
 {
-    if (isset($_POST['adminuser']) && isset($_POST['adminpass']) && isset($_POST['syncuser']) && isset($_POST['syncpass'])) {
-        if (strlen($_POST['adminuser']) > 0 && strlen($_POST['adminpass']) > 0 && strlen($_POST['syncuser']) > 0 && strlen($_POST['syncpass']) > 0) {
-            return true;
-        }
-    }
-
-    return false;
+    return (isset($_POST['adminuser'], $_POST['adminpass'], $_POST['syncuser'], $_POST['syncpass']) &&
+        strlen($_POST['adminuser']) > 0 &&
+        strlen($_POST['adminpass']) > 0 &&
+        strlen($_POST['syncuser']) > 0 &&
+        strlen($_POST['syncpass']) > 0
+    );
 }
 
 /**
@@ -128,12 +127,13 @@ function parse_mysql_dump($url)
     $query        = '';
     foreach ($file_content as $i => $sql_line) {
         $tsl = trim($sql_line);
-        if (($sql_line != '') && (substr($tsl, 0, 2) != '/*') && (substr($tsl, 0, 2) != '--') && (substr($tsl, 0, 1) != '#')) {
+        if (($sql_line !== '') && (substr($tsl, 0, 2) !== '/*') && (substr($tsl, 0, 2) !== '--') && (substr($tsl, 0, 1) !== '#')) {
             $query .= $sql_line;
             if (preg_match('/;\s*$/', $sql_line)) {
                 $result = $GLOBALS['DB']->executeQuery($query, 10);
                 if (!$result) {
-                    $errors .= '<br>' . $GLOBALS['DB']::getErrorMessage() . ' Nr: ' . $GLOBALS['DB']::getErrorCode() . ' in Zeile ' . $i . '<br>' . $query . '<br>';
+                    $errors .= '<br>' . $GLOBALS['DB']::getErrorMessage() .
+                        ' Nr: ' . $GLOBALS['DB']::getErrorCode() . ' in Zeile ' . $i . '<br>' . $query . '<br>';
                 }
                 $query = '';
             }
@@ -226,10 +226,9 @@ function uname($part = 'a')
             if (preg_match('~System.*?(</B></td><TD ALIGN="left">| => |v">)([^<]*)~i', $pinfo, $match)) {
                 $uname = $match[2];
                 if ($part === 'r') {
+                    $result = '';
                     if (!empty($uname) && preg_match('/\S+\s+\S+\s+([0-9.]+)/', $uname, $matchver)) {
                         $result = $matchver[1];
-                    } else {
-                        $result = '';
                     }
                 } else {
                     $result = $uname;
@@ -249,6 +248,6 @@ function uname($part = 'a')
  */
 function function_is_disabled($fn_name)
 {
-    return in_array($fn_name, explode(',', ini_get('disable_functions')));
+    return in_array($fn_name, explode(',', ini_get('disable_functions')), true);
 }
 

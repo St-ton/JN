@@ -158,7 +158,7 @@ function uebernehmeWarenkorbAenderungen()
                         $_SESSION['Warenkorbhinweise'][] = Shop::Lang()->get('wkPurchaseintervall', 'messages');
                     }
                 }
-                if (floatval($_POST['anzahl'][$i]) + $_SESSION['Warenkorb']->gibAnzahlEinesArtikels(
+                if ((float)$_POST['anzahl'][$i] + $_SESSION['Warenkorb']->gibAnzahlEinesArtikels(
                     $_SESSION['Warenkorb']->PositionenArr[$i]->kArtikel,
                     $i
                 ) < $_SESSION['Warenkorb']->PositionenArr[$i]->Artikel->fMindestbestellmenge) {
@@ -166,13 +166,13 @@ function uebernehmeWarenkorbAenderungen()
                     $gueltig                         = false;
                     $_SESSION['Warenkorbhinweise'][] = lang_mindestbestellmenge(
                         $_SESSION['Warenkorb']->PositionenArr[$i]->Artikel,
-                        floatval($_POST['anzahl'][$i])
+                        (float)$_POST['anzahl'][$i]
                     );
                 }
                 //hole akt. lagerbestand vom artikel
                 if ($Artikel->cLagerBeachten === 'Y' && $Artikel->cLagerVariation !== 'Y' &&
                     $Artikel->cLagerKleinerNull !== 'Y' &&
-                    $Artikel->fPackeinheit * (floatval($_POST['anzahl'][$i]) + $_SESSION['Warenkorb']->gibAnzahlEinesArtikels(
+                    $Artikel->fPackeinheit * ((float)$_POST['anzahl'][$i] + $_SESSION['Warenkorb']->gibAnzahlEinesArtikels(
                         $_SESSION['Warenkorb']->PositionenArr[$i]->kArtikel,
                         $i
                     )
@@ -196,7 +196,7 @@ function uebernehmeWarenkorbAenderungen()
                 ) {
                     foreach ($_SESSION['Warenkorb']->PositionenArr[$i]->WarenkorbPosEigenschaftArr as $eWert) {
                         $EigenschaftWert = new EigenschaftWert($eWert->kEigenschaftWert);
-                        if ($EigenschaftWert->fPackeinheit * (floatval($_POST['anzahl'][$i]) + $_SESSION['Warenkorb']->gibAnzahlEinerVariation(
+                        if ($EigenschaftWert->fPackeinheit * ((float)$_POST['anzahl'][$i] + $_SESSION['Warenkorb']->gibAnzahlEinerVariation(
                             $_SESSION['Warenkorb']->PositionenArr[$i]->kArtikel,
                             $eWert->kEigenschaftWert,
                             $i
@@ -215,7 +215,7 @@ function uebernehmeWarenkorbAenderungen()
                 }
 
                 if ($gueltig) {
-                    $_SESSION['Warenkorb']->PositionenArr[$i]->nAnzahl = floatval($_POST['anzahl'][$i]);
+                    $_SESSION['Warenkorb']->PositionenArr[$i]->nAnzahl = (float)$_POST['anzahl'][$i];
                     $_SESSION['Warenkorb']->PositionenArr[$i]->fPreis  = $Artikel->gibPreis(
                         $_SESSION['Warenkorb']->PositionenArr[$i]->nAnzahl,
                         $_SESSION['Warenkorb']->PositionenArr[$i]->WarenkorbPosEigenschaftArr
@@ -276,6 +276,7 @@ function uebernehmeWarenkorbAenderungen()
                 }
             }
         }
+        plausiNeukundenKupon();
     }
     $_SESSION['Warenkorb']->setzePositionsPreise();
     // Gesamtsumme Warenkorb < Gratisgeschenk && Gratisgeschenk in den Pos?
@@ -461,7 +462,7 @@ function gibGratisGeschenke($Einstellungen)
             foreach ($oArtikelGeschenkeTMP_arr as $i => $oArtikelGeschenkeTMP) {
                 $oArtikel = new Artikel();
                 $oArtikel->fuelleArtikel($oArtikelGeschenkeTMP->kArtikel, Artikel::getDefaultOptions());
-                $oArtikel->cBestellwert = gibPreisStringLocalized(doubleval($oArtikelGeschenkeTMP->cWert));
+                $oArtikel->cBestellwert = gibPreisStringLocalized((float)$oArtikelGeschenkeTMP->cWert);
 
                 if ($oArtikel->kArtikel > 0 &&
                     ($oArtikel->kEigenschaftKombi > 0 ||

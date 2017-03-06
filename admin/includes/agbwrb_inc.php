@@ -23,7 +23,7 @@ function speicherAGBWRB($kKundengruppe, $kSprache, $cPost_arr, $kText = 0)
             $oAGBWRB->kText = $kText;
         }
         // Soll Standard sein?
-        if (isset($cPost_arr['nStandard']) && intval($cPost_arr['nStandard']) > 0) {
+        if (isset($cPost_arr['nStandard']) && (int)$cPost_arr['nStandard'] > 0) {
             // Standard umsetzen
             Shop::DB()->query("UPDATE ttext SET nStandard = 0", 3);
         }
@@ -35,7 +35,7 @@ function speicherAGBWRB($kKundengruppe, $kSprache, $cPost_arr, $kText = 0)
         $oAGBWRB->cWRBContentHtml     = $cPost_arr['cWRBContentHtml'];
         $oAGBWRB->cWRBFormContentText = $cPost_arr['cWRBFormContentText'];
         $oAGBWRB->cWRBFormContentHtml = $cPost_arr['cWRBFormContentHtml'];
-        $oAGBWRB->nStandard           = (isset($cPost_arr['nStandard'])) ? $cPost_arr['nStandard'] : 0;
+        $oAGBWRB->nStandard           = isset($cPost_arr['nStandard']) ? $cPost_arr['nStandard'] : 0;
 
         Shop::DB()->insert('ttext', $oAGBWRB);
 

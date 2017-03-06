@@ -343,7 +343,7 @@ class Redirect
     public function test($cUrl)
     {
         //Fallback e.g. if last URL-Path exists in tseo --> do not track 404 hit, instant redirect!
-        if ($fallbackPath = $this->checkFallbackRedirect($cUrl)) {
+        if (($fallbackPath = $this->checkFallbackRedirect($cUrl)) !== false) {
             return $fallbackPath;
         }
         $cRedirectUrl = false;
@@ -382,7 +382,7 @@ class Redirect
                     WHERE tr.cIP = '{$cIP}'
                     AND t.cFromUrl = '{$cUrl}' LIMIT 1", 1
             );
-            if ($oEntry === false || $oEntry === null || (is_object($oEntry) && $oItem->nCount == 0)) {
+            if ($oEntry === false || $oEntry === null || (is_object($oEntry) && (int)$oEntry->nCount === 0)) {
                 $oReferer               = new stdClass();
                 $oReferer->kRedirect    = isset($oItem->kRedirect) ? $oItem->kRedirect : 0;
                 $oReferer->kBesucherBot = isset($_SESSION['oBesucher']->kBesucherBot)

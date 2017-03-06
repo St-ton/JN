@@ -15,7 +15,9 @@
                         <img class="img-responsive" src="{$child->Bilder[0]->cPfadMini}" alt="{$child->Bilder[0]->cAltAttribut}">
                     </td>
                     <td class="col-xs-6">
-                        <a href="{$child->cSeo}">{$child->cName}</a>
+                        <div >
+                            <a href="{$child->cSeo}"><span itemprop="name">{$child->cName}</span></a>
+                        </div>
                         <div class="small">
                             {if $child->nErscheinendesProdukt}
                                 {lang key="productAvailableFrom" section="global"}: <strong>{$child->Erscheinungsdatum_de}</strong>

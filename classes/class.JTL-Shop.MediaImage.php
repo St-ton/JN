@@ -65,7 +65,7 @@ class MediaImage implements IMedia
 
         if (!file_exists($thumbAbs) && !file_exists($rawAbs)) {
             $fallback = $req->getFallbackThumb($size);
-            $thumb    = (file_exists(PFAD_ROOT . $fallback))
+            $thumb    = file_exists(PFAD_ROOT . $fallback)
                 ? $fallback
                 : BILD_KEIN_ARTIKELBILD_VORHANDEN;
         }
@@ -512,7 +512,7 @@ class MediaImage implements IMedia
 
         if (!file_exists($thumbAbs) && !file_exists($rawAbs)) {
             $fallback = $req->getFallbackThumb($size);
-            $thumb    = (file_exists(PFAD_ROOT . $fallback))
+            $thumb    = file_exists(PFAD_ROOT . $fallback)
                 ? PFAD_ROOT . $fallback
                 : BILD_KEIN_ARTIKELBILD_VORHANDEN;
 

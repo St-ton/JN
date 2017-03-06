@@ -62,7 +62,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         public function __construct($kRMA = 0, $bCustomer = false, $bRMAArtikel = true, $kSprache = 0)
         {
-            if (intval($kRMA) > 0) {
+            if ((int)$kRMA > 0) {
                 $this->loadFromDB($kRMA, $bCustomer, $bRMAArtikel, $kSprache);
             }
         }
@@ -92,11 +92,11 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
                 }
 
                 if ($bRMAArtikel) {
-                    $this->oRMAArtikel_arr = array();
-                    $oObj_arr              = Shop::DB()->query(
-                        "SELECT kRMA, kArtikel
+                    $this->oRMAArtikel_arr = [];
+                    $oObj_arr              = Shop::DB()->query("
+                        SELECT kRMA, kArtikel
                             FROM trmaartikel
-                            WHERE kRMA = " . intval($kRMA), 2
+                            WHERE kRMA = " . (int)$kRMA, 2
                     );
 
                     if (is_array($oObj_arr) && count($oObj_arr) > 0) {
@@ -125,10 +125,12 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
                 }
             }
 
-            unset($oObj->kRMA);
-            unset($oObj->oRMAArtikel_arr);
-            unset($oObj->oKunde);
-            unset($oObj->oRMAStatus);
+            unset(
+                $oObj->kRMA,
+                $oObj->oRMAArtikel_arr,
+                $oObj->oKunde,
+                $oObj->oRMAStatus
+            );
 
             $kPrim = Shop::DB()->insert('trma', $oObj);
 
@@ -338,7 +340,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         public static function getCustomerOrders()
         {
             $kKunde          = (int)$_SESSION['Kunde']->kKunde;
-            $oBestellung_arr = array();
+            $oBestellung_arr = [];
 
             if ($kKunde > 0) {
                 $cSQL = '';
@@ -383,36 +385,36 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
             if ($kBestellung > 0) {
                 $oBestellung = new Bestellung($kBestellung, true);
 
-                if (isset($oBestellung->kBestellung) && $oBestellung->kBestellung > 0) {
-                    if (isset($oBestellung->Positionen) && is_array($oBestellung->Positionen) && count($oBestellung->Positionen) > 0) {
-                        $kArtikel_arr = RMAArtikel::getProductsByOrder($kBestellung);
-                        foreach ($oBestellung->Positionen as $i => $oPosition) {
-                            $cAnzahl                              = (string) $oPosition->nAnzahl;
-                            $oBestellung->Positionen[$i]->cAnzahl = Trennzeichen::getUnit(JTLSEPARATER_AMOUNT, $_SESSION['kSprache'], $oPosition->nAnzahl);
+                if (isset($oBestellung->kBestellung, $oBestellung->Positionen) &&
+                    $oBestellung->kBestellung > 0 &&
+                    is_array($oBestellung->Positionen) &&
+                    count($oBestellung->Positionen) > 0
+                ) {
+                    $kArtikel_arr = RMAArtikel::getProductsByOrder($kBestellung);
+                    foreach ($oBestellung->Positionen as $i => $oPosition) {
+                        $oBestellung->Positionen[$i]->cAnzahl = Trennzeichen::getUnit(JTLSEPARATER_AMOUNT, $_SESSION['kSprache'], $oPosition->nAnzahl);
+                        $oBestellung->Positionen[$i]->bRMA    = false;
 
-                            $oBestellung->Positionen[$i]->bRMA = false;
+                        if ($oPosition->nPosTyp != C_WARENKORBPOS_TYP_ARTIKEL || !isset($oPosition->Artikel->kArtikel) || !$oPosition->Artikel->kArtikel) {
+                            unset($oBestellung->Positionen[$i]);
+                        } elseif (count($kArtikel_arr) > 0) {
+                            // Pruefe ob Artikel bereits vollstaendig zurueckgeschickt wurde
+                            if (in_array($oPosition->kArtikel, $kArtikel_arr)) {
+                                $fRMAArtikelQuantity = RMAArtikel::getRMAQuantity($kBestellung, $oPosition->kArtikel);
+                                if ($fRMAArtikelQuantity && $fRMAArtikelQuantity > 0) {
+                                    $fAnzahlBestellung = Bestellung::getProductAmount($kBestellung, $oPosition->kArtikel);
 
-                            if ($oPosition->nPosTyp != C_WARENKORBPOS_TYP_ARTIKEL || !isset($oPosition->Artikel->kArtikel) || !$oPosition->Artikel->kArtikel) {
-                                unset($oBestellung->Positionen[$i]);
-                            } elseif (count($kArtikel_arr) > 0) {
-                                // Pruefe ob Artikel bereits vollstaendig zurueckgeschickt wurde
-                                if (in_array($oPosition->kArtikel, $kArtikel_arr)) {
-                                    $fRMAArtikelQuantity = RMAArtikel::getRMAQuantity($kBestellung, $oPosition->kArtikel);
-                                    if ($fRMAArtikelQuantity && $fRMAArtikelQuantity > 0) {
-                                        $fAnzahlBestellung = Bestellung::getProductAmount($kBestellung, $oPosition->kArtikel);
-
-                                        if ($fRMAArtikelQuantity >= $fAnzahlBestellung) {
-                                            $oBestellung->Positionen[$i]->bRMA = true;
-                                        }
-
-                                        $oBestellung->Positionen[$i]->cRMAArtikelQuantity = Trennzeichen::getUnit(JTLSEPARATER_AMOUNT, $_SESSION['kSprache'], $fRMAArtikelQuantity);
+                                    if ($fRMAArtikelQuantity >= $fAnzahlBestellung) {
+                                        $oBestellung->Positionen[$i]->bRMA = true;
                                     }
+
+                                    $oBestellung->Positionen[$i]->cRMAArtikelQuantity = Trennzeichen::getUnit(JTLSEPARATER_AMOUNT, $_SESSION['kSprache'], $fRMAArtikelQuantity);
                                 }
                             }
                         }
-
-                        $oBestellung->Positionen = array_merge($oBestellung->Positionen);
                     }
+
+                    $oBestellung->Positionen = array_merge($oBestellung->Positionen);
                 }
             }
 
@@ -514,22 +516,10 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         public static function genRMANumber($kKunde = 0, $kBestellung = 0)
         {
-            $oEinstellung_arr = Shop::getSettings(array(CONF_RMA));
+            $oEinstellung_arr = Shop::getSettings([CONF_RMA]);
             $cRMANumber       = '';
 
             if (isset($oEinstellung_arr['rma']['rma_number_gen']) && strlen($oEinstellung_arr['rma']['rma_number_gen']) > 0) {
-                // Erhöhungswert
-                $nIncrNumber = 1;
-                if (isset($oEinstellung_arr['rma']['rma_number_incr']) && intval($oEinstellung_arr['rma']['rma_number_incr']) > 0) {
-                    $nIncrNumber = intval($oEinstellung_arr['rma']['rma_number_incr']);
-                }
-
-                // Startwert
-                $nStartValue = 1;
-                if (isset($oEinstellung_arr['rma']['rma_number_startvalue']) && intval($oEinstellung_arr['rma']['rma_number_startvalue']) >= 0) {
-                    $nStartValue = intval($oEinstellung_arr['rma']['rma_number_startvalue']);
-                }
-
                 $oNummer = new Nummern(JTL_GENNUMBER_RMANUMBER);
                 $nNummer = $oNummer->getNummer();
                 switch ($oEinstellung_arr['rma']['rma_number_gen']) {
@@ -551,7 +541,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
 
                     // Bestellnummer - Fortlaufende Nummer
                     case 'B':
-                        if (intval($kBestellung) > 0) {
+                        if ((int)$kBestellung > 0) {
                             $cBestellNr = Bestellung::getOrderNumber($kBestellung);
                             if ($cBestellNr) {
                                 $cRMANumber = $cBestellNr . $nNummer;
@@ -594,22 +584,20 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         public static function checkPostVars($cPostVar_arr)
         {
-            $cRMAPostAssoc_arr = array();
-            if (is_array($cPostVar_arr) && count($cPostVar_arr) > 0) {
-                if (isset($cPostVar_arr['kArtikel_arr'])) {
-                    foreach ($cPostVar_arr['kArtikel_arr'] as $kArtikel) {
-                        // Grund
-                        if (isset($cPostVar_arr['cGrund_' . $kArtikel])) {
-                            $kRMAGrund                              = (int)$cPostVar_arr['cGrund_' . $kArtikel];
-                            $cRMAPostAssoc_arr['cGrund'][$kArtikel] = $cPostVar_arr['cGrund_' . $kArtikel];
-                            // Anzahl
-                            if (isset($cPostVar_arr['fAnzahl_' . $kArtikel . '_' . $kRMAGrund])) {
-                                $cRMAPostAssoc_arr['fAnzahl'][$kArtikel][$kRMAGrund] = $cPostVar_arr['fAnzahl_' . $kArtikel . '_' . $kRMAGrund];
-                            }
-                            // Kommentar
-                            if (isset($cPostVar_arr['cKommentar_' . $kArtikel . '_' . $kRMAGrund])) {
-                                $cRMAPostAssoc_arr['cKommentar'][$kArtikel][$kRMAGrund] = $cPostVar_arr['cKommentar_' . $kArtikel . '_' . $kRMAGrund];
-                            }
+            $cRMAPostAssoc_arr = [];
+            if (is_array($cPostVar_arr) && count($cPostVar_arr) > 0 && isset($cPostVar_arr['kArtikel_arr'])) {
+                foreach ($cPostVar_arr['kArtikel_arr'] as $kArtikel) {
+                    // Grund
+                    if (isset($cPostVar_arr['cGrund_' . $kArtikel])) {
+                        $kRMAGrund                              = (int)$cPostVar_arr['cGrund_' . $kArtikel];
+                        $cRMAPostAssoc_arr['cGrund'][$kArtikel] = $cPostVar_arr['cGrund_' . $kArtikel];
+                        // Anzahl
+                        if (isset($cPostVar_arr['fAnzahl_' . $kArtikel . '_' . $kRMAGrund])) {
+                            $cRMAPostAssoc_arr['fAnzahl'][$kArtikel][$kRMAGrund] = $cPostVar_arr['fAnzahl_' . $kArtikel . '_' . $kRMAGrund];
+                        }
+                        // Kommentar
+                        if (isset($cPostVar_arr['cKommentar_' . $kArtikel . '_' . $kRMAGrund])) {
+                            $cRMAPostAssoc_arr['cKommentar'][$kArtikel][$kRMAGrund] = $cPostVar_arr['cKommentar_' . $kArtikel . '_' . $kRMAGrund];
                         }
                     }
                 }
@@ -648,14 +636,14 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         public static function getFirstOrderTillNow()
         {
             $cFirstOrder = self::getFirstOrder();
-            $nYear_arr   = array();
+            $nYear_arr   = [];
 
             if ($cFirstOrder !== false) {
-                $nFirstOrderYear = intval(substr($cFirstOrder, 0, strpos($cFirstOrder, '-')));
+                $nFirstOrderYear = (int)substr($cFirstOrder, 0, strpos($cFirstOrder, '-'));
 
                 if ($nFirstOrderYear > 0) {
                     $nYear_arr[] = $nFirstOrderYear;
-                    while ($nFirstOrderYear < intval(date('Y'))) {
+                    while ($nFirstOrderYear < (int)date('Y')) {
                         $nFirstOrderYear++;
                         $nYear_arr[] = $nFirstOrderYear;
                     }
@@ -677,16 +665,17 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
                 $_SESSION['RMA_TimePeriod'] = new stdClass();
                 $nYear                      = 1;
             }
+            $nYear = (int)$nYear;
             // Special cases
-            if ($nYear == 1 || $nYear == 2) {
-                $nYearNow  = intval(date('Y'));
-                $nMonthNow = intval(date('m'));
-                $nDayNow   = intval(date('d'));
+            if ($nYear === 1 || $nYear === 2) {
+                $nYearNow  = (int)date('Y');
+                $nMonthNow = (int)date('m');
+                $nDayNow   = (int)date('d');
                 // Last 2 months
-                if ($nYear == 1) {
+                if ($nYear === 1) {
                     $nMonthNow -= 2;
-                } // Last 6 months
-                elseif ($nYear == 2) {
+                } elseif ($nYear === 2) {
+                    // Last 6 months
                     $nMonthNow -= 6;
                 }
                 if ($nMonthNow <= 0) {
@@ -714,7 +703,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         public static function getAllCustomerRMA($kKunde)
         {
             $kKunde   = (int)$kKunde;
-            $oRMA_arr = array();
+            $oRMA_arr = [];
             if ($kKunde > 0) {
                 $oObj_arr = Shop::DB()->query(
                     "SELECT kRMA
@@ -743,7 +732,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         public static function getAllRMA($bCustomer = false, $bRMAArtikel = true, $kSprache = 0)
         {
-            $oRMA_arr = array();
+            $oRMA_arr = [];
             $oObj_arr = Shop::DB()->query(
                 "SELECT kRMA
                     FROM trma
@@ -783,7 +772,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         public static function checkPlausi($kBestellung, $kArtikel_arr, $cRMAPostAssoc_arr)
         {
-            $cPlausi_arr = array();
+            $cPlausi_arr = [];
 
             if (is_array($kArtikel_arr) && count($kArtikel_arr) > 0) {
                 $kBestellung = (int)$kBestellung;
@@ -802,7 +791,10 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
 
                             // Check Grund
                             $kRMAGrund = 0;
-                            if (!isset($cRMAPostAssoc_arr['cGrund'][$kArtikel]) || strlen($cRMAPostAssoc_arr['cGrund'][$kArtikel]) === 0 || $cRMAPostAssoc_arr['cGrund'][$kArtikel] == '-1') {
+                            if (!isset($cRMAPostAssoc_arr['cGrund'][$kArtikel]) ||
+                                strlen($cRMAPostAssoc_arr['cGrund'][$kArtikel]) === 0 ||
+                                $cRMAPostAssoc_arr['cGrund'][$kArtikel] == '-1'
+                            ) {
                                 $cPlausi_arr[$kArtikel]['cGrund'] = 1;
                             } else {
                                 $kRMAGrund = (int)$cRMAPostAssoc_arr['cGrund'][$kArtikel];
@@ -810,7 +802,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
 
                             // Check Anzahl
                             if ($kRMAGrund > 0) {
-                                if (!isset($cRMAPostAssoc_arr['fAnzahl'][$kArtikel][$kRMAGrund]) || strlen($cRMAPostAssoc_arr['fAnzahl'][$kArtikel][$kRMAGrund]) == 0) {
+                                if (!isset($cRMAPostAssoc_arr['fAnzahl'][$kArtikel][$kRMAGrund]) ||
+                                    strlen($cRMAPostAssoc_arr['fAnzahl'][$kArtikel][$kRMAGrund]) === 0
+                                ) {
                                     $cPlausi_arr[$kArtikel]['fAnzahl'][$kRMAGrund] = 1;
                                 } elseif ($cRMAPostAssoc_arr['fAnzahl'][$kArtikel][$kRMAGrund] < 0) {
                                     $cPlausi_arr[$kArtikel]['fAnzahl'][$kRMAGrund] = 2;
@@ -841,7 +835,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         public static function getArtikelAssocArray($kArtikel_arr)
         {
-            $kArtikelAssoc_arr = array();
+            $kArtikelAssoc_arr = [];
 
             if (is_array($kArtikel_arr) && count($kArtikel_arr) > 0) {
                 foreach ($kArtikel_arr as $kArtikel) {
@@ -859,7 +853,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          * @param array $cEinstellung_arr
          * @return bool
          */
-        public static function sendSuccessEmail($kRMA, $kKunde, $kSprache = 0, $cEinstellung_arr = array())
+        public static function sendSuccessEmail($kRMA, $kKunde, $kSprache = 0, $cEinstellung_arr = [])
         {
             $kRMA     = (int) $kRMA;
             $kKunde   = (int) $kKunde;
@@ -877,8 +871,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
                 $oRMA = new self($kRMA, true, true, $kSprache);
 
                 if (isset($oRMA) && $oRMA->getRMA() > 0) {
-                    if (!is_array($cEinstellung_arr) || count($cEinstellung_arr) == 0) {
-                        $cEinstellung_arr = Shop::getSettings(array(CONF_RMA));
+                    if (!is_array($cEinstellung_arr) || count($cEinstellung_arr) === 0) {
+                        $cEinstellung_arr = Shop::getSettings([CONF_RMA]);
                     }
                     if (!isset($oObj)) {
                         $oObj = new stdClass();

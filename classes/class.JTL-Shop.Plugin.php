@@ -282,9 +282,9 @@ class Plugin
     public $nCalledHook;
 
     /**
-     * @var null|array
+     * @var array
      */
-    private static $hookList = null;
+    private static $hookList;
 
     /**
      * @var array
@@ -589,7 +589,7 @@ class Plugin
         if (strlen($cDateTime) > 0) {
             $date = new DateTime($cDateTime);
 
-            return ($bDateOnly) ? $date->format('d.m.Y') : $date->format('d.m.Y H:i');
+            return $bDateOnly ? $date->format('d.m.Y') : $date->format('d.m.Y H:i');
         }
 
         return '';

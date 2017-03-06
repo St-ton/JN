@@ -18,22 +18,22 @@ function resetteUpdateDB()
             $cColumns_arr[] = $oColumns->Field;
         }
         if (count($cColumns_arr) > 0) {
-            if (!in_array('nZeileVon', $cColumns_arr)) {
+            if (!in_array('nZeileVon', $cColumns_arr, true)) {
                 Shop::DB()->query("ALTER TABLE tversion ADD nZeileVon INT UNSIGNED NOT NULL AFTER nVersion", 4);
             }
-            if (!in_array('nZeileBis', $cColumns_arr)) {
+            if (!in_array('nZeileBis', $cColumns_arr, true)) {
                 Shop::DB()->query("ALTER TABLE tversion ADD nZeileBis INT UNSIGNED NOT NULL AFTER nZeileVon", 4);
             }
-            if (!in_array('nInArbeit', $cColumns_arr)) {
+            if (!in_array('nInArbeit', $cColumns_arr, true)) {
                 Shop::DB()->query("ALTER TABLE tversion ADD nInArbeit TINYINT NOT NULL AFTER nZeileBis", 4);
             }
-            if (!in_array('nFehler', $cColumns_arr)) {
+            if (!in_array('nFehler', $cColumns_arr, true)) {
                 Shop::DB()->query("ALTER TABLE tversion ADD nFehler TINYINT UNSIGNED NOT NULL AFTER nInArbeit", 4);
             }
-            if (!in_array('nTyp', $cColumns_arr)) {
+            if (!in_array('nTyp', $cColumns_arr, true)) {
                 Shop::DB()->query("ALTER TABLE tversion ADD nTyp TINYINT UNSIGNED NOT NULL AFTER nFehler", 4);
             }
-            if (!in_array('cFehlerSQL', $cColumns_arr)) {
+            if (!in_array('cFehlerSQL', $cColumns_arr, true)) {
                 Shop::DB()->query("ALTER TABLE tversion ADD cFehlerSQL VARCHAR(255) NOT NULL AFTER nTyp", 4);
             }
         }
@@ -62,13 +62,9 @@ function resetteUpdateDB()
  */
 function loescheTPLCacheUpdater()
 {
-    if (loescheVerzeichnisUpdater(PFAD_ROOT . PFAD_COMPILEDIR)) {
-        if (loescheVerzeichnisUpdater(PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR)) {
-            return true;
-        }
-    }
-
-    return false;
+    return (loescheVerzeichnisUpdater(PFAD_ROOT . PFAD_COMPILEDIR) &&
+        loescheVerzeichnisUpdater(PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR)
+    );
 }
 
 /**
@@ -84,15 +80,15 @@ function loescheVerzeichnisUpdater($cPfad)
     }
 
     if ($bLinux) {
-        if (strpos(substr($cPfad, (strlen($cPfad) - 1), 1), '/') === false) {
+        if (strpos(substr($cPfad, strlen($cPfad) - 1, 1), '/') === false) {
             $cPfad .= '/';
         }
-    } elseif (strpos(substr($cPfad, (strlen($cPfad) - 1), 1), '\\') === false) {
+    } elseif (strpos(substr($cPfad, strlen($cPfad) - 1, 1), '\\') === false) {
         $cPfad .= '\\';
     }
 
     if (is_dir($cPfad) && is_writable($cPfad)) {
-        if ($dirhandle = opendir($cPfad)) {
+        if (($dirhandle = opendir($cPfad)) !== false) {
             while (($file = readdir($dirhandle)) !== false) {
                 if ($file !== '.' && $file !== '..' && $file !== '.svn'  && $file !== '.git'  && $file !== '.gitkeep') {
                     if (is_dir($cPfad . $file) && is_writable($cPfad . $file)) {
@@ -153,7 +149,7 @@ function gibShopVersion()
  */
 function gibZielVersion($nVersion)
 {
-    $nVersion = intval($nVersion);
+    $nVersion = (int)$nVersion;
 
     $nMajor_arr = [
         219 => 300,
@@ -173,8 +169,8 @@ function gibZielVersion($nVersion)
  */
 function mappeFehlerCode($nFehlerCode)
 {
-    if (intval($nFehlerCode) > 0) {
-        switch (intval($nFehlerCode)) {
+    if ((int)$nFehlerCode > 0) {
+        switch ((int)$nFehlerCode) {
             case 1:
                 return 'Fehler: Ein SQL-Befehl im Update konnte nicht ausgef&uuml;hrt werden. ' .
                     'Bitte versuchen Sie es erneut.';
@@ -202,7 +198,7 @@ function updateFertig($nVersion)
 {
     Shop::DB()->query(
         "UPDATE tversion
-            SET nVersion = " . intval($nVersion) . ",
+            SET nVersion = " . (int)$nVersion . ",
             nZeileVon = 1,
             nZeileBis = 0,
             nFehler = 0,
@@ -225,10 +221,10 @@ function naechsterUpdateStep($nTyp, $nZeileBis = 1)
     Shop::DB()->query(
         "UPDATE tversion
             SET nZeileVon = 1,
-            nZeileBis = " . intval($nZeileBis) . ",
+            nZeileBis = " . (int)$nZeileBis . ",
             nFehler = 0,
             nInArbeit = 0,
-            nTyp = " . intval($nTyp) . ",
+            nTyp = " . (int)$nTyp . ",
             cFehlerSQL = ''", 4
     );
 

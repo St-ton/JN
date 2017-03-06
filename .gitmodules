@@ -31,3 +31,6 @@
 [submodule "includes/plugins/jtl_themebar"]
 	path = includes/plugins/jtl_themebar
 	url = git@gitlab.jtl-software.de:jtlshop/jtl_themebar.git
+[submodule "includes/plugins/jtl_paypal"]
+	path = includes/plugins/jtl_paypal
+	url = git@gitlab.jtl-software.de:jtlshop/paypal.git

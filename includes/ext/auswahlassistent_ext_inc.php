@@ -6,6 +6,7 @@
 $oNice = Nice::getInstance();
 if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
     /**
+     * @deprecated since 4.05
      * @param string    $cKey
      * @param int       $kKey
      * @param int       $kSprache
@@ -111,6 +112,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
     }
 
     /**
+     * @deprecated since 4.05
      * @param int      $kKategorie
      * @param stdClass $NaviFilter
      * @param stdClass $FilterSQL
@@ -157,6 +159,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
     }
 
     /**
+     * @deprecated since 4.05
      * @param array $oMerkmalFilter_arr
      * @param bool  $bMerkmalFilterVorhanden
      */
@@ -205,6 +208,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
     }
 
     /**
+     * @deprecated since 4.05
      * @param int    $kMerkmalWert
      * @param int    $nFrage
      * @param int    $kKategorie
@@ -251,6 +255,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
     }
 
     /**
+     * @deprecated since 4.05
      * @param int $kMerkmalWert
      * @param int $kAuswahlAssistentFrage
      * @param int $nFrage
@@ -281,6 +286,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
     }
 
     /**
+     * @deprecated since 4.05
      * @param int $nFrage
      * @param int $kKategorie
      */
@@ -313,6 +319,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
     }
 
     /**
+     * @deprecated since 4.05
      * @param string $aaParams
      * @return array
      */

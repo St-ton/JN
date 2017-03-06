@@ -5,9 +5,8 @@
  */
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'sitemapexport.php';
-if (!ini_get('safe_mode')) {
-    @ini_set('max_execution_time', 0);
-}
+
+@ini_set('max_execution_time', 0);
 
 $oAccount->permission('EXPORT_SITEMAP_VIEW', true, true);
 

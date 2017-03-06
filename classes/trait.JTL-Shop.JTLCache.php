@@ -178,7 +178,7 @@ trait JTLCacheTrait
         //load journal from extra cache
         $this->getJournal();
         if (is_string($tags)) {
-            return (isset($this->journal[$tags]))
+            return isset($this->journal[$tags])
                 ? $this->journal[$tags]
                 : [];
         } elseif (is_array($tags)) {

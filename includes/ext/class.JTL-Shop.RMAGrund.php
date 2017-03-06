@@ -334,7 +334,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         private function checkReason()
         {
-            $cPlausi_arr = array();
+            $cPlausi_arr = [];
             // Sprache
             if ($this->kSprache == 0) {
                 $cPlausi_arr['kSprache'] = 1;

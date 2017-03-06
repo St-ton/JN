@@ -375,11 +375,10 @@ if ($cParameter_arr['kHersteller'] > 0 ||
         $oSuchergebnisse->Bewertung         = gibBewertungSterneFilterOptionen($FilterSQL, $NaviFilter);
         $oSuchergebnisse->Tags              = gibTagFilterOptionen($FilterSQL, $NaviFilter);
         $oSuchergebnisse->TagsJSON          = gibTagFilterJSONOptionen($FilterSQL, $NaviFilter);
-        $oSuchergebnisse->MerkmalFilter     = gibMerkmalFilterOptionen(
-            $FilterSQL,
+        $oSuchergebnisse->MerkmalFilter     = gibMerkmalFilterOptionen($FilterSQL,
             $NaviFilter,
             $AktuelleKategorie,
-            function_exists('starteAuswahlAssistent')
+            class_exists('AuswahlAssistent')
         );
         $oSuchergebnisse->Preisspanne       = gibPreisspannenFilterOptionen($FilterSQL, $NaviFilter, $oSuchergebnisse);
         $oSuchergebnisse->Kategorieauswahl  = gibKategorieFilterOptionen($FilterSQL, $NaviFilter);
@@ -587,13 +586,17 @@ if ($cParameter_arr['kHersteller'] > 0 ||
         $cCanonicalURL = gibNaviURL($NaviFilter, true, null, 0, true) . $cSeite;
     }
     // Auswahlassistent
-    if (function_exists('starteAuswahlAssistent')) {
+    if (TEMPLATE_COMPATIBILITY === true && function_exists('starteAuswahlAssistent')) {
         starteAuswahlAssistent(
             AUSWAHLASSISTENT_ORT_KATEGORIE,
             $cParameter_arr['kKategorie'],
             Shop::getLanguage(),
             $smarty,
             $Einstellungen['auswahlassistent']
+        );
+    } elseif (class_exists('AuswahlAssistent')) {
+        AuswahlAssistent::startIfRequired(
+            AUSWAHLASSISTENT_ORT_KATEGORIE, $cParameter_arr['kKategorie'], Shop::getLanguage(), $smarty
         );
     }
     // Work around fürs Template

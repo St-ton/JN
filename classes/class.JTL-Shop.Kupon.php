@@ -327,7 +327,7 @@ class Kupon
      */
     public function setWert($fWert)
     {
-        $this->fWert = floatval($fWert);
+        $this->fWert = (float)$fWert;
     }
 
     /**

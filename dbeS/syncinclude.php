@@ -256,11 +256,9 @@ function getObjectArray($elements, $child)
             if (is_array($elements[$child . ' attr'])) {
                 $keys = array_keys($elements[$child . ' attr']);
                 foreach ($keys as $key) {
-                    if (!$elements[$child . ' attr'][$key]) {
-                        if (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-                            Jtllog::writeLog($child . '->' . $key . ' fehlt! XML:' .
-                                $elements[$child], JTLLOG_LEVEL_ERROR, false, 'syncinclude');
-                        }
+                    if (!$elements[$child . ' attr'][$key] && Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
+                        Jtllog::writeLog($child . '->' . $key . ' fehlt! XML:' .
+                            $elements[$child], JTLLOG_LEVEL_ERROR, false, 'syncinclude');
                     }
                     $obj->$key = $elements[$child . ' attr'][$key];
                 }
@@ -279,11 +277,9 @@ function getObjectArray($elements, $child)
                 if (is_array($elements[$child][$i . ' attr'])) {
                     $keys = array_keys($elements[$child][$i . ' attr']);
                     foreach ($keys as $key) {
-                        if (!$elements[$child][$i . ' attr'][$key]) {
-                            if (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-                                Jtllog::writeLog($child . '[' . $i . ']->' . $key .
-                                    ' fehlt! XML:' . $elements[$child], JTLLOG_LEVEL_ERROR, false, 'syncinclude');
-                            }
+                        if (!$elements[$child][$i . ' attr'][$key] && Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
+                            Jtllog::writeLog($child . '[' . $i . ']->' . $key .
+                                ' fehlt! XML:' . $elements[$child], JTLLOG_LEVEL_ERROR, false, 'syncinclude');
                         }
 
                         $obj->$key = $elements[$child][$i . ' attr'][$key];
@@ -363,8 +359,8 @@ function zipRedirect($zip, $xml_obj)
 }
 
 /**
- * @param object $obj
- * @param array  $xml
+ * @param stdClass $obj
+ * @param array    $xml
  */
 function mapAttributes(&$obj, $xml)
 {
@@ -394,9 +390,9 @@ function is_assoc(array $array)
 }
 
 /**
- * @param object $obj
- * @param array $xml
- * @param array $map
+ * @param stdClass $obj
+ * @param array    $xml
+ * @param array    $map
  */
 function mappe(&$obj, $xml, $map)
 {
@@ -406,7 +402,7 @@ function mappe(&$obj, $xml, $map)
 
     if (!is_assoc($map)) {
         foreach ($map as $key) {
-            $obj->$key = (isset($xml[$key])) ? $xml[$key] : null;
+            $obj->$key = isset($xml[$key]) ? $xml[$key] : null;
         }
     } else {
         foreach ($map as $key => $value) {

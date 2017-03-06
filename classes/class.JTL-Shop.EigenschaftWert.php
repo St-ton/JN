@@ -50,6 +50,11 @@ class EigenschaftWert
     public $fAufpreis;
 
     /**
+     * @var int
+     */
+    public $nSort;
+
+    /**
      * Konstruktor
      *
      * @param int $kEigenschaftWert - Falls angegeben, wird der EigenschaftWert mit angegebenem kEigenschaftWert aus der DB geholt
@@ -78,6 +83,9 @@ class EigenschaftWert
                 foreach (get_object_vars($obj) as $k => $v) {
                     $this->$k = $v;
                 }
+                $this->kEigenschaft     = (int)$this->kEigenschaft;
+                $this->kEigenschaftWert = (int)$this->kEigenschaftWert;
+                $this->nSort            = (int)$this->nSort;
                 if ($this->fPackeinheit == 0) {
                     $this->fPackeinheit = 1;
                 }
@@ -98,7 +106,7 @@ class EigenschaftWert
         $obj = kopiereMembers($this);
         unset($obj->fAufpreis);
 
-        return (Shop::DB()->insert('teigenschaftwert', $obj));
+        return Shop::DB()->insert('teigenschaftwert', $obj);
     }
 
     /**

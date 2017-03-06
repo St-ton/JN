@@ -30,7 +30,7 @@ class SessionHandler
     public function get($key, $default = null)
     {
         $array = $this->sessionData;
-        if (is_null($key)) {
+        if ($key === null) {
             return $array;
         }
         if (isset($array[$key])) {

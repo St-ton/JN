@@ -163,9 +163,9 @@ class Kundendatenhistory extends MainModel
     }
 
     /**
-     * @param int  $kKey
-     * @param null $oObj
-     * @param null $xOption
+     * @param int         $kKey
+     * @param null|object $oObj
+     * @param null        $xOption
      * @return $this
      */
     public function load($kKey, $oObj = null, $xOption = null)

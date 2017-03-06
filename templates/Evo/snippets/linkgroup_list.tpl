@@ -3,7 +3,7 @@
     {get_navigation linkgroupIdentifier=$linkgroupIdentifier assign='links'}
     {assign var=checkLinkParents value=false}
     {if !empty($links)}
-        {if isset($Link) && (int)$Link->kLink > 0}
+        {if isset($Link->kLink) && (int)$Link->kLink > 0}
             {assign var='activeId' value=$Link->kLink}
         {elseif Shop::$kLink > 0}
             {assign var='activeId' value=Shop::$kLink}

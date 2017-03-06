@@ -293,7 +293,7 @@ class Artikel
     /**
      * @var array
      */
-    public $Bilder;
+    public $Bilder = [];
 
     /**
      * @var array
@@ -1018,12 +1018,14 @@ class Artikel
             $categoryFilter = isset($_SESSION['LetzteKategorie'])
                 ? " AND tkategorieartikel.kKategorie = " . (int)$_SESSION['LetzteKategorie']
                 : '';
-            $oKategorieartikel = Shop::DB()->query(
-                "SELECT tkategorieartikel.kKategorie
+            $oKategorieartikel = Shop::DB()->query("
+                SELECT tkategorieartikel.kKategorie
                     FROM tkategorieartikel
-                    LEFT JOIN tkategoriesichtbarkeit ON tkategoriesichtbarkeit.kKategorie = tkategorieartikel.kKategorie
+                    LEFT JOIN tkategoriesichtbarkeit 
+                        ON tkategoriesichtbarkeit.kKategorie = tkategorieartikel.kKategorie
                         AND tkategoriesichtbarkeit.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
-                    JOIN tkategorie ON tkategorie.kKategorie = tkategorieartikel.kKategorie
+                    JOIN tkategorie 
+                        ON tkategorie.kKategorie = tkategorieartikel.kKategorie
                     WHERE tkategoriesichtbarkeit.kKategorie IS NULL
                         AND kArtikel = " . $kArtikel . $categoryFilter . "
                     ORDER BY tkategorie.nSort
@@ -1215,20 +1217,22 @@ class Artikel
             // Falls ja, lade die Bilder des anderen Artikels
             $bilder_arr = [];
             if (isset($this->FunktionsAttribute[ART_ATTRIBUT_BILDLINK]) && strlen($this->FunktionsAttribute[ART_ATTRIBUT_BILDLINK]) > 0) {
-                $cArtNr     = StringHandler::filterXSS($this->FunktionsAttribute[ART_ATTRIBUT_BILDLINK]);
-                $bilder_arr = Shop::DB()->query(
-                    "SELECT tartikelpict.cPfad, tartikelpict.nNr
+                $bilder_arr = Shop::DB()->executeQueryPrepared("
+                    SELECT tartikelpict.cPfad, tartikelpict.nNr
                         FROM tartikelpict
-                        JOIN tartikel ON tartikel.cArtNr = '" . $cArtNr . "'
+                        JOIN tartikel 
+                            ON tartikel.cArtNr = :cartnr
                         WHERE tartikelpict.kArtikel = tartikel.kArtikel
                         GROUP BY tartikelpict.cPfad
-                        ORDER BY tartikelpict.nNr", 2
+                        ORDER BY tartikelpict.nNr",
+                    ['cartnr' => $this->FunktionsAttribute[ART_ATTRIBUT_BILDLINK]],
+                    2
                 );
             }
 
             if (count($bilder_arr) === 0) {
-                $bilder_arr = Shop::DB()->query(
-                    "SELECT cPfad, nNr 
+                $bilder_arr = Shop::DB()->query("
+                    SELECT cPfad, nNr 
                         FROM tartikelpict 
                         WHERE kArtikel = " . (int)$this->kArtikel . " 
                         GROUP BY cPfad 
@@ -1493,7 +1497,7 @@ class Artikel
                           AND tstueckliste.kStueckliste = " . (int)$this->kStueckliste . "
                       LEFT JOIN tartikelsichtbarkeit 
                           ON tstueckliste.kArtikel = tartikelsichtbarkeit.kArtikel 
-                          AND tartikelsichtbarkeit.kKundengruppe = {$kKundengruppe}";
+                          AND tartikelsichtbarkeit.kKundengruppe = " . $kKundengruppe;
             if (!$bGetInvisibleParts) {
                 $query .= " WHERE tartikelsichtbarkeit.kArtikel IS NULL";
             }
@@ -1604,16 +1608,13 @@ class Artikel
         $kSprache               = (int)$kSprache;
         $this->oMedienDatei_arr = [];
         // Funktionsattribut gesetzt? Tab oder Beschreibung
-        if (isset($this->FunktionsAttribute[FKT_ATTRIBUT_MEDIENDATEIEN]) &&
-            $this->FunktionsAttribute[FKT_ATTRIBUT_MEDIENDATEIEN] === 'tab'
-        ) {
-            $this->cMedienDateiAnzeige = 'tab';
-        } elseif (isset($this->FunktionsAttribute[FKT_ATTRIBUT_MEDIENDATEIEN]) &&
-            $this->FunktionsAttribute[FKT_ATTRIBUT_MEDIENDATEIEN] === 'beschreibung'
-        ) {
-            $this->cMedienDateiAnzeige = 'beschreibung';
+        if (isset($this->FunktionsAttribute[FKT_ATTRIBUT_MEDIENDATEIEN])) {
+            if ($this->FunktionsAttribute[FKT_ATTRIBUT_MEDIENDATEIEN] === 'tab') {
+                $this->cMedienDateiAnzeige = 'tab';
+            } elseif ($this->FunktionsAttribute[FKT_ATTRIBUT_MEDIENDATEIEN] === 'beschreibung') {
+                $this->cMedienDateiAnzeige = 'beschreibung';
+            }
         }
-
         if ($this->kArtikel > 0) {
             $cSQL = "SELECT tmediendatei.kMedienDatei, tmediendatei.cPfad, tmediendatei.cURL, tmediendatei.cTyp, 
                             tmediendatei.nSort, tmediendateisprache.cName, tmediendateisprache.cBeschreibung, 
@@ -1872,7 +1873,7 @@ class Artikel
             $kKundengruppe = $_SESSION['Kundengruppe']->kKundengruppe;
         }
         if (!$kSprache) {
-            $kSprache = Shop::$kSprache;
+            $kSprache = Shop::getLanguage();
         }
         $this->nVariationsAufpreisVorhanden = 0;
         $kSprache                           = (int)$kSprache;
@@ -1942,8 +1943,8 @@ class Artikel
                         ORDER BY teigenschaft.nSort, teigenschaft.cName, teigenschaftwert.nSort, teigenschaftwert.cName",
                     2
                 );
-                $oVariationVaterTMP_arr = Shop::DB()->query(
-                    "SELECT teigenschaft.kEigenschaft, teigenschaft.kArtikel, teigenschaft.cName, teigenschaft.cWaehlbar,
+                $oVariationVaterTMP_arr = Shop::DB()->query("
+                    SELECT teigenschaft.kEigenschaft, teigenschaft.kArtikel, teigenschaft.cName, teigenschaft.cWaehlbar,
                         teigenschaft.cTyp, teigenschaft.nSort, " . $oSQLEigenschaft->cSELECT . "
                         teigenschaftwert.kEigenschaftWert, teigenschaftwert.cName AS cName_teigenschaftwert, " .
                         $oSQLEigenschaftWert->cSELECT . " teigenschaftwert.fAufpreisNetto,
@@ -1979,8 +1980,8 @@ class Artikel
                     $oVariationTMP_arr = array_merge($oVariationTMP_arr, $oVariationVaterTMP_arr);
                 }
             } elseif ($this->kVaterArtikel > 0) { //child?
-                $oVariationTMP_arr = Shop::DB()->query(
-                    "SELECT tartikel.kArtikel AS tartikel_kArtikel, tartikel.fLagerbestand AS tartikel_fLagerbestand, 
+                $oVariationTMP_arr = Shop::DB()->query("
+                    SELECT tartikel.kArtikel AS tartikel_kArtikel, tartikel.fLagerbestand AS tartikel_fLagerbestand, 
                         tartikel.cLagerBeachten, tartikel.cLagerKleinerNull, tartikel.cLagerVariation, 
                         teigenschaftkombiwert.kEigenschaft, tartikel.fVPEWert, teigenschaftkombiwert.kEigenschaftKombi, 
                         teigenschaft.kArtikel, teigenschaftkombiwert.kEigenschaftWert, teigenschaft.cName,
@@ -2019,8 +2020,8 @@ class Artikel
                     2
                 );
 
-                $oVariationVaterTMP_arr = Shop::DB()->query(
-                    "SELECT teigenschaft.kEigenschaft, teigenschaft.kArtikel, teigenschaft.cName, teigenschaft.cWaehlbar,
+                $oVariationVaterTMP_arr = Shop::DB()->query("
+                    SELECT teigenschaft.kEigenschaft, teigenschaft.kArtikel, teigenschaft.cName, teigenschaft.cWaehlbar,
                         teigenschaft.cTyp, teigenschaft.nSort, " . $oSQLEigenschaft->cSELECT . "
                         teigenschaftwert.kEigenschaftWert, teigenschaftwert.cName AS cName_teigenschaftwert, " .
                         $oSQLEigenschaftWert->cSELECT . " teigenschaftwert.fAufpreisNetto, teigenschaftwert.fGewichtDiff,
@@ -2058,8 +2059,8 @@ class Artikel
                     $oVariationTMP_arr = array_merge($oVariationTMP_arr, $oVariationVaterTMP_arr);
                 }
                 // VariationKombi gesetzte Eigenschaften und EigenschaftWerte vom Kind
-                $this->oVariationKombi_arr = Shop::DB()->query(
-                    "SELECT teigenschaftkombiwert.*
+                $this->oVariationKombi_arr = Shop::DB()->query("
+                    SELECT teigenschaftkombiwert.*
                         FROM teigenschaftkombiwert
                         JOIN tartikel 
                           ON tartikel.kArtikel = " . (int)$this->kArtikel . "
@@ -2081,8 +2082,8 @@ class Artikel
                     }
                 }
             } else {
-                $oVariationTMP_arr = Shop::DB()->query(
-                    "SELECT teigenschaft.kEigenschaft, teigenschaft.kArtikel, teigenschaft.cName, teigenschaft.cWaehlbar,
+                $oVariationTMP_arr = Shop::DB()->query("
+                    SELECT teigenschaft.kEigenschaft, teigenschaft.kArtikel, teigenschaft.cName, teigenschaft.cWaehlbar,
                         teigenschaft.cTyp, teigenschaft.nSort, " . $oSQLEigenschaft->cSELECT . "
                         teigenschaftwert.kEigenschaftWert, teigenschaftwert.cName AS cName_teigenschaftwert, " .
                         $oSQLEigenschaftWert->cSELECT . "
@@ -2410,8 +2411,8 @@ class Artikel
                     // Gibt es nur 1 Variation?
                     if (count($this->VariationenOhneFreifeld) === 1) {
                         // Baue Warenkorbmatrix Bildvorschau
-                        $oVariBoxMatrixBild_arr = Shop::DB()->query(
-                            "SELECT tartikelpict.cPfad, tartikel.cName, tartikel.cSeo, tartikel.cArtNr, 
+                        $oVariBoxMatrixBild_arr = Shop::DB()->query("
+                            SELECT tartikelpict.cPfad, tartikel.cName, tartikel.cSeo, tartikel.cArtNr, 
                                 tartikel.cBarcode, tartikel.kArtikel, teigenschaftkombiwert.kEigenschaft, 
                                 teigenschaftkombiwert.kEigenschaftWert
                                 FROM teigenschaftkombiwert
@@ -2452,8 +2453,8 @@ class Artikel
                         // Baue Warenkorbmatrix Bildvorschau
                         $this->oVariBoxMatrixBild_arr = [];
                         $oVariBoxMatrixBildAssoc_arr  = [];
-                        $oVariBoxMatrixBildTMP_arr    = Shop::DB()->query(
-                            "SELECT tartikelpict.cPfad, teigenschaftkombiwert.kEigenschaft, 
+                        $oVariBoxMatrixBildTMP_arr    = Shop::DB()->query("
+                            SELECT tartikelpict.cPfad, teigenschaftkombiwert.kEigenschaft, 
                                     teigenschaftkombiwert.kEigenschaftWert
                                 FROM teigenschaftkombiwert
                                 JOIN tartikel 
@@ -2594,8 +2595,8 @@ class Artikel
                     $oVariBoxMatrixBild_arr = [];
                     if (count($this->VariationenOhneFreifeld) === 1) {
                         // Baue Warenkorbmatrix Bildvorschau
-                        $oVariBoxMatrixBild_arr = Shop::DB()->query(
-                            "SELECT teigenschaftwertpict.cPfad, teigenschaft.kEigenschaft, teigenschaftwertpict.kEigenschaftWert
+                        $oVariBoxMatrixBild_arr = Shop::DB()->query("
+                            SELECT teigenschaftwertpict.cPfad, teigenschaft.kEigenschaft, teigenschaftwertpict.kEigenschaftWert
                                 FROM teigenschaft
                                 JOIN teigenschaftwert 
                                     ON teigenschaftwert.kEigenschaft = teigenschaft.kEigenschaft
@@ -2615,8 +2616,8 @@ class Artikel
                         );
                     } elseif (count($this->VariationenOhneFreifeld) === 2) {
                         // Baue Warenkorbmatrix Bildvorschau
-                        $oVariBoxMatrixBild_arr = Shop::DB()->query(
-                            "SELECT teigenschaftwertpict.cPfad, teigenschaft.kEigenschaft, teigenschaftwertpict.kEigenschaftWert
+                        $oVariBoxMatrixBild_arr = Shop::DB()->query("
+                            SELECT teigenschaftwertpict.cPfad, teigenschaft.kEigenschaft, teigenschaftwertpict.kEigenschaftWert
                                 FROM teigenschaft
                                 JOIN teigenschaftwert 
                                     ON teigenschaftwert.kEigenschaft = teigenschaft.kEigenschaft
@@ -2671,16 +2672,17 @@ class Artikel
      */
     public function baueVariationKombiHilfe($kKundengruppe)
     {
-        $kArtikel = (int)$this->kVaterArtikel > 0 ? (int)$this->kVaterArtikel : (int)$this->kArtikel;
+        $kKundengruppe = (int)$kKundengruppe;
+        $kArtikel      = $this->kVaterArtikel > 0 ? (int)$this->kVaterArtikel : (int)$this->kArtikel;
         // Soll die JavaScript-Kombihilfe aufgebaut werden?
-        $oAlleVariationKombi_arr = Shop::DB()->query(
-            "SELECT tekw.kEigenschaftWert, tekw.kEigenschaftKombi, tekw.kEigenschaft
+        $oAlleVariationKombi_arr = Shop::DB()->query("
+            SELECT tekw.kEigenschaftWert, tekw.kEigenschaftKombi, tekw.kEigenschaft
                 FROM teigenschaftkombiwert tekw
                 JOIN tartikel 
                     ON tartikel.kVaterArtikel = " . $kArtikel . "
                     AND tartikel.kEigenschaftKombi = tekw.kEigenschaftKombi
                 LEFT JOIN tartikelsichtbarkeit ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                    AND tartikelsichtbarkeit.kKundengruppe = " . (int)$kKundengruppe . "
+                    AND tartikelsichtbarkeit.kKundengruppe = " . $kKundengruppe . "
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
                 ORDER BY tekw.kEigenschaftKombi", 2
         );
@@ -2762,6 +2764,7 @@ class Artikel
      */
     public function holeVariationKombiKinderAssoc($kKundengruppe, $kSprache)
     {
+        $kKundengruppe                  = (int)$kKundengruppe;
         $oVariationKombiKinderAssoc_arr = [];
         if ($kKundengruppe > 0 && $kSprache > 0 && $this->nIstVater) {
             $oVariationsKombiKinder_arr = Shop::DB()->query("
@@ -2775,7 +2778,7 @@ class Artikel
                         ON teigenschaftwert.kEigenschaftWert = teigenschaftkombiwert.kEigenschaftWert 
                     LEFT JOIN tartikelsichtbarkeit 
                         ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                        AND tartikelsichtbarkeit.kKundengruppe = " . (int)$kKundengruppe . "
+                        AND tartikelsichtbarkeit.kKundengruppe = " . $kKundengruppe . "
                     WHERE tartikel.kVaterArtikel = " . (int)$this->kArtikel . " 
                     AND tartikelsichtbarkeit.kArtikel IS NULL
                     ORDER BY tartikel.nSort ASC, teigenschaft.nSort ASC, 
@@ -2906,8 +2909,8 @@ class Artikel
                 }
                 $cSQL .= ')';
             }
-            $oVariationKombiVorschau_arr = Shop::DB()->query(
-                "SELECT tartikel.kArtikel, tartikelpict.cPfad, tartikel.cName, tartikel.cSeo, tartikel.cArtNr, 
+            $oVariationKombiVorschau_arr = Shop::DB()->query("
+                SELECT tartikel.kArtikel, tartikelpict.cPfad, tartikel.cName, tartikel.cSeo, tartikel.cArtNr, 
                     tartikel.cBarcode, tartikel.cLagerBeachten, tartikel.cLagerKleinerNull,
                     tartikel.fLagerbestand, tartikel.fZulauf, 
                     DATE_FORMAT(tartikel.dZulaufDatum, '%d.%m.%Y') AS dZulaufDatum_de, 
@@ -2949,8 +2952,8 @@ class Artikel
                 if ($conf['artikeldetails']['artikeldetails_varikombi_vorschautext'] === 'S') {
                     $oEigenschaft = null;
                     if ($kSprache > 0 && !standardspracheAktiv()) {
-                        $oEigenschaft = Shop::DB()->query(
-                            "SELECT teigenschaftsprache.cName
+                        $oEigenschaft = Shop::DB()->query("
+                            SELECT teigenschaftsprache.cName
                                 FROM teigenschaftsprache
                                 JOIN teigenschaft 
                                     ON teigenschaft.kEigenschaft = teigenschaftsprache.kEigenschaft
@@ -2960,8 +2963,8 @@ class Artikel
                         );
                         $this->oVariationKombiVorschauText = Shop::Lang()->get('choosevariation', 'global') . ' ' . $oEigenschaft->cName;
                     } else {
-                        $oEigenschaft = Shop::DB()->query(
-                            "SELECT cName
+                        $oEigenschaft = Shop::DB()->query("
+                            SELECT cName
                                 FROM teigenschaft
                                 WHERE kEigenschaft {$cVorschauSQL}
                                 ORDER BY nSort LIMIT 1", 1
@@ -3094,8 +3097,8 @@ class Artikel
         // und man kann keine Aufpreise in der Artikeluebersicht mehr erkennen. So koennen wir kein "ab" schreiben
         // sondern nur "nur" bei der Preisangabe => Abmahnung. TODO: Loesung dafuer finden
         if ($this->nVariationOhneFreifeldAnzahl === 1) {
-            $oVariationDetailPreis_arr = Shop::DB()->query(
-                "SELECT tartikel.kArtikel, teigenschaftkombiwert.kEigenschaft, teigenschaftkombiwert.kEigenschaftWert
+            $oVariationDetailPreis_arr = Shop::DB()->query("
+                SELECT tartikel.kArtikel, teigenschaftkombiwert.kEigenschaft, teigenschaftkombiwert.kEigenschaftWert
                     FROM teigenschaftkombiwert
                     JOIN tartikel 
                         ON tartikel.kVaterArtikel = {$this->kArtikel}
@@ -3220,8 +3223,8 @@ class Artikel
         }
         // Baue SprachwechselURLs
         if ($bSeo) {
-            $oSeo_arr = Shop::DB()->query(
-                "SELECT cSeo, kSprache
+            $oSeo_arr = Shop::DB()->query("
+                SELECT cSeo, kSprache
                     FROM tseo
                     WHERE cKey = 'kArtikel'
                         AND kKey = " . (int)$this->kArtikel . " 
@@ -3762,13 +3765,13 @@ class Artikel
         // Lokalisieren
         if ($kSprache > 0 && !standardspracheAktiv()) {
             //VPE-Einheit
-            $oVPEEinheitRes = Shop::DB()->query(
-                "SELECT cName
+            $oVPEEinheitRes = Shop::DB()->query("
+                SELECT cName
                     FROM teinheit
                     WHERE kEinheit = (SELECT kEinheit
                                         FROM teinheit
-                                        WHERE cName = '" . $this->cVPEEinheit . "' LIMIT 0,1)
-                                            AND kSprache = " . $kSprache . " LIMIT 0,1", 1
+                                        WHERE cName = '" . $this->cVPEEinheit . "' LIMIT 0, 1)
+                                            AND kSprache = " . $kSprache . " LIMIT 0, 1", 1
             );
             if (isset($oVPEEinheitRes->cName) && strlen($oVPEEinheitRes->cName) > 0) {
                 $this->cVPEEinheit = $oVPEEinheitRes->cName;
@@ -3862,8 +3865,8 @@ class Artikel
            aber nur wenn auch Preise angezeigt werden, this->Preise also auch vorhanden ist */
         if (is_object($this->Preise) && $oArtikelTMP->kVaterArtikel == 0 && $oArtikelTMP->nIstVater == 1) {
             $fVKNetto         = ($this->Preise->fVKNetto !== null) ? $this->Preise->fVKNetto : 0.0;
-            $oKindSonderpreis = Shop::DB()->query(
-                "SELECT COUNT(a.kArtikel) AS nVariationsAufpreisVorhanden
+            $oKindSonderpreis = Shop::DB()->query("
+                SELECT COUNT(a.kArtikel) AS nVariationsAufpreisVorhanden
                     FROM tartikel AS a
                     JOIN tpreis AS p 
                         ON p.kArtikel = a.kArtikel 
@@ -4124,8 +4127,8 @@ class Artikel
         if ($kKundengruppe > 0) {
             $kKdgKey = (int)$kKundengruppe;
         }
-        $oKat_arr = Shop::DB()->query(
-            "SELECT tkategorieartikel.kKategorie
+        $oKat_arr = Shop::DB()->query("
+            SELECT tkategorieartikel.kKategorie
                 FROM tkategorieartikel
                 LEFT JOIN tkategoriesichtbarkeit 
                     ON tkategoriesichtbarkeit.kKategorie = tkategorieartikel.kKategorie
@@ -4296,8 +4299,8 @@ class Artikel
         $nSchwelleTopBewertet = isset($oBoxenEinstellung_arr['boxen']['boxen_topbewertet_minsterne'])
             ? (int)$oBoxenEinstellung_arr['boxen']['boxen_topbewertet_minsterne']
             : 4;
-        $oBewertet            = Shop::DB()->query(
-            "SELECT round(fDurchschnittsBewertung) >= " . $nSchwelleTopBewertet . " AS bIsTopBewertet
+        $oBewertet            = Shop::DB()->query("
+            SELECT round(fDurchschnittsBewertung) >= " . $nSchwelleTopBewertet . " AS bIsTopBewertet
                 FROM tartikelext
                 WHERE kArtikel = " . (int)$this->kArtikel, 1
         );
@@ -4325,8 +4328,8 @@ class Artikel
         $nSchwelleBestseller = isset($oGlobalEinstellung_arr['global']['global_bestseller_minanzahl'])
             ? (float)$oGlobalEinstellung_arr['global']['global_bestseller_minanzahl']
             : 10;
-        $oBestseller         = Shop::DB()->query(
-            "SELECT round(fAnzahl) >= " . $nSchwelleBestseller . " AS bIsBestseller
+        $oBestseller         = Shop::DB()->query("
+            SELECT round(fAnzahl) >= " . $nSchwelleBestseller . " AS bIsBestseller
                 FROM tbestseller
                 WHERE kArtikel = " . (int)$this->kArtikel, 1
         );
@@ -4665,8 +4668,8 @@ class Artikel
         $oSprache = gibStandardsprache();
         if ($this->kArtikel > 0 && $kSprache != $oSprache->kSprache) {
             //auf aktuelle Sprache setzen
-            $objSprache = Shop::DB()->query(
-                "SELECT tartikelsprache.cName, tseo.cSeo, tartikelsprache.cKurzBeschreibung, tartikelsprache.cBeschreibung
+            $objSprache = Shop::DB()->query("
+                SELECT tartikelsprache.cName, tseo.cSeo, tartikelsprache.cKurzBeschreibung, tartikelsprache.cBeschreibung
                     FROM tartikelsprache
                     LEFT JOIN tseo 
                         ON tseo.cKey = 'kArtikel'
@@ -5067,10 +5070,10 @@ class Artikel
         $minDeliveryDays = (strlen(trim($favShipping->nMinLiefertage)) > 0) ? (int)$favShipping->nMinLiefertage : 2;
         $maxDeliveryDays = (strlen(trim($favShipping->nMaxLiefertage)) > 0) ? (int)$favShipping->nMaxLiefertage : 3;
         // get all pieces (even invisible) to calc delivery
-        $nAllPieces = Shop::DB()->query(
-            "SELECT tartikel.kArtikel, tstueckliste.fAnzahl
-                  FROM tartikel
-                  JOIN tstueckliste 
+        $nAllPieces = Shop::DB()->query("
+            SELECT tartikel.kArtikel, tstueckliste.fAnzahl
+                FROM tartikel
+                JOIN tstueckliste 
                     ON tstueckliste.kArtikel = tartikel.kArtikel 
                     AND tstueckliste.kStueckliste = " . (int)$this->kStueckliste, 3
         );
@@ -5361,7 +5364,9 @@ class Artikel
             $defaultOptions = self::getDefaultOptions();
             foreach ($products as $oProduct) {
                 $oArtikel = new self();
-                $oArtikel->fuelleArtikel(($oProduct->kVaterArtikel > 0) ? $oProduct->kVaterArtikel : $oProduct->kArtikel, $defaultOptions);
+                $oArtikel->fuelleArtikel(($oProduct->kVaterArtikel > 0)
+                    ? $oProduct->kVaterArtikel
+                    : $oProduct->kArtikel, $defaultOptions);
                 if ($oArtikel->kArtikel > 0) {
                     $oArtikel_arr[] = $oArtikel;
                 }
@@ -5441,13 +5446,14 @@ class Artikel
             }
             $lagerFilter           = gibLagerfilter();
             $kundenGruppe          = (int)$_SESSION['Kundengruppe']->kKundengruppe;
-            $return['oArtikelArr'] = Shop::DB()->query(
-                "SELECT merkmalartikel.kArtikel, merkmalartikel.kVaterArtikel
+            $return['oArtikelArr'] = Shop::DB()->query("
+                SELECT merkmalartikel.kArtikel, merkmalartikel.kVaterArtikel
                     FROM (
                         SELECT DISTINCT tartikelmerkmal.kArtikel, tartikel.kVaterArtikel, 
                             tartikelmerkmal.kMerkmal, tartikelmerkmal.kMerkmalWert
                         FROM tartikelmerkmal
-                        JOIN tartikel ON tartikel.kArtikel = tartikelmerkmal.kArtikel
+                        JOIN tartikel 
+                            ON tartikel.kArtikel = tartikelmerkmal.kArtikel
                             AND tartikel.kVaterArtikel != {$kArtikel}
                             AND (tartikel.nIstVater = 1 OR tartikel.kEigenschaftKombi = 0)
                         LEFT JOIN tartikelsichtbarkeit 
@@ -5468,8 +5474,8 @@ class Artikel
             );
             if (!is_array($return['oArtikelArr']) || count($return['oArtikelArr']) < 1) {
                 // Falls es keine Merkmale gibt, in tsuchcachetreffer und ttagartikel suchen
-                $return['oArtikelArr'] = Shop::DB()->query(
-                    "SELECT tsuchcachetreffer.kArtikel, tartikel.kVaterArtikel
+                $return['oArtikelArr'] = Shop::DB()->query("
+                    SELECT tsuchcachetreffer.kArtikel, tartikel.kVaterArtikel
                         FROM
                         (
                             SELECT kSuchCache
@@ -5495,8 +5501,8 @@ class Artikel
                 );
             }
             if (!is_array($return['oArtikelArr']) || count($return['oArtikelArr']) < 1) {
-                $return['oArtikelArr'] = Shop::DB()->query(
-                    "SELECT ttagartikel.kArtikel, tartikel.kVaterArtikel
+                $return['oArtikelArr'] = Shop::DB()->query("
+                    SELECT ttagartikel.kArtikel, tartikel.kVaterArtikel
                         FROM
                         (
                             SELECT kTag
@@ -5541,8 +5547,8 @@ class Artikel
                 : '';
             Shop::DB()->delete('tartikelmerkmal', 'kArtikel', $kVaterArtikel);
 
-            return Shop::DB()->query(
-                "INSERT INTO tartikelmerkmal
+            return Shop::DB()->query("
+                INSERT INTO tartikelmerkmal
                   (
                     SELECT tartikelmerkmal.kMerkmal, tartikelmerkmal.kMerkmalWert, " . $kVaterArtikel . "
                         FROM tartikelmerkmal
@@ -6079,8 +6085,8 @@ class Artikel
     public function getTags()
     {
         $conf      = Shop::getSettings([CONF_ARTIKELDETAILS]);
-        $tag_limit = (int)$conf['artikeldetails']['tagging_max_count'];
-        $tag_limit = ($tag_limit > 0) ? ' LIMIT ' . $tag_limit : '';
+        $nLimit    = (int)$conf['artikeldetails']['tagging_max_count'];
+        $tag_limit = ($nLimit > 0) ? ' LIMIT ' . $nLimit : '';
         $kSprache  = null;
         if (Shop::$kSprache) {
             $kSprache = Shop::getLanguage();
@@ -6092,8 +6098,10 @@ class Artikel
             $kSprache = $oSprache->kSprache;
         }
         $kSprache = (int)$kSprache;
-        $tags     = Shop::DB()->query(
-            "SELECT ttag.kTag, ttag.cName, tseo.cSeo
+        $tags     = Shop::DB()->query("
+            SELECT ttag.kTag, ttag.cName, tseo.cSeo, (SELECT COUNT(*)
+                                                        FROM ttagartikel
+                                                          WHERE kTag = ttag.kTag) AS Anzahl
                 FROM ttag
                 JOIN ttagartikel 
                     ON ttagartikel.kTag = ttag.kTag
@@ -6107,15 +6115,9 @@ class Artikel
                 GROUP BY ttag.kTag 
                 ORDER BY ttagartikel.nAnzahlTagging DESC {$tag_limit}", 2
         );
-        $tagCount = count($tags);
-        for ($i = 0; $i < $tagCount; $i++) {
-            $tag_sum = Shop::DB()->query(
-                "SELECT count(*) AS Anzahl
-                    FROM ttagartikel
-                    WHERE kTag = " . (int)$tags[$i]->kTag,
-                1
-            );
-            $tags[$i]->Anzahl = $tag_sum->Anzahl;
+        foreach ($tags as $i => $tag) {
+            $tags[$i]->kTag   = (int)$tags[$i]->kTag;
+            $tags[$i]->Anzahl = (int)$tags[$i]->Anzahl;
             $tags[$i]->cURL   = baueURL($tags[$i], URLART_TAG);
         }
         executeHook(HOOK_ARTIKEL_INC_PRODUKTTAGGING, [
@@ -6274,24 +6276,29 @@ class Artikel
     {
         $nPossibleVariation_arr = [];
         foreach ($nEigenschaft_arr as $kEigenschaft => $nEigenschaftWert_arr) {
-            $i    = 2;
-            $cSQL = [];
+            $i            = 2;
+            $cSQL         = [];
+            $kEigenschaft = (int)$kEigenschaft;
+            $prepvalues   = ['where' => $kEigenschaft];
             foreach ($kGesetzteEigeschaftWert_arr as $kGesetzteEigenschaft => $kEigenschaftWert) {
-                if ($kEigenschaft != $kGesetzteEigenschaft) {
+                $kGesetzteEigenschaft = (int)$kGesetzteEigenschaft;
+                $kEigenschaftWert     = (int)$kEigenschaftWert;
+                if ($kEigenschaft !== $kGesetzteEigenschaft) {
                     $cSQL[] = "INNER JOIN teigenschaftkombiwert e{$i} 
                                     ON e1.kEigenschaftKombi = e{$i}.kEigenschaftKombi 
-                                    AND e{$i}.kEigenschaftWert ={$kEigenschaftWert}";
-                    $i++;
+                                    AND e{$i}.kEigenschaftWert = :kev{$i}";
+                    $prepvalues['kev' . $i] = $kEigenschaftWert;
+                    ++$i;
                 }
             }
             $cSQLStr          = implode(' ', $cSQL);
-            $oEigenschaft_arr = Shop::DB()->query(
+            $oEigenschaft_arr = Shop::DB()->executeQueryPrepared(
                 "SELECT e1.*, k.cName, k.cLagerBeachten, k.cLagerKleinerNull, k.fLagerbestand 
                     FROM teigenschaftkombiwert e1
                     INNER JOIN tartikel k 
                         ON e1.kEigenschaftKombi = k.kEigenschaftKombi
                     {$cSQLStr}
-                    WHERE e1.kEigenschaft = {$kEigenschaft}", 2
+                    WHERE e1.kEigenschaft = :where", $prepvalues, 2
             );
             foreach ($oEigenschaft_arr as $oEigenschaft) {
                 $oEigenschaft->kEigenschaftWert = (int)$oEigenschaft->kEigenschaftWert;

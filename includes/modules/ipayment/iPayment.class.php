@@ -90,7 +90,7 @@ class iPayment extends PaymentMethod
             }
             $this->setOrderStatusToPaid($order);
             $incomingPayment          = new stdClass();
-            $incomingPayment->fBetrag = floatval($args['trx_amount'] / 100);
+            $incomingPayment->fBetrag = (float)($args['trx_amount'] / 100);
             $incomingPayment->cISO    = $args['trx_currency'];
 
             $this->addIncomingPayment($order, $incomingPayment);

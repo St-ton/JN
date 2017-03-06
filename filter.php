@@ -149,7 +149,7 @@ $oSuchergebnisse->MerkmalFilter    = gibMerkmalFilterOptionen(
     $FilterSQL,
     $NaviFilter,
     $AktuelleKategorie,
-    function_exists('starteAuswahlAssistent')
+    class_exists('AuswahlAssistent')
 );
 $oSuchergebnisse->Preisspanne      = gibPreisspannenFilterOptionen($FilterSQL, $NaviFilter, $oSuchergebnisse);
 $oSuchergebnisse->Kategorieauswahl = gibKategorieFilterOptionen($FilterSQL, $NaviFilter);
@@ -327,13 +327,20 @@ if (strpos(basename(gibNaviURL($NaviFilter, true, null)), '.php') === false) {
     $cCanonicalURL = gibNaviURL($NaviFilter, true, null, 0, true) . $cSeite;
 }
 // Auswahlassistent
-if (function_exists('starteAuswahlAssistent')) {
+if (TEMPLATE_COMPATIBILITY === true && function_exists('starteAuswahlAssistent')) {
     starteAuswahlAssistent(
         AUSWAHLASSISTENT_ORT_KATEGORIE,
         $cParameter_arr['kKategorie'],
         Shop::getLanguage(),
         $smarty,
         $Einstellungen['auswahlassistent']
+    );
+} elseif (class_exists('AuswahlAssistent')) {
+    AuswahlAssistent::startIfRequired(
+        AUSWAHLASSISTENT_ORT_KATEGORIE,
+        $cParameter_arr['kKategorie'],
+        Shop::getLanguage(),
+        $smarty
     );
 }
 $smarty->assign('SEARCHSPECIALS_TOPREVIEWS', SEARCHSPECIALS_TOPREVIEWS)

@@ -12,12 +12,12 @@ class VersandartHelper
     /**
      * @var VersandartHelper
      */
-    private static $_instance = null;
+    private static $_instance;
 
     /**
      * @var string
      */
-    public $cacheID = null;
+    public $cacheID;
 
     /**
      * @var array
@@ -368,7 +368,7 @@ class VersandartHelper
         if (!is_array($oArtikel_arr) || count($oArtikel_arr) === 0) {
             return null;
         }
-        $cLandISO = (isset($_SESSION['cLieferlandISO'])) ? $_SESSION['cLieferlandISO'] : false;
+        $cLandISO = isset($_SESSION['cLieferlandISO']) ? $_SESSION['cLieferlandISO'] : false;
         if (!$cLandISO) {
             //Falls kein Land in tfirma da
             $cLandISO = 'DE';
@@ -779,11 +779,11 @@ class VersandartHelper
                 if ($cVersand) {
                     //DE 1-45,00:2-60,00:3-80;AT 1-90,00:2-120,00:3-150,00
                     list($cLandAttr, $KostenTeil) = explode(' ', $cVersand);
-                    if ($cLandAttr && ($cLand == $cLandAttr || $bCheckLieferadresse == false)) {
+                    if ($cLandAttr && ($cLand === $cLandAttr || $bCheckLieferadresse === false)) {
                         $arrKosten = explode(':', $KostenTeil);
                         foreach ($arrKosten as $staffel) {
                             list($bisAnzahl, $fPreis) = explode('-', $staffel);
-                            $fPreis                   = floatval(str_replace(',', '.', $fPreis));
+                            $fPreis                   = (float)str_replace(',', '.', $fPreis);
                             if ($fPreis >= 0 && $bisAnzahl > 0 && $nAnzahl <= $bisAnzahl) {
                                 $oVersandPos = new stdClass();
                                 //posname lokalisiert ablegen
@@ -795,7 +795,7 @@ class VersandartHelper
                                 $oVersandPos->fKosten         = $fPreis;
                                 if ($netPricesActive === true) {
                                     $oVersandPos->cPreisLocalized = gibPreisStringLocalized(
-                                        berechneNetto(floatval($oVersandPos->fKosten), $steuerSatz)
+                                        berechneNetto((float)$oVersandPos->fKosten, $steuerSatz)
                                         ) . ' ' . Shop::Lang()->get('plus', 'productDetails') . ' ' .
                                         Shop::Lang()->get('vat', 'productDetails');
                                 } else {
@@ -823,10 +823,10 @@ class VersandartHelper
                             $oVersandPos->cName[$Sprache->cISO] = Shop::Lang()->get('shippingFor', 'checkout') . ' ' .
                                 $Artikel->cName . ' (' . $cLandAttr . ')';
                         }
-                        $oVersandPos->fKosten         = floatval(str_replace(',', '.', $fKosten)) * $nAnzahl;
+                        $oVersandPos->fKosten         = (float)str_replace(',', '.', $fKosten) * $nAnzahl;
                         if ($netPricesActive === true) {
                             $oVersandPos->cPreisLocalized = gibPreisStringLocalized(berechneNetto(
-                                floatval($oVersandPos->fKosten),
+                                    (float)$oVersandPos->fKosten,
                                     $steuerSatz
                                 )) . ' ' .  Shop::Lang()->get('plus', 'productDetails') . ' ' .
                                 Shop::Lang()->get('vat', 'productDetails');

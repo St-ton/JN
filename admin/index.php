@@ -33,7 +33,7 @@ if (isset($_POST['adminlogin']) && (int)$_POST['adminlogin'] === 1) {
         if (!isset($_POST['captcha']) || !$_POST['captcha']) {
             $ret['captcha'] = 1;
         }
-        if ((!isset($_POST['md5']) || !$_POST['md5'] || ($_POST['md5'] !== md5(PFAD_ROOT . strtoupper($_POST['captcha']))))) {
+        if (!isset($_POST['md5']) || !$_POST['md5'] || ($_POST['md5'] !== md5(PFAD_ROOT . strtoupper($_POST['captcha'])))) {
             $ret['captcha'] = 2;
         }
     }
@@ -142,7 +142,7 @@ if (file_exists(CAPTCHA_LOCKFILE)) {
 }
 $smarty->assign('bProfilerActive', $profilerState !== 0)
        ->assign('profilerType', $type)
-       ->assign('pw_updated', (isset($_GET['pw_updated']) && $_GET['pw_updated'] === 'true'))
+       ->assign('pw_updated', isset($_GET['pw_updated']) && $_GET['pw_updated'] === 'true')
        ->assign('cFehler', $cFehler)
        ->assign('updateMessage', (isset($updateMessage) ? $updateMessage : null));
 

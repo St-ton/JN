@@ -47,7 +47,7 @@ if ($cName && $cPass && $cName === $loginDaten->cName && $cPass === $loginDaten-
             Shop::DB()->query("ALTER TABLE tlieferadresse AUTO_INCREMENT = " . (int)$_POST['kLieferadresse'], 4);
         }
     }
-    if (isset($_POST['kZahlungseingang']) && intval($_POST['kZahlungseingang']) > 0) {
+    if (isset($_POST['kZahlungseingang']) && (int)$_POST['kZahlungseingang'] > 0) {
         $oStatus = Shop::DB()->query("SHOW TABLE STATUS LIKE 'tzahlungseingang'", 1);
         if ($oStatus->Auto_increment < (int)$_POST['kZahlungseingang']) {
             Shop::DB()->query("ALTER TABLE tzahlungseingang AUTO_INCREMENT  = " . (int)$_POST['kZahlungseingang'], 4);

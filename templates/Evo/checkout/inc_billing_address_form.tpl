@@ -18,7 +18,11 @@
                         <option value="w" {if isset($Kunde->cAnrede) && $Kunde->cAnrede === 'w'}selected="selected"{/if}>{$Anrede_w}</option>
                         <option value="m" {if isset($Kunde->cAnrede) && $Kunde->cAnrede === 'm'}selected="selected"{/if}>{$Anrede_m}</option>
                     </select>
-                    {if isset($fehlendeAngaben.anrede)}<div class="alert alert-danger">{lang key="fillOut" section="global"}</div>{/if}
+                    {if isset($fehlendeAngaben.anrede)}
+                        <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
+                            {lang key="fillOut" section="global"}
+                        </div>
+                    {/if}
                 </div>
             </div>
         {/if}
@@ -36,7 +40,11 @@
                     placeholder="{lang key="title" section="account data"}" 
                     {if $Einstellungen.kunden.kundenregistrierung_abfragen_titel === 'Y'}required{/if} 
                     >
-                    {if isset($fehlendeAngaben.titel)}<div class="alert alert-danger">{lang key="fillOut" section="global"}</div>{/if}
+                    {if isset($fehlendeAngaben.titel)}
+                        <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
+                            {lang key="fillOut" section="global"}
+                        </div>
+                    {/if}
                 </div>
             </div>
         {/if}
@@ -56,11 +64,13 @@
                 {if $Einstellungen.kunden.kundenregistrierung_pflicht_vorname === 'Y'} required{/if} 
                 >
                 {if isset($fehlendeAngaben.vorname)}
-                    {if $fehlendeAngaben.vorname == 1}
-                        <div class="alert alert-danger">{lang key="fillOut" section="global"}</div>
-                    {elseif $fehlendeAngaben.vorname == 2}
-                        <div class="alert alert-danger">{lang key="firstNameNotNumeric" section="account data"}</div>
-                    {/if}
+                    <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
+                        {if $fehlendeAngaben.vorname == 1}
+                            {lang key="fillOut" section="global"}
+                        {elseif $fehlendeAngaben.vorname == 2}
+                            {lang key="firstNameNotNumeric" section="account data"}
+                        {/if}
+                    </div>
                 {/if}
             </div>
         </div>
@@ -77,11 +87,13 @@
                 required 
                 >
                 {if isset($fehlendeAngaben.nachname)}
-                    {if $fehlendeAngaben.nachname == 1}
-                        <div class="alert alert-danger">{lang key="fillOut" section="global"}</div>
-                    {elseif $fehlendeAngaben.nachname == 2}
-                        <div class="alert alert-danger">{lang key="lastNameNotNumeric" section="account data"}</div>
-                    {/if}
+                    <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
+                        {if $fehlendeAngaben.nachname == 1}
+                             {lang key="fillOut" section="global"}
+                        {elseif $fehlendeAngaben.nachname == 2}
+                            {lang key="lastNameNotNumeric" section="account data"}
+                        {/if}
+                    </div>
                 {/if}
             </div>
         </div>
@@ -101,7 +113,11 @@
                 placeholder="{lang key="firm" section="account data"}" 
                 {if $Einstellungen.kunden.kundenregistrierung_abfragen_firma === 'Y'} required{/if} 
                 >
-                {if isset($fehlendeAngaben.firma)}<div class="alert alert-danger">{lang key="fillOut" section="global"}</div>{/if}
+                {if isset($fehlendeAngaben.firma)}
+                    <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
+                        {lang key="fillOut" section="global"}
+                    </div>
+                {/if}
             </div>
         </div>
         {/if}
@@ -119,7 +135,11 @@
                 placeholder="{lang key="firmext" section="account data"}"
                 {if $Einstellungen.kunden.kundenregistrierung_abfragen_firmazusatz === 'Y'} required{/if} 
                 />
-                {if isset($fehlendeAngaben.firmazusatz)}<div class="alert alert-danger">{lang key="fillOut" section="global"}</div>{/if}
+                {if isset($fehlendeAngaben.firmazusatz)}
+                    <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
+                        {lang key="fillOut" section="global"}
+                    </div>
+                {/if}
             </div>
         </div>
         {/if}
@@ -138,7 +158,11 @@
                 placeholder="{lang key="street" section="account data"}" 
                 required 
                 >
-                {if isset($fehlendeAngaben.strasse)}<div class="alert alert-danger">{lang key="fillOut" section="global"}</div>{/if}
+                {if isset($fehlendeAngaben.strasse)}
+                    <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
+                        {lang key="fillOut" section="global"}
+                    </div>
+                {/if}
             </div>
         </div>
 
@@ -154,7 +178,11 @@
                 placeholder="{lang key="streetnumber" section="account data"}" 
                 required 
                 >
-                {if isset($fehlendeAngaben.hausnummer)}<div class="alert alert-danger">{lang key="fillOut" section="global"}</div>{/if}
+                {if isset($fehlendeAngaben.hausnummer)}
+                    <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
+                        {lang key="fillOut" section="global"}
+                    </div>
+                {/if}
             </div>
         </div>
     </div>
@@ -173,7 +201,11 @@
                     placeholder="{lang key="street2" section="account data"}" 
                     {if $Einstellungen.kunden.kundenregistrierung_abfragen_adresszusatz === 'Y'} required{/if} 
                     />
-                    {if isset($fehlendeAngaben.adresszusatz)}<div class="alert alert-danger">{lang key="fillOut" section="global"}</div>{/if}
+                    {if isset($fehlendeAngaben.adresszusatz)}
+                        <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
+                            {lang key="fillOut" section="global"}
+                        </div>
+                    {/if}
                 </div>
             </div>
         </div>
@@ -181,7 +213,7 @@
     {* country *}
     <div class="row">
         <div class="col-xs-12 col-md-6">
-            <div class="form-group float-label-control required">
+            <div class="form-group float-label-control required{if isset($fehlendeAngaben.land)} has-error{/if}">
                 <label class="control-label" for="country">{lang key="country" section="account data"}</label>
                 <select name="land" id="country" class="country_input form-control" required>
                 <option value="" disabled>{lang key="country" section="account data"}</option>
@@ -189,6 +221,11 @@
                     <option value="{$land->cISO}" {if ($Einstellungen.kunden.kundenregistrierung_standardland==$land->cISO && empty($Kunde->cLand)) || !empty($Kunde->cLand) && $Kunde->cLand == $land->cISO}selected="selected"{/if}>{$land->cName}</option>
                 {/foreach}
                 </select>
+                {if isset($fehlendeAngaben.land)}
+                    <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
+                        {lang key="fillOut" section="global"}
+                    </div>
+                {/if}
             </div>
         </div>
     {if $Einstellungen.kunden.kundenregistrierung_abfragen_bundesland === 'N'}
@@ -209,7 +246,11 @@
                 placeholder="{lang key="state" section="account data"}"
                 {if $Einstellungen.kunden.kundenregistrierung_abfragen_bundesland === 'Y'} required{/if}
                 >
-                {if isset($fehlendeAngaben.bundesland)}<div class="alert alert-danger">{lang key="fillOut" section="global"}</div>{/if}
+                {if isset($fehlendeAngaben.bundesland)}
+                    <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
+                        {lang key="fillOut" section="global"}
+                    </div>
+                {/if}
             </div>
         </div>
     </div>{* close row for country *}
@@ -228,7 +269,15 @@
                 placeholder="{lang key="plz" section="account data"}"
                 required
                 >
-                {if isset($fehlendeAngaben.plz)}<div class="alert alert-danger">{if $fehlendeAngaben.plz >= 2}{lang key="checkPLZCity" section="checkout"}{else}{lang key="fillOut" section="global"}{/if}</div>{/if}
+                {if isset($fehlendeAngaben.plz)}
+                    <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
+                        {if $fehlendeAngaben.plz >= 2}
+                            {lang key="checkPLZCity" section="checkout"}
+                        {else}
+                            {lang key="fillOut" section="global"}
+                        {/if}
+                    </div>
+                {/if}
             </div>
         </div>
         
@@ -245,11 +294,13 @@
                 required 
                 >
                 {if isset($fehlendeAngaben.ort)}
-                    {if $fehlendeAngaben.ort==3}
-                        <div class="alert alert-danger">{lang key="cityNotNumeric" section="account data"}</div>
-                    {else}
-                        <div class="alert alert-danger">{lang key="fillOut" section="global"}</div>
-                    {/if}
+                    <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
+                        {if $fehlendeAngaben.ort==3}
+                             {lang key="cityNotNumeric" section="account data"}
+                        {else}
+                            {lang key="fillOut" section="global"}
+                        {/if}
+                    </div>
                 {/if}
             </div>
         </div>
@@ -270,10 +321,14 @@
                 {if $Einstellungen.kunden.kundenregistrierung_abfragen_ustid === 'Y'} required{/if} 
                 >
                 {if isset($fehlendeAngaben.ustid)}
-                <div class="alert alert-danger">
-                    {if $fehlendeAngaben.ustid == 1}{lang key="fillOut" section="global"}
-                    {elseif $fehlendeAngaben.ustid == 2}{lang key="ustIDCaseTwo" section="global"}. {if $fehlendeAngaben.ustid_err|count > 0 && $fehlendeAngaben.ustid_err !== false}{lang key="ustIDCaseTwoB" section="global"}: {$fehlendeAngaben.ustid_err}{/if}
-                    {elseif $fehlendeAngaben.ustid == 5}{lang key="ustIDCaseFive" section="global"}.{/if}
+                <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
+                    {if $fehlendeAngaben.ustid == 1}
+                        {lang key="fillOut" section="global"}
+                    {elseif $fehlendeAngaben.ustid == 2}
+                        {lang key="ustIDCaseTwo" section="global"}. {if $fehlendeAngaben.ustid_err|count > 0 && $fehlendeAngaben.ustid_err !== false}{lang key="ustIDCaseTwoB" section="global"}: {$fehlendeAngaben.ustid_err}{/if}
+                    {elseif $fehlendeAngaben.ustid == 5}
+                        {lang key="ustIDCaseFive" section="global"}.
+                    {/if}
                 </div>
                 {/if}
             </div>
@@ -299,12 +354,18 @@
                 required 
                 >
                 {if isset($fehlendeAngaben.email)}
-                <div class="alert alert-danger">
-                    {if $fehlendeAngaben.email == 1}{lang key="fillOut" section="global"}
-                    {elseif $fehlendeAngaben.email == 2}{lang key="invalidEmail" section="global"}
-                    {elseif $fehlendeAngaben.email == 3}{lang key="blockedEmail" section="global"}
-                    {elseif $fehlendeAngaben.email == 4}{lang key="noDnsEmail" section="account data"}
-                    {elseif $fehlendeAngaben.email == 5}{lang key="emailNotAvailable" section="account data"}{/if}
+                <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
+                    {if $fehlendeAngaben.email == 1}
+                        {lang key="fillOut" section="global"}
+                    {elseif $fehlendeAngaben.email == 2}
+                        {lang key="invalidEmail" section="global"}
+                    {elseif $fehlendeAngaben.email == 3}
+                        {lang key="blockedEmail" section="global"}
+                    {elseif $fehlendeAngaben.email == 4}
+                        {lang key="noDnsEmail" section="account data"}
+                    {elseif $fehlendeAngaben.email == 5}
+                        {lang key="emailNotAvailable" section="account data"}
+                    {/if}
                 </div>
                 {/if}
             </div>
@@ -327,8 +388,12 @@
                     {if $Einstellungen.kunden.kundenregistrierung_abfragen_tel === 'Y'} required{/if} 
                     />
                     {if isset($fehlendeAngaben.tel)}
-                    <div class="alert alert-danger">
-                        {if $fehlendeAngaben.tel == 1}{lang key="fillOut" section="global"}{elseif $fehlendeAngaben.tel == 2}{lang key="invalidTel" section="global"}{/if}
+                    <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
+                        {if $fehlendeAngaben.tel == 1}
+                            {lang key="fillOut" section="global"}
+                        {elseif $fehlendeAngaben.tel == 2}
+                            {lang key="invalidTel" section="global"}
+                        {/if}
                     </div>
                     {/if}
                 </div>
@@ -349,8 +414,12 @@
                     {if $Einstellungen.kunden.kundenregistrierung_abfragen_fax === 'Y'} required{/if}
                     />
                     {if isset($fehlendeAngaben.fax)}
-                        <div class="alert alert-danger">
-                            {if $fehlendeAngaben.fax == 1}{lang key="fillOut" section="global"}{elseif $fehlendeAngaben.fax == 2}{lang key="invalidTel" section="global"}{/if}
+                        <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
+                            {if $fehlendeAngaben.fax == 1}
+                                {lang key="fillOut" section="global"}
+                            {elseif $fehlendeAngaben.fax == 2}
+                                {lang key="invalidTel" section="global"}
+                            {/if}
                         </div>
                     {/if}
                 </div>
@@ -375,8 +444,12 @@
                         {if $Einstellungen.kunden.kundenregistrierung_abfragen_mobil === 'Y'} required{/if} 
                         />
                         {if isset($fehlendeAngaben.mobil)}
-                            <div class="alert alert-danger">
-                                {if $fehlendeAngaben.mobil == 1}{lang key="fillOut" section="global"}{elseif $fehlendeAngaben.mobil == 2}{lang key="invalidTel" section="global"}{/if}
+                            <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
+                                {if $fehlendeAngaben.mobil == 1}
+                                    {lang key="fillOut" section="global"}
+                                {elseif $fehlendeAngaben.mobil == 2}
+                                    {lang key="invalidTel" section="global"}
+                                {/if}
                             </div>
                         {/if}
                     </div>
@@ -396,7 +469,11 @@
                         placeholder="{lang key="www" section="account data"}" 
                         {if $Einstellungen.kunden.kundenregistrierung_abfragen_www === 'Y'} required{/if} 
                         />
-                        {if isset($fehlendeAngaben.www)}<div class="alert alert-danger">{lang key="fillOut" section="global"}</div>{/if}
+                        {if isset($fehlendeAngaben.www)}
+                            <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
+                                {lang key="fillOut" section="global"}
+                            </div>
+                        {/if}
                     </div>
                 </div>
             {/if}
@@ -418,8 +495,14 @@
                     {if $Einstellungen.kunden.kundenregistrierung_abfragen_geburtstag === 'Y'} required{/if} 
                     >
                     {if isset($fehlendeAngaben.geburtstag)}
-                        <div class="alert alert-danger">
-                            {if $fehlendeAngaben.geburtstag == 1}{lang key="fillOut" section="global"}{elseif $fehlendeAngaben.geburtstag == 2}{lang key="invalidDateformat" section="global"}{elseif $fehlendeAngaben.geburtstag == 3}{lang key="invalidDate" section="global"}{/if}
+                        <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
+                            {if $fehlendeAngaben.geburtstag == 1}
+                                {lang key="fillOut" section="global"}
+                            {elseif $fehlendeAngaben.geburtstag == 2}
+                                {lang key="invalidDateformat" section="global"}
+                            {elseif $fehlendeAngaben.geburtstag == 3}
+                                {lang key="invalidDate" section="global"}
+                            {/if}
                         </div>
                     {/if}
                 </div>
@@ -432,42 +515,47 @@
 <fieldset>
     <div class="row">
         <div class="col-xs-12 col-md-6">
-            {foreach name=kundenfeld from=$oKundenfeld_arr item=oKundenfeld}
-                {if $step === 'formular' || $step === 'unregistriert bestellen' || $step === 'rechnungsdaten'}
-                    {if empty($smarty.session.Kunde->kKunde) || $smarty.session.Kunde->kKunde == 0 || $smarty.session.Kunde->kKunde > 0}
-                        {assign var=kKundenfeld value=$oKundenfeld->kKundenfeld}
-                        <div class="form-group float-label-control{if isset($fehlendeAngaben.custom[$kKundenfeld])} has-error{/if}{if $oKundenfeld->nPflicht == 1} required{/if}">
-                            {if $oKundenfeld->cTyp !== 'auswahl'}
-                                <label class="control-label" for="custom_{$kKundenfeld}">{$oKundenfeld->cName}</label>
-                                <input
-                                type="{if $oKundenfeld->cTyp === 'zahl'}number{elseif $oKundenfeld->cTyp === 'datum'}date{else}text{/if}"
-                                name="custom_{$kKundenfeld}"
-                                id="custom_{$kKundenfeld}"
-                                value="{if isset($cKundenattribut_arr[$kKundenfeld]->cWert) && ($step === 'formular' || $step === 'unregistriert bestellen')}{$cKundenattribut_arr[$kKundenfeld]->cWert}{elseif isset($Kunde->cKundenattribut_arr[$kKundenfeld]->cWert)}{$Kunde->cKundenattribut_arr[$kKundenfeld]->cWert}{/if}"
-                                class="form-control"
-                                placeholder="{$oKundenfeld->cName}"
-                                {if ($oKundenfeld->nPflicht == 1 && $oKundenfeld->nEditierbar == 1) || ($oKundenfeld->nEditierbar == 0 && !empty($cKundenattribut_arr[$kKundenfeld]->cWert))} required{/if}
-                                data-toggle="floatLabel"
-                                data-value="no-js"
-                                {if $oKundenfeld->nEditierbar == 0 && !empty($cKundenattribut_arr[$kKundenfeld]->cWert)}readonly{/if}/>
-                                {if isset($fehlendeAngaben.custom[$kKundenfeld])}
-                                    <div class="alert alert-danger">
-                                        {if $fehlendeAngaben.custom[$kKundenfeld] === 1}{lang key="fillOut" section="global"}{elseif $fehlendeAngaben.custom[$kKundenfeld] === 2}{lang key="invalidDateformat" section="global"}{elseif $fehlendeAngaben.custom[$kKundenfeld] === 3}{lang key="invalidDate" section="global"}{elseif $fehlendeAngaben.custom[$kKundenfeld] === 4}{lang key="invalidInteger" section="global"}{/if}
-                                    </div>
+            {if ($step === 'formular' || $step === 'unregistriert bestellen' || $step === 'rechnungsdaten') && empty($smarty.session.Kunde->kKunde)}
+                {foreach name=kundenfeld from=$oKundenfeld_arr item=oKundenfeld}
+                    {assign var=kKundenfeld value=$oKundenfeld->kKundenfeld}
+                    <div class="form-group float-label-control{if isset($fehlendeAngaben.custom[$kKundenfeld])} has-error{/if}{if $oKundenfeld->nPflicht == 1} required{/if}">
+                        <label class="control-label" for="custom_{$kKundenfeld}">{$oKundenfeld->cName}</label>
+                        {if $oKundenfeld->cTyp !== 'auswahl'}
+                            <input
+                            type="{if $oKundenfeld->cTyp === 'zahl'}number{elseif $oKundenfeld->cTyp === 'datum'}date{else}text{/if}"
+                            name="custom_{$kKundenfeld}"
+                            id="custom_{$kKundenfeld}"
+                            value="{if isset($cKundenattribut_arr[$kKundenfeld]->cWert) && ($step === 'formular' || $step === 'unregistriert bestellen')}{$cKundenattribut_arr[$kKundenfeld]->cWert}{elseif isset($Kunde->cKundenattribut_arr[$kKundenfeld]->cWert)}{$Kunde->cKundenattribut_arr[$kKundenfeld]->cWert}{/if}"
+                            class="form-control"
+                            placeholder="{$oKundenfeld->cName}"
+                            {if ($oKundenfeld->nPflicht == 1 && $oKundenfeld->nEditierbar == 1) || ($oKundenfeld->nEditierbar == 0 && !empty($cKundenattribut_arr[$kKundenfeld]->cWert))} required{/if}
+                            data-toggle="floatLabel"
+                            data-value="no-js"
+                            {if $oKundenfeld->nEditierbar == 0 && !empty($cKundenattribut_arr[$kKundenfeld]->cWert)}readonly{/if}/>
+                        {else}
+                            <select name="custom_{$kKundenfeld}" class="form-control{if $oKundenfeld->nPflicht == 1} required{/if}" {if $oKundenfeld->nEditierbar == 0 && !empty($cKundenattribut_arr[$kKundenfeld]->cWert)}disabled{/if}{if $oKundenfeld->nPflicht == 1} required{/if}>
+                                <option value="" selected disabled>{lang key="pleaseChoose" section="global"}</option>
+                                {foreach name=select from=$oKundenfeld->oKundenfeldWert_arr item=oKundenfeldWert}
+                                    <option value="{$oKundenfeldWert->cWert}" {if $step == 'formular' && isset($cKundenattribut_arr[$kKundenfeld]->cWert) && ($oKundenfeldWert->cWert == $cKundenattribut_arr[$kKundenfeld]->cWert)}selected{elseif isset($Kunde->cKundenattribut_arr[$kKundenfeld]->cWert) && ($oKundenfeldWert->cWert == $Kunde->cKundenattribut_arr[$kKundenfeld]->cWert)}selected{/if}>{$oKundenfeldWert->cWert}</option>
+                                {/foreach}
+                            </select>
+                        {/if}
+                        {if isset($fehlendeAngaben.custom[$kKundenfeld])}
+                            <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
+                                {if $fehlendeAngaben.custom[$kKundenfeld] === 1}
+                                    {lang key="fillOut" section="global"}
+                                {elseif $fehlendeAngaben.custom[$kKundenfeld] === 2}
+                                    {lang key="invalidDateformat" section="global"}
+                                {elseif $fehlendeAngaben.custom[$kKundenfeld] === 3}
+                                    {lang key="invalidDate" section="global"}
+                                {elseif $fehlendeAngaben.custom[$kKundenfeld] === 4}
+                                    {lang key="invalidInteger" section="global"}
                                 {/if}
-                            {else}
-                                <label class="control-label" for="custom_{$kKundenfeld}">{$oKundenfeld->cName}</label>
-                                <select name="custom_{$kKundenfeld}" class="form-control{if $oKundenfeld->nPflicht == 1} required{/if}" {if $oKundenfeld->nEditierbar == 0 && !empty($cKundenattribut_arr[$kKundenfeld]->cWert)}disabled{/if}>
-                                    <option value="" selected disabled>{lang key="pleaseChoose" section="global"}</option>
-                                    {foreach name=select from=$oKundenfeld->oKundenfeldWert_arr item=oKundenfeldWert}
-                                        <option value="{$oKundenfeldWert->cWert}" {if $step == 'formular' && isset($cKundenattribut_arr[$kKundenfeld]->cWert) && ($oKundenfeldWert->cWert == $cKundenattribut_arr[$kKundenfeld]->cWert)}selected{elseif isset($Kunde->cKundenattribut_arr[$kKundenfeld]->cWert) && ($oKundenfeldWert->cWert == $Kunde->cKundenattribut_arr[$kKundenfeld]->cWert)}selected{/if}>{$oKundenfeldWert->cWert}</option>
-                                    {/foreach}
-                                </select>
-                            {/if}
-                        </div>
-                    {/if}
-                {/if}
-            {/foreach}
+                            </div>
+                        {/if}
+                    </div>
+                {/foreach}
+            {/if}
         </div>
     </div>
 </fieldset>
@@ -489,9 +577,11 @@
     isset($Einstellungen.global.anti_spam_method) && $Einstellungen.global.anti_spam_method !== 'N' &&
     isset($Einstellungen.kunden.registrieren_captcha) && $Einstellungen.kunden.registrieren_captcha !== 'N' && empty($Kunde->kKunde)}
     <hr>
+    <div class="g-recaptcha form-group" data-sitekey="{$Einstellungen.global.global_google_recaptcha_public}" data-callback="captcha_filled"></div>
     {if isset($fehlendeAngaben.captcha) && $fehlendeAngaben.captcha != false}
-        <div class="alert alert-danger" role="alert">{lang key="invalidToken" section="global"}</div>
+        <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
+            {lang key="invalidToken" section="global"}
+        </div>
     {/if}
-    <div class="g-recaptcha" data-sitekey="{$Einstellungen.global.global_google_recaptcha_public}"></div>
     <hr>
 {/if}

@@ -8,7 +8,11 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'trustedshops_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
+require_once PFAD_ROOT . PFAD_INCLUDES . 'wunschliste_inc.php';
+require_once PFAD_ROOT . PFAD_INCLUDES . 'jtl_inc.php';
+
 /** @global JTLSmarty $smarty */
+
 $AktuelleSeite = 'BESTELLVORGANG';
 $Einstellungen = Shop::getSettings([
     CONF_GLOBAL,
@@ -21,12 +25,12 @@ $Einstellungen = Shop::getSettings([
 ]);
 Shop::setPageType(PAGE_BESTELLVORGANG);
 $step    = 'accountwahl';
-$hinweis = '';
+$cHinweis = '';
 // Kill Ajaxcheckout falls vorhanden
 unset($_SESSION['ajaxcheckout']);
 // Loginbenutzer?
 if (isset($_POST['login']) && (int)$_POST['login'] === 1) {
-    fuehreLoginAus($_POST['userLogin'], $_POST['passLogin']);
+    fuehreLoginAus($_POST['email'], $_POST['passwort']);
 }
 if (verifyGPCDataInteger('basket2Pers') === 1) {
     require_once PFAD_ROOT . PFAD_INCLUDES . 'jtl_inc.php';
@@ -184,7 +188,7 @@ $smarty->assign('Navigation', createNavigation($AktuelleSeite))
        ->assign('Ueberschrift', Shop::Lang()->get('orderStep0Title', 'checkout'))
        ->assign('UeberschriftKlein', Shop::Lang()->get('orderStep0Title2', 'checkout'))
        ->assign('Einstellungen', $Einstellungen)
-       ->assign('hinweis', $hinweis)
+       ->assign('hinweis', $cHinweis)
        ->assign('step', $step)
        ->assign('WarensummeLocalized', $_SESSION['Warenkorb']->gibGesamtsummeWarenLocalized())
        ->assign('Warensumme', $_SESSION['Warenkorb']->gibGesamtsummeWaren())

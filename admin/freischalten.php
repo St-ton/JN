@@ -17,7 +17,7 @@ $cHinweis = '';
 $cFehler  = '';
 $step     = 'freischalten_uebersicht';
 
-$Einstellungen = Shop::getSettings(array(CONF_BEWERTUNG));
+$Einstellungen = Shop::getSettings([CONF_BEWERTUNG]);
 
 // Suche
 if (!isset($cBewertungSQL)) {

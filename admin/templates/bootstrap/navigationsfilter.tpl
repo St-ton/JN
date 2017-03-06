@@ -151,8 +151,9 @@
 </div>{/if}
 <div class="panel panel-default">
     <div class="panel-heading">
-        <h3 class="panel-title">{$oConfig->cName} <span
-                    class="pull-right">{getHelpDesc cID=$oConfig->kEinstellungenConf}</span></h3>
+        <h3 class="panel-title">
+            {$oConfig->cName} <span class="pull-right">{getHelpDesc cID=$oConfig->kEinstellungenConf}</span>
+        </h3>
     </div>
     <div class="panel-body">
         {assign var=open value=true}
@@ -166,7 +167,9 @@
 </div>
 
 <p class="submit">
-    <button name="speichern" class="btn btn-primary" type="button" value="{#navigationsfilterSave#}" onclick="speicherDaten();"><i class="fa fa-save"></i> {#navigationsfilterSave#}</button>
+    <button name="speichern" class="btn btn-primary" type="button" value="{#navigationsfilterSave#}" onclick="speicherDaten();">
+        <i class="fa fa-save"></i> {#navigationsfilterSave#}
+    </button>
 </p>
 </form>
 </div>

@@ -12,7 +12,7 @@
 function berechneVersandpreisBrutto($fPreis, $fSteuersatz)
 {
     if ($fPreis > 0) {
-        return round(floatval($fPreis * ((100 + $fSteuersatz) / 100)), 2);
+        return round((float)($fPreis * ((100 + $fSteuersatz) / 100)), 2);
     }
 
     return 0.0;

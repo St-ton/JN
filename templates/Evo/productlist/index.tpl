@@ -26,9 +26,10 @@
     {/if}
     
     {block name="productlist-results"}
-    <div class="row {if $style !== 'list'}row-eq-height row-eq-img-height{/if} {$style}" id="product-list">
+    <div class="row {if $style !== 'list'}row-eq-height row-eq-img-height{/if} {$style}" id="product-list" itemprop="mainEntity" itemscope itemtype="http://schema.org/ItemList">
         {foreach name=artikel from=$Suchergebnisse->Artikel->elemente item=Artikel}
-            <div class="product-wrapper {$grid}">
+            <div class="product-wrapper {$grid}" itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+                <meta itemprop="position" content="{$smarty.foreach.artikel.iteration}">
                 {if $style === 'list'}
                     {include file='productlist/item_list.tpl' tplscope=$style}
                 {else}

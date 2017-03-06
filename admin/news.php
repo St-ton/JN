@@ -204,7 +204,7 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
                 $extension = substr(
                     $_FILES['previewImage']['type'],
                     strpos($_FILES['previewImage']['type'], '/') + 1,
-                    strlen($_FILES['previewImage']['type'] - (strpos($_FILES['previewImage']['type'], '/'))) + 1
+                    strlen($_FILES['previewImage']['type'] - strpos($_FILES['previewImage']['type'], '/')) + 1
                 );
                 //not elegant, but since it's 99% jpg..
                 if ($extension === 'jpe') {
@@ -232,7 +232,7 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
                         $_FILES['Bilder']['type'][$i - $nZaehler],
                         strpos($_FILES['Bilder']['type'][$i - $nZaehler], '/') + 1,
                         strlen($_FILES['Bilder']['type'][$i - $nZaehler] -
-                            (strpos($_FILES['Bilder']['type'][$i - $nZaehler], '/'))) + 1
+                            strpos($_FILES['Bilder']['type'][$i - $nZaehler], '/')) + 1
                     );
                     //not elegant, but since it's 99% jpg..
                     if ($extension === 'jpe') {
@@ -272,7 +272,7 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
                 Shop::DB()->insert('tnewskategorienews', $oNewsKategorieNews);
             }
             // tnewsmonatsuebersicht updaten
-            if ($nAktiv == 1) {
+            if ($nAktiv === 1) {
                 $oDatum = gibJahrMonatVonDateTime($oNews->dGueltigVon);
                 $dMonat = $oDatum->Monat;
                 $dJahr  = $oDatum->Jahr;
@@ -300,7 +300,7 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
                     );
                     // SEO tseo eintragen
                     $oSeo           = new stdClass();
-                    $oSeo->cSeo     = checkSeo(getSeo($oNewsMonatsPraefix->cPraefix . '-' . strval($dMonat) . '-' . $dJahr));
+                    $oSeo->cSeo     = checkSeo(getSeo($oNewsMonatsPraefix->cPraefix . '-' . (string)$dMonat . '-' . $dJahr));
                     $oSeo->cKey     = 'kNewsMonatsUebersicht';
                     $oSeo->kKey     = $oNewsMonatsUebersicht->kNewsMonatsUebersicht;
                     $oSeo->kSprache = $_SESSION['kSprache'];
@@ -313,7 +313,7 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
                     }
                     $oNewsMonatsUebersichtTMP           = new stdClass();
                     $oNewsMonatsUebersichtTMP->kSprache = (int)$_SESSION['kSprache'];
-                    $oNewsMonatsUebersichtTMP->cName    = mappeDatumName(strval($dMonat), $dJahr, $oSpracheNews->cISO);
+                    $oNewsMonatsUebersichtTMP->cName    = mappeDatumName((string)$dMonat, $dJahr, $oSpracheNews->cISO);
                     $oNewsMonatsUebersichtTMP->nMonat   = (int)$dMonat;
                     $oNewsMonatsUebersichtTMP->nJahr    = (int)$dJahr;
 
@@ -326,7 +326,7 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
                     );
                     // SEO tseo eintragen
                     $oSeo           = new stdClass();
-                    $oSeo->cSeo     = checkSeo(getSeo($oNewsMonatsPraefix->cPraefix . '-' . strval($dMonat) . '-' . $dJahr));
+                    $oSeo->cSeo     = checkSeo(getSeo($oNewsMonatsPraefix->cPraefix . '-' . (string)$dMonat . '-' . $dJahr));
                     $oSeo->cKey     = 'kNewsMonatsUebersicht';
                     $oSeo->kKey     = (int)$kNewsMonatsUebersicht;
                     $oSeo->kSprache = (int)$_SESSION['kSprache'];
@@ -358,7 +358,7 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
     } elseif (isset($_POST['news_loeschen']) && (int)$_POST['news_loeschen'] === 1) { // News loeschen
         if (is_array($_POST['kNews']) && count($_POST['kNews']) > 0) {
             foreach ($_POST['kNews'] as $kNews) {
-                $kNews = intval($kNews);
+                $kNews = (int)$kNews;
 
                 if ($kNews > 0) {
                     ContentAuthor::getInstance()->clearAuthor('NEWS', $kNews);
@@ -408,13 +408,13 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
         $step             = 'news_uebersicht';
         $cName            = htmlspecialchars($_POST['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
         $cSeo             = $_POST['cSeo'];
-        $nSort            = $_POST['nSort'];
-        $nAktiv           = $_POST['nAktiv'];
+        $nSort            = (int)$_POST['nSort'];
+        $nAktiv           = (int)$_POST['nAktiv'];
         $cMetaTitle       = htmlspecialchars($_POST['cMetaTitle'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
         $cMetaDescription = htmlspecialchars($_POST['cMetaDescription'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
         $cBeschreibung    = htmlspecialchars($_POST['cBeschreibung'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
         $cPreviewImage    = $_POST['previewImage'];
-        $cPlausiValue_arr = pruefeNewsKategorie($_POST['cName'], (isset($_POST['newskategorie_edit_speichern']))
+        $cPlausiValue_arr = pruefeNewsKategorie($_POST['cName'], isset($_POST['newskategorie_edit_speichern'])
             ? (int)$_POST['newskategorie_edit_speichern']
             : 0
         );
@@ -434,7 +434,7 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
             $oNewsKategorie->cName                 = $cName;
             $oNewsKategorie->cBeschreibung         = $cBeschreibung;
             $oNewsKategorie->nSort                 = ((int)$nSort > -1) ? (int)$nSort : 0;
-            $oNewsKategorie->nAktiv                = (int)$nAktiv;
+            $oNewsKategorie->nAktiv                = $nAktiv;
             $oNewsKategorie->cMetaTitle            = $cMetaTitle;
             $oNewsKategorie->cMetaDescription      = $cMetaDescription;
             $oNewsKategorie->dLetzteAktualisierung = 'now()';
@@ -469,7 +469,7 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
                 $extension = substr(
                     $_FILES['previewImage']['type'],
                     strpos($_FILES['previewImage']['type'], '/') + 1,
-                    strlen($_FILES['previewImage']['type'] - (strpos($_FILES['previewImage']['type'], '/'))) + 1
+                    strlen($_FILES['previewImage']['type'] - strpos($_FILES['previewImage']['type'], '/')) + 1
                 );
                 $cUploadDatei = $cUploadVerzeichnisKat . $kNewsKategorie . '/preview.' . $extension;
                 move_uploaded_file($_FILES['previewImage']['tmp_name'], $cUploadDatei);
@@ -569,7 +569,7 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
         if ($kNews > 0 && count($oNewsKategorie_arr) > 0) {
             $smarty->assign('oNewsKategorie_arr', $oNewsKategorie_arr)
                    ->assign('oAuthor', ContentAuthor::getInstance()->getAuthor('NEWS', $kNews))
-                   ->assign('oPossibleAuthors_arr', ContentAuthor::getInstance()->getPossibleAuthors(['CONTENT_NEWS_SYSTEM_VIEW']));;
+                   ->assign('oPossibleAuthors_arr', ContentAuthor::getInstance()->getPossibleAuthors(['CONTENT_NEWS_SYSTEM_VIEW']));
             $step  = 'news_editieren';
             $oNews = Shop::DB()->query(
                 "SELECT DATE_FORMAT(tnews.dErstellt, '%d.%m.%Y %H:%i') AS Datum, 

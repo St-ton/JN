@@ -46,7 +46,7 @@ if (isset($oLink->kLink) && $oLink->kLink > 0) {
 $cHinweis      = '';
 $cFehler       = '';
 $cCanonicalURL = '';
-$Einstellungen = Shop::getSettings(array(CONF_GLOBAL, CONF_RSS, CONF_NEWSLETTER));
+$Einstellungen = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_NEWSLETTER]);
 
 pruefeHttps();
 //hole alle OberKategorien
@@ -227,7 +227,10 @@ if (isset($_POST['abonnieren']) && (int)$_POST['abonnieren'] === 1) {
             $cFehler = Shop::Lang()->get('newsletterNoexists', 'errorMessages');
         }
     } else {
-        $cFehler = Shop::Lang()->get('newsletterWrongemail', 'errorMessages');
+        $cFehler          = Shop::Lang()->get('newsletterWrongemail', 'errorMessages');
+        $oFehlendeAngaben = new stdClass();
+        $oFehlendeAngaben->cUnsubscribeEmail = 1;
+        $smarty->assign('oFehlendeAngaben', $oFehlendeAngaben);
     }
 } elseif (isset($_GET['show']) && (int)$_GET['show'] > 0) { // History anzeigen
     $cOption            = 'anzeigen';

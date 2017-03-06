@@ -436,7 +436,7 @@ class Kunde
      */
     public function gibGuthabenLocalized()
     {
-        return (gibPreisStringLocalized($this->fGuthaben));
+        return gibPreisStringLocalized($this->fGuthaben);
     }
 
     /**

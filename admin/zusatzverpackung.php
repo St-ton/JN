@@ -16,9 +16,9 @@ $oSprache_arr = gibAlleSprachen();
 // Zusatzverpackung speichern
 if (isset($_POST['eintragen']) && (int)$_POST['eintragen'] === 1 && validateToken()) {
     $kVerpackung         = (int)$_POST['kVerpackung'];
-    $fBrutto             = isset($_POST['fBrutto']) ? doubleval($_POST['fBrutto']) : 0;
-    $fMindestbestellwert = isset($_POST['fMindestbestellwert']) ? doubleval($_POST['fMindestbestellwert']) : 0;
-    $fKostenfrei         = isset($_POST['fKostenfrei']) ? doubleval($_POST['fKostenfrei']) : 0;
+    $fBrutto             = isset($_POST['fBrutto']) ? (float)$_POST['fBrutto'] : 0;
+    $fMindestbestellwert = isset($_POST['fMindestbestellwert']) ? (float)$_POST['fMindestbestellwert'] : 0;
+    $fKostenfrei         = isset($_POST['fKostenfrei']) ? (float)$_POST['fKostenfrei'] : 0;
     $kSteuerklasse       = isset($_POST['kSteuerklasse']) ? (int)$_POST['kSteuerklasse'] : 0;
     $kKundengruppe_arr   = isset($_POST['kKundengruppe']) ? $_POST['kKundengruppe'] : null;
     $nAktiv              = isset($_POST['nAktiv']) ? (int)$_POST['nAktiv'] : 0;
@@ -80,14 +80,14 @@ if (isset($_POST['eintragen']) && (int)$_POST['eintragen'] === 1 && validateToke
     } else {
         $cFehler .= 'Fehler: Bitte geben Sie der Verpackung einen Namen.<br />';
     }
-} elseif (isset($_POST['bearbeiten']) && intval($_POST['bearbeiten']) === 1 && validateToken()) {
+} elseif (isset($_POST['bearbeiten']) && (int)$_POST['bearbeiten'] === 1 && validateToken()) {
     // Verpackungen bearbeiten (aktualisieren / loeschen)
     if (isset($_POST['loeschen']) && ($_POST['loeschen'] === 'Löschen' ||
             utf8_decode($_POST['loeschen'] === 'Löschen') ||
             $_POST['loeschen'] === utf8_decode('Löschen'))) {
         if (is_array($_POST['kVerpackung']) && count($_POST['kVerpackung']) > 0) {
             foreach ($_POST['kVerpackung'] as $kVerpackung) {
-                $kVerpackung = intval($kVerpackung);
+                $kVerpackung = (int)$kVerpackung;
                 // tverpackung loeschen
                 Shop::DB()->delete('tverpackung', 'kVerpackung', $kVerpackung);
                 // tverpackungsprache loeschen
@@ -187,7 +187,7 @@ function gibKundengruppeObj($cKundengruppe)
         if (is_array($kKundengruppe_arr) && count($kKundengruppe_arr) > 0) {
             if (!in_array('-1', $kKundengruppe_arr)) {
                 foreach ($kKundengruppe_arr as $kKundengruppe) {
-                    $kKundengruppe          = intval($kKundengruppe);
+                    $kKundengruppe          = (int)$kKundengruppe;
                     $kKundengruppeTMP_arr[] = $kKundengruppe;
                     if (is_array($oKundengruppe_arr) && count($oKundengruppe_arr) > 0) {
                         foreach ($oKundengruppe_arr as $oKundengruppe) {

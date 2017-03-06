@@ -788,7 +788,7 @@ function gibGratisGeschenkArtikel($Einstellungen)
         foreach ($oArtikelGeschenkTMP_arr as $i => $oArtikelGeschenkTMP) {
             $oArtikel = new Artikel();
             $oArtikel->fuelleArtikel($oArtikelGeschenkTMP->kArtikel, $defaultOptions);
-            $oArtikel->cBestellwert = gibPreisStringLocalized(doubleval($oArtikelGeschenkTMP->cWert));
+            $oArtikel->cBestellwert = gibPreisStringLocalized((float)$oArtikelGeschenkTMP->cWert);
 
             if ($oArtikel->kEigenschaftKombi > 0 ||
                 !is_array($oArtikel->Variationen) ||

@@ -12,7 +12,7 @@ class AdminTemplate
     /**
      * @var string
      */
-    public static $cTemplate = null;
+    public static $cTemplate;
 
     /**
      * @var int
@@ -22,7 +22,7 @@ class AdminTemplate
     /**
      * @var AdminTemplate
      */
-    private static $instance = null;
+    private static $instance;
 
     /**
      * @var bool
@@ -32,42 +32,42 @@ class AdminTemplate
     /**
      * @var TemplateHelper
      */
-    private static $helper = null;
+    private static $helper;
 
     /**
-     * @var object|null
+     * @var object
      */
-    public $xmlData = null;
+    public $xmlData;
 
     /**
-     * @var string|null
+     * @var string
      */
-    public $name = null;
+    public $name;
 
     /**
-     * @var string|null
+     * @var string
      */
-    public $author = null;
+    public $author;
 
     /**
-     * @var string|null
+     * @var string
      */
-    public $url = null;
+    public $url;
 
     /**
-     * @var int|null
+     * @var int
      */
-    public $version = null;
+    public $version;
 
     /**
-     * @var int|null
+     * @var int
      */
-    public $shopVersion = null;
+    public $shopVersion;
 
     /**
-     * @var string|null
+     * @var string
      */
-    public $preview = null;
+    public $preview;
 
     /**
      *
@@ -104,7 +104,9 @@ class AdminTemplate
      */
     public function getDir($absolute = false)
     {
-        return ($absolute) ? (PFAD_ROOT . PFAD_ADMIN . PFAD_TEMPLATES . self::$cTemplate) : self::$cTemplate;
+        return $absolute
+            ? (PFAD_ROOT . PFAD_ADMIN . PFAD_TEMPLATES . self::$cTemplate)
+            : self::$cTemplate;
     }
 
     /**

@@ -50,17 +50,13 @@ function removeFiles($cDir, $nTimeOff, $nMax)
                 $cFilePath = $cDir . $cFile;
                 if (is_file($cFilePath)) {
                     $nCreated = filemtime($cFilePath);
-                    if (($nCreated + $nTimeOff) <= time()) {
-                        if (($bDeleted = @unlink($cFilePath)) !== false) {
-                            $nDelCount++;
-                        }
+                    if (($nCreated + $nTimeOff) <= time() && ($bDeleted = @unlink($cFilePath)) !== false) {
+                        $nDelCount++;
                     }
                 } elseif (is_dir($cFilePath)) {
                     $nDelCount += removeFiles($cFilePath, $nTimeOff, $nMax - $nDelCount);
-                    if ($nDelCount < $nMax) {
-                        if (($bDeleted = @rmdir($cFilePath)) !== false) {
-                            $nDelCount++;
-                        }
+                    if ($nDelCount < $nMax && ($bDeleted = @rmdir($cFilePath)) !== false) {
+                        $nDelCount++;
                     }
                 }
             }

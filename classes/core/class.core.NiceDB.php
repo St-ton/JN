@@ -559,7 +559,7 @@ class NiceDB
                         } elseif ($object->$property === 'now()') {
                             $values .= $object->$property . ')';
                         } else {
-                            $values .= '' . $this->pdoEscape($object->$property) . ')';
+                            $values .= '"' . $this->pdoEscape($object->$property) . '")';
                         }
                     } else {
                         $columns .= $property . ', ';
@@ -568,12 +568,11 @@ class NiceDB
                         } elseif ($object->$property === 'now()') {
                             $values .= $object->$property . ', ';
                         } else {
-                            $values .= '' . $this->pdoEscape($object->$property) . ', ';
+                            $values .= '"' . $this->pdoEscape($object->$property) . '", ';
                         }
                     }
                 }
-                $stmt = "INSERT INTO $tableName $columns $values";
-                $this->analyzeQuery('insert', $stmt, $end - $start, $backtrace);
+                $this->analyzeQuery('insert', "INSERT INTO $tableName $columns $values", $end - $start, $backtrace);
             }
 
             return ($id > 0) ? $id : 1;
@@ -778,13 +777,13 @@ class NiceDB
             $keys    = is_array($keyname) ? $keyname : [$keyname, $keyname1, $keyname2];
             $values  = is_array($keyvalue) ? $keyvalue : [$keyvalue, $keyvalue1, $keyvalue2];
             $i       = 0;
-            foreach ($keys as &$_key) {
-                if ($_key !== null) {
-                    $_key .= '=';
+            foreach ($keys as &$k) {
+                if ($k !== null) {
+                    $k .= '=';
                     if (is_string($values[$i])) {
-                        $_key .= '\'' . $values[$i] . '\'';
+                        $k .= '\'' . $values[$i] . '\'';
                     } else {
-                        $_key .= $values[$i];
+                        $k .= $values[$i];
                     }
                 } else {
                     unset($keys[$i]);
@@ -1166,7 +1165,7 @@ class NiceDB
     /**
      * Quotes a string with outer quotes for use in a query.
      *
-     * @param string $string
+     * @param string|bool $string
      * @return string
      */
     public function quote($string)

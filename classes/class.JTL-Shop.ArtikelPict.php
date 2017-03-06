@@ -63,7 +63,7 @@ class ArtikelPict
     {
         $obj = kopiereMembers($this);
 
-        return (Shop::DB()->insert('tartikelpict', $obj));
+        return Shop::DB()->insert('tartikelpict', $obj);
     }
 
     /**

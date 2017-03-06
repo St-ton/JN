@@ -366,7 +366,7 @@ function gibKundeGuthaben($fGuthaben, $kKunde)
     if ($kKunde > 0) {
         Shop::DB()->query(
             "UPDATE tkunde
-                SET fGuthaben = fGuthaben + " . floatval($fGuthaben) . "
+                SET fGuthaben = fGuthaben + " . (float)$fGuthaben . "
                 WHERE kKunde = " . (int)$kKunde, 4
         );
 

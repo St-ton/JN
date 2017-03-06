@@ -62,7 +62,7 @@
 {if isset($noarchiv) && $noarchiv}
     <div class="alert alert-info">{lang key="noNewsArchiv" section="news"}.</div>
 {elseif !empty($oNewsUebersicht_arr)}
-    <div id="newsContent">
+    <div id="newsContent" itemprop="mainEntity" itemscope itemtype="https://schema.org/Blog">
         {if !empty($cCurrentKategorie)}
             <h2>{$cCurrentKategorie}</h2>
             <hr>

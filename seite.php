@@ -74,7 +74,7 @@ if ($link->nLinkart === LINKTYP_STARTSEITE) {
            ->assign('Navigation', $Navigation)
            ->assign('oNews_arr', ($Einstellungen['news']['news_benutzen'] === 'Y') ? gibNews($Einstellungen) : []);
     // Auswahlassistent
-    if (function_exists('starteAuswahlAssistent')) {
+    if (TEMPLATE_COMPATIBILITY === true && function_exists('starteAuswahlAssistent')) {
         starteAuswahlAssistent(
             AUSWAHLASSISTENT_ORT_STARTSEITE,
             1,
@@ -82,6 +82,11 @@ if ($link->nLinkart === LINKTYP_STARTSEITE) {
             $smarty,
             $Einstellungen['auswahlassistent']
         );
+    } elseif (class_exists('AuswahlAssistent')) {
+        AuswahlAssistent::startIfRequired(AUSWAHLASSISTENT_ORT_STARTSEITE, 1, Shop::getLanguage(), $smarty);
+    }
+    if ($Einstellungen['news']['news_benutzen'] === 'Y') {
+        $smarty->assign('oNews_arr', gibNews($Einstellungen));
     }
 } elseif ($link->nLinkart === LINKTYP_DATENSCHUTZ) {
     Shop::setPageType(PAGE_DATENSCHUTZ);
@@ -129,7 +134,7 @@ if ($link->nLinkart === LINKTYP_STARTSEITE) {
 } elseif ($link->nLinkart === LINKTYP_AUSWAHLASSISTENT) {
     Shop::setPageType(PAGE_AUSWAHLASSISTENT);
     // Auswahlassistent
-    if (function_exists('starteAuswahlAssistent')) {
+    if (TEMPLATE_COMPATIBILITY === true && function_exists('starteAuswahlAssistent')) {
         starteAuswahlAssistent(
             AUSWAHLASSISTENT_ORT_LINK,
             $link->kLink,
@@ -137,6 +142,8 @@ if ($link->nLinkart === LINKTYP_STARTSEITE) {
             $smarty,
             $Einstellungen['auswahlassistent']
         );
+    } elseif (class_exists('AuswahlAssistent')) {
+        AuswahlAssistent::startIfRequired(AUSWAHLASSISTENT_ORT_LINK, $link->kLink, Shop::getLanguage(), $smarty);
     }
 } elseif ($link->nLinkart === LINKTYP_404) {
     Shop::setPageType(PAGE_404);

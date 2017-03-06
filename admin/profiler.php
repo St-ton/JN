@@ -73,10 +73,10 @@ if (count($pluginProfilerData) > 0) {
             $hookData->drilldown->runcount   = [];
             $hookData->color                 = $colors[$idx];
             foreach ($_hook as $_file) {
-                $hookData->y += (floatval($_file->runtime) * 1000);
+                $hookData->y += ((float)$_file->runtime * 1000);
                 $runtime += $hookData->y;
                 $hookData->drilldown->categories[] = $_file->filename;
-                $hookData->drilldown->data[]       = (floatval($_file->runtime) * 1000);
+                $hookData->drilldown->data[]       = ((float)$_file->runtime * 1000);
                 $hookData->drilldown->runcount[]   = $_file->runcount;
             }
             $data[] = $hookData;

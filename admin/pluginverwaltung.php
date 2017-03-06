@@ -97,7 +97,7 @@ if (!empty($_FILES['file_data'])) {
             $nVersion = $PluginInstalliert->getCurrentVersion();
             if ($nVersion > $PluginInstalliert->nVersion) {
                 $nReturnValue                       = pluginPlausi($PluginInstalliert->kPlugin);
-                $PluginInstalliert_arr[$i]->dUpdate = number_format(doubleval($nVersion) / 100, 2);
+                $PluginInstalliert_arr[$i]->dUpdate = number_format((float)$nVersion / 100, 2);
 
                 if ($nReturnValue === 1 || $nReturnValue === 90) {
                     $PluginInstalliert_arr[$i]->cUpdateFehler = 1;
@@ -106,7 +106,7 @@ if (!empty($_FILES['file_data'])) {
                         StringHandler::htmlentities(mappePlausiFehler($nReturnValue, $PluginInstalliert));
                 }
             }
-            $PluginInstalliert_arr[$i]->dVersion = number_format(doubleval($PluginInstalliert->nVersion) / 100, 2);
+            $PluginInstalliert_arr[$i]->dVersion = number_format((float)$PluginInstalliert->nVersion / 100, 2);
             $PluginInstalliert_arr[$i]->cStatus  = $PluginInstalliert->mapPluginStatus($PluginInstalliert->nStatus);
         }
     }
@@ -507,13 +507,13 @@ if ($step === 'pluginverwaltung_uebersicht') {
             $nVersion = $PluginInstalliert->getCurrentVersion();
             if ($nVersion > $PluginInstalliert->nVersion) {
                 $nReturnValue                       = pluginPlausi($PluginInstalliert->kPlugin);
-                $PluginInstalliert_arr[$i]->dUpdate = number_format(doubleval($nVersion) / 100, 2);
+                $PluginInstalliert_arr[$i]->dUpdate = number_format((float)$nVersion / 100, 2);
 
                 $PluginInstalliert_arr[$i]->cUpdateFehler = ($nReturnValue === 1 || $nReturnValue === 90)
                     ? 1
                     : StringHandler::htmlentities(mappePlausiFehler($nReturnValue, $PluginInstalliert));
             }
-            $PluginInstalliert_arr[$i]->dVersion = number_format(doubleval($PluginInstalliert->nVersion) / 100, 2);
+            $PluginInstalliert_arr[$i]->dVersion = number_format((float)$PluginInstalliert->nVersion / 100, 2);
             $PluginInstalliert_arr[$i]->cStatus  = $PluginInstalliert->mapPluginStatus($PluginInstalliert->nStatus);
         }
     }
@@ -534,7 +534,7 @@ if ($step === 'pluginverwaltung_uebersicht') {
             }
             // only if we found something, we add it to our array
             if ('' !== $vPossibleLicenseNames[$j]) {
-                $vLicenseFiles[$PluginVerfuebar_arr[$i]->cVerzeichnis] = $szFolder.$vPossibleLicenseNames[$j];;
+                $vLicenseFiles[$PluginVerfuebar_arr[$i]->cVerzeichnis] = $szFolder.$vPossibleLicenseNames[$j];
             }
         }
         if (!empty($vLicenseFiles)) {
@@ -569,7 +569,7 @@ if ($reload === true) {
 if (defined('PLUGIN_DEV_MODE') && PLUGIN_DEV_MODE === true) {
     $pluginDevNotice = 'Ihr Shop befindet sich im Plugin-Entwicklungsmodus. ' .
         '&Auml;nderungen an der XML-Datei eines aktivierten Plugins bewirken ein automatisches Update.';
-    $cHinweis        = (empty($cHinweis))
+    $cHinweis        = empty($cHinweis)
         ? $pluginDevNotice
         : $pluginDevNotice . '<br>' . $cHinweis;
 }

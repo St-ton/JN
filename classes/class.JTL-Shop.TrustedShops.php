@@ -296,7 +296,7 @@ class TrustedShops
             $returnValue = $client->requestForProtectionV2(
                 $this->tsId,
                 $this->tsProductId,
-                doubleval($this->amount),
+                (float)$this->amount,
                 $this->currency,
                 $this->paymentType,
                 $this->buyerEmail,
@@ -324,7 +324,12 @@ class TrustedShops
                     break;
             }
         } else {
-            writeLog(PFAD_LOGFILES . 'tskaeuferschutz.log', 'TS Web Service has successfully protected transaction, protectioner is ' . $returnValue . ' - Amount: ' . doubleval($this->amount), 1);
+            writeLog(
+                PFAD_LOGFILES . 'tskaeuferschutz.log',
+                'TS Web Service has successfully protected transaction, protectioner is ' .
+                    $returnValue . ' - Amount: ' . (float)$this->amount,
+                1
+            );
         }
 
         return true;
@@ -404,23 +409,29 @@ class TrustedShops
         if (isset($this->oKaeuferschutzProdukte->item) && is_array($this->oKaeuferschutzProdukte->item) && count($this->oKaeuferschutzProdukte->item) > 0) {
             $cLandISO = isset($_SESSION['Lieferadresse']->cLand) ? $_SESSION['Lieferadresse']->cLand : null;
             if (!$cLandISO) {
-                $cLandISO = (isset($_SESSION['TrustedShops']->oSprache->cISOSprache)) ?
-                    $_SESSION['TrustedShops']->oSprache->cISOSprache :
-                    $_SESSION['Kunde']->cLand;
+                $cLandISO = isset($_SESSION['TrustedShops']->oSprache->cISOSprache)
+                    ? $_SESSION['TrustedShops']->oSprache->cISOSprache
+                    : $_SESSION['Kunde']->cLand;
             }
 
             require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Warenkorb.php';
             unset($_SESSION['Warenkorb']);
             $_SESSION['Warenkorb'] = new Warenkorb();
             foreach ($this->oKaeuferschutzProdukte->item as $i => $oItem) {
-                $this->oKaeuferschutzProdukte->item[$i]->protectedAmountDecimalLocalized = gibPreisStringLocalized($oItem->protectedAmountDecimal);
+                $this->oKaeuferschutzProdukte->item[$i]->protectedAmountDecimalLocalized =
+                    gibPreisStringLocalized($oItem->protectedAmountDecimal);
 
-                if (isset($_SESSION['Warenkorb'], $_SESSION['Steuersatz']) && (!isset($_SESSION['Kundengruppe']->nNettoPreise) || !$_SESSION['Kundengruppe']->nNettoPreise)) {
-                    $this->oKaeuferschutzProdukte->item[$i]->grossFeeLocalized = gibPreisStringLocalized($oItem->netFee * ((100 + doubleval($_SESSION['Steuersatz'][$_SESSION['Warenkorb']->gibVersandkostenSteuerklasse($cLandISO)])) / 100));
-                    $this->oKaeuferschutzProdukte->item[$i]->cFeeTxt           = Shop::Lang()->get('incl', 'productDetails') . ' ' . Shop::Lang()->get('vat', 'productDetails');
+                if (isset($_SESSION['Warenkorb'], $_SESSION['Steuersatz']) &&
+                    (!isset($_SESSION['Kundengruppe']->nNettoPreise) || !$_SESSION['Kundengruppe']->nNettoPreise)
+                ) {
+                    $this->oKaeuferschutzProdukte->item[$i]->grossFeeLocalized = gibPreisStringLocalized($oItem->netFee *
+                        ((100 + (float)$_SESSION['Steuersatz'][$_SESSION['Warenkorb']->gibVersandkostenSteuerklasse($cLandISO)]) / 100));
+                    $this->oKaeuferschutzProdukte->item[$i]->cFeeTxt           = Shop::Lang()->get('incl', 'productDetails') .
+                        ' ' . Shop::Lang()->get('vat', 'productDetails');
                 } else {
                     $this->oKaeuferschutzProdukte->item[$i]->grossFeeLocalized = gibPreisStringLocalized($oItem->netFee);
-                    $this->oKaeuferschutzProdukte->item[$i]->cFeeTxt           = Shop::Lang()->get('excl', 'productDetails') . ' ' . Shop::Lang()->get('vat', 'productDetails');
+                    $this->oKaeuferschutzProdukte->item[$i]->cFeeTxt           = Shop::Lang()->get('excl', 'productDetails') .
+                        ' ' . Shop::Lang()->get('vat', 'productDetails');
                 }
 
                 // DB Member füllen
@@ -512,7 +523,8 @@ class TrustedShops
 
                     if (!$_SESSION['Kundengruppe']->nNettoPreise && isset($_SESSION['Warenkorb'], $_SESSION['Steuersatz'])) {
                         $this->oKaeuferschutzProdukte->item[$i]->grossFeeLocalized = gibPreisStringLocalized(
-                            $fPreis * ((100 + doubleval($_SESSION['Steuersatz'][$_SESSION['Warenkorb']->gibVersandkostenSteuerklasse($cLandISO)])) / 100)
+                            $fPreis *
+                            ((100 + (float)$_SESSION['Steuersatz'][$_SESSION['Warenkorb']->gibVersandkostenSteuerklasse($cLandISO)]) / 100)
                         );
                         $this->oKaeuferschutzProdukte->item[$i]->cFeeTxt           = Shop::Lang()->get('incl', 'productDetails') .
                             ' ' .
@@ -787,8 +799,8 @@ class TrustedShops
     // 10 = Falsche Käuferschutzvariante
     // 11 = SOAP Fehler
     /**
-     * @param object $oZertifikat
-     * @param int    $kTrustedShopsZertifikat
+     * @param stdClass $oZertifikat
+     * @param int      $kTrustedShopsZertifikat
      * @return int
      */
     public function speicherTrustedShopsZertifikat($oZertifikat, $kTrustedShopsZertifikat = 0)
@@ -1050,7 +1062,7 @@ class TrustedShops
     }
 
     /**
-     * @param object $oZertifikat
+     * @param stdClass $oZertifikat
      * @return stdClass
      */
     public function verschluesselTSDaten($oZertifikat)
@@ -1065,7 +1077,7 @@ class TrustedShops
     }
 
     /**
-     * @param object $oZertifikat
+     * @param stdClass $oZertifikat
      * @return stdClass
      */
     public function entschluesselTSDaten($oZertifikat)
@@ -1183,14 +1195,14 @@ class TrustedShops
 
         $dDurchschnitt = null;
         foreach ($xml->ratings->result as $result) {
-            if ($result['name'] == 'average') {
-                $dDurchschnitt = (double) $result;
+            if ($result['name'] === 'average') {
+                $dDurchschnitt = (double)$result;
                 break;
             }
         }
 
-        if (is_null($dDurchschnitt)) {
-            $dDurchschnitt = (double) $xml->ratings->result[0];
+        if ($dDurchschnitt === null) {
+            $dDurchschnitt = (double)$xml->ratings->result[0];
         }
         $rating->dDurchschnitt = $dDurchschnitt;
 

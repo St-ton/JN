@@ -227,7 +227,7 @@ if (isset($_POST['neueVersandart']) && (int)$_POST['neueVersandart'] > 0 && vali
     $Versandart->nMinLiefertage           = (int)$_POST['nMinLiefertage'];
     $Versandart->nMaxLiefertage           = (int)$_POST['nMaxLiefertage'];
     $Versandart->cNurAbhaengigeVersandart = $_POST['cNurAbhaengigeVersandart'];
-    $Versandart->cSendConfirmationMail    = (isset($_POST['cSendConfirmationMail'])) 
+    $Versandart->cSendConfirmationMail    = isset($_POST['cSendConfirmationMail'])
         ? $_POST['cSendConfirmationMail'] 
         : 'Y';
     $Versandart->eSteuer                  = $_POST['eSteuer'];
@@ -286,8 +286,8 @@ if (isset($_POST['neueVersandart']) && (int)$_POST['neueVersandart'] > 0 && vali
                 if (isset($_POST['preis'][$i]) && strlen($fBis) > 0) {
                     unset($oVersandstaffel);
                     $oVersandstaffel         = new stdClass();
-                    $oVersandstaffel->fBis   = doubleval(str_replace(',', '.', $fBis));
-                    $oVersandstaffel->fPreis = doubleval(str_replace(',', '.', $_POST['preis'][$i]));
+                    $oVersandstaffel->fBis   = floatval(str_replace(',', '.', $fBis));
+                    $oVersandstaffel->fPreis = floatval(str_replace(',', '.', $_POST['preis'][$i]));
 
                     $VersandartStaffeln[]        = $oVersandstaffel;
                     $fVersandartStaffelBis_arr[] = $oVersandstaffel->fBis;
@@ -468,10 +468,10 @@ if ($step === 'neue Versandart') {
            ->assign('waehrung', $standardwaehrung->cName)
            ->assign('kundengruppen', Shop::DB()->query("SELECT kKundengruppe, cName FROM tkundengruppe ORDER BY kKundengruppe", 2))
            ->assign('oVersandartSpracheAssoc_arr', getShippingLanguage($kVersandartTMP, $sprachen))
-           ->assign('gesetzteVersandklassen', (isset($Versandart->cVersandklassen))
+           ->assign('gesetzteVersandklassen', isset($Versandart->cVersandklassen)
                ? gibGesetzteVersandklassen($Versandart->cVersandklassen)
                : null)
-           ->assign('gesetzteKundengruppen', (isset($Versandart->cKundengruppen))
+           ->assign('gesetzteKundengruppen', isset($Versandart->cKundengruppen)
                ? gibGesetzteKundengruppen($Versandart->cKundengruppen)
                : null);
 }

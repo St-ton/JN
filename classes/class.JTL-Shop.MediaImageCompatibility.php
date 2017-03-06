@@ -17,7 +17,7 @@ class MediaImageCompatibility implements IMedia
      */
     public function isValid($request)
     {
-        return in_array((int)IMAGE_COMPATIBILITY_LEVEL, [1, 2])
+        return in_array((int)IMAGE_COMPATIBILITY_LEVEL, [1, 2], true)
             && $this->parse($request) !== null;
     }
 

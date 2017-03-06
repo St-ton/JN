@@ -30,8 +30,9 @@ function gibArtikelXSelling($kArtikel, $isParent = null)
         if (count($xsell) > 0) {
             $xsellgruppen = [];
             foreach ($xsell as $xs) {
-                if (!in_array($xs->kXSellGruppe, $xsellgruppen)) {
-                    $xsellgruppen[] = $xs->kXSellGruppe;
+                $xs->kXSellGruppe = (int)$xs->kXSellGruppe;
+                if (!in_array($xs->kXSellGruppe, $xsellgruppen, true)) {
+                    $xsellgruppen[] = (int)$xs->kXSellGruppe;
                 }
             }
             $xSelling->Standard->XSellGruppen = [];
@@ -824,7 +825,7 @@ function bearbeiteProdukttags($AktuellerArtikel)
                     }
                     // Prüfe ob der Tag bereits vorhanden ist
                     $tag_obj = Shop::DB()->select('ttag', 'kSprache', Shop::getLanguage(), 'cName', $tag);
-                    $kTag    = (isset($tag_obj->kTag)) ? (int)$tag_obj->kTag : null;
+                    $kTag    = isset($tag_obj->kTag) ? (int)$tag_obj->kTag : null;
                     if ($kTag > 0) {
                         $count = Shop::DB()->query(
                             "UPDATE ttagartikel
@@ -864,7 +865,7 @@ function bearbeiteProdukttags($AktuellerArtikel)
                     $neuerTagKunde->dZeit  = 'now()';
                     Shop::DB()->insert('ttagkunde', $neuerTagKunde);
 
-                    if (isset($tag_obj->nAktiv) && $tag_obj->nAktiv == 0) {
+                    if (isset($tag_obj->nAktiv) && (int)$tag_obj->nAktiv === 0) {
                         return Shop::Lang()->get('tagAcceptedWaitCheck', 'messages');
                     }
 
@@ -1271,12 +1272,12 @@ function ProductBundleWK($Productkey)
 }
 
 /**
- * @param int   $kArtikel
- * @param float $fAnzahl
- * @param array $nVariation_arr
- * @param array $nKonfiggruppe_arr
- * @param array $nKonfiggruppeAnzahl_arr
- * @param array $nKonfigitemAnzahl_arr
+ * @param int       $kArtikel
+ * @param float|int $fAnzahl
+ * @param array     $nVariation_arr
+ * @param array     $nKonfiggruppe_arr
+ * @param array     $nKonfiggruppeAnzahl_arr
+ * @param array     $nKonfigitemAnzahl_arr
  * @return stdClass|null
  */
 function buildConfig($kArtikel, $fAnzahl, $nVariation_arr, $nKonfiggruppe_arr, $nKonfiggruppeAnzahl_arr, $nKonfigitemAnzahl_arr)
@@ -1309,7 +1310,7 @@ function buildConfig($kArtikel, $fAnzahl, $nVariation_arr, $nKonfiggruppe_arr, $
     $oArtikel->fuelleArtikel($kArtikel, $oArtikelOptionen);
 
     $fAnzahl = max($fAnzahl, 1);
-    if ($oArtikel->cTeilbar !== 'Y' && intval($fAnzahl) != $fAnzahl) {
+    if ($oArtikel->cTeilbar !== 'Y' && (int)$fAnzahl != $fAnzahl) {
         $fAnzahl = (int)$fAnzahl;
     }
 
@@ -1330,7 +1331,7 @@ function buildConfig($kArtikel, $fAnzahl, $nVariation_arr, $nKonfiggruppe_arr, $
         foreach ($oKonfiggruppe->oItem_arr as $j => &$oKonfigitem) {
             /** @var Konfigitem $oKonfigitem */
             $kKonfigitem          = $oKonfigitem->getKonfigitem();
-            $oKonfigitem->fAnzahl = floatval(
+            $oKonfigitem->fAnzahl = (float)(
                 isset($nKonfiggruppeAnzahl_arr[$oKonfigitem->getKonfiggruppe()])
                     ? $nKonfiggruppeAnzahl_arr[$oKonfigitem->getKonfiggruppe()]
                     : $oKonfigitem->getInitial()
@@ -1339,7 +1340,7 @@ function buildConfig($kArtikel, $fAnzahl, $nVariation_arr, $nKonfiggruppe_arr, $
                 $oKonfigitem->fAnzahl = $oKonfigitem->getInitial();
             }
             if ($nKonfigitemAnzahl_arr && isset($nKonfigitemAnzahl_arr[$oKonfigitem->getKonfigitem()])) {
-                $oKonfigitem->fAnzahl = floatval($nKonfigitemAnzahl_arr[$oKonfigitem->getKonfigitem()]);
+                $oKonfigitem->fAnzahl = (float)$nKonfigitemAnzahl_arr[$oKonfigitem->getKonfigitem()];
             }
             if ($oKonfigitem->fAnzahl <= 0) {
                 $oKonfigitem->fAnzahl = 1;

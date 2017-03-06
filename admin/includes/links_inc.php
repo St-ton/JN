@@ -64,10 +64,10 @@ function parseText($cText, $kLink)
         $DirHandle = opendir($cUploadVerzeichnis . $kLink);
         while (false !== ($Datei = readdir($DirHandle))) {
             if ($Datei !== '.' && $Datei !== '..') {
-                $nBild             = intval(substr(
+                $nBild             = (int)substr(
                     str_replace('Bild', '', $Datei),
                     0,
-                    strpos(str_replace('Bild', '', $Datei), '.'))
+                    strpos(str_replace('Bild', '', $Datei), '.')
                 );
                 $cBild_arr[$nBild] = $Datei;
                 $nSort_arr[]       = $nBild;
@@ -201,7 +201,7 @@ function getGesetzteKundengruppen($link)
     }
     $kdgrp = explode(';', $link->cKundengruppen);
     foreach ($kdgrp as $kKundengruppe) {
-        if (intval($kKundengruppe) > 0) {
+        if ((int)$kKundengruppe > 0) {
             $ret[$kKundengruppe] = true;
         }
     }
@@ -252,6 +252,7 @@ function holeSpezialseiten()
 /**
  * @param array $oSub_arr
  * @param int   $kLinkgruppe
+ * @param int   $kLinkgruppeAlt
  */
 function aenderLinkgruppeRek($oSub_arr, $kLinkgruppe, $kLinkgruppeAlt)
 {

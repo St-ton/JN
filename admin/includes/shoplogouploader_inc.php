@@ -37,7 +37,7 @@ function saveShopLogo($cFiles_arr)
                 $option->cName                 = 'shop_logo';
                 $option->cWert                 = $cFiles_arr['shopLogo']['name'];
                 Shop::DB()->update('teinstellungen', 'cName', 'shop_logo', $option);
-                Shop::Cache()->flushTags(array(CACHING_GROUP_OPTION));
+                Shop::Cache()->flushTags([CACHING_GROUP_OPTION]);
 
                 return 1; // Alles O.K.
             }
@@ -67,17 +67,15 @@ function deleteShopLogo($logo)
  */
 function loescheAlleShopBilder()
 {
-    if (is_dir(PFAD_ROOT . PFAD_SHOPLOGO)) {
-        if ($dh = opendir(PFAD_ROOT . PFAD_SHOPLOGO)) {
-            while (($file = readdir($dh)) !== false) {
-                if ($file !== '.' && $file !== '..' && $file !== '.gitkeep') {
-                    @unlink(PFAD_ROOT . PFAD_SHOPLOGO . $file);
-                }
+    if (is_dir(PFAD_ROOT . PFAD_SHOPLOGO) && $dh = opendir(PFAD_ROOT . PFAD_SHOPLOGO)) {
+        while (($file = readdir($dh)) !== false) {
+            if ($file !== '.' && $file !== '..' && $file !== '.gitkeep') {
+                @unlink(PFAD_ROOT . PFAD_SHOPLOGO . $file);
             }
-            closedir($dh);
-
-            return true;
         }
+        closedir($dh);
+
+        return true;
     }
 
     return false;

@@ -18,7 +18,7 @@ function gibStartBoxen()
     $Boxliste      = [];
     $schon_drin    = [];
     $Einstellungen = Shop::getSettings([CONF_STARTSEITE]);
-    while ($obj = gibNextBoxPrio($schon_drin, $Einstellungen)) {
+    while (($obj = gibNextBoxPrio($schon_drin, $Einstellungen)) !== null) {
         $schon_drin[] = $obj->name;
         $Boxliste[]   = $obj;
     }
@@ -139,7 +139,7 @@ function gibNews($Einstellungen)
                     AND tnews.dGueltigVon <= now()
                     AND (
                         tnews.cKundengruppe LIKE '%;-1;%' 
-                        OR tnews.cKundengruppe RLIKE '^([0-9;]+;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";'
+                        OR tnews.cKundengruppe RLIKE '^([0-9;]*;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";'
                         )
                 GROUP BY tnews.kNews
                 ORDER BY tnews.dGueltigVon DESC" . $cSQL, 2
@@ -597,7 +597,7 @@ function gibBoxNews($BoxenEinstellungen)
                 AND nAktiv = 1
                 AND (
                     cKundengruppe LIKE '%;-1;%' 
-                    OR cKundengruppe RLIKE '^([0-9;]+;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";'
+                    OR cKundengruppe RLIKE '^([0-9;]*;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";'
                     )
             GROUP BY DATE_FORMAT(dErstellt, '%M')
             ORDER BY dErstellt DESC
@@ -647,7 +647,7 @@ function gibSitemapNews()
                             AND tnews.nAktiv = 1
                             AND (
                                 tnews.cKundengruppe LIKE '%;-1;%' 
-                                OR tnews.cKundengruppe RLIKE '^([0-9;]+;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";'
+                                OR tnews.cKundengruppe RLIKE '^([0-9;]*;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";'
                                 )
                             AND (MONTH(tnews.dGueltigVon) = '" . $oNewsMonatsUebersicht->nMonat . "') 
                             && (tnews.dGueltigVon <= now())
@@ -702,7 +702,7 @@ function gibNewsKategorie()
                     AND tnews.dGueltigVon <= now()
                     AND (
                             tnews.cKundengruppe LIKE '%;-1;%' 
-                            OR tnews.cKundengruppe RLIKE '^([0-9;]+;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";'
+                            OR tnews.cKundengruppe RLIKE '^([0-9;]*;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";'
                         )
                 GROUP BY tnewskategorienews.kNewsKategorie
                 ORDER BY tnewskategorie.nSort DESC", 2
@@ -730,7 +730,7 @@ function gibNewsKategorie()
                             AND tnews.dGueltigVon <= now()
                             AND (
                                     tnews.cKundengruppe LIKE '%;-1;%' 
-                                    OR tnews.cKundengruppe RLIKE '^([0-9;]+;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";'
+                                    OR tnews.cKundengruppe RLIKE '^([0-9;]*;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";'
                                 )
                         GROUP BY tnews.kNews
                         ORDER BY tnews.dGueltigVon DESC", 2
@@ -765,9 +765,9 @@ function gibGratisGeschenkArtikel($Einstellungen)
     } elseif ($Einstellungen['sonstiges']['sonstiges_gratisgeschenk_sortierung'] === 'L') {
         $cSQLSort = " ORDER BY tartikel.fLagerbestand DESC";
     }
-    $cSQLLimit = (intval($Einstellungen['sonstiges']['sonstiges_gratisgeschenk_anzahl']) > 0) ?
-        " LIMIT " . (int)$Einstellungen['sonstiges']['sonstiges_gratisgeschenk_anzahl'] :
-        '';
+    $cSQLLimit = ((int)$Einstellungen['sonstiges']['sonstiges_gratisgeschenk_anzahl'] > 0)
+        ? " LIMIT " . (int)$Einstellungen['sonstiges']['sonstiges_gratisgeschenk_anzahl']
+        : '';
     $oArtikelGeschenkTMP_arr = Shop::DB()->query("
         SELECT tartikel.kArtikel, tartikelattribut.cWert
             FROM tartikel
@@ -788,7 +788,7 @@ function gibGratisGeschenkArtikel($Einstellungen)
         foreach ($oArtikelGeschenkTMP_arr as $i => $oArtikelGeschenkTMP) {
             $oArtikel = new Artikel();
             $oArtikel->fuelleArtikel($oArtikelGeschenkTMP->kArtikel, $defaultOptions);
-            $oArtikel->cBestellwert = gibPreisStringLocalized(doubleval($oArtikelGeschenkTMP->cWert));
+            $oArtikel->cBestellwert = gibPreisStringLocalized((float)$oArtikelGeschenkTMP->cWert);
 
             if ($oArtikel->kEigenschaftKombi > 0 ||
                 !is_array($oArtikel->Variationen) ||
@@ -921,7 +921,7 @@ function gibNewsArchiv()
                 AND MONTH(tnews.dErstellt) = '" . date('m') . "'
                 AND (
                         tnews.cKundengruppe LIKE '%;-1;%' 
-                        OR tnews.cKundengruppe RLIKE '^([0-9;]+;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";'
+                        OR tnews.cKundengruppe RLIKE '^([0-9;]*;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";'
                     )
             GROUP BY tnews.kNews
             ORDER BY tnews.dErstellt DESC", 2

@@ -159,8 +159,9 @@ class Statistik
 
     /**
      * @return array
+     * @param int $nLimit
      */
-    public function holeBotStats()
+    public function holeBotStats($nLimit = -1)
     {
         if (($this->nStampVon > 0 && $this->nStampBis > 0) ||
             (count($this->cDatumVon_arr) > 0 && count($this->cDatumBis_arr) > 0)
@@ -185,7 +186,9 @@ class Statistik
                     ) AS t
                     JOIN tbesucherbot ON tbesucherbot.kBesucherBot = t.kBesucherBot
                     GROUP BY t.kBesucherBot
-                    ORDER BY nCount DESC", 2
+                    ORDER BY nCount DESC
+                    " . ($nLimit > -1 ? "LIMIT " . (int)$nLimit : ""),
+                2
             );
 
             return $oStatTMP_arr;
@@ -419,7 +422,7 @@ class Statistik
                     $nYearFrom = (int)date('Y') - 1;
                     $nYearTo   = (int)date('Y') + 10;
                 }
-                for ($i = ($nYearFrom); $i <= ($nYearTo); $i++) {
+                for ($i = $nYearFrom; $i <= $nYearTo; $i++) {
                     $oStat         = new stdClass();
                     $oStat->dZeit  = mktime(0, 0, 0, 1, 1, $i);
                     $oStat->nCount = 0;

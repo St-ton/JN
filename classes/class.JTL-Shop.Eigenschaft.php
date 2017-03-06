@@ -76,7 +76,7 @@ class Eigenschaft
         $obj = kopiereMembers($this);
         unset($obj->EigenschaftsWert);
 
-        return (Shop::DB()->insert('teigenschaft', $obj));
+        return Shop::DB()->insert('teigenschaft', $obj);
     }
 
     /**

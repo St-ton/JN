@@ -22,23 +22,21 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'newsletter_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'registrieren_inc.php';
 
 $AktuelleSeite = 'REGISTRIEREN';
-$Einstellungen = Shop::getSettings(
-    array(
-        CONF_GLOBAL,
-        CONF_RSS,
-        CONF_KUNDEN,
-        CONF_KUNDENFELD,
-        CONF_KUNDENWERBENKUNDEN,
-        CONF_NEWSLETTER
-    )
-);
+$Einstellungen = Shop::getSettings([
+    CONF_GLOBAL,
+    CONF_RSS,
+    CONF_KUNDEN,
+    CONF_KUNDENFELD,
+    CONF_KUNDENWERBENKUNDEN,
+    CONF_NEWSLETTER
+]);
 pruefeHttps();
 Shop::setPageType(PAGE_REGISTRIERUNG);
 $kLink                = $linkHelper->getSpecialPageLinkKey(LINKTYP_REGISTRIEREN);
 $step                 = 'formular';
 $hinweis              = '';
 $titel                = Shop::Lang()->get('newAccount', 'login');
-$editRechnungsadresse = (isset($_GET['editRechnungsadresse']))
+$editRechnungsadresse = isset($_GET['editRechnungsadresse'])
     ? (int)$_GET['editRechnungsadresse']
     : 0;
 if (isset($_POST['editRechnungsadresse'])) {

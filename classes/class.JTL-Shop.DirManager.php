@@ -43,11 +43,11 @@ class DirManager
             $islinux = false;
         }
         if ($islinux) {
-            if (strpos(substr($path, (strlen($path) - 1), 1), '/') === false) {
+            if (strpos(substr($path, strlen($path) - 1, 1), '/') === false) {
                 $path .= '/';
             }
         } else {
-            if (strpos(substr($path, (strlen($path) - 1), 1), '\\') === false) {
+            if (strpos(substr($path, strlen($path) - 1, 1), '\\') === false) {
                 $path .= '\\';
             }
         }

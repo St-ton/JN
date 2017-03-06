@@ -3,18 +3,18 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/admininclude.php';
+require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'suche_inc.php';
 
 $oAccount->permission('SETTINGS_ARTICLEOVERVIEW_VIEW', true, true);
 /** @global JTLSmarty $smarty */
 $kSektion         = CONF_ARTIKELUEBERSICHT;
-$Einstellungen    = Shop::getSettings(array($kSektion));
+$Einstellungen    = Shop::getSettings([$kSektion]);
 $standardwaehrung = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
 $step             = 'einstellungen bearbeiten';
 $cHinweis         = '';
 $cFehler          = '';
-$Conf             = array();
+$Conf             = [];
 
 if (isset($_GET['action']) && $_GET['action'] === 'createIndex') {
     header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
@@ -25,7 +25,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'createIndex') {
 
     $index = strtolower(StringHandler::xssClean($_GET['index']));
 
-    if ((!in_array($index, ['tartikel', 'tartikelsprache']))) {
+    if (!in_array($index, ['tartikel', 'tartikelsprache'], true)) {
         header(makeHTTPHeader(403), true);
         echo json_encode((object)['error' => 'Ungültiger Index angegeben']);
         exit;
@@ -49,7 +49,10 @@ if (isset($_GET['action']) && $_GET['action'] === 'createIndex') {
 
         switch ($index) {
             case 'tartikel':
-                $cSpalten_arr = array_intersect($cSuchspalten_arr, ['cName', 'cSeo', 'cSuchbegriffe', 'cArtNr', 'cKurzBeschreibung', 'cBeschreibung', 'cBarcode', 'cISBN', 'cHAN', 'cAnmerkung']);
+                $cSpalten_arr = array_intersect(
+                    $cSuchspalten_arr,
+                    ['cName', 'cSeo', 'cSuchbegriffe', 'cArtNr', 'cKurzBeschreibung', 'cBeschreibung', 'cBarcode', 'cISBN', 'cHAN', 'cAnmerkung']
+                );
                 break;
             case 'tartikelsprache':
                 $cSpalten_arr = array_intersect($cSuchspalten_arr, ['cName', 'cSeo', 'cKurzBeschreibung', 'cBeschreibung']);
@@ -132,7 +135,7 @@ if (isset($_POST['einstellungen_bearbeiten']) && (int)$_POST['einstellungen_bear
         $cHinweis .= ' Volltextsuche wurde deaktiviert.';
     }
 
-    $Einstellungen = Shop::getSettings(array($kSektion));
+    $Einstellungen = Shop::getSettings([$kSektion]);
 } else {
     $smarty->assign('createIndex', false);
 }
@@ -148,8 +151,14 @@ $Conf    = Shop::DB()->query(
 
 $configCount = count($Conf);
 for ($i = 0; $i < $configCount; $i++) {
-    if (in_array($Conf[$i]->cInputTyp, array('selectbox', 'listbox'), true)) {
-        $Conf[$i]->ConfWerte = Shop::DB()->selectAll('teinstellungenconfwerte', 'kEinstellungenConf', (int)$Conf[$i]->kEinstellungenConf, '*', 'nSort');
+    if (in_array($Conf[$i]->cInputTyp, ['selectbox', 'listbox'], true)) {
+        $Conf[$i]->ConfWerte = Shop::DB()->selectAll(
+            'teinstellungenconfwerte',
+            'kEinstellungenConf',
+            (int)$Conf[$i]->kEinstellungenConf,
+            '*',
+            'nSort'
+        );
     }
 
     if (isset($Conf[$i]->cWertName)) {
@@ -160,7 +169,9 @@ for ($i = 0; $i < $configCount; $i++) {
 if ($Einstellungen['artikeluebersicht']['suche_fulltext'] === 'Y'
     && (!Shop::DB()->query("SHOW INDEX FROM tartikel WHERE KEY_NAME = 'idx_tartikel_fulltext'", 1)
         || !Shop::DB()->query("SHOW INDEX FROM tartikelsprache WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'", 1))) {
-    $cFehler = 'Der Volltextindex ist nicht vorhanden! Die Erstellung des Index kann jedoch einige Zeit in Anspruch nehmen. <a href="sucheinstellungen.php" title="Aktualisieren"><i class="alert-danger fa fa-refresh"></i></a>';
+    $cFehler = 'Der Volltextindex ist nicht vorhanden! ' .
+        'Die Erstellung des Index kann jedoch einige Zeit in Anspruch nehmen. ' .
+        '<a href="sucheinstellungen.php" title="Aktualisieren"><i class="alert-danger fa fa-refresh"></i></a>';
     Notification::getInstance()->add(NotificationEntry::TYPE_WARNING, 'Der Volltextindex wird erstellt!', 'sucheinstellungen.php');
 }
 

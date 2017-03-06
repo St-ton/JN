@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/admininclude.php';
+require_once __DIR__ . '/includes/admininclude.php';
 /** @global JTLSmarty $smarty */
 setzeSprache();
 $oAccount->permission('OBJECTCACHE_VIEW', true, true);
@@ -66,7 +66,7 @@ switch ($action) {
             case 'activate' :
                 if (isset($_POST['cache-types']) && is_array($_POST['cache-types'])) {
                     foreach ($_POST['cache-types'] as $cacheType) {
-                        $index = array_search($cacheType, $currentlyDisabled);
+                        $index = array_search($cacheType, $currentlyDisabled, true);
                         if (is_int($index)) {
                             unset($currentlyDisabled[$index]);
                         }
@@ -141,7 +141,7 @@ switch ($action) {
                 $value->kEinstellungenSektion = CONF_CACHING;
                 switch ($settings[$i]->cInputTyp) {
                     case 'kommazahl' :
-                        $value->cWert = floatval($value->cWert);
+                        $value->cWert = (float)$value->cWert;
                         break;
                     case 'zahl' :
                     case 'number':
@@ -158,29 +158,28 @@ switch ($action) {
                     $availableMethods = [];
                     $allMethods       = $cache->checkAvailability();
                     foreach ($allMethods as $_name => $_status) {
-                        if (isset($_status['available']) && isset($_status['functional']) &&
+                        if (isset($_status['available'], $_status['functional']) &&
                             $_status['available'] === true && $_status['functional'] === true
                         ) {
                             $availableMethods[] = $_name;
                         }
                     }
                     if (count($availableMethods) > 0) {
-                        if (in_array('redis', $availableMethods)) {
+                        $value->cWert = 'null';
+                        if (in_array('redis', $availableMethods, true)) {
                             $value->cWert = 'redis';
-                        } elseif (in_array('memcache', $availableMethods)) {
+                        } elseif (in_array('memcache', $availableMethods, true)) {
                             $value->cWert = 'memcache';
-                        } elseif (in_array('memcached', $availableMethods)) {
+                        } elseif (in_array('memcached', $availableMethods, true)) {
                             $value->cWert = 'memcached';
-                        } elseif (in_array('apc', $availableMethods)) {
+                        } elseif (in_array('apc', $availableMethods, true)) {
                             $value->cWert = 'apc';
-                        } elseif (in_array('xcache', $availableMethods)) {
+                        } elseif (in_array('xcache', $availableMethods, true)) {
                             $value->cWert = 'xcache';
-                        } elseif (in_array('advancedfile', $availableMethods)) {
+                        } elseif (in_array('advancedfile', $availableMethods, true)) {
                             $value->cWert = 'advancedfile';
-                        }  elseif (in_array('file', $availableMethods)) {
+                        }  elseif (in_array('file', $availableMethods, true)) {
                             $value->cWert = 'file';
-                        } else {
-                            $value->cWert = 'null';
                         }
                     } else {
                         $value->cWert = 'null';
@@ -271,7 +270,9 @@ switch ($action) {
         $dirMan      = new DirManager();
         $dirMan->getData(PFAD_ROOT . PFAD_COMPILEDIR . $templateDir, $callback, $cbParameters);
         $dirMan->getData(PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR, $callback, $cbParameters);
-        $notice .= 'Es wurden <strong>' . number_format($cbParameters['count']) . '</strong> Dateien im Templatecache gel&ouml;scht!';
+        $notice .= 'Es wurden <strong>' .
+            number_format($cbParameters['count']) .
+            '</strong> Dateien im Templatecache gel&ouml;scht!';
         break;
     default:
         break;
@@ -305,7 +306,7 @@ for ($i = 0; $i < $settingsCount; ++$i) {
         ['kEinstellungenSektion', 'cName'],
         [CONF_CACHING, $settings[$i]->cWertName]
     );
-    $settings[$i]->gesetzterWert = (isset($oSetValue->cWert))
+    $settings[$i]->gesetzterWert = isset($oSetValue->cWert)
         ? $oSetValue->cWert
         : null;
 }
@@ -332,7 +333,7 @@ for ($i = 0; $i < $settingsCount; ++$i) {
         ['kEinstellungenSektion', 'cName'],
         [CONF_CACHING, $advancedSettings[$i]->cWertName]
     );
-    $advancedSettings[$i]->gesetzterWert = (isset($oSetValue->cWert))
+    $advancedSettings[$i]->gesetzterWert = isset($oSetValue->cWert)
         ? $oSetValue->cWert
         : null;
 }
@@ -391,8 +392,9 @@ $allMethods          = $cache->checkAvailability();
 $availableMethods    = [];
 $nonAvailableMethods = [];
 foreach ($allMethods as $_name => $_status) {
-    if (isset($_status['available']) && isset($_status['functional']) &&
-        $_status['available'] === true && $_status['functional'] === true
+    if (isset($_status['available'], $_status['functional']) &&
+        $_status['available'] === true &&
+        $_status['functional'] === true
     ) {
         $availableMethods[] = $_name;
     } elseif ($_name !== 'null') {
@@ -401,7 +403,7 @@ foreach ($allMethods as $_name => $_status) {
 }
 $smarty->assign('settings', $settings)
        ->assign('caching_groups', (($cache !== null) ? $cache->getCachingGroups() : []))
-       ->assign('cache_enabled', (isset($options['activated']) && $options['activated'] === true))
+       ->assign('cache_enabled', isset($options['activated']) && $options['activated'] === true)
        ->assign('show_page_cache', $settings)
        ->assign('options', $options)
        ->assign('opcache_stats', $opcacheStats)

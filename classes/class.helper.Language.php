@@ -10,14 +10,14 @@
 class LanguageHelper
 {
     /**
-     * @var LanguageHelper|null
+     * @var LanguageHelper
      */
-    private static $_instance = null;
+    private static $_instance;
 
     /**
-     * @var string|null
+     * @var string
      */
-    public $cacheID = null;
+    public $cacheID;
 
     /**
      *

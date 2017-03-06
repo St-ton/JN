@@ -6,7 +6,7 @@
 $smarty                    = JTLSmarty::getInstance(false, true);
 $templateDir               = $smarty->getTemplateDir($smarty->context);
 $template                  = AdminTemplate::getInstance();
-$Einstellungen             = Shop::getSettings(array(CONF_GLOBAL));
+$Einstellungen             = Shop::getSettings([CONF_GLOBAL]);
 $Einstellungen['template'] = $template->getConfig();
 $currentTheme              = isset($Einstellungen['template']['theme_default']) ?: '';
 $shopURL                   = Shop::getURL();

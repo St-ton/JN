@@ -156,7 +156,7 @@ function speicherHilfreich($kArtikel, $kKunde, $kSprache, $bewertung_seite = 1, 
                         $oBewertungHilfreich->kKunde     = $kKunde;
                         $oBewertungHilfreich->nBewertung = 0;
                         // Wenn Hilfreich neu für eine Bewertung eingetragen wird und diese positiv ist
-                        if ($bHilfreich == 1) {
+                        if ($bHilfreich === 1) {
                             $oBewertungHilfreich->nBewertung = 1;
                             Shop::DB()->query(
                                 "UPDATE tbewertung
@@ -182,14 +182,14 @@ function speicherHilfreich($kArtikel, $kKunde, $kSprache, $bewertung_seite = 1, 
                     }
                 } elseif ((int)$oBewertungHilfreich->kKunde > 0) {
                     // Wenn Hilfreich nicht neu (wechsel) für eine Bewertung eingetragen wird und diese positiv ist
-                    if ($bHilfreich == 1 && $oBewertungHilfreich->nBewertung != $bHilfreich) {
+                    if ($bHilfreich === 1 && $oBewertungHilfreich->nBewertung != $bHilfreich) {
                         Shop::DB()->query(
                             "UPDATE tbewertung
                                 SET nHilfreich = nHilfreich+1, nNichtHilfreich = nNichtHilfreich-1
                                 WHERE kBewertung = " . $kBewertung, 3
                         );
                     } // Wenn Hilfreich neu für (wechsel) eine Bewertung eingetragen wird und diese negativ ist
-                    elseif ($bHilfreich == 0 && $oBewertungHilfreich->nBewertung != $bHilfreich) {
+                    elseif ($bHilfreich === 0 && $oBewertungHilfreich->nBewertung != $bHilfreich) {
                         Shop::DB()->query(
                             "UPDATE tbewertung
                                 SET nHilfreich = nHilfreich-1, nNichtHilfreich = nNichtHilfreich+1
@@ -249,7 +249,7 @@ function aktualisiereDurchschnitt($kArtikel, $cFreischalten)
         Shop::DB()->delete('tartikelext', 'kArtikel', $kArtikel);
         $oArtikelExt                          = new stdClass();
         $oArtikelExt->kArtikel                = $kArtikel;
-        $oArtikelExt->fDurchschnittsBewertung = doubleval($oBewDurchschnitt->fDurchschnitt);
+        $oArtikelExt->fDurchschnittsBewertung = floatval($oBewDurchschnitt->fDurchschnitt);
 
         Shop::DB()->insert('tartikelext', $oArtikelExt);
     }
@@ -341,24 +341,24 @@ function checkeBewertungGuthabenBonus($kBewertung, $Einstellungen)
                     AND YEAR(dDatum) = " . date('Y') . "
                     AND MONTH(dDatum) = " . date('m'), 1
         );
-        if (doubleval($oBewertungGuthabenBonus->fGuthabenProMonat) <=
-            doubleval($Einstellungen['bewertung']['bewertung_max_guthaben'])) {
+        if (floatval($oBewertungGuthabenBonus->fGuthabenProMonat) <=
+            floatval($Einstellungen['bewertung']['bewertung_max_guthaben'])) {
             // Reichen die Zeichen in der Bewertung, um das Stufe 2 Guthaben zu erhalten?
             if ($Einstellungen['bewertung']['bewertung_stufe2_anzahlzeichen'] <= strlen($oBewertung->cText)) {
                 // Prüfen ob die max. Belohnung + das aktuelle Guthaben, das Max des Monats überscchreitet
                 // Falls ja, nur die Differenz von Kundenguthaben zu Max im Monat auszahlen
-                if ((doubleval($oBewertungGuthabenBonus->fGuthabenProMonat) +
-                        doubleval($Einstellungen['bewertung']['bewertung_stufe2_guthaben'])) >
-                    doubleval($Einstellungen['bewertung']['bewertung_max_guthaben'])) {
-                    $fBelohnung = doubleval($Einstellungen['bewertung']['bewertung_max_guthaben']) -
-                        doubleval($oBewertungGuthabenBonus->fGuthabenProMonat);
+                if ((floatval($oBewertungGuthabenBonus->fGuthabenProMonat) +
+                        floatval($Einstellungen['bewertung']['bewertung_stufe2_guthaben'])) >
+                    floatval($Einstellungen['bewertung']['bewertung_max_guthaben'])) {
+                    $fBelohnung = floatval($Einstellungen['bewertung']['bewertung_max_guthaben']) -
+                        floatval($oBewertungGuthabenBonus->fGuthabenProMonat);
                 } else {
                     $fBelohnung = $Einstellungen['bewertung']['bewertung_stufe2_guthaben'];
                 }
                 // tkunde Guthaben updaten
                 Shop::DB()->query(
                     "UPDATE tkunde
-                        SET fGuthaben = fGuthaben + " . doubleval($fBelohnung) . "
+                        SET fGuthaben = fGuthaben + " . floatval($fBelohnung) . "
                             WHERE kKunde = " . $kKunde, 3
                 );
 
@@ -367,24 +367,24 @@ function checkeBewertungGuthabenBonus($kBewertung, $Einstellungen)
                 $oBewertungGuthabenBonus                 = new stdClass();
                 $oBewertungGuthabenBonus->kBewertung     = $kBewertung;
                 $oBewertungGuthabenBonus->kKunde         = $kKunde;
-                $oBewertungGuthabenBonus->fGuthabenBonus = doubleval($fBelohnung);
+                $oBewertungGuthabenBonus->fGuthabenBonus = floatval($fBelohnung);
                 $oBewertungGuthabenBonus->dDatum         = 'now()';
                 Shop::DB()->insert('tbewertungguthabenbonus', $oBewertungGuthabenBonus);
             } else {
                 // Prüfen ob die max. Belohnung + das aktuelle Guthaben, das Max des Monats überschreitet
                 // Falls ja, nur die Differenz von Kundenguthaben zu Max im Monat auszahlen
-                if ((doubleval($oBewertungGuthabenBonus->fGuthabenProMonat) +
-                        doubleval($Einstellungen['bewertung']['bewertung_stufe1_guthaben'])) >
-                    doubleval($Einstellungen['bewertung']['bewertung_max_guthaben'])) {
-                    $fBelohnung = doubleval($Einstellungen['bewertung']['bewertung_max_guthaben']) -
-                        doubleval($oBewertungGuthabenBonus->fGuthabenProMonat);
+                if ((floatval($oBewertungGuthabenBonus->fGuthabenProMonat) +
+                        floatval($Einstellungen['bewertung']['bewertung_stufe1_guthaben'])) >
+                    floatval($Einstellungen['bewertung']['bewertung_max_guthaben'])) {
+                    $fBelohnung = floatval($Einstellungen['bewertung']['bewertung_max_guthaben']) -
+                        floatval($oBewertungGuthabenBonus->fGuthabenProMonat);
                 } else {
                     $fBelohnung = $Einstellungen['bewertung']['bewertung_stufe1_guthaben'];
                 }
                 // tkunde Guthaben updaten
                 Shop::DB()->query(
                     "UPDATE tkunde
-                        SET fGuthaben = fGuthaben + " . doubleval($fBelohnung) . "
+                        SET fGuthaben = fGuthaben + " . floatval($fBelohnung) . "
                         WHERE kKunde = " . $kKunde, 3
                 );
 
@@ -392,7 +392,7 @@ function checkeBewertungGuthabenBonus($kBewertung, $Einstellungen)
                 $oBewertungGuthabenBonus                 = new stdClass();
                 $oBewertungGuthabenBonus->kBewertung     = $kBewertung;
                 $oBewertungGuthabenBonus->kKunde         = $kKunde;
-                $oBewertungGuthabenBonus->fGuthabenBonus = doubleval($fBelohnung);
+                $oBewertungGuthabenBonus->fGuthabenBonus = floatval($fBelohnung);
                 $oBewertungGuthabenBonus->dDatum         = 'now()';
                 Shop::DB()->insert('tbewertungguthabenbonus', $oBewertungGuthabenBonus);
             }
@@ -435,7 +435,7 @@ function BewertungsGuthabenBonusLoeschen($kBewertung)
                         'kBewertungGuthabenBonus',
                         $oBewertungGuthabenBonus->kBewertungGuthabenBonus
                     );
-                    $fGuthaben      = $oKunde->fGuthaben - doubleval($oBewertungGuthabenBonus->fGuthabenBonus);
+                    $fGuthaben      = $oKunde->fGuthaben - floatval($oBewertungGuthabenBonus->fGuthabenBonus);
                     $upd            = new stdClass();
                     $upd->fGuthaben = (($fGuthaben > 0) ? $fGuthaben : 0);
                     Shop::DB()->update('tkunde', 'kKunde', (int)$oBewertung->kKunde, $upd);

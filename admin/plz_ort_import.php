@@ -3,18 +3,18 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/admininclude.php';
-require_once dirname(__FILE__) . '/includes/plz_ort_import_inc.php';
+require_once __DIR__ . '/includes/admininclude.php';
+require_once __DIR__ . '/includes/plz_ort_import_inc.php';
 
 $oAccount->permission('PLZ_ORT_IMPORT_VIEW', true, true);
 
 /** @global JTLSmarty $smarty */
 
 $cAction  = 'index';
-$messages = array(
+$messages = [
     'notice' => '',
     'error'  => '',
-);
+];
 
 if (isset($_REQUEST['action']) && validateToken()) {
     $cAction = StringHandler::filterXSS($_REQUEST['action']);

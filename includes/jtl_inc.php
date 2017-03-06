@@ -135,7 +135,8 @@ function pruefeKategorieSichtbarkeit($kKundengruppe)
     if (is_array($oKatSichtbarkeit_arr) && count($oKatSichtbarkeit_arr) > 0) {
         $cKatKey_arr = array_keys($categoryList);
         foreach ($oKatSichtbarkeit_arr as $oKatSichtbarkeit) {
-            for ($i = 0; $i < count($_SESSION['kKategorieVonUnterkategorien_arr'][0]); $i++) {
+            $visCount = count($_SESSION['kKategorieVonUnterkategorien_arr'][0]);
+            for ($i = 0; $i < $visCount; $i++) {
                 if ($categoryList['kKategorieVonUnterkategorien_arr'][0][$i] == $oKatSichtbarkeit->kKategorie) {
                     unset($categoryList['kKategorieVonUnterkategorien_arr'][0][$i]);
                     $save = true;
@@ -290,7 +291,7 @@ function pruefeWarenkorbArtikelSichtbarkeit($kKundengruppe)
 
                 if (isset($oArtikelSichtbarkeit->kArtikel) &&
                     $oArtikelSichtbarkeit->kArtikel > 0 &&
-                    intval($_SESSION['Warenkorb']->PositionenArr[$i]->kKonfigitem) === 0
+                    (int)$_SESSION['Warenkorb']->PositionenArr[$i]->kKonfigitem === 0
                 ) {
                     unset($_SESSION['Warenkorb']->PositionenArr[$i]);
                 }

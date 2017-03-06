@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/admininclude.php';
+require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Jtllog.php';
 
 $oAccount->permission('SYSTEMLOG_VIEW', true, true);
@@ -26,7 +26,7 @@ if (strlen(verifyGPDataString('cSuche')) > 0) {
 if (strlen(verifyGPCDataInteger('nLevel')) > 0) {
     $nLevel = verifyGPCDataInteger('nLevel');
 }
-if (isset($_POST['einstellungen']) && intval($_POST['einstellungen']) === 1 && validateToken()) {
+if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1 && validateToken()) {
     Shop::DB()->delete('teinstellungen', ['kEinstellungenSektion', 'cName'], [1, 'systemlog_flag']);
     $ins                        = new stdClass();
     $ins->kEinstellungenSektion = 1;
@@ -35,7 +35,7 @@ if (isset($_POST['einstellungen']) && intval($_POST['einstellungen']) === 1 && v
         ? Jtllog::setBitFlag(array_map('cleanSystemFlag', $_POST['nFlag']))
         : 0;
     Shop::DB()->insert('teinstellungen', $ins);
-    Shop::Cache()->flushTags(array(CACHING_GROUP_OPTION));
+    Shop::Cache()->flushTags([CACHING_GROUP_OPTION]);
 
     $cHinweis = 'Ihre Einstellungen wurden erfolgreich gespeichert.';
 } elseif (isset($_POST['a']) && $_POST['a'] === 'del' && validateToken()) {
@@ -55,7 +55,7 @@ if ($step === 'systemlog_uebersicht') {
     foreach ($oLog_arr as &$oLog) {
         $cLog = $oLog->getcLog();
         $cLog = preg_replace('/\[(.*)\] => (.*)/', '<span class="hl_key">$1</span>: <span class="hl_value">$2</span>', $cLog);
-        $cLog = str_replace(array('(', ')'), array('<span class="hl_brace">(</span>', '<span class="hl_brace">)</span>'), $cLog);
+        $cLog = str_replace(['(', ')'], ['<span class="hl_brace">(</span>', '<span class="hl_brace">)</span>'], $cLog);
 
         $oLog->setcLog($cLog, false);
     }
@@ -78,12 +78,12 @@ if ($step === 'systemlog_uebersicht') {
  */
 function cleanSystemFlag($nFlag)
 {
-    return intval($nFlag);
+    return (int)$nFlag;
 }
 
 $smarty->assign('cHinweis', $cHinweis)
        ->assign('cFehler', $cFehler)
-       ->assign('cSucheEncode', ((isset($cSucheEncode)) ? urlencode($cSucheEncode) : null))
+       ->assign('cSucheEncode', (isset($cSucheEncode) ? urlencode($cSucheEncode) : null))
        ->assign('cSuche', $cSuche)
        ->assign('nLevel', $nLevel)
        ->assign('step', $step)

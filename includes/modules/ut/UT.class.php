@@ -173,7 +173,7 @@ class UT extends PaymentMethod
      */
     public function isCURL()
     {
-        return (function_exists('curl_init'));
+        return function_exists('curl_init');
     }
 
     /**
@@ -181,12 +181,12 @@ class UT extends PaymentMethod
      */
     public function preparePaymentProcess($order)
     {
-        if (isset($_GET['fail']) && intval($_GET['fail']) === 1) {
+        if (isset($_GET['fail']) && (int)$_GET['fail'] === 1) {
             /*** Session Hash ***/
             $cPh = verifyGPDataString('ph');
             $cSh = verifyGPDataString('sh');
 
-            switch (intval($_GET['error'])) {
+            switch ((int)$_GET['error']) {
                 case 1:
                     $cFehler = Shop::Lang()->get('uos1', 'errorMessages');
                     break;
@@ -314,7 +314,7 @@ class UT extends PaymentMethod
         }
 
         // Kunden-Daten
-        if ($this->payment != 'ut_stand') {
+        if ($this->payment !== 'ut_stand') {
             $cUTDaten_arr['cus_direct'] = 1;
             $cUTDaten_arr['is_direct']  = 1;
         }
@@ -432,7 +432,7 @@ class UT extends PaymentMethod
         $cDataString = '';
         if (is_array($cUOSDaten_arr) && count($cUOSDaten_arr) > 0) {
             foreach ($cUOSDaten_arr as $k => $cUOSDaten) {
-                if ($cUOSDaten != '' || is_numeric($cUOSDaten)) {
+                if ($cUOSDaten !== '' || is_numeric($cUOSDaten)) {
                     $cDataString .= urlencode($k) . '=' . urlencode($cUOSDaten) . '&';
                 }
             }
@@ -441,7 +441,7 @@ class UT extends PaymentMethod
         }
 
         $oCURL = curl_init();
-        curl_setopt($oCURL, CURLOPT_URL, PP_MODE == 1 ? URL_TEST : URL_LIVE);
+        curl_setopt($oCURL, CURLOPT_URL, PP_MODE === 1 ? URL_TEST : URL_LIVE);
         curl_setopt($oCURL, CURLOPT_HEADER, 0);
         curl_setopt($oCURL, CURLOPT_FAILONERROR, 1);
         curl_setopt($oCURL, CURLOPT_TIMEOUT, 25);
@@ -507,7 +507,7 @@ class UT extends PaymentMethod
 
             return @!((ord($enc[0]) != 239) && (ord($enc[1]) != 187) && (ord($enc[2]) != 191));
         } else {
-            return (utf8_encode(utf8_decode($string)) == $string);
+            return (utf8_encode(utf8_decode($string)) === $string);
         }
     }
 

@@ -15,8 +15,8 @@ function gib_safetypay_form($Kunde, $Warenkorb, $Einstellungen)
     define('SAFETYPAY_APIKEY', $Einstellungen['zahlungsart_safetypay_apikey']);
     define('SAFETYPAY_SIGNTATURE_KEY', $Einstellungen['zahlungsart_safetypay_signaturekey']);
 
-    require_once'class/safetypayProxyAPI.php';
-    require_once 'include/safetypay_functions.php';
+    require_once __DIR__ . '/class/safetypayProxyAPI.php';
+    require_once __DIR__ . '/include/safetypay_functions.php';
 
     if ($Warenkorb->gibGesamtsummeWaren(true, false) > 0 && $Kunde) {
         // Gets Values

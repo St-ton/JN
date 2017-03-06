@@ -33,49 +33,49 @@ class PaymentPartner extends ServerPaymentMethod
     }
 
     /**
-     * @return null
+     * @return string|null
      */
     public function getLogin()
     {
         global $Einstellungen;
 
-        return (isset($Einstellungen['zahlungsarten']['zahlungsart_paymentpartner_login']))
+        return isset($Einstellungen['zahlungsarten']['zahlungsart_paymentpartner_login'])
             ? $Einstellungen['zahlungsarten']['zahlungsart_paymentpartner_login']
             : null;
     }
 
     /**
-     * @return null
+     * @return string|null
      */
     public function getPassword()
     {
         global $Einstellungen;
 
-        return (isset($Einstellungen['zahlungsarten']['zahlungsart_paymentpartner_password']))
+        return isset($Einstellungen['zahlungsarten']['zahlungsart_paymentpartner_password'])
             ? $Einstellungen['zahlungsarten']['zahlungsart_paymentpartner_password']
             : null;
     }
 
     /**
-     * @return null
+     * @return string|null
      */
     public function getChannel()
     {
         global $Einstellungen;
 
-        return (isset($Einstellungen['zahlungsarten']['zahlungsart_paymentpartner_channel']))
+        return isset($Einstellungen['zahlungsarten']['zahlungsart_paymentpartner_channel'])
             ? $Einstellungen['zahlungsarten']['zahlungsart_paymentpartner_channel']
             : null;
     }
 
     /**
-     * @return null
+     * @return string|null
      */
     public function getSender()
     {
         global $Einstellungen;
 
-        return (isset($Einstellungen['zahlungsarten']['zahlungsart_paymentpartner_sender']))
+        return isset($Einstellungen['zahlungsarten']['zahlungsart_paymentpartner_sender'])
             ? $Einstellungen['zahlungsarten']['zahlungsart_paymentpartner_sender']
             : null;
     }
@@ -140,7 +140,7 @@ class PaymentPartner extends ServerPaymentMethod
         $response = $this->parse($request['body']);
 
         // Error: Not validated
-        if (($response['POST.VALIDATION'] !== 'ACK') || (strstr($response['FRONTEND.REDIRECT_URL'], 'http') === false)) {
+        if (($response['POST.VALIDATION'] !== 'ACK') || (strpos($response['FRONTEND.REDIRECT_URL'], 'http') === false)) {
             $smarty->assign('status', 'error');
             $smarty->assign('error', Shop::Lang()->get('errorText', 'paymentMethods'));
             // Error Mail
@@ -168,19 +168,17 @@ class PaymentPartner extends ServerPaymentMethod
      */
     public function handleNotification($order, $paymentHash, $args)
     {
-        if (strstr($args['PROCESSING_RESULT'], 'ACK')) {
-            if ($this->verifyNotification($order, $paymentHash, $args)) {
-                $incomingPayment          = new stdClass();
-                $incomingPayment->fBetrag = $order->fGesamtsummeKundenwaehrung;
-                $incomingPayment->cISO    = $order->Waehrung->cISO;
-                $this->addIncomingPayment($order, $incomingPayment);
-                $this->setOrderStatusToPaid($order);
-                $this->sendConfirmationMail($order);
-                $_upd            = new stdClass();
-                $_upd->cNofifyID = Shop::DB()->escape($args['IDENTIFICATION_UNIQUEID']);
-                $_upd->dNotify   = 'now()';
-                Shop::DB()->update('tzahlungsession', 'cZahlungsID', substr($paymentHash, 1), $_upd);
-            }
+        if (strpos($args['PROCESSING_RESULT'], 'ACK') !== false && $this->verifyNotification($order, $paymentHash, $args)) {
+            $incomingPayment          = new stdClass();
+            $incomingPayment->fBetrag = $order->fGesamtsummeKundenwaehrung;
+            $incomingPayment->cISO    = $order->Waehrung->cISO;
+            $this->addIncomingPayment($order, $incomingPayment);
+            $this->setOrderStatusToPaid($order);
+            $this->sendConfirmationMail($order);
+            $_upd            = new stdClass();
+            $_upd->cNofifyID = Shop::DB()->escape($args['IDENTIFICATION_UNIQUEID']);
+            $_upd->dNotify   = 'now()';
+            Shop::DB()->update('tzahlungsession', 'cZahlungsID', substr($paymentHash, 1), $_upd);
         }
         // PaymentPartner redirects to:
         echo $this->getReturnURL($order);
@@ -196,7 +194,7 @@ class PaymentPartner extends ServerPaymentMethod
     {
         extract($args);
 
-        if ($IDENTIFICATION_TRANSACTIONID != $paymentHash) {
+        if ($IDENTIFICATION_TRANSACTIONID !== $paymentHash) {
             return false;
         }
 
@@ -204,7 +202,7 @@ class PaymentPartner extends ServerPaymentMethod
             return false;
         }
 
-        if ($CLEARING_CURRENCY != $order->Waehrung->cISO) {
+        if ($CLEARING_CURRENCY !== $order->Waehrung->cISO) {
             return false;
         }
 
@@ -254,25 +252,25 @@ class PaymentPartner extends ServerPaymentMethod
      */
     public function isValidIntern($args_arr = [])
     {
-        if (strlen($this->getSender()) == 0) {
+        if (strlen($this->getSender()) === 0) {
             ZahlungsLog::add($this->moduleID, 'Pflichtparameter "Sender" ist nicht gesetzt!', null, LOGLEVEL_ERROR);
 
             return false;
         }
 
-        if (strlen($this->getLogin()) == 0) {
+        if (strlen($this->getLogin()) === 0) {
             ZahlungsLog::add($this->moduleID, "Pflichtparameter 'Login' ist nicht gesetzt!", null, LOGLEVEL_ERROR);
 
             return false;
         }
 
-        if (strlen($this->getPassword()) == 0) {
+        if (strlen($this->getPassword()) === 0) {
             ZahlungsLog::add($this->moduleID, "Pflichtparameter 'Passwort' ist nicht gesetzt!", null, LOGLEVEL_ERROR);
 
             return false;
         }
 
-        if (strlen($this->getChannel()) == 0) {
+        if (strlen($this->getChannel()) === 0) {
             ZahlungsLog::add($this->moduleID, "Pflichtparameter 'Channel' ist nicht gesetzt!", null, LOGLEVEL_ERROR);
 
             return false;

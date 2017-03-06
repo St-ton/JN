@@ -23,7 +23,7 @@ function bearbeiteNewsletterversand($oJobQueue)
     $kKategorie_arr    = gibAHKKeys($oNewsletter->cKategorie);
     $kKundengruppe_arr = gibAHKKeys($oNewsletter->cKundengruppe);
     // Baue Kampagnenobjekt, falls vorhanden in der Newslettervorlage
-    $oKampagne = new Kampagne(intval($oNewsletter->kKampagne));
+    $oKampagne = new Kampagne($oNewsletter->kKampagne);
     if (count($kKundengruppe_arr) === 0) {
         $oJobQueue->deleteJobInDB();
         // NewsletterQueue löschen
@@ -96,7 +96,7 @@ function bearbeiteNewsletterversand($oJobQueue)
             }
 
             $kKundengruppeTMP = 0;
-            if (intval($oNewsletterEmpfaenger->kKundengruppe) > 0) {
+            if ((int)$oNewsletterEmpfaenger->kKundengruppe > 0) {
                 $kKundengruppeTMP = (int)$oNewsletterEmpfaenger->kKundengruppe;
             }
 
@@ -109,7 +109,7 @@ function bearbeiteNewsletterversand($oJobQueue)
                 $oHersteller_arr,
                 $oKategorie_arr[$kKundengruppeTMP],
                 $oKampagne,
-                ((isset($oKunde)) ? $oKunde : null)
+                (isset($oKunde) ? $oKunde : null)
             );
             // Newsletterempfaenger updaten
             Shop::DB()->query(
@@ -117,7 +117,7 @@ function bearbeiteNewsletterversand($oJobQueue)
                     SET dLetzterNewsletter = '" . date('Y-m-d H:m:s') . "'
                     WHERE kNewsletterEmpfaenger = " . (int)$oNewsletterEmpfaenger->kNewsletterEmpfaenger, 3
             );
-            $oJobQueue->nLimitN += 1;
+            ++$oJobQueue->nLimitN;
             $oJobQueue->updateJobInDB();
         }
         $oJobQueue->nInArbeit = 0;

@@ -159,9 +159,9 @@ function kundeSpeichern($cPost_arr)
             }
             // Guthaben des Neukunden aufstocken insofern er geworben wurde
             if (isset($oNeukunde->kKundenWerbenKunden) && $oNeukunde->kKundenWerbenKunden > 0) {
-                Shop::DB()->query(
-                    "UPDATE tkunde
-                        SET fGuthaben = fGuthaben+" . doubleval($Einstellungen['kundenwerbenkunden']['kwk_neukundenguthaben']) . "
+                Shop::DB()->query("
+                    UPDATE tkunde
+                        SET fGuthaben = fGuthaben + " . (float)$Einstellungen['kundenwerbenkunden']['kwk_neukundenguthaben'] . "
                         WHERE kKunde = " . (int)$knd->kKunde, 3
                 );
                 $_upd               = new stdClass();
@@ -169,7 +169,7 @@ function kundeSpeichern($cPost_arr)
                 Shop::DB()->update('tkundenwerbenkunden', 'cEmail', $knd->cMail, $_upd);
             }
         }
-        if ((isset($_SESSION['Warenkorb']->kWarenkorb)) &&
+        if (isset($_SESSION['Warenkorb']->kWarenkorb) &&
             $_SESSION['Warenkorb']->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]) > 0
         ) {
             setzeSteuersaetze();

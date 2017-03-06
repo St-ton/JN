@@ -131,7 +131,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         public function __construct($kKonfigitem = 0, $kSprache = 0, $kKundengruppe = 0)
         {
-            if (intval($kKonfigitem) > 0) {
+            if ((int)$kKonfigitem > 0) {
                 $this->loadFromDB($kKonfigitem, $kSprache, $kKundengruppe);
             }
         }
@@ -152,13 +152,13 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 'cBeschreibung'     => $this->getBeschreibung(),
                 'cKurzBeschreibung' => $this->getKurzBeschreibung(),
                 'bAnzahl'           => $this->getMin() != $this->getMax(),
-                'fInitial'          => (float) $this->getInitial(),
-                'fMin'              => (float) $this->getMin(),
-                'fMax'              => (float) $this->getMax(),
+                'fInitial'          => (float)$this->getInitial(),
+                'fMin'              => (float)$this->getMin(),
+                'fMax'              => (float)$this->getMax(),
                 'cBildPfad'         => $this->getBildPfad(),
                 'fPreis'            => [
-                    (float) $this->getPreis(),
-                    (float) $this->getPreis(true)
+                    (float)$this->getPreis(),
+                    (float)$this->getPreis(true)
                 ],
                 'fPreisLocalized' => [
                     gibPreisStringLocalized($this->getPreis()),
@@ -189,19 +189,30 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 }
 
                 if (!$kSprache) {
-                    $kSprache = (isset($_SESSION['kSprache']))
-                        ? (int)$_SESSION['kSprache']
+                    $kSprache = isset($_SESSION['kSprache'])
+                        ? $_SESSION['kSprache']
                         : getDefaultLanguageID();
                 }
                 if (!$kKundengruppe) {
                     $kKundengruppe = $_SESSION['Kundengruppe']->kKundengruppe;
                 }
-
-                $this->kSprache      = $kSprache;
-                $this->kKundengruppe = $kKundengruppe;
-                $this->oSprache      = new Konfigitemsprache($this->kKonfigitem, $kSprache);
-                $this->oPreis        = new Konfigitempreis($this->kKonfigitem, $kKundengruppe);
-                $this->oArtikel      = null;
+                $this->kKonfiggruppe     = (int)$this->kKonfiggruppe;
+                $this->kKonfigitem       = (int)$this->kKonfigitem;
+                $this->kArtikel          = (int)$this->kArtikel;
+                $this->nPosTyp           = (int)$this->nPosTyp;
+                $this->nSort             = (int)$this->nSort;
+                $this->bSelektiert       = (int)$this->bSelektiert;
+                $this->bEmpfohlen        = (int)$this->bEmpfohlen;
+                $this->bName             = (int)$this->bName;
+                $this->bPreis            = (int)$this->bPreis;
+                $this->bRabatt           = (int)$this->bRabatt;
+                $this->bZuschlag         = (int)$this->bZuschlag;
+                $this->bIgnoreMultiplier = (int)$this->bIgnoreMultiplier;
+                $this->kSprache          = (int)$kSprache;
+                $this->kKundengruppe     = (int)$kKundengruppe;
+                $this->oSprache          = new Konfigitemsprache($this->kKonfigitem, $kSprache);
+                $this->oPreis            = new Konfigitempreis($this->kKonfigitem, $kKundengruppe);
+                $this->oArtikel          = null;
                 if ($this->kArtikel > 0) {
                     $oArtikelOptionen                             = new stdClass();
                     $oArtikelOptionen->nAttribute                 = 1;
@@ -358,7 +369,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * @param $nPosTyp
+         * @param int $nPosTyp
          * @return $this
          */
         public function setPosTyp($nPosTyp)
@@ -421,7 +432,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * @return mixed
+         * @return int
          */
         public function getSelektiert()
         {
@@ -429,7 +440,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * @return mixed
+         * @return int
          */
         public function getEmpfohlen()
         {
@@ -528,7 +539,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
             $isConverted = false;
             if ($this->oArtikel && $this->bPreis) {
                 //get price from associated article
-                $fVKPreis = (isset($this->oArtikel->Preise->fVKNetto)) ? $this->oArtikel->Preise->fVKNetto : 0;
+                $fVKPreis = isset($this->oArtikel->Preise->fVKNetto) ? $this->oArtikel->Preise->fVKNetto : 0;
                 // Zuschlag / Rabatt berechnen
                 $fSpecial = $this->oPreis->getPreis($bConvertCurrency);
                 if ($fSpecial != 0) {
@@ -549,7 +560,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 } else {
                     $waehrung = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
                 }
-                $fVKPreis = $fVKPreis * floatval($waehrung->fFaktor);
+                $fVKPreis *= (float)$waehrung->fFaktor;
             }
             if (!$_SESSION['Kundengruppe']->nNettoPreise && !$bForceNetto) {
                 $fVKPreis = berechneBrutto($fVKPreis, gibUst($this->getSteuerklasse()), 4);

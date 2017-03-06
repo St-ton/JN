@@ -310,11 +310,9 @@ class VCard
                 $value['Type'] = $type;
             }
         } else {
-            if (in_array($key, self::$elementsMultiple, true)) {
-                $value = self::parseMultipleTextValue($rawValue);
-            } else {
-                $value = $rawValue;
-            }
+            $value = in_array($key, self::$elementsMultiple, true)
+                ? self::parseMultipleTextValue($rawValue)
+                : $rawValue;
 
             if ($type && isset($value)) {
                 $value = [
@@ -444,11 +442,9 @@ class VCard
                             $result->$key = (object)$data;
                         }
                     } else {
-                        if (is_array($data)) {
-                            $result = (object)$data;
-                        } else {
-                            $result = $data;
-                        }
+                        $result = is_array($data)
+                            ? (object)$data
+                            : $data;
                     }
                 }
 
@@ -544,12 +540,10 @@ class VCard
      */
     public function selectVCard($vCard)
     {
-        $vCard = (int)$vCard;
-
+        $vCard        = (int)$vCard;
+        $this->iVCard = 0;
         if ($this->mode === self::MODE_MULTIPLE && $vCard >= 0 && $vCard < count($this->data)) {
             $this->iVCard = $vCard;
-        } else {
-            $this->iVCard = 0;
         }
 
         return $this;
@@ -570,9 +564,9 @@ class VCard
             if (!empty($this->N->Prefixes)) {
                 if (is_array($this->N->Prefixes)) {
                     // Workaround fals prefix für Anrede genutzt wird
-                    if (in_array(Shop::Lang()->get('salutationM', 'global'), $this->N->Prefixes)) {
+                    if (in_array(Shop::Lang()->get('salutationM', 'global'), $this->N->Prefixes, true)) {
                         $Kunde->cAnrede = 'm';
-                    } elseif (in_array(Shop::Lang()->get('salutationW', 'global'), $this->N->Prefixes)) {
+                    } elseif (in_array(Shop::Lang()->get('salutationW', 'global'), $this->N->Prefixes, true)) {
                         $Kunde->cAnrede = 'w';
                     } else {
                         $Kunde->cTitel = implode(' ', $this->N->Prefixes);

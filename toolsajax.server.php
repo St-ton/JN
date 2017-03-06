@@ -8,7 +8,7 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
 require_once PFAD_ROOT . 'toolsajax.common.php';
 /** @global JTLSmarty $smarty */
 
-$cAktuelleSeite = (isset($_SERVER['HTTP_REFERER']))
+$cAktuelleSeite = isset($_SERVER['HTTP_REFERER'])
     ? substr(strrchr($_SERVER['HTTP_REFERER'], '/'), 1, strlen(strrchr($_SERVER['HTTP_REFERER'], '/')))
     : '';
 if ($cAktuelleSeite === 'warenkorb.php?') {
@@ -43,6 +43,7 @@ function gibFinanzierungInfo($kArtikel, $fPreis)
 }
 
 /**
+ * @deprecated since 4.05
  * @return xajaxResponse
  */
 function billpayRates()
@@ -86,6 +87,7 @@ function billpayRates()
 }
 
 /**
+ * @deprecated since 4.05
  * @param int  $nVLKeys
  * @param bool $bWarenkorb
  * @return xajaxResponse
@@ -140,10 +142,10 @@ function gibVergleichsliste($nVLKeys = 0, $bWarenkorb = true)
         }
     }
     // Spaltenbreite
-    $nBreiteAttribut = (intval($Einstellungen_Vergleichsliste['vergleichsliste']['vergleichsliste_spaltengroesseattribut']) > 0)
+    $nBreiteAttribut = ((int)$Einstellungen_Vergleichsliste['vergleichsliste']['vergleichsliste_spaltengroesseattribut'] > 0)
         ? (int)$Einstellungen_Vergleichsliste['vergleichsliste']['vergleichsliste_spaltengroesseattribut']
         : 100;
-    $nBreiteArtikel  = (intval($Einstellungen_Vergleichsliste['vergleichsliste']['vergleichsliste_spaltengroesse']) > 0)
+    $nBreiteArtikel  = ((int)$Einstellungen_Vergleichsliste['vergleichsliste']['vergleichsliste_spaltengroesse'] > 0)
         ? (int)$Einstellungen_Vergleichsliste['vergleichsliste']['vergleichsliste_spaltengroesse']
         : 200;
     $nBreiteTabelle  = $nBreiteArtikel * count($oVergleichsliste->oArtikel_arr) + $nBreiteAttribut;
@@ -172,6 +174,7 @@ function gibVergleichsliste($nVLKeys = 0, $bWarenkorb = true)
 }
 
 /**
+ * @deprecated since 4.05
  * @return xajaxResponse
  */
 function generateToken()
@@ -187,6 +190,7 @@ function generateToken()
 }
 
 /**
+ * @deprecated since 4.05
  * @param array $oArtikel_arr
  * @return xajaxResponse
  */
@@ -202,15 +206,17 @@ function ermittleVersandkostenAjax($oArtikel_arr)
 }
 
 /**
+ * @deprecated since 4.05
  * @param int $nPos
  * @return xajaxResponse
  */
 function loescheWarenkorbPosAjax($nPos)
 {
+    /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
     $objResponse = new xajaxResponse();
     //wurden Positionen gelöscht?
-    if ($_SESSION['Warenkorb']->PositionenArr[intval($nPos)]->nPosTyp == 1) {
-        unset($_SESSION['Warenkorb']->PositionenArr[intval($nPos)]);
+    if ($_SESSION['Warenkorb']->PositionenArr[(int)$nPos]->nPosTyp == 1) {
+        unset($_SESSION['Warenkorb']->PositionenArr[(int)$nPos]);
         $_SESSION['Warenkorb']->PositionenArr = array_merge($_SESSION['Warenkorb']->PositionenArr);
         loescheAlleSpezialPos();
         if (!$_SESSION['Warenkorb']->enthaltenSpezialPos(C_WARENKORBPOS_TYP_ARTIKEL)) {
@@ -228,6 +234,7 @@ function loescheWarenkorbPosAjax($nPos)
 }
 
 /**
+ * @deprecated since 4.05
  * @param int       $kArtikel
  * @param int|float $anzahl
  * @param string    $oEigenschaftwerte_arr
@@ -252,8 +259,8 @@ function fuegeEinInWarenkorbAjax($kArtikel, $anzahl, $oEigenschaftwerte_arr = ''
         if (isset($Artikel->kEigenschaftKombi) && $Artikel->kEigenschaftKombi > 0) {
             $oEigenschaftwerte_arr = gibVarKombiEigenschaftsWerte($Artikel->kArtikel);
         }
-        if (intval($anzahl) != $anzahl && $Artikel->cTeilbar !== 'Y') {
-            $anzahl = max(intval($anzahl), 1);
+        if ((int)$anzahl != $anzahl && $Artikel->cTeilbar !== 'Y') {
+            $anzahl = max((int)$anzahl, 1);
         }
         // Prüfung
         $redirectParam = pruefeFuegeEinInWarenkorb($Artikel, $anzahl, $oEigenschaftwerte_arr);
@@ -265,7 +272,7 @@ function fuegeEinInWarenkorbAjax($kArtikel, $anzahl, $oEigenschaftwerte_arr = ''
             $smarty->assign('cHinweis_arr', $GLOBALS['Artikelhinweise']);
             $oResponse->cPopup = utf8_encode($smarty->fetch('productdetails/redirect.tpl'));
             //redirekt zum artikel, um variation/en zu wählen / MBM beachten
-            if ($Artikel->nIstVater == 1) {
+            if ($Artikel->nIstVater === 1) {
                 $location = 'navi.php?a=' . $Artikel->kArtikel .
                     '&n=' . $anzahl . '&r=' . implode(',', $redirectParam);
             } elseif ($Artikel->kEigenschaftKombi > 0) {
@@ -294,11 +301,13 @@ function fuegeEinInWarenkorbAjax($kArtikel, $anzahl, $oEigenschaftwerte_arr = ''
                               ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR)
                               ->loescheSpezialPos(C_WARENKORBPOS_TYP_TRUSTEDSHOPS);
 
-        unset($_SESSION['VersandKupon']);
-        unset($_SESSION['NeukundenKupon']);
-        unset($_SESSION['Versandart']);
-        unset($_SESSION['Zahlungsart']);
-        unset($_SESSION['TrustedShops']);
+        unset(
+            $_SESSION['VersandKupon'],
+            $_SESSION['NeukundenKupon'],
+            $_SESSION['Versandart'],
+            $_SESSION['Zahlungsart'],
+            $_SESSION['TrustedShops']
+        );
         // Wenn Kupon vorhanden und prozentual auf ganzen Warenkorb, dann verwerfen und neu anlegen
         altenKuponNeuBerechnen();
         setzeLinks();
@@ -358,6 +367,7 @@ function fuegeEinInWarenkorbAjax($kArtikel, $anzahl, $oEigenschaftwerte_arr = ''
 }
 
 /**
+ * @deprecated since 4.05
  * @param $nED
  * @return xajaxResponse
  */
@@ -378,6 +388,7 @@ function setzeErweiterteDarstellung($nED)
 /**
  * Kundenformular Ajax PLZ
  *
+ * @deprecated since 4.05
  * @param $cFormValue - Textfeld Wert vom Kundenfomular input Feldes
  * @param $cLandISO - Ausgewähltes Land in der DropDown Box
  * @return xajaxResponse
@@ -409,6 +420,7 @@ function gibPLZInfo($cFormValue, $cLandISO)
 /**
  * Kundenformular Ajax PLZ
  *
+ * @deprecated since 4.05
  * @param string $cFormValue - Textfeld Wert vom Kundenfomular
  * @param string $cLandISO - Ausgewähltes Land in der DropDown Box
  * @return xajaxResponse
@@ -439,6 +451,7 @@ function aenderKundenformularPLZ($cFormValue, $cLandISO)
 }
 
 /**
+ * @deprecated since 4.05
  * @param string $cLandIso
  * @return xajaxResponse
  */
@@ -457,11 +470,12 @@ function gibRegionzuLand($cLandIso)
 /**
  * Textfeld Ajax Suche
  *
- * @param string $cValue - Textfeld Wert (input) des Suchfeldes
- * @param string $nkeyCode - Geklickter Tastenwert
- * @param string $cElemSearchID - Suchfeld (input)
- * @param string $cElemSuggestID - DIV an dem die Suchvorschläge angegeben werden
- * @param string $cElemSubmitID - Form die abgeschickt werden soll
+ * @deprecated since 4.05
+ * @param string     $cValue - Textfeld Wert (input) des Suchfeldes
+ * @param string|int $nkeyCode - Geklickter Tastenwert
+ * @param string     $cElemSearchID - Suchfeld (input)
+ * @param string     $cElemSuggestID - DIV an dem die Suchvorschläge angegeben werden
+ * @param string     $cElemSubmitID - Form die abgeschickt werden soll
  * @return xajaxResponse
  */
 function suchVorschlag($cValue, $nkeyCode, $cElemSearchID, $cElemSuggestID, $cElemSubmitID)
@@ -474,7 +488,7 @@ function suchVorschlag($cValue, $nkeyCode, $cElemSearchID, $cElemSuggestID, $cEl
 
     global $Einstellungen;
     // Maximale Suchvorschläge
-    $nMaxAnzahl = (intval($Einstellungen['artikeluebersicht']['suche_ajax_anzahl']) > 0)
+    $nMaxAnzahl = ((int)$Einstellungen['artikeluebersicht']['suche_ajax_anzahl'] > 0)
         ? (int)$Einstellungen['artikeluebersicht']['suche_ajax_anzahl']
         : 10;
 
@@ -525,6 +539,7 @@ function suchVorschlag($cValue, $nkeyCode, $cElemSearchID, $cElemSuggestID, $cEl
 }
 
 /**
+ * @deprecated since 4.05
  * @param string $cValue
  * @return xajaxResponse
  */
@@ -535,12 +550,12 @@ function suggestions($cValue)
     $cSuch_arr   = [];
     $cValue      = Shop::DB()->escape(StringHandler::filterXSS($cValue));
     $objResponse = new xajaxResponse();
-    $nMaxAnzahl  = (intval($Einstellungen['artikeluebersicht']['suche_ajax_anzahl']) > 0)
+    $nMaxAnzahl  = ((int)$Einstellungen['artikeluebersicht']['suche_ajax_anzahl'] > 0)
         ? (int)$Einstellungen['artikeluebersicht']['suche_ajax_anzahl']
         : 10;
     if (strlen($cValue) >= 3) {
-        $oSuchanfrage_arr = Shop::DB()->query(
-            "SELECT cSuche, nAnzahlTreffer
+        $oSuchanfrage_arr = Shop::DB()->query("
+            SELECT cSuche, nAnzahlTreffer
                 FROM tsuchanfrage
                 WHERE cSuche LIKE '" . $cValue . "%'
                     AND nAktiv = 1
@@ -617,223 +632,228 @@ function tauscheVariationKombi($aFormValues, $nVater = 0, $kEigenschaft = 0, $kE
         $oArtikelOptionen->nWarenlager           = 1;
         $oArtikelOptionen->nVariationDetailPreis = 1;
         // Warenkorbmatrix nötig? => Varikinder mit Preisen holen
-        $oArtikelOptionen->nWarenkorbmatrix = intval($Einstellungen['artikeldetails']['artikeldetails_warenkorbmatrix_anzeige'] === 'Y');
+        $oArtikelOptionen->nWarenkorbmatrix = (int)($Einstellungen['artikeldetails']['artikeldetails_warenkorbmatrix_anzeige'] === 'Y');
         // Stückliste nötig? => Stücklistenkomponenten  holen
-        $oArtikelOptionen->nStueckliste   = intval($Einstellungen['artikeldetails']['artikeldetails_stueckliste_anzeigen'] === 'Y');
-        $oArtikelOptionen->nProductBundle = intval($Einstellungen['artikeldetails']['artikeldetails_produktbundle_nutzen'] === 'Y');
+        $oArtikelOptionen->nStueckliste   = (int)($Einstellungen['artikeldetails']['artikeldetails_stueckliste_anzeigen'] === 'Y');
+        $oArtikelOptionen->nProductBundle = (int)($Einstellungen['artikeldetails']['artikeldetails_produktbundle_nutzen'] === 'Y');
         $oVaterArtikel->fuelleArtikel((int)$aFormValues['a'], $oArtikelOptionen, (int)$aFormValues['kKundengruppe'], (int)$aFormValues['kSprache']);
 
         $bKindVorhanden = false;
-        if (!$nVater) {
-            if (is_array($oVaterArtikel->Variationen) && count($oVaterArtikel->Variationen) > 0) {
-                $kVariationKombi_arr = [];
-                foreach ($oVaterArtikel->Variationen as $oVariation) {
-                    if ($oVariation->cTyp !== 'FREIFELD' && $oVariation->cTyp !== 'PFLICHT-FREIFELD') {
-                        if (isset($aFormValues['eigenschaftwert_' . $oVariation->kEigenschaft]) && intval($aFormValues['eigenschaftwert_' . $oVariation->kEigenschaft]) > 0) {
-                            $kVariationKombi_arr[$oVariation->kEigenschaft] = (int)$aFormValues['eigenschaftwert_' . $oVariation->kEigenschaft];
-                        }
+        if (!$nVater && is_array($oVaterArtikel->Variationen) && count($oVaterArtikel->Variationen) > 0) {
+            $kVariationKombi_arr = [];
+            foreach ($oVaterArtikel->Variationen as $oVariation) {
+                if ($oVariation->cTyp !== 'FREIFELD' &&
+                    $oVariation->cTyp !== 'PFLICHT-FREIFELD' &&
+                    isset($aFormValues['eigenschaftwert_' . $oVariation->kEigenschaft]) &&
+                    (int)$aFormValues['eigenschaftwert_' . $oVariation->kEigenschaft] > 0
+                ) {
+                    $kVariationKombi_arr[$oVariation->kEigenschaft] =
+                        (int)$aFormValues['eigenschaftwert_' . $oVariation->kEigenschaft];
+                }
+            }
+            if ($bSpeichern) {
+                if (!isset($_SESSION['oVarkombiAuswahl'])) {
+                    $_SESSION['oVarkombiAuswahl'] = new stdClass();
+                }
+                $_SESSION['oVarkombiAuswahl']->kGesetzteEigeschaftWert_arr = $kVariationKombi_arr;
+            }
+            $oArtikelTMP = gibArtikelByVariationen($oVaterArtikel->kArtikel, $kVariationKombi_arr);
+            if (isset($oArtikelTMP->kArtikel) && $oArtikelTMP->kArtikel > 0) {
+                require_once PFAD_ROOT . PFAD_INCLUDES . 'artikel_inc.php';
+                require_once PFAD_ROOT . PFAD_CLASSES_CORE . 'class.core.NiceMail.php';
+                $bKindVorhanden = true;
+                // Bewertungsguthaben
+                $fBelohnung = 0.0;
+                if ($Einstellungen['bewertung']['bewertung_guthaben_nutzen'] === 'Y') {
+                    if (isset($_GET['strl']) && $Einstellungen['bewertung']['bewertung_stufe2_anzahlzeichen'] <= $_GET['strl']) {
+                        $fBelohnung = $Einstellungen['bewertung']['bewertung_stufe2_guthaben'];
+                    } else {
+                        $fBelohnung = $Einstellungen['bewertung']['bewertung_stufe1_guthaben'];
                     }
                 }
-                if ($bSpeichern) {
-                    if (!isset($_SESSION['oVarkombiAuswahl'])) {
-                        $_SESSION['oVarkombiAuswahl'] = new stdClass();
-                    }
-                    $_SESSION['oVarkombiAuswahl']->kGesetzteEigeschaftWert_arr = $kVariationKombi_arr;
-                }
-                $oArtikelTMP = gibArtikelByVariationen($oVaterArtikel->kArtikel, $kVariationKombi_arr);
-                if (isset($oArtikelTMP->kArtikel) && $oArtikelTMP->kArtikel > 0) {
-                    require_once PFAD_ROOT . PFAD_INCLUDES . 'artikel_inc.php';
-                    require_once PFAD_ROOT . PFAD_CLASSES_CORE . 'class.core.NiceMail.php';
-                    $bKindVorhanden = true;
-                    // Bewertungsguthaben
-                    $fBelohnung = 0.0;
-                    if ($Einstellungen['bewertung']['bewertung_guthaben_nutzen'] === 'Y') {
-                        if (isset($_GET['strl']) && $Einstellungen['bewertung']['bewertung_stufe2_anzahlzeichen'] <= $_GET['strl']) {
-                            $fBelohnung = $Einstellungen['bewertung']['bewertung_stufe2_guthaben'];
-                        } else {
-                            $fBelohnung = $Einstellungen['bewertung']['bewertung_stufe1_guthaben'];
-                        }
-                    }
 
-                    // Hinweise und Fehler sammeln
-                    $cHinweis                                    = mappingFehlerCode(verifyGPDataString('cHinweis'), $fBelohnung);
-                    $cFehler                                     = mappingFehlerCode(verifyGPDataString('cFehler'));
-                    $oArtikel                                    = new Artikel();
-                    $oArtikelOptionen                            = new stdClass();
-                    $oArtikelOptionen->nMerkmale                 = 1;
-                    $oArtikelOptionen->nAttribute                = 1;
-                    $oArtikelOptionen->nArtikelAttribute         = 1;
-                    $oArtikelOptionen->nMedienDatei              = 1;
-                    $oArtikelOptionen->nVariationKombi           = 1;
-                    $oArtikelOptionen->nKeinLagerbestandBeachten = 1;
-                    $oArtikelOptionen->nKonfig                   = 1;
-                    $oArtikelOptionen->nDownload                 = 1;
-                    $oArtikelOptionen->nMain                     = 1;
-                    $oArtikelOptionen->nWarenlager               = 1;
-                    // Warenkorbmatrix nötig? => Varikinder mit Preisen holen
-                    $oArtikelOptionen->nWarenkorbmatrix = intval($Einstellungen['artikeldetails']['artikeldetails_warenkorbmatrix_anzeige'] === 'Y');
-                    // Stückliste nötig? => Stücklistenkomponenten  holen
-                    $oArtikelOptionen->nStueckliste   = intval($Einstellungen['artikeldetails']['artikeldetails_stueckliste_anzeigen'] === 'Y');
-                    $oArtikelOptionen->nProductBundle = intval($Einstellungen['artikeldetails']['artikeldetails_produktbundle_nutzen'] === 'Y');
-                    $oArtikel->fuelleArtikel($oArtikelTMP->kArtikel, $oArtikelOptionen, $aFormValues['kKundengruppe'], $aFormValues['kSprache']);
-                    $oArtikel->kArtikelVariKombi = $oArtikel->kArtikel;
+                // Hinweise und Fehler sammeln
+                $cHinweis                                    = mappingFehlerCode(verifyGPDataString('cHinweis'), $fBelohnung);
+                $cFehler                                     = mappingFehlerCode(verifyGPDataString('cFehler'));
+                $oArtikel                                    = new Artikel();
+                $oArtikelOptionen                            = new stdClass();
+                $oArtikelOptionen->nMerkmale                 = 1;
+                $oArtikelOptionen->nAttribute                = 1;
+                $oArtikelOptionen->nArtikelAttribute         = 1;
+                $oArtikelOptionen->nMedienDatei              = 1;
+                $oArtikelOptionen->nVariationKombi           = 1;
+                $oArtikelOptionen->nKeinLagerbestandBeachten = 1;
+                $oArtikelOptionen->nKonfig                   = 1;
+                $oArtikelOptionen->nDownload                 = 1;
+                $oArtikelOptionen->nMain                     = 1;
+                $oArtikelOptionen->nWarenlager               = 1;
+                // Warenkorbmatrix nötig? => Varikinder mit Preisen holen
+                $oArtikelOptionen->nWarenkorbmatrix = (int)($Einstellungen['artikeldetails']['artikeldetails_warenkorbmatrix_anzeige'] === 'Y');
+                // Stückliste nötig? => Stücklistenkomponenten  holen
+                $oArtikelOptionen->nStueckliste   = (int)($Einstellungen['artikeldetails']['artikeldetails_stueckliste_anzeigen'] === 'Y');
+                $oArtikelOptionen->nProductBundle = (int)($Einstellungen['artikeldetails']['artikeldetails_produktbundle_nutzen'] === 'Y');
+                $oArtikel->fuelleArtikel($oArtikelTMP->kArtikel, $oArtikelOptionen, $aFormValues['kKundengruppe'], $aFormValues['kSprache']);
+                $oArtikel->kArtikelVariKombi = $oArtikel->kArtikel;
 
-                    // Hole EigenschaftWerte zur gewählten VariationKombi
-                    $oVariationKombiKind_arr = Shop::DB()->query(
-                        "SELECT teigenschaftkombiwert.kEigenschaftWert, teigenschaftkombiwert.kEigenschaft
-                            FROM teigenschaftkombiwert
-                            JOIN tartikel ON tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
-                                AND tartikel.kVaterArtikel = " . (int)$oVaterArtikel->kArtikel . "
-                                AND tartikel.kArtikel = " . (int)$oArtikel->kArtikelVariKombi . "
-                            LEFT JOIN tartikelsichtbarkeit ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                                AND tartikelsichtbarkeit.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
-                            WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                            ORDER BY tartikel.kArtikel", 2
-                    );
+                // Hole EigenschaftWerte zur gewählten VariationKombi
+                $oVariationKombiKind_arr = Shop::DB()->query(
+                    "SELECT teigenschaftkombiwert.kEigenschaftWert, teigenschaftkombiwert.kEigenschaft
+                        FROM teigenschaftkombiwert
+                        JOIN tartikel ON tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
+                            AND tartikel.kVaterArtikel = " . (int)$oVaterArtikel->kArtikel . "
+                            AND tartikel.kArtikel = " . (int)$oArtikel->kArtikelVariKombi . "
+                        LEFT JOIN tartikelsichtbarkeit ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
+                            AND tartikelsichtbarkeit.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
+                        WHERE tartikelsichtbarkeit.kArtikel IS NULL
+                        ORDER BY tartikel.kArtikel", 2
+                );
 
-                    if (is_array($oVariationKombiKind_arr) && count($oVariationKombiKind_arr) > 0) {
-                        foreach ($oVariationKombiKind_arr as $f => $oVariationKombiKind) {
-                            if ($f > 0) {
-                                $cVariationKombiKind .= ';' . $oVariationKombiKind->kEigenschaft . '_' . $oVariationKombiKind->kEigenschaftWert;
-                            } else {
-                                $cVariationKombiKind .= $oVariationKombiKind->kEigenschaft . '_' . $oVariationKombiKind->kEigenschaftWert;
-                            }
-                        }
-                    }
-
-                    $oArtikel->kArtikel                         = $oVaterArtikel->kArtikel;
-                    $oArtikel->cVaterVKLocalized                = $oVaterArtikel->Preise->cVKLocalized;
-                    $oArtikel->nIstVater                        = $oVaterArtikel->nIstVater;
-                    $oArtikel->fDurchschnittsBewertung          = $oVaterArtikel->fDurchschnittsBewertung;
-                    $oArtikel->Bewertungen                      = (isset($oVaterArtikel->Bewertungen))
-                        ? $oVaterArtikel->Bewertungen
-                        : null;
-                    $oArtikel->HilfreichsteBewertung            = (isset($oVaterArtikel->HilfreichsteBewertung))
-                        ? $oVaterArtikel->HilfreichsteBewertung
-                        : null;
-                    $oArtikel->oVariationKombiVorschau_arr      = (isset($oVaterArtikel->oVariationKombiVorschau_arr))
-                        ? $oVaterArtikel->oVariationKombiVorschau_arr
-                        : null;
-                    $oArtikel->oVariationDetailPreis_arr        = $oVaterArtikel->oVariationDetailPreis_arr;
-                    $oArtikel->nVariationKombiNichtMoeglich_arr = $oVaterArtikel->nVariationKombiNichtMoeglich_arr;
-                    $oArtikel->oVariationKombiVorschauText      = (isset($oVaterArtikel->oVariationKombiVorschauText))
-                        ? $oVaterArtikel->oVariationKombiVorschauText
-                        : null;
-                    $oArtikel->cVaterURL                        = $oVaterArtikel->cURL;
-                    $oArtikel->VaterFunktionsAttribute          = $oVaterArtikel->FunktionsAttribute;
-                    // Kind mit uebergeben
-                    $oArtikel->kVariKindArtikel = $oArtikel->kArtikelVariKombi;
-
-                    $xPost_arr = $_POST;
-                    baueArtikelDetail($oArtikel, $xPost_arr);
-
-                    if (isset($aFormValues['kEditKonfig'])) {
-                        $smarty->assign('kEditKonfig', $aFormValues['kEditKonfig']);
-                    }
-                    $cArtikelTemplate = 'productdetails/details.tpl';
-                    if (isset($oArtikel->FunktionsAttribute[FKT_ATTRIBUT_ARTIKELDETAILS_TPL])) {
-                        $cArtikelTemplate = $oArtikel->FunktionsAttribute[FKT_ATTRIBUT_ARTIKELDETAILS_TPL];
-                    }
-                    if (isset($aFormValues['ek'])) {
-                        holeKonfigBearbeitenModus($aFormValues['ek'], $smarty);
-                    }
-                    $objResponse->assign('contentmid', 'innerHTML', $smarty->fetch($cArtikelTemplate, null, null, null, false, null, false));
-                    $objResponse->assign('popUps', 'innerHTML', $smarty->fetch('productdetails/popups.tpl'));
-                    if (isset($_SESSION['oVarkombiAuswahl'])) {
-                        $objResponse->script("setzeEigenschaftWerte('" . $cVariationKombiKind . "');");
-                    }
-                    // Hole alle Eigenschaften des Artikels
-                    $oEigenschaft_arr = Shop::DB()->query(
-                        "SELECT *
-                            FROM teigenschaft
-                            WHERE kArtikel = " . (int)$oVaterArtikel->kArtikel . "
-                                AND (cTyp = 'RADIO' OR cTyp = 'SELECTBOX')
-                            ORDER BY nSort ASC, cName ASC", 2
-                    );
-                    // Durchlaufe alle Eigenschaften
-                    $oEigenschaftWert_arr = [];
-                    foreach ($oEigenschaft_arr as $i => $oEigenschaft) {
-                        $oEigenschaftWert_arr[$i] = Shop::DB()->selectAll(
-                            'teigenschaftwert',
-                            'kEigenschaft',
-                            (int)$oEigenschaft->kEigenschaft
-                        );
-                    }
-                    // Baue mögliche Kindartikel
-                    $oKombiFilter_arr = gibMoeglicheVariationen(
-                        $oVaterArtikel->kArtikel,
-                        $oEigenschaftWert_arr,
-                        $_SESSION['oVarkombiAuswahl']->kGesetzteEigeschaftWert_arr
-                    );
-                    if (is_array($oKombiFilter_arr) && count($oKombiFilter_arr) > 0) {
-                        $objResponse->script('schliesseAlleEigenschaftFelder();');
-                        foreach ($oKombiFilter_arr as $oKombiFilter) {
-                            $objResponse->script('aVC(' . $oKombiFilter->kEigenschaftWert . ');');
-                        }
-                    }
-                    $objResponse->script('setBindingsArtikel(1);');
-                    if ($oArtikel->bHasKonfig && count($oArtikel->oKonfig_arr) > 0) {
-                        $cArtikelJSTemplate = 'artikel_konfigurator_js.tpl';
-                        if (isset($oArtikel->FunktionsAttribute[FKT_ATTRIBUT_ARTIKELKONFIG_TPL_JS])) {
-                            $cArtikelJSTemplate = $oArtikel->FunktionsAttribute[FKT_ATTRIBUT_ARTIKELKONFIG_TPL_JS];
-                        }
-                        $cKonfigJS = $smarty->fetch('tpl_inc/' . $cArtikelJSTemplate);
-                        // remove script header
-                        $cKonfigJS = str_replace('<script type="text/javascript">', '', $cKonfigJS);
-                        $cKonfigJS = str_replace('</script>', '', $cKonfigJS);
-
-                        $objResponse->script($cKonfigJS);
-                    }
-
+                if (is_array($oVariationKombiKind_arr) && count($oVariationKombiKind_arr) > 0) {
                     foreach ($oVariationKombiKind_arr as $f => $oVariationKombiKind) {
-                        $kNichtGesetzteEigenschaft = $oVariationKombiKind->kEigenschaft;
-                        // hole eigenschaftswerte
-                        $kBereitsGesetzt      = [];
-                        $oEigenschaftWert_arr = Shop::DB()->selectAll(
-                            'teigenschaftwert',
-                            'kEigenschaft',
-                            (int)$kNichtGesetzteEigenschaft
-                        );
-                        foreach ($oEigenschaftWert_arr as $oEigenschaftWert) {
-                            $kMoeglicheEigenschaftWert_arr                             = $_SESSION['oVarkombiAuswahl']->kGesetzteEigeschaftWert_arr;
-                            $kMoeglicheEigenschaftWert_arr[$kNichtGesetzteEigenschaft] = $oEigenschaftWert->kEigenschaftWert;
+                        if ($f > 0) {
+                            $cVariationKombiKind .= ';' . $oVariationKombiKind->kEigenschaft . '_' . $oVariationKombiKind->kEigenschaftWert;
+                        } else {
+                            $cVariationKombiKind .= $oVariationKombiKind->kEigenschaft . '_' . $oVariationKombiKind->kEigenschaftWert;
+                        }
+                    }
+                }
 
-                            $oTMPArtikel = gibArtikelByVariationen(
-                                $oVaterArtikel->kArtikel,
-                                $kMoeglicheEigenschaftWert_arr
+                $oArtikel->kArtikel                         = $oVaterArtikel->kArtikel;
+                $oArtikel->cVaterVKLocalized                = $oVaterArtikel->Preise->cVKLocalized;
+                $oArtikel->nIstVater                        = $oVaterArtikel->nIstVater;
+                $oArtikel->fDurchschnittsBewertung          = $oVaterArtikel->fDurchschnittsBewertung;
+                $oArtikel->Bewertungen                      = isset($oVaterArtikel->Bewertungen)
+                    ? $oVaterArtikel->Bewertungen
+                    : null;
+                $oArtikel->HilfreichsteBewertung            = isset($oVaterArtikel->HilfreichsteBewertung)
+                    ? $oVaterArtikel->HilfreichsteBewertung
+                    : null;
+                $oArtikel->oVariationKombiVorschau_arr      = isset($oVaterArtikel->oVariationKombiVorschau_arr)
+                    ? $oVaterArtikel->oVariationKombiVorschau_arr
+                    : null;
+                $oArtikel->oVariationDetailPreis_arr        = $oVaterArtikel->oVariationDetailPreis_arr;
+                $oArtikel->nVariationKombiNichtMoeglich_arr = $oVaterArtikel->nVariationKombiNichtMoeglich_arr;
+                $oArtikel->oVariationKombiVorschauText      = isset($oVaterArtikel->oVariationKombiVorschauText)
+                    ? $oVaterArtikel->oVariationKombiVorschauText
+                    : null;
+                $oArtikel->cVaterURL                        = $oVaterArtikel->cURL;
+                $oArtikel->VaterFunktionsAttribute          = $oVaterArtikel->FunktionsAttribute;
+                // Kind mit uebergeben
+                $oArtikel->kVariKindArtikel = $oArtikel->kArtikelVariKombi;
+
+                $xPost_arr = $_POST;
+                baueArtikelDetail($oArtikel, $xPost_arr);
+
+                if (isset($aFormValues['kEditKonfig'])) {
+                    $smarty->assign('kEditKonfig', $aFormValues['kEditKonfig']);
+                }
+                $cArtikelTemplate = 'productdetails/details.tpl';
+                if (isset($oArtikel->FunktionsAttribute[FKT_ATTRIBUT_ARTIKELDETAILS_TPL])) {
+                    $cArtikelTemplate = $oArtikel->FunktionsAttribute[FKT_ATTRIBUT_ARTIKELDETAILS_TPL];
+                }
+                if (isset($aFormValues['ek'])) {
+                    holeKonfigBearbeitenModus($aFormValues['ek'], $smarty);
+                }
+                $objResponse->assign('contentmid', 'innerHTML', $smarty->fetch($cArtikelTemplate, null, null, null, false, null, false));
+                $objResponse->assign('popUps', 'innerHTML', $smarty->fetch('productdetails/popups.tpl'));
+                if (isset($_SESSION['oVarkombiAuswahl'])) {
+                    $objResponse->script("setzeEigenschaftWerte('" . $cVariationKombiKind . "');");
+                }
+                // Hole alle Eigenschaften des Artikels
+                $oEigenschaft_arr = Shop::DB()->query(
+                    "SELECT *
+                        FROM teigenschaft
+                        WHERE kArtikel = " . (int)$oVaterArtikel->kArtikel . "
+                            AND (cTyp = 'RADIO' OR cTyp = 'SELECTBOX')
+                        ORDER BY nSort ASC, cName ASC", 2
+                );
+                // Durchlaufe alle Eigenschaften
+                $oEigenschaftWert_arr = [];
+                foreach ($oEigenschaft_arr as $i => $oEigenschaft) {
+                    $oEigenschaftWert_arr[$i] = Shop::DB()->selectAll(
+                        'teigenschaftwert',
+                        'kEigenschaft',
+                        (int)$oEigenschaft->kEigenschaft
+                    );
+                }
+                // Baue mögliche Kindartikel
+                $oKombiFilter_arr = gibMoeglicheVariationen(
+                    $oVaterArtikel->kArtikel,
+                    $oEigenschaftWert_arr,
+                    $_SESSION['oVarkombiAuswahl']->kGesetzteEigeschaftWert_arr
+                );
+                if (is_array($oKombiFilter_arr) && count($oKombiFilter_arr) > 0) {
+                    $objResponse->script('schliesseAlleEigenschaftFelder();');
+                    foreach ($oKombiFilter_arr as $oKombiFilter) {
+                        $objResponse->script('aVC(' . $oKombiFilter->kEigenschaftWert . ');');
+                    }
+                }
+                $objResponse->script('setBindingsArtikel(1);');
+                if ($oArtikel->bHasKonfig && count($oArtikel->oKonfig_arr) > 0) {
+                    $cArtikelJSTemplate = 'artikel_konfigurator_js.tpl';
+                    if (isset($oArtikel->FunktionsAttribute[FKT_ATTRIBUT_ARTIKELKONFIG_TPL_JS])) {
+                        $cArtikelJSTemplate = $oArtikel->FunktionsAttribute[FKT_ATTRIBUT_ARTIKELKONFIG_TPL_JS];
+                    }
+                    $cKonfigJS = $smarty->fetch('tpl_inc/' . $cArtikelJSTemplate);
+                    // remove script header
+                    $cKonfigJS = str_replace('<script type="text/javascript">', '', $cKonfigJS);
+                    $cKonfigJS = str_replace('</script>', '', $cKonfigJS);
+
+                    $objResponse->script($cKonfigJS);
+                }
+
+                foreach ($oVariationKombiKind_arr as $f => $oVariationKombiKind) {
+                    $kNichtGesetzteEigenschaft = $oVariationKombiKind->kEigenschaft;
+                    // hole eigenschaftswerte
+                    $kBereitsGesetzt      = [];
+                    $oEigenschaftWert_arr = Shop::DB()->selectAll(
+                        'teigenschaftwert',
+                        'kEigenschaft',
+                        (int)$kNichtGesetzteEigenschaft
+                    );
+                    foreach ($oEigenschaftWert_arr as $oEigenschaftWert) {
+                        $kMoeglicheEigenschaftWert_arr                             = $_SESSION['oVarkombiAuswahl']->kGesetzteEigeschaftWert_arr;
+                        $kMoeglicheEigenschaftWert_arr[$kNichtGesetzteEigenschaft] = $oEigenschaftWert->kEigenschaftWert;
+
+                        $oTMPArtikel = gibArtikelByVariationen(
+                            $oVaterArtikel->kArtikel,
+                            $kMoeglicheEigenschaftWert_arr
+                        );
+
+                        if ($oTMPArtikel && $oTMPArtikel->kArtikel > 0) {
+                            if (in_array($oTMPArtikel->kArtikel, $kBereitsGesetzt)) {
+                                continue;
+                            }
+                            $kBereitsGesetzt[] = $oTMPArtikel->kArtikel;
+
+                            $oTestArtikel                                = new Artikel();
+                            $oArtikelOptionen->nMerkmale                 = 0;
+                            $oArtikelOptionen->nAttribute                = 0;
+                            $oArtikelOptionen->nArtikelAttribute         = 0;
+                            $oArtikelOptionen->nMedienDatei              = 0;
+                            $oArtikelOptionen->nVariationKombi           = 0;
+                            $oArtikelOptionen->nKeinLagerbestandBeachten = 1;
+                            $oArtikelOptionen->nKonfig                   = 0;
+                            $oArtikelOptionen->nDownload                 = 0;
+                            $oArtikelOptionen->nMain                     = 0;
+                            $oArtikelOptionen->nWarenlager               = 0;
+
+                            $oTestArtikel->fuelleArtikel(
+                                $oTMPArtikel->kArtikel,
+                                $oArtikelOptionen,
+                                Kundengruppe::getCurrent(),
+                                Shop::getLanguage()
                             );
 
-                            if ($oTMPArtikel && $oTMPArtikel->kArtikel > 0) {
-                                if (in_array($oTMPArtikel->kArtikel, $kBereitsGesetzt)) {
-                                    continue;
-                                }
-                                $kBereitsGesetzt[] = $oTMPArtikel->kArtikel;
-
-                                $oTestArtikel                                = new Artikel();
-                                $oArtikelOptionen->nMerkmale                 = 0;
-                                $oArtikelOptionen->nAttribute                = 0;
-                                $oArtikelOptionen->nArtikelAttribute         = 0;
-                                $oArtikelOptionen->nMedienDatei              = 0;
-                                $oArtikelOptionen->nVariationKombi           = 0;
-                                $oArtikelOptionen->nKeinLagerbestandBeachten = 1;
-                                $oArtikelOptionen->nKonfig                   = 0;
-                                $oArtikelOptionen->nDownload                 = 0;
-                                $oArtikelOptionen->nMain                     = 0;
-                                $oArtikelOptionen->nWarenlager               = 0;
-
-                                $oTestArtikel->fuelleArtikel(
-                                    $oTMPArtikel->kArtikel,
-                                    $oArtikelOptionen,
-                                    Kundengruppe::getCurrent(),
-                                    Shop::getLanguage()
+                            if ($oTestArtikel->cLagerBeachten === 'Y' &&
+                                $oTestArtikel->cLagerKleinerNull !== 'Y' &&
+                                $oTestArtikel->fLagerbestand == 0
+                            ) {
+                                $objResponse->script(
+                                    "setzeVarInfo({$oEigenschaftWert->kEigenschaftWert}, 
+                                    '{$oTestArtikel->Lageranzeige->AmpelText}', 
+                                    '{$oTestArtikel->Lageranzeige->nStatus}');"
                                 );
-
-                                if ($oTestArtikel->cLagerBeachten === 'Y' &&
-                                    $oTestArtikel->cLagerKleinerNull !== 'Y' &&
-                                    $oTestArtikel->fLagerbestand == 0
-                                ) {
-                                    $objResponse->script("setzeVarInfo({$oEigenschaftWert->kEigenschaftWert}, '{$oTestArtikel->Lageranzeige->AmpelText}', '{$oTestArtikel->Lageranzeige->nStatus}');");
-                                }
                             }
                         }
                     }
@@ -887,7 +907,7 @@ function baueArtikelDetail($oArtikel, $xPost_arr)
     $Artikelhinweise = [];
     baueArtikelhinweise();
 
-    if (isset($xPost_arr['fragezumprodukt']) && intval($xPost_arr['fragezumprodukt']) === 1) {
+    if (isset($xPost_arr['fragezumprodukt']) && (int)$xPost_arr['fragezumprodukt'] === 1) {
         bearbeiteFrageZumProdukt();
     } elseif (isset($xPost_arr['benachrichtigung_verfuegbarkeit']) && (int)$xPost_arr['benachrichtigung_verfuegbarkeit'] === 1) {
         bearbeiteBenachrichtigung();
@@ -968,7 +988,7 @@ function baueArtikelDetail($oArtikel, $xPost_arr)
            ->assign('UVPBruttolocalized', gibPreisStringLocalized($oArtikel->fUVPBrutto))
            ->assign('Einstellungen', $conf)
            ->assign('Artikel', $oArtikel)
-           ->assign('Xselling', (isset($oArtikel->kVariKindArtikel))
+           ->assign('Xselling', isset($oArtikel->kVariKindArtikel)
                ? gibArtikelXSelling($oArtikel->kVariKindArtikel)
                : null)
            ->assign('requestURL', $requestURL)
@@ -981,8 +1001,8 @@ function baueArtikelDetail($oArtikel, $xPost_arr)
            ->assign('ProduktTagging', $oArtikel->tags)
            ->assign('BlaetterNavi', $oBlaetterNavi)
            ->assign('BewertungsTabAnzeigen', $BewertungsTabAnzeigen)
-           ->assign('hinweis', ((isset($cHinweis)) ? $cHinweis : null))
-           ->assign('fehler', ((isset($cFehler)) ? $cFehler : null))
+           ->assign('hinweis', isset($cHinweis) ? $cHinweis : null)
+           ->assign('fehler', isset($cFehler) ? $cFehler : null)
            ->assign('PFAD_IMAGESLIDER', $shopURL . PFAD_IMAGESLIDER)
            ->assign('PFAD_MEDIAFILES', $shopURL . PFAD_MEDIAFILES)
            ->assign('PFAD_FLASHPLAYER', $shopURL . PFAD_FLASHPLAYER)
@@ -1007,6 +1027,7 @@ function baueArtikelDetail($oArtikel, $xPost_arr)
 }
 
 /**
+ * @deprecated since 4.05
  * @param int $kMerkmalWert
  * @param int $kAuswahlAssistentFrage
  * @param int $nFrage
@@ -1069,6 +1090,7 @@ function setSelectionWizardAnswerAjax($kMerkmalWert, $kAuswahlAssistentFrage, $n
 }
 
 /**
+ * @deprecated since 4.05
  * @param int $nFrage
  * @param int $kKategorie
  * @return xajaxResponse
@@ -1097,8 +1119,7 @@ function resetSelectionWizardAnswerAjax($nFrage, $kKategorie)
     // Bereits ausgewaehlte Antworten loeschen
     foreach ($_SESSION['AuswahlAssistent']->oAuswahl_arr as $i => $oAuswahl) {
         if ($i >= $nFrage) {
-            unset($_SESSION['AuswahlAssistent']->oAuswahl_arr[$i]);
-            unset($_SESSION['AuswahlAssistent']->kMerkmalGesetzt_arr[$i]);
+            unset($_SESSION['AuswahlAssistent']->oAuswahl_arr[$i], $_SESSION['AuswahlAssistent']->kMerkmalGesetzt_arr[$i]);
         }
     }
     // Filter
@@ -1123,6 +1144,7 @@ function resetSelectionWizardAnswerAjax($nFrage, $kKategorie)
 }
 
 /**
+ * @deprecated since 4.05
  * @param int   $kVaterArtikel
  * @param array $kGesetzteEigeschaftWert_arr
  * @return mixed
@@ -1159,9 +1181,9 @@ function getValidVarkombis($kVaterArtikel, $kGesetzteEigeschaftWert_arr)
  */
 function checkVarkombiDependencies($kVaterArtikel, $cVaterURL, $kEigenschaft = 0, $kEigenschaftWert = 0, $oParam_arr = [])
 {
-    $objResponse = (isset($oParam_arr['objResponse'])) ?
-        $oParam_arr['objResponse'] :
-        new xajaxResponse();
+    $objResponse = isset($oParam_arr['objResponse'])
+        ? $oParam_arr['objResponse']
+        : new xajaxResponse();
 
     $kVaterArtikel    = (int)$kVaterArtikel;
     $kEigenschaft     = (int)$kEigenschaft;
@@ -1260,7 +1282,11 @@ function checkVarkombiDependencies($kVaterArtikel, $cVaterURL, $kEigenschaft = 0
                         $oTestArtikel->cLagerKleinerNull !== 'Y' &&
                         $oTestArtikel->fLagerbestand == 0
                     ) {
-                        $objResponse->script("setzeVarInfo({$oEigenschaftWert->kEigenschaftWert}, '{$oTestArtikel->Lageranzeige->AmpelText}', '{$oTestArtikel->Lageranzeige->nStatus}');");
+                        $objResponse->script(
+                            "setzeVarInfo({$oEigenschaftWert->kEigenschaftWert}, 
+                            '{$oTestArtikel->Lageranzeige->AmpelText}', 
+                            '{$oTestArtikel->Lageranzeige->nStatus}');"
+                        );
                     }
                 }
             }
@@ -1302,8 +1328,8 @@ function gibMoeglicheVariationen($kVaterArtikel, $oEigenschaftWert_arr, $kGesetz
             }
         }
         $cSQLStr          = implode(' ', $cSQL);
-        $oEigenschaft_arr = Shop::DB()->query(
-            "SELECT e1.* FROM teigenschaftkombiwert e1
+        $oEigenschaft_arr = Shop::DB()->query("
+            SELECT e1.* FROM teigenschaftkombiwert e1
                 {$cSQLStr}
                 WHERE e1.kEigenschaft ={$group[0]->kEigenschaft}
                 GROUP BY e1.kEigenschaft, e1.kEigenschaftWert", 2
@@ -1338,8 +1364,8 @@ function gibArtikelByVariationen($kArtikel, $kVariationKombi_arr)
     } else {
         return;
     }
-    $oArtikelTMP = Shop::DB()->query(
-        "SELECT tartikel.kArtikel
+    $oArtikelTMP = Shop::DB()->query("
+        SELECT tartikel.kArtikel
             FROM teigenschaftkombiwert
             JOIN tartikel 
                 ON tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi

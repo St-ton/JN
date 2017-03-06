@@ -553,10 +553,8 @@ class Link extends MainModel
                 Shop::DB()->delete('tseo', ['kKey', 'cKey'], [$this->getLink(), 'kLink']);
 
                 $cDir = PFAD_ROOT . PFAD_BILDER . PFAD_LINKBILDER . $this->getLink();
-                if (is_dir($cDir) && $this->getLink() > 0) {
-                    if (delDirRecursively($cDir)) {
-                        rmdir($cDir);
-                    }
+                if (is_dir($cDir) && $this->getLink() > 0 && delDirRecursively($cDir)) {
+                    rmdir($cDir);
                 }
             }
 

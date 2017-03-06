@@ -6,12 +6,12 @@
 /**
  * @global JTLSmarty $smarty
  */
-require_once dirname(__FILE__) . '/includes/admininclude.php';
+require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'template_inc.php';
 
 $oAccount->permission('DISPLAY_TEMPLATE_VIEW', true, true);
 /** @global JTLSmarty $smarty */
-if (isset($_POST['key']) && isset($_POST['upload'])) {
+if (isset($_POST['key'], $_POST['upload'])) {
     $file     = PFAD_ROOT . PFAD_TEMPLATES . $_POST['upload'];
     $response = new stdClass();
     if (file_exists($file) && is_file($file)) {
@@ -25,10 +25,10 @@ if (isset($_POST['key']) && isset($_POST['upload'])) {
 
 $cHinweis       = '';
 $cFehler        = '';
-$lessVars_arr   = array();
-$lessVarsSkin   = array();
-$lessColors_arr = array();
-$lessColorsSkin = array();
+$lessVars_arr   = [];
+$lessVarsSkin   = [];
+$lessColors_arr = [];
+$lessColorsSkin = [];
 $oTemplate      = Template::getInstance();
 $templateHelper = TemplateHelper::getInstance(true);
 $templateHelper->disableCaching();
@@ -102,26 +102,24 @@ if (isset($_POST['type']) && $_POST['type'] === 'settings' && validateToken()) {
                 foreach ($tplConfXML as $_section) {
                     if (isset($_section->oSettings_arr)) {
                         foreach ($_section->oSettings_arr as $_setting) {
-                            if (isset($_setting->cKey) && $_setting->cKey === $cName) {
-                                if (isset($_setting->rawAttributes['target'])) {
-                                    //target folder
-                                    $targetFile = PFAD_ROOT . PFAD_TEMPLATES . $cOrdner . '/' . $_setting->rawAttributes['target'];
-                                    //add trailing slash
-                                    if ($targetFile[strlen($targetFile) - 1] !== '/') {
-                                        $targetFile .= '/';
-                                    }
-                                    //optional target file name + extension
-                                    if (isset($_setting->rawAttributes['targetFileName'])) {
-                                        $cWert = $_setting->rawAttributes['targetFileName'];
-                                    }
-                                    $targetFile .= $cWert;
-                                    if (!move_uploaded_file($file['tmp_name'], $targetFile)) {
-                                        $faviconError = '&faviconError=true';
-                                    }
-                                    $break = true;
-                                    break;
+                            if (isset($_setting->cKey, $_setting->rawAttributes['target']) && $_setting->cKey === $cName) {
+                                //target folder
+                                $targetFile = PFAD_ROOT . PFAD_TEMPLATES . $cOrdner . '/' . $_setting->rawAttributes['target'];
+                                //add trailing slash
+                                if ($targetFile[strlen($targetFile) - 1] !== '/') {
+                                    $targetFile .= '/';
                                 }
-                            }
+                                //optional target file name + extension
+                                if (isset($_setting->rawAttributes['targetFileName'])) {
+                                    $cWert = $_setting->rawAttributes['targetFileName'];
+                                }
+                                $targetFile .= $cWert;
+                                if (!move_uploaded_file($file['tmp_name'], $targetFile)) {
+                                    $faviconError = '&faviconError=true';
+                                }
+                                $break = true;
+                                break;
+                                }
                         }
                     }
                     if ($break === true) {
@@ -143,13 +141,15 @@ if (isset($_POST['type']) && $_POST['type'] === 'settings' && validateToken()) {
     }
     Shop::DB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
     //re-init smarty with new template - problematic because of re-including functions.php
-    header('Location: ' . Shop::getURL() . '/' . PFAD_ADMIN . 'shoptemplate.php?check=' . ($bCheck ? 'true' : 'false') . $faviconError, true, 301);
+    header('Location: ' . Shop::getURL() . '/' .
+        PFAD_ADMIN . 'shoptemplate.php?check=' .
+        ($bCheck ? 'true' : 'false') . $faviconError, true, 301);
 }
 if (isset($_GET['settings']) && strlen($_GET['settings']) > 0 && validateToken()) {
     $cOrdner      = Shop::DB()->escape($_GET['settings']);
     $oTpl         = $templateHelper->getData($cOrdner, $admin);
     $tplXML       = $templateHelper->getXML($cOrdner, false);
-    $preview      = array();
+    $preview      = [];
     $parentFolder = null;
     if (!empty($tplXML->Parent)) {
         $parentFolder = (string)$tplXML->Parent;
@@ -177,23 +177,29 @@ if (isset($_GET['settings']) && strlen($_GET['settings']) > 0 && validateToken()
         foreach ($tplConfXML as $_conf) {
             // iterate over each "Setting" in this "Section"
             foreach ($_conf->oSettings_arr as $_setting) {
-                if ($_setting->cType === 'upload' && isset($_setting->rawAttributes['target']) && isset($_setting->rawAttributes['targetFileName'])) {
-                    if (!file_exists(PFAD_ROOT . PFAD_TEMPLATES . $cOrdner . '/' . $_setting->rawAttributes['target'] . $_setting->rawAttributes['targetFileName'])) {
-                        $_setting->cValue = null;
-                    }
+                if ($_setting->cType === 'upload' &&
+                    isset($_setting->rawAttributes['target'], $_setting->rawAttributes['targetFileName']) &&
+                    !file_exists(PFAD_ROOT . PFAD_TEMPLATES .
+                        $cOrdner . '/' . $_setting->rawAttributes['target'] .
+                        $_setting->rawAttributes['targetFileName'])
+                ) {
+                    $_setting->cValue = null;
                 }
             }
-            if (isset($_conf->cKey) && $_conf->cKey === 'theme' && isset($_conf->oSettings_arr) && count($_conf->oSettings_arr) > 0) {
+            if (isset($_conf->cKey, $_conf->oSettings_arr) && $_conf->cKey === 'theme' && count($_conf->oSettings_arr) > 0) {
                 foreach ($_conf->oSettings_arr as $_themeConf) {
-                    if (isset($_themeConf->cKey) && $_themeConf->cKey === 'theme_default' && isset($_themeConf->oOptions_arr) && count($_themeConf->oOptions_arr) > 0) {
+                    if (isset($_themeConf->cKey, $_themeConf->oOptions_arr) &&
+                        $_themeConf->cKey === 'theme_default' &&
+                        count($_themeConf->oOptions_arr) > 0
+                    ) {
                         foreach ($_themeConf->oOptions_arr as $_theme) {
-                            $previewImage = (isset($_theme->cOrdner)) ?
-                                PFAD_ROOT . PFAD_TEMPLATES . $_theme->cOrdner . '/themes/' . $_theme->cValue . '/preview.png' :
-                                PFAD_ROOT . PFAD_TEMPLATES . $cOrdner . '/themes/' . $_theme->cValue . '/preview.png';
+                            $previewImage = isset($_theme->cOrdner)
+                                ? PFAD_ROOT . PFAD_TEMPLATES . $_theme->cOrdner . '/themes/' . $_theme->cValue . '/preview.png'
+                                : PFAD_ROOT . PFAD_TEMPLATES . $cOrdner . '/themes/' . $_theme->cValue . '/preview.png';
                             if (file_exists($previewImage)) {
-                                $preview[$_theme->cValue] = (isset($_theme->cOrdner)) ?
-                                    $shopURL . PFAD_TEMPLATES . $_theme->cOrdner . '/themes/' . $_theme->cValue . '/preview.png' :
-                                    $shopURL . PFAD_TEMPLATES . $cOrdner . '/themes/' . $_theme->cValue . '/preview.png';
+                                $preview[$_theme->cValue] = isset($_theme->cOrdner)
+                                    ? $shopURL . PFAD_TEMPLATES . $_theme->cOrdner . '/themes/' . $_theme->cValue . '/preview.png'
+                                    : $shopURL . PFAD_TEMPLATES . $cOrdner . '/themes/' . $_theme->cValue . '/preview.png';
                             }
                         }
                         break;
@@ -206,7 +212,7 @@ if (isset($_GET['settings']) && strlen($_GET['settings']) > 0 && validateToken()
                 $themesLess = $_less;
                 $less       = new LessParser();
                 foreach ($themesLess->oFiles_arr as $filePaths) {
-                    if ($themesLess->cName == $currentSkin) {
+                    if ($themesLess->cName === $currentSkin) {
                         $less->read($frontendTemplate . '/' . $filePaths->cPath);
                         $lessVarsSkin   = $less->getStack();
                         $lessColorsSkin = $less->getColors();

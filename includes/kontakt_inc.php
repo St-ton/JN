@@ -18,6 +18,9 @@ function gibFehlendeEingabenKontaktformular()
     if (!$_POST['email']) {
         $ret['email'] = 1;
     }
+    if (!$_POST['subject']) {
+        $ret['subject'] = 1;
+    }
     if (!valid_email($_POST['email'])) {
         $ret['email'] = 2;
     }
@@ -168,7 +171,7 @@ function pruefeBetreffVorhanden()
     $oBetreff_arr = Shop::DB()->query(
         "SELECT kKontaktBetreff
             FROM tkontaktbetreff
-            WHERE cKundengruppen RLIKE '^([0-9;]+;)?" . (int)$kKundengruppe . ";'
+            WHERE cKundengruppen RLIKE '^([0-9;]*;)?" . (int)$kKundengruppe . ";'
                 OR cKundengruppen = '0'", 2
     );
 

@@ -37,44 +37,44 @@ class ClickandBuy extends PaymentMethod
     }
 
     /**
-     * @return null
+     * @return string|null
      */
     private function getMerchantId()
     {
         $conf = Shop::getSettings([CONF_ZAHLUNGSARTEN]);
 
-        return (isset($conf['zahlungsarten']['zahlungsart_clickandbuy_merchant_id']))
+        return isset($conf['zahlungsarten']['zahlungsart_clickandbuy_merchant_id'])
             ? $conf['zahlungsarten']['zahlungsart_clickandbuy_merchant_id']
             :             null;
     }
 
     /**
-     * @return null
+     * @return string|null
      */
     private function getProjectId()
     {
         $conf = Shop::getSettings([CONF_ZAHLUNGSARTEN]);
 
-        return (isset($conf['zahlungsarten']['zahlungsart_clickandbuy_project_id']))
+        return isset($conf['zahlungsarten']['zahlungsart_clickandbuy_project_id'])
             ? $conf['zahlungsarten']['zahlungsart_clickandbuy_project_id']
             : null;
     }
 
     /**
-     * @return null
+     * @return string|null
      */
     private function getSecretKey()
     {
         $conf = Shop::getSettings([CONF_ZAHLUNGSARTEN]);
 
-        return (isset($conf['zahlungsarten']['zahlungsart_clickandbuy_secretkey_id']))
+        return isset($conf['zahlungsarten']['zahlungsart_clickandbuy_secretkey_id'])
             ? $conf['zahlungsarten']['zahlungsart_clickandbuy_secretkey_id']
             : null;
     }
 
     /**
-     * @param $cProjectID
-     * @param $cSecretKey
+     * @param string $cProjectID
+     * @param string $cSecretKey
      * @return string
      */
     private function generateToken($cProjectID, $cSecretKey)
@@ -82,9 +82,8 @@ class ClickandBuy extends PaymentMethod
         $nTimestamp  = gmdate('YmdHis');
         $cHash       = $cProjectID . '::' . $cSecretKey . '::' . $nTimestamp;
         $cToBeHashed = strtoupper(sha1($cHash));
-        $cToken      = $nTimestamp . '::' . $cToBeHashed;
 
-        return $cToken;
+        return $nTimestamp . '::' . $cToBeHashed;
     }
 
     /**
@@ -99,7 +98,7 @@ class ClickandBuy extends PaymentMethod
         $cAuthentication_arr['projectID']  = trim($this->getProjectId());
         $cAuthentication_arr['secretKey']  = trim($this->getSecretKey());
 
-        if (CAB_D_MODE == 1) {
+        if (CAB_D_MODE === 1) {
             ZahlungsLog::add('za_clickandbuy_jtl', 'cAuthentication_arr: ' . print_r($cAuthentication_arr, 1));
         }
         // failureURL
@@ -125,7 +124,7 @@ class ClickandBuy extends PaymentMethod
         //$cDetails_arr['consumerCountry'] = strtolower($customer->cLand);
         $cDetails_arr = $this->removeEmptyTag($cDetails_arr);
 
-        if (CAB_D_MODE == 1) {
+        if (CAB_D_MODE === 1) {
             ZahlungsLog::add('za_clickandbuy_jtl', 'cDetails_arr: ' . print_r($cDetails_arr, 1));
         }
         // Rechnungsinformationen
@@ -149,7 +148,7 @@ class ClickandBuy extends PaymentMethod
 
         $cBillingAddress_arr = $this->removeEmptyTag($cBillingAddress_arr, ['title']);
 
-        if (CAB_D_MODE == 1) {
+        if (CAB_D_MODE === 1) {
             ZahlungsLog::add('za_clickandbuy_jtl', 'cBillingAddress_arr: ' . print_r($cBillingAddress_arr, 1));
         }
 
@@ -170,7 +169,7 @@ class ClickandBuy extends PaymentMethod
             if (strlen($order->Lieferadresse->cLand) < 3) {
                 //$cLandISO = strtolower($order->Lieferadresse->cLand);
                 $cLandISO = strtoupper($order->Lieferadresse->cLand);
-            } elseif (landISO($order->Lieferadresse->cLand) != 'noISO') {
+            } elseif (landISO($order->Lieferadresse->cLand) !== 'noISO') {
                 //$cLandISO = strtolower(landISO($order->Lieferadresse->cLand));
                 $cLandISO = strtoupper(landISO($order->Lieferadresse->cLand));
             }
@@ -187,7 +186,7 @@ class ClickandBuy extends PaymentMethod
             $cShippingAddress_arr['address']['addressSuffix']     = '';
             $cShippingAddress_arr                                 = $this->removeEmptyTag($cShippingAddress_arr, ['title', 'firstName']);
 
-            if (CAB_D_MODE == 1) {
+            if (CAB_D_MODE === 1) {
                 ZahlungsLog::add('za_clickandbuy_jtl', 'cShippingAddress_arr: ' . print_r($cShippingAddress_arr, 1));
             }
         }
@@ -249,19 +248,16 @@ class ClickandBuy extends PaymentMethod
         $itemListArr = [];
         if (count($cItem_arr) > 0) {
             foreach ($cItem_arr as $cItem) {
-                array_push(
-                    $itemListArr,
-                    new soapval(
-                        'item',
-                        false,
-                        [
-                            'itemType'    => 'ITEM',
-                            'description' => $cItem['itemDescription'],
-                            'quantity'    => $cItem['itemQuantity'],
-                            new soapval('unitPrice', false, ['amount' => $cItem['itemUnitPriceAmount'], 'currency' => $cItem['itemUnitPriceCurrency']]),
-                            new soapval('totalPrice', false, ['amount' => $cItem['itemTotalPriceAmount'], 'currency' => $cItem['itemTotalPriceCurrency']])
-                        ]
-                    )
+                $itemListArr[] = new soapval(
+                    'item',
+                    false,
+                    [
+                        'itemType'    => 'ITEM',
+                        'description' => $cItem['itemDescription'],
+                        'quantity'    => $cItem['itemQuantity'],
+                        new soapval('unitPrice', false, ['amount' => $cItem['itemUnitPriceAmount'], 'currency' => $cItem['itemUnitPriceCurrency']]),
+                        new soapval('totalPrice', false, ['amount' => $cItem['itemTotalPriceAmount'], 'currency' => $cItem['itemTotalPriceCurrency']])
+                    ]
                 );
             }
         }
@@ -296,12 +292,11 @@ class ClickandBuy extends PaymentMethod
             'authentication' => $authenticationArr,
             'details'        => $detailsArr
         ];
-        if (CAB_D_MODE == 1) {
+        if (CAB_D_MODE === 1) {
             ZahlungsLog::add('za_clickandbuy_jtl', 'doSoapRequest: ' . print_r($authenticationArr, 1));
         }
-        $nusoapResult = $this->doSoapRequest('payRequest_Request', $reqParam);
 
-        return $nusoapResult;
+        return $this->doSoapRequest('payRequest_Request', $reqParam);
     }
 
     /**
@@ -322,7 +317,7 @@ class ClickandBuy extends PaymentMethod
         if (count($ids) > 0) {
             // Fill idListArr
             foreach ($ids as $key => $value) {
-                array_push($idListArr, new soapval($statusType, false, $value));
+                $idListArr[] = new soapval($statusType, false, $value);
             }
         }
         $detailsArr = [
@@ -332,13 +327,12 @@ class ClickandBuy extends PaymentMethod
             'authentication' => $authenticationArr,
             'details'        => $detailsArr
         ];
-        $nusoapResult = $this->doSoapRequest('statusRequest_Request', $reqParam);
 
-        return $nusoapResult;
+        return $this->doSoapRequest('statusRequest_Request', $reqParam);
     }
 
     /**
-     * @param       $arr
+     * @param array $arr
      * @param array $excludes
      * @return mixed
      */
@@ -459,15 +453,10 @@ class ClickandBuy extends PaymentMethod
             writeLog(CAB_D_PFAD, 'verifyNotification args: ' . print_r($args, 1), 1);
         }
 
-        if (isset($cRequestResult_arr['success']) && $cRequestResult_arr['success']) {
-            if (isset($cRequestResult_arr['values']['transactionList']['transaction']['transactionStatus']) &&
-                $cRequestResult_arr['values']['transactionList']['transaction']['transactionStatus'] === 'SUCCESS'
-            ) {
-                return true;
-            }
-        }
-
-        return false;
+        return (isset($cRequestResult_arr['success'], $cRequestResult_arr['values']['transactionList']['transaction']['transactionStatus']) &&
+            $cRequestResult_arr['success'] &&
+            $cRequestResult_arr['values']['transactionList']['transaction']['transactionStatus'] === 'SUCCESS'
+        );
     }
 
     /**

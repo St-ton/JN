@@ -108,7 +108,7 @@ class Image
      *
      * @TODO: Support all types and map to the according table
      * @todo: unsed param $type
-     * @param string $id id
+     * @param int    $id
      * @param string $type produkt, hersteller, ..
      * @param int    $number
      * @return int foreign key
@@ -117,8 +117,13 @@ class Image
     {
         $id     = (int)$id;
         $number = (int)$number;
-        $sql    = "SELECT kArtikel AS id, nNr AS number, cPfad AS path FROM tartikelpict WHERE kArtikel = '{$id}' AND nNr = '{$number}' ORDER BY nNr LIMIT 1";
-        $item   = Shop::DB()->query($sql, 1);
+        $item   = Shop::DB()->query("
+            SELECT kArtikel AS id, nNr AS number, cPfad AS path 
+                FROM tartikelpict 
+                WHERE kArtikel = '{$id}' 
+                    AND nNr = '{$number}' 
+                ORDER BY nNr LIMIT 1", 1
+        );
 
         return is_object($item) ? $item : null;
     }
@@ -322,7 +327,7 @@ class Image
                 break;
         }
 
-        return (empty($result)) ? 'image' : self::getCleanFilename($result);
+        return empty($result) ? 'image' : self::getCleanFilename($result);
     }
 
     /**

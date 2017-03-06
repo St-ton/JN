@@ -3,7 +3,7 @@
 {if !is_object($oVersion) || $oVersion->nType == -2}
     <span class="text-warning">Fehler beim Abruf der Information</span>
 {elseif $oVersion->nType == -1}
-    <span class="text-success"">Aktuellste Version bereits vorhanden</span>
+    <span class="text-success">Aktuellste Version bereits vorhanden</span>
 {elseif $oVersion->nType == -3}
     <span class="text-info">Entwicklung (Version {$oVersion->nVersion})</span>
 {elseif $oVersion->nType >= 0}

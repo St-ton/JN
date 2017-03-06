@@ -25,14 +25,13 @@ $nFloodProtection = (int)Shop::DB()->query("
             AND DATE_ADD(`dErstellt`, INTERVAL 2 MINUTE) >= NOW() 
         ORDER BY `dErstellt` DESC", 3
 );
-
 if ($nFloodProtection === 0) {
     // Track request
     $oSitemapTracker               = new stdClass();
     $oSitemapTracker->cSitemap     = basename($cDatei);
     $oSitemapTracker->kBesucherBot = getRequestBot();
     $oSitemapTracker->cIP          = $cIP;
-    $oSitemapTracker->cUserAgent   = $_SERVER['HTTP_USER_AGENT'];
+    $oSitemapTracker->cUserAgent   = StringHandler::filterXSS($_SERVER['HTTP_USER_AGENT']);
     $oSitemapTracker->dErstellt    = 'now()';
 
     Shop::DB()->insert('tsitemaptracker', $oSitemapTracker);
@@ -53,7 +52,7 @@ function getRequestBot()
             if (stripos($_SERVER['HTTP_USER_AGENT'], $cBotUserAgent) !== false) {
                 $oBesucherBot = Shop::DB()->select('tbesucherbot', 'cUserAgent', $cBotUserAgent);
 
-                return (isset($oBesucherBot->kBesucherBot)) ? $oBesucherBot->kBesucherBot : 0;
+                return isset($oBesucherBot->kBesucherBot) ? (int)$oBesucherBot->kBesucherBot : 0;
             }
         }
     }

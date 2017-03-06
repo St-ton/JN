@@ -73,7 +73,7 @@ if (pruefeBetreffVorhanden()) {
         "SELECT *
             FROM tkontaktbetreff
             WHERE (cKundengruppen = 0
-            OR cKundengruppen RLIKE '^([0-9;]+;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";') 
+            OR cKundengruppen RLIKE '^([0-9;]*;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";') 
             ORDER BY nSort", 2
     );
     $bCount = count($betreffs);
@@ -101,7 +101,7 @@ if (pruefeBetreffVorhanden()) {
     $smarty->assign('step', $step)
            ->assign('code', generiereCaptchaCode($Einstellungen['kontakt']['kontakt_abfragen_captcha']))
            ->assign('betreffs', $betreffs)
-           ->assign('hinweis', (isset($hinweis)) ? $hinweis : null)
+           ->assign('hinweis', isset($hinweis) ? $hinweis : null)
            ->assign('Vorgaben', $Vorgaben)
            ->assign('fehlendeAngaben', $fehlendeAngaben)
            ->assign('nAnzeigeOrt', CHECKBOX_ORT_KONTAKT);
@@ -114,7 +114,7 @@ if (pruefeBetreffVorhanden()) {
 
 $smarty->assign('Navigation', createNavigation($AktuelleSeite))
        ->assign('Spezialcontent', $SpezialContent)
-       ->assign('requestURL', (isset($requestURL)) ? $requestURL : null)
+       ->assign('requestURL', isset($requestURL) ? $requestURL : null)
        ->assign('Einstellungen', $Einstellungen);
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';

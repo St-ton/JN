@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/admininclude.php';
+require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('ORDER_COUPON_VIEW', true, true);
 /** @global JTLSmarty $smarty */
@@ -20,10 +20,43 @@ $oSprache_arr = gibAlleSprachen();
 $oKupon       = null;
 
 // CSV Import ausgeloest?
-$res = handleCsvImportAction('kupon', 'tkupon');
+$res = handleCsvImportAction('kupon', function ($obj) {
+    $couponNames = [];
+
+    foreach (get_object_vars($obj) as $key => $val) {
+        if (substr($key, 0, 6) === 'cName_') {
+            $couponNames[substr($key, 6)] = $val;
+            unset($obj->$key);
+        }
+    }
+
+    if (isset($obj->cCode) && Shop::DB()->select('tkupon', 'cCode', $obj->cCode) !== null) {
+        return false;
+    }
+
+    $kKupon = Shop::DB()->insert('tkupon', $obj);
+
+    if ($kKupon === 0) {
+        return false;
+    }
+
+    foreach ($couponNames as $key => $val) {
+        $res = Shop::DB()->insert(
+            'tkuponsprache',
+            (object)['kKupon' => (int)$kKupon, 'cISOSprache' => $key, 'cName' => $val]
+        );
+
+        if ($res === 0) {
+            return false;
+        }
+    }
+
+    return true;
+});
 
 if ($res > 0) {
-    $cFehler = 'Konnte CSV Datei nicht importieren.';
+    $cFehler  = 'Konnte CSV-Datei nicht vollst&auml;ndig importieren. ';
+    $cFehler .= ($res === 1 ? '1 Zeile ist' : $res . ' Zeilen sind') . ' nicht importierbar.';
 } elseif ($res === 0) {
     $cHinweis = 'CSV-Datei wurde erfolgreich importiert.';
 }
@@ -101,6 +134,7 @@ if ($action === 'bearbeiten') {
     // Seite: Bearbeiten
     $oSteuerklasse_arr = Shop::DB()->query("SELECT kSteuerklasse, cName FROM tsteuerklasse", 2);
     $oKundengruppe_arr = Shop::DB()->query("SELECT kKundengruppe, cName FROM tkundengruppe", 2);
+    $oHersteller_arr   = getManufacturers($oKupon->cHersteller);
     $oKategorie_arr    = getCategories($oKupon->cKategorien);
     $kKunde_arr        = array_filter(StringHandler::parseSSK($oKupon->cKunden),
         function ($kKunde) { return (int)$kKunde > 0; });
@@ -118,8 +152,9 @@ if ($action === 'bearbeiten') {
 
     $smarty->assign('oSteuerklasse_arr', $oSteuerklasse_arr)
            ->assign('oKundengruppe_arr', $oKundengruppe_arr)
+           ->assign('oHersteller_arr', $oHersteller_arr)
            ->assign('oKategorie_arr', $oKategorie_arr)
-           ->assign('kKunde_arr', $kKunde_arr)
+           ->assign('oKunde_arr', $oKunde_arr)
            ->assign('oSprache_arr', $oSprache_arr)
            ->assign('oKuponName_arr', $oKuponName_arr)
            ->assign('oKupon', $oKupon);
@@ -175,13 +210,13 @@ if ($action === 'bearbeiten') {
     $nKuponNeukundenTotal = getCouponCount('neukundenkupon');
 
     handleCsvExportAction('standard', 'standard.csv', function () use ($oFilterStandard) {
-            return getRawCoupons('standard', [], $oFilterStandard->getWhereSQL());
+            return getExportableCoupons('standard', $oFilterStandard->getWhereSQL());
         }, [], ['kKupon']);
     handleCsvExportAction('versandkupon', 'versandkupon.csv', function () use ($oFilterVersand) {
-            return getRawCoupons('versandkupon', [], $oFilterVersand->getWhereSQL());
+            return getExportableCoupons('versandkupon', $oFilterVersand->getWhereSQL());
         }, [], ['kKupon']);
     handleCsvExportAction('neukundenkupon', 'neukundenkupon.csv', function () use ($oFilterNeukunden) {
-            return getRawCoupons('neukundenkupon', [], $oFilterNeukunden->getWhereSQL());
+            return getExportableCoupons('neukundenkupon', $oFilterNeukunden->getWhereSQL());
         }, [], ['kKupon']);
 
     $oPaginationStandard  = (new Pagination('standard'))

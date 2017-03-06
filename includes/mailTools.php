@@ -198,11 +198,13 @@ function sendeMail($ModulId, $Object, $mail = null)
     }
     $mail->kEmailvorlage = $Emailvorlage->kEmailvorlage;
 
-    $Emailvorlagesprache    = Shop::DB()->select($cTableSprache, ['kEmailvorlage', 'kSprache'],
-        [(int)$Emailvorlage->kEmailvorlage, (int)$Sprache->kSprache]);
-    $Emailvorlage->cBetreff = injectSubject($Object, (isset($Emailvorlagesprache->cBetreff)
-        ? $Emailvorlagesprache->cBetreff
-        : null)
+    $Emailvorlagesprache    = Shop::DB()->select(
+        $cTableSprache,
+        ['kEmailvorlage', 'kSprache'],
+        [(int)$Emailvorlage->kEmailvorlage, (int)$Sprache->kSprache]
+    );
+    $Emailvorlage->cBetreff = injectSubject(
+        $Object, (isset($Emailvorlagesprache->cBetreff) ? $Emailvorlagesprache->cBetreff : null)
     );
 
     if (isset($Emailvorlage->oEinstellungAssoc_arr['cEmailSenderName'])) {
@@ -253,12 +255,10 @@ function sendeMail($ModulId, $Object, $mail = null)
                     StringHandler::convertISO2ISO639($langID)
                 );
                 if (strlen($oTrustedShopsKundenbewertung->cTSID) > 0 && $oTrustedShopsKundenbewertung->nStatus == 1) {
-                    $mailSmarty->assign('oTrustedShopsBewertenButton',
-                        gibTrustedShopsBewertenButton(
-                            $Object->tbestellung->oRechnungsadresse->cMail,
-                            $Object->tbestellung->cBestellNr
-                        )
-                    );
+                    $mailSmarty->assign('oTrustedShopsBewertenButton', gibTrustedShopsBewertenButton(
+                        $Object->tbestellung->oRechnungsadresse->cMail,
+                        $Object->tbestellung->cBestellNr
+                    ));
                 }
             }
 
@@ -295,12 +295,10 @@ function sendeMail($ModulId, $Object, $mail = null)
                     StringHandler::convertISO2ISO639($_SESSION['cISOSprache'])
                 );
                 if (strlen($oTrustedShopsKundenbewertung->cTSID) > 0 && $oTrustedShopsKundenbewertung->nStatus == 1) {
-                    $mailSmarty->assign('oTrustedShopsBewertenButton',
-                        gibTrustedShopsBewertenButton(
-                            $Object->tbestellung->oRechnungsadresse->cMail,
-                            $Object->tbestellung->cBestellNr
-                        )
-                    );
+                    $mailSmarty->assign('oTrustedShopsBewertenButton', gibTrustedShopsBewertenButton(
+                        $Object->tbestellung->oRechnungsadresse->cMail,
+                        $Object->tbestellung->cBestellNr
+                    ));
                 }
             }
 
@@ -341,12 +339,10 @@ function sendeMail($ModulId, $Object, $mail = null)
                     StringHandler::convertISO2ISO639($_SESSION['cISOSprache'])
                 );
                 if (strlen($oTrustedShopsKundenbewertung->cTSID) > 0 && $oTrustedShopsKundenbewertung->nStatus == 1) {
-                    $mailSmarty->assign('oTrustedShopsBewertenButton',
-                        gibTrustedShopsBewertenButton(
-                            $Object->tbestellung->oRechnungsadresse->cMail,
-                            $Object->tbestellung->cBestellNr
-                        )
-                    );
+                    $mailSmarty->assign('oTrustedShopsBewertenButton', gibTrustedShopsBewertenButton(
+                        $Object->tbestellung->oRechnungsadresse->cMail,
+                        $Object->tbestellung->cBestellNr
+                    ));
                 }
             }
 
@@ -412,12 +408,10 @@ function sendeMail($ModulId, $Object, $mail = null)
                     StringHandler::convertISO2ISO639($_SESSION['cISOSprache'])
                 );
                 if (strlen($oTrustedShopsKundenbewertung->cTSID) > 0 && $oTrustedShopsKundenbewertung->nStatus == 1) {
-                    $mailSmarty->assign('oTrustedShopsBewertenButton',
-                        gibTrustedShopsBewertenButton(
-                            $Object->tbestellung->oRechnungsadresse->cMail,
-                            $Object->tbestellung->cBestellNr
-                        )
-                    );
+                    $mailSmarty->assign('oTrustedShopsBewertenButton', gibTrustedShopsBewertenButton(
+                        $Object->tbestellung->oRechnungsadresse->cMail,
+                        $Object->tbestellung->cBestellNr
+                    ));
                 }
             }
             break;
@@ -469,7 +463,6 @@ function sendeMail($ModulId, $Object, $mail = null)
             $mailSmarty->assign('oKunde', $Object->tkunde)
                        ->assign('oBewertungGuthabenBonus', $Object->oBewertungGuthabenBonus);
             break;
-
     }
 
     executeHook(HOOK_MAILTOOLS_INC_SWITCH);
@@ -591,10 +584,7 @@ function sendeMail($ModulId, $Object, $mail = null)
         $mail->replyToName = $Object->mail->replyToName;
     }
     if (isset($Emailvorlagesprache->cPDFS) && strlen($Emailvorlagesprache->cPDFS) > 0) {
-        $mail->cPDFS_arr = bauePDFArrayZumVeschicken($Emailvorlagesprache->cPDFS);
-    }
-    if (isset($Emailvorlagesprache->cDateiname) && strlen($Emailvorlagesprache->cDateiname) > 0) {
-        $mail->cDateiname_arr = StringHandler::parseSSK($Emailvorlagesprache->cDateiname);
+        $mail->cPDFS_arr = getPDFAttachments($Emailvorlagesprache->cPDFS, $Emailvorlagesprache->cDateiname);
     }
     executeHook(HOOK_MAILTOOLS_SENDEMAIL_ENDE, [
         'mailsmarty'    => &$mailSmarty,
@@ -658,7 +648,7 @@ function verschickeMail($mail)
 {
     $kEmailvorlage = null;
     if (isset($mail->kEmailvorlage)) {
-        if (intval($mail->kEmailvorlage) > 0) {
+        if ((int)$mail->kEmailvorlage > 0) {
             $kEmailvorlage = (int)$mail->kEmailvorlage;
         }
         unset($mail->kEmailvorlage);
@@ -720,9 +710,9 @@ function verschickeMail($mail)
                 $phpmailer->Username      = $mail->smtp_user;
                 $phpmailer->Password      = $mail->smtp_pass;
                 $phpmailer->SMTPSecure    = $mail->SMTPSecure;
-                $phpmailer->SMTPAutoTLS   = (isset($mail->SMTPAutoTLS))
-                    ? $mail->SMTPAutoTLS :
-                    ((empty($mail->SMTPSecure))
+                $phpmailer->SMTPAutoTLS   = isset($mail->SMTPAutoTLS)
+                    ? $mail->SMTPAutoTLS
+                    : (empty($mail->SMTPSecure)
                         ? false
                         : true);
                 break;
@@ -735,15 +725,13 @@ function verschickeMail($mail)
             $phpmailer->isHTML(false);
             $phpmailer->Body = $mail->bodyText;
         }
-        if (isset($mail->cPDFS_arr, $mail->cDateiname_arr) &&
-            count($mail->cPDFS_arr) > 0 &&
-            count($mail->cDateiname_arr) > 0
-        ) {
+
+        if (isset($mail->cPDFS_arr) && count($mail->cPDFS_arr) > 0) {
             $cUploadVerzeichnis = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_EMAILPDFS;
 
             foreach ($mail->cPDFS_arr as $i => $cPDFS) {
                 $phpmailer->addAttachment(
-                    $cUploadVerzeichnis . $cPDFS, $mail->cDateiname_arr[$i] . '.pdf',
+                    $cUploadVerzeichnis . $cPDFS->fileName, $cPDFS->publicName . '.pdf',
                     'base64',
                     'application/pdf'
                 );
@@ -910,6 +898,8 @@ function lokalisiereLieferadresse($oSprache, $oLieferadresse)
 }
 
 /**
+ * @deprecated since 4.05.2 - use getPDFAttachments instead
+ * This function produces inconsistency between attachment and name if one or more attachment doesnt exist!
  * @param string $cPDF
  * @return array
  */
@@ -930,9 +920,36 @@ function bauePDFArrayZumVeschicken($cPDF)
 }
 
 /**
+ * @param string $cPDFs
+ * @param string $cNames
+ *
+ * @return stdClass[]
+ */
+function getPDFAttachments($cPDFs, $cNames)
+{
+    $result      = [];
+    $cPDFs_arr   = StringHandler::parseSSK(trim($cPDFs, ";\t\n\r\0"));
+    $cNames_arr  = StringHandler::parseSSK(trim($cNames, ";\t\n\r\0"));
+    $cUploadPath = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_EMAILPDFS;
+
+    if (is_array($cPDFs_arr)) {
+        foreach ($cPDFs_arr as $key => $pdfFile) {
+            if (!empty($pdfFile) && file_exists($cUploadPath . $pdfFile)) {
+                $result[] = (object)[
+                    'fileName'   => $pdfFile,
+                    'publicName' => isset($cNames_arr[$key]) ? $cNames_arr[$key] : $pdfFile,
+                ];
+            }
+        }
+    }
+
+    return $result;
+}
+
+/**
  * @param string $cDateiname
  * @return array
- * @deprecated since 4.05
+ * @deprecated since 4.05 - use getPDFAttachments instead
  */
 function baueDateinameArrayZumVeschicken($cDateiname)
 {

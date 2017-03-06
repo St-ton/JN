@@ -69,7 +69,7 @@ $AktuelleKategorie      = new stdClass();
 $AufgeklappteKategorien = new stdClass();
 if ($cParameter_arr['kKategorie'] > 0) {
     $AktuelleKategorie = new Kategorie($cParameter_arr['kKategorie']);
-    if (!isset($AktuelleKategorie->kKategorie) || $AktuelleKategorie->kKategorie === null) {
+    if ($AktuelleKategorie->kKategorie === null) {
         //temp. workaround: do not return 404 when non-localized existing category is loaded
         if (KategorieHelper::categoryExists($cParameter_arr['kKategorie'])) {
             $AktuelleKategorie->kKategorie = $cParameter_arr['kKategorie'];
@@ -113,10 +113,10 @@ if (isset($Einstellungen['artikeluebersicht']['artikelubersicht_bestseller_grupp
     foreach ($oSuchergebnisse->Artikel->elemente as $product) {
         $products[] = (int)$product->kArtikel;
     }
-    $limit       = (isset($Einstellungen['artikeluebersicht']['artikeluebersicht_bestseller_anzahl']))
+    $limit       = isset($Einstellungen['artikeluebersicht']['artikeluebersicht_bestseller_anzahl'])
         ? (int)$Einstellungen['artikeluebersicht']['artikeluebersicht_bestseller_anzahl']
         : 3;
-    $minsells    = (isset($Einstellungen['global']['global_bestseller_minanzahl']))
+    $minsells    = isset($Einstellungen['global']['global_bestseller_minanzahl'])
         ? (int)$Einstellungen['global']['global_bestseller_minanzahl']
         : 10;
     $bestsellers = Bestseller::buildBestsellers(
@@ -131,10 +131,10 @@ if (isset($Einstellungen['artikeluebersicht']['artikelubersicht_bestseller_grupp
     $smarty->assign('oBestseller_arr', $bestsellers);
 }
 // Schauen ob die maximale Anzahl der Artikel >= der max. Anzahl die im Backend eingestellt wurde
-if (intval($Einstellungen['artikeluebersicht']['suche_max_treffer']) > 0) {
-    if ($oSuchergebnisse->GesamtanzahlArtikel >= intval($Einstellungen['artikeluebersicht']['suche_max_treffer'])) {
-        $smarty->assign('nMaxAnzahlArtikel', 1);
-    }
+if ((int)$Einstellungen['artikeluebersicht']['suche_max_treffer'] > 0 &&
+    $oSuchergebnisse->GesamtanzahlArtikel >= (int)$Einstellungen['artikeluebersicht']['suche_max_treffer']
+) {
+    $smarty->assign('nMaxAnzahlArtikel', 1);
 }
 // Filteroptionen holen
 $oSuchergebnisse->Herstellerauswahl = gibHerstellerFilterOptionen($FilterSQL, $NaviFilter);
@@ -149,7 +149,7 @@ $oSuchergebnisse->MerkmalFilter    = gibMerkmalFilterOptionen(
     $FilterSQL,
     $NaviFilter,
     $AktuelleKategorie,
-    function_exists('starteAuswahlAssistent')
+    class_exists('AuswahlAssistent')
 );
 $oSuchergebnisse->Preisspanne      = gibPreisspannenFilterOptionen($FilterSQL, $NaviFilter, $oSuchergebnisse);
 $oSuchergebnisse->Kategorieauswahl = gibKategorieFilterOptionen($FilterSQL, $NaviFilter);
@@ -210,7 +210,7 @@ if (count($oSuchergebnisse->Artikel->elemente) === 0) {
             $KategorieInhalt->BestsellerArtikel = new ArtikelListe();
             $KategorieInhalt->BestsellerArtikel->holeBestsellerArtikel(
                 $KategorieInhalt->Unterkategorien,
-                (isset($KategorieInhalt->TopArtikel)) ? $KategorieInhalt->TopArtikel : 0
+                isset($KategorieInhalt->TopArtikel) ? $KategorieInhalt->TopArtikel : 0
             );
         }
         $smarty->assign('KategorieInhalt', $KategorieInhalt);
@@ -319,7 +319,7 @@ if (isset($NaviFilter->Kategorie->kKategorie) && $NaviFilter->Kategorie->kKatego
     );
 }
 // Canonical
-if (strpos(basename(gibNaviURL($NaviFilter, true, null)), '.php') === false || !SHOP_SEO) {
+if (strpos(basename(gibNaviURL($NaviFilter, true, null)), '.php') === false) {
     $cSeite = '';
     if (isset($oSuchergebnisse->Seitenzahlen->AktuelleSeite) && $oSuchergebnisse->Seitenzahlen->AktuelleSeite > 1) {
         $cSeite = SEP_SEITE . $oSuchergebnisse->Seitenzahlen->AktuelleSeite;
@@ -327,13 +327,20 @@ if (strpos(basename(gibNaviURL($NaviFilter, true, null)), '.php') === false || !
     $cCanonicalURL = gibNaviURL($NaviFilter, true, null, 0, true) . $cSeite;
 }
 // Auswahlassistent
-if (function_exists('starteAuswahlAssistent')) {
+if (TEMPLATE_COMPATIBILITY === true && function_exists('starteAuswahlAssistent')) {
     starteAuswahlAssistent(
         AUSWAHLASSISTENT_ORT_KATEGORIE,
         $cParameter_arr['kKategorie'],
         Shop::getLanguage(),
         $smarty,
         $Einstellungen['auswahlassistent']
+    );
+} elseif (class_exists('AuswahlAssistent')) {
+    AuswahlAssistent::startIfRequired(
+        AUSWAHLASSISTENT_ORT_KATEGORIE,
+        $cParameter_arr['kKategorie'],
+        Shop::getLanguage(),
+        $smarty
     );
 }
 $smarty->assign('SEARCHSPECIALS_TOPREVIEWS', SEARCHSPECIALS_TOPREVIEWS)
@@ -344,8 +351,8 @@ $smarty->assign('SEARCHSPECIALS_TOPREVIEWS', SEARCHSPECIALS_TOPREVIEWS)
        ->assign('Sortierliste', gibSortierliste($Einstellungen))
        ->assign('Einstellungen', $Einstellungen)
        ->assign('Suchergebnisse', $oSuchergebnisse)
-       ->assign('requestURL', (isset($requestURL)) ? $requestURL : null)
-       ->assign('sprachURL', (isset($sprachURL)) ? $sprachURL : null)
+       ->assign('requestURL', isset($requestURL) ? $requestURL : null)
+       ->assign('sprachURL', isset($sprachURL) ? $sprachURL : null)
        ->assign('oNavigationsinfo', $oNavigationsinfo)
        ->assign('SEP_SEITE', SEP_SEITE)
        ->assign('SEP_KAT', SEP_KAT)

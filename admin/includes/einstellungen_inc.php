@@ -27,7 +27,7 @@ function bearbeiteEinstellungsSuche($cSuche, $bSpeichern = false)
         if (is_array($kEinstellungenConf_arr) && count($kEinstellungenConf_arr) > 1) {
             $bKommagetrennt = true;
             foreach ($kEinstellungenConf_arr as $i => $kEinstellungenConf) {
-                if (intval($kEinstellungenConf) === 0) {
+                if ((int)$kEinstellungenConf === 0) {
                     $bKommagetrennt = false;
                 }
             }
@@ -68,7 +68,7 @@ function bearbeiteEinstellungsSuche($cSuche, $bSpeichern = false)
                     (int)$kEinstellungenConf_arr[0] . " AND " . 
                     (int)$kEinstellungenConf_arr[1] . ") AND cConf = 'Y')";
             } else { // Suche in cName oder kEinstellungenConf suchen
-                if (intval($cSuche) > 0) {
+                if ((int)$cSuche > 0) {
                     $oSQL->nSuchModus = 3;
                     $oSQL->cSearch    = "Suche nach ID: " . $cSuche;
                     $oSQL->cWHERE .= " AND kEinstellungenConf = '" . (int)$cSuche . "'";
@@ -140,14 +140,14 @@ function holeEinstellungen($oSQL, $bSpeichern)
             }
         }
     }
-
     // Aufräumen
     if (count($oSQL->oEinstellung_arr) > 0) {
         $kEinstellungenConf_arr = [];
         foreach ($oSQL->oEinstellung_arr as $i => $oEinstellung) {
+            $oEinstellung->kEinstellungenConf = (int)$oEinstellung->kEinstellungenConf;
             if (isset($oEinstellung->kEinstellungenConf) &&
                 $oEinstellung->kEinstellungenConf > 0 &&
-                !in_array($oEinstellung->kEinstellungenConf, $kEinstellungenConf_arr)) {
+                !in_array($oEinstellung->kEinstellungenConf, $kEinstellungenConf_arr, true)) {
                 $kEinstellungenConf_arr[$i] = $oEinstellung->kEinstellungenConf;
             } else {
                 unset($oSQL->oEinstellung_arr[$i]);
@@ -171,7 +171,7 @@ function holeEinstellungen($oSQL, $bSpeichern)
  */
 function holeEinstellungAbteil($oSQL, $nSort, $kEinstellungenSektion)
 {
-    if (intval($nSort) > 0 && intval($kEinstellungenSektion) > 0) {
+    if ((int)$nSort > 0 && (int)$kEinstellungenSektion > 0) {
         $oEinstellungTMP_arr = Shop::DB()->query(
             "SELECT *
                 FROM teinstellungenconf
@@ -196,18 +196,19 @@ function holeEinstellungAbteil($oSQL, $nSort, $kEinstellungenSektion)
 
 /**
  * @param int $nSort
- * @param int $kEinstellungenSektion
+ * @param int $sectionID
  * @return stdClass
  */
 function holeEinstellungHeadline($nSort, $sectionID)
 {
     $configHead  = new stdClass();
     $sectionID   = (int)$sectionID;
-    if (intval($nSort) > 0 && $sectionID > 0) {
+    $nSort       = (int)$nSort;
+    if ($nSort > 0 && $sectionID > 0) {
         $oEinstellungTMP_arr = Shop::DB()->query(
             "SELECT *
                 FROM teinstellungenconf
-                WHERE nSort < " . (int)$nSort . "
+                WHERE nSort < " . $nSort . "
                     AND kEinstellungenSektion = " . $sectionID . "
                 ORDER BY nSort DESC", 2
         );

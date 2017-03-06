@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/admininclude.php';
+require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('DBCHECK_VIEW', true, true);
 
@@ -13,7 +13,7 @@ $cHinweis          = '';
 $cFehler           = '';
 $cDBStruct_arr     = getDBStruct();
 $cDBFileStruct_arr = getDBFileStruct();
-$cDBError_arr      = array();
+$cDBError_arr      = [];
 $maintenanceResult = null;
 
 if (!empty($_POST['action']) && !empty($_POST['check'])) {

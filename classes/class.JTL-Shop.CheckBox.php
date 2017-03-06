@@ -218,8 +218,8 @@ class CheckBox
         }
         $oCheckBoxTMP_arr = Shop::DB()->query(
             "SELECT kCheckBox FROM tcheckbox
-                WHERE cAnzeigeOrt RLIKE '^([0-9;]+;)?" . (int)$nAnzeigeOrt . ";'
-                    AND cKundengruppe RLIKE '^([0-9;]+;)?" . $kKundengruppe . ";'
+                WHERE cAnzeigeOrt RLIKE '^([0-9;]*;)?" . (int)$nAnzeigeOrt . ";'
+                    AND cKundengruppe RLIKE '^([0-9;]*;)?" . $kKundengruppe . ";'
                     " . $cSQL . "
                 ORDER BY nSort", 2
         );
@@ -255,10 +255,8 @@ class CheckBox
         $cPlausi_arr   = [];
         if (count($oCheckBox_arr) > 0) {
             foreach ($oCheckBox_arr as $oCheckBox) {
-                if (intval($oCheckBox->nPflicht) === 1) {
-                    if (!isset($cPost_arr[$oCheckBox->cID])) {
-                        $cPlausi_arr[$oCheckBox->cID] = 1;
-                    }
+                if ((int)$oCheckBox->nPflicht === 1 && !isset($cPost_arr[$oCheckBox->cID])) {
+                    $cPlausi_arr[$oCheckBox->cID] = 1;
                 }
             }
         }
@@ -322,14 +320,14 @@ class CheckBox
             foreach ($oCheckBox_arr as $oCheckBox) {
                 //@todo: casting to bool does not seem to be a good idea.
                 //$cPost_arr looks like this: array ( [CheckBox_31] => Y, [CheckBox_24] => Y, [abschluss] => 1)
-                $checked                       = (isset($cPost_arr[$oCheckBox->cID]))
+                $checked                       = isset($cPost_arr[$oCheckBox->cID])
                     ? (bool)$cPost_arr[$oCheckBox->cID]
                     : false;
                 $checked                       = ($checked === true) ? 1 : 0;
                 $oCheckBoxLogging              = new stdClass();
                 $oCheckBoxLogging->kCheckBox   = $oCheckBox->kCheckBox;
                 $oCheckBoxLogging->kBesucher   = (int)$_SESSION['oBesucher']->kBesucher;
-                $oCheckBoxLogging->kBestellung = (isset($_SESSION['kBestellung']))
+                $oCheckBoxLogging->kBestellung = isset($_SESSION['kBestellung'])
                     ? (int)$_SESSION['kBestellung']
                     : 0;
                 $oCheckBoxLogging->bChecked    = $checked;
@@ -381,7 +379,7 @@ class CheckBox
         }
         $oCheckBoxCount = Shop::DB()->query("SELECT count(*) AS nAnzahl FROM tcheckbox" . $cSQL, 1);
 
-        return (isset($oCheckBoxCount->nAnzahl)) ? $oCheckBoxCount->nAnzahl : 0;
+        return isset($oCheckBoxCount->nAnzahl) ? (int)$oCheckBoxCount->nAnzahl : 0;
     }
 
     /**
@@ -430,8 +428,8 @@ class CheckBox
     {
         if (is_array($kCheckBox_arr) && count($kCheckBox_arr) > 0) {
             foreach ($kCheckBox_arr as $kCheckBox) {
-                Shop::DB()->query(
-                    "DELETE tcheckbox, tcheckboxsprache
+                Shop::DB()->query("
+                    DELETE tcheckbox, tcheckboxsprache
                         FROM tcheckbox
                         LEFT JOIN tcheckboxsprache 
                             ON tcheckboxsprache.kCheckBox = tcheckbox.kCheckBox
@@ -519,7 +517,7 @@ class CheckBox
     {
         if (strlen($cISO) > 0) {
             $oSprache = Shop::DB()->select('tsprache', 'cISO', StringHandler::filterXSS($cISO));
-            if (isset($oSprache->kSprache) && intval($oSprache->kSprache) > 0) {
+            if (isset($oSprache->kSprache) && (int)$oSprache->kSprache > 0) {
                 return (int)$oSprache->kSprache;
             }
         }
@@ -584,9 +582,9 @@ class CheckBox
     {
         $cAnzeigeOrt_arr = self::gibCheckBoxAnzeigeOrte();
 
-        return (isset($cAnzeigeOrt_arr[$nAnzeigeOrt])) ?
-            $cAnzeigeOrt_arr[$nAnzeigeOrt] :
-            '';
+        return isset($cAnzeigeOrt_arr[$nAnzeigeOrt])
+            ? $cAnzeigeOrt_arr[$nAnzeigeOrt]
+            : '';
     }
 
     /**

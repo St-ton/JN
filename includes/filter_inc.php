@@ -15,7 +15,7 @@ function buildSearchResults($FilterSQL, $NaviFilter)
     // Artikelanzahl pro Seite
     $nArtikelProSeite = 20;
     $conf             = Shop::getSettings([CONF_ARTIKELUEBERSICHT]);
-    if (intval($conf['artikeluebersicht']['artikeluebersicht_artikelproseite']) > 0) {
+    if ((int)$conf['artikeluebersicht']['artikeluebersicht_artikelproseite'] > 0) {
         $nArtikelProSeite = (int)$conf['artikeluebersicht']['artikeluebersicht_artikelproseite'];
     }
     if (isset($_SESSION['ArtikelProSeite']) && $_SESSION['ArtikelProSeite'] > 0) {
@@ -52,7 +52,7 @@ function buildSearchResults($FilterSQL, $NaviFilter)
  */
 function baueArtikelAnzahl($FilterSQL, &$oSuchergebnisse, $nArtikelProSeite = 20, $nLimitN = 20)
 {
-    $kKundengruppe = (isset($_SESSION['Kundengruppe']->kKundengruppe)) ? (int)$_SESSION['Kundengruppe']->kKundengruppe : null;
+    $kKundengruppe = isset($_SESSION['Kundengruppe']->kKundengruppe) ? (int)$_SESSION['Kundengruppe']->kKundengruppe : null;
     if (!$kKundengruppe) {
         $oKundengruppe = Shop::DB()->query("SELECT kKundengruppe FROM tkundengruppe WHERE cStandard = 'Y'", 1);
         $kKundengruppe = (int)$oKundengruppe->kKundengruppe;
@@ -67,28 +67,28 @@ function baueArtikelAnzahl($FilterSQL, &$oSuchergebnisse, $nArtikelProSeite = 20
             FROM(
                 SELECT tartikel.kArtikel
                 FROM tartikel
-                " . ((isset($FilterSQL->oSuchspecialFilterSQL->cJoin)) ? $FilterSQL->oSuchspecialFilterSQL->cJoin : '') . "
-            " . ((isset($FilterSQL->oKategorieFilterSQL->cJoin)) ? $FilterSQL->oKategorieFilterSQL->cJoin : '') . "
-            " . ((isset($FilterSQL->oSuchFilterSQL->cJoin)) ? $FilterSQL->oSuchFilterSQL->cJoin : '') . "
-            " . ((isset($FilterSQL->oMerkmalFilterSQL->cJoin)) ? $FilterSQL->oMerkmalFilterSQL->cJoin : '') . "
-            " . ((isset($FilterSQL->oTagFilterSQL->cJoin)) ? $FilterSQL->oTagFilterSQL->cJoin : '') . "
-            " . ((isset($FilterSQL->oBewertungSterneFilterSQL->cJoin)) ? $FilterSQL->oBewertungSterneFilterSQL->cJoin : '') . "
-            " . ((isset($FilterSQL->oPreisspannenFilterSQL->cJoin)) ? $FilterSQL->oPreisspannenFilterSQL->cJoin : '') . "
+                " . (isset($FilterSQL->oSuchspecialFilterSQL->cJoin) ? $FilterSQL->oSuchspecialFilterSQL->cJoin : '') . "
+            " . (isset($FilterSQL->oKategorieFilterSQL->cJoin) ? $FilterSQL->oKategorieFilterSQL->cJoin : '') . "
+            " . (isset($FilterSQL->oSuchFilterSQL->cJoin) ? $FilterSQL->oSuchFilterSQL->cJoin : '') . "
+            " . (isset($FilterSQL->oMerkmalFilterSQL->cJoin) ? $FilterSQL->oMerkmalFilterSQL->cJoin : '') . "
+            " . (isset($FilterSQL->oTagFilterSQL->cJoin) ? $FilterSQL->oTagFilterSQL->cJoin : '') . "
+            " . (isset($FilterSQL->oBewertungSterneFilterSQL->cJoin) ? $FilterSQL->oBewertungSterneFilterSQL->cJoin : '') . "
+            " . (isset($FilterSQL->oPreisspannenFilterSQL->cJoin) ? $FilterSQL->oPreisspannenFilterSQL->cJoin : '') . "
             LEFT JOIN tartikelsichtbarkeit ON tartikel.kArtikel=tartikelsichtbarkeit.kArtikel
                 AND tartikelsichtbarkeit.kKundengruppe = " . $kKundengruppe . "
             WHERE tartikelsichtbarkeit.kArtikel IS NULL
                 AND tartikel.kVaterArtikel = 0
                 " . gibLagerfilter() . "
-                " . ((isset($FilterSQL->oSuchspecialFilterSQL->cWhere)) ? $FilterSQL->oSuchspecialFilterSQL->cWhere : '') . "
-                " . ((isset($FilterSQL->oSuchFilterSQL->cWhere)) ? $FilterSQL->oSuchFilterSQL->cWhere : '') . "
-                " . ((isset($FilterSQL->oHerstellerFilterSQL->cWhere)) ? $FilterSQL->oHerstellerFilterSQL->cWhere : '') . "
-                " . ((isset($FilterSQL->oKategorieFilterSQL->cWhere)) ? $FilterSQL->oKategorieFilterSQL->cWhere : '') . "
-                " . ((isset($FilterSQL->oMerkmalFilterSQL->cWhere)) ? $FilterSQL->oMerkmalFilterSQL->cWhere : '') . "
-                " . ((isset($FilterSQL->oTagFilterSQL->cWhere)) ? $FilterSQL->oTagFilterSQL->cWhere : '') . "
-                " . ((isset($FilterSQL->oBewertungSterneFilterSQL->cWhere)) ? $FilterSQL->oBewertungSterneFilterSQL->cWhere : '') . "
-                " . ((isset($FilterSQL->oPreisspannenFilterSQL->cWhere)) ? $FilterSQL->oPreisspannenFilterSQL->cWhere : '') . "
+                " . (isset($FilterSQL->oSuchspecialFilterSQL->cWhere) ? $FilterSQL->oSuchspecialFilterSQL->cWhere : '') . "
+                " . (isset($FilterSQL->oSuchFilterSQL->cWhere) ? $FilterSQL->oSuchFilterSQL->cWhere : '') . "
+                " . (isset($FilterSQL->oHerstellerFilterSQL->cWhere) ? $FilterSQL->oHerstellerFilterSQL->cWhere : '') . "
+                " . (isset($FilterSQL->oKategorieFilterSQL->cWhere) ? $FilterSQL->oKategorieFilterSQL->cWhere : '') . "
+                " . (isset($FilterSQL->oMerkmalFilterSQL->cWhere) ? $FilterSQL->oMerkmalFilterSQL->cWhere : '') . "
+                " . (isset($FilterSQL->oTagFilterSQL->cWhere) ? $FilterSQL->oTagFilterSQL->cWhere : '') . "
+                " . (isset($FilterSQL->oBewertungSterneFilterSQL->cWhere) ? $FilterSQL->oBewertungSterneFilterSQL->cWhere : '') . "
+                " . (isset($FilterSQL->oPreisspannenFilterSQL->cWhere) ? $FilterSQL->oPreisspannenFilterSQL->cWhere : '') . "
             GROUP BY tartikel.kArtikel
-            " . ((isset($FilterSQL->oMerkmalFilterSQL->cHaving)) ? $FilterSQL->oMerkmalFilterSQL->cHaving : '') . "
+            " . (isset($FilterSQL->oMerkmalFilterSQL->cHaving) ? $FilterSQL->oMerkmalFilterSQL->cHaving : '') . "
                 ) AS tAnzahl", 1
     );
     executeHook(
@@ -141,7 +141,7 @@ function buildSearchResultPage(&$oSearchResult, $nProductCount, $nLimitN, $nPage
     }
     $oSearchResult->Seitenzahlen->AktuelleSeite = $nPage;
     $oSearchResult->Seitenzahlen->MaxSeiten     = ceil($oSearchResult->GesamtanzahlArtikel / $nProductsPerPage);
-    $oSearchResult->Seitenzahlen->minSeite      = min(intval($oSearchResult->Seitenzahlen->AktuelleSeite - $nSettingMaxPageCount / 2), 0);
+    $oSearchResult->Seitenzahlen->minSeite      = min((int)$oSearchResult->Seitenzahlen->AktuelleSeite - $nSettingMaxPageCount / 2, 0);
     $oSearchResult->Seitenzahlen->maxSeite      = max($oSearchResult->Seitenzahlen->MaxSeiten, $oSearchResult->Seitenzahlen->minSeite + $nSettingMaxPageCount - 1);
     if ($oSearchResult->Seitenzahlen->maxSeite > $oSearchResult->Seitenzahlen->MaxSeiten) {
         $oSearchResult->Seitenzahlen->maxSeite = $oSearchResult->Seitenzahlen->MaxSeiten;
@@ -347,7 +347,7 @@ function gibArtikelKeys($FilterSQL, $nArtikelProSeite, $NaviFilter, $bExtern, $o
         !$bExtern &&
         (gibAnzahlFilter($NaviFilter) > 0 ||
             (isset($NaviFilter->Kategorie->kKategorie) && $NaviFilter->Kategorie->kKategorie > 0 && !$bUnterkategorien) ||
-            (isset($NaviFilter->EchteSuche->cSuche)))
+            isset($NaviFilter->EchteSuche->cSuche))
     ) {
         http_response_code(301);
         // Weiterleitung zur Artikeldetailansicht da nur ein Artikel gefunden wurde und die Einstellung gesetzt ist.
@@ -371,7 +371,7 @@ function gibArtikelKeysExtendedJTLSearch($oExtendedJTLSearchResponse)
     if (isset($oExtendedJTLSearchResponse->oSearch->oItem_arr) &&
         is_array($oExtendedJTLSearchResponse->oSearch->oItem_arr) && count($oExtendedJTLSearchResponse->oSearch->oItem_arr) > 0) {
         // Artikelkeys in der Session halten, da andere Seite wie z.b. Artikel.php auf die voherige Artikelübersicht Daten aufbaut.
-        $_SESSION['oArtikelUebersichtKey_arr']   = (isset($oArtikelKey_arr)) ? $oArtikelKey_arr : [];
+        $_SESSION['oArtikelUebersichtKey_arr']   = isset($oArtikelKey_arr) ? $oArtikelKey_arr : [];
         $_SESSION['nArtikelUebersichtVLKey_arr'] = []; // Nur Artikel die auch wirklich auf der Seite angezeigt werden
         foreach ($oExtendedJTLSearchResponse->oSearch->oItem_arr as $oItem) {
             $oArtikel                                = new Artikel();
@@ -384,7 +384,7 @@ function gibArtikelKeysExtendedJTLSearch($oExtendedJTLSearchResponse)
             $oArtikel->fuelleArtikel($oItem->nId, $oArtikelOptionen);
             if ($oArtikel->kArtikel !== null) {
                 // Aktuelle Artikelmenge in die Session (Keine Vaterartikel)
-                if ($oArtikel->nIstVater == 0) {
+                if ($oArtikel->nIstVater === 0) {
                     $_SESSION['nArtikelUebersichtVLKey_arr'][] = $oArtikel->kArtikel;
                 }
                 $oArtikel_arr[] = $oArtikel;
@@ -632,7 +632,7 @@ function gibKategorieFilterOptionen($FilterSQL, $NaviFilter)
                 ORDER BY ssMerkmal.nSort, ssMerkmal.cName" . $limit, 2
         );
         //baue URL
-        $count = (is_array($oKategorieFilterDB_arr)) ? count($oKategorieFilterDB_arr) : 0;
+        $count = is_array($oKategorieFilterDB_arr) ? count($oKategorieFilterDB_arr) : 0;
         for ($i = 0; $i < $count; ++$i) {
             // Anzeigen als KategoriePfad
             if ($conf['navigationsfilter']['kategoriefilter_anzeigen_als'] === 'KP') {
@@ -692,7 +692,7 @@ function gibSuchFilterOptionen($FilterSQL, $NaviFilter)
         $oSprache = gibStandardsprache(true);
         $kSprache = (int)$oSprache->kSprache;
     }
-    $cacheID = 'sfo_' . md5(json_encode($FilterSQL)) . '_' . ((isset($_SESSION['Kundengruppe']->kKundengruppe))
+    $cacheID = 'sfo_' . md5(json_encode($FilterSQL)) . '_' . (isset($_SESSION['Kundengruppe']->kKundengruppe)
             ? $_SESSION['Kundengruppe']->kKundengruppe
             : '0') . '_' . $kSprache;
     if (($oSuchFilterDB_arr = Shop::Cache()->get($cacheID)) !== false) {
@@ -702,7 +702,7 @@ function gibSuchFilterOptionen($FilterSQL, $NaviFilter)
     $conf              = Shop::getSettings([CONF_NAVIGATIONSFILTER]);
     if ($conf['navigationsfilter']['suchtrefferfilter_nutzen'] !== 'N') {
         $nLimit = (isset($conf['navigationsfilter']['suchtrefferfilter_anzahl'])
-                && intval($conf['navigationsfilter']['suchtrefferfilter_anzahl']) > 0)
+            && (int)$conf['navigationsfilter']['suchtrefferfilter_anzahl'] > 0)
             ? " LIMIT " . (int)$conf['navigationsfilter']['suchtrefferfilter_anzahl']
             : '';
 
@@ -712,10 +712,13 @@ function gibSuchFilterOptionen($FilterSQL, $NaviFilter)
                 (
                     SELECT tsuchanfrage.kSuchanfrage, tsuchanfrage.cSuche
                     FROM tartikel
-                    JOIN tsuchcachetreffer ON tartikel.kArtikel = tsuchcachetreffer.kArtikel
+                    JOIN tsuchcachetreffer 
+                        ON tartikel.kArtikel = tsuchcachetreffer.kArtikel
                     " . $FilterSQL->oSuchFilterSQL->cJoin . "
-                JOIN tsuchcache ON tsuchcache.kSuchCache = tsuchcachetreffer.kSuchCache
-                JOIN tsuchanfrage ON tsuchanfrage.cSuche = tsuchcache.cSuche
+                JOIN tsuchcache 
+                    ON tsuchcache.kSuchCache = tsuchcachetreffer.kSuchCache
+                JOIN tsuchanfrage 
+                    ON tsuchanfrage.cSuche = tsuchcache.cSuche
                     AND tsuchanfrage.kSprache = " . Shop::$kSprache . "
                 " . $FilterSQL->oHerstellerFilterSQL->cJoin . "
                 " . $FilterSQL->oSuchspecialFilterSQL->cJoin . "
@@ -724,7 +727,8 @@ function gibSuchFilterOptionen($FilterSQL, $NaviFilter)
                 " . $FilterSQL->oTagFilterSQL->cJoin . "
                 " . $FilterSQL->oBewertungSterneFilterSQL->cJoin . "
                 " . $FilterSQL->oPreisspannenFilterSQL->cJoin . "
-                LEFT JOIN tartikelsichtbarkeit ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
+                LEFT JOIN tartikelsichtbarkeit 
+                    ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                     AND tartikelsichtbarkeit.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
                     AND tartikel.kVaterArtikel = 0
@@ -964,8 +968,8 @@ function gibPreisspannenFilterOptionen($FilterSQL, $NaviFilter, $oSuchergebnisse
     }
     $cacheID = 'filter_ps_' . md5(
         json_encode($_SESSION['Kundengruppe']->kKundengruppe) .
-        ((isset($NaviFilter->PreisspannenFilter->fVon)) ? json_encode($NaviFilter->PreisspannenFilter->fVon) : '') .
-        ((isset($NaviFilter->PreisspannenFilter->fBis)) ? json_encode($NaviFilter->PreisspannenFilter->fBis) : '') .
+        (isset($NaviFilter->PreisspannenFilter->fVon) ? json_encode($NaviFilter->PreisspannenFilter->fVon) : '') .
+        (isset($NaviFilter->PreisspannenFilter->fBis) ? json_encode($NaviFilter->PreisspannenFilter->fBis) : '') .
         json_encode($FilterSQL) .
         $oSuchergebnisse->GesamtanzahlArtikel .
         json_encode($_SESSION['Steuersatz'])
@@ -1114,10 +1118,10 @@ function gibPreisspannenFilterOptionen($FilterSQL, $NaviFilter, $oSuchergebnisse
                     ", 1
             );
 
-            $nPreisspannenAnzahl_arr   = (is_bool($oPreisspannenFilterDB)) ? null : get_object_vars($oPreisspannenFilterDB);
+            $nPreisspannenAnzahl_arr   = is_bool($oPreisspannenFilterDB) ? null : get_object_vars($oPreisspannenFilterDB);
             $oPreisspannenFilterDB_arr = [];
             for ($i = 0; $i < $oPreis->nAnzahlSpannen; $i++) {
-                if ($i == 0) {
+                if ($i === 0) {
                     $oPreisspannenFilterDB_arr[] = ($nPreisspannenAnzahl_arr['anz' . $i] - 0);
                 } else {
                     $oPreisspannenFilterDB_arr[] = ($nPreisspannenAnzahl_arr['anz' . $i] - $nPreisspannenAnzahl_arr['anz' . ($i - 1)]);
@@ -1247,16 +1251,14 @@ function gibPreisspannenFilterOptionen($FilterSQL, $NaviFilter, $oSuchergebnisse
         }
     }
     // Preisspannen ohne Artikel ausblenden (falls im Backend eingestellt)
-    if ($conf['navigationsfilter']['preisspannenfilter_spannen_ausblenden'] === 'Y') {
-        if (count($oPreisspanne_arr) > 0) {
-            $oPreisspanneTMP_arr = [];
-            foreach ($oPreisspanne_arr as $oPreisspanne) {
-                if ($oPreisspanne->nAnzahlArtikel > 0) {
-                    $oPreisspanneTMP_arr[] = $oPreisspanne;
-                }
+    if ($conf['navigationsfilter']['preisspannenfilter_spannen_ausblenden'] === 'Y' && count($oPreisspanne_arr) > 0) {
+        $oPreisspanneTMP_arr = [];
+        foreach ($oPreisspanne_arr as $oPreisspanne) {
+            if ($oPreisspanne->nAnzahlArtikel > 0) {
+                $oPreisspanneTMP_arr[] = $oPreisspanne;
             }
-            $oPreisspanne_arr = $oPreisspanneTMP_arr;
         }
+        $oPreisspanne_arr = $oPreisspanneTMP_arr;
     }
     $tagArray = [CACHING_GROUP_CATEGORY];
     if (isset($NaviFilter->Kategorie->kKategorie)) {
@@ -1414,8 +1416,8 @@ function gibMerkmalFilterOptionen($FilterSQL, $NaviFilter, $oAktuelleKategorie =
 {
     $cacheID = 'filter_mm_' . md5(
             json_encode($FilterSQL) .
-            ((isset($NaviFilter->Kategorie->kKategorie)) ? json_encode($NaviFilter->Kategorie->kKategorie) : 0)
-        ) . '_' . ((isset($_SESSION['Kundengruppe']->kKundengruppe)) ?
+            (isset($NaviFilter->Kategorie->kKategorie) ? json_encode($NaviFilter->Kategorie->kKategorie) : 0)
+        ) . '_' . (isset($_SESSION['Kundengruppe']->kKundengruppe) ?
             (int)$_SESSION['Kundengruppe']->kKundengruppe : '0') . '_' . (int)Shop::$kSprache . (($bForce === true) ? '_f'
             : '');
     if (($oMerkmalFilter_arr = Shop::Cache()->get($cacheID)) !== false) {
@@ -1425,14 +1427,17 @@ function gibMerkmalFilterOptionen($FilterSQL, $NaviFilter, $oAktuelleKategorie =
     $oMerkmalFilter_arr          = [];
     $cKatAttribMerkmalFilter_arr = [];
     $conf                        = Shop::getSettings([CONF_NAVIGATIONSFILTER]);
-    if (isset($conf['navigationsfilter']['merkmalfilter_verwenden']) && $conf['navigationsfilter']['merkmalfilter_verwenden'] !== 'N' || $bForce) {
+    if ($bForce ||(isset($conf['navigationsfilter']['merkmalfilter_verwenden']) &&
+            $conf['navigationsfilter']['merkmalfilter_verwenden'] !== 'N')
+    ) {
         // Ist Kategorie Mainword, dann prüfe die Kategorie-Funktionsattribute auf merkmalfilter
-        if (isset($NaviFilter->Kategorie->kKategorie) && $NaviFilter->Kategorie->kKategorie > 0) {
-            if (isset($oAktuelleKategorie->categoryFunctionAttributes) && is_array($oAktuelleKategorie->categoryFunctionAttributes) && count($oAktuelleKategorie->categoryFunctionAttributes) > 0) {
-                if (!empty($oAktuelleKategorie->categoryFunctionAttributes[KAT_ATTRIBUT_MERKMALFILTER])) {
-                    $cKatAttribMerkmalFilter_arr = explode(';', $oAktuelleKategorie->categoryFunctionAttributes[KAT_ATTRIBUT_MERKMALFILTER]);
-                }
-            }
+        if (isset($NaviFilter->Kategorie->kKategorie, $oAktuelleKategorie->categoryFunctionAttributes) &&
+            $NaviFilter->Kategorie->kKategorie > 0 &&
+            is_array($oAktuelleKategorie->categoryFunctionAttributes) &&
+            count($oAktuelleKategorie->categoryFunctionAttributes) > 0 &&
+            !empty($oAktuelleKategorie->categoryFunctionAttributes[KAT_ATTRIBUT_MERKMALFILTER])
+        ) {
+            $cKatAttribMerkmalFilter_arr = explode(';', $oAktuelleKategorie->categoryFunctionAttributes[KAT_ATTRIBUT_MERKMALFILTER]);
         }
         //Sprache beachten
         $oSQLMM          = new stdClass();
@@ -1453,38 +1458,45 @@ function gibMerkmalFilterOptionen($FilterSQL, $NaviFilter, $oAktuelleKategorie =
                 FROM
                 (
                     SELECT tartikelmerkmal.kMerkmal, tartikelmerkmal.kMerkmalWert, tmerkmalwert.cBildPfad AS cMMWBildPfad,
-                    tmerkmalwertsprache.cWert, tmerkmal.nSort AS nSortMerkmal, tmerkmalwert.nSort, " . $oSQLMM->cSELECT . " tmerkmal.cTyp, tmerkmal.cBildPfad AS cMMBildPfad
+                    tmerkmalwertsprache.cWert, tmerkmal.nSort AS nSortMerkmal, 
+                    tmerkmalwert.nSort, " . $oSQLMM->cSELECT . " tmerkmal.cTyp, tmerkmal.cBildPfad AS cMMBildPfad
                 FROM tartikel
-                JOIN tartikelmerkmal ON tartikel.kArtikel = tartikelmerkmal.kArtikel
-                JOIN tmerkmalwert ON tmerkmalwert.kMerkmalWert = tartikelmerkmal.kMerkmalWert
-                JOIN tmerkmalwertsprache ON tmerkmalwertsprache.kMerkmalWert = tartikelmerkmal.kMerkmalWert
+                JOIN tartikelmerkmal 
+                ON tartikel.kArtikel = tartikelmerkmal.kArtikel
+                JOIN tmerkmalwert 
+                    ON tmerkmalwert.kMerkmalWert = tartikelmerkmal.kMerkmalWert
+                JOIN tmerkmalwertsprache 
+                    ON tmerkmalwertsprache.kMerkmalWert = tartikelmerkmal.kMerkmalWert
                     AND tmerkmalwertsprache.kSprache = " . (int)Shop::$kSprache . "
-                JOIN tmerkmal ON tmerkmal.kMerkmal = tartikelmerkmal.kMerkmal
+                JOIN tmerkmal 
+                    ON tmerkmal.kMerkmal = tartikelmerkmal.kMerkmal
                 " . $oSQLMM->cJOIN . "
-                " . ((isset($FilterSQL->oHerstellerFilterSQL->cJoin)) ? $FilterSQL->oHerstellerFilterSQL->cJoin : '') . "
-                " . ((isset($FilterSQL->oSuchspecialFilterSQL->cJoin)) ? $FilterSQL->oSuchspecialFilterSQL->cJoin : '') . "
-                " . ((isset($FilterSQL->oSuchFilterSQL->cJoin)) ? $FilterSQL->oSuchFilterSQL->cJoin : '') . "
-                " . ((isset($FilterSQL->oKategorieFilterSQL->cJoin)) ? $FilterSQL->oKategorieFilterSQL->cJoin : '') . "
-                " . ((isset($FilterSQL->oMerkmalFilterSQL->cJoinMMW)) ? $FilterSQL->oMerkmalFilterSQL->cJoinMMW : '') . "
-                " . ((isset($FilterSQL->oTagFilterSQL->cJoin)) ? $FilterSQL->oTagFilterSQL->cJoin : '') . "
-                " . ((isset($FilterSQL->oBewertungSterneFilterSQL->cJoin)) ? $FilterSQL->oBewertungSterneFilterSQL->cJoin : '') . "
-                " . ((isset($FilterSQL->oPreisspannenFilterSQL->cJoin)) ? $FilterSQL->oPreisspannenFilterSQL->cJoin : '') . "
-                LEFT JOIN tartikelsichtbarkeit ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
+                " . (isset($FilterSQL->oHerstellerFilterSQL->cJoin) ? $FilterSQL->oHerstellerFilterSQL->cJoin : '') . "
+                " . (isset($FilterSQL->oSuchspecialFilterSQL->cJoin) ? $FilterSQL->oSuchspecialFilterSQL->cJoin : '') . "
+                " . (isset($FilterSQL->oSuchFilterSQL->cJoin) ? $FilterSQL->oSuchFilterSQL->cJoin : '') . "
+                " . (isset($FilterSQL->oKategorieFilterSQL->cJoin) ? $FilterSQL->oKategorieFilterSQL->cJoin : '') . "
+                " . (isset($FilterSQL->oMerkmalFilterSQL->cJoinMMW) ? $FilterSQL->oMerkmalFilterSQL->cJoinMMW : '') . "
+                " . (isset($FilterSQL->oTagFilterSQL->cJoin) ? $FilterSQL->oTagFilterSQL->cJoin : '') . "
+                " . (isset($FilterSQL->oBewertungSterneFilterSQL->cJoin) ? $FilterSQL->oBewertungSterneFilterSQL->cJoin : '') . "
+                " . (isset($FilterSQL->oPreisspannenFilterSQL->cJoin) ? $FilterSQL->oPreisspannenFilterSQL->cJoin : '') . "
+                LEFT JOIN tartikelsichtbarkeit 
+                    ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                     AND tartikelsichtbarkeit.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
                     AND tartikel.kVaterArtikel = 0
                     " . gibLagerfilter() . "
-                    " . ((isset($FilterSQL->oSuchspecialFilterSQL->cWhere)) ? $FilterSQL->oSuchspecialFilterSQL->cWhere : '') . "
-                    " . ((isset($FilterSQL->oSuchFilterSQL->cWhere)) ? $FilterSQL->oSuchFilterSQL->cWhere : '') . "
-                    " . ((isset($FilterSQL->oHerstellerFilterSQL->cWhere)) ? $FilterSQL->oHerstellerFilterSQL->cWhere : '') . "
-                    " . ((isset($FilterSQL->oKategorieFilterSQL->cWhere)) ? $FilterSQL->oKategorieFilterSQL->cWhere : '') . "
-                    " . ((isset($FilterSQL->oMerkmalFilterSQL->cWhereMMW)) ? $FilterSQL->oMerkmalFilterSQL->cWhereMMW : '') . "
-                    " . ((isset($FilterSQL->oTagFilterSQL->cWhere)) ? $FilterSQL->oTagFilterSQL->cWhere : '') . "
-                    " . ((isset($FilterSQL->oBewertungSterneFilterSQL->cWhere)) ? $FilterSQL->oBewertungSterneFilterSQL->cWhere : '') . "
-                    " . ((isset($FilterSQL->oPreisspannenFilterSQL->cWhere)) ? $FilterSQL->oPreisspannenFilterSQL->cWhere : '') . "
+                    " . (isset($FilterSQL->oSuchspecialFilterSQL->cWhere) ? $FilterSQL->oSuchspecialFilterSQL->cWhere : '') . "
+                    " . (isset($FilterSQL->oSuchFilterSQL->cWhere) ? $FilterSQL->oSuchFilterSQL->cWhere : '') . "
+                    " . (isset($FilterSQL->oHerstellerFilterSQL->cWhere) ? $FilterSQL->oHerstellerFilterSQL->cWhere : '') . "
+                    " . (isset($FilterSQL->oKategorieFilterSQL->cWhere) ? $FilterSQL->oKategorieFilterSQL->cWhere : '') . "
+                    " . (isset($FilterSQL->oMerkmalFilterSQL->cWhereMMW) ? $FilterSQL->oMerkmalFilterSQL->cWhereMMW : '') . "
+                    " . (isset($FilterSQL->oTagFilterSQL->cWhere) ? $FilterSQL->oTagFilterSQL->cWhere : '') . "
+                    " . (isset($FilterSQL->oBewertungSterneFilterSQL->cWhere) ? $FilterSQL->oBewertungSterneFilterSQL->cWhere : '') . "
+                    " . (isset($FilterSQL->oPreisspannenFilterSQL->cWhere) ? $FilterSQL->oPreisspannenFilterSQL->cWhere : '') . "
                 GROUP BY tartikelmerkmal.kMerkmalWert, tartikel.kArtikel
             ) AS ssMerkmal
-            LEFT JOIN tseo ON tseo.kKey = ssMerkmal.kMerkmalWert
+            LEFT JOIN tseo 
+                ON tseo.kKey = ssMerkmal.kMerkmalWert
                 AND tseo.cKey = 'kMerkmalWert'
                 AND tseo.kSprache = " . (int)Shop::$kSprache . "
             GROUP BY ssMerkmal.kMerkmalWert
@@ -1495,12 +1507,13 @@ function gibMerkmalFilterOptionen($FilterSQL, $NaviFilter, $oAktuelleKategorie =
             foreach ($oMerkmalFilterDB_arr as $i => $oMerkmalFilterDB) {
                 $nPos          = gibMerkmalPosition($oMerkmalFilter_arr, $oMerkmalFilterDB->kMerkmal);
                 $oMerkmalWerte = new stdClass();
-                if (isset($NaviFilter->MerkmalWert->kMerkmalWert) && $NaviFilter->MerkmalWert->kMerkmalWert == $oMerkmalFilterDB->kMerkmalWert ||
-                    (isset($NaviFilter->MerkmalFilter) && checkMerkmalWertVorhanden($NaviFilter->MerkmalFilter, $oMerkmalFilterDB->kMerkmalWert))
+                $oMerkmalWerte->nAktiv = 0;
+                if ((isset($NaviFilter->MerkmalWert->kMerkmalWert) &&
+                        $NaviFilter->MerkmalWert->kMerkmalWert == $oMerkmalFilterDB->kMerkmalWert) ||
+                    (isset($NaviFilter->MerkmalFilter) &&
+                        checkMerkmalWertVorhanden($NaviFilter->MerkmalFilter, $oMerkmalFilterDB->kMerkmalWert))
                 ) {
                     $oMerkmalWerte->nAktiv = 1;
-                } else {
-                    $oMerkmalWerte->nAktiv = 0;
                 }
                 $oMerkmalWerte->kMerkmalWert = $oMerkmalFilterDB->kMerkmalWert;
                 $oMerkmalWerte->cWert        = $oMerkmalFilterDB->cWert;
@@ -1791,8 +1804,8 @@ function bearbeiteSuchCache($NaviFilter, $kSpracheExt = 0)
         // wenn kein Suchcache vorhanden
         $nMindestzeichen = 3;
 
-        if (intval($conf['artikeluebersicht']['suche_min_zeichen']) > 0) {
-            $nMindestzeichen = intval($conf['artikeluebersicht']['suche_min_zeichen']);
+        if ((int)$conf['artikeluebersicht']['suche_min_zeichen'] > 0) {
+            $nMindestzeichen = (int)$conf['artikeluebersicht']['suche_min_zeichen'];
         }
         if (strlen($cSuche) < $nMindestzeichen) {
             require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
@@ -1813,7 +1826,10 @@ function bearbeiteSuchCache($NaviFilter, $kSpracheExt = 0)
             $oSuchCache->dErstellt  = 'now()';
             $kSuchCache             = Shop::DB()->insert('tsuchcache', $oSuchCache);
 
-            if (isset($conf['artikeluebersicht']['suche_fulltext']) && $conf['artikeluebersicht']['suche_fulltext'] === 'Y' && isFulltextIndexActive()) {
+            if (isset($conf['artikeluebersicht']['suche_fulltext']) &&
+                $conf['artikeluebersicht']['suche_fulltext'] === 'Y' &&
+                isFulltextIndexActive()
+            ) {
                 $oSuchCache->kSuchCache = $kSuchCache;
 
                 return bearbeiteSuchCacheFulltext($oSuchCache, $cSuchspalten_arr, $cSuch_arr, $conf['artikeluebersicht']['suche_max_treffer']);
@@ -1830,12 +1846,15 @@ function bearbeiteSuchCache($NaviFilter, $kSpracheExt = 0)
                     $cSQL .= " 1 ";
                     if (Shop::$kSprache > 0 && !standardspracheAktiv()) {
                         $cSQL .= "  FROM tartikelsprache
-                                        INNER JOIN tartikel ON tartikelsprache.kArtikel = tartikel.kArtikel
-                                        LEFT JOIN tartikelsichtbarkeit ON tartikelsichtbarkeit.kArtikel = IF(tartikel.kVaterArtikel > 0, tartikel.kVaterArtikel, tartikelsprache.kArtikel)
+                                        INNER JOIN tartikel 
+                                            ON tartikelsprache.kArtikel = tartikel.kArtikel
+                                        LEFT JOIN tartikelsichtbarkeit 
+                                            ON tartikelsichtbarkeit.kArtikel = IF(tartikel.kVaterArtikel > 0, tartikel.kVaterArtikel, tartikelsprache.kArtikel)
                                             AND tartikelsichtbarkeit.kKundengruppe = " . ((int)$_SESSION['Kundengruppe']->kKundengruppe);
                     } else {
                         $cSQL .= " FROM tartikel
-                                        LEFT JOIN tartikelsichtbarkeit ON tartikelsichtbarkeit.kArtikel = IF(tartikel.kVaterArtikel > 0, tartikel.kVaterArtikel, tartikel.kArtikel)
+                                        LEFT JOIN tartikelsichtbarkeit 
+                                            ON tartikelsichtbarkeit.kArtikel = IF(tartikel.kVaterArtikel > 0, tartikel.kVaterArtikel, tartikel.kArtikel)
                                             AND tartikelsichtbarkeit.kKundengruppe = " . ((int)$_SESSION['Kundengruppe']->kKundengruppe);
                     }
                     $cSQL .= " WHERE tartikelsichtbarkeit.kArtikel IS NULL " . gibLagerfilter() . " AND ";
@@ -2129,12 +2148,15 @@ function bearbeiteSuchCache($NaviFilter, $kSpracheExt = 0)
 
                     if (Shop::$kSprache > 0 && !standardspracheAktiv()) {
                         $cSQL .= " FROM tartikelsprache
-                                        INNER JOIN tartikel ON tartikelsprache.kArtikel = tartikel.kArtikel
-                                        LEFT JOIN tartikelsichtbarkeit ON tartikelsichtbarkeit.kArtikel = IF(tartikel.kVaterArtikel > 0, tartikel.kVaterArtikel, tartikelsprache.kArtikel)
+                                        INNER JOIN tartikel 
+                                            ON tartikelsprache.kArtikel = tartikel.kArtikel
+                                        LEFT JOIN tartikelsichtbarkeit 
+                                            ON tartikelsichtbarkeit.kArtikel = IF(tartikel.kVaterArtikel > 0, tartikel.kVaterArtikel, tartikelsprache.kArtikel)
                                             AND tartikelsichtbarkeit.kKundengruppe = " . ((int)$_SESSION['Kundengruppe']->kKundengruppe);
                     } else {
                         $cSQL .= " FROM tartikel
-                                        LEFT JOIN tartikelsichtbarkeit ON tartikelsichtbarkeit.kArtikel = IF(tartikel.kVaterArtikel > 0, tartikel.kVaterArtikel, tartikel.kArtikel)
+                                        LEFT JOIN tartikelsichtbarkeit 
+                                            ON tartikelsichtbarkeit.kArtikel = IF(tartikel.kVaterArtikel > 0, tartikel.kVaterArtikel, tartikel.kArtikel)
                                             AND tartikelsichtbarkeit.kKundengruppe = " . ((int)$_SESSION['Kundengruppe']->kKundengruppe);
                     }
 
@@ -2162,7 +2184,8 @@ function bearbeiteSuchCache($NaviFilter, $kSpracheExt = 0)
 
                     $cSQL .= ")";
                 }
-                Shop::DB()->query("INSERT INTO tsuchcachetreffer $cSQL GROUP BY kArtikelTMP LIMIT " . (int)$conf['artikeluebersicht']['suche_max_treffer'], 3);
+                Shop::DB()->query("INSERT INTO tsuchcachetreffer $cSQL GROUP BY kArtikelTMP LIMIT " .
+                    (int)$conf['artikeluebersicht']['suche_max_treffer'], 3);
             }
 
             return $kSuchCache;
@@ -2361,15 +2384,23 @@ function gibPreisspannenFilterSQL($NaviFilter)
     $oFilter->cJoin  = '';
     $oFilter->cWhere = '';
     // Preisspannen Filter?
-    if (isset($NaviFilter->PreisspannenFilter->fVon) && $NaviFilter->PreisspannenFilter->fVon >= 0 && isset($NaviFilter->PreisspannenFilter->fBis) && $NaviFilter->PreisspannenFilter->fBis > 0) {
-        $oFilter->cJoin = "JOIN tpreise ON tartikel.kArtikel = tpreise.kArtikel AND tpreise.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
-                            LEFT JOIN tartikelkategorierabatt ON tartikelkategorierabatt.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
+    if (isset($NaviFilter->PreisspannenFilter->fVon, $NaviFilter->PreisspannenFilter->fBis) &&
+        $NaviFilter->PreisspannenFilter->fVon >= 0 &&
+        $NaviFilter->PreisspannenFilter->fBis > 0
+    ) {
+        $oFilter->cJoin = "JOIN tpreise 
+                                ON tartikel.kArtikel = tpreise.kArtikel 
+                                AND tpreise.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
+                            LEFT JOIN tartikelkategorierabatt 
+                                ON tartikelkategorierabatt.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
                                 AND tartikelkategorierabatt.kArtikel = tartikel.kArtikel
-                            LEFT JOIN tartikelsonderpreis ON tartikelsonderpreis.kArtikel = tartikel.kArtikel
+                            LEFT JOIN tartikelsonderpreis 
+                                ON tartikelsonderpreis.kArtikel = tartikel.kArtikel
                                 AND tartikelsonderpreis.cAktiv = 'Y'
                                 AND tartikelsonderpreis.dStart <= now()
                                 AND (tartikelsonderpreis.dEnde >= CURDATE() OR tartikelsonderpreis.dEnde = '0000-00-00')
-                            LEFT JOIN tsonderpreise ON tartikelsonderpreis.kArtikelSonderpreis = tsonderpreise.kArtikelSonderpreis
+                            LEFT JOIN tsonderpreise 
+                                ON tartikelsonderpreis.kArtikelSonderpreis = tsonderpreise.kArtikelSonderpreis
                                 AND tsonderpreise.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe;
         $oFilter->cWhere .= " AND";
 
@@ -2380,21 +2411,25 @@ function gibPreisspannenFilterSQL($NaviFilter)
 
         $nSteuersatzKeys_arr = array_keys($_SESSION['Steuersatz']);
         // bis
-        if (isset($_SESSION['Kundengruppe']->nNettoPreise) && intval($_SESSION['Kundengruppe']->nNettoPreise) > 0) {
-            $oFilter->cWhere .= " ROUND(LEAST((tpreise.fVKNetto * " . $_SESSION['Waehrung']->fFaktor . ") * ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), " .
-                $_SESSION['Kundengruppe']->fRabatt . ", " . $fKundenrabatt . ", 0)) / 100), IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * " . $_SESSION['Waehrung']->fFaktor . "))), 2)";
+        if (isset($_SESSION['Kundengruppe']->nNettoPreise) && (int)$_SESSION['Kundengruppe']->nNettoPreise > 0) {
+            $oFilter->cWhere .= " ROUND(LEAST((tpreise.fVKNetto * " .
+                $_SESSION['Waehrung']->fFaktor . ") * ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), " .
+                $_SESSION['Kundengruppe']->fRabatt . ", " . $fKundenrabatt .
+                ", 0)) / 100), IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * " .
+                $_SESSION['Waehrung']->fFaktor . "))), 2)";
         } else {
             foreach ($nSteuersatzKeys_arr as $nSteuersatzKeys) {
-                $fSteuersatz = floatval($_SESSION['Steuersatz'][$nSteuersatzKeys]);
+                $fSteuersatz = (float)$_SESSION['Steuersatz'][$nSteuersatzKeys];
                 $oFilter->cWhere .= " IF(tartikel.kSteuerklasse = " . $nSteuersatzKeys . ",
                             ROUND(LEAST(tpreise.fVKNetto * ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), " .
-                    $_SESSION['Kundengruppe']->fRabatt . ", " . $fKundenrabatt . ", 0)) / 100), IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * " .
+                    $_SESSION['Kundengruppe']->fRabatt . ", " .
+                    $fKundenrabatt . ", 0)) / 100), IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * " .
                     $_SESSION['Waehrung']->fFaktor . "))) * ((100 + " . $fSteuersatz . ") / 100
                         ), 2),";
             }
         }
 
-        if (intval($_SESSION['Kundengruppe']->nNettoPreise) === 0) {
+        if ((int)$_SESSION['Kundengruppe']->nNettoPreise === 0) {
             $oFilter->cWhere .= "0";
 
             $count = count($nSteuersatzKeys_arr);
@@ -2404,21 +2439,23 @@ function gibPreisspannenFilterSQL($NaviFilter)
         }
         $oFilter->cWhere .= " < " . $NaviFilter->PreisspannenFilter->fBis . " AND ";
         // von
-        if (intval($_SESSION['Kundengruppe']->nNettoPreise) > 0) {
+        if ((int)$_SESSION['Kundengruppe']->nNettoPreise > 0) {
             $oFilter->cWhere .= " ROUND(LEAST(tpreise.fVKNetto * ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), " .
-                $_SESSION['Kundengruppe']->fRabatt . ", " . $fKundenrabatt . ", 0)) / 100), IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * " .
+                $_SESSION['Kundengruppe']->fRabatt . ", " . $fKundenrabatt .
+                ", 0)) / 100), IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * " .
                 $_SESSION['Waehrung']->fFaktor . "))), 2)";
         } else {
             foreach ($nSteuersatzKeys_arr as $nSteuersatzKeys) {
-                $fSteuersatz = floatval($_SESSION['Steuersatz'][$nSteuersatzKeys]);
+                $fSteuersatz = (float)$_SESSION['Steuersatz'][$nSteuersatzKeys];
                 $oFilter->cWhere .= " IF(tartikel.kSteuerklasse = " . $nSteuersatzKeys . ",
                             ROUND(LEAST(tpreise.fVKNetto * ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), " .
-                    $_SESSION['Kundengruppe']->fRabatt . ", " . $fKundenrabatt . ", 0)) / 100), IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * " .
+                    $_SESSION['Kundengruppe']->fRabatt . ", " . $fKundenrabatt .
+                    ", 0)) / 100), IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * " .
                     $_SESSION['Waehrung']->fFaktor . "))) * ((100 + " . $fSteuersatz . ") / 100
                         ), 2),";
             }
         }
-        if (intval($_SESSION['Kundengruppe']->nNettoPreise) === 0) {
+        if ((int)$_SESSION['Kundengruppe']->nNettoPreise === 0) {
             $oFilter->cWhere .= "0";
             $count = count($nSteuersatzKeys_arr);
             for ($x = 0; $x < $count; $x++) {
@@ -2475,16 +2512,20 @@ function gibMerkmalFilterSQL($NaviFilter)
     $kMerkmalWert_arr = [];
     if (isset($NaviFilter->MerkmalFilter) && is_array($NaviFilter->MerkmalFilter)) {
         foreach ($NaviFilter->MerkmalFilter as $oMerkmalWert) {
-            if (!in_array($oMerkmalWert->kMerkmalWert, $kMerkmalWert_arr)) {
-                $kMerkmalWert_arr[] = (int)$oMerkmalWert->kMerkmalWert;
+            $oMerkmalWert->kMerkmalWert = (int)$oMerkmalWert->kMerkmalWert;
+            if (!in_array($oMerkmalWert->kMerkmalWert, $kMerkmalWert_arr, true)) {
+                $kMerkmalWert_arr[] = $oMerkmalWert->kMerkmalWert;
             }
         }
-        if ((isset($NaviFilter->MerkmalWert->kMerkmalWert) && $NaviFilter->MerkmalWert->kMerkmalWert > 0) && !in_array($NaviFilter->MerkmalWert->kMerkmalWert, $kMerkmalWert_arr)) {
+        if (isset($NaviFilter->MerkmalWert->kMerkmalWert) &&
+            $NaviFilter->MerkmalWert->kMerkmalWert > 0 &&
+            !in_array((int)$NaviFilter->MerkmalWert->kMerkmalWert, $kMerkmalWert_arr, true)
+        ) {
             $kMerkmalWert_arr[] = (int)$NaviFilter->MerkmalWert->kMerkmalWert;
         }
     }
     // Merkmal Filter?
-    if ((is_array($kMerkmalWert_arr) && count($kMerkmalWert_arr) > 0)) {
+    if (is_array($kMerkmalWert_arr) && count($kMerkmalWert_arr) > 0) {
         $oFilter->cJoin = "JOIN (
                                 SELECT kArtikel
                                 FROM tartikelmerkmal
@@ -2519,7 +2560,7 @@ function gibSuchspecialFilterSQL($NaviFilter)
     $oFilter->cWhere = '';
     // Suchspecial Mainword?
     if (isset($NaviFilter->Suchspecial->kKey) && $NaviFilter->Suchspecial->kKey > 0 || isset($NaviFilter->SuchspecialFilter->kKey) && $NaviFilter->SuchspecialFilter->kKey > 0) {
-        $kKey = (isset($NaviFilter->Suchspecial->kKey)) ? $NaviFilter->Suchspecial->kKey : null;
+        $kKey = isset($NaviFilter->Suchspecial->kKey) ? $NaviFilter->Suchspecial->kKey : null;
         if (isset($NaviFilter->SuchspecialFilter->kKey) && $NaviFilter->SuchspecialFilter->kKey > 0) {
             $kKey = $NaviFilter->SuchspecialFilter->kKey;
         }
@@ -2527,7 +2568,9 @@ function gibSuchspecialFilterSQL($NaviFilter)
         switch ($kKey) {
             case SEARCHSPECIALS_BESTSELLER:
                 $nAnzahl = (isset($conf['global']['global_bestseller_minanzahl'])
-                    && intval($conf['global']['global_bestseller_minanzahl'] > 0)) ? (int)$conf['global']['global_bestseller_minanzahl'] : 100;
+                    && (int)$conf['global']['global_bestseller_minanzahl'] > 0)
+                    ? (int)$conf['global']['global_bestseller_minanzahl']
+                    : 100;
                 $oFilter->cJoin  = "JOIN tbestseller ON tbestseller.kArtikel = tartikel.kArtikel";
                 $oFilter->cWhere = " AND round(tbestseller.fAnzahl) >= " . $nAnzahl;
                 break;
@@ -2535,7 +2578,7 @@ function gibSuchspecialFilterSQL($NaviFilter)
             case SEARCHSPECIALS_SPECIALOFFERS:
                 $tasp = 'tartikelsonderpreis';
                 $tsp  = 'tsonderpreise';
-                if ((!isset($NaviFilter->PreisspannenFilter->fVon) || !isset($NaviFilter->PreisspannenFilter->fBis)) ||
+                if ((!isset($NaviFilter->PreisspannenFilter->fVon, $NaviFilter->PreisspannenFilter->fBis)) ||
                     (!$NaviFilter->PreisspannenFilter->fVon && !$NaviFilter->PreisspannenFilter->fBis)) {
                     $oFilter->cJoin = "JOIN tartikelsonderpreis AS tasp ON tasp.kArtikel = tartikel.kArtikel
                                         JOIN tsonderpreise AS tsp ON tsp.kArtikelSonderpreis = tasp.kArtikelSonderpreis";
@@ -2570,7 +2613,9 @@ function gibSuchspecialFilterSQL($NaviFilter)
 
             case SEARCHSPECIALS_TOPREVIEWS:
                 if (!isset($NaviFilter->BewertungFilter->nSterne) || !$NaviFilter->BewertungFilter->nSterne) {
-                    $nMindestSterne  = (intval($conf['boxen']['boxen_topbewertet_minsterne'] > 0)) ? (int)$conf['boxen']['boxen_topbewertet_minsterne'] : 4;
+                    $nMindestSterne  = ((int)$conf['boxen']['boxen_topbewertet_minsterne'] > 0)
+                        ? (int)$conf['boxen']['boxen_topbewertet_minsterne']
+                        : 4;
                     $oFilter->cJoin  = "JOIN tartikelext AS taex ON taex.kArtikel = tartikel.kArtikel";
                     $oFilter->cWhere = " AND round(taex.fDurchschnittsBewertung) >= " . $nMindestSterne;
                 }
@@ -2594,9 +2639,13 @@ function gibArtikelAttributFilterSQL($NaviFilter)
     $oFilter->cJoin  = '';
     $oFilter->cWhere = '';
     // Tag Mainword?
-    if (isset($NaviFilter->ArtikelAttributFilter->cArtAttrib) && strlen($NaviFilter->ArtikelAttributFilter->cArtAttrib) > 0) {
-        $oFilter->cJoin = " JOIN tartikelattribut ON tartikelattribut.kArtikel = tartikelattribut.kArtikel
-                                AND tartikelattribut.cName = '" . StringHandler::filterXSS($NaviFilter->ArtikelAttributFilter->cArtAttrib) . "'";
+    if (isset($NaviFilter->ArtikelAttributFilter->cArtAttrib) &&
+        strlen($NaviFilter->ArtikelAttributFilter->cArtAttrib) > 0
+    ) {
+        $oFilter->cJoin = " JOIN tartikelattribut 
+                                ON tartikelattribut.kArtikel = tartikelattribut.kArtikel
+                                AND tartikelattribut.cName = '" .
+            StringHandler::filterXSS($NaviFilter->ArtikelAttributFilter->cArtAttrib) . "'";
     }
 
     return $oFilter;
@@ -2651,18 +2700,20 @@ function gibArtikelsortierung($NaviFilter)
         $Artikelsortierung          = mappeUsersortierung($_SESSION['Usersortierung']);
         $_SESSION['Usersortierung'] = $Artikelsortierung;
     }
-    if (isset($NaviFilter->nSortierung) && $NaviFilter->nSortierung > 0 && intval($_SESSION['Usersortierung']) === 100) {
+    if (isset($NaviFilter->nSortierung) && $NaviFilter->nSortierung > 0 && (int)$_SESSION['Usersortierung'] === 100) {
         $Artikelsortierung = $NaviFilter->nSortierung;
     }
     $sort = 'tartikel.nSort, tartikel.cName';
-    switch (intval($Artikelsortierung)) {
+    switch ((int)$Artikelsortierung) {
         case SEARCH_SORT_STANDARD:
+            $sort = 'tartikel.nSort, tartikel.cName';
             if (isset($NaviFilter->Kategorie) && $NaviFilter->Kategorie->kKategorie > 0) {
                 $sort = 'tartikel.nSort, tartikel.cName';
-            } elseif (isset($NaviFilter->Suche->kSuchCache) && $NaviFilter->Suche->kSuchCache > 0 && isset($_SESSION['Usersortierung']) && intval($_SESSION['Usersortierung']) === 100) {
+            } elseif (isset($NaviFilter->Suche->kSuchCache, $_SESSION['Usersortierung']) &&
+                $NaviFilter->Suche->kSuchCache > 0
+                && (int)$_SESSION['Usersortierung'] === 100
+            ) {
                 $sort = 'tsuchcachetreffer.nSort';
-            } else {
-                $sort = 'tartikel.nSort, tartikel.cName';
             }
             break;
         case SEARCH_SORT_NAME_ASC:
@@ -2808,13 +2859,30 @@ function gibNaviURL($NaviFilter, $bSeo, $oZusatzFilter, $kSprache = 0, $bCanonic
     $kSprache = (int)$kSprache;
     $cSEOURL  = Shop::getURL() . '/';
     // Gibt es zu der Suche bereits eine Suchanfrage und wird nicht ExtendedJTLSearch verwendet?
-    if (!(isset($NaviFilter->Suche->bExtendedJTLSearch) && $NaviFilter->Suche->bExtendedJTLSearch) && isset($NaviFilter->Suche->cSuche) && strlen($NaviFilter->Suche->cSuche) > 0) {
-        $oSuchanfrage = Shop::DB()->select('tsuchanfrage', 'cSuche', Shop::DB()->escape($NaviFilter->Suche->cSuche), 'kSprache', $kSprache, 'nAktiv', 1, false, 'kSuchanfrage');
+    if (!(isset($NaviFilter->Suche->bExtendedJTLSearch) &&
+            $NaviFilter->Suche->bExtendedJTLSearch) &&
+        isset($NaviFilter->Suche->cSuche) &&
+        strlen($NaviFilter->Suche->cSuche) > 0
+    ) {
+        $oSuchanfrage = Shop::DB()->select(
+            'tsuchanfrage',
+            'cSuche', Shop::DB()->escape($NaviFilter->Suche->cSuche),
+            'kSprache', $kSprache,
+            'nAktiv', 1,
+            false,
+            'kSuchanfrage'
+        );
         if (isset($oSuchanfrage->kSuchanfrage) && $oSuchanfrage->kSuchanfrage > 0) {
             // Hole alle aktiven Sprachen
             $oSprache_arr = $NaviFilter->oSprache_arr;
             $bSprache     = (is_array($oSprache_arr) && count($oSprache_arr) > 0);
-            $oSeo_arr     = Shop::DB()->selectAll('tseo', ['cKey', 'kKey'], ['kSuchanfrage', (int)$oSuchanfrage->kSuchanfrage], 'cSeo, kSprache', 'kSprache');
+            $oSeo_arr     = Shop::DB()->selectAll(
+                'tseo',
+                ['cKey', 'kKey'],
+                ['kSuchanfrage', (int)$oSuchanfrage->kSuchanfrage],
+                'cSeo, kSprache',
+                'kSprache'
+            );
             if ($bSprache) {
                 foreach ($oSprache_arr as $oSprache) {
                     $NaviFilter->Suchanfrage->cSeo[$oSprache->kSprache] = '';
@@ -2909,7 +2977,7 @@ function gibNaviURL($NaviFilter, $bSeo, $oZusatzFilter, $kSprache = 0, $bCanonic
         $cURL .= 'nk=' . (int)$NaviFilter->NewsKategorie->kNewsKategorie;
     }
     if ((isset($NaviFilter->EchteSuche->cSuche) && strlen($NaviFilter->EchteSuche->cSuche) > 0) &&
-        (!isset($NaviFilter->Suchanfrage->kSuchanfrage) || intval($NaviFilter->Suchanfrage->kSuchanfrage) === 0)
+        (!isset($NaviFilter->Suchanfrage->kSuchanfrage) || (int)$NaviFilter->Suchanfrage->kSuchanfrage === 0)
     ) {
         $bSeo = false;
         $cURL .= 'suche=' . urlencode($NaviFilter->EchteSuche->cSuche);
@@ -2966,22 +3034,26 @@ function gibNaviURL($NaviFilter, $bSeo, $oZusatzFilter, $kSprache = 0, $bCanonic
         $oSuchanfrage_arr     = [];
         if (isset($NaviFilter->SuchFilter) && is_array($NaviFilter->SuchFilter) && count($NaviFilter->SuchFilter) > 0) {
             foreach ($NaviFilter->SuchFilter as $i => $oSuchFilter) {
-                if (isset($oSuchFilter->kSuchanfrage) && $oSuchFilter->kSuchanfrage > 0) {
-                    if (isset($oZusatzFilter->FilterLoesen->SuchFilter) && $oZusatzFilter->FilterLoesen->SuchFilter != $oSuchFilter->kSuchanfrage) {
-                        $bSeo = false;
-                        if ($oSuchFilter->kSuchanfrage != $NaviFilter->Suche->kSuchanfrage) {
-                            $oSuchanfrage_arr[$i]->kSuchanfrage = $oSuchFilter->kSuchanfrage;
-                        }
-                        $nLetzterSuchFilter++;
-                        if ($oSuchFilter->kSuchanfrage == $oZusatzFilter->SuchFilter->kSuchanfrage) {
-                            $bZusatzSuchEnthalten = true;
-                        }
+                if (isset($oSuchFilter->kSuchanfrage, $oZusatzFilter->FilterLoesen->SuchFilter) &&
+                    $oSuchFilter->kSuchanfrage > 0 &&
+                    $oZusatzFilter->FilterLoesen->SuchFilter != $oSuchFilter->kSuchanfrage
+                ) {
+                    $bSeo = false;
+                    if ($oSuchFilter->kSuchanfrage != $NaviFilter->Suche->kSuchanfrage) {
+                        $oSuchanfrage_arr[$i]->kSuchanfrage = $oSuchFilter->kSuchanfrage;
+                    }
+                    $nLetzterSuchFilter++;
+                    if ($oSuchFilter->kSuchanfrage == $oZusatzFilter->SuchFilter->kSuchanfrage) {
+                        $bZusatzSuchEnthalten = true;
                     }
                 }
             }
         }
         // Zusatz SuchFilter
-        if (isset($oZusatzFilter->SuchFilter->kSuchanfrage) && $oZusatzFilter->SuchFilter->kSuchanfrage > 0 && !$bZusatzSuchEnthalten) {
+        if (isset($oZusatzFilter->SuchFilter->kSuchanfrage) &&
+            $oZusatzFilter->SuchFilter->kSuchanfrage > 0 &&
+            !$bZusatzSuchEnthalten
+        ) {
             $nPos = count($oSuchanfrage_arr);
             if (!isset($oSuchanfrage_arr[$nPos])) {
                 $oSuchanfrage_arr[$nPos] = new stdClass();
@@ -3001,23 +3073,23 @@ function gibNaviURL($NaviFilter, $bSeo, $oZusatzFilter, $kSprache = 0, $bCanonic
         $oMerkmalWert_arr        = [];
         if (isset($NaviFilter->MerkmalFilter) && is_array($NaviFilter->MerkmalFilter) && count($NaviFilter->MerkmalFilter) > 0) {
             foreach ($NaviFilter->MerkmalFilter as $i => $oMerkmalFilter) {
-                if ($oMerkmalFilter->kMerkmalWert > 0) {
-                    if ((!isset($oZusatzFilter->FilterLoesen->Merkmale)) || $oZusatzFilter->FilterLoesen->Merkmale != $oMerkmalFilter->kMerkmal) {
-                        if ((!isset($oZusatzFilter->FilterLoesen->MerkmalWert) && isset($oMerkmalFilter->kMerkmalWert)) ||
-                            $oZusatzFilter->FilterLoesen->MerkmalWert != $oMerkmalFilter->kMerkmalWert) {
-                            if (strlen($oMerkmalFilter->cSeo[$kSprache]) === 0) {
-                                $bSeo = false;
-                            }
-                            $oMerkmalWert_arr[$i]               = new stdClass();
-                            $oMerkmalWert_arr[$i]->kMerkmalWert = $oMerkmalFilter->kMerkmalWert;
-                            $oMerkmalWert_arr[$i]->cSeo         = $oMerkmalFilter->cSeo[$kSprache];
-                            $nLetzterMerkmalFilter++;
-                            if (isset($oMerkmalFilter->kMerkmalWert) && isset($oZusatzFilter->MerkmalFilter->kMerkmalWert) &&
-                                $oMerkmalFilter->kMerkmalWert == $oZusatzFilter->MerkmalFilter->kMerkmalWert
-                            ) {
-                                $bZusatzMerkmalEnthalten = true;
-                            }
-                        }
+                if (($oMerkmalFilter->kMerkmalWert > 0 && !isset($oZusatzFilter->FilterLoesen->Merkmale)) ||
+                    ($oZusatzFilter->FilterLoesen->Merkmale != $oMerkmalFilter->kMerkmal &&
+                        !isset($oZusatzFilter->FilterLoesen->MerkmalWert) && isset($oMerkmalFilter->kMerkmalWert)) ||
+                    (!isset($oZusatzFilter->FilterLoesen->MerkmalWert) && isset($oMerkmalFilter->kMerkmalWert) ||
+                        ($oZusatzFilter->FilterLoesen->MerkmalWert != $oMerkmalFilter->kMerkmalWert))
+                ) {
+                    if (strlen($oMerkmalFilter->cSeo[$kSprache]) === 0) {
+                        $bSeo = false;
+                    }
+                    $oMerkmalWert_arr[$i]               = new stdClass();
+                    $oMerkmalWert_arr[$i]->kMerkmalWert = $oMerkmalFilter->kMerkmalWert;
+                    $oMerkmalWert_arr[$i]->cSeo         = $oMerkmalFilter->cSeo[$kSprache];
+                    $nLetzterMerkmalFilter++;
+                    if (isset($oMerkmalFilter->kMerkmalWert, $oZusatzFilter->MerkmalFilter->kMerkmalWert) &&
+                        $oMerkmalFilter->kMerkmalWert == $oZusatzFilter->MerkmalFilter->kMerkmalWert
+                    ) {
+                        $bZusatzMerkmalEnthalten = true;
                     }
                 }
             }
@@ -3040,13 +3112,15 @@ function gibNaviURL($NaviFilter, $bSeo, $oZusatzFilter, $kSprache = 0, $bCanonic
             }
         }
         // Preisspannen
-        if (isset($NaviFilter->PreisspannenFilter->fVon) && $NaviFilter->PreisspannenFilter->fVon >= 0 &&
-            isset($NaviFilter->PreisspannenFilter->fBis) && $NaviFilter->PreisspannenFilter->fBis > 0 &&
+        if (isset($NaviFilter->PreisspannenFilter->fVon, $NaviFilter->PreisspannenFilter->fBis) &&
+            $NaviFilter->PreisspannenFilter->fVon >= 0 &&
+            $NaviFilter->PreisspannenFilter->fBis > 0 &&
             !isset($oZusatzFilter->FilterLoesen->Preisspannen)
         ) {
             $cURL .= '&amp;pf=' . $NaviFilter->PreisspannenFilter->fVon . '_' . $NaviFilter->PreisspannenFilter->fBis;
-        } elseif (isset($oZusatzFilter->PreisspannenFilter->fVon) && $oZusatzFilter->PreisspannenFilter->fVon >= 0 &&
-            isset($oZusatzFilter->PreisspannenFilter->fBis) && $oZusatzFilter->PreisspannenFilter->fBis > 0
+        } elseif (isset($oZusatzFilter->PreisspannenFilter->fVon, $oZusatzFilter->PreisspannenFilter->fBis) &&
+            $oZusatzFilter->PreisspannenFilter->fVon >= 0 &&
+            $oZusatzFilter->PreisspannenFilter->fBis > 0
         ) {
             $cURL .= '&amp;pf=' . $oZusatzFilter->PreisspannenFilter->fVon . '_' . $oZusatzFilter->PreisspannenFilter->fBis;
         }
@@ -3062,18 +3136,16 @@ function gibNaviURL($NaviFilter, $bSeo, $oZusatzFilter, $kSprache = 0, $bCanonic
         $nLetzterTagFilter   = 1;
         $bZusatzTagEnthalten = false;
         $oTag_arr            = [];
-        if (!isset($oZusatzFilter->FilterLoesen->Tags)) {
-            if (isset($NaviFilter->TagFilter) && is_array($NaviFilter->TagFilter)) {
-                foreach ($NaviFilter->TagFilter as $i => $oTagFilter) {
-                    if ($oTagFilter->kTag > 0) {
-                        if (!isset($oTag_arr[$i])) {
-                            $oTag_arr[$i] = new stdClass();
-                        }
-                        $oTag_arr[$i]->kTag = $oTagFilter->kTag;
-                        $nLetzterTagFilter++;
-                        if (isset($oZusatzFilter->TagFilter->kTag) && $oTagFilter->kTag == $oZusatzFilter->TagFilter->kTag) {
-                            $bZusatzTagEnthalten = true;
-                        }
+        if (!isset($oZusatzFilter->FilterLoesen->Tags) && isset($NaviFilter->TagFilter) && is_array($NaviFilter->TagFilter)) {
+            foreach ($NaviFilter->TagFilter as $i => $oTagFilter) {
+                if ($oTagFilter->kTag > 0) {
+                    if (!isset($oTag_arr[$i])) {
+                        $oTag_arr[$i] = new stdClass();
+                    }
+                    $oTag_arr[$i]->kTag = $oTagFilter->kTag;
+                    $nLetzterTagFilter++;
+                    if (isset($oZusatzFilter->TagFilter->kTag) && $oTagFilter->kTag == $oZusatzFilter->TagFilter->kTag) {
+                        $bZusatzTagEnthalten = true;
                     }
                 }
             }
@@ -3139,11 +3211,11 @@ function gibNaviURL($NaviFilter, $bSeo, $oZusatzFilter, $kSprache = 0, $bCanonic
 }
 
 /**
- * @param object     $oPreis
- * @param object|int $oPreisspannenfilter_arr
+ * @param object       $oPreis
+ * @param object|array $oPreisspannenfilter_arr
  * @return string
  */
-function berechnePreisspannenSQL($oPreis, $oPreisspannenfilter_arr = 0)
+function berechnePreisspannenSQL($oPreis, $oPreisspannenfilter_arr = null)
 {
     $cSQL          = '';
     $fKundenrabatt = 0.0;
@@ -3166,13 +3238,15 @@ function berechnePreisspannenSQL($oPreis, $oPreisspannenfilter_arr = 0)
                 $nBis = $nPreisMax;
             }
             // Finde den höchsten und kleinsten Steuersatz
-            if (is_array($_SESSION['Steuersatz']) && intval($_SESSION['Kundengruppe']->nNettoPreise) === 0) {
+            if (is_array($_SESSION['Steuersatz']) && (int)$_SESSION['Kundengruppe']->nNettoPreise === 0) {
                 $nSteuersatzKeys_arr = array_keys($_SESSION['Steuersatz']);
                 foreach ($nSteuersatzKeys_arr as $nSteuersatzKeys) {
-                    $fSteuersatz = floatval($_SESSION['Steuersatz'][$nSteuersatzKeys]);
+                    $fSteuersatz = (float)$_SESSION['Steuersatz'][$nSteuersatzKeys];
                     $cSQL .= "IF(tartikel.kSteuerklasse = " . $nSteuersatzKeys . ",
-                                ROUND(LEAST((tpreise.fVKNetto * " . $_SESSION['Waehrung']->fFaktor . ") * ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), " .
-                        $_SESSION['Kundengruppe']->fRabatt . ", " . $fKundenrabatt . ", 0)) / 100), IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * " .
+                                ROUND(LEAST((tpreise.fVKNetto * " . $_SESSION['Waehrung']->fFaktor .
+                        ") * ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), " .
+                        $_SESSION['Kundengruppe']->fRabatt . ", " . $fKundenrabatt .
+                        ", 0)) / 100), IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * " .
                         $_SESSION['Waehrung']->fFaktor . "))) * ((100 + " . $fSteuersatz . ") / 100)
                             , 2),";
                 }
@@ -3182,9 +3256,11 @@ function berechnePreisspannenSQL($oPreis, $oPreisspannenfilter_arr = 0)
                 for ($x = 0; $x < $count; ++$x) {
                     $cSQL .= ")";
                 }
-            } elseif (intval($_SESSION['Kundengruppe']->nNettoPreise) > 0) {
-                $cSQL .= "ROUND(LEAST((tpreise.fVKNetto * " . $_SESSION['Waehrung']->fFaktor . ") * ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), " .
-                    $_SESSION['Kundengruppe']->fRabatt . ", " . $fKundenrabatt . ", 0)) / 100), IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * " .
+            } elseif ((int)$_SESSION['Kundengruppe']->nNettoPreise > 0) {
+                $cSQL .= "ROUND(LEAST((tpreise.fVKNetto * " . $_SESSION['Waehrung']->fFaktor .
+                    ") * ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), " .
+                    $_SESSION['Kundengruppe']->fRabatt . ", " . $fKundenrabatt .
+                    ", 0)) / 100), IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * " .
                     $_SESSION['Waehrung']->fFaktor . "))), 2)";
             }
             $cSQL .= " < " . $nBis . ", 1, NULL)
@@ -3192,40 +3268,43 @@ function berechnePreisspannenSQL($oPreis, $oPreisspannenfilter_arr = 0)
         }
 
         $cSQL = substr($cSQL, 0, strlen($cSQL) - 2);
-    } else {
-        if (is_array($oPreisspannenfilter_arr)) {
-            foreach ($oPreisspannenfilter_arr as $i => $oPreisspannenfilter) {
-                $cSQL .= "COUNT(
-                        IF(";
+    } elseif (is_array($oPreisspannenfilter_arr)) {
+        foreach ($oPreisspannenfilter_arr as $i => $oPreisspannenfilter) {
+            $cSQL .= "COUNT(
+                    IF(";
 
-                $nBis = $oPreisspannenfilter->nBis;
-                // Finde den höchsten und kleinsten Steuersatz
-                if (is_array($_SESSION['Steuersatz']) && intval($_SESSION['Kundengruppe']->nNettoPreise) === 0) {
-                    $nSteuersatzKeys_arr = array_keys($_SESSION['Steuersatz']);
-                    foreach ($nSteuersatzKeys_arr as $nSteuersatzKeys) {
-                        $fSteuersatz = floatval($_SESSION['Steuersatz'][$nSteuersatzKeys]);
-                        $cSQL .= "IF(tartikel.kSteuerklasse = " . $nSteuersatzKeys . ",
-                                ROUND(LEAST((tpreise.fVKNetto * " . $_SESSION['Waehrung']->fFaktor . ") * ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), " .
-                            $_SESSION['Kundengruppe']->fRabatt . ", " . $fKundenrabatt . ", 0)) / 100), IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * " .
-                            $_SESSION['Waehrung']->fFaktor . "))) * ((100 + " . $fSteuersatz . ") / 100)
-                            , 2),";
-                    }
-                    $cSQL .= "0";
-                    $count = count($nSteuersatzKeys_arr);
-                    for ($x = 0; $x < $count; ++$x) {
-                        $cSQL .= ")";
-                    }
-                } elseif (intval($_SESSION['Kundengruppe']->nNettoPreise) > 0) {
-                    $cSQL .= "ROUND(LEAST((tpreise.fVKNetto * " . $_SESSION['Waehrung']->fFaktor . ") * ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), " .
-                        $_SESSION['Kundengruppe']->fRabatt . ", " . $fKundenrabatt . ", 0)) / 100), IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * " . $_SESSION['Waehrung']->fFaktor . "))), 2)";
+            $nBis = $oPreisspannenfilter->nBis;
+            // Finde den höchsten und kleinsten Steuersatz
+            if (is_array($_SESSION['Steuersatz']) && (int)$_SESSION['Kundengruppe']->nNettoPreise === 0) {
+                $nSteuersatzKeys_arr = array_keys($_SESSION['Steuersatz']);
+                foreach ($nSteuersatzKeys_arr as $nSteuersatzKeys) {
+                    $fSteuersatz = (float)$_SESSION['Steuersatz'][$nSteuersatzKeys];
+                    $cSQL .= "IF(tartikel.kSteuerklasse = " . $nSteuersatzKeys . ",
+                            ROUND(LEAST((tpreise.fVKNetto * " . $_SESSION['Waehrung']->fFaktor .
+                        ") * ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), " .
+                        $_SESSION['Kundengruppe']->fRabatt . ", " .
+                        $fKundenrabatt . ", 0)) / 100), IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * " .
+                        $_SESSION['Waehrung']->fFaktor . "))) * ((100 + " . $fSteuersatz . ") / 100)
+                        , 2),";
                 }
-
-                $cSQL .= " < " . $nBis . ", 1, NULL)
-                        ) AS anz" . $i . ", ";
+                $cSQL .= "0";
+                $count = count($nSteuersatzKeys_arr);
+                for ($x = 0; $x < $count; ++$x) {
+                    $cSQL .= ")";
+                }
+            } elseif ((int)$_SESSION['Kundengruppe']->nNettoPreise > 0) {
+                $cSQL .= "ROUND(LEAST((tpreise.fVKNetto * " . $_SESSION['Waehrung']->fFaktor .
+                    ") * ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), " .
+                    $_SESSION['Kundengruppe']->fRabatt . ", " . $fKundenrabatt .
+                    ", 0)) / 100), IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * " .
+                    $_SESSION['Waehrung']->fFaktor . "))), 2)";
             }
 
-            $cSQL = substr($cSQL, 0, strlen($cSQL) - 2);
+            $cSQL .= " < " . $nBis . ", 1, NULL)
+                    ) AS anz" . $i . ", ";
         }
+
+        $cSQL = substr($cSQL, 0, strlen($cSQL) - 2);
     }
 
     return $cSQL;
@@ -3249,14 +3328,14 @@ function berechneMaxMinStep($fMax, $fMin)
         100000000.0
     ];
     $nStep      = 10;
-    $fDiffPreis = doubleval($fMax - $fMin) * 1000;
+    $fDiffPreis = floatval($fMax - $fMin) * 1000;
     $nMaxSteps  = 5;
     $conf       = Shop::getSettings([CONF_NAVIGATIONSFILTER]);
     if ($conf['navigationsfilter']['preisspannenfilter_anzeige_berechnung'] === 'M') {
         $nMaxSteps = 10;
     }
     foreach ($fStepWert_arr as $i => $fStepWert) {
-        if (($fDiffPreis / doubleval($fStepWert * 1000)) < $nMaxSteps) {
+        if (($fDiffPreis / floatval($fStepWert * 1000)) < $nMaxSteps) {
             $nStep = $i;
             break;
         }
@@ -3267,7 +3346,7 @@ function berechneMaxMinStep($fMax, $fMin)
     $fMaxPreis      = round(((($fMax * 100) - (($fMax * 100) % ($fStepWert * 100))) + ($fStepWert * 100)) / 100, 0);
     $fMinPreis      = round(((($fMin * 100) - (($fMin * 100) % ($fStepWert * 100)))) / 100, 0);
     $fDiffPreis     = $fMaxPreis - $fMinPreis;
-    $nAnzahlSpannen = round(($fDiffPreis / $fStepWert), 0);
+    $nAnzahlSpannen = round($fDiffPreis / $fStepWert, 0);
 
     $oObject                 = new stdClass();
     $oObject->fMaxPreis      = $fMaxPreis / 1000;
@@ -3285,23 +3364,23 @@ function berechneMaxMinStep($fMax, $fMin)
 function gibBrotNaviName()
 {
     global $NaviFilter;
-    if (isset($NaviFilter->Kategorie->kKategorie) && $NaviFilter->Kategorie->kKategorie > 0 && isset($NaviFilter->Kategorie->cName)) {
-        return (isset($NaviFilter->Kategorie->cName)) ? $NaviFilter->Kategorie->cName : null;
+    if (isset($NaviFilter->Kategorie->kKategorie, $NaviFilter->Kategorie->cName) && $NaviFilter->Kategorie->kKategorie > 0) {
+        return isset($NaviFilter->Kategorie->cName) ? $NaviFilter->Kategorie->cName : null;
     }
     if (isset($NaviFilter->Hersteller->kHersteller) && $NaviFilter->Hersteller->kHersteller > 0) {
-        return (isset($NaviFilter->Hersteller->cName)) ? $NaviFilter->Hersteller->cName : $NaviFilter->Hersteller->cName;
+        return isset($NaviFilter->Hersteller->cName) ? $NaviFilter->Hersteller->cName : null;
     }
     if (isset($NaviFilter->MerkmalWert->kMerkmalWert) && $NaviFilter->MerkmalWert->kMerkmalWert > 0) {
-        return (isset($NaviFilter->MerkmalWert->cName)) ? $NaviFilter->MerkmalWert->cName : null;
+        return isset($NaviFilter->MerkmalWert->cName) ? $NaviFilter->MerkmalWert->cName : null;
     }
     if (isset($NaviFilter->Tag->kTag) && $NaviFilter->Tag->kTag > 0) {
-        return (isset($NaviFilter->Tag->cName)) ? $NaviFilter->Tag->cName : null;
+        return isset($NaviFilter->Tag->cName) ? $NaviFilter->Tag->cName : null;
     }
     if (isset($NaviFilter->Suchspecial->kKey) && $NaviFilter->Suchspecial->kKey > 0) {
-        return (isset($NaviFilter->Suchspecial->cName)) ? $NaviFilter->Suchspecial->cName : null;
+        return isset($NaviFilter->Suchspecial->cName) ? $NaviFilter->Suchspecial->cName : null;
     }
     if (isset($NaviFilter->Suche->cSuche) && strlen($NaviFilter->Suche->cSuche) > 0) {
-        return (isset($NaviFilter->Suche->cSuche)) ? strip_tags(trim($NaviFilter->Suche->cSuche)) : null;
+        return isset($NaviFilter->Suche->cSuche) ? strip_tags(trim($NaviFilter->Suche->cSuche)) : null;
     }
 
     return '';
@@ -3374,13 +3453,13 @@ function erstelleFilterLoesenURLs($bSeo, $oSuchergebnisse)
         $NaviFilter->URL->cAlleMerkmalWerte[$oMerkmal->kMerkmalWert] = gibNaviURL($NaviFilter, $bSeo, $oZusatzFilter);
     }
     // kinda hacky: try to build url that removes a merkmalwert url from merkmalfilter url
-    if (isset($NaviFilter->MerkmalWert->kMerkmalWert) && !isset($NaviFilter->URL->cAlleMerkmalWerte[$NaviFilter->MerkmalWert->kMerkmalWert])) {
-        if (isset($NaviFilter->URL->cAlleKategorien)) {
-            // the url should be <shop>/<merkmalwert-url>__<merkmalfilter>[__<merkmalfilter>]
-            $_mmwSeo = str_replace($NaviFilter->MerkmalWert->cSeo[Shop::$kSprache] . '__', '', $NaviFilter->URL->cAlleKategorien);
-            if ($_mmwSeo !== $NaviFilter->URL->cAlleKategorien) {
-                $NaviFilter->URL->cAlleMerkmalWerte[$NaviFilter->MerkmalWert->kMerkmalWert] = $_mmwSeo;
-            }
+    if (isset($NaviFilter->MerkmalWert->kMerkmalWert, $NaviFilter->URL->cAlleKategorien) &&
+        !isset($NaviFilter->URL->cAlleMerkmalWerte[$NaviFilter->MerkmalWert->kMerkmalWert])
+    ) {
+        // the url should be <shop>/<merkmalwert-url>__<merkmalfilter>[__<merkmalfilter>]
+        $_mmwSeo = str_replace($NaviFilter->MerkmalWert->cSeo[Shop::$kSprache] . '__', '', $NaviFilter->URL->cAlleKategorien);
+        if ($_mmwSeo !== $NaviFilter->URL->cAlleKategorien) {
+            $NaviFilter->URL->cAlleMerkmalWerte[$NaviFilter->MerkmalWert->kMerkmalWert] = $_mmwSeo;
         }
     }
 
@@ -3435,8 +3514,10 @@ function erstelleFilterLoesenURLs($bSeo, $oSuchergebnisse)
 function truncateMetaTitle($cTitle)
 {
     $conf = Shop::getSettings([CONF_METAANGABEN]);
-    if (isset($conf['metaangaben']['global_meta_maxlaenge_title']) && $conf['metaangaben']['global_meta_maxlaenge_title'] > 0) {
-        return substr($cTitle, 0, intval($conf['metaangaben']['global_meta_maxlaenge_title']));
+    if (isset($conf['metaangaben']['global_meta_maxlaenge_title']) &&
+        $conf['metaangaben']['global_meta_maxlaenge_title'] > 0
+    ) {
+        return substr($cTitle, 0, (int)$conf['metaangaben']['global_meta_maxlaenge_title']);
     }
 
     return $cTitle;
@@ -3458,7 +3539,9 @@ function gibNaviMetaTitle($NaviFilter, $oSuchergebnisse, $GlobaleMetaAngaben_arr
     if (strlen($oMeta->cMetaTitle) > 0) {
         $oMeta->cMetaTitle = strip_tags($oMeta->cMetaTitle);
         // Globalen Meta Title anhaengen
-        if ($conf['metaangaben']['global_meta_title_anhaengen'] === 'Y' && strlen($GlobaleMetaAngaben_arr[Shop::$kSprache]->Title) > 0) {
+        if ($conf['metaangaben']['global_meta_title_anhaengen'] === 'Y' &&
+            strlen($GlobaleMetaAngaben_arr[Shop::getLanguage()]->Title) > 0
+        ) {
             return truncateMetaTitle($oMeta->cMetaTitle . ' ' . $GlobaleMetaAngaben_arr[Shop::$kSprache]->Title);
         }
 
@@ -3493,8 +3576,10 @@ function gibNaviMetaTitle($NaviFilter, $oSuchergebnisse, $GlobaleMetaAngaben_arr
         $cMetaTitle .= ', ' . Shop::Lang()->get('page', 'global') . " {$oSuchergebnisse->Seitenzahlen->AktuelleSeite}";
     }
     // Globalen Meta Title ueberall anhaengen
-    if ($conf['metaangaben']['global_meta_title_anhaengen'] === 'Y' && !empty($GlobaleMetaAngaben_arr[Shop::getLanguage()]->Title)) {
-        $cMetaTitle .= ' - ' . $GlobaleMetaAngaben_arr[Shop::$kSprache]->Title;
+    if ($conf['metaangaben']['global_meta_title_anhaengen'] === 'Y' &&
+        !empty($GlobaleMetaAngaben_arr[Shop::getLanguage()]->Title)
+    ) {
+        $cMetaTitle .= ' - ' . $GlobaleMetaAngaben_arr[Shop::getLanguage()]->Title;
     }
 
     return truncateMetaTitle($cMetaTitle);
@@ -3561,14 +3646,22 @@ function gibNaviMetaDescription($oArtikel_arr, $NaviFilter, $oSuchergebnisse, $G
             if (strlen($cKatDescription) > 1) {
                 $cKatDescription = str_replace('"', '', $cKatDescription);
                 $cKatDescription = StringHandler::htmlentitydecode($cKatDescription, ENT_NOQUOTES);
-                if (isset($GlobaleMetaAngaben_arr[Shop::$kSprache]->Meta_Description_Praefix) && strlen($GlobaleMetaAngaben_arr[Shop::$kSprache]->Meta_Description_Praefix) > 0) {
-                    $cMetaDescription = trim(strip_tags($GlobaleMetaAngaben_arr[Shop::$kSprache]->Meta_Description_Praefix) . " " . $cKatDescription);
+                if (isset($GlobaleMetaAngaben_arr[Shop::getLanguage()]->Meta_Description_Praefix) &&
+                    strlen($GlobaleMetaAngaben_arr[Shop::getLanguage()]->Meta_Description_Praefix) > 0
+                ) {
+                    $cMetaDescription = trim(strip_tags(
+                        $GlobaleMetaAngaben_arr[Shop::getLanguage()]->Meta_Description_Praefix
+                        ) . ' ' . $cKatDescription);
                 } else {
                     $cMetaDescription = trim($cKatDescription);
                 }
                 // Seitenzahl anhaengen ab Seite 2 (Doppelte Meta-Descriptions vermeiden, #5992)
-                if ($oSuchergebnisse->Seitenzahlen->AktuelleSeite > 1 && $oSuchergebnisse->ArtikelVon > 0 && $oSuchergebnisse->ArtikelBis > 0) {
-                    $cMetaDescription .= ', ' . Shop::Lang()->get('products', 'global') . " {$oSuchergebnisse->ArtikelVon} - {$oSuchergebnisse->ArtikelBis}";
+                if ($oSuchergebnisse->Seitenzahlen->AktuelleSeite > 1 &&
+                    $oSuchergebnisse->ArtikelVon > 0 &&
+                    $oSuchergebnisse->ArtikelBis > 0
+                ) {
+                    $cMetaDescription .= ', ' . Shop::Lang()->get('products', 'global') .
+                        " {$oSuchergebnisse->ArtikelVon} - {$oSuchergebnisse->ArtikelBis}";
                 }
 
                 return truncateMetaDescription($cMetaDescription);
@@ -3594,14 +3687,21 @@ function gibNaviMetaDescription($oArtikel_arr, $NaviFilter, $oSuchergebnisse, $G
         $cArtikelName = str_replace('"', '', $cArtikelName);
         $cArtikelName = StringHandler::htmlentitydecode($cArtikelName, ENT_NOQUOTES);
 
-        if (isset($GlobaleMetaAngaben_arr[Shop::$kSprache]->Meta_Description_Praefix) && strlen($GlobaleMetaAngaben_arr[Shop::$kSprache]->Meta_Description_Praefix) > 0) {
-            $cMetaDescription = gibMetaStart($NaviFilter, $oSuchergebnisse) . ': ' . $GlobaleMetaAngaben_arr[Shop::$kSprache]->Meta_Description_Praefix . ' ' . $cArtikelName;
+        if (isset($GlobaleMetaAngaben_arr[Shop::getLanguage()]->Meta_Description_Praefix) &&
+            strlen($GlobaleMetaAngaben_arr[Shop::getLanguage()]->Meta_Description_Praefix
+            ) > 0) {
+            $cMetaDescription = gibMetaStart($NaviFilter, $oSuchergebnisse) . ': ' .
+                $GlobaleMetaAngaben_arr[Shop::getLanguage()]->Meta_Description_Praefix . ' ' . $cArtikelName;
         } else {
             $cMetaDescription = gibMetaStart($NaviFilter, $oSuchergebnisse) . ': ' . $cArtikelName;
         }
         // Seitenzahl anhaengen ab Seite 2 (Doppelte Meta-Descriptions vermeiden, #5992)
-        if ($oSuchergebnisse->Seitenzahlen->AktuelleSeite > 1 && $oSuchergebnisse->ArtikelVon > 0 && $oSuchergebnisse->ArtikelBis > 0) {
-            $cMetaDescription .= ', ' . Shop::Lang()->get('products', 'global') . " {$oSuchergebnisse->ArtikelVon} - {$oSuchergebnisse->ArtikelBis}";
+        if ($oSuchergebnisse->Seitenzahlen->AktuelleSeite > 1 &&
+            $oSuchergebnisse->ArtikelVon > 0 &&
+            $oSuchergebnisse->ArtikelBis > 0
+        ) {
+            $cMetaDescription .= ', ' . Shop::Lang()->get('products', 'global') .
+                " {$oSuchergebnisse->ArtikelVon} - {$oSuchergebnisse->ArtikelBis}";
         }
     }
 
@@ -3657,7 +3757,8 @@ function gibNaviMetaKeywords($oArtikel_arr, $NaviFilter, $oExcludesKeywords_arr)
         }
         $cArtikelName = '';
         for ($i = 0; $i < $nCount; $i++) {
-            $cExcArtikelName = gibExcludesKeywordsReplace($oArtikel_arr[$i]->cName, $oExcludesKeywords_arr); // Filter nicht erlaubte Keywords
+            $cExcArtikelName = gibExcludesKeywordsReplace($oArtikel_arr[$i]->cName, $oExcludesKeywords_arr);
+            // Filter nicht erlaubte Keywords
             if (strpos($cExcArtikelName, ' ') !== false) {
                 // Wenn der Dateiname aus mehreren Wörtern besteht
                 $cSubNameTMP_arr = explode(' ', $cExcArtikelName);
@@ -3687,7 +3788,7 @@ function gibNaviMetaKeywords($oArtikel_arr, $NaviFilter, $oExcludesKeywords_arr)
         $cMeta_arr               = explode(', ', $cMetaKeywords);
         if (is_array($cMeta_arr) && count($cMeta_arr) > 1) {
             foreach ($cMeta_arr as $cMeta) {
-                if (!in_array($cMeta, $cMetaKeywordsUnique_arr)) {
+                if (!in_array($cMeta, $cMetaKeywordsUnique_arr, true)) {
                     $cMetaKeywordsUnique_arr[] = $cMeta;
                 }
             }
@@ -3698,7 +3799,10 @@ function gibNaviMetaKeywords($oArtikel_arr, $NaviFilter, $oExcludesKeywords_arr)
         if ($oKategorie->bUnterKategorien) {
             $oKategorieListe = new KategorieListe();
             $oKategorieListe->getAllCategoriesOnLevel($oKategorie->kKategorie);
-            if (isset($oKategorieListe->elemente) && is_array($oKategorieListe->elemente) && count($oKategorieListe->elemente) > 0) {
+            if (isset($oKategorieListe->elemente) &&
+                is_array($oKategorieListe->elemente) &&
+                count($oKategorieListe->elemente) > 0
+            ) {
                 foreach ($oKategorieListe->elemente as $i => $oUnterkat) {
                     if (isset($oUnterkat->cName) && strlen($oUnterkat->cName) > 0) {
                         if ($i > 0) {
@@ -3709,7 +3813,8 @@ function gibNaviMetaKeywords($oArtikel_arr, $NaviFilter, $oExcludesKeywords_arr)
                     }
                 }
             }
-        } elseif (isset($oKategorie->cBeschreibung) && strlen($oKategorie->cBeschreibung) > 0) { // Hat die aktuelle Kategorie eine Beschreibung?
+        } elseif (isset($oKategorie->cBeschreibung) && strlen($oKategorie->cBeschreibung) > 0) {
+            // Hat die aktuelle Kategorie eine Beschreibung?
             $cKatKeywords = $oKategorie->cBeschreibung;
         }
         $cKatKeywords  = str_replace('"', '', $cKatKeywords);
@@ -3735,17 +3840,28 @@ function gibMetaStart($NaviFilter, $oSuchergebnisse)
     $cMetaTitle = '';
 
     // MerkmalWert
-    if (isset($NaviFilter->MerkmalWert->kMerkmalWert) && $NaviFilter->MerkmalWert->kMerkmalWert > 0 && isset($NaviFilter->MerkmalWert->cName)) {
+    if (isset($NaviFilter->MerkmalWert->kMerkmalWert, $NaviFilter->MerkmalWert->cName) &&
+        $NaviFilter->MerkmalWert->kMerkmalWert > 0
+    ) {
         $cMetaTitle .= $NaviFilter->MerkmalWert->cName;
-    } elseif (isset($NaviFilter->Kategorie->kKategorie) && $NaviFilter->Kategorie->kKategorie > 0 && isset($NaviFilter->Kategorie->cName)) { // Kategorie
+    } elseif (isset($NaviFilter->Kategorie->kKategorie, $NaviFilter->Kategorie->cName) &&
+        $NaviFilter->Kategorie->kKategorie > 0
+    ) {
+        // Kategorie
         $cMetaTitle .= $NaviFilter->Kategorie->cName;
-    } elseif (isset($NaviFilter->Hersteller->kHersteller) && $NaviFilter->Hersteller->kHersteller > 0) { // Hersteller
+    } elseif (isset($NaviFilter->Hersteller->kHersteller) && $NaviFilter->Hersteller->kHersteller > 0) {
+        // Hersteller
         $cMetaTitle .= $NaviFilter->Hersteller->cName;
-    } elseif (isset($NaviFilter->Tag->kTag) && $NaviFilter->Tag->kTag > 0 && isset($NaviFilter->Tag->cName)) { // Tag
+    } elseif (isset($NaviFilter->Tag->kTag, $NaviFilter->Tag->cName) && $NaviFilter->Tag->kTag > 0) {
+        // Tag
         $cMetaTitle .= $NaviFilter->Tag->cName;
-    } elseif (isset($NaviFilter->Suche->cSuche) && strlen($NaviFilter->Suche->cSuche) > 0) { // Suchebegriff
+    } elseif (isset($NaviFilter->Suche->cSuche) && strlen($NaviFilter->Suche->cSuche) > 0) {
+        // Suchebegriff
         $cMetaTitle .= $NaviFilter->Suche->cSuche;
-    } elseif (isset($NaviFilter->Suchspecial->kKey) && $NaviFilter->Suchspecial->kKey > 0 && isset($NaviFilter->Suchspecial->cName)) { // Suchspecial
+    } elseif (isset($NaviFilter->Suchspecial->kKey, $NaviFilter->Suchspecial->cName) &&
+        $NaviFilter->Suchspecial->kKey > 0
+    ) {
+        // Suchspecial
         $cMetaTitle .= $NaviFilter->Suchspecial->cName;
     }
     // Kategoriefilter
@@ -3753,11 +3869,17 @@ function gibMetaStart($NaviFilter, $oSuchergebnisse)
         $cMetaTitle .= ' ' . $NaviFilter->KategorieFilter->cName;
     }
     // Herstellerfilter
-    if (isset($NaviFilter->HerstellerFilter->kHersteller) && $NaviFilter->HerstellerFilter->kHersteller > 0 && strlen($oSuchergebnisse->Herstellerauswahl[0]->cName) > 0) {
+    if (isset($NaviFilter->HerstellerFilter->kHersteller) &&
+        $NaviFilter->HerstellerFilter->kHersteller > 0 &&
+        strlen($oSuchergebnisse->Herstellerauswahl[0]->cName) > 0
+    ) {
         $cMetaTitle .= ' ' . $NaviFilter->HerstellerFilter->cName;
     }
     // Tagfilter
-    if (isset($NaviFilter->TagFilter) && is_array($NaviFilter->TagFilter) && count($NaviFilter->TagFilter) > 0 && isset($NaviFilter->TagFilter[0]->cName)) {
+    if (isset($NaviFilter->TagFilter, $NaviFilter->TagFilter[0]->cName) &&
+        is_array($NaviFilter->TagFilter) &&
+        count($NaviFilter->TagFilter) > 0
+    ) {
         $cMetaTitle .= ' ' . $NaviFilter->TagFilter[0]->cName;
     }
     // Suchbegrifffilter
@@ -3850,8 +3972,10 @@ function gibErweiterteDarstellung($Einstellungen, $NaviFilter, $nDarstellung = 0
                 $nStdDarstellung = (int)$oKategorie->categoryFunctionAttributes[KAT_ATTRIBUT_DARSTELLUNG];
             }
         }
-        if (isset($Einstellungen['artikeluebersicht']['artikeluebersicht_erw_darstellung_stdansicht']) &&
-            (int)$Einstellungen['artikeluebersicht']['artikeluebersicht_erw_darstellung_stdansicht'] > 0 && $nDarstellung === 0) {
+        if ($nDarstellung === 0 &&
+            isset($Einstellungen['artikeluebersicht']['artikeluebersicht_erw_darstellung_stdansicht']) &&
+            (int)$Einstellungen['artikeluebersicht']['artikeluebersicht_erw_darstellung_stdansicht'] > 0
+        ) {
             $nStdDarstellung = (int)$Einstellungen['artikeluebersicht']['artikeluebersicht_erw_darstellung_stdansicht'];
         }
         if ($nStdDarstellung > 0) {
@@ -3860,7 +3984,7 @@ function gibErweiterteDarstellung($Einstellungen, $NaviFilter, $nDarstellung = 0
                     $_SESSION['oErweiterteDarstellung']->nDarstellung = ERWDARSTELLUNG_ANSICHT_LISTE;
                     if (isset($_SESSION['ArtikelProSeite'])) {
                         $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = $_SESSION['ArtikelProSeite'];
-                    } elseif (intval($Einstellungen['artikeluebersicht']['artikeluebersicht_anzahl_darstellung1']) > 0) {
+                    } elseif ((int)$Einstellungen['artikeluebersicht']['artikeluebersicht_anzahl_darstellung1'] > 0) {
                         $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = (int)$Einstellungen['artikeluebersicht']['artikeluebersicht_anzahl_darstellung1'];
                     }
                     break;
@@ -3868,7 +3992,7 @@ function gibErweiterteDarstellung($Einstellungen, $NaviFilter, $nDarstellung = 0
                     $_SESSION['oErweiterteDarstellung']->nDarstellung = ERWDARSTELLUNG_ANSICHT_GALERIE;
                     if (isset($_SESSION['ArtikelProSeite'])) {
                         $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = $_SESSION['ArtikelProSeite'];
-                    } elseif (intval($Einstellungen['artikeluebersicht']['artikeluebersicht_anzahl_darstellung2']) > 0) {
+                    } elseif ((int)$Einstellungen['artikeluebersicht']['artikeluebersicht_anzahl_darstellung2'] > 0) {
                         $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = (int)$Einstellungen['artikeluebersicht']['artikeluebersicht_anzahl_darstellung2'];
                     }
                     break;
@@ -3876,22 +4000,21 @@ function gibErweiterteDarstellung($Einstellungen, $NaviFilter, $nDarstellung = 0
                     $_SESSION['oErweiterteDarstellung']->nDarstellung = ERWDARSTELLUNG_ANSICHT_MOSAIK;
                     if (isset($_SESSION['ArtikelProSeite'])) {
                         $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = $_SESSION['ArtikelProSeite'];
-                    } elseif (intval($Einstellungen['artikeluebersicht']['artikeluebersicht_anzahl_darstellung3']) > 0) {
+                    } elseif ((int)$Einstellungen['artikeluebersicht']['artikeluebersicht_anzahl_darstellung3'] > 0) {
                         $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = (int)$Einstellungen['artikeluebersicht']['artikeluebersicht_anzahl_darstellung3'];
                     }
                     break;
                 default: // when given invalid option from wawi attribute
+                    $nDarstellung = ERWDARSTELLUNG_ANSICHT_LISTE;
                     if (isset($Einstellungen['artikeluebersicht']['artikeluebersicht_erw_darstellung_stdansicht']) &&
                         (int)$Einstellungen['artikeluebersicht']['artikeluebersicht_erw_darstellung_stdansicht'] > 0
                     ) { // fallback to configured default
                         $nDarstellung = (int)$Einstellungen['artikeluebersicht']['artikeluebersicht_erw_darstellung_stdansicht'];
-                    } else { // fallback to "liste"
-                        $nDarstellung = ERWDARSTELLUNG_ANSICHT_LISTE;
                     }
                     $_SESSION['oErweiterteDarstellung']->nDarstellung = $nDarstellung;
                     if (isset($_SESSION['ArtikelProSeite'])) {
                         $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = $_SESSION['ArtikelProSeite'];
-                    } elseif (intval($Einstellungen['artikeluebersicht']['artikeluebersicht_anzahl_darstellung1']) > 0) {
+                    } elseif ((int)$Einstellungen['artikeluebersicht']['artikeluebersicht_anzahl_darstellung1'] > 0) {
                         $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = (int)$Einstellungen['artikeluebersicht']['artikeluebersicht_anzahl_darstellung1'];
                     }
                     break;
@@ -3900,7 +4023,7 @@ function gibErweiterteDarstellung($Einstellungen, $NaviFilter, $nDarstellung = 0
             $_SESSION['oErweiterteDarstellung']->nDarstellung = ERWDARSTELLUNG_ANSICHT_LISTE; // Std ist Listendarstellung
             if (isset($_SESSION['ArtikelProSeite'])) {
                 $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = $_SESSION['ArtikelProSeite'];
-            } elseif (intval($Einstellungen['artikeluebersicht']['artikeluebersicht_anzahl_darstellung1']) > 0) {
+            } elseif ((int)$Einstellungen['artikeluebersicht']['artikeluebersicht_anzahl_darstellung1'] > 0) {
                 $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = (int)$Einstellungen['artikeluebersicht']['artikeluebersicht_anzahl_darstellung1'];
             }
         }
@@ -3910,19 +4033,19 @@ function gibErweiterteDarstellung($Einstellungen, $NaviFilter, $nDarstellung = 0
         switch ($_SESSION['oErweiterteDarstellung']->nDarstellung) {
             case ERWDARSTELLUNG_ANSICHT_LISTE:
                 $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = ERWDARSTELLUNG_ANSICHT_ANZAHL_STD;
-                if (intval($Einstellungen['artikeluebersicht']['artikeluebersicht_anzahl_darstellung1']) > 0) {
+                if ((int)$Einstellungen['artikeluebersicht']['artikeluebersicht_anzahl_darstellung1'] > 0) {
                     $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = (int)$Einstellungen['artikeluebersicht']['artikeluebersicht_anzahl_darstellung1'];
                 }
                 break;
             case ERWDARSTELLUNG_ANSICHT_GALERIE:
                 $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = ERWDARSTELLUNG_ANSICHT_ANZAHL_STD;
-                if (intval($Einstellungen['artikeluebersicht']['artikeluebersicht_anzahl_darstellung2']) > 0) {
+                if ((int)$Einstellungen['artikeluebersicht']['artikeluebersicht_anzahl_darstellung2'] > 0) {
                     $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = (int)$Einstellungen['artikeluebersicht']['artikeluebersicht_anzahl_darstellung2'];
                 }
                 break;
             case ERWDARSTELLUNG_ANSICHT_MOSAIK:
                 $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = ERWDARSTELLUNG_ANSICHT_ANZAHL_STD;
-                if (intval($Einstellungen['artikeluebersicht']['artikeluebersicht_anzahl_darstellung3']) > 0) {
+                if ((int)$Einstellungen['artikeluebersicht']['artikeluebersicht_anzahl_darstellung3'] > 0) {
                     $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = (int)$Einstellungen['artikeluebersicht']['artikeluebersicht_anzahl_darstellung3'];
                 }
                 break;
@@ -3951,14 +4074,12 @@ function gibErweiterteDarstellung($Einstellungen, $NaviFilter, $nDarstellung = 0
 function setzeUsersortierung($NaviFilter)
 {
     global $Einstellungen, $oSuchergebnisse, $AktuelleKategorie;
-    if (!isset($Einstellungen['artikeluebersicht']) || !isset($Einstellungen['suchspecials'])) {
+    if (!isset($Einstellungen['artikeluebersicht'], $Einstellungen['suchspecials'])) {
         $Einstellungen = Shop::getSettings([CONF_GLOBAL, CONF_ARTIKELUEBERSICHT, CONF_NAVIGATIONSFILTER, CONF_SUCHSPECIAL]);
     }
     // Der User möchte die Standardsortierung wiederherstellen
     if (verifyGPCDataInteger('Sortierung') > 0 && verifyGPCDataInteger('Sortierung') === 100) {
-        unset($_SESSION['Usersortierung']);
-        unset($_SESSION['nUsersortierungWahl']);
-        unset($_SESSION['UsersortierungVorSuche']);
+        unset($_SESSION['Usersortierung'], $_SESSION['nUsersortierungWahl'], $_SESSION['UsersortierungVorSuche']);
     }
     // Wenn noch keine Sortierung gewählt wurde => setze Standard-Sortierung aus Option
     if (!isset($_SESSION['Usersortierung']) && isset($Einstellungen['artikeluebersicht']['artikeluebersicht_artikelsortierung'])) {
@@ -3979,7 +4100,7 @@ function setzeUsersortierung($NaviFilter)
         $_SESSION['Usersortierung'] = $AktuelleKategorie->categoryFunctionAttributes[KAT_ATTRIBUT_ARTIKELSORTIERUNG];
     }
     // Wurde zuvor etwas gesucht? Dann die Einstellung des Users vor der Suche wiederherstellen
-    if (isset($_SESSION['UsersortierungVorSuche']) && intval($_SESSION['UsersortierungVorSuche']) > 0) {
+    if (isset($_SESSION['UsersortierungVorSuche']) && (int)$_SESSION['UsersortierungVorSuche'] > 0) {
         $_SESSION['Usersortierung'] = $_SESSION['UsersortierungVorSuche'];
     }
     // Suchspecial sortierung
@@ -3987,7 +4108,10 @@ function setzeUsersortierung($NaviFilter)
         // Gibt die Suchspecialeinstellungen als Assoc Array zurück, wobei die Keys des Arrays der kKey vom Suchspecial sind.
         $oSuchspecialEinstellung_arr = gibSuchspecialEinstellungMapping($Einstellungen['suchspecials']);
         // -1 = Keine spezielle Sortierung
-        if (count($oSuchspecialEinstellung_arr) > 0 && isset($oSuchspecialEinstellung_arr[$NaviFilter->Suchspecial->kKey]) && $oSuchspecialEinstellung_arr[$NaviFilter->Suchspecial->kKey] != -1) {
+        if (count($oSuchspecialEinstellung_arr) > 0 &&
+            isset($oSuchspecialEinstellung_arr[$NaviFilter->Suchspecial->kKey]) &&
+            $oSuchspecialEinstellung_arr[$NaviFilter->Suchspecial->kKey] != -1
+        ) {
             $_SESSION['Usersortierung'] = $oSuchspecialEinstellung_arr[$NaviFilter->Suchspecial->kKey];
         }
     }
@@ -4021,8 +4145,12 @@ function baueSeitenNaviURL($NaviFilter, $bSeo, $oSeitenzahlen, $nMaxAnzeige = 7,
     $nVon       = 0; // Die aktuellen Seiten in der Navigation, die angezeigt werden sollen.
     $nBis       = 0; // Begrenzt durch $nMaxAnzeige.
     $naviURL    = gibNaviURL($NaviFilter, $bSeo, null);
-    if (isset($oSeitenzahlen->MaxSeiten) && $oSeitenzahlen->MaxSeiten > 0 && isset($oSeitenzahlen->AktuelleSeite) && $oSeitenzahlen->AktuelleSeite > 0) {
-        $nMax = floor($nMaxAnzeige / 2);
+    if (isset($oSeitenzahlen->MaxSeiten, $oSeitenzahlen->AktuelleSeite) &&
+        $oSeitenzahlen->MaxSeiten > 0 &&
+        $oSeitenzahlen->AktuelleSeite > 0
+    ) {
+        $oSeitenzahlen->AktuelleSeite = (int)$oSeitenzahlen->AktuelleSeite;
+        $nMax                         = floor($nMaxAnzeige / 2);
         if ($oSeitenzahlen->MaxSeiten > $nMaxAnzeige) {
             if ($oSeitenzahlen->AktuelleSeite - $nMax >= 1) {
                 $nDiff = 0;
@@ -4040,17 +4168,17 @@ function baueSeitenNaviURL($NaviFilter, $bSeo, $oSeitenzahlen, $nMaxAnzeige = 7,
                 } elseif ($nDiff > 0) {
                     $nVon = $oSeitenzahlen->AktuelleSeite - $nMax - $nDiff;
                 }
-                $nBis = $oSeitenzahlen->MaxSeiten;
+                $nBis = (int)$oSeitenzahlen->MaxSeiten;
             }
             // Laufe alle Seiten durch und baue URLs + Seitenzahl
             for ($i = $nVon; $i <= $nBis; $i++) {
                 $oSeite         = new stdClass();
                 $oSeite->nSeite = $i;
 
-                if ($i == $oSeitenzahlen->AktuelleSeite) {
+                if ($i === $oSeitenzahlen->AktuelleSeite) {
                     $oSeite->cURL = '';
                 } else {
-                    if ($oSeite->nSeite == 1) {
+                    if ($oSeite->nSeite === 1) {
                         $oSeite->cURL = $naviURL . $cFilterShopURL;
                     } else {
                         if ($bSeo) {
@@ -4074,10 +4202,10 @@ function baueSeitenNaviURL($NaviFilter, $bSeo, $oSeitenzahlen, $nMaxAnzeige = 7,
                 $oSeite         = new stdClass();
                 $oSeite->nSeite = $i + 1;
 
-                if ($i + 1 == $oSeitenzahlen->AktuelleSeite) {
+                if ($i + 1 === $oSeitenzahlen->AktuelleSeite) {
                     $oSeite->cURL = '';
                 } else {
-                    if ($oSeite->nSeite == 1) {
+                    if ($oSeite->nSeite === 1) {
                         $oSeite->cURL = $naviURL . $cFilterShopURL;
                     } else {
                         if ($bSeo) {
@@ -4099,19 +4227,22 @@ function baueSeitenNaviURL($NaviFilter, $bSeo, $oSeitenzahlen, $nMaxAnzeige = 7,
         $oSeite_arr['zurueck']       = new stdClass();
         $oSeite_arr['zurueck']->nBTN = 1;
         if ($oSeitenzahlen->AktuelleSeite > 1) {
-            $oSeite_arr['zurueck']->nSeite = $oSeitenzahlen->AktuelleSeite - 1;
-            if ($oSeite_arr['zurueck']->nSeite == 1) {
+            $oSeite_arr['zurueck']->nSeite = (int)$oSeitenzahlen->AktuelleSeite - 1;
+            if ($oSeite_arr['zurueck']->nSeite === 1) {
                 $oSeite_arr['zurueck']->cURL = $naviURL . $cFilterShopURL;
             } else {
                 if ($bSeo) {
                     $cURL = $naviURL;
                     if (strpos(basename($cURL), 'navi.php') !== false) {
-                        $oSeite_arr['zurueck']->cURL = $cURL . '&amp;seite=' . $oSeite_arr['zurueck']->nSeite . $cFilterShopURL;
+                        $oSeite_arr['zurueck']->cURL = $cURL . '&amp;seite=' .
+                            $oSeite_arr['zurueck']->nSeite . $cFilterShopURL;
                     } else {
-                        $oSeite_arr['zurueck']->cURL = $cURL . SEP_SEITE . $oSeite_arr['zurueck']->nSeite;
+                        $oSeite_arr['zurueck']->cURL = $cURL . SEP_SEITE .
+                            $oSeite_arr['zurueck']->nSeite;
                     }
                 } else {
-                    $oSeite_arr['zurueck']->cURL = $naviURL . '&amp;seite=' . $oSeite_arr['zurueck']->nSeite . $cFilterShopURL;
+                    $oSeite_arr['zurueck']->cURL = $naviURL . '&amp;seite=' .
+                        $oSeite_arr['zurueck']->nSeite . $cFilterShopURL;
                 }
             }
         }
@@ -4195,7 +4326,7 @@ function gibSortierliste($Einstellungen = null, $bExtendedJTLSearch = false)
     if ($Einstellungen === null) {
         $Einstellungen = Shop::getSettings([CONF_ARTIKELUEBERSICHT]);
     }
-    while ($obj = gibNextSortPrio($search, $Einstellungen)) {
+    while (($obj = gibNextSortPrio($search, $Einstellungen)) !== null) {
         $search[] = $obj->name;
         unset($obj->name);
         $Sortierliste[] = $obj;
@@ -4216,84 +4347,108 @@ function gibNextSortPrio($search, $Einstellungen = null)
     }
     $max = 0;
     $obj = null;
-    if ($max < $Einstellungen['artikeluebersicht']['suche_sortierprio_name'] && !in_array('suche_sortierprio_name', $search)) {
+    if ($max < $Einstellungen['artikeluebersicht']['suche_sortierprio_name'] &&
+        !in_array('suche_sortierprio_name', $search, true)
+    ) {
         $obj                  = new stdClass();
         $obj->name            = 'suche_sortierprio_name';
         $obj->value           = SEARCH_SORT_NAME_ASC;
         $obj->angezeigterName = Shop::Lang()->get('sortNameAsc', 'global');
         $max                  = $Einstellungen['artikeluebersicht']['suche_sortierprio_name'];
     }
-    if ($max < $Einstellungen['artikeluebersicht']['suche_sortierprio_name_ab'] && !in_array('suche_sortierprio_name_ab', $search)) {
+    if ($max < $Einstellungen['artikeluebersicht']['suche_sortierprio_name_ab'] &&
+        !in_array('suche_sortierprio_name_ab', $search, true)
+    ) {
         $obj                  = new stdClass();
         $obj->name            = 'suche_sortierprio_name_ab';
         $obj->value           = SEARCH_SORT_NAME_DESC;
         $obj->angezeigterName = Shop::Lang()->get('sortNameDesc', 'global');
         $max                  = $Einstellungen['artikeluebersicht']['suche_sortierprio_name_ab'];
     }
-    if ($max < $Einstellungen['artikeluebersicht']['suche_sortierprio_preis'] && !in_array('suche_sortierprio_preis', $search)) {
+    if ($max < $Einstellungen['artikeluebersicht']['suche_sortierprio_preis'] &&
+        !in_array('suche_sortierprio_preis', $search, true)
+    ) {
         $obj                  = new stdClass();
         $obj->name            = 'suche_sortierprio_preis';
         $obj->value           = SEARCH_SORT_PRICE_ASC;
         $obj->angezeigterName = Shop::Lang()->get('sortPriceAsc', 'global');
         $max                  = $Einstellungen['artikeluebersicht']['suche_sortierprio_preis'];
     }
-    if ($max < $Einstellungen['artikeluebersicht']['suche_sortierprio_preis_ab'] && !in_array('suche_sortierprio_preis_ab', $search)) {
+    if ($max < $Einstellungen['artikeluebersicht']['suche_sortierprio_preis_ab'] &&
+        !in_array('suche_sortierprio_preis_ab', $search, true)
+    ) {
         $obj                  = new stdClass();
         $obj->name            = 'suche_sortierprio_preis_ab';
         $obj->value           = SEARCH_SORT_PRICE_DESC;
         $obj->angezeigterName = Shop::Lang()->get('sortPriceDesc', 'global');
         $max                  = $Einstellungen['artikeluebersicht']['suche_sortierprio_preis_ab'];
     }
-    if ($max < $Einstellungen['artikeluebersicht']['suche_sortierprio_ean'] && !in_array('suche_sortierprio_ean', $search)) {
+    if ($max < $Einstellungen['artikeluebersicht']['suche_sortierprio_ean'] &&
+        !in_array('suche_sortierprio_ean', $search, true)
+    ) {
         $obj                  = new stdClass();
         $obj->name            = 'suche_sortierprio_ean';
         $obj->value           = SEARCH_SORT_EAN;
         $obj->angezeigterName = Shop::Lang()->get('sortEan', 'global');
         $max                  = $Einstellungen['artikeluebersicht']['suche_sortierprio_ean'];
     }
-    if ($max < $Einstellungen['artikeluebersicht']['suche_sortierprio_erstelldatum'] && !in_array('suche_sortierprio_erstelldatum', $search)) {
+    if ($max < $Einstellungen['artikeluebersicht']['suche_sortierprio_erstelldatum'] &&
+        !in_array('suche_sortierprio_erstelldatum', $search, true)
+    ) {
         $obj                  = new stdClass();
         $obj->name            = 'suche_sortierprio_erstelldatum';
         $obj->value           = SEARCH_SORT_NEWEST_FIRST;
         $obj->angezeigterName = Shop::Lang()->get('sortNewestFirst', 'global');
         $max                  = $Einstellungen['artikeluebersicht']['suche_sortierprio_erstelldatum'];
     }
-    if ($max < $Einstellungen['artikeluebersicht']['suche_sortierprio_artikelnummer'] && !in_array('suche_sortierprio_artikelnummer', $search)) {
+    if ($max < $Einstellungen['artikeluebersicht']['suche_sortierprio_artikelnummer'] &&
+        !in_array('suche_sortierprio_artikelnummer', $search, true)
+    ) {
         $obj                  = new stdClass();
         $obj->name            = 'suche_sortierprio_artikelnummer';
         $obj->value           = SEARCH_SORT_PRODUCTNO;
         $obj->angezeigterName = Shop::Lang()->get('sortProductno', 'global');
         $max                  = $Einstellungen['artikeluebersicht']['suche_sortierprio_artikelnummer'];
     }
-    if ($max < $Einstellungen['artikeluebersicht']['suche_sortierprio_lagerbestand'] && !in_array('suche_sortierprio_lagerbestand', $search)) {
+    if ($max < $Einstellungen['artikeluebersicht']['suche_sortierprio_lagerbestand'] &&
+        !in_array('suche_sortierprio_lagerbestand', $search, true)
+    ) {
         $obj                  = new stdClass();
         $obj->name            = 'suche_sortierprio_lagerbestand';
         $obj->value           = SEARCH_SORT_AVAILABILITY;
         $obj->angezeigterName = Shop::Lang()->get('sortAvailability', 'global');
         $max                  = $Einstellungen['artikeluebersicht']['suche_sortierprio_lagerbestand'];
     }
-    if ($max < $Einstellungen['artikeluebersicht']['suche_sortierprio_gewicht'] && !in_array('suche_sortierprio_gewicht', $search)) {
+    if ($max < $Einstellungen['artikeluebersicht']['suche_sortierprio_gewicht'] &&
+        !in_array('suche_sortierprio_gewicht', $search, true)
+    ) {
         $obj                  = new stdClass();
         $obj->name            = 'suche_sortierprio_gewicht';
         $obj->value           = SEARCH_SORT_WEIGHT;
         $obj->angezeigterName = Shop::Lang()->get('sortWeight', 'global');
         $max                  = $Einstellungen['artikeluebersicht']['suche_sortierprio_gewicht'];
     }
-    if ($max < $Einstellungen['artikeluebersicht']['suche_sortierprio_erscheinungsdatum'] && !in_array('suche_sortierprio_erscheinungsdatum', $search)) {
+    if ($max < $Einstellungen['artikeluebersicht']['suche_sortierprio_erscheinungsdatum'] &&
+        !in_array('suche_sortierprio_erscheinungsdatum', $search, true)
+    ) {
         $obj                  = new stdClass();
         $obj->name            = 'suche_sortierprio_erscheinungsdatum';
         $obj->value           = SEARCH_SORT_DATEOFISSUE;
         $obj->angezeigterName = Shop::Lang()->get('sortDateofissue', 'global');
         $max                  = $Einstellungen['artikeluebersicht']['suche_sortierprio_erscheinungsdatum'];
     }
-    if ($max < $Einstellungen['artikeluebersicht']['suche_sortierprio_bestseller'] && !in_array('suche_sortierprio_bestseller', $search)) {
+    if ($max < $Einstellungen['artikeluebersicht']['suche_sortierprio_bestseller'] &&
+        !in_array('suche_sortierprio_bestseller', $search, true)
+    ) {
         $obj                  = new stdClass();
         $obj->name            = 'suche_sortierprio_bestseller';
         $obj->value           = SEARCH_SORT_BESTSELLER;
         $obj->angezeigterName = Shop::Lang()->get('bestseller', 'global');
         $max                  = $Einstellungen['artikeluebersicht']['suche_sortierprio_bestseller'];
     }
-    if ($max < $Einstellungen['artikeluebersicht']['suche_sortierprio_bewertung'] && !in_array('suche_sortierprio_bewertung', $search)) {
+    if ($max < $Einstellungen['artikeluebersicht']['suche_sortierprio_bewertung'] &&
+        !in_array('suche_sortierprio_bewertung', $search, true)
+    ) {
         $obj                  = new stdClass();
         $obj->name            = 'suche_sortierprio_bewertung';
         $obj->value           = SEARCH_SORT_RATING;

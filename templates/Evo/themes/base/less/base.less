@@ -9,6 +9,12 @@ a:focus {
     outline: none;
 }
 
+:invalid {
+    box-shadow: none; /* FF */
+    outline: 0;       /* IE */
+}
+
+
 body.no-bg {
     background-color: @gray-base;
 }
@@ -60,6 +66,13 @@ body.no-bg {
     .required {
         color: @brand-info;
     }
+}
+
+.form-group .form-error-msg{
+    clear: both;
+    font-size: @font-size-small;
+    padding-top: 5px;
+    text-transform: initial;
 }
 
 .order-items .form-inline label, label.variation {

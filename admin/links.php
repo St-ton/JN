@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/admininclude.php';
+require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('CONTENT_PAGE_VIEW', true, true);
 require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
@@ -21,7 +21,7 @@ $clearCache         = false;
 $continue           = true;
 
 
-if (isset($_POST['addlink']) && (int)($_POST['addlink']) > 0) {
+if (isset($_POST['addlink']) && (int)$_POST['addlink'] > 0) {
     $step = 'neuer Link';
     if (!isset($link)) {
         $link = new stdClass();
@@ -29,7 +29,7 @@ if (isset($_POST['addlink']) && (int)($_POST['addlink']) > 0) {
     $link->kLinkgruppe = (int)$_POST['addlink'];
 }
 
-if (isset($_POST['dellink']) && (int)($_POST['dellink']) > 0 && validateToken()) {
+if (isset($_POST['dellink']) && (int)$_POST['dellink'] > 0 && validateToken()) {
     $kLink       = (int)$_POST['dellink'];
     $kLinkgruppe = (int)$_POST['kLinkgruppe'];
     removeLink($kLink, $kLinkgruppe);
@@ -39,7 +39,7 @@ if (isset($_POST['dellink']) && (int)($_POST['dellink']) > 0 && validateToken())
     $_POST      = [];
 }
 
-if (isset($_POST['loesch_linkgruppe']) && (int)($_POST['loesch_linkgruppe']) === 1 && validateToken()) {
+if (isset($_POST['loesch_linkgruppe']) && (int)$_POST['loesch_linkgruppe'] === 1 && validateToken()) {
     if (isset($_POST['loeschConfirmJaSubmit'])) {
         $step = 'loesch_linkgruppe';
     } else {
@@ -48,14 +48,14 @@ if (isset($_POST['loesch_linkgruppe']) && (int)($_POST['loesch_linkgruppe']) ===
     }
 }
 
-if ((isset($_POST['dellinkgruppe']) && (int)($_POST['dellinkgruppe']) > 0 && validateToken()) || $step === 'loesch_linkgruppe') {
+if ((isset($_POST['dellinkgruppe']) && (int)$_POST['dellinkgruppe'] > 0 && validateToken()) || $step === 'loesch_linkgruppe') {
     $step = 'uebersicht';
 
     $kLinkgruppe = -1;
     if (isset($_POST['dellinkgruppe'])) {
         $kLinkgruppe = (int)$_POST['dellinkgruppe'];
     }
-    if ((int)($_POST['kLinkgruppe']) > 0) {
+    if ((int)$_POST['kLinkgruppe'] > 0) {
         $kLinkgruppe = (int)$_POST['kLinkgruppe'];
     }
 
@@ -73,12 +73,12 @@ if ((isset($_POST['dellinkgruppe']) && (int)($_POST['dellinkgruppe']) > 0 && val
     $_POST      = [];
 }
 
-if (isset($_POST['delconfirmlinkgruppe']) && (int)($_POST['delconfirmlinkgruppe']) > 0 && validateToken()) {
+if (isset($_POST['delconfirmlinkgruppe']) && (int)$_POST['delconfirmlinkgruppe'] > 0 && validateToken()) {
     $step = 'linkgruppe_loeschen_confirm';
     $smarty->assign('oLinkgruppe', holeLinkgruppe((int)$_POST['delconfirmlinkgruppe']));
 }
 
-if (isset($_POST['neu_link']) && (int)($_POST['neu_link']) === 1 && validateToken()) {
+if (isset($_POST['neu_link']) && (int)$_POST['neu_link'] === 1 && validateToken()) {
     $sprachen     = gibAlleSprachen();
     $hasHTML_arr  = [];
 
@@ -99,7 +99,7 @@ if (isset($_POST['neu_link']) && (int)($_POST['neu_link']) === 1 && validateToke
         $link->kPlugin            = (int)$_POST['kPlugin'];
         $link->cName              = htmlspecialchars($_POST['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
         $link->nLinkart           = (int)$_POST['nLinkart'];
-        $link->cURL               = (isset($_POST['cURL'])) ? $_POST['cURL'] : null;
+        $link->cURL               = isset($_POST['cURL']) ? $_POST['cURL'] : null;
         $link->nSort              = !empty($_POST['nSort']) ? $_POST['nSort'] : 0;
         $link->bSSL               = (int)$_POST['bSSL'];
         $link->bIsActive          = 1;
@@ -113,7 +113,7 @@ if (isset($_POST['neu_link']) && (int)($_POST['neu_link']) === 1 && validateToke
         if (is_array($_POST['cKundengruppen']) && in_array('-1', $_POST['cKundengruppen'])) {
             $link->cKundengruppen = 'NULL';
         }
-        if (isset($_POST['bIsActive']) && (int)($_POST['bIsActive']) !== 1) {
+        if (isset($_POST['bIsActive']) && (int)$_POST['bIsActive'] !== 1) {
             $link->bIsActive = 0;
         }
         if (isset($_POST['cSichtbarNachLogin']) && $_POST['cSichtbarNachLogin'] === 'Y') {
@@ -122,20 +122,20 @@ if (isset($_POST['neu_link']) && (int)($_POST['neu_link']) === 1 && validateToke
         if (isset($_POST['cNoFollow']) && $_POST['cNoFollow'] === 'Y') {
             $link->cNoFollow = 'Y';
         }
-        if ($link->nLinkart > 2 && isset($_POST['nSpezialseite']) && (int)($_POST['nSpezialseite']) > 0) {
+        if ($link->nLinkart > 2 && isset($_POST['nSpezialseite']) && (int)$_POST['nSpezialseite'] > 0) {
             $link->nLinkart = (int)$_POST['nSpezialseite'];
             $link->cURL     = '';
         }
         $clearCache = true;
         $kLink      = 0;
-        if ((int)($_POST['kLink']) === 0) {
+        if ((int)$_POST['kLink'] === 0) {
             //einfuegen
             $kLink = Shop::DB()->insert('tlink', $link);
             $hinweis .= 'Link wurde erfolgreich hinzugef&uuml;gt.';
         } else {
             //updaten
-            $kLink = (int)($_POST['kLink']);
-            $kLinkgruppe = (int)($_POST['kLinkgruppe']);
+            $kLink = (int)$_POST['kLink'];
+            $kLinkgruppe = (int)$_POST['kLinkgruppe'];
             $revision = new Revision();
             $revision->addRevision('link', (int)$_POST['kLink'], true);
             Shop::DB()->update('tlink', ['kLink', 'kLinkgruppe'], [$kLink, $kLinkgruppe], $link);
@@ -161,7 +161,7 @@ if (isset($_POST['neu_link']) && (int)($_POST['neu_link']) === 1 && validateToke
                         substr(
                             $_FILES['Bilder']['type'][$i - $nZaehler],
                             strpos($_FILES['Bilder']['type'][$i - $nZaehler], '/') + 1,
-                            strlen($_FILES['Bilder']['type'][$i - $nZaehler] - (strpos($_FILES['Bilder']['type'][$i - $nZaehler], '/'))) + 1
+                            strlen($_FILES['Bilder']['type'][$i - $nZaehler] - strpos($_FILES['Bilder']['type'][$i - $nZaehler], '/')) + 1
                         );
                     move_uploaded_file($_FILES['Bilder']['tmp_name'][$i - $nZaehler], $cUploadDatei);
                 }
@@ -219,23 +219,23 @@ if (isset($_POST['neu_link']) && (int)($_POST['neu_link']) === 1 && validateToke
         if (!isset($link)) {
             $link = new stdClass();
         }
-        $link->kLinkgruppe = (int)($_POST['kLinkgruppe']);
+        $link->kLinkgruppe = (int)$_POST['kLinkgruppe'];
         $fehler            = 'Fehler: Bitte f&uuml;llen Sie alle Pflichtangaben aus!';
         $smarty->assign('xPlausiVar_arr', $oPlausiCMS->getPlausiVar())
                ->assign('xPostVar_arr', $oPlausiCMS->getPostVar());
     }
-} elseif (((isset($_POST['neuelinkgruppe']) && (int)($_POST['neuelinkgruppe']) === 1) ||
-        (isset($_POST['kLinkgruppe']) && (int)($_POST['kLinkgruppe']) > 0)) && validateToken()) {
+} elseif (((isset($_POST['neuelinkgruppe']) && (int)$_POST['neuelinkgruppe'] === 1) ||
+        (isset($_POST['kLinkgruppe']) && (int)$_POST['kLinkgruppe'] > 0)) && validateToken()) {
     $step = 'neue Linkgruppe';
-    if (isset($_POST['kLinkgruppe']) && (int)($_POST['kLinkgruppe']) > 0) {
+    if (isset($_POST['kLinkgruppe']) && (int)$_POST['kLinkgruppe'] > 0) {
         $linkgruppe = Shop::DB()->select('tlinkgruppe', 'kLinkgruppe', (int)$_POST['kLinkgruppe']);
         $smarty->assign('Linkgruppe', $linkgruppe)
                ->assign('Linkgruppenname', getLinkgruppeNames($linkgruppe->kLinkgruppe));
     }
 }
 
-if ($continue && ((isset($_POST['kLink']) && (int)($_POST['kLink']) > 0) ||
-        (isset($_GET['kLink']) && (int)($_GET['kLink']) && isset($_GET['delpic']))) && validateToken()) {
+if ($continue && ((isset($_POST['kLink']) && (int)$_POST['kLink'] > 0) ||
+        (isset($_GET['kLink']) && (int)$_GET['kLink'] && isset($_GET['delpic']))) && validateToken()) {
     $step = 'neuer Link';
     $link = Shop::DB()->select('tlink', ['kLink', 'kLinkgruppe'], [verifyGPCDataInteger('kLink'), verifyGPCDataInteger('kLinkgruppe')]);
     $smarty->assign('Link', $link)
@@ -262,7 +262,7 @@ if ($continue && ((isset($_POST['kLink']) && (int)($_POST['kLink']) > 0) ||
                 $oDatei->cName     = substr($Datei, 0, strpos($Datei, '.'));
                 $oDatei->cNameFull = $Datei;
                 $oDatei->cURL      = '<img class="link_image" src="' . $shopURL . PFAD_BILDER . PFAD_LINKBILDER . $link->kLink . '/' . $Datei . '" />';
-                $oDatei->nBild     = (int)(substr(str_replace('Bild', '', $Datei), 0, strpos(str_replace('Bild', '', $Datei), '.')));
+                $oDatei->nBild     = (int)substr(str_replace('Bild', '', $Datei), 0, strpos(str_replace('Bild', '', $Datei), '.'));
                 $cDatei_arr[]      = $oDatei;
             }
         }
@@ -271,7 +271,7 @@ if ($continue && ((isset($_POST['kLink']) && (int)($_POST['kLink']) > 0) ||
     }
 }
 
-if (isset($_POST['neu_linkgruppe']) && (int)($_POST['neu_linkgruppe']) === 1 && validateToken()) {
+if (isset($_POST['neu_linkgruppe']) && (int)$_POST['neu_linkgruppe'] === 1 && validateToken()) {
     // Plausi
     $oPlausiCMS = new PlausiCMS();
     $oPlausiCMS->setPostVar($_POST);
@@ -286,13 +286,13 @@ if (isset($_POST['neu_linkgruppe']) && (int)($_POST['neu_linkgruppe']) === 1 && 
         $linkgruppe->cTemplatename = htmlspecialchars($_POST['cTemplatename'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
 
         $kLinkgruppe = 0;
-        if ((int)($_POST['kLinkgruppe']) === 0) {
+        if ((int)$_POST['kLinkgruppe'] === 0) {
             //einf?gen
             $kLinkgruppe = Shop::DB()->insert('tlinkgruppe', $linkgruppe);
             $hinweis .= 'Linkgruppe wurde erfolgreich hinzugef&uuml;gt.';
         } else {
             //updaten
-            $kLinkgruppe = (int)($_POST['kLinkgruppe']);
+            $kLinkgruppe = (int)$_POST['kLinkgruppe'];
             Shop::DB()->update('tlinkgruppe', 'kLinkgruppe', $kLinkgruppe, $linkgruppe);
             $hinweis .= "Die Linkgruppe <strong>$linkgruppe->cName</strong> wurde erfolgreich ge&auml;ndert.";
             $step = 'uebersicht';
@@ -321,10 +321,10 @@ if (isset($_POST['neu_linkgruppe']) && (int)($_POST['neu_linkgruppe']) === 1 && 
     }
 }
 // Verschiebt einen Link in eine andere Linkgruppe
-if (isset($_POST['aender_linkgruppe']) && (int)($_POST['aender_linkgruppe']) === 1 && validateToken()) {
-    if ((int)($_POST['kLink']) > 0 && (int)($_POST['kLinkgruppe']) > 0 && (int)($_POST['kLinkgruppeAlt']) > 0) {
+if (isset($_POST['aender_linkgruppe']) && (int)$_POST['aender_linkgruppe'] === 1 && validateToken()) {
+    if ((int)$_POST['kLink'] > 0 && (int)$_POST['kLinkgruppe'] > 0 && (int)$_POST['kLinkgruppeAlt'] > 0) {
         $oLink = new Link();
-        $oLink->load((int)$_POST['kLink'], null, true, (int)($_POST['kLinkgruppeAlt']));
+        $oLink->load((int)$_POST['kLink'], null, true, (int)$_POST['kLinkgruppeAlt']);
         if ($oLink->getLink() > 0) {
             $oLinkgruppe = Shop::DB()->select('tlinkgruppe', 'kLinkgruppe', (int)$_POST['kLinkgruppe']);
             if (isset($oLinkgruppe->kLinkgruppe) && $oLinkgruppe->kLinkgruppe > 0) {
@@ -355,37 +355,40 @@ if (isset($_POST['aender_linkgruppe']) && (int)($_POST['aender_linkgruppe']) ===
     }
     $step       = 'uebersicht';
 }
-if (isset($_POST['kopiere_in_linkgruppe']) && (int)($_POST['kopiere_in_linkgruppe']) === 1 && validateToken()) {
-    if ((int)($_POST['kLink']) > 0 && (int)($_POST['kLinkgruppe']) > 0) {
-        $oLink = new Link((int)$_POST['kLink'], null, true);
+if (isset($_POST['kopiere_in_linkgruppe']) &&
+    (int)$_POST['kopiere_in_linkgruppe'] === 1 &&
+    (int)$_POST['kLink'] > 0 &&
+    (int)$_POST['kLinkgruppe'] > 0 &&
+    validateToken()
+) {
+    $oLink = new Link((int)$_POST['kLink'], null, true);
 
-        if ($oLink->getLink() > 0) {
-            $oLinkgruppe = Shop::DB()->select('tlinkgruppe', 'kLinkgruppe', (int)$_POST['kLinkgruppe']);
-            if (isset($oLinkgruppe->kLinkgruppe) && $oLinkgruppe->kLinkgruppe > 0) {
-                $exists = Shop::DB()->select('tlink', ['kLink', 'kLinkgruppe'],[(int)$oLink->kLink,  (int)$_POST['kLinkgruppe']]);
-                if (empty($exists)) {
-                    $oLink->setLinkgruppe($_POST['kLinkgruppe'])
-                        ->setVaterLink(0)
-                        ->save();
-                    $hinweis .= 'Sie haben den Link "' . $oLink->cName . '" erfolgreich in die Linkgruppe "' .
-                        $oLinkgruppe->cName . '" kopiert.';
-                } else {
-                    $fehler .= 'Fehler: Der Link konnte nicht kopiert werden. Er existiert bereits in der Zielgruppe.';
-                }
-                $step       = 'uebersicht';
-                $clearCache = true;
+    if ($oLink->getLink() > 0) {
+        $oLinkgruppe = Shop::DB()->select('tlinkgruppe', 'kLinkgruppe', (int)$_POST['kLinkgruppe']);
+        if (isset($oLinkgruppe->kLinkgruppe) && $oLinkgruppe->kLinkgruppe > 0) {
+            $exists = Shop::DB()->select('tlink', ['kLink', 'kLinkgruppe'],[(int)$oLink->kLink,  (int)$_POST['kLinkgruppe']]);
+            if (empty($exists)) {
+                $oLink->setLinkgruppe($_POST['kLinkgruppe'])
+                    ->setVaterLink(0)
+                    ->save();
+                $hinweis .= 'Sie haben den Link "' . $oLink->cName . '" erfolgreich in die Linkgruppe "' .
+                    $oLinkgruppe->cName . '" kopiert.';
             } else {
-                $fehler .= 'Fehler: Es konnte keine Linkgruppe mit Ihrem Key gefunden werden.';
+                $fehler .= 'Fehler: Der Link konnte nicht kopiert werden. Er existiert bereits in der Zielgruppe.';
             }
+            $step       = 'uebersicht';
+            $clearCache = true;
         } else {
-            $fehler .= 'Fehler: Es konnte kein Link mit Ihrem Key gefunden werden.';
+            $fehler .= 'Fehler: Es konnte keine Linkgruppe mit Ihrem Key gefunden werden.';
         }
+    } else {
+        $fehler .= 'Fehler: Es konnte kein Link mit Ihrem Key gefunden werden.';
     }
 }
 // Ordnet einen Link neu an
-if (isset($_POST['aender_linkvater']) && (int)($_POST['aender_linkvater']) === 1 && validateToken()) {
+if (isset($_POST['aender_linkvater']) && (int)$_POST['aender_linkvater'] === 1 && validateToken()) {
     $success = false;
-    if ((int)($_POST['kLink']) > 0 && (int)($_POST['kVaterLink']) >= 0 && (int)($_POST['kLinkgruppe']) > 0) {
+    if ((int)$_POST['kLink'] > 0 && (int)$_POST['kVaterLink'] >= 0 && (int)$_POST['kLinkgruppe'] > 0) {
         $kLink       = (int)$_POST['kLink'];
         $kVaterLink  = (int)$_POST['kVaterLink'];
         $kLinkgruppe = (int)$_POST['kLinkgruppe'];

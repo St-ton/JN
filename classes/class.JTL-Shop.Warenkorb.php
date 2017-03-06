@@ -44,10 +44,10 @@ class Warenkorb
      */
     public $cChecksumme = '';
 
-    /*
+    /**
      * @var object
      */
-    public $Waehrung = null;
+    public $Waehrung;
 
     /**
      * @var array
@@ -224,7 +224,7 @@ class Warenkorb
                     : $NeuePosition->Artikel->cName;
                 $lieferstatus_spr = Shop::DB()->select(
                     'tlieferstatus',
-                    'kLieferstatus', ((isset($NeuePosition->Artikel->kLieferstatus))
+                    'kLieferstatus', (isset($NeuePosition->Artikel->kLieferstatus)
                         ? (int)$NeuePosition->Artikel->kLieferstatus
                         : ''),
                     'kSprache',
@@ -375,7 +375,7 @@ class Warenkorb
      */
     public function gibLetzteWarenkorbPostionindex()
     {
-        return (is_array($this->PositionenArr)) ? (count($this->PositionenArr) - 1) : 0;
+        return is_array($this->PositionenArr) ? (count($this->PositionenArr) - 1) : 0;
     }
 
     /**
@@ -731,10 +731,10 @@ class Warenkorb
                                     if ($oWarenkorbPosEigenschaft->kEigenschaft == $oVariation->kEigenschaft) {
                                         foreach ($oVariation->Werte as $oEigenschaftWert) {
                                             if ($oWarenkorbPosEigenschaft->kEigenschaftWert == $oEigenschaftWert->kEigenschaftWert) {
-                                                $this->PositionenArr[$i]->WarenkorbPosEigenschaftArr[$j]->fAufpreis = (isset($oEigenschaftWert->fAufpreisNetto))
+                                                $this->PositionenArr[$i]->WarenkorbPosEigenschaftArr[$j]->fAufpreis = isset($oEigenschaftWert->fAufpreisNetto)
                                                     ? $oEigenschaftWert->fAufpreisNetto
                                                     : null;
-                                                $this->PositionenArr[$i]->WarenkorbPosEigenschaftArr[$j]->cAufpreisLocalized = (isset($oEigenschaftWert->cAufpreisLocalized[1]))
+                                                $this->PositionenArr[$i]->WarenkorbPosEigenschaftArr[$j]->cAufpreisLocalized = isset($oEigenschaftWert->cAufpreisLocalized[1])
                                                     ? $oEigenschaftWert->cAufpreisLocalized[1]
                                                     : null;
                                                 break;
@@ -887,7 +887,7 @@ class Warenkorb
      */
     public function gibVersandKostenText()
     {
-        return (isset($_SESSION['Versandart']))
+        return isset($_SESSION['Versandart'])
             ? Shop::Lang()->get('noShippingCosts', 'basket')
             : (Shop::Lang()->get('plus', 'basket') . ' ' . Shop::Lang()->get('shipping', 'basket'));
     }
@@ -901,7 +901,7 @@ class Warenkorb
      */
     public function gibGesamtsummeWaren($Brutto = false, $gutscheinBeruecksichtigen = true)
     {
-        $waehrung = (isset($_SESSION['Waehrung'])) ? $_SESSION['Waehrung'] : null;
+        $waehrung = isset($_SESSION['Waehrung']) ? $_SESSION['Waehrung'] : null;
         if ($waehrung === null || !isset($waehrung->kWaehrung)) {
             $waehrung = $this->Waehrung;
         }
@@ -976,7 +976,7 @@ class Warenkorb
             return 0;
         }
         $gesamtsumme = 0;
-        $waehrung    = (isset($_SESSION['Waehrung'])) ? $_SESSION['Waehrung'] : null;
+        $waehrung    = isset($_SESSION['Waehrung']) ? $_SESSION['Waehrung'] : null;
         if ($waehrung === null || !isset($waehrung->kWaehrung)) {
             $waehrung = $this->Waehrung;
         }
@@ -1009,7 +1009,7 @@ class Warenkorb
     {
         $conf = Shop::getSettings([CONF_KAUFABWICKLUNG]);
         if (isset($conf['kaufabwicklung']['bestellabschluss_runden5']) && $conf['kaufabwicklung']['bestellabschluss_runden5'] == 1) {
-            $waehrung = (isset($_SESSION['Waehrung'])) ? $_SESSION['Waehrung'] : null;
+            $waehrung = isset($_SESSION['Waehrung']) ? $_SESSION['Waehrung'] : null;
             if ($waehrung === null || !isset($waehrung->kWaehrung)) {
                 $waehrung = $this->Waehrung;
             }

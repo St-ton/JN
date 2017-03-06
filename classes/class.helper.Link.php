@@ -895,6 +895,14 @@ class LinkHelper
         }
         if (!isset($link->kLink)) {
             $link = Shop::DB()->select('tlink', 'nLinkart', LINKTYP_STARTSEITE);
+            $link->kVaterLink = (int)$link->kVaterLink;
+            $link->kLink      = (int)$link->kLink;
+            $link->kPlugin    = (int)$link->kPlugin;
+            $link->nLinkart   = (int)$link->nLinkart;
+            $link->nSort      = (int)$link->nSort;
+            $link->bSSL       = (int)$link->bSSL;
+            $link->bIsFluid   = (int)$link->bIsFluid;
+            $link->bIsActive  = (int)$link->bIsActive;
             if ((int)$link->kLink !== $kLink) {
                 $link->nHTTPRedirectCode = 301;
             } else {

@@ -78,7 +78,7 @@
                             </li>
                         {/if}
                         {if isset($Artikel->cArtikelgewicht) && $Einstellungen.artikeluebersicht.artikeluebersicht_artikelgewicht_anzeigen === 'Y' && $Artikel->fArtikelgewicht > 0}
-                            <li class="item row attr-weight">
+                            <li class="item row attr-weight weight-unit-article">
                                 <span class="attr-label col-sm-5">{lang key="productWeight" section="global"}: </span>
                                 <span class="value col-sm-7">{$Artikel->cArtikelgewicht} {lang key="weightUnit" section="global"}</span>
                             </li>

@@ -81,7 +81,7 @@
                 {if $showProductWeight}
                     <tr class="attr-weight" itemprop="weight" itemscope itemtype="http://schema.org/QuantitativeValue">
                         <td class="attr-label word-break">{lang key="productWeight" section="global"}: </td>
-                        <td class="attr-value weight-unit">
+                        <td class="attr-value weight-unit weight-unit-article">
                             <span itemprop="value">{$Artikel->cArtikelgewicht}</span> <span itemprop="unitText">{lang key="weightUnit" section="global"}</span>
                         </td>
                     </tr>

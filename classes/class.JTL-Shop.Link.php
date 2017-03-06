@@ -122,6 +122,102 @@ class Link extends MainModel
     public $bHideContent = false;
 
     /**
+     * @var int
+     */
+    public $nPluginStatus = 0;
+
+    /**
+     * @var string
+     */
+    public $cURLFull;
+
+    /**
+     * @var string
+     */
+    public $cURLFullSSL;
+
+    /**
+     * @var int
+     */
+    public $kSpezialSeite = 0;
+
+    /**
+     * @param int $kSpezialSeite
+     * @return $this
+     */
+    public function setSpezialSeite($kSpezialSeite)
+    {
+        $this->kSpezialSeite = (int)$kSpezialSeite;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getSpezialSeite()
+    {
+        return (int)$this->kSpezialSeite;
+    }
+
+    /**
+     * @return string
+     */
+    public function getURLFullSSL()
+    {
+        return $this->cURLFullSSL;
+    }
+
+    /**
+     * @param string $cURLFullSSL
+     * @return $this
+     */
+    public function setURLFullSSL($cURLFullSSL)
+    {
+        $this->cURLFullSSL = $cURLFullSSL;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getURLFull()
+    {
+        return $this->cURLFull;
+    }
+
+    /**
+     * @param string $cURLFull
+     * @return $this
+     */
+    public function setURLFull($cURLFull)
+    {
+        $this->cURLFull = $cURLFull;
+
+        return $this;
+    }
+
+    /**
+     * @param int $nPluginStatus
+     * @return $this
+     */
+    public function setPluginStatus($nPluginStatus)
+    {
+        $this->nPluginStatus = (int)$nPluginStatus;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPluginStatus()
+    {
+        return (int)$this->nPluginStatus;
+    }
+
+    /**
      * @param string $cISO
      * @return $this
      */
@@ -135,7 +231,7 @@ class Link extends MainModel
     /**
      * @return string
      */
-    public function getISO ()
+    public function getISO()
     {
         return $this->cISO;
     }

@@ -67,19 +67,19 @@ class Link extends MainModel
     public $cDruckButton;
 
     /**
-     * @var string
+     * @var int
      */
     public $nSort;
 
     /**
-     * @var string
+     * @var int
      */
-    public $bSSL = '0';
+    public $bSSL = 0;
 
     /**
-     * @var string
+     * @var int
      */
-    public $bIsFluid = '0';
+    public $bIsFluid = 0;
 
     /**
      * @var string
@@ -95,6 +95,88 @@ class Link extends MainModel
      * @var array
      */
     public $oSub_arr = [];
+
+    /**
+     * @var string
+     */
+    public $cISO;
+
+    /**
+     * @var int
+     */
+    public $kSprache = 0;
+
+    /**
+     * @var string
+     */
+    public $cSeo;
+
+    /**
+     * @var int
+     */
+    public $nHTTPRedirectCode = 0;
+
+    /**
+     * @var bool
+     */
+    public $bHideContent = false;
+
+    /**
+     * @param string $cISO
+     * @return $this
+     */
+    public function setISO($cISO)
+    {
+        $this->cISO = $cISO;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getISO ()
+    {
+        return $this->cISO;
+    }
+
+    /**
+     * @param int $kSprache
+     * @return $this
+     */
+    public function setSprache($kSprache)
+    {
+        $this->kSprache = (int)$kSprache;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getSprache()
+    {
+        return (int)$this->kSprache;
+    }
+
+    /**
+     * @param string $cSeo
+     * @return $this
+     */
+    public function setSeo($cSeo)
+    {
+        $this->cSeo = $cSeo;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSeo()
+    {
+        return $this->cSeo;
+    }
 
     /**
      * @return int
@@ -314,7 +396,7 @@ class Link extends MainModel
      */
     public function getSort()
     {
-        return $this->nSort;
+        return (int)$this->nSort;
     }
 
     /**
@@ -329,12 +411,12 @@ class Link extends MainModel
     }
 
     /**
-     * @param bool $mode
+     * @param int $mode
      * @return $this
      */
     public function setSSL($mode)
     {
-        $this->bSSL = $mode;
+        $this->bSSL = (int)$mode;
 
         return $this;
     }
@@ -344,26 +426,26 @@ class Link extends MainModel
      */
     public function getSSL()
     {
-        return $this->bSSL;
+        return (int)$this->bSSL;
     }
 
     /**
-     * @param $mode
+     * @param int $mode
      * @return $this
      */
     public function setIsFluid($mode)
     {
-        $this->bIsFluid = $mode;
+        $this->bIsFluid = (int)$mode;
 
         return $this;
     }
 
     /**
-     * @return string
+     * @return int
      */
     public function getIsFluid()
     {
-        return $this->bIsFluid;
+        return (int)$this->bIsFluid;
     }
 
     /**
@@ -436,7 +518,8 @@ class Link extends MainModel
         $kVaterLinkgruppe = (int)$kVaterLinkgruppe;
         if ($kVaterLink > 0) {
             if (!empty($kVaterLinkgruppe)) {
-                $oLink_arr = Shop::DB()->selectAll('tlink', ['kVaterLink', 'kLinkgruppe'], [$kVaterLink, $kVaterLinkgruppe]);
+                $oLink_arr = Shop::DB()->selectAll('tlink', ['kVaterLink', 'kLinkgruppe'],
+                    [$kVaterLink, $kVaterLinkgruppe]);
             } else {
                 $oLink_arr = Shop::DB()->selectAll('tlink', 'kVaterLink', $kVaterLink);
             }

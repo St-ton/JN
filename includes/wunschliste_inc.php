@@ -343,7 +343,7 @@ function giboWunschlistePos($kWunschlistePos)
 /**
  * @param int    $kWunschliste
  * @param string $cURLID
- * @return bool
+ * @return bool|stdClass
  */
 function giboWunschliste($kWunschliste = 0, $cURLID = '')
 {

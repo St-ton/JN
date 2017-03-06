@@ -29,12 +29,14 @@ function checkSeo($cSeo)
             FROM (
 	            SELECT CONCAT('{$cSeo}', '_', @IKEY:=@IKEY+1) newSeo, @IKEY nOrder
 	            FROM tseo AS iseo
-                WHERE iseo.cSEO RLIKE '^{$cSeo}(_[0-9]+)?$'
+                WHERE iseo.cSeo LIKE '{$cSeo}%'
+		            AND iseo.cSeo RLIKE '^{$cSeo}(_[0-9]+)?$'
             ) AS oseo
             WHERE oseo.newSeo NOT IN (
 	            SELECT iseo.cSeo
 	            FROM tseo AS iseo
-	            WHERE iseo.cSEO RLIKE '^{$cSeo}_[0-9]+$'
+	            WHERE iseo.cSeo LIKE '{$cSeo}_%'
+		            AND iseo.cSeo RLIKE '^{$cSeo}_[0-9]+$'
             )
             ORDER BY oseo.nOrder
             LIMIT 1", 1

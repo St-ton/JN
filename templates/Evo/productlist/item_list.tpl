@@ -221,7 +221,7 @@
                 {/block}
             </form>
 
-            <form action="navi.php" method="post" class="hidden-sm hidden-xs product-actions" data-toggle="product-actions">
+            <form action="" method="post" class="hidden-sm hidden-xs product-actions" data-toggle="product-actions">
                 {$jtl_token}
                 <div class="actions btn-group btn-group-xs btn-group-justified" role="group" aria-label="...">
                 {block name="product-actions"}

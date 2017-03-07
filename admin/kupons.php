@@ -24,7 +24,7 @@ $res = handleCsvImportAction('kupon', function ($obj) {
     $couponNames = [];
 
     foreach (get_object_vars($obj) as $key => $val) {
-        if (substr($key, 0, 6) === 'cName_') {
+        if (strpos($key, 'cName_') === 0) {
             $couponNames[substr($key, 6)] = $val;
             unset($obj->$key);
         }
@@ -138,7 +138,9 @@ if ($action === 'bearbeiten') {
     $oKategorie_arr    = getCategories($oKupon->cKategorien);
     $kKunde_arr        = array_filter(
         StringHandler::parseSSK($oKupon->cKunden),
-        function ($kKunde) { return (int)$kKunde > 0; }
+        function ($kKunde) {
+            return (int)$kKunde > 0;
+        }
     );
     if ($oKupon->kKupon > 0) {
         $oKuponName_arr = getCouponNames((int)$oKupon->kKupon);
@@ -146,10 +148,9 @@ if ($action === 'bearbeiten') {
         $oKuponName_arr = [];
         foreach ($oSprache_arr as $oSprache) {
             $postVarName                     = 'cName_' . $oSprache->cISO;
-            $oKuponName_arr[$oSprache->cISO] =
-                (isset($_POST[$postVarName]) && $_POST[$postVarName] !== '')
-                    ? $_POST[$postVarName]
-                    : $oKupon->cName;
+            $oKuponName_arr[$oSprache->cISO] = (isset($_POST[$postVarName]) && $_POST[$postVarName] !== '')
+                ? $_POST[$postVarName]
+                : $oKupon->cName;
         }
     }
 
@@ -212,15 +213,27 @@ if ($action === 'bearbeiten') {
     $nKuponVersandTotal   = getCouponCount('versandkupon');
     $nKuponNeukundenTotal = getCouponCount('neukundenkupon');
 
-    handleCsvExportAction('standard', 'standard.csv', function () use ($oFilterStandard) {
+    handleCsvExportAction(
+        'standard', 'standard.csv',
+        function () use ($oFilterStandard) {
             return getExportableCoupons('standard', $oFilterStandard->getWhereSQL());
-        }, [], ['kKupon']);
-    handleCsvExportAction('versandkupon', 'versandkupon.csv', function () use ($oFilterVersand) {
+        },
+        [], ['kKupon']
+    );
+    handleCsvExportAction(
+        'versandkupon', 'versandkupon.csv',
+        function () use ($oFilterVersand) {
             return getExportableCoupons('versandkupon', $oFilterVersand->getWhereSQL());
-        }, [], ['kKupon']);
-    handleCsvExportAction('neukundenkupon', 'neukundenkupon.csv', function () use ($oFilterNeukunden) {
+        },
+        [], ['kKupon']
+    );
+    handleCsvExportAction(
+        'neukundenkupon', 'neukundenkupon.csv',
+        function () use ($oFilterNeukunden) {
             return getExportableCoupons('neukundenkupon', $oFilterNeukunden->getWhereSQL());
-        }, [], ['kKupon']);
+        },
+        [], ['kKupon']
+    );
 
     $oPaginationStandard  = (new Pagination('standard'))
         ->setSortByOptions($cSortByOption_arr)
@@ -235,12 +248,18 @@ if ($action === 'bearbeiten') {
         ->setItemCount($nKuponNeukundenCount)
         ->assemble();
 
-    $oKuponStandard_arr  = getCoupons('standard', $oFilterStandard->getWhereSQL(), $oPaginationStandard->getOrderSQL(),
-        $oPaginationStandard->getLimitSQL());
-    $oKuponVersand_arr   = getCoupons('versandkupon', $oFilterVersand->getWhereSQL(), $oPaginationVersand->getOrderSQL(),
-        $oPaginationVersand->getLimitSQL());
-    $oKuponNeukunden_arr = getCoupons('neukundenkupon', $oFilterNeukunden->getWhereSQL(), $oPaginationNeukunden->getOrderSQL(),
-        $oPaginationNeukunden->getLimitSQL());
+    $oKuponStandard_arr  = getCoupons(
+        'standard', $oFilterStandard->getWhereSQL(), $oPaginationStandard->getOrderSQL(),
+        $oPaginationStandard->getLimitSQL()
+    );
+    $oKuponVersand_arr   = getCoupons(
+        'versandkupon', $oFilterVersand->getWhereSQL(), $oPaginationVersand->getOrderSQL(),
+        $oPaginationVersand->getLimitSQL()
+    );
+    $oKuponNeukunden_arr = getCoupons(
+        'neukundenkupon', $oFilterNeukunden->getWhereSQL(), $oPaginationNeukunden->getOrderSQL(),
+        $oPaginationNeukunden->getLimitSQL()
+    );
 
     $smarty->assign('tab', $tab)
         ->assign('oFilterStandard', $oFilterStandard)

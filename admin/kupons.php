@@ -154,7 +154,7 @@ if ($action === 'bearbeiten') {
            ->assign('oKundengruppe_arr', $oKundengruppe_arr)
            ->assign('oHersteller_arr', $oHersteller_arr)
            ->assign('oKategorie_arr', $oKategorie_arr)
-           ->assign('oKunde_arr', $oKunde_arr)
+           ->assign('kKunde_arr', $kKunde_arr)
            ->assign('oSprache_arr', $oSprache_arr)
            ->assign('oKuponName_arr', $oKuponName_arr)
            ->assign('oKupon', $oKupon);

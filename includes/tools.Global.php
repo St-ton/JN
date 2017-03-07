@@ -5125,7 +5125,7 @@ function formatCurrency($fSumme)
         $fSummeABS = abs($fSumme);
         $fSumme    = floor($fSumme * 100);
         $fCents    = $fSumme % 100;
-        $fSumme    = strval(floor($fSumme / 100));
+        $fSumme    = (string)(floor($fSumme / 100));
         if ($fCents < 10) {
             $fCents = '0' . $fCents;
         }

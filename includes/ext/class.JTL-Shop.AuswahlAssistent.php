@@ -113,15 +113,17 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
          */
         private function loadFromDB($cKey, $kKey, $kSprache, $bOnlyActive = true)
         {
-            $oDbResult = Shop::DB()->query("
+            $oDbResult = Shop::DB()->executeQueryPrepared("
                 SELECT *
                     FROM tauswahlassistentort AS ao
                         JOIN tauswahlassistentgruppe AS ag
                             ON ao.kAuswahlAssistentGruppe = ag.kAuswahlAssistentGruppe
-                                AND ao.cKey = '" . Shop::DB()->escape($cKey) . "'
-                                AND ao.kKey = " . $kKey . "
-                                AND ag.kSprache = " . $kSprache .
-                                ($bOnlyActive ? " AND ag.nAktiv = 1" : ""), 1
+                                AND ao.cKey = :ckey
+                                AND ao.kKey = :kkey
+                                AND ag.kSprache = :ksprache" .
+                                ($bOnlyActive ? " AND ag.nAktiv = 1" : ""),
+                ['ckey' => $cKey, 'kkey' => $kKey, 'ksprache' => $kSprache],
+                1
             );
 
             if ($oDbResult !== null && $oDbResult !== false) {

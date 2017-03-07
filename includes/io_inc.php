@@ -795,10 +795,10 @@ function getArticleByVariations($kArtikel, $kVariationKombi_arr)
         $j = 0;
         foreach ($kVariationKombi_arr as $i => $kVariationKombi) {
             if ($j > 0) {
-                $cSQL1 .= ',' . $i;
+                $cSQL1 .= ',' . (int)$i;
                 $cSQL2 .= ',' . (int)$kVariationKombi;
             } else {
-                $cSQL1 .= $i;
+                $cSQL1 .= (int)$i;
                 $cSQL2 .= (int)$kVariationKombi;
             }
             $j++;

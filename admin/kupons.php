@@ -136,16 +136,19 @@ if ($action === 'bearbeiten') {
     $oKundengruppe_arr = Shop::DB()->query("SELECT kKundengruppe, cName FROM tkundengruppe", 2);
     $oHersteller_arr   = getManufacturers($oKupon->cHersteller);
     $oKategorie_arr    = getCategories($oKupon->cKategorien);
-    $kKunde_arr        = array_filter(StringHandler::parseSSK($oKupon->cKunden),
-        function ($kKunde) { return (int)$kKunde > 0; });
+    $kKunde_arr        = array_filter(
+        StringHandler::parseSSK($oKupon->cKunden),
+        function ($kKunde) { return (int)$kKunde > 0; }
+    );
     if ($oKupon->kKupon > 0) {
         $oKuponName_arr = getCouponNames((int)$oKupon->kKupon);
     } else {
         $oKuponName_arr = [];
         foreach ($oSprache_arr as $oSprache) {
+            $postVarName                     = 'cName_' . $oSprache->cISO;
             $oKuponName_arr[$oSprache->cISO] =
-                (isset($_POST['cName_' . $oSprache->cISO]) && $_POST['cName_' . $oSprache->cISO] !== '')
-                    ? $_POST['cName_' . $oSprache->cISO]
+                (isset($_POST[$postVarName]) && $_POST[$postVarName] !== '')
+                    ? $_POST[$postVarName]
                     : $oKupon->cName;
         }
     }

@@ -365,10 +365,10 @@ class Wunschliste
                 FROM twunschliste
                 WHERE kWunschliste = " . (int)$this->kWunschliste, 1
         );
-        $this->kWunschliste = $oWunschliste->kWunschliste;
-        $this->kKunde       = $oWunschliste->kKunde;
-        $this->nStandard    = $oWunschliste->nStandard;
-        $this->nOeffentlich = $oWunschliste->nOeffentlich;
+        $this->kWunschliste = (int)$oWunschliste->kWunschliste;
+        $this->kKunde       = (int)$oWunschliste->kKunde;
+        $this->nStandard    = (int)$oWunschliste->nStandard;
+        $this->nOeffentlich = (int)$oWunschliste->nOeffentlich;
         $this->cName        = $oWunschliste->cName;
         $this->cURLID       = $oWunschliste->cURLID;
         $this->dErstellt    = $oWunschliste->dErstellt;
@@ -399,7 +399,7 @@ class Wunschliste
                 );
 
                 $cArtikelName                      = $CWunschlistePos->cArtikelName;
-                $CWunschlistePos->kWunschlistePos  = $WunschlistePos->kWunschlistePos;
+                $CWunschlistePos->kWunschlistePos  = (int)$WunschlistePos->kWunschlistePos;
                 $CWunschlistePos->cKommentar       = $WunschlistePos->cKommentar;
                 $CWunschlistePos->dHinzugefuegt    = $WunschlistePos->dHinzugefuegt;
                 $CWunschlistePos->dHinzugefuegt_de = $WunschlistePos->dHinzugefuegt_de;
@@ -442,7 +442,7 @@ class Wunschliste
                             $WunschlistePosEigenschaft->cWert,
                             $WunschlistePosEigenschaft->kWunschlistePos);
 
-                        $CWunschlistePosEigenschaft->kWunschlistePosEigenschaft = $WunschlistePosEigenschaft->kWunschlistePosEigenschaft;
+                        $CWunschlistePosEigenschaft->kWunschlistePosEigenschaft = (int)$WunschlistePosEigenschaft->kWunschlistePosEigenschaft;
                         $CWunschlistePos->CWunschlistePosEigenschaft_arr[]      = $CWunschlistePosEigenschaft;
                     }
                 }

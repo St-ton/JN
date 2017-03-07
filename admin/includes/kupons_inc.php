@@ -437,11 +437,12 @@ function validateCoupon($oKupon)
     if ($oKupon->cCode !== '' && !isset($oKupon->massCreationCoupon) &&
         ($oKupon->cKuponTyp === 'standard' || $oKupon->cKuponTyp === 'versandkupon')
     ) {
-        $queryRes = Shop::DB()->query(
+        $queryRes = Shop::DB()->executeQueryPrepared(
             "SELECT kKupon
                 FROM tkupon
-                WHERE cCode = '" . Shop::DB()->escape($oKupon->cCode) . "'" .
-                ((int)$oKupon->kKupon > 0 ? " AND kKupon != " . (int)$oKupon->kKupon : ''),
+                WHERE cCode = :cCode
+                    AND kKupon != :kKupon",
+            [ 'cCode' => $oKupon->cCode, 'kKupon' => (int)$oKupon->kKupon ],
             1
         );
         if (is_object($queryRes)) {

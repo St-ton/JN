@@ -482,14 +482,16 @@ function suchVorschlag($cValue, $nkeyCode, $cElemSearchID, $cElemSuggestID, $cEl
     $objResponse->assign($cElemSuggestID, 'innerHTML', '');
 
     if (strlen($cValue) >= 3) {
-        $oSuchanfrage_arr = Shop::DB()->query(
-            "SELECT cSuche, nAnzahlTreffer
+        $oSuchanfrage_arr = Shop::DB()->executeQueryPrepared("
+            SELECT cSuche, nAnzahlTreffer
                 FROM tsuchanfrage
-                WHERE cSuche LIKE '" . $cValue . "%'
+                WHERE cSuche LIKE :search
                     AND nAktiv = 1
-                    AND kSprache = " . Shop::getLanguage() . "
+                    AND kSprache = :lang
                 ORDER BY nAnzahlGesuche DESC, cSuche
-                LIMIT " . $nMaxAnzahl, 2
+                LIMIT :lim",
+            ['search' => $cValue . '%', 'lang' => Shop::getLanguage(), 'lim' => $nMaxAnzahl],
+            2
         );
 
         if (is_array($oSuchanfrage_arr) && count($oSuchanfrage_arr) > 0) {
@@ -539,14 +541,16 @@ function suggestions($cValue)
         ? (int)$Einstellungen['artikeluebersicht']['suche_ajax_anzahl']
         : 10;
     if (strlen($cValue) >= 3) {
-        $oSuchanfrage_arr = Shop::DB()->query(
-            "SELECT cSuche, nAnzahlTreffer
+        $oSuchanfrage_arr = Shop::DB()->executeQueryPrepared("
+            SELECT cSuche, nAnzahlTreffer
                 FROM tsuchanfrage
-                WHERE cSuche LIKE '" . $cValue . "%'
+                WHERE cSuche LIKE :search
                     AND nAktiv = 1
-                    AND kSprache = " . Shop::getLanguage() . "
+                    AND kSprache = :lang
                 ORDER BY nAnzahlGesuche DESC, cSuche
-                LIMIT " . $nMaxAnzahl, 2
+                LIMIT :lim",
+            ['search' => $cValue . '%', 'lang' => Shop::getLanguage(), 'lim' => $nMaxAnzahl],
+            2
         );
         if (is_array($oSuchanfrage_arr) && count($oSuchanfrage_arr) > 0) {
             foreach ($oSuchanfrage_arr as $i => $oSuchanfrage) {
@@ -1129,7 +1133,8 @@ function resetSelectionWizardAnswerAjax($nFrage, $kKategorie)
  */
 function getValidVarkombis($kVaterArtikel, $kGesetzteEigeschaftWert_arr)
 {
-    $oKombiFilter_arr = Shop::DB()->query(
+    $kGesetzteEigeschaftWert_arr = array_map('intval', $kGesetzteEigeschaftWert_arr);
+    $oKombiFilter_arr            = Shop::DB()->query(
         "SELECT DISTINCT(teigenschaftkombiwert.kEigenschaftWert) AS kEigenschaftWert
             FROM
             (
@@ -1305,7 +1310,7 @@ function gibMoeglicheVariationen($kVaterArtikel, $oEigenschaftWert_arr, $kGesetz
         $oEigenschaft_arr = Shop::DB()->query(
             "SELECT e1.* FROM teigenschaftkombiwert e1
                 {$cSQLStr}
-                WHERE e1.kEigenschaft ={$group[0]->kEigenschaft}
+                WHERE e1.kEigenschaft = " . (int)$group[0]->kEigenschaft . "
                 GROUP BY e1.kEigenschaft, e1.kEigenschaftWert", 2
         );
         $oMoeglicheEigenschaften_arr = array_merge($oMoeglicheEigenschaften_arr, $oEigenschaft_arr);
@@ -1327,10 +1332,10 @@ function gibArtikelByVariationen($kArtikel, $kVariationKombi_arr)
         $j = 0;
         foreach ($kVariationKombi_arr as $i => $kVariationKombi) {
             if ($j > 0) {
-                $cSQL1 .= ',' . $i;
+                $cSQL1 .= ',' . (int)$i;
                 $cSQL2 .= ',' . (int)$kVariationKombi;
             } else {
-                $cSQL1 .= $i;
+                $cSQL1 .= (int)$i;
                 $cSQL2 .= (int)$kVariationKombi;
             }
             $j++;

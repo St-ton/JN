@@ -218,6 +218,16 @@ $(document).ready(function() {
                                     });
                                 }
                             }
+
+                            function showEmergenceCodes(action) {
+                                $('#printframe').attr('src', 'ajax.php?userName=' + $('[id$=cLogin]').val() + '&query=&type=TwoFAgenEmergCodes&token=' + $('[name$=jtl_token]').val());
+                                if ('forceReload' === action) {
+                                    $('#printframe').load();
+                                } else {
+                                    $('#EmergencyCodeModal').modal('show');
+                                }
+                            }
+
                         </script>
                         {/literal}
                         <div id="TwoFAwrapper" {if isset($cError_arr.c2FAsecret)}class="error"{/if} style="border:1px solid {if isset($cError_arr.c2FAsecret)}red{else}lightgrey{/if};padding:10px;">
@@ -231,9 +241,38 @@ $(document).ready(function() {
                                 <input type="hidden" id="c2FAsecret" name="c2FAsecret" value="{$cKnownSecret}">
                                 <br>
                             </div>
+                            {* Emergency-Code-Modal  BEGIN *}
+                            <div class="modal fade" id="EmergencyCodeModal">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                            <h4 class="modal-title">Notfall-Codes</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div id="EmergencyCodes">
+                                                <div class="iframewrapper">
+                                                    <iframe src="" id="printframe" name="printframe" frameborder="0" width="100%" height="300" align="middle"></iframe>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <div class="btn-group">
+                                                <button class="btn btn-default" type="button" data-dismiss="modal">Schlie&szlig;en</button>
+                                                <button class="btn btn-primary" type="button" onclick="printframe.print();">Drucken</button>
+                                                <button class="btn btn-danger" type="button" onclick="showEmergenceCodes('forceReload');">Codes neu erzeugen</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {* Emergency-Code-Modal  END *}
                             Um einen neuen QR-Code zu erzeugen, klicken Sie bitte hier:<br>
                             <br>
-                            <button class="btn btn-primary" type="button" onclick="createNewSecret();">Code erstellen</button>
+                            <div class="btn-group">
+                                <button class="btn btn-primary" type="button" onclick="createNewSecret();">Neuen Code erstellen</button>
+                                <button class="btn btn-warning" type="button" onclick="showEmergenceCodes();">Notfall-Codes neu erstellen</button>
+                            </div>
                         </div>
 
                     </div>

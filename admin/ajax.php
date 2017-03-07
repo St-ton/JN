@@ -32,6 +32,34 @@ if (isset($_GET['query'], $_GET['type']) && validateToken()) {
             $szJSONuserData = json_encode($oUserData);
 
             die($szJSONuserData);
+        case 'TwoFAgenEmergCodes':
+            $oTwoFA = new TwoFA();
+            $oTwoFA->setUserByName($_GET['userName']);
+
+            // create, what the user can print out
+            $szText  = '<h4>JTL-shop Backend Notfall-Codes</h4>';
+            $szText .= 'Account: <b>' . $oTwoFA->getUserTupel()->cLogin . '</b><br>';
+            $szText .= 'Shop: <b>' . $oTwoFA->getShopName() . '</b><br><br>';
+
+            $oTwoFAgenEmergCodes = new TwoFAemergency();
+            $oTwoFAgenEmergCodes->removeExistingCodes($oTwoFA->getUserTupel());
+
+            $vCodes  = $oTwoFAgenEmergCodes->createNewCodes($oTwoFA->getUserTupel());
+
+            $szText .= '<font face = "monospace" size = "+1">';
+            $nCol   = 0;
+            for ($i=0; $i < count($vCodes); $i++) {
+                if (1 > $nCol) {
+                    $szText .= '<span style="padding:3px;">' . $vCodes[$i] . '</span> ';
+                    $nCol++;
+                } else {
+                    $szText .= $vCodes[$i] . '<br>';
+                    $nCol = 0;
+                }
+            }
+            $szText .= '</font>';
+
+            die($szText);
         default :
             die();
     }

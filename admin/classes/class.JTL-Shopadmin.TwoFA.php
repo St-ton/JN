@@ -13,14 +13,26 @@ use qrcodegenerator\QRCode\Output\QRString;
 class TwoFA
 {
     /**
-     * @var PHPGangsta_GoogleAuthenticator
+     * PHPGangsta_GoogleAuthenticator object
+     *
+     * @var object
      */
     private $oGA;
 
     /**
+     * stdClass
+     *
      * @var object
      */
     private $oUserTupel;
+
+    /**
+     * the name of the current shop
+     *
+     * @var string
+     */
+    private $szShopName;
+
 
     /**
      * constructor
@@ -28,9 +40,11 @@ class TwoFA
     public function __construct()
     {
         $this->oUserTupel                 = new stdClass();
+        $this->oUserTupel->kAdminlogin    = 0;
         $this->oUserTupel->cLogin         = '';
         $this->oUserTupel->b2FAauth       = false;
         $this->oUserTupel->c2FAauthSecret = '';
+        $this->szShopName                 = '';
     }
 
     /**
@@ -84,13 +98,7 @@ class TwoFA
         return $this->oUserTupel->c2FAauthSecret;
     }
 
-    /**
-     * instantiate a authenticator-object and try to verify the given code
-     * by load the users secret
-     *
-     * @param string $szCode - numerical code from the login screen (the code, which the user has found on his mobile)
-     * @return bool - true="code ist valid" | false="code is invalid"
-     */
+
     public function isCodeValid($szCode)
     {
         // store a google-authenticator-object instance
@@ -98,7 +106,39 @@ class TwoFA
         //
         $this->oGA = new PHPGangsta_GoogleAuthenticator();
 
-        return $this->oGA->verifyCode($this->oUserTupel->c2FAauthSecret, $szCode);
+        // codes with a length over 6 chars are emergency-codes
+        if (6 < strlen($szCode)) {
+            // try to find this code in the emergency-code-pool
+            $o2FAemergency = new TwoFAemergency();
+            return $o2FAemergency->isValidEmergencyCode($this->oUserTupel->kAdminlogin, $szCode);
+        } else {
+            return $this->oGA->verifyCode($this->oUserTupel->c2FAauthSecret, $szCode);
+        }
+    }
+
+
+
+    /**
+     * instantiate a authenticator-object and try to verify the given code
+     * by load the users secret
+     *
+     * @param string $szCode - numerical code from the login screen (the code, which the user has found on his mobile)
+     * @return bool - true="code ist valid" | false="code is invalid"
+     */
+    public function _isCodeValid($szCode)
+    {
+        // store a google-authenticator-object instance
+        // (only if we check any credential! (something like lazy loading))
+        //
+        $this->oGA = new PHPGangsta_GoogleAuthenticator();
+
+        // try to find this code in the emergency-code-pool
+        $o2FAemergency = new TwoFAemergency();
+        if ($o2FAemergency->isValidEmergencyCode($this->oUserTupel->kAdminlogin, $szCode)) {
+            return true; // ... help! let me in
+        } else {
+            return $this->oGA->verifyCode($this->oUserTupel->c2FAauthSecret, $szCode);
+        }
     }
 
     /**
@@ -110,16 +150,9 @@ class TwoFA
     public function getQRcode()
     {
         if ('' !== $this->oUserTupel->c2FAauthSecret) {
-
-            // find out the global shop-name, if anyone administer more than one shop
-            //
-            $oResult = Shop::DB()->select('teinstellungen', 'cName', 'global_shopname');
-            $szShopName = ('' !== $oResult->cWert) ? $oResult->cWert : '';
-
             // create the QR-code
-            //
             $szQRString = new QRCode(
-                  'otpauth://totp/'.rawurlencode('JTL-Shop ' . $this->oUserTupel->cLogin . '@' . $szShopName)
+                  'otpauth://totp/'.rawurlencode('JTL-Shop ' . $this->oUserTupel->cLogin . '@' . $this->getShopName())
                 . '?secret=' . $this->oUserTupel->c2FAauthSecret
                 . '&issuer=JTL-Software'
                 , new QRString()
@@ -160,6 +193,32 @@ class TwoFA
             $this->oUserTupel = $oTupel;
         }
     }
+
+    /**
+     * deliver the account-data, if there are any
+     *
+     * @param void
+     * @return object  accountdata if there're any, or null
+     */
+    public function getUserTupel()
+    {
+        return $this->oUserTupel ? $this->oUserTupel : null;
+    }
+
+    /**
+     * find out the global shop-name, if anyone administer more than one shop
+     *
+     * @return string  the name of the current shop
+     */
+    public function getShopName()
+    {
+        if ('' === $this->szShopName) {
+            $oResult          = Shop::DB()->select('teinstellungen', 'cName', 'global_shopname');
+            $this->szShopName = ('' !== $oResult->cWert) ? $oResult->cWert : '';
+        }
+        return $this->szShopName;
+    }
+
 
     /**
      * serialize this objects data into a string,

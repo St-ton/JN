@@ -13,7 +13,7 @@
         {if $oWert_arr|@count > 0}
             {include file='tpl_inc/csv_export_btn.tpl' exporterId="langvars"}
         {/if}
-        {include file='tpl_inc/csv_import_btn.tpl' importerId="langvars" bCustomType=true}
+        {include file='tpl_inc/csv_import_btn.tpl' importerId="langvars" bCustomStrategy=true}
     </div>
 {/function}
 {include file='tpl_inc/seite_header.tpl' cTitel=#lang# cBeschreibung=#langDesc# cDokuURL=#langURL#}

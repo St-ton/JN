@@ -208,7 +208,7 @@ function baueDatum($oDatum_arr)
         foreach ($oDatum_arr as $oDatum) {
             $oTMP            = new stdClass();
             $oTMP->cWert     = $oDatum->nMonat . '-' . $oDatum->nJahr;
-            $oTMP->cName     = mappeDatumName(strval($oDatum->nMonat), (int)$oDatum->nJahr, $_SESSION['cISOSprache']);
+            $oTMP->cName     = mappeDatumName((string)$oDatum->nMonat, (int)$oDatum->nJahr, $_SESSION['cISOSprache']);
             $oDatumTMP_arr[] = $oTMP;
         }
     }

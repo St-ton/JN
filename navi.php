@@ -211,6 +211,9 @@ if ($cParameter_arr['kHersteller'] > 0 ||
             $NaviFilter->Suche->cSuche       = $oSuchanfrage->cSuche;
         }
     }
+    if (!isset($NaviFilter->Suche)) {
+        $NaviFilter->Suche = new stdClass();
+    }
     $NaviFilter->Suche->bExtendedJTLSearch = $bExtendedJTLSearch;
     //Suche da? Dann bearbeiten
     if (!$bExtendedJTLSearch && isset($NaviFilter->Suche->cSuche) && strlen($NaviFilter->Suche->cSuche) > 0) {

@@ -314,7 +314,6 @@ function pruefeWarenkorbArtikelSichtbarkeit($kKundengruppe)
 /**
  * @param string $userLogin
  * @param string $passLogin
- * @return int
  */
 function fuehreLoginAus($userLogin, $passLogin)
 {
@@ -381,6 +380,7 @@ function fuehreLoginAus($userLogin, $passLogin)
                 ) {
                     $oWarenkorbPers = new WarenkorbPers($Kunde->kKunde);
                     $oWarenkorbPers->ueberpruefePositionen(true);
+                    /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
                     if (count($oWarenkorbPers->oWarenkorbPersPos_arr) > 0) {
                         foreach ($oWarenkorbPers->oWarenkorbPersPos_arr as $oWarenkorbPersPos) {
                             if (empty($oWarenkorbPers->Artikel->bHasKonfig)) {

@@ -351,17 +351,18 @@ function fuehreLoginAus($userLogin, $passLogin)
                 );
             }
             if ($Kunde->cAktiv === 'Y') {
-                unset($_SESSION['Zahlungsart']);
-                unset($_SESSION['Versandart']);
-                unset($_SESSION['Lieferadresse']);
-                unset($_SESSION['ks']);
-                unset($_SESSION['VersandKupon']);
-                unset($_SESSION['NeukundenKupon']);
-                unset($_SESSION['Kupon']);
-                // Lösche kompletten Kategorie Cache
-                unset($_SESSION['kKategorieVonUnterkategorien_arr']);
-                unset($_SESSION['oKategorie_arr']);
-                unset($_SESSION['oKategorie_arr_new']);
+                unset(
+                    $_SESSION['Zahlungsart'],
+                    $_SESSION['Versandart'],
+                    $_SESSION['Lieferadresse'],
+                    $_SESSION['ks'],
+                    $_SESSION['VersandKupon'],
+                    $_SESSION['NeukundenKupon'],
+                    $_SESSION['Kupon'],
+                    $_SESSION['kKategorieVonUnterkategorien_arr'],
+                    $_SESSION['oKategorie_arr'],
+                    $_SESSION['oKategorie_arr_new']
+                );
                 // Kampagne
                 if (isset($_SESSION['Kampagnenbesucher'])) {
                     setzeKampagnenVorgang(KAMPAGNE_DEF_LOGIN, $Kunde->kKunde, 1.0); // Login
@@ -374,8 +375,10 @@ function fuehreLoginAus($userLogin, $passLogin)
                 $cURL = StringHandler::filterXSS(verifyGPDataString('cURL'));
                 // Lade WarenkorbPers
                 $bPersWarenkorbGeladen = false;
-                $Einstellungen = Shop::getSettings(array(CONF_GLOBAL, CONF_KAUFABWICKLUNG));
-                if ($Einstellungen['global']['warenkorbpers_nutzen'] === 'Y' && count($_SESSION['Warenkorb']->PositionenArr) === 0) {
+                $Einstellungen = Shop::getSettings([CONF_GLOBAL, CONF_KAUFABWICKLUNG]);
+                if ($Einstellungen['global']['warenkorbpers_nutzen'] === 'Y' &&
+                    count($_SESSION['Warenkorb']->PositionenArr) === 0
+                ) {
                     $oWarenkorbPers = new WarenkorbPers($Kunde->kKunde);
                     $oWarenkorbPers->ueberpruefePositionen(true);
                     if (count($oWarenkorbPers->oWarenkorbPersPos_arr) > 0) {
@@ -447,24 +450,17 @@ function fuehreLoginAus($userLogin, $passLogin)
                 // welche für den aktuellen Kunden nicht mehr sichtbar sein duerfen
                 pruefeWarenkorbArtikelSichtbarkeit($_SESSION['Kunde']->kKundengruppe);
                 executeHook(HOOK_JTL_PAGE_REDIRECT);
-
                 if (strlen($cURL) > 0) {
-                    if (substr($cURL, 0, 4) !== 'http') {
+                    if (strpos($cURL, 'http') !== 0) {
                         header('Location: ' . $cURL, true, 301);
                         exit();
                     }
-                } else {
+                } elseif ($Einstellungen['global']['warenkorbpers_nutzen'] === 'Y' && !$bPersWarenkorbGeladen ) {
                     // Existiert ein pers. Warenkorb?
                     // Wenn ja => frag Kunde ob er einen eventuell vorhandenen Warenkorb mergen möchte
-                    if ($Einstellungen['global']['warenkorbpers_nutzen'] === 'Y' &&
-                        $Einstellungen['kaufabwicklung']['warenkorb_warenkorb2pers_merge'] === 'Y' &&
-                        !$bPersWarenkorbGeladen
-                    ) {
+                    if ($Einstellungen['kaufabwicklung']['warenkorb_warenkorb2pers_merge'] === 'Y') {
                         setzeWarenkorbPersInWarenkorb($_SESSION['Kunde']->kKunde);
-                    } elseif ($Einstellungen['global']['warenkorbpers_nutzen'] === 'Y' &&
-                        $Einstellungen['kaufabwicklung']['warenkorb_warenkorb2pers_merge'] === 'P' &&
-                        !$bPersWarenkorbGeladen
-                    ) {
+                    } elseif ($Einstellungen['kaufabwicklung']['warenkorb_warenkorb2pers_merge'] === 'P') {
                         $oWarenkorbPers = new WarenkorbPers($Kunde->kKunde);
                         if (count($oWarenkorbPers->oWarenkorbPersPos_arr) > 0) {
                             Shop::Smarty()->assign('nWarenkorb2PersMerge', 1);
@@ -472,13 +468,15 @@ function fuehreLoginAus($userLogin, $passLogin)
                     }
                 }
                 // Kupons übernehmen, wenn erst der Warenkorb befüllt und sich dann angemeldet wurde
-                if(count($oKupons)>0) {
+                if(count($oKupons) > 0) {
                     foreach ($oKupons as $Kupon) {
                         if(!empty($Kupon)) {
                             $Kuponfehler = checkeKupon($Kupon);
                             $nReturnValue = angabenKorrekt($Kuponfehler);
-                            executeHook(HOOK_WARENKORB_PAGE_KUPONANNEHMEN_PLAUSI,
-                                array('error' => &$Kuponfehler, 'nReturnValue' => &$nReturnValue));
+                            executeHook(HOOK_WARENKORB_PAGE_KUPONANNEHMEN_PLAUSI, [
+                                'error'        => &$Kuponfehler,
+                                'nReturnValue' => &$nReturnValue
+                            ]);
                             if ($nReturnValue) {
                                 if (isset($Kupon->kKupon) && $Kupon->kKupon > 0 && $Kupon->cKuponTyp === 'standard') {
                                     kuponAnnehmen($Kupon);
@@ -514,8 +512,10 @@ function fuehreLoginAus($userLogin, $passLogin)
         } elseif ($nReturnValue === 3) { // Kunde ist nicht aktiv
             $cHinweis .= Shop::Lang()->get('accountInactive', 'global');
         } else {
-            if (isset($Einstellungen['kunden']['kundenlogin_max_loginversuche']) && $Einstellungen['kunden']['kundenlogin_max_loginversuche'] !== '') {
-                $maxAttempts = intval($Einstellungen['kunden']['kundenlogin_max_loginversuche']);
+            if (isset($Einstellungen['kunden']['kundenlogin_max_loginversuche']) &&
+                $Einstellungen['kunden']['kundenlogin_max_loginversuche'] !== ''
+            ) {
+                $maxAttempts = (int)$Einstellungen['kunden']['kundenlogin_max_loginversuche'];
                 if ($maxAttempts > 1 && $nLoginversuche >= $maxAttempts) {
                     $showLoginCaptcha = true;
                     Shop::Smarty()->assign('code_login', generiereCaptchaCode(3));

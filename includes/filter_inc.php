@@ -3328,14 +3328,14 @@ function berechneMaxMinStep($fMax, $fMin)
         100000000.0
     ];
     $nStep      = 10;
-    $fDiffPreis = floatval($fMax - $fMin) * 1000;
+    $fDiffPreis = (float)($fMax - $fMin) * 1000;
     $nMaxSteps  = 5;
     $conf       = Shop::getSettings([CONF_NAVIGATIONSFILTER]);
     if ($conf['navigationsfilter']['preisspannenfilter_anzeige_berechnung'] === 'M') {
         $nMaxSteps = 10;
     }
     foreach ($fStepWert_arr as $i => $fStepWert) {
-        if (($fDiffPreis / floatval($fStepWert * 1000)) < $nMaxSteps) {
+        if (($fDiffPreis / (float)($fStepWert * 1000)) < $nMaxSteps) {
             $nStep = $i;
             break;
         }
@@ -3344,7 +3344,7 @@ function berechneMaxMinStep($fMax, $fMin)
     $fMax *= 1000;
     $fMin *= 1000;
     $fMaxPreis      = round(((($fMax * 100) - (($fMax * 100) % ($fStepWert * 100))) + ($fStepWert * 100)) / 100, 0);
-    $fMinPreis      = round(((($fMin * 100) - (($fMin * 100) % ($fStepWert * 100)))) / 100, 0);
+    $fMinPreis      = round((($fMin * 100) - (($fMin * 100) % ($fStepWert * 100))) / 100, 0);
     $fDiffPreis     = $fMaxPreis - $fMinPreis;
     $nAnzahlSpannen = round($fDiffPreis / $fStepWert, 0);
 

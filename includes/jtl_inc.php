@@ -450,6 +450,7 @@ function fuehreLoginAus($userLogin, $passLogin)
                 // welche für den aktuellen Kunden nicht mehr sichtbar sein duerfen
                 pruefeWarenkorbArtikelSichtbarkeit($_SESSION['Kunde']->kKundengruppe);
                 executeHook(HOOK_JTL_PAGE_REDIRECT);
+                checkeWarenkorbEingang();
                 if (strlen($cURL) > 0) {
                     if (strpos($cURL, 'http') !== 0) {
                         header('Location: ' . $cURL, true, 301);

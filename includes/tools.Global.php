@@ -554,6 +554,9 @@ function checkeWarenkorbEingang()
         // Prüfe ob Kunde eingeloggt
         if (!isset($_SESSION['Kunde']->kKunde) && !isset($_POST['login'])) {
             //redirekt zum artikel, um variation/en zu wählen / MBM beachten
+            if ($fAnzahl <= 0) {
+                $fAnzahl = 1;
+            }
             header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true) .
                 '?a=' . $kArtikel .
                 '&n=' . $fAnzahl .

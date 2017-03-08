@@ -32,7 +32,7 @@
                             </li>
                         {else}
                             <li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
-                                <a itemprop="item" href="{$Shop}/{$oItem->url}" title="{$oItem->name|escape:"html"}">
+                                <a itemprop="item" href="{$ShopURL}/{$oItem->url}" title="{$oItem->name|escape:"html"}">
                                     <span itemprop="name">{$oItem->name}</span>
                                 </a>
                                 <meta itemprop="url" content="{$ShopURL}/{$oItem->url}" />

@@ -2805,7 +2805,8 @@ class Artikel
                 $oVariationKombiKinderAssoc_arr[$cIdentifier] = $lastkArtikel; //last item
 
                 // Preise holen bzw. Artikel
-                if (is_array($oVariationKombiKinderAssoc_arr) && count($oVariationKombiKinderAssoc_arr) > 0) {
+                if (is_array($oVariationKombiKinderAssoc_arr) && count($oVariationKombiKinderAssoc_arr) > 0 &&
+                    count($oVariationKombiKinderAssoc_arr) <= ART_MATRIX_MAX) {
                     foreach ($oVariationKombiKinderAssoc_arr as $i => $oVariationKombiKinderAssoc) {
                         if (!isset($oTMP_arr[$oVariationKombiKinderAssoc])) {
                             $oArtikelOptionen                            = new stdClass();
@@ -2849,10 +2850,10 @@ class Artikel
                             $oVariationKombiKinderAssoc_arr[$i]->nNichtLieferbar = 1;
                         }
                     }
+                    $this->sortVarCombinationArray($oVariationKombiKinderAssoc_arr, array('nSort' => SORT_ASC, 'cName' => SORT_ASC));
                 }
             }
         }
-        $this->sortVarCombinationArray($oVariationKombiKinderAssoc_arr, array('nSort' => SORT_ASC, 'cName' => SORT_ASC));
 
         return $oVariationKombiKinderAssoc_arr;
     }
@@ -2871,9 +2872,9 @@ class Artikel
      *
      * Example usages:
      *
-     * osort($items, 'size');
-     * osort($items, array('size', array('time' => SORT_DESC, 'user' => SORT_ASC));
-     * osort($items, array('size', array('user', 'forname'))
+     * sortVarCombinationArray($items, 'size');
+     * sortVarCombinationArray($items, array('size', array('time' => SORT_DESC, 'user' => SORT_ASC));
+     * sortVarCombinationArray($items, array('size', array('user', 'forname'))
      *
      * @param array $array
      * @param string|array $properties

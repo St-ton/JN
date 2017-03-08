@@ -55,15 +55,13 @@
         </blockquote>
         <img itemprop="image" src="{$Artikel->cVorschaubild}" alt="{$oBewertung->cTitel}" class="hidden" />
         {if isset($oBewertung->cAntwort)}
-            <div class="panel panel-default review-reply">
-                <div class="panel-body">
-                    <p><strong>Antwort von {$cShopName}:</strong></p>
-                    <hr class="hr-sm">
-                    <blockquote>
-                        <p>{$oBewertung->cAntwort}</p>
-                        <small>{$oBewertung->AntwortDatum}</small>
-                    </blockquote>
-                </div>
+            <div class="review-reply">
+                <strong>Antwort von {$cShopName}:</strong>
+                <hr class="hr-sm">
+                <blockquote>
+                    <p>{$oBewertung->cAntwort}</p>
+                    <small>{$oBewertung->AntwortDatum}</small>
+                </blockquote>
             </div>
         {/if}
     </div>

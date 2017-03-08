@@ -30,7 +30,7 @@
         $('#bOpenEnd').change(onEternalCheckboxChange);
         onEternalCheckboxChange();
         onApplySelectedCustomers();
-        checkcWertTypChange();
+        hideValueTooltip();
     });
 
     function onEternalCheckboxChange () {

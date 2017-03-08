@@ -111,7 +111,6 @@
 
     function finishCleanup(result) {
         stopCleanup();
-        console.log('result: ', result);
 
         notify.update({
             progress: 100,

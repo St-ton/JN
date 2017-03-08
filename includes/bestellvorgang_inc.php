@@ -89,7 +89,7 @@ function pruefeUnregistriertBestellen($cPost_arr)
         //selbstdef. Kundenattr in session setzen
         $Kunde->cKundenattribut_arr = $cKundenattribut_arr;
         $Kunde->nRegistriert        = 0;
-        setzeInSession('Kunde', $Kunde);
+        $_SESSION['Kunde'] = $Kunde;
         if (isset($_SESSION['Warenkorb']->kWarenkorb) &&
             $_SESSION['Warenkorb']->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]) > 0
         ) {
@@ -146,7 +146,7 @@ function pruefeLieferdaten($cPost_arr)
             } elseif ($Lieferadresse->cAnrede === 'w') {
                 $Lieferadresse->cAnredeLocalized = Shop::Lang()->get('salutationW', 'global');
             }
-            setzeInSession('Lieferadresse', $Lieferadresse);
+            $_SESSION['Lieferadresse'] = $Lieferadresse;
             executeHook(HOOK_BESTELLVORGANG_PAGE_STEPLIEFERADRESSE_NEUELIEFERADRESSE);
             pruefeVersandkostenfreiKuponVorgemerkt();
         } else {
@@ -162,7 +162,7 @@ function pruefeLieferdaten($cPost_arr)
         );
         if ($LA->kLieferadresse > 0) {
             $oLieferadresse = new Lieferadresse($LA->kLieferadresse);
-            setzeInSession('Lieferadresse', $oLieferadresse);
+            $_SESSION['Lieferadresse'] = $oLieferadresse;
 
             executeHook(HOOK_BESTELLVORGANG_PAGE_STEPLIEFERADRESSE_VORHANDENELIEFERADRESSE);
         }
@@ -2773,6 +2773,7 @@ function getLieferdaten($post)
 /**
  * @param string $name
  * @param mixed $obj
+ * @deprecated since 4.06
  */
 function setzeInSession($name, $obj)
 {
@@ -3086,7 +3087,7 @@ function setzeLieferadresseAusRechnungsadresse()
     $Lieferadresse->cMobil          = $_SESSION['Kunde']->cMobil;
     $Lieferadresse->cBundesland     = $_SESSION['Kunde']->cBundesland;
     $Lieferadresse->angezeigtesLand = ISO2land($Lieferadresse->cLand);
-    setzeInSession('Lieferadresse', $Lieferadresse);
+    $_SESSION['Lieferadresse'] = $Lieferadresse;
 
     return $Lieferadresse;
 }
@@ -3158,7 +3159,7 @@ function pruefeAjaxEinKlick()
 
                 if ($oLieferdaten->kLieferadresse > 0) {
                     $oLieferdaten = new Lieferadresse($oLieferdaten->kLieferadresse);
-                    setzeInSession('Lieferadresse', $oLieferdaten);
+                    $_SESSION['Lieferadresse'] = $oLieferdaten;
                     if (!isset($_SESSION['Bestellung'])) {
                         $_SESSION['Bestellung'] = new stdClass();
                     }
@@ -3326,7 +3327,7 @@ function setzeSessionRechnungsadresse($cPost_arr, $cFehlendeEingaben_arr)
         //selbstdef. Kundenattr in session setzen
         $oKunde->cKundenattribut_arr = $cKundenattribut_arr;
         $oKunde->nRegistriert        = 0;
-        setzeInSession('Kunde', $oKunde);
+        $_SESSION['Kunde'] = $oKunde;
         /** @var array('Warenkorb' => Warenkorb) $_SESSION */
         if (isset($_SESSION['Warenkorb']->kWarenkorb) && 
             $_SESSION['Warenkorb']->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]) > 0
@@ -3446,7 +3447,7 @@ function plausiLieferadresse($cPost_arr)
         );
         if (isset($oLieferadresse->kLieferadresse) && $oLieferadresse->kLieferadresse > 0) {
             $oLieferadresse = new Lieferadresse($oLieferadresse->kLieferadresse);
-            setzeInSession('Lieferadresse', $oLieferadresse);
+            $_SESSION['Lieferadresse'] = $oLieferadresse;
         }
     } elseif ((int)$cPost_arr['kLieferadresse'] === 0) { 
         //lieferadresse gleich rechnungsadresse
@@ -3501,7 +3502,7 @@ function setzeSessionLieferadresse($cPost_arr)
     //neue lieferadresse
     if ($kLieferadresse === -1) {
         $Lieferadresse = getLieferdaten($cPost_arr);
-        setzeInSession('Lieferadresse', $Lieferadresse);
+        $_SESSION['Lieferadresse'] = $Lieferadresse;
     } elseif ($kLieferadresse > 0) {
         //vorhandene lieferadresse
         $LA = Shop::DB()->query(
@@ -3512,7 +3513,7 @@ function setzeSessionLieferadresse($cPost_arr)
         );
         if ($LA->kLieferadresse > 0) {
             $oLieferadresse = new Lieferadresse($LA->kLieferadresse);
-            setzeInSession('Lieferadresse', $oLieferadresse);
+            $_SESSION['Lieferadresse'] = $oLieferadresse;
         }
     } elseif ($kLieferadresse === 0) { //lieferadresse gleich rechnungsadresse
         setzeLieferadresseAusRechnungsadresse();

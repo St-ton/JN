@@ -75,7 +75,8 @@ class Bewertung
         $this->oBewertung_arr = [];
         if ($kArtikel > 0 && $kSprache > 0) {
             $oBewertungHilfreich = Shop::DB()->query(
-                "SELECT *, DATE_FORMAT(dDatum, '%d.%m.%Y') AS Datum
+                "SELECT *, DATE_FORMAT(dDatum, '%d.%m.%Y') AS Datum,
+                        DATE_FORMAT(dAntwortDatum, '%d.%m.%Y') AS AntwortDatum
                     FROM tbewertung
                     WHERE kSprache = " . (int)$kSprache . "
                         AND kArtikel = " . (int)$kArtikel . "
@@ -172,7 +173,8 @@ class Bewertung
                         : ' LIMIT ' . $nAnzahlSeite;
                 }
                 $this->oBewertung_arr = Shop::DB()->query(
-                    "SELECT *, DATE_FORMAT(dDatum, '%d.%m.%Y') AS Datum
+                    "SELECT *, DATE_FORMAT(dDatum, '%d.%m.%Y') AS Datum,
+                            DATE_FORMAT(dAntwortDatum, '%d.%m.%Y') AS AntwortDatum
                         FROM tbewertung
                         WHERE kArtikel = " . $kArtikel . $cSprachSQL . $cSQL . $cSQLFreischalten . "
                         ORDER BY" . $cOrderSQL . $nLimit, 2

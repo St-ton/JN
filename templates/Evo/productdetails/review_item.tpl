@@ -55,14 +55,16 @@
         </blockquote>
         <img itemprop="image" src="{$Artikel->cVorschaubild}" alt="{$oBewertung->cTitel}" class="hidden" />
         {if isset($oBewertung->cAntwort)}
-            <blockquote style="text-align: right;">
-                <strong>Antwort des Shopbetreibers:</strong>
-                <p>{$oBewertung->cAntwort|nl2br}</p>
-                {*<small>*}
-                    {*<cite><span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Shopadmin</span></span>.</cite>,*}
-                    {*<meta itemprop="datePublished" content="{$oBewertung->dAntwortDatum}" />{$oBewertung->dAntwortDatum}*}
-                {*</small>*}
-            </blockquote>
+            <div class="panel panel-default review-reply">
+                <div class="panel-body">
+                    <p><strong>Antwort von {$cShopName}:</strong></p>
+                    <hr class="hr-sm">
+                    <blockquote>
+                        <p>{$oBewertung->cAntwort}</p>
+                        <small>{$oBewertung->AntwortDatum}</small>
+                    </blockquote>
+                </div>
+            </div>
         {/if}
     </div>
     {/block}

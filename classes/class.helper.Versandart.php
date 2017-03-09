@@ -95,7 +95,7 @@ class VersandartHelper
                     FROM tversandart
                     WHERE fVersandkostenfreiAbX > 0
                         AND (cVersandklassen = '-1'
-                        OR cVersandklassen RLIKE '^([0-9- ]* )?" . $versandklasse . " ')
+                        OR cVersandklassen RLIKE '^([0-9 -]* )?" . $versandklasse . " ')
                         AND (cKundengruppen = '-1' OR cKundengruppen RLIKE '^([0-9;]*;)?" . (int)$kKundengruppe . ";')", 2
             );
         }
@@ -180,7 +180,7 @@ class VersandartHelper
                 WHERE cNurAbhaengigeVersandart = '" . $cNurAbhaengigeVersandart . "'
                     AND cLaender LIKE '%" . addcslashes($cISO, '%_') . "%'
                     AND (cVersandklassen = '-1'
-                    OR cVersandklassen RLIKE '^([0-9- ]* )?" . addcslashes($versandklassen, '%_') . " ')
+                    OR cVersandklassen RLIKE '^([0-9 -]* )?" . addcslashes($versandklassen, '%_') . " ')
                     AND (cKundengruppen = '-1'
                     OR cKundengruppen RLIKE '^([0-9;]*;)?" . $kKundengruppe . ";')
                 ORDER BY nSort", 2

@@ -124,7 +124,7 @@
                             <div class="availablefrom">
                                 <small>{lang key="productAvailable" section="global"}: {$Artikel->Erscheinungsdatum_de}</small>
                             </div>
-                            {if $Einstellungen.global.global_erscheinende_kaeuflich === 'Y' && $Artikel->inWarenkorbLegbar == 1}
+                            {if $Einstellungen.global.global_erscheinende_kaeuflich === 'Y' && $Artikel->inWarenkorbLegbar === 1}
                                 <div class="attr attr-preorder"><small class="value">{lang key="preorderPossible" section="global"}</small></div>
                             {/if}
                         {elseif $anzeige !== 'nichts' && $Artikel->cLagerBeachten === 'Y' && ($Artikel->cLagerKleinerNull === 'N' ||
@@ -150,7 +150,7 @@
 
                     <div class="hidden-xs basket-details">
                         {block name="basket-details"}
-                            {if ($Artikel->inWarenkorbLegbar == 1 || ($Artikel->nErscheinendesProdukt == 1 && $Einstellungen.global.global_erscheinende_kaeuflich === 'Y')) && $Artikel->nIstVater == 0 && $Artikel->Variationen|@count == 0 && !$Artikel->bHasKonfig}
+                            {if ($Artikel->inWarenkorbLegbar === 1 || ($Artikel->nErscheinendesProdukt === 1 && $Einstellungen.global.global_erscheinende_kaeuflich === 'Y')) && $Artikel->nIstVater === 0 && $Artikel->Variationen|@count === 0 && !$Artikel->bHasKonfig}
                                 <div class="quantity-wrapper form-group top7">
                                     {if $Artikel->cEinheit}
                                         <div class="input-group input-group-sm">
@@ -225,7 +225,7 @@
                 {$jtl_token}
                 <div class="actions btn-group btn-group-xs btn-group-justified" role="group" aria-label="...">
                 {block name="product-actions"}
-                    {if !($Artikel->nIstVater && $Artikel->kVaterArtikel == 0)}
+                    {if !($Artikel->nIstVater && $Artikel->kVaterArtikel === 0)}
                         {if $Einstellungen.artikeluebersicht.artikeluebersicht_vergleichsliste_anzeigen === 'Y'}
                             <div class="btn-group btn-group-xs" role="group">
                                 <button name="Vergleichsliste" type="submit" class="compare btn btn-default" title="{lang key="addToCompare" section="productOverview"}">
@@ -240,7 +240,7 @@
                                 </button>
                             </div>
                         {/if}
-                        {if $Artikel->verfuegbarkeitsBenachrichtigung == 3 && (($Artikel->cLagerBeachten === 'Y' && $Artikel->cLagerKleinerNull !== 'Y') || $Artikel->cLagerBeachten !== 'Y')}
+                        {if $Artikel->verfuegbarkeitsBenachrichtigung === 3 && (($Artikel->cLagerBeachten === 'Y' && $Artikel->cLagerKleinerNull !== 'Y') || $Artikel->cLagerBeachten !== 'Y')}
                             <div class="btn-group btn-group-xs" role="group">
                                 <button type="button" id="n{$Artikel->kArtikel}" class="popup-dep notification btn btn-default btn-left" title="{lang key="requestNotification" section="global"}">
                                     <span class="fa fa-bell"></span>
@@ -257,7 +257,7 @@
 </div>{* /product-cell *}
 
 {* popup-content *}
-{if $Artikel->verfuegbarkeitsBenachrichtigung == 3}
+{if $Artikel->verfuegbarkeitsBenachrichtigung === 3}
     <div id="popupn{$Artikel->kArtikel}" class="hidden">
         {include file='productdetails/availability_notification_form.tpl' position="popup" tplscope='artikeldetails'}
     </div>

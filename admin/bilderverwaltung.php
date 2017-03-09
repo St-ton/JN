@@ -135,8 +135,9 @@ switch ($action) {
         $checkedInThisRun   = 0;
         $deletedInThisRun   = 0;
         $idx                = 0;
-        foreach (new DirectoryIterator($directory) as $idx => $fileInfo) {
-            if ($idx < $index || $fileInfo->isDot()) {
+
+        foreach (new LimitIterator(new DirectoryIterator($directory), $index, IMAGE_CLEANUP_LIMIT) as $idx => $fileInfo) {
+            if ($fileInfo->isDot()) {
                 continue;
             }
             ++$checkedInThisRun;
@@ -147,10 +148,6 @@ switch ($action) {
                 unlink($fileInfo->getPathname());
                 ++$_SESSION['deletedImages'];
                 ++$deletedInThisRun;
-            }
-            // only check max IMAGE_CLEANUP_LIMIT (default: 50) images per ajax call to avoid timeouts
-            if ($checkedInThisRun >= IMAGE_CLEANUP_LIMIT) {
-                break;
             }
         }
         // increment total number of checked files by the amount checked in this run

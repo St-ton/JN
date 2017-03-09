@@ -54,17 +54,17 @@ class PremiumPlugin
     /**
      * @var bool
      */
-    private $isInstalled = false;
+    private $isInstalled;
 
     /**
      * @var bool
      */
-    private $isActivated = false;
+    private $isActivated;
 
     /**
      * @var bool
      */
-    private $exists = false;
+    private $exists;
 
     /**
      * @var string
@@ -74,7 +74,7 @@ class PremiumPlugin
     /**
      * @var int
      */
-    private $kPlugin = 0;
+    private $kPlugin;
 
     /**
      * @var stdClass

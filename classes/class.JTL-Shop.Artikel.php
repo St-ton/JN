@@ -1143,7 +1143,7 @@ class Artikel
                 $preis = $fPreis;
             }
         }
-        $nettopreise = ((int)$_SESSION['Kundengruppe']->nNettoPreise === 1) ? 1 : 0; 
+        $nettopreise = ((int)$_SESSION['Kundengruppe']->nNettoPreise === 1) ? 1 : 0;
         // Ticket #1247
         if (!$nettopreise) {
             //$preis = berechneBrutto($preis,gibUst($this->kSteuerklasse))/((100+gibUst($this->kSteuerklasse))/100);
@@ -1160,7 +1160,7 @@ class Artikel
                 if ($this->nIstVater === 1 || $this->kVaterArtikel > 0) {
                     continue;
                 }
-                if (isset($EigenschaftWert->cTyp) && 
+                if (isset($EigenschaftWert->cTyp) &&
                     ($EigenschaftWert->cTyp === 'FREIFELD' || $EigenschaftWert->cTyp === 'PFLICHT-FREIFELD')
                 ) {
                     continue;
@@ -1175,14 +1175,14 @@ class Artikel
                 $EW          = new EigenschaftWert($kEigenschaftWert);
                 $aufpreis    = $EW->fAufpreisNetto;
                 $EW_aufpreis = Shop::DB()->select(
-                    'teigenschaftwertaufpreis', 
-                    'kEigenschaftWert', $kEigenschaftWert, 
+                    'teigenschaftwertaufpreis',
+                    'kEigenschaftWert', $kEigenschaftWert,
                     'kKundengruppe', $kKundengruppe
                 );
                 if (!is_object($EW_aufpreis)) {
                     $EW_aufpreis = Shop::DB()->select('teigenschaftwert', 'kEigenschaftWert', $kEigenschaftWert);
                 }
-                if (isset($EW_aufpreis->fAufpreisNetto) && $EW_aufpreis->fAufpreisNetto) {
+                if (isset($EW_aufpreis->fAufpreisNetto)) {
                     $fMaxRabatt = $this->getDiscount($kKundengruppe, $this->kArtikel);
                     $aufpreis   = $EW_aufpreis->fAufpreisNetto * ((100 - $fMaxRabatt) / 100);
                 }
@@ -1252,7 +1252,7 @@ class Artikel
                     $this->cVorschaubild = $image->cPfadKlein;
                 }
                 //Lookup image alt attribute
-                $idx = 'img_alt_' . $image->nNr;
+                $idx                 = 'img_alt_' . $image->nNr;
                 $image->cAltAttribut = isset($this->AttributeAssoc[$idx])
                     ? strip_tags($this->AttributeAssoc['img_alt_' . $image->nNr])
                     : str_replace(['"', "'"], '', $this->cName);
@@ -1636,7 +1636,7 @@ class Artikel
                     $oMedienDatei->nErreichbar              = 1; // Beschreibt, ob eine Datei vorhanden ist
                     $oMedienDatei->cMedienTyp               = ''; // Wird zum Aufbau der Reiter gebraucht
                     if (strlen($oMedienDatei->cTyp) > 0) {
-                        $oMappedTyp                             = $this->mappeMedienTyp($oMedienDatei->cTyp);
+                        $oMappedTyp               = $this->mappeMedienTyp($oMedienDatei->cTyp);
                         $oMedienDatei->cMedienTyp = $oMappedTyp->cName;
                         $oMedienDatei->nMedienTyp = $oMappedTyp->nTyp;
                     }
@@ -2822,8 +2822,8 @@ class Artikel
                         // GrundPreis nicht vom Vater => Ticket #1228
                         if ($oVariationKombiKinderAssoc_arr[$i]->fVPEWert > 0) {
                             $nGenauigkeit = (isset($oVariationKombiKinderAssoc_arr[$i]->FunktionsAttribute[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT]) &&
-                                (int)$oVariationKombiKinderAssoc_arr[$i]->FunktionsAttribute[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT] > 0) 
-                                ? (int)$oVariationKombiKinderAssoc_arr[$i]->FunktionsAttribute[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT] 
+                                (int)$oVariationKombiKinderAssoc_arr[$i]->FunktionsAttribute[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT] > 0)
+                                ? (int)$oVariationKombiKinderAssoc_arr[$i]->FunktionsAttribute[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT]
                                 : 2;
 
                             $oVariationKombiKinderAssoc_arr[$i]->Preise->cPreisVPEWertInklAufpreis[0] = gibPreisStringLocalized(
@@ -2985,7 +2985,7 @@ class Artikel
                     if ($oVariationKombiVorschau->nErscheinendesProdukt && $conf['global']['global_erscheinende_kaeuflich'] !== 'Y') {
                         $oVariationKombiVorschau->inWarenkorbLegbar = INWKNICHTLEGBAR_NICHTVORBESTELLBAR;
                     }
-                    if ($oVariationKombiVorschau->fLagerbestand <= 0 && $oVariationKombiVorschau->cLagerBeachten === 'Y' 
+                    if ($oVariationKombiVorschau->fLagerbestand <= 0 && $oVariationKombiVorschau->cLagerBeachten === 'Y'
                         && $oVariationKombiVorschau->cLagerKleinerNull !== 'Y' && $oVariationKombiVorschau->cLagerVariation !== 'Y') {
                         $oVariationKombiVorschau->inWarenkorbLegbar = INWKNICHTLEGBAR_LAGER;
                     }
@@ -3216,7 +3216,7 @@ class Artikel
         // Baue SprachwechselURLs
         if (is_array($_SESSION['Sprachen']) && count($_SESSION['Sprachen']) > 0) {
             foreach ($_SESSION['Sprachen'] as $oSprache) {
-                $oSprache->kSprache = (int)$oSprache->kSprache;
+                $oSprache->kSprache                    = (int)$oSprache->kSprache;
                 $this->cSprachURL_arr[$oSprache->cISO] = 'navi.php?a=' . $this->kArtikel .
                     '&amp;lang=' . $oSprache->cISO;
             }
@@ -3470,13 +3470,13 @@ class Artikel
             CONF_BEWERTUNG
         ]);
         $this->cCachedCountryCode = isset($_SESSION['cLieferlandISO'])
-            ? $_SESSION['cLieferlandISO'] 
+            ? $_SESSION['cLieferlandISO']
             : null;
         $nSchwelleBestseller      = isset($conf['global']['global_bestseller_minanzahl'])
             ? (float)$conf['global']['global_bestseller_minanzahl']
             : 10;
         $nSchwelleTopBewertet     = isset($conf['boxen']['boxen_topbewertet_minsterne'])
-            ? (int)$conf['boxen']['boxen_topbewertet_minsterne'] 
+            ? (int)$conf['boxen']['boxen_topbewertet_minsterne']
             : 4;
         $kKundengruppe            = (int)$kKundengruppe;
         // Nicht Standardsprache?
@@ -3857,6 +3857,7 @@ class Artikel
             count($this->Variationen) > 0
         ) {
             unset($this->kArtikel);
+
             return null;
         }
 
@@ -3900,7 +3901,7 @@ class Artikel
             $this->oVariationKombiKinderAssoc_arr = $this->holeVariationKombiKinderAssoc($kKundengruppe, $kSprache);
         }
         $this->cMwstVersandText = $this->gibMwStVersandString(
-            isset($_SESSION['Kundengruppe']->nNettoPreise)? $_SESSION['Kundengruppe']->nNettoPreise : 0
+            isset($_SESSION['Kundengruppe']->nNettoPreise) ? $_SESSION['Kundengruppe']->nNettoPreise : 0
         );
         // Download Dateien
         $this->oDownload_arr = [];
@@ -4177,13 +4178,13 @@ class Artikel
                 $nAlterTage  = (isset($conf['boxen']['box_neuimsortiment_alter_tage']) && (int)$conf['boxen']['box_neuimsortiment_alter_tage'] > 0)
                     ? (int)$conf['boxen']['box_neuimsortiment_alter_tage']
                     : 30;
-                list($cJahr, $cMonat, $cTag) = explode('-', $this->dErstellt);
+                list($cJahr, $cMonat, $cTag)                  = explode('-', $this->dErstellt);
                 $nStampErstellt                               = mktime(0, 0, 0, (int)$cMonat, (int)$cTag, (int)$cJahr);
                 $bSuchspecial_arr[SEARCHSPECIALS_NEWPRODUCTS] = (($nStampJetzt - ($nAlterTage * 24 * 60 * 60)) < $nStampErstellt);
             }
             // In kürze Verfügbar
-            list($cJahr, $cMonat, $cTag) = explode('-', $this->dErscheinungsdatum);
-            $nStampErscheinung           = mktime(0, 0, 0, (int)$cMonat, (int)$cTag, (int)$cJahr);
+            list($cJahr, $cMonat, $cTag)                       = explode('-', $this->dErscheinungsdatum);
+            $nStampErscheinung                                 = mktime(0, 0, 0, (int)$cMonat, (int)$cTag, (int)$cJahr);
             $bSuchspecial_arr[SEARCHSPECIALS_UPCOMINGPRODUCTS] = ($nStampJetzt < $nStampErscheinung);
             // Top bewertet
             //No need to check with custom function.. this value is set in fuelleArtikel()?
@@ -6223,6 +6224,7 @@ class Artikel
                             return false;
                         }
                     }
+
                     return !($gesamt_anz > ART_MATRIX_MAX &&
                         $conf['artikeldetails']['artikeldetails_warenkorbmatrix_anzeigeformat'] === 'L'
                     );

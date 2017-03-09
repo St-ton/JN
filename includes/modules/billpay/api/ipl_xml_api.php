@@ -2662,7 +2662,6 @@ class XMLTag
      * @param string $name
      * @param array $attrs
      * @param int $parents
-     * @return XMLTag
      */
     public function __construct($name, $attrs = [], $parents = 0)
     {

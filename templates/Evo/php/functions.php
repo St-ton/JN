@@ -452,11 +452,13 @@ function hasCheckBoxForLocation($params, &$smarty)
  */
 function getCheckBoxForLocation($params, &$smarty)
 {
-    require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.CheckBox.php';
-
-    $oCheckBox     = new CheckBox();
-    $oCheckBox_arr = $oCheckBox->getCheckBoxFrontend((int)$params['nAnzeigeOrt'], 0, true, true);
-
+    $cid = 'cb_' . (int)$params['nAnzeigeOrt'] . '_' . (int)$_SESSION['kSprache'];
+    if (Shop::has($cid)) {
+        $oCheckBox_arr = Shop::get($cid);
+    } else {
+        $oCheckBox     = new CheckBox();
+        $oCheckBox_arr = $oCheckBox->getCheckBoxFrontend((int)$params['nAnzeigeOrt'], 0, true, true);
+    }
     if (count($oCheckBox_arr) > 0) {
         $linkHelper = LinkHelper::getInstance();
         foreach ($oCheckBox_arr as $oCheckBox) {
@@ -464,17 +466,6 @@ function getCheckBoxForLocation($params, &$smarty)
             $cLinkURL     = '';
             $cLinkURLFull = '';
             if ($oCheckBox->kLink > 0) {
-                $oLinkTMP = Shop::DB()->select(
-                    'tseo',
-                    'cKey', 'kLink',
-                    'kKey', (int)$oCheckBox->kLink,
-                    'kSprache', (int)$_SESSION['kSprache'],
-                    false,
-                    'cSeo'
-                );
-                if (isset($oLinkTMP->cSeo) && strlen($oLinkTMP->cSeo) > 0) {
-                    $oCheckBox->oLink->cLocalizedSeo[$_SESSION['cISOSprache']] = $oLinkTMP->cSeo;
-                }
                 $page = $linkHelper->findCMSLinkInSession($oCheckBox->oLink->kLink);
                 if (!empty($page->URL)) {
                     $cLinkURL     = $page->URL;
@@ -505,7 +496,7 @@ function getCheckBoxForLocation($params, &$smarty)
                 $oCheckBox->cErrormsg = Shop::Lang()->get('pleasyAccept', 'account data');
             }
         }
-
+        Shop::set($cid, $oCheckBox_arr);
         if (isset($params['assign'])) {
             $smarty->assign($params['assign'], $oCheckBox_arr);
         }
@@ -722,7 +713,7 @@ function get_cms_content($params, &$smarty)
         }
     }
 
-    return;
+    return null;
 }
 
 /**
@@ -740,7 +731,7 @@ function get_translation($mixed, $to = null)
         return is_string($mixed) ? $mixed : $mixed[$to];
     }
 
-    return;
+    return null;
 }
 
 /**

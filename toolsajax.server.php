@@ -1350,7 +1350,7 @@ function gibMoeglicheVariationen($kVaterArtikel, $oEigenschaftWert_arr, $kGesetz
 /**
  * @param int   $kArtikel
  * @param array $kVariationKombi_arr
- * @return mixed
+ * @return null|stdClass
  */
 function gibArtikelByVariationen($kArtikel, $kVariationKombi_arr)
 {
@@ -1369,9 +1369,10 @@ function gibArtikelByVariationen($kArtikel, $kVariationKombi_arr)
             $j++;
         }
     } else {
-        return;
+        return null;
     }
-    $oArtikelTMP = Shop::DB()->query("
+
+    return Shop::DB()->query("
         SELECT tartikel.kArtikel
             FROM teigenschaftkombiwert
             JOIN tartikel 
@@ -1386,8 +1387,6 @@ function gibArtikelByVariationen($kArtikel, $kVariationKombi_arr)
             GROUP BY tartikel.kArtikel
             HAVING count(*) = " . count($kVariationKombi_arr), 1
     );
-
-    return $oArtikelTMP;
 }
 /** @global xajax $xajax */
 $xajax->processRequest();

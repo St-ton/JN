@@ -1182,7 +1182,7 @@ class Artikel
                 if (!is_object($EW_aufpreis)) {
                     $EW_aufpreis = Shop::DB()->select('teigenschaftwert', 'kEigenschaftWert', $kEigenschaftWert);
                 }
-                if (isset($EW_aufpreis->fAufpreisNetto) && $EW_aufpreis->fAufpreisNetto) {
+                if (isset($EW_aufpreis->fAufpreisNetto)) {
                     $fMaxRabatt = $this->getDiscount($kKundengruppe, $this->kArtikel);
                     $aufpreis   = $EW_aufpreis->fAufpreisNetto * ((100 - $fMaxRabatt) / 100);
                 }
@@ -1252,7 +1252,7 @@ class Artikel
                     $this->cVorschaubild = $image->cPfadKlein;
                 }
                 //Lookup image alt attribute
-                $idx = 'img_alt_' . $image->nNr;
+                $idx                 = 'img_alt_' . $image->nNr;
                 $image->cAltAttribut = isset($this->AttributeAssoc[$idx])
                     ? strip_tags($this->AttributeAssoc['img_alt_' . $image->nNr])
                     : str_replace(['"', "'"], '', $this->cName);
@@ -1636,7 +1636,7 @@ class Artikel
                     $oMedienDatei->nErreichbar              = 1; // Beschreibt, ob eine Datei vorhanden ist
                     $oMedienDatei->cMedienTyp               = ''; // Wird zum Aufbau der Reiter gebraucht
                     if (strlen($oMedienDatei->cTyp) > 0) {
-                        $oMappedTyp                             = $this->mappeMedienTyp($oMedienDatei->cTyp);
+                        $oMappedTyp               = $this->mappeMedienTyp($oMedienDatei->cTyp);
                         $oMedienDatei->cMedienTyp = $oMappedTyp->cName;
                         $oMedienDatei->nMedienTyp = $oMappedTyp->nTyp;
                     }
@@ -3216,7 +3216,7 @@ class Artikel
         // Baue SprachwechselURLs
         if (is_array($_SESSION['Sprachen']) && count($_SESSION['Sprachen']) > 0) {
             foreach ($_SESSION['Sprachen'] as $oSprache) {
-                $oSprache->kSprache = (int)$oSprache->kSprache;
+                $oSprache->kSprache                    = (int)$oSprache->kSprache;
                 $this->cSprachURL_arr[$oSprache->cISO] = 'navi.php?a=' . $this->kArtikel .
                     '&amp;lang=' . $oSprache->cISO;
             }
@@ -3857,6 +3857,7 @@ class Artikel
             count($this->Variationen) > 0
         ) {
             unset($this->kArtikel);
+
             return null;
         }
 
@@ -4175,13 +4176,13 @@ class Artikel
                 $nAlterTage  = (isset($conf['boxen']['box_neuimsortiment_alter_tage']) && (int)$conf['boxen']['box_neuimsortiment_alter_tage'] > 0)
                     ? (int)$conf['boxen']['box_neuimsortiment_alter_tage']
                     : 30;
-                list($cJahr, $cMonat, $cTag) = explode('-', $this->dErstellt);
+                list($cJahr, $cMonat, $cTag)                  = explode('-', $this->dErstellt);
                 $nStampErstellt                               = mktime(0, 0, 0, (int)$cMonat, (int)$cTag, (int)$cJahr);
                 $bSuchspecial_arr[SEARCHSPECIALS_NEWPRODUCTS] = (($nStampJetzt - ($nAlterTage * 24 * 60 * 60)) < $nStampErstellt);
             }
             // In kürze Verfügbar
-            list($cJahr, $cMonat, $cTag) = explode('-', $this->dErscheinungsdatum);
-            $nStampErscheinung           = mktime(0, 0, 0, (int)$cMonat, (int)$cTag, (int)$cJahr);
+            list($cJahr, $cMonat, $cTag)                       = explode('-', $this->dErscheinungsdatum);
+            $nStampErscheinung                                 = mktime(0, 0, 0, (int)$cMonat, (int)$cTag, (int)$cJahr);
             $bSuchspecial_arr[SEARCHSPECIALS_UPCOMINGPRODUCTS] = ($nStampJetzt < $nStampErscheinung);
             // Top bewertet
             //No need to check with custom function.. this value is set in fuelleArtikel()?
@@ -6228,6 +6229,7 @@ class Artikel
                             return false;
                         }
                     }
+
                     return !($gesamt_anz > ART_MATRIX_MAX &&
                         $conf['artikeldetails']['artikeldetails_warenkorbmatrix_anzeigeformat'] === 'L'
                     );

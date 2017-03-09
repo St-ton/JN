@@ -25,7 +25,7 @@
                                 <div class="row">
                                     {if !empty($cBildPfad)}
                                         <div class="col-md-2 visible-md-block visible-lg-block group-image">
-                                            <img src="{$oGruppe->getBildPfad()}" alt="{$oSprache->getName()}" id="img{$kKonfiggruppe}" class="img-responsive" />
+                                            <img src="{$cBildPfad}" alt="{$oSprache->getName()}" id="img{$kKonfiggruppe}" class="img-responsive" />
                                         </div>
                                     {/if}
                                     <div class="col-md-{if empty($cBildPfad)}12{else}10{/if} group-items">

@@ -1091,9 +1091,9 @@ class Billpay extends PaymentMethod
     }
 
     /**
-     * @param      $kBestellung
+     * @param int  $kBestellung
      * @param bool $bDelete
-     * @return bool|void
+     * @return bool
      */
     public function cancelOrder($kBestellung, $bDelete = false)
     {

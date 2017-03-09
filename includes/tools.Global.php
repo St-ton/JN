@@ -5126,7 +5126,7 @@ function formatCurrency($fSumme)
         $fSummeABS = abs($fSumme);
         $fSumme    = floor($fSumme * 100);
         $fCents    = $fSumme % 100;
-        $fSumme    = (string)(floor($fSumme / 100));
+        $fSumme    = (string)floor($fSumme / 100);
         if ($fCents < 10) {
             $fCents = '0' . $fCents;
         }
@@ -6185,7 +6185,7 @@ function urlNotFoundRedirect(array $hookInfos = null, $forceExit = false)
     if ($redirectUrl !== false && $redirectUrl !== $url && '/' . $redirectUrl !== $url) {
         $cUrl_arr = parse_url($redirectUrl);
         if (!array_key_exists('scheme', $cUrl_arr)) {
-            $redirectUrl = (substr($redirectUrl, 0, 1) === '/')
+            $redirectUrl = strpos($redirectUrl, '/') === 0
                 ? Shop::getURL() . $redirectUrl
                 : Shop::getURL() . '/' . $redirectUrl;
         }

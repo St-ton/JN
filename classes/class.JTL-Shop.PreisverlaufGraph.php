@@ -203,7 +203,7 @@ class PreisverlaufGraph
 
                 return $oPreisverlauf_arr;
             }
-            if ($this->nAnzahlTage == 1) {
+            if ($this->nAnzahlTage === 1) {
                 $this->nMaxTimestamp = $oPreisverlauf_arr[0]->timestamp;
                 $this->nMinTimestamp = $this->nMaxTimestamp;
 
@@ -233,8 +233,8 @@ class PreisverlaufGraph
                 $fVKNetto_arr[] = $oPreisverlauf->fVKNetto;
             }
 
-            $this->fMaxPreis  = round(floatval(max($fVKNetto_arr)), 2);
-            $this->fMinPreis  = round(floatval(min($fVKNetto_arr)), 2);
+            $this->fMaxPreis  = round((float)max($fVKNetto_arr), 2);
+            $this->fMinPreis  = round((float)min($fVKNetto_arr), 2);
             $this->fDiffPreis = $this->fMaxPreis - $this->fMinPreis;
         } elseif ($this->oPreisverlaufData_arr !== null && count($this->oPreisverlaufData_arr) === 1) {
             $this->fMaxPreis = $this->oPreisverlaufData_arr[0]->fVKNetto;
@@ -277,7 +277,7 @@ class PreisverlaufGraph
                 );
 
                 $this->fDiffPreis    = $this->fMaxPreis - $this->fMinPreis;
-                $this->nAnzahlPreise = intval($this->fDiffPreis / $this->fStepWert_arr[$this->nStep]);
+                $this->nAnzahlPreise = (int)($this->fDiffPreis / $this->fStepWert_arr[$this->nStep]);
             }
         } elseif ($this->nAnzahlTage == 1) {
             $this->nAnzahlPreise = 1;

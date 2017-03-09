@@ -143,7 +143,7 @@ function ipl_core_send_curl_request($requestUrl, $requestData)
     curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, IPL_CORE_CURL_CONNECTION_TIMEOUT);
 
     // This prevents a known issue with CURLOPT_FOLLOWLOCATION
-    if (ini_get('open_basedir') === '' && ini_get('safe_mode') === 'Off') {
+    if (ini_get('open_basedir') === '') {
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, IPL_CORE_FOLLOW_REDIRECT);
         curl_setopt($ch, CURLOPT_MAXREDIRS, IPL_CORE_MAX_REDIRECTS);
     }

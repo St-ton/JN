@@ -1034,7 +1034,7 @@ function setzeSmartyWeiterleitung($bestellung)
         $paymentMethod           = new PaymentPartner($_SESSION['Zahlungsart']->cModulId);
         $paymentMethod->cModulId = $_SESSION['Zahlungsart']->cModulId;
         $paymentMethod->preparePaymentProcess($bestellung);
-    } elseif (substr($_SESSION['Zahlungsart']->cModulId, 0, 8) === 'za_mbqc_') {
+    } elseif (strpos($_SESSION['Zahlungsart']->cModulId, 'za_mbqc_') === 0) {
         require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'moneybookers_qc/MoneyBookersQC.class.php';
         $paymentMethod           = new MoneyBookersQC($_SESSION['Zahlungsart']->cModulId);
         $paymentMethod->cModulId = $_SESSION['Zahlungsart']->cModulId;
@@ -1065,7 +1065,7 @@ function setzeSmartyWeiterleitung($bestellung)
         $paymentMethod           = new EOS($_SESSION['Zahlungsart']->cModulId);
         $paymentMethod->cModulId = $_SESSION['Zahlungsart']->cModulId;
         $paymentMethod->preparePaymentProcess($bestellung);
-    } elseif (substr($_SESSION['Zahlungsart']->cModulId, 0, 10) === 'za_billpay') {
+    } elseif (strpos($_SESSION['Zahlungsart']->cModulId, 'za_billpay') === 0) {
         require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
         $paymentMethod           = PaymentMethod::create($_SESSION['Zahlungsart']->cModulId);
         $paymentMethod->cModulId = $_SESSION['Zahlungsart']->cModulId;

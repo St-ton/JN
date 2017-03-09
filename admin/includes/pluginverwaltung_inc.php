@@ -4039,9 +4039,9 @@ function parseSQLDatei($cSQLDatei, $cVerzeichnis, $nVersion)
         $cSQL_arr    = [];
         $cLine       = '';
         $i           = 0;
-        while ($cData = fgets($file_handle)) {
+        while (($cData = fgets($file_handle)) !== false) {
             $cData = trim($cData);
-            if ($cData !== '' && substr($cData, 0, 2) !== '--') {
+            if ($cData !== '' && strpos($cData, '--') !== 0) {
                 if (strpos($cData, 'CREATE TABLE') !== false) {
                     $cLine .= trim($cData);
                 } elseif (strpos($cData, 'INSERT') !== false) {

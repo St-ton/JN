@@ -659,7 +659,7 @@ class Template
                         }
                         $oSetting->bEditable = (strlen($oSetting->bEditable) === 0)
                             ? true
-                            : (boolean)intval($oSetting->bEditable);
+                            : (boolean)(int)$oSetting->bEditable;
                         if ($oSetting->bEditable && isset($oDBSettings[$oSection->cKey][$oSetting->cKey])) {
                             $oSetting->cValue = $oDBSettings[$oSection->cKey][$oSetting->cKey];
                         }
@@ -732,7 +732,7 @@ class Template
                 /** @var SimpleXMLElement $oXMLContainer */
                 foreach ($oXMLBoxes_arr as $oXMLContainer) {
                     $cPosition             = (string)$oXMLContainer->attributes()->Position;
-                    $bAvailable            = (boolean)intval($oXMLContainer->attributes()->Available);
+                    $bAvailable            = (boolean)(int)$oXMLContainer->attributes()->Available;
                     $oItem_arr[$cPosition] = $bAvailable;
                 }
             }
@@ -943,7 +943,7 @@ class Template
     public function check($bRedirect = true)
     {
         if (isset($_GET['mt'])) {
-            $this->setzeKundenTemplate((boolean)intval($_GET['mt']));
+            $this->setzeKundenTemplate((boolean)(int)$_GET['mt']);
             $cUrlShop_arr    = parse_url(Shop::getURL());
             $ref             = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
             $cUrlReferer_arr = parse_url($ref);

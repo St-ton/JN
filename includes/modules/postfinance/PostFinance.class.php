@@ -86,7 +86,7 @@ class PostFinance extends PaymentMethod
             $kBestellung = str_replace(['.', ' '], '', microtime());
         }
         $stringToBeHashed = $order->cBestellNr .
-            (round(strval($order->fGesamtsummeKundenwaehrung), 2) * 100) .
+            (round($order->fGesamtsummeKundenwaehrung, 2) * 100) .
             $order->Waehrung->cISO . $this->getPSPID() . $this->getSHA1InSignature();
         $shaSign          = sha1($stringToBeHashed);
         $url              = POST_FINANCE_URL;
@@ -96,7 +96,7 @@ class PostFinance extends PaymentMethod
         }
         $smarty->assign('PSPID', $this->getPSPID());
         $smarty->assign('orderId', $order->cBestellNr);
-        $smarty->assign('amount', round(strval($order->fGesamtsummeKundenwaehrung), 2) * 100);
+        $smarty->assign('amount', round($order->fGesamtsummeKundenwaehrung, 2) * 100);
         $smarty->assign('currency', $order->Waehrung->cISO);
         $smarty->assign('language', $this->countryMapping($customer->cLand, $customer->kSprache));
         $smarty->assign('shopTitle', $this->getShopTitle() . ' ' . $order->cBestellNr);
@@ -168,8 +168,8 @@ class PostFinance extends PaymentMethod
 
             return false;
         }
-        $amount1 = round(strval($order->fGesamtsummeKundenwaehrung), 2) * 100;
-        $amount2 = round(strval($amount), 2) * 100;
+        $amount1 = round($order->fGesamtsummeKundenwaehrung, 2) * 100;
+        $amount2 = round($amount, 2) * 100;
         if ($amount1 != $amount2) {
             $this->doLog('Summe falsch (amount = ' . $amount2 .
                 ', $order->fGesamtsummeKundenwaehrung=' . $amount1 . ')');

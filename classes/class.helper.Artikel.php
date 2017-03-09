@@ -662,7 +662,7 @@ class ArtikelHelper
 
             if ($threshold > 0 && $result->fMassMenge > $threshold) {
                 $result->fGrundpreisMenge = $nAmount;
-                $result->fMassMenge       = $result->fMassMenge / $fFactor;
+                $result->fMassMenge       /= $fFactor;
                 $result->fVPEWert         = $result->fMassMenge / $nAnzahl / $result->fGrundpreisMenge;
                 $result->fBasePreis       = $fPreis / $result->fVPEWert;
                 $result->cVPEEinheit      = $result->fGrundpreisMenge . ' ' . UnitsOfMeasure::getPrintAbbreviation($mappedCode);

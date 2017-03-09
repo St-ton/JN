@@ -120,7 +120,7 @@ class UnitsOfMeasure
 
             if ($nextTo !== $unitTo) {
                 $factor = self::iGetConversionFaktor($nextTo, $unitTo);
-                $result = is_null($factor) ? null : $result * $factor;
+                $result = $factor === null ? null : $result * $factor;
             }
         }
 
@@ -136,10 +136,10 @@ class UnitsOfMeasure
     {
         $result = self::iGetConversionFaktor($unitFrom, $unitTo);
 
-        if (is_null($result)) {
+        if ($result === null) {
             $result = self::iGetConversionFaktor($unitTo, $unitFrom);
 
-            return is_null($result) ? null : 1 / $result;
+            return $result === null ? null : 1 / $result;
         }
 
         return $result;

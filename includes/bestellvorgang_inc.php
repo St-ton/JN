@@ -1293,11 +1293,9 @@ function zahlungsartKorrekt($kZahlungsart)
             $Zahlungsart->ZahlungsInfo = $ZahlungsInfo;
         }
         // billpay
-        if (substr($Zahlungsart->cModulId, 0, 10) === 'za_billpay') {
+        if (isset($paymentMethod) && strpos($Zahlungsart->cModulId, 'za_billpay') === 0 && $paymentMethod) {
             /** @var Billpay $paymentMethod */
-            if (isset($paymentMethod) && $paymentMethod) {
-                return $paymentMethod->preauthRequest() ? 2 : 1;
-            }
+            return $paymentMethod->preauthRequest() ? 2 : 1;
         }
 
         return 2;
@@ -2808,7 +2806,7 @@ function guthabenMoeglich()
 {
     return ($_SESSION['Kunde']->fGuthaben > 0 &&
             (empty($_SESSION['Bestellung']->GuthabenNutzen) || !$_SESSION['Bestellung']->GuthabenNutzen))
-        && substr($_SESSION['Zahlungsart']->cModulId, 0, 10) !== 'za_billpay';
+        && strpos($_SESSION['Zahlungsart']->cModulId, 'za_billpay') !== 0;
 }
 
 /**
@@ -2823,9 +2821,7 @@ function kuponMoeglich()
     $Kategorie_qry  = '';
     $Kunden_qry     = '';
     /** @var array('Warenkorb' => Warenkorb) $_SESSION */
-    if (isset($_SESSION['Zahlungsart']->cModulId) &&
-        substr($_SESSION['Zahlungsart']->cModulId, 0, 10) === 'za_billpay'
-    ) {
+    if (isset($_SESSION['Zahlungsart']->cModulId) && strpos($_SESSION['Zahlungsart']->cModulId, 'za_billpay') === 0 ) {
         return 0;
     }
     if (is_array($_SESSION['Warenkorb']->PositionenArr) && count($_SESSION['Warenkorb']->PositionenArr) > 0) {

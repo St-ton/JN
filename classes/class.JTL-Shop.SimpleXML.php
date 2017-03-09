@@ -209,10 +209,10 @@ class SimpleXML
 
                     if (in_array($array[$i]['tag'] . $array[$i]['level'], $repeat)) {
                         if ($repeatedone && ($repeatedone == $array[$i]['tag'] . $array[$i]['level'])) {
-                            $tags[] = strval($k++);
+                            $tags[] = (string)($k++);
                         } else {
                             $repeatedone = $array[$i]['tag'] . $array[$i]['level'];
-                            $tags[]      = strval($k);
+                            $tags[]      = (string)$k;
                         }
                     }
 
@@ -243,10 +243,10 @@ class SimpleXML
                     $tags[] = $array[$i]['tag'];
                     if (in_array($array[$i]['tag'] . $array[$i]['level'], $repeat)) {
                         if ($repeatedone && $repeatedone == $array[$i]['tag'] . $array[$i]['level']) {
-                            $tags[] = strval($k);
+                            $tags[] = (string)$k;
                         } else {
                             $repeatedone = $array[$i]['tag'] . $array[$i]['level'];
-                            $tags[]      = strval($k);
+                            $tags[]      = (string)$k;
                         }
                     }
 

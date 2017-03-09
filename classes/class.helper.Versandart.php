@@ -95,7 +95,7 @@ class VersandartHelper
                     FROM tversandart
                     WHERE fVersandkostenfreiAbX > 0
                         AND (cVersandklassen = '-1'
-                        OR cVersandklassen  RLIKE '^([0-9- ]* )? " . $versandklasse . " ')
+                        OR cVersandklassen RLIKE '^([0-9- ]* )?" . $versandklasse . " ')
                         AND (cKundengruppen = '-1' OR cKundengruppen RLIKE '^([0-9;]*;)?" . (int)$kKundengruppe . ";')", 2
             );
         }

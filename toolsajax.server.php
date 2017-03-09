@@ -802,8 +802,7 @@ function tauscheVariationKombi($aFormValues, $nVater = 0, $kEigenschaft = 0, $kE
                     }
                     $cKonfigJS = $smarty->fetch('tpl_inc/' . $cArtikelJSTemplate);
                     // remove script header
-                    $cKonfigJS = str_replace('<script type="text/javascript">', '', $cKonfigJS);
-                    $cKonfigJS = str_replace('</script>', '', $cKonfigJS);
+                    $cKonfigJS = str_replace(['<script type="text/javascript">', '</script>'], '', $cKonfigJS);
 
                     $objResponse->script($cKonfigJS);
                 }

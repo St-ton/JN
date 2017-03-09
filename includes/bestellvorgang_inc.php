@@ -178,7 +178,7 @@ function pruefeLieferdaten($cPost_arr)
         $_SESSION['Lieferadresse'] &&
         $_SESSION['Versandart']
     ) {
-        $delVersand = (!stristr($_SESSION['Versandart']->cLaender, $_SESSION['Lieferadresse']->cLand));
+        $delVersand = stripos($_SESSION['Versandart']->cLaender, $_SESSION['Lieferadresse']->cLand) === false;
         //ist die plz im zuschlagsbereich?
         $plz   = Shop::DB()->escape($_SESSION['Lieferadresse']->cPLZ);
         $plz_x = Shop::DB()->query(
@@ -2477,7 +2477,7 @@ function warenkorbKuponFaehigKategorien($Kupon, $PositionenArr)
         }
     }
     foreach ($Kats as $Kat) {
-        if (stristr($Kupon->cKategorien, $Kat . ';') !== false) {
+        if (stripos($Kupon->cKategorien, $Kat . ';') !== false) {
             return true;
         }
     }
@@ -3452,10 +3452,7 @@ function plausiLieferadresse($cPost_arr)
     setzeSteuersaetze();
     //lieferland hat sich geändert und versandart schon gewählt?
     if ($_SESSION['Lieferadresse'] && $_SESSION['Versandart']) {
-        $delVersand = false;
-        if (!stristr($_SESSION['Versandart']->cLaender, $_SESSION['Lieferadresse']->cLand)) {
-            $delVersand = true;
-        }
+        $delVersand = (stripos($_SESSION['Versandart']->cLaender, $_SESSION['Lieferadresse']->cLand) === false);
         //ist die plz im zuschlagsbereich?
         $plz   = Shop::DB()->escape($_SESSION['Lieferadresse']->cPLZ);
         $plz_x = Shop::DB()->query(

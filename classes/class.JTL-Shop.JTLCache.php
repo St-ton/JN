@@ -865,7 +865,7 @@ class JTLCache
         if (is_array($files)) {
             foreach ($files as $_file) {
                 if (strpos($_file, 'class.cachingMethod') !== false) {
-                    $methodNames[] = str_replace('class.cachingMethod.', '', str_replace('.php', '', $_file));
+                    $methodNames[] = str_replace(['class.cachingMethod.', '.php'], '', $_file);
                 }
             }
         }

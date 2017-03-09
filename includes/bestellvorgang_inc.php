@@ -1720,7 +1720,7 @@ function versandartKorrekt($kVersandart, $aFormValues = 0)
                     AND cNurAbhaengigeVersandart = '" . $cNurAbhaengigeVersandart . "'
                     AND (
                             cVersandklassen = '-1' OR 
-                            cVersandklassen RLIKE '^([0-9- ]* )?" . $versandklassen . " '
+                            cVersandklassen RLIKE '^([0-9 -]* )?" . $versandklassen . " '
                         )
                     AND kVersandart = " . $kVersandart, 1
         );

@@ -5018,7 +5018,7 @@ class Artikel
                     ON vas.kVersandart = va.kVersandart
                 WHERE va.cLaender LIKE '%{$countryCode}%'
                 AND (va.cVersandklassen = '-1' 
-                    OR va.cVersandklassen RLIKE '^([0-9- ]* )?{$this->kVersandklasse} ')
+                    OR va.cVersandklassen RLIKE '^([0-9 -]* )?{$this->kVersandklasse} ')
                 AND (va.cKundengruppen = '-1' 
                     OR va.cKundengruppen RLIKE '^([0-9;]*;)?{$_SESSION['Kundengruppe']->kKundengruppe};')
                 AND va.kVersandart NOT IN (

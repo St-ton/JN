@@ -80,7 +80,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
         /**
          * @var array
          */
-        private $config = [];
+        private $config;
 
         /**
          * AuswahlAssistent constructor.

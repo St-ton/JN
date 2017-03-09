@@ -19,11 +19,20 @@ class TwoFAemergency
 
 
     /**
+     * generate 10 codes (maybe should placed into a config)
+     *
+     * @var integer
+     */
+    private $iCodeCount;
+
+
+    /**
      * constructor
      */
     public function __construct()
     {
         $this->vEmergeCodes = [];
+        $this->iCodeCount   = 10;
     }
 
 
@@ -36,9 +45,9 @@ class TwoFAemergency
      */
     public function createNewCodes($oUserTupel)
     {
-        $iCodeCount     = 10; // generate 10 codes (maybe should placed into a config)
         $szSqlRowValues = '';
-        for ($i = 0; $i < $iCodeCount; $i++) {
+        $iValCount      = 'a';
+        for ($i = 0; $i < $this->iCodeCount; $i++) {
             $szEmergeCode         = substr(md5(rand(1000,9000)), 0, 16);
             $this->vEmergeCodes[] = $szEmergeCode;
 
@@ -46,11 +55,21 @@ class TwoFAemergency
                 $szSqlRowValues .= ', ';
             }
             $szEmergeCode    = password_hash($szEmergeCode, PASSWORD_DEFAULT);
-            $szSqlRowValues .= '('.$oUserTupel->kAdminlogin.', "'.$szEmergeCode.'")';
+
+            // to prevent the fireing from within a loop against the DB
+            // we build a values-string (like this: "(:a, :b), (:c, :d), ... " )
+            // and an according array
+            $vAnalogyArray[$iValCount] = $oUserTupel->kAdminlogin;
+            $szSqlRowValues .= '(:'.$iValCount.',';
+            $iValCount++;
+            $vAnalogyArray[$iValCount] = $szEmergeCode;
+            $szSqlRowValues .= ' :'.$iValCount.')';
+            $iValCount++;
         }
         // now write into the DB what we got till now
-        $result = Shop::DB()->executeQuery(
+        $iEffectedRows = Shop::DB()->executeQueryPrepared(
             'INSERT INTO `tadmin2facodes`(`kAdminlogin`, `cEmergencyCode`) VALUES' . $szSqlRowValues
+            , $vAnalogyArray
             , 3);
 
         return $this->vEmergeCodes;
@@ -64,14 +83,17 @@ class TwoFAemergency
      */
     public function removeExistingCodes($oUserTupel)
     {
-        Shop::DB()->executeQuery(
-            'DELETE FROM `tadmin2facodes` WHERE `kAdminlogin` = ' . $oUserTupel->kAdminlogin
-            , 3);
+        $iEffectedRows = Shop::DB()->deleteRow('tadmin2facodes', 'kAdminlogin', $oUserTupel->kAdminlogin);
+        if ($this->iCodeCount !== $iEffectedRows) {
+            // write this error into shop-system-log
+            Jtllog::writeLog('2FA-Notfall-Codes für diesen Account konnten nicht entfernt werden.', JTLLOG_LEVEL_ERROR, false);
+        }
     }
 
 
     /**
      * check a given code for his existence in a given users emergency-code pool
+     * (keep this methode as fast as possible, because it's called during each admin-login)
      *
      * @param integer   admin-account ID
      * @param string    code, as typed in the login-fields
@@ -79,21 +101,28 @@ class TwoFAemergency
      */
     public function isValidEmergencyCode($iAdminID, $szCode)
     {
-        $voHashes = Shop::DB()->executeQuery(
-            'SELECT `cEmergencyCode` FROM `tadmin2facodes` WHERE `kAdminlogin` = ' . $iAdminID
-            , 2);
+        $voHashes = Shop::DB()->selectArray('tadmin2facodes', 'kAdminlogin', $iAdminID);
         if (1 > count($voHashes)) {
+
             return false; // no emergency-codes are there
         }
 
         foreach ($voHashes as $oElement) {
             if (true === password_verify($szCode, $oElement->cEmergencyCode)) {
                 // valid code found. remove it from DB and return a 'true'
-                Shop::DB()->executeQuery(
-                    'DELETE FROM tadmin2facodes WHERE kAdminlogin = ' . $iAdminID . ' AND cEmergencyCode = "' . $oElement->cEmergencyCode . '"'
-                    , 3);
-                return true;             }
+                $iEffectedRows = Shop::DB()->executeQueryPrepared(
+                    'DELETE FROM `tadmin2facodes` WHERE `kAdminlogin` = :kAdminlogin AND `cEmergencyCode` = :cEmergencyCode'
+                    , ['kAdminlogin' => $iAdminID, 'cEmergencyCode' => $oElement->cEmergencyCode]
+                    , 3
+                );
+                if (1 !== $iEffectedRows) {
+                    Jtllog::writeLog('2FA-Notfall-Code konnten nicht gelöscht werden.', JTLLOG_LEVEL_ERROR, false);
+                }
+
+                return true;
+            }
         }
+
         return false; // not a valid emergency code, so no further action here
     }
 

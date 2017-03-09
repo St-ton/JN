@@ -60,7 +60,6 @@ class TwoFA
     /**
      * tell the asker if a secret exists for that user
      *
-     * @param void
      * @return bool - true="secret is there"|false="no secret"
      */
     public function is2FAauthSecretExist()
@@ -82,7 +81,6 @@ class TwoFA
         if(null === $this->oUserTupel) {
             $this->oUserTupel = new stdClass();
         }
-
         $this->oUserTupel->c2FAauthSecret = $this->oGA->createSecret();
 
         return $this;
@@ -99,6 +97,13 @@ class TwoFA
     }
 
 
+    /**
+     * instantiate a authenticator-object and try to verify the given code
+     * by load the users secret
+     *
+     * @param string $szCode - numerical code from the login screen (the code, which the user has found on his mobile)
+     * @return bool - true="code ist valid" | false="code is invalid"
+     */
     public function isCodeValid($szCode)
     {
         // store a google-authenticator-object instance
@@ -110,36 +115,14 @@ class TwoFA
         if (6 < strlen($szCode)) {
             // try to find this code in the emergency-code-pool
             $o2FAemergency = new TwoFAemergency();
+
             return $o2FAemergency->isValidEmergencyCode($this->oUserTupel->kAdminlogin, $szCode);
         } else {
+
             return $this->oGA->verifyCode($this->oUserTupel->c2FAauthSecret, $szCode);
         }
     }
 
-
-
-    /**
-     * instantiate a authenticator-object and try to verify the given code
-     * by load the users secret
-     *
-     * @param string $szCode - numerical code from the login screen (the code, which the user has found on his mobile)
-     * @return bool - true="code ist valid" | false="code is invalid"
-     */
-    public function _isCodeValid($szCode)
-    {
-        // store a google-authenticator-object instance
-        // (only if we check any credential! (something like lazy loading))
-        //
-        $this->oGA = new PHPGangsta_GoogleAuthenticator();
-
-        // try to find this code in the emergency-code-pool
-        $o2FAemergency = new TwoFAemergency();
-        if ($o2FAemergency->isValidEmergencyCode($this->oUserTupel->kAdminlogin, $szCode)) {
-            return true; // ... help! let me in
-        } else {
-            return $this->oGA->verifyCode($this->oUserTupel->c2FAauthSecret, $szCode);
-        }
-    }
 
     /**
      * deliver a QR-code for the given user and his secret
@@ -169,7 +152,6 @@ class TwoFA
      * (store the fetched data in this object)
      *
      * @param int - the (DB-)id of this user-account
-     * @return void
      */
     public function setUserByID($iID)
     {
@@ -182,7 +164,6 @@ class TwoFA
      * (store the fetched data in this object)
      *
      * @param string - the users login-name
-     * @return void
      */
     public function setUserByName($szUserName)
     {
@@ -197,7 +178,6 @@ class TwoFA
     /**
      * deliver the account-data, if there are any
      *
-     * @param void
      * @return object  accountdata if there're any, or null
      */
     public function getUserTupel()
@@ -216,6 +196,7 @@ class TwoFA
             $oResult          = Shop::DB()->select('teinstellungen', 'cName', 'global_shopname');
             $this->szShopName = ('' !== $oResult->cWert) ? $oResult->cWert : '';
         }
+
         return $this->szShopName;
     }
 

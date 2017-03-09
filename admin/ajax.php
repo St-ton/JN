@@ -47,7 +47,8 @@ if (isset($_GET['query'], $_GET['type']) && validateToken()) {
             $vCodes  = $oTwoFAgenEmergCodes->createNewCodes($oTwoFA->getUserTupel());
 
             $szText .= '<font face = "monospace" size = "+1">';
-            $nCol   = 0;
+            $nCol         = 0;
+            $vCodesLength = count($vCodes);
             for ($i=0; $i < count($vCodes); $i++) {
                 if (1 > $nCol) {
                     $szText .= '<span style="padding:3px;">' . $vCodes[$i] . '</span> ';

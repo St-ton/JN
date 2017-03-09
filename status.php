@@ -23,11 +23,13 @@ $linkHelper = LinkHelper::getInstance();
 pruefeHttps();
 
 if (strlen($_GET['uid']) === 40) {
-    $status = Shop::DB()->query("
+    $status = Shop::DB()->executeQueryPrepared("
         SELECT kBestellung 
             FROM tbestellstatus 
             WHERE dDatum >= date_sub(now(), INTERVAL 30 DAY) 
-            AND cUID = '" . Shop::DB()->escape($_GET['uid']) . "'", 1
+            AND cUID = :uid",
+        ['uid' => $_GET['uid']],
+        1
     );
     if (empty($status->kBestellung)) {
         header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true), true, 303);

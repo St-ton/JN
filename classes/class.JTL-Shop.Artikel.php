@@ -2781,7 +2781,7 @@ class Artikel
                         AND tartikelsichtbarkeit.kKundengruppe = " . $kKundengruppe . "
                     WHERE tartikel.kVaterArtikel = " . (int)$this->kArtikel . " 
                     AND tartikelsichtbarkeit.kArtikel IS NULL
-                    ORDER BY tartikel.nSort ASC, teigenschaft.nSort ASC, 
+                    ORDER BY tartikel.kArtikel ASC, teigenschaft.nSort ASC, 
                              teigenschaft.cName, teigenschaftwert.nSort ASC, teigenschaftwert.cName", 2
             );
             if (is_array($oVariationsKombiKinder_arr) && count($oVariationsKombiKinder_arr) > 0) {
@@ -2805,7 +2805,8 @@ class Artikel
                 $oVariationKombiKinderAssoc_arr[$cIdentifier] = $lastkArtikel; //last item
 
                 // Preise holen bzw. Artikel
-                if (is_array($oVariationKombiKinderAssoc_arr) && count($oVariationKombiKinderAssoc_arr) > 0) {
+                if (is_array($oVariationKombiKinderAssoc_arr) && count($oVariationKombiKinderAssoc_arr) > 0 &&
+                    count($oVariationKombiKinderAssoc_arr) <= ART_MATRIX_MAX) {
                     foreach ($oVariationKombiKinderAssoc_arr as $i => $oVariationKombiKinderAssoc) {
                         if (!isset($oTMP_arr[$oVariationKombiKinderAssoc])) {
                             $oArtikelOptionen                            = new stdClass();
@@ -2849,11 +2850,66 @@ class Artikel
                             $oVariationKombiKinderAssoc_arr[$i]->nNichtLieferbar = 1;
                         }
                     }
+                    $this->sortVarCombinationArray($oVariationKombiKinderAssoc_arr, array('nSort' => SORT_ASC, 'cName' => SORT_ASC));
                 }
             }
         }
 
         return $oVariationKombiKinderAssoc_arr;
+    }
+
+    /**
+     * Sort an array of objects.
+     *
+     * Requires PHP 5.3+
+     *
+     * You can pass in one or more properties on which to sort.
+     * If a string is supplied as the sole property, or if you specify a
+     * property without a sort order then the sorting will be ascending.
+     *
+     * If the key of an array is an array, then it will sorted down to that
+     * level of node.
+     *
+     * Example usages:
+     *
+     * sortVarCombinationArray($items, 'size');
+     * sortVarCombinationArray($items, array('size', array('time' => SORT_DESC, 'user' => SORT_ASC));
+     * sortVarCombinationArray($items, array('size', array('user', 'forname'))
+     *
+     * @param array $array
+     * @param string|array $properties
+     */
+    function sortVarCombinationArray(&$array, $properties)
+    {
+        if (is_string($properties)) {
+            $properties = array($properties => SORT_ASC);
+        }
+        uasort($array, function($a, $b) use ($properties) {
+            foreach($properties as $k => $v) {
+                if (is_int($k)) {
+                    $k = $v;
+                    $v = SORT_ASC;
+                }
+                $collapse = function($node, $props) {
+                    if (is_array($props)) {
+                        foreach ($props as $prop) {
+                            $node = (!isset($node->$prop)) ? null : $node->$prop;
+                        }
+                        return $node;
+                    } else {
+                        return (!isset($node->$props)) ? null : $node->$props;
+                    }
+                };
+                $aProp = $collapse($a, $k);
+                $bProp = $collapse($b, $k);
+                if ($aProp != $bProp) {
+                    return ($v == SORT_ASC)
+                        ? strnatcasecmp($aProp, $bProp)
+                        : strnatcasecmp($bProp, $aProp);
+                }
+            }
+            return 0;
+        });
     }
 
     /**

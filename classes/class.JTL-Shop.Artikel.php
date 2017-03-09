@@ -2332,7 +2332,7 @@ class Artikel
                 }
                 foreach ($this->Variationen as $i => $oVariation) {
                     $this->Variationen[$i]->Werte = array_merge($this->Variationen[$i]->Werte);
-                    if ($this->Variationen[$i]->nLieferbareVariationswerte == 0) {
+                    if ($this->Variationen[$i]->nLieferbareVariationswerte === 0) {
                         $this->inWarenkorbLegbar = INWKNICHTLEGBAR_LAGERVAR;
                     }
                     if ($this->Variationen[$i]->cTyp !== 'FREIFELD' && $this->Variationen[$i]->cTyp !== 'PFLICHT-FREIFELD') {
@@ -2355,7 +2355,7 @@ class Artikel
                                     count($this->oVariationKombi_arr) > 0
                                 ) {
                                     foreach ($this->oVariationKombi_arr as $oVariationKombi) {
-                                        if ($oVariationKombi->kEigenschaftWert == $oVariationsWert->kEigenschaftWert) {
+                                        if ($oVariationKombi->kEigenschaftWert === $oVariationsWert->kEigenschaftWert) {
                                             $this->oVariationenNurKind_arr[$i]->Werte[] = $oVariationsWert;
                                         }
                                     }
@@ -3750,7 +3750,7 @@ class Artikel
         $this->checkDateDependencies();
         //wenn ja fMaxRabatt setzen
         // fMaxRabatt = 0, wenn Sonderpreis aktiv
-        if ($this->cAktivSonderpreis !== 'Y' && ((double)$this->fNettoPreis > 0 || (double)$this->fNettoPreis == 0)) {
+        if ($this->cAktivSonderpreis !== 'Y' && ((double)$this->fNettoPreis > 0 || (double)$this->fNettoPreis === 0.0)) {
             $oArtikelTMP->cAktivSonderpreis = null;
             $oArtikelTMP->dStart_en         = null;
             $oArtikelTMP->dStart_de         = null;
@@ -3863,7 +3863,7 @@ class Artikel
         /* Sobald ein KindArtikel teurer ist als der Vaterartikel, muss nVariationsAufpreisVorhanden auf 1
            gesetzt werden damit in der Artikelvorschau ein "Preis ab ..." erscheint
            aber nur wenn auch Preise angezeigt werden, this->Preise also auch vorhanden ist */
-        if (is_object($this->Preise) && $oArtikelTMP->kVaterArtikel == 0 && $oArtikelTMP->nIstVater == 1) {
+        if (is_object($this->Preise) && $this->kVaterArtikel === 0 && $this->nIstVater === 1) {
             $fVKNetto         = ($this->Preise->fVKNetto !== null) ? $this->Preise->fVKNetto : 0.0;
             $oKindSonderpreis = Shop::DB()->query("
                 SELECT COUNT(a.kArtikel) AS nVariationsAufpreisVorhanden

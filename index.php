@@ -21,9 +21,6 @@ if (Shop::$kLink > 0) {
         }
     }
 }
-if ($https === false) {
-    loeseHttps();
-}
 executeHook(HOOK_INDEX_NAVI_HEAD_POSTGET);
 //prg
 if (isset($_SESSION['bWarenkorbHinzugefuegt'], $_SESSION['bWarenkorbAnzahl'], $_SESSION['hinweis'])) {

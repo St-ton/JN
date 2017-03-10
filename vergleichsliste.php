@@ -13,8 +13,6 @@ $oVergleichsliste = null;
 $conf             = Shop::getSettings([CONF_VERGLEICHSLISTE, CONF_ARTIKELDETAILS]);
 $cExclude         = [];
 $oMerkVaria_arr   = [[], []];
-loeseHttps();
-
 if (isset($Link)) {
     $requestURL = baueURL($Link, URLART_SEITE);
     $sprachURL  = isset($Link->languageURLs)

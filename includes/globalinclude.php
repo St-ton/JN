@@ -64,8 +64,8 @@ $cache->setJtlCacheConfig();
 
 $conf = Shop::getSettings([CONF_GLOBAL]);
 
-if ($conf['global']['kaufabwicklung_ssl_nutzen'] === 'P' &&
-    PHP_SAPI !== 'cli' &&
+if (PHP_SAPI !== 'cli' &&
+    $conf['global']['kaufabwicklung_ssl_nutzen'] === 'P' &&
     (!isset($_SERVER['HTTPS']) || (strtolower($_SERVER['HTTPS']) !== 'on' && (int)$_SERVER['HTTPS'] !== 1))
 ) {
     $https = false;

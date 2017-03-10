@@ -149,8 +149,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
             $override = [
                 'cName'             => $this->getName(),
                 'kArtikel'          => $this->getArtikelKey(),
-                'cBeschreibung'     => $this->getBeschreibung(),
-                'cKurzBeschreibung' => $this->getKurzBeschreibung(),
+                'cBeschreibung'     => !empty($this->getKurzBeschreibung())
+                    ? $this->getKurzBeschreibung()
+                    : $this->getBeschreibung(),
                 'bAnzahl'           => $this->getMin() != $this->getMax(),
                 'fInitial'          => (float)$this->getInitial(),
                 'fMin'              => (float)$this->getMin(),
@@ -166,7 +167,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 ]
             ];
             $result = array_merge($override, $virtual);
-
             return utf8_convert_recursive($result);
         }
 
@@ -500,7 +500,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
             }
 
             if ($this->oSprache) {
-                return $this->oSprache->getKurzBeschreibung();
+                return $this->oSprache->getBeschreibung();
             }
 
             return '';

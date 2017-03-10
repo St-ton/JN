@@ -64,7 +64,10 @@ class Status
     }
 
     /**
-     * @return bool
+     * checks the db-structure against 'admin/includes/shopmd5files/dbstruct_[shop-version].json'
+     * (the 'shop-Version' is here needed without points)
+     *
+     * @return bool  true='no errors', false='something is wrong'
      */
     protected function validDatabaseStruct()
     {
@@ -81,7 +84,10 @@ class Status
     }
 
     /**
-     * @return bool
+     * checks the shop-filesystem-structure against 'admin/includes/shopmd5files/[shop-version].csv'
+     * (the 'shop-Version' is here needed without points)
+     *
+     * @return bool  true='no errors', false='something is wrong'
      */
     protected function validFileStruct()
     {

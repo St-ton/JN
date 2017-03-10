@@ -584,11 +584,9 @@ function bearbeiteSet($xml)
             if (strlen($cZahlungsartName) > 0) {
                 $upd->cZahlungsartName = $cZahlungsartName;
             }
-            if (!empty($dBezahltDatum)) {
-                $upd->dBezahltDatum = $dBezahltDatum;
-            } else {
-                $upd->dBezahltDatum = '0000-00-00';
-            }
+            $upd->dBezahltDatum = empty($dBezahltDatum) 
+                ? '0000-00-00' 
+                : $dBezahltDatum;
             Shop::DB()->update('tbestellung', 'kBestellung', (int)$oBestellungWawi->kBestellung, $upd);
             $oBestellungUpdated = new Bestellung($oBestellungShop->kBestellung, true);
 

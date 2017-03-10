@@ -92,8 +92,6 @@ if (!$cParameter_arr['kWunschliste'] && strlen(verifyGPDataString('wlid')) > 0) 
     exit();
 }
 $smarty->assign('NaviFilter', $NaviFilter);
-
-loeseHttps();
 Shop::setPageType(PAGE_ARTIKELLISTE);
 
 if ($cParameter_arr['kHersteller'] > 0 ||

@@ -35,6 +35,12 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         protected $cBeschreibung;
 
         /**
+         * @access protected
+         * @var string
+         */
+        protected $cKurzBeschreibung;
+
+        /**
          * Constructor
          *
          * @param int $kKonfigitem
@@ -210,6 +216,20 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
+         * Sets the cKurzBeschreibung
+         *
+         * @access public
+         * @param string $cKurzBeschreibung
+         * @return $this
+         */
+        public function setKurzBeschreibung($cKurzBeschreibung)
+        {
+            $this->cKurzBeschreibung = Shop::DB()->escape($cKurzBeschreibung);
+
+            return $this;
+        }
+
+        /**
          * Gets the kKonfigitem
          *
          * @access public
@@ -251,6 +271,17 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         public function getBeschreibung()
         {
             return $this->cBeschreibung;
+        }
+
+        /**
+         * Gets the cBeschreibung
+         *
+         * @access public
+         * @return string
+         */
+        public function getKurzBeschreibung()
+        {
+            return $this->cKurzBeschreibung;
         }
     }
 }

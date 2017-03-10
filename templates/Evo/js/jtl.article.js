@@ -417,7 +417,16 @@
                                 } else {
                                     that.setConfigItemImage(grp.kKonfiggruppe, grp.cBildPfad);
                                 }
-                                that.setConfigItemDescription(grp.kKonfiggruppe, item.cBeschreibung);
+                                if (item.kArtikel > 0) {
+                                    if (item.hasOwnProperty('length') && item.cKurzBeschreibung.length > 0) {
+                                        cBeschreibung = item.cKurzBeschreibung;
+                                    } else {
+                                        cBeschreibung = "";
+                                    }
+                                } else {
+                                    cBeschreibung = item.cBeschreibung;
+                                }
+                                that.setConfigItemDescription(grp.kKonfiggruppe, cBeschreibung);
                                 enableQuantity = item.bAnzahl;
                                 if (!enableQuantity) {
                                     quantityInput

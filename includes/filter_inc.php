@@ -280,8 +280,8 @@ function gibArtikelKeys($FilterSQL, $nArtikelProSeite, $NaviFilter, $bExtern, $o
             ORDER BY " . $oSortierungsSQL->cOrder . ", tartikel.kArtikel
             " . $cLimitSQL, 2
     );
-    executeHook(
-        HOOK_FILTER_INC_GIBARTIKELKEYS, [
+    array_map(function($article) { $article->kArtikel = (int)$article->kArtikel; return $article;}, $oArtikelKey_arr);
+    executeHook(HOOK_FILTER_INC_GIBARTIKELKEYS, [
             'oArtikelKey_arr' => &$oArtikelKey_arr,
             'FilterSQL'       => &$FilterSQL,
             'NaviFilter'      => &$NaviFilter,

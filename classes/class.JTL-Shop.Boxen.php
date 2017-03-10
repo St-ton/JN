@@ -1546,7 +1546,7 @@ class Boxen
                 SET bAnzeigen = :show, 
                     nSeite = :page, 
                     ePosition = :position",
-            ['show' => $bAnzeigen, 'page' => $i, 'position' => $ePosition],
+            ['show' => $bAnzeigen, 'page' => $nSeite, 'position' => $ePosition],
             4
         );
     }

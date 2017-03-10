@@ -4093,6 +4093,13 @@ function holeAlleSuchspecialOverlays($kSprache = 0)
             $oSuchspecialOverlay_arr = [];
             if (is_array($oSuchspecialOverlayTMP_arr) && count($oSuchspecialOverlayTMP_arr) > 0) {
                 foreach ($oSuchspecialOverlayTMP_arr as $oSuchspecialOverlayTMP) {
+                    $oSuchspecialOverlayTMP->kSuchspecialOverlay = (int)$oSuchspecialOverlayTMP->kSuchspecialOverlay;
+                    $oSuchspecialOverlayTMP->nAktiv              = (int)$oSuchspecialOverlayTMP->nAktiv;
+                    $oSuchspecialOverlayTMP->nPrio               = (int)$oSuchspecialOverlayTMP->nPrio;
+                    $oSuchspecialOverlayTMP->nMargin             = (int)$oSuchspecialOverlayTMP->nMargin;
+                    $oSuchspecialOverlayTMP->nTransparenz        = (int)$oSuchspecialOverlayTMP->nTransparenz;
+                    $oSuchspecialOverlayTMP->nGroesse            = (int)$oSuchspecialOverlayTMP->nGroesse;
+                    $oSuchspecialOverlayTMP->nPosition           = (int)$oSuchspecialOverlayTMP->nPosition;
                     $cSuchSpecial = strtolower(str_replace([' ', '-', '_'], '', $oSuchspecialOverlayTMP->cSuchspecial));
                     $cSuchSpecial = preg_replace(
                         ['/Ä/', '/Ö/', '/Ü/', '/ä/', '/ö/', '/ü/', '/ß/',

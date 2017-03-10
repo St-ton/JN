@@ -4632,7 +4632,7 @@ function gibUID($nAnzahlStellen, $cString = '')
                 if ((intval(date('w')) % 2) <= strlen($cString)) {
                     $nPos = (intval(date('w')) % 2);
                 }
-                $cUID .= md5(substr($cString, $nPos, 1) . $cSalt . md5(PFAD_ROOT . (microtime() - mt_rand())));
+                $cUID .= md5(substr($cString, $nPos, 1) . $cSalt . md5(PFAD_ROOT . (microtime(true) - mt_rand())));
             }
         }
         $cUID = cryptPasswort($cUID . $cSalt);

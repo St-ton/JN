@@ -141,12 +141,12 @@ class Navigationsfilter
     /**
      * @var int
      */
-    private $languageID = 0;
+    private $languageID;
 
     /**
      * @var int
      */
-    private $customerGroupID = 0;
+    private $customerGroupID;
 
     /**
      * @var array
@@ -2051,9 +2051,9 @@ class Navigationsfilter
     public function mapUserSorting($sort)
     {
         // Ist die Usersortierung ein Integer => Return direkt den Integer
-        preg_match('/[0-9]+/', $sort, $cTreffer_arr);
+        preg_match('/\d+/', $sort, $cTreffer_arr);
         if (isset($cTreffer_arr[0]) && strlen($sort) === strlen($cTreffer_arr[0])) {
-            return $sort;
+            return (int)$sort;
         }
         // Usersortierung ist ein String aus einem Kategorieattribut
         switch (strtolower($sort)) {
@@ -2250,10 +2250,7 @@ class Navigationsfilter
         $cMetaDescription = '';
         if (is_array($oArtikel_arr) && count($oArtikel_arr) > 0) {
             shuffle($oArtikel_arr);
-            $nCount = 12;
-            if (count($oArtikel_arr) < $nCount) {
-                $nCount = count($oArtikel_arr);
-            }
+            $nCount       = min(12, count($oArtikel_arr));
             $cArtikelName = '';
             for ($i = 0; $i < $nCount; ++$i) {
                 $cArtikelName .= ($i > 0)
@@ -2324,18 +2321,17 @@ class Navigationsfilter
         $cMetaKeywords = '';
         if (is_array($oArtikel_arr) && count($oArtikel_arr) > 0) {
             shuffle($oArtikel_arr); // Shuffle alle Artikel
-            $nCount = 6;
-            if (count($oArtikel_arr) < $nCount) {
-                $nCount = count($oArtikel_arr);
-            }
+            $nCount                = min(6, count($oArtikel_arr));
             $cArtikelName          = '';
             $excludes              = holeExcludedKeywords();
             $oExcludesKeywords_arr = isset($excludes[$_SESSION['cISOSprache']]->cKeywords)
                 ? explode(' ', $excludes[$_SESSION['cISOSprache']]->cKeywords)
                 : [];
             for ($i = 0; $i < $nCount; ++$i) {
-                $cExcArtikelName = gibExcludesKeywordsReplace($oArtikel_arr[$i]->cName,
-                    $oExcludesKeywords_arr); // Filter nicht erlaubte Keywords
+                $cExcArtikelName = gibExcludesKeywordsReplace(
+                    $oArtikel_arr[$i]->cName,
+                    $oExcludesKeywords_arr
+                ); // Filter nicht erlaubte Keywords
                 if (strpos($cExcArtikelName, ' ') !== false) {
                     // Wenn der Dateiname aus mehreren Wörtern besteht
                     $cSubNameTMP_arr = explode(' ', $cExcArtikelName);
@@ -2391,10 +2387,8 @@ class Navigationsfilter
 
             return strip_tags($cMetaKeywords);
         }
-        $cMetaKeywords = str_replace('"', '', $cMetaKeywords);
-        $cMetaKeywords = StringHandler::htmlentitydecode($cMetaKeywords, ENT_NOQUOTES);
 
-        return strip_tags($cMetaKeywords);
+        return strip_tags(StringHandler::htmlentitydecode(str_replace('"', '', $cMetaKeywords), ENT_NOQUOTES));
     }
 
     /**

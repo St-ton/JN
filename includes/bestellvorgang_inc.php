@@ -2383,17 +2383,10 @@ function kuponAnnehmen($Kupon)
             );
         }
     }
-    // Pos erstellen für alle ausser Versandkupon (schon erstellt; hat keinen cWertTyp), $postyp bereits gesetzt
-    if ($Kupon->cWertTyp === 'prozent' && $Kupon->nGanzenWKRabattieren != 0) { // %-Kupon + Ganzen WK rabattieren
+    if ($Kupon->cWertTyp === 'prozent' || $Kupon->cWertTyp === 'festpreis') {
         unset($_POST['Kuponcode']);
-        $_SESSION['Warenkorb']->erstelleSpezialPos($Spezialpos->cName, 1, $couponPrice * -1, $Kupon->kSteuerklasse, $postyp);
-    } elseif ($Kupon->cWertTyp === 'prozent' && $Kupon->nGanzenWKRabattieren == 0 && $Kupon->cKuponTyp !== 'neukundenkupon') {
-        // %-Kupon + nicht Ganzen WK rabattieren
-        unset($_POST['Kuponcode']);
-        $_SESSION['Warenkorb']->erstelleSpezialPos($Spezialpos, 1, $couponPrice * -1, $Kupon->kSteuerklasse, $postyp);
-    } elseif ($Kupon->cWertTyp === 'festpreis') {
-        unset($_POST['Kuponcode']);
-        $_SESSION['Warenkorb']->erstelleSpezialPos($Spezialpos->cName, 1, $couponPrice * -1, $Kupon->kSteuerklasse, $postyp);
+        $_SESSION['Warenkorb']->erstelleSpezialPos($Spezialpos->cName, 1, $couponPrice * -1, $Kupon->kSteuerklasse,
+            $postyp);
     }
 }
 
@@ -2427,16 +2420,18 @@ function warenkorbKuponFaehigKategorien($Kupon, $PositionenArr)
     $Kats = [];
     if (is_array($PositionenArr)) {
         foreach ($PositionenArr as $Pos) {
-            $kArtikel = $Pos->Artikel->kArtikel;
-            // Kind?
-            if (ArtikelHelper::isVariChild($kArtikel)) {
-                $kArtikel = ArtikelHelper::getParent($kArtikel);
-            }
-            $Kats_arr = Shop::DB()->selectAll('tkategorieartikel', 'kArtikel', (int)$kArtikel, 'kKategorie');
-            if (is_array($Kats_arr)) {
-                foreach ($Kats_arr as $Kat) {
-                    if (!in_array($Kat->kKategorie, $Kats)) {
-                        $Kats[] = $Kat->kKategorie;
+            if (!empty($Pos->Artikel)) {
+                $kArtikel = $Pos->Artikel->kArtikel;
+                // Kind?
+                if (ArtikelHelper::isVariChild($kArtikel)) {
+                    $kArtikel = ArtikelHelper::getParent($kArtikel);
+                }
+                $Kats_arr = Shop::DB()->selectAll('tkategorieartikel', 'kArtikel', (int)$kArtikel, 'kKategorie');
+                if (is_array($Kats_arr)) {
+                    foreach ($Kats_arr as $Kat) {
+                        if (!in_array($Kat->kKategorie, $Kats)) {
+                            $Kats[] = $Kat->kKategorie;
+                        }
                     }
                 }
             }

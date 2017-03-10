@@ -836,7 +836,6 @@ class Kupon
      */
     public function getTranslation($kKupon = 0)
     {
-        //dump($_SESSION);
         $translationList = [];
         if(isset($_SESSION['Sprachen'])){
             foreach ($_SESSION['Sprachen'] as $Sprache) {

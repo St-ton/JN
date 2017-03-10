@@ -57,7 +57,7 @@ switch (true) {
     case isset($_GET['select']):
         $table = $_GET['select'];
 
-        if (!preg_match('/^\w+$/i', $table, $m)) {
+        if (!preg_match('/^\w+$/i', $table, $m) || !validateToken()) {
             die('Not allowed.');
         }
 
@@ -97,8 +97,9 @@ switch (true) {
         // where
         if (isset($filter['where']['col'])) {
             $whereParts = [];
-            for ($i = 0; $i < count($filter['where']['col']); $i++) {
-                if (!@empty($filter['where']['col'][$i]) && !@empty($filter['where']['op'][$i])) {
+            $columnCount = count($filter['where']['col']);
+            for ($i = 0; $i < $columnCount; $i++) {
+                if (!empty($filter['where']['col'][$i]) && !empty($filter['where']['op'][$i])) {
                     $col = $filter['where']['col'][$i];
                     $val = $filter['where']['val'][$i];
                     $op  = strtoupper($filter['where']['op'][$i]);
@@ -146,10 +147,14 @@ switch (true) {
 
     case isset($_GET['command']):
         $command = $_GET['command'];
-
+        $query   = null;
         if (isset($_POST['query'])) {
             $query = $_POST['query'];
+        } elseif (isset($_POST['sql_query_edit'])) {
+            $query = $_POST['sql_query_edit'];
+        }
 
+        if ($query !== null && validateToken()) {
             try {
                 $parser = new SqlParser\Parser($query);
 
@@ -168,7 +173,7 @@ switch (true) {
                         if ($dbname !== null && strcasecmp($dbname, DB_NAME) !== 0) {
                             throw new \Exception(sprintf('Well, at least u tried :)'));
                         }
-                        if (in_array(strtolower($table), $restrictedTables)) {
+                        if (in_array(strtolower($table), $restrictedTables, true)) {
                             throw new \Exception(sprintf('Permission denied for table `%s`', $table));
                         }
                     }

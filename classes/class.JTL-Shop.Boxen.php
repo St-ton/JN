@@ -1528,22 +1528,26 @@ class Boxen
         if ($nSeite === 0) {
             $bOk = true;
             for ($i = 0; $i < PAGE_MAX && $bOk; $i++) {
-                $bOk = Shop::DB()->query("
+                $bOk = Shop::DB()->executeQueryPrepared("
                   REPLACE INTO tboxenanzeige 
-                      SET bAnzeigen = " . $bAnzeigen . ",
-                          nSeite = " . $i . ", 
-                          ePosition = '" . $ePosition . "'", 4
+                      SET bAnzeigen = :show,
+                          nSeite = :page, 
+                          ePosition = :position",
+                        ['show' => $bAnzeigen, 'page' => $i, 'position' => $ePosition],
+                        4
                     ) && $bOk;
             }
 
             return $bOk;
         }
 
-        return Shop::DB()->query("
+        return Shop::DB()->executeQueryPrepared("
             REPLACE INTO tboxenanzeige 
-                SET bAnzeigen = " . $bAnzeigen . ", 
-                    nSeite = " . $nSeite . ", 
-                    ePosition = '" . $ePosition . "'", 4
+                SET bAnzeigen = :show, 
+                    nSeite = :page, 
+                    ePosition = :position",
+            ['show' => $bAnzeigen, 'page' => $i, 'position' => $ePosition],
+            4
         );
     }
 

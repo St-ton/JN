@@ -169,6 +169,7 @@ ifndef('CATEGORY_FULL_LOAD_MAX_LEVEL', 3);
 //maximum number of entries in category filter, -1 for no limit
 ifndef('CATEGORY_FILTER_ITEM_LIMIT', -1);
 ifndef('PRODUCT_LIST_SHOW_RATINGS', false);
+ifndef('IMAGE_CLEANUP_LIMIT', 50);
 ifndef('OBJECT_CACHE_DIR', PFAD_ROOT . PFAD_COMPILEDIR . 'filecache/');
 
 /**

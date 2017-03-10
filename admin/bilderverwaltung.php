@@ -6,6 +6,8 @@
 ob_start();
 set_time_limit(0);
 
+global $oAccount;
+
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Updater.php';
 
@@ -103,6 +105,71 @@ switch ($action) {
         makeResponse($result);
         break;
 
+    case 'cleanup_storage':
+        $index      = isset($_GET['index']) ? (int)$_GET['index'] : null;
+        $startIndex = $index;
+
+        if ($index === null) {
+            makeResponse(null, 'Invalid argument request', 500);
+        }
+
+        $directory = PFAD_ROOT . PFAD_MEDIA_IMAGE_STORAGE;
+        $started   = time();
+        $result    = (object)[
+            'total'         => 0,
+            'cleanupTime'   => 0,
+            'nextIndex'     => 0,
+            'deletedImages' => 0,
+            'deletes'       => []
+        ];
+
+        if ($index === 0) {
+            // at the first run, check how many files actually exist in the storage dir
+            $storageIterator           = new FilesystemIterator($directory, FilesystemIterator::SKIP_DOTS);
+            $_SESSION['image_count']   = iterator_count($storageIterator);
+            $_SESSION['deletedImages'] = 0;
+            $_SESSION['checkedImages'] = 0;
+        }
+
+        $total              = $_SESSION['image_count'];
+        $checkedInThisRun   = 0;
+        $deletedInThisRun   = 0;
+        $idx                = 0;
+
+        foreach (new LimitIterator(new DirectoryIterator($directory), $index, IMAGE_CLEANUP_LIMIT) as $idx => $fileInfo) {
+            if ($fileInfo->isDot()) {
+                continue;
+            }
+            ++$checkedInThisRun;
+            $imageIsUsed = Shop::DB()->select('tartikelpict', 'cPfad', $fileInfo->getFilename()) !== null;
+            // files in the storage folder that have no associated entry in tartikelpict are considered orphaned
+            if (!$imageIsUsed) {
+                $result->deletes[] = $fileInfo->getFilename();
+                unlink($fileInfo->getPathname());
+                ++$_SESSION['deletedImages'];
+                ++$deletedInThisRun;
+            }
+        }
+        // increment total number of checked files by the amount checked in this run
+        $_SESSION['checkedImages'] += $checkedInThisRun;
+        $index = ($idx > 0) ? $idx + 1 - $deletedInThisRun : $total;
+        // avoid endless recursion
+        if ($index === $startIndex && $deletedInThisRun === 0) {
+            $index = $total;
+        }
+        $result->total             = $total;
+        $result->cleanupTime       = time() - $started;
+        $result->nextIndex         = $index;
+        $result->checkedFiles      = $checkedInThisRun;
+        $result->checkedFilesTotal = $_SESSION['checkedImages'];
+        $result->deletedImages     = $_SESSION['deletedImages'];
+        if ($index >= $total) {
+            // done.
+            unset($_SESSION['image_count'], $_SESSION['deletedImages'], $_SESSION['checkedImages']);
+        }
+        makeResponse($result);
+        break;
+
     case 'cache_image':
         $index = isset($_GET['index']) ? (int)$_GET['index'] : null;
 
@@ -138,12 +205,12 @@ switch ($action) {
 
     default:
         $smarty->assign('items', getItems())
-            ->assign('TYPE_PRODUCT', Image::TYPE_PRODUCT)
-            ->assign('SIZE_XS', Image::SIZE_XS)
-            ->assign('SIZE_SM', Image::SIZE_SM)
-            ->assign('SIZE_MD', Image::SIZE_MD)
-            ->assign('SIZE_LG', Image::SIZE_LG)
-            ->display('bilderverwaltung.tpl');
+               ->assign('TYPE_PRODUCT', Image::TYPE_PRODUCT)
+               ->assign('SIZE_XS', Image::SIZE_XS)
+               ->assign('SIZE_SM', Image::SIZE_SM)
+               ->assign('SIZE_MD', Image::SIZE_MD)
+               ->assign('SIZE_LG', Image::SIZE_LG)
+               ->display('bilderverwaltung.tpl');
         break;
 }
 

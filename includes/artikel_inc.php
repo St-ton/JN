@@ -57,7 +57,7 @@ function gibArtikelXSelling($kArtikel, $isParent = null)
                 }
                 $xSelling->Standard->XSellGruppen[$i]->Artikel = [];
                 foreach ($xsell as $xs) {
-                    if ($xs->kXSellGruppe == $xsellgruppen[$i]) {
+                    if ($xs->kXSellGruppe === $xsellgruppen[$i]) {
                         $artikel = new Artikel();
                         $artikel->fuelleArtikel($xs->kXSellArtikel, $defaultOptions);
                         if ($artikel->kArtikel > 0 && $artikel->aufLagerSichtbarkeit()) {
@@ -1241,7 +1241,7 @@ function holeAehnlicheArtikel($kArtikel)
     ) {
         foreach ($oArtikel_arr as $i => $oArtikel) {
             foreach ($kArtikelXSellerKey_arr as $kArtikelXSellerKey) {
-                if ($oArtikel->kArtikel == $kArtikelXSellerKey) {
+                if ($oArtikel->kArtikel === $kArtikelXSellerKey) {
                     unset($oArtikel_arr[$i]);
                 }
             }

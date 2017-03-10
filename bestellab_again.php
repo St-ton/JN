@@ -212,7 +212,7 @@ if ($kPlugin > 0) {
     $paymentMethod           = new PaymentPartner($bestellung->Zahlungsart->cModulId);
     $paymentMethod->cModulId = $bestellung->Zahlungsart->cModulId;
     $paymentMethod->preparePaymentProcess($bestellung);
-} elseif (substr($bestellung->Zahlungsart->cModulId, 0, 8) === 'za_mbqc_') {
+} elseif (strpos($bestellung->Zahlungsart->cModulId, 'za_mbqc_') === 0) {
     require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'moneybookers_qc/MoneyBookersQC.class.php';
     $paymentMethod           = new MoneyBookersQC($bestellung->Zahlungsart->cModulId);
     $paymentMethod->cModulId = $bestellung->Zahlungsart->cModulId;

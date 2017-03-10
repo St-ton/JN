@@ -8,6 +8,7 @@ require PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
 Shop::run();
 $cParameter_arr = Shop::getParameters();
 $NaviFilter     = Shop::buildNaviFilter($cParameter_arr);
+/** @global JTLSmarty $smarty */
 if ($cParameter_arr['kLink'] > 0) {
     require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
     require __DIR__ . '/seite.php';

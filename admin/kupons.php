@@ -24,7 +24,7 @@ $res = handleCsvImportAction('kupon', function ($obj) {
     $couponNames = [];
 
     foreach (get_object_vars($obj) as $key => $val) {
-        if (substr($key, 0, 6) === 'cName_') {
+        if (strpos($key, 'cName_') === 0) {
             $couponNames[substr($key, 6)] = $val;
             unset($obj->$key);
         }
@@ -136,17 +136,21 @@ if ($action === 'bearbeiten') {
     $oKundengruppe_arr = Shop::DB()->query("SELECT kKundengruppe, cName FROM tkundengruppe", 2);
     $oHersteller_arr   = getManufacturers($oKupon->cHersteller);
     $oKategorie_arr    = getCategories($oKupon->cKategorien);
-    $kKunde_arr        = array_filter(StringHandler::parseSSK($oKupon->cKunden),
-        function ($kKunde) { return (int)$kKunde > 0; });
+    $kKunde_arr        = array_filter(
+        StringHandler::parseSSK($oKupon->cKunden),
+        function ($kKunde) {
+            return (int)$kKunde > 0;
+        }
+    );
     if ($oKupon->kKupon > 0) {
         $oKuponName_arr = getCouponNames((int)$oKupon->kKupon);
     } else {
         $oKuponName_arr = [];
         foreach ($oSprache_arr as $oSprache) {
-            $oKuponName_arr[$oSprache->cISO] =
-                (isset($_POST['cName_' . $oSprache->cISO]) && $_POST['cName_' . $oSprache->cISO] !== '')
-                    ? $_POST['cName_' . $oSprache->cISO]
-                    : $oKupon->cName;
+            $postVarName                     = 'cName_' . $oSprache->cISO;
+            $oKuponName_arr[$oSprache->cISO] = (isset($_POST[$postVarName]) && $_POST[$postVarName] !== '')
+                ? $_POST[$postVarName]
+                : $oKupon->cName;
         }
     }
 
@@ -154,7 +158,7 @@ if ($action === 'bearbeiten') {
            ->assign('oKundengruppe_arr', $oKundengruppe_arr)
            ->assign('oHersteller_arr', $oHersteller_arr)
            ->assign('oKategorie_arr', $oKategorie_arr)
-           ->assign('oKunde_arr', $oKunde_arr)
+           ->assign('kKunde_arr', $kKunde_arr)
            ->assign('oSprache_arr', $oSprache_arr)
            ->assign('oKuponName_arr', $oKuponName_arr)
            ->assign('oKupon', $oKupon);
@@ -209,15 +213,27 @@ if ($action === 'bearbeiten') {
     $nKuponVersandTotal   = getCouponCount('versandkupon');
     $nKuponNeukundenTotal = getCouponCount('neukundenkupon');
 
-    handleCsvExportAction('standard', 'standard.csv', function () use ($oFilterStandard) {
+    handleCsvExportAction(
+        'standard', 'standard.csv',
+        function () use ($oFilterStandard) {
             return getExportableCoupons('standard', $oFilterStandard->getWhereSQL());
-        }, [], ['kKupon']);
-    handleCsvExportAction('versandkupon', 'versandkupon.csv', function () use ($oFilterVersand) {
+        },
+        [], ['kKupon']
+    );
+    handleCsvExportAction(
+        'versandkupon', 'versandkupon.csv',
+        function () use ($oFilterVersand) {
             return getExportableCoupons('versandkupon', $oFilterVersand->getWhereSQL());
-        }, [], ['kKupon']);
-    handleCsvExportAction('neukundenkupon', 'neukundenkupon.csv', function () use ($oFilterNeukunden) {
+        },
+        [], ['kKupon']
+    );
+    handleCsvExportAction(
+        'neukundenkupon', 'neukundenkupon.csv',
+        function () use ($oFilterNeukunden) {
             return getExportableCoupons('neukundenkupon', $oFilterNeukunden->getWhereSQL());
-        }, [], ['kKupon']);
+        },
+        [], ['kKupon']
+    );
 
     $oPaginationStandard  = (new Pagination('standard'))
         ->setSortByOptions($cSortByOption_arr)
@@ -232,12 +248,18 @@ if ($action === 'bearbeiten') {
         ->setItemCount($nKuponNeukundenCount)
         ->assemble();
 
-    $oKuponStandard_arr  = getCoupons('standard', $oFilterStandard->getWhereSQL(), $oPaginationStandard->getOrderSQL(),
-        $oPaginationStandard->getLimitSQL());
-    $oKuponVersand_arr   = getCoupons('versandkupon', $oFilterVersand->getWhereSQL(), $oPaginationVersand->getOrderSQL(),
-        $oPaginationVersand->getLimitSQL());
-    $oKuponNeukunden_arr = getCoupons('neukundenkupon', $oFilterNeukunden->getWhereSQL(), $oPaginationNeukunden->getOrderSQL(),
-        $oPaginationNeukunden->getLimitSQL());
+    $oKuponStandard_arr  = getCoupons(
+        'standard', $oFilterStandard->getWhereSQL(), $oPaginationStandard->getOrderSQL(),
+        $oPaginationStandard->getLimitSQL()
+    );
+    $oKuponVersand_arr   = getCoupons(
+        'versandkupon', $oFilterVersand->getWhereSQL(), $oPaginationVersand->getOrderSQL(),
+        $oPaginationVersand->getLimitSQL()
+    );
+    $oKuponNeukunden_arr = getCoupons(
+        'neukundenkupon', $oFilterNeukunden->getWhereSQL(), $oPaginationNeukunden->getOrderSQL(),
+        $oPaginationNeukunden->getLimitSQL()
+    );
 
     $smarty->assign('tab', $tab)
         ->assign('oFilterStandard', $oFilterStandard)

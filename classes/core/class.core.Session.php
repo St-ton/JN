@@ -198,6 +198,16 @@ class Session
             if (!isset($_SESSION['jtl_token'])) {
                 $_SESSION['jtl_token'] = generateCSRFToken();
             }
+            array_map(function ($lang) {
+                $lang->kSprache = (int)$lang->kSprache;
+
+                return $lang;
+            }, $_SESSION['Sprachen']);
+            array_map(function ($currency) {
+                $currency->kWaehrung = (int)$currency->kWaehrung;
+
+                return $currency;
+            }, $_SESSION['Waehrungen']);
             // Sprache anhand der Browsereinstellung ermitteln
             $cLangDefault = '';
             $cAllowed_arr = [];

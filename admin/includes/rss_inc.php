@@ -152,18 +152,17 @@ function bauerfc2822datum($dErstellt)
 {
     if (strlen($dErstellt) > 0) {
         // Datum + Zeit
-        if (count(explode(' ', $dErstellt)) > 1) {
+        if (substr_count(' ', $dErstellt) > 1) {
             list($dDatum, $dZeit)               = explode(' ', $dErstellt);
             list($dJahr, $dMonat, $dTag)        = explode('-', $dDatum);
             list($dStunde, $dMinute, $dSekunde) = explode(':', $dZeit);
 
             return date('r', mktime($dStunde, $dMinute, $dSekunde, $dMonat, $dTag, $dJahr));
-        } else {
-            // Nur Datum
-            list($dJahr, $dMonat, $dTag) = explode('-', $dErstellt);
-
-            return date('r', mktime(0, 0, 0, $dMonat, $dTag, $dJahr));
         }
+        // Nur Datum
+        list($dJahr, $dMonat, $dTag) = explode('-', $dErstellt);
+
+        return date('r', mktime(0, 0, 0, $dMonat, $dTag, $dJahr));
     }
 
     return false;

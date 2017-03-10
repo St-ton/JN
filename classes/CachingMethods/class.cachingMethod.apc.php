@@ -22,7 +22,7 @@ class cache_apc implements ICachingMethod
      *
      * @var bool
      */
-    private $u = false;
+    private $u;
 
     /**
      * @param $options

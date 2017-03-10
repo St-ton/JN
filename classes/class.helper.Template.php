@@ -217,7 +217,7 @@ class TemplateHelper
     public function getAdminTemplateFolders($bPfad = false)
     {
         $cOrdner_arr = [];
-        if ($nHandle = opendir(PFAD_ROOT . PFAD_ADMIN . PFAD_TEMPLATES)) {
+        if (($nHandle = opendir(PFAD_ROOT . PFAD_ADMIN . PFAD_TEMPLATES)) !== false) {
             while (false !== ($cFile = readdir($nHandle))) {
                 if (
                     $cFile !== '.' &&
@@ -332,7 +332,7 @@ class TemplateHelper
         $oTemplate_arr = Shop::DB()->query("SELECT * FROM ttemplate", 2);
         foreach ($oTemplate_arr as $oTpl) {
             if (!isset($oTemplate->bAktiv) || !$oTemplate->bAktiv) {
-                $oTemplate->bAktiv = (strcasecmp($oTemplate->cOrdner, $oTpl->cTemplate) == 0);
+                $oTemplate->bAktiv = (strcasecmp($oTemplate->cOrdner, $oTpl->cTemplate) === 0);
                 if ($oTemplate->bAktiv) {
                     $oTemplate->eTyp = $oTpl->eTyp;
                 }

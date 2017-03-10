@@ -509,12 +509,9 @@ function checkDependencies($aValues)
                 ? $currentValue->cArtNr
                 : $oArtikel->cArtNr;
         }
-        $weightTotal      = Trennzeichen::getUnit(
-            JTLSEPARATER_WEIGHT,
-            $_SESSION['kSprache'],
-            $oArtikel->fGewicht + $weightDiff
-        );
-        $cUnitWeightLabel = Shop::Lang()->get('weightUnit', 'global');
+        $weightTotal        = Trennzeichen::getUnit(JTLSEPARATER_WEIGHT, $_SESSION['kSprache'], $oArtikel->fGewicht + $weightDiff);
+        $weightArticleTotal = Trennzeichen::getUnit(JTLSEPARATER_WEIGHT, $_SESSION['kSprache'], $oArtikel->fArtikelgewicht + $weightDiff);
+        $cUnitWeightLabel   = Shop::Lang()->get('weightUnit', 'global');
 
         // Alle Variationen ohne Freifeld
         $nKeyValueVariation_arr = $oArtikel->keyValueVariations($oArtikel->VariationenOhneFreifeld);
@@ -550,11 +547,10 @@ function checkDependencies($aValues)
             $cVKLocalized[$nNettoPreise],
             $cPriceLabel
         );
-        $objResponse->jsfunc(
-            '$.evo.article().setUnitWeight',
-            $oArtikel->fGewicht,
-            $weightTotal . ' ' . $cUnitWeightLabel
-        );
+        $objResponse->jsfunc('$.evo.article().setArticleWeight', [
+            [$oArtikel->fGewicht, $weightTotal . ' ' . $cUnitWeightLabel],
+            [$oArtikel->fArtikelgewicht, $weightArticleTotal . ' ' . $cUnitWeightLabel],
+        ]);
 
         if (!empty($oArtikel->staffelPreis_arr)) {
             $fStaffelVK = [0 => [], 1 => []];
@@ -799,10 +795,10 @@ function getArticleByVariations($kArtikel, $kVariationKombi_arr)
         $j = 0;
         foreach ($kVariationKombi_arr as $i => $kVariationKombi) {
             if ($j > 0) {
-                $cSQL1 .= ',' . $i;
+                $cSQL1 .= ',' . (int)$i;
                 $cSQL2 .= ',' . (int)$kVariationKombi;
             } else {
-                $cSQL1 .= $i;
+                $cSQL1 .= (int)$i;
                 $cSQL2 .= (int)$kVariationKombi;
             }
             $j++;

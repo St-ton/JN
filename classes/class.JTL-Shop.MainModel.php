@@ -6,17 +6,13 @@
 
 /**
  * Class MainModel
- *
- * @access public
- * @author Daniel Böhmer
- * @copyright 2012 JTL-Software GmbH
  */
 abstract class MainModel
 {
     /**
-     * @param null $kKey
-     * @param null $oObj
-     * @param null $xOption
+     * @param null|int    $kKey
+     * @param null|object $oObj
+     * @param null|array  $xOption
      */
     public function __construct($kKey = null, $oObj = null, $xOption = null)
     {
@@ -29,8 +25,8 @@ abstract class MainModel
 
     /**
      * @param int  $kKey
-     * @param null $oObj
-     * @param null $xOption
+     * @param null|object $oObj
+     * @param null|array $xOption
      */
     abstract public function load($kKey, $oObj = null, $xOption = null);
 
@@ -68,9 +64,9 @@ abstract class MainModel
         $cMember_arr = array_keys(get_object_vars($this));
         if (is_array($cMember_arr) && count($cMember_arr) > 0) {
             foreach ($cMember_arr as $cMember) {
-                $cMethod = "get" . substr($cMember, 1);
+                $cMethod = 'get' . substr($cMember, 1);
                 if (method_exists($this, $cMethod)) {
-                    $oObj->{$cMember} = call_user_func([&$this, $cMethod]);
+                    $oObj->$cMember = $this->$cMethod();
                 }
             }
         }
@@ -94,7 +90,7 @@ abstract class MainModel
                         $cSep = ';';
                     }
 
-                    $cCSV .= $cSep . call_user_func([&$this, $cMethod]);
+                    $cCSV .= $cSep . $this->$cMethod();
                 }
             }
         }
@@ -113,7 +109,7 @@ abstract class MainModel
         $members = array_keys(get_object_vars($this));
         if (is_array($members) && count($members) > 0) {
             foreach ($members as $member) {
-                if (!in_array($member, $Nonpublics)) {
+                if (!in_array($member, $Nonpublics, true)) {
                     $Obj->$member = $this->$member;
                 }
             }
@@ -123,7 +119,7 @@ abstract class MainModel
     }
 
     /**
-     * @param $oObj
+     * @param object $oObj
      */
     public function loadObject($oObj)
     {
@@ -132,7 +128,7 @@ abstract class MainModel
             foreach ($cMember_arr as $cMember) {
                 $cMethod = 'set' . substr($cMember, 1);
                 if (method_exists($this, $cMethod)) {
-                    call_user_func([&$this, $cMethod], $oObj->$cMember);
+                    $this->$cMethod($oObj->$cMember);
                 }
             }
         }

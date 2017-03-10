@@ -1,6 +1,10 @@
 {*
     Display a CSV import button for a CSV importer with the unique $importerId
+
+    @param string importerId - the id string for this CSV importer
+    @param bool bCustomStrategy - Show modal dialog to choose the import strategy (default: false)
 *}
+{assign var='bCustomStrategy' value=$bCustomStrategy|default:true}
 <script>
     var $form_{$importerId} = $('<form>', { method: 'post', enctype: 'multipart/form-data',
         action: window.location.pathname });
@@ -14,7 +18,7 @@
             .append($importcsvInput, $fileInput, $tokenInput);
         $fileInput
             .change(function () {
-                {if $bCustomType === true}
+                {if $bCustomStrategy === true}
                     $('#modal-{$importerId}').modal('show');
                 {else}
                     $form_{$importerId}.submit();
@@ -24,7 +28,7 @@
         $('body').append($form);
     }
 
-    {if $bCustomType === true}
+    {if $bCustomStrategy === true}
         function onModalCancel_{$importerId} ()
         {
             $('#modal-{$importerId}').modal('hide');
@@ -39,7 +43,7 @@
         }
     {/if}
 </script>
-{if $bCustomType === true}
+{if $bCustomStrategy === true}
     <div class="modal fade" tabindex="-1" role="dialog" id="modal-{$importerId}">
         <div class="modal-dialog" role="document">
             <div class="modal-content">

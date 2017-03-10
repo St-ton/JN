@@ -434,14 +434,17 @@ function validateCoupon($oKupon)
     } elseif (strlen($oKupon->cCode) > 32) {
         $cFehler_arr[] = 'Bitte geben Sie einen k&uuml;rzeren Code ein. Es sind maximal 32 Zeichen erlaubt.';
     }
-    if (!isset($oKupon->massCreationCoupon) &&
-        ($oKupon->cKuponTyp == 'standard' || $oKupon->cKuponTyp === 'versandkupon')) {
-        $queryRes = Shop::DB()->query("
-        SELECT kKupon
-            FROM tkupon
-            WHERE cCode = '" . Shop::DB()->escape($oKupon->cCode) . "'" .
-                ((int)$oKupon->kKupon > 0 ? " AND kKupon != " . (int)$oKupon->kKupon : ''),
-            1);
+    if ($oKupon->cCode !== '' && !isset($oKupon->massCreationCoupon) &&
+        ($oKupon->cKuponTyp === 'standard' || $oKupon->cKuponTyp === 'versandkupon')
+    ) {
+        $queryRes = Shop::DB()->executeQueryPrepared(
+            "SELECT kKupon
+                FROM tkupon
+                WHERE cCode = :cCode
+                    AND kKupon != :kKupon",
+            [ 'cCode' => $oKupon->cCode, 'kKupon' => (int)$oKupon->kKupon ],
+            1
+        );
         if (is_object($queryRes)) {
             $cFehler_arr[] = 'Der angegeben Kuponcode wird bereits von einem anderen Kupon verwendet. Bitte ' .
                 'w&auml;hlen Sie einen anderen Code!';
@@ -510,10 +513,11 @@ function saveCoupon($oKupon, $oSprache_arr)
             unset($oKupon->massCreationCoupon, $_POST['informieren']);
             for ($i = 1; $i <= $massCreationCoupon->numberOfCoupons; $i++) {
                 if ($oKupon->cKuponTyp !== 'neukundenkupon') {
-                    $oKupon->cCode = $oKupon->generateCode($massCreationCoupon->hashLength,
-                        $massCreationCoupon->lowerCase, $massCreationCoupon->upperCase,
-                        $massCreationCoupon->numbersHash, $massCreationCoupon->prefixHash,
-                        $massCreationCoupon->suffixHash);
+                    $oKupon->cCode = $oKupon->generateCode(
+                        $massCreationCoupon->hashLength, $massCreationCoupon->lowerCase,
+                        $massCreationCoupon->upperCase, $massCreationCoupon->numbersHash,
+                        $massCreationCoupon->prefixHash, $massCreationCoupon->suffixHash
+                    );
                 }
                 unset($oKupon->translationList);
                 $oKupon->kKupon[] = (int)$oKupon->save();
@@ -535,10 +539,10 @@ function saveCoupon($oKupon, $oSprache_arr)
                 Shop::DB()->delete('tkuponsprache', 'kKupon', $kKupon);
 
                 foreach ($oSprache_arr as $oSprache) {
-                    $cKuponSpracheName =
-                        (isset($_POST['cName_' . $oSprache->cISO]) && $_POST['cName_' . $oSprache->cISO] !== '')
-                            ? htmlspecialchars($_POST['cName_' . $oSprache->cISO], ENT_COMPAT | ENT_HTML401, JTL_CHARSET)
-                            : $oKupon->cName;
+                    $postVarName       = 'cName_' . $oSprache->cISO;
+                    $cKuponSpracheName = isset($_POST[$postVarName]) && $_POST[$postVarName] !== ''
+                        ? htmlspecialchars($_POST[$postVarName], ENT_COMPAT | ENT_HTML401, JTL_CHARSET)
+                        : $oKupon->cName;
 
                     $kuponSprache              = new stdClass();
                     $kuponSprache->kKupon      = $kKupon;
@@ -551,10 +555,10 @@ function saveCoupon($oKupon, $oSprache_arr)
             Shop::DB()->delete('tkuponsprache', 'kKupon', $oKupon->kKupon);
 
             foreach ($oSprache_arr as $oSprache) {
-                $cKuponSpracheName =
-                    (isset($_POST['cName_' . $oSprache->cISO]) && $_POST['cName_' . $oSprache->cISO] !== '')
-                        ? htmlspecialchars($_POST['cName_' . $oSprache->cISO], ENT_COMPAT | ENT_HTML401, JTL_CHARSET)
-                        : $oKupon->cName;
+                $postVarName       = 'cName_' . $oSprache->cISO;
+                $cKuponSpracheName = isset($_POST[$postVarName]) && $_POST[$postVarName] !== ''
+                    ? htmlspecialchars($_POST[$postVarName], ENT_COMPAT | ENT_HTML401, JTL_CHARSET)
+                    : $oKupon->cName;
 
                 $kuponSprache              = new stdClass();
                 $kuponSprache->kKupon      = $oKupon->kKupon;
@@ -584,7 +588,7 @@ function informCouponCustomers($oKupon)
     // Artikel Default Optionen
     $defaultOptions = Artikel::getDefaultOptions();
     // lokalisierter Kuponwert und MBW
-    $oKupon->cLocalizedWert = ($oKupon->cWertTyp === 'festpreis')
+    $oKupon->cLocalizedWert = $oKupon->cWertTyp === 'festpreis'
         ? gibPreisStringLocalized($oKupon->fWert, $oStdWaehrung, 0)
         : $oKupon->fWert . ' %';
     $oKupon->cLocalizedMBW  = gibPreisStringLocalized($oKupon->fMindestbestellwert, $oStdWaehrung, 0);

@@ -795,11 +795,12 @@ function plausiKupon($cPost_arr)
     /** @var array('Warenkorb' => Warenkorb) $_SESSION */
     $nKuponfehler_arr = [];
     //kupons
-    if (isset($cPost_arr['Kuponcode']) && (isset($_SESSION['Bestellung']->lieferadresseGleich)
-            || $_SESSION['Lieferadresse'])) {
+    if (isset($cPost_arr['Kuponcode']) &&
+        (isset($_SESSION['Bestellung']->lieferadresseGleich) || $_SESSION['Lieferadresse'])
+    ) {
         $Kupon = new Kupon();
         $Kupon = $Kupon->getByCode($_POST['Kuponcode']);
-        if (isset($Kupon->kKupon) && $Kupon->kKupon > 0) {
+        if ($Kupon !== false && $Kupon->kKupon > 0) {
             $nKuponfehler_arr = checkeKupon($Kupon);
             if (angabenKorrekt($nKuponfehler_arr)) {
                 kuponAnnehmen($Kupon);
@@ -814,11 +815,10 @@ function plausiKupon($cPost_arr)
         }
     }
     plausiNeukundenKupon();
-    if (count($nKuponfehler_arr) > 0) {
-        return $nKuponfehler_arr;
-    }
 
-    return 0;
+    return (count($nKuponfehler_arr) > 0)
+        ? $nKuponfehler_arr
+        : 0;
 }
 
 /**
@@ -831,14 +831,17 @@ function plausiNeukundenKupon()
     }
     if (!isset($_SESSION['Kupon']->cKuponTyp) || $_SESSION['Kupon']->cKuponTyp !== 'standard') {
         // Registrierte Kunden
-        if ($_SESSION['Kunde']->kKunde > 0) {
-            $oBestellung = Shop::DB()->query(
+        if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
+            $oBestellung = Shop::DB()->executeQueryPrepared(
                 "SELECT tbestellung.kBestellung
                     FROM tkunde
-                    JOIN tbestellung ON tbestellung.kKunde = tkunde.kKunde
-                    WHERE tkunde.cMail = '" . StringHandler::filterXSS($_SESSION['Kunde']->cMail) . "'
-                        OR tkunde.kKunde = " . (int)$_SESSION['Kunde']->kKunde . "
-                    LIMIT 1", 1
+                    JOIN tbestellung 
+                        ON tbestellung.kKunde = tkunde.kKunde
+                    WHERE tkunde.cMail = :mail
+                        OR tkunde.kKunde = :kkunde
+                    LIMIT 1",
+                ['mail' => $_SESSION['Kunde']->cMail, 'kkunde' => $_SESSION['Kunde']->kKunde],
+                1
             );
             $verwendet = Shop::DB()->select('tkuponneukunde', 'cEmail', $_SESSION['Kunde']->cMail);
             $verwendet = !empty($verwendet) ? $verwendet->cVerwendet : null;
@@ -879,13 +882,16 @@ function plausiNeukundenKupon()
             if ($conf['kaufabwicklung']['bestellvorgang_unregneukundenkupon_zulassen'] === 'N') {
                 return;
             }
-            $oBestellung = Shop::DB()->query(
+            $oBestellung = Shop::DB()->executeQueryPrepared(
                 "SELECT tbestellung.kBestellung
                     FROM tkunde
-                    JOIN tbestellung ON tbestellung.kKunde = tkunde.kKunde
-                    WHERE tkunde.cMail = '" . StringHandler::filterXSS($_SESSION['Kunde']->cMail) . "'
-                        OR tkunde.kKunde = " . (int)$_SESSION['Kunde']->kKunde . "
-                    LIMIT 1", 1
+                    JOIN tbestellung 
+                        ON tbestellung.kKunde = tkunde.kKunde
+                    WHERE tkunde.cMail = :mail
+                        OR tkunde.kKunde = :kkunde
+                    LIMIT 1",
+                ['mail' => $_SESSION['Kunde']->cMail, 'kkunde' => $_SESSION['Kunde']->kKunde],
+                1
             );
             $hash = Kuponneukunde::Hash(
                 null,
@@ -906,10 +912,10 @@ function plausiNeukundenKupon()
                             kuponAnnehmen($NeukundenKupon);
                             if (empty($verwendet)) {
                                 $Options = [
-                                    'Kupon' => $NeukundenKupon->kKupon,
-                                    'Email' => $_SESSION['Kunde']->cMail,
+                                    'Kupon'     => $NeukundenKupon->kKupon,
+                                    'Email'     => $_SESSION['Kunde']->cMail,
                                     'DatenHash' => $hash,
-                                    'Erstellt' => 'now()',
+                                    'Erstellt'  => 'now()',
                                     'Verwendet' => 'N'
                                 ];
                                 $Kuponneukunde = new Kuponneukunde();

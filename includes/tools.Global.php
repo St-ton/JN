@@ -4639,7 +4639,7 @@ function loeseHttps()
  * @param string $cString
  * @return bool|string
  */
-function gibUID($nAnzahlStellen, $cString = '')
+function gibUID($nAnzahlStellen = 40, $cString = '')
 {
     $cUID            = '';
     $cSalt           = '';
@@ -4667,7 +4667,7 @@ function gibUID($nAnzahlStellen, $cString = '')
                 if (((int)date('w') % 2) <= strlen($cString)) {
                     $nPos = (int)date('w') % 2;
                 }
-                $cUID .= md5(substr($cString, $nPos, 1) . $cSalt . md5(PFAD_ROOT . (microtime() - mt_rand())));
+                $cUID .= md5(substr($cString, $nPos, 1) . $cSalt . md5(PFAD_ROOT . (microtime(true) - mt_rand())));
             }
         }
         $cUID = cryptPasswort($cUID . $cSalt);

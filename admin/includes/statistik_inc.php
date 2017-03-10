@@ -93,12 +93,12 @@ function berechneStatZeitraum($nZeitraum)
     $oZeit                = new stdClass();
     $oZeit->nDateStampVon = 0;
     $oZeit->nDateStampBis = 0;
-    if (intval($nZeitraum) > 0) {
+    if ((int)$nZeitraum > 0) {
         switch ($nZeitraum) {
             // Heute
             case 1:
-                $oZeit->nDateStampVon = mktime(0, 0, 0, intval(date('n')), intval(date('j')), intval(date('Y')));
-                $oZeit->nDateStampBis = mktime(23, 59, 59, intval(date('n')), intval(date('j')), intval(date('Y')));
+                $oZeit->nDateStampVon = mktime(0, 0, 0, (int)date('n'), (int)date('j'), (int)date('Y'));
+                $oZeit->nDateStampBis = mktime(23, 59, 59, (int)date('n'), (int)date('j'), (int)date('Y'));
                 break;
 
             // diese Woche
@@ -110,9 +110,9 @@ function berechneStatZeitraum($nZeitraum)
 
             // letzte Woche
             case 3:
-                $nTag   = intval(date('d')) - 7;
-                $nMonat = intval(date('m'));
-                $nJahr  = intval(date('Y'));
+                $nTag   = (int)date('d') - 7;
+                $nMonat = (int)date('m');
+                $nJahr  = (int)date('Y');
                 if ($nTag < 1) {
                     $nMonat--;
                     if ($nMonat < 1) {
@@ -120,7 +120,7 @@ function berechneStatZeitraum($nZeitraum)
                         $nJahr--;
                     }
 
-                    $nTag = intval(date('t', mktime(0, 0, 0, $nMonat, 1, $nJahr)));
+                    $nTag = (int)date('t', mktime(0, 0, 0, $nMonat, 1, $nJahr));
                 }
 
                 $nDatum_arr           = ermittleDatumWoche($nJahr . '-' . $nMonat . '-' . $nTag);
@@ -136,8 +136,8 @@ function berechneStatZeitraum($nZeitraum)
 
             // letzten Monat
             case 5:
-                $nMonat = intval(date('m')) - 1;
-                $nJahr  = intval(date('Y'));
+                $nMonat = (int)date('m') - 1;
+                $nJahr  = (int)date('Y');
 
                 if ($nMonat < 1) {
                     $nMonat = 12;
@@ -150,13 +150,13 @@ function berechneStatZeitraum($nZeitraum)
 
             // dieses Jahr
             case 6:
-                $oZeit->nDateStampVon = mktime(0, 0, 0, 1, 1, intval(date('Y')));
-                $oZeit->nDateStampBis = mktime(23, 59, 59, 12, 31, intval(date('Y')));
+                $oZeit->nDateStampVon = mktime(0, 0, 0, 1, 1, (int)date('Y'));
+                $oZeit->nDateStampBis = mktime(23, 59, 59, 12, 31, (int)date('Y'));
                 break;
 
             // letztes Jahr
             case 7:
-                $nJahr                = intval(date('Y')) - 1;
+                $nJahr                = (int)date('Y') - 1;
                 $oZeit->nDateStampVon = mktime(0, 0, 0, 1, 1, $nJahr);
                 $oZeit->nDateStampBis = mktime(23, 59, 59, 12, 31, $nJahr);
                 break;
@@ -179,18 +179,18 @@ function getJSON($oStat_arr, $nAnzeigeIntervall, $nTyp)
     if (!is_array($oStat_arr) || count($oStat_arr) === 0) {
         return false;
     }
-    if ($nAnzeigeIntervall == 0) {
+    if ((int)$nAnzeigeIntervall === 0) {
         return false;
     }
     if (!$nTyp) {
         return false;
     }
     foreach ($oStat_arr as $oStat) {
-        $data[] = intval($oStat->nCount);
+        $data[] = (int)$oStat->nCount;
     }
     // min und max berechnen
-    $fMax = round(floatval(max($data)), 2);
-    $fMin = round(floatval(min($data)), 2);
+    $fMax = round((float)max($data), 2);
+    $fMin = round((float)min($data), 2);
     // padding
     $fMin -= $fMin * 0.25;
     $fMax += $fMax * 0.25;
@@ -348,7 +348,7 @@ function setPie($data_arr, $x_labels_arr)
             unset($data_arr[$i]);
         }
     }
-    $nValueSonstiges = (isset($data_arr[5])) ? $data_arr[5] : null;
+    $nValueSonstiges = isset($data_arr[5]) ? $data_arr[5] : null;
     $nPosSonstiges   = 0;
     usort($data_arr, 'cmpStat');
 
@@ -365,7 +365,7 @@ function setPie($data_arr, $x_labels_arr)
     }
     $x_labels_arr[$nPosSonstiges] = 'Sonstige';
     foreach ($data_arr as $i => $data) {
-        $cLabel      = $x_labels_arr[$i] . '(' . number_format(floatval($data), 0, ',', '.') . ')';
+        $cLabel      = $x_labels_arr[$i] . '(' . number_format((float)$data, 0, ',', '.') . ')';
         $merge_arr[] = new pie_value($data, $cLabel);
     }
 
@@ -373,7 +373,7 @@ function setPie($data_arr, $x_labels_arr)
     $pie->set_start_angle(35);
     $pie->set_animate(true);
     $pie->set_tooltip('#val# of #total#<br>#percent# of 100%');
-    $pie->set_colours(array('#1C9E05', '#D4FA00', '#9E1176', '#FF368D', '#454545'));
+    $pie->set_colours(['#1C9E05', '#D4FA00', '#9E1176', '#FF368D', '#454545']);
     $pie->set_values($merge_arr);
 
     $chart = new open_flash_chart();
@@ -443,13 +443,13 @@ function gibMappingDaten($nTyp)
  */
 function GetTypeNameStats($type)
 {
-    $names = array(
+    $names = [
         1 => 'Besucher',
         2 => 'Kundenherkunft',
         3 => 'Suchmaschinen',
         4 => 'Umsatz',
         5 => 'Einstiegsseite'
-    );
+    ];
 
     if (isset($names[$type])) {
         return $names[$type];
@@ -518,7 +518,7 @@ function prepareLineChartStats($stats, $name = 'Serie', $axis, $mod = 1)
 {
     require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Linechart.php';
 
-    $chart = new Linechart(array('active' => false));
+    $chart = new Linechart(['active' => false]);
 
     if (is_array($stats) && count($stats) > 0) {
         $chart->setActive(true);
@@ -527,9 +527,9 @@ function prepareLineChartStats($stats, $name = 'Serie', $axis, $mod = 1)
         $x    = $axis->x;
         foreach ($stats as $j => $stat) {
             $obj    = new stdClass();
-            $obj->y = (float) $stat->$y;
+            $obj->y = (float)$stat->$y;
 
-            if ($j % $mod == 0) {
+            if ($j % $mod === 0) {
                 $chart->addAxis($stat->$x);
             } else {
                 $chart->addAxis('|');
@@ -556,7 +556,7 @@ function preparePieChartStats($stats, $name = 'Serie', $axis, $maxEntries = 6)
 {
     require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Piechart.php';
 
-    $chart = new Piechart(array('active' => false));
+    $chart = new Piechart(['active' => false]);
 
     if (is_array($stats) && count($stats) > 0) {
         $chart->setActive(true);
@@ -585,7 +585,7 @@ function preparePieChartStats($stats, $name = 'Serie', $axis, $maxEntries = 6)
 
         foreach ($stats as $stat) {
             $value  = (float) $stat->$y;
-            $data[] = array($stat->$x, $value);
+            $data[] = [$stat->$x, $value];
         }
 
         $chart->addSerie($name, $data);
@@ -605,7 +605,7 @@ function prepareLineChartStatsMulti($Series, $axis, $mod = 1)
 {
     require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Linechart.php';
 
-    $chart = new Linechart(array('active' => false));
+    $chart = new Linechart(['active' => false]);
     if (is_array($Series) && count($Series) > 0) {
         $i = 0;
         foreach ($Series as $Name => $Serie) {
@@ -618,7 +618,7 @@ function prepareLineChartStatsMulti($Series, $axis, $mod = 1)
                     $obj    = new stdClass();
                     $obj->y = (float) $stat->$y;
 
-                    if ($j % $mod == 0) {
+                    if ($j % $mod === 0) {
                         $chart->addAxis($stat->$x);
                     } else {
                         $chart->addAxis('|');
@@ -645,10 +645,10 @@ function prepareLineChartStatsMulti($Series, $axis, $mod = 1)
  */
 function GetLineChartColors($Number)
 {
-    $Colors = array(
-        array('#EDEDED', '#EDEDED'),
-        array('#989898', '#F78D23')
-    );
+    $Colors = [
+        ['#EDEDED', '#EDEDED'],
+        ['#989898', '#F78D23']
+    ];
 
     if (isset($Colors[$Number])) {
         return $Colors[$Number];

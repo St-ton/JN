@@ -13,22 +13,22 @@ class CacheFactory
     /**
      * @var null
      */
-    protected $_settings = null;
+    protected $_settings;
 
     /**
      * @var null
      */
-    protected $_method = null;
+    protected $_method;
 
     /**
      * @var null
      */
-    protected $_cache = null;
+    protected $_cache;
 
     /**
      * @var null|CacheFactory
      */
-    private static $_instance = null;
+    private static $_instance;
 
     /**
      * @param null $method
@@ -128,7 +128,7 @@ class CacheFactory
      */
     public function getStats()
     {
-        return;
+        return null;
     }
 
     /**

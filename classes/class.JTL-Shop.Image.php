@@ -5,7 +5,7 @@
  */
 use Imanee\Imanee;
 
-require_once 'core/class.core.Shop.php';
+require_once __DIR__ . '/core/class.core.Shop.php';
 
 /**
  * Class Image
@@ -108,7 +108,7 @@ class Image
      *
      * @TODO: Support all types and map to the according table
      * @todo: unsed param $type
-     * @param string $id id
+     * @param int    $id
      * @param string $type produkt, hersteller, ..
      * @param int    $number
      * @return int foreign key
@@ -117,8 +117,13 @@ class Image
     {
         $id     = (int)$id;
         $number = (int)$number;
-        $sql    = "SELECT kArtikel AS id, nNr AS number, cPfad AS path FROM tartikelpict WHERE kArtikel = '{$id}' AND nNr = '{$number}' ORDER BY nNr LIMIT 1";
-        $item   = Shop::DB()->query($sql, 1);
+        $item   = Shop::DB()->query("
+            SELECT kArtikel AS id, nNr AS number, cPfad AS path 
+                FROM tartikelpict 
+                WHERE kArtikel = '{$id}' 
+                    AND nNr = '{$number}' 
+                ORDER BY nNr LIMIT 1", 1
+        );
 
         return is_object($item) ? $item : null;
     }
@@ -322,7 +327,7 @@ class Image
                 break;
         }
 
-        return (empty($result)) ? 'image' : self::getCleanFilename($result);
+        return empty($result) ? 'image' : self::getCleanFilename($result);
     }
 
     /**
@@ -381,7 +386,7 @@ class Image
             $imanee = $container;
         }
 
-        if ($req->getSize()->getType() == self::SIZE_LG && isset($settings['branding']) && $settings['branding'] !== null) {
+        if (isset($settings['branding']) && $req->getSize()->getType() === self::SIZE_LG) {
             $branding   = $settings['branding'];
             $brandImage = new Imanee($branding->path);
             $brandSize  = $brandImage->getSize();
@@ -406,14 +411,12 @@ class Image
         $thumbnail = $req->getThumb(null, true);
         $directory  = pathinfo($thumbnail, PATHINFO_DIRNAME);
 
-        if (!is_dir($directory)) {
-            if (!mkdir($directory, 0777, true)) {
-                $error = error_get_last();
-                if (empty($error)) {
-                    $error = "Unable to create directory {$directory}";
-                }
-                throw new Exception(is_array($error) ? $error['message'] : $error);
+        if (!is_dir($directory) && !mkdir($directory, 0777, true)) {
+            $error = error_get_last();
+            if (empty($error)) {
+                $error = "Unable to create directory {$directory}";
             }
+            throw new Exception(is_array($error) ? $error['message'] : $error);
         }
 
         $imanee->setFormat($settings['format']);

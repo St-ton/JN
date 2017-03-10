@@ -102,6 +102,11 @@ class Zahlungsart extends MainModel
     /**
      * @var string
      */
+    public $cHinweisTextShop;
+
+    /**
+     * @var string
+     */
     public $cGebuehrname;
 
     /**
@@ -454,6 +459,25 @@ class Zahlungsart extends MainModel
     /**
      * @return string
      */
+    public function getHinweisTextShop()
+    {
+        return $this->cHinweisTextShop;
+    }
+
+    /**
+     * @param string $cHinweisTextShop
+     * @return $this
+     */
+    public function setHinweisTextShop($cHinweisTextShop)
+    {
+        $this->cHinweisTextShop = $cHinweisTextShop;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
     public function getGebuehrname()
     {
         return $this->cGebuehrname;
@@ -471,9 +495,9 @@ class Zahlungsart extends MainModel
     }
 
     /**
-     * @param int  $kKey
-     * @param null $oObj
-     * @param null $xOption
+     * @param int         $kKey
+     * @param null|object $oObj
+     * @param null|array  $xOption
      * @return $this
      */
     public function load($kKey, $oObj = null, $xOption = null)
@@ -514,7 +538,7 @@ class Zahlungsart extends MainModel
     public static function loadAll($active = true, $iso = null)
     {
         $payments = [];
-        $where    = ($active) ? (' WHERE z.nActive = 1') : '';
+        $where    = $active ? ' WHERE z.nActive = 1' : '';
 
         if ($iso === null) {
             if (isset($_SESSION['cISOSprache'])) {
@@ -525,8 +549,8 @@ class Zahlungsart extends MainModel
             }
         }
 
-        $objs = Shop::DB()->query(
-            "SELECT *
+        $objs = Shop::DB()->query("
+            SELECT *
                 FROM tzahlungsart AS z
                 LEFT JOIN tzahlungsartsprache AS s 
                     ON s.kZahlungsart = z.kZahlungsart

@@ -1,6 +1,6 @@
 {includeMailTemplate template=header type=plain}
 
-Sehr {if $Kunde->cAnrede == "w"}geehrte{else}geehrter{/if} {$Kunde->cAnredeLocalized} {$Kunde->cNachname},
+Sehr {if $Kunde->cAnrede == "w"}geehrte{elseif $Kunde->cAnrede == "m"}geehrter{else}geehrte(r){/if} {$Kunde->cAnredeLocalized} {$Kunde->cNachname},
 
 Ihre Bestellung vom {$Bestellung->dErstelldatum_de} mit Bestellnummer {$Bestellung->cBestellNr} wurde heute an Sie versandt.
 
@@ -12,9 +12,9 @@ Ihre Bestellung vom {$Bestellung->dErstelldatum_de} mit Bestellnummer {$Bestellu
     {/if}
 
     {foreach from=$oLieferschein->oVersand_arr item=oVersand}
-        {if $oVersand->getIdentCode()|@count_characters > 0}
+        {if $oVersand->getIdentCode()|strlen > 0}
             Tracking-Url: {$oVersand->getLogistikVarUrl()}
-            {if $oVersand->getHinweis()|@count_characters > 0}
+            {if $oVersand->getHinweis()|strlen > 0}
                 Tracking-Hinweis: {$oVersand->getHinweis()}
             {/if}
         {/if}

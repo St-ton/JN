@@ -1,6 +1,6 @@
 {includeMailTemplate template=header type=plain}
 
-Dear {$Kunde->cVorname} {$Kunde->cNachname},
+Dear {$Kunde->cAnredeLocalized} {$Kunde->cNachname},
 
 Your order at {$Einstellungen.global.global_shopname} has been updated.
 
@@ -15,13 +15,13 @@ Your order with the order number {$Bestellung->cBestellNr} consists of the follo
         {foreach name=variationen from=$Position->WarenkorbPosEigenschaftArr item=WKPosEigenschaft}
 
             {$WKPosEigenschaft->cEigenschaftName}: {$WKPosEigenschaft->cEigenschaftWertName}{/foreach}
-        {if $Position->cSeriennummer|@count_characters > 0}
+        {if $Position->cSeriennummer|strlen > 0}
             Serialnumber: {$Position->cSeriennummer}
         {/if}
-        {if $Position->dMHD|@count_characters > 0}
+        {if $Position->dMHD|strlen > 0}
             Best before: {$Position->dMHD}
         {/if}
-        {if $Position->cChargeNr|@count_characters > 0}
+        {if $Position->cChargeNr|strlen > 0}
             Charge: {$Position->cChargeNr}
         {/if}
     {else}
@@ -38,7 +38,7 @@ Your order with the order number {$Bestellung->cBestellNr} consists of the follo
 Total: {$Bestellung->WarensummeLocalized[0]}
 
 
-Your billing adress:
+Your billing address:
 
 {$Kunde->cAnredeLocalized} {$Kunde->cVorname} {$Kunde->cNachname}
 {$Kunde->cStrasse} {$Kunde->cHausnummer}
@@ -51,11 +51,11 @@ Your billing adress:
 {/if}{if $Kunde->cFax}Fax: {$Kunde->cFax}
 {/if}
 Email: {$Kunde->cMail}
-{if $Kunde->cUSTID}UstID: {$Kunde->cUSTID}
+{if $Kunde->cUSTID}VAT ID: {$Kunde->cUSTID}
 {/if}
 
 {if $Bestellung->Lieferadresse->kLieferadresse>0}
-    Your shipping adress:
+    Your shipping address:
 
     {$Bestellung->Lieferadresse->cAnrede} {$Bestellung->Lieferadresse->cVorname} {$Bestellung->Lieferadresse->cNachname}
     {$Bestellung->Lieferadresse->cStrasse} {$Bestellung->Lieferadresse->cHausnummer}
@@ -72,7 +72,7 @@ Email: {$Kunde->cMail}
 
 You have chosen the following shipping option: {$Bestellung->cZahlungsartName}
 
-{if isset($Zahlungsart->cHinweisText) && $Zahlungsart->cHinweisText|count_characters > 0} {$Zahlungsart->cHinweisText}
+{if isset($Zahlungsart->cHinweisText) && $Zahlungsart->cHinweisText|strlen > 0} {$Zahlungsart->cHinweisText}
 
 
 {/if}

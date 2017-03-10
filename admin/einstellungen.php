@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/admininclude.php';
+require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'einstellungen_inc.php';
 /** @global JTLSmarty $smarty */
 $kSektion = isset($_REQUEST['kSektion']) ? (int)$_REQUEST['kSektion'] : 0;
@@ -25,6 +25,9 @@ switch ($kSektion) {
         break;
     case 4:
         $oAccount->permission('SETTINGS_ARTICLEOVERVIEW_VIEW', true, true);
+        // Sucheinstellungen haben eigene Logik
+        header('Location: ' . Shop::getURL(true) . '/' . PFAD_ADMIN . 'sucheinstellungen.php');
+        exit;
         break;
     case 5:
         $oAccount->permission('SETTINGS_ARTICLEDETAILS_VIEW', true, true);
@@ -64,7 +67,11 @@ if ($bSuche) {
     $step = 'einstellungen bearbeiten';
 }
 
-if (isset($_POST['einstellungen_bearbeiten']) && (int)$_POST['einstellungen_bearbeiten'] === 1 && $kSektion > 0 && validateToken()) {
+if (isset($_POST['einstellungen_bearbeiten']) &&
+    (int)$_POST['einstellungen_bearbeiten'] === 1 &&
+    $kSektion > 0 &&
+    validateToken()
+) {
     // Einstellungssuche
     $oSQL = new stdClass();
     if ($bSuche) {
@@ -98,11 +105,11 @@ if (isset($_POST['einstellungen_bearbeiten']) && (int)$_POST['einstellungen_bear
             $aktWert->kEinstellungenSektion = $Conf[$i]->kEinstellungenSektion;
             switch ($Conf[$i]->cInputTyp) {
                 case 'kommazahl':
-                    $aktWert->cWert = floatval(str_replace(',', '.', $aktWert->cWert));
+                    $aktWert->cWert = (float)str_replace(',', '.', $aktWert->cWert);
                     break;
                 case 'zahl':
                 case 'number':
-                    $aktWert->cWert = intval($aktWert->cWert);
+                    $aktWert->cWert = (int)$aktWert->cWert;
                     break;
                 case 'text':
                     $aktWert->cWert = substr($aktWert->cWert, 0, 255);
@@ -219,7 +226,7 @@ if ($step === 'einstellungen bearbeiten') {
                 'cName',
                 $Conf[$i]->cWertName
             );
-            $Conf[$i]->gesetzterWert = (isset($setValue->cWert))
+            $Conf[$i]->gesetzterWert = isset($setValue->cWert)
                 ? StringHandler::htmlentities($setValue->cWert)
                 : null;
         }

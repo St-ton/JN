@@ -85,7 +85,7 @@ class Notification implements IteratorAggregate, Countable
     {
         /** @var Status $status */
         $status     = Status::getInstance();
-        $confGlobal = Shop::getSettings(array(CONF_GLOBAL));
+        $confGlobal = Shop::getSettings([CONF_GLOBAL, CONF_ARTIKELUEBERSICHT]);
 
         if ($status->hasPendingUpdates()) {
             $this->add(NotificationEntry::TYPE_DANGER, 'Systemupdate', 'Ein Datenbank-Update ist zwingend notwendig', 'dbupdater.php');
@@ -97,6 +97,14 @@ class Notification implements IteratorAggregate, Countable
 
         if ($status->hasInstallDir()) {
             $this->add(NotificationEntry::TYPE_WARNING, 'System', 'Bitte l&ouml;schen Sie das Installationsverzeichnis "/install/" im Shop-Wurzelverzeichnis.');
+        }
+
+        if (!$status->validDatabaseStruct()) {
+            $this->add(NotificationEntry::TYPE_DANGER, 'Datenbank', 'Es liegen Fehler in der Datenbankstruktur vor.', 'dbcheck.php');
+        }
+
+        if (!$status->validFileStruct()) {
+            $this->add(NotificationEntry::TYPE_DANGER, 'Filesystem', 'Es liegen Fehler in der Shop-Dateistruktur vor.', 'filecheck.php');
         }
 
         if ($status->hasDifferentTemplateVersion()) {
@@ -131,6 +139,18 @@ class Notification implements IteratorAggregate, Countable
 
         if ($status->hasInvalidPollCoupons()) {
             $this->add(NotificationEntry::TYPE_WARNING, 'Umfrage', 'In einer Umfrage wird ein Kupon verwendet, welcher inaktiv ist oder nicht mehr existiert.');
+        }
+
+        if ($confGlobal['artikeluebersicht']['suche_fulltext'] === 'Y'
+            && (!Shop::DB()->query("SHOW INDEX FROM tartikel WHERE KEY_NAME = 'idx_tartikel_fulltext'", 1)
+                || !Shop::DB()->query("SHOW INDEX FROM tartikelsprache WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'", 1))) {
+            $this->add(NotificationEntry::TYPE_WARNING, 'Der Volltextindex ist nicht vorhanden!', 'sucheinstellungen.php');
+        }
+
+        if ($status->usesDeprecatedPriceImages()) {
+            $this->add(NotificationEntry::TYPE_WARNING, 'Konfiguration',
+                'Sie nutzen Grafikpreise. Diese Funktion ist als "deprecated" markiert.<br/>Bitte beachten Sie die Hinweise unter "Storefront->Artikel->Preisanzeige".',
+                'preisanzeige.php');
         }
     }
 }

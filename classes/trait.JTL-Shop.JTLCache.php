@@ -62,7 +62,7 @@ trait JTLCacheTrait
     public function test()
     {
         //if it's not available, it's not working
-        if (!$this->isAvailable() || $this->isInitialized === false) {
+        if ($this->isInitialized === false || !$this->isAvailable()) {
             return false;
         }
         //store value to cache and load again
@@ -124,7 +124,7 @@ trait JTLCacheTrait
      */
     public function must_be_serialized($data)
     {
-        return (is_object($data) || is_array($data)) ? true : false;
+        return (is_object($data) || is_array($data));
     }
 
     /**
@@ -142,7 +142,7 @@ trait JTLCacheTrait
         $this->journalHasChanged = true;
         if (is_string($tags)) {
             if (isset($this->journal[$tags])) {
-                if (!in_array($cacheID, $this->journal[$tags])) {
+                if (!in_array($cacheID, $this->journal[$tags], true)) {
                     $this->journal[$tags][] = $cacheID;
                 }
             } else {
@@ -153,7 +153,7 @@ trait JTLCacheTrait
         } elseif (is_array($tags)) {
             foreach ($tags as $tag) {
                 if (isset($this->journal[$tag])) {
-                    if (!in_array($cacheID, $this->journal[$tag])) {
+                    if (!in_array($cacheID, $this->journal[$tag], true)) {
                         $this->journal[$tag][] = $cacheID;
                     }
                 } else {
@@ -178,7 +178,7 @@ trait JTLCacheTrait
         //load journal from extra cache
         $this->getJournal();
         if (is_string($tags)) {
-            return (isset($this->journal[$tags]))
+            return isset($this->journal[$tags])
                 ? $this->journal[$tags]
                 : [];
         } elseif (is_array($tags)) {
@@ -247,7 +247,7 @@ trait JTLCacheTrait
     /**
      * clean up journal after deleting cache entries
      *
-     * @param string|array $tags
+     * @param array|string $tags
      * @return bool
      */
     public function clearCacheTags($tags)
@@ -259,24 +259,22 @@ trait JTLCacheTrait
         }
         $this->getJournal();
         //avoid infinite loops
-        if ($tags !== $this->journalID) {
+        if ($tags !== $this->journalID && $this->journal !== false) {
             //load meta data
-            if ($this->journal !== false) {
-                foreach ($this->journal as $tagName => $value) {
-                    //search for key in meta values
-                    if (($index = array_search($tags, $value)) !== false) {
-                        unset($this->journal[$tagName][$index]);
-                        if (count($this->journal[$tagName]) === 0) {
-                            //remove empty tag nodes
-                            unset($this->journal[$tagName]);
-                        }
+            foreach ($this->journal as $tagName => $value) {
+                //search for key in meta values
+                if (($index = array_search($tags, $value, true)) !== false) {
+                    unset($this->journal[$tagName][$index]);
+                    if (count($this->journal[$tagName]) === 0) {
+                        //remove empty tag nodes
+                        unset($this->journal[$tagName]);
                     }
                 }
-                //write back journal
-                $this->journalHasChanged = true;
-
-                return true;
             }
+            //write back journal
+            $this->journalHasChanged = true;
+
+            return true;
         }
 
         return false;
@@ -311,7 +309,6 @@ trait JTLCacheTrait
             $newKey               = $this->options['prefix'] . $_key;
             $newKeyArray[$newKey] = $_val;
         }
-        unset($array);
 
         return $newKeyArray;
     }
@@ -329,7 +326,6 @@ trait JTLCacheTrait
             $newKey               = str_replace($this->options['prefix'], '', $_key);
             $newKeyArray[$newKey] = $_val;
         }
-        unset($array);
 
         return $newKeyArray;
     }

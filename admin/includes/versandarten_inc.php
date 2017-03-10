@@ -12,7 +12,7 @@
 function berechneVersandpreisBrutto($fPreis, $fSteuersatz)
 {
     if ($fPreis > 0) {
-        return round(doubleval($fPreis * ((100 + $fSteuersatz) / 100)), 2);
+        return round((float)($fPreis * ((100 + $fSteuersatz) / 100)), 2);
     }
 
     return 0.0;
@@ -107,7 +107,8 @@ function gibGesetzteVersandklassen($cVersandklassen)
     $PVersandklassen = P(Shop::DB()->query("SELECT * FROM tversandklasse ORDER BY kVersandklasse", 2));
     if (is_array($PVersandklassen)) {
         foreach ($PVersandklassen as $vk) {
-            $gesetzteVK[$vk->kVersandklasse] = (in_array($vk->kVersandklasse, $cVKarr));
+            $vk->kVersandklasse = (int)$vk->kVersandklasse;
+            $gesetzteVK[$vk->kVersandklasse] = in_array($vk->kVersandklasse, $cVKarr, true);
         }
     }
     if ($cVersandklassen == '-1') {
@@ -156,7 +157,7 @@ function gibGesetzteKundengruppen($cKundengruppen)
 
     if (is_array($oKundengruppe_arr)) {
         foreach ($oKundengruppe_arr as $oKundengruppe) {
-            $bGesetzteKG_arr[$oKundengruppe->kKundengruppe] = (in_array($oKundengruppe->kKundengruppe, $cKG_arr));
+            $bGesetzteKG_arr[$oKundengruppe->kKundengruppe] = in_array($oKundengruppe->kKundengruppe, $cKG_arr);
         }
     }
     if ($cKundengruppen == '-1') {

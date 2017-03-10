@@ -30,7 +30,7 @@ class SessionHandler
     public function get($key, $default = null)
     {
         $array = $this->sessionData;
-        if (is_null($key)) {
+        if ($key === null) {
             return $array;
         }
         if (isset($array[$key])) {
@@ -64,8 +64,10 @@ class SessionHandler
      */
     public static function array_set(&$array, $key, $value)
     {
-        if (is_null($key)) {
-            return $array = $value;
+        if ($key === null) {
+            $array = $value;
+
+            return $array;
         }
         $keys = explode('.', $key);
         while (count($keys) > 1) {

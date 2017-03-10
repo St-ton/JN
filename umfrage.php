@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/globalinclude.php';
+require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES_EXT . 'umfrage_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
 /** @global JTLSmarty $smarty */
@@ -69,10 +69,6 @@ if (isset($cParameter_arr['kUmfrage']) && $cParameter_arr['kUmfrage'] > 0) {
                         $oNavi_arr,
                         $cParameter_arr['kSeite']
                     );
-                }
-                // Canonical
-                if (strpos(baueURL($oUmfrage, URLART_UMFRAGE), '.php') === false && !SHOP_SEO) {
-                    $cCanonicalURL = Shop::getURL() . '/' . baueURL($oUmfrage, URLART_UMFRAGE);
                 }
                 $_SESSION['Umfrage']->kUmfrage = $oUmfrage->kUmfrage;
                 $smarty->assign('oUmfrage', $oUmfrage)

@@ -99,6 +99,12 @@ class Kupon
      * @access public
      * @var string
      */
+    public $cHersteller;
+
+    /**
+     * @access public
+     * @var string
+     */
     public $cKategorien;
 
     /**
@@ -157,7 +163,7 @@ class Kupon
      */
     public function __construct($kKupon = 0)
     {
-        if (intval($kKupon) > 0) {
+        if ((int)$kKupon > 0) {
             $this->loadFromDB($kKupon);
         }
     }
@@ -174,7 +180,7 @@ class Kupon
         $couponResult = Shop::DB()->select('tkupon', 'kKupon', (int)$kKupon);
 
         if (isset($couponResult->kKupon) && $couponResult->kKupon > 0) {
-            $couponResult->translationList = self::getTranslation($couponResult->kKupon);
+            $couponResult->translationList = $this->getTranslation($couponResult->kKupon);
             $cMember_arr                   = array_keys(get_object_vars($couponResult));
             foreach ($cMember_arr as $cMember) {
                 $this->$cMember = $couponResult->$cMember;
@@ -236,6 +242,7 @@ class Kupon
         $_upd->nVerwendungenBisher   = $this->nVerwendungenBisher;
         $_upd->nVerwendungenProKunde = $this->nVerwendungenProKunde;
         $_upd->cArtikel              = $this->cArtikel;
+        $_upd->cHersteller           = $this->cHersteller;
         $_upd->cKategorien           = $this->cKategorien;
         $_upd->cKunden               = $this->cKunden;
         $_upd->cKuponTyp             = $this->cKuponTyp;
@@ -320,7 +327,7 @@ class Kupon
      */
     public function setWert($fWert)
     {
-        $this->fWert = floatval($fWert);
+        $this->fWert = (float)$fWert;
     }
 
     /**
@@ -374,7 +381,7 @@ class Kupon
      */
     public function setMindestbestellwert($fMindestbestellwert)
     {
-        $this->fMindestbestellwert = floatval($fMindestbestellwert);
+        $this->fMindestbestellwert = (float)$fMindestbestellwert;
 
         return $this;
     }
@@ -445,6 +452,20 @@ class Kupon
     public function setArtikel($cArtikel)
     {
         $this->cArtikel = Shop::DB()->escape($cArtikel);
+
+        return $this;
+    }
+
+    /**
+     * Sets the cHersteller
+     *
+     * @access public
+     * @param string $cHersteller
+     * @return $this
+     */
+    public function setHersteller($cHersteller)
+    {
+        $this->cHersteller = Shop::DB()->escape($cHersteller);
 
         return $this;
     }
@@ -716,6 +737,17 @@ class Kupon
     }
 
     /**
+     * Gets the cHersteller
+     *
+     * @access public
+     * @return string
+     */
+    public function getHersteller()
+    {
+        return $this->cHersteller;
+    }
+
+    /**
      * Gets the cKategorien
      *
      * @access public
@@ -815,7 +847,7 @@ class Kupon
         $couponResult = Shop::DB()->select('tkupon', 'cCode', $cCode);
 
         if (isset($couponResult->kKupon) && $couponResult->kKupon > 0) {
-            $couponResult->translationList = self::getTranslation($couponResult->kKupon);
+            $couponResult->translationList = $this->getTranslation($couponResult->kKupon);
             $cMember_arr                   = array_keys(get_object_vars($couponResult));
             foreach ($cMember_arr as $cMember) {
                 $this->$cMember = $couponResult->$cMember;
@@ -836,7 +868,6 @@ class Kupon
      */
     public function getTranslation($kKupon = 0)
     {
-        //dump($_SESSION);
         $translationList = [];
         if(isset($_SESSION['Sprachen'])){
             foreach ($_SESSION['Sprachen'] as $Sprache) {
@@ -876,7 +907,7 @@ class Kupon
 
         foreach ($newCustomerCoupons as $newCustomerCoupon) {
             if (isset($newCustomerCoupon->kKupon) && $newCustomerCoupon->kKupon > 0) {
-                $newCustomerCoupon->translationList = self::getTranslation($newCustomerCoupon->kKupon);
+                $newCustomerCoupon->translationList = $this->getTranslation($newCustomerCoupon->kKupon);
                 $cMember_arr                        = array_keys(get_object_vars($newCustomerCoupon));
                 foreach ($cMember_arr as $cMember) {
                     $this->$cMember = $newCustomerCoupon->$cMember;

@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/globalinclude.php';
+require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Bestellung.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
@@ -23,11 +23,13 @@ $linkHelper = LinkHelper::getInstance();
 pruefeHttps();
 
 if (strlen($_GET['uid']) === 40) {
-    $status = Shop::DB()->query("
+    $status = Shop::DB()->executeQueryPrepared("
         SELECT kBestellung 
             FROM tbestellstatus 
             WHERE dDatum >= date_sub(now(), INTERVAL 30 DAY) 
-            AND cUID = '" . Shop::DB()->escape($_GET['uid']) . "'", 1
+            AND cUID = :uid",
+        ['uid' => $_GET['uid']],
+        1
     );
     if (empty($status->kBestellung)) {
         header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true), true, 303);

@@ -105,10 +105,10 @@ class WarenkorbPersPos
             if (isset($oEigenschaftwerte->kEigenschaft)) {
                 $oWarenkorbPersPosEigenschaft = new WarenkorbPersPosEigenschaft(
                     $oEigenschaftwerte->kEigenschaft,
-                    ((isset($oEigenschaftwerte->kEigenschaftWert)) ? $oEigenschaftwerte->kEigenschaftWert : null),
-                    ((isset($oEigenschaftwerte->cFreifeldWert)) ? $oEigenschaftwerte->cFreifeldWert : null),
-                    ((isset($oEigenschaftwerte->cEigenschaftName)) ? $oEigenschaftwerte->cEigenschaftName : null),
-                    ((isset($oEigenschaftwerte->cEigenschaftWertName)) ? $oEigenschaftwerte->cEigenschaftWertName : null),
+                    (isset($oEigenschaftwerte->kEigenschaftWert) ? $oEigenschaftwerte->kEigenschaftWert : null),
+                    (isset($oEigenschaftwerte->cFreifeldWert) ? $oEigenschaftwerte->cFreifeldWert : null),
+                    (isset($oEigenschaftwerte->cEigenschaftName) ? $oEigenschaftwerte->cEigenschaftName : null),
+                    (isset($oEigenschaftwerte->cEigenschaftWertName) ? $oEigenschaftwerte->cEigenschaftWertName : null),
                     $this->kWarenkorbPersPos
                 );
                 $oWarenkorbPersPosEigenschaft->schreibeDB();

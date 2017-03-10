@@ -10,10 +10,10 @@
  */
 function speicherTrennzeichen($cPostAssoc_arr)
 {
-    $nEinheit_arr = array(JTLSEPARATER_WEIGHT, JTLSEPARATER_AMOUNT);
+    $nEinheit_arr = [JTLSEPARATER_WEIGHT, JTLSEPARATER_AMOUNT];
 
     foreach ($nEinheit_arr as $nEinheit) {
-        if (isset($cPostAssoc_arr['nDezimal_' . $nEinheit]) && isset($cPostAssoc_arr['cDezZeichen_' . $nEinheit]) && isset($cPostAssoc_arr['cTausenderZeichen_' . $nEinheit])) {
+        if (isset($cPostAssoc_arr['nDezimal_' . $nEinheit], $cPostAssoc_arr['cDezZeichen_' . $nEinheit], $cPostAssoc_arr['cTausenderZeichen_' . $nEinheit])) {
             $oTrennzeichen = new Trennzeichen();
             $oTrennzeichen->setSprache($_SESSION['kSprache'])
                           ->setEinheit($nEinheit)
@@ -33,7 +33,7 @@ function speicherTrennzeichen($cPostAssoc_arr)
         }
     }
 
-    Shop::Cache()->flushTags(array(CACHING_GROUP_CORE, CACHING_GROUP_CATEGORY, CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE));
+    Shop::Cache()->flushTags([CACHING_GROUP_CORE, CACHING_GROUP_CATEGORY, CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
 
     return true;
 }

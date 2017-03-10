@@ -12,7 +12,7 @@ final class Shopsetting implements ArrayAccess
     /**
      * @var Shopsetting
      */
-    private static $_instance = null;
+    private static $_instance;
 
     /**
      * @var array
@@ -62,7 +62,7 @@ final class Shopsetting implements ArrayAccess
      */
     public function offsetSet($offset, $value)
     {
-        if (is_null($offset)) {
+        if ($offset === null) {
             $this->_container[] = $value;
         } else {
             $this->_container[$offset] = $value;
@@ -98,14 +98,13 @@ final class Shopsetting implements ArrayAccess
     public function offsetGet($offset)
     {
         if (!isset($this->_container[$offset])) {
-            $section = $this->mapSettingName(null, $offset);
+            $section = static::mapSettingName(null, $offset);
 
             if ($section === false || $section === null) {
                 return null;
             }
             $cacheID = 'setting_' . $section;
-
-            // Dirty Template work around
+            // Template work around
             if ($section === CONF_TEMPLATE) {
                 if (($templateSettings = Shop::Cache()->get($cacheID)) === false) {
                     $template         = Template::getInstance();
@@ -156,7 +155,7 @@ final class Shopsetting implements ArrayAccess
             }
         }
 
-        return (isset($this->_container[$offset])) ? $this->_container[$offset] : null;
+        return isset($this->_container[$offset]) ? $this->_container[$offset] : null;
     }
 
     /**
@@ -189,7 +188,7 @@ final class Shopsetting implements ArrayAccess
         $settings    = $this->getSettings([$section]);
         $sectionName = self::mapSettingName($section);
 
-        return (isset($settings[$sectionName][$option]))
+        return isset($settings[$sectionName][$option])
             ? $settings[$sectionName][$option]
             : null;
     }
@@ -208,7 +207,7 @@ final class Shopsetting implements ArrayAccess
         if ($section !== null && isset($mappings[$section])) {
             return $mappings[$section];
         }
-        if ($name !== null && ($key = array_search($name, $mappings)) !== false) {
+        if ($name !== null && ($key = array_search($name, $mappings, true)) !== false) {
             return $key;
         }
 
@@ -251,7 +250,7 @@ final class Shopsetting implements ArrayAccess
     }
 
     /**
-     * @return array
+     * @return string[]
      */
     private static function getMappings()
     {

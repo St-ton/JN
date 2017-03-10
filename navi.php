@@ -3,11 +3,11 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/globalinclude.php';
+require_once __DIR__ . '/includes/globalinclude.php';
 /** @global JTLSmarty $smarty */
-$cart = (isset($_SESSION['Warenkorb'])) ?
-    $_SESSION['Warenkorb'] :
-    new Warenkorb();
+$cart = isset($_SESSION['Warenkorb'])
+    ? $_SESSION['Warenkorb']
+    : new Warenkorb();
 
 if (!$_SESSION['Kundengruppe']->darfArtikelKategorienSehen) {
     //falls Artikel/Kategorien nicht gesehen werden dürfen -> login
@@ -34,7 +34,7 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
 executeHook(HOOK_INDEX_NAVI_HEAD_POSTGET);
 
 //support for artikel_after_cart_add
-if (isset($_POST['a']) && isset($_POST['wke'])) {
+if (isset($_POST['a'], $_POST['wke'])) {
     require_once PFAD_ROOT . PFAD_INCLUDES . 'artikel_inc.php';
     if (function_exists('gibArtikelXSelling')) {
         $smarty->assign('Xselling', gibArtikelXSelling($_POST['a']));
@@ -134,7 +134,7 @@ if ($cParameter_arr['kHersteller'] > 0 ||
                     'key'   => 'kLink',
                     'value' => $cParameter_arr['kLink']
                 ]);
-                $kLink         = $hookInfos['value'];
+                $kLink         = (int)$hookInfos['value'];
                 $bFileNotFound = $hookInfos['isFileNotFound'];
                 if (!$kLink) {
                     $linkHelper  = LinkHelper::getInstance();
@@ -211,6 +211,10 @@ if ($cParameter_arr['kHersteller'] > 0 ||
             $NaviFilter->Suche->cSuche       = $oSuchanfrage->cSuche;
         }
     }
+    if (!isset($NaviFilter->Suche)) {
+        $NaviFilter->Suche = new stdClass();
+    }
+    $NaviFilter->Suche->bExtendedJTLSearch = $bExtendedJTLSearch;
     //Suche da? Dann bearbeiten
     if (!$bExtendedJTLSearch && isset($NaviFilter->Suche->cSuche) && strlen($NaviFilter->Suche->cSuche) > 0) {
         //XSS abfangen
@@ -260,7 +264,7 @@ if ($cParameter_arr['kHersteller'] > 0 ||
         'cValue'                     => &$NaviFilter->EchteSuche->cSuche,
         'nArtikelProSeite'           => &$cParameter_arr['nArtikelProSeite'],
         'nSeite'                     => &$NaviFilter->nSeite,
-        'nSortierung'                => (isset($_SESSION['Usersortierung']))
+        'nSortierung'                => isset($_SESSION['Usersortierung'])
             ? $_SESSION['Usersortierung']
             : null,
         'bLagerbeachten'             => $Einstellungen['global']['artikel_artikelanzeigefilter'] ==
@@ -328,10 +332,10 @@ if ($cParameter_arr['kHersteller'] > 0 ||
         foreach ($oSuchergebnisse->Artikel->elemente as $product) {
             $products[] = $product->kArtikel;
         }
-        $limit = (isset($Einstellungen['artikeluebersicht']['artikeluebersicht_bestseller_anzahl']))
+        $limit = isset($Einstellungen['artikeluebersicht']['artikeluebersicht_bestseller_anzahl'])
             ? (int)$Einstellungen['artikeluebersicht']['artikeluebersicht_bestseller_anzahl']
             : 3;
-        $minsells = (isset($Einstellungen['global']['global_bestseller_minanzahl']))
+        $minsells = isset($Einstellungen['global']['global_bestseller_minanzahl'])
             ? (int)$Einstellungen['global']['global_bestseller_minanzahl']
             : 10;
         $bestsellers = Bestseller::buildBestsellers(
@@ -363,10 +367,10 @@ if ($cParameter_arr['kHersteller'] > 0 ||
         )
     );
     // Schauen ob die maximale Anzahl der Artikel >= der max. Anzahl die im Backend eingestellt wurde
-    if ((int)$Einstellungen['artikeluebersicht']['suche_max_treffer'] > 0) {
-        if ($oSuchergebnisse->GesamtanzahlArtikel >= (int)$Einstellungen['artikeluebersicht']['suche_max_treffer']) {
-            $smarty->assign('nMaxAnzahlArtikel', 1);
-        }
+    if ((int)$Einstellungen['artikeluebersicht']['suche_max_treffer'] > 0 &&
+        $oSuchergebnisse->GesamtanzahlArtikel >= (int)$Einstellungen['artikeluebersicht']['suche_max_treffer']
+    ) {
+        $smarty->assign('nMaxAnzahlArtikel', 1);
     }
     //Filteroptionen rausholen
     if (!$bExtendedJTLSearch) {
@@ -374,11 +378,10 @@ if ($cParameter_arr['kHersteller'] > 0 ||
         $oSuchergebnisse->Bewertung         = gibBewertungSterneFilterOptionen($FilterSQL, $NaviFilter);
         $oSuchergebnisse->Tags              = gibTagFilterOptionen($FilterSQL, $NaviFilter);
         $oSuchergebnisse->TagsJSON          = gibTagFilterJSONOptionen($FilterSQL, $NaviFilter);
-        $oSuchergebnisse->MerkmalFilter     = gibMerkmalFilterOptionen(
-            $FilterSQL,
+        $oSuchergebnisse->MerkmalFilter     = gibMerkmalFilterOptionen($FilterSQL,
             $NaviFilter,
             $AktuelleKategorie,
-            function_exists('starteAuswahlAssistent')
+            class_exists('AuswahlAssistent')
         );
         $oSuchergebnisse->Preisspanne       = gibPreisspannenFilterOptionen($FilterSQL, $NaviFilter, $oSuchergebnisse);
         $oSuchergebnisse->Kategorieauswahl  = gibKategorieFilterOptionen($FilterSQL, $NaviFilter);
@@ -404,9 +407,9 @@ if ($cParameter_arr['kHersteller'] > 0 ||
     // Verfügbarkeitsbenachrichtigung allgemeiner CaptchaCode
     $smarty->assign(
         'code_benachrichtigung_verfuegbarkeit',
-        (isset($Einstellungen['artikeldetails']['benachrichtigung_abfragen_captcha'])) ?
-            generiereCaptchaCode($Einstellungen['artikeldetails']['benachrichtigung_abfragen_captcha']) :
-            null
+        isset($Einstellungen['artikeldetails']['benachrichtigung_abfragen_captcha'])
+            ? generiereCaptchaCode($Einstellungen['artikeldetails']['benachrichtigung_abfragen_captcha'])
+            : null
     );
     // Verfügbarkeitsbenachrichtigung pro Artikel
     if (is_array($oSuchergebnisse->Artikel->elemente)) {
@@ -526,7 +529,7 @@ if ($cParameter_arr['kHersteller'] > 0 ||
         if ($Einstellungen['navigationsfilter']['merkmalwert_bild_anzeigen'] === 'Y') {
             $oNavigationsinfo->cName = $oNavigationsinfo->oMerkmalWert->cName;
         } elseif ($Einstellungen['navigationsfilter']['merkmalwert_bild_anzeigen'] === 'BT') {
-            $oNavigationsinfo->cName    = (isset($oNavigationsinfo->oMerkmalWert->cName))
+            $oNavigationsinfo->cName    = isset($oNavigationsinfo->oMerkmalWert->cName)
                 ? $oNavigationsinfo->oMerkmalWert->cName
                 : null;
             $oNavigationsinfo->cBildURL = $oNavigationsinfo->oMerkmalWert->cBildpfadNormal;
@@ -576,7 +579,7 @@ if ($cParameter_arr['kHersteller'] > 0 ||
         );
     }
     // Canonical
-    if (strpos(basename(gibNaviURL($NaviFilter, true, null)), '.php') === false || !SHOP_SEO) {
+    if (strpos(basename(gibNaviURL($NaviFilter, true, null)), '.php') === false) {
         $cSeite = '';
         if (isset($oSuchergebnisse->Seitenzahlen->AktuelleSeite) &&
             $oSuchergebnisse->Seitenzahlen->AktuelleSeite > 1
@@ -586,13 +589,17 @@ if ($cParameter_arr['kHersteller'] > 0 ||
         $cCanonicalURL = gibNaviURL($NaviFilter, true, null, 0, true) . $cSeite;
     }
     // Auswahlassistent
-    if (function_exists('starteAuswahlAssistent')) {
+    if (TEMPLATE_COMPATIBILITY === true && function_exists('starteAuswahlAssistent')) {
         starteAuswahlAssistent(
             AUSWAHLASSISTENT_ORT_KATEGORIE,
             $cParameter_arr['kKategorie'],
             Shop::getLanguage(),
             $smarty,
             $Einstellungen['auswahlassistent']
+        );
+    } elseif (class_exists('AuswahlAssistent')) {
+        AuswahlAssistent::startIfRequired(
+            AUSWAHLASSISTENT_ORT_KATEGORIE, $cParameter_arr['kKategorie'], Shop::getLanguage(), $smarty
         );
     }
     // Work around fürs Template
@@ -603,8 +610,8 @@ if ($cParameter_arr['kHersteller'] > 0 ||
            ->assign('Einstellungen', $Einstellungen)
            ->assign('Sortierliste', gibSortierliste($Einstellungen, $bExtendedJTLSearch))
            ->assign('Suchergebnisse', $oSuchergebnisse)
-           ->assign('requestURL', (isset($requestURL)) ? $requestURL : null)
-           ->assign('sprachURL', (isset($sprachURL)) ? $sprachURL : null)
+           ->assign('requestURL', isset($requestURL) ? $requestURL : null)
+           ->assign('sprachURL', isset($sprachURL) ? $sprachURL : null)
            ->assign('oNavigationsinfo', $oNavigationsinfo)
            ->assign('SEO', false)
            ->assign('SESSION_NOTWENDIG', false);
@@ -614,7 +621,7 @@ if ($cParameter_arr['kHersteller'] > 0 ||
 
     $oGlobaleMetaAngabenAssoc_arr = holeGlobaleMetaAngaben(); // Globale Metaangaben
     $oExcludedKeywordsAssoc_arr   = holeExcludedKeywords(); // Excluded Meta Keywords
-    $keyWords                     = (isset($oExcludedKeywordsAssoc_arr[$_SESSION['cISOSprache']]->cKeywords))
+    $keyWords                     = isset($oExcludedKeywordsAssoc_arr[$_SESSION['cISOSprache']]->cKeywords)
         ? $oExcludedKeywordsAssoc_arr[$_SESSION['cISOSprache']]->cKeywords
         : '';
     $smarty->assign(
@@ -673,11 +680,11 @@ if ($cParameter_arr['kHersteller'] > 0 ||
                 'key'   => 'kLink',
                 'value' => $cParameter_arr['kLink']
             ]);
-            $kLink         = $hookInfos['value'];
+            $kLink         = (int)$hookInfos['value'];
             $bFileNotFound = $hookInfos['isFileNotFound'];
             if (!$kLink) {
                 $oLink       = Shop::DB()->select('tlink', 'nLinkart', LINKTYP_404);
-                $kLink       = $oLink->kLink;
+                $kLink       = (int)$oLink->kLink;
                 Shop::$kLink = $kLink;
             }
         }

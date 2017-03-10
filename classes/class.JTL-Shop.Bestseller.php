@@ -48,7 +48,7 @@ class Bestseller
         $methods = get_class_methods($this);
         foreach ($options as $key => $value) {
             $method = 'set' . ucfirst($key);
-            if (in_array($method, $methods) && method_exists($this, $method)) {
+            if (in_array($method, $methods, true) && method_exists($this, $method)) {
                 $this->$method($value);
             }
         }
@@ -228,7 +228,7 @@ class Bestseller
     public static function ignoreProducts(&$products, $bestsellers)
     {
         $ignoredkeys = [];
-        if (is_array($products) && count($products) > 0 && is_array($bestsellers) && count($bestsellers) > 0) {
+        if (is_array($products) && is_array($bestsellers) && count($products) > 0 && count($bestsellers) > 0) {
             foreach ($products as $i => $product) {
                 if (count($products) === 1) {
                     break;

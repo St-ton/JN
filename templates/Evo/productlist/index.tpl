@@ -8,8 +8,14 @@
     
     {assign var='style' value='gallery'}
     {assign var='grid' value='col-xs-6 col-lg-4'}
-    {if isset($oErweiterteDarstellung->nDarstellung) && isset($Einstellungen.artikeluebersicht.artikeluebersicht_erw_darstellung) && $Einstellungen.artikeluebersicht.artikeluebersicht_erw_darstellung === 'Y'  && $oErweiterteDarstellung->nDarstellung == 1 
-    || isset($Einstellungen.artikeluebersicht.artikeluebersicht_erw_darstellung_stdansicht) && $Einstellungen.artikeluebersicht.artikeluebersicht_erw_darstellung_stdansicht == 1}
+    {if isset($oErweiterteDarstellung->nDarstellung) &&
+    isset($Einstellungen.artikeluebersicht.artikeluebersicht_erw_darstellung) &&
+    $Einstellungen.artikeluebersicht.artikeluebersicht_erw_darstellung === 'Y' &&
+    $oErweiterteDarstellung->nDarstellung == 1 ||
+    isset($Einstellungen.artikeluebersicht.artikeluebersicht_erw_darstellung_stdansicht) &&
+    $Einstellungen.artikeluebersicht.artikeluebersicht_erw_darstellung_stdansicht == 1 ||
+    !empty($AktuelleKategorie->categoryFunctionAttributes['darstellung']) &&
+    $AktuelleKategorie->categoryFunctionAttributes['darstellung'] == 1}
         {assign var='style' value='list'}
         {assign var='grid' value='col-xs-12'}
     {/if}
@@ -26,9 +32,10 @@
     {/if}
     
     {block name="productlist-results"}
-    <div class="row {if $style !== 'list'}row-eq-height row-eq-img-height{/if} {$style}" id="product-list">
+    <div class="row {if $style !== 'list'}row-eq-height row-eq-img-height{/if} {$style}" id="product-list" itemprop="mainEntity" itemscope itemtype="http://schema.org/ItemList">
         {foreach name=artikel from=$Suchergebnisse->Artikel->elemente item=Artikel}
-            <div class="product-wrapper {$grid}">
+            <div class="product-wrapper {$grid}" itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+                <meta itemprop="position" content="{$smarty.foreach.artikel.iteration}">
                 {if $style === 'list'}
                     {include file='productlist/item_list.tpl' tplscope=$style}
                 {else}

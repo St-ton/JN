@@ -15,7 +15,7 @@
  * @method int insert(string $tableName, object $object, int|bool $echo = false, bool $bExecuteHook = false)
  * @method int delete(string $tableName, string|array $keyname, string|int|array $keyvalue, bool|int $echo = false)
  * @method int update(string $tableName, string|array $keyname, string|int|array $keyvalue, object $object, int|bool $echo = false)
- * @method int|array selectAll(string $tableName, string|array $keys, string|int|array $values, string $select = '*', string $orderBy = '', string $limit = '')
+ * @method array selectAll(string $tableName, string|array $keys, string|int|array $values, string $select = '*', string $orderBy = '', string $limit = '')
  * @method string realEscape($string)
  * @method string pdoEscape($string)
  * @method string info()
@@ -68,7 +68,7 @@ class NiceDB
     /**
      * @var NiceDB
      */
-    private static $instance = null;
+    private static $instance;
 
     /**
      * @var PDO
@@ -157,8 +157,6 @@ class NiceDB
         }
         $this->isConnected = true;
         self::$instance    = $this;
-
-        return $this;
     }
 
     /**
@@ -276,7 +274,7 @@ class NiceDB
             'isConnected'     => 'isConnected'
         ];
 
-        return (isset($mapping[$method])) ? $mapping[$method] : null;
+        return isset($mapping[$method]) ? $mapping[$method] : null;
     }
 
     /**
@@ -311,7 +309,11 @@ class NiceDB
                 if (!isset($_bt['function'])) {
                     $_bt['function'] = '';
                 }
-                if (isset($_bt['file']) && strpos($_bt['file'], 'class.core.NiceDB.php') === false && !($_bt['class'] === 'NiceDB' && $_bt['function'] === '__call')) {
+                if (
+                    isset($_bt['file']) &&
+                    !($_bt['class'] === 'NiceDB' && $_bt['function'] === '__call') &&
+                    strpos($_bt['file'], 'class.core.NiceDB.php') === false
+                ) {
                     $strippedBacktrace[] = [
                         'file'     => $_bt['file'],
                         'line'     => $_bt['line'],
@@ -323,7 +325,7 @@ class NiceDB
             $backtrace = $strippedBacktrace;
         }
         if ($res !== false) {
-            while ($row = $res->fetchObject()) {
+            while (($row = $res->fetchObject()) !== false) {
                 if (!empty($row->table)) {
                     $tableData            = new stdClass();
                     $tableData->type      = $type;
@@ -524,7 +526,7 @@ class NiceDB
                     }
                 }
                 $stmt = "INSERT INTO $tableName $columns $values";
-                $this->analyzeQuery('insert', $stmt, ($end - $start), $backtrace);
+                $this->analyzeQuery('insert', $stmt, $end - $start, $backtrace);
             }
 
             return 0;
@@ -557,7 +559,7 @@ class NiceDB
                         } elseif ($object->$property === 'now()') {
                             $values .= $object->$property . ')';
                         } else {
-                            $values .= '' . $this->pdoEscape($object->$property) . ')';
+                            $values .= '"' . $this->pdoEscape($object->$property) . '")';
                         }
                     } else {
                         $columns .= $property . ', ';
@@ -566,12 +568,11 @@ class NiceDB
                         } elseif ($object->$property === 'now()') {
                             $values .= $object->$property . ', ';
                         } else {
-                            $values .= '' . $this->pdoEscape($object->$property) . ', ';
+                            $values .= '"' . $this->pdoEscape($object->$property) . '", ';
                         }
                     }
                 }
-                $stmt = "INSERT INTO $tableName $columns $values";
-                $this->analyzeQuery('insert', $stmt, ($end - $start), $backtrace);
+                $this->analyzeQuery('insert', "INSERT INTO $tableName $columns $values", $end - $start, $backtrace);
             }
 
             return ($id > 0) ? $id : 1;
@@ -698,7 +699,7 @@ class NiceDB
                 $where = ' WHERE ' . $keyname . '=' . $keyvalue;
             }
             $stmt = 'UPDATE ' . $tableName . ' SET ' . implode(',', $updates) . $where;
-            $this->analyzeQuery('update', $stmt, ($end - $start), $backtrace);
+            $this->analyzeQuery('update', $stmt, $end - $start, $backtrace);
         }
 
         return $ret;
@@ -724,8 +725,8 @@ class NiceDB
         $start   = ($this->debug === true || $this->collectData === true)
             ? microtime(true)
             : 0;
-        $keys    = (is_array($keyname)) ? $keyname : [$keyname, $keyname1, $keyname2];
-        $values  = (is_array($keyvalue)) ? $keyvalue : [$keyvalue, $keyvalue1, $keyvalue2];
+        $keys    = is_array($keyname) ? $keyname : [$keyname, $keyname1, $keyname2];
+        $values  = is_array($keyvalue) ? $keyvalue : [$keyvalue, $keyvalue1, $keyvalue2];
         $assigns = [];
         $i       = 0;
         foreach ($keys as &$_key) {
@@ -773,16 +774,16 @@ class NiceDB
             if ($this->debug === true || $this->collectData === true) {
                 $start = microtime(true);
             }
-            $keys    = (is_array($keyname)) ? $keyname : [$keyname, $keyname1, $keyname2];
-            $values  = (is_array($keyvalue)) ? $keyvalue : [$keyvalue, $keyvalue1, $keyvalue2];
+            $keys    = is_array($keyname) ? $keyname : [$keyname, $keyname1, $keyname2];
+            $values  = is_array($keyvalue) ? $keyvalue : [$keyvalue, $keyvalue1, $keyvalue2];
             $i       = 0;
-            foreach ($keys as &$_key) {
-                if ($_key !== null) {
-                    $_key .= '=';
+            foreach ($keys as &$k) {
+                if ($k !== null) {
+                    $k .= '=';
                     if (is_string($values[$i])) {
-                        $_key .= '\'' . $values[$i] . '\'';
+                        $k .= '\'' . $values[$i] . '\'';
                     } else {
-                        $_key .= $values[$i];
+                        $k .= $values[$i];
                     }
                 } else {
                     unset($keys[$i]);
@@ -790,7 +791,7 @@ class NiceDB
                 ++$i;
             }
             $stmt = 'SELECT ' . $select . ' FROM ' . $tableName . ((count($keys) > 0) ? (' WHERE ' . implode(' AND ', $keys)) : '');
-            $this->analyzeQuery('select', $stmt, ($end - $start), $backtrace);
+            $this->analyzeQuery('select', $stmt, $end - $start, $backtrace);
         }
 
         return ($ret !== false) ? $ret : null;
@@ -808,11 +809,12 @@ class NiceDB
      */
     public function selectArray($tableName, $keys, $values, $select = '*', $orderBy = '', $limit = '')
     {
-        $keys         = (is_array($keys)) ? $keys : [$keys];
-        $values       = (is_array($values)) ? $values : [$values];
+        $keys         = is_array($keys) ? $keys : [$keys];
+        $values       = is_array($values) ? $values : [$values];
         $kv           = [];
         if (count($keys) !== count($values)) {
-            throw new InvalidArgumentException('Number of keys must be equal to number of given keys. Got ' . count($keys) . ' key(s) and ' . count($values) . ' value(s).');
+            throw new InvalidArgumentException('Number of keys must be equal to number of given keys. Got ' .
+                count($keys) . ' key(s) and ' . count($values) . ' value(s).');
         }
         foreach ($keys as $_key) {
             $kv[] = $_key . '=:' . $_key;
@@ -901,7 +903,7 @@ class NiceDB
         $type   = (int)$type;
         $return = (int)$return;
         $params = is_array($params) ? $params : [];
-        if (!in_array($type, [0, 1])) {
+        if (!in_array($type, [0, 1], true)) {
             throw new InvalidArgumentException("\$type parameter must be 0 or 1, given '{$type}'");
         }
 
@@ -963,7 +965,7 @@ class NiceDB
             }
 
             if ($fnInfo !== null) {
-                call_user_func($fnInfo, $info);
+                $fnInfo($info);
             }
         }
 
@@ -981,7 +983,7 @@ class NiceDB
                 break;
             case 2:
                 $ret = [];
-                while ($row = $res->fetchObject()) {
+                while (($row = $res->fetchObject()) !== false) {
                     $ret[] = $row;
                 }
                 break;
@@ -1040,11 +1042,12 @@ class NiceDB
      */
     public function deleteRow($tableName, $keyname, $keyvalue, $echo = false)
     {
+        $start = 0;
         if ($this->debug === true || $this->collectData === true) {
             $start = microtime(true);
         }
         $assigns = [];
-        if (is_array($keyvalue) && is_array($keyvalue)) {
+        if (is_array($keyname) && is_array($keyvalue)) {
             if (count($keyname) !== count($keyvalue)) {
                 if ($this->logErrors && $this->logfileName) {
                     $this->writeLog('deleteRow: Anzahl an Schluesseln passt nicht zu Anzahl an Werten - Tablename:' . $tableName);
@@ -1101,7 +1104,7 @@ class NiceDB
                 $keyvalue = $this->pdoEscape($keyvalue);
             }
             $stmt = 'DELETE FROM ' . $tableName . ' WHERE ' . $keyname . '=' . $keyvalue;
-            $this->analyzeQuery('delete', $stmt, ($end - $start), $backtrace);
+            $this->analyzeQuery('delete', $stmt, $end - $start, $backtrace);
         }
 
         return $ret;
@@ -1162,7 +1165,7 @@ class NiceDB
     /**
      * Quotes a string with outer quotes for use in a query.
      *
-     * @param string $string
+     * @param string|bool $string
      * @return string
      */
     public function quote($string)
@@ -1185,9 +1188,7 @@ class NiceDB
         $quotedString = $this->quote($string);
 
         // remove outer single quotes
-        $nonQuotedString = preg_replace('/^\'(.*)\'$/', '$1', $quotedString);
-
-        return $nonQuotedString;
+        return preg_replace('/^\'(.*)\'$/', '$1', $quotedString);
     }
 
     /**
@@ -1230,7 +1231,7 @@ class NiceDB
     {
         $error = $this->_getError();
         if (is_array($error) && isset($error[2])) {
-            return (is_string($error[2])) ? $error[2] : '';
+            return is_string($error[2]) ? $error[2] : '';
         }
 
         return '';
@@ -1285,13 +1286,13 @@ class NiceDB
      * @param PDOStatement $stmt
      * @param string       $parameter
      * @param mixed        $value
-     * @param null         $type
+     * @param int|null     $type
      */
-    protected function _bind(PDOStatement &$stmt, $parameter, $value, $type = null)
+    protected function _bind(PDOStatement $stmt, $parameter, $value, $type = null)
     {
         $parameter = $this->_bindName($parameter);
 
-        if (is_null($type)) {
+        if ($type === null) {
             switch (true) {
                 case is_bool($value):
                     $type = PDO::PARAM_BOOL;
@@ -1335,19 +1336,13 @@ class NiceDB
         $values = [];
 
         foreach ($params as $key => $value) {
-            if (is_string($key)) {
-                $key = $this->_bindName($key);
-            } else {
-                $key = '[?]';
-            }
-
+            $key    = is_string($key)
+                ? $this->_bindName($key)
+                : '[?]';
             $keys[] = '/' . $key . '/';
-
-            if (is_int($value)) {
-                $value = (int)$value;
-            } else {
-                $value = $this->quote($value);
-            }
+            $value  = is_int($value)
+                ? (int)$value
+                : $this->quote($value);
 
             $values[] = $value;
         }

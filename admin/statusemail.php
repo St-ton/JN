@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/admininclude.php';
+require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('EMAIL_REPORTS_VIEW', true, true);
 /** @global JTLSmarty $smarty */
@@ -19,7 +19,7 @@ if (validateToken()) {
     if (isset($_POST['action']) && $_POST['action'] === 'sendnow') {
         sendStatusMail();
     }
-    elseif (isset($_POST['einstellungen']) && intval($_POST['einstellungen']) === 1) {
+    elseif (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1) {
         if (speicherStatusemailEinstellungen()) {
             $cHinweis .= 'Ihre Einstellungen wurden &uuml;bernommen.<br>';
         } else {

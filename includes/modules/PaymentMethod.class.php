@@ -87,10 +87,10 @@ class PaymentMethod
         $this->name = '';
         // Fetch Caption/Name and Image from DB
         $result               = Shop::DB()->select('tzahlungsart', 'cModulId', $this->moduleID);
-        $this->caption        = (isset($result->cName))
+        $this->caption        = isset($result->cName)
             ? $result->cName
             : null;
-        $this->duringCheckout = (isset($result->nWaehrendBestellung))
+        $this->duringCheckout = isset($result->nWaehrendBestellung)
             ? (int)$result->nWaehrendBestellung
             : 0;
 
@@ -107,11 +107,11 @@ class PaymentMethod
      */
     public function getOrderHash($order)
     {
-        $orderId = (isset($order->kBestellung))
+        $orderId = isset($order->kBestellung)
             ? Shop::DB()->query("SELECT cId FROM tbestellid WHERE kBestellung = " . (int)$order->kBestellung, 1)
             : null;
 
-        return (isset($orderId->cId)) ? $orderId->cId : null;
+        return isset($orderId->cId) ? $orderId->cId : null;
     }
 
     /**
@@ -148,7 +148,7 @@ class PaymentMethod
      */
     public function getNotificationURL($hash)
     {
-        $key = ($this->duringCheckout) ? 'sh' : 'ph';
+        $key = $this->duringCheckout ? 'sh' : 'ph';
 
         return Shop::getURL() . '/includes/modules/notify.php?' . $key . '=' . $hash;
     }
@@ -294,7 +294,7 @@ class PaymentMethod
     {
         $model = (object)array_merge([
             'kBestellung'       => (int)$order->kBestellung,
-            'cZahlungsanbieter' => (empty($order->cZahlungsartName)) ? $this->name : $order->cZahlungsartName,
+            'cZahlungsanbieter' => empty($order->cZahlungsartName) ? $this->name : $order->cZahlungsartName,
             'fBetrag'           => 0,
             'fZahlungsgebuehr'  => 0,
             'cISO'              => $_SESSION['Waehrung']->cISO,
@@ -395,7 +395,7 @@ class PaymentMethod
      */
     public function getCustomerOrderCount($kKunde)
     {
-        if (intval($kKunde) > 0) {
+        if ((int)$kKunde > 0) {
             $oBestellung = Shop::DB()->query(
                 "SELECT count(*) AS nAnzahl
                     FROM tbestellung
@@ -437,7 +437,7 @@ class PaymentMethod
     {
         $Einstellungen = Shop::getSettings([CONF_ZAHLUNGSARTEN, CONF_PLUGINZAHLUNGSARTEN]);
 
-        return (isset($Einstellungen['zahlungsarten']['zahlungsart_' . $this->moduleAbbr . '_' . $key]))
+        return isset($Einstellungen['zahlungsarten']['zahlungsart_' . $this->moduleAbbr . '_' . $key])
             ? $Einstellungen['zahlungsarten']['zahlungsart_' . $this->moduleAbbr . '_' . $key]
             : (isset($Einstellungen['pluginzahlungsarten'][$this->moduleID . '_' . $key])
                 ? $Einstellungen['pluginzahlungsarten'][$this->moduleID . '_' . $key]
@@ -568,7 +568,7 @@ class PaymentMethod
      */
     public function unsetCache($cKey = null)
     {
-        if (is_null($cKey)) {
+        if ($cKey === null) {
             unset($_SESSION[$this->moduleID]);
         } else {
             unset($_SESSION[$this->moduleID][$cKey]);
@@ -583,7 +583,7 @@ class PaymentMethod
      */
     public function getCache($cKey = null)
     {
-        if (is_null($cKey)) {
+        if ($cKey === null) {
             return isset($_SESSION[$this->moduleID])
                 ? $_SESSION[$this->moduleID]
                 : null;
@@ -773,7 +773,7 @@ class PaymentMethod
         } elseif ($moduleId === 'za_paymentpartner_jtl') {
             require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'paymentpartner/PaymentPartner.class.php';
             $paymentMethod = new PaymentPartner($moduleId);
-        } elseif (substr($moduleId, 0, 8) === 'za_mbqc_') {
+        } elseif (strpos($moduleId, 'za_mbqc_') === 0) {
             require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'moneybookers_qc/MoneyBookersQC.class.php';
             $paymentMethod = new MoneyBookersQC($moduleId);
         } elseif ($moduleId === 'za_ut_stand_jtl') {

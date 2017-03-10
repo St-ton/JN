@@ -170,8 +170,8 @@ class JTLFont
                 $image,
                 $this->nSize,
                 0,
-                ($wh[2] + $this->nPadding / 2),
-                ($this->nMaxHeight + $this->nPadding / 2),
+                $wh[2] + $this->nPadding / 2,
+                $this->nMaxHeight + $this->nPadding / 2,
                 $cTextColor,
                 $this->cFontDir . '/' . $this->cFont,
                 $char
@@ -190,8 +190,9 @@ class JTLFont
     {
         $list = [];
         $this->calcMax($cText);
+        $max = strlen($cText);
 
-        for ($i = 0; $i < strlen($cText); $i++) {
+        for ($i = 0; $i < $max; $i++) {
             if ($cText[$i] === ' ') {
                 $list[] = false;
             } else {

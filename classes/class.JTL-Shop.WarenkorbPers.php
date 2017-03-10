@@ -69,8 +69,10 @@ class WarenkorbPers
                     break;
                 }
                 if ($oWarenkorbPersPos->kArtikel == $kArtikel &&
-                    count($oWarenkorbPersPos->oWarenkorbPersPosEigenschaft_arr) > 0 &&
-                    (int)$oWarenkorbPersPos->kKonfigitem === (int)$kKonfigitem) {
+                    $oWarenkorbPersPos->cUnique === $cUnique &&
+                    (int)$oWarenkorbPersPos->kKonfigitem === (int)$kKonfigitem &&
+                    count($oWarenkorbPersPos->oWarenkorbPersPosEigenschaft_arr) > 0
+                ) {
                     $nPosition         = $i;
                     $bBereitsEnthalten = true;
                     foreach ($oEigenschaftwerte_arr as $oEigenschaftwerte) {
@@ -86,9 +88,11 @@ class WarenkorbPers
                             break;
                         }
                     }
-                } elseif ($oWarenkorbPersPos->kArtikel == $kArtikel && $cUnique !== '' &&
+                } elseif ($oWarenkorbPersPos->kArtikel == $kArtikel &&
+                    $cUnique !== '' &&
                     $oWarenkorbPersPos->cUnique === $cUnique &&
-                    (int)$oWarenkorbPersPos->kKonfigitem === (int)$kKonfigitem) {
+                    (int)$oWarenkorbPersPos->kKonfigitem === (int)$kKonfigitem
+                ) {
                     $nPosition         = $i;
                     $bBereitsEnthalten = true;
                     break;
@@ -242,9 +246,9 @@ class WarenkorbPers
         }
 
         if ($oWarenkorbPers !== false && $oWarenkorbPers !== null) {
-            $this->kWarenkorbPers = (isset($oWarenkorbPers->kWarenkorbPers)) ? $oWarenkorbPers->kWarenkorbPers : null;
-            $this->kKunde         = (isset($oWarenkorbPers->kKunde)) ? $oWarenkorbPers->kKunde : 0;
-            $this->dErstellt      = (isset($oWarenkorbPers->dErstellt)) ? $oWarenkorbPers->dErstellt : null;
+            $this->kWarenkorbPers = isset($oWarenkorbPers->kWarenkorbPers) ? $oWarenkorbPers->kWarenkorbPers : null;
+            $this->kKunde         = isset($oWarenkorbPers->kKunde) ? $oWarenkorbPers->kKunde : 0;
+            $this->dErstellt      = isset($oWarenkorbPers->dErstellt) ? $oWarenkorbPers->dErstellt : null;
 
             if ($this->kWarenkorbPers > 0) {
                 // Hole alle Positionen für eine WarenkorbPers
@@ -275,7 +279,7 @@ class WarenkorbPers
                         );
 
                         $oWarenkorbPersPos->kWarenkorbPersPos = $oWarenkorbPersPosTMP->kWarenkorbPersPos;
-                        $oWarenkorbPersPos->cKommentar        = (isset($oWarenkorbPersPosTMP->cKommentar))
+                        $oWarenkorbPersPos->cKommentar        = isset($oWarenkorbPersPosTMP->cKommentar)
                             ? $oWarenkorbPersPosTMP->cKommentar
                             : null;
                         $oWarenkorbPersPos->dHinzugefuegt     = $oWarenkorbPersPosTMP->dHinzugefuegt;
@@ -290,7 +294,7 @@ class WarenkorbPers
                                 $oWarenkorbPersPosEigenschaft = new WarenkorbPersPosEigenschaft(
                                     $oWarenkorbPersPosEigenschaftTMP->kEigenschaft,
                                     $oWarenkorbPersPosEigenschaftTMP->kEigenschaftWert,
-                                    ((isset($oWarenkorbPersPosEigenschaftTMP->cFreiFeldWert))
+                                    (isset($oWarenkorbPersPosEigenschaftTMP->cFreiFeldWert)
                                         ? $oWarenkorbPersPosEigenschaftTMP->cFreiFeldWert
                                         : null),
                                     $oWarenkorbPersPosEigenschaftTMP->cEigenschaftName,
@@ -307,7 +311,7 @@ class WarenkorbPers
 
                             $fWarenwert += $oWarenkorbPersPos->Artikel->Preise->fVK[$oWarenkorbPersPos->Artikel->kSteuerklasse];
                         }
-                        $oWarenkorbPersPos->fAnzahl = floatval($oWarenkorbPersPos->fAnzahl);
+                        $oWarenkorbPersPos->fAnzahl = (float)$oWarenkorbPersPos->fAnzahl;
                         $this->oWarenkorbPersPos_arr[] = $oWarenkorbPersPos;
                     }
                     $this->cWarenwertLocalized = gibPreisStringLocalized($fWarenwert);
@@ -377,6 +381,9 @@ class WarenkorbPers
                             $kArtikel_arr[] = $oArtikelVorhanden->kArtikel;
                         }
                     }
+                // Konfigitem ohne Artikelbezug?
+                } elseif ($WarenkorbPersPos->kArtikel === 0 && !empty($WarenkorbPersPos->kKonfigitem)) {
+                    $kArtikel_arr[] = $WarenkorbPersPos->kArtikel;
                 }
             }
             // Artikel aus dem Array Löschen, die nicht mehr Gültig sind
@@ -436,7 +443,7 @@ class WarenkorbPers
 
                     $this->fuegeEin(
                         $oPosition->kArtikel,
-                        (isset($oPosition->Artikel->cName)) ? $oPosition->Artikel->cName : null,
+                        isset($oPosition->Artikel->cName) ? $oPosition->Artikel->cName : null,
                         $oEigenschaftwerte_arr,
                         $oPosition->nAnzahl,
                         $oPosition->cUnique,

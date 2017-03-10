@@ -85,11 +85,12 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
             // TODO: bIgnoreLimits
             // REF: $_POST['konfig_ignore_limits']
 
-            if (!function_exists('loescheWarenkorbPosition')) {
+            if (!function_exists('loescheWarenkorbPositionen')) {
                 require_once PFAD_INCLUDES . 'warenkorb_inc.php';
             }
 
             if (is_array($oBasket->PositionenArr) && count($oBasket->PositionenArr) > 0) {
+                $beDeletednPos_arr = [];
                 foreach ($oBasket->PositionenArr as $nPos => $oPosition) {
                     $bDeleted = false;
                     if ($oPosition->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL) {
@@ -110,14 +111,16 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                             // Konfiguration validieren
                             if (($aError_arr = self::validateBasket($oPosition->kArtikel, $oKonfigitem_arr)) !== true) {
                                 $bDeleted = true;
-                                loescheWarenkorbPosition($nPos);
+                                $beDeletednPos_arr[] = $nPos;
+                                //loescheWarenkorbPosition($nPos);
                             }
                         } // Standardartikel ebenfalls auf eine mögliche Konfiguration prüfen
                         elseif (!$oPosition->cUnique) {
                             // Konfiguration vorhanden -> löschen
                             if (self::hasKonfig($oPosition->kArtikel)) {
                                 $bDeleted = true;
-                                loescheWarenkorbPosition($nPos);
+                                $beDeletednPos_arr[] = $nPos;
+                                //loescheWarenkorbPosition($nPos);
                             }
                         }
 
@@ -129,6 +132,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                         }
                     }
                 }
+                loescheWarenkorbPositionen($beDeletednPos_arr);
             }
         }
 
@@ -139,7 +143,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         public static function validateBasket($kArtikel, $oKonfigitem_arr)
         {
-            if (intval($kArtikel) === 0 || !is_array($oKonfigitem_arr)) {
+            if ((int)$kArtikel === 0 || !is_array($oKonfigitem_arr)) {
                 Jtllog::writeLog(utf8_decode('Validierung der Konfiguration fehlgeschlagen - Ungültige Daten'), JTLLOG_LEVEL_ERROR);
 
                 return false;
@@ -150,7 +154,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
             $oArtikel = new Artikel();
             $oArtikel->fuelleArtikel($kArtikel, Artikel::getDefaultOptions());
             // Grundpreis
-            if ($oArtikel && intval($oArtikel->kArtikel) > 0) {
+            if ($oArtikel && (int)$oArtikel->kArtikel > 0) {
                 $fFinalPrice += $oArtikel->Preise->fVKNetto;
             }
             // Anzahl
@@ -215,7 +219,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         private static function langComponent($bPlural = false, $bSpace = true)
         {
             $cComponent = $bSpace ? ' ' : '';
-            $cComponent .= ($bPlural)
+            $cComponent .= $bPlural
                 ? Shop::Lang()->get('configComponents', 'productDetails')
                 : Shop::Lang()->get('configComponent', 'productDetails');
 

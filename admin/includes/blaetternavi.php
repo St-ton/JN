@@ -23,7 +23,7 @@ function baueBlaetterNavi($nAktuelleSeite, $nAnzahl, $nAnzahlProSeite)
     $oBlaetterNavi->nAktiv = 0;
 
     if ($nAnzahl > $nAnzahlProSeite) {
-        $nBlaetterAnzahl_arr = array();
+        $nBlaetterAnzahl_arr = [];
 
         $nSeiten     = ceil($nAnzahl / $nAnzahlProSeite);
         $nMaxAnzeige = 5; // Zeige in der Navigation nur maximal X Seiten an
@@ -100,8 +100,8 @@ function baueBlaetterNavi($nAktuelleSeite, $nAnzahl, $nAnzahlProSeite)
  */
 function baueBlaetterNaviGetterSetter($nAnzahl, $nAnzahlProSeite)
 {
-    $nAnzahl           = intval($nAnzahl);
-    $nAnzahlProSeite   = intval($nAnzahlProSeite);
+    $nAnzahl           = (int)$nAnzahl;
+    $nAnzahlProSeite   = (int)$nAnzahlProSeite;
     $oBlaetterNaviConf = new stdClass();
 
     if ($nAnzahl > 0 && $nAnzahlProSeite > 0) {
@@ -117,7 +117,7 @@ function baueBlaetterNaviGetterSetter($nAnzahl, $nAnzahlProSeite)
             $oBlaetterNaviConf->$nAktuelleSeite = 1;
             $oBlaetterNaviConf->$cLimit         = 0;
             // GET || POST
-            if (intval(verifyGPCDataInteger('s' . $i)) > 0) {
+            if (verifyGPCDataInteger('s' . $i) > 0) {
                 $nSeite                             = verifyGPCDataInteger('s' . $i);
                 $oBlaetterNaviConf->$cOffset        = (($nSeite - 1) * $nAnzahlProSeite);
                 $oBlaetterNaviConf->$cSQL           = ' LIMIT ' . (($nSeite - 1) * $nAnzahlProSeite) . ", " . $nAnzahlProSeite;

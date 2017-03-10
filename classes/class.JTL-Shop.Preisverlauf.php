@@ -150,8 +150,8 @@ class Preisverlauf
     {
         $this->kPreisverlauf  = (int)$_POST['PStaffelKey'];
         $this->kArtikel       = (int)$_POST['KeyArtikel'];
-        $this->fPreisPrivat   = doubleval($_POST['ArtikelVKBrutto']);
-        $this->fPreisHaendler = doubleval($_POST['ArtikelVKHaendlerBrutto']);
+        $this->fPreisPrivat   = (float)$_POST['ArtikelVKBrutto'];
+        $this->fPreisHaendler = (float)$_POST['ArtikelVKHaendlerBrutto'];
         $this->dDate          = 'now()';
 
         return ($this->kArtikel > 0);

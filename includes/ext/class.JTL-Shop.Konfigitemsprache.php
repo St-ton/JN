@@ -60,16 +60,30 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
             $oObj = Shop::DB()->select('tkonfigitemsprache', 'kKonfigitem', (int)$kKonfigitem, 'kSprache', (int)$kSprache);
             if (isset($oObj) && empty($oObj->cName)) {
                 $kSprache         = gibStandardsprache();
-                $StandardLanguage = Shop::DB()->select('tkonfigitemsprache', 'kKonfigitem', (int)$kKonfigitem, 'kSprache', (int)$kSprache->kSprache, null, null, false, 'cName');
+                $StandardLanguage = Shop::DB()->select(
+                    'tkonfigitemsprache',
+                    'kKonfigitem', (int)$kKonfigitem,
+                    'kSprache', (int)$kSprache->kSprache,
+                    null, null,
+                    false,
+                    'cName'
+                );
                 $oObj->cName      = $StandardLanguage->cName;
             }
             if (isset($oObj) && empty($oObj->cBeschreibung)) {
                 $kSprache            = gibStandardsprache();
-                $StandardLanguage    = Shop::DB()->select('tkonfigitemsprache', 'kKonfigitem', (int)$kKonfigitem, 'kSprache', (int)$kSprache->kSprache, null, null, false, 'cBeschreibung');
+                $StandardLanguage    = Shop::DB()->select(
+                    'tkonfigitemsprache',
+                    'kKonfigitem', (int)$kKonfigitem,
+                    'kSprache', (int)$kSprache->kSprache,
+                    null, null,
+                    false,
+                    'cBeschreibung'
+                );
                 $oObj->cBeschreibung = $StandardLanguage->cBeschreibung;
             }
 
-            if (isset($oObj->kKonfigitem) && isset($oObj->kSprache) && $oObj->kKonfigitem > 0 && $oObj->kSprache > 0) {
+            if (isset($oObj->kKonfigitem, $oObj->kSprache) && $oObj->kKonfigitem > 0 && $oObj->kSprache > 0) {
                 $cMember_arr = array_keys(get_object_vars($oObj));
                 foreach ($cMember_arr as $cMember) {
                     $this->$cMember = $oObj->$cMember;
@@ -93,8 +107,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                     $oObj->$cMember = $this->$cMember;
                 }
             }
-            unset($oObj->kKonfigitem);
-            unset($oObj->kSprache);
+            unset($oObj->kKonfigitem, $oObj->kSprache);
 
             $kPrim = Shop::DB()->insert('tkonfigitemsprache', $oObj);
 

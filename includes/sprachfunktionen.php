@@ -75,7 +75,7 @@ function lang_warenkorb_bestellungEnthaeltXArtikel($warenkorb)
         $ret .= Shop::Lang()->get('positions', 'global');
     }
     $ret .= ' ' . Shop::Lang()->get('with', 'global') . ' ' .
-        ((isset($_SESSION['Warenkorb']->kWarenkorb))
+        (isset($_SESSION['Warenkorb']->kWarenkorb)
             ? $warenkorb->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL])
             : 0
         ) . ' ';
@@ -117,10 +117,10 @@ function lang_passwortlaenge($laenge)
  */
 function lang_steuerposition($ust, $netto)
 {
-    if ($ust == intval($ust)) {
+    if ($ust == (int)$ust) {
         $ust = (int)$ust;
     }
-    return ($netto)
+    return $netto
         ? Shop::Lang()->get('plus', 'productDetails') . ' ' . $ust . '% ' . Shop::Lang()->get('vat', 'productDetails')
         : Shop::Lang()->get('incl', 'productDetails') . ' ' . $ust . '% ' . Shop::Lang()->get('vat', 'productDetails');
 }
@@ -180,7 +180,7 @@ function lang_mindestbestellmenge($Artikel, $beabsichtigteKaufmenge, $kKonfigite
         $Artikel->cEinheit = ' ' . $Artikel->cEinheit;
     }
     $cName = $Artikel->cName;
-    if (class_exists('Konfigitem') && intval($kKonfigitem) > 0) {
+    if (class_exists('Konfigitem') && (int)$kKonfigitem > 0) {
         $oKonfigitem = new Konfigitem($kKonfigitem);
         $cName       = $oKonfigitem->getName();
     }

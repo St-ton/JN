@@ -265,11 +265,22 @@ class Kunde
     {
         $conf          = Shop::getSettings([CONF_KUNDEN]);
         $cBenutzername = $post['email'];
-        if (isset($conf['kunden']['kundenlogin_max_loginversuche']) && $conf['kunden']['kundenlogin_max_loginversuche'] !== '' &&
-            $conf['kunden']['kundenlogin_max_loginversuche'] > 1 && strlen($cBenutzername) > 0
+        if (isset($conf['kunden']['kundenlogin_max_loginversuche']) &&
+            $conf['kunden']['kundenlogin_max_loginversuche'] !== '' &&
+            $conf['kunden']['kundenlogin_max_loginversuche'] > 1 &&
+            strlen($cBenutzername) > 0
         ) {
-            $attempts = Shop::DB()->select('tkunde', 'cMail', StringHandler::filterXSS($cBenutzername), 'nRegistriert', 1, null, null, false, 'nLoginversuche');
-            if (isset($attempts->nLoginversuche) && intval($attempts->nLoginversuche) >= intval($conf['kunden']['kundenlogin_max_loginversuche'])) {
+            $attempts = Shop::DB()->select(
+                'tkunde',
+                'cMail', StringHandler::filterXSS($cBenutzername),
+                'nRegistriert', 1,
+                null, null,
+                false,
+                'nLoginversuche'
+            );
+            if (isset($attempts->nLoginversuche) &&
+                (int)$attempts->nLoginversuche >= (int)$conf['kunden']['kundenlogin_max_loginversuche']
+            ) {
                 if (validateCaptcha($_POST)) {
                     return true;
                 }
@@ -284,7 +295,6 @@ class Kunde
     /**
      * Setzt Kunde mit Daten aus der DB mit spezifiziertem Primary Key
      *
-     * @access public
      * @param string $cBenutzername
      * @param string $cPasswort
      * @return int 1 = Alles O.K., 2 = Kunde ist gesperrt
@@ -309,7 +319,9 @@ class Kunde
                 $this->angezeigtesLand = ISO2land($this->cLand);
                 $this->holeKundenattribute();
                 //check if password has to be updated because of PASSWORD_DEFAULT method changes or using old md5 hash
-                if (version_compare(Shop::getShopVersion(), 350, '>=') === true && (isset($oUser->cPasswort) && password_needs_rehash($oUser->cPasswort, PASSWORD_DEFAULT))) {
+                if ((isset($oUser->cPasswort) && password_needs_rehash($oUser->cPasswort, PASSWORD_DEFAULT)) &&
+                    version_compare(Shop::getShopVersion(), 350, '>=') === true
+                ) {
                     $_upd            = new stdClass();
                     $_upd->cPasswort = password_hash($cPasswort, PASSWORD_DEFAULT);
                     Shop::DB()->update('tkunde', 'kKunde', (int)$oUser->kKunde, $_upd);
@@ -358,20 +370,23 @@ class Kunde
         $updatePassword  = false;
         $verify          = false;
         $oldPasswordHash = '';
-        if (isset($oUser->cPasswort) && strlen($oUser->cPasswort) === 32) { // Alter md5
-            $oldPasswordHash = md5($cPasswort);
-            $updatePassword  = true;
-        } elseif (isset($oUser->cPasswort) && strlen($oUser->cPasswort) === 40) {  // Neuer Hash bis 4.0
-            $cCrypted = cryptPasswort($cPasswort, $oUser->cPasswort);
-            if ($cCrypted === false || strlen($cCrypted) === 0) {
-                return false;
+        if (isset($oUser->cPasswort)) {
+            if (strlen($oUser->cPasswort) === 32) { // Alter md5
+                $oldPasswordHash = md5($cPasswort);
+                $updatePassword  = true;
+            } elseif (strlen($oUser->cPasswort) === 40) {  // Neuer Hash bis 4.0
+                $cCrypted = cryptPasswort($cPasswort, $oUser->cPasswort);
+                if (empty($cCrypted)) {
+                    return false;
+                }
+                $oldPasswordHash = $cCrypted;
+                $updatePassword  = true;
+            } else { //ab 4.0
+                $verify = password_verify($cPasswort, $oUser->cPasswort);
             }
-            $oldPasswordHash = $cCrypted;
-            $updatePassword  = true;
-        } elseif (isset($oUser->cPasswort)) { //ab 4.0
-            $verify = password_verify($cPasswort, $oUser->cPasswort);
+            $oUser->kKunde         = (int)$oUser->kKunde;
+            $oUser->nLoginversuche = (int)$oUser->nLoginversuche;
         }
-
         if ($updatePassword === true) {
             //get customer by mail and old password hash
             $obj = Shop::DB()->select(
@@ -408,11 +423,18 @@ class Kunde
             $obj = false;
             if (isset($oUser->nLoginversuche)) {
                 //increment unsuccessful login attempts
-                $this->nLoginversuche = (intval($oUser->nLoginversuche) + 1);
+                $this->nLoginversuche = (int)$oUser->nLoginversuche + 1;
                 $_upd                 = new stdClass();
                 $_upd->nLoginversuche = $this->nLoginversuche;
                 Shop::DB()->update('tkunde', 'kKunde', (int)$oUser->kKunde, $_upd);
             }
+        }
+        if (isset($obj->kKunde)) {
+            $obj->kKunde         = (int)$obj->kKunde;
+            $obj->kKundengruppe  = (int)$obj->kKundengruppe;
+            $obj->kSprache       = (int)$obj->kSprache;
+            $obj->nLoginversuche = (int)$obj->nLoginversuche;
+            $obj->nRegistriert   = (int)$obj->nRegistriert;
         }
 
         return $obj;
@@ -423,13 +445,12 @@ class Kunde
      */
     public function gibGuthabenLocalized()
     {
-        return (gibPreisStringLocalized($this->fGuthaben));
+        return gibPreisStringLocalized($this->fGuthaben);
     }
 
     /**
      * Setzt Kunde mit Daten aus der DB mit spezifiziertem Primary Key
      *
-     * @access public
      * @param int $kKunde
      * @return $this
      */
@@ -452,11 +473,18 @@ class Kunde
                 //$this->cLand = landISO($this->cLand);
                 $this->holeKundenattribute();
                 $this->entschluesselKundendaten();
+                $this->kKunde         = (int)$this->kKunde;
+                $this->kKundengruppe  = (int)$this->kKundengruppe;
+                $this->kSprache       = (int)$this->kSprache;
+                $this->nLoginversuche = (int)$this->nLoginversuche;
+                $this->nRegistriert   = (int)$this->nRegistriert;
 
                 $this->dGeburtstag_formatted = date_format(date_create($this->dGeburtstag), 'd.m.Y');
                 $this->cGuthabenLocalized    = $this->gibGuthabenLocalized();
                 $cDatum_arr                  = gibDatumTeile($this->dErstellt);
-                $this->dErstellt_DE          = $cDatum_arr['cTag'] . '.' . $cDatum_arr['cMonat'] . '.' . $cDatum_arr['cJahr'];
+                $this->dErstellt_DE          = $cDatum_arr['cTag'] . '.' .
+                    $cDatum_arr['cMonat'] . '.' .
+                    $cDatum_arr['cJahr'];
                 executeHook(HOOK_KUNDE_CLASS_LOADFROMDB);
             }
         }
@@ -497,7 +525,6 @@ class Kunde
     /**
      * Fügt Datensatz in DB ein. Primary Key wird in this gesetzt.
      *
-     * @access public
      * @return int - Key vom eingefügten Kunden
      */
     public function insertInDB()
@@ -542,10 +569,10 @@ class Kunde
         $obj->nRegistriert   = $this->nRegistriert;
         $obj->nLoginversuche = $this->nLoginversuche;
 
-        if ($obj->dGeburtstag === '' || $obj->dGeburtstag === null) {
+        if (empty($obj->dGeburtstag)) {
             $obj->dGeburtstag = '0000-00-00';
         }
-        if (!isset($obj->dVeraendert) || $obj->dVeraendert === '' || $obj->dVeraendert === null) {
+        if (empty($obj->dVeraendert)) {
             $obj->dVeraendert = 'now()';
         }
         $obj->cLand   = $this->pruefeLandISO($obj->cLand);
@@ -564,7 +591,6 @@ class Kunde
     /**
      * Updatet Daten in der DB. Betroffen ist der Datensatz mit gleichem Primary Key
      *
-     * @access public
      * @return string
      */
     public function updateInDB()
@@ -581,15 +607,17 @@ class Kunde
             $cKundenattribut_arr = $obj->cKundenattribut_arr;
         }
 
-        unset($obj->cKundenattribut_arr);
-        unset($obj->cPasswort);
-        unset($obj->angezeigtesLand);
-        unset($obj->dGeburtstag_formatted);
-        unset($obj->Anrede);
-        unset($obj->cAnredeLocalized);
-        unset($obj->cGuthabenLocalized);
-        unset($obj->dErstellt_DE);
-        unset($obj->cPasswortKlartext);
+        unset(
+            $obj->cKundenattribut_arr,
+            $obj->cPasswort,
+            $obj->angezeigtesLand,
+            $obj->dGeburtstag_formatted,
+            $obj->Anrede,
+            $obj->cAnredeLocalized,
+            $obj->cGuthabenLocalized,
+            $obj->dErstellt_DE,
+            $obj->cPasswortKlartext
+        );
         if ($obj->dGeburtstag === '') {
             $obj->dGeburtstag = '0000-00-00';
         }
@@ -619,7 +647,12 @@ class Kunde
     public function holeKundenattribute()
     {
         $this->cKundenattribut_arr = [];
-        $oKundenattribut_arr       = Shop::DB()->selectAll('tkundenattribut', 'kKunde', (int)$this->kKunde, '*', 'kKundenAttribut');
+        $oKundenattribut_arr       = Shop::DB()->selectAll(
+            'tkundenattribut',
+            'kKunde',
+            (int)$this->kKunde,
+            '*', 'kKundenAttribut'
+        );
         if (is_array($oKundenattribut_arr) && count($oKundenattribut_arr) > 0) {
             foreach ($oKundenattribut_arr as $oKundenattribut) {
                 $this->cKundenattribut_arr[$oKundenattribut->kKundenfeld] = $oKundenattribut;
@@ -641,7 +674,7 @@ class Kunde
         preg_match('/[a-zA-Z]{2}/', $cLandISO, $cTreffer1_arr);
         if (strlen($cTreffer1_arr[0]) !== strlen($cLandISO)) {
             $cISO = landISO($cLandISO);
-            if (strlen($cISO) > 0 && $cISO !== 'noISO') {
+            if ($cISO !== 'noISO' && strlen($cISO) > 0) {
                 $cLandISO = $cISO;
             }
         }
@@ -781,6 +814,7 @@ class Kunde
      */
     public function prepareResetPassword($mail)
     {
+        $linkHelper               = LinkHelper::getInstance();
         $now                      = new DateTime();
         $timestamp                = $now->format('U');
         $stringToSend             = md5($mail . microtime(true));
@@ -791,7 +825,7 @@ class Kunde
             require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
             $obj                    = new stdClass();
             $obj->tkunde            = $this;
-            $obj->passwordResetLink = Shop::getURL() . '/pass.php?fpwh=' . $stringToSend . '&mail=' . $mail;
+            $obj->passwordResetLink = $linkHelper->getStaticRoute('pass.php') . '?fpwh=' . $stringToSend . '&mail=' . $mail;
             $obj->cHash             = $stringToSend;
             $obj->neues_passwort    = 'Bitte Mailvorlage zuruecksetzen!';
             sendeMail(MAILTEMPLATE_PASSWORT_VERGESSEN, $obj);
@@ -824,9 +858,9 @@ class Kunde
                 $now  = new DateTime();
                 $diff = $now->diff($createdAt);
                 $secs = $diff->format('%a') * (60 * 60 * 24); //total days
-                $secs += intval($diff->format('%h')) * (60 * 60); //hours
-                $secs += intval($diff->format('%i')) * 60; //minutes
-                $secs += intval($diff->format('%s')); //seconds
+                $secs += (int)$diff->format('%h') * (60 * 60); //hours
+                $secs += (int)$diff->format('%i') * 60; //minutes
+                $secs += (int)$diff->format('%s'); //seconds
                 if ($secs > (60 * 60 * 24)) {
                     return false;
                 }

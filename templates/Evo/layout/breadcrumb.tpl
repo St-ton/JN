@@ -4,23 +4,39 @@
     <div class="breadcrumb-wrapper hidden-xs">
         <div class="row">
             <div class="col-xs-12">
-                <ul id="breadcrumb" class="breadcrumb">
+                <ul id="breadcrumb" class="breadcrumb" itemprop="breadcrumb" itemscope itemtype="http://schema.org/BreadcrumbList">
                     {foreach name=navi from=$Brotnavi item=oItem}
                         {if $smarty.foreach.navi.first}
-                            <li class="breadcrumb-item first">
-                                <a href="{$oItem->url}" title="{$oItem->name|escape:"html"}"><span class="fa fa-home"></span></a>
+                            <li class="breadcrumb-item first" itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+                                <a itemprop="item" href="{$oItem->url}" title="{$oItem->name|escape:"html"}">
+                                    <span class="fa fa-home"></span>
+                                    <span itemprop="name" class="hidden">{$oItem->name|escape:"html"}</span>
+                                </a>
+                                <meta itemprop="url" content="{$oItem->url}" />
+                                <meta itemprop="position" content="{$smarty.foreach.navi.iteration}" />
                             </li>
                         {elseif $smarty.foreach.navi.last}
-                            <li class="breadcrumb-item last">
-                                {if $oItem->name !== null}
-                                    {$oItem->name}
-                                {elseif isset($Suchergebnisse->SuchausdruckWrite)}
-                                    {$Suchergebnisse->SuchausdruckWrite}
-                                {/if}
+                            <li class="breadcrumb-item last" itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+                                <span itemprop="name">
+                                    {if $oItem->name !== null}
+                                        {if $oItem->hasChild === true}
+                                            <a href="{$oItem->url}" title="{$oItem->name|escape:"html"}">{$oItem->name}</a>
+                                        {else}
+                                            {$oItem->name}
+                                        {/if}
+                                    {elseif isset($Suchergebnisse->SuchausdruckWrite)}
+                                        {$Suchergebnisse->SuchausdruckWrite}
+                                    {/if}
+                                </span>
+                                <meta itemprop="position" content="{$smarty.foreach.navi.iteration}" />
                             </li>
                         {else}
-                            <li class="breadcrumb-item">
-                                <a href="{$oItem->url}" title="{$oItem->name|escape:"html"}">{$oItem->name}</a>
+                            <li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+                                <a itemprop="item" href="{$ShopURL}/{$oItem->url}" title="{$oItem->name|escape:"html"}">
+                                    <span itemprop="name">{$oItem->name}</span>
+                                </a>
+                                <meta itemprop="url" content="{$ShopURL}/{$oItem->url}" />
+                                <meta itemprop="position" content="{$smarty.foreach.navi.iteration}" />
                             </li>
                         {/if}
                     {/foreach}

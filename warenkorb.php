@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/globalinclude.php';
+require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'warenkorb_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
@@ -31,48 +31,51 @@ $kLink = $linkHelper->getSpecialPageLinkKey(LINKTYP_WARENKORB);
 uebernehmeWarenkorbAenderungen();
 //validiere Konfigurationen
 validiereWarenkorbKonfig();
+pruefeGuthabenNutzen();
 //Versandermittlung?
-if (isset($_POST['land']) && isset($_POST['plz']) &&
+if (isset($_POST['land'], $_POST['plz']) &&
     !VersandartHelper::getShippingCosts($_POST['land'], $_POST['plz'], $MsgWarning)
 ) {
     $MsgWarning = Shop::Lang()->get('missingParamShippingDetermination', 'errorMessages');
 }
 //Kupons bearbeiten
-if (isset($_POST['Kuponcode']) && strlen($_POST['Kuponcode']) > 0) {
+if ($cart !== null &&
+    isset($_POST['Kuponcode']) &&
+    strlen($_POST['Kuponcode']) > 0 &&
+    $cart->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]) > 0
+) {
     // Kupon darf nicht im leeren Warenkorb eingelöst werden
-    if ($cart !== null && $cart->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]) > 0) {
-        $Kupon             = new Kupon();
-        $Kupon             = $Kupon->getByCode($_POST['Kuponcode']);
-        $invalidCouponCode = false;
-        if (isset($Kupon->kKupon)) {
-            $Kuponfehler  = checkeKupon($Kupon);
-            $nReturnValue = angabenKorrekt($Kuponfehler);
-            executeHook(HOOK_WARENKORB_PAGE_KUPONANNEHMEN_PLAUSI, [
-                'error'        => &$Kuponfehler,
-                'nReturnValue' => &$nReturnValue
-            ]);
-            if ($nReturnValue) {
-                if (isset($Kupon->kKupon) && $Kupon->kKupon > 0 && $Kupon->cKuponTyp === 'standard') {
-                    kuponAnnehmen($Kupon);
-                    executeHook(HOOK_WARENKORB_PAGE_KUPONANNEHMEN);
-                    if (freeGiftStillValid() === false) {
-                        $MsgWarning = Shop::Lang()->get('freegiftsMinimum', 'errorMessages');
-                    }
-                } elseif (!empty($Kupon->kKupon) && $Kupon->cKuponTyp === 'versandkupon') {
-                    // Aktiven Kupon aus der Session löschen und dessen Warenkorbposition
-                    $_SESSION['Warenkorb']->loescheSpezialPos(C_WARENKORBPOS_TYP_KUPON);
-                    // Versandfrei Kupon
-                    $_SESSION['oVersandfreiKupon'] = $Kupon;
-                    $smarty->assign('cVersandfreiKuponLieferlaender_arr', explode(';', $Kupon->cLieferlaender));
-                    $nVersandfreiKuponGueltig = true;
+    $Kupon             = new Kupon();
+    $Kupon             = $Kupon->getByCode($_POST['Kuponcode']);
+    $invalidCouponCode = false;
+    if (isset($Kupon->kKupon)) {
+        $Kuponfehler  = checkeKupon($Kupon);
+        $nReturnValue = angabenKorrekt($Kuponfehler);
+        executeHook(HOOK_WARENKORB_PAGE_KUPONANNEHMEN_PLAUSI, [
+            'error'        => &$Kuponfehler,
+            'nReturnValue' => &$nReturnValue
+        ]);
+        if ($nReturnValue) {
+            if (isset($Kupon->kKupon) && $Kupon->kKupon > 0 && $Kupon->cKuponTyp === 'standard') {
+                kuponAnnehmen($Kupon);
+                executeHook(HOOK_WARENKORB_PAGE_KUPONANNEHMEN);
+                if (freeGiftStillValid() === false) {
+                    $MsgWarning = Shop::Lang()->get('freegiftsMinimum', 'errorMessages');
                 }
-            } else {
-                $smarty->assign('cKuponfehler', $Kuponfehler['ungueltig']);
+            } elseif (!empty($Kupon->kKupon) && $Kupon->cKuponTyp === 'versandkupon') {
+                // Aktiven Kupon aus der Session löschen und dessen Warenkorbposition
+                $_SESSION['Warenkorb']->loescheSpezialPos(C_WARENKORBPOS_TYP_KUPON);
+                // Versandfrei Kupon
+                $_SESSION['oVersandfreiKupon'] = $Kupon;
+                $smarty->assign('cVersandfreiKuponLieferlaender_arr', explode(';', $Kupon->cLieferlaender));
+                $nVersandfreiKuponGueltig = true;
             }
         } else {
-            $invalidCouponCode = true;
-            $smarty->assign('invalidCouponCode', $invalidCouponCode);
+            $smarty->assign('cKuponfehler', $Kuponfehler['ungueltig']);
         }
+    } else {
+        $invalidCouponCode = true;
+        $smarty->assign('invalidCouponCode', $invalidCouponCode);
     }
 }
 
@@ -85,17 +88,18 @@ if (isset($_SESSION['checkCouponResult'])) {
 }
 
 // Gratis Geschenk bearbeiten
-if (isset($_POST['gratis_geschenk']) && intval($_POST['gratis_geschenk']) === 1 && isset($_POST['gratishinzufuegen'])) {
+if (isset($_POST['gratis_geschenk'], $_POST['gratishinzufuegen']) && (int)$_POST['gratis_geschenk'] === 1) {
     $kArtikelGeschenk = (int)$_POST['gratisgeschenk'];
-    // Pruefenn ob der Artikel wirklich ein Gratis Geschenk ist
+    // Pruefen ob der Artikel wirklich ein Gratis Geschenk ist
     $oArtikelGeschenk = Shop::DB()->query(
         "SELECT tartikelattribut.kArtikel, tartikel.fLagerbestand, 
             tartikel.cLagerKleinerNull, tartikel.cLagerBeachten
             FROM tartikelattribut
-            JOIN tartikel ON tartikel.kArtikel = tartikelattribut.kArtikel
-            WHERE tartikelattribut.kArtikel = " . $kArtikelGeschenk . "
-            AND tartikelattribut.cName = '" . FKT_ATTRIBUT_GRATISGESCHENK . "'
-            AND CAST(tartikelattribut.cWert AS DECIMAL) <= "
+                JOIN tartikel 
+                    ON tartikel.kArtikel = tartikelattribut.kArtikel
+                WHERE tartikelattribut.kArtikel = " . $kArtikelGeschenk . "
+                AND tartikelattribut.cName = '" . FKT_ATTRIBUT_GRATISGESCHENK . "'
+                AND CAST(tartikelattribut.cWert AS DECIMAL) <= "
         . $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true), 1
     );
     if (isset($oArtikelGeschenk->kArtikel) && $oArtikelGeschenk->kArtikel > 0) {
@@ -126,14 +130,14 @@ if (isset($_GET['fillOut'])) {
     ) {
         $MsgWarning = Shop::Lang()->get('minordernotreached', 'checkout') . ' ' .
             gibPreisStringLocalized($_SESSION['Kundengruppe']->Attribute[KNDGRP_ATTRIBUT_MINDESTBESTELLWERT]);
-    } elseif (intval($_GET['fillOut']) === 8) {
+    } elseif ((int)$_GET['fillOut'] === 8) {
         $MsgWarning = Shop::Lang()->get('orderNotPossibleNow', 'checkout');
-    } elseif (intval($_GET['fillOut']) === 3) {
+    } elseif ((int)$_GET['fillOut'] === 3) {
         $MsgWarning = Shop::Lang()->get('yourbasketisempty', 'checkout');
-    } elseif (intval($_GET['fillOut']) === 10) {
+    } elseif ((int)$_GET['fillOut'] === 10) {
         $MsgWarning = Shop::Lang()->get('missingProducts', 'checkout');
         loescheAlleSpezialPos();
-    } elseif (intval($_GET['fillOut']) === UPLOAD_ERROR_NEED_UPLOAD) {
+    } elseif ((int)$_GET['fillOut'] === UPLOAD_ERROR_NEED_UPLOAD) {
         $MsgWarning = Shop::Lang()->get('missingFilesUpload', 'checkout');
     }
 }
@@ -172,7 +176,7 @@ $smarty->assign('Navigation', createNavigation($AktuelleSeite))
        ->assign('Einstellungen', $Einstellungen)
        ->assign('MsgWarning', $MsgWarning)
        ->assign('Schnellkaufhinweis', $Schnellkaufhinweis)
-       ->assign('requestURL', (isset($requestURL)) ? $requestURL : null)
+       ->assign('requestURL', isset($requestURL) ? $requestURL : null)
        ->assign('laender', gibBelieferbareLaender($kKundengruppe))
        ->assign('KuponMoeglich', kuponMoeglich())
        ->assign('currentCoupon', Shop::Lang()->get('currentCoupon', 'checkout'))
@@ -188,7 +192,7 @@ $smarty->assign('Navigation', createNavigation($AktuelleSeite))
        ->assign('PFAD_ART_ABNAHMEINTERVALL', PFAD_ART_ABNAHMEINTERVALL)
        ->assign('C_WARENKORBPOS_TYP_ARTIKEL', C_WARENKORBPOS_TYP_ARTIKEL)
        ->assign('C_WARENKORBPOS_TYP_GRATISGESCHENK', C_WARENKORBPOS_TYP_GRATISGESCHENK)
-       ->assign('cErrorVersandkosten', (isset($cErrorVersandkosten)) ? $cErrorVersandkosten : null)
+       ->assign('cErrorVersandkosten', isset($cErrorVersandkosten) ? $cErrorVersandkosten : null)
        ->assign('KuponcodeUngueltig', $KuponcodeUngueltig)
        ->assign('nVersandfreiKuponGueltig', $nVersandfreiKuponGueltig)
        ->assign('Warenkorb', $cart)

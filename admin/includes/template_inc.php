@@ -15,8 +15,7 @@ function __switchTemplate($cOrdner, $eTyp = 'standard')
     $oTemplate = Template::getInstance();
     $bCheck    = $oTemplate->setTemplate($cOrdner, $eTyp);
     if ($bCheck) {
-        unset($_SESSION['cTemplate']);
-        unset($_SESSION['template']);
+        unset($_SESSION['cTemplate'], $_SESSION['template']);
     }
 
     return $bCheck;

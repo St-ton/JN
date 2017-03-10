@@ -10,9 +10,9 @@
 class TemplateHelper
 {
     /**
-     * @var null|string
+     * @var string
      */
-    public $templateDir = null;
+    public $templateDir;
 
     /**
      * @var bool
@@ -20,7 +20,7 @@ class TemplateHelper
     public $isAdmin = false;
 
     /**
-     * @var null|TemplateHelper
+     * @var []TemplateHelper
      */
     public static $instances = [];
 
@@ -35,7 +35,7 @@ class TemplateHelper
     public function __construct($isAdmin = false)
     {
         $this->isAdmin         = $isAdmin;
-        $idx                   = ($isAdmin) ? 'admin' : 'frontend';
+        $idx                   = $isAdmin ? 'admin' : 'frontend';
         self::$instances[$idx] = $this;
     }
 
@@ -45,7 +45,7 @@ class TemplateHelper
      */
     public static function getInstance($isAdmin = false)
     {
-        $idx = ($isAdmin) ? 'admin' : 'frontend';
+        $idx = $isAdmin ? 'admin' : 'frontend';
 
         return (!empty(self::$instances[$idx])) ? self::$instances[$idx] : new self($isAdmin);
     }
@@ -177,12 +177,10 @@ class TemplateHelper
         }
 
         foreach (scandir($path) as $key => $value) {
-            if (!in_array($value, ['.', '..'])) {
-                if (is_dir($path . DIRECTORY_SEPARATOR . $value)) {
-                    $result[$value] = ($depht > 1)
-                        ? $this->getFolders($path . DIRECTORY_SEPARATOR . $value, $depht - 1)
-                        : [];
-                }
+            if (!in_array($value, ['.', '..'], true) && is_dir($path . DIRECTORY_SEPARATOR . $value)) {
+                $result[$value] = ($depht > 1)
+                    ? $this->getFolders($path . DIRECTORY_SEPARATOR . $value, $depht - 1)
+                    : [];
             }
         }
 
@@ -219,12 +217,17 @@ class TemplateHelper
     public function getAdminTemplateFolders($bPfad = false)
     {
         $cOrdner_arr = [];
-        if ($nHandle = opendir(PFAD_ROOT . PFAD_ADMIN . PFAD_TEMPLATES)) {
+        if (($nHandle = opendir(PFAD_ROOT . PFAD_ADMIN . PFAD_TEMPLATES)) !== false) {
             while (false !== ($cFile = readdir($nHandle))) {
-                if ($cFile !== '.' && $cFile !== '..' && $cFile[0] !== '.') {
-                    if (is_dir(PFAD_ROOT . PFAD_ADMIN . PFAD_TEMPLATES . $cFile)) {
-                        $cOrdner_arr[] = $bPfad ? (PFAD_ROOT . PFAD_ADMIN . PFAD_TEMPLATES . $cFile) : $cFile;
-                    }
+                if (
+                    $cFile !== '.' &&
+                    $cFile !== '..' &&
+                    $cFile[0] !== '.' &&
+                    is_dir(PFAD_ROOT . PFAD_ADMIN . PFAD_TEMPLATES . $cFile)
+                ) {
+                    $cOrdner_arr[] = $bPfad
+                        ? (PFAD_ROOT . PFAD_ADMIN . PFAD_TEMPLATES . $cFile)
+                        : $cFile;
                 }
             }
             closedir($nHandle);
@@ -296,7 +299,7 @@ class TemplateHelper
     public function getData($cOrdner, $isAdmin = null)
     {
         $isAdmin = ($isAdmin !== null) ? $isAdmin : $this->isAdmin;
-        $cacheID = 'tpl_' . $cOrdner . (($isAdmin) ? '_admin' : '');
+        $cacheID = 'tpl_' . $cOrdner . ($isAdmin ? '_admin' : '');
         if ($this->cachingEnabled === true && ($oTemplate = Shop::Cache()->get($cacheID)) !== false) {
             return $oTemplate;
         }
@@ -318,7 +321,7 @@ class TemplateHelper
         $oTemplate->cParent      = !empty($oXMLTemplate->Parent) ? (string)trim($oXMLTemplate->Parent) : '';
         $oTemplate->bResponsive  = empty($oXMLTemplate['isFullResponsive'])
             ? false
-            : (strtolower((string)$oXMLTemplate['isFullResponsive']) === 'true' ? true : false);
+            : (strtolower((string)$oXMLTemplate['isFullResponsive']) === 'true');
         $oTemplate->bHasError    = false;
         $oTemplate->eTyp         = '';
         $oTemplate->cDescription = (!empty($oXMLTemplate->Description)) ? (string)trim($oXMLTemplate->Description) : '';
@@ -329,7 +332,7 @@ class TemplateHelper
         $oTemplate_arr = Shop::DB()->query("SELECT * FROM ttemplate", 2);
         foreach ($oTemplate_arr as $oTpl) {
             if (!isset($oTemplate->bAktiv) || !$oTemplate->bAktiv) {
-                $oTemplate->bAktiv = (strcasecmp($oTemplate->cOrdner, $oTpl->cTemplate) == 0);
+                $oTemplate->bAktiv = (strcasecmp($oTemplate->cOrdner, $oTpl->cTemplate) === 0);
                 if ($oTemplate->bAktiv) {
                     $oTemplate->eTyp = $oTpl->eTyp;
                 }

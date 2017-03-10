@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/admininclude.php';
+require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('PLUGIN_ADMIN_VIEW', true, true);
 /** @global JTLSmarty $smarty */
@@ -72,14 +72,14 @@ if (!empty($_FILES['file_data'])) {
             $response->errors[] = 'Got unzip error code: ' . $zip->errorCode();
         }
     }
-    $PluginInstalliertByStatus_arr = array(
+    $PluginInstalliertByStatus_arr = [
         'status_1' => [],
         'status_2' => [],
         'status_3' => [],
         'status_4' => [],
         'status_5' => [],
         'status_6' => []
-    );
+    ];
     $PluginInstalliert_arr = gibInstalliertePlugins();
     $allPlugins            = gibAllePlugins($PluginInstalliert_arr);
     foreach ($PluginInstalliert_arr as $_plugin) {
@@ -97,16 +97,16 @@ if (!empty($_FILES['file_data'])) {
             $nVersion = $PluginInstalliert->getCurrentVersion();
             if ($nVersion > $PluginInstalliert->nVersion) {
                 $nReturnValue                       = pluginPlausi($PluginInstalliert->kPlugin);
-                $PluginInstalliert_arr[$i]->dUpdate = number_format(doubleval($nVersion) / 100, 2);
+                $PluginInstalliert_arr[$i]->dUpdate = number_format((float)$nVersion / 100, 2);
 
-                if ($nReturnValue == 1 || $nReturnValue == 90) {
+                if ($nReturnValue === 1 || $nReturnValue === 90) {
                     $PluginInstalliert_arr[$i]->cUpdateFehler = 1;
                 } else {
                     $PluginInstalliert_arr[$i]->cUpdateFehler =
                         StringHandler::htmlentities(mappePlausiFehler($nReturnValue, $PluginInstalliert));
                 }
             }
-            $PluginInstalliert_arr[$i]->dVersion = number_format(doubleval($PluginInstalliert->nVersion) / 100, 2);
+            $PluginInstalliert_arr[$i]->dVersion = number_format((float)$PluginInstalliert->nVersion / 100, 2);
             $PluginInstalliert_arr[$i]->cStatus  = $PluginInstalliert->mapPluginStatus($PluginInstalliert->nStatus);
         }
     }
@@ -133,18 +133,21 @@ if (!empty($_FILES['file_data'])) {
 
 if (verifyGPCDataInteger('pluginverwaltung_uebersicht') === 1 && validateToken()) {
     // Eine Aktion wurde von der Uebersicht aus gestartet
-    $kPlugin_arr = (isset($_POST['kPlugin'])) ? $_POST['kPlugin'] : [];
+    $kPlugin_arr = isset($_POST['kPlugin']) ? $_POST['kPlugin'] : [];
 
     // Lizenzkey eingeben
-    if (isset($_POST['lizenzkey']) && intval($_POST['lizenzkey']) > 0) {
-        $kPlugin = intval($_POST['lizenzkey']);
+    if (isset($_POST['lizenzkey']) && (int)$_POST['lizenzkey'] > 0) {
+        $kPlugin = (int)$_POST['lizenzkey'];
         $step    = 'pluginverwaltung_lizenzkey';
         $oPlugin = Shop::DB()->select('tplugin', 'kPlugin', $kPlugin);
         $smarty->assign('oPlugin', $oPlugin)
                ->assign('kPlugin', $kPlugin);
         Shop::Cache()->flushTags([CACHING_GROUP_CORE, CACHING_GROUP_LANGUAGE, CACHING_GROUP_PLUGIN]);
-    } elseif (isset($_POST['lizenzkeyadd']) && intval($_POST['lizenzkeyadd']) === 1 &&
-        intval($_POST['kPlugin']) > 0 && validateToken()) { // Lizenzkey eingeben
+    } elseif (isset($_POST['lizenzkeyadd']) &&
+        (int)$_POST['lizenzkeyadd'] === 1 &&
+        (int)$_POST['kPlugin'] > 0 &&
+        validateToken()
+    ) { // Lizenzkey eingeben
         $step    = 'pluginverwaltung_lizenzkey';
         $kPlugin = (int)$_POST['kPlugin'];
         $oPlugin = Shop::DB()->select('tplugin', 'kPlugin', $kPlugin);
@@ -504,13 +507,13 @@ if ($step === 'pluginverwaltung_uebersicht') {
             $nVersion = $PluginInstalliert->getCurrentVersion();
             if ($nVersion > $PluginInstalliert->nVersion) {
                 $nReturnValue                       = pluginPlausi($PluginInstalliert->kPlugin);
-                $PluginInstalliert_arr[$i]->dUpdate = number_format(doubleval($nVersion) / 100, 2);
+                $PluginInstalliert_arr[$i]->dUpdate = number_format((float)$nVersion / 100, 2);
 
-                $PluginInstalliert_arr[$i]->cUpdateFehler = ($nReturnValue == 1 || $nReturnValue == 90)
+                $PluginInstalliert_arr[$i]->cUpdateFehler = ($nReturnValue === 1 || $nReturnValue === 90)
                     ? 1
                     : StringHandler::htmlentities(mappePlausiFehler($nReturnValue, $PluginInstalliert));
             }
-            $PluginInstalliert_arr[$i]->dVersion = number_format(doubleval($PluginInstalliert->nVersion) / 100, 2);
+            $PluginInstalliert_arr[$i]->dVersion = number_format((float)$PluginInstalliert->nVersion / 100, 2);
             $PluginInstalliert_arr[$i]->cStatus  = $PluginInstalliert->mapPluginStatus($PluginInstalliert->nStatus);
         }
     }
@@ -531,7 +534,7 @@ if ($step === 'pluginverwaltung_uebersicht') {
             }
             // only if we found something, we add it to our array
             if ('' !== $vPossibleLicenseNames[$j]) {
-                $vLicenseFiles[$PluginVerfuebar_arr[$i]->cVerzeichnis] = $szFolder.$vPossibleLicenseNames[$j];;
+                $vLicenseFiles[$PluginVerfuebar_arr[$i]->cVerzeichnis] = $szFolder.$vPossibleLicenseNames[$j];
             }
         }
         if (!empty($vLicenseFiles)) {
@@ -566,7 +569,7 @@ if ($reload === true) {
 if (defined('PLUGIN_DEV_MODE') && PLUGIN_DEV_MODE === true) {
     $pluginDevNotice = 'Ihr Shop befindet sich im Plugin-Entwicklungsmodus. ' .
         '&Auml;nderungen an der XML-Datei eines aktivierten Plugins bewirken ein automatisches Update.';
-    $cHinweis        = (empty($cHinweis))
+    $cHinweis        = empty($cHinweis)
         ? $pluginDevNotice
         : $pluginDevNotice . '<br>' . $cHinweis;
 }

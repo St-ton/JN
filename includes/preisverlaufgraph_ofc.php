@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/globalinclude.php';
+require_once __DIR__ . '/globalinclude.php';
 require_once PFAD_ROOT . PFAD_FLASHCHART . 'php-ofc-library/open-flash-chart.php';
 require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Preisverlauf.php';
 
@@ -44,18 +44,16 @@ if (isset($_GET['kArtikel'])) {
     if (count($Einstellungen) > 0) {
         $oPreisConfig           = new stdClass();
         $oPreisConfig->Waehrung = $_SESSION['Waehrung']->cName;
-        if ($_SESSION['Kundengruppe']->nNettoPreise == 1) {
-            $oPreisConfig->Netto = 0;
-        } else {
-            $oPreisConfig->Netto = $_GET['fMwSt'];
-        }
+        $oPreisConfig->Netto    = ($_SESSION['Kundengruppe']->nNettoPreise == 1)
+            ? 0
+            : $_GET['fMwSt'];
         $oVerlauf     = new Preisverlauf();
         $oVerlauf_arr = $oVerlauf->gibPreisverlauf($kArtikel, $kKundengruppe, $nMonat);
         // Array drehen :D
         $oVerlauf_arr = array_reverse($oVerlauf_arr);
         $data         = [];
         foreach ($oVerlauf_arr as $oItem) {
-            $fPreis = round(floatval($oItem->fVKNetto + ($oItem->fVKNetto * ($oPreisConfig->Netto / 100.0))), 2);
+            $fPreis = round((float)($oItem->fVKNetto + ($oItem->fVKNetto * ($oPreisConfig->Netto / 100.0))), 2);
             $data[] = $fPreis;
         }
         $d = new solid_dot();
@@ -70,8 +68,8 @@ if (isset($_GET['kArtikel'])) {
         $bar->set_tooltip('#val# ' . $oPreisConfig->Waehrung);
 
         // min und max berechnen @todo: $data must contain at least one element
-        $fMaxPreis = round(floatval(max($data)), 2);
-        $fMinPreis = round(floatval(min($data)), 2);
+        $fMaxPreis = round((float)max($data), 2);
+        $fMinPreis = round((float)min($data), 2);
 
         // x achse
         $x = new x_axis();
@@ -94,11 +92,10 @@ if (isset($_GET['kArtikel'])) {
         if ($fMinPreis < 0) {
             $fMinPreis = 0;
         }
-        $y->set_range(intval($fMinPreis), intval($fMaxPreis), 10);
+        $y->set_range((int)$fMinPreis, (int)$fMaxPreis, 10);
 
         // chart
         $chart = new open_flash_chart();
-        //$chart->add_element( $line );
         $chart->add_element($bar);
         $chart->set_x_axis($x);
         $chart->set_y_axis($y);

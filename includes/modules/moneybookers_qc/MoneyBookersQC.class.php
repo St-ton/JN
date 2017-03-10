@@ -148,7 +148,7 @@ class MoneyBookersQC extends ServerPaymentMethod
         $request = $this->postRequest($fields);
 
         // HTTP Error
-        if ($request['status'] == 'error') {
+        if ($request['status'] === 'error') {
             Shop::Smarty()->assign('status', 'error')
                 ->assign('error', Shop::Lang()->get('errorText', 'paymentMethods'));
             // Error Mail
@@ -221,7 +221,7 @@ class MoneyBookersQC extends ServerPaymentMethod
     {
         $status = $args['status'];
 
-        return (($status == MBQC_PENDING) || ($status == MBQC_PROCESSED));
+        return ($status == MBQC_PENDING || $status == MBQC_PROCESSED);
     }
 
     /**
@@ -236,18 +236,18 @@ class MoneyBookersQC extends ServerPaymentMethod
         // Checksum
         $secretWord = $this->getSecretWord();
         $str        = $merchant_id . $transaction_id . strtoupper(md5($secretWord)) . $mb_amount . $mb_currency . $status;
-        if ($str == $secretWord) {
+        if ($str === $secretWord) {
             // nothing sent?
             return false;
-        } elseif (strtoupper(md5($str)) != $md5sig) {
+        } elseif (strtoupper(md5($str)) !== $md5sig) {
             return false;
         }
         // Reciever Email
-        if ($pay_to_email != $this->getRecieverEmail()) {
+        if ($pay_to_email !== $this->getRecieverEmail()) {
             return false;
         }
         // Transaction ID
-        if ($transaction_id != $paymentHash) {
+        if ($transaction_id !== $paymentHash) {
             return false;
         }
 
@@ -295,10 +295,9 @@ class MoneyBookersQC extends ServerPaymentMethod
             $abbr         = key($methods);
             $title        = current($methods);
             $pathFilename = $path . $abbr . '.gif';
+            $urlFilename  = '';
             if (file_exists($pathFilename)) {
                 $urlFilename = $url . $abbr . '.gif';
-            } else {
-                $urlFilename = '';
             }
 
             echo "
@@ -330,13 +329,13 @@ class MoneyBookersQC extends ServerPaymentMethod
      */
     public function isValidIntern($args_arr = [])
     {
-        if (strlen($this->getRecieverEmail()) == 0) {
+        if (strlen($this->getRecieverEmail()) === 0) {
             ZahlungsLog::add($this->moduleID, 'Pflichtparameter "RecieverEmail" ist nicht gesetzt!', null, LOGLEVEL_ERROR);
 
             return false;
         }
 
-        if (strlen($this->getSecretWord()) == 0) {
+        if (strlen($this->getSecretWord()) === 0) {
             ZahlungsLog::add($this->moduleID, 'Pflichtparameter "SecretWord" ist nicht gesetzt!', null, LOGLEVEL_ERROR);
 
             return false;

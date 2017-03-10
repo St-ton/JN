@@ -90,16 +90,16 @@ class ExtensionPoint
         switch ($oKey->nPage) {
             case PAGE_ARTIKEL:
                 $oKey->cKey   = 'kArtikel';
-                $oKey->cValue = (isset($this->cParam_arr['kArtikel'])) ? (int)$this->cParam_arr['kArtikel'] : null;
+                $oKey->cValue = isset($this->cParam_arr['kArtikel']) ? (int)$this->cParam_arr['kArtikel'] : null;
                 break;
 
             case PAGE_NEWS:
-                if (isset($this->cParam_arr['kNewsKategorie']) && intval($this->cParam_arr['kNewsKategorie']) > 0) {
+                if (isset($this->cParam_arr['kNewsKategorie']) && (int)$this->cParam_arr['kNewsKategorie'] > 0) {
                     $oKey->cKey   = 'kNewsKategorie';
                     $oKey->cValue = (int)$this->cParam_arr['kNewsKategorie'];
                 } else {
                     $oKey->cKey   = 'kNews';
-                    $oKey->cValue = (isset($this->cParam_arr['kNews'])) ? (int)$this->cParam_arr['kNews'] : null;
+                    $oKey->cValue = isset($this->cParam_arr['kNews']) ? (int)$this->cParam_arr['kNews'] : null;
                 }
                 break;
 

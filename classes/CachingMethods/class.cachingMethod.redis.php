@@ -15,14 +15,14 @@ class cache_redis implements ICachingMethod
     use JTLCacheTrait;
     
     /**
-     * @var cache_redis|null
+     * @var cache_redis
      */
-    public static $instance = null;
+    public static $instance;
 
     /**
-     * @var Redis|null
+     * @var Redis
      */
-    private $_redis = null;
+    private $_redis;
 
     /**
      * @param array $options
@@ -206,8 +206,8 @@ class cache_redis implements ICachingMethod
     }
 
     /**
-     * @param array  $tags
-     * @param string $cacheID
+     * @param array|string $tags
+     * @param string       $cacheID
      * @return bool
      */
     public function setCacheTag($tags = [], $cacheID)
@@ -242,7 +242,7 @@ class cache_redis implements ICachingMethod
     /**
      * redis can delete multiple cacheIDs at once
      *
-     * @param array $tags
+     * @param array|string $tags
      * @return int
      */
     public function flushTags($tags)
@@ -273,7 +273,7 @@ class cache_redis implements ICachingMethod
     }
 
     /**
-     * @param array $tags
+     * @param array|string $tags
      * @return array
      */
     public function getKeysByTag($tags = [])
@@ -299,7 +299,7 @@ class cache_redis implements ICachingMethod
             }
         }
 
-        return (is_array($res)) ? $res : [];
+        return is_array($res) ? $res : [];
     }
 
     /**
@@ -327,15 +327,16 @@ class cache_redis implements ICachingMethod
             return [];
         }
         try {
-            $slowLog = (method_exists($this->_redis, 'slowlog'))
+            $slowLog = method_exists($this->_redis, 'slowlog')
                 ? $this->_redis->slowlog('get', 25)
                 : [];
         } catch (RedisException $e) {
             echo 'Redis exception: ' . $e->getMessage();
         }
-        $db = $this->_redis->getDBNum();
-        if (isset($stats['db' . $db])) {
-            $dbStats = explode(',', $stats['db' . $db]);
+        $db  = $this->_redis->getDBNum();
+        $idx = 'db' . $db;
+        if (isset($stats[$idx])) {
+            $dbStats = explode(',', $stats[$idx]);
             foreach ($dbStats as $stat) {
                 if (strpos($stat, 'keys=') !== false) {
                     $numEntries = str_replace('keys=', '', $stat);
@@ -347,7 +348,7 @@ class cache_redis implements ICachingMethod
             if (isset($_slow[1])) {
                 $slowLogDataEntry['date'] = date('d.m.Y H:i:s', $_slow[1]);
             }
-            if (isset($_slow[3]) && isset($_slow[3][0])) {
+            if (isset($_slow[3][0])) {
                 $slowLogDataEntry['cmd'] = $_slow[3][0];
             }
             if (isset($_slow[2]) && $_slow[2] > 0) {
@@ -358,18 +359,18 @@ class cache_redis implements ICachingMethod
 
         return [
             'entries'  => $numEntries,
-            'uptime'   => (isset($stats['uptime_in_seconds']))
+            'uptime'   => isset($stats['uptime_in_seconds'])
                 ? $stats['uptime_in_seconds']
                 : null, //uptime in seconds
-            'uptime_h' => (isset($stats['uptime_in_seconds']))
+            'uptime_h' => isset($stats['uptime_in_seconds'])
                 ? $this->secondsToTime($stats['uptime_in_seconds'])
                 : null, //human readable
             'hits'     => $stats['keyspace_hits'], //cache hits
             'misses'   => $stats['keyspace_misses'], //cache misses
-            'hps'      => (isset($stats['uptime_in_seconds']))
+            'hps'      => isset($stats['uptime_in_seconds'])
                 ? ($stats['keyspace_hits'] / $stats['uptime_in_seconds'])
                 : null, //hits per second
-            'mps'      => (isset($stats['uptime_in_seconds']))
+            'mps'      => isset($stats['uptime_in_seconds'])
                 ? ($stats['keyspace_misses'] / $stats['uptime_in_seconds'])
                 : null, //misses per second
             'mem'      => $stats['used_memory'], //used memory in bytes

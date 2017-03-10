@@ -61,7 +61,7 @@ class Trennzeichen
      */
     public function __construct($kTrennzeichen = 0)
     {
-        if (intval($kTrennzeichen) > 0) {
+        if ((int)$kTrennzeichen > 0) {
             $this->loadFromDB($kTrennzeichen);
         }
     }

@@ -110,102 +110,102 @@ function speicherHilfreich($kArtikel, $kKunde, $kSprache, $bewertung_seite = 1, 
     // Prüfe ob Kunde eingeloggt
     if ($kKunde > 0) {
         // Sollen Bewertungen überhaupt aktiv sein
+        // Sollen Bewertungen hilfreich überhaupt aktiv sein
         $conf = Shop::getSettings([CONF_BEWERTUNG]);
-        if ($conf['bewertung']['bewertung_anzeigen'] === 'Y') {
-            // Sollen Bewertungen hilfreich überhaupt aktiv sein
-            if ($conf['bewertung']['bewertung_hilfreich_anzeigen'] === 'Y') {
-                if ($kArtikel > 0 && $kSprache > 0) {
-                    // Hole alle Bewertungen für den auktuellen Artikel und Sprache
-                    $oBewertung_arr = Shop::DB()->selectAll(
-                        'tbewertung',
-                        ['kArtikel', 'kSprache'],
-                        [$kArtikel, $kSprache],
-                        'kBewertung'
-                    );
-                    if (is_array($oBewertung_arr) && count($oBewertung_arr) > 0) {
-                        $kBewertung = 0;
-                        foreach ($oBewertung_arr as $oBewertung) {
-                            // Prüf ob die Bewertung als Hilfreich gemarkt ist
-                            if (isset($_POST['hilfreich_' . $oBewertung->kBewertung])) {
-                                $kBewertung = (int)$oBewertung->kBewertung;
-                                $bHilfreich = 1;
-                            }
-                            // Prüf ob die Bewertung als nicht Hilfreich gemarkt ist
-                            if (isset($_POST['nichthilfreich_' . $oBewertung->kBewertung])) {
-                                $kBewertung = (int)$oBewertung->kBewertung;
-                                $bHilfreich = 0;
-                            }
-                        }
-                        // Weiterleitungsstring bauen
-                        $cWeiterleitung = '&btgseite=' . $bewertung_seite . '&btgsterne=' . $bewertung_sterne;
-                        // Hole alle Einträge aus tbewertunghilfreich für eine bestimmte Bewertung und einen bestimmten Kunde
-                        $oBewertungHilfreich = Shop::DB()->select(
-                            'tbewertunghilfreich',
-                            ['kBewertung', 'kKunde'],
-                            [$kBewertung,  $kKunde]
-                        );
-                        // Hat der Kunde für diese Bewertung noch keine hilfreich flag gesetzt?
-                        if (intval($oBewertungHilfreich->kKunde) === 0) {
-                            unset($oBewertungHilfreich);
-                            $oBewertung = Shop::DB()->select('tbewertung', 'kBewertung', $kBewertung);
-                            if ($oBewertung->kKunde != $_SESSION['Kunde']->kKunde) {
-                                $oBewertungHilfreich             = new stdClass();
-                                $oBewertungHilfreich->kBewertung = $kBewertung;
-                                $oBewertungHilfreich->kKunde     = $kKunde;
-                                $oBewertungHilfreich->nBewertung = 0;
-                                // Wenn Hilfreich neu für eine Bewertung eingetragen wird und diese positiv ist
-                                if ($bHilfreich == 1) {
-                                    $oBewertungHilfreich->nBewertung = 1;
-                                    Shop::DB()->query(
-                                        "UPDATE tbewertung
-                                            SET nHilfreich = nHilfreich+1
-                                            WHERE kBewertung = " . $kBewertung, 3
-                                    );
-                                } else {
-                                    // Wenn Hilfreich neu für eine Bewertung eingetragen wird und diese negativ ist
-                                    $oBewertungHilfreich->nBewertung = 0;
-                                    Shop::DB()->query(
-                                        "UPDATE tbewertung
-                                            SET nNichtHilfreich = nNichtHilfreich+1
-                                            WHERE kBewertung = " . $kBewertung, 3
-                                    );
-                                }
-
-                                executeHook(HOOK_BEWERTUNG_INC_SPEICHERBEWERTUNGHILFREICH, ['rating' => &$oBewertungHilfreich]);
-
-                                Shop::DB()->insert('tbewertunghilfreich', $oBewertungHilfreich);
-                                header('Location: index.php?a=' . $kArtikel .
-                                    '&bewertung_anzeigen=1&cHinweis=h02' . $cWeiterleitung, true, 303);
-                                exit;
-                            }
-                        } elseif (intval($oBewertungHilfreich->kKunde) > 0) {
-                            // Wenn Hilfreich nicht neu (wechsel) für eine Bewertung eingetragen wird und diese positiv ist
-                            if ($bHilfreich == 1 && intval($oBewertungHilfreich->nBewertung) != $bHilfreich) {
-                                Shop::DB()->query(
-                                    "UPDATE tbewertung
-                                        SET nHilfreich = nHilfreich+1, nNichtHilfreich = nNichtHilfreich-1
-                                        WHERE kBewertung = " . $kBewertung, 3
-                                );
-                            } // Wenn Hilfreich neu für (wechsel) eine Bewertung eingetragen wird und diese negativ ist
-                            elseif ($bHilfreich == 0 && intval($oBewertungHilfreich->nBewertung) != $bHilfreich) {
-                                Shop::DB()->query(
-                                    "UPDATE tbewertung
-                                        SET nHilfreich = nHilfreich-1, nNichtHilfreich = nNichtHilfreich+1
-                                        WHERE kBewertung = " . $kBewertung, 3
-                                );
-                            }
-
-                            Shop::DB()->query(
-                                "UPDATE tbewertunghilfreich
-                                    SET nBewertung = " . $bHilfreich . "
-                                    WHERE kBewertung = " . $kBewertung . "
-                                        AND kKunde = " . $kKunde, 3
-                            );
-                            header('Location: ' . Shop::getURL() . '/index.php?a=' . $kArtikel .
-                                '&bewertung_anzeigen=1&cHinweis=h03' . $cWeiterleitung, true, 303);
-                            exit;
-                        }
+        if ($kArtikel > 0 &&
+            $kSprache > 0 &&
+            $conf['bewertung']['bewertung_anzeigen'] === 'Y' &&
+            $conf['bewertung']['bewertung_hilfreich_anzeigen'] === 'Y'
+        ) {
+            // Hole alle Bewertungen für den auktuellen Artikel und Sprache
+            $oBewertung_arr = Shop::DB()->selectAll(
+                'tbewertung',
+                ['kArtikel', 'kSprache'],
+                [$kArtikel, $kSprache],
+                'kBewertung'
+            );
+            if (is_array($oBewertung_arr) && count($oBewertung_arr) > 0) {
+                $kBewertung = 0;
+                foreach ($oBewertung_arr as $oBewertung) {
+                    // Prüf ob die Bewertung als Hilfreich gemarkt ist
+                    if (isset($_POST['hilfreich_' . $oBewertung->kBewertung])) {
+                        $kBewertung = (int)$oBewertung->kBewertung;
+                        $bHilfreich = 1;
                     }
+                    // Prüf ob die Bewertung als nicht Hilfreich gemarkt ist
+                    if (isset($_POST['nichthilfreich_' . $oBewertung->kBewertung])) {
+                        $kBewertung = (int)$oBewertung->kBewertung;
+                        $bHilfreich = 0;
+                    }
+                }
+                // Weiterleitungsstring bauen
+                $cWeiterleitung = '&btgseite=' . $bewertung_seite . '&btgsterne=' . $bewertung_sterne;
+                // Hole alle Einträge aus tbewertunghilfreich für eine bestimmte Bewertung und einen bestimmten Kunde
+                $oBewertungHilfreich = Shop::DB()->select(
+                    'tbewertunghilfreich',
+                    ['kBewertung', 'kKunde'],
+                    [$kBewertung,  $kKunde]
+                );
+                // Hat der Kunde für diese Bewertung noch keine hilfreich flag gesetzt?
+                if ((int)$oBewertungHilfreich->kKunde === 0) {
+                    unset($oBewertungHilfreich);
+                    $oBewertung = Shop::DB()->select('tbewertung', 'kBewertung', $kBewertung);
+                    if ($oBewertung->kKunde != $_SESSION['Kunde']->kKunde) {
+                        $oBewertungHilfreich             = new stdClass();
+                        $oBewertungHilfreich->kBewertung = $kBewertung;
+                        $oBewertungHilfreich->kKunde     = $kKunde;
+                        $oBewertungHilfreich->nBewertung = 0;
+                        // Wenn Hilfreich neu für eine Bewertung eingetragen wird und diese positiv ist
+                        if ($bHilfreich === 1) {
+                            $oBewertungHilfreich->nBewertung = 1;
+                            Shop::DB()->query(
+                                "UPDATE tbewertung
+                                    SET nHilfreich = nHilfreich+1
+                                    WHERE kBewertung = " . $kBewertung, 3
+                            );
+                        } else {
+                            // Wenn Hilfreich neu für eine Bewertung eingetragen wird und diese negativ ist
+                            $oBewertungHilfreich->nBewertung = 0;
+                            Shop::DB()->query(
+                                "UPDATE tbewertung
+                                    SET nNichtHilfreich = nNichtHilfreich+1
+                                    WHERE kBewertung = " . $kBewertung, 3
+                            );
+                        }
+
+                        executeHook(HOOK_BEWERTUNG_INC_SPEICHERBEWERTUNGHILFREICH, ['rating' => &$oBewertungHilfreich]);
+
+                        Shop::DB()->insert('tbewertunghilfreich', $oBewertungHilfreich);
+                        header('Location: index.php?a=' . $kArtikel .
+                            '&bewertung_anzeigen=1&cHinweis=h02' . $cWeiterleitung, true, 303);
+                        exit;
+                    }
+                } elseif ((int)$oBewertungHilfreich->kKunde > 0) {
+                    // Wenn Hilfreich nicht neu (wechsel) für eine Bewertung eingetragen wird und diese positiv ist
+                    if ($bHilfreich === 1 && $oBewertungHilfreich->nBewertung != $bHilfreich) {
+                        Shop::DB()->query(
+                            "UPDATE tbewertung
+                                SET nHilfreich = nHilfreich+1, nNichtHilfreich = nNichtHilfreich-1
+                                WHERE kBewertung = " . $kBewertung, 3
+                        );
+                    } // Wenn Hilfreich neu für (wechsel) eine Bewertung eingetragen wird und diese negativ ist
+                    elseif ($bHilfreich === 0 && $oBewertungHilfreich->nBewertung != $bHilfreich) {
+                        Shop::DB()->query(
+                            "UPDATE tbewertung
+                                SET nHilfreich = nHilfreich-1, nNichtHilfreich = nNichtHilfreich+1
+                                WHERE kBewertung = " . $kBewertung, 3
+                        );
+                    }
+
+                    Shop::DB()->query(
+                        "UPDATE tbewertunghilfreich
+                            SET nBewertung = " . $bHilfreich . "
+                            WHERE kBewertung = " . $kBewertung . "
+                                AND kKunde = " . $kKunde, 3
+                    );
+                    header('Location: ' . Shop::getURL() . '/index.php?a=' . $kArtikel .
+                        '&bewertung_anzeigen=1&cHinweis=h03' . $cWeiterleitung, true, 303);
+                    exit;
                 }
             }
         }
@@ -249,7 +249,7 @@ function aktualisiereDurchschnitt($kArtikel, $cFreischalten)
         Shop::DB()->delete('tartikelext', 'kArtikel', $kArtikel);
         $oArtikelExt                          = new stdClass();
         $oArtikelExt->kArtikel                = $kArtikel;
-        $oArtikelExt->fDurchschnittsBewertung = doubleval($oBewDurchschnitt->fDurchschnitt);
+        $oArtikelExt->fDurchschnittsBewertung = (float)$oBewDurchschnitt->fDurchschnitt;
 
         Shop::DB()->insert('tartikelext', $oArtikelExt);
     }
@@ -296,9 +296,12 @@ function pruefeKundeArtikelGekauft($kArtikel, $kKunde)
             $oBestellung = Shop::DB()->query(
                 "SELECT tbestellung.kBestellung
                     FROM tbestellung
-                    LEFT JOIN tartikel ON tartikel.kVaterArtikel = {$kArtikel}
-                    JOIN twarenkorb ON twarenkorb.kWarenkorb = tbestellung.kWarenkorb
-                    JOIN twarenkorbpos ON twarenkorbpos.kWarenkorb = twarenkorb.kWarenkorb
+                    LEFT JOIN tartikel 
+                        ON tartikel.kVaterArtikel = {$kArtikel}
+                    JOIN twarenkorb 
+                        ON twarenkorb.kWarenkorb = tbestellung.kWarenkorb
+                    JOIN twarenkorbpos 
+                        ON twarenkorbpos.kWarenkorb = twarenkorb.kWarenkorb
                     WHERE tbestellung.kKunde = {$kKunde}
                         AND (twarenkorbpos.kArtikel = {$kArtikel} OR twarenkorbpos.kArtikel = tartikel.kArtikel)", 1
             );
@@ -338,24 +341,24 @@ function checkeBewertungGuthabenBonus($kBewertung, $Einstellungen)
                     AND YEAR(dDatum) = " . date('Y') . "
                     AND MONTH(dDatum) = " . date('m'), 1
         );
-        if (doubleval($oBewertungGuthabenBonus->fGuthabenProMonat) <=
-            doubleval($Einstellungen['bewertung']['bewertung_max_guthaben'])) {
+        if ((float)$oBewertungGuthabenBonus->fGuthabenProMonat <=
+            (float)$Einstellungen['bewertung']['bewertung_max_guthaben']) {
             // Reichen die Zeichen in der Bewertung, um das Stufe 2 Guthaben zu erhalten?
             if ($Einstellungen['bewertung']['bewertung_stufe2_anzahlzeichen'] <= strlen($oBewertung->cText)) {
                 // Prüfen ob die max. Belohnung + das aktuelle Guthaben, das Max des Monats überscchreitet
                 // Falls ja, nur die Differenz von Kundenguthaben zu Max im Monat auszahlen
-                if ((doubleval($oBewertungGuthabenBonus->fGuthabenProMonat) +
-                        doubleval($Einstellungen['bewertung']['bewertung_stufe2_guthaben'])) >
-                    doubleval($Einstellungen['bewertung']['bewertung_max_guthaben'])) {
-                    $fBelohnung = doubleval($Einstellungen['bewertung']['bewertung_max_guthaben']) -
-                        doubleval($oBewertungGuthabenBonus->fGuthabenProMonat);
+                if (((float)$oBewertungGuthabenBonus->fGuthabenProMonat +
+                    (float)$Einstellungen['bewertung']['bewertung_stufe2_guthaben']) >
+                    (float)$Einstellungen['bewertung']['bewertung_max_guthaben']) {
+                    $fBelohnung = (float)$Einstellungen['bewertung']['bewertung_max_guthaben'] -
+                        (float)$oBewertungGuthabenBonus->fGuthabenProMonat;
                 } else {
                     $fBelohnung = $Einstellungen['bewertung']['bewertung_stufe2_guthaben'];
                 }
                 // tkunde Guthaben updaten
-                Shop::DB()->query(
-                    "UPDATE tkunde
-                        SET fGuthaben = fGuthaben + " . doubleval($fBelohnung) . "
+                Shop::DB()->query("
+                    UPDATE tkunde
+                        SET fGuthaben = fGuthaben + " . (float)$fBelohnung . "
                             WHERE kKunde = " . $kKunde, 3
                 );
 
@@ -364,24 +367,24 @@ function checkeBewertungGuthabenBonus($kBewertung, $Einstellungen)
                 $oBewertungGuthabenBonus                 = new stdClass();
                 $oBewertungGuthabenBonus->kBewertung     = $kBewertung;
                 $oBewertungGuthabenBonus->kKunde         = $kKunde;
-                $oBewertungGuthabenBonus->fGuthabenBonus = doubleval($fBelohnung);
+                $oBewertungGuthabenBonus->fGuthabenBonus = (float)$fBelohnung;
                 $oBewertungGuthabenBonus->dDatum         = 'now()';
                 Shop::DB()->insert('tbewertungguthabenbonus', $oBewertungGuthabenBonus);
             } else {
                 // Prüfen ob die max. Belohnung + das aktuelle Guthaben, das Max des Monats überschreitet
                 // Falls ja, nur die Differenz von Kundenguthaben zu Max im Monat auszahlen
-                if ((doubleval($oBewertungGuthabenBonus->fGuthabenProMonat) +
-                        doubleval($Einstellungen['bewertung']['bewertung_stufe1_guthaben'])) >
-                    doubleval($Einstellungen['bewertung']['bewertung_max_guthaben'])) {
-                    $fBelohnung = doubleval($Einstellungen['bewertung']['bewertung_max_guthaben']) -
-                        doubleval($oBewertungGuthabenBonus->fGuthabenProMonat);
+                if (((float)$oBewertungGuthabenBonus->fGuthabenProMonat +
+                    (float)$Einstellungen['bewertung']['bewertung_stufe1_guthaben']) >
+                    (float)$Einstellungen['bewertung']['bewertung_max_guthaben']) {
+                    $fBelohnung = (float)$Einstellungen['bewertung']['bewertung_max_guthaben'] -
+                        (float)$oBewertungGuthabenBonus->fGuthabenProMonat;
                 } else {
                     $fBelohnung = $Einstellungen['bewertung']['bewertung_stufe1_guthaben'];
                 }
                 // tkunde Guthaben updaten
-                Shop::DB()->query(
-                    "UPDATE tkunde
-                        SET fGuthaben = fGuthaben + " . doubleval($fBelohnung) . "
+                Shop::DB()->query("
+                    UPDATE tkunde
+                        SET fGuthaben = fGuthaben + " . (float)$fBelohnung . "
                         WHERE kKunde = " . $kKunde, 3
                 );
 
@@ -389,7 +392,7 @@ function checkeBewertungGuthabenBonus($kBewertung, $Einstellungen)
                 $oBewertungGuthabenBonus                 = new stdClass();
                 $oBewertungGuthabenBonus->kBewertung     = $kBewertung;
                 $oBewertungGuthabenBonus->kKunde         = $kKunde;
-                $oBewertungGuthabenBonus->fGuthabenBonus = doubleval($fBelohnung);
+                $oBewertungGuthabenBonus->fGuthabenBonus = (float)$fBelohnung;
                 $oBewertungGuthabenBonus->dDatum         = 'now()';
                 Shop::DB()->insert('tbewertungguthabenbonus', $oBewertungGuthabenBonus);
             }
@@ -432,7 +435,7 @@ function BewertungsGuthabenBonusLoeschen($kBewertung)
                         'kBewertungGuthabenBonus',
                         $oBewertungGuthabenBonus->kBewertungGuthabenBonus
                     );
-                    $fGuthaben      = $oKunde->fGuthaben - doubleval($oBewertungGuthabenBonus->fGuthabenBonus);
+                    $fGuthaben      = $oKunde->fGuthaben - (float)$oBewertungGuthabenBonus->fGuthabenBonus;
                     $upd            = new stdClass();
                     $upd->fGuthaben = (($fGuthaben > 0) ? $fGuthaben : 0);
                     Shop::DB()->update('tkunde', 'kKunde', (int)$oBewertung->kKunde, $upd);

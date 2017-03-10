@@ -9,8 +9,7 @@
  */
 function gibTrustedShops()
 {
-    unset($_SESSION['TrustedShops']);
-    unset($oTrustedShops);
+    unset($_SESSION['TrustedShops'], $oTrustedShops);
     require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.TrustedShops.php';
     $oTrustedShops = new TrustedShops(-1, StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
     $oTrustedShops->holeKaeuferschutzProdukteDB(StringHandler::convertISO2ISO639($_SESSION['cISOSprache']), true);
@@ -22,7 +21,7 @@ function gibTrustedShops()
         $cLandISO = $_SESSION['Kunde']->cLand;
     }
     // Prüfe, ob TS ID noch gültig ist
-    if ($oTrustedShops->pruefeZertifikat(StringHandler::convertISO2ISO639($_SESSION['cISOSprache'])) == 1) {
+    if ($oTrustedShops->pruefeZertifikat(StringHandler::convertISO2ISO639($_SESSION['cISOSprache'])) === 1) {
         // Gib nur die Informationen weiter, die das Template auch braucht
         $oTrustedShopsTMP->nAktiv                       = $oTrustedShops->nAktiv;
         $oTrustedShopsTMP->eType                        = $oTrustedShops->eType;
@@ -34,18 +33,18 @@ function gibTrustedShops()
             $oTrustedShopsTMP->oKaeuferschutzProdukte->item = filterNichtGebrauchteKaeuferschutzProdukte(
                 $oTrustedShops->oKaeuferschutzProdukte->item,
                 $_SESSION['Warenkorb']->gibGesamtsummeWaren(false) *
-                ((100 + doubleval($_SESSION['Steuersatz'][$_SESSION['Warenkorb']->gibVersandkostenSteuerklasse($cLandISO)])) / 100)
+                ((100 + (float)$_SESSION['Steuersatz'][$_SESSION['Warenkorb']->gibVersandkostenSteuerklasse($cLandISO)]) / 100)
             );
         }
         $oTrustedShopsTMP->cLogoURL                 = $oTrustedShops->cLogoURL;
         $oTrustedShopsTMP->cSpeicherungURL          = $oTrustedShops->cSpeicherungURL;
         $oTrustedShopsTMP->cBedingungURL            = $oTrustedShops->cBedingungURL;
         $oTrustedShopsTMP->cBoxText                 = $oTrustedShops->cBoxText;
-        $oTrustedShopsTMP->cVorausgewaehltesProdukt = (isset($oTrustedShops->oKaeuferschutzProdukte->item))
+        $oTrustedShopsTMP->cVorausgewaehltesProdukt = isset($oTrustedShops->oKaeuferschutzProdukte->item)
             ? gibVorausgewaehltesProdukt(
                 $oTrustedShops->oKaeuferschutzProdukte->item,
                 $_SESSION['Warenkorb']->gibGesamtsummeWaren(false) *
-                ((100 + doubleval($_SESSION['Steuersatz'][$_SESSION['Warenkorb']->gibVersandkostenSteuerklasse($cLandISO)])) / 100)
+                ((100 + (float)$_SESSION['Steuersatz'][$_SESSION['Warenkorb']->gibVersandkostenSteuerklasse($cLandISO)]) / 100)
             )
             : '';
     }
@@ -74,7 +73,7 @@ function filterNichtGebrauchteKaeuferschutzProdukte($oKaeuferschutzProdukte_arr,
     if (is_array($oKaeuferschutzProdukte_arr) && count($oKaeuferschutzProdukte_arr) > 0) {
         foreach ($oKaeuferschutzProdukte_arr as $oKaeuferschutzProdukte) {
             $oKaeuferschutzProdukteFilter_arr[] = $oKaeuferschutzProdukte;
-            if (doubleval($fGesamtSumme) < doubleval($oKaeuferschutzProdukte->protectedAmountDecimal)) {
+            if ((float)$fGesamtSumme < (float)$oKaeuferschutzProdukte->protectedAmountDecimal) {
                 break;
             }
         }
@@ -114,10 +113,10 @@ function gibVorausgewaehltesProdukt($oKaeuferschutzProdukte_arr, $fGesamtSumme)
     $fLetzterWert = 0.0;
     if (is_array($oKaeuferschutzProdukte_arr) && count($oKaeuferschutzProdukte_arr) > 0) {
         foreach ($oKaeuferschutzProdukte_arr as $oKaeuferschutzProdukte) {
-            if (doubleval($fGesamtSumme) <= doubleval($oKaeuferschutzProdukte->protectedAmountDecimal) &&
-                (doubleval($oKaeuferschutzProdukte->protectedAmountDecimal) < $fLetzterWert || $fLetzterWert == 0.0)) {
+            if ((float)$fGesamtSumme <= (float)$oKaeuferschutzProdukte->protectedAmountDecimal &&
+                ((float)$oKaeuferschutzProdukte->protectedAmountDecimal < $fLetzterWert || $fLetzterWert === 0.0)) {
                 $tsProductID  = $oKaeuferschutzProdukte->tsProductID;
-                $fLetzterWert = doubleval($oKaeuferschutzProdukte->protectedAmountDecimal);
+                $fLetzterWert = (float)$oKaeuferschutzProdukte->protectedAmountDecimal;
             }
         }
     }

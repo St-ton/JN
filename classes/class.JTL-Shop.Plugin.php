@@ -282,9 +282,9 @@ class Plugin
     public $nCalledHook;
 
     /**
-     * @var null|array
+     * @var array
      */
-    private static $hookList = null;
+    private static $hookList;
 
     /**
      * @var array
@@ -589,7 +589,7 @@ class Plugin
         if (strlen($cDateTime) > 0) {
             $date = new DateTime($cDateTime);
 
-            return ($bDateOnly) ? $date->format('d.m.Y') : $date->format('d.m.Y H:i');
+            return $bDateOnly ? $date->format('d.m.Y') : $date->format('d.m.Y H:i');
         }
 
         return '';
@@ -654,7 +654,7 @@ class Plugin
      */
     public function getConf($cName)
     {
-        if (strlen($cName) > 0 && isset($_SESSION['PluginSession'][$this->kPlugin][$cName])) {
+        if (isset($_SESSION['PluginSession'][$this->kPlugin][$cName]) && strlen($cName) > 0) {
             return $_SESSION['PluginSession'][$this->kPlugin][$cName];
         }
 
@@ -689,16 +689,14 @@ class Plugin
     public function getCurrentVersion()
     {
         $cPfad = PFAD_ROOT . PFAD_PLUGIN . $this->cVerzeichnis;
-        if (is_dir($cPfad)) {
-            if (file_exists($cPfad . '/' . PLUGIN_INFO_FILE)) {
-                $xml     = StringHandler::convertISO(file_get_contents($cPfad . '/' . PLUGIN_INFO_FILE));
-                $XML_arr = XML_unserialize($xml, 'ISO-8859-1');
-                $XML_arr = getArrangedArray($XML_arr);
+        if (is_dir($cPfad) && file_exists($cPfad . '/' . PLUGIN_INFO_FILE)) {
+            $xml     = StringHandler::convertISO(file_get_contents($cPfad . '/' . PLUGIN_INFO_FILE));
+            $XML_arr = XML_unserialize($xml, 'ISO-8859-1');
+            $XML_arr = getArrangedArray($XML_arr);
 
-                $nLastVersionKey = count($XML_arr['jtlshop3plugin'][0]['Install'][0]['Version']) / 2 - 1;
+            $nLastVersionKey = count($XML_arr['jtlshop3plugin'][0]['Install'][0]['Version']) / 2 - 1;
 
-                return (int)$XML_arr['jtlshop3plugin'][0]['Install'][0]['Version'][$nLastVersionKey . ' attr']['nr'];
-            }
+            return (int)$XML_arr['jtlshop3plugin'][0]['Install'][0]['Version'][$nLastVersionKey . ' attr']['nr'];
         }
 
         return 0;

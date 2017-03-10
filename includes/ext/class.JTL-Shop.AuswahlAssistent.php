@@ -438,14 +438,16 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
         public static function getGroupsByLocation($cKey, $kKey, $kSprache)
         {
             if ((int)$kKey > 0 && (int)$kSprache > 0 && strlen($cKey) > 0) {
-                $oOrt = Shop::DB()->query(
+                $oOrt = Shop::DB()->executeQueryPrepared(
                     "SELECT tao.kAuswahlAssistentGruppe
                         FROM tauswahlassistentort tao
                         JOIN tauswahlassistentgruppe  tag
                             ON tag.kAuswahlAssistentGruppe = tao.kAuswahlAssistentGruppe
-                            AND tag.kSprache = " . (int)$kSprache . "
-                        WHERE tao.cKey = '" . Shop::DB()->escape($cKey) . "'
-                            AND tao.kKey = " . (int)$kKey, 1
+                            AND tag.kSprache = :lang
+                        WHERE tao.cKey = :ckey
+                            AND tao.kKey = :kkey",
+                    ['lang' => $kSprache, 'ckey' => $cKey, 'kkey' => $kKey],
+                    1
                 );
 
                 if (isset($oOrt->kAuswahlAssistentGruppe) && $oOrt->kAuswahlAssistentGruppe > 0) {

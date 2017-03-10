@@ -323,7 +323,7 @@ function gibArtikelKeys($FilterSQL, $nArtikelProSeite, $NaviFilter, $bExtern, $o
                 //$oArtikelOptionen->nVariationDetailPreis = 1;
                 $oArtikel->fuelleArtikel($oArtikelKey->kArtikel, $oArtikelOptionen);
                 // Aktuelle Artikelmenge in die Session (Keine Vaterartikel)
-                if ($oArtikel->nIstVater == 0) {
+                if ($oArtikel->nIstVater === 0) {
                     $_SESSION['nArtikelUebersichtVLKey_arr'][] = $oArtikel->kArtikel;
                 }
                 $oArtikel_arr[] = $oArtikel;

@@ -31,7 +31,8 @@ class Migration_20170310153800 extends Migration implements IMigration
             "UPDATE teinstellungen 
                 SET cWert = 'P' 
                 WHERE kEinstellungenSektion = 1 
-                AND cName = 'kaufabwicklung_ssl_nutzen'"
+                AND cName = 'kaufabwicklung_ssl_nutzen'
+                AND cWert = 'Z'"
         );
         $this->execute(
             "DELETE 

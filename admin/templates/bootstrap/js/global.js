@@ -533,10 +533,21 @@ function reloadFavs() {
     });
 }
 
+function switchCouponTooltipVisibility() {
+    $('#cWertTyp').change(function() {
+        if($(this).val() === 'prozent') {
+            $('#fWertTooltip').parent().show();
+        } else {
+            $('#fWertTooltip').parent().hide();
+        }
+    });
+}
+
 /**
  * document ready
  */
 $(document).ready(function () {
+    switchCouponTooltipVisibility();
     $('#show_article_list').set_search('article', '#assign_article_list');
     $('#show_manufacturer_list').set_search('manufacturer', '#assign_manufacturer_list');
     $('#show_categories_list').set_search('categories', '#assign_categories_list');

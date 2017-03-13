@@ -86,13 +86,3 @@ function changeCurrencyTooltipText (sourceId) {
    var sourceInput = $('#' + sourceId)[0];
    setzePreisTooltipAjax(false, sourceId + 'Tooltip', sourceInput);
 }
-
-function hideValueTooltip() {
-    $('#cWertTyp').change(function() {
-        if($(this).val() === 'prozent') {
-            $('#fWertTooltip').parent().hide();
-        } else {
-            $('#fWertTooltip').parent().show();
-        }
-    });
-}

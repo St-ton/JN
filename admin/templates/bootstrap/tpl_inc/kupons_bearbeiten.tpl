@@ -21,16 +21,10 @@
         {if $oKupon->cKuponTyp == 'standard' || $oKupon->cKuponTyp == 'neukundenkupon'}
             makeCurrencyTooltip('fWert');
         {/if}
-        {if $oKupon->cWertTyp == 'prozent'}
-            $('#fWertTooltip').parent().hide();
-        {else}
-            $('#fWertTooltip').parent().show();
-        {/if}
         makeCurrencyTooltip('fMindestbestellwert');
         $('#bOpenEnd').change(onEternalCheckboxChange);
         onEternalCheckboxChange();
         onApplySelectedCustomers();
-        hideValueTooltip();
     });
 
     function onEternalCheckboxChange () {
@@ -170,7 +164,7 @@
                                 </option>
                             </select>
                         </span>
-                        <span class="input-group-addon">
+                        <span class="input-group-addon" {if $oKupon->cWertTyp == 'festpreis'} style="display: none;"{/if}>
                             {getCurrencyConversionTooltipButton inputId='fWert'}
                         </span>
                     </div>

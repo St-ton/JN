@@ -11,11 +11,32 @@
 | ![Screenshot](https://images.jtl-software.de/shop4/shop_release_showcase.png "JTL-Shop 4") |
 
 ## System Requirements
-* PHP >= v5.4
-* MySQL >= v5
-* GD-Lib >= v2.0
-* Optional: ImageMagick and imagick php module
-* Optional: IonCube Loader >= 4.5 for some third-party plug-ins
+
+**Apache**
+ * mod_rewrite module
+  
+**Database** 
+* MySQL or MariaDB >= v5.0
+
+**PHP**
+* Version 7.0 recommended. Versions 5.4-5.6 are also supported. 
+* PHP-Modules: 
+ * GD Lib
+ * SimpleXML
+ * ImageMagick
+ * Imagick
+ * Curl
+ * Iconv
+ * MBString
+ * Tokenizer
+ * PDO (MySQL)
+ * Optional: IonCube Loader >= 4.5 for some third-party plug-ins
+* PHP Settings
+ * max_execution_time >= 120s
+ * memory_limit >= 128MB
+ * upload_max_filesize >= 6MB
+ * allow_url_fopen activated
+ * magic_quotes_runtime deactivated (removed since php v7.0)
 
 ## Software boundaries
 * See [Software boundaries and limits](http://jtl-url.de/limits) for details

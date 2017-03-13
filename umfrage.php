@@ -36,9 +36,6 @@ if (isset($cParameter_arr['kUmfrage']) && $cParameter_arr['kUmfrage'] > 0) {
         // Umfrage holen
         $oUmfrage = holeAktuelleUmfrage($cParameter_arr['kUmfrage']);
         if ($oUmfrage->kUmfrage > 0) {
-            // Rausgenommen weil teilweise auf xxx.xxx.*.* geprüft wurde und das ist overkill
-            // Nun wird auf die von tbesucher generierte cID geprüft
-            //if(pruefeUserUmfrage($oUmfrage->kUmfrage, $_SESSION['Kunde']->kKunde, gibIP()))
             if (pruefeUserUmfrage($oUmfrage->kUmfrage, $_SESSION['Kunde']->kKunde, $_SESSION['oBesucher']->cID)) {
                 $step = 'umfrage_durchfuehren';
                 // Auswertung

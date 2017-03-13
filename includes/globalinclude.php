@@ -5,6 +5,8 @@
  */
 $nStartzeit = microtime(true);
 
+
+
 if (file_exists(__DIR__ . '/config.JTL-Shop.ini.php')) {
     require_once __DIR__ . '/config.JTL-Shop.ini.php';
 }
@@ -42,11 +44,7 @@ if (!Shop()->PHPSettingsHelper()->hasMinLimit(64)) {
 }
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'tools.Global.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.StringHandler.php';
 require_once PFAD_ROOT . PFAD_BLOWFISH . 'xtea.class.php';
-require_once PFAD_ROOT . PFAD_CLASSES_CORE . 'class.core.NiceDB.php';
-require_once PFAD_ROOT . PFAD_CLASSES_CORE . 'class.core.Nice.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Profiler.php';
 
 Profiler::start();
 // datenbankverbindung aufbauen
@@ -57,8 +55,7 @@ try {
 }
 $GLOBALS['bSeo'] = true; //seo module is always available, keep global for compatibility reasons
 require_once PFAD_ROOT . PFAD_INCLUDES . 'plugin_inc.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Shopsetting.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.JTLCache.php';
+
 $cache = JTLCache::getInstance();
 $cache->setJtlCacheConfig();
 
@@ -93,18 +90,6 @@ if (!JTL_INCLUDE_ONLY_DB) {
     require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
     require_once PFAD_ROOT . PFAD_INCLUDES . 'parameterhandler.php';
     //standard includes
-    require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Template.php';
-    require_once PFAD_ROOT . PFAD_CLASSES_CORE . 'class.core.Session.php';
-    require_once PFAD_ROOT . PFAD_CLASSES . 'class.helper.Artikel.php';
-    require_once PFAD_ROOT . PFAD_CLASSES . 'class.helper.Url.php';
-    require_once PFAD_ROOT . PFAD_CLASSES . 'class.helper.Link.php';
-    require_once PFAD_ROOT . PFAD_CLASSES . 'class.helper.Versandart.php';
-    require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.MainModel.php';
-    require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Hersteller.php';
-    require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Warenkorb.php';
-    require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.ExtensionPoint.php';
-    require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Boxen.php';
-    require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Sprache.php';
     //globale Werkzeuge
     require_once PFAD_ROOT . PFAD_XAJAX . 'xajax_core/xajax.inc.php';
     require_once PFAD_ROOT . PFAD_INCLUDES_EXT . 'auswahlassistent_ext_inc.php';
@@ -113,7 +98,6 @@ if (!JTL_INCLUDE_ONLY_DB) {
     // An jedem Hook hängt ein Array mit Plugin die diesen Hook benutzen
     $oPluginHookListe_arr = Plugin::getHookList();
     $nSystemlogFlag       = getSytemlogFlag();
-    require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Jtllog.php';
     // Mobil-Template
     $template = Template::getInstance();
     $template->check(true);

@@ -1,7 +1,6 @@
 <?php
 
 require_once __DIR__ . '/includes/admininclude.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Jtllog.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'statistik_inc.php';
 
 $oAccount->permission('PROFILER_VIEW', true, true);

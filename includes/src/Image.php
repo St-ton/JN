@@ -5,7 +5,6 @@
  */
 use Imanee\Imanee;
 
-require_once __DIR__ . '/core/class.core.Shop.php';
 
 /**
  * Class Image

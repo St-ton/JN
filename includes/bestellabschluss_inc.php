@@ -9,7 +9,6 @@
  */
 function bestellungKomplett()
 {
-    require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.CheckBox.php';
     $kKundengruppe = Kundengruppe::getCurrent();
     // CheckBox Plausi
     $oCheckBox               = new CheckBox();
@@ -223,7 +222,6 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
         // Falls die Einstellung global_wunschliste_artikel_loeschen_nach_kauf auf Y (Ja) steht und
         // Artikel vom aktuellen Wunschzettel gekauft wurden, sollen diese vom Wunschzettel geloescht werden
         if (isset($_SESSION['Wunschliste']->kWunschliste) && $_SESSION['Wunschliste']->kWunschliste > 0) {
-            require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Wunschliste.php';
             Wunschliste::pruefeArtikelnachBestellungLoeschen($_SESSION['Wunschliste']->kWunschliste, $oWarenkorbpositionen_arr);
         }
     }
@@ -380,9 +378,6 @@ function saveZahlungsInfo($kKunde, $kBestellung, $bZahlungAgain = false)
 
     if (!$kKunde || !$kBestellung) {
         return false;
-    }
-    if (!class_exists('ZahlungsInfo')) {
-        require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.ZahlungsInfo.php';
     }
     $_SESSION['ZahlungsInfo']              = new ZahlungsInfo();
     $_SESSION['ZahlungsInfo']->kBestellung = $kBestellung;
@@ -1293,7 +1288,6 @@ function finalisiereBestellung($cBestellNr = '', $bSendeMail = true)
     }
     $_SESSION['Kunde'] = $oKunde;
     $kKundengruppe     = Kundengruppe::getCurrent();
-    require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.CheckBox.php';
     $oCheckBox = new CheckBox();
     // CheckBox Spezialfunktion ausführen
     $oCheckBox->triggerSpecialFunction(

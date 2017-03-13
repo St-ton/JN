@@ -4,7 +4,6 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 require_once __DIR__ . '/includes/admininclude.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Versandart.php';
 
 $oAccount->permission('ORDER_SHIPMENT_VIEW', true, true);
 

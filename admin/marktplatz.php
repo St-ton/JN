@@ -4,8 +4,6 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 require_once __DIR__ . '/includes/admininclude.php';
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_CLASSES . 'class.JTL-Shopadmin.Marketplace.php';
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_CLASSES . 'class.JTL-Shopadmin.MarketplaceQuery.php';
 /** @global JTLSmarty $smarty */
 $oAccount->permission('DISPLAY_MARKETPLACE_VIEW', true, true);
 

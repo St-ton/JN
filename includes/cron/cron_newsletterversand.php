@@ -4,7 +4,6 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'smartyinclude.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Kampagne.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'newsletter_inc.php';
 
 /**
@@ -85,7 +84,6 @@ function bearbeiteNewsletterversand($oJobQueue)
     );
 
     if (is_array($oNewsletterEmpfaenger_arr) && count($oNewsletterEmpfaenger_arr) > 0) {
-        require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Kunde.php';
         $shopURL = Shop::getURL();
         foreach ($oNewsletterEmpfaenger_arr as $oNewsletterEmpfaenger) {
             unset($oKunde);

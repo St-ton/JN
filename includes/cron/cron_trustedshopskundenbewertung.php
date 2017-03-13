@@ -6,7 +6,6 @@
 require_once PFAD_ROOT . PFAD_INCLUDES . 'tools.Global.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.TrustedShops.php';
 
 /**
  * @param JobQueue $oJobQueue

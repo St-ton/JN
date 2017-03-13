@@ -26,7 +26,6 @@ if (($action = verifyGPDataString('a')) !== '' &&
     $oZahlungsart = Shop::DB()->select('tzahlungsart', 'kZahlungsart', $kZahlungsart);
 
     if (isset($oZahlungsart->cModulId) && strlen($oZahlungsart->cModulId) > 0) {
-        require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.ZahlungsLog.php';
         $oZahlungsLog = new ZahlungsLog($oZahlungsart->cModulId);
         $oZahlungsLog->loeschen();
 
@@ -262,7 +261,6 @@ if ($step === 'einstellen') {
                 ->assign('ZAHLUNGSART_MAIL_STORNO', ZAHLUNGSART_MAIL_STORNO);
     }
 } elseif ($step === 'log') {
-    require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.ZahlungsLog.php';
 
     $kZahlungsart = verifyGPCDataInteger('kZahlungsart');
     $oZahlungsart = Shop::DB()->select('tzahlungsart', 'kZahlungsart', $kZahlungsart);
@@ -335,7 +333,6 @@ if ($step === 'uebersicht') {
     );
 
     if (is_array($oZahlungsart_arr) && count($oZahlungsart_arr) > 0) {
-        require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.ZahlungsLog.php';
 
         foreach ($oZahlungsart_arr as $i => &$oZahlungsart) {
             $oZahlungsLog                 = new ZahlungsLog($oZahlungsart->cModulId);

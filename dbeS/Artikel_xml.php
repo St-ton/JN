@@ -83,8 +83,6 @@ if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
  */
 function bearbeiteDeletes($xml, $conf)
 {
-    require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Artikel.php';
-
     if (is_array($xml['del_artikel']) && is_array($xml['del_artikel']['kArtikel'])) {
         foreach ($xml['del_artikel']['kArtikel'] as $kArtikel) {
             $kArtikel = (int)$kArtikel;
@@ -145,8 +143,6 @@ function bearbeiteDeletes($xml, $conf)
  */
 function bearbeiteInsert($xml, array $conf)
 {
-    require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Artikel.php';
-
     $Artikel           = new stdClass();
     $Artikel->kArtikel = 0;
 

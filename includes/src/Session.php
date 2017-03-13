@@ -3,7 +3,6 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require PFAD_ROOT . PFAD_CLASSES_CORE . 'class.core.SessionHandler.php';
 
 /**
  * Class Session

@@ -437,8 +437,6 @@ function gibPreisStringLocalizedSmarty($params, &$smarty)
  */
 function hasCheckBoxForLocation($params, &$smarty)
 {
-    require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.CheckBox.php';
-
     $oCheckBox     = new CheckBox();
     $oCheckBox_arr = $oCheckBox->getCheckBoxFrontend((int)$params['nAnzeigeOrt'], 0, true, true);
 
@@ -605,7 +603,6 @@ function build_navigation_subs($oLink_arr, $kVaterLink = 0)
  */
 function get_trustedshops_data($params, &$smarty)
 {
-    require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.TrustedShops.php';
     $oTrustedShops   = new TrustedShops(-1, StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
     $value['tsId']   = $oTrustedShops->tsId;
     $value['nAktiv'] = $oTrustedShops->nAktiv;

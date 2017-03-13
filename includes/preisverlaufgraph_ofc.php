@@ -5,7 +5,6 @@
  */
 require_once __DIR__ . '/globalinclude.php';
 require_once PFAD_ROOT . PFAD_FLASHCHART . 'php-ofc-library/open-flash-chart.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Preisverlauf.php';
 
 // kArtikel;kKundengruppe;kSteuerklasse;fMwSt
 list($_GET['kArtikel'], $_GET['kKundengruppe'], $_GET['kSteuerklasse'], $_GET['fMwSt']) = explode(';', $_GET['cOption']);

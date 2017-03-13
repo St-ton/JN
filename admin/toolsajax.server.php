@@ -6,9 +6,6 @@
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_XAJAX . 'xajax_core/xajax.inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dashboard_inc.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Artikel.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Hersteller.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Kategorie.php';
 
 global $oAccount;
 $url = null;
@@ -185,7 +182,6 @@ function getRemoteDataApiAjax($cURL, $cDataName, $cTpl, $cWrapperID)
     global $oAccount;
     $oResponse = new xajaxResponse();
     if ($oAccount->permission('DASHBOARD_VIEW')) {
-        require_once PFAD_ROOT . PFAD_CLASSES . 'core/class.core.jtlAPI.php';
 
         $cData = jtlAPI::checkVersion(Shop::getVersion());
         Shop::Smarty()->assign($cDataName, $cData);
@@ -595,7 +591,6 @@ function getMerkmalWerteAA($kMM_arr, $kSprache)
 function saveBannerAreas($cData)
 {
     global $oAccount;
-    require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.ImageMap.php';
 
     $oBanner   = new ImageMap();
     $oResponse = new xajaxResponse();
@@ -644,7 +639,6 @@ function truncateJtllog()
     global $oAccount;
     $oResponse = new xajaxResponse();
     if ($oAccount->permission('DASHBOARD_VIEW')) {
-        require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Jtllog.php';
         Jtllog::truncateLog();
     }
 

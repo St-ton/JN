@@ -3,7 +3,6 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Kunde.php';
 
 /**
  * @param object $Bestellung

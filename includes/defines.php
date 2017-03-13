@@ -39,7 +39,7 @@ ifndef('JTL_INCLUDE_ONLY_DB', 0);
 ifndef('SOCKET_TIMEOUT', 30);
 ifndef('ARTICLES_PER_PAGE_HARD_LIMIT', 100);
 // Pfade
-ifndef('PFAD_CLASSES', 'classes/');
+ifndef('PFAD_CLASSES', 'classes/'); // depcrecated since 4.x TODO define version
 ifndef('PFAD_CONFIG', 'config/');
 ifndef('PFAD_INCLUDES', 'includes/');
 ifndef('PFAD_TEMPLATES', 'templates/');
@@ -69,7 +69,7 @@ ifndef('PFAD_ART_ABNAHMEINTERVALL', PFAD_INCLUDES_LIBS . 'artikel_abnahmeinterva
 ifndef('PFAD_BLOWFISH', PFAD_INCLUDES_LIBS . 'xtea/');
 ifndef('PFAD_FLASHPLAYER', PFAD_INCLUDES_LIBS . 'flashplayer/');
 ifndef('PFAD_IMAGESLIDER', PFAD_INCLUDES_LIBS . 'slideitmoo_image_slider/');
-ifndef('PFAD_CLASSES_CORE', PFAD_CLASSES . 'core/');
+ifndef('PFAD_CLASSES_CORE', PFAD_CLASSES . 'core/'); // depcrecated since 4.x TODO define version
 ifndef('PFAD_OBJECT_CACHING', 'caching/');
 ifndef('PFAD_GFX', 'gfx/');
 ifndef('PFAD_GFX_AMPEL', PFAD_GFX . 'ampel/');

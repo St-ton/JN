@@ -72,9 +72,7 @@ if(!version_compare($szPhpVersion, '5.4.0', '>='))
    exit(-1);
 }
 
-require_once PFAD_ROOT . PFAD_CLASSES_CORE . 'class.core.Shop.php';
 $shop = Shop::getInstance();
-require_once PFAD_ROOT . PFAD_CLASSES_CORE . 'class.core.NiceDB.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'tools.Global.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'plugin_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES_LIBS . 'password_compat/password.php';

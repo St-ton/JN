@@ -7,8 +7,8 @@ if (!defined('PFAD_ROOT')) {
     http_response_code(400);
     exit();
 }
+require_once PFAD_ROOT . PFAD_INCLUDES . 'autoload.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'artikel_inc.php';
-require_once PFAD_ROOT . PFAD_CLASSES_CORE . 'class.core.NiceMail.php';
 /** @global JTLSmarty $smarty */
 $AktuelleSeite = 'ARTIKEL';
 Shop::setPageType(PAGE_ARTIKEL);

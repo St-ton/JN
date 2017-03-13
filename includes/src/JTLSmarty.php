@@ -311,7 +311,6 @@ class JTLSmarty extends SmartyBC
                     //since setzeLinks() is only executed in class.core.Session.php
                     $linkGroups = setzeLinks();
                 }
-                require_once PFAD_ROOT . PFAD_CLASSES . 'class.helper.Hersteller.php';
                 $manufacturerHelper = HerstellerHelper::getInstance();
                 $manufacturers      = $manufacturerHelper->getManufacturers();
                 $this->assign('linkgroups', $linkGroups)

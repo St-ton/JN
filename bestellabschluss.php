@@ -107,7 +107,6 @@ $startKat             = new Kategorie();
 $startKat->kKategorie = 0;
 // Trusted Shops Kaeuferschutz Classic
 if (isset($Einstellungen['trustedshops']['trustedshops_nutzen']) && $Einstellungen['trustedshops']['trustedshops_nutzen'] === 'Y') {
-    require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.TrustedShops.php';
     $oTrustedShops = new TrustedShops(-1, StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
 
     if (strlen($oTrustedShops->tsId) > 0 && $oTrustedShops->nAktiv == 1) {

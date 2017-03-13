@@ -7,7 +7,6 @@ require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('MODULE_SAVED_BASKETS_VIEW', true, true);
 
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.WarenkorbPers.php';
 /** @global JTLSmarty $smarty */
 $cHinweis          = '';
 $cFehler           = '';

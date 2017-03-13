@@ -21,8 +21,6 @@ if (file_exists(JOBQUEUE_LOCKFILE)) {
 } else {
     touch(JOBQUEUE_LOCKFILE);
 }
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Cron.php';
-
 $oCron_arr = Shop::DB()->query(
     "SELECT tcron.*
         FROM tcron

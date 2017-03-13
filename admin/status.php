@@ -4,7 +4,6 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 require_once __DIR__ . '/includes/admininclude.php';
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_CLASSES . 'class.JTL-Shopadmin.AjaxResponse.php';
 /** @global JTLSmarty $smarty */
 $response = new AjaxResponse();
 $action   = isset($_GET['action']) ? $_GET['action'] : null;

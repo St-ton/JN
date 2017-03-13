@@ -17,14 +17,13 @@ if (!isset($bExtern) || !$bExtern) {
     defined('DB_PASS') || die('Kein MySql-Datenbank Passwort angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
 }
 
+require PFAD_ROOT . PFAD_INCLUDES . 'autoload.php';
 require PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
 require PFAD_ROOT . PFAD_INCLUDES . 'error_handler.php';
 require PFAD_ROOT . PFAD_INCLUDES . 'plugin_inc.php';
 require PFAD_ROOT . PFAD_INCLUDES . 'autoload.php';
 require PFAD_ROOT . PFAD_INCLUDES . 'tools.Global.php';
 require PFAD_ROOT . PFAD_BLOWFISH . 'xtea.class.php';
-require PFAD_ROOT . PFAD_CLASSES_CORE . 'class.core.NiceDB.php';
-require PFAD_ROOT . PFAD_CLASSES_CORE . 'class.core.Nice.php';
 require PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'benutzerverwaltung_inc.php';
 require PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'admin_tools.php';
 

@@ -9,7 +9,6 @@ set_time_limit(0);
 global $oAccount;
 
 require_once __DIR__ . '/includes/admininclude.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Updater.php';
 
 $hasPermission = $oAccount->permission('DISPLAY_IMAGES_VIEW', false, false);
 /** @global JTLSmarty $smarty */

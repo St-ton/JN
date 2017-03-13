@@ -36,8 +36,6 @@ if ($kWunschliste === 0 && !empty($_SESSION['Kunde']->kKunde) && empty($_SESSION
 }
 
 Shop::setPageType(PAGE_WUNSCHLISTE);
-loeseHttps();
-
 if (!empty($_POST['addToCart'])) {
     $action          = 'addToCart';
     $kWunschlistePos = (int)$_POST['addToCart'];

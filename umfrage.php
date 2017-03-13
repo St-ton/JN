@@ -18,9 +18,7 @@ $nAktuelleSeite       = 1;
 $oUmfrageFrageTMP_arr = [];
 $Einstellungen        = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_UMFRAGE]);
 $linkHelper           = LinkHelper::getInstance();
-
-loeseHttps();
-$kLink = $linkHelper->getSpecialPageLinkKey(LINKTYP_UMFRAGE);
+$kLink                = $linkHelper->getSpecialPageLinkKey(LINKTYP_UMFRAGE);
 
 //hole alle OberKategorien
 $AufgeklappteKategorien = new KategorieListe();

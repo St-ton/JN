@@ -4544,7 +4544,6 @@ function setzeSpracheUndWaehrungLink()
  * -1 = SSL nicht aktiv und nicht erlaubt
  * 1 = SSL aktiv durch Einstellung nicht erwünscht
  * 2 = SSL aktiv und erlaubt
- * 3 = SSL nicht aktiv aber erlaubt
  * 4 = SSL nicht aktiv aber erzwungen
  *
  * @return int
@@ -4556,10 +4555,9 @@ function pruefeSSL()
     if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
         $_SERVER['HTTPS'] = 'on';
     }
-
     // Ist im Server SSL aktiv?
     if (isset($_SERVER['HTTPS']) && (strtolower($_SERVER['HTTPS']) === 'on' || $_SERVER['HTTPS'] === '1')) {
-        if ($cSSLNutzen === 'P' || $cSSLNutzen === 'Z') { // SSL durch Einstellung erlaubt?
+        if ($cSSLNutzen === 'P') { // SSL durch Einstellung erlaubt?
             return 2;
         }
 
@@ -4567,9 +4565,6 @@ function pruefeSSL()
     }
     if ($cSSLNutzen === 'P') {
         return 4;
-    }
-    if ($cSSLNutzen === 'Z') { // SSL durch Einstellung erlaubt?
-        return 3;
     }
 
     return -1;
@@ -4579,113 +4574,18 @@ function pruefeSSL()
  * https? wenn erwünscht reload mit https
  *
  * @return bool
+ * @deprecated since 4.06
  */
 function pruefeHttps()
 {
-    $conf = Shop::getSettings([CONF_GLOBAL]);
-    if ($conf['global']['kaufabwicklung_ssl_nutzen'] === 'Z' &&
-        (!isset($_SERVER['HTTPS']) || strtolower($_SERVER['HTTPS']) !== 'on')
-    ) {
-        $https = false;
-        //Ausnahmen
-        //hosteurope
-        if (isset($_SERVER['HTTP_X_FORWARDED_HOST']) && $_SERVER['HTTP_X_FORWARDED_HOST'] === 'ssl.webpack.de') {
-            $https = true;
-        }
-        //strato
-        if (isset($_SERVER['SCRIPT_URI']) && preg_match('/^ssl-id/', $_SERVER['SCRIPT_URI'])) {
-            $https = true;
-        }
-        //1&1
-        if (isset($_SERVER['HTTP_X_FORWARDED_HOST']) && preg_match('/^ssl/', $_SERVER['HTTP_X_FORWARDED_HOST'])) {
-            $https = true;
-        }
-        if (isset($_SERVER['HTTPS']) && ($_SERVER['HTTPS'] === 'on' || (int)$_SERVER['HTTPS'] === 1)) {
-            $https = true;
-        }
-        if (!$https) {
-            $lang = '';
-            if (!standardspracheAktiv(true)) {
-                if (strpos($_SERVER['REQUEST_URI'], '?')) {
-                    $lang = '&lang=' . $_SESSION['cISOSprache'];
-                } else {
-                    $lang = '?lang=' . $_SESSION['cISOSprache'];
-                }
-            }
-            $www = $conf['global']['global_ssl_www'];
-            //www. schon im servernamen enthalten?
-            if ($_SERVER['SERVER_NAME']{0} === 'w' && $_SERVER['SERVER_NAME']{1} === 'w' &&
-                $_SERVER['SERVER_NAME']{2} === 'w' && $_SERVER['SERVER_NAME']{3} === '.'
-            ) {
-                $www = '';
-            }
-            header('Location: https://' . $www . $_SERVER['SERVER_NAME'] .
-                $_SERVER['REQUEST_URI'] . $lang, true, 301);
-            exit();
-        }
-    }
-
     return false;
 }
 
 /**
- *
+ * @deprecated since 4.06
  */
 function loeseHttps()
 {
-    $conf = Shop::getSettings([CONF_GLOBAL]);
-    if ($conf['global']['kaufabwicklung_ssl_nutzen'] === 'Z' &&
-        (isset($_SERVER['HTTPS']) && (strtolower($_SERVER['HTTPS']) === 'on' || (int)$_SERVER['HTTPS'] === 1)) &&
-        !(isset($_GET['exclusive_content']) && (int)$_GET['exclusive_content'] === 1) &&
-        (verifyGPDataString('isAjax') !== 'true')
-    ) {
-        $https = false;
-        if (isset($_SERVER['HTTP_X_FORWARDED_HOST']) && $_SERVER['HTTP_X_FORWARDED_HOST'] === 'ssl.webpack.de') {
-            //hosteurope
-            $https = true;
-        } elseif (isset($_SERVER['SCRIPT_URI']) && preg_match('/^ssl-id/', $_SERVER['SCRIPT_URI'])) {
-            //strato
-            $https = true;
-        } elseif (isset($_SERVER['HTTP_X_FORWARDED_HOST']) && preg_match('/^ssl/', $_SERVER['HTTP_X_FORWARDED_HOST'])) {
-            //1&1
-            $https = true;
-        } elseif (isset($conf['global']['kaufabwicklung_ssl_proxy']) &&
-            preg_match('/^' . $conf['global']['kaufabwicklung_ssl_proxy'] . '/', $_SERVER['HTTP_X_FORWARDED_HOST'])
-        ) {
-            //ist proxy im fw host?
-            $https = true;
-        } elseif (isset($_SERVER['HTTPS']) && (strtolower($_SERVER['HTTPS']) === 'on' || (int)$_SERVER['HTTPS'] === 1)) {
-            $https = true;
-        }
-        if ($https) {
-            if (Shop::$kLink > 0) {
-                $lh = LinkHelper::getInstance();
-                if (!empty($lh->linkGroups->staticRoutes)) {
-                    foreach ($lh->linkGroups->staticRoutes as $id => $languages) {
-                        foreach ($languages as $link) {
-                            if ((int)$link->kLink === (int)Shop::$kLink) {
-                                if ($id !== 'umfrage.php' && $id !== 'news.php' && $id !== 'vergleichsliste.php') {
-                                    return;
-                                }
-                            }
-                        }
-
-                    }
-                }
-            }
-            $lang = '';
-            if (!standardspracheAktiv(true)) {
-                if (strpos($_SERVER['REQUEST_URI'], '?')) {
-                    $lang = '&lang=' . $_SESSION['cISOSprache'];
-                } else {
-                    $lang = '?lang=' . $_SESSION['cISOSprache'];
-                }
-            }
-            header('Location: http://' . $_SERVER['SERVER_NAME'] .
-                str_replace($lang, '', $_SERVER['REQUEST_URI']) . $lang, true, 302);
-            exit();
-        }
-    }
 }
 
 /**

@@ -16,8 +16,6 @@ if (Shop::$directEntry === true) {
 } else {
     $cParameter_arr = [];
 }
-
-loeseHttps();
 $cHinweis               = '';
 $cFehler                = '';
 $step                   = 'news_uebersicht';

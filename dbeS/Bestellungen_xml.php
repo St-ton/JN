@@ -589,11 +589,11 @@ function bearbeiteSet($xml)
             $upd->cStatus       = $status;
             $upd->cVersandInfo  = Shop::DB()->escape($oBestellungWawi->cVersandInfo);
             if (strlen($cZahlungsartName) > 0) {
-                $upd->cZahlungsartName = Shop::DB()->escape($oBestellungWawi->cZahlungsartName);
+                $upd->cZahlungsartName = $cZahlungsartName;
             }
-            if (!empty($dBezahltDatum)) {
-                $upd->dBezahltDatum = Shop::DB()->escape($oBestellungWawi->dBezahltDatum);
-            }
+            $upd->dBezahltDatum = empty($dBezahltDatum) 
+                ? '0000-00-00' 
+                : $dBezahltDatum;
             Shop::DB()->update('tbestellung', 'kBestellung', (int)$oBestellungWawi->kBestellung, $upd);
             $oBestellungUpdated = new Bestellung($oBestellungShop->kBestellung, true);
 

@@ -44,10 +44,12 @@ class SessionHandlerDB extends \JTL\core\SessionHandler implements SessionHandle
      */
     public function read($sessID)
     {
-        $res = Shop::DB()->query(
+        $res = Shop::DB()->executeQueryPrepared(
             "SELECT cSessionData FROM tsession
-                WHERE cSessionId = '{$sessID}'
-                AND nSessionExpires > " . time(), 1
+                WHERE cSessionId = :id
+                AND nSessionExpires > :time",
+            ['id' => $sessID, 'time' => time()],
+            1
         );
 
         return ($res !== false && isset($res->cSessionData)) ? $res->cSessionData : '';

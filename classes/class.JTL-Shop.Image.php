@@ -97,8 +97,15 @@ class Image
     {
         $number = (int)$number;
         $path   = Shop::DB()->escape($path);
-        $sql    = "SELECT kArtikel AS id, nNr AS number, cPfad AS path FROM tartikelpict WHERE cPfad = '{$path}' AND nNr = '{$number}' LIMIT 1";
-        $item   = Shop::DB()->query($sql, 1);
+        $item   = Shop::DB()->executeQueryPrepared(
+            "SELECT kArtikel AS id, nNr AS number, cPfad AS path 
+                FROM tartikelpict 
+                WHERE cPfad = :path 
+                AND nNr = :nr 
+                LIMIT 1",
+            ['path' => $path, 'nr' => $number],
+            1
+        );
 
         return is_object($item) ? $item : null;
     }

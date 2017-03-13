@@ -11,7 +11,6 @@
     };
         
     GalleryClass.DEFAULTS = {
-        
         items: [],
         size: 'md',
         fullscreen: false,
@@ -34,8 +33,6 @@
         }
     };
 
-    
-    
     GalleryClass.prototype = {
         constructor: GalleryClass,
         element: null,
@@ -88,7 +85,16 @@
                 alt,
                 itemClass,
                 image,
-                thumb;
+                thumb,
+                pswpElement,
+                items,
+                pswpItems,
+                options,
+                gallery,
+                indicator,
+                step,
+                p,
+                i;
             this.ident = scope || this.ident;
 
             $(this.element)
@@ -101,7 +107,7 @@
             self.showThumbs(false);
             $(this.element).empty();
 
-            for (var i = 0; i < self.getStack().length; i++) {
+            for (i = 0; i < self.getStack().length; i++) {
                 item = self.getStack()[i];
                 src = item[self.options.size].src;
                 alt = item[self.options.size].alt;
@@ -116,22 +122,22 @@
                 $(template).find('.image-container')
                     .append(image);
 
-                thumb = $('<li />').addClass('item').append(
+                thumb = $('<li />').addClass('item')
+                                   .append(
                     $('<img />')
                         .attr('src', item.xs.src)
                         .attr('alt', alt)
                         .attr('width', item.xs.size.width)
                         .attr('height', item.xs.size.height)
                 );
-
+                thumb = thumb.append($('<meta>').attr('itemprop', 'image').attr('content', item.lg.src));
                 $(template).find('.image-thumbs')
                     .append(thumb);
             }
 
             $(this.element).append($(template));
 
-            //if (!this.options.fullscreen) {
-            if (ResponsiveBootstrapToolkit.current() == 'xs') {
+            if (ResponsiveBootstrapToolkit.current() === 'xs') {
                 $(this.element).find('.image-container').swipeleft(function (e) {
                     self.next();
                 });
@@ -177,13 +183,9 @@
                     });
                     */
 
-                    var pswpElement = document.querySelectorAll('.pswp')[0],
-                        items = jQuery.extend(true, [], self.getStack()),
-                        pswpItems = [],
-                        options,
-                        gallery,
-                        p,
-                        i;
+                    pswpElement = document.querySelectorAll('.pswp')[0];
+                    items = jQuery.extend(true, [], self.getStack());
+                    pswpItems = [];
 
                     for (i = 0; i < items.length; i++) {
                         p = items[i]['lg'];
@@ -200,7 +202,7 @@
                     gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, pswpItems, options);
                     gallery.init();
                     if (pswpItems.length > 1) {
-                        var indicator = $(self.options.template.indicator);
+                        indicator = $(self.options.template.indicator);
                         $(gallery.container).parent().addClass('theme-default');
                         $(gallery.container).parent().append(indicator);
                         
@@ -236,47 +238,58 @@
             
             this.adjust();
 
-            var step;
             GalleryClass.prototype.element = this.element;
             $(this.element).find('button[name="btnGalleryPre"]').click(function() {
                 var el = GalleryClass.prototype;
-                if ($(el.element).find('.image-thumbs').css('position') == 'absolute') {//V
-                    step = Math.ceil( $(el.element).find('.thumbs-box').outerHeight(false) / $(el.element).find('.image-thumbs li').outerHeight(true));
+                if ($(el.element).find('.image-thumbs').css('position') === 'absolute') {//V
+                    step = Math.ceil($(el.element).find('.thumbs-box').outerHeight(false) / $(el.element).find('.image-thumbs li').outerHeight(true));
                 } else {//H
-                    step = Math.ceil( $(el.element).find('.thumbs-box').outerWidth(false) / $(el.element).find('.image-thumbs li').outerWidth(true));
+                    step = Math.ceil($(el.element).find('.thumbs-box').outerWidth(false) / $(el.element).find('.image-thumbs li').outerWidth(true));
                 }
                 el.scrollTo(-step);//step = Schrittweite
             });
             $(this.element).find('button[name="btnGalleryNext"]').click(function() {
                 var el = GalleryClass.prototype;
-                if ($(el.element).find('.image-thumbs').css('position') == 'absolute') {//V
-                    step = Math.ceil( $(el.element).find('.thumbs-box').outerHeight(false) / $(el.element).find('.image-thumbs li').outerHeight(true));
+                if ($(el.element).find('.image-thumbs').css('position') === 'absolute') {//V
+                    step = Math.ceil($(el.element).find('.thumbs-box').outerHeight(false) / $(el.element).find('.image-thumbs li').outerHeight(true));
                 } else {//H
-                    step = Math.ceil( $(el.element).find('.thumbs-box').outerWidth(false) / $(el.element).find('.image-thumbs li').outerWidth(true));
+                    step = Math.ceil($(el.element).find('.thumbs-box').outerWidth(false) / $(el.element).find('.image-thumbs li').outerWidth(true));
                 }
                 el.scrollTo(step);//step = Schrittweite
             });
         },
 
         scrollTo: function(step) {
-            if ($(this.element).find('.image-thumbs').css('position') == 'absolute') { //V
-                var next;
-                var img_h = $(this.element).find('.image-thumbs li').outerHeight(false) + ( $(this.element).find('.image-thumbs li').outerHeight(true)- $(this.element).find('.image-thumbs li').outerHeight(false))/2;
+            var next,
+                img_w,
+                img_h,
+                rect,
+                listElem;
+            if ($(this.element).find('.image-thumbs').css('position') === 'absolute') { //V
+                listElem = $(this.element).find('.image-thumbs li');
+                rect = listElem[0].getBoundingClientRect();
+                if (rect.height) {
+                    // "width" is available for IE9+
+                    img_h = rect.height + ((parseInt(listElem.css('margin-bottom').replace('px', '')) + parseInt(listElem.css('margin-top').replace('px', ''))) / 2);
+                } else {
+                    // Calculate width for IE8 and below
+                    img_h = (rect.bottom - rect.top) + (listElem.outerHeight(true) - (rect.bottom - rect.top))/2 + listElem.outerHeight(true)- (rect.bottom - rect.top);
+                }
                 if ($(this.element).find('.image-thumbs').outerHeight(false) - $(this.element).find('.thumbs-box').scrollTop() - (img_h * step) >  (img_h * step) ) {
                     next = img_h * step;
                 } else {
                     next = Math.floor(( $(this.element).find('.image-thumbs').outerHeight(false) - $(this.element).find('.thumbs-box').scrollTop() - (img_h * step) ) / img_h) * img_h;
                 }
-                $(this.element).find('.thumbs-box').animate({scrollTop: '+=' + next}, "slow" );
+                $(this.element).find('.thumbs-box').animate({scrollTop: '+=' + next}, 'slow');
             } else { //H
-                var img_w = $(this.element).find('.image-thumbs li').outerWidth(true);
+                img_w = $(this.element).find('.image-thumbs li').outerWidth(true);
                 if ($(this.element).find('.image-thumbs').outerWidth(false) - $(this.element).find('.thumbs-box').scrollLeft() + (img_w * step) >  (img_w * step*-1) ) {
                     next = img_w * step;
                 } else {
                     next = Math.floor(( $(this.element).find('.image-thumbs').outerWidth(false) - $(this.element).find('.thumbs-box').scrollLeft() - (img_w * step * -1) ) / img_w) * img_w * -1;
                 }
                 
-                $(this.element).find('.thumbs-box').animate({scrollLeft: '-=' + next}, "slow" );
+                $(this.element).find('.thumbs-box').animate({scrollLeft: '-=' + next}, 'slow');
             }
         },
         
@@ -289,97 +302,103 @@
         },
 
         adjust: function() {
-            var height   = this.calcHeights();
-            var imgCount = this.itemCount();
+            var height   = this.calcHeights(),
+                imgCount = this.itemCount(),
+                primary_h,
+                listElem,
+                main_img_w,
+                main_img_h,
+                img_w,
+                img_w_outer,
+                img_h_outer,
+                img_h,
+                h,
+                prevElem,
+                nextElem,
+                btn_left,
+                btn_top,
+                w,
+                rect,
+                imagesPerView, //amount of images visible at each gallery "page"
+                ulw;
             if (imgCount > 0) {
-                var primary_h  = $('.product-primary').height();
-                var main_img_w = $(this.element).find('.thumbs').width();
-                var main_img_h = $('.product-gallery').height();
-
-                var img_w       = $(this.element).find('.image-thumbs li').outerWidth(true);
-                var img_w_outer = ( $(this.element).find('.image-thumbs li').outerWidth(true)- $(this.element).find('.image-thumbs li').outerWidth(false));
-                var img_h_outer;
-                var img_h, h;
-                
-                if ($(this.element).find('.image-thumbs').css('position') == 'absolute') { //V
+                primary_h   = $('.product-primary').height();
+                listElem    = $(this.element).find('.image-thumbs li');
+                main_img_w  = $(this.element).find('.thumbs').width();
+                main_img_h  = $('.product-gallery').height();
+                img_w       = listElem.outerWidth(true);
+                img_w_outer = (listElem.outerWidth(true) - listElem.outerWidth(false));
+                prevElem    = $(this.element).find('button[name="btnGalleryPre"]');
+                nextElem    = $(this.element).find('button[name="btnGalleryNext"]');
+                if ($(this.element).find('.image-thumbs').css('position') === 'absolute') { //V
                     primary_h -= 40;//wegen up / down Buttons
                     $(this.element).find('.thumbs-box').scrollLeft(0);
-                    
-                    img_h       = $(this.element).find('.image-thumbs li').outerHeight(false) + ( $(this.element).find('.image-thumbs li').outerHeight(true)- $(this.element).find('.image-thumbs li').outerHeight(false))/2;
-                    img_h_outer = $(this.element).find('.image-thumbs li').outerHeight(true)- $(this.element).find('.image-thumbs li').outerHeight(false);
-                    h           = parseInt(primary_h / img_h) * img_h;
-                    
-                    if (h > img_h * imgCount) {
-                        h = img_h * imgCount;
-                    }
+                    rect = listElem[0].getBoundingClientRect();
+                    img_h_outer = ((parseInt(listElem.css('margin-bottom').replace('px', '')) + parseInt(listElem.css('margin-top').replace('px', ''))) / 2);
+                    img_h = (rect.height) ? (rect.height + img_h_outer) : (rect.bottom - rect.top + img_h_outer);
+                    imagesPerView = Math.floor(primary_h / img_h);
 
-                    $(this.element).find('.thumbs-box').css({ 'height': (h - img_h_outer / 2) + 'px', 'width' : (img_w - img_w_outer) + 'px', 'overflow' : 'hidden' });
-                    $(this.element).find('.thumbs').css({ 'position': 'absolute'});
+                    $(this.element).find('.thumbs-box').css({'height': Math.ceil((imagesPerView * img_h) - img_h_outer) + 'px', 'width' : (img_w - img_w_outer) + 'px', 'overflow' : 'hidden'});
+                    $(this.element).find('.thumbs').css({'position': 'absolute'});
+
+                    btn_left = parseInt((img_w - img_w_outer) / 2 - prevElem.outerHeight(true) / 2);
+
+                    prevElem.removeClass('btn-gallery-left').addClass('btn-gallery-up').css({'top': '', 'left': btn_left + 'px'});
+                    nextElem.removeClass('btn-gallery-right').addClass('btn-gallery-down').css({'top': '', 'left': btn_left + 'px'});
                     
-                    var btn_left = parseInt((img_w - img_w_outer) / 2 - $(this.element).find('button[name="btnGalleryPre"]').outerHeight(true) / 2);
-                    
-                    $(this.element).find('button[name="btnGalleryPre"]').removeClass("btn-gallery-left").addClass("btn-gallery-up").css({'top' : '','left':btn_left + 'px'});
-                    $(this.element).find('button[name="btnGalleryNext"]').removeClass("btn-gallery-right").addClass("btn-gallery-down").css({'top' : '','left':btn_left + 'px'});
-                    
-                    //Show / Hidden Navi Button
+                    //Show / Hide Navi Button
                     if ($(this.element).find('.image-thumbs').height() <= $(this.element).find('.thumbs').height()) {
-                        $(this.element).find('button[name="btnGalleryPre"]').hide();
-                        $(this.element).find('button[name="btnGalleryNext"]').hide();
+                        prevElem.hide();
+                        nextElem.hide();
                     } else {
-                        $(this.element).find('button[name="btnGalleryPre"]').show();
-                        $(this.element).find('button[name="btnGalleryNext"]').show();
-                        $(this.element).find('.thumbs-box').css({ 'margin': '22px 0'});
+                        prevElem.show();
+                        nextElem.show();
+                        $(this.element).find('.thumbs-box').css({'margin': '22px 0'});
                     }
                 } else { //H
                     $(this.element).find('.thumbs-box').scrollTop(0);
 
                     img_h = $(this.element).find('.image-thumbs li').outerHeight(true);
-                    h     = ResponsiveBootstrapToolkit.current() == 'xs' ? img_h : parseInt((primary_h - main_img_h) / img_h) * img_h;
-
-                    h = (h == 0) ? img_h : h;
-                    var w = parseInt( (main_img_w / img_w) ) * (img_w);
-
-                    var ulw = Math.ceil(imgCount / parseInt(h / img_h)) * img_w;
+                    h = ResponsiveBootstrapToolkit.current() === 'xs' ? img_h : parseInt((primary_h - main_img_h) / img_h) * img_h;
+                    h = (h === 0) ? img_h : h;
+                    w = parseInt( (main_img_w / img_w) ) * (img_w);
+                    ulw = Math.ceil(imgCount / parseInt(h / img_h)) * img_w;
 
                     if ((h / img_h)*(w / img_w) > imgCount) {
                         h = Math.ceil(imgCount / (w / img_w)) * img_h;
                         ulw = w;
                     }
 
-                    $(this.element).find('.thumbs-box').css({ 'height': h + 'px', 'width' : (w - img_w_outer) + 'px', 'overflow' : 'hidden' });
-
-                    $(this.element).find('.image-thumbs').css({ 'width' : ulw + 'px' });
-                    $(this.element).find('.thumbs').css({ 'position': 'relative'});
+                    $(this.element).find('.thumbs-box').css({'height': h + 'px', 'width' : (w - img_w_outer) + 'px', 'overflow' : 'hidden'});
+                    $(this.element).find('.image-thumbs').css({'width' : ulw + 'px'});
+                    $(this.element).find('.thumbs').css({'position': 'relative'});
                     
-                    var btn_top = parseInt((h- $(this.element).find('button[name="btnGalleryPre"]').height())/2);
-                    $(this.element).find('button[name="btnGalleryPre"]').removeClass("btn-gallery-up").addClass("btn-gallery-left").css({'left' : '','top':btn_top + 'px'});
-                    $(this.element).find('button[name="btnGalleryNext"]').removeClass("btn-gallery-down").addClass("btn-gallery-right").css({'left':'','top':btn_top + 'px'});
+                    btn_top = parseInt((h - prevElem.height())/2);
+                    prevElem.removeClass('btn-gallery-up').addClass('btn-gallery-left').css({'left' : '', 'top':btn_top + 'px'});
+                    nextElem.removeClass('btn-gallery-down').addClass('btn-gallery-right').css({'left':'', 'top':btn_top + 'px'});
                     
                     //Show / Hidden Navi Button
                     if ($(this.element).find('.image-thumbs').width() <= $(this.element).find('.thumbs').width()) {
-                        $(this.element).find('button[name="btnGalleryPre"]').hide();
-                        $(this.element).find('button[name="btnGalleryNext"]').hide();
+                        prevElem.hide();
+                        nextElem.hide();
                     } else {
-                        $(this.element).find('button[name="btnGalleryPre"]').show();
-                        $(this.element).find('button[name="btnGalleryNext"]').show();
-                        $(this.element).find('.thumbs-box').css({ 'margin': 'auto'});
+                        prevElem.show();
+                        nextElem.show();
+                        $(this.element).find('.thumbs-box').css({'margin': 'auto'});
                     }
                 }
             } else {
                 $(this.element).find('.thumbs').hide();
             }
 
-            if (this.options.fullscreen || ResponsiveBootstrapToolkit.current() == 'xs') {
+            if (this.options.fullscreen || ResponsiveBootstrapToolkit.current() === 'xs') {
                 // var height = $('#gallery-modal').find('.modal-body .image-gallery').prop('scrollHeight');
-                // console.log('scrollHeight', height, $(this.element));
                 // this.setMaxHeight(height);
                 this.resetMaxHeight();
             } else {
                 this.setMaxHeight(height, img_h);
             }
         },
-
-        
         
         calcHeights: function() {
             var images = this.getStack(),
@@ -403,7 +422,6 @@
                 .css('max-height', height+thumb_height);
             $(this.element).find('ul.image-container > li img')
                 .css('max-height', height);
-
             $(this.element).find('ul.image-container')
                 .css('height', height);
         },
@@ -411,7 +429,6 @@
         resetMaxHeight: function () {
             $(this.element).find('.image-gallery, ul.image-container > li img')
                 .css('max-height', '');
-
             $(this.element).find('ul.image-container')
                 .css('height', '');
         },
@@ -433,6 +450,10 @@
                 this.stack[s] = [];
             }
             return this.stack[s];
+        },
+
+        getStacks: function() {
+            return this.stack;
         },
 
         activate: function(index) {

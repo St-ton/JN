@@ -15,7 +15,9 @@
                         <img class="img-responsive" src="{$child->Bilder[0]->cPfadMini}" alt="{$child->Bilder[0]->cAltAttribut}">
                     </td>
                     <td class="col-xs-6">
-                        <a href="{$child->cSeo}">{$child->cName}</a>
+                        <div >
+                            <a href="{$child->cSeo}"><span itemprop="name">{$child->cName}</span></a>
+                        </div>
                         <div class="small">
                             {if $child->nErscheinendesProdukt}
                                 {lang key="productAvailableFrom" section="global"}: <strong>{$child->Erscheinungsdatum_de}</strong>
@@ -53,5 +55,6 @@
         </table>
     </div>
     <input type="hidden" name="variBox" value="1" />
+    <input type="hidden" name="varimatrix" value="1" />
     <button name="inWarenkorb" type="submit" value="{lang key="addToCart" section="global"}" class="submit btn btn-primary pull-right">{lang key="addToCart" section="global"}</button>
 {/if}

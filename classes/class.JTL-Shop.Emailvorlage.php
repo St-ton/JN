@@ -101,7 +101,7 @@ class Emailvorlage
      */
     public function __construct($kEmailvorlage = 0, $bPlugin = false)
     {
-        if (intval($kEmailvorlage) > 0) {
+        if ((int)$kEmailvorlage > 0) {
             $this->loadFromDB($kEmailvorlage, $bPlugin);
         }
     }
@@ -128,8 +128,8 @@ class Emailvorlage
             // Settings
             $this->oEinstellung_arr = Shop::DB()->selectAll($cTableSetting, 'kEmailvorlage', $this->kEmailvorlage);
             // Assoc bauen
-            if (isset($Emailvorlage) && is_array($Emailvorlage->oEinstellung_arr) && count($this->oEinstellung_arr) > 0) {
-                $this->oEinstellungAssoc_arr = array();
+            if (is_array($this->oEinstellung_arr) && count($this->oEinstellung_arr) > 0) {
+                $this->oEinstellungAssoc_arr = [];
                 foreach ($this->oEinstellung_arr as $oEinstellung) {
                     $this->oEinstellungAssoc_arr[$oEinstellung->cKey] = $oEinstellung->cValue;
                 }
@@ -432,7 +432,7 @@ class Emailvorlage
         $table = $isPlugin ? 'tpluginemailvorlage' : 'temailvorlage';
         $obj   = Shop::DB()->select($table, 'cModulId', Shop::DB()->escape($modulId), null, null, null, null, false, 'kEmailvorlage');
 
-        if (is_object($obj) && isset($obj->kEmailvorlage) && intval($obj->kEmailvorlage) > 0) {
+        if (is_object($obj) && isset($obj->kEmailvorlage) && (int)$obj->kEmailvorlage > 0) {
             return new self($obj->kEmailvorlage, $isPlugin);
         }
 

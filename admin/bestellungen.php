@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/admininclude.php';
+require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'bestellungen_inc.php';
 /** @global JTLSmarty $smarty */
 $oAccount->permission('ORDER_VIEW', true, true);
@@ -38,10 +38,11 @@ if (verifyGPCDataInteger('zuruecksetzen') === 1 && validateToken()) {
 }
 
 if ($step === 'bestellungen_uebersicht') {
-    $oPagination = (new Pagination('bestellungen'))
-        ->setItemArray(gibBestellungsUebersicht('', $cSuchFilter))
+    $oPagination     = (new Pagination('bestellungen'))
+        ->setItemCount(gibAnzahlBestellungen($cSuchFilter))
         ->assemble();
-    $smarty->assign('oBestellung_arr', $oPagination->getPageItems())
+    $oBestellung_arr = gibBestellungsUebersicht(' LIMIT ' . $oPagination->getLimitSQL(), $cSuchFilter);
+    $smarty->assign('oBestellung_arr', $oBestellung_arr)
            ->assign('oPagination', $oPagination);
 }
 

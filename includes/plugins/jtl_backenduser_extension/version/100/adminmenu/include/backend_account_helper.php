@@ -11,8 +11,14 @@
  */
 class BackendAccountHelper
 {
+    /**
+     * @var Plugin
+     */
     private $plugin;
 
+    /**
+     * @var BackendAccountHelper
+     */
     private static $_instance;
 
     /**
@@ -44,12 +50,12 @@ class BackendAccountHelper
      */
     private function uploadImage(array $tmpFile, $attribName)
     {
-        $imgType = array_search($tmpFile['type'][$attribName], array(
+        $imgType = array_search($tmpFile['type'][$attribName], [
             IMAGETYPE_JPEG => image_type_to_mime_type(IMAGETYPE_JPEG),
             IMAGETYPE_PNG  => image_type_to_mime_type(IMAGETYPE_PNG),
             IMAGETYPE_BMP  => image_type_to_mime_type(IMAGETYPE_BMP),
             IMAGETYPE_GIF  => image_type_to_mime_type(IMAGETYPE_GIF),
-        ));
+        ], true);
 
         if ($imgType !== false) {
             $imagePath = PFAD_MEDIA_IMAGE . 'avatare/';
@@ -82,7 +88,9 @@ class BackendAccountHelper
      */
     public function getConfigParam($paramName, $defaultValue = null)
     {
-        return isset($this->plugin->oPluginEinstellungAssoc_arr[$paramName]) ? $this->plugin->oPluginEinstellungAssoc_arr[$paramName] : $defaultValue;
+        return isset($this->plugin->oPluginEinstellungAssoc_arr[$paramName])
+            ? $this->plugin->oPluginEinstellungAssoc_arr[$paramName]
+            : $defaultValue;
     }
 
     /**
@@ -98,38 +106,35 @@ class BackendAccountHelper
 
                 if (isset($author->kAdminlogin) && $author->kAdminlogin > 0) {
                     // Avatar benutzen?
-                    if ($this->getConfigParam('use_avatar', 'N') === 'Y' && isset($author->extAttribs['useAvatar'])) {
+                    if (isset($author->extAttribs['useAvatar']) && $this->getConfigParam('use_avatar', 'N') === 'Y') {
                         if ($author->extAttribs['useAvatar']->cAttribValue === 'G') {
                             $params = ['email' => null, 's' => 80, 'd' => 'mm', 'r' => 'g'];
                             $url    = 'https://www.gravatar.com/avatar/';
-                            $url   .= md5(!empty($author->extAttribs['useGravatarEmail']->cAttribValue) ? strtolower(trim($author->extAttribs['useGravatarEmail']->cAttribValue)) : strtolower(trim($author->cMail)));
+                            $url   .= md5(!empty($author->extAttribs['useGravatarEmail']->cAttribValue)
+                                ? strtolower(trim($author->extAttribs['useGravatarEmail']->cAttribValue))
+                                : strtolower(trim($author->cMail)));
                             $url   .= '?' . http_build_query($params, '', '&');
                             $author->cAvatarImgSrc = $url;
                         }
                         if ($author->extAttribs['useAvatar']->cAttribValue === 'U') {
                             $author->cAvatarImgSrc = $author->extAttribs['useAvatarUpload']->cAttribValue;
                         }
-                    } else {
-                        if (isset($author->extAttribs['useAvatar'])) {
-                            $author->extAttribs['useAvatar']->cAttribValue = 'N';
-                        }
+                    } elseif (isset($author->extAttribs['useAvatar'])) {
+                        $author->extAttribs['useAvatar']->cAttribValue = 'N';
                     }
-                    unset($author->extAttribs['useAvatarUpload']);
-                    unset($author->extAttribs['useGravatarEmail']);
+                    unset($author->extAttribs['useAvatarUpload'], $author->extAttribs['useGravatarEmail']);
 
                     // Vita benutzen?
-                    if ($this->getConfigParam('use_vita', 'N') === 'Y') {
-                        if (isset($author->extAttribs['useVita_' . $_SESSION['cISOSprache']])) {
-                            $author->cVitaShort = $author->extAttribs['useVita_' . $_SESSION['cISOSprache']]->cAttribValue;
-                            $author->cVitaLong  = $author->extAttribs['useVita_' . $_SESSION['cISOSprache']]->cAttribText;
-                        }
+                    if (isset($author->extAttribs['useVita_' . $_SESSION['cISOSprache']]) && $this->getConfigParam('use_vita', 'N') === 'Y') {
+                        $author->cVitaShort = $author->extAttribs['useVita_' . $_SESSION['cISOSprache']]->cAttribValue;
+                        $author->cVitaLong  = $author->extAttribs['useVita_' . $_SESSION['cISOSprache']]->cAttribText;
                     }
                     foreach (gibAlleSprachen() as $sprache) {
                         unset($author->extAttribs['useVita_' . $sprache->cISO]);
                     }
 
                     // Google+ benutzen?
-                    if ($this->getConfigParam('use_gplus', 'N') === 'Y' && !empty($author->extAttribs['useGPlus']->cAttribValue)) {
+                    if (!empty($author->extAttribs['useGPlus']->cAttribValue) && $this->getConfigParam('use_gplus', 'N') === 'Y') {
                         $author->cGplusProfile = $author->extAttribs['useGPlus']->cAttribValue;
                     }
                     unset($author->extAttribs['useGPlus']);
@@ -142,6 +147,7 @@ class BackendAccountHelper
 
     /**
      * HOOK_BACKEND_ACCOUNT_PREPARE_EDIT
+     *
      * @param stdClass $oAccount
      * @param JTLSmarty $smarty
      * @param array $attribs
@@ -149,21 +155,23 @@ class BackendAccountHelper
      */
     public function getContent(stdClass $oAccount, JTLSmarty $smarty, array $attribs)
     {
-        $showAvatar          = $this->getConfigParam('use_avatar', 'N') === 'Y' ? true : false;
-        $showVita            = $this->getConfigParam('use_vita', 'N') === 'Y' ? true : false;
-        $showGPlus           = $this->getConfigParam('use_gplus', 'N') === 'Y' ? true : false;
+        $showAvatar          = $this->getConfigParam('use_avatar', 'N') === 'Y';
+        $showVita            = $this->getConfigParam('use_vita', 'N') === 'Y';
+        $showGPlus           = $this->getConfigParam('use_gplus', 'N') === 'Y';
         $showSectionPersonal = $showAvatar || $showVita || $showGPlus;
 
         if ($showAvatar) {
+            $gravatarEmail = '';
             if (!empty($attribs['useGravatarEmail']->cAttribValue)) {
                 $gravatarEmail = $attribs['useGravatarEmail']->cAttribValue;
-            } else if (isset($oAccount->cMail)) {
+            } elseif (isset($oAccount->cMail)) {
                 $gravatarEmail = $oAccount->cMail;
-            } else {
-                $gravatarEmail = '';
             }
-
-            $uploadImage   = isset($attribs['useAvatar']->cAttribValue) && $attribs['useAvatar']->cAttribValue === 'U' && !empty($attribs['useAvatarUpload']->cAttribValue) ? $attribs['useAvatarUpload']->cAttribValue : '/' . BILD_UPLOAD_ZUGRIFF_VERWEIGERT;
+            $uploadImage   = isset($attribs['useAvatar']->cAttribValue) &&
+            $attribs['useAvatar']->cAttribValue === 'U' &&
+            !empty($attribs['useAvatarUpload']->cAttribValue)
+                ? $attribs['useAvatarUpload']->cAttribValue
+                : '/' . BILD_UPLOAD_ZUGRIFF_VERWEIGERT;
         } else {
             $gravatarEmail = '';
             $uploadImage   = '';
@@ -201,6 +209,7 @@ class BackendAccountHelper
 
     /**
      * HOOK_BACKEND_ACCOUNT_EDIT - VALIDATE
+     *
      * @param stdClass $oAccount
      * @param array $attribs
      * @param array $messages
@@ -230,12 +239,12 @@ class BackendAccountHelper
 
                         if ($attribs['useAvatarUpload'] === false) {
                             $messages['error'] .= 'Fehler beim Bilupload!';
-                            $result = array('useAvatarUpload' => 1);
+                            $result = ['useAvatarUpload' => 1];
                         }
                     } else {
                         if (empty($attribs['useAvatarUpload'])) {
                             $messages['error'] .= 'Bitte geben Sie ein Bild an!';
-                            $result = array('useAvatarUpload' => 1);
+                            $result = ['useAvatarUpload' => 1];
                         }
                     }
 

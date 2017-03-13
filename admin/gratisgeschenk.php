@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/admininclude.php';
+require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('MODULE_GIFT_VIEW', true, true);
 /** @global JTLSmarty $smarty */
@@ -12,7 +12,7 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 
 $cHinweis          = '';
 $cfehler           = '';
-$settingsIDs       = array(1143, 1144, 1145, 1146);
+$settingsIDs       = [1143, 1144, 1145, 1146];
 // Tabs
 if (strlen(verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', verifyGPDataString('tab'));
@@ -30,9 +30,23 @@ $oConfig_arr = Shop::DB()->query(
 );
 $configCount = count($oConfig_arr);
 for ($i = 0; $i < $configCount; $i++) {
-    $oConfig_arr[$i]->ConfWerte = Shop::DB()->selectAll('teinstellungenconfwerte', 'kEinstellungenConf', (int)$oConfig_arr[$i]->kEinstellungenConf, '*', 'nSort');
-    $oSetValue = Shop::DB()->select('teinstellungen', 'kEinstellungenSektion', (int)$oConfig_arr[$i]->kEinstellungenSektion, 'cName', $oConfig_arr[$i]->cWertName);
-    $oConfig_arr[$i]->gesetzterWert = (isset($oSetValue->cWert)) ? $oSetValue->cWert : null;
+    $oConfig_arr[$i]->ConfWerte = Shop::DB()->selectAll(
+        'teinstellungenconfwerte',
+        'kEinstellungenConf',
+        (int)$oConfig_arr[$i]->kEinstellungenConf,
+        '*',
+        'nSort'
+    );
+    $oSetValue = Shop::DB()->select(
+        'teinstellungen',
+        'kEinstellungenSektion',
+        (int)$oConfig_arr[$i]->kEinstellungenSektion,
+        'cName',
+        $oConfig_arr[$i]->cWertName
+    );
+    $oConfig_arr[$i]->gesetzterWert = isset($oSetValue->cWert)
+        ? $oSetValue->cWert
+        : null;
 }
 
 $oPagiAktiv     = (new Pagination('aktiv'))

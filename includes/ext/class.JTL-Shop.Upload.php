@@ -13,12 +13,13 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
         /**
          * @param int $kArtikel
          * @param bool|array $eigenschaftenArr
-         * @return bool
+         * @return array|bool
          */
         public static function gibArtikelUploads($kArtikel, $eigenschaftenArr = false)
         {
+            $kArtikel      = (int)$kArtikel;
             $oUploadSchema = new UploadSchema();
-            $oUploads_arr  = $oUploadSchema->fetchAll($kArtikel, UPLOAD_TYP_WARENKORBPOS);
+            $oUploads_arr  = $oUploadSchema::fetchAll($kArtikel, UPLOAD_TYP_WARENKORBPOS);
             if (is_array($oUploads_arr) && count($oUploads_arr) > 0) {
                 foreach ($oUploads_arr as &$oUpload) {
                     $oUpload->nEigenschaften_arr = $eigenschaftenArr;
@@ -26,7 +27,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
                     $oUpload->cDateiTyp_arr      = self::formatTypen($oUpload->cDateiTyp);
                     $oUpload->cDateiListe        = implode(';', $oUpload->cDateiTyp_arr);
                     $oUpload->bVorhanden         = is_file(PFAD_UPLOADS . $oUpload->cUnique);
-                    $oUploadDatei                = (isset($_SESSION['Uploader'][$oUpload->cUnique])) ? $_SESSION['Uploader'][$oUpload->cUnique] : null;
+                    $oUploadDatei                = isset($_SESSION['Uploader'][$oUpload->cUnique])
+                        ? $_SESSION['Uploader'][$oUpload->cUnique]
+                        : null;
                     if (is_object($oUploadDatei)) {
                         $oUpload->cDateiname    = $oUploadDatei->cName;
                         $oUpload->cDateigroesse = self::formatGroesse($oUploadDatei->nBytes);
@@ -47,9 +50,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
          */
         public static function deleteArtikelUploads($kArtikel)
         {
-            $oUploads_arr = self::gibArtikelUploads(intval($kArtikel));
+            $oUploads_arr = self::gibArtikelUploads($kArtikel);
 
-            if (is_array($oUploads_arr) && count($oUploads_arr) > 0) {
+            if ($oUploads_arr !== false) {
                 foreach ($oUploads_arr as &$oUpload) {
                     if ($oUpload->bVorhanden) {
                         unlink(PFAD_UPLOADS . $oUpload->cUnique);
@@ -68,10 +71,13 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
             if (count($oWarenkorb->PositionenArr) > 0) {
                 foreach ($oWarenkorb->PositionenArr as &$oPosition) {
                     if ($oPosition->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL && isset($oPosition->Artikel->kArtikel)) {
-                        $eigenschaftArr = array();
+                        $eigenschaftArr = [];
                         if (!empty($oPosition->WarenkorbPosEigenschaftArr)) {
                             foreach ($oPosition->WarenkorbPosEigenschaftArr as $eigenschaft) {
-                                $eigenschaftArr[$eigenschaft->kEigenschaft] = (!empty(array_values($eigenschaft->cEigenschaftWertName)[0])) ? array_values($eigenschaft->cEigenschaftWertName)[0] : $eigenschaft->cEigenschaftWertName;
+                                $eigenschaftArr[$eigenschaft->kEigenschaft] =
+                                    (!empty(array_values($eigenschaft->cEigenschaftWertName)[0]))
+                                        ? array_values($eigenschaft->cEigenschaftWertName)[0]
+                                        : $eigenschaft->cEigenschaftWertName;
                             }
                         }
                         $oUpload              = new stdClass();
@@ -96,10 +102,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
          */
         public static function gibBestellungUploads($kBestellung)
         {
-            $oUploadDatei     = new UploadDatei();
-            $oUploadDatei_arr = $oUploadDatei->fetchAll($kBestellung, UPLOAD_TYP_BESTELLUNG);
+            $oUploadDatei = new UploadDatei();
 
-            return $oUploadDatei_arr;
+            return $oUploadDatei::fetchAll($kBestellung, UPLOAD_TYP_BESTELLUNG);
         }
 
         /**
@@ -137,15 +142,23 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
          */
         public static function speicherUploadDateien($oWarenkorb, $kBestellung)
         {
-            $kBestellung       = intval($kBestellung);
+            $kBestellung       = (int)$kBestellung;
             $oUploadSchema_arr = self::gibWarenkorbUploads($oWarenkorb);
             if (is_array($oUploadSchema_arr)) {
                 foreach ($oUploadSchema_arr as &$oUploadSchema) {
                     foreach ($oUploadSchema->oUpload_arr as &$oUploadDatei) {
-                        $oUploadInfo = (isset($_SESSION['Uploader'][$oUploadDatei->cUnique])) ? $_SESSION['Uploader'][$oUploadDatei->cUnique] : null;
+                        $oUploadInfo = isset($_SESSION['Uploader'][$oUploadDatei->cUnique])
+                            ? $_SESSION['Uploader'][$oUploadDatei->cUnique]
+                            : null;
                         if (is_object($oUploadInfo)) {
                             self::setzeUploadQueue($kBestellung, $oUploadDatei->kCustomID);
-                            self::setzeUploadDatei($kBestellung, UPLOAD_TYP_BESTELLUNG, $oUploadInfo->cName, $oUploadDatei->cUnique, $oUploadInfo->nBytes);
+                            self::setzeUploadDatei(
+                                $kBestellung,
+                                UPLOAD_TYP_BESTELLUNG,
+                                $oUploadInfo->cName,
+                                $oUploadDatei->cUnique,
+                                $oUploadInfo->nBytes
+                            );
                         }
                         unset($_SESSION['Uploader'][$oUploadDatei->cUnique]);
                     }
@@ -193,9 +206,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
          */
         public static function uploadMax()
         {
-            $nMaxUpload   = intval(ini_get('upload_max_filesize'));
-            $nMaxPost     = intval(ini_get('post_max_size'));
-            $nMemoryLimit = intval(ini_get('memory_limit'));
+            $nMaxUpload   = (int)ini_get('upload_max_filesize');
+            $nMaxPost     = (int)ini_get('post_max_size');
+            $nMemoryLimit = Shop()->PHPSettingsHelper()->limit();
             $nUploadMax   = min($nMaxUpload, $nMaxPost, $nMemoryLimit);
             $nUploadMax *= (1024 * 1024);
 
@@ -211,11 +224,11 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
             if (is_numeric($nFileSize)) {
                 $nStep       = 0;
                 $nDecr       = 1024;
-                $cPrefix_arr = array('Byte', 'KB', 'MB', 'GB', 'TB', 'PB');
+                $cPrefix_arr = ['Byte', 'KB', 'MB', 'GB', 'TB', 'PB'];
 
                 while (($nFileSize / $nDecr) > 0.9) {
-                    $nFileSize = $nFileSize / $nDecr;
-                    $nStep++;
+                    $nFileSize /= $nDecr;
+                    ++$nStep;
                 }
 
                 return round($nFileSize, 2) . ' ' . $cPrefix_arr[$nStep];
@@ -266,7 +279,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
             if (is_array($cPath_arr)) {
                 return in_array(
                     $cPath_arr['extension'],
-                    array('gif', 'png', 'jpg', 'jpeg', 'bmp', 'jpe')
+                    ['gif', 'png', 'jpg', 'jpeg', 'bmp', 'jpe'],
+                    true
                 );
             }
 

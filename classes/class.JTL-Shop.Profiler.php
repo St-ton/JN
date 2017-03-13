@@ -12,7 +12,7 @@ class Profiler
     /**
      * @var Profiler
      */
-    private static $_instance = null;
+    private static $_instance;
 
     /**
      * @var bool
@@ -32,7 +32,7 @@ class Profiler
     /**
      * @var array
      */
-    public static $data = array();
+    public static $data = [];
 
     /**
      * @var string
@@ -47,12 +47,12 @@ class Profiler
     /**
      * @var array
      */
-    public static $options = array();
+    public static $options = [];
 
     /**
      * @var object
      */
-    public static $run = null;
+    public static $run;
 
     /**
      * set to true to finish profiling
@@ -65,39 +65,39 @@ class Profiler
     /**
      * @var array
      */
-    private static $pluginProfile = array();
+    private static $pluginProfile = [];
 
     /**
      * @var array
      */
-    private static $sqlProfile = array();
+    private static $sqlProfile = [];
 
     /**
      * @var array
      */
-    private static $sqlErrors = array();
+    private static $sqlErrors = [];
 
     /**
      * @var array
      */
-    private static $cacheProfile = array(
-        'options' => array(),
-        'get'     => array('success' => array(), 'failure' => array()),
-        'set'     => array('success' => array(), 'failure' => array()),
-        'flush'   => array('success' => array(), 'failure' => array()),
-    );
+    private static $cacheProfile = [
+        'options' => [],
+        'get'     => ['success' => [], 'failure' => []],
+        'set'     => ['success' => [], 'failure' => []],
+        'flush'   => ['success' => [], 'failure' => []],
+    ];
 
     /**
      * @var null|string
      */
-    public static $method = null;
+    public static $method;
 
     /**
      * @param int    $flags
      * @param array  $options
      * @param string $dir
      */
-    public function __construct($flags, $options, $dir)
+    private function __construct($flags, $options, $dir)
     {
         if (defined('PROFILE_SHOP') && PROFILE_SHOP === true) {
             self::$enabled = true;
@@ -126,7 +126,7 @@ class Profiler
      * @param string $dir
      * @return Profiler
      */
-    public static function getInstance($flags = -1, $options = array(), $dir = '/tmp')
+    public static function getInstance($flags = -1, $options = [], $dir = '/tmp')
     {
         return (self::$_instance === null) ? new self($flags, $options, $dir) : self::$_instance;
     }
@@ -236,16 +236,16 @@ class Profiler
     public static function saveSQLProfile()
     {
         self::$stopProfiling = true;
-        if (count(self::$sqlProfile) > 0 && PROFILE_QUERIES_ECHO !== true) {
+        if (PROFILE_QUERIES_ECHO !== true && count(self::$sqlProfile) > 0) {
             //create run object
             $run        = new stdClass();
-            $run->url   = (isset($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : '';
+            $run->url   = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '';
             $run->ptype = 'sql';
             //build stats for this run
             $run->total_count = 0; //total number of queries
             $run->total_time  = 0.0; //total execution time
             //filter duplicated queries
-            $filtered = array();
+            $filtered = [];
             foreach (self::$sqlProfile as $_queryRun) {
                 if (!isset($filtered[$_queryRun->hash])) {
                     $obj                        = new stdClass();
@@ -253,20 +253,22 @@ class Profiler
                     $obj->runcount              = $_queryRun->count;
                     $obj->statement             = trim($_queryRun->statement);
                     $obj->tablename             = $_queryRun->table;
-                    $obj->data                  = (isset($_queryRun->backtrace)) ? serialize(array('backtrace' => $_queryRun->backtrace)) : null;
+                    $obj->data                  = isset($_queryRun->backtrace)
+                        ? serialize(['backtrace' => $_queryRun->backtrace])
+                        : null;
                     $filtered[$_queryRun->hash] = $obj;
                 } else {
-                    $filtered[$_queryRun->hash]->runtime = $filtered[$_queryRun->hash]->runtime + $_queryRun->time;
-                    $filtered[$_queryRun->hash]->runcount++;
+                    $filtered[$_queryRun->hash]->runtime += $_queryRun->time;
+                    ++$filtered[$_queryRun->hash]->runcount;
                 }
                 $run->total_time += $_queryRun->time;
-                $run->total_count++;
+                ++$run->total_count;
             }
             //insert profiler run into DB - return a new primary key
             $runID = Shop::DB()->insert('tprofiler', $run);
             if (is_numeric($runID)) {
                 //set runID for all filtered queries and save to DB
-                $runID = (int) $runID;
+                $runID = (int)$runID;
                 foreach ($filtered as $_queryRun) {
                     $_queryRun->runID = $runID;
                     Shop::DB()->insert('tprofiler_runs', $_queryRun);
@@ -277,7 +279,7 @@ class Profiler
                     $_queryRun->tablename = 'error';
                     $_queryRun->runtime   = 0;
                     $_queryRun->statement = trim($_error->statement);
-                    $_queryRun->data      = serialize(array('message' => $_error->message, 'backtrace' => $_error->backtrace));
+                    $_queryRun->data      = serialize(['message' => $_error->message, 'backtrace' => $_error->backtrace]);
                     Shop::DB()->insert('tprofiler_runs', $_queryRun);
                 }
 
@@ -298,12 +300,12 @@ class Profiler
         self::$stopProfiling = true;
         if (defined('PROFILE_PLUGINS') && PROFILE_PLUGINS === true && count(self::$pluginProfile) > 0) {
             $run              = new stdClass();
-            $run->url         = (isset($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : '';
+            $run->url         = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '';
             $run->ptype       = 'plugin';
             $run->total_count = 0;
             $run->total_time  = 0.0;
 
-            $hooks = array();
+            $hooks = [];
             //combine multiple calls of the same file
             foreach (self::$pluginProfile as $_fileRun) {
                 if (isset($_fileRun['hookID'])) {
@@ -317,19 +319,20 @@ class Profiler
                         //check if the same file has been executed multiple times for this hook
                         foreach ($hooks[$_fileRun['hookID']] as &$_run) {
                             if ($_run['file'] === $_fileRun['file']) {
-                                $_run['runcount'] += 1;
+                                ++$_run['runcount'];
                                 $_run['runtime'] += $_fileRun['runtime'];
                                 $foundInList = true;
                                 break;
                             }
                         }
+                        unset($_run);
                         if ($foundInList === false) {
                             $hooks[$_fileRun['hookID']][] = $_fileRun;
                         }
                     }
                 }
             }
-            self::$pluginProfile = array();
+            self::$pluginProfile = [];
             foreach ($hooks as $_hook) {
                 foreach ($_hook as $_file) {
                     self::$pluginProfile[] = $_file;
@@ -337,11 +340,11 @@ class Profiler
             }
             $runID = Shop::DB()->insert('tprofiler', $run);
             if (is_numeric($runID)) {
-                $runID = (int) $runID;
+                $runID = (int)$runID;
                 foreach (self::$pluginProfile as $_fileRun) {
                     $obj           = new stdClass();
                     $obj->runID    = $runID;
-                    $obj->hookID   = (isset($_fileRun['hookID'])) ? $_fileRun['hookID'] : 0;
+                    $obj->hookID   = isset($_fileRun['hookID']) ? $_fileRun['hookID'] : 0;
                     $obj->filename = $_fileRun['file'];
                     $obj->runtime  = $_fileRun['runtime'];
                     $obj->runcount = $_fileRun['runcount'];
@@ -392,7 +395,7 @@ class Profiler
      * get plugin profiler data from DB
      *
      * @param bool $combined
-     * @return mixed
+     * @return array
      */
     public static function getPluginProfiles($combined = false)
     {
@@ -421,16 +424,22 @@ class Profiler
             return Shop::DB()->query("
                 SELECT *
                     FROM tprofiler
+                    JOIN tprofiler_runs 
+                        ON tprofiler.runID = tprofiler_runs.runID
                     WHERE ptype = '" . $type . "'
-                    JOIN tprofiler_runs ON tprofiler.runID = tprofiler_runs.runID
                     ORDER BY runID DESC", 2
             );
         }
         $profiles = Shop::DB()->selectAll('tprofiler', 'ptype', $type, '*', 'runID DESC');
-        $data = array();
+        $data     = [];
         if (is_array($profiles)) {
             foreach ($profiles as $_profile) {
-                $_profile->data = Shop::DB()->selectAll('tprofiler_runs', 'runID', (int)$_profile->runID, '*', 'runtime DESC');
+                $_profile->data = Shop::DB()->selectAll(
+                    'tprofiler_runs',
+                    'runID',
+                    (int)$_profile->runID,
+                    '*', 'runtime DESC'
+                );
                 $data[] = $_profile;
             }
         }
@@ -444,7 +453,7 @@ class Profiler
      * @param string $dir
      * @return bool
      */
-    public static function start($flags = -1, $options = array(), $dir = '/tmp')
+    public static function start($flags = -1, $options = [], $dir = '/tmp')
     {
         if (defined('PROFILE_SHOP') && PROFILE_SHOP === true) {
             self::$enabled = true;
@@ -456,9 +465,9 @@ class Profiler
             if (self::$method !== null) {
                 self::$functional = true;
                 if ($flags === -1) {
-                    $flags = (self::$method === 'xhprof') ?
-                        (XHPROF_FLAGS_CPU + XHPROF_FLAGS_MEMORY) :
-                        (TIDEWAYS_FLAGS_CPU | TIDEWAYS_FLAGS_MEMORY | TIDEWAYS_FLAGS_NO_SPANS);
+                    $flags = (self::$method === 'xhprof')
+                        ? (XHPROF_FLAGS_CPU + XHPROF_FLAGS_MEMORY)
+                        : (TIDEWAYS_FLAGS_CPU | TIDEWAYS_FLAGS_MEMORY | TIDEWAYS_FLAGS_NO_SPANS);
                 }
                 self::$flags   = $flags;
                 self::$options = $options;
@@ -493,9 +502,9 @@ class Profiler
     public static function finish()
     {
         if (self::$enabled === true && self::$functional === true) {
-            self::$data = (self::$method === 'xhprof') ?
-                xhprof_disable() :
-                tideways_disable();
+            self::$data = (self::$method === 'xhprof')
+                ? xhprof_disable()
+                : tideways_disable();
 
             return true;
         }
@@ -522,15 +531,18 @@ class Profiler
                 file_put_contents($filename, serialize(self::$data));
             }
             $html = '<div class="profile-wrapper" style="position:fixed;z-index:9999;bottom:5px;left:5px;">
-                        <a class="btn btn-danger" target="_blank" rel="nofollow" href="' . Shop::getURL() . '/xhprof_html/index.php?run=' . $runID . '&source=xhprof_jtl">View profile</a>
+                        <a class="btn btn-danger" target="_blank" rel="nofollow" href="' .
+                            Shop::getURL() . '/xhprof_html/index.php?run=' . $runID . '&source=xhprof_jtl">
+                        View profile
+                        </a>
                     </div>';
         }
 
-        return array(
+        return [
             'html'   => $html,
             'run'    => self::$run,
             'run_id' => $runID
-        );
+        ];
     }
 
     /**
@@ -545,21 +557,22 @@ class Profiler
             $deletes      = 0;
             $executes     = 0;
             $updates      = 0;
+            $errors       = count(self::$sqlErrors);
             foreach (self::$sqlProfile as $_query) {
                 if (isset($_query->type)) {
                     if ($_query->type === 'delete') {
-                        $deletes++;
+                        ++$deletes;
                     } elseif ($_query->type === 'executeQuery') {
-                        $executes++;
+                        ++$executes;
                     } elseif ($_query->type === 'update') {
-                        $updates++;
+                        ++$updates;
                     } elseif ($_query->type === 'select') {
-                        $selects++;
+                        ++$selects;
                     } elseif ($_query->type === 'insert') {
-                        $inserts++;
+                        ++$inserts;
                     }
                 }
-                $totalQueries++;
+                ++$totalQueries;
             }
             echo '
                 <style>
@@ -584,6 +597,7 @@ class Profiler
                 '<br><strong>Updates:</strong> ' . $updates .
                 '<br><strong>Inserts:</strong> ' . $inserts .
                 '<br><strong>Deletes:</strong> ' . $deletes .
+                '<br><strong>Errors:</strong> ' . $errors .
                 '<br><strong>Statements:</strong> ' .
                 '<ul class="sql-tables-list">';
             foreach (self::$sqlProfile as $_query) {
@@ -591,19 +605,28 @@ class Profiler
                 if (isset($_query->statement)) {
                     echo '<pre class="sql-statement">' . $_query->statement . '</pre>';
                 }
-                if (isset($_query->backtrace) && $_query->backtrace !== null) {
+                if (!empty($_query->backtrace)) {
                     echo '<ul class="backtrace">';
                     foreach ($_query->backtrace as $_bt) {
                         echo '<li class="backtrace-item">' .
-                            $_bt['file'] . ':' . $_bt['line'] . ' - ' . ((isset($_bt['class'])) ? ($_bt['class'] . '::') : '') . $_bt['function'] . '()' .
+                            $_bt['file'] . ':' . $_bt['line'] . ' - ' . (isset($_bt['class'])
+                                ? ($_bt['class'] . '::')
+                                : '') . $_bt['function'] . '()' .
                             '</li>';
                     }
                     echo '</ul>';
                 }
-                echo '</li>';
             }
-            echo '</ul>' .
-                '</div>';
+            echo '</ul>';
+            if ($errors > 0) {
+                echo '<br><strong>Errors:</strong> ' .
+                    '<ul class="sql-tables-list">';
+                foreach (self::$sqlErrors as $_error) {
+                    echo '<li>' . $_error->message . ' for query <pre class="sql-statement">' . $_error->statement  . '</pre></li>';
+                }
+                echo '</ul>';
+            }
+            echo '</div>';
         }
     }
 }

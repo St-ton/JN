@@ -3,20 +3,20 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/admininclude.php';
+require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_CLASSES . 'class.JTL-Shopadmin.AjaxResponse.php';
 /** @global JTLSmarty $smarty */
-$response  = new AjaxResponse();
-$action    = isset($_GET['action']) ? $_GET['action'] : null;
+$response = new AjaxResponse();
+$action   = isset($_GET['action']) ? $_GET['action'] : null;
 
 if ($oAccount->logged() !== true) {
     $action = 'login';
 }
 
-$kAdminlogin = (int) $_SESSION['AdminAccount']->kAdminlogin;
+$kAdminlogin = (int)$_SESSION['AdminAccount']->kAdminlogin;
 
 switch ($action) {
-    case 'login': {
+    case 'login':
         if ($response->isAjax()) {
             $result = $response->buildError('Unauthorized', 401);
             $response->makeResponse($result);
@@ -25,8 +25,8 @@ switch ($action) {
         }
 
         return;
-    }
-    case 'add': {
+
+    case 'add':
         $success = false;
         $title   = isset($_GET['title']) ? utf8_decode($_GET['title']) : null;
         $url     = isset($_GET['url']) ? utf8_decode($_GET['url']) : null;
@@ -46,24 +46,21 @@ switch ($action) {
 
         $response->makeResponse($result, $action);
         break;
-    }
 
-    case 'list': {
+    case 'list':
         $result = $response->buildResponse([
-            'tpl' => $smarty
-                ->assign('favorites', $oAccount->favorites())
-                ->fetch('tpl_inc/favs_drop.tpl')
+            'tpl' => $smarty->assign('favorites', $oAccount->favorites())
+                            ->fetch('tpl_inc/favs_drop.tpl')
         ]);
         $response->makeResponse($result, $action);
         break;
-    }
 
-    default: {
-        if (isset($_POST['title']) && isset($_POST['url'])) {
+    default:
+        if (isset($_POST['title'], $_POST['url'])) {
             $titles = $_POST['title'];
             $urls   = $_POST['url'];
 
-            if (is_array($titles) && is_array($urls) && count($titles) == count($urls)) {
+            if (is_array($titles) && is_array($urls) && count($titles) === count($urls)) {
                 AdminFavorite::remove($kAdminlogin);
                 foreach ($titles as $i => $title) {
                     AdminFavorite::add($kAdminlogin, $title, $urls[$i], $i);
@@ -71,9 +68,7 @@ switch ($action) {
             }
         }
 
-        $smarty
-            ->assign('favorites', $oAccount->favorites())
-            ->display('favs.tpl');
+        $smarty->assign('favorites', $oAccount->favorites())
+               ->display('favs.tpl');
         break;
-    }
 }

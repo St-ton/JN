@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/admininclude.php';
+require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('STATS_CAMPAIGN_VIEW', true, true);
 /** @global JTLSmarty $smarty */
@@ -43,20 +43,27 @@ if (strlen(verifyGPDataString('tab')) > 0) {
 }
 if (verifyGPCDataInteger('neu') === 1 && validateToken()) {
     $step = 'kampagne_erstellen';
-} elseif (verifyGPCDataInteger('editieren') === 1 && verifyGPCDataInteger('kKampagne') > 0 && validateToken()) { // Editieren
+} elseif (verifyGPCDataInteger('editieren') === 1 && verifyGPCDataInteger('kKampagne') > 0 && validateToken()) {
+    // Editieren
     $step      = 'kampagne_erstellen';
     $kKampagne = verifyGPCDataInteger('kKampagne');
-} elseif (verifyGPCDataInteger('detail') === 1 && verifyGPCDataInteger('kKampagne') > 0 && validateToken()) { // Detail
+} elseif (verifyGPCDataInteger('detail') === 1 && verifyGPCDataInteger('kKampagne') > 0 && validateToken()) {
+    // Detail
     $step      = 'kampagne_detail';
     $kKampagne = verifyGPCDataInteger('kKampagne');
     // Zeitraum / Ansicht
     setzeDetailZeitraum($cDatumNow_arr);
-} elseif (verifyGPCDataInteger('defdetail') === 1 && verifyGPCDataInteger('kKampagne') > 0 && verifyGPCDataInteger('kKampagneDef') > 0 && validateToken()) { // Def Detail
+} elseif (verifyGPCDataInteger('defdetail') === 1 &&
+    verifyGPCDataInteger('kKampagne') > 0 &&
+    verifyGPCDataInteger('kKampagneDef') > 0 &&
+    validateToken()
+) { // Def Detail
     $step         = 'kampagne_defdetail';
     $kKampagne    = verifyGPCDataInteger('kKampagne');
     $kKampagneDef = verifyGPCDataInteger('kKampagneDef');
     $cStamp       = verifyGPDataString('cStamp');
-} elseif (verifyGPCDataInteger('erstellen_speichern') === 1 && validateToken()) { // Speichern / Editieren
+} elseif (verifyGPCDataInteger('erstellen_speichern') === 1 && validateToken()) {
+    // Speichern / Editieren
     $oKampagne             = new Kampagne();
     $oKampagne->cName      = $_POST['cName'];
     $oKampagne->cParameter = $_POST['cParameter'];
@@ -79,7 +86,8 @@ if (verifyGPCDataInteger('neu') === 1 && validateToken()) {
         $smarty->assign('oKampagne', $oKampagne);
         $step = 'kampagne_erstellen';
     }
-} elseif (verifyGPCDataInteger('delete') === 1 && validateToken()) { // Loeschen
+} elseif (verifyGPCDataInteger('delete') === 1 && validateToken()) {
+    // Loeschen
     if (isset($_POST['kKampagne']) && is_array($_POST['kKampagne']) && count($_POST['kKampagne']) > 0) {
         $nReturnValue = loescheGewaehlteKampagnen($_POST['kKampagne']);
 
@@ -95,8 +103,8 @@ if (verifyGPCDataInteger('neu') === 1 && validateToken()) {
     // Vergangenheit
     if (verifyGPCDataInteger('nStamp') == -1) {
         $_SESSION['Kampagne']->cStamp = gibStamp($_SESSION['Kampagne']->cStamp, -1, $_SESSION['Kampagne']->nAnsicht);
-    } // Zukunft
-    elseif (verifyGPCDataInteger('nStamp') === 1) {
+    } elseif (verifyGPCDataInteger('nStamp') === 1) {
+        // Zukunft
         $_SESSION['Kampagne']->cStamp = gibStamp($_SESSION['Kampagne']->cStamp, 1, $_SESSION['Kampagne']->nAnsicht);
     }
 } elseif (verifyGPCDataInteger('nSort') > 0) { // Sortierung
@@ -141,7 +149,7 @@ if ($step === 'kampagne_uebersicht') {
 
         $Stats = holeKampagneDetailStats($kKampagne, $oKampagneDef_arr);
         // Highchart
-        $Charts = array();
+        $Charts = [];
         for ($i = 1; $i <= 10; $i++) {
             $Charts[$i] = PrepareLineChartKamp($Stats, $i);
         }
@@ -161,7 +169,7 @@ if ($step === 'kampagne_uebersicht') {
 
     if ($kKampagne > 0 && $kKampagneDef > 0 && strlen($cStamp) > 0) {
         $oKampagneDef = holeKampagneDef($kKampagneDef);
-        $cMember_arr  = array();
+        $cMember_arr  = [];
         $cStampText   = '';
         $cSQLSELECT   = '';
         $cSQLWHERE    = '';
@@ -193,10 +201,11 @@ if ($step === 'kampagne_uebersicht') {
 }
 
 $cDatum_arr = gibDatumTeile($_SESSION['Kampagne']->cStamp);
-switch (intval($_SESSION['Kampagne']->nAnsicht)) {
+switch ((int)$_SESSION['Kampagne']->nAnsicht) {
     case 1:    // Monat
         $cZeitraum = '01.' . $cDatum_arr['cMonat'] . '.' . $cDatum_arr['cJahr'] . ' - ' .
-            date('t', mktime(0, 0, 0, intval($cDatum_arr['cMonat']), 1, intval($cDatum_arr['cJahr']))) . '.' . $cDatum_arr['cMonat'] . '.' . $cDatum_arr['cJahr'];
+            date('t', mktime(0, 0, 0, (int)$cDatum_arr['cMonat'], 1, (int)$cDatum_arr['cJahr'])) .
+            '.' . $cDatum_arr['cMonat'] . '.' . $cDatum_arr['cJahr'];
         $smarty->assign('cZeitraum', $cZeitraum)
                ->assign('cZeitraumParam', base64_encode($cZeitraum));
         break;
@@ -213,8 +222,10 @@ switch (intval($_SESSION['Kampagne']->nAnsicht)) {
         break;
 }
 
-if (intval($cDatumNow_arr['cTag']) === intval($cDatum_arr['cTag']) &&
-    intval($cDatumNow_arr['cMonat']) === intval($cDatum_arr['cMonat']) && intval($cDatumNow_arr['cJahr']) === intval($cDatum_arr['cJahr'])) {
+if ((int)$cDatumNow_arr['cTag'] === (int)$cDatum_arr['cTag'] &&
+    (int)$cDatumNow_arr['cMonat'] === (int)$cDatum_arr['cMonat'] &&
+    (int)$cDatumNow_arr['cJahr'] === (int)$cDatum_arr['cJahr']
+) {
     $smarty->assign('nGreaterNow', 1);
 }
 $smarty->assign('PFAD_ADMIN', PFAD_ADMIN)

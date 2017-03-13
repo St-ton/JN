@@ -22,16 +22,24 @@
                                         {math equation='a/b*c' a=$nSterne b=$Artikel->Bewertungen->oBewertungGesamt->nAnzahl c=$int2 assign='percent'}
                                         <div class="row">
                                             <div class="col-xs-12 col-sm-6 col-lg-4">
-                                                {if $nSterne > 0}
+                                                {if isset($bewertungSterneSelected) && $bewertungSterneSelected === $schluessel}
+                                                    <strong>
+                                                {/if}
+                                                {if $nSterne > 0 && (!isset($bewertungSterneSelected) || $bewertungSterneSelected !== $schluessel)}
                                                     <a href="{$Artikel->cURLFull}?btgsterne={$schluessel}#tab-votes">{$schluessel} {if $i == 4}{lang key="starSingular" section="product rating"}{else}{lang key="starPlural" section="product rating"}{/if}</a>
                                                 {else}
                                                     {$schluessel} {if $i == 4}{lang key="starSingular" section="product rating"}{else}{lang key="starPlural" section="product rating"}{/if}
+                                                {/if}
+                                                {if isset($bewertungSterneSelected) && $bewertungSterneSelected === $schluessel}
+                                                    </strong>
                                                 {/if}
                                             </div>
                                             <div class="col-xs-12 col-sm-6 col-lg-8">
                                                 <div class="progress">
                                                     {if $nSterne > 0}
-                                                        <div class="progress-bar" role="progressbar" aria-valuenow="{$percent|round}" aria-valuemin="0" aria-valuemax="100" style="width: {$percent|round}%;">
+                                                        <div class="progress-bar" role="progressbar"
+                                                             aria-valuenow="{$percent|round}" aria-valuemin="0"
+                                                             aria-valuemax="100" style="width: {$percent|round}%;">
                                                             {$nSterne}
                                                         </div>
                                                     {/if}
@@ -39,6 +47,13 @@
                                             </div>
                                         </div>
                                     {/foreach}
+                                    {if isset($bewertungSterneSelected) && $bewertungSterneSelected > 0}
+                                        <p>
+                                            <a href="{$Artikel->cURLFull}#tab-votes" class="btn btn-default">
+                                                {lang key="allReviews" section="product rating"}
+                                            </a>
+                                        </p>
+                                    {/if}
                                 </div>
                             {/if}
                             <div class="col-xs-12 {if $Artikel->Bewertungen->oBewertungGesamt->nAnzahl === 0}col-md-10 col-md-push-1 {else}col-md-6 {/if}">
@@ -58,7 +73,9 @@
         </div>{* /reviews-overview *}
         {/block}
 
-        {if isset($Artikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich) && $Artikel->HilfreichsteBewertung->oBewertung_arr|@count > 0 && $Artikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich > 0}
+        {if isset($Artikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich) &&
+            $Artikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich > 0
+        }
             <div class="review-wrapper reviews-mosthelpful panel">
                 <form method="post" action="{get_static_route id='bewertung.php'}#tab-votes">
                     {$jtl_token}
@@ -84,32 +101,23 @@
             </div>
         {/if}
 
-        {if $Artikel->Bewertungen->oBewertung_arr|@count > 0}
-            {if $Artikel->Bewertungen->oBewertung_arr|@count == 1 && isset($Artikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich) &&
-            $Artikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich > 0 && $Artikel->HilfreichsteBewertung->oBewertung_arr[0]->kBewertung == $oBewertung->kBewertung}
-                {* only one review so far. don't display this stuff *}
-            {else}
-                {include file="snippets/pagination.tpl" oPagination=$ratingPagination cThisUrl=$Artikel->cURLFull cAnchor='tab-votes'}
-                <form method="post" action="{get_static_route id='bewertung.php'}#tab-votes" class="reviews-list">
-                    {$jtl_token}
-                    <input name="bhjn" type="hidden" value="1" />
-                    <input name="a" type="hidden" value="{$Artikel->kArtikel}" />
-                    <input name="btgsterne" type="hidden" value="{$BlaetterNavi->nSterne}" />
-                    <input name="btgseite" type="hidden" value="{$BlaetterNavi->nAktuelleSeite}" />
+        {if $ratingPagination->getPageItemCount() > 0}
+            {include file="snippets/pagination.tpl" oPagination=$ratingPagination cThisUrl=$Artikel->cURLFull cAnchor='tab-votes'}
+            <form method="post" action="{get_static_route id='bewertung.php'}#tab-votes" class="reviews-list">
+                {$jtl_token}
+                <input name="bhjn" type="hidden" value="1" />
+                <input name="a" type="hidden" value="{$Artikel->kArtikel}" />
+                <input name="btgsterne" type="hidden" value="{$BlaetterNavi->nSterne}" />
+                <input name="btgseite" type="hidden" value="{$BlaetterNavi->nAktuelleSeite}" />
 
-                    {foreach name=artikelbewertungen from=$ratingPagination->getPageItems() item=oBewertung}
-                        {if $Artikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich > 0 && $Artikel->HilfreichsteBewertung->oBewertung_arr[0]->kBewertung == $oBewertung->kBewertung}
-                            {* helpful review already displayed on top *}
-                        {else}
-                            <div class="review panel panel-default {if $smarty.foreach.artikelbewertungen.last}last{/if}">
-                                <div class="panel-body">
-                                    {include file="productdetails/review_item.tpl" oBewertung=$oBewertung}
-                                </div>
-                            </div>
-                        {/if}
-                    {/foreach}
-                </form>
-            {/if}
+                {foreach name=artikelbewertungen from=$ratingPagination->getPageItems() item=oBewertung}
+                    <div class="review panel panel-default {if $smarty.foreach.artikelbewertungen.last}last{/if}">
+                        <div class="panel-body">
+                            {include file="productdetails/review_item.tpl" oBewertung=$oBewertung}
+                        </div>
+                    </div>
+                {/foreach}
+            </form>
             {include file="snippets/pagination.tpl" oPagination=$ratingPagination cThisUrl=$Artikel->cURLFull cAnchor='tab-votes' showFilter=false}
         {/if}
     </div>{* /col *}

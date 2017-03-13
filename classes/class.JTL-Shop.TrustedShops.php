@@ -174,9 +174,9 @@ class TrustedShops
      */
     public function __construct($tsId = '', $cISOSprache = '')
     {
-        if ((strlen($tsId) > 0 && $tsId != -1) && strlen($cISOSprache) > 0) {
+        if ($tsId != -1 && strlen($tsId) > 0 && strlen($cISOSprache) > 0) {
             $this->fuelleTrustedShops($tsId, $cISOSprache);
-        } elseif ((strlen($tsId) > 0 && $tsId != -1)) {
+        } elseif ($tsId != -1 && strlen($tsId) > 0) {
             $this->fuelleTrustedShops($tsId);
         } elseif (strlen($cISOSprache) > 0) {
             $this->fuelleTrustedShops($tsId, $cISOSprache);
@@ -193,7 +193,7 @@ class TrustedShops
      */
     public function fuelleTrustedShops($tsId, $cISOSprache = '')
     {
-        $conf    = Shop::getSettings(array(CONF_GLOBAL));
+        $conf    = Shop::getSettings([CONF_GLOBAL]);
         $cacheID = 'jtl_ts_' . $tsId . '_' . $cISOSprache;
         if (($artikel = Shop::Cache()->get($cacheID)) !== false) {
             foreach (get_object_vars($artikel) as $k => $v) {
@@ -202,7 +202,7 @@ class TrustedShops
 
             return $this;
         }
-        if ((strlen($tsId) > 0 && $tsId != -1) && strlen($cISOSprache) > 0) {
+        if ($tsId != -1 && strlen($tsId) > 0 && strlen($cISOSprache) > 0) {
             $this->oZertifikat = $this->gibTrustedShopsZertifikatISO($cISOSprache, $tsId);
             if (strlen($this->oZertifikat->cTSID) > 0) {
                 $this->kTrustedShopsZertifikat = $this->oZertifikat->kTrustedShopsZertifikat;
@@ -253,13 +253,21 @@ class TrustedShops
             $this->cLogoSiegelBoxURL['nl'] = 'https://www.trustedshops.nl/shop/certificate.php?shop_id=' . $this->tsId;
             $this->cLogoSiegelBoxURL['it'] = 'https://www.trustedshops.it/shop/certificate.php?shop_id=' . $this->tsId;
 
-            $this->cBoxText['de']      = "Die im K&auml;uferschutz enthaltene <a href='" . $this->cBedingungURL . "' target='_blank'>Trusted Shops Garantie</a> sichert Ihren Online-Kauf ab. Mit der &Uuml;bermittlung und <a href='" . $this->cSpeicherungURL . "' target='_blank'>Speicherung</a> meiner E-Mail-Adresse zur Abwicklung des K&auml;uferschutzes durch Trusted Shops bin ich einverstanden. <a href='" . $this->cBedingungURL . "' target='_blank'>Garantiebedingungen</a> f&uuml;r den K&auml;uferschutz.";
-            $this->cBoxText['en']      = "The Trusted Shops buyer protection secures your online purchase. I agree with the transfer and <a href='" . $this->cSpeicherungURL . "' target='_blank'>saving</a> of my email address for the buyer protection handling by Trusted Shops. <a href='" . $this->cBedingungURL . "' target='_blank'>Conditions</a> for the buyer protection.";
-            $this->cBoxText['nl']      = "De in de koperbescherming inbegrepen Trusted Shops Garantie beveiligt uw online aankoop. Ik ga akkoord met de doorgifte en de <a href='" . $this->cSpeicherungURL . "' target='_blank'>opslag</a> van mijn E-mailadres voor de afwikkeling van de koperbescherming door Trusted Shops. <a href='" . $this->cBedingungURL . "' target='_blank'>Garantievoorwaarden</a>  voor de koperbescherming.";
-            $this->cBoxText['it']      = "La protezione acquirenti di Trusted Shops rende sicuri i tuoi acquisti online. Do il mio assenso al trasferimento e al <a href='" . $this->cSpeicherungURL . "' target='_blank'>salvataggio</a> del mio indirizzo e-mail per lelaborazione della protezione acquirenti da parte di Trusted Shops. <a href='" . $this->cBedingungURL . "' target='_blank'>Condizioni</a> della protezione acquirenti.";
+            $this->cBoxText['de']      = "Die im K&auml;uferschutz enthaltene <a href='" . $this->cBedingungURL . "' target='_blank'>Trusted Shops Garantie</a> sichert Ihren Online-Kauf ab. " .
+                "Mit der &Uuml;bermittlung und <a href='" . $this->cSpeicherungURL . "' target='_blank'>Speicherung</a> meiner E-Mail-Adresse zur " .
+                "Abwicklung des K&auml;uferschutzes durch Trusted Shops bin ich einverstanden. <a href='" . $this->cBedingungURL . "' target='_blank'>Garantiebedingungen</a> f&uuml;r den K&auml;uferschutz.";
+            $this->cBoxText['en']      = "The Trusted Shops buyer protection secures your online purchase. I agree with the transfer and <a href='" . $this->cSpeicherungURL .
+                "' target='_blank'>saving</a> of my email address for the buyer protection handling by Trusted Shops. <a href='" . $this->cBedingungURL .
+                "' target='_blank'>Conditions</a> for the buyer protection.";
+            $this->cBoxText['nl']      = "De in de koperbescherming inbegrepen Trusted Shops Garantie beveiligt uw online aankoop. Ik ga akkoord met de doorgifte en de <a href='" .
+                $this->cSpeicherungURL . "' target='_blank'>opslag</a> van mijn E-mailadres voor de afwikkeling van de koperbescherming door Trusted Shops. <a href='" .
+                $this->cBedingungURL . "' target='_blank'>Garantievoorwaarden</a>  voor de koperbescherming.";
+            $this->cBoxText['it']      = "La protezione acquirenti di Trusted Shops rende sicuri i tuoi acquisti online. Do il mio assenso al trasferimento e al <a href='" .
+                $this->cSpeicherungURL . "' target='_blank'>salvataggio</a> del mio indirizzo e-mail per lelaborazione della protezione acquirenti da parte di Trusted Shops. <a href='" .
+                $this->cBedingungURL . "' target='_blank'>Condizioni</a> della protezione acquirenti.";
             $this->cBoxText['default'] = $this->cBoxText['de'];
         }
-        Shop::Cache()->set($cacheID, $this, array(CACHING_GROUP_OPTION, CACHING_GROUP_CORE));
+        Shop::Cache()->set($cacheID, $this, [CACHING_GROUP_OPTION, CACHING_GROUP_CORE]);
 
         return $this;
     }
@@ -281,11 +289,24 @@ class TrustedShops
         $returnValue = '';
         $wsdlUrl     = TS_SERVER_PROTECTION;
         if (pruefeSOAP($wsdlUrl)) {
-            $client = new SoapClient($wsdlUrl, array('exceptions' => 0));
+            $client = new SoapClient($wsdlUrl, ['exceptions' => 0]);
             //set return value for the case if a SOAP exception occurs
             $returnValue = SOAP_ERROR;
             //call WS method
-            $returnValue = $client->requestForProtectionV2($this->tsId, $this->tsProductId, doubleval($this->amount), $this->currency, $this->paymentType, $this->buyerEmail, $this->shopCustomerID, $this->shopOrderID, $this->orderDate, $this->shopSystemVersion, $this->wsUser, $this->wsPassword);
+            $returnValue = $client->requestForProtectionV2(
+                $this->tsId,
+                $this->tsProductId,
+                (float)$this->amount,
+                $this->currency,
+                $this->paymentType,
+                $this->buyerEmail,
+                $this->shopCustomerID,
+                $this->shopOrderID,
+                $this->orderDate,
+                $this->shopSystemVersion,
+                $this->wsUser,
+                $this->wsPassword
+            );
             if (is_soap_fault($returnValue)) {
                 $errorText = "SOAP Fault: (faultcode: {$returnValue->faultcode}, faultstring: {$returnValue->faultstring})";
                 writeLog(PFAD_LOGFILES . 'trustedshops.log', $errorText, 1);
@@ -303,7 +324,12 @@ class TrustedShops
                     break;
             }
         } else {
-            writeLog(PFAD_LOGFILES . 'tskaeuferschutz.log', 'TS Web Service has successfully protected transaction, protectioner is ' . $returnValue . ' - Amount: ' . doubleval($this->amount), 1);
+            writeLog(
+                PFAD_LOGFILES . 'tskaeuferschutz.log',
+                'TS Web Service has successfully protected transaction, protectioner is ' .
+                    $returnValue . ' - Amount: ' . (float)$this->amount,
+                1
+            );
         }
 
         return true;
@@ -321,7 +347,7 @@ class TrustedShops
         ini_set('soap.wsdl_cache_enabled', 1);
 
         if (pruefeSOAP($wsdlUrl)) {
-            $client = new SoapClient($wsdlUrl, array('exceptions' => 0));
+            $client = new SoapClient($wsdlUrl, ['exceptions' => 0]);
             //set return value for the case if a SOAP exception occurs
             $returnValue = SOAP_ERROR;
             //call WS method
@@ -336,18 +362,19 @@ class TrustedShops
         // Geaendert aufgrund Mail von Herrn van der Wielen
         // Quote: 'Tatsächlich jedoch sollten Zertifikate mit den Status 'PRODUCTION', 'INTEGRATION' (und 'TEST') akzeptiert werden.'
         $languageIso = StringHandler::convertISO2ISO639($_SESSION['cISOSprache']);
-        if (($returnValue->stateEnum === 'PRODUCTION' || $returnValue->stateEnum === 'TEST' || $returnValue->stateEnum === 'INTEGRATION') && $returnValue->certificationLanguage == $languageIso) {
-            return true;
-        }
-
-        return false;
+        return (
+            ($returnValue->stateEnum === 'PRODUCTION' ||
+                $returnValue->stateEnum === 'TEST' ||
+                $returnValue->stateEnum === 'INTEGRATION'
+            ) && $returnValue->certificationLanguage == $languageIso
+        );
     }
 
     /**
      * Lädt anhand der tsID von der TrustedShops API, die Käuferschutzprodukte und
      * speichert diese direkt in die DB
      *
-     * @param $kTrustedShopsZertifikat
+     * @param int $kTrustedShopsZertifikat
      * @return $this
      */
     public function holeKaeuferschutzProdukte($kTrustedShopsZertifikat)
@@ -357,7 +384,7 @@ class TrustedShops
         ini_set('soap.wsdl_cache_enabled', 1);
         $wsdlUrl = TS_SERVER;
         if (pruefeSOAP($wsdlUrl)) {
-            $client = new SoapClient($wsdlUrl, array('exceptions' => 0));
+            $client = new SoapClient($wsdlUrl, ['exceptions' => 0]);
             //set return value for the case if a SOAP exception occurs
             $returnValue = SOAP_ERROR;
             //call WS method
@@ -373,7 +400,7 @@ class TrustedShops
 
         if (isset($returnValue->item) && is_object($returnValue->item)) {
             $oTmp                = $returnValue->item;
-            $returnValue->item   = array();
+            $returnValue->item   = [];
             $returnValue->item[] = $oTmp;
         }
 
@@ -382,23 +409,29 @@ class TrustedShops
         if (isset($this->oKaeuferschutzProdukte->item) && is_array($this->oKaeuferschutzProdukte->item) && count($this->oKaeuferschutzProdukte->item) > 0) {
             $cLandISO = isset($_SESSION['Lieferadresse']->cLand) ? $_SESSION['Lieferadresse']->cLand : null;
             if (!$cLandISO) {
-                $cLandISO = (isset($_SESSION['TrustedShops']->oSprache->cISOSprache)) ?
-                    $_SESSION['TrustedShops']->oSprache->cISOSprache :
-                    $_SESSION['Kunde']->cLand;
+                $cLandISO = isset($_SESSION['TrustedShops']->oSprache->cISOSprache)
+                    ? $_SESSION['TrustedShops']->oSprache->cISOSprache
+                    : $_SESSION['Kunde']->cLand;
             }
 
             require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Warenkorb.php';
             unset($_SESSION['Warenkorb']);
             $_SESSION['Warenkorb'] = new Warenkorb();
             foreach ($this->oKaeuferschutzProdukte->item as $i => $oItem) {
-                $this->oKaeuferschutzProdukte->item[$i]->protectedAmountDecimalLocalized = gibPreisStringLocalized($oItem->protectedAmountDecimal);
+                $this->oKaeuferschutzProdukte->item[$i]->protectedAmountDecimalLocalized =
+                    gibPreisStringLocalized($oItem->protectedAmountDecimal);
 
-                if (isset($_SESSION['Warenkorb']) && isset($_SESSION['Steuersatz']) && (!isset($_SESSION['Kundengruppe']->nNettoPreise) || !$_SESSION['Kundengruppe']->nNettoPreise)) {
-                    $this->oKaeuferschutzProdukte->item[$i]->grossFeeLocalized = gibPreisStringLocalized($oItem->netFee * ((100 + doubleval($_SESSION['Steuersatz'][$_SESSION['Warenkorb']->gibVersandkostenSteuerklasse($cLandISO)])) / 100));
-                    $this->oKaeuferschutzProdukte->item[$i]->cFeeTxt           = Shop::Lang()->get('incl', 'productDetails') . ' ' . Shop::Lang()->get('vat', 'productDetails');
+                if (isset($_SESSION['Warenkorb'], $_SESSION['Steuersatz']) &&
+                    (!isset($_SESSION['Kundengruppe']->nNettoPreise) || !$_SESSION['Kundengruppe']->nNettoPreise)
+                ) {
+                    $this->oKaeuferschutzProdukte->item[$i]->grossFeeLocalized = gibPreisStringLocalized($oItem->netFee *
+                        ((100 + (float)$_SESSION['Steuersatz'][$_SESSION['Warenkorb']->gibVersandkostenSteuerklasse($cLandISO)]) / 100));
+                    $this->oKaeuferschutzProdukte->item[$i]->cFeeTxt           = Shop::Lang()->get('incl', 'productDetails') .
+                        ' ' . Shop::Lang()->get('vat', 'productDetails');
                 } else {
                     $this->oKaeuferschutzProdukte->item[$i]->grossFeeLocalized = gibPreisStringLocalized($oItem->netFee);
-                    $this->oKaeuferschutzProdukte->item[$i]->cFeeTxt           = Shop::Lang()->get('excl', 'productDetails') . ' ' . Shop::Lang()->get('vat', 'productDetails');
+                    $this->oKaeuferschutzProdukte->item[$i]->cFeeTxt           = Shop::Lang()->get('excl', 'productDetails') .
+                        ' ' . Shop::Lang()->get('vat', 'productDetails');
                 }
 
                 // DB Member füllen
@@ -471,11 +504,11 @@ class TrustedShops
                         $fPreis = $oItem->fNetto / $_SESSION['Waehrung']->fFaktor;
                         $nWert  = $oItem->nWert / $_SESSION['Waehrung']->fFaktor;
                     }
-                    if (!isset($this->oKaeuferschutzProdukte)) {
+                    if ($this->oKaeuferschutzProdukte === null) {
                         $this->oKaeuferschutzProdukte = new stdClass();
                     }
                     if (!isset($this->oKaeuferschutzProdukte->item)) {
-                        $this->oKaeuferschutzProdukte->item = array();
+                        $this->oKaeuferschutzProdukte->item = [];
                     }
                     if (!isset($this->oKaeuferschutzProdukte->item[$i])) {
                         $this->oKaeuferschutzProdukte->item[$i] = new stdClass();
@@ -488,15 +521,23 @@ class TrustedShops
                     $this->oKaeuferschutzProdukte->item[$i]->protectedAmountDecimal          = $oItem->nWert;
                     $this->oKaeuferschutzProdukte->item[$i]->tsProductID                     = $oItem->cProduktID;
 
-                    if (!$_SESSION['Kundengruppe']->nNettoPreise && isset($_SESSION['Warenkorb']) && isset($_SESSION['Steuersatz'])) {
-                        $this->oKaeuferschutzProdukte->item[$i]->grossFeeLocalized = gibPreisStringLocalized($fPreis * ((100 + doubleval($_SESSION['Steuersatz'][$_SESSION['Warenkorb']->gibVersandkostenSteuerklasse($cLandISO)])) / 100));
-                        $this->oKaeuferschutzProdukte->item[$i]->cFeeTxt           = Shop::Lang()->get('incl', 'productDetails') . ' ' . Shop::Lang()->get('vat', 'productDetails');
+                    if (!$_SESSION['Kundengruppe']->nNettoPreise && isset($_SESSION['Warenkorb'], $_SESSION['Steuersatz'])) {
+                        $this->oKaeuferschutzProdukte->item[$i]->grossFeeLocalized = gibPreisStringLocalized(
+                            $fPreis *
+                            ((100 + (float)$_SESSION['Steuersatz'][$_SESSION['Warenkorb']->gibVersandkostenSteuerklasse($cLandISO)]) / 100)
+                        );
+                        $this->oKaeuferschutzProdukte->item[$i]->cFeeTxt           = Shop::Lang()->get('incl', 'productDetails') .
+                            ' ' .
+                            Shop::Lang()->get('vat', 'productDetails');
                     } else {
                         $this->oKaeuferschutzProdukte->item[$i]->grossFeeLocalized = gibPreisStringLocalized($fPreis);
-                        $this->oKaeuferschutzProdukte->item[$i]->cFeeTxt           = Shop::Lang()->get('excl', 'productDetails') . ' ' . Shop::Lang()->get('vat', 'productDetails');
+                        $this->oKaeuferschutzProdukte->item[$i]->cFeeTxt           = Shop::Lang()->get('excl', 'productDetails') .
+                            ' ' .
+                            Shop::Lang()->get('vat', 'productDetails');
                     }
                 }
-                $this->oKaeuferschutzProdukteDB->item[$i]->protectedAmountDecimalLocalized = gibPreisStringLocalized(isset($oItem->protectedAmountDecimal) ? $oItem->protectedAmountDecimal : 0);
+                $this->oKaeuferschutzProdukteDB->item[$i]->protectedAmountDecimalLocalized =
+                    gibPreisStringLocalized(isset($oItem->protectedAmountDecimal) ? $oItem->protectedAmountDecimal : 0);
             }
         }
 
@@ -511,7 +552,10 @@ class TrustedShops
      */
     public function speicherKaeuferschutzProdukteDB($kTrustedShopsZertifikat)
     {
-        if (is_array($this->oKaeuferschutzProdukteDB->item) && count($this->oKaeuferschutzProdukteDB->item) > 0 && $kTrustedShopsZertifikat > 0) {
+        if ($kTrustedShopsZertifikat > 0 &&
+            is_array($this->oKaeuferschutzProdukteDB->item) &&
+            count($this->oKaeuferschutzProdukteDB->item) > 0
+        ) {
             Shop::DB()->delete('ttrustedeshopsprodukt', 'kTrustedShopsZertifikat', (int)$kTrustedShopsZertifikat);
             foreach ($this->oKaeuferschutzProdukteDB->item as $oKaeuferschutzProdukt) {
                 $oKaeuferschutzProdukt->kTrustedShopsZertifikat = $kTrustedShopsZertifikat;
@@ -558,7 +602,7 @@ class TrustedShops
             $cTSID   = $this->tsId;
 
             if (pruefeSOAP($wsdlUrl)) {
-                $client = new SoapClient($wsdlUrl, array('exceptions' => 0));
+                $client = new SoapClient($wsdlUrl, ['exceptions' => 0]);
                 //set return value for the case if a SOAP exception occurs
                 $returnValue = SOAP_ERROR;
                 //call WS method
@@ -571,11 +615,15 @@ class TrustedShops
                     return 11; // SOAP Fehler
                 } else {
                     writeLog(PFAD_LOGFILES . 'trustedshops.log', print_r($returnValue, 1), 1);
-                    Jtllog::writeLog(utf8_decode('Die Zertifikatsprüfung von TrustedShops ergab folgendes Ergebnis: ') . print_r($returnValue, 1), JTLLOG_LEVEL_NOTICE);
+                    Jtllog::writeLog(utf8_decode('Die Zertifikatsprüfung von TrustedShops ergab folgendes Ergebnis: ') . print_r($returnValue, true), JTLLOG_LEVEL_NOTICE);
 
                     $this->dChecked = date('Y-m-d H:i:s');
                     if (!$bSaved) {
-                        Shop::DB()->query("UPDATE ttrustedshopszertifikat SET dChecked = '{$this->dChecked}' WHERE kTrustedShopsZertifikat = {$this->kTrustedShopsZertifikat}", 3);
+                        Shop::DB()->query("
+                            UPDATE ttrustedshopszertifikat 
+                                SET dChecked = '{$this->dChecked}' 
+                                WHERE kTrustedShopsZertifikat = {$this->kTrustedShopsZertifikat}", 3
+                        );
                     }
                 }
             } else {
@@ -590,7 +638,8 @@ class TrustedShops
 
         // Geaendert aufgrund Mail von Herrn van der Wielen
         // Quote: 'Tatsächlich jedoch sollten Zertifikate mit den Status 'PRODUCTION', 'INTEGRATION' (und 'TEST') akzeptiert werden.'
-        if (($returnValue->stateEnum === 'PRODUCTION' || $returnValue->stateEnum === 'TEST' || $returnValue->stateEnum === 'INTEGRATION') && ($cISOSprache === null || $returnValue->certificationLanguage === $cISOSprache) && $returnValue->typeEnum === $this->eType) {
+        if (($returnValue->stateEnum === 'PRODUCTION' || $returnValue->stateEnum === 'TEST' || $returnValue->stateEnum === 'INTEGRATION') &&
+            ($cISOSprache === null || $returnValue->certificationLanguage === $cISOSprache) && $returnValue->typeEnum === $this->eType) {
             return 1;
         } // Alles O.K.
         if ($returnValue->stateEnum === 'INVALID_TS_ID') {
@@ -640,7 +689,7 @@ class TrustedShops
         ini_set('soap.wsdl_cache_enabled', 1);
 
         if (pruefeSOAP($wsdlUrl)) {
-            $client = new SoapClient($wsdlUrl, array('exceptions' => 0));
+            $client = new SoapClient($wsdlUrl, ['exceptions' => 0]);
             //set return value for the case if a SOAP exception occurs
             $returnValue = SOAP_ERROR;
             //call WS method
@@ -701,7 +750,7 @@ class TrustedShops
     /**
      * Holt anhand der cISOSprache das Trusted Shops Zertifikat aus der Datenbank
      *
-     * @param        $cISOSprache
+     * @param string $cISOSprache
      * @param string $tsId
      * @return null|stdClass
      */
@@ -750,8 +799,8 @@ class TrustedShops
     // 10 = Falsche Käuferschutzvariante
     // 11 = SOAP Fehler
     /**
-     * @param object $oZertifikat
-     * @param int    $kTrustedShopsZertifikat
+     * @param stdClass $oZertifikat
+     * @param int      $kTrustedShopsZertifikat
      * @return int
      */
     public function speicherTrustedShopsZertifikat($oZertifikat, $kTrustedShopsZertifikat = 0)
@@ -792,8 +841,10 @@ class TrustedShops
             }
             $oZertifikat = $this->verschluesselTSDaten($oZertifikat);
             Shop::DB()->query(
-                "DELETE ttrustedshopszertifikat, ttrustedeshopsprodukt FROM ttrustedshopszertifikat
-                    LEFT JOIN ttrustedeshopsprodukt ON ttrustedeshopsprodukt.kTrustedShopsZertifikat = ttrustedshopszertifikat.kTrustedShopsZertifikat
+                "DELETE ttrustedshopszertifikat, ttrustedeshopsprodukt 
+                    FROM ttrustedshopszertifikat
+                    LEFT JOIN ttrustedeshopsprodukt 
+                        ON ttrustedeshopsprodukt.kTrustedShopsZertifikat = ttrustedshopszertifikat.kTrustedShopsZertifikat
                         WHERE ttrustedshopszertifikat.cISOSprache = '" . $oZertifikat->cISOSprache . "'", 4
             );
 
@@ -846,12 +897,12 @@ class TrustedShops
     /**
      * Löscht ein Zertifikat aus der Datenbank
      *
-     * @param $kTrustedShopsZertifikat
+     * @param int $kTrustedShopsZertifikat
      * @return bool
      */
     public function loescheTrustedShopsZertifikat($kTrustedShopsZertifikat)
     {
-        if (intval($kTrustedShopsZertifikat) > 0) {
+        if ((int)$kTrustedShopsZertifikat > 0) {
             $nRows = Shop::DB()->delete('ttrustedshopszertifikat', 'kTrustedShopsZertifikat', (int)$kTrustedShopsZertifikat);
 
             return ($nRows > 0);
@@ -863,8 +914,8 @@ class TrustedShops
     /**
      * Gibt den aktuellen Kundenbewertungsstatus aus der DB zurück
      *
-     * @param $cISOSprache
-     * @return bool
+     * @param string $cISOSprache
+     * @return object|bool
      */
     public function holeKundenbewertungsstatus($cISOSprache)
     {
@@ -895,11 +946,7 @@ class TrustedShops
                         AND cISOSprache != '" . $cISOSprache . "'", 2
             );
 
-            if (is_array($oTrustedShopsKundenbewertung_arr) && count($oTrustedShopsKundenbewertung_arr) > 0) {
-                return true;
-            }
-
-            return false;
+            return (is_array($oTrustedShopsKundenbewertung_arr) && count($oTrustedShopsKundenbewertung_arr) > 0);
         }
 
         return false;
@@ -978,7 +1025,7 @@ class TrustedShops
         $wsdlUrl = TS_RATING_SERVER;
 
         if (pruefeSOAP($wsdlUrl)) {
-            $client = new SoapClient($wsdlUrl, array('exceptions' => 0));
+            $client = new SoapClient($wsdlUrl, ['exceptions' => 0]);
             //set return value for the case if a SOAP exception occurs
             $returnValue = SOAP_ERROR;
             //call WS method
@@ -993,7 +1040,7 @@ class TrustedShops
             writeLog(PFAD_LOGFILES . 'trustedshops.log', 'SOAP could not be loaded.', 1);
         }
 
-        if ($returnValue == 'OK') {
+        if ($returnValue === 'OK') {
             $this->aenderKundenbewertungsstatusDB($nStatus, $cISOSprache);
 
             return 1;
@@ -1015,7 +1062,7 @@ class TrustedShops
     }
 
     /**
-     * @param object $oZertifikat
+     * @param stdClass $oZertifikat
      * @return stdClass
      */
     public function verschluesselTSDaten($oZertifikat)
@@ -1030,7 +1077,7 @@ class TrustedShops
     }
 
     /**
-     * @param object $oZertifikat
+     * @param stdClass $oZertifikat
      * @return stdClass
      */
     public function entschluesselTSDaten($oZertifikat)
@@ -1144,18 +1191,18 @@ class TrustedShops
 
         $xml             = simplexml_load_string($content);
         $rating          = new stdClass();
-        $rating->nAnzahl = (int) $xml->ratings['amount'];
+        $rating->nAnzahl = (int)$xml->ratings['amount'];
 
         $dDurchschnitt = null;
         foreach ($xml->ratings->result as $result) {
-            if ($result['name'] == 'average') {
-                $dDurchschnitt = (double) $result;
+            if ($result['name'] === 'average') {
+                $dDurchschnitt = (double)$result;
                 break;
             }
         }
 
-        if (is_null($dDurchschnitt)) {
-            $dDurchschnitt = (double) $xml->ratings->result[0];
+        if ($dDurchschnitt === null) {
+            $dDurchschnitt = (double)$xml->ratings->result[0];
         }
         $rating->dDurchschnitt = $dDurchschnitt;
 

@@ -13,7 +13,7 @@
  */
 function pruefeNewsPost($cBetreff, $cText, $kKundengruppe_arr, $kNewsKategorie_arr)
 {
-    $cPlausiValue_arr = array();
+    $cPlausiValue_arr = [];
     // Betreff prüfen
     if (strlen($cBetreff) === 0) {
         $cPlausiValue_arr['cBetreff'] = 1;
@@ -41,7 +41,7 @@ function pruefeNewsPost($cBetreff, $cText, $kKundengruppe_arr, $kNewsKategorie_a
  */
 function pruefeNewsKategorie($cName, $nNewskategorieEditSpeichern = 0)
 {
-    $cPlausiValue_arr = array();
+    $cPlausiValue_arr = [];
     // Name prüfen
     if (strlen($cName) === 0) {
         $cPlausiValue_arr['cName'] = 1;
@@ -64,7 +64,7 @@ function pruefeNewsKategorie($cName, $nNewskategorieEditSpeichern = 0)
 function convertDate($string)
 {
     list($dDatum, $dZeit) = explode(' ', $string);
-    if (count(explode(':', $dZeit)) === 2) {
+    if (substr_count(':', $dZeit) === 2 ) {
         list($nStunde, $nMinute) = explode(':', $dZeit);
     } else {
         list($nStunde, $nMinute, $nSekunde) = explode(':', $dZeit);
@@ -82,7 +82,7 @@ function gibLetzteBildNummer($kNews)
 {
     $cUploadVerzeichnis = PFAD_ROOT . PFAD_NEWSBILDER;
 
-    $cBild_arr = array();
+    $cBild_arr = [];
     if (is_dir($cUploadVerzeichnis . $kNews)) {
         $DirHandle = opendir($cUploadVerzeichnis . $kNews);
         while (false !== ($Datei = readdir($DirHandle))) {
@@ -176,7 +176,7 @@ function mappeDatumName($cMonat, $nJahr, $cISOSprache)
                 break;
         }
     } else {
-        $cName .= date('F', mktime(0, 0, 0, intval($cMonat), 1, $nJahr)) . ', ' . $nJahr;
+        $cName .= date('F', mktime(0, 0, 0, (int)$cMonat, 1, $nJahr)) . ', ' . $nJahr;
     }
 
     return $cName;
@@ -191,9 +191,9 @@ function gibJahrMonatVonDateTime($cDateTimeStr)
     list($dDatum, $dUhrzeit)     = explode(' ', $cDateTimeStr);
     list($dJahr, $dMonat, $dTag) = explode('-', $dDatum);
     $oDatum                      = new stdClass();
-    $oDatum->Jahr                = intval($dJahr);
-    $oDatum->Monat               = intval($dMonat);
-    $oDatum->Tag                 = intval($dTag);
+    $oDatum->Jahr                = (int)$dJahr;
+    $oDatum->Monat               = (int)$dMonat;
+    $oDatum->Tag                 = (int)$dTag;
 
     return $oDatum;
 }
@@ -239,7 +239,7 @@ function calcRatio($cDatei, $nMaxBreite, $nMaxHoehe)
     }
     $f = min($nMaxBreite / $ImageBreite, $nMaxHoehe / $ImageHoehe, 1);
 
-    return array(round($f * $nMaxBreite), round($f * $nMaxHoehe));
+    return [round($f * $nMaxBreite), round($f * $nMaxHoehe)];
 }
 
 /**
@@ -252,10 +252,11 @@ function holeNewskategorie($kSprache = null, $cLimitSQL = '')
     if (!isset($kSprache)) {
         $kSprache = $_SESSION['kSprache'];
     }
-    $kSprache = (int) $kSprache;
+    $kSprache = (int)$kSprache;
 
     return Shop::DB()->query(
-        "SELECT" . (!empty($cLimitSQL) ? " SQL_CALC_FOUND_ROWS" : '') . " *, DATE_FORMAT(dLetzteAktualisierung, '%d.%m.%Y %H:%i') AS dLetzteAktualisierung_de
+        "SELECT" . (!empty($cLimitSQL) ? " SQL_CALC_FOUND_ROWS" : '') . 
+            " *, DATE_FORMAT(dLetzteAktualisierung, '%d.%m.%Y %H:%i') AS dLetzteAktualisierung_de
             FROM tnewskategorie
             WHERE kSprache = " . $kSprache . "
             ORDER BY nSort DESC" . (!empty($cLimitSQL) ? " " . $cLimitSQL : ''), 2
@@ -269,7 +270,7 @@ function holeNewskategorie($kSprache = null, $cLimitSQL = '')
  */
 function holeNewsBilder($kNews, $cUploadVerzeichnis)
 {
-    $oDatei_arr = array();
+    $oDatei_arr = [];
     $kNews      = (int)$kNews;
     if ($kNews > 0) {
         if (is_dir($cUploadVerzeichnis . $kNews)) {
@@ -326,7 +327,7 @@ function loescheNewsKategorie($kNewsKategorie_arr)
             $kNewsKategorie = (int)$kNewsKategorie;
             Shop::DB()->delete('tnewskategorie', 'kNewsKategorie', $kNewsKategorie);
             // tseo löschen
-            Shop::DB()->delete('tseo', array('cKey', 'kKey'), array('kNewsKategorie', $kNewsKategorie));
+            Shop::DB()->delete('tseo', ['cKey', 'kKey'], ['kNewsKategorie', $kNewsKategorie]);
             // tnewskategorienews löschen
             Shop::DB()->delete('tnewskategorienews', 'kNewsKategorie', $kNewsKategorie);
         }
@@ -373,7 +374,7 @@ function editiereNewskategorie($kNewsKategorie, $kSprache)
 function parseText($cText, $kNews)
 {
     $cUploadVerzeichnis = PFAD_ROOT . PFAD_NEWSBILDER;
-    $cBild_arr          = array();
+    $cBild_arr          = [];
     if (is_dir($cUploadVerzeichnis . $kNews)) {
         $DirHandle = opendir($cUploadVerzeichnis . $kNews);
         while (false !== ($Datei = readdir($DirHandle))) {
@@ -387,14 +388,19 @@ function parseText($cText, $kNews)
     usort($cBild_arr, 'cmp');
 
     $shopURL = Shop::getURL() . '/';
-    for ($i = 1; $i <= count($cBild_arr); $i++) {
-        $cText = str_replace("$#Bild" . $i . "#$", '<img alt="" src="' . $shopURL . PFAD_NEWSBILDER . $kNews . '/' . $cBild_arr[$i - 1] . '" />', $cText);
+    $count   = count($cBild_arr);
+    for ($i = 1; $i <= $count; $i++) {
+        $cText = str_replace("$#Bild" . $i . "#$", '<img alt="" src="' . 
+            $shopURL . PFAD_NEWSBILDER . $kNews . '/' . $cBild_arr[$i - 1] . 
+            '" />', $cText);
     }
     if (strpos(end($cBild_arr), 'preview') !== false) {
-        $cText = str_replace("$#preview#$", '<img alt="" src="' . $shopURL . PFAD_NEWSBILDER . $kNews . '/' . $cBild_arr[count($cBild_arr) - 1] . '" />', $cText);
+        $cText = str_replace("$#preview#$", '<img alt="" src="' . 
+            $shopURL . PFAD_NEWSBILDER . $kNews . '/' . $cBild_arr[count($cBild_arr) - 1] . 
+            '" />', $cText);
     }
 
-    return str_replace("'", "\'", $cText);
+    return $cText;
 }
 
 /**
@@ -405,21 +411,22 @@ function parseText($cText, $kNews)
  */
 function loescheNewsBild($cBildname, $kNews, $cUploadVerzeichnis)
 {
-    if (intval($kNews) > 0 && strlen($cBildname) > 0 && is_dir($cUploadVerzeichnis)) {
-        if (is_dir($cUploadVerzeichnis . $kNews)) {
-            $DirHandle = opendir($cUploadVerzeichnis . $kNews);
-            while (false !== ($Datei = readdir($DirHandle))) {
-                if ($Datei !== '.' && $Datei !== '..' && substr($Datei, 0, strpos($Datei, '.')) == $cBildname) {
-                    unlink($cUploadVerzeichnis . $kNews . '/' . $Datei);
-                    closedir($DirHandle);
-                    if ($cBildname === 'preview') {
-                        $upd                = new stdClass();
-                        $upd->cPreviewImage = '';
-                        Shop::DB()->update('tnews', 'kNews', $kNews, $upd);
-                    }
-
-                    return true;
+    if ((int)$kNews > 0 && strlen($cBildname) > 0 &&
+        is_dir($cUploadVerzeichnis) &&
+        is_dir($cUploadVerzeichnis . $kNews)
+    ) {
+        $DirHandle = opendir($cUploadVerzeichnis . $kNews);
+        while (false !== ($Datei = readdir($DirHandle))) {
+            if ($Datei !== '.' && $Datei !== '..' && substr($Datei, 0, strpos($Datei, '.')) === $cBildname) {
+                unlink($cUploadVerzeichnis . $kNews . '/' . $Datei);
+                closedir($DirHandle);
+                if ($cBildname === 'preview') {
+                    $upd                = new stdClass();
+                    $upd->cPreviewImage = '';
+                    Shop::DB()->update('tnews', 'kNews', $kNews, $upd);
                 }
+
+                return true;
             }
         }
     }
@@ -435,11 +442,11 @@ function loescheNewsBild($cBildname, $kNews, $cUploadVerzeichnis)
  */
 function newsRedirect($cTab = '', $cHinweis = '', $urlParams = null)
 {
-    $tabPageMapping = array(
+    $tabPageMapping = [
         'inaktiv'    => 's1',
         'aktiv'      => 's2',
         'kategorien' => 's3',
-    );
+    ];
     if (empty($cHinweis)) {
         unset($_SESSION['news.cHinweis']);
     } else {
@@ -448,16 +455,17 @@ function newsRedirect($cTab = '', $cHinweis = '', $urlParams = null)
 
     if (!empty($cTab)) {
         if (!is_array($urlParams)) {
-            $urlParams = array();
+            $urlParams = [];
         }
-
         $urlParams['tab'] = $cTab;
-
-        if (isset($tabPageMapping[$cTab]) && verifyGPCDataInteger($tabPageMapping[$cTab]) > 1 && !array_key_exists($tabPageMapping[$cTab], $urlParams)) {
+        if (isset($tabPageMapping[$cTab]) && verifyGPCDataInteger($tabPageMapping[$cTab]) > 1 && 
+            !array_key_exists($tabPageMapping[$cTab], $urlParams)) {
             $urlParams[$tabPageMapping[$cTab]] = verifyGPCDataInteger($tabPageMapping[$cTab]);
         }
     }
 
-    header('Location: news.php' . (is_array($urlParams) ? '?' . http_build_query($urlParams, '', '&') : ''));
+    header('Location: news.php' . (is_array($urlParams) 
+            ? '?' . http_build_query($urlParams, '', '&') 
+            : ''));
     exit;
 }

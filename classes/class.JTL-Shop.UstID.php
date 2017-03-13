@@ -98,11 +98,12 @@ class UstID
                 if ($this->pruefePHPEinstellung()) {
                     // Uhrzeit pruefen da die API Ruhezeit hat -.-
                     // Taeglich von 5 Uhr - 23 Uhr
-                    if (intval(date('H')) >= 5 && intval(date('H')) < 23) {
+                    if ((int)date('H') >= 5 && (int)date('H') < 23) {
                         $cURL = 'http://evatr.bff-online.de/evatrRPC?UstId_1=' . $this->cUstId_1 . '&UstId_2=' .
                             $this->cUstId_2 . '&Firmenname=' . $this->cFirmenname . '&Ort=' . $this->cOrt . '&PLZ=' .
                             $this->cPLZ . '&Strasse=' . $this->cStrasse . ' ' . $this->cHausnummer . '&Druck=' . $this->cDruck;
-                        $this->cAntwort = XML_unserialize(file_get_contents(str_replace(' ', '%20', $cURL)));
+                        $xml = file_get_contents(str_replace(' ', '%20', $cURL));
+                        $this->cAntwort = XML_unserialize($xml);
                         $paramCount     = count($this->cAntwort['params']['param']);
                         for ($i = 0; $i < $paramCount; $i++) {
                             $oInfo        = new stdClass();
@@ -112,7 +113,7 @@ class UstID
                             $this->cAntwortInfo_arr[$oInfo->cName] = $oInfo->cWert;
                         }
 
-                        $nFehlerCode = intval($this->cAntwortInfo_arr['ErrorCode']);
+                        $nFehlerCode = (int)$this->cAntwortInfo_arr['ErrorCode'];
                         $this->mappeFehlerCode($nFehlerCode);
 
                         return $nFehlerCode;
@@ -136,7 +137,7 @@ class UstID
      */
     public function pruefePHPEinstellung()
     {
-        return (ini_get('allow_url_fopen'));
+        return ini_get('allow_url_fopen');
     }
 
     /**
@@ -231,7 +232,7 @@ class UstID
 
         switch (substr($cUstID, 0, 2)) {
             case 'AT':
-                if (substr($cIDNummer, 0, 1) !== 'U') {
+                if (strpos($cIDNummer, 'U') !== 0) {
                     $oReturn->cError = 'ATU99999999';
                 } elseif (preg_match('/^[0-9A-Z]{9}$/', $cIDNummer) !== 1) {
                     $oReturn->cError = 'ATU99999999';

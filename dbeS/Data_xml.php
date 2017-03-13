@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-require_once dirname(__FILE__) . '/syncinclude.php';
+require_once __DIR__ . '/syncinclude.php';
 
 $return = 3;
 if (auth()) {
@@ -22,7 +22,8 @@ if (auth()) {
             $return = 0;
             foreach ($list as $zip) {
                 if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                    Jtllog::writeLog('bearbeite: ' . PFAD_SYNC_TMP . $zip['filename'] . ' size: ' . filesize(PFAD_SYNC_TMP . $zip['filename']), JTLLOG_LEVEL_DEBUG, false, 'Data_xml');
+                    Jtllog::writeLog('bearbeite: ' . PFAD_SYNC_TMP . $zip['filename'] . ' size: ' .
+                        filesize(PFAD_SYNC_TMP . $zip['filename']), JTLLOG_LEVEL_DEBUG, false, 'Data_xml');
                 }
                 $d   = file_get_contents(PFAD_SYNC_TMP . $zip['filename']);
                 $xml = XML_unserialize($d);
@@ -40,7 +41,7 @@ if (auth()) {
     }
 }
 
-if ($return == 1) {
+if ($return === 2) {
     syncException('Error : ' . $archive->errorInfo(true));
 }
 
@@ -52,16 +53,25 @@ echo $return;
 function bearbeiteVerfuegbarkeitsbenachrichtigungenAck($xml)
 {
     if (isset($xml['ack_verfuegbarkeitsbenachrichtigungen']['kVerfuegbarkeitsbenachrichtigung'])) {
-        if (!is_array($xml['ack_verfuegbarkeitsbenachrichtigungen']['kVerfuegbarkeitsbenachrichtigung']) && intval($xml['ack_verfuegbarkeitsbenachrichtigungen']['kVerfuegbarkeitsbenachrichtigung']) > 0) {
-            $xml['ack_verfuegbarkeitsbenachrichtigungen']['kVerfuegbarkeitsbenachrichtigung'] = array($xml['ack_verfuegbarkeitsbenachrichtigungen']['kVerfuegbarkeitsbenachrichtigung']);
+        if (!is_array($xml['ack_verfuegbarkeitsbenachrichtigungen']['kVerfuegbarkeitsbenachrichtigung']) &&
+            (int)$xml['ack_verfuegbarkeitsbenachrichtigungen']['kVerfuegbarkeitsbenachrichtigung'] > 0
+        ) {
+            $xml['ack_verfuegbarkeitsbenachrichtigungen']['kVerfuegbarkeitsbenachrichtigung'] =
+                [$xml['ack_verfuegbarkeitsbenachrichtigungen']['kVerfuegbarkeitsbenachrichtigung']];
         }
         if (is_array($xml['ack_verfuegbarkeitsbenachrichtigungen']['kVerfuegbarkeitsbenachrichtigung'])) {
             foreach ($xml['ack_verfuegbarkeitsbenachrichtigungen']['kVerfuegbarkeitsbenachrichtigung'] as $kVerfuegbarkeitsbenachrichtigung) {
                 $kVerfuegbarkeitsbenachrichtigung = (int)$kVerfuegbarkeitsbenachrichtigung;
                 if ($kVerfuegbarkeitsbenachrichtigung > 0) {
-                    Shop::DB()->update('tverfuegbarkeitsbenachrichtigung', 'kVerfuegbarkeitsbenachrichtigung', $kVerfuegbarkeitsbenachrichtigung, (object)['cAbgeholt' => 'Y']);
+                    Shop::DB()->update(
+                        'tverfuegbarkeitsbenachrichtigung',
+                        'kVerfuegbarkeitsbenachrichtigung',
+                        $kVerfuegbarkeitsbenachrichtigung,
+                        (object)['cAbgeholt' => 'Y']
+                    );
                     if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                        Jtllog::writeLog('Verfuegbarkeitsbenachrichtigung erfolgreich abgeholt: ' . $kVerfuegbarkeitsbenachrichtigung, JTLLOG_LEVEL_DEBUG, false, 'Data_xml');
+                        Jtllog::writeLog('Verfuegbarkeitsbenachrichtigung erfolgreich abgeholt: ' .
+                            $kVerfuegbarkeitsbenachrichtigung, JTLLOG_LEVEL_DEBUG, false, 'Data_xml');
                     }
                 }
             }
@@ -81,7 +91,7 @@ function bearbeiteUploadQueueAck($xml)
                 Shop::DB()->delete('tuploadqueue', 'kUploadqueue', $kUploadqueue);
             }
         }
-    } elseif (intval($xml['ack_uploadqueue']['kuploadqueue']) > 0) {
+    } elseif ((int)$xml['ack_uploadqueue']['kuploadqueue'] > 0) {
         Shop::DB()->delete('tuploadqueue', 'kUploadqueue', (int)$xml['ack_uploadqueue']['kuploadqueue']);
     }
 }

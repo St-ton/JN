@@ -19,12 +19,11 @@
 function SendNiceMailReply($FromName, $FromMail, $ReplyAdresse, $To, $Subject, $Text, $Html = '')
 {
     //endl definieren
-    if (strtoupper(substr(PHP_OS, 0, 3) == 'WIN')) {
+    $eol = "\n";
+    if (strpos(strtoupper(PHP_OS), 'WIN') === 0) {
         $eol = "\r\n";
-    } elseif (strtoupper(substr(PHP_OS, 0, 3) == 'MAC')) {
+    } elseif (strpos(strtoupper(PHP_OS), 'MAC') === 0) {
         $eol = "\r";
-    } else {
-        $eol = "\n";
     }
 
     $FromName = StringHandler::unhtmlentities($FromName);
@@ -32,9 +31,9 @@ function SendNiceMailReply($FromName, $FromMail, $ReplyAdresse, $To, $Subject, $
     $Subject  = StringHandler::unhtmlentities($Subject);
     $Text     = StringHandler::unhtmlentities($Text);
 
-    $Text = $Text ? $Text : 'Sorry, but you need an html mailer to read this mail.';
+    $Text = $Text ?: 'Sorry, but you need an html mailer to read this mail.';
 
-    if (strlen($To) === 0) {
+    if (empty($To)) {
         return false;
     }
 
@@ -86,10 +85,10 @@ function SendNiceMailReply($FromName, $FromMail, $ReplyAdresse, $To, $Subject, $
 function encode_iso88591($string)
 {
     $text = '=?' . JTL_CHARSET . '?Q?';
-
-    for ($i = 0; $i < strlen($string); $i++) {
+    $max  = strlen($string);
+    for ($i = 0; $i < $max; $i++) {
         $val = ord($string[$i]);
-        if ($val > 127 or $val == 63) {
+        if ($val > 127 || $val === 63) {
             $val = dechex($val);
             $text .= '=' . $val;
         } else {

@@ -3,11 +3,11 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/admininclude.php';
+require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('SETTINGS_EMAIL_BLACKLIST_VIEW', true, true);
 /** @global JTLSmarty $smarty */
-$Einstellungen = Shop::getSettings(array(CONF_EMAILBLACKLIST));
+$Einstellungen = Shop::getSettings([CONF_EMAILBLACKLIST]);
 $cHinweis      = '';
 $cFehler       = '';
 $step          = 'emailblacklist';
@@ -35,30 +35,50 @@ if (isset($_POST['emailblacklist']) && (int)$_POST['emailblacklist'] === 1 && va
     }
 }
 
-$oConfig_arr = Shop::DB()->selectAll('teinstellungenconf', 'kEinstellungenSektion', CONF_EMAILBLACKLIST, '*', 'nSort');
+$oConfig_arr = Shop::DB()->selectAll(
+    'teinstellungenconf',
+    'kEinstellungenSektion',
+    CONF_EMAILBLACKLIST,
+    '*',
+    'nSort'
+);
 $configCount = count($oConfig_arr);
 for ($i = 0; $i < $configCount; $i++) {
     if ($oConfig_arr[$i]->cInputTyp === 'selectbox') {
-        $oConfig_arr[$i]->ConfWerte = Shop::DB()->selectAll('teinstellungenconfwerte', 'kEinstellungenConf', (int)$oConfig_arr[$i]->kEinstellungenConf, '*', 'nSort');
+        $oConfig_arr[$i]->ConfWerte = Shop::DB()->selectAll(
+            'teinstellungenconfwerte',
+            'kEinstellungenConf',
+            (int)$oConfig_arr[$i]->kEinstellungenConf,
+            '*',
+            'nSort'
+        );
     }
 
-    $oSetValue = Shop::DB()->select('teinstellungen', 'kEinstellungenSektion', CONF_EMAILBLACKLIST, 'cName', $oConfig_arr[$i]->cWertName);
-    $oConfig_arr[$i]->gesetzterWert = (isset($oSetValue->cWert)) ? $oSetValue->cWert : null;
+    $oSetValue = Shop::DB()->select(
+        'teinstellungen',
+        'kEinstellungenSektion',
+        CONF_EMAILBLACKLIST,
+        'cName',
+        $oConfig_arr[$i]->cWertName
+    );
+    $oConfig_arr[$i]->gesetzterWert = isset($oSetValue->cWert)
+        ? $oSetValue->cWert
+        : null;
 }
 
 // Emails auslesen und in Smarty assignen
 $oEmailBlacklist_arr = Shop::DB()->query("SELECT * FROM temailblacklist", 2);
 // Geblockte Emails auslesen und assignen
-$oEmailBlacklistBlock_arr = Shop::DB()->query(
-    "SELECT *, DATE_FORMAT(dLetzterBlock, '%d.%m.%Y %H:%i') AS Datum
+$oEmailBlacklistBlock_arr = Shop::DB()->query("
+    SELECT *, DATE_FORMAT(dLetzterBlock, '%d.%m.%Y %H:%i') AS Datum
         FROM temailblacklistblock
         ORDER BY dLetzterBlock DESC
         LIMIT 100", 2
 );
 
 $smarty->assign('Sprachen', gibAlleSprachen())
-       ->assign('oEmailBlacklist_arr', (is_array($oEmailBlacklist_arr)) ? $oEmailBlacklist_arr : [])
-       ->assign('oEmailBlacklistBlock_arr', (is_array($oEmailBlacklistBlock_arr)) ? $oEmailBlacklistBlock_arr : [])
+       ->assign('oEmailBlacklist_arr', is_array($oEmailBlacklist_arr) ? $oEmailBlacklist_arr : [])
+       ->assign('oEmailBlacklistBlock_arr', is_array($oEmailBlacklistBlock_arr) ? $oEmailBlacklistBlock_arr : [])
        ->assign('oConfig_arr', $oConfig_arr)
        ->assign('hinweis', $cHinweis)
        ->assign('fehler', $cFehler)

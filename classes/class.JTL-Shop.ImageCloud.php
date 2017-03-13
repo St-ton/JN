@@ -61,16 +61,16 @@ final class ImageCloud
      * Checks whether the hash value exists
      *
      * @param  string $hash image hash
-     * @return boolean
+     * @return $this
      */
     public function exists($hash)
     {
-        $res = Guzzle\Http\StaticClient::head($this->getCloudEndpoint($hash), array(
-            'headers' => array(
+        $res = Guzzle\Http\StaticClient::head($this->getCloudEndpoint($hash), [
+            'headers' => [
                 'User-Agent'      => self::USER_AGENT,
                 'X-Merchant-UUID' => self::$uid
-            )
-        ));
+            ]
+        ]);
 
         return $this;
     }
@@ -89,14 +89,14 @@ final class ImageCloud
         }
 
         $hash = $this->getHash($filename);
-        $res  = Guzzle\Http\StaticClient::post($this->getCloudEndpoint($hash), array(
+        $res  = Guzzle\Http\StaticClient::post($this->getCloudEndpoint($hash), [
             'body'    => file_get_contents($filename),
-            'headers' => array(
+            'headers' => [
                 'User-Agent'      => self::USER_AGENT,
                 'Content-Type'    => $this->getMimeType($filename),
                 'X-Merchant-UUID' => self::$uid
-            )
-        ));
+            ]
+        ]);
 
         $json = $res->getBody(true);
         $obj  = json_decode($json);

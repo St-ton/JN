@@ -4,13 +4,15 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-require_once dirname(__FILE__) . '/syncinclude.php';
+require_once __DIR__ . '/syncinclude.php';
 // Einstellungen holen
-$Einstellungen = Shop::getSettings(array(CONF_BILDER));
+$Einstellungen = Shop::getSettings([CONF_BILDER]);
 
-if ($Einstellungen['bilder']['bilder_externe_bildschnittstelle'] === 'N') { // Schnittstelle ist deaktiviert
+if ($Einstellungen['bilder']['bilder_externe_bildschnittstelle'] === 'N') {
+    // Schnittstelle ist deaktiviert
     exit();
-} elseif ($Einstellungen['bilder']['bilder_externe_bildschnittstelle'] === 'W') { // Nur Wawi darf zugreifen
+} elseif ($Einstellungen['bilder']['bilder_externe_bildschnittstelle'] === 'W') {
+    // Nur Wawi darf zugreifen
     if (!auth()) {
         exit();
     }
@@ -28,11 +30,12 @@ if ($kArtikel > 0 && $nBildNummer > 0 && $nSize > 0) {
     if (!isset($oKundengruppe->kKundengruppe)) {
         exit();
     }
-    $shopURL = Shop::getURL();
-    // Alle Bilder?
-    if ($kArtikel == $nBildNummer) { // Hole alle Bilder zum Artikel
-        $oArtikelPict_arr = Shop::DB()->query(
-            "SELECT tartikelpict.cPfad
+    $shopURL          = Shop::getURL() . '/';
+    $qry_bildNr       = ($kArtikel === $nBildNummer)
+        ? ''
+        : " AND tartikelpict.nNr = " . $nBildNummer;
+    $oArtikelPict_arr = Shop::DB()->query(
+        "SELECT tartikelpict.cPfad, tartikelpict.kArtikel, tartikel.cSeo, tartikelpict.nNr
                 FROM tartikelpict
                 JOIN tartikel
                     ON tartikel.kArtikel = tartikelpict.kArtikel
@@ -40,48 +43,26 @@ if ($kArtikel > 0 && $nBildNummer > 0 && $nSize > 0) {
                     ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                     AND tartikelsichtbarkeit.kKundengruppe = " . (int)$oKundengruppe->kKundengruppe . "
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                    AND tartikel.kArtikel = " . $kArtikel, 2
-        );
-        if (is_array($oArtikelPict_arr) && count($oArtikelPict_arr) > 0) {
-            foreach ($oArtikelPict_arr as $oArtikelPict) {
-                if ($nURL == 1) {
-                    echo $shopURL . '/' . gibPfadGroesse($nSize) . $oArtikelPict->cPfad . "\n";
-                } else {
-                    // Bild ShopURL
-                    $cBildpfad = $shopURL. '/' . gibPfadGroesse($nSize) . $oArtikelPict->cPfad;
-                    // Format ermitteln
-                    $cBildformat = gibBildformat($cBildpfad);
-                    // @ToDo - Bild ausgeben
-                    if ($cBildformat) {
-                        exit();
-                    }
-                }
-            }
-        }
-    } else { // Hole nur 1 Bild
-        $oArtikelPict = Shop::DB()->query(
-            "SELECT tartikelpict.cPfad
-                FROM tartikelpict
-                JOIN tartikel
-                    ON tartikel.kArtikel = tartikelpict.kArtikel
-                LEFT JOIN tartikelsichtbarkeit
-                    ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                    AND tartikelsichtbarkeit.kKundengruppe = " . (int)$oKundengruppe->kKundengruppe . "
-                WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                    AND tartikel.kArtikel = " . $kArtikel . "
-                    AND tartikelpict.nNr = " . $nBildNummer, 1
-        );
-        if (strlen($oArtikelPict->cPfad) > 0) {
-            if ($nURL == 1) {
-                echo $shopURL . '/' . gibPfadGroesse($nSize) . $oArtikelPict->cPfad;
+                    AND tartikel.kArtikel = " . $kArtikel . $qry_bildNr, 2
+    );
+
+    if (is_array($oArtikelPict_arr) && count($oArtikelPict_arr) > 0) {
+        foreach ($oArtikelPict_arr as $oArtikelPict) {
+            $image = MediaImage::getThumb(
+                Image::TYPE_PRODUCT,
+                $oArtikelPict->kArtikel,
+                $oArtikelPict,
+                gibPfadGroesse($nSize),
+                $oArtikelPict->nNr
+            );
+            if ($nURL === 1) {
+                echo $shopURL . $image . "<br/>\n";
             } else {
-                // Bild ShopURL
-                $cBildpfad = $shopURL . '/' . gibPfadGroesse($nSize) . $oArtikelPict->cPfad;
                 // Format ermitteln
-                $cBildformat = gibBildformat($cBildpfad);
-                // ToDo - Bild ausgeben
-                if ($cBildformat) {
-                    $im = ladeBild($cBildpfad);
+                $cBildformat = gibBildformat(PFAD_ROOT . $image);
+                // @ToDo - Bilder ausgeben wenn alle angefragt wurden?
+                if ($cBildformat && $kArtikel !== $nBildNummer) {
+                    $im = ladeBild(PFAD_ROOT . $image);
                     if ($im) {
                         header('Content-type: image/' . $cBildformat);
                         imagepng($im);
@@ -104,21 +85,22 @@ function gibPfadGroesse($nSize)
     if ($nSize > 0) {
         switch ($nSize) {
             case 1:
-                return PFAD_PRODUKTBILDER_GROSS;
+                return Image::SIZE_LG;
                 break;
 
             case 2:
-                return PFAD_PRODUKTBILDER_NORMAL;
+                return Image::SIZE_MD;
                 break;
 
             case 3:
-                return PFAD_PRODUKTBILDER_KLEIN;
+                return Image::SIZE_SM;
                 break;
 
             case 4:
-                return PFAD_PRODUKTBILDER_MINI;
+                return Image::SIZE_XS;
                 break;
-
+            default:
+                return 0;
         }
     }
 
@@ -155,7 +137,8 @@ function gibBildformat($cBildPfad)
                 return 'bmp';
             }
             break;
-
+        default:
+            return false;
     }
 
     return false;

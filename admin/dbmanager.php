@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/admininclude.php';
+require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dbcheck_inc.php';
 
 $oAccount->permission('DBCHECK_VIEW', true, true);
@@ -40,7 +40,7 @@ foreach ($tables as $table => $info) {
 $smarty->assign('jsTypo', $jsTypo);
 
 switch (true) {
-    case isset($_GET['table']): {
+    case isset($_GET['table']):
         $table   = $_GET['table'];
         $status  = DBManager::getStatus(DB_NAME, $table);
         $columns = DBManager::getColumns($table);
@@ -53,13 +53,12 @@ switch (true) {
                ->assign('sub', 'table')
                ->display('dbmanager.tpl');
         break;
-    }
 
-    case isset($_GET['select']): {
+    case isset($_GET['select']):
         $table = $_GET['select'];
 
-        if (!preg_match('/^\w+$/i', $table, $m)) {
-            die('no no no');
+        if (!preg_match('/^\w+$/i', $table, $m) || !validateToken()) {
+            die('Not allowed.');
         }
 
         $status  = DBManager::getStatus(DB_NAME, $table);
@@ -76,8 +75,8 @@ switch (true) {
         $filter = array_merge($defaultFilter, $filter);
 
         // validate filter
-        $filter['limit'] = (int) $filter['limit'];
-        $page            = isset($_GET['page']) ? (int) $_GET['page'] : 1;
+        $filter['limit'] = (int)$filter['limit'];
+        $page            = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 
         if ($page < 1) {
             $page = 1;
@@ -98,8 +97,9 @@ switch (true) {
         // where
         if (isset($filter['where']['col'])) {
             $whereParts = [];
-            for ($i = 0; $i < count($filter['where']['col']); $i++) {
-                if (!@empty($filter['where']['col'][$i]) && !@empty($filter['where']['op'][$i])) {
+            $columnCount = count($filter['where']['col']);
+            for ($i = 0; $i < $columnCount; $i++) {
+                if (!empty($filter['where']['col'][$i]) && !empty($filter['where']['op'][$i])) {
                     $col = $filter['where']['col'][$i];
                     $val = $filter['where']['val'][$i];
                     $op  = strtoupper($filter['where']['op'][$i]);
@@ -119,7 +119,7 @@ switch (true) {
         // count without limit
         $query = implode(' ', $queryParts);
         $count = Shop::DB()->executeQueryPrepared($query, $queryParams, 3);
-        $pages = (int) ceil($count / $filter['limit']);
+        $pages = (int)ceil($count / $filter['limit']);
 
         // limit
         $queryParams['limit_count']  = $filter['limit'];
@@ -127,12 +127,8 @@ switch (true) {
         $queryParts['limit']         = "LIMIT :limit_offset, :limit_count";
 
         $query = implode(' ', $queryParts);
-
-        //$q = Shop::DB()->readableQuery($query, $queryParams);
-        //dd($q, $query, $queryParts, $queryParams);
-
-        $info = null;
-        $data = Shop::DB()->executeQueryPrepared($query, $queryParams, 9, false, false, function ($o) use (&$info) {
+        $info  = null;
+        $data  = Shop::DB()->executeQueryPrepared($query, $queryParams, 9, false, false, function ($o) use (&$info) {
             $info = $o;
         });
 
@@ -148,14 +144,17 @@ switch (true) {
                ->assign('sub', 'select')
                ->display('dbmanager.tpl');
         break;
-    }
 
-    case isset($_GET['command']): {
+    case isset($_GET['command']):
         $command = $_GET['command'];
-
+        $query   = null;
         if (isset($_POST['query'])) {
             $query = $_POST['query'];
+        } elseif (isset($_POST['sql_query_edit'])) {
+            $query = $_POST['sql_query_edit'];
+        }
 
+        if ($query !== null && validateToken()) {
             try {
                 $parser = new SqlParser\Parser($query);
 
@@ -174,7 +173,7 @@ switch (true) {
                         if ($dbname !== null && strcasecmp($dbname, DB_NAME) !== 0) {
                             throw new \Exception(sprintf('Well, at least u tried :)'));
                         }
-                        if (in_array(strtolower($table), $restrictedTables)) {
+                        if (in_array(strtolower($table), $restrictedTables, true)) {
                             throw new \Exception(sprintf('Permission denied for table `%s`', $table));
                         }
                     }
@@ -204,14 +203,12 @@ switch (true) {
         $smarty->assign('sub', 'command')
                ->display('dbmanager.tpl');
         break;
-    }
 
-    default: {
+    default:
         $definedTables = array_keys(getDBFileStruct() ?: []);
 
         $smarty->assign('definedTables', $definedTables)
                ->assign('sub', 'default')
                ->display('dbmanager.tpl');
         break;
-    }
 }

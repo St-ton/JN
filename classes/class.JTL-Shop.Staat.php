@@ -48,7 +48,7 @@ class Staat
         $methods = get_class_methods($this);
         foreach ($options as $key => $value) {
             $method = 'set' . ucfirst($key);
-            if (in_array($method, $methods) && method_exists($this, $method)) {
+            if (in_array($method, $methods, true) && method_exists($this, $method)) {
                 $this->$method($value);
             }
         }
@@ -94,7 +94,7 @@ class Staat
      */
     public function setStaat($kStaat)
     {
-        $this->kStaat = (int) $kStaat;
+        $this->kStaat = (int)$kStaat;
 
         return $this;
     }
@@ -141,14 +141,14 @@ class Staat
         if (strlen($cLandIso) === 2) {
             $oObj_arr = Shop::DB()->selectAll('tstaat', 'cLandIso', $cLandIso);
             if (is_array($oObj_arr) && count($oObj_arr) > 0) {
-                $oStaat_arr = array();
+                $oStaat_arr = [];
                 foreach ($oObj_arr as $oObj) {
-                    $options = array(
+                    $options = [
                         'Staat'   => $oObj->kStaat,
                         'LandIso' => $oObj->cLandIso,
                         'Name'    => $oObj->cName,
                         'Code'    => $oObj->cCode,
-                    );
+                    ];
 
                     $oStaat_arr[] = new self($options);
                 }
@@ -176,12 +176,12 @@ class Staat
             }
             $oObj = Shop::DB()->select('tstaat', 'cCode', $cCode, $key2, $val2);
             if (isset($oObj->kStaat) && $oObj->kStaat > 0) {
-                $options = array(
+                $options = [
                     'Staat'   => $oObj->kStaat,
                     'LandIso' => $oObj->cLandIso,
                     'Name'    => $oObj->cName,
                     'Code'    => $oObj->cCode,
-                );
+                ];
 
                 return new self($options);
             }
@@ -199,12 +199,12 @@ class Staat
         if (strlen($cName) > 0) {
             $oObj = Shop::DB()->select('tstaat', 'cName', $cName);
             if (isset($oObj->kStaat) && $oObj->kStaat > 0) {
-                $options = array(
+                $options = [
                     'Staat'   => $oObj->kStaat,
                     'LandIso' => $oObj->cLandIso,
                     'Name'    => $oObj->cName,
                     'Code'    => $oObj->cCode,
-                );
+                ];
 
                 return new self($options);
             }

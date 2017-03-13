@@ -48,7 +48,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         public function __construct($kKonfigitem = 0, $kKundengruppe = 0)
         {
-            if (intval($kKonfigitem) > 0 && intval($kKundengruppe) > 0) {
+            if ((int)$kKonfigitem > 0 && (int)$kKundengruppe > 0) {
                 $this->loadFromDB($kKonfigitem, $kKundengruppe);
             }
         }
@@ -62,13 +62,26 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         private function loadFromDB($kKonfigitem = 0, $kKundengruppe = 0)
         {
-            $oObj = Shop::DB()->select('tkonfigitempreis', 'kKonfigitem', (int)$kKonfigitem, 'kKundengruppe', (int)$kKundengruppe);
+            $oObj = Shop::DB()->select(
+                'tkonfigitempreis',
+                'kKonfigitem',
+                (int)$kKonfigitem,
+                'kKundengruppe',
+                (int)$kKundengruppe
+            );
 
-            if (isset($oObj->kKonfigitem) && isset($oObj->kKundengruppe) && $oObj->kKonfigitem > 0 && $oObj->kKundengruppe > 0) {
+            if (isset($oObj->kKonfigitem, $oObj->kKundengruppe) &&
+                $oObj->kKonfigitem > 0 &&
+                $oObj->kKundengruppe > 0
+            ) {
                 $cMember_arr = array_keys(get_object_vars($oObj));
                 foreach ($cMember_arr as $cMember) {
                     $this->$cMember = $oObj->$cMember;
                 }
+                $this->kKonfigitem   = (int)$this->kKonfigitem;
+                $this->kKundengruppe = (int)$this->kKundengruppe;
+                $this->kSteuerklasse = (int)$this->kSteuerklasse;
+                $this->nTyp          = (int)$this->nTyp;
             }
         }
 
@@ -88,8 +101,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                     $oObj->$cMember = $this->$cMember;
                 }
             }
-            unset($oObj->kKonfigitem);
-            unset($oObj->kKundengruppe);
+            unset($oObj->kKonfigitem, $oObj->kKundengruppe);
 
             $kPrim = Shop::DB()->insert('tkonfigitempreis', $oObj);
 
@@ -113,7 +125,12 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
             $_upd->fPreis        = $this->fPreis;
             $_upd->nTyp          = $this->getTyp();
 
-            return Shop::DB()->update('tkonfigitempreis', array('kKonfigitem', 'kKundengruppe'), array($this->getKonfigitem(), $this->getKundengruppe()), $_upd);
+            return Shop::DB()->update(
+                'tkonfigitempreis',
+                ['kKonfigitem', 'kKundengruppe'],
+                [$this->getKonfigitem(), $this->getKundengruppe()],
+                $_upd
+            );
         }
 
         /**
@@ -124,7 +141,11 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         public function delete()
         {
-            return Shop::DB()->delete('tkonfigitempreis', ['kKonfigitem', 'kKundengruppe'], [(int)$this->kKonfigitem, (int)$this->kKundengruppe]);
+            return Shop::DB()->delete(
+                'tkonfigitempreis',
+                ['kKonfigitem', 'kKundengruppe'],
+                [(int)$this->kKonfigitem, (int)$this->kKundengruppe]
+            );
         }
 
         /**
@@ -178,7 +199,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         public function setPreis($fPreis)
         {
-            $this->fPreis = floatval($fPreis);
+            $this->fPreis = (float)$fPreis;
 
             return $this;
         }
@@ -230,14 +251,14 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 if (!$oWaehrung->kWaehrung) {
                     $oWaehrung = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
                 }
-                $fPreis *= floatval($oWaehrung->fFaktor);
+                $fPreis *= (float)$oWaehrung->fFaktor;
             }
 
             return $fPreis;
         }
 
         /**
-         * @return mixed
+         * @return int
          */
         public function getTyp()
         {

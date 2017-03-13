@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-require_once dirname(__FILE__) . '/syncinclude.php';
+require_once __DIR__ . '/syncinclude.php';
 
 $return = 3;
 if (auth()) {
@@ -28,7 +28,8 @@ if (auth()) {
             $return = 0;
             foreach ($list as $i => $zip) {
                 if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                    Jtllog::writeLog('bearbeite: ' . $entzippfad . $zip['filename'] . ' size: ' . filesize($entzippfad . $zip['filename']), JTLLOG_LEVEL_DEBUG, false, 'Konfig_xml');
+                    Jtllog::writeLog('bearbeite: ' . $entzippfad . $zip['filename'] . ' size: ' .
+                        filesize($entzippfad . $zip['filename']), JTLLOG_LEVEL_DEBUG, false, 'Konfig_xml');
                 }
                 $cData = file_get_contents($entzippfad . $zip['filename']);
                 $oXml  = simplexml_load_string($cData);
@@ -54,7 +55,7 @@ if (auth()) {
     }
 }
 
-if ($return == 1) {
+if ($return === 2) {
     syncException('Error : ' . $archive->errorInfo(true));
 }
 
@@ -71,27 +72,27 @@ function bearbeiteInsert($oXml)
     // Konfiggruppe
     foreach ($oXml->tkonfiggruppe as $oXmlKonfiggruppe) {
         $oKonfiggruppe = JTLMapArr($oXmlKonfiggruppe, $GLOBALS['mKonfigGruppe']);
-        DBUpdateInsert('tkonfiggruppe', array($oKonfiggruppe), 'kKonfiggruppe');
+        DBUpdateInsert('tkonfiggruppe', [$oKonfiggruppe], 'kKonfiggruppe');
         // Konfiggruppesprache
         foreach ($oXmlKonfiggruppe->tkonfiggruppesprache as $oXmlKonfiggruppesprache) {
             $oKonfiggruppesprache = JTLMapArr($oXmlKonfiggruppesprache, $GLOBALS['mKonfigSprache']);
-            DBUpdateInsert('tkonfiggruppesprache', array($oKonfiggruppesprache), 'kKonfiggruppe', 'kSprache');
+            DBUpdateInsert('tkonfiggruppesprache', [$oKonfiggruppesprache], 'kKonfiggruppe', 'kSprache');
         }
         // Konfiggruppeitem
         loescheKonfigitem($oKonfiggruppe->kKonfiggruppe);
 
         foreach ($oXmlKonfiggruppe->tkonfigitem as $oXmlKonfigitem) {
             $oKonfigitem = JTLMapArr($oXmlKonfigitem, $GLOBALS['mKonfigItem']);
-            DBUpdateInsert('tkonfigitem', array($oKonfigitem), 'kKonfigitem');
+            DBUpdateInsert('tkonfigitem', [$oKonfigitem], 'kKonfigitem');
             // Konfiggruppeitemsprache
             foreach ($oXmlKonfigitem->tkonfigitemsprache as $oXmlKonfigitemsprache) {
                 $oKonfigitemsprache = JTLMapArr($oXmlKonfigitemsprache, $GLOBALS['mKonfigSprache']);
-                DBUpdateInsert('tkonfigitemsprache', array($oKonfigitemsprache), 'kKonfigitem', 'kSprache');
+                DBUpdateInsert('tkonfigitemsprache', [$oKonfigitemsprache], 'kKonfigitem', 'kSprache');
             }
             // Konfiggruppeitemsprache
             foreach ($oXmlKonfigitem->tkonfigitempreis as $oXmlKonfigitempreis) {
                 $oKonfigitempreis = JTLMapArr($oXmlKonfigitempreis, $GLOBALS['mKonfigItemPreis']);
-                DBUpdateInsert('tkonfigitempreis', array($oKonfigitempreis), 'kKonfigitem', 'kKundengruppe');
+                DBUpdateInsert('tkonfigitempreis', [$oKonfigitempreis], 'kKonfigitem', 'kKundengruppe');
             }
         }
     }

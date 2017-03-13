@@ -12,6 +12,9 @@
     {if $cKuponfehler_arr.ungueltig == 11}
         <div class="alert alert-danger">{lang key="invalidCouponCode" section="checkout"}</div>
     {/if}
+    {if $cKuponfehler_arr.ungueltig == 12}
+        <div class="alert alert-danger">{lang key="invalidCouponCode" section="checkout"}</div>
+    {/if}
     {if $cKuponfehler_arr.ungueltig != 1 && $cKuponfehler_arr.ungueltig != 2 && $cKuponfehler_arr.ungueltig != 3 && $cKuponfehler_arr.ungueltig != 4 && $cKuponfehler_arr.ungueltig != 6 && $cKuponfehler_arr.ungueltig != 11}
         <div class="alert alert-danger">{lang key="couponErr99" section="global"}</div>
     {/if}

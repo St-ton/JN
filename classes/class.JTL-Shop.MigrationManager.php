@@ -32,6 +32,7 @@ class MigrationManager
      *
      * @param int $identifier
      * @return array
+     * @throws Exception
      */
     public function migrate($identifier = null)
     {
@@ -137,7 +138,7 @@ class MigrationManager
 
         try {
             Shop::DB()->beginTransaction();
-            call_user_func(array(&$migration, $direction));
+            call_user_func([&$migration, $direction]);
             Shop::DB()->commit();
             $this->migrated($migration, $direction, $start);
         } catch (Exception $e) {
@@ -178,7 +179,7 @@ class MigrationManager
     public function getMigrations()
     {
         if (!is_array(static::$migrations) || count(static::$migrations) === 0) {
-            $migrations = array();
+            $migrations = [];
             $executed   = $this->_getExecutedMigrations();
             $path       = MigrationHelper::getMigrationPath();
 
@@ -188,7 +189,7 @@ class MigrationManager
                     $id    = MigrationHelper::getIdFromFileName($baseName);
                     $info  = MigrationHelper::getInfoFromFileName($baseName);
                     $class = MigrationHelper::mapFileNameToClassName($baseName);
-                    $date  = isset($executed[(int) $id]) ? $executed[(int) $id] : null;
+                    $date  = isset($executed[(int)$id]) ? $executed[(int)$id] : null;
 
                     require_once $filePath;
 
@@ -232,7 +233,7 @@ class MigrationManager
             return $oVersion->kMigration;
         }
 
-        return;
+        return 0;
     }
 
     /**
@@ -242,7 +243,7 @@ class MigrationManager
     {
         $migrations = $this->_getExecutedMigrations();
         if (!is_array($migrations)) {
-            $migrations = array();
+            $migrations = [];
         }
 
         return array_keys($migrations);
@@ -278,9 +279,9 @@ class MigrationManager
 
     /**
      * @param IMigration $migration
-     * @param            $direction
-     * @param            $state
-     * @param            $message
+     * @param string     $direction
+     * @param string     $state
+     * @param string     $message
      */
     public function log(IMigration $migration, $direction, $state, $message)
     {
@@ -297,8 +298,8 @@ class MigrationManager
 
     /**
      * @param IMigration $migration
-     * @param            $direction
-     * @param            $executed
+     * @param string     $direction
+     * @param DateTime   $executed
      * @return $this
      */
     public function migrated(IMigration $migration, $direction, $executed)

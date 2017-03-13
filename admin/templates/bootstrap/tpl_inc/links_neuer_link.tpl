@@ -80,13 +80,13 @@
                 <div class="panel-body">
                     <div class="input-group{if isset($xPlausiVar_arr.cName)} error{/if}">
                         <span class="input-group-addon">
-                            <label for="cName">Name{if isset($xPlausiVar_arr.cName)}<span class="fillout">{#FillOut#}</span>{/if}</label>
+                            <label for="cName">Name{if isset($xPlausiVar_arr.cName)} <span class="fillout">{#FillOut#}</span>{/if}</label>
                         </span>
                         <input type="text" name="cName" id="cName" class="form-control{if isset($xPlausiVar_arr.cName)} fieldfillout{/if}" value="{if isset($xPostVar_arr.cName) && $xPostVar_arr.cName}{$xPostVar_arr.cName}{elseif isset($Link->cName)}{$Link->cName}{/if}" tabindex="1" />
                     </div>
-                    <div class="input-group">
+                    <div class="input-group{if isset($xPlausiVar_arr.nLinkart)} error{/if}">
                         <span class="input-group-addon">
-                            <label>{#linkType#}{if isset($xPlausiVar_arr.nLinkart)}<span class="fillout">{#FillOut#}</span>{/if}</label>
+                            <label>{#linkType#}{if isset($xPlausiVar_arr.nLinkart)} <span class="fillout">{#FillOut#}</span>{/if}</label>
                         </span>
                         <div class="input-group-wrap">
                         {if isset($Link->kPlugin) && $Link->kPlugin > 0}
@@ -121,9 +121,9 @@
                         {/if}
                         </div>
                     </div>
-                    <div class="input-group">
+                    <div class="input-group{if isset($xPlausiVar_arr.cKundengruppen)} error{/if}">
                         <span class="input-group-addon">
-                            <label for="cKundengruppen">{#restrictedToCustomerGroups#}{if isset($xPlausiVar_arr.cKundengruppen)}<span class="fillout">{#FillOut#}</span>{/if}</label>
+                            <label for="cKundengruppen">{#restrictedToCustomerGroups#}{if isset($xPlausiVar_arr.cKundengruppen)} <span class="fillout">{#FillOut#}</span>{/if}</label>
                         </span>
                         <select name="cKundengruppen[]" class="form-control{if isset($xPlausiVar_arr.cKundengruppen)} fieldfillout{/if}" multiple="multiple" size="6" id="cKundengruppen">
                             <option value="-1"{if isset($Link->kLink) && $Link->kLink > 0 && isset($gesetzteKundengruppen[0]) && $gesetzteKundengruppen[0]} selected{elseif isset($xPostVar_arr.cKundengruppen)}
@@ -192,7 +192,10 @@
                             </div>
                         </span>
                         <span class="input-group-btn input-group-addon">
-                            <button title="{#linkPicAdd#}" name="hinzufuegen" value="{#linkPicAdd#}" onclick="return append_file_selector();" class="btn btn-info"><i class="fa fa-plus"></i></button>
+                            <button type="button" title="{#linkPicAdd#}" name="hinzufuegen" value="{#linkPicAdd#}"
+                                    onclick="return append_file_selector();" class="btn btn-info">
+                                <i class="fa fa-plus"></i>
+                            </button>
                         </span>
 
                     </div>
@@ -303,7 +306,7 @@
             </div>
         </form>
         {if isset($Link->kLink)}
-            {getRevisions type='link' key=$Link->kLink show=['cContent'] secondary=true}
+            {getRevisions type='link' key=$Link->kLink show=['cContent'] secondary=true data=$Linkcontent}
         {/if}
     </div>
 </div>

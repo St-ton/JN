@@ -57,8 +57,17 @@
             <div class="col-xs-6 col-md-4 col-lg-3">
                 <div class="thumbnail">
                     <a href="{$Unterkat->cURL}">
-                        {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'Y'}<img src="{$Unterkat->cBildURL}" alt="{$Unterkat->cName}" />{/if}</a>
-                        {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'B'}<div class="caption text-center"><a href="{$Unterkat->cURL}">{$Unterkat->cName}</a></div>{/if}
+                        {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'Y'}
+                            <img src="{$Unterkat->cBildURL}" alt="{$Unterkat->cName}"/>
+                        {/if}
+                    </a>
+                    {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'B'}
+                        <div class="caption text-center">
+                            <a href="{$Unterkat->cURL}">
+                                {$Unterkat->cName}
+                            </a>
+                        </div>
+                    {/if}
                     {if $Einstellungen.navigationsfilter.unterkategorien_beschreibung_anzeigen === 'Y'}
                         <p class="item_desc small text-muted">{$Unterkat->cBeschreibung|strip_tags|truncate:68}</p>
                     {/if}
@@ -95,12 +104,21 @@
             <input type="hidden" name="m" value="{$NaviFilter->MerkmalWert->kMerkmalWert}" />{/if}
         {if isset($NaviFilter->Suchspecial->kKey) && $NaviFilter->Suchspecial->kKey > 0}
             <input type="hidden" name="q" value="{$NaviFilter->Suchspecial->kKey}" />{/if}
-        {if isset($NaviFilter->SuchspecialFilter->kKey) && $NaviFilter->SuchspecialFilter->kKey > 0}
-            <input type="hidden" name="qf" value="{$NaviFilter->SuchspecialFilter->kKey}" />{/if}
         {if isset($NaviFilter->Suche->cSuche) && $NaviFilter->Suche->cSuche|count > 0}
             <input type="hidden" name="suche" value="{$NaviFilter->Suche->cSuche|escape:'htmlall'}" />{/if}
         {if isset($NaviFilter->Tag->kTag) && $NaviFilter->Tag->kTag > 0}
             <input type="hidden" name="t" value="{$NaviFilter->Tag->kTag}" />{/if}
+        {*Suchergebnisfilter*}
+        {if isset($NaviFilter->KategorieFilter->kKategorie) && $NaviFilter->KategorieFilter->kKategorie > 0}
+            <input type="hidden" name="kf" value="{$NaviFilter->KategorieFilter->kKategorie}" />{/if}
+        {if isset($NaviFilter->HerstellerFilter->kHersteller) && $NaviFilter->HerstellerFilter->kHersteller > 0}
+            <input type="hidden" name="hf" value="{$NaviFilter->HerstellerFilter->kHersteller}" />{/if}
+        {if isset($NaviFilter->SuchspecialFilter->kKey) && $NaviFilter->SuchspecialFilter->kKey > 0}
+            <input type="hidden" name="qf" value="{$NaviFilter->SuchspecialFilter->kKey}" />{/if}
+        {if isset($NaviFilter->BewertungFilter->nSterne) && $NaviFilter->BewertungFilter->nSterne > 0}
+            <input type="hidden" name="bf" value="{$NaviFilter->BewertungFilter->nSterne}" />{/if}
+        {if isset($NaviFilter->PreisspannenFilter->cWert) && $NaviFilter->PreisspannenFilter->cWert|count > 0}
+            <input type="hidden" name="pf" value="{$NaviFilter->PreisspannenFilter->cWert}" />{/if}
         {if isset($NaviFilter->MerkmalFilter) && is_array($NaviFilter->MerkmalFilter)}
             {foreach name=merkmalfilter from=$NaviFilter->MerkmalFilter item=mmfilter}
                 <input type="hidden" name="mf{$smarty.foreach.merkmalfilter.iteration}" value="{$mmfilter->kMerkmalWert}" />

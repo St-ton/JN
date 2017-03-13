@@ -14,7 +14,7 @@
         {$Link->Sprache->cContent}
     {/if}
 
-    {if $Link->nLinkart == 11}
+    {if $Link->nLinkart == $smarty.const.LINKTYP_AGB}
         <div id="tos" class="well well-sm">
             {if $AGB->cAGBContentHtml}
                 {$AGB->cAGBContentHtml}
@@ -22,7 +22,7 @@
                 {$AGB->cAGBContentText|nl2br}
             {/if}
         </div>
-    {elseif $Link->nLinkart == 24}
+    {elseif $Link->nLinkart == $smarty.const.LINKTYP_WRB}
         <div id="revocation-instruction" class="well well-sm">
             {if $WRB->cWRBContentHtml}
                 {$WRB->cWRBContentHtml}
@@ -30,27 +30,27 @@
                 {$WRB->cWRBContentText|nl2br}
             {/if}
         </div>
-    {elseif $Link->nLinkart == 5}
+    {elseif $Link->nLinkart == $smarty.const.LINKTYP_STARTSEITE}
         {include file='page/index.tpl'}
-    {elseif $Link->nLinkart == 6}
+    {elseif $Link->nLinkart == $smarty.const.LINKTYP_VERSAND}
         {include file='page/shipping.tpl'}
-    {elseif $Link->nLinkart == 14}
+    {elseif $Link->nLinkart == $smarty.const.LINKTYP_TAGGING}
         {include file='page/tagging.tpl'}
-    {elseif $Link->nLinkart == 15}
+    {elseif $Link->nLinkart == $smarty.const.LINKTYP_LIVESUCHE}
         {include file='page/livesearch.tpl'}
-    {elseif $Link->nLinkart == 16}
+    {elseif $Link->nLinkart == $smarty.const.LINKTYP_HERSTELLER}
         {include file='page/manufacturers.tpl'}
-    {elseif $Link->nLinkart == 18}
+    {elseif $Link->nLinkart == $smarty.const.LINKTYP_NEWSLETTERARCHIV}
         {include file='page/newsletter_archive.tpl'}
-    {elseif $Link->nLinkart == 21}
+    {elseif $Link->nLinkart == $smarty.const.LINKTYP_SITEMAP}
         {include file='page/sitemap.tpl'}
-    {elseif $Link->nLinkart == 23}
+    {elseif $Link->nLinkart == $smarty.const.LINKTYP_GRATISGESCHENK}
         {include file='page/free_gift.tpl'}
-    {elseif $Link->nLinkart == 25 && empty($nFullscreenTemplate)}
+    {elseif $Link->nLinkart == $smarty.const.LINKTYP_PLUGIN && empty($nFullscreenTemplate)}
         {include file="$cPluginTemplate"}
-    {elseif $Link->nLinkart == 26}
+    {elseif $Link->nLinkart == $smarty.const.LINKTYP_AUSWAHLASSISTENT}
         {include file='productwizard/index.tpl'}
-    {elseif $Link->nLinkart == 29}
+    {elseif $Link->nLinkart == $smarty.const.LINKTYP_404}
         {include file='page/404.tpl'}
     {/if}
     {include file='layout/footer.tpl'}

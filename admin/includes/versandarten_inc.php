@@ -12,7 +12,7 @@
 function berechneVersandpreisBrutto($fPreis, $fSteuersatz)
 {
     if ($fPreis > 0) {
-        return round(doubleval($fPreis * ((100 + $fSteuersatz) / 100)), 2);
+        return round((float)($fPreis * ((100 + $fSteuersatz) / 100)), 2);
     }
 
     return 0.0;
@@ -39,7 +39,7 @@ function berechneVersandpreisNetto($fPreis, $fSteuersatz)
  */
 function reorganizeObjectArray($obj_arr, $key)
 {
-    $res = array();
+    $res = [];
     if (is_array($obj_arr)) {
         foreach ($obj_arr as $obj) {
             $arr  = get_object_vars($obj);
@@ -66,7 +66,7 @@ function reorganizeObjectArray($obj_arr, $key)
  */
 function P($arr)
 {
-    $newArr = array();
+    $newArr = [];
     if (is_array($arr)) {
         foreach ($arr as $ele) {
             $newArr = bauePot($newArr, $ele);
@@ -102,16 +102,13 @@ function bauePot($arr, $key)
  */
 function gibGesetzteVersandklassen($cVersandklassen)
 {
-    $gesetzteVK      = array();
+    $gesetzteVK      = [];
     $cVKarr          = explode(' ', trim($cVersandklassen));
     $PVersandklassen = P(Shop::DB()->query("SELECT * FROM tversandklasse ORDER BY kVersandklasse", 2));
     if (is_array($PVersandklassen)) {
         foreach ($PVersandklassen as $vk) {
-            if (in_array($vk->kVersandklasse, $cVKarr)) {
-                $gesetzteVK[$vk->kVersandklasse] = true;
-            } else {
-                $gesetzteVK[$vk->kVersandklasse] = false;
-            }
+            $vk->kVersandklasse = (int)$vk->kVersandklasse;
+            $gesetzteVK[$vk->kVersandklasse] = in_array($vk->kVersandklasse, $cVKarr, true);
         }
     }
     if ($cVersandklassen == '-1') {
@@ -127,7 +124,7 @@ function gibGesetzteVersandklassen($cVersandklassen)
  */
 function gibGesetzteVersandklassenUebersicht($cVersandklassen)
 {
-    $gesetzteVK      = array();
+    $gesetzteVK      = [];
     $cVKarr          = explode(' ', trim($cVersandklassen));
     $PVersandklassen = P(Shop::DB()->query("SELECT * FROM tversandklasse ORDER BY kVersandklasse", 2));
     if (is_array($PVersandklassen)) {
@@ -150,7 +147,7 @@ function gibGesetzteVersandklassenUebersicht($cVersandklassen)
  */
 function gibGesetzteKundengruppen($cKundengruppen)
 {
-    $bGesetzteKG_arr   = array();
+    $bGesetzteKG_arr   = [];
     $cKG_arr           = explode(';', trim($cKundengruppen));
     $oKundengruppe_arr = Shop::DB()->query(
         "SELECT kKundengruppe
@@ -160,11 +157,7 @@ function gibGesetzteKundengruppen($cKundengruppen)
 
     if (is_array($oKundengruppe_arr)) {
         foreach ($oKundengruppe_arr as $oKundengruppe) {
-            if (in_array($oKundengruppe->kKundengruppe, $cKG_arr)) {
-                $bGesetzteKG_arr[$oKundengruppe->kKundengruppe] = true;
-            } else {
-                $bGesetzteKG_arr[$oKundengruppe->kKundengruppe] = false;
-            }
+            $bGesetzteKG_arr[$oKundengruppe->kKundengruppe] = in_array($oKundengruppe->kKundengruppe, $cKG_arr);
         }
     }
     if ($cKundengruppen == '-1') {
@@ -181,7 +174,7 @@ function gibGesetzteKundengruppen($cKundengruppen)
  */
 function getShippingLanguage($kVersandart = 0, $oSprache_arr)
 {
-    $oVersandartSpracheAssoc_arr = array();
+    $oVersandartSpracheAssoc_arr = [];
     $oVersandartSprache_arr      = Shop::DB()->selectAll('tversandartsprache', 'kVersandart', (int)$kVersandart);
     if (is_array($oSprache_arr) && count($oSprache_arr) > 0) {
         foreach ($oSprache_arr as $oSprache) {
@@ -205,7 +198,7 @@ function getShippingLanguage($kVersandart = 0, $oSprache_arr)
  */
 function getZuschlagNames($kVersandzuschlag)
 {
-    $namen = array();
+    $namen = [];
     if (!$kVersandzuschlag) {
         return $namen;
     }
@@ -226,16 +219,18 @@ function getShippingByName($cSearch)
 {
     // Einstellungen Kommagetrennt?
     $cSearch_arr        = explode(',', $cSearch);
-    $allShippingsByName = array();
+    $allShippingsByName = [];
     foreach ($cSearch_arr as $cSearchPos) {
         trim($cSearchPos);
         if (strlen($cSearchPos) > 2) {
             $shippingByName_arr = Shop::DB()->query(
                 "SELECT va.kVersandart, va.cName
                     FROM tversandart AS va
-                    LEFT JOIN tversandartsprache AS vs ON vs.kVersandart = va.kVersandart
+                    LEFT JOIN tversandartsprache AS vs 
+                        ON vs.kVersandart = va.kVersandart
                         AND vs.cName LIKE '%" . Shop::DB()->escape($cSearchPos) . "%'
-                    WHERE va.cName LIKE '%" . Shop::DB()->escape($cSearchPos) . "%' OR vs.cName LIKE '%" . Shop::DB()->escape($cSearchPos) . "%'", 2
+                    WHERE va.cName LIKE '%" . Shop::DB()->escape($cSearchPos) . "%' 
+                    OR vs.cName LIKE '%" . Shop::DB()->escape($cSearchPos) . "%'", 2
             );
             if (!empty($shippingByName_arr)) {
                 if (count($shippingByName_arr) > 1) {

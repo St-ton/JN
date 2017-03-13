@@ -23,21 +23,26 @@ function checkSeo($cSeo)
         return '';
     }
 
-    $i             = 0;
-    $obj           = new stdClass();
-    $cSeo_original = $cSeo;
-    $obj->cSeo     = $cSeo;
+    Shop::DB()->query("SET @IKEY := 0", 10);
+    $obj = Shop::DB()->query(
+        "SELECT oseo.newSeo
+            FROM (
+	            SELECT CONCAT('{$cSeo}', '_', @IKEY:=@IKEY+1) newSeo, @IKEY nOrder
+	            FROM tseo AS iseo
+                WHERE iseo.cSeo LIKE '{$cSeo}%'
+		            AND iseo.cSeo RLIKE '^{$cSeo}(_[0-9]+)?$'
+            ) AS oseo
+            WHERE oseo.newSeo NOT IN (
+	            SELECT iseo.cSeo
+	            FROM tseo AS iseo
+	            WHERE iseo.cSeo LIKE '{$cSeo}_%'
+		            AND iseo.cSeo RLIKE '^{$cSeo}_[0-9]+$'
+            )
+            ORDER BY oseo.nOrder
+            LIMIT 1", 1
+    );
 
-    while (isset($obj->cSeo) && $obj->cSeo) {
-        if ($i > 0) {
-            $cSeo = $cSeo_original . '_' . $i;
-        }
-
-        $i++;
-        $obj = Shop::DB()->select('tseo', 'cSeo', $cSeo);
-    }
-
-    return $cSeo;
+    return isset($obj->newSeo) ? $obj->newSeo : $cSeo;
 }
 
 /**
@@ -46,7 +51,7 @@ function checkSeo($cSeo)
  */
 function iso2ascii($str)
 {
-    $arr = array(
+    $arr = [
         chr(161) => 'A', chr(163) => 'L', chr(165) => 'L', chr(166) => 'S', chr(169) => 'S',
         chr(170) => 'S', chr(171) => 'T', chr(172) => 'Z', chr(174) => 'Z', chr(175) => 'Z',
         chr(177) => 'a', chr(179) => 'l', chr(181) => 'l', chr(182) => 's', chr(185) => 's',
@@ -65,7 +70,7 @@ function iso2ascii($str)
         chr(249) => 'u', chr(250) => 'u', chr(251) => 'u', chr(252) => 'ue', chr(253) => 'y',
         chr(254) => 't', chr(32) => '-', chr(58) => '-', chr(59) => '-',
         chr(92)  => '-', chr(43) => '-', chr(38) => '-', chr(180) => ''
-    );
+    ];
     $str = preg_replace('~[^\w-/]~', '', strtr($str, $arr));
 
     while (strpos($str, '--') !== false) {
@@ -78,7 +83,7 @@ function iso2ascii($str)
 /**
  * Get flat SEO-URL path (removes all slashes from seo-url-path, including leading and trailing slashes)
  *
- * @param string $cSeoPath the seo path e.g. "My/Product/Name"
+ * @param string $cSeoPath - the seo path e.g. "My/Product/Name"
  * @return string - flat SEO-URL Path e.g. "My-Product-Name"
  */
 function getFlatSeoPath($cSeoPath)

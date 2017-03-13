@@ -2,7 +2,6 @@
 <h1>{lang key="forgotPassword" section="global"}</h1>
 
 {include file="snippets/extension.tpl"}
-
 {if !empty($cFehler)}
     <div class="alert alert-danger">{$cFehler}</div>
 {/if}
@@ -23,7 +22,7 @@
                         <div class="form-group float-label-control required">
                             <label for="email" class="control-label">{lang key="emailadress" section="global"}</label>
                             <input
-                            type="text"
+                            type="email"
                             name="email"
                             id="email"
                             class="form-control"

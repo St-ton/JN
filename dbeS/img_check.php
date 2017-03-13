@@ -5,7 +5,7 @@
  */
 
 ob_start();
-require_once dirname(__FILE__) . '/syncinclude.php';
+require_once __DIR__ . '/syncinclude.php';
 
 $return = 3;
 if (auth()) {
@@ -20,14 +20,15 @@ if (auth()) {
             Jtllog::writeLog('Image Check: Anzahl Dateien im Zip: ' . count($list), JTLLOG_LEVEL_DEBUG, false, 'img_check_xml');
         }
 
-        $newTmpDir = PFAD_SYNC_TMP . uniqid("check_") . '/';
+        $newTmpDir = PFAD_SYNC_TMP . uniqid('check_') . '/';
         mkdir($newTmpDir, 0777, true);
 
         if ($extracedList = $archive->extract(PCLZIP_OPT_PATH, $newTmpDir)) {
             $return = 0;
             foreach ($list as $zip) {
                 if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                    Jtllog::writeLog('Image Check: bearbeite: ' . $newTmpDir . $zip['filename'] . ' size: ' . filesize($newTmpDir . $zip['filename']),
+                    Jtllog::writeLog('Image Check: bearbeite: ' . $newTmpDir . $zip['filename'] .
+                        ' size: ' . filesize($newTmpDir . $zip['filename']),
                         JTLLOG_LEVEL_DEBUG, false, 'img_check_xml');
                 }
                 if ($zip['filename'] === 'bildercheck.xml') {
@@ -46,31 +47,13 @@ if (auth()) {
 }
 echo $return;
 
-/*
-$xmlString = <<<XML
-<?xml version='1.0'?>
-<bildcheck cloudURL="http://www.google.de">
-    <item kBild="1" cHash="1024_768_d774fdbe7ff617eff8e28a7f1181b853_367f69f988bfe6f062249c145146eda126e8e4cb248709782974b4499f9aabf395797f98cde3461695eeadc2a40169f4fa73a59bc8432834ad6b49353c2611ba.jpg" />
-    <item kBild="18" cHash="--1024_768_881dd83994a7d74ffd37b7211aa54306_0e8a9a6a33e1549b814b4c06fbb63d7959d7fd0d460981562d8c31cee5f10346c2689c64e8fc4e266389a783d8a1dd4d91278104be41b960e2bb4a304e50a5ff.jpg" />
-    <item kBild="36" cHash="1024_1024_f33f1c16bfbf36b435f86866d128f6a4_e0781a3b0ef4afeb6cd50b119a0ad72ee4263b7edc4d8cb98553e18298f6539ad180b1ade442efa00f7c0909fa8e27ca35a9ba2640284d97529a1e99d31584de.jpg" />
-    <item kBild="48" cHash="994_377_0af357f377013b10a6414238d4c2208d_ce18c4713e7915b566232e9f5618eef3066c61b81473a28eaadc2af8ac498def4521abfc42490c17b70dad8fe0105bc1195262bea11a7d9c5b0da65a7a7c9be1.jpg" />
-    <item kBild="68" cHash="2304_1728_e01d005023e887391c09c504641dab53_feda8d5e50b76329eca6fcb0d385109adf258c6e691017edb65368aa84f52c6b7411bdf24c4e9a1539b1eb8080a108ed4ffadb4680bfe2e2858af12afe1509e8.jpg" />
-    <item kBild="110" cHash="400_600_3fe24cc241cdaaebfcedeb43efed4939_d80bbf48d31125b74e861ad0e5767045c43bc0b00b23fb03bb506187be260ee9158c711f18acb78dc6146872cbe271b057ddd36978e10aeb29d9edd1c6d96a75.jpg" />
-    <item kBild="127" cHash="800_800_31f064ca7d0194eff3a80bc6ffea0ff7_74246cce02d48e0e89a4beeb93d45456d8bac3862fef21b4749b2847f3540947192eb20993528197362fbe1b877090356543fdfcb87760ebd44c3db8c7d8bdea.jpg" />
-</bildcheck>
-XML;
-
-$xml = simplexml_load_string($xmlString);
-bildercheck_xml($xml);
-*/
-
 /**
  * @param SimpleXMLElement $xml
  */
 function bildercheck_xml(SimpleXMLElement $xml)
 {
-    $found  = array();
-    $sqls   = array();
+    $found  = [];
+    $sqls   = [];
     $object = get_object($xml);
     foreach ($object->items as $item) {
         $hash   = Shop::DB()->escape($item->hash);
@@ -84,7 +67,8 @@ function bildercheck_xml(SimpleXMLElement $xml)
             $storage = PFAD_ROOT . PFAD_MEDIA_IMAGE_STORAGE . $image->hash;
             if (!file_exists($storage)) {
                 if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                    Jtllog::writeLog("Dropping orphan {$image->id} -> {$image->hash}: no such file", JTLLOG_LEVEL_DEBUG, false, 'img_check_xml');
+                    Jtllog::writeLog("Dropping orphan {$image->id} -> {$image->hash}: no such file",
+                        JTLLOG_LEVEL_DEBUG, false, 'img_check_xml');
                 }
                 Shop::DB()->delete('tbild', 'kBild', $image->id);
                 Shop::DB()->delete('tartikelpict', 'kBild', $image->id);
@@ -102,7 +86,7 @@ function bildercheck_xml(SimpleXMLElement $xml)
                     'kBild' => $item->id,
                     'cPfad' => $item->hash
                 ];
-                DBUpdateInsert('tbild', array($oBild), 'kBild');
+                DBUpdateInsert('tbild', [$oBild], 'kBild');
                 $found[] = $item->id;
             }
         }
@@ -150,16 +134,17 @@ function push_response($content)
 function get_object(SimpleXMLElement $xml)
 {
     $cloudURL = (string)$xml->attributes()->cloudURL;
-    $check    = (object)array(
+    $check    = (object)[
         'url'   => $cloudURL,
         'cloud' => strlen($cloudURL) > 0,
-        'items' => array()
-    );
+        'items' => []
+    ];
+    /** @var SimpleXMLElement $child */
     foreach ($xml->children() as $child) {
-        $check->items[] = (object)array(
+        $check->items[] = (object)[
             'id'   => (int)$child->attributes()->kBild,
             'hash' => (string)$child->attributes()->cHash
-        );
+        ];
     }
 
     return $check;

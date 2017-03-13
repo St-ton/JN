@@ -16,7 +16,7 @@
                     <th class="text-center">Im Cache</th>
                     <th class="text-center">Fehlerhaft</th>
                     <th class="text-center" width="125">Gr&ouml;&szlig;e</th>
-                    <th class="text-center" width="200">Aktionen</th>
+                    <th class="text-center" width="300">Aktionen</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -43,6 +43,7 @@
                         </td>
                         <td class="text-center action-buttons">
                             <div class="btn-group btn-group-xs" role="group">
+                                <a class="btn btn-default" href="#" data-callback="cleanup" data-type="{$item->type}"><i class="fa fa-trash-o"></i> Verwaiste l&ouml;schen</a>
                                 <a class="btn btn-default" href="#" data-callback="flush" data-type="{$item->type}"><i class="fa fa-trash-o"></i> Cache leeren</a>
                                 <a class="btn btn-default" href="#" data-callback="generate"><i class="fa fa-cog"></i> Generieren</a>
                             </div>
@@ -64,11 +65,10 @@
         $('#cache-items tbody > tr').each(function (i, item) {
             var type = $(item).data('type');
             loadStats(type, function (stats) {
+                var totalCached = 0;
                 $('.item-total', item).text(stats.total);
                 $('.item-corrupted', item).text(stats.corrupted);
                 $('.item-total-size', item).text(formatSize(stats.totalSize));
-
-                var totalCached = 0;
 
                 $(['xs', 'sm', 'md', 'lg']).each(function (i, size) {
                     totalCached += stats.generated[size];
@@ -93,6 +93,96 @@
 
     function generate() {
         startGenerate('product');
+    }
+
+    function cleanup() {
+        running = true;
+        lastResults = [];
+        lastTick = new Date();
+        notify = showGenerateNotify('Bilder werden aufger&auml;mt', 'L&ouml;sche Bilder...');
+        $('.action-buttons a').attr('disabled', true);
+        doCleanup(0);
+    }
+
+    function stopCleanup() {
+        running = false;
+        $('.action-buttons a').attr('disabled', false);
+    }
+
+    function finishCleanup(result) {
+        stopCleanup();
+
+        notify.update({
+            progress: 100,
+            message: 'Insgesamt ' + result.deletedImages + ' Bilder gel&ouml;scht.',
+            type: 'success',
+            title: 'Bilder erfolgreich aufger&auml;mt'
+        });
+    }
+
+    function doCleanup(index) {
+        lastTick = new Date().getTime();
+        var call = loadCleanup(index, function (result) {
+            var items = result.deletes,
+                deleted = result.deletedImages,
+                total = result.total,
+                offsetTick = new Date().getTime() - lastTick,
+                perItem = Math.floor(offsetTick / result.checkedFiles),
+                avg,
+                remaining,
+                eta,
+                readable,
+                percent;
+            if (lastResults.length >= 10) {
+                lastResults.splice(0, 1);
+            }
+            lastResults.push(perItem);
+            avg = average(lastResults);
+            remaining = total - result.checkedFilesTotal;
+            eta = Math.max(0, Math.ceil(remaining * avg));
+            readable = shortGermanHumanizer(eta);
+            percent = Math.round(result.checkedFilesTotal / total * 100, 0);
+            notify.update({
+                message: '<div class="row">' +
+                '<div class="col-sm-4"><strong>' + percent + '</strong>%</div>' +
+                '<div class="col-sm-4 text-center">' + result.checkedFilesTotal + ' / ' + total + '</div>' +
+                '<div class="col-sm-4 text-right">' + readable + '</div>' +
+                '</div>',
+                progress: percent
+            });
+
+            if (result.nextIndex >= total) {
+                finishCleanup(result);
+                return;
+            }
+
+            if (result.nextIndex > 0 && result.nextIndex < total && running) {
+                doCleanup(result.nextIndex);
+            }
+        });
+        $.when(call).done();
+    }
+
+    function loadCleanup(index, callback) {
+        return ajaxCall('bilderverwaltung.php', {action: 'cleanup_storage', index: index}, function (result, xhr) {
+            if (typeof callback === 'function') {
+                callback(result.data);
+            }
+        });
+    }
+
+    function showCleanupNotify(title, message) {
+        return createNotify({
+            title: title,
+            message: message
+        }, {
+            allow_dismiss: true,
+            showProgressbar: true,
+            delay: 0,
+            onClose: function () {
+                stopCleanup();
+            }
+        });
     }
 
     function flush(param) {
@@ -144,18 +234,23 @@
                 rendered = result.renderedImages,
                 total = result.total,
                 offsetTick = new Date().getTime() - lastTick,
-                perItem = Math.floor(offsetTick / items.length);
+                perItem = Math.floor(offsetTick / items.length),
+                avg,
+                remaining,
+                eta,
+                readable,
+                percent;
 
             if (lastResults.length >= 10) {
                 lastResults.splice(0, 1);
             }
             lastResults.push(perItem);
 
-            var avg = average(lastResults),
-                remaining = total - rendered,
-                eta = Math.max(0, Math.ceil(remaining * avg)),
-                readable = shortGermanHumanizer(eta),
-                percent = Math.round(rendered * 100 / total, 0);
+            avg = average(lastResults);
+            remaining = total - rendered;
+            eta = Math.max(0, Math.ceil(remaining * avg));
+            readable = shortGermanHumanizer(eta);
+            percent = Math.round(rendered * 100 / total, 0);
 
             notify.update({
                 message: '<div class="row">' +

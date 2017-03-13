@@ -1,6 +1,6 @@
 {includeMailTemplate template=header type=html}
 
-Sehr {if $Kunde->cAnrede == "w"}geehrte{else}geehrter{/if} {$Kunde->cAnredeLocalized} {$Kunde->cNachname},<br>
+Sehr {if $Kunde->cAnrede == "w"}geehrte{elseif $Kunde->cAnrede == "m"}geehrter{else}geehrte(r){/if} {$Kunde->cAnredeLocalized} {$Kunde->cNachname},<br>
 <br>
 Ihre Bestellung bei {$Einstellungen.global.global_shopname} wurde aktualisiert.<br>
 <br>
@@ -20,17 +20,17 @@ Ihre Bestellung mit Bestellnummer {$Bestellung->cBestellNr} umfasst folgende Pos
                     {/foreach}
                     
                     {* Seriennummer *}
-                    {if $Position->cSeriennummer|@count_characters > 0}
+                    {if $Position->cSeriennummer|strlen > 0}
                         <br>Seriennummer: {$Position->cSeriennummer}
                     {/if}
 
                     {* MHD *}
-                    {if $Position->dMHD|@count_characters > 0}
+                    {if $Position->dMHD|strlen > 0}
                         <br>Mindesthaltbarkeitsdatum: {$Position->dMHD_de}
                     {/if}
 
                     {* Charge *}
-                    {if $Position->cChargeNr|@count_characters > 0}
+                    {if $Position->cChargeNr|strlen > 0}
                         <br>Charge: {$Position->cChargeNr}
                     {/if}
                 {else}
@@ -515,13 +515,13 @@ Sie haben folgende Zahlungsart gewählt: {$Bestellung->cZahlungsartName}<br>
 {elseif $Bestellung->Zahlungsart->cModulId=="za_moneybookers_jtl"}
 {/if}
 
-{if isset($Zahlungsart->cHinweisText) && $Zahlungsart->cHinweisText|count_characters > 0}
+{if isset($Zahlungsart->cHinweisText) && $Zahlungsart->cHinweisText|strlen > 0}
     {$Zahlungsart->cHinweisText}<br>
     <br>
 {/if}
 Über den weiteren Verlauf Ihrer Bestellung werden wir Sie jeweils gesondert informieren.
 
-{if $oTrustedShopsBewertenButton->cURL|count_characters > 0}
+{if $oTrustedShopsBewertenButton->cURL|strlen > 0}
     <br><br>
     Waren Sie mit Ihrer Bestellung zufrieden? Dann würden wir uns über eine Empfehlung freuen ... es dauert auch nur eine Minute.<br>
     <a href="{$oTrustedShopsBewertenButton->cURL}"><img src="{$oTrustedShopsBewertenButton->cPicURL}" alt="Bewerten Sie uns!"></a>

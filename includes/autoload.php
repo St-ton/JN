@@ -17,16 +17,16 @@ require PFAD_ROOT . PFAD_INCLUDES . 'vendor/autoload.php';
  */
 function ShopAutoload($class)
 {
-    $classPaths = array(
+    $classPaths = [
         PFAD_ROOT . PFAD_CLASSES,
         PFAD_ROOT . PFAD_ADMIN . PFAD_CLASSES,
         PFAD_ROOT . PFAD_INCLUDES_EXT,
         PFAD_ROOT . PFAD_CLASSES_CORE
-    );
+    ];
 
     $endsWith = function ($haystack, $needle) {
         $length = strlen($needle);
-        if ($length == 0) {
+        if ($length === 0) {
             return true;
         }
 
@@ -82,7 +82,9 @@ function ShopAutoload($class)
     return false;
 }
 
-if (function_exists('spl_autoload_functions') && !spl_autoload_functions() || !in_array('ShopAutoload', spl_autoload_functions())) {
+if ((function_exists('spl_autoload_functions') && !spl_autoload_functions()) ||
+    !in_array('ShopAutoload', spl_autoload_functions(), true)
+) {
     spl_autoload_extensions('.php');
     spl_autoload_register('ShopAutoload');
 }

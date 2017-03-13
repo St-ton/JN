@@ -61,18 +61,18 @@ class Lieferschein
      * @access protected
      * @var array
      */
-    public $oLieferscheinPos_arr = array();
+    public $oLieferscheinPos_arr = [];
 
     /**
      * @access protected
      * @var array
      */
-    public $oVersand_arr = array();
+    public $oVersand_arr = [];
 
     /**
      * @var array
      */
-    public $oPosition_arr = array();
+    public $oPosition_arr = [];
 
     /**
      * Constructor
@@ -83,7 +83,7 @@ class Lieferschein
      */
     public function __construct($kLieferschein = 0, $oData = null)
     {
-        if (intval($kLieferschein) > 0) {
+        if ((int)$kLieferschein > 0) {
             $this->loadFromDB($kLieferschein, $oData);
         }
     }
@@ -98,7 +98,7 @@ class Lieferschein
      */
     private function loadFromDB($kLieferschein = 0, $oData = null)
     {
-        $kLieferschein = intval($kLieferschein);
+        $kLieferschein = (int)$kLieferschein;
         $oObj          = Shop::DB()->select('tlieferschein', 'kLieferschein', $kLieferschein);
         if ($oObj->kLieferschein > 0) {
             $cMember_arr = array_keys(get_object_vars($oObj));
@@ -110,9 +110,14 @@ class Lieferschein
 
             foreach ($kLieferscheinPos_arr as $oLieferscheinPos) {
                 $oLieferscheinpos                           = new Lieferscheinpos($oLieferscheinPos->kLieferscheinPos);
-                $oLieferscheinpos->oLieferscheinPosInfo_arr = array();
+                $oLieferscheinpos->oLieferscheinPosInfo_arr = [];
 
-                $kLieferscheinPosInfo_arr = Shop::DB()->selectAll('tlieferscheinposinfo', 'kLieferscheinPos', (int)$oLieferscheinPos->kLieferscheinPos, 'kLieferscheinPosInfo');
+                $kLieferscheinPosInfo_arr = Shop::DB()->selectAll(
+                    'tlieferscheinposinfo',
+                    'kLieferscheinPos',
+                    (int)$oLieferscheinPos->kLieferscheinPos,
+                    'kLieferscheinPosInfo'
+                );
                 if (is_array($kLieferscheinPosInfo_arr) && !empty($kLieferscheinPosInfo_arr)) {
                     foreach ($kLieferscheinPosInfo_arr as $oLieferscheinPosInfo) {
                         $oLieferscheinpos->oLieferscheinPosInfo_arr[] = new Lieferscheinposinfo($oLieferscheinPosInfo->kLieferscheinPosInfo);
@@ -197,7 +202,7 @@ class Lieferschein
      */
     public function setLieferschein($kLieferschein)
     {
-        $this->kLieferschein = intval($kLieferschein);
+        $this->kLieferschein = (int)$kLieferschein;
 
         return $this;
     }
@@ -211,7 +216,7 @@ class Lieferschein
      */
     public function setInetBestellung($kInetBestellung)
     {
-        $this->kInetBestellung = intval($kInetBestellung);
+        $this->kInetBestellung = (int)$kInetBestellung;
 
         return $this;
     }
@@ -253,7 +258,7 @@ class Lieferschein
      */
     public function setFulfillment($nFulfillment)
     {
-        $this->nFulfillment = intval($nFulfillment);
+        $this->nFulfillment = (int)$nFulfillment;
 
         return $this;
     }
@@ -267,7 +272,7 @@ class Lieferschein
      */
     public function setStatus($nStatus)
     {
-        $this->nStatus = intval($nStatus);
+        $this->nStatus = (int)$nStatus;
 
         return $this;
     }
@@ -295,7 +300,7 @@ class Lieferschein
      */
     public function setEmailVerschickt($bEmailVerschickt)
     {
-        $this->bEmailVerschickt = (bool) $bEmailVerschickt;
+        $this->bEmailVerschickt = (bool)$bEmailVerschickt;
 
         return $this;
     }
@@ -308,7 +313,7 @@ class Lieferschein
      */
     public function getLieferschein()
     {
-        return intval($this->kLieferschein);
+        return (int)$this->kLieferschein;
     }
 
     /**

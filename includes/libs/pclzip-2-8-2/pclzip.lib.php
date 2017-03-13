@@ -1769,27 +1769,27 @@
   public function privOptionDefaultThreshold(&$p_options)
   {
       $v_result=1;
-    
+
       if (isset($p_options[PCLZIP_OPT_TEMP_FILE_THRESHOLD])
         || isset($p_options[PCLZIP_OPT_TEMP_FILE_OFF])) {
           return $v_result;
       }
-    
+
     // ----- Get 'memory_limit' configuration value
     $v_memory_limit = ini_get('memory_limit');
       $v_memory_limit = trim($v_memory_limit);
       $last = strtolower(substr($v_memory_limit, -1));
- 
+
       if ($last == 'g') {//$v_memory_limit = $v_memory_limit*1024*1024*1024;
-        $v_memory_limit = $v_memory_limit*1073741824;
+        $v_memory_limit = substr($v_memory_limit, 0, strlen($v_memory_limit) - 1)*1073741824;
       }
       if ($last == 'm') {//$v_memory_limit = $v_memory_limit*1024*1024;
-        $v_memory_limit = $v_memory_limit*1048576;
+        $v_memory_limit = substr($v_memory_limit, 0, strlen($v_memory_limit) - 1)*1048576;
       }
       if ($last == 'k') {
-          $v_memory_limit = $v_memory_limit*1024;
+          $v_memory_limit = substr($v_memory_limit, 0, strlen($v_memory_limit) - 1)*1024;
       }
-            
+
       $p_options[PCLZIP_OPT_TEMP_FILE_THRESHOLD] = floor($v_memory_limit*PCLZIP_TEMPORARY_FILE_RATIO);
     
 

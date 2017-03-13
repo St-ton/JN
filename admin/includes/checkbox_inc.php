@@ -11,7 +11,7 @@
  */
 function plausiCheckBox($cPost_arr, $oSprache_arr)
 {
-    $cPlausi_arr = array();
+    $cPlausi_arr = [];
     if (!is_array($oSprache_arr) || count($oSprache_arr) === 0) {
         $cPlausi_arr['oSprache_arr'] = 1;
 
@@ -88,7 +88,7 @@ function speicherCheckBox($cPost_arr, $oSprache_arr)
 {
     if (isset($cPost_arr['kCheckBox']) && (int)$cPost_arr['kCheckBox'] > 0) {
         $oCheckBox = new CheckBox((int)$cPost_arr['kCheckBox']);
-        $oCheckBox->deleteCheckBox(array((int)$cPost_arr['kCheckBox']));
+        $oCheckBox->deleteCheckBox([(int)$cPost_arr['kCheckBox']]);
     } else {
         $oCheckBox = new CheckBox();
     }
@@ -97,7 +97,7 @@ function speicherCheckBox($cPost_arr, $oSprache_arr)
         $oCheckBox->kLink = (int)$cPost_arr['kLink'];
     }
     $oCheckBox->kCheckBoxFunktion = (int)$cPost_arr['kCheckBoxFunktion'];
-    $oCheckBox->cName             = htmlspecialchars($cPost_arr['cName']);
+    $oCheckBox->cName             = htmlspecialchars($cPost_arr['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
     $oCheckBox->cKundengruppe     = gibKeyStringFuerKeyArray($cPost_arr['kKundengruppe'], ';');
     $oCheckBox->cAnzeigeOrt       = gibKeyStringFuerKeyArray($cPost_arr['cAnzeigeOrt'], ';');
     $oCheckBox->nAktiv            = 0;
@@ -114,8 +114,8 @@ function speicherCheckBox($cPost_arr, $oSprache_arr)
     }
     $oCheckBox->nSort       = (int)$cPost_arr['nSort'];
     $oCheckBox->dErstellt   = 'now()';
-    $cTextAssoc_arr         = array();
-    $cBeschreibungAssoc_arr = array();
+    $cTextAssoc_arr         = [];
+    $cBeschreibungAssoc_arr = [];
     foreach ($oSprache_arr as $oSprache) {
         $cTextAssoc_arr[$oSprache->cISO]         = str_replace('"', '&quot;', $cPost_arr['cText_' . $oSprache->cISO]);
         $cBeschreibungAssoc_arr[$oSprache->cISO] = str_replace('"', '&quot;', $cPost_arr['cBeschreibung_' . $oSprache->cISO]);

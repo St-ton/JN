@@ -54,9 +54,9 @@ class WunschlistePosEigenschaft
      */
     public function __construct($kEigenschaft, $kEigenschaftWert, $cFreifeldWert, $cEigenschaftName, $cEigenschaftWertName, $kWunschlistePos)
     {
-        $this->kEigenschaft         = intval($kEigenschaft);
-        $this->kEigenschaftWert     = intval($kEigenschaftWert);
-        $this->kWunschlistePos      = intval($kWunschlistePos);
+        $this->kEigenschaft         = (int)$kEigenschaft;
+        $this->kEigenschaftWert     = (int)$kEigenschaftWert;
+        $this->kWunschlistePos      = (int)$kWunschlistePos;
         $this->cFreifeldWert        = $cFreifeldWert;
         $this->cEigenschaftName     = $cEigenschaftName;
         $this->cEigenschaftWertName = $cEigenschaftWertName;

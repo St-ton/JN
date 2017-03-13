@@ -74,7 +74,7 @@ class StringHandler
      */
     public static function gethtmltranslationtable($cFlag = ENT_QUOTES, $cEncoding = JTL_CHARSET)
     {
-        if (floatval(phpversion()) >= 5.4) {
+        if (version_compare(PHP_VERSION, '5.4.0', '>=')) {
             return get_html_translation_table(HTML_ENTITIES, $cFlag, $cEncoding);
         }
 
@@ -97,11 +97,11 @@ class StringHandler
         }
         $cString = trim(strip_tags($input));
         $cString = ($nSuche == 1) ?
-            str_replace(array('\\\'', '\\'), '', $cString) :
-            str_replace(array('\"', '\\\'', '\\', '"', '\''), '', $cString);
+            str_replace(['\\\'', '\\'], '', $cString) :
+            str_replace(['\"', '\\\'', '\\', '"', '\''], '', $cString);
 
         if (strlen($cString) > 10 && $nSuche == 1) {
-            $cString = substr(str_replace(array('(', ')', ';'), '', $cString), 0, 50);
+            $cString = substr(str_replace(['(', ')', ';'], '', $cString), 0, 50);
         }
 
         return $cString;
@@ -130,7 +130,7 @@ class StringHandler
         if ($res === false) {
             //some kind of pcre error happend - probably PREG_JIT_STACKLIMIT_ERROR.
             //we could check this via preg_last_error()
-            $res = (function_exists('mb_detect_encoding'))
+            $res = function_exists('mb_detect_encoding')
                 ? (int)(mb_detect_encoding($string, 'UTF-8', true) === 'UTF-8')
                 : 0;
         }
@@ -151,7 +151,7 @@ class StringHandler
             $data    = utf8_encode($data);
         }
         // Fix &entity\n;
-        $data = str_replace(array('&amp;', '&lt;', '&gt;'), array('&amp;amp;', '&amp;lt;', '&amp;gt;'), $data);
+        $data = str_replace(['&amp;', '&lt;', '&gt;'], ['&amp;amp;', '&amp;lt;', '&amp;gt;'], $data);
         $data = preg_replace('/(&#*\w+)[\x00-\x20]+;/u', '$1;', $data);
         $data = preg_replace('/(&#x*[0-9A-F]+);*/iu', '$1;', $data);
         $data = html_entity_decode($data, ENT_COMPAT, 'UTF-8');
@@ -181,7 +181,7 @@ class StringHandler
         } while ($old_data !== $data);
 
         // we are done...
-        return ($convert) ? utf8_decode($data) : $data;
+        return $convert ? utf8_decode($data) : $data;
     }
 
     /**
@@ -234,7 +234,7 @@ class StringHandler
      */
     public static function getISOMappings()
     {
-        $cIso639_2To639_1 = array(
+        $cIso639_2To639_1 = [
             'aar' => 'aa', // Afar
             'abk' => 'ab', // Abkhazian
             'afr' => 'af', // Afrikaans
@@ -419,7 +419,7 @@ class StringHandler
             'yor' => 'yo', // Yoruba
             'zha' => 'za', // Zhuang; Chuang
             'zul' => 'zu'
-        );
+        ];
 
         return $cIso639_2To639_1;
     }
@@ -474,7 +474,7 @@ class StringHandler
             return array_filter(explode(';', $ssk));
         }
 
-        return array();
+        return [];
     }
 
     /**
@@ -490,12 +490,12 @@ class StringHandler
         if ((function_exists('mb_detect_encoding') && mb_detect_encoding($input) !== 'UTF-8') || !self::is_utf8($input)) {
             $input = utf8_encode($input);
         }
-        $input     = (function_exists('idn_to_ascii')) ? idn_to_ascii($input) : $input;
+        $input     = function_exists('idn_to_ascii') ? idn_to_ascii($input) : $input;
         $sanitized = filter_var($input, FILTER_SANITIZE_EMAIL);
 
-        return ($validate) ?
-            filter_var($sanitized, FILTER_VALIDATE_EMAIL) :
-            $sanitized;
+        return $validate
+            ? filter_var($sanitized, FILTER_VALIDATE_EMAIL)
+            : $sanitized;
     }
 
     /**
@@ -511,12 +511,12 @@ class StringHandler
         if ((function_exists('mb_detect_encoding') && mb_detect_encoding($input) !== 'UTF-8') || !self::is_utf8($input)) {
             $input = utf8_encode($input);
         }
-        $input     = (function_exists('idn_to_ascii')) ? idn_to_ascii($input) : $input;
+        $input     = function_exists('idn_to_ascii') ? idn_to_ascii($input) : $input;
         $sanitized = filter_var($input, FILTER_SANITIZE_URL);
 
-        return ($validate) ?
-            filter_var($sanitized, FILTER_VALIDATE_URL) :
-            $sanitized;
+        return $validate
+            ? filter_var($sanitized, FILTER_VALIDATE_URL)
+            : $sanitized;
     }
 
     /**

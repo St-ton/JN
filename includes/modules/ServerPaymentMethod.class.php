@@ -63,7 +63,7 @@ class ServerPaymentMethod extends PaymentMethod
         // Socket Error
         if (!$socket) {
             //echo $errStr;
-            return array('status' => 'error');
+            return ['status' => 'error'];
         }
 
         // Request
@@ -90,8 +90,8 @@ class ServerPaymentMethod extends PaymentMethod
             . "Content-Type: application/x-www-form-urlencoded;charset={$cEncoding}\r\n"
             . "Content-Length: " . strlen($request) . "\r\n"
             . "Connection: close\r\n\r\n";
-        fputs($socket, $header);
-        fputs($socket, $request);
+        fwrite($socket, $header);
+        fwrite($socket, $request);
 
         if ($bLogging && strlen($cLogPfad) > 0) {
             writeLog($cLogPfad, 'postRequest header: ' . $header, 1);
@@ -102,7 +102,7 @@ class ServerPaymentMethod extends PaymentMethod
         $reponseBody   = '';
         $isBody        = false;
         $isChunked     = false;
-        while (feof($socket) == false) {
+        while (feof($socket) === false) {
             $line = fgetss($socket, 256);
             $line = trim($line);
 
@@ -111,7 +111,7 @@ class ServerPaymentMethod extends PaymentMethod
             }
 
             if ($isBody) {
-                if (($isChunked) && ($line === '')) {
+                if ($isChunked && $line === '') {
                     // Read Control Sequence
                     fgetss($socket, 256);
                 } else {
@@ -125,10 +125,13 @@ class ServerPaymentMethod extends PaymentMethod
             }
         }
         fclose($socket);
-
         // Workaround: http://bugs.php.net/bug.php?id=39039 (see first line of Method)
         error_reporting($tempErrorLevel);
 
-        return array('status' => 'success', 'header' => $reponseHeader, 'body' => $reponseBody);
+        return [
+            'status' => 'success',
+            'header' => $reponseHeader,
+            'body'   => $reponseBody
+        ];
     }
 }

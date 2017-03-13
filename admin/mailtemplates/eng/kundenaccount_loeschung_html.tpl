@@ -1,6 +1,6 @@
 {includeMailTemplate template=header type=html}
 
-Dear {$Kunde->cVorname} {$Kunde->cNachname},<br>
+Dear {$Kunde->cAnredeLocalized} {$Kunde->cNachname},<br>
 <br>
 As requested, we have closed your account {$Kunde->cMail} effective today.<br>
 <br>

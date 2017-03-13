@@ -102,6 +102,11 @@ class Zahlungsart extends MainModel
     /**
      * @var string
      */
+    public $cHinweisTextShop;
+
+    /**
+     * @var string
+     */
     public $cGebuehrname;
 
     /**
@@ -123,7 +128,7 @@ class Zahlungsart extends MainModel
      */
     public function setZahlungsart($kZahlungsart)
     {
-        $this->kZahlungsart = (int) $kZahlungsart;
+        $this->kZahlungsart = (int)$kZahlungsart;
 
         return $this;
     }
@@ -256,7 +261,7 @@ class Zahlungsart extends MainModel
      */
     public function setSort($nSort)
     {
-        $this->nSort = (int) $nSort;
+        $this->nSort = (int)$nSort;
 
         return $this;
     }
@@ -275,7 +280,7 @@ class Zahlungsart extends MainModel
      */
     public function setMailSenden($nMailSenden)
     {
-        $this->nMailSenden = (int) $nMailSenden;
+        $this->nMailSenden = (int)$nMailSenden;
 
         return $this;
     }
@@ -294,7 +299,7 @@ class Zahlungsart extends MainModel
      */
     public function setActive($nActive)
     {
-        $this->nActive = (int) $nActive;
+        $this->nActive = (int)$nActive;
 
         return $this;
     }
@@ -351,7 +356,7 @@ class Zahlungsart extends MainModel
      */
     public function setWaehrendBestellung($nWaehrendBestellung)
     {
-        $this->nWaehrendBestellung = (int) $nWaehrendBestellung;
+        $this->nWaehrendBestellung = (int)$nWaehrendBestellung;
 
         return $this;
     }
@@ -370,7 +375,7 @@ class Zahlungsart extends MainModel
      */
     public function setCURL($nCURL)
     {
-        $this->nCURL = (int) $nCURL;
+        $this->nCURL = (int)$nCURL;
 
         return $this;
     }
@@ -389,7 +394,7 @@ class Zahlungsart extends MainModel
      */
     public function setSOAP($nSOAP)
     {
-        $this->nSOAP = (int) $nSOAP;
+        $this->nSOAP = (int)$nSOAP;
 
         return $this;
     }
@@ -408,7 +413,7 @@ class Zahlungsart extends MainModel
      */
     public function setSOCKETS($nSOCKETS)
     {
-        $this->nSOCKETS = (int) $nSOCKETS;
+        $this->nSOCKETS = (int)$nSOCKETS;
 
         return $this;
     }
@@ -427,7 +432,7 @@ class Zahlungsart extends MainModel
      */
     public function setNutzbar($nNutzbar)
     {
-        $this->nNutzbar = (int) $nNutzbar;
+        $this->nNutzbar = (int)$nNutzbar;
 
         return $this;
     }
@@ -454,6 +459,25 @@ class Zahlungsart extends MainModel
     /**
      * @return string
      */
+    public function getHinweisTextShop()
+    {
+        return $this->cHinweisTextShop;
+    }
+
+    /**
+     * @param string $cHinweisTextShop
+     * @return $this
+     */
+    public function setHinweisTextShop($cHinweisTextShop)
+    {
+        $this->cHinweisTextShop = $cHinweisTextShop;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
     public function getGebuehrname()
     {
         return $this->cGebuehrname;
@@ -471,14 +495,14 @@ class Zahlungsart extends MainModel
     }
 
     /**
-     * @param int  $kKey
-     * @param null $oObj
-     * @param null $xOption
+     * @param int         $kKey
+     * @param null|object $oObj
+     * @param null|array  $xOption
      * @return $this
      */
     public function load($kKey, $oObj = null, $xOption = null)
     {
-        $kKey = (int) $kKey;
+        $kKey = (int)$kKey;
         if ($kKey > 0) {
             if ($xOption['iso'] !== null) {
                 $iso = $xOption['iso'];
@@ -513,8 +537,8 @@ class Zahlungsart extends MainModel
      */
     public static function loadAll($active = true, $iso = null)
     {
-        $payments = array();
-        $where    = ($active) ? (' WHERE z.nActive = 1') : '';
+        $payments = [];
+        $where    = $active ? ' WHERE z.nActive = 1' : '';
 
         if ($iso === null) {
             if (isset($_SESSION['cISOSprache'])) {
@@ -525,10 +549,11 @@ class Zahlungsart extends MainModel
             }
         }
 
-        $objs = Shop::DB()->query(
-            "SELECT *
-                FROM tzahlungsart as z
-                LEFT JOIN tzahlungsartsprache as s ON s.kZahlungsart = z.kZahlungsart
+        $objs = Shop::DB()->query("
+            SELECT *
+                FROM tzahlungsart AS z
+                LEFT JOIN tzahlungsartsprache AS s 
+                    ON s.kZahlungsart = z.kZahlungsart
                     AND s.cISOSprache = '{$iso}'
                 {$where}", 2
         );

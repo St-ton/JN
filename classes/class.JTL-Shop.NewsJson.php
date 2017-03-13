@@ -30,17 +30,18 @@ class NewsJson
         $this->timeline->type      = 'default';
         $this->timeline->text      = $cText;
         $this->timeline->startDate = $cStartDate;
-        $this->timeline->date      = array();
+        $this->timeline->date      = [];
 
         if (count($oNews_arr) > 0) {
+            $shopURL = Shop::getURL() . '/';
             foreach ($oNews_arr as $oNews) {
-                $oNewsItem = new NewsItem($oNews->cBetreff, $oNews->cText, $oNews->dGueltigVonJS, Shop::getURL() . "/{$oNews->cUrl}");
+                $oNewsItem = new NewsItem($oNews->cBetreff, $oNews->cText, $oNews->dGueltigVonJS, $shopURL . "{$oNews->cUrl}");
 
                 if ($this->checkMedia($oNews->cVorschauText)) {
                     $oNewsItemAsset = new NewsItemAsset($oNews->cVorschauText);
                     $oNewsItem->addAsset($oNewsItemAsset);
                 } else {
-                    $oNewsItem->text = $oNews->cVorschauText . "<br /><a href='{$oNews->cUrl}' class='btn'>Mehr...</a>";
+                    $oNewsItem->text = $oNews->cVorschauText . '<br /><a href="' . $oNews->cUrl . '" class="btn">Mehr...</a>';
                 }
 
                 $this->timeline->date[] = $oNewsItem;
@@ -62,7 +63,7 @@ class NewsJson
      */
     protected function checkMedia($cMediaLink)
     {
-        $cMedia_arr = array(
+        $cMedia_arr = [
             'youtube.com/watch?v=',
             'vimeo.com/',
             'twitter.com/',
@@ -71,7 +72,7 @@ class NewsJson
             'dailymotion.com/video',
             'wikipedia.org/wiki',
             'soundcloud.com/'
-        );
+        ];
 
         if (strlen($cMediaLink) > 3) {
             foreach ($cMedia_arr as $cMedia) {
@@ -89,7 +90,7 @@ class NewsJson
      */
     public static function buildThumbnail($cOptions_arr)
     {
-        if (isset($cOptions_arr['filename']) && isset($cOptions_arr['path']) && isset($cOptions_arr['isdir']) && !$cOptions_arr['isdir']) {
+        if (isset($cOptions_arr['filename'], $cOptions_arr['path'], $cOptions_arr['isdir']) && !$cOptions_arr['isdir']) {
             $cOptions_arr['thumb'] = Shop::getURL() . '/' . PFAD_NEWSBILDER . "{$cOptions_arr['news']}/{$cOptions_arr['filename']}";
         }
     }

@@ -10,9 +10,9 @@
  */
 function baueMerkmalundVariation($oVergleichsliste)
 {
-    $Tmp_arr          = array();
-    $oMerkmale_arr    = array();
-    $oVariationen_arr = array();
+    $Tmp_arr          = [];
+    $oMerkmale_arr    = [];
+    $oVariationen_arr = [];
     // Falls es min. einen Artikel in der Vergleichsliste gibt ...
     if (isset($oVergleichsliste->oArtikel_arr) && count($oVergleichsliste->oArtikel_arr) > 0) {
         // Alle Artikel in der Vergleichsliste durchgehen
@@ -92,35 +92,35 @@ function gibMaxPrioSpalteV($cExclude, $config)
 {
     $nMax     = 0;
     $cElement = '';
-    if (!in_array('cArtNr', $cExclude) && $config['vergleichsliste']['vergleichsliste_artikelnummer'] > $nMax) {
+    if ($config['vergleichsliste']['vergleichsliste_artikelnummer'] > $nMax && !in_array('cArtNr', $cExclude, true)) {
         $nMax     = $config['vergleichsliste']['vergleichsliste_artikelnummer'];
         $cElement = 'cArtNr';
     }
-    if (!in_array('cHersteller', $cExclude) && $config['vergleichsliste']['vergleichsliste_hersteller'] > $nMax) {
+    if ($config['vergleichsliste']['vergleichsliste_hersteller'] > $nMax && !in_array('cHersteller', $cExclude, true)) {
         $nMax     = $config['vergleichsliste']['vergleichsliste_hersteller'];
         $cElement = 'cHersteller';
     }
-    if (!in_array('cBeschreibung', $cExclude) && $config['vergleichsliste']['vergleichsliste_beschreibung'] > $nMax) {
+    if ($config['vergleichsliste']['vergleichsliste_beschreibung'] > $nMax && !in_array('cBeschreibung', $cExclude, true)) {
         $nMax     = $config['vergleichsliste']['vergleichsliste_beschreibung'];
         $cElement = 'cBeschreibung';
     }
-    if (!in_array('cKurzBeschreibung', $cExclude) && $config['vergleichsliste']['vergleichsliste_kurzbeschreibung'] > $nMax) {
+    if ($config['vergleichsliste']['vergleichsliste_kurzbeschreibung'] > $nMax && !in_array('cKurzBeschreibung', $cExclude, true)) {
         $nMax     = $config['vergleichsliste']['vergleichsliste_kurzbeschreibung'];
         $cElement = 'cKurzBeschreibung';
     }
-    if (!in_array('fArtikelgewicht', $cExclude) && $config['vergleichsliste']['vergleichsliste_artikelgewicht'] > $nMax) {
+    if ($config['vergleichsliste']['vergleichsliste_artikelgewicht'] > $nMax && !in_array('fArtikelgewicht', $cExclude, true)) {
         $nMax     = $config['vergleichsliste']['vergleichsliste_artikelgewicht'];
         $cElement = 'fArtikelgewicht';
     }
-    if (!in_array('fGewicht', $cExclude) && $config['vergleichsliste']['vergleichsliste_versandgewicht'] > $nMax) {
+    if ($config['vergleichsliste']['vergleichsliste_versandgewicht'] > $nMax && !in_array('fGewicht', $cExclude, true)) {
         $nMax     = $config['vergleichsliste']['vergleichsliste_versandgewicht'];
         $cElement = 'fGewicht';
     }
-    if (!in_array('Merkmale', $cExclude) && $config['vergleichsliste']['vergleichsliste_merkmale'] > $nMax) {
+    if ($config['vergleichsliste']['vergleichsliste_merkmale'] > $nMax && !in_array('Merkmale', $cExclude, true)) {
         $nMax     = $config['vergleichsliste']['vergleichsliste_merkmale'];
         $cElement = 'Merkmale';
     }
-    if (!in_array('Variationen', $cExclude) && $config['vergleichsliste']['vergleichsliste_variationen'] > $nMax) {
+    if ($config['vergleichsliste']['vergleichsliste_variationen'] > $nMax && !in_array('Variationen', $cExclude, true)) {
         $cElement = 'Variationen';
     }
 
@@ -135,29 +135,30 @@ function gibMaxPrioSpalteV($cExclude, $config)
  */
 function setzeVergleich($oVergleichsliste)
 {
-    if (isset($oVergleichsliste)) {
-        if (is_array($oVergleichsliste->oArtikel_arr) && count($oVergleichsliste->oArtikel_arr) > 0) {
-            $nVergleiche = Shop::DB()->query(
-                "SELECT count(kVergleichsliste) AS nVergleiche
-                    FROM tvergleichsliste
-                    WHERE cIP = '" . gibIP() . "'
-                        AND dDate > DATE_SUB(now(),INTERVAL 1 DAY)", 1
-            );
+    if (isset($oVergleichsliste->oArtikel_arr) &&
+        is_array($oVergleichsliste->oArtikel_arr) &&
+        count($oVergleichsliste->oArtikel_arr) > 0
+    ) {
+        $nVergleiche = Shop::DB()->query(
+            "SELECT count(kVergleichsliste) AS nVergleiche
+                FROM tvergleichsliste
+                WHERE cIP = '" . gibIP() . "'
+                    AND dDate > DATE_SUB(now(),INTERVAL 1 DAY)", 1
+        );
 
-            if ($nVergleiche->nVergleiche < 3) {
-                $oVergleichslisteTable        = new stdClass();
-                $oVergleichslisteTable->cIP   = gibIP();
-                $oVergleichslisteTable->dDate = date('Y-m-d H:i:s', time());
+        if ($nVergleiche->nVergleiche < 3) {
+            $oVergleichslisteTable        = new stdClass();
+            $oVergleichslisteTable->cIP   = gibIP();
+            $oVergleichslisteTable->dDate = date('Y-m-d H:i:s', time());
 
-                $kVergleichsliste = Shop::DB()->insert('tvergleichsliste', $oVergleichslisteTable);
-                foreach ($oVergleichsliste->oArtikel_arr as $oArtikel) {
-                    $oVergleichslistePosTable                   = new stdClass();
-                    $oVergleichslistePosTable->kVergleichsliste = $kVergleichsliste;
-                    $oVergleichslistePosTable->kArtikel         = $oArtikel->kArtikel;
-                    $oVergleichslistePosTable->cArtikelName     = $oArtikel->cName;
+            $kVergleichsliste = Shop::DB()->insert('tvergleichsliste', $oVergleichslisteTable);
+            foreach ($oVergleichsliste->oArtikel_arr as $oArtikel) {
+                $oVergleichslistePosTable                   = new stdClass();
+                $oVergleichslistePosTable->kVergleichsliste = $kVergleichsliste;
+                $oVergleichslistePosTable->kArtikel         = $oArtikel->kArtikel;
+                $oVergleichslistePosTable->cArtikelName     = $oArtikel->cName;
 
-                    Shop::DB()->insert('tvergleichslistepos', $oVergleichslistePosTable);
-                }
+                Shop::DB()->insert('tvergleichslistepos', $oVergleichslistePosTable);
             }
         }
     }

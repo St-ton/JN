@@ -289,6 +289,7 @@
                     catch(e) { }
                 });
             }
+            $('.g-recaptcha-response').attr('required', true);
         },
         
         popupDep: function() {
@@ -307,13 +308,17 @@
                                 newRecaptcha = $('<div />');
                             if (typeof  siteKey !== 'undefined') {
                                 //create empty recapcha div, give it a unique id and delete the old one
-                                newRecaptcha.attr('id', 'popup-recaptcha').addClass('g-recaptcha');
+                                newRecaptcha.attr('id', 'popup-recaptcha').addClass('g-recaptcha form-group');
                                 recaptcha.replaceWith(newRecaptcha);
                                 grecaptcha.render('popup-recaptcha', {
-                                    'sitekey' : siteKey
+                                    'sitekey' : siteKey,
+                                    'callback' : 'captcha_filled'
+
                                 });
                             }
                         }
+                        addValidationListener();
+                        $('.g-recaptcha-response').attr('required', true);
                     }
                 });
                 return false;
@@ -466,9 +471,16 @@
         }
     };
 
-    $(window).on('load', function () {
-        $.evo.extended().register();
-    });
+    var ie = /(msie|trident)/i.test(navigator.userAgent) ? navigator.userAgent.match(/(msie |rv:)(\d+(.\d+)?)/i)[2] : false;
+    if (ie && parseInt(ie) <= 9) {
+        $(document).ready(function () {
+            $.evo.extended().register();
+        });
+    } else {
+        $(window).on('load', function () {
+            $.evo.extended().register();
+        });
+    }
 
     $(window).on('resize', function () {
         $.evo.extended().autoheight();

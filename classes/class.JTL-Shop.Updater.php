@@ -10,9 +10,9 @@
 class Updater
 {
     /**
-     * @var null|array
+     * @var array
      */
-    protected static $availableVersions = null;
+    protected static $availableVersions;
 
     /**
      * @var boolean
@@ -252,7 +252,7 @@ class Updater
         $lines = file($sqlFile);
         foreach ($lines as $i => $line) {
             $line = trim($line);
-            if (substr($line, 0, 2) === '--' || substr($line, 0, 1) === '#') {
+            if (strpos($line, '--') === 0 || strpos($line, '#') === 0) {
                 unset($lines[$i]);
             }
         }
@@ -270,7 +270,7 @@ class Updater
             return $this->updateToNextVersion();
         }
 
-        return;
+        return null;
     }
 
     /**
@@ -316,7 +316,7 @@ class Updater
             $code  = (int)$e->errorInfo[1];
             $error = Shop::DB()->escape($e->errorInfo[2]);
 
-            if (!in_array($code, array(1062, 1060, 1267))) {
+            if (!in_array($code, [1062, 1060, 1267], true)) {
                 Shop::DB()->rollback();
 
                 $errorCountForLine = 1;
@@ -357,7 +357,7 @@ class Updater
             return $targetVersion;
         }
 
-        $id = end($pendingMigrations);
+        $id = reset($pendingMigrations);
 
         $migration = $manager->getMigrationById($id);
         $manager->executeMigration($migration, IMigration::UP);
@@ -436,7 +436,7 @@ class Updater
             ];
         }
 
-        return;
+        return null;
     }
 
     /**
@@ -450,13 +450,11 @@ class Updater
 
         if ((int)$version->nFehler > 0) {
             if (array_key_exists($version->nZeileBis, $sqls)) {
-                $errorSql = trim($sqls[$version->nZeileBis]);
-
-                return $errorSql;
+                return trim($sqls[$version->nZeileBis]);
             }
         }
 
-        return;
+        return null;
     }
 
     /**
@@ -467,10 +465,14 @@ class Updater
         $directories = [];
         $dir         = PFAD_ROOT . PFAD_UPDATE;
         foreach (scandir($dir) as $key => $value) {
-            if (!in_array($value, array(".", "..")) && is_dir($dir . DIRECTORY_SEPARATOR . $value)) {
-                if (is_numeric($value) && (int)$value > 300 && (int)$value < 500) {
-                    $directories[] = $value;
-                }
+            if (
+                is_numeric($value) &&
+                (int)$value > 300 &&
+                (int)$value < 500 &&
+                !in_array($value, ['.', '..'], true) &&
+                is_dir($dir . DIRECTORY_SEPARATOR . $value)
+            ) {
+                $directories[] = $value;
             }
         }
 

@@ -65,11 +65,14 @@ class Billpay extends PaymentMethod
         return $this;
     }
 
+    /**
+     * @return null|mixed
+     */
     public function getOptions()
     {
         $oCustomer   = $_SESSION['Kunde'];
         $oBasketInfo = $this->getBasketTotal($_SESSION['Warenkorb']);
-        $cBaseUrl    = ($this->getCoreSetting('mode') == 'live') ? BILLPAY_API_PL : BILLPAY_API_PL_TEST;
+        $cBaseUrl    = ($this->getCoreSetting('mode') === 'live') ? BILLPAY_API_PL : BILLPAY_API_PL_TEST;
 
         $params = [
             'version'        => BILLPAY_API_PL_VERSION,
@@ -94,25 +97,27 @@ class Billpay extends PaymentMethod
             $jsonResults = http_get_contents($cOptionsUrl);
 
             if (empty($jsonResults)) {
-                return;
+                return null;
             }
 
             $oResult = json_decode($jsonResults, true);
 
             if (json_last_error() > 0) {
-                return;
+                return null;
             }
 
-            if (isset($oResult['responseStatus']) && isset($oResult['responseStatus']['errorCode'])) {
-                if (intval($oResult['responseStatus']['errorCode']) === 0) {
+            if (isset($oResult['responseStatus'], $oResult['responseStatus']['errorCode'])) {
+                if ((int)$oResult['responseStatus']['errorCode'] === 0) {
                     $_SESSION['za_billpay_jtl']['oOptions_arr'][$cOptionsHash] = $oResult;
 
                     return $oResult;
                 } else {
                     $cCustomerMessage = isset($oResult['responseStatus']['customerMessage'])
-                        ? $oResult['responseStatus']['customerMessage'] : null;
+                        ? $oResult['responseStatus']['customerMessage']
+                        : null;
                     $cMerchantMessage = isset($oResult['responseStatus']['merchantMessage'])
-                        ? $oResult['responseStatus']['merchantMessage'] : null;
+                        ? $oResult['responseStatus']['merchantMessage']
+                        : null;
 
                     if ($cCustomerMessage !== null) {
                         $this->assignMessage($cCustomerMessage, 'error');
@@ -124,7 +129,7 @@ class Billpay extends PaymentMethod
             }
         }
 
-        return;
+        return null;
     }
 
     /**
@@ -205,7 +210,7 @@ class Billpay extends PaymentMethod
 
                         case IPL_CORE_PAYMENT_TYPE_RATE_PAYMENT:
                             $oMail                  = new stdClass();
-                            $oMail->oAttachment_arr = array();
+                            $oMail->oAttachment_arr = [];
 
                             $oPDFAttach = BPHelper::savePDF(BILLPAY_PDF_ATTACHMENT, $cOrderNumber, $oCapture->get_email_attachment_pdf());
                             $oPDFInfo   = BPHelper::savePDF(BILLPAY_PDF_INFORMATION, $cOrderNumber, $oCapture->get_standard_information_pdf());
@@ -304,40 +309,39 @@ class Billpay extends PaymentMethod
 
     /**
      * @param $nPaymentType
-     * @param $fCartAmount
      * @return bool
      */
     public function isUseable($nPaymentType)
     {
         $oOptions = $this->getOptions();
 
-        if ($oOptions == null) {
+        if ($oOptions === null) {
             return false;
         }
 
         switch ($nPaymentType) {
             case IPL_CORE_PAYMENT_TYPE_INVOICE: {
-                return intval($oOptions['paymentOptions']['b2C']['invoice']['enabled']) == 1;
+                return (int)$oOptions['paymentOptions']['b2C']['invoice']['enabled'] === 1;
                 break;
             }
 
             case IPL_CORE_PAYMENT_TYPE_DIRECT_DEBIT: {
-                return intval($oOptions['paymentOptions']['b2C']['directDebit']['enabled']) == 1;
+                return (int)$oOptions['paymentOptions']['b2C']['directDebit']['enabled'] === 1;
                 break;
             }
 
             case IPL_CORE_PAYMENT_TYPE_RATE_PAYMENT: {
-                return intval($oOptions['paymentOptions']['b2C']['transactionCredit']['enabled']) == 1;
+                return (int)$oOptions['paymentOptions']['b2C']['transactionCredit']['enabled'] === 1;
                 break;
             }
 
             case IPL_CORE_PAYMENT_TYPE_PAY_LATER: {
-                return intval($oOptions['paymentOptions']['b2C']['paylater']['enabled']) == 1;
+                return (int)$oOptions['paymentOptions']['b2C']['paylater']['enabled'] === 1;
                 break;
             }
 
             case IPL_CORE_PAYMENT_TYPE_PAY_LATER_COLLATERAL: {
-                return intval($oOptions['paymentOptions']['b2C']['paylaterCollateralPromise']['enabled']) == 1;
+                return (int)$oOptions['paymentOptions']['b2C']['paylaterCollateralPromise']['enabled'] === 1;
                 break;
             }
         }
@@ -357,7 +361,7 @@ class Billpay extends PaymentMethod
      * @param array $args_arr
      * @return bool
      */
-    public function isValidIntern($args_arr = array())
+    public function isValidIntern($args_arr = [])
     {
         // Identitaets- und Bonitaetspruefung fehlgeschlagen
         if (isset($_SESSION['za_billpay_jtl']['bUse']) && !$_SESSION['za_billpay_jtl']['bUse']) {
@@ -381,7 +385,8 @@ class Billpay extends PaymentMethod
     }
 
     /**
-     * @param $mixedData
+     * @param mixed $mixedData
+     * @param bool  $preauthError
      * @return bool
      */
     public function handleAdditional($mixedData, $preauthError = false)
@@ -408,17 +413,17 @@ class Billpay extends PaymentMethod
 
             if ($this->nPaymentType == IPL_CORE_PAYMENT_TYPE_INVOICE) {
                 $oData->bToc = $cBillpay_arr['invoice_toc'] == 'true';
-                $oData->bB2B = $cBillpay_arr['invoice_customer_group'] == 'business';
+                $oData->bB2B = $cBillpay_arr['invoice_customer_group'] === 'business';
             }
 
             if ($this->nPaymentType == IPL_CORE_PAYMENT_TYPE_DIRECT_DEBIT) {
                 $oData->bToc = $cBillpay_arr['direct_debit_toc'] == 'true';
-                $oData->bB2B = $cBillpay_arr['direct_debit_customer_group'] == 'business';
+                $oData->bB2B = $cBillpay_arr['direct_debit_customer_group'] === 'business';
             }
 
             if ($this->nPaymentType == IPL_CORE_PAYMENT_TYPE_PAY_LATER) {
                 $oData->bToc         = $cBillpay_arr['paylater_toc'] == 'true';
-                $oData->bB2B         = $cBillpay_arr['paylater_customer_group'] == 'business';
+                $oData->bB2B         = $cBillpay_arr['paylater_customer_group'] === 'business';
                 $oData->nInstalments = $cBillpay_arr['paylater_instalments_count'];
                 $oData->nDuration    = $cBillpay_arr['paylater_instalment_amount'];
                 $oData->nFeeTotal    = $cBillpay_arr['paylater_fee_absolute'];
@@ -457,50 +462,53 @@ class Billpay extends PaymentMethod
             }
 
             // validation
-            $cMissing_arr = array();
+            $cMissing_arr = [];
 
             if (!$oData->bToc) {
                 $cMissing_arr[] = 'payment_toc';
             }
 
-            if ($this->nPaymentType == IPL_CORE_PAYMENT_TYPE_RATE_PAYMENT || $this->nPaymentType == IPL_CORE_PAYMENT_TYPE_PAY_LATER || $this->nPaymentType == IPL_CORE_PAYMENT_TYPE_PAY_LATER_COLLATERAL) {
-                if (strlen($oData->cTel) == 0) {
+            if ($this->nPaymentType == IPL_CORE_PAYMENT_TYPE_RATE_PAYMENT ||
+                $this->nPaymentType == IPL_CORE_PAYMENT_TYPE_PAY_LATER ||
+                $this->nPaymentType == IPL_CORE_PAYMENT_TYPE_PAY_LATER_COLLATERAL
+            ) {
+                if (strlen($oData->cTel) === 0) {
                     $cMissing_arr[] = 'customer_phone_number';
                 }
             }
 
-            if ($this->nPaymentType == IPL_CORE_PAYMENT_TYPE_DIRECT_DEBIT || $this->nPaymentType == IPL_CORE_PAYMENT_TYPE_PAY_LATER) {
-                if (strlen($oData->cAccountholder) == 0) {
+            if ($this->nPaymentType == IPL_CORE_PAYMENT_TYPE_DIRECT_DEBIT ||
+                $this->nPaymentType == IPL_CORE_PAYMENT_TYPE_PAY_LATER
+            ) {
+                if (strlen($oData->cAccountholder) === 0) {
                     $cMissing_arr[] = 'account_holder';
                 }
-                if (strlen($oData->cAccountnumber) == 0) {
+                if (strlen($oData->cAccountnumber) === 0) {
                     $cMissing_arr[] = 'customer_iban';
                 }
-                if (strtoupper(substr($oData->cAccountnumber, 0, 2)) != 'DE') {
-                    if (strlen($oData->cSortcode) == 0) {
-                        $cMissing_arr[] = 'customer_bic';
-                    }
+                if (strtoupper(substr($oData->cAccountnumber, 0, 2)) !== 'DE' && strlen($oData->cSortcode) === 0) {
+                    $cMissing_arr[] = 'customer_bic';
                 }
             }
 
             if ($oData->bB2B) {
-                if (strlen($oData->cFirma) == 0) {
+                if (strlen($oData->cFirma) === 0) {
                     $cMissing_arr[] = 'company_name';
                 }
-                if (strlen($oData->cInhaber) == 0) {
+                if (strlen($oData->cInhaber) === 0) {
                     $cMissing_arr[] = 'company_holder';
                 }
-                if (strlen($oData->cRechtsform) == 0) {
+                if (strlen($oData->cRechtsform) === 0) {
                     $cMissing_arr[] = 'company_legal_form';
                 }
-                if (strlen($oData->cHrn) == 0) {
+                if (strlen($oData->cHrn) === 0) {
                     $cMissing_arr[] = 'company_register_number';
                 }
             } else {
-                if (strlen($oData->cAnrede) == 0) {
+                if (strlen($oData->cAnrede) === 0) {
                     $cMissing_arr[] = 'customer_salutation';
                 }
-                if (strlen($oData->dGeburtstag) == 0) {
+                if (strlen($oData->dGeburtstag) === 0) {
                     $cMissing_arr[] = 'customer_day_of_birth';
                 } else {
                     $date = new DateTime($oData->dGeburtstag);
@@ -521,12 +529,12 @@ class Billpay extends PaymentMethod
                 $oCustomer->cUSTID = $oData->cUSTID;
             } else {
                 $oCustomer->dGeburtstag = $oData->dGeburtstag;
-                $oCustomer->cAnrede     = $oCustomer->cAnrede     = BPHelper::mapSalutation($oData->cAnrede, true);
+                $oCustomer->cAnrede     = $oCustomer->cAnrede = BPHelper::mapSalutation($oData->cAnrede, true);
             }
 
-            if (count($cMissing_arr) == 0 && $preauthError === false) {
+            if ($preauthError === false && count($cMissing_arr) === 0) {
                 $_SESSION['za_billpay_jtl']['validated'] = true;
-                $_SESSION['za_billpay_jtl']['oOrderEx']  = (object) (array) $oData;
+                $_SESSION['za_billpay_jtl']['oOrderEx']  = (object)(array)$oData;
 
                 return true;
             }
@@ -539,7 +547,7 @@ class Billpay extends PaymentMethod
             'type'     => BPHelper::getPaymentType($this->nPaymentType),
             'shop'     => [
                 'apiKey' => $this->getCoreSetting('publicapicode'),
-                'live'   => $this->getCoreSetting('mode') == 'live'
+                'live'   => $this->getCoreSetting('mode') === 'live'
             ],
             'order' => [
                 'cartAmount'  => $oBasketInfo->fArticle[AMT_GROSS] - $oBasketInfo->fRebate[AMT_GROSS],
@@ -664,7 +672,7 @@ class Billpay extends PaymentMethod
     /**
      * @param string   $cType
      * @param null|int $nPaymentType
-     * @return bool
+     * @return bool|ipl_xml_request
      */
     public function getApi($cType, $nPaymentType = null)
     {
@@ -689,7 +697,7 @@ class Billpay extends PaymentMethod
         $cSecure = md5($this->getCoreSetting('bpsecure'));
         // mode
         $cMode = $this->getCoreSetting('mode');
-        $cURL  = ($cMode == 'live') ? BILLPAY_API : BILLPAY_API_TEST;
+        $cURL  = ($cMode === 'live') ? BILLPAY_API : BILLPAY_API_TEST;
         // default api params
         $oReq = new $cClass($cURL, $nPaymentType);
         $oReq->set_default_params($cMID, $cPID, $cSecure);
@@ -722,10 +730,9 @@ class Billpay extends PaymentMethod
         // p: private customer, b: business customer
         $eCustomerGroup = $oData->bB2B ? 'b' : 'p';
         $oPreAuth       = $this->getApi('preauthorize', $this->nPaymentType);
-
         // customer address
         $oPreAuth->set_customer_details(
-            intval($oCustomer->kKunde),                        // customerid
+            (int)$oCustomer->kKunde,                           // customerid
             BPHelper::strEncode($eCustomerType, 1),            // customertype
             BPHelper::mapSalutation($oCustomer->cAnrede),      // salutation
             BPHelper::strEncode($oCustomer->cTitel, 20),       // title
@@ -733,7 +740,7 @@ class Billpay extends PaymentMethod
             BPHelper::strEncode($oCustomer->cNachname, 50),    // lastname
             BPHelper::strEncode($oCustomer->cStrasse, 50),     // street
             BPHelper::strEncode($oCustomer->cHausnummer, 50),  // streetno
-            BPHelper::strEncode($oCustomer->cAdressZusatz, 50), // addressaddition
+            BPHelper::strEncode($oCustomer->cAdressZusatz, 50),// addressaddition
             BPHelper::strEncode($oCustomer->cPLZ, 10),         // zip
             BPHelper::strEncode($oCustomer->cOrt, 50),         // city
             BPHelper::mapCountryCode($oCustomer->cLand),       // country
@@ -767,7 +774,7 @@ class Billpay extends PaymentMethod
             $oPreAuth->set_shipping_details(1);
         }
         // company information
-        if ($eCustomerGroup == 'b') {
+        if ($eCustomerGroup === 'b') {
             $oPreAuth->set_company_details(
                 BPHelper::strEncode($oCustomer->cFirma, 200), // name
                 BPHelper::strEncode($oData->cRechtsform),     // legal form
@@ -783,7 +790,7 @@ class Billpay extends PaymentMethod
         foreach ($oBasket->PositionenArr as $oPosition) {
             $fPreisEinzelNetto = $oPosition->fPreisEinzelNetto;
             if (isset($oPosition->WarenkorbPosEigenschaftArr) && is_array($oPosition->WarenkorbPosEigenschaftArr) &&
-                (!isset($oPosition->Artikel->kVaterArtikel) || intval($oPosition->Artikel->kVaterArtikel) === 0)
+                (!isset($oPosition->Artikel->kVaterArtikel) || (int)$oPosition->Artikel->kVaterArtikel === 0)
             ) {
                 foreach ($oPosition->WarenkorbPosEigenschaftArr as $oWarenkorbPosEigenschaft) {
                     if ($oWarenkorbPosEigenschaft->fAufpreis > 0) {
@@ -798,8 +805,8 @@ class Billpay extends PaymentMethod
 
             if ($oPosition->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL || $oPosition->nPosTyp == C_WARENKORBPOS_TYP_GRATISGESCHENK) {
                 $oPreAuth->add_article(
-                    intval($oPosition->kArtikel),                                    // articleid
-                    floatval($oPosition->nAnzahl),                                   // articlequantity
+                    (int)$oPosition->kArtikel,                                       // articleid
+                    (float)$oPosition->nAnzahl,                                      // articlequantity
                     BPHelper::strEncode($oPosition->cName[$cISOSprache], 50),        // articlename
                     BPHelper::strEncode($oPosition->Artikel->cKurzBeschreibung, 50), // articledescription
                     BPHelper::fmtAmount($fAmount[AMT_NET], true),                    // articleprice
@@ -808,12 +815,11 @@ class Billpay extends PaymentMethod
             }
         }
         // set total
+        $shippingName = '';
         if (isset($oShipping->cName[$cISOSprache])) {
             $shippingName = BPHelper::strEncode($oShipping->cName[$cISOSprache], 50);
         } elseif (is_string($oShipping->cName)) {
             $shippingName = BPHelper::strEncode($oShipping->cName, 50);
-        } else {
-            $shippingName = '';
         }
 
         $oPreAuth->set_total(
@@ -840,7 +846,7 @@ class Billpay extends PaymentMethod
         switch ($this->nPaymentType) {
             // rate
             case IPL_CORE_PAYMENT_TYPE_RATE_PAYMENT: {
-                $nRate = intval($oData->nRate);
+                $nRate = (int)$oData->nRate;
                 $oRate = $oData->oRate;
 
                 $oPreAuth->set_rate_request(
@@ -882,21 +888,14 @@ class Billpay extends PaymentMethod
         // order history
         if ($eCustomerType == 'e') {
             $oOrder_arr = Shop::DB()->query(
-                "SELECT
-                     tbestellung.dErstellt, tbestellung.fGesamtsumme, twaehrung.cISO, tbestellung.kBestellung
-                  FROM
-                     tbestellung
-                  LEFT JOIN
-                     twaehrung
-                  ON
-                     tbestellung.kWaehrung = twaehrung.kWaehrung
-                  WHERE
-                     kKunde = " . (int) $oCustomer->kKunde . "
-                  ORDER BY
-                     dErstellt
-                  DESC LIMIT 20", 2
+                "SELECT tbestellung.dErstellt, tbestellung.fGesamtsumme, twaehrung.cISO, tbestellung.kBestellung
+                    FROM tbestellung
+                    LEFT JOIN twaehrung
+                        ON tbestellung.kWaehrung = twaehrung.kWaehrung
+                    WHERE kKunde = " . (int)$oCustomer->kKunde . "
+                    ORDER BY dErstellt DESC 
+                    LIMIT 20", 2
             );
-
             if (is_array($oOrder_arr) && count($oOrder_arr) > 0) {
                 foreach ($oOrder_arr as $oOrder) {
                     $oPreAuth->add_order_history(
@@ -925,12 +924,12 @@ class Billpay extends PaymentMethod
                     $oData->cTXID = $oPreAuth->get_bptid();
 
                     if ($this->nPaymentType == IPL_CORE_PAYMENT_TYPE_RATE_PAYMENT) {
-                        // $cNotice = 'Zinsaufschlag f&uuml;r ' . $oRate->nRate . ' Raten (' . $oRate->fBaseFmt . ' x ' . $oRate->fInterest . ' x ' . $oRate->nRate . ') / 100';
-                        // $cNotice = html_entity_decode(utf8_decode($cNotice));
                         // new positions
                         $cName['ger']   = 'Zinsaufschlag';
                         $cName['eng']   = 'Interest charge';
-                        $currencyFactor = (isset($oBasketInfo->cCurrency) && isset($oBasketInfo->cCurrency->fFaktor)) ? $oBasketInfo->cCurrency->fFaktor : 1;
+                        $currencyFactor = (isset($oBasketInfo->cCurrency) && isset($oBasketInfo->cCurrency->fFaktor))
+                            ? $oBasketInfo->cCurrency->fFaktor
+                            : 1;
                         $this->addSpecialPosition($cName, 1, $oRate->feeAbsolute / $currencyFactor, C_WARENKORBPOS_TYP_ZINSAUFSCHLAG, true, true/*, $cNotice*/);
                         $cName['ger'] = 'Bearbeitungsgeb&uuml;hr';
                         $cName['eng'] = 'Processing fee';
@@ -997,24 +996,25 @@ class Billpay extends PaymentMethod
         $oOrder->fuelleBestellung(0);
 
         $fAmount = $oOrder->fGesamtsumme;
-        if ($oOrder->Zahlungsart->cModulId == 'za_billpay_rate_payment_jtl' || $oOrder->Zahlungsart->cModulId == 'za_billpay_paylater_jtl') {
+        if ($oOrder->Zahlungsart->cModulId === 'za_billpay_rate_payment_jtl' || $oOrder->Zahlungsart->cModulId === 'za_billpay_paylater_jtl') {
             $oBasket                = new Warenkorb($oOrder->kWarenkorb);
             $oBasket->Waehrung      = $oOrder->Waehrung;
             $oBasket->PositionenArr = $oOrder->Positionen;
             $deliveryCountry        = 'DE';
-            if (isset($oOrder->Lieferadresse) && isset($oOrder->Lieferadresse->cLand)) {
+            if (isset($oOrder->Lieferadresse, $oOrder->Lieferadresse->cLand)) {
                 $deliveryCountry = $oOrder->Lieferadresse->cLand;
-            } elseif (isset($oOrder->oRechnungsadresse) && isset($oOrder->oRechnungsadresse->cLand)) {
+            } elseif (isset($oOrder->oRechnungsadresse, $oOrder->oRechnungsadresse->cLand)) {
                 $deliveryCountry = $oOrder->oRechnungsadresse->cLand;
             }
             setzeSteuersaetze($deliveryCountry);
-            $fAmount                = $oBasket->gibGesamtsummeWarenOhne(array(C_WARENKORBPOS_TYP_ZINSAUFSCHLAG, C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR), true) * $oBasket->Waehrung->fFaktor;
+            $fAmount = $oBasket->gibGesamtsummeWarenOhne([C_WARENKORBPOS_TYP_ZINSAUFSCHLAG, C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR], true) * $oBasket->Waehrung->fFaktor;
         }
 
         if ($oOrder) {
-            $nDelayInDays = intval($this->getCoreSetting('delayindays'));
-            $nDelayInDays = ($nDelayInDays >= 0 && $nDelayInDays <= BILLPAY_MAX_DELAY_IN_DAYS) ?
-                $nDelayInDays : BILLPAY_MAX_DELAY_IN_DAYS;
+            $nDelayInDays = (int)$this->getCoreSetting('delayindays');
+            $nDelayInDays = ($nDelayInDays >= 0 && $nDelayInDays <= BILLPAY_MAX_DELAY_IN_DAYS)
+                ? $nDelayInDays
+                : BILLPAY_MAX_DELAY_IN_DAYS;
 
             $oInvoice = $this->getApi('invoice_created');
             $oInvoice->set_invoice_params(
@@ -1091,9 +1091,9 @@ class Billpay extends PaymentMethod
     }
 
     /**
-     * @param      $kBestellung
+     * @param int  $kBestellung
      * @param bool $bDelete
-     * @return bool|void
+     * @return bool
      */
     public function cancelOrder($kBestellung, $bDelete = false)
     {
@@ -1101,18 +1101,18 @@ class Billpay extends PaymentMethod
         $oOrder = new Bestellung($kBestellung);
         $oOrder->fuelleBestellung(0);
         $fAmount = $oOrder->fGesamtsumme;
-        if ($oOrder->Zahlungsart->cModulId == 'za_billpay_rate_payment_jtl' || $oOrder->Zahlungsart->cModulId == 'za_billpay_paylater_jtl') {
+        if ($oOrder->Zahlungsart->cModulId === 'za_billpay_rate_payment_jtl' || $oOrder->Zahlungsart->cModulId === 'za_billpay_paylater_jtl') {
             $oBasket                = new Warenkorb($oOrder->kWarenkorb);
             $oBasket->Waehrung      = $oOrder->Waehrung;
             $oBasket->PositionenArr = $oOrder->Positionen;
             $deliveryCountry        = 'DE';
-            if (isset($oOrder->Lieferadresse) && isset($oOrder->Lieferadresse->cLand)) {
+            if (isset($oOrder->Lieferadresse, $oOrder->Lieferadresse->cLand)) {
                 $deliveryCountry = $oOrder->Lieferadresse->cLand;
-            } elseif (isset($oOrder->oRechnungsadresse) && isset($oOrder->oRechnungsadresse->cLand)) {
+            } elseif (isset($oOrder->oRechnungsadresse, $oOrder->oRechnungsadresse->cLand)) {
                 $deliveryCountry = $oOrder->oRechnungsadresse->cLand;
             }
             setzeSteuersaetze($deliveryCountry);
-            $fAmount                = $oBasket->gibGesamtsummeWarenOhne(array(C_WARENKORBPOS_TYP_ZINSAUFSCHLAG, C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR), true) * $oBasket->Waehrung->fFaktor;
+            $fAmount = $oBasket->gibGesamtsummeWarenOhne([C_WARENKORBPOS_TYP_ZINSAUFSCHLAG, C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR], true) * $oBasket->Waehrung->fFaktor;
         }
         if ($oOrder) {
             $oCancel = $this->getApi('cancel');
@@ -1147,17 +1147,17 @@ class Billpay extends PaymentMethod
     public function getBasketTotal($oBasket)
     {
         $oBasketInfo             = new stdClass();
-        $oBasketInfo->fArticle   = array(0, 0);// artikel
-        $oBasketInfo->fShipping  = array(0, 0);// versand
-        $oBasketInfo->fRebate    = array(0, 0);// rabatt
-        $oBasketInfo->fSurcharge = array(0, 0);// zuschlag
-        $oBasketInfo->fTotal     = array(0, 0);// warenkorb
+        $oBasketInfo->fArticle   = [0, 0];// artikel
+        $oBasketInfo->fShipping  = [0, 0];// versand
+        $oBasketInfo->fRebate    = [0, 0];// rabatt
+        $oBasketInfo->fSurcharge = [0, 0];// zuschlag
+        $oBasketInfo->fTotal     = [0, 0];// warenkorb
 
-        $cCurrency = $_SESSION['Waehrung'];
-        if (is_null($cCurrency) || !isset($cCurrency->kWaehrung)) {
+        $cCurrency = isset($_SESSION['Waehrung']) ? $_SESSION['Waehrung'] : null;
+        if ($cCurrency === null || !isset($cCurrency->kWaehrung)) {
             $cCurrency = $oBasket->Waehrung;
         }
-        if (is_null($cCurrency) || !isset($cCurrency->kWaehrung)) {
+        if ($cCurrency === null || !isset($cCurrency->kWaehrung)) {
             $cCurrency = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
         }
 
@@ -1166,7 +1166,7 @@ class Billpay extends PaymentMethod
         foreach ($oBasket->PositionenArr as $oPosition) {
             $fPreisEinzelNetto = $oPosition->fPreisEinzelNetto;
             if (isset($oPosition->WarenkorbPosEigenschaftArr) && is_array($oPosition->WarenkorbPosEigenschaftArr) &&
-                (!isset($oPosition->Artikel->kVaterArtikel) || intval($oPosition->Artikel->kVaterArtikel) === 0)
+                (!isset($oPosition->Artikel->kVaterArtikel) || (int)$oPosition->Artikel->kVaterArtikel === 0)
             ) {
                 foreach ($oPosition->WarenkorbPosEigenschaftArr as $oWarenkorbPosEigenschaft) {
                     if ($oWarenkorbPosEigenschaft->fAufpreis > 0) {
@@ -1230,8 +1230,8 @@ class Billpay extends PaymentMethod
     public function calculateRates($oBasket)
     {
         $oRateInfo                 = new stdClass();
-        $oRateInfo->aRates_arr     = array();
-        $oRateInfo->nAvailable_arr = array();
+        $oRateInfo->aRates_arr     = [];
+        $oRateInfo->nAvailable_arr = [];
         $oBasketInfo               = $this->getBasketTotal($oBasket);
         // load from cache if exists
         $oRateInfo = $this->getCachedRate($oBasketInfo);
@@ -1273,7 +1273,7 @@ class Billpay extends PaymentMethod
                     $oRateInfo->aRates_arr[$nRate]->fOtherSurchargeFmt = BPHelper::fmtAmount($oBasketInfo->fSurcharge[AMT_GROSS] + $oBasketInfo->fShipping[AMT_GROSS], false, true);
 
                     $oRateInfo->nAvailable_arr[]              = $nRate;
-                    $oRateInfo->aRates_arr[$nRate]->oDues_arr = array();
+                    $oRateInfo->aRates_arr[$nRate]->oDues_arr = [];
                     foreach ($aRates['dues'] as $i => $cDue_arr) {
                         $oRateInfo->aRates_arr[$nRate]->oDues_arr[$i]             = new stdClass();
                         $oRateInfo->aRates_arr[$nRate]->oDues_arr[$i]->cType      = BPHelper::strDecode($cDue_arr['type']);
@@ -1305,7 +1305,9 @@ class Billpay extends PaymentMethod
     public function getCachedRate($oBasketInfo)
     {
         $cHash = $this->getRateHash($oBasketInfo);
-        if (isset($_SESSION['za_billpay_jtl']['oCashedRates_arr']) && is_array($_SESSION['za_billpay_jtl']['oCashedRates_arr']) && isset($_SESSION['za_billpay_jtl']['oCashedRates_arr'][$cHash])) {
+        if (isset($_SESSION['za_billpay_jtl']['oCashedRates_arr'], $_SESSION['za_billpay_jtl']['oCashedRates_arr'][$cHash]) &&
+            is_array($_SESSION['za_billpay_jtl']['oCashedRates_arr'])
+        ) {
             $_SESSION['za_billpay_jtl']['oCashedRates_arr'][$cHash]->bFromCache = true;
 
             return $_SESSION['za_billpay_jtl']['oCashedRates_arr'][$cHash];
@@ -1321,7 +1323,7 @@ class Billpay extends PaymentMethod
     {
         $cHash = $this->getRateHash($oRateInfo->oBasketInfo);
         if (!isset($_SESSION['za_billpay_jtl']['oCashedRates_arr'])) {
-            $_SESSION['za_billpay_jtl']['oCashedRates_arr'] = array();
+            $_SESSION['za_billpay_jtl']['oCashedRates_arr'] = [];
         }
         $_SESSION['za_billpay_jtl']['oCashedRates_arr'][$cHash] = $oRateInfo;
     }
@@ -1383,21 +1385,23 @@ class Billpay extends PaymentMethod
     /**
      * @param string $key
      * @param bool   $root
-     * @return null
+     * @return string|null
      */
     public function getCoreSetting($key, $root = false)
     {
         global $Einstellungen;
         if (!is_array($Einstellungen)) {
-            $Einstellungen = Shop::getSettings(array(CONF_ZAHLUNGSARTEN));
+            $Einstellungen = Shop::getSettings([CONF_ZAHLUNGSARTEN]);
         }
 
-        return (isset($Einstellungen['zahlungsarten']['zahlungsart_billpay_' . $key])) ? $Einstellungen['zahlungsarten']['zahlungsart_billpay_' . $key] : null;
+        return isset($Einstellungen['zahlungsarten']['zahlungsart_billpay_' . $key])
+            ? $Einstellungen['zahlungsarten']['zahlungsart_billpay_' . $key]
+            : null;
     }
 
     /**
-     * @param     $cMessage
-     * @param int $nLevel
+     * @param string $cMessage
+     * @param int    $nLevel
      */
     public function log($cMessage, $nLevel = LOGLEVEL_ERROR)
     {
@@ -1405,8 +1409,8 @@ class Billpay extends PaymentMethod
     }
 
     /**
-     * @param     $cMessage
-     * @param     $oObject
+     * @param string $cMessage
+     * @param string $oObject
      * @param int $nLevel
      */
     public function logEx($cMessage, $oObject, $nLevel = LOGLEVEL_ERROR)
@@ -1433,7 +1437,7 @@ class BPHelper
     public static function savePDF($cFile, $cOrderNumber, $cData)
     {
         $cData = base64_decode($cData);
-        if (strcasecmp(substr($cData, 0, 4), FILE_HEADER_PDF) == 0) {
+        if (strcasecmp(substr($cData, 0, 4), FILE_HEADER_PDF) === 0) {
             $oFile            = new stdClass();
             $oFile->cFile     = sprintf($cFile, $cOrderNumber);
             $oFile->cFilePath = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_EMAILPDFS . $oFile->cFile;
@@ -1457,7 +1461,7 @@ class BPHelper
             $nTime = strtotime($cDate);
 
             return date('Ymd' . ($bMis ? ' H:i:s' : ''), $nTime);
-        } elseif (strlen($cDate) == 8) {
+        } elseif (strlen($cDate) === 8) {
             $nYear  = substr($cDate, 0, 4);
             $nMonth = substr($cDate, 4, 2);
             $nDay   = substr($cDate, 6, 2);
@@ -1557,7 +1561,8 @@ class BPHelper
     }
 
     /**
-     * @param $cStr
+     * @param string $cStr
+     * @param bool  $from
      * @return string
      */
     public static function mapSalutation($cStr, $from = false)
@@ -1598,7 +1603,8 @@ class BPHelper
     /**
      * https://techdocs.billpay.de/en/For_decision_makers/Possible_Country_and_Payment_Method_Combinations.html
      *
-     * @param $cISO
+     * @param int    $nPaymentType
+     * @param string $cISO
      * @return bool
      */
     public static function isValidCountry($nPaymentType, $cISO)
@@ -1617,12 +1623,12 @@ class BPHelper
             return false;
         }
 
-        return in_array($cISO, $aValidCombinations[$nPaymentType]);
+        return in_array($cISO, $aValidCombinations[$nPaymentType], true);
     }
 
     /**
      * @param $cISO
-     * @return null|string
+     * @return string
      */
     public static function mapCountryCode($cISO)
     {
@@ -1656,10 +1662,11 @@ class BPHelper
      */
     public static function getTermUrls()
     {
-        return array(
+        return [
             'DEU' => 'https://www.billpay.de/api/agb',
             'CHE' => 'https://www.billpay.de/api/agb-ch',
-            'AUT' => 'https://www.billpay.de/api/agb-at');
+            'AUT' => 'https://www.billpay.de/api/agb-at'
+        ];
     }
 
     /**

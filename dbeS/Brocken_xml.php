@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-require_once dirname(__FILE__) . '/syncinclude.php';
+require_once __DIR__ . '/syncinclude.php';
 
 $return = 3;
 if (auth()) {
@@ -18,20 +18,24 @@ if (auth()) {
                 ORDER BY dErstellt DESC
                 LIMIT 1", 1
         );
-        // Leer?
-        if (!isset($oBrocken->cBrocken) || strlen($oBrocken->cBrocken) === 0) {
+        if (empty($oBrocken->cBrocken)) {
             // Insert
             $oBrocken            = new stdClass();
             $oBrocken->cBrocken  = $cBrocken;
             $oBrocken->dErstellt = 'now()';
 
             Shop::DB()->insert('tbrocken', $oBrocken);
-        } elseif (isset($oBrocken->cBrocken) && strlen($oBrocken->cBrocken) > 0 && $oBrocken->cBrocken != $cBrocken) { // Verändert?
+        } elseif (isset($oBrocken->cBrocken) && $oBrocken->cBrocken !== $cBrocken && strlen($oBrocken->cBrocken) > 0) {
             // Update
-            Shop::DB()->update('tbrocken', 'cBrocken', $oBrocken->cBrocken, (object)['cBrocken' => $cBrocken, 'dErstellt' => 'now()']);
+            Shop::DB()->update(
+                'tbrocken',
+                'cBrocken',
+                $oBrocken->cBrocken,
+                (object)['cBrocken' => $cBrocken, 'dErstellt' => 'now()']
+            );
         }
         $return = 0;
-        Shop::Cache()->flushTags(array(CACHING_GROUP_CORE));
+        Shop::Cache()->flushTags([CACHING_GROUP_CORE]);
     }
 }
 

@@ -4,14 +4,11 @@ include_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
 
 // Mode
 define('PP_MODE', 0); // 1 = Test / 0 = Live
-
 // Debug
 define('D_MODE', 1); // 1 = An / 0 = Aus
 define('D_PFAD', PFAD_LOGFILES . 'ut.log');
-
 // Sandbox
 define('URL_TEST', 'http://transfer.uos-test.com/interfaces/payment.php');
-
 // Live
 define('URL_LIVE', 'https://www.united-online-transfer.com/interfaces/payment.php');
 
@@ -105,7 +102,7 @@ class UT extends PaymentMethod
      */
     public function getISOLang($kSprache)
     {
-        $kSprache = intval($kSprache);
+        $kSprache = (int)$kSprache;
         if ($kSprache > 0) {
             $oSprache = Shop::DB()->query(
                 "SELECT kSprache, cISO
@@ -176,11 +173,7 @@ class UT extends PaymentMethod
      */
     public function isCURL()
     {
-        if (function_exists(curl_init)) {
-            return true;
-        } else {
-            return false;
-        }
+        return function_exists('curl_init');
     }
 
     /**
@@ -188,12 +181,12 @@ class UT extends PaymentMethod
      */
     public function preparePaymentProcess($order)
     {
-        if (isset($_GET['fail']) && intval($_GET['fail']) === 1) {
+        if (isset($_GET['fail']) && (int)$_GET['fail'] === 1) {
             /*** Session Hash ***/
             $cPh = verifyGPDataString('ph');
             $cSh = verifyGPDataString('sh');
 
-            switch (intval($_GET['error'])) {
+            switch ((int)$_GET['error']) {
                 case 1:
                     $cFehler = Shop::Lang()->get('uos1', 'errorMessages');
                     break;
@@ -230,10 +223,13 @@ class UT extends PaymentMethod
                 if (D_MODE === 1) {
                     writeLog(D_PFAD, ': preparePaymentProcess cPh: ' . $cPh, 1);
                 }
-
                 // Payment Hash
                 $paymentHash = StringHandler::htmlentities(StringHandler::filterXSS($cPh));
-                $sql         = "SELECT ZID.kBestellung, ZA.cModulId FROM tzahlungsid ZID LEFT JOIN tzahlungsart ZA ON ZA.kZahlungsart = ZID.kZahlungsart WHERE ZID.cId = '$paymentHash' ";
+                $sql         = "SELECT ZID.kBestellung, ZA.cModulId 
+                                    FROM tzahlungsid ZID 
+                                    LEFT JOIN tzahlungsart ZA 
+                                        ON ZA.kZahlungsart = ZID.kZahlungsart 
+                                    WHERE ZID.cId = '$paymentHash' ";
                 $paymentId   = Shop::DB()->query($sql, 1);
 
                 if ($paymentId->kBestellung > 0) {
@@ -248,8 +244,9 @@ class UT extends PaymentMethod
 
                 // Load from Session Hash / Session Hash starts with "_"
                 $sessionHash    = substr(StringHandler::htmlentities(StringHandler::filterXSS($cSh)), 1);
-                $paymentSession = Shop::DB()->query("SELECT cSID, kBestellung FROM tzahlungsession WHERE cZahlungsID='" . $sessionHash . "'", 1);
+                $paymentSession = Shop::DB()->select('tzahlungsession', 'cZahlungsID', $sessionHash);
                 if (strlen($paymentSession->cSID) > 0) {
+                    /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
                     // Load Session
                     $_COOKIE['JTLSHOP'] = $paymentSession->cSID;
                     new Session();
@@ -263,10 +260,10 @@ class UT extends PaymentMethod
             $paymentHash = $this->generateHash($order);
         }
         // Daten
-        $cUTDaten_arr = array();
+        $cUTDaten_arr = [];
         $kBestellung  = $order->kBestellung;
         if (!$order->kBestellung) {
-            $kBestellung = str_replace(array('.', ' '), '', microtime());
+            $kBestellung = str_replace(['.', ' '], '', microtime());
         }
         // Projekt-Daten
         $cUTDaten_arr['uos_p']        = $this->getProjectID();
@@ -304,8 +301,10 @@ class UT extends PaymentMethod
             $cUTDaten_arr['uos_url_fail']   = Shop::getURL() . '/bestellvorgang.php?editZahlungsart=1';
             $cUTDaten_arr['uos_url_cancel'] = Shop::getURL() . '/bestellvorgang.php?editZahlungsart=1';
         } else {
-            $cUTDaten_arr['uos_url_fail']   = Shop::getURL() . '/bestellab_again.php?kBestellung=' . $order->kBestellung . '&fail=1';
-            $cUTDaten_arr['uos_url_cancel'] = Shop::getURL() . '/bestellab_again.php?kBestellung=' . $order->kBestellung . '&fail=1';
+            $cUTDaten_arr['uos_url_fail']   = Shop::getURL() . '/bestellab_again.php?kBestellung=' .
+                $order->kBestellung . '&fail=1';
+            $cUTDaten_arr['uos_url_cancel'] = Shop::getURL() . '/bestellab_again.php?kBestellung=' .
+                $order->kBestellung . '&fail=1';
         }
 
         if (isset($_SERVER['HTTP_X_FORWARDED_FOR']) && $_SERVER['HTTP_X_FORWARDED_FOR']) {
@@ -315,7 +314,7 @@ class UT extends PaymentMethod
         }
 
         // Kunden-Daten
-        if ($this->payment != 'ut_stand') {
+        if ($this->payment !== 'ut_stand') {
             $cUTDaten_arr['cus_direct'] = 1;
             $cUTDaten_arr['is_direct']  = 1;
         }
@@ -351,12 +350,14 @@ class UT extends PaymentMethod
         } elseif ($cRes['status'] === 'REDIRECT') {
             parse_str($cRes['params'], $data);
             $iframe_url = $data['redirect_url'] . '&lang=' . $this->getISOLang($customer->kSprache);
-            Shop::Smarty()->assign('iFrame', '<iframe src="' . $iframe_url . '" width="100%" height="1250" name="uos_iframe" frameborder="0"></iframe>');
+            Shop::Smarty()->assign('iFrame', '<iframe src="' . $iframe_url .
+                '" width="100%" height="1250" name="uos_iframe" frameborder="0"></iframe>');
         } else {
             if ($this->duringCheckout) {
                 header('Location: ' . Shop::getURL() . '/bestellvorgang.php?editZahlungsart=1');
             } else {
-                header('Location: ' . Shop::getURL() . '/bestellab_again.php?kBestellung=' . $order->kBestellung . '&params=' . base64_encode($cRes['params']) . '&fail=1');
+                header('Location: ' . Shop::getURL() . '/bestellab_again.php?kBestellung=' .
+                    $order->kBestellung . '&params=' . base64_encode($cRes['params']) . '&fail=1');
             }
 
             exit();
@@ -420,20 +421,18 @@ class UT extends PaymentMethod
      * @param array $cUOSDaten_arr
      * @return mixed|string
      */
-    public function doUOSRequest($cUOSDaten_arr = array())
+    public function doUOSRequest($cUOSDaten_arr = [])
     {
         // Wenn kein Curl vorhanden dann gleich abbrechen
         if (!$this->isCURL()) {
             return 'status=FAIL&code_1=300&msg_1=' . urlencode('Curl Fehler');
         }
-
         $cUOSDaten_arr = $this->convertUTF8($cUOSDaten_arr);
-
         // String erzeugen
         $cDataString = '';
         if (is_array($cUOSDaten_arr) && count($cUOSDaten_arr) > 0) {
             foreach ($cUOSDaten_arr as $k => $cUOSDaten) {
-                if ($cUOSDaten != '' || is_numeric($cUOSDaten)) {
+                if ($cUOSDaten !== '' || is_numeric($cUOSDaten)) {
                     $cDataString .= urlencode($k) . '=' . urlencode($cUOSDaten) . '&';
                 }
             }
@@ -442,7 +441,7 @@ class UT extends PaymentMethod
         }
 
         $oCURL = curl_init();
-        curl_setopt($oCURL, CURLOPT_URL, PP_MODE == 1 ? URL_TEST : URL_LIVE);
+        curl_setopt($oCURL, CURLOPT_URL, PP_MODE === 1 ? URL_TEST : URL_LIVE);
         curl_setopt($oCURL, CURLOPT_HEADER, 0);
         curl_setopt($oCURL, CURLOPT_FAILONERROR, 1);
         curl_setopt($oCURL, CURLOPT_TIMEOUT, 25);
@@ -479,7 +478,7 @@ class UT extends PaymentMethod
         $status      = $statusArray[1];
         $params      = substr($params, 1);
 
-        return array('status' => $status, 'params' => $params);
+        return ['status' => $status, 'params' => $params];
     }
 
     /**
@@ -508,7 +507,7 @@ class UT extends PaymentMethod
 
             return @!((ord($enc[0]) != 239) && (ord($enc[1]) != 187) && (ord($enc[2]) != 191));
         } else {
-            return (utf8_encode(utf8_decode($string)) == $string);
+            return (utf8_encode(utf8_decode($string)) === $string);
         }
     }
 

@@ -34,7 +34,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
 
         /**
          * @access protected
-         * @var enum
+         * @var string
          */
         protected $eFunktion;
 
@@ -47,12 +47,12 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         /**
          * Constructor
          *
-         * @param int kRMAStatus primarykey
+         * @param int $kRMAStatus
          * @access public
          */
         public function __construct($kRMAStatus = 0)
         {
-            if (intval($kRMAStatus) > 0) {
+            if ((int)$kRMAStatus > 0) {
                 $this->loadFromDB($kRMAStatus);
             }
         }
@@ -60,7 +60,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         /**
          * Loads database member into class member
          *
-         * @param int $kRMAStatus primarykey
+         * @param int $kRMAStatus
          * @access private
          */
         private function loadFromDB($kRMAStatus)
@@ -138,7 +138,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         public function setRMAStatus($kRMAStatus)
         {
-            $this->kRMAStatus = intval($kRMAStatus);
+            $this->kRMAStatus = (int)$kRMAStatus;
 
             return $this;
         }
@@ -152,7 +152,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         public function setSprache($kSprache)
         {
-            $this->kSprache = intval($kSprache);
+            $this->kSprache = (int)$kSprache;
 
             return $this;
         }
@@ -194,7 +194,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         public function setAktiv($nAktiv)
         {
-            $this->nAktiv = intval($nAktiv);
+            $this->nAktiv = (int)$nAktiv;
 
             return $this;
         }
@@ -268,9 +268,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
                 if ($kRMAStatus > 0) {
                     return $bPrimary ? $kRMAStatus : true;
                 }
-            } else {
-                return $cPlausi_arr;
             }
+
+            return $cPlausi_arr;
         }
 
         /**
@@ -294,7 +294,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         private function checkStatus()
         {
-            $cPlausi_arr = array();
+            $cPlausi_arr = [];
             // Sprache
             if ($this->kSprache == 0) {
                 $cPlausi_arr['kSprache'] = 1;
@@ -326,7 +326,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
                             AND eFunktion = '" . $this->eFunktion . "'", 1
                 );
 
-                if (!isset($oObj->kRMAStatus) || $oObj->kRMAStatus == 0) {
+                if (!isset($oObj->kRMAStatus) || (int)$oObj->kRMAStatus === 0) {
                     return true;
                 }
             }
@@ -342,8 +342,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         public static function getAll($kSprache, $bAssoc = true, $bAktiv = true)
         {
-            $oRMAStatus_arr = array();
-            $kSprache       = intval($kSprache);
+            $oRMAStatus_arr = [];
+            $kSprache       = (int)$kSprache;
             if ($kSprache > 0) {
                 $cSQL = '';
                 if ($bAktiv) {
@@ -386,7 +386,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
                 $oObj = Shop::DB()->query(
                     "SELECT kRMAStatus
                         FROM trmastatus
-                        WHERE kSprache = " . intval($kSprache) . "
+                        WHERE kSprache = " . (int)$kSprache . "
                             AND eFunktion = '" . StringHandler::filterXSS($cFunktion) . "'" . $cSQL, 1
                 );
 
@@ -404,12 +404,13 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         public static function mapPlausiError($cPlausi_arr)
         {
-            $cError_arr = array();
-            if (is_array($cPlausi_arr) && count($cPlausi_arr) > 0) {
-                // Funktion wurde doppelt belegt
-                if (isset($cPlausi_arr['eFunktion']) && $cPlausi_arr['eFunktion'] == 2) {
-                    $cError_arr[] = "Die gewählte Funktion ist bereits vorhanden. Diese darf nicht doppelt belegt werden.";
-                }
+            $cError_arr = [];
+            if (is_array($cPlausi_arr) &&
+                count($cPlausi_arr) > 0 &&
+                isset($cPlausi_arr['eFunktion']) &&
+                $cPlausi_arr['eFunktion'] == 2
+            ) {
+                $cError_arr[] = "Die gewählte Funktion ist bereits vorhanden. Diese darf nicht doppelt belegt werden.";
             }
 
             return $cError_arr;

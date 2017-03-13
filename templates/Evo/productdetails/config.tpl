@@ -7,7 +7,7 @@
                         {assign var=oSprache value=$oGruppe->getSprache()}
                         {assign var=cBildPfad value=$oGruppe->getBildPfad()}
                         {assign var=kKonfiggruppe value=$oGruppe->getKonfiggruppe()}
-                        <div class="cfg-group panel panel-default{if $oGruppe->getMin() > 0} required{/if}" data-id="{$oGruppe->getKonfiggruppe()}">
+                        <div class="cfg-group panel panel-default{if $oGruppe->getMin() > 0} required{/if}" data-id="{$kKonfiggruppe}">
                             <div class="panel-heading">
                                 <h5 class="panel-title">{$oSprache->getName()}</h5>
                             </div>
@@ -25,7 +25,7 @@
                                 <div class="row">
                                     {if !empty($cBildPfad)}
                                         <div class="col-md-2 visible-md-block visible-lg-block group-image">
-                                            <img src="{$oGruppe->getBildPfad()}" alt="{$oSprache->getName()}" id="img{$oGruppe->getKonfiggruppe()}" class="img-responsive" />
+                                            <img src="{$cBildPfad}" alt="{$oSprache->getName()}" id="img{$kKonfiggruppe}" class="img-responsive" />
                                         </div>
                                     {/if}
                                     <div class="col-md-{if empty($cBildPfad)}12{else}10{/if} group-items">
@@ -41,8 +41,8 @@
                                                     {if $smarty.foreach.konfigitem.first}
                                                         {if $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN || $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN_MULTI}
                                                         <div class="item clearfix{if isset($aKonfigitemerror_arr[$kKonfigitem]) && $aKonfigitemerror_arr[$kKonfigitem]} error{/if}">
-                                                            <select class="form-control" name="item[{$oGruppe->getKonfiggruppe()}][]"
-                                                                {if $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN_MULTI} multiple="multiple" size="4"{/if} ref="{$oGruppe->getKonfiggruppe()}"{if $oGruppe->getMin() > 0} required{/if}>
+                                                            <select class="form-control" name="item[{$kKonfiggruppe}][]"
+                                                                {if $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN_MULTI} multiple="multiple" size="4"{/if} ref="{$kKonfiggruppe}"{if $oGruppe->getMin() > 0} required{/if}>
                                                                 {if $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN}
                                                                     <option value="">{lang key="pleaseChoose"}</option>
                                                                 {/if}
@@ -52,11 +52,11 @@
                                                         <div class="{if $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_CHECKBOX}checkbox{else}radio{/if}">
                                                             <label class="btn-block">
                                                                 <input type="{if $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_CHECKBOX}checkbox{else}radio{/if}"
-                                                                       name="item[{$oGruppe->getKonfiggruppe()}][]"
+                                                                       name="item[{$kKonfiggruppe}][]"
                                                                        id="item{$oItem->getKonfigitem()}"
                                                                        value="{$oItem->getKonfigitem()}"
                                                                        {if isset($nKonfigitem_arr)} data-selected="{if in_array($oItem->getKonfigitem(), $nKonfigitem_arr)}true{else}false{/if}"{else}
-                                                                       {if (!empty($aKonfigerror_arr) && isset($smarty.post.item) && isset($smarty.post.item[$oGruppe->getKonfiggruppe()]) && $oItem->getKonfigitem()|in_array:$smarty.post.item[$oGruppe->getKonfiggruppe()]) || ($oItem->getSelektiert() && (!isset($aKonfigerror_arr) || !$aKonfigerror_arr))} checked="checked"{/if}{/if} />
+                                                                       {if (!empty($aKonfigerror_arr) && isset($smarty.post.item) && isset($smarty.post.item[$kKonfiggruppe]) && $oItem->getKonfigitem()|in_array:$smarty.post.item[$kKonfiggruppe]) || ($oItem->getSelektiert() && (!isset($aKonfigerror_arr) || !$aKonfigerror_arr))} checked="checked"{/if}{/if} />
                                                                 {if $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_CHECKBOX}{$oItem->getInitial()}x {/if}
                                                                 {$oItem->getName()}
                                                                 {if $smarty.session.Kundengruppe->darfPreiseSehen}
@@ -90,7 +90,7 @@
                                                         {if $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN || $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN_MULTI}
                                                             </select>
                                                             {if $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN}
-                                                                <a class="small filter-collapsible-control{if empty($cKurzBeschreibung)} hidden{/if}" data-toggle="collapse" href="#filter-collapsible_dropdown_{$oGruppe->getKonfiggruppe()}" aria-expanded="false" aria-controls="filter-collapsible">
+                                                                <a class="small filter-collapsible-control{if empty($cKurzBeschreibung)} hidden{/if}" data-toggle="collapse" href="#filter-collapsible_dropdown_{$kKonfiggruppe}" aria-expanded="false" aria-controls="filter-collapsible">
                                                                     {lang key="showDescription"} <i class="caret"></i>
                                                                 </a>
                                                             {/if}
@@ -103,7 +103,7 @@
 
                                                     {if $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN}
                                                     <div class="panel-collapse">
-                                                        <div id="filter-collapsible_dropdown_{$oGruppe->getKonfiggruppe()}" class="collapse top10 panel-body{if empty($cKurzBeschreibung)} hidden{/if}">
+                                                        <div id="filter-collapsible_dropdown_{$kKonfiggruppe}" class="collapse top10 panel-body{if empty($cKurzBeschreibung)} hidden{/if}">
                                                             {$cKurzBeschreibung}
                                                         </div>
                                                     </div>
@@ -121,26 +121,28 @@
                                         </ul>
                                         {if ($oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_RADIO || $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN)}
                                             {assign var=quantity value=$oGruppe->getInitQuantity()}
-                                            {if isset($nKonfiggruppeAnzahl_arr) && array_key_exists($oGruppe->getKonfiggruppe(), $nKonfiggruppeAnzahl_arr)}
-                                                {assign var=quantity value=$nKonfiggruppeAnzahl_arr[$oGruppe->getKonfiggruppe()]}
+                                            {if isset($nKonfiggruppeAnzahl_arr) && array_key_exists($kKonfiggruppe, $nKonfiggruppeAnzahl_arr)}
+                                                {assign var=quantity value=$nKonfiggruppeAnzahl_arr[$kKonfiggruppe]}
                                             {/if}
 
                                             {if !$oGruppe->quantityEquals()}
-                                                <div class="quantity form-inline" data-id="{$oGruppe->getKonfiggruppe()}" style="display:none">
-                                                    <label for="quantity{$oGruppe->getKonfiggruppe()}">{lang key="quantity" section="global"}:</label>
+                                                <div class="quantity form-inline" data-id="{$kKonfiggruppe}" style="display:none">
+                                                    <label for="quantity{$kKonfiggruppe}">{lang key="quantity" section="global"}:</label>
 
                                                     <div class="input-group">
                                                         <input class="form-control" size="2" type="number"
-                                                               id="quantity{$oGruppe->getKonfiggruppe()}"
-                                                               name="quantity[{$oGruppe->getKonfiggruppe()}]"
+                                                               id="quantity{$kKonfiggruppe}"
+                                                               name="quantity[{$kKonfiggruppe}]"
                                                                value="{$quantity}" autocomplete="off"
                                                                min="{$oGruppe->getMin()}" max="{$oGruppe->getMax()}" />
                                                     </div>
                                                 </div>
                                             {else}
-                                                <input type="hidden" id="quantity{$oGruppe->getKonfiggruppe()}"
-                                                       name="quantity[{$oGruppe->getKonfiggruppe()}]"
-                                                       value="{$quantity}" />
+                                                <div class="quantity">
+                                                    <input type="hidden" id="quantity{$kKonfiggruppe}"
+                                                           name="quantity[{$kKonfiggruppe}]"
+                                                           value="{$quantity}" />
+                                                </div>
                                             {/if}
                                         {/if}
                                     </div>
@@ -158,7 +160,12 @@
                         <h5 class="panel-title">{lang key="yourConfiguration" section="global"}</h5>
                     </div>
                     <div class="panel-body">
+                        <p class="text-center">
+                            <strong class="price"></strong>
+                        </p>
+                        <hr/>
                         <div class="summary"></div>
+                        <hr/>
                         <p class="text-center">
                             <strong class="price"></strong>
                         </p>
@@ -166,7 +173,7 @@
                             <div id="quantity-grp" class="choose_quantity input-group">
                                 <input type="number"{if $Artikel->fAbnahmeintervall > 0} required step="{$Artikel->fAbnahmeintervall}"{/if} id="quantity"
                                        class="quantity form-control text-right" name="anzahl"
-                                       value="{if $Artikel->fAbnahmeintervall > 0}{if $Artikel->fMindestbestellmenge > $Artikel->fAbnahmeintervall}{$Artikel->fMindestbestellmenge}{else}{$Artikel->fAbnahmeintervall}{/if}{elseif isset($fAnzahl)}{$fAnzahl}}{else}1{/if}" />
+                                       value="{if $Artikel->fAbnahmeintervall > 0}{if $Artikel->fMindestbestellmenge > $Artikel->fAbnahmeintervall}{$Artikel->fMindestbestellmenge}{else}{$Artikel->fAbnahmeintervall}{/if}{elseif isset($fAnzahl)}{$fAnzahl}{else}1{/if}" />
                                 <span class="input-group-btn">
                                     <button name="inWarenkorb" type="submit" value="{lang key="addToCart" section="global"}"
                                             class="submit btn btn-primary">

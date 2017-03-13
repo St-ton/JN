@@ -4,7 +4,7 @@
  *}
 <div class="panel-wrap">
     {if isset($position) && $position === 'popup'}
-        {if count($Artikelhinweise) > 0}
+        {if isset($Artikelhinweise) && count($Artikelhinweise) > 0}
             <div class="alert alert-danger alert-dismissible">
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
@@ -29,7 +29,7 @@
                             </label>
                             <input type="text" class="form-control" name="vorname" value="{if isset($Benachrichtigung->cVorname)}{$Benachrichtigung->cVorname}{/if}" id="firstName"{if $Einstellungen.$tplscope.benachrichtigung_abfragen_vorname === 'Y'} required{/if}>
                             {if !empty($fehlendeAngaben_benachrichtigung.vorname)}
-                                <div class="alert alert-danger">
+                                <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
                                     {lang key="fillOut" section="global"}
                                 </div>
                             {/if}
@@ -45,7 +45,7 @@
                             </label>
                             <input type="text" class="form-control" name="nachname" value="{if isset($Benachrichtigung->cNachname)}{$Benachrichtigung->cNachname}{/if}" id="lastName"{if $Einstellungen.$tplscope.benachrichtigung_abfragen_nachname === 'Y'} required{/if}>
                             {if !empty($fehlendeAngaben_benachrichtigung.nachname)}
-                                <div class="alert alert-danger">
+                                <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
                                     {lang key="fillOut" section="global"}
                                 </div>
                             {/if}
@@ -63,7 +63,7 @@
                         </label>
                         <input type="email" class="form-control" name="email" value="{if isset($Lieferadresse->cMail)}{$Lieferadresse->cMail}{/if}" id="email" required>
                         {if !empty($fehlendeAngaben_benachrichtigung.email)}
-                            <div class="alert alert-danger">
+                            <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
                                 {if $fehlendeAngaben_benachrichtigung.email == 1}
                                     {lang key="fillOut" section="global"}
                                 {elseif $fehlendeAngaben_benachrichtigung.email == 2}
@@ -90,10 +90,10 @@
             <hr>
             <div class="row">
                 <div class="col-xs-12 col-md-12">
+                    <div class="g-recaptcha form-group" data-sitekey="{$Einstellungen.global.global_google_recaptcha_public}" data-callback="captcha_filled"></div>
                     {if !empty($fehlendeAngaben_benachrichtigung.captcha)}
-                        <div class="alert alert-danger" role="alert">{lang key="invalidToken" section="global"}</div>
+                        <div class="form-error-msg text-danger"><i class="fa fa-warning"></i> {lang key="invalidToken" section="global"}</div>
                     {/if}
-                    <div class="g-recaptcha" data-sitekey="{$Einstellungen.global.global_google_recaptcha_public}"></div>
                     <hr>
                 </div>
             </div>

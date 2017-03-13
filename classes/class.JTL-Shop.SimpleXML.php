@@ -16,7 +16,7 @@ class SimpleXMLObject
     {
         $container = get_object_vars($this);
 
-        return (object) $container['@attributes'];
+        return (object)$container['@attributes'];
     }
 
     /**
@@ -26,7 +26,7 @@ class SimpleXMLObject
     {
         $container = get_object_vars($this);
 
-        return (object) $container['@content'];
+        return (object)$container['@content'];
     }
 }
 
@@ -38,7 +38,7 @@ class SimpleXML
     /**
      * @var array
      */
-    public $result = array();
+    public $result = [];
 
     /**
      * @var int
@@ -61,10 +61,10 @@ class SimpleXML
     public $evalCode = '';
 
     /**
-     * @param $level
-     * @param $tags
-     * @param $value
-     * @param $type
+     * @param int    $level
+     * @param array  $tags
+     * @param mixed  $value
+     * @param string $type
      */
     public function array_insert($level, $tags, $value, $type)
     {
@@ -82,21 +82,21 @@ class SimpleXML
     }
 
     /**
-     * @param $array
+     * @param array $array
      * @return array
      */
     public function xml_tags($array)
     {
-        $repeats_temp  = array();
-        $repeats_count = array();
-        $repeats       = array();
+        $repeats_temp  = [];
+        $repeats_count = [];
+        $repeats       = [];
 
         if (is_array($array)) {
             $n = count($array) - 1;
             for ($i = 0; $i < $n; $i++) {
                 $idn = $array[$i]['tag'] . $array[$i]['level'];
                 if (in_array($idn, $repeats_temp)) {
-                    $repeats_count[array_search($idn, $repeats_temp)] += 1;
+                    ++$repeats_count[array_search($idn, $repeats_temp)];
                 } else {
                     $repeats_temp[]                                   = $idn;
                     $repeats_count[array_search($idn, $repeats_temp)] = 1;
@@ -109,14 +109,13 @@ class SimpleXML
                 $repeats[] = $repeats_temp[$i];
             }
         }
-        unset($repeats_temp);
-        unset($repeats_count);
+        unset($repeats_temp, $repeats_count);
 
         return array_unique($repeats);
     }
 
     /**
-     * @param $arg_array
+     * @param array $arg_array
      * @return array|SimpleXMLObject
      */
     public function array2object($arg_array)
@@ -135,7 +134,7 @@ class SimpleXML
                     $has_string = true;
                 }
             }
-            if (isset($has_number) and !isset($has_string)) {
+            if (isset($has_number) && !isset($has_string)) {
                 foreach ($arg_array as $key => $value) {
                     $tmp[] = $this->array2object($value);
                 }
@@ -148,11 +147,9 @@ class SimpleXML
             }
         } elseif (is_object($arg_array)) {
             foreach ($arg_array as $key => $value) {
-                if (is_array($value) or is_object($value)) {
-                    $tmp->$key = $this->array2object($value);
-                } else {
-                    $tmp->$key = $value;
-                }
+                $tmp->$key = (is_array($value) || is_object($value))
+                    ? $this->array2object($value)
+                    : $value;
             }
         } else {
             $tmp = $arg_array;
@@ -162,13 +159,13 @@ class SimpleXML
     }
 
     /**
-     * @param $array
+     * @param array $array
      * @return array
      */
     public function array_reindex($array)
     {
         if (is_array($array)) {
-            if (count($array) === 1 && $array[0]) {
+            if ($array[0] && count($array) === 1) {
                 return $this->array_reindex($array[0]);
             } else {
                 foreach ($array as $keys => $items) {
@@ -176,7 +173,7 @@ class SimpleXML
                         if (is_numeric($keys)) {
                             $array[$keys] = $this->array_reindex($items);
                         } else {
-                            $array[$keys] = $this->array_reindex(array_merge(array(), $items));
+                            $array[$keys] = $this->array_reindex(array_merge([], $items));
                         }
                     }
                 }
@@ -187,7 +184,7 @@ class SimpleXML
     }
 
     /**
-     * @param $array
+     * @param array $array
      * @return array
      */
     public function xml_reorganize($array)
@@ -195,13 +192,13 @@ class SimpleXML
         $count       = count($array);
         $repeat      = $this->xml_tags($array);
         $repeatedone = false;
-        $tags        = array();
+        $tags        = [];
         $k           = 0;
         for ($i = 0; $i < $count; $i++) {
             switch ($array[$i]['type']) {
                 case 'open':
                     $tags[] = $array[$i]['tag'];
-                    if ($i > 0 && ($array[$i]['tag'] == $array[$i - 1]['tag']) && ($array[$i - 1]['type'] == 'close')) {
+                    if ($i > 0 && ($array[$i - 1]['type'] === 'close') && ($array[$i]['tag'] == $array[$i - 1]['tag'])) {
                         $k++;
                     }
                     if (isset($array[$i]['value']) && ($array[$i]['value'] || !$this->skip_empty_values)) {
@@ -211,11 +208,11 @@ class SimpleXML
                     }
 
                     if (in_array($array[$i]['tag'] . $array[$i]['level'], $repeat)) {
-                        if (($repeatedone == $array[$i]['tag'] . $array[$i]['level']) && ($repeatedone)) {
-                            $tags[] = strval($k++);
+                        if ($repeatedone && ($repeatedone == $array[$i]['tag'] . $array[$i]['level'])) {
+                            $tags[] = (string)($k++);
                         } else {
                             $repeatedone = $array[$i]['tag'] . $array[$i]['level'];
-                            $tags[]      = strval($k);
+                            $tags[]      = (string)$k;
                         }
                     }
 
@@ -245,11 +242,11 @@ class SimpleXML
                 case 'complete':
                     $tags[] = $array[$i]['tag'];
                     if (in_array($array[$i]['tag'] . $array[$i]['level'], $repeat)) {
-                        if ($repeatedone == $array[$i]['tag'] . $array[$i]['level'] && $repeatedone) {
-                            $tags[] = strval($k);
+                        if ($repeatedone && $repeatedone == $array[$i]['tag'] . $array[$i]['level']) {
+                            $tags[] = (string)$k;
                         } else {
                             $repeatedone = $array[$i]['tag'] . $array[$i]['level'];
-                            $tags[]      = strval($k);
+                            $tags[]      = (string)$k;
                         }
                     }
 
@@ -283,32 +280,30 @@ class SimpleXML
             }
         }
         eval($this->evalCode);
-        $last = $this->array_reindex($this->result);
 
-        return $last;
+        return $this->array_reindex($this->result);
     }
 
     /**
-     * @param        $file
+     * @param string $file
      * @param string $resulttype
      * @param string $encoding
      * @return array|SimpleXMLObject|string
      */
     public function xml_load_file($file, $resulttype = 'object', $encoding = 'UTF-8')
     {
-        $php_errormsg   = '';
         $this->result   = '';
         $this->evalCode = '';
         $data           = file_get_contents($file);
         if (!$data) {
-            return 'Cannot open xml document: ' . (isset($php_errormsg) ? $php_errormsg : $file);
+            return 'Cannot open xml document: ' . $file;
         }
 
         return xml_load_string($data);
     }
 
     /**
-     * @param        $data
+     * @param string $data
      * @param string $resulttype
      * @param string $encoding
      * @return array|SimpleXMLObject|string
@@ -335,7 +330,7 @@ class SimpleXML
         if (!$ok) {
             return $errmsg;
         }
-        if ($resulttype == 'array') {
+        if ($resulttype === 'array') {
             return $this->xml_reorganize($values);
         }
 
@@ -346,7 +341,7 @@ class SimpleXML
 
 if (!function_exists('simplexml_load_file')) {
     /**
-     * @param $file
+     * @param string $file
      * @return array|SimpleXMLObject|string
      */
     function simplexml_load_file($file)
@@ -359,7 +354,7 @@ if (!function_exists('simplexml_load_file')) {
 
 if (!function_exists('xml_load_string')) {
     /**
-     * @param $data
+     * @param string $data
      * @return array|SimpleXMLObject|string
      */
     function xml_load_string($data)

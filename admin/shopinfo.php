@@ -3,19 +3,17 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/admininclude.php';
+require_once __DIR__ . '/includes/admininclude.php';
 
-if (!ini_get('safe_mode')) {
-    @ini_set('max_execution_time', 0);
-}
+@ini_set('max_execution_time', 0);
 
 $oAccount->permission('EXPORT_SHOPINFO_VIEW', true, true);
 
-$arMapping       = array();
-$arKategorien    = array();
-$arEinstellungen = Shop::getSettings(array(CONF_GLOBAL));
+$arMapping       = [];
+$arKategorien    = [];
+$arEinstellungen = Shop::getSettings([CONF_GLOBAL]);
 
-if (isset($_POST['post']) && intval($_POST['post']) === 1) {
+if (isset($_POST['post']) && (int)$_POST['post'] === 1) {
     $oTmpConf = Shop::DB()->query("SELECT * FROM teinstellungen WHERE cName = 'shopInfo_updateInterval'", 1);
     if ($oTmpConf) {
         $strSQL = "UPDATE teinstellungen SET cWert = '" . $_POST['shopInfo_updateInterval'] . "' WHERE cName = 'shopInfo_updateInterval'";
@@ -205,7 +203,7 @@ if (isset($_POST['post']) && intval($_POST['post']) === 1) {
         $strSQL          = "INSERT INTO tkategoriemapping SET kKategorie = " . (int)$ar[0] . ", cName = '" . $ar[1] . "'";
         Shop::DB()->query($strSQL, 4);
     }
-    Shop::Cache()->flushTags(array(CACHING_GROUP_OPTION));
+    Shop::Cache()->flushTags([CACHING_GROUP_OPTION]);
 
     $strSQL       = "SELECT kKategorie, cName FROM tkategorie WHERE kOberkategorie <= 0 ";
     $arKategorien = Shop::DB()->query($strSQL, 2);
@@ -480,15 +478,15 @@ if ($bWrite) {
     if (isset($_REQUEST['update']) && $_REQUEST['update'] == '1') {
         $file = fopen(PFAD_ROOT . $fileShopFeed, "w+");
 
-        fputs(
+        fwrite(
             $file, '<?xml version="1.0" encoding="' . JTL_CHARSET . '"?>
                         <osp:Shop xmlns:osp="http://elektronischer-markt.de/schema"
                                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                                 xsi:schemaLocation="http://elektronischer-markt.de/schema
                                                     http://kuhlins.de/elmar/schema/shop.xsd">'
         );
-        fputs($file, $XML);
-        fputs($file, "</osp:Shop>");
+        fwrite($file, $XML);
+        fwrite($file, "</osp:Shop>");
         fclose($file);
     }
 

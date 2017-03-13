@@ -5,7 +5,7 @@
  */
 use Imanee\Imanee;
 
-require_once 'core/class.core.Shop.php';
+require_once __DIR__ . '/core/class.core.Shop.php';
 
 /**
  * Class Image
@@ -36,7 +36,7 @@ class Image
      *
      * @var array
      */
-    private static $typeMapper = array(
+    private static $typeMapper = [
         'artikel'      => self::TYPE_PRODUCT,
         'produkte'     => self::TYPE_PRODUCT,
         'kategorien'   => self::TYPE_CATEGORY,
@@ -46,26 +46,26 @@ class Image
         'hersteller'   => self::TYPE_MANUFACTURER,
         'merkmale'     => self::TYPE_ATTRIBUTE,
         'merkmalwerte' => self::TYPE_ATTRIBUTE_VALUE
-    );
+    ];
 
     /**
      * Image size map
      *
      * @var array
      */
-    private static $sizeMapper = array(
+    private static $sizeMapper = [
         'mini'   => self::SIZE_XS,
         'klein'  => self::SIZE_SM,
         'normal' => self::SIZE_MD,
         'gross'  => self::SIZE_LG
-    );
+    ];
 
     /**
      * Image size map
      *
      * @var array
      */
-    private static $positionMapper = array(
+    private static $positionMapper = [
         'oben'         => Imanee::IM_POS_TOP_CENTER,
         'oben-rechts'  => Imanee::IM_POS_TOP_RIGHT,
         'rechts'       => Imanee::IM_POS_MID_RIGHT,
@@ -75,7 +75,7 @@ class Image
         'links'        => Imanee::IM_POS_MID_LEFT,
         'oben-links'   => Imanee::IM_POS_TOP_LEFT,
         'zentriert'    => Imanee::IM_POS_MID_CENTER
-    );
+    ];
 
     /**
      * Image settings
@@ -95,7 +95,7 @@ class Image
      */
     public static function getByPath($path, $type, $number = 1)
     {
-        $number = (int) $number;
+        $number = (int)$number;
         $path   = Shop::DB()->escape($path);
         $sql    = "SELECT kArtikel AS id, nNr AS number, cPfad AS path FROM tartikelpict WHERE cPfad = '{$path}' AND nNr = '{$number}' LIMIT 1";
         $item   = Shop::DB()->query($sql, 1);
@@ -108,17 +108,22 @@ class Image
      *
      * @TODO: Support all types and map to the according table
      * @todo: unsed param $type
-     * @param string $id id
+     * @param int    $id
      * @param string $type produkt, hersteller, ..
      * @param int    $number
      * @return int foreign key
      */
     public static function getById($id, $type, $number = 1)
     {
-        $id     = (int) $id;
-        $number = (int) $number;
-        $sql    = "SELECT kArtikel AS id, nNr AS number, cPfad AS path FROM tartikelpict WHERE kArtikel = '{$id}' AND nNr = '{$number}' ORDER BY nNr LIMIT 1";
-        $item   = Shop::DB()->query($sql, 1);
+        $id     = (int)$id;
+        $number = (int)$number;
+        $item   = Shop::DB()->query("
+            SELECT kArtikel AS id, nNr AS number, cPfad AS path 
+                FROM tartikelpict 
+                WHERE kArtikel = '{$id}' 
+                    AND nNr = '{$number}' 
+                ORDER BY nNr LIMIT 1", 1
+        );
 
         return is_object($item) ? $item : null;
     }
@@ -131,41 +136,41 @@ class Image
     public static function getSettings()
     {
         if (self::$settings === null) {
-            $settings = Shop::getSettings(array(CONF_BILDER));
+            $settings = Shop::getSettings([CONF_BILDER]);
             $settings = array_shift($settings);
             $branding = self::getBranding();
 
-            self::$settings = array(
+            self::$settings = [
                 'background' => $settings['bilder_hintergrundfarbe'],
                 'container'  => $settings['container_verwenden'] === 'Y',
                 'format'     => strtolower($settings['bilder_dateiformat']),
                 'scale'      => $settings['bilder_skalieren'] === 'Y',
-                'quality'    => (int) $settings['bilder_jpg_quali'],
+                'quality'    => (int)$settings['bilder_jpg_quali'],
                 'branding'   => isset($branding[self::TYPE_PRODUCT]) ? $branding[self::TYPE_PRODUCT] : null,
-                'size'       => array(
-                    self::SIZE_XS => array(
-                        'width'  => (int) $settings['bilder_artikel_mini_breite'],
-                        'height' => (int) $settings['bilder_artikel_mini_hoehe']
-                    ),
-                    self::SIZE_SM => array(
-                        'width'  => (int) $settings['bilder_artikel_klein_breite'],
-                        'height' => (int) $settings['bilder_artikel_klein_hoehe']
-                    ),
-                    self::SIZE_MD => array(
-                        'width'  => (int) $settings['bilder_artikel_normal_breite'],
-                        'height' => (int) $settings['bilder_artikel_normal_hoehe']
-                    ),
-                    self::SIZE_LG => array(
-                        'width'  => (int) $settings['bilder_artikel_gross_breite'],
-                        'height' => (int) $settings['bilder_artikel_gross_hoehe']
-                    )
-                ),
-                'naming'   => array(
-                    self::TYPE_PRODUCT   => (int) $settings['bilder_artikel_namen'],
-                    self::TYPE_CATEGORY  => (int) $settings['bilder_kategorie_namen'],
-                    self::TYPE_VARIATION => (int) $settings['bilder_variation_namen']
-                )
-            );
+                'size'       => [
+                    self::SIZE_XS => [
+                        'width'  => (int)$settings['bilder_artikel_mini_breite'],
+                        'height' => (int)$settings['bilder_artikel_mini_hoehe']
+                    ],
+                    self::SIZE_SM => [
+                        'width'  => (int)$settings['bilder_artikel_klein_breite'],
+                        'height' => (int)$settings['bilder_artikel_klein_hoehe']
+                    ],
+                    self::SIZE_MD => [
+                        'width'  => (int)$settings['bilder_artikel_normal_breite'],
+                        'height' => (int)$settings['bilder_artikel_normal_hoehe']
+                    ],
+                    self::SIZE_LG => [
+                        'width'  => (int)$settings['bilder_artikel_gross_breite'],
+                        'height' => (int)$settings['bilder_artikel_gross_hoehe']
+                    ]
+                ],
+                'naming'   => [
+                    self::TYPE_PRODUCT   => (int)$settings['bilder_artikel_namen'],
+                    self::TYPE_CATEGORY  => (int)$settings['bilder_kategorie_namen'],
+                    self::TYPE_VARIATION => (int)$settings['bilder_variation_namen']
+                ]
+            ];
         }
 
         return self::$settings;
@@ -186,7 +191,7 @@ class Image
             return $mapper[$size];
         }
 
-        return;
+        return null;
     }
 
     /**
@@ -204,7 +209,7 @@ class Image
             return $mapper[$type];
         }
 
-        return;
+        return null;
     }
 
     /**
@@ -222,7 +227,7 @@ class Image
             return $mapper[$position];
         }
 
-        return;
+        return null;
     }
 
     /**
@@ -233,7 +238,7 @@ class Image
      */
     private static function getBranding()
     {
-        $branding    = array();
+        $branding    = [];
         $brandingTmp = Shop::DB()->query("SELECT tbranding.cBildKategorie 
             AS type, tbrandingeinstellung.cPosition AS position, tbrandingeinstellung.cBrandingBild AS path,
             tbrandingeinstellung.dTransparenz AS transparency, tbrandingeinstellung.dGroesse AS size
@@ -242,8 +247,8 @@ class Image
             WHERE tbrandingeinstellung.nAktiv = 1", 2);
 
         foreach ($brandingTmp as $b) {
-            $b->size            = (int) $b->size;
-            $b->transparency    = (int) $b->transparency;
+            $b->size            = (int)$b->size;
+            $b->transparency    = (int)$b->transparency;
             $b->type            = self::mapType($b->type);
             $b->position        = self::mapPosition($b->position);
             $b->path            = PFAD_ROOT . PFAD_BRANDINGBILDER . $b->path;
@@ -281,7 +286,7 @@ class Image
             return $info['type'];
         }
 
-        return;
+        return null;
     }
 
     /**
@@ -322,7 +327,7 @@ class Image
                 break;
         }
 
-        return (empty($result)) ? 'image' : self::getCleanFilename($result);
+        return empty($result) ? 'image' : self::getCleanFilename($result);
     }
 
     /**
@@ -333,8 +338,8 @@ class Image
     {
         $filename = strtolower($filename);
 
-        $source   = array('.', ' ', '/', 'ä', 'ö', 'ü', 'ß', utf8_decode('ä'), utf8_decode('ö'), utf8_decode('ü'), utf8_decode('ß'));
-        $replace  = array('-', '-', '-', 'ae', 'oe', 'ue', 'ss', 'ae', 'oe', 'ue', 'ss');
+        $source   = ['.', ' ', '/', 'ä', 'ö', 'ü', 'ß', utf8_decode('ä'), utf8_decode('ö'), utf8_decode('ü'), utf8_decode('ß')];
+        $replace  = ['-', '-', '-', 'ae', 'oe', 'ue', 'ss', 'ae', 'oe', 'ue', 'ss'];
         $filename = str_replace($source, $replace, $filename);
 
         return preg_replace('/[^a-zA-Z0-9\.\-_]/', '', $filename);
@@ -381,7 +386,7 @@ class Image
             $imanee = $container;
         }
 
-        if ($req->getSize()->getType() == self::SIZE_LG && isset($settings['branding']) && $settings['branding'] !== null) {
+        if (isset($settings['branding']) && $req->getSize()->getType() === self::SIZE_LG) {
             $branding   = $settings['branding'];
             $brandImage = new Imanee($branding->path);
             $brandSize  = $brandImage->getSize();
@@ -406,25 +411,22 @@ class Image
         $thumbnail = $req->getThumb(null, true);
         $directory  = pathinfo($thumbnail, PATHINFO_DIRNAME);
 
-        if (!is_dir($directory)) {
-            if (!mkdir($directory, 0777, true)) {
-                $error = error_get_last();
-                if (empty($error)) {
-                    $error = "Unable to create directory {$directory}";
-                }
-                throw new Exception(is_array($error) ? $error['message'] : $error);
+        if (!is_dir($directory) && !mkdir($directory, 0777, true)) {
+            $error = error_get_last();
+            if (empty($error)) {
+                $error = "Unable to create directory {$directory}";
             }
+            throw new Exception(is_array($error) ? $error['message'] : $error);
         }
 
         $imanee->setFormat($settings['format']);
         $imanee->write($thumbnail, $settings['quality']);
 
-        executeHook(HOOK_IMAGE_RENDER, array(
+        executeHook(HOOK_IMAGE_RENDER, [
             'imanee'   => $imanee,
             'settings' => $settings,
             'path'     => $thumbnail
-            )
-        );
+        ]);
 
         return $imanee;
     }

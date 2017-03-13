@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-require_once dirname(__FILE__) . '/syncinclude.php';
+require_once __DIR__ . '/syncinclude.php';
 
 $return = 3;
 if (auth()) {
@@ -28,12 +28,13 @@ if (auth()) {
             $return = 0;
             foreach ($list as $i => $zip) {
                 if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                    Jtllog::writeLog('bearbeite: ' . $entzippfad . $zip['filename'] . ' size: ' . filesize($entzippfad . $zip['filename']), JTLLOG_LEVEL_DEBUG, false, 'QuickSync_xml');
+                    Jtllog::writeLog('bearbeite: ' . $entzippfad . $zip['filename'] . ' size: ' .
+                        filesize($entzippfad . $zip['filename']), JTLLOG_LEVEL_DEBUG, false, 'QuickSync_xml');
                 }
                 $d   = file_get_contents($entzippfad . $zip['filename']);
                 $xml = XML_unserialize($d);
 
-                if ($zip['filename'] == 'quicksync.xml') {
+                if ($zip['filename'] === 'quicksync.xml') {
                     bearbeiteInsert($xml);
                 }
 
@@ -48,7 +49,7 @@ if (auth()) {
     }
 }
 
-if ($return == 1) {
+if ($return === 2) {
     syncException('Error : ' . $archive->errorInfo(true));
 }
 
@@ -65,7 +66,6 @@ function bearbeiteInsert($xml)
     if (is_array($xml['quicksync']['tartikel'])) {
         $oArtikel_arr = mapArray($xml['quicksync'], 'tartikel', $GLOBALS['mArtikelQuickSync']);
         $nCount       = count($oArtikel_arr);
-
         //PREISE
         if ($nCount < 2) {
             updateXMLinDB($xml['quicksync']['tartikel'], 'tpreise', $GLOBALS['mPreise'], 'kKundengruppe', 'kArtikel');
@@ -82,7 +82,7 @@ function bearbeiteInsert($xml)
                 setzePreisverlauf($oPreis->kArtikel, $oPreis->kKundengruppe, $oPreis->fVKNetto);
             }
         } else {
-            for ($i = 0; $i < $nCount; $i++) {
+            for ($i = 0; $i < $nCount; ++$i) {
                 updateXMLinDB($xml['quicksync']['tartikel'][$i], 'tpreise', $GLOBALS['mPreise'], 'kKundengruppe', 'kArtikel');
 
                 if (version_compare($_POST['vers'], '099976', '>=')) {
@@ -115,9 +115,11 @@ function bearbeiteInsert($xml)
                         AND pos.kArtikel = " . (int)$oArtikel->kArtikel, 1
                 );
                 if ($delta->totalquantity > 0) {
-                    $oArtikel->fLagerbestand = $oArtikel->fLagerbestand - $delta->totalquantity; //subtract delta from stocklevel
+                    //subtract delta from stocklevel
+                    $oArtikel->fLagerbestand -= $delta->totalquantity;
                     if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                        Jtllog::writeLog("Artikel-Quicksync: Lagerbestand von kArtikel {$oArtikel->kArtikel} wurde wegen nicht-abgeholter Bestellungen um {$delta->totalquantity} reduziert auf {$oArtikel->fLagerbestand}." , JTLLOG_LEVEL_DEBUG, false, 'Artikel_xml');
+                        Jtllog::writeLog("Artikel-Quicksync: Lagerbestand von kArtikel {$oArtikel->kArtikel} wurde wegen nicht-abgeholter Bestellungen "
+                        . "um {$delta->totalquantity} auf {$oArtikel->fLagerbestand} reduziert." , JTLLOG_LEVEL_DEBUG, false, 'Artikel_xml');
                     }
                 }
             }
@@ -131,7 +133,14 @@ function bearbeiteInsert($xml)
             Shop::DB()->update('tartikel', 'kArtikel', (int)$oArtikel->kArtikel, $upd);
             executeHook(HOOK_QUICKSYNC_XML_BEARBEITEINSERT, ['oArtikel' => $oArtikel]);
             // clear object cache for this article and its parent if there is any
-            $parentArticle = Shop::DB()->select('tartikel', 'kArtikel', $oArtikel->kArtikel, null, null, null, null, false, 'kVaterArtikel');
+            $parentArticle = Shop::DB()->select(
+                'tartikel',
+                'kArtikel', $oArtikel->kArtikel,
+                null, null,
+                null, null,
+                false,
+                'kVaterArtikel'
+            );
             if (!empty($parentArticle->kVaterArtikel)) {
                 $clearTags[] = (int)$parentArticle->kVaterArtikel;
             }

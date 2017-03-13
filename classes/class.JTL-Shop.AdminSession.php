@@ -1,4 +1,8 @@
 <?php
+/**
+ * @copyright (c) JTL-Software-GmbH
+ * @license http://jtl-url.de/jtlshoplicense
+ */
 
 /**
  * Class AdminSession
@@ -13,10 +17,10 @@ class AdminSession
     /**
      * @var AdminSession
      */
-    private static $_instance = null;
+    private static $_instance;
 
     /**
-     * @return Session
+     * @return AdminSession
      */
     public static function getInstance()
     {
@@ -40,24 +44,24 @@ class AdminSession
         if (ES_SESSIONS === 1) {
             // Sessions in DB speichern
             session_set_save_handler(
-                array(&$this, 'open'),
-                array(&$this, 'close'),
-                array(&$this, 'read'),
-                array(&$this, 'write'),
-                array(&$this, 'destroy'),
-                array(&$this, 'gc')
+                [&$this, 'open'],
+                [&$this, 'close'],
+                [&$this, 'read'],
+                [&$this, 'write'],
+                [&$this, 'destroy'],
+                [&$this, 'gc']
             );
             register_shutdown_function('session_write_close');
         }
 
-        $conf           = Shop::getConfig(array(CONF_GLOBAL));
+        $conf           = Shop::getSettings([CONF_GLOBAL]);
         $cookieDefaults = session_get_cookie_params();
         $set            = false;
-        $lifetime       = (isset($cookieDefaults['lifetime'])) ? $cookieDefaults['lifetime'] : 0;
-        $path           = (isset($cookieDefaults['path'])) ? $cookieDefaults['path'] : '';
-        $domain         = (isset($cookieDefaults['domain'])) ? $cookieDefaults['domain'] : '';
-        $secure         = (isset($cookieDefaults['secure'])) ? $cookieDefaults['secure'] : false;
-        $httpOnly       = (isset($cookieDefaults['httponly'])) ? $cookieDefaults['httponly'] : false;
+        $lifetime       = isset($cookieDefaults['lifetime']) ? $cookieDefaults['lifetime'] : 0;
+        $path           = isset($cookieDefaults['path']) ? $cookieDefaults['path'] : '';
+        $domain         = isset($cookieDefaults['domain']) ? $cookieDefaults['domain'] : '';
+        $secure         = isset($cookieDefaults['secure']) ? $cookieDefaults['secure'] : false;
+        $httpOnly       = isset($cookieDefaults['httponly']) ? $cookieDefaults['httponly'] : false;
         if (isset($conf['global']['global_cookie_secure']) && $conf['global']['global_cookie_secure'] !== 'S') {
             $set    = true;
             $secure = $conf['global']['global_cookie_secure'] === 'Y';
@@ -70,7 +74,10 @@ class AdminSession
             $set    = true;
             $domain = $conf['global']['global_cookie_domain'];
         }
-        if (isset($conf['global']['global_cookie_lifetime']) && is_numeric($conf['global']['global_cookie_lifetime']) && (int)$conf['global']['global_cookie_lifetime'] > 0) {
+        if (isset($conf['global']['global_cookie_lifetime']) &&
+            is_numeric($conf['global']['global_cookie_lifetime']) &&
+            (int)$conf['global']['global_cookie_lifetime'] > 0
+        ) {
             $set      = true;
             $lifetime = (int)$conf['global']['global_cookie_lifetime'];
         }
@@ -96,7 +103,7 @@ class AdminSession
         }
         if (!isset($_SESSION['kSprache'])) {
             $lang                 = Shop::DB()->select('tsprache', 'cISO', 'ger');
-            $_SESSION['kSprache'] = (isset($lang->kSprache)) ? (int) $lang->kSprache : 1;
+            $_SESSION['kSprache'] = isset($lang->kSprache) ? (int)$lang->kSprache : 1;
         }
     }
 
@@ -124,19 +131,22 @@ class AdminSession
     }
 
     /**
+     * fetch session-data
+     *
      * @param string $sessID
      * @return string
      */
     public function read($sessID)
     {
-        // fetch session-data
-        $res = Shop::DB()->query(
-            "SELECT cSessionData FROM tadminsession
-                WHERE cSessionId = '{$sessID}'
-                AND nSessionExpires > " . time(), 1
+        $res = Shop::DB()->executeQueryPrepared("
+            SELECT cSessionData FROM tadminsession
+                WHERE cSessionId = :sid
+                AND nSessionExpires > :time",
+            ['sid' => $sessID, 'time' => time()],
+            1
         );
 
-        return (isset($res->cSessionData)) ? $res->cSessionData : '';
+        return isset($res->cSessionData) ? $res->cSessionData : '';
     }
 
     /**

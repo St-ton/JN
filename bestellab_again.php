@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/globalinclude.php';
+require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellabschluss_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
@@ -11,16 +11,21 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
 /** @global JTLSmarty $smarty */
 $AktuelleSeite = 'BESTELLVORGANG';
 Shop::setPageType(PAGE_BESTELLABSCHLUSS);
-$Einstellungen = Shop::getSettings(array(CONF_GLOBAL, CONF_RSS, CONF_KUNDEN, CONF_KAUFABWICKLUNG, CONF_ZAHLUNGSARTEN));
+$Einstellungen = Shop::getSettings([
+    CONF_GLOBAL,
+    CONF_RSS,
+    CONF_KUNDEN,
+    CONF_KAUFABWICKLUNG,
+    CONF_ZAHLUNGSARTEN
+]);
 $kBestellung   = (int)$_REQUEST['kBestellung'];
 $linkHelper    = LinkHelper::getInstance();
 $bestellung    = new Bestellung($kBestellung);
 $bestellung->fuelleBestellung();
-
 //abfragen, ob diese Bestellung dem Kunden auch gehoert
 //bei Gastbestellungen ist ggf das Kundenobjekt bereits entfernt bzw nRegistriert = 0
-if (isset($bestellung->oKunde) && (int) $bestellung->oKunde->nRegistriert === 1) {
-    if ((int) $bestellung->kKunde !== (int) $_SESSION['Kunde']->kKunde) {
+if ($bestellung->oKunde !== null && (int)$bestellung->oKunde->nRegistriert === 1) {
+    if ((int)$bestellung->kKunde !== (int)$_SESSION['Kunde']->kKunde) {
         header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true), true, 303);
         exit;
     }
@@ -50,11 +55,16 @@ if (verifyGPCDataInteger('zusatzschritt') === 1) {
                 $_POST['kartentyp'] &&
                 $_POST['inhaber']
             ) {
-                $_SESSION['Zahlungsart']->ZahlungsInfo->cKartenNr    = StringHandler::htmlentities(stripslashes($_POST['kreditkartennr']), ENT_QUOTES);
-                $_SESSION['Zahlungsart']->ZahlungsInfo->cGueltigkeit = StringHandler::htmlentities(stripslashes($_POST['gueltigkeit']), ENT_QUOTES);
-                $_SESSION['Zahlungsart']->ZahlungsInfo->cCVV         = StringHandler::htmlentities(stripslashes($_POST['cvv']), ENT_QUOTES);
-                $_SESSION['Zahlungsart']->ZahlungsInfo->cKartenTyp   = StringHandler::htmlentities(stripslashes($_POST['kartentyp']), ENT_QUOTES);
-                $_SESSION['Zahlungsart']->ZahlungsInfo->cInhaber     = StringHandler::htmlentities(stripslashes($_POST['inhaber']), ENT_QUOTES);
+                $_SESSION['Zahlungsart']->ZahlungsInfo->cKartenNr    =
+                    StringHandler::htmlentities(stripslashes($_POST['kreditkartennr']), ENT_QUOTES);
+                $_SESSION['Zahlungsart']->ZahlungsInfo->cGueltigkeit =
+                    StringHandler::htmlentities(stripslashes($_POST['gueltigkeit']), ENT_QUOTES);
+                $_SESSION['Zahlungsart']->ZahlungsInfo->cCVV         =
+                    StringHandler::htmlentities(stripslashes($_POST['cvv']), ENT_QUOTES);
+                $_SESSION['Zahlungsart']->ZahlungsInfo->cKartenTyp   =
+                    StringHandler::htmlentities(stripslashes($_POST['kartentyp']), ENT_QUOTES);
+                $_SESSION['Zahlungsart']->ZahlungsInfo->cInhaber     =
+                    StringHandler::htmlentities(stripslashes($_POST['inhaber']), ENT_QUOTES);
                 $bZusatzangabenDa                                    = true;
             }
             break;
@@ -69,12 +79,18 @@ if (verifyGPCDataInteger('zusatzschritt') === 1) {
                     $_POST['bic'] &&
                     $_POST['inhaber'])
             ) {
-                $_SESSION['Zahlungsart']->ZahlungsInfo->cBankName = StringHandler::htmlentities(stripslashes($_POST['bankname']), ENT_QUOTES);
-                $_SESSION['Zahlungsart']->ZahlungsInfo->cKontoNr  = StringHandler::htmlentities(stripslashes($_POST['kontonr']), ENT_QUOTES);
-                $_SESSION['Zahlungsart']->ZahlungsInfo->cBLZ      = StringHandler::htmlentities(stripslashes($_POST['blz']), ENT_QUOTES);
-                $_SESSION['Zahlungsart']->ZahlungsInfo->cIBAN     = StringHandler::htmlentities(stripslashes($_POST['iban']), ENT_QUOTES);
-                $_SESSION['Zahlungsart']->ZahlungsInfo->cBIC      = StringHandler::htmlentities(stripslashes($_POST['bic']), ENT_QUOTES);
-                $_SESSION['Zahlungsart']->ZahlungsInfo->cInhaber  = StringHandler::htmlentities(stripslashes($_POST['inhaber']), ENT_QUOTES);
+                $_SESSION['Zahlungsart']->ZahlungsInfo->cBankName =
+                    StringHandler::htmlentities(stripslashes($_POST['bankname']), ENT_QUOTES);
+                $_SESSION['Zahlungsart']->ZahlungsInfo->cKontoNr  =
+                    StringHandler::htmlentities(stripslashes($_POST['kontonr']), ENT_QUOTES);
+                $_SESSION['Zahlungsart']->ZahlungsInfo->cBLZ      =
+                    StringHandler::htmlentities(stripslashes($_POST['blz']), ENT_QUOTES);
+                $_SESSION['Zahlungsart']->ZahlungsInfo->cIBAN     =
+                    StringHandler::htmlentities(stripslashes($_POST['iban']), ENT_QUOTES);
+                $_SESSION['Zahlungsart']->ZahlungsInfo->cBIC      =
+                    StringHandler::htmlentities(stripslashes($_POST['bic']), ENT_QUOTES);
+                $_SESSION['Zahlungsart']->ZahlungsInfo->cInhaber  =
+                    StringHandler::htmlentities(stripslashes($_POST['inhaber']), ENT_QUOTES);
                 $bZusatzangabenDa                                 = true;
             }
             break;
@@ -82,7 +98,12 @@ if (verifyGPCDataInteger('zusatzschritt') === 1) {
 
     if ($bZusatzangabenDa) {
         if (saveZahlungsInfo($bestellung->kKunde, $bestellung->kBestellung)) {
-            Shop::DB()->update('tbestellung', 'kBestellung', (int)$bestellung->kBestellung, (object)['cAbgeholt' => 'N']);
+            Shop::DB()->update(
+                'tbestellung',
+                'kBestellung',
+                (int)$bestellung->kBestellung,
+                (object)['cAbgeholt' => 'N']
+            );
             unset($_SESSION['Zahlungsart']);
             header('Location: ' . $successPaymentURL, true, 303);
             exit();
@@ -97,8 +118,10 @@ if ($kPlugin > 0) {
     $oPlugin = new Plugin($kPlugin);
 
     if ($oPlugin->kPlugin > 0) {
-        require_once PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/' . PFAD_PLUGIN_VERSION . $oPlugin->nVersion . '/' .
-            PFAD_PLUGIN_PAYMENTMETHOD . $oPlugin->oPluginZahlungsKlasseAssoc_arr[$bestellung->Zahlungsart->cModulId]->cClassPfad;
+        require_once PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/' .
+            PFAD_PLUGIN_VERSION . $oPlugin->nVersion . '/' . PFAD_PLUGIN_PAYMENTMETHOD .
+            $oPlugin->oPluginZahlungsKlasseAssoc_arr[$bestellung->Zahlungsart->cModulId]->cClassPfad;
+        /** @var PaymentMethod $paymentMethod */
         $pluginName              = $oPlugin->oPluginZahlungsKlasseAssoc_arr[$bestellung->Zahlungsart->cModulId]->cClassName;
         $paymentMethod           = new $pluginName($bestellung->Zahlungsart->cModulId);
         $paymentMethod->cModulId = $bestellung->Zahlungsart->cModulId;
@@ -124,11 +147,12 @@ if ($kPlugin > 0) {
 } elseif ($bestellung->Zahlungsart->cModulId === 'za_moneybookers_jtl') {
     require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'moneybookers/moneybookers.php';
     $smarty->assign(
-        'moneybookersform', gib_moneybookers_form(
-                              $bestellung,
-                              strtolower($Einstellungen['zahlungsarten']['zahlungsart_moneybookers_empfaengermail']),
-                              $successPaymentURL
-                          )
+        'moneybookersform',
+        gib_moneybookers_form(
+            $bestellung,
+            strtolower($Einstellungen['zahlungsarten']['zahlungsart_moneybookers_empfaengermail']),
+            $successPaymentURL
+        )
     );
 } elseif ($bestellung->Zahlungsart->cModulId === 'za_ipayment_jtl') {
     require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'ipayment/iPayment.class.php';
@@ -188,7 +212,7 @@ if ($kPlugin > 0) {
     $paymentMethod           = new PaymentPartner($bestellung->Zahlungsart->cModulId);
     $paymentMethod->cModulId = $bestellung->Zahlungsart->cModulId;
     $paymentMethod->preparePaymentProcess($bestellung);
-} elseif (substr($bestellung->Zahlungsart->cModulId, 0, 8) === 'za_mbqc_') {
+} elseif (strpos($bestellung->Zahlungsart->cModulId, 'za_mbqc_') === 0) {
     require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'moneybookers_qc/MoneyBookersQC.class.php';
     $paymentMethod           = new MoneyBookersQC($bestellung->Zahlungsart->cModulId);
     $paymentMethod->cModulId = $bestellung->Zahlungsart->cModulId;
@@ -233,12 +257,14 @@ $smarty->assign('Navigation', createNavigation($AktuelleSeite))
        ->assign('Einstellungen', $Einstellungen)
        ->assign('Bestellung', $bestellung);
 
-unset($_SESSION['Zahlungsart']);
-unset($_SESSION['Versandart']);
-unset($_SESSION['Lieferadresse']);
-unset($_SESSION['VersandKupon']);
-unset($_SESSION['NeukundenKupon']);
-unset($_SESSION['Kupon']);
+unset(
+    $_SESSION['Zahlungsart'],
+    $_SESSION['Versandart'],
+    $_SESSION['Lieferadresse'],
+    $_SESSION['VersandKupon'],
+    $_SESSION['NeukundenKupon'],
+    $_SESSION['Kupon']
+);
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 $smarty->display('checkout/order_completed.tpl');

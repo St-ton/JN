@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-require_once dirname(__FILE__) . '/NetSync_inc.php';
+require_once __DIR__ . '/NetSync_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES_EXT . 'class.JTL-Shop.Upload.php';
 
 /**
@@ -20,14 +20,6 @@ class Uploader extends NetSyncHandler
     }
 
     /**
-     * @param $oException
-     */
-    public static function exception($oException)
-    {
-        parent::exception($oException);
-    }
-
-    /**
      * @param $eRequest
      */
     protected function request($eRequest)
@@ -37,9 +29,9 @@ class Uploader extends NetSyncHandler
         }
         switch ($eRequest) {
             case NetSyncRequest::UploadFiles:
-                $kBestellung = intval($_POST['kBestellung']);
+                $kBestellung = (int)$_POST['kBestellung'];
                 if ($kBestellung > 0) {
-                    $oSystemFiles_arr = array();
+                    $oSystemFiles_arr = [];
                     $oUpload_arr      = Upload::gibBestellungUploads($kBestellung);
                     if (is_array($oUpload_arr) && count($oUpload_arr)) {
                         foreach ($oUpload_arr as $oUpload) {
@@ -66,13 +58,13 @@ class Uploader extends NetSyncHandler
                 break;
 
             case NetSyncRequest::UploadFileData:
-                $kUpload = intval($_GET['kFileID']);
+                $kUpload = (int)$_GET['kFileID'];
                 if ($kUpload > 0) {
                     $oUploadDatei = new UploadDatei();
                     if ($oUploadDatei->loadFromDB($kUpload)) {
                         $cFilePath = PFAD_UPLOADS . $oUploadDatei->cPfad;
                         if (file_exists($cFilePath)) {
-                            self::streamFile($cFilePath, 'application/octet-stream', $oUploadDatei->cName);
+                            $this->streamFile($cFilePath, 'application/octet-stream', $oUploadDatei->cName);
                             exit;
                         }
                     }

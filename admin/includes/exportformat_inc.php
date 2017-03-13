@@ -5,6 +5,7 @@
  */
 
 /**
+ * @deprecated since 4.05
  * @param array $cDateinameSplit_arr
  * @param int   $nDateiZaehler
  * @return string
@@ -19,6 +20,7 @@ function gibDateiname($cDateinameSplit_arr, $nDateiZaehler)
 }
 
 /**
+ * @deprecated since 4.05
  * @param array $cDateinameSplit_arr
  * @param int   $nDateiZaehler
  * @return string
@@ -29,12 +31,12 @@ function gibDateiPfad($cDateinameSplit_arr, $nDateiZaehler)
 }
 
 /**
+ * @deprecated since 4.05
  * @return array
  */
 function pruefeExportformat()
 {
-    $cPlausiValue_arr = array();
-
+    $cPlausiValue_arr = [];
     // Name
     if (!isset($_POST['cName']) || strlen($_POST['cName']) === 0) {
         $cPlausiValue_arr['cName'] = 1;
@@ -52,15 +54,15 @@ function pruefeExportformat()
         $cPlausiValue_arr['cContent'] = 1;
     }
     // Sprache
-    if (!isset($_POST['kSprache']) || intval($_POST['kSprache']) === 0) {
+    if (!isset($_POST['kSprache']) || (int)$_POST['kSprache'] === 0) {
         $cPlausiValue_arr['kSprache'] = 1;
     }
     // Sprache
-    if (!isset($_POST['kWaehrung']) || intval($_POST['kWaehrung']) === 0) {
+    if (!isset($_POST['kWaehrung']) || (int)$_POST['kWaehrung'] === 0) {
         $cPlausiValue_arr['kWaehrung'] = 1;
     }
     // Kundengruppe
-    if (!isset($_POST['kKundengruppe']) || intval($_POST['kKundengruppe']) === 0) {
+    if (!isset($_POST['kKundengruppe']) || (int)$_POST['kKundengruppe'] === 0) {
         $cPlausiValue_arr['kKundengruppe'] = 1;
     }
 
@@ -70,13 +72,16 @@ function pruefeExportformat()
 /**
  * Falls eingestellt, wird die Exportdatei in mehrere Dateien gesplittet
  *
+ * @deprecated since 4.05
  * @param object $oExportformat
  */
 function splitteExportDatei($oExportformat)
 {
-    if (isset($oExportformat->nSplitgroesse) && intval($oExportformat->nSplitgroesse) > 0 && file_exists(PFAD_ROOT . PFAD_EXPORT . $oExportformat->cDateiname)) {
+    if (isset($oExportformat->nSplitgroesse) &&
+        (int)$oExportformat->nSplitgroesse > 0 &&
+        file_exists(PFAD_ROOT . PFAD_EXPORT . $oExportformat->cDateiname)) {
         $nDateiZaehler       = 1;
-        $cDateinameSplit_arr = array();
+        $cDateinameSplit_arr = [];
         $nFileTypePos        = strrpos($oExportformat->cDateiname, '.');
         // Dateiname splitten nach Name + Typ
         if ($nFileTypePos === false) {
@@ -87,7 +92,8 @@ function splitteExportDatei($oExportformat)
         }
         // Ist die angelegte Datei größer als die Einstellung im Exportformat?
         clearstatcache();
-        if (filesize(PFAD_ROOT . PFAD_EXPORT . $oExportformat->cDateiname) >= ($oExportformat->nSplitgroesse * 1024 * 1024 - 102400)) {
+        if (filesize(PFAD_ROOT . PFAD_EXPORT . $oExportformat->cDateiname) >=
+            ($oExportformat->nSplitgroesse * 1024 * 1024 - 102400)) {
             sleep(2);
             loescheExportDateien($oExportformat->cDateiname, $cDateinameSplit_arr[0]);
             $handle     = fopen(PFAD_ROOT . PFAD_EXPORT . $oExportformat->cDateiname, 'r');
@@ -126,6 +132,7 @@ function splitteExportDatei($oExportformat)
 }
 
 /**
+ * @deprecated since 4.05
  * @param resource $dateiHandle
  * @param string   $cKopfzeile
  * @param string   $cKodierung
@@ -146,6 +153,7 @@ function schreibeKopfzeile($dateiHandle, $cKopfzeile, $cKodierung)
 }
 
 /**
+ * @deprecated since 4.05
  * @param resource $dateiHandle
  * @param string   $cFusszeile
  * @param string   $cKodierung
@@ -162,6 +170,7 @@ function schreibeFusszeile($dateiHandle, $cFusszeile, $cKodierung)
 }
 
 /**
+ * @deprecated since 4.05
  * @param string $cDateiname
  * @param string $cDateinameSplit
  */
@@ -171,61 +180,13 @@ function loescheExportDateien($cDateiname, $cDateinameSplit)
         $dir = opendir(PFAD_ROOT . PFAD_EXPORT);
         if ($dir !== false) {
             while ($cDatei = readdir($dir)) {
-                if ($cDatei != $cDateiname && strpos($cDatei, $cDateinameSplit) !== false) {
+                if ($cDatei !== $cDateiname && strpos($cDatei, $cDateinameSplit) !== false) {
                     @unlink(PFAD_ROOT . PFAD_EXPORT . $cDatei);
                 }
             }
             closedir($dir);
         }
     }
-}
-
-/**
- * @param string    $tpl_name
- * @param string    $tpl_source
- * @param JTLSmarty $smarty
- * @return bool
- */
-function xdb_get_template($tpl_name, &$tpl_source, $smarty)
-{
-    $exportformat = Shop::DB()->select('texportformat', 'kExportformat', (int)$tpl_name);
-    if (empty($exportformat->kExportformat) || $exportformat->kExportformat <= 0) {
-        return false;
-    }
-    $tpl_source = $exportformat->cContent;
-
-    return true;
-}
-
-/**
- * @param string    $tpl_name
- * @param string    $tpl_timestamp
- * @param JTLSmarty $smarty
- * @return bool
- */
-function xdb_get_timestamp($tpl_name, &$tpl_timestamp, $smarty)
-{
-    $tpl_timestamp = time();
-
-    return true;
-}
-
-/**
- * @param string    $tpl_name
- * @param JTLSmarty $smarty
- * @return bool
- */
-function xdb_get_secure($tpl_name, $smarty)
-{
-    return true;
-}
-
-/**
- * @param string    $tpl_name
- * @param JTLSmarty $smarty
- */
-function xdb_get_trusted($tpl_name, $smarty)
-{
 }
 
 /**
@@ -237,22 +198,13 @@ function xdb_get_trusted($tpl_name, $smarty)
  */
 function verarbeiteYategoExport(&$Artikel, $exportformat, $ExportEinstellungen, &$KategorieListe, &$oGlobal_arr)
 {
-    if ($Artikel->kArtikel > 0) {
-        // Vater
-        if ($Artikel->nIstVater == 1) {
-            if (count($Artikel->Variationen) > 1) {
-                return;
-            }
-        }
-
-        if (($ExportEinstellungen['exportformate_lager_ueber_null'] === 'Y' && $Artikel->fLagerbestand <= 0) ||
-            ($ExportEinstellungen['exportformate_lager_ueber_null'] === 'O' && $Artikel->fLagerbestand <= 0 && $Artikel->cLagerKleinerNull === 'N') ||
-            ($ExportEinstellungen['exportformate_preis_ueber_null'] === 'Y' && $Artikel->Preise->fVKNetto <= 0) ||
-            ($ExportEinstellungen['exportformate_beschreibung'] === 'Y' && !$Artikel->cBeschreibung)
-        ) {
-            return;
-        }
-
+    if ($Artikel->kArtikel > 0 &&
+        !($ExportEinstellungen['exportformate_lager_ueber_null'] === 'Y' && $Artikel->fLagerbestand <= 0 ||
+        $ExportEinstellungen['exportformate_lager_ueber_null'] === 'O' && $Artikel->fLagerbestand <= 0 &&
+            $Artikel->cLagerKleinerNull === 'N' ||
+        $ExportEinstellungen['exportformate_preis_ueber_null'] === 'Y' && $Artikel->Preise->fVKNetto <= 0 ||
+        $ExportEinstellungen['exportformate_beschreibung'] === 'Y' && !$Artikel->cBeschreibung)
+    ) {
         $Artikel->cBeschreibungHTML     = str_replace('"', '&quot;', $Artikel->cBeschreibung);
         $Artikel->cKurzBeschreibungHTML = str_replace('"', '&quot;', $Artikel->cKurzBeschreibung);
         $Artikel->cName                 = strip_tags($Artikel->cName);
@@ -261,9 +213,10 @@ function verarbeiteYategoExport(&$Artikel, $exportformat, $ExportEinstellungen, 
         $Artikel->cKurzBeschreibung     = strip_tags($Artikel->cKurzBeschreibung);
         $Artikel->cKurzBeschreibung     = str_replace('\"', '""', addslashes($Artikel->cKurzBeschreibung));
 
-        $find    = array("\r\n", "\r", "\n", "\x0B", "\x0");
-        $replace = array(' ', ' ', ' ', ' ', '');
+        $find    = ["\r\n", "\r", "\n", "\x0B", "\x0"];
+        $replace = [' ', ' ', ' ', ' ', ''];
 
+        // Zeichenmaskierung
         if ($ExportEinstellungen['exportformate_quot'] !== 'N' && $ExportEinstellungen['exportformate_quot']) {
             $find[] = '"';
             if ($ExportEinstellungen['exportformate_quot'] === 'q' || $ExportEinstellungen['exportformate_quot'] === 'bq') {
@@ -289,18 +242,37 @@ function verarbeiteYategoExport(&$Artikel, $exportformat, $ExportEinstellungen, 
         $Artikel->cName                 = StringHandler::unhtmlentities($Artikel->cName);
         $Artikel->cBeschreibung         = StringHandler::unhtmlentities($Artikel->cBeschreibung);
         $Artikel->cKurzBeschreibung     = StringHandler::unhtmlentities($Artikel->cKurzBeschreibung);
-        $Artikel->cName                 = StringHandler::removeWhitespace(str_replace($find, $replace, $Artikel->cName));
-        $Artikel->cBeschreibung         = StringHandler::removeWhitespace(str_replace($find, $replace, $Artikel->cBeschreibung));
-        $Artikel->cKurzBeschreibung     = StringHandler::removeWhitespace(str_replace($find, $replace, $Artikel->cKurzBeschreibung));
-        $Artikel->cBeschreibungHTML     = StringHandler::removeWhitespace(str_replace($find, $replace, $Artikel->cBeschreibungHTML));
-        $Artikel->cKurzBeschreibungHTML = StringHandler::removeWhitespace(str_replace($find, $replace, $Artikel->cKurzBeschreibungHTML));
+        $Artikel->cName                 = StringHandler::removeWhitespace(
+            str_replace($find, $replace, $Artikel->cName)
+        );
+        $Artikel->cBeschreibung         = StringHandler::removeWhitespace(
+            str_replace($find, $replace, $Artikel->cBeschreibung)
+        );
+        $Artikel->cKurzBeschreibung     = StringHandler::removeWhitespace(
+            str_replace($find, $replace, $Artikel->cKurzBeschreibung)
+        );
+        $Artikel->cBeschreibungHTML     = StringHandler::removeWhitespace(
+            str_replace($find, $replace, $Artikel->cBeschreibungHTML)
+        );
+        $Artikel->cKurzBeschreibungHTML = StringHandler::removeWhitespace(
+            str_replace($find, $replace, $Artikel->cKurzBeschreibungHTML)
+        );
         $Artikel->Preise->fVKBrutto     = berechneBrutto($Artikel->Preise->fVKNetto, gibUst($Artikel->kSteuerklasse));
+
         //Kategoriepfad
-        $Artikel->Kategorie     = new Kategorie($Artikel->gibKategorie(), $exportformat->kSprache, $exportformat->kKundengruppe);
-        $Artikel->Kategoriepfad = (isset($Artikel->Kategorie->cKategoriePfad)) ?
-            $Artikel->Kategorie->cKategoriePfad : // calling gibKategoriepfad() should not be necessary since it has already been called in Kategorie::loadFromDB()
-            gibKategoriepfad($Artikel->Kategorie, $exportformat->kKundengruppe, $exportformat->kSprache);
-        $Artikel->Versandkosten = gibGuenstigsteVersandkosten($ExportEinstellungen['exportformate_lieferland'], $Artikel, 0, $exportformat->kKundengruppe);
+        $Artikel->Kategorie     = new Kategorie(
+            $Artikel->gibKategorie(),
+            $exportformat->kSprache,
+            $exportformat->kKundengruppe
+        );
+        $Artikel->Kategoriepfad = $Artikel->Kategorie->cKategoriePfad;
+        $Artikel->Versandkosten = gibGuenstigsteVersandkosten(
+            $ExportEinstellungen['exportformate_lieferland'],
+            $Artikel,
+            0,
+            $exportformat->kKundengruppe
+        );
+
         // Kampagne URL
         if (isset($exportformat->tkampagne_cParameter)) {
             $cSep = '?';
@@ -328,22 +300,29 @@ function verarbeiteYategoExport(&$Artikel, $exportformat, $ExportEinstellungen, 
         if ($Artikel->fLagerbestand > 0) {
             $Artikel->Verfuegbarkeit_kelkoo = '001';
         }
+
         // X-Selling
         $oXSellingTMP_arr = Shop::DB()->query(
             "SELECT kXSellArtikel
                 FROM txsell
                 WHERE kArtikel = " . (int)$Artikel->kArtikel, 9
         );
-        $oXSelling_arr = array();
+        $oXSelling_arr    = [];
         if (is_array($oXSellingTMP_arr) && count($oXSellingTMP_arr) > 0) {
             foreach ($oXSellingTMP_arr as $oXSellingTMP) {
                 $oXSelling_arr[] = $oXSellingTMP['kXSellArtikel'];
             }
         }
+
         $cVarianten       = '';
-        $kKategorie_arr   = array(); // Alle Kategorien vom Artikel
-        $kYatKategoie_arr = array(); // Alle Yatego Kategorien vom Artikel
-        $oKategorie_arr   = Shop::DB()->selectAll('tkategorieartikel', 'kArtikel', (int)$Artikel->kArtikel, 'kKategorie');
+        $kKategorie_arr   = []; // Alle Kategorien vom Artikel
+        $kYatKategoie_arr = []; // Alle Yatego Kategorien vom Artikel
+        $oKategorie_arr   = Shop::DB()->selectAll(
+            'tkategorieartikel',
+            'kArtikel',
+            (int)$Artikel->kArtikel,
+            'kKategorie'
+        );
         if (is_array($oKategorie_arr) && count($oKategorie_arr) > 0) {
             foreach ($oKategorie_arr as $oKategorie) {
                 $kKategorie_arr[] = $oKategorie->kKategorie;
@@ -352,175 +331,154 @@ function verarbeiteYategoExport(&$Artikel, $exportformat, $ExportEinstellungen, 
         if ($Artikel->FunktionsAttribute['yategokat']) {
             $kYatKategoie_arr = explode(',', $Artikel->FunktionsAttribute['yategokat']);
         }
-        // Liste von kKategorien vom Artikel inkl. Yatego Kats
         $kKategorieListe_arr = array_merge($kYatKategoie_arr, $kKategorie_arr);
-        // Varianten
-        if (is_array($Artikel->Variationen)) {
-            $oVariationsListe_arr = array();
-            $bEigenschaftCheck    = true;
-            // Kinder Prüfen
-            $oEigenschaftKombi_arr = array();
-            if ($Artikel->nIstVater > 0) {
-                $oVariationsKind_arr = ArtikelHelper::getChildren($Artikel->kArtikel);
 
-                if (is_array($oVariationsKind_arr) && count($oVariationsKind_arr) > 0) {
-                    $cSQL = '';
-                    foreach ($oVariationsKind_arr as $i => $oVariationsKind) {
-                        if ($i > 0) {
-                            $cSQL .= ", " . (int)$oVariationsKind->kEigenschaftKombi;
-                        } else {
-                            $cSQL .= (int)$oVariationsKind->kEigenschaftKombi;
-                        }
-                    }
-                    if (strlen($cSQL) > 0) {
-                        $oEigenschaftKombi_arr = Shop::DB()->query(
-                            "SELECT teigenschaftkombiwert.*, tartikel.kArtikel
-                                FROM teigenschaftkombiwert
-                                JOIN tartikel ON tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
-                                WHERE teigenschaftkombiwert.kEigenschaftKombi IN (" . $cSQL . ")
-                                GROUP BY teigenschaftkombiwert.kEigenschaftWert
-                                ORDER BY teigenschaftkombiwert.kEigenschaft, teigenschaftkombiwert.kEigenschaftWert", 2
-                        );
-                    }
-                }
-            }
+        // Varianten
+        $oVariationsLager_arr = [];
+        if (is_array($Artikel->Variationen)) {
+            $defaultOptions       = Artikel::getDefaultOptions();
             $shopURL              = Shop::getURL();
-            $oVariationsLager_arr = array();
+            $combinations         = [];
+            $oVariationsListe_arr = [];
+
             foreach ($Artikel->Variationen as $oVariation) {
-                $oGlobal_arr['varianten'][] = array(
+                $oGlobal_arr['varianten'][] = [
                     'foreign_id'       => $oVariation->kEigenschaft,
                     'vs_title'         => $oVariation->cName,
                     'variant_set_name' => $oVariation->cName,
                     'set_sorting'      => 'man',
-                    'sorting_number'   => $oVariation->nSort);
+                    'sorting_number'   => $oVariation->nSort
+                ];
+                $oVariationsListe_arr[]     = $oVariation->kEigenschaft;
+                $combinationsPass           = [];
 
-                $oVariationsListe_arr[] = $oVariation->kEigenschaft;
+                foreach ($oVariation->Werte as $oWert) {
+                    $oVariationsBild = Shop::DB()->select(
+                        'teigenschaftwertpict',
+                        'kEigenschaftWert',
+                        (int)$oWert->kEigenschaftWert,
+                        null,
+                        null,
+                        null,
+                        null,
+                        false,
+                        'cPfad'
+                    );
 
-                if (is_array($oVariation->Werte) && count($oVariation->Werte) > 0) {
-                    foreach ($oVariation->Werte as $oWert) {
-                        $oVariationsKind = new stdClass();
-                        if (is_array($oEigenschaftKombi_arr) && count($oEigenschaftKombi_arr) > 0) {
-                            $bEigenschaftCheck = false;
-                            $oArtikelOptionen  = new stdClass();
-                            foreach ($oEigenschaftKombi_arr as $oEigenschaftKombi) {
-                                if ($oEigenschaftKombi->kEigenschaft == $oVariation->kEigenschaft && $oEigenschaftKombi->kEigenschaftWert == $oWert->kEigenschaftWert) {
-                                    $oVariationsKind = new Artikel();
-                                    $oVariationsKind->fuelleArtikel($oEigenschaftKombi->kArtikel, $oArtikelOptionen, $exportformat->kKundengruppe, $exportformat->kSprache, true);
-                                    $bEigenschaftCheck = true;
-                                    break;
-                                }
-                            }
-                        }
+                    $cBild = !empty($oVariationsBild->cPfad)
+                        ? $shopURL . '/' . PFAD_VARIATIONSBILDER_GROSS . $oVariationsBild->cPfad
+                        : '';
 
-                        if ($bEigenschaftCheck) {
-                            //@todo: utf_decode ok?
-                            $cEinheit = utf8_decode('Stück');
-                            $fVPEWert = 1;
-                            // Gibts einen Vater und ein Kind dazu?
-                            if ($Artikel->nIstVater > 0 && $oVariationsKind->kArtikel > 0) {
-                                if (isset($oVariationsKind->cVPEEinheit) && strlen($oVariationsKind->cVPEEinheit) > 0) {
-                                    $cEinheit = $oVariationsKind->cVPEEinheit;
-                                }
-                                if (isset($oVariationsKind->fVPEWert) && $oVariationsKind->fVPEWert > 0) {
-                                    $fVPEWert = $oVariationsKind->fVPEWert;
-                                }
-                                $oWert->fAufpreisNetto = $oVariationsKind->Preise->fVKNetto - $Artikel->Preise->fVKNetto;
+                    $oGlobal_arr['variantenwerte'][] = [
+                        'variant_set_id' => $oWert->kEigenschaft,
+                        'foreign_id'     => $oWert->kEigenschaftWert,
+                        'title'          => $oWert->cName,
+                        'picture'        => $cBild,
+                        'price'          => getNum($oWert->fAufpreisNetto)
+                    ];
 
-                                $cBild = '';
-                                if (isset($oVariationsKind->Bilder[0]->cPfadNormal) && strlen($oVariationsKind->Bilder[0]->cPfadNormal) > 0) {
-                                    $cBild = $shopURL . '/' . $oVariationsKind->Bilder[0]->cPfadNormal;
-                                }
-                                $oGlobal_arr['variantenwerte'][] = array(
-                                    'variant_set_id' => $oWert->kEigenschaft,
-                                    'foreign_id'     => $oWert->kEigenschaftWert,
-                                    'title'          => $oWert->cName,
-                                    'picture'        => $cBild,
-                                    'price'          => getNum($oWert->fAufpreisNetto)
-                                );
-                                $fLagerbestand = -1;
-                                $nAktiv        = 1;
-                                if ($oVariationsKind->cLagerBeachten === 'Y' && $oVariationsKind->cLagerKleinerNull === 'N') {
-                                    $fLagerbestand = $oVariationsKind->fLagerbestand;
-                                    if ($oVariationsKind->fLagerbestand <= 0) {
-                                        $nAktiv = 0;
-                                    }
-                                }
-
-                                $oVariationsLager_arr[] = array(
-                                    'foreign_id'    => $Artikel->kArtikel . sprintf("%05s", $oWert->kEigenschaftWert),
-                                    'article_id'    => $Artikel->kArtikel,
-                                    'variant_ids'   => $oWert->kEigenschaftWert,
-                                    'stock_value'   => $fLagerbestand,
-                                    'delivery_date' => $oVariationsKind->cLieferstatus,
-                                    'active'        => $nAktiv,
-                                    'article_nr'    => $oVariationsKind->cArtNr . '.' . $oWert->cName,
-                                    'price'         => 0,
-                                    'quantity_unit' => $cEinheit,
-                                    'package_size'  => $fVPEWert,
-                                    'info_v_title'  => '',
-                                    'info_vs_id'    => '',
-                                    'info_p_title'  => '',
-                                    'delitem'       => '');
-                            } else {
-                                if (isset($Artikel->cVPEEinheit) && strlen($Artikel->cVPEEinheit) > 0) {
-                                    $cEinheit = $Artikel->cVPEEinheit;
-                                }
-
-                                if (isset($Artikel->fVPEWert) && $Artikel->fVPEWert > 0) {
-                                    $fVPEWert = $Artikel->fVPEWert;
-                                }
-                                $oVariationsBild = Shop::DB()->query(
-                                    "SELECT cPfad
-                                        FROM teigenschaftwertpict
-                                        WHERE kEigenschaftWert = " . (int)$oWert->kEigenschaftWert, 1
-                                );
-
-                                $cBild = '';
-                                if (isset($oVariationsBild->cPfad) && strlen($oVariationsBild->cPfad) > 0) {
-                                    $cBild = $shopURL . '/' . PFAD_VARIATIONSBILDER_GROSS . $oVariationsBild->cPfad;
-                                }
-
-                                $oGlobal_arr['variantenwerte'][] = array(
-                                    'variant_set_id' => $oWert->kEigenschaft,
-                                    'foreign_id'     => $oWert->kEigenschaftWert,
-                                    'title'          => $oWert->cName,
-                                    'picture'        => $cBild,
-                                    'price'          => getNum($oWert->fAufpreisNetto)
-                                );
-
-                                $fLagerbestand = -1;
-                                $nAktiv        = 1;
-                                if ($Artikel->cLagerBeachten === 'Y' && $Artikel->cLagerVariation === 'Y') {
-                                    $fLagerbestand = $oWert->fLagerbestand;
-                                    if ($oWert->fLagerbestand <= 0) {
-                                        $nAktiv = 0;
-                                    }
-                                } elseif ($Artikel->cLagerBeachten === 'Y' && $Artikel->cLagerVariation === 'N') {
-                                    $fLagerbestand = $Artikel->fLagerbestand;
-                                    if ($Artikel->fLagerbestand <= 0) {
-                                        $nAktiv = 0;
-                                    }
-                                }
-
-                                $oVariationsLager_arr[] = array(
-                                    'foreign_id'    => $Artikel->kArtikel . sprintf("%05s", $oWert->kEigenschaftWert),
-                                    'article_id'    => $Artikel->kArtikel,
-                                    'variant_ids'   => $oWert->kEigenschaftWert,
-                                    'stock_value'   => $fLagerbestand,
-                                    'delivery_date' => $Artikel->cLieferstatus,
-                                    'active'        => $nAktiv,
-                                    'article_nr'    => $Artikel->cArtNr . '.' . $oWert->cName,
-                                    'price'         => 0,
-                                    'quantity_unit' => $cEinheit,
-                                    'package_size'  => $fVPEWert,
-                                    'info_v_title'  => '',
-                                    'info_vs_id'    => '',
-                                    'info_p_title'  => '',
-                                    'delitem'       => ''
-                                );
+                    if ((int)$Artikel->nIstVater === 0) {
+                        // Varianten sukzessive kombinieren
+                        if (count($combinations) === 0) {
+                            $oVariantKombi                    = new stdClass();
+                            $oVariantKombi->cName             = $oWert->cName;
+                            $oVariantKombi->fAufpreisNetto    = $oWert->fAufpreisNetto;
+                            $oVariantKombi->cEigenschaft      = (string)$oVariation->kEigenschaft;
+                            $oVariantKombi->cEigenschaftWerte = (string)$oWert->kEigenschaftWert;
+                            $oVariantKombi->foreignIdPostfix  = sprintf("%05s", $oWert->kEigenschaftWert);
+                            $combinationsPass[]               = $oVariantKombi;
+                        } else {
+                            foreach ($combinations as $oVariantKombi) {
+                                $oVariantKombiNew                     = clone $oVariantKombi;
+                                $oVariantKombiNew->cName             .= '.' . $oWert->cName;
+                                $oVariantKombiNew->fAufpreisNetto    += $oWert->fAufpreisNetto;
+                                $oVariantKombiNew->cEigenschaftWerte .= ',' . $oWert->kEigenschaftWert;
+                                $oVariantKombiNew->foreignIdPostfix  .= sprintf("%05s", $oWert->kEigenschaftWert);
+                                $combinationsPass[]                   = $oVariantKombiNew;
                             }
                         }
                     }
+                }
+
+                $combinations = $combinationsPass;
+            }
+
+            if ((int)$Artikel->nIstVater > 0) {
+                // Hole VarKombi-Kinder
+                $combinations = Shop::DB()->query(
+                    "SELECT a.kArtikel, ekw.kEigenschaftKombi,
+                            GROUP_CONCAT(ekw.kEigenschaft ORDER BY ekw.kEigenschaft SEPARATOR ',') AS cEigenschaften,
+                            GROUP_CONCAT(ekw.kEigenschaftWert ORDER BY ekw.kEigenschaft SEPARATOR ',') AS cEigenschaftWerte
+                        FROM tartikel AS a
+                            JOIN teigenschaftkombiwert AS ekw
+                                ON ekw.kEigenschaftKombi = a.kEigenschaftKombi
+                        WHERE a.kVaterArtikel = " . (int)$Artikel->kArtikel . "
+                        GROUP BY ekw.kEigenschaftKombi",
+                    2
+                );
+            }
+
+            foreach ($combinations as $combination) {
+                if ((int)$Artikel->nIstVater > 0) {
+                    $childArticle = new Artikel();
+                    $childArticle->fuelleArtikel(
+                        $combination->kArtikel,
+                        $defaultOptions,
+                        $exportformat->kKundengruppe,
+                        $exportformat->kSprache,
+                        true
+                    );
+                    $oVariationsLager_arr[] = [
+                        'foreign_id'    => $childArticle->kArtikel,
+                        'article_id'    => $Artikel->kArtikel,
+                        'variant_ids'   => $combination->cEigenschaftWerte,
+                        'stock_value'   => ($childArticle->cLagerBeachten === 'Y' &&
+                            $childArticle->cLagerKleinerNull === 'N')
+                            ? $childArticle->fLagerbestand
+                            : -1,
+                        'delivery_date' => $childArticle->cLieferstatus,
+                        'active'        => ($childArticle->cLagerBeachten === 'Y' &&
+                            $childArticle->cLagerKleinerNull === 'N' &&
+                            $childArticle->fLagerbestand <= 0)
+                            ? 0
+                            : 1,
+                        'article_nr'    => $childArticle->cArtNr,
+                        'price'         => $childArticle->Preise->fVKNetto,
+                        'quantity_unit' => !empty($childArticle->cVPEEinheit)
+                            ? $childArticle->cVPEEinheit
+                            : utf8_decode('Stück'),
+                        'package_size'  => !empty($childArticle->fVPEWert) && $childArticle->fVPEWert > 0
+                            ? $childArticle->fVPEWert
+                            : 1,
+                        'info_v_title'  => '',
+                        'info_vs_id'    => '',
+                        'info_p_title'  => '',
+                        'delitem'       => ''
+                    ];
+                } else {
+                    $oVariationsLager_arr[] = [
+                        'foreign_id'    => $Artikel->kArtikel . $combination->foreignIdPostfix,
+                        'article_id'    => $Artikel->kArtikel,
+                        'variant_ids'   => $combination->cEigenschaftWerte,
+                        'stock_value'   => $Artikel->cLagerBeachten === 'Y' && $Artikel->cLagerVariation === 'N'
+                            ? $Artikel->fLagerbestand
+                            : -1,
+                        'delivery_date' => $Artikel->cLieferstatus,
+                        'active'        => ($Artikel->cLagerBeachten === 'Y' && $Artikel->cLagerKleinerNull === 'N' &&
+                            $Artikel->fLagerbestand <= 0)
+                            ? 0
+                            : 1,
+                        'article_nr'    => $Artikel->cArtNr . '.' . $combination->cName,
+                        'price'         => $Artikel->Preise->fVKNetto + $combination->fAufpreisNetto,
+                        'quantity_unit' => !empty($Artikel->cVPEEinheit) ? $Artikel->cVPEEinheit : utf8_decode('Stück'),
+                        'package_size'  => (!empty($Artikel->fVPEWert) && $Artikel->fVPEWert > 0)
+                            ? $Artikel->fVPEWert
+                            : 1,
+                        'info_v_title'  => '',
+                        'info_vs_id'    => '',
+                        'info_p_title'  => '',
+                        'delitem'       => ''
+                    ];
                 }
             }
 
@@ -530,16 +488,17 @@ function verarbeiteYategoExport(&$Artikel, $exportformat, $ExportEinstellungen, 
         //do not use double quotes here to keep csv column order (https://gitlab.jtl-software.de/jtlshop/shop4/issues/166)
         $cBacklink = "<a href='" . getURL($Artikel->cURL) . "' target='_blank'>{$Artikel->cName}</a>";
 
-        $oGlobal_arr['artikel'][] = array(
+        $oGlobal_arr['artikel'][] = [
             'foreign_id'         => $Artikel->kArtikel,
             'article_nr'         => $Artikel->cArtNr,
             'title'              => $Artikel->cName,
             'tax'                => getNum($Artikel->fMwSt),
-            'price'              => getNum($Artikel->Preise->fVKBrutto),
+            'price'              => count($Artikel->Variationen) > 0 ? 0 : getNum($Artikel->Preise->fVKBrutto),
             'price_uvp'          => getNum($Artikel->fUVP),
             'delivery_surcharge' => 0,
             'delivery_calc_once' => 0,
-            'short_desc'         => '<h2>' . $Artikel->cName . '</h2>' . (($Artikel->cKurzBeschreibung) ? $Artikel->cKurzBeschreibung : substr($Artikel->cBeschreibung, 0, 130)),
+            'short_desc'         => '<h2>' . $Artikel->cName . '</h2>' . ($Artikel->cKurzBeschreibung
+                    ?: substr($Artikel->cBeschreibung, 0, 130)),
             'long_desc'          => '<h2>' . $Artikel->cName . '</h2>' . $Artikel->cBeschreibung . $cBacklink,
             'url'                => getURL($Artikel->cURL),
             'picture'            => isset($Artikel->Bilder[0]) ? getURL($Artikel->Bilder[0]->cPfadGross) : '',
@@ -550,38 +509,34 @@ function verarbeiteYategoExport(&$Artikel, $exportformat, $ExportEinstellungen, 
             'categories'         => implode(',', $kKategorieListe_arr),
             'variants'           => $cVarianten,
             'delivery_date'      => $Artikel->cLieferstatus,
-            'stock'              => $Artikel->fLagerbestand,
+            'stock'              => $Artikel->cLagerBeachten === 'Y' && $Artikel->cLagerKleinerNull === 'N'
+                ? $Artikel->fLagerbestand : -1,
             'cross_selling'      => implode(',', $oXSelling_arr)
-        );
+        ];
+
         $KategorieListe[$Artikel->Kategorie->kKategorie] = 1;
+
         // Lager
         if (count($Artikel->Variationen) === 0) {
-            $cEinheit      = (isset($Artikel->cVPEEinheit) && strlen($Artikel->cVPEEinheit) > 0) ? $Artikel->cVPEEinheit : utf8_decode('Stück');
-            $fVPEWert      = (isset($Artikel->fVPEWert) && $Artikel->fVPEWert > 0) ? $Artikel->fVPEWert : 1;
-            $fLagerbestand = -1;
-            $nAktiv        = 1;
-            if ($Artikel->cLagerBeachten === 'Y' && $Artikel->cLagerKleinerNull === 'N') {
-                $fLagerbestand = $oWert->fLagerbestand;
-                if ($Artikel->fLagerbestand <= 0) {
-                    $nAktiv = 0;
-                }
-            }
-            $oGlobal_arr['lager'][] = array(
+            $oGlobal_arr['lager'][] = [
                 'foreign_id'    => $Artikel->kArtikel,
                 'article_id'    => $Artikel->kArtikel,
                 'variant_ids'   => $cVarianten,
-                'stock_value'   => $fLagerbestand,
+                'stock_value'   => $Artikel->cLagerBeachten === 'Y' && $Artikel->cLagerKleinerNull === 'N'
+                    ? $Artikel->fLagerbestand : -1,
                 'delivery_date' => $Artikel->cLieferstatus,
-                'active'        => $nAktiv,
+                'active'        => ($Artikel->cLagerBeachten === 'Y' && $Artikel->cLagerKleinerNull === 'N' &&
+                    $Artikel->fLagerbestand <= 0) ? 0 : 1,
                 'article_nr'    => $Artikel->cArtNr,
                 'price'         => 0,
-                'quantity_unit' => $cEinheit,
-                'package_size'  => $fVPEWert,
+                'quantity_unit' => (isset($Artikel->cVPEEinheit) && strlen($Artikel->cVPEEinheit) > 0)
+                    ? $Artikel->cVPEEinheit : utf8_decode('Stück'),
+                'package_size'  => (isset($Artikel->fVPEWert) && $Artikel->fVPEWert > 0) ? $Artikel->fVPEWert : 1,
                 'info_v_title'  => '',
                 'info_vs_id'    => '',
                 'info_p_title'  => '',
                 'delitem'       => ''
-            );
+            ];
         } else {
             $oGlobal_arr['lager'] = array_merge($oGlobal_arr['lager'], $oVariationsLager_arr);
         }
@@ -593,7 +548,7 @@ function verarbeiteYategoExport(&$Artikel, $exportformat, $ExportEinstellungen, 
  */
 function pruefeYategoExportPfad()
 {
-    return (is_dir(PFAD_ROOT . PFAD_EXPORT_YATEGO) && is_writeable(PFAD_ROOT . PFAD_EXPORT_YATEGO));
+    return (is_dir(PFAD_ROOT . PFAD_EXPORT_YATEGO) && is_writable(PFAD_ROOT . PFAD_EXPORT_YATEGO));
 }
 
 /**
@@ -603,9 +558,14 @@ function pruefeYategoExportPfad()
 function getEinstellungenExport($kExportformat)
 {
     $kExportformat = (int)$kExportformat;
-    $ret           = array();
+    $ret           = [];
     if ($kExportformat > 0) {
-        $einst = Shop::DB()->selectAll('texportformateinstellungen', 'kExportformat', $kExportformat, 'cName, cWert');
+        $einst = Shop::DB()->selectAll(
+            'texportformateinstellungen',
+            'kExportformat',
+            $kExportformat,
+            'cName, cWert'
+        );
         foreach ($einst as $eins) {
             if ($eins->cName) {
                 $ret[$eins->cName] = $eins->cWert;
@@ -617,12 +577,13 @@ function getEinstellungenExport($kExportformat)
 }
 
 /**
+ * @deprecated since 4.05
  * @param object $oExportformat
  * @return array
  */
 function baueArtikelExportSQL(&$oExportformat)
 {
-    $cSQL_arr          = array();
+    $cSQL_arr          = [];
     $cSQL_arr['Where'] = '';
     $cSQL_arr['Join']  = '';
 
@@ -639,19 +600,24 @@ function baueArtikelExportSQL(&$oExportformat)
             $cSQL_arr['Where'] = " AND (tartikel.nIstVater != 1 OR tartikel.kEigenschaftKombi > 0)";
             break;
     }
-    if (isset($cExportEinstellungAssoc_arr['exportformate_lager_ueber_null']) && $cExportEinstellungAssoc_arr['exportformate_lager_ueber_null'] === 'Y') {
+    if (isset($cExportEinstellungAssoc_arr['exportformate_lager_ueber_null']) &&
+        $cExportEinstellungAssoc_arr['exportformate_lager_ueber_null'] === 'Y') {
         $cSQL_arr['Where'] .= " AND (NOT (tartikel.fLagerbestand <= 0 AND tartikel.cLagerBeachten = 'Y'))";
-    } elseif (isset($cExportEinstellungAssoc_arr['exportformate_lager_ueber_null']) && $cExportEinstellungAssoc_arr['exportformate_lager_ueber_null'] === 'O') {
-        $cSQL_arr['Where'] .= " AND (NOT (tartikel.fLagerbestand <= 0 AND tartikel.cLagerBeachten = 'Y') OR tartikel.cLagerKleinerNull = 'Y')";
+    } elseif (isset($cExportEinstellungAssoc_arr['exportformate_lager_ueber_null']) &&
+        $cExportEinstellungAssoc_arr['exportformate_lager_ueber_null'] === 'O') {
+        $cSQL_arr['Where'] .= " AND (NOT (tartikel.fLagerbestand <= 0 AND tartikel.cLagerBeachten = 'Y') 
+                                    OR tartikel.cLagerKleinerNull = 'Y')";
     }
 
-    if (isset($cExportEinstellungAssoc_arr['exportformate_preis_ueber_null']) && $cExportEinstellungAssoc_arr['exportformate_preis_ueber_null'] === 'Y') {
+    if (isset($cExportEinstellungAssoc_arr['exportformate_preis_ueber_null']) &&
+        $cExportEinstellungAssoc_arr['exportformate_preis_ueber_null'] === 'Y') {
         $cSQL_arr['Join'] .= " JOIN tpreise ON tpreise.kArtikel = tartikel.kArtikel
                                 AND tpreise.kKundengruppe = " . (int)$oExportformat->kKundengruppe . "
                                 AND tpreise.fVKNetto > 0";
     }
 
-    if (isset($cExportEinstellungAssoc_arr['exportformate_beschreibung']) && $cExportEinstellungAssoc_arr['exportformate_beschreibung'] === 'Y') {
+    if (isset($cExportEinstellungAssoc_arr['exportformate_beschreibung']) &&
+        $cExportEinstellungAssoc_arr['exportformate_beschreibung'] === 'Y') {
         $cSQL_arr['Where'] .= " AND tartikel.cBeschreibung != ''";
     }
 
@@ -659,20 +625,23 @@ function baueArtikelExportSQL(&$oExportformat)
 }
 
 /**
+ * @deprecated since 4.05
  * @param object $oExportformat
  * @return mixed
  */
 function holeMaxExportArtikelAnzahl(&$oExportformat)
 {
     $cSQL_arr = baueArtikelExportSQL($oExportformat);
-    $conf     = Shop::getSettings(array(CONF_GLOBAL));
+    $conf     = Shop::getSettings([CONF_GLOBAL]);
     $sql      = 'AND NOT (DATE(tartikel.dErscheinungsdatum) > DATE(NOW()))';
-    if (isset($conf['global']['global_erscheinende_kaeuflich']) && $conf['global']['global_erscheinende_kaeuflich'] === 'Y') {
+    if (isset($conf['global']['global_erscheinende_kaeuflich']) &&
+        $conf['global']['global_erscheinende_kaeuflich'] === 'Y') {
         $sql = 'AND (
                     NOT (DATE(tartikel.dErscheinungsdatum) > DATE(NOW()))
                     OR  (
                             DATE(tartikel.dErscheinungsdatum) > DATE(NOW())
-                            AND (tartikel.cLagerBeachten = "N" OR tartikel.fLagerbestand > 0 OR tartikel.cLagerKleinerNull = "Y")
+                            AND (tartikel.cLagerBeachten = "N" 
+                                OR tartikel.fLagerbestand > 0 OR tartikel.cLagerKleinerNull = "Y")
                         )
                 )';
     }
@@ -684,9 +653,11 @@ function holeMaxExportArtikelAnzahl(&$oExportformat)
     $count = Shop::DB()->query(
         "SELECT count(*) AS nAnzahl
             FROM tartikel
-            LEFT JOIN tartikelattribut ON tartikelattribut.kArtikel = tartikel.kArtikel
+            LEFT JOIN tartikelattribut 
+                ON tartikelattribut.kArtikel = tartikel.kArtikel
                 AND tartikelattribut.cName = '" . FKT_ATTRIBUT_KEINE_PREISSUCHMASCHINEN . "'
-            LEFT JOIN tartikelsichtbarkeit ON tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
+            LEFT JOIN tartikelsichtbarkeit 
+                ON tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
                 AND tartikelsichtbarkeit.kKundengruppe = " . (int)$oExportformat->kKundengruppe . "
             " . $cSQL_arr['Join'] . "
             WHERE tartikelattribut.kArtikelAttribut IS NULL" . $cSQL_arr['Where'] . "

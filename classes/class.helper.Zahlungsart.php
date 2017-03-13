@@ -14,7 +14,7 @@ class ZahlungsartHelper
             return false;
         }
         require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';
-        $einstellungen              = Shop::getConfig(array(CONF_ZAHLUNGSARTEN));
+        $einstellungen              = Shop::getSettings([CONF_ZAHLUNGSARTEN]);
         $Zahlungsart->einstellungen = $einstellungen['zahlungsarten'];
         switch ($Zahlungsart->cModulId) {
             case 'za_ueberweisung_jtl':
@@ -103,13 +103,13 @@ class ZahlungsartHelper
                 require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
                 $paymentMethod = PaymentMethod::create($Zahlungsart->cModulId);
 
-                return $paymentMethod->isValid(((isset($_SESSION['Kunde'])) ? $_SESSION['Kunde'] : null), $_SESSION['Warenkorb']);
+                return $paymentMethod->isValid((isset($_SESSION['Kunde']) ? $_SESSION['Kunde'] : null), $_SESSION['Warenkorb']);
                 break;
             default:
                 require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
                 $paymentMethod = PaymentMethod::create($Zahlungsart->cModulId);
                 if ($paymentMethod !== null) {
-                    return $paymentMethod->isValid(((isset($_SESSION['Kunde'])) ? $_SESSION['Kunde'] : null), $_SESSION['Warenkorb']);
+                    return $paymentMethod->isValid((isset($_SESSION['Kunde']) ? $_SESSION['Kunde'] : null), $_SESSION['Warenkorb']);
                 }
                 break;
         }

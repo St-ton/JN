@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/admininclude.php';
+require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('ORDER_BILLPAY_VIEW', true, true);
 
@@ -20,8 +20,11 @@ if (strlen(verifyGPDataString('tab')) > 0) {
 /** @var Billpay $oBillpay */
 $oBillpay = PaymentMethod::create('za_billpay_jtl');
 
-if (strlen($oBillpay->getSetting('pid')) > 0 && strlen($oBillpay->getSetting('mid')) > 0 && strlen($oBillpay->getSetting('bpsecure')) > 0) {
-    $oItem_arr = array();
+if (strlen($oBillpay->getSetting('pid')) > 0 &&
+    strlen($oBillpay->getSetting('mid')) > 0 &&
+    strlen($oBillpay->getSetting('bpsecure')) > 0
+) {
+    $oItem_arr = [];
     $oConfig   = $oBillpay->getApi('module_config');
     foreach (['AUT' => ['EUR'], 'DEU' => ['EUR'], 'NLD' => ['EUR'], 'CHE' => ['EUR', 'CHF']] as $cLand => $cWaehrung_arr) {
         foreach ($cWaehrung_arr as $cWaehrung) {
@@ -98,7 +101,9 @@ if (strlen($oBillpay->getSetting('pid')) > 0 && strlen($oBillpay->getSetting('mi
     $smarty->assign('oLog_arr', $oPagiLog->getPageItems())
         ->assign('oPagiLog', $oPagiLog);
 } else {
-    $cFehler = 'Billpay wurde bisher nicht konfiguriert. <a href="http://guide.jtl-software.de/index.php?title=Kaufabwicklung:Billpay#Billpay" target="_blank"><i class="fa fa-external-link"></i> Zur Dokumentation</a>';
+    $cFehler = 'Billpay wurde bisher nicht konfiguriert. ' .
+        '<a href="http://guide.jtl-software.de/index.php?title=Kaufabwicklung:Billpay#Billpay" target="_blank">' .
+        '<i class="fa fa-external-link"></i> Zur Dokumentation</a>';
 }
 
 $smarty->assign('cFehlerBillpay', $cFehler);
@@ -115,11 +120,11 @@ if (isset($_POST['einstellungen_bearbeiten'])) {
             $aktWert->kEinstellungenSektion = $Conf[$i]->kEinstellungenSektion;
             switch ($Conf[$i]->cInputTyp) {
                 case 'kommazahl':
-                    $aktWert->cWert = floatval(str_replace(',', '.', $aktWert->cWert));
+                    $aktWert->cWert = (float)str_replace(',', '.', $aktWert->cWert);
                     break;
                 case 'zahl':
                 case 'number':
-                    $aktWert->cWert = intval($aktWert->cWert);
+                    $aktWert->cWert = (int)$aktWert->cWert;
                     break;
                 case 'text':
                     $aktWert->cWert = substr($aktWert->cWert, 0, 255);
@@ -128,12 +133,16 @@ if (isset($_POST['einstellungen_bearbeiten'])) {
                     $aktWert->cWert = substr($aktWert->cWert, 0, 255);
                     break;
             }
-            Shop::DB()->delete('teinstellungen', array('kEinstellungenSektion', 'cName'), array((int)$Conf[$i]->kEinstellungenSektion, $Conf[$i]->cWertName));
+            Shop::DB()->delete(
+                'teinstellungen',
+                ['kEinstellungenSektion', 'cName'],
+                [(int)$Conf[$i]->kEinstellungenSektion, $Conf[$i]->cWertName]
+            );
             Shop::DB()->insert('teinstellungen', $aktWert);
         }
     }
-    Shop::DB()->query("UPDATE tglobals SET dLetzteAenderung=now()", 4);
-    Shop::Cache()->flushTags(array(CACHING_GROUP_OPTION));
+    Shop::DB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
+    Shop::Cache()->flushTags([CACHING_GROUP_OPTION]);
 
     $smarty->assign('saved', true);
 }
@@ -141,10 +150,20 @@ if (isset($_POST['einstellungen_bearbeiten'])) {
 $configCount = count($Conf);
 for ($i = 0; $i < $configCount; $i++) {
     if ($Conf[$i]->cInputTyp === 'selectbox') {
-        $Conf[$i]->ConfWerte = Shop::DB()->selectAll('teinstellungenconfwerte', 'kEinstellungenConf', (int)$Conf[$i]->kEinstellungenConf, '*', 'nSort');
+        $Conf[$i]->ConfWerte = Shop::DB()->selectAll(
+            'teinstellungenconfwerte',
+            'kEinstellungenConf',
+            (int)$Conf[$i]->kEinstellungenConf,
+            '*',
+            'nSort'
+        );
     }
-    $setValue                = Shop::DB()->select('teinstellungen', 'kEinstellungenSektion', (int)$Conf[$i]->kEinstellungenSektion, 'cName', $Conf[$i]->cWertName);
-    $Conf[$i]->gesetzterWert = (isset($setValue->cWert)) ? StringHandler::htmlentities($setValue->cWert) : null;
+    $setValue                = Shop::DB()->select(
+        'teinstellungen',
+        'kEinstellungenSektion', (int)$Conf[$i]->kEinstellungenSektion,
+        'cName', $Conf[$i]->cWertName
+    );
+    $Conf[$i]->gesetzterWert = isset($setValue->cWert) ? StringHandler::htmlentities($setValue->cWert) : null;
 }
 
 $smarty->assign('Conf', $Conf)

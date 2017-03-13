@@ -75,7 +75,7 @@ class Slider implements IExtensionPoint
     /**
      * @var array
      */
-    public $oSlide_arr = array();
+    public $oSlide_arr = [];
 
     /**
      * @var bool
@@ -91,6 +91,11 @@ class Slider implements IExtensionPoint
      * @var bool
      */
     public $bDirectionNav = true;
+
+    /**
+     * @var bool
+     */
+    public $bUseKB = true;
 
     /**
      *
@@ -109,11 +114,9 @@ class Slider implements IExtensionPoint
         if ($kSlider > 0) {
             global $smarty;
 
-            if ($this->load($kSlider, 'AND bAktiv = 1') === true) {
-                if ($this->bAktiv == 1) {
-                    $smarty->assign('PFAD_SLIDER', Shop::getURL() . '/' . PFAD_BILDER_SLIDER)
-                           ->assign('oSlider', $this);
-                }
+            if ($this->load($kSlider, 'AND bAktiv = 1') === true && (int)$this->bAktiv === 1) {
+                $smarty->assign('PFAD_SLIDER', Shop::getURL() . '/' . PFAD_BILDER_SLIDER)
+                       ->assign('oSlider', $this);
             }
         }
 
@@ -139,14 +142,14 @@ class Slider implements IExtensionPoint
     }
 
     /**
-     * @param string|int $kSlider
+     * @param int    $kSlider
      * @param string $filter
      * @param int $limit
      * @return bool
      */
-    public function load($kSlider = '', $filter = '', $limit = 1)
+    public function load($kSlider = 0, $filter = '', $limit = 1)
     {
-        if (isset($kSlider) && intval($kSlider !== 0) || !empty($this->kSlider) && intval($this->kSlider !== 0)) {
+        if ((int)$kSlider > 0 || (!empty($this->kSlider) && (int)$this->kSlider > 0)) {
             if (empty($kSlider) || (int)$kSlider === 0) {
                 $kSlider = $this->kSlider;
             }
@@ -167,7 +170,7 @@ class Slider implements IExtensionPoint
                     WHERE kSlider = " . $kSlider . "
                     ORDER BY nSort ASC", 9
             );
-            $oSlide_arr = array();
+            $oSlide_arr = [];
             foreach ($kSlide_arr as $kSlide) {
                 $oSlide          = new Slide();
                 $oSlide->kSlider = (int)$cSlider_arr['kSlider'];
@@ -195,11 +198,9 @@ class Slider implements IExtensionPoint
      */
     public function save()
     {
-        if (isset($this->kSlider) && intval($this->kSlider) !== 0) {
-            return $this->update();
-        }
-
-        return $this->append();
+        return ($this->kSlider > 0)
+            ? $this->update()
+            : $this->append();
     }
 
     /**
@@ -208,13 +209,12 @@ class Slider implements IExtensionPoint
     private function append()
     {
         $oSlider = clone $this;
-        unset($oSlider->oSlide_arr);
-        unset($oSlider->kSlider);
+        unset($oSlider->oSlide_arr, $oSlider->kSlider);
 
         $kSlider = Shop::DB()->insert('tslider', $oSlider);
 
-        if (intval($kSlider) != 0) {
-            $this->kSlider = $kSlider;
+        if ((int)$kSlider > 0) {
+            $this->kSlider = (int)$kSlider;
 
             return true;
         }
@@ -229,8 +229,7 @@ class Slider implements IExtensionPoint
     {
         $oSlider = clone $this;
 
-        unset($oSlider->oSlide_arr);
-        unset($oSlider->kSlider);
+        unset($oSlider->oSlide_arr, $oSlider->kSlider);
 
         return Shop::DB()->update('tslider', 'kSlider', $this->kSlider, $oSlider) >= 0;
     }
@@ -241,15 +240,15 @@ class Slider implements IExtensionPoint
      */
     public function delete($kSlider = 0)
     {
-        if (intval($this->kSlider) !== 0 && intval($kSlider) !== 0) {
+        if ((int)$this->kSlider !== 0 && (int)$kSlider !== 0) {
             $kSlider = $this->kSlider;
         }
         $kSlider = (int)$kSlider;
         if ($kSlider !== 0) {
-            $bSuccess = Shop::DB()->delete('tslider', 'kSlider', $kSlider);
+            $affected = Shop::DB()->delete('tslider', 'kSlider', $kSlider);
             Shop::DB()->delete('textensionpoint', ['cClass', 'kInitial'], ['Slider', $kSlider]);
 
-            if ($bSuccess == true) {
+            if ($affected > 0) {
                 if (!empty($this->oSlide_arr)) {
                     foreach ($this->oSlide_arr as $oSlide) {
                         $oSlide->delete();

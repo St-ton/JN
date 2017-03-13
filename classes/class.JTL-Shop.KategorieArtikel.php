@@ -28,7 +28,6 @@ class KategorieArtikel
      * Konstruktor
      *
      * @param int $kKategorieArtikel - Falls angegeben, wird der KategorieArtikel mit angegebenem kKategorieArtikel aus der DB geholt
-     * @return KategorieArtikel
      */
     public function __construct($kKategorieArtikel = 0)
     {
@@ -62,7 +61,7 @@ class KategorieArtikel
      */
     public function insertInDB()
     {
-        return (Shop::DB()->insert('tkategorieartikel', kopiereMembers($this)));
+        return Shop::DB()->insert('tkategorieartikel', kopiereMembers($this));
     }
 
     /**

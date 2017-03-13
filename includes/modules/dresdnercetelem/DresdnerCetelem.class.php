@@ -40,18 +40,27 @@ class DresdnerCetelem extends PaymentMethod
             if ($this->gibAnzahlungMoeglich() === 'Y') {
                 $cAnzahlung = '&/CreditCalculator/firstPayment=0';
             }
-            $fGesamtsummeKundenWaehrung = str_replace(".", ",", round(strval($order->fGesamtsummeKundenwaehrung), 2));
+            $fGesamtsummeKundenWaehrung = str_replace('.', ',', round($order->fGesamtsummeKundenwaehrung, 2));
 
-            $cURL = 'https://finanzierung.commerzfinanz.com/ecommerce/entry?vendorid=' . $this->Haendlernummer  . '&order_amount=' . $fGesamtsummeKundenWaehrung . $cAnzahlung . '&order_id=' . urlencode(utf8_encode($order->cBestellNr)) . '&firstname=' . urlencode(utf8_encode($customer->cVorname)) . '&lastname=' . urlencode(utf8_encode($customer->cNachname)) . '&email=' . $customer->cMail . '&street=' . urlencode(utf8_encode($customer->cStrasse . ' ' . $customer->cHausnummer)) . '&zip=' . $customer->cPLZ . '&city=' . urlencode(utf8_encode($customer->cOrt)) . '&successURL=' . $this->getNotificationURL($paymentHash);
+            $cURL = 'https://finanzierung.commerzfinanz.com/ecommerce/entry?vendorid=' . $this->Haendlernummer  .
+                '&order_amount=' . $fGesamtsummeKundenWaehrung . $cAnzahlung . '&order_id=' .
+                urlencode(utf8_encode($order->cBestellNr)) . '&firstname=' .
+                urlencode(utf8_encode($customer->cVorname)) . '&lastname=' .
+                urlencode(utf8_encode($customer->cNachname)) . '&email=' .
+                $customer->cMail . '&street=' . urlencode(utf8_encode($customer->cStrasse . ' ' .
+                    $customer->cHausnummer)) . '&zip=' . $customer->cPLZ . '&city=' .
+                urlencode(utf8_encode($customer->cOrt)) . '&successURL=' . $this->getNotificationURL($paymentHash);
 
-            $strReturn = '<a href="#" class="submit" onClick="open_window(\'' . $cURL . '\'); changeButton(this); return false;">' . Shop::Lang()->get('payWithDresdnercetelem', 'global') . '</a>';
+            $strReturn = '<a href="#" class="submit" onClick="open_window(\'' .
+                $cURL . '\'); changeButton(this); return false;">' .
+                Shop::Lang()->get('payWithDresdnercetelem', 'global') . '</a>';
 
             Shop::Smarty()->assign('dresdnercetelemform', $strReturn);
         }
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getHaendlernummer()
     {
@@ -61,7 +70,7 @@ class DresdnerCetelem extends PaymentMethod
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function gibAnzahlungMoeglich()
     {
@@ -76,7 +85,9 @@ class DresdnerCetelem extends PaymentMethod
     public function gibMindestArtikelwert()
     {
         global $Einstellungen;
-        $fMinWert = (isset($Einstellungen['zahlungsarten']['zahlungsart_dresdnercetelem_min'])) ? intval($Einstellungen['zahlungsarten']['zahlungsart_dresdnercetelem_min']) : null;
+        $fMinWert = isset($Einstellungen['zahlungsarten']['zahlungsart_dresdnercetelem_min'])
+            ? (int)$Einstellungen['zahlungsarten']['zahlungsart_dresdnercetelem_min']
+            : null;
         if ($fMinWert < 100) {
             $fMinWert = 100;
         }
@@ -88,7 +99,7 @@ class DresdnerCetelem extends PaymentMethod
      * @param array $args_arr
      * @return bool
      */
-    public function isValidIntern($args_arr = array())
+    public function isValidIntern($args_arr = [])
     {
         if (strlen($this->getHaendlernummer()) === 0) {
             ZahlungsLog::add($this->moduleID, 'Pflichtparameter "Haendlernummer" ist nicht gesetzt!', null, LOGLEVEL_ERROR);

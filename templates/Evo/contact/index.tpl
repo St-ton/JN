@@ -33,7 +33,7 @@
                     <div class="row">
                         {if $Einstellungen.kontakt.kontakt_abfragen_anrede !== 'N'}
                             <div class="col-xs-12 col-md-6">
-                                <div class="form-group float-label-control required">
+                                <div class="form-group float-label-control">
                                     <select name="anrede" id="salutation" class="form-control" required>
                                         <option value="" selected="selected" disabled>{lang key="salutation" section="account data"}</option>
                                         <option value="w" {if isset($Vorgaben->cAnrede) && $Vorgaben->cAnrede === 'w'}selected="selected"{/if}>{$Anrede_w}</option>
@@ -48,8 +48,7 @@
                         <div class="row">
                             {if $Einstellungen.kontakt.kontakt_abfragen_vorname !== 'N'}
                                 <div class="col-xs-12 col-md-6">
-                                    {include    file="snippets/form_group_simple.tpl"
-                                        options=[ "text" , "firstName", "vorname", {$Vorgaben->cVorname}, {lang key="firstName" section="account data"}, {$Einstellungen.kontakt.kontakt_abfragen_vorname}]}
+                                    {include file="snippets/form_group_simple.tpl" options=["text", "firstName", "vorname", {$Vorgaben->cVorname}, {lang key="firstName" section="account data"}, {$Einstellungen.kontakt.kontakt_abfragen_vorname}]}
                                 </div>
                             {/if}
                             {if $Einstellungen.kontakt.kontakt_abfragen_nachname !== 'N'}
@@ -62,8 +61,7 @@
                                             {lang assign="invalidReason" key="lastNameNotNumeric" section="account data"}
                                         {/if}
                                     {/if}
-                                    {include    file="snippets/form_group_simple.tpl"
-                                        options=[ "text" , "lastName", "nachname", {$Vorgaben->cNachname}, {lang key="lastName" section="account data"}, {$Einstellungen.kontakt.kontakt_abfragen_nachname}, {$invalidReason}]}
+                                    {include file="snippets/form_group_simple.tpl" options=["text" , "lastName", "nachname", {$Vorgaben->cNachname}, {lang key="lastName" section="account data"}, {$Einstellungen.kontakt.kontakt_abfragen_nachname}, {$invalidReason}]}
                                 </div>
                             {/if}
                         </div>
@@ -97,16 +95,14 @@
                                 <div class="col-xs-12  col-md-6">
                                     {assign var='invalidReason' value=null}
                                     {if isset($fehlendeAngaben.tel) && $fehlendeAngaben.tel === 1}{lang assign="invalidReason" key="fillOut" section="global"}{elseif isset($fehlendeAngaben.tel) && $fehlendeAngaben.tel === 2}{lang assign="invalidReason" key="invalidTel" section="global"}{/if}
-                                    {include file="snippets/form_group_simple.tpl"
-                                        options=[ "tel" , "tel", "tel", {$Vorgaben->cTel}, {lang key="tel" section="account data"}, {$Einstellungen.kontakt.kontakt_abfragen_tel}, {$invalidReason}]}
+                                    {include file="snippets/form_group_simple.tpl" options=["tel" , "tel", "tel", {$Vorgaben->cTel}, {lang key="tel" section="account data"}, {$Einstellungen.kontakt.kontakt_abfragen_tel}, {$invalidReason}]}
                                 </div>
                             {/if}
                             {if $Einstellungen.kontakt.kontakt_abfragen_mobil !== 'N'}
                                 <div class="col-xs-12 col-md-6">
                                     {assign var='invalidReason' value=null}
                                     {if isset($fehlendeAngaben.mobil) && $fehlendeAngaben.mobil === 1}{lang assign="invalidReason" key="fillOut" section="global"}{elseif isset($fehlendeAngaben.mobil) && $fehlendeAngaben.mobil === 2}{lang assign="invalidReason" key="invalidTel" section="global"}{/if}
-                                    {include file="snippets/form_group_simple.tpl"
-                                        options=[ "tel" , "mobile", "mobil", {$Vorgaben->cMobil}, {lang key="mobile" section="account data"}, {$Einstellungen.kontakt.kontakt_abfragen_mobil}, {$invalidReason}]}
+                                    {include file="snippets/form_group_simple.tpl" options=["tel" , "mobile", "mobil", {$Vorgaben->cMobil}, {lang key="mobile" section="account data"}, {$Einstellungen.kontakt.kontakt_abfragen_mobil}, {$invalidReason}]}
                                 </div>
                             {/if}
                         </div>
@@ -117,8 +113,7 @@
                             <div class="col-xs-12 col-md-6">
                                 {assign var='invalidReason' value=null}
                                 {if !empty($fehlendeAngaben.fax) && $fehlendeAngaben.fax === 1}{lang assign="invalidReason" key="fillOut" section="global"}{elseif isset($fehlendeAngaben.fax) && $fehlendeAngaben.fax === 2}{lang assign="invalidReason" key="invalidTel" section="global"}{/if}
-                                {include file="snippets/form_group_simple.tpl"
-                                        options=[ "tel" , "fax", "fax", {$Vorgaben->cFax}, {lang key="fax" section="account data"}, {$Einstellungen.kontakt.kontakt_abfragen_fax}, {$invalidReason}]}
+                                {include file="snippets/form_group_simple.tpl" options=["tel" , "fax", "fax", {$Vorgaben->cFax}, {lang key="fax" section="account data"}, {$Einstellungen.kontakt.kontakt_abfragen_fax}, {$invalidReason}]}
                             </div>
                         </div>
                     {/if}
@@ -139,7 +134,7 @@
                         {/if}
                         <div class="row">
                             <div class="col-xs-12 col-md-6">
-                                <div class="form-group float-label-control{if isset($fehlendeAngaben.betreff)} has-error{/if} required">
+                                <div class="form-group float-label-control{if isset($fehlendeAngaben.subject)} has-error{/if} required">
                                     <label for="subject" class="control-label">{lang key="subject" section="contact"}{* <span class="fa fa-asterisk required"></span>*}</label>
                                     <select class="form-control" name="subject" id="subject" required>
                                         <option value="" selected disabled>{lang key="subject" section="contact"}</option>
@@ -147,6 +142,11 @@
                                             <option value="{$betreff->kKontaktBetreff}" {if $Vorgaben->kKontaktBetreff==$betreff->kKontaktBetreff}selected{/if}>{$betreff->AngezeigterName}</option>
                                         {/foreach}
                                     </select>
+                                    {if !empty($fehlendeAngaben.subject)}
+                                        <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
+                                            {lang key="fillOut" section="global"}
+                                        </div>
+                                    {/if}
                                 </div>
                             </div>
                         </div>
@@ -156,6 +156,11 @@
                             <div class="form-group float-label-control{if isset($fehlendeAngaben.nachricht)} has-error{/if} required">
                                 <label for="message" class="control-label">{lang key="message" section="contact"}{* <span class="fa fa-asterisk required"></span>*}</label>
                                 <textarea name="nachricht" class="form-control" rows="10" id="message" required>{if isset($Vorgaben->cNachricht)}{$Vorgaben->cNachricht}{/if}</textarea>
+                                {if !empty($fehlendeAngaben.nachricht)}
+                                    <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
+                                        {lang key="fillOut" section="global"}
+                                    </div>
+                                {/if}
                             </div>
                         </div>
                     </div>
@@ -166,10 +171,10 @@
                     <hr>
                     <div class="row">
                         <div class="col-xs-12 col-md-12">
+                            <div class="g-recaptcha form-group" data-sitekey="{$Einstellungen.global.global_google_recaptcha_public}" data-callback="captcha_filled"></div>
                             {if !empty($fehlendeAngaben.captcha)}
-                                <div class="alert alert-danger" role="alert">{lang key="invalidToken" section="global"}</div>
+                                <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>{lang key="invalidToken" section="global"}</div>
                             {/if}
-                            <div class="g-recaptcha" data-sitekey="{$Einstellungen.global.global_google_recaptcha_public}"></div>
                             <hr>
                         </div>
                     </div>

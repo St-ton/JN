@@ -82,7 +82,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         protected $oSprache;
 
         /**
-         * @var Preise
+         * @var Konfigitempreis
          */
         protected $oPreis;
 
@@ -131,7 +131,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         public function __construct($kKonfigitem = 0, $kSprache = 0, $kKundengruppe = 0)
         {
-            if (intval($kKonfigitem) > 0) {
+            if ((int)$kKonfigitem > 0) {
                 $this->loadFromDB($kKonfigitem, $kSprache, $kKundengruppe);
             }
         }
@@ -143,28 +143,28 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         public function jsonSerialize()
         {
-            $virtual = array(
+            $virtual = [
                 'bAktiv' => $this->{"bAktiv"}
-            );
-            $override = array(
+            ];
+            $override = [
                 'cName'             => $this->getName(),
                 'kArtikel'          => $this->getArtikelKey(),
                 'cBeschreibung'     => $this->getBeschreibung(),
                 'cKurzBeschreibung' => $this->getKurzBeschreibung(),
                 'bAnzahl'           => $this->getMin() != $this->getMax(),
-                'fInitial'          => (float) $this->getInitial(),
-                'fMin'              => (float) $this->getMin(),
-                'fMax'              => (float) $this->getMax(),
+                'fInitial'          => (float)$this->getInitial(),
+                'fMin'              => (float)$this->getMin(),
+                'fMax'              => (float)$this->getMax(),
                 'cBildPfad'         => $this->getBildPfad(),
-                'fPreis'            => array(
-                    (float) $this->getPreis(),
-                    (float) $this->getPreis(true)
-                ),
-                'fPreisLocalized' => array(
+                'fPreis'            => [
+                    (float)$this->getPreis(),
+                    (float)$this->getPreis(true)
+                ],
+                'fPreisLocalized' => [
                     gibPreisStringLocalized($this->getPreis()),
                     gibPreisStringLocalized($this->getPreis(true))
-                )
-            );
+                ]
+            ];
             $result = array_merge($override, $virtual);
 
             return utf8_convert_recursive($result);
@@ -189,17 +189,30 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 }
 
                 if (!$kSprache) {
-                    $kSprache = (isset($_SESSION['kSprache'])) ? $_SESSION['kSprache'] : getDefaultLanguageID();
+                    $kSprache = isset($_SESSION['kSprache'])
+                        ? $_SESSION['kSprache']
+                        : getDefaultLanguageID();
                 }
                 if (!$kKundengruppe) {
                     $kKundengruppe = $_SESSION['Kundengruppe']->kKundengruppe;
                 }
-
-                $this->kSprache      = $kSprache;
-                $this->kKundengruppe = $kKundengruppe;
-                $this->oSprache      = new Konfigitemsprache($this->kKonfigitem, $kSprache);
-                $this->oPreis        = new Konfigitempreis($this->kKonfigitem, $kKundengruppe);
-                $this->oArtikel      = null;
+                $this->kKonfiggruppe     = (int)$this->kKonfiggruppe;
+                $this->kKonfigitem       = (int)$this->kKonfigitem;
+                $this->kArtikel          = (int)$this->kArtikel;
+                $this->nPosTyp           = (int)$this->nPosTyp;
+                $this->nSort             = (int)$this->nSort;
+                $this->bSelektiert       = (int)$this->bSelektiert;
+                $this->bEmpfohlen        = (int)$this->bEmpfohlen;
+                $this->bName             = (int)$this->bName;
+                $this->bPreis            = (int)$this->bPreis;
+                $this->bRabatt           = (int)$this->bRabatt;
+                $this->bZuschlag         = (int)$this->bZuschlag;
+                $this->bIgnoreMultiplier = (int)$this->bIgnoreMultiplier;
+                $this->kSprache          = (int)$kSprache;
+                $this->kKundengruppe     = (int)$kKundengruppe;
+                $this->oSprache          = new Konfigitemsprache($this->kKonfigitem, $kSprache);
+                $this->oPreis            = new Konfigitempreis($this->kKonfigitem, $kKundengruppe);
+                $this->oArtikel          = null;
                 if ($this->kArtikel > 0) {
                     $oArtikelOptionen                             = new stdClass();
                     $oArtikelOptionen->nAttribute                 = 1;
@@ -303,14 +316,14 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         {
             $oItem_arr = Shop::DB()->query("
                 SELECT kKonfigitem 
-                  FROM tkonfigitem 
-                  WHERE kKonfiggruppe = " . (int)$kKonfiggruppe . " 
-                  ORDER BY nSort ASC", 2
+                    FROM tkonfigitem 
+                    WHERE kKonfiggruppe = " . (int)$kKonfiggruppe . " 
+                    ORDER BY nSort ASC", 2
             );
             if (!is_array($oItem_arr)) {
                 return false;
             }
-            $oItemEx_arr = array();
+            $oItemEx_arr = [];
             foreach ($oItem_arr as &$oItem) {
                 $kKonfigitem = $oItem->kKonfigitem;
                 $oItem       = new self($kKonfigitem);
@@ -356,7 +369,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * @param $nPosTyp
+         * @param int $nPosTyp
          * @return $this
          */
         public function setPosTyp($nPosTyp)
@@ -419,7 +432,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * @return mixed
+         * @return int
          */
         public function getSelektiert()
         {
@@ -427,7 +440,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * @return mixed
+         * @return int
          */
         public function getEmpfohlen()
         {
@@ -526,7 +539,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
             $isConverted = false;
             if ($this->oArtikel && $this->bPreis) {
                 //get price from associated article
-                $fVKPreis = (isset($this->oArtikel->Preise->fVKNetto)) ? $this->oArtikel->Preise->fVKNetto : 0;
+                $fVKPreis = isset($this->oArtikel->Preise->fVKNetto) ? $this->oArtikel->Preise->fVKNetto : 0;
                 // Zuschlag / Rabatt berechnen
                 $fSpecial = $this->oPreis->getPreis($bConvertCurrency);
                 if ($fSpecial != 0) {
@@ -547,7 +560,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 } else {
                     $waehrung = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
                 }
-                $fVKPreis = $fVKPreis * floatval($waehrung->fFaktor);
+                $fVKPreis *= (float)$waehrung->fFaktor;
             }
             if (!$_SESSION['Kundengruppe']->nNettoPreise && !$bForceNetto) {
                 $fVKPreis = berechneBrutto($fVKPreis, gibUst($this->getSteuerklasse()), 4);

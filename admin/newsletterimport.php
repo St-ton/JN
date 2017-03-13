@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/admininclude.php';
+require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('IMPORT_NEWSLETTER_RECEIVER_VIEW', true, true);
 /** @global JTLSmarty $smarty */
@@ -11,35 +11,37 @@ require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
 //jtl2
-$format  = array('cAnrede', 'cVorname', 'cNachname', 'cEmail');
+$format  = ['cAnrede', 'cVorname', 'cNachname', 'cEmail'];
 $hinweis = '';
 $fehler  = '';
 
-if (isset($_POST['newsletterimport']) && intval($_POST['newsletterimport']) === 1 && $_FILES['csv'] && validateToken()) {
-    if (isset($_FILES['csv']['tmp_name']) && strlen($_FILES['csv']['tmp_name']) > 0) {
-        $file = fopen($_FILES['csv']['tmp_name'], 'r');
-        if ($file !== false) {
-            $row      = 0;
-            $formatId = -1;
-            $fmt      = [];
-            while ($data = fgetcsv($file, 2000, ';', '"')) {
-                if ($row == 0) {
-                    $hinweis .= 'Checke Kopfzeile ...';
-                    $fmt = checkformat($data);
-                    if ($fmt === -1) {
-                        $fehler = 'Format nicht erkannt!';
-                        break;
-                    } else {
-                        $hinweis .= '<br /><br />Importiere...<br />';
-                    }
+if ((int)$_POST['newsletterimport'] === 1 &&
+    isset($_POST['newsletterimport'], $_FILES['csv']['tmp_name']) &&
+    validateToken() &&
+    strlen($_FILES['csv']['tmp_name']) > 0
+) {
+    $file = fopen($_FILES['csv']['tmp_name'], 'r');
+    if ($file !== false) {
+        $row      = 0;
+        $formatId = -1;
+        $fmt      = [];
+        while ($data = fgetcsv($file, 2000, ';', '"')) {
+            if ($row == 0) {
+                $hinweis .= 'Checke Kopfzeile ...';
+                $fmt = checkformat($data);
+                if ($fmt === -1) {
+                    $fehler = 'Format nicht erkannt!';
+                    break;
                 } else {
-                    $hinweis .= '<br />Zeile ' . $row . ': ' . processImport($fmt, $data);
+                    $hinweis .= '<br /><br />Importiere...<br />';
                 }
-
-                $row++;
+            } else {
+                $hinweis .= '<br />Zeile ' . $row . ': ' . processImport($fmt, $data);
             }
-            fclose($file);
+
+            $row++;
         }
+        fclose($file);
     }
 }
 
@@ -91,9 +93,13 @@ function generatePW($length = 8, $myseed = 1)
  */
 function pruefeNLEBlacklist($cMail)
 {
-    $oNEB = Shop::DB()->select('tnewsletterempfaengerblacklist', 'cMail',  StringHandler::filterXSS(strip_tags($cMail)));
+    $oNEB = Shop::DB()->select(
+        'tnewsletterempfaengerblacklist',
+        'cMail',
+        StringHandler::filterXSS(strip_tags($cMail))
+    );
 
-    return (isset($oNEB->cMail) && strlen($oNEB->cMail) > 0);
+    return (!empty($oNEB->cMail));
 }
 
 /**
@@ -102,15 +108,15 @@ function pruefeNLEBlacklist($cMail)
  */
 function checkformat($data)
 {
-    $fmt = array();
+    $fmt = [];
     $cnt = count($data);
     for ($i = 0; $i < $cnt; $i++) {
         // jtl-shop/issues#296
-        if (!empty($data[$i]) && in_array($data[$i], $GLOBALS['format'])) {
+        if (!empty($data[$i]) && in_array($data[$i], $GLOBALS['format'], true)) {
             $fmt[$i] = $data[$i];
         }
     }
-    if (!in_array('cEmail', $fmt)) {
+    if (!in_array('cEmail', $fmt, true)) {
         return -1;
     }
 
@@ -172,7 +178,8 @@ function processImport($fmt, $data)
     }
     // NewsletterEmpfaengerBlacklist
     if (pruefeNLEBlacklist($newsletterempfaenger->cEmail)) {
-        return "keine g&uuml;ltige Email ($newsletterempfaenger->cEmail)! Kunde hat sich auf die Blacklist setzen lassen! &Uuml;bergehe diesen Datensatz.";
+        return "keine g&uuml;ltige Email ($newsletterempfaenger->cEmail)! " .
+            "Kunde hat sich auf die Blacklist setzen lassen! &Uuml;bergehe diesen Datensatz.";
     }
 
     if (!$newsletterempfaenger->cNachname) {
@@ -181,7 +188,8 @@ function processImport($fmt, $data)
 
     $old_mail = Shop::DB()->select('tnewsletterempfaenger', 'cEmail', $newsletterempfaenger->cEmail);
     if (isset($old_mail->kNewsletterEmpfaenger) && $old_mail->kNewsletterEmpfaenger > 0) {
-        return "Newsletterempf&auml;nger mit dieser Emailadresse bereits vorhanden: ($newsletterempfaenger->cEmail)! &Uuml;bergehe Datensatz.";
+        return "Newsletterempf&auml;nger mit dieser Emailadresse bereits vorhanden: (" .
+            $newsletterempfaenger->cEmail . ")! &Uuml;bergehe Datensatz.";
     }
 
     if ($newsletterempfaenger->cAnrede === 'f') {
@@ -229,7 +237,9 @@ function processImport($fmt, $data)
         $oTMP->cAktion      = 'Daten-Import';
         $res                = Shop::DB()->insert('tnewsletterempfaengerhistory', $oTMP);
         if ($res) {
-            return 'Datensatz OK. Importiere: ' . $newsletterempfaenger->cVorname . ' ' . $newsletterempfaenger->cNachname;
+            return 'Datensatz OK. Importiere: ' .
+                $newsletterempfaenger->cVorname . ' ' .
+                $newsletterempfaenger->cNachname;
         }
     }
 

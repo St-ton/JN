@@ -22,19 +22,18 @@ $smarty->registerPlugin('function', 'getCurrencyConversionSmarty', 'getCurrencyC
  */
 function getRevisions($params, &$smarty)
 {
-    $secondary = (isset($params['secondary'])) ?
-       $params['secondary'] :
-        false;
-    $data      = (isset($params['data'])) ?
-        $params['data'] :
-        null;
+    $secondary = isset($params['secondary'])
+        ? $params['secondary']
+        : false;
+    $data      = isset($params['data'])
+        ? $params['data']
+        : null;
     $revision  = new Revision();
-    $smarty->assign('revisions', $revision->getRevisions($params['type'], $params['key'], $secondary))
+    return $smarty->assign('revisions', $revision->getRevisions($params['type'], $params['key']))
            ->assign('secondary', $secondary)
            ->assign('data', $data)
-           ->assign('show', $params['show']);
-
-    return $smarty->fetch('tpl_inc/revisions.tpl');
+           ->assign('show', $params['show'])
+           ->fetch('tpl_inc/revisions.tpl');
 }
 
 /**
@@ -44,10 +43,7 @@ function getRevisions($params, &$smarty)
  */
 function getCurrencyConversionSmarty($params, &$smarty)
 {
-    $bForceSteuer = true;
-    if (isset($params['bSteuer']) && $params['bSteuer'] == false) {
-        $bForceSteuer = false;
-    }
+    $bForceSteuer = !(isset($params['bSteuer']) && $params['bSteuer'] == false);
     if (!isset($params['fPreisBrutto'])) {
         $params['fPreisBrutto'] = 0;
     }
@@ -68,17 +64,16 @@ function getCurrencyConversionSmarty($params, &$smarty)
  */
 function getCurrencyConversionTooltipButton($params, &$smarty)
 {
-    $placement = 'left';
-
-    if (isset($params['placement'])) {
-        $placement = $params['placement'];
-    }
+    $placement = isset($params['placement'])
+        ? $params['placement']
+        : 'left';
 
     if (isset($params['inputId'])) {
         $inputId = $params['inputId'];
         $button = '<button type="button" class="btn btn-tooltip btn-info" id="' . $inputId . 'Tooltip" data-html="true"';
         $button .= ' data-toggle="tooltip" data-placement="' . $placement . '">';
         $button .= '<i class="fa fa-eur"></i></button>';
+
         return $button;
     }
 
@@ -196,7 +191,7 @@ function getExtensionCategory($params, &$smarty)
         return;
     }
 
-    $catNames = array(
+    $catNames = [
         4  => 'Templates/Themes',
         5  => 'Sprachpakete',
         6  => 'Druckvorlagen',
@@ -206,9 +201,9 @@ function getExtensionCategory($params, &$smarty)
         10 => 'Import/Export',
         11 => 'SEO',
         12 => 'Auswertungen'
-    );
+    ];
 
-    $key = (isset($catNames[$params['cat']])) ? $catNames[$params['cat']] : null;
+    $key = isset($catNames[$params['cat']]) ? $catNames[$params['cat']] : null;
     $smarty->assign('catName', $key);
 }
 
@@ -223,9 +218,7 @@ function formatVersion($params, &$smarty)
         return null;
     }
 
-    $version = (int) $params['value'];
-
-    return substr_replace($version, '.', 1, 0);
+    return substr_replace((int)$params['value'], '.', 1, 0);
 }
 
 /**

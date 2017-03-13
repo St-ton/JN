@@ -1,7 +1,7 @@
 {includeMailTemplate template=header type=plain}
 
 Hello,
-Take a look at my wishlist at {$Firma->cName}.
+Take a look at my wish list at {$Firma->cName}.
 
 {foreach name=wunschlistepos from=$Wunschliste->CWunschlistePos_arr item=CWunschlistePos}
     *{$CWunschlistePos->cArtikelName}*

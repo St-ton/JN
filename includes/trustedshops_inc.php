@@ -9,20 +9,19 @@
  */
 function gibTrustedShops()
 {
-    unset($_SESSION['TrustedShops']);
-    unset($oTrustedShops);
-
+    unset($_SESSION['TrustedShops'], $oTrustedShops);
     require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.TrustedShops.php';
     $oTrustedShops = new TrustedShops(-1, StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
-    $oTrustedShops->holeKaeuferschutzProdukteDB(StringHandler::convertISO2ISO639($_SESSION['cISOSprache']), true);  // Hole alle Käuferschutzprodukte, die in der DB hinterlegt sind
+    $oTrustedShops->holeKaeuferschutzProdukteDB(StringHandler::convertISO2ISO639($_SESSION['cISOSprache']), true);
+    // Hole alle Käuferschutzprodukte, die in der DB hinterlegt sind
     $oTrustedShopsTMP = new stdClass();
-
+    /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
     $cLandISO = $_SESSION['Lieferadresse']->cLand;
     if (!$cLandISO) {
         $cLandISO = $_SESSION['Kunde']->cLand;
     }
     // Prüfe, ob TS ID noch gültig ist
-    if ($oTrustedShops->pruefeZertifikat(StringHandler::convertISO2ISO639($_SESSION['cISOSprache'])) == 1) {
+    if ($oTrustedShops->pruefeZertifikat(StringHandler::convertISO2ISO639($_SESSION['cISOSprache'])) === 1) {
         // Gib nur die Informationen weiter, die das Template auch braucht
         $oTrustedShopsTMP->nAktiv                       = $oTrustedShops->nAktiv;
         $oTrustedShopsTMP->eType                        = $oTrustedShops->eType;
@@ -30,22 +29,32 @@ function gibTrustedShops()
         $oTrustedShopsTMP->cISOSprache                  = $oTrustedShops->oZertifikat->cISOSprache;
         $oTrustedShopsTMP->oKaeuferschutzProdukteDB     = $oTrustedShops->oKaeuferschutzProdukteDB;
         $oTrustedShopsTMP->oKaeuferschutzProdukte       = $oTrustedShops->oKaeuferschutzProdukte;
-        $oTrustedShopsTMP->oKaeuferschutzProdukte->item = filterNichtGebrauchteKaeuferschutzProdukte(
-            $oTrustedShops->oKaeuferschutzProdukte->item,
-            $_SESSION['Warenkorb']->gibGesamtsummeWaren(false) * ((100 + doubleval($_SESSION['Steuersatz'][$_SESSION['Warenkorb']->gibVersandkostenSteuerklasse($cLandISO)])) / 100)
-        );
+        if (isset($oTrustedShopsTMP->oKaeuferschutzProdukte->item)) {
+            $oTrustedShopsTMP->oKaeuferschutzProdukte->item = filterNichtGebrauchteKaeuferschutzProdukte(
+                $oTrustedShops->oKaeuferschutzProdukte->item,
+                $_SESSION['Warenkorb']->gibGesamtsummeWaren(false) *
+                ((100 + (float)$_SESSION['Steuersatz'][$_SESSION['Warenkorb']->gibVersandkostenSteuerklasse($cLandISO)]) / 100)
+            );
+        }
         $oTrustedShopsTMP->cLogoURL                 = $oTrustedShops->cLogoURL;
         $oTrustedShopsTMP->cSpeicherungURL          = $oTrustedShops->cSpeicherungURL;
         $oTrustedShopsTMP->cBedingungURL            = $oTrustedShops->cBedingungURL;
         $oTrustedShopsTMP->cBoxText                 = $oTrustedShops->cBoxText;
-        $oTrustedShopsTMP->cVorausgewaehltesProdukt = gibVorausgewaehltesProdukt(
-            $oTrustedShops->oKaeuferschutzProdukte->item,
-            $_SESSION['Warenkorb']->gibGesamtsummeWaren(false) * ((100 + doubleval($_SESSION['Steuersatz'][$_SESSION['Warenkorb']->gibVersandkostenSteuerklasse($cLandISO)])) / 100)
-        );
+        $oTrustedShopsTMP->cVorausgewaehltesProdukt = isset($oTrustedShops->oKaeuferschutzProdukte->item)
+            ? gibVorausgewaehltesProdukt(
+                $oTrustedShops->oKaeuferschutzProdukte->item,
+                $_SESSION['Warenkorb']->gibGesamtsummeWaren(false) *
+                ((100 + (float)$_SESSION['Steuersatz'][$_SESSION['Warenkorb']->gibVersandkostenSteuerklasse($cLandISO)]) / 100)
+            )
+            : '';
     }
 
     if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-        Jtllog::writeLog(utf8_decode("Der TrustedShops Käuferschutz im Bestellvorgang wurde mit folgendem Ergebnis geladen: ") . print_r($oTrustedShopsTMP, 1), JTLLOG_LEVEL_DEBUG);
+        Jtllog::writeLog(
+            utf8_decode("Der TrustedShops Käuferschutz im Bestellvorgang wurde mit folgendem Ergebnis geladen: ") .
+                print_r($oTrustedShopsTMP, true),
+            JTLLOG_LEVEL_DEBUG
+        );
     }
 
     return $oTrustedShopsTMP;
@@ -60,12 +69,11 @@ function gibTrustedShops()
  */
 function filterNichtGebrauchteKaeuferschutzProdukte($oKaeuferschutzProdukte_arr, $fGesamtSumme)
 {
-    $oKaeuferschutzProdukteFilter_arr = array();
-
+    $oKaeuferschutzProdukteFilter_arr = [];
     if (is_array($oKaeuferschutzProdukte_arr) && count($oKaeuferschutzProdukte_arr) > 0) {
         foreach ($oKaeuferschutzProdukte_arr as $oKaeuferschutzProdukte) {
             $oKaeuferschutzProdukteFilter_arr[] = $oKaeuferschutzProdukte;
-            if (doubleval($fGesamtSumme) < doubleval($oKaeuferschutzProdukte->protectedAmountDecimal)) {
+            if ((float)$fGesamtSumme < (float)$oKaeuferschutzProdukte->protectedAmountDecimal) {
                 break;
             }
         }
@@ -82,7 +90,7 @@ function filterNichtGebrauchteKaeuferschutzProdukte($oKaeuferschutzProdukte_arr,
  */
 function gibKaeuferschutzProdukteAssocID($oKaeuferschutzProdukte_arr)
 {
-    $oKaeuferschutzProdukteAssocID_arr = array();
+    $oKaeuferschutzProdukteAssocID_arr = [];
     if (is_array($oKaeuferschutzProdukte_arr) && count($oKaeuferschutzProdukte_arr) > 0) {
         foreach ($oKaeuferschutzProdukte_arr as $oKaeuferschutzProdukte) {
             $oKaeuferschutzProdukteAssocID_arr[$oKaeuferschutzProdukte->tsProductID] = $oKaeuferschutzProdukte->netFee;
@@ -105,9 +113,10 @@ function gibVorausgewaehltesProdukt($oKaeuferschutzProdukte_arr, $fGesamtSumme)
     $fLetzterWert = 0.0;
     if (is_array($oKaeuferschutzProdukte_arr) && count($oKaeuferschutzProdukte_arr) > 0) {
         foreach ($oKaeuferschutzProdukte_arr as $oKaeuferschutzProdukte) {
-            if (doubleval($fGesamtSumme) <= doubleval($oKaeuferschutzProdukte->protectedAmountDecimal) && (doubleval($oKaeuferschutzProdukte->protectedAmountDecimal) < $fLetzterWert || $fLetzterWert == 0.0)) {
+            if ((float)$fGesamtSumme <= (float)$oKaeuferschutzProdukte->protectedAmountDecimal &&
+                ((float)$oKaeuferschutzProdukte->protectedAmountDecimal < $fLetzterWert || $fLetzterWert === 0.0)) {
                 $tsProductID  = $oKaeuferschutzProdukte->tsProductID;
-                $fLetzterWert = doubleval($oKaeuferschutzProdukte->protectedAmountDecimal);
+                $fLetzterWert = (float)$oKaeuferschutzProdukte->protectedAmountDecimal;
             }
         }
     }

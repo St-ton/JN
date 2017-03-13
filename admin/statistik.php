@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/admininclude.php';
+require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'statistik_inc.php';
 
 $nStatsType = verifyGPCDataInteger('s');
@@ -30,78 +30,26 @@ switch ($nStatsType) {
 /** @global JTLSmarty $smarty */
 $cHinweis          = '';
 $cFehler           = '';
-$cSpalteX          = '';
 $nAnzeigeIntervall = 0;
-$nDateStampVon     = firstDayOfMonth();
-$nDateStampBis     = lastDayOfMonth();
 
 if (!isset($_SESSION['Statistik'])) {
-    $_SESSION['Statistik']            = new stdClass();
-    $_SESSION['Statistik']->nTyp      = STATS_ADMIN_TYPE_BESUCHER;
-    $_SESSION['Statistik']->nZeitraum = 4;
-    $cSpalteX                         = 'dZeit';
+    $_SESSION['Statistik']       = new stdClass();
+    $_SESSION['Statistik']->nTyp = STATS_ADMIN_TYPE_BESUCHER;
 }
 // Stat Typ
 if (verifyGPCDataInteger('s') > 0) {
     $_SESSION['Statistik']->nTyp = verifyGPCDataInteger('s');
 }
-// Zeitraum vordefiniert
-if (verifyGPCDataInteger('btnZeit') > 0) {
-    $_SESSION['Statistik']->nZeitraum = verifyGPCDataInteger('btnZeit');
-}
-// Zeitraum selbst definiert
-if (isset($_POST['btnDatum'])) {
-    $_SESSION['Statistik']->nZeitraum = 0;
 
-    $nTagVon   = (int)$_POST['cTagVon'];
-    $nMonatVon = (int)$_POST['cMonatVon'];
-    $nJahrVon  = (int)$_POST['cJahrVon'];
-    $nTagBis   = (int)$_POST['cTagBis'];
-    $nMonatBis = (int)$_POST['cMonatBis'];
-    $nJahrBis  = (int)$_POST['cJahrBis'];
-
-    if (statsDatumPlausi($nTagVon, $nMonatVon, $nJahrVon, $nTagBis, $nMonatBis, $nJahrBis)) {
-        $nDateStampVon = mktime(0, 0, 0, $nMonatVon, $nTagVon, $nJahrVon);
-        $nDateStampBis = mktime(23, 59, 59, $nMonatBis, $nTagBis, $nJahrBis);
-
-        if ($nDateStampVon > $nDateStampBis) {
-            $nDateStampVon = 0;
-            $nDateStampBis = 0;
-
-            $cFehler = 'Fehler: Ihr Anfangsdatum muss kleiner oder gleich dem Enddatum sein.';
-        }
-    } else {
-        $cFehler = 'Fehler: Bitte f&uuml;llen Sie alle Datumfelder aus.';
-    }
-
-    $smarty->assign('cPostVar_arr', StringHandler::filterXSS($_POST));
-}
-
-if ($_SESSION['Statistik']->nZeitraum > 0) {
-    $oZeit         = berechneStatZeitraum($_SESSION['Statistik']->nZeitraum);
-    $nDateStampVon = $oZeit->nDateStampVon;
-    $nDateStampBis = $oZeit->nDateStampBis;
-
-    $smarty->assign('cPostVar_arr', array(
-            'cTagVon'   => date('d', $oZeit->nDateStampVon),
-            'cMonatVon' => date('m', $oZeit->nDateStampVon),
-            'cJahrVon'  => date('Y', $oZeit->nDateStampVon),
-            'cTagBis'   => date('d', $oZeit->nDateStampBis),
-            'cMonatBis' => date('m', $oZeit->nDateStampBis),
-            'cJahrBis'  => date('Y', $oZeit->nDateStampBis)
-        )
-    );
-} else {
-    $smarty->assign('cPostVar_arr', array(
-            'cTagVon'   => date('d', $nDateStampVon),
-            'cMonatVon' => date('m', $nDateStampVon),
-            'cJahrVon'  => date('Y', $nDateStampVon),
-            'cTagBis'   => date('d', $nDateStampBis),
-            'cMonatBis' => date('m', $nDateStampBis),
-            'cJahrBis'  => date('Y', $nDateStampBis)
-        )
-    );
-}
+$oFilter    = new Filter('statistics');
+$oDateRange = $oFilter->addDaterangefield(
+    'Zeitraum', '',
+    date_create()->modify('-1 year')->modify('+1 day')->format('d.m.Y') . ' - ' .
+    date('d.m.Y')
+);
+$oFilter->assemble();
+$nDateStampVon = strtotime($oDateRange->getStart());
+$nDateStampBis = strtotime($oDateRange->getEnd());
 
 $oStat_arr = gibBackendStatistik($_SESSION['Statistik']->nTyp, $nDateStampVon, $nDateStampBis, $nAnzeigeIntervall);
 // Highchart
@@ -122,7 +70,7 @@ if ($_SESSION['Statistik']->nTyp == STATS_ADMIN_TYPE_KUNDENHERKUNFT ||
     $smarty->assign('ylabel', $member_arr['nCount']);
 }
 // Table
-$cMember_arr = array();
+$cMember_arr = [];
 if (is_array($oStat_arr) && count($oStat_arr) > 0) {
     foreach ($oStat_arr as $oStat) {
         $cMember_arr[] = array_keys(get_object_vars($oStat));
@@ -140,7 +88,6 @@ $smarty->assign('headline', GetTypeNameStats($_SESSION['Statistik']->nTyp))
     ->assign('oStat_arr', $oStat_arr)
     ->assign('oStatJSON', getJSON($oStat_arr, $nAnzeigeIntervall, $_SESSION['Statistik']->nTyp))
     ->assign('cMember_arr', mappeDatenMember($cMember_arr, gibMappingDaten($_SESSION['Statistik']->nTyp)))
-    ->assign('btnZeit', $_SESSION['Statistik']->nZeitraum)
     ->assign('STATS_ADMIN_TYPE_BESUCHER', STATS_ADMIN_TYPE_BESUCHER)
     ->assign('STATS_ADMIN_TYPE_KUNDENHERKUNFT', STATS_ADMIN_TYPE_KUNDENHERKUNFT)
     ->assign('STATS_ADMIN_TYPE_SUCHMASCHINE', STATS_ADMIN_TYPE_SUCHMASCHINE)
@@ -149,4 +96,5 @@ $smarty->assign('headline', GetTypeNameStats($_SESSION['Statistik']->nTyp))
     ->assign('nPosAb', $oPagination->getFirstPageItem())
     ->assign('nPosBis', $oPagination->getFirstPageItem() + $oPagination->getPageItemCount())
     ->assign('oPagination', $oPagination)
+    ->assign('oFilter', $oFilter)
     ->display('statistik.tpl');

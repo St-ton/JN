@@ -12,7 +12,7 @@ class Vergleichsliste
     /**
      * @var array
      */
-    public $oArtikel_arr = array();
+    public $oArtikel_arr = [];
 
     /**
      * Konstruktor
@@ -32,14 +32,8 @@ class Vergleichsliste
                 $oArtikel->cName    = $tmpName->cName;
             } else {
                 //default mode
-                $oArtikel                                     = new Artikel();
-                $oArtikelOptionen                             = new stdClass();
-                $oArtikelOptionen->nMerkmale                  = 1;
-                $oArtikelOptionen->nAttribute                 = 1;
-                $oArtikelOptionen->nArtikelAttribute          = 1;
-                $oArtikelOptionen->nVariationKombi            = 1;
-                $oArtikelOptionen->nKeineSichtbarkeitBeachten = 1;
-                $oArtikel->fuelleArtikel($kArtikel, $oArtikelOptionen);
+                $oArtikel = new Artikel();
+                $oArtikel->fuelleArtikel($kArtikel, Artikel::getDefaultOptions());
             }
             if (is_array($oVariationen_arr) && count($oVariationen_arr) > 0) {
                 $oArtikel->Variationen = $oVariationen_arr;
@@ -60,12 +54,7 @@ class Vergleichsliste
     public function umgebungsWechsel()
     {
         if (count($_SESSION['Vergleichsliste']->oArtikel_arr) > 0) {
-            $oArtikelOptionen                             = new stdClass();
-            $oArtikelOptionen->nMerkmale                  = 1;
-            $oArtikelOptionen->nAttribute                 = 1;
-            $oArtikelOptionen->nArtikelAttribute          = 1;
-            $oArtikelOptionen->nVariationKombi            = 1;
-            $oArtikelOptionen->nKeineSichtbarkeitBeachten = 1;
+            $defaultOptions = Artikel::getDefaultOptions();
             foreach ($_SESSION['Vergleichsliste']->oArtikel_arr as $i => $oArtikel) {
                 //new slim variant for compare list
                 if (TEMPLATE_COMPATIBILITY === false) {
@@ -74,7 +63,7 @@ class Vergleichsliste
                 } else {
                     //default mode
                     $oArtikel_tmp = new Artikel($oArtikel->kArtikel);
-                    $oArtikel_tmp->fuelleArtikel($oArtikel->kArtikel, $oArtikelOptionen);
+                    $oArtikel_tmp->fuelleArtikel($oArtikel->kArtikel, $defaultOptions);
                 }
                 $_SESSION['Vergleichsliste']->oArtikel_arr[$i] = $oArtikel_tmp;
             }
@@ -99,19 +88,11 @@ class Vergleichsliste
             if (TEMPLATE_COMPATIBILITY === false) {
                 $oArtikel->kArtikel = $kArtikel;
             } else {
-                $oArtikelOptionen                             = new stdClass();
-                $oArtikelOptionen->nMerkmale                  = 1;
-                $oArtikelOptionen->nAttribute                 = 1;
-                $oArtikelOptionen->nArtikelAttribute          = 1;
-                $oArtikelOptionen->nVariationKombi            = 1;
-                $oArtikelOptionen->nKeineSichtbarkeitBeachten = 1;
-                $oArtikel->fuelleArtikel($kArtikel, $oArtikelOptionen);
-                $oArtikel           = new stdClass();
-                $oArtikel->kArtikel = $kArtikel;
+                $oArtikel->fuelleArtikel($kArtikel, Artikel::getDefaultOptions());
             }
             if ($kKonfigitem > 0) {
                 // Falls Konfigitem gesetzt Preise + Name überschreiben
-                if (intval($kKonfigitem) > 0 && class_exists('Konfigitem')) {
+                if ((int)$kKonfigitem > 0 && class_exists('Konfigitem')) {
                     $oKonfigitem = new Konfigitem($kKonfigitem);
                     if ($oKonfigitem->getKonfigitem() > 0) {
                         $oArtikel->Preise->cVKLocalized[0] = $oKonfigitem->getPreisLocalized(true, false);
@@ -145,12 +126,10 @@ class Vergleichsliste
     public function artikelVorhanden($kArtikel)
     {
         $kArtikel = (int)$kArtikel;
-        if ($kArtikel > 0) {
-            if (count($this->oArtikel_arr) > 0) {
-                foreach ($this->oArtikel_arr as $oArtikel) {
-                    if ((int)$oArtikel->kArtikel === $kArtikel) {
-                        return true;
-                    }
+        if ($kArtikel > 0 && count($this->oArtikel_arr) > 0) {
+            foreach ($this->oArtikel_arr as $oArtikel) {
+                if ((int)$oArtikel->kArtikel === $kArtikel) {
+                    return true;
                 }
             }
         }

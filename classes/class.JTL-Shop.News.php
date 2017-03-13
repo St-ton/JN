@@ -108,7 +108,7 @@ class News extends MainModel
      */
     public function setNews($kNews)
     {
-        $this->kNews = (int) $kNews;
+        $this->kNews = (int)$kNews;
 
         return $this;
     }
@@ -127,7 +127,7 @@ class News extends MainModel
      */
     public function setSprache($kSprache)
     {
-        $this->kSprache = (int) $kSprache;
+        $this->kSprache = (int)$kSprache;
 
         return $this;
     }
@@ -198,7 +198,7 @@ class News extends MainModel
     }
 
     /**
-     * @param $cKundengruppe
+     * @param string $cKundengruppe
      * @return $this
      */
     public function setKundengruppe($cKundengruppe)
@@ -293,7 +293,7 @@ class News extends MainModel
     }
 
     /**
-     * @param $cMetaDescription
+     * @param string $cMetaDescription
      * @return $this
      */
     public function setMetaDescription($cMetaDescription)
@@ -336,7 +336,7 @@ class News extends MainModel
      */
     public function setAktiv($nAktiv)
     {
-        $this->nAktiv = (int) $nAktiv;
+        $this->nAktiv = (int)$nAktiv;
 
         return $this;
     }
@@ -355,11 +355,9 @@ class News extends MainModel
      */
     public function setErstellt($dErstellt)
     {
-        if ($dErstellt === 'now()') {
-            $this->dErstellt = date('Y-m-d H:i:s');
-        } else {
-            $this->dErstellt = $dErstellt;
-        }
+        $this->dErstellt = ($dErstellt === 'now()')
+            ? date('Y-m-d H:i:s')
+            : $dErstellt;
 
         return $this;
     }
@@ -378,11 +376,9 @@ class News extends MainModel
      */
     public function setGueltigVon($dGueltigVon)
     {
-        if ($dGueltigVon === 'now()') {
-            $this->dGueltigVon = date('Y-m-d H:i:s');
-        } else {
-            $this->dGueltigVon = $dGueltigVon;
-        }
+        $this->dGueltigVon = ($dGueltigVon === 'now()')
+            ? date('Y-m-d H:i:s')
+            : $dGueltigVon;
 
         return $this;
     }
@@ -401,40 +397,40 @@ class News extends MainModel
      */
     public function setGueltigVonJS($dGueltigVonJS)
     {
-        if ($dGueltigVonJS === 'now()') {
-            $this->dGueltigVonJS = date('Y-m-d H:i:s');
-        } else {
-            $this->dGueltigVonJS = $dGueltigVonJS;
-        }
+        $this->dGueltigVonJS = ($dGueltigVonJS === 'now()')
+            ? date('Y-m-d H:i:s')
+            : $dGueltigVonJS;
 
         return $this;
     }
 
     /**
-     * @param int  $kKey
-     * @param null $oObj
-     * @param null $xOption
-     * @return mixed|void
+     * @param int         $kKey
+     * @param null|object $oObj
+     * @param null        $xOption
      */
     public function load($kKey, $oObj = null, $xOption = null)
     {
-        $kKey = intval($kKey);
+        $kKey = (int)$kKey;
         if ($kKey > 0) {
             $kSprache = null;
             if (isset($_SESSION['kSprache'])) {
-                $kSprache = (int) $_SESSION['kSprache'];
+                $kSprache = (int)$_SESSION['kSprache'];
             } else {
                 $oSprache = gibStandardsprache(true);
-                $kSprache = (int) $oSprache->kSprache;
+                $kSprache = (int)$oSprache->kSprache;
             }
 
             $oObj = Shop::DB()->query(
-                "SELECT tseo.cSeo, tnews.*, DATE_FORMAT(tnews.dGueltigVon, '%Y,%m,%d') AS dGueltigVonJS, count(distinct(tnewskommentar.kNewsKommentar)) AS nNewsKommentarAnzahl
+                "SELECT tseo.cSeo, tnews.*, DATE_FORMAT(tnews.dGueltigVon, '%Y,%m,%d') AS dGueltigVonJS, 
+                    COUNT(DISTINCT(tnewskommentar.kNewsKommentar)) AS nNewsKommentarAnzahl
                     FROM tnews
-                    LEFT JOIN tseo ON tseo.cKey = 'kNews'
+                    LEFT JOIN tseo 
+                        ON tseo.cKey = 'kNews'
                         AND tseo.kKey = tnews.kNews
                         AND tseo.kSprache = {$kSprache}
-                    LEFT JOIN tnewskommentar ON tnewskommentar.kNews = tnews.kNews
+                    LEFT JOIN tnewskommentar 
+                        ON tnewskommentar.kNews = tnews.kNews
                         AND tnewskommentar.nAktiv = 1
                     WHERE tnews.kNews = {$kKey}
                     GROUP BY tnews.kNews
@@ -447,12 +443,12 @@ class News extends MainModel
     }
 
     /**
-     * @param bool $bActive
-     * @param null $cOrder
-     * @param null $nCount
-     * @param null $nOffset
-     * @param null $kExcludeCategory
-     * @return array|null
+     * @param bool        $bActive
+     * @param null|string $cOrder
+     * @param null|int    $nCount
+     * @param null|int    $nOffset
+     * @param null|int    $kExcludeCategory
+     * @return array
      */
     public static function loadAll($bActive = true, $cOrder = null, $nCount = null, $nOffset = null, $kExcludeCategory = null)
     {
@@ -462,6 +458,7 @@ class News extends MainModel
         }
         $cSqlExcludeCategory = '';
         if ($kExcludeCategory !== null) {
+            $kExcludeCategory    = (int)$kExcludeCategory;
             $cSqlExcludeCategory = "JOIN tnewskategorienews ON tnewskategorienews.kNews = tnews.kNews
                                         AND tnewskategorienews.kNewsKategorie != {$kExcludeCategory}";
         }
@@ -478,28 +475,29 @@ class News extends MainModel
         }
         $kKundengruppe = null;
         if (isset($_SESSION['Kundengruppe']->kKundengruppe)) {
-            $kKundengruppe = (int) $_SESSION['Kundengruppe']->kKundengruppe;
+            $kKundengruppe = (int)$_SESSION['Kundengruppe']->kKundengruppe;
         } else {
             $kKundengruppe = Kundengruppe::getDefaultGroupID();
         }
-        $kSprache = null;
         if (isset($_SESSION['kSprache'])) {
-            $kSprache = (int) $_SESSION['kSprache'];
+            $kSprache = (int)$_SESSION['kSprache'];
         } else {
             $oSprache = gibStandardsprache(true);
-            $kSprache = (int) $oSprache->kSprache;
+            $kSprache = (int)$oSprache->kSprache;
         }
         $oObj_arr = Shop::DB()->query(
-            "SELECT tseo.cSeo, tnews.*, DATE_FORMAT(tnews.dGueltigVon, '%Y,%m,%d') AS dGueltigVonJS, count(distinct(tnewskommentar.kNewsKommentar)) AS nNewsKommentarAnzahl
+            "SELECT tseo.cSeo, tnews.*, DATE_FORMAT(tnews.dGueltigVon, '%Y,%m,%d') AS dGueltigVonJS, 
+                COUNT(DISTINCT(tnewskommentar.kNewsKommentar)) AS nNewsKommentarAnzahl
                 FROM tnews
-                LEFT JOIN tseo ON tseo.cKey = 'kNews'
+                LEFT JOIN tseo 
+                    ON tseo.cKey = 'kNews'
                     AND tseo.kKey = tnews.kNews
                     AND tseo.kSprache = {$kSprache}
                 LEFT JOIN tnewskommentar ON tnewskommentar.kNews = tnews.kNews
                     AND tnewskommentar.nAktiv = 1
                 {$cSqlExcludeCategory}
                 WHERE tnews.dGueltigVon <= now()
-                    AND (tnews.cKundengruppe LIKE '%;-1;%' OR tnews.cKundengruppe LIKE '%;{$kKundengruppe};%')
+                    AND (tnews.cKundengruppe LIKE '%;-1;%' OR tnews.cKundengruppe RLIKE '^([0-9;]*;)?{$kKundengruppe};')
                     AND tnews.kSprache = {$kSprache}
                 {$cSqlActive}
                 GROUP BY tnews.kNews
@@ -508,7 +506,7 @@ class News extends MainModel
         );
 
         if (is_array($oObj_arr) && count($oObj_arr) > 0) {
-            $oNews_arr = array();
+            $oNews_arr = [];
             foreach ($oObj_arr as $oObj) {
                 $oObj->cUrl    = baueURL($oObj, URLART_NEWS);
                 $oObj->cUrlExt = Shop::getURL() . "/{$oObj->cUrl}";

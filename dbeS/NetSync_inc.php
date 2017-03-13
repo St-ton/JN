@@ -6,10 +6,10 @@
 
 ob_start();
 
-require_once dirname(__FILE__) . '/syncinclude.php';
+require_once __DIR__ . '/syncinclude.php';
 // configuration
-require_once '../includes/config.JTL-Shop.ini.php';
-require_once '../includes/defines.php';
+require_once __DIR__ . '/../includes/config.JTL-Shop.ini.php';
+require_once __DIR__ . '/../includes/defines.php';
 error_reporting(SYNC_LOG_LEVEL);
 // basic classes
 require_once PFAD_ROOT . PFAD_CLASSES_CORE . 'class.core.NiceDB.php';
@@ -151,7 +151,7 @@ class SystemFolder
      * @param string $cBasePath
      * @param array  $oSubFolders
      */
-    public function __construct($cBaseName = '', $cBasePath = '', $oSubFolders = array())
+    public function __construct($cBaseName = '', $cBasePath = '', $oSubFolders = [])
     {
         $this->cBaseName   = $cBaseName;
         $this->cBasePath   = $cBasePath;
@@ -268,9 +268,9 @@ class CronjobHistory
 class NetSyncHandler
 {
     /**
-     * @var null|NetSyncHandler
+     * @var NetSyncHandler
      */
-    private static $oInstance = null;
+    private static $oInstance;
 
     /**
      *
@@ -298,15 +298,15 @@ class NetSyncHandler
      */
     public function __construct()
     {
-        if (!is_null(self::$oInstance)) {
+        if (self::$oInstance !== null) {
             throw new Exception('Class ' . __CLASS__ . ' already created');
         }
         self::$oInstance = $this;
         $this->init();
         if (!$this->isAuthed()) {
-            $this->throwResponse(NetSyncResponse::ErrorLogin);
+            static::throwResponse(NetSyncResponse::ErrorLogin);
         }
-        $this->request(intval($_REQUEST['e']));
+        $this->request((int)$_REQUEST['e']);
     }
 
     /**
@@ -314,10 +314,10 @@ class NetSyncHandler
      */
     public static function create($cClass)
     {
-        if (is_null(self::$oInstance)) {
+        if (self::$oInstance === null) {
             if (class_exists($cClass)) {
                 new $cClass;
-                set_exception_handler(array($cClass, 'exception'));
+                set_exception_handler([$cClass, 'exception']);
             }
         }
     }
@@ -338,7 +338,7 @@ class NetSyncHandler
         $cName   = utf8_decode(urldecode($_REQUEST['uid']));
         $cPass   = utf8_decode(urldecode($_REQUEST['upwd']));
         $bAuthed = false;
-        if (strlen($cName) > 0 && strlen($cPass)) {
+        if (strlen($cName) > 0 && strlen($cPass) > 0) {
             $oSync   = new Synclogin();
             $bAuthed = ($cName === $oSync->cName && $cPass === $oSync->cPass);
         }
@@ -380,11 +380,10 @@ class NetSyncHandler
      */
     public function streamFile($filename, $mimetype, $outname = '')
     {
-        if (!empty($_SERVER['HTTP_USER_AGENT'])) {
-            $HTTP_USER_AGENT = $_SERVER['HTTP_USER_AGENT'];
-        } else {
-            $HTTP_USER_AGENT = '';
-        }
+        $HTTP_USER_AGENT = (!empty($_SERVER['HTTP_USER_AGENT']))
+            ? $_SERVER['HTTP_USER_AGENT']
+            : '';
+        $browser_agent   = 'other';
         if (preg_match('/^Opera(\/| )([0-9].[0-9]{1,2})/', $HTTP_USER_AGENT) === 1) {
             $browser_agent = 'opera';
         } elseif (preg_match('/^MSIE ([0-9].[0-9]{1,2})/', $HTTP_USER_AGENT) === 1) {
@@ -397,14 +396,11 @@ class NetSyncHandler
             $browser_agent = 'mozilla';
         } elseif (preg_match('/^Konqueror\/([0-9].[0-9]{1,2})/', $HTTP_USER_AGENT) === 1) {
             $browser_agent = 'konqueror';
-        } else {
-            $browser_agent = 'other';
         }
-        if (($mimetype == 'application/octet-stream') || ($mimetype == 'application/octetstream')) {
-            if (($browser_agent == 'ie') || ($browser_agent == 'opera')) {
+        if (($mimetype === 'application/octet-stream') || ($mimetype === 'application/octetstream')) {
+            $mimetype = 'application/octet-stream';
+            if (($browser_agent === 'ie') || ($browser_agent === 'opera')) {
                 $mimetype = 'application/octetstream';
-            } else {
-                $mimetype = 'application/octet-stream';
             }
         }
 
@@ -414,10 +410,10 @@ class NetSyncHandler
         header('Pragma: public');
         header('Content-Transfer-Encoding: none');
 
-        if (strlen($outname) === 0) {
+        if ($outname === '') {
             $outname = basename($filename);
         }
-        if ($browser_agent == 'ie') {
+        if ($browser_agent === 'ie') {
             header('Content-Type: ' . $mimetype);
             header('Content-Disposition: inline; filename="' . $outname . '"');
         } else {
@@ -439,7 +435,7 @@ class NetSyncHandler
  */
 function getFolderStruct($cBaseDir)
 {
-    $oFolder_arr     = array();
+    $oFolder_arr     = [];
     $cBaseDir        = realpath($cBaseDir);
     $cFolderData_arr = scandir($cBaseDir);
     foreach ($cFolderData_arr as $cFolderItem) {
@@ -465,7 +461,7 @@ function getFolderStruct($cBaseDir)
 function getFilesStruct($cBaseDir, $bPreview = false)
 {
     $nIndex          = 0;
-    $oFiles_arr      = array();
+    $oFiles_arr      = [];
     $cBaseDir        = realpath($cBaseDir);
     $cFolderData_arr = scandir($cBaseDir);
     foreach ($cFolderData_arr as $cFile) {
@@ -476,7 +472,16 @@ function getFilesStruct($cBaseDir, $bPreview = false)
         if (is_file($cFilePath)) {
             $cInfo_arr    = pathinfo($cFilePath);
             $cRelFilePath = substr($cFilePath, strlen($bPreview ? PFAD_DOWNLOADS_PREVIEW : PFAD_DOWNLOADS));
-            $oFile        = new SystemFile($nIndex++, $cFilePath, $cRelFilePath, $cInfo_arr['filename'], $cInfo_arr['dirname'], $cInfo_arr['extension'], filemtime($cFilePath), filesize($cFilePath));
+            $oFile        = new SystemFile(
+                $nIndex++,
+                $cFilePath,
+                $cRelFilePath,
+                $cInfo_arr['filename'],
+                $cInfo_arr['dirname'],
+                $cInfo_arr['extension'],
+                filemtime($cFilePath),
+                filesize($cFilePath)
+            );
             $oFiles_arr[] = $oFile;
         }
     }

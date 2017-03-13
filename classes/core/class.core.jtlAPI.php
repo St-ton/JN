@@ -16,7 +16,7 @@ final class jtlAPI
     {
         try {
             $oNice      = Nice::getInstance();
-            $cParam_arr = array('a' => 'getsubscription', 'key' => $oNice->getAPIKey(), 'domain' => $oNice->getDomain());
+            $cParam_arr = ['a' => 'getsubscription', 'key' => $oNice->getAPIKey(), 'domain' => $oNice->getDomain()];
 
             $oSecurity = new SecurityAPI();
             $oSecurity->setParam_arr($cParam_arr);
@@ -40,7 +40,11 @@ final class jtlAPI
     {
         try {
             $oNice      = Nice::getInstance();
-            $cParam_arr = array('a' => 'getshop3version', 'v' => $nVersion, 'domain' => $oNice->getDomain());
+            $cParam_arr = [
+                'a'      => 'getshop3version',
+                'v'      => $nVersion,
+                'domain' => $oNice->getDomain()
+            ];
 
             $oSecurity = new SecurityAPI();
             $oSecurity->setParam_arr($cParam_arr);
@@ -75,12 +79,15 @@ final class jtlAPI
  */
 final class CommunicationAPI
 {
+    /**
+     * @var string
+     */
     private static $cAPIUrl = 'http://jtladmin.jtl-software.de/jtlAPI.php';
 
     /**
-     * @param      $xPostData_arr
-     * @param      $bPost
-     * @param null $bForceUrl
+     * @param array     $xPostData_arr
+     * @param bool      $bPost
+     * @param null|bool $bForceUrl
      * @return mixed
      * @throws Exception
      */
@@ -107,7 +114,6 @@ final class CommunicationAPI
             @curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
 
             $cContent  = @curl_exec($ch);
-            $cResponse = @curl_getinfo($ch);
 
             curl_close($ch);
         } else {
@@ -123,7 +129,7 @@ final class CommunicationAPI
      * @param null  $bForceUrl
      * @return mixed|string
      */
-    public static function postData($xData_arr = array(), $bPost = true, $bForceUrl = null)
+    public static function postData($xData_arr = [], $bPost = true, $bForceUrl = null)
     {
         if (is_array($xData_arr)) {
             return self::doCall($xData_arr, $bPost, $bForceUrl);
@@ -183,7 +189,7 @@ final class SecurityAPI
     public function __construct()
     {
         $this->cSHA1Key   = '';
-        $this->cParam_arr = array();
+        $this->cParam_arr = [];
     }
 
     /**

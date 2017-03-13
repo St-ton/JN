@@ -12,7 +12,7 @@ class SmartyResourceNiceDB extends Smarty_Resource_Custom
     /**
      * @var string
      */
-    private $type = 'export';
+    private $type;
 
     /**
      * SmartyResourceNiceDB constructor.
@@ -39,20 +39,22 @@ class SmartyResourceNiceDB extends Smarty_Resource_Custom
             $source = $exportformat->cContent;
         } elseif ($this->type === 'mail') {
             $pcs = explode('_', $name);
-            if (isset($pcs[0]) && isset($pcs[1]) && isset($pcs[2]) && isset($pcs[3]) && $pcs[3] === 'anbieterkennzeichnung') {
+            if (isset($pcs[0], $pcs[1], $pcs[2], $pcs[3]) &&
+                $pcs[3] === 'anbieterkennzeichnung'
+            ) {
                 // Anbieterkennzeichnungsvorlage holen
                 $vl = Shop::DB()->query(
                     "SELECT tevs.cContentHtml, tevs.cContentText
                         FROM temailvorlageoriginal tevo
                         JOIN temailvorlagesprache tevs
                             ON tevs.kEmailVorlage = tevo.kEmailvorlage
-                            AND tevs.kSprache = " . (int) $pcs[4] . "
+                            AND tevs.kSprache = " . (int)$pcs[4] . "
                         WHERE tevo.cModulId = 'core_jtl_anbieterkennzeichnung'", 1
                 );
             } else {
                 // Plugin Emailvorlage?
                 $cTableSprache = 'temailvorlagesprache';
-                if (isset($pcs[3]) && intval($pcs[3]) > 0) {
+                if (isset($pcs[3]) && (int)$pcs[3] > 0) {
                     $cTableSprache = 'tpluginemailvorlagesprache';
                 }
                 $vl = Shop::DB()->select($cTableSprache, ['kEmailvorlage', 'kSprache'], [(int)$pcs[1], (int)$pcs[2]]);
@@ -68,7 +70,8 @@ class SmartyResourceNiceDB extends Smarty_Resource_Custom
                 }
             } else {
                 $source = '';
-                Jtllog::writeLog('Emailvorlage mit der ID ' . (int)$pcs[1] . ' in der Sprache ' . (int)$pcs[2] . ' wurde nicht gefunden', JTLLOG_LEVEL_NOTICE);
+                Jtllog::writeLog('Emailvorlage mit der ID ' . (int)$pcs[1] .
+                    ' in der Sprache ' . (int)$pcs[2] . ' wurde nicht gefunden', JTLLOG_LEVEL_NOTICE);
             }
         } elseif ($this->type === 'newsletter') {
             $cTeile_arr = explode('_', $name);

@@ -4,32 +4,37 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+/**
+ * Class FilterField
+ */
 abstract class FilterField
 {
-    protected $oFilter = null;
-    protected $cType   = '';
-    protected $cTitle  = '';
-    protected $cColumn = '';
-    protected $cValue  = '';
-    protected $cId     = '';
+    protected $oFilter;
+    protected $cType      = '';
+    protected $cTitle     = '';
+    protected $cTitleLong = '';
+    protected $cColumn    = '';
+    protected $cValue     = '';
+    protected $cId        = '';
 
     /**
      * FilterField constructor.
      * 
      * @param Filter $oFilter
      * @param string $cType
-     * @param string $cTitle
+     * @param string|array $cTitle - either title-string for this field or a pair of short title and long title
      * @param string $cColumn
      * @param string $cDefValue
      */
     public function __construct($oFilter, $cType, $cTitle, $cColumn, $cDefValue = '')
     {
-        $this->oFilter = $oFilter;
-        $this->cType   = $cType;
-        $this->cTitle  = $cTitle;
-        $this->cColumn = $cColumn;
-        $this->cId     = preg_replace('/[^a-zA-Z0-9_]+/', '', $cTitle);
-        $this->cValue  =
+        $this->oFilter    = $oFilter;
+        $this->cType      = $cType;
+        $this->cTitle     = is_array($cTitle) ? $cTitle[0] : $cTitle;
+        $this->cTitleLong = is_array($cTitle) ? $cTitle[1] : '';
+        $this->cColumn    = $cColumn;
+        $this->cId        = preg_replace('/[^a-zA-Z0-9_]+/', '', $this->cTitle);
+        $this->cValue     =
             $oFilter->getAction() === $oFilter->getId() . '_filter'      ? $_GET[$oFilter->getId() . '_' . $this->cId] : (
             $oFilter->getAction() === $oFilter->getId() . '_resetfilter' ? $cDefValue : (
             $oFilter->hasSessionField($this->cId)                        ? $oFilter->getSessionField($this->cId) :
@@ -67,6 +72,14 @@ abstract class FilterField
     public function getTitle()
     {
         return $this->cTitle;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTitleLong()
+    {
+        return $this->cTitleLong;
     }
 
     /**

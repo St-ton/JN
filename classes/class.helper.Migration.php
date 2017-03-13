@@ -40,7 +40,7 @@ class MigrationHelper
      */
     public static function getExistingMigrationClassNames()
     {
-        $classNames = array();
+        $classNames = [];
         $path       = static::getMigrationPath();
 
         $phpFiles = glob($path . '*.php');
@@ -61,12 +61,12 @@ class MigrationHelper
      */
     public static function getIdFromFileName($fileName)
     {
-        $matches = array();
+        $matches = [];
         if (preg_match(static::MIGRATION_FILE_NAME_PATTERN, basename($fileName), $matches)) {
             return $matches[1];
         }
 
-        return;
+        return null;
     }
 
     /**
@@ -77,7 +77,7 @@ class MigrationHelper
      */
     public static function getInfoFromFileName($fileName)
     {
-        $matches = array();
+        $matches = [];
         if (preg_match(static::MIGRATION_FILE_NAME_PATTERN, basename($fileName), $matches)) {
             return preg_replace_callback(
                 '/(^|_)([a-z])/',
@@ -86,7 +86,7 @@ class MigrationHelper
             );
         }
 
-        return;
+        return null;
     }
 
     /**
@@ -108,12 +108,12 @@ class MigrationHelper
      */
     public static function mapClassNameToId($className)
     {
-        $matches = array();
+        $matches = [];
         if (preg_match(static::MIGRATION_CLASS_NAME_PATTERN, $className, $matches)) {
             return $matches[1];
         }
 
-        return;
+        return null;
     }
 
     /**
@@ -124,7 +124,7 @@ class MigrationHelper
      */
     public static function isValidMigrationFileName($fileName)
     {
-        $matches = array();
+        $matches = [];
 
         return preg_match(static::MIGRATION_FILE_NAME_PATTERN, $fileName, $matches);
     }
@@ -134,7 +134,26 @@ class MigrationHelper
      */
     public static function verifyIntegrity()
     {
-        Shop::DB()->query("CREATE TABLE IF NOT EXISTS tmigration (kMigration bigint(14) NOT NULL, nVersion int(3) NOT NULL, dExecuted datetime NOT NULL, PRIMARY KEY (kMigration)) ENGINE=InnoDB DEFAULT CHARSET=latin1", 3);
-        Shop::DB()->query("CREATE TABLE IF NOT EXISTS tmigrationlog (kMigrationlog int(10) NOT NULL AUTO_INCREMENT, kMigration bigint(20) NOT NULL, cDir enum('up','down') NOT NULL, cState varchar(6) NOT NULL, cLog text NOT NULL, dCreated datetime NOT NULL, PRIMARY KEY (kMigrationlog)) ENGINE=InnoDB DEFAULT CHARSET=latin1", 3);
+        Shop::DB()->query("
+            CREATE TABLE IF NOT EXISTS tmigration 
+            (
+                kMigration bigint(14) NOT NULL, 
+                nVersion int(3) NOT NULL, 
+                dExecuted datetime NOT NULL,
+                PRIMARY KEY (kMigration)
+            ) ENGINE=InnoDB DEFAULT CHARSET=latin1", 3
+        );
+        Shop::DB()->query("
+            CREATE TABLE IF NOT EXISTS tmigrationlog 
+            (
+                kMigrationlog int(10) NOT NULL AUTO_INCREMENT, 
+                kMigration bigint(20) NOT NULL, 
+                cDir enum('up','down') NOT NULL, 
+                cState varchar(6) NOT NULL, 
+                cLog text NOT NULL, 
+                dCreated datetime NOT NULL, 
+                PRIMARY KEY (kMigrationlog)
+            ) ENGINE=InnoDB DEFAULT CHARSET=latin1", 3
+        );
     }
 }

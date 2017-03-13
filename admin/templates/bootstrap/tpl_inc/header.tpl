@@ -15,7 +15,7 @@
     <link type="text/css" rel="stylesheet" href="{$PFAD_CODEMIRROR}addon/hint/show-hint.css" />
     <link type="text/css" rel="stylesheet" href="{$PFAD_CODEMIRROR}addon/display/fullscreen.css" />
     <link type="text/css" rel="stylesheet" href="{$PFAD_CODEMIRROR}addon/scroll/simplescrollbars.css" />
-    <link type="text/css" rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/7.1.0/css/bootstrap-slider.min.css" />
+
     {$admin_js}
     <script type="text/javascript" src="{$PFAD_CKEDITOR}ckeditor.js"></script>
     <script type="text/javascript" src="{$PFAD_CODEMIRROR}lib/codemirror.js"></script>
@@ -34,9 +34,6 @@
     <script type="text/javascript" src="{$PFAD_CODEMIRROR}mode/smartymixed/smartymixed.js"></script>
     <script type="text/javascript" src="{$PFAD_CODEMIRROR}mode/sql/sql.js"></script>
 
-    <script src="//npmcdn.com/masonry-layout@4.0/dist/masonry.pkgd.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/7.1.0/bootstrap-slider.min.js"></script>
-
     <script type="text/javascript" src="{$URL_SHOP}/{$PFAD_ADMIN}{$currentTemplateDir}js/codemirror_init.js"></script>
     <script type="text/javascript">
         var bootstrapButton = $.fn.button.noConflict();
@@ -51,9 +48,7 @@
     {/if}
 </head>
 <body>
-
-{* {if $account} *}
-{if isset($smarty.session.loginIsValid) && true ===  $smarty.session.loginIsValid }
+{if $account !== false && isset($smarty.session.loginIsValid) && true ===  $smarty.session.loginIsValid }
     {if permission('SETTINGS_SEARCH_VIEW')}
         <div id="main-search" class="modal fade" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
@@ -94,8 +89,9 @@
                 };
 
                 var query = $(event.target).val() || '';
-                if (query.length < 3) {
+                if (query.length < 3 || event.keyCode == 27) {
                     setResult(null);
+                    lastQuery = null;
                 }
                 else if(query != lastQuery) {
                     lastQuery = query;
@@ -120,9 +116,15 @@
             });
 
             $(document).on("keydown", function (event) {
-                if (event.keyCode == 71 && event.ctrlKey) {
+                if (event.keyCode === 71 && event.ctrlKey) {
                     event.preventDefault();
                     $search_frame.modal('toggle');
+                }
+                if (event.keyCode === 13) {
+                    szSearchString = $("[name$=cSuche]").val();
+                        if ('' !== szSearchString) {
+                            document.location.href = 'einstellungen.php?cSuche=' + szSearchString + '&einstellungen_suchen=1';
+                        }
                 }
             });
         });

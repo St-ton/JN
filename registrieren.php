@@ -5,11 +5,14 @@
  *
  * @global $smarty
  */
-require_once dirname(__FILE__) . '/includes/globalinclude.php';
+require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
 
 $linkHelper = LinkHelper::getInstance();
-if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0 && verifyGPCDataInteger('editRechnungsadresse') === 0) {
+if (isset($_SESSION['Kunde']->kKunde) &&
+    $_SESSION['Kunde']->kKunde > 0 &&
+    verifyGPCDataInteger('editRechnungsadresse') === 0
+) {
     header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true), true, 301);
 }
 
@@ -19,38 +22,41 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'newsletter_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'registrieren_inc.php';
 
 $AktuelleSeite = 'REGISTRIEREN';
-$Einstellungen = Shop::getSettings(
-    array(
-        CONF_GLOBAL,
-        CONF_RSS,
-        CONF_KUNDEN,
-        CONF_KUNDENFELD,
-        CONF_KUNDENWERBENKUNDEN,
-        CONF_NEWSLETTER
-    )
-);
+$Einstellungen = Shop::getSettings([
+    CONF_GLOBAL,
+    CONF_RSS,
+    CONF_KUNDEN,
+    CONF_KUNDENFELD,
+    CONF_KUNDENWERBENKUNDEN,
+    CONF_NEWSLETTER
+]);
 pruefeHttps();
 Shop::setPageType(PAGE_REGISTRIERUNG);
 $kLink                = $linkHelper->getSpecialPageLinkKey(LINKTYP_REGISTRIEREN);
 $step                 = 'formular';
 $hinweis              = '';
 $titel                = Shop::Lang()->get('newAccount', 'login');
-$editRechnungsadresse = (isset($_GET['editRechnungsadresse'])) ? intval($_GET['editRechnungsadresse']) : 0;
+$editRechnungsadresse = isset($_GET['editRechnungsadresse'])
+    ? (int)$_GET['editRechnungsadresse']
+    : 0;
 if (isset($_POST['editRechnungsadresse'])) {
     $editRechnungsadresse = (int)$_POST['editRechnungsadresse'];
 }
 // Kunde speichern
-if (isset($_POST['form']) && intval($_POST['form']) === 1) {
+if (isset($_POST['form']) && (int)$_POST['form'] === 1) {
     kundeSpeichern($_POST);
 }
 // Kunde ändern
-if (isset($_GET['editRechnungsadresse']) && intval($_GET['editRechnungsadresse']) === 1) {
+if (isset($_GET['editRechnungsadresse']) && (int)$_GET['editRechnungsadresse'] === 1) {
     gibKunde();
 }
 if ($step === 'formular') {
     gibFormularDaten(verifyGPCDataInteger('checkout'));
 }
-if (isset($_FILES['vcard']) && $Einstellungen['kunden']['kundenregistrierung_vcardupload'] === 'Y' && validateToken()) {
+if (isset($_FILES['vcard']) &&
+    $Einstellungen['kunden']['kundenregistrierung_vcardupload'] === 'Y' &&
+    validateToken()
+) {
     gibKundeFromVCard($_FILES['vcard']['tmp_name']);
     @unlink($_FILES['vcard']['tmp_name']);
 }
@@ -79,7 +85,9 @@ $cMetaKeywords    = $oMeta->cKeywords;
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 //Zum prüfen wie lange ein User/Bot gebraucht hat um das Registrieren-Formular auszufüllen
-if (isset($Einstellungen['kunden']['kundenregistrierung_pruefen_zeit']) && $Einstellungen['kunden']['kundenregistrierung_pruefen_zeit'] === 'Y') {
+if (isset($Einstellungen['kunden']['kundenregistrierung_pruefen_zeit']) &&
+    $Einstellungen['kunden']['kundenregistrierung_pruefen_zeit'] === 'Y'
+) {
     $_SESSION['dRegZeit'] = time();
 }
 

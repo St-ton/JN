@@ -45,7 +45,7 @@ final class EventDispatcher
      */
     public function listen($eventNames, $listener)
     {
-        foreach ((array) $eventNames as $event) {
+        foreach ((array)$eventNames as $event) {
             if (strpos($event, '*') !== false) {
                 $this->wildcards[$event][] = $listener;
             } else {
@@ -59,7 +59,6 @@ final class EventDispatcher
      *
      * @param string|object $eventName
      * @param mixed $arguments
-     * @return array|null
      */
     public function fire($eventName, array $arguments = [])
     {

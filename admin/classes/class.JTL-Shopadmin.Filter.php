@@ -6,10 +6,10 @@
 class Filter
 {
     protected $cId          = 'filter';
-    protected $oField_arr   = array();
+    protected $oField_arr   = [];
     protected $cWhereSQL    = '';
     protected $cAction      = '';
-    protected $cSession_arr = array();
+    protected $cSession_arr = [];
 
     /**
      * Filter constructor.
@@ -29,7 +29,7 @@ class Filter
     /**
      * Add a text field to a filter object
      *
-     * @param string $cTitle - the label/title for this field
+     * @param string|array $cTitle - either title-string for this field or a pair of short title and long title
      * @param string $cColumn - the column name to be compared
      * @param int    $nTestOp
      *  0 = custom
@@ -61,13 +61,31 @@ class Filter
      * Add a select field to a filter object. Options can be added with FilterSelectField->addSelectOption() to this
      * select field
      *
-     * @param string $cTitle - the label/title for this field
+     * @param string|array $cTitle - either title-string for this field or a pair of short title and long title
      * @param string $cColumn - the column name to be compared
+     * @param int    $nDefaultOption
      * @return FilterSelectField
      */
-    public function addSelectfield($cTitle, $cColumn)
+    public function addSelectfield($cTitle, $cColumn, $nDefaultOption = 0)
     {
-        $oField                               = new FilterSelectField($this, $cTitle, $cColumn);
+        $oField                               = new FilterSelectField($this, $cTitle, $cColumn, $nDefaultOption);
+        $this->oField_arr[]                   = $oField;
+        $this->cSession_arr[$oField->getId()] = $oField->getValue();
+
+        return $oField;
+    }
+
+    /**
+     * Add a DateRange field to the filter object.
+     *
+     * @param string $cTitle
+     * @param string $cColumn
+     * @param string $cDefValue
+     * @return FilterDateRangeField
+     */
+    public function addDaterangefield($cTitle, $cColumn, $cDefValue = '')
+    {
+        $oField                               = new FilterDateRangeField($this, $cTitle, $cColumn, $cDefValue);
         $this->oField_arr[]                   = $oField;
         $this->cSession_arr[$oField->getId()] = $oField->getValue();
 
@@ -98,6 +116,15 @@ class Filter
     }
 
     /**
+     * @param int $i
+     * @return array
+     */
+    public function getField($i)
+    {
+        return $this->oField_arr[$i];
+    }
+
+    /**
      * @return string
      */
     public function getAction()
@@ -118,7 +145,7 @@ class Filter
      */
     public function loadSessionStore()
     {
-        $this->cSession_arr = isset($_SESSION['filter_' . $this->cId]) ? $_SESSION['filter_' . $this->cId] : array();
+        $this->cSession_arr = isset($_SESSION['filter_' . $this->cId]) ? $_SESSION['filter_' . $this->cId] : [];
     }
 
     /**

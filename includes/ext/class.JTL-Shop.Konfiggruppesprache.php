@@ -43,7 +43,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         public function __construct($kKonfiggruppe = 0, $kSprache = 0)
         {
-            if (intval($kKonfiggruppe) > 0 && intval($kSprache) > 0) {
+            if ((int)$kKonfiggruppe > 0 && (int)$kSprache > 0) {
                 $this->loadFromDB($kKonfiggruppe, $kSprache);
             }
         }
@@ -53,10 +53,10 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         public function jsonSerialize()
         {
-            return utf8_convert_recursive(array(
+            return utf8_convert_recursive([
                 'cName'         => $this->cName,
                 'cBeschreibung' => $this->cBeschreibung
-            ));
+            ]);
         }
 
         /**
@@ -68,12 +68,23 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         private function loadFromDB($kKonfiggruppe = 0, $kSprache = 0)
         {
-            $oObj = Shop::DB()->select('tkonfiggruppesprache', 'kKonfiggruppe', (int)$kKonfiggruppe, 'kSprache', (int)$kSprache);
-            if (isset($oObj->kKonfiggruppe) && isset($oObj->kSprache) && $oObj->kKonfiggruppe > 0 && $oObj->kSprache > 0) {
+            $oObj = Shop::DB()->select(
+                'tkonfiggruppesprache',
+                'kKonfiggruppe',
+                (int)$kKonfiggruppe,
+                'kSprache',
+                (int)$kSprache
+            );
+            if (isset($oObj->kKonfiggruppe, $oObj->kSprache) &&
+                $oObj->kKonfiggruppe > 0 &&
+                $oObj->kSprache > 0
+            ) {
                 $cMember_arr = array_keys(get_object_vars($oObj));
                 foreach ($cMember_arr as $cMember) {
                     $this->$cMember = $oObj->$cMember;
                 }
+                $this->kSprache      = (int)$this->kSprache;
+                $this->kKonfiggruppe = (int)$this->kKonfiggruppe;
             }
         }
 
@@ -93,9 +104,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                     $oObj->$cMember = $this->$cMember;
                 }
             }
-
-            unset($oObj->kKonfiggruppe);
-            unset($oObj->kSprache);
+            unset($oObj->kKonfiggruppe, $oObj->kSprache);
 
             $kPrim = Shop::DB()->insert('tkonfiggruppesprache', $oObj);
 
@@ -119,7 +128,12 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
             $_upd->cName         = $this->getName();
             $_upd->cBeschreibung = $this->getBeschreibung();
 
-            return Shop::DB()->update('tkonfiggruppesprache', array('kKonfiggruppe', 'kSprache'), array($this->getKonfiggruppe(), $this->getSprache()), $_upd);
+            return Shop::DB()->update(
+                'tkonfiggruppesprache',
+                ['kKonfiggruppe', 'kSprache'],
+                [$this->getKonfiggruppe(), $this->getSprache()],
+                $_upd
+            );
         }
 
         /**
@@ -130,7 +144,11 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         public function delete()
         {
-            return Shop::DB()->delete('tkonfiggruppesprache', ['kKonfiggruppe', 'kSprache'], [(int)$this->kKonfiggruppe, (int)$this->kSprache]);
+            return Shop::DB()->delete(
+                'tkonfiggruppesprache',
+                ['kKonfiggruppe', 'kSprache'],
+                [(int)$this->kKonfiggruppe, (int)$this->kSprache]
+            );
         }
 
         /**

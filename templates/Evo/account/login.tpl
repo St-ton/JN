@@ -1,3 +1,8 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license http://jtl-url.de/jtlshoplicense
+ *}
+
 <h1>{if !empty($oRedirect->cName)}{$oRedirect->cName}{else}{lang key="loginTitle" section="login"}{/if}</h1>
 {if !$bCookieErlaubt}
     <div class="alert alert-danger hidden" id="no-cookies-warning" style="display:none;">
@@ -11,12 +16,8 @@
            {rdelim}
        {rdelim});
     </script>
-{else}
-    {if !empty($cHinweis)}
-        <div class="alert alert-info">{$cHinweis}</div>
-    {else}
-        <div class="alert alert-info">{lang key="loginDesc" section="login"} {if isset($oRedirect) && $oRedirect->cName}{lang key="redirectDesc1" section="global"} {$oRedirect->cName} {lang key="redirectDesc2" section="global"}.{/if}</div>
-    {/if}
+{elseif empty($cHinweis)}
+    <div class="alert alert-info">{lang key="loginDesc" section="login"} {if isset($oRedirect) && $oRedirect->cName}{lang key="redirectDesc1" section="global"} {$oRedirect->cName} {lang key="redirectDesc2" section="global"}.{/if}</div>
 {/if}
 
 {include file="snippets/extension.tpl"}
@@ -32,7 +33,7 @@
                     <div class="form-group float-label-control required">
                         <label for="email" class="control-label">{lang key="emailadress" section="global"}</label>
                         <input
-                        type="text"
+                        type="email"
                         name="email"
                         id="email"
                         class="form-control"
@@ -54,7 +55,7 @@
 
                     {if $showLoginCaptcha}
                         <div class="form-group text-center float-label-control">
-                            <div class="g-recaptcha" data-sitekey="{$Einstellungen.global.global_google_recaptcha_public}"></div>
+                            <div class="g-recaptcha" data-sitekey="{$Einstellungen.global.global_google_recaptcha_public}" data-callback="captcha_filled"></div>
                         </div>
                     {/if}
 

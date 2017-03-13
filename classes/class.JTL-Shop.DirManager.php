@@ -30,9 +30,9 @@ class DirManager
     /**
      * Userfunc (callback function) must have 1 parameter (array)
      *
-     * @param string $path
-     * @param null   $userfunc
-     * @param array  $parameters
+     * @param string        $path
+     * @param null|callable $userfunc
+     * @param array         $parameters
      * @return $this
      */
     public function getData($path, $userfunc = null, array $parameters = null)
@@ -43,11 +43,11 @@ class DirManager
             $islinux = false;
         }
         if ($islinux) {
-            if (strpos(substr($path, (strlen($path) - 1), 1), '/') === false) {
+            if (strpos(substr($path, strlen($path) - 1, 1), '/') === false) {
                 $path .= '/';
             }
         } else {
-            if (strpos(substr($path, (strlen($path) - 1), 1), '\\') === false) {
+            if (strpos(substr($path, strlen($path) - 1, 1), '\\') === false) {
                 $path .= '\\';
             }
         }
@@ -64,11 +64,11 @@ class DirManager
                             $this->getData($path . $file, $userfunc, $parameters);
                         }
                         // Last level dir?
-                        $options = array(
+                        $options = [
                             'filename' => $file,
                             'path'     => $path,
                             'isdir'    => false
-                        );
+                        ];
                         if (is_dir($path . $file)) {
                             $options['isdir'] = true;
                         }
@@ -76,7 +76,7 @@ class DirManager
                             $options = array_merge($options, $parameters);
                         }
                         if ($userfunc !== null) {
-                            call_user_func($userfunc, $options);
+                            $userfunc($options);
                         }
                     }
                 }

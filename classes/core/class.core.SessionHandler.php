@@ -30,7 +30,7 @@ class SessionHandler
     public function get($key, $default = null)
     {
         $array = $this->sessionData;
-        if (is_null($key)) {
+        if ($key === null) {
             return $array;
         }
         if (isset($array[$key])) {
@@ -64,14 +64,16 @@ class SessionHandler
      */
     public static function array_set(&$array, $key, $value)
     {
-        if (is_null($key)) {
-            return $array = $value;
+        if ($key === null) {
+            $array = $value;
+
+            return $array;
         }
         $keys = explode('.', $key);
         while (count($keys) > 1) {
             $key = array_shift($keys);
             if (!isset($array[$key]) || !is_array($array[$key])) {
-                $array[$key] = array();
+                $array[$key] = [];
             }
             $array = &$array[$key];
         }
@@ -90,7 +92,7 @@ class SessionHandler
     public function put($key, $value = null)
     {
         if (!is_array($key)) {
-            $key = array($key => $value);
+            $key = [$key => $value];
         }
         foreach ($key as $arrayKey => $arrayValue) {
             $this->set($arrayKey, $arrayValue);
@@ -106,7 +108,7 @@ class SessionHandler
      */
     public function push($key, $value)
     {
-        $array   = $this->get($key, array());
+        $array   = $this->get($key, []);
         $array[] = $value;
         $this->put($key, $array);
     }

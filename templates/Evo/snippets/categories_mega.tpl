@@ -31,7 +31,7 @@
             {/if}
             <li class="{if $isDropdown}dropdown megamenu-fw{/if}{if $category->kKategorie == $activeId || (isset($activeParents[0]) && $activeParents[0]->kKategorie == $category->kKategorie)} active{/if}">
                 <a href="{$category->cURL}"{if $isDropdown} class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-delay="300" data-hover-delay="100" data-close-others="true"{/if}>
-                    {$category->cName}
+                    {$category->cKurzbezeichnung}
                     {if $isDropdown}<span class="caret"></span>{/if}
                 </a>
                 {if $isDropdown}
@@ -39,7 +39,9 @@
                         <li>
                             <div class="megamenu-content">
                                 <div class="category-title text-center">
-                                    <a href="{$category->cURL}">{$category->cName}</a>
+                                    <a href="{$category->cURL}">
+                                        {$category->cName}
+                                    </a>
                                 </div>
                                 <hr class="hr-sm">
                                 <div class="row">
@@ -49,7 +51,10 @@
                                         <div class="col-lg-3 visible-lg">
                                             <div class="mega-info-lg top15">
                                                 {if $category->cBildURL !== 'gfx/keinBild.gif'}
-                                                    <a href="{$category->cURL}"><img src="{$category->cBildURLFull}" class="img-responsive" alt="{$category->cName|escape:'html'}"></a>
+                                                    <a href="{$category->cURL}">
+                                                        <img src="{$category->cBildURLFull}" class="img-responsive"
+                                                             alt="{$category->cKurzbezeichnung|escape:'html'}">
+                                                    </a>
                                                     <div class="clearall top15"></div>
                                                 {/if}
                                                 <div class="description text-muted small">{$category->cBeschreibung}</div>
@@ -69,11 +74,20 @@
                                                         <div class="category-wrapper top15{if $sub->kKategorie == $activeId || (isset($activeParents[1]) && $activeParents[1]->kKategorie == $sub->kKategorie)} active{/if}">
                                                             {if isset($Einstellungen.template.megamenu.show_category_images) && $Einstellungen.template.megamenu.show_category_images !== 'N'}
                                                                 <div class="img text-center">
-                                                                    <a href="{$sub->cURL}"><img src="{$sub->cBildURLFull}" class="image" alt="{$sub->cName|escape:'html'}"></a>
+                                                                    <a href="{$sub->cURL}">
+                                                                        <img src="{$sub->cBildURLFull}" class="image"
+                                                                             alt="{$category->cKurzbezeichnung|escape:'html'}">
+                                                                    </a>
                                                                 </div>
                                                             {/if}
                                                             <div class="caption{if isset($Einstellungen.template.megamenu.show_category_images) && $Einstellungen.template.megamenu.show_category_images !== 'N'} text-center{/if}">
-                                                                <h5 class="title"><a href="{$sub->cURL}"><span>{$sub->cName}</span></a></h5>
+                                                                <h5 class="title">
+                                                                    <a href="{$sub->cURL}">
+                                                                        <span>
+                                                                            {$sub->cKurzbezeichnung}
+                                                                        </span>
+                                                                    </a>
+                                                                </h5>
                                                             </div>
                                                             {if $show_subcategories && $sub->bUnterKategorien}
                                                                 {if !empty($sub->Unterkategorien)}
@@ -87,7 +101,7 @@
                                                                         {if $smarty.foreach.subsub_categories.iteration <= $max_subsub_items}
                                                                             <li{if $subsub->kKategorie == $activeId || (isset($activeParents[2]) && $activeParents[2]->kKategorie == $subsub->kKategorie)} class="active"{/if}>
                                                                                 <a href="{$subsub->cURL}">
-                                                                                    {$subsub->cName}
+                                                                                    {$subsub->cKurzbezeichnung}
                                                                                 </a>
                                                                             </li>
                                                                         {else}

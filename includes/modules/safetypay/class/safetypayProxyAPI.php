@@ -1,7 +1,7 @@
 <?php
 
 require_once PFAD_ROOT . PFAD_INCLUDES_LIBS . PFAD_NUSOAP . 'nusoap.php';
-require_once 'safetypaySha256.inc.php';
+require_once __DIR__ . '/safetypaySha256.inc.php';
 
 /**
  * Class SafetyPayProxy
@@ -11,19 +11,18 @@ class SafetyPayProxy
     /**
      *
      */
-    public function SafetyPayProxy()
+    public function __construct()
     {
         // Web Services Credentials: API Key
         $this->ApiKey          = SAFETYPAY_APIKEY;
         $this->SignatureKey    = SAFETYPAY_SIGNTATURE_KEY;
         $this->CurrCodeDefault = 'EUR'; // Set the Currency Code of Virtual Store (USD, PEn, MXN, EUR, etc.)
         $this->Test            = 1; // Set 1: For Test - Set 0: For Production
+        // Production Links v2.2
+        $this->wsdlURL = 'https://secure.saftpay.com/prod/WebServices/v2.2/Merchants/MerchantWS.asmx?WSDL';
         if ($this->Test) {
             // Sandbox Links v2.2
             $this->wsdlURL = 'https://secure.saftpay.com/Prod_QAS/WebServices/v2.2/Merchants/MerchantWS.asmx?WSDL';
-        } else {
-            // Production Links v2.2
-            $this->wsdlURL = 'https://secure.saftpay.com/prod/WebServices/v2.2/Merchants/MerchantWS.asmx?WSDL';
         }
         // Request Headers for WS v2.2
         $this->headers = '<RequesterCredentials xmlns="SaftpayMerchant v.2.2"><ApiKey>' . $this->ApiKey . '</ApiKey></RequesterCredentials>';
@@ -40,10 +39,10 @@ class SafetyPayProxy
      */
     public function LetKeys($sApiKey = '', $sSignatureKey = '')
     {
-        if ($sApiKey != '') {
+        if ($sApiKey !== '') {
             $this->ApiKey = $sApiKey;
         }
-        if ($sSignatureKey != '') {
+        if ($sSignatureKey !== '') {
             $this->SignatureKey = $sSignatureKey;
         }
         $this->headers = '<RequesterCredentials xmlns="SaftpayMerchant v.2.2"><ApiKey>' . $this->ApiKey . '</ApiKey></RequesterCredentials>';

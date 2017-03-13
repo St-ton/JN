@@ -10,18 +10,36 @@
  */
 function getAdminSectionSettings($kEinstellungenSektion)
 {
-    $kEinstellungenSektion = intval($kEinstellungenSektion);
-    $oConfig_arr           = array();
+    $kEinstellungenSektion = (int)$kEinstellungenSektion;
+    $oConfig_arr           = [];
     if ($kEinstellungenSektion > 0) {
-        $oConfig_arr = Shop::DB()->selectAll('teinstellungenconf', 'kEinstellungenSektion', $kEinstellungenSektion, '*', 'nSort');
+        $oConfig_arr = Shop::DB()->selectAll(
+            'teinstellungenconf',
+            'kEinstellungenSektion',
+            $kEinstellungenSektion,
+            '*',
+            'nSort'
+        );
         if (is_array($oConfig_arr) && count($oConfig_arr) > 0) {
             $count = count($oConfig_arr);
             for ($i = 0; $i < $count; $i++) {
                 if ($oConfig_arr[$i]->cInputTyp === 'selectbox') {
-                    $oConfig_arr[$i]->ConfWerte = Shop::DB()->selectAll('teinstellungenconfwerte', 'kEinstellungenConf', $oConfig_arr[$i]->kEinstellungenConf, '*', 'nSort');
+                    $oConfig_arr[$i]->ConfWerte = Shop::DB()->selectAll(
+                        'teinstellungenconfwerte',
+                        'kEinstellungenConf',
+                        $oConfig_arr[$i]->kEinstellungenConf,
+                        '*',
+                        'nSort'
+                    );
                 }
-                $oSetValue = Shop::DB()->select('teinstellungen', ['kEinstellungenSektion', 'cName'], [$kEinstellungenSektion, $oConfig_arr[$i]->cWertName]);
-                $oConfig_arr[$i]->gesetzterWert = (isset($oSetValue->cWert)) ? $oSetValue->cWert : null;
+                $oSetValue = Shop::DB()->select(
+                    'teinstellungen',
+                    ['kEinstellungenSektion', 'cName'],
+                    [$kEinstellungenSektion, $oConfig_arr[$i]->cWertName]
+                );
+                $oConfig_arr[$i]->gesetzterWert = isset($oSetValue->cWert)
+                    ? $oSetValue->cWert
+                    : null;
             }
         }
     }
@@ -35,8 +53,11 @@ function getAdminSectionSettings($kEinstellungenSektion)
  * @param array $tags
  * @return string
  */
-function saveAdminSettings($settingsIDs, &$cPost_arr, $tags = array(CACHING_GROUP_OPTION))
+function saveAdminSettings($settingsIDs, &$cPost_arr, $tags = [CACHING_GROUP_OPTION])
 {
+    array_walk($settingsIDs, function (&$i) {
+        $i = (int)$i;
+    });
     $oConfig_arr = Shop::DB()->query(
         "SELECT *
             FROM teinstellungenconf
@@ -47,16 +68,18 @@ function saveAdminSettings($settingsIDs, &$cPost_arr, $tags = array(CACHING_GROU
     if (is_array($oConfig_arr) && count($oConfig_arr) > 0) {
         for ($i = 0; $i < $configCount; $i++) {
             $aktWert                        = new stdClass();
-            $aktWert->cWert                 = (isset($cPost_arr[$oConfig_arr[$i]->cWertName])) ? $cPost_arr[$oConfig_arr[$i]->cWertName] : null;
+            $aktWert->cWert                 = isset($cPost_arr[$oConfig_arr[$i]->cWertName])
+                ? $cPost_arr[$oConfig_arr[$i]->cWertName]
+                : null;
             $aktWert->cName                 = $oConfig_arr[$i]->cWertName;
             $aktWert->kEinstellungenSektion = (int)$oConfig_arr[$i]->kEinstellungenSektion;
             switch ($oConfig_arr[$i]->cInputTyp) {
                 case 'kommazahl':
-                    $aktWert->cWert = floatval($aktWert->cWert);
+                    $aktWert->cWert = (float)$aktWert->cWert;
                     break;
                 case 'zahl':
                 case 'number':
-                    $aktWert->cWert = intval($aktWert->cWert);
+                    $aktWert->cWert = (int)$aktWert->cWert;
                     break;
                 case 'text':
                     $aktWert->cWert = substr($aktWert->cWert, 0, 255);
@@ -66,7 +89,11 @@ function saveAdminSettings($settingsIDs, &$cPost_arr, $tags = array(CACHING_GROU
                     break;
             }
             if ($oConfig_arr[$i]->cInputTyp !== 'listbox') {
-                Shop::DB()->delete('teinstellungen', array('kEinstellungenSektion', 'cName'), array((int)$oConfig_arr[$i]->kEinstellungenSektion, $oConfig_arr[$i]->cWertName));
+                Shop::DB()->delete(
+                    'teinstellungen',
+                    ['kEinstellungenSektion', 'cName'],
+                    [(int)$oConfig_arr[$i]->kEinstellungenSektion, $oConfig_arr[$i]->cWertName]
+                );
                 Shop::DB()->insert('teinstellungen', $aktWert);
             }
         }
@@ -85,9 +112,9 @@ function saveAdminSettings($settingsIDs, &$cPost_arr, $tags = array(CACHING_GROU
  */
 function bearbeiteListBox($cListBox_arr, $cWertName, $kEinstellungenSektion)
 {
-    $kEinstellungenSektion = intval($kEinstellungenSektion);
+    $kEinstellungenSektion = (int)$kEinstellungenSektion;
     if (is_array($cListBox_arr) && count($cListBox_arr) > 0) {
-        Shop::DB()->delete('teinstellungen', array('kEinstellungenSektion', 'cName'), array($kEinstellungenSektion, $cWertName));
+        Shop::DB()->delete('teinstellungen', ['kEinstellungenSektion', 'cName'], [$kEinstellungenSektion, $cWertName]);
         foreach ($cListBox_arr as $cListBox) {
             $oAktWert                        = new stdClass();
             $oAktWert->cWert                 = $cListBox;
@@ -102,7 +129,11 @@ function bearbeiteListBox($cListBox_arr, $cWertName, $kEinstellungenSektion)
             // Standard Kundengruppe aus DB holen
             $oKundengruppe = Shop::DB()->select('tkundengruppe', 'cStandard', 'Y');
             if ($oKundengruppe->kKundengruppe > 0) {
-                Shop::DB()->delete('teinstellungen', array('kEinstellungenSektion', 'cName'), array($kEinstellungenSektion, $cWertName));
+                Shop::DB()->delete(
+                    'teinstellungen',
+                    ['kEinstellungenSektion', 'cName'],
+                    [$kEinstellungenSektion, $cWertName]
+                );
                 $oAktWert                        = new stdClass();
                 $oAktWert->cWert                 = $oKundengruppe->kKundengruppe;
                 $oAktWert->cName                 = $cWertName;
@@ -120,28 +151,36 @@ function bearbeiteListBox($cListBox_arr, $cWertName, $kEinstellungenSektion)
  * @param array $tags
  * @return string
  */
-function saveAdminSectionSettings($kEinstellungenSektion, &$cPost_arr, $tags = array(CACHING_GROUP_OPTION))
+function saveAdminSectionSettings($kEinstellungenSektion, &$cPost_arr, $tags = [CACHING_GROUP_OPTION])
 {
     if (!validateToken()) {
         return 'Fehler: Cross site request forgery.';
     }
-    $kEinstellungenSektion = intval($kEinstellungenSektion);
-    $oConfig_arr           = Shop::DB()->selectAll('teinstellungenconf', ['kEinstellungenSektion', 'cConf'], [$kEinstellungenSektion, 'Y'], '*', 'nSort');
+    $kEinstellungenSektion = (int)$kEinstellungenSektion;
+    $oConfig_arr           = Shop::DB()->selectAll(
+        'teinstellungenconf',
+        ['kEinstellungenSektion', 'cConf'],
+        [$kEinstellungenSektion, 'Y'],
+        '*',
+        'nSort'
+    );
 
     if (is_array($oConfig_arr) && count($oConfig_arr) > 0) {
         $count = count($oConfig_arr);
         for ($i = 0; $i < $count; $i++) {
             $aktWert                        = new stdClass();
-            $aktWert->cWert                 = (isset($cPost_arr[$oConfig_arr[$i]->cWertName])) ? $cPost_arr[$oConfig_arr[$i]->cWertName] : null;
+            $aktWert->cWert                 = isset($cPost_arr[$oConfig_arr[$i]->cWertName])
+                ? $cPost_arr[$oConfig_arr[$i]->cWertName]
+                : null;
             $aktWert->cName                 = $oConfig_arr[$i]->cWertName;
             $aktWert->kEinstellungenSektion = $kEinstellungenSektion;
             switch ($oConfig_arr[$i]->cInputTyp) {
                 case 'kommazahl':
-                    $aktWert->cWert = floatval(str_replace(',', '.', $aktWert->cWert));
+                    $aktWert->cWert = (float)str_replace(',', '.', $aktWert->cWert);
                     break;
                 case 'zahl':
                 case 'number':
-                    $aktWert->cWert = intval($aktWert->cWert);
+                    $aktWert->cWert = (int)$aktWert->cWert;
                     break;
                 case 'text':
                     $aktWert->cWert = substr($aktWert->cWert, 0, 255);
@@ -153,7 +192,11 @@ function saveAdminSectionSettings($kEinstellungenSektion, &$cPost_arr, $tags = a
             }
 
             if ($oConfig_arr[$i]->cInputTyp !== 'listbox' && $oConfig_arr[$i]->cInputTyp !== 'selectkdngrp') {
-                Shop::DB()->delete('teinstellungen', array('kEinstellungenSektion', 'cName'), array($kEinstellungenSektion, $oConfig_arr[$i]->cWertName));
+                Shop::DB()->delete(
+                    'teinstellungen',
+                    ['kEinstellungenSektion', 'cName'],
+                    [$kEinstellungenSektion, $oConfig_arr[$i]->cWertName]
+                );
                 Shop::DB()->insert('teinstellungen', $aktWert);
             }
         }
@@ -176,14 +219,14 @@ function saveAdminSectionSettings($kEinstellungenSektion, &$cPost_arr, $tags = a
  */
 function holeAlleKampagnen($bInterneKampagne = false, $bAktivAbfragen = true)
 {
-    $cAktivSQL  = ($bAktivAbfragen) ? " WHERE nAktiv = 1" : '';
+    $cAktivSQL  = $bAktivAbfragen ? " WHERE nAktiv = 1" : '';
     $cInternSQL = '';
     if (!$bInterneKampagne && $bAktivAbfragen) {
         $cInternSQL = " AND kKampagne >= 1000";
     } elseif (!$bInterneKampagne) {
         $cInternSQL = " WHERE kKampagne >= 1000";
     }
-    $oKampagne_arr    = array();
+    $oKampagne_arr    = [];
     $oKampagneTMP_arr = Shop::DB()->query(
         "SELECT kKampagne
             FROM tkampagne
@@ -211,6 +254,7 @@ function holeAlleKampagnen($bInterneKampagne = false, $bAktivAbfragen = true)
  */
 function getArrangedArray($oXML_arr, $nLevel = 1)
 {
+    $nLevel = (int)$nLevel;
     if (is_array($oXML_arr)) {
         $cArrayKeys = array_keys($oXML_arr);
         $nCount     = count($oXML_arr);
@@ -219,7 +263,7 @@ function getArrangedArray($oXML_arr, $nLevel = 1)
                 //attribut array -> nicht beachten -> weiter
                 continue;
             } else {
-                if (intval($cArrayKeys[$i]) > 0 || $cArrayKeys[$i] == '0' || $nLevel == 0) {
+                if ($nLevel === 0 || (int)$cArrayKeys[$i] > 0 || $cArrayKeys[$i] == '0') {
                     //int Arrayelement -> in die Tiefe gehen
                     $oXML_arr[$cArrayKeys[$i]] = getArrangedArray($oXML_arr[$cArrayKeys[$i]]);
                 } else {
@@ -231,11 +275,12 @@ function getArrangedArray($oXML_arr, $nLevel = 1)
                             continue;
                         }
                         //kein Attributzweig, kein numerischer Anfang
-                        $tmp_arr           = array();
-                        $tmp_arr['0 attr'] = (isset($oXML_arr[$cArrayKeys[$i] . ' attr'])) ? $oXML_arr[$cArrayKeys[$i] . ' attr'] : null;
+                        $tmp_arr           = [];
+                        $tmp_arr['0 attr'] = isset($oXML_arr[$cArrayKeys[$i] . ' attr'])
+                            ? $oXML_arr[$cArrayKeys[$i] . ' attr']
+                            : null;
                         $tmp_arr['0']      = $oXML_arr[$cArrayKeys[$i]];
-                        unset($oXML_arr[$cArrayKeys[$i]]);
-                        unset($oXML_arr[$cArrayKeys[$i] . ' attr']);
+                        unset($oXML_arr[$cArrayKeys[$i]], $oXML_arr[$cArrayKeys[$i] . ' attr']);
                         $oXML_arr[$cArrayKeys[$i]] = $tmp_arr;
                         if (is_array($oXML_arr[$cArrayKeys[$i]]['0'])) {
                             $oXML_arr[$cArrayKeys[$i]]['0'] = getArrangedArray($oXML_arr[$cArrayKeys[$i]]['0']);
@@ -254,12 +299,12 @@ function getArrangedArray($oXML_arr, $nLevel = 1)
  */
 function holeBewertungserinnerungSettings()
 {
-    $Einstellungen = array();
+    $Einstellungen = [];
     // Einstellungen für die Bewertung holen
     $oEinstellungen_arr = Shop::DB()->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_BEWERTUNG);
     if (is_array($oEinstellungen_arr) && count($oEinstellungen_arr) > 0) {
-        $Einstellungen['bewertung']                                       = array();
-        $Einstellungen['bewertung']['bewertungserinnerung_kundengruppen'] = array();
+        $Einstellungen['bewertung']                                       = [];
+        $Einstellungen['bewertung']['bewertungserinnerung_kundengruppen'] = [];
 
         foreach ($oEinstellungen_arr as $oEinstellungen) {
             if ($oEinstellungen->cName) {
@@ -282,19 +327,31 @@ function holeBewertungserinnerungSettings()
  */
 function setzeSprache()
 {
-    //setze std Sprache als aktuelle Sprache
-    if (!isset($_SESSION['kSprache'])) {
-        $StdSprache = Shop::DB()->select('tsprache', 'cShopStandard', 'Y');
-        if ($StdSprache->kSprache > 0) {
-            $_SESSION['kSprache'] = $StdSprache->kSprache;
+    if (validateToken() && verifyGPCDataInteger('sprachwechsel') === 1) {
+        // Wähle explizit gesetzte Sprache als aktuelle Sprache
+        $oSprache = Shop::DB()->select('tsprache', 'kSprache', (int)$_POST['kSprache']);
+
+        if ((int)$oSprache->kSprache > 0) {
+            $_SESSION['kSprache']    = (int)$oSprache->kSprache;
+            $_SESSION['cISOSprache'] = $oSprache->cISO;
         }
     }
-    //setze explizit ausgewählte Sprache
-    if (isset($_POST['sprachwechsel']) && intval($_POST['sprachwechsel']) === 1) {
-        $StdSprache = Shop::DB()->select('tsprache', 'kSprache', (int)$_POST['kSprache']);
-        if ($StdSprache->kSprache > 0) {
-            $_SESSION['kSprache']    = $StdSprache->kSprache;
-            $_SESSION['cISOSprache'] = $StdSprache->cISO;
+
+    if (!isset($_SESSION['kSprache'])) {
+        // Wähle Standardsprache als aktuelle Sprache
+        $oSprache = Shop::DB()->select('tsprache', 'cShopStandard', 'Y');
+
+        if ((int)$oSprache->kSprache > 0) {
+            $_SESSION['kSprache']    = (int)$oSprache->kSprache;
+            $_SESSION['cISOSprache'] = $oSprache->cISO;
+        }
+    }
+    if (isset($_SESSION['kSprache']) && empty($_SESSION['cISOSprache'])) {
+        // Fehlendes cISO ergänzen
+        $oSprache = Shop::DB()->select('tsprache', 'kSprache', (int)$_SESSION['kSprache']);
+
+        if ((int)$oSprache->kSprache > 0) {
+            $_SESSION['cISOSprache'] = $oSprache->cISO;
         }
     }
 }
@@ -304,13 +361,13 @@ function setzeSprache()
  */
 function setzeSpracheTrustedShops()
 {
-    $cISOSprache_arr = array(
+    $cISOSprache_arr = [
         'de' => 'Deutsch',
         'en' => 'Englisch',
         'fr' => 'Französisch',
         'pl' => 'Polnisch',
         'es' => 'Spanisch'
-    );
+    ];
     //setze std Sprache als aktuelle Sprache
     if (!isset($_SESSION['TrustedShops']->oSprache->cISOSprache)) {
         if (!isset($_SESSION['TrustedShops'])) {
@@ -322,10 +379,12 @@ function setzeSpracheTrustedShops()
     }
 
     //setze explizit ausgewählte Sprache
-    if (isset($_POST['sprachwechsel']) && intval($_POST['sprachwechsel']) === 1) {
+    if (isset($_POST['sprachwechsel']) && (int)$_POST['sprachwechsel'] === 1) {
         if (strlen($_POST['cISOSprache']) > 0) {
-            $_SESSION['TrustedShops']->oSprache->cISOSprache  = StringHandler::htmlentities(StringHandler::filterXSS($_POST['cISOSprache']));
-            $_SESSION['TrustedShops']->oSprache->cNameSprache = $cISOSprache_arr[StringHandler::htmlentities(StringHandler::filterXSS($_POST['cISOSprache']))];
+            $_SESSION['TrustedShops']->oSprache->cISOSprache  =
+                StringHandler::htmlentities(StringHandler::filterXSS($_POST['cISOSprache']));
+            $_SESSION['TrustedShops']->oSprache->cNameSprache =
+                $cISOSprache_arr[StringHandler::htmlentities(StringHandler::filterXSS($_POST['cISOSprache']))];
         }
     }
 }
@@ -337,7 +396,14 @@ function setzeSpracheTrustedShops()
  */
 function firstDayOfMonth($nMonth = -1, $nYear = -1)
 {
-    return mktime(0, 0, 0, $nMonth > -1 ? $nMonth : date('m'), 1, $nYear > -1 ? $nYear : date('Y'));
+    return mktime(
+        0,
+        0,
+        0,
+        $nMonth > -1 ? $nMonth : date('m'),
+        1,
+        $nYear > -1 ? $nYear : date('Y')
+    );
 }
 
 /**
@@ -347,7 +413,14 @@ function firstDayOfMonth($nMonth = -1, $nYear = -1)
  */
 function lastDayOfMonth($nMonth = -1, $nYear = -1)
 {
-    return mktime(23, 59, 59, $nMonth > -1 ? $nMonth : date('m'), date('t', firstDayOfMonth($nMonth, $nYear)), $nYear > -1 ? $nYear : date('Y'));
+    return mktime(
+        23,
+        59,
+        59,
+        $nMonth > -1 ? $nMonth : date('m'),
+        date('t', firstDayOfMonth($nMonth, $nYear)),
+        $nYear > -1 ? $nYear : date('Y')
+    );
 }
 
 /**
@@ -364,23 +437,23 @@ function ermittleDatumWoche($cDatum)
     if (strlen($cDatum) > 0) {
         list($cJahr, $cMonat, $cTag) = explode('-', $cDatum);
         // So = 0, SA = 6
-        $nWochentag = intval(date('w', mktime(0, 0, 0, intval($cMonat), intval($cTag), intval($cJahr))));
+        $nWochentag = (int)date('w', mktime(0, 0, 0, (int)$cMonat, (int)$cTag, (int)$cJahr));
         // Woche soll Montag starten - also So = 6, Mo = 0
-        if ($nWochentag == 0) {
+        if ($nWochentag === 0) {
             $nWochentag = 6;
         } else {
             $nWochentag--;
         }
         // Wochenstart ermitteln
-        $nTagOld = intval($cTag);
-        $nTag    = intval($cTag) - $nWochentag;
-        $nMonat  = intval($cMonat);
-        $nJahr   = intval($cJahr);
+        $nTagOld = (int)$cTag;
+        $nTag    = (int)$cTag - $nWochentag;
+        $nMonat  = (int)$cMonat;
+        $nJahr   = (int)$cJahr;
         if ($nTag <= 0) {
-            $nMonat -= 1;
-            if ($nMonat == 0) {
+            --$nMonat;
+            if ($nMonat === 0) {
                 $nMonat = 12;
-                $nJahr += 1;
+                ++$nJahr;
             }
 
             $nAnzahlTageProMonat = date('t', mktime(0, 0, 0, $nMonat, 1, $nJahr));
@@ -392,20 +465,20 @@ function ermittleDatumWoche($cDatum)
         $nAnzahlTageProMonat = date('t', mktime(0, 0, 0, $nMonat, 1, $nJahr));
         $nTag += $nTage;
         if ($nTag > $nAnzahlTageProMonat) {
-            $nTag = $nTag - $nAnzahlTageProMonat;
-            $nMonat += 1;
+            $nTag -= $nAnzahlTageProMonat;
+            ++$nMonat;
             if ($nMonat > 12) {
                 $nMonat = 1;
-                $nJahr += 1;
+                ++$nJahr;
             }
         }
 
         $nStampEnde = mktime(23, 59, 59, $nMonat, $nTag, $nJahr);
 
-        return array($nStampStart, $nStampEnde);
+        return [$nStampStart, $nStampEnde];
     }
 
-    return array();
+    return [];
 }
 
 /**
@@ -419,7 +492,7 @@ function getJTLVersionDB($bDate = false)
     $nRet     = 0;
     $nVersion = Shop::DB()->query("SELECT nVersion, dAktualisiert FROM tversion", 1);
     if (isset($nVersion->nVersion) && is_numeric($nVersion->nVersion)) {
-        $nRet = intval($nVersion->nVersion);
+        $nRet = (int)$nVersion->nVersion;
     }
     if ($bDate) {
         $nRet = $nVersion->dAktualisiert;
@@ -435,9 +508,16 @@ function getJTLVersionDB($bDate = false)
 function getMaxFileSize($size_str)
 {
     switch (substr($size_str, -1)) {
-        case 'M': case 'm': return (int)$size_str * 1048576;
-        case 'K': case 'k': return (int)$size_str * 1024;
-        case 'G': case 'g': return (int)$size_str * 1073741824;
-        default: return $size_str;
+        case 'M':
+        case 'm':
+            return (int)$size_str * 1048576;
+        case 'K':
+        case 'k':
+            return (int)$size_str * 1024;
+        case 'G':
+        case 'g':
+            return (int)$size_str * 1073741824;
+        default:
+            return $size_str;
     }
 }

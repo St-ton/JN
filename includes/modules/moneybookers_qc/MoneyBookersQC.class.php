@@ -113,11 +113,11 @@ class MoneyBookersQC extends ServerPaymentMethod
         $paymentHash = $this->generateHash($order, 32);
         $cReturnURL  = $this->getReturnURL($order);
 
-        if ($_SESSION['Zahlungsart']->nWaehrendBestellung == 1) {
+        if (isset($_SESSION['Zahlungsart']->nWaehrendBestellung) && $_SESSION['Zahlungsart']->nWaehrendBestellung == 1) {
             $cReturnURL = $this->getNotificationURL($paymentHash);
         }
 
-        $fields = array(
+        $fields = [
             'payment_methods'       => strtoupper($this->mbAbbr),
             'language'              => StringHandler::convertISO2ISO639($_SESSION['cISOSprache']),
             'prepare_only'          => 1,
@@ -139,7 +139,7 @@ class MoneyBookersQC extends ServerPaymentMethod
             'firstname'             => $customer->cVorname,
             'lastname'              => $customer->cNachname,
             'pay_from_email'        => $customer->cMail
-        );
+        ];
 
         if ($this->mbAbbr === 'acc' || $this->mbAbbr === 'vsa' || $this->mbAbbr === 'msc') {
             $fields['wpf_redirect'] = 1;
@@ -148,7 +148,7 @@ class MoneyBookersQC extends ServerPaymentMethod
         $request = $this->postRequest($fields);
 
         // HTTP Error
-        if ($request['status'] == 'error') {
+        if ($request['status'] === 'error') {
             Shop::Smarty()->assign('status', 'error')
                 ->assign('error', Shop::Lang()->get('errorText', 'paymentMethods'));
             // Error Mail
@@ -221,7 +221,7 @@ class MoneyBookersQC extends ServerPaymentMethod
     {
         $status = $args['status'];
 
-        return (($status == MBQC_PENDING) || ($status == MBQC_PROCESSED));
+        return ($status == MBQC_PENDING || $status == MBQC_PROCESSED);
     }
 
     /**
@@ -236,18 +236,18 @@ class MoneyBookersQC extends ServerPaymentMethod
         // Checksum
         $secretWord = $this->getSecretWord();
         $str        = $merchant_id . $transaction_id . strtoupper(md5($secretWord)) . $mb_amount . $mb_currency . $status;
-        if ($str == $secretWord) {
+        if ($str === $secretWord) {
             // nothing sent?
             return false;
-        } elseif (strtoupper(md5($str)) != $md5sig) {
+        } elseif (strtoupper(md5($str)) !== $md5sig) {
             return false;
         }
         // Reciever Email
-        if ($pay_to_email != $this->getRecieverEmail()) {
+        if ($pay_to_email !== $this->getRecieverEmail()) {
             return false;
         }
         // Transaction ID
-        if ($transaction_id != $paymentHash) {
+        if ($transaction_id !== $paymentHash) {
             return false;
         }
 
@@ -259,7 +259,7 @@ class MoneyBookersQC extends ServerPaymentMethod
      */
     public function generatePaymentMethodsSQL()
     {
-        $methods = array(
+        $methods = [
             // Order:
             'wlt' => 'Moneybookers eWallet',
             'acc' => 'All Credit Cards',
@@ -285,7 +285,7 @@ class MoneyBookersQC extends ServerPaymentMethod
             'pwy' => 'Przelewy',
             'slo' => 'Solo',
             'so2' => 'Nordea Solo Finland'
-        );
+        ];
 
         reset($methods);
         $url  = PFAD_GFX . 'MoneyBookersQC/';
@@ -295,27 +295,27 @@ class MoneyBookersQC extends ServerPaymentMethod
             $abbr         = key($methods);
             $title        = current($methods);
             $pathFilename = $path . $abbr . '.gif';
+            $urlFilename  = '';
             if (file_exists($pathFilename)) {
                 $urlFilename = $url . $abbr . '.gif';
-            } else {
-                $urlFilename = '';
             }
 
             echo "
 				INSERT INTO `teinstellungen` VALUES (100, 'zahlungsart_mbqc_" . $abbr . "_min_bestellungen', '0', 'za_mbqc_" . $abbr . "_jtl');
 				INSERT INTO `teinstellungen` VALUES (100, 'zahlungsart_mbqc_" . $abbr . "_min', '0', 'za_mbqc_" . $abbr . "_jtl');
-				INSERT INTO `teinstellungen` VALUES (100, 'zahlungsart_mbqc_" . $abbr . "_max', '0', 'za_mbqc_" . $abbr . "_jtl');
-				
-				INSERT INTO `teinstellungenconf` (kEinstellungenSektion,cName,cBeschreibung,cWertName,cInputTyp,cModulId,nSort,cConf) VALUES (100, '" . $title . "', '', NULL, NULL, 'za_mbqc_" . $abbr . "_jtl', 700, 'N');
-				INSERT INTO `teinstellungenconf` (kEinstellungenSektion,cName,cBeschreibung,cWertName,cInputTyp,cModulId,nSort,cConf) VALUES (100, 'Anzahl Bestellungen n�tig', 'Nur Kunden, die min. soviele Bestellungen bereits durchgef�hrt haben, k�nnen diese Zahlungsart nutzen.', 'zahlungsart_mbqc_" . $abbr . "_min_bestellungen', 'zahl', 'za_mbqc_" . $abbr . "_jtl', 710, 'Y');
-				INSERT INTO `teinstellungenconf` (kEinstellungenSektion,cName,cBeschreibung,cWertName,cInputTyp,cModulId,nSort,cConf) VALUES (100, 'Mindestbestellwert', 'Erst ab diesem Bestellwert kann diese Zahlungsart genutzt werden.', 'zahlungsart_mbqc_" . $abbr . "_min', 'kommazahl', 'za_mbqc_" . $abbr . "_jtl', 720, 'Y');
-				INSERT INTO `teinstellungenconf` (kEinstellungenSektion,cName,cBeschreibung,cWertName,cInputTyp,cModulId,nSort,cConf) VALUES (100, 'Maximaler Bestellwert', 'Nur bis zu diesem Bestellwert wird diese Zahlungsart angeboten. (einschliesslich)', 'zahlungsart_mbqc_" . $abbr . "_max', 'kommazahl', 'za_mbqc_" . $abbr . "_jtl', 730, 'Y');
-				
+				INSERT INTO `teinstellungen` VALUES (100, 'zahlungsart_mbqc_" . $abbr . "_max', '0', 'za_mbqc_" . $abbr . "_jtl');				
+				INSERT INTO `teinstellungenconf` (kEinstellungenSektion,cName,cBeschreibung,cWertName,cInputTyp,cModulId,nSort,cConf) 
+				VALUES (100, '" . $title . "', '', NULL, NULL, 'za_mbqc_" . $abbr . "_jtl', 700, 'N');
+				INSERT INTO `teinstellungenconf` (kEinstellungenSektion,cName,cBeschreibung,cWertName,cInputTyp,cModulId,nSort,cConf) 
+				VALUES (100, 'Anzahl Bestellungen nötig', 'Nur Kunden, die min. soviele Bestellungen bereits durchgeführt haben, können diese Zahlungsart nutzen.', 'zahlungsart_mbqc_" . $abbr . "_min_bestellungen', 'zahl', 'za_mbqc_" . $abbr . "_jtl', 710, 'Y');
+				INSERT INTO `teinstellungenconf` (kEinstellungenSektion,cName,cBeschreibung,cWertName,cInputTyp,cModulId,nSort,cConf) 
+				VALUES (100, 'Mindestbestellwert', 'Erst ab diesem Bestellwert kann diese Zahlungsart genutzt werden.', 'zahlungsart_mbqc_" . $abbr . "_min', 'kommazahl', 'za_mbqc_" . $abbr . "_jtl', 720, 'Y');
+				INSERT INTO `teinstellungenconf` (kEinstellungenSektion,cName,cBeschreibung,cWertName,cInputTyp,cModulId,nSort,cConf) 
+				VALUES (100, 'Maximaler Bestellwert', 'Nur bis zu diesem Bestellwert wird diese Zahlungsart angeboten. (einschliesslich)', 'zahlungsart_mbqc_" . $abbr . "_max', 'kommazahl', 'za_mbqc_" . $abbr . "_jtl', 730, 'Y');
 				INSERT INTO `tmodul` VALUES ('za_mbqc_" . $abbr . "_jtl', '" . $title . "', 'JTL-Software', 'Zahlungsmodul', '', '', '2009-06-19 19:04:00');
-				INSERT INTO `tzahlungsart` (cName,cModulId,cKundengruppen,cZusatzschrittTemplate,cBild,nSort,nActive,cAnbieter) VALUES ('" . $title . "', 'za_mbqc_" . $abbr . "_jtl', '', '', '" . $urlFilename . "', ' . $sort . ', 0, 'Moneybookers');
-				
+				INSERT INTO `tzahlungsart` (cName,cModulId,cKundengruppen,cZusatzschrittTemplate,cBild,nSort,nActive,cAnbieter) 
+				VALUES ('" . $title . "', 'za_mbqc_" . $abbr . "_jtl', '', '', '" . $urlFilename . "', ' . $sort . ', 0, 'Moneybookers');
 				SET @LastID = LAST_INSERT_ID();
-				
 				INSERT INTO `tzahlungsartsprache` VALUES (@LastID, 'ger', '" . $title . "', 'Gebühr');
 				INSERT INTO `tzahlungsartsprache` VALUES (@LastID, 'eng', '" . $title . "', 'Fee');
 			";
@@ -327,16 +327,16 @@ class MoneyBookersQC extends ServerPaymentMethod
      * @param array $args_arr
      * @return bool
      */
-    public function isValidIntern($args_arr = array())
+    public function isValidIntern($args_arr = [])
     {
-        if (strlen($this->getRecieverEmail()) == 0) {
-            ZahlungsLog::add($this->moduleID, "Pflichtparameter 'RecieverEmail' ist nicht gesetzt!", null, LOGLEVEL_ERROR);
+        if (strlen($this->getRecieverEmail()) === 0) {
+            ZahlungsLog::add($this->moduleID, 'Pflichtparameter "RecieverEmail" ist nicht gesetzt!', null, LOGLEVEL_ERROR);
 
             return false;
         }
 
-        if (strlen($this->getSecretWord()) == 0) {
-            ZahlungsLog::add($this->moduleID, "Pflichtparameter 'SecretWord' ist nicht gesetzt!", null, LOGLEVEL_ERROR);
+        if (strlen($this->getSecretWord()) === 0) {
+            ZahlungsLog::add($this->moduleID, 'Pflichtparameter "SecretWord" ist nicht gesetzt!', null, LOGLEVEL_ERROR);
 
             return false;
         }

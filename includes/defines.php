@@ -24,12 +24,7 @@ ifndef('PROFILE_PLUGINS', false);
 ifndef('PROFILE_SHOP', false);
 ifndef('PROFILE_QUERIES', false);
 ifndef('PROFILE_QUERIES_ECHO', false);
-ifndef('SHOW_PAGE_CACHE', false);
 ifndef('IO_LOG_CONSOLE', false);
-// PHP memory_limit work around
-if (intval(str_replace('M', '', ini_get('memory_limit'))) < 64) {
-    ini_set('memory_limit', '64M');
-}
 ini_set('session.use_trans_sid', 0);
 // Logging (in logs/) 0 => aus, 1 => nur errors, 2 => errors, notifications, 3 => errors, notifications, debug
 ifndef('ES_LOGGING', 1);
@@ -156,10 +151,10 @@ ifndef('BILD_KEIN_HERSTELLERBILD_VORHANDEN', PFAD_GFX . 'keinBild.gif');
 ifndef('BILD_KEIN_MERKMALBILD_VORHANDEN', PFAD_GFX . 'keinBild.gif');
 ifndef('BILD_KEIN_MERKMALWERTBILD_VORHANDEN', PFAD_GFX . 'keinBild_kl.gif');
 ifndef('BILD_UPLOAD_ZUGRIFF_VERWEIGERT', PFAD_GFX . 'keinBild.gif');
+//MediaImage Regex
+ifndef('MEDIAIMAGE_REGEX', '/^media\/image\/(?P<type>product|category|variation|manufacturer)\/(?P<id>\d+)\/(?P<size>xs|sm|md|lg)\/(?P<name>[a-zA-Z0-9\-_]+)(?:(?:~(?P<number>\d+))?)\.(?P<ext>jpg|jpeg|png|gif)$/');
 // Suchcache Lebensdauer in Minuten nach letzter Artikeländerung durch JTL-Wawi
 ifndef('SUCHCACHE_LEBENSDAUER', 60);
-// Customer max order count
-ifndef('CUSTOMER_ACCOUNT_MAX_ORDERS', 50);
 // Steuersatz Standardland OVERRIDE - setzt ein anderes Steuerland, als im Shop angegeben (upper case, ISO 3166-2)
 // ifndef('STEUERSATZ_STANDARD_LAND', 'DE')
 ifndef('JTLLOG_MAX_LOGSIZE', 200000);
@@ -167,6 +162,15 @@ ifndef('JTLLOG_MAX_LOGSIZE', 200000);
 ifndef('PCLZIP_TEMPORARY_DIR', PFAD_ROOT . PFAD_COMPILEDIR);
 
 ifndef('IMAGE_PRELOAD_LIMIT', 10);
+//when the shop has up to n categories, all category data will be loaded by KategorieHelper::combinedGetAll()
+//with more then n categories, some db fields will only be selected if the corresponding options are active
+ifndef('CATEGORY_FULL_LOAD_LIMIT', 10000);
+ifndef('CATEGORY_FULL_LOAD_MAX_LEVEL', 3);
+//maximum number of entries in category filter, -1 for no limit
+ifndef('CATEGORY_FILTER_ITEM_LIMIT', -1);
+ifndef('PRODUCT_LIST_SHOW_RATINGS', false);
+ifndef('IMAGE_CLEANUP_LIMIT', 50);
+ifndef('OBJECT_CACHE_DIR', PFAD_ROOT . PFAD_COMPILEDIR . 'filecache/');
 
 /**
  * @param string     $constant
@@ -247,5 +251,5 @@ function shop_writeable_paths()
  */
 
 // Static defines (do not edit)
-require_once dirname(__FILE__) . '/defines_inc.php';
-require_once dirname(__FILE__) . '/hooks_inc.php';
+require_once __DIR__ . '/defines_inc.php';
+require_once __DIR__ . '/hooks_inc.php';

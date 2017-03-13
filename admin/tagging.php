@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/admininclude.php';
+require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('MODULE_PRODUCTTAGS_VIEW', true, true);
 
@@ -15,12 +15,13 @@ setzeSprache();
 $cHinweis          = '';
 $cFehler           = '';
 $step              = 'uebersicht';
-$settingsIDs       = array(427, 428, 431, 433, 434, 435, 430);
+$settingsIDs       = [427, 428, 431, 433, 434, 435, 430];
 // Tabs
 if (strlen(verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', verifyGPDataString('tab'));
 }
-if (isset($_POST['tagging']) && intval($_POST['tagging']) === 1 && validateToken()) { //Formular wurde abgeschickt
+if (isset($_POST['tagging']) && (int)$_POST['tagging'] === 1 && validateToken()) {
+    //Formular wurde abgeschickt
     if (!isset($_POST['delete'])) {
         if (is_array($_POST['kTagAll']) && count($_POST['kTagAll']) > 0) {
             $cSQLDel = ' IN (';
@@ -52,10 +53,16 @@ if (isset($_POST['tagging']) && intval($_POST['tagging']) === 1 && validateToken
             if (is_array($_POST['nAktiv'])) {
                 foreach ($_POST['nAktiv'] as $i => $nAktiv) {
                     $oTag = Shop::DB()->select('ttag', 'kTag', (int)$nAktiv);
-                    Shop::DB()->delete('tseo', array('cKey', 'kKey', 'kSprache'), array('kTag', (int)$nAktiv, (int)$_SESSION['kSprache']));
+                    Shop::DB()->delete(
+                        'tseo',
+                        ['cKey', 'kKey', 'kSprache'],
+                        ['kTag', (int)$nAktiv, (int)$_SESSION['kSprache']]
+                    );
                     // Aktivierten Tag in tseo eintragen
                     $oSeo           = new stdClass();
-                    $oSeo->cSeo     = (isset($oTag->cName)) ? checkSeo(getSeo($oTag->cName)) : '';
+                    $oSeo->cSeo     = isset($oTag->cName)
+                        ? checkSeo(getSeo($oTag->cName))
+                        : '';
                     $oSeo->cKey     = 'kTag';
                     $oSeo->kKey     = $nAktiv;
                     $oSeo->kSprache = $_SESSION['kSprache'];
@@ -71,14 +78,17 @@ if (isset($_POST['tagging']) && intval($_POST['tagging']) === 1 && validateToken
         }
         // Eintragen in die Mapping Tabelle
         $Tags = Shop::DB()->query(
-            "SELECT ttag.kTag,ttag.cName,ttag.nAktiv,sum(ttagartikel.nAnzahlTagging) AS Anzahl FROM ttag
-                JOIN ttagartikel ON ttagartikel.kTag = ttag.kTag
-                WHERE ttag.kSprache = " . (int)$_SESSION['kSprache'] . " GROUP BY ttag.cName
+            "SELECT ttag.kTag, ttag.cName, ttag.nAktiv, sum(ttagartikel.nAnzahlTagging) AS Anzahl 
+                FROM ttag
+                JOIN ttagartikel 
+                    ON ttagartikel.kTag = ttag.kTag
+                WHERE ttag.kSprache = " . (int)$_SESSION['kSprache'] . " 
+                GROUP BY ttag.cName
                 ORDER BY Anzahl DESC", 2
         );
         if (is_array($Tags) && count($Tags) > 0) {
             foreach ($Tags as $tag) {
-                if ($tag->cName != $_POST['mapping_' . $tag->kTag]) {
+                if ($tag->cName !== $_POST['mapping_' . $tag->kTag]) {
                     if (strlen($_POST['mapping_' . $tag->kTag]) > 0) {
                         $tagmapping_obj           = new stdClass();
                         $tagmapping_obj->kSprache = (int)$_SESSION['kSprache'];
@@ -104,14 +114,24 @@ if (isset($_POST['tagging']) && intval($_POST['tagging']) === 1 && validateToken
                                                 AND kArtikel = " . (int)$tagmapping->kArtikel, 3
                                     ) > 0
                                 ) {
-                                    Shop::DB()->delete('ttagartikel', ['kTag', 'kArtikel'], [(int)$tag->kTag, (int)$tagmapping->kArtikel]);
+                                    Shop::DB()->delete(
+                                        'ttagartikel',
+                                        ['kTag', 'kArtikel'],
+                                        [(int)$tag->kTag, (int)$tagmapping->kArtikel]
+                                    );
                                 } else {
                                     $upd = new stdClass();
                                     $upd->kTag = (int)$Neuertag->kTag;
-                                    Shop::DB()->update('ttagartikel', ['kTag', 'kArtikel'], [(int)$tag->kTag, (int)$tagmapping->kArtikel], $upd);
+                                    Shop::DB()->update(
+                                        'ttagartikel',
+                                        ['kTag', 'kArtikel'],
+                                        [(int)$tag->kTag, (int)$tagmapping->kArtikel],
+                                        $upd
+                                    );
                                 }
                             }
-                            $cHinweis .= 'Der Tag "' . $tagmapping_obj->cName . '" wurde erfolgreich auf "' . $tagmapping_obj->cNameNeu . '" gemappt.<br />';
+                            $cHinweis .= 'Der Tag "' . $tagmapping_obj->cName . '" wurde erfolgreich auf "' .
+                                $tagmapping_obj->cNameNeu . '" gemappt.<br />';
                         }
 
                         unset($tagmapping_obj);
@@ -133,7 +153,8 @@ if (isset($_POST['tagging']) && intval($_POST['tagging']) === 1 && validateToken
                     Shop::DB()->query(
                         "DELETE ttag, tseo
                             FROM ttag
-                            LEFT JOIN tseo ON tseo.cKey = 'kTag'
+                            LEFT JOIN tseo 
+                                ON tseo.cKey = 'kTag'
                                 AND tseo.kKey = ttag.kTag
                             WHERE ttag.kTag = " . $kTag, 4
                     );
@@ -149,7 +170,7 @@ if (isset($_POST['tagging']) && intval($_POST['tagging']) === 1 && validateToken
             $cFehler .= 'Bitte w&auml;hlen Sie mindestens einen Tag aus.<br />';
         }
     }
-} elseif (isset($_POST['tagging']) && intval($_POST['tagging']) === 2 && validateToken()) { // Mappinglist
+} elseif (isset($_POST['tagging']) && (int)$_POST['tagging'] === 2 && validateToken()) { // Mappinglist
     if (isset($_POST['delete'])) {
         if (is_array($_POST['kTagMapping'])) {
             foreach ($_POST['kTagMapping'] as $kTagMapping) {
@@ -167,7 +188,8 @@ if (isset($_POST['tagging']) && intval($_POST['tagging']) === 1 && validateToken
             $cFehler .= 'Bitte w&auml;hlen Sie mindestens ein Mapping aus.<br />';
         }
     }
-} elseif ((isset($_POST['a']) && $_POST['a'] === 'saveSettings') || isset($_POST['tagging']) && intval($_POST['tagging']) === 3) { // Einstellungen
+} elseif ((isset($_POST['a']) && $_POST['a'] === 'saveSettings') ||
+    (isset($_POST['tagging']) && (int)$_POST['tagging'] === 3)) { // Einstellungen
     $cHinweis .= saveAdminSettings($settingsIDs, $_POST);
 }
 // Tagdetail
@@ -179,7 +201,8 @@ if (verifyGPCDataInteger('kTag') > 0 && verifyGPCDataInteger('tagdetail') === 1)
         ->setItemCount($nTagDetailAnzahl)
         ->assemble();
     // Tag von einem odere mehreren Artikeln loesen
-    if (!empty($_POST['kArtikel_arr']) && is_array($_POST['kArtikel_arr']) && count($_POST['kArtikel_arr']) && verifyGPCDataInteger('detailloeschen') === 1) {
+    if (!empty($_POST['kArtikel_arr']) && is_array($_POST['kArtikel_arr']) &&
+        count($_POST['kArtikel_arr']) && verifyGPCDataInteger('detailloeschen') === 1) {
         if (loescheTagsVomArtikel($_POST['kArtikel_arr'], verifyGPCDataInteger('kTag'))) {
             $cHinweis = 'Der Tag wurde erfolgreich bei Ihren markierten Artikeln gel&ouml;scht.';
         } else {
@@ -187,11 +210,17 @@ if (verifyGPCDataInteger('kTag') > 0 && verifyGPCDataInteger('tagdetail') === 1)
             $cFehler = 'Fehler: Ihre markierten Artikel zum Produkttag konnten nicht gel&ouml;scht werden.';
         }
     }
-    $oTagArtikel_arr = holeTagDetail(verifyGPCDataInteger('kTag'), (int)$_SESSION['kSprache'], ' LIMIT ' . $oPagiTagDetail->getLimitSQL());
+    $oTagArtikel_arr = holeTagDetail(
+        verifyGPCDataInteger('kTag'),
+        (int)$_SESSION['kSprache'],
+        ' LIMIT ' . $oPagiTagDetail->getLimitSQL()
+    );
     $smarty->assign('oTagArtikel_arr', $oTagArtikel_arr)
         ->assign('oPagiTagDetail', $oPagiTagDetail)
         ->assign('kTag', verifyGPCDataInteger('kTag'))
-        ->assign('cTagName', (isset($oTagArtikel_arr[0]->cName)) ? $oTagArtikel_arr[0]->cName : '');
+        ->assign('cTagName', isset($oTagArtikel_arr[0]->cName)
+            ? $oTagArtikel_arr[0]->cName
+            : '');
 } else {
     // Anzahl Tags fuer diese Sprache
     $nAnzahlTags = Shop::DB()->query(
@@ -216,19 +245,21 @@ if (verifyGPCDataInteger('kTag') > 0 && verifyGPCDataInteger('tagdetail') === 1)
 
     $Sprachen = gibAlleSprachen();
     $Tags     = Shop::DB()->query("
-        SELECT ttag.kTag,ttag.cName,ttag.nAktiv,sum(ttagartikel.nAnzahlTagging) AS Anzahl FROM ttag
-            JOIN ttagartikel ON ttagartikel.kTag = ttag.kTag
+        SELECT ttag.kTag, ttag.cName, ttag.nAktiv, sum(ttagartikel.nAnzahlTagging) AS Anzahl 
+            FROM ttag
+            JOIN ttagartikel 
+                ON ttagartikel.kTag = ttag.kTag
             WHERE ttag.kSprache = " . (int)$_SESSION['kSprache'] . "
             GROUP BY ttag.cName
             ORDER BY Anzahl DESC
-            LIMIT " . $oPagiTags->getLimitSQL(),
-        2);
+            LIMIT " . $oPagiTags->getLimitSQL(), 2
+    );
     $Tagmapping = Shop::DB()->query("
         SELECT *
             FROM ttagmapping
             WHERE kSprache = " . (int)$_SESSION['kSprache'] . "
-            LIMIT " . $oPagiTagMappings->getLimitSQL(),
-        2);
+            LIMIT " . $oPagiTagMappings->getLimitSQL(), 2
+    );
 
     // Config holen
     $oConfig_arr = Shop::DB()->query(
@@ -239,9 +270,23 @@ if (verifyGPCDataInteger('kTag') > 0 && verifyGPCDataInteger('tagdetail') === 1)
     );
     $configCount = count($oConfig_arr);
     for ($i = 0; $i < $configCount; $i++) {
-        $oConfig_arr[$i]->ConfWerte = Shop::DB()->selectAll('teinstellungenconfwerte', 'kEinstellungenConf', (int)$oConfig_arr[$i]->kEinstellungenConf, '*', 'nSort');
-        $oSetValue = Shop::DB()->select('teinstellungen', 'kEinstellungenSektion', (int)$oConfig_arr[$i]->kEinstellungenSektion, 'cName', $oConfig_arr[$i]->cWertName);
-        $oConfig_arr[$i]->gesetzterWert = (isset($oSetValue->cWert)) ? $oSetValue->cWert : null;
+        $oConfig_arr[$i]->ConfWerte = Shop::DB()->selectAll(
+            'teinstellungenconfwerte',
+            'kEinstellungenConf',
+            (int)$oConfig_arr[$i]->kEinstellungenConf,
+            '*',
+            'nSort'
+        );
+        $oSetValue = Shop::DB()->select(
+            'teinstellungen',
+            'kEinstellungenSektion',
+            (int)$oConfig_arr[$i]->kEinstellungenSektion,
+            'cName',
+            $oConfig_arr[$i]->cWertName
+        );
+        $oConfig_arr[$i]->gesetzterWert = isset($oSetValue->cWert)
+            ? $oSetValue->cWert
+            : null;
     }
 
     $smarty->assign('oConfig_arr', $oConfig_arr)

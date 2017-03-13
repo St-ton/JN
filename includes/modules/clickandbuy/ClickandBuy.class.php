@@ -37,44 +37,44 @@ class ClickandBuy extends PaymentMethod
     }
 
     /**
-     * @return null
+     * @return string|null
      */
     private function getMerchantId()
     {
-        $conf = Shop::getSettings(array(CONF_ZAHLUNGSARTEN));
+        $conf = Shop::getSettings([CONF_ZAHLUNGSARTEN]);
 
-        return (isset($conf['zahlungsarten']['zahlungsart_clickandbuy_merchant_id'])) ?
-            $conf['zahlungsarten']['zahlungsart_clickandbuy_merchant_id'] :
-            null;
+        return isset($conf['zahlungsarten']['zahlungsart_clickandbuy_merchant_id'])
+            ? $conf['zahlungsarten']['zahlungsart_clickandbuy_merchant_id']
+            :             null;
     }
 
     /**
-     * @return null
+     * @return string|null
      */
     private function getProjectId()
     {
-        $conf = Shop::getSettings(array(CONF_ZAHLUNGSARTEN));
+        $conf = Shop::getSettings([CONF_ZAHLUNGSARTEN]);
 
-        return (isset($conf['zahlungsarten']['zahlungsart_clickandbuy_project_id'])) ?
-            $conf['zahlungsarten']['zahlungsart_clickandbuy_project_id'] :
-            null;
+        return isset($conf['zahlungsarten']['zahlungsart_clickandbuy_project_id'])
+            ? $conf['zahlungsarten']['zahlungsart_clickandbuy_project_id']
+            : null;
     }
 
     /**
-     * @return null
+     * @return string|null
      */
     private function getSecretKey()
     {
-        $conf = Shop::getSettings(array(CONF_ZAHLUNGSARTEN));
+        $conf = Shop::getSettings([CONF_ZAHLUNGSARTEN]);
 
-        return (isset($conf['zahlungsarten']['zahlungsart_clickandbuy_secretkey_id'])) ?
-            $conf['zahlungsarten']['zahlungsart_clickandbuy_secretkey_id'] :
-            null;
+        return isset($conf['zahlungsarten']['zahlungsart_clickandbuy_secretkey_id'])
+            ? $conf['zahlungsarten']['zahlungsart_clickandbuy_secretkey_id']
+            : null;
     }
 
     /**
-     * @param $cProjectID
-     * @param $cSecretKey
+     * @param string $cProjectID
+     * @param string $cSecretKey
      * @return string
      */
     private function generateToken($cProjectID, $cSecretKey)
@@ -82,9 +82,8 @@ class ClickandBuy extends PaymentMethod
         $nTimestamp  = gmdate('YmdHis');
         $cHash       = $cProjectID . '::' . $cSecretKey . '::' . $nTimestamp;
         $cToBeHashed = strtoupper(sha1($cHash));
-        $cToken      = $nTimestamp . '::' . $cToBeHashed;
 
-        return $cToken;
+        return $nTimestamp . '::' . $cToBeHashed;
     }
 
     /**
@@ -99,7 +98,7 @@ class ClickandBuy extends PaymentMethod
         $cAuthentication_arr['projectID']  = trim($this->getProjectId());
         $cAuthentication_arr['secretKey']  = trim($this->getSecretKey());
 
-        if (CAB_D_MODE == 1) {
+        if (CAB_D_MODE === 1) {
             ZahlungsLog::add('za_clickandbuy_jtl', 'cAuthentication_arr: ' . print_r($cAuthentication_arr, 1));
         }
         // failureURL
@@ -125,7 +124,7 @@ class ClickandBuy extends PaymentMethod
         //$cDetails_arr['consumerCountry'] = strtolower($customer->cLand);
         $cDetails_arr = $this->removeEmptyTag($cDetails_arr);
 
-        if (CAB_D_MODE == 1) {
+        if (CAB_D_MODE === 1) {
             ZahlungsLog::add('za_clickandbuy_jtl', 'cDetails_arr: ' . print_r($cDetails_arr, 1));
         }
         // Rechnungsinformationen
@@ -147,9 +146,9 @@ class ClickandBuy extends PaymentMethod
         $cBillingAddress_arr['address']['state']         = utf8_encode($customer->cBundesland);
         $cBillingAddress_arr['address']['addressSuffix'] = '';
 
-        $cBillingAddress_arr = $this->removeEmptyTag($cBillingAddress_arr, array('title'));
+        $cBillingAddress_arr = $this->removeEmptyTag($cBillingAddress_arr, ['title']);
 
-        if (CAB_D_MODE == 1) {
+        if (CAB_D_MODE === 1) {
             ZahlungsLog::add('za_clickandbuy_jtl', 'cBillingAddress_arr: ' . print_r($cBillingAddress_arr, 1));
         }
 
@@ -170,7 +169,7 @@ class ClickandBuy extends PaymentMethod
             if (strlen($order->Lieferadresse->cLand) < 3) {
                 //$cLandISO = strtolower($order->Lieferadresse->cLand);
                 $cLandISO = strtoupper($order->Lieferadresse->cLand);
-            } elseif (landISO($order->Lieferadresse->cLand) != 'noISO') {
+            } elseif (landISO($order->Lieferadresse->cLand) !== 'noISO') {
                 //$cLandISO = strtolower(landISO($order->Lieferadresse->cLand));
                 $cLandISO = strtoupper(landISO($order->Lieferadresse->cLand));
             }
@@ -185,14 +184,14 @@ class ClickandBuy extends PaymentMethod
             $cShippingAddress_arr['address']['country']           = $cLandISO;
             $cShippingAddress_arr['address']['state']             = utf8_encode($order->Lieferadresse->cBundesland);
             $cShippingAddress_arr['address']['addressSuffix']     = '';
-            $cShippingAddress_arr                                 = $this->removeEmptyTag($cShippingAddress_arr, array('title', 'firstName'));
+            $cShippingAddress_arr                                 = $this->removeEmptyTag($cShippingAddress_arr, ['title', 'firstName']);
 
-            if (CAB_D_MODE == 1) {
+            if (CAB_D_MODE === 1) {
                 ZahlungsLog::add('za_clickandbuy_jtl', 'cShippingAddress_arr: ' . print_r($cShippingAddress_arr, 1));
             }
         }
         // Warenkorbinformationen
-        $cItem_arr = array();
+        $cItem_arr = [];
         foreach ($order->Positionen as $i => $oBestellPos) {
             $cItem_arr[$i]['itemType']               = 'item' . $i . 'Item';
             $cItem_arr[$i]['itemDescription']        = utf8_encode(trim($oBestellPos->cName));
@@ -210,8 +209,11 @@ class ClickandBuy extends PaymentMethod
             header('Location: ' . $cFailURL);
             exit();
         } else {
-            if (isset($cRequestResult_arr['values']['transaction']['transactionID']) && strlen($cRequestResult_arr['values']['transaction']['transactionID']) > 0) {
-                $order->cKommentar .= "\n" . "ClickandBuy Transaction ID: " . $cRequestResult_arr['values']['transaction']['transactionID'];
+            if (isset($cRequestResult_arr['values']['transaction']['transactionID']) &&
+                strlen($cRequestResult_arr['values']['transaction']['transactionID']) > 0
+            ) {
+                $order->cKommentar .= "\n" . "ClickandBuy Transaction ID: " .
+                    $cRequestResult_arr['values']['transaction']['transactionID'];
                 $_upd             = new stdClass();
                 $_upd->cKommentar = $order->cKommentar;
                 Shop::DB()->update('tbestellung', 'kBestellung', (int)$order->kBestellung, $_upd);
@@ -233,39 +235,37 @@ class ClickandBuy extends PaymentMethod
     private function payRequest($cAuthentication_arr, $cDetails_arr, $cShippingType, $cShippingAddress_arr, $cBillingType, $cBillingAddress_arr, $cItem_arr)
     {
         $cToken    = $this->generateToken($cAuthentication_arr['projectID'], $cAuthentication_arr['secretKey']);
-        $amountArr = array(
+        $amountArr = [
             'amount'   => $cDetails_arr['amount'],
             'currency' => $cDetails_arr['currency']
-        );
-        $shippingAddressArr = array(
+        ];
+        $shippingAddressArr = [
             $cShippingType => $cShippingAddress_arr
-        );
-        $billingAddressArr = array(
+        ];
+        $billingAddressArr = [
             $cBillingType => $cBillingAddress_arr
-        );
-        $itemListArr = array();
+        ];
+        $itemListArr = [];
         if (count($cItem_arr) > 0) {
             foreach ($cItem_arr as $cItem) {
-                array_push(
-                    $itemListArr,
-                    new soapval(
-                        'item', false,
-                        array(
-                            'itemType'    => 'ITEM',
-                            'description' => $cItem['itemDescription'],
-                            'quantity'    => $cItem['itemQuantity'],
-                            new soapval('unitPrice', false, array('amount' => $cItem['itemUnitPriceAmount'], 'currency' => $cItem['itemUnitPriceCurrency'])),
-                            new soapval('totalPrice', false, array('amount' => $cItem['itemTotalPriceAmount'], 'currency' => $cItem['itemTotalPriceCurrency']))
-                        )
-                    )
+                $itemListArr[] = new soapval(
+                    'item',
+                    false,
+                    [
+                        'itemType'    => 'ITEM',
+                        'description' => $cItem['itemDescription'],
+                        'quantity'    => $cItem['itemQuantity'],
+                        new soapval('unitPrice', false, ['amount' => $cItem['itemUnitPriceAmount'], 'currency' => $cItem['itemUnitPriceCurrency']]),
+                        new soapval('totalPrice', false, ['amount' => $cItem['itemTotalPriceAmount'], 'currency' => $cItem['itemTotalPriceCurrency']])
+                    ]
                 );
             }
         }
-        $orderDetailsArr = array(
+        $orderDetailsArr = [
             'text'     => $cDetails_arr['orderDescription'],
             'itemList' => $itemListArr
-        );
-        $detailsArr = array(
+        ];
+        $detailsArr      = [
             'amount'            => $amountArr,
             'basketRisk'        => $cDetails_arr['basketRisk'],
             'clientRisk'        => $cDetails_arr['clientRisk'],
@@ -281,23 +281,22 @@ class ClickandBuy extends PaymentMethod
             'orderDetails'      => $orderDetailsArr,
             'shipping'          => $shippingAddressArr,
             'billing'           => $billingAddressArr
-        );
+        ];
         $detailsArr        = $this->removeEmptyTag($detailsArr);
-        $authenticationArr = array(
+        $authenticationArr = [
             'merchantID' => $cAuthentication_arr['merchantID'],
             'projectID'  => $cAuthentication_arr['projectID'],
             'token'      => $cToken
-        );
-        $reqParam = array(
+        ];
+        $reqParam          = [
             'authentication' => $authenticationArr,
             'details'        => $detailsArr
-        );
-        if (CAB_D_MODE == 1) {
-            ZahlungsLog::add('za_clickandbuy_jtl', "doSoapRequest: " . print_r($authenticationArr, 1));
+        ];
+        if (CAB_D_MODE === 1) {
+            ZahlungsLog::add('za_clickandbuy_jtl', 'doSoapRequest: ' . print_r($authenticationArr, 1));
         }
-        $nusoapResult = $this->doSoapRequest("payRequest_Request", $reqParam);
 
-        return $nusoapResult;
+        return $this->doSoapRequest('payRequest_Request', $reqParam);
     }
 
     /**
@@ -309,36 +308,35 @@ class ClickandBuy extends PaymentMethod
     private function statusRequest($cAuthentication_arr, $statusType, $ids)
     {
         $cToken            = $this->generateToken($cAuthentication_arr['projectID'], $cAuthentication_arr['secretKey']);
-        $authenticationArr = array(
+        $authenticationArr = [
             'merchantID' => $cAuthentication_arr['merchantID'],
             'projectID'  => $cAuthentication_arr['projectID'],
             'token'      => $cToken
-        );
-        $idListArr = array();
+        ];
+        $idListArr = [];
         if (count($ids) > 0) {
             // Fill idListArr
             foreach ($ids as $key => $value) {
-                array_push($idListArr, new soapval($statusType, false, $value));
+                $idListArr[] = new soapval($statusType, false, $value);
             }
         }
-        $detailsArr = array(
+        $detailsArr = [
             $statusType . 'List' => $idListArr
-        );
-        $reqParam = array(
+        ];
+        $reqParam   = [
             'authentication' => $authenticationArr,
             'details'        => $detailsArr
-        );
-        $nusoapResult = $this->doSoapRequest('statusRequest_Request', $reqParam);
+        ];
 
-        return $nusoapResult;
+        return $this->doSoapRequest('statusRequest_Request', $reqParam);
     }
 
     /**
-     * @param       $arr
+     * @param array $arr
      * @param array $excludes
      * @return mixed
      */
-    private function removeEmptyTag($arr, $excludes = array())
+    private function removeEmptyTag($arr, $excludes = [])
     {
         foreach ($arr as $key => $value) {
             if (in_array($key, $excludes)) {
@@ -443,7 +441,7 @@ class ClickandBuy extends PaymentMethod
             Jtllog::writeLog('verifyNotification paymentHash: ' . $paymentHash, JTLLOG_LEVEL_DEBUG, 'ClickandBuy');
         }
 
-        $ids                = array('externalID1' => $paymentHash);
+        $ids                = ['externalID1' => $paymentHash];
         $cRequestResult_arr = $this->statusRequest($cAuthentication_arr, 'externalID', $ids);
 
         if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
@@ -455,23 +453,20 @@ class ClickandBuy extends PaymentMethod
             writeLog(CAB_D_PFAD, 'verifyNotification args: ' . print_r($args, 1), 1);
         }
 
-        if (isset($cRequestResult_arr['success']) && $cRequestResult_arr['success']) {
-            if (isset($cRequestResult_arr['values']['transactionList']['transaction']['transactionStatus']) && $cRequestResult_arr['values']['transactionList']['transaction']['transactionStatus'] === 'SUCCESS') {
-                return true;
-            }
-        }
-
-        return false;
+        return (isset($cRequestResult_arr['success'], $cRequestResult_arr['values']['transactionList']['transaction']['transactionStatus']) &&
+            $cRequestResult_arr['success'] &&
+            $cRequestResult_arr['values']['transactionList']['transaction']['transactionStatus'] === 'SUCCESS'
+        );
     }
 
     /**
      * @param array $args_arr
      * @return bool
      */
-    public function isValidIntern($args_arr = array())
+    public function isValidIntern($args_arr = [])
     {
         // Authentifikations Parameter
-        $cAuthentication_arr               = array();
+        $cAuthentication_arr               = [];
         $cAuthentication_arr['merchantID'] = $this->getMerchantId();
         $cAuthentication_arr['projectID']  = $this->getProjectId();
         $cAuthentication_arr['secretKey']  = $this->getSecretKey();

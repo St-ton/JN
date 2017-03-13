@@ -12,14 +12,14 @@ class ContentAuthor
     use SingletonTrait;
 
     /**
-     * @param string $realm
-     * @param int $contentID
-     * @param mixed int|null $authorID
-     * @return mixed int|boolean
+     * @param string   $realm
+     * @param int      $contentID
+     * @param int|null $authorID
+     * @return int|boolean
      */
     public function setAuthor($realm, $contentID, $authorID = null)
     {
-        if (!isset($authorID) || (int)$authorID === 0) {
+        if ($authorID === null || (int)$authorID === 0) {
             $account = $GLOBALS['oAccount']->account();
 
             if ($account !== false) {
@@ -63,10 +63,12 @@ class ContentAuthor
                     AND COALESCE(tadminlogin.dGueltigBis, NOW()) >= NOW()' : '';
 
         $author  = Shop::DB()->query(
-            "SELECT tcontentauthor.kContentAuthor, tcontentauthor.cRealm, tcontentauthor.kAdminlogin, tcontentauthor.kContentId,
-                    tadminlogin.cName, tadminlogin.cMail
+            "SELECT tcontentauthor.kContentAuthor, tcontentauthor.cRealm, 
+                tcontentauthor.kAdminlogin, tcontentauthor.kContentId,
+                tadminlogin.cName, tadminlogin.cMail
                 FROM tcontentauthor
-                INNER JOIN tadminlogin ON tadminlogin.kAdminlogin = tcontentauthor.kAdminlogin
+                INNER JOIN tadminlogin 
+                    ON tadminlogin.kAdminlogin = tcontentauthor.kAdminlogin
                 WHERE tcontentauthor.cRealm = '" . $realm . "'
                     AND tcontentauthor.kContentId = " . (int)$contentID . "
                     $filter", 1
@@ -74,11 +76,12 @@ class ContentAuthor
 
         if (is_object($author) && (int)$author->kAdminlogin > 0) {
             $attribs = Shop::DB()->query(
-                "SELECT tadminloginattribut.kAttribut, tadminloginattribut.cName, tadminloginattribut.cAttribValue, tadminloginattribut.cAttribText
+                "SELECT tadminloginattribut.kAttribut, tadminloginattribut.cName, 
+                    tadminloginattribut.cAttribValue, tadminloginattribut.cAttribText
                     FROM tadminloginattribut
                     WHERE tadminloginattribut.kAdminlogin = " . (int)$author->kAdminlogin, 2
             );
-            $author->extAttribs = array();
+            $author->extAttribs = [];
             foreach ($attribs as $attrib) {
                 $author->extAttribs[$attrib->cName] = $attrib;
             }
@@ -93,7 +96,8 @@ class ContentAuthor
      */
     public function getPossibleAuthors(array $adminRights = null)
     {
-        if (isset($adminRights) && is_array($adminRights)) {
+        $filter = '';
+        if ($adminRights !== null && is_array($adminRights)) {
             $filter = "AND (tadminlogin.kAdminlogingruppe = 1
                         OR EXISTS (
                             SELECT 1 
@@ -101,8 +105,6 @@ class ContentAuthor
                             WHERE tadminrechtegruppe.kAdminlogingruppe = tadminlogin.kAdminlogingruppe
                                 AND tadminrechtegruppe.cRecht IN ('" . implode("', '", $adminRights) . "')
                         ))";
-        } else {
-            $filter = '';
         }
 
         return Shop::DB()->query(

@@ -4,21 +4,18 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-require_once dirname(__FILE__) . '/syncinclude.php';
-// mail tools
+require_once __DIR__ . '/syncinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
-// xml lib
 require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.SimpleXML.php';
-// payment
 require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
-
 
 if (auth()) {
     checkFile();
-    if (isset($_POST['kBestellung']) && isset($_POST['dRechnungErstellt']) && isset($_POST['kSprache'])) {
+    if (isset($_POST['kBestellung'], $_POST['dRechnungErstellt'], $_POST['kSprache'])) {
         handleData($_POST['kBestellung'], $_POST['dRechnungErstellt'], $_POST['kSprache']);
     } else {
-        pushError("Invoice Auth: POST-Parameter konnten nicht verarbeitet werden (kBestellung: {$_POST['kBestellung']}, dRechnungErstellt: {$_POST['dRechnungErstellt']}, kSprache: {$_POST['kSprache']}).");
+        pushError("Invoice Auth: POST-Parameter konnten nicht verarbeitet werden " .
+            "(kBestellung: {$_POST['kBestellung']}, dRechnungErstellt: {$_POST['dRechnungErstellt']}, kSprache: {$_POST['kSprache']}).");
     }
 } else {
     pushError("Invoice Auth: Anmeldung fehlgeschlagen.");
@@ -31,15 +28,14 @@ if (auth()) {
  */
 function handleData($kBestellung, $dRechnungErstellt, $kSprache)
 {
-    $kBestellung = intval($kBestellung);
-    $kSprache    = intval($kSprache);
-
+    $kBestellung = (int)$kBestellung;
+    $kSprache    = (int)$kSprache;
     if ($kBestellung > 0 && $kSprache > 0) {
         $oBestellung = Shop::DB()->query(
             "SELECT tbestellung.kBestellung, tbestellung.fGesamtsumme, tzahlungsart.cModulId
                 FROM tbestellung
                 LEFT JOIN tzahlungsart
-                ON tbestellung.kZahlungsart = tzahlungsart.kZahlungsart
+                  ON tbestellung.kZahlungsart = tzahlungsart.kZahlungsart
                 WHERE tbestellung.kBestellung = " . $kBestellung . " 
                 LIMIT 1", 1
         );
@@ -82,10 +78,11 @@ function handleData($kBestellung, $dRechnungErstellt, $kSprache)
  */
 function createResponse($kBestellung, $cTyp, $cComment)
 {
-    $aResponse                               = array('tbestellung' => array());
+    $aResponse                               = ['tbestellung' => []];
     $aResponse['tbestellung']['kBestellung'] = $kBestellung;
     $aResponse['tbestellung']['cTyp']        = $cTyp;
-    $aResponse['tbestellung']['cKommentar']  = html_entity_decode( $cComment, ENT_COMPAT | ENT_HTML401, 'ISO-8859-1' ); // decode entities for jtl-wawi. Entities are html-encoded since https://gitlab.jtl-software.de/jtlshop/jtl-shop/commit/e81f7a93797d8e57d00a1705cc5f13191eee9ca1
+    $aResponse['tbestellung']['cKommentar']  = html_entity_decode( $cComment, ENT_COMPAT | ENT_HTML401, 'ISO-8859-1' ); // decode entities for jtl-wawi.
+    //Entities are html-encoded since https://gitlab.jtl-software.de/jtlshop/jtl-shop/commit/e81f7a93797d8e57d00a1705cc5f13191eee9ca1
 
     return $aResponse;
 }

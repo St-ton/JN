@@ -10,7 +10,7 @@ if (isset($_GET['phpinfo'])) {
 }
 
 // allow the loading of composer-libs (system-check)
-require_once('../includes/vendor/autoload.php');
+require_once '../includes/vendor/autoload.php';
 
 ini_set('display_errors', 1); // --TO-CHECK--
 
@@ -22,37 +22,33 @@ if (strpos($cREQUEST_URI, '.php')) {
     $nPos         = strrpos($cREQUEST_URI, '/') + 1;
     $cREQUEST_URI = substr($cREQUEST_URI, 0, strlen($cREQUEST_URI) - (strlen($cREQUEST_URI) - $nPos));
 }
-$protocol = (isset($_SERVER['HTTPS']) && (strtolower($_SERVER['HTTPS']) === 'on' || intval($_SERVER['HTTPS']) === 1))
+$protocol = (isset($_SERVER['HTTPS']) && (strtolower($_SERVER['HTTPS']) === 'on' || (int)$_SERVER['HTTPS'] === 1))
     ? 'https://'
-    : 'http://'
-;
-
+    : 'http://';
 $cShopPort = '';
-if (intval($_SERVER['SERVER_PORT']) !== 80) {
-    $cShopPort = (intval($_SERVER['SERVER_PORT']) === 443 && $protocol === 'https://')
+if ((int)$_SERVER['SERVER_PORT'] !== 80) {
+    $cShopPort = ((int)$_SERVER['SERVER_PORT'] === 443 && $protocol === 'https://')
         ? ''
-        : (':' . intval($_SERVER['SERVER_PORT']))
-    ;
+        : (':' . (int)$_SERVER['SERVER_PORT']);
 }
 $host     = !empty($_SERVER['SERVER_NAME']) ? $_SERVER['SERVER_NAME'] : $_SERVER['HTTP_HOST'];
 $cShopURL = $protocol . $host . $cShopPort . substr($cREQUEST_URI, 0, strlen($cREQUEST_URI) - 8);
 
-//define('PFAD_ROOT', substr(dirname(__FILE__), 0, strlen(dirname(__FILE__)) - 7));
 define('PFAD_ROOT', realpath(__DIR__ . '/..') . '/');
 define('URL_SHOP', $cShopURL);
 define('SHOP_LOG_LEVEL', E_ALL);
 define('SMARTY_LOG_LEVEL', E_ALL);
 
 require_once PFAD_ROOT . 'includes/defines.php';
+require_once PFAD_ROOT . PFAD_INCLUDES . 'autoload.php';
 if (!is_writable(PFAD_ROOT . PFAD_COMPILEDIR)) {
     die('Der Installer kann nicht gestartet werden. Bitte geben Sie dem Verzeichnis ' . PFAD_ROOT . PFAD_COMPILEDIR . ' Schreibrechte f&uuml;r alle.
     Schreibrechte k&ouml;nnen Sie mit Ihrem FTP-Programm setzen. Rufen Sie danach diese Seite erneut auf.');
 }
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // if anyone goes lower than PHP 5.4, we abort here and warn him!
 require_once PFAD_ROOT . PFAD_SMARTY . 'SmartyBC.class.php';
-$szPhpVersion = phpversion();
+$szPhpVersion = PHP_VERSION;
 if(!version_compare($szPhpVersion, '5.4.0', '>='))
 {
     $smarty = new Smarty();
@@ -62,23 +58,19 @@ if(!version_compare($szPhpVersion, '5.4.0', '>='))
     $smarty->setTemplateDir(PFAD_ROOT . PFAD_INSTALL . 'template/')
            ->setCompileDir(PFAD_ROOT . PFAD_COMPILEDIR)
            ->setConfigDir(PFAD_ROOT . PFAD_INSTALL . 'template/lang/')
-           ->assign('PFAD_ROOT', PFAD_ROOT)
-    ;
+           ->assign('PFAD_ROOT', PFAD_ROOT);
 
-    $cHinweis = 'Der Installer kann nicht gestartet werden. Sie verwenden aktuell die PHP-Version <b>' . $szPhpVersion . '</b>.<br />'
-        . 'JTL-Shop4 setzt mindestens die PHP-Version <b>5.4</b> voraus.'
-    ;
+    $cHinweis = 'Der Installer kann nicht gestartet werden. Sie verwenden aktuell die PHP-Version <b>' . $szPhpVersion . '</b>.<br />' .
+        'JTL-Shop4 setzt mindestens die PHP-Version <b>5.4</b> voraus.';
     $smarty->assign('URL_SHOP', URL_SHOP)
            ->assign('PFAD_INSTALL', PFAD_INSTALL)
            ->assign('PFAD_ADMIN_TEMPLATE', PFAD_ADMIN . PFAD_TEMPLATES . 'bootstrap/')
            ->assign('versionAbort', true)
            ->assign('cHinweis', $cHinweis)
-           ->display('install.tpl')
-   ;
+           ->display('install.tpl');
 
    exit(-1);
 }
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 require_once PFAD_ROOT . PFAD_CLASSES_CORE . 'class.core.Shop.php';
 $shop = Shop::getInstance();
@@ -91,10 +83,8 @@ require_once PFAD_ROOT . PFAD_INSTALL . PFAD_INCLUDES . 'install_inc.php';
 
 $oSC    = new Systemcheck_Environment();
 $vTests = $oSC->executeTestGroup('Shop4');
+$oFS    = new Systemcheck_Platform_Filesystem(PFAD_ROOT);
 
-$oFS = new Systemcheck_Platform_Filesystem(PFAD_ROOT);
-
-//Smarty Objekt bauen
 $smarty = new Smarty();
 $smarty->setCaching(0);
 $smarty->setDebugging(false);
@@ -104,17 +94,15 @@ $smarty->setTemplateDir(PFAD_ROOT . PFAD_INSTALL . 'template/')
        ->setConfigDir(PFAD_ROOT . PFAD_INSTALL . 'template/lang/')
        ->assign('PFAD_ROOT', PFAD_ROOT)
        ->assign('versionAbort', false);
-;
 
 $cHinweis  = '';
 $nCon      = 0;
 $step      = 'schritt2';
 $DB        = null;
 $configErr = false;
-
-
+$dbError   = '';
 // Pruefe Datenbankverbindung
-if (isset($_POST['DBhost']) && strlen($_POST['DBhost']) > 0 && isset($_POST['DBuser']) && strlen($_POST['DBuser']) > 0) {
+if (isset($_POST['DBhost'], $_POST['DBuser']) && strlen($_POST['DBhost']) > 0 && strlen($_POST['DBuser']) > 0) {
     if (!empty($_POST['DBsocket'])) {
         define('DB_SOCKET', $_POST['DBsocket']);
     }
@@ -135,24 +123,24 @@ if ($nCon !== 3 || !$bAnforderungen || !$bVerzeichnisRechte) {
     $step = 'schritt0';
     $DB   = null;
 } else {
-    if (pruefeSchritt1Eingaben()) {
-        $step = 'schritt2';
-    } else {
-        $step = 'schritt1';
-    }
+    $step = pruefeSchritt1Eingaben()
+        ? 'schritt2'
+        : 'schritt1';
 }
-
 
 // (Schritt 0) Zeige Install
 switch ($step) {
     case 'schritt0':
         $cHinweis = '';
-
-        if (!(isset($_POST['DBhost']) && strlen($_POST['DBhost']) > 0 && isset($_POST['DBuser']) && strlen($_POST['DBuser']) > 0) && isset($_POST['installiere'])) {
+        if (!(isset($_POST['DBhost'], $_POST['DBuser'], $_POST['installiere']) &&
+            strlen($_POST['DBhost']) > 0 &&
+            strlen($_POST['DBuser']) > 0)
+        ) {
             $cHinweis = 'Bitte f&uuml;llen Sie die Datenbankinformationen aus';
         }
         if ($nCon === 1) {
-            $cHinweis = 'Die Angaben Datenbankhost (' . $_POST['DBhost'] . '), Benutzername (' . $_POST['DBuser'] . ') oder Passwort stimmen nicht. <br />
+            $cHinweis = 'Die Angaben Datenbankhost (' . $_POST['DBhost'] .
+                '), Benutzername (' . $_POST['DBuser'] . ') oder Passwort stimmen nicht. <br />
             Es konnte keine Verbindung zum MySQL-Server aufgebaut werden. Bitte &uuml;berpr&uuml;fen Sie die Eingaben.';
         } elseif ($nCon === 2) {
             $cHinweis = 'Der angegebene Benutzername hat auf dem angegebenem Server keine Rechte f&uuml;r die Datenbank ' . $_POST['DBname'];
@@ -161,8 +149,6 @@ switch ($step) {
         } elseif ($nCon === 5) {
             $cHinweis = $dbError;
         }
-
-
         if (!$bAnforderungen) {
             $cHinweis = 'Installation kann nicht fortgesetzt werden, da einige Anforderungen nicht erf&uuml;llt werden.';
         } elseif (!$bVerzeichnisRechte) {
@@ -175,7 +161,7 @@ switch ($step) {
             $cHinweis = 'Installation kann nicht fortgesetzt werden, da der Shop bereits installiert wurde.';
         }
 
-        $smarty->assign('bOk', ($bAnforderungen && $bVerzeichnisRechte && !$bInstalliert))
+        $smarty->assign('bOk', $bAnforderungen && $bVerzeichnisRechte && !$bInstalliert)
                ->assign('cVerzeichnis_arr', $oFS->getFoldersChecked())
                ->assign('cVorhandeneIniDateien_arr', gibVorhandeneIniDateien());
         break;
@@ -215,7 +201,15 @@ switch ($step) {
         pruefeZahlungsartNutzbarkeit();
 
         if (strlen($cHinweis) === 0) {
-            if (!schreibeConfigDateiInstall($_POST['DBhost'], $_POST['DBuser'], $_POST['DBpass'], $_POST['DBname'], (!empty($_POST['DBsocket'])) ? $_POST['DBsocket'] : null)) {
+            if (!schreibeConfigDateiInstall(
+                $_POST['DBhost'],
+                $_POST['DBuser'],
+                $_POST['DBpass'],
+                $_POST['DBname'],
+                (!empty($_POST['DBsocket']))
+                    ? $_POST['DBsocket']
+                    : null)
+            ) {
                 $cHinweis  = 'Beim Schreiben der Konfigurationsdatei ist ein unbekannter Fehler aufgetreten.';
                 $configErr = true;
             } else {

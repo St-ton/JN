@@ -4,15 +4,19 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/admininclude.php';
+require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('REDIRECT_VIEW', true, true);
 /** @global JTLSmarty $smarty */
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
+require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'csv_exporter_inc.php';
+require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'csv_importer_inc.php';
 
-$aData     = (isset($_POST['aData'])) ? $_POST['aData'] : null;
+handleCsvImportAction('redirects', 'tredirect');
+
+$aData     = isset($_POST['aData']) ? $_POST['aData'] : null;
 $oRedirect = new Redirect();
-$urls      = array();
+$urls      = [];
 $cHinweis  = '';
 $cFehler   = '';
 $shopURL   = Shop::getURL();
@@ -21,9 +25,9 @@ if (isset($aData['action']) && validateToken()) {
     switch ($aData['action']) {
         case 'search':
             $ret = [
-                'article'      => getArticleList($aData['search'], array('cLimit' => 10, 'return' => 'object')),
-                'category'     => getCategoryList($aData['search'], array('cLimit' => 10, 'return' => 'object')),
-                'manufacturer' => getManufacturerList($aData['search'], array('cLimit' => 10, 'return' => 'object')),
+                'article'      => getArticleList($aData['search'], ['cLimit' => 10, 'return' => 'object']),
+                'category'     => getCategoryList($aData['search'], ['cLimit' => 10, 'return' => 'object']),
+                'manufacturer' => getManufacturerList($aData['search'], ['cLimit' => 10, 'return' => 'object']),
             ];
             exit(json_encode($ret));
             break;
@@ -39,7 +43,7 @@ if (isset($aData['action']) && validateToken()) {
                 }
                 if ($oItem->kRedirect > 0) {
                     $oItem->cToUrl = $cToUrl;
-                    if (Redirect::checkAvailability($shopURL . $cToUrl)) {
+                    if (Redirect::checkAvailability($cToUrl)) {
                         Shop::DB()->update('tredirect', 'kRedirect', $oItem->kRedirect, $oItem);
                     } else {
                         $cFehler .= "&Auml;nderungen konnten nicht gespeichert werden, da die weiterzuleitende URL {$cToUrl} nicht erreichbar ist.<br />";
@@ -106,6 +110,10 @@ $oPagination = (new Pagination())
     ->assemble();
 
 $oRedirect_arr = Redirect::getRedirects($oFilter->getWhereSQL(), $oPagination->getOrderSQL(), $oPagination->getLimitSQL());
+
+handleCsvExportAction('redirects', 'redirects.csv', function () use ($oFilter, $oPagination) {
+        return Redirect::getRedirects($oFilter->getWhereSQL(), $oPagination->getOrderSQL());
+    }, ['cFromUrl', 'cToUrl']);
 
 if (!empty($oRedirect_arr) && !empty($urls)) {
     foreach ($oRedirect_arr as &$oRedirect) {

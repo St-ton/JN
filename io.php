@@ -5,7 +5,7 @@
  */
 ob_start();
 
-require_once dirname(__FILE__) . '/includes/globalinclude.php';
+require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'io_inc.php';
 require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.IO.php';
 require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.IOResponse.php';
@@ -19,7 +19,8 @@ $smarty->setCaching(false)
        ->assign('BILD_KEIN_ARTIKELBILD_VORHANDEN', BILD_KEIN_ARTIKELBILD_VORHANDEN)
        ->assign('BILD_KEIN_HERSTELLERBILD_VORHANDEN', BILD_KEIN_HERSTELLERBILD_VORHANDEN)
        ->assign('BILD_KEIN_MERKMALBILD_VORHANDEN', BILD_KEIN_MERKMALBILD_VORHANDEN)
-       ->assign('BILD_KEIN_MERKMALWERTBILD_VORHANDEN', BILD_KEIN_MERKMALWERTBILD_VORHANDEN);
+       ->assign('BILD_KEIN_MERKMALWERTBILD_VORHANDEN', BILD_KEIN_MERKMALWERTBILD_VORHANDEN)
+       ->assign('nSeitenTyp', PAGE_IO);
 Shop::setPageType(PAGE_IO);
 
 if (!isset($_REQUEST['io'])) {
@@ -29,10 +30,10 @@ if (!isset($_REQUEST['io'])) {
 
 $request = $_REQUEST['io'];
 
-executeHook(HOOK_IO_HANDLE_REQUEST, array(
+executeHook(HOOK_IO_HANDLE_REQUEST, [
     'io'      => &$io,
     'request' => &$request
-));
+]);
 
 try {
     $data = $io->handleRequest($request);

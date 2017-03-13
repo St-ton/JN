@@ -14,15 +14,22 @@ require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.TrustedShops.php';
 function bearbeiteTrustedShopsKundenbewertung($oJobQueue)
 {
     $oJobQueue->nInArbeit = 1;
-    $cValidSprachISO_arr  = array('de', 'en', 'fr', 'pl', 'es');
+    $cValidSprachISO_arr  = ['de', 'en', 'fr', 'pl', 'es'];
     foreach ($cValidSprachISO_arr as $cValidSprachISO) {
         unset($oTrustedShops);
         $oTrustedShops                = new TrustedShops(-1, $cValidSprachISO);
         $oTrustedShopsKundenbewertung = $oTrustedShops->holeKundenbewertungsstatus($cValidSprachISO);
-        if (strlen($oTrustedShopsKundenbewertung->cTSID) > 0 && $oTrustedShopsKundenbewertung->nStatus == 1) {
-            $returnValue = $oTrustedShops->aenderKundenbewertungsstatus($oTrustedShopsKundenbewertung->cTSID, 1, $cValidSprachISO);
-            if ($returnValue != 1) {
-                $oTrustedShops->aenderKundenbewertungsstatusDB(0, $oTrustedShopsKundenbewertung->cISOSprache);
+        if ($oTrustedShopsKundenbewertung->nStatus == 1 && strlen($oTrustedShopsKundenbewertung->cTSID) > 0) {
+            $returnValue = $oTrustedShops->aenderKundenbewertungsstatus(
+                $oTrustedShopsKundenbewertung->cTSID,
+                1,
+                $cValidSprachISO
+            );
+            if ($returnValue !== 1) {
+                $oTrustedShops->aenderKundenbewertungsstatusDB(
+                    0,
+                    $oTrustedShopsKundenbewertung->cISOSprache
+                );
             }
         }
     }

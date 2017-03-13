@@ -279,7 +279,7 @@ class Warenlager extends MainModel
      */
     public function setFulfillment($nFulfillment)
     {
-        $this->nFulfillment = (int) $nFulfillment;
+        $this->nFulfillment = (int)$nFulfillment;
 
         return $this;
     }
@@ -298,28 +298,27 @@ class Warenlager extends MainModel
      */
     public function setAktiv($nAktiv)
     {
-        $this->nAktiv = (int) $nAktiv;
+        $this->nAktiv = (int)$nAktiv;
 
         return $this;
     }
 
     /**
-     * @param int  $kKey
-     * @param null $oObj
-     * @param null $xOption
-     * @return mixed|void
+     * @param int         $kKey
+     * @param null|object $oObj
+     * @param int|null    $xOption
      */
     public function load($kKey, $oObj = null, $xOption = null)
     {
         if ($kKey !== null) {
-            $kKey = (int) $kKey;
+            $kKey = (int)$kKey;
 
             if ($kKey > 0) {
                 $cSqlSelect = '';
                 $cSqlJoin   = '';
                 // $xOption = kSprache
-                if ($xOption !== null && intval($xOption) > 0) {
-                    $xOption    = (int) $xOption;
+                if ($xOption !== null && (int)$xOption > 0) {
+                    $xOption    = (int)$xOption;
                     $cSqlSelect = ", IF (twarenlagersprache.cName IS NOT NULL, twarenlagersprache.cName, twarenlager.cName) AS cName";
                     $cSqlJoin   = "LEFT JOIN twarenlagersprache ON twarenlagersprache.kWarenlager = twarenlager.kWarenlager
                                     AND twarenlagersprache.kSprache = {$xOption}";
@@ -327,9 +326,9 @@ class Warenlager extends MainModel
 
                 $oObj = Shop::DB()->query(
                     "SELECT twarenlager.* {$cSqlSelect}
-                      FROM twarenlager
-                      {$cSqlJoin}
-                      WHERE twarenlager.kWarenlager = {$kKey}", 1
+                         FROM twarenlager
+                         {$cSqlJoin}
+                         WHERE twarenlager.kWarenlager = {$kKey}", 1
                 );
             }
         }
@@ -377,14 +376,14 @@ class Warenlager extends MainModel
     public function update()
     {
         $cQuery      = "UPDATE twarenlager SET ";
-        $cSet_arr    = array();
+        $cSet_arr    = [];
         $cMember_arr = array_keys(get_object_vars($this));
         if (is_array($cMember_arr) && count($cMember_arr) > 0) {
             foreach ($cMember_arr as $cMember) {
                 $cMethod = 'get' . substr($cMember, 1);
                 if (method_exists($this, $cMethod)) {
-                    $mValue = "'" . Shop::DB()->escape(call_user_func(array(&$this, $cMethod))) . "'";
-                    if (call_user_func(array(&$this, $cMethod)) === null) {
+                    $mValue = "'" . Shop::DB()->escape(call_user_func([&$this, $cMethod])) . "'";
+                    if (call_user_func([&$this, $cMethod]) === null) {
                         $mValue = 'NULL';
                     }
                     $cSet_arr[] = "{$cMember} = {$mValue}";
@@ -394,9 +393,7 @@ class Warenlager extends MainModel
             $cQuery .= implode(', ', $cSet_arr);
             $cQuery .= " WHERE kWarenlager = {$this->kWarenlager}";
 
-            $result = Shop::DB()->query($cQuery, 3);
-
-            return $result;
+            return Shop::DB()->query($cQuery, 3);
         } else {
             throw new Exception('ERROR: Object has no members!');
         }
@@ -410,8 +407,9 @@ class Warenlager extends MainModel
         $nRows = Shop::DB()->query(
             "DELETE twarenlager, twarenlagersprache
                 FROM twarenlager
-                LEFT JOIN twarenlagersprache ON twarenlagersprache.kWarenlager = twarenlager.kWarenlager
-                WHERE twarenlager.kWarenlager = " . (int) $this->kWarenlager, 3
+                LEFT JOIN twarenlagersprache 
+                    ON twarenlagersprache.kWarenlager = twarenlager.kWarenlager
+                WHERE twarenlager.kWarenlager = " . (int)$this->kWarenlager, 3
         );
 
         return $nRows;
@@ -426,7 +424,7 @@ class Warenlager extends MainModel
             $oObj_arr = Shop::DB()->selectAll('twarenlagersprache', 'kWarenlager', $this->getWarenlager());
 
             if (is_array($oObj_arr) && count($oObj_arr) > 0) {
-                $this->cSpracheAssoc_arr = array();
+                $this->cSpracheAssoc_arr = [];
                 foreach ($oObj_arr as $oObj) {
                     $this->cSpracheAssoc_arr[$oObj->kSprache] = $oObj->cName;
                 }
@@ -445,7 +443,7 @@ class Warenlager extends MainModel
      */
     public static function getAll($bActive = true, $bLoadLanguages = false)
     {
-        $oWarenlager_arr = array();
+        $oWarenlager_arr = [];
         $cSql            = '';
         if ($bActive) {
             $cSql = " WHERE nAktiv = 1";
@@ -471,16 +469,16 @@ class Warenlager extends MainModel
     }
 
     /**
-     * @param int  $kArtikel
-     * @param null $kSprache
-     * @param null $xOption_arr
-     * @param bool $bActive
+     * @param int        $kArtikel
+     * @param int|null   $kSprache
+     * @param null|array $xOption_arr
+     * @param bool       $bActive
      * @return array|null
      */
     public static function getByProduct($kArtikel, $kSprache = null, $xOption_arr = null, $bActive = true)
     {
-        $oWarenlager_arr = array();
-        $kArtikel        = (int) $kArtikel;
+        $oWarenlager_arr = [];
+        $kArtikel        = (int)$kArtikel;
         if ($kArtikel > 0) {
             $cSql = '';
             if ($bActive) {
@@ -489,12 +487,13 @@ class Warenlager extends MainModel
             $oObj_arr = Shop::DB()->query(
                 "SELECT tartikelwarenlager.*
                     FROM tartikelwarenlager
-                    JOIN twarenlager ON twarenlager.kWarenlager = tartikelwarenlager.kWarenlager
+                    JOIN twarenlager 
+                        ON twarenlager.kWarenlager = tartikelwarenlager.kWarenlager
                        {$cSql}
                     WHERE tartikelwarenlager.kArtikel = {$kArtikel}", 2
             );
             if (is_array($oObj_arr) && count($oObj_arr) > 0) {
-                $oWarenlager_arr = array();
+                $oWarenlager_arr = [];
                 foreach ($oObj_arr as $oObj) {
                     $oWarenlager               = new self($oObj->kWarenlager, null, $kSprache);
                     $oWarenlager->fBestand     = $oObj->fBestand;
@@ -527,14 +526,17 @@ class Warenlager extends MainModel
     public function buildWarehouseInfo($fBestand, array $xOption_arr)
     {
         $this->oLageranzeige                = new stdClass();
-        $this->oLageranzeige->cLagerhinweis = array();
-        $conf                               = Shop::getSettings(array(CONF_GLOBAL, CONF_ARTIKELDETAILS));
+        $this->oLageranzeige->cLagerhinweis = [];
+        $conf                               = Shop::getSettings([CONF_GLOBAL, CONF_ARTIKELDETAILS]);
 
         if ($xOption_arr['cLagerBeachten'] === 'Y') {
             if ($fBestand > 0) {
-                $this->oLageranzeige->cLagerhinweis['genau']          = $fBestand . ' ' . $xOption_arr['cEinheit'] . ' ' . Shop::Lang()->get('inStock', 'global');
+                $this->oLageranzeige->cLagerhinweis['genau']          = $fBestand . ' ' .
+                    $xOption_arr['cEinheit'] . ' ' . Shop::Lang()->get('inStock', 'global');
                 $this->oLageranzeige->cLagerhinweis['verfuegbarkeit'] = Shop::Lang()->get('productAvailable', 'global');
-                if (isset($conf['artikeldetails']['artikel_lagerbestandsanzeige']) && $conf['artikeldetails']['artikel_lagerbestandsanzeige'] === 'verfuegbarkeit') {
+                if (isset($conf['artikeldetails']['artikel_lagerbestandsanzeige']) &&
+                    $conf['artikeldetails']['artikel_lagerbestandsanzeige'] === 'verfuegbarkeit'
+                ) {
                     $this->oLageranzeige->cLagerhinweis['verfuegbarkeit'] = Shop::Lang()->get('ampelGruen', 'global');
                 }
             } elseif ($xOption_arr['cLagerKleinerNull'] === 'Y') {
@@ -557,7 +559,9 @@ class Warenlager extends MainModel
                 $this->oLageranzeige->AmpelText = $xOption_arr['attribut_ampeltext_rot'];
             }
             if ($xOption_arr['cLagerBeachten'] !== 'Y' || $fBestand >= (int)$conf['global']['artikel_lagerampel_gruen'] ||
-                ($xOption_arr['cLagerBeachten'] === 'Y' && $xOption_arr['cLagerKleinerNull'] === 'Y' && $conf['global']['artikel_ampel_lagernull_gruen'] === 'Y')
+                ($xOption_arr['cLagerBeachten'] === 'Y' && $xOption_arr['cLagerKleinerNull'] === 'Y' &&
+                    $conf['global']['artikel_ampel_lagernull_gruen'] === 'Y'
+                )
             ) {
                 $this->oLageranzeige->nStatus   = 2;
                 $this->oLageranzeige->AmpelText = $xOption_arr['attribut_ampeltext_gruen'];

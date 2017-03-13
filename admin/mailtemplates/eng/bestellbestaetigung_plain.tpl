@@ -1,6 +1,6 @@
 {includeMailTemplate template=header type=plain}
 
-Dear {$Kunde->cVorname} {$Kunde->cNachname},
+Dear {$Kunde->cAnredeLocalized} {$Kunde->cNachname},
 
 Thank you for your order at {$Einstellungen.global.global_shopname}.
 
@@ -38,7 +38,7 @@ Total: {$Bestellung->WarensummeLocalized[0]}
 Shipping time: {if isset($Bestellung->cEstimatedDeliveryEx)}{$Bestellung->cEstimatedDeliveryEx}{else}{$Bestellung->cEstimatedDelivery}{/if}
 
 
-Your billing adress:
+Your billing address:
 
 {if !empty($Kunde->cFirma)}{$Kunde->cFirma}{/if}
 {$Kunde->cAnredeLocalized} {$Kunde->cVorname} {$Kunde->cNachname}
@@ -52,11 +52,11 @@ Your billing adress:
 {/if}{if $Kunde->cFax}Fax: {$Kunde->cFax}
 {/if}
 Email: {$Kunde->cMail}
-{if $Kunde->cUSTID}UstID: {$Kunde->cUSTID}
+{if $Kunde->cUSTID}VAT ID: {$Kunde->cUSTID}
 {/if}
 
 {if !empty($Bestellung->Lieferadresse->kLieferadresse)}
-    Your shipping adress:
+    Your shipping address:
 
     {if !empty($Bestellung->Lieferadresse->cFirma)}{$Bestellung->Lieferadresse->cFirma}{/if}
     {$Bestellung->Lieferadresse->cAnredeLocalized} {$Bestellung->Lieferadresse->cVorname} {$Bestellung->Lieferadresse->cNachname}
@@ -77,19 +77,28 @@ You have chosen the following payment option: {$Bestellung->cZahlungsartName}
 {if $Bestellung->Zahlungsart->cModulId=="za_ueberweisung_jtl"}
     Please make the following banktransfer:
     Account owner:{$Firma->cKontoinhaber}
-    bank:{$Firma->cBank}
-    IBAN.:{$Firma->cIBAN}
-    BIC.:{$Firma->cBIC}
+    Bank name:{$Firma->cBank}
+    IBAN:{$Firma->cIBAN}
+    BIC:{$Firma->cBIC}
 
     Purpose:{$Bestellung->cBestellNr}
     Total sum:{$Bestellung->WarensummeLocalized[0]}
 
-    For international banktransfers:
-    BIC:{$Firma->cBIC}
-    IBAN:{$Firma->cIBAN}
+
 {elseif $Bestellung->Zahlungsart->cModulId=="za_nachnahme_jtl"}
 {elseif $Bestellung->Zahlungsart->cModulId=="za_kreditkarte_jtl"}
 {elseif $Bestellung->Zahlungsart->cModulId=="za_rechnung_jtl"}
+{elseif $Bestellung->Zahlungsart->cModulId=="za_lastschrift_jtl"}
+{elseif $Bestellung->Zahlungsart->cModulId=="za_barzahlung_jtl"}
+{elseif $Bestellung->Zahlungsart->cModulId=="za_paypal_jtl"}
+{elseif $Bestellung->Zahlungsart->cModulId=="za_moneybookers_jtl"}
+{/if}
+
+{if isset($Zahlungsart->cHinweisText) && $Zahlungsart->cHinweisText|strlen > 0}  {$Zahlungsart->cHinweisText}
+
+
+{/if}
+{if $Bestellung->Zahlungsart->cModulId=="za_rechnung_jtl"}
 {elseif $Bestellung->Zahlungsart->cModulId=="za_lastschrift_jtl"}
 {elseif $Bestellung->Zahlungsart->cModulId=="za_barzahlung_jtl"}
 {elseif $Bestellung->Zahlungsart->cModulId=="za_paypal_jtl"}

@@ -10,7 +10,7 @@
 function gibVaterSQL()
 {
     // Muss ein VaterArtikel sein!
-    return $cVaterSQL = ' AND tartikel.kVaterArtikel = 0';
+    return ' AND tartikel.kVaterArtikel = 0';
 }
 
 /**
@@ -20,8 +20,8 @@ function gibVaterSQL()
  */
 function gibTopAngebote($nLimit, $kKundengruppe = 0)
 {
-    $kKundengruppe = (int) $kKundengruppe;
-    $nLimit        = (int) $nLimit;
+    $kKundengruppe = (int)$kKundengruppe;
+    $nLimit        = (int)$nLimit;
     if (!$nLimit) {
         $nLimit = 20;
     }
@@ -31,7 +31,8 @@ function gibTopAngebote($nLimit, $kKundengruppe = 0)
     $topArticles = Shop::DB()->query(
         "SELECT tartikel.kArtikel
             FROM tartikel
-            LEFT JOIN tartikelsichtbarkeit ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
+            LEFT JOIN tartikelsichtbarkeit 
+                ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                 AND tartikelsichtbarkeit.kKundengruppe = " . $kKundengruppe . "
             WHERE tartikelsichtbarkeit.kArtikel IS NULL
                 AND tartikel.cTopArtikel = 'Y'
@@ -49,7 +50,7 @@ function gibTopAngebote($nLimit, $kKundengruppe = 0)
  */
 function array_random_assoc($arr, $num = 1)
 {
-    $r    = array();
+    $r    = [];
     $keys = array_keys($arr);
     shuffle($keys);
     for ($i = 0; $i < $num; ++$i) {
@@ -66,26 +67,27 @@ function array_random_assoc($arr, $num = 1)
  */
 function gibBestseller($nLimit, $kKundengruppe = 0)
 {
-    $kKundengruppe = (int) $kKundengruppe;
-    $nLimit        = (int) $nLimit;
+    $kKundengruppe = (int)$kKundengruppe;
+    $nLimit        = (int)$nLimit;
     if (!$nLimit) {
         $nLimit = 20;
     }
     if (!$kKundengruppe) {
         $kKundengruppe = Kundengruppe::getDefaultGroupID();
     }
-    $oGlobalnEinstellung_arr = Shop::getSettings(array(CONF_GLOBAL));
-    $nSchwelleBestseller     = (isset($oGlobalnEinstellung_arr['global']['global_bestseller_minanzahl'])) ?
-        doubleval($oGlobalnEinstellung_arr['global']['global_bestseller_minanzahl']) :
-        10;
+    $oGlobalnEinstellung_arr = Shop::getSettings([CONF_GLOBAL]);
+    $nSchwelleBestseller     = isset($oGlobalnEinstellung_arr['global']['global_bestseller_minanzahl'])
+        ? (float)$oGlobalnEinstellung_arr['global']['global_bestseller_minanzahl']
+        : 10;
     $bestsellers = Shop::DB()->query(
         "SELECT tartikel.kArtikel, tbestseller.fAnzahl
             FROM tbestseller, tartikel
-            LEFT JOIN tartikelsichtbarkeit ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
+            LEFT JOIN tartikelsichtbarkeit 
+                ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                 AND tartikelsichtbarkeit.kKundengruppe = " . $kKundengruppe . "
             WHERE tartikelsichtbarkeit.kArtikel IS NULL
                 AND tbestseller.kArtikel = tartikel.kArtikel
-                 AND round(tbestseller.fAnzahl) >= " . $nSchwelleBestseller . "
+                AND round(tbestseller.fAnzahl) >= " . $nSchwelleBestseller . "
                 " . gibVaterSQL() . "
                 " . gibLagerfilter() . "
             ORDER BY fAnzahl DESC
@@ -102,8 +104,8 @@ function gibBestseller($nLimit, $kKundengruppe = 0)
  */
 function gibSonderangebote($nLimit, $kKundengruppe = 0)
 {
-    $kKundengruppe = (int) $kKundengruppe;
-    $nLimit        = (int) $nLimit;
+    $kKundengruppe = (int)$kKundengruppe;
+    $nLimit        = (int)$nLimit;
     if (!$nLimit) {
         $nLimit = 20;
     }
@@ -113,9 +115,12 @@ function gibSonderangebote($nLimit, $kKundengruppe = 0)
     $specialOffers = Shop::DB()->query(
         "SELECT tartikel.kArtikel, tsonderpreise.fNettoPreis
             FROM tartikel
-            JOIN tartikelsonderpreis ON tartikelsonderpreis.kArtikel = tartikel.kArtikel
-            JOIN tsonderpreise ON tsonderpreise.kArtikelSonderpreis = tartikelsonderpreis.kArtikelSonderpreis
-            LEFT JOIN tartikelsichtbarkeit ON tartikel.kArtikel=tartikelsichtbarkeit.kArtikel
+            JOIN tartikelsonderpreis 
+                ON tartikelsonderpreis.kArtikel = tartikel.kArtikel
+            JOIN tsonderpreise 
+                ON tsonderpreise.kArtikelSonderpreis = tartikelsonderpreis.kArtikelSonderpreis
+            LEFT JOIN tartikelsichtbarkeit 
+                ON tartikel.kArtikel=tartikelsichtbarkeit.kArtikel
                 AND tartikelsichtbarkeit.kKundengruppe = " . $kKundengruppe . "
             WHERE tartikelsichtbarkeit.kArtikel IS NULL
                 AND tartikelsonderpreis.kArtikel = tartikel.kArtikel
@@ -146,14 +151,15 @@ function gibNeuImSortiment($nLimit, $kKundengruppe = 0)
     if (!$kKundengruppe) {
         $kKundengruppe = Kundengruppe::getDefaultGroupID();
     }
-    $config     = Shop::getSettings(array(CONF_BOXEN));
-    $nAlterTage = ($config['boxen']['box_neuimsortiment_alter_tage'] > 0) ?
-        (int) $config['boxen']['box_neuimsortiment_alter_tage'] :
-        30;
+    $config     = Shop::getSettings([CONF_BOXEN]);
+    $nAlterTage = ($config['boxen']['box_neuimsortiment_alter_tage'] > 0)
+        ? (int)$config['boxen']['box_neuimsortiment_alter_tage']
+        : 30;
     $new = Shop::DB()->query(
         "SELECT tartikel.kArtikel
             FROM tartikel
-            LEFT JOIN tartikelsichtbarkeit ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
+            LEFT JOIN tartikelsichtbarkeit 
+                ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                 AND tartikelsichtbarkeit.kKundengruppe = " . $kKundengruppe . "
             WHERE tartikelsichtbarkeit.kArtikel IS NULL
                 AND tartikel.cNeu = 'Y'

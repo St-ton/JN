@@ -12,12 +12,12 @@ final class Shopsetting implements ArrayAccess
     /**
      * @var Shopsetting
      */
-    private static $_instance = null;
+    private static $_instance;
 
     /**
      * @var array
      */
-    private $_container = array();
+    private $_container = [];
 
     /**
      *
@@ -50,7 +50,7 @@ final class Shopsetting implements ArrayAccess
      */
     public function reset()
     {
-        $this->_container = array();
+        $this->_container = [];
 
         return $this;
     }
@@ -62,7 +62,7 @@ final class Shopsetting implements ArrayAccess
      */
     public function offsetSet($offset, $value)
     {
-        if (is_null($offset)) {
+        if ($offset === null) {
             $this->_container[] = $value;
         } else {
             $this->_container[$offset] = $value;
@@ -98,19 +98,18 @@ final class Shopsetting implements ArrayAccess
     public function offsetGet($offset)
     {
         if (!isset($this->_container[$offset])) {
-            $section = $this->mapSettingName(null, $offset);
+            $section = static::mapSettingName(null, $offset);
 
             if ($section === false || $section === null) {
-                return;
+                return null;
             }
             $cacheID = 'setting_' . $section;
-
-            // Dirty Template work around
+            // Template work around
             if ($section === CONF_TEMPLATE) {
                 if (($templateSettings = Shop::Cache()->get($cacheID)) === false) {
                     $template         = Template::getInstance();
                     $templateSettings = $template->getConfig();
-                    Shop::Cache()->set($cacheID, $templateSettings, array(CACHING_GROUP_TEMPLATE, CACHING_GROUP_OPTION));
+                    Shop::Cache()->set($cacheID, $templateSettings, [CACHING_GROUP_TEMPLATE, CACHING_GROUP_OPTION]);
                 }
                 if (is_array($templateSettings)) {
                     foreach ($templateSettings as $templateSection => $templateSetting) {
@@ -133,24 +132,30 @@ final class Shopsetting implements ArrayAccess
                     $settings = Shop::DB()->query("
                          SELECT cName, cWert
                              FROM tplugineinstellungen
-                             WHERE cName LIKE '%_min%' OR cName LIKE '%_max'", 2
+                             WHERE cName LIKE '%_min%' 
+                              OR cName LIKE '%_max'", 2
                      );
                 } else {
-                    $settings = Shop::DB()->selectAll('teinstellungen', 'kEinstellungenSektion', $section, 'kEinstellungenSektion, cName, cWert');
+                    $settings = Shop::DB()->selectAll(
+                        'teinstellungen',
+                        'kEinstellungenSektion',
+                        $section,
+                        'kEinstellungenSektion, cName, cWert'
+                    );
                 }
                 if (is_array($settings) && count($settings) > 0) {
-                    $this->_container[$offset] = array();
+                    $this->_container[$offset] = [];
 
                     foreach ($settings as $setting) {
                         $this->_container[$offset][$setting->cName] = $setting->cWert;
                     }
 
-                    Shop::Cache()->set($cacheID, $settings, array(CACHING_GROUP_OPTION));
+                    Shop::Cache()->set($cacheID, $settings, [CACHING_GROUP_OPTION]);
                 }
             }
         }
 
-        return (isset($this->_container[$offset])) ? $this->_container[$offset] : null;
+        return isset($this->_container[$offset]) ? $this->_container[$offset] : null;
     }
 
     /**
@@ -159,9 +164,9 @@ final class Shopsetting implements ArrayAccess
      */
     public function getSettings($sektionen_arr)
     {
-        $ret = array();
+        $ret = [];
         if (!is_array($sektionen_arr)) {
-            $sektionen_arr = (array) $sektionen_arr;
+            $sektionen_arr = (array)$sektionen_arr;
         }
         foreach ($sektionen_arr as $sektionen) {
             $mapping = self::mapSettingName($sektionen);
@@ -171,6 +176,21 @@ final class Shopsetting implements ArrayAccess
         }
 
         return $ret;
+    }
+
+    /**
+     * @param string $section
+     * @param string $option
+     * @return string|array|int
+     */
+    public function getValue($section, $option)
+    {
+        $settings    = $this->getSettings([$section]);
+        $sectionName = self::mapSettingName($section);
+
+        return isset($settings[$sectionName][$option])
+            ? $settings[$sectionName][$option]
+            : null;
     }
 
     /**
@@ -187,11 +207,11 @@ final class Shopsetting implements ArrayAccess
         if ($section !== null && isset($mappings[$section])) {
             return $mappings[$section];
         }
-        if ($name !== null && ($key = array_search($name, $mappings)) !== false) {
+        if ($name !== null && ($key = array_search($name, $mappings, true)) !== false) {
             return $key;
         }
 
-        return;
+        return null;
     }
 
     /**
@@ -210,19 +230,19 @@ final class Shopsetting implements ArrayAccess
                     FROM teinstellungen
                     ORDER BY kEinstellungenSektion", 9
             );
-            $result = array();
+            $result = [];
             foreach ($mappings as $mappingID => $sectionName) {
                 foreach ($settings as $setting) {
-                    $kEinstellungenSektion = (int) $setting['kEinstellungenSektion'];
+                    $kEinstellungenSektion = (int)$setting['kEinstellungenSektion'];
                     if ($kEinstellungenSektion === $mappingID) {
                         if (!isset($result[$sectionName])) {
-                            $result[$sectionName] = array();
+                            $result[$sectionName] = [];
                         }
                         $result[$sectionName][$setting['cName']] = $setting['cWert'];
                     }
                 }
             }
-            Shop::Cache()->set($cacheID, $result, array(CACHING_GROUP_TEMPLATE, CACHING_GROUP_OPTION, CACHING_GROUP_CORE));
+            Shop::Cache()->set($cacheID, $result, [CACHING_GROUP_TEMPLATE, CACHING_GROUP_OPTION, CACHING_GROUP_CORE]);
         }
         $this->_container = $result;
 
@@ -230,11 +250,11 @@ final class Shopsetting implements ArrayAccess
     }
 
     /**
-     * @return array
+     * @return string[]
      */
     private static function getMappings()
     {
-        return array(
+        return [
             CONF_GLOBAL              => 'global',
             CONF_STARTSEITE          => 'startseite',
             CONF_EMAILS              => 'emails',
@@ -272,6 +292,6 @@ final class Shopsetting implements ArrayAccess
             CONF_RMA                 => 'rma',
             CONF_OBJECTCACHING       => 'objectcaching',
             CONF_CACHING             => 'caching'
-        );
+        ];
     }
 }

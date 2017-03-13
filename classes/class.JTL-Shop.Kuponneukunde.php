@@ -43,6 +43,12 @@ class Kuponneukunde
     public $dErstellt;
 
     /**
+     * @access public
+     * @var string
+     */
+    public $cVerwendet;
+
+    /**
      * Constructor
      *
      * @access public
@@ -56,7 +62,7 @@ class Kuponneukunde
                 foreach ($cMember_arr as $cMember) {
                     $cMethod = 'set' . substr($cMember, 1);
                     if (method_exists($this, $cMethod)) {
-                        call_user_func(array(&$this, $cMethod), $oObj->$cMember);
+                        call_user_func([&$this, $cMethod], $oObj->$cMember);
                     }
                 }
             }
@@ -72,7 +78,7 @@ class Kuponneukunde
         $methods = get_class_methods($this);
         foreach ($options as $key => $value) {
             $method = 'set' . ucfirst($key);
-            if (in_array($method, $methods)) {
+            if (in_array($method, $methods, true)) {
                 $this->$method($value);
             }
         }
@@ -86,7 +92,7 @@ class Kuponneukunde
     public function Save()
     {
         if ($this->kKuponNeukunde > 0) {
-            Shop::DB()->delete('tkuponneukunde', 'kKuponNeukunde', (int) $this->kKuponNeukunde);
+            Shop::DB()->delete('tkuponneukunde', 'kKuponNeukunde', (int)$this->kKuponNeukunde);
         }
         $obj = kopiereMembers($this);
         unset($obj->kKuponNeukunde);
@@ -127,7 +133,7 @@ class Kuponneukunde
      */
     public function setKupon($kKupon)
     {
-        $this->kKupon = intval($kKupon);
+        $this->kKupon = (int)$kKupon;
 
         return $this;
     }
@@ -164,15 +170,30 @@ class Kuponneukunde
      * Sets the dErstellt
      *
      * @access public
-     * @var datetime
+     * @param string $dErstellt
+     * @return $this
      */
     public function setErstellt($dErstellt)
     {
-        if ($dErstellt === 'now()') {
-            $this->dErstellt = date('Y-m-d H:i:s');
-        } else {
-            $this->dErstellt = $dErstellt;
-        }
+        $this->dErstellt = ($dErstellt === 'now()')
+            ? date('Y-m-d H:i:s')
+            : $dErstellt;
+
+        return $this;
+    }
+
+    /**
+     * Sets the cVerwendet
+     *
+     * @access public
+     * @param string $cVerwendet
+     * @return $this
+     */
+    public function setVerwendet($cVerwendet)
+    {
+        $this->cVerwendet = $cVerwendet;
+
+        return $this;
     }
 
     /**
@@ -238,11 +259,16 @@ class Kuponneukunde
     public static function Load($email, $hash)
     {
         if (strlen($email) > 0 && strlen($hash) > 0) {
-            $Obj = Shop::DB()->query(
-                "SELECT *
+            $Obj = Shop::DB()->executeQueryPrepared("
+                SELECT *
                     FROM tkuponneukunde
-                    WHERE cEmail = '" . StringHandler::filterXSS($email) . "'
-                    OR cDatenHash = '" . StringHandler::filterXSS($hash) . "'", 1
+                    WHERE cEmail = :email
+                    OR cDatenHash = :hash",
+                [
+                    'email' => StringHandler::filterXSS($email),
+                    'hash'  => StringHandler::filterXSS($hash)
+                ],
+                1
             );
 
             if (isset($Obj->kKuponNeukunde) && $Obj->kKuponNeukunde > 0) {

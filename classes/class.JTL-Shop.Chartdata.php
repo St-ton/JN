@@ -90,7 +90,7 @@ class Chartdata
         $methods = get_class_methods($this);
         foreach ($options as $key => $value) {
             $method = 'set' . ucfirst($key);
-            if (in_array($method, $methods)) {
+            if (in_array($method, $methods, true)) {
                 $this->$method($value);
             }
         }
@@ -103,7 +103,7 @@ class Chartdata
      */
     public function toArray()
     {
-        $array   = array();
+        $array   = [];
         $members = array_keys(get_object_vars($this));
         foreach ($members as $member) {
             $array[substr($member, 1)] = $this->$member;

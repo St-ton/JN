@@ -88,7 +88,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         public function jsonSerialize()
         {
-            $override = array(
+            $override = [
                 'kKonfiggruppe' => (int)$this->kKonfiggruppe,
                 'cBildPfad'     => $this->getBildPfad(),
                 'nMin'          => (float)$this->nMin,
@@ -99,8 +99,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 'cName'         => $this->oSprache->getName(),
                 'cBeschreibung' => $this->oSprache->getBeschreibung(),
                 'oItem_arr'     => $this->oItem_arr
-            );
-
+            ];
             $result = array_merge(get_object_vars($this), $override);
 
             return utf8_convert_recursive($result);
@@ -346,13 +345,13 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         {
             $oCount = Shop::DB()->query("
                 SELECT COUNT(*) AS nCount 
-                  FROM tkonfigitem 
-                  WHERE kKonfiggruppe = " . (int) $this->kKonfiggruppe, 1
+                    FROM tkonfigitem 
+                    WHERE kKonfiggruppe = " . (int)$this->kKonfiggruppe, 1
             );
 
-            return (isset($oCount->nCount)) ?
-                (int)$oCount->nCount :
-                0;
+            return isset($oCount->nCount)
+                ? (int)$oCount->nCount
+                : 0;
         }
 
         /**

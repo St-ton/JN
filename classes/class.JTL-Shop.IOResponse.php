@@ -12,21 +12,12 @@ class IOResponse implements JsonSerializable
     /**
      * @var array
      */
-    private $assigns;
+    private $assigns = [];
 
     /**
      * @var array
      */
-    private $scripts;
-
-    /**
-     *
-     */
-    public function __constructor()
-    {
-        $this->assigns = array();
-        $this->scripts = array();
-    }
+    private $scripts = [];
 
     /**
      * @param $target
@@ -35,11 +26,11 @@ class IOResponse implements JsonSerializable
      */
     public function assign($target, $attr, $data)
     {
-        $this->assigns[] = (object) array(
+        $this->assigns[] = (object)[
             'target' => $target,
             'attr'   => $attr,
             'data'   => $data
-        );
+        ];
     }
 
     /**
@@ -126,7 +117,7 @@ class IOResponse implements JsonSerializable
         $trace = array_reverse($trace);
         array_shift($trace);
         array_pop($trace);
-        $result = array();
+        $result = [];
 
         foreach ($trace as $i => $t) {
             $result[] = '#' . ($i + 1) . substr($t, strpos($t, ' '));
@@ -140,9 +131,9 @@ class IOResponse implements JsonSerializable
      */
     public function jsonSerialize()
     {
-        return array(
+        return [
             'js'  => $this->scripts,
             'css' => $this->assigns,
-        );
+        ];
     }
 }

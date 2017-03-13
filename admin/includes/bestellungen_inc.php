@@ -11,7 +11,7 @@
  */
 function gibBestellungsUebersicht($cLimitSQL, $cSuchFilter)
 {
-    $oBestellung_arr = array();
+    $oBestellung_arr = [];
     $cSuchFilterSQL  = '';
     if (strlen($cSuchFilter)) {
         $cSuchFilterSQL = " WHERE cBestellNr LIKE '%" . $cSuchFilter . "%'";
@@ -41,9 +41,9 @@ function gibBestellungsUebersicht($cLimitSQL, $cSuchFilter)
  */
 function gibAnzahlBestellungen($cSuchFilter)
 {
-    $cSuchFilterSQL = (strlen($cSuchFilter) > 0) ?
-        " WHERE cBestellNr LIKE '%" . $cSuchFilter . "%'" :
-        '';
+    $cSuchFilterSQL = (strlen($cSuchFilter) > 0)
+        ? " WHERE cBestellNr LIKE '%" . $cSuchFilter . "%'"
+        : '';
     $oBestellung = Shop::DB()->query(
         "SELECT count(*) AS nAnzahl
             FROM tbestellung" . $cSuchFilterSQL, 1
@@ -71,10 +71,11 @@ function setzeAbgeholtZurueck($kBestellung_arr)
                     AND cAbgeholt = 'Y'", 2
         );
         if (is_array($oKunde_arr) && count($oKunde_arr) > 0) {
-            $kKunde_arr = array();
+            $kKunde_arr = [];
             foreach ($oKunde_arr as $oKunde) {
-                if (!in_array($oKunde->kKunde, $kKunde_arr)) {
-                    $kKunde_arr[] = (int)$oKunde->kKunde;
+                $oKunde->kKunde = (int)$oKunde->kKunde;
+                if (!in_array($oKunde->kKunde, $kKunde_arr, true)) {
+                    $kKunde_arr[] = $oKunde->kKunde;
                 }
             }
             Shop::DB()->query(
@@ -86,6 +87,14 @@ function setzeAbgeholtZurueck($kBestellung_arr)
         // Bestellungen cAbgeholt zurücksetzen
         Shop::DB()->query(
             "UPDATE tbestellung
+                SET cAbgeholt = 'N'
+                WHERE kBestellung IN(" . implode(',', $kBestellung_arr) . ")
+                    AND cAbgeholt = 'Y'", 3
+        );
+
+        // Zahlungsinfo cAbgeholt zurücksetzen
+        Shop::DB()->query(
+            "UPDATE tzahlungsinfo
                 SET cAbgeholt = 'N'
                 WHERE kBestellung IN(" . implode(',', $kBestellung_arr) . ")
                     AND cAbgeholt = 'Y'", 3

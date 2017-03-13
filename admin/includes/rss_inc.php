@@ -12,7 +12,7 @@ function generiereRSSXML()
     Jtllog::writeLog("RSS wird erstellt", JTLLOG_LEVEL_NOTICE);
     $shopURL = Shop::getURL();
     if (is_writable(PFAD_ROOT . FILE_RSS_FEED)) {
-        $Einstellungen = Shop::getSettings(array(CONF_RSS));
+        $Einstellungen = Shop::getSettings([CONF_RSS]);
         if ($Einstellungen['rss']['rss_nutzen'] !== 'Y') {
             return false;
         }
@@ -41,25 +41,29 @@ function generiereRSSXML()
 		</image>';
         //Artikel STD Sprache
         $lagerfilter = gibLagerfilter();
-        $alter_tage  = intval($Einstellungen['rss']['rss_alterTage']);
+        $alter_tage  = (int)$Einstellungen['rss']['rss_alterTage'];
         if (!$alter_tage) {
             $alter_tage = 14;
         }
         // Artikel beachten?
         if ($Einstellungen['rss']['rss_artikel_beachten'] === 'Y') {
             $artikelarr = Shop::DB()->query(
-                "SELECT tartikel.kArtikel, tartikel.cName, tartikel.cKurzBeschreibung, tseo.cSeo, tartikel.dLetzteAktualisierung,
-                    tartikel.dErstellt, DATE_FORMAT(tartikel.dErstellt, \"%a, %d %b %Y %H:%i:%s UTC\") as erstellt
+                "SELECT tartikel.kArtikel, tartikel.cName, tartikel.cKurzBeschreibung, tseo.cSeo, 
+                    tartikel.dLetzteAktualisierung, tartikel.dErstellt, 
+                    DATE_FORMAT(tartikel.dErstellt, \"%a, %d %b %Y %H:%i:%s UTC\") AS erstellt
                     FROM tartikel
-                    LEFT JOIN tartikelsichtbarkeit ON tartikel.kArtikel=tartikelsichtbarkeit.kArtikel
+                    LEFT JOIN tartikelsichtbarkeit 
+                        ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                         AND tartikelsichtbarkeit.kKundengruppe = $stdKundengruppe->kKundengruppe
-                    LEFT JOIN tseo ON tseo.cKey = 'kArtikel'
+                    LEFT JOIN tseo 
+                        ON tseo.cKey = 'kArtikel'
                         AND tseo.kKey = tartikel.kArtikel
                         AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
                     WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                        AND tartikel.cNeu='Y'
+                        AND tartikel.cNeu = 'Y'
                         $lagerfilter
-                        AND cNeu='Y' AND DATE_SUB(now(),INTERVAL " . $alter_tage . " DAY) < dErstellt
+                        AND cNeu = 'Y' 
+                        AND DATE_SUB(now(), INTERVAL " . $alter_tage . " DAY) < dErstellt
                     ORDER BY dLetzteAktualisierung DESC", 2
             );
 
@@ -129,7 +133,7 @@ function generiereRSSXML()
 		';
 
         $file = fopen(PFAD_ROOT . FILE_RSS_FEED, 'w+');
-        fputs($file, $xml);
+        fwrite($file, $xml);
         fclose($file);
     } else {
         Jtllog::writeLog('RSS Verzeichnis nicht beschreibbar!', JTLLOG_LEVEL_ERROR);
@@ -148,18 +152,17 @@ function bauerfc2822datum($dErstellt)
 {
     if (strlen($dErstellt) > 0) {
         // Datum + Zeit
-        if (count(explode(' ', $dErstellt)) > 1) {
+        if (substr_count(' ', $dErstellt) > 1) {
             list($dDatum, $dZeit)               = explode(' ', $dErstellt);
             list($dJahr, $dMonat, $dTag)        = explode('-', $dDatum);
             list($dStunde, $dMinute, $dSekunde) = explode(':', $dZeit);
 
             return date('r', mktime($dStunde, $dMinute, $dSekunde, $dMonat, $dTag, $dJahr));
-        } else {
-            // Nur Datum
-            list($dJahr, $dMonat, $dTag) = explode('-', $dErstellt);
-
-            return date('r', mktime(0, 0, 0, $dMonat, $dTag, $dJahr));
         }
+        // Nur Datum
+        list($dJahr, $dMonat, $dTag) = explode('-', $dErstellt);
+
+        return date('r', mktime(0, 0, 0, $dMonat, $dTag, $dJahr));
     }
 
     return false;

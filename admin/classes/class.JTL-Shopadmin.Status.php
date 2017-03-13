@@ -23,7 +23,7 @@ class Status
      */
     public function __call($name, $arguments)
     {
-        if (!isset($this->cache[$name]) || $this->cache[$name] !== null) {
+        if (!isset($this->cache[$name])) {
             $this->cache[$name] = call_user_func_array([&$this, $name], $arguments);
         }
 
@@ -64,9 +64,12 @@ class Status
     }
 
     /**
-     * @return bool
+     * checks the db-structure against 'admin/includes/shopmd5files/dbstruct_[shop-version].json'
+     * (the 'shop-Version' is here needed without points)
+     *
+     * @return bool  true='no errors', false='something is wrong'
      */
-    protected function validDatabateStruct()
+    protected function validDatabaseStruct()
     {
         require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dbcheck_inc.php';
 
@@ -81,7 +84,10 @@ class Status
     }
 
     /**
-     * @return bool
+     * checks the shop-filesystem-structure against 'admin/includes/shopmd5files/[shop-version].csv'
+     * (the 'shop-Version' is here needed without points)
+     *
+     * @return bool  true='no errors', false='something is wrong'
      */
     protected function validFileStruct()
     {
@@ -114,9 +120,9 @@ class Status
     {
         $sharedPlugins = [];
         $sharedHookIds = Shop::DB()->executeQuery(
-            "SELECT nHook 
-                FROM tpluginhook 
-                GROUP BY nHook 
+            "SELECT nHook
+                FROM tpluginhook
+                GROUP BY nHook
                 HAVING COUNT(DISTINCT kPlugin) > 1", 2
         );
 
@@ -127,11 +133,12 @@ class Status
         foreach ($sharedHookIds as $hookId) {
             $sharedPlugins[$hookId] = [];
             $plugins                = Shop::DB()->executeQuery(
-                "SELECT DISTINCT tpluginhook.kPlugin, tplugin.cName, tplugin.cPluginID 
-                    FROM tpluginhook 
-                    INNER JOIN tplugin 
-                        ON tpluginhook.kPlugin = tplugin.kPlugin 
-                    WHERE tpluginhook.nHook = " . $hookId . " AND tplugin.nStatus = 2", 2
+                "SELECT DISTINCT tpluginhook.kPlugin, tplugin.cName, tplugin.cPluginID
+                    FROM tpluginhook
+                    INNER JOIN tplugin
+                        ON tpluginhook.kPlugin = tplugin.kPlugin
+                    WHERE tpluginhook.nHook = " . $hookId . "
+                        AND tplugin.nStatus = 2", 2
             );
             foreach ($plugins as $plugin) {
                 $sharedPlugins[$hookId][$plugin->cPluginID] = $plugin;
@@ -183,16 +190,18 @@ class Status
     protected function hasMobileTemplateIssue()
     {
         $oTemplate = Shop::DB()->select('ttemplate', 'eTyp', 'standard');
-        if (isset($oTemplate)) {
+        if (isset($oTemplate->cTemplate)) {
             $oTplData = TemplateHelper::getInstance(false)->getData($oTemplate->cTemplate);
             if ($oTplData->bResponsive) {
                 $oMobileTpl = Shop::DB()->select('ttemplate', 'eTyp', 'mobil');
                 if ($oMobileTpl !== null) {
-                    $cXMLFile = PFAD_ROOT . PFAD_TEMPLATES . $oMobileTpl->cTemplate . DIRECTORY_SEPARATOR . TEMPLATE_XML;
+                    $cXMLFile = PFAD_ROOT . PFAD_TEMPLATES . $oMobileTpl->cTemplate .
+                        DIRECTORY_SEPARATOR . TEMPLATE_XML;
                     if (file_exists($cXMLFile)) {
                         return true;
                     }
-                    // Wenn ein Template aktiviert aber physisch nicht vorhanden ist, dann ist der DB-Eintrag falsch und wird gelöscht
+                    // Wenn ein Template aktiviert aber physisch nicht vorhanden ist,
+                    // ist der DB-Eintrag falsch und wird gelöscht
                     Shop::DB()->delete('ttemplate', 'eTyp', 'mobil');
                 }
             }
@@ -216,10 +225,13 @@ class Status
      */
     protected function getSubscription()
     {
-        if (!isset($_SESSION['subscription']) || $_SESSION['subscription'] === null) {
+        if (!isset($_SESSION['subscription'])) {
             $_SESSION['subscription'] = jtlAPI::getSubscription();
         }
-        if (is_object($_SESSION['subscription']) && isset($_SESSION['subscription']->kShop) && (int)$_SESSION['subscription']->kShop > 0) {
+        if (is_object($_SESSION['subscription']) &&
+            isset($_SESSION['subscription']->kShop) &&
+            (int)$_SESSION['subscription']->kShop > 0
+        ) {
             return $_SESSION['subscription'];
         }
 
@@ -281,7 +293,13 @@ class Status
     protected function getPaymentMethodsWithError()
     {
         $incorrectPaymentMethods = [];
-        $paymentMethods          = Shop::DB()->selectAll('tzahlungsart', 'nActive', 1, '*', 'cAnbieter, cName, nSort, kZahlungsart');
+        $paymentMethods          = Shop::DB()->selectAll(
+            'tzahlungsart',
+            'nActive',
+            1,
+            '*',
+            'cAnbieter, cName, nSort, kZahlungsart'
+        );
 
         if (is_array($paymentMethods)) {
             foreach ($paymentMethods as $i => $method) {
@@ -293,7 +311,7 @@ class Status
                 }
 
                 foreach ($logs as $entry) {
-                    if (intval($entry->nLevel) === JTLLOG_LEVEL_ERROR) {
+                    if ((int)$entry->nLevel === JTLLOG_LEVEL_ERROR) {
                         $method->logs              = $logs;
                         $incorrectPaymentMethods[] = $method;
                         break;
@@ -304,4 +322,69 @@ class Status
 
         return $incorrectPaymentMethods;
     }
+
+    /**
+     * @return bool
+     */
+    protected function hasInvalidPollCoupons()
+    {
+        $aPollCoupons        = Shop::DB()->selectAll('tumfrage', 'nAktiv', 1);
+        $invalidCouponsFound = false;
+
+        if (count($aPollCoupons) > 0) {
+            foreach ($aPollCoupons as $Kupon) {
+                if ($Kupon->kKupon > 0){
+                    $kKupon = Shop::DB()->select(
+                        'tkupon',
+                        'kKupon',
+                        $Kupon->kKupon,
+                        'cAktiv',
+                        'Y',
+                        null,
+                        null,
+                        false,
+                        'kKupon'
+                    );
+                    $invalidCouponsFound = empty($kKupon);
+                }
+            }
+        }
+
+        return $invalidCouponsFound;
+    }
+
+    /**
+     * @return bool
+     */
+    protected function usesDeprecatedPriceImages()
+    {
+        $grafikPreise = Shop::DB()->selectAll('teinstellungen', 'kEinstellungenSektion', 118);
+
+        foreach ($grafikPreise as $preis) {
+            if ($preis->cWert === 'Y') {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @param bool $has
+     * @return array|bool
+     */
+    protected function getOrphanedCategories($has = true)
+    {
+        $categories = Shop::DB()->query("
+            SELECT kKategorie, cName
+                FROM tkategorie
+                WHERE kOberkategorie > 0
+                    AND kOberkategorie NOT IN (SELECT DISTINCT kKategorie FROM tkategorie)", 2
+        );
+
+        return ($has === true)
+            ? count($categories) === 0
+            : $categories;
+    }
+
 }

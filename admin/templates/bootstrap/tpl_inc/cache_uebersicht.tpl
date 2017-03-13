@@ -52,9 +52,9 @@
                         <thead>
                         <tr>
                             <th class="tleft">
-                                <input type="checkbox" class="massaction-checkboxx" id="massaction-main-switch" />
+                                <input type="checkbox" class="massaction-checkbox" id="massaction-main-switch" />
                             </th>
-                            <th class="tleft">{#type#}</th>
+                            <th class="tleft"><label style="margin-bottom:0;" for="massaction-main-switch">{#type#}</label></th>
                             <th class="tleft">{#description#}</th>
                             <th class="tleft">{#status#}</th>
                         </tr>
@@ -62,10 +62,12 @@
                         <tbody>
                         {foreach name=cgfe from=$caching_groups item=cg}
                             <tr class="{if ($smarty.foreach.cgfe.index % 2) === 0}even{else}odd{/if}">
-                                <td><input type="checkbox" class="massaction-checkbox" value="{$cg.value}" name="cache-types[]"></td>
+                                <td>
+                                    <input type="checkbox" class="massaction-checkbox" value="{$cg.value}" name="cache-types[]" id="group-cb-{$smarty.foreach.cgfe.index}">
+                                </td>
                                 <td>
                                     {assign var=nicename value=$cg.nicename}
-                                    {$smarty.config.$nicename}
+                                    <label for="group-cb-{$smarty.foreach.cgfe.index}">{$smarty.config.$nicename}</label>
                                 </td>
                                 <td>
                                     {assign var=description value=$cg.description}
@@ -109,9 +111,6 @@
                                 <span class="submit_wrap btn-group">
                                     <button name="a" type="submit" value="flush_object_cache" class="btn btn-default delete"{if !$cache_enabled} disabled="disabled"{/if}><i class="fa fa-trash"></i>&nbsp;{#clearObjectCache#}</button>
                                     <button name="a" type="submit" value="flush_template_cache" class="btn btn-default delete"><i class="fa fa-trash"></i>&nbsp;{#clearTemplateCache#}</button>
-                                    {if isset($options.page_cache) && $options.page_cache !== 0 && $options.page_cache !== false}
-                                        <button name="a" type="submit" value="flush_page_cache" class="btn btn-default delete"><i class="fa fa-trash"></i>&nbsp;{#clearPageCache#}</button>
-                                    {/if}
                                 </span>
                             </form>
                         </div>
@@ -452,6 +451,8 @@
                                                 </select>
                                             {elseif $setting->cInputTyp === 'number'}
                                                 <input class="form-control" type="number" name="{$setting->cWertName}" id="{$setting->cWertName}" value="{if isset($setting->gesetzterWert)}{$setting->gesetzterWert}{/if}" tabindex="1" />
+                                            {elseif $setting->cInputTyp === 'pass'}
+                                                <input class="form-control" type="password" name="{$setting->cWertName}" id="{$setting->cWertName}" value="{if isset($setting->gesetzterWert)}{$setting->gesetzterWert}{/if}" tabindex="1" />
                                             {else}
                                                 <input class="form-control" type="text" name="{$setting->cWertName}" id="{$setting->cWertName}" value="{if isset($setting->gesetzterWert)}{$setting->gesetzterWert}{/if}" tabindex="1" />
                                             {/if}
@@ -464,40 +465,6 @@
                             {/foreach}
                         </div>
                     </div>
-                    {if isset($expert_settings) && $expert_settings !== null}
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <h3 class="panel-title">Experten</h3>
-                            </div>
-                            <div class="panel-body">
-                                {foreach name=conf from=$expert_settings item=setting}
-                                    {if $setting->cConf === 'Y'}
-                                        <div class="input-group">
-                                            <span class="input-group-addon">
-                                                <label for="{$setting->cWertName}">{$setting->cName}</label>
-                                            </span>
-                                            <span class="input-group-wrap">
-                                                {if $setting->cInputTyp === 'selectbox'}
-                                                    <select name="{$setting->cWertName}" id="{$setting->cWertName}" class="form-control">
-                                                        {foreach name=selectfor from=$setting->ConfWerte item=wert}
-                                                            <option value="{$wert->cWert}" {if isset($setting->gesetzterWert) && $setting->gesetzterWert == $wert->cWert}selected{/if}>{$wert->cName}</option>
-                                                        {/foreach}
-                                                    </select>
-                                                {elseif $setting->cInputTyp === 'number'}
-                                                    <input class="form-control" type="number" name="{$setting->cWertName}" id="{$setting->cWertName}" value="{if isset($setting->gesetzterWert)}{$setting->gesetzterWert}{/if}" tabindex="1" />
-                                                {else}
-                                                    <input class="form-control" type="text" name="{$setting->cWertName}" id="{$setting->cWertName}" value="{if isset($setting->gesetzterWert)}{$setting->gesetzterWert}{/if}" tabindex="1" />
-                                                {/if}
-                                            </span>
-                                            {if isset($setting->cBeschreibung)}
-                                                <span class="input-group-addon">{getHelpDesc cDesc=$setting->cBeschreibung}</span>
-                                            {/if}
-                                        </div>
-                                    {/if}
-                                {/foreach}
-                            </div>
-                        </div>
-                    {/if}
                 </div>
                 <p class="submit">
                     <button name="speichern" type="submit" value="{#save#}" class="btn btn-primary"><i class="fa fa-save"></i> {#save#}</button>

@@ -1,6 +1,17 @@
 <?php
 
-// Get Currencies for 'ToCurrency' Section ----------------------------------------------------------------
+/**
+ * Get Currencies for 'ToCurrency'
+ *
+ * @param $proxySTP
+ * @param $languageShop
+ * @param $Currency
+ * @param $txtAmount
+ * @param $txtToCurrency
+ * @param $calculationQuoteReferenceNo
+ * @param $calculationQuoteToAmount
+ * @return string
+ */
 function stp_GetCurrencies($proxySTP, $languageShop, $Currency, $txtAmount, &$txtToCurrency, &$calculationQuoteReferenceNo, &$calculationQuoteToAmount)
 {
     $optionsCurrencies = '';
@@ -11,7 +22,7 @@ function stp_GetCurrencies($proxySTP, $languageShop, $Currency, $txtAmount, &$tx
                 if ($txtToCurrency == $value['Code']) {
                     $txtToCurrency = $value['Code'];
                     $optionsCurrencies .=  '<option value="' . $value['Code'] . '" selected>' . $value['Name'] . "</option>\n";
-                } elseif (($value['Code'] == 'USD') && ($key == 0)) {
+                } elseif ($value['Code'] === 'USD' && $key == 0) {
                     $txtToCurrency = $value['Code'];
                     $optionsCurrencies .=  '<option value="' . $value['Code'] . '" selected>' . $value['Name'] . "</option>\n";
                 } else {
@@ -36,7 +47,13 @@ function stp_GetCurrencies($proxySTP, $languageShop, $Currency, $txtAmount, &$tx
     return $optionsCurrencies;
 }
 
-// Get Banks availables for 'BankID' Section ----------------------------------------------------------------
+/**
+ * Get Banks availables for 'BankID'
+ *
+ * @param $proxySTP
+ * @param $txtToCurrency
+ * @return string
+ */
 function stp_GetBanks($proxySTP, $txtToCurrency)
 {
     $optionsBanks = '';
@@ -61,7 +78,22 @@ function stp_GetBanks($proxySTP, $txtToCurrency)
     return $optionsBanks;            // return string data
 }
 
-// Create Transaction ----------------------------------------------------------------
+/**
+ * Create Transaction
+ *
+ * @param $proxySTP
+ * @param $Currency
+ * @param $txtAmount
+ * @param $ToCurrency
+ * @param $MerchantReferenceNo
+ * @param $languageShop
+ * @param $calculationQuoteReferenceNo
+ * @param $TrackingCode
+ * @param $BankID
+ * @param $urlOK
+ * @param $urlKO
+ * @return string
+ */
 function stp_CreateTransaction($proxySTP, $Currency, $txtAmount, $ToCurrency, $MerchantReferenceNo, $languageShop, $calculationQuoteReferenceNo, $TrackingCode, $BankID, $urlOK, $urlKO)
 {
     unset($TransactionData);

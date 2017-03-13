@@ -4,9 +4,10 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-require_once dirname(__FILE__) . '/syncinclude.php';
+require_once __DIR__ . '/syncinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
+require_once PFAD_ROOT . PFAD_INCLUDES . 'tools.Global.php';
 
 $return = 3;
 $kKunde = 0;
@@ -26,7 +27,8 @@ if (auth()) {
             $return = 0;
             foreach ($list as $zip) {
                 if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                    Jtllog::writeLog('bearbeite: ' . PFAD_SYNC_TMP . $zip['filename'] . ' size: ' . filesize(PFAD_SYNC_TMP . $zip['filename']), JTLLOG_LEVEL_DEBUG, false, 'SetKunde_xml');
+                    Jtllog::writeLog('bearbeite: ' . PFAD_SYNC_TMP . $zip['filename'] . ' size: ' .
+                        filesize(PFAD_SYNC_TMP . $zip['filename']), JTLLOG_LEVEL_DEBUG, false, 'SetKunde_xml');
                 }
                 $d   = file_get_contents(PFAD_SYNC_TMP . $zip['filename']);
                 $xml = XML_unserialize($d);
@@ -40,7 +42,7 @@ if (auth()) {
     }
 }
 
-if ($return == 1) {
+if ($return === 2) {
     syncException('Error : ' . $archive->errorInfo(true));
 }
 
@@ -56,20 +58,23 @@ if (is_array($res)) {
  */
 function bearbeite($xml)
 {
-    $res_obj              = array();
+    $res_obj              = [];
     $nr                   = 0;
     $Kunde                = new Kunde();
     $Kunde->kKundengruppe = 0;
-    $oKundenattribut_arr  = array();
+    $oKundenattribut_arr  = [];
 
     if (is_array($xml['tkunde attr'])) {
-        $Kunde->kKundengruppe = intval($xml['tkunde attr']['kKundengruppe']);
-        $Kunde->kSprache      = intval($xml['tkunde attr']['kSprache']);
+        $Kunde->kKundengruppe = (int)$xml['tkunde attr']['kKundengruppe'];
+        $Kunde->kSprache      = (int)$xml['tkunde attr']['kSprache'];
     }
     if (is_array($xml['tkunde'])) {
         mappe($Kunde, $xml['tkunde'], $GLOBALS['mKunde']);
         // Kundenattribute
-        if (isset($xml['tkunde']['tkundenattribut']) && is_array($xml['tkunde']['tkundenattribut']) && count($xml['tkunde']['tkundenattribut']) > 0) {
+        if (isset($xml['tkunde']['tkundenattribut']) &&
+            is_array($xml['tkunde']['tkundenattribut']) &&
+            count($xml['tkunde']['tkundenattribut']) > 0
+        ) {
             $cMember_arr = array_keys($xml['tkunde']['tkundenattribut']);
 
             if ($cMember_arr[0] == '0') {
@@ -97,7 +102,7 @@ function bearbeite($xml)
             $Kunde->kSprache = $oSprache->kSprache;
         }
 
-        $kInetKunde = intval($xml['tkunde attr']['kKunde']);
+        $kInetKunde = (int)$xml['tkunde attr']['kKunde'];
         $oKundeAlt  = new stdClass();
         if ($kInetKunde > 0) {
             $oKundeAlt = new Kunde($kInetKunde);
@@ -112,10 +117,26 @@ function bearbeite($xml)
             $Kunde->cAktiv       = 'Y';
             $Kunde->dVeraendert  = 'now()';
             
-            //keep login-credentials! fixes jtlshop/jtl-shop#267
-            $Kunde->cMail        = $oKundeAlt->cMail;
+            if ($Kunde->cMail !== $oKundeAlt->cMail) {
+                // E-Mail Adresse geändert - Verwendung prüfen!
+                if (!valid_email($Kunde->cMail) ||
+                    pruefeEmailblacklist($Kunde->cMail) ||
+                    Shop::DB()->select('tkunde', 'cMail', $Kunde->cMail, 'nRegistriert', 1) !== null
+                ) {
+                    // E-Mail ist invalid, blacklisted bzw. wird bereits im Shop verwendet - die Änderung wird zurückgewiesen.
+                    $res_obj['keys']['tkunde attr']['kKunde'] = 0;
+                    $res_obj['keys']['tkunde']   = '';
+
+                    return $res_obj;
+                }
+
+                // Mail an Kunden mit Info, dass Zugang verändert wurde
+                $obj         = new stdClass();
+                $obj->tkunde = $Kunde;
+                sendeMail(MAILTEMPLATE_ACCOUNTERSTELLUNG_DURCH_BETREIBER, $obj);
+            }
+
             $Kunde->cPasswort    = $oKundeAlt->cPasswort;
-            
             $Kunde->nRegistriert = $oKundeAlt->nRegistriert;
             $Kunde->dErstellt    = $oKundeAlt->dErstellt;
             $Kunde->fGuthaben    = $oKundeAlt->fGuthaben;
@@ -129,7 +150,7 @@ function bearbeite($xml)
             }
             // Hausnummer extrahieren
             extractStreet($Kunde);
-            //DBUpdateInsert('tkunde', array($Kunde), 'kKunde');
+            //DBUpdateInsert('tkunde', [$Kunde], 'kKunde');
 
             $Kunde->updateInDB();
             // Kundendatenhistory
@@ -148,22 +169,29 @@ function bearbeite($xml)
                 $res_obj['keys']['tkunde']                = '';
 
                 if (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-                    Jtllog::writeLog('Verknuepfter Kunde in Wawi existiert nicht im Shop: ' . XML_serialize($res_obj), JTLLOG_LEVEL_ERROR, false, 'SetKunde_xml');
+                    Jtllog::writeLog('Verknuepfter Kunde in Wawi existiert nicht im Shop: ' .
+                        XML_serialize($res_obj), JTLLOG_LEVEL_ERROR, false, 'SetKunde_xml');
                 }
 
                 return $res_obj;
             }
             //Kunde existiert nicht im Shop - check, ob email schon belegt
-            $oKundeAlt = Shop::DB()->query("SELECT kKunde FROM tkunde WHERE nRegistriert = 1 AND cMail = '" . Shop::DB()->escape($Kunde->cMail) . "'", 1);
+            $oKundeAlt = Shop::DB()->select(
+                'tkunde',
+                'nRegistriert', 1,
+                'cMail', Shop::DB()->escape($Kunde->cMail),
+                null, null,
+                false,
+                'kKunde'
+            );
             if (isset($oKundeAlt->kKunde) && $oKundeAlt->kKunde > 0) {
                 //EMAIL SCHON BELEGT -> Kunde wird nicht neu angelegt, sondern der Kunde wird an Wawi zurückgegeben
                 $xml_obj['kunden']['tkunde']      = Shop::DB()->query(
                     "SELECT kKunde, kKundengruppe, kSprache, cKundenNr, cPasswort, cAnrede, cTitel, cVorname,
-                        cNachname, cFirma, cZusatz, cStrasse, cHausnummer, cAdressZusatz, cPLZ, cOrt, cBundesland, cLand, cTel,
-                        cMobil, cFax, cMail, cUSTID, cWWW, fGuthaben, cNewsletter, dGeburtstag, fRabatt,
+                        cNachname, cFirma, cZusatz, cStrasse, cHausnummer, cAdressZusatz, cPLZ, cOrt, cBundesland, 
+                        cLand, cTel, cMobil, cFax, cMail, cUSTID, cWWW, fGuthaben, cNewsletter, dGeburtstag, fRabatt,
                         cHerkunft, dErstellt, dVeraendert, cAktiv, cAbgeholt,
-                        date_format(dGeburtstag, '%d.%m.%Y') AS dGeburtstag_formatted,
-                        nRegistriert
+                        date_format(dGeburtstag, '%d.%m.%Y') AS dGeburtstag_formatted, nRegistriert
                         FROM tkunde
                         WHERE kKunde = " . (int)$oKundeAlt->kKunde, 9
                 );
@@ -182,10 +210,15 @@ function bearbeite($xml)
 
                 unset($xml_obj['kunden']['tkunde'][0]['cPasswort']);
                 $xml_obj['kunden']['tkunde']['0 attr']             = buildAttributes($xml_obj['kunden']['tkunde'][0]);
-                $xml_obj['kunden']['tkunde'][0]['tkundenattribut'] = Shop::DB()->query("SELECT * FROM tkundenattribut WHERE kKunde = " . (int)$xml_obj['kunden']['tkunde']['0 attr']['kKunde'], 9);
+                $xml_obj['kunden']['tkunde'][0]['tkundenattribut'] = Shop::DB()->query("
+                    SELECT * 
+                        FROM tkundenattribut
+                         WHERE kKunde = " . (int)$xml_obj['kunden']['tkunde']['0 attr']['kKunde'], 9
+                );
                 $kundenattribute_anz                               = count($xml_obj['kunden']['tkunde'][0]['tkundenattribut']);
                 for ($o = 0; $o < $kundenattribute_anz; $o++) {
-                    $xml_obj['kunden']['tkunde'][0]['tkundenattribut'][$o . ' attr'] = buildAttributes($xml_obj['kunden']['tkunde'][0]['tkundenattribut'][$o]);
+                    $xml_obj['kunden']['tkunde'][0]['tkundenattribut'][$o . ' attr'] =
+                        buildAttributes($xml_obj['kunden']['tkunde'][0]['tkundenattribut'][$o]);
                 }
                 if (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
                     Jtllog::writeLog('Dieser Kunde existiert: ' . XML_serialize($xml_obj), JTLLOG_LEVEL_ERROR, false, 'SetKunde_xml');
@@ -195,8 +228,8 @@ function bearbeite($xml)
             }
             //Email noch nicht belegt, der Kunde muss neu erstellt werden -> KUNDE WIRD NEU ERSTELLT
             $Kunde->dErstellt         = 'now()';
-            $Kunde->cPasswortKlartext = $Kunde->generatePassword(12);//strtoupper(gibUID(8));
-            $Kunde->cPasswort         = $Kunde->generatePasswordHash($Kunde->cPasswortKlartext);//cryptPasswort($cPasswortKlartext);
+            $Kunde->cPasswortKlartext = $Kunde->generatePassword(12);
+            $Kunde->cPasswort         = $Kunde->generatePasswordHash($Kunde->cPasswortKlartext);
             $Kunde->nRegistriert      = 1;
             $Kunde->cAbgeholt         = 'Y';
             $Kunde->cAktiv            = 'Y';
@@ -207,8 +240,7 @@ function bearbeite($xml)
             if ($Kunde->cMail) {
                 sendeMail(MAILTEMPLATE_ACCOUNTERSTELLUNG_DURCH_BETREIBER, $obj);
             }
-            unset($Kunde->cPasswortKlartext);
-            unset($Kunde->Anrede);
+            unset($Kunde->cPasswortKlartext, $Kunde->Anrede);
             $kInetKunde = $Kunde->insertInDB();
 
             if (count($oKundenattribut_arr) > 0) {
@@ -244,7 +276,7 @@ function bearbeite($xml)
                         $Lieferadresse->cZusatz   = verschluesselXTEA(trim($Lieferadresse->cZusatz));
                         $Lieferadresse->cStrasse  = verschluesselXTEA(trim($Lieferadresse->cStrasse));
                         $Lieferadresse->cAnrede   = mappeWawiAnrede2ShopAnrede($Lieferadresse->cAnrede);
-                        DBUpdateInsert('tlieferadresse', array($Lieferadresse), 'kLieferadresse');
+                        DBUpdateInsert('tlieferadresse', [$Lieferadresse], 'kLieferadresse');
                     } else {
                         $Lieferadresse->kKunde = $kInetKunde;
                         mappe($Lieferadresse, $xml['tkunde']['tadresse'][$i], $GLOBALS['mLieferadresse']);
@@ -258,7 +290,8 @@ function bearbeite($xml)
                         $Lieferadresse->cAnrede   = mappeWawiAnrede2ShopAnrede($Lieferadresse->cAnrede);
                         $kInetLieferadresse       = DBinsert('tlieferadresse', $Lieferadresse);
                         if ($kInetLieferadresse > 0) {
-                            $res_obj['keys']['tkunde']['tadresse'][$nr . ' attr']['kAdresse']     = $xml['tkunde']['tadresse'][$i . ' attr']['kAdresse'];
+                            $res_obj['keys']['tkunde']['tadresse'][$nr . ' attr']['kAdresse']     =
+                                $xml['tkunde']['tadresse'][$i . ' attr']['kAdresse'];
                             $res_obj['keys']['tkunde']['tadresse'][$nr . ' attr']['kInetAdresse'] = $kInetLieferadresse;
                             $res_obj['keys']['tkunde']['tadresse'][$nr]                           = '';
                             $nr++;
@@ -283,7 +316,7 @@ function bearbeite($xml)
                     $Lieferadresse->cZusatz   = verschluesselXTEA(trim($Lieferadresse->cZusatz));
                     $Lieferadresse->cStrasse  = verschluesselXTEA(trim($Lieferadresse->cStrasse));
                     $Lieferadresse->cAnrede   = mappeWawiAnrede2ShopAnrede($Lieferadresse->cAnrede);
-                    DBUpdateInsert('tlieferadresse', array($Lieferadresse), 'kLieferadresse');
+                    DBUpdateInsert('tlieferadresse', [$Lieferadresse], 'kLieferadresse');
                 } else {
                     if (!isset($Lieferadresse)) {
                         $Lieferadresse = new stdClass();
@@ -337,7 +370,11 @@ function speicherKundenattribut($kKunde, $kSprache, $oKundenattribut_arr, $bNeu)
                     continue;
                 }
                 if (!$bNeu) {
-                    Shop::DB()->delete('tkundenattribut', ['kKunde', 'kKundenfeld'], [$kKunde, (int)$oKundenfeld->kKundenfeld]);
+                    Shop::DB()->delete(
+                        'tkundenattribut',
+                        ['kKunde', 'kKundenfeld'],
+                        [$kKunde, (int)$oKundenfeld->kKundenfeld]
+                    );
                 }
                 $oKundenattributTMP              = new stdClass();
                 $oKundenattributTMP->kKunde      = $kKunde;

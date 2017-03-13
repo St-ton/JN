@@ -14,7 +14,8 @@
                     {include file="snippets/image.tpl" src=$Artikel->Bilder[0]->cPfadNormal alt=$alt tplscope=$tplscope}
 
                     {if isset($Artikel->oSuchspecialBild)}
-                        <img class="overlay-img visible-lg" src="{$Artikel->oSuchspecialBild->cPfadKlein}" alt="{if isset($Artikel->oSuchspecialBild->cSuchspecial)}{$Artikel->oSuchspecialBild->cSuchspecial}{else}{$Artikel->cName}{/if}">
+                        <img class="overlay-img visible-lg" src="{$Artikel->oSuchspecialBild->cPfadKlein}"
+                             alt="{if isset($Artikel->oSuchspecialBild->cSuchspecial)}{$Artikel->oSuchspecialBild->cSuchspecial}{else}{$Artikel->cName}{/if}">
                     {/if}
                 </a>
             {/block}
@@ -23,7 +24,12 @@
             {/if}
         </div>
         <div class="col-xs-6 col-lg-5">
-            {block name="product-title"}<h4 class="title"><a href="{$Artikel->cURL}">{$Artikel->cName}</a></h4>{/block}
+            {block name="product-title"}
+                <h4 class="title" itemprop="name">
+                    <a href="{$Artikel->cURL}">{$Artikel->cName}</a>
+                </h4>
+                <meta itemprop="url" content="{$ShopURL}/{$Artikel->cURL}">
+            {/block}
             {block name="product-manufacturer"}
                 {if $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen !== 'N'}
                     <div class="media hidden-xs top0 bottom5">
@@ -72,7 +78,7 @@
                             </li>
                         {/if}
                         {if isset($Artikel->cArtikelgewicht) && $Einstellungen.artikeluebersicht.artikeluebersicht_artikelgewicht_anzeigen === 'Y' && $Artikel->fArtikelgewicht > 0}
-                            <li class="item row attr-weight">
+                            <li class="item row attr-weight weight-unit-article">
                                 <span class="attr-label col-sm-5">{lang key="productWeight" section="global"}: </span>
                                 <span class="value col-sm-7">{$Artikel->cArtikelgewicht} {lang key="weightUnit" section="global"}</span>
                             </li>
@@ -118,7 +124,7 @@
                             <div class="availablefrom">
                                 <small>{lang key="productAvailable" section="global"}: {$Artikel->Erscheinungsdatum_de}</small>
                             </div>
-                            {if $Einstellungen.global.global_erscheinende_kaeuflich === 'Y' && $Artikel->inWarenkorbLegbar == 1}
+                            {if $Einstellungen.global.global_erscheinende_kaeuflich === 'Y' && $Artikel->inWarenkorbLegbar === 1}
                                 <div class="attr attr-preorder"><small class="value">{lang key="preorderPossible" section="global"}</small></div>
                             {/if}
                         {elseif $anzeige !== 'nichts' && $Artikel->cLagerBeachten === 'Y' && ($Artikel->cLagerKleinerNull === 'N' ||
@@ -144,15 +150,12 @@
 
                     <div class="hidden-xs basket-details">
                         {block name="basket-details"}
-                            {if ($Artikel->inWarenkorbLegbar == 1 || ($Artikel->nErscheinendesProdukt == 1 && $Einstellungen.global.global_erscheinende_kaeuflich === 'Y')) && $Artikel->nIstVater == 0 && $Artikel->Variationen|@count == 0 && !$Artikel->bHasKonfig}
+                            {if ($Artikel->inWarenkorbLegbar === 1 || ($Artikel->nErscheinendesProdukt === 1 && $Einstellungen.global.global_erscheinende_kaeuflich === 'Y')) && $Artikel->nIstVater === 0 && $Artikel->Variationen|@count === 0 && !$Artikel->bHasKonfig}
                                 <div class="quantity-wrapper form-group top7">
                                     {if $Artikel->cEinheit}
                                         <div class="input-group input-group-sm">
                                             <input type="number" min="0"{if $Artikel->fAbnahmeintervall > 0} step="{$Artikel->fAbnahmeintervall}"{/if} size="2" onfocus="this.setAttribute('autocomplete', 'off');" id="quantity{$Artikel->kArtikel}" class="quantity form-control text-right" name="anzahl" value="{if $Artikel->fAbnahmeintervall > 0}{if $Artikel->fMindestbestellmenge > $Artikel->fAbnahmeintervall}{$Artikel->fMindestbestellmenge}{else}{$Artikel->fAbnahmeintervall}{/if}{else}1{/if}" />
-
-                                            {if $Artikel->cEinheit}
-                                                <span class="input-group-addon unit">{$Artikel->cEinheit}</span>
-                                            {/if}
+                                            <span class="input-group-addon unit">{$Artikel->cEinheit}</span>
                                         </div>
                                         <div class="input-group input-group-sm">
                                             <span class="change_quantity input-group-btn">
@@ -218,11 +221,11 @@
                 {/block}
             </form>
 
-            <form action="navi.php" method="post" class="hidden-sm hidden-xs product-actions">
+            <form action="" method="post" class="hidden-sm hidden-xs product-actions" data-toggle="product-actions">
                 {$jtl_token}
                 <div class="actions btn-group btn-group-xs btn-group-justified" role="group" aria-label="...">
                 {block name="product-actions"}
-                    {if !($Artikel->nIstVater && $Artikel->kVaterArtikel == 0)}
+                    {if !($Artikel->nIstVater && $Artikel->kVaterArtikel === 0)}
                         {if $Einstellungen.artikeluebersicht.artikeluebersicht_vergleichsliste_anzeigen === 'Y'}
                             <div class="btn-group btn-group-xs" role="group">
                                 <button name="Vergleichsliste" type="submit" class="compare btn btn-default" title="{lang key="addToCompare" section="productOverview"}">
@@ -237,7 +240,7 @@
                                 </button>
                             </div>
                         {/if}
-                        {if $Artikel->verfuegbarkeitsBenachrichtigung == 3 && (($Artikel->cLagerBeachten === 'Y' && $Artikel->cLagerKleinerNull !== 'Y') || $Artikel->cLagerBeachten !== 'Y')}
+                        {if $Artikel->verfuegbarkeitsBenachrichtigung === 3 && (($Artikel->cLagerBeachten === 'Y' && $Artikel->cLagerKleinerNull !== 'Y') || $Artikel->cLagerBeachten !== 'Y')}
                             <div class="btn-group btn-group-xs" role="group">
                                 <button type="button" id="n{$Artikel->kArtikel}" class="popup-dep notification btn btn-default btn-left" title="{lang key="requestNotification" section="global"}">
                                     <span class="fa fa-bell"></span>
@@ -254,7 +257,7 @@
 </div>{* /product-cell *}
 
 {* popup-content *}
-{if $Artikel->verfuegbarkeitsBenachrichtigung == 3}
+{if $Artikel->verfuegbarkeitsBenachrichtigung === 3}
     <div id="popupn{$Artikel->kArtikel}" class="hidden">
         {include file='productdetails/availability_notification_form.tpl' position="popup" tplscope='artikeldetails'}
     </div>

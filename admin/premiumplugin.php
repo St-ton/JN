@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/admininclude.php';
+require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('PLUGIN_ADMIN_VIEW', true, true);
 /** @global JTLSmarty $smarty */
@@ -13,7 +13,7 @@ $step          = 'uebersicht';
 
 setzeSprache();
 
-$pluginID = (isset($_GET['plugin_id'])) ? $_GET['plugin_id'] : 's360_amazon_lpa_shop4';
+$pluginID = isset($_GET['plugin_id']) ? $_GET['plugin_id'] : 's360_amazon_lpa_shop4';
 $pp       = null;
 if (!empty($pluginID)) {
     $pp = new PremiumPlugin($pluginID);
@@ -53,13 +53,13 @@ if (!empty($pluginID)) {
         $sp                        = new stdClass();
         $sp->kServicePartner       = 519;
         $sp->marketPlaceURL        = 'https://www.jtl-software.de/Servicepartner-Detailansicht?id=' . $sp->kServicePartner;
-        $sp->oZertifizierungen_arr = array(
+        $sp->oZertifizierungen_arr = [
             'https://bilder.jtl-software.de/zertifikat/jtl_premium_sp_280.png',
             'https://bilder.jtl-software.de/zertifikat/jtl_cert_badge_1_280.png',
             'https://bilder.jtl-software.de/zertifikat/jtl_cert_badge_6_280.png',
             'https://bilder.jtl-software.de/zertifikat/jtl_cert_badge_7_280.png',
             'https://bilder.jtl-software.de/zertifikat/jtl_cert_badge_8_280.png',
-        );
+        ];
         $sp->cLogoPfad             = 'https://bilder.jtl-software.de/splogos/kServicepartner_519.png';
         $sp->cFirma                = 'Solution 360 GmbH';
         $sp->cPLZ                  = '10179';
@@ -120,8 +120,8 @@ if (!empty($pluginID)) {
         $sp                        = new stdClass();
         $sp->kServicePartner       = 0;
         $sp->marketPlaceURL        = null;
-        $sp->oZertifizierungen_arr = array();
-        $sp->cLogoPfad             = $baseURL . 'agws_ts_features_logo.png';;
+        $sp->oZertifizierungen_arr = [];
+        $sp->cLogoPfad             = $baseURL . 'agws_ts_features_logo.png';
         $sp->cFirma                = 'Trusted Shops GmbH';
         $sp->cPLZ                  = '50823';
         $sp->cOrt                  = utf8_decode('Köln');

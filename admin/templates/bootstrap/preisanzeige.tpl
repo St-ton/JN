@@ -4,6 +4,9 @@
 
 {include file='tpl_inc/seite_header.tpl' cTitel=#priceNotification# cBeschreibung=#information# cDokuURL=#priceURL#}
 <div id="content" class="container-fluid">
+    <div class="alert alert-warning">
+        <i class="fa fa-warning"></i> {#priceNotificationDeprecated#}
+    </div>
     <div class="alert alert-info">
         {#priceInfo#}
     </div>

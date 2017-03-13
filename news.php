@@ -9,9 +9,8 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'news_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'seite_inc.php';
 /** @global JTLSmarty $smarty */
 if (Shop::$directEntry === true) {
-    Shop::run();
+    $NaviFilter     = Shop::run();
     $cParameter_arr = Shop::getParameters();
-    $NaviFilter     = Shop::buildNaviFilter($cParameter_arr);
     Shop::setPageType(PAGE_NEWS);
 } else {
     $cParameter_arr = [];

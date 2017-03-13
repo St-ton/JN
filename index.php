@@ -6,9 +6,9 @@
 require __DIR__ . '/includes/globalinclude.php';
 require PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
 /** @global JTLSmarty $smarty */
-Shop::run();
+
+$NaviFilter     = Shop::run();
 $cParameter_arr = Shop::getParameters();
-$NaviFilter     = Shop::buildNaviFilter($cParameter_arr);
 $https          = false;
 $linkHelper     = LinkHelper::getInstance();
 if (Shop::$kLink > 0) {

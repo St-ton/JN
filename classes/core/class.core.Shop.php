@@ -733,6 +733,8 @@ final class Shop
         $_SESSION['cTemplate'] = Template::$cTemplate;
 
         self::Event()->fire('shop.run');
+
+        return self::buildNaviFilter(self::getParameters());
     }
 
     /**

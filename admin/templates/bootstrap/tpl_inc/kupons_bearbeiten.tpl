@@ -182,6 +182,7 @@
                                 </option>
                             </select>
                         </span>
+                        <span class="input-group-addon">{getHelpDesc cDesc=#wholeWKDiscountHint#}</span>
                     </div>
                     <div class="input-group">
                         <span class="input-group-addon">

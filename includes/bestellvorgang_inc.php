@@ -829,101 +829,53 @@ function plausiNeukundenKupon()
     if (isset($_SESSION['NeukundenKuponAngenommen']) && $_SESSION['NeukundenKuponAngenommen'] === true) {
         return;
     }
-    if (!isset($_SESSION['Kupon']->cKuponTyp) || $_SESSION['Kupon']->cKuponTyp !== 'standard') {
-        // Registrierte Kunden
-        if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
-            $oBestellung = Shop::DB()->executeQueryPrepared(
-                "SELECT tbestellung.kBestellung
-                    FROM tkunde
-                    JOIN tbestellung 
-                        ON tbestellung.kKunde = tkunde.kKunde
-                    WHERE tkunde.cMail = :mail
-                        OR tkunde.kKunde = :kkunde
-                    LIMIT 1",
-                ['mail' => $_SESSION['Kunde']->cMail, 'kkunde' => $_SESSION['Kunde']->kKunde],
-                1
-            );
-            $verwendet = Shop::DB()->select('tkuponneukunde', 'cEmail', $_SESSION['Kunde']->cMail);
-            $verwendet = !empty($verwendet) ? $verwendet->cVerwendet : null;
-            if (empty($oBestellung)) {
-                $NeukundenKupons = (new Kupon())->getNewCustomerCoupon();
-                if ($NeukundenKupons !== false) {
-                    foreach ($NeukundenKupons as $NeukundenKupon) {
-                        if ((empty($verwendet) || $verwendet === 'N') && angabenKorrekt(checkeKupon($NeukundenKupon))) {
-                            kuponAnnehmen($NeukundenKupon);
-                            if (empty($verwendet)) {
-                                $hash = Kuponneukunde::Hash(
-                                    null,
-                                    trim($_SESSION['Kunde']->cNachname),
-                                    trim($_SESSION['Kunde']->cStrasse),
-                                    null,
-                                    trim($_SESSION['Kunde']->cPLZ),
-                                    trim($_SESSION['Kunde']->cOrt),
-                                    trim($_SESSION['Kunde']->cLand)
-                                );
-                                $Options = [
-                                    'Kupon' => $NeukundenKupon->kKupon,
-                                    'Email' => $_SESSION['Kunde']->cMail,
-                                    'DatenHash' => $hash,
-                                    'Erstellt' => 'now()',
-                                    'Verwendet' => 'N'
-                                ];
-                                $Kuponneukunde = new Kuponneukunde();
-                                $Kuponneukunde->setOptions($Options);
-                                $Kuponneukunde->Save();
-                            }
-                            break;
-                        }
-                    }
-                }
-            }
+    if ((!isset($_SESSION['Kupon']->cKuponTyp) || $_SESSION['Kupon']->cKuponTyp !== 'standard') && !empty($_SESSION['Kunde']->cMail)) {
+        $query = "SELECT tbestellung.kBestellung
+            FROM tkunde
+            JOIN tbestellung
+                ON tbestellung.kKunde = tkunde.kKunde
+            WHERE tkunde.cMail = :mail";
+        $values = ['mail' => $_SESSION['Kunde']->cMail];
+        $conf = Shop::getSettings([CONF_KAUFABWICKLUNG]);
+        if (!empty($_SESSION['Kunde']->kKunde) && $conf['kaufabwicklung']['bestellvorgang_unregneukundenkupon_zulassen'] === 'N') {
+            $query .= " OR tkunde.kKunde = :kkunde";
+            $values["kkunde"] = $_SESSION['Kunde']->kKunde;
         } else {
-            $conf = Shop::getSettings([CONF_KAUFABWICKLUNG]);
-            if ($conf['kaufabwicklung']['bestellvorgang_unregneukundenkupon_zulassen'] === 'N') {
-                return;
-            }
-            $oBestellung = Shop::DB()->executeQueryPrepared(
-                "SELECT tbestellung.kBestellung
-                    FROM tkunde
-                    JOIN tbestellung 
-                        ON tbestellung.kKunde = tkunde.kKunde
-                    WHERE tkunde.cMail = :mail
-                        OR tkunde.kKunde = :kkunde
-                    LIMIT 1",
-                ['mail' => $_SESSION['Kunde']->cMail, 'kkunde' => $_SESSION['Kunde']->kKunde],
-                1
-            );
-            $hash = Kuponneukunde::Hash(
-                null,
-                trim($_SESSION['Kunde']->cNachname),
-                trim($_SESSION['Kunde']->cStrasse),
-                null,
-                trim($_SESSION['Kunde']->cPLZ),
-                trim($_SESSION['Kunde']->cOrt),
-                trim($_SESSION['Kunde']->cLand)
-            );
-            if (empty($oBestellung)) {
-                $NeukundenKupons = (new Kupon())->getNewCustomerCoupon();
-                if ($NeukundenKupons !== false) {
-                    $verwendet = Shop::DB()->select('tkuponneukunde', 'cEmail', $_SESSION['Kunde']->cMail);
-                    $verwendet = !empty($verwendet) ? $verwendet->cVerwendet : null;
-                    foreach ($NeukundenKupons as $NeukundenKupon) {
-                        if ((empty($verwendet) || $verwendet === 'N') && angabenKorrekt(checkeKupon($NeukundenKupon))) {
-                            kuponAnnehmen($NeukundenKupon);
-                            if (empty($verwendet)) {
-                                $Options = [
-                                    'Kupon'     => $NeukundenKupon->kKupon,
-                                    'Email'     => $_SESSION['Kunde']->cMail,
-                                    'DatenHash' => $hash,
-                                    'Erstellt'  => 'now()',
-                                    'Verwendet' => 'N'
-                                ];
-                                $Kuponneukunde = new Kuponneukunde();
-                                $Kuponneukunde->setOptions($Options);
-                                $Kuponneukunde->Save();
-                            }
-                            break;
+            return;
+        }
+        $query .= " LIMIT 1";
+        $oBestellung = Shop::DB()->executeQueryPrepared($query, $values, 1);
+
+        if (empty($oBestellung)) {
+            $NeukundenKupons = (new Kupon())->getNewCustomerCoupon();
+            if ($NeukundenKupons !== false) {
+                $verwendet = Shop::DB()->select('tkuponneukunde', 'cEmail', $_SESSION['Kunde']->cMail);
+                $verwendet = !empty($verwendet) ? $verwendet->cVerwendet : null;
+                foreach ($NeukundenKupons as $NeukundenKupon) {
+                    if ((empty($verwendet) || $verwendet === 'N') && angabenKorrekt(checkeKupon($NeukundenKupon))) {
+                        kuponAnnehmen($NeukundenKupon);
+                        if (empty($verwendet)) {
+                            $hash = Kuponneukunde::Hash(
+                                null,
+                                trim($_SESSION['Kunde']->cNachname),
+                                trim($_SESSION['Kunde']->cStrasse),
+                                null,
+                                trim($_SESSION['Kunde']->cPLZ),
+                                trim($_SESSION['Kunde']->cOrt),
+                                trim($_SESSION['Kunde']->cLand)
+                            );
+                            $Options = [
+                                'Kupon' => $NeukundenKupon->kKupon,
+                                'Email' => $_SESSION['Kunde']->cMail,
+                                'DatenHash' => $hash,
+                                'Erstellt' => 'now()',
+                                'Verwendet' => 'N'
+                            ];
+                            $Kuponneukunde = new Kuponneukunde();
+                            $Kuponneukunde->setOptions($Options);
+                            $Kuponneukunde->Save();
                         }
+                        break;
                     }
                 }
             }

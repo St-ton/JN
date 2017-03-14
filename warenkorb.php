@@ -24,7 +24,6 @@ $KuponcodeUngueltig       = false;
 $nVersandfreiKuponGueltig = false;
 $cart                     = $_SESSION['Warenkorb'];
 
-pruefeHttps();
 Shop::setPageType(PAGE_WARENKORB);
 $kLink = $linkHelper->getSpecialPageLinkKey(LINKTYP_WARENKORB);
 //Warenkorbaktualisierung?

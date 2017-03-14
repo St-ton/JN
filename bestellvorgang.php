@@ -72,9 +72,6 @@ if ($Einstellungen['kaufabwicklung']['bestellvorgang_kaufabwicklungsmethode'] ==
 if (verifyGPCDataInteger('wk') === 1) {
     resetNeuKundenKupon();
 }
-//https? wenn erwuenscht reload mit https
-pruefeHttps();
-
 if (isset($_POST['versandartwahl']) && (int)$_POST['versandartwahl'] === 1) {
     pruefeVersandartWahl(isset($_POST['Versandart']) ? $_POST['Versandart'] : null);
 }

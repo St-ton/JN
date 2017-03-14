@@ -54,7 +54,7 @@
             </small>
         </blockquote>
         <img itemprop="image" src="{$Artikel->cVorschaubild}" alt="{$oBewertung->cTitel}" class="hidden" />
-        {if isset($oBewertung->cAntwort)}
+        {if !empty($oBewertung->cAntwort)}
             <div class="review-reply">
                 <strong>Antwort von {$cShopName}:</strong>
                 <hr class="hr-sm">

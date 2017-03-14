@@ -32,11 +32,17 @@ function editiereBewertung($cPost_arr)
     ) {
         $oBewertung = holeBewertung($kBewertung);
         if (isset($oBewertung->kBewertung) && $oBewertung->kBewertung > 0) {
-            $upd          = new stdClass();
-            $upd->cName   = $cPost_arr['cName'];
-            $upd->cTitel  = $cPost_arr['cTitel'];
-            $upd->cText   = $cPost_arr['cText'];
-            $upd->nSterne = (int)$cPost_arr['nSterne'];
+            $upd           = new stdClass();
+            $upd->cName    = $cPost_arr['cName'];
+            $upd->cTitel   = $cPost_arr['cTitel'];
+            $upd->cText    = $cPost_arr['cText'];
+            $upd->nSterne  = (int)$cPost_arr['nSterne'];
+            $upd->cAntwort = !empty($cPost_arr['cAntwort']) ? $cPost_arr['cAntwort'] : null;
+
+            if ($cPost_arr['cAntwort'] !== $oBewertung->cAntwort) {
+                $upd->dAntwortDatum = !empty($cPost_arr['cAntwort']) ? date('Y-m-d') : null;
+            }
+
             Shop::DB()->update('tbewertung', 'kBewertung', $kBewertung, $upd);
             // Durchschnitt neu berechnen
             aktualisiereDurchschnitt($oBewertung->kArtikel, $conf['bewertung']['bewertung_freischalten']);
@@ -46,4 +52,17 @@ function editiereBewertung($cPost_arr)
     }
 
     return false;
+}
+
+/**
+ * @param $kBewertung
+ */
+function removeReply($kBewertung)
+{
+    $update = (object)[
+        'cAntwort' => null,
+        'dAntwortDatum' => null
+    ];
+
+    Shop::DB()->update('tbewertung', 'kBewertung', $kBewertung, $update);
 }

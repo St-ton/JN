@@ -2928,3 +2928,7 @@ h2 .btn-group {
 .template-favicon-upload .file-input {
     overflow-x: hidden;
 }
+
+.review-reply {
+    margin: 0;
+}

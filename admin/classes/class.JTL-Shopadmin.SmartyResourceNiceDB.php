@@ -59,7 +59,7 @@ class SmartyResourceNiceDB extends Smarty_Resource_Custom
                 }
                 $vl = Shop::DB()->select($cTableSprache, ['kEmailvorlage', 'kSprache'], [(int)$pcs[1], (int)$pcs[2]]);
             }
-            if (isset($vl) && $vl !== false) {
+            if ($vl !== null && $vl !== false) {
                 if ($pcs[0] === 'html') {
                     $source = $vl->cContentHtml;
                 } elseif ($pcs[0] === 'text') {

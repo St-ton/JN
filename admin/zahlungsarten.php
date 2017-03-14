@@ -178,7 +178,7 @@ if (isset($_POST['einstellungen_bearbeiten'], $_POST['kZahlungsart']) &&
 
 if ($step === 'einstellen') {
     $zahlungsart = Shop::DB()->select('tzahlungsart', 'kZahlungsart', verifyGPCDataInteger('kZahlungsart'));
-    if (!isset($zahlungsart)) {
+    if ($zahlungsart === null) {
         $step    = 'uebersicht';
         $hinweis = 'Zahlungsart nicht gefunden.';
     } else {

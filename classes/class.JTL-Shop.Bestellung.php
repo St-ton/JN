@@ -479,7 +479,7 @@ class Bestellung
             if ($this->kZahlungsart > 0) {
                 require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
                 $this->Zahlungsart = Shop::DB()->select('tzahlungsart', 'kZahlungsart', (int)$this->kZahlungsart);
-                if (isset($this->Zahlungsart)) {
+                if ($this->Zahlungsart !== null) {
                     $oPaymentMethod = new PaymentMethod($this->Zahlungsart->cModulId, 1);
                     $oZahlungsart   = $oPaymentMethod::create($this->Zahlungsart->cModulId);
                     if ($oZahlungsart !== null) {

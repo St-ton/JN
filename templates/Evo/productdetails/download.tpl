@@ -30,9 +30,11 @@
                                     Your browser does not support the video tag.
                                 </video>
                             {elseif $oDownload->getPreviewType() === 'image'}
-                                <img src="{PFAD_DOWNLOADS_PREVIEW_REL}{$oDownload->cPfadVorschau}" class="img-responsive" alt="{$oDownload->oDownloadSprache->getBeschreibung()}">
+                                <img src="{PFAD_DOWNLOADS_PREVIEW_REL}{$oDownload->cPfadVorschau}"
+                                     class="img-responsive" alt="{$oDownload->oDownloadSprache->getBeschreibung()}">
                             {else}
-                                <a href="{PFAD_DOWNLOADS_PREVIEW_REL}{$oDownload->cPfadVorschau}" title="{$oDownload->oDownloadSprache->getName()}" target="_blank">
+                                <a href="{PFAD_DOWNLOADS_PREVIEW_REL}{$oDownload->cPfadVorschau}"
+                                   title="{$oDownload->oDownloadSprache->getName()}" target="_blank">
                                     {$oDownload->oDownloadSprache->getName()}
                                 </a>
                             {/if}

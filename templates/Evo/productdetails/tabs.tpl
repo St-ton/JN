@@ -26,6 +26,13 @@
         {$tabsPaneleArr.description.content3 = $mediaDescriptionContentArr}
     {/if}
 {/if}
+{if isset($Artikel->oDownload_arr) && $Artikel->oDownload_arr|@count > 0}
+    {$tabsPaneleArr['downloads'] = [
+    'id'      => 'downloads',
+    'cName'   => {lang section="productDownloads" key="downloadSection"},
+    'content' => {include file="productdetails/download.tpl"}
+    ]}
+{/if}
 {section name=iterator start=1 loop=10}
     {$tab = tab}
     {$tabname = $tab|cat:$smarty.section.iterator.index|cat:" name"}
@@ -33,37 +40,37 @@
     {if isset($Artikel->AttributeAssoc[$tabname]) && $Artikel->AttributeAssoc[$tabname]
         && $Artikel->AttributeAssoc[$tabinhalt]}
         {$tabsPaneleArr[{$tabname|replace:' ':'-'}] = [
-            'id' => {$tabname|replace:' ':'-'},
-            'cName' => {$Artikel->AttributeAssoc[$tabname]},
+            'id'      => {$tabname|replace:' ':'-'},
+            'cName'   => {$Artikel->AttributeAssoc[$tabname]},
             'content' => {$Artikel->AttributeAssoc[$tabinhalt]}
         ]}
     {/if}
 {/section}
 {if $Einstellungen.bewertung.bewertung_anzeigen === 'Y'}
     {$tabsPaneleArr['votes'] = [
-        'id' => 'votes',
-        'cName' => {lang key="Votes" section="global"},
+        'id'      => 'votes',
+        'cName'   => {lang key="Votes" section="global"},
         'content' => {include file="productdetails/reviews.tpl" stars=$Artikel->Bewertungen->oBewertungGesamt->fDurchschnitt}
     ]}
 {/if}
 {if $Einstellungen.artikeldetails.artikeldetails_fragezumprodukt_anzeigen === 'Y'}
     {$tabsPaneleArr['questionOnItem'] = [
-        'id' => 'questionOnItem',
-        'cName' => {lang key="productQuestion" section="productDetails"},
+        'id'      => 'questionOnItem',
+        'cName'   => {lang key="productQuestion" section="productDetails"},
         'content' => {include file="productdetails/question_on_item.tpl" position="tab"}
     ]}
 {/if}
 {if $Einstellungen.preisverlauf.preisverlauf_anzeigen === 'Y' && $bPreisverlauf}
     {$tabsPaneleArr['priceFlow'] = [
-        'id' => 'priceFlow',
-        'cName' => {lang key="priceFlow" section="productDetails"},
+        'id'      => 'priceFlow',
+        'cName'   => {lang key="priceFlow" section="productDetails"},
         'content' => {include file="productdetails/price_history.tpl"}
     ]}
 {/if}
 {if $verfuegbarkeitsBenachrichtigung == 1 && $Artikel->cLagerBeachten === 'Y'}
     {$tabsPaneleArr['availabilityNotification'] = [
-        'id' => 'availabilityNotification',
-        'cName' => {lang key="notifyMeWhenProductAvailableAgain" section="global"},
+        'id'      => 'availabilityNotification',
+        'cName'   => {lang key="notifyMeWhenProductAvailableAgain" section="global"},
         'content' => {include file="productdetails/availability_notification_form.tpl" position="tab" tplscope="artikeldetails"}
     ]}
 {/if}
@@ -72,8 +79,8 @@
     {foreach name="mediendateigruppen" from=$Artikel->cMedienTyp_arr item=cMedienTyp}
         {$cMedienTypId = $cMedienTyp|regex_replace:"/[\'\" ]/":""}
         {$tabsPaneleArr[{$cMedienTypId}] = [
-            'id' => {$cMedienTypId},
-            'cName' => {$cMedienTyp},
+            'id'      => {$cMedienTypId},
+            'cName'   => {$cMedienTyp},
             'content' => {include file="productdetails/mediafile.tpl"}
         ]}
     {/foreach}
@@ -81,8 +88,8 @@
 {if $Einstellungen.artikeldetails.tagging_anzeigen === 'Y' && (count($ProduktTagging) > 0
     || $Einstellungen.artikeldetails.tagging_freischaltung !== 'N')}
     {$tabsPaneleArr['tags'] = [
-        'id' => 'tags',
-        'cName' => {lang key="productTags" section="productDetails"},
+        'id'      => 'tags',
+        'cName'   => {lang key="productTags" section="productDetails"},
         'content' => {include file="productdetails/tags.tpl"}
     ]}
 {/if}

@@ -103,7 +103,7 @@ function bearbeiteInsert($xml)
         // N-Downloads
         $oDownload_arr = mapArray($xml['tDownloads'], 'tDownload', $GLOBALS['mDownload']);
         if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-            Jtllog::writeLog('Multiple downloads, oDownload_arr: ' . print_r($oDownload_arr, 1), JTLLOG_LEVEL_DEBUG, false, 'Download_xml');
+            Jtllog::writeLog('Multiple downloads, oDownload_arr: ' . print_r($oDownload_arr, true), JTLLOG_LEVEL_DEBUG, false, 'Download_xml');
         }
 
         foreach ($oDownload_arr as $i => $oDownload) {

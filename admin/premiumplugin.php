@@ -24,7 +24,7 @@ if (!empty($pluginID)) {
         Jeder Kunde, der ein Amazon-Kundenkonto besitzt, kann "Login und Bezahlen mit Amazon" als Zahlungsart in Ihrem Shop auswählen.');
         $pp->setShortDescription('Zertifiziertes Plugin für JTL-Shop 4',
             'Für JTL-Shop 4 steht Ihnen "Login und Bezahlen mit Amazon" als zertifiziertes Plugin direkt im Backend zur Verfügung.');
-        $pp->setTitle('Amazon Payments Login & Pay (JTL Shop 4)');
+        $pp->setTitle('Amazon Pay Login & Pay (JTL Shop 4)');
 
         $pp->setAuthor('Solution 360 GmbH');
 
@@ -38,9 +38,9 @@ if (!empty($pluginID)) {
            ->addAdvantage('Schutz vor Zahlungsausfall und Betrugsversuchen')
            ->addAdvantage('Kostensenkung durch transaktionsbasiertes Preismodell ohne Grundgebühren, Vorauszahlungen o.Ä.');
 
-        $pp->addHowTo('Registrieren Sie sich bei Amazon Payments unter <a title="Amazon Payments" href="https://payments.amazon.de/?ld=SPEXDEAPA-JTL-CP-DP-2016-07" target="_blank"><i class="fa fa-external-link"></i> https://payments.amazon.de/</a>')
-           ->addHowTo('Aktivieren Sie das Amazon Payments Plugin in Ihrem JTL-Shop 4')
-           ->addHowTo('Konfigurieren Sie das Amazon Payments Plugin mit Hilfe der Dokumentation von Solution 360. Diese finden Sie unter diesem <a title="Dokumentation" href="https://shop.solution360.de/downloads/dokus/Plugin_Doku_AmazonLogin&Pay-Shop4.pdf" target="_blank"><i class="fa fa-external-link"></i> Link</a>.')
+        $pp->addHowTo('Registrieren Sie sich bei Amazon Pay unter <a title="Amazon Pay" href="https://pay.amazon.com/de/?ld=SPEXDEAPA-JTL-CP-DP-2016-07" target="_blank"><i class="fa fa-external-link"></i> https://pay.amazon.com/</a>')
+           ->addHowTo('Aktivieren Sie das Amazon Pay Plugin in Ihrem JTL-Shop 4')
+           ->addHowTo('Konfigurieren Sie das Amazon Pay Plugin mit Hilfe der Dokumentation von Solution 360. Diese finden Sie unter diesem <a title="Dokumentation" href="https://shop.solution360.de/downloads/dokus/Plugin_Doku_AmazonLogin&Pay-Shop4.pdf" target="_blank"><i class="fa fa-external-link"></i> Link</a>.')
            ->addHowTo('Fertig!');
 
         $ss          = new stdClass();

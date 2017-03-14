@@ -128,29 +128,29 @@
                                     <td class="TD2"><a href="../index.php?a={$oBewertungLetzten50->kArtikel}" target="_blank">{$oBewertungLetzten50->ArtikelName}</a></td>
                                     <td class="TD3">{$oBewertungLetzten50->cName}.</td>
                                     <td class="TD4">
-                                        <b>{$oBewertungLetzten50->cTitel}</b><br>
+                                        <strong>{$oBewertungLetzten50->cTitel}</strong><br>
                                         {$oBewertungLetzten50->cText}
                                         {if !empty($oBewertungLetzten50->cAntwort)}
                                             <blockquote class="review-reply">
-                                                <strong>Antwort:</strong><br>
+                                                <strong>{#ratingReply#}:</strong><br>
                                                 {$oBewertungLetzten50->cAntwort}
                                             </blockquote>
                                         {/if}
                                     </td>
                                     <td class="tcenter">{$oBewertungLetzten50->nSterne}</td>
                                     <td class="tcenter">{$oBewertungLetzten50->Datum}</td>
-                                    <td class="tcenter7" style="width: 96px;">
+                                    <td class="tcenter7 tright" style="min-width: 96px;">
                                         <div class="btn-group">
+                                            {if !empty($oBewertungLetzten50->cAntwort)}
+                                                <a href="bewertung.php?a=delreply&kBewertung={$oBewertungLetzten50->kBewertung}&tab=letzten50&token={$smarty.session.jtl_token}"
+                                                   class="btn btn-danger" title="{#removeReply#}">
+                                                    <i class="fa fa-times-circle-o"></i>
+                                                </a>
+                                            {/if}
                                             <a href="bewertung.php?a=editieren&kBewertung={$oBewertungLetzten50->kBewertung}&tab=letzten50&token={$smarty.session.jtl_token}"
                                                class="btn btn-default" title="{#modify#}">
                                                 <i class="fa fa-edit"></i>
                                             </a>
-                                            {if !empty($oBewertungLetzten50->cAntwort)}
-                                                <a href="bewertung.php?a=delreply&kBewertung={$oBewertungLetzten50->kBewertung}&tab=letzten50&token={$smarty.session.jtl_token}"
-                                                   class="btn btn-danger" title="Entferne Antwort">
-                                                    <i class="fa fa-times-circle-o"></i>
-                                                </a>
-                                            {/if}
                                         </div>
                                     </td>
                                 </tr>

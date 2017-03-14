@@ -491,7 +491,7 @@ class Template
         $cacheID = 'mobile_template';
         if (($oTemplate = Shop::Cache()->get($cacheID)) === false) {
             $oTemplate = Shop::DB()->select('ttemplate', 'eTyp', 'mobil');
-            if ($oTemplate === false) {
+            if (!isset($oTemplate)) {
                 Shop::Cache()->set($cacheID, 'false', [CACHING_GROUP_TEMPLATE]);
             } else {
                 Shop::Cache()->set($cacheID, $oTemplate, [CACHING_GROUP_TEMPLATE]);

@@ -62,7 +62,7 @@ final class Shopsetting implements ArrayAccess
      */
     public function offsetSet($offset, $value)
     {
-        if (is_null($offset)) {
+        if ($offset === null) {
             $this->_container[] = $value;
         } else {
             $this->_container[$offset] = $value;

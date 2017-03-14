@@ -295,7 +295,6 @@ class Kunde
     /**
      * Setzt Kunde mit Daten aus der DB mit spezifiziertem Primary Key
      *
-     * @access public
      * @param string $cBenutzername
      * @param string $cPasswort
      * @return int 1 = Alles O.K., 2 = Kunde ist gesperrt
@@ -371,20 +370,23 @@ class Kunde
         $updatePassword  = false;
         $verify          = false;
         $oldPasswordHash = '';
-        if (isset($oUser->cPasswort) && strlen($oUser->cPasswort) === 32) { // Alter md5
-            $oldPasswordHash = md5($cPasswort);
-            $updatePassword  = true;
-        } elseif (isset($oUser->cPasswort) && strlen($oUser->cPasswort) === 40) {  // Neuer Hash bis 4.0
-            $cCrypted = cryptPasswort($cPasswort, $oUser->cPasswort);
-            if ($cCrypted === false || strlen($cCrypted) === 0) {
-                return false;
+        if (isset($oUser->cPasswort)) {
+            if (strlen($oUser->cPasswort) === 32) { // Alter md5
+                $oldPasswordHash = md5($cPasswort);
+                $updatePassword  = true;
+            } elseif (strlen($oUser->cPasswort) === 40) {  // Neuer Hash bis 4.0
+                $cCrypted = cryptPasswort($cPasswort, $oUser->cPasswort);
+                if (empty($cCrypted)) {
+                    return false;
+                }
+                $oldPasswordHash = $cCrypted;
+                $updatePassword  = true;
+            } else { //ab 4.0
+                $verify = password_verify($cPasswort, $oUser->cPasswort);
             }
-            $oldPasswordHash = $cCrypted;
-            $updatePassword  = true;
-        } elseif (isset($oUser->cPasswort)) { //ab 4.0
-            $verify = password_verify($cPasswort, $oUser->cPasswort);
+            $oUser->kKunde         = (int)$oUser->kKunde;
+            $oUser->nLoginversuche = (int)$oUser->nLoginversuche;
         }
-
         if ($updatePassword === true) {
             //get customer by mail and old password hash
             $obj = Shop::DB()->select(
@@ -427,6 +429,13 @@ class Kunde
                 Shop::DB()->update('tkunde', 'kKunde', (int)$oUser->kKunde, $_upd);
             }
         }
+        if (isset($obj->kKunde)) {
+            $obj->kKunde         = (int)$obj->kKunde;
+            $obj->kKundengruppe  = (int)$obj->kKundengruppe;
+            $obj->kSprache       = (int)$obj->kSprache;
+            $obj->nLoginversuche = (int)$obj->nLoginversuche;
+            $obj->nRegistriert   = (int)$obj->nRegistriert;
+        }
 
         return $obj;
     }
@@ -442,7 +451,6 @@ class Kunde
     /**
      * Setzt Kunde mit Daten aus der DB mit spezifiziertem Primary Key
      *
-     * @access public
      * @param int $kKunde
      * @return $this
      */
@@ -465,6 +473,11 @@ class Kunde
                 //$this->cLand = landISO($this->cLand);
                 $this->holeKundenattribute();
                 $this->entschluesselKundendaten();
+                $this->kKunde         = (int)$this->kKunde;
+                $this->kKundengruppe  = (int)$this->kKundengruppe;
+                $this->kSprache       = (int)$this->kSprache;
+                $this->nLoginversuche = (int)$this->nLoginversuche;
+                $this->nRegistriert   = (int)$this->nRegistriert;
 
                 $this->dGeburtstag_formatted = date_format(date_create($this->dGeburtstag), 'd.m.Y');
                 $this->cGuthabenLocalized    = $this->gibGuthabenLocalized();
@@ -512,7 +525,6 @@ class Kunde
     /**
      * Fügt Datensatz in DB ein. Primary Key wird in this gesetzt.
      *
-     * @access public
      * @return int - Key vom eingefügten Kunden
      */
     public function insertInDB()
@@ -579,7 +591,6 @@ class Kunde
     /**
      * Updatet Daten in der DB. Betroffen ist der Datensatz mit gleichem Primary Key
      *
-     * @access public
      * @return string
      */
     public function updateInDB()
@@ -803,6 +814,7 @@ class Kunde
      */
     public function prepareResetPassword($mail)
     {
+        $linkHelper               = LinkHelper::getInstance();
         $now                      = new DateTime();
         $timestamp                = $now->format('U');
         $stringToSend             = md5($mail . microtime(true));
@@ -813,7 +825,7 @@ class Kunde
             require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
             $obj                    = new stdClass();
             $obj->tkunde            = $this;
-            $obj->passwordResetLink = Shop::getURL() . '/pass.php?fpwh=' . $stringToSend . '&mail=' . $mail;
+            $obj->passwordResetLink = $linkHelper->getStaticRoute('pass.php') . '?fpwh=' . $stringToSend . '&mail=' . $mail;
             $obj->cHash             = $stringToSend;
             $obj->neues_passwort    = 'Bitte Mailvorlage zuruecksetzen!';
             sendeMail(MAILTEMPLATE_PASSWORT_VERGESSEN, $obj);

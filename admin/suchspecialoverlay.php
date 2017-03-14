@@ -34,7 +34,8 @@ if (verifyGPCDataInteger('suchspecialoverlay') === 1) {
 }
 $oSuchspecialOverlay_arr = gibAlleSuchspecialOverlays();
 $nMaxFileSize            = getMaxFileSize(ini_get('upload_max_filesize'));
-if ((int)$_SESSION['template']->version >= 4) {
+$template = Template::getInstance();
+if ($template->name === 'Evo' && $template->author === 'JTL-Software-GmbH' && (int)$template->version >= 4) {
     $smarty->assign('isDeprecated', true);
 }
 

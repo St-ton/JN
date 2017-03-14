@@ -64,7 +64,7 @@ function pruefeNewsKategorie($cName, $nNewskategorieEditSpeichern = 0)
 function convertDate($string)
 {
     list($dDatum, $dZeit) = explode(' ', $string);
-    if (count(explode(':', $dZeit)) === 2) {
+    if (substr_count(':', $dZeit) === 2 ) {
         list($nStunde, $nMinute) = explode(':', $dZeit);
     } else {
         list($nStunde, $nMinute, $nSekunde) = explode(':', $dZeit);

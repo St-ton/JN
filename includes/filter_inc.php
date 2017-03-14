@@ -280,8 +280,8 @@ function gibArtikelKeys($FilterSQL, $nArtikelProSeite, $NaviFilter, $bExtern, $o
             ORDER BY " . $oSortierungsSQL->cOrder . ", tartikel.kArtikel
             " . $cLimitSQL, 2
     );
-    executeHook(
-        HOOK_FILTER_INC_GIBARTIKELKEYS, [
+    array_map(function($article) { $article->kArtikel = (int)$article->kArtikel; return $article;}, $oArtikelKey_arr);
+    executeHook(HOOK_FILTER_INC_GIBARTIKELKEYS, [
             'oArtikelKey_arr' => &$oArtikelKey_arr,
             'FilterSQL'       => &$FilterSQL,
             'NaviFilter'      => &$NaviFilter,
@@ -323,7 +323,7 @@ function gibArtikelKeys($FilterSQL, $nArtikelProSeite, $NaviFilter, $bExtern, $o
                 //$oArtikelOptionen->nVariationDetailPreis = 1;
                 $oArtikel->fuelleArtikel($oArtikelKey->kArtikel, $oArtikelOptionen);
                 // Aktuelle Artikelmenge in die Session (Keine Vaterartikel)
-                if ($oArtikel->nIstVater == 0) {
+                if ($oArtikel->nIstVater === 0) {
                     $_SESSION['nArtikelUebersichtVLKey_arr'][] = $oArtikel->kArtikel;
                 }
                 $oArtikel_arr[] = $oArtikel;
@@ -1790,12 +1790,14 @@ function bearbeiteSuchCache($NaviFilter, $kSpracheExt = 0)
     $keySuche = $cSuche . ';' . $conf['global']['artikel_artikelanzeigefilter'] . ';' . $_SESSION['Kundengruppe']->kKundengruppe;
 
     // Suchcache checken, ob bereits vorhanden
-    $oSuchCache = Shop::DB()->query(
+    $oSuchCache = Shop::DB()->executeQueryPrepared(
         "SELECT kSuchCache
             FROM tsuchcache
-            WHERE kSprache =  " . $kSprache . "
-                AND cSuche = '" . Shop::DB()->escape($keySuche) . "'
-                AND (dGueltigBis > now() OR dGueltigBis IS NULL)", 1
+            WHERE kSprache =  :lang
+                AND cSuche = :search
+                AND (dGueltigBis > now() OR dGueltigBis IS NULL)",
+        ['lang' => $kSprache, 'search' => Shop::DB()->escape($keySuche)],
+        1
     );
 
     if (isset($oSuchCache->kSuchCache) && $oSuchCache->kSuchCache > 0) {
@@ -3328,14 +3330,14 @@ function berechneMaxMinStep($fMax, $fMin)
         100000000.0
     ];
     $nStep      = 10;
-    $fDiffPreis = floatval($fMax - $fMin) * 1000;
+    $fDiffPreis = (float)($fMax - $fMin) * 1000;
     $nMaxSteps  = 5;
     $conf       = Shop::getSettings([CONF_NAVIGATIONSFILTER]);
     if ($conf['navigationsfilter']['preisspannenfilter_anzeige_berechnung'] === 'M') {
         $nMaxSteps = 10;
     }
     foreach ($fStepWert_arr as $i => $fStepWert) {
-        if (($fDiffPreis / floatval($fStepWert * 1000)) < $nMaxSteps) {
+        if (($fDiffPreis / (float)($fStepWert * 1000)) < $nMaxSteps) {
             $nStep = $i;
             break;
         }
@@ -3344,7 +3346,7 @@ function berechneMaxMinStep($fMax, $fMin)
     $fMax *= 1000;
     $fMin *= 1000;
     $fMaxPreis      = round(((($fMax * 100) - (($fMax * 100) % ($fStepWert * 100))) + ($fStepWert * 100)) / 100, 0);
-    $fMinPreis      = round(((($fMin * 100) - (($fMin * 100) % ($fStepWert * 100)))) / 100, 0);
+    $fMinPreis      = round((($fMin * 100) - (($fMin * 100) % ($fStepWert * 100))) / 100, 0);
     $fDiffPreis     = $fMaxPreis - $fMinPreis;
     $nAnzahlSpannen = round($fDiffPreis / $fStepWert, 0);
 

@@ -53,7 +53,7 @@ if (isset($_GET['kArtikel'])) {
         $oVerlauf_arr = array_reverse($oVerlauf_arr);
         $data         = [];
         foreach ($oVerlauf_arr as $oItem) {
-            $fPreis = round(floatval($oItem->fVKNetto + ($oItem->fVKNetto * ($oPreisConfig->Netto / 100.0))), 2);
+            $fPreis = round((float)($oItem->fVKNetto + ($oItem->fVKNetto * ($oPreisConfig->Netto / 100.0))), 2);
             $data[] = $fPreis;
         }
         $d = new solid_dot();
@@ -68,8 +68,8 @@ if (isset($_GET['kArtikel'])) {
         $bar->set_tooltip('#val# ' . $oPreisConfig->Waehrung);
 
         // min und max berechnen @todo: $data must contain at least one element
-        $fMaxPreis = round(floatval(max($data)), 2);
-        $fMinPreis = round(floatval(min($data)), 2);
+        $fMaxPreis = round((float)max($data), 2);
+        $fMinPreis = round((float)min($data), 2);
 
         // x achse
         $x = new x_axis();

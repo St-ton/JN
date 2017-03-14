@@ -65,7 +65,7 @@ function gibAllePlugins($PluginInstalliert_arr)
             return $item->cVerzeichnis;
         }, $PluginInstalliert_arr);
 
-        while ($cVerzeichnis = readdir($Dir)) {
+        while (($cVerzeichnis = readdir($Dir)) !== false) {
             if ($cVerzeichnis !== '.' && $cVerzeichnis !== '..') {
                 $cXML = $cPfad . $cVerzeichnis . '/' . PLUGIN_INFO_FILE;
                 // Ist eine info.xml Datei vorhanden? Wenn nicht, ist das Plugin fehlerhaft und wird nicht angezeigt
@@ -4039,9 +4039,9 @@ function parseSQLDatei($cSQLDatei, $cVerzeichnis, $nVersion)
         $cSQL_arr    = [];
         $cLine       = '';
         $i           = 0;
-        while ($cData = fgets($file_handle)) {
+        while (($cData = fgets($file_handle)) !== false) {
             $cData = trim($cData);
-            if ($cData !== '' && substr($cData, 0, 2) !== '--') {
+            if ($cData !== '' && strpos($cData, '--') !== 0) {
                 if (strpos($cData, 'CREATE TABLE') !== false) {
                     $cLine .= trim($cData);
                 } elseif (strpos($cData, 'INSERT') !== false) {
@@ -4079,7 +4079,7 @@ function gibHoehereSQLVersionen($cPluginVerzeichnis, $nVersion)
     if (is_dir($cSQLVerzeichnis)) {
         $nVerzeichnis_arr = [];
         $Dir              = opendir($cSQLVerzeichnis);
-        while ($cVerzeichnis = readdir($Dir)) {
+        while (($cVerzeichnis = readdir($Dir)) !== false) {
             if ($cVerzeichnis !== '.' && $cVerzeichnis !== '..' && is_dir($cSQLVerzeichnis . $cVerzeichnis)) {
                 $nVerzeichnis_arr[] = (int)$cVerzeichnis;
             }

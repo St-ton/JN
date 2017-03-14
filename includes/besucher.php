@@ -44,6 +44,8 @@ if (!isset($_SESSION['oBesucher'])) {
     }
     //Besucher in der Session festhalten, falls einer erstellt oder rausgeholt
     if (isset($besucher->kBesucher) && $besucher->kBesucher > 0) {
+        $besucher->kBesucher   = (int)$besucher->kBesucher;
+        $besucher->kKunde      = (int)$besucher->kKunde;
         $_SESSION['oBesucher'] = $besucher;
     }
 }

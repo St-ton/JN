@@ -35,15 +35,36 @@ class VCard
 
     const ERR_INVALID    = 0x01;
 
-    private $rawVCard = '';
+    /**
+     * @var string
+     */
+    private $rawVCard;
+
+    /**
+     * @var array
+     */
     private $data     = [];
+
+    /**
+     * @var int
+     */
     private $mode     = self::MODE_UNKNOWN;
+
+    /**
+     * @var int
+     */
     private $iVCard   = 0;
 
+    /**
+     * @var array
+     */
     private $options = [
         'handling' => self::OPT_ERR_IGNORE,
     ];
 
+    /**
+     * @var array
+     */
     private static $elementsStructured = [
         'n'   => ['LastName', 'FirstName', 'AdditionalNames', 'Prefixes', 'Suffixes'],
         'adr' => ['POBox', 'ExtendedAddress', 'StreetAddress', 'Locality', 'Region', 'PostalCode', 'Country'],
@@ -51,11 +72,17 @@ class VCard
         'org' => ['Name', 'Unit1', 'Unit2'],
     ];
 
+    /**
+     * @var array
+     */
     private static $elementsMultiple = [
         'nickname',
         'categories'
     ];
 
+    /**
+     * @var array
+     */
     private static $elementsType = [
         'email' => ['internet', 'x400', 'pref', 'work', 'home'],
         'adr'   => ['dom', 'intl', 'postal', 'parcel', 'home', 'work', 'pref'],
@@ -63,7 +90,9 @@ class VCard
         'tel'   => ['home', 'msg', 'work', 'pref', 'voice', 'fax', 'cell', 'video', 'pager', 'bbs', 'modem', 'car', 'isdn', 'pcs'],
         'impp'  => ['personal', 'business', 'home', 'work', 'mobile', 'pref']
     ];
-
+    /**
+     * @var array
+     */
     private static $elementsFile = [
         'photo',
         'logo',

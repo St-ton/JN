@@ -40,7 +40,7 @@ class DresdnerCetelem extends PaymentMethod
             if ($this->gibAnzahlungMoeglich() === 'Y') {
                 $cAnzahlung = '&/CreditCalculator/firstPayment=0';
             }
-            $fGesamtsummeKundenWaehrung = str_replace('.', ',', round(strval($order->fGesamtsummeKundenwaehrung), 2));
+            $fGesamtsummeKundenWaehrung = str_replace('.', ',', round($order->fGesamtsummeKundenwaehrung, 2));
 
             $cURL = 'https://finanzierung.commerzfinanz.com/ecommerce/entry?vendorid=' . $this->Haendlernummer  .
                 '&order_amount=' . $fGesamtsummeKundenWaehrung . $cAnzahlung . '&order_id=' .

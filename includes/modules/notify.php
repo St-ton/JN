@@ -209,13 +209,14 @@ if (strlen($cPh) > 0) {
         writeLog(NO_PFAD, 'Payment Hash ' . $cPh, 1);
     }
     // Payment Hash
-    $paymentHash = Shop::DB()->escape(StringHandler::htmlentities(StringHandler::filterXSS($cPh)));
-    $paymentId   = Shop::DB()->query(
+    $paymentId   = Shop::DB()->executeQueryPrepared(
         "SELECT ZID.kBestellung, ZA.cModulId
             FROM tzahlungsid ZID
             LEFT JOIN tzahlungsart ZA
                 ON ZA.kZahlungsart = ZID.kZahlungsart
-            WHERE ZID.cId = '" . $paymentHash  . "'", 1
+            WHERE ZID.cId = :hash",
+        ['hash' => StringHandler::htmlentities(StringHandler::filterXSS($cPh))],
+        1
     );
 
     if ($paymentId === false) {

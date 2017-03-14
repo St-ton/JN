@@ -60,9 +60,9 @@ class AdminAccount
                 $now  = new DateTime();
                 $diff = $now->diff($createdAt);
                 $secs = ($diff->format('%a') * (60 * 60 * 24)); //total days
-                $secs += intval($diff->format('%h')) * (60 * 60); //hours
-                $secs += intval($diff->format('%i')) * 60; //minutes
-                $secs += intval($diff->format('%s')); //seconds
+                $secs += (int)$diff->format('%h') * (60 * 60); //hours
+                $secs += (int)$diff->format('%i') * 60; //minutes
+                $secs += (int)$diff->format('%s'); //seconds
                 if ($secs > (60 * 60 * 24)) {
                     return false;
                 }

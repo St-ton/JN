@@ -319,9 +319,7 @@ class JTLCache
             'collect_stats'    => false, //used to tell caching methods to collect statistical data or not (if not provided transparently)
             'debug'            => false, //enable or disable collecting of debug data
             'debug_method'     => 'echo', //'ssd'/'jtld' for SmarterSmartyDebug/JTLDebug, 'echo' for direct echo
-            'cache_dir'        => (defined('PFAD_ROOT') && defined('PFAD_COMPILEDIR'))
-                ? (PFAD_ROOT . PFAD_COMPILEDIR . 'filecache/')
-                : sys_get_temp_dir(), //file cache directory
+            'cache_dir'        => OBJECT_CACHE_DIR, //file cache directory
             'file_extension'   => '.fc', //file extension for file cache
             'page_cache'       => false, //smarty page cache switch
             'types_disabled'   => [] //disabled cache groups
@@ -867,7 +865,7 @@ class JTLCache
         if (is_array($files)) {
             foreach ($files as $_file) {
                 if (strpos($_file, 'class.cachingMethod') !== false) {
-                    $methodNames[] = str_replace('class.cachingMethod.', '', str_replace('.php', '', $_file));
+                    $methodNames[] = str_replace(['class.cachingMethod.', '.php'], '', $_file);
                 }
             }
         }

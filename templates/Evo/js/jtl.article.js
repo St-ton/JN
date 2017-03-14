@@ -35,23 +35,25 @@
         },
         
         onLoad: function() {
-            var that = this;
-            var form = $.evo.io().getFormValues('buy_form');
+            if ($('#buy_form').length > 0) {
+                var that = this;
+                var form = $.evo.io().getFormValues('buy_form');
 
-            if (typeof history.replaceState === 'function') {
-                history.replaceState({
-                    a: form.a,
-                    a2: form.VariKindArtikel || form.a,
-                    url: document.location.href,
-                    variations: {}
-                }, document.title, document.location.href);
-            }
-
-            window.addEventListener('popstate', function(event) {
-                if (event.state) {
-                    that.setArticleContent( event.state.a, event.state.a2, event.state.url, event.state.variations);
+                if (typeof history.replaceState === 'function') {
+                    history.replaceState({
+                        a: form.a,
+                        a2: form.VariKindArtikel || form.a,
+                        url: document.location.href,
+                        variations: {}
+                    }, document.title, document.location.href);
                 }
-            }, false);
+
+                window.addEventListener('popstate', function (event) {
+                    if (event.state) {
+                        that.setArticleContent(event.state.a, event.state.a2, event.state.url, event.state.variations);
+                    }
+                }, false);
+            }
         },
 
         register: function () {

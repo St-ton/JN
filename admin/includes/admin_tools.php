@@ -254,6 +254,7 @@ function holeAlleKampagnen($bInterneKampagne = false, $bAktivAbfragen = true)
  */
 function getArrangedArray($oXML_arr, $nLevel = 1)
 {
+    $nLevel = (int)$nLevel;
     if (is_array($oXML_arr)) {
         $cArrayKeys = array_keys($oXML_arr);
         $nCount     = count($oXML_arr);
@@ -262,7 +263,7 @@ function getArrangedArray($oXML_arr, $nLevel = 1)
                 //attribut array -> nicht beachten -> weiter
                 continue;
             } else {
-                if ((int)$cArrayKeys[$i] > 0 || $cArrayKeys[$i] == '0' || $nLevel == 0) {
+                if ($nLevel === 0 || (int)$cArrayKeys[$i] > 0 || $cArrayKeys[$i] == '0') {
                     //int Arrayelement -> in die Tiefe gehen
                     $oXML_arr[$cArrayKeys[$i]] = getArrangedArray($oXML_arr[$cArrayKeys[$i]]);
                 } else {

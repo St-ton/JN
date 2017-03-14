@@ -554,6 +554,9 @@ function checkeWarenkorbEingang()
         // Prüfe ob Kunde eingeloggt
         if (!isset($_SESSION['Kunde']->kKunde) && !isset($_POST['login'])) {
             //redirekt zum artikel, um variation/en zu wählen / MBM beachten
+            if ($fAnzahl <= 0) {
+                $fAnzahl = 1;
+            }
             header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true) .
                 '?a=' . $kArtikel .
                 '&n=' . $fAnzahl .
@@ -1789,7 +1792,8 @@ function setzeSteuersaetze($steuerland = 0)
         $merchantCountryCode !== $deliveryCountryCode &&
         $merchantCountryCode !== $billingCountryCode &&
         strlen($_SESSION['Kunde']->cUSTID) > 0 &&
-        strcasecmp($billingCountryCode, substr($_SESSION['Kunde']->cUSTID, 0, 2)) === 0
+        strcasecmp($billingCountryCode, substr($_SESSION['Kunde']->cUSTID, 0, 2)) === 0 ||
+        (strcasecmp($billingCountryCode, 'GR') === 0 && strcasecmp(substr($_SESSION['Kunde']->cUSTID, 0, 2), 'EL') === 0)
     ) {
         $deliveryCountry = Shop::DB()->select('tland', 'cISO', $deliveryCountryCode);
         $shopCountry     = Shop::DB()->select('tland', 'cISO', $merchantCountryCode);
@@ -2623,7 +2627,7 @@ function gibGuenstigsteVersandart($lieferland, $versandklassen, $kKundengruppe, 
             WHERE cNurAbhaengigeVersandart = '" . $cNurAbhaengigeVersandart . "'
                 AND cLaender LIKE '%" . $cISO . "%'
                 AND (cVersandklassen = '-1' 
-                    OR cVersandklassen RLIKE '^([0-9- ]* )?" . $versandklassen . " ')
+                    OR cVersandklassen RLIKE '^([0-9 -]* )?" . $versandklassen . " ')
                 AND (cKundengruppen = '-1' 
                     OR cKundengruppen RLIKE '^([0-9;]*;)?" . $kKundengruppe . ";') 
             ORDER BY nSort", 2
@@ -2896,7 +2900,7 @@ function gibGuenstigsteVersandkosten($cISO, $Artikel, $barzahlungZulassen, $kKun
             FROM tversandart
             WHERE cLaender LIKE '%" . $cISO . "%'
                 AND (cVersandklassen = '-1' 
-                    OR cVersandklassen RLIKE '^([0-9- ]* )?" . $Artikel->kVersandklasse . " ')
+                    OR cVersandklassen RLIKE '^([0-9 -]* )?" . $Artikel->kVersandklasse . " ')
                 AND (cKundengruppen = '-1' 
                     OR cKundengruppen RLIKE '^([0-9;]*;)?" . $kKundengruppe . ";')", 2
     );
@@ -3575,7 +3579,7 @@ function gibVersandkostenfreiAb($kKundengruppe, $cLand = '')
                     AND tversandartsprache.cISOSprache = '" . $_SESSION['cISOSprache'] . "'
                 WHERE fVersandkostenfreiAbX > 0
                     AND (cVersandklassen = '-1' 
-                        OR cVersandklassen RLIKE '^([0-9- ]* )?" . $versandklassen . " ')
+                        OR cVersandklassen RLIKE '^([0-9 -]* )?" . $versandklassen . " ')
                     AND (cKundengruppen = '-1' 
                         OR cKundengruppen RLIKE '^([0-9;]*;)?" . $kKundengruppe . ";')
                     " . $cKundeSQLWhere . "
@@ -4089,6 +4093,13 @@ function holeAlleSuchspecialOverlays($kSprache = 0)
             $oSuchspecialOverlay_arr = [];
             if (is_array($oSuchspecialOverlayTMP_arr) && count($oSuchspecialOverlayTMP_arr) > 0) {
                 foreach ($oSuchspecialOverlayTMP_arr as $oSuchspecialOverlayTMP) {
+                    $oSuchspecialOverlayTMP->kSuchspecialOverlay = (int)$oSuchspecialOverlayTMP->kSuchspecialOverlay;
+                    $oSuchspecialOverlayTMP->nAktiv              = (int)$oSuchspecialOverlayTMP->nAktiv;
+                    $oSuchspecialOverlayTMP->nPrio               = (int)$oSuchspecialOverlayTMP->nPrio;
+                    $oSuchspecialOverlayTMP->nMargin             = (int)$oSuchspecialOverlayTMP->nMargin;
+                    $oSuchspecialOverlayTMP->nTransparenz        = (int)$oSuchspecialOverlayTMP->nTransparenz;
+                    $oSuchspecialOverlayTMP->nGroesse            = (int)$oSuchspecialOverlayTMP->nGroesse;
+                    $oSuchspecialOverlayTMP->nPosition           = (int)$oSuchspecialOverlayTMP->nPosition;
                     $cSuchSpecial = strtolower(str_replace([' ', '-', '_'], '', $oSuchspecialOverlayTMP->cSuchspecial));
                     $cSuchSpecial = preg_replace(
                         ['/Ä/', '/Ö/', '/Ü/', '/ä/', '/ö/', '/ü/', '/ß/',
@@ -4486,7 +4497,6 @@ function setzeSpracheUndWaehrungLink()
  * -1 = SSL nicht aktiv und nicht erlaubt
  * 1 = SSL aktiv durch Einstellung nicht erwünscht
  * 2 = SSL aktiv und erlaubt
- * 3 = SSL nicht aktiv aber erlaubt
  * 4 = SSL nicht aktiv aber erzwungen
  *
  * @return int
@@ -4498,10 +4508,9 @@ function pruefeSSL()
     if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
         $_SERVER['HTTPS'] = 'on';
     }
-
     // Ist im Server SSL aktiv?
     if (isset($_SERVER['HTTPS']) && (strtolower($_SERVER['HTTPS']) === 'on' || $_SERVER['HTTPS'] === '1')) {
-        if ($cSSLNutzen === 'P' || $cSSLNutzen === 'Z') { // SSL durch Einstellung erlaubt?
+        if ($cSSLNutzen === 'P') { // SSL durch Einstellung erlaubt?
             return 2;
         }
 
@@ -4509,9 +4518,6 @@ function pruefeSSL()
     }
     if ($cSSLNutzen === 'P') {
         return 4;
-    }
-    if ($cSSLNutzen === 'Z') { // SSL durch Einstellung erlaubt?
-        return 3;
     }
 
     return -1;
@@ -4521,113 +4527,18 @@ function pruefeSSL()
  * https? wenn erwünscht reload mit https
  *
  * @return bool
+ * @deprecated since 4.06
  */
 function pruefeHttps()
 {
-    $conf = Shop::getSettings([CONF_GLOBAL]);
-    if ($conf['global']['kaufabwicklung_ssl_nutzen'] === 'Z' &&
-        (!isset($_SERVER['HTTPS']) || strtolower($_SERVER['HTTPS']) !== 'on')
-    ) {
-        $https = false;
-        //Ausnahmen
-        //hosteurope
-        if (isset($_SERVER['HTTP_X_FORWARDED_HOST']) && $_SERVER['HTTP_X_FORWARDED_HOST'] === 'ssl.webpack.de') {
-            $https = true;
-        }
-        //strato
-        if (isset($_SERVER['SCRIPT_URI']) && preg_match('/^ssl-id/', $_SERVER['SCRIPT_URI'])) {
-            $https = true;
-        }
-        //1&1
-        if (isset($_SERVER['HTTP_X_FORWARDED_HOST']) && preg_match('/^ssl/', $_SERVER['HTTP_X_FORWARDED_HOST'])) {
-            $https = true;
-        }
-        if (isset($_SERVER['HTTPS']) && ($_SERVER['HTTPS'] === 'on' || (int)$_SERVER['HTTPS'] === 1)) {
-            $https = true;
-        }
-        if (!$https) {
-            $lang = '';
-            if (!standardspracheAktiv(true)) {
-                if (strpos($_SERVER['REQUEST_URI'], '?')) {
-                    $lang = '&lang=' . $_SESSION['cISOSprache'];
-                } else {
-                    $lang = '?lang=' . $_SESSION['cISOSprache'];
-                }
-            }
-            $www = $conf['global']['global_ssl_www'];
-            //www. schon im servernamen enthalten?
-            if ($_SERVER['SERVER_NAME']{0} === 'w' && $_SERVER['SERVER_NAME']{1} === 'w' &&
-                $_SERVER['SERVER_NAME']{2} === 'w' && $_SERVER['SERVER_NAME']{3} === '.'
-            ) {
-                $www = '';
-            }
-            header('Location: https://' . $www . $_SERVER['SERVER_NAME'] .
-                $_SERVER['REQUEST_URI'] . $lang, true, 301);
-            exit();
-        }
-    }
-
     return false;
 }
 
 /**
- *
+ * @deprecated since 4.06
  */
 function loeseHttps()
 {
-    $conf = Shop::getSettings([CONF_GLOBAL]);
-    if ($conf['global']['kaufabwicklung_ssl_nutzen'] === 'Z' &&
-        (isset($_SERVER['HTTPS']) && (strtolower($_SERVER['HTTPS']) === 'on' || (int)$_SERVER['HTTPS'] === 1)) &&
-        !(isset($_GET['exclusive_content']) && (int)$_GET['exclusive_content'] === 1) &&
-        (verifyGPDataString('isAjax') !== 'true')
-    ) {
-        $https = false;
-        if (isset($_SERVER['HTTP_X_FORWARDED_HOST']) && $_SERVER['HTTP_X_FORWARDED_HOST'] === 'ssl.webpack.de') {
-            //hosteurope
-            $https = true;
-        } elseif (isset($_SERVER['SCRIPT_URI']) && preg_match('/^ssl-id/', $_SERVER['SCRIPT_URI'])) {
-            //strato
-            $https = true;
-        } elseif (isset($_SERVER['HTTP_X_FORWARDED_HOST']) && preg_match('/^ssl/', $_SERVER['HTTP_X_FORWARDED_HOST'])) {
-            //1&1
-            $https = true;
-        } elseif (isset($conf['global']['kaufabwicklung_ssl_proxy']) &&
-            preg_match('/^' . $conf['global']['kaufabwicklung_ssl_proxy'] . '/', $_SERVER['HTTP_X_FORWARDED_HOST'])
-        ) {
-            //ist proxy im fw host?
-            $https = true;
-        } elseif (isset($_SERVER['HTTPS']) && (strtolower($_SERVER['HTTPS']) === 'on' || (int)$_SERVER['HTTPS'] === 1)) {
-            $https = true;
-        }
-        if ($https) {
-            if (Shop::$kLink > 0) {
-                $lh = LinkHelper::getInstance();
-                if (!empty($lh->linkGroups->staticRoutes)) {
-                    foreach ($lh->linkGroups->staticRoutes as $id => $languages) {
-                        foreach ($languages as $link) {
-                            if ((int)$link->kLink === (int)Shop::$kLink) {
-                                if ($id !== 'umfrage.php' && $id !== 'news.php' && $id !== 'vergleichsliste.php') {
-                                    return;
-                                }
-                            }
-                        }
-
-                    }
-                }
-            }
-            $lang = '';
-            if (!standardspracheAktiv(true)) {
-                if (strpos($_SERVER['REQUEST_URI'], '?')) {
-                    $lang = '&lang=' . $_SESSION['cISOSprache'];
-                } else {
-                    $lang = '?lang=' . $_SESSION['cISOSprache'];
-                }
-            }
-            header('Location: http://' . $_SERVER['SERVER_NAME'] .
-                str_replace($lang, '', $_SERVER['REQUEST_URI']) . $lang, true, 302);
-            exit();
-        }
-    }
 }
 
 /**
@@ -4635,7 +4546,7 @@ function loeseHttps()
  * @param string $cString
  * @return bool|string
  */
-function gibUID($nAnzahlStellen, $cString = '')
+function gibUID($nAnzahlStellen = 40, $cString = '')
 {
     $cUID            = '';
     $cSalt           = '';
@@ -4663,7 +4574,7 @@ function gibUID($nAnzahlStellen, $cString = '')
                 if (((int)date('w') % 2) <= strlen($cString)) {
                     $nPos = (int)date('w') % 2;
                 }
-                $cUID .= md5(substr($cString, $nPos, 1) . $cSalt . md5(PFAD_ROOT . (microtime() - mt_rand())));
+                $cUID .= md5(substr($cString, $nPos, 1) . $cSalt . md5(PFAD_ROOT . (microtime(true) - mt_rand())));
             }
         }
         $cUID = cryptPasswort($cUID . $cSalt);
@@ -5122,7 +5033,7 @@ function formatCurrency($fSumme)
         $fSummeABS = abs($fSumme);
         $fSumme    = floor($fSumme * 100);
         $fCents    = $fSumme % 100;
-        $fSumme    = strval(floor($fSumme / 100));
+        $fSumme    = (string)floor($fSumme / 100);
         if ($fCents < 10) {
             $fCents = '0' . $fCents;
         }
@@ -6181,7 +6092,7 @@ function urlNotFoundRedirect(array $hookInfos = null, $forceExit = false)
     if ($redirectUrl !== false && $redirectUrl !== $url && '/' . $redirectUrl !== $url) {
         $cUrl_arr = parse_url($redirectUrl);
         if (!array_key_exists('scheme', $cUrl_arr)) {
-            $redirectUrl = (substr($redirectUrl, 0, 1) === '/')
+            $redirectUrl = strpos($redirectUrl, '/') === 0
                 ? Shop::getURL() . $redirectUrl
                 : Shop::getURL() . '/' . $redirectUrl;
         }

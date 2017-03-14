@@ -12,7 +12,7 @@ class SmartyResourceNiceDB extends Smarty_Resource_Custom
     /**
      * @var string
      */
-    private $type = 'export';
+    private $type;
 
     /**
      * SmartyResourceNiceDB constructor.

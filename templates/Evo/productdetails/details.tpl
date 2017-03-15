@@ -81,6 +81,7 @@
                             </div>
                         {/if}
                         {if ($Einstellungen.bewertung.bewertung_anzeigen === 'Y' && $Artikel->Bewertungen->oBewertungGesamt->nAnzahl > 0)}
+                            {block name="productdetails-info-rating-wrapper"}
                             <div class="rating-wrapper col-xs-4 text-right" itemprop="aggregateRating" itemscope itemtype="http://schema.org/AggregateRating">
                             <span itemprop="ratingValue"
                                   class="hidden">{$Artikel->Bewertungen->oBewertungGesamt->fDurchschnitt}</span>
@@ -89,6 +90,7 @@
                                 {include file='productdetails/rating.tpl' stars=$Artikel->Bewertungen->oBewertungGesamt->fDurchschnitt total=$Artikel->Bewertungen->oBewertungGesamt->nAnzahl}
                             </a>
                             </div>{* /rating-wrapper*}
+                            {/block}
                         {/if}
                         {/block}
                     </div>

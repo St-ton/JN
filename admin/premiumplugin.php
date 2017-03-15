@@ -28,7 +28,7 @@ if (!empty($pluginID)) {
 
         $pp->setAuthor('Solution 360 GmbH');
 
-        $pp->addButton('Jetzt registrieren', 'https://payments.amazon.de/?ld=SPEXDEAPA-JTL-CP-DP-2016-07', 'btn btn-primary', 'sign-in')
+        $pp->addButton('Jetzt registrieren', 'https://pay.amazon.com/de/?ld=SPEXDEAPA-JTL-CP-DP-2016-07', 'btn btn-primary', 'sign-in')
            ->addButton('Dokumentation', 'https://shop.solution360.de/downloads/dokus/Plugin_Doku_AmazonLogin&Pay-Shop4.pdf', 'btn btn-default', null, true);
 
         $pp->addAdvantage('Neukundengewinnung und verbessertes Einkaufserlebnis - Chance auf höhere Konversion und mehr Umsatz Online-Shop durch vereinfachten Bezahlprozess. Käufer werden zu Ihren Kunden und Sie können Ihre Produkte direkt an sie vermarkten.')
@@ -72,7 +72,7 @@ if (!empty($pluginID)) {
 
         $pp->setServicePartner($sp);
 
-        $pp->addBadge('AmazonPayments_PartnerLogos_Black_Premier_Partner.png', true);
+        $pp->addBadge('amazon_pay_partner_program_logo_dark_premier_partner.png', true);
     } elseif ($pluginID === 'agws_ts_features') {
         $pp->setLongDescription('Zeigen Sie, dass Ihre Kunden Sie lieben!',
             'Die einzigartige Trustbadge Technologie ermöglicht es Ihnen automatisiert Shopbewertungen und Produktbewertungen zu sammeln und direkt im Shop konversionssteigernd anzuzeigen. 

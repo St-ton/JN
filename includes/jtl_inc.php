@@ -519,7 +519,9 @@ function fuehreLoginAus($userLogin, $passLogin)
                 $maxAttempts = (int)$Einstellungen['kunden']['kundenlogin_max_loginversuche'];
                 if ($maxAttempts > 1 && $nLoginversuche >= $maxAttempts) {
                     $showLoginCaptcha = true;
-                    Shop::Smarty()->assign('code_login', generiereCaptchaCode(3));
+                    Shop::Smarty()
+                        ->assign('showLoginCaptcha', $showLoginCaptcha)
+                        ->assign('code_login', generiereCaptchaCode(3));
                 }
             }
             $cHinweis .= Shop::Lang()->get('incorrectLogin', 'global');

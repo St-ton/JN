@@ -47,6 +47,8 @@ function editiereBewertung($cPost_arr)
             // Durchschnitt neu berechnen
             aktualisiereDurchschnitt($oBewertung->kArtikel, $conf['bewertung']['bewertung_freischalten']);
 
+            Shop::Cache()->flushTags([CACHING_GROUP_ARTICLE . '_' . $oBewertung->kArtikel]);
+
             return true;
         }
     }

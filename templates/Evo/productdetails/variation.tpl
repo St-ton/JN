@@ -8,6 +8,7 @@
                 <dt>{$Variation->cName}{if $Variation->cTyp === 'IMGSWATCHES'} <span class="swatches-selected text-muted" data-id="{$Variation->kEigenschaft}"></span>{/if}</dt>
                 <dd class="form-group{if $Variation->cTyp !== 'FREIFELD' && !$showMatrix} required{/if}">
                     {if $Variation->cTyp === 'SELECTBOX'}
+                        {block name="productdetails-info-variation-select"}
                         <select class="form-control" title="{lang key="pleaseChooseVariation" section="productDetails"}" name="eigenschaftwert[{$Variation->kEigenschaft}]"{if !$showMatrix} required{/if}>
                             {foreach name=Variationswerte from=$Variation->Werte key=y item=Variationswert}
                                 {assign var="bSelected" value=false}
@@ -38,6 +39,7 @@
                                 {/if}
                             {/foreach}
                         </select>
+                        {/block}
                     {elseif $Variation->cTyp === 'RADIO'}
                         {foreach name=Variationswerte from=$Variation->Werte key=y item=Variationswert}
                             {assign var="bSelected" value=false}
@@ -51,6 +53,7 @@
                             $Einstellungen.global.artikeldetails_variationswertlager == 3 &&
                             !empty($Artikel->VariationenOhneFreifeld[$i]->Werte[$y]->nNichtLieferbar) && $Artikel->VariationenOhneFreifeld[$i]->Werte[$y]->nNichtLieferbar == 1}
                             {else}
+                                {block name="productdetails-info-variation-radio"}
                                 <label class="variation" for="vt{$Variationswert->kEigenschaftWert}"
                                        data-type="radio"
                                        data-original="{$Variationswert->cName}"
@@ -69,6 +72,7 @@
                                            >
                                     {include file="productdetails/variation_value.tpl"}
                                 </label>
+                                {/block}
                             {/if}
                         {/foreach}
                     {elseif $Variation->cTyp === 'IMGSWATCHES' || $Variation->cTyp === 'TEXTSWATCHES'}
@@ -86,6 +90,7 @@
                                 !empty($Artikel->VariationenOhneFreifeld[$i]->Werte[$y]->nNichtLieferbar) && $Artikel->VariationenOhneFreifeld[$i]->Werte[$y]->nNichtLieferbar == 1}
                                     {* /do nothing *}
                                 {else}
+                                    {block name="productdetails-info-variation-swatch"}
                                     <label class="variation block btn btn-default{if $bSelected} active{/if}"
                                             data-type="swatch"
                                             data-original="{$Variationswert->cName}"
@@ -115,15 +120,18 @@
                                         </span>
                                         {include file="productdetails/variation_value.tpl" hideVariationValue=true}
                                     </label>
+                                    {/block}
                                 {/if}
                             {/foreach}
                         </div>
                     {elseif $Variation->cTyp === 'FREIFELD' || $Variation->cTyp === 'PFLICHT-FREIFELD'}
+                        {block name="productdetails-info-variation-text"}
                         <input type="text"
                            class="form-control"
                            name="eigenschaftwert[{$Variation->kEigenschaft}]"
                            value="{if isset($oEigenschaftWertEdit_arr[$Variation->kEigenschaft])}{$oEigenschaftWertEdit_arr[$Variation->kEigenschaft]->cEigenschaftWertNameLocalized}{/if}"
                            data-key="{$Variation->kEigenschaft}"{if $Variation->cTyp === 'PFLICHT-FREIFELD'} required{/if}>
+                        {/block}
                     {/if}
                 </dd>
             {/strip}

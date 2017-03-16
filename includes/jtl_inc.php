@@ -141,8 +141,7 @@ function pruefeKategorieSichtbarkeit($kKundengruppe)
                     unset($categoryList['kKategorieVonUnterkategorien_arr'][0][$i]);
                     $save = true;
                 }
-                $categoryList['kKategorieVonUnterkategorien_arr'][0] =
-                    array_merge($categoryList['kKategorieVonUnterkategorien_arr'][0]);
+                $categoryList['kKategorieVonUnterkategorien_arr'][0] = array_merge($categoryList['kKategorieVonUnterkategorien_arr'][0]);
             }
 
             if (isset($categoryList['kKategorieVonUnterkategorien_arr'][$oKatSichtbarkeit->kKategorie])) {
@@ -186,8 +185,8 @@ function setzeWarenkorbPersInWarenkorb($kKunde)
             if ($oWarenkorbPos->nPosTyp === C_WARENKORBPOS_TYP_GRATISGESCHENK) {
                 $kArtikelGeschenk = (int)$oWarenkorbPos->kArtikel;
                 // Pruefen ob der Artikel wirklich ein Gratis Geschenk ist
-                $oArtikelGeschenk = Shop::DB()->query("
-                    SELECT tartikelattribut.kArtikel, tartikel.fLagerbestand, 
+                $oArtikelGeschenk = Shop::DB()->query(
+                    "SELECT tartikelattribut.kArtikel, tartikel.fLagerbestand,
                            tartikel.cLagerKleinerNull, tartikel.cLagerBeachten
                         FROM tartikelattribut
                         JOIN tartikel 
@@ -226,8 +225,8 @@ function setzeWarenkorbPersInWarenkorb($kKunde)
             if ($oWarenkorbPersPos->nPosTyp === C_WARENKORBPOS_TYP_GRATISGESCHENK) {
                 $kArtikelGeschenk = (int)$oWarenkorbPersPos->kArtikel;
                 // Pruefen ob der Artikel wirklich ein Gratis Geschenk ist
-                $oArtikelGeschenk = Shop::DB()->query("
-                    SELECT tartikelattribut.kArtikel, tartikel.fLagerbestand, 
+                $oArtikelGeschenk = Shop::DB()->query(
+                    "SELECT tartikelattribut.kArtikel, tartikel.fLagerbestand,
                            tartikel.cLagerKleinerNull, tartikel.cLagerBeachten
                         FROM tartikelattribut
                         JOIN tartikel 
@@ -282,8 +281,8 @@ function pruefeWarenkorbArtikelSichtbarkeit($kKundengruppe)
             $bKonfig = (isset($oPosition->cUnique) && strlen($oPosition->cUnique) === 10);
             if ($oPosition->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL && !$bKonfig) {
                 // Artikelsichtbarkeit prüfen
-                $oArtikelSichtbarkeit = Shop::DB()->query("
-                    SELECT kArtikel
+                $oArtikelSichtbarkeit = Shop::DB()->query(
+                    "SELECT kArtikel
                         FROM tartikelsichtbarkeit
                         WHERE kArtikel = " . (int)$oPosition->kArtikel . "
                             AND kKundengruppe = " . $kKundengruppe, 1
@@ -325,6 +324,7 @@ function fuehreLoginAus($userLogin, $passLogin)
         $cHinweis .= Shop::Lang()->get('csrfValidationFailed', 'global');
         Jtllog::writeLog('CSRF-Warnung fuer Login: ' . $_POST['login'], JTLLOG_LEVEL_ERROR);
     } else {
+        $Einstellungen  = Shop::getSettings([CONF_GLOBAL, CONF_KAUFABWICKLUNG, CONF_KUNDEN]);
         $loginCaptchaOK = $Kunde->verifyLoginCaptcha($_POST);
         if ($loginCaptchaOK === true) {
             $nReturnValue   = $Kunde->holLoginKunde($userLogin, $passLogin);
@@ -334,6 +334,7 @@ function fuehreLoginAus($userLogin, $passLogin)
             $nLoginversuche = $loginCaptchaOK;
         }
         if ($Kunde->kKunde > 0) {
+            unset($_SESSION['showLoginCaptcha']);
             $oKupons[] = !empty($_SESSION['VersandKupon']) ? $_SESSION['VersandKupon'] : null;
             $oKupons[] = !empty($_SESSION['oVersandfreiKupon']) ? $_SESSION['oVersandfreiKupon'] : null;
             $oKupons[] = !empty($_SESSION['NeukundenKupon']) ? $_SESSION['NeukundenKupon'] : null;
@@ -374,7 +375,6 @@ function fuehreLoginAus($userLogin, $passLogin)
                 $cURL = StringHandler::filterXSS(verifyGPDataString('cURL'));
                 // Lade WarenkorbPers
                 $bPersWarenkorbGeladen = false;
-                $Einstellungen = Shop::getSettings([CONF_GLOBAL, CONF_KAUFABWICKLUNG]);
                 if ($Einstellungen['global']['warenkorbpers_nutzen'] === 'Y' &&
                     count($_SESSION['Warenkorb']->PositionenArr) === 0
                 ) {
@@ -400,19 +400,17 @@ function fuehreLoginAus($userLogin, $passLogin)
                                     );
 
                                     if (isset($oArtikelGeschenk->kArtikel) && $oArtikelGeschenk->kArtikel > 0) {
-                                        if ($oArtikelGeschenk->fLagerbestand <= 0 &&
-                                            $oArtikelGeschenk->cLagerKleinerNull === 'N' &&
-                                            $oArtikelGeschenk->cLagerBeachten === 'Y'
+                                        if ($oArtikelGeschenk->fLagerbestand > 0 ||
+                                            $oArtikelGeschenk->cLagerKleinerNull === 'Y' ||
+                                            $oArtikelGeschenk->cLagerBeachten === 'N'
                                         ) {
-                                            $MsgWarning = Shop::Lang()->get('freegiftsNostock', 'errorMessages');
-                                        } else {
                                             executeHook(HOOK_WARENKORB_PAGE_GRATISGESCHENKEINFUEGEN);
                                             $_SESSION['Warenkorb']->loescheSpezialPos(C_WARENKORBPOS_TYP_GRATISGESCHENK)
                                                 ->fuegeEin($kArtikelGeschenk, 1, [], C_WARENKORBPOS_TYP_GRATISGESCHENK);
                                         }
                                     }
                                     // Konfigitems ohne Artikelbezug
-                                } elseif ($oWarenkorbPersPos->kArtikel === 0 && !empty($oWarenkorbPersPos->kKonfigitem) ) {
+                                } elseif ($oWarenkorbPersPos->kArtikel === 0 && !empty($oWarenkorbPersPos->kKonfigitem)) {
                                     $oKonfigitem = new Konfigitem($oWarenkorbPersPos->kKonfigitem);
                                     $_SESSION['Warenkorb']->erstelleSpezialPos(
                                         $oKonfigitem->getName(),
@@ -456,7 +454,7 @@ function fuehreLoginAus($userLogin, $passLogin)
                         header('Location: ' . $cURL, true, 301);
                         exit();
                     }
-                } elseif ($Einstellungen['global']['warenkorbpers_nutzen'] === 'Y' && !$bPersWarenkorbGeladen ) {
+                } elseif ($Einstellungen['global']['warenkorbpers_nutzen'] === 'Y' && !$bPersWarenkorbGeladen) {
                     // Existiert ein pers. Warenkorb?
                     // Wenn ja => frag Kunde ob er einen eventuell vorhandenen Warenkorb mergen möchte
                     if ($Einstellungen['kaufabwicklung']['warenkorb_warenkorb2pers_merge'] === 'Y') {
@@ -469,10 +467,10 @@ function fuehreLoginAus($userLogin, $passLogin)
                     }
                 }
                 // Kupons übernehmen, wenn erst der Warenkorb befüllt und sich dann angemeldet wurde
-                if(count($oKupons) > 0) {
+                if (count($oKupons) > 0) {
                     foreach ($oKupons as $Kupon) {
-                        if(!empty($Kupon)) {
-                            $Kuponfehler = checkeKupon($Kupon);
+                        if (!empty($Kupon)) {
+                            $Kuponfehler  = checkeKupon($Kupon);
                             $nReturnValue = angabenKorrekt($Kuponfehler);
                             executeHook(HOOK_WARENKORB_PAGE_KUPONANNEHMEN_PLAUSI, [
                                 'error'        => &$Kuponfehler,
@@ -485,9 +483,10 @@ function fuehreLoginAus($userLogin, $passLogin)
                                 } elseif (!empty($Kupon->kKupon) && $Kupon->cKuponTyp === 'versandkupon') {
                                     // Versandfrei Kupon
                                     $_SESSION['oVersandfreiKupon'] = $Kupon;
-                                    Shop::Smarty()->assign('cVersandfreiKuponLieferlaender_arr',
-                                        explode(';', $Kupon->cLieferlaender));
-                                    $nVersandfreiKuponGueltig = true;
+                                    Shop::Smarty()->assign(
+                                        'cVersandfreiKuponLieferlaender_arr',
+                                        explode(';', $Kupon->cLieferlaender)
+                                    );
                                 }
                             } else {
                                 Shop::Smarty()->assign('cKuponfehler', $Kuponfehler['ungueltig']);
@@ -504,7 +503,6 @@ function fuehreLoginAus($userLogin, $passLogin)
                     Shop::setLanguage($Kunde->kSprache, $oISOSprache->cISO);
                     Shop::Lang()->setzeSprache($oISOSprache->cISO);
                 }
-
             } else {
                 $cHinweis .= Shop::Lang()->get('loginNotActivated', 'global');
             }
@@ -518,10 +516,7 @@ function fuehreLoginAus($userLogin, $passLogin)
             ) {
                 $maxAttempts = (int)$Einstellungen['kunden']['kundenlogin_max_loginversuche'];
                 if ($maxAttempts > 1 && $nLoginversuche >= $maxAttempts) {
-                    $showLoginCaptcha = true;
-                    Shop::Smarty()
-                        ->assign('showLoginCaptcha', $showLoginCaptcha)
-                        ->assign('code_login', generiereCaptchaCode(3));
+                    $_SESSION['showLoginCaptcha'] = true;
                 }
             }
             $cHinweis .= Shop::Lang()->get('incorrectLogin', 'global');

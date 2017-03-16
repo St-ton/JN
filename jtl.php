@@ -14,10 +14,10 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'wunschliste_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'kundenwerbenkeunden_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
 
-$AktuelleSeite    = 'MEIN KONTO';
-$cBrotNavi        = '';
-$linkHelper       = LinkHelper::getInstance();
-$Einstellungen    = Shop::getSettings([
+$AktuelleSeite = 'MEIN KONTO';
+$cBrotNavi     = '';
+$linkHelper    = LinkHelper::getInstance();
+$Einstellungen = Shop::getSettings([
     CONF_GLOBAL,
     CONF_RSS,
     CONF_KUNDEN,
@@ -26,11 +26,10 @@ $Einstellungen    = Shop::getSettings([
     CONF_KUNDENWERBENKUNDEN,
     CONF_TRUSTEDSHOPS
 ]);
-$kLink            = $linkHelper->getSpecialPageLinkKey(LINKTYP_LOGIN);
-$cHinweis         = '';
-$hinweis          = '';
-$cFehler          = '';
-$showLoginCaptcha = false;
+$kLink         = $linkHelper->getSpecialPageLinkKey(LINKTYP_LOGIN);
+$cHinweis      = '';
+$hinweis       = '';
+$cFehler       = '';
 
 if (verifyGPCDataInteger('wlidmsg') > 0) {
     $cHinweis .= mappeWunschlisteMSG(verifyGPCDataInteger('wlidmsg'));
@@ -872,7 +871,6 @@ $cMetaKeywords    = $oMeta->cKeywords;
 $smarty->assign('cHinweis', $cHinweis)
        ->assign('cFehler', $cFehler)
        ->assign('hinweis', $cHinweis)
-       ->assign('showLoginCaptcha', $showLoginCaptcha)
        ->assign('step', $step)
        ->assign('Navigation', $cBrotNavi)
        ->assign('requestURL', isset($requestURL) ? $requestURL : null)

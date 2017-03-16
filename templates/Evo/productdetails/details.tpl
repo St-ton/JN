@@ -140,6 +140,7 @@
                     {include file="productdetails/variation.tpl" simple=$Artikel->isSimpleVariation showMatrix=$showMatrix}
                     <hr>
                     <div class="row">
+                        {block name="productdetails-info-price"}
                         <div class="col-xs-7">
                             {if isset($Artikel->Preise->strPreisGrafik_Detail)}
                                 {assign var=priceImage value=$Artikel->Preise->strPreisGrafik_Detail}
@@ -148,6 +149,7 @@
                             {/if}
                             {include file="productdetails/price.tpl" Artikel=$Artikel price_image=$priceImage tplscope="detail"}
                         </div>
+                        {/block}
                         <div class="col-xs-5 text-right">
                             {include file="productdetails/stock.tpl"}
                         </div>

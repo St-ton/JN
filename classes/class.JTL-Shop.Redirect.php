@@ -152,6 +152,16 @@ class Redirect
                 if ((int)$kRedirect > 0) {
                     return true;
                 }
+            } elseif ($this->normalize($oRedirect->cFromUrl) === $this->normalize($cSource) &&
+                empty($oRedirect->cToUrl)
+            ) {
+                // the redirect already exists but has an empty cToUrl => update it
+                if ((int)Shop::DB()->update(
+                    'tredirect', 'cFromUrl', $this->normalize($cSource),
+                    (object)['cToUrl' => StringHandler::convertISO($cDestination)]
+                ) > 0) {
+                    return true;
+                }
             }
         }
 

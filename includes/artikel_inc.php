@@ -1311,7 +1311,7 @@ function buildConfig($kArtikel, $fAnzahl, $nVariation_arr, $nKonfiggruppe_arr, $
 
     $oKonfig->nMinDeliveryDays      = $oArtikel->nMinDeliveryDays;
     $oKonfig->nMaxDeliveryDays      = $oArtikel->nMaxDeliveryDays;
-$oKonfig->cEstimatedDelivery        = $oArtikel->cEstimatedDelivery;
+    $oKonfig->cEstimatedDelivery    = $oArtikel->cEstimatedDelivery;
     $oKonfig->Lageranzeige->nStatus = $oArtikel->Lageranzeige->nStatus;
 
     $fAnzahl = max($fAnzahl, 1);

@@ -5109,6 +5109,7 @@ class Artikel
     {
         //Language-Fallback fuer Exportformate - #6663.
         //@todo: Abfrage der aktuellen Sprache in Session-Class oder System-Class auslagern
+        //@todo: Verwendung von $allMaxDeliveryDays / $allMinDeliveryDays prüfen
         if ($languageISO === null && !isset($_SESSION['cISOSprache'])) {
             $oSprache                = gibStandardsprache(true);
             $_SESSION['cISOSprache'] = $oSprache->cISO;

@@ -202,6 +202,7 @@ if ($oAccount->getIsAuthenticated()) {
         if (isset($_POST['TwoFA_code']) && '' !== $_POST['TwoFA_code']) {
             if ($oAccount->doTwoFA()) {
                 $_SESSION['AdminAccount']->TwoFA_expired = false;
+                $_SESSION['AdminAccount']->TwoFA_valid   = true;
                 $_SESSION['loginIsValid']                = true; // "enable" the "header.tpl"-navigation again
                 $smarty->assign('cFehler', ''); // reset a previously (falsely arised) error-message
 

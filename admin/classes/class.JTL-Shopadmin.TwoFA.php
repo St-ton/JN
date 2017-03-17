@@ -13,18 +13,18 @@ use qrcodegenerator\QRCode\Output\QRString;
 class TwoFA
 {
     /**
-     * PHPGangsta_GoogleAuthenticator object
+     * TwoFactorAuth-object
      *
-     * @var object
+     * @var PHPGangsta_GoogleAuthenticator
      */
     private $oGA;
 
     /**
-     * stdClass
+     * user-account data
      *
-     * @var object
+     * @var stdClass
      */
-    private $oUserTupel;
+    private $oUserTuple;
 
     /**
      * the name of the current shop
@@ -39,11 +39,11 @@ class TwoFA
      */
     public function __construct()
     {
-        $this->oUserTupel                 = new stdClass();
-        $this->oUserTupel->kAdminlogin    = 0;
-        $this->oUserTupel->cLogin         = '';
-        $this->oUserTupel->b2FAauth       = false;
-        $this->oUserTupel->c2FAauthSecret = '';
+        $this->oUserTuple                 = new stdClass();
+        $this->oUserTuple->kAdminlogin    = 0;
+        $this->oUserTuple->cLogin         = '';
+        $this->oUserTuple->b2FAauth       = false;
+        $this->oUserTuple->c2FAauthSecret = '';
         $this->szShopName                 = '';
     }
 
@@ -54,7 +54,7 @@ class TwoFA
      */
     public function is2FAauth()
     {
-        return (bool)$this->oUserTupel->b2FAauth;
+        return (bool)$this->oUserTuple->b2FAauth;
     }
 
     /**
@@ -64,7 +64,7 @@ class TwoFA
      */
     public function is2FAauthSecretExist()
     {
-        return ('' !== $this->oUserTupel->c2FAauthSecret);
+        return ('' !== $this->oUserTuple->c2FAauthSecret);
     }
 
     /**
@@ -78,10 +78,10 @@ class TwoFA
         // (only if we want a new secret! (something like lazy loading))
         $this->oGA = new PHPGangsta_GoogleAuthenticator();
 
-        if(null === $this->oUserTupel) {
-            $this->oUserTupel = new stdClass();
+        if (null === $this->oUserTuple) {
+            $this->oUserTuple = new stdClass();
         }
-        $this->oUserTupel->c2FAauthSecret = $this->oGA->createSecret();
+        $this->oUserTuple->c2FAauthSecret = $this->oGA->createSecret();
 
         return $this;
     }
@@ -93,7 +93,7 @@ class TwoFA
      */
     public function getSecret()
     {
-        return $this->oUserTupel->c2FAauthSecret;
+        return $this->oUserTuple->c2FAauthSecret;
     }
 
 
@@ -114,12 +114,12 @@ class TwoFA
         // codes with a length over 6 chars are emergency-codes
         if (6 < strlen($szCode)) {
             // try to find this code in the emergency-code-pool
-            $o2FAemergency = new TwoFAemergency();
+            $o2FAemergency = new TwoFAEmergency();
 
-            return $o2FAemergency->isValidEmergencyCode($this->oUserTupel->kAdminlogin, $szCode);
+            return $o2FAemergency->isValidEmergencyCode($this->oUserTuple->kAdminlogin, $szCode);
         } else {
 
-            return $this->oGA->verifyCode($this->oUserTupel->c2FAauthSecret, $szCode);
+            return $this->oGA->verifyCode($this->oUserTuple->c2FAauthSecret, $szCode);
         }
     }
 
@@ -132,11 +132,11 @@ class TwoFA
      */
     public function getQRcode()
     {
-        if ('' !== $this->oUserTupel->c2FAauthSecret) {
+        if ('' !== $this->oUserTuple->c2FAauthSecret) {
             // create the QR-code
             $szQRString = new QRCode(
-                  'otpauth://totp/'.rawurlencode('JTL-Shop ' . $this->oUserTupel->cLogin . '@' . $this->getShopName())
-                . '?secret=' . $this->oUserTupel->c2FAauthSecret
+                  'otpauth://totp/'.rawurlencode('JTL-Shop ' . $this->oUserTuple->cLogin . '@' . $this->getShopName())
+                . '?secret=' . $this->oUserTuple->c2FAauthSecret
                 . '&issuer=JTL-Software'
                 , new QRString()
             );
@@ -155,7 +155,7 @@ class TwoFA
      */
     public function setUserByID($iID)
     {
-        $this->oUserTupel = Shop::DB()->select('tadminlogin', 'kAdminlogin', (int)$iID);
+        $this->oUserTuple = Shop::DB()->select('tadminlogin', 'kAdminlogin', (int)$iID);
     }
 
     /**
@@ -168,10 +168,10 @@ class TwoFA
     public function setUserByName($szUserName)
     {
         // write at least the user's name we get via e.g. ajax
-        $this->oUserTupel->cLogin = $szUserName;
+        $this->oUserTuple->cLogin = $szUserName;
         // check if we know that user yet
-        if($oTupel = Shop::DB()->select('tadminlogin', 'cLogin', $szUserName)) {
-            $this->oUserTupel = $oTupel;
+        if ($oTuple = Shop::DB()->select('tadminlogin', 'cLogin', $szUserName)) {
+            $this->oUserTuple = $oTuple;
         }
     }
 
@@ -180,9 +180,9 @@ class TwoFA
      *
      * @return object  accountdata if there're any, or null
      */
-    public function getUserTupel()
+    public function getUserTuple()
     {
-        return $this->oUserTupel ? $this->oUserTupel : null;
+        return $this->oUserTuple ? $this->oUserTuple : null;
     }
 
     /**
@@ -209,7 +209,6 @@ class TwoFA
      */
     public function __toString()
     {
-        return print_r($this->oUserTupel, true);
+        return print_r($this->oUserTuple, true);
     }
-
 }

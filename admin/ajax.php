@@ -26,10 +26,10 @@ if (isset($_GET['query'], $_GET['type']) && validateToken()) {
             $oTwoFA = new TwoFA();
             $oTwoFA->setUserByName($_GET['userName']);
 
-            $oUserData = new stdClass();
+            $oUserData           = new stdClass();
             $oUserData->szSecret = $oTwoFA->createNewSecret()->getSecret();
             $oUserData->szQRcode = $oTwoFA->getQRcode();
-            $szJSONuserData = json_encode($oUserData);
+            $szJSONuserData      = json_encode($oUserData);
 
             die($szJSONuserData);
         case 'TwoFAgenEmergCodes':
@@ -38,31 +38,30 @@ if (isset($_GET['query'], $_GET['type']) && validateToken()) {
 
             // create, what the user can print out
             $szText  = '<h4>JTL-shop Backend Notfall-Codes</h4>';
-            $szText .= 'Account: <b>' . $oTwoFA->getUserTupel()->cLogin . '</b><br>';
+            $szText .= 'Account: <b>' . $oTwoFA->getUserTuple()->cLogin . '</b><br>';
             $szText .= 'Shop: <b>' . $oTwoFA->getShopName() . '</b><br><br>';
 
-            $oTwoFAgenEmergCodes = new TwoFAemergency();
-            $oTwoFAgenEmergCodes->removeExistingCodes($oTwoFA->getUserTupel());
+            $oTwoFAgenEmergCodes = new TwoFAEmergency();
+            $oTwoFAgenEmergCodes->removeExistingCodes($oTwoFA->getUserTuple());
 
-            $vCodes  = $oTwoFAgenEmergCodes->createNewCodes($oTwoFA->getUserTupel());
+            $vCodes = $oTwoFAgenEmergCodes->createNewCodes($oTwoFA->getUserTuple());
 
-            $szText .= '<font face = "monospace" size = "+1">';
+            $szText      .= '<font face = "monospace" size = "+1">';
             $nCol         = 0;
-            $vCodesLength = count($vCodes);
-            for ($i=0; $i < count($vCodes); $i++) {
+            $iCodesLength = count($vCodes);
+            for ($i = 0; $i < $iCodesLength; $i++) {
                 if (1 > $nCol) {
-                    $szText .= '<span style="padding:3px;">' . $vCodes[$i] . '</span> ';
+                    $szText .= '<span style="padding:3px;">' . $vCodes[$i] . '</span>';
                     $nCol++;
                 } else {
                     $szText .= $vCodes[$i] . '<br>';
-                    $nCol = 0;
+                    $nCol    = 0;
                 }
             }
             $szText .= '</font>';
 
             die($szText);
-        default :
+        default:
             die();
     }
 }
-

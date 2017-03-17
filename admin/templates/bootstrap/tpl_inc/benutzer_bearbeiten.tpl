@@ -219,7 +219,7 @@ $(document).ready(function() {
                                 }
                             }
 
-                            function showEmergenceCodes(action) {
+                            function showEmergencyCodes(action) {
                                 $('#printframe').attr('src', 'ajax.php?userName=' + $('[id$=cLogin]').val() + '&query=&type=TwoFAgenEmergCodes&token=' + $('[name$=jtl_token]').val());
                                 if ('forceReload' === action) {
                                     $('#printframe').load();
@@ -260,7 +260,7 @@ $(document).ready(function() {
                                             <div class="btn-group">
                                                 <button class="btn btn-default" type="button" data-dismiss="modal">Schlie&szlig;en</button>
                                                 <button class="btn btn-primary" type="button" onclick="printframe.print();">Drucken</button>
-                                                <button class="btn btn-danger" type="button" onclick="showEmergenceCodes('forceReload');">Codes neu erzeugen</button>
+                                                <button class="btn btn-danger" type="button" onclick="showEmergencyCodes('forceReload');">Codes neu erzeugen</button>
                                             </div>
                                         </div>
                                     </div>
@@ -271,7 +271,7 @@ $(document).ready(function() {
                             <br>
                             <div class="btn-group">
                                 <button class="btn btn-primary" type="button" onclick="createNewSecret();">Neuen Code erstellen</button>
-                                <button class="btn btn-warning" type="button" onclick="showEmergenceCodes();">Notfall-Codes neu erstellen</button>
+                                <button class="btn btn-warning" type="button" onclick="showEmergencyCodes();">Notfall-Codes neu erstellen</button>
                             </div>
                         </div>
 

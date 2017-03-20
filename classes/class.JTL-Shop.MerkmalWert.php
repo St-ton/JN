@@ -127,7 +127,7 @@ class MerkmalWert
             return $this;
         }
         $kStandardSprache = (int)gibStandardsprache()->kSprache;
-        if ($kSprache != $kStandardSprache) {
+        if ($kSprache !== $kStandardSprache) {
             $cSelect = "COALESCE(fremdSprache.kSprache, standardSprache.kSprache) AS kSprache, 
                         COALESCE(fremdSprache.cWert, standardSprache.cWert) AS cWert,
                         COALESCE(fremdSprache.cMetaTitle, standardSprache.cMetaTitle) AS cMetaTitle, 
@@ -202,7 +202,7 @@ class MerkmalWert
                 }
             }
             $kStandardSprache = (int)gibStandardsprache()->kSprache;
-            if ($kSprache != $kStandardSprache) {
+            if ($kSprache !== $kStandardSprache) {
                 $cSelect = "COALESCE(fremdSprache.kSprache, standardSprache.kSprache) AS kSprache, 
                             COALESCE(fremdSprache.cWert, standardSprache.cWert) AS cWert,
                             COALESCE(fremdSprache.cMetaTitle, standardSprache.cMetaTitle) AS cMetaTitle, 

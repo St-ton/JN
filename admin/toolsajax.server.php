@@ -714,7 +714,7 @@ function getCustomerList($searchString, $kKundeSelected_arr)
 
     return $oResponse;
 }
-if ($oAccount->logged()) {
+if ($oAccount->getIsAuthenticated()) {
     executeHook(HOOK_TOOLSAJAX_SERVER_ADMIN, ['xajax' => &$xajax]);
 
     $xajax->registerFunction('reloadAdminLoginCaptcha');

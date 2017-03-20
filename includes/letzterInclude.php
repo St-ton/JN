@@ -172,7 +172,8 @@ $smarty->assign('cPluginCss_arr', $cMinify_arr['plugin_css'])
        ->assign('BILD_KEIN_MERKMALBILD_VORHANDEN', BILD_KEIN_MERKMALBILD_VORHANDEN)
        ->assign('BILD_KEIN_MERKMALWERTBILD_VORHANDEN', BILD_KEIN_MERKMALWERTBILD_VORHANDEN)
        ->assign('cCanonicalURL', isset($cCanonicalURL) ? $cCanonicalURL : null)
-       ->assign('AktuelleKategorie', $AktuelleKategorie);
+       ->assign('AktuelleKategorie', $AktuelleKategorie)
+       ->assign('showLoginCaptcha', isset($_SESSION['showLoginCaptcha']) ? $_SESSION['showLoginCaptcha'] : false);
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'besucher.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'toolsajax_inc.php';

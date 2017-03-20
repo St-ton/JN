@@ -239,7 +239,7 @@ class Boxen
                         }
                         //add the filter for admin backend
                         foreach ($oVisible_arr as $oVisible) {
-                            if ($nSeite == $oVisible->kSeite) {
+                            if ((int)$nSeite === (int)$oVisible->kSeite) {
                                 if (!empty($oVisible->cFilter)) {
                                     $_tmp          = explode(',', $oVisible->cFilter);
                                     $filterOptions = [];

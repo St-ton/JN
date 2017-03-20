@@ -158,14 +158,19 @@ class WarenkorbPersPos
     }
 
     /**
-     * @param int $kEigenschaft
-     * @param int $kEigenschaftWert
+     * @param int    $kEigenschaft
+     * @param int    $kEigenschaftWert
+     * @param string $cFreifeldWert
      * @return bool
      */
-    public function istEigenschaftEnthalten($kEigenschaft, $kEigenschaftWert)
+    public function istEigenschaftEnthalten($kEigenschaft, $kEigenschaftWert, $cFreifeldWert = '')
     {
         foreach ($this->oWarenkorbPersPosEigenschaft_arr as $oWarenkorbPersPosEigenschaft) {
-            if ($oWarenkorbPersPosEigenschaft->kEigenschaft == $kEigenschaft && $oWarenkorbPersPosEigenschaft->kEigenschaftWert == $kEigenschaftWert) {
+            if ($oWarenkorbPersPosEigenschaft->kEigenschaft == $kEigenschaft &&
+                ((!empty($oWarenkorbPersPosEigenschaft->kEigenschaftWert) &&
+                    $oWarenkorbPersPosEigenschaft->kEigenschaftWert === $kEigenschaftWert) ||
+                ($oWarenkorbPersPosEigenschaft->kEigenschaftWert === 0 &&
+                    $oWarenkorbPersPosEigenschaft->cFreifeldWert === $cFreifeldWert))) {
                 return true;
             }
         }

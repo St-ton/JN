@@ -82,6 +82,10 @@ class WarenkorbPers
                             (isset($oEigenschaftwerte->kEigenschaftWert)
                                 ? $oEigenschaftwerte->kEigenschaftWert
                                 : null
+                            ),
+                            (isset($oEigenschaftwerte->cFreifeldWert)
+                                ? $oEigenschaftwerte->cFreifeldWert
+                                : null
                             )
                         )) {
                             $bBereitsEnthalten = false;
@@ -294,8 +298,8 @@ class WarenkorbPers
                                 $oWarenkorbPersPosEigenschaft = new WarenkorbPersPosEigenschaft(
                                     $oWarenkorbPersPosEigenschaftTMP->kEigenschaft,
                                     $oWarenkorbPersPosEigenschaftTMP->kEigenschaftWert,
-                                    (isset($oWarenkorbPersPosEigenschaftTMP->cFreiFeldWert)
-                                        ? $oWarenkorbPersPosEigenschaftTMP->cFreiFeldWert
+                                    (isset($oWarenkorbPersPosEigenschaftTMP->cFreifeldWert)
+                                        ? $oWarenkorbPersPosEigenschaftTMP->cFreifeldWert
                                         : null),
                                     $oWarenkorbPersPosEigenschaftTMP->cEigenschaftName,
                                     $oWarenkorbPersPosEigenschaftTMP->cEigenschaftWertName,

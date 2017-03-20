@@ -4154,6 +4154,8 @@ class Artikel
             $this->oVariationKombiKinderAssoc_arr = $children;
         }
         $this->rabattierePreise();
+        // Versandkostenfrei-Länder aufgrund rabattierter Preise neu setzen
+        $this->taxData['shippingFreeCountries'] = $this->gibMwStVersandLaenderString();
 
         return $this;
     }

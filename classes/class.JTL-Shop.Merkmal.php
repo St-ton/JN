@@ -109,7 +109,7 @@ class Merkmal
             return $this;
         }
         $kStandardSprache     = (int)gibStandardsprache()->kSprache;
-        if ($kSprache != $kStandardSprache) {
+        if ($kSprache !== $kStandardSprache) {
             $cSelect = "COALESCE(fremdSprache.cName, standardSprache.cName) AS cName";
             $cJoin   = "LEFT JOIN tmerkmalsprache AS standardSprache 
                             ON standardSprache.kMerkmal = tmerkmal.kMerkmal

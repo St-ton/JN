@@ -1617,7 +1617,7 @@ class Artikel
             }
         }
         if ($this->kArtikel > 0) {
-            if ($kSprache == $kDefaultLanguage) {
+            if ($kSprache === $kDefaultLanguage) {
                 $conditionalFields   = "lang.cName, lang.cBeschreibung, lang.kSprache";
                 $conditionalLeftJoin = "LEFT JOIN tmediendateisprache AS lang 
                                         ON lang.kMedienDatei = tmediendatei.kMedienDatei 

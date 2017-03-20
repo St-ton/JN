@@ -159,7 +159,7 @@
                             {elseif $smarty.session.Waehrung->cISO === 'GBP'}
                                 <i class="fa fa-gbp" title="{$smarty.session.Waehrung->cName}"></i>
                             {else}
-                                else{$smarty.session.Waehrung->cName}
+                                {$smarty.session.Waehrung->cName}
                             {/if} <span class="caret"></span>
                         </a>
                         <ul id="currency-dropdown-small" class="dropdown-menu dropdown-menu-right">

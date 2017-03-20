@@ -36,14 +36,16 @@
             {if isset($arrBoxBottom) && count($arrBoxBottom) > 0}
                 <div class="row" id="footer-boxes">
                     {foreach name=bottomBoxes from=$arrBoxBottom item=box}
-                        <div class="{block name="footer-boxes-class"}col-xs-6 col-md-3{/block}">
-                            {if isset($box.obj) && isset($box.tpl)}
-                                {if $smarty.foreach.bottomBoxes.iteration < 10}
-                                    {assign var=oBox value=$box.obj}
-                                    {include file=$box.tpl}
+                        {if $box.obj->anzeigen === 'Y'}
+                            <div class="{block name="footer-boxes-class"}col-xs-6 col-md-3{/block}">
+                                {if isset($box.obj) && isset($box.tpl)}
+                                    {if $smarty.foreach.bottomBoxes.iteration < 10}
+                                        {assign var=oBox value=$box.obj}
+                                        {include file=$box.tpl}
+                                    {/if}
                                 {/if}
-                            {/if}
-                        </div>
+                            </div>
+                        {/if}
                     {/foreach}
                 </div>
             {/if}

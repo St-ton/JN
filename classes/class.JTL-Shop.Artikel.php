@@ -1730,15 +1730,17 @@ class Artikel
                                 $width = $_attr->cWert;
                             } elseif ($_attr->cName === 'height' && is_numeric($_attr->cWert)) {
                                 $height = $_attr->cWert;
-                            } elseif ($_attr->cName === 'fullscreen' && ($_attr->cWert === '0' || $_attr->cWert === 'false')) {
+                            } elseif ($_attr->cName === 'fullscreen' && ($_attr->cWert === '0'
+                                    || $_attr->cWert === 'false')) {
                                 $fullscreen = '';
                             }
                         }
                     }
-                    $embedURL                   = str_replace('https://', '//', $mediaFile->cURL);
-                    $embedURL                   = str_replace('watch?v=', 'embed/', $embedURL) . $related;
-                    $mediaFile->oEmbed->code    = '<iframe class="youtube" width="' . $width . '
-                    " height="' . $height . '" src="' . $embedURL . '" frameborder="0"' . $fullscreen . '></iframe>';
+                    $cSearch                    = ['https://', 'watch?v='];
+                    $cReplace                   = ['//', 'embed/'];
+                    $embedURL                   = str_replace($cSearch, $cReplace, $mediaFile->cURL) . $related;
+                    $mediaFile->oEmbed->code    = '<iframe class="youtube" width="' . $width . '" height="' . $height
+                        . '" src="' . $embedURL . '" frameborder="0"' . $fullscreen . '></iframe>';
                     $mediaFile->oEmbed->options = [
                         'height'     => $height,
                         'width'      => $width,
@@ -1765,20 +1767,23 @@ class Artikel
                                 $width = $_attr->cWert;
                             } elseif ($_attr->cName === 'height' && is_numeric($_attr->cWert)) {
                                 $height = $_attr->cWert;
-                            } elseif ($_attr->cName === 'fullscreen' && ($_attr->cWert === '0' || $_attr->cWert === 'false')) {
+                            } elseif ($_attr->cName === 'fullscreen' && ($_attr->cWert === '0'
+                                    || $_attr->cWert === 'false')) {
                                 $fullscreen = '';
                             }
                         }
                     }
-                    $embedURL                   = str_replace('https://', '//', $mediaFile->cURL);
-                    $embedURL                   = str_replace('youtu.be/', 'youtube.com/embed/', $embedURL) . $related;
-                    $mediaFile->oEmbed->code    = '<iframe class="youtube" width="' . $width . '" height="' . $height . '" src="' . $embedURL . '" frameborder="0"' . $fullscreen . '></iframe>';
-                    $mediaFile->oEmbed->options = array(
+                    $cSearch                    = ['https://', 'youtu.be/'];
+                    $cReplace                   = ['//', 'youtube.com/embed/'];
+                    $embedURL                   = str_replace($cSearch, $cReplace, $mediaFile->cURL) . $related;
+                    $mediaFile->oEmbed->code    = '<iframe class="youtube" width="' . $width . '" height="' . $height
+                        . '" src="' . $embedURL . '" frameborder="0"' . $fullscreen . '></iframe>';
+                    $mediaFile->oEmbed->options = [
                         'height'     => $height,
                         'width'      => $width,
                         'related'    => $related,
                         'fullscreen' => $fullscreen
-                    );
+                    ];
                 }
             }
         }

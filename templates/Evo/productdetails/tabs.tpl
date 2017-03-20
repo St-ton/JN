@@ -1,8 +1,4 @@
-{if $Einstellungen.artikeldetails.artikeldetails_tabs_nutzen !== 'N'}
-    {$tabanzeige = true}
-{else}
-    {$tabanzeige = false}
-{/if}
+{$tabanzeige = $Einstellungen.artikeldetails.artikeldetails_tabs_nutzen !== 'N'}
 {if $Artikel->cBeschreibung|strlen > 0 || $Einstellungen.artikeldetails.merkmale_anzeigen === 'Y'
     && $Artikel->oMerkmale_arr|count > 1}
     {$tabsPaneleArr['description'] = [

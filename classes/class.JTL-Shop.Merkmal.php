@@ -137,7 +137,7 @@ class Merkmal
             }
         }
         if ($bMMW && $this->kMerkmal > 0) {
-            if ($kSprache != $kStandardSprache) {
+            if ($kSprache !== $kStandardSprache) {
                 $cJoinMerkmalwert = "LEFT JOIN tmerkmalwertsprache AS standardSprache 
                                         ON standardSprache.kMerkmalWert = tmw.kMerkmalWert
                                         AND standardSprache.kSprache = {$kStandardSprache}
@@ -205,7 +205,7 @@ class Merkmal
             }
             $kSprache         = (int)$kSprache;
             $kStandardSprache = (int)gibStandardsprache()->kSprache;
-            if ($kSprache != $kStandardSprache) {
+            if ($kSprache !== $kStandardSprache) {
                 $cSelect = "COALESCE(fremdSprache.cName, standardSprache.cName) AS cName";
                 $cJoin   = "LEFT JOIN tmerkmalsprache AS standardSprache 
                                 ON standardSprache.kMerkmal = tmerkmal.kMerkmal

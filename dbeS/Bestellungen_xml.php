@@ -361,19 +361,26 @@ function bearbeiteUpdate($xml)
     if (isset($xml['tbestellung']['cZahlungsartName']) && strlen($xml['tbestellung']['cZahlungsartName']) > 0) {
         $oSprache = gibStandardsprache(true);
         if ($oSprache->kSprache != $oBestellung->kSprache) {
-            $oZahlungsart = Shop::DB()->query(
+            $oZahlungsart = Shop::DB()->executeQueryPrepared(
                 "SELECT kZahlungsart, cName
                     FROM tzahlungsart
-                    WHERE cName LIKE '%" . Shop::DB()->escape($xml['tbestellung']['cZahlungsartName']) . "%'", 1
+                    WHERE cName LIKE :name",
+                ['name' => '%' . $xml['tbestellung']['cZahlungsartName'] . '%'],
+                1
             );
         } else {
-            $oZahlungsart = Shop::DB()->query(
+            $oZahlungsart = Shop::DB()->executeQueryPrepared(
                 "SELECT tzahlungsart.kZahlungsart, IFNULL(tzahlungsartsprache.cName, tzahlungsart.cName) AS cName
                     FROM tzahlungsart
                     LEFT JOIN tzahlungsartsprache 
                         ON tzahlungsartsprache.kZahlungsart = tzahlungsart.kZahlungsart
-                        AND tzahlungsartsprache.cISOSprache = '" . gibSprachKeyISO('', (int)$oBestellung->kSprache) . "'
-                    WHERE tzahlungsart.cName LIKE '%" . Shop::DB()->escape($xml['tbestellung']['cZahlungsartName']) . "%'", 1
+                        AND tzahlungsartsprache.cISOSprache = :iso
+                    WHERE tzahlungsart.cName LIKE :name",
+                [
+                    'iso'  => gibSprachKeyISO('', (int)$oBestellung->kSprache),
+                    'name' => '%' . $xml['tbestellung']['cZahlungsartName'] . '%'
+                ],
+                1
             );
         }
     }
@@ -386,7 +393,7 @@ function bearbeiteUpdate($xml)
     if (isset($oBestellung->kWaehrung)) {
         $currentCurrency = Shop::DB()->select('twaehrung', 'kWaehrung', $oBestellung->kWaehrung);
         $defaultCurrency = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
-        if (isset($currentCurrency->kWaehrung) && isset($defaultCurrency->kWaehrung)) {
+        if (isset($currentCurrency->kWaehrung, $defaultCurrency->kWaehrung)) {
             $correctionFactor = (float)$currentCurrency->fFaktor;
             $oBestellung->fGesamtsumme /= $correctionFactor;
         }
@@ -582,11 +589,11 @@ function bearbeiteSet($xml)
             $upd->cStatus       = $status;
             $upd->cVersandInfo  = Shop::DB()->escape($oBestellungWawi->cVersandInfo);
             if (strlen($cZahlungsartName) > 0) {
-                $upd->cZahlungsartName = Shop::DB()->escape($oBestellungWawi->cZahlungsartName);
+                $upd->cZahlungsartName = $cZahlungsartName;
             }
-            if (!empty($dBezahltDatum)) {
-                $upd->dBezahltDatum = Shop::DB()->escape($oBestellungWawi->dBezahltDatum);
-            }
+            $upd->dBezahltDatum = empty($dBezahltDatum) 
+                ? '0000-00-00' 
+                : $dBezahltDatum;
             Shop::DB()->update('tbestellung', 'kBestellung', (int)$oBestellungWawi->kBestellung, $upd);
             $oBestellungUpdated = new Bestellung($oBestellungShop->kBestellung, true);
 

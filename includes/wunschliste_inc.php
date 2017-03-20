@@ -205,10 +205,8 @@ function wunschlisteSenden($cEmail_arr, $kWunschliste)
     $kWunschliste = (int)$kWunschliste;
     // Wurden Emails übergeben?
     if (count($cEmail_arr) > 0) {
-        $conf = Shop::getSettings([CONF_GLOBAL]);
-        if (!isset($oMail)) {
-            $oMail = new stdClass();
-        }
+        $conf                = Shop::getSettings([CONF_GLOBAL]);
+        $oMail               = new stdClass();
         $oMail->tkunde       = $_SESSION['Kunde'];
         $oMail->twunschliste = bauecPreis(new Wunschliste($kWunschliste));
 
@@ -229,9 +227,7 @@ function wunschlisteSenden($cEmail_arr, $kWunschliste)
             // Email auf "Echtheit" prüfen
             $cEmail = StringHandler::filterXSS($cEmail_arr[$i]);
             if (!pruefeEmailblacklist($cEmail)) {
-                if (!isset($oMail->mail)) {
-                    $oMail->mail = new stdClass();
-                }
+                $oMail->mail          = new stdClass();
                 $oMail->mail->toEmail = $cEmail;
                 $oMail->mail->toName  = $cEmail;
                 // Emails senden
@@ -348,19 +344,20 @@ function giboWunschlistePos($kWunschlistePos)
 function giboWunschliste($kWunschliste = 0, $cURLID = '')
 {
     $kWunschliste = (int)$kWunschliste;
-    if ($kWunschliste > 0 || strlen($cURLID) > 0) {
-        $cSQL = "kWunschliste = " . $kWunschliste;
-        if ($kWunschliste === 0 && strlen($cURLID) > 0) {
-            $cSQL = "cURLID LIKE '" . addcslashes($cURLID, '%_') . "%'";
-        }
-        $oWunschliste = Shop::DB()->query("SELECT * FROM twunschliste WHERE " . $cSQL, 1);
+    $oWunschliste = null;
 
-        if (isset($oWunschliste->kWunschliste) && $oWunschliste->kWunschliste > 0) {
-            return $oWunschliste;
-        }
+    if ($kWunschliste > 0) {
+        $oWunschliste = Shop::DB()->select('twunschliste', 'kWunschliste', $kWunschliste);
+    } elseif ($cURLID !== '') {
+        $oWunschliste = Shop::DB()->executeQueryPrepared(
+            "SELECT * FROM twunschliste WHERE cURLID LIKE :id",
+            ['id' => $cURLID],
+            1
+        );
     }
-
-    return false;
+    return (isset($oWunschliste->kWunschliste) && $oWunschliste->kWunschliste > 0)
+        ? $oWunschliste
+        : false;
 }
 
 /**

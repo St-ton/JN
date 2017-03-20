@@ -164,7 +164,7 @@
                                 </option>
                             </select>
                         </span>
-                        <span class="input-group-addon">
+                        <span class="input-group-addon" {if $oKupon->cWertTyp == 'festpreis'} style="display: none;"{/if}>
                             {getCurrencyConversionTooltipButton inputId='fWert'}
                         </span>
                     </div>

@@ -20,8 +20,6 @@ $hinweis    = '';
 $requestURL = '';
 $linkHelper = LinkHelper::getInstance();
 
-pruefeHttps();
-
 if (strlen($_GET['uid']) === 40) {
     $status = Shop::DB()->executeQueryPrepared("
         SELECT kBestellung 

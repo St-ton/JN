@@ -9,16 +9,11 @@ require PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
 
 $NaviFilter     = Shop::run();
 $cParameter_arr = Shop::getParameters();
-$https          = false;
+$NaviFilter     = Shop::buildNaviFilter($cParameter_arr);
 $linkHelper     = LinkHelper::getInstance();
+Shop::checkNaviFilter($NaviFilter);
 if (Shop::$kLink > 0) {
     $link = $linkHelper->getPageLink(Shop::$kLink);
-    if (isset($link->bSSL) && $link->bSSL > 0) {
-        $https = true;
-        if ((int)$link->bSSL === 2) {
-            pruefeHttps();
-        }
-    }
 }
 executeHook(HOOK_INDEX_NAVI_HEAD_POSTGET);
 //prg

@@ -938,7 +938,7 @@ class Kupon
         $numbersString = $numbers ? '0123456789' : null;
         $cCode         = '';
         $allCoupons    = Shop::DB()->query("SELECT * FROM tkupon", 2);
-        while (empty($cCode) || ((count($allCoupons) == 0) 
+        while (empty($cCode) || ((count($allCoupons) === 0)
                 ? empty($cCode) 
                 : Shop::DB()->select('tkupon', 'cCode', $cCode))) {
             $cCode = $prefix . substr(str_shuffle(str_repeat(

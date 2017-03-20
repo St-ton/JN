@@ -254,17 +254,19 @@ class Redirect
     public function getArtNrUrl($cArtNr, $cIso)
     {
         if (strlen($cArtNr) > 0) {
-            $oObj = Shop::DB()->query(
+            $oObj = Shop::DB()->executeQueryPrepared(
                 "SELECT tartikel.kArtikel, tseo.cSeo
                     FROM tartikel
                     LEFT JOIN tsprache 
-                        ON tsprache.cISO = '" . Shop::DB()->escape(strtolower($cIso)) . "'
+                        ON tsprache.cISO = :iso
                     LEFT JOIN tseo 
                         ON tseo.kKey = tartikel.kArtikel
                         AND tseo.cKey = 'kArtikel'
                         AND tseo.kSprache = tsprache.kSprache
-                    WHERE tartikel.cArtNr = '" . Shop::DB()->escape($cArtNr) . "'
-                    LIMIT 1", 1
+                    WHERE tartikel.cArtNr = :artnr
+                    LIMIT 1",
+                ['iso' => strtolower($cIso), 'artnr' => $cArtNr],
+                1
             );
 
             return baueURL($oObj, URLART_ARTIKEL);

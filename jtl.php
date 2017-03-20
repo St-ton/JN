@@ -51,7 +51,6 @@ if (isset($_SESSION['JTL_REDIRECT']) || verifyGPCDataInteger('r') > 0) {
     $smarty->assign('oRedirect', (isset($_SESSION['JTL_REDIRECT']) ? $_SESSION['JTL_REDIRECT'] : gibRedirect(verifyGPCDataInteger('r'))));
     executeHook(HOOK_JTL_PAGE_REDIRECT_DATEN);
 }
-pruefeHttps();
 // Upload zum Download freigeben
 if (isset($_POST['kUpload']) &&
     (int)$_POST['kUpload'] > 0 &&

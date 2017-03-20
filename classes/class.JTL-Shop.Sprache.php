@@ -603,23 +603,25 @@ class Sprache
 
     /**
      * @param string $cSuchwort
-     * @return mixed
+     * @return array
      */
     public function suche($cSuchwort)
     {
         $cSuchwort = Shop::DB()->escape($cSuchwort);
 
-        return Shop::DB()->query(
+        return Shop::DB()->executeQueryPrepared(
             "SELECT tsprachwerte.kSprachsektion, tsprachwerte.cName, tsprachwerte.cWert, 
                 tsprachwerte.cStandard, tsprachwerte.bSystem, tsprachsektion.cName AS cSektionName
                 FROM tsprachwerte
                 LEFT JOIN tsprachsektion 
                     ON tsprachwerte.kSprachsektion = tsprachsektion.kSprachsektion
                 WHERE (
-                    tsprachwerte.cWert LIKE '%" . $cSuchwort . "%' 
-                    OR tsprachwerte.cName LIKE '%" . $cSuchwort . "%'
+                    tsprachwerte.cWert LIKE :search 
+                    OR tsprachwerte.cName LIKE :search
                 )
-                AND kSprachISO = " . (int)$this->kSprachISO, 2
+                AND kSprachISO = :id",
+            ['search' => '%' . $cSuchwort . '%', 'id' => $this->kSprachISO],
+            2
         );
     }
 
@@ -756,14 +758,22 @@ class Sprache
                         break;
 
                     case 1: // Vorhandene Variablen überschreiben
-                        Shop::DB()->query(
+                        Shop::DB()->executeQueryPrepared(
                             "REPLACE INTO tsprachwerte
-                                SET kSprachISO = " . $kSprachISO . ", 
-                                    kSprachsektion = " . $kSprachsektion . ",
-                                    cName = '" . $cName . "', 
-                                    cWert='" . $cWert . "', 
-                                    cStandard = '" . $cWert . "', 
-                                    bSystem = " . $bSystem, 4
+                                SET kSprachISO = :iso, 
+                                    kSprachsektion = :section,
+                                    cName = :name, 
+                                    cWert = :val, 
+                                    cStandard = :val, 
+                                    bSystem = :sys",
+                            [
+                                'iso'     => $kSprachISO,
+                                'section' => $kSprachsektion,
+                                'name'    => $cName,
+                                'val'     => $cWert,
+                                'sys'     => $bSystem
+                            ],
+                            4
                         );
                         $nUpdateCount++;
                         break;
@@ -779,14 +789,22 @@ class Sprache
                             $cName
                         );
                         if (!$oWert) {
-                            Shop::DB()->query(
+                            Shop::DB()->executeQueryPrepared(
                                 "REPLACE INTO tsprachwerte
-                                    SET kSprachISO = " . $kSprachISO . ", 
-                                        kSprachsektion = " . $kSprachsektion . ",
-                                        cName = '" . $cName . "', 
-                                        cWert = '" . $cWert . "', 
-                                        cStandard = '" . $cWert . "', 
-                                        bSystem = " . $bSystem, 4
+                                    SET kSprachISO = :iso, 
+                                        kSprachsektion = :section,
+                                        cName = :name, 
+                                        cWert = :val, 
+                                        cStandard = :val, 
+                                        bSystem = :sys",
+                                [
+                                    'iso'     => $kSprachISO,
+                                    'section' => $kSprachsektion,
+                                    'name'    => $cName,
+                                    'val'     => $cWert,
+                                    'sys'     => $bSystem
+                                ],
+                                4
                             );
                             $nUpdateCount++;
                         }

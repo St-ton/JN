@@ -395,14 +395,16 @@ class AuswahlAssistentOrt
     public static function getLocation($cKey, $kKey, $kSprache, $bBackend = false)
     {
         if ((int)$kKey > 0 && (int)$kSprache > 0 && strlen($cKey) > 0) {
-            $oOrt = Shop::DB()->query(
+            $oOrt = Shop::DB()->executeQueryPrepared(
                 "SELECT kAuswahlAssistentOrt
-                    FROM tauswahlassistentort
-                    JOIN tauswahlassistentgruppe 
-                        ON tauswahlassistentgruppe.kAuswahlAssistentGruppe = tauswahlassistentort.kAuswahlAssistentGruppe
-                        AND tauswahlassistentgruppe.kSprache = " . (int)$kSprache . "
-                    WHERE tauswahlassistentort.cKey = '" . Shop::DB()->escape($cKey) . "'
-                        AND tauswahlassistentort.kKey = " . (int)$kKey, 1
+                        FROM tauswahlassistentort
+                        JOIN tauswahlassistentgruppe 
+                            ON tauswahlassistentgruppe.kAuswahlAssistentGruppe = tauswahlassistentort.kAuswahlAssistentGruppe
+                            AND tauswahlassistentgruppe.kSprache = :lang
+                        WHERE tauswahlassistentort.cKey = :ckey
+                            AND tauswahlassistentort.kKey = :kkey",
+                ['lang' => (int)$kSprache, 'ckey' => $cKey, 'kkey' => (int)$kKey],
+                1
             );
 
             if (isset($oOrt->kAuswahlAssistentOrt) && $oOrt->kAuswahlAssistentOrt > 0) {

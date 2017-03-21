@@ -332,7 +332,7 @@ function gibArtikelKeys($FilterSQL, $nArtikelProSeite, $NaviFilter, $bExtern, $o
                         /** @var Konfigitem $piece */
                         foreach ($gruppe->oItem_arr as $piece) {
                             $konfigItemArticle = $piece->getArtikel();
-                            if (!empty($konfigItemArticle) && $piece->getEmpfohlen()) {
+                            if (!empty($konfigItemArticle) && $piece->getSelektiert()) {
                                 if (isset($konfigItemArticle->nMaxDeliveryDays)) {
                                     $oArtikel->nMaxDeliveryDays = max($oArtikel->nMaxDeliveryDays, $konfigItemArticle->nMaxDeliveryDays);
                                 }

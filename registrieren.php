@@ -30,7 +30,6 @@ $Einstellungen = Shop::getSettings([
     CONF_KUNDENWERBENKUNDEN,
     CONF_NEWSLETTER
 ]);
-pruefeHttps();
 Shop::setPageType(PAGE_REGISTRIERUNG);
 $kLink                = $linkHelper->getSpecialPageLinkKey(LINKTYP_REGISTRIEREN);
 $step                 = 'formular';

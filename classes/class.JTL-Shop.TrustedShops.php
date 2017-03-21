@@ -939,11 +939,13 @@ class TrustedShops
     public function pruefeKundenbewertungsstatusAndereSprache($cTSID, $cISOSprache)
     {
         if (strlen($cTSID) > 0 && strlen($cISOSprache) > 0) {
-            $oTrustedShopsKundenbewertung_arr = Shop::DB()->query(
+            $oTrustedShopsKundenbewertung_arr = Shop::DB()->executeQueryPrepared(
                 "SELECT *
                     FROM ttrustedshopskundenbewertung
-                    WHERE cTSID = '" . Shop::DB()->escape($cTSID) . "'
-                        AND cISOSprache != '" . $cISOSprache . "'", 2
+                    WHERE cTSID = :id
+                        AND cISOSprache != :iso",
+                ['id' => $cTSID, 'iso' => $cISOSprache],
+                2
             );
 
             return (is_array($oTrustedShopsKundenbewertung_arr) && count($oTrustedShopsKundenbewertung_arr) > 0);

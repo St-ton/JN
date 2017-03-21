@@ -341,8 +341,8 @@ function benutzerverwaltungActionAccountEdit(JTLSmarty $smarty, array &$messages
         if ($oTmpAcc->kAdminlogin > 0) {
             $oOldAcc = getAdmin($oTmpAcc->kAdminlogin);
             $oCount  = Shop::DB()->query("
-                SELECT COUNT(*) AS nCount 
-                    FROM tadminlogin 
+                SELECT COUNT(*) AS nCount
+                    FROM tadminlogin
                     WHERE kAdminlogingruppe = 1", 1
             );
             if ((int)$oOldAcc->kAdminlogingruppe === ADMINGROUP &&
@@ -463,8 +463,8 @@ function benutzerverwaltungActionAccountEdit(JTLSmarty $smarty, array &$messages
     ]);
 
     $oCount = Shop::DB()->query("
-        SELECT COUNT(*) AS nCount 
-            FROM tadminlogin 
+        SELECT COUNT(*) AS nCount
+            FROM tadminlogin
             WHERE kAdminlogingruppe = 1", 1
     );
     $smarty->assign('oAccount', $oAccount)
@@ -483,8 +483,8 @@ function benutzerverwaltungActionAccountDelete(JTLSmarty $smarty, array &$messag
 {
     $kAdminlogin = (int)$_POST['id'];
     $oCount      = Shop::DB()->query("
-        SELECT COUNT(*) AS nCount 
-            FROM tadminlogin 
+        SELECT COUNT(*) AS nCount
+            FROM tadminlogin
             WHERE kAdminlogingruppe = 1", 1
     );
     $oAccount    = Shop::DB()->select('tadminlogin', 'kAdminlogin', $kAdminlogin);

@@ -14,10 +14,10 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'wunschliste_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'kundenwerbenkeunden_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
 
-$AktuelleSeite    = 'MEIN KONTO';
-$cBrotNavi        = '';
-$linkHelper       = LinkHelper::getInstance();
-$Einstellungen    = Shop::getSettings([
+$AktuelleSeite = 'MEIN KONTO';
+$cBrotNavi     = '';
+$linkHelper    = LinkHelper::getInstance();
+$Einstellungen = Shop::getSettings([
     CONF_GLOBAL,
     CONF_RSS,
     CONF_KUNDEN,
@@ -26,11 +26,10 @@ $Einstellungen    = Shop::getSettings([
     CONF_KUNDENWERBENKUNDEN,
     CONF_TRUSTEDSHOPS
 ]);
-$kLink            = $linkHelper->getSpecialPageLinkKey(LINKTYP_LOGIN);
-$cHinweis         = '';
-$hinweis          = '';
-$cFehler          = '';
-$showLoginCaptcha = false;
+$kLink         = $linkHelper->getSpecialPageLinkKey(LINKTYP_LOGIN);
+$cHinweis      = '';
+$hinweis       = '';
+$cFehler       = '';
 
 if (verifyGPCDataInteger('wlidmsg') > 0) {
     $cHinweis .= mappeWunschlisteMSG(verifyGPCDataInteger('wlidmsg'));
@@ -51,7 +50,6 @@ if (isset($_SESSION['JTL_REDIRECT']) || verifyGPCDataInteger('r') > 0) {
     $smarty->assign('oRedirect', (isset($_SESSION['JTL_REDIRECT']) ? $_SESSION['JTL_REDIRECT'] : gibRedirect(verifyGPCDataInteger('r'))));
     executeHook(HOOK_JTL_PAGE_REDIRECT_DATEN);
 }
-pruefeHttps();
 // Upload zum Download freigeben
 if (isset($_POST['kUpload']) &&
     (int)$_POST['kUpload'] > 0 &&
@@ -84,7 +82,7 @@ $startKat             = new Kategorie();
 $startKat->kKategorie = 0;
 $editRechnungsadresse = 0;
 
-if (!empty($Kunde->kKunde) && (
+if (isset($Kunde) && !empty($Kunde->kKunde) && (
         (isset($_GET['editRechnungsadresse']) && (int)$_GET['editRechnungsadresse'] > 0) ||
         (isset($_POST['editRechnungsadresse']) && (int)$_POST['editRechnungsadresse'] > 0))
 ) {
@@ -147,12 +145,12 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
     }
     // Wunschliste loeschen
     if (verifyGPCDataInteger('wllo') > 0 && validateToken()) {
-        $step = (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) ? 'mein Konto' : 'login';
+        $step      = (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) ? 'mein Konto' : 'login';
         $cHinweis .= wunschlisteLoeschen(verifyGPCDataInteger('wllo'));
     }
     // Wunschliste Standard setzen
     if (isset($_POST['wls']) && (int)$_POST['wls'] > 0 && validateToken()) {
-        $step = (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) ? 'mein Konto' : 'login';
+        $step      = (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) ? 'mein Konto' : 'login';
         $cHinweis .= wunschlisteStandard(verifyGPCDataInteger('wls'));
     }
     // Kunden werben Kunden
@@ -191,13 +189,14 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
         $oWunschlistePos = giboWunschlistePos($kWunschlistePos);
         if (isset($oWunschlistePos->kArtikel) || $oWunschlistePos->kArtikel > 0) {
             $oEigenschaftwerte_arr = ArtikelHelper::isVariChild($oWunschlistePos->kArtikel)
-                ? gibVarKombiEigenschaftsWerte($oWunschlistePos->kArtikel) 
+                ? gibVarKombiEigenschaftsWerte($oWunschlistePos->kArtikel)
                 : gibEigenschaftenZuWunschliste($kWunschliste, $oWunschlistePos->kWunschlistePos);
             if (!$oWunschlistePos->bKonfig) {
                 fuegeEinInWarenkorb($oWunschlistePos->kArtikel, $oWunschlistePos->fAnzahl, $oEigenschaftwerte_arr);
             }
             $cParamWLID = (strlen($cURLID) > 0) ? ('&wlid=' . $cURLID) : '';
-            header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true) .
+            header(
+                'Location: ' . $linkHelper->getStaticRoute('jtl.php', true) .
                 '?wl=' . $kWunschliste .
                 '&wlidmsg=1' . $cParamWLID, true, 303
             );
@@ -215,7 +214,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
         if (count($oWunschliste->CWunschlistePos_arr) > 0) {
             foreach ($oWunschliste->CWunschlistePos_arr as $oWunschlistePos) {
                 $oEigenschaftwerte_arr = ArtikelHelper::isVariChild($oWunschlistePos->kArtikel)
-                    ? gibVarKombiEigenschaftsWerte($oWunschlistePos->kArtikel) 
+                    ? gibVarKombiEigenschaftsWerte($oWunschlistePos->kArtikel)
                     : gibEigenschaftenZuWunschliste($kWunschliste, $oWunschlistePos->kWunschlistePos);
                 if (!$oWunschlistePos->Artikel->bHasKonfig &&
                     !$oWunschlistePos->bKonfig &&
@@ -225,7 +224,8 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
                     fuegeEinInWarenkorb($oWunschlistePos->kArtikel, $oWunschlistePos->fAnzahl, $oEigenschaftwerte_arr);
                 }
             }
-            header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true) .
+            header(
+                'Location: ' . $linkHelper->getStaticRoute('jtl.php', true) .
                 '?wl=' . $kWunschliste .
                 '&wlid=' . $cURLID .
                 '&wlidmsg=2', true, 303
@@ -243,7 +243,8 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
             if (!empty($oWunschliste->kKunde) && $oWunschliste->kKunde == $_SESSION['Kunde']->kKunde) {
                 $step                    = 'wunschliste anzeigen';
                 $cHinweis               .= wunschlisteAktualisieren($kWunschliste);
-                $_SESSION['Wunschliste'] = new Wunschliste(isset($_SESSION['Wunschliste']->kWunschliste)
+                $_SESSION['Wunschliste'] = new Wunschliste(
+                    isset($_SESSION['Wunschliste']->kWunschliste)
                     ? $_SESSION['Wunschliste']->kWunschliste
                     : $kWunschliste
                 );
@@ -261,7 +262,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
     if (isset($_POST['wlh']) && (int)$_POST['wlh'] > 0) {
         $step             = 'mein Konto';
         $cWunschlisteName = StringHandler::htmlentities(StringHandler::filterXSS($_POST['cWunschlisteName']));
-        $cHinweis .= wunschlisteSpeichern($cWunschlisteName);
+        $cHinweis        .= wunschlisteSpeichern($cWunschlisteName);
     }
     // Wunschliste via Email
     if (verifyGPCDataInteger('wlvm') > 0 && verifyGPCDataInteger('wl') > 0) {
@@ -289,7 +290,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
                 if (isset($_POST['send']) && (int)$_POST['send'] === 1) {
                     if ($Einstellungen['global']['global_wunschliste_anzeigen'] === 'Y') {
                         $cEmail_arr = explode(' ', StringHandler::htmlentities(StringHandler::filterXSS($_POST['email'])));
-                        $cHinweis .= wunschlisteSenden($cEmail_arr, $kWunschliste);
+                        $cHinweis  .= wunschlisteSenden($cEmail_arr, $kWunschliste);
                         // Wunschliste aufbauen und cPreis setzen (Artikelanzahl mit eingerechnet)
                         $CWunschliste = bauecPreis(new Wunschliste($kWunschliste));
                         $smarty->assign('CWunschliste', $CWunschliste);
@@ -462,8 +463,8 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
                 if (is_array($nonEditableCustomerfields_arr) && count($nonEditableCustomerfields_arr) > 0) {
                     $cSQL = ' AND ' . implode(' AND ', $nonEditableCustomerfields_arr);
                 }
-                Shop::DB()->query("
-                    DELETE FROM tkundenattribut
+                Shop::DB()->query(
+                    "DELETE FROM tkundenattribut
                         WHERE kKunde = " . (int)$_SESSION['Kunde']->kKunde . $cSQL, 3
                 );
                 $nKundenattributKey_arr             = array_keys($cKundenattribut_arr);
@@ -543,7 +544,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
                 $ok = $oKunde->checkCredentials($oUser->cMail, $_POST['altesPasswort']);
                 if ($ok !== false) {
                     $oKunde->updatePassword($_POST['neuesPasswort1']);
-                    $step = 'mein Konto';
+                    $step      = 'mein Konto';
                     $cHinweis .= Shop::Lang()->get('changepasswordSuccess', 'login');
                 } else {
                     $cFehler .= Shop::Lang()->get('changepasswordWrongPass', 'login');
@@ -615,8 +616,8 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
             Jtllog::writeLog('CSRF-Warnung fuer Account-Loeschung und kKunde ' .
                 (int)$_SESSION['Kunde']->kKunde, JTLLOG_LEVEL_ERROR);
         } else {
-            $oBestellung = Shop::DB()->query("
-                SELECT COUNT(kBestellung) AS countBestellung
+            $oBestellung = Shop::DB()->query(
+                "SELECT COUNT(kBestellung) AS countBestellung
                     FROM tbestellung
                     WHERE cStatus NOT IN (" . BESTELLUNG_STATUS_VERSANDT . ", " . BESTELLUNG_STATUS_STORNO . ")
                         AND kKunde = " . (int)$_SESSION['Kunde']->kKunde, 1
@@ -666,8 +667,8 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
             ]);
 
             // Wunschliste
-            Shop::DB()->query("
-                DELETE twunschliste, twunschlistepos, twunschlisteposeigenschaft, twunschlisteversand
+            Shop::DB()->query(
+                "DELETE twunschliste, twunschlistepos, twunschlisteposeigenschaft, twunschlisteversand
                         FROM twunschliste
                         LEFT JOIN twunschlistepos
                             ON twunschliste.kWunschliste = twunschlistepos.kWunschliste
@@ -679,8 +680,8 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
             );
 
             // Pers. Warenkorb
-            Shop::DB()->query("
-                DELETE twarenkorbpers, twarenkorbperspos, twarenkorbpersposeigenschaft
+            Shop::DB()->query(
+                "DELETE twarenkorbpers, twarenkorbperspos, twarenkorbpersposeigenschaft
                     FROM twarenkorbpers
                     LEFT JOIN twarenkorbperspos 
                         ON twarenkorbperspos.kWarenkorbPers = twarenkorbpers.kWarenkorbPers
@@ -870,7 +871,6 @@ $cMetaKeywords    = $oMeta->cKeywords;
 $smarty->assign('cHinweis', $cHinweis)
        ->assign('cFehler', $cFehler)
        ->assign('hinweis', $cHinweis)
-       ->assign('showLoginCaptcha', $showLoginCaptcha)
        ->assign('step', $step)
        ->assign('Navigation', $cBrotNavi)
        ->assign('requestURL', isset($requestURL) ? $requestURL : null)

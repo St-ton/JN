@@ -16,7 +16,7 @@
                     <input type="password" name="passwort" id="password" class="form-control" placeholder="{lang key="password" section="account data"}" required />
                 </div>
 
-                {if $showLoginCaptcha}
+                {if isset($showLoginCaptcha) && $showLoginCaptcha}
                     <div class="form-group text-center float-label-control">
                         <div class="g-recaptcha" data-sitekey="{$Einstellungen.global.global_google_recaptcha_public}" data-callback="captcha_filled"></div>
                     </div>

@@ -128,7 +128,7 @@ function expandWidgetAjax($kWidget, $bExpand)
  */
 function getAvailableWidgetsAjax()
 {
-    $objResponse          = new xajaxResponse();
+    $objResponse = new xajaxResponse();
     global $oAccount;
     if ($oAccount->permission('DASHBOARD_VIEW')) {
         $oAvailableWidget_arr = getWidgets(false);
@@ -274,9 +274,9 @@ function getArticleListFromString($cArray)
         }
 
         $oArticle_arr = Shop::DB()->query("
-            SELECT kArtikel AS kPrimary, cArtNr AS cBase, kArtikel, cName 
-                FROM tartikel 
-                WHERE " . $cSQL . " 
+            SELECT kArtikel AS kPrimary, cArtNr AS cBase, kArtikel, cName
+                FROM tartikel
+                WHERE " . $cSQL . "
                 LIMIT 50", 2
         );
         foreach ($oArticle_arr as &$oArticle) {
@@ -308,7 +308,7 @@ function getManufacturerList($cSearch, $aParam)
         $oManufacturer_arr = Shop::DB()->executeQueryPrepared("
             SELECT kHersteller AS kPrimary, kHersteller AS cBase, cName
                 FROM thersteller
-                WHERE cName LIKE :search 
+                WHERE cName LIKE :search
                 LIMIT :lim",
             ['search' => $cSearch . '%', 'lim' => $limit],
             2
@@ -431,9 +431,9 @@ function getCategoryListFromString($cArray)
         }
 
         $oArticle_arr = Shop::DB()->query("
-            SELECT kKategorie AS kPrimary, kKategorie AS cBase, cName 
-                FROM tkategorie 
-                WHERE " . $cSQL . " 
+            SELECT kKategorie AS kPrimary, kKategorie AS cBase, cName
+                FROM tkategorie
+                WHERE " . $cSQL . "
                 LIMIT 50", 2
         );
         foreach ($oArticle_arr as &$oArticle) {
@@ -461,9 +461,9 @@ function getTagList($cSearch, $cWrapperID)
     $oResponse    = new xajaxResponse();
     if (strlen($cSearch) >= 2 && $oAccount->logged()) {
         $oArticle_arr = Shop::DB()->executeQueryPrepared("
-            SELECT kTag AS kPrimary, kTag AS cBase, cName 
-                FROM ttag 
-                WHERE cName LIKE :search 
+            SELECT kTag AS kPrimary, kTag AS cBase, cName
+                FROM ttag
+                WHERE cName LIKE :search
                 LIMIT 50",
             ['search' => $cSearch . '%'],
             2
@@ -493,12 +493,12 @@ function getAttributeList($cSearch, $cWrapperID)
     $oResponse    = new xajaxResponse();
     if (strlen($cSearch) >= 2 && $oAccount->logged()) {
         $oArticle_arr = Shop::DB()->executeQueryPrepared("
-            SELECT tmerkmalwert.kMerkmalwert AS kPrimary, tmerkmalwert.kMerkmalwert AS cBase, 
+            SELECT tmerkmalwert.kMerkmalwert AS kPrimary, tmerkmalwert.kMerkmalwert AS cBase,
                 tmerkmalwertsprache.cWert AS cName
                 FROM tmerkmal
-                LEFT JOIN tmerkmalwert 
+                LEFT JOIN tmerkmalwert
                     ON tmerkmal.kMerkmal = tmerkmalwert.kMerkmal
-                LEFT JOIN tmerkmalwertsprache 
+                LEFT JOIN tmerkmalwertsprache
                     ON tmerkmalwert.kMerkmalwert = tmerkmalwertsprache.kMerkmalwert
                 WHERE length(tmerkmalwertsprache.cWert) > 0
                     AND tmerkmalwertsprache.cWert LIKE :search
@@ -530,9 +530,9 @@ function getLinkList($cSearch, $aParam)
     $oResponse    = new xajaxResponse();
     if (strlen($cSearch) >= 2 && $oAccount->logged()) {
         $oArticle_arr = Shop::DB()->executeQueryPrepared("
-            SELECT kLink AS kPrimary, kLink AS cBase, cName 
-                FROM tlink 
-                WHERE cName LIKE :search 
+            SELECT kLink AS kPrimary, kLink AS cBase, cName
+                FROM tlink
+                WHERE cName LIKE :search
                 LIMIT 50",
             ['search' => $cSearch . '%'],
             2
@@ -566,9 +566,9 @@ function getMerkmalWerteAA($kMM_arr, $kSprache)
         $oMerkmalWert_arr = Shop::DB()->query(
             "SELECT tmerkmalwert.*, tmerkmalwertsprache.cWert, tmerkmal.cName
                 FROM tmerkmalwert
-                JOIN tmerkmal 
+                JOIN tmerkmal
                     ON tmerkmal.kMerkmal = tmerkmalwert.kMerkmal
-                JOIN tmerkmalwertsprache 
+                JOIN tmerkmalwertsprache
                     ON tmerkmalwertsprache.kMerkmalWert = tmerkmalwert.kMerkmalWert
                     AND tmerkmalwertsprache.kSprache = " . (int)$kSprache . "
                 WHERE tmerkmalwert.kMerkmal IN(" . implode(',', $kMM_arr) . ")
@@ -683,9 +683,9 @@ function getCustomerList($searchString, $kKundeSelected_arr)
             $oKunde_arr = Shop::DB()->executeQueryPrepared("
                 SELECT kKunde
                     FROM tkunde
-                    WHERE cVorname LIKE :search 
-                          OR cMail LIKE :search 
-                          OR cOrt LIKE :search 
+                    WHERE cVorname LIKE :search
+                          OR cMail LIKE :search
+                          OR cOrt LIKE :search
                           OR cPLZ LIKE :search
                     LIMIT 100",
                 ['search' => '%' . $searchString . '%'],
@@ -714,7 +714,7 @@ function getCustomerList($searchString, $kKundeSelected_arr)
 
     return $oResponse;
 }
-if ($oAccount->logged()) {
+if ($oAccount->getIsAuthenticated()) {
     executeHook(HOOK_TOOLSAJAX_SERVER_ADMIN, ['xajax' => &$xajax]);
 
     $xajax->registerFunction('reloadAdminLoginCaptcha');

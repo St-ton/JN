@@ -10,16 +10,9 @@ Shop::run();
 $cParameter_arr = Shop::getParameters();
 $NaviFilter     = Shop::buildNaviFilter($cParameter_arr);
 Shop::checkNaviFilter($NaviFilter);
-$https          = false;
 $linkHelper     = LinkHelper::getInstance();
 if (Shop::$kLink > 0) {
     $link = $linkHelper->getPageLink(Shop::$kLink);
-    if (isset($link->bSSL) && $link->bSSL > 0) {
-        $https = true;
-        if ((int)$link->bSSL === 2) {
-            pruefeHttps();
-        }
-    }
 }
 executeHook(HOOK_INDEX_NAVI_HEAD_POSTGET);
 //prg

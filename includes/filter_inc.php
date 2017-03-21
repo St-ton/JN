@@ -1808,12 +1808,14 @@ function bearbeiteSuchCache($NaviFilter, $kSpracheExt = 0)
     $keySuche = $cSuche . ';' . $conf['global']['artikel_artikelanzeigefilter'] . ';' . $_SESSION['Kundengruppe']->kKundengruppe;
 
     // Suchcache checken, ob bereits vorhanden
-    $oSuchCache = Shop::DB()->query(
+    $oSuchCache = Shop::DB()->executeQueryPrepared(
         "SELECT kSuchCache
             FROM tsuchcache
-            WHERE kSprache =  " . $kSprache . "
-                AND cSuche = '" . Shop::DB()->escape($keySuche) . "'
-                AND (dGueltigBis > now() OR dGueltigBis IS NULL)", 1
+            WHERE kSprache =  :lang
+                AND cSuche = :search
+                AND (dGueltigBis > now() OR dGueltigBis IS NULL)",
+        ['lang' => $kSprache, 'search' => Shop::DB()->escape($keySuche)],
+        1
     );
 
     if (isset($oSuchCache->kSuchCache) && $oSuchCache->kSuchCache > 0) {

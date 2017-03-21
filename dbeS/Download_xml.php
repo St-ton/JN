@@ -103,7 +103,7 @@ function bearbeiteInsert($xml)
         // N-Downloads
         $oDownload_arr = mapArray($xml['tDownloads'], 'tDownload', $GLOBALS['mDownload']);
         if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-            Jtllog::writeLog('Multiple downloads, oDownload_arr: ' . print_r($oDownload_arr, 1), JTLLOG_LEVEL_DEBUG, false, 'Download_xml');
+            Jtllog::writeLog('Multiple downloads, oDownload_arr: ' . print_r($oDownload_arr, true), JTLLOG_LEVEL_DEBUG, false, 'Download_xml');
         }
 
         foreach ($oDownload_arr as $i => $oDownload) {
@@ -115,7 +115,7 @@ function bearbeiteInsert($xml)
                 if (is_array($oDownloadSprache_arr) && count($oDownloadSprache_arr) > 0) {
                     DBUpdateInsert('tdownload', [$oDownload], 'kDownload');
                     $cdsaCount = count($oDownloadSprache_arr);
-                    for ($j = 0; $j < $cdsaCount; ++$i) {
+                    for ($j = 0; $j < $cdsaCount; ++$j) {
                         $oDownloadSprache_arr[$j]->kDownload = $oDownload->kDownload;
                         DBUpdateInsert('tdownloadsprache', [$oDownloadSprache_arr[$j]], 'kDownload', 'kSprache');
                     }

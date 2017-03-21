@@ -48,7 +48,6 @@ $cFehler       = '';
 $cCanonicalURL = '';
 $Einstellungen = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_NEWSLETTER]);
 
-pruefeHttps();
 //hole alle OberKategorien
 $AktuelleKategorie      = new Kategorie(verifyGPCDataInteger('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();

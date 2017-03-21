@@ -331,11 +331,19 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
                 } else {
                     $cKeywords .= $oNewsUebersicht->cBetreff;
                 }
-                $oNewsUebersicht_arr[$i]->cText    = parseNewsText($oNewsUebersicht_arr[$i]->cText);
-                $oNewsUebersicht_arr[$i]->cURL     = baueURL($oNewsUebersicht, URLART_NEWS);
-                $oNewsUebersicht_arr[$i]->cMehrURL = '<a class="news-more-link" href="' .
+                $oNewsUebersicht_arr[$i]->cPreviewImageFull = empty($oNewsUebersicht_arr[$i]->cPreviewImage)
+                    ? ''
+                    : $shopURL . $oNewsUebersicht_arr[$i]->cPreviewImage;
+                $oNewsUebersicht_arr[$i]->cText             = parseNewsText($oNewsUebersicht_arr[$i]->cText);
+                $oNewsUebersicht_arr[$i]->cURL              = baueURL($oNewsUebersicht, URLART_NEWS);
+                $oNewsUebersicht_arr[$i]->cURLFull          = $shopURL . $oNewsUebersicht_arr[$i]->cURL;
+                $oNewsUebersicht_arr[$i]->cMehrURL          = '<a class="news-more-link" href="' .
                     $oNewsUebersicht_arr[$i]->cURL . '">' .
-                    Shop::Lang()->get('moreLink', 'news') . '</a>';
+                    Shop::Lang()->get('moreLink', 'news') .
+                    '</a>';
+                $oNewsUebersicht_arr[$i]->cMehrURLFull      = '<a href="' . $oNewsUebersicht_arr[$i]->cURLFull . '">' .
+                    Shop::Lang()->get('moreLink', 'news') .
+                    '</a>';
             }
         }
         $cMetaTitle       = (strlen($cMetaDescription) < 1)

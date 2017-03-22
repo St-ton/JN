@@ -10,9 +10,30 @@
 class IO
 {
     /**
+     * @var self
+     */
+    private static $instance = null;
+
+    /**
      * @var array
      */
-    private static $functions = [];
+    private $functions = [];
+
+    /**
+     * IO constructor.
+     */
+    private function __construct()
+    {
+        self::$instance = $this;
+    }
+
+    /**
+     * @return self
+     */
+    public static function getInstance()
+    {
+        return self::$instance === null ? new self() : self::$instance;
+    }
 
     /**
      * Registers a PHP function or method.
@@ -33,7 +54,7 @@ class IO
             $function = $name;
         }
 
-        self::$functions[$name] = $function;
+        $this->functions[$name] = $function;
 
         return $this;
     }
@@ -66,7 +87,7 @@ class IO
      */
     public function exists($name)
     {
-        return isset(self::$functions[$name]);
+        return isset($this->functions[$name]);
     }
 
     /**
@@ -83,7 +104,7 @@ class IO
             throw new Exception("Function not registered");
         }
 
-        $function = self::$functions[$name];
+        $function = $this->functions[$name];
 
         $ref = new ReflectionFunction($function);
 

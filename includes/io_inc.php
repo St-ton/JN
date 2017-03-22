@@ -6,7 +6,7 @@
 require_once PFAD_ROOT . PFAD_CLASSES  . 'class.JTL-Shop.Warenkorb.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'artikel_inc.php';
 
-$io = new IO();
+$io = IO::getInstance();
 
 $io->register('suggestions')
    ->register('pushToBasket')

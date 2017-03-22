@@ -136,8 +136,10 @@
                     <input type="hidden" name="kKundengruppe" value="{$smarty.session.Kundengruppe->kKundengruppe}" />
                     <input type="hidden" name="kSprache" value="{$smarty.session.kSprache}" />
                     {/block}
+                    {block name="productdetails-info-variation"}
                     <!-- VARIATIONEN -->
                     {include file="productdetails/variation.tpl" simple=$Artikel->isSimpleVariation showMatrix=$showMatrix}
+                    {/block}
                     <hr>
                     <div class="row">
                         {block name="productdetails-info-price"}
@@ -153,6 +155,7 @@
                         <div class="col-xs-5 text-right">
                             {include file="productdetails/stock.tpl"}
                         </div>
+                        {/block}
                     </div>
                     {*WARENKORB anzeigen wenn keine variationen mehr auf lager sind?!*}
                     {include file="productdetails/basket.tpl"}

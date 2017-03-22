@@ -1205,7 +1205,8 @@ final class Shop
                     FROM tseo
                         LEFT JOIN thersteller
                         ON thersteller.kHersteller = tseo.kKey
-                    WHERE cKey = 'kHersteller' AND kKey = " . (int)$NaviFilter->Hersteller->kHersteller . "
+                    WHERE cKey = 'kHersteller' 
+                        AND kKey = " . (int)$NaviFilter->Hersteller->kHersteller . "
                     ORDER BY kSprache", 2
             );
             if ($bSprache) {
@@ -1242,7 +1243,8 @@ final class Shop
                     LEFT JOIN tsuchanfrage
                         ON tsuchanfrage.kSuchanfrage = tseo.kKey
                         AND tsuchanfrage.kSprache = tseo.kSprache
-                    WHERE cKey = 'kSuchanfrage' AND kKey = " . (int)$NaviFilter->Suchanfrage->kSuchanfrage, 1
+                    WHERE cKey = 'kSuchanfrage' 
+                        AND kKey = " . (int)$NaviFilter->Suchanfrage->kSuchanfrage, 1
             );
             if ($bSprache) {
                 $NaviFilter->Suchanfrage->cSeo = [];
@@ -1266,7 +1268,8 @@ final class Shop
             $oSeo_arr                              = self::DB()->query("
                 SELECT cSeo, kSprache
                     FROM tseo
-                    WHERE cKey = 'kMerkmalWert' AND kKey = " . $NaviFilter->MerkmalWert->kMerkmalWert . "
+                    WHERE cKey = 'kMerkmalWert' 
+                        AND kKey = " . $NaviFilter->MerkmalWert->kMerkmalWert . "
                     ORDER BY kSprache", 2
             );
             if ($bSprache) {
@@ -1288,7 +1291,8 @@ final class Shop
             $oSQL->cMMWhere  = '';
             if (self::$kSprache > 0 && !standardspracheAktiv()) {
                 $oSQL->cMMSelect = "tmerkmalsprache.cName, tmerkmal.cName AS cMMName";
-                $oSQL->cMMJOIN   = " JOIN tmerkmalsprache ON tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal
+                $oSQL->cMMJOIN   = " JOIN tmerkmalsprache 
+                                        ON tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal
                                         AND tmerkmalsprache.kSprache = " . (int)self::$kSprache;
             }
             $oSQL->cMMWhere = "tmerkmalwert.kMerkmalWert = '" . $NaviFilter->MerkmalWert->kMerkmalWert . "'";
@@ -1300,9 +1304,11 @@ final class Shop
             $oMerkmalWert_arr = self::DB()->query(
                 "SELECT tmerkmalwertsprache.cWert, " . $oSQL->cMMSelect . "
                 FROM tmerkmalwert
-                JOIN tmerkmalwertsprache ON tmerkmalwertsprache.kMerkmalWert = tmerkmalwert.kMerkmalWert
+                JOIN tmerkmalwertsprache 
+                    ON tmerkmalwertsprache.kMerkmalWert = tmerkmalwert.kMerkmalWert
                     AND kSprache = " . self::$kSprache . "
-                JOIN tmerkmal ON tmerkmal.kMerkmal = tmerkmalwert.kMerkmal
+                JOIN tmerkmal 
+                    ON tmerkmal.kMerkmal = tmerkmalwert.kMerkmal
                 " . $oSQL->cMMJOIN . "
                 WHERE " . $oSQL->cMMWhere, 2
             );
@@ -1341,7 +1347,8 @@ final class Shop
                     FROM tseo
                     LEFT JOIN ttag
                         ON tseo.kKey = ttag.kTag
-                    WHERE tseo.cKey = 'kTag' AND tseo.kKey = " . $NaviFilter->Tag->kTag, 1
+                    WHERE tseo.cKey = 'kTag' 
+                        AND tseo.kKey = " . $NaviFilter->Tag->kTag, 1
             );
             if (isset($bSprache)) {
                 $NaviFilter->Tag->cSeo = [];
@@ -1503,7 +1510,7 @@ final class Shop
                 SELECT cSeo, kSprache
                     FROM tseo
                     WHERE cKey = 'kKategorie' 
-                    AND kKey = " . (int)$NaviFilter->KategorieFilter->kKategorie . "
+                        AND kKey = " . (int)$NaviFilter->KategorieFilter->kKategorie . "
                     ORDER BY kSprache", 2
             );
 
@@ -1554,7 +1561,8 @@ final class Shop
                     FROM tseo
                         LEFT JOIN thersteller
                         ON thersteller.kHersteller = tseo.kKey
-                    WHERE cKey = 'kHersteller' AND kKey = " . (int)$NaviFilter->HerstellerFilter->kHersteller . "
+                    WHERE cKey = 'kHersteller' 
+                        AND kKey = " . (int)$NaviFilter->HerstellerFilter->kHersteller . "
                     ORDER BY kSprache", 2
             );
 
@@ -1586,7 +1594,8 @@ final class Shop
                     $oSeo_arr = self::DB()->query("
                         SELECT cSeo, kSprache
                             FROM tseo
-                            WHERE cKey = 'kMerkmalWert' AND kKey = " . $oMerkmalWert->kMerkmalWert . "
+                            WHERE cKey = 'kMerkmalWert' 
+                                AND kKey = " . $oMerkmalWert->kMerkmalWert . "
                             ORDER BY kSprache", 2
                     );
 
@@ -1605,7 +1614,8 @@ final class Shop
                     $seo_obj = self::DB()->query("
                         SELECT tmerkmalwertsprache.cWert, tmerkmalwert.kMerkmal
                             FROM tmerkmalwertsprache
-                            JOIN tmerkmalwert ON tmerkmalwert.kMerkmalWert = tmerkmalwertsprache.kMerkmalWert
+                            JOIN tmerkmalwert 
+                                ON tmerkmalwert.kMerkmalWert = tmerkmalwertsprache.kMerkmalWert
                             WHERE tmerkmalwertsprache.kSprache = " . self::$kSprache . "
                                AND tmerkmalwertsprache.kMerkmalWert = " . $oMerkmalWert->kMerkmalWert, 1
                     );
@@ -1957,8 +1967,13 @@ final class Shop
         };
         if (isset($_COOKIE['eSIdAdm'])) {
             if (session_name() !== 'eSIdAdm') {
+                $oldID = session_id();
+                session_write_close();
+                session_id($_COOKIE['eSIdAdm']);
                 $result = $isLogged();
-                Session::getInstance(true, true);
+                session_write_close();
+                session_id($oldID);
+                new Session();
             } else {
                 $result = $isLogged();
             }

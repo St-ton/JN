@@ -39,8 +39,8 @@ class IO
      * Registers a PHP function or method.
      * This makes the function available for XMLHTTPRequest requests.
      *
-     * @param string      $name
-     * @param null|string $function
+     * @param string        $name
+     * @param null|callable $function
      * @return $this
      * @throws Exception
      */
@@ -106,12 +106,16 @@ class IO
 
         $function = $this->functions[$name];
 
-        $ref = new ReflectionFunction($function);
+        if (is_array($function)) {
+            $ref = new ReflectionMethod($function[0], $function[1]);
+        } else {
+            $ref = new ReflectionFunction($function);
+        }
 
         if ($ref->getNumberOfRequiredParameters() > count($params)) {
             throw new Exception("Wrong required parameter count");
         }
 
-        return $ref->invokeArgs($params);
+        return call_user_func_array($function, $params);
     }
 }

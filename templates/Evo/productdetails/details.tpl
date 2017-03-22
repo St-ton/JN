@@ -136,8 +136,10 @@
                     <input type="hidden" name="kKundengruppe" value="{$smarty.session.Kundengruppe->kKundengruppe}" />
                     <input type="hidden" name="kSprache" value="{$smarty.session.kSprache}" />
                     {/block}
+                    {block name="productdetails-info-variation"}
                     <!-- VARIATIONEN -->
                     {include file="productdetails/variation.tpl" simple=$Artikel->isSimpleVariation showMatrix=$showMatrix}
+                    {/block}
                     <hr>
                     <div class="row">
                         <div class="col-xs-7">

@@ -150,9 +150,11 @@
                             {/if}
                             {include file="productdetails/price.tpl" Artikel=$Artikel price_image=$priceImage tplscope="detail"}
                         </div>
+                        {block name="productdetails-info-stock"}
                         <div class="col-xs-5 text-right">
                             {include file="productdetails/stock.tpl"}
                         </div>
+                        {/block}
                     </div>
                     {*WARENKORB anzeigen wenn keine variationen mehr auf lager sind?!*}
                     {include file="productdetails/basket.tpl"}

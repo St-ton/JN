@@ -15,6 +15,27 @@
 class JSONAPI
 {
     /**
+     * @var self
+     */
+    private static $instance = null;
+
+    /**
+     * JSONAPI constructor.
+     */
+    private function __construct()
+    {
+        self::$instance = $this;
+    }
+
+    /**
+     * @return self
+     */
+    public static function getInstance()
+    {
+        return self::$instance === null ? new self() : self::$instance;
+    }
+
+    /**
      * @param string $name
      * @param array  $arguments
      * @return mixed|string

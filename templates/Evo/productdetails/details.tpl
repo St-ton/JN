@@ -45,6 +45,7 @@
         <div class="product-info{if $hasLeftBox} col-sm-7{else} col-sm-6{/if}">
             {block name="productdetails-info"}
             <div class="product-info-inner">
+                {block name="productdetails-info-manufacturer-wrapper"}
                 {if $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen !== 'N' && isset($Artikel->cHersteller)}
                     {block name="product-info-manufacturer"}
                     <div class="manufacturer-row text-right small" itemprop="manufacturer" itemscope itemtype="http://schema.org/Organization">
@@ -61,14 +62,15 @@
                     </div>
                     {/block}
                 {/if}
-    
+                {/block}
     
                 <div class="product-headline hidden-xs">
                     {block name="productdetails-info-product-title"}
                     <h1 class="fn product-title" itemprop="name">{$Artikel->cName}</h1>
                     {/block}
                 </div>
-    
+
+                {block name="productdetails-info-essential-wrapper"}
                 {if ($Artikel->Bewertungen->oBewertungGesamt->nAnzahl > 0) || isset($Artikel->cArtNr)}
                     <div class="info-essential row">
                         {block name="productdetails-info-essential"}
@@ -96,7 +98,9 @@
                     </div>
                     <div class="clearfix top10"></div>
                 {/if}
-    
+                {/block}
+
+                {block name="productdetails-info-description-wrapper"}
                 {if $Einstellungen.artikeldetails.artikeldetails_kurzbeschreibung_anzeigen === 'Y' && $Artikel->cKurzBeschreibung}
                     {block name="productdetails-info-description"}
                     <div class="shortdesc" itemprop="description">
@@ -105,7 +109,9 @@
                     {/block}
                     <div class="clearfix top10"></div>
                 {/if}
-    
+                {/block}
+
+                {block name="productdetails-info-category-wrapper"}
                 {if $Einstellungen.artikeldetails.artikeldetails_kategorie_anzeigen === 'Y'}
                     {block name="productdetails-info-category"}
                     <p class="product-category word-break">
@@ -115,6 +121,7 @@
                     </p>
                     {/block}
                 {/if}
+                {/block}
                 
                 <div class="product-offer" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
                     <link itemprop="businessFunction" href="http://purl.org/goodrelations/v1#Sell" />

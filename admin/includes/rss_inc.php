@@ -9,7 +9,7 @@
  */
 function generiereRSSXML()
 {
-    Jtllog::writeLog("RSS wird erstellt", JTLLOG_LEVEL_NOTICE);
+    Jtllog::writeLog('RSS wird erstellt', JTLLOG_LEVEL_NOTICE);
     $shopURL = Shop::getURL();
     if (is_writable(PFAD_ROOT . FILE_RSS_FEED)) {
         $Einstellungen = Shop::getSettings([CONF_RSS]);
@@ -69,12 +69,13 @@ function generiereRSSXML()
 
             if (is_array($artikelarr) && count($artikelarr) > 0) {
                 foreach ($artikelarr as $artikel) {
+                    $url = $shopURL . '/' . baueURL($artikel, URLART_ARTIKEL);
                     $xml .= '
 		        <item>
 			        <title>' . wandelXMLEntitiesUm($artikel->cName) . '</title>
 			        <description>' . wandelXMLEntitiesUm($artikel->cKurzBeschreibung) . '</description>
-			        <link>' . $shopURL . '/' . baueURL($artikel, URLART_ARTIKEL) . '</link>
-			        <guid>' . $shopURL . '/' . baueURL($artikel, URLART_ARTIKEL) . '</guid>
+			        <link>' . $url . '</link>
+			        <guid>' . $url . '</guid>
 			        <pubDate>' . bauerfc2822datum($artikel->dLetzteAktualisierung) . '</pubDate>
 		        </item>';
                 }
@@ -94,12 +95,13 @@ function generiereRSSXML()
 
             if (is_array($oNews_arr) && count($oNews_arr) > 0) {
                 foreach ($oNews_arr as $oNews) {
+                    $url = $shopURL . '/' . baueURL($oNews, URLART_NEWS);
                     $xml .= '
                 <item>
                     <title>' . wandelXMLEntitiesUm($oNews->cBetreff) . '</title>
                     <description>' . wandelXMLEntitiesUm($oNews->cVorschauText) . '</description>
-                    <link>' . $shopURL . '/' . baueURL($oNews, URLART_NEWS) . '</link>
-                    <guid>' . $shopURL . '/' . baueURL($oNews, URLART_NEWS) . '</guid>
+                    <link>' . $url . '</link>
+                    <guid>' . $url . '</guid>
                     <pubDate>' . bauerfc2822datum($oNews->dGueltigVon) . '</pubDate>
                 </item>';
                 }
@@ -115,12 +117,13 @@ function generiereRSSXML()
             );
             if (is_array($oBewertung_arr) && count($oBewertung_arr) > 0) {
                 foreach ($oBewertung_arr as $oBewertung) {
+                    $url = $shopURL . '/' . baueURL($oBewertung, URLART_ARTIKEL);
                     $xml .= '
                 <item>
                     <title>bewertung ' . wandelXMLEntitiesUm($oBewertung->cTitel) . ' von ' . wandelXMLEntitiesUm($oBewertung->cName) . '</title>
                     <description>' . wandelXMLEntitiesUm($oBewertung->cText) . '</description>
-                    <link>' . $shopURL . '/' . baueURL($oBewertung, URLART_ARTIKEL) . '</link>
-                    <guid>' . $shopURL . '/' . baueURL($oBewertung, URLART_ARTIKEL) . '</guid>
+                    <link>' . $url . '</link>
+                    <guid>' . $url . '</guid>
                     <pubDate>' . bauerfc2822datum($oBewertung->dDatum) . '</pubDate>
                 </item>';
                 }
@@ -150,22 +153,9 @@ function generiereRSSXML()
  */
 function bauerfc2822datum($dErstellt)
 {
-    if (strlen($dErstellt) > 0) {
-        // Datum + Zeit
-        if (substr_count(' ', $dErstellt) > 1) {
-            list($dDatum, $dZeit)               = explode(' ', $dErstellt);
-            list($dJahr, $dMonat, $dTag)        = explode('-', $dDatum);
-            list($dStunde, $dMinute, $dSekunde) = explode(':', $dZeit);
-
-            return date('r', mktime($dStunde, $dMinute, $dSekunde, $dMonat, $dTag, $dJahr));
-        }
-        // Nur Datum
-        list($dJahr, $dMonat, $dTag) = explode('-', $dErstellt);
-
-        return date('r', mktime(0, 0, 0, $dMonat, $dTag, $dJahr));
-    }
-
-    return false;
+    return strlen($dErstellt) > 0
+        ? (new DateTime($dErstellt))->format(DATE_RSS)
+        : false;
 }
 
 /**

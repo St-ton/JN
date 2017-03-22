@@ -315,7 +315,7 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
         $oNewsUebersichtAll = getFullNewsOverview($oSQL);
         // Pagination
         $oPagination = (new Pagination())
-            ->setItemsPerPageOptions([2, 5, 10])
+            ->setItemsPerPageOptions([10, 25, 100])
             ->setDefaultItemsPerPage(0)
             ->setItemCount($oNewsUebersichtAll->nAnzahl)
             ->assemble();

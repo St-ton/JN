@@ -43,10 +43,12 @@ class IO
      *
      * @param string        $name
      * @param null|callable $function
+     * @param null|string   $include
+     * @param null|string   $permission
      * @return $this
      * @throws Exception
      */
-    public function register($name, $function = null)
+    public function register($name, $function = null, $include = null, $permission = null)
     {
         if ($this->exists($name)) {
             throw new Exception("Function already registered");
@@ -56,7 +58,7 @@ class IO
             $function = $name;
         }
 
-        $this->functions[$name] = $function;
+        $this->functions[$name] = [$function, $include, $permission];
 
         return $this;
     }
@@ -94,6 +96,8 @@ class IO
                 // it is not a JSON string yet
                 $data = json_encode($data);
             }
+        } elseif (is_null($data)) {
+            $data = '{}';
         } else {
             $data = json_encode($data);
         }
@@ -128,11 +132,19 @@ class IO
      */
     public function execute($name, $params)
     {
+        global $oAccount;
+
         if (!$this->exists($name)) {
             throw new Exception("Function not registered");
         }
 
-        $function = $this->functions[$name];
+        $function   = $this->functions[$name][0];
+        $include    = $this->functions[$name][1];
+        $permission = $this->functions[$name][2];
+
+        if ($include !== null) {
+            require_once $include;
+        }
 
         if (is_array($function)) {
             $ref = new ReflectionMethod($function[0], $function[1]);
@@ -142,6 +154,10 @@ class IO
 
         if ($ref->getNumberOfRequiredParameters() > count($params)) {
             throw new Exception("Wrong required parameter count");
+        }
+
+        if ($permission !== null && !$oAccount->permission($permission)) {
+            throw new Exception("User has not the required permission to execute this function");
         }
 
         return call_user_func_array($function, $params);

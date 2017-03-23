@@ -23,10 +23,10 @@ $io->register('getPages', [$jsonApi, 'getPages'])
    ->register('getCustomers', [$jsonApi, 'getCustomers'])
    ->register('getNewTwoFA', ['TwoFA', 'getNewTwoFA'])
    ->register('genTwoFAEmergencyCodes', ['TwoFA', 'genTwoFAEmergencyCodes'])
+   ->register('setWidgetPosition', 'setWidgetPosition', $dashboardInc, 'DASHBOARD_VIEW')
    ->register('closeWidget', 'closeWidget', $dashboardInc, 'DASHBOARD_VIEW')
    ->register('addWidget', 'addWidget', $dashboardInc, 'DASHBOARD_VIEW')
-   ->register('expandWidget', 'expandWidget', $dashboardInc, 'DASHBOARD_VIEW')
-   ->register('setWidgetPosition', 'setWidgetPosition', $dashboardInc, 'DASHBOARD_VIEW');
+   ->register('expandWidget', 'expandWidget', $dashboardInc, 'DASHBOARD_VIEW');
 
 $data = $io->handleRequest($_REQUEST['io']);
 $io->respondAndExit($data);

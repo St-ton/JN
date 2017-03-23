@@ -35,6 +35,11 @@ class JSONAPI
         return self::$instance === null ? new self() : self::$instance;
     }
 
+    public static function getProducts($limit)
+    {
+        return self::$instance->__call('getProducts', [$limit]);
+    }
+
     /**
      * @param string $name
      * @param array  $arguments

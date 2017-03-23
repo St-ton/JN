@@ -79,6 +79,11 @@ class IO
         return $this->execute($request['name'], $request['params']);
     }
 
+    public function respondAndExit($data)
+    {
+
+    }
+
     /**
      * Check if function exists
      *

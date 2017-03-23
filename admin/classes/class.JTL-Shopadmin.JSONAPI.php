@@ -6,11 +6,6 @@
 
 /**
  * Class JSONAPI
- *
- * @method mixed getPages(array $arguments = [])
- * @method mixed getCategories(array $arguments = [])
- * @method mixed getProducts(array $arguments = [])
- * @method mixed getManufacturers(array $arguments = [])
  */
 class JSONAPI
 {
@@ -20,24 +15,66 @@ class JSONAPI
     private static $instance = null;
 
     /**
-     * JSONAPI constructor.
+     * ctor
      */
-    private function __construct()
-    {
-        self::$instance = $this;
-    }
+    private function __construct() { }
+
+    /**
+     * copy-ctor
+     */
+    private function __clone() { }
 
     /**
      * @return self
      */
     public static function getInstance()
     {
-        return self::$instance === null ? new self() : self::$instance;
+        return self::$instance === null ? (self::$instance = new self()) : self::$instance;
     }
 
-    public static function getProducts($limit)
+    /**
+     * @param $limit
+     * @return mixed|string
+     */
+    public function getPages($limit = 0)
     {
-        return self::$instance->__call('getProducts', [$limit]);
+        return $this->getJson('getPages', $limit);
+    }
+
+    /**
+     * @param $limit
+     * @return mixed|string
+     */
+    public function getCategories($limit = 0)
+    {
+        return $this->getJson('getCategories', $limit);
+    }
+
+    /**
+     * @param $limit
+     * @return mixed|string
+     */
+    public function getProducts($limit = 0)
+    {
+        return $this->getJson('getProducts', $limit);
+    }
+
+    /**
+     * @param $limit
+     * @return mixed|string
+     */
+    public function getManufacturers($limit = 0)
+    {
+        return $this->getJson('getManufacturers', $limit);
+    }
+
+    /**
+     * @param $limit
+     * @return mixed|string
+     */
+    public function getCustomers($limit = 0, $search = '')
+    {
+        return $this->getJson('getCustomers', $limit, $search);
     }
 
     /**
@@ -45,57 +82,82 @@ class JSONAPI
      * @param array  $arguments
      * @return mixed|string
      */
-    public function __call($name, $arguments)
+    private function getJson($name, $limit = 0, $search = '')
     {
-        $limit   = '';
-        $cacheID = 'jsonapi_' . $name;
-        if (count($arguments) > 0) {
-            $limit = ' LIMIT ' . (int)$arguments[0];
-            $cacheID .= '_' . (int)$arguments[0];
-        }
+        $limit     = (int)$limit;
+        $cacheID   = 'jsonapi_' . $name . '_' . $limit . '_' . md5($search);
+        $cacheTags = [CACHING_GROUP_CORE];
 
         if (($data = Shop::Cache()->get($cacheID)) !== false) {
             return $data;
         }
 
-        $data      = [];
-        $cacheTags = [CACHING_GROUP_CORE];
         switch ($name) {
             case 'getPages':
-                $data = Shop::DB()->query("
-                    SELECT kLink AS id, cName AS name 
-                        FROM tlink" . $limit, 2
+                $data = Shop::DB()->query(
+                    "SELECT kLink AS id, cName AS name
+                        FROM tlink
+                        " . ($limit > 0 ? "LIMIT " . $limit : ""),
+                    2
                 );
                 break;
             case 'getCategories':
-                $data        = Shop::DB()->query("
-                    SELECT kKategorie AS id, cName AS name 
-                        FROM tkategorie" . $limit, 2
+                $data        = Shop::DB()->query(
+                    "SELECT kKategorie AS id, cName AS name
+                        FROM tkategorie
+                        " . ($limit > 0 ? "LIMIT " . $limit : ""),
+                    2
                 );
                 $cacheTags[] = CACHING_GROUP_CATEGORY;
                 break;
             case 'getProducts':
-                $data        = Shop::DB()->query("
-                    SELECT kArtikel AS id, cName AS name 
-                      FROM tartikel" . $limit, 2
+                $data        = Shop::DB()->query(
+                    "SELECT kArtikel AS id, cName AS name
+                        FROM tartikel
+                        " . ($limit > 0 ? "LIMIT " . $limit : ""),
+                    2
                 );
                 $cacheTags[] = CACHING_GROUP_ARTICLE;
                 break;
             case 'getManufacturers':
-                $data        = Shop::DB()->query("
-                    SELECT kHersteller AS id, cName AS name 
-                      FROM thersteller" . $limit, 2
+                $data        = Shop::DB()->query(
+                    "SELECT kHersteller AS id, cName AS name
+                        FROM thersteller
+                        " . ($limit > 0 ? "LIMIT " . $limit : ""),
+                    2
                 );
                 $cacheTags[] = CACHING_GROUP_MANUFACTURER;
                 break;
+            case 'getCustomers':
+                $search = Shop::DB()->escape($search);
+                $data   = Shop::DB()->query(
+                    "SELECT kKunde, cVorname, cNachname, cMail, cStrasse, cHausnummer, cPLZ, cOrt 
+                        FROM tkunde
+                        WHERE cVorname LIKE '%" . $search . "%'
+                              OR cMail LIKE '%" . $search . "%'
+                              OR cOrt LIKE '%" . $search . "%'
+                              OR cPLZ LIKE '%" . $search . "%'
+                        " . ($limit > 0 ? "LIMIT " . $limit : ""),
+                    2
+                );
+                foreach ($data as $item) {
+                    $item->cNachname = trim(entschluesselXTEA($item->cNachname));
+                    $item->cStrasse  = trim(entschluesselXTEA($item->cStrasse));
+                }
+                $cacheTags[] = CACHING_GROUP_MANUFACTURER;
+                break;
             default:
+                $data = [];
                 break;
         }
+
+        // deep UTF-8 encode
         foreach ($data as $_object) {
             foreach (get_object_vars($_object) as $_k => $_v) {
                 $_object->$_k = utf8_encode($_v);
             }
         }
+
         $data = json_encode($data);
         Shop::Cache()->set($cacheID, $data, $cacheTags);
 

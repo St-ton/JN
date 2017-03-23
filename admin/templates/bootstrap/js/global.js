@@ -674,3 +674,24 @@ function showBackdrop() {
 function hideBackdrop() {
     $('.menu-backdrop').remove();
 }
+
+function ioGetJson(name, args, success)
+{
+    args    = args || [];
+    success = success || function () { };
+
+    $.ajax({
+        url: 'io.php',
+        method: 'post',
+        dataType: 'json',
+        data: {
+            io : JSON.stringify({
+                name: name,
+                params : args
+            })
+        },
+        success: function (data, textStatus, jqXHR) {
+            success(data);
+        }
+    });
+}

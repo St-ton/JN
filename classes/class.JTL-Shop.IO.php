@@ -20,19 +20,21 @@ class IO
     private $functions = [];
 
     /**
-     * IO constructor.
+     * ctor
      */
-    private function __construct()
-    {
-        self::$instance = $this;
-    }
+    private function __construct() { }
+
+    /**
+     * copy-ctor
+     */
+    private function __clone() { }
 
     /**
      * @return self
      */
     public static function getInstance()
     {
-        return self::$instance === null ? new self() : self::$instance;
+        return self::$instance === null ? (self::$instance = new self()) : self::$instance;
     }
 
     /**
@@ -79,9 +81,30 @@ class IO
         return $this->execute($request['name'], $request['params']);
     }
 
+    /**
+     * @param $data
+     */
     public function respondAndExit($data)
     {
+        // encode data if not already encoded
+        if (is_string($data)) {
+            // data is a string
+            json_decode($data);
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                // it is not a JSON string yet
+                $data = json_encode($data);
+            }
+        } else {
+            $data = json_encode($data);
+        }
 
+        header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+        header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
+        header('Cache-Control: no-cache, must-revalidate');
+        header('Pragma: no-cache');
+        header('Content-type: application/json');
+
+        die($data);
     }
 
     /**

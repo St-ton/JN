@@ -149,3 +149,16 @@ function getRemoteData($cURL, $nTimeout = 15)
 
     return $cData;
 }
+
+function getAvailableWidgetsIO()
+{
+    $response             = new IOResponse();
+    $oAvailableWidget_arr = getWidgets(false);
+    Shop::Smarty()->assign('oAvailableWidget_arr', $oAvailableWidget_arr);
+    $cWrapper = Shop::Smarty()->fetch('tpl_inc/widget_selector.tpl');
+    $cWrapper = utf8_encode($cWrapper);
+    $response->assign('settings', 'innerHTML', $cWrapper);
+    $response->script('registerWidgetSettings();');
+
+    return $response;
+}

@@ -70,6 +70,7 @@ function setCurrencyConversionAjaxTooltip($fPreisNetto, $fPreisBrutto, $cTooltip
 }
 
 /**
+ * @deprecated since 4.06
  * @param int    $kWidget
  * @param string $cContainer
  * @param int    $nPos
@@ -84,6 +85,7 @@ function setWidgetPositionAjax($kWidget, $cContainer, $nPos)
 }
 
 /**
+ * @deprecated since 4.06
  * @param int $kWidget
  * @return xajaxResponse
  */
@@ -96,6 +98,7 @@ function closeWidgetAjax($kWidget)
 }
 
 /**
+ * @deprecated since 4.06
  * @param int $kWidget
  * @return xajaxResponse
  */
@@ -108,6 +111,7 @@ function addWidgetAjax($kWidget)
 }
 
 /**
+ * @deprecated since 4.06
  * @param int  $kWidget
  * @param bool $bExpand
  * @return xajaxResponse
@@ -124,6 +128,7 @@ function expandWidgetAjax($kWidget, $bExpand)
 }
 
 /**
+ * @deprecated since 4.06
  * @return xajaxResponse
  */
 function getAvailableWidgetsAjax()

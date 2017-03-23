@@ -647,7 +647,7 @@ $(document).ready(function () {
     });
     $('.switcher').on('show.bs.dropdown', function () {
         showBackdrop();
-        xajax_getAvailableWidgetsAjax();
+        ioCall('getAvailableWidgets');
     }).on('hide.bs.dropdown', function () {
         hideBackdrop();
     });

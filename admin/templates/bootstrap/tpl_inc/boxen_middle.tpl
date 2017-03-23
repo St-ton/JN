@@ -14,9 +14,11 @@
                             <label for="box_top_show">Container anzeigen</label>
                         {else}
                             {if isset($bBoxenAnzeigen.top) && $bBoxenAnzeigen.top}
+                                <input type="hidden" name="box_show" value="1" />
                                 <a href="boxen.php?action=container&position=top&value=0&token={$smarty.session.jtl_token}" title="Auf jeder Seite deaktivieren"><i class="fa fa-lg fa-eye-slash"></i></a>
                                 <span>Container Top ausblenden</span>
                             {else}
+                                <input type="hidden" name="box_show" value="0" />
                                 <a href="boxen.php?action=container&position=top&value=1&token={$smarty.session.jtl_token}" title="Auf jeder Seite aktivieren"><i class="fa fa-lg fa-eye"></i></a>
                                 <span>Container Top auf jeder Seite anzeigen</span>
                             {/if}

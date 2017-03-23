@@ -23,8 +23,10 @@
     <div class="col-xs-2">
         {if $nPage == 0}
             {if $oBox->bAktiv == 0}
+                <input type="hidden" name="box_show" value="0" />
                 <a href="boxen.php?action=activate&position={$position}&item={$oBox->kBox}&value=1&token={$smarty.session.jtl_token}" title="Auf jeder Seite aktivieren"><i class="fa fa-lg fa-eye"></i></a>
             {else}
+                <input type="hidden" name="box_show" value="1" />
                 <a href="boxen.php?action=activate&position={$position}&item={$oBox->kBox}&value=0&token={$smarty.session.jtl_token}" title="Auf jeder Seite deaktivieren"><i class="fa fa-lg fa-eye-slash"></i></a>
             {/if}
         {/if}

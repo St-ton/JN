@@ -215,14 +215,16 @@ $(document).ready(function() {
                                     iframeHtml += '<h4>JTL-shop Backend Notfall-Codes</h4>';
                                     iframeHtml += 'Account: <b>' + data.loginName + '</b><br>';
                                     iframeHtml += 'Shop: <b>' + data.shopName + '</b><br><br>';
-                                    iframeHtml += '<font face = "monospace" size = "+1">';
+                                    iframeHtml += '<pre>';
 
                                     data.vCodes.forEach(function (code, i) {
-                                        iframeHtml += '<span style="padding:3px;">' + code + '</span>';
+                                        iframeHtml += code + ' ';
                                         if (i%2 === 1) {
-                                            iframeHtml += '<br>';
+                                            iframeHtml += '\n';
                                         }
                                     });
+
+                                    iframeHtml += '</pre>';
 
                                     $('#printframe').contents().find('body')[0].innerHTML = iframeHtml;
                                     $('#EmergencyCodeModal').modal('show');

@@ -695,3 +695,45 @@ function ioGetJson(name, args, success)
         }
     });
 }
+
+function ioCall(name, args, success, context)
+{
+    'use strict';
+
+    args    = args || [];
+    success = success || function () { };
+    context = context || { };
+
+    var evalInContext = function (code) { eval(code); }.bind(context);
+
+    $.ajax({
+        url: 'io.php',
+        method: 'post',
+        dataType: 'json',
+        data: {
+            io : JSON.stringify({
+                name: name,
+                params : args
+            })
+        },
+        success: function (data, textStatus, jqXHR) {
+            var jslist = data.js || [];
+            var csslist = data.css || [];
+
+            csslist.forEach(function (assign) {
+                var $target = $('#' + assign.target);
+                if($target.length > 0) {
+                   $target[0][assign.attr] = assign.data;
+                }
+            });
+
+            jslist.forEach(function (js) {
+                evalInContext(js);
+            });
+
+            if (typeof success === 'function') {
+                success(true, context);
+            }
+        }
+    });
+}

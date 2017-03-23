@@ -192,40 +192,41 @@ $(document).ready(function() {
                                 }
 
                                 if(confirm("Das bisherige 'Authentication Secret' wird ersetzt!\nWirklich fortfahren?")) {
-                                    $.ajax({
-                                          method: 'get'
-                                        , url: 'ajax.php?type=TwoFA&token=' + $('[name$=jtl_token]').val()
-                                        , data: {
-                                              userName: $('[id$=cLogin]').val()
-                                            , query: '_dummy'
-                                            , type: 'TwoFA'
-                                          }
-                                        , beforeSend: function() {
-                                                $('[id$=QRcode]').html('<img src="templates/bootstrap/gfx/widgets/ajax-loader.gif">');
-                                            }
-                                    })
-                                    .done(function(msg) {
-                                        var oUserData = jQuery.parseJSON(msg);
-
+                                    var userName = $('#cLogin').val();
+                                    $('#QRcode').html('<img src="templates/bootstrap/gfx/widgets/ajax-loader.gif">');
+                                    ioGetJson('getNewTwoFA', [userName], function (data) {
                                         // display the new RQ-code
-                                        $('[id$=QRcode]').html(oUserData.szQRcode);
-                                        $('[id$=c2FAsecret]').val(oUserData.szSecret);
+                                        $('#QRcode').html(data.szQRcode);
+                                        $('#c2FAsecret').val(data.szSecret);
 
                                         // toggle code-canvas
-                                        if('none' == $('[id$=QRcodeCanvas]').css('display')) {
-                                            $('[id$=QRcodeCanvas]').css('display','block');
+                                        if('none' == $('#QRcodeCanvas').css('display')) {
+                                            $('#QRcodeCanvas').css('display', 'block');
                                         }
                                     });
                                 }
                             }
 
                             function showEmergencyCodes(action) {
-                                $('#printframe').attr('src', 'ajax.php?userName=' + $('[id$=cLogin]').val() + '&query=&type=TwoFAgenEmergCodes&token=' + $('[name$=jtl_token]').val());
-                                if ('forceReload' === action) {
-                                    $('#printframe').load();
-                                } else {
+                                var userName = $('#cLogin').val();
+                                ioGetJson('genTwoFAEmergencyCodes', [userName], function (data) {
+                                    var iframeHtml = '';
+
+                                    iframeHtml += '<h4>JTL-shop Backend Notfall-Codes</h4>';
+                                    iframeHtml += 'Account: <b>' + data.loginName + '</b><br>';
+                                    iframeHtml += 'Shop: <b>' + data.shopName + '</b><br><br>';
+                                    iframeHtml += '<font face = "monospace" size = "+1">';
+
+                                    data.vCodes.forEach(function (code, i) {
+                                        iframeHtml += '<span style="padding:3px;">' + code + '</span>';
+                                        if (i%2 === 1) {
+                                            iframeHtml += '<br>';
+                                        }
+                                    });
+
+                                    $('#printframe').contents().find('body')[0].innerHTML = iframeHtml;
                                     $('#EmergencyCodeModal').modal('show');
-                                }
+                                });
                             }
 
                         </script>

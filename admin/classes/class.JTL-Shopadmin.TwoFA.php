@@ -211,4 +211,66 @@ class TwoFA
     {
         return print_r($this->oUserTuple, true);
     }
+
+    /**
+     * @param $userName
+     * @return string
+     */
+    public static function getNewTwoFA($userName)
+    {
+        $oTwoFA = new TwoFA();
+        $oTwoFA->setUserByName($userName);
+
+        $oUserData           = new stdClass();
+        $oUserData->szSecret = $oTwoFA->createNewSecret()->getSecret();
+        $oUserData->szQRcode = $oTwoFA->getQRcode();
+
+        return json_encode($oUserData);
+    }
+
+    /**
+     * @param $userName
+     * @return string
+     */
+    public static function genTwoFAEmergencyCodes($userName)
+    {
+        $oTwoFA = new TwoFA();
+        $oTwoFA->setUserByName($userName);
+
+        $data            = new stdClass();
+        $data->loginName = $oTwoFA->getUserTuple()->cLogin;
+        $data->shopName  = $oTwoFA->getShopName();
+
+        /*
+        // create, what the user can print out
+        $szText  = '<h4>JTL-shop Backend Notfall-Codes</h4>';
+        $szText .= 'Account: <b>' . $oTwoFA->getUserTuple()->cLogin . '</b><br>';
+        $szText .= 'Shop: <b>' . $oTwoFA->getShopName() . '</b><br><br>';
+        */
+
+        $oTwoFAgenEmergCodes = new TwoFAEmergency();
+        $oTwoFAgenEmergCodes->removeExistingCodes($oTwoFA->getUserTuple());
+
+        $data->vCodes = $oTwoFAgenEmergCodes->createNewCodes($oTwoFA->getUserTuple());
+
+        /*
+        $szText      .= '<font face = "monospace" size = "+1">';
+        $nCol         = 0;
+        $iCodesLength = count($vCodes);
+        for ($i = 0; $i < $iCodesLength; $i++) {
+            if (1 > $nCol) {
+                $szText .= '<span style="padding:3px;">' . $vCodes[$i] . '</span>';
+                $nCol++;
+            } else {
+                $szText .= $vCodes[$i] . '<br>';
+                $nCol    = 0;
+            }
+        }
+        $szText .= '</font>';
+
+        return $szText;
+        */
+
+        return $data;
+    }
 }

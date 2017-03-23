@@ -41,10 +41,10 @@ class IO
      * Registers a PHP function or method.
      * This makes the function available for XMLHTTPRequest requests.
      *
-     * @param string        $name
-     * @param null|callable $function
-     * @param null|string   $include
-     * @param null|string   $permission
+     * @param string        $name - name udner which this function is callable
+     * @param null|callable $function - target function name, method-tuple or closure
+     * @param null|string   $include - file where this function is defined in
+     * @param null|string   $permission - permission that is required to execute this function
      * @return $this
      * @throws Exception
      */

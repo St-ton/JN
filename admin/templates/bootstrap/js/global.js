@@ -675,6 +675,14 @@ function hideBackdrop() {
     $('.menu-backdrop').remove();
 }
 
+/**
+ * Call the AJAX function 'name' with the argument list args. On success call the callback function success with the
+ * result object as the first parameter
+ *
+ * @param name
+ * @param args
+ * @param success
+ */
 function ioGetJson(name, args, success)
 {
     args    = args || [];
@@ -696,6 +704,15 @@ function ioGetJson(name, args, success)
     });
 }
 
+/**
+ * Call a function asynchronously on the server. The server answers with a JSON-encoded IOResponse object, that
+ * ioCall() will interpret afterwards.
+ *
+ * @param name - name of the function
+ * @param args - argument array for the function call
+ * @param success - callback(context) function to be called on success (default: null)
+ * @param context - object to be assigned 'this' in eval()-code (default: { } = a new empty anonymous object)
+ */
 function ioCall(name, args, success, context)
 {
     'use strict';
@@ -732,7 +749,7 @@ function ioCall(name, args, success, context)
             });
 
             if (typeof success === 'function') {
-                success(true, context);
+                success(context);
             }
         }
     });

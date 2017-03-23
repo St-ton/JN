@@ -36,36 +36,36 @@ class JSONAPI
      * @param $limit
      * @return mixed|string
      */
-    public function getPages($limit = 0)
+    public function getPages($limit = 0, $search = '')
     {
-        return $this->getJson('getPages', $limit);
+        return $this->getJson('getPages', $limit, $search);
     }
 
     /**
      * @param $limit
      * @return mixed|string
      */
-    public function getCategories($limit = 0)
+    public function getCategories($limit = 0, $search = '')
     {
-        return $this->getJson('getCategories', $limit);
+        return $this->getJson('getCategories', $limit, $search);
     }
 
     /**
      * @param $limit
      * @return mixed|string
      */
-    public function getProducts($limit = 0)
+    public function getProducts($limit = 0, $search = '')
     {
-        return $this->getJson('getProducts', $limit);
+        return $this->getJson('getProducts', $limit, $search);
     }
 
     /**
      * @param $limit
      * @return mixed|string
      */
-    public function getManufacturers($limit = 0)
+    public function getManufacturers($limit = 0, $search = '')
     {
-        return $this->getJson('getManufacturers', $limit);
+        return $this->getJson('getManufacturers', $limit, $search);
     }
 
     /**
@@ -85,6 +85,7 @@ class JSONAPI
     private function getJson($name, $limit = 0, $search = '')
     {
         $limit     = (int)$limit;
+        $search    = Shop::DB()->escape($search);
         $cacheID   = 'jsonapi_' . $name . '_' . $limit . '_' . md5($search);
         $cacheTags = [CACHING_GROUP_CORE];
 
@@ -97,6 +98,7 @@ class JSONAPI
                 $data = Shop::DB()->query(
                     "SELECT kLink AS id, cName AS name
                         FROM tlink
+                        WHERE cName LIKE '%" . $search . "%'
                         " . ($limit > 0 ? "LIMIT " . $limit : ""),
                     2
                 );
@@ -105,6 +107,7 @@ class JSONAPI
                 $data        = Shop::DB()->query(
                     "SELECT kKategorie AS id, cName AS name
                         FROM tkategorie
+                        WHERE cName LIKE '%" . $search . "%'
                         " . ($limit > 0 ? "LIMIT " . $limit : ""),
                     2
                 );
@@ -114,6 +117,7 @@ class JSONAPI
                 $data        = Shop::DB()->query(
                     "SELECT kArtikel AS id, cName AS name
                         FROM tartikel
+                        WHERE cName LIKE '%" . $search . "%'
                         " . ($limit > 0 ? "LIMIT " . $limit : ""),
                     2
                 );
@@ -123,14 +127,14 @@ class JSONAPI
                 $data        = Shop::DB()->query(
                     "SELECT kHersteller AS id, cName AS name
                         FROM thersteller
+                        WHERE cName LIKE '%" . $search . "%'
                         " . ($limit > 0 ? "LIMIT " . $limit : ""),
                     2
                 );
                 $cacheTags[] = CACHING_GROUP_MANUFACTURER;
                 break;
             case 'getCustomers':
-                $search = Shop::DB()->escape($search);
-                $data   = Shop::DB()->query(
+                $data = Shop::DB()->query(
                     "SELECT kKunde, cVorname, cNachname, cMail, cStrasse, cHausnummer, cPLZ, cOrt 
                         FROM tkunde
                         WHERE cVorname LIKE '%" . $search . "%'

@@ -19,33 +19,13 @@
             $('#boxFilterModal .filter-input').val(''); //cleanup input
         });
         {if $nPage == 1}
-            $('#products').typeahead({
-                ajax: '{$shopURL}/{$PFAD_ADMIN}ajax.php?type=product&token={$smarty.session.jtl_token}',
-                onSelect: function (item) {
-                    onSelect(item, '#selected-items', '#products');
-                }
-            });
+            enableTypeahead('#products', 'getProducts', function (item) { onSelect(item, '#selected-items', '#products'); });
         {elseif $nPage == 31}
-            $('#pages').typeahead({
-                ajax: '{$shopURL}/{$PFAD_ADMIN}ajax.php?type=page&token={$smarty.session.jtl_token}',
-                onSelect: function (item) {
-                    onSelect(item, '#selected-items', '#pages');
-                }
-            });
+            enableTypeahead('#pages', 'getPages', function (item) { onSelect(item, '#selected-items', '#pages'); });
         {elseif $nPage == 2}
-            $('#categories').typeahead({
-                ajax: '{$shopURL}/{$PFAD_ADMIN}ajax.php?type=category&token={$smarty.session.jtl_token}',
-                onSelect: function (item) {
-                    onSelect(item, '#selected-items', '#categories');
-                }
-            });
+            enableTypeahead('#categories', 'getCategories', function (item) { onSelect(item, '#selected-items', '#categories'); });
         {elseif $nPage == 24}
-            $('#manufacturers').typeahead({
-                ajax: '{$shopURL}/{$PFAD_ADMIN}ajax.php?type=manufacturer&token={$smarty.session.jtl_token}',
-                onSelect: function (item) {
-                    onSelect(item, '#selected-items', '#manufacturers');
-                }
-            });
+            enableTypeahead('#manufacturers', 'getManufacturers', function (item) { onSelect(item, '#selected-items', '#manufacturers'); });
         {/if}
 
         $('#modal-save').click(function () {

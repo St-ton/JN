@@ -737,3 +737,30 @@ function ioCall(name, args, success, context)
         }
     });
 }
+
+/**
+ * Make an input element selected by 'selector' a typeahead input field. The data is queried on an ajax-function named
+ * funcName. When an item from the suggestion list ist selected the callback onSelect is executed.
+ *
+ * @param selector
+ * @param funcName
+ * @param onSelect
+ */
+function enableTypeahead(selector, funcName, onSelect)
+{
+    $(selector).typeahead({
+        ajax: {
+            url: 'io.php',
+            method: 'post',
+            preDispatch: function (query) {
+                return {
+                    io: JSON.stringify({
+                        name: funcName,
+                        params: [100, query]
+                    })
+                };
+            }
+        },
+        onSelect: onSelect
+    });
+}

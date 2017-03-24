@@ -7,29 +7,30 @@
 /**
  * Class FilterDummyState
  */
-class FilterDummyState extends AbstractFilter implements IFilter
+class FilterDummyState extends AbstractFilter
 {
     use FilterItemTrait;
 
     /**
-     * @var bool
-     */
-    public $isCustom = false;
-
-    /**
-     * @var string
-     */
-    public $urlParam = 'ds';
-
-    /**
-     * @var string
-     */
-    public $urlParamSEO = null;
-
-    /**
      * @var null
      */
-    public $dummyValue = null;
+    public $dummyValue;
+
+    /**
+     * FilterDummyState constructor.
+     *
+     * @param int|null   $languageID
+     * @param int|null   $customerGroupID
+     * @param array|null $config
+     * @param array|null $languages
+     */
+    public function __construct($languageID = null, $customerGroupID = null, $config = null, $languages = null)
+    {
+        parent::__construct($languageID, $customerGroupID, $config, $languages);
+        $this->isCustom    = false;
+        $this->urlParam    = 'ds';
+        $this->urlParamSEO = null;
+    }
 
     /**
      * @param int $id

@@ -7,14 +7,9 @@
 /**
  * Class FilterItemPriceRange
  */
-class FilterItemPriceRange extends AbstractFilter implements IFilter
+class FilterItemPriceRange extends AbstractFilter
 {
     use FilterItemTrait;
-
-    /**
-     * @var bool
-     */
-    public $isCustom = false;
 
     /**
      * @var float
@@ -47,14 +42,20 @@ class FilterItemPriceRange extends AbstractFilter implements IFilter
     private $oFilter;
 
     /**
-     * @var string
+     * FilterItemPriceRange constructor.
+     *
+     * @param int|null   $languageID
+     * @param int|null   $customerGroupID
+     * @param array|null $config
+     * @param array|null $languages
      */
-    public $urlParam = 'pf';
-
-    /**
-     * @var string
-     */
-    public $urlParamSEO = null;
+    public function __construct($languageID = null, $customerGroupID = null, $config = null, $languages = null)
+    {
+        parent::__construct($languageID, $customerGroupID, $config, $languages);
+        $this->isCustom    = false;
+        $this->urlParam    = 'pf';
+        $this->urlParamSEO = null;
+    }
 
     /**
      * @param int $id

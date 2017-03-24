@@ -7,22 +7,28 @@
 /**
  * Class FilterNews
  */
-class FilterNews extends AbstractFilter implements IFilter
+class FilterNews extends AbstractFilter
 {
-    /**
-     * @var string
-     */
-    public $urlParam = 'n';
-
-    /**
-     * @var bool
-     */
-    public $isCustom = false;
-
     /**
      * @var int
      */
     public $kNews = 0;
+
+    /**
+     * FilterNews constructor.
+     *
+     * @param int|null   $languageID
+     * @param int|null   $customerGroupID
+     * @param array|null $config
+     * @param array|null $languages
+     */
+    public function __construct($languageID = null, $customerGroupID = null, $config = null, $languages = null)
+    {
+        parent::__construct($languageID, $customerGroupID, $config, $languages);
+        $this->isCustom    = false;
+        $this->urlParam    = 'n';
+        $this->urlParamSEO = null;
+    }
 
     /**
      * @param int $id

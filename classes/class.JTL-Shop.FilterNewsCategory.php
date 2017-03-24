@@ -7,22 +7,28 @@
 /**
  * Class FilterNewsCategory
  */
-class FilterNewsCategory extends AbstractFilter implements IFilter
+class FilterNewsCategory extends AbstractFilter
 {
-    /**
-     * @var bool
-     */
-    public $isCustom = false;
-
     /**
      * @var int
      */
     public $kNewsKategorie = 0;
 
     /**
-     * @var string
+     * FilterNewsCategory constructor.
+     *
+     * @param int|null   $languageID
+     * @param int|null   $customerGroupID
+     * @param array|null $config
+     * @param array|null $languages
      */
-    public $urlParam = 'nk';
+    public function __construct($languageID = null, $customerGroupID = null, $config = null, $languages = null)
+    {
+        parent::__construct($languageID, $customerGroupID, $config, $languages);
+        $this->isCustom    = false;
+        $this->urlParam    = 'nk';
+        $this->urlParamSEO = null;
+    }
 
     /**
      * @param int $id

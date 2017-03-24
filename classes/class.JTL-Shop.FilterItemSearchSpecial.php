@@ -7,24 +7,29 @@
 /**
  * Class FilterItemSearchSpecial
  */
-class FilterItemSearchSpecial extends AbstractFilter implements IFilter
+class FilterItemSearchSpecial extends AbstractFilter
 {
     use FilterItemTrait;
-
-    /**
-     * @var string
-     */
-    public $urlParam = 'qf';
-
-    /**
-     * @var bool
-     */
-    public $isCustom = false;
 
     /**
      * @var int
      */
     public $kKey = 0;
+
+    /**
+     * FilterItemSearchSpecial constructor.
+     *
+     * @param int|null   $languageID
+     * @param int|null   $customerGroupID
+     * @param array|null $config
+     * @param array|null $languages
+     */
+    public function __construct($languageID = null, $customerGroupID = null, $config = null, $languages = null)
+    {
+        parent::__construct($languageID, $customerGroupID, $config, $languages);
+        $this->isCustom = false;
+        $this->urlParam = 'qf';
+    }
 
     /**
      * @param int $id

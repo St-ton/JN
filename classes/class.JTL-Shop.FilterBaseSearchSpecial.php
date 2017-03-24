@@ -7,27 +7,28 @@
 /**
  * Class FilterBaseSearchSpecial
  */
-class FilterBaseSearchSpecial extends AbstractFilter implements IFilter
+class FilterBaseSearchSpecial extends AbstractFilter
 {
-    /**
-     * @var bool
-     */
-    public $isCustom = false;
-
     /**
      * @var int
      */
     public $kKey = 0;
 
     /**
-     * @var string
+     * FilterBaseSearchSpecial constructor.
+     *
+     * @param int|null   $languageID
+     * @param int|null   $customerGroupID
+     * @param array|null $config
+     * @param array|null $languages
      */
-    public $urlParam = 'q';
-
-    /**
-     * @var string
-     */
-    public $urlParamSEO = null;
+    public function __construct($languageID = null, $customerGroupID = null, $config = null, $languages = null)
+    {
+        parent::__construct($languageID, $customerGroupID, $config, $languages);
+        $this->isCustom    = false;
+        $this->urlParam    = 'q';
+        $this->urlParamSEO = null;
+    }
 
     /**
      * @param int $id

@@ -12,14 +12,19 @@ class FilterItemTag extends FilterBaseTag
     use FilterItemTrait;
 
     /**
-     * @var string
+     * FilterItemTag constructor.
+     *
+     * @param int|null   $languageID
+     * @param int|null   $customerGroupID
+     * @param array|null $config
+     * @param array|null $languages
      */
-    public $urlParam = 'tf';
-
-    /**
-     * @var bool
-     */
-    public $isCustom = false;
+    public function __construct($languageID = null, $customerGroupID = null, $config = null, $languages = null)
+    {
+        parent::__construct($languageID, $customerGroupID, $config, $languages);
+        $this->isCustom = false;
+        $this->urlParam = 'tf';
+    }
 
     /**
      * @return string

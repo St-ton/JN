@@ -12,19 +12,20 @@ class FilterItemManufacturer extends FilterBaseManufacturer
     use FilterItemTrait;
 
     /**
-     * @var string
+     * FilterItemManufacturer constructor.
+     *
+     * @param int|null   $languageID
+     * @param int|null   $customerGroupID
+     * @param array|null $config
+     * @param array|null $languages
      */
-    public $urlParam = 'hf';
-
-    /**
-     * @var string
-     */
-    public $urlParamSEO = SEP_HST;
-
-    /**
-     * @var bool
-     */
-    public $isCustom = false;
+    public function __construct($languageID = null, $customerGroupID = null, $config = null, $languages = null)
+    {
+        parent::__construct($languageID, $customerGroupID, $config, $languages);
+        $this->isCustom    = false;
+        $this->urlParam    = 'hf';
+        $this->urlParamSEO = SEP_HST;
+    }
 
     /**
      * @return string

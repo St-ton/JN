@@ -12,11 +12,6 @@ class FilterItemAttribute extends FilterBaseAttribute
     use FilterItemTrait;
 
     /**
-     * @var bool
-     */
-    public $isCustom = false;
-
-    /**
      * @var string
      */
     public $cWert;
@@ -27,14 +22,20 @@ class FilterItemAttribute extends FilterBaseAttribute
     public $kMerkmal;
 
     /**
-     * @var string
+     * FilterItemAttribute constructor.
+     *
+     * @param int|null   $languageID
+     * @param int|null   $customerGroupID
+     * @param array|null $config
+     * @param array|null $languages
      */
-    public $urlParam = 'mf';
-
-    /**
-     * @var string
-     */
-    public $urlParamSEO = SEP_MERKMAL;
+    public function __construct($languageID = null, $customerGroupID = null, $config = null, $languages = null)
+    {
+        parent::__construct($languageID, $customerGroupID, $config, $languages);
+        $this->isCustom    = false;
+        $this->urlParam    = 'mf';
+        $this->urlParamSEO = SEP_MERKMAL;
+    }
 
     /**
      * @param array $languages

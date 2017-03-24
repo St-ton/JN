@@ -7,14 +7,9 @@
 /**
  * Class FilterSearch
  */
-class FilterSearch extends AbstractFilter implements IFilter
+class FilterSearch extends AbstractFilter
 {
     use FilterItemTrait;
-
-    /**
-     * @var bool
-     */
-    public $isCustom = false;
 
     /**
      * @var int
@@ -27,16 +22,6 @@ class FilterSearch extends AbstractFilter implements IFilter
     public $cSuche;
 
     /**
-     * @var string
-     */
-    public $urlParam = 'sf';
-
-    /**
-     * @var string
-     */
-    public $urlParamSEO = null;
-
-    /**
      * @var int
      */
     public $kSuchCache = 0;
@@ -45,6 +30,22 @@ class FilterSearch extends AbstractFilter implements IFilter
      * @var string
      */
     public $Fehler;
+
+    /**
+     * FilterSearch constructor.
+     *
+     * @param int|null   $languageID
+     * @param int|null   $customerGroupID
+     * @param array|null $config
+     * @param array|null $languages
+     */
+    public function __construct($languageID = null, $customerGroupID = null, $config = null, $languages = null)
+    {
+        parent::__construct($languageID, $customerGroupID, $config, $languages);
+        $this->isCustom    = false;
+        $this->urlParam    = 'sf';
+        $this->urlParamSEO = null;
+    }
 
     /**
      * @param int $id

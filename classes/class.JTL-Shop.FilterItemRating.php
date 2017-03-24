@@ -7,14 +7,9 @@
 /**
  * Class FilterItemRating
  */
-class FilterItemRating extends AbstractFilter implements IFilter
+class FilterItemRating extends AbstractFilter
 {
     use FilterItemTrait;
-
-    /**
-     * @var bool
-     */
-    public $isCustom = false;
 
     /**
      * @var int
@@ -22,14 +17,20 @@ class FilterItemRating extends AbstractFilter implements IFilter
     public $nSterne = 0;
 
     /**
-     * @var string
+     * FilterItemRating constructor.
+     *
+     * @param int|null   $languageID
+     * @param int|null   $customerGroupID
+     * @param array|null $config
+     * @param array|null $languages
      */
-    public $urlParam = 'bf';
-
-    /**
-     * @var string
-     */
-    public $urlParamSEO = null;
+    public function __construct($languageID = null, $customerGroupID = null, $config = null, $languages = null)
+    {
+        parent::__construct($languageID, $customerGroupID, $config, $languages);
+        $this->isCustom    = false;
+        $this->urlParam    = 'bf';
+        $this->urlParamSEO = null;
+    }
 
     /**
      * @param int $id

@@ -7,21 +7,27 @@
 /**
  * Class FilterBaseAttribute
  */
-class FilterBaseAttribute extends AbstractFilter implements IFilter
+class FilterBaseAttribute extends AbstractFilter
 {
-    /**
-     * @var string
-     */
-    public $urlParam = 'm';
-    /**
-     * @var bool
-     */
-    public $isCustom = false;
-
     /**
      * @var int
      */
     public $kMerkmalWert = 0;
+
+    /**
+     * FilterBaseAttribute constructor.
+     *
+     * @param int|null   $languageID
+     * @param int|null   $customerGroupID
+     * @param array|null $config
+     * @param array|null $languages
+     */
+    public function __construct($languageID = null, $customerGroupID = null, $config = null, $languages = null)
+    {
+        parent::__construct($languageID, $customerGroupID, $config, $languages);
+        $this->isCustom = false;
+        $this->urlParam = 'm';
+    }
 
     /**
      * @param int $id

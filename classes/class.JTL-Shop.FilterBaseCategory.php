@@ -7,7 +7,7 @@
 /**
  * Class FilterBaseCategory
  */
-class FilterBaseCategory extends AbstractFilter implements IFilter
+class FilterBaseCategory extends AbstractFilter
 {
     /**
      * @var int
@@ -15,19 +15,20 @@ class FilterBaseCategory extends AbstractFilter implements IFilter
     public $kKategorie;
 
     /**
-     * @var bool
+     * FilterBaseCategory constructor.
+     *
+     * @param int|null   $languageID
+     * @param int|null   $customerGroupID
+     * @param array|null $config
+     * @param array|null $languages
      */
-    public $isCustom = false;
-
-    /**
-     * @var string
-     */
-    public $urlParam = 'k';
-
-    /**
-     * @var string
-     */
-    public $urlParamSEO = SEP_KAT;
+    public function __construct($languageID = null, $customerGroupID = null, $config = null, $languages = null)
+    {
+        parent::__construct($languageID, $customerGroupID, $config, $languages);
+        $this->isCustom    = false;
+        $this->urlParam    = 'k';
+        $this->urlParamSEO = SEP_KAT;
+    }
 
     /**
      * @param int $id

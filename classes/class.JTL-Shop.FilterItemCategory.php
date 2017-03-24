@@ -12,19 +12,20 @@ class FilterItemCategory extends FilterBaseCategory
     use FilterItemTrait;
 
     /**
-     * @var bool
+     * FilterItemCategory constructor.
+     *
+     * @param int|null   $languageID
+     * @param int|null   $customerGroupID
+     * @param array|null $config
+     * @param array|null $languages
      */
-    public $isCustom = false;
-
-    /**
-     * @var string
-     */
-    public $urlParam = 'kf';
-
-    /**
-     * @var string
-     */
-    public $urlParamSEO = SEP_KAT;
+    public function __construct($languageID = null, $customerGroupID = null, $config = null, $languages = null)
+    {
+        parent::__construct($languageID, $customerGroupID, $config, $languages);
+        $this->isCustom    = false;
+        $this->urlParam    = 'kf';
+        $this->urlParamSEO = SEP_KAT;
+    }
 
     /**
      * @return string

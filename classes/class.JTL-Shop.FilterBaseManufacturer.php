@@ -7,27 +7,28 @@
 /**
  * Class FilterBaseManufacturer
  */
-class FilterBaseManufacturer extends AbstractFilter implements IFilter
+class FilterBaseManufacturer extends AbstractFilter
 {
-    /**
-     * @var bool
-     */
-    public $isCustom = false;
-
     /**
      * @var int
      */
     public $kHersteller = 0;
 
     /**
-     * @var string
+     * FilterBaseManufacturer constructor.
+     *
+     * @param int|null   $languageID
+     * @param int|null   $customerGroupID
+     * @param array|null $config
+     * @param array|null $languages
      */
-    public $urlParam = 'h';
-
-    /**
-     * @var string
-     */
-    public $urlParamSEO = SEP_HST;
+    public function __construct($languageID = null, $customerGroupID = null, $config = null, $languages = null)
+    {
+        parent::__construct($languageID, $customerGroupID, $config, $languages);
+        $this->isCustom    = false;
+        $this->urlParam    = 'h';
+        $this->urlParamSEO = SEP_HST;
+    }
 
     /**
      * @param int $id

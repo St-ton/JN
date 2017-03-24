@@ -7,27 +7,28 @@
 /**
  * Class FilterBaseTag
  */
-class FilterBaseTag extends AbstractFilter implements IFilter
+class FilterBaseTag extends AbstractFilter
 {
-    /**
-     * @var bool
-     */
-    public $isCustom = false;
-
     /**
      * @var int
      */
     public $kTag = 0;
 
     /**
-     * @var string
+     * FilterBaseTag constructor.
+     *
+     * @param int|null   $languageID
+     * @param int|null   $customerGroupID
+     * @param array|null $config
+     * @param array|null $languages
      */
-    public $urlParam = 't';
-
-    /**
-     * @var string
-     */
-    public $urlParamSEO = null;
+    public function __construct($languageID = null, $customerGroupID = null, $config = null, $languages = null)
+    {
+        parent::__construct($languageID, $customerGroupID, $config, $languages);
+        $this->isCustom    = false;
+        $this->urlParam    = 't';
+        $this->urlParamSEO = null;
+    }
 
     /**
      * @param int $id

@@ -33,6 +33,11 @@
                             <div class="form-group">
                                 <input type="password" name="passwort" id="password_quick" class="form-control" placeholder="{lang key='password'}" required/>
                             </div>
+                            {if isset($showLoginCaptcha) && $showLoginCaptcha}
+                                <div class="form-group text-center float-label-control">
+                                    <div class="g-recaptcha" data-sitekey="{$Einstellungen.global.global_google_recaptcha_public}" data-callback="captcha_filled"></div>
+                                </div>
+                            {/if}
                             <div class="form-group">
                                 <input type="hidden" name="login" value="1"/>
                                 {if !empty($oRedirect->cURL)}

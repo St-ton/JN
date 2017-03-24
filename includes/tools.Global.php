@@ -53,7 +53,7 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
                     $ele           = new stdClass();
                     $ele->hasChild = false;
                     $ele->name     = $KategorieListe->elemente[$i]->cKurzbezeichnung;
-                    $ele->url      = $KategorieListe->elemente[$i]->cURL;
+                    $ele->url      = $KategorieListe->elemente[$i]->cURLFull;
                     $brotnavi[]    = $ele;
                 }
             }

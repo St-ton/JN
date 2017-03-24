@@ -1423,8 +1423,13 @@ final class Shop
         };
         if (isset($_COOKIE['eSIdAdm'])) {
             if (session_name() !== 'eSIdAdm') {
+                $oldID = session_id();
+                session_write_close();
+                session_id($_COOKIE['eSIdAdm']);
                 $result = $isLogged();
-                Session::getInstance(true, true);
+                session_write_close();
+                session_id($oldID);
+                new Session();
             } else {
                 $result = $isLogged();
             }

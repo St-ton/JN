@@ -1,6 +1,6 @@
 {* template to display products in product-lists *}
 
-<div class="product-cell">
+<div class="product-cell thumbnail">
     <div class="product-body row {if $tplscope !== 'list'} text-center{/if}">
         <div class="col-xs-3 col-sm-2 col-lg-3 text-center">
             {block name="image-wrapper"}

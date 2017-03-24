@@ -29,7 +29,7 @@
 
 ## [4.05.1] - 2017-02-17
 
-###Bugfixes
+### Bugfixes
 
 * Weiterleitungslink kann bei Teilverschlüsselung nicht gespeichert werden, wenn Admin über https aufgerufen wird (#991)
 * Weiterleitungsschleife bei SSL-Teilverschlüsselung z.B. bei Mein-Konto oder Kontakt (#990)

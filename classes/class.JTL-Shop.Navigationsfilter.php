@@ -1150,14 +1150,13 @@ class Navigationsfilter
             }
             // Header bauen
             $oSuchergebnisse->SuchausdruckWrite = $this->getHeader();
-            $this->createUnsetFilterURLs(true, $oSuchergebnisse);
             Shop::Cache()->set($hash, $oSuchergebnisse, [CACHING_GROUP_CATEGORY]);
             if ($fillArticles === true) {
                 foreach (array_slice($oSuchergebnisse->Artikel->articleKeys, $nLimitNBlaetter, $offsetEnd) as $i => $key) {
                     $nLaufLimitN = $i + $nLimitNBlaetter;
                     if ($nLaufLimitN >= $nLimitN && $nLaufLimitN < $nLimitN + $nArtikelProSeite) {
                         $oArtikel = new Artikel();
-                        //$oArtikelOptionen->nVariationDetailPreis = 1;
+                        // $oArtikelOptionen->nVariationDetailPreis = 1;
                         $oArtikel->fuelleArtikel($key, $oArtikelOptionen);
                         // Aktuelle Artikelmenge in die Session (Keine Vaterartikel)
                         if ($oArtikel->nIstVater === 0) {
@@ -1168,6 +1167,7 @@ class Navigationsfilter
                 }
             }
         }
+        $this->createUnsetFilterURLs(true, $oSuchergebnisse);
         $_SESSION['oArtikelUebersichtKey_arr']   = $oSuchergebnisse->Artikel->articleKeys;
         $_SESSION['nArtikelUebersichtVLKey_arr'] = [];
 
@@ -1182,7 +1182,7 @@ class Navigationsfilter
      */
     public function getActiveFilters($byType = false)
     {
-        $filters = ($byType !== false)
+        $filters = $byType !== false
             ? [
                 'kf'     => [],
                 'mm'     => [],
@@ -1196,7 +1196,7 @@ class Navigationsfilter
             ]
             : [];
         foreach ($this->activeFilters as $activeFilter) {
-            //get custom filters
+            // get custom filters
             if ($activeFilter->isCustom()) {
                 if ($byType) {
                     $filters['custom'][] = $activeFilter;
@@ -1204,7 +1204,7 @@ class Navigationsfilter
                     $filters[] = $activeFilter;
                 }
             } else {
-                //get build-in filters
+                // get built-in filters
                 $found = false;
                 if ($activeFilter === $this->KategorieFilter) {
                     if ($this->KategorieFilter->isInitialized()) {
@@ -1274,7 +1274,7 @@ class Navigationsfilter
                         }
                     }
                 }
-                //get built-in filters that were manually set
+                // get built-in filters that were manually set
                 if ($found === false) {
                     if ($byType) {
                         $filters['misc'][] = $activeFilter;
@@ -1312,7 +1312,7 @@ class Navigationsfilter
                 $singleConditions = [];
                 /** @var AbstractFilter $filter */
                 foreach ($filters as $idx => $filter) {
-                    //the built-in filter behave quite strangely and have to be combined this way
+                    // the built-in filter behave quite strangely and have to be combined this way
                     if ($ignore === null || $filter->getClassName() !== $ignore) {
                         if ($idx === 0) {
                             $itemJoin = $filter->getSQLJoin();
@@ -1324,7 +1324,7 @@ class Navigationsfilter
                                 $data->joins[] = $itemJoin;
                             }
                             if ($filter->getType() === AbstractFilter::FILTER_TYPE_AND) {
-                                //filters that decrease the total amount of articles must have a "HAVING" clause
+                                // filters that decrease the total amount of articles must have a "HAVING" clause
                                 $data->having[] = 'HAVING COUNT(' . $filter->getTableName() . '.' .
                                     $filter->getPrimaryKeyRow() . ') = ' . $count;
                             }
@@ -1350,8 +1350,8 @@ class Navigationsfilter
                     $data->conditions[] = "\n#condition from filter " . $type . "\n" . $filters[0]->getSQLCondition();
                 }
             } elseif ($count > 0 && ($type !== 'misc' || $type !== 'custom')) {
-                //this is the most clean and usual behaviour.
-                //'misc' and custom contain clean new filters that can be calculated by just iterating over the array
+                // this is the most clean and usual behaviour.
+                // 'misc' and custom contain clean new filters that can be calculated by just iterating over the array
                 foreach ($filters as $filter) {
                     $itemJoin = $filter->getSQLJoin();
                     if (is_array($itemJoin)) {
@@ -1428,12 +1428,12 @@ class Navigationsfilter
     public function getAttributePosition($oMerkmalauswahl_arr, $kMerkmal)
     {
         if (is_array($oMerkmalauswahl_arr)) {
-            //@todo: remove test
+            // @todo: remove test
             if ($kMerkmal !== (int)$kMerkmal) {
                 die('fix type check 1 @getAttributePosition');
             }
             foreach ($oMerkmalauswahl_arr as $i => $oMerkmalauswahl) {
-                //@todo: remove test
+                // @todo: remove test
                 if ($oMerkmalauswahl->kMerkmal !== (int)$oMerkmalauswahl->kMerkmal) {
                     die('fix type check 2 @getAttributePosition');
                 }
@@ -1518,7 +1518,7 @@ class Navigationsfilter
              ->setOn('tartikel.kArtikel = tartikelsichtbarkeit.kArtikel 
                         AND tartikelsichtbarkeit.kKundengruppe = ' . $this->getCustomerGroupID());
         $joins[] = $join;
-        //remove duplicate joins
+        // remove duplicate joins
         $joinedTables = [];
         foreach ($joins as $i => $stateJoin) {
             if (is_string($stateJoin)) {
@@ -1531,7 +1531,7 @@ class Navigationsfilter
             }
         }
         if ($or === true) {
-            //testing
+            // testing
             $conditionsString = implode(' AND ', array_map(function ($a) {
                 return is_string($a)
                     ? $a
@@ -1770,7 +1770,7 @@ class Navigationsfilter
                 $config,
                 $this->oSprache_arr)
             )->init($extraFilter->FilterLoesen->SuchFilter);
-        } elseif (isset($extraFilter->FilterLoesen->Erscheinungsdatum) && 
+        } elseif (isset($extraFilter->FilterLoesen->Erscheinungsdatum) &&
             $extraFilter->FilterLoesen->Erscheinungsdatum === true
         ) {
             //@todo@todo@todo
@@ -1814,11 +1814,11 @@ class Navigationsfilter
         }
         $url           = $baseURL;
         $activeFilters = $this->getActiveFilters();
-        //we need the base state + all active filters + optionally the additional filter to generate the correct url
+        // we need the base state + all active filters + optionally the additional filter to generate the correct url
         if ($oZusatzFilter !== null && $extraFilter !== null && !$extraFilter->getDoUnset()) {
             $activeFilters[] = $extraFilter;
         }
-        //add all filter urls to an array indexed by the filter's url param
+        // add all filter urls to an array indexed by the filter's url param
         /** @var IFilter $filter */
         foreach ($activeFilters as $filter) {
             $filterSeo = ($bSeo === true)
@@ -1850,7 +1850,7 @@ class Navigationsfilter
                 $urlParams[$urlParam][] = $filterSeoData;
             }
         }
-        //remove extra filters from url array if getDoUnset equals true
+        // remove extra filters from url array if getDoUnset equals true
         if (method_exists($extraFilter, 'getDoUnset') && $extraFilter->getDoUnset() === true) {
             if ($extraFilter->getValue() === 0) {
                 unset($urlParams[$extraFilter->getUrlParam()]);
@@ -1873,7 +1873,11 @@ class Navigationsfilter
                 }
             }
         }
-        //build url string from url array
+        if ($debug) {
+            Shop::dbg($urlParams, false, 'Params2:');
+            Shop::dbg($url, false, 'Current url:');
+        }
+        // build url string from url array
         foreach ($urlParams as $filterID => $filters) {
             $filters = array_map('unserialize', array_unique(array_map('serialize', $filters)));
             foreach ($filters as $filterItem) {
@@ -1895,17 +1899,12 @@ class Navigationsfilter
             }
         }
 
-        if ($debug) {
-//            $oldUrl = $this->getURL2($bSeo, $oZusatzFilter, $bCanonical, $debug);
-//            Shop::dbg($oldUrl, false, 'real url:');
-            Shop::dbg($url, false, 'new url:');
-            Shop::dbg($urlParams, false, 'params:');
-        }
-
         return $url;
     }
 
     /**
+     * URLs generieren, die Filter lösen
+     *
      * @param bool   $bSeo
      * @param object $oSuchergebnisse
      * @return $this
@@ -1917,11 +1916,10 @@ class Navigationsfilter
         $config                      = $this->getConfig();
         $oZusatzFilter               = new stdClass();
         $oZusatzFilter->FilterLoesen = new stdClass();
-        if ($this->SuchspecialFilter->isInitialized()) {
+        // @todo: why?
+        if (false&&$this->SuchspecialFilter->isInitialized()) {
             $bSeo = false;
         }
-        // URLs bauen, die Filter lösen
-
         $extraFilter = (new FilterItemCategory(
             $languageID,
             $customerGroupID,
@@ -1947,12 +1945,15 @@ class Navigationsfilter
             $this->URL->cAlleMerkmalWerte[$oMerkmal->kMerkmalWert] = $this->getURL($bSeo, $oZusatzFilter);
         }
         // kinda hacky: try to build url that removes a merkmalwert url from merkmalfilter url
-        if ($this->MerkmalWert->isInitialized() && 
+        if ($this->MerkmalWert->isInitialized() &&
             !isset($this->URL->cAlleMerkmalWerte[$this->MerkmalWert->getValue()])
         ) {
             // the url should be <shop>/<merkmalwert-url>__<merkmalfilter>[__<merkmalfilter>]
-            $_mmwSeo = str_replace($this->MerkmalWert->getSeo($this->getLanguageID()) . SEP_MERKMAL, '',
-                $this->URL->cAlleKategorien);
+            $_mmwSeo = str_replace(
+                $this->MerkmalWert->getSeo($this->getLanguageID()) . SEP_MERKMAL,
+                    '',
+                $this->URL->cAlleKategorien
+            );
             if ($_mmwSeo !== $this->URL->cAlleKategorien) {
                 $this->URL->cAlleMerkmalWerte[$this->MerkmalWert->getValue()] = $_mmwSeo;
             }
@@ -1987,7 +1988,7 @@ class Navigationsfilter
             $config,
             $this->oSprache_arr)
         )->init(null)->setDoUnset(true);
-        $this->URL->cAlleSuchspecials = $this->getURL($bSeo, $extraFilter);
+        $this->URL->cAlleSuchspecials = $this->getURL($bSeo, $extraFilter, false, true);
 
         $oZusatzFilter->FilterLoesen = new stdClass();
         foreach ($this->SuchFilter as $oSuchFilter) {
@@ -2132,7 +2133,7 @@ class Navigationsfilter
             // Globalen Meta Title anhaengen
             if ($append === true && !empty($globalMeta[$this->getLanguageID()]->Title)) {
                 return $this->truncateMetaTitle(
-                    $oMeta->cMetaTitle . ' ' . 
+                    $oMeta->cMetaTitle . ' ' .
                     $globalMeta[$this->getLanguageID()]->Title
                 );
             }
@@ -2303,12 +2304,10 @@ class Navigationsfilter
                 : new Kategorie($this->Kategorie->getValue());
             if (!empty($oKategorie->cMetaKeywords)) {
                 // meta keywords via new method
-
                 return strip_tags($oKategorie->cMetaKeywords);
             }
             if (!empty($oKategorie->categoryAttributes['meta_keywords']->cWert)) {
                 // Hat die aktuelle Kategorie als Kategorieattribut einen Meta Keywords gesetzt?
-
                 return strip_tags($oKategorie->categoryAttributes['meta_keywords']->cWert);
             }
             if (!empty($oKategorie->KategorieAttribute['meta_keywords'])) {
@@ -2912,8 +2911,8 @@ class Navigationsfilter
         }
         Shop::DB()->query("
             INSERT INTO tsuchcachetreffer " .
-                $cSQL . " 
-                GROUP BY kArtikelTMP 
+                $cSQL . "
+                GROUP BY kArtikelTMP
                 LIMIT " . (int)$this->conf['artikeluebersicht']['suche_max_treffer'], 3
         );
 

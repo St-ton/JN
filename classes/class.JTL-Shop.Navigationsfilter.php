@@ -1988,7 +1988,7 @@ class Navigationsfilter
             $config,
             $this->oSprache_arr)
         )->init(null)->setDoUnset(true);
-        $this->URL->cAlleSuchspecials = $this->getURL($bSeo, $extraFilter, false, true);
+        $this->URL->cAlleSuchspecials = $this->getURL($bSeo, $extraFilter);
 
         $oZusatzFilter->FilterLoesen = new stdClass();
         foreach ($this->SuchFilter as $oSuchFilter) {

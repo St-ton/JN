@@ -19,6 +19,7 @@ if (!isset($oAccount) || get_class_methods($oAccount) === null) {
     require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'benutzerverwaltung_inc.php';
     $oAccount = new AdminAccount();
 }
+$adminLoginGruppe          = !empty($oAccount->account()->oGroup->kAdminlogingruppe) ? (int)$oAccount->account()->oGroup->kAdminlogingruppe : -1;
 // Einstellungen
 $configSections = Shop::DB()->query("SELECT * FROM teinstellungensektion ORDER BY cName", 2);
 $sectionCount   = count($configSections);
@@ -58,16 +59,32 @@ if (is_array($oLinkOberGruppe_arr) && count($oLinkOberGruppe_arr) > 0) {
                 if (!isset($oLinkGruppe->oLink_arr)) {
                     $oLinkGruppe->oLink_arr = [];
                 }
-                $oLinkGruppe_arr[$j]->oLink_arr = Shop::DB()->selectAll(
-                    'tadminmenu',
-                    'kAdminmenueGruppe',
-                    (int)$oLinkGruppe->kAdminmenueGruppe,
-                    '*',
-                    'cLinkname, nSort'
-                );
+                if ($adminLoginGruppe === ADMINGROUP) {
+                    $oLinkGruppe_arr[$j]->oLink_arr = Shop::DB()->selectAll(
+                        'tadminmenu',
+                        'kAdminmenueGruppe',
+                        (int)$oLinkGruppe->kAdminmenueGruppe,
+                        '*',
+                        'cLinkname, nSort'
+                    );
+                } else{
+                    $oLinkGruppe_arr[$j]->oLink_arr = Shop::DB()->queryPrepared(
+                        'SELECT tadminmenu.* 
+                    FROM tadminmenu 
+                        JOIN tadminrechtegruppe ON tadminmenu.cRecht = tadminrechtegruppe.cRecht 
+                    WHERE kAdminmenueGruppe = :kAdminmenueGruppe AND kAdminlogingruppe = :kAdminlogingruppe 
+                    ORDER BY cLinkname, nSort;',
+                        [
+                            'kAdminmenueGruppe' => (int)$oLinkGruppe->kAdminmenueGruppe,
+                            'kAdminlogingruppe' => $adminLoginGruppe
+                        ],
+                        2
+                    );
+                }
                 foreach ($configSections as $_k => $_configSection) {
                     if (isset($_configSection->kAdminmenueGruppe) &&
-                        $_configSection->kAdminmenueGruppe == $oLinkGruppe->kAdminmenueGruppe
+                        $_configSection->kAdminmenueGruppe == $oLinkGruppe->kAdminmenueGruppe &&
+                        $oAccount->permission($_configSection->cRecht)
                     ) {
                         $oLinkGruppe->oLink_arr[] = $_configSection;
                         unset($configSections[$_k]);
@@ -77,7 +94,7 @@ if (is_array($oLinkOberGruppe_arr) && count($oLinkOberGruppe_arr) > 0) {
             $oLinkOberGruppe->oLinkGruppe_arr = $oLinkGruppe_arr;
         }
         // Plugin Work Around
-        if ($oLinkOberGruppe->kAdminmenueGruppe == LINKTYP_BACKEND_PLUGINS) {
+        if ($oLinkOberGruppe->kAdminmenueGruppe == LINKTYP_BACKEND_PLUGINS && $oAccount->permission('PLUGIN_ADMIN_VIEW')) {
             $oPlugin_arr = Shop::DB()->query(
                 "SELECT DISTINCT tplugin.kPlugin, tplugin.cName, tplugin.cPluginID, tplugin.nPrio
                     FROM tplugin INNER JOIN tpluginadminmenu
@@ -118,7 +135,7 @@ if (is_array($oLinkOberGruppe_arr) && count($oLinkOberGruppe_arr) > 0) {
                 //make the submenu full-width if more then 12 plugins are listed
                 $oLinkOberGruppe_arr[$i]->class = 'yamm-fw';
             }
-        } elseif ($oLinkOberGruppe->kAdminmenueGruppe == 17) {
+        } elseif ($oLinkOberGruppe->kAdminmenueGruppe == 17 && $oAccount->permission('PLUGIN_ADMIN_VIEW')) {
             if (isset($oPluginSearch->kPlugin) && $oPluginSearch->kPlugin > 0) {
                 $oPluginSearch->cLinkname = 'JTL Search';
                 $oPluginSearch->cURL      = $shopURL . '/' . PFAD_ADMIN .
@@ -130,13 +147,31 @@ if (is_array($oLinkOberGruppe_arr) && count($oLinkOberGruppe_arr) > 0) {
                 objectSort($oLinkOberGruppe_arr[$i]->oLink_arr, 'cLinkname');
             }
         } else {
-            $oLinkOberGruppe_arr[$i]->oLink_arr = Shop::DB()->selectAll(
-                'tadminmenu',
-                'kAdminmenueGruppe',
-                (int)$oLinkOberGruppe->kAdminmenueGruppe,
-                '*',
-                'cLinkname'
-            );
+            if ($adminLoginGruppe === ADMINGROUP) {
+                $oLinkOberGruppe_arr[$i]->oLink_arr = Shop::DB()->selectAll(
+                    'tadminmenu',
+                    'kAdminmenueGruppe',
+                    (int)$oLinkOberGruppe->kAdminmenueGruppe,
+                    '*',
+                    'cLinkname'
+                );
+            } else {
+                $oLinkOberGruppe_arr[$i]->oLink_arr = Shop::DB()->queryPrepared(
+                    'SELECT tadminmenu.* 
+                    FROM tadminmenu 
+                        JOIN tadminrechtegruppe ON tadminmenu.cRecht = tadminrechtegruppe.cRecht 
+                    WHERE kAdminmenueGruppe = :kAdminmenueGruppe AND (kAdminlogingruppe = :kAdminlogingruppe OR 1 = :kAdminlogingruppe)
+                    ORDER BY cLinkname;',
+                    [
+                        'kAdminmenueGruppe' => (int)$oLinkOberGruppe->kAdminmenueGruppe,
+                        'kAdminlogingruppe' => $adminLoginGruppe
+                    ],
+                    2
+                );
+            }
+        }
+        if (empty($oLinkOberGruppe_arr[$i]->oLinkGruppe_arr) && empty($oLinkOberGruppe_arr[$i]->oLink_arr)) {
+            unset($oLinkOberGruppe_arr[$i]);
         }
     }
 }

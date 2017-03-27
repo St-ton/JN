@@ -78,14 +78,25 @@ class JSONAPI
     }
 
     /**
-     * @param string $name
-     * @param array  $arguments
-     * @return mixed|string
+     * @param $name
+     * @param int $limit
+     * @param string|array $search
+     * @return string
      */
     private function getJson($name, $limit = 0, $search = '')
     {
-        $limit     = (int)$limit;
-        $search    = Shop::DB()->escape($search);
+        $limit = (int)$limit;
+        $keys  = null;
+
+        if (is_string($search)) {
+            $search = Shop::DB()->escape($search);
+        } elseif (is_array($search)) {
+            $keys = array_map(function ($key) {
+                return (int)$key;
+            }, $search);
+            $search = serialize($keys);
+        }
+
         $cacheID   = 'jsonapi_' . $name . '_' . $limit . '_' . md5($search);
         $cacheTags = [CACHING_GROUP_CORE];
 
@@ -135,18 +146,22 @@ class JSONAPI
                 break;
             case 'getCustomers':
                 $data = Shop::DB()->query(
-                    "SELECT kKunde, cVorname, cNachname, cMail, cStrasse, cHausnummer, cPLZ, cOrt 
+                    "SELECT kKunde AS id, cVorname AS first, cNachname AS last, cMail AS mail, cStrasse AS street,
+                            cHausnummer AS housenr, cPLZ AS postcode, cOrt AS city
                         FROM tkunde
-                        WHERE cVorname LIKE '%" . $search . "%'
-                              OR cMail LIKE '%" . $search . "%'
-                              OR cOrt LIKE '%" . $search . "%'
-                              OR cPLZ LIKE '%" . $search . "%'
-                        " . ($limit > 0 ? "LIMIT " . $limit : ""),
+                        WHERE " . ($keys !== null
+                            ? "kKunde IN (" . implode(',', $keys) . ")"
+                            : "cVorname LIKE '%" . $search . "%'
+                                OR cMail LIKE '%" . $search . "%'
+                                OR cOrt LIKE '%" . $search . "%'
+                                OR cPLZ LIKE '%" . $search . "%'
+                            ") .
+                        ($limit > 0 ? " LIMIT " . $limit : ""),
                     2
                 );
                 foreach ($data as $item) {
-                    $item->cNachname = trim(entschluesselXTEA($item->cNachname));
-                    $item->cStrasse  = trim(entschluesselXTEA($item->cStrasse));
+                    $item->last   = trim(entschluesselXTEA($item->last));
+                    $item->street = trim(entschluesselXTEA($item->street));
                 }
                 $cacheTags[] = CACHING_GROUP_MANUFACTURER;
                 break;
@@ -156,9 +171,9 @@ class JSONAPI
         }
 
         // deep UTF-8 encode
-        foreach ($data as $_object) {
-            foreach (get_object_vars($_object) as $_k => $_v) {
-                $_object->$_k = utf8_encode($_v);
+        foreach ($data as $item) {
+            foreach (get_object_vars($item) as $key => $val) {
+                $item->$key = utf8_encode($val);
             }
         }
 

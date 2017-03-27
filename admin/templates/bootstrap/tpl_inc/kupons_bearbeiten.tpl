@@ -13,8 +13,9 @@
 {/if}
 
 {include file='tpl_inc/seite_header.tpl' cTitel=$cTitel cBeschreibung=#couponsDesc# cDokuURL=#couponsURL#}
-{include file='tpl_inc/customer_search.tpl' cUrl='kupons.php' kKundeSelected_arr=$kKunde_arr
-         onSave='onApplySelectedCustomers'}
+{include file='tpl_inc/item_search_modal.tpl' itemName='customer' modalTitle='Kunden ausw&auml;hlen'
+    searchInputLabel='Suche nach Vornamen, E-Mail-Adresse, Wohnort oder Postleitzahl' getDataIoFunc='getCustomers'
+    renderItemCb='renderCustomerItem' onApply='onApplySelectedCustomers' selectedKeys=$kKunde_arr}
 
 <script>
     $(function () {
@@ -24,8 +25,30 @@
         makeCurrencyTooltip('fMindestbestellwert');
         $('#bOpenEnd').change(onEternalCheckboxChange);
         onEternalCheckboxChange();
-        onApplySelectedCustomers();
+        onApplySelectedCustomers([{$kKunde_arr|implode:','}]);
     });
+
+    function renderCustomerItem (item)
+    {
+        return '<p class="list-group-item-text">' +
+            item.first + ' ' + item.last + '<em>(' + item.mail + ')</em>' +
+            '</p>' +
+            '<p class="list-group-item-text">' +
+            item.street + ' ' + item.housenr + ', ' + item.postcode + ' ' + item.city +
+            '</p>'
+        ;
+    }
+
+    function onApplySelectedCustomers (selectedCustomers)
+    {
+        if (selectedCustomers.length > 0) {
+            $('#customerSelectionInfo').val(selectedCustomers.length + ' Kunden');
+            $('#cKunden').val(selectedCustomers.join(';'));
+        } else {
+            $('#customerSelectionInfo').val('Alle Kunden');
+            $('#cKunden').val('-1');
+        }
+    }
 
     function onEternalCheckboxChange () {
         var elem = $('#bOpenEnd');
@@ -37,16 +60,6 @@
             $('#dGueltigBis').val('');
         } else {
             $('#dDauerTage').val('');
-        }
-    }
-
-    function onApplySelectedCustomers () {
-        if (selectedCustomers.length > 0) {
-            $('#customerSelectionInfo').val(selectedCustomers.length + ' Kunden');
-            $('#cKunden').val(selectedCustomers.join(';'));
-        } else {
-            $('#customerSelectionInfo').val('Alle Kunden');
-            $('#cKunden').val('-1');
         }
     }
 </script>

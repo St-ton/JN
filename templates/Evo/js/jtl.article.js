@@ -397,6 +397,7 @@
                 // global price
                 nNetto = result.nNettoPreise;
                 that.setPrice(result.fGesamtpreis[nNetto], result.cPreisLocalized[nNetto], result.cPreisString);
+                that.setStockInformation(result.cEstimatedDelivery);
 
                 $('#content .summary').html(result.cTemplate);
 
@@ -518,6 +519,10 @@
             if (priceLabel.length > 0) {
                 $('#product-offer .price_label').html(priceLabel);
             }
+        },
+
+        setStockInformation: function(cEstimatedDelivery) {
+            $('.delivery-status .estimated-delivery span').html(cEstimatedDelivery);
         },
 
         setStaffelPrice: function(prices, fmtPrices) {

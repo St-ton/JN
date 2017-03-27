@@ -111,7 +111,7 @@ class Merkmal
         $kStandardSprache     = (int)gibStandardsprache()->kSprache;
         if ($kSprache !== $kStandardSprache) {
             $cSelect = "COALESCE(fremdSprache.cName, standardSprache.cName) AS cName";
-            $cJoin   = "LEFT JOIN tmerkmalsprache AS standardSprache 
+            $cJoin   = "INNER JOIN tmerkmalsprache AS standardSprache 
                             ON standardSprache.kMerkmal = tmerkmal.kMerkmal
                             AND standardSprache.kSprache = {$kStandardSprache}
                         LEFT JOIN tmerkmalsprache AS fremdSprache 
@@ -119,12 +119,13 @@ class Merkmal
                             AND fremdSprache.kSprache = {$kSprache}";
         } else {
             $cSelect = "tmerkmalsprache.cName";
-            $cJoin   = "LEFT JOIN tmerkmalsprache ON tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal
+            $cJoin   = "INNER JOIN tmerkmalsprache ON tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal
                             AND tmerkmalsprache.kSprache = {$kSprache}";
         }
         $kMerkmal = (int)$kMerkmal;
         $oMerkmal = Shop::DB()->query(
-            "SELECT tmerkmal.*, {$cSelect}
+            "SELECT tmerkmal.kMerkmal, tmerkmal.nSort, tmerkmal.nGlobal, tmerkmal.cBildpfad, tmerkmal.cTyp, 
+                  {$cSelect}
                 FROM tmerkmal
                 {$cJoin}
                 WHERE tmerkmal.kMerkmal =  {$kMerkmal}
@@ -138,23 +139,23 @@ class Merkmal
         }
         if ($bMMW && $this->kMerkmal > 0) {
             if ($kSprache !== $kStandardSprache) {
-                $cJoinMerkmalwert = "LEFT JOIN tmerkmalwertsprache AS standardSprache 
+                $cJoinMerkmalwert = "INNER JOIN tmerkmalwertsprache AS standardSprache 
                                         ON standardSprache.kMerkmalWert = tmw.kMerkmalWert
                                         AND standardSprache.kSprache = {$kStandardSprache}
                                     LEFT JOIN tmerkmalwertsprache AS fremdSprache 
                                         ON fremdSprache.kMerkmalWert = tmw.kMerkmalWert
                                         AND fremdSprache.kSprache = {$kSprache}";
             } else {
-                $cJoinMerkmalwert = "LEFT JOIN tmerkmalwertsprache 
-                                        ON tmerkmalwertsprache.kMerkmalWert = tmw.kMerkmalWert
-                                        AND tmerkmalwertsprache.kSprache = {$kSprache}";
+                $cJoinMerkmalwert = "INNER JOIN tmerkmalwertsprache AS standardSprache
+                                        ON standardSprache.kMerkmalWert = tmw.kMerkmalWert
+                                        AND standardSprache.kSprache = {$kSprache}";
             }
             $oMerkmalWertTMP_arr = Shop::DB()->query(
                 "SELECT tmw.kMerkmalWert
                     FROM tmerkmalwert tmw
                     {$cJoinMerkmalwert}
                     WHERE kMerkmal = {$this->kMerkmal}
-                    ORDER BY tmw.nSort, tmws.cWert", 2
+                    ORDER BY tmw.nSort, COALESCE(fremdSprache.cWert, standardSprache.cWert)", 2
             );
 
             if (is_array($oMerkmalWertTMP_arr) && count($oMerkmalWertTMP_arr) > 0) {
@@ -207,7 +208,7 @@ class Merkmal
             $kStandardSprache = (int)gibStandardsprache()->kSprache;
             if ($kSprache !== $kStandardSprache) {
                 $cSelect = "COALESCE(fremdSprache.cName, standardSprache.cName) AS cName";
-                $cJoin   = "LEFT JOIN tmerkmalsprache AS standardSprache 
+                $cJoin   = "INNER JOIN tmerkmalsprache AS standardSprache 
                                 ON standardSprache.kMerkmal = tmerkmal.kMerkmal
                                 AND standardSprache.kSprache = {$kStandardSprache}
                             LEFT JOIN tmerkmalsprache AS fremdSprache 
@@ -215,28 +216,19 @@ class Merkmal
                                 AND fremdSprache.kSprache = {$kSprache}";
             } else {
                 $cSelect = "tmerkmalsprache.cName";
-                $cJoin   = "LEFT JOIN tmerkmalsprache 
+                $cJoin   = "INNER JOIN tmerkmalsprache 
                                 ON tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal
                                 AND tmerkmalsprache.kSprache = {$kSprache}";
             }
 
-            $cSQL = ' IN(';
-            foreach ($kMerkmal_arr as $i => $kMerkmal) {
-                $kMerkmal = (int)$kMerkmal;
-                if ($i > 0) {
-                    $cSQL .= ', ' . $kMerkmal;
-                } else {
-                    $cSQL .= $kMerkmal;
-                }
-            }
-            $cSQL .= ') ';
+            $cSQL = ' IN(' . implode(', ', array_filter($kMerkmal_arr, 'intval')) . ') ';
 
             $oMerkmal_arr = Shop::DB()->query(
-                "SELECT tmerkmal.*, {$cSelect}
+                "SELECT tmerkmal.kMerkmal, tmerkmal.nSort, tmerkmal.nGlobal, tmerkmal.cBildpfad, tmerkmal.cTyp, 
+                      {$cSelect}
                     FROM tmerkmal
                     {$cJoin}
                     WHERE tmerkmal.kMerkmal " . $cSQL . "
-                    GROUP BY tmerkmal.kMerkmal
                     ORDER BY tmerkmal.nSort", 2
             );
 

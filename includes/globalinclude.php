@@ -131,9 +131,9 @@ if (!JTL_INCLUDE_ONLY_DB) {
     // Boxen
     $oBoxen = Boxen::getInstance();
     // Session
-    $session = (defined('JTLCRON') && JTLCRON === true) ?
-        Session::getInstance(true, true, 'JTLCRON') :
-        Session::getInstance();
+    $session = (defined('JTLCRON') && JTLCRON === true)
+        ? Session::getInstance(true, true, 'JTLCRON')
+        : Session::getInstance();
     //Wartungsmodus aktiviert?
     $bAdminWartungsmodus = false;
     if ($GlobaleEinstellungen['global']['wartungsmodus_aktiviert'] === 'Y' &&

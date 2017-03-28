@@ -312,6 +312,7 @@ function gibArtikelKeys($FilterSQL, $nArtikelProSeite, $NaviFilter, $bExtern, $o
         $oArtikelOptionen->nArtikelAttribute     = 1;
         $oArtikelOptionen->nVariationKombiKinder = 1;
         $oArtikelOptionen->nWarenlager           = 1;
+        $oArtikelOptionen->nKonfig               = 1;
         if (PRODUCT_LIST_SHOW_RATINGS === true) {
             $oArtikelOptionen->nRatings = 1;
         }
@@ -325,6 +326,23 @@ function gibArtikelKeys($FilterSQL, $nArtikelProSeite, $NaviFilter, $bExtern, $o
                 // Aktuelle Artikelmenge in die Session (Keine Vaterartikel)
                 if ($oArtikel->nIstVater === 0) {
                     $_SESSION['nArtikelUebersichtVLKey_arr'][] = $oArtikel->kArtikel;
+                }
+                if ($oArtikel->bHasKonfig) {
+                    foreach ($oArtikel->oKonfig_arr as $gruppe) {
+                        /** @var Konfigitem $piece */
+                        foreach ($gruppe->oItem_arr as $piece) {
+                            $konfigItemArticle = $piece->getArtikel();
+                            if (!empty($konfigItemArticle) && $piece->getSelektiert()) {
+                                if (isset($konfigItemArticle->nMaxDeliveryDays)) {
+                                    $oArtikel->nMaxDeliveryDays = max($oArtikel->nMaxDeliveryDays, $konfigItemArticle->nMaxDeliveryDays);
+                                }
+                                if (isset($konfigItemArticle->nMinDeliveryDays)) {
+                                    $oArtikel->nMinDeliveryDays = max($oArtikel->nMinDeliveryDays, $konfigItemArticle->nMinDeliveryDays);
+                                }
+                                $oArtikel->cEstimatedDelivery = getDeliverytimeEstimationText($oArtikel->nMinDeliveryDays, $oArtikel->nMaxDeliveryDays);
+                            }
+                        }
+                    }
                 }
                 $oArtikel_arr[] = $oArtikel;
             } else {

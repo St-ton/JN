@@ -1044,6 +1044,9 @@ class Exportformat
             $exportformat->nSplitgroesse    = $this->getSplitgroesse();
             $exportformat->dZuletztErstellt = $this->getZuletztErstellt();
             $exportformat->nUseCache        = $this->getCaching();
+            // needed by Google Shopping export format plugin
+            $exportformat->tkampagne_cParameter = $this->campaignParameter;
+            $exportformat->tkampagne_cWert      = $this->campaignValue;
             //needed for plugin exports
             $ExportEinstellungen            = $this->getConfig();
             include $oPlugin->cAdminmenuPfad . PFAD_PLUGIN_EXPORTFORMAT .

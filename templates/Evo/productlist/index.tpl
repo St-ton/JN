@@ -5,17 +5,20 @@
     {block name="productlist-header"}
     {include file='productlist/header.tpl'}
     {/block}
-    
+
     {assign var='style' value='gallery'}
     {assign var='grid' value='col-xs-6 col-lg-4'}
-    {if isset($oErweiterteDarstellung->nDarstellung) &&
+    {*Prio: -> Funktionsattribut -> Benutzereingabe -> Standarddarstellung*}
+    {if (!empty($AktuelleKategorie->categoryFunctionAttributes['darstellung']) &&
+    $AktuelleKategorie->categoryFunctionAttributes['darstellung'] == 1) ||
+    (empty($AktuelleKategorie->categoryFunctionAttributes['darstellung']) &&
+    ((!empty($oErweiterteDarstellung->nDarstellung) &&
     isset($Einstellungen.artikeluebersicht.artikeluebersicht_erw_darstellung) &&
     $Einstellungen.artikeluebersicht.artikeluebersicht_erw_darstellung === 'Y' &&
-    $oErweiterteDarstellung->nDarstellung == 1 ||
+    $oErweiterteDarstellung->nDarstellung == 1) ||
+    (empty($oErweiterteDarstellung->nDarstellung) &&
     isset($Einstellungen.artikeluebersicht.artikeluebersicht_erw_darstellung_stdansicht) &&
-    $Einstellungen.artikeluebersicht.artikeluebersicht_erw_darstellung_stdansicht == 1 ||
-    !empty($AktuelleKategorie->categoryFunctionAttributes['darstellung']) &&
-    $AktuelleKategorie->categoryFunctionAttributes['darstellung'] == 1}
+    $Einstellungen.artikeluebersicht.artikeluebersicht_erw_darstellung_stdansicht == 1)))}
         {assign var='style' value='list'}
         {assign var='grid' value='col-xs-12'}
     {/if}

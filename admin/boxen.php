@@ -113,22 +113,23 @@ if (isset($_REQUEST['action']) && validateToken()) {
             break;
 
         case 'resort':
-            $nPage     = $_REQUEST['page'];
+            $nPage     = (int)$_REQUEST['page'];
             $ePosition = $_REQUEST['position'];
             $box_arr   = isset($_REQUEST['box']) ? $_REQUEST['box'] : null;
             $sort_arr  = isset($_REQUEST['sort']) ? $_REQUEST['sort'] : null;
             $aktiv_arr = isset($_REQUEST['aktiv']) ? $_REQUEST['aktiv'] : [];
             $boxCount  = count($box_arr);
             for ($i = 0; $i < $boxCount; $i++) {
+                $idx = 'box-filter-' . $box_arr[$i];
                 $oBoxen->sortBox($box_arr[$i], $nPage, $sort_arr[$i], in_array($box_arr[$i], $aktiv_arr) ? true : false);
                 $oBoxen->filterBoxVisibility(
                     (int)$box_arr[$i],
-                    (int)$nPage,
-                    isset($_POST['box-filter-' . $box_arr[$i]]) ? $_POST['box-filter-' . $box_arr[$i]] : ''
+                    $nPage,
+                    isset($_POST[$idx]) ? $_POST[$idx] : ''
                 );
             }
             // see jtlshop/jtl-shop/issues#544 && jtlshop/shop4#41
-            if ($ePosition !== 'left' && (int)$nPage > 0) {
+            if ($ePosition !== 'left' || (int)$nPage > 0) {
                 $oBoxen->setzeBoxAnzeige($nPage, $ePosition, isset($_REQUEST['box_show']));
             }
             $cHinweis = 'Die Boxen wurden aktualisiert.';

@@ -669,11 +669,9 @@ function tauscheVariationKombi($aFormValues, $nVater = 0, $kEigenschaft = 0, $kE
                 // Bewertungsguthaben
                 $fBelohnung = 0.0;
                 if ($Einstellungen['bewertung']['bewertung_guthaben_nutzen'] === 'Y') {
-                    if (isset($_GET['strl']) && $Einstellungen['bewertung']['bewertung_stufe2_anzahlzeichen'] <= $_GET['strl']) {
-                        $fBelohnung = $Einstellungen['bewertung']['bewertung_stufe2_guthaben'];
-                    } else {
-                        $fBelohnung = $Einstellungen['bewertung']['bewertung_stufe1_guthaben'];
-                    }
+                    $fBelohnung = (isset($_GET['strl']) && $Einstellungen['bewertung']['bewertung_stufe2_anzahlzeichen'] <= $_GET['strl'])
+                        ? $Einstellungen['bewertung']['bewertung_stufe2_guthaben']
+                        : $Einstellungen['bewertung']['bewertung_stufe1_guthaben'];
                 }
 
                 // Hinweise und Fehler sammeln
@@ -760,8 +758,13 @@ function tauscheVariationKombi($aFormValues, $nVater = 0, $kEigenschaft = 0, $kE
                 if (isset($aFormValues['ek'])) {
                     holeKonfigBearbeitenModus($aFormValues['ek'], $smarty);
                 }
-                $objResponse->assign('contentmid', 'innerHTML', $smarty->fetch($cArtikelTemplate));
                 $objResponse->assign('popUps', 'innerHTML', $smarty->fetch('productdetails/popups.tpl'));
+                // force running the outputfilter - we have to use display() for this
+                ob_start();
+                $smarty->display($cArtikelTemplate);
+                $articleHtml = ob_get_contents();
+                ob_end_clean();
+                $objResponse->assign('contentmid', 'innerHTML', $articleHtml);
                 if (isset($_SESSION['oVarkombiAuswahl'])) {
                     $objResponse->script("setzeEigenschaftWerte('" . $cVariationKombiKind . "');");
                 }
@@ -868,7 +871,12 @@ function tauscheVariationKombi($aFormValues, $nVater = 0, $kEigenschaft = 0, $kE
         if (!$bKindVorhanden) {
             $xPost_arr = $_POST;
             baueArtikelDetail($oVaterArtikel, $xPost_arr);
-            $objResponse->assign('contentmid', 'innerHTML', $smarty->fetch('productdetails/details.tpl'));
+            // force running the outputfilter - we have to use display() for this
+            ob_start();
+            $smarty->display('productdetails/details.tpl');
+            $articleHtml = ob_get_contents();
+            ob_end_clean();
+            $objResponse->assign('contentmid', 'innerHTML', $articleHtml);
             $objResponse->script('setBindingsArtikel(1);');
             $cVariationKombiKind = "{$kEigenschaft}_{$kEigenschaftWert}";
             $objResponse->script("setzeEigenschaftWerte('" . $cVariationKombiKind . "');");

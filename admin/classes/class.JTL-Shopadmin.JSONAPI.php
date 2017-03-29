@@ -33,21 +33,40 @@ class JSONAPI
     }
 
     /**
-     * @param $limit
+     * @param string|array $search
+     * @param int $limit
      * @return mixed|string
      */
-    public function getPages($limit = 0, $search = '')
+    public function getPages($search = null, $limit = 0)
     {
-        return $this->getJson('getPages', $limit, $search);
+        if (is_string($search)) {
+            $searchIn = ['cName'];
+        } elseif (is_array($search)) {
+            $searchIn = 'kLink';
+        } else {
+            $searchIn = null;
+        }
+
+        return $this->itemsToJson($this->getItems('tlink', ['kLink', 'cName'], null, $searchIn, $search, $limit));
     }
 
     /**
      * @param $limit
      * @return mixed|string
      */
-    public function getCategories($limit = 0, $search = '')
+    public function getCategories($search = null, $limit = 0)
     {
-        return $this->getJson('getCategories', $limit, $search);
+        if (is_string($search)) {
+            $searchIn = ['cName'];
+        } elseif (is_array($search)) {
+            $searchIn = 'kKategorie';
+        } else {
+            $searchIn = null;
+        }
+
+        return $this->itemsToJson($this->getItems(
+            'tkategorie', ['kKategorie', 'cName'], CACHING_GROUP_CATEGORY, $searchIn, $search, $limit
+        ));
     }
 
     /**
@@ -56,7 +75,17 @@ class JSONAPI
      */
     public function getProducts($limit = 0, $search = '')
     {
-        return $this->getJson('getProducts', $limit, $search);
+        if (is_string($search)) {
+            $searchIn = ['cName'];
+        } elseif (is_array($search)) {
+            $searchIn = 'kArtikel';
+        } else {
+            $searchIn = null;
+        }
+
+        return $this->itemsToJson(
+            $this->getItems('tartikel', ['kArtikel', 'cName'], CACHING_GROUP_ARTICLE, $searchIn, $search, $limit)
+        );
     }
 
     /**
@@ -65,7 +94,17 @@ class JSONAPI
      */
     public function getManufacturers($limit = 0, $search = '')
     {
-        return $this->getJson('getManufacturers', $limit, $search);
+        if (is_string($search)) {
+            $searchIn = ['cName'];
+        } elseif (is_array($search)) {
+            $searchIn = 'kHersteller';
+        } else {
+            $searchIn = null;
+        }
+
+        return $this->itemsToJson($this->getItems(
+            'thersteller', ['kHersteller', 'cName'], CACHING_GROUP_MANUFACTURER, $searchIn, $search, $limit
+        ));
     }
 
     /**
@@ -74,112 +113,114 @@ class JSONAPI
      */
     public function getCustomers($limit = 0, $search = '')
     {
-        return $this->getJson('getCustomers', $limit, $search);
+        if (is_string($search)) {
+            $searchIn = ['cVorname', 'cMail', 'cOrt', 'cPLZ'];
+        } elseif (is_array($search)) {
+            $searchIn = 'kKunde';
+        } else {
+            $searchIn = null;
+        }
+
+        $items = $this->getItems(
+            'tkunde', ['kKunde', 'cVorname', 'cNachname', 'cStrasse', 'cHausnummer', 'cPLZ', 'cOrt', 'cMail'],
+            null, $searchIn, $search, $limit
+        );
+
+        foreach ($items as $item) {
+            $item->cNachname = trim(entschluesselXTEA($item->cNachname));
+            $item->cStrasse  = trim(entschluesselXTEA($item->cStrasse));
+        }
+
+        return $this->itemsToJson($items);
     }
 
     /**
-     * @param $name
+     * @param string $table
+     * @param string[] $columns
+     * @param string $addCacheTag
+     * @param string[]|string|null $searchIn
+     * @param string|string[]|null $searchFor
      * @param int $limit
-     * @param string|array $search
-     * @return string
+     * @return array
      */
-    private function getJson($name, $limit = 0, $search = '')
+    public function getItems($table, $columns, $addCacheTag = null, $searchIn = null, $searchFor = null, $limit = 0)
     {
-        $limit = (int)$limit;
-        $keys  = null;
-
-        if (is_string($search)) {
-            $search = Shop::DB()->escape($search);
-        } elseif (is_array($search)) {
-            $keys = array_map(function ($key) {
-                return (int)$key;
-            }, $search);
-            $search = serialize($keys);
-        }
-
-        $cacheID   = 'jsonapi_' . $name . '_' . $limit . '_' . md5($search);
+        $table     = Shop::DB()->escape($table);
+        $limit     = (int)$limit;
+        $cacheId   = 'jsonapi_' . $table . '_' . $limit . '_';
+        $cacheId  .= md5(serialize($columns) . serialize($searchIn) . serialize($searchFor));
         $cacheTags = [CACHING_GROUP_CORE];
 
-        if (($data = Shop::Cache()->get($cacheID)) !== false) {
+        if ($addCacheTag !== null) {
+            $cacheTags[] = $addCacheTag;
+        }
+
+        if (($data = Shop::Cache()->get($cacheId)) !== false) {
             return $data;
         }
 
-        switch ($name) {
-            case 'getPages':
-                $data = Shop::DB()->query(
-                    "SELECT kLink AS id, cName AS name
-                        FROM tlink
-                        WHERE cName LIKE '%" . $search . "%'
-                        " . ($limit > 0 ? "LIMIT " . $limit : ""),
-                    2
-                );
-                break;
-            case 'getCategories':
-                $data        = Shop::DB()->query(
-                    "SELECT kKategorie AS id, cName AS name
-                        FROM tkategorie
-                        WHERE cName LIKE '%" . $search . "%'
-                        " . ($limit > 0 ? "LIMIT " . $limit : ""),
-                    2
-                );
-                $cacheTags[] = CACHING_GROUP_CATEGORY;
-                break;
-            case 'getProducts':
-                $data        = Shop::DB()->query(
-                    "SELECT kArtikel AS id, cName AS name
-                        FROM tartikel
-                        WHERE cName LIKE '%" . $search . "%'
-                        " . ($limit > 0 ? "LIMIT " . $limit : ""),
-                    2
-                );
-                $cacheTags[] = CACHING_GROUP_ARTICLE;
-                break;
-            case 'getManufacturers':
-                $data        = Shop::DB()->query(
-                    "SELECT kHersteller AS id, cName AS name
-                        FROM thersteller
-                        WHERE cName LIKE '%" . $search . "%'
-                        " . ($limit > 0 ? "LIMIT " . $limit : ""),
-                    2
-                );
-                $cacheTags[] = CACHING_GROUP_MANUFACTURER;
-                break;
-            case 'getCustomers':
-                $data = Shop::DB()->query(
-                    "SELECT kKunde AS id, cVorname AS first, cNachname AS last, cMail AS mail, cStrasse AS street,
-                            cHausnummer AS housenr, cPLZ AS postcode, cOrt AS city
-                        FROM tkunde
-                        WHERE " . ($keys !== null
-                            ? "kKunde IN (" . implode(',', $keys) . ")"
-                            : "cVorname LIKE '%" . $search . "%'
-                                OR cMail LIKE '%" . $search . "%'
-                                OR cOrt LIKE '%" . $search . "%'
-                                OR cPLZ LIKE '%" . $search . "%'
-                            ") .
-                        ($limit > 0 ? " LIMIT " . $limit : ""),
-                    2
-                );
-                foreach ($data as $item) {
-                    $item->last   = trim(entschluesselXTEA($item->last));
-                    $item->street = trim(entschluesselXTEA($item->street));
-                }
-                $cacheTags[] = CACHING_GROUP_MANUFACTURER;
-                break;
-            default:
-                $data = [];
-                break;
+        foreach ($columns as $i => $column) {
+            $columns[$i] = Shop::DB()->escape($column);
         }
 
+        if (is_array($searchIn) && is_string($searchFor)) {
+            // full text search
+            $searchFor  = Shop::DB()->escape($searchFor);
+            $conditions = [];
+
+            foreach ($searchIn as $i => $column) {
+                $conditions[] = Shop::DB()->escape($column) . " LIKE '%" . $searchFor . "%'";
+            }
+
+            $result = Shop::DB()->query(
+                "SELECT " . implode(',', $columns) . "
+                    FROM " . $table . "
+                    WHERE " . implode(' OR ', $conditions) . "
+                    " . ($limit > 0 ? "LIMIT " . $limit : ""),
+                2
+            );
+        } elseif (is_string($searchIn) && is_array($searchFor)) {
+            // key array select
+            $searchIn = Shop::DB()->escape($searchIn);
+
+            foreach ($searchFor as $i => $key) {
+                $searchFor[$i] = "'" . Shop::DB()->escape($key) . "'";
+            }
+
+            $result = Shop::DB()->query(
+                "SELECT " . implode(',', $columns) . "
+                    FROM " . $table . "
+                    WHERE " . $searchIn . " IN (" . implode(',', $searchFor) . ")
+                    " . ($limit > 0 ? "LIMIT " . $limit : ""),
+                2
+            );
+        } elseif ($searchIn === null && $searchFor === null) {
+            // select all
+            $result = Shop::DB()->query(
+                "SELECT " . implode(',', $columns) . "
+                    FROM " . $table . "
+                    " . ($limit > 0 ? "LIMIT " . $limit : ""),
+                2
+            );
+        } else {
+            // invalid arguments
+            $result = [];
+        }
+
+        Shop::Cache()->set($cacheId, $result, $cacheTags);
+
+        return $result;
+    }
+
+    public function itemsToJson($items)
+    {
         // deep UTF-8 encode
-        foreach ($data as $item) {
+        foreach ($items as $item) {
             foreach (get_object_vars($item) as $key => $val) {
                 $item->$key = utf8_encode($val);
             }
         }
 
-        $data = json_encode($data);
-        Shop::Cache()->set($cacheID, $data, $cacheTags);
-
-        return $data;
+        return json_encode($items);
     }
 }

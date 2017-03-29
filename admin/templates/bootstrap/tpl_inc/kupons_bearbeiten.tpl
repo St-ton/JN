@@ -304,12 +304,9 @@
                 <script>
                     $(function () {
                         articlePicker = new SearchPicker(
-                            'articlePicker',
-                            'getProducts',
+                            'articlePicker', 'getProducts', 'cArtNr',
                             function (item) { return '<p class="list-group-item-text">' + item.name + '</p>'; },
-                            onApplySelectedArticles,
-                            [],
-                            'artnum'
+                            onApplySelectedArticles, [],
                         );
                         onApplySelectedArticles(articlePicker.getSelection());
                     });
@@ -409,10 +406,8 @@
                     <script>
                         $(function () {
                             customerPicker = new SearchPicker(
-                                'customerPicker',
-                                'getCustomers',
-                                renderCustomerItem,
-                                onApplySelectedCustomers,
+                                'customerPicker', 'getCustomers', 'kKunde',
+                                renderCustomerItem, onApplySelectedCustomers,
                                 [{foreach $kKunde_arr as $kKunde}'{$kKunde}',{/foreach}]
                             );
                             onApplySelectedCustomers(customerPicker.getSelection());

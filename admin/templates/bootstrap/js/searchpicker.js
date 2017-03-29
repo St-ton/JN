@@ -3,14 +3,13 @@
  *
  * @param searchPickerName - page unique id for the kind of items to be searched for (e.g. 'customer', 'product')
  * @param getDataIoFuncName - the Ajax function name that fetches the items to be searched for
- * @param renderItemCb - callback function that gets an item object and returns the html to be rendered for its list
- *      item
+ * @param keyName - name of the property that denotes the key column of each item
+ * @param renderItemCb - callback function that gets an item object and returns the html content for its list item
  * @param onApply - callback function that gets called on apply selection click with the current selected keys array
  * @param selectedKeysInit - array of the items keys that are initially selected
- * @param keyName - name of the property that denotes the key column of each item (default: 'id')
  * @constructor
  */
-function SearchPicker(searchPickerName, getDataIoFuncName, renderItemCb, onApply, selectedKeysInit, keyName)
+function SearchPicker(searchPickerName, getDataIoFuncName, keyName, renderItemCb, onApply, selectedKeysInit)
 {
     keyName                = keyName || 'id';
     var self               = this;
@@ -107,9 +106,9 @@ function SearchPicker(searchPickerName, getDataIoFuncName, renderItemCb, onApply
     self.updateItemList = function ()
     {
         if (searchString !== '') {
-            ioGetJson(dataIoFuncName, [100, searchString], self.itemsReceived);
+            ioGetJson(dataIoFuncName, [searchString, 100], self.itemsReceived);
         } else if (selectedKeys.length > 0) {
-            ioGetJson(dataIoFuncName, [0, selectedKeys], self.itemsReceived);
+            ioGetJson(dataIoFuncName, [selectedKeys], self.itemsReceived);
         } else {
             $searchResultList.empty();
             foundItems = [];

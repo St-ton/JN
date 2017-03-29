@@ -3558,6 +3558,10 @@ function gibNaviMetaTitle($NaviFilter, $oSuchergebnisse, $GlobaleMetaAngaben_arr
     // Pruefen ob bereits eingestellte Metas gesetzt sind
     if (strlen($oMeta->cMetaTitle) > 0) {
         $oMeta->cMetaTitle = strip_tags($oMeta->cMetaTitle);
+        // Seitenzahl anhaengen ab Seite 2 (Doppelte Titles vermeiden, #5992)
+        if ($oSuchergebnisse->Seitenzahlen->AktuelleSeite > 1) {
+            $oMeta->cMetaTitle .= ', ' . Shop::Lang()->get('page', 'global') . " {$oSuchergebnisse->Seitenzahlen->AktuelleSeite}";
+        }
         // Globalen Meta Title anhaengen
         if ($conf['metaangaben']['global_meta_title_anhaengen'] === 'Y' &&
             strlen($GlobaleMetaAngaben_arr[Shop::getLanguage()]->Title) > 0

@@ -89,7 +89,9 @@ class JSONAPI
         }
 
         return $this->itemsToJson(
-            $this->getItems('tartikel', ['kArtikel', 'cName'], CACHING_GROUP_ARTICLE, $searchIn, $search, $limit)
+            $this->getItems(
+                'tartikel', ['kArtikel', 'cName', 'cArtNr'], CACHING_GROUP_ARTICLE, $searchIn, $search, $limit
+            )
         );
     }
 

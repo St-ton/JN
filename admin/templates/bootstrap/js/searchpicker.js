@@ -11,7 +11,6 @@
  */
 function SearchPicker(searchPickerName, getDataIoFuncName, keyName, renderItemCb, onApply, selectedKeysInit)
 {
-    keyName                = keyName || 'id';
     var self               = this;
     var searchString       = '';
     var lastSearchString   = '';
@@ -108,7 +107,7 @@ function SearchPicker(searchPickerName, getDataIoFuncName, keyName, renderItemCb
         if (searchString !== '') {
             ioGetJson(dataIoFuncName, [searchString, 100], self.itemsReceived);
         } else if (selectedKeys.length > 0) {
-            ioGetJson(dataIoFuncName, [selectedKeys], self.itemsReceived);
+            ioGetJson(dataIoFuncName, [selectedKeys, 0, keyName], self.itemsReceived);
         } else {
             $searchResultList.empty();
             foundItems = [];

@@ -305,8 +305,11 @@
                     $(function () {
                         articlePicker = new SearchPicker(
                             'articlePicker', 'getProducts', 'cArtNr',
-                            function (item) { return '<p class="list-group-item-text">' + item.name + '</p>'; },
-                            onApplySelectedArticles, [],
+                            function (item) { return '<p class="list-group-item-text">' + item.cName + '</p>'; },
+                            onApplySelectedArticles,
+                            [{foreach explode(';', $oKupon->cArtikel) as $cArtNr}
+                                {if $cArtNr !== ''}'{$cArtNr}',{/if}
+                            {/foreach}]
                         );
                         onApplySelectedArticles(articlePicker.getSelection());
                     });
@@ -415,9 +418,9 @@
                         function renderCustomerItem(item)
                         {
                             return '<p class="list-group-item-text">' +
-                                item.first + ' ' + item.last + '<em>(' + item.mail + ')</em></p>' +
+                                item.cVorname + ' ' + item.cNachname + '<em>(' + item.cMail + ')</em></p>' +
                                 '<p class="list-group-item-text">' +
-                                item.street + ' ' + item.housenr + ', ' + item.postcode + ' ' + item.city + '</p>';
+                                item.cStrasse + ' ' + item.cHausnummer + ', ' + item.cPLZ + ' ' + item.cOrt + '</p>';
                         }
                         function onApplySelectedCustomers(selectedCustomers)
                         {

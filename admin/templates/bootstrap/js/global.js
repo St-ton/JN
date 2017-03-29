@@ -765,7 +765,7 @@ function ioCall(name, args, success, context)
  * @param displayField
  * @param valueField
  */
-function enableTypeahead(selector, funcName, onSelect, displayField, valueField)
+function enableTypeahead(selector, funcName, displayField, valueField, onSelect)
 {
     displayField = displayField || 'name';
     valueField   = valueField || 'id';

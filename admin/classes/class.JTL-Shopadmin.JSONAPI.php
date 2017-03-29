@@ -33,9 +33,9 @@ class JSONAPI
     }
 
     /**
-     * @param string|array $search
+     * @param string|array|null $search
      * @param int $limit
-     * @return mixed|string
+     * @return string
      */
     public function getPages($search = null, $limit = 0)
     {
@@ -51,8 +51,9 @@ class JSONAPI
     }
 
     /**
-     * @param $limit
-     * @return mixed|string
+     * @param string|array|null $search
+     * @param int $limit
+     * @return string
      */
     public function getCategories($search = null, $limit = 0)
     {
@@ -70,10 +71,11 @@ class JSONAPI
     }
 
     /**
-     * @param $limit
-     * @return mixed|string
+     * @param string|array|null $search
+     * @param int $limit
+     * @return string
      */
-    public function getProducts($limit = 0, $search = '')
+    public function getProducts($search = null, $limit = 0)
     {
         if (is_string($search)) {
             $searchIn = ['cName'];
@@ -89,10 +91,11 @@ class JSONAPI
     }
 
     /**
-     * @param $limit
-     * @return mixed|string
+     * @param string|array|null $search
+     * @param int $limit
+     * @return string
      */
-    public function getManufacturers($limit = 0, $search = '')
+    public function getManufacturers($search = null, $limit = 0)
     {
         if (is_string($search)) {
             $searchIn = ['cName'];
@@ -108,10 +111,11 @@ class JSONAPI
     }
 
     /**
-     * @param $limit
-     * @return mixed|string
+     * @param string|array|null $search
+     * @param int $limit
+     * @return string
      */
-    public function getCustomers($limit = 0, $search = '')
+    public function getCustomers($search = null, $limit = 0)
     {
         if (is_string($search)) {
             $searchIn = ['cVorname', 'cMail', 'cOrt', 'cPLZ'];

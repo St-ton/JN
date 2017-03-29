@@ -26,6 +26,7 @@ if (isset($_SERVER['REQUEST_URI'])) {
 $xajax = new xajax($url);
 
 /**
+ * @deprecated since 4.06
  * @return xajaxResponse
  */
 function reloadAdminLoginCaptcha()

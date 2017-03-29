@@ -36,45 +36,45 @@ class JSONAPI
      * @param $limit
      * @return mixed|string
      */
-    public function getPages($limit = 0, $search = '')
+    public function getPages($limit = 0, $search = '', $keyName = '')
     {
-        return $this->getJson('getPages', $limit, $search);
+        return $this->getJson('getPages', $limit, $search, $keyName);
     }
 
     /**
      * @param $limit
      * @return mixed|string
      */
-    public function getCategories($limit = 0, $search = '')
+    public function getCategories($limit = 0, $search = '', $keyName = '')
     {
-        return $this->getJson('getCategories', $limit, $search);
+        return $this->getJson('getCategories', $limit, $search, $keyName);
     }
 
     /**
      * @param $limit
      * @return mixed|string
      */
-    public function getProducts($limit = 0, $search = '')
+    public function getProducts($limit = 0, $search = '', $keyName = '')
     {
-        return $this->getJson('getProducts', $limit, $search);
+        return $this->getJson('getProducts', $limit, $search, $keyName);
     }
 
     /**
      * @param $limit
      * @return mixed|string
      */
-    public function getManufacturers($limit = 0, $search = '')
+    public function getManufacturers($limit = 0, $search = '', $keyName = '')
     {
-        return $this->getJson('getManufacturers', $limit, $search);
+        return $this->getJson('getManufacturers', $limit, $search, $keyName);
     }
 
     /**
      * @param $limit
      * @return mixed|string
      */
-    public function getCustomers($limit = 0, $search = '')
+    public function getCustomers($limit = 0, $search = '', $keyName = '')
     {
-        return $this->getJson('getCustomers', $limit, $search);
+        return $this->getJson('getCustomers', $limit, $search, $keyName);
     }
 
     /**
@@ -83,7 +83,7 @@ class JSONAPI
      * @param string|array $search
      * @return string
      */
-    private function getJson($name, $limit = 0, $search = '')
+    private function getJson($name, $limit = 0, $search = '', $keyName = '')
     {
         $limit = (int)$limit;
         $keys  = null;
@@ -91,9 +91,7 @@ class JSONAPI
         if (is_string($search)) {
             $search = Shop::DB()->escape($search);
         } elseif (is_array($search)) {
-            $keys = array_map(function ($key) {
-                return (int)$key;
-            }, $search);
+            $keys   = $search;
             $search = serialize($keys);
         }
 
@@ -106,40 +104,64 @@ class JSONAPI
 
         switch ($name) {
             case 'getPages':
+                if (empty($keyName)) {
+                    $keyName = 'kLink';
+                }
                 $data = Shop::DB()->query(
                     "SELECT kLink AS id, cName AS name
                         FROM tlink
-                        WHERE cName LIKE '%" . $search . "%'
-                        " . ($limit > 0 ? "LIMIT " . $limit : ""),
+                        WHERE " . ($keys !== null
+                            ? $keyName . " IN (" . implode(',', $keys) . ")"
+                            : "cName LIKE '%" . $search . "%'"
+                            ) .
+                        ($limit > 0 ? "LIMIT " . $limit : ""),
                     2
                 );
                 break;
             case 'getCategories':
+                if (empty($keyName)) {
+                    $keyName = 'kKategorie';
+                }
                 $data        = Shop::DB()->query(
                     "SELECT kKategorie AS id, cName AS name
                         FROM tkategorie
-                        WHERE cName LIKE '%" . $search . "%'
-                        " . ($limit > 0 ? "LIMIT " . $limit : ""),
+                        WHERE " . ($keys !== null
+                            ? $keyName . " IN (" . implode(',', $keys) . ")"
+                            : "cName LIKE '%" . $search . "%'"
+                            ) .
+                        ($limit > 0 ? "LIMIT " . $limit : ""),
                     2
                 );
                 $cacheTags[] = CACHING_GROUP_CATEGORY;
                 break;
             case 'getProducts':
+                if (empty($keyName)) {
+                    $keyName = 'kArtikel';
+                }
                 $data        = Shop::DB()->query(
-                    "SELECT kArtikel AS id, cName AS name
+                    "SELECT kArtikel AS id, cName AS name, cArtNr AS artnum
                         FROM tartikel
-                        WHERE cName LIKE '%" . $search . "%'
-                        " . ($limit > 0 ? "LIMIT " . $limit : ""),
+                        WHERE " . ($keys !== null
+                            ? $keyName . " IN (" . implode(',', $keys) . ")"
+                            : "cName LIKE '%" . $search . "%'"
+                            ) .
+                        ($limit > 0 ? "LIMIT " . $limit : ""),
                     2
                 );
                 $cacheTags[] = CACHING_GROUP_ARTICLE;
                 break;
             case 'getManufacturers':
+                if (empty($keyName)) {
+                    $keyName = 'kHersteller';
+                }
                 $data        = Shop::DB()->query(
                     "SELECT kHersteller AS id, cName AS name
                         FROM thersteller
-                        WHERE cName LIKE '%" . $search . "%'
-                        " . ($limit > 0 ? "LIMIT " . $limit : ""),
+                        WHERE " . ($keys !== null
+                            ? $keyName . " IN (" . implode(',', $keys) . ")"
+                            : "cName LIKE '%" . $search . "%'"
+                            ) .
+                        ($limit > 0 ? "LIMIT " . $limit : ""),
                     2
                 );
                 $cacheTags[] = CACHING_GROUP_MANUFACTURER;
@@ -150,7 +172,7 @@ class JSONAPI
                             cHausnummer AS housenr, cPLZ AS postcode, cOrt AS city
                         FROM tkunde
                         WHERE " . ($keys !== null
-                            ? "kKunde IN (" . implode(',', $keys) . ")"
+                            ? (empty($keyName) ? 'kKunde' : $keyName) . " IN (" . implode(',', $keys) . ")"
                             : "cVorname LIKE '%" . $search . "%'
                                 OR cMail LIKE '%" . $search . "%'
                                 OR cOrt LIKE '%" . $search . "%'

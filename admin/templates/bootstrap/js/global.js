@@ -762,13 +762,20 @@ function ioCall(name, args, success, context)
  * @param selector
  * @param funcName
  * @param onSelect
+ * @param displayField
+ * @param valueField
  */
-function enableTypeahead(selector, funcName, onSelect)
+function enableTypeahead(selector, funcName, onSelect, displayField, valueField)
 {
+    displayField = displayField || 'name';
+    valueField   = valueField || 'id';
+
     $(selector).typeahead({
         ajax: {
             url: 'io.php',
             method: 'post',
+            displayField: displayField,
+            valueField: valueField,
             preDispatch: function (query) {
                 return {
                     io: JSON.stringify({

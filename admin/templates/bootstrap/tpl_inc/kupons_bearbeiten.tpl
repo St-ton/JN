@@ -13,9 +13,6 @@
 {/if}
 
 {include file='tpl_inc/seite_header.tpl' cTitel=$cTitel cBeschreibung=#couponsDesc# cDokuURL=#couponsURL#}
-{include file='tpl_inc/item_search_modal.tpl' itemName='customer' modalTitle='Kunden ausw&auml;hlen'
-    searchInputLabel='Suche nach Vornamen, E-Mail-Adresse, Wohnort oder Postleitzahl' getDataIoFunc='getCustomers'
-    renderItemCb='renderCustomerItem' onApply='onApplySelectedCustomers' selectedKeys=$kKunde_arr}
 
 <script>
     $(function () {
@@ -25,30 +22,7 @@
         makeCurrencyTooltip('fMindestbestellwert');
         $('#bOpenEnd').change(onEternalCheckboxChange);
         onEternalCheckboxChange();
-        onApplySelectedCustomers([{$kKunde_arr|implode:','}]);
     });
-
-    function renderCustomerItem (item)
-    {
-        return '<p class="list-group-item-text">' +
-            item.first + ' ' + item.last + '<em>(' + item.mail + ')</em>' +
-            '</p>' +
-            '<p class="list-group-item-text">' +
-            item.street + ' ' + item.housenr + ', ' + item.postcode + ' ' + item.city +
-            '</p>'
-        ;
-    }
-
-    function onApplySelectedCustomers (selectedCustomers)
-    {
-        if (selectedCustomers.length > 0) {
-            $('#customerSelectionInfo').val(selectedCustomers.length + ' Kunden');
-            $('#cKunden').val(selectedCustomers.join(';'));
-        } else {
-            $('#customerSelectionInfo').val('Alle Kunden');
-            $('#cKunden').val('-1');
-        }
-    }
 
     function onEternalCheckboxChange () {
         var elem = $('#bOpenEnd');
@@ -322,17 +296,45 @@
                 <h3 class="panel-title">{#restrictions#}</h3>
             </div>
             <div class="panel-body">
-                <div id="ajax_list_picker" class="ajax_list_picker article">{include file="tpl_inc/popup_artikelsuche.tpl"}</div>
+                {include file='tpl_inc/searchpicker_modal.tpl'
+                    searchPickerName='articlePicker'
+                    modalTitle='Artikel ausw&auml;hlen'
+                    searchInputLabel='Suche nach Artikelnamen'
+                }
+                <script>
+                    $(function () {
+                        articlePicker = new SearchPicker(
+                            'articlePicker',
+                            'getProducts',
+                            function (item) { return '<p class="list-group-item-text">' + item.name + '</p>'; },
+                            onApplySelectedArticles,
+                            [],
+                            'artnum'
+                        );
+                        onApplySelectedArticles(articlePicker.getSelection());
+                    });
+                    function onApplySelectedArticles(selectedArticles)
+                    {
+                        if (selectedArticles.length > 0) {
+                            $('#articleSelectionInfo').val(selectedArticles.length + ' Artikel');
+                            $('#cArtikel').val(selectedArticles.join(';'));
+                        } else {
+                            $('#articleSelectionInfo').val('Alle Artikel');
+                            $('#cArtikel').val('-1');
+                        }
+                    }
+                </script>
                 <div class="input-group">
                     <span class="input-group-addon">
-                        <label for="assign_article_list">{#productRestrictions#}</label>
+                        <label for="articleSelectionInfo">{#productRestrictions#}</label>
                     </span>
                     <span class="input-group-wrap">
-                        <input type="text" class="form-control" name="cArtikel" id="assign_article_list" value="{$oKupon->cArtikel}">
+                        <input type="text" class="form-control" readonly="readonly" id="articleSelectionInfo">
+                        <input type="hidden" id="cArtikel" name="cArtikel" value="{$oKupon->cArtikel}">
                     </span>
                     <span class="input-group-addon">
-                        <button type="button" class="btn btn-info btn-xs btn-tooltip" id="show_article_list" data-html="true"
-                                data-toggle="tooltip" data-placement="left" data-original-title="{#manageArticlesHint#}">
+                        <button type="button" class="btn btn-info btn-xs" data-toggle="modal"
+                                data-target="#articlePicker-modal">
                             <i class="fa fa-edit"></i>
                         </button>
                     </span>
@@ -399,6 +401,40 @@
                     <span class="input-group-addon">{getHelpDesc cDesc=#multipleChoice#}</span>
                 </div>
                 {if $oKupon->cKuponTyp === 'standard' || $oKupon->cKuponTyp === 'versandkupon'}
+                    {include file='tpl_inc/searchpicker_modal.tpl'
+                        searchPickerName='customerPicker'
+                        modalTitle='Kunden ausw&auml;hlen'
+                        searchInputLabel='Suche nach Vornamen, E-Mail-Adresse, Wohnort oder Postleitzahl'
+                    }
+                    <script>
+                        $(function () {
+                            customerPicker = new SearchPicker(
+                                'customerPicker',
+                                'getCustomers',
+                                renderCustomerItem,
+                                onApplySelectedCustomers,
+                                [{foreach $kKunde_arr as $kKunde}'{$kKunde}',{/foreach}]
+                            );
+                            onApplySelectedCustomers(customerPicker.getSelection());
+                        });
+                        function renderCustomerItem(item)
+                        {
+                            return '<p class="list-group-item-text">' +
+                                item.first + ' ' + item.last + '<em>(' + item.mail + ')</em></p>' +
+                                '<p class="list-group-item-text">' +
+                                item.street + ' ' + item.housenr + ', ' + item.postcode + ' ' + item.city + '</p>';
+                        }
+                        function onApplySelectedCustomers(selectedCustomers)
+                        {
+                            if (selectedCustomers.length > 0) {
+                                $('#customerSelectionInfo').val(selectedCustomers.length + ' Kunden');
+                                $('#cKunden').val(selectedCustomers.join(';'));
+                            } else {
+                                $('#customerSelectionInfo').val('Alle Kunden');
+                                $('#cKunden').val('-1');
+                            }
+                        }
+                    </script>
                     <div class="input-group{if isset($oKupon->massCreationCoupon)} hidden{/if}" id="limitedByCustomers">
                         <span class="input-group-addon">
                             <label for="customerSelectionInfo">{#restrictedToCustomers#}</label>
@@ -408,8 +444,8 @@
                             <input type="hidden" id="cKunden" name="cKunden" value="{$oKupon->cKunden}">
                         </span>
                         <span class="input-group-addon">
-                            <button type="button" class="btn btn-info btn-xs"
-                                    data-toggle="modal" data-target="#customer-search-modal">
+                            <button type="button" class="btn btn-info btn-xs" data-toggle="modal"
+                                    data-target="#customerPicker-modal">
                                 <i class="fa fa-edit"></i>
                             </button>
                         </span>

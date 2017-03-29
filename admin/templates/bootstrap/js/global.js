@@ -780,7 +780,7 @@ function enableTypeahead(selector, funcName, displayField, valueField, onSelect)
                 return {
                     io: JSON.stringify({
                         name: funcName,
-                        params: [100, query]
+                        params: [query, 100]
                     })
                 };
             }

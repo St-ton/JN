@@ -107,7 +107,7 @@ function SearchPicker(searchPickerName, getDataIoFuncName, keyName, renderItemCb
         if (searchString !== '') {
             ioGetJson(dataIoFuncName, [searchString, 100], self.itemsReceived);
         } else if (selectedKeys.length > 0) {
-            ioGetJson(dataIoFuncName, [selectedKeys, 0, keyName], self.itemsReceived);
+            ioGetJson(dataIoFuncName, [selectedKeys, 100, keyName], self.itemsReceived);
         } else {
             $searchResultList.empty();
             foundItems = [];

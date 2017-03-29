@@ -33,16 +33,17 @@ class JSONAPI
     }
 
     /**
-     * @param string|array $search
+     * @param string|array|null $search
      * @param int $limit
-     * @return mixed|string
+     * @param string $keyName
+     * @return string
      */
-    public function getPages($search = null, $limit = 0)
+    public function getPages($search = null, $limit = 0, $keyName = 'kLink')
     {
         if (is_string($search)) {
             $searchIn = ['cName'];
         } elseif (is_array($search)) {
-            $searchIn = 'kLink';
+            $searchIn = $keyName;
         } else {
             $searchIn = null;
         }
@@ -51,15 +52,17 @@ class JSONAPI
     }
 
     /**
-     * @param $limit
-     * @return mixed|string
+     * @param string|array|null $search
+     * @param int $limit
+     * @param string $keyName
+     * @return string
      */
-    public function getCategories($search = null, $limit = 0)
+    public function getCategories($search = null, $limit = 0, $keyName = 'kKategorie')
     {
         if (is_string($search)) {
             $searchIn = ['cName'];
         } elseif (is_array($search)) {
-            $searchIn = 'kKategorie';
+            $searchIn = $keyName;
         } else {
             $searchIn = null;
         }
@@ -70,15 +73,17 @@ class JSONAPI
     }
 
     /**
-     * @param $limit
-     * @return mixed|string
+     * @param string|array|null $search
+     * @param int $limit
+     * @param string $keyName
+     * @return string
      */
-    public function getProducts($search = null, $limit = 0)
+    public function getProducts($search = null, $limit = 0, $keyName = 'kArtikel')
     {
         if (is_string($search)) {
             $searchIn = ['cName'];
         } elseif (is_array($search)) {
-            $searchIn = 'kArtikel';
+            $searchIn = $keyName;
         } else {
             $searchIn = null;
         }
@@ -89,15 +94,17 @@ class JSONAPI
     }
 
     /**
-     * @param $limit
-     * @return mixed|string
+     * @param string|array|null $search
+     * @param int $limit
+     * @param string $keyName
+     * @return string
      */
-    public function getManufacturers($search = null, $limit = 0)
+    public function getManufacturers($search = null, $limit = 0, $keyName = 'kHersteller')
     {
         if (is_string($search)) {
             $searchIn = ['cName'];
         } elseif (is_array($search)) {
-            $searchIn = 'kHersteller';
+            $searchIn = $keyName;
         } else {
             $searchIn = null;
         }
@@ -108,15 +115,17 @@ class JSONAPI
     }
 
     /**
-     * @param $limit
-     * @return mixed|string
+     * @param string|array|null $search
+     * @param int $limit
+     * @param string $keyName
+     * @return string
      */
-    public function getCustomers($search = null, $limit = 0)
+    public function getCustomers($search = null, $limit = 0, $keyName = 'kKunde')
     {
         if (is_string($search)) {
             $searchIn = ['cVorname', 'cMail', 'cOrt', 'cPLZ'];
         } elseif (is_array($search)) {
-            $searchIn = 'kKunde';
+            $searchIn = $keyName;
         } else {
             $searchIn = null;
         }

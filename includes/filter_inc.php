@@ -3528,19 +3528,16 @@ function erstelleFilterLoesenURLs($bSeo, $oSuchergebnisse)
 }
 
 /**
+ * @deprecated since 4.06
  * @param string $cTitle
  * @return string
  */
 function truncateMetaTitle($cTitle)
 {
     $conf = Shop::getSettings([CONF_METAANGABEN]);
-    if (isset($conf['metaangaben']['global_meta_maxlaenge_title']) &&
-        $conf['metaangaben']['global_meta_maxlaenge_title'] > 0
-    ) {
-        return substr($cTitle, 0, (int)$conf['metaangaben']['global_meta_maxlaenge_title']);
-    }
+    $maxLength = !empty($conf['metaangaben']['global_meta_maxlaenge_title']) ? (int)$conf['metaangaben']['global_meta_maxlaenge_title'] : 0;
 
-    return $cTitle;
+    return prepareMeta($cTitle, null, $maxLength);
 }
 
 /**
@@ -3552,7 +3549,9 @@ function truncateMetaTitle($cTitle)
 function gibNaviMetaTitle($NaviFilter, $oSuchergebnisse, $GlobaleMetaAngaben_arr)
 {
     global $oMeta;
-    $conf = Shop::getSettings([CONF_METAANGABEN]);
+    $conf      = Shop::getSettings([CONF_METAANGABEN]);
+    $cSuffix   = '';
+    $maxLength = !empty($conf['metaangaben']['global_meta_maxlaenge_title']) ? (int)$conf['metaangaben']['global_meta_maxlaenge_title'] : 0;
 
     executeHook(HOOK_FILTER_INC_GIBNAVIMETATITLE);
     // Seitenzahl anhaengen ab Seite 2 (Doppelte Titles vermeiden, #5992)
@@ -3569,7 +3568,7 @@ function gibNaviMetaTitle($NaviFilter, $oSuchergebnisse, $GlobaleMetaAngaben_arr
             return prepareMeta($oMeta->cMetaTitle . ' ' . $GlobaleMetaAngaben_arr[Shop::$kSprache]->Title, $cSuffix);
         }
 
-        return prepareMeta($oMeta->cMetaTitle, $cSuffix);
+        return prepareMeta($oMeta->cMetaTitle, $cSuffix, $maxLength);
     }
     // Set Default Titles
     $cMetaTitle = gibMetaStart($NaviFilter, $oSuchergebnisse);
@@ -3603,7 +3602,7 @@ function gibNaviMetaTitle($NaviFilter, $oSuchergebnisse, $GlobaleMetaAngaben_arr
         $cMetaTitle .= ' - ' . $GlobaleMetaAngaben_arr[Shop::getLanguage()]->Title;
     }
 
-    return prepareMeta($cMetaTitle, $cSuffix);
+    return prepareMeta($cMetaTitle, $cSuffix, $maxLength);
 }
 
 /**
@@ -3616,6 +3615,8 @@ function gibNaviMetaTitle($NaviFilter, $oSuchergebnisse, $GlobaleMetaAngaben_arr
 function gibNaviMetaDescription($oArtikel_arr, $NaviFilter, $oSuchergebnisse, $GlobaleMetaAngaben_arr)
 {
     global $oMeta;
+    $conf      = Shop::getSettings([CONF_METAANGABEN]);
+    $maxLength = $conf['metaangaben']['global_meta_maxlaenge_description'] > 0 ? (int)$conf['metaangaben']['global_meta_maxlaenge_description'] : 0;
 
     executeHook(HOOK_FILTER_INC_GIBNAVIMETADESCRIPTION);
     $cSuffix = '';
@@ -3630,7 +3631,7 @@ function gibNaviMetaDescription($oArtikel_arr, $NaviFilter, $oSuchergebnisse, $G
     if (strlen($oMeta->cMetaDescription) > 0) {
         $oMeta->cMetaDescription = strip_tags($oMeta->cMetaDescription);
 
-        return prepareMeta($oMeta->cMetaDescription, $cSuffix);
+        return prepareMeta($oMeta->cMetaDescription, $cSuffix, $maxLength);
     }
     // Kategorieattribut?
     $cKatDescription = '';
@@ -3640,17 +3641,17 @@ function gibNaviMetaDescription($oArtikel_arr, $NaviFilter, $oSuchergebnisse, $G
             // meta description via new method
             $cKatDescription = strip_tags($oKategorie->cMetaDescription);
 
-            return prepareMeta($cKatDescription, $cSuffix);
+            return prepareMeta($cKatDescription, $cSuffix, $maxLength);
         } elseif (!empty($oKategorie->categoryAttributes['meta_description']->cWert)) {
             // Hat die aktuelle Kategorie als Kategorieattribut eine Meta Description gesetzt?
             $cKatDescription = strip_tags($oKategorie->categoryAttributes['meta_description']->cWert);
 
-            return prepareMeta($cKatDescription, $cSuffix);
+            return prepareMeta($cKatDescription, $cSuffix, $maxLength);
         } elseif (!empty($oKategorie->KategorieAttribute['meta_description'])) {
             /** @deprecated since 4.05 - this is for compatibilty only! */
             $cKatDescription = strip_tags($oKategorie->KategorieAttribute['meta_description']);
 
-            return prepareMeta($cKatDescription, $cSuffix);
+            return prepareMeta($cKatDescription, $cSuffix, $maxLength);
         } else {
             // Hat die aktuelle Kategorie eine Beschreibung?
             if (isset($oKategorie->cBeschreibung) && strlen($oKategorie->cBeschreibung) > 0) {
@@ -3686,7 +3687,7 @@ function gibNaviMetaDescription($oArtikel_arr, $NaviFilter, $oSuchergebnisse, $G
                 }
                 $cMetaDescription = $cMetaDescription;
 
-                return prepareMeta($cMetaDescription, $cSuffix);
+                return prepareMeta($cMetaDescription, $cSuffix, $maxLength);
             }
         }
     }
@@ -3720,7 +3721,7 @@ function gibNaviMetaDescription($oArtikel_arr, $NaviFilter, $oSuchergebnisse, $G
         $cMetaDescription = $cMetaDescription;
     }
 
-    return prepareMeta(strip_tags($cMetaDescription), $cSuffix);
+    return prepareMeta(strip_tags($cMetaDescription), $cSuffix, $maxLength);
 }
 
 /**

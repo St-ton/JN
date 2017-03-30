@@ -5912,13 +5912,10 @@ function pruefeWarenkorbStueckliste($oArtikel, $fAnzahl)
  */
 function truncateMetaDescription($cDesc)
 {
-    $cDesc = str_replace('"', '', $cDesc);
-    $conf  = Shop::getSettings([CONF_METAANGABEN]);
-    if ($conf['metaangaben']['global_meta_maxlaenge_description'] > 0) {
-        $cDesc = substr($cDesc, 0, (int)$conf['metaangaben']['global_meta_maxlaenge_description']);
-    }
+    $conf = Shop::getSettings([CONF_METAANGABEN]);
+    $maxLength = !empty($conf['metaangaben']['global_meta_maxlaenge_description']) ? (int)$conf['metaangaben']['global_meta_maxlaenge_description'] : 0;
 
-    return trim(preg_replace('/\s\s+/', ' ', $cDesc));
+    return prepareMeta($cDesc, null, $maxLength);
 }
 
 /**
@@ -5929,11 +5926,8 @@ function truncateMetaDescription($cDesc)
  */
 function prepareMeta($metaProposal, $metaSuffix = null, $maxLength = null) {
     $metaProposal = str_replace('"', '', $metaProposal);
-    if (empty($maxLength)) {
-        $conf  = Shop::getSettings([CONF_METAANGABEN]);
-        $maxLength = $conf['metaangaben']['global_meta_maxlaenge_description'] > 0 ? $conf['metaangaben']['global_meta_maxlaenge_description'] : 0;
-    }
-    if ($maxLength > 0) {
+    $metaSuffix = !empty($metaSuffix) ? $metaSuffix : '';
+    if (!empty($maxLength) && $maxLength > 0) {
         $metaProposal = substr($metaProposal, 0, (int)$maxLength);
     }
 

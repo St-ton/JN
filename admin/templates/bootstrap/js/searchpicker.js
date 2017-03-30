@@ -131,7 +131,6 @@ function SearchPicker(searchPickerName, getDataIoFuncName, keyName, renderItemCb
         $searchResultList.empty();
 
         items.forEach(function (item) {
-            // item[keyName] = parseInt(item[keyName]);
             $('<a>')
                 .addClass('list-group-item' + (self.isSelected(item[keyName]) ? ' active' : ''))
                 .attr('id', searchPickerName + '-' + item[keyName])

@@ -317,7 +317,7 @@
                     {
                         if (selectedArticles.length > 0) {
                             $('#articleSelectionInfo').val(selectedArticles.length + ' Artikel');
-                            $('#cArtikel').val(selectedArticles.join(';'));
+                            $('#cArtikel').val(selectedArticles.join(';') + ';');
                         } else {
                             $('#articleSelectionInfo').val('Alle Artikel');
                             $('#cArtikel').val('');

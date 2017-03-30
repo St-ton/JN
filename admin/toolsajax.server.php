@@ -627,6 +627,7 @@ function saveBannerAreas($cData)
 }
 
 /**
+ * @deprecated since 4.06
  * @param string $cTemplate
  * @return xajaxResponse
  */
@@ -648,6 +649,7 @@ function getContentTemplate($cTemplate)
 }
 
 /**
+ * @deprecated since 4.06
  * @return xajaxResponse
  */
 function truncateJtllog()

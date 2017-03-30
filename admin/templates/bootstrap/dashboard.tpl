@@ -24,7 +24,7 @@
     }
 
     $(function() {ldelim}
-        xajax_truncateJtllog();
+        ioCall('truncateJtllog');
         registerWidgetSettings();
     {rdelim});
     </script>

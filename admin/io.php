@@ -12,9 +12,12 @@ if (!$oAccount->getIsAuthenticated()) {
     exit();
 }
 
-$jsonApi      = JSONAPI::getInstance();
-$io           = IO::getInstance();
-$dashboardInc = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dashboard_inc.php';
+$jsonApi       = JSONAPI::getInstance();
+$io            = IO::getInstance();
+$dashboardInc  = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dashboard_inc.php';
+$widgetBaseInc = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_WIDGETS . 'class.WidgetBase.php';
+$accountInc    = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'benutzerverwaltung_inc.php';
+$bannerInc     = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'banner_inc.php';
 
 $io->register('getPages', [$jsonApi, 'getPages'])
    ->register('getCategories', [$jsonApi, 'getCategories'])
@@ -29,7 +32,13 @@ $io->register('getPages', [$jsonApi, 'getPages'])
    ->register('closeWidget', 'closeWidget', $dashboardInc, 'DASHBOARD_VIEW')
    ->register('addWidget', 'addWidget', $dashboardInc, 'DASHBOARD_VIEW')
    ->register('expandWidget', 'expandWidget', $dashboardInc, 'DASHBOARD_VIEW')
-   ->register('getAvailableWidgets', 'getAvailableWidgetsIO', $dashboardInc, 'DASHBOARD_VIEW');
+   ->register('getAvailableWidgets', 'getAvailableWidgetsIO', $dashboardInc, 'DASHBOARD_VIEW')
+   ->register('getRemoteDataIO', ['WidgetBase', 'getRemoteDataIO'], $widgetBaseInc, 'DASHBOARD_VIEW')
+   ->register('truncateJtllog', ['Jtllog', 'truncateLog'], null, 'DASHBOARD_VIEW')
+    // Benutzerverwaltung
+   ->register('getRandomPasswordIO', 'getRandomPasswordIO', $accountInc, 'ACCOUNT_VIEW')
+    // Bannerverwaltung
+   ->register('saveBannerAreasIO', 'saveBannerAreasIO', $bannerInc, 'DISPLAY_BANNER_VIEW');
 
 $data = $io->handleRequest($_REQUEST['io']);
 $io->respondAndExit($data);

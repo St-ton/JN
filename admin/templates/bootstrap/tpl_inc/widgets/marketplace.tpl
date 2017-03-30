@@ -1,8 +1,12 @@
 <script type="text/javascript">
     $(document).ready(function() {ldelim}
-       xajax_getRemoteDataAjax('{$JTLURL_GET_SHOPMARKETPLACE}?v={$nVersionDB}', 'oMarketplace_arr', 'widgets/marketplace_data.tpl', 'marketplace_data_wrapper');
+        ioCall('getRemoteDataIO', ['{$JTLURL_GET_SHOPMARKETPLACE}?v={$nVersionDB}', 'oMarketplace_arr', 'widgets/marketplace_data.tpl', 'marketplace_data_wrapper']);
        {if $cPluginCheck|strlen > 0}
-       xajax_getRemoteDataAjax('{$JTLURL_GET_SHOPMARKETPLACE}', 'oMarketplaceUpdates_arr', 'widgets/marketplace_update_data.tpl', 'marketplace_update_data_wrapper', 'check={$cPluginCheck}', 'marketplace_showUpdateCount');
+        ioCall(
+            'getRemoteDataIO',
+            ['{$JTLURL_GET_SHOPMARKETPLACE}', 'oMarketplaceUpdates_arr', 'widgets/marketplace_update_data.tpl',
+                'marketplace_update_data_wrapper', 'check={$cPluginCheck}', 'marketplace_showUpdateCount']
+        );
        {/if}
     {rdelim});
     

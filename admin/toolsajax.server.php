@@ -26,6 +26,7 @@ if (isset($_SERVER['REQUEST_URI'])) {
 $xajax = new xajax($url);
 
 /**
+ * @deprecated since 4.06
  * @return xajaxResponse
  */
 function reloadAdminLoginCaptcha()
@@ -149,6 +150,7 @@ function getAvailableWidgetsAjax()
 }
 
 /**
+ * @deprecated since 4.06
  * @param string $cURL
  * @param string $cDataName
  * @param string $cTpl
@@ -180,6 +182,7 @@ function getRemoteDataAjax($cURL, $cDataName, $cTpl, $cWrapperID, $cPost = null,
 }
 
 /**
+ * @deprecated since 4.06
  * @param string $cURL
  * @param string $cDataName
  * @param string $cTpl
@@ -200,6 +203,7 @@ function getRemoteDataApiAjax($cURL, $cDataName, $cTpl, $cWrapperID)
 }
 
 /**
+ * @deprecated since 4.06
  * @return xajaxResponse
  */
 function getRandomPassword()
@@ -555,6 +559,7 @@ function getLinkList($cSearch, $aParam)
 /**
  * Auswahlassistent
  *
+ * @deprecated since 4.06
  * @param array $kMM_arr
  * @param int   $kSprache
  * @return xajaxResponse
@@ -594,6 +599,7 @@ function getMerkmalWerteAA($kMM_arr, $kSprache)
 }
 
 /**
+ * @deprecated since 4.06
  * @param string $cData
  * @return xajaxResponse
  */
@@ -621,6 +627,7 @@ function saveBannerAreas($cData)
 }
 
 /**
+ * @deprecated since 4.06
  * @param string $cTemplate
  * @return xajaxResponse
  */
@@ -642,6 +649,7 @@ function getContentTemplate($cTemplate)
 }
 
 /**
+ * @deprecated since 4.06
  * @return xajaxResponse
  */
 function truncateJtllog()

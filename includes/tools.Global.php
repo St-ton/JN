@@ -5904,6 +5904,7 @@ function pruefeWarenkorbStueckliste($oArtikel, $fAnzahl)
 }
 
 /**
+ * @deprecated since 4.06
  * return trimmed description without (double) line breaks
  *
  * @param string $cDesc
@@ -5918,6 +5919,25 @@ function truncateMetaDescription($cDesc)
     }
 
     return trim(preg_replace('/\s\s+/', ' ', $cDesc));
+}
+
+/**
+ * @param string $metaProposal the proposed meta text value.
+ * @param string $metaSuffix append suffix to meta value that wont be shortened
+ * @param int $maxLength $metaProposal will be truncated to $maxlength - strlen($metaSuffix) characters
+ * @return string truncated meta value with optional suffix (always appended if set)
+ */
+function prepareMeta($metaProposal, $metaSuffix = null, $maxLength = null) {
+    $metaProposal = str_replace('"', '', $metaProposal);
+    if (empty($maxLength)) {
+        $conf  = Shop::getSettings([CONF_METAANGABEN]);
+        $maxLength = $conf['metaangaben']['global_meta_maxlaenge_description'] > 0 ? $conf['metaangaben']['global_meta_maxlaenge_description'] : 0;
+    }
+    if ($maxLength > 0) {
+        $metaProposal = substr($metaProposal, 0, (int)$maxLength);
+    }
+
+    return trim(preg_replace('/\s\s+/', ' ', $metaProposal)) . $metaSuffix;
 }
 
 /**

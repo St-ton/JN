@@ -182,6 +182,7 @@ function getRemoteDataAjax($cURL, $cDataName, $cTpl, $cWrapperID, $cPost = null,
 }
 
 /**
+ * @deprecated since 4.06
  * @param string $cURL
  * @param string $cDataName
  * @param string $cTpl
@@ -202,6 +203,7 @@ function getRemoteDataApiAjax($cURL, $cDataName, $cTpl, $cWrapperID)
 }
 
 /**
+ * @deprecated since 4.06
  * @return xajaxResponse
  */
 function getRandomPassword()

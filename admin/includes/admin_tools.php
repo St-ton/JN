@@ -518,3 +518,33 @@ function getMaxFileSize($size_str)
             return $size_str;
     }
 }
+
+/**
+ * @param float  $fPreisNetto
+ * @param float  $fPreisBrutto
+ * @param string $cTargetID
+ * @return IOResponse
+ */
+function getCurrencyConversionIO($fPreisNetto, $fPreisBrutto, $cTargetID)
+{
+    $response = new IOResponse();
+    $cString  = getCurrencyConversion($fPreisNetto, $fPreisBrutto);
+    $response->assign($cTargetID, 'innerHTML', $cString);
+
+    return $response;
+}
+
+/**
+ * @param float  $fPreisNetto
+ * @param float  $fPreisBrutto
+ * @param string $cTooltipID
+ * @return IOResponse
+ */
+function setCurrencyConversionTooltipIO($fPreisNetto, $fPreisBrutto, $cTooltipID)
+{
+    $response = new IOResponse();
+    $cString  = getCurrencyConversion($fPreisNetto, $fPreisBrutto);
+    $response->assign($cTooltipID, 'dataset.originalTitle', $cString);
+
+    return $response;
+}

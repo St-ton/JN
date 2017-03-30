@@ -24,6 +24,9 @@ $io->register('getPages', [$jsonApi, 'getPages'])
    ->register('getProducts', [$jsonApi, 'getProducts'])
    ->register('getManufacturers', [$jsonApi, 'getManufacturers'])
    ->register('getCustomers', [$jsonApi, 'getCustomers'])
+    // Allround-iocalls
+   ->register('getCurrencyConversion', 'getCurrencyConversionIO')
+   ->register('setCurrencyConversionTooltip', 'setCurrencyConversionTooltipIO')
     // Two-FA-related functions
    ->register('getNewTwoFA', ['TwoFA', 'getNewTwoFA'])
    ->register('genTwoFAEmergencyCodes', ['TwoFA', 'genTwoFAEmergencyCodes'])

@@ -320,7 +320,7 @@
                             $('#cArtikel').val(selectedArticles.join(';'));
                         } else {
                             $('#articleSelectionInfo').val('Alle Artikel');
-                            $('#cArtikel').val('-1');
+                            $('#cArtikel').val('');
                         }
                     }
                 </script>

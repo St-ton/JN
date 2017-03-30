@@ -27,17 +27,17 @@
                         </button>
                     </span>
                 </div>
-                <h5 id="{$searchPickerName}-list-title">Suchergebnisse</h5>
+                <h5 id="{$searchPickerName}-list-title"></h5>
                 <div class="list-group" id="{$searchPickerName}-result-list" style="max-height:500px;overflow:auto;">
                 </div>
                 <div class="btn-group">
                     <button type="button" class="btn btn-xs btn-primary" id="{$searchPickerName}-select-all-btn">
                         <i class="fa fa-check-square-o"></i>
-                        Alle ausw&auml;hlen
+                        {#searchpickerSelectAllShown#}
                     </button>
                     <button type="button" class="btn btn-xs btn-danger" id="{$searchPickerName}-unselect-all-btn">
                         <i class="fa fa-square-o"></i>
-                        Alle abw&auml;hlen
+                        {#searchpickerUnselectAllShown#}
                     </button>
                 </div>
             </div>

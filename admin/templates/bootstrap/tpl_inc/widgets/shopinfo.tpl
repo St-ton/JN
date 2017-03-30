@@ -44,6 +44,6 @@
 </div>
 <script type="text/javascript">
     $(document).ready(function () {ldelim}
-        xajax_getRemoteDataAjax('{$JTLURL_GET_SHOPVERSION}?v={$nVersionFile}', 'oVersion', 'widgets/shopinfo_version.tpl', 'version_data_wrapper');
+        ioCall('getRemoteDataIO', ['{$JTLURL_GET_SHOPVERSION}?v={$nVersionFile}', 'oVersion', 'widgets/shopinfo_version.tpl', 'version_data_wrapper']);
     {rdelim});
 </script>

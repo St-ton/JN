@@ -1,6 +1,6 @@
 <script type="text/javascript">
     $(document).ready(function () {ldelim}
-        xajax_getRemoteDataAjax('{$JTLURL_GET_SHOPPATCH}?v={$nVersionDB}', 'oPatch_arr', 'widgets/patch_data.tpl', 'patch_data_wrapper');
+        ioCall('getRemoteDataIO', ['{$JTLURL_GET_SHOPPATCH}?v={$nVersionDB}', 'oPatch_arr', 'widgets/patch_data.tpl', 'patch_data_wrapper']);
     {rdelim});
 </script>
 

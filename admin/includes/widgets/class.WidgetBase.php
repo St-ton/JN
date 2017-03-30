@@ -61,7 +61,7 @@ class WidgetBase
      * @param bool $bDecodeUTF8
      * @return IOResponse
      */
-    public static function getRemoteDataIO($cURL, $cDataName, $cTpl, $cWrapperID, $cPost = null, $bDecodeUTF8 = false)
+    public static function getRemoteDataIO($cURL, $cDataName, $cTpl, $cWrapperID, $cPost = null, $cCallback = null, $bDecodeUTF8 = false)
     {
         $response = new IOResponse();
         $cData    = http_get_contents($cURL, 15, $cPost);
@@ -70,6 +70,10 @@ class WidgetBase
         Shop::Smarty()->assign($cDataName, $oData);;
         $cWrapper = Shop::Smarty()->fetch('tpl_inc/' . $cTpl);
         $response->assign($cWrapperID, 'innerHTML', $cWrapper);
+
+        if ($cCallback !== null) {
+            $response->script("if(typeof {$cCallback} === 'function') {$cCallback}({$cData});");
+        }
 
         return $response;
     }

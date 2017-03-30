@@ -150,6 +150,7 @@ function getAvailableWidgetsAjax()
 }
 
 /**
+ * @deprecated since 4.06
  * @param string $cURL
  * @param string $cDataName
  * @param string $cTpl

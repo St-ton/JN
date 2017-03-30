@@ -682,13 +682,14 @@ function hideBackdrop() {
  * @param name
  * @param args
  * @param success
+ * @returns XMLHttpRequest jqxhr
  */
 function ioGetJson(name, args, success)
 {
     args    = args || [];
     success = success || function () { };
 
-    $.ajax({
+    return $.ajax({
         url: 'io.php',
         method: 'post',
         dataType: 'json',
@@ -712,6 +713,7 @@ function ioGetJson(name, args, success)
  * @param args - argument array for the function call
  * @param success - callback(context) function to be called on success (default: null)
  * @param context - object to be assigned 'this' in eval()-code (default: { } = a new empty anonymous object)
+ * @returns XMLHttpRequest jqxhr
  */
 function ioCall(name, args, success, context)
 {
@@ -723,7 +725,7 @@ function ioCall(name, args, success, context)
 
     var evalInContext = function (code) { eval(code); }.bind(context);
 
-    $.ajax({
+    return $.ajax({
         url: 'io.php',
         method: 'post',
         dataType: 'json',

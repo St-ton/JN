@@ -559,6 +559,7 @@ function getLinkList($cSearch, $aParam)
 /**
  * Auswahlassistent
  *
+ * @deprecated since 4.06
  * @param array $kMM_arr
  * @param int   $kSprache
  * @return xajaxResponse
@@ -598,6 +599,7 @@ function getMerkmalWerteAA($kMM_arr, $kSprache)
 }
 
 /**
+ * @deprecated since 4.06
  * @param string $cData
  * @return xajaxResponse
  */

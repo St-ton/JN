@@ -17,6 +17,7 @@ $io            = IO::getInstance();
 $dashboardInc  = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dashboard_inc.php';
 $widgetBaseInc = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_WIDGETS . 'class.WidgetBase.php';
 $accountInc    = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'benutzerverwaltung_inc.php';
+$bannerInc     = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'banner_inc.php';
 
 $io->register('getPages', [$jsonApi, 'getPages'])
    ->register('getCategories', [$jsonApi, 'getCategories'])
@@ -34,7 +35,9 @@ $io->register('getPages', [$jsonApi, 'getPages'])
    ->register('getAvailableWidgets', 'getAvailableWidgetsIO', $dashboardInc, 'DASHBOARD_VIEW')
    ->register('getRemoteDataIO', ['WidgetBase', 'getRemoteDataIO'], $widgetBaseInc, 'DASHBOARD_VIEW')
     // Benutzerverwaltung
-   ->register('getRandomPasswordIO', 'getRandomPasswordIO', $accountInc, 'ACCOUNT_VIEW');
+   ->register('getRandomPasswordIO', 'getRandomPasswordIO', $accountInc, 'ACCOUNT_VIEW')
+    // Bannerverwaltung
+   ->register('saveBannerAreasIO', 'saveBannerAreasIO', $bannerInc, 'DISPLAY_BANNER_VIEW');
 
 $data = $io->handleRequest($_REQUEST['io']);
 $io->respondAndExit($data);

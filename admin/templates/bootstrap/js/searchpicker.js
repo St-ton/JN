@@ -20,6 +20,7 @@ function SearchPicker(searchPickerName, getDataIoFuncName, keyName, renderItemCb
     var dataIoFuncName     = getDataIoFuncName;
     var getRenderedItem    = renderItemCb;
     var closeAction        = '';
+    var pendingRequest     = null;
     var $searchModal       = $('#' + searchPickerName + '-modal');
     var $searchResultList  = $('#' + searchPickerName + '-result-list');
     var $listTitle         = $('#' + searchPickerName + '-list-title');
@@ -105,9 +106,17 @@ function SearchPicker(searchPickerName, getDataIoFuncName, keyName, renderItemCb
     self.updateItemList = function ()
     {
         if (searchString !== '') {
-            ioGetJson(dataIoFuncName, [searchString, 100], self.itemsReceived);
+            if (pendingRequest !== null) {
+                pendingRequest.abort();
+            }
+
+            pendingRequest = ioGetJson(dataIoFuncName, [searchString, 100], self.itemsReceived);
         } else if (selectedKeys.length > 0) {
-            ioGetJson(dataIoFuncName, [selectedKeys, 100, keyName], self.itemsReceived);
+            if (pendingRequest !== null) {
+                pendingRequest.abort();
+            }
+
+            pendingRequest = ioGetJson(dataIoFuncName, [selectedKeys, 100, keyName], self.itemsReceived);
         } else {
             $searchResultList.empty();
             foundItems = [];
@@ -131,6 +140,8 @@ function SearchPicker(searchPickerName, getDataIoFuncName, keyName, renderItemCb
                 .html(getRenderedItem(item))
                 .appendTo($searchResultList);
         });
+
+        pendingRequest = null;
     };
 
     self.updateListTitle = function ()

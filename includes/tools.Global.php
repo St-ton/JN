@@ -5904,6 +5904,7 @@ function pruefeWarenkorbStueckliste($oArtikel, $fAnzahl)
 }
 
 /**
+ * @deprecated since 4.06
  * return trimmed description without (double) line breaks
  *
  * @param string $cDesc
@@ -5911,13 +5912,26 @@ function pruefeWarenkorbStueckliste($oArtikel, $fAnzahl)
  */
 function truncateMetaDescription($cDesc)
 {
-    $cDesc = str_replace('"', '', $cDesc);
-    $conf  = Shop::getSettings([CONF_METAANGABEN]);
-    if ($conf['metaangaben']['global_meta_maxlaenge_description'] > 0) {
-        $cDesc = substr($cDesc, 0, (int)$conf['metaangaben']['global_meta_maxlaenge_description']);
+    $conf = Shop::getSettings([CONF_METAANGABEN]);
+    $maxLength = !empty($conf['metaangaben']['global_meta_maxlaenge_description']) ? (int)$conf['metaangaben']['global_meta_maxlaenge_description'] : 0;
+
+    return prepareMeta($cDesc, null, $maxLength);
+}
+
+/**
+ * @param string $metaProposal the proposed meta text value.
+ * @param string $metaSuffix append suffix to meta value that wont be shortened
+ * @param int $maxLength $metaProposal will be truncated to $maxlength - strlen($metaSuffix) characters
+ * @return string truncated meta value with optional suffix (always appended if set)
+ */
+function prepareMeta($metaProposal, $metaSuffix = null, $maxLength = null) {
+    $metaProposal = str_replace('"', '', $metaProposal);
+    $metaSuffix = !empty($metaSuffix) ? $metaSuffix : '';
+    if (!empty($maxLength) && $maxLength > 0) {
+        $metaProposal = substr($metaProposal, 0, (int)$maxLength);
     }
 
-    return trim(preg_replace('/\s\s+/', ' ', $cDesc));
+    return trim(preg_replace('/\s\s+/', ' ', $metaProposal)) . $metaSuffix;
 }
 
 /**

@@ -784,6 +784,7 @@ function enableTypeahead(selector, funcName, displayField, valueField, onSelect)
                 };
             }
         },
+        items: 16,
         onSelect: onSelect
     });
 }

@@ -121,6 +121,14 @@
     </ul>
     <div class="tab-content">
         <div id="redirects" class="tab-pane fade {if !isset($cTab) || $cTab === 'redirects'} active in{/if}">
+            <input id="typetest" class="form-control">
+            <script>
+                $(function () {
+                    enableTypeahead('#typetest', 'getSeos', 'cSeo', 'cSeo', function (item) {
+                        console.log(item);
+                    });
+                });
+            </script>
             <div class="panel panel-default">
                 {if $nRedirectCount > 0}
                     {include file='tpl_inc/filtertools.tpl' oFilter=$oFilter}
@@ -159,7 +167,7 @@
                                         <a href="{$oRedirect->cFromUrl}" target="_blank">{$oRedirect->cFromUrl|truncate:52:"..."}</a>
                                     </td>
                                     <td class="tleft">
-                                        <div id="frm_{$oRedirect->kRedirect}" class="input-group input-group-sm" style="margin-right:30px;">
+                                        <div id="frm_{$oRedirect->kRedirect}" class="input-group input-group-sm">
                                             <span class="input-group-addon alert-info state-checking"><i class="fa fa-spinner"></i></span>
                                             <span class="input-group-addon alert-success state-available" style="display:none;"><i class="fa fa-check"></i></span>
                                             <span class="input-group-addon alert-danger state-unavailable" style="display:none;"><i class="fa fa-warning"></i></span>
@@ -167,12 +175,16 @@
                                                    name="aData[redirect][{$oRedirect->kRedirect}][url]" type="text"
                                                    class="form-control cToUrl" autocomplete="off"
                                                    value="{$oRedirect->cToUrl}"
-                                                   onblur="check_url('{$oRedirect->kRedirect}',this.value);"
-                                                   onkeyup="redirect_search('{$oRedirect->kRedirect}',this.value);">
-                                            <div class="input-group-btn" style="width:100%;display:block;top:100%;">
-                                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="caret"></span></button>
-                                                <ul class="dropdown-menu" style="min-width:100%;" id="resSearch_{$oRedirect->kRedirect}"></ul>
-                                            </div>
+                                                   onblur="check_url('{$oRedirect->kRedirect}', this.value);">
+                                            <script>
+                                                enableTypeahead(
+                                                    '#url_{$oRedirect->kRedirect}', 'getSeos', 'cUrl',
+                                                    'cUrl',
+                                                    function (item) {
+                                                        check_url('{$oRedirect->kRedirect}', item.url);
+                                                    }
+                                                );
+                                            </script>
                                         </div>
                                     </td>
                                     <td class="text-right" style="vertical-align:middle;"><span class="badge">{$redirectCount}</span></td>
@@ -305,14 +317,13 @@
                             <span class="input-group-addon alert-success state-available" style="display:none;"><i class="fa fa-check"></i></span>
                             <span class="input-group-addon alert-danger state-unavailable" style="display:none;"><i class="fa fa-warning"></i></span>
                             <input id="url_cToUrl" name="cToUrl" type="text" class="form-control cToUrl"
-                                   autocomplete="off" onblur="check_url('cToUrl',this.value);"
-                                   onkeyup="redirect_search('cToUrl', this.value );"
-                                   placeholder="Ziel-URL"
-                                   value="{if isset($cPost_arr.cToUrl)}{$cPost_arr.cToUrl}{/if}">
-                            <div class="input-group-btn">
-                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="caret"></span></button>
-                                <ul class="dropdown-menu dropdown-menu-right" id="resSearch_cToUrl"></ul>
-                            </div>
+                                   autocomplete="off" value="{if isset($cPost_arr.cToUrl)}{$cPost_arr.cToUrl}{/if}"
+                                   onblur="check_url('cToUrl', this.value);" placeholder="Ziel-URL">
+                            <script>
+                                enableTypeahead('#url_cToUrl', 'getSeos', 'cUrl', 'cUrl', function (item) {
+                                    check_url('cToUrl', item.url);
+                                });
+                            </script>
                         </div>
                     </div>
                     <div class="panel-footer">

@@ -33,6 +33,31 @@ class JSONAPI
     }
 
     /**
+     * @param null $search
+     * @param int $limit
+     * @param string $keyName
+     * @return mixed|string
+     */
+    public function getSeos($search = null, $limit = 0, $keyName = 'cSeo')
+    {
+        if (is_string($search)) {
+            $searchIn = ['cSeo'];
+        } elseif (is_array($search)) {
+            $searchIn = $keyName;
+        } else {
+            $searchIn = null;
+        }
+
+        $items = $this->getItems('tseo', ['cSeo', 'cKey', 'kKey'], null, $searchIn, $search, $limit);
+
+        foreach ($items as $item) {
+            $item->cUrl = '/' . $item->cSeo;
+        }
+
+        return $this->itemsToJson($items);
+    }
+
+    /**
      * @param string|array|null $search
      * @param int $limit
      * @param string $keyName

@@ -1,6 +1,6 @@
 {* template to display products in boxes and product-lists *}
 
-<div class="product-cell text-center{if isset($class)} {$class}{/if}">
+<div id="result-wrapper_buy_form_{$Artikel->kArtikel}" class="product-cell text-center{if isset($class)} {$class}{/if}">
     {block name="productlist-image"}
         <a class="image-wrapper" href="{$Artikel->cURL}">
             {if isset($Artikel->Bilder[0]->cAltAttribut)}
@@ -32,7 +32,7 @@
         {include file="productdetails/price.tpl" Artikel=$Artikel price_image=$price_image tplscope=$tplscope}
     </div>{* /caption *}
     {/block}
-    <form action="navi.php" method="post" class="form form-basket" data-toggle="basket-add">
+    <form id="buy_form_{$Artikel->kArtikel}" action="navi.php" method="post" class="form form-basket" data-toggle="basket-add">
         {$jtl_token}
         {block name="productlist-delivery-status"}
             <div class="delivery-status">
@@ -65,11 +65,17 @@
                 {/if}
             </div>
         {/block}
-
+        {hasOnlyListableVariations artikel=$Artikel assign="hasOnlyListableVariations"}
+        {if $hasOnlyListableVariations > 0 && !$Artikel->bHasKonfig}
+            <div class="hidden-xs basket-variations">
+                {assign var="singleVariation" value=true}
+                {include file="productdetails/variation.tpl" simple=$Artikel->isSimpleVariation showMatrix=false smallView=true ohneFreifeld=($hasOnlyListableVariations == 2)}
+            </div>
+        {/if}
         <div class="hidden-xs">
             {block name="productlist-add-basket"}
-            {if ($Artikel->inWarenkorbLegbar == 1 || ($Artikel->nErscheinendesProdukt == 1 && $Einstellungen.global.global_erscheinende_kaeuflich === 'Y')) &&
-                $Artikel->nIstVater == 0 && $Artikel->Variationen|@count == 0 && !$Artikel->bHasKonfig
+            {if ($Artikel->inWarenkorbLegbar === 1 || ($Artikel->nErscheinendesProdukt === 1 && $Einstellungen.global.global_erscheinende_kaeuflich === 'Y')) &&
+                (($Artikel->nIstVater === 0 && $Artikel->Variationen|@count === 0) || $hasOnlyListableVariations === 1) && !$Artikel->bHasKonfig
             }
                 <div class="quantity-wrapper form-group top7">
                     <div class="input-group input-group-sm">

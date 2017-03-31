@@ -124,8 +124,22 @@ function pushToBasket($kArtikel, $anzahl, $oEigenschaftwerte_arr = '')
         $Artikel->fuelleArtikel($kArtikel, $oArtikelOptionen);
         // Falls der Artikel ein Variationskombikind ist, hole direkt seine Eigenschaften
         if ($Artikel->kEigenschaftKombi > 0) {
+            // Variationskombi-Artikel
             $oEigenschaftwerte_arr = gibVarKombiEigenschaftsWerte($Artikel->kArtikel);
+        } elseif (isset($oEigenschaftwerte_arr['eigenschaftwert']) && is_array($oEigenschaftwerte_arr['eigenschaftwert'])) {
+            // einfache Variation - keine Varkombi
+            foreach ($Artikel->Variationen as $oVariation) {
+                if (array_key_exists($oVariation->kEigenschaft, $oEigenschaftwerte_arr['eigenschaftwert'])) {
+                    $value =& $oEigenschaftwerte_arr['eigenschaftwert'][$oVariation->kEigenschaft];
+
+                    $oEigenschaftwerte_arr[$oVariation->kEigenschaft] = (object)[
+                        'kEigenschaft'     => (int)$oVariation->kEigenschaft,
+                        'kEigenschaftWert' => $oVariation->cTyp === 'FREIFELD' ? StringHandler::filterXSS($value) : (int)$value,
+                    ];
+                }
+            }
         }
+
         if ((int)$anzahl != $anzahl && $Artikel->cTeilbar !== 'Y') {
             $anzahl = max((int)$anzahl, 1);
         }
@@ -144,6 +158,8 @@ function pushToBasket($kArtikel, $anzahl, $oEigenschaftwerte_arr = '')
         }
         /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
         $cart = $_SESSION['Warenkorb'];
+        WarenkorbHelper::addVariationPictures($cart);
+        /** @var Warenkorb $cart */
         $cart->fuegeEin($kArtikel, $anzahl, $oEigenschaftwerte_arr)
              ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS)
              ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDZUSCHLAG)
@@ -189,7 +205,7 @@ function pushToBasket($kArtikel, $anzahl, $oEigenschaftwerte_arr = '')
                 [C_WARENKORBPOS_TYP_ARTIKEL, C_WARENKORBPOS_TYP_KUPON, C_WARENKORBPOS_TYP_NEUKUNDENKUPON],
                 true
             )))
-               ->assign('zuletztInWarenkorbGelegterArtikel', $Artikel)
+               ->assign('zuletztInWarenkorbGelegterArtikel', $cart->gibLetztenWKArtikel())
                ->assign('fAnzahl', $anzahl)
                ->assign('NettoPreise', $_SESSION['Kundengruppe']->nNettoPreise)
                ->assign('Einstellungen', $Einstellungen)
@@ -212,7 +228,7 @@ function pushToBasket($kArtikel, $anzahl, $oEigenschaftwerte_arr = '')
         }
 
         if ($GLOBALS['GlobaleEinstellungen']['global']['global_warenkorb_weiterleitung'] === 'Y') {
-            $linkHelper = LinkHelper::getInstance();
+            $linkHelper           = LinkHelper::getInstance();
             $oResponse->nType     = 1;
             $oResponse->cLocation = $linkHelper->getStaticRoute('warenkorb.php');
             $objResponse->script('this.response = ' . json_encode($oResponse) . ';');
@@ -487,6 +503,7 @@ function checkDependencies($aValues)
     $kVaterArtikel = (int)$aValues['a'];
     $fAnzahl       = (float)$aValues['anzahl'];
     $valueID_arr   = array_filter((array)$aValues['eigenschaftwert']);
+    $wrapper       = isset($aValues['wrapper']) ? StringHandler::filterXSS($aValues['wrapper']) : '';
 
     if ($kVaterArtikel > 0) {
         $oArtikelOptionen                            = new stdClass();
@@ -506,7 +523,7 @@ function checkDependencies($aValues)
         $newProductNr = '';
         foreach ($valueID_arr as $valueID) {
             $currentValue = new EigenschaftWert($valueID);
-            $weightDiff   += $currentValue->fGewichtDiff;
+            $weightDiff  += $currentValue->fGewichtDiff;
             $newProductNr = (!empty($currentValue->cArtNr) && $oArtikel->cArtNr !== $currentValue->cArtNr)
                 ? $currentValue->cArtNr
                 : $oArtikel->cArtNr;
@@ -547,12 +564,13 @@ function checkDependencies($aValues)
             '$.evo.article().setPrice',
             $fVK[$nNettoPreise],
             $cVKLocalized[$nNettoPreise],
-            $cPriceLabel
+            $cPriceLabel,
+            $wrapper
         );
         $objResponse->jsfunc('$.evo.article().setArticleWeight', [
             [$oArtikel->fGewicht, $weightTotal . ' ' . $cUnitWeightLabel],
             [$oArtikel->fArtikelgewicht, $weightArticleTotal . ' ' . $cUnitWeightLabel],
-        ]);
+        ], $wrapper);
 
         if (!empty($oArtikel->staffelPreis_arr)) {
             $fStaffelVK = [0 => [], 1 => []];
@@ -585,8 +603,8 @@ function checkDependencies($aValues)
             $fStaffelVPE = [0 => [], 1 => []];
             $cStaffelVPE = [0 => [], 1 => []];
             foreach ($oArtikel->staffelPreis_arr as $staffelPreis) {
-                $nAnzahl = &$staffelPreis['nAnzahl'];
-                $fStaffelVPENetto = $oArtikel->gibPreis($nAnzahl, $valueID_arr, Kundengruppe::getCurrent());
+                $nAnzahl                  = &$staffelPreis['nAnzahl'];
+                $fStaffelVPENetto         = $oArtikel->gibPreis($nAnzahl, $valueID_arr, Kundengruppe::getCurrent());
                 $fStaffelVPE[0][$nAnzahl] = berechneBrutto(
                     $fStaffelVPENetto / $oArtikel->fVPEWert,
                     $_SESSION['Steuersatz'][$oArtikel->kSteuerklasse]
@@ -628,6 +646,7 @@ function checkVarkombiDependencies($aValues, $kEigenschaft = 0, $kEigenschaftWer
     $kArtikelKind                = isset($aValues['VariKindArtikel']) ? (int)$aValues['VariKindArtikel'] : 0;
     $kFreifeldEigeschaftWert_arr = [];
     $kGesetzteEigeschaftWert_arr = array_filter((array)$aValues['eigenschaftwert']);
+    $wrapper                     = isset($aValues['wrapper']) ? StringHandler::filterXSS($aValues['wrapper']) : '';
 
     if ($kVaterArtikel > 0) {
         $oArtikelOptionen                            = new stdClass();
@@ -667,7 +686,7 @@ function checkVarkombiDependencies($aValues, $kEigenschaft = 0, $kEigenschaftWer
 
         // Auswahl zurücksetzen sobald eine nicht vorhandene Variation ausgewählt wurde.
         if ($bHasInvalidSelection) {
-            $objResponse->jsfunc('$.evo.article().variationResetAll');
+            $objResponse->jsfunc('$.evo.article().variationResetAll', $wrapper);
 
             $kGesetzteEigeschaftWert_arr = [$kEigenschaft => $kEigenschaftWert];
             $nInvalidVariations          = $oArtikel->getVariationsBySelection($kGesetzteEigeschaftWert_arr, true);
@@ -722,19 +741,19 @@ function checkVarkombiDependencies($aValues, $kEigenschaft = 0, $kEigenschaftWer
             }
         }
 
-        $objResponse->jsfunc('$.evo.article().variationDisableAll');
+        $objResponse->jsfunc('$.evo.article().variationDisableAll', $wrapper);
 
         $nPossibleVariations = $oArtikel->getVariationsBySelection($kGesetzteEigeschaftWert_arr, false);
 
         foreach ($nPossibleVariations as $k => $values) {
             foreach ($values as $v) {
-                $objResponse->jsfunc('$.evo.article().variationEnable', $k, $v);
+                $objResponse->jsfunc('$.evo.article().variationEnable', $k, $v, $wrapper);
             }
         }
 
         foreach ($kGesetzteEigeschaftWert_arr as $key => $value) {
             $escaped = addslashes($value);
-            $objResponse->jsfunc('$.evo.article().variationActive', $key, $escaped);
+            $objResponse->jsfunc('$.evo.article().variationActive', $key, $escaped, null, $wrapper);
         }
 
         foreach ($nInvalidVariations as $k => $values) {

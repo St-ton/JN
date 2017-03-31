@@ -316,6 +316,9 @@ function gibArtikelKeys($FilterSQL, $nArtikelProSeite, $NaviFilter, $bExtern, $o
         if (PRODUCT_LIST_SHOW_RATINGS === true) {
             $oArtikelOptionen->nRatings = 1;
         }
+        if (isset($conf['artikeldetails']['artikel_variationspreisanzeige']) && $conf['artikeldetails']['artikel_variationspreisanzeige'] != 0) {
+            $oArtikelOptionen->nVariationDetailPreis = 1;
+        }
 
         foreach ($oArtikelKey_arr as $i => $oArtikelKey) {
             $nLaufLimitN = $i + $nLimitNBlaetter;

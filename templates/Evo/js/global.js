@@ -143,6 +143,12 @@ function loadContent(url)
 {
     $.evo.extended().loadContent(url, function() {
         $.evo.extended().register();
+
+        if (typeof $.evo.article === 'function') {
+            $.evo.article().onLoad();
+            $.evo.article().register();
+        }
+
         $('html,body').animate({
             scrollTop: $('.list-pageinfo').offset().top - $('#evo-main-nav-wrapper').outerHeight() - 10 
         }, 100);

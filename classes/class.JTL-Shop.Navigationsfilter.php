@@ -446,7 +446,8 @@ class Navigationsfilter
             $this->addActiveFilter($this->HerstellerFilter, $params['kHerstellerFilter']);
         }
         if ($params['kMerkmalWert'] > 0) {
-            $this->MerkmalWert = (new FilterBaseAttribute($languageID, $customerGroupID, $config, $this->oSprache_arr))->init($params['kMerkmalWert']);
+            $this->MerkmalWert = (new FilterBaseAttribute($languageID, $customerGroupID, $config, $this->oSprache_arr))
+                ->init($params['kMerkmalWert']);
             $this->baseState   = $this->MerkmalWert;
         }
         if (count($params['MerkmalFilter_arr']) > 0) {
@@ -506,28 +507,24 @@ class Navigationsfilter
             }
             // Suchcache beachten / erstellen
             if (!empty($this->Suche->cSuche)) {
-                $this->Suche->kSuchCache = $this->editSearchCache();
+                $this->Suche->kSuchCache = $this->Suchanfrage->editSearchCache();
                 $this->Suchanfrage->init($oSuchanfrage->kSuchanfrage);
                 $this->Suchanfrage->kSuchCache = $this->Suche->kSuchCache;
                 $this->Suchanfrage->cSuche     = $this->Suche->cSuche;
                 $this->baseState               = $this->Suchanfrage;
             }
         } elseif (strlen($params['cSuche']) > 0) {
-            $params['cSuche']    = StringHandler::filterXSS($params['cSuche']);
-            $this->Suche->cSuche = $params['cSuche'];
-            $kSuchCache          = $this->editSearchCache();
-
+            $params['cSuche']              = StringHandler::filterXSS($params['cSuche']);
+            $this->Suche->cSuche           = $params['cSuche'];
             $oSuchanfrage                  = Shop::DB()->select(
                 'tsuchanfrage',
-                'cSuche',
-                Shop::DB()->escape($this->Suche->cSuche),
-                'kSprache',
-                $this->getLanguageID(),
-                'nAktiv',
-                1,
+                'cSuche', Shop::DB()->escape($this->Suche->cSuche),
+                'kSprache', $this->getLanguageID(),
+                'nAktiv', 1,
                 false,
                 'kSuchanfrage'
             );
+            $kSuchCache                    = $this->Suchanfrage->editSearchCache();
             $kSuchAnfrage                  = isset($oSuchanfrage->kSuchanfrage)
                 ? (int)$oSuchanfrage->kSuchanfrage
                 : $params['kSuchanfrage'];
@@ -570,7 +567,6 @@ class Navigationsfilter
             'navifilter' => $this,
             'params'     => $params]
         );
-
         $this->params = $params;
 
         return $this->validate();
@@ -1842,8 +1838,6 @@ class Navigationsfilter
                 $urlParams[$urlParam] = [];
                 $filterSeoData          = new stdClass();
                 $filterSeoData->value   = $filter->getValue();
-//                if ($debug)
-//                Shop::dbg($filterSeoData->value, false, 'if!$filterSeoData->value:');
                 $filterSeoData->sep     = $filter->getUrlParamSEO();
                 $filterSeoData->seo     = $filterSeo;
                 $filterSeoData->type    = $filter->getType();
@@ -1860,7 +1854,6 @@ class Navigationsfilter
                 $filterSeoData->type    = $filter->getType();
                 $urlParams[$urlParam][] = $filterSeoData;
             }
-            if ($debug) Shop::dbg($urlParams, false, '$urlParams now:');
         }
         // remove extra filters from url array if getDoUnset equals true
         if (method_exists($extraFilter, 'getDoUnset') && $extraFilter->getDoUnset() === true) {
@@ -1892,17 +1885,13 @@ class Navigationsfilter
         // build url string from url array
         foreach ($urlParams as $filterID => $filters) {
             $filters = array_map('unserialize', array_unique(array_map('serialize', $filters)));
-            if ($debug) Shop::dbg($filters, false, '$filters:');
             foreach ($filters as $filterItem) {
-                if ($debug) Shop::dbg($filterItem, false, '$filterItem:');
                 if (!empty($filterItem->sep) && !empty($filterItem->seo)) {
                     $url .= $filterItem->sep . $filterItem->seo;
                 } else {
-                    if ($debug) Shop::dbg($filterItem->value, false, '$filterItem->value:');
                     $getParam = $hasQuestionMark ? '&' : '?';
                     if (is_array($filterItem->value)) {
                         foreach ($filterItem->value as $filterValue) {
-                            if ($debug) Shop::dbg($url, false, 'URL:');
                             $getParam = $hasQuestionMark ? '&' : '?';
                             $url .= $getParam . $filterID . '[]=' . $filterValue;
                             $hasQuestionMark = true;
@@ -1933,7 +1922,7 @@ class Navigationsfilter
         $oZusatzFilter               = new stdClass();
         $oZusatzFilter->FilterLoesen = new stdClass();
         // @todo: why?
-        if (false&&$this->SuchspecialFilter->isInitialized()) {
+        if (false && $this->SuchspecialFilter->isInitialized()) {
             $bSeo = false;
         }
         $extraFilter = (new FilterItemCategory(
@@ -2494,445 +2483,6 @@ class Navigationsfilter
         }
 
         return ltrim($cMetaTitle);
-    }
-
-    /**
-     * @param string $Suchausdruck
-     * @param int    $kSpracheExt
-     * @return string
-     * @former mappingBeachten
-     */
-    private function getMapping($Suchausdruck, $kSpracheExt = 0)
-    {
-        $kSprache = ($kSpracheExt > 0)
-            ? (int)$kSpracheExt
-            : $this->getLanguageID();
-        if (strlen($Suchausdruck) > 0) {
-            $SuchausdruckmappingTMP = Shop::DB()->select(
-                'tsuchanfragemapping',
-                'kSprache',
-                $kSprache,
-                'cSuche',
-                $Suchausdruck
-            );
-            $Suchausdruckmapping    = $SuchausdruckmappingTMP;
-            while (!empty($SuchausdruckmappingTMP->cSucheNeu)) {
-                $SuchausdruckmappingTMP = Shop::DB()->select(
-                    'tsuchanfragemapping',
-                    'kSprache',
-                    $kSprache,
-                    'cSuche',
-                    $SuchausdruckmappingTMP->cSucheNeu
-                );
-                if (!empty($SuchausdruckmappingTMP->cSucheNeu)) {
-                    $Suchausdruckmapping = $SuchausdruckmappingTMP;
-                }
-            }
-            if (!empty($Suchausdruckmapping->cSucheNeu)) {
-                $Suchausdruck = $Suchausdruckmapping->cSucheNeu;
-            }
-        }
-
-        return $Suchausdruck;
-    }
-
-    /**
-     * @param int $kSpracheExt
-     * @return int
-     */
-    public function editSearchCache($kSpracheExt = 0)
-    {
-        require_once PFAD_ROOT . PFAD_INCLUDES . 'suche_inc.php';
-        // Mapping beachten
-        $cSuche                    = $this->getMapping($this->Suche->cSuche, $kSpracheExt);
-        $this->Suche->cSuche       = $cSuche;
-        $kSprache                  = ($kSpracheExt > 0)
-            ? (int)$kSpracheExt
-            : $this->getLanguageID();
-        // Suchcache wurde zwar gefunden, ist jedoch nicht mehr gültig
-        Shop::DB()->query("
-            DELETE tsuchcache, tsuchcachetreffer
-                FROM tsuchcache
-                LEFT JOIN tsuchcachetreffer 
-                    ON tsuchcachetreffer.kSuchCache = tsuchcache.kSuchCache
-                WHERE tsuchcache.kSprache = " . $kSprache . "
-                    AND tsuchcache.dGueltigBis IS NOT NULL
-                    AND DATE_ADD(tsuchcache.dGueltigBis, INTERVAL 5 MINUTE) < now()", 3
-        );
-
-        // Suchcache checken, ob bereits vorhanden
-        $oSuchCache = Shop::DB()->query("
-            SELECT kSuchCache
-                FROM tsuchcache
-                WHERE kSprache =  " . $kSprache . "
-                    AND cSuche = '" . Shop::DB()->escape($cSuche) . "'
-                    AND (dGueltigBis > now() OR dGueltigBis IS NULL)", 1
-        );
-
-        if (isset($oSuchCache->kSuchCache) && $oSuchCache->kSuchCache > 0) {
-            return (int)$oSuchCache->kSuchCache; // Gib gültigen Suchcache zurück
-        }
-        // wenn kein Suchcache vorhanden
-        $nMindestzeichen = ((int)$this->conf['artikeluebersicht']['suche_min_zeichen'] > 0)
-            ? (int)$this->conf['artikeluebersicht']['suche_min_zeichen']
-            : 3;
-        if (strlen($cSuche) < $nMindestzeichen) {
-            require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
-            $this->Suche->Fehler = lang_suche_mindestanzahl($cSuche, $nMindestzeichen);
-
-            return 0;
-        }
-        // Suchausdruck aufbereiten
-        $cSuch_arr    = suchausdruckVorbereiten($cSuche);
-        $cSuchTMP_arr = $cSuch_arr;
-        if (count($cSuch_arr) === 0) {
-
-            return 0;
-        }
-        // Array mit nach Prio sort. Suchspalten holen
-        $cSuchspalten_arr       = gibSuchSpalten();
-        $cSuchspaltenKlasse_arr = gibSuchspaltenKlassen($cSuchspalten_arr);
-        $oSuchCache             = new stdClass();
-        $oSuchCache->kSprache   = $kSprache;
-        $oSuchCache->cSuche     = $cSuche;
-        $oSuchCache->dErstellt  = 'now()';
-        $kSuchCache             = Shop::DB()->insert('tsuchcache', $oSuchCache);
-
-        if ($kSuchCache <= 0) {
-            return 0;
-        }
-
-        if ($this->getLanguageID() > 0 && !standardspracheAktiv()) {
-            $cSQL = "SELECT " . $kSuchCache . ", IF(tartikel.kVaterArtikel > 0, 
-                        tartikel.kVaterArtikel, tartikelsprache.kArtikel) AS kArtikelTMP, ";
-        } else {
-            $cSQL = "SELECT " . $kSuchCache . ", IF(kVaterArtikel > 0, 
-                        kVaterArtikel, kArtikel) AS kArtikelTMP, ";
-        }
-        // Shop2 Suche - mehr als 3 Suchwörter *
-        if (count($cSuch_arr) > 3) {
-            $cSQL .= " 1 ";
-            if ($this->getLanguageID() > 0 && !standardspracheAktiv()) {
-                $cSQL .= " FROM tartikelsprache
-                                LEFT JOIN tartikel 
-                                    ON tartikelsprache.kArtikel = tartikel.kArtikel";
-            } else {
-                $cSQL .= " FROM tartikel ";
-            }
-            $cSQL .= " WHERE ";
-
-            foreach ($cSuchspalten_arr as $i => $cSuchspalten) {
-                if ($i > 0) {
-                    $cSQL .= " OR";
-                }
-                $cSQL .= "(";
-                foreach ($cSuchTMP_arr as $j => $cSuch) {
-                    if ($j > 0) {
-                        $cSQL .= " AND";
-                    }
-                    $cSQL .= " " . $cSuchspalten . " LIKE '%" . $cSuch . "%'";
-                }
-                $cSQL .= ")";
-            }
-        } else {
-            $nKlammern = 0;
-            $nPrio     = 1;
-            foreach ($cSuchspalten_arr as $i => $cSuchspalten) {
-                // Fülle bei 1, 2 oder 3 Suchwörtern aufsplitten
-                switch (count($cSuchTMP_arr)) {
-                    case 1: // Fall 1, nur ein Suchwort
-                        // "A"
-                        $nNichtErlaubteKlasse_arr = [2];
-                        if (pruefeSuchspaltenKlassen($cSuchspaltenKlasse_arr, $cSuchspalten, $nNichtErlaubteKlasse_arr)) {
-                            $nKlammern++;
-                            $cSQL .= "IF(" . $cSuchspalten . " = '" . $cSuchTMP_arr[0] . "', " . ++$nPrio . ", ";
-                        }
-                        // "A_%"
-                        $nNichtErlaubteKlasse_arr = [2, 3];
-                        if (pruefeSuchspaltenKlassen($cSuchspaltenKlasse_arr, $cSuchspalten, $nNichtErlaubteKlasse_arr)) {
-                            $nKlammern++;
-                            $cSQL .= "IF(" . $cSuchspalten . " LIKE '" . $cSuchTMP_arr[0] . " %', " . ++$nPrio . ", ";
-                        }
-                        // "%_A_%"
-                        $nNichtErlaubteKlasse_arr = [3];
-                        if (pruefeSuchspaltenKlassen($cSuchspaltenKlasse_arr, $cSuchspalten, $nNichtErlaubteKlasse_arr)) {
-                            $nKlammern++;
-                            $cSQL .= "IF(" . $cSuchspalten . " LIKE '% " . $cSuchTMP_arr[0] . " %', " . ++$nPrio . ", ";
-                        }
-                        // "%_A"
-                        $nNichtErlaubteKlasse_arr = [2, 3];
-                        if (pruefeSuchspaltenKlassen($cSuchspaltenKlasse_arr, $cSuchspalten, $nNichtErlaubteKlasse_arr)) {
-                            $nKlammern++;
-                            $cSQL .= "IF(" . $cSuchspalten . " LIKE '% " . $cSuchTMP_arr[0] . "', " . ++$nPrio . ", ";
-                        }
-                        // "%_A%"
-                        $nNichtErlaubteKlasse_arr = [3];
-                        if (pruefeSuchspaltenKlassen($cSuchspaltenKlasse_arr, $cSuchspalten, $nNichtErlaubteKlasse_arr)) {
-                            $nKlammern++;
-                            $cSQL .= "IF(" . $cSuchspalten . " LIKE '% " . $cSuchTMP_arr[0] . "%', " . ++$nPrio . ", ";
-                        }
-                        // "%A_%"
-                        $nNichtErlaubteKlasse_arr = [3];
-                        if (pruefeSuchspaltenKlassen($cSuchspaltenKlasse_arr, $cSuchspalten, $nNichtErlaubteKlasse_arr)) {
-                            $nKlammern++;
-                            $cSQL .= "IF(" . $cSuchspalten . " LIKE '%" . $cSuchTMP_arr[0] . " %', " . ++$nPrio . ", ";
-                        }
-                        // "A%"
-                        $nNichtErlaubteKlasse_arr = [2, 3];
-                        if (pruefeSuchspaltenKlassen($cSuchspaltenKlasse_arr, $cSuchspalten, $nNichtErlaubteKlasse_arr)) {
-                            $nKlammern++;
-                            $cSQL .= "IF(" . $cSuchspalten . " LIKE '" . $cSuchTMP_arr[0] . "%', " . ++$nPrio . ", ";
-                        }
-                        // "%A"
-                        $nNichtErlaubteKlasse_arr = [2, 3];
-                        if (pruefeSuchspaltenKlassen($cSuchspaltenKlasse_arr, $cSuchspalten, $nNichtErlaubteKlasse_arr)) {
-                            $nKlammern++;
-                            $cSQL .= "IF(" . $cSuchspalten . " LIKE '%" . $cSuchTMP_arr[0] . "', " . ++$nPrio . ", ";
-                        }
-                        // "%A%"
-                        $nNichtErlaubteKlasse_arr = [3];
-                        if (pruefeSuchspaltenKlassen($cSuchspaltenKlasse_arr, $cSuchspalten, $nNichtErlaubteKlasse_arr)) {
-                            $nKlammern++;
-                            $cSQL .= "IF(" . $cSuchspalten . " LIKE '%" . $cSuchTMP_arr[0] . "%', " . ++$nPrio . ", ";
-                        }
-                        break;
-                    case 2: // Fall 2, zwei Suchwörter
-                        // "A_B"
-                        $nNichtErlaubteKlasse_arr = [2];
-                        if (pruefeSuchspaltenKlassen($cSuchspaltenKlasse_arr, $cSuchspalten, $nNichtErlaubteKlasse_arr)) {
-                            $nKlammern++;
-                            $cSQL .= "IF(" . $cSuchspalten . " LIKE '" . $cSuchTMP_arr[0] . " " . $cSuchTMP_arr[1] . "', " . ++$nPrio . ", ";
-                        }
-                        // "B_A"
-                        $nNichtErlaubteKlasse_arr = [2, 3];
-                        if (pruefeSuchspaltenKlassen($cSuchspaltenKlasse_arr, $cSuchspalten, $nNichtErlaubteKlasse_arr)) {
-                            $nKlammern++;
-                            $cSQL .= "IF(" . $cSuchspalten . " LIKE '" . $cSuchTMP_arr[1] . " " . $cSuchTMP_arr[0] . "', " . ++$nPrio . ", ";
-                        }
-                        // "A_B_%"
-                        $nNichtErlaubteKlasse_arr = [2, 3];
-                        if (pruefeSuchspaltenKlassen($cSuchspaltenKlasse_arr, $cSuchspalten, $nNichtErlaubteKlasse_arr)) {
-                            $nKlammern++;
-                            $cSQL .= "IF(" . $cSuchspalten . " LIKE '" . $cSuchTMP_arr[0] . " " . $cSuchTMP_arr[1] . " %', " . ++$nPrio . ", ";
-                        }
-                        // "B_A_%"
-                        $nNichtErlaubteKlasse_arr = [2, 3];
-                        if (pruefeSuchspaltenKlassen($cSuchspaltenKlasse_arr, $cSuchspalten, $nNichtErlaubteKlasse_arr)) {
-                            $nKlammern++;
-                            $cSQL .= "IF(" . $cSuchspalten . " LIKE '" . $cSuchTMP_arr[1] . " " . $cSuchTMP_arr[0] . " %', " . ++$nPrio . ", ";
-                        }
-                        // "%_A_B"
-                        $nNichtErlaubteKlasse_arr = [2, 3];
-                        if (pruefeSuchspaltenKlassen($cSuchspaltenKlasse_arr, $cSuchspalten, $nNichtErlaubteKlasse_arr)) {
-                            $nKlammern++;
-                            $cSQL .= "IF(" . $cSuchspalten . " LIKE '% " . $cSuchTMP_arr[0] . " " . $cSuchTMP_arr[1] . "', " . ++$nPrio . ", ";
-                        }
-                        // "%_B_A"
-                        $nNichtErlaubteKlasse_arr = [2, 3];
-                        if (pruefeSuchspaltenKlassen($cSuchspaltenKlasse_arr, $cSuchspalten, $nNichtErlaubteKlasse_arr)) {
-                            $nKlammern++;
-                            $cSQL .= "IF(" . $cSuchspalten . " LIKE '% " . $cSuchTMP_arr[1] . " " . $cSuchTMP_arr[0] . "', " . ++$nPrio . ", ";
-                        }
-                        // "%_A_B_%"
-                        $nNichtErlaubteKlasse_arr = [3];
-                        if (pruefeSuchspaltenKlassen($cSuchspaltenKlasse_arr, $cSuchspalten, $nNichtErlaubteKlasse_arr)) {
-                            $nKlammern++;
-                            $cSQL .= "IF(" . $cSuchspalten . " LIKE '% " . $cSuchTMP_arr[0] . " " . $cSuchTMP_arr[1] . " %', " . ++$nPrio . ", ";
-                        }
-                        // "%_B_A_%"
-                        $nNichtErlaubteKlasse_arr = [3];
-                        if (pruefeSuchspaltenKlassen($cSuchspaltenKlasse_arr, $cSuchspalten, $nNichtErlaubteKlasse_arr)) {
-                            $nKlammern++;
-                            $cSQL .= "IF(" . $cSuchspalten . " LIKE '% " . $cSuchTMP_arr[1] . " " . $cSuchTMP_arr[0] . " %', " . ++$nPrio . ", ";
-                        }
-                        // "%A_B_%"
-                        $nNichtErlaubteKlasse_arr = [3];
-                        if (pruefeSuchspaltenKlassen($cSuchspaltenKlasse_arr, $cSuchspalten, $nNichtErlaubteKlasse_arr)) {
-                            $nKlammern++;
-                            $cSQL .= "IF(" . $cSuchspalten . " LIKE '%" . $cSuchTMP_arr[0] . " " . $cSuchTMP_arr[1] . " %', " . ++$nPrio . ", ";
-                        }
-                        // "%B_A_%"
-                        $nNichtErlaubteKlasse_arr = [3];
-                        if (pruefeSuchspaltenKlassen($cSuchspaltenKlasse_arr, $cSuchspalten, $nNichtErlaubteKlasse_arr)) {
-                            $nKlammern++;
-                            $cSQL .= "IF(" . $cSuchspalten . " LIKE '%" . $cSuchTMP_arr[1] . " " . $cSuchTMP_arr[0] . " %', " . ++$nPrio . ", ";
-                        }
-                        // "%_A_B%"
-                        $nNichtErlaubteKlasse_arr = [3];
-                        if (pruefeSuchspaltenKlassen($cSuchspaltenKlasse_arr, $cSuchspalten, $nNichtErlaubteKlasse_arr)) {
-                            $nKlammern++;
-                            $cSQL .= "IF(" . $cSuchspalten . " LIKE '% " . $cSuchTMP_arr[0] . " " . $cSuchTMP_arr[1] . "%', " . ++$nPrio . ", ";
-                        }
-                        // "%_B_A%"
-                        $nNichtErlaubteKlasse_arr = [3];
-                        if (pruefeSuchspaltenKlassen($cSuchspaltenKlasse_arr, $cSuchspalten, $nNichtErlaubteKlasse_arr)) {
-                            $nKlammern++;
-                            $cSQL .= "IF(" . $cSuchspalten . " LIKE '% " . $cSuchTMP_arr[1] . " " . $cSuchTMP_arr[0] . "%', " . ++$nPrio . ", ";
-                        }
-                        // "%A_B%"
-                        $nNichtErlaubteKlasse_arr = [3];
-                        if (pruefeSuchspaltenKlassen($cSuchspaltenKlasse_arr, $cSuchspalten, $nNichtErlaubteKlasse_arr)) {
-                            $nKlammern++;
-                            $cSQL .= "IF(" . $cSuchspalten . " LIKE '%" . $cSuchTMP_arr[0] . " " . $cSuchTMP_arr[1] . "%', " . ++$nPrio . ", ";
-                        }
-                        // "%B_A%"
-                        $nNichtErlaubteKlasse_arr = [3];
-                        if (pruefeSuchspaltenKlassen($cSuchspaltenKlasse_arr, $cSuchspalten, $nNichtErlaubteKlasse_arr)) {
-                            $nKlammern++;
-                            $cSQL .= "IF(" . $cSuchspalten . " LIKE '%" . $cSuchTMP_arr[1] . " " . $cSuchTMP_arr[0] . "%', " . ++$nPrio . ", ";
-                        }
-                        // "%_A%_B_%"
-                        $nNichtErlaubteKlasse_arr = [3];
-                        if (pruefeSuchspaltenKlassen($cSuchspaltenKlasse_arr, $cSuchspalten, $nNichtErlaubteKlasse_arr)) {
-                            $nKlammern++;
-                            $cSQL .= "IF(" . $cSuchspalten . " LIKE '% " . $cSuchTMP_arr[0] . "% " . $cSuchTMP_arr[1] . " %', " . ++$nPrio . ", ";
-                        }
-                        // "%_B%_A_%"
-                        $nNichtErlaubteKlasse_arr = [3];
-                        if (pruefeSuchspaltenKlassen($cSuchspaltenKlasse_arr, $cSuchspalten, $nNichtErlaubteKlasse_arr)) {
-                            $nKlammern++;
-                            $cSQL .= "IF(" . $cSuchspalten . " LIKE '% " . $cSuchTMP_arr[1] . "% " . $cSuchTMP_arr[0] . " %', " . ++$nPrio . ", ";
-                        }
-                        // "%_A_%B_%"
-                        $nNichtErlaubteKlasse_arr = [3];
-                        if (pruefeSuchspaltenKlassen($cSuchspaltenKlasse_arr, $cSuchspalten, $nNichtErlaubteKlasse_arr)) {
-                            $nKlammern++;
-                            $cSQL .= "IF(" . $cSuchspalten . " LIKE '% " . $cSuchTMP_arr[0] . " %" . $cSuchTMP_arr[1] . " %', " . ++$nPrio . ", ";
-                        }
-                        // "%_B_%A_%"
-                        $nNichtErlaubteKlasse_arr = [3];
-                        if (pruefeSuchspaltenKlassen($cSuchspaltenKlasse_arr, $cSuchspalten, $nNichtErlaubteKlasse_arr)) {
-                            $nKlammern++;
-                            $cSQL .= "IF(" . $cSuchspalten . " LIKE '% " . $cSuchTMP_arr[1] . " %" . $cSuchTMP_arr[0] . " %', " . ++$nPrio . ", ";
-                        }
-                        // "%_A%_%B_%"
-                        $nNichtErlaubteKlasse_arr = [2, 3];
-                        if (pruefeSuchspaltenKlassen($cSuchspaltenKlasse_arr, $cSuchspalten, $nNichtErlaubteKlasse_arr)) {
-                            $nKlammern++;
-                            $cSQL .= "IF(" . $cSuchspalten . " LIKE '% " . $cSuchTMP_arr[0] . "% %" . $cSuchTMP_arr[1] . " %', " . ++$nPrio . ", ";
-                        }
-                        // "%_B%_%A_%"
-                        $nNichtErlaubteKlasse_arr = [2, 3];
-                        if (pruefeSuchspaltenKlassen($cSuchspaltenKlasse_arr, $cSuchspalten, $nNichtErlaubteKlasse_arr)) {
-                            $nKlammern++;
-                            $cSQL .= "IF(" . $cSuchspalten . " LIKE '% " . $cSuchTMP_arr[1] . "% %" . $cSuchTMP_arr[0] . " %', " . ++$nPrio . ", ";
-                        }
-                        break;
-                    case 3: // Fall 3, drei Suchwörter
-                        // "%A_%_B_%_C%"
-                        $nNichtErlaubteKlasse_arr = [3];
-                        if (pruefeSuchspaltenKlassen($cSuchspaltenKlasse_arr, $cSuchspalten, $nNichtErlaubteKlasse_arr)) {
-                            $nKlammern++;
-                            $cSQL .= "IF(" . $cSuchspalten . " LIKE '%" . $cSuchTMP_arr[0] . " % " . $cSuchTMP_arr[1] . " % " . $cSuchTMP_arr[2] . "%', " . ++$nPrio . ", ";
-                        }
-                        // "%_A_% AND %_B_% AND %_C_%"
-                        $nNichtErlaubteKlasse_arr = [3];
-                        if (pruefeSuchspaltenKlassen($cSuchspaltenKlasse_arr, $cSuchspalten, $nNichtErlaubteKlasse_arr)) {
-                            $nKlammern++;
-                            $cSQL .= "IF((" . $cSuchspalten . " LIKE '% " . $cSuchTMP_arr[0] . " %') AND (" . $cSuchspalten .
-                                " LIKE '% " . $cSuchTMP_arr[1] . " %') AND (" . $cSuchspalten . " LIKE '% " . $cSuchTMP_arr[2] . " %'), " . ++$nPrio . ", ";
-                        }
-                        // "%_A_% AND %_B_% AND %C%"
-                        $nNichtErlaubteKlasse_arr = [3];
-                        if (pruefeSuchspaltenKlassen($cSuchspaltenKlasse_arr, $cSuchspalten, $nNichtErlaubteKlasse_arr)) {
-                            $nKlammern++;
-                            $cSQL .= "IF((" . $cSuchspalten . " LIKE '" . $cSuchTMP_arr[0] . "') AND (" . $cSuchspalten .
-                                " LIKE '" . $cSuchTMP_arr[1] . "') AND (" . $cSuchspalten . " LIKE '%" . $cSuchTMP_arr[2] . "%'), " . ++$nPrio . ", ";
-                        }
-                        // "%_A_% AND %B% AND %_C_%"
-                        $nNichtErlaubteKlasse_arr = [3];
-                        if (pruefeSuchspaltenKlassen($cSuchspaltenKlasse_arr, $cSuchspalten, $nNichtErlaubteKlasse_arr)) {
-                            $nKlammern++;
-                            $cSQL .= "IF((" . $cSuchspalten . " LIKE '% " . $cSuchTMP_arr[0] . " %') AND (" . $cSuchspalten .
-                                " LIKE '%" . $cSuchTMP_arr[1] . "%') AND (" . $cSuchspalten . " LIKE '% " . $cSuchTMP_arr[2] . " %'), " . ++$nPrio . ", ";
-                        }
-                        // "%_A_% AND %B% AND %C%"
-                        $nNichtErlaubteKlasse_arr = [3];
-                        if (pruefeSuchspaltenKlassen($cSuchspaltenKlasse_arr, $cSuchspalten, $nNichtErlaubteKlasse_arr)) {
-                            $nKlammern++;
-                            $cSQL .= "IF((" . $cSuchspalten . " LIKE '% " . $cSuchTMP_arr[0] . " %') AND (" . $cSuchspalten .
-                                " LIKE '%" . $cSuchTMP_arr[1] . "%') AND (" . $cSuchspalten . " LIKE '%" . $cSuchTMP_arr[2] . "%'), " . ++$nPrio . ", ";
-                        }
-                        // "%A% AND %_B_% AND %_C_%"
-                        $nNichtErlaubteKlasse_arr = [3];
-                        if (pruefeSuchspaltenKlassen($cSuchspaltenKlasse_arr, $cSuchspalten, $nNichtErlaubteKlasse_arr)) {
-                            $nKlammern++;
-                            $cSQL .= "IF((" . $cSuchspalten . " LIKE '%" . $cSuchTMP_arr[0] . "%') AND (" . $cSuchspalten .
-                                " LIKE '% " . $cSuchTMP_arr[1] . " %') AND (" . $cSuchspalten . " LIKE '% " . $cSuchTMP_arr[2] . " %'), " . ++$nPrio . ", ";
-                        }
-                        // "%A% AND %_B_% AND %C%"
-                        $nNichtErlaubteKlasse_arr = [3];
-                        if (pruefeSuchspaltenKlassen($cSuchspaltenKlasse_arr, $cSuchspalten, $nNichtErlaubteKlasse_arr)) {
-                            $nKlammern++;
-                            $cSQL .= "IF((" . $cSuchspalten . " LIKE '%" . $cSuchTMP_arr[0] . "%') AND (" . $cSuchspalten .
-                                " LIKE '% " . $cSuchTMP_arr[1] . " %') AND (" . $cSuchspalten . " LIKE '%" . $cSuchTMP_arr[2] . "%'), " . ++$nPrio . ", ";
-                        }
-                        // "%A% AND %B% AND %_C_%"
-                        $nNichtErlaubteKlasse_arr = [3];
-                        if (pruefeSuchspaltenKlassen($cSuchspaltenKlasse_arr, $cSuchspalten, $nNichtErlaubteKlasse_arr)) {
-                            $nKlammern++;
-                            $cSQL .= "IF((" . $cSuchspalten . " LIKE '%" . $cSuchTMP_arr[0] . "%') AND (" . $cSuchspalten .
-                                " LIKE '%" . $cSuchTMP_arr[1] . "%') AND (" . $cSuchspalten . " LIKE '% " . $cSuchTMP_arr[2] . " %'), " . ++$nPrio . ", ";
-                        }
-                        // "%A%B%C%"
-                        $nNichtErlaubteKlasse_arr = [3];
-                        if (pruefeSuchspaltenKlassen($cSuchspaltenKlasse_arr, $cSuchspalten, $nNichtErlaubteKlasse_arr)) {
-                            $nKlammern++;
-                            $cSQL .= "IF(" . $cSuchspalten . " LIKE '%" . $cSuchTMP_arr[0] . "%" . $cSuchTMP_arr[1] . "%" . $cSuchTMP_arr[2] . "%', " . ++$nPrio . ", ";
-                        }
-                        // "%A% AND %B% AND %C%"
-                        $nNichtErlaubteKlasse_arr = [3];
-                        if (pruefeSuchspaltenKlassen($cSuchspaltenKlasse_arr, $cSuchspalten, $nNichtErlaubteKlasse_arr)) {
-                            $nKlammern++;
-                            $cSQL .= "IF((" . $cSuchspalten . " LIKE '%" . $cSuchTMP_arr[0] . "%') AND (" . $cSuchspalten .
-                                " LIKE '%" . $cSuchTMP_arr[1] . "%') AND (" . $cSuchspalten . " LIKE '%" . $cSuchTMP_arr[2] . "%'), " . ++$nPrio . ", ";
-                        }
-                        break;
-                    }
-
-                if ($i === (count($cSuchspalten_arr) - 1)) {
-                    $cSQL .= "254)";
-                }
-            }
-
-            for ($i = 0; $i < ($nKlammern - 1); ++$i) {
-                $cSQL .= ")";
-            }
-
-            if ($this->getLanguageID() > 0 && !standardspracheAktiv()) {
-                $cSQL .= " FROM tartikelsprache
-                            LEFT JOIN tartikel 
-                                ON tartikelsprache.kArtikel = tartikel.kArtikel";
-            } else {
-                $cSQL .= " FROM tartikel ";
-            }
-            $cSQL .= " WHERE ";
-            if ($this->getLanguageID() > 0 && !standardspracheAktiv()) {
-                $cSQL .= " tartikelsprache.kSprache = " . $this->getLanguageID() . " AND ";
-            }
-            foreach ($cSuchspalten_arr as $i => $cSuchspalten) {
-                if ($i > 0) {
-                    $cSQL .= " OR";
-                }
-                $cSQL .= "(";
-
-                foreach ($cSuchTMP_arr as $j => $cSuch) {
-                    if ($j > 0) {
-                        $cSQL .= " AND";
-                    }
-                    $cSQL .= " " . $cSuchspalten . " LIKE '%" . $cSuch . "%'";
-                }
-                $cSQL .= ")";
-            }
-        }
-        Shop::DB()->query("
-            INSERT INTO tsuchcachetreffer " .
-                $cSQL . "
-                GROUP BY kArtikelTMP
-                LIMIT " . (int)$this->conf['artikeluebersicht']['suche_max_treffer'], 3
-        );
-
-        return (int)$kSuchCache;
     }
 
     /**

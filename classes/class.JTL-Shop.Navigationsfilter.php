@@ -1825,23 +1825,34 @@ class Navigationsfilter
                 ? $filter->getSeo($this->getLanguageID())
                 : '';
             if ($debug) {
-                Shop::dbg($filter->getValue(), false, 'active filter value:');
+                Shop::dbg($filter, false, 'active filter:');
             }
             if (empty($filterSeo)) {
                 $bSeo = false;
             }
             $urlParam = $filter->getUrlParam();
+            if ($debug) {
+                Shop::dbg($urlParam, false, 'urlParam for active filter:');
+                if (isset($urlParams[$urlParam])) {
+                    Shop::dbg($urlParams[$urlParam], false, '@index:');
+                    Shop::dbg(is_array($urlParams[$urlParam][0]->value), false, 'isarray?:');
+                }
+            }
             if (!isset($urlParams[$urlParam])) {
                 $urlParams[$urlParam] = [];
                 $filterSeoData          = new stdClass();
                 $filterSeoData->value   = $filter->getValue();
+//                if ($debug)
+//                Shop::dbg($filterSeoData->value, false, 'if!$filterSeoData->value:');
                 $filterSeoData->sep     = $filter->getUrlParamSEO();
                 $filterSeoData->seo     = $filterSeo;
                 $filterSeoData->type    = $filter->getType();
                 $urlParams[$urlParam][] = $filterSeoData;
-            } elseif (isset($urlParams[$urlParam]->value) && is_array($urlParams[$urlParam]->value)) {
-                $urlParams[$urlParam]->value[] = $filter->getValue();
+            } elseif (isset($urlParams[$urlParam][0]->value) && is_array($urlParams[$urlParam][0]->value)) {
+                if ($debug) echo 'elseif';
+                $urlParams[$urlParam][0]->value[] = $filter->getValue();
             } else {
+                if ($debug) echo 'else';
                 $filterSeoData          = new stdClass();
                 $filterSeoData->value   = $filter->getValue();
                 $filterSeoData->sep     = $filter->getUrlParamSEO();
@@ -1849,6 +1860,7 @@ class Navigationsfilter
                 $filterSeoData->type    = $filter->getType();
                 $urlParams[$urlParam][] = $filterSeoData;
             }
+            if ($debug) Shop::dbg($urlParams, false, '$urlParams now:');
         }
         // remove extra filters from url array if getDoUnset equals true
         if (method_exists($extraFilter, 'getDoUnset') && $extraFilter->getDoUnset() === true) {
@@ -1874,19 +1886,23 @@ class Navigationsfilter
             }
         }
         if ($debug) {
-            Shop::dbg($urlParams, false, 'Params2:');
             Shop::dbg($url, false, 'Current url:');
+            Shop::dbg($urlParams, false, 'params:');
         }
         // build url string from url array
         foreach ($urlParams as $filterID => $filters) {
             $filters = array_map('unserialize', array_unique(array_map('serialize', $filters)));
+            if ($debug) Shop::dbg($filters, false, '$filters:');
             foreach ($filters as $filterItem) {
+                if ($debug) Shop::dbg($filterItem, false, '$filterItem:');
                 if (!empty($filterItem->sep) && !empty($filterItem->seo)) {
                     $url .= $filterItem->sep . $filterItem->seo;
                 } else {
+                    if ($debug) Shop::dbg($filterItem->value, false, '$filterItem->value:');
                     $getParam = $hasQuestionMark ? '&' : '?';
                     if (is_array($filterItem->value)) {
                         foreach ($filterItem->value as $filterValue) {
+                            if ($debug) Shop::dbg($url, false, 'URL:');
                             $getParam = $hasQuestionMark ? '&' : '?';
                             $url .= $getParam . $filterID . '[]=' . $filterValue;
                             $hasQuestionMark = true;

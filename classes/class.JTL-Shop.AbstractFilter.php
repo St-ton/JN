@@ -132,9 +132,6 @@ abstract class AbstractFilter implements IFilter
      */
     public function getSeo($idx = null)
     {
-//        Shop::dbg(__CLASS__, false, 'getSeo for class:');
-//        Shop::dbg($this->cSeo, false, 'current seo:');
-//        Shop::dbg($idx, false, 'IDX:');
         return ($idx !== null)
             ? (isset($this->cSeo[$idx])
                 ? $this->cSeo[$idx]

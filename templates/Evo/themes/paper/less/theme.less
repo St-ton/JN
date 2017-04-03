@@ -424,6 +424,16 @@ input[type="checkbox"],
   .box-shadow(0 1px 4px rgba(0,0,0,.3));
 }
 
+
+// Default navbar
+.navbar-default .navbar-nav > li > a {
+    &:hover,
+    &:active {
+      color: @navbar-default-link-active-color;
+      background-color: @navbar-default-link-active-bg;
+    }
+}
+
 // Indicators =================================================================
 
 .alert:not(.panel-wrap) {

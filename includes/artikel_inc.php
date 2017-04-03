@@ -1309,6 +1309,11 @@ function buildConfig($kArtikel, $fAnzahl, $nVariation_arr, $nKonfiggruppe_arr, $
     $oArtikelOptionen->nVariationKombiKinder = 1;
     $oArtikel->fuelleArtikel($kArtikel, $oArtikelOptionen);
 
+    $oKonfig->nMinDeliveryDays      = $oArtikel->nMinDeliveryDays;
+    $oKonfig->nMaxDeliveryDays      = $oArtikel->nMaxDeliveryDays;
+    $oKonfig->cEstimatedDelivery    = $oArtikel->cEstimatedDelivery;
+    $oKonfig->Lageranzeige->nStatus = $oArtikel->Lageranzeige->nStatus;
+
     $fAnzahl = max($fAnzahl, 1);
     if ($oArtikel->cTeilbar !== 'Y' && (int)$fAnzahl != $fAnzahl) {
         $fAnzahl = (int)$fAnzahl;
@@ -1355,6 +1360,13 @@ function buildConfig($kArtikel, $fAnzahl, $nVariation_arr, $nKonfiggruppe_arr, $
                 $oKonfig->fGesamtpreis[0] += $oKonfigitem->getPreis() * $oKonfigitem->fAnzahlWK;
                 $oKonfig->fGesamtpreis[1] += $oKonfigitem->getPreis(true) * $oKonfigitem->fAnzahlWK;
                 $oKonfiggruppe->bAktiv = true;
+                //Konfigitem mit Lagerinfos
+                if ($oKonfigitem->getArtikel()->cLagerBeachten === 'Y' && $oKonfig->nMinDeliveryDays < $oKonfigitem->getArtikel()->nMinDeliveryDays) {
+                    $oKonfig->nMinDeliveryDays      = $oKonfigitem->getArtikel()->nMinDeliveryDays;
+                    $oKonfig->nMaxDeliveryDays      = $oKonfigitem->getArtikel()->nMaxDeliveryDays;
+                    $oKonfig->cEstimatedDelivery    = $oKonfigitem->getArtikel()->cEstimatedDelivery;
+                    $oKonfig->Lageranzeige->nStatus = $oKonfigitem->getArtikel()->Lageranzeige->nStatus;
+                }
             }
         }
         $oKonfiggruppe->oItem_arr = array_values($oKonfiggruppe->oItem_arr);

@@ -103,6 +103,7 @@ function uebernehmeWarenkorbAenderungen()
     }
     if ($drop !== null) {
         loescheWarenkorbPosition($drop);
+        freeGiftStillValid();
         if ($post) {
             //prg
             $linkHelper = LinkHelper::getInstance();

@@ -412,7 +412,7 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
         $nAktiv           = (int)$_POST['nAktiv'];
         $cMetaTitle       = htmlspecialchars($_POST['cMetaTitle'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
         $cMetaDescription = htmlspecialchars($_POST['cMetaDescription'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
-        $cBeschreibung    = htmlspecialchars($_POST['cBeschreibung'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
+        $cBeschreibung    = $_POST['cBeschreibung'];
         $cPreviewImage    = $_POST['previewImage'];
         $cPlausiValue_arr = pruefeNewsKategorie($_POST['cName'], isset($_POST['newskategorie_edit_speichern'])
             ? (int)$_POST['newskategorie_edit_speichern']

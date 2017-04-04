@@ -13,7 +13,7 @@ if (!$oAccount->getIsAuthenticated()) {
 }
 
 $jsonApi       = JSONAPI::getInstance();
-$io            = IO::getInstance();
+$io            = AdminIO::getInstance()->setAccount($oAccount);
 $dashboardInc  = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dashboard_inc.php';
 $widgetBaseInc = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_WIDGETS . 'class.WidgetBase.php';
 $accountInc    = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'benutzerverwaltung_inc.php';
@@ -23,15 +23,15 @@ $io->register('getPages', [$jsonApi, 'getPages'])
    ->register('getCategories', [$jsonApi, 'getCategories'])
    ->register('getProducts', [$jsonApi, 'getProducts'])
    ->register('getManufacturers', [$jsonApi, 'getManufacturers'])
-    ->register('getCustomers', [$jsonApi, 'getCustomers'])
-    ->register('getSeos', [$jsonApi, 'getSeos'])
-    // Allround-iocalls
+   ->register('getCustomers', [$jsonApi, 'getCustomers'])
+   ->register('getSeos', [$jsonApi, 'getSeos'])
+   // Allround-iocalls
    ->register('getCurrencyConversion', 'getCurrencyConversionIO')
    ->register('setCurrencyConversionTooltip', 'setCurrencyConversionTooltipIO')
-    // Two-FA-related functions
+   // Two-FA-related functions
    ->register('getNewTwoFA', ['TwoFA', 'getNewTwoFA'])
    ->register('genTwoFAEmergencyCodes', ['TwoFA', 'genTwoFAEmergencyCodes'])
-    // Dashboard-related functions
+   // Dashboard-related functions
    ->register('setWidgetPosition', 'setWidgetPosition', $dashboardInc, 'DASHBOARD_VIEW')
    ->register('closeWidget', 'closeWidget', $dashboardInc, 'DASHBOARD_VIEW')
    ->register('addWidget', 'addWidget', $dashboardInc, 'DASHBOARD_VIEW')
@@ -39,9 +39,9 @@ $io->register('getPages', [$jsonApi, 'getPages'])
    ->register('getAvailableWidgets', 'getAvailableWidgetsIO', $dashboardInc, 'DASHBOARD_VIEW')
    ->register('getRemoteDataIO', ['WidgetBase', 'getRemoteDataIO'], $widgetBaseInc, 'DASHBOARD_VIEW')
    ->register('truncateJtllog', ['Jtllog', 'truncateLog'], null, 'DASHBOARD_VIEW')
-    // Benutzerverwaltung
+   // Benutzerverwaltung
    ->register('getRandomPasswordIO', 'getRandomPasswordIO', $accountInc, 'ACCOUNT_VIEW')
-    // Bannerverwaltung
+   // Bannerverwaltung
    ->register('saveBannerAreasIO', 'saveBannerAreasIO', $bannerInc, 'DISPLAY_BANNER_VIEW');
 
 $data = $io->handleRequest($_REQUEST['io']);

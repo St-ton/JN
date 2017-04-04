@@ -10,14 +10,14 @@
 class IO
 {
     /**
-     * @var self
+     * @var static
      */
     private static $instance = null;
 
     /**
      * @var array
      */
-    private $functions = [];
+    protected $functions = [];
 
     /**
      * ctor
@@ -30,11 +30,11 @@ class IO
     private function __clone() { }
 
     /**
-     * @return self
+     * @return static
      */
     public static function getInstance()
     {
-        return self::$instance === null ? (self::$instance = new self()) : self::$instance;
+        return static::$instance === null ? (static::$instance = new static()) : static::$instance;
     }
 
     /**
@@ -44,11 +44,10 @@ class IO
      * @param string        $name - name udner which this function is callable
      * @param null|callable $function - target function name, method-tuple or closure
      * @param null|string   $include - file where this function is defined in
-     * @param null|string   $permission - permission that is required to execute this function
      * @return $this
      * @throws Exception
      */
-    public function register($name, $function = null, $include = null, $permission = null)
+    public function register($name, $function = null, $include = null)
     {
         if ($this->exists($name)) {
             throw new Exception("Function already registered");
@@ -58,7 +57,7 @@ class IO
             $function = $name;
         }
 
-        $this->functions[$name] = [$function, $include, $permission];
+        $this->functions[$name] = [$function, $include];
 
         return $this;
     }
@@ -132,15 +131,12 @@ class IO
      */
     public function execute($name, $params)
     {
-        global $oAccount;
-
         if (!$this->exists($name)) {
             throw new Exception("Function not registered");
         }
 
-        $function   = $this->functions[$name][0];
-        $include    = $this->functions[$name][1];
-        $permission = $this->functions[$name][2];
+        $function = $this->functions[$name][0];
+        $include  = $this->functions[$name][1];
 
         if ($include !== null) {
             require_once $include;
@@ -154,10 +150,6 @@ class IO
 
         if ($ref->getNumberOfRequiredParameters() > count($params)) {
             throw new Exception("Wrong required parameter count");
-        }
-
-        if ($permission !== null && !$oAccount->permission($permission)) {
-            throw new Exception("User has not the required permission to execute this function");
         }
 
         return call_user_func_array($function, $params);

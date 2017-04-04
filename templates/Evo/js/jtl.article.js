@@ -8,13 +8,10 @@
 
     var _stock_info = ['out-of-stock', 'in-short-supply', 'in-stock'],
         $v,
-        ArticleClass = function() {
+        ArticleClass = function () {
             this.init();
         };
 
-    /*******************************************************************************************************************
-     * ArticleClass - Base class for article handling, used on article details
-     */
     ArticleClass.DEFAULTS = {
         input: {
             id: 'a'
@@ -33,7 +30,7 @@
     ArticleClass.prototype = {
         constructor: ArticleClass,
 
-        init: function() {
+        init: function () {
             this.options = ArticleClass.DEFAULTS;
         },
         
@@ -59,52 +56,31 @@
             }
         },
 
-        register: function() {
-            var $wrapper = $('#result-wrapper');
+        register: function () {
+            var that = this,
+                config,
+                inner;
+            this.gallery = $('#gallery').gallery();
+            this.galleryIndex = 0;
+            this.galleryLastIdent = '_';
 
-            this.registerGallery();
-            this.registerConfig();
-            this.registerSimpleVariations($wrapper);
-            this.registerSwitchVariations($wrapper);
-            this.registerImageSwitch($wrapper);
-            this.registerFinish();
-        },
-
-        registerGallery: function() {
-            var $gallery = $('#gallery');
-
-            if ($gallery.length === 1) {
-                this.gallery          = $gallery.gallery();
-                this.galleryIndex     = 0;
-                this.galleryLastIdent = '_';
-            } else {
-                this.gallery = null;
-            }
-        },
-
-        registerConfig: function() {
-            var that   = this,
-                config = $('.product-configuration')
-                    .closest('form')
-                    .find('input[type="radio"], input[type="checkbox"], input[type="number"], select');
+            config = $('.product-configuration')
+                .closest('form')
+                .find('input[type="radio"], input[type="checkbox"], input[type="number"], select');
 
             if (config.length > 0) {
-                config.on('change', function() {
+                config.on('change', function () {
                     that.configurator();
                 })
-                    .keypress(function (e) {
-                        if (e.which === 13) {
-                            return false;
-                        }
-                    });
+                .keypress(function (e) {
+                    if (e.which == 13) {
+                        return false;
+                    }
+                });
                 that.configurator(true);
             }
-        },
-
-        registerSimpleVariations: function($wrapper) {
-            var that = this;
-
-            $('.variations select', $wrapper).selectpicker({
+            
+            $('.variations select').selectpicker({
                 iconBase: 'fa',
                 tickIcon: 'fa-check',
                 hideDisabled: true,
@@ -112,60 +88,51 @@
                 /*mobile: true*/
             });
 
-            $('.simple-variations input[type="radio"]', $wrapper)
-                .on('change', function() {
-                    var val = $(this).val(),
-                        key = $(this).parent().data('key');
-                    $('.simple-variations [data-key="' + key + '"]').removeClass('active');
-                    $('.simple-variations [data-value="' + val + '"]').addClass('active');
-                });
-
-            $('.simple-variations input[type="radio"], .simple-variations select', $wrapper)
+            $('.simple-variations input[type="radio"]').on('change', function () {
+                var val = $(this).val(),
+                    key = $(this).parent().data('key');
+                $('.simple-variations [data-key="' + key + '"]').removeClass('active');
+                $('.simple-variations [data-value="' + val + '"]').addClass('active');
+            });
+            
+            $('.simple-variations input[type="radio"], .simple-variations select')
                 .on('change', function () {
-                    that.variationPrice(this, true);
+                    that.variationPrice(true);
                 });
-        },
-
-        registerSwitchVariations: function($wrapper) {
-            var that = this;
-
-            $('.switch-variations input[type="radio"], .switch-variations select', $wrapper)
+            
+            $('.switch-variations input[type="radio"], .switch-variations select')
                 .on('change', function () {
                     that.variationSwitch(this, true);
                 });
 
             if ("ontouchstart" in document.documentElement) {
-                $('.variations .swatches .variation', $wrapper)
-                    .on('mouseover', function() {
-                        $(this).trigger('click');
-                    });
+                $('.variations .swatches .variation').on('mouseover', function() {
+                    $(this).trigger('click');
+                });
             }
 
             // ie11 fallback
             if (typeof document.body.style.msTransform === 'string') {
-                $('.variations label.variation', $wrapper)
+                $('.variations label.variation')
                     .on('click', function (e) {
                         if (e.target.tagName === 'IMG') {
                             $(this).trigger('click');
                         }
                     });
             }
-        },
-
-        registerImageSwitch: function($wrapper) {
-            var imgSwitch = function(context, temporary, force) {
-                var $context = $(context),
-                    id       = $context.attr('data-key'),
-                    value    = $context.attr('data-value'),
-                    data     = $context.data('list'),
-                    title    = $context.attr('data-title'),
-                    gallery  = $.evo.article().gallery;
+            
+            inner = function(context, temporary, force) {
+                var id = $(context).attr('data-key'),
+                    value = $(context).attr('data-value'),
+                    data  = $(context).data('list'),
+                    title = $(context).attr('data-title'),
+                    gallery = $.evo.article().gallery;
 
                 if (typeof temporary === 'undefined') {
                     temporary = true;
                 }
 
-                if (gallery !== null && !$(context).hasClass('active') || force) {
+                if (!$(context).hasClass('active') || force) {
                     if (!!data) {
                         gallery.setItems([data], value);
 
@@ -173,7 +140,7 @@
                             var items  = [data];
                             var stacks = gallery.getStacks();
                             for (var s in stacks) {
-                                if (stacks.hasOwnProperty(s) && s.match(/^_[0-9a-zA-Z]*$/) && s !== '_' + id) {
+                                if (stacks.hasOwnProperty(s) && s.match(/^_[0-9a-zA-Z]*$/) && s != '_' + id) {
                                     items = $.merge(items, stacks[s]);
                                 }
                             }
@@ -191,69 +158,66 @@
                 }
             };
 
-            $('.variations .bootstrap-select select', $wrapper)
-                .change(function() {
-                    var tmp_idx = parseInt($('.variations .bootstrap-select li.selected').attr('data-original-index')) + 1;
-                    var sel     = $(this).find('option:nth-child(' + tmp_idx + ')');
-                    var cont    = $(this).closest('.variations');
-                    if (cont.hasClass('simple-variations')) {
-                        imgSwitch(sel, false, false);
-                    } else {
-                        imgSwitch(sel, true, false);
-                    }
-                });
+            $('.variations .bootstrap-select select').change(function() {
+                var tmp_idx = parseInt($('.variations .bootstrap-select li.selected').attr('data-original-index')) + 1;
+                var sel     = $(this).find('option:nth-child(' + tmp_idx + ')');
+                var cont    = $(this).closest('.variations');
+                if (cont.hasClass('simple-variations')) {
+                    inner(sel, false, false);
+                } else {
+                    inner(sel, true, false);
+                }
+            });
 
             var touchCapable = 'ontouchstart' in window || (window.DocumentTouch && document instanceof window.DocumentTouch);
             if (!touchCapable || ResponsiveBootstrapToolkit.current() !== 'xs') {
-                $('.variations .bootstrap-select .dropdown-menu li', $wrapper)
-                    .hover(function () {
-                        var tmp_idx = parseInt($(this).attr('data-original-index')) + 1,
-                            sel     = $(this).closest('.bootstrap-select').find('select option:nth-child(' + tmp_idx + ')');
-                        imgSwitch(sel);
-                    }, function () {
-                        var tmp_idx = parseInt($(this).attr('data-original-index')) + 1,
-                            p       = $(this).closest('.bootstrap-select').find('select option:nth-child(' + tmp_idx + ')'),
-                            id      = $(p).attr('data-key'),
-                            data    = $(p).data('list'),
-                            gallery = $.evo.article().gallery,
-                            active;
-
-                        if (!!data && gallery !== null) {
-                            active = $(p).find('.variation.active');
-                            gallery.render($.evo.article().galleryLastIdent);
-                            gallery.activate($.evo.article().galleryIndex);
-                        }
-                    });
-            }
-
-            $('.variations.simple-variations .variation', $wrapper)
-                .click(function() {
-                    imgSwitch(this, false);
-                });
-
-            if (!touchCapable || ResponsiveBootstrapToolkit.current() !== 'xs') {
-                $('.variations .variation', $wrapper).hover(function () {
-                    imgSwitch(this);
+                $('.variations .bootstrap-select .dropdown-menu li').hover(function () {
+                    var tmp_idx = parseInt($(this).attr('data-original-index')) + 1;
+                    var sel = $(this).closest('.bootstrap-select').find('select option:nth-child(' + tmp_idx + ')');
+                    inner(sel);
                 }, function () {
-                    var p = $(this).closest('.variation'),
-                        data    = $(this).data('list'),
-                        gallery = $.evo.article().gallery,
-                        active  = $(p).find('.variation.active');
+                    var tmp_idx = parseInt($(this).attr('data-original-index')) + 1,
+                        p = $(this).closest('.bootstrap-select').find('select option:nth-child(' + tmp_idx + ')'),
+                        id = $(p).attr('data-key'),
+                        data = $(p).data('list'),
+                        gallery,
+                        active;
 
-                    if (!!data && gallery !== null) {
+                    if (!!data) {
+                        gallery = $.evo.article().gallery;
+                        active = $(p).find('.variation.active');
                         gallery.render($.evo.article().galleryLastIdent);
                         gallery.activate($.evo.article().galleryIndex);
                     }
                 });
             }
-        },
 
-        registerFinish: function() {
+            $('.variations.simple-variations .variation').click(function() {
+                inner(this, false);
+            });
+            
+            if (!touchCapable || ResponsiveBootstrapToolkit.current() !== 'xs') {
+                $('.variations .variation').hover(function () {
+                    inner(this);
+                }, function () {
+                    var p = $(this).closest('.variation'),
+                        data = $(this).data('list'),
+                        gallery,
+                        active;
+                    if (!!data) {
+                        gallery = $.evo.article().gallery;
+                        active = $(p).find('.variation.active');
+                        gallery.render($.evo.article().galleryLastIdent);
+                        gallery.activate($.evo.article().galleryIndex);
+                    }
+                });
+            }
+
             $('#jump-to-votes-tab').click(function () {
                 $('#content a[href="#tab-votes"]').tab('show');
             });
-
-            if ($('.switch-variations').length === 1) {
+            
+            if ($('.switch-variations').length == 1) {
                 this.variationSwitch();
             }
 
@@ -261,7 +225,7 @@
         },
 
         registerProductActions: function($container) {
-            if (typeof $container === 'undefined') {
+            if (typeof $container == 'undefined') {
                 $container = $('body');
             }
 
@@ -358,18 +322,18 @@
             return false;
         },
 
-        configurator: function(init) {
-            var that      = this,
+        configurator: function (init) {
+            var that = this,
                 container = $('#cfg-container'),
-                sidebar   = $('#product-configuration-sidebar'),
                 width,
-                form;
+                form,
+                sidebar = $('#product-configuration-sidebar');
 
             if (container.length === 0) {
                 return;
             }
 
-            if (viewport.current() !== 'lg') {
+            if (viewport.current() != 'lg') {
                 sidebar.removeClass('affix');
             }
 
@@ -384,14 +348,14 @@
                     offset: {
                         top: function () {
                             var top = container.offset().top - $('#evo-main-nav-wrapper.affix').outerHeight(true);
-                            if (viewport.current() !== 'lg') {
+                            if (viewport.current() != 'lg') {
                                 top = 999999;
                             }
                             return top;
                         },
                         bottom: function () {
                             var bottom = $('body').height() - (container.height() + container.offset().top);
-                            if (viewport.current() !== 'lg') {
+                            if (viewport.current() != 'lg') {
                                 bottom = 999999;
                             }
                             return bottom;
@@ -477,7 +441,7 @@
                                         quantityWrapper.slideDown(200);
                                     }
                                 } else {
-                                    if (quantityWrapper.css('display') === 'none' && !init) {
+                                    if (quantityWrapper.css('display') == 'none' && !init) {
                                         quantityInput.val(item.fInitial);
                                     }
                                     quantityWrapper.slideDown(200);
@@ -502,25 +466,16 @@
             });
         },
 
-        getConfigGroupQuantity: function(groupId) {
+        getConfigGroupQuantity: function (groupId) {
             return $('.cfg-group[data-id="' + groupId + '"] .quantity');
         },
 
-        getConfigGroupQuantityInput: function(groupId) {
+        getConfigGroupQuantityInput: function (groupId) {
             return $('.cfg-group[data-id="' + groupId + '"] .quantity input');
         },
 
-        getConfigGroupImage: function(groupId) {
+        getConfigGroupImage: function (groupId) {
             return $('.cfg-group[data-id="' + groupId + '"] .group-image img');
-        },
-
-        getCurrent: function(item) {
-            var $current = $(item).hasClass('variation') ? $(item) : $(item).closest('.variation');
-            if ($current.context.tagName === 'SELECT') {
-                $current = $(item).find('option:selected');
-            }
-
-            return $current;
         },
 
         handleProductAction: function(action, data) {
@@ -534,7 +489,7 @@
             return false;
         },
 
-        setConfigItemImage: function(groupId, img) {
+        setConfigItemImage: function (groupId, img) {
             $('.cfg-group[data-id="' + groupId + '"] .group-image img').attr('src', img).first();
         },
 
@@ -546,40 +501,38 @@
             var multiselect                      = groupItems.find('select').attr("multiple");
 
             //  Bisher kein Content mit einer Beschreibung vorhanden, aber ein Artikel mit Beschreibung ausgewählt
-            if (descriptionDropdownContentHidden.length > 0 && descriptionCheckdioContent.length === 0 && itemBeschreibung.length > 0 && multiselect !== "multiple") {
+            if (descriptionDropdownContentHidden.length > 0 && descriptionCheckdioContent.length == 0 && itemBeschreibung.length > 0 && multiselect !== "multiple") {
                 groupItems.find('a[href="#filter-collapsible_dropdown_' + groupId + '"]').removeClass('hidden');
                 descriptionDropdownContent.replaceWith('<div id="filter-collapsible_dropdown_' + groupId + '" class="collapse top10 panel-body">' + itemBeschreibung + '</div>');
             //  Bisher Content mit einer Beschreibung vorhanden, aber ein Artikel ohne Beschreibung ausgewählt
-            } else if (descriptionDropdownContentHidden.length === 0 && descriptionCheckdioContent.length === 0 && itemBeschreibung.length === 0 && multiselect !== "multiple") {
+            } else if (descriptionDropdownContentHidden.length == 0 && descriptionCheckdioContent.length == 0 && itemBeschreibung.length == 0 && multiselect !== "multiple") {
                 groupItems.find('a[href="#filter-collapsible_dropdown_' + groupId + '"]').addClass('hidden');
                 descriptionDropdownContent.addClass('hidden');
             //  Bisher Content mit einer Beschreibung vorhanden und ein Artikel mit Beschreibung ausgewählt
-            } else if (descriptionDropdownContentHidden.length === 0 && descriptionCheckdioContent.length === 0 && itemBeschreibung.length > 0 && multiselect !== "multiple") {
+            } else if (descriptionDropdownContentHidden.length == 0 && descriptionCheckdioContent.length == 0 && itemBeschreibung.length > 0 && multiselect !== "multiple") {
                 descriptionDropdownContent.replaceWith('<div id="filter-collapsible_dropdown_' + groupId + '" class="collapse top10 panel-body">' + itemBeschreibung + '</div>');
             }
         },
         
-        setPrice: function(price, fmtPrice, priceLabel, wrapper) {
-            var $productOffer = $('#product-offer');
-
-            $('.price', $productOffer).html(fmtPrice);
+        setPrice: function(price, fmtPrice, priceLabel) {
+            $('#product-offer .price').html(fmtPrice);
             if (priceLabel.length > 0) {
-                $('.price_label', $productOffer).html(priceLabel);
+                $('#product-offer .price_label').html(priceLabel);
             }
         },
 
-        setStockInformation: function(cEstimatedDelivery, wrapper) {
+        setStockInformation: function(cEstimatedDelivery) {
             $('.delivery-status .estimated-delivery span').html(cEstimatedDelivery);
         },
 
-        setStaffelPrice: function(prices, fmtPrices, wrapper) {
+        setStaffelPrice: function(prices, fmtPrices) {
             var $container = $('#product-offer');
             $.each(fmtPrices, function(index, value){
                 $('.bulk-price-' + index + ' .bulk-price', $container).html(value);
             });
         },
 
-        setVPEPrice: function(fmtVPEPrice, VPEPrices, fmtVPEPrices, wrapper) {
+        setVPEPrice: function(fmtVPEPrice, VPEPrices, fmtVPEPrices) {
             var $container = $('#product-offer');
             $('.base-price .value', $container).html(fmtVPEPrice);
             $.each(fmtVPEPrices, function(index, value){
@@ -587,30 +540,35 @@
             });
         },
 
-        /**
-         * @deprecated since 4.05 - use setArticleWeight instead
-         */
         setUnitWeight: function(UnitWeight, newUnitWeight) {
             $('#article-tabs .product-attributes .weight-unit').html(newUnitWeight);
         },
 
-        setArticleWeight: function(ArticleWeight, wrapper) {
-            var $articleTabs = $('#article-tabs');
-
+        setArticleWeight: function(ArticleWeight) {
+            var $wrapper,
+                selector;
             if ($.isArray(ArticleWeight)) {
-                $('.product-attributes .weight-unit', $articleTabs).html(ArticleWeight[0][1]);
-                $('.product-attributes .weight-unit-article', $articleTabs).html(ArticleWeight[1][1]);
+                $wrapper = $('#article-tabs');
+                selector = [
+                    '.product-attributes .weight-unit',
+                    '.product-attributes .weight-unit-article'
+                ];
+
+                if ($wrapper.length == 1) {
+                    for (var i = 0; i < 2; i++) {
+                        $(selector[i], $wrapper).html(ArticleWeight[i][1]);
+                    }
+                }
             } else {
-                $('.product-attributes .weight-unit', $articleTabs).html(ArticleWeight);
+                this.setUnitWeight(0, ArticleWeight);
             }
         },
 
-        setProductNumber: function(productNumber, wrapper){
+        setProductNumber: function(productNumber){
             $('#product-offer span[itemprop="sku"]').html(productNumber);
         },
 
         setArticleContent: function(id, variation, url, variations) {
-            var $spinner = $.evo.extended().spinner();
             $.evo.extended().loadContent(url, function(content) {
                 $.evo.extended().register();
                 $.evo.article().register();
@@ -619,10 +577,9 @@
                    $.evo.article().variationSetVal(item.key, item.value);
                 });
                 
-                if (document.location.href !== url) {
+                if (document.location.href != url) {
                     history.pushState({ a: id, a2: variation, url: url, variations: variations }, "", url);
                 }
-                $spinner.stop();
             }, function() {
                 $.evo.error('Error loading ' + url);
             });
@@ -664,13 +621,13 @@
             }
         },
 
-        variationResetAll: function($wrapper) {
+        variationResetAll: function() {
             $('.variation[data-value] input:checked').prop('checked', false);
             $('.variations select option').prop('selected', false);
             $('.variations select').selectpicker('refresh');
         },
 
-        variationDisableAll: function($wrapper) {
+        variationDisableAll: function() {
             $('.swatches-selected').text('');
             $('[data-value].variation').each(function(i, item) {
                 $(item)
@@ -682,28 +639,24 @@
             });
         },
 
-        variationSetVal: function(key, value, $wrapper) {
+        variationSetVal: function(key, value) {
             $('[data-key="' + key + '"]')
                 .val(value)
                 .closest('select')
                     .selectpicker('refresh');
         },
 
-        variationEnable: function(key, value, $wrapper) {
-            this.variationEnableItem($('[data-value="' + value + '"].variation'));
-        },
+        variationEnable: function(key, value) {
+            var item = $('[data-value="' + value + '"].variation');
 
-        variationEnableItem: function(item) {
             item.removeClass('not-available');
             item.closest('select')
                 .selectpicker('refresh');
         },
 
-        variationActive: function(key, value, def, $wrapper) {
-            this.variationActiveItem($('[data-value="' + value + '"].variation'), key);
-        },
+        variationActive: function(key, value, def) {
+            var item = $('[data-value="' + value + '"].variation');
 
-        variationActiveItem: function(item, key) {
             item.addClass('active')
                 .removeClass('loading')
                 .find('input')
@@ -719,12 +672,15 @@
         },
         
         removeStockInfo: function(item) {
-            var type = item.attr('data-type');
+            var type = item.attr('data-type'),
+                elem,
+                label,
+                wrapper;
             
             switch (type) {
                 case 'option':
-                    var label   = item.data('content'),
-                        wrapper = $('<div />').append(label);
+                    label = item.data('content');
+                    wrapper = $('<div />').append(label);
                     $(wrapper)
                         .find('.label-not-available')
                         .remove();
@@ -736,7 +692,7 @@
                         .selectpicker('refresh');
                 break;
                 case 'radio':
-                    var elem = item.find('.label-not-available');
+                    elem = item.find('.label-not-available');
                     if (elem.length === 1) {
                         $(elem).remove();
                     }
@@ -752,20 +708,24 @@
         variationInfo: function(value, status, note) {
             var item = $('[data-value="' + value + '"].variation'),
                 type = item.attr('data-type'),
+                text,
+                content,
+                wrapper,
                 label;
             
             item.attr('data-stock', _stock_info[status]);
 
             switch (type) {
                 case 'option':
-                    var content = item.data('content'),
-                        wrapper = $('<div />');
+                    text = ' (' + note + ')';
+                    content = item.data('content');
+                    wrapper = $('<div />');
                     
                     wrapper.append(content);
                     wrapper
                         .find('.label-not-available')
                         .remove();
-
+                    
                     label = $('<span />')
                         .addClass('label label-default label-not-available')
                         .text(note);
@@ -799,10 +759,10 @@
         },
 
         variationSwitch: function(item, animation) {
-            var key      = 0,
-                value    = 0,
-                io       = $.evo.io(),
-                args     = io.getFormValues('buy_form'),
+            var key = 0,
+                value = 0,
+                io = $.evo.io(),
+                args = io.getFormValues('buy_form'),
                 $current,
                 $spinner = null,
                 $wrapper = $('#result-wrapper');
@@ -813,7 +773,9 @@
             }
 
             if (item) {
-                $current = this.getCurrent(item);
+                $current = $(item).hasClass('variation') ?
+                    $(item) :
+                    $(item).closest('.variation'); 
 
                 if ($current.context.tagName === 'SELECT') {
                     $current = $(item).find('option:selected');
@@ -821,14 +783,14 @@
 
                 $current.addClass('loading');
 
-                key   = $current.data('key');
+                key = $current.data('key');
                 value = $current.data('value');
             }
 
             $.evo.article()
                 .variationDispose();
 
-            io.call('checkVarkombiDependencies', [args, key, value], item, function(error, data) {
+            io.call('checkVarkombiDependencies', [args, key, value], item, function (error, data) {
                 $wrapper.removeClass('loading');
                 if (animation) {
                     $spinner.stop();
@@ -843,10 +805,11 @@
             $('[role="tooltip"]').remove();
         },
         
-        variationPrice: function(item, animation) {
-            var io       = $.evo.io(),
-                args     = io.getFormValues('buy_form'),
-                $spinner = null,
+        variationPrice: function(animation) {
+            var io = $.evo.io(),
+                args = io.getFormValues('buy_form');
+                
+            var $spinner = null,
                 $wrapper = $('#result-wrapper');
             
             if (animation) {
@@ -854,7 +817,7 @@
                 $spinner = $.evo.extended().spinner();
             }
 
-            io.call('checkDependencies', [args], null, function(error, data) {
+            io.call('checkDependencies', [args], null, function (error, data) {
                 $wrapper.removeClass('loading');
                 if (animation) {
                     $spinner.stop();
@@ -866,255 +829,15 @@
         }
     };
 
-    /*******************************************************************************************************************
-     * ArticleListClass - Extende class for article handling, used on article lists
-     */
-    var ArticleListClass = function() {
-        ArticleClass.call(this);
-    };
-
-    ArticleListClass.prototype = $.extend(Object.create(ArticleClass.prototype), {
-        constructor: ArticleListClass,
-
-        registerGallery: function() {
-            this.gallery = null;
-        },
-
-        registerConfig: function() {
-            // nur im Single-Artikel Context benutzen!!!
-        },
-
-        registerImageSwitch: function($wrapper) {
-            var imgSwitch = function(context, replace) {
-                var value   = $(context).attr('data-value'),
-                    data    = $(context).data('list'),
-                    title   = $(context).attr('data-title');
-
-                if (!!data) {
-                    var $wrapper = $(context).closest('.product-wrapper');
-                    var $img     = $('.image-box img', $wrapper);
-                    if ($img.length === 1) {
-                        $img.attr('src', data.md.src);
-                        if (replace) {
-                            $img.attr('data-src', data.md.src);
-                        }
-                    }
-                }
-            };
-
-            $('.variations .bootstrap-select select', $wrapper)
-                .change(function() {
-                    var tmp_idx = parseInt($('li.selected', this.parentElement).attr('data-original-index')) + 1;
-                    imgSwitch($(this).find('option:nth-child(' + tmp_idx + ')'), true);
-                });
-
-            $('.variations .bootstrap-select .dropdown-menu li', $wrapper)
-                .hover(function() {
-                    var tmp_idx = parseInt($(this).attr('data-original-index')) + 1;
-                    var sel     = $(this).closest('.bootstrap-select').find('select option:nth-child(' + tmp_idx + ')');
-                    imgSwitch(sel, false);
-                }, function() {
-                    var tmp_idx = parseInt($(this).attr('data-original-index')) + 1,
-                        p       = $(this).closest('.bootstrap-select').find('select option:nth-child(' + tmp_idx + ')'),
-                        data    = $(p).data('list');
-
-                    if (!!data) {
-                        var $wrapper = $(this).closest('.product-wrapper');
-                        var $img     = $('.image-box img', $wrapper);
-                        if ($img.length === 1) {
-                            $img.attr('src', $img.attr('data-src'));
-                        }
-                    }
-                });
-
-            var $varVariations = $('.variations .variation', $wrapper);
-            $varVariations.click(function() {
-                imgSwitch(this, true);
-            });
-
-            $varVariations.hover(function() {
-                imgSwitch(this, false);
-            }, function() {
-                var data = $(this).data('list');
-
-                if (!!data) {
-                    var $wrapper = $(this).closest('.product-wrapper');
-                    var $img     = $('.image-box img', $wrapper);
-                    if ($img.length === 1) {
-                        $img.attr('src', $img.attr('data-src'));
-                    }
-                }
-            });
-        },
-
-        setPrice: function(price, fmtPrice, priceLabel, wrapper) {
-            var $wrapper = $(wrapper);
-            var $price   = $('.price_wrapper', $wrapper);
-
-            $('.price span:first-child', $price).html(fmtPrice);
-            if (priceLabel.length > 0) {
-                $('.price_label', $price).html(priceLabel);
-            }
-        },
-
-        setArticleWeight: function(ArticleWeight, wrapper) {
-            var $wrapper = $(wrapper);
-
-            if ($.isArray(ArticleWeight)) {
-                $('.attr-weight .value', $wrapper).html(ArticleWeight[0][1]);
-                $('.attr-weight.weight-unit-article .value', $wrapper).html(ArticleWeight[1][1]);
-            } else {
-                $('.attr-weight .value', $wrapper).html(ArticleWeight);
-            }
-        },
-
-        setArticleContent: function(id, variation, url, variations) {
-            var wrapper   = '#result-wrapper_buy_form_' + id;
-            var listStyle = $('#ed_list.active').length > 0 ? 'list' : 'gallery';
-            var $spinner  = $.evo.extended().spinner($(wrapper)[0]);
-
-            $.evo.extended().loadContent(url + (url.indexOf('?') >= 0 ? '&' : '?') + 'isListStyle=' + listStyle, function (content) {
-                var $wrapper = $(wrapper);
-
-                $.evo.extended().imagebox(wrapper);
-                $.evo.article().registerSimpleVariations($wrapper);
-                $.evo.article().registerSwitchVariations($wrapper);
-                $.evo.article().registerImageSwitch($wrapper);
-
-                $('*[data-toggle="basket-add"]', $wrapper).on('submit', function(event) {
-                    event.preventDefault();
-
-                    var $form = $(this);
-                    var data  = $form.serializeObject();
-                    data['a'] = variation;
-
-                    $.evo.basket().addToBasket($form, data);
-                });
-
-                $(variations).each(function (i, item) {
-                    $.evo.article().variationSetVal(item.key, item.value, $wrapper);
-                });
-
-                $.evo.extended().autoheight();
-                $spinner.stop();
-            }, function () {
-                $.evo.error('Error loading ' + url);
-            }, false, wrapper);
-        },
-
-        variationResetAll: function($wrapper) {
-            $('.variation[data-value] input:checked', $wrapper).prop('checked', false);
-            $('.variations select option', $wrapper).prop('selected', false);
-            $('.variations select', $wrapper).selectpicker('refresh');
-        },
-
-        variationDisableAll: function($wrapper) {
-            $('.swatches-selected', $wrapper).text('');
-            $('[data-value].variation', $wrapper).each(function (i, item) {
-                $(item)
-                    .removeClass('active')
-                    .removeClass('loading')
-                    .addClass('not-available');
-                $.evo.article()
-                    .removeStockInfo($(item));
-            });
-        },
-
-        variationSetVal: function(key, value, $wrapper) {
-            $('[data-key="' + key + '"]', $wrapper)
-                .val(value)
-                .closest('select')
-                .selectpicker('refresh');
-        },
-
-        variationEnable: function(key, value, $wrapper) {
-            this.variationEnableItem($('[data-value="' + value + '"].variation', $wrapper));
-        },
-
-        variationActive: function(key, value, def, $wrapper) {
-            this.variationActiveItem($('[data-value="' + value + '"].variation', $wrapper), key);
-        },
-
-        removeStockInfo: function(item) {
-            // nur im Single-Artikel Context benutzen!!!
-        },
-
-        variationInfo: function(value, status, note) {
-            // nur im Single-Artikel Context benutzen!!!
-        },
-
-        variationSwitch: function(item, animation) {
-            if (item) {
-                var formID   = $(item).closest('form').attr('id'),
-                    $current = this.getCurrent(item),
-                    key      = $current.data('key'),
-                    value    = $current.data('value'),
-                    io       = $.evo.io(),
-                    args     = io.getFormValues(formID),
-                    $wrapper = $('#result-wrapper_' + formID),
-                    $spinner = animation ? $.evo.extended().spinner($wrapper[0]) : null;
-
-                args.wrapper = '#' + $wrapper.attr('id');
-                $current.addClass('loading');
-
-                if (animation) {
-                    $wrapper.addClass('loading');
-                }
-
-                $.evo.article().variationDispose();
-                io.call('checkVarkombiDependencies', [args, key, value], item, function (error, data) {
-                    $wrapper.removeClass('loading');
-                    if (animation) {
-                        $spinner.stop();
-                    }
-                    if (error) {
-                        $.evo.error('checkVarkombiDependencies');
-                    }
-                });
-            }
-        },
-
-        variationPrice: function(item, animation) {
-            if (item) {
-                var formID   = $(item).closest('form').attr('id'),
-                    io       = $.evo.io(),
-                    args     = io.getFormValues(formID),
-                    $wrapper = $('#result-wrapper_' + formID),
-                    $spinner = animation ? $.evo.extended().spinner($wrapper[0]) : null;
-
-
-                args.wrapper = '#' + $wrapper.attr('id');
-
-                if (animation) {
-                    $wrapper.addClass('loading');
-                }
-
-                io.call('checkDependencies', [args], null, function (error, data) {
-                    $wrapper.removeClass('loading');
-                    if (animation) {
-                        $spinner.stop();
-                    }
-                    if (error) {
-                        $.evo.error('checkDependencies');
-                    }
-                });
-            }
-        }
-    });
-
-    /*******************************************************************************************************************
-     * Article classloader - if #buy_form exists (on article details), load ArticleClass and ArticleListClass otherwise
-     */
+    $v     = new ArticleClass();
     var ie = /(msie|trident)/i.test(navigator.userAgent) ? navigator.userAgent.match(/(msie |rv:)(\d+(.\d+)?)/i)[2] : false;
     if (ie && parseInt(ie) <= 9) {
         $(document).ready(function () {
-            $v = ($('#buy_form').length === 1) ? new ArticleClass() : new ArticleListClass();
             $v.onLoad();
             $v.register();
         });
     } else {
-        $(window).on('load', function() {
-            $v = ($('#buy_form').length === 1) ? new ArticleClass() : new ArticleListClass();
+        $(window).on('load', function () {
             $v.onLoad();
             $v.register();
         });
@@ -1128,7 +851,7 @@
 
     // PLUGIN DEFINITION
     // =================
-    $.evo.article = function() {
+    $.evo.article = function () {
        return $v;
     };
 })(jQuery, document, window, ResponsiveBootstrapToolkit);

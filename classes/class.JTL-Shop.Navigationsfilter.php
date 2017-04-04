@@ -225,7 +225,7 @@ class Navigationsfilter
             ])
             : $options['config'];
         $this->languageID      = Shop::getLanguage();
-        $this->customerGroupID = (!isset($_SESSION['Kundengruppe']->kKundengruppe))
+        $this->customerGroupID = !isset($_SESSION['Kundengruppe']->kKundengruppe)
             ? (int)Shop::DB()->select('tkundengruppe', 'cStandard', 'Y')->kKundengruppe
             : (int)$_SESSION['Kundengruppe']->kKundengruppe;
         $this->baseURL         = Shop::getURL() . '/';
@@ -979,7 +979,7 @@ class Navigationsfilter
         {
             $limit = (int)$_SESSION['oErweiterteDarstellung']->nAnzahlArtikel;
         } else {
-            $limit = (($max = $this->conf['artikeluebersicht']['artikeluebersicht_artikelproseite']) > 0)
+            $limit = ($max = $this->conf['artikeluebersicht']['artikeluebersicht_artikelproseite']) > 0
                 ? (int)$max
                 : 20;
         }
@@ -1010,7 +1010,9 @@ class Navigationsfilter
     }
 
     /**
-     * @return array
+     * get list of product IDs matching the current filter
+     *
+     * @return int[]
      */
     public function getProductKeys()
     {
@@ -1066,9 +1068,9 @@ class Navigationsfilter
     }
 
     /**
-     * @param bool           $forProductListing
+     * @param bool           $forProductListing - if true, return $oSuchergebnisse object, otherwise keys only
      * @param Kategorie|null $currentCategory
-     * @param bool           $fillArticles
+     * @param bool           $fillArticles - if true, return Artikel class instances, otherwise keys only
      * @param int            $limit
      * @return stdClass
      */
@@ -1103,7 +1105,7 @@ class Navigationsfilter
             $oSuchergebnisse->Artikel                = new stdClass();
             $oSuchergebnisse->Artikel->articleKeys   = [];
             $oSuchergebnisse->Artikel->elemente      = new Collection();
-            $nArtikelProSeite = ($limit > 0) ? $limit : $this->getArticlesPerPageLimit();
+            $nArtikelProSeite = $limit > 0 ? $limit : $this->getArticlesPerPageLimit();
             $nLimitN          = ($this->nSeite - 1) * $nArtikelProSeite;
             // 50 nach links und 50 nach rechts für Artikeldetails blättern rausholen
             $nLimitNBlaetter = $nLimitN;
@@ -1116,8 +1118,7 @@ class Navigationsfilter
             $offsetEnd                = $nArtikelProSeiteBlaetter - $nLimitNBlaetter;
 
             $oSuchergebnisse->Artikel->articleKeys = $this->getProductKeys();
-
-            $oSuchergebnisse->GesamtanzahlArtikel = count($oSuchergebnisse->Artikel->articleKeys);
+            $oSuchergebnisse->GesamtanzahlArtikel  = count($oSuchergebnisse->Artikel->articleKeys);
 
             if (!empty($this->Suche->cSuche)) {
                 suchanfragenSpeichern($this->Suche->cSuche, $oSuchergebnisse->GesamtanzahlArtikel);
@@ -1167,9 +1168,9 @@ class Navigationsfilter
         $_SESSION['oArtikelUebersichtKey_arr']   = $oSuchergebnisse->Artikel->articleKeys;
         $_SESSION['nArtikelUebersichtVLKey_arr'] = [];
 
-        return ($forProductListing === true) ?
-            $oSuchergebnisse :
-            $oSuchergebnisse->Artikel->elemente;
+        return $forProductListing === true
+            ? $oSuchergebnisse
+            : $oSuchergebnisse->Artikel->elemente;
     }
 
     /**
@@ -1178,8 +1179,9 @@ class Navigationsfilter
      */
     public function getActiveFilters($byType = false)
     {
-        $filters = $byType !== false
-            ? [
+        $filters = $byType === false
+            ? []
+            : [
                 'kf'     => [],
                 'mm'     => [],
                 'ssf'    => [],
@@ -1189,8 +1191,7 @@ class Navigationsfilter
                 'bf'     => [],
                 'custom' => [],
                 'misc'   => []
-            ]
-            : [];
+            ];
         foreach ($this->activeFilters as $activeFilter) {
             // get custom filters
             if ($activeFilter->isCustom()) {
@@ -1526,51 +1527,44 @@ class Navigationsfilter
                 unset($joins[$i]);
             }
         }
-        if ($or === true) {
-            // testing
-            $conditionsString = implode(' AND ', array_map(function ($a) {
-                return is_string($a)
-                    ? $a
-                    : ('NOT(' . implode(' OR ', $a) . ')');
-            }, $conditions));
-        } else {
-            $conditionsString = implode(' AND ', array_map(function ($a) {
-                return is_string($a)
-                    ? $a
-                    : ('(' . implode(' OR ', $a) . ')');
-            }, $conditions));
-        }
-
-        $joinString   = implode("\n", $joins);
-        $havingString = implode(' AND ', $having);
+        $conditionsString = implode(' AND ', array_map(function ($a) use ($or) {
+            if (is_string($a)) {
+                return $a;
+            }
+            return $or === false
+                ? '(' . implode(' OR ', $a) . ')'
+                : 'NOT(' . implode(' OR ', $a) . ')';
+        }, $conditions));
+        $joinString       = implode("\n", $joins);
+        $havingString     = implode(' AND ', $having);
         if (!empty($limit)) {
             $limit = ' LIMIT ' . $limit;
         }
         if (!empty($order)) {
-            $order = "ORDER BY " . $order;
+            $order = 'ORDER BY ' . $order;
         }
         if (!empty($conditionsString)) {
             $conditionsString = ' AND ' . $conditionsString;
         }
         $groupByString = !empty($groupBy)
-            ? "GROUP BY " . implode(', ', $groupBy)
+            ? 'GROUP BY ' . implode(', ', $groupBy)
             : '';
 
-        return "SELECT " . implode(', ', $select) . "
-            FROM tartikel " . $joinString . "
+        return 'SELECT ' . implode(', ', $select) . '
+            FROM tartikel ' . $joinString . '
             #default conditions
             WHERE tartikelsichtbarkeit.kArtikel IS NULL
                 AND tartikel.kVaterArtikel = 0
                 #stock filter
-                " . $this->getStorageFilter() .
-            $conditionsString . "
+                ' . $this->getStorageFilter() .
+            $conditionsString . '
             #default group by
-            " . $groupByString . "
-            " . $havingString . "
+            ' . $groupByString . '
+            ' . $havingString . '
             #order by
-            " . $order . "
+            ' . $order . '
             #limit sql
-            " . $limit;
+            ' . $limit;
     }
 
     /**
@@ -1629,11 +1623,11 @@ class Navigationsfilter
     /**
      * converts legacy stdClass filters to real filter instances
      *
-     * @param object|IFilter $extraFilter
+     * @param stdClass|IFilter $extraFilter
      * @return IFilter
      * @throws InvalidArgumentException
      */
-    private function convertExtraFilter($extraFilter)
+    public function convertExtraFilter($extraFilter)
     {
         if (get_class($extraFilter) !== 'stdClass') {
             return $extraFilter;
@@ -1798,9 +1792,9 @@ class Navigationsfilter
             if (!empty($filterSeoUrl)) {
                 $baseURL .= $filterSeoUrl;
             } else {
-                $bSeo = false;
-                $baseURL .= 'index.php?' . $baseState->getUrlParam() . '=' . $baseState->getValue();
+                $bSeo            = false;
                 $hasQuestionMark = true;
+                $baseURL .= 'index.php?' . $baseState->getUrlParam() . '=' . $baseState->getValue();
             }
         } else {
             $baseURL .= 'index.php';
@@ -1817,7 +1811,7 @@ class Navigationsfilter
         // add all filter urls to an array indexed by the filter's url param
         /** @var IFilter $filter */
         foreach ($activeFilters as $filter) {
-            $filterSeo = ($bSeo === true)
+            $filterSeo = $bSeo === true
                 ? $filter->getSeo($this->getLanguageID())
                 : '';
             if ($debug) {
@@ -1843,10 +1837,8 @@ class Navigationsfilter
                 $filterSeoData->type    = $filter->getType();
                 $urlParams[$urlParam][] = $filterSeoData;
             } elseif (isset($urlParams[$urlParam][0]->value) && is_array($urlParams[$urlParam][0]->value)) {
-                if ($debug) echo 'elseif';
                 $urlParams[$urlParam][0]->value[] = $filter->getValue();
             } else {
-                if ($debug) echo 'else';
                 $filterSeoData          = new stdClass();
                 $filterSeoData->value   = $filter->getValue();
                 $filterSeoData->sep     = $filter->getUrlParamSEO();
@@ -1865,12 +1857,12 @@ class Navigationsfilter
                     foreach ($urlParams[$urlParam] as $i => $active) {
                         if (is_array($active->value)) {
                             foreach ($active->value as $idx => $value) {
-                                if ($value == $extraFilter->getValue()) {
+                                if ($value === $extraFilter->getValue()) {
                                     unset($active->value[$idx]);
                                 }
                             }
                         } else {
-                            if ($extraFilter->getValue() == $active->value) {
+                            if ($extraFilter->getValue() === $active->value) {
                                 unset($urlParams[$urlParam][$i]);
                             }
                         }
@@ -1919,8 +1911,6 @@ class Navigationsfilter
         $languageID                  = $this->getLanguageID();
         $customerGroupID             = $this->getCustomerGroupID();
         $config                      = $this->getConfig();
-        $oZusatzFilter               = new stdClass();
-        $oZusatzFilter->FilterLoesen = new stdClass();
         // @todo: why?
         if (false && $this->SuchspecialFilter->isInitialized()) {
             $bSeo = false;
@@ -1941,13 +1931,23 @@ class Navigationsfilter
         )->init(null)->setDoUnset(true);
         $this->URL->cAlleHersteller = $this->getURL($bSeo, $extraFilter);
 
+        $additionalFilter = (new FilterItemAttribute(
+            $languageID,
+            $customerGroupID,
+            $config,
+            $this->oSprache_arr
+        ))->setDoUnset(true);
         foreach ($this->MerkmalFilter as $oMerkmal) {
             if ($oMerkmal->kMerkmal > 0) {
-                $oZusatzFilter->FilterLoesen->Merkmale         = $oMerkmal->kMerkmal;
-                $this->URL->cAlleMerkmale[$oMerkmal->kMerkmal] = $this->getURL($bSeo, $oZusatzFilter);
+                $this->URL->cAlleMerkmale[$oMerkmal->kMerkmal] = $this->getURL(
+                    $bSeo,
+                    $additionalFilter->init($oMerkmal->kMerkmal)
+                );
             }
-            $oZusatzFilter->FilterLoesen->MerkmalWert              = $oMerkmal->kMerkmalWert;
-            $this->URL->cAlleMerkmalWerte[$oMerkmal->kMerkmalWert] = $this->getURL($bSeo, $oZusatzFilter);
+            $this->URL->cAlleMerkmalWerte[$oMerkmal->kMerkmalWert] = $this->getURL(
+                $bSeo,
+                $additionalFilter->init($oMerkmal->kMerkmalWert)
+            );
         }
         // kinda hacky: try to build url that removes a merkmalwert url from merkmalfilter url
         if ($this->MerkmalWert->isInitialized() &&
@@ -1995,36 +1995,37 @@ class Navigationsfilter
         )->init(null)->setDoUnset(true);
         $this->URL->cAlleSuchspecials = $this->getURL($bSeo, $extraFilter);
 
-        $oZusatzFilter->FilterLoesen = new stdClass();
+        $extraFilter = (new FilterBaseSearchQuery(
+            $languageID,
+            $customerGroupID,
+            $config,
+            $this->oSprache_arr)
+        )->init(null)->setDoUnset(true);
         foreach ($this->SuchFilter as $oSuchFilter) {
-            if ($oSuchFilter->kSuchanfrage > 0) {
-                $oZusatzFilter->FilterLoesen->SuchFilter                = $oSuchFilter->kSuchanfrage;
-                $this->URL->cAlleSuchFilter[$oSuchFilter->kSuchanfrage] = $this->getURL($bSeo, $oZusatzFilter);
+            if ($oSuchFilter->getValue() > 0) {
+                $this->URL->cAlleSuchFilter[$oSuchFilter->kSuchanfrage] = $this->getURL($bSeo, $extraFilter);
             }
         }
 
-        $oZusatzFilter->FilterLoesen = new stdClass();
         foreach ($this->filters as $filter) {
             if ($filter->isInitialized() && $filter->isCustom()) {
                 $className       = $filter->getClassName();
                 $idx             = 'cAlle' . $className;
                 $this->URL->$idx = [];
                 if ($filter->getType() === AbstractFilter::FILTER_TYPE_OR) {
-                    $extraFilter = clone $filter;
-                    $extraFilter->setDoUnset(true);
+                    $extraFilter= (clone $filter)->setDoUnset(true);
                     foreach ($filter->getValue() as $filterValue) {
                         $extraFilter->setValue($filterValue);
                         $this->URL->$idx[$filterValue] = $this->getURL($bSeo, $extraFilter);
                     }
                 } else {
-                    $extraFilter = clone $filter;
-                    $extraFilter->setDoUnset(true)->setValue($filter->getValue());
+                    $extraFilter = (clone $filter)->setDoUnset(true)->setValue($filter->getValue());
                     $this->URL->$idx = $this->getURL($bSeo, $extraFilter);
                 }
             }
         }
         // Filter reset
-        $cSeite = ($oSuchergebnisse->Seitenzahlen->AktuelleSeite > 1)
+        $cSeite = $oSuchergebnisse->Seitenzahlen->AktuelleSeite > 1
             ? SEP_SEITE . $oSuchergebnisse->Seitenzahlen->AktuelleSeite
             : '';
 
@@ -2049,8 +2050,6 @@ class Navigationsfilter
     }
 
     /**
-     * Die Usersortierung kann entweder ein Integer sein oder via Kategorieattribut ein String
-     *
      * @param int|string $sort
      * @return int
      */
@@ -2116,14 +2115,14 @@ class Navigationsfilter
      */
     public function truncateMetaTitle($cTitle)
     {
-        return (($length = (int)$this->conf['metaangaben']['global_meta_maxlaenge_title']) > 0)
+        return ($length = (int)$this->conf['metaangaben']['global_meta_maxlaenge_title']) > 0
             ? substr($cTitle, 0, $length)
             : $cTitle;
     }
 
     /**
-     * @param object         $oMeta
-     * @param object         $oSuchergebnisse
+     * @param stdClass       $oMeta
+     * @param stdClass       $oSuchergebnisse
      * @param array          $globalMeta
      * @param Kategorie|null $oKategorie
      * @return string
@@ -2151,7 +2150,7 @@ class Navigationsfilter
         $cMetaTitle = StringHandler::htmlentitydecode($cMetaTitle, ENT_NOQUOTES);
         // Kategorieattribute koennen Standard-Titles ueberschreiben
         if ($this->Kategorie->isInitialized()) {
-            $oKategorie = ($oKategorie !== null)
+            $oKategorie = $oKategorie !== null
                 ? $oKategorie
                 : new Kategorie($this->Kategorie->getValue());
             if (!empty($oKategorie->cTitleTag)) {
@@ -2185,9 +2184,9 @@ class Navigationsfilter
     }
 
     /**
-     * @param object         $oMeta
+     * @param stdClass       $oMeta
      * @param array          $oArtikel_arr
-     * @param object         $oSuchergebnisse
+     * @param stdClass       $oSuchergebnisse
      * @param array          $globalMeta
      * @param Kategorie|null $oKategorie
      * @return string
@@ -2203,7 +2202,7 @@ class Navigationsfilter
         // Kategorieattribut?
         $cKatDescription = '';
         if ($this->Kategorie->isInitialized()) {
-            $oKategorie = ($oKategorie !== null)
+            $oKategorie = $oKategorie !== null
                 ? $oKategorie
                 : new Kategorie($this->Kategorie->getValue());
             if (!empty($oKategorie->cMetaDescription)) {
@@ -2229,7 +2228,7 @@ class Navigationsfilter
                 if (!empty($oKategorieListe->elemente) && count($oKategorieListe->elemente) > 0) {
                     foreach ($oKategorieListe->elemente as $i => $oUnterkat) {
                         if (!empty($oUnterkat->cName)) {
-                            $cKatDescription .= ($i > 0)
+                            $cKatDescription .= $i > 0
                                 ? ', ' . strip_tags($oUnterkat->cName)
                                 : strip_tags($oUnterkat->cName);
                         }
@@ -2259,14 +2258,14 @@ class Navigationsfilter
             $nCount       = min(12, count($oArtikel_arr));
             $cArtikelName = '';
             for ($i = 0; $i < $nCount; ++$i) {
-                $cArtikelName .= ($i > 0)
+                $cArtikelName .= $i > 0
                     ? ' - ' . $oArtikel_arr[$i]->cName
                     : $oArtikel_arr[$i]->cName;
             }
             $cArtikelName = str_replace('"', '', $cArtikelName);
             $cArtikelName = StringHandler::htmlentitydecode($cArtikelName, ENT_NOQUOTES);
 
-            $cMetaDescription = (!empty($globalMeta[$this->getLanguageID()]->Meta_Description_Praefix))
+            $cMetaDescription = !empty($globalMeta[$this->getLanguageID()]->Meta_Description_Praefix)
                 ? $this->getMetaStart($oSuchergebnisse) .
                     ': ' .
                     $globalMeta[$this->getLanguageID()]->Meta_Description_Praefix .
@@ -2287,7 +2286,7 @@ class Navigationsfilter
     }
 
     /**
-     * @param object         $oMeta
+     * @param stdClass       $oMeta
      * @param array          $oArtikel_arr
      * @param Kategorie|null $oKategorie
      * @return mixed|string
@@ -2304,7 +2303,7 @@ class Navigationsfilter
         // Kategorieattribut?
         $cKatKeywords = '';
         if ($this->Kategorie->isInitialized()) {
-            $oKategorie = ($oKategorie !== null)
+            $oKategorie = $oKategorie !== null
                 ? $oKategorie
                 : new Kategorie($this->Kategorie->getValue());
             if (!empty($oKategorie->cMetaKeywords)) {
@@ -2344,7 +2343,7 @@ class Navigationsfilter
                         foreach ($cSubNameTMP_arr as $j => $cSubNameTMP) {
                             if (strlen($cSubNameTMP) > 2) {
                                 $cSubNameTMP = str_replace(',', '', $cSubNameTMP);
-                                $cSubName .= ($j > 0)
+                                $cSubName .= $j > 0
                                     ? ', ' . $cSubNameTMP
                                     : $cSubNameTMP;
                             }
@@ -2377,7 +2376,7 @@ class Navigationsfilter
                 if (!empty($oKategorieListe->elemente) && count($oKategorieListe->elemente) > 0) {
                     foreach ($oKategorieListe->elemente as $i => $oUnterkat) {
                         if (isset($oUnterkat->cName) && strlen($oUnterkat->cName) > 0) {
-                            $cKatKeywords .= ($i > 0)
+                            $cKatKeywords .= $i > 0
                                 ? ', ' . $oUnterkat->cName
                                 : $oUnterkat->cName;
                         }
@@ -2396,7 +2395,7 @@ class Navigationsfilter
     }
 
     /**
-     * Baut für die NaviMetas die gesetzten Mainwords + Filter und stellt diese vor jedem Meta vorne an.
+     * Erstellt für die NaviMetas die gesetzten Mainwords + Filter und stellt diese vor jedem Meta an.
      *
      * @param object $oSuchergebnisse
      * @return string

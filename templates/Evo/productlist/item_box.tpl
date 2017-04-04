@@ -95,7 +95,7 @@
                     </div>
                 </div>
             {else}
-                <div class="top7 form-group">
+                <div class="top7 form-group{if $Artikel->Variationen|@count > 0 && !$Artikel->bHasKonfig} variation-article{/if}">
                     <a class="btn btn-default btn-sm btn-block" role="button" href="{$Artikel->cURL}">{lang key="details"}</a>
                 </div>
             {/if}

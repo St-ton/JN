@@ -176,22 +176,21 @@ class FilterBaseTag extends AbstractFilter
                     AND tseo.kSprache = " . $this->getLanguageID() . "
                 GROUP BY ssMerkmal.kTag
                 ORDER BY nAnzahl DESC LIMIT 0, " . (int)$this->getConfig()['navigationsfilter']['tagfilter_max_anzeige'];
-            $oTagFilterDB_arr = Shop::DB()->query($query, 2);
-            foreach ($oTagFilterDB_arr as $oTagFilterDB) {
+            $tags             = Shop::DB()->query($query, 2);
+            $additionalFilter = new FilterItemTag(
+                $this->getLanguageID(),
+                $this->getCustomerGroupID(),
+                $this->getConfig(),
+                $this->getAvailableLanguages()
+            );
+            foreach ($tags as $tag) {
                 $oTagFilter = new stdClass();
-                if (!isset($oZusatzFilter)) {
-                    $oZusatzFilter = new stdClass();
-                }
-                if (!isset($oZusatzFilter->TagFilter)) {
-                    $oZusatzFilter->TagFilter = new stdClass();
-                }
                 //baue URL
-                $oZusatzFilter->TagFilter->kTag = $oTagFilterDB->kTag;
-                $oTagFilter->cURL               = $naviFilter->getURL(true, $oZusatzFilter);
-                $oTagFilter->kTag               = $oTagFilterDB->kTag;
-                $oTagFilter->cName              = $oTagFilterDB->cName;
-                $oTagFilter->nAnzahl            = $oTagFilterDB->nAnzahl;
-                $oTagFilter->nAnzahlTagging     = $oTagFilterDB->nAnzahlTagging;
+                $oTagFilter->cURL               = $naviFilter->getURL(true, $additionalFilter->init((int)$tag->kTag));
+                $oTagFilter->kTag               = $tag->kTag;
+                $oTagFilter->cName              = $tag->cName;
+                $oTagFilter->nAnzahl            = $tag->nAnzahl;
+                $oTagFilter->nAnzahlTagging     = $tag->nAnzahlTagging;
 
                 $oTagFilter_arr[] = $oTagFilter;
             }

@@ -104,7 +104,7 @@ class FilterItemRating extends AbstractFilter
      */
     public function getOptions($mixed = null)
     {
-        $oBewertungFilter_arr = [];
+        $ratings = [];
         if ($this->getConfig()['navigationsfilter']['bewertungsfilter_benutzen'] !== 'N') {
             $naviFilter = Shop::getNaviFilter();
             $order      = $naviFilter->getOrder();
@@ -113,35 +113,43 @@ class FilterItemRating extends AbstractFilter
             $state->joins[] = $order->join;
             $state->joins[] = $this->getSQLJoin();
 
-            $query = $naviFilter->getBaseQuery([
-                'ROUND(tartikelext.fDurchschnittsBewertung, 0) AS nSterne',
-                'tartikel.kArtikel'
-            ], $state->joins, $state->conditions, $state->having, $order->orderBy);
-            $query = "SELECT ssMerkmal.nSterne, COUNT(*) AS nAnzahl
+            $query = $naviFilter->getBaseQuery(
+                [
+                    'ROUND(tartikelext.fDurchschnittsBewertung, 0) AS nSterne',
+                    'tartikel.kArtikel'
+                ],
+                $state->joins,
+                $state->conditions,
+                $state->having,
+                $order->orderBy
+            );
+            $query   = "SELECT ssMerkmal.nSterne, COUNT(*) AS nAnzahl
                         FROM (" . $query . " ) AS ssMerkmal
                         GROUP BY ssMerkmal.nSterne
                         ORDER BY ssMerkmal.nSterne DESC";
-
-            $oBewertungFilterDB_arr = Shop::DB()->query($query, 2);
-            if (is_array($oBewertungFilterDB_arr)) {
-                $nSummeSterne = 0;
-                foreach ($oBewertungFilterDB_arr as $oBewertungFilterDB) {
-                    $nSummeSterne += (int)$oBewertungFilterDB->nAnzahl;
+            $ratings = Shop::DB()->query($query, 2);
+            if (is_array($ratings)) {
+                $nSummeSterne     = 0;
+                $additionalFilter = new FilterItemRating(
+                    $this->getLanguageID(),
+                    $this->getCustomerGroupID(),
+                    $this->getConfig(),
+                    $this->getAvailableLanguages()
+                );
+                foreach ($ratings as $rating) {
+                    $nSummeSterne += (int)$rating->nAnzahl;
                     $oBewertung          = new stdClass();
-                    $oBewertung->nStern  = (int)$oBewertungFilterDB->nSterne;
+                    $oBewertung->nStern  = (int)$rating->nSterne;
                     $oBewertung->nAnzahl = $nSummeSterne;
-                    //baue URL
-                    if (!isset($oZusatzFilter)) {
-                        $oZusatzFilter                  = new stdClass();
-                        $oZusatzFilter->BewertungFilter = new stdClass();
-                    }
-                    $oZusatzFilter->BewertungFilter->nSterne = $oBewertung->nStern;
-                    $oBewertung->cURL                        = $naviFilter->getURL(true, $oZusatzFilter);
-                    $oBewertungFilter_arr[]                  = $oBewertung;
+                    $oBewertung->cURL    = $naviFilter->getURL(
+                        true,
+                        $additionalFilter->init($oBewertung->nStern)
+                    );
+                    $oBewertungFilter_arr[] = $oBewertung;
                 }
             }
         }
 
-        return $oBewertungFilter_arr;
+        return $ratings;
     }
 }

@@ -169,7 +169,7 @@ class FilterSearch extends AbstractFilter
      */
     public function getOptions($mixed = null)
     {
-        $oSuchFilterDB_arr = [];
+        $searchFilters = [];
         if ($this->getConfig()['navigationsfilter']['suchtrefferfilter_nutzen'] !== 'N') {
             $naviFilter = Shop::getNaviFilter();
             $nLimit     = (isset($this->getConfig()['navigationsfilter']['suchtrefferfilter_anzahl']) &&
@@ -203,7 +203,7 @@ class FilterSearch extends AbstractFilter
 
             $state->conditions[] = "tsuchanfrage.nAktiv = 1";
 
-            $query = $naviFilter->getBaseQuery(
+            $query            = $naviFilter->getBaseQuery(
                 ['tsuchanfrage.kSuchanfrage', 'tsuchanfrage.cSuche', 'tartikel.kArtikel'],
                 $state->joins,
                 $state->conditions,
@@ -212,64 +212,64 @@ class FilterSearch extends AbstractFilter
                 '',
                 ['tsuchanfrage.kSuchanfrage', 'tartikel.kArtikel']
             );
-
-            $query = "SELECT ssMerkmal.kSuchanfrage, ssMerkmal.cSuche, count(*) AS nAnzahl
+            $query            = "SELECT ssMerkmal.kSuchanfrage, ssMerkmal.cSuche, count(*) AS nAnzahl
                 FROM (" . $query . ") AS ssMerkmal
                     GROUP BY ssMerkmal.kSuchanfrage
                     ORDER BY ssMerkmal.cSuche" . $nLimit;
-
-            $oSuchFilterDB_arr = Shop::DB()->query($query, 2);
-
+            $searchFilters    = Shop::DB()->query($query, 2);
             $kSuchanfrage_arr = [];
             if ($naviFilter->Suche->kSuchanfrage > 0) {
                 $kSuchanfrage_arr[] = (int)$naviFilter->Suche->kSuchanfrage;
             }
             if (count($naviFilter->SuchFilter) > 0) {
                 foreach ($naviFilter->SuchFilter as $oSuchFilter) {
-                    if (isset($oSuchFilter->kSuchanfrage)) {
-                        $kSuchanfrage_arr[] = (int)$oSuchFilter->kSuchanfrage;
+                    if ($oSuchFilter->getValue() > 0) {
+                        $kSuchanfrage_arr[] = (int)$oSuchFilter->getValue();
                     }
                 }
             }
-            // Werfe bereits gesetzte Filter aus dem Ergebnis Array
-            $nCount = count($oSuchFilterDB_arr);
-            $count  = count($kSuchanfrage_arr);
-            for ($j = 0; $j < $nCount; ++$j) {
-                for ($i = 0; $i < $count; ++$i) {
-                    if ($oSuchFilterDB_arr[$j]->kSuchanfrage == $kSuchanfrage_arr[$i]) {
-                        unset($oSuchFilterDB_arr[$j]);
+            // entferne bereits gesetzte Filter aus dem Ergebnis-Array
+            foreach ($searchFilters as $j => $searchFilter) {
+                foreach ($kSuchanfrage_arr as $searchQuery) {
+                    if ($searchFilter->kSuchanfrage === $searchQuery) {
+                        unset($searchFilters[$j]);
                         break;
                     }
                 }
             }
-            if (is_array($oSuchFilterDB_arr)) {
-                $oSuchFilterDB_arr = array_merge($oSuchFilterDB_arr);
+            if (is_array($searchFilters)) {
+                $searchFilters = array_merge($searchFilters);
             }
             //baue URL
-            $count = count($oSuchFilterDB_arr);
-            for ($i = 0; $i < $count; ++$i) {
-                $oZusatzFilter                           = new stdClass();
-                $oZusatzFilter->SuchFilter               = new stdClass();
-                $oZusatzFilter->SuchFilter->kSuchanfrage = (int)$oSuchFilterDB_arr[$i]->kSuchanfrage;
-                $oSuchFilterDB_arr[$i]->cURL             = $naviFilter->getURL(true, $oZusatzFilter);
+            $additionalFilter = new FilterBaseSearchQuery(
+                $this->getLanguageID(),
+                $this->getCustomerGroupID(),
+                $this->getConfig(),
+                $this->getAvailableLanguages()
+            );
+            foreach ($searchFilters as $searchFilter) {
+                $searchFilter->cURL = $naviFilter->getURL(
+                    true, 
+                    $additionalFilter->init((int)$searchFilter->kSuchanfrage)
+                );
             }
             // Priorität berechnen
             $nPrioStep = 0;
-            $nCount    = count($oSuchFilterDB_arr);
+            $nCount    = count($searchFilters);
             if ($nCount > 0) {
-                $nPrioStep = ($oSuchFilterDB_arr[0]->nAnzahl - $oSuchFilterDB_arr[$nCount - 1]->nAnzahl) / 9;
+                $nPrioStep = ($searchFilters[0]->nAnzahl - $searchFilters[$nCount - 1]->nAnzahl) / 9;
             }
-            foreach ($oSuchFilterDB_arr as $i => $oSuchFilterDB) {
-                $oSuchFilterDB_arr[$i]->Klasse = rand(1, 10);
+            foreach ($searchFilters as $i => $oSuchFilterDB) {
+                $searchFilters[$i]->Klasse = rand(1, 10);
                 if (isset($oSuchFilterDB->kSuchCache) && $oSuchFilterDB->kSuchCache > 0 && $nPrioStep >= 0) {
-                    $oSuchFilterDB_arr[$i]->Klasse = round(
-                            ($oSuchFilterDB->nAnzahl - $oSuchFilterDB_arr[$nCount - 1]->nAnzahl) /
+                    $searchFilters[$i]->Klasse = round(
+                            ($oSuchFilterDB->nAnzahl - $searchFilters[$nCount - 1]->nAnzahl) /
                             $nPrioStep
                         ) + 1;
                 }
             }
         }
 
-        return $oSuchFilterDB_arr;
+        return $searchFilters;
     }
 }

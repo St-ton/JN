@@ -243,9 +243,15 @@ class FilterItemSearchSpecial extends AbstractFilter
      */
     public function getOptions($mixed = null)
     {
-        $oSuchspecialFilterDB_arr = [];
+        $searchSpecialFilters = [];
         if ($this->getConfig()['navigationsfilter']['allgemein_suchspecialfilter_benutzen'] === 'Y') {
-            $naviFilter = Shop::getNaviFilter();
+            $naviFilter       = Shop::getNaviFilter();
+            $additionalFilter = new FilterItemSearchSpecial(
+                $this->getLanguageID(),
+                $this->getCustomerGroupID(),
+                $this->getConfig(),
+                $this->getAvailableLanguages()
+            );
             for ($i = 1; $i < 7; ++$i) {
                 $state = $naviFilter->getCurrentStateData();
                 switch ($i) {
@@ -283,14 +289,14 @@ class FilterItemSearchSpecial extends AbstractFilter
                             $tsonderpreise = 'tsonderpreise';//'tspgspqf';
                         }
                         $state->conditions[] = "tartikelsonderpreis.cAktiv = 'Y' AND tartikelsonderpreis.dStart <= now()";
-                        $state->conditions[] = "(tartikelsonderpreis.dEnde >= CuRDATE() OR tartikelsonderpreis.dEnde = '0000-00-00')";
+                        $state->conditions[] = "(tartikelsonderpreis.dEnde >= CURDATE() OR tartikelsonderpreis.dEnde = '0000-00-00')";
                         $state->conditions[] = $tsonderpreise . ".kKundengruppe = " . $this->getCustomerGroupID();
                         break;
                     case SEARCHSPECIALS_NEWPRODUCTS:
                         $alter_tage          = (($age = $this->getConfig()['boxen']['box_neuimsortiment_alter_tage']) > 0)
                             ? (int)$age
                             : 30;
-                        $state->conditions[] = "tartikel.cNeu = 'Y' AND DATE_SUB(now(),INTERVAL $alter_tage DAY) < tartikel.dErstellt";
+                        $state->conditions[] = "tartikel.cNeu = 'Y' AND DATE_SUB(now(), INTERVAL $alter_tage DAY) < tartikel.dErstellt";
                         break;
                     case SEARCHSPECIALS_TOPOFFERS:
                         $state->conditions[] = 'tartikel.cTopArtikel = "Y"';
@@ -321,15 +327,14 @@ class FilterItemSearchSpecial extends AbstractFilter
                 $oSuchspecial          = new stdClass();
                 $oSuchspecial->nAnzahl = count($oSuchspecialFilterDB);
                 $oSuchspecial->kKey    = $i;
-
-                $oZusatzFilter                          = new stdClass();
-                $oZusatzFilter->SuchspecialFilter       = new stdClass();
-                $oZusatzFilter->SuchspecialFilter->kKey = $i;
-                $oSuchspecial->cURL                     = $naviFilter->getURL(true, $oZusatzFilter);
-                $oSuchspecialFilterDB_arr[$i]           = $oSuchspecial;
+                $oSuchspecial->cURL    = $naviFilter->getURL(
+                    true,
+                    $additionalFilter->init($i)
+                );
+                $searchSpecialFilters[$i]  = $oSuchspecial;
             }
         }
 
-        return $oSuchspecialFilterDB_arr;
+        return $searchSpecialFilters;
     }
 }

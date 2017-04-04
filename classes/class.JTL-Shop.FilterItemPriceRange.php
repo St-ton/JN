@@ -490,10 +490,16 @@ class FilterItemPriceRange extends AbstractFilter
                         : $nPreisspannenAnzahl_arr['anz' . ($i - 1)];
                     $oPreisspannenFilterDB_arr[] = ($nPreisspannenAnzahl_arr['anz' . $i] - $sub);
                 }
-                $nPreisMax      = $oPreis->fMaxPreis;
-                $nPreisMin      = $oPreis->fMinPreis;
-                $nStep          = $oPreis->fStep;
-                $nAnzahlSpannen = (int)$oPreis->nAnzahlSpannen;
+                $nPreisMax        = $oPreis->fMaxPreis;
+                $nPreisMin        = $oPreis->fMinPreis;
+                $nStep            = $oPreis->fStep;
+                $nAnzahlSpannen   = (int)$oPreis->nAnzahlSpannen;
+                $additionalFilter = new FilterItemPriceRange(
+                    $this->getLanguageID(),
+                    $this->getCustomerGroupID(),
+                    $this->getConfig(),
+                    $this->getAvailableLanguages()
+                );
                 for ($i = 0; $i < $nAnzahlSpannen; ++$i) {
                     $oPreisspannenFilter       = new stdClass();
                     $oPreisspannenFilter->nVon = ($nPreisMin + $i * $nStep);
@@ -508,22 +514,20 @@ class FilterItemPriceRange extends AbstractFilter
                         }
                     }
                     // Localize Preise
-                    $oPreisspannenFilter->cVonLocalized  = gibPreisLocalizedOhneFaktor($oPreisspannenFilter->nVon,
-                        $currency);
-                    $oPreisspannenFilter->cBisLocalized  = gibPreisLocalizedOhneFaktor($oPreisspannenFilter->nBis,
-                        $currency);
+                    $oPreisspannenFilter->cVonLocalized  = gibPreisLocalizedOhneFaktor(
+                        $oPreisspannenFilter->nVon,
+                        $currency
+                    );
+                    $oPreisspannenFilter->cBisLocalized  = gibPreisLocalizedOhneFaktor(
+                        $oPreisspannenFilter->nBis,
+                        $currency
+                    );
                     $oPreisspannenFilter->nAnzahlArtikel = $oPreisspannenFilterDB_arr[$i];
-                    //baue URL
-                    if (!isset($oZusatzFilter)) {
-                        $oZusatzFilter = new stdClass();
-                    }
-                    if (!isset($oZusatzFilter->PreisspannenFilter)) {
-                        $oZusatzFilter->PreisspannenFilter = new stdClass();
-                    }
-                    $oZusatzFilter->PreisspannenFilter->fVon = $oPreisspannenFilter->nVon;
-                    $oZusatzFilter->PreisspannenFilter->fBis = $oPreisspannenFilter->nBis;
-                    $oPreisspannenFilter->cURL               = $naviFilter->getURL(true, $oZusatzFilter);
-                    $oPreisspanne_arr[]                      = $oPreisspannenFilter;
+                    $oPreisspannenFilter->cURL           = $naviFilter->getURL(
+                        true,
+                        $additionalFilter->init($oPreisspannenFilter->nVon . '_' . $oPreisspannenFilter->nBis)
+                    );
+                    $oPreisspanne_arr[]                  = $oPreisspannenFilter;
                 }
             }
         } else {
@@ -577,22 +581,30 @@ class FilterItemPriceRange extends AbstractFilter
                         $oPreisspannenFilterDB_arr[] = ($nPreisspannenAnzahl_arr['anz' . $i] - $sub);
                     }
                 }
+                $additionalFilter = new FilterItemPriceRange(
+                    $this->getLanguageID(),
+                    $this->getCustomerGroupID(),
+                    $this->getConfig(),
+                    $this->getAvailableLanguages()
+                );
                 foreach ($oPreisspannenfilter_arr as $i => $oPreisspannenfilter) {
                     $oPreisspannenfilterTMP                 = new stdClass();
                     $oPreisspannenfilterTMP->nVon           = $oPreisspannenfilter->nVon;
                     $oPreisspannenfilterTMP->nBis           = $oPreisspannenfilter->nBis;
                     $oPreisspannenfilterTMP->nAnzahlArtikel = (int)$oPreisspannenFilterDB_arr[$i];
                     // Localize Preise
-                    $oPreisspannenfilterTMP->cVonLocalized = gibPreisLocalizedOhneFaktor($oPreisspannenfilterTMP->nVon,
-                        $currency);
-                    $oPreisspannenfilterTMP->cBisLocalized = gibPreisLocalizedOhneFaktor($oPreisspannenfilterTMP->nBis,
-                        $currency);
-                    //baue URL
-                    $oZusatzFilter                           = new stdClass();
-                    $oZusatzFilter->PreisspannenFilter       = new stdClass();
-                    $oZusatzFilter->PreisspannenFilter->fVon = $oPreisspannenfilterTMP->nVon;
-                    $oZusatzFilter->PreisspannenFilter->fBis = $oPreisspannenfilterTMP->nBis;
-                    $oPreisspannenfilterTMP->cURL            = $naviFilter->getURL(true, $oZusatzFilter);
+                    $oPreisspannenfilterTMP->cVonLocalized = gibPreisLocalizedOhneFaktor(
+                        $oPreisspannenfilterTMP->nVon,
+                        $currency
+                    );
+                    $oPreisspannenfilterTMP->cBisLocalized = gibPreisLocalizedOhneFaktor(
+                        $oPreisspannenfilterTMP->nBis,
+                        $currency
+                    );
+                    $oPreisspannenfilterTMP->cURL            = $naviFilter->getURL(
+                        true,
+                        $additionalFilter->init($oPreisspannenfilterTMP->nVon . '_' . $oPreisspannenfilterTMP->nBis)
+                    );
                     $oPreisspanne_arr[]                      = $oPreisspannenfilterTMP;
                 }
             }

@@ -240,6 +240,12 @@ class FilterItemAttribute extends FilterBaseAttribute
             $oMerkmalFilterDB_arr = Shop::DB()->query($query, 2);
 
             if (is_array($oMerkmalFilterDB_arr)) {
+                $additionalFilter = new FilterItemAttribute(
+                    $this->getLanguageID(),
+                    $this->getCustomerGroupID(),
+                    $this->getConfig(),
+                    $this->getAvailableLanguages()
+                );
                 foreach ($oMerkmalFilterDB_arr as $i => $oMerkmalFilterDB) {
                     $nPos          = $naviFilter->getAttributePosition($oMerkmalFilter_arr, (int)$oMerkmalFilterDB->kMerkmal);
                     $oMerkmalWerte = new stdClass();
@@ -260,18 +266,17 @@ class FilterItemAttribute extends FilterBaseAttribute
                         $oMerkmalWerte->cBildpfadGross = BILD_KEIN_MERKMALWERTBILD_VORHANDEN;
                     }
                     //baue URL
-                    $oZusatzFilter                              = new stdClass();
-                    $oZusatzFilter->MerkmalFilter               = new stdClass();
-                    $oZusatzFilter->MerkmalFilter->kMerkmalWert = (int)$oMerkmalFilterDB->kMerkmalWert;
-                    $oZusatzFilter->MerkmalFilter->cSeo         = $oMerkmalFilterDB->cSeo;
-                    $oMerkmalWerte->cURL                        = $naviFilter->getURL(true, $oZusatzFilter);
-
+                    $oMerkmalWerte->cURL = $naviFilter->getURL(
+                        true,
+                        $additionalFilter->init((int)$oMerkmalFilterDB->kMerkmalWert)
+                    );
                     //hack for #4815
-                    if ($oMerkmalWerte->nAktiv === 1 && isset($oZusatzFilter->MerkmalFilter->cSeo)) {
+                    $seoURL = $additionalFilter->getSeo($this->getLanguageID());
+                    if ($oMerkmalWerte->nAktiv === 1 && !empty($seoURL)) {
                         //remove '__attrY' from '<url>attrX__attrY'
-                        $newURL = str_replace('__' . $oZusatzFilter->MerkmalFilter->cSeo, '', $oMerkmalWerte->cURL);
+                        $newURL = str_replace('__' . $seoURL, '', $oMerkmalWerte->cURL);
                         //remove 'attrY__' from '<url>attrY__attrX'
-                        $newURL              = str_replace($oZusatzFilter->MerkmalFilter->cSeo . '__', '', $newURL);
+                        $newURL              = str_replace($seoURL . '__', '', $newURL);
                         $oMerkmalWerte->cURL = $newURL;
                     }
                     $oMerkmal           = new stdClass();
@@ -316,7 +321,8 @@ class FilterItemAttribute extends FilterBaseAttribute
                         }
                         if ($nIndex >= 0) {
                             unset($oMerkmalFilter_arr[$o]->oMerkmalWerte_arr[$nIndex]);
-                            $oMerkmalFilter_arr[$o]->oMerkmalWerte_arr = array_merge($oMerkmalFilter_arr[$o]->oMerkmalWerte_arr);
+                            $oMerkmalFilter_arr[$o]->oMerkmalWerte_arr =
+                                array_merge($oMerkmalFilter_arr[$o]->oMerkmalWerte_arr);
                         }
                     }
                 }

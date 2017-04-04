@@ -124,9 +124,9 @@ class FilterBaseManufacturer extends AbstractFilter
      */
     public function getOptions($mixed = null)
     {
-        $oHerstellerFilterDB_arr = [];
+        $manufacturers = [];
         if ($this->getConfig()['navigationsfilter']['allgemein_herstellerfilter_benutzen'] !== 'N') {
-            //it's actually stupid to filter by manufacturer if we already got a manufacturer filter active...
+            //it's actually unnecessary to filter by manufacturer if we already got a manufacturer filter active...
 //            if ($this->HerstellerFilter->isInitialized()) {
 //                $filter              = new stdClass();
 //                $filter->cSeo        = $this->HerstellerFilter->getSeo();
@@ -158,30 +158,32 @@ class FilterBaseManufacturer extends AbstractFilter
                 FROM
                 (" . $query . "
                 ) AS ssMerkmal
-                    LEFT JOIN tseo ON tseo.kKey = ssMerkmal.kHersteller
+                    LEFT JOIN tseo 
+                        ON tseo.kKey = ssMerkmal.kHersteller
                         AND tseo.cKey = 'kHersteller'
                         AND tseo.kSprache = " . $this->getLanguageID() . "
                     GROUP BY ssMerkmal.kHersteller
                     ORDER BY ssMerkmal.nSortNr, ssMerkmal.cName";
 
-            $oHerstellerFilterDB_arr = Shop::DB()->query($query, 2);
-            //baue URL
-            $oZusatzFilter = new stdClass();
-            $count         = count($oHerstellerFilterDB_arr);
-            for ($i = 0; $i < $count; ++$i) {
-                $oHerstellerFilterDB_arr[$i]->kHersteller = (int)$oHerstellerFilterDB_arr[$i]->kHersteller;
-                $oHerstellerFilterDB_arr[$i]->nAnzahl     = (int)$oHerstellerFilterDB_arr[$i]->nAnzahl;
-                $oHerstellerFilterDB_arr[$i]->nSortNr     = (int)$oHerstellerFilterDB_arr[$i]->nSortNr;
+            $manufacturers    = Shop::DB()->query($query, 2);
+            $additionalFilter = new FilterItemManufacturer(
+                $this->getLanguageID(),
+                $this->getCustomerGroupID(),
+                $this->getConfig(),
+                $this->getAvailableLanguages()
+            );
 
-                $oZusatzFilter->HerstellerFilter              = new stdClass();
-                $oZusatzFilter->HerstellerFilter->kHersteller = (int)$oHerstellerFilterDB_arr[$i]->kHersteller;
-                $oZusatzFilter->HerstellerFilter->cSeo        = $oHerstellerFilterDB_arr[$i]->cSeo;
-
-                $oHerstellerFilterDB_arr[$i]->cURL = $naviFilter->getURL(true, $oZusatzFilter);
+            foreach ($manufacturers as $manufacturer) {
+                $manufacturer->kHersteller = (int)$manufacturer->kHersteller;
+                $manufacturer->nAnzahl     = (int)$manufacturer->nAnzahl;
+                $manufacturer->nSortNr     = (int)$manufacturer->nSortNr;
+                $manufacturer->cURL        = $naviFilter->getURL(
+                    true,
+                    $additionalFilter->init((int)$manufacturer->kHersteller)
+                );
             }
-            unset($oZusatzFilter);
         }
 
-        return $oHerstellerFilterDB_arr;
+        return $manufacturers;
     }
 }

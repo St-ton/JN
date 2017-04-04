@@ -64,7 +64,7 @@ class FilterItemCategory extends FilterBaseCategory
      */
     public function getOptions($mixed = null)
     {
-        $oKategorieFilterDB_arr = [];
+        $categories = [];
         if ($this->getConfig()['navigationsfilter']['allgemein_kategoriefilter_benutzen'] !== 'N') {
             $naviFilter         = Shop::getNaviFilter();
             $categoryFilterType = $this->getConfig()['navigationsfilter']['kategoriefilter_anzeigen_als'];
@@ -136,7 +136,7 @@ class FilterItemCategory extends FilterBaseCategory
                 $select[] = "tkategorie.cName";
             }
 
-            $query                  = $naviFilter->getBaseQuery(
+            $query            = $naviFilter->getBaseQuery(
                 $select,
                 $state->joins,
                 $state->conditions,
@@ -145,7 +145,7 @@ class FilterItemCategory extends FilterBaseCategory
                 '',
                 ['tkategorie.kKategorie', 'tartikel.kArtikel']
             );
-            $query                  = "SELECT tseo.cSeo, ssMerkmal.kKategorie, ssMerkmal.cName, 
+            $query            = "SELECT tseo.cSeo, ssMerkmal.kKategorie, ssMerkmal.cName, 
                 ssMerkmal.nSort, COUNT(*) AS nAnzahl
                 FROM (" . $query . " ) AS ssMerkmal
                     LEFT JOIN tseo ON tseo.kKey = ssMerkmal.kKategorie
@@ -153,27 +153,30 @@ class FilterItemCategory extends FilterBaseCategory
                         AND tseo.kSprache = " . $this->getLanguageID() . "
                     GROUP BY ssMerkmal.kKategorie
                     ORDER BY ssMerkmal.nSort, ssMerkmal.cName";
-            $oKategorieFilterDB_arr = Shop::DB()->query($query, 2);
-            //baue URL
-            $count                          = is_array($oKategorieFilterDB_arr) ? count($oKategorieFilterDB_arr) : 0;
-            $oZusatzFilter                  = new stdClass();
-            $oZusatzFilter->KategorieFilter = new stdClass();
-            for ($i = 0; $i < $count; ++$i) {
+            $categories       = Shop::DB()->query($query, 2);
+            $additionalFilter = new FilterItemCategory(
+                $this->getLanguageID(),
+                $this->getCustomerGroupID(),
+                $this->getConfig(),
+                $this->getAvailableLanguages()
+            );
+            foreach ($categories as $category) {
                 // Anzeigen als KategoriePfad
                 if ($categoryFilterType === 'KP') {
-                    $oKategorie                        = new Kategorie($oKategorieFilterDB_arr[$i]->kKategorie);
-                    $oKategorieFilterDB_arr[$i]->cName = gibKategoriepfad(
+                    $oKategorie      = new Kategorie($category->kKategorie);
+                    $category->cName = gibKategoriepfad(
                         $oKategorie,
                         $this->getCustomerGroupID(),
                         $this->getLanguageID()
                     );
                 }
-                $oZusatzFilter->KategorieFilter->kKategorie = (int)$oKategorieFilterDB_arr[$i]->kKategorie;
-                $oZusatzFilter->KategorieFilter->cSeo       = $oKategorieFilterDB_arr[$i]->cSeo;
-                $oKategorieFilterDB_arr[$i]->cURL           = $naviFilter->getURL(true, $oZusatzFilter);
-                $oKategorieFilterDB_arr[$i]->nAnzahl        = (int)$oKategorieFilterDB_arr[$i]->nAnzahl;
-                $oKategorieFilterDB_arr[$i]->kKategorie     = (int)$oKategorieFilterDB_arr[$i]->kKategorie;
-                $oKategorieFilterDB_arr[$i]->nSort          = (int)$oKategorieFilterDB_arr[$i]->nSort;
+                $category->cURL       = $naviFilter->getURL(
+                    true,
+                    $additionalFilter->init((int)$category->kKategorie)
+                );
+                $category->nAnzahl    = (int)$category->nAnzahl;
+                $category->kKategorie = (int)$category->kKategorie;
+                $category->nSort      = (int)$category->nSort;
             }
             //neue Sortierung
             if ($categoryFilterType === 'KP') {
@@ -181,6 +184,6 @@ class FilterItemCategory extends FilterBaseCategory
             }
         }
 
-        return $oKategorieFilterDB_arr;
+        return $categories;
     }
 }

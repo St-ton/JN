@@ -133,7 +133,7 @@ $(document).ready(function() {
                             </span>
                             <input id="cPass" class="form-control" type="text" name="cPass" autocomplete="off" />
                             <span class="input-group-addon">
-                                <a href="#" onclick="ioCall('getRandomPasswordIO');return false;" class="button generate" title="">Passwort generieren</a>
+                                <a href="#" onclick="ioCall('getRandomPassword');return false;" class="button generate" title="">Passwort generieren</a>
                             </span>
                             {if isset($cError_arr.cPass)}<span class="input-group-addon error" title="Bitte ausf&uuml;llen"><i class="fa fa-exclamation-triangle"></i></span>{else}<span class="input-group-addon"><i class="fa fa-wrench"></i></span>{/if}
                         </div>

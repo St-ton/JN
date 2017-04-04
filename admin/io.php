@@ -40,9 +40,9 @@ $io->register('getPages', [$jsonApi, 'getPages'])
    ->register('getRemoteData', ['WidgetBase', 'getRemoteDataIO'], $widgetBaseInc, 'DASHBOARD_VIEW')
    ->register('truncateJtllog', ['Jtllog', 'truncateLog'], null, 'DASHBOARD_VIEW')
    // Benutzerverwaltung
-   ->register('getRandomPasswordIO', 'getRandomPasswordIO', $accountInc, 'ACCOUNT_VIEW')
+   ->register('getRandomPassword', 'getRandomPasswordIO', $accountInc, 'ACCOUNT_VIEW')
    // Bannerverwaltung
-   ->register('saveBannerAreasIO', 'saveBannerAreasIO', $bannerInc, 'DISPLAY_BANNER_VIEW');
+   ->register('saveBannerAreas', 'saveBannerAreasIO', $bannerInc, 'DISPLAY_BANNER_VIEW');
 
 $data = $io->handleRequest($_REQUEST['io']);
 $io->respondAndExit($data);

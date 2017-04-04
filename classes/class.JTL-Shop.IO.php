@@ -65,18 +65,17 @@ class IO
     /**
      * @param string $reqString
      * @return mixed
-     * @throws Exception
      */
     public function handleRequest($reqString)
     {
         $request = json_decode($reqString, true);
 
         if (($errno = json_last_error()) != JSON_ERROR_NONE) {
-            throw new Exception("Error {$errno} while decoding data");
+            return new IOError("Error {$errno} while decoding data");
         }
 
         if (!isset($request['name'], $request['params'])) {
-            throw new Exception("Missing request property");
+            return new IOError("Missing request property");
         }
 
         return $this->execute($request['name'], $request['params']);
@@ -87,6 +86,17 @@ class IO
      */
     public function respondAndExit($data)
     {
+        header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+        header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
+        header('Cache-Control: no-cache, must-revalidate');
+        header('Pragma: no-cache');
+        header('Content-type: application/json');
+
+        // respond with an error?
+        if (is_object($data) && get_class($data) === 'IOError') {
+            header(makeHTTPHeader($data->code), true, $data->code);
+        }
+
         // encode data if not already encoded
         if (is_string($data)) {
             // data is a string
@@ -100,12 +110,6 @@ class IO
         } else {
             $data = json_encode($data);
         }
-
-        header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
-        header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
-        header('Cache-Control: no-cache, must-revalidate');
-        header('Pragma: no-cache');
-        header('Content-type: application/json');
 
         die($data);
     }
@@ -132,7 +136,7 @@ class IO
     public function execute($name, $params)
     {
         if (!$this->exists($name)) {
-            throw new Exception("Function not registered");
+            return new IOError("Function not registered");
         }
 
         $function = $this->functions[$name][0];
@@ -149,7 +153,7 @@ class IO
         }
 
         if ($ref->getNumberOfRequiredParameters() > count($params)) {
-            throw new Exception("Wrong required parameter count");
+            return new IOError("Wrong required parameter count");
         }
 
         return call_user_func_array($function, $params);

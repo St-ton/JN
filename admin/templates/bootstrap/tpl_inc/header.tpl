@@ -93,15 +93,10 @@
                     setResult(null);
                     lastQuery = null;
                 }
-                else if(query != lastQuery) {
+                else if(query !== lastQuery) {
                     lastQuery = query;
-                    ajaxCallV2('suche.php', { query: query, suggest: true }, function(result, error) {
-                        if (error) {
-                            setResult(null);
-                        }
-                        else {
-                            setResult(result.data.tpl);
-                        }
+                    ioGetJson('adminSearch', [query], function (data) {
+                        setResult(data.data.tpl);
                     });
                 }
             }

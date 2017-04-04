@@ -47,13 +47,13 @@ class AdminIO extends IO
     public function execute($name, $params)
     {
         if (!$this->exists($name)) {
-            throw new Exception("Function not registered");
+            return new IOError("Function not registered");
         }
 
         $permission = $this->functions[$name][2];
 
         if ($permission !== null && !$this->oAccount->permission($permission)) {
-            throw new Exception("User has not the required permission to execute this function");
+            return new IOError("User has not the required permission to execute this function", 401);
         }
 
         return parent::execute($name, $params);

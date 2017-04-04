@@ -108,6 +108,14 @@ abstract class AbstractFilter implements IFilter
     }
 
     /**
+     * @return array
+     */
+    public function getAvailableLanguages()
+    {
+        return $this->availableLanguages;
+    }
+
+    /**
      * @param int|string $value
      * @return $this
      */

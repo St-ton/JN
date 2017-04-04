@@ -170,8 +170,7 @@
                                                    onblur="check_url('{$oRedirect->kRedirect}', this.value);">
                                             <script>
                                                 enableTypeahead(
-                                                    '#url_{$oRedirect->kRedirect}', 'getSeos', 'cUrl',
-                                                    'cUrl',
+                                                    '#url_{$oRedirect->kRedirect}', 'getSeos', 'cUrl', 'cUrl',
                                                     function (item) {
                                                         check_url('{$oRedirect->kRedirect}', item.url);
                                                     }
@@ -312,9 +311,12 @@
                                    autocomplete="off" value="{if isset($cPost_arr.cToUrl)}{$cPost_arr.cToUrl}{/if}"
                                    onblur="check_url('cToUrl', this.value);" placeholder="Ziel-URL">
                             <script>
-                                enableTypeahead('#url_cToUrl', 'getSeos', 'cUrl', 'cUrl', function (item) {
-                                    check_url('cToUrl', item.url);
-                                });
+                                enableTypeahead(
+                                    '#url_cToUrl', 'getSeos', 'cUrl', 'cUrl',
+                                    function (item) {
+                                        check_url('cToUrl', item.url);
+                                    }
+                                );
                             </script>
                         </div>
                     </div>

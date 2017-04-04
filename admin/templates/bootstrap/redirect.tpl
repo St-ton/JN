@@ -121,14 +121,6 @@
     </ul>
     <div class="tab-content">
         <div id="redirects" class="tab-pane fade {if !isset($cTab) || $cTab === 'redirects'} active in{/if}">
-            <input id="typetest" class="form-control">
-            <script>
-                $(function () {
-                    enableTypeahead('#typetest', 'getSeos', 'cSeo', 'cSeo', function (item) {
-                        console.log(item);
-                    });
-                });
-            </script>
             <div class="panel panel-default">
                 {if $nRedirectCount > 0}
                     {include file='tpl_inc/filtertools.tpl' oFilter=$oFilter}

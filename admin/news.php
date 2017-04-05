@@ -166,7 +166,7 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
             $oNews->cMetaTitle       = htmlspecialchars($cMetaTitle, ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
             $oNews->cMetaDescription = htmlspecialchars($cMetaDescription, ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
             $oNews->cMetaKeywords    = htmlspecialchars($cMetaKeywords, ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
-            $oNews->dErstellt        = 'now()';
+            $oNews->dErstellt        = date('Y-m-d H:i:s');
             $oNews->dGueltigVon      = convertDate($dGueltigVon);
             $oNews->cPreviewImage    = $cPreviewImage;
 
@@ -437,7 +437,7 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
             $oNewsKategorie->nAktiv                = $nAktiv;
             $oNewsKategorie->cMetaTitle            = $cMetaTitle;
             $oNewsKategorie->cMetaDescription      = $cMetaDescription;
-            $oNewsKategorie->dLetzteAktualisierung = 'now()';
+            $oNewsKategorie->dLetzteAktualisierung = date('Y-m-d H:i:s');
             $oNewsKategorie->cSeo                  = (strlen($cSeo) > 0)
                 ? checkSeo(getSeo($cSeo))
                 : checkSeo(getSeo($cName));

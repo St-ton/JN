@@ -88,7 +88,7 @@
             body { background-color: {$Einstellungen.template.theme.backgroundcolor}!important; }
         </style>
     {/if}
-    <script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
+    <script src="{$currentTemplateDir}js/jquery-1.12.4.min.js"></script>
     {include file='layout/header_inline_js.tpl'}
 </head>
 {assign var="isFluidContent" value=false}

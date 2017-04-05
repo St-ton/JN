@@ -233,6 +233,7 @@ function getArticleList($cSearch, $aParam)
             );
             foreach ($oArticle_arr as &$oArticle) {
                 $oArticle->cName                              = utf8_encode($oArticle->cName);
+                $oArticle->cBase                              = utf8_encode($oArticle->cBase); // optional (maybe for austria)
                 $Artikel                                      = new Artikel();
                 $oArtikelOptionen                             = new stdClass();
                 $oArtikelOptionen->nKeinLagerbestandBeachten  = 1;

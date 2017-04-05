@@ -1866,6 +1866,9 @@ class Boxen
                 count($oSuchergebnisse->Preisspanne) > 0 &&
                 $this->boxConfig['navigationsfilter']['preisspannenfilter_benutzen'] === 'box' &&
                 $conf['global']['global_sichtbarkeit'] == 1)
+            || (isset($oSuchergebnisse->Suchspecialauswahl) &&
+                count($oSuchergebnisse->Suchspecialauswahl) > 0 &&
+                $this->boxConfig['navigationsfilter']['allgemein_suchspecialfilter_benutzen'] === 'Y')
             || (isset($NaviFilter->SuchspecialFilter->kKey) &&
                 $NaviFilter->SuchspecialFilter->kKey > 0 &&
                 $this->boxConfig['navigationsfilter']['allgemein_suchspecialfilter_benutzen'] === 'Y')

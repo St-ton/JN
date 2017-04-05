@@ -949,6 +949,11 @@ legend {
     margin: 10px 0;
 }
 
+.single_search_browser img#loaderimg {
+    visibility: hidden;
+    padding-left: 5px;
+}
+
 .input-group-checkbox-wrap:not(:first-child):not(:last-child) {
     border-radius: 0;
 }

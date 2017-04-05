@@ -1634,11 +1634,11 @@ function checkSetPercentCouponWKPos($oWKPosition, $Kupon)
                     OR kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . ")
                 AND (nVerwendungen = 0 
                     OR nVerwendungen > nVerwendungenBisher)
-                AND (cArtikel = '' " . $Artikel_qry . ")
+                AND (cArtikel = '' {$Artikel_qry})
                 AND (cKategorien = '' 
-                    OR cKategorien = '-1' " . $Kategorie_qry . ")
+                    OR cKategorien = '-1' {$Kategorie_qry})
                 AND (cKunden = '' 
-                    OR cKunden = '-1' " . $Kunden_qry . ")
+                    OR cKunden = '-1' {$Kunden_qry})
                 AND kKupon = " . (int)$Kupon->kKupon, 1
     );
     $waehrung    = isset($_SESSION['Waehrung']) ? $_SESSION['Waehrung'] : null;
@@ -1667,12 +1667,26 @@ function gibLagerfilter()
     $conf      = Shop::getSettings([CONF_GLOBAL]);
     $filterSQL = '';
     if ((int)$conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER) {
-        $filterSQL = "AND (NOT (tartikel.fLagerbestand <= 0 
-                                AND tartikel.cLagerBeachten = 'Y') 
-                            OR tartikel.cLagerVariation = 'Y')";
+        $filterSQL = "AND (tartikel.cLagerBeachten != 'Y'
+                        OR tartikel.fLagerbestand > 0
+                        OR (tartikel.cLagerVariation = 'Y'
+                            AND (
+                                SELECT MAX(teigenschaftwert.fLagerbestand)
+                                FROM teigenschaft
+                                INNER JOIN teigenschaftwert ON teigenschaftwert.kEigenschaft = teigenschaft.kEigenschaft
+                                WHERE teigenschaft.kArtikel = tartikel.kArtikel
+                            ) > 0))";
     } elseif ((int)$conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL) {
-        $filterSQL = "AND (NOT (tartikel.fLagerbestand <= 0 AND tartikel.cLagerBeachten = 'Y') 
-                            OR tartikel.cLagerKleinerNull = 'Y' OR tartikel.cLagerVariation = 'Y')";
+        $filterSQL = "AND (tartikel.cLagerBeachten != 'Y'
+                        OR tartikel.fLagerbestand > 0
+                        OR tartikel.cLagerKleinerNull = 'Y'
+                        OR (tartikel.cLagerVariation = 'Y'
+                            AND (
+                                SELECT MAX(teigenschaftwert.fLagerbestand)
+                                FROM teigenschaft
+                                INNER JOIN teigenschaftwert ON teigenschaftwert.kEigenschaft = teigenschaft.kEigenschaft
+                                WHERE teigenschaft.kArtikel = tartikel.kArtikel
+                            ) > 0))";
     }
     executeHook(HOOK_STOCK_FILTER, [
         'conf'      => (int)$conf['global']['artikel_artikelanzeigefilter'],

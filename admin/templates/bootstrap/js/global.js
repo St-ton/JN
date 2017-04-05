@@ -515,6 +515,9 @@ function massCreationCoupons() {
     $("#informCustomers").toggleClass("hidden", checkboxCreationCoupons);
 }
 
+/**
+ * @deprecated since 4.06
+ */
 function addFav(title, url, success) {
     ajaxCallV2('favs.php?action=add', { title: title, url: url }, function(result, error) {
         if (!error) {
@@ -526,6 +529,9 @@ function addFav(title, url, success) {
     });
 }
 
+/**
+ * @deprecated since 4.06
+ */
 function reloadFavs() {
     ajaxCallV2('favs.php?action=list', {}, function(result, error) {
         if (!error) {
@@ -604,7 +610,10 @@ $(document).ready(function () {
     $('#fav-add').click(function() {
         var title = $('.content-header h1').text();
         var url = window.location.href;
-        addFav(title, url, function() {
+        ioCall('addFav', [title, url], function() {
+            ioGetJson('reloadFavs', [], function (data) {
+                $('#favs-drop').html(data.tpl);
+            });
             showNotify('success', 'Favoriten', 'Wurde erfolgreich hinzugef&uuml;gt');
         });
 

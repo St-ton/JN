@@ -548,3 +548,40 @@ function setCurrencyConversionTooltipIO($fPreisNetto, $fPreisBrutto, $cTooltipID
 
     return $response;
 }
+
+/**
+ * @param $title
+ * @param $utl
+ */
+function addFav($title, $url)
+{
+    $success     = false;
+    $title       = utf8_decode($title);
+    $url         = utf8_decode($url);
+    $kAdminlogin = (int)$_SESSION['AdminAccount']->kAdminlogin;
+
+    if (!empty($title) && !empty($url)) {
+        $success = AdminFavorite::add($kAdminlogin, $title, $url);
+    }
+
+    if ($success) {
+        $result = [
+            'title' => $title,
+            'url'   => $url
+        ];
+    } else {
+        $result = new IOError('Unauthorized', 401);
+    }
+
+    return $result;
+}
+
+function reloadFavs()
+{
+    global $smarty, $oAccount;
+
+    $smarty->assign('favorites', $oAccount->favorites());
+    $tpl = $smarty->fetch('tpl_inc/favs_drop.tpl');
+
+    return [ 'tpl' => $tpl ];
+}

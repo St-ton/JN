@@ -40,6 +40,8 @@ $io->register('getPages', [$jsonApi, 'getPages'])
    ->register('getAvailableWidgets', 'getAvailableWidgetsIO', $dashboardInc, 'DASHBOARD_VIEW')
    ->register('getRemoteData', ['WidgetBase', 'getRemoteDataIO'], $widgetBaseInc, 'DASHBOARD_VIEW')
    ->register('truncateJtllog', ['Jtllog', 'truncateLog'], null, 'DASHBOARD_VIEW')
+   ->register('addFav')
+   ->register('reloadFavs')
    // Benutzerverwaltung
    ->register('getRandomPassword', 'getRandomPasswordIO', $accountInc, 'ACCOUNT_VIEW')
    // Bannerverwaltung

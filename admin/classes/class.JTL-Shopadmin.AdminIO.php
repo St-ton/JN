@@ -33,7 +33,7 @@ class AdminIO extends IO
     public function register($name, $function = null, $include = null, $permission = null)
     {
         parent::register($name, $function, $include);
-        $this->functions[$name] = [$function, $include, $permission];
+        $this->functions[$name][] = $permission;
 
         return $this;
     }

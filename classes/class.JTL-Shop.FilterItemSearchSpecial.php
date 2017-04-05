@@ -126,7 +126,7 @@ class FilterItemSearchSpecial extends AbstractFilter
      */
     public function getSQLCondition()
     {
-        $conf = Shop::getSettings([CONF_BOXEN, CONF_GLOBAL]);
+        $conf = $this->getConfig();
         switch ($this->kKey) {
             case SEARCHSPECIALS_BESTSELLER:
                 $nAnzahl = (isset($conf['global']['global_bestseller_minanzahl'])

@@ -688,15 +688,17 @@ function hideBackdrop() {
  * Call the AJAX function 'name' with the argument list args. On success call the callback function success with the
  * result object as the first parameter
  *
- * @param name
- * @param args
- * @param success
+ * @param name - name of the ajax function
+ * @param args - array of arguments passed to the ajax function
+ * @param success - callback(data) that is called on success
+ * @param error - callback(data) that is called on failure
  * @returns XMLHttpRequest jqxhr
  */
-function ioGetJson(name, args, success)
+function ioGetJson(name, args, success, error)
 {
     args    = args || [];
     success = success || function () { };
+    error   = error || function () { };
 
     return $.ajax({
         url: 'io.php',
@@ -710,6 +712,9 @@ function ioGetJson(name, args, success)
         },
         success: function (data, textStatus, jqXHR) {
             success(data);
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            error(jqXHR.responseJSON);
         }
     });
 }

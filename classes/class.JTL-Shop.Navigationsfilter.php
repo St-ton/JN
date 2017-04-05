@@ -2489,8 +2489,8 @@ class Navigationsfilter
      */
     public function __debugInfo()
     {
-        $res           = get_object_vars($this);
-        $res['conf']   = '*truncated*';
+        $res         = get_object_vars($this);
+        $res['conf'] = '*truncated*';
 
         return $res;
     }

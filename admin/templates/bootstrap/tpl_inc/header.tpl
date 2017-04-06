@@ -224,7 +224,7 @@
                         </li>
                         <li class="dropdown avatar">
                             <a href="#" class="dropdown-toggle parent" data-toggle="dropdown">
-                                <img src="{gravatarImage email=$account->cMail}" title="{$account->cMail}" class="img-circle" />
+                                <img src="{if !empty($account->extensionAvatar)}{$account->extensionAvatar}{else}{gravatarImage email=$account->cMail}{/if}" title="{$account->cMail}" class="img-circle" />
                             </a>
                             <ul class="dropdown-menu" role="main">
                                 <li>

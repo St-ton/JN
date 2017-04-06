@@ -2633,7 +2633,7 @@ function getKundendaten($post, $kundenaccount, $htmlentities = 1)
         }
     }
     if (preg_match('/^\d{2}\.\d{2}\.(\d{4})$/', $Kunde->dGeburtstag)) {
-        $Kunde->dGeburtstag = convertDate2German($Kunde->dGeburtstag);
+        $Kunde->dGeburtstag = DateTime::createFromFormat('d.m.Y', $Kunde->dGeburtstag)->format('Y-m-d');
     }
     $Kunde->angezeigtesLand = ISO2land($Kunde->cLand);
     if (!empty($Kunde->cBundesland)) {

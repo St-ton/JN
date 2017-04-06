@@ -167,7 +167,7 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
             $oNews->cMetaDescription = htmlspecialchars($cMetaDescription, ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
             $oNews->cMetaKeywords    = htmlspecialchars($cMetaKeywords, ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
             $oNews->dErstellt        = date('Y-m-d H:i:s');
-            $oNews->dGueltigVon      = convertDate($dGueltigVon);
+            $oNews->dGueltigVon      = DateTime::createFromFormat('d.m.Y H:i', $dGueltigVon)->format('Y-m-d H:i:00');
             $oNews->cPreviewImage    = $cPreviewImage;
 
             $nNewsOld = 0;
@@ -273,9 +273,9 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
             }
             // tnewsmonatsuebersicht updaten
             if ($nAktiv === 1) {
-                $oDatum = gibJahrMonatVonDateTime($oNews->dGueltigVon);
-                $dMonat = $oDatum->Monat;
-                $dJahr  = $oDatum->Jahr;
+                $oDatum = DateTime::createFromFormat('Y-m-d H:i:s', $oNews->dGueltigVon);
+                $dMonat = (int)$oDatum->format('m');
+                $dJahr = (int)$oDatum->format('Y');
 
                 $oNewsMonatsUebersicht = Shop::DB()->select(
                     'tnewsmonatsuebersicht',
@@ -374,13 +374,15 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
                     Shop::DB()->delete('tnewskategorienews', 'kNews', $kNews);
                     // War das die letzte News fuer einen bestimmten Monat?
                     // => Falls ja, tnewsmonatsuebersicht Monat loeschen
-                    $oDatum       = gibJahrMonatVonDateTime($oNewsTMP->dGueltigVon);
+                    $oDatum = DateTime::createFromFormat('Y-m-d H:i:s', $oNewsTMP->dGueltigVon);
+                    $dMonat = (int)$oDatum->format('m');
+                    $dJahr = (int)$oDatum->format('Y');
                     $kSpracheTMP  = (int)$oNewsTMP->kSprache;
                     $oNewsTMP_arr = Shop::DB()->query(
                         "SELECT kNews
                             FROM tnews
-                            WHERE month(dGueltigVon) = " . $oDatum->Monat . "
-                                AND year(dGueltigVon) = " . $oDatum->Jahr . "
+                            WHERE month(dGueltigVon) = " . $dMonat . "
+                                AND year(dGueltigVon) = " . $dJahr . "
                                 AND kSprache = " . $kSpracheTMP, 2
                     );
                     if (is_array($oNewsTMP_arr) && count($oNewsTMP_arr) === 0) {
@@ -390,8 +392,8 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
                                     ON tseo.cKey = 'kNewsMonatsUebersicht'
                                     AND tseo.kKey = tnewsmonatsuebersicht.kNewsMonatsUebersicht
                                     AND tseo.kSprache = tnewsmonatsuebersicht.kSprache
-                                WHERE tnewsmonatsuebersicht.nMonat = " . $oDatum->Monat . "
-                                    AND tnewsmonatsuebersicht.nJahr = " . $oDatum->Jahr . "
+                                WHERE tnewsmonatsuebersicht.nMonat = " . $dMonat . "
+                                    AND tnewsmonatsuebersicht.nJahr = " . $dJahr . "
                                     AND tnewsmonatsuebersicht.kSprache = " . $kSpracheTMP, 4
                         );
                     }

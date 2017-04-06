@@ -376,11 +376,6 @@ class AdminAccount
             $_SESSION['AdminAccount']->cMail       = $oAdmin->cMail;
             $_SESSION['AdminAccount']->cPass       = $oAdmin->cPass;
 
-            executeHook(HOOK_BACKEND_ACCOUNT_LOGIN, [
-                'oAdmin' => $oAdmin,
-                'AdminAccount' => &$_SESSION['AdminAccount']
-            ]);
-
             $_SESSION['KCFINDER']             = [];
             $_SESSION['KCFINDER']['disabled'] = false;
 

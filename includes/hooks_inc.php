@@ -1670,7 +1670,8 @@ define('HOOK_GET_MANUFACTURERS', 226);
 
 /**
  * @since 4.06
- * @file classes/class.JTL-Shop.AdminAccount.php
- * @param Account   - oAdmin
+ * @file admin/templates/bootstrap/php/functions.php
+ * @param AdminAccount - oAdminAccount
+ * @param string       - url
  */
-define('HOOK_BACKEND_ACCOUNT_LOGIN', 227);
+define('HOOK_BACKEND_FUNCTIONS_GRAVATAR', 227);

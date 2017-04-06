@@ -1607,6 +1607,7 @@ class Artikel
             $kSprache = Shop::$kSprache;
         }
         $kSprache               = (int)$kSprache;
+        $kDefaultLanguage       = (int)gibStandardsprache()->kSprache;
         $this->oMedienDatei_arr = [];
         // Funktionsattribut gesetzt? Tab oder Beschreibung
         if (isset($this->FunktionsAttribute[FKT_ATTRIBUT_MEDIENDATEIEN])) {
@@ -1617,15 +1618,29 @@ class Artikel
             }
         }
         if ($this->kArtikel > 0) {
+            if ($kSprache === $kDefaultLanguage) {
+                $conditionalFields   = "lang.cName, lang.cBeschreibung, lang.kSprache";
+                $conditionalLeftJoin = "LEFT JOIN tmediendateisprache AS lang 
+                                        ON lang.kMedienDatei = tmediendatei.kMedienDatei 
+                                        AND lang.kSprache = " . $kSprache;
+            } else {
+                $conditionalFields   = "IF(TRIM(IFNULL(lang.cName, '')) != '', lang.cName, deflang.cName) cName,
+                                            IF(TRIM(IFNULL(lang.cBeschreibung, '')) != '', 
+                                            lang.cBeschreibung, deflang.cBeschreibung) cBeschreibung,
+                                            IF(TRIM(IFNULL(lang.kSprache, '')) != '', 
+                                            lang.kSprache, deflang.kSprache) kSprache";
+                $conditionalLeftJoin = "LEFT JOIN tmediendateisprache AS deflang ON 
+                                        deflang.kMedienDatei = tmediendatei.kMedienDatei 
+                                        AND deflang.kSprache = " . $kDefaultLanguage . "
+                                        LEFT JOIN tmediendateisprache AS lang ON 
+                                        deflang.kMedienDatei = lang.kMedienDatei AND lang.kSprache = " . $kSprache;
+            }
             $cSQL = "SELECT tmediendatei.kMedienDatei, tmediendatei.cPfad, tmediendatei.cURL, tmediendatei.cTyp, 
-                            tmediendatei.nSort, tmediendateisprache.cName, tmediendateisprache.cBeschreibung, 
-                            tmediendateisprache.kSprache
+                            tmediendatei.nSort, " . $conditionalFields . "
                         FROM tmediendatei
-                        JOIN tmediendateisprache 
-                            ON tmediendateisprache.kMedienDatei = tmediendatei.kMedienDatei
+                        " . $conditionalLeftJoin . "
                         WHERE tmediendatei.kArtikel = " . (int)$this->kArtikel . "
-                            AND tmediendateisprache.kSprache = " . $kSprache . "
-                        ORDER BY tmediendatei.nSort ASC, tmediendateisprache.cName";
+                        ORDER BY tmediendatei.nSort ASC";
 
             $this->oMedienDatei_arr = Shop::DB()->query($cSQL, 2);
             if (is_array($this->oMedienDatei_arr) && count($this->oMedienDatei_arr) > 0) {
@@ -1716,15 +1731,17 @@ class Artikel
                                 $width = $_attr->cWert;
                             } elseif ($_attr->cName === 'height' && is_numeric($_attr->cWert)) {
                                 $height = $_attr->cWert;
-                            } elseif ($_attr->cName === 'fullscreen' && ($_attr->cWert === '0' || $_attr->cWert === 'false')) {
+                            } elseif ($_attr->cName === 'fullscreen' && ($_attr->cWert === '0'
+                                    || $_attr->cWert === 'false')) {
                                 $fullscreen = '';
                             }
                         }
                     }
-                    $embedURL                   = str_replace('http://', '//', $mediaFile->cURL);
-                    $embedURL                   = str_replace('watch?v=', 'embed/', $embedURL) . $related;
-                    $mediaFile->oEmbed->code    = '<iframe class="youtube" width="' . $width . '
-                    " height="' . $height . '" src="' . $embedURL . '" frameborder="0"' . $fullscreen . '></iframe>';
+                    $cSearch                    = ['https://', 'watch?v='];
+                    $cReplace                   = ['//', 'embed/'];
+                    $embedURL                   = str_replace($cSearch, $cReplace, $mediaFile->cURL) . $related;
+                    $mediaFile->oEmbed->code    = '<iframe class="youtube" width="' . $width . '" height="' . $height
+                        . '" src="' . $embedURL . '" frameborder="0"' . $fullscreen . '></iframe>';
                     $mediaFile->oEmbed->options = [
                         'height'     => $height,
                         'width'      => $width,
@@ -1733,6 +1750,41 @@ class Artikel
                     ];
                 } elseif (strpos($mediaFile->cURL, 'embed') !== false) {
                     $mediaFile->oEmbed->code = $mediaFile->cURL;
+                }
+            } elseif (strpos($mediaFile->cURL, 'youtu.be') !== false) {
+                $mediaFile->oEmbed = new stdClass();
+                if ((strpos($mediaFile->cURL, 'embed') !== false)) {
+                    $mediaFile->oEmbed->code = $mediaFile->cURL;
+                } else {
+                    $height     = 'auto';
+                    $width      = '100%';
+                    $related    = '?rel=0';
+                    $fullscreen = ' allowfullscreen';
+                    if (isset($mediaFile->oMedienDateiAttribut_arr) && count($mediaFile->oMedienDateiAttribut_arr) > 0) {
+                        foreach ($mediaFile->oMedienDateiAttribut_arr as $_attr) {
+                            if ($_attr->cName === 'related' && $_attr->cWert === '1') {
+                                $related = '';
+                            } elseif ($_attr->cName === 'width' && is_numeric($_attr->cWert)) {
+                                $width = $_attr->cWert;
+                            } elseif ($_attr->cName === 'height' && is_numeric($_attr->cWert)) {
+                                $height = $_attr->cWert;
+                            } elseif ($_attr->cName === 'fullscreen' && ($_attr->cWert === '0'
+                                    || $_attr->cWert === 'false')) {
+                                $fullscreen = '';
+                            }
+                        }
+                    }
+                    $cSearch                    = ['https://', 'youtu.be/'];
+                    $cReplace                   = ['//', 'youtube.com/embed/'];
+                    $embedURL                   = str_replace($cSearch, $cReplace, $mediaFile->cURL) . $related;
+                    $mediaFile->oEmbed->code    = '<iframe class="youtube" width="' . $width . '" height="' . $height
+                        . '" src="' . $embedURL . '" frameborder="0"' . $fullscreen . '></iframe>';
+                    $mediaFile->oEmbed->options = [
+                        'height'     => $height,
+                        'width'      => $width,
+                        'related'    => $related,
+                        'fullscreen' => $fullscreen
+                    ];
                 }
             }
         }

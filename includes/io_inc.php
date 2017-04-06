@@ -134,8 +134,11 @@ function pushToBasket($kArtikel, $anzahl, $oEigenschaftwerte_arr = '')
 
                     $oEigenschaftwerte_arr[$oVariation->kEigenschaft] = (object)[
                         'kEigenschaft'     => (int)$oVariation->kEigenschaft,
-                        'kEigenschaftWert' => $oVariation->cTyp === 'FREIFELD' ? StringHandler::filterXSS($value) : (int)$value,
+                        'kEigenschaftWert' => ($oVariation->cTyp === 'FREIFELD' || $oVariation->cTyp === 'PFLICHT-FREIFELD') ? utf8_decode(StringHandler::filterXSS($value)) : (int)$value,
                     ];
+                    if ($oVariation->cTyp === 'FREIFELD' || $oVariation->cTyp === 'PFLICHT-FREIFELD') {
+                        $oEigenschaftwerte_arr[$oVariation->kEigenschaft]->cFreifeldWert = &$oEigenschaftwerte_arr[$oVariation->kEigenschaft]->kEigenschaftWert;
+                    }
                 }
             }
         }
@@ -590,7 +593,8 @@ function checkDependencies($aValues)
             $objResponse->jsfunc(
                 '$.evo.article().setStaffelPrice',
                 $fStaffelVK[$nNettoPreise],
-                $cStaffelVK[$nNettoPreise]
+                $cStaffelVK[$nNettoPreise],
+                $wrapper
             );
         }
 
@@ -618,12 +622,13 @@ function checkDependencies($aValues)
                 '$.evo.article().setVPEPrice',
                 $oArtikel->cLocalizedVPE[$nNettoPreise],
                 $fStaffelVPE[$nNettoPreise],
-                $cStaffelVPE[$nNettoPreise]
+                $cStaffelVPE[$nNettoPreise],
+                $wrapper
             );
         }
 
         if (!empty($newProductNr)) {
-            $objResponse->jsfunc('$.evo.article().setProductNumber', $newProductNr);
+            $objResponse->jsfunc('$.evo.article().setProductNumber', $newProductNr, $wrapper);
         }
     }
 
@@ -702,7 +707,8 @@ function checkVarkombiDependencies($aValues, $kEigenschaft = 0, $kEigenschaftWer
                         $oArtikel->kArtikel,
                         0,
                         $oArtikel->cURL,
-                        []
+                        [],
+                        $wrapper
                     );
 
                     return $objResponse;
@@ -728,7 +734,8 @@ function checkVarkombiDependencies($aValues, $kEigenschaft = 0, $kEigenschaftWer
                     $kVaterArtikel,
                     $oArtikelTMP->kArtikel,
                     $cUrl,
-                    $oGesetzteEigeschaftWerte_arr
+                    $oGesetzteEigeschaftWerte_arr,
+                    $wrapper
                 );
 
                 executeHook(HOOK_TOOLSAJAXSERVER_PAGE_TAUSCHEVARIATIONKOMBI, [

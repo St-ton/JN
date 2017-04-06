@@ -94,8 +94,12 @@
                         </span>
                     </div>
                 </div>
+            {elseif $Artikel->Variationen|@count > 0 && !$Artikel->bHasKonfig}
+                <div class="top7 form-group variation-article">
+                    <a class="btn btn-default btn-sm btn-block" role="button" href="{$Artikel->cURL}"><span class="fa fa-shopping-cart"></span><span class="hidden-md"> {lang key="pleaseChooseVariation" section="productDetails"}</span></a>
+                </div>
             {else}
-                <div class="top7 form-group{if $Artikel->Variationen|@count > 0 && !$Artikel->bHasKonfig} variation-article{/if}">
+                <div class="top7 form-group">
                     <a class="btn btn-default btn-sm btn-block" role="button" href="{$Artikel->cURL}">{lang key="details"}</a>
                 </div>
             {/if}

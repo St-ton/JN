@@ -21,42 +21,53 @@ $bannerInc           = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'banner_inc.php'
 $sucheInc            = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'suche_inc.php';
 $bilderverwaltungInc = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'bilderverwaltung_inc.php';
 $sucheinstellungInc  = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'sucheinstellungen_inc.php';
+$plzimportInc        = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'plz_ort_import_inc.php';
 
-$io->register('getPages', [$jsonApi, 'getPages'])
-   ->register('getCategories', [$jsonApi, 'getCategories'])
-   ->register('getProducts', [$jsonApi, 'getProducts'])
-   ->register('getManufacturers', [$jsonApi, 'getManufacturers'])
-   ->register('getCustomers', [$jsonApi, 'getCustomers'])
-   ->register('getSeos', [$jsonApi, 'getSeos'])
-   // Allround-IO-calls
-   ->register('getCurrencyConversion', 'getCurrencyConversionIO')
-   ->register('setCurrencyConversionTooltip', 'setCurrencyConversionTooltipIO')
-   // Two-FA-related functions
-   ->register('getNewTwoFA', ['TwoFA', 'getNewTwoFA'])
-   ->register('genTwoFAEmergencyCodes', ['TwoFA', 'genTwoFAEmergencyCodes'])
-   // Dashboard-related functions
-   ->register('setWidgetPosition', 'setWidgetPosition', $dashboardInc, 'DASHBOARD_VIEW')
-   ->register('closeWidget', 'closeWidget', $dashboardInc, 'DASHBOARD_VIEW')
-   ->register('addWidget', 'addWidget', $dashboardInc, 'DASHBOARD_VIEW')
-   ->register('expandWidget', 'expandWidget', $dashboardInc, 'DASHBOARD_VIEW')
-   ->register('getAvailableWidgets', 'getAvailableWidgetsIO', $dashboardInc, 'DASHBOARD_VIEW')
-   ->register('getRemoteData', ['WidgetBase', 'getRemoteDataIO'], $widgetBaseInc, 'DASHBOARD_VIEW')
-   ->register('truncateJtllog', ['Jtllog', 'truncateLog'], null, 'DASHBOARD_VIEW')
-   ->register('addFav')
-   ->register('reloadFavs')
-   // Benutzerverwaltung
-   ->register('getRandomPassword', 'getRandomPasswordIO', $accountInc, 'ACCOUNT_VIEW')
-   // Bannerverwaltung
-   ->register('saveBannerAreas', 'saveBannerAreasIO', $bannerInc, 'DISPLAY_BANNER_VIEW')
-   // Bilderverwaltung
-   ->register('loadStats', 'loadStats', $bilderverwaltungInc, 'DISPLAY_IMAGES_VIEW')
-   ->register('cleanupStorage', 'cleanupStorage', $bilderverwaltungInc, 'DISPLAY_IMAGES_VIEW')
-   ->register('clearImageCache', 'clearImageCache', $bilderverwaltungInc, 'DISPLAY_IMAGES_VIEW')
-   ->register('generateImageCache', 'generateImageCache', $bilderverwaltungInc, 'DISPLAY_IMAGES_VIEW')
-   // Sucheinstellungen
-   ->register('createSearchIndex', 'createSearchIndex', $sucheinstellungInc, 'SETTINGS_ARTICLEOVERVIEW_VIEW')
-   // Backend-Suche
-   ->register('adminSearch', 'adminSearch', $sucheInc, 'SETTINGS_SEARCH_VIEW');
+$io
+    ->register('getPages', [$jsonApi, 'getPages'])
+    ->register('getCategories', [$jsonApi, 'getCategories'])
+    ->register('getProducts', [$jsonApi, 'getProducts'])
+    ->register('getManufacturers', [$jsonApi, 'getManufacturers'])
+    ->register('getCustomers', [$jsonApi, 'getCustomers'])
+    ->register('getSeos', [$jsonApi, 'getSeos'])
+    // Allround-IO-calls
+    ->register('getCurrencyConversion', 'getCurrencyConversionIO')
+    ->register('setCurrencyConversionTooltip', 'setCurrencyConversionTooltipIO')
+    // Two-FA-related functions
+    ->register('getNewTwoFA', ['TwoFA', 'getNewTwoFA'])
+    ->register('genTwoFAEmergencyCodes', ['TwoFA', 'genTwoFAEmergencyCodes'])
+    // Dashboard-related functions
+    ->register('setWidgetPosition', 'setWidgetPosition', $dashboardInc, 'DASHBOARD_VIEW')
+    ->register('closeWidget', 'closeWidget', $dashboardInc, 'DASHBOARD_VIEW')
+    ->register('addWidget', 'addWidget', $dashboardInc, 'DASHBOARD_VIEW')
+    ->register('expandWidget', 'expandWidget', $dashboardInc, 'DASHBOARD_VIEW')
+    ->register('getAvailableWidgets', 'getAvailableWidgetsIO', $dashboardInc, 'DASHBOARD_VIEW')
+    ->register('getRemoteData', ['WidgetBase', 'getRemoteDataIO'], $widgetBaseInc, 'DASHBOARD_VIEW')
+    ->register('truncateJtllog', ['Jtllog', 'truncateLog'], null, 'DASHBOARD_VIEW')
+    ->register('addFav')
+    ->register('reloadFavs')
+    // Benutzerverwaltung
+    ->register('getRandomPassword', 'getRandomPasswordIO', $accountInc, 'ACCOUNT_VIEW')
+    // Bannerverwaltung
+    ->register('saveBannerAreas', 'saveBannerAreasIO', $bannerInc, 'DISPLAY_BANNER_VIEW')
+    // Bilderverwaltung
+    ->register('loadStats', 'loadStats', $bilderverwaltungInc, 'DISPLAY_IMAGES_VIEW')
+    ->register('cleanupStorage', 'cleanupStorage', $bilderverwaltungInc, 'DISPLAY_IMAGES_VIEW')
+    ->register('clearImageCache', 'clearImageCache', $bilderverwaltungInc, 'DISPLAY_IMAGES_VIEW')
+    ->register('generateImageCache', 'generateImageCache', $bilderverwaltungInc, 'DISPLAY_IMAGES_VIEW')
+    // Sucheinstellungen
+    ->register('createSearchIndex', 'createSearchIndex', $sucheinstellungInc, 'SETTINGS_ARTICLEOVERVIEW_VIEW')
+    // PLZ-Import
+    ->register('plzimportActionLoadAvailableDownloads', null, $plzimportInc, 'PLZ_ORT_IMPORT_VIEW')
+    ->register('plzimportActionDoImport', null, $plzimportInc, 'PLZ_ORT_IMPORT_VIEW')
+    ->register('plzimportActionCallStatus', null, $plzimportInc, 'PLZ_ORT_IMPORT_VIEW')
+    ->register('plzimportActionUpdateIndex', null, $plzimportInc, 'PLZ_ORT_IMPORT_VIEW')
+    ->register('plzimportActionRestoreBackup', null, $plzimportInc, 'PLZ_ORT_IMPORT_VIEW')
+    ->register('plzimportActionCheckStatus', null, $plzimportInc, 'PLZ_ORT_IMPORT_VIEW')
+    ->register('plzimportActionDelTempImport', null, $plzimportInc, 'PLZ_ORT_IMPORT_VIEW')
+    // Backend-Suche
+    ->register('adminSearch', 'adminSearch', $sucheInc, 'SETTINGS_SEARCH_VIEW')
+;
 
 $data = $io->handleRequest($_REQUEST['io']);
 $io->respondAndExit($data);

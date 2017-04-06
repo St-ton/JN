@@ -10,18 +10,6 @@ require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'template_inc.php';
 
 $oAccount->permission('DISPLAY_TEMPLATE_VIEW', true, true);
-/** @global JTLSmarty $smarty */
-if (isset($_POST['key'], $_POST['upload'])) {
-    $file     = PFAD_ROOT . PFAD_TEMPLATES . $_POST['upload'];
-    $response = new stdClass();
-    if (file_exists($file) && is_file($file)) {
-        $delete           = unlink($file);
-        $response->status = ($delete === true) ? 'OK' : 'FAILED';
-    } else {
-        $response->status = 'FAILED';
-    }
-    die(json_encode($response));
-}
 
 $cHinweis       = '';
 $cFehler        = '';
@@ -33,6 +21,20 @@ $oTemplate      = Template::getInstance();
 $templateHelper = TemplateHelper::getInstance(true);
 $templateHelper->disableCaching();
 $admin          = (isset($_GET['admin']) && $_GET['admin'] === 'true');
+/** @global JTLSmarty $smarty */
+if (isset($_POST['key'], $_POST['upload'])) {
+    $file   = PFAD_ROOT . PFAD_TEMPLATES . $_POST['upload'];
+    $upload = explode('/', $_POST['upload']);
+    $oTemplate->setConfig($upload[0], 'theme', 'favicon', '');
+    $response = new stdClass();
+    if (file_exists($file) && is_file($file)) {
+        $delete           = unlink($file);
+        $response->status = ($delete === true) ? 'OK' : 'FAILED';
+    } else {
+        $response->status = 'FAILED';
+    }
+    die(json_encode($response));
+}
 if (isset($_GET['check'])) {
     if ($_GET['check'] === 'true') {
         $cHinweis = 'Template und Einstellungen wurden erfolgreich ge&auml;ndert.';
@@ -102,9 +104,10 @@ if (isset($_POST['type']) && $_POST['type'] === 'settings' && validateToken()) {
                 foreach ($tplConfXML as $_section) {
                     if (isset($_section->oSettings_arr)) {
                         foreach ($_section->oSettings_arr as $_setting) {
-                            if (isset($_setting->cKey, $_setting->rawAttributes['target']) && $_setting->cKey === $cName) {
+                            if (isset($_setting->cKey, $_setting->rawAttributes['target'])
+                                && $_setting->cKey === $cName) {
                                 //target folder
-                                $targetFile = PFAD_ROOT . PFAD_TEMPLATES . $cOrdner . '/' . $_setting->rawAttributes['target'];
+                                $targetFile = PFAD_ROOT . PFAD_TEMPLATES . $cOrdner . '/';
                                 //add trailing slash
                                 if ($targetFile[strlen($targetFile) - 1] !== '/') {
                                     $targetFile .= '/';
@@ -179,10 +182,10 @@ if (isset($_GET['settings']) && strlen($_GET['settings']) > 0 && validateToken()
             foreach ($_conf->oSettings_arr as $_setting) {
                 if ($_setting->cType === 'upload' &&
                     isset($_setting->rawAttributes['target'], $_setting->rawAttributes['targetFileName']) &&
-                    !file_exists(PFAD_ROOT . PFAD_TEMPLATES .
-                        $cOrdner . '/' . $_setting->rawAttributes['target'] .
-                        $_setting->rawAttributes['targetFileName'])
+                    !file_exists(PFAD_ROOT . PFAD_TEMPLATES . $cOrdner . '/'
+                        . $_setting->rawAttributes['targetFileName'])
                 ) {
+
                     $_setting->cValue = null;
                 }
             }

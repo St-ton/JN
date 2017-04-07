@@ -383,7 +383,7 @@ function bearbeite($xml, $unzipPath)
             } elseif (stripos(strrev($Herstellerbild->cPfad), strrev($Bildformat)) !== 0) {
                 $Herstellerbild->cPfad .= '.' . $Bildformat;
             }
-            $Herstellerbild->cPfad = neuerDateiname($Herstellerbild->cPfad);
+            $Herstellerbild->cPfad = neuerDateiname(str_replace("/", "_",$Herstellerbild->cPfad));
             erstelleThumbnail(
                 $GLOBALS['oBranding_arr']['Hersteller'],
                 $unzipPath . $imgFilename,

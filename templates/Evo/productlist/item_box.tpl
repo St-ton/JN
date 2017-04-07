@@ -15,6 +15,10 @@
             <img class="overlay-img hidden-xs" src="{$Artikel->oSuchspecialBild->cPfadKlein}"
                  alt="{if isset($Artikel->oSuchspecialBild->cSuchspecial)}{$Artikel->oSuchspecialBild->cSuchspecial}{else}{$Artikel->cName}{/if}" />
         {/if}
+
+        {if !$Artikel->bHasKonfig}
+            <span class="quickview badge hidden-xs" data-src="{$Artikel->cURL}" data-target="buy_form_{$Artikel->kArtikel}" title="{$Artikel->cName}">{lang key="downloadPreview" section="productDownloads"}</span>
+        {/if}
     </a>
     {/block}
     {block name="productlist-image-caption"}
@@ -93,10 +97,6 @@
                             </button>
                         </span>
                     </div>
-                </div>
-            {elseif $Artikel->Variationen|@count > 0 && !$Artikel->bHasKonfig}
-                <div class="top7 form-group variation-article">
-                    <a class="btn btn-default btn-sm btn-block" role="button" href="{$Artikel->cURL}"><span class="fa fa-shopping-cart"></span><span class="hidden-md"> {lang key="pleaseChooseVariation" section="productDetails"}</span></a>
                 </div>
             {else}
                 <div class="top7 form-group">

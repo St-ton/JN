@@ -728,7 +728,7 @@ function hasOnlyListableVariations($params, &$smarty)
         return false;
     }
 
-    $maxVariationCount = isset($params['maxVariationCount']) ? $params['maxVariationCount'] : 2;
+    $maxVariationCount = isset($params['maxVariationCount']) ? $params['maxVariationCount'] : 1;
     $maxWerteCount     = isset($params['maxWerteCount']) ? $params['maxWerteCount'] : 3;
     $variationCheck    = function ($Variationen, $maxVariationCount, $maxWerteCount) {
         $result = true;

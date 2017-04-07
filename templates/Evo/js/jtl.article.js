@@ -195,10 +195,10 @@
             console.log('registerArticleOverlay(' + $wrapper.attr('id') + ')');
             var that = this;
 
-            $('.variation-article > a.btn', $wrapper)
+            $('.quickview', $wrapper)
                 .each(function(i, item) {
                     var $item      = $(item),
-                        formID     = $item.closest('form').attr('id'),
+                        formID     = $item.data('target'),
                         wrapper    = that.options.modal.wrapper_modal + '_' + formID,
                         srcWrapper = that.options.modal.wrapper + '_' + formID;
                     console.log('registerArticleOverlay(' + wrapper + ')');
@@ -211,8 +211,9 @@
 
         registerImageSwitch: function($wrapper) {
             console.log('registerImageSwitch(' + $wrapper.attr('id') + ')');
-            var imgSwitch,
-                gallery  = $.evo.article().gallery;
+            var that     = this,
+                imgSwitch,
+                gallery  = this.gallery;
 
             if (gallery !== null) {
                 imgSwitch = function (context, temporary, force) {
@@ -242,8 +243,8 @@
                             gallery.setItems(items, '__');
                             gallery.render('__');
 
-                            $.evo.article().galleryIndex     = gallery.index;
-                            $.evo.article().galleryLastIdent = gallery.ident;
+                            that.galleryIndex     = gallery.index;
+                            that.galleryLastIdent = gallery.ident;
                         } else {
                             gallery.render(value);
                         }
@@ -256,13 +257,17 @@
                         data     = $context.data('list'),
                         title    = $context.attr('data-title');
 
+                    if (typeof temporary === 'undefined') {
+                        temporary = true;
+                    }
+
                     if (!!data) {
                         var $wrapper = $(context).closest('.product-wrapper');
                         var $img = $('.image-box img', $wrapper);
                         if ($img.length === 1) {
                             $img.attr('src', data.md.src);
                             if (!temporary) {
-                                $img.attr('data-src', data.md.src);
+                                $img.data('src', data.md.src);
                             }
                         }
                     }
@@ -294,15 +299,20 @@
                     }, function () {
                         var tmp_idx = parseInt($(this).attr('data-original-index')) + 1,
                             rule    = 'select option:nth-child(' + tmp_idx + ')',
-                            p       = $(this).closest('.bootstrap-select').find(rule),
-                            data    = $(p).data('list'),
-                            gallery = $.evo.article().gallery,
+                            sel     = $(this).closest('.bootstrap-select').find(rule),
+                            gallery = that.gallery,
                             active;
 
-                        if (!!data && gallery !== null) {
-                            active = $(p).find('.variation.active');
-                            gallery.render($.evo.article().galleryLastIdent);
-                            gallery.activate($.evo.article().galleryIndex);
+                        if (gallery !== null) {
+                            active = $(sel).find('.variation.active');
+                            gallery.render(that.galleryLastIdent);
+                            gallery.activate(that.galleryIndex);
+                        } else {
+                            var $wrapper = $(sel).closest('.product-wrapper'),
+                                $img     = $('.image-box img', $wrapper);
+                            if ($img.length === 1) {
+                                $img.attr('src', $img.data('src'));
+                            }
                         }
                     });
             }
@@ -313,19 +323,24 @@
                 });
 
             if (!touchCapable || ResponsiveBootstrapToolkit.current() !== 'xs') {
-                $('.variations .variation', $wrapper).hover(function () {
-                    imgSwitch(this);
-                }, function () {
-                    var p = $(this).closest('.variation'),
-                        data    = $(this).data('list'),
-                        gallery = $.evo.article().gallery,
-                        active  = $(p).find('.variation.active');
+                $('.variations .variation', $wrapper)
+                    .hover(function () {
+                        imgSwitch(this);
+                    }, function () {
+                        var sel     = $(this).closest('.variation'),
+                            gallery = that.gallery;
 
-                    if (!!data && gallery !== null) {
-                        gallery.render($.evo.article().galleryLastIdent);
-                        gallery.activate($.evo.article().galleryIndex);
-                    }
-                });
+                        if (gallery !== null) {
+                            gallery.render(that.galleryLastIdent);
+                            gallery.activate(that.galleryIndex);
+                        } else {
+                            var $wrapper = $(sel).closest('.product-wrapper'),
+                                $img     = $('.image-box img', $wrapper);
+                            if ($img.length === 1) {
+                                $img.attr('src', $img.data('src'));
+                            }
+                        }
+                    });
             }
         },
 
@@ -344,21 +359,25 @@
 
         registerProductActions: function($wrapper) {
             console.log('registerProductActions(' + $wrapper.attr('id') + ')');
-            $('*[data-toggle="product-actions"] button', $wrapper).on('click', function(event) {
-                var data = $(this.form).serializeObject();
+            var that = this;
 
-                if ($.evo.article().handleProductAction(this, data)) {
-                    event.preventDefault();
-                }
-            });
-            $('a[data-toggle="product-actions"]', $wrapper).on('click', function(event) {
-                var data  = $(this).data('value');
-                this.name = $(this).data('name');
+            $('*[data-toggle="product-actions"] button', $wrapper)
+                .on('click', function(event) {
+                    var data = $(this.form).serializeObject();
 
-                if ($.evo.article().handleProductAction(this, data)) {
-                    event.preventDefault();
-                }
-            });
+                    if (that.handleProductAction(this, data)) {
+                        event.preventDefault();
+                    }
+                });
+            $('a[data-toggle="product-actions"]', $wrapper)
+                .on('click', function(event) {
+                    var data  = $(this).data('value');
+                    this.name = $(this).data('name');
+
+                    if (that.handleProductAction(this, data)) {
+                        event.preventDefault();
+                    }
+                });
         },
 
         loadModalArticle: function(url, wrapper, done, fail) {
@@ -1108,7 +1127,8 @@
         modalArticleDetail: function(item, wrapper, srcWrapper) {
             var that     = this,
                 title    = $(srcWrapper).find('.caption > h4').text(),
-                image    = $(srcWrapper).find('.image-content').html();
+                image    = $(srcWrapper).find('.image-content').html(),
+                url      = $(item).data('src');
 
             if (typeof this.modalView === 'undefined' || this.modalView === null) {
                 this.modalView = $(
@@ -1143,7 +1163,7 @@
 
                     that.modalShown = true;
                     console.log('shown.bs.modal(' + (that.modalShown ? 'shown' : 'hidden') + ')');
-                    that.loadModalArticle(item.href, wrapper,
+                    that.loadModalArticle(url, wrapper,
                         function() {
                             var article = new ArticleClass();
                             article.register(wrapper);

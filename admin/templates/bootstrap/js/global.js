@@ -493,18 +493,16 @@ function createNotify(options, settings) {
 }
 
 function updateNotifyDrop() {
-    ajaxCall('status.php', { action: 'notify' }, function(result, xhr) {
-        if (xhr && xhr.error && xhr.error.code == 401) {
-            // auth session expired
-        }
-        else if(!result.error) {
-            if (result.data.tpl) {
-                $('#notify-drop').html(result.data.tpl);
+    ioGetJson(
+        'getNotifyDropIO', [],
+        function (result) {
+            if (result.tpl) {
+                $('#notify-drop').html(result.tpl);
             } else {
                 $('#notify-drop').html('');
             }
         }
-    });
+    );
 }
 
 function massCreationCoupons() {
@@ -769,6 +767,54 @@ function ioCall(name, args, success, context)
             }
         }
     });
+}
+
+/**
+ * Induce a file download provided by an AJAX function
+ * @param name
+ * @param args
+ */
+function ioDownload(name, args)
+{
+    window.location.href = 'io.php?io=' + encodeURIComponent(JSON.stringify({
+        name: name,
+        params: args
+    }));
+}
+
+/**
+ * @param adminPath
+ * @param funcname
+ * @param params
+ * @param callback
+ */
+function ioManagedCall(adminPath, funcname, params, callback)
+{
+    ioGetJson(
+        funcname, params,
+        function (result) {
+            if (typeof callback === 'function') {
+                callback(result, result.error);
+            }
+        },
+        function (result) {
+            if (result.error && result.error.code === 401) {
+                createNotify(
+                    {
+                        title: 'Sitzung abgelaufen',
+                        message: 'Sie werden zur Anmelde-Maske weitergeleitet...',
+                        icon: 'fa fa-lock'
+                    },
+                    {
+                        type: 'danger',
+                        onClose: function() {
+                            window.location.pathname = '/' + adminPath + 'index.php';
+                        }
+                    }
+                );
+            }
+        }
+    );
 }
 
 /**

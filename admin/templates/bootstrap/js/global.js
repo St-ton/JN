@@ -341,6 +341,7 @@ function retract(elemID, picExpandID, picRetractID) {
 }
 
 /**
+ * @deprecated since 4.06
  * @param url
  * @param params
  * @param callback
@@ -369,6 +370,7 @@ function ajaxCall(url, params, callback) {
 var _queryTimeout = null;
 
 /**
+ * @deprecated since 4.06
  * @param url
  * @param params
  * @param callback

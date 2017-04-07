@@ -576,6 +576,9 @@ function addFav($title, $url)
     return $result;
 }
 
+/**
+ * @return array
+ */
 function reloadFavs()
 {
     global $smarty, $oAccount;
@@ -584,4 +587,16 @@ function reloadFavs()
     $tpl = $smarty->fetch('tpl_inc/favs_drop.tpl');
 
     return [ 'tpl' => $tpl ];
+}
+
+/**
+ * @return array
+ */
+function getNotifyDropIO()
+{
+    Shop::Smarty()->assign('notifications', Notification::getInstance());
+    return [
+        'tpl' => Shop::Smarty()->fetch('tpl_inc/notify_drop.tpl'),
+        'type' => 'notify'
+    ];
 }

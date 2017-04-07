@@ -771,7 +771,7 @@ function verschickeMail($mail)
     } else {
         Jtllog::writeLog(
             'Email konnte nicht versendet werden! Fehler: ' . $mail->cFehler,
-            JTLLOG_LEVEL_DEBUG,
+            JTLLOG_LEVEL_ERROR,
             false,
             'kEmailvorlage'
         );

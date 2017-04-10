@@ -5747,11 +5747,8 @@ function utf8_convert_recursive($data, $encode = true)
 {
     if (is_string($data)) {
         $isUtf8 = mb_detect_encoding($data, 'UTF-8', true) !== false;
-
-        if (!$isUtf8 && $encode) {
-            $data = utf8_encode($data);
-        } elseif ($isUtf8 && !$encode) {
-            $data = utf8_decode($data);
+        if (!$isUtf8 && $encode || $isUtf8 && !$encode) {
+            $data = $encode ? utf8_encode($data) : utf8_decode($data);
         }
     } elseif (is_array($data)) {
         foreach ($data as $key => $val) {

@@ -32,7 +32,12 @@
     {/block}
 
     {block name="head-icons"}
-        <link type="image/x-icon" href="{$currentTemplateDir}themes/base/images/{if !empty($Einstellungen.template.theme.favicon)}{$Einstellungen.template.theme.favicon}{else}favicon-jtl.ico{/if}" rel="shortcut icon">
+        {if !empty($Einstellungen.template.theme.favicon)}
+            <link type="image/x-icon" href="{$currentTemplateDir}{$Einstellungen.template.theme.favicon}"
+                rel="shortcut icon">
+        {else}
+            <link type="image/x-icon" href="favicon-default.ico" rel="shortcut icon">
+        {/if}
         {if $nSeitenTyp == 1 && isset($Artikel) && !empty($Artikel->Bilder)}
             <link rel="image_src" href="{$ShopURL}/{$Artikel->Bilder[0]->cPfadGross}">
             <meta property="og:image" content="{$ShopURL}/{$Artikel->Bilder[0]->cPfadGross}">
@@ -88,7 +93,7 @@
             body { background-color: {$Einstellungen.template.theme.backgroundcolor}!important; }
         </style>
     {/if}
-    <script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
+    <script src="{$currentTemplateDir}js/jquery-1.12.4.min.js"></script>
     {include file='layout/header_inline_js.tpl'}
 </head>
 {assign var="isFluidContent" value=false}

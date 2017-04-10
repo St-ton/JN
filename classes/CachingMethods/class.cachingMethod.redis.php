@@ -104,12 +104,10 @@ class cache_redis implements ICachingMethod
     {
         try {
             $res = $this->_redis->set($cacheID, $content);
-            if ($cacheID !== $this->journalID) {
-                //the journal should not have an expiration
-                $this->_redis->setTimeout($cacheID, (($expiration === null)
-                    ? $this->options['lifetime']
-                    : $expiration)
-                );
+            $exp = $expiration === null ? $this->options['lifetime'] : $expiration;
+            // the journal and negative expiration values should not cause an expiration
+            if ($cacheID !== $this->journalID && $exp > -1) {
+                $this->_redis->setTimeout($cacheID, $exp);
             }
 
             return $res;

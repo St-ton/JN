@@ -120,9 +120,9 @@ class Boxen
      */
     public function gibBoxInhalt($kBox, $cISO = '')
     {
-        return (strlen($cISO) > 0) ?
-            Shop::DB()->select('tboxsprache', 'kBox', (int)$kBox, 'cISO', $cISO) :
-            Shop::DB()->selectAll('tboxsprache', 'kBox', (int)$kBox);
+        return (strlen($cISO) > 0)
+            ? Shop::DB()->select('tboxsprache', 'kBox', (int)$kBox, 'cISO', $cISO)
+            : Shop::DB()->selectAll('tboxsprache', 'kBox', (int)$kBox);
     }
 
     /**
@@ -1508,7 +1508,7 @@ class Boxen
             return $oBoxAnzeige;
         }
 
-        if ($nSeite != 0 && $bGlobal) {
+        if ($nSeite !== 0 && $bGlobal) {
             return $this->holeBoxAnzeige(0);
         }
 

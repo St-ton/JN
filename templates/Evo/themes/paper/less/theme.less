@@ -9,7 +9,27 @@
 // Bootswatch
 // -----------------------------------------------------
 
-@import url("//fonts.googleapis.com/css?family=Roboto:300,400,500");
+//import via CDN
+//@import url("//fonts.googleapis.com/css?family=Roboto:300,400,500");
+//import local files
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 300;
+  src: local('Roboto Light'), local('Roboto-Light'), url('@{icon-font-path}roboto/Roboto-Light.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Roboto'), local('Roboto-Regular'), url('@{icon-font-path}roboto/Roboto-Regular.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 500;
+  src: local('Roboto Medium'), local('Roboto-Medium'), url('@{icon-font-path}roboto/Roboto-Medium.ttf') format('truetype');
+}
 
 // Navbar =====================================================================
 
@@ -422,6 +442,16 @@ input[type="checkbox"],
 .dropdown-menu {
   border: none;
   .box-shadow(0 1px 4px rgba(0,0,0,.3));
+}
+
+
+// Default navbar
+.navbar-default .navbar-nav > li > a {
+    &:hover,
+    &:active {
+      color: @navbar-default-link-active-color;
+      background-color: @navbar-default-link-active-bg;
+    }
 }
 
 // Indicators =================================================================

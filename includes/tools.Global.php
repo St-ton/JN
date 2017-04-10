@@ -53,7 +53,7 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
                     $ele           = new stdClass();
                     $ele->hasChild = false;
                     $ele->name     = $KategorieListe->elemente[$i]->cKurzbezeichnung;
-                    $ele->url      = $KategorieListe->elemente[$i]->cURL;
+                    $ele->url      = $KategorieListe->elemente[$i]->cURLFull;
                     $brotnavi[]    = $ele;
                 }
             }
@@ -1637,11 +1637,11 @@ function checkSetPercentCouponWKPos($oWKPosition, $Kupon)
                     OR kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . ")
                 AND (nVerwendungen = 0 
                     OR nVerwendungen > nVerwendungenBisher)
-                AND (cArtikel = '' " . $Artikel_qry . ")
+                AND (cArtikel = '' {$Artikel_qry})
                 AND (cKategorien = '' 
-                    OR cKategorien = '-1' " . $Kategorie_qry . ")
+                    OR cKategorien = '-1' {$Kategorie_qry})
                 AND (cKunden = '' 
-                    OR cKunden = '-1' " . $Kunden_qry . ")
+                    OR cKunden = '-1' {$Kunden_qry})
                 AND kKupon = " . (int)$Kupon->kKupon, 1
     );
     $waehrung    = isset($_SESSION['Waehrung']) ? $_SESSION['Waehrung'] : null;
@@ -1670,12 +1670,26 @@ function gibLagerfilter()
     $conf      = Shop::getSettings([CONF_GLOBAL]);
     $filterSQL = '';
     if ((int)$conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER) {
-        $filterSQL = "AND (NOT (tartikel.fLagerbestand <= 0 
-                                AND tartikel.cLagerBeachten = 'Y') 
-                            OR tartikel.cLagerVariation = 'Y')";
+        $filterSQL = "AND (tartikel.cLagerBeachten != 'Y'
+                        OR tartikel.fLagerbestand > 0
+                        OR (tartikel.cLagerVariation = 'Y'
+                            AND (
+                                SELECT MAX(teigenschaftwert.fLagerbestand)
+                                FROM teigenschaft
+                                INNER JOIN teigenschaftwert ON teigenschaftwert.kEigenschaft = teigenschaft.kEigenschaft
+                                WHERE teigenschaft.kArtikel = tartikel.kArtikel
+                            ) > 0))";
     } elseif ((int)$conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL) {
-        $filterSQL = "AND (NOT (tartikel.fLagerbestand <= 0 AND tartikel.cLagerBeachten = 'Y') 
-                            OR tartikel.cLagerKleinerNull = 'Y' OR tartikel.cLagerVariation = 'Y')";
+        $filterSQL = "AND (tartikel.cLagerBeachten != 'Y'
+                        OR tartikel.fLagerbestand > 0
+                        OR tartikel.cLagerKleinerNull = 'Y'
+                        OR (tartikel.cLagerVariation = 'Y'
+                            AND (
+                                SELECT MAX(teigenschaftwert.fLagerbestand)
+                                FROM teigenschaft
+                                INNER JOIN teigenschaftwert ON teigenschaftwert.kEigenschaft = teigenschaft.kEigenschaft
+                                WHERE teigenschaft.kArtikel = tartikel.kArtikel
+                            ) > 0))";
     }
     executeHook(HOOK_STOCK_FILTER, [
         'conf'      => (int)$conf['global']['artikel_artikelanzeigefilter'],
@@ -5725,44 +5739,35 @@ function make_http_request($cURL, $nTimeout = 15, $cPost = null, $bReturnStatus 
 }
 
 /**
- * @param string|array|object $xData
- * @param bool                $bEncode
- * @return string|array|object
+ * @param string|array|object $data the string, array or object to convert recursively. Objects are changed, not copied
+ * @param bool                $encode true if data should be utf-8-encoded or false if data should be utf-8-decoded
+ * @return string|array|object converted data
  */
-function utf8_convert_recursive($xData, $bEncode = true)
+function utf8_convert_recursive($data, $encode = true)
 {
-    if (is_string($xData)) {
-        $cEncoding = mb_detect_encoding($xData, 'UTF-8, ISO-8859-1, ISO-8859-15', true);
-        $bUTF8     = (strtoupper($cEncoding) === 'UTF-8');
-        if (($bEncode && $bUTF8) || (!$bUTF8 && !$bEncode)) {
-            return $xData;
+    if (is_string($data)) {
+        $isUtf8 = mb_detect_encoding($data, 'UTF-8', true) !== false;
+
+        if (!$isUtf8 && $encode || $isUtf8 && !$encode) {
+            $data = $encode ? utf8_encode($data) : utf8_decode($data);
         }
-
-        return $bEncode ? utf8_encode($xData) : utf8_decode($xData);
-    }
-    if (is_object($xData)) {
-        $xData_arr = get_object_vars($xData);
-        $xNewData  = $xData;
-        foreach ($xData_arr as $cKey => $xTmp) {
-            $tmp    = utf8_convert_recursive($xNewData->$cKey, $bEncode);
-            $newKey = utf8_convert_recursive($cKey, $bEncode);
-            unset($xNewData->$cKey);
-            $xNewData->$newKey = $tmp;
-            unset($tmp);
+    } elseif (is_array($data)) {
+        foreach ($data as $key => $val) {
+            $newKey = (string)utf8_convert_recursive($key, $encode);
+            $newVal = utf8_convert_recursive($val, $encode);
+            unset($data[$key]);
+            $data[$newKey] = $newVal;
         }
-
-        return $xNewData;
-    }
-    if (!is_array($xData)) {
-        return $xData;
-    }
-    $xData_rr = [];
-    foreach ($xData as $cKey => $xTmp) {
-        $cKey            = utf8_convert_recursive($cKey, $bEncode);
-        $xData_rr[$cKey] = utf8_convert_recursive($xTmp, $bEncode);
+    } elseif (is_object($data)) {
+        foreach (get_object_vars($data) as $key => $val) {
+            $newKey = (string)utf8_convert_recursive($key, $encode);
+            $newVal = utf8_convert_recursive($val, $encode);
+            unset($data->$key);
+            $data->$newKey = $newVal;
+        }
     }
 
-    return $xData_rr;
+    return $data;
 }
 
 /**
@@ -5904,6 +5909,7 @@ function pruefeWarenkorbStueckliste($oArtikel, $fAnzahl)
 }
 
 /**
+ * @deprecated since 4.06
  * return trimmed description without (double) line breaks
  *
  * @param string $cDesc
@@ -5911,13 +5917,26 @@ function pruefeWarenkorbStueckliste($oArtikel, $fAnzahl)
  */
 function truncateMetaDescription($cDesc)
 {
-    $cDesc = str_replace('"', '', $cDesc);
-    $conf  = Shop::getSettings([CONF_METAANGABEN]);
-    if ($conf['metaangaben']['global_meta_maxlaenge_description'] > 0) {
-        $cDesc = substr($cDesc, 0, (int)$conf['metaangaben']['global_meta_maxlaenge_description']);
+    $conf = Shop::getSettings([CONF_METAANGABEN]);
+    $maxLength = !empty($conf['metaangaben']['global_meta_maxlaenge_description']) ? (int)$conf['metaangaben']['global_meta_maxlaenge_description'] : 0;
+
+    return prepareMeta($cDesc, null, $maxLength);
+}
+
+/**
+ * @param string $metaProposal the proposed meta text value.
+ * @param string $metaSuffix append suffix to meta value that wont be shortened
+ * @param int $maxLength $metaProposal will be truncated to $maxlength - strlen($metaSuffix) characters
+ * @return string truncated meta value with optional suffix (always appended if set)
+ */
+function prepareMeta($metaProposal, $metaSuffix = null, $maxLength = null) {
+    $metaProposal = str_replace('"', '', $metaProposal);
+    $metaSuffix = !empty($metaSuffix) ? $metaSuffix : '';
+    if (!empty($maxLength) && $maxLength > 0) {
+        $metaProposal = substr($metaProposal, 0, (int)$maxLength);
     }
 
-    return trim(preg_replace('/\s\s+/', ' ', $cDesc));
+    return trim(preg_replace('/\s\s+/', ' ', $metaProposal)) . $metaSuffix;
 }
 
 /**

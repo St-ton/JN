@@ -73,7 +73,7 @@ trait JTLCacheTrait
         $flush = $this->flush($cID);
 
         //loaded value should equal stored value and it should be correctly flushed
-        return (($value === $load) && $set && $flush);
+        return $value === $load && $set && $flush;
     }
 
     /**
@@ -89,7 +89,7 @@ trait JTLCacheTrait
             return false;
         }
         $data = trim($data);
-        if ('N;' == $data) {
+        if ('N;' === $data) {
             return true;
         }
         if (!preg_match('/^([adObis]):/', $data, $badions)) {

@@ -1478,14 +1478,12 @@ function gibMerkmalFilterOptionen($FilterSQL, $NaviFilter, $oAktuelleKategorie =
                                         ON fremdSprache.kMerkmalWert = tartikelmerkmal.kMerkmalWert
                                         AND fremdSprache.kSprache = " . $kSprache . "";
         } else {
-
             $cSelectMerkmalwert  = "tmerkmalwertsprache.cWert, tmerkmalwertsprache.cSeo,";
             $cJoinMerkmalwert    = "INNER JOIN tmerkmalwertsprache 
                                         ON tmerkmalwertsprache.kMerkmalWert = tartikelmerkmal.kMerkmalWert
                                         AND tmerkmalwertsprache.kSprache = " . $kSprache;
             $cSelectMerkmal      = 'tmerkmal.cName, ';
             $cJoinMerkmal        = '';
-
         }
         $oMerkmalFilterDB_arr = Shop::DB()->query(
             "SELECT ssMerkmal.cSeo, ssMerkmal.kMerkmal, ssMerkmal.kMerkmalWert, ssMerkmal.cMMWBildPfad, ssMerkmal.cWert, 

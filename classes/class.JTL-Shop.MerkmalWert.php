@@ -146,7 +146,6 @@ class MerkmalWert
                         tmerkmalwertsprache.cMetaKeywords, tmerkmalwertsprache.cMetaDescription,
                         tmerkmalwertsprache.cBeschreibung, tmerkmalwertsprache.cSeo";
             $cJoin   = "INNER JOIN tmerkmalwertsprache ON tmerkmalwertsprache.kMerkmalWert = tmerkmalwert.kMerkmalWert
-	
                             AND tmerkmalwertsprache.kSprache = " . $kSprache;
         }
         $oMerkmalWert = Shop::DB()->query(
@@ -224,7 +223,6 @@ class MerkmalWert
                         tmerkmalwertsprache.cBeschreibung, tmerkmalwertsprache.cSeo";
                 $cJoin   = "INNER JOIN tmerkmalwertsprache ON tmerkmalwertsprache.kMerkmalWert = tmerkmalwert.kMerkmalWert
                                 AND tmerkmalwertsprache.kSprache = " . $kSprache;
-
             }
             $oMerkmalWert_arr = Shop::DB()->query(
                 "SELECT tmerkmalwert.*, {$cSelect}

@@ -118,10 +118,8 @@ class Merkmal
                             ON fremdSprache.kMerkmal = tmerkmal.kMerkmal
                             AND fremdSprache.kSprache = {$kSprache}";
         } else {
-
             $cSelect = "tmerkmalsprache.cName";
             $cJoin   = "INNER JOIN tmerkmalsprache ON tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal
-	
                             AND tmerkmalsprache.kSprache = {$kSprache}";
         }
         $kMerkmal = (int)$kMerkmal;
@@ -153,7 +151,6 @@ class Merkmal
                                         ON standardSprache.kMerkmalWert = tmw.kMerkmalWert
                                         AND standardSprache.kSprache = {$kSprache}";
                 $cOrderBy         = "ORDER BY tmw.nSort, standardSprache.cWert";
-
             }
             $oMerkmalWertTMP_arr = Shop::DB()->query(
                 "SELECT tmw.kMerkmalWert
@@ -222,7 +219,6 @@ class Merkmal
             } else {
                 $cSelect = "tmerkmalsprache.cName";
                 $cJoin   = "INNER JOIN tmerkmalsprache 
-	
                                 ON tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal
                                 AND tmerkmalsprache.kSprache = {$kSprache}";
             }

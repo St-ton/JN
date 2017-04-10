@@ -929,7 +929,7 @@ class Exportformat
                 $nZeile     = 1;
                 $new_handle = fopen($this->getFileName($fileNameSplit_arr, $fileCounter), 'w');
                 $nSizeDatei = 0;
-                while ($cContent = fgets($handle)) {
+                while (($cContent = fgets($handle)) !== false) {
                     if ($nZeile > 1) {
                         $nSizeZeile = strlen($cContent) + 2;
                         //Schwelle erreicht?
@@ -984,9 +984,8 @@ class Exportformat
     private function cleanupFiles($fileName, $fileNameSplit)
     {
         if (is_dir(PFAD_ROOT . PFAD_EXPORT)) {
-            $dir = opendir(PFAD_ROOT . PFAD_EXPORT);
-            if ($dir !== false) {
-                while ($cDatei = readdir($dir)) {
+            if (($dir = opendir(PFAD_ROOT . PFAD_EXPORT)) !== false) {
+                while (($cDatei = readdir($dir)) !== false) {
                     if ($cDatei !== $fileName && strpos($cDatei, $fileNameSplit) !== false) {
                         unlink(PFAD_ROOT . PFAD_EXPORT . $cDatei);
                     }
@@ -1068,10 +1067,9 @@ class Exportformat
         $cacheHits   = 0;
         $cacheMisses = 0;
         $cOutput     = '';
-        if ((int)$this->queue->nLimitN === 0 && file_exists(PFAD_ROOT . PFAD_EXPORT . $this->cDateiname)) {
+        if ($isAsync === true && $this->queue->nLimitN == 0 && file_exists(PFAD_ROOT . PFAD_EXPORT . $this->cDateiname)) {
             unlink(PFAD_ROOT . PFAD_EXPORT . $this->cDateiname);
         }
-
         $datei = fopen(PFAD_ROOT . PFAD_EXPORT . $this->tempFileName, 'a');
         if ($max === null) {
             $maxObj = Shop::DB()->executeQuery($this->getExportSQL(true), 1);

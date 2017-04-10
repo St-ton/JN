@@ -9,7 +9,21 @@
 // Bootswatch
 // -----------------------------------------------------
 
-@import url("//fonts.googleapis.com/css?family=News+Cycle:400,700");
+//import via CDN
+//@import url("//fonts.googleapis.com/css?family=News+Cycle:400,700");
+//import local files
+@font-face {
+  font-family: 'News Cycle';
+  font-style: normal;
+  font-weight: 400;
+  src: local('News Cycle'), local('NewsCycle'), url('@{icon-font-path}newscycle/NewsCycle-Regular.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'News Cycle';
+  font-style: normal;
+  font-weight: 700;
+  src: local('News Cycle Bold'), local('NewsCycle-Bold'), url('@{icon-font-path}newscycle/NewsCycle-Bold.ttf') format('truetype');
+}
 
 // Navbar =====================================================================
 

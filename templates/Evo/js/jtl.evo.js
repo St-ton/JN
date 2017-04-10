@@ -165,39 +165,16 @@
             }
         },
 
-        productTabs: function() {
-            var tabAnchor = $('#article-tabs');
-            if (tabAnchor && tabAnchor.hasClass('tab-content')) {
-                var items = '<ul id="article-tabs-list" class="nav nav-tabs">';
-
-                $('.panel-heading[data-parent="#article-tabs"]').each(function () {
-                    var href = $(this).attr('data-target'),
-                        aria = href.replace('#', ''),
-                        title = $(this).text();
-                    items += '<li role="presentation" class="' + aria + '-list"><a href="' + href + '" aria-controls="' + aria + '" role="tab" data-toggle="tab">' + title + '</a></li>';
-                    $(this).remove();
-                });
-
-                $('#article-tabs.tab-content').before(items + '</ul>');
-
-                $('#article-tabs-list li:first,#article-tabs.tab-content div:first').addClass('active');
-
-                $('#article-tabs-list').on('click', 'a', function (e) {
-                    e.preventDefault();
-                    $(this).tab('show');
-                    if ($(e.target).attr('aria-controls') === 'tab-preisverlauf' && typeof window.priceHistoryChart !== 'undefined' && window.priceHistoryChart === null) {
-                        window.priceHistoryChart = new Chart(window.ctx).Bar(window.chartData, {
-                            responsive:      true,
-                            scaleBeginAtZero: false,
-                            tooltipTemplate: "<%if (label){%><%=label%> - <%}%><%= parseFloat(value).toFixed(2).replace('.', ',') %> " + window.chartDataCurrency
-                        });
-                    }
-                });
-
-                if (window.location.hash) {
-                    $('#article-tabs-list').find('a[href="' + window.location.hash + '"]').tab('show');
+        productTabsPriceFlow: function() {
+            $('a[href="#priceFlow"]').on('shown.bs.tab', function () {
+                if (typeof window.priceHistoryChart !== 'undefined' && window.priceHistoryChart === null) {
+                    window.priceHistoryChart = new Chart(window.ctx).Bar(window.chartData, {
+                        responsive:      true,
+                        scaleBeginAtZero: false,
+                        tooltipTemplate: "<%if (label){%><%=label%> - <%}%><%= parseFloat(value).toFixed(2).replace('.', ',') %> " + window.chartDataCurrency
+                    });
                 }
-            }
+            });
         },
 
         autoheight: function() {
@@ -397,7 +374,7 @@
 
         register: function() {
             this.addSliderTouchSupport();
-            this.productTabs();
+            this.productTabsPriceFlow();
             // this.generateEvoSlider();
             this.generateSlickSlider();
             $('.nav-pills, .nav-tabs').tabdrop();

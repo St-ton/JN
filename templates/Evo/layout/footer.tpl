@@ -226,7 +226,9 @@
         </div>
     </footer>
 {/if}
+{block name="main-wrapper-close"}
 </div> {* /mainwrapper *}
+{/block}
 
 {* JavaScripts *}
 {block name="footer-js"}

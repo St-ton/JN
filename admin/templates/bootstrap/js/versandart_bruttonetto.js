@@ -78,7 +78,7 @@ function setzePreisTooltipAjax(bNetto, cTooltipID, sourceElem)
     if (bNetto) {
         ioCall('setCurrencyConversionTooltip', [parseFloat($(sourceElem).val().replace(',', '.')), 0, cTargetID]);
     } else {
-        ioCall('setCurrencyConversionTooltip', [0, pparseFloat($(sourceElem).val().replace(',', '.')), cTargetID]);
+        ioCall('setCurrencyConversionTooltip', [0, parseFloat($(sourceElem).val().replace(',', '.')), cTargetID]);
     }
 }
 

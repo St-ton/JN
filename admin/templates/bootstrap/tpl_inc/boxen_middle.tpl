@@ -14,12 +14,14 @@
                         <label for="box_{$direction}_show">Container anzeigen</label>
                     {else}
                         {if isset($bBoxenAnzeigen.$direction) && $bBoxenAnzeigen.$direction}
+                            <input type="hidden" name="box_show" value="1" />
                             <a href="boxen.php?action=container&position={$direction}&value=0&token={$smarty.session.jtl_token}"
                                title="{$directionName} auf jeder Seite deaktivieren" class="btn btn-warning"
                                data-toggle="tooltip" data-placement="right">
                                 <i class="fa fa-eye-slash"></i>
                             </a>
                         {else}
+                            <input type="hidden" name="box_show" value="0" />
                             <a href="boxen.php?action=container&position={$direction}&value=1&token={$smarty.session.jtl_token}"
                                title="{$directionName} auf jeder Seite aktivieren" class="btn btn-success"
                                data-toggle="tooltip" data-placement="right">

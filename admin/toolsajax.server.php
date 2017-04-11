@@ -41,6 +41,7 @@ function reloadAdminLoginCaptcha()
 }
 
 /**
+ * @deprecated since 4.06
  * @param float  $fPreisNetto
  * @param float  $fPreisBrutto
  * @param string $cTargetID
@@ -56,6 +57,7 @@ function getCurrencyConversionAjax($fPreisNetto, $fPreisBrutto, $cTargetID)
 }
 
 /**
+ * @deprecated since 4.06
  * @param float  $fPreisNetto
  * @param float  $fPreisBrutto
  * @param string $cTooltipID
@@ -242,6 +244,7 @@ function getArticleList($cSearch, $aParam)
             );
             foreach ($oArticle_arr as &$oArticle) {
                 $oArticle->cName                              = utf8_encode($oArticle->cName);
+                $oArticle->cBase                              = utf8_encode($oArticle->cBase); // optional (maybe for austria)
                 $Artikel                                      = new Artikel();
                 $oArtikelOptionen                             = new stdClass();
                 $oArtikelOptionen->nKeinLagerbestandBeachten  = 1;

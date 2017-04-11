@@ -2158,6 +2158,10 @@ function checkeKupon($Kupon)
     if ($Kupon->fMindestbestellwert > $_SESSION['Warenkorb']->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true)) {
         $ret['ungueltig'] = 4;
     }
+    if ($Kupon->cWertTyp === 'festpreis' && $Kupon->nGanzenWKRabattieren === '0' &&
+        $Kupon->fMindestbestellwert > gibGesamtsummeKuponartikelImWarenkorb($Kupon, $_SESSION['Warenkorb']->PositionenArr)) {
+        $ret['ungueltig'] = 4;
+    }
     if ($Kupon->kKundengruppe > 0 && $Kupon->kKundengruppe != $_SESSION['Kundengruppe']->kKundengruppe) {
         $ret['ungueltig'] = 5;
     }
@@ -2378,6 +2382,30 @@ function kuponAnnehmen($Kupon)
 }
 
 /**
+ * liefert Gesamtsumme der Artikel im Warenkorb, welche dem Kupon zugeordnet werden können
+ *
+ * @param Kupon|object $Kupon
+ * @param array $PositionenArr
+ * @return bool
+ */
+function gibGesamtsummeKuponartikelImWarenkorb($Kupon, $PositionenArr)
+{
+    $gesamtsumme = 0;
+    if (is_array($PositionenArr)) {
+        foreach ($PositionenArr as $Position) {
+            if (warenkorbKuponFaehigArtikel($Kupon, [$Position]) ||
+                warenkorbKuponFaehigHersteller($Kupon, [$Position]) ||
+                warenkorbKuponFaehigKategorien($Kupon, [$Position])) {
+                $gesamtsumme += $Position->fPreis * $Position->nAnzahl * ((100 + gibUst($Position->kSteuerklasse)) / 100);
+            }
+        }
+    }
+    $gesamtsumme = round($gesamtsumme, 2);
+
+    return $gesamtsumme;
+}
+
+/**
  * @param Kupon|object $Kupon
  * @param array $PositionenArr
  * @return bool
@@ -2444,7 +2472,7 @@ function warenkorbKuponFaehigKategorien($Kupon, $PositionenArr)
         }
     }
     foreach ($Kats as $Kat) {
-        if (stripos($Kupon->cKategorien, $Kat . ';') !== false) {
+        if (preg_match('/;' . preg_quote($Kat, '/') . ';/i', $Kupon->cKategorien)) {
             return true;
         }
     }

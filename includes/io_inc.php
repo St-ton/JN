@@ -72,7 +72,9 @@ function getCitiesByZip($cityQuery, $country, $zip)
 {
     $results    = [];
     if (!empty($country) && !empty($zip) && strlen($cityQuery) >= 1) {
-        $cityQuery = "%" . $cityQuery . "%";
+        $cityQuery = "%" . StringHandler::filterXSS($cityQuery) . "%";
+        $country   = StringHandler::filterXSS($country);
+        $zip       = StringHandler::filterXSS($zip);
         $cities = Shop::DB()->queryPrepared("
             SELECT cOrt
             FROM tplz
@@ -82,7 +84,7 @@ function getCitiesByZip($cityQuery, $country, $zip)
             ['country' => $country, 'zip' => $zip, 'cityQuery' => $cityQuery],
             2);
         foreach ($cities as $result) {
-            $results[] = $result->cOrt;
+            $results[] = utf8_encode($result->cOrt);
         }
     }
 

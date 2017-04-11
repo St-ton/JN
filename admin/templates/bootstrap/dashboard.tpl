@@ -18,7 +18,7 @@
             ioCall(
                 'addWidget', [kWidget], function () {
                     window.location.href='index.php?kWidget=' + kWidget;
-                }, this
+                }
             );
         });
     }

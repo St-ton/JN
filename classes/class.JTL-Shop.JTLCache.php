@@ -330,10 +330,13 @@ class JTLCache
         if (substr($this->options['cache_dir'], strlen($this->options['cache_dir']) - 1) !== '/') {
             $this->options['cache_dir'] .= '/';
         }
+        if ($this->options['method'] !== 'redis' && (int)$this->options['lifetime'] < 0) {
+            $this->options['lifetime'] = 0;
+        }
         //accept only valid integer lifetime values
-        $this->options['lifetime'] = ($this->options['lifetime'] === '' || (int)$this->options['lifetime'] <= 0) ?
-            self::DEFAULT_LIFETIME :
-            (int)$this->options['lifetime'];
+        $this->options['lifetime'] = ($this->options['lifetime'] === '' || (int)$this->options['lifetime'] === 0)
+            ? self::DEFAULT_LIFETIME
+            : (int)$this->options['lifetime'];
         if ($this->options['types_disabled'] === null) {
             $this->options['types_disabled'] = [];
         }
@@ -981,6 +984,7 @@ class JTLCache
     public function _benchmark($methods = 'all', $testData = 'simple string', $runCount = 1000, $repeat = 1, $echo = true, $format = false)
     {
         $this->options['activated'] = true;
+        $this->options['lifetime']  = self::DEFAULT_LIFETIME;
         //sanitize input
         if (!is_int($runCount) || $runCount < 1) {
             $runCount = 1;
@@ -1027,7 +1031,7 @@ class JTLCache
                     for ($j = 0; $j < $runCount; ++$j) {
                         $cacheID = 'c_' . $j;
                         $res     = $this->get($cacheID);
-                        if ($res != $testData) {
+                        if ($res !== $testData) {
                             $validResults = false;
                         }
                     }

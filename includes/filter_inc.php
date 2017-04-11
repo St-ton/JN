@@ -312,6 +312,7 @@ function gibArtikelKeys($FilterSQL, $nArtikelProSeite, $NaviFilter, $bExtern, $o
         $oArtikelOptionen->nArtikelAttribute     = 1;
         $oArtikelOptionen->nVariationKombiKinder = 1;
         $oArtikelOptionen->nWarenlager           = 1;
+        $oArtikelOptionen->nKonfig               = 1;
         if (PRODUCT_LIST_SHOW_RATINGS === true) {
             $oArtikelOptionen->nRatings = 1;
         }
@@ -325,6 +326,23 @@ function gibArtikelKeys($FilterSQL, $nArtikelProSeite, $NaviFilter, $bExtern, $o
                 // Aktuelle Artikelmenge in die Session (Keine Vaterartikel)
                 if ($oArtikel->nIstVater === 0) {
                     $_SESSION['nArtikelUebersichtVLKey_arr'][] = $oArtikel->kArtikel;
+                }
+                if ($oArtikel->bHasKonfig) {
+                    foreach ($oArtikel->oKonfig_arr as $gruppe) {
+                        /** @var Konfigitem $piece */
+                        foreach ($gruppe->oItem_arr as $piece) {
+                            $konfigItemArticle = $piece->getArtikel();
+                            if (!empty($konfigItemArticle) && $piece->getSelektiert()) {
+                                if (isset($konfigItemArticle->nMaxDeliveryDays)) {
+                                    $oArtikel->nMaxDeliveryDays = max($oArtikel->nMaxDeliveryDays, $konfigItemArticle->nMaxDeliveryDays);
+                                }
+                                if (isset($konfigItemArticle->nMinDeliveryDays)) {
+                                    $oArtikel->nMinDeliveryDays = max($oArtikel->nMinDeliveryDays, $konfigItemArticle->nMinDeliveryDays);
+                                }
+                                $oArtikel->cEstimatedDelivery = getDeliverytimeEstimationText($oArtikel->nMinDeliveryDays, $oArtikel->nMaxDeliveryDays);
+                            }
+                        }
+                    }
                 }
                 $oArtikel_arr[] = $oArtikel;
             } else {
@@ -3510,19 +3528,16 @@ function erstelleFilterLoesenURLs($bSeo, $oSuchergebnisse)
 }
 
 /**
+ * @deprecated since 4.06
  * @param string $cTitle
  * @return string
  */
 function truncateMetaTitle($cTitle)
 {
     $conf = Shop::getSettings([CONF_METAANGABEN]);
-    if (isset($conf['metaangaben']['global_meta_maxlaenge_title']) &&
-        $conf['metaangaben']['global_meta_maxlaenge_title'] > 0
-    ) {
-        return substr($cTitle, 0, (int)$conf['metaangaben']['global_meta_maxlaenge_title']);
-    }
+    $maxLength = !empty($conf['metaangaben']['global_meta_maxlaenge_title']) ? (int)$conf['metaangaben']['global_meta_maxlaenge_title'] : 0;
 
-    return $cTitle;
+    return prepareMeta($cTitle, null, $maxLength);
 }
 
 /**
@@ -3534,9 +3549,15 @@ function truncateMetaTitle($cTitle)
 function gibNaviMetaTitle($NaviFilter, $oSuchergebnisse, $GlobaleMetaAngaben_arr)
 {
     global $oMeta;
-    $conf = Shop::getSettings([CONF_METAANGABEN]);
+    $conf      = Shop::getSettings([CONF_METAANGABEN]);
+    $cSuffix   = '';
+    $maxLength = !empty($conf['metaangaben']['global_meta_maxlaenge_title']) ? (int)$conf['metaangaben']['global_meta_maxlaenge_title'] : 0;
 
     executeHook(HOOK_FILTER_INC_GIBNAVIMETATITLE);
+    // Seitenzahl anhaengen ab Seite 2 (Doppelte Titles vermeiden, #5992)
+    if ($oSuchergebnisse->Seitenzahlen->AktuelleSeite > 1) {
+        $cSuffix = ', ' . Shop::Lang()->get('page', 'global') . " {$oSuchergebnisse->Seitenzahlen->AktuelleSeite}";
+    }
     // Pruefen ob bereits eingestellte Metas gesetzt sind
     if (strlen($oMeta->cMetaTitle) > 0) {
         $oMeta->cMetaTitle = strip_tags($oMeta->cMetaTitle);
@@ -3544,10 +3565,10 @@ function gibNaviMetaTitle($NaviFilter, $oSuchergebnisse, $GlobaleMetaAngaben_arr
         if ($conf['metaangaben']['global_meta_title_anhaengen'] === 'Y' &&
             strlen($GlobaleMetaAngaben_arr[Shop::getLanguage()]->Title) > 0
         ) {
-            return truncateMetaTitle($oMeta->cMetaTitle . ' ' . $GlobaleMetaAngaben_arr[Shop::$kSprache]->Title);
+            return prepareMeta($oMeta->cMetaTitle . ' ' . $GlobaleMetaAngaben_arr[Shop::$kSprache]->Title, $cSuffix);
         }
 
-        return truncateMetaTitle($oMeta->cMetaTitle);
+        return prepareMeta($oMeta->cMetaTitle, $cSuffix, $maxLength);
     }
     // Set Default Titles
     $cMetaTitle = gibMetaStart($NaviFilter, $oSuchergebnisse);
@@ -3573,10 +3594,7 @@ function gibNaviMetaTitle($NaviFilter, $oSuchergebnisse, $GlobaleMetaAngaben_arr
             $cMetaTitle = StringHandler::htmlentitydecode($cMetaTitle, ENT_NOQUOTES);
         }
     }
-    // Seitenzahl anhaengen ab Seite 2 (Doppelte Titles vermeiden, #5992)
-    if ($oSuchergebnisse->Seitenzahlen->AktuelleSeite > 1) {
-        $cMetaTitle .= ', ' . Shop::Lang()->get('page', 'global') . " {$oSuchergebnisse->Seitenzahlen->AktuelleSeite}";
-    }
+
     // Globalen Meta Title ueberall anhaengen
     if ($conf['metaangaben']['global_meta_title_anhaengen'] === 'Y' &&
         !empty($GlobaleMetaAngaben_arr[Shop::getLanguage()]->Title)
@@ -3584,7 +3602,7 @@ function gibNaviMetaTitle($NaviFilter, $oSuchergebnisse, $GlobaleMetaAngaben_arr
         $cMetaTitle .= ' - ' . $GlobaleMetaAngaben_arr[Shop::getLanguage()]->Title;
     }
 
-    return truncateMetaTitle($cMetaTitle);
+    return prepareMeta($cMetaTitle, $cSuffix, $maxLength);
 }
 
 /**
@@ -3597,13 +3615,23 @@ function gibNaviMetaTitle($NaviFilter, $oSuchergebnisse, $GlobaleMetaAngaben_arr
 function gibNaviMetaDescription($oArtikel_arr, $NaviFilter, $oSuchergebnisse, $GlobaleMetaAngaben_arr)
 {
     global $oMeta;
+    $conf      = Shop::getSettings([CONF_METAANGABEN]);
+    $maxLength = $conf['metaangaben']['global_meta_maxlaenge_description'] > 0 ? (int)$conf['metaangaben']['global_meta_maxlaenge_description'] : 0;
 
     executeHook(HOOK_FILTER_INC_GIBNAVIMETADESCRIPTION);
+    $cSuffix = '';
+    if ($oSuchergebnisse->Seitenzahlen->AktuelleSeite > 1 &&
+        $oSuchergebnisse->ArtikelVon > 0 &&
+        $oSuchergebnisse->ArtikelBis > 0
+    ) {
+        $cSuffix = ', ' . Shop::Lang()->get('products', 'global') .
+            " {$oSuchergebnisse->ArtikelVon} - {$oSuchergebnisse->ArtikelBis}";
+    }
     // Prüfen ob bereits eingestellte Metas gesetzt sind
     if (strlen($oMeta->cMetaDescription) > 0) {
         $oMeta->cMetaDescription = strip_tags($oMeta->cMetaDescription);
 
-        return truncateMetaDescription($oMeta->cMetaDescription);
+        return prepareMeta($oMeta->cMetaDescription, $cSuffix, $maxLength);
     }
     // Kategorieattribut?
     $cKatDescription = '';
@@ -3613,17 +3641,17 @@ function gibNaviMetaDescription($oArtikel_arr, $NaviFilter, $oSuchergebnisse, $G
             // meta description via new method
             $cKatDescription = strip_tags($oKategorie->cMetaDescription);
 
-            return truncateMetaDescription($cKatDescription);
+            return prepareMeta($cKatDescription, $cSuffix, $maxLength);
         } elseif (!empty($oKategorie->categoryAttributes['meta_description']->cWert)) {
             // Hat die aktuelle Kategorie als Kategorieattribut eine Meta Description gesetzt?
             $cKatDescription = strip_tags($oKategorie->categoryAttributes['meta_description']->cWert);
 
-            return truncateMetaDescription($cKatDescription);
+            return prepareMeta($cKatDescription, $cSuffix, $maxLength);
         } elseif (!empty($oKategorie->KategorieAttribute['meta_description'])) {
             /** @deprecated since 4.05 - this is for compatibilty only! */
             $cKatDescription = strip_tags($oKategorie->KategorieAttribute['meta_description']);
 
-            return truncateMetaDescription($cKatDescription);
+            return prepareMeta($cKatDescription, $cSuffix, $maxLength);
         } else {
             // Hat die aktuelle Kategorie eine Beschreibung?
             if (isset($oKategorie->cBeschreibung) && strlen($oKategorie->cBeschreibung) > 0) {
@@ -3657,16 +3685,9 @@ function gibNaviMetaDescription($oArtikel_arr, $NaviFilter, $oSuchergebnisse, $G
                 } else {
                     $cMetaDescription = trim($cKatDescription);
                 }
-                // Seitenzahl anhaengen ab Seite 2 (Doppelte Meta-Descriptions vermeiden, #5992)
-                if ($oSuchergebnisse->Seitenzahlen->AktuelleSeite > 1 &&
-                    $oSuchergebnisse->ArtikelVon > 0 &&
-                    $oSuchergebnisse->ArtikelBis > 0
-                ) {
-                    $cMetaDescription .= ', ' . Shop::Lang()->get('products', 'global') .
-                        " {$oSuchergebnisse->ArtikelVon} - {$oSuchergebnisse->ArtikelBis}";
-                }
+                $cMetaDescription = $cMetaDescription;
 
-                return truncateMetaDescription($cMetaDescription);
+                return prepareMeta($cMetaDescription, $cSuffix, $maxLength);
             }
         }
     }
@@ -3697,17 +3718,10 @@ function gibNaviMetaDescription($oArtikel_arr, $NaviFilter, $oSuchergebnisse, $G
         } else {
             $cMetaDescription = gibMetaStart($NaviFilter, $oSuchergebnisse) . ': ' . $cArtikelName;
         }
-        // Seitenzahl anhaengen ab Seite 2 (Doppelte Meta-Descriptions vermeiden, #5992)
-        if ($oSuchergebnisse->Seitenzahlen->AktuelleSeite > 1 &&
-            $oSuchergebnisse->ArtikelVon > 0 &&
-            $oSuchergebnisse->ArtikelBis > 0
-        ) {
-            $cMetaDescription .= ', ' . Shop::Lang()->get('products', 'global') .
-                " {$oSuchergebnisse->ArtikelVon} - {$oSuchergebnisse->ArtikelBis}";
-        }
+        $cMetaDescription = $cMetaDescription;
     }
 
-    return truncateMetaDescription(strip_tags($cMetaDescription));
+    return prepareMeta(strip_tags($cMetaDescription), $cSuffix, $maxLength);
 }
 
 /**

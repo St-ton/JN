@@ -64,21 +64,23 @@
                             {foreach name=newskommentare from=$oNewsKommentar_arr item=oNewsKommentar}
                                 <tr class="tab_bg{$smarty.foreach.newskommentare.iteration%2}">
                                     <td class="check">
-                                        <input type="checkbox" name="kNewsKommentar[]" value="{$oNewsKommentar->kNewsKommentar}" />
+                                        <input type="checkbox" name="kNewsKommentar[]" value="{$oNewsKommentar->kNewsKommentar}" id="comment-{$oNewsKommentar->kNewsKommentar}" />
                                     </td>
                                     <td class="TD2">
+                                        <label for="comment-{$oNewsKommentar->kNewsKommentar}">
                                         {if $oNewsKommentar->cVorname|strlen > 0}
                                             {$oNewsKommentar->cVorname} {$oNewsKommentar->cNachname}
                                         {else}
                                             {$oNewsKommentar->cName}
                                         {/if}
+                                        </label>
                                     </td>
                                     <td class="TD3">{$oNewsKommentar->cBetreff|truncate:50:"..."}</td>
                                     <td class="TD4">{$oNewsKommentar->cKommentar|truncate:150:"..."}</td>
                                     <td class="tcenter">{$oNewsKommentar->dErstellt_de}</td>
                                     <td class="tcenter">
                                         <a href="news.php?news=1&kNews={$oNewsKommentar->kNews}&kNewsKommentar={$oNewsKommentar->kNewsKommentar}&nkedit=1&tab=inaktiv&token={$smarty.session.jtl_token}"
-                                           class="btn btn-default" title="{#modify#}">
+                                           class="btn btn-primary" title="{#modify#}">
                                             <i class="fa fa-edit"></i>
                                         </a>
                                     </td>
@@ -127,15 +129,15 @@
                             <th>{#newsActive#}</th>
                             <th>{#newsComments#}</th>
                             <th>{#newsCatLastUpdate#}</th>
-                            <th></th>
+                            <th style="min-width: 100px;"></th>
                         </tr>
                         </thead>
                         <tbody>
                         {if $oNews_arr|@count > 0 && $oNews_arr}
                             {foreach name=news from=$oNews_arr item=oNews}
                                 <tr class="tab_bg{$smarty.foreach.news.iteration%2}">
-                                    <td class="check"><input type="checkbox" name="kNews[]" value="{$oNews->kNews}" /></td>
-                                    <td class="TD2">{$oNews->cBetreff}</td>
+                                    <td class="check"><input type="checkbox" name="kNews[]" value="{$oNews->kNews}" id="news-cb-{$oNews->kNews}" /></td>
+                                    <td class="TD2"><label for="news-cb-{$oNews->kNews}">{$oNews->cBetreff}</label></td>
                                     <td class="TD3">{$oNews->KategorieAusgabe}</td>
                                     <td class="TD4">
                                         {foreach name=kundengruppen from=$oNews->cKundengruppe_arr item=cKundengruppe}
@@ -155,7 +157,7 @@
                                     <td class="tcenter">
                                         <div class="btn-group">
                                             <a href="news.php?news=1&news_editieren=1&kNews={$oNews->kNews}&tab=aktiv&token={$smarty.session.jtl_token}"
-                                               class="btn btn-default" title="{#modify#}">
+                                               class="btn btn-primary" title="{#modify#}">
                                                 <i class="fa fa-edit"></i>
                                             </a>
                                             <a href="news.php?news=1&nd=1&kNews={$oNews->kNews}&tab=aktiv&token={$smarty.session.jtl_token}"
@@ -226,15 +228,15 @@
                             {foreach name=newskategorie from=$oNewsKategorie_arr item=oNewsKategorie}
                                 <tr class="tab_bg{$smarty.foreach.newskategorie.iteration%2}">
                                     <td class="check">
-                                        <input type="checkbox" name="kNewsKategorie[]" value="{$oNewsKategorie->kNewsKategorie}" />
+                                        <input type="checkbox" name="kNewsKategorie[]" value="{$oNewsKategorie->kNewsKategorie}" id="newscat-{$oNewsKategorie->kNewsKategorie}" />
                                     </td>
-                                    <td class="TD2">{$oNewsKategorie->cName}</td>
+                                    <td class="TD2"><label for="newscat-{$oNewsKategorie->kNewsKategorie}">{$oNewsKategorie->cName}</label></td>
                                     <td class="tcenter">{$oNewsKategorie->nSort}</td>
                                     <td class="tcenter">{if $oNewsKategorie->nAktiv === '1'}ja{else}nein{/if}</td>
                                     <td class="tcenter">{$oNewsKategorie->dLetzteAktualisierung_de}</td>
                                     <td class="tcenter">
                                         <a href="news.php?news=1&newskategorie_editieren=1&kNewsKategorie={$oNewsKategorie->kNewsKategorie}&tab=kategorien&token={$smarty.session.jtl_token}"
-                                           class="btn btn-default" title="{#modify#}">
+                                           class="btn btn-primary" title="{#modify#}">
                                             <i class="fa fa-edit"></i>
                                         </a>
                                     </td>

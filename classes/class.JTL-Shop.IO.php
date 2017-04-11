@@ -10,14 +10,14 @@
 class IO
 {
     /**
-     * @var self
+     * @var static
      */
-    private static $instance = null;
+    protected static $instance = null;
 
     /**
      * @var array
      */
-    private $functions = [];
+    protected $functions = [];
 
     /**
      * ctor
@@ -30,11 +30,11 @@ class IO
     private function __clone() { }
 
     /**
-     * @return self
+     * @return static
      */
     public static function getInstance()
     {
-        return self::$instance === null ? (self::$instance = new self()) : self::$instance;
+        return static::$instance === null ? (static::$instance = new static()) : static::$instance;
     }
 
     /**
@@ -44,11 +44,10 @@ class IO
      * @param string        $name - name udner which this function is callable
      * @param null|callable $function - target function name, method-tuple or closure
      * @param null|string   $include - file where this function is defined in
-     * @param null|string   $permission - permission that is required to execute this function
      * @return $this
      * @throws Exception
      */
-    public function register($name, $function = null, $include = null, $permission = null)
+    public function register($name, $function = null, $include = null)
     {
         if ($this->exists($name)) {
             throw new Exception("Function already registered");
@@ -58,7 +57,7 @@ class IO
             $function = $name;
         }
 
-        $this->functions[$name] = [$function, $include, $permission];
+        $this->functions[$name] = [$function, $include];
 
         return $this;
     }
@@ -66,21 +65,29 @@ class IO
     /**
      * @param string $reqString
      * @return mixed
-     * @throws Exception
      */
     public function handleRequest($reqString)
     {
         $request = json_decode($reqString, true);
 
         if (($errno = json_last_error()) != JSON_ERROR_NONE) {
-            throw new Exception("Error {$errno} while decoding data");
+            return new IOError("Error {$errno} while decoding data");
         }
 
         if (!isset($request['name'], $request['params'])) {
-            throw new Exception("Missing request property");
+            return new IOError("Missing request property");
         }
 
-        return $this->execute($request['name'], $request['params']);
+        ob_start();
+        set_time_limit(0);
+
+        $result = $this->execute($request['name'], $request['params']);
+
+        if (ob_get_level() > 0) {
+            ob_end_clean();
+        }
+
+        return $result;
     }
 
     /**
@@ -88,18 +95,11 @@ class IO
      */
     public function respondAndExit($data)
     {
-        // encode data if not already encoded
-        if (is_string($data)) {
-            // data is a string
-            json_decode($data);
-            if (json_last_error() !== JSON_ERROR_NONE) {
-                // it is not a JSON string yet
-                $data = json_encode($data);
-            }
-        } elseif (is_null($data)) {
-            $data = '{}';
-        } else {
-            $data = json_encode($data);
+        // respond with an error?
+        if (is_object($data) && get_class($data) === 'IOError') {
+            header(makeHTTPHeader($data->code), true, $data->code);
+        } elseif (is_object($data) && get_class($data) === 'IOFile') {
+            $this->pushFile($data->filename, $data->mimetype);
         }
 
         header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
@@ -108,7 +108,7 @@ class IO
         header('Pragma: no-cache');
         header('Content-type: application/json');
 
-        die($data);
+        die(json_safe_encode($data));
     }
 
     /**
@@ -132,15 +132,12 @@ class IO
      */
     public function execute($name, $params)
     {
-        global $oAccount;
-
         if (!$this->exists($name)) {
-            throw new Exception("Function not registered");
+            return new IOError("Function not registered");
         }
 
-        $function   = $this->functions[$name][0];
-        $include    = $this->functions[$name][1];
-        $permission = $this->functions[$name][2];
+        $function = $this->functions[$name][0];
+        $include  = $this->functions[$name][1];
 
         if ($include !== null) {
             require_once $include;
@@ -153,13 +150,64 @@ class IO
         }
 
         if ($ref->getNumberOfRequiredParameters() > count($params)) {
-            throw new Exception("Wrong required parameter count");
-        }
-
-        if ($permission !== null && !$oAccount->permission($permission)) {
-            throw new Exception("User has not the required permission to execute this function");
+            return new IOError("Wrong required parameter count");
         }
 
         return call_user_func_array($function, $params);
+    }
+
+    /**
+     * @param string $filename
+     * @param string $mimetype
+     */
+    protected function pushFile($filename, $mimetype)
+    {
+        $userAgent = '';
+        if (isset($_SERVER['HTTP_USER_AGENT'])) {
+            $userAgent = $_SERVER['HTTP_USER_AGENT'];
+        }
+
+        $browserAgent = '';
+        if (preg_match('/Opera\/([0-9].[0-9]{1,2})/', $userAgent, $m)) {
+            $browserAgent = 'opera';
+        } elseif (preg_match('/MSIE ([0-9].[0-9]{1,2})/', $userAgent, $m)) {
+            $browserAgent = 'ie';
+        } elseif (preg_match('/OmniWeb\/([0-9].[0-9]{1,2})/', $userAgent, $m)) {
+            $browserAgent = 'omniweb';
+        } elseif (preg_match('/Netscape([0-9]{1})/', $userAgent, $m)) {
+            $browserAgent = 'netscape';
+        } elseif (preg_match('/Mozilla\/([0-9].[0-9]{1,2})/', $userAgent, $m)) {
+            $browserAgent = 'mozilla';
+        } elseif (preg_match('/Konqueror\/([0-9].[0-9]{1,2})/', $userAgent, $m)) {
+            $browserAgent = 'konqueror';
+        }
+
+        if (($mimetype === 'application/octet-stream') || ($mimetype === 'application/octetstream')) {
+            $mimetype = ($browserAgent === 'ie' || $browserAgent === 'opera')
+                ? 'application/octetstream'
+                : 'application/octet-stream';
+        }
+
+        @ob_end_clean();
+        @ini_set('zlib.output_compression', 'Off');
+
+        header('Pragma: public');
+        header('Content-Transfer-Encoding: none');
+
+        if ($browserAgent === 'ie') {
+            header('Content-Type: ' . $mimetype);
+            header('Content-Disposition: inline; filename="' . basename($filename) . '"');
+        } else {
+            header('Content-Type: ' . $mimetype . '; name="' . basename($filename) . '"');
+            header('Content-Disposition: attachment; filename="' . basename($filename) . '"');
+        }
+
+        $size = @filesize($filename);
+        if ($size) {
+            header("Content-length: $size");
+        }
+
+        readfile($filename);
+        exit;
     }
 }

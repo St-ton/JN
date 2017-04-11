@@ -155,24 +155,30 @@ function get_list_callback(type, id) {
  * @param callback
  */
 function init_simple_search(callback) {
-    var search,
-        type,
+    var type,
         res,
         selected,
-        browser = $('.single_search_browser');
-    browser.find('input').keyup(function () {
-        search = $(this).val();
-        type = browser.attr('type');
-        browser.find('select').empty();
-        simple_search_list(type, search, function (result) {
-            $(result).each(function (k, v) {
-                browser.find('select').append(
-                    $('<option></option>').attr('primary', v.kPrimary).attr('url', v.cUrl).val(v.kPrimary).html(v.cName).dblclick(function () {
-                        browser.find('.button.add').trigger('click');
-                    })
-                );
+        browser = $('.single_search_browser'),
+        typingTimeout;
+    browser.find('input').keyup(function (evnt) {
+        // reset the timer, if another key-up-event was arised
+        clearTimeout(typingTimeout);
+        // we only fire a search-request,
+        // if three quarter of a second are elapsed without a key-up-event
+        typingTimeout = setTimeout(function() {
+            search = browser.find('input').val();
+            type = browser.attr('type');
+            browser.find('select').empty();
+            simple_search_list(type, search, function (result) {
+                $(result).each(function (k, v) {
+                    browser.find('select').append(
+                        $('<option></option>').attr('primary', v.kPrimary).attr('url', v.cUrl).val(v.kPrimary).html(v.cName).dblclick(function () {
+                            browser.find('.button.add').trigger('click');
+                        })
+                    );
+                });
             });
-        });
+        }, 750);
     });
 
     browser.find('.button.remove').click(function () {
@@ -217,7 +223,12 @@ function show_simple_search(type) {
 function simple_search_list(type, search, callback) {
     var myCallback = xajax.callback.create(),
         cb;
+    myCallback.onRequest = function (obj) {
+        // irform the user about the "search-in-progress"
+        $('#loaderimg').css('visibility', 'visible');
+    }
     myCallback.onComplete = function (obj) {
+        $('#loaderimg').css('visibility', 'hidden');
         callback(obj.context.search_arr);
     };
 
@@ -341,6 +352,7 @@ function retract(elemID, picExpandID, picRetractID) {
 }
 
 /**
+ * @deprecated since 4.06
  * @param url
  * @param params
  * @param callback
@@ -369,6 +381,7 @@ function ajaxCall(url, params, callback) {
 var _queryTimeout = null;
 
 /**
+ * @deprecated since 4.06
  * @param url
  * @param params
  * @param callback
@@ -493,18 +506,16 @@ function createNotify(options, settings) {
 }
 
 function updateNotifyDrop() {
-    ajaxCall('status.php', { action: 'notify' }, function(result, xhr) {
-        if (xhr && xhr.error && xhr.error.code == 401) {
-            // auth session expired
-        }
-        else if(!result.error) {
-            if (result.data.tpl) {
-                $('#notify-drop').html(result.data.tpl);
+    ioCall(
+        'getNotifyDropIO', [],
+        function (result) {
+            if (result.tpl) {
+                $('#notify-drop').html(result.tpl);
             } else {
                 $('#notify-drop').html('');
             }
         }
-    });
+    );
 }
 
 function massCreationCoupons() {
@@ -515,6 +526,9 @@ function massCreationCoupons() {
     $("#informCustomers").toggleClass("hidden", checkboxCreationCoupons);
 }
 
+/**
+ * @deprecated since 4.06
+ */
 function addFav(title, url, success) {
     ajaxCallV2('favs.php?action=add', { title: title, url: url }, function(result, error) {
         if (!error) {
@@ -526,6 +540,9 @@ function addFav(title, url, success) {
     });
 }
 
+/**
+ * @deprecated since 4.06
+ */
 function reloadFavs() {
     ajaxCallV2('favs.php?action=list', {}, function(result, error) {
         if (!error) {
@@ -604,7 +621,10 @@ $(document).ready(function () {
     $('#fav-add').click(function() {
         var title = $('.content-header h1').text();
         var url = window.location.href;
-        addFav(title, url, function() {
+        ioCall('addFav', [title, url], function() {
+            ioCall('reloadFavs', [], function (data) {
+                $('#favs-drop').html(data.tpl);
+            });
             showNotify('success', 'Favoriten', 'Wurde erfolgreich hinzugef&uuml;gt');
         });
 
@@ -676,51 +696,24 @@ function hideBackdrop() {
 }
 
 /**
- * Call the AJAX function 'name' with the argument list args. On success call the callback function success with the
- * result object as the first parameter
+ * Call a function asynchronously on the server. The server answers with a JSON-encoded IOResponse object, that ioCall()
+ * will interpret afterwards.an or an IOError on failure or with some other generic data depending on the called
+ * function on the server.
  *
- * @param name
- * @param args
- * @param success
- * @returns XMLHttpRequest jqxhr
- */
-function ioGetJson(name, args, success)
-{
-    args    = args || [];
-    success = success || function () { };
-
-    return $.ajax({
-        url: 'io.php',
-        method: 'post',
-        dataType: 'json',
-        data: {
-            io : JSON.stringify({
-                name: name,
-                params : args
-            })
-        },
-        success: function (data, textStatus, jqXHR) {
-            success(data);
-        }
-    });
-}
-
-/**
- * Call a function asynchronously on the server. The server answers with a JSON-encoded IOResponse object, that
- * ioCall() will interpret afterwards.
- *
- * @param name - name of the function
- * @param args - argument array for the function call
- * @param success - callback(context) function to be called on success (default: null)
+ * @param name - name of the AJAX-function registered on the server
+ * @param args - array of arguments passed to the function
+ * @param success - (optional) function (data, context) success-callback
+ * @param error - (optional) function (data) error-callback
  * @param context - object to be assigned 'this' in eval()-code (default: { } = a new empty anonymous object)
  * @returns XMLHttpRequest jqxhr
  */
-function ioCall(name, args, success, context)
+function ioCall(name, args, success, error, context)
 {
     'use strict';
 
     args    = args || [];
     success = success || function () { };
+    error   = error || function () { };
     context = context || { };
 
     var evalInContext = function (code) { eval(code); }.bind(context);
@@ -736,25 +729,77 @@ function ioCall(name, args, success, context)
             })
         },
         success: function (data, textStatus, jqXHR) {
-            var jslist = data.js || [];
-            var csslist = data.css || [];
+            if (data) {
+                var jslist = data.js || [];
+                var csslist = data.css || [];
 
-            csslist.forEach(function (assign) {
-                var $target = $('#' + assign.target);
-                if($target.length > 0) {
-                   $target[0][assign.attr] = assign.data;
-                }
-            });
+                csslist.forEach(function (assign) {
+                    var $target = $('#' + assign.target);
+                    if($target.length > 0) {
+                        $target[0][assign.attr] = assign.data;
+                    }
+                });
 
-            jslist.forEach(function (js) {
-                evalInContext(js);
-            });
-
-            if (typeof success === 'function') {
-                success(context);
+                jslist.forEach(function (js) {
+                    evalInContext(js);
+                });
             }
+
+            success(data, context);
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            error(jqXHR.responseJSON);
         }
     });
+}
+
+/**
+ * Induce a file download provided by an AJAX function
+ *
+ * @param name
+ * @param args
+ */
+function ioDownload(name, args)
+{
+    window.location.href = 'io.php?io=' + encodeURIComponent(JSON.stringify({
+        name: name,
+        params: args
+    }));
+}
+
+/**
+ * @param adminPath
+ * @param funcname
+ * @param params
+ * @param callback
+ */
+function ioManagedCall(adminPath, funcname, params, callback)
+{
+    ioCall(
+        funcname, params,
+        function (result) {
+            if (typeof callback === 'function') {
+                callback(result, result.error);
+            }
+        },
+        function (result) {
+            if (result.error && result.error.code === 401) {
+                createNotify(
+                    {
+                        title: 'Sitzung abgelaufen',
+                        message: 'Sie werden zur Anmelde-Maske weitergeleitet...',
+                        icon: 'fa fa-lock'
+                    },
+                    {
+                        type: 'danger',
+                        onClose: function() {
+                            window.location.pathname = '/' + adminPath + 'index.php';
+                        }
+                    }
+                );
+            }
+        }
+    );
 }
 
 /**
@@ -787,6 +832,7 @@ function enableTypeahead(selector, funcName, displayField, valueField, onSelect)
                 };
             }
         },
+        items: 16,
         onSelect: onSelect
     });
 }

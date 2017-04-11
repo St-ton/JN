@@ -34,6 +34,7 @@
         <table class="table table-striped table-bordered">
             <tbody>
                 {if $Einstellungen.artikeldetails.merkmale_anzeigen === 'Y'}
+                    {block name="productdetails-attributes-characteristics"}
                     {foreach from=$Artikel->oMerkmale_arr item=oMerkmal}
                         <tr class="attr-characteristic">
                             <td class="attr-label word-break">
@@ -69,30 +70,40 @@
                             </td>
                         </tr>
                     {/foreach}
+                    {/block}
                 {/if}
 
                 {if $showShippingWeight}
+                    {block name="productdetails-attributes-shipping-weight"}
                     <tr class="attr-weight">
                         <td class="attr-label word-break">{lang key="shippingWeight" section="global"}: </td>
                         <td class="attr-value weight-unit">{$Artikel->cGewicht} {lang key="weightUnit" section="global"}</td>
                     </tr>
+                    {/block}
                 {/if}
 
                 {if $showProductWeight}
-                    <tr class="attr-weight">
+                    {block name="productdetails-attributes-product-weight"}
+                    <tr class="attr-weight" itemprop="weight" itemscope itemtype="http://schema.org/QuantitativeValue">
                         <td class="attr-label word-break">{lang key="productWeight" section="global"}: </td>
-                        <td class="attr-value weight-unit">{$Artikel->cArtikelgewicht} {lang key="weightUnit" section="global"}</td>
+                        <td class="attr-value weight-unit weight-unit-article">
+                            <span itemprop="value">{$Artikel->cArtikelgewicht}</span> <span itemprop="unitText">{lang key="weightUnit" section="global"}</span>
+                        </td>
                     </tr>
+                    {/block}
                 {/if}
 
                 {if isset($Artikel->cMasseinheitName) && isset($Artikel->fMassMenge) && $Artikel->fMassMenge > 0 && $Artikel->cTeilbar !== 'Y' && ($Artikel->fAbnahmeintervall == 0 || $Artikel->fAbnahmeintervall == 1) && isset($Artikel->cMassMenge)}
+                    {block name="productdetails-attributes-unit"}
                     <tr class="attr-contents">
                         <td class="attr-label word-break">{lang key="contents" section="productDetails"}: </td>
                         <td class="attr-value">{$Artikel->cMassMenge} {$Artikel->cMasseinheitName}</td>
                     </tr>
+                    {/block}
                 {/if}
 
                 {if $dimension && $Einstellungen.artikeldetails.artikeldetails_abmessungen_anzeigen === 'Y'}
+                    {block name="productdetails-attributes-dimensions"}
                     {assign var=dimensionArr value=$Artikel->getDimensionLocalized()}
                     {if $dimensionArr|count > 0}
                         <tr class="attr-dimensions">
@@ -108,15 +119,18 @@
                             </td>
                         </tr>
                     {/if}
+                    {/block}
                 {/if}
 
                 {if $Einstellungen.artikeldetails.artikeldetails_attribute_anhaengen === 'Y' || (isset($Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ATTRIBUTEANHAENGEN]) && $Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ATTRIBUTEANHAENGEN] == 1)}
+                    {block name="productdetails-attributes-shop-attributes"}
                     {foreach name=Attribute from=$Artikel->Attribute item=Attribut}
                         <tr class="attr-custom">
                             <td class="attr-label word-break">{$Attribut->cName}: </td>
                             <td class="attr-value">{$Attribut->cWert}</td>
                         </tr>
                     {/foreach}
+                    {/block}
                 {/if}
             </tbody>{* /attr-group *}
         </table>

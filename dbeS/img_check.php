@@ -5,7 +5,7 @@
  */
 
 ob_start();
-require_once dirname(__FILE__) . '/syncinclude.php';
+require_once __DIR__ . '/syncinclude.php';
 
 $return = 3;
 if (auth()) {
@@ -20,14 +20,15 @@ if (auth()) {
             Jtllog::writeLog('Image Check: Anzahl Dateien im Zip: ' . count($list), JTLLOG_LEVEL_DEBUG, false, 'img_check_xml');
         }
 
-        $newTmpDir = PFAD_SYNC_TMP . uniqid("check_") . '/';
+        $newTmpDir = PFAD_SYNC_TMP . uniqid('check_') . '/';
         mkdir($newTmpDir, 0777, true);
 
         if ($extracedList = $archive->extract(PCLZIP_OPT_PATH, $newTmpDir)) {
             $return = 0;
             foreach ($list as $zip) {
                 if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                    Jtllog::writeLog('Image Check: bearbeite: ' . $newTmpDir . $zip['filename'] . ' size: ' . filesize($newTmpDir . $zip['filename']),
+                    Jtllog::writeLog('Image Check: bearbeite: ' . $newTmpDir . $zip['filename'] .
+                        ' size: ' . filesize($newTmpDir . $zip['filename']),
                         JTLLOG_LEVEL_DEBUG, false, 'img_check_xml');
                 }
                 if ($zip['filename'] === 'bildercheck.xml') {
@@ -66,7 +67,8 @@ function bildercheck_xml(SimpleXMLElement $xml)
             $storage = PFAD_ROOT . PFAD_MEDIA_IMAGE_STORAGE . $image->hash;
             if (!file_exists($storage)) {
                 if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                    Jtllog::writeLog("Dropping orphan {$image->id} -> {$image->hash}: no such file", JTLLOG_LEVEL_DEBUG, false, 'img_check_xml');
+                    Jtllog::writeLog("Dropping orphan {$image->id} -> {$image->hash}: no such file",
+                        JTLLOG_LEVEL_DEBUG, false, 'img_check_xml');
                 }
                 Shop::DB()->delete('tbild', 'kBild', $image->id);
                 Shop::DB()->delete('tartikelpict', 'kBild', $image->id);

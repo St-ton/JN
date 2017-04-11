@@ -15,11 +15,15 @@
          */
         function setSelectionWizardAnswer(kMerkmalWert, kAuswahlAssistentFrage, nFrage, kKategorie) {
             var myCallback = xajax.callback.create(),
-                    data;
+                data;
             myCallback.onComplete = function (obj) {
                 data = obj.context.response;
             };
-            xajax.call('setSelectionWizardAnswerAjax', { parameters: [kMerkmalWert, kAuswahlAssistentFrage, nFrage, kKategorie], callback: myCallback, context: this });
+            xajax.call('setSelectionWizardAnswerAjax', {
+                parameters: [kMerkmalWert, kAuswahlAssistentFrage, nFrage, kKategorie],
+                callback:   myCallback,
+                context:    this
+            });
             return false;
         }
         /**
@@ -27,11 +31,15 @@
          */
         function resetSelectionWizardAnswer(nFrage, kKategorie) {
             var myCallback = xajax.callback.create(),
-                    data;
+                data;
             myCallback.onComplete = function (obj) {
                 data = obj.context.response;
             };
-            xajax.call('resetSelectionWizardAnswerAjax', { parameters: [nFrage, kKategorie], callback: myCallback, context: this });
+            xajax.call('resetSelectionWizardAnswerAjax', {
+                parameters: [nFrage, kKategorie],
+                callback:   myCallback,
+                context:    this
+            });
             return false;
         }
         {/literal}
@@ -78,13 +86,13 @@
                                         <a href="{aaURLEncode kMerkmalWert=$oMerkmalWert->kMerkmalWert kAuswahlAssistentFrage=$oAuswahlAssistentFrage->kAuswahlAssistentFrage nFrage=$nFrage kKategorie=$kKategorie}" onclick="return setSelectionWizardAnswer({$oMerkmalWert->kMerkmalWert}, {$oAuswahlAssistentFrage->kAuswahlAssistentFrage}, {$nFrage}, {$kKategorie});" hidefocus="hidefocus">
                                     {/if}
                                     {if $Einstellungen.auswahlassistent.auswahlassistent_anzeigeformat === 'T'}
-                                        {$oMerkmalWert->cWert}{if $Einstellungen.auswahlassistent.auswahlassistent_anzahl_anzeigen === 'Y' && isset($oMerkmalWert->nAnzahl)}
+                                        {$oMerkmalWert->cWert|htmlentities}{if $Einstellungen.auswahlassistent.auswahlassistent_anzahl_anzeigen === 'Y' && isset($oMerkmalWert->nAnzahl)}
                                         <span class="badge">{$oMerkmalWert->nAnzahl}</span>{/if}
                                     {elseif $Einstellungen.auswahlassistent.auswahlassistent_anzeigeformat === 'B'}
-                                        <img src="{$oMerkmalWert->cBildpfadKlein}" class="vmiddle" title="{$oMerkmalWert->cWert}" />
+                                        <img src="{$oMerkmalWert->cBildpfadKlein}" class="vmiddle" title="{$oMerkmalWert->cWert|htmlentities}" />
                                     {elseif $Einstellungen.auswahlassistent.auswahlassistent_anzeigeformat === 'BT'}
-                                        <img src="{$oMerkmalWert->cBildpfadKlein}" class="vmiddle" title="{$oMerkmalWert->cWert}" />
-                                        {$oMerkmalWert->cWert}{if $Einstellungen.auswahlassistent.auswahlassistent_anzahl_anzeigen === 'Y' && isset($oMerkmalWert->nAnzahl)}
+                                        <img src="{$oMerkmalWert->cBildpfadKlein}" class="vmiddle" title="{$oMerkmalWert->cWert|htmlentities}" />
+                                        {$oMerkmalWert->cWert|htmlentities}{if $Einstellungen.auswahlassistent.auswahlassistent_anzahl_anzeigen === 'Y' && isset($oMerkmalWert->nAnzahl)}
                                         <span class="badge">{$oMerkmalWert->nAnzahl}</span>{/if}
                                     {/if}
                                     {if $smarty.session.AuswahlAssistent->nFrage != $nFrage && ($Einstellungen.auswahlassistent.auswahlassistent_allefragen === 'Y' || $smarty.session.AuswahlAssistent->nFrage > $nFrage)}

@@ -4,7 +4,7 @@
             <tbody>
             {foreach from=$smarty.session.Warenkorb->PositionenArr item=oPosition}
                 {if !$oPosition->istKonfigKind()}
-                    {if $oPosition->nPosTyp == 1}
+                    {if $oPosition->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL}
                         <tr>
                             <td class="item-image">
                                 {if $oPosition->Artikel->Bilder[0]->cPfadNormal !== $BILD_KEIN_ARTIKELBILD_VORHANDEN}

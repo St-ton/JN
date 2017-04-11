@@ -22,10 +22,10 @@ $smarty->registerPlugin('function', 'getCurrencyConversionSmarty', 'getCurrencyC
  */
 function getRevisions($params, &$smarty)
 {
-    $secondary = (isset($params['secondary']))
+    $secondary = isset($params['secondary'])
         ? $params['secondary']
         : false;
-    $data      = (isset($params['data']))
+    $data      = isset($params['data'])
         ? $params['data']
         : null;
     $revision  = new Revision();
@@ -43,9 +43,7 @@ function getRevisions($params, &$smarty)
  */
 function getCurrencyConversionSmarty($params, &$smarty)
 {
-    $bForceSteuer = (isset($params['bSteuer']) && $params['bSteuer'] == false)
-        ? false
-        : true;
+    $bForceSteuer = !(isset($params['bSteuer']) && $params['bSteuer'] == false);
     if (!isset($params['fPreisBrutto'])) {
         $params['fPreisBrutto'] = 0;
     }
@@ -66,7 +64,7 @@ function getCurrencyConversionSmarty($params, &$smarty)
  */
 function getCurrencyConversionTooltipButton($params, &$smarty)
 {
-    $placement = (isset($params['placement']))
+    $placement = isset($params['placement'])
         ? $params['placement']
         : 'left';
 
@@ -205,7 +203,7 @@ function getExtensionCategory($params, &$smarty)
         12 => 'Auswertungen'
     ];
 
-    $key = (isset($catNames[$params['cat']])) ? $catNames[$params['cat']] : null;
+    $key = isset($catNames[$params['cat']]) ? $catNames[$params['cat']] : null;
     $smarty->assign('catName', $key);
 }
 
@@ -220,9 +218,7 @@ function formatVersion($params, &$smarty)
         return null;
     }
 
-    $version = (int) $params['value'];
-
-    return substr_replace($version, '.', 1, 0);
+    return substr_replace((int)$params['value'], '.', 1, 0);
 }
 
 /**

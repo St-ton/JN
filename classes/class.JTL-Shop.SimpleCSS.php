@@ -102,10 +102,8 @@ class SimpleCSS
      */
     public function getSelector($cSelector)
     {
-        if (is_array($this->cCSS_arr) && count($this->cCSS_arr)) {
-            if (isset($this->cCSS_arr[$cSelector])) {
-                return $this->cCSS_arr[$cSelector];
-            }
+        if (is_array($this->cCSS_arr) && count($this->cCSS_arr) && isset($this->cCSS_arr[$cSelector])) {
+            return $this->cCSS_arr[$cSelector];
         }
 
         return false;
@@ -121,7 +119,7 @@ class SimpleCSS
         $cAttr_arr = $this->getSelector($cSelector);
         if (is_array($cAttr_arr) && count($cAttr_arr)) {
             foreach ($cAttr_arr as $cAttrKey => $cValue) {
-                if (strcasecmp($cAttrKey, $cKey) == 0) {
+                if (strcasecmp($cAttrKey, $cKey) === 0) {
                     return $cValue;
                 }
             }
@@ -194,7 +192,7 @@ class SimpleCSS
             case 'color': {
                 // rgb(255,255,255)
                 if (preg_match('/rgb(\s*)\(([\d\s]+),([\d\s]+),([\d\s]+)\)/', $cValue, $cMatch_arr)) {
-                    return $this->rgb2html(intval($cMatch_arr[2]), intval($cMatch_arr[3]), intval($cMatch_arr[4]));
+                    return $this->rgb2html((int)$cMatch_arr[2], (int)$cMatch_arr[3], (int)$cMatch_arr[4]);
                 } // #fff or #ffffff
                 elseif (preg_match('/#([\w\d]+)/', $cValue, $cMatch_arr)) {
                     return trim($cMatch_arr[0]);
@@ -205,7 +203,7 @@ class SimpleCSS
             case 'size': {
                 // 1.2em 15% '12 px'
                 if (preg_match('/([\d\.]+)(.*)/', $cValue, $cMatch_arr)) {
-                    $cOut['numeric'] = floatval($cMatch_arr[1]);
+                    $cOut['numeric'] = (float)$cMatch_arr[1];
                     $cOut['unit']    = trim($cMatch_arr[2]);
 
                     return $cOut;
@@ -228,12 +226,12 @@ class SimpleCSS
      */
     public function rgb2html($r, $g, $b)
     {
-        if (is_array($r) && sizeof($r) == 3) {
+        if (is_array($r) && count($r) === 3) {
             list($r, $g, $b) = $r;
         }
-        $r = intval($r);
-        $g = intval($g);
-        $b = intval($b);
+        $r = (int)$r;
+        $g = (int)$g;
+        $b = (int)$b;
 
         $r = dechex($r < 0 ? 0 : ($r > 255 ? 255 : $r));
         $g = dechex($g < 0 ? 0 : ($g > 255 ? 255 : $g));

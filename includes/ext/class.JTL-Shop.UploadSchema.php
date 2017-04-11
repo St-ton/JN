@@ -50,7 +50,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
          */
         public function __construct($kUploadSchema = 0)
         {
-            if (intval($kUploadSchema) > 0) {
+            if ((int)$kUploadSchema > 0) {
                 $this->loadFromDB($kUploadSchema);
             }
         }
@@ -71,7 +71,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
                     WHERE kUploadSchema =  " . (int)$kUploadSchema, 1
             );
 
-            if (isset($oUpload->kUploadSchema) && intval($oUpload->kUploadSchema) > 0) {
+            if (isset($oUpload->kUploadSchema) && (int)$oUpload->kUploadSchema > 0) {
                 self::copyMembers($oUpload, $this);
             }
         }
@@ -113,8 +113,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
         public static function fetchAll($kCustomID, $nTyp)
         {
             $cSql = '';
-            if ($nTyp == UPLOAD_TYP_WARENKORBPOS) {
-                $cSql = " AND kCustomID = '" . $kCustomID . "'";
+            if ($nTyp === UPLOAD_TYP_WARENKORBPOS) {
+                $cSql = " AND kCustomID = '" . (int)$kCustomID . "'";
             }
 
             return Shop::DB()->query(
@@ -131,8 +131,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
         }
 
         /**
-         * @param object      $objFrom
-         * @param object|null $objTo
+         * @param object        $objFrom
+         * @param stdClass|null $objTo
          * @return null|stdClass
          */
         private static function copyMembers($objFrom, &$objTo = null)

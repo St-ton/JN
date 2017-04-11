@@ -6,7 +6,7 @@
 defined('JTLCRON') || define('JTLCRON', true);
 
 if (!defined('PFAD_LOGFILES')) {
-    require dirname(__FILE__) . '/globalinclude.php';
+    require __DIR__ . '/globalinclude.php';
 }
 
 define('JOBQUEUE_LOCKFILE', PFAD_LOGFILES . 'jobqueue.lock');

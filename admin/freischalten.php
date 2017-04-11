@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/admininclude.php';
+require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('UNLOCK_CENTRAL_VIEW', true, true);
 
@@ -17,7 +17,7 @@ $cHinweis = '';
 $cFehler  = '';
 $step     = 'freischalten_uebersicht';
 
-$Einstellungen = Shop::getSettings(array(CONF_BEWERTUNG));
+$Einstellungen = Shop::getSettings([CONF_BEWERTUNG]);
 
 // Suche
 if (!isset($cBewertungSQL)) {

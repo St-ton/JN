@@ -18,7 +18,7 @@ function baueBewertungsErinnerung()
     if (is_array($conf) && count($conf) > 0) {
         $kKundengruppen_arr = $conf['bewertungserinnerung_kundengruppen'];
         if ($conf['bewertungserinnerung_nutzen'] === 'Y' && $conf['bewertung_anzeigen'] === 'Y') {
-            $nVersandTage = intval($conf['bewertungserinnerung_versandtage']);
+            $nVersandTage = (int)$conf['bewertungserinnerung_versandtage'];
             if ($nVersandTage > 0) {
                 // Baue SQL mit allen erlaubten Kundengruppen
                 $cSQL = '';

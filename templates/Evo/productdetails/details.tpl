@@ -3,7 +3,7 @@
 {/if}
 {if !empty($hinweis)}
     {if isset($bWarenkorbHinzugefuegt) && $bWarenkorbHinzugefuegt}
-        {include file='productdetails/pushed_success.tpl' type='alert'}
+        {include file='productdetails/pushed_success.tpl'}
     {else}
         <div class="alert alert-success">
             {$hinweis}
@@ -36,37 +36,41 @@
 
 <div class="h1 visible-xs text-center">{$Artikel->cName}</div>
 
-<form id="buy_form" method="post" action="{$Artikel->cURLFull}">
+<form id="buy_form" method="post" action="{$Artikel->cURLFull}" >
     {$jtl_token}
-    <div class="row product-primary" itemscope itemtype="http://schema.org/Product" id="product-offer">
+    <div class="row product-primary" id="product-offer">
         <div class="product-gallery{if $hasLeftBox} col-sm-5{else} col-sm-6{/if}">
             {include file="productdetails/image.tpl"}
         </div>
         <div class="product-info{if $hasLeftBox} col-sm-7{else} col-sm-6{/if}">
             {block name="productdetails-info"}
             <div class="product-info-inner">
+                {block name="productdetails-info-manufacturer-wrapper"}
                 {if $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen !== 'N' && isset($Artikel->cHersteller)}
                     {block name="product-info-manufacturer"}
-                    <div class="manufacturer-row text-right small">
-                        <a href="{$Artikel->cHerstellerSeo}"{if $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen !== 'B'} data-toggle="tooltip" data-placement="left" title="{$Artikel->cHersteller}"{/if}>
+                    <div class="manufacturer-row text-right small" itemprop="manufacturer" itemscope itemtype="http://schema.org/Organization">
+                        <a href="{$Artikel->cHerstellerSeo}"{if $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen !== 'B'} data-toggle="tooltip" data-placement="left" title="{$Artikel->cHersteller}"{/if} itemprop="url">
                             {if $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen !== 'Y' && (!empty($Artikel->cBildpfad_thersteller) || $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen === 'B') && isset($Artikel->cHerstellerBildKlein)}
                                 <img src="{$Artikel->cHerstellerBildKlein}" alt="{$Artikel->cHersteller}" class="img-sm">
+                                <meta itemprop="image" content="{$ShopURL}/{$Artikel->cHerstellerBildKlein}">
+                                <meta itemprop="url" content="{$ShopURL}/{$Artikel->cHerstellerSeo}">
                             {/if}
                             {if $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen !== 'B'}
-                                {$Artikel->cHersteller}
+                                <span itemprop="name">{$Artikel->cHersteller}</span>
                             {/if}
                         </a>
                     </div>
                     {/block}
                 {/if}
-    
+                {/block}
     
                 <div class="product-headline hidden-xs">
                     {block name="productdetails-info-product-title"}
                     <h1 class="fn product-title" itemprop="name">{$Artikel->cName}</h1>
                     {/block}
                 </div>
-    
+
+                {block name="productdetails-info-essential-wrapper"}
                 {if ($Artikel->Bewertungen->oBewertungGesamt->nAnzahl > 0) || isset($Artikel->cArtNr)}
                     <div class="info-essential row">
                         {block name="productdetails-info-essential"}
@@ -79,6 +83,7 @@
                             </div>
                         {/if}
                         {if ($Einstellungen.bewertung.bewertung_anzeigen === 'Y' && $Artikel->Bewertungen->oBewertungGesamt->nAnzahl > 0)}
+                            {block name="productdetails-info-rating-wrapper"}
                             <div class="rating-wrapper col-xs-4 text-right" itemprop="aggregateRating" itemscope itemtype="http://schema.org/AggregateRating">
                             <span itemprop="ratingValue"
                                   class="hidden">{$Artikel->Bewertungen->oBewertungGesamt->fDurchschnitt}</span>
@@ -87,12 +92,15 @@
                                 {include file='productdetails/rating.tpl' stars=$Artikel->Bewertungen->oBewertungGesamt->fDurchschnitt total=$Artikel->Bewertungen->oBewertungGesamt->nAnzahl}
                             </a>
                             </div>{* /rating-wrapper*}
+                            {/block}
                         {/if}
                         {/block}
                     </div>
                     <div class="clearfix top10"></div>
                 {/if}
-    
+                {/block}
+
+                {block name="productdetails-info-description-wrapper"}
                 {if $Einstellungen.artikeldetails.artikeldetails_kurzbeschreibung_anzeigen === 'Y' && $Artikel->cKurzBeschreibung}
                     {block name="productdetails-info-description"}
                     <div class="shortdesc" itemprop="description">
@@ -101,20 +109,26 @@
                     {/block}
                     <div class="clearfix top10"></div>
                 {/if}
-    
+                {/block}
+
+                {block name="productdetails-info-category-wrapper"}
                 {if $Einstellungen.artikeldetails.artikeldetails_kategorie_anzeigen === 'Y'}
                     {block name="productdetails-info-category"}
                     <p class="product-category word-break">
                         <span class="text-muted">{lang key="category" section="global"}: </span>
                         {assign var=i_kat value=$Brotnavi|@count}{assign var=i_kat value=$i_kat-2}
-                        <a href="{$Brotnavi[$i_kat]->url}">{$Brotnavi[$i_kat]->name}</a>
+                        <a href="{$Brotnavi[$i_kat]->url}" itemprop="category">{$Brotnavi[$i_kat]->name}</a>
                     </p>
                     {/block}
                 {/if}
+                {/block}
                 
                 <div class="product-offer" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+                    <link itemprop="businessFunction" href="http://purl.org/goodrelations/v1#Sell" />
                     {block name="productdetails-info-hidden"}
-                    <link itemprop="url" href="{$Artikel->cURLFull}" />
+                    {if !($Artikel->nIstVater)}
+                        <link itemprop="url" href="{$Artikel->cURLFull}" />
+                    {/if}
                     <input type="submit" name="inWarenkorb" value="1" class="hidden" />
                     {if $Artikel->kArtikelVariKombi > 0}
                         <input type="hidden" name="aK" value="{$Artikel->kArtikelVariKombi}" />
@@ -131,10 +145,13 @@
                     <input type="hidden" name="kKundengruppe" value="{$smarty.session.Kundengruppe->kKundengruppe}" />
                     <input type="hidden" name="kSprache" value="{$smarty.session.kSprache}" />
                     {/block}
+                    {block name="productdetails-info-variation"}
                     <!-- VARIATIONEN -->
                     {include file="productdetails/variation.tpl" simple=$Artikel->isSimpleVariation showMatrix=$showMatrix}
+                    {/block}
                     <hr>
                     <div class="row">
+                        {block name="productdetails-info-price"}
                         <div class="col-xs-7">
                             {if isset($Artikel->Preise->strPreisGrafik_Detail)}
                                 {assign var=priceImage value=$Artikel->Preise->strPreisGrafik_Detail}
@@ -143,9 +160,12 @@
                             {/if}
                             {include file="productdetails/price.tpl" Artikel=$Artikel price_image=$priceImage tplscope="detail"}
                         </div>
+                        {/block}
+                        {block name="productdetails-info-stock"}
                         <div class="col-xs-5 text-right">
                             {include file="productdetails/stock.tpl"}
                         </div>
+                        {/block}
                     </div>
                     {*WARENKORB anzeigen wenn keine variationen mehr auf lager sind?!*}
                     {include file="productdetails/basket.tpl"}

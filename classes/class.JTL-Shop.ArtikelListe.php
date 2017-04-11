@@ -42,15 +42,15 @@ class ArtikelListe
         $kKundengruppe = (int)$kKundengruppe;
         $kSprache      = (int)$kSprache;
         $anzahl        = (int)$anzahl;
-        $cacheID       = 'jtl_tpnw_' . ((is_string($topneu)) ? $topneu : '') .
+        $cacheID       = 'jtl_tpnw_' . (is_string($topneu) ? $topneu : '') .
             '_' . $anzahl .
             '_' . $kSprache .
             '_' . $kKundengruppe;
         $objArr        = Shop::Cache()->get($cacheID);
         if ($objArr === false) {
-            $qry = ($topneu === 'neu') ?
-                "cNeu = 'Y'" :
-                "tartikel.cTopArtikel = 'Y'";
+            $qry = ($topneu === 'neu')
+                ? "cNeu = 'Y'"
+                : "tartikel.cTopArtikel = 'Y'";
             if (!$kKundengruppe) {
                 $kKundengruppe = (int)$_SESSION['Kundengruppe']->kKundengruppe;
             }
@@ -206,14 +206,13 @@ class ArtikelListe
             }
             $Einstellungen = Shop::getSettings([CONF_ARTIKELUEBERSICHT]);
             $kKundengruppe = (int)$_SESSION['Kundengruppe']->kKundengruppe;
-            $cLimitSql     = (isset($Einstellungen['artikeluebersicht']['artikelubersicht_topbest_anzahl'])) ?
-                ('LIMIT ' . (int)$Einstellungen['artikeluebersicht']['artikelubersicht_topbest_anzahl']) :
-                'LIMIT 6';
-
+            $cLimitSql     = isset($Einstellungen['artikeluebersicht']['artikelubersicht_topbest_anzahl'])
+                ? ('LIMIT ' . (int)$Einstellungen['artikeluebersicht']['artikelubersicht_topbest_anzahl'])
+                : 'LIMIT 6';
             //top-Artikel
             $lagerfilter = gibLagerfilter();
-            $objArr      = Shop::DB()->query(
-                "SELECT DISTINCT (tartikel.kArtikel)
+            $objArr      = Shop::DB()->query("
+                SELECT DISTINCT (tartikel.kArtikel)
                     FROM tkategorieartikel, tartikel
                     LEFT JOIN tartikelsichtbarkeit
                         ON tartikel.kArtikel=tartikelsichtbarkeit.kArtikel
@@ -235,13 +234,11 @@ class ArtikelListe
             Shop::Cache()->set($cacheID, $objArr, $cacheTags);
         }
         if (is_array($objArr)) {
-            $res            = [];
             $defaultOptions = Artikel::getDefaultOptions();
             foreach ($objArr as $obj) {
                 $artikel = new Artikel();
                 $artikel->fuelleArtikel($obj->kArtikel, $defaultOptions);
                 $this->elemente[] = $artikel;
-                $res[]            = $artikel;
             }
         }
 
@@ -278,22 +275,20 @@ class ArtikelListe
             $kKundengruppe = $_SESSION['Kundengruppe']->kKundengruppe;
             //top artikel nicht nochmal in den bestsellen vorkommen lassen
             $sql_artikelExclude = '';
-            if ($topArtikelliste) {
-                if (isset($topArtikelliste->elemente) && is_array($topArtikelliste->elemente)) {
-                    foreach ($topArtikelliste->elemente as $ele) {
-                        if ($ele->kArtikel > 0) {
-                            $sql_artikelExclude .= ' AND tartikel.kArtikel != ' . (int)$ele->kArtikel;
-                        }
+            if (isset($topArtikelliste->elemente) && is_array($topArtikelliste->elemente)) {
+                foreach ($topArtikelliste->elemente as $ele) {
+                    if ($ele->kArtikel > 0) {
+                        $sql_artikelExclude .= ' AND tartikel.kArtikel != ' . (int)$ele->kArtikel;
                     }
                 }
             }
-            $cLimitSql = (isset($Einstellungen['artikeluebersicht']['artikelubersicht_topbest_anzahl'])) ?
-                ('LIMIT ' . (int)$Einstellungen['artikeluebersicht']['artikelubersicht_topbest_anzahl']) :
-                'LIMIT 6';
+            $cLimitSql = isset($Einstellungen['artikeluebersicht']['artikelubersicht_topbest_anzahl'])
+                ? ('LIMIT ' . (int)$Einstellungen['artikeluebersicht']['artikelubersicht_topbest_anzahl'])
+                : 'LIMIT 6';
             //top-Artikel
             $lagerfilter = gibLagerfilter();
-            $objArr      = Shop::DB()->query(
-                "SELECT DISTINCT (tartikel.kArtikel)
+            $objArr      = Shop::DB()->query("
+                SELECT DISTINCT (tartikel.kArtikel)
                     FROM tkategorieartikel, tbestseller, tartikel
                     LEFT JOIN tartikelsichtbarkeit
                         ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
@@ -315,14 +310,12 @@ class ArtikelListe
             }
             Shop::Cache()->set($cacheID, $objArr, $cacheTags);
         }
-        $res = [];
         if (is_array($objArr)) {
             $defaultOptions = Artikel::getDefaultOptions();
             foreach ($objArr as $obj) {
                 $artikel = new Artikel();
                 $artikel->fuelleArtikel($obj->kArtikel, $defaultOptions);
                 $this->elemente[] = $artikel;
-                $res[]            = $artikel;
             }
         }
 

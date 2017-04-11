@@ -43,7 +43,7 @@ class Eigenschaft
      */
     public function __construct($kEigenschaft = 0)
     {
-        if (intval($kEigenschaft) > 0) {
+        if ((int)$kEigenschaft > 0) {
             $this->loadFromDB($kEigenschaft);
         }
     }
@@ -76,7 +76,7 @@ class Eigenschaft
         $obj = kopiereMembers($this);
         unset($obj->EigenschaftsWert);
 
-        return (Shop::DB()->insert('teigenschaft', $obj));
+        return Shop::DB()->insert('teigenschaft', $obj);
     }
 
     /**

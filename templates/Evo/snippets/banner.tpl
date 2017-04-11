@@ -29,40 +29,4 @@
             <hr>
         {/if}
     </div>
-    <script type="text/javascript">
-        {block name="banner-js"}
-        {literal}
-        jtl.ready(function () {
-            var bannerLink = $('.banner > a');
-            bannerLink.popover({
-                placement: 'auto bottom',
-                html:      true,
-                trigger:   'hover',
-                container: 'body',
-                content:   function () {
-                    return $(this).children('.area-desc').html()
-                }
-            });
-
-            bannerLink.mouseenter(function () {
-                $(this).animate({
-                    borderWidth: 10,
-                    opacity:     0
-                }, 900, function () {
-                    $(this).css({opacity: 1, borderWidth: 0});
-                });
-            });
-
-            $('.banner').mouseenter(function () {
-                $(this).children('a').animate({
-                    borderWidth: 10,
-                    opacity:     0
-                }, 900, function () {
-                    $(this).css({opacity: 1, borderWidth: 0});
-                });
-            });
-        });
-        {/literal}
-        {/block}
-    </script>
 {/if}

@@ -3,14 +3,14 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/admininclude.php';
+require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->redirectOnFailure();
 
 $phpInfo = '';
 /** @global JTLSmarty $smarty */
 if (isset($_GET['phpinfo'])) {
-    if (in_array('phpinfo', explode(',', ini_get('disable_functions')))) {
+    if (in_array('phpinfo', explode(',', ini_get('disable_functions')), true)) {
         return;
     }
     ob_start();

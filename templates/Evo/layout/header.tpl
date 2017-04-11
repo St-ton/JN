@@ -1,16 +1,27 @@
 <!DOCTYPE html>
-<html lang="{$meta_language}">
+<html lang="{$meta_language}" itemscope {if $nSeitenTyp == URLART_ARTIKEL}itemtype="http://schema.org/ItemPage"
+      {elseif $nSeitenTyp == URLART_KATEGORIE}itemtype="http://schema.org/CollectionPage"
+      {else}itemtype="http://schema.org/WebPage"{/if}>
 <head>
     {block name="head-meta"}
         <meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
-        <meta name="description" content={block name="head-meta-description"}"{$meta_description|truncate:1000:"":true}{/block}">
-        <meta name="keywords" content="{block name="head-meta-keywords"}{$meta_keywords|truncate:255:"":true}{/block}">
+        <meta name="description" itemprop="description" content={block name="head-meta-description"}"{$meta_description|truncate:1000:"":true}{/block}">
+        <meta name="keywords" itemprop="keywords" content="{block name="head-meta-keywords"}{$meta_keywords|truncate:255:"":true}{/block}">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="robots" content="{if $bNoIndex === true  || (isset($Link->cNoFollow) && $Link->cNoFollow === 'Y')}noindex{else}index, follow{/if}">
+
+        <meta itemprop="image" content="{$ShopURL}/{$ShopLogoURL}" />
+        <meta itemprop="url" content="{$cCanonicalURL}"/>
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="{$meta_title}" />
+        <meta property="og:title" content="{$meta_title}" />
+        <meta property="og:description" content="{$meta_description|truncate:1000:"":true}" />
+        <meta property="og:image" content="{$ShopLogoURL}" />
+        <meta property="og:url" content="{$cCanonicalURL}"/>
     {/block}
 
-    <title>{block name="head-title"}{$meta_title}{/block}</title>
+    <title itemprop="name">{block name="head-title"}{$meta_title}{/block}</title>
 
     {if !empty($cCanonicalURL)}
         <link rel="canonical" href="{$cCanonicalURL}">
@@ -21,7 +32,12 @@
     {/block}
 
     {block name="head-icons"}
-        <link type="image/x-icon" href="{$currentTemplateDir}themes/base/images/{if !empty($Einstellungen.template.theme.favicon)}{$Einstellungen.template.theme.favicon}{else}favicon-jtl.ico{/if}" rel="shortcut icon">
+        {if !empty($Einstellungen.template.theme.favicon)}
+            <link type="image/x-icon" href="{$currentTemplateDir}{$Einstellungen.template.theme.favicon}"
+                rel="shortcut icon">
+        {else}
+            <link type="image/x-icon" href="favicon-default.ico" rel="shortcut icon">
+        {/if}
         {if $nSeitenTyp == 1 && isset($Artikel) && !empty($Artikel->Bilder)}
             <link rel="image_src" href="{$ShopURL}/{$Artikel->Bilder[0]->cPfadGross}">
             <meta property="og:image" content="{$ShopURL}/{$Artikel->Bilder[0]->cPfadGross}">
@@ -77,7 +93,7 @@
             body { background-color: {$Einstellungen.template.theme.backgroundcolor}!important; }
         </style>
     {/if}
-    <script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
+    <script src="{$currentTemplateDir}js/jquery-1.12.4.min.js"></script>
     {include file='layout/header_inline_js.tpl'}
 </head>
 {assign var="isFluidContent" value=false}
@@ -116,8 +132,11 @@
                 {/block}
                 {block name="header-branding-content"}
                 <div class="row">
-                    <div class="col-xs-4" id="logo">
+                    <div class="col-xs-4" id="logo" itemprop="publisher" itemscope itemtype="http://schema.org/Organization" itemid="">
                         {block name="logo"}
+                        <span itemprop="name" class="hidden">{$meta_publisher}</span>
+                        <meta itemprop="url" content="{$ShopURL}">
+                        <meta itemprop="logo" content="{$ShopURL}/{$ShopLogoURL}">
                         <a href="{$ShopURL}" title="{$Einstellungen.global.global_shopname}">
                             {if isset($ShopLogoURL)}
                                 {image src=$ShopLogoURL alt=$Einstellungen.global.global_shopname class="img-responsive"}

@@ -79,12 +79,15 @@ final class jtlAPI
  */
 final class CommunicationAPI
 {
+    /**
+     * @var string
+     */
     private static $cAPIUrl = 'http://jtladmin.jtl-software.de/jtlAPI.php';
 
     /**
-     * @param      $xPostData_arr
-     * @param      $bPost
-     * @param null $bForceUrl
+     * @param array     $xPostData_arr
+     * @param bool      $bPost
+     * @param null|bool $bForceUrl
      * @return mixed
      * @throws Exception
      */
@@ -111,7 +114,6 @@ final class CommunicationAPI
             @curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
 
             $cContent  = @curl_exec($ch);
-            $cResponse = @curl_getinfo($ch);
 
             curl_close($ch);
         } else {

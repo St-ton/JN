@@ -66,7 +66,7 @@ class KategoriePict
      */
     public function insertInDB()
     {
-        return (Shop::DB()->insert('tkategoriepict', kopiereMembers($this)));
+        return Shop::DB()->insert('tkategoriepict', kopiereMembers($this));
     }
 
     /**

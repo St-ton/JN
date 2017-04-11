@@ -43,7 +43,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         public function __construct($kKonfiggruppe = 0, $kSprache = 0)
         {
-            if (intval($kKonfiggruppe) > 0 && intval($kSprache) > 0) {
+            if ((int)$kKonfiggruppe > 0 && (int)$kSprache > 0) {
                 $this->loadFromDB($kKonfiggruppe, $kSprache);
             }
         }
@@ -75,8 +75,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 'kSprache',
                 (int)$kSprache
             );
-            if (isset($oObj->kKonfiggruppe) &&
-                isset($oObj->kSprache) &&
+            if (isset($oObj->kKonfiggruppe, $oObj->kSprache) &&
                 $oObj->kKonfiggruppe > 0 &&
                 $oObj->kSprache > 0
             ) {
@@ -84,6 +83,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 foreach ($cMember_arr as $cMember) {
                     $this->$cMember = $oObj->$cMember;
                 }
+                $this->kSprache      = (int)$this->kSprache;
+                $this->kKonfiggruppe = (int)$this->kKonfiggruppe;
             }
         }
 
@@ -103,9 +104,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                     $oObj->$cMember = $this->$cMember;
                 }
             }
-
-            unset($oObj->kKonfiggruppe);
-            unset($oObj->kSprache);
+            unset($oObj->kKonfiggruppe, $oObj->kSprache);
 
             $kPrim = Shop::DB()->insert('tkonfiggruppesprache', $oObj);
 

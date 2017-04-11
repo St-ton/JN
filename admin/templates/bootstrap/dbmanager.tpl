@@ -5,8 +5,8 @@
 {function table_scope_header table=null}
     <h2>Tabelle: {$table}
         <div class="btn-group btn-group-xs" role="group">
-            <a href="dbmanager.php?table={$table}" class="btn btn-default"><span class="glyphicon glyphicon-equalizer"></span> Struktur</a>
-            <a href="dbmanager.php?select={$table}" class="btn btn-default"><span class="glyphicon glyphicon-list"></span> Anzeigen</a>
+            <a href="dbmanager.php?table={$table}&token={$smarty.session.jtl_token}" class="btn btn-default"><span class="glyphicon glyphicon-equalizer"></span> Struktur</a>
+            <a href="dbmanager.php?select={$table}&token={$smarty.session.jtl_token}" class="btn btn-default"><span class="glyphicon glyphicon-list"></span> Anzeigen</a>
         </div>
     </h2>
 {/function}
@@ -44,8 +44,10 @@
 var $add_row_tpl = $({$filter_row_tpl_data|strip|json_encode});
 {if isset($info) && isset($info.statement)}var sql_query = {$info.statement|json_encode};{/if}
 
-{literal}
 $(function() {
+    var new_content = '<form action="dbmanager.php?command" method="POST">';
+    new_content += '{$jtl_token}';
+    console.log('new content: ', new_content);
     $search = $('#db-search');
 
     $('table.table-sticky-header').stickyTableHeaders({
@@ -82,7 +84,7 @@ $(function() {
         prevClass: 'prev',
         lastClass: 'last',
         firstClass: 'first',
-    }).on("page", function(event, page){
+    }).on('page', function(event, page){
         var p = get_params({ name: 'page', value: page });
         var url = location.pathname.split('/').slice(-1)[0];
         location.href = url + '?' + jQuery.param(p);
@@ -101,7 +103,7 @@ $(function() {
         var old_text   = $inner_sql.html();
 
         var new_content = '<form action="dbmanager.php?command" method="POST">';
-
+        new_content += '{$jtl_token}';
         new_content += '<div class="form-group"><textarea name="sql_query_edit" id="sql_query_edit">' + sql_query + '</textarea></div>';
         new_content += '<div class="form-group btn-group-xs last-child">';
         new_content += '    <button type="submit" id="sql_query_edit_save" class="btn btn-primary">OK</button>';
@@ -134,7 +136,7 @@ function get_params(p) {
     var params = $('#filter form').serializeArray();
 
     for (var i = 0; i < params.length; i++) {
-        if (params[i].name == 'page') {
+        if (params[i].name === 'page') {
             delete params[i];
         }
     }
@@ -207,8 +209,8 @@ function get_sql_editor($textarea, options, resize, lintOptions) {
         var defaults = {
             lineNumbers: true,
             matchBrackets: true,
-            extraKeys: {"Ctrl-Space": "autocomplete"},
-            hintOptions: {"completeSingle": false, "completeOnSingleClick": true},
+            extraKeys: { "Ctrl-Space": "autocomplete" },
+            hintOptions: { "completeSingle": false, "completeOnSingleClick": true },
             indentUnit: 4,
             mode: "text/x-mysql",
             lineWrapping: true,
@@ -239,13 +241,13 @@ function get_sql_editor($textarea, options, resize, lintOptions) {
             resize = 'vertical';
         }
         var handles = '';
-        if (resize == 'vertical') {
+        if (resize === 'vertical') {
             handles = 'n, s';
         }
-        if (resize == 'both') {
+        if (resize === 'both') {
             handles = 'all';
         }
-        if (resize == 'horizontal') {
+        if (resize === 'horizontal') {
             handles = 'e, w';
         }
         $(codemirrorEditor.getWrapperElement())
@@ -376,7 +378,6 @@ $(function() {
     });
 });
 */
-{/literal}
 </script>
 
 <div id="content" class="container-fluid">
@@ -389,7 +390,7 @@ $(function() {
             <nav class="db-sidebar hidden-print hidden-xs hidden-sm">
                 <ul class="nav db-sidenav">
                     {foreach $tables as $table}
-                        <li><a href="dbmanager.php?select={$table@key}">{$table@key}</a></li>
+                        <li><a href="dbmanager.php?select={$table@key}&token={$smarty.session.jtl_token}">{$table@key}</a></li>
                     {/foreach}
                 </ul>
             </nav>
@@ -417,70 +418,77 @@ $(function() {
                 {/if}
 
                 <form action="dbmanager.php?command" method="POST">
+                    {$jtl_token}
                     <div class="form-group">
                         <textarea name="query" id="query" class="codemirror sql" data-hint='{$jsTypo|json_encode}'>{if isset($info) && isset($info.statement)}{$info.statement}{/if}</textarea>
                     </div>
                     <div class="form-group">
-                        <input type="submit" value="Ausführen" class="btn btn-primary" />
+                        <button type="submit" class="btn btn-primary"><i class="fa fa-share"></i> Ausführen</button>
                     </div>
                 </form>
                 
                 <!-- ###################################################### -->
-                {if isset($result)}
-                
+                {if isset($result) && !isset($result[0])}
+                    <div class="alert alert-xs alert-success">
+                        <p>Keine Datens&auml;tze</p>
+                    </div>
+                {elseif isset($result[0])}
                     {$headers = array_keys($result[0])}
-                    <table class="table table-striped table-condensed table-bordered table-hover table-sql table-sticky-header nowrap">
-                        <thead>
-                            <tr>
-                                {foreach $headers as $h}
-                                    <th>{$h}</th>
-                                {/foreach}
-                            </tr>
-                        </thead>
-                        {foreach $result as $d}
-                            <tr class="text-vcenter">
-                                {foreach $headers as $h}
-                                    {$value = $d[$h]|escape:'html'|truncate:100:'...'}
-                                    <td class="data data-mixed{if $value == null} data-null{/if}"><span>{if $value == null}NULL{else}{$value}{/if}</span></td>
-                                {/foreach}
-                            </tr>
-                        {/foreach}
-                    </table>
-
+                    <div class="table-responsive">
+                        <table class="table table-striped table-condensed table-bordered table-hover table-sql table-sticky-header nowrap">
+                            <thead>
+                                <tr>
+                                    {foreach $headers as $h}
+                                        <th>{$h}</th>
+                                    {/foreach}
+                                </tr>
+                            </thead>
+                            {foreach $result as $d}
+                                <tr class="text-vcenter">
+                                    {foreach $headers as $h}
+                                        {$value = $d[$h]|escape:'html'|truncate:100:'...'}
+                                        <td class="data data-mixed{if $value == null} data-null{/if}"><span>{if $value == null}NULL{else}{$value}{/if}</span></td>
+                                    {/foreach}
+                                </tr>
+                            {/foreach}
+                        </table>
+                    </div>
                 {/if}
                 <!-- ###################################################### -->
 
-            {else if $sub === 'default'}
+            {elseif $sub === 'default'}
                 {if isset($tables) && $tables|@count > 0}
-                    <table class="table table-striped table-condensed table-bordered table-hover table-sticky-header">
-                        <thead>
-                        <tr>
-                            <th>Tabelle</th>
-                            <th class="text-center">Aktion</th>
-                            <th class="text-center">Typ</th>
-                            <th class="text-center">Kollation</th>
-                            <th class="text-right">Datensätze</th>
-                            <th class="text-right">Auto-Inkrement</th>
-                        </tr>
-                        </thead>
-                        {foreach $tables as $table}
-                            <tr class="text-vcenter{if count($definedTables) > 0 && !($table@key|in_array:$definedTables || $table@key|substr:0:8 == 'xplugin_')} warning{/if}" id="table-{$table@key}">
-                                <td><a href="dbmanager.php?select={$table@key}">{$table@key}</a></td>
-                                <td class="text-center">
-                                    <div class="btn-group btn-group-xs" role="group">
-                                        <a href="dbmanager.php?table={$table@key}" class="btn btn-default"><span class="glyphicon glyphicon-equalizer"></span> Struktur</a>
-                                        <a href="dbmanager.php?select={$table@key}" class="btn btn-default"><span class="glyphicon glyphicon-list"></span> Anzeigen</a>
-                                    </div>
-                                </td>
-                                <td class="text-center">{$table->Engine}</td>
-                                <td class="text-center">{$table->Collation}</td>
-                                <td class="text-right">{$table->Rows|number_format}</td>
-                                <td class="text-right">{$table->Auto_increment}</td>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-condensed table-bordered table-hover table-sticky-header">
+                            <thead>
+                            <tr>
+                                <th>Tabelle</th>
+                                <th class="text-center">Aktion</th>
+                                <th class="text-center">Typ</th>
+                                <th class="text-center">Kollation</th>
+                                <th class="text-right">Datensätze</th>
+                                <th class="text-right">Auto-Inkrement</th>
                             </tr>
-                        {/foreach}
-                    </table>
+                            </thead>
+                            {foreach $tables as $table}
+                                <tr class="text-vcenter{if count($definedTables) > 0 && !($table@key|in_array:$definedTables || $table@key|substr:0:8 === 'xplugin_')} warning{/if}" id="table-{$table@key}">
+                                    <td><a href="dbmanager.php?select={$table@key}&token={$smarty.session.jtl_token}">{$table@key}</a></td>
+                                    <td class="text-center">
+                                        <div class="btn-group btn-group-xs" role="group">
+                                            <a href="dbmanager.php?table={$table@key}&token={$smarty.session.jtl_token}" class="btn btn-default"><span class="glyphicon glyphicon-equalizer"></span> Struktur</a>
+                                            <a href="dbmanager.php?select={$table@key}&token={$smarty.session.jtl_token}" class="btn btn-default"><span class="glyphicon glyphicon-list"></span> Anzeigen</a>
+                                        </div>
+                                    </td>
+                                    <td class="text-center">{$table->Engine}</td>
+                                    <td class="text-center">{$table->Collation}</td>
+                                    <td class="text-right">{$table->Rows|number_format}</td>
+                                    <td class="text-right">{$table->Auto_increment}</td>
+                                </tr>
+                            {/foreach}
+                        </table>
+                    </div>
                 {/if}
-            {else if $sub === 'table'}
+            {elseif $sub === 'table'}
                 {table_scope_header table=$selectedTable}
                 <div class="row">
                     <div class="col-md-6">
@@ -495,7 +503,7 @@ $(function() {
                             </thead>
                             {foreach $columns as $column}
                                 <tr class="text-vcenter">
-                                    <th><span class="text-vcenter">{$column->Field}</span> {if $column->Extra == 'auto_increment'}<span class="label label-default text-vcenter"><abbr title="Auto-Inkrement">AI</abbr></span>{/if}</th>
+                                    <th><span class="text-vcenter">{$column->Field}</span> {if $column->Extra === 'auto_increment'}<span class="label label-default text-vcenter"><abbr title="Auto-Inkrement">AI</abbr></span>{/if}</th>
                                     <td>{$column->Type} {if $column->Null === 'YES'}<i class="text-danger">NULL</i>{/if} {if $column->Default !== null}<strong class="text-muted">[{$column->Default}]</strong>{/if}</td>
                                     <td>{$column->Collation}</td>
                                 </tr>
@@ -522,7 +530,7 @@ $(function() {
                         </table>
                     </div>
                 </div>
-            {else if $sub === 'select'}
+            {elseif $sub === 'select'}
                 {table_scope_header table=$selectedTable}
                 {$headers = array_keys($columns)}
                 
@@ -534,6 +542,7 @@ $(function() {
                 
                 <div id="filter">
                     <form method="GET" action="dbmanager.php" data-sql={$info.statement|json_encode}>
+                        <input type="hidden" name="token" value="{$smarty.session.jtl_token}">
                         <input type="hidden" name="select" value="{$selectedTable}">
 
                         <fieldset>
@@ -582,45 +591,47 @@ $(function() {
                 </div>
                 
                 {if count($data) > 0}
-                    <table class="table table-striped table-condensed table-bordered table-hover table-sql table-sticky-header nowrap">
-                        <thead>
-                            <tr>
-                                {foreach $headers as $h}
-                                    <th>{$h}</th>
-                                {/foreach}
-                            </tr>
-                        </thead>
-                        {foreach $data as $d}
-                            <tr class="text-vcenter">
-                                {foreach $headers as $h}
-                                    {$value = $d[$h]}
-                                    {$class = 'none'}
-                                    {$info = $columns[$h]->Type_info}
+                    <div class="table-responsive">
+                        <table class="table table-striped table-condensed table-bordered table-hover table-sql table-sticky-header nowrap">
+                            <thead>
+                                <tr>
+                                    {foreach $headers as $h}
+                                        <th>{$h}</th>
+                                    {/foreach}
+                                </tr>
+                            </thead>
+                            {foreach $data as $d}
+                                <tr class="text-vcenter">
+                                    {foreach $headers as $h}
+                                        {$value = $d[$h]}
+                                        {$class = 'none'}
+                                        {$info = $columns[$h]->Type_info}
 
-                                    {if $info->Name|in_array:['varchar', 'tinytext', 'text', 'mediumtext', 'longtext']}
-                                        {$class = 'str'}
-                                        {$value = $value|escape:'html'|truncate:100:'...'}
-                                    {else if $info->Name|in_array:['float', 'decimal']}
-                                        {$class = 'float'}
-                                        {$decimals = (int)$info->Size[1]}
-                                        {$value = $value|number_format:$decimals}
-                                    {else if $info->Name|in_array:['double']}
-                                        {$class = 'float'}
-                                        {$value = $value|number_format:2}
-                                    {else if $info->Name|in_array:['tinyint', 'smallint', 'mediumint', 'int', 'bigint']}
-                                        {$class = 'int'}
-                                    {else if $info->Name|in_array:['date', 'datetime', 'time', 'timestamp', 'year']}
-                                        {$class = 'date'}
-                                        {*$default = ($value == '0000-00-00' || $value == '0000-00-00 00-00-00')*}
-                                    {else if $info->Name|in_array:['bit', 'char']}
-                                        {$class = 'char'}
-                                    {/if}
+                                        {if $info->Name|in_array:['varchar', 'tinytext', 'text', 'mediumtext', 'longtext']}
+                                            {$class = 'str'}
+                                            {$value = $value|escape:'html'|truncate:100:'...'}
+                                        {elseif $info->Name|in_array:['float', 'decimal']}
+                                            {$class = 'float'}
+                                            {$decimals = (int)$info->Size[1]}
+                                            {$value = $value|number_format:$decimals}
+                                        {elseif $info->Name|in_array:['double']}
+                                            {$class = 'float'}
+                                            {$value = $value|number_format:2}
+                                        {elseif $info->Name|in_array:['tinyint', 'smallint', 'mediumint', 'int', 'bigint']}
+                                            {$class = 'int'}
+                                        {elseif $info->Name|in_array:['date', 'datetime', 'time', 'timestamp', 'year']}
+                                            {$class = 'date'}
+                                            {*$default = ($value == '0000-00-00' || $value == '0000-00-00 00-00-00')*}
+                                        {elseif $info->Name|in_array:['bit', 'char']}
+                                            {$class = 'char'}
+                                        {/if}
 
-                                    <td class="data data-{$class}{if $value == null} data-null{/if}"><span>{if $value == null}NULL{else}{$value}{/if}</span></td>
-                                {/foreach}
-                            </tr>
-                        {/foreach}
-                    </table>
+                                        <td class="data data-{$class}{if $value == null} data-null{/if}"><span>{if $value == null}NULL{else}{$value}{/if}</span></td>
+                                    {/foreach}
+                                </tr>
+                            {/foreach}
+                        </table>
+                    </div>
                 {else}
                     <div class="alert alert-xs alert-success">
                         <p>Keine Datens&auml;tze</p>

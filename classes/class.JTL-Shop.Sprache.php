@@ -48,9 +48,9 @@ class Sprache
     public $kSprachISO = 0;
 
     /**
-     * @var array|null
+     * @var array
      */
-    public $langVars = null;
+    public $langVars;
 
     /**
      * @var string
@@ -58,9 +58,9 @@ class Sprache
     public $cacheID;
 
     /**
-     * @var array|null
+     * @var array
      */
-    public $oSprache_arr = null;
+    public $oSprache_arr;
 
     /**
      * @var array
@@ -85,7 +85,7 @@ class Sprache
     /**
      * @var Sprache
      */
-    private static $instance = null;
+    private static $instance;
 
     /**
      * @param bool $bAutoload
@@ -176,7 +176,7 @@ class Sprache
             'getIsoFromLangID' => '_getIsoFromLangID'
         ];
 
-        return (isset($mapping[$method])) ? $mapping[$method] : null;
+        return isset($mapping[$method]) ? $mapping[$method] : null;
     }
 
     /**
@@ -339,7 +339,7 @@ class Sprache
             $oSprachISO              = $this->getLangIDFromIso($cISO);
             $this->oSprachISO[$cISO] = $oSprachISO;
 
-            return (isset($oSprachISO->kSprachISO)) ? (int)$oSprachISO->kSprachISO : false;
+            return isset($oSprachISO->kSprachISO) ? (int)$oSprachISO->kSprachISO : false;
         }
 
         return false;
@@ -603,23 +603,25 @@ class Sprache
 
     /**
      * @param string $cSuchwort
-     * @return mixed
+     * @return array
      */
     public function suche($cSuchwort)
     {
         $cSuchwort = Shop::DB()->escape($cSuchwort);
 
-        return Shop::DB()->query(
+        return Shop::DB()->executeQueryPrepared(
             "SELECT tsprachwerte.kSprachsektion, tsprachwerte.cName, tsprachwerte.cWert, 
                 tsprachwerte.cStandard, tsprachwerte.bSystem, tsprachsektion.cName AS cSektionName
                 FROM tsprachwerte
                 LEFT JOIN tsprachsektion 
                     ON tsprachwerte.kSprachsektion = tsprachsektion.kSprachsektion
                 WHERE (
-                    tsprachwerte.cWert LIKE '%" . $cSuchwort . "%' 
-                    OR tsprachwerte.cName LIKE '%" . $cSuchwort . "%'
+                    tsprachwerte.cWert LIKE :search 
+                    OR tsprachwerte.cName LIKE :search
                 )
-                AND kSprachISO = " . (int)$this->kSprachISO, 2
+                AND kSprachISO = :id",
+            ['search' => '%' . $cSuchwort . '%', 'id' => $this->kSprachISO],
+            2
         );
     }
 
@@ -672,7 +674,7 @@ class Sprache
 
         foreach ($oWerte_arr as $oWert) {
             if (strlen($oWert->cWert) === 0) {
-                $oWert->cWert = (isset($oWert->cStandard))
+                $oWert->cWert = isset($oWert->cStandard)
                     ? $oWert->cStandard
                     : null;
             }
@@ -756,14 +758,22 @@ class Sprache
                         break;
 
                     case 1: // Vorhandene Variablen überschreiben
-                        Shop::DB()->query(
+                        Shop::DB()->executeQueryPrepared(
                             "REPLACE INTO tsprachwerte
-                                SET kSprachISO = " . $kSprachISO . ", 
-                                    kSprachsektion = " . $kSprachsektion . ",
-                                    cName = '" . $cName . "', 
-                                    cWert='" . $cWert . "', 
-                                    cStandard = '" . $cWert . "', 
-                                    bSystem = " . $bSystem, 4
+                                SET kSprachISO = :iso, 
+                                    kSprachsektion = :section,
+                                    cName = :name, 
+                                    cWert = :val, 
+                                    cStandard = :val, 
+                                    bSystem = :sys",
+                            [
+                                'iso'     => $kSprachISO,
+                                'section' => $kSprachsektion,
+                                'name'    => $cName,
+                                'val'     => $cWert,
+                                'sys'     => $bSystem
+                            ],
+                            4
                         );
                         $nUpdateCount++;
                         break;
@@ -779,14 +789,22 @@ class Sprache
                             $cName
                         );
                         if (!$oWert) {
-                            Shop::DB()->query(
+                            Shop::DB()->executeQueryPrepared(
                                 "REPLACE INTO tsprachwerte
-                                    SET kSprachISO = " . $kSprachISO . ", 
-                                        kSprachsektion = " . $kSprachsektion . ",
-                                        cName = '" . $cName . "', 
-                                        cWert = '" . $cWert . "', 
-                                        cStandard = '" . $cWert . "', 
-                                        bSystem = " . $bSystem, 4
+                                    SET kSprachISO = :iso, 
+                                        kSprachsektion = :section,
+                                        cName = :name, 
+                                        cWert = :val, 
+                                        cStandard = :val, 
+                                        bSystem = :sys",
+                                [
+                                    'iso'     => $kSprachISO,
+                                    'section' => $kSprachsektion,
+                                    'name'    => $cName,
+                                    'val'     => $cWert,
+                                    'sys'     => $bSystem
+                                ],
+                                4
                             );
                             $nUpdateCount++;
                         }
@@ -827,7 +845,7 @@ class Sprache
                 $oShopSpracheAssoc_arr = gibAlleSprachen(1);
             }
 
-            return (isset($oShopSpracheAssoc_arr[$kSprache]));
+            return isset($oShopSpracheAssoc_arr[$kSprache]);
         }
 
         return false;

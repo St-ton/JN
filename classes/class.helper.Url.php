@@ -110,10 +110,13 @@ class UrlHelper
     {
         if ($this->path) {
             // case normalization
-            $this->path = preg_replace_callback('/(%([0-9abcdef][0-9abcdef]))/x', function ($x) {return '%' . strtoupper($x[2]);}, $this->path);
+            $this->path = preg_replace_callback(
+                '/(%([0-9abcdef][0-9abcdef]))/x',
+                function ($x) {return '%' . strtoupper($x[2]);},
+                $this->path
+            );
             // percent-encoding normalization
             $this->path = $this->urlDecodeUnreservedChars($this->path);
-
             // path segment normalization
             $this->path = $this->removeDotSegments($this->path);
         }

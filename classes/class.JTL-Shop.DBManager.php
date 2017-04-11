@@ -115,14 +115,13 @@ class DBManager
             'Size'     => null,
             'Unsigned' => false
         ];
+        $types  = explode(' ', $type);
 
-        $type = explode(' ', $type);
-
-        if (isset($type[1]) && $type[1] === 'unsigned') {
+        if (isset($types[1]) && $types[1] === 'unsigned') {
             $result->Unsigned = true;
         }
 
-        if (preg_match('/([a-z]+)(?:\((.*)\))?/', $type[0], $m)) {
+        if (preg_match('/([a-z]+)(?:\((.*)\))?/', $types[0], $m)) {
             $result->Size = 0;
             $result->Name = $m[1];
             if (isset($m[2])) {

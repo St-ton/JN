@@ -19,13 +19,13 @@ function bearbeiteTrustedShopsKundenbewertung($oJobQueue)
         unset($oTrustedShops);
         $oTrustedShops                = new TrustedShops(-1, $cValidSprachISO);
         $oTrustedShopsKundenbewertung = $oTrustedShops->holeKundenbewertungsstatus($cValidSprachISO);
-        if (strlen($oTrustedShopsKundenbewertung->cTSID) > 0 && $oTrustedShopsKundenbewertung->nStatus == 1) {
+        if ($oTrustedShopsKundenbewertung->nStatus == 1 && strlen($oTrustedShopsKundenbewertung->cTSID) > 0) {
             $returnValue = $oTrustedShops->aenderKundenbewertungsstatus(
                 $oTrustedShopsKundenbewertung->cTSID,
                 1,
                 $cValidSprachISO
             );
-            if ($returnValue != 1) {
+            if ($returnValue !== 1) {
                 $oTrustedShops->aenderKundenbewertungsstatusDB(
                     0,
                     $oTrustedShopsKundenbewertung->cISOSprache

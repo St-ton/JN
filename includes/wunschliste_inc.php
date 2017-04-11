@@ -117,8 +117,8 @@ function wunschlisteAktualisieren($kWunschliste)
                 Shop::DB()->update('twunschlistepos', 'kWunschlistePos', (int)$kWunschlistePos, $_upd);
             }
             // Ist eine Anzahl gesezt
-            if (intval($_POST['Anzahl_' . $kWunschlistePos]) > 0) {
-                $fAnzahl = floatval($_POST['Anzahl_' . $kWunschlistePos]);
+            if ((int)$_POST['Anzahl_' . $kWunschlistePos] > 0) {
+                $fAnzahl = (float)$_POST['Anzahl_' . $kWunschlistePos];
                 // Anzahl der Position updaten
                 $_upd          = new stdClass();
                 $_upd->fAnzahl = $fAnzahl;
@@ -179,10 +179,12 @@ function wunschlisteSpeichern($cWunschlisteName)
         $CWunschliste            = new Wunschliste();
         $CWunschliste->cName     = $cWunschlisteName;
         $CWunschliste->nStandard = 0;
-        unset($CWunschliste->CWunschlistePos_arr);
-        unset($CWunschliste->oKunde);
-        unset($CWunschliste->kWunschliste);
-        unset($CWunschliste->dErstellt_DE);
+        unset(
+            $CWunschliste->CWunschlistePos_arr,
+            $CWunschliste->oKunde,
+            $CWunschliste->kWunschliste,
+            $CWunschliste->dErstellt_DE
+        );
 
         Shop::DB()->insert('twunschliste', $CWunschliste);
 
@@ -203,10 +205,8 @@ function wunschlisteSenden($cEmail_arr, $kWunschliste)
     $kWunschliste = (int)$kWunschliste;
     // Wurden Emails übergeben?
     if (count($cEmail_arr) > 0) {
-        $conf = Shop::getSettings([CONF_GLOBAL]);
-        if (!isset($oMail)) {
-            $oMail = new stdClass();
-        }
+        $conf                = Shop::getSettings([CONF_GLOBAL]);
+        $oMail               = new stdClass();
         $oMail->tkunde       = $_SESSION['Kunde'];
         $oMail->twunschliste = bauecPreis(new Wunschliste($kWunschliste));
 
@@ -227,9 +227,7 @@ function wunschlisteSenden($cEmail_arr, $kWunschliste)
             // Email auf "Echtheit" prüfen
             $cEmail = StringHandler::filterXSS($cEmail_arr[$i]);
             if (!pruefeEmailblacklist($cEmail)) {
-                if (!isset($oMail->mail)) {
-                    $oMail->mail = new stdClass();
-                }
+                $oMail->mail          = new stdClass();
                 $oMail->mail->toEmail = $cEmail;
                 $oMail->mail->toName  = $cEmail;
                 // Emails senden
@@ -247,8 +245,8 @@ function wunschlisteSenden($cEmail_arr, $kWunschliste)
             $hinweis = substr($hinweis, 0, strlen($hinweis) - 2) . '<br />';
         }
         // Hat der benutzer mehr Emails angegeben als erlaubt sind?
-        if (count($cEmail_arr) > intval($conf['global']['global_wunschliste_max_email'])) {
-            $nZuviel = count($cEmail_arr) - intval($conf['global']['global_wunschliste_max_email']);
+        if (count($cEmail_arr) > (int)$conf['global']['global_wunschliste_max_email']) {
+            $nZuviel = count($cEmail_arr) - (int)$conf['global']['global_wunschliste_max_email'];
             $hinweis .= '<br />';
 
             if (strpos($hinweis, Shop::Lang()->get('novalidEmail', 'messages')) === false) {
@@ -256,11 +254,11 @@ function wunschlisteSenden($cEmail_arr, $kWunschliste)
             }
 
             for ($i = 0; $i < $nZuviel; $i++) {
-                if (strpos($hinweis, $cEmail_arr[((count($cEmail_arr) - 1) - $i)]) === false) {
+                if (strpos($hinweis, $cEmail_arr[(count($cEmail_arr) - 1) - $i]) === false) {
                     if ($i > 0) {
-                        $hinweis .= ', ' . $cEmail_arr[((count($cEmail_arr) - 1) - $i)];
+                        $hinweis .= ', ' . $cEmail_arr[(count($cEmail_arr) - 1) - $i];
                     } else {
-                        $hinweis .= $cEmail_arr[((count($cEmail_arr) - 1) - $i)];
+                        $hinweis .= $cEmail_arr[(count($cEmail_arr) - 1) - $i];
                     }
                 }
             }
@@ -341,23 +339,25 @@ function giboWunschlistePos($kWunschlistePos)
 /**
  * @param int    $kWunschliste
  * @param string $cURLID
- * @return bool
+ * @return bool|stdClass
  */
 function giboWunschliste($kWunschliste = 0, $cURLID = '')
 {
-    if ($kWunschliste > 0 || strlen($cURLID) > 0) {
-        $cSQL = "kWunschliste = " . (int)$kWunschliste;
-        if ($kWunschliste == 0 && strlen($cURLID) > 0) {
-            $cSQL = "cURLID LIKE '" . addcslashes($cURLID, '%_') . "%'";
-        }
-        $oWunschliste = Shop::DB()->query("SELECT * FROM twunschliste WHERE " . $cSQL, 1);
+    $kWunschliste = (int)$kWunschliste;
+    $oWunschliste = null;
 
-        if (isset($oWunschliste->kWunschliste) && $oWunschliste->kWunschliste > 0) {
-            return $oWunschliste;
-        }
+    if ($kWunschliste > 0) {
+        $oWunschliste = Shop::DB()->select('twunschliste', 'kWunschliste', $kWunschliste);
+    } elseif ($cURLID !== '') {
+        $oWunschliste = Shop::DB()->executeQueryPrepared(
+            "SELECT * FROM twunschliste WHERE cURLID LIKE :id",
+            ['id' => $cURLID],
+            1
+        );
     }
-
-    return false;
+    return (isset($oWunschliste->kWunschliste) && $oWunschliste->kWunschliste > 0)
+        ? $oWunschliste
+        : false;
 }
 
 /**
@@ -369,12 +369,12 @@ function bauecPreis($oWunschliste)
     // Wunschliste durchlaufen und cPreis setzen (Artikelanzahl mit eingerechnet)
     if (is_array($oWunschliste->CWunschlistePos_arr) && count($oWunschliste->CWunschlistePos_arr) > 0) {
         foreach ($oWunschliste->CWunschlistePos_arr as $oWunschlistePos) {
-            if (intval($_SESSION['Kundengruppe']->nNettoPreise) > 0) {
-                $fPreis = (isset($oWunschlistePos->Artikel->Preise->fVKNetto))
+            if ((int)$_SESSION['Kundengruppe']->nNettoPreise > 0) {
+                $fPreis = isset($oWunschlistePos->Artikel->Preise->fVKNetto)
                     ? (int)$oWunschlistePos->fAnzahl * $oWunschlistePos->Artikel->Preise->fVKNetto
                     : 0;
             } else {
-                $fPreis = (isset($oWunschlistePos->Artikel->Preise->fVKNetto))
+                $fPreis = isset($oWunschlistePos->Artikel->Preise->fVKNetto)
                     ? (int)$oWunschlistePos->fAnzahl *
                         (
                             $oWunschlistePos->Artikel->Preise->fVKNetto *
@@ -396,7 +396,7 @@ function bauecPreis($oWunschliste)
 function mappeWunschlisteMSG($nMSGCode)
 {
     $cMSG = '';
-    if (intval($nMSGCode) > 0) {
+    if ((int)$nMSGCode > 0) {
         switch ($nMSGCode) {
             case 1:
                 $cMSG = Shop::Lang()->get('basketAdded', 'messages');

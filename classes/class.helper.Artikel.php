@@ -185,7 +185,7 @@ class ArtikelHelper
         if (!$kKundengruppe) {
             $kKundengruppe = Kundengruppe::getDefaultGroupID();
         }
-        $cGroupBy = ($bGroupBy) ? "GROUP BY teigenschaftkombiwert.kEigenschaftWert" : '';
+        $cGroupBy = $bGroupBy ? "GROUP BY teigenschaftkombiwert.kEigenschaftWert" : '';
 
         return Shop::DB()->query(
             "SELECT teigenschaftkombiwert.*
@@ -255,7 +255,7 @@ class ArtikelHelper
                     $j++;
                 }
             }
-            $kSprache                     = (isset($_SESSION['kSprache']))
+            $kSprache                     = isset($_SESSION['kSprache'])
                 ? (int)$_SESSION['kSprache']
                 : Shop::getLanguage();
             $oSQLEigenschaft              = new stdClass();
@@ -276,23 +276,23 @@ class ArtikelHelper
                                                 AND teigenschaftwertsprache.kSprache = " . $kSprache;
             }
 
-            $oEigenschaft_arr = Shop::DB()->query("
-                SELECT teigenschaftwert.kEigenschaftWert, teigenschaftwert.cName, " . $oSQLEigenschaftWert->cSELECT . " 
-                teigenschaftwertsichtbarkeit.kKundengruppe, teigenschaftwert.kEigenschaft, teigenschaft.cTyp, " .
-                $oSQLEigenschaft->cSELECT . " teigenschaft.cName AS cNameEigenschaft, teigenschaft.kArtikel
-                FROM teigenschaftwert
-                LEFT JOIN teigenschaftwertsichtbarkeit 
-                    ON teigenschaftwertsichtbarkeit.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
-                    AND teigenschaftwertsichtbarkeit.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
-                JOIN teigenschaft ON teigenschaft.kEigenschaft = teigenschaftwert.kEigenschaft
-                LEFT JOIN teigenschaftsichtbarkeit ON teigenschaft.kEigenschaft = teigenschaftsichtbarkeit.kEigenschaft
-                    AND teigenschaftsichtbarkeit.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
-                " . $oSQLEigenschaft->cJOIN . "
-                " . $oSQLEigenschaftWert->cJOIN . "
-                WHERE teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL
-                    AND teigenschaftsichtbarkeit.kEigenschaft IS NULL
-                    AND teigenschaftwert.kEigenschaft IN (" . $cSQL1 . ")
-                    AND teigenschaftwert.kEigenschaftWert IN (" . $cSQL2 . ")", 2
+            $oEigenschaft_arr = Shop::DB()->query(
+                "SELECT teigenschaftwert.kEigenschaftWert, teigenschaftwert.cName, " . $oSQLEigenschaftWert->cSELECT . "
+                    teigenschaftwertsichtbarkeit.kKundengruppe, teigenschaftwert.kEigenschaft, teigenschaft.cTyp, " .
+                    $oSQLEigenschaft->cSELECT . " teigenschaft.cName AS cNameEigenschaft, teigenschaft.kArtikel
+                    FROM teigenschaftwert
+                    LEFT JOIN teigenschaftwertsichtbarkeit
+                        ON teigenschaftwertsichtbarkeit.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
+                        AND teigenschaftwertsichtbarkeit.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
+                    JOIN teigenschaft ON teigenschaft.kEigenschaft = teigenschaftwert.kEigenschaft
+                    LEFT JOIN teigenschaftsichtbarkeit ON teigenschaft.kEigenschaft = teigenschaftsichtbarkeit.kEigenschaft
+                        AND teigenschaftsichtbarkeit.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
+                    " . $oSQLEigenschaft->cJOIN . "
+                    " . $oSQLEigenschaftWert->cJOIN . "
+                    WHERE teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL
+                        AND teigenschaftsichtbarkeit.kEigenschaft IS NULL
+                        AND teigenschaftwert.kEigenschaft IN (" . $cSQL1 . ")
+                        AND teigenschaftwert.kEigenschaftWert IN (" . $cSQL2 . ")", 2
             );
 
             $oEigenschaftTMP_arr = Shop::DB()->query(
@@ -378,15 +378,13 @@ class ArtikelHelper
                 }
             }
 
-            if (!$nVorhanden) {
-                if (!isset($_SESSION['variBoxAnzahl_arr'])) {
-                    //redirekt zum artikel, weil variation nicht vorhanden
-                    header('Location: ' . Shop::getURL() .
-                        '/index.php?a=' . $kArtikel .
-                        '&n=' . (int)$_POST['anzahl'] .
-                        '&r=' . R_VARWAEHLEN, true, 301);
-                    exit();
-                }
+            if (!$nVorhanden && !isset($_SESSION['variBoxAnzahl_arr'])) {
+                //redirekt zum artikel, weil variation nicht vorhanden
+                header('Location: ' . Shop::getURL() .
+                    '/index.php?a=' . $kArtikel .
+                    '&n=' . (int)$_POST['anzahl'] .
+                    '&r=' . R_VARWAEHLEN, true, 301);
+                exit();
             }
         }
         // Wie beim Artikel die Variationen aufbauen
@@ -498,15 +496,13 @@ class ArtikelHelper
             }
         }
 
-        if (!$nVorhanden && $bRedirect) {
-            if (!isset($_SESSION['variBoxAnzahl_arr'])) {
-                //redirekt zum artikel, weil variation nicht vorhanden
-                header('Location: ' . Shop::getURL() .
-                    '/index.php?a=' . $kArtikel .
-                    '&n=' . (int)$_POST['anzahl'] .
-                    '&r=' . R_VARWAEHLEN, true, 302);
-                exit();
-            }
+        if (!$nVorhanden && $bRedirect && !isset($_SESSION['variBoxAnzahl_arr'])) {
+            //redirect zum artikel, weil variation nicht vorhanden
+            header('Location: ' . Shop::getURL() .
+                '/index.php?a=' . $kArtikel .
+                '&n=' . (int)$_POST['anzahl'] .
+                '&r=' . R_VARWAEHLEN, true, 302);
+            exit();
         }
 
         return $oProperties;
@@ -567,7 +563,7 @@ class ArtikelHelper
         if ($kArtikel > 0) {
             $oObj = Shop::DB()->select('tstueckliste', 'kArtikel', $kArtikel);
             if (isset($oObj->kStueckliste) && $oObj->kStueckliste > 0) {
-                return ($bInfo) ? $oObj : true;
+                return $bInfo ? $oObj : true;
             }
         }
 
@@ -628,5 +624,51 @@ class ArtikelHelper
 
             $artikel->cVorschaubild = $artikel->Bilder[0]->cPfadKlein;
         }
+    }
+
+    /**
+     * @param Artikel $artikel
+     * @param float $fPreis
+     * @param int $nAnzahl
+     * @return stdClass
+     */
+    public static function getBasePriceUnit(Artikel $artikel, $fPreis, $nAnzahl)
+    {
+        $unitMappings = [
+            'mg'  => 'kg',
+            'g'   => 'kg',
+            'mL'  => 'L',
+            'cm3' => 'L',
+            'cL'  => 'L',
+            'dL'  => 'L',
+        ];
+
+        $result = (object)[
+            'fGrundpreisMenge'   => $artikel->fGrundpreisMenge,
+            'fMassMenge'         => $artikel->fMassMenge * $nAnzahl,
+            'fBasePreis'         => $fPreis / $artikel->fVPEWert,
+            'fVPEWert'           => (float)$artikel->fVPEWert,
+            'cVPEEinheit'        => $artikel->cVPEEinheit,
+        ];
+
+        $gpUnit   = UnitsOfMeasure::getUnit($artikel->kGrundpreisEinheit);
+        $massUnit = UnitsOfMeasure::getUnit($artikel->kMassEinheit);
+
+        if (isset($gpUnit, $massUnit, $unitMappings[$gpUnit->cCode], $unitMappings[$massUnit->cCode])) {
+            $fFactor    = UnitsOfMeasure::getConversionFaktor($unitMappings[$massUnit->cCode], $massUnit->cCode);
+            $threshold  = 250 * $fFactor / 1000;
+            $nAmount    = 1;
+            $mappedCode = $unitMappings[$massUnit->cCode];
+
+            if ($threshold > 0 && $result->fMassMenge > $threshold) {
+                $result->fGrundpreisMenge = $nAmount;
+                $result->fMassMenge       /= $fFactor;
+                $result->fVPEWert         = $result->fMassMenge / $nAnzahl / $result->fGrundpreisMenge;
+                $result->fBasePreis       = $fPreis / $result->fVPEWert;
+                $result->cVPEEinheit      = $result->fGrundpreisMenge . ' ' . UnitsOfMeasure::getPrintAbbreviation($mappedCode);
+            }
+        }
+
+        return $result;
     }
 }

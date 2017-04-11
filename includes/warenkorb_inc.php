@@ -4,6 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';
+
 /**
  * @param array $nPos_arr
  * @return null|void
@@ -61,6 +62,7 @@ function loescheWarenkorbPositionen($nPos_arr)
         unset($_SESSION['Kupon']);
         $_SESSION['Warenkorb'] = new Warenkorb();
     }
+    require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';
     freeGiftStillValid();
     // Lösche Position aus dem WarenkorbPersPos
     if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']->kKunde > 0) {
@@ -84,9 +86,8 @@ function loescheWarenkorbPosition($nPos)
  */
 function uebernehmeWarenkorbAenderungen()
 {
-    /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
-    unset($_SESSION['cPlausi_arr']);
-    unset($_SESSION['cPost_arr']);
+    /** @var array('Warenkorb' => Warenkorb) $_SESSION */
+    unset($_SESSION['cPlausi_arr'], $_SESSION['cPost_arr']);
     // Gratis Geschenk wurde hinzugefuegt
     if (isset($_POST['gratishinzufuegen'])) {
         return;
@@ -102,6 +103,7 @@ function uebernehmeWarenkorbAenderungen()
     }
     if ($drop !== null) {
         loescheWarenkorbPosition($drop);
+        freeGiftStillValid();
         if ($post) {
             //prg
             $linkHelper = LinkHelper::getInstance();
@@ -134,7 +136,7 @@ function uebernehmeWarenkorbAenderungen()
 
                 $_POST['anzahl'][$i] = str_replace(',', '.', $_POST['anzahl'][$i]);
 
-                if (intval($_POST['anzahl'][$i]) != $_POST['anzahl'][$i] && $Artikel->cTeilbar !== 'Y') {
+                if ((int)$_POST['anzahl'][$i] != $_POST['anzahl'][$i] && $Artikel->cTeilbar !== 'Y') {
                     $_POST['anzahl'][$i] = min((int)$_POST['anzahl'][$i], 1);
                 }
                 $gueltig = true;
@@ -157,7 +159,7 @@ function uebernehmeWarenkorbAenderungen()
                         $_SESSION['Warenkorbhinweise'][] = Shop::Lang()->get('wkPurchaseintervall', 'messages');
                     }
                 }
-                if (floatval($_POST['anzahl'][$i]) + $_SESSION['Warenkorb']->gibAnzahlEinesArtikels(
+                if ((float)$_POST['anzahl'][$i] + $_SESSION['Warenkorb']->gibAnzahlEinesArtikels(
                     $_SESSION['Warenkorb']->PositionenArr[$i]->kArtikel,
                     $i
                 ) < $_SESSION['Warenkorb']->PositionenArr[$i]->Artikel->fMindestbestellmenge) {
@@ -165,13 +167,13 @@ function uebernehmeWarenkorbAenderungen()
                     $gueltig                         = false;
                     $_SESSION['Warenkorbhinweise'][] = lang_mindestbestellmenge(
                         $_SESSION['Warenkorb']->PositionenArr[$i]->Artikel,
-                        floatval($_POST['anzahl'][$i])
+                        (float)$_POST['anzahl'][$i]
                     );
                 }
                 //hole akt. lagerbestand vom artikel
                 if ($Artikel->cLagerBeachten === 'Y' && $Artikel->cLagerVariation !== 'Y' &&
                     $Artikel->cLagerKleinerNull !== 'Y' &&
-                    $Artikel->fPackeinheit * (floatval($_POST['anzahl'][$i]) + $_SESSION['Warenkorb']->gibAnzahlEinesArtikels(
+                    $Artikel->fPackeinheit * ((float)$_POST['anzahl'][$i] + $_SESSION['Warenkorb']->gibAnzahlEinesArtikels(
                         $_SESSION['Warenkorb']->PositionenArr[$i]->kArtikel,
                         $i
                     )
@@ -195,7 +197,7 @@ function uebernehmeWarenkorbAenderungen()
                 ) {
                     foreach ($_SESSION['Warenkorb']->PositionenArr[$i]->WarenkorbPosEigenschaftArr as $eWert) {
                         $EigenschaftWert = new EigenschaftWert($eWert->kEigenschaftWert);
-                        if ($EigenschaftWert->fPackeinheit * (floatval($_POST['anzahl'][$i]) + $_SESSION['Warenkorb']->gibAnzahlEinerVariation(
+                        if ($EigenschaftWert->fPackeinheit * ((float)$_POST['anzahl'][$i] + $_SESSION['Warenkorb']->gibAnzahlEinerVariation(
                             $_SESSION['Warenkorb']->PositionenArr[$i]->kArtikel,
                             $eWert->kEigenschaftWert,
                             $i
@@ -214,7 +216,7 @@ function uebernehmeWarenkorbAenderungen()
                 }
 
                 if ($gueltig) {
-                    $_SESSION['Warenkorb']->PositionenArr[$i]->nAnzahl = floatval($_POST['anzahl'][$i]);
+                    $_SESSION['Warenkorb']->PositionenArr[$i]->nAnzahl = (float)$_POST['anzahl'][$i];
                     $_SESSION['Warenkorb']->PositionenArr[$i]->fPreis  = $Artikel->gibPreis(
                         $_SESSION['Warenkorb']->PositionenArr[$i]->nAnzahl,
                         $_SESSION['Warenkorb']->PositionenArr[$i]->WarenkorbPosEigenschaftArr
@@ -275,6 +277,7 @@ function uebernehmeWarenkorbAenderungen()
                 }
             }
         }
+        plausiNeukundenKupon();
     }
     $_SESSION['Warenkorb']->setzePositionsPreise();
     // Gesamtsumme Warenkorb < Gratisgeschenk && Gratisgeschenk in den Pos?
@@ -307,7 +310,7 @@ function uebernehmeWarenkorbAenderungen()
 function checkeSchnellkauf()
 {
     $hinweis = '';
-    if (isset($_POST['schnellkauf']) && intval($_POST['schnellkauf']) > 0 && !empty($_POST['ean'])) {
+    if (isset($_POST['schnellkauf']) && (int)$_POST['schnellkauf'] > 0 && !empty($_POST['ean'])) {
         $hinweis = Shop::Lang()->get('eanNotExist', 'global') . ' ' .
             StringHandler::htmlentities(StringHandler::filterXSS($_POST['ean']));
         //gibts artikel mit dieser artnr?
@@ -327,7 +330,7 @@ function checkeSchnellkauf()
             $oArtikel = new Artikel();
             $oArtikel->fuelleArtikel($artikel->kArtikel, Artikel::getDefaultOptions());
 
-            if (isset($oArtikel->kArtikel) && $oArtikel->kArtikel > 0 && fuegeEinInWarenkorb(
+            if ($oArtikel->kArtikel > 0 && fuegeEinInWarenkorb(
                 $artikel->kArtikel,
                 1,
                 ArtikelHelper::getSelectedPropertiesForArticle($artikel->kArtikel)
@@ -356,12 +359,14 @@ function loescheAlleSpezialPos()
                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERPACKUNG)
                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_TRUSTEDSHOPS)
                           ->checkIfCouponIsStillValid();
-    unset($_SESSION['Versandart']);
-    unset($_SESSION['VersandKupon']);
-    unset($_SESSION['oVersandfreiKupon']);
-    unset($_SESSION['Verpackungen']);
-    unset($_SESSION['TrustedShops']);
-    unset($_SESSION['Zahlungsart']);
+    unset(
+        $_SESSION['Versandart'],
+        $_SESSION['VersandKupon'],
+        $_SESSION['oVersandfreiKupon'],
+        $_SESSION['Verpackungen'],
+        $_SESSION['TrustedShops'],
+        $_SESSION['Zahlungsart']
+    );
     resetNeuKundenKupon();
     altenKuponNeuBerechnen();
 
@@ -458,12 +463,12 @@ function gibGratisGeschenke($Einstellungen)
             foreach ($oArtikelGeschenkeTMP_arr as $i => $oArtikelGeschenkeTMP) {
                 $oArtikel = new Artikel();
                 $oArtikel->fuelleArtikel($oArtikelGeschenkeTMP->kArtikel, Artikel::getDefaultOptions());
-                $oArtikel->cBestellwert = gibPreisStringLocalized(doubleval($oArtikelGeschenkeTMP->cWert));
+                $oArtikel->cBestellwert = gibPreisStringLocalized((float)$oArtikelGeschenkeTMP->cWert);
 
-                if (($oArtikel->kEigenschaftKombi > 0 ||
+                if ($oArtikel->kArtikel > 0 &&
+                    ($oArtikel->kEigenschaftKombi > 0 ||
                         !is_array($oArtikel->Variationen) ||
-                        count($oArtikel->Variationen) === 0) &&
-                    $oArtikel->kArtikel > 0
+                        count($oArtikel->Variationen) === 0)
                 ) {
                     $oArtikelGeschenke_arr[] = $oArtikel;
                 }

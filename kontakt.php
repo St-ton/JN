@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/globalinclude.php';
+require_once __DIR__ . '/includes/globalinclude.php';
 $session = Session::getInstance();
 require_once PFAD_ROOT . PFAD_INCLUDES . 'kontakt_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
@@ -21,12 +21,10 @@ $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 $startKat             = new Kategorie();
 $startKat->kKategorie = 0;
 $cCanonicalURL        = '';
-// SSL?
-pruefeHttps();
 if (pruefeBetreffVorhanden()) {
     $step            = 'formular';
     $fehlendeAngaben = [];
-    if (isset($_POST['kontakt']) && intval($_POST['kontakt']) === 1) {
+    if (isset($_POST['kontakt']) && (int)$_POST['kontakt'] === 1) {
         $fehlendeAngaben = gibFehlendeEingabenKontaktformular();
         $kKundengruppe   = Kundengruppe::getCurrent();
         // CheckBox Plausi
@@ -73,7 +71,7 @@ if (pruefeBetreffVorhanden()) {
         "SELECT *
             FROM tkontaktbetreff
             WHERE (cKundengruppen = 0
-            OR cKundengruppen LIKE '" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";') 
+            OR cKundengruppen RLIKE '^([0-9;]*;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";') 
             ORDER BY nSort", 2
     );
     $bCount = count($betreffs);
@@ -101,7 +99,7 @@ if (pruefeBetreffVorhanden()) {
     $smarty->assign('step', $step)
            ->assign('code', generiereCaptchaCode($Einstellungen['kontakt']['kontakt_abfragen_captcha']))
            ->assign('betreffs', $betreffs)
-           ->assign('hinweis', (isset($hinweis)) ? $hinweis : null)
+           ->assign('hinweis', isset($hinweis) ? $hinweis : null)
            ->assign('Vorgaben', $Vorgaben)
            ->assign('fehlendeAngaben', $fehlendeAngaben)
            ->assign('nAnzeigeOrt', CHECKBOX_ORT_KONTAKT);
@@ -114,7 +112,7 @@ if (pruefeBetreffVorhanden()) {
 
 $smarty->assign('Navigation', createNavigation($AktuelleSeite))
        ->assign('Spezialcontent', $SpezialContent)
-       ->assign('requestURL', (isset($requestURL)) ? $requestURL : null)
+       ->assign('requestURL', isset($requestURL) ? $requestURL : null)
        ->assign('Einstellungen', $Einstellungen);
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';

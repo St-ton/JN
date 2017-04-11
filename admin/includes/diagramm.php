@@ -4,14 +4,14 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 $bExtern = true;
-require_once dirname(__FILE__) . '/admininclude.php';
+require_once __DIR__ . '/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'benutzerverwaltung_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'admininclude.php';
 require_once PFAD_ROOT . PFAD_GRAPHCLASS . 'graph.php';
 
 //### Prüfung welcher Graph angezeigt werden soll
 if (isset($_SESSION['nDiagrammTyp'])) {
-    switch (intval($_SESSION['nDiagrammTyp'])) {
+    switch ((int)$_SESSION['nDiagrammTyp']) {
         case 1: // Umsatz - Jahr
             erstelleUmsatzGraph($_SESSION['oY1_arr'], $_SESSION['oY2_arr'], $_SESSION['nYmax'], 1);
             break;
@@ -52,14 +52,14 @@ function erstelleUmsatzGraph($oY1_arr, $oY2_arr, $nYmax, $nDiagrammTyp)
         $CGraph->parameter['shadow']            = 'none';
         $CGraph->parameter['title']             = 'Umsatzstatistik';
         $CGraph->parameter['x_label']           = 'Monate';
-        $CGraph->x_data                         = array('Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember');
-        $CGraph->y_data['alpha']                = array();
-        $CGraph->y_data['beta']                 = array();
+        $CGraph->x_data                         = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
+        $CGraph->y_data['alpha']                = [];
+        $CGraph->y_data['beta']                 = [];
 
         // Monatsumsatz?
         if ($nDiagrammTyp == 2) {
             $CGraph->parameter['x_label'] = 'Tage';
-            $CGraph->x_data               = array();
+            $CGraph->x_data               = [];
 
             for ($i = 1; $i <= 31; $i++) {
                 $CGraph->x_data[] = $i;
@@ -71,7 +71,7 @@ function erstelleUmsatzGraph($oY1_arr, $oY2_arr, $nYmax, $nDiagrammTyp)
             $tmpUmsatz = 0;
 
             foreach ($oY1_arr as $oY1) {
-                if (intval($oY1->ZeitWert) === ($i + 1)) {
+                if ((int)$oY1->ZeitWert === ($i + 1)) {
                     $tmpUmsatz = $oY1->Umsatz;
                 }
             }
@@ -83,7 +83,7 @@ function erstelleUmsatzGraph($oY1_arr, $oY2_arr, $nYmax, $nDiagrammTyp)
             $tmpUmsatz = 0;
 
             foreach ($oY2_arr as $oY2) {
-                if (intval($oY2->ZeitWert) === $i + 1) {
+                if ((int)$oY2->ZeitWert === $i + 1) {
                     $tmpUmsatz = $oY2->Umsatz;
                 }
             }
@@ -92,10 +92,10 @@ function erstelleUmsatzGraph($oY1_arr, $oY2_arr, $nYmax, $nDiagrammTyp)
         }
 
         if (count($CGraph->y_data['alpha']) > 1 && count($CGraph->y_data['beta']) > 1 && count($CGraph->x_data) > 1) {
-            $CGraph->y_format['alpha'] = array('colour' => 'blue', 'bar' => 'fill', 'bar_size' => 0.8, 'y_axis' => 'right');
-            $CGraph->y_format['beta']  = array('colour' => 'red', 'bar' => 'fill', 'bar_size' => 0.3, 'y_axis' => 'right');
+            $CGraph->y_format['alpha'] = ['colour' => 'blue', 'bar' => 'fill', 'bar_size' => 0.8, 'y_axis' => 'right'];
+            $CGraph->y_format['beta']  = ['colour' => 'red', 'bar' => 'fill', 'bar_size' => 0.3, 'y_axis' => 'right'];
 
-            $CGraph->y_order = array('alpha', 'beta');
+            $CGraph->y_order = ['alpha', 'beta'];
 
             $CGraph->draw_stack();
         }
@@ -123,8 +123,8 @@ function erstelleTop10Graph($oGraphData_arr, $nYmax, $cGraphFilter)
         $CGraph->parameter['shadow']            = 'none';
         $CGraph->parameter['title']             = 'Top10 ' . $cGraphFilter;
         $CGraph->parameter['x_label']           = $cGraphFilter;
-        $CGraph->x_data                         = array();
-        $CGraph->y_data['alpha']                = array();
+        $CGraph->x_data                         = [];
+        $CGraph->y_data['alpha']                = [];
 
         if (count($oGraphData_arr) > 0) {
             // Array sortieren
@@ -143,8 +143,8 @@ function erstelleTop10Graph($oGraphData_arr, $nYmax, $cGraphFilter)
         }
 
         if (count($CGraph->x_data) > 1 && count($CGraph->y_data['alpha']) > 1) {
-            $CGraph->y_format['alpha'] = array('colour' => 'blue', 'bar' => 'fill', 'bar_size' => 0.8, 'y_axis' => 'right');
-            $CGraph->y_order           = array('alpha');
+            $CGraph->y_format['alpha'] = ['colour' => 'blue', 'bar' => 'fill', 'bar_size' => 0.8, 'y_axis' => 'right'];
+            $CGraph->y_order           = ['alpha'];
 
             $CGraph->draw_stack();
         }
@@ -172,8 +172,8 @@ function erstelleTopVergleichslisteGraph($oGraphData_arr, $nYmax, $nAnzahl)
         $CGraph->parameter['shadow']            = 'none';
         $CGraph->parameter['title']             = 'Top' . $nAnzahl . ' Artikel die verglichen wurden';
         $CGraph->parameter['x_label']           = 'Artikel';
-        $CGraph->x_data                         = array();
-        $CGraph->y_data['alpha']                = array();
+        $CGraph->x_data                         = [];
+        $CGraph->y_data['alpha']                = [];
 
         foreach ($oGraphData_arr as $oGraphData) {
             $CGraph->x_data[]          = $oGraphData->cArtikelName;
@@ -181,8 +181,8 @@ function erstelleTopVergleichslisteGraph($oGraphData_arr, $nYmax, $nAnzahl)
         }
 
         if (count($CGraph->x_data) > 1 && count($CGraph->y_data['alpha']) > 1) {
-            $CGraph->y_format['alpha'] = array('colour' => 'blue', 'bar' => 'fill', 'bar_size' => 0.8, 'y_axis' => 'right');
-            $CGraph->y_order           = array('alpha');
+            $CGraph->y_format['alpha'] = ['colour' => 'blue', 'bar' => 'fill', 'bar_size' => 0.8, 'y_axis' => 'right'];
+            $CGraph->y_order           = ['alpha'];
 
             $CGraph->draw_stack();
         }
@@ -202,13 +202,13 @@ function erstelleKampagneDetailGraph($oKampagneDetailGraph, $kKampagneDef)
     $CGraph->parameter['x_grid']            = 'none';
     $CGraph->parameter['y_decimal_right']   = 2;
     $CGraph->parameter['y_min_right']       = 0;
-    $CGraph->parameter['y_max_right']       = ceil(intval($oKampagneDetailGraph->nGraphMaxAssoc_arr[$kKampagneDef]) * 1.1);
+    $CGraph->parameter['y_max_right']       = ceil((int)$oKampagneDetailGraph->nGraphMaxAssoc_arr[$kKampagneDef] * 1.1);
     $CGraph->parameter['y_axis_gridlines']  = 11;
     $CGraph->parameter['y_axis_text_right'] = 2;  //print a tick every 2nd grid line
     $CGraph->parameter['shadow']            = 'none';
     $CGraph->parameter['title']             = $oKampagneDetailGraph->oKampagneDef_arr[$kKampagneDef]->cName;
-    $CGraph->x_data                         = array();
-    $CGraph->y_data['alpha']                = array();
+    $CGraph->x_data                         = [];
+    $CGraph->y_data['alpha']                = [];
 
     if (is_array($oKampagneDetailGraph->oKampagneDetailGraph_arr) && count($oKampagneDetailGraph->oKampagneDetailGraph_arr) > 0) {
         foreach ($oKampagneDetailGraph->oKampagneDetailGraph_arr as $oKampagneDetailGraphDef_arr) {
@@ -218,8 +218,8 @@ function erstelleKampagneDetailGraph($oKampagneDetailGraph, $kKampagneDef)
     }
     // Balken 1 (Umsatz pro Monat) Werte Array aufbauen
     if (count($CGraph->y_data['alpha']) > 1 && count($CGraph->x_data) > 1) {
-        $CGraph->y_format['alpha'] = array('colour' => 'blue', 'bar' => 'fill', 'bar_size' => 0.8, 'y_axis' => 'right');
-        $CGraph->y_order           = array('alpha');
+        $CGraph->y_format['alpha'] = ['colour' => 'blue', 'bar' => 'fill', 'bar_size' => 0.8, 'y_axis' => 'right'];
+        $CGraph->y_order           = ['alpha'];
         $CGraph->draw_stack();
     }
 }

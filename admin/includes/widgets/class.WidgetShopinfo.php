@@ -20,7 +20,7 @@ class WidgetShopinfo extends WidgetBase
         $nVersionFile    = Shop::getVersion();
         $nVersionDB      = getJTLVersionDB();
         $oTpl            = Template::getInstance();
-        $nTplVersion     = intval($oTpl->getShopVersion());
+        $nTplVersion     = (int)$oTpl->getShopVersion();
         $strFileVersion  = sprintf('%.2f', $nVersionFile / 100);
         $strDBVersion    = sprintf('%.2f', $nVersionDB / 100);
         $strTplVersion   = sprintf('%.2f', $nTplVersion / 100);
@@ -38,7 +38,7 @@ class WidgetShopinfo extends WidgetBase
 
         if (isset($oSubscription->kShop) && $oSubscription->kShop > 0) {
             // Läuft bald ab?
-            if (intval($oSubscription->bUpdate) === 1) {
+            if ((int)$oSubscription->bUpdate === 1) {
                 $oSubscription->cUpdate = 'http://jtl-url.de/subscription';
             }
             // Caching

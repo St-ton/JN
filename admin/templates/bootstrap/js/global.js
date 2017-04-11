@@ -155,24 +155,30 @@ function get_list_callback(type, id) {
  * @param callback
  */
 function init_simple_search(callback) {
-    var search,
-        type,
+    var type,
         res,
         selected,
-        browser = $('.single_search_browser');
-    browser.find('input').keyup(function () {
-        search = $(this).val();
-        type = browser.attr('type');
-        browser.find('select').empty();
-        simple_search_list(type, search, function (result) {
-            $(result).each(function (k, v) {
-                browser.find('select').append(
-                    $('<option></option>').attr('primary', v.kPrimary).attr('url', v.cUrl).val(v.kPrimary).html(v.cName).dblclick(function () {
-                        browser.find('.button.add').trigger('click');
-                    })
-                );
+        browser = $('.single_search_browser'),
+        typingTimeout;
+    browser.find('input').keyup(function (evnt) {
+        // reset the timer, if another key-up-event was arised
+        clearTimeout(typingTimeout);
+        // we only fire a search-request,
+        // if three quarter of a second are elapsed without a key-up-event
+        typingTimeout = setTimeout(function() {
+            search = browser.find('input').val();
+            type = browser.attr('type');
+            browser.find('select').empty();
+            simple_search_list(type, search, function (result) {
+                $(result).each(function (k, v) {
+                    browser.find('select').append(
+                        $('<option></option>').attr('primary', v.kPrimary).attr('url', v.cUrl).val(v.kPrimary).html(v.cName).dblclick(function () {
+                            browser.find('.button.add').trigger('click');
+                        })
+                    );
+                });
             });
-        });
+        }, 750);
     });
 
     browser.find('.button.remove').click(function () {
@@ -217,7 +223,12 @@ function show_simple_search(type) {
 function simple_search_list(type, search, callback) {
     var myCallback = xajax.callback.create(),
         cb;
+    myCallback.onRequest = function (obj) {
+        // irform the user about the "search-in-progress"
+        $('#loaderimg').css('visibility', 'visible');
+    }
     myCallback.onComplete = function (obj) {
+        $('#loaderimg').css('visibility', 'hidden');
         callback(obj.context.search_arr);
     };
 
@@ -535,10 +546,21 @@ function reloadFavs() {
     });
 }
 
+function switchCouponTooltipVisibility() {
+    $('#cWertTyp').change(function() {
+        if($(this).val() === 'prozent') {
+            $('#fWertTooltip').parent().show();
+        } else {
+            $('#fWertTooltip').parent().hide();
+        }
+    });
+}
+
 /**
  * document ready
  */
 $(document).ready(function () {
+    switchCouponTooltipVisibility();
     $('#show_article_list').set_search('article', '#assign_article_list');
     $('#show_manufacturer_list').set_search('manufacturer', '#assign_manufacturer_list');
     $('#show_categories_list').set_search('categories', '#assign_categories_list');

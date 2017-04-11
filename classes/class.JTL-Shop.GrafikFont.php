@@ -233,7 +233,7 @@ class GrafikFont
                     }
                     break;
             }
-            if (is_file($this->m_strFontDir . $strFileName) && $bMakeHTML) {
+            if ($bMakeHTML && is_file($this->m_strFontDir . $strFileName)) {
                 $strHTML .= '<img style="border:none; margin-right:0px;" src="' . $this->m_strFontDir . $strFileName . '" alt="' . $c . '" />';
             }
 

@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/globalinclude.php';
+require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 /** @global JTLSmarty $smarty */
@@ -12,9 +12,7 @@ $AktuelleSeite                   = 'PASSWORT VERGESSEN';
 Shop::$AktuelleSeite             = 'PASSWORT VERGESSEN';
 $Einstellungen                   = Shop::getSettings([CONF_GLOBAL, CONF_RSS]);
 $GLOBALS['GlobaleEinstellungen'] = array_merge($GLOBALS['GlobaleEinstellungen'], $Einstellungen);
-
-pruefeHttps();
-$linkHelper = LinkHelper::getInstance();
+$linkHelper                      = LinkHelper::getInstance();
 $kLink      = $linkHelper->getSpecialPageLinkKey(LINKTYP_PASSWORD_VERGESSEN);
 //hole alle OberKategorien
 $AktuelleKategorie      = new Kategorie(verifyGPCDataInteger('kategorie'));
@@ -26,7 +24,7 @@ $step                 = 'formular';
 $hinweis              = '';
 $cFehler              = '';
 //loginbenutzer?
-if (isset($_POST['passwort_vergessen']) && (int)$_POST['passwort_vergessen'] === 1 && isset($_POST['email'])) {
+if (isset($_POST['passwort_vergessen'], $_POST['email']) && (int)$_POST['passwort_vergessen'] === 1) {
     $kunde = Shop::DB()->select(
         'tkunde',
         'cMail',
@@ -49,7 +47,7 @@ if (isset($_POST['passwort_vergessen']) && (int)$_POST['passwort_vergessen'] ===
     } else {
         $hinweis = Shop::Lang()->get('incorrectEmail', 'global');
     }
-} elseif (isset($_POST['pw_new']) && isset($_POST['pw_new_confirm']) && isset($_POST['fpm']) && isset($_POST['fpwh'])) {
+} elseif (isset($_POST['pw_new'], $_POST['pw_new_confirm'], $_POST['fpm'], $_POST['fpwh'])) {
     if ($_POST['pw_new'] === $_POST['pw_new_confirm']) {
         $kunde = Shop::DB()->select(
             'tkunde',
@@ -80,7 +78,7 @@ if (isset($_POST['passwort_vergessen']) && (int)$_POST['passwort_vergessen'] ===
     $step = 'confirm';
     $smarty->assign('fpwh', $_POST['fpwh'])
            ->assign('fpm', $_POST['fpm']);
-} elseif (isset($_GET['fpwh']) && isset($_GET['mail'])) {
+} elseif (isset($_GET['fpwh'], $_GET['mail'])) {
     $smarty->assign('fpwh', $_GET['fpwh'])
            ->assign('fpm', $_GET['mail']);
     $step = 'confirm';
@@ -95,7 +93,7 @@ $smarty->assign('step', $step)
        ->assign('hinweis', $hinweis)
        ->assign('cFehler', $cFehler)
        ->assign('Navigation', createNavigation($AktuelleSeite))
-       ->assign('requestURL', (isset($requestURL)) ? $requestURL : null)
+       ->assign('requestURL', isset($requestURL) ? $requestURL : null)
        ->assign('Einstellungen', $GLOBALS['GlobaleEinstellungen']);
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';

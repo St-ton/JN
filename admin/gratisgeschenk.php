@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/admininclude.php';
+require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('MODULE_GIFT_VIEW', true, true);
 /** @global JTLSmarty $smarty */
@@ -44,7 +44,7 @@ for ($i = 0; $i < $configCount; $i++) {
         'cName',
         $oConfig_arr[$i]->cWertName
     );
-    $oConfig_arr[$i]->gesetzterWert = (isset($oSetValue->cWert))
+    $oConfig_arr[$i]->gesetzterWert = isset($oSetValue->cWert)
         ? $oSetValue->cWert
         : null;
 }

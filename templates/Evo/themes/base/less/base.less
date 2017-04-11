@@ -731,6 +731,60 @@ ul.filter_state li a.active:before {
     opacity: 0.9;
 }
 
+[data-touchcapable="false"] .gallery .product-cell {
+    @media (min-width: @screen-md-min) {
+        .expandable {
+            display: none;
+        }
+
+        .image-box {
+            transition: 0.5s;
+        }
+
+        .quickview.badge {
+            position: absolute;
+            top: @input-height-large;
+            left: 50%;
+            width: 40%;
+            margin-left: -20%;
+            transition: 0.5s;
+            padding: 1em;
+            border-radius: @border-radius-small;
+            background-color: @body-bg;
+            color: @text-color;
+            border: 1px solid @btn-default-border;
+            opacity: 0;
+        }
+
+        &:hover, &.active {
+            left: -5%;
+            top: -5%;
+            height: auto !important;
+            width: 110%;
+            position: absolute;
+            z-index: @zindex-navbar - 10;
+            .box-shadow(0 0 @margin-base rgba(0, 0, 0, 0.45));
+
+            .expandable {
+                display: block;
+            }
+
+            .quickview.badge {
+                opacity: 1;
+            }
+
+            .image-box {
+                opacity: 0.5;
+                max-height: 100% !important;
+
+                img {
+                    max-height: 100% !important;
+                }
+            }
+        }
+    }
+}
+
 /* Fix issue # 248 */
 .price_img img {
     display: inline !important;

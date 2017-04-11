@@ -181,6 +181,9 @@
             $('.row-eq-height').each(function(i, e) {
                 $(e).children('[class*="col-"]').children().responsiveEqualHeightGrid();
             });
+            $('.row-eq-height [class*="col-"]').each(function(i, e) {
+                $(e).height($('div', $(e)).outerHeight());
+            });
         },
         
         tooltips: function() {

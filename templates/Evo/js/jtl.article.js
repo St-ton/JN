@@ -173,7 +173,7 @@
                     });
                 });
 
-            if ("ontouchstart" in document.documentElement) {
+            if (isTouchCapable()) {
                 $('.variations .swatches .variation', $wrapper)
                     .on('mouseover', function() {
                         $(this).trigger('click');
@@ -193,7 +193,7 @@
 
         registerArticleOverlay: function($wrapper) {
             console.log('registerArticleOverlay(' + $wrapper.attr('id') + ')');
-            var that = this;
+            var that         = this;
 
             $('.quickview', $wrapper)
                 .each(function(i, item) {
@@ -288,8 +288,7 @@
                     }
                 });
 
-            var touchCapable = 'ontouchstart' in window || (window.DocumentTouch && document instanceof window.DocumentTouch);
-            if (!touchCapable || ResponsiveBootstrapToolkit.current() !== 'xs') {
+            if (!isTouchCapable() || ResponsiveBootstrapToolkit.current() !== 'xs') {
                 $('.variations .bootstrap-select .dropdown-menu li', $wrapper)
                     .hover(function () {
                         var tmp_idx = parseInt($(this).attr('data-original-index')) + 1,
@@ -322,7 +321,7 @@
                     imgSwitch(this, false);
                 });
 
-            if (!touchCapable || ResponsiveBootstrapToolkit.current() !== 'xs') {
+            if (!isTouchCapable() || ResponsiveBootstrapToolkit.current() !== 'xs') {
                 $('.variations .variation', $wrapper)
                     .hover(function () {
                         imgSwitch(this);

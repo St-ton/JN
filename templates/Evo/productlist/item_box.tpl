@@ -69,72 +69,74 @@
                 {/if}
             </div>
         {/block}
-        {hasOnlyListableVariations artikel=$Artikel assign="hasOnlyListableVariations"}
-        {if $hasOnlyListableVariations > 0 && !$Artikel->bHasKonfig}
-            <div class="hidden-xs basket-variations">
-                {assign var="singleVariation" value=true}
-                {include file="productdetails/variation.tpl" simple=$Artikel->isSimpleVariation showMatrix=false smallView=true ohneFreifeld=($hasOnlyListableVariations == 2)}
-            </div>
-        {/if}
-        <div class="hidden-xs">
-            {block name="productlist-add-basket"}
-            {if ($Artikel->inWarenkorbLegbar === 1 || ($Artikel->nErscheinendesProdukt === 1 && $Einstellungen.global.global_erscheinende_kaeuflich === 'Y')) &&
-                (($Artikel->nIstVater === 0 && $Artikel->Variationen|@count === 0) || $hasOnlyListableVariations === 1) && !$Artikel->bHasKonfig
-            }
-                <div class="quantity-wrapper form-group top7">
-                    <div class="input-group input-group-sm">
-                        <input type="number" min="0"
-                               {if $Artikel->fAbnahmeintervall > 0}step="{$Artikel->fAbnahmeintervall}"{/if} size="2"
-                               id="quantity{$Artikel->kArtikel}" class="quantity form-control text-right" name="anzahl"
-                               autocomplete="off"
-                               value="{if $Artikel->fAbnahmeintervall > 0}{if $Artikel->fMindestbestellmenge > $Artikel->fAbnahmeintervall}{$Artikel->fMindestbestellmenge}{else}{$Artikel->fAbnahmeintervall}{/if}{else}1{/if}">
-
-                        <span class="change_quantity input-group-btn">
-                            <button type="submit" class="btn btn-default" id="submit{$Artikel->kArtikel}"
-                                    title="{lang key="addToCart" section="global"}">
-                                <span class="fa fa-shopping-cart"></span>
-                                <span class="hidden-md"> {lang key="addToCart" section="global"}</span>
-                            </button>
-                        </span>
-                    </div>
-                </div>
-            {else}
-                <div class="top7 form-group">
-                    <a class="btn btn-default btn-sm btn-block" role="button" href="{$Artikel->cURL}">{lang key="details"}</a>
+        <div class="expandable">
+            {hasOnlyListableVariations artikel=$Artikel assign="hasOnlyListableVariations"}
+            {if $hasOnlyListableVariations > 0 && !$Artikel->bHasKonfig}
+                <div class="hidden-xs basket-variations">
+                    {assign var="singleVariation" value=true}
+                    {include file="productdetails/variation.tpl" simple=$Artikel->isSimpleVariation showMatrix=false smallView=true ohneFreifeld=($hasOnlyListableVariations == 2)}
                 </div>
             {/if}
-            {/block}
+            <div class="hidden-xs">
+                {block name="productlist-add-basket"}
+                {if ($Artikel->inWarenkorbLegbar === 1 || ($Artikel->nErscheinendesProdukt === 1 && $Einstellungen.global.global_erscheinende_kaeuflich === 'Y')) &&
+                    (($Artikel->nIstVater === 0 && $Artikel->Variationen|@count === 0) || $hasOnlyListableVariations === 1) && !$Artikel->bHasKonfig
+                }
+                    <div class="quantity-wrapper form-group top7">
+                        <div class="input-group input-group-sm">
+                            <input type="number" min="0"
+                                   {if $Artikel->fAbnahmeintervall > 0}step="{$Artikel->fAbnahmeintervall}"{/if} size="2"
+                                   id="quantity{$Artikel->kArtikel}" class="quantity form-control text-right" name="anzahl"
+                                   autocomplete="off"
+                                   value="{if $Artikel->fAbnahmeintervall > 0}{if $Artikel->fMindestbestellmenge > $Artikel->fAbnahmeintervall}{$Artikel->fMindestbestellmenge}{else}{$Artikel->fAbnahmeintervall}{/if}{else}1{/if}">
+
+                            <span class="change_quantity input-group-btn">
+                                <button type="submit" class="btn btn-default" id="submit{$Artikel->kArtikel}"
+                                        title="{lang key="addToCart" section="global"}">
+                                    <span class="fa fa-shopping-cart"></span>
+                                    <span class="hidden-md"> {lang key="addToCart" section="global"}</span>
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                {else}
+                    <div class="top7 form-group">
+                        <a class="btn btn-default btn-sm btn-block" role="button" href="{$Artikel->cURL}">{lang key="details"}</a>
+                    </div>
+                {/if}
+                {/block}
+            </div>
+
+            <input type="hidden" name="a" value="{$Artikel->kArtikel}" />
+            <input type="hidden" name="wke" value="1" />
+            <input type="hidden" name="overview" value="1" />
+            <input type="hidden" name="Sortierung" value="{if !empty($Suchergebnisse->Sortierung)}{$Suchergebnisse->Sortierung}{/if}" />
+            {if isset($Suchergebnisse->Seitenzahlen) && $Suchergebnisse->Seitenzahlen->AktuelleSeite > 1}
+                <input type="hidden" name="seite" value="{$Suchergebnisse->Seitenzahlen->AktuelleSeite}" />{/if}
+            {if isset($NaviFilter->Kategorie) && $NaviFilter->Kategorie->kKategorie > 0}
+                <input type="hidden" name="k" value="{$NaviFilter->Kategorie->kKategorie}" />{/if}
+            {if isset($NaviFilter->Hersteller) && $NaviFilter->Hersteller->kHersteller > 0}
+                <input type="hidden" name="h" value="{$NaviFilter->Hersteller->kHersteller}" />{/if}
+            {if isset($NaviFilter->Suchanfrage) && $NaviFilter->Suchanfrage->kSuchanfrage > 0}
+                <input type="hidden" name="l" value="{$NaviFilter->Suchanfrage->kSuchanfrage}" />{/if}
+            {if isset($NaviFilter->MerkmalWert) && $NaviFilter->MerkmalWert->kMerkmalWert > 0}
+                <input type="hidden" name="m" value="{$NaviFilter->MerkmalWert->kMerkmalWert}" />{/if}
+            {if isset($NaviFilter->Tag) && $NaviFilter->Tag->kTag > 0}<input type="hidden" name="t" value="{$NaviFilter->Tag->kTag}">{/if}
+            {if isset($NaviFilter->KategorieFilter) && $NaviFilter->KategorieFilter->kKategorie > 0}
+                <input type="hidden" name="kf" value="{$NaviFilter->KategorieFilter->kKategorie}" />{/if}
+            {if isset($NaviFilter->HerstellerFilter) && $NaviFilter->HerstellerFilter->kHersteller > 0}
+                <input type="hidden" name="hf" value="{$NaviFilter->HerstellerFilter->kHersteller}" />{/if}
+
+            {if isset($NaviFilter->MerkmalFilter)}
+                {foreach name=merkmalfilter from=$NaviFilter->MerkmalFilter item=mmfilter}
+                    <input type="hidden" name="mf{$smarty.foreach.merkmalfilter.iteration}" value="{$mmfilter->kMerkmalWert}" />
+                {/foreach}
+            {/if}
+            {if isset($NaviFilter->TagFilter)}
+                {foreach name=tagfilter from=$NaviFilter->TagFilter item=tag}
+                    <input type="hidden" name="tf{$smarty.foreach.tagfilter.iteration}" value="{$tag->kTag}" />
+                {/foreach}
+            {/if}
         </div>
-
-        <input type="hidden" name="a" value="{$Artikel->kArtikel}" />
-        <input type="hidden" name="wke" value="1" />
-        <input type="hidden" name="overview" value="1" />
-        <input type="hidden" name="Sortierung" value="{if !empty($Suchergebnisse->Sortierung)}{$Suchergebnisse->Sortierung}{/if}" />
-        {if isset($Suchergebnisse->Seitenzahlen) && $Suchergebnisse->Seitenzahlen->AktuelleSeite > 1}
-            <input type="hidden" name="seite" value="{$Suchergebnisse->Seitenzahlen->AktuelleSeite}" />{/if}
-        {if isset($NaviFilter->Kategorie) && $NaviFilter->Kategorie->kKategorie > 0}
-            <input type="hidden" name="k" value="{$NaviFilter->Kategorie->kKategorie}" />{/if}
-        {if isset($NaviFilter->Hersteller) && $NaviFilter->Hersteller->kHersteller > 0}
-            <input type="hidden" name="h" value="{$NaviFilter->Hersteller->kHersteller}" />{/if}
-        {if isset($NaviFilter->Suchanfrage) && $NaviFilter->Suchanfrage->kSuchanfrage > 0}
-            <input type="hidden" name="l" value="{$NaviFilter->Suchanfrage->kSuchanfrage}" />{/if}
-        {if isset($NaviFilter->MerkmalWert) && $NaviFilter->MerkmalWert->kMerkmalWert > 0}
-            <input type="hidden" name="m" value="{$NaviFilter->MerkmalWert->kMerkmalWert}" />{/if}
-        {if isset($NaviFilter->Tag) && $NaviFilter->Tag->kTag > 0}<input type="hidden" name="t" value="{$NaviFilter->Tag->kTag}">{/if}
-        {if isset($NaviFilter->KategorieFilter) && $NaviFilter->KategorieFilter->kKategorie > 0}
-            <input type="hidden" name="kf" value="{$NaviFilter->KategorieFilter->kKategorie}" />{/if}
-        {if isset($NaviFilter->HerstellerFilter) && $NaviFilter->HerstellerFilter->kHersteller > 0}
-            <input type="hidden" name="hf" value="{$NaviFilter->HerstellerFilter->kHersteller}" />{/if}
-
-        {if isset($NaviFilter->MerkmalFilter)}
-            {foreach name=merkmalfilter from=$NaviFilter->MerkmalFilter item=mmfilter}
-                <input type="hidden" name="mf{$smarty.foreach.merkmalfilter.iteration}" value="{$mmfilter->kMerkmalWert}" />
-            {/foreach}
-        {/if}
-        {if isset($NaviFilter->TagFilter)}
-            {foreach name=tagfilter from=$NaviFilter->TagFilter item=tag}
-                <input type="hidden" name="tf{$smarty.foreach.tagfilter.iteration}" value="{$tag->kTag}" />
-            {/foreach}
-        {/if}
     </form>
 </div>{* /product-cell *}

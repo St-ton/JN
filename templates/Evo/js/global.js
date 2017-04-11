@@ -197,6 +197,10 @@ function captcha_filled() {
     $('.g-recaptcha').closest('.form-group').find('div.form-error-msg').remove();
 }
 
+function isTouchCapable() {
+    return 'ontouchstart' in window || (window.DocumentTouch && document instanceof window.DocumentTouch);
+}
+
 $(window).load(function(){
     navigation();
 });
@@ -380,12 +384,15 @@ $(document).ready(function () {
      * set bootstrap viewport
      */
     (function($, document, window, viewport){ 
+        var $body = $('body');
+
         $(window).resize(
             viewport.changed(function() {
-                $('body').attr('data-viewport', viewport.current());
+                $body.attr('data-viewport', viewport.current());
             })
         );
-        $('body').attr('data-viewport', viewport.current());
+        $body.attr('data-viewport', viewport.current());
+        $body.attr('data-touchcapable', isTouchCapable() ? 'true' : 'false');
     })(jQuery, document, window, ResponsiveBootstrapToolkit);
 
     categoryMenu();

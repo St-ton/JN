@@ -64,7 +64,7 @@
     function updateStats() {
         $('#cache-items tbody > tr').each(function (i, item) {
             var type = $(item).data('type');
-            ioGetJson('loadStats', [type], function (data) {
+            ioCall('loadStats', [type], function (data) {
                 var totalCached = 0;
                 $('.item-total', item).text(data.total);
                 $('.item-corrupted', item).text(data.corrupted);
@@ -114,7 +114,7 @@
 
     function doCleanup(index) {
         lastTick = new Date().getTime();
-        ioGetJson('cleanupStorage', [index], function (result) {
+        ioCall('cleanupStorage', [index], function (result) {
             var items = result.deletes,
                 deleted = result.deletedImages,
                 total = result.total,
@@ -170,7 +170,7 @@
 
     function flush(param) {
         var type = (typeof param.data('type') !== 'undefined') ? param.data('type') : 'product';
-        return ioGetJson('clearImageCache', [type, true], function (result) {
+        return ioCall('clearImageCache', [type, true], function (result) {
             updateStats();
             showGenerateNotify(result.success).update({
                 progress: 100,
@@ -282,7 +282,7 @@
     });
 
     function loadGenerate(type, index, callback) {
-        return ioGetJson('generateImageCache', [type, index], function (result) {
+        return ioCall('generateImageCache', [type, index], function (result) {
             callback(result);
         });
     }

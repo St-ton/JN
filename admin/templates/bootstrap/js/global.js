@@ -506,7 +506,7 @@ function createNotify(options, settings) {
 }
 
 function updateNotifyDrop() {
-    ioGetJson(
+    ioCall(
         'getNotifyDropIO', [],
         function (result) {
             if (result.tpl) {
@@ -622,7 +622,7 @@ $(document).ready(function () {
         var title = $('.content-header h1').text();
         var url = window.location.href;
         ioCall('addFav', [title, url], function() {
-            ioGetJson('reloadFavs', [], function (data) {
+            ioCall('reloadFavs', [], function (data) {
                 $('#favs-drop').html(data.tpl);
             });
             showNotify('success', 'Favoriten', 'Wurde erfolgreich hinzugef&uuml;gt');
@@ -696,56 +696,24 @@ function hideBackdrop() {
 }
 
 /**
- * Call the AJAX function 'name' with the argument list args. On success call the callback function success with the
- * result object as the first parameter
+ * Call a function asynchronously on the server. The server answers with a JSON-encoded IOResponse object, that ioCall()
+ * will interpret afterwards.an or an IOError on failure or with some other generic data depending on the called
+ * function on the server.
  *
- * @param name - name of the ajax function
- * @param args - array of arguments passed to the ajax function
- * @param success - callback(data) that is called on success
- * @param error - callback(data) that is called on failure
- * @returns XMLHttpRequest jqxhr
- */
-function ioGetJson(name, args, success, error)
-{
-    args    = args || [];
-    success = success || function () { };
-    error   = error || function () { };
-
-    return $.ajax({
-        url: 'io.php',
-        method: 'post',
-        dataType: 'json',
-        data: {
-            io : JSON.stringify({
-                name: name,
-                params : args
-            })
-        },
-        success: function (data, textStatus, jqXHR) {
-            success(data);
-        },
-        error: function (jqXHR, textStatus, errorThrown) {
-            error(jqXHR.responseJSON);
-        }
-    });
-}
-
-/**
- * Call a function asynchronously on the server. The server answers with a JSON-encoded IOResponse object, that
- * ioCall() will interpret afterwards.
- *
- * @param name - name of the function
- * @param args - argument array for the function call
- * @param success - callback(context) function to be called on success (default: null)
+ * @param name - name of the AJAX-function registered on the server
+ * @param args - array of arguments passed to the function
+ * @param success - (optional) function (data, context) success-callback
+ * @param error - (optional) function (data) error-callback
  * @param context - object to be assigned 'this' in eval()-code (default: { } = a new empty anonymous object)
  * @returns XMLHttpRequest jqxhr
  */
-function ioCall(name, args, success, context)
+function ioCall(name, args, success, error, context)
 {
     'use strict';
 
     args    = args || [];
     success = success || function () { };
+    error   = error || function () { };
     context = context || { };
 
     var evalInContext = function (code) { eval(code); }.bind(context);
@@ -761,29 +729,33 @@ function ioCall(name, args, success, context)
             })
         },
         success: function (data, textStatus, jqXHR) {
-            var jslist = data.js || [];
-            var csslist = data.css || [];
+            if (data) {
+                var jslist = data.js || [];
+                var csslist = data.css || [];
 
-            csslist.forEach(function (assign) {
-                var $target = $('#' + assign.target);
-                if($target.length > 0) {
-                   $target[0][assign.attr] = assign.data;
-                }
-            });
+                csslist.forEach(function (assign) {
+                    var $target = $('#' + assign.target);
+                    if($target.length > 0) {
+                        $target[0][assign.attr] = assign.data;
+                    }
+                });
 
-            jslist.forEach(function (js) {
-                evalInContext(js);
-            });
-
-            if (typeof success === 'function') {
-                success(context);
+                jslist.forEach(function (js) {
+                    evalInContext(js);
+                });
             }
+
+            success(data, context);
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            error(jqXHR.responseJSON);
         }
     });
 }
 
 /**
  * Induce a file download provided by an AJAX function
+ *
  * @param name
  * @param args
  */
@@ -803,7 +775,7 @@ function ioDownload(name, args)
  */
 function ioManagedCall(adminPath, funcname, params, callback)
 {
-    ioGetJson(
+    ioCall(
         funcname, params,
         function (result) {
             if (typeof callback === 'function') {

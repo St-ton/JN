@@ -194,7 +194,7 @@ $(document).ready(function() {
                                 if(confirm("Das bisherige 'Authentication Secret' wird ersetzt!\nWirklich fortfahren?")) {
                                     var userName = $('#cLogin').val();
                                     $('#QRcode').html('<img src="templates/bootstrap/gfx/widgets/ajax-loader.gif">');
-                                    ioGetJson('getNewTwoFA', [userName], function (data) {
+                                    ioCall('getNewTwoFA', [userName], function (data) {
                                         // display the new RQ-code
                                         $('#QRcode').html(data.szQRcode);
                                         $('#c2FAsecret').val(data.szSecret);
@@ -209,7 +209,7 @@ $(document).ready(function() {
 
                             function showEmergencyCodes(action) {
                                 var userName = $('#cLogin').val();
-                                ioGetJson('genTwoFAEmergencyCodes', [userName], function (data) {
+                                ioCall('genTwoFAEmergencyCodes', [userName], function (data) {
                                     var iframeHtml = '';
 
                                     iframeHtml += '<h4>JTL-shop Backend Notfall-Codes</h4>';

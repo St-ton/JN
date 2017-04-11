@@ -119,7 +119,7 @@
 
     function updateIndex() {
         $('[data-callback]').attr('disabled', true);
-        ioGetJson('plzimportActionUpdateIndex', [], function(result) {
+        ioCall('plzimportActionUpdateIndex', [], function(result) {
             if (result) {
                 $('#importForm .panel-body').html(result.listHTML);
             }
@@ -129,7 +129,7 @@
 
     function refreshNotify() {
         if (running) {
-            ioGetJson('plzimportActionCallStatus', [], function(result) {
+            ioCall('plzimportActionCallStatus', [], function(result) {
                 if (result && result.running) {
                     var offsetTick = new Date().getTime() - startTick,
                         perItem    = Math.floor(offsetTick / result.step),
@@ -159,7 +159,7 @@
         notify    = showImportNotify('PLZ-Orte Import', 'Import wird gestartet...');
 
         window.setTimeout(refreshNotify, 1500);
-        ioGetJson('plzimportActionDoImport', [ref, part], function(result) {
+        ioCall('plzimportActionDoImport', [ref, part], function(result) {
             stopImport();
             updateIndex();
             notify.update({
@@ -176,14 +176,14 @@
 
     function startBackup(ref) {
         var $modalWait = showModalWait();
-        ioGetJson('plzimportActionRestoreBackup', [ref], function(result) {
+        ioCall('plzimportActionRestoreBackup', [ref], function(result) {
             $modalWait.modal('hide');
             updateIndex();
         });
     }
 
     function checkRunning() {
-        ioGetJson('plzimportActionCheckStatus', [], function(result) {
+        ioCall('plzimportActionCheckStatus', [], function(result) {
             if (result) {
                 if (result.running) {
                     $('[data-callback]').attr('disabled', true);
@@ -211,7 +211,7 @@
 
     function plz_ort_import_delete_temp() {
         notify = showImportNotify('PLZ-Orte Import', 'Tempor&auml;rer Import wird gel&ouml;scht...');
-        ioGetJson('plzimportActionDelTempImport', [], function(result) {
+        ioCall('plzimportActionDelTempImport', [], function(result) {
             notify.update({
                 progress: 100,
                 message: '&nbsp;',
@@ -229,7 +229,7 @@
         var $modal = $('#modalSelect');
         if ($modal.length === 0) {
             var $modalWait = showModalWait();
-            ioGetJson('plzimportActionLoadAvailableDownloads', [], function (result) {
+            ioCall('plzimportActionLoadAvailableDownloads', [], function (result) {
                 $modal = $(result.dialogHTML);
                 $modal.on('hide.bs.modal', function () {
                     hideBackdrop();

@@ -95,7 +95,7 @@
                 }
                 else if(query !== lastQuery) {
                     lastQuery = query;
-                    ioGetJson('adminSearch', [query], function (data) {
+                    ioCall('adminSearch', [query], function (data) {
                         setResult(data.data.tpl);
                     });
                 }

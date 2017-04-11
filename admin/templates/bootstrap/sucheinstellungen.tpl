@@ -33,8 +33,8 @@
             }
         }
 
-        ioGetJson('createSearchIndex', ['tartikel', createIndex], showIndexNotification, showIndexNotification);
-        ioGetJson('createSearchIndex', ['tartikelsprache', createIndex], showIndexNotification, showIndexNotification);
+        ioCall('createSearchIndex', ['tartikel', createIndex], showIndexNotification, showIndexNotification);
+        ioCall('createSearchIndex', ['tartikelsprache', createIndex], showIndexNotification, showIndexNotification);
     </script>
 {/if}
 {include file='tpl_inc/footer.tpl'}

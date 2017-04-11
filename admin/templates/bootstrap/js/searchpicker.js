@@ -110,13 +110,13 @@ function SearchPicker(searchPickerName, getDataIoFuncName, keyName, renderItemCb
                 pendingRequest.abort();
             }
 
-            pendingRequest = ioGetJson(dataIoFuncName, [searchString, 100], self.itemsReceived);
+            pendingRequest = ioCall(dataIoFuncName, [searchString, 100], self.itemsReceived);
         } else if (selectedKeys.length > 0) {
             if (pendingRequest !== null) {
                 pendingRequest.abort();
             }
 
-            pendingRequest = ioGetJson(dataIoFuncName, [selectedKeys, 100, keyName], self.itemsReceived);
+            pendingRequest = ioCall(dataIoFuncName, [selectedKeys, 100, keyName], self.itemsReceived);
         } else {
             $searchResultList.empty();
             foundItems = [];

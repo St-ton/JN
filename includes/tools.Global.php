@@ -5739,11 +5739,12 @@ function make_http_request($cURL, $nTimeout = 15, $cPost = null, $bReturnStatus 
 }
 
 /**
- * @param string|array|object $data the string, array or object to convert recursively. Objects are changed, not copied
+ * @param string|array|object $data the string, array or object to convert recursively
  * @param bool                $encode true if data should be utf-8-encoded or false if data should be utf-8-decoded
+ * @param bool                $copy false if objects should be changed, true if they should be cloned first
  * @return string|array|object converted data
  */
-function utf8_convert_recursive($data, $encode = true)
+function utf8_convert_recursive($data, $encode = true, $copy = false)
 {
     if (is_string($data)) {
         $isUtf8 = mb_detect_encoding($data, 'UTF-8', true) !== false;
@@ -5759,6 +5760,10 @@ function utf8_convert_recursive($data, $encode = true)
             $data[$newKey] = $newVal;
         }
     } elseif (is_object($data)) {
+        if ($copy) {
+            $data = clone $data;
+        }
+
         foreach (get_object_vars($data) as $key => $val) {
             $newKey = (string)utf8_convert_recursive($key, $encode);
             $newVal = utf8_convert_recursive($val, $encode);

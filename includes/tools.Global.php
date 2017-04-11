@@ -5776,6 +5776,32 @@ function utf8_convert_recursive($data, $encode = true, $copy = false)
 }
 
 /**
+ * JSON-Encode $data only if it is not already encoded, meaning it avoids double encoding
+ *
+ * @param mixed $data
+ * @return string or false when $data is not encodable
+ * @throws Exception
+ */
+function json_safe_encode($data)
+{
+    $data = utf8_convert_recursive($data);
+
+    // encode data if not already encoded
+    if (is_string($data)) {
+        // data is a string
+        json_decode($data);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            // it is not a JSON string yet
+            $data = json_encode($data);
+        }
+    } else {
+        $data = json_encode($data);
+    }
+
+    return $data;
+}
+
+/**
  * @param object $NaviFilter
  * @param int    $nAnzahl
  * @param bool   $bSeo

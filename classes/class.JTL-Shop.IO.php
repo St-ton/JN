@@ -108,21 +108,7 @@ class IO
         header('Pragma: no-cache');
         header('Content-type: application/json');
 
-        // encode data if not already encoded
-        if (is_string($data)) {
-            // data is a string
-            json_decode($data);
-            if (json_last_error() !== JSON_ERROR_NONE) {
-                // it is not a JSON string yet
-                $data = json_encode(utf8_convert_recursive($data));
-            }
-        } elseif (is_null($data)) {
-            $data = '{}';
-        } else {
-            $data = json_encode(utf8_convert_recursive($data));
-        }
-
-        die($data);
+        die(json_safe_encode($data));
     }
 
     /**

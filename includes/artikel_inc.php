@@ -174,9 +174,9 @@ function bearbeiteFrageZumProdukt()
 
                 // Bei anonymen Anfragen die E-Mail-Adresse als Name verwenden
                 if (empty($oAnfrage->cNachname)) {
-                    $oAnfrage->cNachname = $oAnfrage->cMail;
+                    $oAnfrage->cNachname = '';
                 }
-                if (!isset($oAnfrage->cVorname)) {
+                if (empty($oAnfrage->cVorname)) {
                     $oAnfrage->cVorname = '';
                 }
                 // CheckBox Spezialfunktion ausfuehren
@@ -432,9 +432,9 @@ function bearbeiteBenachrichtigung()
 
                 // Bei anonymen Anfragen die E-Mail-Adresse als Name verwenden
                 if (empty($Benachrichtigung->cNachname)) {
-                    $Benachrichtigung->cNachname = $Benachrichtigung->cMail;
+                    $Benachrichtigung->cNachname = '';
                 }
-                if (!isset($Benachrichtigung->cVorname)) {
+                if (empty($Benachrichtigung->cVorname)) {
                     $Benachrichtigung->cVorname = '';
                 }
                 // CheckBox Spezialfunktion ausfuehren
@@ -515,10 +515,14 @@ function gibFehlendeEingabenBenachrichtigungsformular()
  */
 function baueFormularVorgabenBenachrichtigung()
 {
-    $msg            = new stdClass();
-    $msg->cVorname  = StringHandler::filterXSS($_POST['vorname']);
-    $msg->cNachname = StringHandler::filterXSS($_POST['nachname']);
-    $msg->cMail     = StringHandler::filterXSS($_POST['email']);
+    $conf = Shop::getSettings([CONF_ARTIKELDETAILS]);
+    $msg  = new stdClass();
+    if ($conf['artikeldetails']['benachrichtigung_abfragen_vorname'] !== 'N' && !empty($_POST['vorname'])) {
+        $msg->cVorname  = StringHandler::filterXSS($_POST['vorname']);
+    }
+    if ($conf['artikeldetails']['benachrichtigung_abfragen_nachname'] !== 'N' && !empty($_POST['nachname'])) {
+        $msg->cNachname = StringHandler::filterXSS($_POST['nachname']);
+    }
 
     return $msg;
 }

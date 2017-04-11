@@ -129,7 +129,6 @@
         },
 
         registerSimpleVariations: function($wrapper) {
-            console.log('registerSimpleVariations(' + $wrapper.attr('id') + ')');
             var that = this;
 
             $('.variations select', $wrapper).selectpicker({
@@ -152,7 +151,7 @@
                 .each(function(i, item) {
                     var $item   = $(item),
                         wrapper = '#' + $item.closest('form').closest('div').attr('id');
-                    console.log('registerSimpleVariations(' + wrapper + ')');
+
                     $item.on('change', function () {
                         that.variationPrice($(this), true, wrapper);
                     });
@@ -160,14 +159,13 @@
         },
 
         registerSwitchVariations: function($wrapper) {
-            console.log('registerSwitchVariations(' + $wrapper.attr('id') + ')');
             var that = this;
 
             $('.switch-variations input[type="radio"], .switch-variations select', $wrapper)
                 .each(function(i, item) {
                     var $item   = $(item),
                         wrapper = '#' + $item.closest('form').closest('div').attr('id');
-                    console.log('registerSwitchVariations(' + wrapper + ')');
+
                     $item.on('change', function () {
                         that.variationSwitch($(this), true, wrapper);
                     });
@@ -192,7 +190,6 @@
         },
 
         registerArticleOverlay: function($wrapper) {
-            console.log('registerArticleOverlay(' + $wrapper.attr('id') + ')');
             var that         = this;
 
             $('.quickview', $wrapper)
@@ -201,7 +198,7 @@
                         formID     = $item.data('target'),
                         wrapper    = that.options.modal.wrapper_modal + '_' + formID,
                         srcWrapper = that.options.modal.wrapper + '_' + formID;
-                    console.log('registerArticleOverlay(' + wrapper + ')');
+
                     $item.on('click', function (event) {
                         event.preventDefault();
                         that.modalArticleDetail(this, wrapper, srcWrapper);
@@ -210,7 +207,6 @@
         },
 
         registerImageSwitch: function($wrapper) {
-            console.log('registerImageSwitch(' + $wrapper.attr('id') + ')');
             var that     = this,
                 imgSwitch,
                 gallery  = this.gallery;
@@ -344,7 +340,6 @@
         },
 
         registerFinish: function($wrapper) {
-            console.log('registerFinish(' + $wrapper.attr('id') + ')');
             $('#jump-to-votes-tab', $wrapper).click(function () {
                 $('#content a[href="#tab-votes"]', $wrapper).tab('show');
             });
@@ -357,7 +352,6 @@
         },
 
         registerProductActions: function($wrapper) {
-            console.log('registerProductActions(' + $wrapper.attr('id') + ')');
             var that = this;
 
             $('*[data-toggle="product-actions"] button', $wrapper)
@@ -380,7 +374,6 @@
         },
 
         loadModalArticle: function(url, wrapper, done, fail) {
-            console.log('loadModalArticle(' + wrapper + ')');
             var that       = this,
                 $wrapper   = this.getWrapper(wrapper),
                 id         = wrapper.substring(1),
@@ -756,7 +749,6 @@
         },
 
         setPrice: function(price, fmtPrice, priceLabel, wrapper) {
-            console.log('setPrice(' + wrapper + ')');
             var $wrapper = this.getWrapper(wrapper);
 
             if (this.isSingleArticle()) {
@@ -775,14 +767,12 @@
         },
 
         setStockInformation: function(cEstimatedDelivery, wrapper) {
-            console.log('setStockInformation(' + wrapper + ')');
             var $wrapper = this.getWrapper(wrapper);
 
             $('.delivery-status .estimated-delivery span', $wrapper).html(cEstimatedDelivery);
         },
 
         setStaffelPrice: function(prices, fmtPrices, wrapper) {
-            console.log('setStaffelPrice(' + wrapper + ')');
             var $wrapper   = this.getWrapper(wrapper),
                 $container = $('#product-offer', $wrapper);
 
@@ -792,7 +782,6 @@
         },
 
         setVPEPrice: function(fmtVPEPrice, VPEPrices, fmtVPEPrices, wrapper) {
-            console.log('setVPEPrice(' + wrapper + ')');
             var $wrapper   = this.getWrapper(wrapper),
                 $container = $('#product-offer', $wrapper);
 
@@ -810,7 +799,6 @@
         },
 
         setArticleWeight: function(ArticleWeight, wrapper) {
-            console.log('setArticleWeight(' + wrapper + ')');
             if (this.isSingleArticle()) {
                 var $articleTabs = $('#article-tabs');
 
@@ -834,20 +822,17 @@
         },
 
         setProductNumber: function(productNumber, wrapper) {
-            console.log('setProductNumber(' + wrapper + ')');
             var $wrapper = this.getWrapper(wrapper);
 
             $('#product-offer span[itemprop="sku"]', $wrapper).html(productNumber);
         },
 
         setArticleContent: function(id, variation, url, variations, wrapper) {
-            console.log('setArticleContent(' + wrapper + ')');
             var $wrapper  = this.getWrapper(wrapper),
                 listStyle = $('#ed_list.active').length > 0 ? 'list' : 'gallery',
                 $spinner  = $.evo.extended().spinner($wrapper.get(0));
 
             if (this.modalShown) {
-                console.log('setArticleContent modalShown(' + wrapper + ')');
                 this.loadModalArticle(url, wrapper,
                     function() {
                         var article = new ArticleClass();
@@ -860,9 +845,7 @@
                     }
                 );
             } else if (this.isSingleArticle()) {
-                console.log('setArticleContent isSingleArticle(' + wrapper + ')');
                 $.evo.extended().loadContent(url, function (content) {
-                    console.log('setArticleContent isSingleArticle loaded(' + wrapper + ')');
                     $.evo.extended().register();
                     $.evo.article().register(wrapper);
 
@@ -880,9 +863,7 @@
                     $spinner.stop();
                 }, false, wrapper);
             } else {
-                console.log('setArticleContent isMultipleArticle(' + wrapper + ')');
                 $.evo.extended().loadContent(url + (url.indexOf('?') >= 0 ? '&' : '?') + 'isListStyle=' + listStyle, function (content) {
-                    console.log('setArticleContent isMultipleArticle loaded(' + wrapper + ')');
                     $.evo.extended().imagebox(wrapper);
                     $.evo.article().register(wrapper);
 
@@ -910,7 +891,6 @@
         },
 
         variationResetAll: function(wrapper) {
-            console.log('variationResetAll(' + wrapper + ')');
             var $wrapper = this.getWrapper(wrapper);
 
             $('.variation[data-value] input:checked', $wrapper).prop('checked', false);
@@ -919,7 +899,6 @@
         },
 
         variationDisableAll: function(wrapper) {
-            console.log('variationDisableAll(' + wrapper + ')');
             var $wrapper = this.getWrapper(wrapper);
 
             $('.swatches-selected', $wrapper).text('');
@@ -934,7 +913,6 @@
         },
 
         variationSetVal: function(key, value, wrapper) {
-            console.log('variationSetVal(' + wrapper + ')');
             var $wrapper = this.getWrapper(wrapper);
 
             $('[data-key="' + key + '"]', $wrapper).val(value)
@@ -943,7 +921,6 @@
         },
 
         variationEnable: function(key, value, wrapper) {
-            console.log('variationEnable(' + wrapper + ')');
             var $wrapper = this.getWrapper(wrapper),
                 $item    = $('[data-value="' + value + '"].variation', $wrapper);
 
@@ -953,7 +930,6 @@
         },
 
         variationActive: function(key, value, def, wrapper) {
-            console.log('variationActive(' + wrapper + ')');
             var $wrapper = this.getWrapper(wrapper),
                 $item    = $('[data-value="' + value + '"].variation', $wrapper);
 
@@ -1063,7 +1039,6 @@
         },
 
         variationSwitch: function($item, animation, wrapper) {
-            console.log('variationSwitch(' + wrapper + ')');
             if ($item) {
                 var formID   = $item.closest('form').attr('id'),
                     $current = this.getCurrent($item),
@@ -1098,7 +1073,6 @@
         },
 
         variationPrice: function($item, animation, wrapper) {
-            console.log('variationPrice(' + wrapper + ')');
             var formID   = $item.closest('form').attr('id'),
                 $wrapper = this.getWrapper(wrapper),
                 io       = $.evo.io(),
@@ -1149,7 +1123,6 @@
                         that.modalView
                             .off('shown.bs.modal');
                         that.modalShown = false;
-                        console.log('hidden.bs.modal(' + (that.modalShown ? 'shown' : 'hidden') + ')');
                     });
             } else {
                 $('.modal-title', that.modalView).html(title);
@@ -1161,7 +1134,6 @@
                     var $spinner = $.evo.extended().spinner($(wrapper).get(0));
 
                     that.modalShown = true;
-                    console.log('shown.bs.modal(' + (that.modalShown ? 'shown' : 'hidden') + ')');
                     that.loadModalArticle(url, wrapper,
                         function() {
                             var article = new ArticleClass();
@@ -1178,7 +1150,6 @@
         },
 
         variationDispose: function(wrapper) {
-            console.log('variationDispose(' + wrapper + ')');
             var $wrapper = this.getWrapper(wrapper);
 
             $('[role="tooltip"]', $wrapper).remove();

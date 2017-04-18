@@ -1099,7 +1099,7 @@
 
         modalArticleDetail: function(item, wrapper, srcWrapper) {
             var that     = this,
-                title    = $(srcWrapper).find('.caption > h4').text(),
+                title    = $(srcWrapper).find('h4.title').text(),
                 image    = $(srcWrapper).find('.image-content').html(),
                 url      = $(item).data('src');
 

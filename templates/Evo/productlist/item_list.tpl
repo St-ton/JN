@@ -1,6 +1,10 @@
 {* template to display products in product-lists *}
 
-{hasOnlyListableVariations artikel=$Artikel assign="hasOnlyListableVariations"}
+{if $Einstellungen.template.productlist.variation_select_productlist === 'N'}
+    {assign var="hasOnlyListableVariations" value=0}
+{else}
+    {hasOnlyListableVariations artikel=$Artikel maxVariationCount=$Einstellungen.template.productlist.variation_select_productlist assign="hasOnlyListableVariations"}
+{/if}
 <div class="product-cell thumbnail">
     <div id="result-wrapper_buy_form_{$Artikel->kArtikel}" class="product-body row {if $tplscope !== 'list'} text-center{/if}">
         <div class="col-xs-3 col-sm-2 col-lg-3 text-center">
@@ -19,7 +23,7 @@
                              alt="{if isset($Artikel->oSuchspecialBild->cSuchspecial)}{$Artikel->oSuchspecialBild->cSuchspecial}{else}{$Artikel->cName}{/if}">
                     {/if}
 
-                    {if !$Artikel->bHasKonfig}
+                    {if $Einstellungen.template.productlist.quickview_productlist === 'Y' && !$Artikel->bHasKonfig}
                         <span class="quickview badge hidden-xs" data-src="{$Artikel->cURL}" data-target="buy_form_{$Artikel->kArtikel}" title="{$Artikel->cName}">{lang key="downloadPreview" section="productDownloads"}</span>
                     {/if}
                 </a>

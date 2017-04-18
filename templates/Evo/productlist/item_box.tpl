@@ -1,6 +1,11 @@
 {* template to display products in boxes and product-lists *}
 
-<div id="result-wrapper_buy_form_{$Artikel->kArtikel}" class="product-cell text-center{if isset($class)} {$class}{/if}">
+{if $Einstellungen.template.productlist.variation_select_productlist === 'N'}
+    {assign var="hasOnlyListableVariations" value=0}
+{else}
+    {hasOnlyListableVariations artikel=$Artikel maxVariationCount=$Einstellungen.template.productlist.variation_select_productlist assign="hasOnlyListableVariations"}
+{/if}
+<div id="result-wrapper_buy_form_{$Artikel->kArtikel}" class="product-cell text-center{if $Einstellungen.template.productlist.hover_productlist === 'Y'} hover-enabled{/if}{if isset($class)} {$class}{/if}">
     {block name="productlist-image"}
         <a class="image-wrapper" href="{$Artikel->cURL}">
             {if isset($Artikel->Bilder[0]->cAltAttribut)}
@@ -16,7 +21,7 @@
                  alt="{if isset($Artikel->oSuchspecialBild->cSuchspecial)}{$Artikel->oSuchspecialBild->cSuchspecial}{else}{$Artikel->cName}{/if}" />
         {/if}
 
-        {if !$Artikel->bHasKonfig}
+        {if $Einstellungen.template.productlist.quickview_productlist === 'Y' && !$Artikel->bHasKonfig}
             <span class="quickview badge hidden-xs" data-src="{$Artikel->cURL}" data-target="buy_form_{$Artikel->kArtikel}" title="{$Artikel->cName}">{lang key="downloadPreview" section="productDownloads"}</span>
         {/if}
     </a>
@@ -70,7 +75,6 @@
             </div>
         {/block}
         <div class="expandable">
-            {hasOnlyListableVariations artikel=$Artikel assign="hasOnlyListableVariations"}
             {if $hasOnlyListableVariations > 0 && !$Artikel->bHasKonfig}
                 <div class="hidden-xs basket-variations">
                     {assign var="singleVariation" value=true}

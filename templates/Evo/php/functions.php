@@ -725,11 +725,11 @@ function get_cms_content($params, &$smarty)
 function hasOnlyListableVariations($params, &$smarty)
 {
     if (!isset($params['artikel']->Variationen)) {
-        return false;
+        return 0;
     }
 
-    $maxVariationCount = isset($params['maxVariationCount']) ? $params['maxVariationCount'] : 1;
-    $maxWerteCount     = isset($params['maxWerteCount']) ? $params['maxWerteCount'] : 3;
+    $maxVariationCount = isset($params['maxVariationCount']) ? (int)$params['maxVariationCount'] : 1;
+    $maxWerteCount     = isset($params['maxWerteCount']) ? (int)$params['maxWerteCount'] : 3;
     $variationCheck    = function ($Variationen, $maxVariationCount, $maxWerteCount) {
         $result = true;
 
@@ -742,7 +742,7 @@ function hasOnlyListableVariations($params, &$smarty)
                 }
             }
         } else {
-            $result = false;
+            $result = 0;
         }
 
         return $result;

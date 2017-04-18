@@ -227,8 +227,8 @@
                         gallery.setItems([data], value);
 
                         if (!temporary) {
-                            var items = [data];
-                            var stacks = gallery.getStacks();
+                            var items  = [data],
+                                stacks = gallery.getStacks();
                             for (var s in stacks) {
                                 if (stacks.hasOwnProperty(s) && s.match(/^_[0-9a-zA-Z]*$/) && s !== '_' + id) {
                                     items = $.merge(items, stacks[s]);
@@ -258,8 +258,8 @@
                     }
 
                     if (!!data) {
-                        var $wrapper = $(context).closest('.product-wrapper');
-                        var $img = $('.image-box img', $wrapper);
+                        var $wrapper = $(context).closest('.product-wrapper'),
+                            $img     = $('.image-box img', $wrapper);
                         if ($img.length === 1) {
                             $img.attr('src', data.md.src);
                             if (!temporary) {
@@ -272,7 +272,8 @@
 
             $('.variations .bootstrap-select select', $wrapper)
                 .change(function() {
-                    var tmp_idx = parseInt($('.variations .bootstrap-select li.selected').attr('data-original-index')) + 1,
+                    var tmp_idx = parseInt($('li.selected', $(this).closest('.bootstrap-select'))
+                                .attr('data-original-index')) + 1,
                         rule    = 'option:nth-child(' + tmp_idx + ')',
                         sel     = $(this).find(rule),
                         cont    = $(this).closest('.variations');

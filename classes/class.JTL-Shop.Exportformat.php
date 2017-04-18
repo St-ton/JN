@@ -1061,7 +1061,11 @@ class Exportformat
         $cacheHits   = 0;
         $cacheMisses = 0;
         $cOutput     = '';
-        $datei       = fopen(PFAD_ROOT . PFAD_EXPORT . $this->tempFileName, 'a');
+        if ($isAsync === true && $this->queue->nLimitN == 0 && file_exists(PFAD_ROOT . PFAD_EXPORT . $this->cDateiname)) {
+            unlink(PFAD_ROOT . PFAD_EXPORT . $this->cDateiname);
+
+        }
+        $datei = fopen(PFAD_ROOT . PFAD_EXPORT . $this->tempFileName, 'a');
         if ($max === null) {
             $maxObj = Shop::DB()->executeQuery($this->getExportSQL(true), 1);
             $max    = (int)$maxObj->nAnzahl;

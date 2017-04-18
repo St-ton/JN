@@ -760,7 +760,7 @@ ul.filter_state li a.active:before {
         }
 
         &.hover-enabled {
-            transition: box-shadow 0.3s;
+            transition: none;
 
             .expandable {
                 display: none;
@@ -781,6 +781,7 @@ ul.filter_state li a.active:before {
                 padding-left: @grid-gutter-width / 2 + 10;
                 padding-right: @grid-gutter-width / 2 + 10;
                 .box-shadow(0 0 @margin-base rgba(0, 0, 0, 0.45));
+                transition: box-shadow 0.3s;
 
                 .expandable {
                     display: block;

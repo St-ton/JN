@@ -204,6 +204,9 @@
                         that.modalArticleDetail(this, wrapper, srcWrapper);
                     });
                 });
+            $wrapper.hover(null, function() {
+                $(this).removeClass('active');
+            })
         },
 
         registerImageSwitch: function($wrapper) {
@@ -882,7 +885,9 @@
                         $.evo.article().variationSetVal(item.key, item.value, wrapper);
                     });
 
-                    $.evo.extended().autoheight();
+                    if (!$wrapper.hasClass('hover-enabled')) {
+                        $.evo.extended().autoheight();
+                    }
                     $spinner.stop();
                 }, function () {
                     $.evo.error('Error loading ' + url);

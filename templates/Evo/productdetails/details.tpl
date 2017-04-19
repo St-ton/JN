@@ -82,8 +82,6 @@
                             <div class="rating-wrapper col-xs-4 text-right" itemprop="aggregateRating" itemscope itemtype="http://schema.org/AggregateRating">
                             <span itemprop="ratingValue"
                                   class="hidden">{$Artikel->Bewertungen->oBewertungGesamt->fDurchschnitt}</span>
-                            <span itemprop="bestRating" class="hidden">5</span>
-                            <span itemprop="worstRating" class="hidden">1</span>
                             <span itemprop="reviewCount" class="hidden">{$Artikel->Bewertungen->oBewertungGesamt->nAnzahl}</span>
                             <a href="{$Artikel->cURLFull}#tab-votes" id="jump-to-votes-tab" class="hidden-print">
                                 {include file='productdetails/rating.tpl' stars=$Artikel->Bewertungen->oBewertungGesamt->fDurchschnitt total=$Artikel->Bewertungen->oBewertungGesamt->nAnzahl}

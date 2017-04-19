@@ -13,7 +13,7 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'suche_inc.php';
  */
 function buildSearchResults($FilterSQL, $NaviFilter)
 {
-    trigger_error('filter_inc.php: buildSearchResults() called.', E_WARNING);
+    trigger_error('filter_inc.php: buildSearchResults() called.', E_USER_WARNING);
     return Shop::getNaviFilter()->getProducts();
 }
 
@@ -28,7 +28,7 @@ function buildSearchResults($FilterSQL, $NaviFilter)
  */
 function buildSearchResultPage(&$oSearchResult, $nProductCount, $nLimitN, $nPage, $nProductsPerPage = 25, $nSettingMaxPageCount = 25)
 {
-    trigger_error('filter_inc.php: buildSearchResultPage() called.', E_WARNING);
+    trigger_error('filter_inc.php: buildSearchResultPage() called.', E_USER_WARNING);
 }
 
 /**
@@ -42,7 +42,7 @@ function buildSearchResultPage(&$oSearchResult, $nProductCount, $nLimitN, $nPage
  */
 function gibArtikelKeys($FilterSQL, $nArtikelProSeite, $NaviFilter, $bExtern, $oSuchergebnisse)
 {
-    trigger_error('filter_inc.php: gibArtikelKeys() called.', E_WARNING);
+    trigger_error('filter_inc.php: gibArtikelKeys() called.', E_USER_WARNING);
     return Shop::getNaviFilter()->getProductKeys();
 }
 
@@ -53,7 +53,7 @@ function gibArtikelKeys($FilterSQL, $nArtikelProSeite, $NaviFilter, $bExtern, $o
  */
 function gibAnzahlFilter($NaviFilter)
 {
-    trigger_error('filter_inc.php: gibAnzahlFilter() called.', E_WARNING);
+    trigger_error('filter_inc.php: gibAnzahlFilter() called.', E_USER_WARNING);
     return Shop::getNaviFilter()->getFilterCount();
 }
 
@@ -65,7 +65,7 @@ function gibAnzahlFilter($NaviFilter)
  */
 function gibHerstellerFilterOptionen($FilterSQL, $NaviFilter)
 {
-    trigger_error('filter_inc.php: gibHerstellerFilterOptionen() called.', E_WARNING);
+    trigger_error('filter_inc.php: gibHerstellerFilterOptionen() called.', E_USER_WARNING);
     return Shop::getNaviFilter()->HerstellerFilter->getOptions();
 }
 
@@ -77,7 +77,7 @@ function gibHerstellerFilterOptionen($FilterSQL, $NaviFilter)
  */
 function gibKategorieFilterOptionen($FilterSQL, $NaviFilter)
 {
-    trigger_error('filter_inc.php: gibKategorieFilterOptionen() called.', E_WARNING);
+    trigger_error('filter_inc.php: gibKategorieFilterOptionen() called.', E_USER_WARNING);
     return Shop::getNaviFilter()->KategorieFilter->getOptions();
 }
 
@@ -89,7 +89,7 @@ function gibKategorieFilterOptionen($FilterSQL, $NaviFilter)
  */
 function gibSuchFilterOptionen($FilterSQL, $NaviFilter)
 {
-    trigger_error('filter_inc.php: gibSuchFilterOptionen() called.', E_WARNING);
+    trigger_error('filter_inc.php: gibSuchFilterOptionen() called.', E_USER_WARNING);
     return Shop::getNaviFilter()->searchFilterCompat->getOptions();
 }
 
@@ -101,7 +101,7 @@ function gibSuchFilterOptionen($FilterSQL, $NaviFilter)
  */
 function gibBewertungSterneFilterOptionen($FilterSQL, $NaviFilter)
 {
-    trigger_error('filter_inc.php: gibBewertungSterneFilterOptionen() called.', E_WARNING);
+    trigger_error('filter_inc.php: gibBewertungSterneFilterOptionen() called.', E_USER_WARNING);
     return Shop::getNaviFilter()->BewertungFilter->getOptions();
 }
 
@@ -114,7 +114,7 @@ function gibBewertungSterneFilterOptionen($FilterSQL, $NaviFilter)
  */
 function gibPreisspannenFilterOptionen($FilterSQL, $NaviFilter, $oSuchergebnisse)
 {
-    trigger_error('filter_inc.php: gibPreisspannenFilterOptionen() called.', E_WARNING);
+    trigger_error('filter_inc.php: gibPreisspannenFilterOptionen() called.', E_USER_WARNING);
     return Shop::getNaviFilter()->PreisspannenFilter->getOptions();
 }
 
@@ -126,7 +126,7 @@ function gibPreisspannenFilterOptionen($FilterSQL, $NaviFilter, $oSuchergebnisse
  */
 function gibTagFilterOptionen($FilterSQL, $NaviFilter)
 {
-    trigger_error('filter_inc.php: gibTagFilterOptionen() called.', E_WARNING);
+    trigger_error('filter_inc.php: gibTagFilterOptionen() called.', E_USER_WARNING);
     return Shop::getNaviFilter()->tagFilterCompat->getOptions();
 }
 
@@ -138,7 +138,7 @@ function gibTagFilterOptionen($FilterSQL, $NaviFilter)
  */
 function gibSuchFilterJSONOptionen($FilterSQL, $NaviFilter)
 {
-    trigger_error('filter_inc.php: gibSuchFilterJSONOptionen() called.', E_WARNING);
+    trigger_error('filter_inc.php: gibSuchFilterJSONOptionen() called.', E_USER_WARNING);
     $oSuchfilter_arr = gibSuchFilterOptionen($FilterSQL, $NaviFilter); // cURL
     foreach ($oSuchfilter_arr as $key => $oSuchfilter) {
         $oSuchfilter_arr[$key]->cURL = StringHandler::htmlentitydecode($oSuchfilter->cURL);
@@ -155,7 +155,7 @@ function gibSuchFilterJSONOptionen($FilterSQL, $NaviFilter)
  */
 function gibTagFilterJSONOptionen($FilterSQL, $NaviFilter)
 {
-    trigger_error('filter_inc.php: gibTagFilterJSONOptionen() called.', E_WARNING);
+    trigger_error('filter_inc.php: gibTagFilterJSONOptionen() called.', E_USER_WARNING);
     $oTags_arr = gibTagFilterOptionen($FilterSQL, $NaviFilter);
     foreach ($oTags_arr as $key => $oTags) {
         $oTags_arr[$key]->cURL = StringHandler::htmlentitydecode($oTags->cURL);
@@ -174,7 +174,7 @@ function gibTagFilterJSONOptionen($FilterSQL, $NaviFilter)
  */
 function gibMerkmalFilterOptionen($FilterSQL, $NaviFilter, $oAktuelleKategorie = null, $bForce = false)
 {
-    trigger_error('filter_inc.php: gibMerkmalFilterOptionen() called.', E_WARNING);
+    trigger_error('filter_inc.php: gibMerkmalFilterOptionen() called.', E_USER_WARNING);
     return Shop::getNaviFilter()->attributeFilterCompat->getOptions();
 }
 
@@ -201,7 +201,7 @@ function sortierMerkmalWerteNumerisch($a, $b)
  */
 function gibSuchspecialFilterOptionen($FilterSQL, $NaviFilter)
 {
-    trigger_error('filter_inc.php: gibSuchspecialFilterOptionen() called.', E_WARNING);
+    trigger_error('filter_inc.php: gibSuchspecialFilterOptionen() called.', E_USER_WARNING);
     return Shop::getNaviFilter()->searchFilterCompat->getOptions();
 }
 
@@ -213,7 +213,7 @@ function gibSuchspecialFilterOptionen($FilterSQL, $NaviFilter)
  */
 function bearbeiteSuchCache($NaviFilter, $kSpracheExt = 0)
 {
-    trigger_error('filter_inc.php: bearbeiteSuchCache() called.', E_WARNING);
+    trigger_error('filter_inc.php: bearbeiteSuchCache() called.', E_USER_WARNING);
     return Shop::getNaviFilter()->Suchanfrage->editSearchCache($kSpracheExt);
 }
 
@@ -316,7 +316,7 @@ function gibArtikelAttributFilterSQL($NaviFilter)
  */
 function gibMerkmalPosition($oMerkmalauswahl_arr, $kMerkmal)
 {
-    trigger_error('filter_inc.php: gibMerkmalPosition() called.', E_WARNING);
+    trigger_error('filter_inc.php: gibMerkmalPosition() called.', E_USER_WARNING);
     return -1;
 }
 
@@ -328,7 +328,7 @@ function gibMerkmalPosition($oMerkmalauswahl_arr, $kMerkmal)
  */
 function checkMerkmalWertVorhanden($oMerkmalauswahl_arr, $kMerkmalWert)
 {
-    trigger_error('filter_inc.php: checkMerkmalWertVorhanden() called.', E_WARNING);
+    trigger_error('filter_inc.php: checkMerkmalWertVorhanden() called.', E_USER_WARNING);
     return false;
 }
 
@@ -339,7 +339,7 @@ function checkMerkmalWertVorhanden($oMerkmalauswahl_arr, $kMerkmalWert)
  */
 function gibArtikelsortierung($NaviFilter)
 {
-    trigger_error('filter_inc.php: gibArtikelsortierung() called.', E_WARNING);
+    trigger_error('filter_inc.php: gibArtikelsortierung() called.', E_USER_WARNING);
     return Shop::getNaviFilter()->getOrder()->orderBy;
 }
 
@@ -350,7 +350,7 @@ function gibArtikelsortierung($NaviFilter)
  */
 function mappeUsersortierung($nUsersortierung)
 {
-    trigger_error('filter_inc.php: mappeUsersortierung() called.', E_WARNING);
+    trigger_error('filter_inc.php: mappeUsersortierung() called.', E_USER_WARNING);
     return Shop::getNaviFilter()->mapUserSorting($nUsersortierung);
 }
 
@@ -364,7 +364,7 @@ function mappeUsersortierung($nUsersortierung)
  */
 function gibNaviURL($NaviFilter, $bSeo, $oZusatzFilter, $kSprache = 0, $bCanonical = false)
 {
-    trigger_error('filter_inc.php: gibNaviURL() called.', E_WARNING);
+    trigger_error('filter_inc.php: gibNaviURL() called.', E_USER_WARNING);
     return Shop::getNaviFilter()->getURL($bSeo, $oZusatzFilter, $bCanonical);
 }
 
@@ -376,7 +376,7 @@ function gibNaviURL($NaviFilter, $bSeo, $oZusatzFilter, $kSprache = 0, $bCanonic
  */
 function berechnePreisspannenSQL($oPreis, $oPreisspannenfilter_arr = null)
 {
-    trigger_error('filter_inc.php: berechnePreisspannenSQL() called.', E_WARNING);
+    trigger_error('filter_inc.php: berechnePreisspannenSQL() called.', E_USER_WARNING);
     return Shop::getNaviFilter()->getPriceRangeSQL();
 }
 
@@ -387,7 +387,7 @@ function berechnePreisspannenSQL($oPreis, $oPreisspannenfilter_arr = null)
  */
 function berechneMaxMinStep($fMax, $fMin)
 {
-    trigger_error('filter_inc.php: berechneMaxMinStep() called.', E_WARNING);
+    trigger_error('filter_inc.php: berechneMaxMinStep() called.', E_USER_WARNING);
     return Shop::getNaviFilter()->PreisspannenFilter->calculateSteps($fMax, $fMin);
 }
 
@@ -397,7 +397,7 @@ function berechneMaxMinStep($fMax, $fMin)
  */
 function gibBrotNaviName()
 {
-    trigger_error('filter_inc.php: gibBrotNaviName() called.', E_WARNING);
+    trigger_error('filter_inc.php: gibBrotNaviName() called.', E_USER_WARNING);
     return Shop::getNaviFilter()->cBrotNaviName;
 }
 
@@ -407,7 +407,7 @@ function gibBrotNaviName()
  */
 function gibHeaderAnzeige()
 {
-    trigger_error('filter_inc.php: gibHeaderAnzeige() called.', E_WARNING);
+    trigger_error('filter_inc.php: gibHeaderAnzeige() called.', E_USER_WARNING);
     return Shop::getNaviFilter()->getHeader();
 }
 
@@ -418,7 +418,7 @@ function gibHeaderAnzeige()
  */
 function erstelleFilterLoesenURLs($bSeo, $oSuchergebnisse)
 {
-    trigger_error('filter_inc.php: erstelleFilterLoesenURLs() called.', E_WARNING);
+    trigger_error('filter_inc.php: erstelleFilterLoesenURLs() called.', E_USER_WARNING);
     Shop::getNaviFilter()->createUnsetFilterURLs($bSeo, $oSuchergebnisse);
 }
 
@@ -430,7 +430,7 @@ function erstelleFilterLoesenURLs($bSeo, $oSuchergebnisse)
  */
 function truncateMetaTitle($cTitle)
 {
-    trigger_error('filter_inc.php: truncateMetaTitle() called.', E_WARNING);
+    trigger_error('filter_inc.php: truncateMetaTitle() called.', E_USER_WARNING);
     return Shop::getNaviFilter()->truncateMetaTitle($cTitle);
 }
 
@@ -443,7 +443,7 @@ function truncateMetaTitle($cTitle)
  */
 function gibNaviMetaTitle($NaviFilter, $oSuchergebnisse, $GlobaleMetaAngaben_arr)
 {
-    trigger_error('filter_inc.php: gibNaviMetaTitle() called.', E_WARNING);
+    trigger_error('filter_inc.php: gibNaviMetaTitle() called.', E_USER_WARNING);
     global $oMeta;
     return Shop::getNaviFilter()->getMetaTitle($oMeta, $oSuchergebnisse, $GlobaleMetaAngaben_arr);
 }
@@ -458,7 +458,7 @@ function gibNaviMetaTitle($NaviFilter, $oSuchergebnisse, $GlobaleMetaAngaben_arr
  */
 function gibNaviMetaDescription($oArtikel_arr, $NaviFilter, $oSuchergebnisse, $GlobaleMetaAngaben_arr)
 {
-    trigger_error('filter_inc.php: gibNaviMetaDescription() called.', E_WARNING);
+    trigger_error('filter_inc.php: gibNaviMetaDescription() called.', E_USER_WARNING);
     global $oMeta;
     return Shop::getNaviFilter()->getMetaDescription($oMeta, $oArtikel_arr, $oSuchergebnisse, $GlobaleMetaAngaben_arr);
 }
@@ -472,7 +472,7 @@ function gibNaviMetaDescription($oArtikel_arr, $NaviFilter, $oSuchergebnisse, $G
  */
 function gibNaviMetaKeywords($oArtikel_arr, $NaviFilter, $oExcludesKeywords_arr = [])
 {
-    trigger_error('filter_inc.php: gibNaviMetaKeywords() called.', E_WARNING);
+    trigger_error('filter_inc.php: gibNaviMetaKeywords() called.', E_USER_WARNING);
     global $oMeta;
     return Shop::getNaviFilter()->getMetaKeywords($oMeta, $oArtikel_arr);
 }
@@ -487,7 +487,7 @@ function gibNaviMetaKeywords($oArtikel_arr, $NaviFilter, $oExcludesKeywords_arr 
  */
 function gibMetaStart($NaviFilter, $oSuchergebnisse)
 {
-    trigger_error('filter_inc.php: gibMetaStart() called.', E_WARNING);
+    trigger_error('filter_inc.php: gibMetaStart() called.', E_USER_WARNING);
     return Shop::getNaviFilter()->getMetaStart($oSuchergebnisse);
 }
 
@@ -516,7 +516,7 @@ function gibSuchanfrageKey($cSuche, $kSprache)
  */
 function setzeUsersortierung($NaviFilter)
 {
-    trigger_error('filter_inc.php: setzeUsersortierung() called.', E_WARNING);
+    trigger_error('filter_inc.php: setzeUsersortierung() called.', E_USER_WARNING);
     global $AktuelleKategorie;
     Shop::getNaviFilter()->setUserSort($AktuelleKategorie);
 }
@@ -1111,7 +1111,7 @@ function gibArtikelKeysExtendedJTLSearch($oExtendedJTLSearchResponse)
  */
 function baueArtikelAnzahl($FilterSQL, &$oSuchergebnisse, $nArtikelProSeite = 20, $nLimitN = 20)
 {
-    trigger_error('filter_inc.php: baueArtikelAnzahl() called.', E_WARNING);
+    trigger_error('filter_inc.php: baueArtikelAnzahl() called.', E_USER_WARNING);
     $kKundengruppe = isset($_SESSION['Kundengruppe']->kKundengruppe) ? (int)$_SESSION['Kundengruppe']->kKundengruppe : null;
     if (!$kKundengruppe) {
         $oKundengruppe = Shop::DB()->query("SELECT kKundengruppe FROM tkundengruppe WHERE cStandard = 'Y'", 1);

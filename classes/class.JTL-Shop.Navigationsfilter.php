@@ -2735,6 +2735,165 @@ class Navigationsfilter
     }
 
     /**
+     * @param bool $bExtendedJTLSearch
+     * @return array
+     * @former gibSortierliste
+     */
+    public function getSortingOptions($bExtendedJTLSearch = false)
+    {
+        $sortingOptions = [];
+        $search         = [];
+        if ($bExtendedJTLSearch !== false) {
+            $names     = [
+                'suche_sortierprio_name',
+                'suche_sortierprio_name_ab',
+                'suche_sortierprio_preis',
+                'suche_sortierprio_preis_ab'
+            ];
+            $values    = [SEARCH_SORT_NAME_ASC, SEARCH_SORT_NAME_DESC, SEARCH_SORT_PRICE_ASC, SEARCH_SORT_PRICE_DESC];
+            $languages = ['sortNameAsc', 'sortNameDesc', 'sortPriceAsc', 'sortPriceDesc'];
+            foreach ($names as $i => $name) {
+                $obj                  = new stdClass();
+                $obj->name            = $name;
+                $obj->value           = $values[$i];
+                $obj->angezeigterName = Shop::Lang()->get($languages[$i], 'global');
+
+                $sortingOptions[] = $obj;
+            }
+
+            return $sortingOptions;
+        }
+        while (($obj = $this->getNextSearchPriority($search)) !== null) {
+            $search[] = $obj->name;
+            unset($obj->name);
+            $sortingOptions[] = $obj;
+        }
+
+        return $sortingOptions;
+    }
+
+    /**
+     * @param array $search
+     * @return null|stdClass
+     * @former gibNextSortPrio
+     */
+    public function getNextSearchPriority($search)
+    {
+        $max = 0;
+        $obj = null;
+        if ($max < $this->conf['artikeluebersicht']['suche_sortierprio_name'] &&
+            !in_array('suche_sortierprio_name', $search, true)
+        ) {
+            $obj                  = new stdClass();
+            $obj->name            = 'suche_sortierprio_name';
+            $obj->value           = SEARCH_SORT_NAME_ASC;
+            $obj->angezeigterName = Shop::Lang()->get('sortNameAsc', 'global');
+            $max                  = $this->conf['artikeluebersicht']['suche_sortierprio_name'];
+        }
+        if ($max < $this->conf['artikeluebersicht']['suche_sortierprio_name_ab'] &&
+            !in_array('suche_sortierprio_name_ab', $search, true)
+        ) {
+            $obj                  = new stdClass();
+            $obj->name            = 'suche_sortierprio_name_ab';
+            $obj->value           = SEARCH_SORT_NAME_DESC;
+            $obj->angezeigterName = Shop::Lang()->get('sortNameDesc', 'global');
+            $max                  = $this->conf['artikeluebersicht']['suche_sortierprio_name_ab'];
+        }
+        if ($max < $this->conf['artikeluebersicht']['suche_sortierprio_preis'] &&
+            !in_array('suche_sortierprio_preis', $search, true)
+        ) {
+            $obj                  = new stdClass();
+            $obj->name            = 'suche_sortierprio_preis';
+            $obj->value           = SEARCH_SORT_PRICE_ASC;
+            $obj->angezeigterName = Shop::Lang()->get('sortPriceAsc', 'global');
+            $max                  = $this->conf['artikeluebersicht']['suche_sortierprio_preis'];
+        }
+        if ($max < $this->conf['artikeluebersicht']['suche_sortierprio_preis_ab'] &&
+            !in_array('suche_sortierprio_preis_ab', $search, true)
+        ) {
+            $obj                  = new stdClass();
+            $obj->name            = 'suche_sortierprio_preis_ab';
+            $obj->value           = SEARCH_SORT_PRICE_DESC;
+            $obj->angezeigterName = Shop::Lang()->get('sortPriceDesc', 'global');
+            $max                  = $this->conf['artikeluebersicht']['suche_sortierprio_preis_ab'];
+        }
+        if ($max < $this->conf['artikeluebersicht']['suche_sortierprio_ean'] &&
+            !in_array('suche_sortierprio_ean', $search, true)
+        ) {
+            $obj                  = new stdClass();
+            $obj->name            = 'suche_sortierprio_ean';
+            $obj->value           = SEARCH_SORT_EAN;
+            $obj->angezeigterName = Shop::Lang()->get('sortEan', 'global');
+            $max                  = $this->conf['artikeluebersicht']['suche_sortierprio_ean'];
+        }
+        if ($max < $this->conf['artikeluebersicht']['suche_sortierprio_erstelldatum'] &&
+            !in_array('suche_sortierprio_erstelldatum', $search, true)
+        ) {
+            $obj                  = new stdClass();
+            $obj->name            = 'suche_sortierprio_erstelldatum';
+            $obj->value           = SEARCH_SORT_NEWEST_FIRST;
+            $obj->angezeigterName = Shop::Lang()->get('sortNewestFirst', 'global');
+            $max                  = $this->conf['artikeluebersicht']['suche_sortierprio_erstelldatum'];
+        }
+        if ($max < $this->conf['artikeluebersicht']['suche_sortierprio_artikelnummer'] &&
+            !in_array('suche_sortierprio_artikelnummer', $search, true)
+        ) {
+            $obj                  = new stdClass();
+            $obj->name            = 'suche_sortierprio_artikelnummer';
+            $obj->value           = SEARCH_SORT_PRODUCTNO;
+            $obj->angezeigterName = Shop::Lang()->get('sortProductno', 'global');
+            $max                  = $this->conf['artikeluebersicht']['suche_sortierprio_artikelnummer'];
+        }
+        if ($max < $this->conf['artikeluebersicht']['suche_sortierprio_lagerbestand'] &&
+            !in_array('suche_sortierprio_lagerbestand', $search, true)
+        ) {
+            $obj                  = new stdClass();
+            $obj->name            = 'suche_sortierprio_lagerbestand';
+            $obj->value           = SEARCH_SORT_AVAILABILITY;
+            $obj->angezeigterName = Shop::Lang()->get('sortAvailability', 'global');
+            $max                  = $this->conf['artikeluebersicht']['suche_sortierprio_lagerbestand'];
+        }
+        if ($max < $this->conf['artikeluebersicht']['suche_sortierprio_gewicht'] &&
+            !in_array('suche_sortierprio_gewicht', $search, true)
+        ) {
+            $obj                  = new stdClass();
+            $obj->name            = 'suche_sortierprio_gewicht';
+            $obj->value           = SEARCH_SORT_WEIGHT;
+            $obj->angezeigterName = Shop::Lang()->get('sortWeight', 'global');
+            $max                  = $this->conf['artikeluebersicht']['suche_sortierprio_gewicht'];
+        }
+        if ($max < $this->conf['artikeluebersicht']['suche_sortierprio_erscheinungsdatum'] &&
+            !in_array('suche_sortierprio_erscheinungsdatum', $search, true)
+        ) {
+            $obj                  = new stdClass();
+            $obj->name            = 'suche_sortierprio_erscheinungsdatum';
+            $obj->value           = SEARCH_SORT_DATEOFISSUE;
+            $obj->angezeigterName = Shop::Lang()->get('sortDateofissue', 'global');
+            $max                  = $this->conf['artikeluebersicht']['suche_sortierprio_erscheinungsdatum'];
+        }
+        if ($max < $this->conf['artikeluebersicht']['suche_sortierprio_bestseller'] &&
+            !in_array('suche_sortierprio_bestseller', $search, true)
+        ) {
+            $obj                  = new stdClass();
+            $obj->name            = 'suche_sortierprio_bestseller';
+            $obj->value           = SEARCH_SORT_BESTSELLER;
+            $obj->angezeigterName = Shop::Lang()->get('bestseller', 'global');
+            $max                  = $this->conf['artikeluebersicht']['suche_sortierprio_bestseller'];
+        }
+        if ($max < $this->conf['artikeluebersicht']['suche_sortierprio_bewertung'] &&
+            !in_array('suche_sortierprio_bewertung', $search, true)
+        ) {
+            $obj                  = new stdClass();
+            $obj->name            = 'suche_sortierprio_bewertung';
+            $obj->value           = SEARCH_SORT_RATING;
+            $obj->angezeigterName = Shop::Lang()->get('rating', 'global');
+        }
+
+        return $obj;
+    }
+
+
+    /**
      * @return array
      */
     public function __debugInfo()

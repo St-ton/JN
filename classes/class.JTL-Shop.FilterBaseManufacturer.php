@@ -59,7 +59,7 @@ class FilterBaseManufacturer extends AbstractFilter
                 SELECT tseo.cSeo, tseo.kSprache, thersteller.cName
                     FROM tseo
                         LEFT JOIN thersteller
-                        ON thersteller.kHersteller = tseo.kKey
+                            ON thersteller.kHersteller = tseo.kKey
                     WHERE cKey = 'kHersteller' 
                         AND kKey = " . $this->getValue() . "
                     ORDER BY kSprache", 2
@@ -126,15 +126,6 @@ class FilterBaseManufacturer extends AbstractFilter
     {
         $manufacturers = [];
         if ($this->getConfig()['navigationsfilter']['allgemein_herstellerfilter_benutzen'] !== 'N') {
-            //it's actually unnecessary to filter by manufacturer if we already got a manufacturer filter active...
-//            if ($this->HerstellerFilter->isInitialized()) {
-//                $filter              = new stdClass();
-//                $filter->cSeo        = $this->HerstellerFilter->getSeo();
-//                $filter->kHersteller = $this->HerstellerFilter->getValue();
-//                $filter->cName       = $this->HerstellerFilter->getName();
-//
-//                return $filter;
-//            }
             $naviFilter = Shop::getNaviFilter();
             $order      = $naviFilter->getOrder();
             $state      = $naviFilter->getCurrentStateData();
@@ -145,16 +136,21 @@ class FilterBaseManufacturer extends AbstractFilter
                                                 ->setTable('thersteller')
                                                 ->setOn('tartikel.kHersteller = thersteller.kHersteller');
 
-            $query = $naviFilter->getBaseQuery([
-                'thersteller.kHersteller',
-                'thersteller.cName',
-                'thersteller.nSortNr',
-                'tartikel.kArtikel'
-            ], $state->joins, $state->conditions, $state->having, $order->orderBy);
-            $query = "
-            SELECT tseo.cSeo, ssMerkmal.kHersteller, ssMerkmal.cName, ssMerkmal.nSortNr, COUNT(*) AS nAnzahl
-                FROM
-                (" . $query . "
+            $query = $naviFilter->getBaseQuery(
+                [
+                    'thersteller.kHersteller',
+                    'thersteller.cName',
+                    'thersteller.nSortNr',
+                    'tartikel.kArtikel'
+                ],
+                $state->joins,
+                $state->conditions,
+                $state->having,
+                $order->orderBy
+            );
+            $query = "SELECT tseo.cSeo, ssMerkmal.kHersteller, ssMerkmal.cName, ssMerkmal.nSortNr, COUNT(*) AS nAnzahl
+                FROM (" .
+                    $query . "
                 ) AS ssMerkmal
                     LEFT JOIN tseo 
                         ON tseo.kKey = ssMerkmal.kHersteller

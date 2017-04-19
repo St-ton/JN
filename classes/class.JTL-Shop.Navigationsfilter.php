@@ -919,7 +919,6 @@ class Navigationsfilter
                 break;
             case SEARCH_SORT_PRICE_DESC:
                 $sort->orderBy = 'tpreise.fVKNetto DESC, tartikel.cName';
-                $sort->join    = new FilterJoin();
                 $sort->join->setComment('join from SORT by price DESC')
                            ->setType('JOIN')
                            ->setTable('tpreise')
@@ -946,7 +945,6 @@ class Navigationsfilter
                 break;
             case SEARCH_SORT_BESTSELLER:
                 $sort->orderBy = 'tbestseller.fAnzahl DESC, tartikel.cName';
-                $sort->join    = new FilterJoin();
                 $sort->join->setComment('join from SORT by bestseller')
                            ->setType('LEFT JOIN')
                            ->setTable('tbestseller')
@@ -954,7 +952,6 @@ class Navigationsfilter
                 break;
             case SEARCH_SORT_RATING:
                 $sort->orderBy = 'tbewertung.nSterne DESC, tartikel.cName';
-                $sort->join    = new FilterJoin();
                 $sort->join->setComment('join from SORT by rating')
                            ->setType('LEFT JOIN')
                            ->setTable('tbewertung')
@@ -1508,13 +1505,11 @@ class Navigationsfilter
         $groupBy = ['tartikel.kArtikel'],
         $or = false
     ) {
-        $join = new FilterJoin();
-        $join->setComment('article visiblity join from getBaseQuery')
-             ->setType('LEFT JOIN')
-             ->setTable('tartikelsichtbarkeit')
-             ->setOn('tartikel.kArtikel = tartikelsichtbarkeit.kArtikel 
+        $joins[] = (new FilterJoin())->setComment('article visiblity join from getBaseQuery')
+                                     ->setType('LEFT JOIN')
+                                     ->setTable('tartikelsichtbarkeit')
+                                     ->setOn('tartikel.kArtikel = tartikelsichtbarkeit.kArtikel 
                         AND tartikelsichtbarkeit.kKundengruppe = ' . $this->getCustomerGroupID());
-        $joins[] = $join;
         // remove duplicate joins
         $joinedTables = [];
         foreach ($joins as $i => $stateJoin) {

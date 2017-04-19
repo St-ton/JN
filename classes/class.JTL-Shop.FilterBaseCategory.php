@@ -121,12 +121,9 @@ class FilterBaseCategory extends AbstractFilter
      */
     public function getSQLJoin()
     {
-        $join = new FilterJoin();
-        $join->setType('JOIN')
-             ->setTable('tkategorieartikel')
-             ->setOn('tartikel.kArtikel = tkategorieartikel.kArtikel')
-             ->setComment('join from FilterBaseCategory');
-
-        return $join;
+        return (new FilterJoin())->setType('JOIN')
+                                 ->setTable('tkategorieartikel')
+                                 ->setOn('tartikel.kArtikel = tkategorieartikel.kArtikel')
+                                 ->setComment('join from FilterBaseCategory');
     }
 }

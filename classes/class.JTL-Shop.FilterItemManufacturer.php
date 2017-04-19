@@ -26,36 +26,4 @@ class FilterItemManufacturer extends FilterBaseManufacturer
         $this->urlParam    = 'hf';
         $this->urlParamSEO = SEP_HST;
     }
-
-    /**
-     * @return string
-     */
-    public function getPrimaryKeyRow()
-    {
-        return 'kHersteller';
-    }
-
-    /**
-     * @return string
-     */
-    public function getTableName()
-    {
-        return 'thersteller';
-    }
-
-    /**
-     * @return string
-     */
-    public function getSQLCondition()
-    {
-        return 'tartikel.' . $this->getPrimaryKeyRow() . ' = ' . $this->getValue();
-    }
-
-    /**
-     * @return FilterJoin[]
-     */
-    public function getSQLJoin()
-    {
-        return [];
-    }
 }

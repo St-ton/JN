@@ -153,8 +153,7 @@ class FilterBaseAttribute extends AbstractFilter
      */
     public function getSQLJoin()
     {
-        $join = new FilterJoin();
-        $join->setType('JOIN')
+        return (new FilterJoin())->setType('JOIN')
              ->setComment('join1 from FilterBaseAttribute')
              ->setTable('(
                             SELECT kArtikel
@@ -163,11 +162,5 @@ class FilterBaseAttribute extends AbstractFilter
                             GROUP BY tartikelmerkmal.kArtikel
                             ) AS tmerkmaljoin')
              ->setOn('tmerkmaljoin.kArtikel = tartikel.kArtikel');
-//        $join2 = new FilterJoin();
-//        $join2->setType('JOIN')
-//              ->setTable('ttag')
-//              ->setOn('ttagartikel.kTag = ttag.kTag');
-
-        return $join;
     }
 }

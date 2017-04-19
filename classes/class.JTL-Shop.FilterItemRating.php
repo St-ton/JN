@@ -89,13 +89,10 @@ class FilterItemRating extends AbstractFilter
      */
     public function getSQLJoin()
     {
-        $join = new FilterJoin();
-        $join->setType('JOIN')
+        return (new FilterJoin())->setType('JOIN')
              ->setTable('tartikelext')
              ->setOn('tartikel.kArtikel = tartikelext.kArtikel')
              ->setComment('JOIN from FilterItemRating');
-
-        return $join;
     }
 
     /**

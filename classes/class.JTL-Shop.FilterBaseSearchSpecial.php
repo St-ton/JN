@@ -185,24 +185,18 @@ class FilterBaseSearchSpecial extends AbstractFilter
     {
         switch ($this->kKey) {
             case SEARCHSPECIALS_BESTSELLER:
-                $join = new FilterJoin();
-                $join->setType('JOIN')
-                     ->setTable('tbestseller')
-                     ->setOn('tbestseller.kArtikel = tartikel.kArtikel')
-                     ->setComment('JOIN from FilterBaseSearchSpecial bestseller');
-
-                return $join;
+                return (new FilterJoin())->setType('JOIN')
+                                         ->setTable('tbestseller')
+                                         ->setOn('tbestseller.kArtikel = tartikel.kArtikel')
+                                         ->setComment('JOIN from FilterBaseSearchSpecial bestseller');
 
             case SEARCHSPECIALS_SPECIALOFFERS:
                 if (!Shop::getNaviFilter()->PreisspannenFilter->isInitialized()) {
-                    $join = new FilterJoin();
-                    $join->setType('JOIN')
-                         ->setTable('tartikelsonderpreis AS tasp')
-                         ->setOn('tasp.kArtikel = tartikel.kArtikel JOIN tsonderpreise AS tsp 
+                    return (new FilterJoin())->setType('JOIN')
+                                             ->setTable('tartikelsonderpreis AS tasp')
+                                             ->setOn('tasp.kArtikel = tartikel.kArtikel JOIN tsonderpreise AS tsp 
                                       ON tsp.kArtikelSonderpreis = tasp.kArtikelSonderpreis')
-                         ->setComment('JOIN from FilterBaseSearchSpecial special offers');
-
-                    return $join;
+                                             ->setComment('JOIN from FilterBaseSearchSpecial special offers');
                 }
 
                 return [];
@@ -214,13 +208,10 @@ class FilterBaseSearchSpecial extends AbstractFilter
 
             case SEARCHSPECIALS_TOPREVIEWS:
                 if (!Shop::getNaviFilter()->BewertungFilter->isInitialized()) {
-                    $join = new FilterJoin();
-                    $join->setType('JOIN')
-                         ->setTable('tartikelext AS taex ')
-                         ->setOn('taex.kArtikel = tartikel.kArtikel')
-                         ->setComment('JOIN from FilterBaseSearchSpecial top reviews');
-
-                    return $join;
+                    return (new FilterJoin())->setType('JOIN')
+                                             ->setTable('tartikelext AS taex ')
+                                             ->setOn('taex.kArtikel = tartikel.kArtikel')
+                                             ->setComment('JOIN from FilterBaseSearchSpecial top reviews');
                 }
 
                 return [];

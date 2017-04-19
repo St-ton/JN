@@ -64,7 +64,8 @@ class FilterItemAttribute extends FilterBaseAttribute
             $seo_obj = Shop::DB()->query("
                 SELECT tmerkmalwertsprache.cWert, tmerkmalwert.kMerkmal
                     FROM tmerkmalwertsprache
-                    JOIN tmerkmalwert ON tmerkmalwert.kMerkmalWert = tmerkmalwertsprache.kMerkmalWert
+                    JOIN tmerkmalwert 
+                        ON tmerkmalwert.kMerkmalWert = tmerkmalwertsprache.kMerkmalWert
                     WHERE tmerkmalwertsprache.kSprache = " . Shop::getLanguage() . "
                        AND tmerkmalwertsprache.kMerkmalWert = " . $this->getValue(), 1
             );
@@ -76,14 +77,6 @@ class FilterItemAttribute extends FilterBaseAttribute
         }
 
         return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getPrimaryKeyRow()
-    {
-        return 'kMerkmalWert';
     }
 
     /**
@@ -107,13 +100,10 @@ class FilterItemAttribute extends FilterBaseAttribute
      */
     public function getSQLJoin()
     {
-        $join = new FilterJoin();
-        $join->setType('JOIN')
-             ->setTable('tartikelmerkmal')
-             ->setOn('tartikel.kArtikel = tartikelmerkmal.kArtikel')
-             ->setComment('join from FilterItemAttribute');
-
-        return $join;
+        return (new FilterJoin())->setType('JOIN')
+                                 ->setTable('tartikelmerkmal')
+                                 ->setOn('tartikel.kArtikel = tartikelmerkmal.kArtikel')
+                                 ->setComment('join from FilterItemAttribute');
     }
 
     /**
@@ -150,64 +140,52 @@ class FilterItemAttribute extends FilterBaseAttribute
             $state->joins[] = $order->join;
 
             $select = 'tmerkmal.cName';
+            // @todo?
             if (true || (!$naviFilter->MerkmalWert->isInitialized() && count($naviFilter->MerkmalFilter) === 0)) {
-                $join = new FilterJoin();
-                $join->setComment('join1 from FilterItemAttribute::getOptions()')
-                     ->setType('JOIN')
-                     ->setTable('tartikelmerkmal')
-                     ->setOn('tartikel.kArtikel = tartikelmerkmal.kArtikel');
-                $state->joins[] = $join;
+                $state->joins[] = (new FilterJoin())->setComment('join1 from FilterItemAttribute::getOptions()')
+                                                    ->setType('JOIN')
+                                                    ->setTable('tartikelmerkmal')
+                                                    ->setOn('tartikel.kArtikel = tartikelmerkmal.kArtikel');
             }
-            $join = new FilterJoin();
-            $join->setComment('join2 from FilterItemAttribute::getOptions()')
-                 ->setType('JOIN')
-                 ->setTable('tmerkmalwert')
-                 ->setOn('tmerkmalwert.kMerkmalWert = tartikelmerkmal.kMerkmalWert');
-            $state->joins[] = $join;
+            $state->joins[] = (new FilterJoin())->setComment('join2 from FilterItemAttribute::getOptions()')
+                                                ->setType('JOIN')
+                                                ->setTable('tmerkmalwert')
+                                                ->setOn('tmerkmalwert.kMerkmalWert = tartikelmerkmal.kMerkmalWert');
+            $state->joins[] = (new FilterJoin())->setComment('join3 from FilterItemAttribute::getOptions()')
+                                                ->setType('JOIN')
+                                                ->setTable('tmerkmalwertsprache')
+                                                ->setOn('tmerkmalwertsprache.kMerkmalWert = tartikelmerkmal.kMerkmalWert 
+                                                            AND tmerkmalwertsprache.kSprache = ' .
+                                                            $this->getLanguageID());
+            $state->joins[] = (new FilterJoin())->setComment('join4 from FilterItemAttribute::getOptions()')
+                                                ->setType('JOIN')
+                                                ->setTable('tmerkmal')
+                                                ->setOn('tmerkmal.kMerkmal = tartikelmerkmal.kMerkmal');
 
-            $join = new FilterJoin();
-            $join->setComment('join3 from FilterItemAttribute::getOptions()')
-                 ->setType('JOIN')
-                 ->setTable('tmerkmalwertsprache')
-                 ->setOn('tmerkmalwertsprache.kMerkmalWert = tartikelmerkmal.kMerkmalWert 
-                              AND tmerkmalwertsprache.kSprache = ' . $this->getLanguageID());
-            $state->joins[] = $join;
-
-            $join = new FilterJoin();
-            $join->setComment('join4 from FilterItemAttribute::getOptions()')
-                 ->setType('JOIN')
-                 ->setTable('tmerkmal')
-                 ->setOn('tmerkmal.kMerkmal = tartikelmerkmal.kMerkmal');
-            $state->joins[] = $join;
-
-            if (Shop::$kSprache > 0 && !standardspracheAktiv()) {
-                $select = "tmerkmalsprache.cName";
-                $join   = new FilterJoin();
-                $join->setComment('join5 from FilterItemAttribute::getOptions()')
-                     ->setType('JOIN')
-                     ->setTable('tmerkmalsprache')
-                     ->setOn('tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal 
-                                  AND tmerkmalsprache.kSprache = ' . $this->getLanguageID());
-                $state->joins[] = $join;
+            if (Shop::getLanguage() > 0 && !standardspracheAktiv()) {
+                $select = 'tmerkmalsprache.cName';
+                $state->joins[] = (new FilterJoin())->setComment('join5 from FilterItemAttribute::getOptions()')
+                                                    ->setType('JOIN')
+                                                    ->setTable('tmerkmalsprache')
+                                                    ->setOn('tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal 
+                                                    AND tmerkmalsprache.kSprache = ' . $this->getLanguageID());
             }
 
             if (count($naviFilter->MerkmalFilter) > 0) {
-                $join            = new FilterJoin();
                 $activeFilterIDs = [];
                 foreach ($naviFilter->MerkmalFilter as $filter) {
                     $activeFilterIDs[] = $filter->getValue();
                 }
-                $join->setComment('join6 from FilterItemAttribute::getOptions()')
-                     ->setType('JOIN')
-                     ->setTable('(
-                                SELECT kArtikel
-                                    FROM tartikelmerkmal
-                                        WHERE kMerkmalWert IN (' . implode(', ', $activeFilterIDs) . ' )
-                                    GROUP BY kArtikel
-                                    HAVING count(*) = ' . count($activeFilterIDs) . '
-                                    ) AS ssj1')
-                     ->setOn('tartikel.kArtikel = ssj1.kArtikel');
-                $state->joins[] = $join;
+                $state->joins[] = (new FilterJoin())->setComment('join6 from FilterItemAttribute::getOptions()')
+                                                    ->setType('JOIN')
+                                                    ->setTable('(
+                                                        SELECT kArtikel
+                                                            FROM tartikelmerkmal
+                                                                WHERE kMerkmalWert IN (' . implode(', ', $activeFilterIDs) . ' )
+                                                            GROUP BY kArtikel
+                                                            HAVING count(*) = ' . count($activeFilterIDs) . '
+                                                            ) AS ssj1')
+                                                    ->setOn('tartikel.kArtikel = ssj1.kArtikel');
             }
 
             $query = $naviFilter->getBaseQuery([
@@ -349,7 +327,7 @@ class FilterItemAttribute extends FilterBaseAttribute
                 }
                 if ($bAlleNumerisch) {
                     usort($oMerkmalFilter_arr[$o]->oMerkmalWerte_arr, function ($a, $b) {
-                        return ($a == $b)
+                        return $a == $b
                             ? 0
                             : (($a->cWert < $b->cWert)
                                 ? -1

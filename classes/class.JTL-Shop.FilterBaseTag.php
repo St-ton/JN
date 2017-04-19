@@ -105,18 +105,16 @@ class FilterBaseTag extends AbstractFilter
      */
     public function getSQLJoin()
     {
-        $join = new FilterJoin();
-        $join->setType('JOIN')
-             ->setTable('ttagartikel')
-             ->setOn('tartikel.kArtikel = ttagartikel.kArtikel')
-             ->setComment('JOIN1 from FilterBaseTag');
-        $join2 = new FilterJoin();
-        $join2->setType('JOIN')
-              ->setTable('ttag')
-              ->setOn('ttagartikel.kTag = ttag.kTag')
-              ->setComment('JOIN2 from FilterBaseTag');
-
-        return [$join, $join2];
+        return [
+            (new FilterJoin())->setType('JOIN')
+                              ->setTable('ttagartikel')
+                              ->setOn('tartikel.kArtikel = ttagartikel.kArtikel')
+                              ->setComment('JOIN1 from FilterBaseTag'),
+            (new FilterJoin())->setType('JOIN')
+                              ->setTable('ttag')
+                              ->setOn('ttagartikel.kTag = ttag.kTag')
+                              ->setComment('JOIN2 from FilterBaseTag')
+        ];
     }
 
     /**
@@ -132,26 +130,19 @@ class FilterBaseTag extends AbstractFilter
             $order        = $naviFilter->getOrder();
             $state        = $naviFilter->getCurrentStateData();
 
-            $join = new FilterJoin();
-            $join->setComment('join1 from FilterBaseTag::getOptions()')
-                 ->setType('JOIN')
-                 ->setTable('ttagartikel')
-                 ->setOn('ttagartikel.kArtikel = tartikel.kArtikel');
-
-            $state->joins[] = $join;
-
-            $join = new FilterJoin();
-            $join->setComment('join2 from FilterBaseTag::getOptions()')
-                 ->setType('JOIN')
-                 ->setTable('ttag')
-                 ->setOn('ttagartikel.kTag = ttag.kTag');
-
-            $state->joins[] = $join;
+            $state->joins[] = (new FilterJoin())->setComment('join1 from FilterBaseTag::getOptions()')
+                                                ->setType('JOIN')
+                                                ->setTable('ttagartikel')
+                                                ->setOn('ttagartikel.kArtikel = tartikel.kArtikel');
+            $state->joins[] = (new FilterJoin())->setComment('join2 from FilterBaseTag::getOptions()')
+                                                ->setType('JOIN')
+                                                ->setTable('ttag')
+                                                ->setOn('ttagartikel.kTag = ttag.kTag');
             $state->joins[] = $order->join;
 
             //remove duplicate joins
             foreach ($state->joins as $i => $stateJoin) {
-                if (!in_array($stateJoin->getTable(), $joinedTables)) {
+                if (!in_array($stateJoin->getTable(), $joinedTables, true)) {
                     $joinedTables[] = $stateJoin->getTable();
                 } else {
                     unset($state->joins[$i]);

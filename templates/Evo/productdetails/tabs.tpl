@@ -95,7 +95,7 @@
         <ul class="nav nav-tabs bottom15" role="tablist">
             {foreach from=$tabsPaneleArr item=tabPanel name=tabPanelItem}
                 <li role="presentation"
-                    {if isset($smarty.get.ratings_nPage) && count($smarty.get.ratings_nPage) > 0 && $tabPanel.id == "votes"}
+                    {if isset($smarty.get.ratings_nPage) && count($smarty.get.ratings_nPage) > 0 && $tabPanel.id === "votes"}
                         class="active"
                     {else}
                         {if $smarty.foreach.tabPanelItem.first && !isset($smarty.get.ratings_nPage)} class="active"{/if}
@@ -108,7 +108,7 @@
     <div class="tab-content">
         {foreach from=$tabsPaneleArr item=tabPanele name=tabPaneleItem}
             {if $tabanzeige}
-                {if isset($smarty.get.ratings_nPage) && count($smarty.get.ratings_nPage) > 0 && $tabPanele.id == "votes"}
+                {if isset($smarty.get.ratings_nPage) && count($smarty.get.ratings_nPage) > 0 && $tabPanele.id === "votes"}
                     <div role="tabpanel" class="tab-pane fade in active"
                 {else}
                     <div role="tabpanel" class="tab-pane fade

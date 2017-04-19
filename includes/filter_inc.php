@@ -553,79 +553,19 @@ function baueSeitenNaviURL($NaviFilter, $bSeo, $oSeitenzahlen, $nMaxAnzeige = 7,
 }
 
 /**
- * @todo
- * @param object $NaviFilter
- * @return mixed|stdClass
- * @deprecated since 4.06
- */
-function bauFilterSQL($NaviFilter)
-{
-    die('bauFilterSQL()');
-    $cacheID = 'fsql_' . md5(serialize($NaviFilter));
-    if (($FilterSQL = Shop::Cache()->get($cacheID)) === false) {
-        $FilterSQL = new stdClass();
-        //Filter SQLs Objekte
-        $FilterSQL->oHerstellerFilterSQL      = gibHerstellerFilterSQL($NaviFilter);
-        $FilterSQL->oKategorieFilterSQL       = gibKategorieFilterSQL($NaviFilter);
-        $FilterSQL->oMerkmalFilterSQL         = gibMerkmalFilterSQL($NaviFilter);
-        $FilterSQL->oTagFilterSQL             = gibTagFilterSQL($NaviFilter);
-        $FilterSQL->oBewertungSterneFilterSQL = gibBewertungSterneFilterSQL($NaviFilter);
-        $FilterSQL->oPreisspannenFilterSQL    = gibPreisspannenFilterSQL($NaviFilter);
-        $FilterSQL->oSuchFilterSQL            = gibSuchFilterSQL($NaviFilter);
-        $FilterSQL->oSuchspecialFilterSQL     = gibSuchspecialFilterSQL($NaviFilter);
-        $FilterSQL->oArtikelAttributFilterSQL = gibArtikelAttributFilterSQL($NaviFilter);
-
-        executeHook(HOOK_FILTER_INC_BAUFILTERSQL, [
-            'NaviFilter' => &$NaviFilter,
-            'FilterSQL'  => &$FilterSQL
-            ]
-        );
-
-        Shop::Cache()->set($cacheID, $FilterSQL, [CACHING_GROUP_CATEGORY]);
-    }
-
-    return $FilterSQL;
-}
-
-/**
- * @todo
  * @param null|array $Einstellungen
  * @param bool $bExtendedJTLSearch
  * @return array
+ * @deprecated since 4.06
  */
 function gibSortierliste($Einstellungen = null, $bExtendedJTLSearch = false)
 {
-    $Sortierliste = [];
-    $search       = [];
-    if ($bExtendedJTLSearch) {
-        $names     = ['suche_sortierprio_name', 'suche_sortierprio_name_ab', 'suche_sortierprio_preis', 'suche_sortierprio_preis_ab'];
-        $values    = [SEARCH_SORT_NAME_ASC, SEARCH_SORT_NAME_DESC, SEARCH_SORT_PRICE_ASC, SEARCH_SORT_PRICE_DESC];
-        $languages = ['sortNameAsc', 'sortNameDesc', 'sortPriceAsc', 'sortPriceDesc'];
-        foreach ($names as $i => $name) {
-            $obj                  = new stdClass();
-            $obj->name            = $name;
-            $obj->value           = $values[$i];
-            $obj->angezeigterName = Shop::Lang()->get($languages[$i], 'global');
-
-            $Sortierliste[] = $obj;
-        }
-
-        return $Sortierliste;
-    }
-    if ($Einstellungen === null) {
-        $Einstellungen = Shop::getSettings([CONF_ARTIKELUEBERSICHT]);
-    }
-    while (($obj = gibNextSortPrio($search, $Einstellungen)) !== null) {
-        $search[] = $obj->name;
-        unset($obj->name);
-        $Sortierliste[] = $obj;
-    }
-
-    return $Sortierliste;
+    trigger_error('filter_inc.php: gibSortierliste() called.', E_USER_WARNING);
+    return Shop::getNaviFilter()->getSortingOptions($bExtendedJTLSearch);
 }
 
 /**
- * @todo
+ * @deprecated since 4.06
  * @param array $search
  * @param null|array $Einstellungen
  * @return null|stdClass
@@ -748,82 +688,61 @@ function gibNextSortPrio($search, $Einstellungen = null)
     return $obj;
 }
 
-
 /**
  * @todo
- * @param stdClass $oSuchCache
- * @param array $cSuchspalten_arr
- * @param array $cSuch_arr
- * @param int $nLimit
- *
- * @return int
+ * @param object $NaviFilter
+ * @return mixed|stdClass
+ * @deprecated since 4.06
+ */
+function bauFilterSQL($NaviFilter)
+{
+    die('bauFilterSQL()');
+    $cacheID = 'fsql_' . md5(serialize($NaviFilter));
+    if (($FilterSQL = Shop::Cache()->get($cacheID)) === false) {
+        $FilterSQL = new stdClass();
+        //Filter SQLs Objekte
+        $FilterSQL->oHerstellerFilterSQL      = gibHerstellerFilterSQL($NaviFilter);
+        $FilterSQL->oKategorieFilterSQL       = gibKategorieFilterSQL($NaviFilter);
+        $FilterSQL->oMerkmalFilterSQL         = gibMerkmalFilterSQL($NaviFilter);
+        $FilterSQL->oTagFilterSQL             = gibTagFilterSQL($NaviFilter);
+        $FilterSQL->oBewertungSterneFilterSQL = gibBewertungSterneFilterSQL($NaviFilter);
+        $FilterSQL->oPreisspannenFilterSQL    = gibPreisspannenFilterSQL($NaviFilter);
+        $FilterSQL->oSuchFilterSQL            = gibSuchFilterSQL($NaviFilter);
+        $FilterSQL->oSuchspecialFilterSQL     = gibSuchspecialFilterSQL($NaviFilter);
+        $FilterSQL->oArtikelAttributFilterSQL = gibArtikelAttributFilterSQL($NaviFilter);
+
+        executeHook(HOOK_FILTER_INC_BAUFILTERSQL, [
+            'NaviFilter' => &$NaviFilter,
+            'FilterSQL'  => &$FilterSQL
+            ]
+        );
+
+        Shop::Cache()->set($cacheID, $FilterSQL, [CACHING_GROUP_CATEGORY]);
+    }
+
+    return $FilterSQL;
+}
+
+/**
+ * @throws Exception
+ * @deprecated since 4.06
  */
 function bearbeiteSuchCacheFulltext($oSuchCache, $cSuchspalten_arr, $cSuch_arr, $nLimit = 0)
 {
-    $nLimit = (int)$nLimit;
-
-    if ($oSuchCache->kSuchCache > 0) {
-        $cArtikelSpalten_arr = array_map(function ($item) {
-            $item_arr = explode('.', $item, 2);
-
-            return 'tartikel.' . $item_arr[1];
-        }, $cSuchspalten_arr);
-
-        $cSprachSpalten_arr = array_filter($cSuchspalten_arr, function ($item) {
-            return preg_match('/tartikelsprache\.(.*)/', $item) ? true : false;
-        });
-
-        $match = "MATCH (" . implode(', ', $cArtikelSpalten_arr) . ") AGAINST ('" . implode(' ', $cSuch_arr) . "' IN NATURAL LANGUAGE MODE)";
-        $cSQL  = "SELECT {$oSuchCache->kSuchCache} AS kSuchCache,
-                    IF(tartikel.kVaterArtikel > 0, tartikel.kVaterArtikel, tartikel.kArtikel) AS kArtikelTMP,
-                    $match AS score
-                    FROM tartikel
-                    WHERE $match " . gibLagerfilter() . " ";
-
-        if (Shop::$kSprache > 0 && !standardspracheAktiv()) {
-            $match  = "MATCH (" . implode(', ', $cSprachSpalten_arr) . ") AGAINST ('" . implode(' ', $cSuch_arr) . "' IN NATURAL LANGUAGE MODE)";
-            $cSQL  .= "UNION DISTINCT
-                SELECT {$oSuchCache->kSuchCache} AS kSuchCache,
-                    IF(tartikel.kVaterArtikel > 0, tartikel.kVaterArtikel, tartikel.kArtikel) AS kArtikelTMP,
-                    $match AS score
-                    FROM tartikel
-                    INNER JOIN tartikelsprache ON tartikelsprache.kArtikel = tartikel.kArtikel
-                    WHERE $match " . gibLagerfilter() . " ";
-        }
-
-        $cISQL = "INSERT INTO tsuchcachetreffer
-                    SELECT kSuchCache, kArtikelTMP, ROUND(MAX(15 - score) * 10)
-                    FROM ($cSQL) AS i
-                    LEFT JOIN tartikelsichtbarkeit ON tartikelsichtbarkeit.kArtikel = i.kArtikelTMP
-                        AND tartikelsichtbarkeit.kKundengruppe = " . ((int)$_SESSION['Kundengruppe']->kKundengruppe) . "
-                    WHERE tartikelsichtbarkeit.kKundengruppe IS NULL
-                    GROUP BY kSuchCache, kArtikelTMP" . ($nLimit > 0 ? " LIMIT $nLimit" : '');
-
-        Shop::DB()->query($cISQL, 3);
-    }
-
-    return $oSuchCache->kSuchCache;
+    throw new Exception('filter_inc.php: bearbeiteSuchCacheFulltext() no longer supported.');
 }
 
 /**
- * @todo
- * @return bool
+ * @throws Exception
+ * @deprecated since 4.06
  */
 function isFulltextIndexActive()
 {
-    static $active = null;
-
-    if (!isset($active)) {
-        $active = Shop::DB()->query("SHOW INDEX FROM tartikel WHERE KEY_NAME = 'idx_tartikel_fulltext'", 1)
-        && Shop::DB()->query("SHOW INDEX FROM tartikelsprache WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'", 1) ? true : false;
-    }
-
-    return $active;
+    throw new Exception('filter_inc.php: isFulltextIndexActive() no longer supported.');
 }
 
-
 /**
- * @todo
+ * @deprecated since 4.06
  * @param object $a
  * @param object $b
  * @return int

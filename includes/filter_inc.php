@@ -377,7 +377,13 @@ function gibNaviURL($NaviFilter, $bSeo, $oZusatzFilter, $kSprache = 0, $bCanonic
 function berechnePreisspannenSQL($oPreis, $oPreisspannenfilter_arr = null)
 {
     trigger_error('filter_inc.php: berechnePreisspannenSQL() called.', E_USER_DEPRECATED);
-    return Shop::getNaviFilter()->PreisspannenFilter->getPriceRangeSQL();
+    $currency = isset($_SESSION['Waehrung'])
+        ? $_SESSION['Waehrung']
+        : null;
+    if (!isset($currency->kWaehrung)) {
+        $currency = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
+    }
+    return Shop::getNaviFilter()->PreisspannenFilter->getPriceRangeSQL($oPreis, $currency, $oPreisspannenfilter_arr);
 }
 
 /**

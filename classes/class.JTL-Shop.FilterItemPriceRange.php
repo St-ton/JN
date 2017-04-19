@@ -270,7 +270,6 @@ class FilterItemPriceRange extends AbstractFilter
         }
         // Wenn Option vorhanden, dann nur Spannen anzeigen, in denen Artikel vorhanden sind
         if ($this->getConfig()['navigationsfilter']['preisspannenfilter_anzeige_berechnung'] === 'A') {
-//            $nPreisMax = $oPreis->fMaxPreis;
             $nPreisMin               = $oPreis->fMinPreis;
             $nStep                   = $oPreis->fStep;
             $oPreisspannenfilter_arr = [];
@@ -316,7 +315,7 @@ class FilterItemPriceRange extends AbstractFilter
                 $cSQL .= " < " . $nBis . ", tartikel.kArtikel, NULL)
                     ) AS anz" . $i . ", ";
             }
-            $cSQL = substr($cSQL, 0, strlen($cSQL) - 2);
+            $cSQL = substr($cSQL, 0, -2);
         }
 
         return $cSQL;
@@ -397,7 +396,7 @@ class FilterItemPriceRange extends AbstractFilter
                 if (is_string($stateJoin)) {
                     throw new \InvalidArgumentException('getBaseQuery() got join as string: ' . $stateJoin);
                 }
-                if (!in_array($stateJoin->getTable(), $joinedTables)) {
+                if (!in_array($stateJoin->getTable(), $joinedTables, true)) {
                     $joinedTables[] = $stateJoin->getTable();
                 } else {
                     unset($state->joins[$i]);
@@ -419,8 +418,8 @@ class FilterItemPriceRange extends AbstractFilter
                 ? $_SESSION['Kunde']->fRabatt
                 : 0.0;
             $state->conditions = implode(' AND ', array_map(function ($a) {
-                return (is_string($a))
-                    ? ($a)
+                return is_string($a)
+                    ? $a
                     : ('(' . implode(' OR ', $a) . ')');
             }, $state->conditions));
             if (!empty($state->conditions)) {
@@ -480,7 +479,7 @@ class FilterItemPriceRange extends AbstractFilter
                     ) AS ssMerkmal
                     ";
                 $oPreisspannenFilterDB     = Shop::DB()->query($qry, 1);
-                $nPreisspannenAnzahl_arr   = (is_object($oPreisspannenFilterDB))
+                $nPreisspannenAnzahl_arr   = is_object($oPreisspannenFilterDB)
                     ? get_object_vars($oPreisspannenFilterDB)
                     : null;
                 $oPreisspannenFilterDB_arr = [];
@@ -508,10 +507,7 @@ class FilterItemPriceRange extends AbstractFilter
                         if ($oPreisspannenFilter->nVon >= $nPreisMax) {
                             $oPreisspannenFilter->nVon = ($nPreisMin + ($i - 1) * $nStep);
                         }
-
-                        if ($oPreisspannenFilter->nBis > $nPreisMax) {
-                            $oPreisspannenFilter->nBis = $nPreisMax;
-                        }
+                        $oPreisspannenFilter->nBis = $nPreisMax;
                     }
                     // Localize Preise
                     $oPreisspannenFilter->cVonLocalized  = gibPreisLocalizedOhneFaktor(
@@ -539,11 +535,7 @@ class FilterItemPriceRange extends AbstractFilter
                     $oPreisspannenfilter_arr[0]->nVon * $currency->fFaktor
                 );
                 if (!$oPreis->nAnzahlSpannen || !$oPreis->fMaxPreis) {
-                    $res = [];
-
-//                    Shop::Cache()->set($cacheID, $res, [CACHING_GROUP_CATEGORY]);
-
-                    return $res;
+                    return [];
                 }
                 $cSelectSQL = '';
                 $count      = count($oPreisspannenfilter_arr);

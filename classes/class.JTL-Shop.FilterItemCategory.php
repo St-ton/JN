@@ -180,7 +180,7 @@ class FilterItemCategory extends FilterBaseCategory
             }
             //neue Sortierung
             if ($categoryFilterType === 'KP') {
-                usort($oKategorieFilterDB_arr, 'sortierKategoriepfade');
+                usort($oKategorieFilterDB_arr, function ($a, $b) { return strcmp($a->cName, $b->cName); });
             }
         }
 

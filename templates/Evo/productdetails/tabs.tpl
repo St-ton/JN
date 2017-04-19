@@ -73,7 +73,7 @@
 {if (($Einstellungen.artikeldetails.mediendatei_anzeigen === 'YM' && $Artikel->cMedienDateiAnzeige !== 'beschreibung')
     || $Artikel->cMedienDateiAnzeige === 'tab') && !empty($Artikel->cMedienTyp_arr)}
     {foreach name="mediendateigruppen" from=$Artikel->cMedienTyp_arr item=cMedienTyp}
-        {$cMedienTypId = $cMedienTyp|regex_replace:"/[\'\" ]/":""}
+        {$cMedienTypId = $cMedienTyp|regex_replace:"/[\'\"\/ ]/":""}
         {$tabsPaneleArr[{$cMedienTypId}] = [
             'id'      => {$cMedienTypId},
             'cName'   => {$cMedienTyp},

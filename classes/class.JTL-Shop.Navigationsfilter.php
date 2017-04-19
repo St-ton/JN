@@ -1074,100 +1074,85 @@ class Navigationsfilter
     public function getProducts($forProductListing = true, $currentCategory = null, $fillArticles = true, $limit = 0)
     {
         $hash                                    = $this->getHash();
-        $oArtikelOptionen                        = new stdClass();
-        $oArtikelOptionen->nMerkmale             = 1;
-        $oArtikelOptionen->nKategorie            = 1;
-        $oArtikelOptionen->nAttribute            = 1;
-        $oArtikelOptionen->nArtikelAttribute     = 1;
-        $oArtikelOptionen->nVariationKombiKinder = 1;
-        $oArtikelOptionen->nWarenlager           = 1;
-        $_SESSION['nArtikelUebersichtVLKey_arr'] = []; // Nur Artikel die auch wirklich auf der Seite angezeigt werden
-        if (($oSuchergebnisse = Shop::Cache()->get($hash)) !== false) {
-            if ($fillArticles === true) {
-                $keys = $oSuchergebnisse->Artikel->articleKeys;
-                /** @var int[] $keys */
-                foreach ($keys as $articleKey) {
-                    $oArtikel = new Artikel();
-                    //$oArtikelOptionen->nVariationDetailPreis = 1;
-                    $oArtikel->fuelleArtikel($articleKey, $oArtikelOptionen);
-                    // Aktuelle Artikelmenge in die Session (Keine Vaterartikel)
-                    if ($oArtikel->nIstVater === 0) {
-                        $_SESSION['nArtikelUebersichtVLKey_arr'][] = $oArtikel->kArtikel;
-                    }
-                    $oSuchergebnisse->Artikel->elemente->addItem($oArtikel);
-                }
-            }
-        } else {
-            $oSuchergebnisse                         = new stdClass();
-            $oSuchergebnisse->Artikel                = new stdClass();
-            $oSuchergebnisse->Artikel->articleKeys   = [];
-            $oSuchergebnisse->Artikel->elemente      = new Collection();
-            $nArtikelProSeite = $limit > 0 ? $limit : $this->getArticlesPerPageLimit();
-            $nLimitN          = ($this->nSeite - 1) * $nArtikelProSeite;
-            // 50 nach links und 50 nach rechts für Artikeldetails blättern rausholen
-            $nLimitNBlaetter = $nLimitN;
-            if ($nLimitNBlaetter >= 50) {
-                $nLimitNBlaetter -= 50;
-            } elseif ($nLimitNBlaetter < 50) {
-                $nLimitNBlaetter = 0;
-            }
-            $nArtikelProSeiteBlaetter = max(100, $nArtikelProSeite + 50);
-            $offsetEnd                = $nArtikelProSeiteBlaetter - $nLimitNBlaetter;
+        $_SESSION['nArtikelUebersichtVLKey_arr'] = []; // Nur Artikel, die auch wirklich auf der Seite angezeigt werden
 
-            $oSuchergebnisse->Artikel->articleKeys = $this->getProductKeys();
-            $oSuchergebnisse->GesamtanzahlArtikel  = count($oSuchergebnisse->Artikel->articleKeys);
+        $limitPerPage    = $limit > 0 ? $limit : $this->getArticlesPerPageLimit();
+        $nLimitN         = ($this->nSeite - 1) * $limitPerPage;
+        $paginationLimit = $nLimitN >= 50 // 50 nach links und 50 nach rechts für Artikeldetails blättern
+            ? $nLimitN - 50
+            : 0;
+        $offsetEnd       = max(100, $limitPerPage + 50) - $paginationLimit;
+        $nLimitN         = $limitPerPage * ($this->nSeite - 1);
+        $max             = (int)$this->conf['artikeluebersicht']['artikeluebersicht_max_seitenzahl'];
+        if (($searchResults = Shop::Cache()->get($hash)) === false) {
+            $searchResults                       = new stdClass();
+            $searchResults->Artikel              = new stdClass();
+            $searchResults->Artikel->articleKeys = [];
+            $searchResults->Artikel->elemente    = new Collection();
+            $searchResults->Artikel->articleKeys = $this->getProductKeys();
+            $searchResults->GesamtanzahlArtikel  = count($searchResults->Artikel->articleKeys);
 
             if (!empty($this->Suche->cSuche)) {
-                suchanfragenSpeichern($this->Suche->cSuche, $oSuchergebnisse->GesamtanzahlArtikel);
+                suchanfragenSpeichern($this->Suche->cSuche, $searchResults->GesamtanzahlArtikel);
                 $this->Suche->kSuchanfrage = gibSuchanfrageKey($this->Suche->cSuche, $this->getLanguageID());
                 $this->Suchanfrage->setValue($this->Suche->kSuchanfrage)->setSeo($this->oSprache_arr);
             }
 
-            $nLimitN = $nArtikelProSeite * ($this->nSeite - 1);
-            $max     = (int)$this->conf['artikeluebersicht']['artikeluebersicht_max_seitenzahl'];
-
-            $oSuchergebnisse->ArtikelVon = $nLimitN + 1;
-            $oSuchergebnisse->ArtikelBis = min($nLimitN + $nArtikelProSeite, $oSuchergebnisse->GesamtanzahlArtikel);
-
-            $oSuchergebnisse->Seitenzahlen                = new stdClass();
-            $oSuchergebnisse->Seitenzahlen->AktuelleSeite = $this->nSeite;
-            $oSuchergebnisse->Seitenzahlen->MaxSeiten     = ceil($oSuchergebnisse->GesamtanzahlArtikel / $nArtikelProSeite);
-            $oSuchergebnisse->Seitenzahlen->minSeite      = min($oSuchergebnisse->Seitenzahlen->AktuelleSeite - $max / 2, 0);
-            $oSuchergebnisse->Seitenzahlen->maxSeite      = max($oSuchergebnisse->Seitenzahlen->MaxSeiten,
-                $oSuchergebnisse->Seitenzahlen->minSeite + $max - 1);
-            if ($oSuchergebnisse->Seitenzahlen->maxSeite > $oSuchergebnisse->Seitenzahlen->MaxSeiten) {
-                $oSuchergebnisse->Seitenzahlen->maxSeite = $oSuchergebnisse->Seitenzahlen->MaxSeiten;
+            $searchResults->ArtikelVon                  = $nLimitN + 1;
+            $searchResults->ArtikelBis                  = min(
+                $nLimitN + $limitPerPage,
+                $searchResults->GesamtanzahlArtikel
+            );
+            $searchResults->Seitenzahlen                = new stdClass();
+            $searchResults->Seitenzahlen->AktuelleSeite = $this->nSeite;
+            $searchResults->Seitenzahlen->MaxSeiten     = ceil(
+                $searchResults->GesamtanzahlArtikel / $limitPerPage
+            );
+            $searchResults->Seitenzahlen->minSeite      = min(
+                $searchResults->Seitenzahlen->AktuelleSeite - $max / 2,
+                0
+            );
+            $searchResults->Seitenzahlen->maxSeite      = max(
+                $searchResults->Seitenzahlen->MaxSeiten,
+                $searchResults->Seitenzahlen->minSeite + $max - 1
+            );
+            if ($searchResults->Seitenzahlen->maxSeite > $searchResults->Seitenzahlen->MaxSeiten) {
+                $searchResults->Seitenzahlen->maxSeite = $searchResults->Seitenzahlen->MaxSeiten;
             }
-
             if ($currentCategory !== null) {
-                $oSuchergebnisse = $this->setFilterOptions($oSuchergebnisse, $currentCategory);
+                $searchResults = $this->setFilterOptions($searchResults, $currentCategory);
             }
             // Header bauen
-            $oSuchergebnisse->SuchausdruckWrite = $this->getHeader();
-            Shop::Cache()->set($hash, $oSuchergebnisse, [CACHING_GROUP_CATEGORY]);
-            if ($fillArticles === true) {
-                foreach (array_slice($oSuchergebnisse->Artikel->articleKeys, $nLimitNBlaetter, $offsetEnd) as $i => $key) {
-                    $nLaufLimitN = $i + $nLimitNBlaetter;
-                    if ($nLaufLimitN >= $nLimitN && $nLaufLimitN < $nLimitN + $nArtikelProSeite) {
-                        $oArtikel = new Artikel();
-                        // $oArtikelOptionen->nVariationDetailPreis = 1;
-                        $oArtikel->fuelleArtikel($key, $oArtikelOptionen);
-                        // Aktuelle Artikelmenge in die Session (Keine Vaterartikel)
-                        if ($oArtikel->nIstVater === 0) {
-                            $_SESSION['nArtikelUebersichtVLKey_arr'][] = $oArtikel->kArtikel;
-                        }
-                        $oSuchergebnisse->Artikel->elemente->addItem($oArtikel);
+            $searchResults->SuchausdruckWrite = $this->getHeader();
+            Shop::Cache()->set($hash, $searchResults, [CACHING_GROUP_CATEGORY]);
+        }
+        if ($fillArticles === true) {
+            $opt                        = new stdClass();
+            $opt->nMerkmale             = 1;
+            $opt->nKategorie            = 1;
+            $opt->nAttribute            = 1;
+            $opt->nArtikelAttribute     = 1;
+            $opt->nVariationKombiKinder = 1;
+            $opt->nWarenlager           = 1;
+            foreach (array_slice($searchResults->Artikel->articleKeys, $paginationLimit, $offsetEnd) as $i => $id) {
+                $nLaufLimitN = $i + $paginationLimit;
+                if ($nLaufLimitN >= $nLimitN && $nLaufLimitN < $nLimitN + $limitPerPage) {
+                    $article = (new Artikel())->fuelleArtikel($id, $opt);
+                    // Aktuelle Artikelmenge in die Session (Keine Vaterartikel)
+                    if ($article->nIstVater === 0) {
+                        $_SESSION['nArtikelUebersichtVLKey_arr'][] = $article->kArtikel;
                     }
+                    $searchResults->Artikel->elemente->addItem($article);
                 }
             }
         }
-        $this->createUnsetFilterURLs(true, $oSuchergebnisse);
-        $_SESSION['oArtikelUebersichtKey_arr']   = $oSuchergebnisse->Artikel->articleKeys;
+        $this->createUnsetFilterURLs(true, $searchResults);
+        $_SESSION['oArtikelUebersichtKey_arr']   = $searchResults->Artikel->articleKeys;
         $_SESSION['nArtikelUebersichtVLKey_arr'] = [];
 
         return $forProductListing === true
-            ? $oSuchergebnisse
-            : $oSuchergebnisse->Artikel->elemente;
+            ? $searchResults
+            : $searchResults->Artikel->elemente;
     }
 
     /**

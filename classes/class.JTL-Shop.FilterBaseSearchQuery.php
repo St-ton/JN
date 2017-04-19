@@ -360,6 +360,19 @@ class FilterBaseSearchQuery extends AbstractFilter
                     AND cSuche = '" . Shop::DB()->escape($cSuche) . "'
                     AND (dGueltigBis > now() OR dGueltigBis IS NULL)", 1
         );
+        $keySuche = $cSuche . ';' .
+            $this->getConfig()['global']['artikel_artikelanzeigefilter'] . ';' .
+            (int)$_SESSION['Kundengruppe']->kKundengruppe;
+        // Suchcache checken, ob bereits vorhanden
+        $oSuchCache = Shop::DB()->executeQueryPrepared(
+            "SELECT kSuchCache
+                FROM tsuchcache
+                WHERE kSprache =  :lang
+                    AND cSuche = :search
+                    AND (dGueltigBis > now() OR dGueltigBis IS NULL)",
+            ['lang' => $kSprache, 'search' => Shop::DB()->escape($keySuche)],
+            1
+        );
 
         if (isset($oSuchCache->kSuchCache) && $oSuchCache->kSuchCache > 0) {
             return (int)$oSuchCache->kSuchCache; // Gib gültigen Suchcache zurück
@@ -389,6 +402,19 @@ class FilterBaseSearchQuery extends AbstractFilter
         $oSuchCache->cSuche     = $cSuche;
         $oSuchCache->dErstellt  = 'now()';
         $kSuchCache             = Shop::DB()->insert('tsuchcache', $oSuchCache);
+
+        if (isset($this->getConfig()['artikeluebersicht']['suche_fulltext']) &&
+            $this->getConfig()['artikeluebersicht']['suche_fulltext'] === 'Y' &&
+            $this->isFulltextIndexActive()
+        ) {
+            $oSuchCache->kSuchCache = $kSuchCache;
+
+            return $this->editFullTextSearchCache(
+                $oSuchCache,
+                $cSuchspalten_arr,
+                $cSuch_arr, $this->getConfig()['artikeluebersicht']['suche_max_treffer']
+            );
+        }
 
         if ($kSuchCache <= 0) {
             return 0;
@@ -725,5 +751,75 @@ class FilterBaseSearchQuery extends AbstractFilter
         );
 
         return (int)$kSuchCache;
+    }
+
+    /**
+     * @param stdClass $oSuchCache
+     * @param array $cSuchspalten_arr
+     * @param array $cSuch_arr
+     * @param int $nLimit
+     * @return int
+     * @former bearbeiteSuchCacheFulltext
+     */
+    private function editFullTextSearchCache($oSuchCache, $cSuchspalten_arr, $cSuch_arr, $nLimit = 0)
+    {
+        $nLimit = (int)$nLimit;
+
+        if ($oSuchCache->kSuchCache > 0) {
+            $cArtikelSpalten_arr = array_map(function ($item) {
+                $item_arr = explode('.', $item, 2);
+
+                return 'tartikel.' . $item_arr[1];
+            }, $cSuchspalten_arr);
+
+            $cSprachSpalten_arr = array_filter($cSuchspalten_arr, function ($item) {
+                return preg_match('/tartikelsprache\.(.*)/', $item) ? true : false;
+            });
+
+            $match = "MATCH (" . implode(', ', $cArtikelSpalten_arr) . ") AGAINST ('" . implode(' ', $cSuch_arr) . "' IN NATURAL LANGUAGE MODE)";
+            $cSQL  = "SELECT {$oSuchCache->kSuchCache} AS kSuchCache,
+                    IF(tartikel.kVaterArtikel > 0, tartikel.kVaterArtikel, tartikel.kArtikel) AS kArtikelTMP,
+                    $match AS score
+                    FROM tartikel
+                    WHERE $match " . gibLagerfilter() . " ";
+
+            if (Shop::$kSprache > 0 && !standardspracheAktiv()) {
+                $match  = "MATCH (" . implode(', ', $cSprachSpalten_arr) . ") AGAINST ('" . implode(' ', $cSuch_arr) . "' IN NATURAL LANGUAGE MODE)";
+                $cSQL  .= "UNION DISTINCT
+                SELECT {$oSuchCache->kSuchCache} AS kSuchCache,
+                    IF(tartikel.kVaterArtikel > 0, tartikel.kVaterArtikel, tartikel.kArtikel) AS kArtikelTMP,
+                    $match AS score
+                    FROM tartikel
+                    INNER JOIN tartikelsprache ON tartikelsprache.kArtikel = tartikel.kArtikel
+                    WHERE $match " . gibLagerfilter() . " ";
+            }
+
+            $cISQL = "INSERT INTO tsuchcachetreffer
+                    SELECT kSuchCache, kArtikelTMP, ROUND(MAX(15 - score) * 10)
+                    FROM ($cSQL) AS i
+                    LEFT JOIN tartikelsichtbarkeit ON tartikelsichtbarkeit.kArtikel = i.kArtikelTMP
+                        AND tartikelsichtbarkeit.kKundengruppe = " . ((int)$_SESSION['Kundengruppe']->kKundengruppe) . "
+                    WHERE tartikelsichtbarkeit.kKundengruppe IS NULL
+                    GROUP BY kSuchCache, kArtikelTMP" . ($nLimit > 0 ? " LIMIT $nLimit" : '');
+
+            Shop::DB()->query($cISQL, 3);
+        }
+
+        return $oSuchCache->kSuchCache;
+    }
+
+    /**
+     * @return bool
+     */
+    private function isFulltextIndexActive()
+    {
+        static $active = null;
+
+        if (!isset($active)) {
+            $active = Shop::DB()->query("SHOW INDEX FROM tartikel WHERE KEY_NAME = 'idx_tartikel_fulltext'", 1)
+            && Shop::DB()->query("SHOW INDEX FROM tartikelsprache WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'", 1);
+        }
+
+        return $active;
     }
 }

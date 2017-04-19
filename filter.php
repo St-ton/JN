@@ -11,7 +11,7 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'filter_inc.php';
 Shop::setPageType(PAGE_ARTIKELLISTE);
 /** @global JTLSmarty $smarty */
 /** @global array $cParameter_arr */
-/** @global object $NaviFilter*/
+/** @global Navigationsfilter $NaviFilter*/
 $Einstellungen          = Shop::getSettings([
     CONF_GLOBAL,
     CONF_RSS,
@@ -76,7 +76,7 @@ if ($NaviFilter->hasCategory()) {
 // Usersortierung
 $NaviFilter->setUserSort($AktuelleKategorie);
 // Erweiterte Darstellung Artikelübersicht
-gibErweiterteDarstellung($Einstellungen, $NaviFilter, $cParameter_arr['nDarstellung']);
+$smarty->assign('oErweiterteDarstellung', $NaviFilter->getExtendedView($cParameter_arr['nDarstellung']));
 $oSuchergebnisse = $NaviFilter->getProducts(true, $AktuelleKategorie);
 if ($hasError) {
     $cFehler                              = Shop::Lang()->get('expressionHasTo', 'global') .
@@ -255,10 +255,10 @@ if (TEMPLATE_COMPATIBILITY === true && function_exists('starteAuswahlAssistent')
 $smarty->assign('SEARCHSPECIALS_TOPREVIEWS', SEARCHSPECIALS_TOPREVIEWS)
         ->assign('code_benachrichtigung_verfuegbarkeit',
             generiereCaptchaCode($Einstellungen['artikeldetails']['benachrichtigung_abfragen_captcha']))
-        ->assign('oNaviSeite_arr', baueSeitenNaviURL(
-            $NaviFilter,
+        ->assign('oNaviSeite_arr', $NaviFilter->buildPageNavigation(
             true,
-            $oSuchergebnisse->Seitenzahlen, $Einstellungen['artikeluebersicht']['artikeluebersicht_max_seitenzahl']))
+            $oSuchergebnisse->Seitenzahlen,
+            $Einstellungen['artikeluebersicht']['artikeluebersicht_max_seitenzahl']))
         ->assign('PFAD_ART_ABNAHMEINTERVALL', PFAD_ART_ABNAHMEINTERVALL)
         ->assign('ArtikelProSeite', $nArtikelProSeite_arr)
         ->assign('Navigation', $cBrotNavi)
@@ -266,8 +266,8 @@ $smarty->assign('SEARCHSPECIALS_TOPREVIEWS', SEARCHSPECIALS_TOPREVIEWS)
         ->assign('Sortierliste', gibSortierliste($Einstellungen))
         ->assign('Einstellungen', $Einstellungen)
         ->assign('Suchergebnisse', $oSuchergebnisse)
-        ->assign('requestURL', (isset($requestURL)) ? $requestURL : null)
-        ->assign('sprachURL', (isset($sprachURL)) ? $sprachURL : null)
+        ->assign('requestURL', isset($requestURL) ? $requestURL : null)
+        ->assign('sprachURL', isset($sprachURL) ? $sprachURL : null)
         ->assign('oNavigationsinfo', $oNavigationsinfo)
         ->assign('SEO', true)
         ->assign('nMaxAnzahlArtikel', (int)($oSuchergebnisse->GesamtanzahlArtikel >=

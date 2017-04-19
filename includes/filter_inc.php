@@ -2757,7 +2757,7 @@ function checkMerkmalWertVorhanden($oMerkmalauswahl_arr, $kMerkmalWert)
 function gibArtikelsortierung($NaviFilter)
 {
     die('gibArtikelsortierung()');
-    return Shop::getNaviFilter()->getOrder();
+    return Shop::getNaviFilter()->getOrder()->orderBy;
 }
 
 /**

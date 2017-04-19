@@ -4321,9 +4321,10 @@ function cryptPasswort($cPasswort, $cHashPasswort = null)
  */
 function setzeSpracheUndWaehrungLink()
 {
-    global $NaviFilter, $oZusatzFilter, $sprachURL, $AktuellerArtikel, $kSeite, $kLink, $AktuelleSeite;
-    $shopURL = Shop::getURL() . '/';
-    $helper  = LinkHelper::getInstance();
+    global $oZusatzFilter, $sprachURL, $AktuellerArtikel, $kSeite, $kLink, $AktuelleSeite;
+    $shopURL    = Shop::getURL() . '/';
+    $helper     = LinkHelper::getInstance();
+    $NaviFilter = Shop::getNaviFilter();
     if (isset($kSeite) && $kSeite > 0) {
         $kLink = $kSeite;
     }
@@ -4434,7 +4435,10 @@ function setzeSpracheUndWaehrungLink()
 
                 executeHook(HOOK_TOOLSGLOBAL_INC_SWITCH_SETZESPRACHEUNDWAEHRUNG_SPRACHE);
             } else {
-                $cUrl = gibNaviURL($NaviFilter, true, $oZusatzFilter, $oSprache->kSprache);
+                $originalLanguage = $NaviFilter->getLanguageID();
+                $NaviFilter->setLanguageID($oSprache->kSprache);
+                $cUrl = $NaviFilter->getURL(true, $oZusatzFilter);
+                $NaviFilter->setLanguageID($originalLanguage);
                 if (!empty($NaviFilter->nSeite) && $NaviFilter->nSeite > 1) {
                     if (strpos($sprachURL, 'navi.php') !== false) {
                         $cUrl .= '&amp;seite=' . $NaviFilter->nSeite;
@@ -4532,11 +4536,9 @@ function setzeSpracheUndWaehrungLink()
                 $_SESSION['Waehrungen'][$i]->cURL = 'index.php?s=' . $kLink .
                     '&lang=' . $_SESSION['cISOSprache'] . '&amp;curr=' . $oWaehrung->cISO;
             } else {
-                $_SESSION['Waehrungen'][$i]->cURL = gibNaviURL(
-                        $NaviFilter,
+                $_SESSION['Waehrungen'][$i]->cURL = $NaviFilter->getURL(
                         true,
-                        $oZusatzFilter,
-                        $_SESSION['kSprache']
+                        $oZusatzFilter
                     ) . '?curr=' . $oWaehrung->cISO;
             }
             $_SESSION['Waehrungen'][$i]->cURLFull = $shopURL . $_SESSION['Waehrungen'][$i]->cURL;

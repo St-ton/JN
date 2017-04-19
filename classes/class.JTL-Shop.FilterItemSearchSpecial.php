@@ -179,6 +179,8 @@ class FilterItemSearchSpecial extends AbstractFilter
             default:
                 break;
         }
+
+        return '';
     }
 
     /**

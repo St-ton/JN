@@ -815,7 +815,7 @@ class FilterBaseSearchQuery extends AbstractFilter
     {
         static $active = null;
 
-        if (!isset($active)) {
+        if ($active === null) {
             $active = Shop::DB()->query("SHOW INDEX FROM tartikel WHERE KEY_NAME = 'idx_tartikel_fulltext'", 1)
             && Shop::DB()->query("SHOW INDEX FROM tartikelsprache WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'", 1);
         }

@@ -377,7 +377,7 @@ function gibNaviURL($NaviFilter, $bSeo, $oZusatzFilter, $kSprache = 0, $bCanonic
 function berechnePreisspannenSQL($oPreis, $oPreisspannenfilter_arr = null)
 {
     trigger_error('filter_inc.php: berechnePreisspannenSQL() called.', E_USER_DEPRECATED);
-    return Shop::getNaviFilter()->getPriceRangeSQL();
+    return Shop::getNaviFilter()->PreisspannenFilter->getPriceRangeSQL();
 }
 
 /**

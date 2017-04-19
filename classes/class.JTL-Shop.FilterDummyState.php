@@ -61,7 +61,7 @@ class FilterDummyState extends AbstractFilter
     }
 
     /**
-     * @param int   $id
+     * @param int $id
      * @return $this
      */
     public function init($id)

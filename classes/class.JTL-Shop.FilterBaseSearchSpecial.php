@@ -174,6 +174,8 @@ class FilterBaseSearchSpecial extends AbstractFilter
             default:
                 break;
         }
+
+        return '';
     }
 
     /**

@@ -1793,6 +1793,7 @@ class Navigationsfilter
             }
         } else {
             $baseURL .= 'index.php';
+            $bSeo = false;
         }
         if ($bCanonical === true) {
             return $baseURL;

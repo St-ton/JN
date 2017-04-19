@@ -522,125 +522,23 @@ function setzeUsersortierung($NaviFilter)
 }
 
 /**
- * @todo
+ * @deprecated since 4.06
  * @param array  $Einstellungen
  * @param object $NaviFilter
  * @param int    $nDarstellung
  */
 function gibErweiterteDarstellung($Einstellungen, $NaviFilter, $nDarstellung = 0)
 {
-    global $smarty;
-
-    if (!isset($_SESSION['oErweiterteDarstellung'])) {
-        $nStdDarstellung                                    = 0;
-        $_SESSION['oErweiterteDarstellung']                 = new stdClass();
-        $_SESSION['oErweiterteDarstellung']->cURL_arr       = [];
-        $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = ERWDARSTELLUNG_ANSICHT_ANZAHL_STD;
-
-        if (isset($NaviFilter->Kategorie->kKategorie) && $NaviFilter->Kategorie->kKategorie > 0) {
-            $oKategorie = new Kategorie($NaviFilter->Kategorie->kKategorie);
-            if (!empty($oKategorie->categoryFunctionAttributes[KAT_ATTRIBUT_DARSTELLUNG])) {
-                $nStdDarstellung = (int)$oKategorie->categoryFunctionAttributes[KAT_ATTRIBUT_DARSTELLUNG];
-            }
-        }
-        if ($nDarstellung === 0 &&
-            isset($Einstellungen['artikeluebersicht']['artikeluebersicht_erw_darstellung_stdansicht']) &&
-            (int)$Einstellungen['artikeluebersicht']['artikeluebersicht_erw_darstellung_stdansicht'] > 0
-        ) {
-            $nStdDarstellung = (int)$Einstellungen['artikeluebersicht']['artikeluebersicht_erw_darstellung_stdansicht'];
-        }
-        if ($nStdDarstellung > 0) {
-            switch ($nStdDarstellung) {
-                case ERWDARSTELLUNG_ANSICHT_LISTE:
-                    $_SESSION['oErweiterteDarstellung']->nDarstellung = ERWDARSTELLUNG_ANSICHT_LISTE;
-                    if (isset($_SESSION['ArtikelProSeite'])) {
-                        $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = $_SESSION['ArtikelProSeite'];
-                    } elseif ((int)$Einstellungen['artikeluebersicht']['artikeluebersicht_anzahl_darstellung1'] > 0) {
-                        $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = (int)$Einstellungen['artikeluebersicht']['artikeluebersicht_anzahl_darstellung1'];
-                    }
-                    break;
-                case ERWDARSTELLUNG_ANSICHT_GALERIE:
-                    $_SESSION['oErweiterteDarstellung']->nDarstellung = ERWDARSTELLUNG_ANSICHT_GALERIE;
-                    if (isset($_SESSION['ArtikelProSeite'])) {
-                        $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = $_SESSION['ArtikelProSeite'];
-                    } elseif ((int)$Einstellungen['artikeluebersicht']['artikeluebersicht_anzahl_darstellung2'] > 0) {
-                        $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = (int)$Einstellungen['artikeluebersicht']['artikeluebersicht_anzahl_darstellung2'];
-                    }
-                    break;
-                case ERWDARSTELLUNG_ANSICHT_MOSAIK:
-                    $_SESSION['oErweiterteDarstellung']->nDarstellung = ERWDARSTELLUNG_ANSICHT_MOSAIK;
-                    if (isset($_SESSION['ArtikelProSeite'])) {
-                        $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = $_SESSION['ArtikelProSeite'];
-                    } elseif ((int)$Einstellungen['artikeluebersicht']['artikeluebersicht_anzahl_darstellung3'] > 0) {
-                        $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = (int)$Einstellungen['artikeluebersicht']['artikeluebersicht_anzahl_darstellung3'];
-                    }
-                    break;
-                default: // when given invalid option from wawi attribute
-                    $nDarstellung = ERWDARSTELLUNG_ANSICHT_LISTE;
-                    if (isset($Einstellungen['artikeluebersicht']['artikeluebersicht_erw_darstellung_stdansicht']) &&
-                        (int)$Einstellungen['artikeluebersicht']['artikeluebersicht_erw_darstellung_stdansicht'] > 0
-                    ) { // fallback to configured default
-                        $nDarstellung = (int)$Einstellungen['artikeluebersicht']['artikeluebersicht_erw_darstellung_stdansicht'];
-                    }
-                    $_SESSION['oErweiterteDarstellung']->nDarstellung = $nDarstellung;
-                    if (isset($_SESSION['ArtikelProSeite'])) {
-                        $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = $_SESSION['ArtikelProSeite'];
-                    } elseif ((int)$Einstellungen['artikeluebersicht']['artikeluebersicht_anzahl_darstellung1'] > 0) {
-                        $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = (int)$Einstellungen['artikeluebersicht']['artikeluebersicht_anzahl_darstellung1'];
-                    }
-                    break;
-            }
-        } else {
-            $_SESSION['oErweiterteDarstellung']->nDarstellung = ERWDARSTELLUNG_ANSICHT_LISTE; // Std ist Listendarstellung
-            if (isset($_SESSION['ArtikelProSeite'])) {
-                $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = $_SESSION['ArtikelProSeite'];
-            } elseif ((int)$Einstellungen['artikeluebersicht']['artikeluebersicht_anzahl_darstellung1'] > 0) {
-                $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = (int)$Einstellungen['artikeluebersicht']['artikeluebersicht_anzahl_darstellung1'];
-            }
-        }
-    }
-    if ($nDarstellung > 0) {
-        $_SESSION['oErweiterteDarstellung']->nDarstellung = $nDarstellung;
-        switch ($_SESSION['oErweiterteDarstellung']->nDarstellung) {
-            case ERWDARSTELLUNG_ANSICHT_LISTE:
-                $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = ERWDARSTELLUNG_ANSICHT_ANZAHL_STD;
-                if ((int)$Einstellungen['artikeluebersicht']['artikeluebersicht_anzahl_darstellung1'] > 0) {
-                    $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = (int)$Einstellungen['artikeluebersicht']['artikeluebersicht_anzahl_darstellung1'];
-                }
-                break;
-            case ERWDARSTELLUNG_ANSICHT_GALERIE:
-                $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = ERWDARSTELLUNG_ANSICHT_ANZAHL_STD;
-                if ((int)$Einstellungen['artikeluebersicht']['artikeluebersicht_anzahl_darstellung2'] > 0) {
-                    $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = (int)$Einstellungen['artikeluebersicht']['artikeluebersicht_anzahl_darstellung2'];
-                }
-                break;
-            case ERWDARSTELLUNG_ANSICHT_MOSAIK:
-                $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = ERWDARSTELLUNG_ANSICHT_ANZAHL_STD;
-                if ((int)$Einstellungen['artikeluebersicht']['artikeluebersicht_anzahl_darstellung3'] > 0) {
-                    $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = (int)$Einstellungen['artikeluebersicht']['artikeluebersicht_anzahl_darstellung3'];
-                }
-                break;
-        }
-
-        if (isset($_SESSION['ArtikelProSeite'])) {
-            $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = $_SESSION['ArtikelProSeite'];
-        }
-    }
+    trigger_error('filter_inc.php: gibErweiterteDarstellung() called.', E_USER_WARNING);
+    Shop::getNaviFilter()->getExtendedView($nDarstellung);
     if (isset($_SESSION['oErweiterteDarstellung'])) {
-        $naviURL                                                                      = gibNaviURL($NaviFilter, false, null);
-        $_SESSION['oErweiterteDarstellung']->cURL_arr[ERWDARSTELLUNG_ANSICHT_LISTE]   = $naviURL . '&amp;ed=' . ERWDARSTELLUNG_ANSICHT_LISTE;
-        $_SESSION['oErweiterteDarstellung']->cURL_arr[ERWDARSTELLUNG_ANSICHT_GALERIE] = $naviURL . '&amp;ed=' . ERWDARSTELLUNG_ANSICHT_GALERIE;
-        $_SESSION['oErweiterteDarstellung']->cURL_arr[ERWDARSTELLUNG_ANSICHT_MOSAIK]  = $naviURL . '&amp;ed=' . ERWDARSTELLUNG_ANSICHT_MOSAIK;
+        global $smarty;
         $smarty->assign('oErweiterteDarstellung', $_SESSION['oErweiterteDarstellung']);
     }
-
-    $smarty->assign('ERWDARSTELLUNG_ANSICHT_LISTE', ERWDARSTELLUNG_ANSICHT_LISTE)
-           ->assign('ERWDARSTELLUNG_ANSICHT_GALERIE', ERWDARSTELLUNG_ANSICHT_GALERIE)
-           ->assign('ERWDARSTELLUNG_ANSICHT_MOSAIK', ERWDARSTELLUNG_ANSICHT_MOSAIK);
 }
 
 /**
- * @todo
+ * @deprecated since 4.06
  * @param object $NaviFilter
  * @param bool   $bSeo
  * @param object $oSeitenzahlen
@@ -650,136 +548,8 @@ function gibErweiterteDarstellung($Einstellungen, $NaviFilter, $nDarstellung = 0
  */
 function baueSeitenNaviURL($NaviFilter, $bSeo, $oSeitenzahlen, $nMaxAnzeige = 7, $cFilterShopURL = '')
 {
-    if (strlen($cFilterShopURL) > 0) {
-        $bSeo = false;
-    }
-    $cURL       = '';
-    $oSeite_arr = [];
-    $nAnfang    = 0; // Wenn die aktuelle Seite - $nMaxAnzeige größer 0 ist, wird nAnfang gesetzt
-    $nEnde      = 0; // Wenn die aktuelle Seite + $nMaxAnzeige <= $nSeiten ist, wird nEnde gesetzt
-    $nVon       = 0; // Die aktuellen Seiten in der Navigation, die angezeigt werden sollen.
-    $nBis       = 0; // Begrenzt durch $nMaxAnzeige.
-    $naviURL    = gibNaviURL($NaviFilter, $bSeo, null);
-    if (isset($oSeitenzahlen->MaxSeiten, $oSeitenzahlen->AktuelleSeite) &&
-        $oSeitenzahlen->MaxSeiten > 0 &&
-        $oSeitenzahlen->AktuelleSeite > 0
-    ) {
-        $oSeitenzahlen->AktuelleSeite = (int)$oSeitenzahlen->AktuelleSeite;
-        $nMax                         = floor($nMaxAnzeige / 2);
-        if ($oSeitenzahlen->MaxSeiten > $nMaxAnzeige) {
-            if ($oSeitenzahlen->AktuelleSeite - $nMax >= 1) {
-                $nDiff = 0;
-                $nVon  = $oSeitenzahlen->AktuelleSeite - $nMax;
-            } else {
-                $nVon  = 1;
-                $nDiff = $nMax - $oSeitenzahlen->AktuelleSeite + 1;
-            }
-            if ($oSeitenzahlen->AktuelleSeite + $nMax + $nDiff <= $oSeitenzahlen->MaxSeiten) {
-                $nBis = $oSeitenzahlen->AktuelleSeite + $nMax + $nDiff;
-            } else {
-                $nDiff = $oSeitenzahlen->AktuelleSeite + $nMax - $oSeitenzahlen->MaxSeiten;
-                if ($nDiff == 0) {
-                    $nVon -= ($nMaxAnzeige - ($nMax + 1));
-                } elseif ($nDiff > 0) {
-                    $nVon = $oSeitenzahlen->AktuelleSeite - $nMax - $nDiff;
-                }
-                $nBis = (int)$oSeitenzahlen->MaxSeiten;
-            }
-            // Laufe alle Seiten durch und baue URLs + Seitenzahl
-            for ($i = $nVon; $i <= $nBis; $i++) {
-                $oSeite         = new stdClass();
-                $oSeite->nSeite = $i;
-
-                if ($i === $oSeitenzahlen->AktuelleSeite) {
-                    $oSeite->cURL = '';
-                } else {
-                    if ($oSeite->nSeite === 1) {
-                        $oSeite->cURL = $naviURL . $cFilterShopURL;
-                    } else {
-                        if ($bSeo) {
-                            $cURL = $naviURL;
-                            if (strpos(basename($cURL), 'index.php') !== false) {
-                                $oSeite->cURL = $cURL . '&amp;seite=' . $oSeite->nSeite . $cFilterShopURL;
-                            } else {
-                                $oSeite->cURL = $cURL . SEP_SEITE . $oSeite->nSeite;
-                            }
-                        } else {
-                            $oSeite->cURL = $naviURL . '&amp;seite=' . $oSeite->nSeite . $cFilterShopURL;
-                        }
-                    }
-                }
-
-                $oSeite_arr[] = $oSeite;
-            }
-        } else {
-            // Laufe alle Seiten durch und baue URLs + Seitenzahl
-            for ($i = 0; $i < $oSeitenzahlen->MaxSeiten; $i++) {
-                $oSeite         = new stdClass();
-                $oSeite->nSeite = $i + 1;
-
-                if ($i + 1 === $oSeitenzahlen->AktuelleSeite) {
-                    $oSeite->cURL = '';
-                } else {
-                    if ($oSeite->nSeite === 1) {
-                        $oSeite->cURL = $naviURL . $cFilterShopURL;
-                    } else {
-                        if ($bSeo) {
-                            $cURL = $naviURL;
-                            if (strpos(basename($cURL), 'index.php') !== false) {
-                                $oSeite->cURL = $cURL . '&amp;seite=' . $oSeite->nSeite . $cFilterShopURL;
-                            } else {
-                                $oSeite->cURL = $cURL . SEP_SEITE . $oSeite->nSeite;
-                            }
-                        } else {
-                            $oSeite->cURL = $naviURL . '&amp;seite=' . $oSeite->nSeite . $cFilterShopURL;
-                        }
-                    }
-                }
-                $oSeite_arr[] = $oSeite;
-            }
-        }
-        // Baue Zurück-URL
-        $oSeite_arr['zurueck']       = new stdClass();
-        $oSeite_arr['zurueck']->nBTN = 1;
-        if ($oSeitenzahlen->AktuelleSeite > 1) {
-            $oSeite_arr['zurueck']->nSeite = (int)$oSeitenzahlen->AktuelleSeite - 1;
-            if ($oSeite_arr['zurueck']->nSeite === 1) {
-                $oSeite_arr['zurueck']->cURL = $naviURL . $cFilterShopURL;
-            } else {
-                if ($bSeo) {
-                    $cURL = $naviURL;
-                    if (strpos(basename($cURL), 'index.php') !== false) {
-                        $oSeite_arr['zurueck']->cURL = $cURL . '&amp;seite=' .
-                            $oSeite_arr['zurueck']->nSeite . $cFilterShopURL;
-                    } else {
-                        $oSeite_arr['zurueck']->cURL = $cURL . SEP_SEITE .
-                            $oSeite_arr['zurueck']->nSeite;
-                    }
-                } else {
-                    $oSeite_arr['zurueck']->cURL = $naviURL . '&amp;seite=' .
-                        $oSeite_arr['zurueck']->nSeite . $cFilterShopURL;
-                }
-            }
-        }
-        // Baue Vor-URL
-        $oSeite_arr['vor']       = new stdClass();
-        $oSeite_arr['vor']->nBTN = 1;
-        if ($oSeitenzahlen->AktuelleSeite < $oSeitenzahlen->maxSeite) {
-            $oSeite_arr['vor']->nSeite = $oSeitenzahlen->AktuelleSeite + 1;
-            if ($bSeo) {
-                $cURL = $naviURL;
-                if (strpos(basename($cURL), 'index.php') !== false) {
-                    $oSeite_arr['vor']->cURL = $cURL . '&amp;seite=' . $oSeite_arr['vor']->nSeite . $cFilterShopURL;
-                } else {
-                    $oSeite_arr['vor']->cURL = $cURL . SEP_SEITE . $oSeite_arr['vor']->nSeite;
-                }
-            } else {
-                $oSeite_arr['vor']->cURL = $naviURL . '&amp;seite=' . $oSeite_arr['vor']->nSeite . $cFilterShopURL;
-            }
-        }
-    }
-
-    return $oSeite_arr;
+    trigger_error('filter_inc.php: baueSeitenNaviURL() called.', E_USER_WARNING);
+    return Shop::getNaviFilter()->buildPageNavigation($bSeo, $oSeitenzahlen, $nMaxAnzeige, $cFilterShopURL);
 }
 
 /**

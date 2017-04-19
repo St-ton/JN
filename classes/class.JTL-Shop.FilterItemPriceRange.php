@@ -626,12 +626,14 @@ class FilterItemPriceRange extends AbstractFilter
     }
 
     /**
+     * has to be public for compatibility with filter_inc.php
+     *
      * @param float $fMax
      * @param float $fMin
      * @return stdClass
      * @former berechneMaxMinStep
      */
-    private function calculateSteps($fMax, $fMin)
+    public function calculateSteps($fMax, $fMin)
     {
         $fStepWert_arr = [
             0.001, 0.005, 0.01, 0.05, 0.10, 0.25, 0.5, 1.0, 2.5, 5.0, 7.5,

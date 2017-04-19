@@ -1085,7 +1085,7 @@ function setSelectionWizardAnswerAjax($kMerkmalWert, $kAuswahlAssistentFrage, $n
                 $cAusgabe .= " <span class='edit fa fa-edit list-group-item-text' title='" . Shop::Lang()->get('edit', 'global') .
                     "' onClick='return resetSelectionWizardAnswer(" . $i . ", " . $kKategorie . ");'></span>";
             }
-            if ($i != $_SESSION['AuswahlAssistent']->nFrage) {
+            if ($i !== $_SESSION['AuswahlAssistent']->nFrage) {
                 $objResponse->assign(
                     'answer_' . $_SESSION['AuswahlAssistent']->oAuswahlAssistent->oAuswahlAssistentFrage_arr[$i]->kAuswahlAssistentFrage,
                     'innerHTML',
@@ -1093,14 +1093,17 @@ function setSelectionWizardAnswerAjax($kMerkmalWert, $kAuswahlAssistentFrage, $n
                 );
             }
         }
-    } elseif (!$bFragenEnde || $oSuchergebnisse->GesamtanzahlArtikel == 1 || !$bMerkmalFilterVorhanden) { // Abbruch
+    } elseif (!$bFragenEnde || $oSuchergebnisse->GesamtanzahlArtikel === 1 || !$bMerkmalFilterVorhanden) { // Abbruch
         if (!$kKategorie) {
             unset($_POST['mf1']);
+        }
+        if ($NaviFilter->hasAttributeValue()) {
+            // set navifilter base state
+            $cParameter_arr['kMerkmalWert'] = $NaviFilter->MerkmalWert->getValue();
         }
         $cParameter_arr['MerkmalFilter_arr'] = setzeMerkmalFilter();
         $NaviFilter                          = Shop::buildNaviFilter($cParameter_arr, $NaviFilter);
         $objResponse->script("window.location.href='" . StringHandler::htmlentitydecode($NaviFilter->getURL()) . "';");
-
         unset($_SESSION['AuswahlAssistent']);
     }
 

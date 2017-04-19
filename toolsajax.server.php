@@ -1053,6 +1053,7 @@ function setSelectionWizardAnswerAjax($kMerkmalWert, $kAuswahlAssistentFrage, $n
 
     require_once PFAD_ROOT . PFAD_INCLUDES_EXT . 'auswahlassistent_ext_inc.php';
 
+    $NaviFilter    = Shop::getNaviFilter();
     $Einstellungen = Shop::getSettings([
         CONF_GLOBAL,
         CONF_RSS,
@@ -1085,7 +1086,11 @@ function setSelectionWizardAnswerAjax($kMerkmalWert, $kAuswahlAssistentFrage, $n
                     "' onClick='return resetSelectionWizardAnswer(" . $i . ", " . $kKategorie . ");'></span>";
             }
             if ($i != $_SESSION['AuswahlAssistent']->nFrage) {
-                $objResponse->assign('answer_' . $_SESSION['AuswahlAssistent']->oAuswahlAssistent->oAuswahlAssistentFrage_arr[$i]->kAuswahlAssistentFrage, 'innerHTML', $cAusgabe);
+                $objResponse->assign(
+                    'answer_' . $_SESSION['AuswahlAssistent']->oAuswahlAssistent->oAuswahlAssistentFrage_arr[$i]->kAuswahlAssistentFrage,
+                    'innerHTML',
+                    $cAusgabe
+                );
             }
         }
     } elseif (!$bFragenEnde || $oSuchergebnisse->GesamtanzahlArtikel == 1 || !$bMerkmalFilterVorhanden) { // Abbruch
@@ -1094,7 +1099,7 @@ function setSelectionWizardAnswerAjax($kMerkmalWert, $kAuswahlAssistentFrage, $n
         }
         $cParameter_arr['MerkmalFilter_arr'] = setzeMerkmalFilter();
         $NaviFilter                          = Shop::buildNaviFilter($cParameter_arr, $NaviFilter);
-        $objResponse->script("window.location.href='" . StringHandler::htmlentitydecode(gibNaviURL($NaviFilter, true, null)) . "';");
+        $objResponse->script("window.location.href='" . StringHandler::htmlentitydecode($NaviFilter->getURL()) . "';");
 
         unset($_SESSION['AuswahlAssistent']);
     }

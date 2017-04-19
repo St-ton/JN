@@ -4360,13 +4360,14 @@ function setzeSpracheUndWaehrungLink()
             ) {
                 switch ($AktuelleSeite) {
                     case 'STARTSEITE':
-                        $id                             = null;
-                        $_SESSION['Sprachen'][$i]->cURL = gibNaviURL(
-                            $NaviFilter,
-                            SHOP_SEO,
-                            $oZusatzFilter,
-                            $oSprache->kSprache
+                        $id               = null;
+                        $originalLanguage = $NaviFilter->getLanguageID();
+                        $NaviFilter->setLanguageID($oSprache->kSprache);
+                        $_SESSION['Sprachen'][$i]->cURL = $NaviFilter->getURL(
+                            true,
+                            $oZusatzFilter
                         );
+                        $NaviFilter->setLanguageID($originalLanguage);
                         if ($_SESSION['Sprachen'][$i]->cURL === $shopURL) {
                             $_SESSION['Sprachen'][$i]->cURL .= '?lang=' . $oSprache->cISO;
                         }

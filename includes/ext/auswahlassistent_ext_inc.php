@@ -278,7 +278,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
             }
             $cParameter_arr['MerkmalFilter_arr'] = setzeMerkmalFilter();
             $NaviFilter                          = Shop::buildNaviFilter($cParameter_arr);
-            header('Location: ' . StringHandler::htmlentitydecode(gibNaviURL($NaviFilter, true, null)));
+            header('Location: ' . StringHandler::htmlentitydecode($NaviFilter->getURL()));
             exit();
         }
     }

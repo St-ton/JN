@@ -1063,10 +1063,11 @@ class Exportformat
 
             return true;
         }
-        $start       = microtime(true);
-        $cacheHits   = 0;
-        $cacheMisses = 0;
-        $cOutput     = '';
+        $start        = microtime(true);
+        $cacheHits    = 0;
+        $cacheMisses  = 0;
+        $cOutput      = '';
+        $errorMessage = '';
         if ((int)$this->queue->nLimitN === 0 && file_exists(PFAD_ROOT . PFAD_EXPORT . $this->tempFileName)) {
             unlink(PFAD_ROOT . PFAD_EXPORT . $this->tempFileName);
         }
@@ -1251,6 +1252,7 @@ class Exportformat
 
         if ($isCron === false) {
             if ($max > $this->queue->nLimitN + $this->queue->nLimitM) {
+                fclose($datei);
                 Shop::DB()->query("
                     UPDATE texportqueue 
                       SET nLimit_n = nLimit_n + " . $this->queue->nLimitM . " 
@@ -1287,7 +1289,16 @@ class Exportformat
                 Shop::DB()->delete('texportqueue', 'kExportqueue', (int)$this->queue->kExportqueue);
 
                 $this->writeFooter($datei);
-
+                fclose($datei);
+                if (copy(PFAD_ROOT . PFAD_EXPORT . $this->tempFileName, PFAD_ROOT . PFAD_EXPORT . $this->cDateiname)) {
+                    unlink(PFAD_ROOT . PFAD_EXPORT . $this->tempFileName);
+                } else {
+                    $errorMessage = 'Konnte Export-Datei ' .
+                        PFAD_ROOT . PFAD_EXPORT . $this->cDateiname .
+                        ' nicht erstellen. Fehlende Schreibrechte?';
+                }
+                // Versucht (falls so eingestellt) die erstellte Exportdatei in mehrere Dateien zu splitten
+                $this->splitFile();
                 if ($back === true) {
                     if ($isAsync) {
                         $oCallback                = new stdClass();
@@ -1297,21 +1308,18 @@ class Exportformat
                         $oCallback->bFinished     = true;
                         $oCallback->cacheMisses   = $cacheMisses;
                         $oCallback->cacheHits     = $cacheHits;
+                        $oCallback->errorMessage  = $errorMessage;
 
                         echo json_encode($oCallback);
                     } else {
                         header('Location: exportformate.php?action=exported&token=' .
                             $_SESSION['jtl_token'] .
-                            '&kExportformat=' . $this->getExportformat() . '&max=' . $max);
+                            '&kExportformat=' . $this->getExportformat() .
+                            '&max=' . $max .
+                            '&hasError=' . (int)($errorMessage !== '')
+                        );
                     }
                 }
-                fclose($datei);
-                if (copy(PFAD_ROOT . PFAD_EXPORT . $this->tempFileName,
-                    PFAD_ROOT . PFAD_EXPORT . $this->cDateiname)) {
-                    unlink(PFAD_ROOT . PFAD_EXPORT . $this->tempFileName);
-                }
-                // Versucht (falls so eingestellt) die erstellte Exportdatei in mehrere Dateien zu splitten
-                $this->splitFile();
             }
         } else {
             $queueObject->updateExportformatQueueBearbeitet();
@@ -1319,9 +1327,12 @@ class Exportformat
             //finalize job when there are no more articles to export
             if (($queueObject->nLimitN >= $max) || !(is_array($articles) && count($articles) > 0)) {
                 Jtllog::cronLog('Finalizing job.', 2);
-                $upd                   = new stdClass();
-                $upd->dZuletztErstellt = 'now()';
-                Shop::DB()->update('texportformat', 'kExportformat', (int)$queueObject->kKey, $upd);
+                Shop::DB()->update(
+                    'texportformat',
+                    'kExportformat',
+                    (int)$queueObject->kKey,
+                    (object)['dZuletztErstellt' => 'now()']
+                );
                 $queueObject->deleteJobInDB();
 
                 if (file_exists(PFAD_ROOT . PFAD_EXPORT . $this->cDateiname)) {
@@ -1331,8 +1342,7 @@ class Exportformat
                 // Schreibe Fusszeile
                 $this->writeFooter($datei);
                 fclose($datei);
-                if (copy(PFAD_ROOT . PFAD_EXPORT . $this->tempFileName,
-                    PFAD_ROOT . PFAD_EXPORT . $this->cDateiname)) {
+                if (copy(PFAD_ROOT . PFAD_EXPORT . $this->tempFileName, PFAD_ROOT . PFAD_EXPORT . $this->cDateiname)) {
                     unlink(PFAD_ROOT . PFAD_EXPORT . $this->tempFileName);
                 }
                 // Versucht (falls so eingestellt) die erstellte Exportdatei in mehrere Dateien zu splitten
@@ -1342,7 +1352,6 @@ class Exportformat
                 's. Article cache hits: ' . $cacheHits . ', misses: ' . $cacheMisses);
         }
         $this->restoreSession();
-        usleep(100000);
 
         if ($isAsync) {
             exit();

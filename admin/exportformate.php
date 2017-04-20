@@ -159,7 +159,12 @@ if ($cAction !== null && $kExportformat !== null && validateToken()) {
                     file_exists(PFAD_ROOT . PFAD_EXPORT . $exportformat->cDateiname . '.zip') ||
                     (isset($exportformat->nSplitgroesse) && (int)$exportformat->nSplitgroesse > 0))
             ) {
-                $hinweis = 'Das Exportformat <b>' . $exportformat->cName . '</b> wurde erfolgreich erstellt.';
+                if (empty($_GET['hasError'])) {
+                    $hinweis = 'Das Exportformat <b>' . $exportformat->cName . '</b> wurde erfolgreich erstellt.';
+                } else {
+                    $fehler = 'Das Exportformat <b>' . $exportformat->cName . '</b> konnte nicht erstellt werden.' .
+                        ' Fehlende Schreibrechte?';
+                }
             } else {
                 $fehler = 'Das Exportformat <b>' . $exportformat->cName . '</b> konnte nicht erstellt werden.';
             }

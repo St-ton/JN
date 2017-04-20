@@ -196,7 +196,7 @@ class Exportformat
                 $this->setKundengruppe(Kundengruppe::getDefaultGroupID());
             }
             $this->isOk         = true;
-            $this->tempFileName = $this->cDateiname;
+            $this->tempFileName = 'tmp_' . $this->cDateiname;
         }
 
         return $this;
@@ -1067,8 +1067,8 @@ class Exportformat
         $cacheHits   = 0;
         $cacheMisses = 0;
         $cOutput     = '';
-        if ($isAsync === true && $this->queue->nLimitN == 0 && file_exists(PFAD_ROOT . PFAD_EXPORT . $this->cDateiname)) {
-            unlink(PFAD_ROOT . PFAD_EXPORT . $this->cDateiname);
+        if ((int)$this->queue->nLimitN === 0 && file_exists(PFAD_ROOT . PFAD_EXPORT . $this->tempFileName)) {
+            unlink(PFAD_ROOT . PFAD_EXPORT . $this->tempFileName);
         }
         $datei = fopen(PFAD_ROOT . PFAD_EXPORT . $this->tempFileName, 'a');
         if ($max === null) {
@@ -1279,9 +1279,6 @@ class Exportformat
                     header('Location: ' . $cURL);
                 }
             } else {
-                // Versucht (falls so eingestellt) die erstellte Exportdatei in mehrere Dateien zu splitten
-                $this->splitFile();
-
                 Shop::DB()->query("
                     UPDATE texportformat 
                         SET dZuletztErstellt = now() 
@@ -1308,8 +1305,14 @@ class Exportformat
                             '&kExportformat=' . $this->getExportformat() . '&max=' . $max);
                     }
                 }
+                fclose($datei);
+                if (copy(PFAD_ROOT . PFAD_EXPORT . $this->tempFileName,
+                    PFAD_ROOT . PFAD_EXPORT . $this->cDateiname)) {
+                    unlink(PFAD_ROOT . PFAD_EXPORT . $this->tempFileName);
+                }
+                // Versucht (falls so eingestellt) die erstellte Exportdatei in mehrere Dateien zu splitten
+                $this->splitFile();
             }
-            fclose($datei);
         } else {
             $queueObject->updateExportformatQueueBearbeitet();
             $queueObject->setDZuletztGelaufen(date('Y-m-d H:i'))->setNInArbeit(0)->updateJobInDB();
@@ -1339,6 +1342,7 @@ class Exportformat
                 's. Article cache hits: ' . $cacheHits . ', misses: ' . $cacheMisses);
         }
         $this->restoreSession();
+        usleep(100000);
 
         if ($isAsync) {
             exit();

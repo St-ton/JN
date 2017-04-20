@@ -1073,9 +1073,9 @@ class Navigationsfilter
      */
     public function getProducts($forProductListing = true, $currentCategory = null, $fillArticles = true, $limit = 0)
     {
-        $hash                                    = $this->getHash();
         $_SESSION['nArtikelUebersichtVLKey_arr'] = []; // Nur Artikel, die auch wirklich auf der Seite angezeigt werden
 
+        $hash            = $this->getHash();
         $limitPerPage    = $limit > 0 ? $limit : $this->getArticlesPerPageLimit();
         $nLimitN         = ($this->nSeite - 1) * $limitPerPage;
         $paginationLimit = $nLimitN >= 50 // 50 nach links und 50 nach rechts für Artikeldetails blättern
@@ -1127,6 +1127,7 @@ class Navigationsfilter
             Shop::Cache()->set($hash, $searchResults, [CACHING_GROUP_CATEGORY]);
         }
         if ($fillArticles === true) {
+            // @todo: slice list of IDs when not filling?
             $opt                        = new stdClass();
             $opt->nMerkmale             = 1;
             $opt->nKategorie            = 1;

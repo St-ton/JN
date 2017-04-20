@@ -117,7 +117,11 @@ function bearbeiteInsert($xml)
     }
     if (is_array($xml['tkategorie'])) {
         // Altes SEO merken => falls sich es bei der aktualisierten Kategorie ändert => Eintrag in tredirect
-        $oSeoOld       = Shop::DB()->query("SELECT cSeo FROM tkategorie WHERE kKategorie = " . $Kategorie->kKategorie, 1);
+        $oDataOld      = Shop::DB()->query(
+            "SELECT cSeo, lft, rght, nLevel
+                FROM tkategorie
+                WHERE kKategorie = " . $Kategorie->kKategorie, 1
+        );
         $oSeoAssoc_arr = getSeoFromDB($Kategorie->kKategorie, 'kKategorie', null, 'kSprache');
 
         loescheKategorie($Kategorie->kKategorie);
@@ -130,10 +134,13 @@ function bearbeiteInsert($xml)
             $kategorie_arr[0]->cSeo                  = getSeo($kategorie_arr[0]->cSeo);
             $kategorie_arr[0]->cSeo                  = checkSeo($kategorie_arr[0]->cSeo);
             $kategorie_arr[0]->dLetzteAktualisierung = 'now()';
+            $kategorie_arr[0]->lft                   = isset($oDataOld->lft) ? $oDataOld->lft : 0;
+            $kategorie_arr[0]->rght                  = isset($oDataOld->rght) ? $oDataOld->rght : 0;
+            $kategorie_arr[0]->nLevel                = isset($oDataOld->nLevel) ? $oDataOld->nLevel : 0;
             DBUpdateInsert('tkategorie', $kategorie_arr, 'kKategorie');
             // Insert into tredirect weil sich das SEO geändert hat
-            if (isset($oSeoOld->cSeo)) {
-                checkDbeSXmlRedirect($oSeoOld->cSeo, $kategorie_arr[0]->cSeo);
+            if (isset($oDataOld->cSeo)) {
+                checkDbeSXmlRedirect($oDataOld->cSeo, $kategorie_arr[0]->cSeo);
             }
             //insert in tseo
             Shop::DB()->query(

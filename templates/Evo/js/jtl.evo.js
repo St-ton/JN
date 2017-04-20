@@ -370,6 +370,25 @@
             });
         },
 
+        checkout: function() {
+            $('#checkout-shipping-payment input[name="Versandart"]').change(function() {
+                var id = parseInt($(this).val());
+                var form = $(this).closest('form');
+
+                if (isNaN(id)) {
+                    return;
+                }
+
+                form.find('fieldset, input[type="submit"]')
+                    .attr('disabled', true);
+
+                var url = 'bestellvorgang.php?kVersandart=' + id;
+                $.evo.extended().loadContent(url, function() {
+                    $.evo.extended().checkout();
+                }, null, true, 'html');
+            });
+        },
+
         register: function() {
             this.addSliderTouchSupport();
             this.productTabsPriceFlow();
@@ -384,16 +403,18 @@
             this.popover();
             this.preventDropdownToggle();
             this.smoothScroll();
+            this.checkout();
         },
         
-        loadContent: function(url, callback, error, animation) {
+        loadContent: function(url, callback, error, animation, dataType) {
             var that = this;
             var $wrapper = $('#result-wrapper');
+            var ajaxOptions = {data: 'isAjax', dataType: dataType};
             if (animation) {
                 $wrapper.addClass('loading');
             }
 
-            $.ajax(url, {data: 'isAjax'}).done(function(html) {
+            $.ajax(url, ajaxOptions).done(function(html) {
                 var $data = $(html);
                 if (animation) {
                     $data.addClass('loading');

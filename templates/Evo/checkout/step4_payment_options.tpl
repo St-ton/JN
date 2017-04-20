@@ -1,3 +1,4 @@
+{*
 {if !empty($hinweis)}
     <div class="alert alert-danger">{$hinweis}</div>
 {/if}
@@ -96,4 +97,5 @@
         </div>
         {/block}
     </div>
-</div>
+</div>*}
+{include file='checkout/step3_shipping_options.tpl'}

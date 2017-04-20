@@ -72,8 +72,13 @@ if ($Einstellungen['kaufabwicklung']['bestellvorgang_kaufabwicklungsmethode'] ==
 if (verifyGPCDataInteger('wk') === 1) {
     resetNeuKundenKupon();
 }
-if (isset($_POST['versandartwahl']) && (int)$_POST['versandartwahl'] === 1) {
-    pruefeVersandartWahl(isset($_POST['Versandart']) ? $_POST['Versandart'] : null);
+if (isset($_POST['versandartwahl']) && (int)$_POST['versandartwahl'] === 1 || isset($_GET['kVersandart'])) {
+    unset($_SESSION['Zahlungsart']);
+    $kVersandart = (isset($_POST['Versandart'])) ? (int)$_POST['Versandart'] : null;
+    if (isset($_GET['kVersandart'])) {
+        $kVersandart = (int)$_GET['kVersandart'];
+    }
+    pruefeVersandartWahl($kVersandart);
 }
 if (isset($_POST['unreg_form']) && (int)$_POST['unreg_form'] === 1 &&
     $Einstellungen['kaufabwicklung']['bestellvorgang_unregistriert'] === 'Y'

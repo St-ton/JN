@@ -838,11 +838,14 @@ function plausiNeukundenKupon()
             WHERE tkunde.cMail = :mail";
         $values = ['mail' => $_SESSION['Kunde']->cMail];
         $conf = Shop::getSettings([CONF_KAUFABWICKLUNG]);
-        if (!empty($_SESSION['Kunde']->kKunde) && $conf['kaufabwicklung']['bestellvorgang_unregneukundenkupon_zulassen'] === 'N') {
+        if (empty($_SESSION['Kunde']->kKunde) && $conf['kaufabwicklung']['bestellvorgang_unregneukundenkupon_zulassen'] === 'N') {
+            //unregistrierte Neukunden, keine Kupons für Gastbestellungen zugelassen
+            return;
+        }
+        if (!empty($_SESSION['Kunde']->kKunde)) {
+            // registrierte Kunden und Neukunden mit Kundenkonto
             $query .= " OR tkunde.kKunde = :kkunde";
             $values["kkunde"] = $_SESSION['Kunde']->kKunde;
-        } else {
-            return;
         }
         $query .= " LIMIT 1";
         $oBestellung = Shop::DB()->executeQueryPrepared($query, $values, 1);

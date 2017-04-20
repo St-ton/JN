@@ -120,12 +120,12 @@ class FilterItemRating extends AbstractFilter
                 $state->having,
                 $order->orderBy
             );
-            $query   = "SELECT ssMerkmal.nSterne, COUNT(*) AS nAnzahl
+            $query = "SELECT ssMerkmal.nSterne, COUNT(*) AS nAnzahl
                         FROM (" . $query . " ) AS ssMerkmal
                         GROUP BY ssMerkmal.nSterne
                         ORDER BY ssMerkmal.nSterne DESC";
-            $ratings = Shop::DB()->query($query, 2);
-            if (is_array($ratings)) {
+            $res   = Shop::DB()->query($query, 2);
+            if (is_array($res)) {
                 $nSummeSterne     = 0;
                 $additionalFilter = new FilterItemRating(
                     $this->getLanguageID(),
@@ -133,16 +133,16 @@ class FilterItemRating extends AbstractFilter
                     $this->getConfig(),
                     $this->getAvailableLanguages()
                 );
-                foreach ($ratings as $rating) {
-                    $nSummeSterne += (int)$rating->nAnzahl;
-                    $oBewertung          = new stdClass();
-                    $oBewertung->nStern  = (int)$rating->nSterne;
-                    $oBewertung->nAnzahl = $nSummeSterne;
-                    $oBewertung->cURL    = $naviFilter->getURL(
+                foreach ($res as $row) {
+                    $nSummeSterne    += (int)$row->nAnzahl;
+                    $rating          = new stdClass();
+                    $rating->nStern  = (int)$row->nSterne;
+                    $rating->nAnzahl = $nSummeSterne;
+                    $rating->cURL    = $naviFilter->getURL(
                         true,
-                        $additionalFilter->init($oBewertung->nStern)
+                        $additionalFilter->init($rating->nStern)
                     );
-                    $oBewertungFilter_arr[] = $oBewertung;
+                    $ratings[]       = $rating;
                 }
             }
         }

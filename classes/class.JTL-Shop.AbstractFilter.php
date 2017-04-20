@@ -76,7 +76,7 @@ abstract class AbstractFilter implements IFilter
     protected $isInitialized = false;
 
     /**
-     * @var ''
+     * @var string
      */
     private $className = '';
 
@@ -97,6 +97,11 @@ abstract class AbstractFilter implements IFilter
     private $doUnset = false;
 
     /**
+     * @var string
+     */
+    private $unsetFilterURL = '';
+
+    /**
      * @param int|array $value
      * @return $this
      */
@@ -105,6 +110,25 @@ abstract class AbstractFilter implements IFilter
         $this->isInitialized = true;
 
         return $this->setValue($value)->setSeo($this->availableLanguages);
+    }
+
+    /**
+     * @param string $url
+     * @return $this
+     */
+    public function setUnsetFilterURL($url)
+    {
+        $this->unsetFilterURL = $url;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUnsetFilterURL()
+    {
+        return $this->unsetFilterURL;
     }
 
     /**

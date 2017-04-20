@@ -210,4 +210,15 @@ interface IFilter
      * @return $this
      */
     public function setDoUnset($doUnset);
+
+    /**
+     * @param string $url
+     * @return $this
+     */
+    public function setUnsetFilterURL($url);
+
+    /**
+     * @return string
+     */
+    public function getUnsetFilterURL();
 }

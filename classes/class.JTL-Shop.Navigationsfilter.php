@@ -1904,6 +1904,7 @@ class Navigationsfilter
             $this->oSprache_arr)
         )->init(null)->setDoUnset(true);
         $this->URL->cAlleKategorien = $this->getURL($bSeo, $extraFilter);
+        $this->KategorieFilter->setUnsetFilterURL($this->URL->cAlleKategorien);
 
         $extraFilter = (new FilterItemManufacturer(
             $languageID,
@@ -1912,6 +1913,7 @@ class Navigationsfilter
             $this->oSprache_arr)
         )->init(null)->setDoUnset(true);
         $this->URL->cAlleHersteller = $this->getURL($bSeo, $extraFilter);
+        $this->Hersteller->setUnsetFilterURL($this->URL->cAlleHersteller);
 
         $additionalFilter = (new FilterItemAttribute(
             $languageID,
@@ -1921,15 +1923,19 @@ class Navigationsfilter
         ))->setDoUnset(true);
         foreach ($this->MerkmalFilter as $oMerkmal) {
             if ($oMerkmal->kMerkmal > 0) {
-                $this->URL->cAlleMerkmale[$oMerkmal->kMerkmal] = $this->getURL(
+                $_url = $this->getURL(
                     $bSeo,
                     $additionalFilter->init($oMerkmal->kMerkmal)
                 );
+                $this->URL->cAlleMerkmale[$oMerkmal->kMerkmal] = $_url;
+                $oMerkmal->setUnsetFilterURL($_url);
             }
-            $this->URL->cAlleMerkmalWerte[$oMerkmal->kMerkmalWert] = $this->getURL(
+            $_url = $this->getURL(
                 $bSeo,
                 $additionalFilter->init($oMerkmal->kMerkmalWert)
             );
+            $this->URL->cAlleMerkmalWerte[$oMerkmal->kMerkmalWert] = $_url;
+            $oMerkmal->setUnsetFilterURL($_url);
         }
         // kinda hacky: try to build url that removes a merkmalwert url from merkmalfilter url
         if ($this->MerkmalWert->isInitialized() &&
@@ -1942,7 +1948,9 @@ class Navigationsfilter
                 $this->URL->cAlleKategorien
             );
             if ($_mmwSeo !== $this->URL->cAlleKategorien) {
-                $this->URL->cAlleMerkmalWerte[$this->MerkmalWert->getValue()] = $_mmwSeo;
+                $_url = $_mmwSeo;
+                $this->URL->cAlleMerkmalWerte[$this->MerkmalWert->getValue()] = $_url;
+                $this->MerkmalWert->setUnsetFilterURL($_url);
             }
         }
         $extraFilter = (new FilterItemPriceRange(
@@ -1952,6 +1960,7 @@ class Navigationsfilter
             $this->oSprache_arr)
         )->init(null)->setDoUnset(true);
         $this->URL->cAllePreisspannen = $this->getURL($bSeo, $extraFilter);
+        $this->PreisspannenFilter->setUnsetFilterURL($this->URL->cAllePreisspannen);
 
         $extraFilter = (new FilterItemRating(
             $languageID,
@@ -1960,6 +1969,7 @@ class Navigationsfilter
             $this->oSprache_arr)
         )->init(null)->setDoUnset(true);
         $this->URL->cAlleBewertungen = $this->getURL($bSeo, $extraFilter);
+        $this->BewertungFilter->setUnsetFilterURL($this->URL->cAlleBewertungen);
 
         $extraFilter = (new FilterItemTag(
             $languageID,
@@ -1968,6 +1978,7 @@ class Navigationsfilter
             $this->oSprache_arr)
         )->init(null)->setDoUnset(true);
         $this->URL->cAlleTags = $this->getURL($bSeo, $extraFilter);
+        $this->Tag->setUnsetFilterURL($this->URL->cAlleTags);
 
         $extraFilter = (new FilterItemSearchSpecial(
             $languageID,
@@ -1976,6 +1987,7 @@ class Navigationsfilter
             $this->oSprache_arr)
         )->init(null)->setDoUnset(true);
         $this->URL->cAlleSuchspecials = $this->getURL($bSeo, $extraFilter);
+        $this->SuchspecialFilter->setUnsetFilterURL($this->URL->cAlleSuchspecials);
 
         $extraFilter = (new FilterBaseSearchQuery(
             $languageID,
@@ -1985,7 +1997,9 @@ class Navigationsfilter
         )->init(null)->setDoUnset(true);
         foreach ($this->SuchFilter as $oSuchFilter) {
             if ($oSuchFilter->getValue() > 0) {
-                $this->URL->cAlleSuchFilter[$oSuchFilter->kSuchanfrage] = $this->getURL($bSeo, $extraFilter);
+                $_url = $this->getURL($bSeo, $extraFilter);
+                $this->URL->cAlleSuchFilter[$oSuchFilter->kSuchanfrage] = $_url;
+                $oSuchFilter->setUnsetFilterURL($_url);
             }
         }
 
@@ -1995,14 +2009,16 @@ class Navigationsfilter
                 $idx             = 'cAlle' . $className;
                 $this->URL->$idx = [];
                 if ($filter->getType() === AbstractFilter::FILTER_TYPE_OR) {
-                    $extraFilter= (clone $filter)->setDoUnset(true);
+                    $extraFilter = (clone $filter)->setDoUnset(true);
                     foreach ($filter->getValue() as $filterValue) {
                         $extraFilter->setValue($filterValue);
                         $this->URL->$idx[$filterValue] = $this->getURL($bSeo, $extraFilter);
+                        $filter->setUnsetFilterURL($this->URL->$idx[$filterValue]);
                     }
                 } else {
                     $extraFilter = (clone $filter)->setDoUnset(true)->setValue($filter->getValue());
                     $this->URL->$idx = $this->getURL($bSeo, $extraFilter);
+                    $filter->setUnsetFilterURL($this->URL->$idx);
                 }
             }
         }

@@ -723,6 +723,7 @@ function ioCall(name, args, success, error, context)
         method: 'post',
         dataType: 'json',
         data: {
+            jtl_token: jtlToken,
             io : JSON.stringify({
                 name: name,
                 params : args

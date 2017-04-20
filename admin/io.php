@@ -7,7 +7,7 @@
 
 require_once __DIR__ . '/includes/admininclude.php';
 
-if (!$oAccount->getIsAuthenticated()) {
+if (!$oAccount->getIsAuthenticated() || !validateToken()) {
     http_response_code(403);
     exit();
 }

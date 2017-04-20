@@ -318,7 +318,7 @@ class FilterItemSearchSpecial extends AbstractFilter
                     $additionalFilter->init($i)
                 );
                 if ($oSuchspecial->nAnzahl > 0) {
-                    $oSuchspecialFilterDB_arr[$i] = $oSuchspecial;
+                    $searchSpecialFilters[$i] = $oSuchspecial;
                 }
             }
         }

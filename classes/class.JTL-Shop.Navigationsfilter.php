@@ -1020,16 +1020,6 @@ class Navigationsfilter
      */
     public function getProductKeys()
     {
-        $oSuchergebnisse                    = new stdClass();
-        $oSuchergebnisse->Artikel           = new ArtikelListe();
-        $oSuchergebnisse->MerkmalFilter     = [];
-        $oSuchergebnisse->Herstellerauswahl = [];
-        $oSuchergebnisse->Tags              = [];
-        $oSuchergebnisse->Bewertung         = [];
-        $oSuchergebnisse->Preisspanne       = [];
-        $oSuchergebnisse->Suchspecial       = [];
-        $oSuchergebnisse->SuchFilter        = [];
-
         $order          = $this->getOrder();
         $state          = $this->getCurrentStateData();
         $state->joins[] = $order->join;
@@ -1303,8 +1293,10 @@ class Navigationsfilter
                     if ($ignore === null || $filter->getClassName() !== $ignore) {
                         if ($idx === 0) {
                             $itemJoin = $filter->getSQLJoin();
+                            // alternatively:
+                            // $data->joins = array_merge($data->joins, is_array($itemJoin) ? $itemJoin : [$itemJoin]);
                             if (is_array($itemJoin)) {
-                                foreach ($filter->getSQLJoin() as $filterJoin) {
+                                foreach ($itemJoin as $filterJoin) {
                                     $data->joins[] = $filterJoin;
                                 }
                             } else {
@@ -1358,71 +1350,66 @@ class Navigationsfilter
     }
 
     /**
-     * @param object         $oSuchergebnisse
+     * @param object         $searchResults
      * @param null|Kategorie $AktuelleKategorie
      * @return mixed
      */
-    public function setFilterOptions($oSuchergebnisse, $AktuelleKategorie = null)
+    public function setFilterOptions($searchResults, $AktuelleKategorie = null)
     {
-        $oSuchergebnisse->Herstellerauswahl = $this->HerstellerFilter->getOptions();
-        $oSuchergebnisse->Bewertung         = $this->BewertungFilter->getOptions();
-        $oSuchergebnisse->Tags              = $this->Tag->getOptions();
+        $searchResults->Herstellerauswahl = $this->HerstellerFilter->getOptions();
+        $searchResults->Bewertung         = $this->BewertungFilter->getOptions();
+        $searchResults->Tags              = $this->Tag->getOptions();
 
         if ($this->conf['navigationsfilter']['allgemein_tagfilter_benutzen'] === 'Y') {
             $oTags_arr = [];
-            foreach ($oSuchergebnisse->Tags as $key => $oTags) {
+            foreach ($searchResults->Tags as $key => $oTags) {
                 $oTags_arr[$key]       = $oTags;
                 $oTags_arr[$key]->cURL = StringHandler::htmlentitydecode($oTags->cURL);
             }
-            $oSuchergebnisse->TagsJSON = Boxen::gibJSONString($oTags_arr);
+            $searchResults->TagsJSON = Boxen::gibJSONString($oTags_arr);
         }
-        $oSuchergebnisse->MerkmalFilter    = $this->attributeFilterCompat->getOptions([
+        $searchResults->MerkmalFilter = $this->attributeFilterCompat->getOptions([
             'oAktuelleKategorie' => $AktuelleKategorie,
             'bForce'             => function_exists('starteAuswahlAssistent')
         ]);
-        $this->attributeFilterCompat->setFilterCollection($oSuchergebnisse->MerkmalFilter);
+        $this->attributeFilterCompat->setFilterCollection($searchResults->MerkmalFilter);
 
-        $oSuchergebnisse->Preisspanne      = $this->PreisspannenFilter->getOptions($oSuchergebnisse->GesamtanzahlArtikel);
-        $oSuchergebnisse->Kategorieauswahl = $this->KategorieFilter->getOptions();
-        $oSuchergebnisse->SuchFilter       = $this->searchFilterCompat->getOptions();
-        $oSuchergebnisse->SuchFilterJSON   = [];
+        $searchResults->Preisspanne      = $this->PreisspannenFilter->getOptions($searchResults->GesamtanzahlArtikel);
+        $searchResults->Kategorieauswahl = $this->KategorieFilter->getOptions();
+        $searchResults->SuchFilter       = $this->searchFilterCompat->getOptions();
+        $searchResults->SuchFilterJSON   = [];
 
-        foreach ($oSuchergebnisse->SuchFilter as $key => $oSuchfilter) {
-            $oSuchergebnisse->SuchFilterJSON[$key]       = $oSuchfilter;
-            $oSuchergebnisse->SuchFilterJSON[$key]->cURL = StringHandler::htmlentitydecode($oSuchfilter->cURL);
+        foreach ($searchResults->SuchFilter as $key => $oSuchfilter) {
+            $searchResults->SuchFilterJSON[$key]       = $oSuchfilter;
+            $searchResults->SuchFilterJSON[$key]->cURL = StringHandler::htmlentitydecode($oSuchfilter->cURL);
         }
-        $oSuchergebnisse->SuchFilterJSON     = Boxen::gibJSONString($oSuchergebnisse->SuchFilterJSON);
-        $oSuchergebnisse->Suchspecialauswahl = (!$this->params['kSuchspecial'] && !$this->params['kSuchspecialFilter'])
+        $searchResults->SuchFilterJSON     = Boxen::gibJSONString($searchResults->SuchFilterJSON);
+        $searchResults->Suchspecialauswahl = (!$this->params['kSuchspecial'] && !$this->params['kSuchspecialFilter'])
             ? $this->SuchspecialFilter->getOptions()
             : null;
-        $oSuchergebnisse->customFilters      = [];
+        $searchResults->customFilters      = [];
 
-        if (empty($oSuchergebnisse->Kategorieauswahl) || count($oSuchergebnisse->Kategorieauswahl) <= 1) {
+        if (empty($searchResults->Kategorieauswahl) || count($searchResults->Kategorieauswahl) <= 1) {
             // hide category filter when a category is being browsed
             $this->KategorieFilter->setVisibility(AbstractFilter::SHOW_NEVER);
         }
-        if (empty($oSuchergebnisse->Herstellerauswahl) || count($oSuchergebnisse->Herstellerauswahl) === 0) {
+        if (empty($searchResults->Herstellerauswahl) || count($searchResults->Herstellerauswahl) === 0) {
             // hide manufacturer filter when browsing manufacturer products
             $this->HerstellerFilter->setVisibility(AbstractFilter::SHOW_NEVER);
         }
-        if (count($oSuchergebnisse->MerkmalFilter) === 0) {
+        if (count($searchResults->MerkmalFilter) === 0) {
             // hide attribute filter when none available
             $this->attributeFilterCompat->setVisibility(AbstractFilter::SHOW_NEVER);
         }
-
-        foreach($this->filters as $filter) {
-            if ($filter->isCustom()) {
-//                $filterObject                     = new stdClass();
-//                $filterObject->cClassname         = $filter->getClassName();
-//                $filterObject->cName              = $filter->getName();
-//                $filterObject->value              = $filter->getValue();
-//                $filterObject->filterOptions      = $filter->getOptions();
-//                $oSuchergebnisse->customFilters[] = $filterObject;
-                $oSuchergebnisse->customFilters[] = $filter;
+        $searchResults->customFilters = array_filter(
+            $this->filters,
+            function ($e) {
+                /** @var IFilter $e */
+                return $e->isCustom();
             }
-        }
+        );
 
-        return $oSuchergebnisse;
+        return $searchResults;
     }
 
     /**

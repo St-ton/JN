@@ -145,10 +145,10 @@ interface IFilter
     /**
      * set basic information for using this filter
      *
-     * @param int   $languageID
-     * @param int   $customerGroupID
-     * @param array $config
-     * @param array $languages
+     * @param int        $languageID
+     * @param int        $customerGroupID
+     * @param array|null $config
+     * @param array|null $languages
      * @return $this
      */
     public function setData($languageID, $customerGroupID, $config, $languages);
@@ -232,4 +232,26 @@ interface IFilter
      * @return $this
      */
     public function setVisibility($visibility);
+
+    /**
+     * @param string $name
+     * @return $this
+     */
+    public function setFrontendName($name);
+
+    /**
+     * @return string
+     */
+    public function getFrontendName();
+
+    /**
+     * @param array $collection
+     * @return $this
+     */
+    public function setFilterCollection(array $collection);
+
+    /**
+     * @return array
+     */
+    public function getFilterCollection();
 }

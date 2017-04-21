@@ -127,6 +127,18 @@ abstract class AbstractFilter implements IFilter
     private $visibility = self::SHOW_ALWAYS;
 
     /**
+     * @var string
+     */
+    private $frontendName = '';
+
+    /**
+     * list of filter options for AttributeFilters etc. that consist of multiple different filter options
+     *
+     * @var array
+     */
+    private $filterCollection = [];
+
+    /**
      * @param int|array $value
      * @return $this
      */
@@ -135,6 +147,43 @@ abstract class AbstractFilter implements IFilter
         $this->isInitialized = true;
 
         return $this->setValue($value)->setSeo($this->availableLanguages);
+    }
+
+    /**
+     * @param array $collection
+     * @return $this
+     */
+    public function setFilterCollection(array $collection)
+    {
+        $this->filterCollection = $collection;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getFilterCollection()
+    {
+        return $this->filterCollection;
+    }
+
+    /**
+     * @param string $name
+     * @return $this
+     */
+    public function setFrontendName($name) {
+        $this->frontendName = $name;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFrontendName()
+    {
+        return $this->frontendName;
     }
 
     /**

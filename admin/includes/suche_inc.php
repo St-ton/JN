@@ -4,7 +4,14 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-function adminSearch ($query, $data = false)
+/**
+ * Search for backend settings
+ *
+ * @param string $query - search string
+ * @param bool $data - true to return raw data, false to return html
+ * @return IOError|object
+ */
+function adminSearch($query, $data = false)
 {
     define('JTL_CHARSET', 'utf-8');
 

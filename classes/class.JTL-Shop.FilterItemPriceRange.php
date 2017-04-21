@@ -55,6 +55,7 @@ class FilterItemPriceRange extends AbstractFilter
         $this->isCustom    = false;
         $this->urlParam    = 'pf';
         $this->urlParamSEO = null;
+        $this->setVisibility($config['navigationsfilter']['preisspannenfilter_benutzen']);
     }
 
     /**
@@ -226,7 +227,8 @@ class FilterItemPriceRange extends AbstractFilter
         $res[] = (new FilterJoin())->setComment('join2 from FilterItemPriceRange')
                                    ->setType('LEFT JOIN')
                                    ->setTable('tartikelkategorierabatt')
-                                   ->setOn('tartikelkategorierabatt.kKundengruppe = ' . (int)$_SESSION['Kundengruppe']->kKundengruppe .
+                                   ->setOn('tartikelkategorierabatt.kKundengruppe = ' .
+                                       (int)$_SESSION['Kundengruppe']->kKundengruppe .
                                        ' AND tartikelkategorierabatt.kArtikel = tartikel.kArtikel');
         $res[] = (new FilterJoin())->setComment('join3 from FilterItemPriceRange')
                                    ->setType('LEFT JOIN')
@@ -319,7 +321,8 @@ class FilterItemPriceRange extends AbstractFilter
         $naviFilter       = Shop::getNaviFilter();
         $productCount     = $mixed;
         $oPreisspanne_arr = [];
-        // Prüfe ob es nur einen Artikel in der Artikelübersicht gibt, falls ja und es ist noch kein Preisspannenfilter gesetzt
+        // Prüfe, ob es nur einen Artikel in der Artikelübersicht gibt
+        // falls ja und es ist noch kein Preisspannenfilter gesetzt,
         // dürfen keine Preisspannenfilter angezeigt werden
         if (($productCount === 1 && !$this->isInitialized()) ||
             $this->getConfig()['navigationsfilter']['preisspannenfilter_benutzen'] === 'N'
@@ -338,18 +341,22 @@ class FilterItemPriceRange extends AbstractFilter
 
         $state->joins[] = (new FilterJoin())->setType('LEFT JOIN')
                                             ->setTable('tartikelkategorierabatt')
-                                            ->setOn("tartikelkategorierabatt.kKundengruppe = " . $this->getCustomerGroupID() .
-                                                " AND tartikelkategorierabatt.kArtikel = tartikel.kArtikel");
+                                            ->setOn("tartikelkategorierabatt.kKundengruppe = " .
+                                                    $this->getCustomerGroupID() .
+                                                    " AND tartikelkategorierabatt.kArtikel = tartikel.kArtikel");
         $state->joins[] = (new FilterJoin())->setType('LEFT JOIN')
                                             ->setTable('tartikelsonderpreis')
                                             ->setOn("tartikelsonderpreis.kArtikel = tartikel.kArtikel
-                        AND tartikelsonderpreis.cAktiv = 'Y'
-                        AND tartikelsonderpreis.dStart <= now()
-                        AND (tartikelsonderpreis.dEnde >= CURDATe() OR tartikelsonderpreis.dEnde = '0000-00-00')");
+                                                        AND tartikelsonderpreis.cAktiv = 'Y'
+                                                        AND tartikelsonderpreis.dStart <= now()
+                                                        AND (tartikelsonderpreis.dEnde >= CURDATe() 
+                                                            OR tartikelsonderpreis.dEnde = '0000-00-00')");
         $state->joins[] = (new FilterJoin())->setType('LEFT JOIN')
                                             ->setTable('tsonderpreise')
-                                            ->setOn("tartikelsonderpreis.kArtikelSonderpreis = tsonderpreise.kArtikelSonderpreis 
-                        AND tsonderpreise.kKundengruppe = " . $this->getCustomerGroupID());
+                                            ->setOn("tartikelsonderpreis.kArtikelSonderpreis = 
+                                                        tsonderpreise.kArtikelSonderpreis 
+                                                        AND tsonderpreise.kKundengruppe = " .
+                                                $this->getCustomerGroupID());
         $state->joins[] = $order->join;
 
         // Automatisch
@@ -358,13 +365,15 @@ class FilterItemPriceRange extends AbstractFilter
                                                 ->setTable('tpreise')
                                                 ->setType('JOIN')
                                                 ->setOn('tpreise.kArtikel = tartikel.kArtikel 
-                            AND tpreise.kKundengruppe = ' . $this->getCustomerGroupID());
+                                                            AND tpreise.kKundengruppe = ' .
+                                                            $this->getCustomerGroupID());
             $state->joins[] = (new FilterJoin())->setComment('join2 from FilterItemPriceRange::getOptions()')
                                                 ->setTable('tartikelsichtbarkeit')
                                                 ->setType('LEFT JOIN')
                                                 ->setOn('tartikel.kArtikel = tartikelsichtbarkeit.kArtikel 
-                            AND tartikelsichtbarkeit.kKundengruppe = ' . $this->getCustomerGroupID());
-            //remove duplicate joins
+                                                            AND tartikelsichtbarkeit.kKundengruppe = ' .
+                                                            $this->getCustomerGroupID());
+            // remove duplicate joins
             $joinedTables = [];
             foreach ($state->joins as $i => $stateJoin) {
                 if (is_string($stateJoin)) {

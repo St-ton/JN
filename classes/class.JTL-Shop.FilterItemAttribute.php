@@ -35,6 +35,7 @@ class FilterItemAttribute extends FilterBaseAttribute
         $this->isCustom    = false;
         $this->urlParam    = 'mf';
         $this->urlParamSEO = SEP_MERKMAL;
+        $this->setVisibility($config['navigationsfilter']['merkmalfilter_verwenden']);
     }
 
     /**
@@ -44,30 +45,35 @@ class FilterItemAttribute extends FilterBaseAttribute
     public function setSeo($languages)
     {
         if ($this->getValue() > 0) {
-            $oSeo_arr = Shop::DB()->query("
-                SELECT cSeo, kSprache
-                    FROM tseo
-                    WHERE cKey = 'kMerkmalWert' AND kKey = " . $this->getValue() . "
-                    ORDER BY kSprache", 2
+            $oSeo_arr = Shop::DB()->selectAll(
+                'tseo',
+                ['cKey', 'kKey'],
+                ['kMerkmalWert', $this->getValue()],
+                'cSeo, kSprache',
+                'kSprache'
             );
-
             foreach ($languages as $language) {
                 $this->cSeo[$language->kSprache] = '';
                 if (is_array($oSeo_arr)) {
                     foreach ($oSeo_arr as $oSeo) {
-                        if ($language->kSprache == $oSeo->kSprache) {
+                        if ($language->kSprache === (int)$oSeo->kSprache) {
                             $this->cSeo[$language->kSprache] = $oSeo->cSeo;
                         }
                     }
                 }
             }
-            $seo_obj = Shop::DB()->query("
+            $seo_obj = Shop::DB()->executeQueryPrepared('
                 SELECT tmerkmalwertsprache.cWert, tmerkmalwert.kMerkmal
                     FROM tmerkmalwertsprache
                     JOIN tmerkmalwert 
                         ON tmerkmalwert.kMerkmalWert = tmerkmalwertsprache.kMerkmalWert
-                    WHERE tmerkmalwertsprache.kSprache = " . Shop::getLanguage() . "
-                       AND tmerkmalwertsprache.kMerkmalWert = " . $this->getValue(), 1
+                    WHERE tmerkmalwertsprache.kSprache = :lid
+                       AND tmerkmalwertsprache.kMerkmalWert = :val',
+                [
+                    'lid' => Shop::getLanguage(),
+                    'val' => $this->getValue()
+                ],
+                1
             );
             if (!empty($seo_obj->kMerkmal)) {
                 $this->kMerkmal = $seo_obj->kMerkmal;
@@ -209,7 +215,8 @@ class FilterItemAttribute extends FilterBaseAttribute
             $query = "SELECT tseo.cSeo, ssMerkmal.kMerkmal, ssMerkmal.kMerkmalWert, ssMerkmal.cMMWBildPfad, 
                 ssMerkmal.cWert, ssMerkmal.cName, ssMerkmal.cTyp, ssMerkmal.cMMBildPfad, COUNT(*) AS nAnzahl
                 FROM (" . $query . ") AS ssMerkmal
-                LEFT JOIN tseo ON tseo.kKey = ssMerkmal.kMerkmalWert
+                LEFT JOIN tseo 
+                    ON tseo.kKey = ssMerkmal.kMerkmalWert
                     AND tseo.cKey = 'kMerkmalWert'
                     AND tseo.kSprache = " . $this->getLanguageID() . "
                 GROUP BY ssMerkmal.kMerkmalWert
@@ -243,17 +250,17 @@ class FilterItemAttribute extends FilterBaseAttribute
                         $oMerkmalWerte->cBildpfadKlein = BILD_KEIN_MERKMALWERTBILD_VORHANDEN;
                         $oMerkmalWerte->cBildpfadGross = BILD_KEIN_MERKMALWERTBILD_VORHANDEN;
                     }
-                    //baue URL
+                    // baue URL
                     $oMerkmalWerte->cURL = $naviFilter->getURL(
                         true,
                         $additionalFilter->init((int)$oMerkmalFilterDB->kMerkmalWert)
                     );
-                    //hack for #4815
+                    // hack for #4815
                     $seoURL = $additionalFilter->getSeo($this->getLanguageID());
                     if ($oMerkmalWerte->nAktiv === 1 && !empty($seoURL)) {
-                        //remove '__attrY' from '<url>attrX__attrY'
+                        // remove '__attrY' from '<url>attrX__attrY'
                         $newURL = str_replace('__' . $seoURL, '', $oMerkmalWerte->cURL);
-                        //remove 'attrY__' from '<url>attrY__attrX'
+                        // remove 'attrY__' from '<url>attrY__attrX'
                         $newURL              = str_replace($seoURL . '__', '', $newURL);
                         $oMerkmalWerte->cURL = $newURL;
                     }
@@ -272,7 +279,7 @@ class FilterItemAttribute extends FilterBaseAttribute
                     if ($nPos >= 0) {
                         $oMerkmalFilter_arr[$nPos]->oMerkmalWerte_arr[] = $oMerkmalWerte;
                     } else {
-                        //#533 Anzahl max Merkmale erreicht?
+                        // #533 Anzahl max Merkmale erreicht?
                         if (($max = $this->getConfig()['navigationsfilter']['merkmalfilter_maxmerkmale']) > 0 &&
                             count($oMerkmalFilter_arr) >= $max
                         ) {
@@ -283,9 +290,9 @@ class FilterItemAttribute extends FilterBaseAttribute
                     }
                 }
             }
-            //Filter durchgehen und die Merkmalwerte entfernen, die zuviel sind und deren Anzahl am geringsten ist.
+            // Filter durchgehen und die Merkmalwerte entfernen, die zuviel sind und deren Anzahl am geringsten ist.
             foreach ($oMerkmalFilter_arr as $o => $oMerkmalFilter) {
-                //#534 Anzahl max Merkmalwerte erreicht?
+                // #534 Anzahl max Merkmalwerte erreicht?
                 if (($max = $this->getConfig()['navigationsfilter']['merkmalfilter_maxmerkmalwerte']) > 0) {
                     while (count($oMerkmalFilter_arr[$o]->oMerkmalWerte_arr) > $max) {
                         $nMinAnzahl = 999999;
@@ -315,7 +322,7 @@ class FilterItemAttribute extends FilterBaseAttribute
                 }
                 $oMerkmalFilter_arr = array_merge($oMerkmalFilter_arr);
             }
-            //Merkmalwerte numerisch sortieren, wenn alle Merkmalwerte eines Merkmals numerisch sind
+            // Merkmalwerte numerisch sortieren, wenn alle Merkmalwerte eines Merkmals numerisch sind
             foreach ($oMerkmalFilter_arr as $o => $oMerkmalFilter) {
                 $bAlleNumerisch = true;
                 $count          = count($oMerkmalFilter->oMerkmalWerte_arr);

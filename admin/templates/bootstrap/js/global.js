@@ -762,7 +762,7 @@ function ioCall(name, args, success, error, context)
  */
 function ioDownload(name, args)
 {
-    window.location.href = 'io.php?io=' + encodeURIComponent(JSON.stringify({
+    window.location.href = 'io.php?token=' + jtlToken + '&io=' + encodeURIComponent(JSON.stringify({
         name: name,
         params: args
     }));
@@ -823,6 +823,7 @@ function enableTypeahead(selector, funcName, displayField, valueField, onSelect)
             valueField: valueField,
             preDispatch: function (query) {
                 return {
+                    jtl_token: jtlToken,
                     io: JSON.stringify({
                         name: funcName,
                         params: [query, 100]

@@ -24,7 +24,7 @@ $Einstellungen = Shop::getSettings([
     CONF_ARTIKELDETAILS
 ]);
 Shop::setPageType(PAGE_BESTELLVORGANG);
-$step    = 'accountwahl';
+$step     = 'accountwahl';
 $cHinweis = '';
 // Kill Ajaxcheckout falls vorhanden
 unset($_SESSION['ajaxcheckout']);
@@ -72,8 +72,17 @@ if ($Einstellungen['kaufabwicklung']['bestellvorgang_kaufabwicklungsmethode'] ==
 if (verifyGPCDataInteger('wk') === 1) {
     resetNeuKundenKupon();
 }
-if (isset($_POST['versandartwahl']) && (int)$_POST['versandartwahl'] === 1) {
-    pruefeVersandartWahl(isset($_POST['Versandart']) ? $_POST['Versandart'] : null);
+if (isset($_POST['versandartwahl']) && (int)$_POST['versandartwahl'] === 1 || isset($_GET['kVersandart'])) {
+    unset($_SESSION['Zahlungsart']);
+    $kVersandart = null;
+
+    if (isset($_GET['kVersandart'])) {
+        $kVersandart = (int)$_GET['kVersandart'];
+    } elseif (isset($_POST['Versandart'])) {
+        $kVersandart = (int)$_POST['Versandart'];
+    }
+
+    pruefeVersandartWahl($kVersandart);
 }
 if (isset($_POST['unreg_form']) && (int)$_POST['unreg_form'] === 1 &&
     $Einstellungen['kaufabwicklung']['bestellvorgang_unregistriert'] === 'Y'
@@ -120,6 +129,7 @@ pruefeZahlungsartwahlStep($_POST);
 
 if ($step === 'accountwahl') {
     gibStepAccountwahl();
+    gibStepUnregistriertBestellen();
 }
 if ($step === 'unregistriert bestellen') {
     gibStepUnregistriertBestellen();
@@ -158,8 +168,8 @@ if (isset($_SESSION['Zahlungsart']->cModulId) &&
     $smarty->assign('safetypay_form', gib_safetypay_form(
         $_SESSION['Kunde'],
         $_SESSION['Warenkorb'],
-        $Einstellungen['zahlungsarten'])
-    );
+        $Einstellungen['zahlungsarten']
+    ));
 }
 //Billpay
 if (isset($_SESSION['Zahlungsart']) &&

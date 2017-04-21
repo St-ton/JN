@@ -79,6 +79,7 @@ class FilterItemAttribute extends FilterBaseAttribute
                 $this->kMerkmal = $seo_obj->kMerkmal;
                 $this->cWert    = $seo_obj->cWert;
                 $this->cName    = $seo_obj->cWert;
+                $this->setFrontendName($this->cName);
             }
         }
 

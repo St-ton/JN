@@ -25,7 +25,8 @@ class FilterItemCategory extends FilterBaseCategory
         $this->isCustom    = false;
         $this->urlParam    = 'kf';
         $this->urlParamSEO = SEP_KAT;
-        $this->setVisibility($config['navigationsfilter']['allgemein_kategoriefilter_benutzen']);
+        $this->setVisibility($config['navigationsfilter']['allgemein_kategoriefilter_benutzen'])
+             ->setFrontendName(Shop::Lang()->get('allCategories', 'global'));
     }
 
     /**

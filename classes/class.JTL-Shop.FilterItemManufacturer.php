@@ -25,6 +25,7 @@ class FilterItemManufacturer extends FilterBaseManufacturer
         $this->isCustom    = false;
         $this->urlParam    = 'hf';
         $this->urlParamSEO = SEP_HST;
-        $this->setVisibility($config['navigationsfilter']['allgemein_herstellerfilter_benutzen']);
+        $this->setVisibility($config['navigationsfilter']['allgemein_herstellerfilter_benutzen'])
+             ->setFrontendName(Shop::Lang()->get('allManufacturers', 'global'));
     }
 }

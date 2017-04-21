@@ -55,7 +55,8 @@ class FilterItemPriceRange extends AbstractFilter
         $this->isCustom    = false;
         $this->urlParam    = 'pf';
         $this->urlParamSEO = null;
-        $this->setVisibility($config['navigationsfilter']['preisspannenfilter_benutzen']);
+        $this->setVisibility($config['navigationsfilter']['preisspannenfilter_benutzen'])
+             ->setFrontendName(Shop::Lang()->get('rangeOfPrices', 'global'));
     }
 
     /**

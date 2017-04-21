@@ -29,6 +29,7 @@ class FilterItemSearchSpecial extends AbstractFilter
         parent::__construct($languageID, $customerGroupID, $config, $languages);
         $this->isCustom = false;
         $this->urlParam = 'qf';
+        $this->setFrontendName(Shop::Lang()->get('specificProducts', 'global'));
     }
 
     /**

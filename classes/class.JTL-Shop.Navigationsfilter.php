@@ -418,6 +418,13 @@ class Navigationsfilter
 
         $this->baseState = new FilterDummyState();
 
+        $this->filters[] = $this->KategorieFilter;
+        $this->filters[] = $this->HerstellerFilter;
+        $this->filters[] = $this->attributeFilterCompat;
+        $this->filters[] = $this->SuchspecialFilter;
+        $this->filters[] = $this->PreisspannenFilter;
+        $this->filters[] = $this->BewertungFilter;
+
         return $this;
     }
 
@@ -1373,6 +1380,8 @@ class Navigationsfilter
             'oAktuelleKategorie' => $AktuelleKategorie,
             'bForce'             => function_exists('starteAuswahlAssistent')
         ]);
+        $this->attributeFilterCompat->setFilterCollection($oSuchergebnisse->MerkmalFilter);
+
         $oSuchergebnisse->Preisspanne      = $this->PreisspannenFilter->getOptions($oSuchergebnisse->GesamtanzahlArtikel);
         $oSuchergebnisse->Kategorieauswahl = $this->KategorieFilter->getOptions();
         $oSuchergebnisse->SuchFilter       = $this->searchFilterCompat->getOptions();
@@ -1388,13 +1397,29 @@ class Navigationsfilter
             : null;
         $oSuchergebnisse->customFilters      = [];
 
+        if (empty($oSuchergebnisse->Kategorieauswahl) || count($oSuchergebnisse->Kategorieauswahl) <= 1) {
+            // hide category filter when a category is being browsed
+            $this->KategorieFilter->setVisibility(AbstractFilter::SHOW_NEVER);
+        }
+        if (empty($oSuchergebnisse->Herstellerauswahl) || count($oSuchergebnisse->Herstellerauswahl) === 0) {
+            // hide manufacturer filter when browsing manufacturer products
+            $this->HerstellerFilter->setVisibility(AbstractFilter::SHOW_NEVER);
+        }
+        if (count($oSuchergebnisse->MerkmalFilter) === 0) {
+            // hide attribute filter when none available
+            $this->attributeFilterCompat->setVisibility(AbstractFilter::SHOW_NEVER);
+        }
+
         foreach($this->filters as $filter) {
-            $filterObject                     = new stdClass();
-            $filterObject->cClassname         = $filter->getClassName();
-            $filterObject->cName              = $filter->getName();
-            $filterObject->value              = $filter->getValue();
-            $filterObject->filterOptions      = $filter->getOptions();
-            $oSuchergebnisse->customFilters[] = $filterObject;
+            if ($filter->isCustom()) {
+//                $filterObject                     = new stdClass();
+//                $filterObject->cClassname         = $filter->getClassName();
+//                $filterObject->cName              = $filter->getName();
+//                $filterObject->value              = $filter->getValue();
+//                $filterObject->filterOptions      = $filter->getOptions();
+//                $oSuchergebnisse->customFilters[] = $filterObject;
+                $oSuchergebnisse->customFilters[] = $filter;
+            }
         }
 
         return $oSuchergebnisse;

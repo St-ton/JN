@@ -30,6 +30,7 @@ class FilterItemRating extends AbstractFilter
         $this->isCustom    = false;
         $this->urlParam    = 'bf';
         $this->urlParamSEO = null;
+        $this->setVisibility($config['navigationsfilter']['bewertungsfilter_benutzen']);
     }
 
     /**

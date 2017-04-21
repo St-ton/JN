@@ -25,6 +25,7 @@ class FilterItemCategory extends FilterBaseCategory
         $this->isCustom    = false;
         $this->urlParam    = 'kf';
         $this->urlParamSEO = SEP_KAT;
+        $this->setVisibility($config['navigationsfilter']['allgemein_kategoriefilter_benutzen']);
     }
 
     /**
@@ -32,8 +33,7 @@ class FilterItemCategory extends FilterBaseCategory
      */
     public function getSQLCondition()
     {
-        $conf = Shop::getSettings([CONF_NAVIGATIONSFILTER]);
-        if ($conf['navigationsfilter']['kategoriefilter_anzeigen_als'] === 'HF') {
+        if ($this->getConfig()['navigationsfilter']['kategoriefilter_anzeigen_als'] === 'HF') {
             return '(tkategorieartikelgesamt.kOberKategorie = ' . $this->getValue() .
                 ' OR tkategorieartikelgesamt.kKategorie = ' . $this->getValue() . ') ';
         }
@@ -46,11 +46,10 @@ class FilterItemCategory extends FilterBaseCategory
      */
     public function getSQLJoin()
     {
-        $conf = Shop::getSettings([CONF_NAVIGATIONSFILTER]);
         $join = new FilterJoin();
         $join->setComment('join from FilterItemCategory')
              ->setType('JOIN');
-        if ($conf['navigationsfilter']['kategoriefilter_anzeigen_als'] === 'HF') {
+        if ($this->getConfig()['navigationsfilter']['kategoriefilter_anzeigen_als'] === 'HF') {
             $join->setTable('tkategorieartikelgesamt')->setOn('tartikel.kArtikel = tkategorieartikelgesamt.kArtikel');
         }
         $join->setTable('tkategorieartikel')->setOn('tartikel.kArtikel = tkategorieartikel.kArtikel');
@@ -83,7 +82,8 @@ class FilterItemCategory extends FilterBaseCategory
                 $state->joins[] = (new FilterJoin())->setComment('join1 from FilterItemCategory::getOptions()')
                                                     ->setType('JOIN')
                                                     ->setTable('tkategorieartikelgesamt')
-                                                    ->setOn('tartikel.kArtikel = tkategorieartikelgesamt.kArtikel ' . $kKatFilter);
+                                                    ->setOn('tartikel.kArtikel = tkategorieartikelgesamt.kArtikel ' .
+                                                        $kKatFilter);
                 $state->joins[] = (new FilterJoin())->setComment('join2 from FilterItemCategory::getOptions()')
                                                     ->setType('JOIN')
                                                     ->setTable('tkategorie')

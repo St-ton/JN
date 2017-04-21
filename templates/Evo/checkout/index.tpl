@@ -2,13 +2,15 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  *}
+
 {if !isset($bAjaxRequest) || !$bAjaxRequest}
     {include file='layout/header.tpl'}
 {/if}
-{*<h1 class="text-center">{lang section="breadcrumb" key="checkout"}</h1>*}
+<h1 class="text-center">{lang section="breadcrumb" key="checkout"}</h1>
 <div id="checkout">
     <div id="result-wrapper">
         {include file="checkout/inc_steps.tpl"}
+
         {include file="snippets/extension.tpl"}
         {if $step === 'accountwahl'}
             {include file='checkout/step0_login_or_register.tpl'}{*bestellvorgang_accountwahl.tpl*}
@@ -27,6 +29,13 @@
         {/if}
     </div>
 </div>
+
+<script type="text/javascript">
+    if (top.location !== self.location) {ldelim}
+        top.location = self.location.href;
+    {rdelim}
+</script>
+
 {if !isset($bAjaxRequest) || !$bAjaxRequest}
     {include file='layout/footer.tpl'}
 {/if}

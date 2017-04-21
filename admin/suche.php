@@ -2,8 +2,6 @@
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
- */
-/**
  * @deprecated since 4.06 - AJAX function adminSearch() in admin/suche_inc.php is used instead
  */
 ob_start();

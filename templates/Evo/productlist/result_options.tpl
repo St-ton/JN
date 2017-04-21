@@ -52,6 +52,7 @@
     {if $show_filters}
         <div id="filter-collapsible" class="collapse in top10" aria-expanded="true">
         <nav class="panel panel-default">
+            CONTROL:
             <div id="navbar-filter" class="panel-body">
                 <div class="form-inline">
 
@@ -174,11 +175,9 @@
         </nav>
         </div>{* /collapse *}
 
-
-
-
         <div id="filter-collapsible" class="collapse in top10" aria-expanded="true">
             <nav class="panel panel-default">
+                NEW:
                 <div id="navbar-filter" class="panel-body">
                     {*<pre>{$NaviFilter->getAvailableFilters()|@var_dump}</pre>*}
                     <div class="form-inline">
@@ -228,7 +227,6 @@
                                 {/if}
                             {/if}
 
-                            {*{if $filter->getVisibility() === }*}
                         {/foreach}
 
                     </div>{* /form-inline *}
@@ -284,7 +282,6 @@
                         </a>
                     {/strip}
                 {/if}
-                <br>
                 {if !empty($NaviFilter->Hersteller->kHersteller) || !empty($NaviFilter->HerstellerFilter->kHersteller)}
 
                     {if $debug}
@@ -298,7 +295,6 @@
                         </a>
                     {/strip}
                 {/if}
-                <br>
                 {if !empty($NaviFilter->PreisspannenFilter->fBis)}
 
                     {if $debug}
@@ -312,7 +308,6 @@
                         &nbsp;<span class="fa fa-trash-o"></span>
                         </a>{/strip}
                 {/if}
-                <br>
                 {if !empty($NaviFilter->BewertungFilter->nSterne)}
 
                     {if $debug}
@@ -326,7 +321,6 @@
                         </a>
                     {/strip}
                 {/if}
-                <br>
                 {if !empty($NaviFilter->TagFilter[0]->kTag)}
 
                     {if $debug}
@@ -340,10 +334,10 @@
                         </a>
                     {/strip}
                 {/if}
-                <br>
                 {foreach name=merkmalfilter from=$NaviFilter->MerkmalFilter item=Merkmal}
 
                     {if $debug}
+                    <br>
                     OLD6: {$NaviFilter->URL->cAlleMerkmalWerte[$Merkmal->kMerkmalWert]}<br>
                     new6: {$Merkmal->getUnsetFilterURL()}
                     {/if}
@@ -353,7 +347,6 @@
                             {$Merkmal->cName|escape:'html'} &nbsp;<span class="fa fa-trash-o"></span>
                         </a>
                     {/strip}
-                    <br>
                 {/foreach}
                 {foreach $NaviFilter->getActiveFilters() as $filter}
                     {if $filter->isCustom()}

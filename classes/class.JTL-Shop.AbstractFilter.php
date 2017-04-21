@@ -16,6 +16,26 @@ abstract class AbstractFilter implements IFilter
     const FILTER_TYPE_AND = 1;
 
     /**
+     * never show filter
+     */
+    const SHOW_NEVER = 0;
+
+    /**
+     * show filter in box
+     */
+    const SHOW_BOX = 1;
+
+    /**
+     * show filter in content area
+     */
+    const SHOW_CONTENT = 2;
+
+    /**
+     * always show filter
+     */
+    const SHOW_ALWAYS = 3;
+
+    /**
      * @var bool
      */
     public $isCustom = true;
@@ -102,6 +122,11 @@ abstract class AbstractFilter implements IFilter
     private $unsetFilterURL = '';
 
     /**
+     * @var int
+     */
+    private $visibility = self::SHOW_ALWAYS;
+
+    /**
      * @param int|array $value
      * @return $this
      */
@@ -110,6 +135,34 @@ abstract class AbstractFilter implements IFilter
         $this->isInitialized = true;
 
         return $this->setValue($value)->setSeo($this->availableLanguages);
+    }
+
+    /**
+     * @return int
+     */
+    public function getVisibility()
+    {
+        return $this->visibility;
+    }
+
+    /**
+     * @param int|string $visibility
+     * @return $this
+     */
+    public function setVisibility($visibility)
+    {
+        $this->visibility = self::SHOW_NEVER;
+        if (is_numeric($visibility)) {
+            $this->visibility = $visibility;
+        } elseif ($visibility === 'content') {
+            $this->visibility = self::SHOW_CONTENT;
+        } elseif ($visibility === 'box') {
+            $this->visibility = self::SHOW_BOX;
+        } elseif ($visibility === 'Y') {
+            $this->visibility = self::SHOW_ALWAYS;
+        }
+
+        return $this;
     }
 
     /**

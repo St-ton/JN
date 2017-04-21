@@ -221,4 +221,15 @@ interface IFilter
      * @return string
      */
     public function getUnsetFilterURL();
+
+    /**
+     * @return int
+     */
+    public function getVisibility();
+
+    /**
+     * @param int|string $visibility
+     * @return $this
+     */
+    public function setVisibility($visibility);
 }

@@ -60,7 +60,7 @@ class FilterItemCategory extends FilterBaseCategory
 
     /**
      * @param null $mixed
-     * @return array|int|object
+     * @return array|int|stdClass
      */
     public function getOptions($mixed = null)
     {
@@ -168,7 +168,7 @@ class FilterItemCategory extends FilterBaseCategory
             }
             //neue Sortierung
             if ($categoryFilterType === 'KP') {
-                usort($oKategorieFilterDB_arr, function ($a, $b) { return strcmp($a->cName, $b->cName); });
+                usort($categories, function ($a, $b) { return strcmp($a->cName, $b->cName); });
             }
         }
 

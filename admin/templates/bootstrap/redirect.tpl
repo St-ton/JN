@@ -160,7 +160,7 @@
                                     </td>
                                     <td class="tleft">
                                         <div id="frm_{$oRedirect->kRedirect}" class="input-group input-group-sm">
-                                            <span class="input-group-addon alert-info state-checking"><i class="fa fa-spinner"></i></span>
+                                            <span class="input-group-addon alert-info state-checking"><i class="fa fa-spinner fa-pulse"></i></span>
                                             <span class="input-group-addon alert-success state-available" style="display:none;"><i class="fa fa-check"></i></span>
                                             <span class="input-group-addon alert-danger state-unavailable" style="display:none;"><i class="fa fa-warning"></i></span>
                                             <input id="url_{$oRedirect->kRedirect}"

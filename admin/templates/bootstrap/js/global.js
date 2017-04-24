@@ -815,23 +815,69 @@ function ioManagedCall(adminPath, funcname, params, callback)
  */
 function enableTypeahead(selector, funcName, displayField, valueField, onSelect)
 {
-    $(selector).typeahead({
-        ajax: {
-            url: 'io.php',
-            method: 'post',
-            displayField: displayField,
-            valueField: valueField,
-            preDispatch: function (query) {
-                return {
-                    jtl_token: jtlToken,
-                    io: JSON.stringify({
-                        name: funcName,
-                        params: [query, 100]
-                    })
-                };
+    var pendingRequest = null;
+
+    $(selector)
+        .typeahead(
+            {
+                highlight: true,
+                hint: true
+            },
+            {
+                limit: 10,
+                source: function (query, syncResults, asyncResults) {
+                    if(pendingRequest !== null) {
+                        pendingRequest.abort();
+                    }
+                    ioCall(funcName, [query, 100], function (data) {
+                        pendingRequest = null;
+                        asyncResults(data);
+                    });
+                },
+                display: function (item) {
+                    return '/' + item.cSeo;
+                },
+                templates: {
+                    suggestion: function (item) {
+                        var type = '';
+                        switch(item.cKey) {
+                            case 'kLink': type = 'Seite'; break;
+                            case 'kNews': type = 'News'; break;
+                            case 'kArtikel': type = 'Artikel'; break;
+                            case 'kKategorie': type = 'Kategorie'; break;
+                            case 'kHersteller': type = 'Hersteller'; break;
+                            default: type = 'Anderes'; break;
+                        }
+                        return '<span>/' + item.cSeo + ' <small class="text-muted">- ' + type + '</small></span>';
+                    }
+                }
             }
-        },
-        items: 16,
-        onSelect: onSelect
-    });
+        )
+    ;
+    // $(selector).typeahead({
+    //     ajax: {
+    //         url: 'io.php',
+    //         method: 'post',
+    //         displayField: displayField,
+    //         valueField: valueField,
+    //         preDispatch: function (query) {
+    //             return {
+    //                 jtl_token: jtlToken,
+    //                 io: JSON.stringify({
+    //                     name: funcName,
+    //                     params: [query, 100]
+    //                 })
+    //             };
+    //         },
+    //         preProcess: function (data) {
+    //             data.forEach(function (item) {
+    //                 item.cUrl += ' <small class="text-muted">- ' + item.type + '</small>';
+    //             });
+    //             console.log(data);
+    //             return data;
+    //         }
+    //     },
+    //     items: 16,
+    //     onSelect: onSelect
+    // });
 }

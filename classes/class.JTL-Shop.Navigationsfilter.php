@@ -2203,11 +2203,18 @@ class Navigationsfilter
      */
     public function getMetaDescription($oMeta, $oArtikel_arr, $oSuchergebnisse, $globalMeta, $oKategorie = null ) {
         executeHook(HOOK_FILTER_INC_GIBNAVIMETADESCRIPTION);
+        $maxLength = !empty($this->conf['metaangaben']['global_meta_maxlaenge_description'])
+            ? (int)$this->conf['metaangaben']['global_meta_maxlaenge_description']
+            : 0;
         // Prüfen ob bereits eingestellte Metas gesetzt sind
         if (strlen($oMeta->cMetaDescription) > 0) {
             $oMeta->cMetaDescription = strip_tags($oMeta->cMetaDescription);
 
-            return truncateMetaDescription($oMeta->cMetaDescription);
+            return prepareMeta(
+                $oMeta->cMetaDescription,
+                null,
+                $maxLength
+            );
         }
         // Kategorieattribut?
         $cKatDescription = '';
@@ -2217,15 +2224,27 @@ class Navigationsfilter
                 : new Kategorie($this->Kategorie->getValue());
             if (!empty($oKategorie->cMetaDescription)) {
                 // meta description via new method
-                return truncateMetaDescription(strip_tags($oKategorie->cMetaDescription));
+                return prepareMeta(
+                    strip_tags($oKategorie->cMetaDescription),
+                    null,
+                    $maxLength
+                );
             }
             if (!empty($oKategorie->categoryAttributes['meta_description']->cWert)) {
                 // Hat die aktuelle Kategorie als Kategorieattribut eine Meta Description gesetzt?
-                return truncateMetaDescription(strip_tags($oKategorie->categoryAttributes['meta_description']->cWert));
+                return prepareMeta(
+                    strip_tags($oKategorie->categoryAttributes['meta_description']->cWert),
+                    null,
+                    $maxLength
+                );
             }
             if (!empty($oKategorie->KategorieAttribute['meta_description'])) {
                 /** @deprecated since 4.05 - this is for compatibilty only! */
-                return truncateMetaDescription(strip_tags($oKategorie->KategorieAttribute['meta_description']));
+                return prepareMeta(
+                    strip_tags($oKategorie->KategorieAttribute['meta_description']),
+                    null,
+                    $maxLength
+                );
             }
             // Hat die aktuelle Kategorie eine Beschreibung?
             if (!empty($oKategorie->cBeschreibung)) {
@@ -2258,7 +2277,7 @@ class Navigationsfilter
                         " {$oSuchergebnisse->ArtikelVon} - {$oSuchergebnisse->ArtikelBis}";
                 }
 
-                return truncateMetaDescription($cMetaDescription);
+                return prepareMeta($cMetaDescription, null, $maxLength);
             }
         }
         // Keine eingestellten Metas vorhanden => generiere Standard Metas
@@ -2292,7 +2311,7 @@ class Navigationsfilter
             }
         }
 
-        return truncateMetaDescription(strip_tags($cMetaDescription));
+        return prepareMeta(strip_tags($cMetaDescription), null, $maxLength);
     }
 
     /**

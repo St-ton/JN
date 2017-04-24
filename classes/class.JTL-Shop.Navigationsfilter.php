@@ -1393,6 +1393,10 @@ class Navigationsfilter
             // hide category filter when a category is being browsed
             $this->KategorieFilter->setVisibility(AbstractFilter::SHOW_NEVER);
         }
+        if (empty($searchResults->Preisspanne) || count($searchResults->Preisspanne) === 0) {
+            // hide manufacturer filter when browsing manufacturer products
+            $this->PreisspannenFilter->setVisibility(AbstractFilter::SHOW_NEVER);
+        }
         if (empty($searchResults->Herstellerauswahl) || count($searchResults->Herstellerauswahl) === 0) {
             // hide manufacturer filter when browsing manufacturer products
             $this->HerstellerFilter->setVisibility(AbstractFilter::SHOW_NEVER);
@@ -1935,19 +1939,17 @@ class Navigationsfilter
         ))->setDoUnset(true);
         foreach ($this->MerkmalFilter as $oMerkmal) {
             if ($oMerkmal->kMerkmal > 0) {
-                $_url = $this->getURL(
+                $this->URL->cAlleMerkmale[$oMerkmal->kMerkmal] = $this->getURL(
                     $bSeo,
                     $additionalFilter->init($oMerkmal->kMerkmal)
                 );
-                $this->URL->cAlleMerkmale[$oMerkmal->kMerkmal] = $_url;
-                $oMerkmal->setUnsetFilterURL($_url);
+                $oMerkmal->setUnsetFilterURL($this->URL->cAlleMerkmale[$oMerkmal->kMerkmal]);
             }
-            $_url = $this->getURL(
+            $this->URL->cAlleMerkmalWerte[$oMerkmal->kMerkmalWert] = $this->getURL(
                 $bSeo,
                 $additionalFilter->init($oMerkmal->kMerkmalWert)
             );
-            $this->URL->cAlleMerkmalWerte[$oMerkmal->kMerkmalWert] = $_url;
-            $oMerkmal->setUnsetFilterURL($_url);
+            $oMerkmal->setUnsetFilterURL($this->URL->cAlleMerkmalWerte[$oMerkmal->kMerkmalWert]);
         }
         // kinda hacky: try to build url that removes a merkmalwert url from merkmalfilter url
         if ($this->MerkmalWert->isInitialized() &&

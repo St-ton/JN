@@ -5975,8 +5975,10 @@ function pruefeWarenkorbStueckliste($oArtikel, $fAnzahl)
  */
 function truncateMetaDescription($cDesc)
 {
-    $conf = Shop::getSettings([CONF_METAANGABEN]);
-    $maxLength = !empty($conf['metaangaben']['global_meta_maxlaenge_description']) ? (int)$conf['metaangaben']['global_meta_maxlaenge_description'] : 0;
+    $conf      = Shop::getSettings([CONF_METAANGABEN]);
+    $maxLength = !empty($conf['metaangaben']['global_meta_maxlaenge_description'])
+        ? (int)$conf['metaangaben']['global_meta_maxlaenge_description']
+        : 0;
 
     return prepareMeta($cDesc, null, $maxLength);
 }

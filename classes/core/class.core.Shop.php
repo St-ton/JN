@@ -1232,7 +1232,7 @@ final class Shop
     }
 
     /**
-     * @param stdClass $NaviFilter
+     * @param Navigationsfilter|stdClass $NaviFilter
      */
     public static function checkNaviFilter($NaviFilter)
     {

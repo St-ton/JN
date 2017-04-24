@@ -170,10 +170,26 @@
                                                    onblur="check_url('{$oRedirect->kRedirect}', this.value);">
                                             <script>
                                                 enableTypeahead(
-                                                    '#url_{$oRedirect->kRedirect}', 'getSeos', 'cUrl', 'cUrl',
+                                                    '#url_{$oRedirect->kRedirect}', 'getSeos',
+                                                    function (item) { return '/' + item.cSeo; },
                                                     function (item) {
-                                                        check_url('{$oRedirect->kRedirect}', item.url);
-                                                    }
+                                                        var type = '';
+                                                        switch(item.cKey) {
+                                                            case 'kLink': type = 'Seite'; break;
+                                                            case 'kNews': type = 'News'; break;
+                                                            case 'kNewsKategorie': type = 'News-Kategorie'; break;
+                                                            case 'kNewsMonatsUebersicht': type = 'News-Montas&uuml;bersicht'; break;
+                                                            case 'kUmfrage': type = 'Umfrage'; break;
+                                                            case 'kArtikel': type = 'Artikel'; break;
+                                                            case 'kKategorie': type = 'Kategorie'; break;
+                                                            case 'kHersteller': type = 'Hersteller'; break;
+                                                            case 'kMerkmalWert': type = 'Merkmal-Wert'; break;
+                                                            case 'suchspecial': type = 'Suchspecial'; break;
+                                                            default: type = 'Anderes'; break;
+                                                        }
+                                                        return '<span>/' + item.cSeo + ' <small class="text-muted">- ' + type + '</small></span>';
+                                                    },
+                                                    function (e) { check_url('{$oRedirect->kRedirect}', e.target.value); }
                                                 );
                                             </script>
                                         </div>
@@ -304,7 +320,7 @@
                             <span class="input-group-addon">
                                 <label for="cToUrl">Ziel-URL:</label>
                             </span>
-                            <span class="input-group-addon alert-info state-checking"><i class="fa fa-spinner"></i></span>
+                            <span class="input-group-addon alert-info state-checking"><i class="fa fa-spinner fa-pulse"></i></span>
                             <span class="input-group-addon alert-success state-available" style="display:none;"><i class="fa fa-check"></i></span>
                             <span class="input-group-addon alert-danger state-unavailable" style="display:none;"><i class="fa fa-warning"></i></span>
                             <input id="url_cToUrl" name="cToUrl" type="text" class="form-control cToUrl"
@@ -312,10 +328,26 @@
                                    onblur="check_url('cToUrl', this.value);" placeholder="Ziel-URL">
                             <script>
                                 enableTypeahead(
-                                    '#url_cToUrl', 'getSeos', 'cUrl', 'cUrl',
+                                    '#url_cToUrl', 'getSeos',
+                                    function (item) { return '/' + item.cSeo; },
                                     function (item) {
-                                        check_url('cToUrl', item.url);
-                                    }
+                                        var type = '';
+                                        switch(item.cKey) {
+                                            case 'kLink': type = 'Seite'; break;
+                                            case 'kNews': type = 'News'; break;
+                                            case 'kNewsKategorie': type = 'News-Kategorie'; break;
+                                            case 'kNewsMonatsUebersicht': type = 'News-Montas&uuml;bersicht'; break;
+                                            case 'kUmfrage': type = 'Umfrage'; break;
+                                            case 'kArtikel': type = 'Artikel'; break;
+                                            case 'kKategorie': type = 'Kategorie'; break;
+                                            case 'kHersteller': type = 'Hersteller'; break;
+                                            case 'kMerkmalWert': type = 'Merkmal-Wert'; break;
+                                            case 'suchspecial': type = 'Suchspecial'; break;
+                                            default: type = 'Anderes'; break;
+                                        }
+                                        return '<span>/' + item.cSeo + ' <small class="text-muted">- ' + type + '</small></span>';
+                                    },
+                                    function (e) { check_url('cToUrl', e.target.value); }
                                 );
                             </script>
                         </div>

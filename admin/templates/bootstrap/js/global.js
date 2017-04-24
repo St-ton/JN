@@ -809,11 +809,10 @@ function ioManagedCall(adminPath, funcname, params, callback)
  *
  * @param selector
  * @param funcName
- * @param onSelect
- * @param displayField
- * @param valueField
+ * @param display
+ * @param suggestion
  */
-function enableTypeahead(selector, funcName, displayField, valueField, onSelect)
+function enableTypeahead(selector, funcName, display, suggestion, onSelect)
 {
     var pendingRequest = null;
 
@@ -824,35 +823,23 @@ function enableTypeahead(selector, funcName, displayField, valueField, onSelect)
                 hint: true
             },
             {
-                limit: 10,
+                limit: 50,
                 source: function (query, syncResults, asyncResults) {
                     if(pendingRequest !== null) {
                         pendingRequest.abort();
                     }
-                    ioCall(funcName, [query, 100], function (data) {
+                    pendingRequest = ioCall(funcName, [query, 100], function (data) {
                         pendingRequest = null;
                         asyncResults(data);
                     });
                 },
-                display: function (item) {
-                    return '/' + item.cSeo;
-                },
+                display: display,
                 templates: {
-                    suggestion: function (item) {
-                        var type = '';
-                        switch(item.cKey) {
-                            case 'kLink': type = 'Seite'; break;
-                            case 'kNews': type = 'News'; break;
-                            case 'kArtikel': type = 'Artikel'; break;
-                            case 'kKategorie': type = 'Kategorie'; break;
-                            case 'kHersteller': type = 'Hersteller'; break;
-                            default: type = 'Anderes'; break;
-                        }
-                        return '<span>/' + item.cSeo + ' <small class="text-muted">- ' + type + '</small></span>';
-                    }
+                    suggestion: suggestion
                 }
             }
         )
+        .bind('typeahead:select', onSelect)
     ;
     // $(selector).typeahead({
     //     ajax: {

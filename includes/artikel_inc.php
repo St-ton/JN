@@ -172,10 +172,11 @@ function bearbeiteFrageZumProdukt()
 
                 executeHook(HOOK_ARTIKEL_INC_FRAGEZUMPRODUKT);
 
-                // Bei anonymen Anfragen die E-Mail-Adresse als Name verwenden
+                // Set empty string if it not exists
                 if (empty($oAnfrage->cNachname)) {
                     $oAnfrage->cNachname = '';
                 }
+                // Set empty string if it not exists
                 if (empty($oAnfrage->cVorname)) {
                     $oAnfrage->cVorname = '';
                 }
@@ -430,10 +431,11 @@ function bearbeiteBenachrichtigung()
 
                 executeHook(HOOK_ARTIKEL_INC_BENACHRICHTIGUNG);
 
-                // Bei anonymen Anfragen die E-Mail-Adresse als Name verwenden
+                // Set empty string if not exists
                 if (empty($Benachrichtigung->cNachname)) {
                     $Benachrichtigung->cNachname = '';
                 }
+                // Set empty string if it not exists
                 if (empty($Benachrichtigung->cVorname)) {
                     $Benachrichtigung->cVorname = '';
                 }

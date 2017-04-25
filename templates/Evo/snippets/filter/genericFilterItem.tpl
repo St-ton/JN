@@ -3,7 +3,7 @@
         {foreach $filter->oMerkmalWerte_arr as $MerkmalWert}
             {if $MerkmalWert->nAktiv}
                 <li class="active">
-                    <a rel="nofollow" href="{if !empty($MerkmalWert->cURL)}{$MerkmalWert->cURL}{else}#{/if}"{if $Merkmal->cTyp === 'BILD'} title="{$MerkmalWert->cWert}"{/if}>
+                    <a rel="nofollow" href="{if !empty($MerkmalWert->cURL)}{$MerkmalWert->cURL}{else}#{/if}"{if $filter->cTyp === 'BILD'} title="{$MerkmalWert->cWert}"{/if}>
                         <span class="value">
                             <i class="fa fa-check-square-o text-muted"></i>
                             {if $MerkmalWert->cBildpfadKlein !== 'gfx/keinBild_kl.gif' && $filter->cTyp !== 'TEXT'}

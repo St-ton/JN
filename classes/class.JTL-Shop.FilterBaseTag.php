@@ -177,29 +177,32 @@ class FilterBaseTag extends AbstractFilter
                 $this->getConfig(),
                 $this->getAvailableLanguages()
             );
-            foreach ($tags as $tag) {
-                $oTagFilter = new stdClass();
-                //baue URL
-                $oTagFilter->cURL               = $naviFilter->getURL(true, $additionalFilter->init((int)$tag->kTag));
-                $oTagFilter->kTag               = $tag->kTag;
-                $oTagFilter->cName              = $tag->cName;
-                $oTagFilter->nAnzahl            = $tag->nAnzahl;
-                $oTagFilter->nAnzahlTagging     = $tag->nAnzahlTagging;
-
-                $oTagFilter_arr[] = $oTagFilter;
-            }
             // Priorität berechnen
             $nPrioStep = 0;
-            $nCount    = count($oTagFilter_arr);
+            $nCount    = count($tags);
             if ($nCount > 0) {
-                $nPrioStep = ($oTagFilter_arr[0]->nAnzahlTagging - $oTagFilter_arr[$nCount - 1]->nAnzahlTagging) / 9;
+                $nPrioStep = ($tags[0]->nAnzahlTagging - $tags[$nCount - 1]->nAnzahlTagging) / 9;
             }
-            foreach ($oTagFilter_arr as $i => $oTagwolke) {
-                if ($oTagwolke->kTag > 0) {
-                    $oTagFilter_arr[$i]->Klasse = ($nPrioStep < 1)
+            foreach ($tags as $tag) {
+                $oTagFilter = new stdClass();
+                // attributes for old filter templates
+                $oTagFilter->cURL               = $naviFilter->getURL(true, $additionalFilter->init((int)$tag->kTag));
+                $oTagFilter->kTag               = (int)$tag->kTag;
+                $oTagFilter->cName              = $tag->cName;
+                $oTagFilter->nAnzahl            = (int)$tag->nAnzahl;
+                $oTagFilter->nAnzahlTagging     = (int)$tag->nAnzahlTagging;
+                $oTagFilter->Klasse             = '';
+                // generic attributes for new filter templates
+                $oTagFilter->id    = (int)$tag->kTag;
+                $oTagFilter->count = (int)$tag->nAnzahl;
+                if ($oTagFilter->kTag > 0) {
+                    $oTagFilter->Klasse = ($nPrioStep < 1)
                         ? rand(1, 10)
-                        : round(($oTagwolke->nAnzahlTagging - $oTagFilter_arr[$nCount - 1]->nAnzahlTagging) / $nPrioStep) + 1;
+                        : round(($oTagFilter->nAnzahlTagging - $oTagFilter_arr[$nCount - 1]->nAnzahlTagging) / $nPrioStep) + 1;
                 }
+                $oTagFilter->class = $oTagFilter->Klasse;
+
+                $oTagFilter_arr[] = $oTagFilter;
             }
         }
 

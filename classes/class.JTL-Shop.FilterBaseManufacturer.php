@@ -127,7 +127,7 @@ class FilterBaseManufacturer extends AbstractFilter
         if ($this->options !== null) {
             return $this->options;
         }
-        $manufacturers = [];
+        $options = [];
         if ($this->getConfig()['navigationsfilter']['allgemein_herstellerfilter_benutzen'] !== 'N') {
             $naviFilter = Shop::getNaviFilter();
             $order      = $naviFilter->getOrder();
@@ -171,6 +171,7 @@ class FilterBaseManufacturer extends AbstractFilter
             );
 
             foreach ($manufacturers as $manufacturer) {
+                // attributes for old filter templates
                 $manufacturer->kHersteller = (int)$manufacturer->kHersteller;
                 $manufacturer->nAnzahl     = (int)$manufacturer->nAnzahl;
                 $manufacturer->nSortNr     = (int)$manufacturer->nSortNr;
@@ -178,9 +179,25 @@ class FilterBaseManufacturer extends AbstractFilter
                     true,
                     $additionalFilter->init((int)$manufacturer->kHersteller)
                 );
+
+                $fe = (new FilterExtra())
+                    ->setType($this->getType())
+                    ->setClassName($this->getClassName())
+                    ->setParam($this->getUrlParam())
+                    ->setName($manufacturer->cName)
+                    ->setValue((int)$manufacturer->kHersteller)
+                    ->setCount($manufacturer->nAnzahl)
+                    ->setSort($manufacturer->nSortNr)
+                    ->setURL($naviFilter->getURL(
+                        true,
+                        $additionalFilter->init((int)$manufacturer->kHersteller)
+                    ));
+                $fe->kHersteller = (int)$manufacturer->kHersteller;
+
+                $options[] = $fe;
             }
         }
 
-        return $manufacturers;
+        return $options;
     }
 }

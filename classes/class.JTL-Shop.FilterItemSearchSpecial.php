@@ -254,6 +254,7 @@ class FilterItemSearchSpecial extends AbstractFilter
                 $state = $naviFilter->getCurrentStateData();
                 switch ($i) {
                     case SEARCHSPECIALS_BESTSELLER:
+                        $name    = Shop::Lang()->get('bestsellers', 'global');
                         $nAnzahl = (($min = $this->getConfig()['global']['global_bestseller_minanzahl']) > 0)
                             ? (int)$min
                             : 100;
@@ -266,6 +267,7 @@ class FilterItemSearchSpecial extends AbstractFilter
                         $state->conditions[] = 'ROUND(tbestseller.fAnzahl) >= ' . $nAnzahl;
                         break;
                     case SEARCHSPECIALS_SPECIALOFFERS:
+                        $name = Shop::Lang()->get('specialOffer', 'global');
                         if (!$this->isInitialized()) {
                             $state->joins[] = (new FilterJoin())->setComment('join1 from FilterItemSearchSpecial::getOptions() special offer')
                                                                 ->setType('JOIN')
@@ -285,18 +287,22 @@ class FilterItemSearchSpecial extends AbstractFilter
                         $state->conditions[] = $tsonderpreise . ".kKundengruppe = " . $this->getCustomerGroupID();
                         break;
                     case SEARCHSPECIALS_NEWPRODUCTS:
+                        $name                = Shop::Lang()->get('newProducts', 'global');
                         $alter_tage          = (($age = $this->getConfig()['boxen']['box_neuimsortiment_alter_tage']) > 0)
                             ? (int)$age
                             : 30;
                         $state->conditions[] = "tartikel.cNeu = 'Y' AND DATE_SUB(now(), INTERVAL $alter_tage DAY) < tartikel.dErstellt";
                         break;
                     case SEARCHSPECIALS_TOPOFFERS:
+                        $name = Shop::Lang()->get('topOffer', 'global');
                         $state->conditions[] = 'tartikel.cTopArtikel = "Y"';
                         break;
                     case SEARCHSPECIALS_UPCOMINGPRODUCTS:
+                        $name = Shop::Lang()->get('upcomingProducts', 'global');
                         $state->conditions[] = 'now() < tartikel.dErscheinungsdatum';
                         break;
                     case SEARCHSPECIALS_TOPREVIEWS:
+                        $name = Shop::Lang()->get('topReviews', 'global');
                         if (!$naviFilter->BewertungFilter->isInitialized()) {
                             $state->joins[] = (new FilterJoin())->setComment('join from FilterItemSearchSpecial::getOptions() top reviews')
                                                                 ->setType('JOIN')
@@ -314,14 +320,34 @@ class FilterItemSearchSpecial extends AbstractFilter
                     $state->having
                 );
                 $oSuchspecialFilterDB  = Shop::DB()->query($qry, 2);
-                $oSuchspecial          = new stdClass();
-                $oSuchspecial->nAnzahl = count($oSuchspecialFilterDB);
-                $oSuchspecial->kKey    = $i;
-                $oSuchspecial->cURL    = $naviFilter->getURL(
-                    true,
-                    $additionalFilter->init($i)
-                );
-                if ($oSuchspecial->nAnzahl > 0) {
+
+                $oSuchspecial = (new FilterExtra())
+                    ->setType($this->getType())
+                    ->setClassName($this->getClassName())
+                    ->setParam($this->getUrlParam())
+                    ->setName($name)
+                    ->setValue($i)
+                    ->setCount(count($oSuchspecialFilterDB))
+                    ->setSort(0)
+                    ->setURL($naviFilter->getURL(
+                        true,
+                        $additionalFilter->init($i)
+                    ));
+                $oSuchspecial->kKey = $i;
+
+                $options[] = $oSuchspecial;
+
+//                $oSuchspecial          = new stdClass();
+//                $oSuchspecial->nAnzahl = count($oSuchspecialFilterDB);
+//                $oSuchspecial->kKey    = $i;
+//                $oSuchspecial->cURL    = $naviFilter->getURL(
+//                    true,
+//                    $additionalFilter->init($i)
+//                );
+//                // generic attributes for new filter templates
+//                $oSuchspecial->count = $oSuchspecial->nAnzahl;
+//                $oSuchspecial->id    = $i;
+                if ($oSuchspecial->getCount() > 0) {
                     $searchSpecialFilters[$i] = $oSuchspecial;
                 }
             }

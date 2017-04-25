@@ -487,7 +487,7 @@ class FilterItemPriceRange extends AbstractFilter
                     $this->getAvailableLanguages()
                 );
                 for ($i = 0; $i < $nAnzahlSpannen; ++$i) {
-                    $oPreisspannenFilter       = new stdClass();
+                    $oPreisspannenFilter       = new FilterExtra();
                     $oPreisspannenFilter->nVon = ($nPreisMin + $i * $nStep);
                     $oPreisspannenFilter->nBis = ($nPreisMin + ($i + 1) * $nStep);
                     if ($oPreisspannenFilter->nBis > $nPreisMax) {
@@ -497,19 +497,51 @@ class FilterItemPriceRange extends AbstractFilter
                         $oPreisspannenFilter->nBis = $nPreisMax;
                     }
                     // Localize Preise
-                    $oPreisspannenFilter->cVonLocalized  = gibPreisLocalizedOhneFaktor(
+                    $oPreisspannenFilter->cVonLocalized = gibPreisLocalizedOhneFaktor(
                         $oPreisspannenFilter->nVon,
                         $currency
                     );
-                    $oPreisspannenFilter->cBisLocalized  = gibPreisLocalizedOhneFaktor(
+                    $oPreisspannenFilter->cBisLocalized = gibPreisLocalizedOhneFaktor(
                         $oPreisspannenFilter->nBis,
                         $currency
                     );
-                    $oPreisspannenFilter->nAnzahlArtikel = $oPreisspannenFilterDB_arr[$i];
-                    $oPreisspannenFilter->cURL           = $naviFilter->getURL(
-                        true,
-                        $additionalFilter->init($oPreisspannenFilter->nVon . '_' . $oPreisspannenFilter->nBis)
-                    );
+                    $oPreisspannenFilter->setType($this->getType())
+                                        ->setClassName($this->getClassName())
+                                        ->setParam($this->getUrlParam())
+                                        ->setName($oPreisspannenFilter->cVonLocalized . ' - ' . $oPreisspannenFilter->cBisLocalized)
+                                        ->setValue($i)
+                                        ->setCount($oPreisspannenFilterDB_arr[$i])
+                                        ->setSort(0)
+                                        ->setURL($naviFilter->getURL(
+                                            true,
+                                            $additionalFilter->init($oPreisspannenFilter->nVon . '_' . $oPreisspannenFilter->nBis)
+                                        ));
+                    $oPreisspannenFilter->nAnzahlArtikel = $oPreisspannenFilter->getCount();
+
+
+//                    $oPreisspannenFilter       = new stdClass();
+//                    $oPreisspannenFilter->nVon = ($nPreisMin + $i * $nStep);
+//                    $oPreisspannenFilter->nBis = ($nPreisMin + ($i + 1) * $nStep);
+//                    if ($oPreisspannenFilter->nBis > $nPreisMax) {
+//                        if ($oPreisspannenFilter->nVon >= $nPreisMax) {
+//                            $oPreisspannenFilter->nVon = ($nPreisMin + ($i - 1) * $nStep);
+//                        }
+//                        $oPreisspannenFilter->nBis = $nPreisMax;
+//                    }
+//                    // Localize Preise
+//                    $oPreisspannenFilter->cVonLocalized  = gibPreisLocalizedOhneFaktor(
+//                        $oPreisspannenFilter->nVon,
+//                        $currency
+//                    );
+//                    $oPreisspannenFilter->cBisLocalized  = gibPreisLocalizedOhneFaktor(
+//                        $oPreisspannenFilter->nBis,
+//                        $currency
+//                    );
+//                    $oPreisspannenFilter->nAnzahlArtikel = $oPreisspannenFilterDB_arr[$i];
+//                    $oPreisspannenFilter->cURL           = $naviFilter->getURL(
+//                        true,
+//                        $additionalFilter->init($oPreisspannenFilter->nVon . '_' . $oPreisspannenFilter->nBis)
+//                    );
                     $oPreisspanne_arr[]                  = $oPreisspannenFilter;
                 }
             }
@@ -566,7 +598,34 @@ class FilterItemPriceRange extends AbstractFilter
                     $this->getConfig(),
                     $this->getAvailableLanguages()
                 );
+                Shop::dbg($oPreisspannenfilter_arr, true, '$oPreisspannenfilter');
                 foreach ($oPreisspannenfilter_arr as $i => $oPreisspannenfilter) {
+                    $priceRange = (new FilterExtra())
+                        ->setType($this->getType())
+                        ->setClassName($this->getClassName())
+                        ->setParam($this->getUrlParam())
+                        ->setName($i)
+                        ->setValue($i)
+                        ->setCount(count($oSuchspecialFilterDB))
+                        ->setSort(0)
+                        ->setURL($naviFilter->getURL(
+                            true,
+                            $additionalFilter->init($i)
+                        ));
+
+                    $priceRange->nVon           = $oPreisspannenfilter->nVon;
+                    $priceRange->nBis           = $oPreisspannenfilter->nBis;
+                    $priceRange->nAnzahlArtikel = $priceRange->getCount();
+                    // Localize Preise
+                    $oPreisspannenfilterTMP->cVonLocalized = gibPreisLocalizedOhneFaktor(
+                        $oPreisspannenfilterTMP->nVon,
+                        $currency
+                    );
+                    $oPreisspannenfilterTMP->cBisLocalized = gibPreisLocalizedOhneFaktor(
+                        $oPreisspannenfilterTMP->nBis,
+                        $currency
+                    );
+
                     $oPreisspannenfilterTMP                 = new stdClass();
                     $oPreisspannenfilterTMP->nVon           = $oPreisspannenfilter->nVon;
                     $oPreisspannenfilterTMP->nBis           = $oPreisspannenfilter->nBis;

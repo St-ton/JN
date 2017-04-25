@@ -59,6 +59,13 @@ class FilterItemRating extends AbstractFilter
      */
     public function setSeo($languages)
     {
+        $this->cName = Shop::Lang()->get('from', 'productDetails') . ' ' .
+            $this->getValue() . ' ' .
+            ($this->getValue() > 0
+                ? Shop::Lang()->get('starPlural', 'global')
+                : Shop::Lang()->get('starSingular', 'global')
+            );
+
         return $this;
     }
 
@@ -139,15 +146,47 @@ class FilterItemRating extends AbstractFilter
                     $this->getAvailableLanguages()
                 );
                 foreach ($res as $row) {
-                    $nSummeSterne    += (int)$row->nAnzahl;
-                    $rating          = new stdClass();
-                    $rating->nStern  = (int)$row->nSterne;
-                    $rating->nAnzahl = $nSummeSterne;
-                    $rating->cURL    = $naviFilter->getURL(
-                        true,
-                        $additionalFilter->init($rating->nStern)
-                    );
-                    $ratings[]       = $rating;
+                    $nSummeSterne += (int)$row->nAnzahl;
+
+                    $rating         = (new FilterExtra())
+                        ->setType($this->getType())
+                        ->setClassName($this->getClassName())
+                        ->setParam($this->getUrlParam())
+                        ->setName(
+                            Shop::Lang()->get('from', 'productDetails') . ' ' .
+                            $row->nSterne . ' ' .
+                            ($row->nSterne > 1
+                                ? Shop::Lang()->get('starPlural', 'global')
+                                : Shop::Lang()->get('starSingular', 'global'))
+                        )
+                        ->setValue((int)$row->nSterne)
+                        ->setCount($nSummeSterne)
+                        ->setURL($naviFilter->getURL(
+                            true,
+                            $additionalFilter->init((int)$row->nSterne)
+                        ));
+                    $rating->nStern = (int)$row->nSterne;
+
+//                    <em>({lang key='from' section='productDetails'} {$oBewertung->nStern}
+//                                {if $oBewertung->nStern > 1}
+//                                    {lang key='starPlural'}
+//                                {else}
+//                                    {lang key='starSingular'}
+//                                {/if})
+//                            </em>
+                    // attributes for old filter templates
+//                    $rating          = new stdClass();
+//                    $rating->nStern  = (int)$row->nSterne;
+//                    $rating->nAnzahl = $nSummeSterne;
+//                    $rating->cURL    = $naviFilter->getURL(
+//                        true,
+//                        $additionalFilter->init($rating->nStern)
+//                    );
+//                    // generic attributes for new filter templates
+//                    $rating->count = $nSummeSterne;
+//                    $rating->id    = (int)$row->nSterne;
+
+                    $ratings[] = $rating;
                 }
             }
         }

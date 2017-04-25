@@ -27,6 +27,11 @@ class FilterExtra //extends AbstractFilter implements IFilter
     /**
      * @var string
      */
+    public $cName;
+
+    /**
+     * @var string
+     */
     private $className;
 
     /**
@@ -40,9 +45,29 @@ class FilterExtra //extends AbstractFilter implements IFilter
     private $count;
 
     /**
+     * @var int
+     */
+    public $nAnzahl;
+
+    /**
      * @var string
      */
     private $url;
+
+    /**
+     * @var string
+     */
+    public $cURL = '';
+
+    /**
+     * @var int
+     */
+    private $sort = 0;
+
+    /**
+     * @var int
+     */
+    public $nSortNr = 0;
 
     /**
      * used to create FilterLoesenURLs
@@ -57,6 +82,57 @@ class FilterExtra //extends AbstractFilter implements IFilter
      * @var bool
      */
     private $disableSeoURLs = false;
+
+    /**
+     * @var string
+     */
+    public $Klasse = '';
+
+    /**
+     * @var string
+     */
+    private $class = '';
+
+    /**
+     * @return int
+     */
+    public function getSort()
+    {
+        return $this->sort;
+    }
+
+    /**
+     * @param int $sort
+     * @return $this
+     */
+    public function setSort($sort)
+    {
+        $this->sort    = (int)$sort;
+        $this->nSortNr = (int)$sort;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getClass()
+    {
+        return $this->class;
+    }
+
+    /**
+     * @param string $class
+     * @return $this
+     */
+    public function setClass($class)
+    {
+        $this->class = $class;
+        $this->Klasse = $class;
+
+        return $this;
+    }
+
 
     /**
      * @param mixed $value
@@ -148,7 +224,8 @@ class FilterExtra //extends AbstractFilter implements IFilter
      */
     public function setName($name)
     {
-        $this->name = $name;
+        $this->name  = $name;
+        $this->cName = $name;
 
         return $this;
     }
@@ -167,7 +244,8 @@ class FilterExtra //extends AbstractFilter implements IFilter
      */
     public function setCount($count)
     {
-        $this->count = (int)$count;
+        $this->count   = (int)$count;
+        $this->nAnzahl = (int)$count;
 
         return $this;
     }
@@ -186,7 +264,8 @@ class FilterExtra //extends AbstractFilter implements IFilter
      */
     public function setURL($url)
     {
-        $this->url = $url;
+        $this->url  = $url;
+        $this->cURL = $url;
 
         return $this;
     }

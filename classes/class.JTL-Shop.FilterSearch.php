@@ -241,26 +241,26 @@ class FilterSearch extends AbstractFilter
                 $this->getConfig(),
                 $this->getAvailableLanguages()
             );
-            foreach ($searchFilters as $searchFilter) {
-                $searchFilter->cURL = $naviFilter->getURL(
-                    true, 
-                    $additionalFilter->init((int)$searchFilter->kSuchanfrage)
-                );
-            }
             // Priorität berechnen
             $nPrioStep = 0;
             $nCount    = count($searchFilters);
             if ($nCount > 0) {
                 $nPrioStep = ($searchFilters[0]->nAnzahl - $searchFilters[$nCount - 1]->nAnzahl) / 9;
             }
-            foreach ($searchFilters as $i => $oSuchFilterDB) {
-                $searchFilters[$i]->Klasse = rand(1, 10);
-                if (isset($oSuchFilterDB->kSuchCache) && $oSuchFilterDB->kSuchCache > 0 && $nPrioStep >= 0) {
-                    $searchFilters[$i]->Klasse = round(
-                            ($oSuchFilterDB->nAnzahl - $searchFilters[$nCount - 1]->nAnzahl) /
+            foreach ($searchFilters as $searchFilter) {
+                $searchFilter->cURL = $naviFilter->getURL(
+                    true, 
+                    $additionalFilter->init((int)$searchFilter->kSuchanfrage)
+                );
+                $searchFilter->Klasse = rand(1, 10);
+                if (isset($searchFilter->kSuchCache) && $searchFilter->kSuchCache > 0 && $nPrioStep >= 0) {
+                    $searchFilter->Klasse = round(
+                            ($searchFilter->nAnzahl - $searchFilters[$nCount - 1]->nAnzahl) /
                             $nPrioStep
                         ) + 1;
                 }
+                // generic attributes for new filter templates
+                $searchFilter->class = $searchFilter->Klasse;
             }
         }
 

@@ -807,10 +807,14 @@ function ioManagedCall(adminPath, funcname, params, callback)
  * Make an input element selected by 'selector' a typeahead input field. The data is queried on an ajax-function named
  * funcName. When an item from the suggestion list ist selected the callback onSelect is executed.
  *
- * @param selector
- * @param funcName
- * @param display
- * @param suggestion
+ * @param selector the CSS selector to apply the typeahead onto
+ * @param funcName the AJAX function name that provides the sugesstion data
+ * @param display for a given suggestion, determines the string representation of it. This will be used when setting
+ *      the value of the input control after a suggestion is selected. Can be either a key string or a function that
+ *      transforms a suggestion object into a string. Defaults to stringifying the suggestion.
+ * @param suggestion (default: null) a callback function to customize the sugesstion entry. Takes the item object and
+ *      returns a HTML string
+ * @param onSelect
  */
 function enableTypeahead(selector, funcName, display, suggestion, onSelect)
 {
@@ -841,30 +845,4 @@ function enableTypeahead(selector, funcName, display, suggestion, onSelect)
         )
         .bind('typeahead:select', onSelect)
     ;
-    // $(selector).typeahead({
-    //     ajax: {
-    //         url: 'io.php',
-    //         method: 'post',
-    //         displayField: displayField,
-    //         valueField: valueField,
-    //         preDispatch: function (query) {
-    //             return {
-    //                 jtl_token: jtlToken,
-    //                 io: JSON.stringify({
-    //                     name: funcName,
-    //                     params: [query, 100]
-    //                 })
-    //             };
-    //         },
-    //         preProcess: function (data) {
-    //             data.forEach(function (item) {
-    //                 item.cUrl += ' <small class="text-muted">- ' + item.type + '</small>';
-    //             });
-    //             console.log(data);
-    //             return data;
-    //         }
-    //     },
-    //     items: 16,
-    //     onSelect: onSelect
-    // });
 }

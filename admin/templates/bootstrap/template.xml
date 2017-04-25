@@ -33,7 +33,6 @@
             <File Path="js/versandart_bruttonetto.js"/>
             <File Path="js/fileinput.min.js"/>
             <File Path="js/fileinput_locale_de.js"/>
-            <!--<File Path="js/bootstrap-typeahead.min.js"/>-->
             <File Path="js/bootstrap-ladda.js"/>
             <File Path="js/bootstrap-notify.min.js"/>
             <File Path="js/humanize-duration.js"/>

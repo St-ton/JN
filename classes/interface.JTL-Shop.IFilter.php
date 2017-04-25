@@ -115,6 +115,14 @@ interface IFilter
     public function getOptions($mixed = null);
 
     /**
+     * set the list of available options
+     *
+     * @param mixed $mixed
+     * @return $this
+     */
+    public function setOptions($mixed);
+
+    /**
      * get a nice name
      *
      * @return string

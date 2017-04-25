@@ -1122,6 +1122,11 @@ class Navigationsfilter
             // Header bauen
             $searchResults->SuchausdruckWrite = $this->getHeader();
             Shop::Cache()->set($hash, $searchResults, [CACHING_GROUP_CATEGORY]);
+        } else {
+            if ($currentCategory !== null) {
+//                $this->loadFilterOptions($searchResults, $currentCategory);
+                $searchResults = $this->setFilterOptions($searchResults, $currentCategory);
+            }
         }
         if ($fillArticles === true) {
             // @todo: slice list of IDs when not filling?
@@ -1350,17 +1355,25 @@ class Navigationsfilter
     }
 
     /**
-     * @param object         $searchResults
+     * @param stdClass       $searchResults
      * @param null|Kategorie $AktuelleKategorie
      * @return mixed
      */
     public function setFilterOptions($searchResults, $AktuelleKategorie = null)
     {
-        $searchResults->Herstellerauswahl = $this->HerstellerFilter->getOptions();
-        $searchResults->Bewertung         = $this->BewertungFilter->getOptions();
-        $searchResults->Tags              = $this->Tag->getOptions();
+        if (!isset($searchResults->Herstellerauswahl)) {
+            $searchResults->Herstellerauswahl = $this->HerstellerFilter->getOptions();
+        }
+        if (!isset($searchResults->Bewertung)) {
+            $searchResults->Bewertung = $this->BewertungFilter->getOptions();
+        }
+        if (!isset($searchResults->Tags)) {
+            $searchResults->Tags = $this->Tag->getOptions();
+        }
 
-        if ($this->conf['navigationsfilter']['allgemein_tagfilter_benutzen'] === 'Y') {
+        if (!isset($searchResults->TagsJSON)
+            && $this->conf['navigationsfilter']['allgemein_tagfilter_benutzen'] === 'Y'
+        ) {
             $oTags_arr = [];
             foreach ($searchResults->Tags as $key => $oTags) {
                 $oTags_arr[$key]       = $oTags;
@@ -1368,25 +1381,37 @@ class Navigationsfilter
             }
             $searchResults->TagsJSON = Boxen::gibJSONString($oTags_arr);
         }
-        $searchResults->MerkmalFilter = $this->attributeFilterCompat->getOptions([
-            'oAktuelleKategorie' => $AktuelleKategorie,
-            'bForce'             => function_exists('starteAuswahlAssistent')
-        ]);
+        if (!isset($searchResults->MerkmalFilter)) {
+            $searchResults->MerkmalFilter = $this->attributeFilterCompat->getOptions([
+                'oAktuelleKategorie' => $AktuelleKategorie,
+                'bForce'             => function_exists('starteAuswahlAssistent')
+            ]);
+        }
         $this->attributeFilterCompat->setFilterCollection($searchResults->MerkmalFilter);
 
-        $searchResults->Preisspanne      = $this->PreisspannenFilter->getOptions($searchResults->GesamtanzahlArtikel);
-        $searchResults->Kategorieauswahl = $this->KategorieFilter->getOptions();
-        $searchResults->SuchFilter       = $this->searchFilterCompat->getOptions();
-        $searchResults->SuchFilterJSON   = [];
-
-        foreach ($searchResults->SuchFilter as $key => $oSuchfilter) {
-            $searchResults->SuchFilterJSON[$key]       = $oSuchfilter;
-            $searchResults->SuchFilterJSON[$key]->cURL = StringHandler::htmlentitydecode($oSuchfilter->cURL);
+        if (!isset($searchResults->Preisspanne)) {
+            $searchResults->Preisspanne      = $this->PreisspannenFilter->getOptions($searchResults->GesamtanzahlArtikel);
         }
-        $searchResults->SuchFilterJSON     = Boxen::gibJSONString($searchResults->SuchFilterJSON);
-        $searchResults->Suchspecialauswahl = (!$this->params['kSuchspecial'] && !$this->params['kSuchspecialFilter'])
-            ? $this->SuchspecialFilter->getOptions()
-            : null;
+        if (!isset($searchResults->Kategorieauswahl)) {
+            $searchResults->Kategorieauswahl = $this->KategorieFilter->getOptions();
+        }
+        if (!isset($searchResults->SuchFilter)) {
+            $searchResults->SuchFilter = $this->searchFilterCompat->getOptions();
+        }
+        if (!isset($searchResults->SuchFilterJSON)) {
+            $searchResults->SuchFilterJSON = [];
+
+            foreach ($searchResults->SuchFilter as $key => $oSuchfilter) {
+                $searchResults->SuchFilterJSON[$key]       = $oSuchfilter;
+                $searchResults->SuchFilterJSON[$key]->cURL = StringHandler::htmlentitydecode($oSuchfilter->cURL);
+            }
+            $searchResults->SuchFilterJSON = Boxen::gibJSONString($searchResults->SuchFilterJSON);
+        }
+        if (!isset($searchResults->Suchspecialauswahl)) {
+            $searchResults->Suchspecialauswahl = (!$this->params['kSuchspecial'] && !$this->params['kSuchspecialFilter'])
+                ? $this->SuchspecialFilter->getOptions()
+                : null;
+        }
         $searchResults->customFilters      = [];
 
         if (empty($searchResults->Kategorieauswahl) || count($searchResults->Kategorieauswahl) <= 1) {
@@ -1397,7 +1422,10 @@ class Navigationsfilter
             // hide manufacturer filter when browsing manufacturer products
             $this->PreisspannenFilter->setVisibility(AbstractFilter::SHOW_NEVER);
         }
-        if (empty($searchResults->Herstellerauswahl) || count($searchResults->Herstellerauswahl) === 0) {
+        if (empty($searchResults->Herstellerauswahl) || count($searchResults->Herstellerauswahl) === 0
+            || $this->Hersteller->isInitialized()
+            || ($this->HerstellerFilter->isInitialized() && count($searchResults->Herstellerauswahl) === 1)
+        ) {
             // hide manufacturer filter when browsing manufacturer products
             $this->HerstellerFilter->setVisibility(AbstractFilter::SHOW_NEVER);
         }
@@ -1409,7 +1437,12 @@ class Navigationsfilter
             $this->filters,
             function ($e) {
                 /** @var IFilter $e */
-                return $e->isCustom();
+                $isCustom = $e->isCustom();
+                if ($isCustom && count($e->getOptions()) === 0) {
+                    $e->setVisibility(AbstractFilter::SHOW_NEVER);
+                }
+
+                return $isCustom;
             }
         );
 
@@ -1930,6 +1963,7 @@ class Navigationsfilter
         )->init(null)->setDoUnset(true);
         $this->URL->cAlleHersteller = $this->getURL($bSeo, $extraFilter);
         $this->Hersteller->setUnsetFilterURL($this->URL->cAlleHersteller);
+        $this->HerstellerFilter->setUnsetFilterURL($this->URL->cAlleHersteller);
 
         $additionalFilter = (new FilterItemAttribute(
             $languageID,

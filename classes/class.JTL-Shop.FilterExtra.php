@@ -94,6 +94,11 @@ class FilterExtra //extends AbstractFilter implements IFilter
     private $class = '';
 
     /**
+     * @var array
+     */
+    private $data = [];
+
+    /**
      * @return int
      */
     public function getSort()
@@ -306,5 +311,37 @@ class FilterExtra //extends AbstractFilter implements IFilter
         $this->disableSeoURLs = $disableSeoURLs;
 
         return $this;
+    }
+
+    /**
+     * @param string $name
+     * @param mixed  $value
+     * @return $this
+     */
+    public function __set($name, $value)
+    {
+        $this->data[$name] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $name
+     * @return mixed|null
+     */
+    public function __get($name)
+    {
+        return isset($this->data[$name])
+            ? $this->data[$name]
+            : null;
+    }
+
+    /**
+     * @param string $name
+     * @return bool
+     */
+    public function __isset($name)
+    {
+        return isset($this->data[$name]);
     }
 }

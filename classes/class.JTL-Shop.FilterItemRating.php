@@ -113,7 +113,7 @@ class FilterItemRating extends AbstractFilter
         if ($this->options !== null) {
             return $this->options;
         }
-        $ratings = [];
+        $options = [];
         if ($this->getConfig()['navigationsfilter']['bewertungsfilter_benutzen'] !== 'N') {
             $naviFilter = Shop::getNaviFilter();
             $order      = $naviFilter->getOrder();
@@ -148,7 +148,7 @@ class FilterItemRating extends AbstractFilter
                 foreach ($res as $row) {
                     $nSummeSterne += (int)$row->nAnzahl;
 
-                    $rating         = (new FilterExtra())
+                    $fe         = (new FilterExtra())
                         ->setType($this->getType())
                         ->setClassName($this->getClassName())
                         ->setParam($this->getUrlParam())
@@ -165,32 +165,12 @@ class FilterItemRating extends AbstractFilter
                             true,
                             $additionalFilter->init((int)$row->nSterne)
                         ));
-                    $rating->nStern = (int)$row->nSterne;
-
-//                    <em>({lang key='from' section='productDetails'} {$oBewertung->nStern}
-//                                {if $oBewertung->nStern > 1}
-//                                    {lang key='starPlural'}
-//                                {else}
-//                                    {lang key='starSingular'}
-//                                {/if})
-//                            </em>
-                    // attributes for old filter templates
-//                    $rating          = new stdClass();
-//                    $rating->nStern  = (int)$row->nSterne;
-//                    $rating->nAnzahl = $nSummeSterne;
-//                    $rating->cURL    = $naviFilter->getURL(
-//                        true,
-//                        $additionalFilter->init($rating->nStern)
-//                    );
-//                    // generic attributes for new filter templates
-//                    $rating->count = $nSummeSterne;
-//                    $rating->id    = (int)$row->nSterne;
-
-                    $ratings[] = $rating;
+                    $fe->nStern = (int)$row->nSterne;
+                    $options[] = $fe;
                 }
             }
         }
 
-        return $ratings;
+        return $options;
     }
 }

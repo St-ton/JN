@@ -183,7 +183,7 @@ class FilterBaseSearchQuery extends AbstractFilter
         if ($this->options !== null) {
             return $this->options;
         }
-        $searchFilters = [];
+        $options = [];
         if ($this->getConfig()['navigationsfilter']['suchtrefferfilter_nutzen'] !== 'N') {
             $naviFilter = Shop::getNaviFilter();
             $nLimit     = (isset($this->getConfig()['navigationsfilter']['suchtrefferfilter_anzahl']) &&
@@ -262,22 +262,31 @@ class FilterBaseSearchQuery extends AbstractFilter
                 $nPrioStep = ($searchFilters[0]->nAnzahl - $searchFilters[$nCount - 1]->nAnzahl) / 9;
             }
             foreach ($searchFilters as $searchFilter) {
-                $searchFilter->cURL    = $naviFilter->getURL(
-                    true,
-                    $additionalFilter->init((int)$searchFilter->kSuchanfrage)
-                );
-                $searchFilters->Klasse = rand(1, 10);
+                $fe = (new FilterExtra())
+                    ->setType($this->getType())
+                    ->setClassName($this->getClassName())
+                    ->setParam($this->getUrlParam())
+                    ->setName($manufacturer->cName)
+                    ->setValue((int)$manufacturer->kHersteller)
+                    ->setCount($manufacturer->nAnzahl)
+                    ->setSort($manufacturer->nSortNr)
+                    ->setURL($naviFilter->getURL(
+                        true,
+                        $additionalFilter->init((int)$searchFilter->kSuchanfrage)
+                    ))
+                    ->setClass(rand(1, 10));
                 if (isset($searchFilter->kSuchCache) && $searchFilter->kSuchCache > 0 && $nPrioStep >= 0) {
-                    $searchFilters->Klasse = round(
+                    $fe->setClass(round(
                             ($searchFilter->nAnzahl - $searchFilters[$nCount - 1]->nAnzahl) /
                             $nPrioStep
-                        ) + 1;
+                        ) + 1
+                    );
                 }
-                $searchFilters->class  = $searchFilters->Klasse;
+                $options[] = $fe;
             }
         }
 
-        return $searchFilters;
+        return $options;
     }
 
     /**

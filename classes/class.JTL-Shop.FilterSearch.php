@@ -170,7 +170,7 @@ class FilterSearch extends AbstractFilter
         if ($this->options !== null) {
             return $this->options;
         }
-        $searchFilters = [];
+        $options = [];
         if ($this->getConfig()['navigationsfilter']['suchtrefferfilter_nutzen'] !== 'N') {
             $naviFilter = Shop::getNaviFilter();
             $nLimit     = (isset($this->getConfig()['navigationsfilter']['suchtrefferfilter_anzahl']) &&
@@ -195,7 +195,7 @@ class FilterSearch extends AbstractFilter
                                                 ->setOn('tsuchanfrage.cSuche = tsuchcache.cSuche 
                                                             AND tsuchanfrage.kSprache = ' . $this->getLanguageID());
 
-            $state->conditions[] = "tsuchanfrage.nAktiv = 1";
+            $state->conditions[] = 'tsuchanfrage.nAktiv = 1';
 
             $query            = $naviFilter->getBaseQuery(
                 ['tsuchanfrage.kSuchanfrage', 'tsuchanfrage.cSuche', 'tartikel.kArtikel'],
@@ -248,22 +248,32 @@ class FilterSearch extends AbstractFilter
                 $nPrioStep = ($searchFilters[0]->nAnzahl - $searchFilters[$nCount - 1]->nAnzahl) / 9;
             }
             foreach ($searchFilters as $searchFilter) {
-                $searchFilter->cURL = $naviFilter->getURL(
-                    true, 
-                    $additionalFilter->init((int)$searchFilter->kSuchanfrage)
-                );
-                $searchFilter->Klasse = rand(1, 10);
+                $class = rand(1, 10);
                 if (isset($searchFilter->kSuchCache) && $searchFilter->kSuchCache > 0 && $nPrioStep >= 0) {
-                    $searchFilter->Klasse = round(
+                    $class = round(
                             ($searchFilter->nAnzahl - $searchFilters[$nCount - 1]->nAnzahl) /
                             $nPrioStep
                         ) + 1;
                 }
-                // generic attributes for new filter templates
-                $searchFilter->class = $searchFilter->Klasse;
+                $fe = (new FilterExtra())
+                    ->setType($this->getType())
+                    ->setClassName($this->getClassName())
+                    ->setClass($class)
+                    ->setParam($this->getUrlParam())
+                    ->setName('@todo: setName for FilterSearch')
+                    ->setValue((int)$searchFilter->kSuchanfrage)
+                    ->setCount($searchFilter->nAnzahl)
+                    ->setURL($naviFilter->getURL(
+                        true,
+                        $additionalFilter->init((int)$searchFilter->kSuchanfrage)
+                    ));
+                $fe->cSuche       = $searchFilter->cSuche;
+                $fe->kSuchanfrage = $searchFilter->kSuchanfrage;
+
+                $options[] = $fe;
             }
         }
 
-        return $searchFilters;
+        return $options;
     }
 }

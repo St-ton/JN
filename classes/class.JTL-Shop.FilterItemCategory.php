@@ -67,7 +67,7 @@ class FilterItemCategory extends FilterBaseCategory
         if ($this->options !== null) {
             return $this->options;
         }
-        $categoryOptions = [];
+        $options = [];
         if ($this->getConfig()['navigationsfilter']['allgemein_kategoriefilter_benutzen'] !== 'N') {
             $naviFilter         = Shop::getNaviFilter();
             $categoryFilterType = $this->getConfig()['navigationsfilter']['kategoriefilter_anzeigen_als'];
@@ -124,7 +124,7 @@ class FilterItemCategory extends FilterBaseCategory
                                                     ->setOn('tkategoriesprache.kKategorie = tkategorie.kKategorie 
                                   AND tkategoriesprache.kSprache = ' . $this->getLanguageID());
             } else {
-                $select[] = "tkategorie.cName";
+                $select[] = 'tkategorie.cName';
             }
 
             $query            = $naviFilter->getBaseQuery(
@@ -161,12 +161,7 @@ class FilterItemCategory extends FilterBaseCategory
                         $this->getLanguageID()
                     );
                 }
-//                $category->cURL       = $naviFilter->getURL(
-//                    true,
-//                    $additionalFilter->init((int)$category->kKategorie)
-//                );
-
-                $fe                = (new FilterExtra())
+                $fe             = (new FilterExtra())
                     ->setType($this->getType())
                     ->setClassName($this->getClassName())
                     ->setParam($this->getUrlParam())
@@ -178,16 +173,12 @@ class FilterItemCategory extends FilterBaseCategory
                         true,
                         $additionalFilter->init((int)$category->kKategorie)
                     ));
-                $fe->kKategorie    = (int)$category->kKategorie;
-                $categoryOptions[] = $fe;
-
-//                $category->nAnzahl    = (int)$category->nAnzahl;
-//                $category->kKategorie = (int)$category->kKategorie;
-//                $category->nSort      = (int)$category->nSort;
+                $fe->kKategorie = (int)$category->kKategorie;
+                $options[]      = $fe;
             }
             //neue Sortierung
             if ($categoryFilterType === 'KP') {
-                usort($categories, function ($a, $b) {
+                usort($options, function ($a, $b) {
                     /** @var FilterExtra $a */
                     /** @var FilterExtra $b */
                     return strcmp($a->getName(), $b->getName());
@@ -195,6 +186,6 @@ class FilterItemCategory extends FilterBaseCategory
             }
         }
 
-        return $categoryOptions;
+        return $options;
     }
 }

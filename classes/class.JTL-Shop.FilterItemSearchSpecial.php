@@ -241,7 +241,8 @@ class FilterItemSearchSpecial extends AbstractFilter
         if ($this->options !== null) {
             return $this->options;
         }
-        $searchSpecialFilters = [];
+        $name    = '';
+        $options = [];
         if ($this->getConfig()['navigationsfilter']['allgemein_suchspecialfilter_benutzen'] === 'Y') {
             $naviFilter       = Shop::getNaviFilter();
             $additionalFilter = new FilterItemSearchSpecial(
@@ -321,7 +322,7 @@ class FilterItemSearchSpecial extends AbstractFilter
                 );
                 $oSuchspecialFilterDB  = Shop::DB()->query($qry, 2);
 
-                $oSuchspecial = (new FilterExtra())
+                $fe = (new FilterExtra())
                     ->setType($this->getType())
                     ->setClassName($this->getClassName())
                     ->setParam($this->getUrlParam())
@@ -333,26 +334,13 @@ class FilterItemSearchSpecial extends AbstractFilter
                         true,
                         $additionalFilter->init($i)
                     ));
-                $oSuchspecial->kKey = $i;
-
-                $options[] = $oSuchspecial;
-
-//                $oSuchspecial          = new stdClass();
-//                $oSuchspecial->nAnzahl = count($oSuchspecialFilterDB);
-//                $oSuchspecial->kKey    = $i;
-//                $oSuchspecial->cURL    = $naviFilter->getURL(
-//                    true,
-//                    $additionalFilter->init($i)
-//                );
-//                // generic attributes for new filter templates
-//                $oSuchspecial->count = $oSuchspecial->nAnzahl;
-//                $oSuchspecial->id    = $i;
-                if ($oSuchspecial->getCount() > 0) {
-                    $searchSpecialFilters[$i] = $oSuchspecial;
+                $fe->kKey = $i;
+                if ($fe->getCount() > 0) {
+                    $options[$i] = $fe;
                 }
             }
         }
 
-        return $searchSpecialFilters;
+        return $options;
     }
 }

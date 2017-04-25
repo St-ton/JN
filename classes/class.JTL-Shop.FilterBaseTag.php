@@ -97,7 +97,7 @@ class FilterBaseTag extends AbstractFilter
      */
     public function getSQLCondition()
     {
-        return "ttag.nAktiv = 1 AND ttagartikel.kTag = " . $this->getValue();
+        return 'ttag.nAktiv = 1 AND ttagartikel.kTag = ' . $this->getValue();
     }
 
     /**
@@ -126,7 +126,7 @@ class FilterBaseTag extends AbstractFilter
         if ($this->options !== null) {
             return $this->options;
         }
-        $oTagFilter_arr = [];
+        $options = [];
         if ($this->getConfig()['navigationsfilter']['allgemein_tagfilter_benutzen'] !== 'N') {
             $naviFilter   = Shop::getNaviFilter();
             $joinedTables = [];
@@ -152,8 +152,8 @@ class FilterBaseTag extends AbstractFilter
                 }
             }
 
-            $state->conditions[] = "ttag.nAktiv = 1";
-            $state->conditions[] = "ttag.kSprache = " . $this->getLanguageID();
+            $state->conditions[] = 'ttag.nAktiv = 1';
+            $state->conditions[] = 'ttag.kSprache = ' . $this->getLanguageID();
             $query               = $naviFilter->getBaseQuery([
                 'ttag.kTag',
                 'ttag.cName',
@@ -184,28 +184,33 @@ class FilterBaseTag extends AbstractFilter
                 $nPrioStep = ($tags[0]->nAnzahlTagging - $tags[$nCount - 1]->nAnzahlTagging) / 9;
             }
             foreach ($tags as $tag) {
-                $oTagFilter = new stdClass();
-                // attributes for old filter templates
-                $oTagFilter->cURL               = $naviFilter->getURL(true, $additionalFilter->init((int)$tag->kTag));
-                $oTagFilter->kTag               = (int)$tag->kTag;
-                $oTagFilter->cName              = $tag->cName;
-                $oTagFilter->nAnzahl            = (int)$tag->nAnzahl;
-                $oTagFilter->nAnzahlTagging     = (int)$tag->nAnzahlTagging;
-                $oTagFilter->Klasse             = '';
+                $fe                 = (new FilterExtra())
+                    ->setType($this->getType())
+                    ->setClassName($this->getClassName())
+                    ->setParam($this->getUrlParam())
+                    ->setName($tag->cName)
+                    ->setValue((int)$tag->kTag)
+                    ->setCount($tag->nAnzahl)
+                    ->setURL($naviFilter->getURL(
+                        true,
+                        $additionalFilter->init((int)$tag->kTag)
+                    ));
+                $fe->kTag           = (int)$tag->kTag;
+                $fe->nAnzahlTagging = (int)$tag->nAnzahlTagging;
+                $class                      = '';
                 // generic attributes for new filter templates
-                $oTagFilter->id    = (int)$tag->kTag;
-                $oTagFilter->count = (int)$tag->nAnzahl;
-                if ($oTagFilter->kTag > 0) {
-                    $oTagFilter->Klasse = ($nPrioStep < 1)
+                if ($fe->kTag > 0) {
+                    $class = ($nPrioStep < 1)
                         ? rand(1, 10)
-                        : round(($oTagFilter->nAnzahlTagging - $oTagFilter_arr[$nCount - 1]->nAnzahlTagging) / $nPrioStep) + 1;
+                        : round(
+                            ($fe->nAnzahlTagging - $tags[$nCount - 1]->nAnzahlTagging) /
+                            $nPrioStep
+                        ) + 1;
                 }
-                $oTagFilter->class = $oTagFilter->Klasse;
-
-                $oTagFilter_arr[] = $oTagFilter;
+                $options[] = $fe->setClass($class);
             }
         }
 
-        return $oTagFilter_arr;
+        return $options;
     }
 }

@@ -304,14 +304,14 @@
                 }
                 <script>
                     $(function () {
-                        articlePicker = new SearchPicker(
-                            'articlePicker', 'getProducts', 'cArtNr',
-                            function (item) { return '<p class="list-group-item-text">' + item.cName + '</p>'; },
-                            onApplySelectedArticles,
-                            [{foreach explode(';', $oKupon->cArtikel) as $cArtNr}
-                                {if $cArtNr !== ''}'{$cArtNr}',{/if}
-                            {/foreach}]
-                        );
+                        articlePicker = new SearchPicker({
+                            searchPickerName:  'articlePicker',
+                            getDataIoFuncName: 'getProducts',
+                            keyName:           'cArtNr',
+                            renderItemCb:      function (item) { return '<p class="list-group-item-text">' + item.cName + '</p>'; },
+                            onApply:           onApplySelectedArticles,
+                            selectedKeysInit:  '{$oKupon->cArtikel}'.split(';').filter(function (i) { return i !== ''; })
+                        });
                         onApplySelectedArticles(articlePicker.getSelection());
                     });
                     function onApplySelectedArticles(selectedArticles)
@@ -409,11 +409,14 @@
                     }
                     <script>
                         $(function () {
-                            customerPicker = new SearchPicker(
-                                'customerPicker', 'getCustomers', 'kKunde',
-                                renderCustomerItem, onApplySelectedCustomers,
-                                [{foreach $kKunde_arr as $kKunde}'{$kKunde}',{/foreach}]
-                            );
+                            customerPicker = new SearchPicker({
+                                searchPickerName:  'customerPicker',
+                                getDataIoFuncName: 'getCustomers',
+                                keyName:           'kKunde',
+                                renderItemCb:      renderCustomerItem,
+                                onApply:           onApplySelectedCustomers,
+                                selectedKeysInit:  [{foreach $kKunde_arr as $kKunde}'{$kKunde}',{/foreach}]
+                            });
                             onApplySelectedCustomers(customerPicker.getSelection());
                         });
                         function renderCustomerItem(item)

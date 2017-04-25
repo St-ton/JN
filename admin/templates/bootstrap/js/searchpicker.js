@@ -1,16 +1,21 @@
 /**
- * SearchPicker constructer
- *
- * @param searchPickerName - page unique id for the kind of items to be searched for (e.g. 'customer', 'product')
- * @param getDataIoFuncName - the Ajax function name that fetches the items to be searched for
- * @param keyName - name of the property that denotes the key column of each item
- * @param renderItemCb - callback function that gets an item object and returns the html content for its list item
- * @param onApply - callback function that gets called on apply selection click with the current selected keys array
- * @param selectedKeysInit - array of the items keys that are initially selected
+ * @param options.searchPickerName page unique id for the kind of items to be searched for (e.g. 'customer', 'product')
+ * @param options.getDataIoFuncName the Ajax function name that fetches the items to be searched for
+ * @param options.keyName name of the property that denotes the key column of each item
+ * @param options.renderItemCb callback function that gets an item object and returns the html content for its list item
+ * @param options.onApply callback function that gets called on apply selection click with the current array of selected keys
+ * @param options.selectedKeysInit array of the items keys that are initially selected
  * @constructor
  */
-function SearchPicker(searchPickerName, getDataIoFuncName, keyName, renderItemCb, onApply, selectedKeysInit)
+function SearchPicker(options)
+// function SearchPicker(searchPickerName, getDataIoFuncName, keyName, renderItemCb, onApply, selectedKeysInit)
 {
+    var searchPickerName   = options.searchPickerName;
+    var getDataIoFuncName  = options.getDataIoFuncName;
+    var keyName            = options.keyName;
+    var renderItemCb       = options.renderItemCb;
+    var onApply            = options.onApply;
+    var selectedKeysInit   = options.selectedKeysInit || [];
     var self               = this;
     var searchString       = '';
     var lastSearchString   = '';

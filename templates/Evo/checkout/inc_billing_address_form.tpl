@@ -515,7 +515,7 @@
 <fieldset>
     <div class="row">
         <div class="col-xs-12 col-md-6">
-            {if ($step === 'formular' || $step === 'unregistriert bestellen' || $step === 'rechnungsdaten') && empty($smarty.session.Kunde->kKunde)}
+            {if $step === 'formular' || $step === 'unregistriert bestellen' || $step === 'rechnungsdaten'}
                 {foreach name=kundenfeld from=$oKundenfeld_arr item=oKundenfeld}
                     {assign var=kKundenfeld value=$oKundenfeld->kKundenfeld}
                     <div class="form-group float-label-control{if isset($fehlendeAngaben.custom[$kKundenfeld])} has-error{/if}{if $oKundenfeld->nPflicht == 1} required{/if}">

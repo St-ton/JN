@@ -112,9 +112,35 @@ if (isset($_GET['unreg']) && (int)$_GET['unreg'] === 1 &&
 if (isset($_POST['lieferdaten']) && (int)$_POST['lieferdaten'] === 1) {
     pruefeLieferdaten($_POST);
 }
+if (isset($_POST['shipping_address']) && (int)$_POST['shipping_address'] === 1 && isset($_POST['register']['shipping_address'])) {
+    pruefeLieferdaten($_POST['register']['shipping_address']);
+}
 //autom. step ermitteln
 if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']) {
     $step = 'Lieferadresse';
+
+    if (!isset($_SESSION['Lieferadresse'])) {
+        pruefeLieferdaten(['kLieferadresse' => 0]);
+    }
+
+    if (!isset($_SESSION['Versandart']) || !is_object($_SESSION['Versandart'])) {
+        $land          = isset($_SESSION['Lieferadresse']->cLand) ? $_SESSION['Lieferadresse']->cLand : $_SESSION['Kunde']->cLand;
+        $plz           = isset($_SESSION['Lieferadresse']->cPLZ) ? $_SESSION['Lieferadresse']->cPLZ : $_SESSION['Kunde']->cPLZ;
+        $kKundengruppe = isset($_SESSION['Kunde']->kKundengruppe) ? $_SESSION['Kunde']->kKundengruppe : $_SESSION['Kundengruppe']->kKundengruppe;
+
+        $oGuenstigsteVersandart = null;
+        $oVersandart_arr        = VersandartHelper::getPossibleShippingMethods($land, $plz, VersandartHelper::getShippingClasses($_SESSION['Warenkorb']), $kKundengruppe);
+
+        foreach ($oVersandart_arr as $oVersandart) {
+            if ($oGuenstigsteVersandart === null || $oVersandart->fEndpreis < $oGuenstigsteVersandart->fEndpreis) {
+                $oGuenstigsteVersandart = $oVersandart;
+            }
+        }
+
+        if ($oGuenstigsteVersandart !== null) {
+            pruefeVersandartWahl($oGuenstigsteVersandart->kVersandart);
+        }
+    }
 }
 //Download-Artikel vorhanden?
 if ($step !== 'accountwahl' &&
@@ -148,11 +174,12 @@ if ($step === 'accountwahl') {
 }
 if ($step === 'unregistriert bestellen') {
     gibStepUnregistriertBestellen();
-}
-if ($step === 'Lieferadresse') {
-    validateCouponInCheckout();
     gibStepLieferadresse();
 }
+//if ($step === 'Lieferadresse') {
+//    validateCouponInCheckout();
+//    gibStepLieferadresse();
+//}
 if ($step === 'Versand') {
     gibStepVersand();
     Warenkorb::refreshChecksum($_SESSION['Warenkorb']);

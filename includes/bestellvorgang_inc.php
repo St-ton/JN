@@ -304,6 +304,7 @@ function pruefeRechnungsadresseStep($cGet_arr)
                 '?checkout=1&editRechnungsadresse=1', true, 303);
             exit;
         } else {
+            pruefeLieferadresseStep(['editLieferadresse' => $cGet_arr['editRechnungsadresse']]);
             $Kunde = $_SESSION['Kunde'];
             $step  = 'unregistriert bestellen';
         }

@@ -14,6 +14,9 @@
     {$jtl_token}
     {include file='register/form/customer_account.tpl'}
     <hr>
+    {if isset($checkout)}
+        {include file='checkout/inc_shipping_address.tpl'}
+    {/if}
     <input type="hidden" name="checkout" value="{if isset($checkout)}{$checkout}{/if}">
     <input type="hidden" name="form" value="1">
     <input type="hidden" name="editRechnungsadresse" value="{$editRechnungsadresse}">

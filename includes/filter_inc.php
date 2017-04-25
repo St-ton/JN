@@ -43,7 +43,7 @@ function buildSearchResultPage(&$oSearchResult, $nProductCount, $nLimitN, $nPage
 function gibArtikelKeys($FilterSQL, $nArtikelProSeite, $NaviFilter, $bExtern, $oSuchergebnisse)
 {
     trigger_error('filter_inc.php: gibArtikelKeys() called.', E_USER_DEPRECATED);
-    return Shop::getNaviFilter()->getProductKeys();
+    return Shop::getNaviFilter()->getProducts(false, null, true, (int)$nArtikelProSeite);
 }
 
 /**
@@ -220,92 +220,83 @@ function bearbeiteSuchCache($NaviFilter, $kSpracheExt = 0)
 /**
  * @deprecated since 4.06
  * @param object $NaviFilter
- * @throws Exception
  */
 function gibSuchFilterSQL($NaviFilter)
 {
-    throw new Exception('filter_inc.php: gibSuchFilterSQL() no longer supported.');
+    trigger_error('filter_inc.php: gibSuchFilterSQL() no longer supported.', E_USER_DEPRECATED);
 }
 
 
 /**
  * @deprecated since 4.06
  * @param object $NaviFilter
- * @throws Exception
  */
 function gibHerstellerFilterSQL($NaviFilter)
 {
-    throw new Exception('filter_inc.php: gibHerstellerFilterSQL() no longer supported.');
+    trigger_error('filter_inc.php: gibHerstellerFilterSQL() no longer supported.', E_USER_DEPRECATED);
 }
 
 /**
  * @deprecated since 4.06
  * @param object $NaviFilter
- * @throws Exception
  */
 function gibKategorieFilterSQL($NaviFilter)
 {
-    throw new Exception('filter_inc.php: gibKategorieFilterSQL() no longer supported.');
+    trigger_error('filter_inc.php: gibKategorieFilterSQL() no longer supported.', E_USER_DEPRECATED);
 }
 
 /**
  * @deprecated since 4.06
  * @param object $NaviFilter
- * @throws Exception
  */
 function gibBewertungSterneFilterSQL($NaviFilter)
 {
-    throw new Exception('filter_inc.php: gibBewertungSterneFilterSQL() no longer supported.');
+    trigger_error('filter_inc.php: gibBewertungSterneFilterSQL() no longer supported.', E_USER_DEPRECATED);
 }
 
 /**
  * @deprecated since 4.06
  * @param object $NaviFilter
- * @throws Exception
  */
 function gibPreisspannenFilterSQL($NaviFilter)
 {
-    throw new Exception('filter_inc.php: gibPreisspannenFilterSQL() no longer supported.');
+    trigger_error('filter_inc.php: gibPreisspannenFilterSQL() no longer supported.', E_USER_DEPRECATED);
 }
 
 /**
  * @deprecated since 4.06
  * @param object $NaviFilter
- * @throws Exception
  */
 function gibTagFilterSQL($NaviFilter)
 {
-    throw new Exception('filter_inc.php: gibTagFilterSQL() no longer supported.');
+    trigger_error('filter_inc.php: gibTagFilterSQL() no longer supported.', E_USER_DEPRECATED);
 }
 
 /**
  * @deprecated since 4.06
  * @param object $NaviFilter
- * @throws Exception
  */
 function gibMerkmalFilterSQL($NaviFilter)
 {
-    throw new Exception('filter_inc.php: gibMerkmalFilterSQL() no longer supported.');
+    trigger_error('filter_inc.php: gibMerkmalFilterSQL() no longer supported.', E_USER_DEPRECATED);
 }
 
 /**
  * @deprecated since 4.06
  * @param object $NaviFilter
- * @throws Exception
  */
 function gibSuchspecialFilterSQL($NaviFilter)
 {
-    throw new Exception('filter_inc.php: gibSuchspecialFilterSQL() no longer supported.');
+    trigger_error('filter_inc.php: gibSuchspecialFilterSQL() no longer supported.', E_USER_DEPRECATED);
 }
 
 /**
  * @deprecated since 4.06
  * @param object $NaviFilter
- * @throws Exception
  */
 function gibArtikelAttributFilterSQL($NaviFilter)
 {
-    throw new Exception('filter_inc.php: gibArtikelAttributFilterSQL() no longer supported.');
+    trigger_error('filter_inc.php: gibArtikelAttributFilterSQL() no longer supported.', E_USER_DEPRECATED);
 }
 
 /**
@@ -620,6 +611,19 @@ function gibNextSortPrio($search, $Einstellungen = null)
  */
 function bauFilterSQL($NaviFilter)
 {
+    $FilterSQL = new stdClass();
+    //Filter SQLs Objekte
+    $FilterSQL->oHerstellerFilterSQL      = new stdClass();
+    $FilterSQL->oKategorieFilterSQL       = new stdClass();
+    $FilterSQL->oMerkmalFilterSQL         = new stdClass();
+    $FilterSQL->oTagFilterSQL             = new stdClass();
+    $FilterSQL->oBewertungSterneFilterSQL = new stdClass();
+    $FilterSQL->oPreisspannenFilterSQL    = new stdClass();
+    $FilterSQL->oSuchFilterSQL            = new stdClass();
+    $FilterSQL->oSuchspecialFilterSQL     = new stdClass();
+    $FilterSQL->oArtikelAttributFilterSQL = new stdClass();
+
+    return $FilterSQL;
     die('bauFilterSQL()');
     $cacheID = 'fsql_' . md5(serialize($NaviFilter));
     if (($FilterSQL = Shop::Cache()->get($cacheID)) === false) {

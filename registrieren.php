@@ -30,7 +30,7 @@ $Einstellungen = Shop::getSettings([
     CONF_KUNDENWERBENKUNDEN,
     CONF_NEWSLETTER
 ]);
-Shop::setPageType(PAGE_REGISTRIERUNG);
+Shop::setPageType(verifyGPCDataInteger('checkout') > 0 ? PAGE_BESTELLVORGANG : PAGE_REGISTRIERUNG);
 $kLink                = $linkHelper->getSpecialPageLinkKey(LINKTYP_REGISTRIEREN);
 $step                 = 'formular';
 $hinweis              = '';

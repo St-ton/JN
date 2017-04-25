@@ -196,6 +196,28 @@ $(window).load(function(){
 });
 
 $(document).ready(function () {
+    $('.collapse-non-validate')
+        .on('hidden.bs.collapse', function() {
+            $(this)
+                .addClass('hidden')
+                .find('fieldset, .form-control')
+                .attr('disabled', true);
+        })
+        .on('show.bs.collapse', function() {
+            $(this)
+                .removeClass('hidden')
+                .find('fieldset, .form-control')
+                .attr('disabled', false);
+        });
+    $('.collapse-non-validate.collapse')
+        .addClass('hidden')
+        .find('fieldset, .form-control')
+        .attr('disabled', true);
+    $('.collapse-non-validate.collapse.in')
+        .removeClass('hidden')
+        .find('fieldset, .form-control')
+        .attr('disabled', false);
+
     $('#complete-order-button').click(function () {
         var commentField = $('#comment'),
             commentFieldHidden = $('#comment-hidden');

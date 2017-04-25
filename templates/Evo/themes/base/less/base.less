@@ -2954,6 +2954,83 @@ header.fixed-navbar {
     font-weight: bold;
 }
 
+// Nav Wizard
+// -------------------------
+.arrow(@color) {
+    width: 0;
+    height: 0;
+    border-top: @navbar-height / 2 inset transparent;
+    border-bottom: @navbar-height / 2 inset transparent;
+    border-left: @arrow-size solid @color;
+    position: absolute;
+    content: "";
+    top: 0;
+}
+
+.nav-wizard {
+    border-radius: @nav-pills-border-radius;
+    margin: 0 0 @margin-base;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid @navbar-default-toggle-border-color;
+
+    > li {
+        display: inline-block;
+        float: left;
+        margin: 0;
+        padding: 0;
+        position: relative;
+        height: @navbar-height;
+
+        > a, .nav-badge {
+            font-size: @font-size-large;
+            display: inline-block;
+            padding: 0 !important;
+            width: 100%;
+            line-height: @navbar-height;
+            height: @navbar-height;
+            overflow: hidden;
+            text-align: center;
+            color: @navbar-default-color;
+            background-color: @nav-link-hover-bg;
+        }
+
+        &:not(:first-child) {
+            padding-left: @arrow-sep;
+            &:before {
+                .arrow(@navbar-default-bg);
+                left: @arrow-sep;
+                z-index: 3;
+            }
+        }
+        &:not(:last-child) {
+            &:after {
+                .arrow(@nav-link-hover-bg);
+                right: -@arrow-size;
+                z-index: 4;
+            }
+        }
+
+        &.active, &.active {
+            > a, .nav-badge {
+                color: @nav-pills-active-link-hover-color;
+                background-color: @nav-pills-active-link-hover-bg;
+            }
+
+            &:after {
+                border-left-color: @nav-pills-active-link-hover-bg;
+            }
+        }
+    }
+}
+// -------------------------
+
+#vcard-upload {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
 .word-break, .desc, .shortdesc, .product-title {
     word-wrap: break-word;
     overflow-wrap: break-word;

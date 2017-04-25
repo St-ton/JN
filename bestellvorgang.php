@@ -5,6 +5,7 @@
  */
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';
+require_once PFAD_ROOT . PFAD_INCLUDES . 'registrieren_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'trustedshops_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
@@ -71,6 +72,20 @@ if ($Einstellungen['kaufabwicklung']['bestellvorgang_kaufabwicklungsmethode'] ==
 }
 if (verifyGPCDataInteger('wk') === 1) {
     resetNeuKundenKupon();
+}
+if (isset($_FILES['vcard']) &&
+    $Einstellungen['kunden']['kundenregistrierung_vcardupload'] === 'Y' &&
+    validateToken()
+) {
+    gibKundeFromVCard($_FILES['vcard']['tmp_name']);
+    @unlink($_FILES['vcard']['tmp_name']);
+}
+if (isset($_POST['unreg_form']) && (int)$_POST['unreg_form'] === 0) {
+    include 'registrieren.php';
+}
+if (isset($_POST['shipping_address']) && (int)$_POST['shipping_address'] === 0) {
+    $_POST['kLieferadresse'] = 0;
+    $_POST['lieferdaten']    = 1;
 }
 if (isset($_POST['versandartwahl']) && (int)$_POST['versandartwahl'] === 1 || isset($_GET['kVersandart'])) {
     unset($_SESSION['Zahlungsart']);

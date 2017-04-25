@@ -19,14 +19,14 @@
 {if !$editRechnungsadresse}
     {if isset($checkout) && $Einstellungen.kaufabwicklung.bestellvorgang_unregistriert === 'Y'}
         <div class="form-group">
-            <input type="hidden" name="unreg" value="1">
+            <input type="hidden" name="unreg_form" value="1">
             <label class="control-label" for="checkout_create_account_unreg" data-toggle="collapse" data-target="#create_account_data">
-                <input id="checkout_create_account_unreg" class="checkbox-inline" type="checkbox" name="unreg" value="0" checked="checked" />
+                <input id="checkout_create_account_unreg" class="checkbox-inline" type="checkbox" name="unreg_form" value="0" checked="checked" />
                 {lang key="createNewAccount" section="account data"}
             </label>
         </div>
     {/if}
-    <div id="create_account_data" class="row collapse in" aria-expanded="true">
+    <div id="create_account_data" class="row collapse in collapse-non-validate" aria-expanded="true">
         <div class="col-xs-6">
             <div class="form-group float-label-control{if isset($fehlendeAngaben.pass_zu_kurz) || isset($fehlendeAngaben.pass_ungleich)} has-error{/if} required">
                 <label for="password" class="control-label">{lang key="password" section="account data"}</label>

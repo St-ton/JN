@@ -6,7 +6,6 @@
 {if !isset($bAjaxRequest) || !$bAjaxRequest}
     {include file='layout/header.tpl'}
 {/if}
-<h1 class="text-center">{lang section="breadcrumb" key="checkout"}</h1>
 <div id="checkout">
     <div id="result-wrapper">
         {include file="checkout/inc_steps.tpl"}

@@ -1122,11 +1122,8 @@ class Navigationsfilter
             // Header bauen
             $searchResults->SuchausdruckWrite = $this->getHeader();
             Shop::Cache()->set($hash, $searchResults, [CACHING_GROUP_CATEGORY]);
-        } else {
-            if ($currentCategory !== null) {
-//                $this->loadFilterOptions($searchResults, $currentCategory);
-                $searchResults = $this->setFilterOptions($searchResults, $currentCategory);
-            }
+        } elseif ($currentCategory !== null) {
+            $searchResults = $this->setFilterOptions($searchResults, $currentCategory);
         }
         if ($fillArticles === true) {
             // @todo: slice list of IDs when not filling?

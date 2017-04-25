@@ -723,6 +723,7 @@ function ioCall(name, args, success, error, context)
         method: 'post',
         dataType: 'json',
         data: {
+            jtl_token: jtlToken,
             io : JSON.stringify({
                 name: name,
                 params : args
@@ -761,7 +762,7 @@ function ioCall(name, args, success, error, context)
  */
 function ioDownload(name, args)
 {
-    window.location.href = 'io.php?io=' + encodeURIComponent(JSON.stringify({
+    window.location.href = 'io.php?token=' + jtlToken + '&io=' + encodeURIComponent(JSON.stringify({
         name: name,
         params: args
     }));
@@ -806,33 +807,42 @@ function ioManagedCall(adminPath, funcname, params, callback)
  * Make an input element selected by 'selector' a typeahead input field. The data is queried on an ajax-function named
  * funcName. When an item from the suggestion list ist selected the callback onSelect is executed.
  *
- * @param selector
- * @param funcName
+ * @param selector the CSS selector to apply the typeahead onto
+ * @param funcName the AJAX function name that provides the sugesstion data
+ * @param display for a given suggestion, determines the string representation of it. This will be used when setting
+ *      the value of the input control after a suggestion is selected. Can be either a key string or a function that
+ *      transforms a suggestion object into a string. Defaults to stringifying the suggestion.
+ * @param suggestion (default: null) a callback function to customize the sugesstion entry. Takes the item object and
+ *      returns a HTML string
  * @param onSelect
- * @param displayField
- * @param valueField
  */
-function enableTypeahead(selector, funcName, displayField, valueField, onSelect)
+function enableTypeahead(selector, funcName, display, suggestion, onSelect)
 {
-    displayField = displayField || 'name';
-    valueField   = valueField || 'id';
+    var pendingRequest = null;
 
-    $(selector).typeahead({
-        ajax: {
-            url: 'io.php',
-            method: 'post',
-            displayField: displayField,
-            valueField: valueField,
-            preDispatch: function (query) {
-                return {
-                    io: JSON.stringify({
-                        name: funcName,
-                        params: [query, 100]
-                    })
-                };
+    $(selector)
+        .typeahead(
+            {
+                highlight: true,
+                hint: true
+            },
+            {
+                limit: 50,
+                source: function (query, syncResults, asyncResults) {
+                    if(pendingRequest !== null) {
+                        pendingRequest.abort();
+                    }
+                    pendingRequest = ioCall(funcName, [query, 100], function (data) {
+                        pendingRequest = null;
+                        asyncResults(data);
+                    });
+                },
+                display: display,
+                templates: {
+                    suggestion: suggestion
+                }
             }
-        },
-        items: 16,
-        onSelect: onSelect
-    });
+        )
+        .bind('typeahead:select', onSelect)
+    ;
 }

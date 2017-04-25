@@ -50,10 +50,6 @@ class JSONAPI
 
         $items = $this->getItems('tseo', ['cSeo', 'cKey', 'kKey'], null, $searchIn, $search, $limit);
 
-        foreach ($items as $item) {
-            $item->cUrl = '/' . $item->cSeo;
-        }
-
         return $this->itemsToJson($items);
     }
 

@@ -2024,6 +2024,10 @@ class Navigationsfilter
         )->init(null)->setDoUnset(true);
         $this->URL->cAlleTags = $this->getURL($bSeo, $extraFilter);
         $this->Tag->setUnsetFilterURL($this->URL->cAlleTags);
+        $this->tagFilterCompat->setUnsetFilterURL($this->URL->cAlleTags);
+        foreach ($this->TagFilter as $tagFilter) {
+            $tagFilter->setUnsetFilterURL($this->URL->cAlleTags);
+        }
 
         $extraFilter = (new FilterItemSearchSpecial(
             $languageID,

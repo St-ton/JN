@@ -139,6 +139,11 @@ abstract class AbstractFilter implements IFilter
     private $filterCollection = [];
 
     /**
+     * @var mixed
+     */
+    protected $options;
+
+    /**
      * @param int|array $value
      * @return $this
      */
@@ -298,6 +303,17 @@ abstract class AbstractFilter implements IFilter
     public function getName()
     {
         return $this->cName;
+    }
+
+    /**
+     * @param mixed $mixed
+     * @return $this
+     */
+    public function setOptions($mixed)
+    {
+        $this->options = $mixed;
+
+        return $this;
     }
 
     /**

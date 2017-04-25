@@ -319,6 +319,9 @@ class FilterItemPriceRange extends AbstractFilter
      */
     public function getOptions($mixed = null)
     {
+        if ($this->options !== null) {
+            return $this->options;
+        }
         $naviFilter       = Shop::getNaviFilter();
         $productCount     = $mixed;
         $oPreisspanne_arr = [];

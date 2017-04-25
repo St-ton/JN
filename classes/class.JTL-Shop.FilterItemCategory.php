@@ -64,6 +64,9 @@ class FilterItemCategory extends FilterBaseCategory
      */
     public function getOptions($mixed = null)
     {
+        if ($this->options !== null) {
+            return $this->options;
+        }
         $categories = [];
         if ($this->getConfig()['navigationsfilter']['allgemein_kategoriefilter_benutzen'] !== 'N') {
             $naviFilter         = Shop::getNaviFilter();

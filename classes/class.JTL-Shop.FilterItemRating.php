@@ -103,6 +103,9 @@ class FilterItemRating extends AbstractFilter
      */
     public function getOptions($mixed = null)
     {
+        if ($this->options !== null) {
+            return $this->options;
+        }
         $ratings = [];
         if ($this->getConfig()['navigationsfilter']['bewertungsfilter_benutzen'] !== 'N') {
             $naviFilter = Shop::getNaviFilter();

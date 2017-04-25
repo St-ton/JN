@@ -167,6 +167,9 @@ class FilterSearch extends AbstractFilter
      */
     public function getOptions($mixed = null)
     {
+        if ($this->options !== null) {
+            return $this->options;
+        }
         $searchFilters = [];
         if ($this->getConfig()['navigationsfilter']['suchtrefferfilter_nutzen'] !== 'N') {
             $naviFilter = Shop::getNaviFilter();

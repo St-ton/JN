@@ -119,6 +119,9 @@ class FilterItemAttribute extends FilterBaseAttribute
      */
     public function getOptions($mixed = null)
     {
+        if ($this->options !== null) {
+            return $this->options;
+        }
         $naviFilter                  = Shop::getNaviFilter();
         $oAktuelleKategorie          = isset($mixed['oAktuelleKategorie'])
             ? $mixed['oAktuelleKategorie']

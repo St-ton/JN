@@ -238,6 +238,9 @@ class FilterItemSearchSpecial extends AbstractFilter
      */
     public function getOptions($mixed = null)
     {
+        if ($this->options !== null) {
+            return $this->options;
+        }
         $searchSpecialFilters = [];
         if ($this->getConfig()['navigationsfilter']['allgemein_suchspecialfilter_benutzen'] === 'Y') {
             $naviFilter       = Shop::getNaviFilter();

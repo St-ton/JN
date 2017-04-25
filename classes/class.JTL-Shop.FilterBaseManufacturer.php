@@ -124,6 +124,9 @@ class FilterBaseManufacturer extends AbstractFilter
      */
     public function getOptions($mixed = null)
     {
+        if ($this->options !== null) {
+            return $this->options;
+        }
         $manufacturers = [];
         if ($this->getConfig()['navigationsfilter']['allgemein_herstellerfilter_benutzen'] !== 'N') {
             $naviFilter = Shop::getNaviFilter();

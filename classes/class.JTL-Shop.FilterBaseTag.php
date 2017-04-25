@@ -123,6 +123,9 @@ class FilterBaseTag extends AbstractFilter
      */
     public function getOptions($mixed = null)
     {
+        if ($this->options !== null) {
+            return $this->options;
+        }
         $oTagFilter_arr = [];
         if ($this->getConfig()['navigationsfilter']['allgemein_tagfilter_benutzen'] !== 'N') {
             $naviFilter   = Shop::getNaviFilter();

@@ -2309,10 +2309,17 @@ class Navigationsfilter
                 $cKatDescription  = str_replace('"', '', $cKatDescription);
                 $cKatDescription  = StringHandler::htmlentitydecode($cKatDescription, ENT_NOQUOTES);
                 $cMetaDescription = !empty($globalMeta[$this->getLanguageID()]->Meta_Description_Praefix)
-                    ? trim(strip_tags($globalMeta[$this->getLanguageID()]->Meta_Description_Praefix) . ' ' . $cKatDescription)
+                    ? trim(
+                        strip_tags($globalMeta[$this->getLanguageID()]->Meta_Description_Praefix) .
+                        ' ' .
+                        $cKatDescription
+                    )
                     : trim($cKatDescription);
                 // Seitenzahl anhaengen ab Seite 2 (Doppelte Meta-Descriptions vermeiden, #5992)
-                if ($oSuchergebnisse->Seitenzahlen->AktuelleSeite > 1 && $oSuchergebnisse->ArtikelVon > 0 && $oSuchergebnisse->ArtikelBis > 0) {
+                if ($oSuchergebnisse->Seitenzahlen->AktuelleSeite > 1
+                    && $oSuchergebnisse->ArtikelVon > 0
+                    && $oSuchergebnisse->ArtikelBis > 0
+                ) {
                     $cMetaDescription .= ', ' . Shop::Lang()->get('products', 'global') .
                         " {$oSuchergebnisse->ArtikelVon} - {$oSuchergebnisse->ArtikelBis}";
                 }
@@ -2585,7 +2592,8 @@ class Navigationsfilter
                         if (isset($_SESSION['ArtikelProSeite'])) {
                             $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = $_SESSION['ArtikelProSeite'];
                         } elseif ((int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung1'] > 0) {
-                            $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = (int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung1'];
+                            $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel =
+                                (int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung1'];
                         }
                         break;
                     case ERWDARSTELLUNG_ANSICHT_GALERIE:
@@ -2593,7 +2601,8 @@ class Navigationsfilter
                         if (isset($_SESSION['ArtikelProSeite'])) {
                             $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = $_SESSION['ArtikelProSeite'];
                         } elseif ((int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung2'] > 0) {
-                            $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = (int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung2'];
+                            $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel =
+                                (int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung2'];
                         }
                         break;
                     case ERWDARSTELLUNG_ANSICHT_MOSAIK:
@@ -2601,7 +2610,8 @@ class Navigationsfilter
                         if (isset($_SESSION['ArtikelProSeite'])) {
                             $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = $_SESSION['ArtikelProSeite'];
                         } elseif ((int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung3'] > 0) {
-                            $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = (int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung3'];
+                            $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel =
+                                (int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung3'];
                         }
                         break;
                     default: // when given invalid option from wawi attribute
@@ -2615,7 +2625,8 @@ class Navigationsfilter
                         if (isset($_SESSION['ArtikelProSeite'])) {
                             $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = $_SESSION['ArtikelProSeite'];
                         } elseif ((int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung1'] > 0) {
-                            $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = (int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung1'];
+                            $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel =
+                                (int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung1'];
                         }
                         break;
                 }
@@ -2624,7 +2635,8 @@ class Navigationsfilter
                 if (isset($_SESSION['ArtikelProSeite'])) {
                     $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = $_SESSION['ArtikelProSeite'];
                 } elseif ((int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung1'] > 0) {
-                    $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = (int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung1'];
+                    $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel =
+                        (int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung1'];
                 }
             }
         }
@@ -2634,19 +2646,22 @@ class Navigationsfilter
                 case ERWDARSTELLUNG_ANSICHT_LISTE:
                     $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = ERWDARSTELLUNG_ANSICHT_ANZAHL_STD;
                     if ((int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung1'] > 0) {
-                        $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = (int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung1'];
+                        $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel =
+                            (int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung1'];
                     }
                     break;
                 case ERWDARSTELLUNG_ANSICHT_GALERIE:
                     $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = ERWDARSTELLUNG_ANSICHT_ANZAHL_STD;
                     if ((int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung2'] > 0) {
-                        $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = (int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung2'];
+                        $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel =
+                            (int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung2'];
                     }
                     break;
                 case ERWDARSTELLUNG_ANSICHT_MOSAIK:
                     $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = ERWDARSTELLUNG_ANSICHT_ANZAHL_STD;
                     if ((int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung3'] > 0) {
-                        $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = (int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung3'];
+                        $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel =
+                            (int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung3'];
                     }
                     break;
             }
@@ -2656,10 +2671,14 @@ class Navigationsfilter
             }
         }
         if (isset($_SESSION['oErweiterteDarstellung'])) {
-            $naviURL                                                                      = $this->getURL(false);
-            $_SESSION['oErweiterteDarstellung']->cURL_arr[ERWDARSTELLUNG_ANSICHT_LISTE]   = $naviURL . '&amp;ed=' . ERWDARSTELLUNG_ANSICHT_LISTE;
-            $_SESSION['oErweiterteDarstellung']->cURL_arr[ERWDARSTELLUNG_ANSICHT_GALERIE] = $naviURL . '&amp;ed=' . ERWDARSTELLUNG_ANSICHT_GALERIE;
-            $_SESSION['oErweiterteDarstellung']->cURL_arr[ERWDARSTELLUNG_ANSICHT_MOSAIK]  = $naviURL . '&amp;ed=' . ERWDARSTELLUNG_ANSICHT_MOSAIK;
+            $naviURL                                                                      = $this->getURL(false) .
+                '&amp;ed=';
+            $_SESSION['oErweiterteDarstellung']->cURL_arr[ERWDARSTELLUNG_ANSICHT_LISTE]   = $naviURL .
+                ERWDARSTELLUNG_ANSICHT_LISTE;
+            $_SESSION['oErweiterteDarstellung']->cURL_arr[ERWDARSTELLUNG_ANSICHT_GALERIE] = $naviURL .
+                ERWDARSTELLUNG_ANSICHT_GALERIE;
+            $_SESSION['oErweiterteDarstellung']->cURL_arr[ERWDARSTELLUNG_ANSICHT_MOSAIK]  = $naviURL .
+                ERWDARSTELLUNG_ANSICHT_MOSAIK;
         }
 
         return $_SESSION['oErweiterteDarstellung'];
@@ -2680,8 +2699,6 @@ class Navigationsfilter
         }
         $cURL       = '';
         $oSeite_arr = [];
-        $nAnfang    = 0; // Wenn die aktuelle Seite - $nMaxAnzeige größer 0 ist, wird nAnfang gesetzt
-        $nEnde      = 0; // Wenn die aktuelle Seite + $nMaxAnzeige <= $nSeiten ist, wird nEnde gesetzt
         $nVon       = 0; // Die aktuellen Seiten in der Navigation, die angezeigt werden sollen.
         $nBis       = 0; // Begrenzt durch $nMaxAnzeige.
         $naviURL    = $this->getURL($bSeo);
@@ -2813,14 +2830,19 @@ class Navigationsfilter
         $sortingOptions = [];
         $search         = [];
         if ($bExtendedJTLSearch !== false) {
-            $names     = [
+            static $names     = [
                 'suche_sortierprio_name',
                 'suche_sortierprio_name_ab',
                 'suche_sortierprio_preis',
                 'suche_sortierprio_preis_ab'
             ];
-            $values    = [SEARCH_SORT_NAME_ASC, SEARCH_SORT_NAME_DESC, SEARCH_SORT_PRICE_ASC, SEARCH_SORT_PRICE_DESC];
-            $languages = ['sortNameAsc', 'sortNameDesc', 'sortPriceAsc', 'sortPriceDesc'];
+            static $values    = [
+                SEARCH_SORT_NAME_ASC,
+                                 SEARCH_SORT_NAME_DESC,
+                                 SEARCH_SORT_PRICE_ASC,
+                                 SEARCH_SORT_PRICE_DESC
+            ];
+            static $languages = ['sortNameAsc', 'sortNameDesc', 'sortPriceAsc', 'sortPriceDesc'];
             foreach ($names as $i => $name) {
                 $obj                  = new stdClass();
                 $obj->name            = $name;

@@ -6,7 +6,7 @@
             </div>
             <div class="box-body">
                 {include file='snippets/filter/special.tpl'}
-                {if !empty($NaviFilter->SuchspecialFilter)}
+                {if !empty($NaviFilter->SuchspecialFilter->cName)}
                     <ul class="{if isset($class)}{$class}{else}nav nav-list{/if}">
                         <li>
                             <a href="{$NaviFilter->URL->cAlleSuchspecials}" rel="nofollow">

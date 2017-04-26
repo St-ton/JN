@@ -197,17 +197,23 @@ $(window).load(function(){
 
 $(document).ready(function () {
     $('.collapse-non-validate')
-        .on('hidden.bs.collapse', function() {
-            $(this)
-                .addClass('hidden')
-                .find('fieldset, .form-control')
-                .attr('disabled', true);
+        .on('hidden.bs.collapse', function(e) {
+            if (e.target === e.currentTarget) {
+                $(this)
+                    .addClass('hidden')
+                    .find('fieldset, .form-control')
+                    .attr('disabled', true);
+                e.stopPropagation();
+            }
         })
-        .on('show.bs.collapse', function() {
-            $(this)
-                .removeClass('hidden')
-                .find('fieldset, .form-control')
-                .attr('disabled', false);
+        .on('show.bs.collapse', function(e) {
+            if (e.target === e.currentTarget) {
+                $(this)
+                    .removeClass('hidden')
+                    .find('fieldset, .form-control')
+                    .attr('disabled', false);
+                e.stopPropagation();
+            }
         });
     $('.collapse-non-validate.collapse')
         .addClass('hidden')

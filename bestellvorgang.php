@@ -85,6 +85,8 @@ if (isset($_POST['shipping_address'])) {
         $_POST['kLieferadresse'] = 0;
         $_POST['lieferdaten']    = 1;
         pruefeLieferdaten($_POST);
+    } elseif (isset($_POST['kLieferadresse']) && (int)$_POST['kLieferadresse'] > 0) {
+        pruefeLieferdaten($_POST);
     } elseif (isset($_POST['register']['shipping_address'])) {
         pruefeLieferdaten($_POST['register']['shipping_address']);
     }
@@ -185,10 +187,10 @@ if ($step === 'edit_customer_address') {
     gibStepUnregistriertBestellen();
     gibStepLieferadresse();
 }
-//if ($step === 'Lieferadresse') {
-//    validateCouponInCheckout();
-//    gibStepLieferadresse();
-//}
+if ($step === 'Lieferadresse') {
+    validateCouponInCheckout();
+    gibStepLieferadresse();
+}
 if ($step === 'Versand') {
     gibStepVersand();
     Warenkorb::refreshChecksum($_SESSION['Warenkorb']);

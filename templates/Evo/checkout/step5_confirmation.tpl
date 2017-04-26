@@ -43,7 +43,7 @@
                                 <p>
                                     {include file='checkout/inc_delivery_address.tpl'}
                                 </p>
-                                <a class="small edit" href="{get_static_route id='bestellvorgang.php'}?{if $Kunde->kKunde > 0}editLieferadresse=1{else}editRechnungsadresse=1#register_shipping_address{/if}">
+                                <a class="small edit" href="{get_static_route id='bestellvorgang.php'}?editRechnungsadresse=1#register_shipping_address">
                                     <span class="fa fa-pencil"></span> {lang key="modifyShippingAdress" section="checkout"}
                                 </a>
                             {/block}
@@ -75,7 +75,7 @@
                                     <strong>{lang key="shippingTime" section="global"}</strong>: {$cEstimatedDelivery}
                                 </p>
                             {/if}
-                            <a class="small edit" href="{get_static_route id='bestellvorgang.php'}?editVersandart=1">
+                            <a class="small edit" href="{get_static_route id='bestellvorgang.php'}?editZahlungsart=1">
                                 <span class="fa fa-pencil"></span> {lang key="modifyShippingOption" section="checkout"}
                             </a>
                         {/block}
@@ -90,7 +90,7 @@
                             {if isset($smarty.session.Zahlungsart->cHinweisText) && !empty($smarty.session.Zahlungsart->cHinweisText)}{* this should be localized *}
                                 <p class="small text-muted">{$smarty.session.Zahlungsart->cHinweisText}</p>
                             {/if}
-                            <a class="small edit" href="{get_static_route id='bestellvorgang.php'}?editZahlungsart=1">
+                            <a class="small edit" href="{get_static_route id='bestellvorgang.php'}?editZahlungsart=1#fieldset-payment">
                                 <span class="fa fa-pencil"></span> {lang key="modifyPaymentOption" section="checkout"}
                             </a>
                         {/block}

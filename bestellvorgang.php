@@ -80,12 +80,26 @@ if (isset($_FILES['vcard']) &&
     gibKundeFromVCard($_FILES['vcard']['tmp_name']);
     @unlink($_FILES['vcard']['tmp_name']);
 }
-if (isset($_POST['unreg_form']) && (int)$_POST['unreg_form'] === 0) {
-    include 'registrieren.php';
+if (isset($_POST['shipping_address'])) {
+    if ((int)$_POST['shipping_address'] === 0) {
+        $_POST['kLieferadresse'] = 0;
+        $_POST['lieferdaten']    = 1;
+        pruefeLieferdaten($_POST);
+    } elseif (isset($_POST['register']['shipping_address'])) {
+        pruefeLieferdaten($_POST['register']['shipping_address']);
+    }
 }
-if (isset($_POST['shipping_address']) && (int)$_POST['shipping_address'] === 0) {
-    $_POST['kLieferadresse'] = 0;
-    $_POST['lieferdaten']    = 1;
+if (isset($_POST['unreg_form']) && (int)$_POST['unreg_form'] === 0) {
+    $_POST['checkout'] = 1;
+    $_POST['form']     = 1;
+
+    // persistent delivery address during custom register
+    $_SESSION['tmpLieferadresse'] = $_SESSION['Lieferadresse'];
+    include 'registrieren.php';
+} elseif (isset($_SESSION['tmpLieferadresse'])) {
+    // restore delivery address after registering customer
+    $_SESSION['Lieferadresse'] = $_SESSION['tmpLieferadresse'];
+    unset($_SESSION['tmpLieferadresse']);
 }
 if (isset($_POST['versandartwahl']) && (int)$_POST['versandartwahl'] === 1 || isset($_GET['kVersandart'])) {
     unset($_SESSION['Zahlungsart']);
@@ -107,14 +121,9 @@ if (isset($_POST['unreg_form']) && (int)$_POST['unreg_form'] === 1 &&
 if (isset($_GET['unreg']) && (int)$_GET['unreg'] === 1 &&
     $Einstellungen['kaufabwicklung']['bestellvorgang_unregistriert'] === 'Y'
 ) {
-    $step = 'unregistriert bestellen';
+    $step = 'edit_customer_address';
 }
-if (isset($_POST['lieferdaten']) && (int)$_POST['lieferdaten'] === 1) {
-    pruefeLieferdaten($_POST);
-}
-if (isset($_POST['shipping_address']) && (int)$_POST['shipping_address'] === 1 && isset($_POST['register']['shipping_address'])) {
-    pruefeLieferdaten($_POST['register']['shipping_address']);
-}
+
 //autom. step ermitteln
 if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']) {
     $step = 'Lieferadresse';
@@ -172,7 +181,7 @@ if ($step === 'accountwahl') {
     gibStepAccountwahl();
     gibStepUnregistriertBestellen();
 }
-if ($step === 'unregistriert bestellen') {
+if ($step === 'edit_customer_address') {
     gibStepUnregistriertBestellen();
     gibStepLieferadresse();
 }
@@ -239,6 +248,7 @@ $smarty->assign('Navigation', createNavigation($AktuelleSeite))
        ->assign('Einstellungen', $Einstellungen)
        ->assign('hinweis', $cHinweis)
        ->assign('step', $step)
+       ->assign('editRechnungsadresse', verifyGPCDataInteger('editRechnungsadresse'))
        ->assign('WarensummeLocalized', $_SESSION['Warenkorb']->gibGesamtsummeWarenLocalized())
        ->assign('Warensumme', $_SESSION['Warenkorb']->gibGesamtsummeWaren())
        ->assign('Steuerpositionen', $_SESSION['Warenkorb']->gibSteuerpositionen())

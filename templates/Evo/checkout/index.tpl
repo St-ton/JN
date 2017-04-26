@@ -13,8 +13,8 @@
         {include file="snippets/extension.tpl"}
         {if $step === 'accountwahl'}
             {include file='checkout/step0_login_or_register.tpl'}{*bestellvorgang_accountwahl.tpl*}
-        {elseif $step === 'unregistriert bestellen'}
-            {include file='checkout/step1_proceed_as_guest.tpl'}{*bestellvorgang_unregistriert_formular.tpl*}
+        {elseif $step === 'edit_customer_address'}
+            {include file='checkout/step1_edit_customer_address.tpl'}{*bestellvorgang_unregistriert_formular.tpl*}
         {elseif $step === 'Lieferadresse'}
             {include file='checkout/step2_delivery_address.tpl'}{*bestellvorgang_lieferadresse.tpl*}
         {elseif $step === 'Versand'}

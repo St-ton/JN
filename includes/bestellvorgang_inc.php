@@ -54,7 +54,7 @@ function pruefeUnregistriertBestellen($cPost_arr)
     unset($_SESSION['Lieferadresse'], $_SESSION['Versandart'], $_SESSION['Zahlungsart']);
     $_SESSION['Warenkorb']->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS)
                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART);
-    $step = 'unregistriert bestellen';
+    $step = 'edit_customer_address';
     unset($_SESSION['Kunde']);
     $fehlendeAngaben     = checkKundenFormular(0);
     $Kunde               = getKundendaten($cPost_arr, 0);
@@ -297,17 +297,9 @@ function pruefeRechnungsadresseStep($cGet_arr)
     //sondersteps Rechnungsadresse ändern
     if (isset($cGet_arr['editRechnungsadresse']) && $cGet_arr['editRechnungsadresse'] == 1 && $_SESSION['Kunde']) {
         resetNeuKundenKupon();
-        if ($_SESSION['Kunde']->kKunde > 0) {
-            $linkHelper = LinkHelper::getInstance();
-            //weiterleitung zur Rechnungsänderung eines bestehenden Kunden
-            header('Location: ' . $linkHelper->getStaticRoute('registrieren.php', true) .
-                '?checkout=1&editRechnungsadresse=1', true, 303);
-            exit;
-        } else {
-            pruefeLieferadresseStep(['editLieferadresse' => $cGet_arr['editRechnungsadresse']]);
-            $Kunde = $_SESSION['Kunde'];
-            $step  = 'unregistriert bestellen';
-        }
+        pruefeLieferadresseStep(['editLieferadresse' => $cGet_arr['editRechnungsadresse']]);
+        $Kunde = $_SESSION['Kunde'];
+        $step  = 'edit_customer_address';
     }
 }
 
@@ -3040,7 +3032,7 @@ function gibBestellschritt($step)
     $schritt[4] = 3;
     $schritt[5] = 3;
     switch ($step) {
-        case 'unregistriert bestellen':
+        case 'edit_customer_address':
             $schritt[1] = 1;
             $schritt[2] = 3;
             $schritt[3] = 3;

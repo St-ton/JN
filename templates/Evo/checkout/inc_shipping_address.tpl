@@ -10,7 +10,7 @@
         {lang key="shippingAdressEqualBillingAdress" section="account data"}
     </label>
 </div>
-<div id="register_shipping_address" class="panel panel-strap collapse collapse-non-validate{if isset($Lieferadresse)} in{/if}" aria-expanded="false">
+<div id="register_shipping_address" class="panel panel-wrap collapse collapse-non-validate{if isset($Lieferadresse)} in{/if}" aria-expanded="false">
     <fieldset>
         <legend>{lang key="createNewShippingAdress" section="account data"}</legend>
         {include file="register/form/customer_shipping_address.tpl" prefix="register"}

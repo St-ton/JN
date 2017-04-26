@@ -510,14 +510,15 @@ class FilterItemPriceRange extends AbstractFilter
                                         ->setParam($this->getUrlParam())
                                         ->setName($fe->cVonLocalized . ' - ' . $fe->cBisLocalized)
                                         ->setValue($i)
-                                        ->setCount($feDB_arr[$i])
+                                        ->setCount($oPreisspannenFilterDB_arr[$i])
                                         ->setSort(0)
                                         ->setURL($naviFilter->getURL(
                                             true,
                                             $additionalFilter->init($fe->nVon . '_' . $fe->nBis)
                                         ));
                     $fe->nAnzahlArtikel = $fe->getCount();
-                    $options[]                           = $fe;
+
+                    $options[] = $fe;
                 }
             }
         } else {

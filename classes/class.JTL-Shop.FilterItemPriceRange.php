@@ -391,7 +391,7 @@ class FilterItemPriceRange extends AbstractFilter
                 }
             }
             // Finde den höchsten und kleinsten Steuersatz
-            if (is_array($_SESSION['Steuersatz']) && $_SESSION['Kundengruppe']->nNettoPreise === '0') {
+            if (is_array($_SESSION['Steuersatz']) && (int)$_SESSION['Kundengruppe']->nNettoPreise === 0) {
                 $fSteuersatz_arr = [];
                 foreach ($_SESSION['Steuersatz'] as $fSteuersatz) {
                     $fSteuersatz_arr[] = $fSteuersatz;
@@ -452,7 +452,7 @@ class FilterItemPriceRange extends AbstractFilter
                     }
                     $cSelectSQL .= " SUM(ssMerkmal.anz" . $i . ") AS anz" . $i;
                 }
-                $qry                   = "SELECT " . $cSelectSQL . "
+                $qry                       = "SELECT " . $cSelectSQL . "
                     FROM
                     (
                         SELECT " . $this->getPriceRangeSQL($oPreis, $currency) . "
@@ -497,7 +497,6 @@ class FilterItemPriceRange extends AbstractFilter
                         }
                         $fe->nBis = $nPreisMax;
                     }
-                    // Localize Preise
                     $fe->cVonLocalized = gibPreisLocalizedOhneFaktor(
                         $fe->nVon,
                         $currency

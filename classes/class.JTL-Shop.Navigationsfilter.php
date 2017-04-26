@@ -1134,6 +1134,9 @@ class Navigationsfilter
             $opt->nArtikelAttribute     = 1;
             $opt->nVariationKombiKinder = 1;
             $opt->nWarenlager           = 1;
+            if (PRODUCT_LIST_SHOW_RATINGS === true) {
+                $opt->nRatings = 1;
+            }
             foreach (array_slice($searchResults->Artikel->articleKeys, $paginationLimit, $offsetEnd) as $i => $id) {
                 $nLaufLimitN = $i + $paginationLimit;
                 if ($nLaufLimitN >= $nLimitN && $nLaufLimitN < $nLimitN + $limitPerPage) {

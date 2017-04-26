@@ -230,8 +230,6 @@ class FilterItemAttribute extends FilterBaseAttribute
                 ORDER BY ssMerkmal.nSortMerkmal, ssMerkmal.nSort, ssMerkmal.cWert";
 
             $oMerkmalFilterDB_arr = Shop::DB()->query($query, 2);
-//            Shop::dbg($query, false, '$query:');
-//            Shop::dbg($oMerkmalFilterDB_arr, true);
 
             if (is_array($oMerkmalFilterDB_arr)) {
                 $additionalFilter = new FilterItemAttribute(
@@ -241,9 +239,7 @@ class FilterItemAttribute extends FilterBaseAttribute
                     $this->getAvailableLanguages()
                 );
                 foreach ($oMerkmalFilterDB_arr as $i => $oMerkmalFilterDB) {
-                    $nPos          = $naviFilter->getAttributePosition($attributeFilters, (int)$oMerkmalFilterDB->kMerkmal);
                     $oMerkmalWerte = new stdClass();
-
                     $oMerkmalWerte->kMerkmalWert = (int)$oMerkmalFilterDB->kMerkmalWert;
                     $oMerkmalWerte->cWert        = $oMerkmalFilterDB->cWert;
                     $oMerkmalWerte->nAnzahl      = (int)$oMerkmalFilterDB->nAnzahl;
@@ -304,33 +300,15 @@ class FilterItemAttribute extends FilterBaseAttribute
                         }
                         $attributeFilters[] = $oMerkmal;
                     }
-//                    Shop::dbg($oMerkmal, false, '$oMerkmal@position ' . $nPos);
-//                    $oMerkmal           = new stdClass();
-//                    $oMerkmal->cName    = $oMerkmalFilterDB->cName;
-//                    $oMerkmal->cTyp     = $oMerkmalFilterDB->cTyp;
-//                    $oMerkmal->kMerkmal = (int)$oMerkmalFilterDB->kMerkmal;
-//                    if (strlen($oMerkmalFilterDB->cMMBildPfad) > 0) {
-//                        $oMerkmal->cBildpfadKlein  = PFAD_MERKMALBILDER_KLEIN . $oMerkmalFilterDB->cMMBildPfad;
-//                        $oMerkmal->cBildpfadNormal = PFAD_MERKMALBILDER_NORMAL . $oMerkmalFilterDB->cMMBildPfad;
-//                    } else {
-//                        $oMerkmal->cBildpfadKlein = BILD_KEIN_MERKMALBILD_VORHANDEN;
-//                        $oMerkmal->cBildpfadGross = BILD_KEIN_MERKMALBILD_VORHANDEN;
-//                    }
-//                    $oMerkmal->oMerkmalWerte_arr = [];
-//                    if ($nPos >= 0) {
-//                        $attributeFilters[$nPos]->oMerkmalWerte_arr[] = $oMerkmalWerte;
-//                    } else {
-                        // #533 Anzahl max Merkmale erreicht?
-                        if (($max = $this->getConfig()['navigationsfilter']['merkmalfilter_maxmerkmale']) > 0 &&
-                            count($attributeFilters) >= $max
-                        ) {
-                            continue;
-                        }
-                        $oMerkmal->oMerkmalWerte_arr[] = $oMerkmalWerte;
-//                    }
+                    // #533 Anzahl max Merkmale erreicht?
+                    if (($max = $this->getConfig()['navigationsfilter']['merkmalfilter_maxmerkmale']) > 0 &&
+                        count($attributeFilters) >= $max
+                    ) {
+                        continue;
+                    }
+                    $oMerkmal->oMerkmalWerte_arr[] = $oMerkmalWerte;
                 }
             }
-//            Shop::dbg($attributeFilters, true, '$attributeFilters:');
             // Filter durchgehen und die Merkmalwerte entfernen, die zuviel sind und deren Anzahl am geringsten ist.
             foreach ($attributeFilters as $o => $oMerkmalFilter) {
                 // #534 Anzahl max Merkmalwerte erreicht?
@@ -338,13 +316,13 @@ class FilterItemAttribute extends FilterBaseAttribute
                     while (count($attributeFilters[$o]->oMerkmalWerte_arr) > $max) {
                         $nMinAnzahl = 999999;
                         $nIndex     = -1;
-                        $count      = count($attributeFilters[$o]->oMerkmalWerte_arr);
-                        for ($l = 0; $l < $count; ++$l) {
-                            if ($attributeFilters[$o]->oMerkmalWerte_arr[$l]->nAnzahl < $nMinAnzahl) {
-                                $nMinAnzahl = (int)$attributeFilters[$o]->oMerkmalWerte_arr[$l]->nAnzahl;
+                        foreach($attributeFilters[$o]->oMerkmalWerte_arr as $l => $attributeValues) {
+                            if ($attributeValues->nAnzahl < $nMinAnzahl) {
+                                $nMinAnzahl = (int)$attributeValues->nAnzahl;
                                 $nIndex     = $l;
                             }
                         }
+
                         if ($nIndex >= 0) {
                             unset($attributeFilters[$o]->oMerkmalWerte_arr[$nIndex]);
                             $attributeFilters[$o]->oMerkmalWerte_arr =
@@ -355,9 +333,8 @@ class FilterItemAttribute extends FilterBaseAttribute
             }
             // Falls merkmalfilter Kategorieattribut gesetzt ist, alle Merkmale die nicht enthalten sein dürfen entfernen
             if (count($cKatAttribMerkmalFilter_arr) > 0) {
-                $nKatFilter = count($attributeFilters);
-                for ($i = 0; $i < $nKatFilter; ++$i) {
-                    if (!in_array($attributeFilters[$i]->cName, $cKatAttribMerkmalFilter_arr, true)) {
+                foreach ($attributeFilters as $i => $attributeFilter) {
+                    if (!in_array($attributeFilter->cName, $cKatAttribMerkmalFilter_arr, true)) {
                         unset($attributeFilters[$i]);
                     }
                 }
@@ -366,16 +343,15 @@ class FilterItemAttribute extends FilterBaseAttribute
             // Merkmalwerte numerisch sortieren, wenn alle Merkmalwerte eines Merkmals numerisch sind
             foreach ($attributeFilters as $o => $oMerkmalFilter) {
                 $bAlleNumerisch = true;
-                $count          = count($oMerkmalFilter->oMerkmalWerte_arr);
-                for ($i = 0; $i < $count; ++$i) {
-                    if (!is_numeric($oMerkmalFilter->oMerkmalWerte_arr[$i]->cWert)) {
+                foreach ($oMerkmalFilter->oMerkmalWerte_arr as $attributeValue) {
+                    if (!is_numeric($attributeValue->cWert)) {
                         $bAlleNumerisch = false;
                         break;
                     }
                 }
                 if ($bAlleNumerisch) {
                     usort($attributeFilters[$o]->oMerkmalWerte_arr, function ($a, $b) {
-                        return $a == $b
+                        return $a === $b
                             ? 0
                             : (($a->cWert < $b->cWert)
                                 ? -1

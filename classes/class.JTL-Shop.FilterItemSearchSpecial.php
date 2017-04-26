@@ -218,14 +218,12 @@ class FilterItemSearchSpecial extends AbstractFilter
                 return [];
 
             case SEARCHSPECIALS_TOPREVIEWS:
-                if (!Shop::getNaviFilter()->BewertungFilter->isInitialized()) {
-                    return (new FilterJoin())->setType('JOIN')
+                return Shop::getNaviFilter()->BewertungFilter->isInitialized()
+                    ? []
+                    : (new FilterJoin())->setType('JOIN')
                                              ->setTable('tartikelext AS taex ')
                                              ->setOn('taex.kArtikel = tartikel.kArtikel')
                                              ->setComment('JOIN from FilterItemSearchSpecial top reviews');
-                }
-
-                return [];
 
             default:
                 return [];

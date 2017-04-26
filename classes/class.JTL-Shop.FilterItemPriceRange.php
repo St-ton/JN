@@ -37,7 +37,7 @@ class FilterItemPriceRange extends AbstractFilter
     public $cBisLocalized;
 
     /**
-     * @var object
+     * @var stdClass
      */
     private $oFilter;
 
@@ -106,8 +106,7 @@ class FilterItemPriceRange extends AbstractFilter
         $this->isInitialized = true;
 
         $oFilter         = new stdClass();
-        $oFilter->cJoin  = "
-            JOIN tpreise 
+        $oFilter->cJoin  = "JOIN tpreise 
                 ON tartikel.kArtikel = tpreise.kArtikel 
                 AND tpreise.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
             LEFT JOIN tartikelkategorierabatt 
@@ -141,7 +140,8 @@ class FilterItemPriceRange extends AbstractFilter
             foreach ($nSteuersatzKeys_arr as $nSteuersatzKeys) {
                 $fSteuersatz = (float)$_SESSION['Steuersatz'][$nSteuersatzKeys];
                 $oFilter->cWhere .= " IF(tartikel.kSteuerklasse = " . $nSteuersatzKeys . ",
-                            ROUND(LEAST(tpreise.fVKNetto * ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), " .
+                            ROUND(LEAST(tpreise.fVKNetto * 
+                                ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), " .
                     $_SESSION['Kundengruppe']->fRabatt . ", " . $fKundenrabatt .
                     ", 0)) / 100), IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * " .
                     $_SESSION['Waehrung']->fFaktor . "))) * ((100 + " . $fSteuersatz . ") / 100
@@ -160,7 +160,8 @@ class FilterItemPriceRange extends AbstractFilter
         $oFilter->cWhere .= " < " . $this->fBis . " AND ";
         // von
         if ((int)$_SESSION['Kundengruppe']->nNettoPreise > 0) {
-            $oFilter->cWhere .= " ROUND(LEAST(tpreise.fVKNetto * ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), " .
+            $oFilter->cWhere .= " ROUND(LEAST(tpreise.fVKNetto * 
+                ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), " .
                 $_SESSION['Kundengruppe']->fRabatt . ", " . $fKundenrabatt .
                 ", 0)) / 100), IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * " .
                 $_SESSION['Waehrung']->fFaktor . "))), 2)";
@@ -248,8 +249,8 @@ class FilterItemPriceRange extends AbstractFilter
     }
 
     /**
-     * @param object     $oPreis
-     * @param object     $currency
+     * @param stdClass   $oPreis
+     * @param stdClass   $currency
      * @param array|null $oPreisspannenfilter_arr
      * @return string
      */
@@ -471,10 +472,10 @@ class FilterItemPriceRange extends AbstractFilter
                     : null;
                 $oPreisspannenFilterDB_arr = [];
                 for ($i = 0; $i < $oPreis->nAnzahlSpannen; ++$i) {
-                    $sub                         = ($i === 0)
+                    $sub                         = $i === 0
                         ? 0
                         : $nPreisspannenAnzahl_arr['anz' . ($i - 1)];
-                    $oPreisspannenFilterDB_arr[] = ($nPreisspannenAnzahl_arr['anz' . $i] - $sub);
+                    $oPreisspannenFilterDB_arr[] = $nPreisspannenAnzahl_arr['anz' . $i] - $sub;
                 }
                 $nPreisMax        = $oPreis->fMaxPreis;
                 $nPreisMin        = $oPreis->fMinPreis;
@@ -488,11 +489,11 @@ class FilterItemPriceRange extends AbstractFilter
                 );
                 for ($i = 0; $i < $nAnzahlSpannen; ++$i) {
                     $fe       = new FilterExtra();
-                    $fe->nVon = ($nPreisMin + $i * $nStep);
-                    $fe->nBis = ($nPreisMin + ($i + 1) * $nStep);
+                    $fe->nVon = $nPreisMin + $i * $nStep;
+                    $fe->nBis = $nPreisMin + ($i + 1) * $nStep;
                     if ($fe->nBis > $nPreisMax) {
                         if ($fe->nVon >= $nPreisMax) {
-                            $fe->nVon = ($nPreisMin + ($i - 1) * $nStep);
+                            $fe->nVon = $nPreisMin + ($i - 1) * $nStep;
                         }
                         $fe->nBis = $nPreisMax;
                     }
@@ -506,16 +507,16 @@ class FilterItemPriceRange extends AbstractFilter
                         $currency
                     );
                     $fe->setType($this->getType())
-                                        ->setClassName($this->getClassName())
-                                        ->setParam($this->getUrlParam())
-                                        ->setName($fe->cVonLocalized . ' - ' . $fe->cBisLocalized)
-                                        ->setValue($i)
-                                        ->setCount($oPreisspannenFilterDB_arr[$i])
-                                        ->setSort(0)
-                                        ->setURL($naviFilter->getURL(
-                                            true,
-                                            $additionalFilter->init($fe->nVon . '_' . $fe->nBis)
-                                        ));
+                       ->setClassName($this->getClassName())
+                       ->setParam($this->getUrlParam())
+                       ->setName($fe->cVonLocalized . ' - ' . $fe->cBisLocalized)
+                       ->setValue($i)
+                       ->setCount($oPreisspannenFilterDB_arr[$i])
+                       ->setSort(0)
+                       ->setURL($naviFilter->getURL(
+                           true,
+                           $additionalFilter->init($fe->nVon . '_' . $fe->nBis)
+                       ));
                     $fe->nAnzahlArtikel = $fe->getCount();
 
                     $options[] = $fe;
@@ -565,7 +566,7 @@ class FilterItemPriceRange extends AbstractFilter
                         $sub                         = $i === 0
                             ? 0
                             : $nPreisspannenAnzahl_arr['anz' . ($i - 1)];
-                        $oPreisspannenFilterDB_arr[] = ($nPreisspannenAnzahl_arr['anz' . $i] - $sub);
+                        $oPreisspannenFilterDB_arr[] = $nPreisspannenAnzahl_arr['anz' . $i] - $sub;
                     }
                 }
                 $additionalFilter = new FilterItemPriceRange(
@@ -587,18 +588,17 @@ class FilterItemPriceRange extends AbstractFilter
                         $fe->nBis,
                         $currency
                     );
-                    $fe->setType($this->getType())
-                               ->setClassName($this->getClassName())
-                               ->setParam($this->getUrlParam())
-                               ->setName($fe->cVonLocalized . ' - ' . $fe->cBisLocalized)
-                               ->setValue($i)
-                               ->setCount($fe->nAnzahlArtikel)
-                               ->setSort(0)
-                               ->setURL($naviFilter->getURL(
-                                   true,
-                                   $additionalFilter->init($fe->nVon . '_' . $fe->nBis)
-                               ));
-                    $options[] = $fe;
+                    $options[] = $fe->setType($this->getType())
+                                    ->setClassName($this->getClassName())
+                                    ->setParam($this->getUrlParam())
+                                    ->setName($fe->cVonLocalized . ' - ' . $fe->cBisLocalized)
+                                    ->setValue($i)
+                                    ->setCount($fe->nAnzahlArtikel)
+                                    ->setSort(0)
+                                    ->setURL($naviFilter->getURL(
+                                        true,
+                                        $additionalFilter->init($fe->nVon . '_' . $fe->nBis)
+                                    ));
                 }
             }
         }
@@ -628,7 +628,7 @@ class FilterItemPriceRange extends AbstractFilter
      */
     public function calculateSteps($fMax, $fMin)
     {
-        $fStepWert_arr = [
+        static $fStepWert_arr = [
             0.001, 0.005, 0.01, 0.05, 0.10, 0.25, 0.5, 1.0, 2.5, 5.0, 7.5,
             10.0, 12.5, 15.0, 20.0, 25.0, 50.0, 100.0, 250.0, 300.0, 350.0,
             400.0, 500.0, 750.0, 1000.0, 1500.0, 2500.0, 5000.0, 10000.0,
@@ -649,9 +649,9 @@ class FilterItemPriceRange extends AbstractFilter
                 break;
             }
         }
-        $fStepWert = $fStepWert_arr[$nStep] * 1000;
-        $fMax *= 1000;
-        $fMin *= 1000;
+        $fMax *= 1000.0;
+        $fMin *= 1000.0;
+        $fStepWert      = $fStepWert_arr[$nStep] * 1000;
         $fMaxPreis      = round(((($fMax * 100) - (($fMax * 100) % ($fStepWert * 100))) + ($fStepWert * 100)) / 100, 0);
         $fMinPreis      = round((($fMin * 100) - (($fMin * 100) % ($fStepWert * 100))) / 100, 0);
         $fDiffPreis     = $fMaxPreis - $fMinPreis;

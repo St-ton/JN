@@ -34,12 +34,10 @@ class FilterItemCategory extends FilterBaseCategory
      */
     public function getSQLCondition()
     {
-        if ($this->getConfig()['navigationsfilter']['kategoriefilter_anzeigen_als'] === 'HF') {
-            return '(tkategorieartikelgesamt.kOberKategorie = ' . $this->getValue() .
-                ' OR tkategorieartikelgesamt.kKategorie = ' . $this->getValue() . ') ';
-        }
-
-        return ' tkategorieartikel.kKategorie = ' . $this->getValue();
+        return $this->getConfig()['navigationsfilter']['kategoriefilter_anzeigen_als'] === 'HF'
+            ? '(tkategorieartikelgesamt.kOberKategorie = ' . $this->getValue() .
+                ' OR tkategorieartikelgesamt.kKategorie = ' . $this->getValue() . ') '
+            : ' tkategorieartikel.kKategorie = ' . $this->getValue();
     }
 
     /**

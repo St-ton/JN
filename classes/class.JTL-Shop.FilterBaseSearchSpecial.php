@@ -191,15 +191,13 @@ class FilterBaseSearchSpecial extends AbstractFilter
                                          ->setComment('JOIN from FilterBaseSearchSpecial bestseller');
 
             case SEARCHSPECIALS_SPECIALOFFERS:
-                if (!Shop::getNaviFilter()->PreisspannenFilter->isInitialized()) {
-                    return (new FilterJoin())->setType('JOIN')
+                return Shop::getNaviFilter()->PreisspannenFilter->isInitialized()
+                    ? []
+                    : (new FilterJoin())->setType('JOIN')
                                              ->setTable('tartikelsonderpreis AS tasp')
                                              ->setOn('tasp.kArtikel = tartikel.kArtikel JOIN tsonderpreise AS tsp 
                                       ON tsp.kArtikelSonderpreis = tasp.kArtikelSonderpreis')
                                              ->setComment('JOIN from FilterBaseSearchSpecial special offers');
-                }
-
-                return [];
 
             case SEARCHSPECIALS_NEWPRODUCTS:
             case SEARCHSPECIALS_TOPOFFERS:
@@ -207,14 +205,12 @@ class FilterBaseSearchSpecial extends AbstractFilter
                 return [];
 
             case SEARCHSPECIALS_TOPREVIEWS:
-                if (!Shop::getNaviFilter()->BewertungFilter->isInitialized()) {
-                    return (new FilterJoin())->setType('JOIN')
+                return Shop::getNaviFilter()->BewertungFilter->isInitialized()
+                    ? []
+                    : (new FilterJoin())->setType('JOIN')
                                              ->setTable('tartikelext AS taex ')
                                              ->setOn('taex.kArtikel = tartikel.kArtikel')
                                              ->setComment('JOIN from FilterBaseSearchSpecial top reviews');
-                }
-
-                return [];
 
             default:
                 return [];

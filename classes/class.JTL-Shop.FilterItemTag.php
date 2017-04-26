@@ -27,14 +27,6 @@ class FilterItemTag extends FilterBaseTag
     }
 
     /**
-     * @return string
-     */
-    public function getSQLCondition()
-    {
-        return 'ttag.nAktiv = 1 AND ttagartikel.kTag = ' . $this->getValue();
-    }
-
-    /**
      * @return FilterJoin[]
      */
     public function getSQLJoin()

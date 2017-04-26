@@ -266,10 +266,9 @@ class FilterBaseSearchQuery extends AbstractFilter
                     ->setType($this->getType())
                     ->setClassName($this->getClassName())
                     ->setParam($this->getUrlParam())
-                    ->setName($manufacturer->cName)
-                    ->setValue((int)$manufacturer->kHersteller)
-                    ->setCount($manufacturer->nAnzahl)
-                    ->setSort($manufacturer->nSortNr)
+                    ->setName($searchFilter->cSuche)
+                    ->setValue((int)$searchFilter->kSuchanfrage)
+                    ->setCount($searchFilter->nAnzahl)
                     ->setURL($naviFilter->getURL(
                         true,
                         $additionalFilter->init((int)$searchFilter->kSuchanfrage)
@@ -404,8 +403,7 @@ class FilterBaseSearchQuery extends AbstractFilter
         $oSuchCache->dErstellt  = 'now()';
         $kSuchCache             = Shop::DB()->insert('tsuchcache', $oSuchCache);
 
-        if (isset($this->getConfig()['artikeluebersicht']['suche_fulltext']) &&
-            $this->getConfig()['artikeluebersicht']['suche_fulltext'] === 'Y' &&
+        if ($this->getConfig()['artikeluebersicht']['suche_fulltext'] === 'Y' &&
             $this->isFulltextIndexActive()
         ) {
             $oSuchCache->kSuchCache = $kSuchCache;

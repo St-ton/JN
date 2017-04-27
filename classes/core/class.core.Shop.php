@@ -314,6 +314,11 @@ final class Shop
     private static $_settings;
 
     /**
+     * @var array
+     */
+    public static $customFilters = [];
+
+    /**
      *
      */
     private function __construct()
@@ -734,7 +739,11 @@ final class Shop
 
         self::Event()->fire('shop.run');
 
-        return self::buildNaviFilter(self::getParameters());
+        self::$NaviFilter = new Navigationsfilter();
+
+        self::seoCheck();
+
+        return self::buildNaviFilter(self::getParameters(true));
     }
 
     /**
@@ -744,7 +753,6 @@ final class Shop
      */
     public static function getParameters()
     {
-        self::seoCheck();
         if (self::$kKategorie > 0 && !Kategorie::isVisible(self::$kKategorie, $_SESSION['Kundengruppe']->kKundengruppe)) {
             self::$kKategorie = 0;
         }
@@ -797,6 +805,7 @@ final class Shop
             'cDatum'                 => self::$cDatum,
             'nAnzahl'                => self::$nAnzahl,
             'nSterne'                => self::$nSterne,
+            'customFilters'          => self::$customFilters
         ];
     }
 
@@ -815,10 +824,11 @@ final class Shop
         self::$bHerstellerFilterNotFound = false;
         //@todo@todo@todo
         if (true||strpos($uri, 'index.php') === false) {
-            executeHook(HOOK_SEOCHECK_ANFANG, array('uri' => &$uri));
+            executeHook(HOOK_SEOCHECK_ANFANG, ['uri' => &$uri]);
             $seite        = 0;
             $hstseo       = '';
             $katseo       = '';
+            $customSeo    = [];
             $xShopurl_arr = parse_url(self::getURL());
             $xBaseurl_arr = parse_url($uri);
             $seo          = isset($xBaseurl_arr['path'])
@@ -829,6 +839,47 @@ final class Shop
             //Fremdparameter
             $seo = extFremdeParameter($seo);
             if ($seo) {
+                foreach (self::$NaviFilter->getCustomFilters() as $customFilter) {
+                    $seoParam = $customFilter->getUrlParamSEO();
+                    if ($seoParam !== '') {
+                        $customFilterArr = explode($seoParam, $seo);
+                        if (is_array($customFilterArr) && count($customFilterArr) > 1) {
+                            list($seo, $customFilterSeo) = $customFilterArr;
+                            if (strpos($customFilterSeo, SEP_HST) !== false) {
+                                $arr             = explode(SEP_HST, $customFilterSeo);
+                                $customFilterSeo = $arr[0];
+                                $seo             .= SEP_HST . $arr[1];
+                            }
+                            if (($idx = strpos($customFilterSeo,
+                                    SEP_KAT)) !== false && $idx !== strpos($customFilterSeo, SEP_HST)
+                            ) {
+                                $oHersteller_arr = explode(SEP_KAT, $customFilterSeo);
+                                $customFilterSeo = $oHersteller_arr[0];
+                                $seo             .= SEP_KAT . $oHersteller_arr[1];
+                            }
+                            if (strpos($customFilterSeo, SEP_MERKMAL) !== false) {
+                                $arr             = explode(SEP_MERKMAL, $customFilterSeo);
+                                $customFilterSeo = $arr[0];
+                                $seo             .= SEP_MERKMAL . $arr[1];
+                            }
+                            if (strpos($customFilterSeo, SEP_MM_MMW) !== false) {
+                                $arr             = explode(SEP_MM_MMW, $customFilterSeo);
+                                $customFilterSeo = $arr[0];
+                                $seo             .= SEP_MM_MMW . $arr[1];
+                            }
+                            if (strpos($customFilterSeo, SEP_SEITE) !== false) {
+                                $arr             = explode(SEP_SEITE, $customFilterSeo);
+                                $customFilterSeo = $arr[0];
+                                $seo             .= SEP_SEITE . $arr[1];
+                            }
+
+                            $customSeo[$customFilter->getClassName()] = [
+                                'cSeo'  => $customFilterSeo,
+                                'table' => $customFilter->getTableName()
+                            ];
+                        }
+                    }
+                }
                 //change Opera Fix
                 if (substr($seo, strlen($seo) - 1, 1) === '?') {
                     $seo = substr($seo, 0, strlen($seo) - 1);
@@ -872,8 +923,7 @@ final class Shop
                 }
                 $oHersteller_arr = explode(SEP_HST, $seo);
                 if (is_array($oHersteller_arr) && count($oHersteller_arr) > 1) {
-                    $seo    = $oHersteller_arr[0];
-                    $hstseo = $oHersteller_arr[1];
+                    list($seo, $hstseo) = $oHersteller_arr;
                     if (($idx = strpos($hstseo, SEP_KAT)) !== false && $idx !== strpos($hstseo, SEP_HST)) {
                         $oHersteller_arr = explode(SEP_KAT, $hstseo);
                         $hstseo = $oHersteller_arr[0];
@@ -899,8 +949,7 @@ final class Shop
                 }
                 $oKategorie_arr = explode(SEP_KAT, $seo);
                 if (is_array($oKategorie_arr) && count($oKategorie_arr) > 1) {
-                    $seo    = $oKategorie_arr[0];
-                    $katseo = $oKategorie_arr[1];
+                    list($seo, $katseo) = $oKategorie_arr;
                     if (strpos($katseo, SEP_HST) !== false) {
                         $arr = explode(SEP_HST, $katseo);
                         $katseo = $arr[0];
@@ -932,6 +981,17 @@ final class Shop
                 if (is_array($oMerkmal_arr) && count($oMerkmal_arr) > 1) {
                     $seo = $oMerkmal_arr[1];
                     //$mmseo = $oMerkmal_arr[0];
+                }
+                // custom filter
+                if (count($customSeo) > 0) {
+                    foreach ($customSeo as $className => $data) {
+                        $oSeo = self::DB()->select($data['table'], 'cSeo', $data['cSeo']);
+                        if (isset($oSeo->filterval)) {
+                            self::$customFilters[$className] = (int)$oSeo->filterval    ;
+                        } else {
+                            self::$bKatFilterNotFound = true;
+                        }
+                    }
                 }
                 //category filter
                 if (strlen($katseo) > 0) {
@@ -1220,7 +1280,10 @@ final class Shop
      */
     public static function buildNaviFilter($cParameter_arr, $NaviFilter = null)
     {
-        return (self::$NaviFilter = (new Navigationsfilter())->initStates($cParameter_arr));
+        if (self::$NaviFilter === null) {
+            self::$NaviFilter = new Navigationsfilter();
+        }
+        return self::$NaviFilter->initStates($cParameter_arr);
     }
 
     /**
@@ -1232,16 +1295,19 @@ final class Shop
     }
 
     /**
-     * @param Navigationsfilter|stdClass $NaviFilter
+     * @param null|Navigationsfilter $NaviFilter
      */
-    public static function checkNaviFilter($NaviFilter)
+    public static function checkNaviFilter($NaviFilter = null)
     {
+        if ($NaviFilter === null) {
+            $NaviFilter = self::$NaviFilter;
+        }
         if ($NaviFilter->nAnzahlFilter > 0) {
             if (empty($NaviFilter->Hersteller->kHersteller) && empty($NaviFilter->Kategorie->kKategorie) &&
                 empty($NaviFilter->Tag->kTag) && empty($NaviFilter->Suchanfrage->kSuchanfrage) &&
                 empty($NaviFilter->News->kNews) && empty($NaviFilter->Newsmonat->kNewsMonatsUebersicht) &&
                 empty($NaviFilter->NewsKategorie->kNewsKategorie) &&
-                !isset($NaviFilter->Suche->cSuche) && empty($NaviFilter->MerkmalWert->kMerkmalWert) &&
+                $NaviFilter->Suche->cSuche === null && empty($NaviFilter->MerkmalWert->kMerkmalWert) &&
                 empty($NaviFilter->Suchspecial->kKey)
             ) {
                 //we have a manufacturer filter that doesn't filter anything

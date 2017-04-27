@@ -239,6 +239,10 @@ class JSONAPI
             $result = [];
         }
 
+        if(!is_array($result)) {
+            $result = [];
+        }
+
         Shop::Cache()->set($cacheId, $result, $cacheTags);
 
         return $result;

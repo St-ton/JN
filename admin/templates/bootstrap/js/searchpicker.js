@@ -8,18 +8,18 @@
  * @constructor
  */
 function SearchPicker(options)
-// function SearchPicker(searchPickerName, getDataIoFuncName, keyName, renderItemCb, onApply, selectedKeysInit)
 {
     var searchPickerName   = options.searchPickerName;
     var getDataIoFuncName  = options.getDataIoFuncName;
     var keyName            = options.keyName;
     var renderItemCb       = options.renderItemCb;
-    var onApply            = options.onApply;
+    var onApply            = options.onApply || $.noop;
     var selectedKeysInit   = options.selectedKeysInit || [];
     var self               = this;
     var searchString       = '';
     var lastSearchString   = '';
     var selectedKeys       = selectedKeysInit.slice();
+    var selectedItems      = [];
     var backupSelectedKeys = [];
     var foundItems         = [];
     var dataIoFuncName     = getDataIoFuncName;
@@ -63,7 +63,13 @@ function SearchPicker(options)
         console.log(searchPickerName, 'hide');
 
         if (closeAction === 'apply') {
-            onApply(selectedKeys);
+            ioCall(
+                dataIoFuncName, [selectedKeys, 100],
+                function (items) {
+                    onApply(selectedKeys, items);
+                    pendingRequest = null;
+                }
+            );
             self.init();
         } else if (closeAction === 'cancel') {
             selectedKeys = backupSelectedKeys.slice();
@@ -110,6 +116,13 @@ function SearchPicker(options)
 
     self.updateItemList = function ()
     {
+        $searchResultList.empty();
+        $('<span>')
+            .addClass('list-group-item')
+            .html('<i class="fa fa-spinner fa-pulse"></i>')
+            .appendTo($searchResultList);
+        $listTitle.html('Suche...');
+
         if (searchString !== '') {
             if (pendingRequest !== null) {
                 pendingRequest.abort();
@@ -188,5 +201,23 @@ function SearchPicker(options)
     self.getSelection = function ()
     {
         return selectedKeys;
+    };
+
+    self.setSelection = function (newSelectedKeys)
+    {
+        selectedKeys = newSelectedKeys;
+        return self;
+    };
+
+    self.setOnApply = function (newOnApply)
+    {
+        onApply = newOnApply;
+        return self;
+    };
+
+    self.show = function () {
+        self.init();
+        $searchModal.modal('show');
+        return self;
     }
 }

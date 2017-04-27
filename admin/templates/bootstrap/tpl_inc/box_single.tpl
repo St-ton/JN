@@ -62,11 +62,26 @@
                         <i class="fa fa-info"></i>
                     </button>
                 {elseif $nPage == 1 || $nPage == 2 || $nPage == 24 || $nPage == 31}
-                    <a href="#" data-filter="box-filter-{$oBox->kBox}" data-box-id="{$oBox->kBox}" class="btn btn-default"
-                       data-box-title="{if $oBox->bContainer}Container #{$oBox->kBox}{else}{$oBox->cTitel}{/if}"
-                       data-toggle="modal" data-target="#boxFilterModal">
+                    {if $nPage == 1}
+                        {assign var="picker" value="articlePicker"}
+                    {elseif $nPage == 2}
+                        {assign var="picker" value="categoryPicker"}
+                    {elseif $nPage == 24}
+                        {assign var="picker" value="articlePicker"}
+                    {elseif $nPage == 31}
+                        {assign var="picker" value="articlePicker"}
+                    {/if}
+                    {*<a href="#" data-filter="box-filter-{$oBox->kBox}" data-box-id="{$oBox->kBox}" class="btn btn-default"*}
+                       {*data-box-title="{if $oBox->bContainer}Container #{$oBox->kBox}{else}{$oBox->cTitel}{/if}"*}
+                       {*data-toggle="modal" data-target="#boxFilterModal">*}
+                        {*<i class="fa fa-filter"></i>*}
+                    {*</a>*}
+                    <input type="hidden" id="box_filter_{$oBox->kBox}" name="box_filter_{$oBox->kBox}"
+                           value="{foreach $oBox->cFilter as $filter}{$filter.id}{if !$filter@last};{/if}{/foreach}">
+                    <button type="button" class="btn btn-default"
+                            onclick="openFilterPicker({$picker}, {$oBox->kBox})">
                         <i class="fa fa-filter"></i>
-                    </a>
+                    </button>
                 {/if}
             {/if}
         </div>
@@ -76,13 +91,14 @@
             {if !empty($oBox->cFilter)}
                 {foreach name="filters" from=$oBox->cFilter item=filter}
                     {if $filter !== ''}
-                        <li class="selected-item" id="elem-{$filter.id}">
-                            <a href="#" data-ref="{$filter.id}" class="btn btn-default btn-xs">
-                                <i class="fa fa-trash"></i>
-                            </a>
-                            {$filter.name}
-                            <input class="new-filter" type="hidden" name="box-filter-{$oBox->kBox}[]" value="{$filter.id}">
-                        </li>
+                        <li class="selected-item"><i class="fa fa-filter"></i> {$filter.name}</li>
+                        {*<li class="selected-item" id="elem-{$filter.id}">*}
+                            {*<a href="#" data-ref="{$filter.id}" class="btn btn-default btn-xs">*}
+                                {*<i class="fa fa-trash"></i>*}
+                            {*</a>*}
+                            {*{$filter.name}*}
+                            {*<input class="new-filter" type="hidden" name="box-filter-{$oBox->kBox}[]" value="{$filter.id}">*}
+                        {*</li>*}
                     {/if}
                 {/foreach}
             {/if}

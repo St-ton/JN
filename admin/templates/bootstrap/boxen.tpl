@@ -2,6 +2,73 @@
 {include file='tpl_inc/header.tpl'}
 {include file='tpl_inc/seite_header.tpl' cTitel=#boxen# cBeschreibung=#boxenDesc# cDokuURL=#boxenURL#}
 
+{include file='tpl_inc/searchpicker_modal.tpl'
+    searchPickerName='articlePicker'
+    modalTitle='Artikel ausw&auml;hlen'
+    searchInputLabel='Suche nach Artikelnamen'
+}
+{include file='tpl_inc/searchpicker_modal.tpl'
+    searchPickerName='categoryPicker'
+    modalTitle='Kategorien ausw&auml;hlen'
+    searchInputLabel='Suche nach Kategorienamen'
+}
+{*
+{include file='tpl_inc/searchpicker_modal.tpl'
+    searchPickerName='linkPicker'
+    modalTitle='Eigene Seite ausw&auml;hlen'
+    searchInputLabel='Suche nach Seitennamen'
+}
+{include file='tpl_inc/searchpicker_modal.tpl'
+    searchPickerName='articlePicker'
+    modalTitle='Artikel ausw&auml;hlen'
+    searchInputLabel='Suche nach Artikelnamen'
+}
+*}
+<script>
+    $(function () {
+        articlePicker = new SearchPicker({
+            searchPickerName:  'articlePicker',
+            getDataIoFuncName: 'getProducts',
+            keyName:           'kArtikel',
+            renderItemCb:      function (item) { return '<p class="list-group-item-text">' + item.cName + '</p>'; }
+        });
+        categoryPicker = new SearchPicker({
+            searchPickerName:  'categoryPicker',
+            getDataIoFuncName: 'getCategories',
+            keyName:           'kKategorie',
+            renderItemCb:      function (item) { return '<p class="list-group-item-text">' + item.cName + '</p>'; }
+        });
+//        articlePicker = new SearchPicker({
+//            searchPickerName:  'articlePicker',
+//            getDataIoFuncName: 'getProducts',
+//            keyName:           'cArtNr',
+//            renderItemCb:      function (item) { return '<p class="list-group-item-text">' + item.cName + '</p>'; }
+//        });
+//        articlePicker = new SearchPicker({
+//            searchPickerName:  'articlePicker',
+//            getDataIoFuncName: 'getProducts',
+//            keyName:           'cArtNr',
+//            renderItemCb:      function (item) { return '<p class="list-group-item-text">' + item.cName + '</p>'; }
+//        });
+    });
+
+    function openFilterPicker (picker, kBox) {
+        var $activeFilterList = $('#box-active-filters-' + kBox);
+        picker
+            .setOnApply(function (selectedKeys, selectedItems) {
+                $('#box_filter_' + kBox).val(selectedKeys.join(';'));
+                $activeFilterList.empty();
+                selectedItems.forEach(function (item) {
+                    $activeFilterList
+                        .append('<li class="selected-item"><i class="fa fa-filter"></i> ' + item.cName + '</li>');
+                });
+            })
+            .setSelection($('#box_filter_' + kBox).val().split(';').filter(Boolean))
+            .show();
+    }
+</script>
+
+
 <script type="text/javascript">
     $(function() {
         $('#boxFilterModal').on('show.bs.modal', function (event) {

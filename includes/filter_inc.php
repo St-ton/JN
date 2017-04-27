@@ -1772,7 +1772,9 @@ function gibSuchspecialFilterOptionen($FilterSQL, $NaviFilter)
             $oZusatzFilter->SuchspecialFilter       = new stdClass();
             $oZusatzFilter->SuchspecialFilter->kKey = $i;
             $oSuchspecial->cURL                     = gibNaviURL($NaviFilter, false, $oZusatzFilter);
-            $oSuchspecialFilterDB_arr[$i]           = $oSuchspecial;
+            if ($oSuchspecial->nAnzahl > 0) {
+                $oSuchspecialFilterDB_arr[$i]       = $oSuchspecial;
+            }
         }
     }
 

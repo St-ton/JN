@@ -3526,7 +3526,7 @@ class Artikel
         $kSprache = (int)$kSprache;
         // Work Around -.- wenn Einstellung global_sichtbarkeit aktiv ist
         if ($noCache === false) {
-            $baseID        = Shop::Cache()->getBaseID();
+            $baseID        = Shop::Cache()->getBaseID(false, false, $kKundengruppe, $kSprache);
             $taxClass      = isset($_SESSION['Steuersatz']) ? implode('_', $_SESSION['Steuersatz']) : '';
             $kKunde        = isset($_SESSION['Kunde']) ? (int)$_SESSION['Kunde']->kKunde : 0;
             $productHash   = md5($baseID . $this->getOptionsHash($oArtikelOptionen) . $taxClass . $kKunde);

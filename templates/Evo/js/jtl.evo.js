@@ -179,7 +179,10 @@
 
         autoheight: function() {
             $('.row-eq-height').each(function(i, e) {
-                $(e).find('[class*="col-"] > *').responsiveEqualHeightGrid();
+                $(e).children('[class*="col-"]').children().responsiveEqualHeightGrid();
+            });
+            $('.row-eq-height.gallery > [class*="col-"]').each(function(i, e) {
+                $(e).height($('div', $(e)).outerHeight());
             });
         },
         

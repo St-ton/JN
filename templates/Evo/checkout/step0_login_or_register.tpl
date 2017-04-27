@@ -34,7 +34,7 @@
                     <input type="hidden" name="form" value="1">
                     <input type="hidden" name="editRechnungsadresse" value="1">
 
-                    <input type="submit" class="btn btn-primary submit submit_once pull-right" value="{lang key="sendCustomerData" section="account data"}">
+                    <input type="submit" class="btn btn-primary btn-lg submit submit_once pull-right" value="{lang key="sendCustomerData" section="account data"}">
                 </form>
         </div>
     </div>

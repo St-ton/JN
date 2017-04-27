@@ -22,6 +22,7 @@
     modalTitle='Eigene Seiten ausw&auml;hlen'
     searchInputLabel='Suche nach Seitennamen'
 }
+
 <script>
     $(function () {
         articlePicker = new SearchPicker({
@@ -90,146 +91,12 @@
             );
         });
     }
-</script>
 
-
-<script type="text/javascript">
-    $(function() {
-        $('#boxFilterModal').on('show.bs.modal', function (event) {
-            var button = $(event.relatedTarget),
-                    filter = button.data('filter'),
-                    boxTitle = button.data('box-title'),
-                    boxID = button.data('box-id'),
-                    modal = $(this);
-            modal.find('#myModalLabel').text('{#showBoxOnlyFor#}'.replace('%s', boxTitle));
-            modal.find('#filter-target').val(filter);
-            modal.find('#filter-target-id').val(boxID);
-            $('#selected-items').append($('#box-active-filters-' + boxID).find('.selected-item').clone());
-        }).on('hide.bs.modal', function (event) {
-            $('#boxFilterModal .selected-item').remove(); //cleanup selected items
-            $('#boxFilterModal .filter-input').val(''); //cleanup input
-        });
-        {if $nPage == 1}
-            enableTypeahead(
-                '#products', 'getProducts', 'cName', null,
-                function (e, item) {
-                    onSelect({ value: item.kArtikel, text: item.cName }, '#selected-items', '#products');
-                }
-            );
-        {elseif $nPage == 31}
-            enableTypeahead(
-                '#pages', 'getPages', 'cName', null,
-                function (e, item) {
-                    onSelect({ value: item.kLink, text: item.cName }, '#selected-items', '#pages');
-                }
-            );
-        {elseif $nPage == 2}
-            enableTypeahead(
-                '#categories', 'getCategories', 'cName', null,
-                function (e, item) {
-                    onSelect({ value: item.kKategorie, text: item.cName }, '#selected-items', '#categories');
-                }
-            );
-        {elseif $nPage == 24}
-            enableTypeahead(
-                '#manufacturers', 'getManufacturers', 'cName', null,
-                function (e, item) {
-                    onSelect({ value: item.kHersteller, text: item.cName }, '#selected-items', '#manufacturers');
-                }
-            );
-        {/if}
-
-        $('#modal-save').click(function () {
-            var idList = $('#modal-filter-form .new-filter'),
-                    numElements = idList.length,
-                    boxID = $('#filter-target-id').val(),
-                    target,
-                    targetSelector = $('#filter-target').val();
-
-            if (targetSelector) {
-                $('#box-active-filters-' + boxID).empty().append($('#boxFilterModal .selected-item'));
-                $('#boxFilterModal').modal('hide'); //hide modal
-            }
-        });
-
-        $('#modal-cancel').click(function () {
-            $('#boxFilterModal').modal('hide'); //hide modal
-        });
-
-        $('#boxFilterModal .selected-items').on('click', 'a', function (e) {
-            e.preventDefault();
-            $('#elem-' + $(this).attr('data-ref')).remove();
-            return false;
-        });
-    });
-
-    function onSelect (item, selectorAdd, selectorRemove) {
-        if (item.value > 0) {
-            var button = $('<a />'),
-                input = $('<input />'),
-                element = $('<li />'),
-                boxID = $('#filter-target-id').val();
-            input.attr({ 'class': 'new-filter', type: 'hidden', name: 'box-filter-' + boxID + '[]', value: item.value });
-            element.attr({ 'class': 'selected-item', id: 'elem-' + item.value });
-            button.attr({ 'class': 'btn btn-default btn-xs', href: '#', 'data-ref': item.value }).html('<i class="fa fa-trash"></i>');
-            element.append(button).append(' ' + item.text).append(input);
-            $(selectorAdd).append(element);
-        }
-    }
-
-    function confirmDelete(cName) {
+    function confirmDelete(cName)
+    {
         return confirm('{#confirmDeleteBox#}'.replace('%s', cName));
     }
-
-    function onFocus(obj) {
-       obj.id = obj.value;
-       obj.value = '';
-    }
-
-    function onBlur(obj) {
-       if (obj.value.length === 0) {
-           obj.value = obj.id;
-       }
-    }
 </script>
-<div class="modal fade" id="boxFilterModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="myModalLabel"></h4>
-            </div>
-            <div class="modal-body">
-                <form id="modal-filter-form">
-                    {$jtl_token}
-                    <input id="filter-target" type="hidden" />
-                    <input id="filter-target-id" type="hidden" />
-                    {if $nPage == 1}
-                        <input id="products" type="text" class="filter-input form-control" placeholder="{#products#}..." autocomplete="off" />
-                        <ul id="selected-products" class="selected-items"></ul>
-                    {elseif $nPage == 31}
-                        <input id="pages" type="text" class="filter-input form-control" placeholder="{#pages#}..." autocomplete="off" />
-                        <ul id="selected-pages" class="selected-items"></ul>
-                    {elseif $nPage == 2}
-                        <input id="categories" type="text" class="filter-input form-control" placeholder="{#categories#}..." autocomplete="off" />
-                        <ul id="selected-categories" class="selected-items"></ul>
-                    {elseif $nPage == 24}
-                        <input id="manufacturers" type="text" class="filter-input form-control" placeholder="{#manufacturers#}..." autocomplete="off" />
-                        <ul id="selected-manufacturers" class="selected-items"></ul>
-                    {/if}
-                    <ul id="selected-items" class="selected-items"></ul>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <span class="btn-group">
-                    <button type="button" class="btn btn-default" id="modal-cancel"><i class="fa fa-times"></i> {#cancel#}</button>
-                    <button type="button" class="btn btn-primary" id="modal-save"><i class="fa fa-save"></i> {#apply#}</button>
-                </span>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- Modal -->
 
 <div id="content">
     {if $invisibleBoxes|count > 0}
@@ -399,6 +266,4 @@
     {/if}
 </div>
 
-<script type="text/javascript">
-</script>
 {include file='tpl_inc/footer.tpl'}

@@ -16,25 +16,25 @@
     {if !empty($smarty.session.Kunde->kKunde) && isset($Lieferadressen) && $Lieferadressen|count > 0}
         <fieldset>
             <legend>{lang key="deviatingDeliveryAddress" section="account data"}</legend>
-            <ul class="list-group">
+            <ul class="list-group form-group">
             {foreach name=lieferad from=$Lieferadressen item=adresse}
                 {if $adresse->kLieferadresse>0}
                     <li class="list-group-item">
-                        <div class="radio form-group">
+                        <div class="radio">
                             <label class="control-label" for="delivery{$adresse->kLieferadresse}">
                                 <input type="radio" class="radio-inline" name="kLieferadresse" value="{$adresse->kLieferadresse}" id="delivery{$adresse->kLieferadresse}" {if $kLieferadresse == $adresse->kLieferadresse}checked{/if} data-toggle="collapse" data-target="#register_shipping_address.in">
-                                {if $adresse->cFirma}{$adresse->cFirma},{/if} {$adresse->cVorname} {$adresse->cNachname}
+                                <span>{if $adresse->cFirma}{$adresse->cFirma},{/if} {$adresse->cVorname} {$adresse->cNachname}
                                 , {$adresse->cStrasse} {$adresse->cHausnummer}, {$adresse->cPLZ} {$adresse->cOrt}
-                                , {$adresse->angezeigtesLand}</label>
+                                    , {$adresse->angezeigtesLand}</span></label>
                         </div>
                     </li>
                 {/if}
             {/foreach}
                 <li class="list-group-item">
-                    <div class="radio form-group">
+                    <div class="radio">
                         <label class="control-label" for="delivery_new" data-toggle="collapse" data-target="#register_shipping_address:not(.in)">
-                            <input type="radio" class="radio-inline" name="kLieferadresse" value="-1" id="delivery_new" {if $kLieferadresse == -1}checked{/if}>
-                            {lang key="createNewShippingAdress" section="account data"}
+                            <input type="radio" class="radio-inline" name="kLieferadresse" value="-1" id="delivery_new" {if $kLieferadresse == -1}checked{/if} required="required" aria-required="true">
+                            <span>{lang key="createNewShippingAdress" section="account data"}</span>
                         </label>
                     </div>
                 </li>

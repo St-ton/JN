@@ -43,7 +43,7 @@
                                 <p>
                                     {include file='checkout/inc_delivery_address.tpl'}
                                 </p>
-                                <a class="small edit" href="{get_static_route id='bestellvorgang.php'}?editRechnungsadresse=1#register_shipping_address">
+                                <a class="small edit" href="{get_static_route id='bestellvorgang.php'}?editRechnungsadresse=1#select_shipping_address">
                                     <span class="fa fa-pencil"></span> {lang key="modifyShippingAdress" section="checkout"}
                                 </a>
                             {/block}

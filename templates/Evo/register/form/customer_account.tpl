@@ -3,18 +3,6 @@
  * @license http://jtl-url.de/jtlshoplicense
  *}
 
-{if !empty($hinweis)}
-    <div class="alert alert-info">{$hinweis}</div>{/if}
-{if !empty($fehlendeAngaben) && !$hinweis}
-    <div class="alert alert-danger">{lang key="yourDataDesc" section="account data"}</div>
-{/if}
-{if isset($fehlendeAngaben.email_vorhanden) && $fehlendeAngaben.email_vorhanden == 1}
-    <div class="alert alert-danger">{lang key="emailAlreadyExists" section="account data"}</div>
-{/if}
-{if isset($fehlendeAngaben.formular_zeit) && $fehlendeAngaben.formular_zeit == 1}
-    <div class="alert alert-danger">{lang key="formToFast" section="account data"}</div>
-{/if}
-
 {include file='checkout/inc_billing_address_form.tpl'}
 {if !$editRechnungsadresse}
     {if isset($checkout) && $Einstellungen.kaufabwicklung.bestellvorgang_unregistriert === 'Y'}

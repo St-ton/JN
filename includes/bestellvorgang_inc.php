@@ -479,7 +479,7 @@ function pruefeGuthabenNutzen()
  */
 function gibStepAccountwahl()
 {
-    global $hinweis;
+    global $hinweis, $Kunde;
     // Einstellung global_kundenkonto_aktiv ist auf 'A' und Kunde wurde nach der Registrierung zurück zur Accountwahl geleitet
     if (isset($_REQUEST['reg']) && (int)$_REQUEST['reg'] === 1) {
         $hinweis = Shop::Lang()->get('accountCreated') . '<br />' . Shop::Lang()->get('loginNotActivated');
@@ -487,6 +487,20 @@ function gibStepAccountwahl()
     Shop::Smarty()->assign('untertitel', lang_warenkorb_bestellungEnthaeltXArtikel($_SESSION['Warenkorb']));
 
     executeHook(HOOK_BESTELLVORGANG_PAGE_STEPACCOUNTWAHL);
+
+    if (isset($_SESSION['checkout.step']) && $_SESSION['checkout.step'] === 'accountwahl') {
+        if (isset($_SESSION['checkout.fehlendeAngaben'])) {
+            Shop::Smarty()->assign('fehlendeAngaben', $_SESSION['checkout.fehlendeAngaben']);
+            unset($_SESSION['checkout.fehlendeAngaben']);
+        }
+        if (isset($_SESSION['checkout.cPost_arr'])) {
+            $Kunde                      = getKundendaten($_SESSION['checkout.cPost_arr'], 0, 0);
+            $Kunde->cKundenattribut_arr = getKundenattribute($_SESSION['checkout.cPost_arr']);
+            Shop::Smarty()->assign('Kunde', $Kunde);
+            unset($_SESSION['checkout.cPost_arr']);
+        }
+        unset($_SESSION['checkout.step']);
+    }
 }
 
 /**

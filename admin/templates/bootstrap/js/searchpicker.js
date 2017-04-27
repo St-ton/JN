@@ -3,7 +3,11 @@
  * @param options.getDataIoFuncName the Ajax function name that fetches the items to be searched for
  * @param options.keyName name of the property that denotes the key column of each item
  * @param options.renderItemCb callback function that gets an item object and returns the html content for its list item
- * @param options.onApply callback function that gets called on apply selection click with the current array of selected keys
+ *      (function (item))
+ * @param options.onApplyBefore callback that gets called *before* the selected items are returned through the onApply
+ *      callback
+ * @param options.onApply callback function that gets called on apply selection click with the current array of selected
+ *      keys (function (selectedKeys, items))
  * @param options.selectedKeysInit array of the items keys that are initially selected
  * @constructor
  */
@@ -13,13 +17,13 @@ function SearchPicker(options)
     var getDataIoFuncName  = options.getDataIoFuncName;
     var keyName            = options.keyName;
     var renderItemCb       = options.renderItemCb;
+    var onApplyBefore      = options.onApplyBefore || $.noop;
     var onApply            = options.onApply || $.noop;
     var selectedKeysInit   = options.selectedKeysInit || [];
     var self               = this;
     var searchString       = '';
     var lastSearchString   = '';
     var selectedKeys       = selectedKeysInit.slice();
-    var selectedItems      = [];
     var backupSelectedKeys = [];
     var foundItems         = [];
     var dataIoFuncName     = getDataIoFuncName;
@@ -63,6 +67,7 @@ function SearchPicker(options)
         console.log(searchPickerName, 'hide');
 
         if (closeAction === 'apply') {
+            onApplyBefore();
             ioCall(
                 dataIoFuncName, [selectedKeys, 100],
                 function (items) {
@@ -206,6 +211,12 @@ function SearchPicker(options)
     self.setSelection = function (newSelectedKeys)
     {
         selectedKeys = newSelectedKeys;
+        return self;
+    };
+
+    self.setOnApplyBefore = function (newOnApplyBefore)
+    {
+        onApplyBefore = newOnApplyBefore;
         return self;
     };
 

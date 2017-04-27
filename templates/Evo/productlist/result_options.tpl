@@ -86,10 +86,9 @@
             <div class="active-filters panel panel-default">
                 <div class="panel-body">
                     {foreach $NaviFilter->getActiveFilters() as $activeFilter}
-                        {*<pre>{$activeFilter|@var_dump}</pre>*}
                         {if $activeFilter->getValue() !== null}
                             {strip}
-                                <a href="{$activeFilter->getUnsetFilterURL()}" rel="nofollow" title="Filter {lang key='delete' section='global'}" class="label label-info filter-type-{$filter->getClassName()}">
+                                <a href="{$activeFilter->getUnsetFilterURL()}" rel="nofollow" title="Filter {lang key='delete' section='global'}" class="label label-info filter-type-{$activeFilter->getClassName()}">
                                     {$activeFilter->getName()}
                                     &nbsp;<span class="fa fa-trash-o"></span>
                                 </a>

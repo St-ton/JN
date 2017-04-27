@@ -544,35 +544,43 @@ class Navigationsfilter
             $this->baseState           = $this->Suchanfrage;
         }
         $this->nSeite = max(1, verifyGPCDataInteger('seite'));
-        foreach ($this->filters as $filter) {
-            //auto init custom filters
-            if ($filter->isCustom()) {
-                $filterParam = $filter->getUrlParam();
-                if (isset($_GET[$filterParam])) {
-                    if (!is_array($_GET[$filterParam]) && $filter->getType() === AbstractFilter::FILTER_TYPE_OR) {
-                        $_GET[$filterParam] = [$_GET[$filterParam]];
-                    }
-                    if (($filter->getType() === AbstractFilter::FILTER_TYPE_OR && is_array($_GET[$filterParam])) ||
-                        ($filter->getType() === AbstractFilter::FILTER_TYPE_AND &&
-                            (verifyGPCDataInteger($filterParam) > 0 || verifyGPDataString($filterParam) !== ''))
-                    ) {
-                        if (is_array($_GET[$filterParam])) {
-                            $filterValue = [];
-                            foreach ($_GET[$filterParam] as $idx => $param) {
-                                $filterValue[$idx] = Shop::DB()->realEscape($param);
-                            }
-                        } else {
-                            $filterValue = Shop::DB()->realEscape($_GET[$filterParam]);
+
+        foreach ($this->getCustomFilters() as $filter) {
+            $filterParam = $filter->getUrlParam();
+            $filterClass = $filter->getClassName();
+            if (isset($_GET[$filterParam])) {
+                if (!is_array($_GET[$filterParam]) && $filter->getType() === AbstractFilter::FILTER_TYPE_OR) {
+                    $_GET[$filterParam] = [$_GET[$filterParam]];
+                }
+                if (($filter->getType() === AbstractFilter::FILTER_TYPE_OR && is_array($_GET[$filterParam])) ||
+                    ($filter->getType() === AbstractFilter::FILTER_TYPE_AND &&
+                        (verifyGPCDataInteger($filterParam) > 0 || verifyGPDataString($filterParam) !== ''))
+                ) {
+                    if (is_array($_GET[$filterParam])) {
+                        $filterValue = [];
+                        foreach ($_GET[$filterParam] as $idx => $param) {
+                            $filterValue[$idx] = Shop::DB()->realEscape($param);
                         }
+                    } else {
+                        $filterValue = Shop::DB()->realEscape($_GET[$filterParam]);
+                    }
+                    $this->addActiveFilter($filter, $filterValue);
+                    $params[$filterParam] = $filterValue;
+                }
+            } elseif (count($params['customFilters']) > 0) {
+                foreach ($params['customFilters'] as $className => $filterValue) {
+                    if ($filterClass === $className) {
                         $this->addActiveFilter($filter, $filterValue);
                         $params[$filterParam] = $filterValue;
                     }
                 }
+
             }
         }
         executeHook(HOOK_NAVIGATIONSFILTER_INIT_FILTER, [
-            'navifilter' => $this,
-            'params'     => $params]
+                'navifilter' => $this,
+                'params'     => $params
+            ]
         );
         $this->params = $params;
 
@@ -711,6 +719,20 @@ class Navigationsfilter
         }
 
         return null;
+    }
+
+    /**
+     * @return IFilter[]
+     */
+    public function getCustomFilters()
+    {
+        return array_filter(
+            $this->filters,
+            function ($e) {
+                /** @var IFilter $e */
+                return  $e->isCustom();
+            }
+        );
     }
 
     /**
@@ -1833,6 +1855,9 @@ class Navigationsfilter
         if ($bCanonical === true) {
             return $baseURL;
         }
+        if ($debug) {
+            Shop::dbg($bSeo, false, 'bSeo?');
+        }
         $url           = $baseURL;
         $activeFilters = $this->getActiveFilters();
         // we need the base state + all active filters + optionally the additional filter to generate the correct url
@@ -1849,6 +1874,9 @@ class Navigationsfilter
                 Shop::dbg($filter, false, 'active filter:');
             }
             if (empty($filterSeo)) {
+                if ($debug) {
+                    echo '<br>No filterSEO found - disable SEO mode.';
+                }
                 $bSeo = false;
             }
             $urlParam = $filter->getUrlParam();
@@ -2982,7 +3010,6 @@ class Navigationsfilter
 
         return $obj;
     }
-
 
     /**
      * @return array

@@ -40,6 +40,10 @@
                 </li>
             </ul>
         </fieldset>
+        <fieldset id="register_shipping_address" class="collapse collapse-non-validate{if $kLieferadresse == -1}} in{/if}" aria-expanded="{if $kLieferadresse == -1}}true{else}false{/if}">
+            <legend>{lang key="createNewShippingAdress" section="account data"}</legend>
+            {include file="register/form/customer_shipping_address.tpl" prefix="register"}
+        </fieldset>
     {else}
         <fieldset>
             <legend>{lang key="createNewShippingAdress" section="account data"}</legend>
@@ -48,12 +52,4 @@
     {/if}
     {/block}
 </div>
-{if !empty($smarty.session.Kunde->kKunde) && isset($Lieferadressen) && $Lieferadressen|count > 0}
-<div id="register_shipping_address" class="panel panel-wrap collapse collapse-non-validate{if $kLieferadresse == -1}} in{/if}" aria-expanded="{if $kLieferadresse == -1}}true{else}false{/if}">
-    <fieldset>
-        <legend>{lang key="createNewShippingAdress" section="account data"}</legend>
-        {include file="register/form/customer_shipping_address.tpl" prefix="register"}
-    </fieldset>
-</div>
-{/if}
 {/block}

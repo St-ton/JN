@@ -725,7 +725,13 @@ function get_cms_content($params, &$smarty)
 function hasOnlyListableVariations($params, &$smarty)
 {
     if (!isset($params['artikel']->Variationen)) {
-        return 0;
+        if (isset($params['assign'])) {
+            $smarty->assign($params['assign'], 0);
+
+            return null;
+        } else {
+            return 0;
+        }
     }
 
     $maxVariationCount = isset($params['maxVariationCount']) ? (int)$params['maxVariationCount'] : 1;
@@ -742,7 +748,7 @@ function hasOnlyListableVariations($params, &$smarty)
                 }
             }
         } else {
-            $result = 0;
+            $result = false;
         }
 
         return $result;
@@ -756,6 +762,8 @@ function hasOnlyListableVariations($params, &$smarty)
 
     if (isset($params['assign'])) {
         $smarty->assign($params['assign'], $result);
+
+        return null;
     }
 
     return $result;

@@ -12,59 +12,83 @@
     modalTitle='Kategorien ausw&auml;hlen'
     searchInputLabel='Suche nach Kategorienamen'
 }
-{*
 {include file='tpl_inc/searchpicker_modal.tpl'
-    searchPickerName='linkPicker'
-    modalTitle='Eigene Seite ausw&auml;hlen'
+    searchPickerName='manufacturerPicker'
+    modalTitle='Hersteller ausw&auml;hlen'
+    searchInputLabel='Suche nach Herstellernamen'
+}
+{include file='tpl_inc/searchpicker_modal.tpl'
+    searchPickerName='pagePicker'
+    modalTitle='Eigene Seiten ausw&auml;hlen'
     searchInputLabel='Suche nach Seitennamen'
 }
-{include file='tpl_inc/searchpicker_modal.tpl'
-    searchPickerName='articlePicker'
-    modalTitle='Artikel ausw&auml;hlen'
-    searchInputLabel='Suche nach Artikelnamen'
-}
-*}
 <script>
     $(function () {
         articlePicker = new SearchPicker({
             searchPickerName:  'articlePicker',
             getDataIoFuncName: 'getProducts',
             keyName:           'kArtikel',
-            renderItemCb:      function (item) { return '<p class="list-group-item-text">' + item.cName + '</p>'; }
+            renderItemCb:      renderItemName
         });
         categoryPicker = new SearchPicker({
             searchPickerName:  'categoryPicker',
             getDataIoFuncName: 'getCategories',
             keyName:           'kKategorie',
-            renderItemCb:      function (item) { return '<p class="list-group-item-text">' + item.cName + '</p>'; }
+            renderItemCb:      renderItemName
         });
-//        articlePicker = new SearchPicker({
-//            searchPickerName:  'articlePicker',
-//            getDataIoFuncName: 'getProducts',
-//            keyName:           'cArtNr',
-//            renderItemCb:      function (item) { return '<p class="list-group-item-text">' + item.cName + '</p>'; }
-//        });
-//        articlePicker = new SearchPicker({
-//            searchPickerName:  'articlePicker',
-//            getDataIoFuncName: 'getProducts',
-//            keyName:           'cArtNr',
-//            renderItemCb:      function (item) { return '<p class="list-group-item-text">' + item.cName + '</p>'; }
-//        });
+        manufacturerPicker = new SearchPicker({
+            searchPickerName:  'manufacturerPicker',
+            getDataIoFuncName: 'getManufacturers',
+            keyName:           'kHersteller',
+            renderItemCb:      renderItemName
+        });
+        pagePicker = new SearchPicker({
+            searchPickerName:  'pagePicker',
+            getDataIoFuncName: 'getPages',
+            keyName:           'kLink',
+            renderItemCb:      renderItemName
+        });
     });
 
-    function openFilterPicker (picker, kBox) {
-        var $activeFilterList = $('#box-active-filters-' + kBox);
+    function renderItemName (item)
+    {
+        return '<p class="list-group-item-text">' + item.cName + '</p>';
+    }
+
+    function openFilterPicker (picker, kBox)
+    {
         picker
-            .setOnApply(function (selectedKeys, selectedItems) {
-                $('#box_filter_' + kBox).val(selectedKeys.join(';'));
-                $activeFilterList.empty();
-                selectedItems.forEach(function (item) {
-                    $activeFilterList
-                        .append('<li class="selected-item"><i class="fa fa-filter"></i> ' + item.cName + '</li>');
-                });
-            })
-            .setSelection($('#box_filter_' + kBox).val().split(';').filter(Boolean))
+            .setOnApplyBefore(
+                function () { onApplyBeforeFilterPicker(kBox) }
+            )
+            .setOnApply(
+                function (selectedKeys, selectedItems) { onApplyFilterPicker(kBox, selectedKeys, selectedItems) }
+            )
+            .setSelection($('#box-filter-' + kBox).val().split(',').filter(Boolean))
             .show();
+    }
+
+    function onApplyBeforeFilterPicker (kBox)
+    {
+        $('#box-active-filters-' + kBox)
+            .empty()
+            .append(
+                '<li class="selected-item"><i class="fa fa-spinner fa-pulse"></i></li>'
+            );
+    }
+
+    function onApplyFilterPicker (kBox, selectedKeys, selectedItems)
+    {
+        var $activeFilterList = $('#box-active-filters-' + kBox);
+
+        $('#box-filter-' + kBox).val(selectedKeys.join(','));
+        $activeFilterList.empty();
+
+        selectedItems.forEach(function (item) {
+            $activeFilterList.append(
+                '<li class="selected-item"><i class="fa fa-filter"></i> ' + item.cName + '</li>'
+            );
+        });
     }
 </script>
 

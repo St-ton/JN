@@ -49,9 +49,11 @@ class FilterItemCategory extends FilterBaseCategory
         $join->setComment('join from FilterItemCategory')
              ->setType('JOIN');
         if ($this->getConfig()['navigationsfilter']['kategoriefilter_anzeigen_als'] === 'HF') {
-            $join->setTable('tkategorieartikelgesamt')->setOn('tartikel.kArtikel = tkategorieartikelgesamt.kArtikel');
+            $join->setTable('tkategorieartikelgesamt')
+                 ->setOn('tartikel.kArtikel = tkategorieartikelgesamt.kArtikel');
         }
-        $join->setTable('tkategorieartikel')->setOn('tartikel.kArtikel = tkategorieartikel.kArtikel');
+        $join->setTable('tkategorieartikel')
+             ->setOn('tartikel.kArtikel = tkategorieartikel.kArtikel');
 
         return $join;
     }

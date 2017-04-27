@@ -366,7 +366,8 @@ class Navigationsfilter
             'nNewsKat'               => 0,
             'cDatum'                 => '',
             'nAnzahl'                => 0,
-            'nSterne'                => 0
+            'nSterne'                => 0,
+            'customFilters'          => []
         ];
     }
 
@@ -544,7 +545,6 @@ class Navigationsfilter
             $this->baseState           = $this->Suchanfrage;
         }
         $this->nSeite = max(1, verifyGPCDataInteger('seite'));
-
         foreach ($this->getCustomFilters() as $filter) {
             $filterParam = $filter->getUrlParam();
             $filterClass = $filter->getClassName();

@@ -99,7 +99,8 @@ class FilterItemAttribute extends FilterBaseAttribute
      */
     public function getSQLCondition()
     {
-        return 'tartikelmerkmal.kMerkmalWert = ' . $this->getValue();
+        return 'tartikelmerkmal.kMerkmalWert = ' . $this->getValue() .
+            ' #condition from FilterItemAttribute::getSQLCondition()' . "\n";
     }
 
     /**
@@ -110,7 +111,7 @@ class FilterItemAttribute extends FilterBaseAttribute
         return (new FilterJoin())->setType('JOIN')
                                  ->setTable('tartikelmerkmal')
                                  ->setOn('tartikel.kArtikel = tartikelmerkmal.kArtikel')
-                                 ->setComment('join from FilterItemAttribute');
+                                 ->setComment('join from FilterItemAttribute::getSQLJoin()');
     }
 
     /**

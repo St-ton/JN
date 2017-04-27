@@ -54,7 +54,7 @@
                                 {if count($filter->getFilterCollection()) > 0}
                                     {block name='productlist-result-options-'|cat:$filter->getClassName()}
                                         {foreach $filter->getOptions() as $subFilter}
-                                            <div class="form-group dropdown filter-type-{$tpl}">
+                                            <div class="form-group dropdown filter-type-{$filter->getClassName()}">
                                                 <a href="#" class="btn btn-default dropdown-toggle form-control" data-toggle="dropdown" role="button" aria-expanded="false">
                                                     {$subFilter->getFrontendName()|escape:'html'} <span class="caret"></span>
                                                 </a>

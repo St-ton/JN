@@ -354,9 +354,9 @@
                     <input type="hidden" name="article" id="article"
                            value="{if isset($oBanner->kArtikel)}{$oBanner->kArtikel}{/if}" />
                     <script>
-                        enableTypeahead('#article_name', 'getProducts', 'cName', 'kArtikel', function (item) {
+                        enableTypeahead('#article_name', 'getProducts', 'cName', null, function (e, item) {
                             console.log(item);
-                            $('#article').val(item.value);
+                            $('#article').val(item.kArtikel);
                         });
                     </script>
                 </div>

@@ -13,35 +13,34 @@
                     <div class="alert alert-danger">{lang key="noShippingMethodsAvailable" section="checkout"}</div>
                 {else}
                     <legend>{lang section='global' key='shippingOptions'}</legend>
-                    <ul class="list-unstyled list-shipping">
+                    <div class="row bottom15">
                         {foreach name=shipment from=$Versandarten item=versandart}
-                            <li id="shipment_{$versandart->kVersandart}" class="list-group-item">
-                                <div class="radio">
+                            <div id="shipment_{$versandart->kVersandart}" class="col-xs-12">
+                                <div class=" radio ">
                                     <label for="del{$versandart->kVersandart}" class="btn-block">
-                                        <div class="row">
-                                            <div class="col-xs-12">
 
-                                                <input name="Versandart" value="{$versandart->kVersandart}" type="radio" class="radio-checkbox" id="del{$versandart->kVersandart}"{if $Versandarten|@count == 1 || $smarty.session.Versandart->kVersandart == $versandart->kVersandart} checked{/if}{if $smarty.foreach.shipment.first} required{/if}>
-                                                <span class="radio-icon"><i class="fa"></i></span>
 
-                                                <span class="content" style="width: 130px;">
-                                                        <span class="title">{$versandart->angezeigterName|trans}</span>
-                                                        <small class="desc text-info">{$versandart->cLieferdauer|trans}</small>
-                                                    </span>
 
-                                                {if $versandart->cBild}
-                                                    <img src="{$versandart->cBild}" alt="{$versandart->angezeigterName|trans}" style="margin:0 20px">
-                                                {/if}
+                                            <input name="Versandart" value="{$versandart->kVersandart}" type="radio" class="radio-checkbox" id="del{$versandart->kVersandart}"{if $Versandarten|@count == 1 || $smarty.session.Versandart->kVersandart == $versandart->kVersandart} checked{/if}{if $smarty.foreach.shipment.first} required{/if}>
+                                            <span class="radio-icon"><i class="fa"></i></span>
 
-                                                <span class="content text-muted" style="max-width: 480px;font-size:0.85em">
-                                                        {$versandart->angezeigterHinweistext|trans}
-                                                    </span>
+                                            <span class="content" style="width: 130px;">
+                                                    <span class="title">{$versandart->angezeigterName|trans}</span>
+                                                    <small class="desc text-info">{$versandart->cLieferdauer|trans}</small>
+                                                </span>
 
-                                            </div>
-                                            <div class="hidden">
-                                                <span class="badge pull-right">{$versandart->cPreisLocalized}</span>
-                                            </div>
+                                            {if $versandart->cBild}
+                                                <img src="{$versandart->cBild}" alt="{$versandart->angezeigterName|trans}" style="margin:0 20px">
+                                            {/if}
+
+                                            <span class="content text-muted" style="max-width: 480px;font-size:0.85em">
+                                                    {$versandart->angezeigterHinweistext|trans}
+                                                </span>
+
+                                        <div class="hidden">
+                                            <span class="badge pull-right">{$versandart->cPreisLocalized}</span>
                                         </div>
+
                                         {if isset($versandart->specificShippingcosts_arr)}
                                             {foreach name=specificShippingcosts from=$versandart->specificShippingcosts_arr item=specificShippingcosts}
                                                 <div class="row">
@@ -75,12 +74,13 @@
                                         {/if}
                                     </label>
                                 </div>
-                            </li>
+                            </div>
                         {/foreach}
-                    </ul>
+                    </div>
                 {/if}
                 {if isset($Verpackungsarten) && $Verpackungsarten|@count > 0}
-                    <div class="form-group">
+                    <legend>Zusatzverpackung</legend>
+                    <div class="form-group bottom15">
                         {foreach name=zusatzverpackungen from=$Verpackungsarten item=oVerpackung}
                             <div class="checkbox">
                                 <label for="pac{$oVerpackung->kVerpackung}">
@@ -89,9 +89,9 @@
                                         <small>{$oVerpackung->cBeschreibung}</small>
                                     </p>
                                 </label>
-                                &nbsp;<span class="label label-default">
-                           {if $oVerpackung->nKostenfrei == 1}{lang key="ExemptFromCharges" section="global"}{else}{$oVerpackung->fBruttoLocalized}{/if}
-                           </span>
+                                 <span class="label label-default">
+                                    {if $oVerpackung->nKostenfrei == 1}{lang key="ExemptFromCharges" section="global"}{else}{$oVerpackung->fBruttoLocalized}{/if}
+                                </span>
                             </div>
                         {/foreach}
                     </div>
@@ -102,10 +102,10 @@
                 {if !empty($cFehler)}
                     <div class="alert alert-danger">{$cFehler}</div>
                 {/if}
-                <legend>{lang section='global' key='shippingOptions'}</legend>
-                <ul class="list-group">
+                <legend>{lang section='global' key='paymentOptions'}</legend>
+                <div class="row">
                     {foreach name=paymentmethod from=$Zahlungsarten item=zahlungsart}
-                        <li id="{$zahlungsart->cModulId}" class="list-group-item">
+                        <div id="{$zahlungsart->cModulId}" class="col-xs-12">
                             <div class="radio">
                                 <label for="payment{$zahlungsart->kZahlungsart}" class="btn-block">
                                     <input name="Zahlungsart" value="{$zahlungsart->kZahlungsart}" type="radio" id="payment{$zahlungsart->kZahlungsart}"{if $Zahlungsarten|@count == 1} checked{/if}{if $smarty.foreach.paymentmethod.first} required{/if}>
@@ -127,9 +127,9 @@
                                     {/if}
                                 </label>
                             </div>
-                        </li>
+                        </div>
                     {/foreach}
-                </ul>
+                </div>
 
                 {if isset($oTrustedShops->oKaeuferschutzProdukte->item) && $oTrustedShops->oKaeuferschutzProdukte->item|@count > 0 && $Einstellungen.trustedshops.trustedshops_nutzen === 'Y'}
                     <hr>
@@ -183,7 +183,7 @@
             {if isset($Versandarten)}
                 <div class="text-right">
                     <input type="hidden" name="versandartwahl" value="1" />
-                    <input type="submit" value="{lang key="continueOrder" section="account data"}" class="submit btn btn-primary" />
+                    <input type="submit" value="{lang key="continueOrder" section="account data"}" class="submit btn btn-lg submit-once btn-primary" />
                 </div>
             {/if}
         </form>

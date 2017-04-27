@@ -2993,12 +2993,16 @@ header.fixed-navbar {
             text-align: center;
             color: @navbar-default-color;
             background-color: @nav-link-hover-bg;
+
+            @media (max-width: @screen-sm-min) {
+                font-size: @font-size-base;
+            }
         }
 
         &:not(:first-child) {
             padding-left: @arrow-sep;
             &:before {
-                .arrow(@navbar-default-bg);
+                .arrow(@body-bg);
                 left: @arrow-sep;
                 z-index: 3;
             }

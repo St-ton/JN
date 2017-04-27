@@ -615,6 +615,7 @@ function gibStepZahlung()
         $kKundengruppe = $_SESSION['Kundengruppe']->kKundengruppe;
     }
     $oVersandart_arr = VersandartHelper::getPossibleShippingMethods($lieferland, $plz, VersandartHelper::getShippingClasses($_SESSION['Warenkorb']), $kKundengruppe);
+    $oVerpackung_arr = gibMoeglicheVerpackungen($_SESSION['Kundengruppe']->kKundengruppe);
 
     $oZahlungsart_arr = gibZahlungsarten($_SESSION['Versandart']->kVersandart, $_SESSION['Kundengruppe']->kKundengruppe);
     if (is_array($oZahlungsart_arr) && count($oZahlungsart_arr) === 1 &&
@@ -645,6 +646,7 @@ function gibStepZahlung()
     }
     Shop::Smarty()->assign('Zahlungsarten', $oZahlungsart_arr)
         ->assign('Versandarten', $oVersandart_arr)
+        ->assign('Verpackungsarten', $oVerpackung_arr)
         ->assign('AktiveVersandart', $_SESSION['Versandart']->kVersandart)
         ->assign('Kunde', $_SESSION['Kunde'])
         ->assign('Lieferadresse', $_SESSION['Lieferadresse']);

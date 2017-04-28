@@ -11,7 +11,7 @@
     </label>
 </div>
 {block name="checkout-enter-shipping-address"}
-<div id="select_shipping_address" class="panel panel-wrap collapse collapse-non-validate{if isset($Lieferadresse) || !empty($kLieferadresse)} in{/if}" aria-expanded="{if isset($Lieferadresse) || !empty($kLieferadresse)}true{else}false{/if}">
+<div id="select_shipping_address" class="collapse collapse-non-validate{if isset($Lieferadresse) || !empty($kLieferadresse)} in{/if}" aria-expanded="{if isset($Lieferadresse) || !empty($kLieferadresse)}true{else}false{/if}">
     {block name="checkout-enter-shipping-address-body"}
     {if !empty($smarty.session.Kunde->kKunde) && isset($Lieferadressen) && $Lieferadressen|count > 0}
         <fieldset>
@@ -33,7 +33,7 @@
                 <li class="list-group-item">
                     <div class="radio form-group">
                         <label class="control-label radio-inline" for="delivery_new" data-toggle="collapse" data-target="#register_shipping_address:not(.in)">
-                            <input type="radio" name="kLieferadresse" value="-1" id="delivery_new" {if $kLieferadresse == -1}checked{/if}>
+                            <input type="radio" name="kLieferadresse" value="-1" id="delivery_new" {if $kLieferadresse == -1}checked{/if} required="required" aria-required="true">
                             <span>{lang key="createNewShippingAdress" section="account data"}</span>
                         </label>
                     </div>

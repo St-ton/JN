@@ -18,24 +18,21 @@
                             <div id="shipment_{$versandart->kVersandart}" class="col-xs-12">
                                 <div class=" radio ">
                                     <label for="del{$versandart->kVersandart}" class="btn-block">
+                                        <input name="Versandart" value="{$versandart->kVersandart}" type="radio" class="radio-checkbox" id="del{$versandart->kVersandart}"{if $Versandarten|@count == 1 || $smarty.session.Versandart->kVersandart == $versandart->kVersandart} checked{/if}{if $smarty.foreach.shipment.first} required{/if}>
+                                        <span class="radio-icon"><i class="fa"></i></span>
 
+                                        <span class="content" style="width: 130px;">
+                                            <span class="title">{$versandart->angezeigterName|trans}</span>
+                                            <small class="desc text-info">{$versandart->cLieferdauer|trans}</small>
+                                        </span>
 
+                                        {if $versandart->cBild}
+                                            <img src="{$versandart->cBild}" alt="{$versandart->angezeigterName|trans}" style="margin:0 20px">
+                                        {/if}
 
-                                            <input name="Versandart" value="{$versandart->kVersandart}" type="radio" class="radio-checkbox" id="del{$versandart->kVersandart}"{if $Versandarten|@count == 1 || $smarty.session.Versandart->kVersandart == $versandart->kVersandart} checked{/if}{if $smarty.foreach.shipment.first} required{/if}>
-                                            <span class="radio-icon"><i class="fa"></i></span>
-
-                                            <span class="content" style="width: 130px;">
-                                                    <span class="title">{$versandart->angezeigterName|trans}</span>
-                                                    <small class="desc text-info">{$versandart->cLieferdauer|trans}</small>
-                                                </span>
-
-                                            {if $versandart->cBild}
-                                                <img src="{$versandart->cBild}" alt="{$versandart->angezeigterName|trans}" style="margin:0 20px">
-                                            {/if}
-
-                                            <span class="content text-muted" style="max-width: 480px;font-size:0.85em">
-                                                    {$versandart->angezeigterHinweistext|trans}
-                                                </span>
+                                        <span class="content text-muted" style="max-width: 480px;font-size:0.85em">
+                                            {$versandart->angezeigterHinweistext|trans}
+                                        </span>
 
                                         <div class="hidden">
                                             <span class="badge pull-right">{$versandart->cPreisLocalized}</span>
@@ -79,19 +76,19 @@
                     </div>
                 {/if}
                 {if isset($Verpackungsarten) && $Verpackungsarten|@count > 0}
-                    <legend>Zusatzverpackung</legend>
-                    <div class="form-group bottom15">
+                    <legend>{lang section='checkout' key='additionalPackaging'}</legend>
+                    <div class="bottom15">
                         {foreach name=zusatzverpackungen from=$Verpackungsarten item=oVerpackung}
                             <div class="checkbox">
-                                <label for="pac{$oVerpackung->kVerpackung}">
-                                    <input name="kVerpackung[]" type="checkbox" value="{$oVerpackung->kVerpackung}" id="pac{$oVerpackung->kVerpackung}" />{$oVerpackung->cName}
+                                <label for="pac{$oVerpackung->kVerpackung}" class="btn-block">
+                                    <input name="kVerpackung[]" type="checkbox" value="{$oVerpackung->kVerpackung}" id="pac{$oVerpackung->kVerpackung}" {if $oVerpackung->bWarenkorbAktiv === true}checked{/if}/>{$oVerpackung->cName}
+                                    <span class="badge pull-right">
+                                        {if $oVerpackung->nKostenfrei == 1}{lang key="ExemptFromCharges" section="global"}{else}{$oVerpackung->fBruttoLocalized}{/if}
+                                    </span>
                                     <p>
                                         <small>{$oVerpackung->cBeschreibung}</small>
                                     </p>
                                 </label>
-                                 <span class="label label-default">
-                                    {if $oVerpackung->nKostenfrei == 1}{lang key="ExemptFromCharges" section="global"}{else}{$oVerpackung->fBruttoLocalized}{/if}
-                                </span>
                             </div>
                         {/foreach}
                     </div>
@@ -103,7 +100,7 @@
                     <div class="alert alert-danger">{$cFehler}</div>
                 {/if}
                 <legend>{lang section='global' key='paymentOptions'}</legend>
-                <div class="row">
+                <div class="row form-group">
                     {foreach name=paymentmethod from=$Zahlungsarten item=zahlungsart}
                         <div id="{$zahlungsart->cModulId}" class="col-xs-12">
                             <div class="radio">

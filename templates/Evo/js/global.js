@@ -301,14 +301,14 @@ $(document).ready(function () {
         dataType: "json"
     });
 
-    $('#neukunde #plz, #new_customer #plz').change(function(){
+    $('#neukunde #plz, #new_customer #plz, #form-register #plz').change(function(){
         citySuggestion.remote.url = 'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $('#country').val() + '", "' + $('#plz').val() + '"]}';
     });
-    $('#neukunde #country, #new_customer #country').change(function(){
+    $('#neukunde #country, #new_customer #country, #form-register #country').change(function(){
         citySuggestion.remote.url = 'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $('#country').val() + '", "' + $('#plz').val() + '"]}';
     });
 
-    $('#neukunde #city, #new_customer #city').typeahead(
+    $('#neukunde #city, #new_customer #city, #form-register #city').typeahead(
         {
             hint: true,
             minLength: 1
@@ -316,6 +316,34 @@ $(document).ready(function () {
         {
             name:       'cities',
             source:     citySuggestion
+        }
+    );
+
+    var citySuggestionRegShip = new Bloodhound({
+        datumTokenizer: Bloodhound.tokenizers.obj.whitespace('keyword'),
+        queryTokenizer: Bloodhound.tokenizers.whitespace,
+        remote:         {
+            url:      'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $('#register-shipping_address-country').val() + '", "' + $('#register-shipping_address-postcode').val() + '"]}',
+            wildcard: '%QUERY'
+        },
+        dataType: "json"
+    });
+
+    $('#form-register #register-shipping_address-postcode, #neukunde #register-shipping_address-postcode').change(function(){
+        citySuggestionRegShip.remote.url = 'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $('#register-shipping_address-country').val() + '", "' + $('#register-shipping_address-postcode').val() + '"]}';
+    });
+    $('#form-register #register-shipping_address-country, #neukunde #register-shipping_address-country').change(function(){
+        citySuggestionRegShip.remote.url = 'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $('#register-shipping_address-country').val() + '", "' + $('#register-shipping_address-postcode').val() + '"]}';
+    });
+
+    $('#form-register #register-shipping_address-city, #neukunde #register-shipping_address-city').typeahead(
+        {
+            hint: true,
+            minLength: 1
+        },
+        {
+            name:       'cities',
+            source:     citySuggestionRegShip
         }
     );
 

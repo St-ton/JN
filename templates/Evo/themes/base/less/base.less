@@ -2153,7 +2153,7 @@ div#add-to-cart {
 
     &.label-default {
         background: @label-default-bg;
-        color: @text-color;
+        //color: @text-color;
     }
     &.label-primary {
         background: @label-primary-bg;
@@ -2373,6 +2373,7 @@ div#add-to-cart {
 //particular style for each other
 .twitter-typeahead .tt-hint {
     color: @text-muted;//color - hint
+    background-color: transparent !important;
 }
 .twitter-typeahead .tt-input {
     z-index: 2;
@@ -2983,7 +2984,7 @@ header.fixed-navbar {
         height: @navbar-height;
 
         > a, .nav-badge {
-            font-size: @font-size-large;
+            font-size: @font-size-base;
             display: inline-block;
             padding: 0 !important;
             width: 100%;

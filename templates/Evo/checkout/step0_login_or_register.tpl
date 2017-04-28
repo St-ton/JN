@@ -33,20 +33,20 @@
         </form>
     </div>
     <div id="customer" class="col-xs-12 {if isset($boxes.left) && !$bExclusive && !empty($boxes.left)}col-md-9{else}col-md-8{/if}">
-        <div class="panel panel-wrap">
-                {include file='register/inc_vcard_upload.tpl' id='bestellvorgang.php'}
-                <form method="post" action="{get_static_route id='bestellvorgang.php'}" class="form" id="form-register">
-                    {$jtl_token}
-                    {include file='register/form/customer_account.tpl' checkout=1 step="formular"}
-                    <hr/>
-                    {include file='checkout/inc_shipping_address.tpl'}
+        <div>
+            {include file='register/inc_vcard_upload.tpl' id='bestellvorgang.php'}
+            <form method="post" action="{get_static_route id='bestellvorgang.php'}" class="form" id="form-register">
+                {$jtl_token}
+                {include file='register/form/customer_account.tpl' checkout=1 step="formular"}
+                <hr/>
+                {include file='checkout/inc_shipping_address.tpl'}
 
-                    <input type="hidden" name="checkout" value="1">
-                    <input type="hidden" name="form" value="1">
-                    <input type="hidden" name="editRechnungsadresse" value="0">
+                <input type="hidden" name="checkout" value="1">
+                <input type="hidden" name="form" value="1">
+                <input type="hidden" name="editRechnungsadresse" value="0">
 
-                    <input type="submit" class="btn btn-primary btn-lg submit submit_once pull-right" value="{lang key="sendCustomerData" section="account data"}">
-                </form>
+                <input type="submit" class="btn btn-primary btn-lg submit submit_once pull-right" value="{lang key="sendCustomerData" section="account data"}">
+            </form>
         </div>
     </div>
 </div>

@@ -631,6 +631,18 @@ function gibStepZahlung()
     $oVersandart_arr = VersandartHelper::getPossibleShippingMethods($lieferland, $plz, VersandartHelper::getShippingClasses($_SESSION['Warenkorb']), $kKundengruppe);
     $oVerpackung_arr = gibMoeglicheVerpackungen($_SESSION['Kundengruppe']->kKundengruppe);
 
+    if ($_SESSION['Warenkorb']->enthaltenSpezialPos(C_WARENKORBPOS_TYP_VERPACKUNG) && !empty($oVerpackung_arr)) {
+        foreach ($_SESSION['Warenkorb']->PositionenArr as $oPos) {
+            if ($oPos->nPosTyp === C_WARENKORBPOS_TYP_VERPACKUNG) {
+                foreach ($oVerpackung_arr as $oPack) {
+                    if ($oPack->cName === $oPos->cName[$oPack->cISOSprache]) {
+                        $oPack->bWarenkorbAktiv = true;
+                    }
+                }
+            }
+        }
+    }
+
     $oZahlungsart_arr = gibZahlungsarten($_SESSION['Versandart']->kVersandart, $_SESSION['Kundengruppe']->kKundengruppe);
     if (is_array($oZahlungsart_arr) && count($oZahlungsart_arr) === 1 &&
         !isset($_GET['editZahlungsart']) && empty($_SESSION['TrustedShopsZahlung'])
@@ -793,6 +805,17 @@ function gibStepVersand()
         }
     }
     $oVerpackung_arr = gibMoeglicheVerpackungen($_SESSION['Kundengruppe']->kKundengruppe);
+    if ($_SESSION['Warenkorb']->enthaltenSpezialPos(C_WARENKORBPOS_TYP_VERPACKUNG) && !empty($oVerpackung_arr)) {
+        foreach ($_SESSION['Warenkorb']->PositionenArr as $oPos) {
+            if ($oPos->nPosTyp === C_WARENKORBPOS_TYP_VERPACKUNG) {
+                foreach ($oVerpackung_arr as $oPack) {
+                    if ($oPack->cName === $oPos->cName[$oPack->cISOSprache]) {
+                        $oPack->bWarenkorbAktiv = true;
+                    }
+                }
+            }
+        }
+    }
     if ((is_array($oVersandart_arr) && count($oVersandart_arr) > 0) ||
         (is_array($oVersandart_arr) && count($oVersandart_arr) === 1 &&
             is_array($oVerpackung_arr) && count($oVerpackung_arr) > 0)

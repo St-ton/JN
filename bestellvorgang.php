@@ -80,6 +80,11 @@ if (isset($_FILES['vcard']) &&
     gibKundeFromVCard($_FILES['vcard']['tmp_name']);
     @unlink($_FILES['vcard']['tmp_name']);
 }
+if (isset($_POST['unreg_form']) && (int)$_POST['unreg_form'] === 1 &&
+    $Einstellungen['kaufabwicklung']['bestellvorgang_unregistriert'] === 'Y'
+) {
+    pruefeUnregistriertBestellen($_POST);
+}
 if (isset($_POST['shipping_address'])) {
     if ((int)$_POST['shipping_address'] === 0) {
         $_POST['kLieferadresse'] = 0;
@@ -114,11 +119,6 @@ if (isset($_POST['versandartwahl']) && (int)$_POST['versandartwahl'] === 1 || is
     }
 
     pruefeVersandartWahl($kVersandart);
-}
-if (isset($_POST['unreg_form']) && (int)$_POST['unreg_form'] === 1 &&
-    $Einstellungen['kaufabwicklung']['bestellvorgang_unregistriert'] === 'Y'
-) {
-    pruefeUnregistriertBestellen($_POST);
 }
 if (isset($_GET['unreg']) && (int)$_GET['unreg'] === 1 &&
     $Einstellungen['kaufabwicklung']['bestellvorgang_unregistriert'] === 'Y'

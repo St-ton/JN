@@ -77,19 +77,17 @@
             var id = $(area).attr('ref');
 
             if (data = getData(id)) {
-                console.log(data);
-                $(options.editor).find('#title').val(data.cTitel);
-                $(options.editor).find('#desc').val(data.cBeschreibung);
-                $(options.editor).find('#url').val(data.cUrl);
-                $(options.editor).find('#article').val(data.kArtikel);
-                $(options.editor).find('#article_name').val(parseInt(data.kArtikel) > 0 ? data.oArtikel.cName : '');
-                $(options.editor).find('#style').val(data.cStyle);
-                $(options.editor).find('#id').val(id);
+               $(options.editor).find('#title').val(data.cTitel);
+               $(options.editor).find('#desc').val(data.cBeschreibung);
+               $(options.editor).find('#url').val(data.cUrl);
+               $(options.editor).find('#article').val(data.kArtikel);
+               $(options.editor).find('#style').val(data.cStyle);
+               $(options.editor).find('#id').val(id);
 
-                $(options.editor).find('#article_info').html((data.kArtikel > 0) ?
-                    '<span class="success">Verkn&uuml;pft</span>' : '<span class="error">Nicht verkn&uuml;pft</span>');
+               $(options.editor).find('#article_info').html((data.kArtikel > 0) ?
+                  '<span class="success">Verkn&uuml;pft</span>' : '<span class="error">Nicht verkn&uuml;pft</span>');
 
-                $(options.editor).show();
+               $(options.editor).show();
             }
          }
 

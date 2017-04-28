@@ -303,7 +303,6 @@
 
             $('#article_unlink').click(function () {
                 $('#article').val(0);
-                $('#article_name').val('');
                 $('#article_info').html('<span class="error">Nicht verkn&uuml;pft</span>');
                 return false;
             });
@@ -347,21 +346,16 @@
                 </div>
                 <div class="input-group">
                     <span class="input-group-addon">
-                        <label for="article_name">Artikel</label>
+                        <label for="article">Artikel</label>
                     </span>
-                    <input class="form-control" type="text" name="article_name" id="article_name"
-                           value="{if isset($oBanner->kArtikel)}{$oBanner->kArtikel}{/if}">
-                    <input type="hidden" name="article" id="article"
-                           value="{if isset($oBanner->kArtikel)}{$oBanner->kArtikel}{/if}" />
-                    <script>
-                        enableTypeahead('#article_name', 'getProducts', 'cName', null, function (e, item) {
-                            console.log(item);
-                            $('#article').val(item.kArtikel);
-                        });
-                    </script>
+                    <span class="input-group-wrap">
+                        <span id="article_info" style="margin-left:5px;"></span>
+                    </span>
+                    <input type="hidden" name="article" id="article" value="{if isset($oBanner->kArtikel)}{$oBanner->kArtikel}{/if}" />
                 </div>
                 <input type="hidden" name="id" id="id" />
                 <div class="save_wrapper btn-group">
+                    <a href="#" class="btn btn-default" id="article_browser">Artikel w&auml;hlen</a>
                     <a href="#" class="btn btn-default" id="article_unlink">Artikel L&ouml;sen</a>
                     <button type="button" class="btn btn-danger" id="remove"><i class="fa fa-trash"></i> Zone l&ouml;schen</button>
                 </div>

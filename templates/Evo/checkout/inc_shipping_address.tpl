@@ -20,7 +20,7 @@
             {foreach name=lieferad from=$Lieferadressen item=adresse}
                 {if $adresse->kLieferadresse>0}
                     <li class="list-group-item">
-                        <div class="radio form-group">
+                        <div class="radio">
                             <label class="control-label radio-inline" for="delivery{$adresse->kLieferadresse}">
                                 <input type="radio" name="kLieferadresse" value="{$adresse->kLieferadresse}" id="delivery{$adresse->kLieferadresse}" {if $kLieferadresse == $adresse->kLieferadresse}checked{/if} data-toggle="collapse" data-target="#register_shipping_address.in">
                                 <span>{if $adresse->cFirma}{$adresse->cFirma},{/if} {$adresse->cVorname} {$adresse->cNachname}
@@ -31,7 +31,7 @@
                 {/if}
             {/foreach}
                 <li class="list-group-item">
-                    <div class="radio form-group">
+                    <div class="radio">
                         <label class="control-label radio-inline" for="delivery_new" data-toggle="collapse" data-target="#register_shipping_address:not(.in)">
                             <input type="radio" name="kLieferadresse" value="-1" id="delivery_new" {if $kLieferadresse == -1}checked{/if} required="required" aria-required="true">
                             <span>{lang key="createNewShippingAdress" section="account data"}</span>

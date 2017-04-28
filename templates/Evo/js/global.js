@@ -198,31 +198,34 @@ $(window).load(function(){
 $(document).ready(function () {
     $('.collapse-non-validate')
         .on('hidden.bs.collapse', function(e) {
-            if (e.target === e.currentTarget) {
-                $(this)
-                    .addClass('hidden')
-                    .find('fieldset, .form-control')
-                    .attr('disabled', true);
-                e.stopPropagation();
-            }
+            $(e.target)
+                .addClass('hidden')
+                .find('fieldset, .form-control')
+                .attr('disabled', true);
+            e.stopPropagation();
         })
         .on('show.bs.collapse', function(e) {
-            if (e.target === e.currentTarget) {
-                $(this)
-                    .removeClass('hidden')
-                    .find('fieldset, .form-control')
-                    .attr('disabled', false);
-                e.stopPropagation();
-            }
+            $(e.target)
+                .removeClass('hidden')
+                .attr('disabled', false);
+            e.stopPropagation();
+        }).on('shown.bs.collapse', function(e) {
+            $(e.target)
+                .find('fieldset, .form-control')
+                .filter(function (i, e) {
+                    return $(e).closest('.collapse-non-validate.collapse').hasClass('in');
+                })
+                .attr('disabled', false);
+            e.stopPropagation();
         });
-    $('.collapse-non-validate.collapse')
-        .addClass('hidden')
-        .find('fieldset, .form-control')
-        .attr('disabled', true);
     $('.collapse-non-validate.collapse.in')
         .removeClass('hidden')
         .find('fieldset, .form-control')
         .attr('disabled', false);
+    $('.collapse-non-validate.collapse:not(.in)')
+        .addClass('hidden')
+        .find('fieldset, .form-control')
+        .attr('disabled', true);
 
     $('#complete-order-button').click(function () {
         var commentField = $('#comment'),

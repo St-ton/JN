@@ -218,7 +218,7 @@
             });
             
             if ($('.switch-variations').length == 1) {
-                this.variationSwitch();
+                this.variationSwitch(0, false);
             }
 
             this.registerProductActions();
@@ -466,6 +466,10 @@
             });
         },
 
+        variationRefreshAll: function() {
+            $('.variations select').selectpicker('refresh');
+        },
+
         getConfigGroupQuantity: function (groupId) {
             return $('.cfg-group[data-id="' + groupId + '"] .quantity');
         },
@@ -640,18 +644,13 @@
         },
 
         variationSetVal: function(key, value) {
-            $('[data-key="' + key + '"]')
-                .val(value)
-                .closest('select')
-                    .selectpicker('refresh');
+            $('[data-key="' + key + '"]').val(value);
         },
 
         variationEnable: function(key, value) {
             var item = $('[data-value="' + value + '"].variation');
 
             item.removeClass('not-available');
-            item.closest('select')
-                .selectpicker('refresh');
         },
 
         variationActive: function(key, value, def) {
@@ -663,9 +662,6 @@
                 .prop('checked', true)
                 .end()
                 .prop('selected', true);
-                
-            item.closest('select')
-                .selectpicker('refresh');
 
             $('[data-id="'+key+'"].swatches-selected')
                 .text($(item).attr('data-original'));
@@ -687,9 +683,7 @@
                     label = $(wrapper).html();
                     item.data('content', label)
                         .attr('data-content', label);
-                    
-                    item.closest('select')
-                        .selectpicker('refresh');
+
                 break;
                 case 'radio':
                     elem = item.find('.label-not-available');
@@ -770,6 +764,9 @@
             if (animation) {
                 $wrapper.addClass('loading');
                 $spinner = $.evo.extended().spinner();
+            } else {
+                var spinIcon = $('<div id="updatingStockInfo" class="col-xs-12 text-center"><i class="fa fa-spinner fa-spin" title="updating stock information" /></div>');
+                $('.variations').append(spinIcon);
             }
 
             if (item) {
@@ -795,6 +792,7 @@
                 if (animation) {
                     $spinner.stop();
                 }
+                $('.variations #updatingStockInfo').remove();
                 if (error) {
                     $.evo.error('checkVarkombiDependencies');
                 }

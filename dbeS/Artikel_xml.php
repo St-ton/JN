@@ -1428,7 +1428,8 @@ function clearProductCaches($kArtikel)
 
         if (isset($kArtikel[0]['kArtikel'])) {
             // deleted articles
-            dbeSlog('flushing caches for DELETED articles ' . print_r($kArtikel, true));
+//            dbeSlog('flushing caches for DELETED articles ' . print_r($kArtikel, true));
+            dbeSlog('flushing caches for DELETED articles');
             foreach ($kArtikel as $article) {
                 $cacheTags[] = CACHING_GROUP_ARTICLE . '_' . (int)$article['kArtikel'];
                 $cacheTags[] = CACHING_GROUP_MANUFACTURER . '_' . (int)$article['kHersteller'];
@@ -1438,8 +1439,8 @@ function clearProductCaches($kArtikel)
             }
 
         } else {
-
-            dbeSlog('flushing caches for articles ' . print_r($kArtikel, true));
+//            dbeSlog('flushing caches for articles ' . print_r($kArtikel, true));
+            dbeSlog('flushing caches for articles');
 
             foreach ($kArtikel as $articleID) {
                 $parentIDs = getConfigParents($articleID);
@@ -1466,11 +1467,11 @@ function clearProductCaches($kArtikel)
         }
 
         $cacheTags[] = 'jtl_mmf';
-        dbeSlog('Complete list of cache tags: ' . print_r($cacheTags, true));
         $cacheTags = array_unique($cacheTags);
+//        dbeSlog('Complete list of cache tags: ' . print_r($cacheTags, true));
         //flush article cache, category cache and cache for gibMerkmalFilterOptionen() and mega menu/category boxes
         $totalCount = Shop::Cache()->flushTags($cacheTags);
         $end        = microtime(true);
-        dbeSlog('Flushed a total of ' . $totalCount . ' keys in ' . ($end - $start) . 's');
+        dbeSlog('Flushed a total of ' . $totalCount . ' keys for ' . count($cacheTags) . ' tags in ' . ($end - $start) . 's');
     }
 }

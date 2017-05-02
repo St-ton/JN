@@ -16,6 +16,7 @@ if ($smarty === null) {
 $return  = 3;
 $archive = null;
 if (auth()) {
+    $articleIDs = [];
     checkFile();
     $return  = 2;
     $archive = new PclZip($_FILES['data']['tmp_name']);
@@ -26,6 +27,7 @@ if (auth()) {
         if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
             Jtllog::writeLog('Anzahl Dateien im Zip: ' . count($list), JTLLOG_LEVEL_DEBUG, false, 'Artikel_xml');
         }
+        dbeSlog('Got ' . count($list) . ' files in artikel_xml');
         $entzippfad = PFAD_ROOT . PFAD_DBES . PFAD_SYNC_TMP . basename($_FILES['data']['tmp_name']) . '_' . date('dhis');
         mkdir($entzippfad);
         $entzippfad .= '/';
@@ -33,8 +35,8 @@ if (auth()) {
             if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
                 Jtllog::writeLog('Zip entpackt in ' . $entzippfad, JTLLOG_LEVEL_DEBUG, false, 'Artikel_xml');
             }
-            $return        = 0;
-            $conf = Shop::getSettings([CONF_GLOBAL]);
+            $return = 0;
+            $conf   = Shop::getSettings([CONF_GLOBAL]);
             foreach ($list as $i => $zip) {
                 if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
                     Jtllog::writeLog('bearbeite: ' . $entzippfad . $zip['filename'] . ' size: ' .
@@ -44,9 +46,11 @@ if (auth()) {
                 $xml = XML_unserialize($d);
 
                 if ($zip['filename'] === 'artdel.xml') {
-                    bearbeiteDeletes($xml, $conf);
+                    $articleIDs = bearbeiteDeletes($xml, $conf);
                 } else {
-                    bearbeiteInsert($xml, $conf);
+                    foreach (bearbeiteInsert($xml, $conf) as $articleID) {
+                        $articleIDs[] = $articleID;
+                    }
                 }
                 if ($i === 0) {
                     //Suchcachetimer setzen.
@@ -67,6 +71,8 @@ if (auth()) {
             Jtllog::writeLog('Error : ' . $archive->errorInfo(true), JTLLOG_LEVEL_ERROR, false, 'Artikel_xml');
         }
     }
+    dbeSlog('Got list of articles: ' . print_r($articleIDs, true));
+    clearProductCaches($articleIDs);
 }
 if ($return === 2) {
     syncException('Error : ' . $archive->errorInfo(true));
@@ -80,12 +86,15 @@ if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
 /**
  * @param array $xml
  * @param array $conf
+ * @return array - list of article IDs
  */
 function bearbeiteDeletes($xml, $conf)
 {
+    $res = [];
     require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Artikel.php';
 
     if (is_array($xml['del_artikel']) && is_array($xml['del_artikel']['kArtikel'])) {
+        dbeSlog('bearbeiteDeletes for ' . count($xml['del_artikel']['kArtikel']) . ' articles');
         foreach ($xml['del_artikel']['kArtikel'] as $kArtikel) {
             $kArtikel = (int)$kArtikel;
             if ($kArtikel > 0) {
@@ -100,7 +109,7 @@ function bearbeiteDeletes($xml, $conf)
                         ON tartikel.kArtikel = {$kArtikel}
                         AND tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi", 4
                 );
-                loescheArtikel($kArtikel, $nIstVater, false, $conf);
+                $res[] = loescheArtikel($kArtikel, $nIstVater, false, $conf);
                 // Lösche Artikel aus tartikelkategorierabatt
                 Shop::DB()->delete('tartikelkategorierabatt', 'kArtikel', $kArtikel);
                 // Lösche Artikel aus tkategorieartikelgesamt
@@ -126,7 +135,7 @@ function bearbeiteDeletes($xml, $conf)
                         AND tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi", 4
             );
 
-            loescheArtikel((int)$xml['del_artikel']['kArtikel'], $nIstVater, false, $conf);
+            $res[] = loescheArtikel((int)$xml['del_artikel']['kArtikel'], $nIstVater, false, $conf);
             // Lösche Artikel aus tartikelkategorierabatt
             Shop::DB()->delete('tartikelkategorierabatt', 'kArtikel', (int)$xml['del_artikel']['kArtikel']);
             // Aktualisiere Merkmale in tartikelmerkmal vom Vaterartikel
@@ -137,15 +146,19 @@ function bearbeiteDeletes($xml, $conf)
             executeHook(HOOK_ARTIKEL_XML_BEARBEITEDELETES, ['kArtikel' => $xml['del_artikel']['kArtikel']]);
         }
     }
+
+    return $res;
 }
 
 /**
  * @param array $xml
  * @param array $conf
+ * @return array - list of article IDs to flush
  */
 function bearbeiteInsert($xml, array $conf)
 {
     require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Artikel.php';
+    $res = [];
 
     $Artikel           = new stdClass();
     $Artikel->kArtikel = 0;
@@ -158,7 +171,7 @@ function bearbeiteInsert($xml, array $conf)
             Jtllog::writeLog('kArtikel fehlt! XML:' . print_r($xml, true), JTLLOG_LEVEL_ERROR, false, 'Artikel_xml');
         }
 
-        return;
+        return $res;
     }
     if (is_array($xml['tartikel'])) {
         $artikel_arr = mapArray($xml, 'tartikel', $GLOBALS['mArtikel']);
@@ -166,6 +179,7 @@ function bearbeiteInsert($xml, array $conf)
         $oSeoOld       = Shop::DB()->select('tartikel', 'kArtikel', (int)$Artikel->kArtikel, null, null, null, null, false, 'cSeo');
         $oSeoAssoc_arr = getSeoFromDB($Artikel->kArtikel, 'kArtikel', null, 'kSprache');
         $isParent      = isset($artikel_arr[0]->nIstVater) ? 1 : 0;
+        dbeSlog('bearbeiteInsert for kArtikel ' . $Artikel->kArtikel);
 
         if (isset($xml['tartikel']['tkategorieartikel']) &&
             $conf['global']['kategorien_anzeigefilter'] == EINSTELLUNGEN_KATEGORIEANZEIGEFILTER_NICHTLEERE &&
@@ -924,14 +938,16 @@ function bearbeiteInsert($xml, array $conf)
         }
         // Alle Shop Kundengruppen holen
         $oKundengruppe_arr = Shop::DB()->query("SELECT kKundengruppe FROM tkundengruppe", 2);
+        $res = [(int)$Artikel->kArtikel];
         fuelleArtikelKategorieRabatt($artikel_arr[0], $oKundengruppe_arr);
-        clearProductCaches($Artikel->kArtikel);
         if (!empty($artikel_arr[0]->kVaterartikel)) {
-            Shop::Cache()->flushTags([CACHING_GROUP_ARTICLE . '_' . (int)$artikel_arr[0]->kVaterartikel]);
+            $res[] = (int)$artikel_arr[0]->kVaterartikel;
         }
         //emailbenachrichtigung, wenn verfügbar
         versendeVerfuegbarkeitsbenachrichtigung($artikel_arr[0]);
     }
+
+    return $res;
 }
 
 /**
@@ -939,16 +955,19 @@ function bearbeiteInsert($xml, array $conf)
  * @param int   $nIstVater
  * @param bool  $bForce
  * @param array $conf
+ * @return array
  */
 function loescheArtikel($kArtikel, $nIstVater = 0, $bForce = false, $conf = null)
 {
     $kArtikel = (int)$kArtikel;
+    $forced = $bForce === false ? 'not forced' : 'forced';
+    dbeSlog('loescheArtikel ' . $kArtikel . ' ' . $forced);
+    // get list of all categories the article was associated with
+    $articleCategories = Shop::DB()->selectAll('tkategorieartikel', 'kArtikel', $kArtikel, 'kKategorie');
     if ($bForce === false &&
         isset($conf['global']['kategorien_anzeigefilter']) &&
         $conf['global']['kategorien_anzeigefilter'] === '2'
     ) {
-        // get list of all categories the article was associated with
-        $articleCategories = Shop::DB()->selectAll('tkategorieartikel', 'kArtikel', $kArtikel, 'kKategorie');
         foreach ($articleCategories as $category) {
             // check if the article was the only one in at least one of these categories
             $categoryCount = Shop::DB()->query(
@@ -965,11 +984,11 @@ function loescheArtikel($kArtikel, $nIstVater = 0, $bForce = false, $conf = null
             }
         }
     }
-    clearProductCaches($kArtikel);
     if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
         Jtllog::writeLog('kArtikel: ' . $kArtikel . ' - nIstVater: ' . $nIstVater, JTLLOG_LEVEL_DEBUG, false, 'Artikel_xml loescheArtikel');
     }
     if ($kArtikel > 0) {
+        $manufacturerID = Shop::DB()->query("SELECT kHersteller FROM tartikel WHERE kArtikel = " . $kArtikel, 1);
         Shop::DB()->delete('tseo', ['cKey', 'kKey'], ['kArtikel', (int)$kArtikel]);
         Shop::DB()->delete('tartikel', 'kArtikel', $kArtikel);
         Shop::DB()->delete('tpreise', 'kArtikel', $kArtikel);
@@ -995,7 +1014,17 @@ function loescheArtikel($kArtikel, $nIstVater = 0, $bForce = false, $conf = null
         if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
             Jtllog::writeLog('Artikel geloescht: ' . $kArtikel, JTLLOG_LEVEL_DEBUG, false, 'Artikel_xml');
         }
+
+        return [
+            'kArtikel'    => $kArtikel,
+            'categories'  => $articleCategories,
+            'kHersteller' => isset($manufacturerID->kHersteller)
+                ? (int)$manufacturerID->kHersteller
+                : 0
+        ];
     }
+
+    return [];
 }
 
 /**
@@ -1356,35 +1385,92 @@ function getDownloadKeys($kArtikel)
  * clear all caches associated with a product ID
  * including manufacturers, categories, parent products
  *
- * @param int $kArtikel
+ * @param array|int $kArtikel
  */
 function clearProductCaches($kArtikel)
 {
-    $kArtikel  = (int)$kArtikel;
-    $parentIDs = getConfigParents($kArtikel);
-    $cacheTags = [];
-    array_walk($parentIDs, function (&$i) {
-        $i = CACHING_GROUP_ARTICLE . '_' . $i;
-    });
-    //flush config parents cache
-    Shop::Cache()->flushTags($parentIDs);
-    //flush cache tags associated with the article's manufacturer ID
-    $oArticleManufacturer = Shop::DB()->query("SELECT kHersteller FROM tartikel WHERE kArtikel = " . $kArtikel, 1);
-    if (isset($oArticleManufacturer->kHersteller) && (int)$oArticleManufacturer->kHersteller > 0) {
-        Shop::Cache()->flushTags([CACHING_GROUP_MANUFACTURER . '_' . $oArticleManufacturer->kHersteller]);
-    }
-    //flush cache tags associated with the article's category IDs
-    $oArticleCategories = Shop::DB()->selectAll('tkategorieartikel', 'kArtikel', $kArtikel);
-    if (is_array($oArticleCategories)) {
-        foreach ($oArticleCategories as $_articleCategory) {
-            $cacheTags[] = (int)$_articleCategory->kKategorie;
+    if (is_numeric($kArtikel)) {
+        dbeSlog('flushing caches for kArtikel ' . $kArtikel);
+        $start      = microtime(true);
+        $totalCount = 0;
+        $kArtikel   = (int)$kArtikel;
+        $parentIDs  = getConfigParents($kArtikel);
+        $cacheTags  = [];
+        array_walk($parentIDs, function (&$i) {
+            $i = CACHING_GROUP_ARTICLE . '_' . $i;
+        });
+        //flush config parents cache
+        $totalCount += Shop::Cache()->flushTags($parentIDs);
+        //flush cache tags associated with the article's manufacturer ID
+        $oArticleManufacturer = Shop::DB()->query("SELECT kHersteller FROM tartikel WHERE kArtikel = " . $kArtikel, 1);
+        if (isset($oArticleManufacturer->kHersteller) && (int)$oArticleManufacturer->kHersteller > 0) {
+            $totalCount += Shop::Cache()->flushTags([CACHING_GROUP_MANUFACTURER . '_' . $oArticleManufacturer->kHersteller]);
         }
+        //flush cache tags associated with the article's category IDs
+        $oArticleCategories = Shop::DB()->selectAll('tkategorieartikel', 'kArtikel', $kArtikel);
+        if (is_array($oArticleCategories)) {
+            foreach ($oArticleCategories as $_articleCategory) {
+                $cacheTags[] = (int)$_articleCategory->kKategorie;
+            }
+        }
+        array_walk($cacheTags, function (&$i) {
+            $i = CACHING_GROUP_CATEGORY . '_' . $i;
+        });
+        $cacheTags[] = CACHING_GROUP_ARTICLE . '_' . $kArtikel;
+        $cacheTags[] = 'jtl_mmf';
+        //flush article cache, category cache and cache for gibMerkmalFilterOptionen() and mega menu/category boxes
+        $totalCount += Shop::Cache()->flushTags($cacheTags);
+        $end        = microtime(true);
+        dbeSlog('Flushed a total of ' . $totalCount . ' keys in ' . ($end - $start) . 's');
+    } elseif (is_array($kArtikel)) {
+        $start     = microtime(true);
+        $cacheTags = [];
+
+        if (isset($kArtikel[0]['kArtikel'])) {
+            // deleted articles
+            dbeSlog('flushing caches for DELETED articles ' . print_r($kArtikel, true));
+            foreach ($kArtikel as $article) {
+                $cacheTags[] = CACHING_GROUP_ARTICLE . '_' . (int)$article['kArtikel'];
+                $cacheTags[] = CACHING_GROUP_MANUFACTURER . '_' . (int)$article['kHersteller'];
+                foreach ($article['categories'] as $category) {
+                    $cacheTags[] = CACHING_GROUP_CATEGORY . '_' . (int)$category->kKategorie;
+                }
+            }
+
+        } else {
+
+            dbeSlog('flushing caches for articles ' . print_r($kArtikel, true));
+
+            foreach ($kArtikel as $articleID) {
+                $parentIDs = getConfigParents($articleID);
+                foreach ($parentIDs as $parentID) {
+                    $cacheTags[] = CACHING_GROUP_ARTICLE . '_' . (int)$parentID;
+                }
+                $cacheTags[] = CACHING_GROUP_ARTICLE . '_' . (int)$articleID;
+            }
+
+            //flush cache tags associated with the article's manufacturer ID
+            $oArticleManufacturer = Shop::DB()->query("SELECT kHersteller FROM tartikel WHERE kArtikel IN (" . implode(',',
+                    $kArtikel) . ")", 2);
+
+            foreach ($oArticleManufacturer as $manufacturers) {
+                $cacheTags[] = CACHING_GROUP_MANUFACTURER . '_' . $manufacturers->kHersteller;
+            }
+            //flush cache tags associated with the article's category IDs
+            $oArticleCategories = Shop::DB()->query('SELECT kKategorie FROM tkategorieartikel WHERE kArtikel IN (' . implode(',',
+                    $kArtikel) . ')', 2);
+            foreach ($oArticleCategories as $_articleCategory) {
+                $cacheTags[] = CACHING_GROUP_CATEGORY . '_' . (int)$_articleCategory->kKategorie;
+            }
+
+        }
+
+        $cacheTags[] = 'jtl_mmf';
+        dbeSlog('Complete list of cache tags: ' . print_r($cacheTags, true));
+        $cacheTags = array_unique($cacheTags);
+        //flush article cache, category cache and cache for gibMerkmalFilterOptionen() and mega menu/category boxes
+        $totalCount = Shop::Cache()->flushTags($cacheTags);
+        $end        = microtime(true);
+        dbeSlog('Flushed a total of ' . $totalCount . ' keys in ' . ($end - $start) . 's');
     }
-    array_walk($cacheTags, function (&$i) {
-        $i = CACHING_GROUP_CATEGORY . '_' . $i;
-    });
-    $cacheTags[] = CACHING_GROUP_ARTICLE . '_' . $kArtikel;
-    $cacheTags[] = 'jtl_mmf';
-    //flush article cache, category cache and cache for gibMerkmalFilterOptionen() and mega menu/category boxes
-    Shop::Cache()->flushTags($cacheTags);
 }

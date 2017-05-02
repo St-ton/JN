@@ -164,7 +164,7 @@ class FilterSearch extends AbstractFilter
 
     /**
      * @param null $mixed
-     * @return array|int|object
+     * @return array
      */
     public function getOptions($mixed = null)
     {
@@ -236,6 +236,7 @@ class FilterSearch extends AbstractFilter
             }
             //baue URL
             $additionalFilter = new FilterBaseSearchQuery(
+                $this->naviFilter,
                 $this->getLanguageID(),
                 $this->getCustomerGroupID(),
                 $this->getConfig(),

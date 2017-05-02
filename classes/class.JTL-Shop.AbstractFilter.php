@@ -353,30 +353,31 @@ abstract class AbstractFilter implements IFilter
     /**
      * AbstractFilter constructor
      *
-     * @param Navigationsfilter $naviFilter
-     * @param int|null          $languageID
-     * @param int|null          $customerGroupID
-     * @param array|null        $config
-     * @param array|null        $languages
+     * @param Navigationsfilter|null $naviFilter
+     * @param int|null               $languageID
+     * @param int|null               $customerGroupID
+     * @param array|null             $config
+     * @param array|null             $languages
      */
-    public function __construct($naviFilter, $languageID = null, $customerGroupID = null, $config = null, $languages = null)
+    public function __construct($naviFilter = null, $languageID = null, $customerGroupID = null, $config = null, $languages = null)
     {
         if ($languageID !== null && $customerGroupID !== null && $config !== null && $languages !== null) {
-            $this->setData($languageID, $customerGroupID, $config, $languages);
+            $this->setData($naviFilter, $languageID, $customerGroupID, $config, $languages);
         }
-        $this->setNaviFilter($naviFilter)
-             ->setClassName(get_class($this));
+        $this->setClassName(get_class($this));
     }
 
     /**
-     * @param int   $languageID
-     * @param int   $customerGroupID
-     * @param array $config
-     * @param array $languages
+     * @param Navigationsfilter $naviFilter
+     * @param int               $languageID
+     * @param int               $customerGroupID
+     * @param array             $config
+     * @param array             $languages
      * @return $this
      */
-    public function setData($languageID, $customerGroupID, $config, $languages = [])
+    public function setData($naviFilter, $languageID, $customerGroupID, $config, $languages = [])
     {
+        $this->naviFilter         = $naviFilter;
         $this->languageID         = $languageID;
         $this->customerGroupID    = $customerGroupID;
         $this->config             = $config;

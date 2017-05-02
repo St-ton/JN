@@ -594,6 +594,7 @@ class Navigationsfilter
     public function registerFilter(IFilter $filter)
     {
         $this->filters[] = $filter->setData(
+            $this,
             $this->getLanguageID(),
             $this->getCustomerGroupID(),
             $this->getConfig(),
@@ -614,6 +615,7 @@ class Navigationsfilter
         if (class_exists($filterName)) {
             /** @var IFilter $filter */
             $filter = new $filterName(
+                $this,
                 $this->getLanguageID(),
                 $this->getCustomerGroupID(),
                 $this->getConfig(),
@@ -635,6 +637,7 @@ class Navigationsfilter
     public function addActiveFilter(IFilter $filter, $filterValue)
     {
         $this->activeFilters[] = $filter->setData(
+            $this,
             $this->getLanguageID(),
             $this->getCustomerGroupID(),
             $this->getConfig(),

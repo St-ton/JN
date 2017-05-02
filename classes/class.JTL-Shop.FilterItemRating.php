@@ -116,14 +116,13 @@ class FilterItemRating extends AbstractFilter
         }
         $options = [];
         if ($this->getConfig()['navigationsfilter']['bewertungsfilter_benutzen'] !== 'N') {
-            $naviFilter = $this->getNaviFilter();
-            $order      = $naviFilter->getOrder();
-            $state      = $naviFilter->getCurrentStateData();
+            $order      = $this->naviFilter->getOrder();
+            $state      = $this->naviFilter->getCurrentStateData();
 
             $state->joins[] = $order->join;
             $state->joins[] = $this->getSQLJoin();
 
-            $query = $naviFilter->getBaseQuery(
+            $query = $this->naviFilter->getBaseQuery(
                 [
                     'ROUND(tartikelext.fDurchschnittsBewertung, 0) AS nSterne',
                     'tartikel.kArtikel'
@@ -163,7 +162,7 @@ class FilterItemRating extends AbstractFilter
                         )
                         ->setValue((int)$row->nSterne)
                         ->setCount($nSummeSterne)
-                        ->setURL($naviFilter->getURL(
+                        ->setURL($this->naviFilter->getURL(
                             true,
                             $additionalFilter->init((int)$row->nSterne)
                         ));

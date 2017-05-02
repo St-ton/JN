@@ -129,10 +129,9 @@ class FilterBaseTag extends AbstractFilter
         }
         $options = [];
         if ($this->getConfig()['navigationsfilter']['allgemein_tagfilter_benutzen'] !== 'N') {
-            $naviFilter   = $this->getNaviFilter();
             $joinedTables = [];
-            $order        = $naviFilter->getOrder();
-            $state        = $naviFilter->getCurrentStateData();
+            $order        = $this->naviFilter->getOrder();
+            $state        = $this->naviFilter->getCurrentStateData();
 
             $state->joins[] = (new FilterJoin())->setComment('join1 from FilterBaseTag::getOptions()')
                                                 ->setType('JOIN')
@@ -155,7 +154,7 @@ class FilterBaseTag extends AbstractFilter
 
             $state->conditions[] = 'ttag.nAktiv = 1';
             $state->conditions[] = 'ttag.kSprache = ' . $this->getLanguageID();
-            $query               = $naviFilter->getBaseQuery([
+            $query               = $this->naviFilter->getBaseQuery([
                 'ttag.kTag',
                 'ttag.cName',
                 'ttagartikel.nAnzahlTagging',
@@ -173,7 +172,7 @@ class FilterBaseTag extends AbstractFilter
                 ORDER BY nAnzahl DESC LIMIT 0, " . (int)$this->getConfig()['navigationsfilter']['tagfilter_max_anzeige'];
             $tags             = Shop::DB()->query($query, 2);
             $additionalFilter = new FilterItemTag(
-                $this->getNaviFilter(),
+                $this->naviFilter,
                 $this->getLanguageID(),
                 $this->getCustomerGroupID(),
                 $this->getConfig(),
@@ -193,7 +192,7 @@ class FilterBaseTag extends AbstractFilter
                     ->setName($tag->cName)
                     ->setValue((int)$tag->kTag)
                     ->setCount($tag->nAnzahl)
-                    ->setURL($naviFilter->getURL(
+                    ->setURL($this->naviFilter->getURL(
                         true,
                         $additionalFilter->init((int)$tag->kTag)
                     ));

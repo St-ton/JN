@@ -130,9 +130,8 @@ class FilterBaseManufacturer extends AbstractFilter
         }
         $options = [];
         if ($this->getConfig()['navigationsfilter']['allgemein_herstellerfilter_benutzen'] !== 'N') {
-            $naviFilter = $this->getNaviFilter();
-            $order      = $naviFilter->getOrder();
-            $state      = $naviFilter->getCurrentStateData();
+            $order      = $this->naviFilter->getOrder();
+            $state      = $this->naviFilter->getCurrentStateData();
 
             $state->joins[] = $order->join;
             $state->joins[] = (new FilterJoin())->setComment('join from FilterManufacturer::getOptions()')
@@ -140,7 +139,7 @@ class FilterBaseManufacturer extends AbstractFilter
                                                 ->setTable('thersteller')
                                                 ->setOn('tartikel.kHersteller = thersteller.kHersteller');
 
-            $query = $naviFilter->getBaseQuery(
+            $query = $this->naviFilter->getBaseQuery(
                 [
                     'thersteller.kHersteller',
                     'thersteller.cName',
@@ -165,7 +164,7 @@ class FilterBaseManufacturer extends AbstractFilter
 
             $manufacturers    = Shop::DB()->query($query, 2);
             $additionalFilter = new FilterItemManufacturer(
-                $this->getNaviFilter(),
+                $this->naviFilter,
                 $this->getLanguageID(),
                 $this->getCustomerGroupID(),
                 $this->getConfig(),
@@ -177,7 +176,7 @@ class FilterBaseManufacturer extends AbstractFilter
                 $manufacturer->kHersteller = (int)$manufacturer->kHersteller;
                 $manufacturer->nAnzahl     = (int)$manufacturer->nAnzahl;
                 $manufacturer->nSortNr     = (int)$manufacturer->nSortNr;
-                $manufacturer->cURL        = $naviFilter->getURL(
+                $manufacturer->cURL        = $this->naviFilter->getURL(
                     true,
                     $additionalFilter->init((int)$manufacturer->kHersteller)
                 );
@@ -190,7 +189,7 @@ class FilterBaseManufacturer extends AbstractFilter
                     ->setValue((int)$manufacturer->kHersteller)
                     ->setCount($manufacturer->nAnzahl)
                     ->setSort($manufacturer->nSortNr)
-                    ->setURL($naviFilter->getURL(
+                    ->setURL($this->naviFilter->getURL(
                         true,
                         $additionalFilter->init((int)$manufacturer->kHersteller)
                     ));

@@ -141,7 +141,7 @@ abstract class AbstractFilter implements IFilter
     /**
      * @var Navigationsfilter
      */
-    private $naviFilter;
+    protected $naviFilter;
 
     /**
      * @var mixed

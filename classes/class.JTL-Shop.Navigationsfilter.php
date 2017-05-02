@@ -2111,8 +2111,8 @@ class Navigationsfilter
                     foreach ($filter->getValue() as $filterValue) {
                         $extraFilter->setValue($filterValue);
                         $this->URL->$idx[$filterValue] = $this->getURL($bSeo, $extraFilter);
-                        $filter->setUnsetFilterURL($this->URL->$idx[$filterValue]);
                     }
+                    $filter->setUnsetFilterURL($this->URL->$idx);
                 } else {
                     $extraFilter = (clone $filter)->setDoUnset(true)->setValue($filter->getValue());
                     $this->URL->$idx = $this->getURL($bSeo, $extraFilter);

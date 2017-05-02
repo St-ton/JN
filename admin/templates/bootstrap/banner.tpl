@@ -297,13 +297,12 @@
             });
 
             init_simple_search(function (type, res) {
-                $('#article').val(res.kPrimary);
                 $('#article_info').html((res.kPrimary > 0) ? '<span class="success">Verkn&uuml;pft</span>' : '<span class="error">Nicht verkn&uuml;pft</span>');
             });
 
             $('#article_unlink').click(function () {
-                $('#article').val(0);
-                $('#article_info').html('<span class="error">Nicht verkn&uuml;pft</span>');
+                $('#article_id').val(0);
+                $('#article_name').val('');
                 return false;
             });
         });
@@ -346,12 +345,17 @@
                 </div>
                 <div class="input-group">
                     <span class="input-group-addon">
-                        <label for="article">Artikel</label>
-                    </span>
-                    <span class="input-group-wrap">
-                        <span id="article_info" style="margin-left:5px;"></span>
+                        <label for="article_name">Artikel</label>
                     </span>
                     <input type="hidden" name="article" id="article" value="{if isset($oBanner->kArtikel)}{$oBanner->kArtikel}{/if}" />
+                    <input type="text" name="article_name" id="article_name" value="" class="form-control">
+                    <input type="hidden" name="article_id" id="article_id" value="">
+                    <script>
+                        enableTypeahead('#article_name', 'getProducts', 'cName', null, function (e, item) {
+                            $('#article_name').val(item.cName);
+                            $('#article_id').val(item.kArtikel);
+                        });
+                    </script>
                 </div>
                 <input type="hidden" name="id" id="id" />
                 <div class="save_wrapper btn-group">

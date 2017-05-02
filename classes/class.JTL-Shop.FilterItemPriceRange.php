@@ -44,14 +44,15 @@ class FilterItemPriceRange extends AbstractFilter
     /**
      * FilterItemPriceRange constructor.
      *
-     * @param int|null   $languageID
-     * @param int|null   $customerGroupID
-     * @param array|null $config
-     * @param array|null $languages
+     * @param Navigationsfilter $naviFilter
+     * @param int|null          $languageID
+     * @param int|null          $customerGroupID
+     * @param array|null        $config
+     * @param array|null        $languages
      */
-    public function __construct($languageID = null, $customerGroupID = null, $config = null, $languages = null)
+    public function __construct($naviFilter, $languageID = null, $customerGroupID = null, $config = null, $languages = null)
     {
-        parent::__construct($languageID, $customerGroupID, $config, $languages);
+        parent::__construct($naviFilter, $languageID, $customerGroupID, $config, $languages);
         $this->isCustom    = false;
         $this->urlParam    = 'pf';
         $this->urlParamSEO = null;
@@ -323,7 +324,7 @@ class FilterItemPriceRange extends AbstractFilter
         if ($this->options !== null) {
             return $this->options;
         }
-        $naviFilter   = Shop::getNaviFilter();
+        $naviFilter   = $this->getNaviFilter();
         $productCount = $mixed;
         $options      = [];
         // Prüfe, ob es nur einen Artikel in der Artikelübersicht gibt
@@ -482,6 +483,7 @@ class FilterItemPriceRange extends AbstractFilter
                 $nStep            = $oPreis->fStep;
                 $nAnzahlSpannen   = (int)$oPreis->nAnzahlSpannen;
                 $additionalFilter = new FilterItemPriceRange(
+                    $this->getNaviFilter(),
                     $this->getLanguageID(),
                     $this->getCustomerGroupID(),
                     $this->getConfig(),
@@ -569,6 +571,7 @@ class FilterItemPriceRange extends AbstractFilter
                     }
                 }
                 $additionalFilter = new FilterItemPriceRange(
+                    $this->getNaviFilter(),
                     $this->getLanguageID(),
                     $this->getCustomerGroupID(),
                     $this->getConfig(),

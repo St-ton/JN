@@ -17,14 +17,15 @@ class FilterBaseManufacturer extends AbstractFilter
     /**
      * FilterBaseManufacturer constructor.
      *
-     * @param int|null   $languageID
-     * @param int|null   $customerGroupID
-     * @param array|null $config
-     * @param array|null $languages
+     * @param Navigationsfilter $naviFilter
+     * @param int|null          $languageID
+     * @param int|null          $customerGroupID
+     * @param array|null        $config
+     * @param array|null        $languages
      */
-    public function __construct($languageID = null, $customerGroupID = null, $config = null, $languages = null)
+    public function __construct($naviFilter, $languageID = null, $customerGroupID = null, $config = null, $languages = null)
     {
-        parent::__construct($languageID, $customerGroupID, $config, $languages);
+        parent::__construct($naviFilter, $languageID, $customerGroupID, $config, $languages);
         $this->isCustom    = false;
         $this->urlParam    = 'h';
         $this->urlParamSEO = SEP_HST;
@@ -129,7 +130,7 @@ class FilterBaseManufacturer extends AbstractFilter
         }
         $options = [];
         if ($this->getConfig()['navigationsfilter']['allgemein_herstellerfilter_benutzen'] !== 'N') {
-            $naviFilter = Shop::getNaviFilter();
+            $naviFilter = $this->getNaviFilter();
             $order      = $naviFilter->getOrder();
             $state      = $naviFilter->getCurrentStateData();
 
@@ -164,6 +165,7 @@ class FilterBaseManufacturer extends AbstractFilter
 
             $manufacturers    = Shop::DB()->query($query, 2);
             $additionalFilter = new FilterItemManufacturer(
+                $this->getNaviFilter(),
                 $this->getLanguageID(),
                 $this->getCustomerGroupID(),
                 $this->getConfig(),

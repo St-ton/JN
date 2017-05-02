@@ -19,14 +19,15 @@ class FilterItemSearchSpecial extends AbstractFilter
     /**
      * FilterItemSearchSpecial constructor.
      *
-     * @param int|null   $languageID
-     * @param int|null   $customerGroupID
-     * @param array|null $config
-     * @param array|null $languages
+     * @param Navigationsfilter $naviFilter
+     * @param int|null          $languageID
+     * @param int|null          $customerGroupID
+     * @param array|null        $config
+     * @param array|null        $languages
      */
-    public function __construct($languageID = null, $customerGroupID = null, $config = null, $languages = null)
+    public function __construct($naviFilter, $languageID = null, $customerGroupID = null, $config = null, $languages = null)
     {
-        parent::__construct($languageID, $customerGroupID, $config, $languages);
+        parent::__construct($naviFilter, $languageID, $customerGroupID, $config, $languages);
         $this->isCustom = false;
         $this->urlParam = 'qf';
         $this->setFrontendName(Shop::Lang()->get('specificProducts', 'global'));
@@ -140,7 +141,7 @@ class FilterItemSearchSpecial extends AbstractFilter
             case SEARCHSPECIALS_SPECIALOFFERS:
                 $tasp = 'tartikelsonderpreis';
                 $tsp  = 'tsonderpreise';
-                if (!Shop::getNaviFilter()->PreisspannenFilter->isInitialized()) {
+                if (!$this->getNaviFilter()->PreisspannenFilter->isInitialized()) {
                     $tasp = 'tasp';
                     $tsp  = 'tsp';
                 }
@@ -168,7 +169,7 @@ class FilterItemSearchSpecial extends AbstractFilter
                 return "now() < tartikel.dErscheinungsdatum";
 
             case SEARCHSPECIALS_TOPREVIEWS:
-                if (!Shop::getNaviFilter()->BewertungFilter->isInitialized()) {
+                if (!$this->getNaviFilter()->BewertungFilter->isInitialized()) {
                     $nMindestSterne = ((int)$conf['boxen']['boxen_topbewertet_minsterne'] > 0)
                         ? (int)$conf['boxen']['boxen_topbewertet_minsterne']
                         : 4;
@@ -197,7 +198,7 @@ class FilterItemSearchSpecial extends AbstractFilter
                                          ->setComment('JOIN from FilterItemSearchSpecial bestseller');
 
             case SEARCHSPECIALS_SPECIALOFFERS:
-                if (!Shop::getNaviFilter()->PreisspannenFilter->isInitialized()) {
+                if (!$this->getNaviFilter()->PreisspannenFilter->isInitialized()) {
                     return [
                         (new FilterJoin())->setType('JOIN')
                                           ->setTable('tartikelsonderpreis AS tasp')
@@ -218,7 +219,7 @@ class FilterItemSearchSpecial extends AbstractFilter
                 return [];
 
             case SEARCHSPECIALS_TOPREVIEWS:
-                return Shop::getNaviFilter()->BewertungFilter->isInitialized()
+                return $this->getNaviFilter()->BewertungFilter->isInitialized()
                     ? []
                     : (new FilterJoin())->setType('JOIN')
                                              ->setTable('tartikelext AS taex ')
@@ -242,8 +243,9 @@ class FilterItemSearchSpecial extends AbstractFilter
         $name    = '';
         $options = [];
         if ($this->getConfig()['navigationsfilter']['allgemein_suchspecialfilter_benutzen'] === 'Y') {
-            $naviFilter       = Shop::getNaviFilter();
+            $naviFilter       = $this->getNaviFilter();
             $additionalFilter = new FilterItemSearchSpecial(
+                $this->getNaviFilter(),
                 $this->getLanguageID(),
                 $this->getCustomerGroupID(),
                 $this->getConfig(),

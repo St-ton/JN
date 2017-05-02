@@ -24,14 +24,15 @@ class FilterItemAttribute extends FilterBaseAttribute
     /**
      * FilterItemAttribute constructor.
      *
-     * @param int|null   $languageID
-     * @param int|null   $customerGroupID
-     * @param array|null $config
-     * @param array|null $languages
+     * @param Navigationsfilter $naviFilter
+     * @param int|null          $languageID
+     * @param int|null          $customerGroupID
+     * @param array|null        $config
+     * @param array|null        $languages
      */
-    public function __construct($languageID = null, $customerGroupID = null, $config = null, $languages = null)
+    public function __construct($naviFilter, $languageID = null, $customerGroupID = null, $config = null, $languages = null)
     {
-        parent::__construct($languageID, $customerGroupID, $config, $languages);
+        parent::__construct($naviFilter, $languageID, $customerGroupID, $config, $languages);
         $this->isCustom    = false;
         $this->urlParam    = 'mf';
         $this->urlParamSEO = SEP_MERKMAL;
@@ -123,7 +124,7 @@ class FilterItemAttribute extends FilterBaseAttribute
         if ($this->options !== null) {
             return $this->options;
         }
-        $naviFilter                  = Shop::getNaviFilter();
+        $naviFilter                  = $this->getNaviFilter();
         $oAktuelleKategorie          = isset($mixed['oAktuelleKategorie'])
             ? $mixed['oAktuelleKategorie']
             : null;
@@ -234,6 +235,7 @@ class FilterItemAttribute extends FilterBaseAttribute
 
             if (is_array($oMerkmalFilterDB_arr)) {
                 $additionalFilter = new FilterItemAttribute(
+                    $this->getNaviFilter(),
                     $this->getLanguageID(),
                     $this->getCustomerGroupID(),
                     $this->getConfig(),
@@ -281,6 +283,7 @@ class FilterItemAttribute extends FilterBaseAttribute
 
                     if ($oMerkmal === null) {
                         $oMerkmal = new FilterItemAttribute(
+                            $this->getNaviFilter(),
                             $this->getLanguageID(),
                             $this->getCustomerGroupID(),
                             $this->getConfig(), $this->getAvailableLanguages()

@@ -17,14 +17,15 @@ class FilterBaseTag extends AbstractFilter
     /**
      * FilterBaseTag constructor.
      *
-     * @param int|null   $languageID
-     * @param int|null   $customerGroupID
-     * @param array|null $config
-     * @param array|null $languages
+     * @param Navigationsfilter $naviFilter
+     * @param int|null          $languageID
+     * @param int|null          $customerGroupID
+     * @param array|null        $config
+     * @param array|null        $languages
      */
-    public function __construct($languageID = null, $customerGroupID = null, $config = null, $languages = null)
+    public function __construct($naviFilter, $languageID = null, $customerGroupID = null, $config = null, $languages = null)
     {
-        parent::__construct($languageID, $customerGroupID, $config, $languages);
+        parent::__construct($naviFilter, $languageID, $customerGroupID, $config, $languages);
         $this->isCustom    = false;
         $this->urlParam    = 't';
         $this->urlParamSEO = null;
@@ -128,7 +129,7 @@ class FilterBaseTag extends AbstractFilter
         }
         $options = [];
         if ($this->getConfig()['navigationsfilter']['allgemein_tagfilter_benutzen'] !== 'N') {
-            $naviFilter   = Shop::getNaviFilter();
+            $naviFilter   = $this->getNaviFilter();
             $joinedTables = [];
             $order        = $naviFilter->getOrder();
             $state        = $naviFilter->getCurrentStateData();
@@ -172,6 +173,7 @@ class FilterBaseTag extends AbstractFilter
                 ORDER BY nAnzahl DESC LIMIT 0, " . (int)$this->getConfig()['navigationsfilter']['tagfilter_max_anzeige'];
             $tags             = Shop::DB()->query($query, 2);
             $additionalFilter = new FilterItemTag(
+                $this->getNaviFilter(),
                 $this->getLanguageID(),
                 $this->getCustomerGroupID(),
                 $this->getConfig(),

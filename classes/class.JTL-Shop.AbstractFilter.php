@@ -139,6 +139,11 @@ abstract class AbstractFilter implements IFilter
     private $filterCollection = [];
 
     /**
+     * @var Navigationsfilter
+     */
+    private $naviFilter;
+
+    /**
      * @var mixed
      */
     protected $options;
@@ -326,19 +331,40 @@ abstract class AbstractFilter implements IFilter
     }
 
     /**
+     * @param Navigationsfilter $naviFilter
+     * @return $this
+     */
+    public function setNaviFilter($naviFilter)
+    {
+        $this->naviFilter = $naviFilter;
+
+        return $this;
+    }
+
+    /**
+     * @return Navigationsfilter
+     */
+    public function getNaviFilter()
+    {
+        return $this->naviFilter;
+    }
+
+    /**
      * AbstractFilter constructor
      *
-     * @param int|null   $languageID
-     * @param int|null   $customerGroupID
-     * @param array|null $config
-     * @param array|null $languages
+     * @param Navigationsfilter $naviFilter
+     * @param int|null          $languageID
+     * @param int|null          $customerGroupID
+     * @param array|null        $config
+     * @param array|null        $languages
      */
-    public function __construct($languageID = null, $customerGroupID = null, $config = null, $languages = null)
+    public function __construct($naviFilter, $languageID = null, $customerGroupID = null, $config = null, $languages = null)
     {
         if ($languageID !== null && $customerGroupID !== null && $config !== null && $languages !== null) {
             $this->setData($languageID, $customerGroupID, $config, $languages);
         }
-        $this->setClassName(get_class($this));
+        $this->setNaviFilter($naviFilter)
+             ->setClassName(get_class($this));
     }
 
     /**
@@ -438,8 +464,9 @@ abstract class AbstractFilter implements IFilter
      */
     public function __debugInfo()
     {
-        $res           = get_object_vars($this);
-        $res['config'] = '*truncated*';
+        $res               = get_object_vars($this);
+        $res['config']     = '*truncated*';
+        $res['naviFilter'] = '*truncated*';
 
         return $res;
     }

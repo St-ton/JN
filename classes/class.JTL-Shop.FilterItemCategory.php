@@ -14,14 +14,15 @@ class FilterItemCategory extends FilterBaseCategory
     /**
      * FilterItemCategory constructor.
      *
-     * @param int|null   $languageID
-     * @param int|null   $customerGroupID
-     * @param array|null $config
-     * @param array|null $languages
+     * @param Navigationsfilter $naviFilter
+     * @param int|null          $languageID
+     * @param int|null          $customerGroupID
+     * @param array|null        $config
+     * @param array|null        $languages
      */
-    public function __construct($languageID = null, $customerGroupID = null, $config = null, $languages = null)
+    public function __construct($naviFilter, $languageID = null, $customerGroupID = null, $config = null, $languages = null)
     {
-        parent::__construct($languageID, $customerGroupID, $config, $languages);
+        parent::__construct($naviFilter, $languageID, $customerGroupID, $config, $languages);
         $this->isCustom    = false;
         $this->urlParam    = 'kf';
         $this->urlParamSEO = SEP_KAT;
@@ -69,7 +70,7 @@ class FilterItemCategory extends FilterBaseCategory
         }
         $options = [];
         if ($this->getConfig()['navigationsfilter']['allgemein_kategoriefilter_benutzen'] !== 'N') {
-            $naviFilter         = Shop::getNaviFilter();
+            $naviFilter         = $this->getNaviFilter();
             $categoryFilterType = $this->getConfig()['navigationsfilter']['kategoriefilter_anzeigen_als'];
             $order              = $naviFilter->getOrder();
             $state              = $naviFilter->getCurrentStateData();
@@ -146,6 +147,7 @@ class FilterItemCategory extends FilterBaseCategory
                     ORDER BY ssMerkmal.nSort, ssMerkmal.cName";
             $categories       = Shop::DB()->query($query, 2);
             $additionalFilter = new FilterItemCategory(
+                $this->getNaviFilter(),
                 $this->getLanguageID(),
                 $this->getCustomerGroupID(),
                 $this->getConfig(),

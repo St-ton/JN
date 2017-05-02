@@ -29,14 +29,15 @@ class FilterBaseSearchQuery extends AbstractFilter
     /**
      * FilterBaseSearchQuery constructor.
      *
-     * @param int|null   $languageID
-     * @param int|null   $customerGroupID
-     * @param array|null $config
-     * @param array|null $languages
+     * @param Navigationsfilter $naviFilter
+     * @param int|null          $languageID
+     * @param int|null          $customerGroupID
+     * @param array|null        $config
+     * @param array|null        $languages
      */
-    public function __construct($languageID = null, $customerGroupID = null, $config = null, $languages = null)
+    public function __construct($naviFilter, $languageID = null, $customerGroupID = null, $config = null, $languages = null)
     {
-        parent::__construct($languageID, $customerGroupID, $config, $languages);
+        parent::__construct($naviFilter, $languageID, $customerGroupID, $config, $languages);
         $this->isCustom    = false;
         $this->urlParam    = 'l';
         $this->urlParamSEO = null;
@@ -58,7 +59,7 @@ class FilterBaseSearchQuery extends AbstractFilter
      */
     public function getValue()
     {
-        $nf = Shop::getNaviFilter();
+        $nf = $this->getNaviFilter();
         if (!empty($nf->EchteSuche->cSuche) && empty($nf->Suchanfrage->kSuchanfrage)) {
             return urlencode($nf->EchteSuche->cSuche);
         }
@@ -71,7 +72,7 @@ class FilterBaseSearchQuery extends AbstractFilter
      */
     public function getUrlParam()
     {
-        $nf = Shop::getNaviFilter();
+        $nf = $this->getNaviFilter();
         if (!empty($nf->EchteSuche->cSuche) && empty($nf->Suchanfrage->kSuchanfrage)) {
             return 'suche';
         }
@@ -144,9 +145,8 @@ class FilterBaseSearchQuery extends AbstractFilter
      */
     public function getSQLJoin()
     {
-        $count           = 0;
         $kSucheCache_arr = [];
-        $searchFilter    = Shop::getNaviFilter()->getActiveState();
+        $searchFilter    = $this->getNaviFilter()->getActiveState();
         if (is_array($searchFilter)) {
             $count = count($searchFilter);
             foreach ($searchFilter as $oSuchFilter) {
@@ -185,7 +185,7 @@ class FilterBaseSearchQuery extends AbstractFilter
         }
         $options = [];
         if ($this->getConfig()['navigationsfilter']['suchtrefferfilter_nutzen'] !== 'N') {
-            $naviFilter = Shop::getNaviFilter();
+            $naviFilter = $this->getNaviFilter();
             $nLimit     = (isset($this->getConfig()['navigationsfilter']['suchtrefferfilter_anzahl']) &&
                 ($limit = (int)$this->getConfig()['navigationsfilter']['suchtrefferfilter_anzahl']) > 0)
                 ? " LIMIT " . $limit

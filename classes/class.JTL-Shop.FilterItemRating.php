@@ -19,14 +19,15 @@ class FilterItemRating extends AbstractFilter
     /**
      * FilterItemRating constructor.
      *
-     * @param int|null   $languageID
-     * @param int|null   $customerGroupID
-     * @param array|null $config
-     * @param array|null $languages
+     * @param Navigationsfilter $naviFilter
+     * @param int|null          $languageID
+     * @param int|null          $customerGroupID
+     * @param array|null        $config
+     * @param array|null        $languages
      */
-    public function __construct($languageID = null, $customerGroupID = null, $config = null, $languages = null)
+    public function __construct($naviFilter, $languageID = null, $customerGroupID = null, $config = null, $languages = null)
     {
-        parent::__construct($languageID, $customerGroupID, $config, $languages);
+        parent::__construct($naviFilter, $languageID, $customerGroupID, $config, $languages);
         $this->isCustom    = false;
         $this->urlParam    = 'bf';
         $this->urlParamSEO = null;
@@ -115,7 +116,7 @@ class FilterItemRating extends AbstractFilter
         }
         $options = [];
         if ($this->getConfig()['navigationsfilter']['bewertungsfilter_benutzen'] !== 'N') {
-            $naviFilter = Shop::getNaviFilter();
+            $naviFilter = $this->getNaviFilter();
             $order      = $naviFilter->getOrder();
             $state      = $naviFilter->getCurrentStateData();
 
@@ -140,6 +141,7 @@ class FilterItemRating extends AbstractFilter
             if (is_array($res)) {
                 $nSummeSterne     = 0;
                 $additionalFilter = new FilterItemRating(
+                    $this->getNaviFilter(),
                     $this->getLanguageID(),
                     $this->getCustomerGroupID(),
                     $this->getConfig(),

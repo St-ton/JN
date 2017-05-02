@@ -1669,18 +1669,26 @@ define('HOOK_QUICKSYNC_XML_BEARBEITEINSERT', 225);
 define('HOOK_GET_MANUFACTURERS', 226);
 
 /**
+ * @since 4.06
+ * @file admin/templates/bootstrap/php/functions.php
+ * @param AdminAccount - oAdminAccount
+ * @param string       - url
+ */
+define('HOOK_BACKEND_FUNCTIONS_GRAVATAR', 227);
+
+/**
  * in Navigationsfilter::initBaseStates() after initializing the base filters
  *
  * @file class.JTL-Shop.Navigationsfilter.php
- * @param Navigationsfilter navfilter
+ * @param Navigationsfilter navifilter
  */
-define('HOOK_NAVIGATIONSFILTER_INIT', 227);
+define('HOOK_NAVIGATIONSFILTER_INIT', 228);
 
 /**
  * in Navigationsfilter::initStates() after initializing the active filters
  *
  * @file class.JTL-Shop.Navigationsfilter.php
- * @param Navigationsfilter navfilter
+ * @param Navigationsfilter navifilter
  * @param array params
  */
-define('HOOK_NAVIGATIONSFILTER_INIT_FILTER', 228);
+define('HOOK_NAVIGATIONSFILTER_INIT_FILTER', 229);

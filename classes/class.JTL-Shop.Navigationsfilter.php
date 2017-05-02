@@ -229,8 +229,6 @@ class Navigationsfilter
             ? (int)Shop::DB()->select('tkundengruppe', 'cStandard', 'Y')->kKundengruppe
             : (int)$_SESSION['Kundengruppe']->kKundengruppe;
         $this->baseURL         = Shop::getURL() . '/';
-
-        $this->initBaseStates();
     }
 
     /**
@@ -374,7 +372,7 @@ class Navigationsfilter
     /**
      * @return $this
      */
-    private function initBaseStates()
+    public function initBaseStates()
     {
         $languageID      = $this->getLanguageID();
         $customerGroupID = $this->getCustomerGroupID();
@@ -415,9 +413,10 @@ class Navigationsfilter
         $this->searchFilterCompat    = new FilterSearch($this, $languageID, $customerGroupID, $config, $this->oSprache_arr);
 
         $this->Suche = new FilterSearch($this, $languageID, $customerGroupID, $config, $this->oSprache_arr);
-        executeHook(HOOK_NAVIGATIONSFILTER_INIT, ['navifilter' => $this]);
 
         $this->baseState = new FilterDummyState($this);
+
+        executeHook(HOOK_NAVIGATIONSFILTER_INIT, ['navifilter' => $this]);
 
         $this->filters[] = $this->KategorieFilter;
         $this->filters[] = $this->HerstellerFilter;
@@ -435,6 +434,7 @@ class Navigationsfilter
      */
     public function initStates($params)
     {
+        $this->initBaseStates();
         $params          = array_merge($this->getParamsPrototype(), $params);
         $languageID      = $this->getLanguageID();
         $customerGroupID = $this->getCustomerGroupID();

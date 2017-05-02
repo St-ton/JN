@@ -220,15 +220,16 @@ interface IFilter
     public function setDoUnset($doUnset);
 
     /**
-     * @param string $url
+     * @param string|array $url
      * @return $this
      */
     public function setUnsetFilterURL($url);
 
     /**
+     * @param string|null
      * @return string
      */
-    public function getUnsetFilterURL();
+    public function getUnsetFilterURL($idx = null);
 
     /**
      * @return int

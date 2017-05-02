@@ -1101,7 +1101,10 @@ final class Shop
                 }
                 if (isset($oSeo->kSprache) && $oSeo->kSprache > 0) {
                     $kSprache = (int)$oSeo->kSprache;
-                    $spr      = class_exists('Sprache')
+                    if (self::$NaviFilter->getLanguageID() !== $kSprache) {
+                        self::$NaviFilter->setLanguageID($kSprache);
+                    }
+                    $spr   = class_exists('Sprache')
                         ? self::Lang()->getIsoFromLangID($kSprache)
                         : self::DB()->select('tsprache', 'kSprache', $kSprache);
                     $cLang = isset($spr->cISO) ? $spr->cISO : null;

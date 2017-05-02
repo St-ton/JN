@@ -8,7 +8,7 @@
     {if isset($checkout) && $Einstellungen.kaufabwicklung.bestellvorgang_unregistriert === 'Y'}
         <div class="form-group">
             <input type="hidden" name="unreg_form" value="1">
-            <label class="control-label" for="checkout_create_account_unreg" data-toggle="collapse" data-target="#create_account_data">
+            <label class="checkbox-inline control-label" for="checkout_create_account_unreg" data-toggle="collapse" data-target="#create_account_data">
                 <input id="checkout_create_account_unreg" class="checkbox-inline" type="checkbox" name="unreg_form" value="0" checked="checked" />
                 {lang key="createNewAccount" section="account data"}
             </label>

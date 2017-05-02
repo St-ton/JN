@@ -117,7 +117,7 @@ abstract class AbstractFilter implements IFilter
     private $doUnset = false;
 
     /**
-     * @var string
+     * @var string|array
      */
     private $unsetFilterURL = '';
 
@@ -225,7 +225,7 @@ abstract class AbstractFilter implements IFilter
     }
 
     /**
-     * @param string $url
+     * @param string|array $url
      * @return $this
      */
     public function setUnsetFilterURL($url)
@@ -236,11 +236,12 @@ abstract class AbstractFilter implements IFilter
     }
 
     /**
-     * @return string
+     * @param string|null $idx
+     * @return string|array
      */
-    public function getUnsetFilterURL()
+    public function getUnsetFilterURL($idx = null)
     {
-        return $this->unsetFilterURL;
+        return $idx === null ? $this->unsetFilterURL : $this->unsetFilterURL[$idx];
     }
 
     /**

@@ -3,11 +3,13 @@
  * @license http://jtl-url.de/jtlshoplicense
  *}
 
-<div class="form-group">
+<div class="form-group checkbox">
     <input type="hidden" name="shipping_address" value="1">
-    <label class="control-label checkbox-inline" for="checkout_register_shipping_address" data-toggle="collapse" data-target="#select_shipping_address">
-        <input id="checkout_register_shipping_address" type="checkbox" name="shipping_address" value="0"{if !isset($Lieferadresse) && empty($kLieferadresse)} checked="checked"{/if} />
-        {lang key="shippingAdressEqualBillingAdress" section="account data"}
+    <label for="checkout_register_shipping_address" class="btn-block" data-toggle="collapse" data-target="#select_shipping_address">
+        <input id="checkout_register_shipping_address" class="radio-checkbox" type="checkbox" name="shipping_address" value="0"{if !isset($Lieferadresse) && empty($kLieferadresse)} checked="checked"{/if} />
+        <span class="control-label label-default">
+            {lang key="shippingAdressEqualBillingAdress" section="account data"}
+        </span>
     </label>
 </div>
 {block name="checkout-enter-shipping-address"}
@@ -21,9 +23,9 @@
                 {if $adresse->kLieferadresse>0}
                     <li class="list-group-item">
                         <div class="radio">
-                            <label class="control-label radio-inline" for="delivery{$adresse->kLieferadresse}">
-                                <input type="radio" name="kLieferadresse" value="{$adresse->kLieferadresse}" id="delivery{$adresse->kLieferadresse}" {if $kLieferadresse == $adresse->kLieferadresse}checked{/if} data-toggle="collapse" data-target="#register_shipping_address.in">
-                                <span>{if $adresse->cFirma}{$adresse->cFirma},{/if} {$adresse->cVorname} {$adresse->cNachname}
+                            <label class="btn-block" for="delivery{$adresse->kLieferadresse}" data-toggle="collapse" data-target="#register_shipping_address.in">
+                                <input class="radio-checkbox" type="radio" name="kLieferadresse" value="{$adresse->kLieferadresse}" id="delivery{$adresse->kLieferadresse}" {if $kLieferadresse == $adresse->kLieferadresse}checked{/if}>
+                                <span class="control-label label-default">{if $adresse->cFirma}{$adresse->cFirma},{/if} {$adresse->cVorname} {$adresse->cNachname}
                                 , {$adresse->cStrasse} {$adresse->cHausnummer}, {$adresse->cPLZ} {$adresse->cOrt}
                                     , {$adresse->angezeigtesLand}</span></label>
                         </div>
@@ -32,9 +34,9 @@
             {/foreach}
                 <li class="list-group-item">
                     <div class="radio">
-                        <label class="control-label radio-inline" for="delivery_new" data-toggle="collapse" data-target="#register_shipping_address:not(.in)">
-                            <input type="radio" name="kLieferadresse" value="-1" id="delivery_new" {if $kLieferadresse == -1}checked{/if} required="required" aria-required="true">
-                            <span>{lang key="createNewShippingAdress" section="account data"}</span>
+                        <label class="btn-block" for="delivery_new" data-toggle="collapse" data-target="#register_shipping_address:not(.in)">
+                            <input class="radio-checkbox" type="radio" name="kLieferadresse" value="-1" id="delivery_new" {if $kLieferadresse == -1}checked{/if} required="required" aria-required="true">
+                            <span class="control-label label-default">{lang key="createNewShippingAdress" section="account data"}</span>
                         </label>
                     </div>
                 </li>

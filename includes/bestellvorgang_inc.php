@@ -161,12 +161,12 @@ function pruefeLieferdaten($cPost_arr)
                     AND kLieferadresse = " . (int)$cPost_arr['kLieferadresse'], 1
         );
         if ($LA->kLieferadresse > 0) {
-            $oLieferadresse = new Lieferadresse($LA->kLieferadresse);
+            $oLieferadresse            = new Lieferadresse($LA->kLieferadresse);
             $_SESSION['Lieferadresse'] = $oLieferadresse;
 
             executeHook(HOOK_BESTELLVORGANG_PAGE_STEPLIEFERADRESSE_VORHANDENELIEFERADRESSE);
         }
-    } elseif ((int)$cPost_arr['kLieferadresse'] === 0) {
+    } elseif ((int)$cPost_arr['kLieferadresse'] === 0 && isset($_SESSION['Kunde'])) {
         //lieferadresse gleich rechnungsadresse
         setzeLieferadresseAusRechnungsadresse();
 

@@ -79,6 +79,19 @@ body.no-bg {
     cursor: pointer;
 }
 
+label {
+    > .radio-checkbox {
+        height: 100%;
+        margin-top: 0;
+
+        + .control-label {
+            margin-left: @margin-base;
+            display: block;
+            width: auto;
+        }
+    }
+}
+
 .input-group input[type="text"].form-control {
     min-width: 3em;
     &[readonly] {

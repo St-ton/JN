@@ -50,7 +50,7 @@
                 <div id="navbar-filter" class="panel-body">
                     <div class="form-inline2">
                         {foreach $NaviFilter->getAvailableFilters() as $filter}
-                            {if ($filter->getVisibility() === $filter::SHOW_ALWAYS || $filter->getVisibility() === $filter::SHOW_CONTENT) && (!$filter->isInitialized() || $filter->getType() === 0)}
+                            {if ($filter->getVisibility() === $filter::SHOW_ALWAYS || $filter->getVisibility() === $filter::SHOW_CONTENT) && (!$filter->isInitialized() || $filter->getType() === $filter::FILTER_TYPE_OR)}
                                 {if count($filter->getFilterCollection()) > 0}
                                     {block name='productlist-result-options-'|cat:$filter->getClassName()}
                                         {foreach $filter->getOptions() as $subFilter}

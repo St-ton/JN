@@ -34,18 +34,28 @@
             {/if}
         {/foreach}
     {else}
-        {foreach $filter->getOptions() as $filterOption}
+        {if $filter->isInitialized()}
             <li>
-                <a rel="nofollow" href="{$filterOption->getURL()}">
+                <a href="{$filter->getUnsetFilterURL()}" rel="nofollow" class="active">
                     <span class="value">
-                        <i class="fa {if $NaviFilter->getFilterValue($filter->getClassName()) === $filterOption->getValue()}fa-check-square-o{else}fa-square-o{/if} text-muted"></i>
-                        {if $filter->getClassName() === 'FilterItemRating'}
-                            {include file='productdetails/rating.tpl' stars=$filterOption->getValue()}
-                        {/if}
-                        {$filterOption->getName()}<span class="badge pull-right">{$filterOption->getCount()}</span>
+                        <i class="fa fa-check-square-o text-muted"></i> {$filter->getName()}
                     </span>
                 </a>
             </li>
-        {/foreach}
+        {else}
+            {foreach $filter->getOptions() as $filterOption}
+                <li>
+                    <a rel="nofollow" href="{$filterOption->getURL()}">
+                        <span class="value">
+                            <i class="fa {if $NaviFilter->getFilterValue($filter->getClassName()) === $filterOption->getValue()}fa-check-square-o{else}fa-square-o{/if} text-muted"></i>
+                            {if $filter->getClassName() === 'FilterItemRating'}
+                                {include file='productdetails/rating.tpl' stars=$filterOption->getValue()}
+                            {/if}
+                            {$filterOption->getName()}<span class="badge pull-right">{$filterOption->getCount()}</span>
+                        </span>
+                    </a>
+                </li>
+            {/foreach}
+        {/if}
     {/if}
 </ul>

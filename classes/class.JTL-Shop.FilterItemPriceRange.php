@@ -270,7 +270,7 @@ class FilterItemPriceRange extends AbstractFilter
             $oPreisspannenfilter_arr = [];
             for ($i = 0; $i < $oPreis->nAnzahlSpannen; ++$i) {
                 $fakePriceRange              = new stdClass();
-                $fakePriceRange->nBis        = ($nPreisMin + ($i + 1) * $nStep);
+                $fakePriceRange->nBis        = $nPreisMin + ($i + 1) * $nStep;
                 $oPreisspannenfilter_arr[$i] = $fakePriceRange;
             }
         }
@@ -481,7 +481,6 @@ class FilterItemPriceRange extends AbstractFilter
                 $nPreisMax        = $oPreis->fMaxPreis;
                 $nPreisMin        = $oPreis->fMinPreis;
                 $nStep            = $oPreis->fStep;
-                $nAnzahlSpannen   = (int)$oPreis->nAnzahlSpannen;
                 $additionalFilter = new FilterItemPriceRange(
                     $this->naviFilter,
                     $this->getLanguageID(),
@@ -489,7 +488,7 @@ class FilterItemPriceRange extends AbstractFilter
                     $this->getConfig(),
                     $this->getAvailableLanguages()
                 );
-                for ($i = 0; $i < $nAnzahlSpannen; ++$i) {
+                foreach ($oPreisspannenFilterDB_arr as $i => $priceRangeFilterCount) {
                     $fe       = new FilterExtra();
                     $fe->nVon = $nPreisMin + $i * $nStep;
                     $fe->nBis = $nPreisMin + ($i + 1) * $nStep;
@@ -512,7 +511,7 @@ class FilterItemPriceRange extends AbstractFilter
                        ->setParam($this->getUrlParam())
                        ->setName($fe->cVonLocalized . ' - ' . $fe->cBisLocalized)
                        ->setValue($i)
-                       ->setCount($oPreisspannenFilterDB_arr[$i])
+                       ->setCount($priceRangeFilterCount)
                        ->setSort(0)
                        ->setURL($this->naviFilter->getURL(
                            true,

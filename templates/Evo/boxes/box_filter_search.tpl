@@ -4,7 +4,8 @@
             <h5 class="panel-title">{lang key="searchFilter" section="global"}</h5>
         </div>
         <div class="box-body">
-            {include file='snippets/filter/search.tpl'}
+            {*{include file='snippets/filter/search.tpl'}*}
+            {include file='snippets/filter/genericFilterItem.tpl' filter=$NaviFilter->SuchFilter}
         </div>
     </section>
 {/if}

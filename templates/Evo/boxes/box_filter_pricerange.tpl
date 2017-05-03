@@ -4,7 +4,8 @@
             <h5 class="panel-title">{lang key="rangeOfPrices" section="global"}</h5>
         </div>
         <div class="box-body">
-            {include file='snippets/filter/pricerange.tpl'}
+            {*{include file='snippets/filter/pricerange.tpl'}*}
+            {include file='snippets/filter/genericFilterItem.tpl' filter=$NaviFilter->PreisspannenFilter}
         </div>
     </section>
 {/if}

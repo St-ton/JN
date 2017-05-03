@@ -198,31 +198,29 @@
                     </div>
                     <div id="type2" class="custom">
                         <div class="input-group">
-                            <span class="input-group-addon"><label for="cKey">&raquo; Filter</label></span>
-                            <div>
-                                <span class="input-group-wrap">
-                                    <select class="form-control" id="cKey" name="cKey">
-                                        <option value="" {if isset($oExtension->cKey) && $oExtension->cKey === ''}selected="selected"{/if}>
-                                            Kein Filter
-                                        </option>
-                                        <option value="kTag" {if isset($cKey) && $cKey === 'kTag'}selected="selected" {elseif isset($oExtension->cKey) && $oExtension->cKey === 'kTag'}selected="selected"{/if}>
-                                            Tag
-                                        </option>
-                                        <option value="kMerkmalWert" {if isset($cKey) && $cKey === 'kMerkmalWert'}selected="selected" {elseif isset($oExtension->cKey) && $oExtension->cKey === 'kMerkmalWert'}selected="selected"{/if}>
-                                            Merkmal
-                                        </option>
-                                        <option value="kKategorie" {if isset($cKey) && $cKey === 'kKategorie'}selected="selected" {elseif isset($oExtension->cKey) && $oExtension->cKey === 'kKategorie'}selected="selected"{/if}>
-                                            Kategorie
-                                        </option>
-                                        <option value="kHersteller" {if isset($cKey) && $cKey === 'kHersteller'}selected="selected" {elseif isset($oExtension->cKey) && $oExtension->cKey === 'kHersteller'}selected="selected"{/if}>
-                                            Hersteller
-                                        </option>
-                                        <option value="cSuche" {if isset($cKey) && $cKey === 'cSuche'}selected="selected" {elseif isset($oExtension->cKey) && $oExtension->cKey === 'cSuche'}selected="selected"{/if}>
-                                            Suchbegriff
-                                        </option>
-                                    </select>
-                                </span>
-                            </div>
+                            <span class="input-group-addon"><label for="cKey">Filter</label></span>
+                            <span class="input-group-wrap">
+                                <select class="form-control" id="cKey" name="cKey">
+                                    <option value="" {if isset($oExtension->cKey) && $oExtension->cKey === ''}selected="selected"{/if}>
+                                        Kein Filter
+                                    </option>
+                                    <option value="kTag" {if isset($cKey) && $cKey === 'kTag'}selected="selected" {elseif isset($oExtension->cKey) && $oExtension->cKey === 'kTag'}selected="selected"{/if}>
+                                        Tag
+                                    </option>
+                                    <option value="kMerkmalWert" {if isset($cKey) && $cKey === 'kMerkmalWert'}selected="selected" {elseif isset($oExtension->cKey) && $oExtension->cKey === 'kMerkmalWert'}selected="selected"{/if}>
+                                        Merkmal
+                                    </option>
+                                    <option value="kKategorie" {if isset($cKey) && $cKey === 'kKategorie'}selected="selected" {elseif isset($oExtension->cKey) && $oExtension->cKey === 'kKategorie'}selected="selected"{/if}>
+                                        Kategorie
+                                    </option>
+                                    <option value="kHersteller" {if isset($cKey) && $cKey === 'kHersteller'}selected="selected" {elseif isset($oExtension->cKey) && $oExtension->cKey === 'kHersteller'}selected="selected"{/if}>
+                                        Hersteller
+                                    </option>
+                                    <option value="cSuche" {if isset($cKey) && $cKey === 'cSuche'}selected="selected" {elseif isset($oExtension->cKey) && $oExtension->cKey === 'cSuche'}selected="selected"{/if}>
+                                        Suchbegriff
+                                    </option>
+                                </select>
+                            </span>
                         </div>
                     </div>
                     {include file="tpl_inc/single_search_browser.tpl"}

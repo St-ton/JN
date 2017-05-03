@@ -253,26 +253,26 @@ if (TEMPLATE_COMPATIBILITY === true && function_exists('starteAuswahlAssistent')
     );
 }
 $smarty->assign('SEARCHSPECIALS_TOPREVIEWS', SEARCHSPECIALS_TOPREVIEWS)
-        ->assign('code_benachrichtigung_verfuegbarkeit',
-            generiereCaptchaCode($Einstellungen['artikeldetails']['benachrichtigung_abfragen_captcha']))
-        ->assign('oNaviSeite_arr', $NaviFilter->buildPageNavigation(
-            true,
-            $oSuchergebnisse->Seitenzahlen,
-            $Einstellungen['artikeluebersicht']['artikeluebersicht_max_seitenzahl']))
-        ->assign('PFAD_ART_ABNAHMEINTERVALL', PFAD_ART_ABNAHMEINTERVALL)
-        ->assign('ArtikelProSeite', $nArtikelProSeite_arr)
-        ->assign('Navigation', $cBrotNavi)
-        ->assign('Einstellungen', $Einstellungen)
-        ->assign('Sortierliste', $NaviFilter->getSortingOptions())
-        ->assign('Einstellungen', $Einstellungen)
-        ->assign('Suchergebnisse', $oSuchergebnisse)
-        ->assign('requestURL', isset($requestURL) ? $requestURL : null)
-        ->assign('sprachURL', isset($sprachURL) ? $sprachURL : null)
-        ->assign('oNavigationsinfo', $oNavigationsinfo)
-        ->assign('SEO', true)
-        ->assign('nMaxAnzahlArtikel', (int)($oSuchergebnisse->GesamtanzahlArtikel >=
-            (int)$Einstellungen['artikeluebersicht']['suche_max_treffer']))
-        ->assign('SESSION_NOTWENDIG', false);
+       ->assign('code_benachrichtigung_verfuegbarkeit',
+           generiereCaptchaCode($Einstellungen['artikeldetails']['benachrichtigung_abfragen_captcha']))
+       ->assign('oNaviSeite_arr', $NaviFilter->buildPageNavigation(
+           true,
+           $oSuchergebnisse->Seitenzahlen,
+           $Einstellungen['artikeluebersicht']['artikeluebersicht_max_seitenzahl']))
+       ->assign('PFAD_ART_ABNAHMEINTERVALL', PFAD_ART_ABNAHMEINTERVALL)
+       ->assign('ArtikelProSeite', $nArtikelProSeite_arr)
+       ->assign('Navigation', $cBrotNavi)
+       ->assign('Einstellungen', $Einstellungen)
+       ->assign('Sortierliste', $NaviFilter->getSortingOptions())
+       ->assign('Einstellungen', $Einstellungen)
+       ->assign('Suchergebnisse', $oSuchergebnisse)
+       ->assign('requestURL', isset($requestURL) ? $requestURL : null)
+       ->assign('sprachURL', isset($sprachURL) ? $sprachURL : null)
+       ->assign('oNavigationsinfo', $oNavigationsinfo)
+       ->assign('SEO', true)
+       ->assign('nMaxAnzahlArtikel', (int)($oSuchergebnisse->GesamtanzahlArtikel >=
+           (int)$Einstellungen['artikeluebersicht']['suche_max_treffer']))
+       ->assign('SESSION_NOTWENDIG', false);
 
 executeHook(HOOK_FILTER_PAGE);
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';

@@ -167,6 +167,48 @@ class JSONAPI
     }
 
     /**
+     * @param string|array|null $search
+     * @param int $limit
+     * @param string $keyName
+     * @return string
+     */
+    public function getTags($search = null, $limit = 0, $keyName = 'kTag')
+    {
+        if (is_string($search)) {
+            $searchIn = ['cName'];
+        } elseif (is_array($search)) {
+            $searchIn = $keyName;
+        } else {
+            $searchIn = null;
+        }
+
+        return $this->itemsToJson($this->getItems(
+            'ttag', ['kTag', 'cName'], CACHING_GROUP_ARTICLE, $searchIn, $search, $limit
+        ));
+    }
+
+    /**
+     * @param string|array|null $search
+     * @param int $limit
+     * @param string $keyName
+     * @return string
+     */
+    public function getAttributes($search = null, $limit = 0, $keyName = 'kMerkmalWert')
+    {
+        if (is_string($search)) {
+            $searchIn = ['cWert'];
+        } elseif (is_array($search)) {
+            $searchIn = $keyName;
+        } else {
+            $searchIn = null;
+        }
+
+        return $this->itemsToJson($this->getItems(
+            'tmerkmalwertsprache', ['kMerkmalWert', 'cWert'], CACHING_GROUP_ARTICLE, $searchIn, $search, $limit
+        ));
+    }
+
+    /**
      * @param string $table
      * @param string[] $columns
      * @param string $addCacheTag
@@ -239,7 +281,7 @@ class JSONAPI
             $result = [];
         }
 
-        if(!is_array($result)) {
+        if (!is_array($result)) {
             $result = [];
         }
 

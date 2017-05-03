@@ -34,7 +34,7 @@
             {/if}
         {/foreach}
     {else}
-        {if $filter->isInitialized()}
+        {if $filter->isInitialized() && $filter->getType() !== 0}
             <li>
                 <a href="{$filter->getUnsetFilterURL()}" rel="nofollow" class="active">
                     <span class="value">

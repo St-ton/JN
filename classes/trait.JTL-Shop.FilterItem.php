@@ -9,12 +9,6 @@
  */
 trait FilterItemTrait
 {
-    public function getExtraFilter()
-    {
-        $filter = new FilterExtra();
-        Shop::dbg($this, false, 'getExtraFilter:');
-    }
-
     /**
      * @return mixed
      */

@@ -1264,9 +1264,7 @@ function finalisiereBestellung($cBestellNr = '', $bSendeMail = true)
             trim($bestellung->oRechnungsadresse->cOrt),
             trim($bestellung->oRechnungsadresse->cLand)
         );
-        $obj = new stdClass();
-        $obj->cVerwendet = 'Y';
-        Shop::DB()->update('tkuponneukunde', 'cDatenHash', $hash, $obj);
+        Shop::DB()->update('tkuponneukunde', 'cDatenHash', $hash, (object)['cVerwendet' => 'Y']);
     }
 
     $_upd              = new stdClass();

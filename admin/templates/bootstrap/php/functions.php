@@ -231,7 +231,7 @@ function formatVersion($params, &$smarty)
  * array['d']     - Default imageset to use [ 404 | mm | identicon | monsterid | wavatar ]
  * array['r']     - Maximum rating (inclusive) [ g | pg | r | x ]
  *
- * @param JTLSmarty $smarty
+ * @params JTLSmarty $smarty
  * @source https://gravatar.com/site/implement/images/php/
  * @return string
  */
@@ -249,6 +249,11 @@ function gravatarImage($params, &$smarty)
     $url  = 'https://www.gravatar.com/avatar/';
     $url .= md5(strtolower(trim($email)));
     $url .= '?' . http_build_query($params, '', '&');
+
+    executeHook(HOOK_BACKEND_FUNCTIONS_GRAVATAR, [
+        'url' => &$url,
+        'AdminAccount' => &$_SESSION['AdminAccount']
+    ]);
 
     return $url;
 }

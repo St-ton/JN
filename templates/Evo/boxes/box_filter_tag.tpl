@@ -1,26 +1,27 @@
 {if $bBoxenFilterNach && !empty($Suchergebnisse->Tags)}
     <section class="panel panel-default box box-filter-tag" id="sidebox{$oBox->kBox}">
         <div class="panel-heading">
-            <h5 class="panel-title">{lang key="tagFilter" section="global"}</h5></div>
+            <h5 class="panel-title">{lang key="tagFilter" section="global"}</h5>
+        </div>
         <div class="box-body">
             <ul class="nav nav-list">
-             {foreach name=tagfilter from=$Suchergebnisse->Tags item=oTag}
-                 {if isset($NaviFilter->TagFilter[0]->kTag) && $NaviFilter->TagFilter[0]->kTag == $oTag->kTag}
+             {foreach $Suchergebnisse->Tags as $oTag}
+                 {if isset($NaviFilter->TagFilter[0]->kTag) && $NaviFilter->TagFilter[0]->kTag === $oTag->kTag}
                      <li>
-                         <a rel="nofollow" href="{$NaviFilter->URL->cAlleTags}" class="active">
+                         <a rel="nofollow" href="{$NaviFilter->tagFilterCompat->getUnsetFilterURL()}" class="active">
                              <i class="fa fa-check-square-o text-muted"></i>
                              <span class="value">
-                                 {$oTag->cName}
-                                 <span class="badge pull-right">{$oTag->nAnzahl}</span>
+                                 {$oTag->getName()}
+                                 <span class="badge pull-right">{$oTag->getCount()}</span>
                              </span>
                          </a>
                      </li>
                  {else}
                      <li>
-                         <a rel="nofollow" href="{$oTag->cURL}" class="active">
+                         <a rel="nofollow" href="{$oTag->getURL()}" class="active">
                              <span class="value">
-                                 {$oTag->cName}
-                                 <span class="badge pull-right">{$oTag->nAnzahl}</span>
+                                 {$oTag->getName()}
+                                 <span class="badge pull-right">{$oTag->getCount()}</span>
                              </span>
                          </a>
                      </li>

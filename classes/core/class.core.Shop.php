@@ -743,7 +743,7 @@ final class Shop
 
         self::seoCheck();
 
-        return self::buildNaviFilter(self::getParameters(true));
+        return self::buildNaviFilter(self::getParameters());
     }
 
     /**

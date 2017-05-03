@@ -850,8 +850,8 @@ final class Shop
                                 $customFilterSeo = $arr[0];
                                 $seo             .= SEP_HST . $arr[1];
                             }
-                            if (($idx = strpos($customFilterSeo,
-                                    SEP_KAT)) !== false && $idx !== strpos($customFilterSeo, SEP_HST)
+                            if (($idx = strpos($customFilterSeo, SEP_KAT)) !== false
+                                && $idx !== strpos($customFilterSeo, SEP_HST)
                             ) {
                                 $oHersteller_arr = explode(SEP_KAT, $customFilterSeo);
                                 $customFilterSeo = $oHersteller_arr[0];
@@ -987,9 +987,12 @@ final class Shop
                     foreach ($customSeo as $className => $data) {
                         $oSeo = self::DB()->select($data['table'], 'cSeo', $data['cSeo']);
                         if (isset($oSeo->filterval)) {
-                            self::$customFilters[$className] = (int)$oSeo->filterval    ;
+                            self::$customFilters[$className] = (int)$oSeo->filterval;
                         } else {
                             self::$bKatFilterNotFound = true;
+                        }
+                        if (isset($oSeo->kSprache) && $oSeo->kSprache > 0) {
+                            self::updateLanguage($oSeo->kSprache);
                         }
                     }
                 }
@@ -1100,18 +1103,7 @@ final class Shop
                     }
                 }
                 if (isset($oSeo->kSprache) && $oSeo->kSprache > 0) {
-                    $kSprache = (int)$oSeo->kSprache;
-                    if (self::$NaviFilter->getLanguageID() !== $kSprache) {
-                        self::$NaviFilter->setLanguageID($kSprache);
-                    }
-                    $spr   = class_exists('Sprache')
-                        ? self::Lang()->getIsoFromLangID($kSprache)
-                        : self::DB()->select('tsprache', 'kSprache', $kSprache);
-                    $cLang = isset($spr->cISO) ? $spr->cISO : null;
-                    if ($cLang !== $_SESSION['cISOSprache']) {
-                        checkeSpracheWaehrung($cLang);
-                        setzeSteuersaetze();
-                    }
+                    self::updateLanguage($oSeo->kSprache);
                 }
             }
             self::$MerkmalFilter = setzeMerkmalFilter();
@@ -1119,6 +1111,25 @@ final class Shop
             self::$TagFilter     = setzeTagFilter();
 
             executeHook(HOOK_SEOCHECK_ENDE);
+        }
+    }
+
+    /**
+     * @param int $languageID
+     */
+    private static function updateLanguage($languageID)
+    {
+        $languageID = (int)$languageID;
+        if (self::$NaviFilter->getLanguageID() !== $languageID) {
+            self::$NaviFilter->setLanguageID($languageID);
+        }
+        $spr   = class_exists('Sprache')
+            ? self::Lang()->getIsoFromLangID($languageID)
+            : self::DB()->select('tsprache', 'kSprache', $languageID);
+        $cLang = isset($spr->cISO) ? $spr->cISO : null;
+        if ($cLang !== $_SESSION['cISOSprache']) {
+            checkeSpracheWaehrung($cLang);
+            setzeSteuersaetze();
         }
     }
 

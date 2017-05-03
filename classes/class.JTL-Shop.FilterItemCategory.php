@@ -14,14 +14,15 @@ class FilterItemCategory extends FilterBaseCategory
     /**
      * FilterItemCategory constructor.
      *
-     * @param int|null   $languageID
-     * @param int|null   $customerGroupID
-     * @param array|null $config
-     * @param array|null $languages
+     * @param Navigationsfilter|null $naviFilter
+     * @param int|null               $languageID
+     * @param int|null               $customerGroupID
+     * @param array|null             $config
+     * @param array|null             $languages
      */
-    public function __construct($languageID = null, $customerGroupID = null, $config = null, $languages = null)
+    public function __construct($naviFilter = null, $languageID = null, $customerGroupID = null, $config = null, $languages = null)
     {
-        parent::__construct($languageID, $customerGroupID, $config, $languages);
+        parent::__construct($naviFilter, $languageID, $customerGroupID, $config, $languages);
         $this->isCustom    = false;
         $this->urlParam    = 'kf';
         $this->urlParamSEO = SEP_KAT;
@@ -69,17 +70,16 @@ class FilterItemCategory extends FilterBaseCategory
         }
         $options = [];
         if ($this->getConfig()['navigationsfilter']['allgemein_kategoriefilter_benutzen'] !== 'N') {
-            $naviFilter         = Shop::getNaviFilter();
             $categoryFilterType = $this->getConfig()['navigationsfilter']['kategoriefilter_anzeigen_als'];
-            $order              = $naviFilter->getOrder();
-            $state              = $naviFilter->getCurrentStateData();
+            $order              = $this->naviFilter->getOrder();
+            $state              = $this->naviFilter->getCurrentStateData();
 
             $state->joins[] = $order->join;
 
             // Kategoriefilter anzeige
-            if ($categoryFilterType === 'HF' && (!$naviFilter->Kategorie->isInitialized())) {
+            if ($categoryFilterType === 'HF' && (!$this->naviFilter->Kategorie->isInitialized())) {
                 //@todo: $this instead of $naviFilter->KategorieFilter?
-                $kKatFilter = $naviFilter->KategorieFilter->isInitialized()
+                $kKatFilter = $this->naviFilter->KategorieFilter->isInitialized()
                     ? ''
                     : " AND tkategorieartikelgesamt.kOberKategorie = 0";
 
@@ -94,7 +94,7 @@ class FilterItemCategory extends FilterBaseCategory
                                                     ->setOn('tkategorie.kKategorie = tkategorieartikelgesamt.kKategorie');
             } else {
                 //@todo: this instead of $naviFilter->Kategorie?
-                if (!$naviFilter->Kategorie->isInitialized()) {
+                if (!$this->naviFilter->Kategorie->isInitialized()) {
                     $state->joins[] = (new FilterJoin())->setComment('join3 from FilterItemCategory::getOptions()')
                                                         ->setType('JOIN')
                                                         ->setTable('tkategorieartikel')
@@ -127,7 +127,7 @@ class FilterItemCategory extends FilterBaseCategory
                 $select[] = 'tkategorie.cName';
             }
 
-            $query            = $naviFilter->getBaseQuery(
+            $query            = $this->naviFilter->getBaseQuery(
                 $select,
                 $state->joins,
                 $state->conditions,
@@ -146,6 +146,7 @@ class FilterItemCategory extends FilterBaseCategory
                     ORDER BY ssMerkmal.nSort, ssMerkmal.cName";
             $categories       = Shop::DB()->query($query, 2);
             $additionalFilter = new FilterItemCategory(
+                $this->naviFilter,
                 $this->getLanguageID(),
                 $this->getCustomerGroupID(),
                 $this->getConfig(),
@@ -169,7 +170,7 @@ class FilterItemCategory extends FilterBaseCategory
                     ->setValue((int)$category->kKategorie)
                     ->setCount($category->nAnzahl)
                     ->setSort($category->nSort)
-                    ->setURL($naviFilter->getURL(
+                    ->setURL($this->naviFilter->getURL(
                         true,
                         $additionalFilter->init((int)$category->kKategorie)
                     ));

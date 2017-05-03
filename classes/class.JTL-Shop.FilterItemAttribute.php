@@ -24,14 +24,15 @@ class FilterItemAttribute extends FilterBaseAttribute
     /**
      * FilterItemAttribute constructor.
      *
-     * @param int|null   $languageID
-     * @param int|null   $customerGroupID
-     * @param array|null $config
-     * @param array|null $languages
+     * @param Navigationsfilter|null $naviFilter
+     * @param int|null               $languageID
+     * @param int|null               $customerGroupID
+     * @param array|null             $config
+     * @param array|null             $languages
      */
-    public function __construct($languageID = null, $customerGroupID = null, $config = null, $languages = null)
+    public function __construct($naviFilter = null, $languageID = null, $customerGroupID = null, $config = null, $languages = null)
     {
-        parent::__construct($languageID, $customerGroupID, $config, $languages);
+        parent::__construct($naviFilter, $languageID, $customerGroupID, $config, $languages);
         $this->isCustom    = false;
         $this->urlParam    = 'mf';
         $this->urlParamSEO = SEP_MERKMAL;
@@ -123,7 +124,6 @@ class FilterItemAttribute extends FilterBaseAttribute
         if ($this->options !== null) {
             return $this->options;
         }
-        $naviFilter                  = Shop::getNaviFilter();
         $oAktuelleKategorie          = isset($mixed['oAktuelleKategorie'])
             ? $mixed['oAktuelleKategorie']
             : null;
@@ -144,18 +144,18 @@ class FilterItemAttribute extends FilterBaseAttribute
                 is_array($oAktuelleKategorie->categoryFunctionAttributes) &&
                 count($oAktuelleKategorie->categoryFunctionAttributes) > 0 &&
                 !empty($oAktuelleKategorie->categoryFunctionAttributes[KAT_ATTRIBUT_MERKMALFILTER]) &&
-                $naviFilter->KategorieFilter->isInitialized()
+                $this->naviFilter->KategorieFilter->isInitialized()
             ) {
                 $cKatAttribMerkmalFilter_arr =
                     explode(';', $oAktuelleKategorie->categoryFunctionAttributes[KAT_ATTRIBUT_MERKMALFILTER]);
             }
-            $order          = $naviFilter->getOrder();
-            $state          = $naviFilter->getCurrentStateData('FilterItemAttribute');
+            $order          = $this->naviFilter->getOrder();
+            $state          = $this->naviFilter->getCurrentStateData('FilterItemAttribute');
             $state->joins[] = $order->join;
 
             $select = 'tmerkmal.cName';
             // @todo?
-            if (true || (!$naviFilter->MerkmalWert->isInitialized() && count($naviFilter->MerkmalFilter) === 0)) {
+            if (true || (!$this->naviFilter->MerkmalWert->isInitialized() && count($this->naviFilter->MerkmalFilter) === 0)) {
                 $state->joins[] = (new FilterJoin())->setComment('join1 from FilterItemAttribute::getOptions()')
                                                     ->setType('JOIN')
                                                     ->setTable('tartikelmerkmal')
@@ -185,9 +185,9 @@ class FilterItemAttribute extends FilterBaseAttribute
                                                     AND tmerkmalsprache.kSprache = ' . $this->getLanguageID());
             }
 
-            if (count($naviFilter->MerkmalFilter) > 0) {
+            if (count($this->naviFilter->MerkmalFilter) > 0) {
                 $activeFilterIDs = [];
-                foreach ($naviFilter->MerkmalFilter as $filter) {
+                foreach ($this->naviFilter->MerkmalFilter as $filter) {
                     $activeFilterIDs[] = $filter->getValue();
                 }
                 $state->joins[] = (new FilterJoin())->setComment('join6 from FilterItemAttribute::getOptions()')
@@ -202,7 +202,7 @@ class FilterItemAttribute extends FilterBaseAttribute
                                                     ->setOn('tartikel.kArtikel = ssj1.kArtikel');
             }
 
-            $query = $naviFilter->getBaseQuery([
+            $query = $this->naviFilter->getBaseQuery([
                 'tartikelmerkmal.kMerkmal',
                 'tartikelmerkmal.kMerkmalWert',
                 'tmerkmalwert.cBildPfad AS cMMWBildPfad',
@@ -234,6 +234,7 @@ class FilterItemAttribute extends FilterBaseAttribute
 
             if (is_array($oMerkmalFilterDB_arr)) {
                 $additionalFilter = new FilterItemAttribute(
+                    $this->naviFilter,
                     $this->getLanguageID(),
                     $this->getCustomerGroupID(),
                     $this->getConfig(),
@@ -244,8 +245,8 @@ class FilterItemAttribute extends FilterBaseAttribute
                     $oMerkmalWerte->kMerkmalWert = (int)$oMerkmalFilterDB->kMerkmalWert;
                     $oMerkmalWerte->cWert        = $oMerkmalFilterDB->cWert;
                     $oMerkmalWerte->nAnzahl      = (int)$oMerkmalFilterDB->nAnzahl;
-                    $oMerkmalWerte->nAktiv       = ($naviFilter->MerkmalWert->getValue() === $oMerkmalWerte->kMerkmalWert ||
-                        $naviFilter->attributeValueIsActive($oMerkmalWerte->kMerkmalWert))
+                    $oMerkmalWerte->nAktiv       = ($this->naviFilter->MerkmalWert->getValue() === $oMerkmalWerte->kMerkmalWert ||
+                        $this->naviFilter->attributeValueIsActive($oMerkmalWerte->kMerkmalWert))
                         ? 1
                         : 0;
 
@@ -257,7 +258,7 @@ class FilterItemAttribute extends FilterBaseAttribute
                         $oMerkmalWerte->cBildpfadGross = BILD_KEIN_MERKMALWERTBILD_VORHANDEN;
                     }
                     // baue URL
-                    $oMerkmalWerte->cURL = $naviFilter->getURL(
+                    $oMerkmalWerte->cURL = $this->naviFilter->getURL(
                         true,
                         $additionalFilter->init((int)$oMerkmalFilterDB->kMerkmalWert)
                     );
@@ -281,6 +282,7 @@ class FilterItemAttribute extends FilterBaseAttribute
 
                     if ($oMerkmal === null) {
                         $oMerkmal = new FilterItemAttribute(
+                            $this->naviFilter,
                             $this->getLanguageID(),
                             $this->getCustomerGroupID(),
                             $this->getConfig(), $this->getAvailableLanguages()

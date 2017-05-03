@@ -50,7 +50,7 @@
                 <div id="navbar-filter" class="panel-body">
                     <div class="form-inline2">
                         {foreach $NaviFilter->getAvailableFilters() as $filter}
-                            {if ($filter->getVisibility() === $filter::SHOW_ALWAYS || $filter->getVisibility() === $filter::SHOW_CONTENT) && !$filter->isInitialized()}
+                            {if ($filter->getVisibility() === $filter::SHOW_ALWAYS || $filter->getVisibility() === $filter::SHOW_CONTENT) && (!$filter->isInitialized() || $filter->getType() === 0)}
                                 {if count($filter->getFilterCollection()) > 0}
                                     {block name='productlist-result-options-'|cat:$filter->getClassName()}
                                         {foreach $filter->getOptions() as $subFilter}
@@ -73,9 +73,7 @@
                                     {/block}
                                 {/if}
                             {/if}
-
                         {/foreach}
-
                     </div>{* /form-inline *}
                 </div>
                 {*/.navbar-collapse*}
@@ -86,13 +84,25 @@
             <div class="active-filters panel panel-default">
                 <div class="panel-body">
                     {foreach $NaviFilter->getActiveFilters() as $activeFilter}
-                        {if $activeFilter->getValue() !== null}
-                            {strip}
+                        {assign var=activeFilterValue value=$activeFilter->getValue()}
+                        {if $activeFilterValue !== null}
+                            {if $activeFilterValue|is_array}
+                                {foreach $activeFilterValue as $value}
+                                    {strip}
+                                    <a href="{$activeFilter->getUnsetFilterURL($value)}" rel="nofollow" title="Filter {lang key='delete' section='global'}" class="label label-info filter-type-{$activeFilter->getClassName()}">
+                                        {$activeFilter->getName()|cat:': '|cat:$value}
+                                        &nbsp;<span class="fa fa-trash-o"></span>
+                                    </a>
+                                    {/strip}
+                                {/foreach}
+                            {else}
+                                {strip}
                                 <a href="{$activeFilter->getUnsetFilterURL()}" rel="nofollow" title="Filter {lang key='delete' section='global'}" class="label label-info filter-type-{$activeFilter->getClassName()}">
                                     {$activeFilter->getName()}
                                     &nbsp;<span class="fa fa-trash-o"></span>
                                 </a>
-                            {/strip}
+                                {/strip}
+                            {/if}
                         {/if}
                     {/foreach}
                     {if !empty($NaviFilter->URL->cNoFilter)}

@@ -153,13 +153,14 @@ interface IFilter
     /**
      * set basic information for using this filter
      *
-     * @param int        $languageID
-     * @param int        $customerGroupID
-     * @param array|null $config
-     * @param array|null $languages
+     * @param Navigationsfilter|null $naviFilter
+     * @param int                    $languageID
+     * @param int                    $customerGroupID
+     * @param array|null             $config
+     * @param array|null             $languages
      * @return $this
      */
-    public function setData($languageID, $customerGroupID, $config, $languages);
+    public function setData($naviFilter, $languageID, $customerGroupID, $config, $languages);
 
     /**
      * the language ID currently active in the shop
@@ -220,15 +221,16 @@ interface IFilter
     public function setDoUnset($doUnset);
 
     /**
-     * @param string $url
+     * @param string|array $url
      * @return $this
      */
     public function setUnsetFilterURL($url);
 
     /**
+     * @param string|null
      * @return string
      */
-    public function getUnsetFilterURL();
+    public function getUnsetFilterURL($idx = null);
 
     /**
      * @return int

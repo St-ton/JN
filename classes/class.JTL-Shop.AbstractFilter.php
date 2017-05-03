@@ -117,7 +117,7 @@ abstract class AbstractFilter implements IFilter
     private $doUnset = false;
 
     /**
-     * @var string
+     * @var string|array
      */
     private $unsetFilterURL = '';
 
@@ -137,6 +137,11 @@ abstract class AbstractFilter implements IFilter
      * @var array
      */
     private $filterCollection = [];
+
+    /**
+     * @var Navigationsfilter
+     */
+    protected $naviFilter;
 
     /**
      * @var mixed
@@ -220,7 +225,7 @@ abstract class AbstractFilter implements IFilter
     }
 
     /**
-     * @param string $url
+     * @param string|array $url
      * @return $this
      */
     public function setUnsetFilterURL($url)
@@ -231,11 +236,12 @@ abstract class AbstractFilter implements IFilter
     }
 
     /**
-     * @return string
+     * @param string|null $idx
+     * @return string|array
      */
-    public function getUnsetFilterURL()
+    public function getUnsetFilterURL($idx = null)
     {
-        return $this->unsetFilterURL;
+        return $idx === null ? $this->unsetFilterURL : $this->unsetFilterURL[$idx];
     }
 
     /**
@@ -326,30 +332,52 @@ abstract class AbstractFilter implements IFilter
     }
 
     /**
+     * @param Navigationsfilter $naviFilter
+     * @return $this
+     */
+    public function setNaviFilter($naviFilter)
+    {
+        $this->naviFilter = $naviFilter;
+
+        return $this;
+    }
+
+    /**
+     * @return Navigationsfilter
+     */
+    public function getNaviFilter()
+    {
+        return $this->naviFilter;
+    }
+
+    /**
      * AbstractFilter constructor
      *
-     * @param int|null   $languageID
-     * @param int|null   $customerGroupID
-     * @param array|null $config
-     * @param array|null $languages
+     * @param Navigationsfilter|null $naviFilter
+     * @param int|null               $languageID
+     * @param int|null               $customerGroupID
+     * @param array|null             $config
+     * @param array|null             $languages
      */
-    public function __construct($languageID = null, $customerGroupID = null, $config = null, $languages = null)
+    public function __construct($naviFilter = null, $languageID = null, $customerGroupID = null, $config = null, $languages = null)
     {
         if ($languageID !== null && $customerGroupID !== null && $config !== null && $languages !== null) {
-            $this->setData($languageID, $customerGroupID, $config, $languages);
+            $this->setData($naviFilter, $languageID, $customerGroupID, $config, $languages);
         }
         $this->setClassName(get_class($this));
     }
 
     /**
-     * @param int   $languageID
-     * @param int   $customerGroupID
-     * @param array $config
-     * @param array $languages
+     * @param Navigationsfilter $naviFilter
+     * @param int               $languageID
+     * @param int               $customerGroupID
+     * @param array             $config
+     * @param array             $languages
      * @return $this
      */
-    public function setData($languageID, $customerGroupID, $config, $languages = [])
+    public function setData($naviFilter, $languageID, $customerGroupID, $config, $languages = [])
     {
+        $this->naviFilter         = $naviFilter;
         $this->languageID         = $languageID;
         $this->customerGroupID    = $customerGroupID;
         $this->config             = $config;
@@ -438,8 +466,9 @@ abstract class AbstractFilter implements IFilter
      */
     public function __debugInfo()
     {
-        $res           = get_object_vars($this);
-        $res['config'] = '*truncated*';
+        $res               = get_object_vars($this);
+        $res['config']     = '*truncated*';
+        $res['naviFilter'] = '*truncated*';
 
         return $res;
     }

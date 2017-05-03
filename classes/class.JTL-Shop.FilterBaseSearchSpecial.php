@@ -17,14 +17,15 @@ class FilterBaseSearchSpecial extends AbstractFilter
     /**
      * FilterBaseSearchSpecial constructor.
      *
-     * @param int|null   $languageID
-     * @param int|null   $customerGroupID
-     * @param array|null $config
-     * @param array|null $languages
+     * @param Navigationsfilter|null $naviFilter
+     * @param int|null               $languageID
+     * @param int|null               $customerGroupID
+     * @param array|null             $config
+     * @param array|null             $languages
      */
-    public function __construct($languageID = null, $customerGroupID = null, $config = null, $languages = null)
+    public function __construct($naviFilter = null, $languageID = null, $customerGroupID = null, $config = null, $languages = null)
     {
-        parent::__construct($languageID, $customerGroupID, $config, $languages);
+        parent::__construct($naviFilter, $languageID, $customerGroupID, $config, $languages);
         $this->isCustom    = false;
         $this->urlParam    = 'q';
         $this->urlParamSEO = null;
@@ -134,7 +135,7 @@ class FilterBaseSearchSpecial extends AbstractFilter
             case SEARCHSPECIALS_SPECIALOFFERS:
                 $tasp = 'tartikelsonderpreis';
                 $tsp  = 'tsonderpreise';
-                if (!Shop::getNaviFilter()->PreisspannenFilter->isInitialized()) {
+                if (!$this->naviFilter->PreisspannenFilter->isInitialized()) {
                     $tasp = 'tasp';
                     $tsp  = 'tsp';
                 }
@@ -162,7 +163,7 @@ class FilterBaseSearchSpecial extends AbstractFilter
                 return "now() < tartikel.dErscheinungsdatum";
 
             case SEARCHSPECIALS_TOPREVIEWS:
-                if (!Shop::getNaviFilter()->BewertungFilter->isInitialized()) {
+                if (!$this->naviFilter->BewertungFilter->isInitialized()) {
                     $nMindestSterne = (($min = $this->getConfig()['boxen']['boxen_topbewertet_minsterne']) > 0)
                         ? (int)$min
                         : 4;
@@ -179,7 +180,7 @@ class FilterBaseSearchSpecial extends AbstractFilter
     }
 
     /**
-     * @return string
+     * @return array|FilterJoin
      */
     public function getSQLJoin()
     {
@@ -191,7 +192,7 @@ class FilterBaseSearchSpecial extends AbstractFilter
                                          ->setComment('JOIN from FilterBaseSearchSpecial bestseller');
 
             case SEARCHSPECIALS_SPECIALOFFERS:
-                return Shop::getNaviFilter()->PreisspannenFilter->isInitialized()
+                return $this->naviFilter->PreisspannenFilter->isInitialized()
                     ? []
                     : (new FilterJoin())->setType('JOIN')
                                              ->setTable('tartikelsonderpreis AS tasp')
@@ -205,7 +206,7 @@ class FilterBaseSearchSpecial extends AbstractFilter
                 return [];
 
             case SEARCHSPECIALS_TOPREVIEWS:
-                return Shop::getNaviFilter()->BewertungFilter->isInitialized()
+                return $this->naviFilter->BewertungFilter->isInitialized()
                     ? []
                     : (new FilterJoin())->setType('JOIN')
                                              ->setTable('tartikelext AS taex ')

@@ -1,6 +1,13 @@
 # JTL-Shop Changelog
 
-## [4.05.2]
+## [4.05.3]
+
+## Bugfixes
+
+* Beim Export von Exportformaten wird der neue Dateiinhalt an alte Datei angehängt (#1217)
+* Bei News-Kategoriebeschreibung kann kein HTML verwendet werden (#1197)
+
+## [4.05.2] - 2017-04-04
 
 ### Bugfixes 
 

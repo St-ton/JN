@@ -59,8 +59,13 @@
         function finish_export(cb) {
             var elem = '#progress' + cb.kExportformat;
             $(elem).find('div').fadeOut(250, function () {
-                var text = $(elem).find('p').html();
-                $(elem).find('p').html(text).fadeIn(1000);
+                $('#error-msg-' + cb.kExportformat).remove();
+                var text  = $(elem).find('p').html(),
+                    error = '';
+                if (cb.errorMessage.length > 0) {
+                    error = '<span class="red" id="error-msg-' + cb.kExportformat + '"><br>' + cb.errorMessage + '</span>';
+                }
+                $(elem).find('p').html(text).append(error).fadeIn(1000);
             });
         }
         {/literal}

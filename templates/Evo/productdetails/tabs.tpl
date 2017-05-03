@@ -73,7 +73,7 @@
 {if (($Einstellungen.artikeldetails.mediendatei_anzeigen === 'YM' && $Artikel->cMedienDateiAnzeige !== 'beschreibung')
     || $Artikel->cMedienDateiAnzeige === 'tab') && !empty($Artikel->cMedienTyp_arr)}
     {foreach name="mediendateigruppen" from=$Artikel->cMedienTyp_arr item=cMedienTyp}
-        {$cMedienTypId = $cMedienTyp|regex_replace:"/[\'\" ]/":""}
+        {$cMedienTypId = $cMedienTyp|regex_replace:"/[\'\"\/ ]/":""}
         {$tabsPaneleArr[{$cMedienTypId}] = [
             'id'      => {$cMedienTypId},
             'cName'   => {$cMedienTyp},
@@ -94,8 +94,13 @@
     {if $tabanzeige}
         <ul class="nav nav-tabs bottom15" role="tablist">
             {foreach from=$tabsPaneleArr item=tabPanel name=tabPanelItem}
-                <li role="presentation"{if $smarty.foreach.tabPanelItem.first} class="active"{/if}>
-                    <a href="#{$tabPanel.id}" role="tab" data-toggle="tab">{$tabPanel.cName}</a>
+                <li role="presentation"
+                    {if isset($smarty.get.ratings_nPage) && count($smarty.get.ratings_nPage) > 0 && $tabPanel.id === "votes"}
+                        class="active"
+                    {else}
+                        {if $smarty.foreach.tabPanelItem.first && !isset($smarty.get.ratings_nPage)} class="active"{/if}
+                    {/if}>
+                    <a href="#tab-{$tabPanel.id}" role="tab" data-toggle="tab">{$tabPanel.cName}</a>
                 </li>
             {/foreach}
         </ul>
@@ -103,14 +108,19 @@
     <div class="tab-content">
         {foreach from=$tabsPaneleArr item=tabPanele name=tabPaneleItem}
             {if $tabanzeige}
-                <div role="tabpanel" class="tab-pane fade{if $smarty.foreach.tabPaneleItem.first} in active{/if}"
-                     id="{$tabPanele.id}">
+                {if isset($smarty.get.ratings_nPage) && count($smarty.get.ratings_nPage) > 0 && $tabPanele.id === "votes"}
+                    <div role="tabpanel" class="tab-pane fade in active"
+                {else}
+                    <div role="tabpanel" class="tab-pane fade
+                        {if $smarty.foreach.tabPaneleItem.first && !isset($smarty.get.ratings_nPage)} in active{/if}"
+                {/if}
+                     id="tab-{$tabPanele.id}">
             {else}
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h3 class="panel-title">{$tabPanele.cName}</h3>
                     </div>
-                    <div class="panel-body">
+                    <div class="panel-body" id="tab-{$tabPanele.id}">
             {/if}
             {$tabPanele.content}
             {if !empty($tabPanele.content2)}

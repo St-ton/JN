@@ -72,13 +72,13 @@
                                 <ul class="nav navbar-nav navbar-right">
                                     <li class="dropdown">
                                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{lang key="manufacturers" section="global"} <span class="fa fa-caret-down pull-right"></span></a>
-                                            <ul class="dropdown-menu keepopen">
-                                                {foreach name='hersteller' from=$manufacturers item='hst'}
-                                                    <li role="presentation">
-                                                        <a role="menuitem" tabindex="-1" href="{$hst->cSeo}">{$hst->cName|escape:"html"}</a>
-                                                    </li>
-                                                {/foreach}
-                                            </ul>
+                                        <ul class="dropdown-menu keepopen">
+                                            {foreach name='hersteller' from=$manufacturers item='hst'}
+                                                <li role="presentation">
+                                                    <a role="menuitem" tabindex="-1" href="{$hst->cSeo}">{$hst->cName|escape:"html"}</a>
+                                                </li>
+                                            {/foreach}
+                                        </ul>
                                     </li>
                                 </ul>
                             </div>
@@ -93,7 +93,7 @@
                     {/if}
                     {$firstelement = true}
                     <ul class="nav navbar-nav">
-                        {include file='snippets/linkgroup_list.tpl' linkgroupIdentifier='megamenu' dropdownSupport=true tplscope='megamenu'}
+                        {include file='snippets/linkgroup_list.tpl' linkgroupIdentifier='megamenu' dropdownSupport=true tplscope='megamenu' caret="fa fa-caret-down pull-right"}
                     </ul>
                 {/if}
             {/block}{* megamenu-pages *}

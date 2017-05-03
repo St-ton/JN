@@ -124,6 +124,9 @@ class NiceDB
             }
             $dsn .= ';host=' . $dbHost;
         }
+        if (defined('DB_PERSISTENT_CONNECTIONS') && is_bool(DB_PERSISTENT_CONNECTIONS)) {
+            $options[PDO::ATTR_PERSISTENT] = DB_PERSISTENT_CONNECTIONS;
+        }
         $this->pdo = new PDO($dsn, $dbUser, $dbPass, $options);
         if (defined('NICEDB_EXCEPTION_BACKTRACE') && NICEDB_EXCEPTION_BACKTRACE === true) {
             $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);

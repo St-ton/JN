@@ -103,6 +103,7 @@ class FilterItemPriceRange extends AbstractFilter
         //localize prices
         $this->cVonLocalized = gibPreisLocalizedOhneFaktor($this->fVon);
         $this->cBisLocalized = gibPreisLocalizedOhneFaktor($this->fBis);
+        $this->cName         = $this->cVonLocalized . ' - ' . $this->cBisLocalized;
         $this->isInitialized = true;
 
         $oFilter         = new stdClass();

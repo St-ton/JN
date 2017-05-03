@@ -229,6 +229,7 @@ class Navigationsfilter
             ? (int)Shop::DB()->select('tkundengruppe', 'cStandard', 'Y')->kKundengruppe
             : (int)$_SESSION['Kundengruppe']->kKundengruppe;
         $this->baseURL         = Shop::getURL() . '/';
+        executeHook(HOOK_NAVIGATIONSFILTER_CREATE, ['navifilter' => $this]);
     }
 
     /**
@@ -577,7 +578,7 @@ class Navigationsfilter
 
             }
         }
-        executeHook(HOOK_NAVIGATIONSFILTER_INIT_FILTER, [
+        executeHook(HOOK_NAVIGATIONSFILTER_INIT_STATES, [
                 'navifilter' => $this,
                 'params'     => $params
             ]
@@ -1974,8 +1975,8 @@ class Navigationsfilter
     /**
      * URLs generieren, die Filter lösen
      *
-     * @param bool   $bSeo
-     * @param object $oSuchergebnisse
+     * @param bool     $bSeo
+     * @param stdClass $oSuchergebnisse
      * @return $this
      */
     public function createUnsetFilterURLs($bSeo, $oSuchergebnisse)

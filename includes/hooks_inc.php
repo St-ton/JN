@@ -1691,4 +1691,12 @@ define('HOOK_NAVIGATIONSFILTER_INIT', 228);
  * @param Navigationsfilter navifilter
  * @param array params
  */
-define('HOOK_NAVIGATIONSFILTER_INIT_FILTER', 229);
+define('HOOK_NAVIGATIONSFILTER_INIT_STATES', 229);
+
+/**
+ * in Navigationsfilter::construct() when creating the instance
+ *
+ * @file class.JTL-Shop.Navigationsfilter.php
+ * @param Navigationsfilter navifilter
+ */
+define('HOOK_NAVIGATIONSFILTER_CREATE', 230);

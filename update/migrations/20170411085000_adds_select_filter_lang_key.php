@@ -27,8 +27,8 @@ class Migration_20170411085000 extends Migration implements IMigration
 
     public function up()
     {
-        $this->setLocalization('ger', 'global', 'selectFilter', 'optionalen Filter w&auml;hlen');
-        $this->setLocalization('eng', 'global', 'selectFilter', 'select optional filter');
+        $this->setLocalization('ger', 'global', 'selectFilter', 'Beliebig');
+        $this->setLocalization('eng', 'global', 'selectFilter', 'Any');
     }
 
     public function down()

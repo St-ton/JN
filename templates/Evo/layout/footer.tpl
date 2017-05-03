@@ -226,7 +226,7 @@
         </div>
     </footer>
 {/if}
-{block name="main-wrapper-close"}
+{block name="main-wrapper-closingtag"}
 </div> {* /mainwrapper *}
 {/block}
 

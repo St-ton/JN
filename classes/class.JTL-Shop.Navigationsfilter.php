@@ -1415,7 +1415,7 @@ class Navigationsfilter
         $this->attributeFilterCompat->setFilterCollection($searchResults->MerkmalFilter);
 
         if (!isset($searchResults->Preisspanne)) {
-            $searchResults->Preisspanne      = $this->PreisspannenFilter->getOptions($searchResults->GesamtanzahlArtikel);
+            $searchResults->Preisspanne = $this->PreisspannenFilter->getOptions($searchResults->GesamtanzahlArtikel);
         }
         if (!isset($searchResults->Kategorieauswahl)) {
             $searchResults->Kategorieauswahl = $this->KategorieFilter->getOptions();

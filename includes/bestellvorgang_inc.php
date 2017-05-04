@@ -2394,7 +2394,7 @@ function gibGesamtsummeKuponartikelImWarenkorb($Kupon, $PositionenArr)
     if (is_array($PositionenArr)) {
         foreach ($PositionenArr as $Position) {
             if ((empty($Kupon->cArtikel) || warenkorbKuponFaehigArtikel($Kupon, [$Position])) ||
-                (empty($Kupon->cArtikel) || warenkorbKuponFaehigHersteller($Kupon, [$Position])) ||
+                (empty($Kupon->cHersteller) || warenkorbKuponFaehigHersteller($Kupon, [$Position])) ||
                 warenkorbKuponFaehigKategorien($Kupon, [$Position])) {
                 $gesamtsumme += $Position->fPreis * $Position->nAnzahl * ((100 + gibUst($Position->kSteuerklasse)) / 100);
             }

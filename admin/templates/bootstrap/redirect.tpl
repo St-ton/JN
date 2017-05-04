@@ -5,15 +5,6 @@
 
 <script>{literal}
     $(document).ready(function () {
-        init_simple_search(function (type, res) {
-            $('input.simple_search').val(res.cUrl)
-        });
-        $('.showEditor').click(function () {
-            $('input.cToUrl').removeClass('simple_search');
-            $(this).parent().find('input.cToUrl').addClass('simple_search');
-            show_simple_search($(this).attr('id'));
-            return false;
-        });
         $('.import').click(function () {
             var $csvimport = $('.csvimport');
             if ($csvimport.css('display') === 'none') {

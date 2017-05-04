@@ -381,4 +381,3 @@
     </div>
 </form>
 </div>
-{include file="tpl_inc/single_search_browser.tpl"}

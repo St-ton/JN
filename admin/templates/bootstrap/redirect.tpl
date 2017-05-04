@@ -21,55 +21,6 @@
         {literal}
     });
     
-    redirect_search = function (id,search) {
-        $.ajax({
-            type: 'POST',
-            dataType: 'json',
-            url: 'redirect.php',
-            data: {
-                {/literal}
-                    'jtl_token': '{$smarty.session.jtl_token}',
-                {literal}
-                'aData[action]': 'search',
-                'aData[search]': ( (search.substr(0, 1) != '/') ? search.substr(0) : search.substr(1) )
-            },
-            success: function (data, textStatus, jqXHR) {
-                if (search.length > 1) {
-                    var ret = '',
-                        i;
-                    $('#resSearch_' + id + ' li').remove();
-                    if (data.article.length > 0) {
-                        ret += '<li class="dropdown-header">Artikel</li>';
-                        for (i = 0; i < data.article.length; i++) {
-                            ret += '<li onclick="$(\'#url_' + id + '\').val(\'/' + data.article[i].cUrl + '\');check_url(\'' + id + '\',$(\'#url_' + id + '\').val());return false;">';
-                            ret += '<a href="#">/' + data.article[i].cUrl + '</a></li>';
-                        }
-                    }
-                    if (data.category.length > 0) {
-                        ret += '<li class="dropdown-header">Kategorie</li>';
-                        for (i = 0; i < data.category.length; i++) {
-                            ret += '<li onclick="$(\'#url_' + id + '\').val(\'/' + data.category[i].cUrl + '\');check_url(\'' + id + '\',$(\'#url_' + id + '\').val());return false;">';
-                            ret += '<a href="#">/' + data.category[i].cUrl + '</a></li>';
-                        }
-                    }
-                    if (data.manufacturer.length > 0) {
-                        ret += '<li class="dropdown-header">Hersteller</li>';
-                        for (i = 0; i < data.manufacturer.length; i++) {
-                            ret += '<li onclick="$(\'#url_' + id + '\').val(\'/' + data.manufacturer[i].cUrl + '\');check_url(\'' + id + '\',$(\'#url_' + id + '\').val());return false;">';
-                            ret += '<a href="#">/' + data.manufacturer[i].cUrl + '</a></li>';
-                        }
-                    }
-                    $('#resSearch_' + id).append(ret);
-                    if (ret) {
-                        $('#frm_' + id + ' .input-group-btn').addClass('open');
-                    } else {
-                        $('#frm_' + id + ' .input-group-btn').removeClass('open');
-                    }
-                }
-            }
-        });
-    };
-    
     check_url = function(id,url) {
         var $stateChecking = $('#frm_' + id + ' .state-checking');
         var $stateAvailable = $('#frm_' + id + ' .state-available');

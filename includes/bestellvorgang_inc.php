@@ -2206,7 +2206,7 @@ function checkeKupon($Kupon)
         }
     }
     //Hersteller
-    if ($Kupon->cHersteller != -1 && !warenkorbKuponFaehigHersteller($Kupon, $_SESSION['Warenkorb']->PositionenArr)) {
+    if ($Kupon->cHersteller != -1 && !empty($Kupon->cHersteller) && !warenkorbKuponFaehigHersteller($Kupon, $_SESSION['Warenkorb']->PositionenArr)) {
         $ret['ungueltig'] = 12;
     }
     $alreadyUsedSQL = '';
@@ -2393,8 +2393,8 @@ function gibGesamtsummeKuponartikelImWarenkorb($Kupon, $PositionenArr)
     $gesamtsumme = 0;
     if (is_array($PositionenArr)) {
         foreach ($PositionenArr as $Position) {
-            if (warenkorbKuponFaehigArtikel($Kupon, [$Position]) ||
-                warenkorbKuponFaehigHersteller($Kupon, [$Position]) ||
+            if ((empty($Kupon->cArtikel) || warenkorbKuponFaehigArtikel($Kupon, [$Position])) ||
+                (empty($Kupon->cArtikel) || warenkorbKuponFaehigHersteller($Kupon, [$Position])) ||
                 warenkorbKuponFaehigKategorien($Kupon, [$Position])) {
                 $gesamtsumme += $Position->fPreis * $Position->nAnzahl * ((100 + gibUst($Position->kSteuerklasse)) / 100);
             }
@@ -2870,7 +2870,7 @@ function kuponMoeglich()
                 AND (nVerwendungen = 0 
                     OR nVerwendungen > nVerwendungenBisher)
                 AND (cArtikel = '' $Artikel_qry)
-                AND (cHersteller = '-1' $Hersteller_qry) 
+                AND (cHersteller IS NULL OR cHersteller = '' OR cHersteller = '-1' $Hersteller_qry) 
                 AND (cKategorien = '' 
                     OR cKategorien = '-1' $Kategorie_qry)
                 AND (cKunden = '' 

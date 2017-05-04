@@ -44,19 +44,6 @@
                 typeChanged($(selected).val());
             }).change();
 
-            $('.nl').find('a').each(function () {
-                var type = $(this).attr('id');
-                $(this).click(function () {
-                    show_simple_search(type);
-                });
-            });
-
-            init_simple_search(function (type, res) {
-                $(".nl input[name='" + type + "_key']").val(res.kKey);
-                $(".nl input[name='" + type + "_name']").val(res.cName);
-            });
-
-
             $('form #oFile').change(function(e){
                 $('form div.alert').slideUp();
                 var filesize= this.files[0].size;
@@ -223,7 +210,6 @@
                             </span>
                         </div>
                     </div>
-                    {include file="tpl_inc/single_search_browser.tpl"}
                     <div class="nl">
                         <div id="keykArtikel" class="input-group key">
                             <span class="input-group-addon"><label for="article_name">Artikel</label></span>
@@ -361,15 +347,6 @@
     <script type="text/javascript">
         {literal}
         $(document).ready(function () {
-            $('#article_browser').click(function () {
-                show_simple_search('article');
-                return false;
-            });
-
-            init_simple_search(function (type, res) {
-                $('#article_info').html((res.kPrimary > 0) ? '<span class="success">Verkn&uuml;pft</span>' : '<span class="error">Nicht verkn&uuml;pft</span>');
-            });
-
             $('#article_unlink').click(function () {
                 $('#article_id').val(0);
                 $('#article_name').val('');
@@ -382,7 +359,6 @@
         <div class="left">Zonen</div>
         <div class="right" id="area_info"></div>
     </div>
-    {include file="tpl_inc/single_search_browser.tpl"}
     <div id="area_container">
         <div id="area_editor" class="panel panel-default">
             <div class="category first panel-heading">

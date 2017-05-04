@@ -152,6 +152,8 @@ function get_list_callback(type, id) {
 
 /**
  * single search browser
+ * @deprecated since 4.06 the functionality of this component can simply be covered with a twitter typeahead. See
+ *      the function enableTypeahead() in global.js to turn a text input into a suggestion input.
  * @param callback
  */
 function init_simple_search(callback) {
@@ -204,6 +206,8 @@ function init_simple_search(callback) {
 }
 
 /**
+ * @deprecated since 4.06 the functionality of this component can simply be covered with a twitter typeahead. See
+ *      the function enableTypeahead() in global.js to turn a text input into a suggestion input.
  * @param type
  */
 function show_simple_search(type) {
@@ -215,6 +219,8 @@ function show_simple_search(type) {
 }
 
 /**
+ * @deprecated since 4.06 the functionality of this component can simply be covered with a twitter typeahead. See
+ *      the function enableTypeahead() in global.js to turn a text input into a suggestion input.
  * @param type
  * @param search
  * @param callback

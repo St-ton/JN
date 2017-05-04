@@ -75,7 +75,7 @@
                                     <strong>{lang key="shippingTime" section="global"}</strong>: {$cEstimatedDelivery}
                                 </p>
                             {/if}
-                            <a class="small edit" href="{get_static_route id='bestellvorgang.php'}?editZahlungsart=1">
+                            <a class="small edit" href="{get_static_route id='bestellvorgang.php'}?editVersandart=1">
                                 <span class="fa fa-pencil"></span> {lang key="modifyShippingOption" section="checkout"}
                             </a>
                         {/block}

@@ -141,15 +141,20 @@ if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']) {
 
         $oGuenstigsteVersandart = null;
         $oVersandart_arr        = VersandartHelper::getPossibleShippingMethods($land, $plz, VersandartHelper::getShippingClasses($_SESSION['Warenkorb']), $kKundengruppe);
+        $activeVersandart       = gibAktiveVersandart($oVersandart_arr);
 
-        foreach ($oVersandart_arr as $oVersandart) {
-            if ($oGuenstigsteVersandart === null || $oVersandart->fEndpreis < $oGuenstigsteVersandart->fEndpreis) {
-                $oGuenstigsteVersandart = $oVersandart;
+        if (empty($activeVersandart)) {
+            foreach ($oVersandart_arr as $oVersandart) {
+                if ($oGuenstigsteVersandart === null || $oVersandart->fEndpreis < $oGuenstigsteVersandart->fEndpreis) {
+                    $oGuenstigsteVersandart = $oVersandart;
+                }
             }
-        }
 
-        if ($oGuenstigsteVersandart !== null) {
-            pruefeVersandartWahl($oGuenstigsteVersandart->kVersandart);
+            if ($oGuenstigsteVersandart !== null) {
+                pruefeVersandartWahl($oGuenstigsteVersandart->kVersandart);
+            }
+        } else {
+            pruefeVersandartWahl($activeVersandart);
         }
     }
 }
@@ -191,11 +196,8 @@ if ($step === 'Lieferadresse') {
     validateCouponInCheckout();
     gibStepLieferadresse();
 }
-if ($step === 'Versand') {
+if ($step === 'Versand' || $step === 'Zahlung') {
     gibStepVersand();
-    Warenkorb::refreshChecksum($_SESSION['Warenkorb']);
-}
-if ($step === 'Zahlung') {
     gibStepZahlung();
     Warenkorb::refreshChecksum($_SESSION['Warenkorb']);
 }

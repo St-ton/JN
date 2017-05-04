@@ -374,15 +374,22 @@
         },
 
         checkout: function() {
-            $('#checkout-shipping-payment input[name="Versandart"]').change(function() {
-                var id = parseInt($(this).val());
-                var form = $(this).closest('form');
+            // show only the first submit button (i.g. the button from payment plugin)
+            var $submits = $('#checkout-shipping-payment')
+                .closest('form')
+                .find('input[type="submit"]');
+            $submits.addClass('hidden');
+            $submits.first().removeClass('hidden');
+
+            $('input[name="Versandart"]', '#checkout-shipping-payment').change(function() {
+                var id    = parseInt($(this).val());
+                var $form = $(this).closest('form');
 
                 if (isNaN(id)) {
                     return;
                 }
 
-                form.find('fieldset, input[type="submit"]')
+                $form.find('fieldset, input[type="submit"]')
                     .attr('disabled', true);
 
                 var url = 'bestellvorgang.php?kVersandart=' + id;
@@ -410,8 +417,8 @@
         },
         
         loadContent: function(url, callback, error, animation, dataType) {
-            var that = this;
-            var $wrapper = $('#result-wrapper');
+            var that        = this;
+            var $wrapper    = $('#result-wrapper');
             var ajaxOptions = {data: 'isAjax', dataType: dataType};
             if (animation) {
                 $wrapper.addClass('loading');
@@ -424,12 +431,12 @@
                 }
                 $wrapper.replaceWith($data);
                 $wrapper = $data;
-                if (typeof callback == 'function') {
+                if (typeof callback === 'function') {
                     callback();
                 }
             })
             .fail(function() {
-                if (typeof error == 'function') {
+                if (typeof error === 'function') {
                     error();
                 }
             })

@@ -6,8 +6,8 @@
 {if !isset($bAjaxRequest) || !$bAjaxRequest}
     {include file='layout/header.tpl'}
 {/if}
-<div id="checkout">
-    <div id="result-wrapper">
+<div id="result-wrapper">
+    <div id="checkout">
         {include file="checkout/inc_steps.tpl"}
 
         {include file="snippets/extension.tpl"}
@@ -17,10 +17,8 @@
             {include file='checkout/step1_edit_customer_address.tpl'}{*bestellvorgang_unregistriert_formular.tpl*}
         {elseif $step === 'Lieferadresse'}
             {include file='checkout/step2_delivery_address.tpl'}{*bestellvorgang_lieferadresse.tpl*}
-        {elseif $step === 'Versand'}
+        {elseif $step === 'Versand' || $step === 'Zahlung'}
             {include file='checkout/step3_shipping_options.tpl'}{*bestellvorgang_versand.tpl*}
-        {elseif $step === 'Zahlung'}
-            {include file='checkout/step4_payment_options.tpl'}{*bestellvorgang_zahlung.tpl*}
         {elseif $step === 'ZahlungZusatzschritt'}
             {include file='checkout/step4_payment_additional.tpl'}{*bestellvorgang_zahlung_zusatzschritt*}
         {elseif $step === 'Bestaetigung'}

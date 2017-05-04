@@ -364,7 +364,9 @@ function pruefeVersandartStep($cGet_arr)
                               ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZINSAUFSCHLAG)
                               ->loescheSpezialPos(C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR);
         unset($_SESSION['Zahlungsart'], $_SESSION['TrustedShops'], $_SESSION['Versandart']);
+
         $step = 'Versand';
+        pruefeZahlungsartStep(['editZahlungsart' => 1]);
     }
 }
 
@@ -384,6 +386,7 @@ function pruefeZahlungsartStep($cGet_arr)
                               ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR);
         unset($_SESSION['Zahlungsart']);
         $step = 'Zahlung';
+        pruefeVersandartStep(['editVersandart' => 1]);
     }
     // Hinweis?
     if (isset($cGet_arr['nHinweis']) && (int)$cGet_arr['nHinweis'] > 0) {
@@ -643,7 +646,8 @@ function gibStepZahlung()
         }
     }
 
-    $oZahlungsart_arr = gibZahlungsarten($_SESSION['Versandart']->kVersandart, $_SESSION['Kundengruppe']->kKundengruppe);
+    $aktiveVersandart = gibAktiveVersandart($oVersandart_arr);
+    $oZahlungsart_arr = gibZahlungsarten($aktiveVersandart, $_SESSION['Kundengruppe']->kKundengruppe);
     if (is_array($oZahlungsart_arr) && count($oZahlungsart_arr) === 1 &&
         !isset($_GET['editZahlungsart']) && empty($_SESSION['TrustedShopsZahlung'])
     ) {
@@ -670,10 +674,20 @@ function gibStepZahlung()
                 JTLLOG_LEVEL_ERROR);
         }
     }
+
+    $aktiveZahlungsart = gibAktiveZahlungsart($oZahlungsart_arr);
+    if (!isset($_SESSION['Versandart']) && !empty($aktiveVersandart)) {
+        // dieser Workaround verhindert die Anzeige der Standardzahlungsarten wenn ein Zahlungsplugin aktiv ist
+        $_SESSION['Versandart'] = (object)[
+            'kVersandart' => $aktiveVersandart,
+        ];
+    }
+
     Shop::Smarty()->assign('Zahlungsarten', $oZahlungsart_arr)
         ->assign('Versandarten', $oVersandart_arr)
         ->assign('Verpackungsarten', $oVerpackung_arr)
-        ->assign('AktiveVersandart', $_SESSION['Versandart']->kVersandart)
+        ->assign('AktiveVersandart', $aktiveVersandart)
+        ->assign('AktiveZahlungsart', $aktiveZahlungsart)
         ->assign('Kunde', $_SESSION['Kunde'])
         ->assign('Lieferadresse', $_SESSION['Lieferadresse']);
 
@@ -1243,8 +1257,9 @@ function zahlungsartKorrekt($kZahlungsart)
                 }
             }
         }
-        $Zahlungsart->angezeigterName = $Spezialpos->cName;
-        $_SESSION['Zahlungsart']      = $Zahlungsart;
+        $Zahlungsart->angezeigterName  = $Spezialpos->cName;
+        $_SESSION['Zahlungsart']       = $Zahlungsart;
+        $_SESSION['AktiveZahlungsart'] = $Zahlungsart->kZahlungsart;
         if ($Zahlungsart->cZusatzschrittTemplate) {
             $ZahlungsInfo    = new stdClass();
             $zusatzangabenDa = false;
@@ -1503,6 +1518,50 @@ function gibZahlungsarten($kVersandart, $kKundengruppe)
     }
 
     return $gueltigeZahlungsarten;
+}
+
+/**
+ * @param object[] $oVersandarten_arr
+ * @return int
+ */
+function gibAktiveVersandart($oVersandarten_arr)
+{
+    if (isset($_SESSION['Versandart'])) {
+        $_SESSION['AktiveVersandart'] = $_SESSION['Versandart']->kVersandart;
+    } elseif (!empty($_SESSION['AktiveVersandart']) && is_array($oVersandarten_arr) && count($oVersandarten_arr) > 0) {
+        $active = $_SESSION['AktiveVersandart'];
+        if (array_reduce($oVersandarten_arr, function ($carry, $item) use ($active) {
+            return $item->kVersandart === $active ? $item->kVersandart : $carry;
+        }, 0) !== $_SESSION['AktiveVersandart']) {
+            $_SESSION['AktiveVersandart'] = $oVersandarten_arr[0]->kVersandart;
+        }
+    } else {
+        $_SESSION['AktiveVersandart'] = 0;
+    }
+
+    return $_SESSION['AktiveVersandart'];
+}
+
+/**
+ * @param object[] $oZahlungsarten_arr
+ * @return int
+ */
+function gibAktiveZahlungsart($oZahlungsarten_arr)
+{
+    if (isset($_SESSION['Zahlungsart'])) {
+        $_SESSION['AktiveZahlungsart'] = $_SESSION['Zahlungsart']->kZahlungsart;
+    } elseif (!empty($_SESSION['AktiveZahlungsart']) && is_array($oZahlungsarten_arr) && count($oZahlungsarten_arr) > 0) {
+        $active = $_SESSION['AktiveZahlungsart'];
+        if (array_reduce($oZahlungsarten_arr, function ($carry, $item) use ($active) {
+            return $item->kZahlungsart === $active ? $item->kZahlungsart : $carry;
+        }, 0) !== $_SESSION['AktiveZahlungsart']) {
+            $_SESSION['AktiveZahlungsart'] = $oZahlungsarten_arr[0]->kZahlungsart;
+        }
+    } else {
+        $_SESSION['AktiveZahlungsart'] = 0;
+    }
+
+    return $_SESSION['AktiveZahlungsart'];
 }
 
 /**
@@ -1817,7 +1876,8 @@ function versandartKorrekt($kVersandart, $aFormValues = 0)
                     $bSteuerPos
                 );
             }
-            $_SESSION['Versandart'] = $versandart;
+            $_SESSION['Versandart']       = $versandart;
+            $_SESSION['AktiveVersandart'] = $versandart->kVersandart;
 
             return true;
         }

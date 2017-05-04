@@ -151,10 +151,10 @@ if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']) {
             }
 
             if ($oGuenstigsteVersandart !== null) {
-                pruefeVersandartWahl($oGuenstigsteVersandart->kVersandart);
+                pruefeVersandartWahl($oGuenstigsteVersandart->kVersandart, ['kVerpackung' => array_keys(gibAktiveVerpackung(gibMoeglicheVerpackungen($kKundengruppe)))]);
             }
         } else {
-            pruefeVersandartWahl($activeVersandart);
+            pruefeVersandartWahl($activeVersandart, ['kVerpackung' => array_keys(gibAktiveVerpackung(gibMoeglicheVerpackungen($kKundengruppe)))]);
         }
     }
 }

@@ -675,6 +675,7 @@ function gibStepZahlung()
         }
     }
 
+    $aktiveVerpackung  = gibAktiveVerpackung($oVerpackung_arr);
     $aktiveZahlungsart = gibAktiveZahlungsart($oZahlungsart_arr);
     if (!isset($_SESSION['Versandart']) && !empty($aktiveVersandart)) {
         // dieser Workaround verhindert die Anzeige der Standardzahlungsarten wenn ein Zahlungsplugin aktiv ist
@@ -688,6 +689,7 @@ function gibStepZahlung()
         ->assign('Verpackungsarten', $oVerpackung_arr)
         ->assign('AktiveVersandart', $aktiveVersandart)
         ->assign('AktiveZahlungsart', $aktiveZahlungsart)
+        ->assign('AktiveVerpackung', $aktiveVerpackung)
         ->assign('Kunde', $_SESSION['Kunde'])
         ->assign('Lieferadresse', $_SESSION['Lieferadresse']);
 
@@ -1565,6 +1567,33 @@ function gibAktiveZahlungsart($oZahlungsarten_arr)
 }
 
 /**
+ * @param object[] $oVerpackung_arr
+ * @return array
+ */
+function gibAktiveVerpackung($oVerpackung_arr)
+{
+    if (isset($_SESSION['Verpackung']) && count($_SESSION['Verpackung']) > 0) {
+        $_SESSION['AktiveVerpackung'] = [];
+        foreach ($_SESSION['Verpackung'] as $verpackung) {
+            $_SESSION['AktiveVerpackung'][$verpackung->kVerpackung] = 1;
+        }
+    } elseif (!empty($_SESSION['AktiveVerpackung']) && is_array($oVerpackung_arr) && count($oVerpackung_arr) > 0) {
+        foreach (array_keys($_SESSION['AktiveVerpackung']) as $active) {
+            if (array_reduce($oVerpackung_arr, function ($carry, $item) use ($active) {
+                $kVerpackung = (int)$item->kVerpackung;
+                return $kVerpackung === $active ? $kVerpackung : $carry;
+            }, 0) === 0) {
+                unset($_SESSION['AktiveVerpackung'][$active]);
+            }
+        }
+    } else {
+        $_SESSION['AktiveVerpackung'] = [];
+    }
+
+    return $_SESSION['AktiveVerpackung'];
+}
+
+/**
  * @param Zahlungsart|object $Zahlungsart
  * @return bool
  */
@@ -1733,7 +1762,6 @@ function versandartKorrekt($kVersandart, $aFormValues = 0)
     $fSummeWarenkorb        = $_SESSION['Warenkorb']->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true);
     $_SESSION['Verpackung'] = [];
     if (is_array($kVerpackung_arr) && count($kVerpackung_arr) > 0) {
-        unset($_SESSION['Verpackungen']);
         $_SESSION['Warenkorb']->loescheSpezialPos(C_WARENKORBPOS_TYP_VERPACKUNG);
         foreach ($kVerpackung_arr as $i => $kVerpackung) {
             $kVerpackung = (int)$kVerpackung;
@@ -1746,7 +1774,7 @@ function versandartKorrekt($kVersandart, $aFormValues = 0)
                         AND " . $fSummeWarenkorb . " >= tverpackung.fMindestbestellwert
                         AND nAktiv = 1", 1
             );
-
+            $oVerpackung->kVerpackung = (int)$oVerpackung->kVerpackung;
             if ($oVerpackung->kVerpackung > 0) {
                 $cName_arr              = [];
                 $oVerpackungSprache_arr = Shop::DB()->selectAll('tverpackungsprache', 'kVerpackung', (int)$oVerpackung->kVerpackung);
@@ -1763,6 +1791,8 @@ function versandartKorrekt($kVersandart, $aFormValues = 0)
                     $oVerpackung->kSteuerklasse = $_SESSION['Warenkorb']->gibVersandkostenSteuerklasse($_SESSION['Lieferadresse']->cLand);
                 }
                 $_SESSION['Verpackung'][] = $oVerpackung;
+
+                $_SESSION['AktiveVerpackung'][$oVerpackung->kVerpackung] = 1;
                 $_SESSION['Warenkorb']->erstelleSpezialPos($cName_arr, 1, $fBrutto, $oVerpackung->kSteuerklasse, C_WARENKORBPOS_TYP_VERPACKUNG, false);
                 unset($oVerpackung);
             } else {

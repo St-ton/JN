@@ -85,7 +85,7 @@
                         <div id="packaging_{$oVerpackung->kVerpackung}" class="col-xs-12">
                             <div class="checkbox">
                                 <label for="pac{$oVerpackung->kVerpackung}" class="btn-block">
-                                    <input name="kVerpackung[]" type="checkbox" class="radio-checkbox" value="{$oVerpackung->kVerpackung}" id="pac{$oVerpackung->kVerpackung}" {if $oVerpackung->bWarenkorbAktiv === true}checked{/if}/>
+                                    <input name="kVerpackung[]" type="checkbox" class="radio-checkbox" value="{$oVerpackung->kVerpackung}" id="pac{$oVerpackung->kVerpackung}" {if $oVerpackung->bWarenkorbAktiv === true || (isset($AktiveVerpackung[$oVerpackung->kVerpackung]) && $AktiveVerpackung[$oVerpackung->kVerpackung] === 1)}checked{/if}/>
                                     <span class="control-label label-default">
                                         <span class="content">
                                             <span class="title">{$oVerpackung->cName}</span>

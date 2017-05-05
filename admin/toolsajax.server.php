@@ -217,6 +217,7 @@ function getRandomPassword()
 }
 
 /**
+ * @deprecated since 4.06
  * @param string $cSearch
  * @param array $aParam
  * @return array
@@ -264,6 +265,7 @@ function getArticleList($cSearch, $aParam)
 }
 
 /**
+ * @deprecated since 4.06
  * @param string $cArray
  * @return xajaxResponse
  */
@@ -302,6 +304,7 @@ function getArticleListFromString($cArray)
 }
 
 /**
+ * @deprecated since 4.06
  * @param string $cSearch
  * @param array $aParam
  * @return array
@@ -343,6 +346,7 @@ function getManufacturerList($cSearch, $aParam)
 }
 
 /**
+ * @deprecated since 4.06
  * @param string $cArray
  * @return xajaxResponse
  */
@@ -381,6 +385,7 @@ function getManufacturerListFromString($cArray)
 }
 
 /**
+ * @deprecated since 4.06
  * @param string $cSearch
  * @param array $aParam
  * @return array
@@ -421,6 +426,7 @@ function getCategoryList($cSearch, $aParam)
 }
 
 /**
+ * @deprecated since 4.06
  * @param string $cArray
  * @return xajaxResponse
  */
@@ -459,6 +465,7 @@ function getCategoryListFromString($cArray)
 }
 
 /**
+ * @deprecated since 4.06
  * @param string $cSearch
  * @param string $cWrapperID
  * @return xajaxResponse
@@ -491,6 +498,7 @@ function getTagList($cSearch, $cWrapperID)
 }
 
 /**
+ * @deprecated since 4.06
  * @param string $cSearch
  * @param string $cWrapperID
  * @return xajaxResponse
@@ -529,6 +537,7 @@ function getAttributeList($cSearch, $cWrapperID)
 }
 
 /**
+ * @deprecated since 4.06
  * @param string $cSearch
  * @param array $aParam
  * @return xajaxResponse

@@ -9,6 +9,7 @@ jQuery.fn.center = function () {
 };
 
 /**
+ * @deprecated since 4.06
  * @param type
  * @param assign
  */
@@ -59,6 +60,7 @@ jQuery.fn.set_search = function (type, assign) {
 };
 
 /**
+ * @deprecated since 4.06
  * @param type
  * @param list
  */
@@ -85,6 +87,7 @@ function set_selected_list(type, list) {
 }
 
 /**
+ * @deprecated since 4.06
  * @param type
  * @param search
  * @returns {boolean}
@@ -118,6 +121,7 @@ function search_list(type, search) {
 }
 
 /**
+ * @deprecated since 4.06
  * @param type
  * @param id
  * @returns {*}
@@ -573,9 +577,6 @@ function switchCouponTooltipVisibility() {
  */
 $(document).ready(function () {
     switchCouponTooltipVisibility();
-    $('#show_article_list').set_search('article', '#assign_article_list');
-    $('#show_manufacturer_list').set_search('manufacturer', '#assign_manufacturer_list');
-    $('#show_categories_list').set_search('categories', '#assign_categories_list');
     $('.collapse').removeClass('in');
 
     $('.accordion-toggle').click(function () {

@@ -694,6 +694,18 @@ function gibStepZahlung()
         ->assign('Lieferadresse', $_SESSION['Lieferadresse']);
 
     executeHook(HOOK_BESTELLVORGANG_PAGE_STEPZAHLUNG);
+
+    /**
+     * This is for compatibility in 3-step checkout and will prevent form in form tags trough payment plugins
+     * @see /templates/Evo/checkout/step4_payment_options.tpl
+     * ToDo: Replace with more convenient solution in later versions (after 4.06)
+     */
+    $step4_payment_content = Shop::Smarty()->fetch('checkout/step4_payment_options.tpl');
+    if (preg_match('/<form([^>]*)>/', $step4_payment_content, $hits)) {
+        $step4_payment_content = str_replace($hits[0], '<div' . $hits[1] . '>', $step4_payment_content);
+        $step4_payment_content = str_replace('</form>', '</div>', $step4_payment_content);
+    }
+    Shop::Smarty()->assign('step4_payment_content', $step4_payment_content);
 }
 
 /**

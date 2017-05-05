@@ -106,11 +106,12 @@
             </fieldset>
             <fieldset id="fieldset-payment">
                 <legend>{lang section='global' key='paymentOptions'}</legend>
-                {include file='checkout/step4_payment_options.tpl'}
+                {$step4_payment_content}
             </fieldset>
             {if isset($Versandarten)}
             <div class="text-right">
                 <input type="hidden" name="versandartwahl" value="1" />
+                <input type="hidden" name="zahlungsartwahl" value="1" />
                 <input type="submit" value="{lang key="continueOrder" section="account data"}" class="submit btn btn-lg submit-once btn-primary hidden" />
             </div>
             {/if}

@@ -37,7 +37,7 @@ function checkNewsletterSend() {ldelim}
             {if isset($oNewsletterVorlage->kNewsletterVorlage) && $oNewsletterVorlage->kNewsletterVorlage}
                 <input name="kNewsletterVorlage" type="hidden" value="{$oNewsletterVorlage->kNewsletterVorlage}">
             {/if}
-            <div class="panel panel-default">
+            <div class="panel panel-default settings">
                 <div class="panel-heading">
                     <h3 class="panel-title">Vorlage erstellen</h3>
                 </div>
@@ -173,6 +173,52 @@ function checkNewsletterSend() {ldelim}
                         </span>
                     </div>
                     <div class="input-group">
+                        {*
+                        {include file='tpl_inc/searchpicker_modal.tpl'
+                            searchPickerName='articlePicker'
+                            modalTitle='Artikel ausw&auml;hlen'
+                            searchInputLabel='Suche nach Artikelnamen'
+                        }
+                        <script>
+                            $(function () {
+                                articlePicker = new SearchPicker({
+                                    searchPickerName:  'articlePicker',
+                                    getDataIoFuncName: 'getProducts',
+                                    keyName:           'cArtNr',
+                                    renderItemCb:      function (item) { return '<p class="list-group-item-text">' + item.cName + '</p>'; },
+                                    onApply:           onApplySelectedArticles,
+                                    selectedKeysInit:  '{$oKupon->cArtikel}'.split(';').filter(function (i) { return i !== ''; })
+                                });
+                                onApplySelectedArticles(articlePicker.getSelection());
+                            });
+                            function onApplySelectedArticles(selectedArticles)
+                            {
+                                if (selectedArticles.length > 0) {
+                                    $('#articleSelectionInfo').val(selectedArticles.length + ' Artikel');
+                                    $('#cArtikel').val(selectedArticles.join(';') + ';');
+                                } else {
+                                    $('#articleSelectionInfo').val('Alle Artikel');
+                                    $('#cArtikel').val('');
+                                }
+                            }
+                        </script>
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <label for="articleSelectionInfo">Artikel</label>
+                            </span>
+                                    <span class="input-group-wrap">
+                                <input type="text" class="form-control" readonly="readonly" id="articleSelectionInfo">
+                                <input type="hidden" id="cArtikel" name="cArtikel"
+                                       value="{if isset($cPostVar_arr.cArtikel) && $cPostVar_arr.cArtikel|strlen > 0}{$cPostVar_arr.cArtikel}{elseif isset($oNewsletterVorlage->cArtikel)}{$oNewsletterVorlage->cArtikel}{/if}">
+                            </span>
+                                    <span class="input-group-addon">
+                                <button type="button" class="btn btn-info btn-xs" data-toggle="modal"
+                                        data-target="#articlePicker-modal">
+                                    <i class="fa fa-edit"></i>
+                                </button>
+                            </span>
+                        </div>
+                                *}
                         <span class="input-group-addon">
                             <label for="assign_article_list">{#newsletterartnr#}</label>
                         </span>

@@ -9,14 +9,16 @@
  */
 class SettingSection
 {
-    public $hasSectionMarkup = false;
-    public $hasValueMarkup   = false;
 
+    /** @var bool  */
+    public $hasSectionMarkup = false;
+    /** @var bool  */
+    public $hasValueMarkup = false;
+    /** @var SettingSection[]  */
     private static $instances = [];
 
     /**
      * @param int $kSektion
-     *
      * @return static
      */
     public static function getInstance($kSektion)
@@ -41,7 +43,6 @@ class SettingSection
     /**
      * @param object $conf
      * @param object $confValue
-     *
      * @return bool
      */
     public function validate($conf, &$confValue)
@@ -52,7 +53,6 @@ class SettingSection
     /**
      * @param object $conf
      * @param mixed $value
-     *
      * @return static
      */
     public function setValue(&$conf, $value)
@@ -70,7 +70,6 @@ class SettingSection
 
     /**
      * @param object $conf
-     *
      * @return string
      */
     public function getValueMarkup($conf)

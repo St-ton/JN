@@ -4,6 +4,9 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+/**
+ * Class SettingSection
+ */
 class SettingSection
 {
     public $hasSectionMarkup = false;
@@ -13,6 +16,7 @@ class SettingSection
 
     /**
      * @param int $kSektion
+     *
      * @return static
      */
     public static function getInstance($kSektion)
@@ -37,6 +41,7 @@ class SettingSection
     /**
      * @param object $conf
      * @param object $confValue
+     *
      * @return bool
      */
     public function validate($conf, &$confValue)
@@ -47,11 +52,12 @@ class SettingSection
     /**
      * @param object $conf
      * @param mixed $value
-     * @return void
+     *
+     * @return static
      */
     public function setValue(&$conf, $value)
     {
-        null;
+        return $this;
     }
 
     /**
@@ -64,6 +70,7 @@ class SettingSection
 
     /**
      * @param object $conf
+     *
      * @return string
      */
     public function getValueMarkup($conf)

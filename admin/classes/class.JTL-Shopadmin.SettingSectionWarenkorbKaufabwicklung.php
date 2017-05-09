@@ -4,6 +4,9 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+/**
+ * Class SettingSectionWarenkorbKaufabwicklung
+ */
 class SettingSectionWarenkorbKaufabwicklung extends SettingSection
 {
     public function __construct()

@@ -830,7 +830,9 @@ function plausiNeukundenKupon()
     if (isset($_SESSION['NeukundenKuponAngenommen']) && $_SESSION['NeukundenKuponAngenommen'] === true) {
         return;
     }
-    if ((!isset($_SESSION['Kupon']->cKuponTyp) || $_SESSION['Kupon']->cKuponTyp !== 'standard') && !empty($_SESSION['Kunde']->cMail)) {
+    if ((!isset($_SESSION['Kupon']->cKuponTyp) || $_SESSION['Kupon']->cKuponTyp !== 'standard')
+        && !empty($_SESSION['Kunde']->cMail)
+    ) {
         $query = "SELECT tbestellung.kBestellung
             FROM tkunde
             JOIN tbestellung
@@ -838,14 +840,16 @@ function plausiNeukundenKupon()
             WHERE tkunde.cMail = :mail";
         $values = ['mail' => $_SESSION['Kunde']->cMail];
         $conf = Shop::getSettings([CONF_KAUFABWICKLUNG]);
-        if (empty($_SESSION['Kunde']->kKunde) && $conf['kaufabwicklung']['bestellvorgang_unregneukundenkupon_zulassen'] === 'N') {
+        if (empty($_SESSION['Kunde']->kKunde)
+            && $conf['kaufabwicklung']['bestellvorgang_unregneukundenkupon_zulassen'] === 'N'
+        ) {
             //unregistrierte Neukunden, keine Kupons für Gastbestellungen zugelassen
             return;
         }
         if (!empty($_SESSION['Kunde']->kKunde)) {
             // registrierte Kunden und Neukunden mit Kundenkonto
             $query .= " OR tkunde.kKunde = :kkunde";
-            $values["kkunde"] = $_SESSION['Kunde']->kKunde;
+            $values['kkunde'] = $_SESSION['Kunde']->kKunde;
         }
         $query .= " LIMIT 1";
         $oBestellung = Shop::DB()->executeQueryPrepared($query, $values, 1);

@@ -265,7 +265,14 @@ class JTLSmarty extends SmartyBC
             if (!file_exists($_compileDir)) {
                 mkdir($_compileDir);
             }
-            $this->setTemplateDir([$this->context => PFAD_ROOT . PFAD_TEMPLATES . $cTemplate . '/'])
+            $templatePaths = [];
+            $pluginTemplatePaths = Plugin::getTemplatePaths();
+            foreach ($pluginTemplatePaths as $moduleId => $path) {
+                $templateKey = 'plugin_' . $moduleId;
+                $templatePaths[$templateKey] = $path;
+            }
+            $templatePaths[$this->context] = PFAD_ROOT . PFAD_TEMPLATES . $cTemplate . '/';
+            $this->setTemplateDir($templatePaths)
                  ->setCompileDir($_compileDir)
                  ->setCacheDir(PFAD_ROOT . PFAD_COMPILEDIR . $cTemplate . '/' . 'page_cache/')
                  ->setPluginsDir(SMARTY_PLUGINS_DIR);
@@ -339,6 +346,34 @@ class JTLSmarty extends SmartyBC
         if ($context === 'frontend' || $context === 'backend') {
             self::$_instance = $this;
         }
+    }
+
+    /**
+     * initialize Source Object for given resource
+     *
+     * @param string $resource_name
+     * @return Smarty_Template_Source|null
+     */
+    public function getTemplateSource($resource_name)
+    {
+        try {
+            $source = Smarty_Template_Source::load(null, $this, $resource_name);
+            return $source->exists ? $source : null;
+        }
+        catch (Exception $e) { }
+
+        return null;
+    }
+
+    /**
+     * Check if a template resource exists
+     *
+     * @param string $resource_name
+     * @return boolean
+     */
+    public function templateExists($resource_name)
+    {
+        return $this->getTemplateSource($resource_name) !== null;
     }
 
     /**
@@ -713,6 +748,13 @@ class JTLSmarty extends SmartyBC
             'out'       => &$resource_cfb_name,
             'transform' => $transform
         ]);
+
+        if ($resource_name === $resource_cfb_name) {
+
+            if ($source = $this->getTemplateSource($resource_cfb_name)) {
+                $resource_cfb_name = $source->filepath;
+            }
+        }
 
         return $transform ? ('file:' . $resource_cfb_name) : $resource_cfb_name;
     }

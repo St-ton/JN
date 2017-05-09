@@ -5119,7 +5119,7 @@ class Artikel
         }
         // cheapest shipping except shippings that offer cash payment
         $shipping = Shop::DB()->query(
-            "SELECT va.kVersandart, IF(vas.fPreis IS NOT NULL, vas.fPreis, va.fPreis) AS minPrice
+            "SELECT va.kVersandart, IF(vas.fPreis IS NOT NULL, vas.fPreis, va.fPreis) AS minPrice, va.nSort
                 FROM tversandart va
                 LEFT JOIN tversandartstaffel vas
                     ON vas.kVersandart = va.kVersandart
@@ -5137,7 +5137,7 @@ class Artikel
                     OR ( va.kVersandberechnung = 2 AND vas.fBis > 0 AND {$this->fGewicht} <= vas.fBis )
                     OR ( va.kVersandberechnung = 3 AND vas.fBis > 0 AND {$this->Preise->fVKNetto} <= vas.fBis )
                     )
-                ORDER BY minPrice ASC LIMIT 1", 1
+                ORDER BY minPrice, nSort ASC LIMIT 1", 1
         );
         if (isset($shipping->kVersandart)) {
             $this->oFavourableShipping = new Versandart($shipping->kVersandart);

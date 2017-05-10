@@ -519,15 +519,13 @@ function gibFehlendeEingabenBenachrichtigungsformular()
  */
 function baueFormularVorgabenBenachrichtigung()
 {
-    $msg = new stdClass();
-    if (!empty($_POST['vorname'])) {
-        $conf = Shop::getSettings([CONF_ARTIKELDETAILS]);
-        if ($conf['artikeldetails']['benachrichtigung_abfragen_vorname'] !== 'N') {
-            $msg->cVorname  = StringHandler::filterXSS($_POST['vorname']);
-        }
-        if ($conf['artikeldetails']['benachrichtigung_abfragen_nachname'] !== 'N') {
-            $msg->cNachname = StringHandler::filterXSS($_POST['nachname']);
-        }
+    $msg  = new stdClass();
+    $conf = Shop::getSettings([CONF_ARTIKELDETAILS]);
+    if (!empty($_POST['vorname']) && $conf['artikeldetails']['benachrichtigung_abfragen_vorname'] !== 'N') {
+        $msg->cVorname = StringHandler::filterXSS($_POST['vorname']);
+    }
+    if (!empty($_POST['nachname']) && $conf['artikeldetails']['benachrichtigung_abfragen_nachname'] !== 'N') {
+        $msg->cNachname = StringHandler::filterXSS($_POST['nachname']);
     }
 
     return $msg;

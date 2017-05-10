@@ -217,7 +217,6 @@ class MerkmalWert
                             ON fremdSprache.kMerkmalWert = tmerkmalwert.kMerkmalWert
                             AND fremdSprache.kSprache = " . $kSprache . "";
             } else {
-
                 $cSelect = "tmerkmalwertsprache.kSprache, tmerkmalwertsprache.cWert, tmerkmalwertsprache.cMetaTitle,
                         tmerkmalwertsprache.cMetaKeywords, tmerkmalwertsprache.cMetaDescription,
                         tmerkmalwertsprache.cBeschreibung, tmerkmalwertsprache.cSeo";

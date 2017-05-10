@@ -1465,25 +1465,25 @@ function gibMerkmalFilterOptionen($FilterSQL, $NaviFilter, $oAktuelleKategorie =
         $kSprache         = (int)Shop::$kSprache;
         $kStandardSprache = (int)gibStandardsprache()->kSprache;
         if ($kSprache !== $kStandardSprache) {
-            $cSelectMerkmal      = "COALESCE(tmerkmalsprache.cName, tmerkmal.cName) AS cName, ";
-            $cJoinMerkmal        = "LEFT JOIN tmerkmalsprache 
+            $cSelectMerkmal     = "COALESCE(tmerkmalsprache.cName, tmerkmal.cName) AS cName, ";
+            $cJoinMerkmal       = "LEFT JOIN tmerkmalsprache
                                         ON tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal
-                                        AND tmerkmalsprache.kSprache = " . (int)Shop::$kSprache;
-            $cSelectMerkmalwert  = "COALESCE(fremdSprache.cSeo, standardSprache.cSeo) AS cSeo, 
+                                        AND tmerkmalsprache.kSprache = " . $kSprache;
+            $cSelectMerkmalwert = "COALESCE(fremdSprache.cSeo, standardSprache.cSeo) AS cSeo,
                                     COALESCE(fremdSprache.cWert, standardSprache.cWert) AS cWert,";
-            $cJoinMerkmalwert    = "INNER JOIN tmerkmalwertsprache AS standardSprache 
+            $cJoinMerkmalwert   = "INNER JOIN tmerkmalwertsprache AS standardSprache
                                         ON standardSprache.kMerkmalWert = tartikelmerkmal.kMerkmalWert
                                         AND standardSprache.kSprache = " . $kStandardSprache . "
                                     LEFT JOIN tmerkmalwertsprache AS fremdSprache 
                                         ON fremdSprache.kMerkmalWert = tartikelmerkmal.kMerkmalWert
                                         AND fremdSprache.kSprache = " . $kSprache . "";
         } else {
-            $cSelectMerkmalwert  = "tmerkmalwertsprache.cWert, tmerkmalwertsprache.cSeo,";
-            $cJoinMerkmalwert    = "INNER JOIN tmerkmalwertsprache 
+            $cSelectMerkmalwert = "tmerkmalwertsprache.cWert, tmerkmalwertsprache.cSeo,";
+            $cJoinMerkmalwert   = "INNER JOIN tmerkmalwertsprache
                                         ON tmerkmalwertsprache.kMerkmalWert = tartikelmerkmal.kMerkmalWert
                                         AND tmerkmalwertsprache.kSprache = " . $kSprache;
-            $cSelectMerkmal      = 'tmerkmal.cName, ';
-            $cJoinMerkmal        = '';
+            $cSelectMerkmal     = 'tmerkmal.cName, ';
+            $cJoinMerkmal       = '';
         }
         $oMerkmalFilterDB_arr = Shop::DB()->query(
             "SELECT ssMerkmal.cSeo, ssMerkmal.kMerkmal, ssMerkmal.kMerkmalWert, ssMerkmal.cMMWBildPfad, ssMerkmal.cWert, 

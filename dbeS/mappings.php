@@ -659,3 +659,8 @@ $mVersand = [
     'cHinweis',
     'dErstellt'
 ];
+
+$mBestellattribut = [
+    'key',
+    'value'
+];

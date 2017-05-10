@@ -58,7 +58,7 @@ function pruefeNewsKategorie($cName, $nNewskategorieEditSpeichern = 0)
 }
 
 /**
- * @deprecated
+ * @deprecated since 4.06
  *
  * @param string $string
  * @return string
@@ -185,7 +185,7 @@ function mappeDatumName($cMonat, $nJahr, $cISOSprache)
 }
 
 /**
- * @deprecated
+ * @deprecated since 4.06
  *
  * @param string $cDateTimeStr
  * @return stdClass

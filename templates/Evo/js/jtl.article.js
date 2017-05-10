@@ -765,8 +765,7 @@
                 $wrapper.addClass('loading');
                 $spinner = $.evo.extended().spinner();
             } else {
-                var spinIcon = $('<div id="updatingStockInfo" class="col-xs-12 text-center"><i class="fa fa-spinner fa-spin" title="updating stock information" /></div>');
-                $('.variations').append(spinIcon);
+                $('.variations #updatingStockInfo').show();
             }
 
             if (item) {
@@ -792,7 +791,7 @@
                 if (animation) {
                     $spinner.stop();
                 }
-                $('.variations #updatingStockInfo').remove();
+                $('.variations #updatingStockInfo').hide();
                 if (error) {
                     $.evo.error('checkVarkombiDependencies');
                 }

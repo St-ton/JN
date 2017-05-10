@@ -750,7 +750,7 @@ function checkVarkombiDependencies($aValues, $kEigenschaft = 0, $kEigenschaftWer
                 array_keys($kGesetzteEigeschaftWert_arr)
             )
         );
-        $kZuletztGestzteEigenschaft = $kEigenschaft;
+        $kZuletztGesetzteEigenschaft = $kEigenschaft;
         if (count($kNichtGesetzteEigenschaft_arr) <= 1) {
             foreach ($nKeyValueVariation_arr as $kEigenschaft => $kEigenschaftWert) {
                 $kVerfuegbareEigenschaftWert_arr = $nKeyValueVariation_arr[$kEigenschaft];
@@ -758,7 +758,7 @@ function checkVarkombiDependencies($aValues, $kEigenschaft = 0, $kEigenschaftWer
 
                 foreach ($kVerfuegbareEigenschaftWert_arr as $kVerfuegbareEigenschaftWert) {
                     //nur für noch auswählbare Varkombis Lagerbestand holen und Infos setzen
-                    if (in_array($kEigenschaft, $kNichtGesetzteEigenschaft_arr) || $kZuletztGestzteEigenschaft === 0) {
+                    if (in_array($kEigenschaft, $kNichtGesetzteEigenschaft_arr) || $kZuletztGesetzteEigenschaft === 0) {
                         $kMoeglicheEigeschaftWert_arr[$kEigenschaft] = $kVerfuegbareEigenschaftWert;
                         $oKindArtikel = getArticleStockInfo(
                             $kVaterArtikel,

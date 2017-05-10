@@ -44,6 +44,7 @@ if (isset($aData['action']) && validateToken()) {
                 if ($oItem->kRedirect > 0) {
                     $oItem->cToUrl = $cToUrl;
                     if (Redirect::checkAvailability($cToUrl)) {
+                        $oItem->bAvailable = $cToUrl !== '' ? '1' : '0';
                         Shop::DB()->update('tredirect', 'kRedirect', $oItem->kRedirect, $oItem);
                     } else {
                         $cFehler .= "&Auml;nderungen konnten nicht gespeichert werden, da die weiterzuleitende URL {$cToUrl} nicht erreichbar ist.<br />";

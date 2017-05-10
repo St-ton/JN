@@ -3,7 +3,7 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=#redirect# cBeschreibung=#redirectDesc# cDokuURL=#redirectURL#}
 {include file='tpl_inc/sortcontrols.tpl'}
 
-<script>{literal}
+<script>
     $(document).ready(function () {
         init_simple_search(function (type, res) {
             $('input.simple_search').val(res.cUrl)
@@ -22,12 +22,10 @@
                 $csvimport.fadeOut();
             }
         });
-        {/literal}
-            {foreach $oRedirect_arr as $oRedirect}
-                check_url({$oRedirect->kRedirect}, '{$oRedirect->cToUrl}');
-            {/foreach}
-            check_url('cToUrl', '{if isset($cPost_arr.cToUrl)}{$cPost_arr.cToUrl}{/if}');
-        {literal}
+        {*{foreach $oRedirect_arr as $oRedirect}*}
+            {*check_url({$oRedirect->kRedirect}, '{$oRedirect->cToUrl}');*}
+        {*{/foreach}*}
+        check_url('cToUrl', '{if isset($cPost_arr.cToUrl)}{$cPost_arr.cToUrl}{/if}');
     });
     
     redirect_search = function (id,search) {
@@ -36,9 +34,7 @@
             dataType: 'json',
             url: 'redirect.php',
             data: {
-                {/literal}
-                    'jtl_token': '{$smarty.session.jtl_token}',
-                {literal}
+                'jtl_token': '{$smarty.session.jtl_token}',
                 'aData[action]': 'search',
                 'aData[search]': ( (search.substr(0, 1) != '/') ? search.substr(0) : search.substr(1) )
             },
@@ -90,9 +86,7 @@
             type: 'POST',
             url: 'redirect.php',
             data: {
-                {/literal}
-                    'jtl_token': '{$smarty.session.jtl_token}',
-                {literal}
+                'jtl_token': '{$smarty.session.jtl_token}',
                 'aData[action]': 'check_url',
                 'aData[url]': url
             },
@@ -108,7 +102,7 @@
             }
         });
     };
-{/literal}</script>
+</script>
 
 <div id="content" class="container-fluid">
     <ul class="nav nav-tabs" role="tablist">
@@ -160,9 +154,18 @@
                                     </td>
                                     <td class="tleft">
                                         <div id="frm_{$oRedirect->kRedirect}" class="input-group input-group-sm" style="margin-right:30px;">
-                                            <span class="input-group-addon alert-info state-checking"><i class="fa fa-spinner"></i></span>
-                                            <span class="input-group-addon alert-success state-available" style="display:none;"><i class="fa fa-check"></i></span>
-                                            <span class="input-group-addon alert-danger state-unavailable" style="display:none;"><i class="fa fa-warning"></i></span>
+                                            <span class="input-group-addon alert-info state-checking"
+                                                  style="display:none;">
+                                                <i class="fa fa-spinner"></i>
+                                            </span>
+                                            <span class="input-group-addon alert-success state-available"
+                                                  {if $oRedirect->bAvailable === '0'}style="display:none;"{/if}>
+                                                <i class="fa fa-check"></i>
+                                            </span>
+                                            <span class="input-group-addon alert-danger state-unavailable"
+                                                  {if $oRedirect->bAvailable === '1'}style="display:none;"{/if}>
+                                                <i class="fa fa-warning"></i>
+                                            </span>
                                             <input id="url_{$oRedirect->kRedirect}"
                                                    name="aData[redirect][{$oRedirect->kRedirect}][url]" type="text"
                                                    class="form-control cToUrl" autocomplete="off"

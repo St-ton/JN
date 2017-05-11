@@ -152,12 +152,12 @@
                                                             language: 'de',
                                                             maxFileSize: {if !empty($oSetting->rawAttributes.maxFileSize)}{$oSetting->rawAttributes.maxFileSize}{else}1000{/if},
                                                             maxFilesNum: 1{if !empty($oSetting->cValue)}, initialPreview: [
-                                                                '<img src="{$shopURL}/templates/{$oTemplate->cOrdner}/{$oSetting->rawAttributes.target}{$oSetting->cValue}?v={$smarty.now}" class="file-preview-image" alt="" title="" />'
+                                                                '<img src="{$shopURL}/templates/{$oTemplate->cOrdner}/{$oSetting->cValue}?v={$smarty.now}" class="file-preview-image" alt="" title="" />'
                                                             ]{/if},
                                                             initialPreviewConfig: [
                                                                 {ldelim}
                                                                     url: '{$shopURL}/{$PFAD_ADMIN}shoptemplate.php',
-                                                                    extra: {ldelim}upload: '{$oTemplate->cOrdner}/{$oSetting->rawAttributes.target}{$oSetting->cValue}', id: 'upload-{$smarty.foreach.tplOptions.index}', token : '{$smarty.session.jtl_token}'{rdelim}
+                                                                    extra: {ldelim}upload: '{$oTemplate->cOrdner}/{$oSetting->cValue}', id: 'upload-{$smarty.foreach.tplOptions.index}', token : '{$smarty.session.jtl_token}'{rdelim}
                                                                     {rdelim}
                                                             ]
                                                         {rdelim}).on('fileuploaded', function(event, data) {ldelim}

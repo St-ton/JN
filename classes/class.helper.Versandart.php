@@ -186,7 +186,7 @@ class VersandartHelper
                 ORDER BY nSort", 2
         );
         $cnt             = count($versandarten);
-        $netPricesActive = $_SESSION['Kundengruppe']->nNettoPreise === '1';
+        $netPricesActive = (int)$_SESSION['Kundengruppe']->nNettoPreise === 1;
 
         for ($i = 0; $i < $cnt; $i++) {
             $bSteuerPos                  = $versandarten[$i]->eSteuer !== 'netto';

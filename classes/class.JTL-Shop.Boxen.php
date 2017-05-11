@@ -120,9 +120,9 @@ class Boxen
      */
     public function gibBoxInhalt($kBox, $cISO = '')
     {
-        return (strlen($cISO) > 0) ?
-            Shop::DB()->select('tboxsprache', 'kBox', (int)$kBox, 'cISO', $cISO) :
-            Shop::DB()->selectAll('tboxsprache', 'kBox', (int)$kBox);
+        return (strlen($cISO) > 0)
+            ? Shop::DB()->select('tboxsprache', 'kBox', (int)$kBox, 'cISO', $cISO)
+            : Shop::DB()->selectAll('tboxsprache', 'kBox', (int)$kBox);
     }
 
     /**
@@ -1508,7 +1508,7 @@ class Boxen
             return $oBoxAnzeige;
         }
 
-        if ($nSeite != 0 && $bGlobal) {
+        if ($nSeite !== 0 && $bGlobal) {
             return $this->holeBoxAnzeige(0);
         }
 
@@ -1866,6 +1866,9 @@ class Boxen
                 count($oSuchergebnisse->Preisspanne) > 0 &&
                 $this->boxConfig['navigationsfilter']['preisspannenfilter_benutzen'] === 'box' &&
                 $conf['global']['global_sichtbarkeit'] == 1)
+            || (isset($oSuchergebnisse->Suchspecialauswahl) &&
+                count($oSuchergebnisse->Suchspecialauswahl) > 0 &&
+                $this->boxConfig['navigationsfilter']['allgemein_suchspecialfilter_benutzen'] === 'Y')
             || (isset($NaviFilter->SuchspecialFilter->kKey) &&
                 $NaviFilter->SuchspecialFilter->kKey > 0 &&
                 $this->boxConfig['navigationsfilter']['allgemein_suchspecialfilter_benutzen'] === 'Y')

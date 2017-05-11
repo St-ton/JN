@@ -1,6 +1,13 @@
 # JTL-Shop Changelog
 
-## [4.05.2]
+## [4.05.3]
+
+## Bugfixes
+
+* Beim Export von Exportformaten wird der neue Dateiinhalt an alte Datei angehängt (#1217)
+* Bei News-Kategoriebeschreibung kann kein HTML verwendet werden (#1197)
+
+## [4.05.2] - 2017-04-04
 
 ### Bugfixes 
 
@@ -25,7 +32,7 @@
 * Fehlerhafte URLs in Newsübersicht (#1159)
 * Bestellbestätigung-E-Mail Lieferzeit fehlerhaft, wenn letzter verfügbarer Artikel gekauft wurde (#1097)
 * Fehler beim Versenden von Newslettern wenn mindestens zwei Artikel hinzugefügt werden (#1014)
-
+* Aufgabenplaner löscht bei Start vorhandene Datei (steht während des Exports nicht zum Download zur Verfügung) (#1190)
 
 ## [4.05.1] - 2017-02-17
 

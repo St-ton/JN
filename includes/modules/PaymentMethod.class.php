@@ -485,7 +485,7 @@ class PaymentMethod
         if ($this->getSetting('min') > 0 && $cart->gibGesamtsummeWaren(1) <= $this->getSetting('min')) {
             ZahlungsLog::add($this->moduleID,
                 'Bestellwert ' . $cart->gibGesamtsummeWaren(1) .
-                    ' ist kleiner als der Mindestbestellwert von ' . $this->getSetting('min_bestellungen'),
+                    ' ist kleiner als der Mindestbestellwert von ' . $this->getSetting('min'),
                 null,
                 LOGLEVEL_NOTICE
             );
@@ -496,7 +496,7 @@ class PaymentMethod
         if ($this->getSetting('max') > 0 && $cart->gibGesamtsummeWaren(1) >= $this->getSetting('max')) {
             ZahlungsLog::add($this->moduleID,
                 'Bestellwert ' . $cart->gibGesamtsummeWaren(1) .
-                    ' ist groesser als der Mindestbestellwert von ' . $this->getSetting('min_bestellungen'),
+                    ' ist groesser als der maximale Bestellwert von ' . $this->getSetting('max'),
                 null,
                 LOGLEVEL_NOTICE
             );

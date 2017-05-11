@@ -440,10 +440,7 @@ class Navigationsfilter
     public function initStates($params)
     {
         $this->initBaseStates();
-        $params          = array_merge($this->getParamsPrototype(), $params);
-        $languageID      = $this->getLanguageID();
-        $customerGroupID = $this->getCustomerGroupID();
-        $config          = $this->getConfig();
+        $params = array_merge($this->getParamsPrototype(), $params);
         if ($params['kKategorie'] > 0) {
             $this->Kategorie->init($params['kKategorie']);
             $this->baseState = $this->Kategorie;
@@ -459,8 +456,7 @@ class Navigationsfilter
             $this->addActiveFilter($this->HerstellerFilter, $params['kHerstellerFilter']);
         }
         if ($params['kMerkmalWert'] > 0) {
-            $this->MerkmalWert = (new FilterBaseAttribute($this))
-                ->init($params['kMerkmalWert']);
+            $this->MerkmalWert = (new FilterBaseAttribute($this))->init($params['kMerkmalWert']);
             $this->baseState   = $this->MerkmalWert;
         }
         if (count($params['MerkmalFilter_arr']) > 0) {
@@ -1545,8 +1541,8 @@ class Navigationsfilter
     public function getBaseQuery(
         $select = ['tartikel.kArtikel'],
         array $joins,
-        $conditions,
-        $having = [],
+        array $conditions,
+        array $having = [],
         $order = '',
         $limit = '',
         $groupBy = ['tartikel.kArtikel'],
@@ -1674,10 +1670,7 @@ class Navigationsfilter
         if (get_class($extraFilter) !== 'stdClass') {
             return $extraFilter;
         }
-        $languageID      = $this->getLanguageID();
-        $customerGroupID = $this->getCustomerGroupID();
-        $config          = $this->getConfig();
-        $filter          = null;
+        $filter = null;
         if (
             isset($extraFilter->KategorieFilter->kKategorie) ||
             (isset($extraFilter->FilterLoesen->Kategorie) && $extraFilter->FilterLoesen->Kategorie === true)

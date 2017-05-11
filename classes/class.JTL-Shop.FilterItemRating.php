@@ -19,19 +19,15 @@ class FilterItemRating extends AbstractFilter
     /**
      * FilterItemRating constructor.
      *
-     * @param Navigationsfilter|null $naviFilter
-     * @param int|null               $languageID
-     * @param int|null               $customerGroupID
-     * @param array|null             $config
-     * @param array|null             $languages
+     * @param Navigationsfilter $naviFilter
      */
-    public function __construct($naviFilter = null, $languageID = null, $customerGroupID = null, $config = null, $languages = null)
+    public function __construct($naviFilter)
     {
-        parent::__construct($naviFilter, $languageID, $customerGroupID, $config, $languages);
+        parent::__construct($naviFilter);
         $this->isCustom    = false;
         $this->urlParam    = 'bf';
         $this->urlParamSEO = null;
-        $this->setVisibility($config['navigationsfilter']['bewertungsfilter_benutzen'])
+        $this->setVisibility($this->getConfig()['navigationsfilter']['bewertungsfilter_benutzen'])
              ->setFrontendName(Shop::Lang()->get('Votes', 'global'));
     }
 
@@ -139,13 +135,7 @@ class FilterItemRating extends AbstractFilter
             $res   = Shop::DB()->query($query, 2);
             if (is_array($res)) {
                 $nSummeSterne     = 0;
-                $additionalFilter = new FilterItemRating(
-                    $this->getNaviFilter(),
-                    $this->getLanguageID(),
-                    $this->getCustomerGroupID(),
-                    $this->getConfig(),
-                    $this->getAvailableLanguages()
-                );
+                $additionalFilter = new FilterItemRating($this->getNaviFilter());
                 foreach ($res as $row) {
                     $nSummeSterne += (int)$row->nAnzahl;
 

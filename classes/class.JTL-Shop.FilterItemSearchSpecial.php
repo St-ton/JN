@@ -20,14 +20,10 @@ class FilterItemSearchSpecial extends AbstractFilter
      * FilterItemSearchSpecial constructor.
      *
      * @param Navigationsfilter $naviFilter
-     * @param int|null          $languageID
-     * @param int|null          $customerGroupID
-     * @param array|null        $config
-     * @param array|null        $languages
      */
-    public function __construct($naviFilter, $languageID = null, $customerGroupID = null, $config = null, $languages = null)
+    public function __construct($naviFilter)
     {
-        parent::__construct($naviFilter, $languageID, $customerGroupID, $config, $languages);
+        parent::__construct($naviFilter);
         $this->isCustom = false;
         $this->urlParam = 'qf';
         $this->setFrontendName(Shop::Lang()->get('specificProducts', 'global'));
@@ -243,13 +239,7 @@ class FilterItemSearchSpecial extends AbstractFilter
         $name    = '';
         $options = [];
         if ($this->getConfig()['navigationsfilter']['allgemein_suchspecialfilter_benutzen'] === 'Y') {
-            $additionalFilter = new FilterItemSearchSpecial(
-                $this->naviFilter,
-                $this->getLanguageID(),
-                $this->getCustomerGroupID(),
-                $this->getConfig(),
-                $this->getAvailableLanguages()
-            );
+            $additionalFilter = new FilterItemSearchSpecial($this->naviFilter);
             for ($i = 1; $i < 7; ++$i) {
                 $state = $this->naviFilter->getCurrentStateData();
                 switch ($i) {

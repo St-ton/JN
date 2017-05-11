@@ -44,19 +44,15 @@ class FilterItemPriceRange extends AbstractFilter
     /**
      * FilterItemPriceRange constructor.
      *
-     * @param Navigationsfilter|null $naviFilter
-     * @param int|null               $languageID
-     * @param int|null               $customerGroupID
-     * @param array|null             $config
-     * @param array|null             $languages
+     * @param Navigationsfilter $naviFilter
      */
-    public function __construct($naviFilter = null, $languageID = null, $customerGroupID = null, $config = null, $languages = null)
+    public function __construct($naviFilter)
     {
-        parent::__construct($naviFilter, $languageID, $customerGroupID, $config, $languages);
+        parent::__construct($naviFilter);
         $this->isCustom    = false;
         $this->urlParam    = 'pf';
         $this->urlParamSEO = null;
-        $this->setVisibility($config['navigationsfilter']['preisspannenfilter_benutzen'])
+        $this->setVisibility($this->getConfig()['navigationsfilter']['preisspannenfilter_benutzen'])
              ->setFrontendName(Shop::Lang()->get('rangeOfPrices', 'global'));
     }
 
@@ -481,13 +477,7 @@ class FilterItemPriceRange extends AbstractFilter
                 $nPreisMax        = $oPreis->fMaxPreis;
                 $nPreisMin        = $oPreis->fMinPreis;
                 $nStep            = $oPreis->fStep;
-                $additionalFilter = new FilterItemPriceRange(
-                    $this->naviFilter,
-                    $this->getLanguageID(),
-                    $this->getCustomerGroupID(),
-                    $this->getConfig(),
-                    $this->getAvailableLanguages()
-                );
+                $additionalFilter = new FilterItemPriceRange($this->naviFilter);
                 foreach ($oPreisspannenFilterDB_arr as $i => $priceRangeFilterCount) {
                     $fe       = new FilterExtra();
                     $fe->nVon = $nPreisMin + $i * $nStep;
@@ -569,13 +559,7 @@ class FilterItemPriceRange extends AbstractFilter
                         $oPreisspannenFilterDB_arr[] = $nPreisspannenAnzahl_arr['anz' . $i] - $sub;
                     }
                 }
-                $additionalFilter = new FilterItemPriceRange(
-                    $this->naviFilter,
-                    $this->getLanguageID(),
-                    $this->getCustomerGroupID(),
-                    $this->getConfig(),
-                    $this->getAvailableLanguages()
-                );
+                $additionalFilter = new FilterItemPriceRange($this->naviFilter);
                 foreach ($oPreisspannenfilter_arr as $i => $oPreisspannenfilter) {
                     $fe                 = new FilterExtra();
                     $fe->nVon           = $oPreisspannenfilter->nVon;

@@ -154,13 +154,9 @@ interface IFilter
      * set basic information for using this filter
      *
      * @param Navigationsfilter|null $naviFilter
-     * @param int                    $languageID
-     * @param int                    $customerGroupID
-     * @param array|null             $config
-     * @param array|null             $languages
      * @return $this
      */
-    public function setData($naviFilter, $languageID, $customerGroupID, $config, $languages);
+    public function setData($naviFilter);
 
     /**
      * the language ID currently active in the shop

@@ -34,15 +34,11 @@ class FilterSearch extends AbstractFilter
     /**
      * FilterSearch constructor.
      *
-     * @param Navigationsfilter|null $naviFilter
-     * @param int|null               $languageID
-     * @param int|null               $customerGroupID
-     * @param array|null             $config
-     * @param array|null             $languages
+     * @param Navigationsfilter $naviFilter
      */
-    public function __construct($naviFilter = null, $languageID = null, $customerGroupID = null, $config = null, $languages = null)
+    public function __construct($naviFilter)
     {
-        parent::__construct($naviFilter, $languageID, $customerGroupID, $config, $languages);
+        parent::__construct($naviFilter);
         $this->isCustom    = false;
         $this->urlParam    = 'sf';
         $this->urlParamSEO = null;
@@ -235,13 +231,7 @@ class FilterSearch extends AbstractFilter
                 $searchFilters = array_merge($searchFilters);
             }
             //baue URL
-            $additionalFilter = new FilterBaseSearchQuery(
-                $this->naviFilter,
-                $this->getLanguageID(),
-                $this->getCustomerGroupID(),
-                $this->getConfig(),
-                $this->getAvailableLanguages()
-            );
+            $additionalFilter = new FilterBaseSearchQuery($this->naviFilter);
             // Priorität berechnen
             $nPrioStep = 0;
             $nCount    = count($searchFilters);

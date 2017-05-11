@@ -17,14 +17,11 @@ class FilterNewsCategory extends AbstractFilter
     /**
      * FilterNewsCategory constructor.
      *
-     * @param int|null   $languageID
-     * @param int|null   $customerGroupID
-     * @param array|null $config
-     * @param array|null $languages
+     * @param Navigationsfilter $naviFilter
      */
-    public function __construct($languageID = null, $customerGroupID = null, $config = null, $languages = null)
+    public function __construct($naviFilter)
     {
-        parent::__construct($languageID, $customerGroupID, $config, $languages);
+        parent::__construct($naviFilter);
         $this->isCustom    = false;
         $this->urlParam    = 'nk';
         $this->urlParamSEO = null;

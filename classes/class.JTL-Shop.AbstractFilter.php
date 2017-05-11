@@ -149,6 +149,17 @@ abstract class AbstractFilter implements IFilter
     protected $options;
 
     /**
+     * AbstractFilter constructor
+     *
+     * @param Navigationsfilter $naviFilter
+     */
+    public function __construct($naviFilter)
+    {
+        if ($naviFilter === null) Shop::dbg($naviFilter, true, 'NULL!!', 6);
+        $this->setData($naviFilter)->setClassName(get_class($this));
+    }
+
+    /**
      * @param int|array $value
      * @return $this
      */
@@ -351,37 +362,16 @@ abstract class AbstractFilter implements IFilter
     }
 
     /**
-     * AbstractFilter constructor
-     *
-     * @param Navigationsfilter|null $naviFilter
-     * @param int|null               $languageID
-     * @param int|null               $customerGroupID
-     * @param array|null             $config
-     * @param array|null             $languages
-     */
-    public function __construct($naviFilter = null, $languageID = null, $customerGroupID = null, $config = null, $languages = null)
-    {
-        if ($languageID !== null && $customerGroupID !== null && $config !== null && $languages !== null) {
-            $this->setData($naviFilter, $languageID, $customerGroupID, $config, $languages);
-        }
-        $this->setClassName(get_class($this));
-    }
-
-    /**
      * @param Navigationsfilter $naviFilter
-     * @param int               $languageID
-     * @param int               $customerGroupID
-     * @param array             $config
-     * @param array             $languages
      * @return $this
      */
-    public function setData($naviFilter, $languageID, $customerGroupID, $config, $languages = [])
+    public function setData($naviFilter)
     {
         $this->naviFilter         = $naviFilter;
-        $this->languageID         = $languageID;
-        $this->customerGroupID    = $customerGroupID;
-        $this->config             = $config;
-        $this->availableLanguages = $languages;
+        $this->languageID         = $naviFilter->getLanguageID();
+        $this->customerGroupID    = $naviFilter->getCustomerGroupID();
+        $this->config             = $naviFilter->getConfig();
+        $this->availableLanguages = $naviFilter->getAvailableLanguages();
 
         return $this;
     }

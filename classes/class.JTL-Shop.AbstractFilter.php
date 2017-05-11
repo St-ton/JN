@@ -155,7 +155,6 @@ abstract class AbstractFilter implements IFilter
      */
     public function __construct($naviFilter)
     {
-        if ($naviFilter === null) Shop::dbg($naviFilter, true, 'NULL!!', 6);
         $this->setData($naviFilter)->setClassName(get_class($this));
     }
 

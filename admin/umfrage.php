@@ -147,7 +147,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                     $oUmfrage->dGueltigBis   = (strlen($dGueltigBis) > 0) 
                         ? DateTime::createFromFormat('d.m.Y H:i', $dGueltigBis)->format('Y-m-d H:i:00')
                         : null;
-                    $oUmfrage->dErstellt     = date('Y-m-d H:i:s');
+                    $oUmfrage->dErstellt     = (new DateTime())->format('Y-m-d H:i:s');
 
                     $nNewsOld = 0;
                     if (isset($_POST['umfrage_edit_speichern']) && (int)$_POST['umfrage_edit_speichern'] === 1) {

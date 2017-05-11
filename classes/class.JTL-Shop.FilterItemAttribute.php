@@ -132,8 +132,8 @@ class FilterItemAttribute extends FilterBaseAttribute
         $attributeFilters = [];
 
         if ($bForce ||
-            (isset($this->getConfig()['navigationsfilter']['merkmalfilter_verwenden']) &&
-                $this->getConfig()['navigationsfilter']['merkmalfilter_verwenden'] !== 'N')
+            (isset($this->getConfig()['navigationsfilter']['merkmalfilter_verwenden'])
+                && $this->getConfig()['navigationsfilter']['merkmalfilter_verwenden'] !== 'N')
         ) {
             // Ist Kategorie Mainword, dann prüfe die Kategorie-Funktionsattribute auf merkmalfilter
             if (isset($oAktuelleKategorie->categoryFunctionAttributes) &&
@@ -198,23 +198,25 @@ class FilterItemAttribute extends FilterBaseAttribute
                                                     ->setOn('tartikel.kArtikel = ssj1.kArtikel');
             }
 
-            $query = $this->naviFilter->getBaseQuery([
-                'tartikelmerkmal.kMerkmal',
-                'tartikelmerkmal.kMerkmalWert',
-                'tmerkmalwert.cBildPfad AS cMMWBildPfad',
-                'tmerkmalwertsprache.cWert',
-                'tmerkmal.nSort AS nSortMerkmal',
-                'tmerkmalwert.nSort',
-                'tmerkmal.cTyp',
-                'tmerkmal.cBildPfad AS cMMBildPfad',
-                $select
-            ],
+            $query = $this->naviFilter->getBaseQuery(
+                [
+                    'tartikelmerkmal.kMerkmal',
+                    'tartikelmerkmal.kMerkmalWert',
+                    'tmerkmalwert.cBildPfad AS cMMWBildPfad',
+                    'tmerkmalwertsprache.cWert',
+                    'tmerkmal.nSort AS nSortMerkmal',
+                    'tmerkmalwert.nSort',
+                    'tmerkmal.cTyp',
+                    'tmerkmal.cBildPfad AS cMMBildPfad',
+                    $select
+                ],
                 $state->joins,
                 $state->conditions,
                 $state->having,
                 $order->orderBy,
                 '',
-                ['tartikelmerkmal.kMerkmalWert', 'tartikel.kArtikel']);
+                ['tartikelmerkmal.kMerkmalWert', 'tartikel.kArtikel']
+            );
 
             $query = "SELECT tseo.cSeo, ssMerkmal.kMerkmal, ssMerkmal.kMerkmalWert, ssMerkmal.cMMWBildPfad, 
                 ssMerkmal.cWert, ssMerkmal.cName, ssMerkmal.cTyp, ssMerkmal.cMMBildPfad, COUNT(*) AS nAnzahl
@@ -229,13 +231,7 @@ class FilterItemAttribute extends FilterBaseAttribute
             $oMerkmalFilterDB_arr = Shop::DB()->query($query, 2);
 
             if (is_array($oMerkmalFilterDB_arr)) {
-                $additionalFilter = new FilterItemAttribute(
-                    $this->naviFilter,
-                    $this->getLanguageID(),
-                    $this->getCustomerGroupID(),
-                    $this->getConfig(),
-                    $this->getAvailableLanguages()
-                );
+                $additionalFilter = new FilterItemAttribute($this->naviFilter);
                 foreach ($oMerkmalFilterDB_arr as $i => $oMerkmalFilterDB) {
                     $oMerkmalWerte = new stdClass();
                     $oMerkmalWerte->kMerkmalWert = (int)$oMerkmalFilterDB->kMerkmalWert;
@@ -277,16 +273,11 @@ class FilterItemAttribute extends FilterBaseAttribute
                     }
 
                     if ($oMerkmal === null) {
-                        $oMerkmal = new FilterItemAttribute(
-                            $this->naviFilter,
-                            $this->getLanguageID(),
-                            $this->getCustomerGroupID(),
-                            $this->getConfig(), $this->getAvailableLanguages()
-                        );
+                        $oMerkmal = new FilterItemAttribute($this->naviFilter);
                         $oMerkmal->setFrontendName($oMerkmalFilterDB->cName);
                         $oMerkmal->cName             = $oMerkmalFilterDB->cName;
                         $oMerkmal->cSeo              = $oMerkmalFilterDB->cSeo;
-                        $oMerkmal->nAnzahl           = $oMerkmalFilterDB->nAnzahl;
+                        $oMerkmal->nAnzahl           = (int)$oMerkmalFilterDB->nAnzahl;
                         $oMerkmal->cTyp              = $oMerkmalFilterDB->cTyp;
                         $oMerkmal->kMerkmal          = (int)$oMerkmalFilterDB->kMerkmal;
                         $oMerkmal->oMerkmalWerte_arr = [];

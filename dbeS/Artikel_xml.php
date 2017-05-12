@@ -926,8 +926,8 @@ function bearbeiteInsert($xml, array $conf)
         $oKundengruppe_arr = Shop::DB()->query("SELECT kKundengruppe FROM tkundengruppe", 2);
         fuelleArtikelKategorieRabatt($artikel_arr[0], $oKundengruppe_arr);
         clearProductCaches($Artikel->kArtikel);
-        if (!empty($artikel_arr[0]->kVaterartikel)) {
-            Shop::Cache()->flushTags([CACHING_GROUP_ARTICLE . '_' . (int)$artikel_arr[0]->kVaterartikel]);
+        if (!empty($artikel_arr[0]->kVaterArtikel)) {
+            Shop::Cache()->flushTags([CACHING_GROUP_ARTICLE . '_' . (int)$artikel_arr[0]->kVaterArtikel]);
         }
         //emailbenachrichtigung, wenn verfügbar
         versendeVerfuegbarkeitsbenachrichtigung($artikel_arr[0]);

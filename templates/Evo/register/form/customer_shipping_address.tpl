@@ -131,6 +131,7 @@
 <div class="row">
     <div class="col-xs-12 col-md-6">
         <div class="form-group float-label-control">
+            <label class="control-label" for="{$prefix}-{$name}-country">{lang key="country" section="account data"}</label>
             <select name="{$prefix}[{$name}][land]" id="{$prefix}-{$name}-country" class="country_input form-control">
                 <option value="" selected disabled>{lang key="country" section="account data"}*</option>
                 {foreach name=land from=$laender item=land}

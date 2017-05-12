@@ -4,7 +4,6 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-
 /**
  *
  */
@@ -66,8 +65,8 @@ function pruefeUnregistriertBestellen($cPost_arr)
         CHECKBOX_ORT_REGISTRIERUNG,
         $kKundengruppe,
         $cPost_arr,
-        true)
-    );
+        true
+    ));
     $nReturnValue    = angabenKorrekt($fehlendeAngaben);
 
     executeHook(HOOK_BESTELLVORGANG_INC_UNREGISTRIERTBESTELLEN_PLAUSI, [
@@ -89,7 +88,7 @@ function pruefeUnregistriertBestellen($cPost_arr)
         //selbstdef. Kundenattr in session setzen
         $Kunde->cKundenattribut_arr = $cKundenattribut_arr;
         $Kunde->nRegistriert        = 0;
-        $_SESSION['Kunde'] = $Kunde;
+        $_SESSION['Kunde']          = $Kunde;
         if (isset($_SESSION['Warenkorb']->kWarenkorb) &&
             $_SESSION['Warenkorb']->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]) > 0
         ) {
@@ -104,8 +103,8 @@ function pruefeUnregistriertBestellen($cPost_arr)
 
         return 1;
     }
+    setzeFehlendeAngaben($fehlendeAngaben);
     Shop::Smarty()->assign('cKundenattribut_arr', $cKundenattribut_arr)
-        ->assign('fehlendeAngaben', $fehlendeAngaben)
         ->assign('cPost_var', StringHandler::filterXSS($cPost_arr));
 
     return 0;
@@ -113,9 +112,10 @@ function pruefeUnregistriertBestellen($cPost_arr)
 
 /**
  * @param array $cPost_arr
+ * @param array|null $fehlendeAngaben
  * @return string
  */
-function pruefeLieferdaten($cPost_arr)
+function pruefeLieferdaten($cPost_arr, &$fehlendeAngaben = null)
 {
     global $step, $Lieferadresse;
     /** @var array('Warenkorb' => Warenkorb) $_SESSION */
@@ -131,7 +131,7 @@ function pruefeLieferdaten($cPost_arr)
     unset($_SESSION['Versandart']);
     //neue lieferadresse
     if (!isset($cPost_arr['kLieferadresse']) || (int)$cPost_arr['kLieferadresse'] === -1) {
-        $fehlendeAngaben = checkLieferFormular();
+        $fehlendeAngaben = checkLieferFormular($cPost_arr);
         $Lieferadresse   = getLieferdaten($cPost_arr);
         $nReturnValue    = angabenKorrekt($fehlendeAngaben);
 
@@ -150,7 +150,8 @@ function pruefeLieferdaten($cPost_arr)
             executeHook(HOOK_BESTELLVORGANG_PAGE_STEPLIEFERADRESSE_NEUELIEFERADRESSE);
             pruefeVersandkostenfreiKuponVorgemerkt();
         } else {
-            Shop::Smarty()->assign('fehlendeAngaben', $fehlendeAngaben);
+            $_SESSION['Lieferadresse'] = $Lieferadresse;
+            setzeFehlendeAngaben($fehlendeAngaben, 'shipping_address');
         }
     } elseif ((int)$cPost_arr['kLieferadresse'] > 0) {
         //vorhandene lieferadresse
@@ -316,6 +317,10 @@ function pruefeLieferadresseStep($cGet_arr)
         $Lieferadresse = $_SESSION['Lieferadresse'];
         $step          = 'Lieferadresse';
     }
+    if (pruefeFehlendeAngaben('shipping_address')) {
+        $Lieferadresse = $_SESSION['Lieferadresse'];
+        $step          = 'Lieferadresse';
+    }
 }
 
 /**
@@ -478,6 +483,17 @@ function pruefeGuthabenNutzen()
 }
 
 /**
+ * @param string $context
+ * @return bool
+ */
+function pruefeFehlendeAngaben($context)
+{
+    $fehlendeAngaben = Shop::Smarty()->getTemplateVars('fehlendeAngaben');
+
+    return (is_array($fehlendeAngaben[$context]) && count($fehlendeAngaben[$context]));
+}
+
+/**
  *
  */
 function gibStepAccountwahl()
@@ -493,13 +509,17 @@ function gibStepAccountwahl()
 
     if (isset($_SESSION['checkout.step']) && $_SESSION['checkout.step'] === 'accountwahl') {
         if (isset($_SESSION['checkout.fehlendeAngaben'])) {
-            Shop::Smarty()->assign('fehlendeAngaben', $_SESSION['checkout.fehlendeAngaben']);
+            setzeFehlendeAngaben($_SESSION['checkout.fehlendeAngaben']);
             unset($_SESSION['checkout.fehlendeAngaben']);
         }
         if (isset($_SESSION['checkout.cPost_arr'])) {
             $Kunde                      = getKundendaten($_SESSION['checkout.cPost_arr'], 0, 0);
             $Kunde->cKundenattribut_arr = getKundenattribute($_SESSION['checkout.cPost_arr']);
             Shop::Smarty()->assign('Kunde', $Kunde);
+
+            if (isset($_SESSION['Lieferadresse'])) {
+                Shop::Smarty()->assign('Lieferadresse', $_SESSION['Lieferadresse']);
+            }
             unset($_SESSION['checkout.cPost_arr']);
         }
         unset($_SESSION['checkout.step']);
@@ -724,8 +744,8 @@ function gibStepZahlungZusatzschritt($cPost_arr)
             ? $_SESSION['Zahlungsart']->ZahlungsInfo
             : null));
     } else {
-        Shop::Smarty()->assign('fehlendeAngaben', checkAdditionalPayment($Zahlungsart))
-            ->assign('ZahlungsInfo', gibPostZahlungsInfo());
+        setzeFehlendeAngaben(checkAdditionalPayment($Zahlungsart));
+        Shop::Smarty()->assign('ZahlungsInfo', gibPostZahlungsInfo());
     }
     Shop::Smarty()->assign('Zahlungsart', $Zahlungsart)
         ->assign('Kunde', $_SESSION['Kunde'])
@@ -2266,40 +2286,39 @@ function checkLieferFormularArray($data)
         }
     }
 
-    if ($conf['kunden']['lieferadresse_abfragen_email'] === 'Y') {
+    if ($conf['kunden']['lieferadresse_abfragen_email'] !== 'N') {
         $data['email'] = trim($data['email']);
 
         if (!$data['email']) {
-            $ret['email'] = 1;
+            if ($conf['kunden']['lieferadresse_abfragen_email'] === 'Y') {
+                $ret['email'] = 1;
+            }
         } elseif (!valid_email($data['email'])) {
             $ret['email'] = 2;
         }
     }
-    if ($conf['kunden']['lieferadresse_abfragen_tel'] === 'Y' && 
-        checkeTel(StringHandler::filterXSS($data['tel'])) > 0
-    ) {
-        $ret['tel'] = checkeTel(StringHandler::filterXSS($data['tel']));
-    }
-    if ($conf['kunden']['lieferadresse_abfragen_mobil'] === 'Y' &&
-        checkeTel(StringHandler::filterXSS($data['mobil'])) > 0
-    ) {
-        $ret['mobil'] = checkeTel(StringHandler::filterXSS($data['mobil']));
-    }
-    if ($conf['kunden']['lieferadresse_abfragen_fax'] === 'Y' && 
-        checkeTel(StringHandler::filterXSS($data['fax'])) > 0
-    ) {
-        $ret['fax'] = checkeTel(StringHandler::filterXSS($data['fax']));
+
+    foreach (['tel', 'mobil', 'fax'] as $telType) {
+        if ($conf['kunden']["lieferadresse_abfragen_$telType"] !== 'N') {
+            $result = checkeTel(StringHandler::filterXSS($data[$telType]));
+            if ($result === 1 && $conf['kunden']["lieferadresse_abfragen_$telType"] === 'Y') {
+                $ret[$telType] = 1;
+            } elseif ($result > 1) {
+                $ret[$telType] = $result;
+            }
+        }
     }
 
     return $ret;
 }
 
 /**
+ * @param array $cPost_arr
  * @return array
  */
-function checkLieferFormular()
+function checkLieferFormular($cPost_arr = null)
 {
-    return checkLieferFormularArray($_POST);
+    return checkLieferFormularArray(isset($cPost_arr) ? $cPost_arr : $_POST);
 }
 
 /**
@@ -3564,7 +3583,7 @@ function setzeSmartyRechnungsadresse($nUnreg, $nCheckout = 0)
 function setzeFehlerSmartyRechnungsadresse($cFehlendeEingaben_arr, $nUnreg = 0, $cPost_arr = null)
 {
     $conf = Shop::getSettings([CONF_KUNDEN]);
-    Shop::Smarty()->assign('fehlendeAngaben', $cFehlendeEingaben_arr);
+    setzeFehlendeAngaben($cFehlendeEingaben_arr);
     $herkunfte = Shop::DB()->query(
         "SELECT *
             FROM tkundenherkunft
@@ -3602,7 +3621,7 @@ function plausiLieferadresse($cPost_arr)
     $_SESSION['Bestellung']->kLieferadresse = (int)$cPost_arr['kLieferadresse'];
     //neue lieferadresse
     if ((int)$cPost_arr['kLieferadresse'] === -1) {
-        $cFehlendeAngaben_arr = checkLieferFormular();
+        $cFehlendeAngaben_arr = checkLieferFormular($cPost_arr);
         if (angabenKorrekt($cFehlendeAngaben_arr)) {
             return $cFehlendeEingaben_arr;
         }
@@ -3765,12 +3784,12 @@ function setzeFehlerSmartyLieferadresse($cFehlendeEingaben_arr, $cPost_arr)
         Shop::Smarty()->assign('Lieferadressen', $Lieferadressen)
             ->assign('GuthabenLocalized', $_SESSION['Kunde']->gibGuthabenLocalized());
     }
+    setzeFehlendeAngaben($cFehlendeEingaben_arr, 'shipping_address');
     Shop::Smarty()->assign('laender', gibBelieferbareLaender($kKundengruppe))
         ->assign('Kunde', $_SESSION['Kunde'])
         ->assign('KuponMoeglich', kuponMoeglich())
         ->assign('kLieferadresse', $_SESSION['Bestellung']->kLieferadresse)
-        ->assign('kLieferadresse', $cPost_arr['kLieferadresse'])
-        ->assign('fehlendeAngaben', $cFehlendeEingaben_arr);
+        ->assign('kLieferadresse', $cPost_arr['kLieferadresse']);
     if ($_SESSION['Bestellung']->kLieferadresse == -1) {
         Shop::Smarty()->assign('Lieferadresse', mappeLieferadresseKontaktdaten($cPost_arr));
     }
@@ -3878,8 +3897,8 @@ function setzeSmartyZahlungsartZusatz($cPost_arr, $cFehlendeEingaben_arr = 0)
     if (empty($cPost_arr['zahlungsartzusatzschritt'])) {
         Shop::Smarty()->assign('ZahlungsInfo', $_SESSION['Zahlungsart']->ZahlungsInfo);
     } else {
-        Shop::Smarty()->assign('fehlendeAngaben', $cFehlendeEingaben_arr)
-            ->assign('ZahlungsInfo', gibPostZahlungsInfo());
+        setzeFehlendeAngaben($cFehlendeEingaben_arr);
+        Shop::Smarty()->assign('ZahlungsInfo', gibPostZahlungsInfo());
     }
     Shop::Smarty()->assign('Zahlungsart', $Zahlungsart)
         ->assign('Kunde', $_SESSION['Kunde'])
@@ -3913,6 +3932,25 @@ function setzeSmartyBestaetigung()
         $conf = Shop::getSettings([CONF_ZAHLUNGSARTEN]);
         Shop::Smarty()->assign('safetypay_form', gib_safetypay_form($_SESSION['Kunde'], $_SESSION['Warenkorb'], $conf['zahlungsarten']));
     }
+}
+
+/**
+ * @param array $fehlendeAngabe
+ * @param null $context
+ */
+function setzeFehlendeAngaben($fehlendeAngabe, $context = null)
+{
+    $fehlendeAngaben = Shop::Smarty()->getTemplateVars('fehlendeAngaben');
+    if (!is_array($fehlendeAngaben)) {
+        $fehlendeAngaben = [];
+    }
+    if (empty($context)) {
+        $fehlendeAngaben = array_merge($fehlendeAngaben, $fehlendeAngabe);
+    } else {
+        $fehlendeAngaben[$context] = isset($fehlendeAngaben[$context]) ? array_merge($fehlendeAngaben[$context], $fehlendeAngabe) : $fehlendeAngabe;
+    }
+
+    Shop::Smarty()->assign('fehlendeAngaben', $fehlendeAngaben);
 }
 
 /**

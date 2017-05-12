@@ -93,7 +93,7 @@ if (isset($_POST['shipping_address'])) {
     } elseif (isset($_POST['kLieferadresse']) && (int)$_POST['kLieferadresse'] > 0) {
         pruefeLieferdaten($_POST);
     } elseif (isset($_POST['register']['shipping_address'])) {
-        pruefeLieferdaten($_POST['register']['shipping_address']);
+        pruefeLieferdaten($_POST['register']['shipping_address'], $fehlendeAngaben);
     }
 }
 if (isset($_POST['unreg_form']) && (int)$_POST['unreg_form'] === 0) {
@@ -101,12 +101,18 @@ if (isset($_POST['unreg_form']) && (int)$_POST['unreg_form'] === 0) {
     $_POST['form']     = 1;
 
     // persistent delivery address during custom register
-    $_SESSION['tmpLieferadresse'] = $_SESSION['Lieferadresse'];
+    $_SESSION['tmpShipping'] = [
+        'Lieferadresse'   => $_SESSION['Lieferadresse'],
+        'fehlendeAngaben' => $fehlendeAngaben,
+    ];
     include 'registrieren.php';
-} elseif (isset($_SESSION['tmpLieferadresse'])) {
+} elseif (isset($_SESSION['tmpShipping'])) {
     // restore delivery address after registering customer
-    $_SESSION['Lieferadresse'] = $_SESSION['tmpLieferadresse'];
-    unset($_SESSION['tmpLieferadresse']);
+    $_SESSION['Lieferadresse'] = $_SESSION['tmpShipping']['Lieferadresse'];
+    if (is_array($_SESSION['tmpShipping']['fehlendeAngaben'])) {
+        setzeFehlendeAngaben($_SESSION['tmpShipping']['fehlendeAngaben'], 'shipping_address');
+    }
+    unset($_SESSION['tmpShipping']);
 }
 if (isset($_POST['versandartwahl']) && (int)$_POST['versandartwahl'] === 1 || isset($_GET['kVersandart'])) {
     unset($_SESSION['Zahlungsart']);
@@ -188,12 +194,9 @@ if ($step === 'accountwahl') {
     gibStepAccountwahl();
     gibStepUnregistriertBestellen();
 }
-if ($step === 'edit_customer_address') {
-    gibStepUnregistriertBestellen();
-    gibStepLieferadresse();
-}
-if ($step === 'Lieferadresse') {
+if ($step === 'edit_customer_address' || $step === 'Lieferadresse') {
     validateCouponInCheckout();
+    gibStepUnregistriertBestellen();
     gibStepLieferadresse();
 }
 if ($step === 'Versand' || $step === 'Zahlung') {

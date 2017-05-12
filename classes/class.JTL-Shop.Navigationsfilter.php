@@ -553,9 +553,9 @@ class Navigationsfilter
                 if (!is_array($_GET[$filterParam]) && $filter->getType() === AbstractFilter::FILTER_TYPE_OR) {
                     $_GET[$filterParam] = [$_GET[$filterParam]];
                 }
-                if (($filter->getType() === AbstractFilter::FILTER_TYPE_OR && is_array($_GET[$filterParam])) ||
-                    ($filter->getType() === AbstractFilter::FILTER_TYPE_AND &&
-                        (verifyGPCDataInteger($filterParam) > 0 || verifyGPDataString($filterParam) !== ''))
+                if (($filter->getType() === AbstractFilter::FILTER_TYPE_OR && is_array($_GET[$filterParam]))
+                    || ($filter->getType() === AbstractFilter::FILTER_TYPE_AND
+                        && (verifyGPCDataInteger($filterParam) > 0 || verifyGPDataString($filterParam) !== ''))
                 ) {
                     if (is_array($_GET[$filterParam])) {
                         $filterValue = [];
@@ -847,24 +847,24 @@ class Navigationsfilter
     public function validate()
     {
         if ($this->nAnzahlFilter > 0) {
-            if (empty($this->Suche->cSuche) &&
-                !$this->hasManufacturer() &&
-                !$this->hasCategory() &&
-                !$this->hasTag() &&
-                !$this->hasSuchanfrage() &&
-                !$this->hasNews() &&
-                !$this->hasNewsOverview() &&
-                !$this->hasNewsCategory() &&
-                !$this->hasAttributeValue() &&
-                !$this->hasSearchSpecial()
+            if (empty($this->Suche->cSuche)
+                && !$this->hasManufacturer()
+                && !$this->hasCategory()
+                && !$this->hasTag()
+                && !$this->hasSuchanfrage()
+                && !$this->hasNews()
+                && !$this->hasNewsOverview()
+                && !$this->hasNewsCategory()
+                && !$this->hasAttributeValue()
+                && !$this->hasSearchSpecial()
             ) {
-                //we have a manufacturer filter that doesn't filter anything
+                // we have a manufacturer filter that doesn't filter anything
                 if ($this->HerstellerFilter->getSeo($this->getLanguageID()) !== null) {
                     http_response_code(301);
                     header('Location: ' . $this->baseURL . $this->HerstellerFilter->getSeo($this->getLanguageID()));
                     exit();
                 }
-                //we have a category filter that doesn't filter anything
+                // we have a category filter that doesn't filter anything
                 if ($this->KategorieFilter->getSeo($this->getLanguageID()) !== null) {
                     http_response_code(301);
                     header('Location: ' . $this->baseURL . $this->KategorieFilter->getSeo($this->getLanguageID()));
@@ -873,14 +873,14 @@ class Navigationsfilter
             } elseif ($this->hasManufacturer() && $this->hasManufacturerFilter() &&
                 $this->Hersteller->getSeo($this->getLanguageID()) !== null
             ) {
-                //we have a manufacturer page with some manufacturer filter
+                // we have a manufacturer page with some manufacturer filter
                 http_response_code(301);
                 header('Location: ' . $this->baseURL . $this->Hersteller->getSeo($this->getLanguageID()));
                 exit();
             } elseif ($this->hasCategory() && $this->hasCategoryFilter() &&
                 $this->Kategorie->getSeo($this->getLanguageID()) !== null)
             {
-                //we have a category page with some category filter
+                // we have a category page with some category filter
                 http_response_code(301);
                 header('Location: ' . $this->baseURL . $this->Kategorie->getSeo($this->getLanguageID()));
                 exit();
@@ -1416,11 +1416,11 @@ class Navigationsfilter
             $searchResults->SuchFilterJSON = Boxen::gibJSONString($searchResults->SuchFilterJSON);
         }
         if (!isset($searchResults->Suchspecialauswahl)) {
-            $searchResults->Suchspecialauswahl = (!$this->params['kSuchspecial'] && !$this->params['kSuchspecialFilter'])
+            $searchResults->Suchspecialauswahl = !$this->params['kSuchspecial'] && !$this->params['kSuchspecialFilter']
                 ? $this->SuchspecialFilter->getOptions()
                 : null;
         }
-        $searchResults->customFilters      = [];
+        $searchResults->customFilters = [];
 
         if (empty($searchResults->Kategorieauswahl) || count($searchResults->Kategorieauswahl) <= 1) {
             // hide category filter when a category is being browsed
@@ -1900,9 +1900,6 @@ class Navigationsfilter
      */
     public function createUnsetFilterURLs($bSeo, $oSuchergebnisse)
     {
-        $languageID                  = $this->getLanguageID();
-        $customerGroupID             = $this->getCustomerGroupID();
-        $config                      = $this->getConfig();
         // @todo: why?
         if (false && $this->SuchspecialFilter->isInitialized()) {
             $bSeo = false;
@@ -2500,9 +2497,9 @@ class Navigationsfilter
                     $nStdDarstellung = (int)$oKategorie->categoryFunctionAttributes[KAT_ATTRIBUT_DARSTELLUNG];
                 }
             }
-            if ($nDarstellung === 0 &&
-                isset($this->conf['artikeluebersicht']['artikeluebersicht_erw_darstellung_stdansicht']) &&
-                (int)$this->conf['artikeluebersicht']['artikeluebersicht_erw_darstellung_stdansicht'] > 0
+            if ($nDarstellung === 0
+                && isset($this->conf['artikeluebersicht']['artikeluebersicht_erw_darstellung_stdansicht'])
+                && (int)$this->conf['artikeluebersicht']['artikeluebersicht_erw_darstellung_stdansicht'] > 0
             ) {
                 $nStdDarstellung = (int)$this->conf['artikeluebersicht']['artikeluebersicht_erw_darstellung_stdansicht'];
             }
@@ -2552,7 +2549,8 @@ class Navigationsfilter
                         break;
                 }
             } else {
-                $_SESSION['oErweiterteDarstellung']->nDarstellung = ERWDARSTELLUNG_ANSICHT_LISTE; // Std ist Listendarstellung
+                // Std ist Listendarstellung
+                $_SESSION['oErweiterteDarstellung']->nDarstellung = ERWDARSTELLUNG_ANSICHT_LISTE;
                 if (isset($_SESSION['ArtikelProSeite'])) {
                     $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = $_SESSION['ArtikelProSeite'];
                 } elseif ((int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung1'] > 0) {
@@ -2661,7 +2659,7 @@ class Navigationsfilter
                         } else {
                             if ($bSeo) {
                                 $cURL         = $naviURL;
-                                $oSeite->cURL = (strpos(basename($cURL), 'index.php') !== false)
+                                $oSeite->cURL = strpos(basename($cURL), 'index.php') !== false
                                     ? $cURL . '&amp;seite=' . $oSeite->nSeite . $cFilterShopURL
                                     : $cURL . SEP_SEITE . $oSeite->nSeite;
                             } else {
@@ -2686,7 +2684,7 @@ class Navigationsfilter
                         } else {
                             if ($bSeo) {
                                 $cURL         = $naviURL;
-                                $oSeite->cURL = (strpos(basename($cURL), 'index.php') !== false)
+                                $oSeite->cURL = strpos(basename($cURL), 'index.php') !== false
                                     ? $cURL . '&amp;seite=' . $oSeite->nSeite . $cFilterShopURL
                                     : $cURL . SEP_SEITE . $oSeite->nSeite;
                             } else {

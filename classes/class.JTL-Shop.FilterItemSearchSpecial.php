@@ -26,7 +26,8 @@ class FilterItemSearchSpecial extends AbstractFilter
         parent::__construct($naviFilter);
         $this->isCustom = false;
         $this->urlParam = 'qf';
-        $this->setFrontendName(Shop::Lang()->get('specificProducts', 'global'));
+        $this->setFrontendName(Shop::Lang()->get('specificProducts', 'global'))
+             ->setVisibility($this->getConfig()['navigationsfilter']['allgemein_suchspecialfilter_benutzen']);
     }
 
     /**

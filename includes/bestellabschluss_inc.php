@@ -290,7 +290,7 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
     if ($Bestellung->fGesamtsumme == 0) {
         $Bestellung->cStatus          = BESTELLUNG_STATUS_BEZAHLT;
         $Bestellung->dBezahltDatum    = 'now()';
-        $Bestellung->cZahlungsartName = '-';
+        $Bestellung->cZahlungsartName = Shop::Lang()->get('paymentNotNecessary', 'checkout');
     }
     $Bestellung->cIP = isset($_SESSION['IP']->cIP) ? $_SESSION['IP']->cIP : gibIP(true);
     //#8544

@@ -117,7 +117,8 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
 
         if (isset($_SESSION['Kunde']->cPasswort) && $_SESSION['Kunde']->cPasswort) {
             $_SESSION['Kunde']->cPasswortKlartext = $cPasswortKlartext;
-            $obj = new stdClass();
+
+            $obj         = new stdClass();
             $obj->tkunde = $_SESSION['Kunde'];
 
             executeHook(HOOK_BESTELLABSCHLUSS_INC_BESTELLUNGINDB_NEUKUNDENREGISTRIERUNG);
@@ -280,8 +281,8 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
     $Bestellung->berechneEstimatedDelivery();
     if (isset($_SESSION['Bestellung']->GuthabenNutzen) && $_SESSION['Bestellung']->GuthabenNutzen == 1) {
         $Bestellung->fGuthaben = -$_SESSION['Bestellung']->fGuthabenGenutzt;
-        Shop::DB()->query("
-            UPDATE tkunde 
+        Shop::DB()->query(
+            "UPDATE tkunde
                 SET fGuthaben = fGuthaben - " . $_SESSION['Bestellung']->fGuthabenGenutzt . " 
                 WHERE kKunde = " . (int)$Bestellung->kKunde, 4
         );
@@ -385,37 +386,37 @@ function saveZahlungsInfo($kKunde, $kBestellung, $bZahlungAgain = false)
     if (!class_exists('ZahlungsInfo')) {
         require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.ZahlungsInfo.php';
     }
-    $_SESSION['ZahlungsInfo']              = new ZahlungsInfo();
-    $_SESSION['ZahlungsInfo']->kBestellung = $kBestellung;
-    $_SESSION['ZahlungsInfo']->kKunde      = $kKunde;
-    $_SESSION['ZahlungsInfo']->cKartenTyp  = isset($_SESSION['Zahlungsart']->ZahlungsInfo->cKartenTyp)
+    $_SESSION['ZahlungsInfo']               = new ZahlungsInfo();
+    $_SESSION['ZahlungsInfo']->kBestellung  = $kBestellung;
+    $_SESSION['ZahlungsInfo']->kKunde       = $kKunde;
+    $_SESSION['ZahlungsInfo']->cKartenTyp   = isset($_SESSION['Zahlungsart']->ZahlungsInfo->cKartenTyp)
         ? StringHandler::unhtmlentities($_SESSION['Zahlungsart']->ZahlungsInfo->cKartenTyp)
         : null;
     $_SESSION['ZahlungsInfo']->cGueltigkeit = isset($_SESSION['Zahlungsart']->ZahlungsInfo->cGueltigkeit)
         ? StringHandler::unhtmlentities($_SESSION['Zahlungsart']->ZahlungsInfo->cGueltigkeit)
         : null;
-    $_SESSION['ZahlungsInfo']->cBankName = isset($_SESSION['Zahlungsart']->ZahlungsInfo->cBankName)
+    $_SESSION['ZahlungsInfo']->cBankName    = isset($_SESSION['Zahlungsart']->ZahlungsInfo->cBankName)
         ? StringHandler::unhtmlentities($_SESSION['Zahlungsart']->ZahlungsInfo->cBankName)
         : null;
-    $_SESSION['ZahlungsInfo']->cKartenNr = isset($_SESSION['Zahlungsart']->ZahlungsInfo->cKartenNr)
+    $_SESSION['ZahlungsInfo']->cKartenNr    = isset($_SESSION['Zahlungsart']->ZahlungsInfo->cKartenNr)
         ? StringHandler::unhtmlentities($_SESSION['Zahlungsart']->ZahlungsInfo->cKartenNr)
         : null;
-    $_SESSION['ZahlungsInfo']->cCVV = isset($_SESSION['Zahlungsart']->ZahlungsInfo->cCVV)
+    $_SESSION['ZahlungsInfo']->cCVV         = isset($_SESSION['Zahlungsart']->ZahlungsInfo->cCVV)
         ? StringHandler::unhtmlentities($_SESSION['Zahlungsart']->ZahlungsInfo->cCVV)
         : null;
-    $_SESSION['ZahlungsInfo']->cKontoNr = isset($_SESSION['Zahlungsart']->ZahlungsInfo->cKontoNr)
+    $_SESSION['ZahlungsInfo']->cKontoNr     = isset($_SESSION['Zahlungsart']->ZahlungsInfo->cKontoNr)
         ? StringHandler::unhtmlentities($_SESSION['Zahlungsart']->ZahlungsInfo->cKontoNr)
         : null;
-    $_SESSION['ZahlungsInfo']->cBLZ = isset($_SESSION['Zahlungsart']->ZahlungsInfo->cBLZ)
+    $_SESSION['ZahlungsInfo']->cBLZ         = isset($_SESSION['Zahlungsart']->ZahlungsInfo->cBLZ)
         ? StringHandler::unhtmlentities($_SESSION['Zahlungsart']->ZahlungsInfo->cBLZ)
         : null;
-    $_SESSION['ZahlungsInfo']->cIBAN = isset($_SESSION['Zahlungsart']->ZahlungsInfo->cIBAN)
+    $_SESSION['ZahlungsInfo']->cIBAN        = isset($_SESSION['Zahlungsart']->ZahlungsInfo->cIBAN)
         ? StringHandler::unhtmlentities($_SESSION['Zahlungsart']->ZahlungsInfo->cIBAN)
         : null;
-    $_SESSION['ZahlungsInfo']->cBIC = isset($_SESSION['Zahlungsart']->ZahlungsInfo->cBIC)
+    $_SESSION['ZahlungsInfo']->cBIC         = isset($_SESSION['Zahlungsart']->ZahlungsInfo->cBIC)
         ? StringHandler::unhtmlentities($_SESSION['Zahlungsart']->ZahlungsInfo->cBIC)
         : null;
-    $_SESSION['ZahlungsInfo']->cInhaber = isset($_SESSION['Zahlungsart']->ZahlungsInfo->cInhaber)
+    $_SESSION['ZahlungsInfo']->cInhaber     = isset($_SESSION['Zahlungsart']->ZahlungsInfo->cInhaber)
         ? StringHandler::unhtmlentities($_SESSION['Zahlungsart']->ZahlungsInfo->cInhaber)
         : null;
 
@@ -602,8 +603,8 @@ function aktualisiereXselling($kArtikel, $kZielArtikel)
     }
     $obj = Shop::DB()->select('txsellkauf', 'kArtikel', $kArtikel, 'kXSellArtikel', $kZielArtikel);
     if (isset($obj->nAnzahl) && $obj->nAnzahl > 0) {
-        Shop::DB()->query("
-            UPDATE txsellkauf 
+        Shop::DB()->query(
+            "UPDATE txsellkauf
               SET nAnzahl = nAnzahl + 1 
               WHERE kArtikel = " . $kArtikel . " 
                 AND kXSellArtikel = " . $kZielArtikel, 4
@@ -721,6 +722,7 @@ function AktualisiereStueckliste($kStueckliste, $fPackeinheitSt, $fLagerbestandS
               ON tartikel.kArtikel = tstueckliste.kArtikel
             WHERE tstueckliste.kStueckliste = {$kStueckliste}", 2
     );
+
     $bFull = true;
     if (is_array($oKomponente_arr) && count($oKomponente_arr) > 0) {
         foreach ($oKomponente_arr as $oKomponente) {
@@ -842,7 +844,7 @@ function KuponVerwendungen($oBestellung)
     if (is_array($_SESSION['Warenkorb']->PositionenArr) && count($_SESSION['Warenkorb']->PositionenArr) > 0) {
         foreach ($_SESSION['Warenkorb']->PositionenArr as $i => $Position) {
             if (!isset($_SESSION['VersandKupon']) && ($Position->nPosTyp == 3 || $Position->nPosTyp == 7)) {
-                $fKuponwertBrutto = berechneBrutto($Position->fPreisEinzelNetto, gibUst($Position->kSteuerklasse))*(-1);
+                $fKuponwertBrutto = berechneBrutto($Position->fPreisEinzelNetto, gibUst($Position->kSteuerklasse)) * (-1);
             }
         }
     }
@@ -855,19 +857,19 @@ function KuponVerwendungen($oBestellung)
         $KuponKunde->cMail         = Shop::DB()->escape(StringHandler::filterXSS($_SESSION['Kunde']->cMail));
         $KuponKunde->dErstellt     = 'now()';
         $KuponKunde->nVerwendungen = 1;
-        $KuponKundeBisher          = Shop::DB()->query('
-            SELECT SUM(nVerwendungen) AS nVerwendungen 
+        $KuponKundeBisher          = Shop::DB()->query(
+            "SELECT SUM(nVerwendungen) AS nVerwendungen
                 FROM tkuponkunde 
-                WHERE cMail = "' . $KuponKunde->cMail . '";', 1
+                WHERE cMail = '{$KuponKunde->cMail}'", 1
         );
         if (isset($KuponKundeBisher->nVerwendungen) && $KuponKundeBisher->nVerwendungen > 0) {
             $KuponKunde->nVerwendungen += $KuponKundeBisher->nVerwendungen;
         }
-        Shop::DB()->delete('tkuponkunde', ['kKunde', 'kKupon'], [(int) $KuponKunde->kKunde, $kKupon]);
+        Shop::DB()->delete('tkuponkunde', ['kKunde', 'kKupon'], [(int)$KuponKunde->kKunde, $kKupon]);
         Shop::DB()->insert('tkuponkunde', $KuponKunde);
 
         if (isset($_SESSION['NeukundenKupon']->kKupon) && $_SESSION['NeukundenKupon']->kKupon > 0) {
-            Shop::DB()->delete('tkuponneukunde',['kKupon', 'cEmail'], [$kKupon, $_SESSION['Kunde']->cMail]);
+            Shop::DB()->delete('tkuponneukunde', ['kKupon', 'cEmail'], [$kKupon, $_SESSION['Kunde']->cMail]);
         }
 
         $oKuponBestellung                     = new KuponBestellung();
@@ -911,7 +913,7 @@ function baueBestellnummer()
         [date('Y'), date('m'), date('d'), date('W')],
         $conf['kaufabwicklung']['bestellabschluss_bestellnummer_praefix']
     );
-    $cSuffix = str_replace(
+    $cSuffix  = str_replace(
         ['%Y', '%m', '%d', '%W'],
         [date('Y'), date('m'), date('d'), date('W')],
         $conf['kaufabwicklung']['bestellabschluss_bestellnummer_suffix']
@@ -951,7 +953,7 @@ function setzeSmartyWeiterleitung($bestellung)
             require_once PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/' . PFAD_PLUGIN_VERSION .
                 $oPlugin->nVersion . '/' . PFAD_PLUGIN_PAYMENTMETHOD .
                 $oPlugin->oPluginZahlungsKlasseAssoc_arr[$_SESSION['Zahlungsart']->cModulId]->cClassPfad;
-            $pluginClass             = $oPlugin->oPluginZahlungsKlasseAssoc_arr[$_SESSION['Zahlungsart']->cModulId]->cClassName;
+            $pluginClass = $oPlugin->oPluginZahlungsKlasseAssoc_arr[$_SESSION['Zahlungsart']->cModulId]->cClassName;
             /** @var PaymentMethod $paymentMethod */
             $paymentMethod           = new $pluginClass($_SESSION['Zahlungsart']->cModulId);
             $paymentMethod->cModulId = $_SESSION['Zahlungsart']->cModulId;
@@ -970,7 +972,8 @@ function setzeSmartyWeiterleitung($bestellung)
         $paymentMethod->preparePaymentProcess($bestellung);
     } elseif ($_SESSION['Zahlungsart']->cModulId === 'za_moneybookers_jtl') {
         require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'moneybookers/moneybookers.php';
-        Shop::Smarty()->assign('moneybookersform',
+        Shop::Smarty()->assign(
+            'moneybookersform',
             gib_moneybookers_form(
                 $bestellung,
                 strtolower($Einstellungen['zahlungsarten']['zahlungsart_moneybookers_empfaengermail']),
@@ -1280,7 +1283,8 @@ function finalisiereBestellung($cBestellNr = '', $bSendeMail = true)
     if (isset($bestellung->oEstimatedDelivery->longestMin, $bestellung->oEstimatedDelivery->longestMax)) {
         $obj->tbestellung->cEstimatedDeliveryEx = dateAddWeekday(
             $bestellung->dErstellt,
-                $bestellung->oEstimatedDelivery->longestMin)->format('d.m.Y')
+            $bestellung->oEstimatedDelivery->longestMin
+        )->format('d.m.Y')
             . ' - ' .
             dateAddWeekday($bestellung->dErstellt, $bestellung->oEstimatedDelivery->longestMax)->format('d.m.Y');
     }

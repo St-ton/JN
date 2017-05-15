@@ -118,7 +118,13 @@ function bearbeiteInsert($xml)
             if (!isset($oMM_arr[$i]) || $oMM_arr[$i] === null) {
                 $oMM_arr[$i] = new stdClass();
             }
-
+            if (isset($merkmal_arr[$i]->nMehrfachauswahl)) {
+                if ($merkmal_arr[$i]->nMehrfachauswahl > 1) {
+                    $merkmal_arr[$i]->nMehrfachauswahl = 1;
+                }
+            } else {
+                $merkmal_arr[$i]->nMehrfachauswahl = 0;
+            }
             $oMerkmal                   = merkeBildPfad($merkmal_arr[$i]->kMerkmal);
             $merkmal_arr[$i]->cBildpfad = isset($oMerkmal->cBildpfad) ? $oMerkmal->cBildpfad : '';
             $oMM_arr[$i]->oMMW_arr      = [];

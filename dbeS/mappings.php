@@ -457,7 +457,8 @@ $mMerkmal = [
     'nSort',
     'cName',
     'nGlobal',
-    'cTyp'
+    'cTyp',
+    'nMehrfachauswahl'
 ];
 
 $mMerkmalSprache = [

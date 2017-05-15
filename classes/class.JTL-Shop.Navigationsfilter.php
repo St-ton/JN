@@ -460,9 +460,10 @@ class Navigationsfilter
             $this->baseState   = $this->MerkmalWert;
         }
         if (count($params['MerkmalFilter_arr']) > 0) {
-            foreach ($params['MerkmalFilter_arr'] as $mmf) {
-                $this->MerkmalFilter[] = $this->addActiveFilter(new FilterItemAttribute($this), $mmf);
-            }
+//            foreach ($params['MerkmalFilter_arr'] as $mmf) {
+//                $this->MerkmalFilter[] = $this->addActiveFilter(new FilterItemAttribute($this), $mmf);
+//            }
+            $this->setAttributeFilters($params['MerkmalFilter_arr']);
         }
         if ($params['kTag'] > 0) {
             $this->Tag->init($params['kTag']);
@@ -586,6 +587,65 @@ class Navigationsfilter
         $this->params = $params;
 
         return $this->validate();
+    }
+
+    /**
+     * @param array $values
+     * @return $this
+     */
+    private function setAttributeFiltersX($values)
+    {
+        $attributes       = Shop::DB()->query('
+            SELECT tmerkmalwert.kMerkmal, tmerkmalwert.kMerkmalWert, tmerkmal.nMehrfachauswahl
+                FROM tmerkmalwert
+                JOIN tmerkmal 
+                    ON tmerkmal.kMerkmal = tmerkmalwert.kMerkmal
+                WHERE kMerkmalWert IN (' . implode(',', array_map('intval', $values)) . ')',
+            2
+        );
+        $attributeFilters = [];
+        foreach ($attributes as $attribute) {
+            $attribute->kMerkmal         = (int)$attribute->kMerkmal;
+            $attribute->kMerkmalWert     = (int)$attribute->kMerkmalWert;
+            $attribute->nMehrfachauswahl = (int)$attribute->nMehrfachauswahl;
+            if ($attribute->nMehrfachauswahl > 0) {
+                if (!isset($attributeFilters[$attribute->kMerkmal])) {
+                    $attributeFilters[$attribute->kMerkmal] = [];
+                }
+                $attributeFilters[$attribute->kMerkmal][] = $attribute;
+            } else {
+                $attributeFilters[$attribute->kMerkmal] = $attribute;
+            }
+        }
+        foreach ($attributeFilters as $attributeFilter) {
+            $this->MerkmalFilter[] = $this->addActiveFilter(new FilterItemAttribute($this), $attributeFilter);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param array $values
+     * @return $this
+     */
+    private function setAttributeFilters($values)
+    {
+        $attributes = Shop::DB()->query('
+            SELECT tmerkmalwert.kMerkmal, tmerkmalwert.kMerkmalWert, tmerkmal.nMehrfachauswahl
+                FROM tmerkmalwert
+                JOIN tmerkmal 
+                    ON tmerkmal.kMerkmal = tmerkmalwert.kMerkmal
+                WHERE kMerkmalWert IN (' . implode(',', array_map('intval', $values)) . ')',
+            2
+        );
+        foreach ($attributes as $attribute) {
+            $attribute->kMerkmal         = (int)$attribute->kMerkmal;
+            $attribute->kMerkmalWert     = (int)$attribute->kMerkmalWert;
+            $attribute->nMehrfachauswahl = (int)$attribute->nMehrfachauswahl;
+            $this->MerkmalFilter[] = $this->addActiveFilter(new FilterItemAttribute($this), $attribute);
+        }
+
+        return $this;
     }
 
     /**
@@ -1037,7 +1097,10 @@ class Navigationsfilter
             $state->joins,
             $state->conditions,
             $state->having,
-            $order->orderBy
+            $order->orderBy,
+            '',
+            ['tartikel.kArtikel'],
+            false
         );
         $keys = Shop::DB()->query($qry, 2);
         $res  = [];
@@ -1300,6 +1363,8 @@ class Navigationsfilter
             $count = count($filters);
             if ($count > 1 && $type !== 'misc' && $type !== 'custom') {
                 $singleConditions = [];
+                $orFilters        = array_filter($filters, function($f) { return $f->getType() === AbstractFilter::FILTER_TYPE_OR; });
+
                 /** @var AbstractFilter $filter */
                 foreach ($filters as $idx => $filter) {
                     // the built-in filter behave quite strangely and have to be combined this way
@@ -1315,13 +1380,35 @@ class Navigationsfilter
                             } else {
                                 $data->joins[] = $itemJoin;
                             }
-                            if ($filter->getType() === AbstractFilter::FILTER_TYPE_AND) {
-                                // filters that decrease the total amount of articles must have a "HAVING" clause
-                                $data->having[] = 'HAVING COUNT(' . $filter->getTableName() . '.' .
-                                    $filter->getPrimaryKeyRow() . ') = ' . $count;
-                            }
+//                            if ($filter->getType() === AbstractFilter::FILTER_TYPE_AND) {
+//                                // filters that decrease the total amount of articles must have a "HAVING" clause
+//                                $having = 'HAVING COUNT(' . $filter->getTableName() . '.' .
+//                                    $filter->getPrimaryKeyRow() . ') = ' . $count;
+////                                $data->having[] = $having;
+//                            }
                         }
-                        $singleConditions[] = $filter->getSQLCondition();
+                        if (!in_array($filter, $orFilters, true)) {
+                            $singleConditions[] = $filter->getSQLCondition();
+                        }
+                    }
+                }
+
+                if (count($orFilters) > 0) {
+                    // group OR filters by their primary key row
+                    $groupedOrFilters = [];
+                    foreach ($orFilters as $filter) {
+                        $primaryKeyRow = $filter->getPrimaryKeyRow();
+                        if (!isset($groupedOrFilters[$primaryKeyRow])) {
+                            $groupedOrFilters[$primaryKeyRow] = [];
+                        }
+                        $groupedOrFilters[$primaryKeyRow][] = $filter;
+                    }
+                    foreach ($groupedOrFilters as $primaryKeyRow => $orFilters) {
+                        $values = implode(',', array_map(function ($f) { return $f->getValue(); }, $orFilters));
+                        $data->conditions[] = "\n#combined conditions from OR filter " . $primaryKeyRow . "\n" .
+                            $orFilters[0]->getTableName() . '.kArtikel IN ' .
+                            '(SELECT kArtikel FROM ' . $orFilters[0]->getTableName() . ' WHERE ' .
+                                $primaryKeyRow . ' IN (' . $values . '))';
                     }
                 }
                 if (!empty($singleConditions)) {
@@ -1339,7 +1426,8 @@ class Navigationsfilter
                         $data->joins[] = $itemJoin;
                     }
 
-                    $data->conditions[] = "\n#condition from filter " . $type . "\n" . $filters[0]->getSQLCondition();
+                    $data->conditions[] = "\n#condition from filter " . $type . "\n" .
+                        $filters[0]->getSQLCondition();
                 }
             } elseif ($count > 0 && ($type !== 'misc' || $type !== 'custom')) {
                 // this is the most clean and usual behaviour.
@@ -1354,7 +1442,8 @@ class Navigationsfilter
                         $data->joins[] = $itemJoin;
                     }
 
-                    $data->conditions[] = "\n#condition from filter " . $type . "\n" . $filter->getSQLCondition();
+                    $data->conditions[] = "\n#condition from filter " . $type . "\n" .
+                        $filter->getSQLCondition();
                 }
             }
         }
@@ -1419,6 +1508,10 @@ class Navigationsfilter
             $searchResults->Suchspecialauswahl = !$this->params['kSuchspecial'] && !$this->params['kSuchspecialFilter']
                 ? $this->SuchspecialFilter->getOptions()
                 : null;
+        }
+        if (empty($searchResults->Suchspecialauswahl)) {
+            // hide category filter when a category is being browsed
+            $this->SuchspecialFilter->setVisibility(AbstractFilter::SHOW_NEVER);
         }
         $searchResults->customFilters = [];
 
@@ -1565,13 +1658,15 @@ class Navigationsfilter
                 unset($joins[$i]);
             }
         }
-        $conditionsString = implode(' AND ', array_map(function ($a) use ($or) {
+//        $conditionsString = implode(' AND ', array_map(function ($a) use ($or) {
+        $conditionsString = implode(' AND ', array_map(function ($a) {
             if (is_string($a)) {
                 return $a;
             }
-            return $or === false
-                ? '(' . implode(' OR ', $a) . ')'
-                : 'NOT(' . implode(' OR ', $a) . ')';
+            return '(' . implode(' AND ', $a) . ')';
+//            return $or === false
+//                ? '(' . implode(' OR ', $a) . ')'
+//                : 'NOT(' . implode(' OR ', $a) . ')';
         }, $conditions));
         $joinString       = implode("\n", $joins);
         $havingString     = implode(' AND ', $having);
@@ -1594,7 +1689,7 @@ class Navigationsfilter
             WHERE tartikelsichtbarkeit.kArtikel IS NULL
                 AND tartikel.kVaterArtikel = 0
                 #stock filter
-                ' . $this->getStorageFilter() .
+                ' . $this->getStorageFilter() . "\n" .
             $conditionsString . '
             #default group by
             ' . $groupByString . '
@@ -1922,11 +2017,29 @@ class Navigationsfilter
                 );
                 $oMerkmal->setUnsetFilterURL($this->URL->cAlleMerkmale[$oMerkmal->kMerkmal]);
             }
+//            if (is_array($oMerkmal->kMerkmalWert)) {
+//                foreach ($oMerkmal->kMerkmalWert as $mmw) {
+//                    $this->URL->cAlleMerkmalWerte[$mmw] = $this->getURL(
+//                        $bSeo,
+//                        $additionalFilter->init($oMerkmal)
+//                    );
+//                    $oMerkmal->setUnsetFilterURL($this->URL->cAlleMerkmalWerte[$mmw]);
+//                }
+//            } else {
+//                $this->URL->cAlleMerkmalWerte[$oMerkmal->kMerkmalWert] = $this->getURL(
+//                    $bSeo,
+//                    $additionalFilter->init($oMerkmal)
+//                );
+//                $oMerkmal->setUnsetFilterURL($this->URL->cAlleMerkmalWerte[$oMerkmal->kMerkmalWert]);
+//            }
+
             $this->URL->cAlleMerkmalWerte[$oMerkmal->kMerkmalWert] = $this->getURL(
                 $bSeo,
                 $additionalFilter->init($oMerkmal->kMerkmalWert)
             );
             $oMerkmal->setUnsetFilterURL($this->URL->cAlleMerkmalWerte[$oMerkmal->kMerkmalWert]);
+
+
         }
         // kinda hacky: try to build url that removes a merkmalwert url from merkmalfilter url
         if ($this->MerkmalWert->isInitialized() &&

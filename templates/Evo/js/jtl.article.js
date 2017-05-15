@@ -765,7 +765,7 @@
                 $wrapper.addClass('loading');
                 $spinner = $.evo.extended().spinner();
             } else {
-                $('.variations #updatingStockInfo').show();
+                $('#updatingStockInfo').show();
             }
 
             if (item) {
@@ -791,7 +791,7 @@
                 if (animation) {
                     $spinner.stop();
                 }
-                $('.variations #updatingStockInfo').hide();
+                $('#updatingStockInfo').hide();
                 if (error) {
                     $.evo.error('checkVarkombiDependencies');
                 }

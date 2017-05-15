@@ -67,7 +67,7 @@
             {if $oKwKReg_arr && $oKwKReg_arr|@count > 0}
                 {include file='tpl_inc/pagination.tpl' oPagination=$oPagiReg cAnchor='registrierung'}
                 <div id="payment">
-                    <div id="tabellenLivesuche">
+                    <div id="tabellenLivesuche" class="table-responsive">
                         <table class="table">
                             <tr>
                                 <th class="tleft">{#kundenwerbenkundenRegName#}</th>

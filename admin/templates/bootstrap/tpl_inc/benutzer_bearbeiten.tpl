@@ -89,8 +89,11 @@ $(document).ready(function() {
                     <div class="item">
                         <div class="input-group{if isset($cError_arr.cName)} error{/if}">
                             <span class="input-group-addon">
-                            <label for="cName">Vor- und Nachname</label></span>
-                            <input id="cName" class="form-control" type="text" name="cName" value="{if isset($oAccount->cName)}{$oAccount->cName}{/if}" />
+                                <label for="cName">Vor- und Nachname</label>
+                            </span>
+                            <span class="input-group-wrap">
+                                <input id="cName" class="form-control" type="text" name="cName" value="{if isset($oAccount->cName)}{$oAccount->cName}{/if}" />
+                            </span>
                             {if isset($cError_arr.cName)}<span class="input-group-addon error" title="Bitte ausf&uuml;llen"><i class="fa fa-exclamation-triangle"></i></span>{/if}
                         </div>
                     </div>
@@ -99,7 +102,9 @@ $(document).ready(function() {
                             <span class="input-group-addon">
                                 <label for="cMail">E-Mail Adresse</label>
                             </span>
-                            <input id="cMail" class="form-control" type="text" name="cMail" value="{if isset($oAccount->cMail)}{$oAccount->cMail}{/if}" />
+                            <span class="input-group-wrap">
+                                <input id="cMail" class="form-control" type="text" name="cMail" value="{if isset($oAccount->cMail)}{$oAccount->cMail}{/if}" />
+                            </span>
                             {if isset($cError_arr.cMail)}<span class="input-group-addon error" title="Bitte ausf&uuml;llen"><i class="fa fa-exclamation-triangle"></i></span>{/if}
                         </div>
                     </div>
@@ -116,7 +121,9 @@ $(document).ready(function() {
                             <span class="input-group-addon">
                                 <label for="cLogin">Benutzername</label>
                             </span>
-                            <input id="cLogin" class="form-control" type="text" name="cLogin" value="{if isset($oAccount->cLogin)}{$oAccount->cLogin}{/if}" />
+                            <span class="input-group-wrap">
+                                <input id="cLogin" class="form-control" type="text" name="cLogin" value="{if isset($oAccount->cLogin)}{$oAccount->cLogin}{/if}">
+                            </span>
                             {if isset($cError_arr.cLogin) && $cError_arr.cLogin == 1}
                                 <span class="input-group-addon error" title="Bitte ausf&uuml;llen"><i class="fa fa-exclamation-triangle"></i></span>
                             {elseif isset($cError_arr.cLogin) && $cError_arr.cLogin == 2}
@@ -131,9 +138,14 @@ $(document).ready(function() {
                             <span class="input-group-addon">
                                 <label for="cPass">Passwort</label>
                             </span>
-                            <input id="cPass" class="form-control" type="text" name="cPass" autocomplete="off" />
+                            <span class="input-group-wrap">
+                                <input id="cPass" class="form-control" type="text" name="cPass" autocomplete="off" />
+                            </span>
                             <span class="input-group-addon">
-                                <a href="#" onclick="xajax_getRandomPassword();return false;" class="button generate" title="">Passwort generieren</a>
+                                <a href="#" onclick="xajax_getRandomPassword();return false;" class="btn btn-info btn-xs"
+                                   title="Passwort generieren">
+                                    <i class="fa fa-random"></i>
+                                </a>
                             </span>
                             {if isset($cError_arr.cPass)}<span class="input-group-addon error" title="Bitte ausf&uuml;llen"><i class="fa fa-exclamation-triangle"></i></span>{else}<span class="input-group-addon"><i class="fa fa-wrench"></i></span>{/if}
                         </div>

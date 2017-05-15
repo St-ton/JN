@@ -328,48 +328,58 @@
                             <div class="panel-heading">
                                 <h3 class="panel-title">Vorhandene Vorlagen</h3>
                             </div>
-                            <table class="table">
-                                <tr>
-                                    <th class="th-1">&nbsp;</th>
-                                    <th class="th-2">{#newsletterdraftname#}</th>
-                                    <th class="th-3">{#newsletterdraftsubject#}</th>
-                                    <th class="th-4">{#newsletterdraftStdShort#}</th>
-                                    <th class="th-5" style="width: 385px;">{#newsletterdraftoptions#}</th>
-                                </tr>
-                                {foreach name=newslettervorlage from=$oNewsletterVorlage_arr item=oNewsletterVorlage}
-                                    <tr class="tab_bg{$smarty.foreach.newslettervorlage.iteration%2}">
-                                        <td class="TD1">
-                                            <input name="kNewsletterVorlage[]" type="checkbox" value="{$oNewsletterVorlage->kNewsletterVorlage}">
-                                        </td>
-                                        <td class="TD2">{$oNewsletterVorlage->cName}</td>
-                                        <td class="TD3">{$oNewsletterVorlage->cBetreff}</td>
-                                        <td class="TD4">
-                                            {if $oNewsletterVorlage->kNewslettervorlageStd > 0}
-                                                {#yes#}
-                                            {else}
-                                                {#no#}
-                                            {/if}
-                                        </td>
-                                        <td class="TD5">
-                                            <div class="btn-group">
-                                                <a class="btn btn-default" href="newsletter.php?&vorschau={$oNewsletterVorlage->kNewsletterVorlage}&iframe=1&tab=newslettervorlagen&token={$smarty.session.jtl_token}" title="{#newsletterPreview#}"><i class="fa fa-eye"></i></a>
-                                                {if $oNewsletterVorlage->kNewslettervorlageStd > 0}
-                                                    <a class="btn btn-default" href="newsletter.php?newslettervorlagenstd=1&editieren={$oNewsletterVorlage->kNewsletterVorlage}&tab=newslettervorlagen&token={$smarty.session.jtl_token}" title="{#modify#}"><i class="fa fa-edit"></i></a>
-                                                {else}
-                                                    <a class="btn btn-default" href="newsletter.php?newslettervorlagen=1&editieren={$oNewsletterVorlage->kNewsletterVorlage}&tab=newslettervorlagen&token={$smarty.session.jtl_token}" title="{#modify#}"><i class="fa fa-edit"></i></a>
-                                                {/if}
-                                                <a class="btn btn-default" href="newsletter.php?newslettervorlagen=1&vorbereiten={$oNewsletterVorlage->kNewsletterVorlage}&tab=newslettervorlagen&token={$smarty.session.jtl_token}" title="{#newsletterprepare#}">{#newsletterprepare#}</a>
-                                            </div>
-                                        </td>
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <tr>
+                                        <th class="th-1">&nbsp;</th>
+                                        <th class="th-2">{#newsletterdraftname#}</th>
+                                        <th class="th-3">{#newsletterdraftsubject#}</th>
+                                        <th class="th-4">{#newsletterdraftStdShort#}</th>
+                                        <th class="th-5" style="width: 385px;">{#newsletterdraftoptions#}</th>
                                     </tr>
-                                {/foreach}
-                                <tr>
-                                    <td class="TD1">
-                                        <input name="ALLMSGS" id="ALLMSGS5" type="checkbox" onclick="AllMessages(this.form);">
-                                    </td>
-                                    <td colspan="6" class="TD7"><label for="ALLMSGS5">{#globalSelectAll#}</label></td>
-                                </tr>
-                            </table>
+                                    {foreach name=newslettervorlage from=$oNewsletterVorlage_arr item=oNewsletterVorlage}
+                                        <tr class="tab_bg{$smarty.foreach.newslettervorlage.iteration%2}">
+                                            <td class="TD1">
+                                                <input name="kNewsletterVorlage[]" type="checkbox" value="{$oNewsletterVorlage->kNewsletterVorlage}">
+                                            </td>
+                                            <td class="TD2">{$oNewsletterVorlage->cName}</td>
+                                            <td class="TD3">{$oNewsletterVorlage->cBetreff}</td>
+                                            <td class="TD4">
+                                                {if $oNewsletterVorlage->kNewslettervorlageStd > 0}
+                                                    {#yes#}
+                                                {else}
+                                                    {#no#}
+                                                {/if}
+                                            </td>
+                                            <td class="TD5">
+                                                <div class="btn-group">
+                                                    <a class="btn btn-default"
+                                                       href="newsletter.php?&vorschau={$oNewsletterVorlage->kNewsletterVorlage}&iframe=1&tab=newslettervorlagen&token={$smarty.session.jtl_token}"
+                                                       title="{#newsletterPreview#}"><i class="fa fa-eye"></i></a>
+                                                    {if $oNewsletterVorlage->kNewslettervorlageStd > 0}
+                                                        <a class="btn btn-default"
+                                                           href="newsletter.php?newslettervorlagenstd=1&editieren={$oNewsletterVorlage->kNewsletterVorlage}&tab=newslettervorlagen&token={$smarty.session.jtl_token}"
+                                                           title="{#modify#}"><i class="fa fa-edit"></i></a>
+                                                    {else}
+                                                        <a class="btn btn-default"
+                                                           href="newsletter.php?newslettervorlagen=1&editieren={$oNewsletterVorlage->kNewsletterVorlage}&tab=newslettervorlagen&token={$smarty.session.jtl_token}"
+                                                           title="{#modify#}"><i class="fa fa-edit"></i></a>
+                                                    {/if}
+                                                    <a class="btn btn-default"
+                                                       href="newsletter.php?newslettervorlagen=1&vorbereiten={$oNewsletterVorlage->kNewsletterVorlage}&tab=newslettervorlagen&token={$smarty.session.jtl_token}"
+                                                       title="{#newsletterprepare#}">{#newsletterprepare#}</a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {/foreach}
+                                    <tr>
+                                        <td class="TD1">
+                                            <input name="ALLMSGS" id="ALLMSGS5" type="checkbox" onclick="AllMessages(this.form);">
+                                        </td>
+                                        <td colspan="6" class="TD7"><label for="ALLMSGS5">{#globalSelectAll#}</label></td>
+                                    </tr>
+                                </table>
+                            </div>
                             <div class="panel-footer">
                                 <div class="{if isset($oNewsletterVorlage_arr) && $oNewsletterVorlage_arr|@count > 0}btn-group{/if}">
                                     <button name="vorlage_erstellen" class="btn btn-primary" type="submit">{#newsletterdraftcreate#}</button>

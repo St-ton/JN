@@ -136,6 +136,7 @@ if (auth()) {
             $xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo attr'] = buildAttributes($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']);
             unset($xml_obj['bestellungen']['tbestellung'][$i . ' attr']['kVersandArt'], $xml_obj['bestellungen']['tbestellung'][$i . ' attr']['kWarenkorb']);
 
+            // Sicherstellen, dass fWaehrungsFaktor als letztes Element im XML steht
             $tmpWaehrungsfaktor = $xml_obj['bestellungen']['tbestellung'][$i]['fWaehrungsFaktor'];
             unset($xml_obj['bestellungen']['tbestellung'][$i]['fWaehrungsFaktor']);
             $xml_obj['bestellungen']['tbestellung'][$i]['fWaehrungsFaktor'] = $tmpWaehrungsfaktor;

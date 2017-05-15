@@ -1110,6 +1110,7 @@ function fakeBestellung()
     $bestellung->Positionen       = [];
     $bestellung->Waehrung         = $_SESSION['Waehrung'];
     $bestellung->kWaehrung        = $_SESSION['Waehrung']->kWaehrung;
+    $bestellung->fWaehrungsFaktor = $_SESSION['Waehrung']->fFaktor;
     if ($bestellung->oRechnungsadresse === null) {
         $bestellung->oRechnungsadresse = new stdClass();
     }

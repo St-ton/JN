@@ -41,7 +41,7 @@ if (isset($aData['action']) && validateToken()) {
                 if (!empty($cToUrl)) {
                     $urls[$oItem->kRedirect] = $cToUrl;
                 }
-                if ($oItem->kRedirect > 0) {
+                if ($oItem->kRedirect > 0 && $oItem->cToUrl !== $cToUrl) {
                     $oItem->cToUrl = $cToUrl;
                     if (Redirect::checkAvailability($cToUrl)) {
                         $oItem->bAvailable = $cToUrl !== '' ? '1' : '0';

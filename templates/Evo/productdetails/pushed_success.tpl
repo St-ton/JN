@@ -1,4 +1,4 @@
-<div id="pushed-success" class="alert alert-info panel-wrap{if isset($inline)} no-margin{/if}">
+<div id="pushed-success" class="notification-alert bg-info panel-wrap{if isset($inline)} no-margin{/if}">
     {if isset($zuletztInWarenkorbGelegterArtikel)}
         {assign var=pushedArtikel value=$zuletztInWarenkorbGelegterArtikel}
     {else}
@@ -29,7 +29,7 @@
                     <hr>
                     <p class="btn-group btn-group-justified btn-group-full" role="group">
                         <a href="{get_static_route id='warenkorb.php'}" class="btn btn-default btn-basket"><i class="fa fa-shopping-cart"></i> {lang key="gotoBasket"}</a>
-                        <a href="#" class="btn btn-primary btn-checkout" data-dismiss="{if isset($type)}{$type}{else}modal{/if}" aria-label="Close"><i class="fa fa-arrow-circle-right"></i> {lang key="continueShopping" section="checkout"}</a>
+                        <a href="{$pushedArtikel->cURL}" class="btn btn-primary btn-checkout" data-dismiss="{if isset($type)}{$type}{else}modal{/if}" aria-label="Close"><i class="fa fa-arrow-circle-right"></i> {lang key="continueShopping" section="checkout"}</a>
                     </p>
 {*
                     <p class="continue-shopping">

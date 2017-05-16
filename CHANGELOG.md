@@ -1,7 +1,50 @@
 # JTL-Shop Changelog
 
+## [4.05.3]
 
-## [4.05]
+## Bugfixes
+
+* Beim Export von Exportformaten wird der neue Dateiinhalt an alte Datei angehängt (#1217)
+* Bei News-Kategoriebeschreibung kann kein HTML verwendet werden (#1197)
+
+## [4.05.2] - 2017-04-04
+
+### Bugfixes 
+
+* Varkombivorschaubilder werden nicht mehr gruppiert angezeigt (#985)
+* Detailinformationen von Seiteninhalten gegen beim Speichern von eigenen Seiten verloren (#998)
+* Fehlende Vorschaubilder in der Newsübersicht (#1011)
+* Admin Sitemapexport speicherhungrig (zeitlich unbegrenzte Statistikauswertung) (#986)
+* E-Mail-Bestellbestätigung: Lieferzeit an Bestellpositionen fehlt (#1004)
+* Bewertungen werden nicht vollständig angezeigt (#1000)
+* Falsche Meldung bei 2-Faktor-Authentifizierung (#968)
+* Neue SEO-URLs beachten Kundengruppen nicht (#1003)
+* Prozentuale Neukundenkupons werden nicht eingelöst bei Ganzer WK "Nein" (#1007)
+* Konfigurationsartikelbeschreibung wird nicht angezeigt, wenn Komponente mit Artikel verknüpft ist, aber individuelle Beschreibung enthält (#980)
+* E-Mails bringen Dateianhang-Namen durcheinander (#1016)
+* Abfrage auf spezielle Kundengruppe in cKundengruppe funktioniert nur bei einstelligen Kundengruppen-IDs (#997)
+* Hinweistext für Versandarten lässt kein HTML zu (#1039)
+* Kupon: "Beschränken auf Kunden" funktioniert bei aktiviertem Errorlogging nicht (#1092)
+* Beim Editieren von Artikel-Bewertungs-Texten wird die Überschrift im Bewertungstext gespeichert (#1001)
+* Beitragsanzahl auf der News Seite (#1118)
+* Warenkorbmatrix arbeitet fehlerhaft (#1078)
+* Admin Boxenverwaltung: Footer wird deaktiviert, sobald man den Aktualisieren-Button drückt (#1128)
+* Fehlerhafte URLs in Newsübersicht (#1159)
+* Bestellbestätigung-E-Mail Lieferzeit fehlerhaft, wenn letzter verfügbarer Artikel gekauft wurde (#1097)
+* Fehler beim Versenden von Newslettern wenn mindestens zwei Artikel hinzugefügt werden (#1014)
+* Aufgabenplaner löscht bei Start vorhandene Datei (steht während des Exports nicht zum Download zur Verfügung) (#1190)
+
+## [4.05.1] - 2017-02-17
+
+### Bugfixes
+
+* Weiterleitungslink kann bei Teilverschlüsselung nicht gespeichert werden, wenn Admin über https aufgerufen wird (#991)
+* Weiterleitungsschleife bei SSL-Teilverschlüsselung z.B. bei Mein-Konto oder Kontakt (#990)
+* Serverfehler 500, wenn Konfigurationsartikel im Warenkorb bearbeitet wird (#995)
+* Mehrere im Backend-CMS hinterlegte Startseiten (Typ Spezialseite Startseite) erzeugen Dauerschleife (#987)
+
+
+## [4.05] - 2017-02-14
 
 Die nachfolgende Auflistung informiert Sie über die wichtigsten Änderungen in JTL-Shop Version 4.05. <br>
 Eine vollständige Liste aller in dieser Version gelöster Issues finden Sie [hier](https://gitlab.jtl-software.de/jtlshop/shop4/issues?scope=all&utf8=%E2%9C%93&state=closed&milestone_title=4.05).

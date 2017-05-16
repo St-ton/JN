@@ -11,11 +11,33 @@
 | ![Screenshot](https://images.jtl-software.de/shop4/shop_release_showcase.png "JTL-Shop 4") |
 
 ## System Requirements
-* PHP >= v5.4
-* MySQL >= v5
-* GD-Lib >= v2.0
-* Optional: ImageMagick and imagick php module
-* Optional: IonCube Loader >= 4.5 for some third-party plug-ins
+
+**Apache**
+ * Version 2.2 or 2.4
+ * mod_rewrite module activated
+ * .htaccess support (allowed to override options)
+  
+**Database** 
+* MySQL or MariaDB >= v5.0
+
+**PHP**
+* Version 7.0 or 5.6 recommended. Support for 5.4 and 5.5 will be dropped soon. 
+* PHP-Modules: 
+ * [GD](http://php.net/manual/en/book.image.php)
+ * [SimpleXML](http://php.net/manual/en/book.simplexml.php)
+ * [ImageMagick + Imagick](http://php.net/manual/en/book.imagick.php)
+ * [Curl](http://php.net/manual/en/book.curl.php)
+ * [Iconv](http://php.net/manual/en/book.iconv.php)
+ * [MBString](http://php.net/manual/en/book.mbstring.php)
+ * [Tokenizer](http://php.net/manual/en/book.tokenizer.php)
+ * [PDO (MySQL)](http://php.net/manual/en/book.pdo.php)
+ * Optional: [IonCube Loader](https://www.ioncube.com/loaders.php) for some third-party plug-ins
+* PHP Settings
+ * `max_execution_time` >= 120s
+ * `memory_limit` >= 128MB
+ * `upload_max_filesize` >= 6MB
+ * `allow_url_fopen` activated
+ * `magic_quotes_runtime` deactivated (removed since php v7.0)
 
 ## Software boundaries
 * See [Software boundaries and limits](http://jtl-url.de/limits) for details

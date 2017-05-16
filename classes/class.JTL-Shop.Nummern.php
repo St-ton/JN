@@ -151,11 +151,9 @@ class Nummern
      */
     public function setAktualisiert($dAktualisiert)
     {
-        if ($dAktualisiert === 'now()') {
-            $this->dAktualisiert = date('Y-m-d H:i:s');
-        } else {
-            $this->dAktualisiert = Shop::DB()->escape($dAktualisiert);
-        }
+        $this->dAktualisiert = $dAktualisiert === 'now()'
+            ? date('Y-m-d H:i:s')
+            : Shop::DB()->escape($dAktualisiert);
 
         return $this;
     }

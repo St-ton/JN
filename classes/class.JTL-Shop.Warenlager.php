@@ -304,9 +304,9 @@ class Warenlager extends MainModel
     }
 
     /**
-     * @param int      $kKey
-     * @param null     $oObj
-     * @param int|null $xOption
+     * @param int         $kKey
+     * @param null|object $oObj
+     * @param int|null    $xOption
      */
     public function load($kKey, $oObj = null, $xOption = null)
     {
@@ -317,7 +317,7 @@ class Warenlager extends MainModel
                 $cSqlSelect = '';
                 $cSqlJoin   = '';
                 // $xOption = kSprache
-                if ($xOption !== null && intval($xOption) > 0) {
+                if ($xOption !== null && (int)$xOption > 0) {
                     $xOption    = (int)$xOption;
                     $cSqlSelect = ", IF (twarenlagersprache.cName IS NOT NULL, twarenlagersprache.cName, twarenlager.cName) AS cName";
                     $cSqlJoin   = "LEFT JOIN twarenlagersprache ON twarenlagersprache.kWarenlager = twarenlager.kWarenlager
@@ -469,10 +469,10 @@ class Warenlager extends MainModel
     }
 
     /**
-     * @param int  $kArtikel
-     * @param null $kSprache
-     * @param null $xOption_arr
-     * @param bool $bActive
+     * @param int        $kArtikel
+     * @param int|null   $kSprache
+     * @param null|array $xOption_arr
+     * @param bool       $bActive
      * @return array|null
      */
     public static function getByProduct($kArtikel, $kSprache = null, $xOption_arr = null, $bActive = true)

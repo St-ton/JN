@@ -105,7 +105,7 @@ class KategorieListe
         $objArr = $this->holUnterkategorien($kKategorie, $kKundengruppe, $kSprache);
         if (is_array($objArr)) {
             foreach ($objArr as $kategorie) {
-                $kategorie->bAktiv = (Shop::$kKategorie > 0 && intval($kategorie->kKategorie) == Shop::$kKategorie);
+                $kategorie->bAktiv = (Shop::$kKategorie > 0 && (int)$kategorie->kKategorie === (int)Shop::$kKategorie);
                 if (isset($conf['navigationsfilter']['unterkategorien_lvl2_anzeigen']) &&
                     $conf['navigationsfilter']['unterkategorien_lvl2_anzeigen'] === 'Y'
                 ) {
@@ -193,7 +193,7 @@ class KategorieListe
         }
         $kSprache      = (int)$kSprache;
         $kKundengruppe = (int)$kKundengruppe;
-        $allCategories = $this->getCategoryList($kKundengruppe, $kSprache);
+        $allCategories = static::getCategoryList($kKundengruppe, $kSprache);
         while ($AktuellekOberkategorie > 0) {
             //kann man aus dem cache nehmen?
             if (isset($allCategories['oKategorie_arr'][$AktuellekOberkategorie])) {
@@ -254,7 +254,8 @@ class KategorieListe
      */
     public function holUnterkategorien($kKategorie, $kKundengruppe, $kSprache)
     {
-        $kKategorie = (int)$kKategorie;
+        $kKategorie     = (int)$kKategorie;
+        $oKategorie_arr = [];
         if (!$_SESSION['Kundengruppe']->darfArtikelKategorienSehen) {
             return [];
         }
@@ -267,11 +268,11 @@ class KategorieListe
         $kSprache      = (int)$kSprache;
         $kKundengruppe = (int)$kKundengruppe;
         $categoryList  = self::getCategoryList($kKundengruppe, $kSprache);
-        $subCategories = (isset($categoryList['kKategorieVonUnterkategorien_arr'][$kKategorie]))
+        $subCategories = isset($categoryList['kKategorieVonUnterkategorien_arr'][$kKategorie])
             ? $categoryList['kKategorieVonUnterkategorien_arr'][$kKategorie]
             : null;
 
-        if (isset($subCategories) && is_array($subCategories)) {
+        if ($subCategories !== null && is_array($subCategories)) {
             //nimm kats aus session
             foreach ($subCategories as $kUnterKategorie) {
                 $oKategorie_arr[$kUnterKategorie] = (!isset($categoryList['oKategorie_arr'][$kUnterKategorie]))
@@ -365,8 +366,7 @@ class KategorieListe
                             $oKategorie->cBeschreibung = $oKategorie->cBeschreibung_spr;
                         }
                     }
-                    unset($oKategorie->cBeschreibung_spr);
-                    unset($oKategorie->cName_spr);
+                    unset($oKategorie->cBeschreibung_spr, $oKategorie->cName_spr);
                     // Attribute holen
                     $oKategorie->categoryFunctionAttributes = [];
                     $oKategorie->categoryAttributes         = [];
@@ -421,7 +421,7 @@ class KategorieListe
             self::setCategoryList($categoryList, $kKundengruppe, $kSprache);
         }
 
-        return (isset($oKategorie_arr)) ? $oKategorie_arr : [];
+        return (!empty($oKategorie_arr)) ? $oKategorie_arr : [];
     }
 
     /**

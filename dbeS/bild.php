@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-require_once dirname(__FILE__) . '/syncinclude.php';
+require_once __DIR__ . '/syncinclude.php';
 // Einstellungen holen
 $Einstellungen = Shop::getSettings([CONF_BILDER]);
 
@@ -48,7 +48,18 @@ if ($kArtikel > 0 && $nBildNummer > 0 && $nSize > 0) {
 
     if (is_array($oArtikelPict_arr) && count($oArtikelPict_arr) > 0) {
         foreach ($oArtikelPict_arr as $oArtikelPict) {
-            $image = MediaImage::getThumb(Image::TYPE_PRODUCT, $oArtikelPict->kArtikel, $oArtikelPict, gibPfadGroesse($nSize), $oArtikelPict->nNr);
+            $image = MediaImage::getThumb(
+                Image::TYPE_PRODUCT,
+                $oArtikelPict->kArtikel,
+                $oArtikelPict,
+                gibPfadGroesse($nSize),
+                $oArtikelPict->nNr
+            );
+            if (!file_exists($image)){
+                $req = MediaImage::toRequest($image);
+                MediaImage::cacheImage($req);
+            }
+
             if ($nURL === 1) {
                 echo $shopURL . $image . "<br/>\n";
             } else {

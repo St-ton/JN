@@ -32,6 +32,6 @@
     <label for="{$inputId}" class="control-label">{$label}{* {if $isRequired}<span class="indication fa fa-asterisk"></span>{else}<span class="indication">({lang section='checkout' key="conditionalFillOut"})</span>{/if} *}</label>
     <input type="{if isset($inputType)}{$inputType}{else}text{/if}" name="{$inputName}" value="{if isset($inputValue)}{$inputValue}{/if}" id="{$inputId}" class="form-control" placeholder="{if isset($placeholder)}{$placeholder}{else}{$label}{/if}"{if $isRequired} required{/if}>
     {if isset($invalidReason) && $invalidReason|strlen > 0}
-        <div class="alert alert-danger">{$invalidReason}</div>
+        <div class="form-error-msg text-danger"><i class="fa fa-warning"></i> {$invalidReason}</div>
     {/if}
 </div>

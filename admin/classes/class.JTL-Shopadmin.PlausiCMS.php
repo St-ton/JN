@@ -21,7 +21,7 @@ class PlausiCMS extends Plausi
             switch ($cType) {
                 case 'lnk':
                     // kLinkgruppe
-                    if (!isset($this->xPostVar_arr['kLinkgruppe']) || intval($this->xPostVar_arr['kLinkgruppe']) === 0) {
+                    if (!isset($this->xPostVar_arr['kLinkgruppe']) || (int)$this->xPostVar_arr['kLinkgruppe'] === 0) {
                         $this->xPlausiVar_arr['kLinkgruppe'] = 1;
                     }
                     // cName
@@ -33,11 +33,13 @@ class PlausiCMS extends Plausi
                         $this->xPlausiVar_arr['cKundengruppen'] = 1;
                     }
                     // nLinkart
-                    if (!isset($this->xPostVar_arr['nLinkart']) || intval($this->xPostVar_arr['nLinkart']) === 0) {
+                    if (!isset($this->xPostVar_arr['nLinkart']) || (int)$this->xPostVar_arr['nLinkart'] === 0) {
                         $this->xPlausiVar_arr['nLinkart'] = 1;
-                    } elseif (intval($this->xPostVar_arr['nLinkart']) === 2 && (!isset($this->xPostVar_arr['cURL']) || strlen($this->xPostVar_arr['cURL']) === 0)) {
+                    } elseif ((int)$this->xPostVar_arr['nLinkart'] === 2 &&
+                        (!isset($this->xPostVar_arr['cURL']) || strlen($this->xPostVar_arr['cURL']) === 0)) {
                         $this->xPlausiVar_arr['nLinkart'] = 2;
-                    } elseif (intval($this->xPostVar_arr['nLinkart']) === 3 && (!isset($this->xPostVar_arr['nSpezialseite']) || intval($this->xPostVar_arr['nSpezialseite']) <= 0)) {
+                    } elseif ((int)$this->xPostVar_arr['nLinkart'] === 3 &&
+                        (!isset($this->xPostVar_arr['nSpezialseite']) || (int)$this->xPostVar_arr['nSpezialseite'] <= 0)) {
                         $this->xPlausiVar_arr['nLinkart'] = 3;
                     }
 

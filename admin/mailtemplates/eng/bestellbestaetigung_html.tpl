@@ -1,6 +1,6 @@
 {includeMailTemplate template=header type=html}
 
-Dear {$Kunde->cVorname} {$Kunde->cNachname},<br>
+Dear {$Kunde->cAnredeLocalized} {$Kunde->cNachname},<br>
 <br>
 Thank you for your order at {$Einstellungen.global.global_shopname}.<br>
 <br>
@@ -101,7 +101,7 @@ Your order with the order number {$Bestellung->cBestellNr} consists of the follo
                 <tr>
                     <td>
                         <font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-                            <strong>Anschrift:</strong>
+                            <strong>Address:</strong>
                         </font>
                     </td>
                 </tr>
@@ -234,7 +234,7 @@ Your order with the order number {$Bestellung->cBestellNr} consists of the follo
                 <tr>
                     <td>
                         <font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-                            <strong>UstID:</strong>
+                            <strong>VAT ID:</strong>
                         </font>
                     </td>
                 </tr>
@@ -264,7 +264,7 @@ Your order with the order number {$Bestellung->cBestellNr} consists of the follo
     </tr>
 </table><br>
 {if !empty($Bestellung->Lieferadresse->kLieferadresse)}
-    <strong>Your shipping adress:</strong><br>
+    <strong>Your shipping address:</strong><br>
     <br>
     <table cellpadding="0" cellspacing="0" border="0" width="100%" style="border-bottom: 1px dotted #929292;">
         <tr>
@@ -273,7 +273,7 @@ Your order with the order number {$Bestellung->cBestellNr} consists of the follo
                     <tr>
                         <td>
                             <font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-                                <strong>Anschrift:</strong>
+                                <strong>Address:</strong>
                             </font>
                         </td>
                     </tr>
@@ -614,7 +614,7 @@ You have chosen the following payment option: {$Bestellung->cZahlungsartName}<br
                     <tr>
                         <td>
                             <font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-                                <strong>v:</strong>
+                                <strong>Bank name:</strong>
                             </font>
                         </td>
                     </tr>

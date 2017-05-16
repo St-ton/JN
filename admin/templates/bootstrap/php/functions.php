@@ -22,10 +22,10 @@ $smarty->registerPlugin('function', 'getCurrencyConversionSmarty', 'getCurrencyC
  */
 function getRevisions($params, &$smarty)
 {
-    $secondary = (isset($params['secondary']))
+    $secondary = isset($params['secondary'])
         ? $params['secondary']
         : false;
-    $data      = (isset($params['data']))
+    $data      = isset($params['data'])
         ? $params['data']
         : null;
     $revision  = new Revision();
@@ -43,9 +43,7 @@ function getRevisions($params, &$smarty)
  */
 function getCurrencyConversionSmarty($params, &$smarty)
 {
-    $bForceSteuer = (isset($params['bSteuer']) && $params['bSteuer'] == false)
-        ? false
-        : true;
+    $bForceSteuer = !(isset($params['bSteuer']) && $params['bSteuer'] == false);
     if (!isset($params['fPreisBrutto'])) {
         $params['fPreisBrutto'] = 0;
     }
@@ -66,7 +64,7 @@ function getCurrencyConversionSmarty($params, &$smarty)
  */
 function getCurrencyConversionTooltipButton($params, &$smarty)
 {
-    $placement = (isset($params['placement']))
+    $placement = isset($params['placement'])
         ? $params['placement']
         : 'left';
 
@@ -205,7 +203,7 @@ function getExtensionCategory($params, &$smarty)
         12 => 'Auswertungen'
     ];
 
-    $key = (isset($catNames[$params['cat']])) ? $catNames[$params['cat']] : null;
+    $key = isset($catNames[$params['cat']]) ? $catNames[$params['cat']] : null;
     $smarty->assign('catName', $key);
 }
 
@@ -220,9 +218,7 @@ function formatVersion($params, &$smarty)
         return null;
     }
 
-    $version = (int) $params['value'];
-
-    return substr_replace($version, '.', 1, 0);
+    return substr_replace((int)$params['value'], '.', 1, 0);
 }
 
 /**
@@ -235,7 +231,7 @@ function formatVersion($params, &$smarty)
  * array['d']     - Default imageset to use [ 404 | mm | identicon | monsterid | wavatar ]
  * array['r']     - Maximum rating (inclusive) [ g | pg | r | x ]
  *
- * @param JTLSmarty $smarty
+ * @params JTLSmarty $smarty
  * @source https://gravatar.com/site/implement/images/php/
  * @return string
  */
@@ -253,6 +249,11 @@ function gravatarImage($params, &$smarty)
     $url  = 'https://www.gravatar.com/avatar/';
     $url .= md5(strtolower(trim($email)));
     $url .= '?' . http_build_query($params, '', '&');
+
+    executeHook(HOOK_BACKEND_FUNCTIONS_GRAVATAR, [
+        'url' => &$url,
+        'AdminAccount' => &$_SESSION['AdminAccount']
+    ]);
 
     return $url;
 }

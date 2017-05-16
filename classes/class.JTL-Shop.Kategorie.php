@@ -146,6 +146,8 @@ class Kategorie
      */
     public function loadFromDB($kKategorie, $kSprache = 0, $kKundengruppe = 0, $recall = false, $noCache = false)
     {
+        $oSpracheTmp            = null;
+        $oKategorieAttribut_arr = null;
         if (!$kKundengruppe) {
             $kKundengruppe = Kundengruppe::getDefaultGroupID();
             if (!isset($_SESSION['Kundengruppe'])) { //auswahlassistent admin fix
@@ -212,10 +214,10 @@ class Kategorie
         if ($oKategorie === null || $oKategorie === false) {
             if (!$recall && !standardspracheAktiv(false, $kSprache)) {
                 if (defined('EXPERIMENTAL_MULTILANG_SHOP') && EXPERIMENTAL_MULTILANG_SHOP === true) {
-                    if (!isset($oSpracheTmp)) {
+                    if ($oSpracheTmp === null) {
                         $oSpracheTmp = gibStandardsprache();
                     }
-                    $kDefaultLang = $oSpracheTmp->kSprache;
+                    $kDefaultLang = (int)$oSpracheTmp->kSprache;
                     if ($kDefaultLang !== $kSprache) {
                         return $this->loadFromDB($kKategorie, $kDefaultLang, $kKundengruppe, true);
                     }
@@ -231,8 +233,9 @@ class Kategorie
         if ((!isset($oKategorie->cSeo) || $oKategorie->cSeo === null || $oKategorie->cSeo === '') &&
             defined('EXPERIMENTAL_MULTILANG_SHOP') && EXPERIMENTAL_MULTILANG_SHOP === true
         ) {
-            $kDefaultLang = isset($oSpracheTmp) ? $oSpracheTmp->kSprache : gibStandardsprache()->kSprache;
-            if ($kSprache != $kDefaultLang) {
+            $kDefaultLang = $oSpracheTmp !== null ? $oSpracheTmp->kSprache : gibStandardsprache()->kSprache;
+            $kDefaultLang = (int)$kDefaultLang;
+            if ($kSprache !== $kDefaultLang) {
                 $oSeo = Shop::DB()->select(
                     'tseo',
                     'cKey', 'kKategorie',
@@ -281,7 +284,7 @@ class Kategorie
                     ORDER BY tkategorieattribut.bIstFunktionsAttribut DESC, tkategorieattribut.nSort", 2
             );
         }
-        if (isset($oKategorieAttribut_arr) && is_array($oKategorieAttribut_arr) && count($oKategorieAttribut_arr) > 0) {
+        if ($oKategorieAttribut_arr !== null && is_array($oKategorieAttribut_arr) && count($oKategorieAttribut_arr) > 0) {
             foreach ($oKategorieAttribut_arr as $oKategorieAttribut) {
                 // Aus Kompatibilitätsgründen findet hier KEINE Trennung zwischen Funktions- und lokalisierten Attributen statt
                 if ($oKategorieAttribut->cName === 'meta_title') {
@@ -467,7 +470,7 @@ class Kategorie
                         AND kKategorie = " . (int)$this->kKategorie, 1
             );
 
-            return (isset($oObj->kOberKategorie)) ? (int)$oObj->kOberKategorie : false;
+            return isset($oObj->kOberKategorie) ? (int)$oObj->kOberKategorie : false;
         }
 
         return false;

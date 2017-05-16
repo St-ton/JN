@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/admininclude.php';
+require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('STATS_COUPON_VIEW', true, true);
 /** @global JTLSmarty $smarty */
@@ -15,7 +15,7 @@ $startDate   = DateTime::createFromFormat('Y-m-j', $oDateShop->startDate);
 $endDate     = DateTime::createFromFormat('Y-m-j', date('Y-m-j'));
 
 if (isset($_POST['formFilter']) && $_POST['formFilter'] > 0 && validateToken()) {
-    if (intval($_POST['kKupon']) > -1) {
+    if ((int)$_POST['kKupon'] > -1) {
         $cWhere = "(SELECT kKupon 
                         FROM tkuponbestellung 
                         WHERE tkuponbestellung.kBestellung = tbestellung.kBestellung 
@@ -84,7 +84,8 @@ if (isset($usedCouponsOrder) && is_array($usedCouponsOrder)) {
             SELECT CONCAT_WS(' ',wk.cName,wk.cHinweis) AS cName,
                 wk.fPreis+(wk.fPreis/100*wk.fMwSt) AS nPreis, wk.nAnzahl
                 FROM twarenkorbpos AS wk
-                LEFT JOIN tbestellung AS bs ON wk.kWarenkorb = bs.kWarenkorb
+                LEFT JOIN tbestellung AS bs 
+                    ON wk.kWarenkorb = bs.kWarenkorb
                 WHERE bs.kBestellung = " . (int)$usedCouponOrder['kBestellung'], 9
         );
         foreach ($usedCouponsOrder[$key]['cOrderPos_arr'] as $posKey => $value) {
@@ -108,8 +109,8 @@ if (isset($usedCouponsOrder) && is_array($usedCouponsOrder)) {
     array_multisort($date, SORT_DESC, $usedCouponsOrder);
 }
 
-$nPercentCountUsedCoupons = (isset($nCountOrders_arr['nCount']) && intval($nCountOrders_arr['nCount']) > 0)
-    ? number_format(100 / intval($nCountOrders_arr['nCount']) * $nCountUsedCouponsOrder, 2)
+$nPercentCountUsedCoupons = (isset($nCountOrders_arr['nCount']) && (int)$nCountOrders_arr['nCount'] > 0)
+    ? number_format(100 / (int)$nCountOrders_arr['nCount'] * $nCountUsedCouponsOrder, 2)
     : 0;
 $overview_arr                  = [
     'nCountUsedCouponsOrder'   => $nCountUsedCouponsOrder,

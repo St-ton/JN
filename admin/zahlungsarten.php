@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/admininclude.php';
+require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('ORDER_PAYMENT_VIEW', true, true);
 
@@ -45,7 +45,7 @@ if (verifyGPCDataInteger('kZahlungsart') > 0 && $action !== 'logreset' && valida
     }
 }
 
-if (isset($_POST['einstellungen_bearbeiten']) && isset($_POST['kZahlungsart']) &&
+if (isset($_POST['einstellungen_bearbeiten'], $_POST['kZahlungsart']) &&
     (int)$_POST['einstellungen_bearbeiten'] === 1 && (int)$_POST['kZahlungsart'] > 0 && validateToken()) {
     $step              = 'uebersicht';
     $zahlungsart       = Shop::DB()->select('tzahlungsart', 'kZahlungsart', (int)$_POST['kZahlungsart']);
@@ -98,7 +98,7 @@ if (isset($_POST['einstellungen_bearbeiten']) && isset($_POST['kZahlungsart']) &
 
             switch ($Conf[$i]->cInputTyp) {
                 case 'kommazahl':
-                    $aktWert->cWert = floatval(str_replace(',', '.', $aktWert->cWert));
+                    $aktWert->cWert = (float)str_replace(',', '.', $aktWert->cWert);
                     break;
                 case 'zahl':
                 case 'number':
@@ -129,7 +129,7 @@ if (isset($_POST['einstellungen_bearbeiten']) && isset($_POST['kZahlungsart']) &
 
             switch ($Conf[$i]->cInputTyp) {
                 case 'kommazahl':
-                    $aktWert->cWert = floatval(str_replace(',', '.', $aktWert->cWert));
+                    $aktWert->cWert = (float)str_replace(',', '.', $aktWert->cWert);
                     break;
                 case 'zahl':
                 case 'number':
@@ -178,7 +178,7 @@ if (isset($_POST['einstellungen_bearbeiten']) && isset($_POST['kZahlungsart']) &
 
 if ($step === 'einstellen') {
     $zahlungsart = Shop::DB()->select('tzahlungsart', 'kZahlungsart', verifyGPCDataInteger('kZahlungsart'));
-    if ($zahlungsart === false) {
+    if ($zahlungsart === null) {
         $step    = 'uebersicht';
         $hinweis = 'Zahlungsart nicht gefunden.';
     } else {
@@ -242,7 +242,7 @@ if ($step === 'einstellen') {
                     'cName',
                     $Conf[$i]->cWertName
                 );
-                $Conf[$i]->gesetzterWert = (isset($setValue->cWert))
+                $Conf[$i]->gesetzterWert = isset($setValue->cWert)
                     ? $setValue->cWert
                     : null;
             }
@@ -273,8 +273,10 @@ if ($step === 'einstellen') {
                ->assign('kZahlungsart', $kZahlungsart);
     }
 } elseif ($step === 'payments') {
-    if (isset($_POST['action']) && $_POST['action'] === 'paymentwawireset' &&
-        isset($_POST['kEingang_arr']) && validateToken()) {
+    if (isset($_POST['action'], $_POST['kEingang_arr']) &&
+        $_POST['action'] === 'paymentwawireset' &&
+        validateToken()
+    ) {
         $kEingang_arr = $_POST['kEingang_arr'];
         array_walk($kEingang_arr, function (&$i) {
             $i = (int)$i;
@@ -332,37 +334,24 @@ if ($step === 'uebersicht') {
         'cAnbieter, cName, nSort, kZahlungsart'
     );
 
-    if (is_array($oZahlungsart_arr) && count($oZahlungsart_arr) > 0) {
-        require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.ZahlungsLog.php';
-
-        foreach ($oZahlungsart_arr as $i => &$oZahlungsart) {
-            $oZahlungsLog                 = new ZahlungsLog($oZahlungsart->cModulId);
-            $oZahlungsLog->oLog_arr       = $oZahlungsLog->holeLog();
-            $oZahlungsart->nEingangAnzahl = (int)Shop::DB()->query("
+    foreach ($oZahlungsart_arr as $i => &$oZahlungsart) {
+        $oZahlungsart->nEingangAnzahl = (int)Shop::DB()->query("
                     SELECT count(*) AS nAnzahl
                         FROM tzahlungseingang AS ze
                             JOIN tbestellung AS b 
                                 ON ze.kBestellung = b.kBestellung
                         WHERE b.kZahlungsart = " . $oZahlungsart->kZahlungsart,
-                1)->nAnzahl;
+            1)->nAnzahl;
 
-            // jtl-shop/issues#288
-            $hasError = false;
-            foreach ($oZahlungsLog->oLog_arr as $entry) {
-                if ((int)$entry->nLevel === JTLLOG_LEVEL_ERROR) {
-                    $hasError = true;
-                    break;
-                }
-            }
-            $oZahlungsLog->hasError = $hasError;
-            unset($hasError);
-            $oZahlungsart_arr[$i]->oZahlungsLog = $oZahlungsLog;
-        }
+        $oZahlungsart_arr[$i]->nLogCount = ZahlungsLog::count($oZahlungsart->cModulId);
+
+        // jtl-shop/issues#288
+        $oZahlungsart_arr[$i]->nErrorLogCount = ZahlungsLog::count($oZahlungsart->cModulId, JTLLOG_LEVEL_ERROR);
     }
 
     $oNice = Nice::getInstance();
     $smarty->assign('zahlungsarten', $oZahlungsart_arr)
-           ->assign('nFinanzierungAktiv', ($oNice->checkErweiterung(SHOP_ERWEITERUNG_FINANZIERUNG)) ? 1 : 0);
+           ->assign('nFinanzierungAktiv', $oNice->checkErweiterung(SHOP_ERWEITERUNG_FINANZIERUNG) ? 1 : 0);
 }
 $smarty->assign('step', $step)
        ->assign('waehrung', $standardwaehrung->cName)

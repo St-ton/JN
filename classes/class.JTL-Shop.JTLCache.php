@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-define('CACHING_ROOT_DIR', dirname(__FILE__) . '/');
+define('CACHING_ROOT_DIR', __DIR__ . '/');
 define('CACHING_METHODS_DIR', CACHING_ROOT_DIR . 'CachingMethods/');
 define('CACHING_GROUP_ARTICLE', 'art');
 define('CACHING_GROUP_CATEGORY', 'cat');
@@ -92,7 +92,7 @@ class JTLCache
      *
      * @var ICachingMethod
      */
-    private $_method = null;
+    private $_method;
 
     /**
      * caching options
@@ -104,9 +104,9 @@ class JTLCache
     /**
      * plugin instance
      *
-     * @var null|JTLCache
+     * @var JTLCache
      */
-    private static $instance = null;
+    private static $instance;
 
     /**
      * get/set result code
@@ -209,7 +209,7 @@ class JTLCache
             'benchmark'          => '_benchmark',
         ];
 
-        return (isset($mapping[$method])) ? $mapping[$method] : null;
+        return isset($mapping[$method]) ? $mapping[$method] : null;
     }
 
     /**
@@ -314,14 +314,12 @@ class JTLCache
             'redis_persistent' => false, //optional redis database id, null or 0 for default
             'memcache_port'    => self::DEFAULT_MEMCACHE_PORT, //port for memcache(d) server
             'memcache_host'    => self::DEFAULT_MEMCACHE_HOST, //host of memcache(d) server
-            'prefix'           => 'jc_' . ((defined('DB_NAME')) ? DB_NAME . '_' : ''), //try to make a quite unique prefix if multiple shops are used
+            'prefix'           => 'jc_' . (defined('DB_NAME') ? DB_NAME . '_' : ''), //try to make a quite unique prefix if multiple shops are used
             'lifetime'         => self::DEFAULT_LIFETIME, //cache lifetime in seconds
             'collect_stats'    => false, //used to tell caching methods to collect statistical data or not (if not provided transparently)
             'debug'            => false, //enable or disable collecting of debug data
             'debug_method'     => 'echo', //'ssd'/'jtld' for SmarterSmartyDebug/JTLDebug, 'echo' for direct echo
-            'cache_dir'        => (defined('PFAD_ROOT') && defined('PFAD_COMPILEDIR'))
-                ? (PFAD_ROOT . PFAD_COMPILEDIR . 'filecache/')
-                : sys_get_temp_dir(), //file cache directory
+            'cache_dir'        => OBJECT_CACHE_DIR, //file cache directory
             'file_extension'   => '.fc', //file extension for file cache
             'page_cache'       => false, //smarty page cache switch
             'types_disabled'   => [] //disabled cache groups
@@ -332,10 +330,13 @@ class JTLCache
         if (substr($this->options['cache_dir'], strlen($this->options['cache_dir']) - 1) !== '/') {
             $this->options['cache_dir'] .= '/';
         }
+        if ($this->options['method'] !== 'redis' && (int)$this->options['lifetime'] < 0) {
+            $this->options['lifetime'] = 0;
+        }
         //accept only valid integer lifetime values
-        $this->options['lifetime'] = ($this->options['lifetime'] === '' || (int)$this->options['lifetime'] <= 0) ?
-            self::DEFAULT_LIFETIME :
-            (int)$this->options['lifetime'];
+        $this->options['lifetime'] = ($this->options['lifetime'] === '' || (int)$this->options['lifetime'] === 0)
+            ? self::DEFAULT_LIFETIME
+            : (int)$this->options['lifetime'];
         if ($this->options['types_disabled'] === null) {
             $this->options['types_disabled'] = [];
         }
@@ -636,7 +637,7 @@ class JTLCache
      * check if cache for selected group id is active
      * this allows the disabling of certain cache types
      *
-     * @param string $groupID
+     * @param string|array $groupID
      * @return bool
      */
     public function _isCacheGroupActive($groupID)
@@ -647,13 +648,13 @@ class JTLCache
         }
         if (is_string($groupID) &&
             is_array($this->options['types_disabled']) &&
-            in_array($groupID, $this->options['types_disabled'])
+            in_array($groupID, $this->options['types_disabled'], true)
         ) {
             return false;
         }
         if (is_array($groupID)) {
             foreach ($groupID as $group) {
-                if (in_array($group, $this->options['types_disabled'])) {
+                if (in_array($group, $this->options['types_disabled'], true)) {
                     return false;
                 }
             }
@@ -748,10 +749,10 @@ class JTLCache
                 Profiler::setCacheProfile('flush', (($res !== false) ? 'success' : 'failure'), $cacheID);
             }
         }
-        if ($hookInfo !== null && function_exists('executeHook') && defined('HOOK_CACHE_FLUSH_AFTER')) {
+        if ($hookInfo !== null && defined('HOOK_CACHE_FLUSH_AFTER') && function_exists('executeHook')) {
             executeHook(HOOK_CACHE_FLUSH_AFTER, $hookInfo);
         }
-        $this->resultCode = (is_int($res)) ? self::RES_FAIL : self::RES_SUCCESS;
+        $this->resultCode = is_int($res) ? self::RES_FAIL : self::RES_SUCCESS;
 
         return $res;
     }
@@ -766,7 +767,7 @@ class JTLCache
     public function _flushTags($tags, $hookInfo = null)
     {
         $deleted = $this->_method->flushTags($tags);
-        if ($hookInfo !== null && function_exists('executeHook') && defined('HOOK_CACHE_FLUSH_AFTER')) {
+        if ($hookInfo !== null && defined('HOOK_CACHE_FLUSH_AFTER') && function_exists('executeHook')) {
             executeHook(HOOK_CACHE_FLUSH_AFTER, $hookInfo);
         }
 
@@ -867,7 +868,7 @@ class JTLCache
         if (is_array($files)) {
             foreach ($files as $_file) {
                 if (strpos($_file, 'class.cachingMethod') !== false) {
-                    $methodNames[] = str_replace('class.cachingMethod.', '', str_replace('.php', '', $_file));
+                    $methodNames[] = str_replace(['class.cachingMethod.', '.php'], '', $_file);
                 }
             }
         }
@@ -921,24 +922,25 @@ class JTLCache
         //add customer ID
         if ($customerID === true) {
             $baseID .= '_cid';
-            $baseID .= (isset($_SESSION['Kunde']->kKunde)) ?
-                $_SESSION['Kunde']->kKunde :
-                '-1';
+            $baseID .= isset($_SESSION['Kunde']->kKunde)
+                ? $_SESSION['Kunde']->kKunde
+                : '-1';
         }
         //add customer group
         if ($customerGroup === true) {
             $baseID .= '_cgid';
-            $baseID .= (isset($_SESSION['Kundengruppe']->kKundengruppe)) ?
-                $_SESSION['Kundengruppe']->kKundengruppe :
-                Kundengruppe::getDefaultGroupID();
+            $baseID .= isset($_SESSION['Kundengruppe']->kKundengruppe)
+                ? $_SESSION['Kundengruppe']->kKundengruppe
+                : Kundengruppe::getDefaultGroupID();
         } elseif (is_numeric($customerGroup)) {
             $baseID .= '_cgid' . (int)$customerGroup;
         }
         //add language ID
         if ($languageID === true) {
             $baseID .= '_lid';
-            if (isset(Shop::$kSprache)) {
-                $baseID .= Shop::$kSprache;
+            $lang = Shop::getLanguage();
+            if ($lang > 0) {
+                $baseID .= $lang;
             } elseif (isset($_SESSION['kSprache'])) {
                 $baseID .= $_SESSION['kSprache'];
             } else {
@@ -950,9 +952,9 @@ class JTLCache
         //add currency ID
         if ($currencyID === true) {
             $baseID .= '_curid';
-            $baseID .= (isset($_SESSION['Waehrung']->kWaehrung)) ?
-                $_SESSION['Waehrung']->kWaehrung :
-                '0';
+            $baseID .= isset($_SESSION['Waehrung']->kWaehrung)
+                ? $_SESSION['Waehrung']->kWaehrung
+                : '0';
         } elseif (is_numeric($currencyID)) {
             $baseID .= '_curid' . (int)$currencyID;
         }
@@ -982,6 +984,7 @@ class JTLCache
     public function _benchmark($methods = 'all', $testData = 'simple string', $runCount = 1000, $repeat = 1, $echo = true, $format = false)
     {
         $this->options['activated'] = true;
+        $this->options['lifetime']  = self::DEFAULT_LIFETIME;
         //sanitize input
         if (!is_int($runCount) || $runCount < 1) {
             $runCount = 1;
@@ -1028,7 +1031,7 @@ class JTLCache
                     for ($j = 0; $j < $runCount; ++$j) {
                         $cacheID = 'c_' . $j;
                         $res     = $this->get($cacheID);
-                        if ($res != $testData) {
+                        if ($res !== $testData) {
                             $validResults = false;
                         }
                     }
@@ -1048,8 +1051,8 @@ class JTLCache
                 //calculate averages
                 $rpsGet   = ($runCount * $repeat / $timesGet);
                 $rpsSet   = ($runCount * $repeat / $timesSet);
-                $timesSet = ($timesSet / $repeat);
-                $timesGet = ($timesGet / $repeat);
+                $timesSet /= $repeat;
+                $timesGet /= $repeat;
                 if ($format === true) {
                     $timesSet = number_format($timesSet, 4, ',', '.');
                     $timesGet = number_format($timesGet, 4, ',', '.');

@@ -405,9 +405,9 @@ class News extends MainModel
     }
 
     /**
-     * @param int  $kKey
-     * @param null $oObj
-     * @param null $xOption
+     * @param int         $kKey
+     * @param null|object $oObj
+     * @param null        $xOption
      */
     public function load($kKey, $oObj = null, $xOption = null)
     {
@@ -497,7 +497,7 @@ class News extends MainModel
                     AND tnewskommentar.nAktiv = 1
                 {$cSqlExcludeCategory}
                 WHERE tnews.dGueltigVon <= now()
-                    AND (tnews.cKundengruppe LIKE '%;-1;%' OR tnews.cKundengruppe LIKE '%;{$kKundengruppe};%')
+                    AND (tnews.cKundengruppe LIKE '%;-1;%' OR tnews.cKundengruppe RLIKE '^([0-9;]*;)?{$kKundengruppe};')
                     AND tnews.kSprache = {$kSprache}
                 {$cSqlActive}
                 GROUP BY tnews.kNews

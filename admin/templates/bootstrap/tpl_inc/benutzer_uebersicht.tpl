@@ -26,7 +26,7 @@
                             <th class="tcenter">{#benutzerLoginVersuche#}</th>
                             <th class="tcenter">{#benutzerLetzterLogin#}</th>
                             <th class="tcenter">{#benutzerGueltigBis#}</th>
-                            <th class="tcenter">{#benutzerAktion#}</th>
+                            <th class="tcenter" width="135">{#benutzerAktion#}</th>
                         </tr>
                         </thead>
                         <tbody>

@@ -17,7 +17,7 @@ class MediaImageCompatibility implements IMedia
      */
     public function isValid($request)
     {
-        return in_array((int)IMAGE_COMPATIBILITY_LEVEL, [1, 2])
+        return in_array((int)IMAGE_COMPATIBILITY_LEVEL, [1, 2], true)
             && $this->parse($request) !== null;
     }
 
@@ -28,13 +28,15 @@ class MediaImageCompatibility implements IMedia
     public function handle($request)
     {
         $req      = $this->parse($request);
-        $path     = strtolower(Shop::DB()->escape($req['path']));
-        $fallback = Shop::DB()->executeQuery("
-          SELECT h.kArtikel, h.nNr, a.cSeo, a.cName, a.cArtNr, a.cBarcode 
-            FROM tartikelpicthistory h 
-            INNER JOIN tartikel a 
-              ON h.kArtikel = a.kArtikel 
-              WHERE LOWER(h.cPfad) = '{$path}'", 1
+        $path     = strtolower($req['path']);
+        $fallback = Shop::DB()->executeQueryPrepared(
+            "SELECT h.kArtikel, h.nNr, a.cSeo, a.cName, a.cArtNr, a.cBarcode 
+                FROM tartikelpicthistory h 
+                INNER JOIN tartikel a 
+                  ON h.kArtikel = a.kArtikel 
+                  WHERE LOWER(h.cPfad) = :path",
+            ['path' => $path],
+            1
         );
 
         if (is_object($fallback)) {

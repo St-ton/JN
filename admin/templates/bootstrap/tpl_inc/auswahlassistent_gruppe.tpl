@@ -130,7 +130,7 @@
                 </div>
                 <div class="panel-footer">
                     <div class="btn-group">
-                        <button name="speicherGruppe" type="submit" value="{$saveTitle}" class="btn btn-primary"><i class="fa fa-save"></i> {#save#}</button>
+                        <button name="speicherGruppe" type="submit" value="save" class="btn btn-primary"><i class="fa fa-save"></i> {#save#}</button>
                         <a href="auswahlassistent.php" class="btn btn-danger">{#goBack#}</a>
                     </div>
                 </div>

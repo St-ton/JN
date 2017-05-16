@@ -17,9 +17,9 @@ class cache_advancedfile implements ICachingMethod
     }
 
     /**
-     * @var cache_advancedfile|null
+     * @var cache_advancedfile
      */
-    public static $instance = null;
+    public static $instance;
 
     /**
      * @param array $options
@@ -38,7 +38,7 @@ class cache_advancedfile implements ICachingMethod
      */
     private function getFileName($cacheID)
     {
-        return (is_string($cacheID))
+        return is_string($cacheID)
             ? $this->options['cache_dir'] . $cacheID . $this->options['file_extension']
             : false;
     }
@@ -53,7 +53,7 @@ class cache_advancedfile implements ICachingMethod
     {
         $fileName = $this->getFileName($cacheID);
         $dir      = $this->options['cache_dir'];
-        if ($fileName === false || (!is_dir($dir) && mkdir($dir) === false)) {
+        if ($fileName === false || (!is_dir($dir) && mkdir($dir) === false && !is_dir($dir))) {
             return false;
         }
 
@@ -62,12 +62,12 @@ class cache_advancedfile implements ICachingMethod
                 serialize(
                     [
                         'value'    => $content,
-                        'lifetime' => ($expiration === null) ?
-                            $this->options['lifetime'] :
-                            $expiration
+                        'lifetime' => ($expiration === null)
+                            ? $this->options['lifetime']
+                            : $expiration
                     ]
                 )
-            ) !== false) ? true : false;
+            ) !== false);
     }
 
     /**
@@ -121,12 +121,14 @@ class cache_advancedfile implements ICachingMethod
      */
     public function isAvailable()
     {
-        $res = true;
-        if (!is_dir($this->options['cache_dir'])) {
-            $res = mkdir($this->options['cache_dir']);
+        if (!is_dir($this->options['cache_dir']) &&
+            !mkdir($this->options['cache_dir']) &&
+            !is_dir($this->options['cache_dir']) // check again after creating
+        ) {
+            return false;
         }
 
-        return $res && is_writable($this->options['cache_dir']);
+        return is_writable($this->options['cache_dir']);
     }
 
     /**
@@ -185,25 +187,9 @@ class cache_advancedfile implements ICachingMethod
         $total = 0;
         $num   = 0;
         while ($dir && ($file = readdir($dir)) !== false) {
-            if ($file !== '.' && $file !== '..') {
-//                if (is_dir($this->options['cache_dir'] . $file)) {
-//                    //read sub dir
-//                    $subDir = opendir($this->options['cache_dir'] . $file);
-//                    while ($subDir && ($f = readdir($subDir)) !== false) {
-//                        if ($f !== '.' && $f !== '..') {
-//                            $filePath = $this->options['cache_dir'] . $file . '/' . $f;
-//                            if (!is_link($filePath)) {
-//                                $total += filesize($filePath);
-//                            }
-//                            ++$num;
-//                        }
-//                    }
-//                    closedir($subDir);
-//                } else
-                if (is_file($this->options['cache_dir'] . $file)) {
-                    $total += filesize($this->options['cache_dir'] . $file);
-                    ++$num;
-                }
+            if ($file !== '.' && $file !== '..' && is_file($this->options['cache_dir'] . $file)) {
+                $total += filesize($this->options['cache_dir'] . $file);
+                ++$num;
             }
         }
         if ($dir !== false) {
@@ -220,8 +206,8 @@ class cache_advancedfile implements ICachingMethod
     }
 
     /**
-     * @param array  $tags
-     * @param string $cacheID
+     * @param array|string $tags
+     * @param string       $cacheID
      * @return bool
      */
     public function setCacheTag($tags = [], $cacheID)
@@ -242,13 +228,13 @@ class cache_advancedfile implements ICachingMethod
                 foreach ($dirs as $dir) {
                     if (strlen($dir) > 0) {
                         $path .= $dir . '/';
-                        if (!file_exists($path)) {
-                            mkdir($path);
+                        if (!file_exists($path) && !mkdir($path) && !is_dir($path)) {
+                            return false;
                         }
                     }
                 }
-                if (!file_exists($path . $cacheID)) {
-                    symlink($fileName, $path . $cacheID);
+                if (file_exists($path . $cacheID) || !file_exists($fileName) || !symlink($fileName, $path . $cacheID)) {
+                    return false;
                 }
             }
             $res = true;
@@ -260,7 +246,7 @@ class cache_advancedfile implements ICachingMethod
     /**
      * removes cache IDs associated with tag from cache
      *
-     * @param array $tags
+     * @param array|string $tags
      * @return int
      */
     public function flushTags($tags)

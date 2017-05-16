@@ -83,7 +83,7 @@ class Lieferschein
      */
     public function __construct($kLieferschein = 0, $oData = null)
     {
-        if (intval($kLieferschein) > 0) {
+        if ((int)$kLieferschein > 0) {
             $this->loadFromDB($kLieferschein, $oData);
         }
     }
@@ -300,7 +300,7 @@ class Lieferschein
      */
     public function setEmailVerschickt($bEmailVerschickt)
     {
-        $this->bEmailVerschickt = (bool) $bEmailVerschickt;
+        $this->bEmailVerschickt = (bool)$bEmailVerschickt;
 
         return $this;
     }

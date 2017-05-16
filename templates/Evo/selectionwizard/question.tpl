@@ -1,4 +1,4 @@
-<div class="list-group-item selection-wizard-question {if $nQuestion !== $AWA->getCurQuestion()}disabled{/if}">
+<div class="list-group-item selection-wizard-question {if $nQuestion > $AWA->getCurQuestion()}disabled{/if}">
     <h4 class="list-group-item-heading selection-wizard-question-heading">
         {$oFrage->cFrage}
         {if $nQuestion < $AWA->getCurQuestion()}
@@ -19,7 +19,7 @@
         {if $AWA->getConf('auswahlassistent_anzeigeformat') === 'S'}
             <label for="kMerkmalWert-{$nQuestion}" class="sr-only">{lang key="pleaseChoose" section="global"}</label>
             <select id="kMerkmalWert-{$nQuestion}"
-                    onchange="return setSelectionWizardAnswerJS($(this).val());">
+                    onchange="return setSelectionWizardAnswerJS($(this).val());" class="form-control">
                 <option value="-1">{lang key="pleaseChoose" section="global"}</option>
                 {foreach $oFrage->oWert_arr as $oWert}
                     {if isset($oWert->nAnzahl)}
@@ -55,7 +55,7 @@
     {elseif $nQuestion > $AWA->getCurQuestion()}
         {if $AWA->getConf('auswahlassistent_anzeigeformat') === 'S'}
             <label for="kMerkmalWert-{$nQuestion}" class="sr-only">{lang key="pleaseChoose" section="global"}</label>
-            <select id="kMerkmalWert-{$nQuestion}" disabled="disabled">
+            <select id="kMerkmalWert-{$nQuestion}" disabled="disabled" class="form-control">
                 <option value="-1">{lang key="pleaseChoose" section="global"}</option>
             </select>
         {else}

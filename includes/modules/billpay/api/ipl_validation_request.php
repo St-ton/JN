@@ -1,21 +1,66 @@
 <?php
 
-require_once dirname(__FILE__) . '/ipl_xml_request.php';
+require_once __DIR__ . '/ipl_xml_request.php';
 
 /**
+ * class ipl_validation_request
+ *
  * @author Jan Wehrs (jan.wehrs@billpay.de)
  * @copyright Copyright 2010 Billpay GmbH
- * @license commercial 
+ * @license commercial
  */
 class ipl_validation_request extends ipl_xml_request
 {
-    private $_customer_details  = array();
-    private $_shippping_details = array();
+    /**
+     * @var array
+     */
+    private $_customer_details = [];
 
-    public function set_customer_details($customer_id, $customer_type, $salutation, $title,
-        $first_name, $last_name, $street, $street_no, $address_addition, $zip,
-        $city, $country, $email, $phone, $cell_phone, $birthday, $language, $ip)
-    {
+    /**
+     * @var array
+     */
+    private $_shippping_details = [];
+
+    /**
+     * @param $customer_id
+     * @param $customer_type
+     * @param $salutation
+     * @param $title
+     * @param $first_name
+     * @param $last_name
+     * @param $street
+     * @param $street_no
+     * @param $address_addition
+     * @param $zip
+     * @param $city
+     * @param $country
+     * @param $email
+     * @param $phone
+     * @param $cell_phone
+     * @param $birthday
+     * @param $language
+     * @param $ip
+     */
+    public function set_customer_details(
+        $customer_id,
+        $customer_type,
+        $salutation,
+        $title,
+        $first_name,
+        $last_name,
+        $street,
+        $street_no,
+        $address_addition,
+        $zip,
+        $city,
+        $country,
+        $email,
+        $phone,
+        $cell_phone,
+        $birthday,
+        $language,
+        $ip
+    ) {
         $this->_customer_details['customerid']      = $customer_id;
         $this->_customer_details['customertype']    = $customer_type;
         $this->_customer_details['salutation']      = $salutation;
@@ -36,9 +81,36 @@ class ipl_validation_request extends ipl_xml_request
         $this->_customer_details['ip']              = $ip;
     }
 
-    public function set_shipping_details($use_billing_address, $salutation = null, $title = null, $first_name = null, $last_name = null,
-        $street = null, $street_no = null, $address_addition = null, $zip = null, $city = null, $country = null, $phone = null, $cell_phone = null)
-    {
+    /**
+     * @param      $use_billing_address
+     * @param null $salutation
+     * @param null $title
+     * @param null $first_name
+     * @param null $last_name
+     * @param null $street
+     * @param null $street_no
+     * @param null $address_addition
+     * @param null $zip
+     * @param null $city
+     * @param null $country
+     * @param null $phone
+     * @param null $cell_phone
+     */
+    public function set_shipping_details(
+        $use_billing_address,
+        $salutation = null,
+        $title = null,
+        $first_name = null,
+        $last_name = null,
+        $street = null,
+        $street_no = null,
+        $address_addition = null,
+        $zip = null,
+        $city = null,
+        $country = null,
+        $phone = null,
+        $cell_phone = null
+    ) {
         $this->_shippping_details['useBillingAddress'] = $use_billing_address ? '1' : '0';
         $this->_shippping_details['salutation']        = $salutation;
         $this->_shippping_details['title']             = $title;
@@ -54,6 +126,9 @@ class ipl_validation_request extends ipl_xml_request
         $this->_shippping_details['cellPhone']         = $cell_phone;
     }
 
+    /**
+     * @return array|bool
+     */
     protected function _send()
     {
         return ipl_core_send_validation_request(
@@ -65,6 +140,9 @@ class ipl_validation_request extends ipl_xml_request
         );
     }
 
+    /**
+     * @param $data
+     */
     protected function _process_response_xml($data)
     {
         // Nothing to do here

@@ -150,24 +150,22 @@ class Kundendatenhistory extends MainModel
     }
 
     /**
-     * @param $dErstellt
+     * @param string $dErstellt
      * @return $this
      */
     public function setErstellt($dErstellt)
     {
-        if ($dErstellt === 'now()') {
-            $this->dErstellt = date('Y-m-d H:i:s');
-        } else {
-            $this->dErstellt = $dErstellt;
-        }
+        $this->dErstellt = ($dErstellt === 'now()')
+            ? date('Y-m-d H:i:s')
+            : $dErstellt;
 
         return $this;
     }
 
     /**
-     * @param int $kKey
-     * @param null $oObj
-     * @param null $xOption
+     * @param int         $kKey
+     * @param null|object $oObj
+     * @param null        $xOption
      * @return $this
      */
     public function load($kKey, $oObj = null, $xOption = null)
@@ -224,9 +222,8 @@ class Kundendatenhistory extends MainModel
             }
             $cQuery .= implode(', ', $cSet_arr);
             $cQuery .= " WHERE kKundendatenHistory = {$this->getKundendatenHistory()}";
-            $result = Shop::DB()->query($cQuery, 3);
 
-            return $result;
+            return Shop::DB()->query($cQuery, 3);
         } else {
             throw new Exception('ERROR: Object has no members!');
         }

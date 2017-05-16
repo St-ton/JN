@@ -349,7 +349,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                     WHERE kKonfiggruppe = " . (int)$this->kKonfiggruppe, 1
             );
 
-            return (isset($oCount->nCount))
+            return isset($oCount->nCount)
                 ? (int)$oCount->nCount
                 : 0;
         }

@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/globalinclude.php';
+require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_INCLUDES . 'bewertung_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
 /** @global JTLSmarty $smarty */
@@ -70,7 +70,7 @@ if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
     $AufgeklappteKategorien = new KategorieListe();
     $startKat               = new Kategorie();
     $startKat->kKategorie   = 0;
-    if (!isset($AktuellerArtikel->Bewertungen)) {
+    if ($AktuellerArtikel->Bewertungen === null) {
         $AktuellerArtikel->holeBewertung(
             Shop::getLanguage(),
             $Einstellungen['bewertung']['bewertung_anzahlseite'],
@@ -100,8 +100,8 @@ if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
                'bewertung.php?a=' . $AktuellerArtikel->kArtikel . '&bfa=1'))
            ->assign('Einstellungen', $Einstellungen)
            ->assign('Artikel', $AktuellerArtikel)
-           ->assign('requestURL', (isset($requestURL)) ? $requestURL : null)
-           ->assign('sprachURL', (isset($sprachURL)) ? $sprachURL : null);
+           ->assign('requestURL', isset($requestURL) ? $requestURL : null)
+           ->assign('sprachURL', isset($sprachURL) ? $sprachURL : null);
 
     require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
     $smarty->display('productdetails/review_form.tpl');

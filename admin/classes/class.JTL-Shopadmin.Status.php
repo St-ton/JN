@@ -23,7 +23,7 @@ class Status
      */
     public function __call($name, $arguments)
     {
-        if (!isset($this->cache[$name]) || $this->cache[$name] !== null) {
+        if (!isset($this->cache[$name])) {
             $this->cache[$name] = call_user_func_array([&$this, $name], $arguments);
         }
 
@@ -64,9 +64,12 @@ class Status
     }
 
     /**
-     * @return bool
+     * checks the db-structure against 'admin/includes/shopmd5files/dbstruct_[shop-version].json'
+     * (the 'shop-Version' is here needed without points)
+     *
+     * @return bool  true='no errors', false='something is wrong'
      */
-    protected function validDatabateStruct()
+    protected function validDatabaseStruct()
     {
         require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dbcheck_inc.php';
 
@@ -81,7 +84,10 @@ class Status
     }
 
     /**
-     * @return bool
+     * checks the shop-filesystem-structure against 'admin/includes/shopmd5files/[shop-version].csv'
+     * (the 'shop-Version' is here needed without points)
+     *
+     * @return bool  true='no errors', false='something is wrong'
      */
     protected function validFileStruct()
     {
@@ -114,9 +120,9 @@ class Status
     {
         $sharedPlugins = [];
         $sharedHookIds = Shop::DB()->executeQuery(
-            "SELECT nHook 
-                FROM tpluginhook 
-                GROUP BY nHook 
+            "SELECT nHook
+                FROM tpluginhook
+                GROUP BY nHook
                 HAVING COUNT(DISTINCT kPlugin) > 1", 2
         );
 
@@ -127,11 +133,11 @@ class Status
         foreach ($sharedHookIds as $hookId) {
             $sharedPlugins[$hookId] = [];
             $plugins                = Shop::DB()->executeQuery(
-                "SELECT DISTINCT tpluginhook.kPlugin, tplugin.cName, tplugin.cPluginID 
-                    FROM tpluginhook 
-                    INNER JOIN tplugin 
-                        ON tpluginhook.kPlugin = tplugin.kPlugin 
-                    WHERE tpluginhook.nHook = " . $hookId . " 
+                "SELECT DISTINCT tpluginhook.kPlugin, tplugin.cName, tplugin.cPluginID
+                    FROM tpluginhook
+                    INNER JOIN tplugin
+                        ON tpluginhook.kPlugin = tplugin.kPlugin
+                    WHERE tpluginhook.nHook = " . $hookId . "
                         AND tplugin.nStatus = 2", 2
             );
             foreach ($plugins as $plugin) {
@@ -184,7 +190,7 @@ class Status
     protected function hasMobileTemplateIssue()
     {
         $oTemplate = Shop::DB()->select('ttemplate', 'eTyp', 'standard');
-        if (isset($oTemplate)) {
+        if (isset($oTemplate->cTemplate)) {
             $oTplData = TemplateHelper::getInstance(false)->getData($oTemplate->cTemplate);
             if ($oTplData->bResponsive) {
                 $oMobileTpl = Shop::DB()->select('ttemplate', 'eTyp', 'mobil');
@@ -219,7 +225,7 @@ class Status
      */
     protected function getSubscription()
     {
-        if (!isset($_SESSION['subscription']) || $_SESSION['subscription'] === null) {
+        if (!isset($_SESSION['subscription'])) {
             $_SESSION['subscription'] = jtlAPI::getSubscription();
         }
         if (is_object($_SESSION['subscription']) &&
@@ -297,19 +303,9 @@ class Status
 
         if (is_array($paymentMethods)) {
             foreach ($paymentMethods as $i => $method) {
-                $log  = new ZahlungsLog($method->cModulId);
-                $logs = $log->holeLog();
-
-                if (!is_array($logs)) {
-                    continue;
-                }
-
-                foreach ($logs as $entry) {
-                    if (intval($entry->nLevel) === JTLLOG_LEVEL_ERROR) {
-                        $method->logs              = $logs;
-                        $incorrectPaymentMethods[] = $method;
-                        break;
-                    }
+                if (($logCount = ZahlungsLog::count($method->cModulId, JTLLOG_LEVEL_ERROR)) > 0) {
+                    $method->logCount = $logCount;
+                    $incorrectPaymentMethods[] = $method;
                 }
             }
         }
@@ -348,15 +344,31 @@ class Status
     }
 
     /**
+     * @return bool
+     */
+    protected function usesDeprecatedPriceImages()
+    {
+        $grafikPreise = Shop::DB()->selectAll('teinstellungen', 'kEinstellungenSektion', 118);
+
+        foreach ($grafikPreise as $preis) {
+            if ($preis->cWert === 'Y') {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * @param bool $has
      * @return array|bool
      */
     protected function getOrphanedCategories($has = true)
     {
         $categories = Shop::DB()->query("
-            SELECT kKategorie, cName 
-                FROM tkategorie 
-                WHERE kOberkategorie > 0 
+            SELECT kKategorie, cName
+                FROM tkategorie
+                WHERE kOberkategorie > 0
                     AND kOberkategorie NOT IN (SELECT DISTINCT kKategorie FROM tkategorie)", 2
         );
 
@@ -364,4 +376,5 @@ class Status
             ? count($categories) === 0
             : $categories;
     }
+
 }

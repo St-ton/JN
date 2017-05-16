@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/admininclude.php';
+require_once __DIR__ . '/includes/admininclude.php';
 
 define('PARTNER_PACKAGE', 'JTL');
 define('SHOP_SOFTWARE', 'JTL');
@@ -20,7 +20,7 @@ setzeSpracheTrustedShops();
 
 $Einstellungen = Shop::getSettings([CONF_TRUSTEDSHOPS]);
 
-if (isset($_POST['kaeuferschutzeinstellungen']) && intval($_POST['kaeuferschutzeinstellungen']) === 1 && validateToken()) {
+if (isset($_POST['kaeuferschutzeinstellungen']) && (int)$_POST['kaeuferschutzeinstellungen'] === 1 && validateToken()) {
     // Lpesche das Zertifikat
     if (isset($_POST['delZertifikat'])) {
         $oTrustedShops = new TrustedShops(-1, $_SESSION['TrustedShops']->oSprache->cISOSprache);
@@ -64,11 +64,11 @@ if (isset($_POST['kaeuferschutzeinstellungen']) && intval($_POST['kaeuferschutze
             $aktWert->kEinstellungenSektion = CONF_TRUSTEDSHOPS;
             switch ($oConfig_arr[$i]->cInputTyp) {
                 case 'kommazahl':
-                    $aktWert->cWert = floatval($aktWert->cWert);
+                    $aktWert->cWert = (float)$aktWert->cWert;
                     break;
                 case 'zahl':
                 case 'number':
-                    $aktWert->cWert = intval($aktWert->cWert);
+                    $aktWert->cWert = (int)$aktWert->cWert;
                     break;
                 case 'text':
                     $aktWert->cWert = substr($aktWert->cWert, 0, 255);
@@ -113,7 +113,7 @@ if (isset($_POST['kaeuferschutzeinstellungen']) && intval($_POST['kaeuferschutze
         Shop::Cache()->flushTags([CACHING_GROUP_OPTION]);
         unset($oConfig_arr);
     }
-} elseif (isset($_POST['kaeuferschutzupdate']) && intval($_POST['kaeuferschutzupdate']) === 1 && validateToken()) {
+} elseif (isset($_POST['kaeuferschutzupdate']) && (int)$_POST['kaeuferschutzupdate'] === 1 && validateToken()) {
     // Kaeuferprodukte updaten
     $oTrustedShops = new TrustedShops(-1, $_SESSION['TrustedShops']->oSprache->cISOSprache);
     //$oZertifikat = $oTrustedShops->gibTrustedShopsZertifikatISO($_SESSION['TrustedShops']->oSprache->cISOSprache);
@@ -124,7 +124,7 @@ if (isset($_POST['kaeuferschutzeinstellungen']) && intval($_POST['kaeuferschutze
     } else {
         $cFehler .= 'Fehler: Ihre K&auml;uferschutzprodukte konnten nicht aktualisiert werden.';
     }
-} elseif (isset($_POST['kundenbewertungeinstellungen']) && intval($_POST['kundenbewertungeinstellungen']) === 1 && validateToken()) {
+} elseif (isset($_POST['kundenbewertungeinstellungen']) && (int)$_POST['kundenbewertungeinstellungen'] === 1 && validateToken()) {
     // Kundenbewertung Einstellungen
     $oTrustedShops = new TrustedShops(-1, $_SESSION['TrustedShops']->oSprache->cISOSprache);
     $cPreStatus    = $Einstellungen['trustedshops']['trustedshops_kundenbewertung_anzeigen'];
@@ -144,11 +144,11 @@ if (isset($_POST['kaeuferschutzeinstellungen']) && intval($_POST['kaeuferschutze
         $aktWert->kEinstellungenSektion = CONF_TRUSTEDSHOPS;
         switch ($oConfig_arr[$i]->cInputTyp) {
             case 'kommazahl':
-                $aktWert->cWert = floatval($aktWert->cWert);
+                $aktWert->cWert = (float)$aktWert->cWert;
                 break;
             case 'zahl':
             case 'number':
-                $aktWert->cWert = intval($aktWert->cWert);
+                $aktWert->cWert = (int)$aktWert->cWert;
                 break;
             case 'text':
                 $aktWert->cWert = substr($aktWert->cWert, 0, 255);
@@ -182,7 +182,7 @@ if (isset($_POST['kaeuferschutzeinstellungen']) && intval($_POST['kaeuferschutze
         $cFehler .= 'Fehler: Bitte geben Sie eine tsID ein!<br>';
     }
     Shop::Cache()->flushTags([CACHING_GROUP_OPTION]);
-} elseif (isset($_POST['kundenbewertungupdate']) && intval($_POST['kundenbewertungupdate']) === 1) { // Kundenbewertung update
+} elseif (isset($_POST['kundenbewertungupdate']) && (int)$_POST['kundenbewertungupdate'] === 1) { // Kundenbewertung update
     if (isset($_POST['tsKundenbewertungActive']) || isset($_POST['tsKundenbewertungDeActive'])) {
         $nStatus = 0;
         if (isset($_POST['tsKundenbewertungActive'])) {
@@ -193,33 +193,33 @@ if (isset($_POST['kaeuferschutzeinstellungen']) && intval($_POST['kaeuferschutze
 
         if (strlen($oTrustedShopsKundenbewertung->cTSID) > 0) {
             $nReturnValue = $oTrustedShops->aenderKundenbewertungsstatus($oTrustedShopsKundenbewertung->cTSID, $nStatus, $_SESSION['TrustedShops']->oSprache->cISOSprache);
-            if ($nReturnValue == 1) {
+            if ($nReturnValue === 1) {
                 $filename = $oTrustedShopsKundenbewertung->cTSID . '.gif';
-                $oTrustedShops->ladeKundenbewertungsWidgetNeu($filename);
+                $oTrustedShops::ladeKundenbewertungsWidgetNeu($filename);
                 $cHinweis = 'Ihr Status wurde erfolgreich ge&auml;ndert';
-            } elseif ($nReturnValue == 2) {
+            } elseif ($nReturnValue === 2) {
                 $cFehler = 'Fehler: Bei der Status&auml;nderung ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.';
-            } elseif ($nReturnValue == 3) {
+            } elseif ($nReturnValue === 3) {
                 // Wurde die TS-ID vielleicht schon in einer anderen Sprache benutzt?
                 if ($oTrustedShops->pruefeKundenbewertungsstatusAndereSprache($oTrustedShopsKundenbewertung->cTSID, $_SESSION['TrustedShops']->oSprache->cISOSprache)) {
                     $cFehler = 'Fehler: Ihre Trusted Shops ID (tsId) wurde bereits f&uuml;r eine andere Sprache verwendet.';
                 } else {
                     $cFehler = 'Fehler: Ihre Trusted Shops ID (tsId) ist falsch.';
                 }
-            } elseif ($nReturnValue == 4) {
+            } elseif ($nReturnValue === 4) {
                 $cFehler = 'Fehler: Sie sind nicht registriert um die Kundenbewertung zu nutzen. Bitte nutzen Sie den Link zum Formular, oben auf dieser Seite.';
-            } elseif ($nReturnValue == 5) {
+            } elseif ($nReturnValue === 5) {
                 $cFehler = 'Fehler: Ihr Username und Passwort sind falsch.';
-            } elseif ($nReturnValue == 6) {
+            } elseif ($nReturnValue === 6) {
                 $cFehler = 'Fehler: Sie m&uuml;ssen Ihre Trusted Shops Kundenbewertung erst aktivieren.';
             }
         } else {
             $cFehler = 'Fehler: Kundenbewertung nicht gefunden.';
         }
     }
-} elseif (isset($_GET['whatis']) && intval($_GET['whatis']) === 1) { // Infoseite anzeigen
+} elseif (isset($_GET['whatis']) && (int)$_GET['whatis'] === 1) { // Infoseite anzeigen
     $step = 'info';
-} elseif (isset($_GET['whatisrating']) && intval($_GET['whatisrating']) === 1) { // Infoseite Kundenbewertung anzeigen
+} elseif (isset($_GET['whatisrating']) && (int)$_GET['whatisrating'] === 1) { // Infoseite Kundenbewertung anzeigen
     $step = 'info_kundenbewertung';
 }
 
@@ -264,7 +264,7 @@ if ($step === 'uebersicht') {
                     WHERE kEinstellungenSektion = " . CONF_TRUSTEDSHOPS . "
                         AND cName = '" . $oConfig_arr[$i]->cWertName . "'", 1
             );
-            $oConfig_arr[$i]->gesetzterWert = (isset($oSetValue->cWert)) ? $oSetValue->cWert : null;
+            $oConfig_arr[$i]->gesetzterWert = isset($oSetValue->cWert) ? $oSetValue->cWert : null;
         }
     }
 
@@ -273,8 +273,9 @@ if ($step === 'uebersicht') {
 
     $oTrustedShops = new TrustedShops(-1, $_SESSION['TrustedShops']->oSprache->cISOSprache);
 
-    if (isset($_POST['kaeuferschutzupdate']) && intval($_POST['kaeuferschutzupdate']) === 1 &&
-        $Einstellungen['trustedshops']['trustedshops_nutzen'] === 'Y' && isset($_POST['tsupdate'])) {
+    if (isset($_POST['kaeuferschutzupdate'], $_POST['tsupdate']) && (int)$_POST['kaeuferschutzupdate'] === 1 &&
+        $Einstellungen['trustedshops']['trustedshops_nutzen'] === 'Y'
+    ) {
         $smarty->assign('oKaeuferschutzProdukteDB', $oTrustedShops->oKaeuferschutzProdukteDB);
         $smarty->assign('oZertifikat', $oTrustedShops->gibTrustedShopsZertifikatISO($_SESSION['TrustedShops']->oSprache->cISOSprache));
 

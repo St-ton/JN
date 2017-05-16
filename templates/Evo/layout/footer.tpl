@@ -36,14 +36,17 @@
             {if isset($arrBoxBottom) && count($arrBoxBottom) > 0}
                 <div class="row" id="footer-boxes">
                     {foreach name=bottomBoxes from=$arrBoxBottom item=box}
-                        <div class="{block name="footer-boxes-class"}col-xs-6 col-md-3{/block}">
-                            {if isset($box.obj) && isset($box.tpl)}
-                                {if $smarty.foreach.bottomBoxes.iteration < 10}
-                                    {assign var=oBox value=$box.obj}
-                                    {include file=$box.tpl}
+                        {if ($box.obj->kBoxvorlage != 0 && $box.obj->anzeigen === 'Y' ) ||
+                        ($box.obj->kBoxvorlage == 0 && !empty($box.obj->oContainer_arr))}
+                            <div class="{block name="footer-boxes-class"}col-xs-6 col-md-3{/block}">
+                                {if isset($box.obj) && isset($box.tpl)}
+                                    {if $smarty.foreach.bottomBoxes.iteration < 10}
+                                        {assign var=oBox value=$box.obj}
+                                        {include file=$box.tpl}
+                                    {/if}
                                 {/if}
-                            {/if}
-                        </div>
+                            </div>
+                        {/if}
                     {/foreach}
                 </div>
             {/if}
@@ -53,7 +56,7 @@
             {if $Einstellungen.template.footer.socialmedia_footer === 'Y' || $Einstellungen.template.footer.newsletter_footer === 'Y'}
             <div class="row footer-additional">
                 {if $Einstellungen.template.footer.newsletter_footer === 'Y'}
-                    <div class="col-xs-12 col-md-7 newsletter-footer">
+                    <div class="{block name="footer-newsletter-class"}col-xs-12 col-md-7 newsletter-footer{/block}">
                         <div class="row">
                             {block name="footer-newsletter"}
                                 <div class="col-xs-12 col-sm-4">
@@ -70,7 +73,7 @@
                                         <div class="form-group">
                                             <label class="control-label sr-only" for="newsletter_email">{lang key="emailadress"}</label>
                                             <div class="input-group">
-                                                <input type="text" size="20" name="cEmail" id="newsletter_email" class="form-control" placeholder="{lang key="emailadress"}">
+                                                <input type="email" size="20" name="cEmail" id="newsletter_email" class="form-control" placeholder="{lang key="emailadress"}">
                                                 <span class="input-group-btn">
                                                     <button type="submit" class="btn btn-primary submit">
                                                         <span>{lang key="newsletterSendSubscribe" section="newsletter"}</span>
@@ -86,7 +89,7 @@
                 {/if}
 
                 {if $Einstellungen.template.footer.socialmedia_footer === 'Y'}
-                    <div class="col-xs-12 col-md-5 pull-right">
+                    <div class="{block name="footer-socialmedia-class"}col-xs-12 col-md-5 pull-right{/block}">
                         <div class="footer-additional-wrapper pull-right">
                             {block name="footer-socialmedia"}
                                 {if !empty($Einstellungen.template.footer.facebook)}
@@ -126,7 +129,56 @@
             </div>{* /row footer-additional *}
             {/if}
             {/block}{* /footer-additional *}
-
+            <div class="row">
+                {block name="footer-language"}
+                {if isset($smarty.session.Sprachen) && $smarty.session.Sprachen|@count > 1}
+                    <div class="language-dropdown dropdown visible-xs col-xs-6 text-center">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            <i class="fa fa-language"></i>
+                            <span class="caret"></span>
+                        </a>
+                        <ul id="language-dropdown-small" class="dropdown-menu dropdown-menu-right">
+                            {foreach from=$smarty.session.Sprachen item=Sprache}
+                                {if $Sprache->kSprache == $smarty.session.kSprache}
+                                    <li class="active lang-{$lang} visible-xs"><a>{if $lang === 'ger'}{$Sprache->cNameDeutsch}{else}{$Sprache->cNameEnglisch}{/if}</a></li>
+                                {/if}
+                            {/foreach}
+                            {foreach from=$smarty.session.Sprachen item=oSprache}
+                                {if $oSprache->kSprache != $smarty.session.kSprache}
+                                    <li>
+                                        <a href="{$oSprache->cURL}" class="link_lang {$oSprache->cISO}" rel="nofollow">{if $lang === 'ger'}{$oSprache->cNameDeutsch}{else}{$oSprache->cNameEnglisch}{/if}</a>
+                                    </li>
+                                {/if}
+                            {/foreach}
+                        </ul>
+                    </div>
+                {/if}
+                {/block}
+                {block name="footer-currency"}
+                {if isset($smarty.session.Waehrungen) && $smarty.session.Waehrungen|@count > 1}
+                    <div class="currency-dropdown dropdown visible-xs col-xs-6 text-center">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            {if $smarty.session.Waehrung->cISO === 'EUR'}
+                                <i class="fa fa-eur" title="{$smarty.session.Waehrung->cName}"></i>
+                            {elseif $smarty.session.Waehrung->cISO === 'USD'}
+                                <i class="fa fa-usd" title="{$smarty.session.Waehrung->cName}"></i>
+                            {elseif $smarty.session.Waehrung->cISO === 'GBP'}
+                                <i class="fa fa-gbp" title="{$smarty.session.Waehrung->cName}"></i>
+                            {else}
+                                {$smarty.session.Waehrung->cName}
+                            {/if} <span class="caret"></span>
+                        </a>
+                        <ul id="currency-dropdown-small" class="dropdown-menu dropdown-menu-right">
+                            {foreach from=$smarty.session.Waehrungen item=oWaehrung}
+                                <li>
+                                    <a href="{$oWaehrung->cURL}" rel="nofollow">{$oWaehrung->cName}</a>
+                                </li>
+                            {/foreach}
+                        </ul>
+                    </div>
+                {/if}
+                {/block}
+            </div>
             <div class="footnote-vat text-center">
                 {if $NettoPreise == 1}
                     {lang key="footnoteExclusiveVat" section="global" assign="footnoteVat"}
@@ -156,7 +208,7 @@
                     {/if}
                     <ul class="row list-unstyled">
                         <li class="col-xs-12 col-md-3">
-                            {if !empty($meta_copyright)}&copy; {$meta_copyright}{/if}
+                            {if !empty($meta_copyright)}<span itemprop="copyrightHolder">&copy; {$meta_copyright}</span>{/if}
                             {if $Einstellungen.global.global_zaehler_anzeigen === 'Y'}{lang key="counter" section="global"}: {$Besucherzaehler}{/if}
                         </li>
                         <li class="col-xs-12 col-md-6 text-center">

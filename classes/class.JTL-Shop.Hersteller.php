@@ -84,7 +84,7 @@ class Hersteller
      */
     public function __construct($kHersteller = 0, $kSprache = 0, $noCache = false)
     {
-        if (intval($kHersteller) > 0) {
+        if ((int)$kHersteller > 0) {
             $this->loadFromDB($kHersteller, $kSprache, $noCache);
         }
     }
@@ -120,8 +120,8 @@ class Hersteller
     public function loadFromDB($kHersteller, $kSprache = 0, $noCache = false)
     {
         //noCache param to avoid problem with de-serialization of class properties with jtl search
-        $kSprache = (intval($kSprache) > 0) ? (int)$kSprache : Shop::getLanguage();
-        if (!isset($kSprache) || $kSprache === null) {
+        $kSprache = ((int)$kSprache > 0) ? (int)$kSprache : Shop::getLanguage();
+        if ($kSprache === 0) {
             $oSprache = gibStandardsprache();
             $kSprache = (int)$oSprache->kSprache;
         }
@@ -171,7 +171,7 @@ class Hersteller
      * @param stdClass $obj
      * @return $this
      */
-    public function getExtras(stdClass &$obj)
+    public function getExtras(stdClass $obj)
     {
         if (isset($obj->kHersteller) && $obj->kHersteller > 0) {
             // URL bauen
@@ -198,7 +198,7 @@ class Hersteller
     public static function getAll($productLookup = true)
     {
         $sqlWhere = '';
-        $kSprache = (isset($_SESSION['kSprache'])) ? (int)$_SESSION['kSprache'] : (int)gibStandardsprache();
+        $kSprache = isset($_SESSION['kSprache']) ? (int)$_SESSION['kSprache'] : Shop::getLanguage();
         if ($productLookup) {
             $sqlWhere = "WHERE EXISTS (
                             SELECT 1

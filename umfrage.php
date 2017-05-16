@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/globalinclude.php';
+require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES_EXT . 'umfrage_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
 /** @global JTLSmarty $smarty */
@@ -18,9 +18,7 @@ $nAktuelleSeite       = 1;
 $oUmfrageFrageTMP_arr = [];
 $Einstellungen        = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_UMFRAGE]);
 $linkHelper           = LinkHelper::getInstance();
-
-loeseHttps();
-$kLink = $linkHelper->getSpecialPageLinkKey(LINKTYP_UMFRAGE);
+$kLink                = $linkHelper->getSpecialPageLinkKey(LINKTYP_UMFRAGE);
 
 //hole alle OberKategorien
 $AufgeklappteKategorien = new KategorieListe();
@@ -38,9 +36,6 @@ if (isset($cParameter_arr['kUmfrage']) && $cParameter_arr['kUmfrage'] > 0) {
         // Umfrage holen
         $oUmfrage = holeAktuelleUmfrage($cParameter_arr['kUmfrage']);
         if ($oUmfrage->kUmfrage > 0) {
-            // Rausgenommen weil teilweise auf xxx.xxx.*.* geprüft wurde und das ist overkill
-            // Nun wird auf die von tbesucher generierte cID geprüft
-            //if(pruefeUserUmfrage($oUmfrage->kUmfrage, $_SESSION['Kunde']->kKunde, gibIP()))
             if (pruefeUserUmfrage($oUmfrage->kUmfrage, $_SESSION['Kunde']->kKunde, $_SESSION['oBesucher']->cID)) {
                 $step = 'umfrage_durchfuehren';
                 // Auswertung
@@ -69,10 +64,6 @@ if (isset($cParameter_arr['kUmfrage']) && $cParameter_arr['kUmfrage'] > 0) {
                         $oNavi_arr,
                         $cParameter_arr['kSeite']
                     );
-                }
-                // Canonical
-                if (strpos(baueURL($oUmfrage, URLART_UMFRAGE), '.php') === false && !SHOP_SEO) {
-                    $cCanonicalURL = Shop::getURL() . '/' . baueURL($oUmfrage, URLART_UMFRAGE);
                 }
                 $_SESSION['Umfrage']->kUmfrage = $oUmfrage->kUmfrage;
                 $smarty->assign('oUmfrage', $oUmfrage)

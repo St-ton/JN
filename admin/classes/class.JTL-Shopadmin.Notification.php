@@ -99,6 +99,14 @@ class Notification implements IteratorAggregate, Countable
             $this->add(NotificationEntry::TYPE_WARNING, 'System', 'Bitte l&ouml;schen Sie das Installationsverzeichnis "/install/" im Shop-Wurzelverzeichnis.');
         }
 
+        if (!$status->validDatabaseStruct()) {
+            $this->add(NotificationEntry::TYPE_DANGER, 'Datenbank', 'Es liegen Fehler in der Datenbankstruktur vor.', 'dbcheck.php');
+        }
+
+        if (!$status->validFileStruct()) {
+            $this->add(NotificationEntry::TYPE_DANGER, 'Filesystem', 'Es liegen Fehler in der Shop-Dateistruktur vor.', 'filecheck.php');
+        }
+
         if ($status->hasDifferentTemplateVersion()) {
             $this->add(NotificationEntry::TYPE_WARNING, 'Template', 'Ihre Template-Version unterscheidet sich von Ihrer Shop-Version.<br />Weitere Hilfe zu Template-Updates finden Sie im <i class="fa fa-external-link"></i> Wiki', 'shoptemplate.php');
         }
@@ -137,6 +145,12 @@ class Notification implements IteratorAggregate, Countable
             && (!Shop::DB()->query("SHOW INDEX FROM tartikel WHERE KEY_NAME = 'idx_tartikel_fulltext'", 1)
                 || !Shop::DB()->query("SHOW INDEX FROM tartikelsprache WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'", 1))) {
             $this->add(NotificationEntry::TYPE_WARNING, 'Der Volltextindex ist nicht vorhanden!', 'sucheinstellungen.php');
+        }
+
+        if ($status->usesDeprecatedPriceImages()) {
+            $this->add(NotificationEntry::TYPE_WARNING, 'Konfiguration',
+                'Sie nutzen Grafikpreise. Diese Funktion ist als "deprecated" markiert.<br/>Bitte beachten Sie die Hinweise unter "Storefront->Artikel->Preisanzeige".',
+                'preisanzeige.php');
         }
     }
 }

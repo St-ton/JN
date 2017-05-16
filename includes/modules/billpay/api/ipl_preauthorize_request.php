@@ -1,6 +1,6 @@
 <?php
 
-require_once dirname(__FILE__) . '/ipl_xml_request.php';
+require_once __DIR__. '/ipl_xml_request.php';
 
 /**
  * @author Jan Wehrs (jan.wehrs@billpay.de)
@@ -9,22 +9,22 @@ require_once dirname(__FILE__) . '/ipl_xml_request.php';
  */
 class ipl_preauthorize_request extends ipl_xml_request
 {
-    private $_customer_details  = array();
-    private $_shippping_details = array();
-    private $_totals            = array();
-    private $_bank_account      = array();
-    private $_rate_request_data = array();
+    private $_customer_details  = [];
+    private $_shippping_details = [];
+    private $_totals            = [];
+    private $_bank_account      = [];
+    private $_rate_request_data = [];
 
-    private $_article_data       = array();
-    private $_order_history_attr = array();
-    private $_order_history_data = array();
-    private $_company_details    = array();
+    private $_article_data       = [];
+    private $_order_history_attr = [];
+    private $_order_history_data = [];
+    private $_company_details    = [];
 
-    private $_payment_info_params = array();
-    private $_fraud_detection     = array();
+    private $_payment_info_params = [];
+    private $_fraud_detection     = [];
 
-    private $_preauth_params       = array();
-    private $_async_capture_params = array();
+    private $_preauth_params       = [];
+    private $_async_capture_params = [];
 
     private $_payment_type;
 
@@ -67,7 +67,7 @@ class ipl_preauthorize_request extends ipl_xml_request
     private $cart_amount;
     private $surcharge;
     private $interest;
-    private $dues = array();
+    private $dues = [];
 
     // pre approved specific
     private $async_amount;
@@ -80,13 +80,21 @@ class ipl_preauthorize_request extends ipl_xml_request
     // parameters needed for prescore
     private $is_prescored = 0;
 
-    // ctr
+    /**
+     * ipl_preauthorize_request constructor.
+     * @param $ipl_request_url
+     * @param $payment_type
+     */
     public function __construct($ipl_request_url, $payment_type)
     {
         $this->_payment_type = $payment_type;
         parent::__construct($ipl_request_url);
     }
 
+    /**
+     * @param $sShopType
+     * @return $this
+     */
     public function setTraceShopType($sShopType)
     {
         $this->aTraceData['shop_type'] = $sShopType;
@@ -94,6 +102,10 @@ class ipl_preauthorize_request extends ipl_xml_request
         return $this;
     }
 
+    /**
+     * @param $sVersion
+     * @return $this
+     */
     public function setTraceShopVersion($sVersion)
     {
         $this->aTraceData['shop_version'] = $sVersion;
@@ -101,6 +113,10 @@ class ipl_preauthorize_request extends ipl_xml_request
         return $this;
     }
 
+    /**
+     * @param $sShopDomain
+     * @return $this
+     */
     public function setTraceShopDomain($sShopDomain)
     {
         $this->aTraceData['shop_domain'] = $sShopDomain;
@@ -108,6 +124,10 @@ class ipl_preauthorize_request extends ipl_xml_request
         return $this;
     }
 
+    /**
+     * @param $sVersion
+     * @return $this
+     */
     public function setTracePluginVersion($sVersion)
     {
         $this->aTraceData['plugin_version'] = $sVersion;
@@ -115,6 +135,9 @@ class ipl_preauthorize_request extends ipl_xml_request
         return $this;
     }
 
+    /**
+     * @return array
+     */
     protected function getTraceData()
     {
         $aTraceData = parent::getTraceData();
@@ -123,7 +146,7 @@ class ipl_preauthorize_request extends ipl_xml_request
             $aTraceData['shop_domain'] = $_SERVER['SERVER_NAME'];
         }
 
-        $aTraceData['php_version'] = phpversion();
+        $aTraceData['php_version'] = PHP_VERSION;
         $aTraceData['os_version']  = @php_uname('a');
         $aTraceData['api_version'] = IPL_CORE_API_VERSION;
 
@@ -132,167 +155,313 @@ class ipl_preauthorize_request extends ipl_xml_request
         return $aTraceData;
     }
 
+    /**
+     * @return bool
+     */
     public function get_terms_accepted()
     {
         return $this->_terms_accepted;
     }
+
+    /**
+     * @param $val
+     */
     public function set_terms_accepted($val)
     {
         $this->_terms_accepted = $val;
     }
+
+    /**
+     * @param $val
+     */
     public function set_expected_days_till_shipping($val)
     {
         $this->_expected_days_till_shipping = $val;
     }
+
+    /**
+     * @param $val
+     */
     public function set_capture_request_necessary($val)
     {
         $this->_capture_request_necessary = $val;
     }
 
+    /**
+     * @return int
+     */
     public function get_expected_days_till_shipping()
     {
         return $this->_expected_days_till_shipping;
     }
+
+    /**
+     * @return bool
+     */
     public function get_capture_request_nesessary()
     {
         return $this->_capture_request_necessary;
     }
+
+    /**
+     * @return mixed
+     */
     public function get_payment_type()
     {
         return $this->_payment_type;
     }
+
+    /**
+     * @return mixed
+     */
     public function get_status()
     {
         return $this->status;
     }
+
+    /**
+     * @return mixed
+     */
     public function get_bptid()
     {
         return $this->bptid;
     }
+
+    /**
+     * @return mixed
+     */
     public function get_corrected_street()
     {
         return $this->corrected_street;
     }
+
+    /**
+     * @return mixed
+     */
     public function get_corrected_street_no()
     {
         return $this->corrected_street_no;
     }
+
+    /**
+     * @return mixed
+     */
     public function get_corrected_zip()
     {
         return $this->corrected_zip;
     }
+
+    /**
+     * @return mixed
+     */
     public function get_corrected_city()
     {
         return $this->corrected_city;
     }
+
+    /**
+     * @return mixed
+     */
     public function get_corrected_country()
     {
         return $this->corrected_country;
     }
+
+    /**
+     * @return mixed
+     */
     public function get_account_holder()
     {
         return $this->account_holder;
     }
+
+    /**
+     * @return mixed
+     */
     public function get_account_number()
     {
         return $this->account_number;
     }
+
+    /**
+     * @return mixed
+     */
     public function get_bank_code()
     {
         return $this->bank_code;
     }
+
+    /**
+     * @return mixed
+     */
     public function get_bank_name()
     {
         return $this->bank_name;
     }
+
+    /**
+     * @return mixed
+     */
     public function get_invoice_reference()
     {
         return $this->invoice_reference;
     }
+
+    /**
+     * @return mixed
+     */
     public function get_invoice_duedate()
     {
         return $this->invoice_duedate;
     }
+
+    /**
+     * @return mixed
+     */
     public function get_activation_performed()
     {
         return $this->activation_performed;
     }
+
+    /**
+     * @return mixed
+     */
     public function get_standard_information_pdf()
     {
         return $this->standard_information_pdf;
     }
+
+    /**
+     * @return mixed
+     */
     public function get_email_attachment_pdf()
     {
         return $this->email_attachment_pdf;
     }
+
+    /**
+     * @return mixed
+     */
     public function get_payment_info_html()
     {
         return $this->payment_info_html;
     }
+
+    /**
+     * @return mixed
+     */
     public function get_payment_info_plain()
     {
         return $this->payment_info_plain;
     }
+
+    /**
+     * @return mixed
+     */
     public function get_async_amount()
     {
         return $this->async_amount;
     }
+
+    /**
+     * @return mixed
+     */
     public function get_prepayment_amount()
     {
         return $this->async_amount;
     }
+
+    /**
+     * @return mixed
+     */
     public function get_external_redirect_url()
     {
         return $this->external_redirect_url;
     }
+
+    /**
+     * @return mixed
+     */
     public function get_rate_plan_url()
     {
         return $this->rate_plan_url;
     }
+
+    /**
+     * @return mixed
+     */
     public function get_campaign_type()
     {
         return $this->campaign_type;
     }
+
+    /**
+     * @return mixed
+     */
     public function get_campaign_display_text()
     {
         return $this->campaign_display_text;
     }
+
+    /**
+     * @return mixed
+     */
     public function get_campaign_display_image_url()
     {
         return $this->campaign_display_image_url;
     }
 
-    // ------------------ paylater specific ------------------ //
+    /**
+     * @return mixed
+     */
     public function get_instalment_count()
     {
         return $this->instalment_count;
     }
 
+    /**
+     * @return mixed
+     */
     public function get_duration()
     {
         return $this->duration;
     }
 
+    /**
+     * @return mixed
+     */
     public function get_fee_percent()
     {
         return $this->fee_percent;
     }
 
+    /**
+     * @return mixed
+     */
     public function get_fee_total()
     {
         return $this->fee_total;
     }
 
+    /**
+     * @return mixed
+     */
     public function get_total_amount()
     {
         return $this->total_amount;
     }
 
+    /**
+     * @return mixed
+     */
     public function get_effective_annual()
     {
         return $this->effective_annual;
     }
 
+    /**
+     * @return mixed
+     */
     public function get_nominal_annual()
     {
         return $this->nominal_annual;
@@ -335,11 +504,35 @@ class ipl_preauthorize_request extends ipl_xml_request
         return (int) $this->interest;
     }
 
+    /**
+     * @return array
+     */
     public function get_dues()
     {
         return $this->dues;
     }
 
+    /**
+     * @param $customer_id
+     * @param $customer_type
+     * @param $salutation
+     * @param $title
+     * @param $first_name
+     * @param $last_name
+     * @param $street
+     * @param $street_no
+     * @param $address_addition
+     * @param $zip
+     * @param $city
+     * @param $country
+     * @param $email
+     * @param $phone
+     * @param $cell_phone
+     * @param $birthday
+     * @param $language
+     * @param $ip
+     * @param $customerGroup
+     */
     public function set_customer_details($customer_id, $customer_type, $salutation, $title,
         $first_name, $last_name, $street, $street_no, $address_addition, $zip,
         $city, $country, $email, $phone, $cell_phone, $birthday, $language, $ip, $customerGroup)
@@ -365,6 +558,21 @@ class ipl_preauthorize_request extends ipl_xml_request
         $this->_customer_details['customerGroup']   = $customerGroup;
     }
 
+    /**
+     * @param      $use_billing_address
+     * @param null $salutation
+     * @param null $title
+     * @param null $first_name
+     * @param null $last_name
+     * @param null $street
+     * @param null $street_no
+     * @param null $address_addition
+     * @param null $zip
+     * @param null $city
+     * @param null $country
+     * @param null $phone
+     * @param null $cell_phone
+     */
     public function set_shipping_details($use_billing_address, $salutation = null, $title = null, $first_name = null, $last_name = null,
         $street = null, $street_no = null, $address_addition = null, $zip = null, $city = null, $country = null, $phone = null, $cell_phone = null)
     {
@@ -383,10 +591,18 @@ class ipl_preauthorize_request extends ipl_xml_request
         $this->_shippping_details['cellPhone']         = $cell_phone;
     }
 
+    /**
+     * @param $articleid
+     * @param $articlequantity
+     * @param $articlename
+     * @param $articledescription
+     * @param $article_price
+     * @param $article_price_gross
+     */
     public function add_article($articleid, $articlequantity, $articlename, $articledescription,
         $article_price, $article_price_gross)
     {
-        $article                       = array();
+        $article                       = [];
         $article['articleid']          = $articleid;
         $article['articlequantity']    = $articlequantity;
         $article['articlename']        = $articlename;
@@ -397,19 +613,32 @@ class ipl_preauthorize_request extends ipl_xml_request
         $this->_article_data[] = $article;
     }
 
+    /**
+     * @param $iMerchantCustomerLimit
+     * @param $iRepeatCustomer
+     * @return $this
+     */
     public function add_order_history_attributes($iMerchantCustomerLimit, $iRepeatCustomer)
     {
-        $this->_order_history_attr = array(
+        $this->_order_history_attr = [
             'merchant_customer_limit' => (int) $iMerchantCustomerLimit,
             'repeat_customer'         => (int) $iRepeatCustomer,
-        );
+        ];
 
         return $this;
     }
 
+    /**
+     * @param $horderid
+     * @param $hdate
+     * @param $hamount
+     * @param $hcurrency
+     * @param $hpaymenttype
+     * @param $hstatus
+     */
     public function add_order_history($horderid, $hdate, $hamount, $hcurrency, $hpaymenttype, $hstatus)
     {
-        $histOrder                 = array();
+        $histOrder                 = [];
         $histOrder['horderid']     = $horderid;
         $histOrder['hdate']        = $hdate;
         $histOrder['hamount']      = $hamount;
@@ -420,6 +649,18 @@ class ipl_preauthorize_request extends ipl_xml_request
         $this->_order_history_data[] = $histOrder;
     }
 
+    /**
+     * @param        $rebate
+     * @param        $rebate_gross
+     * @param        $shipping_name
+     * @param        $shipping_price
+     * @param        $shipping_price_gross
+     * @param        $cart_total_price
+     * @param        $cart_total_price_gross
+     * @param        $currency
+     * @param        $reference
+     * @param string $reference2
+     */
     public function set_total($rebate, $rebate_gross, $shipping_name, $shipping_price,
             $shipping_price_gross, $cart_total_price, $cart_total_price_gross,
             $currency, $reference, $reference2 = "")
@@ -436,11 +677,19 @@ class ipl_preauthorize_request extends ipl_xml_request
         $this->_totals['reference2']          = $reference2;
     }
 
+    /**
+     * @param $reference
+     */
     public function set_reference($reference)
     {
         $this->_totals['reference'] = $reference;
     }
 
+    /**
+     * @param $account_holder
+     * @param $account_number
+     * @param $sort_code
+     */
     public function set_bank_account($account_holder, $account_number, $sort_code)
     {
         $this->_bank_account['accountholder'] = $account_holder;
@@ -448,6 +697,13 @@ class ipl_preauthorize_request extends ipl_xml_request
         $this->_bank_account['sortcode']      = $sort_code;
     }
 
+    /**
+     * @param $name
+     * @param $legalForm
+     * @param $registerNumber
+     * @param $holderName
+     * @param $taxNumber
+     */
     public function set_company_details($name, $legalForm, $registerNumber, $holderName, $taxNumber)
     {
         $this->_company_details['name']           = $name;
@@ -474,17 +730,28 @@ class ipl_preauthorize_request extends ipl_xml_request
         }
     }
 
+    /**
+     * @param $showhtmlinfo
+     * @param $showplaininfo
+     */
     public function set_payment_info_params($showhtmlinfo, $showplaininfo)
     {
         $this->_payment_info_params['htmlinfo']  = $showhtmlinfo ? "1" : "0";
         $this->_payment_info_params['plaininfo'] = $showplaininfo ? "1" : "0";
     }
 
+    /**
+     * @param $session_id
+     */
     public function set_fraud_detection($session_id)
     {
         $this->_fraud_detection['session_id'] = $session_id;
     }
 
+    /**
+     * @param $is_prescored
+     * @param $bptid
+     */
     public function set_prescore_enable($is_prescored, $bptid)
     {
         if ($is_prescored == true) {
@@ -498,15 +765,22 @@ class ipl_preauthorize_request extends ipl_xml_request
         }
     }
 
+    /**
+     * @param $redirect_url
+     * @param $notify_url
+     */
     public function set_async_capture($redirect_url, $notify_url)
     {
         $this->_async_capture_params['redirect_url'] = $redirect_url;
         $this->_async_capture_params['notify_url']   = $notify_url;
     }
 
+    /**
+     * @return array|bool
+     */
     protected function _send()
     {
-        $attributes                             = array();
+        $attributes                             = [];
         $attributes['tcaccepted']               = $this->_terms_accepted;
         $attributes['expecteddaystillshipping'] = $this->_expected_days_till_shipping;
         $attributes['capturerequestnecessary']  = $this->_capture_request_necessary;
@@ -533,6 +807,9 @@ class ipl_preauthorize_request extends ipl_xml_request
         );
     }
 
+    /**
+     * @param $data
+     */
     protected function _process_response_xml($data)
     {
         foreach ($data as $key => $value) {
@@ -540,6 +817,9 @@ class ipl_preauthorize_request extends ipl_xml_request
         }
     }
 
+    /**
+     * @param $data
+     */
     protected function _process_error_response_xml($data)
     {
         if (isset($data['status'])) {

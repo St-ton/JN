@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/globalinclude.php';
+require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'newsletter_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'seite_inc.php';
@@ -26,7 +26,7 @@ if (isset($oLink->kLink) && $oLink->kLink > 0) {
     $Link = $linkHelper->getPageLink($oLink->kLink);
     //url
     $requestURL    = baueURL($Link, URLART_SEITE);
-    $sprachURL     = (isset($Link->languageURLs))
+    $sprachURL     = isset($Link->languageURLs)
         ? $Link->languageURLs
         : baueSprachURLS($Link, URLART_SEITE);
     $Link->Sprache = $linkHelper->getPageLinkLanguage($oLink->kLink);
@@ -46,9 +46,8 @@ if (isset($oLink->kLink) && $oLink->kLink > 0) {
 $cHinweis      = '';
 $cFehler       = '';
 $cCanonicalURL = '';
-$Einstellungen = Shop::getSettings(array(CONF_GLOBAL, CONF_RSS, CONF_NEWSLETTER));
+$Einstellungen = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_NEWSLETTER]);
 
-pruefeHttps();
 //hole alle OberKategorien
 $AktuelleKategorie      = new Kategorie(verifyGPCDataInteger('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
@@ -140,21 +139,21 @@ if (isset($_GET['fc']) && strlen($_GET['fc']) > 0) {
     }
 }
 // Abonnieren
-if (isset($_POST['abonnieren']) && intval($_POST['abonnieren']) === 1) {
+if (isset($_POST['abonnieren']) && (int)$_POST['abonnieren'] === 1) {
     require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
     require_once PFAD_ROOT . PFAD_INCLUDES . 'newsletter_inc.php';
 
     $oKunde            = new stdClass();
-    $oKunde->cAnrede   = (isset($_POST['cAnrede']))
+    $oKunde->cAnrede   = isset($_POST['cAnrede'])
         ? StringHandler::filterXSS(Shop::DB()->escape(strip_tags($_POST['cAnrede'])))
         : null;
-    $oKunde->cVorname  = (isset($_POST['cVorname']))
+    $oKunde->cVorname  = isset($_POST['cVorname'])
         ? StringHandler::filterXSS(Shop::DB()->escape(strip_tags($_POST['cVorname'])))
         : null;
-    $oKunde->cNachname = (isset($_POST['cNachname']))
+    $oKunde->cNachname = isset($_POST['cNachname'])
         ? StringHandler::filterXSS(Shop::DB()->escape(strip_tags($_POST['cNachname'])))
         : null;
-    $oKunde->cEmail    = (isset($_POST['cEmail']))
+    $oKunde->cEmail    = isset($_POST['cEmail'])
         ? StringHandler::filterXSS(Shop::DB()->escape(strip_tags($_POST['cEmail'])))
         : null;
     $oKunde->cRegIp    = gibIP(); // IP of the current event-issuer
@@ -163,19 +162,19 @@ if (isset($_POST['abonnieren']) && intval($_POST['abonnieren']) === 1) {
         $smarty->assign('oPlausi', fuegeNewsletterEmpfaengerEin($oKunde, true));
         Shop::DB()->delete('tnewsletterempfaengerblacklist', 'cMail', $oKunde->cEmail);
     } else {
-        $cFehler .= (valid_email($_POST['cEmail'])) ?
-            (Shop::Lang()->get('kwkEmailblocked', 'errorMessages') . '<br />') :
-            (Shop::Lang()->get('invalidEmail', 'global') . '<br />');
+        $cFehler .= valid_email($_POST['cEmail'])
+            ? (Shop::Lang()->get('kwkEmailblocked', 'errorMessages') . '<br />')
+            : (Shop::Lang()->get('invalidEmail', 'global') . '<br />');
     }
 
     $smarty->assign('cPost_arr', StringHandler::filterXSS($_POST));
-} elseif (isset($_POST['abonnieren']) && intval($_POST['abonnieren']) === 2) {
+} elseif (isset($_POST['abonnieren']) && (int)$_POST['abonnieren'] === 2) {
     // weiterleitung vom Footer zu newsletter.php
-    $oPlausi->cPost_arr['cEmail'] = (isset($_POST['cEmail']))
+    $oPlausi->cPost_arr['cEmail'] = isset($_POST['cEmail'])
         ? StringHandler::filterXSS(Shop::DB()->escape(strip_tags($_POST['cEmail'])))
         : null;
     $smarty->assign('oPlausi', $oPlausi);
-} elseif (isset($_POST['abmelden']) && intval($_POST['abmelden']) === 1) { // Abmelden
+} elseif (isset($_POST['abmelden']) && (int)$_POST['abmelden'] === 1) { // Abmelden
     if (valid_email($_POST['cEmail'])) {
         // Pruefen, ob Email bereits vorhanden
         $oNewsletterEmpfaenger = Shop::DB()->select(
@@ -227,9 +226,12 @@ if (isset($_POST['abonnieren']) && intval($_POST['abonnieren']) === 1) {
             $cFehler = Shop::Lang()->get('newsletterNoexists', 'errorMessages');
         }
     } else {
-        $cFehler = Shop::Lang()->get('newsletterWrongemail', 'errorMessages');
+        $cFehler          = Shop::Lang()->get('newsletterWrongemail', 'errorMessages');
+        $oFehlendeAngaben = new stdClass();
+        $oFehlendeAngaben->cUnsubscribeEmail = 1;
+        $smarty->assign('oFehlendeAngaben', $oFehlendeAngaben);
     }
-} elseif (isset($_GET['show']) && intval($_GET['show']) > 0) { // History anzeigen
+} elseif (isset($_GET['show']) && (int)$_GET['show'] > 0) { // History anzeigen
     $cOption            = 'anzeigen';
     $kNewsletterHistory = (int)$_GET['show'];
     $oNewsletterHistory = Shop::DB()->query(

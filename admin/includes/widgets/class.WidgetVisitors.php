@@ -25,9 +25,8 @@ class WidgetVisitors extends WidgetBase
     public function getVisitorsOfCurrentMonth()
     {
         $oStatistik    = new Statistik(firstDayOfMonth(), time());
-        $oVisitors_arr = $oStatistik->holeBesucherStats(2);
 
-        return $oVisitors_arr;
+        return $oStatistik->holeBesucherStats(2);
     }
 
     /**
@@ -47,9 +46,8 @@ class WidgetVisitors extends WidgetBase
         $nTo   = lastDayOfMonth($nMonth, $nYear);
 
         $oStatistik    = new Statistik($nFrom, $nTo);
-        $oVisitors_arr = $oStatistik->holeBesucherStats(2);
 
-        return $oVisitors_arr;
+        return $oStatistik->holeBesucherStats(2);
     }
 
     /**
@@ -71,10 +69,10 @@ class WidgetVisitors extends WidgetBase
             }
         }
 
-        $Series = array(
+        $Series = [
             'Letzter Monat' => $oLastMonth_arr,
             'Dieser Monat'  => $oCurrentMonth_arr
-        );
+        ];
 
         return prepareLineChartStatsMulti($Series, getAxisNames(STATS_ADMIN_TYPE_BESUCHER), 2);
     }

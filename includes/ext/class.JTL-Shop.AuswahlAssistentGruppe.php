@@ -85,8 +85,8 @@ if (class_exists('AuswahlAssistent')) {
                 if ($bAktiv) {
                     $cAktivSQL = " AND nAktiv = 1";
                 }
-                $oGruppe = Shop::DB()->query(
-                    "SELECT *
+                $oGruppe = Shop::DB()->query("
+                    SELECT *
                         FROM tauswahlassistentgruppe
                         WHERE kAuswahlAssistentGruppe = " . (int)$kAuswahlAssistentGruppe .
                         $cAktivSQL, 1
@@ -98,6 +98,9 @@ if (class_exists('AuswahlAssistent')) {
                             $this->$cMember = $oGruppe->$cMember;
                         }
                     }
+                    $this->kAuswahlAssistentGruppe = (int)$this->kAuswahlAssistentGruppe;
+                    $this->kSprache                = (int)$this->kSprache;
+                    $this->nAktiv                  = (int)$this->nAktiv;
                     // Fragen
                     $this->oAuswahlAssistentFrage_arr = AuswahlAssistentFrage::getQuestions(
                         $oGruppe->kAuswahlAssistentGruppe,
@@ -145,8 +148,8 @@ if (class_exists('AuswahlAssistent')) {
             if ($bAktiv) {
                 $cAktivSQL = " AND nAktiv = 1";
             }
-            $oGruppeTMP_arr = Shop::DB()->query(
-                "SELECT kAuswahlAssistentGruppe
+            $oGruppeTMP_arr = Shop::DB()->query("
+                SELECT kAuswahlAssistentGruppe
                     FROM tauswahlassistentgruppe
                     WHERE kSprache = " . (int)$kSprache .
                     $cAktivSQL, 2
@@ -170,11 +173,18 @@ if (class_exists('AuswahlAssistent')) {
             $cPlausi_arr = $this->checkGroup($cParam_arr);
             if (count($cPlausi_arr) === 0) {
                 $oObj = kopiereMembers($this);
-                unset($oObj->cSprache);
-                unset($oObj->nStartseite);
-                unset($oObj->cKategorie);
-                unset($oObj->oAuswahlAssistentOrt_arr);
-                unset($oObj->oAuswahlAssistentFrage_arr);
+
+                $this->nAktiv                  = (int)$this->nAktiv;
+                $this->kSprache                = (int)$this->kSprache;
+                $this->nStartseite             = (int)$this->nStartseite;
+                $this->kAuswahlAssistentGruppe = (int)$this->kAuswahlAssistentGruppe;
+                unset(
+                    $oObj->cSprache,
+                    $oObj->nStartseite,
+                    $oObj->cKategorie,
+                    $oObj->oAuswahlAssistentOrt_arr,
+                    $oObj->oAuswahlAssistentFrage_arr
+                );
                 $kAuswahlAssistentGruppe = Shop::DB()->insert('tauswahlassistentgruppe', $oObj);
                 if ($kAuswahlAssistentGruppe > 0) {
                     AuswahlAssistentOrt::saveLocation($cParam_arr, $kAuswahlAssistentGruppe);
@@ -225,15 +235,15 @@ if (class_exists('AuswahlAssistent')) {
         {
             $cPlausi_arr = [];
             // Name
-            if (strlen($this->cName) === 0) {
+            if (empty($this->cName)) {
                 $cPlausi_arr['cName'] = 1;
             }
             // Sprache
-            if ($this->kSprache == 0) {
+            if ($this->kSprache === 0) {
                 $cPlausi_arr['kSprache'] = 1;
             }
             // Aktiv
-            if ($this->nAktiv != 0 && $this->nAktiv != 1) {
+            if ($this->nAktiv !== 0 && $this->nAktiv !== 1) {
                 $cPlausi_arr['nAktiv'] = 1;
             }
             $cPlausiOrt_arr = AuswahlAssistentOrt::checkLocation($cParam_arr, $bUpdate);
@@ -252,14 +262,14 @@ if (class_exists('AuswahlAssistent')) {
                 is_array($cParam_arr['kAuswahlAssistentGruppe_arr']) &&
                 count($cParam_arr['kAuswahlAssistentGruppe_arr']) > 0) {
                 foreach ($cParam_arr['kAuswahlAssistentGruppe_arr'] as $kAuswahlAssistentGruppe) {
-                    Shop::DB()->query(
-                        "DELETE tauswahlassistentgruppe, tauswahlassistentfrage, tauswahlassistentort
-                            FROM tauswahlassistentgruppe
-                            LEFT JOIN tauswahlassistentfrage 
-                                ON tauswahlassistentfrage.kAuswahlAssistentGruppe = tauswahlassistentgruppe.kAuswahlAssistentGruppe
-                            LEFT JOIN tauswahlassistentort 
-                                ON tauswahlassistentort.kAuswahlAssistentGruppe = tauswahlassistentgruppe.kAuswahlAssistentGruppe
-                            WHERE tauswahlassistentgruppe.kAuswahlAssistentGruppe = " . (int)$kAuswahlAssistentGruppe, 3
+                    Shop::DB()->query("
+                        DELETE tag, taf, tao
+                            FROM tauswahlassistentgruppe tag
+                            LEFT JOIN tauswahlassistentfrage taf
+                                ON taf.kAuswahlAssistentGruppe = tag.kAuswahlAssistentGruppe
+                            LEFT JOIN tauswahlassistentort tao
+                                ON tao.kAuswahlAssistentGruppe = tag.kAuswahlAssistentGruppe
+                            WHERE tag.kAuswahlAssistentGruppe = " . (int)$kAuswahlAssistentGruppe, 3
                     );
                 }
 

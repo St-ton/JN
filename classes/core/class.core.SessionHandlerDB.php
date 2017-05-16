@@ -44,10 +44,12 @@ class SessionHandlerDB extends \JTL\core\SessionHandler implements SessionHandle
      */
     public function read($sessID)
     {
-        $res = Shop::DB()->query(
+        $res = Shop::DB()->executeQueryPrepared(
             "SELECT cSessionData FROM tsession
-                WHERE cSessionId = '{$sessID}'
-                AND nSessionExpires > " . time(), 1
+                WHERE cSessionId = :id
+                AND nSessionExpires > :time",
+            ['id' => $sessID, 'time' => time()],
+            1
         );
 
         return ($res !== false && isset($res->cSessionData)) ? $res->cSessionData : '';
@@ -99,12 +101,7 @@ class SessionHandlerDB extends \JTL\core\SessionHandler implements SessionHandle
     public function destroy($sessID)
     {
         //if session was deleted, return true,
-        if (Shop::DB()->query("DELETE FROM tsession WHERE cSessionId = '{$sessID}'", 3) > 0) {
-            return true;
-        }
-
-        //otherwise return false
-        return false;
+        return Shop::DB()->delete('tsession', 'cSessionId', $sessID) > 0;
     }
 
     /**

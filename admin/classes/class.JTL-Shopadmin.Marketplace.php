@@ -31,7 +31,7 @@ final class Marketplace
             throw new InvalidArgumentException('Paramter query must be an instance of MarketplaceQuery');
         }
         $url      = sprintf("%s?s=%s&c=marketplace%s", self::API_URL, self::API_TOKEN, $query);
-        $response = Communication::postData($url, array(), false);
+        $response = Communication::postData($url, [], false);
         if (!$response) {
             throw new UnexpectedValueException('Empty api response');
         }

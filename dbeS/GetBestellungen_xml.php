@@ -4,18 +4,21 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-require_once dirname(__FILE__) . '/syncinclude.php';
+require_once __DIR__ . '/syncinclude.php';
 
 $return  = 3;
 $xml_obj = [];
 if (auth()) {
     $return = 0;
     $oBestellung_arr = Shop::DB()->query(
-        "SELECT tbestellung.kBestellung, tbestellung.kWarenkorb, tbestellung.kKunde, tbestellung.kLieferadresse, tbestellung.kRechnungsadresse, 
-            tbestellung.kZahlungsart, tbestellung.kVersandart, tbestellung.kSprache, tbestellung.kWaehrung, '0' AS nZahlungsTyp, tbestellung.fGuthaben, 
-            tbestellung.cSession, tbestellung.cZahlungsartName, tbestellung.cBestellNr, tbestellung.cVersandInfo, tbestellung.dVersandDatum, tbestellung.cTracking, 
-            tbestellung.cKommentar, tbestellung.cAbgeholt, tbestellung.cStatus, date_format(tbestellung.dErstellt, \"%d.%m.%Y\") AS dErstellt_formatted, 
-            tbestellung.dErstellt, tzahlungsart.cModulId, tbestellung.cPUIZahlungsdaten, tbestellung.nLongestMinDelivery, tbestellung.nLongestMaxDelivery
+        "SELECT tbestellung.kBestellung, tbestellung.kWarenkorb, tbestellung.kKunde, tbestellung.kLieferadresse,
+            tbestellung.kRechnungsadresse,  tbestellung.kZahlungsart, tbestellung.kVersandart, tbestellung.kSprache, 
+            tbestellung.kWaehrung, '0' AS nZahlungsTyp, tbestellung.fGuthaben,  tbestellung.cSession, 
+            tbestellung.cZahlungsartName, tbestellung.cBestellNr, tbestellung.cVersandInfo, tbestellung.dVersandDatum, 
+            tbestellung.cTracking, tbestellung.cKommentar, tbestellung.cAbgeholt, tbestellung.cStatus, 
+            date_format(tbestellung.dErstellt, \"%d.%m.%Y\") AS dErstellt_formatted,  tbestellung.dErstellt, 
+            tzahlungsart.cModulId, tbestellung.cPUIZahlungsdaten, tbestellung.nLongestMinDelivery, 
+            tbestellung.nLongestMaxDelivery, tbestellung.fWaehrungsFaktor
             FROM tbestellung
             LEFT JOIN tzahlungsart
                 ON tzahlungsart.kZahlungsart = tbestellung.kZahlungsart
@@ -25,7 +28,9 @@ if (auth()) {
     );
 
     foreach ($oBestellung_arr as $i => $oBestellung) {
-        if (strlen($oBestellung['cPUIZahlungsdaten']) > 0 && preg_match('/^kPlugin_(\d+)_paypalexpress$/', $oBestellung['cModulId'], $matches)) {
+        if (strlen($oBestellung['cPUIZahlungsdaten']) > 0 &&
+            preg_match('/^kPlugin_(\d+)_paypalexpress$/', $oBestellung['cModulId'], $matches)
+        ) {
             $oBestellung_arr[$i]['cModulId'] = 'za_paypal_pui_jtl';
         }
 
@@ -71,9 +76,9 @@ if (auth()) {
             unset($oLieferadresse->angezeigtesLand);
             $xml_obj['bestellungen']['tbestellung'][$i]['tlieferadresse'] = $oLieferadresse->gibLieferadresseAssoc();
             // Work Around um der Wawi die ausgeschriebene Anrede mitzugeben
-            $xml_obj['bestellungen']['tbestellung'][$i]['tlieferadresse']['cAnrede'] = (isset($xml_obj['bestellungen']['tbestellung'][$i]['tlieferadresse']['cAnredeLocalized'])) ?
-                $xml_obj['bestellungen']['tbestellung'][$i]['tlieferadresse']['cAnredeLocalized'] :
-                null;
+            $xml_obj['bestellungen']['tbestellung'][$i]['tlieferadresse']['cAnrede'] = isset($xml_obj['bestellungen']['tbestellung'][$i]['tlieferadresse']['cAnredeLocalized']) 
+                ? $xml_obj['bestellungen']['tbestellung'][$i]['tlieferadresse']['cAnredeLocalized'] 
+                : null;
             $xml_obj['bestellungen']['tbestellung'][$i]['tlieferadresse attr']       = buildAttributes($xml_obj['bestellungen']['tbestellung'][$i]['tlieferadresse']);
             //Strasse und Hausnummer zusammenführen
             if (isset($xml_obj['bestellungen']['tbestellung'][$i]['tlieferadresse']['cHausnummer'])) {
@@ -96,40 +101,45 @@ if (auth()) {
                 "SELECT *
                     FROM tzahlungsinfo
                     WHERE kBestellung = " . (int)$xml_obj['bestellungen']['tbestellung'][$i . ' attr']['kBestellung'] . "
+                        AND cAbgeholt = 'N'
                     ORDER BY kZahlungsInfo DESC LIMIT 1", 8
             );
             // Entschlüsseln
-            $xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cBankName'] = (isset($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cBankName'])) ?
-                entschluesselXTEA($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cBankName']) :
-                null;
-            $xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cBLZ']      = (isset($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cBLZ'])) ?
-                entschluesselXTEA($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cBLZ']) :
-                null;
-            $xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cInhaber']  = (isset($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cInhaber'])) ?
-                entschluesselXTEA($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cInhaber']) :
-                null;
-            $xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cKontoNr']  = (isset($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cKontoNr'])) ?
-                entschluesselXTEA($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cKontoNr']) :
-                null;
-            $xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cIBAN']     = (isset($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cIBAN'])) ?
-                entschluesselXTEA($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cIBAN']) :
-                null;
-            $xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cBIC']      = (isset($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cBIC'])) ?
-                entschluesselXTEA($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cBIC']) :
-                null;
-            $xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cKartenNr'] = (isset($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cKartenNr'])) ?
-                entschluesselXTEA($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cKartenNr']) :
-                null;
-            $xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cCVV']      = (isset($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cCVV'])) ?
-                trim(entschluesselXTEA($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cCVV'])) :
-                null;
+            $xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cBankName'] = isset($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cBankName'])
+                ? entschluesselXTEA($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cBankName'])
+                : null;
+            $xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cBLZ']      = isset($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cBLZ'])
+                ? entschluesselXTEA($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cBLZ'])
+                : null;
+            $xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cInhaber']  = isset($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cInhaber'])
+                ? entschluesselXTEA($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cInhaber'])
+                : null;
+            $xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cKontoNr']  = isset($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cKontoNr'])
+                ? entschluesselXTEA($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cKontoNr'])
+                : null;
+            $xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cIBAN']     = isset($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cIBAN'])
+                ? entschluesselXTEA($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cIBAN'])
+                : null;
+            $xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cBIC']      = isset($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cBIC'])
+                ? entschluesselXTEA($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cBIC'])
+                : null;
+            $xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cKartenNr'] = isset($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cKartenNr'])
+                ? entschluesselXTEA($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cKartenNr'])
+                : null;
+            $xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cCVV']      = isset($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cCVV'])
+                ? trim(entschluesselXTEA($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cCVV']))
+                : null;
             if (strlen($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cCVV']) > 4) {
                 $xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cCVV'] = substr($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cCVV'], 0, 4);
             }
 
             $xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo attr'] = buildAttributes($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']);
-            unset($xml_obj['bestellungen']['tbestellung'][$i . ' attr']['kVersandArt']);
-            unset($xml_obj['bestellungen']['tbestellung'][$i . ' attr']['kWarenkorb']);
+            unset($xml_obj['bestellungen']['tbestellung'][$i . ' attr']['kVersandArt'], $xml_obj['bestellungen']['tbestellung'][$i . ' attr']['kWarenkorb']);
+
+            // Sicherstellen, dass fWaehrungsFaktor als letztes Element im XML steht
+            $tmpWaehrungsfaktor = $xml_obj['bestellungen']['tbestellung'][$i]['fWaehrungsFaktor'];
+            unset($xml_obj['bestellungen']['tbestellung'][$i]['fWaehrungsFaktor']);
+            $xml_obj['bestellungen']['tbestellung'][$i]['fWaehrungsFaktor'] = $tmpWaehrungsfaktor;
         }
     }
 }

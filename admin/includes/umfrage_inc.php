@@ -8,13 +8,15 @@
 define('UMFRAGE_MAXANZAHLANZEIGEN', 20);
 
 /**
+ * @deprecated since 4.06
+ *
  * @param string $string
  * @return string
  */
 function convertDate($string)
 {
     list($dDatum, $dZeit) = explode(' ', $string);
-    $exploded             = (explode(':', $dZeit));
+    $exploded             = explode(':', $dZeit);
     if (count($exploded) === 2) {
         list($nStunde, $nMinute) = $exploded;
     } else {
@@ -26,6 +28,8 @@ function convertDate($string)
 }
 
 /**
+ * @deprecated since 4.06
+ *
  * @param string $cDateTimeStr
  * @return stdClass
  */
@@ -87,13 +91,13 @@ function updateAntwortUndOption($kUmfrageFrage, $cTyp, $cNameOption_arr, $cNameA
 }
 
 /**
- * @param int    $kUmfrageFrage
- * @param string $cTyp
- * @param string $cNameOption
- * @param string $cNameAntwort
- * @param array  $nSortAntwort_arr
- * @param array  $nSortOption_arr
- * @param object $oAnzahlAUndOVorhanden
+ * @param int          $kUmfrageFrage
+ * @param string       $cTyp
+ * @param string|array $cNameOption
+ * @param string|array $cNameAntwort
+ * @param array        $nSortAntwort_arr
+ * @param array        $nSortOption_arr
+ * @param object       $oAnzahlAUndOVorhanden
  */
 function speicherAntwortZuFrage($kUmfrageFrage, $cTyp, $cNameOption, $cNameAntwort, $nSortAntwort_arr, $nSortOption_arr, $oAnzahlAUndOVorhanden)
 {
@@ -101,7 +105,8 @@ function speicherAntwortZuFrage($kUmfrageFrage, $cTyp, $cNameOption, $cNameAntwo
     switch ($cTyp) {
         case 'multiple_single':
             if (is_array($cNameAntwort) && count($cNameAntwort) > 0) {
-                for ($i = $oAnzahlAUndOVorhanden->nAnzahlAntworten; $i < count($cNameAntwort); $i++) {
+                $count = count($cNameAntwort);
+                for ($i = $oAnzahlAUndOVorhanden->nAnzahlAntworten; $i < $count; $i++) {
                     unset($oUmfrageFrageAntwort);
                     $oUmfrageFrageAntwort                = new stdClass();
                     $oUmfrageFrageAntwort->kUmfrageFrage = $kUmfrageFrage;
@@ -114,7 +119,8 @@ function speicherAntwortZuFrage($kUmfrageFrage, $cTyp, $cNameOption, $cNameAntwo
             break;
         case 'multiple_multi':
             if (is_array($cNameAntwort) && count($cNameAntwort) > 0) {
-                for ($i = $oAnzahlAUndOVorhanden->nAnzahlAntworten; $i < count($cNameAntwort); $i++) {
+                $count = count($cNameAntwort);
+                for ($i = $oAnzahlAUndOVorhanden->nAnzahlAntworten; $i < $count; $i++) {
                     unset($oUmfrageFrageAntwort);
                     $oUmfrageFrageAntwort                = new stdClass();
                     $oUmfrageFrageAntwort->kUmfrageFrage = $kUmfrageFrage;
@@ -127,7 +133,8 @@ function speicherAntwortZuFrage($kUmfrageFrage, $cTyp, $cNameOption, $cNameAntwo
             break;
         case 'select_single':
             if (is_array($cNameAntwort) && count($cNameAntwort) > 0) {
-                for ($i = $oAnzahlAUndOVorhanden->nAnzahlAntworten; $i < count($cNameAntwort); $i++) {
+                $count = count($cNameAntwort);
+                for ($i = $oAnzahlAUndOVorhanden->nAnzahlAntworten; $i < $count; $i++) {
                     unset($oUmfrageFrageAntwort);
                     $oUmfrageFrageAntwort                = new stdClass();
                     $oUmfrageFrageAntwort->kUmfrageFrage = $kUmfrageFrage;
@@ -140,7 +147,8 @@ function speicherAntwortZuFrage($kUmfrageFrage, $cTyp, $cNameOption, $cNameAntwo
             break;
         case 'select_multi':
             if (is_array($cNameAntwort) && count($cNameAntwort) > 0) {
-                for ($i = $oAnzahlAUndOVorhanden->nAnzahlAntworten; $i < count($cNameAntwort); $i++) {
+                $count = count($cNameAntwort);
+                for ($i = $oAnzahlAUndOVorhanden->nAnzahlAntworten; $i < $count; $i++) {
                     unset($oUmfrageFrageAntwort);
                     $oUmfrageFrageAntwort                = new stdClass();
                     $oUmfrageFrageAntwort->kUmfrageFrage = $kUmfrageFrage;
@@ -152,8 +160,9 @@ function speicherAntwortZuFrage($kUmfrageFrage, $cTyp, $cNameOption, $cNameAntwo
             }
             break;
         case 'matrix_single':
-            if (is_array($cNameAntwort) && count($cNameAntwort) > 0 && is_array($cNameOption) && count($cNameOption) > 0) {
-                for ($i = $oAnzahlAUndOVorhanden->nAnzahlAntworten; $i < count($cNameAntwort); $i++) {
+            if (is_array($cNameAntwort) && is_array($cNameOption) && count($cNameAntwort) > 0 && count($cNameOption) > 0) {
+                $count = count($cNameAntwort);
+                for ($i = $oAnzahlAUndOVorhanden->nAnzahlAntworten; $i < $count; $i++) {
                     unset($oUmfrageFrageAntwort);
                     $oUmfrageFrageAntwort                = new stdClass();
                     $oUmfrageFrageAntwort->kUmfrageFrage = $kUmfrageFrage;
@@ -162,8 +171,8 @@ function speicherAntwortZuFrage($kUmfrageFrage, $cTyp, $cNameOption, $cNameAntwo
 
                     Shop::DB()->insert('tumfragefrageantwort', $oUmfrageFrageAntwort);
                 }
-
-                for ($i = $oAnzahlAUndOVorhanden->nAnzahlOptionen; $i < count($cNameOption); $i++) {
+                $count = count($cNameOption);
+                for ($i = $oAnzahlAUndOVorhanden->nAnzahlOptionen; $i < $count; $i++) {
                     unset($matrixOpt);
                     $matrixOpt                = new stdClass();
                     $matrixOpt->kUmfrageFrage = $kUmfrageFrage;
@@ -175,8 +184,9 @@ function speicherAntwortZuFrage($kUmfrageFrage, $cTyp, $cNameOption, $cNameAntwo
             }
             break;
         case 'matrix_multi':
-            if (is_array($cNameAntwort) && count($cNameAntwort) > 0 && is_array($cNameOption) && count($cNameOption) > 0) {
-                for ($i = $oAnzahlAUndOVorhanden->nAnzahlAntworten; $i < count($cNameAntwort); $i++) {
+            if (is_array($cNameAntwort) && is_array($cNameOption) && count($cNameAntwort) > 0 && count($cNameOption) > 0) {
+                $count = count($cNameAntwort);
+                for ($i = $oAnzahlAUndOVorhanden->nAnzahlAntworten; $i < $count; $i++) {
                     unset($oUmfrageFrageAntwort);
                     $oUmfrageFrageAntwort                = new stdClass();
                     $oUmfrageFrageAntwort->kUmfrageFrage = $kUmfrageFrage;
@@ -185,8 +195,8 @@ function speicherAntwortZuFrage($kUmfrageFrage, $cTyp, $cNameOption, $cNameAntwo
 
                     Shop::DB()->insert('tumfragefrageantwort', $oUmfrageFrageAntwort);
                 }
-
-                for ($i = $oAnzahlAUndOVorhanden->nAnzahlOptionen; $i < count($cNameOption); $i++) {
+                $count = count($cNameOption);
+                for ($i = $oAnzahlAUndOVorhanden->nAnzahlOptionen; $i < $count; $i++) {
                     unset($matrixOpt);
                     $matrixOpt                = new stdClass();
                     $matrixOpt->kUmfrageFrage = $kUmfrageFrage;
@@ -228,7 +238,7 @@ function pruefeTyp($cTyp, $kUmfrageFrage)
 {
     $oUmfrageFrage = Shop::DB()->select('tumfragefrage', 'kUmfrageFrage', (int)$kUmfrageFrage);
     // Wenn sich der Typ geändert hat, dann return false
-    return ($cTyp == $oUmfrageFrage->cTyp);
+    return $cTyp === $oUmfrageFrage->cTyp;
 }
 
 /**
@@ -365,7 +375,7 @@ function holeUmfrageStatistik($kUmfrage)
                         if (is_array($matrixOpt_arr) && count($matrixOpt_arr) > 0) {
                             foreach ($matrixOpt_arr as $matrixOpt) {
                                 $nMaxAntworten = 0;
-                                if (is_array($matrixOpt_arr) && is_array($oUmfrageFrageAntwort_arr) > 0) {
+                                if (is_array($oUmfrageFrageAntwort_arr)) {
                                     //max ermitteln
                                     foreach ($oUmfrageFrageAntwort_arr as $oUmfrageFrageAntwort) {
                                         if ($oErgebnisMatrix_arr[$oUmfrageFrageAntwort->kUmfrageFrageAntwort][$matrixOpt->kUmfrageMatrixOption]->nAnzahl > $nMaxAntworten) {
@@ -413,13 +423,13 @@ function holeUmfrageStatistik($kUmfrage)
                                             LIMIT " . UMFRAGE_MAXANZAHLANZEIGEN . ", " . count($oUmfrageFrageAntwort_arr) . "
                                      ) AS b", 1
                             );
-                            if (isset($oUmfrageFrageAntwortTMP->nAnzahlAntwort) && intval($oUmfrageFrageAntwortTMP->nAnzahlAntwort) > 0) {
-                                $oUmfrageStats->oUmfrageFrage_arr[$i]->nAnzahlAntworten += intval($oUmfrageFrageAntwortTMP->nAnzahlAntwort);
+                            if (isset($oUmfrageFrageAntwortTMP->nAnzahlAntwort) && (int)$oUmfrageFrageAntwortTMP->nAnzahlAntwort > 0) {
+                                $oUmfrageStats->oUmfrageFrage_arr[$i]->nAnzahlAntworten += (int)$oUmfrageFrageAntwortTMP->nAnzahlAntwort;
                                 $oTMP        = new stdClass();
                                 $oTMP->cName = '<a href="umfrage.php?umfrage=1&uf=' . $oUmfrageFrage->kUmfrageFrage . '&aa=' . $oUmfrageStats->oUmfrageFrage_arr[$i]->nAnzahlAntworten .
                                     '&ma=' . count($oUmfrageFrageAntwort_arr) . '&a=zeige_sonstige">Sonstige</a>';
                                 $oTMP->nAnzahlAntwort = $oUmfrageFrageAntwortTMP->nAnzahlAntwort;
-                                $oTMP->fProzent       = round(($oUmfrageFrageAntwortTMP->nAnzahlAntwort / ($oUmfrageStats->oUmfrageFrage_arr[$i]->nAnzahlAntworten)) * 100, 1);
+                                $oTMP->fProzent       = round(($oUmfrageFrageAntwortTMP->nAnzahlAntwort / $oUmfrageStats->oUmfrageFrage_arr[$i]->nAnzahlAntworten) * 100, 1);
                             }
                             $oUmfrageStats->oUmfrageFrage_arr[$i]->oUmfrageFrageAntwort_arr = [];
                             //$oUmfrageStats->oUmfrageFrage_arr[$i]->nAnzahlAntworten = count($oUmfrageFrageAntwort_arr);
@@ -432,7 +442,7 @@ function holeUmfrageStatistik($kUmfrage)
                                 }
                             }
                             // Sontiges Element (falls vorhanden) dem Antworten Array hinzufügen
-                            if (isset($oUmfrageFrageAntwortTMP->nAnzahlAntwort) && intval($oUmfrageFrageAntwortTMP->nAnzahlAntwort) > 0) {
+                            if (isset($oUmfrageFrageAntwortTMP->nAnzahlAntwort) && (int)$oUmfrageFrageAntwortTMP->nAnzahlAntwort > 0) {
                                 $oUmfrageStats->oUmfrageFrage_arr[$i]->oUmfrageFrageAntwort_arr[] = $oTMP;
                             }
                         } else {
@@ -471,11 +481,10 @@ function holeUmfrageStatistik($kUmfrage)
 
                             if (is_array($oUmfrageStats->oUmfrageFrage_arr[$i]->oUmfrageFrageAntwort_arr) && count($oUmfrageStats->oUmfrageFrage_arr[$i]->oUmfrageFrageAntwort_arr) > 0) {
                                 foreach ($oUmfrageStats->oUmfrageFrage_arr[$i]->oUmfrageFrageAntwort_arr as $j => $oUmfrageFrageAntwort) {
+                                    $oUmfrageStats->oUmfrageFrage_arr[$i]->oUmfrageFrageAntwort_arr[$j]->fProzent = 0.0;
                                     if ($oUmfrageStats->oUmfrageFrage_arr[$i]->nAnzahlAntworten > 0) {
                                         $oUmfrageStats->oUmfrageFrage_arr[$i]->oUmfrageFrageAntwort_arr[$j]->fProzent =
                                             round(($oUmfrageFrageAntwort->nAnzahlAntwort / $oUmfrageStats->oUmfrageFrage_arr[$i]->nAnzahlAntworten) * 100, 1);
-                                    } else {
-                                        $oUmfrageStats->oUmfrageFrage_arr[$i]->oUmfrageFrageAntwort_arr[$j]->fProzent = 0.0;
                                     }
                                 }
                             }

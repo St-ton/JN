@@ -17,7 +17,7 @@ class AdminSession
     /**
      * @var AdminSession
      */
-    private static $_instance = null;
+    private static $_instance;
 
     /**
      * @return AdminSession
@@ -32,14 +32,8 @@ class AdminSession
      */
     public function __construct()
     {
-        session_write_close(); // save previously created session
         self::$_instance = $this;
         session_name('eSIdAdm');
-
-        // if a session id came as cookie, set it as the current one
-        if (isset($_COOKIE['eSIdAdm'])) {
-            session_id($_COOKIE['eSIdAdm']);
-        }
 
         if (ES_SESSIONS === 1) {
             // Sessions in DB speichern
@@ -57,11 +51,11 @@ class AdminSession
         $conf           = Shop::getSettings([CONF_GLOBAL]);
         $cookieDefaults = session_get_cookie_params();
         $set            = false;
-        $lifetime       = (isset($cookieDefaults['lifetime'])) ? $cookieDefaults['lifetime'] : 0;
-        $path           = (isset($cookieDefaults['path'])) ? $cookieDefaults['path'] : '';
-        $domain         = (isset($cookieDefaults['domain'])) ? $cookieDefaults['domain'] : '';
-        $secure         = (isset($cookieDefaults['secure'])) ? $cookieDefaults['secure'] : false;
-        $httpOnly       = (isset($cookieDefaults['httponly'])) ? $cookieDefaults['httponly'] : false;
+        $lifetime       = isset($cookieDefaults['lifetime']) ? $cookieDefaults['lifetime'] : 0;
+        $path           = isset($cookieDefaults['path']) ? $cookieDefaults['path'] : '';
+        $domain         = isset($cookieDefaults['domain']) ? $cookieDefaults['domain'] : '';
+        $secure         = isset($cookieDefaults['secure']) ? $cookieDefaults['secure'] : false;
+        $httpOnly       = isset($cookieDefaults['httponly']) ? $cookieDefaults['httponly'] : false;
         if (isset($conf['global']['global_cookie_secure']) && $conf['global']['global_cookie_secure'] !== 'S') {
             $set    = true;
             $secure = $conf['global']['global_cookie_secure'] === 'Y';
@@ -103,7 +97,7 @@ class AdminSession
         }
         if (!isset($_SESSION['kSprache'])) {
             $lang                 = Shop::DB()->select('tsprache', 'cISO', 'ger');
-            $_SESSION['kSprache'] = (isset($lang->kSprache)) ? (int)$lang->kSprache : 1;
+            $_SESSION['kSprache'] = isset($lang->kSprache) ? (int)$lang->kSprache : 1;
         }
     }
 
@@ -146,7 +140,7 @@ class AdminSession
             1
         );
 
-        return (isset($res->cSessionData)) ? $res->cSessionData : '';
+        return isset($res->cSessionData) ? $res->cSessionData : '';
     }
 
     /**

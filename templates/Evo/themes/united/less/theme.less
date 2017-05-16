@@ -9,7 +9,15 @@
 // Bootswatch
 // -----------------------------------------------------
 
-@import url("//fonts.googleapis.com/css?family=Ubuntu");
+//import via CDN
+//@import url("//fonts.googleapis.com/css?family=Ubuntu");
+//import local files
+@font-face {
+  font-family: 'Ubuntu';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Ubuntu'), url('@{icon-font-path}ubuntu/Ubuntu-Regular.ttf') format('truetype');
+}
 
 // Navbar =====================================================================
 

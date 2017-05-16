@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-require_once dirname(__FILE__) . '/NetSync_inc.php';
+require_once __DIR__ . '/NetSync_inc.php';
 
 /**
  * Class ArticleDownloads
@@ -16,15 +16,6 @@ class ArticleDownloads extends NetSyncHandler
      */
     protected function init()
     {
-    }
-
-    /**
-     * @param $oException
-     */
-    public static function exception($oException)
-    {
-        // parent::exception($oException);
-        var_dump($oException);
     }
 
     /**
@@ -40,7 +31,7 @@ class ArticleDownloads extends NetSyncHandler
                 break;
 
             case NetSyncRequest::DownloadFilesInFolder:
-                $bPreview = intval($_POST['bPreview']);
+                $bPreview = (int)$_POST['bPreview'];
                 if (!isset($_POST['cBasePath']) || empty($_POST['cBasePath'])) {
                     $_POST['cBasePath'] = $bPreview ? PFAD_DOWNLOADS_PREVIEW : PFAD_DOWNLOADS;
                 }

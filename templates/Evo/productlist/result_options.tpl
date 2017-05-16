@@ -25,7 +25,8 @@
                     <option value="90"{if isset($smarty.session.ArtikelProSeite) && $smarty.session.ArtikelProSeite == 90} selected="selected"{/if}>90 {lang key="productsPerPage" section="productOverview"}</option>
                 </select>
             </div>
-            {if isset($oErweiterteDarstellung) && isset($Einstellungen.artikeluebersicht.artikeluebersicht_erw_darstellung) && $Einstellungen.artikeluebersicht.artikeluebersicht_erw_darstellung === 'Y'}
+            {if isset($oErweiterteDarstellung) && isset($Einstellungen.artikeluebersicht.artikeluebersicht_erw_darstellung) &&
+            $Einstellungen.artikeluebersicht.artikeluebersicht_erw_darstellung === 'Y' && empty($AktuelleKategorie->categoryFunctionAttributes['darstellung'])}
                 <div class="btn-group">
                     <a href="{$oErweiterteDarstellung->cURL_arr[1]}" id="ed_list" class="btn btn-default btn-option ed list {if $oErweiterteDarstellung->nDarstellung == 1}active{/if}" role="button" title="{lang key="list" section="productOverview"}"><span class="fa fa-th-list"></span></a>
                     <a href="{$oErweiterteDarstellung->cURL_arr[2]}" id="ed_gallery" class="btn btn-default btn-option ed gallery {if $oErweiterteDarstellung->nDarstellung == 2}active{/if}" role="button" title="{lang key="gallery" section="productOverview"}"><span class="fa fa-th-large"></span></a>
@@ -83,13 +84,7 @@
                         {/foreach}
                         {/block}
                     {/if}{* /merkmalfilter *}
-                    {if isset($Suchergebnisse->Suchspecialauswahl) && (
-                    (isset($Suchergebnisse->Suchspecialauswahl[1]->nAnzahl) && $Suchergebnisse->Suchspecialauswahl[1]->nAnzahl > 0) ||
-                    (isset($Suchergebnisse->Suchspecialauswahl[2]->nAnzahl) && $Suchergebnisse->Suchspecialauswahl[2]->nAnzahl > 0) ||
-                    (isset($Suchergebnisse->Suchspecialauswahl[3]->nAnzahl) && $Suchergebnisse->Suchspecialauswahl[3]->nAnzahl > 0) ||
-                    (isset($Suchergebnisse->Suchspecialauswahl[4]->nAnzahl) && $Suchergebnisse->Suchspecialauswahl[4]->nAnzahl > 0) ||
-                    (isset($Suchergebnisse->Suchspecialauswahl[5]->nAnzahl) && $Suchergebnisse->Suchspecialauswahl[5]->nAnzahl > 0) ||
-                    (isset($Suchergebnisse->Suchspecialauswahl[6]->nAnzahl) && $Suchergebnisse->Suchspecialauswahl[6]->nAnzahl > 0))}
+                    {if !empty($Suchergebnisse->Suchspecialauswahl)}
                         <div class="form-group dropdown filter-type-special">
                             <a href="#" class="btn btn-default dropdown-toggle form-control" data-toggle="dropdown" role="button" aria-expanded="false">
                                 {lang key="specificProducts" section="global"} <span class="caret"></span>

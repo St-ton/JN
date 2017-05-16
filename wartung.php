@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/globalinclude.php';
+require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
 /** @global JTLSmarty $smarty */
 $AktuelleSeite = 'WARTUNG';
@@ -22,7 +22,7 @@ if ($Einstellungen['global']['wartungsmodus_aktiviert'] === 'N') {
 Shop::setPageType(PAGE_WARTUNG);
 if (isset($Link)) {
     $requestURL = baueURL($Link, URLART_SEITE);
-    $sprachURL  = (isset($Link->languageURLs))
+    $sprachURL  = isset($Link->languageURLs)
         ? $Link->languageURLs
         : baueSprachURLS($Link, URLART_SEITE);
 }

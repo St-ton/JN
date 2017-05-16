@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/globalinclude.php';
+require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'news_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'seite_inc.php';
@@ -16,8 +16,6 @@ if (Shop::$directEntry === true) {
 } else {
     $cParameter_arr = [];
 }
-
-loeseHttps();
 $cHinweis               = '';
 $cFehler                = '';
 $step                   = 'news_uebersicht';
@@ -31,7 +29,7 @@ $Einstellungen          = Shop::getSettings([
     CONF_NEWS,
     CONF_KONTAKTFORMULAR
 ]);
-$nAktuelleSeite         = (isset(Shop::$kSeite) && Shop::$kSeite > 0) ? Shop::$kSeite : 1;
+$nAktuelleSeite         = (Shop::$kSeite !== null && Shop::$kSeite > 0) ? Shop::$kSeite : 1;
 $oNewsUebersicht_arr    = [];
 $linkHelper             = LinkHelper::getInstance();
 $kLink                  = $linkHelper->getSpecialPageLinkKey(LINKTYP_NEWS);
@@ -56,7 +54,7 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
         $_SESSION['NewsNaviFilter']->cDatum = (count($_date) > 1)
             ? StringHandler::filterXSS($cParameter_arr['cDatum'])
             : -1;
-    } elseif (intval($cParameter_arr['cDatum']) === -1) {
+    } elseif ((int)$cParameter_arr['cDatum'] === -1) {
         $_SESSION['NewsNaviFilter']->cDatum = -1;
     }
     if ($cParameter_arr['nNewsKat'] > 0) {
@@ -64,11 +62,12 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
     } elseif ($cParameter_arr['nNewsKat'] === -1) {
         $_SESSION['NewsNaviFilter']->nNewsKat = -1;
     }
-    if ($cParameter_arr['kNews'] > 0 || isset($kNews) && $kNews > 0) { // Detailansicht anzeigen
+    if ($cParameter_arr['kNews'] > 0 || (isset($kNews) && $kNews > 0)) {
+        // Detailansicht anzeigen
         Shop::$AktuelleSeite = 'NEWSDETAIL';
         $AktuelleSeite       = 'NEWSDETAIL';
         $step                = 'news_detailansicht';
-        if (!isset($kNews) || $kNews == 0) {
+        if (empty($kNews)) {
             $kNews = $cParameter_arr['kNews'];
         }
         $oNewsArchiv = getNewsArchive($kNews, true);
@@ -79,13 +78,13 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
                 $smarty->assign('oNewsArchiv', $oNewsArchiv);
             }
             // Metas
-            $cMetaTitle         = (isset($oNewsArchiv->cMetaTitle))
+            $cMetaTitle         = isset($oNewsArchiv->cMetaTitle)
                 ? $oNewsArchiv->cMetaTitle
                 : '';
-            $cMetaDescription   = (isset($oNewsArchiv->cMetaDescription))
+            $cMetaDescription   = isset($oNewsArchiv->cMetaDescription)
                 ? $oNewsArchiv->cMetaDescription
                 : '';
-            $cMetaKeywords      = (isset($oNewsArchiv->cMetaKeywords))
+            $cMetaKeywords      = isset($oNewsArchiv->cMetaKeywords)
                 ? $oNewsArchiv->cMetaKeywords
                 : '';
             $oNewsKategorie_arr = getNewsCategory($kNews);
@@ -99,16 +98,15 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
                    ->assign('oNewsKategorie_arr', $oNewsKategorie_arr);
 
             // Kommentar hinzufügen
-            if (isset($_POST['kommentar_einfuegen']) &&
-                intval($_POST['kommentar_einfuegen']) > 0 &&
-                isset($Einstellungen['news']['news_kommentare_nutzen']) &&
+            if (isset($_POST['kommentar_einfuegen'], $Einstellungen['news']['news_kommentare_nutzen']) &&
+                (int)$_POST['kommentar_einfuegen'] > 0 &&
                 $Einstellungen['news']['news_kommentare_nutzen'] === 'Y'
             ) {
                 // Plausi
                 $nPlausiValue_arr = pruefeKundenKommentar(
-                    (isset($_POST['cKommentar'])) ? $_POST['cKommentar'] : '',
-                    (isset($_POST['cName'])) ? $_POST['cName'] : null,
-                    (isset($_POST['cEmail'])) ? $_POST['cEmail'] : null,
+                    isset($_POST['cKommentar']) ? $_POST['cKommentar'] : '',
+                    isset($_POST['cName']) ? $_POST['cName'] : null,
+                    isset($_POST['cEmail']) ? $_POST['cEmail'] : null,
                     $kNews,
                     $Einstellungen
                 );
@@ -147,13 +145,13 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
                     }
                 } elseif ($Einstellungen['news']['news_kommentare_eingeloggt'] === 'N') {
                     if (is_array($nPlausiValue_arr) && count($nPlausiValue_arr) === 0) {
-                        $cEmail = (isset($_POST['cEmail'])) ? $_POST['cEmail'] : null;
+                        $cEmail = isset($_POST['cEmail']) ? $_POST['cEmail'] : null;
                         if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
                             $cEmail = $_SESSION['Kunde']->cMail;
                         }
                         $oNewsKommentar         = new stdClass();
                         $oNewsKommentar->kNews  = (int)$_POST['kNews'];
-                        $oNewsKommentar->kKunde = (isset($_SESSION['Kunde']->kKunde))
+                        $oNewsKommentar->kKunde = isset($_SESSION['Kunde']->kKunde)
                             ? $_SESSION['Kunde']->kKunde
                             : 0;
                         $oNewsKommentar->nAktiv = ($Einstellungen['news']['news_kommentare_freischalten'] === 'Y')
@@ -314,8 +312,12 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
         // News total count
         $oNewsUebersichtAll = getFullNewsOverview($oSQL);
         // Pagination
-        $oPagination = (new Pagination())
-            ->setItemsPerPageOptions([2, 5, 10])
+        $newsCountShow = isset($Einstellungen['news']['news_anzahl_uebersicht'])
+                && (int)$Einstellungen['news']['news_anzahl_uebersicht'] > 0
+            ? (int)$Einstellungen['news']['news_anzahl_uebersicht']
+            : 10;
+        $oPagination   = (new Pagination())
+            ->setItemsPerPageOptions([$newsCountShow, $newsCountShow * 2, $newsCountShow * 5])
             ->setDefaultItemsPerPage(0)
             ->setItemCount($oNewsUebersichtAll->nAnzahl)
             ->assemble();
@@ -323,6 +325,7 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
         $oNewsUebersicht_arr = getNewsOverview($oSQL, $oPagination->getLimitSQL());
         $oDatum_arr          = getNewsDateArray($oSQL);
         $cKeywords           = '';
+        $shopURL             = Shop::getURL() . '/';
         if (is_array($oNewsUebersicht_arr) && count($oNewsUebersicht_arr) > 0) {
             foreach ($oNewsUebersicht_arr as $i => $oNewsUebersicht) {
                 if ($i > 0) {
@@ -330,7 +333,7 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
                 } else {
                     $cKeywords .= $oNewsUebersicht->cBetreff;
                 }
-                $oNewsUebersicht_arr[$i]->cPreviewImageFull = (empty($oNewsUebersicht_arr[$i]->cPreviewImage))
+                $oNewsUebersicht_arr[$i]->cPreviewImageFull = empty($oNewsUebersicht_arr[$i]->cPreviewImage)
                     ? ''
                     : $shopURL . $oNewsUebersicht_arr[$i]->cPreviewImage;
                 $oNewsUebersicht_arr[$i]->cText             = parseNewsText($oNewsUebersicht_arr[$i]->cText);
@@ -376,7 +379,7 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
            ->assign('hinweis', $cHinweis)
            ->assign('fehler', $cFehler)
            ->assign('step', $step)
-           ->assign('code_news', generiereCaptchaCode((isset($Einstellungen['news']['news_sicherheitscode']))
+           ->assign('code_news', generiereCaptchaCode(isset($Einstellungen['news']['news_sicherheitscode'])
                ? $Einstellungen['news']['news_sicherheitscode']
                : 'N')
            );
@@ -390,7 +393,7 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
 } else {
     $oLink                   = Shop::DB()->select('tlink', 'nLinkart', LINKTYP_404);
     $bFileNotFound           = true;
-    Shop::$kLink             = $oLink->kLink;
+    Shop::$kLink             = (int)$oLink->kLink;
     Shop::$bFileNotFound     = true;
     Shop::$is404             = true;
     $cParameter_arr['is404'] = true;

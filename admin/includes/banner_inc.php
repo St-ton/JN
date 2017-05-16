@@ -43,7 +43,7 @@ function entferneBanner($kImageMap)
 {
     $kImageMap = (int)$kImageMap;
     $oBanner   = new ImageMap();
-    Shop::DB()->delete('textensionpoint', array('cClass', 'kInitial'), array('ImageMap', $kImageMap));
+    Shop::DB()->delete('textensionpoint', ['cClass', 'kInitial'], ['ImageMap', $kImageMap]);
 
     return $oBanner->delete($kImageMap);
 }
@@ -53,7 +53,7 @@ function entferneBanner($kImageMap)
  */
 function holeBannerDateien()
 {
-    $cBannerFile_arr = array();
+    $cBannerFile_arr = [];
     if (($nHandle = opendir(PFAD_ROOT . PFAD_BILDER_BANNER)) !== false) {
         while (false !== ($cFile = readdir($nHandle))) {
             if ($cFile !== '.' && $cFile !== '..' && $cFile[0] !== '.') {

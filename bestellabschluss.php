@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/globalinclude.php';
+require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellabschluss_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'warenkorb_inc.php';
@@ -82,7 +82,7 @@ if (isset($_GET['i'])) {
             $bestellid  = (isset($bestellung->kBestellung) && $bestellung->kBestellung > 0)
                 ? Shop::DB()->select('tbestellid', 'kBestellung', $bestellung->kBestellung)
                 : false;
-            if (is_null($bestellung->Lieferadresse) &&
+            if ($bestellung->Lieferadresse === null &&
                 isset($_SESSION['Lieferadresse']) &&
                 strlen($_SESSION['Lieferadresse']->cVorname) > 0
             ) {
@@ -120,13 +120,13 @@ $smarty->assign('Navigation', createNavigation($AktuelleSeite))
        ->assign('WarensummeLocalized', $_SESSION['Warenkorb']->gibGesamtsummeWarenLocalized())
        ->assign('Einstellungen', $Einstellungen)
        ->assign('Bestellung', $bestellung)
-       ->assign('Kunde', (isset($_SESSION['Kunde'])) ? $_SESSION['Kunde'] : null)
+       ->assign('Kunde', isset($_SESSION['Kunde']) ? $_SESSION['Kunde'] : null)
        ->assign('bOrderConf', true)
        ->assign('C_WARENKORBPOS_TYP_ARTIKEL', C_WARENKORBPOS_TYP_ARTIKEL)
        ->assign('C_WARENKORBPOS_TYP_GRATISGESCHENK', C_WARENKORBPOS_TYP_GRATISGESCHENK);
 
 // Plugin Zahlungsmethode beachten
-$kPlugin = (isset($bestellung->Zahlungsart->cModulId)) ? gibkPluginAuscModulId($bestellung->Zahlungsart->cModulId) : 0;
+$kPlugin = isset($bestellung->Zahlungsart->cModulId) ? gibkPluginAuscModulId($bestellung->Zahlungsart->cModulId) : 0;
 if ($kPlugin > 0) {
     $oPlugin = new Plugin($kPlugin);
     $smarty->assign('oPlugin', $oPlugin);

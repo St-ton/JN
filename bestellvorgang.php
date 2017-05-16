@@ -3,12 +3,16 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/globalinclude.php';
+require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'trustedshops_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
+require_once PFAD_ROOT . PFAD_INCLUDES . 'wunschliste_inc.php';
+require_once PFAD_ROOT . PFAD_INCLUDES . 'jtl_inc.php';
+
 /** @global JTLSmarty $smarty */
+
 $AktuelleSeite = 'BESTELLVORGANG';
 $Einstellungen = Shop::getSettings([
     CONF_GLOBAL,
@@ -21,12 +25,12 @@ $Einstellungen = Shop::getSettings([
 ]);
 Shop::setPageType(PAGE_BESTELLVORGANG);
 $step    = 'accountwahl';
-$hinweis = '';
+$cHinweis = '';
 // Kill Ajaxcheckout falls vorhanden
 unset($_SESSION['ajaxcheckout']);
 // Loginbenutzer?
 if (isset($_POST['login']) && (int)$_POST['login'] === 1) {
-    fuehreLoginAus($_POST['userLogin'], $_POST['passLogin']);
+    fuehreLoginAus($_POST['email'], $_POST['passwort']);
 }
 if (verifyGPCDataInteger('basket2Pers') === 1) {
     require_once PFAD_ROOT . PFAD_INCLUDES . 'jtl_inc.php';
@@ -36,21 +40,17 @@ if (verifyGPCDataInteger('basket2Pers') === 1) {
     exit();
 }
 // Ist Bestellung moeglich?
-if ($_SESSION['Warenkorb']->istBestellungMoeglich() != 10) {
+if ($_SESSION['Warenkorb']->istBestellungMoeglich() !== 10) {
     pruefeBestellungMoeglich();
 }
 // Pflicht-Uploads vorhanden?
-if (class_exists('Upload')) {
-    if (!Upload::pruefeWarenkorbUploads($_SESSION['Warenkorb'])) {
-        Upload::redirectWarenkorb(UPLOAD_ERROR_NEED_UPLOAD);
-    }
+if (class_exists('Upload') && !Upload::pruefeWarenkorbUploads($_SESSION['Warenkorb'])) {
+    Upload::redirectWarenkorb(UPLOAD_ERROR_NEED_UPLOAD);
 }
 // Download-Artikel vorhanden?
-if (class_exists('Download')) {
-    if (Download::hasDownloads($_SESSION['Warenkorb'])) {
-        // Nur registrierte Benutzer
-        $Einstellungen['kaufabwicklung']['bestellvorgang_unregistriert'] = 'N';
-    }
+if (class_exists('Download') && Download::hasDownloads($_SESSION['Warenkorb'])) {
+    // Nur registrierte Benutzer
+    $Einstellungen['kaufabwicklung']['bestellvorgang_unregistriert'] = 'N';
 }
 // oneClick? Darf nur einmal ausgeführt werden und nur dann, wenn man vom Warenkorb kommt.
 if ($Einstellungen['kaufabwicklung']['bestellvorgang_kaufabwicklungsmethode'] === 'NO' &&
@@ -61,10 +61,10 @@ if ($Einstellungen['kaufabwicklung']['bestellvorgang_kaufabwicklungsmethode'] ==
         $kKunde = $_SESSION['Kunde']->kKunde;
     }
     $oWarenkorbPers = new WarenkorbPers($kKunde);
-    if (!(count($oWarenkorbPers->oWarenkorbPersPos_arr) > 0 &&
-        isset($_POST['login']) && (int)$_POST['login'] === 1 &&
+    if (!(isset($_POST['login']) && (int)$_POST['login'] === 1 &&
         $Einstellungen['global']['warenkorbpers_nutzen'] === 'Y' &&
-        $Einstellungen['kaufabwicklung']['warenkorb_warenkorb2pers_merge'] === 'P')
+        $Einstellungen['kaufabwicklung']['warenkorb_warenkorb2pers_merge'] === 'P' &&
+        count($oWarenkorbPers->oWarenkorbPersPos_arr) > 0)
     ) {
         pruefeAjaxEinKlick();
     }
@@ -72,11 +72,8 @@ if ($Einstellungen['kaufabwicklung']['bestellvorgang_kaufabwicklungsmethode'] ==
 if (verifyGPCDataInteger('wk') === 1) {
     resetNeuKundenKupon();
 }
-//https? wenn erwuenscht reload mit https
-pruefeHttps();
-
 if (isset($_POST['versandartwahl']) && (int)$_POST['versandartwahl'] === 1) {
-    pruefeVersandartWahl((isset($_POST['Versandart'])) ? $_POST['Versandart'] : null);
+    pruefeVersandartWahl(isset($_POST['Versandart']) ? $_POST['Versandart'] : null);
 }
 if (isset($_POST['unreg_form']) && (int)$_POST['unreg_form'] === 1 &&
     $Einstellungen['kaufabwicklung']['bestellvorgang_unregistriert'] === 'Y'
@@ -96,16 +93,14 @@ if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']) {
     $step = 'Lieferadresse';
 }
 //Download-Artikel vorhanden?
-if (class_exists('Download')) {
-    if (Download::hasDownloads($_SESSION['Warenkorb'])) {
-        // Falls unregistrierter Kunde bereits im Checkout war und einen Downloadartikel hinzugefuegt hat
-        if ((!isset($_SESSION['Kunde']->cPasswort) || strlen($_SESSION['Kunde']->cPasswort) === 0) &&
-            $step !== 'accountwahl'
-        ) {
-            $step = 'accountwahl';
-            unset($_SESSION['Kunde']);
-        }
-    }
+if ($step !== 'accountwahl' &&
+    class_exists('Download') &&
+    Download::hasDownloads($_SESSION['Warenkorb']) &&
+    (!isset($_SESSION['Kunde']->cPasswort) || strlen($_SESSION['Kunde']->cPasswort) === 0)
+) {
+    // Falls unregistrierter Kunde bereits im Checkout war und einen Downloadartikel hinzugefuegt hat
+    $step = 'accountwahl';
+    unset($_SESSION['Kunde']);
 }
 //autom. step ermitteln
 pruefeVersandkostenStep();
@@ -171,6 +166,7 @@ if (isset($_SESSION['Zahlungsart']) &&
     $_SESSION['Zahlungsart']->cModulId === 'za_billpay_jtl' &&
     $step === 'Bestaetigung'
 ) {
+    /** @var Billpay $paymentMethod */
     $paymentMethod = PaymentMethod::create('za_billpay_jtl');
     $paymentMethod->handleConfirmation();
 }
@@ -189,7 +185,7 @@ $smarty->assign('Navigation', createNavigation($AktuelleSeite))
        ->assign('Ueberschrift', Shop::Lang()->get('orderStep0Title', 'checkout'))
        ->assign('UeberschriftKlein', Shop::Lang()->get('orderStep0Title2', 'checkout'))
        ->assign('Einstellungen', $Einstellungen)
-       ->assign('hinweis', $hinweis)
+       ->assign('hinweis', $cHinweis)
        ->assign('step', $step)
        ->assign('WarensummeLocalized', $_SESSION['Warenkorb']->gibGesamtsummeWarenLocalized())
        ->assign('Warensumme', $_SESSION['Warenkorb']->gibGesamtsummeWaren())

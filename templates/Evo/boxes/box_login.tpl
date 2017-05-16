@@ -1,6 +1,6 @@
 <section class="panel panel-default box box-login" id="sidebox{$oBox->kBox}">
     <div class="panel-heading">
-        <h5 class="panel-title">{if !isset($smarty.session.Kunde) || $smarty.session.Kunde->kKunde == 0}{lang key="login" section="global"}{else}{lang key="hello" section="global"}, {$smarty.session.Kunde->cVorname} {$smarty.session.Kunde->cNachname}{/if}</h5>
+        <h5 class="panel-title">{if empty($smarty.session.Kunde)}{lang key="login" section="global"}{else}{lang key="hello" section="global"}, {$smarty.session.Kunde->cVorname} {$smarty.session.Kunde->cNachname}{/if}</h5>
     </div>
     <div class="panel-body">
         {if empty($smarty.session.Kunde->kKunde)}
@@ -9,7 +9,7 @@
                 {$jtl_token}
                 <div class="form-group required">
                     <label for="email" class="control-label">{lang key="emailadress" section="global"}</label>
-                    <input type="text" name="email" id="email" class="form-control" placeholder="{lang key="emailadress" section="global"}" required />
+                    <input type="email" name="email" id="email" class="form-control" placeholder="{lang key="emailadress" section="global"}" required />
                 </div>
                 <div class="form-group required">
                     <label for="password" class="control-label">{lang key="password" section="account data"}</label>
@@ -17,10 +17,8 @@
                 </div>
 
                 {if isset($showLoginCaptcha) && $showLoginCaptcha}
-                    {*@todo: remove/use reCaptcha*}
                     <div class="form-group text-center float-label-control">
-                        <img src="{$code_login->codeURL}" alt="Captcha" />
-                        <input type="text" name="code_login" id="code_login" class="form-control" placeholder="{lang key="code" section="global"}*" />
+                        <div class="g-recaptcha" data-sitekey="{$Einstellungen.global.global_google_recaptcha_public}" data-callback="captcha_filled"></div>
                     </div>
                 {/if}
 

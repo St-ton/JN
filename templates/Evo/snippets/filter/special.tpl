@@ -1,5 +1,5 @@
 <ul class="{if isset($class)}{$class}{else}nav nav-list{/if}">
-    {if $Suchergebnisse->Suchspecialauswahl[1]->nAnzahl > 0}
+    {if !empty($Suchergebnisse->Suchspecialauswahl[1]) && $Suchergebnisse->Suchspecialauswahl[1]->nAnzahl > 0}
         <li>
             <a href="{$Suchergebnisse->Suchspecialauswahl[1]->cURL}" rel="nofollow">
                 <span class="value">
@@ -9,7 +9,7 @@
             </a>
         </li>
     {/if}
-    {if $Suchergebnisse->Suchspecialauswahl[2]->nAnzahl > 0}
+    {if !empty($Suchergebnisse->Suchspecialauswahl[2]) && $Suchergebnisse->Suchspecialauswahl[2]->nAnzahl > 0}
         <li>
             <a href="{$Suchergebnisse->Suchspecialauswahl[2]->cURL}" rel="nofollow">
                 <span class="value">
@@ -19,7 +19,7 @@
             </a>
         </li>
     {/if}
-    {if $Suchergebnisse->Suchspecialauswahl[3]->nAnzahl > 0}
+    {if !empty($Suchergebnisse->Suchspecialauswahl[3]) && $Suchergebnisse->Suchspecialauswahl[3]->nAnzahl > 0}
         <li>
             <a href="{$Suchergebnisse->Suchspecialauswahl[3]->cURL}" rel="nofollow">
                 <span class="value">
@@ -29,7 +29,7 @@
             </a>
         </li>
     {/if}
-    {if $Suchergebnisse->Suchspecialauswahl[4]->nAnzahl > 0}
+    {if !empty($Suchergebnisse->Suchspecialauswahl[4]) && $Suchergebnisse->Suchspecialauswahl[4]->nAnzahl > 0}
         <li>
             <a href="{$Suchergebnisse->Suchspecialauswahl[4]->cURL}" rel="nofollow">
                 <span class="value">
@@ -39,7 +39,7 @@
             </a>
         </li>
     {/if}
-    {if $Suchergebnisse->Suchspecialauswahl[5]->nAnzahl > 0}
+    {if !empty($Suchergebnisse->Suchspecialauswahl[5]) && $Suchergebnisse->Suchspecialauswahl[5]->nAnzahl > 0}
         <li>
             <a href="{$Suchergebnisse->Suchspecialauswahl[5]->cURL}" rel="nofollow">
                 <span class="value">
@@ -49,7 +49,7 @@
             </a>
         </li>
     {/if}
-    {if $Suchergebnisse->Suchspecialauswahl[6]->nAnzahl > 0}
+    {if !empty($Suchergebnisse->Suchspecialauswahl[6]) && $Suchergebnisse->Suchspecialauswahl[6]->nAnzahl > 0}
         <li>
             <a href="{$Suchergebnisse->Suchspecialauswahl[6]->cURL}" rel="nofollow">
                 <span class="value">

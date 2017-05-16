@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/admininclude.php';
+require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('EXPORT_SITEMAP_VIEW', true, true);
 /** @global JTLSmarty $smarty */
@@ -27,7 +27,7 @@ if (strlen(verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', verifyGPDataString('tab'));
 }
 
-if (isset($_POST['einstellungen']) && intval($_POST['einstellungen']) > 0) {
+if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
     $cHinweis .= saveAdminSectionSettings(CONF_SITEMAP, $_POST);
 } elseif (verifyGPCDataInteger('download_edit') === 1) { // Sitemap Downloads loeschen
     $kSitemapTracker_arr = sichereArrayKeys($_POST['kSitemapTracker']);
@@ -55,7 +55,50 @@ if (isset($_POST['einstellungen']) && intval($_POST['einstellungen']) > 0) {
     $cHinweis = 'Ihre markierten Sitemap Reports wurden erfolgreich gel&ouml;scht.';
 }
 
+$nYearDownloads = verifyGPCDataInteger('nYear_downloads');
+$nYearReports   = verifyGPCDataInteger('nYear_reports');
+
+// Sitemap Downloads - Jahr löschen
+if (isset($_POST['action']) && $_POST['action'] === 'year_downloads_delete' && validateToken()) {
+    Shop::DB()->query(
+        "DELETE FROM tsitemaptracker
+            WHERE YEAR(tsitemaptracker.dErstellt) = " . $nYearDownloads, 3
+    );
+    $cHinweis       = 'Ihre markierten Sitemap Downloads f&uuml;r ' . $nYearDownloads . ' wurden erfolgreich gel&ouml;scht.';
+    $nYearDownloads = 0;
+}
+
+// Sitemap Reports - Jahr löschen
+if (isset($_POST['action']) && $_POST['action'] === 'year_reports_delete' && validateToken()) {
+    Shop::DB()->query(
+        "DELETE FROM tsitemapreport
+            WHERE YEAR(tsitemapreport.dErstellt) = " . $nYearReports, 3
+    );
+    $cHinweis     = 'Ihre Sitemap Reports f&uuml;r ' . $nYearReports . ' wurden erfolgreich gel&ouml;scht.';
+    $nYearReports = 0;
+}
+
 // Sitemap Downloads
+$oSitemapDownloadYears_arr = Shop::DB()->query(
+    "SELECT YEAR(dErstellt) AS year, COUNT(*) AS count
+        FROM tsitemaptracker
+        GROUP BY 1
+        ORDER BY 1 DESC", 2
+);
+if (!isset($oSitemapDownloadYears_arr) || count($oSitemapDownloadYears_arr) === 0) {
+    $oSitemapDownloadYears_arr[] = (object)[
+        'year'  => date('Y'),
+        'count' => 0,
+    ];
+}
+if ($nYearDownloads === 0) {
+    $nYearDownloads = $oSitemapDownloadYears_arr[0]->year;
+}
+$oSitemapDownloadPagination = (new Pagination('SitemapDownload'))
+    ->setItemCount(array_reduce($oSitemapDownloadYears_arr, function ($carry, $item) use ($nYearDownloads) {
+        return $item->year == $nYearDownloads ? $item->count : $carry;
+    }, 0))
+    ->assemble();
 $oSitemapDownload_arr = Shop::DB()->query(
     "SELECT tsitemaptracker.*, IF(tsitemaptracker.kBesucherBot = 0, '', 
         IF(CHAR_LENGTH(tbesucherbot.cUserAgent) = 0, tbesucherbot.cName, tbesucherbot.cUserAgent)) AS cBot, 
@@ -63,14 +106,38 @@ $oSitemapDownload_arr = Shop::DB()->query(
         FROM tsitemaptracker
         LEFT JOIN tbesucherbot 
             ON tbesucherbot.kBesucherBot = tsitemaptracker.kBesucherBot
-        ORDER BY tsitemaptracker.dErstellt DESC", 2
+        WHERE YEAR(tsitemaptracker.dErstellt) = " . $nYearDownloads . "
+        ORDER BY tsitemaptracker.dErstellt DESC
+        LIMIT " . $oSitemapDownloadPagination->getLimitSQL(), 2
 );
 
 // Sitemap Reports
+$oSitemapReportYears_arr = Shop::DB()->query(
+    "SELECT YEAR(dErstellt) AS year, COUNT(*) AS count
+        FROM tsitemapreport
+        GROUP BY 1
+        ORDER BY 1 DESC", 2
+);
+if (!isset($oSitemapReportYears_arr) || count($oSitemapReportYears_arr) === 0) {
+    $oSitemapReportYears_arr[] = (object)[
+        'year'  => date('Y'),
+        'count' => 0,
+    ];
+}
+if ($nYearReports === 0) {
+    $nYearReports = $oSitemapReportYears_arr[0]->year;
+}
+$oSitemapReportPagination = (new Pagination('SitemapReport'))
+    ->setItemCount(array_reduce($oSitemapReportYears_arr, function ($carry, $item) use ($nYearReports) {
+        return $item->year == $nYearReports ? $item->count : $carry;
+    }, 0))
+    ->assemble();
 $oSitemapReport_arr = Shop::DB()->query(
     "SELECT tsitemapreport.*, DATE_FORMAT(tsitemapreport.dErstellt, '%d.%m.%Y %H:%i') AS dErstellt_DE
         FROM tsitemapreport
-        ORDER BY tsitemapreport.dErstellt DESC", 2
+        WHERE YEAR(tsitemapreport.dErstellt) = " . $nYearReports . "
+        ORDER BY tsitemapreport.dErstellt DESC
+        LIMIT " . $oSitemapReportPagination->getLimitSQL(), 2
 );
 
 if (is_array($oSitemapReport_arr) && count($oSitemapReport_arr) > 0) {
@@ -114,18 +181,22 @@ for ($i = 0; $i < $count; ++$i) {
         'cName',
         $oConfig_arr[$i]->cWertName
     );
-    $oConfig_arr[$i]->gesetzterWert = (isset($oSetValue->cWert))
-        ? $oSetValue->cWert
-        : null;
+    $oConfig_arr[$i]->gesetzterWert = isset($oSetValue->cWert) ? $oSetValue->cWert : null;
 }
 
 $smarty->assign('oConfig_arr', $oConfig_arr)
-       ->assign('oSitemapReport_arr', $oSitemapReport_arr)
-       ->assign('oSitemapDownload_arr', $oSitemapDownload_arr)
-       ->assign('hinweis', $cHinweis)
-       ->assign('fehler', $cFehler)
-       ->assign('URL', Shop::getURL() . '/' . 'sitemap_index.xml')
-       ->display('sitemapexport.tpl');
+        ->assign('nSitemapDownloadYear', $nYearDownloads)
+        ->assign('oSitemapDownloadYears_arr', $oSitemapDownloadYears_arr)
+        ->assign('oSitemapDownloadPagination', $oSitemapDownloadPagination)
+        ->assign('oSitemapDownload_arr', $oSitemapDownload_arr)
+        ->assign('nSitemapReportYear', $nYearReports)
+        ->assign('oSitemapReportYears_arr', $oSitemapReportYears_arr)
+        ->assign('oSitemapReportPagination', $oSitemapReportPagination)
+        ->assign('oSitemapReport_arr', $oSitemapReport_arr)
+        ->assign('hinweis', $cHinweis)
+        ->assign('fehler', $cFehler)
+        ->assign('URL', Shop::getURL() . '/' . 'sitemap_index.xml')
+        ->display('sitemapexport.tpl');
 
 /**
  * @param array $cArray_arr

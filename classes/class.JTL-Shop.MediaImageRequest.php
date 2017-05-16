@@ -65,7 +65,7 @@ class MediaImageRequest
      * @param MediaImageRequest $new
      * @return MediaImageRequest
      */
-    public function copy(&$mixed, MediaImageRequest &$new)
+    public function copy(&$mixed, MediaImageRequest $new)
     {
         $mixed = (object)$mixed;
         foreach ($mixed as $property => &$value) {
@@ -172,7 +172,7 @@ class MediaImageRequest
     public function getRaw($absolute = false)
     {
         $path = $this->getPath();
-        $path = (empty($path)) ? null : sprintf('%s%s', self::getStoragePath(), $path);
+        $path = empty($path) ? null : sprintf('%s%s', self::getStoragePath(), $path);
 
         return ($path !== null && $absolute === true)
             ? PFAD_ROOT . $path
@@ -180,8 +180,8 @@ class MediaImageRequest
     }
 
     /**
-     * @param null $size
-     * @param bool $absolute
+     * @param null|MediaImageSize $size
+     * @param bool                $absolute
      * @return string
      */
     public function getThumb($size = null, $absolute = false)
@@ -203,7 +203,7 @@ class MediaImageRequest
     }
 
     /**
-     * @param null|string $size
+     * @param null|string|MediaImageSize $size
      * @return string
      */
     public function getFallbackThumb($size = null)
@@ -237,7 +237,7 @@ class MediaImageRequest
             WHERE kArtikel = {$id} AND nNr = {$number} ORDER BY nNr LIMIT 1", 1
         );
 
-        return (isset($item->path))
+        return isset($item->path)
             ? $item->path
             : null;
     }

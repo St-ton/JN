@@ -54,15 +54,15 @@ function pruefeExportformat()
         $cPlausiValue_arr['cContent'] = 1;
     }
     // Sprache
-    if (!isset($_POST['kSprache']) || intval($_POST['kSprache']) === 0) {
+    if (!isset($_POST['kSprache']) || (int)$_POST['kSprache'] === 0) {
         $cPlausiValue_arr['kSprache'] = 1;
     }
     // Sprache
-    if (!isset($_POST['kWaehrung']) || intval($_POST['kWaehrung']) === 0) {
+    if (!isset($_POST['kWaehrung']) || (int)$_POST['kWaehrung'] === 0) {
         $cPlausiValue_arr['kWaehrung'] = 1;
     }
     // Kundengruppe
-    if (!isset($_POST['kKundengruppe']) || intval($_POST['kKundengruppe']) === 0) {
+    if (!isset($_POST['kKundengruppe']) || (int)$_POST['kKundengruppe'] === 0) {
         $cPlausiValue_arr['kKundengruppe'] = 1;
     }
 
@@ -78,8 +78,9 @@ function pruefeExportformat()
 function splitteExportDatei($oExportformat)
 {
     if (isset($oExportformat->nSplitgroesse) &&
-        intval($oExportformat->nSplitgroesse) > 0 &&
-        file_exists(PFAD_ROOT . PFAD_EXPORT . $oExportformat->cDateiname)) {
+        (int)$oExportformat->nSplitgroesse > 0 &&
+        file_exists(PFAD_ROOT . PFAD_EXPORT . $oExportformat->cDateiname)
+    ) {
         $nDateiZaehler       = 1;
         $cDateinameSplit_arr = [];
         $nFileTypePos        = strrpos($oExportformat->cDateiname, '.');
@@ -100,7 +101,7 @@ function splitteExportDatei($oExportformat)
             $nZeile     = 1;
             $new_handle = fopen(gibDateiPfad($cDateinameSplit_arr, $nDateiZaehler), 'w');
             $nSizeDatei = 0;
-            while ($cContent = fgets($handle)) {
+            while (($cContent = fgets($handle)) !== false) {
                 if ($nZeile > 1) {
                     $nSizeZeile = strlen($cContent) + 2;
                     //Schwelle erreicht?
@@ -179,8 +180,8 @@ function loescheExportDateien($cDateiname, $cDateinameSplit)
     if (is_dir(PFAD_ROOT . PFAD_EXPORT)) {
         $dir = opendir(PFAD_ROOT . PFAD_EXPORT);
         if ($dir !== false) {
-            while ($cDatei = readdir($dir)) {
-                if ($cDatei != $cDateiname && strpos($cDatei, $cDateinameSplit) !== false) {
+            while (($cDatei = readdir($dir)) !== false) {
+                if ($cDatei !== $cDateiname && strpos($cDatei, $cDateinameSplit) !== false) {
                     @unlink(PFAD_ROOT . PFAD_EXPORT . $cDatei);
                 }
             }
@@ -497,8 +498,8 @@ function verarbeiteYategoExport(&$Artikel, $exportformat, $ExportEinstellungen, 
             'price_uvp'          => getNum($Artikel->fUVP),
             'delivery_surcharge' => 0,
             'delivery_calc_once' => 0,
-            'short_desc'         => '<h2>' . $Artikel->cName . '</h2>' . (($Artikel->cKurzBeschreibung)
-                    ? $Artikel->cKurzBeschreibung : substr($Artikel->cBeschreibung, 0, 130)),
+            'short_desc'         => '<h2>' . $Artikel->cName . '</h2>' . ($Artikel->cKurzBeschreibung
+                    ?: substr($Artikel->cBeschreibung, 0, 130)),
             'long_desc'          => '<h2>' . $Artikel->cName . '</h2>' . $Artikel->cBeschreibung . $cBacklink,
             'url'                => getURL($Artikel->cURL),
             'picture'            => isset($Artikel->Bilder[0]) ? getURL($Artikel->Bilder[0]->cPfadGross) : '',
@@ -548,7 +549,7 @@ function verarbeiteYategoExport(&$Artikel, $exportformat, $ExportEinstellungen, 
  */
 function pruefeYategoExportPfad()
 {
-    return (is_dir(PFAD_ROOT . PFAD_EXPORT_YATEGO) && is_writeable(PFAD_ROOT . PFAD_EXPORT_YATEGO));
+    return (is_dir(PFAD_ROOT . PFAD_EXPORT_YATEGO) && is_writable(PFAD_ROOT . PFAD_EXPORT_YATEGO));
 }
 
 /**
@@ -558,7 +559,7 @@ function pruefeYategoExportPfad()
 function getEinstellungenExport($kExportformat)
 {
     $kExportformat = (int)$kExportformat;
-    $ret           = array();
+    $ret           = [];
     if ($kExportformat > 0) {
         $einst = Shop::DB()->selectAll(
             'texportformateinstellungen',
@@ -583,7 +584,7 @@ function getEinstellungenExport($kExportformat)
  */
 function baueArtikelExportSQL(&$oExportformat)
 {
-    $cSQL_arr          = array();
+    $cSQL_arr          = [];
     $cSQL_arr['Where'] = '';
     $cSQL_arr['Join']  = '';
 
@@ -632,7 +633,7 @@ function baueArtikelExportSQL(&$oExportformat)
 function holeMaxExportArtikelAnzahl(&$oExportformat)
 {
     $cSQL_arr = baueArtikelExportSQL($oExportformat);
-    $conf     = Shop::getSettings(array(CONF_GLOBAL));
+    $conf     = Shop::getSettings([CONF_GLOBAL]);
     $sql      = 'AND NOT (DATE(tartikel.dErscheinungsdatum) > DATE(NOW()))';
     if (isset($conf['global']['global_erscheinende_kaeuflich']) &&
         $conf['global']['global_erscheinende_kaeuflich'] === 'Y') {

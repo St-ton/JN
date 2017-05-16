@@ -10,19 +10,19 @@
 class WidgetBase
 {
     /**
-     * @var null|JTLSmarty
+     * @var JTLSmarty
      */
-    public $oSmarty = null;
+    public $oSmarty;
 
     /**
-     * @var null|NiceDB
+     * @var NiceDB
      */
-    public $oDB = null;
+    public $oDB;
 
     /**
-     * @var null|Plugin
+     * @var Plugin
      */
-    public $oPlugin = null;
+    public $oPlugin;
 
     /**
      * @param JTLSmarty $oSmarty

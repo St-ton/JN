@@ -13,9 +13,9 @@ class cache_session implements ICachingMethod
     use JTLCacheTrait;
 
     /**
-     * @var cache_session|null
+     * @var cache_session
      */
-    public static $instance = null;
+    public static $instance;
 
     /**
      * @param array $options
@@ -134,7 +134,7 @@ class cache_session implements ICachingMethod
      */
     public function keyExists($cacheID)
     {
-        return (isset($_SESSION[$this->options['prefix'] . $cacheID]));
+        return isset($_SESSION[$this->options['prefix'] . $cacheID]);
     }
 
     /**

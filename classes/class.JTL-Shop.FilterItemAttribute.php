@@ -124,9 +124,9 @@ class FilterItemAttribute extends FilterBaseAttribute
     {
         return "\n" . 'tartikelmerkmal.kArtikel  IN (' .
             'SELECT kArtikel FROM ' . $this->getTableName() .
-                ' WHERE ' . $this->getPrimaryKeyRow() . ' IN (' .
-                    $this->getValue() .
-                '))' .
+            ' WHERE ' . $this->getPrimaryKeyRow() . ' IN (' .
+            $this->getValue() .
+            '))' .
             ' #condition from FilterItemAttribute::getSQLCondition() ' . $this->getName() . "\n";
     }
 
@@ -194,24 +194,35 @@ class FilterItemAttribute extends FilterBaseAttribute
                                                 ->setType('JOIN')
                                                 ->setTable('tmerkmalwert')
                                                 ->setOn('tmerkmalwert.kMerkmalWert = tartikelmerkmal.kMerkmalWert');
-            $state->joins[] = (new FilterJoin())->setComment('join3 from FilterItemAttribute::getOptions()')
-                                                ->setType('JOIN')
-                                                ->setTable('tmerkmalwertsprache')
-                                                ->setOn('tmerkmalwertsprache.kMerkmalWert = tartikelmerkmal.kMerkmalWert 
-                                                            AND tmerkmalwertsprache.kSprache = ' .
-                                                            $this->getLanguageID());
+//            $state->joins[] = (new FilterJoin())->setComment('join3 from FilterItemAttribute::getOptions()')
+//                                                ->setType('JOIN')
+//                                                ->setTable('tmerkmalwertsprache')
+//                                                ->setOn('tmerkmalwertsprache.kMerkmalWert = tartikelmerkmal.kMerkmalWert
+//                                                            AND tmerkmalwertsprache.kSprache = ' .
+//                                                            $this->getLanguageID());
             $state->joins[] = (new FilterJoin())->setComment('join4 from FilterItemAttribute::getOptions()')
                                                 ->setType('JOIN')
                                                 ->setTable('tmerkmal')
                                                 ->setOn('tmerkmal.kMerkmal = tartikelmerkmal.kMerkmal');
 
-            if (Shop::getLanguage() > 0 && !standardspracheAktiv()) {
-                $select = 'tmerkmalsprache.cName';
-                $state->joins[] = (new FilterJoin())->setComment('join5 from FilterItemAttribute::getOptions()')
-                                                    ->setType('JOIN')
+            $kSprache         = $this->getLanguageID();
+            $kStandardSprache = (int)gibStandardsprache()->kSprache;
+            if ($kSprache !== $kStandardSprache) {
+                $select = 'COALESCE(tmerkmalsprache.cName, tmerkmal.cName) AS cName, ' .
+                    'COALESCE(fremdSprache.cSeo, standardSprache.cSeo) AS cSeo, ' .
+                    'COALESCE(fremdSprache.cWert, standardSprache.cWert) AS cWert';
+                $state->joins[] = (new FilterJoin())->setComment('join5 non default lang from FilterItemAttribute::getOptions()')
+                                                    ->setType('LEFT JOIN')
                                                     ->setTable('tmerkmalsprache')
                                                     ->setOn('tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal 
-                                                    AND tmerkmalsprache.kSprache = ' . $this->getLanguageID());
+                                                    AND tmerkmalsprache.kSprache = ' . $kSprache);
+            } else {
+                $select = 'tmerkmalwertsprache.cWert, tmerkmalwertsprache.cSeo, tmerkmal.cName';
+                $state->joins[] = (new FilterJoin())->setComment('join5 default lang from FilterItemAttribute::getOptions()')
+                                                    ->setType('INNER JOIN')
+                                                    ->setTable('tmerkmalwertsprache')
+                                                    ->setOn('tmerkmalwertsprache.kMerkmalWert = tartikelmerkmal.kMerkmalWert
+                                                    AND tmerkmalwertsprache.kSprache = ' . $kSprache);
             }
 
             if (count($this->naviFilter->MerkmalFilter) > 0) {
@@ -224,14 +235,12 @@ class FilterItemAttribute extends FilterBaseAttribute
                         $activeValues[] = $values;
                     }
                     if ($filter->getType() === AbstractFilter::FILTER_TYPE_OR) {
-//                        $activeOrFilterIDs[] = $filter->getValue();
                         if (is_array($values)) {
                             $activeOrFilterIDs = $values;
                         } else {
                             $activeOrFilterIDs[] = $values;
                         }
                     } else {
-//                        $activeAndFilterIDs[] = $filter->getValue();
                         if (is_array($values)) {
                             $activeAndFilterIDs = $values;
                         } else {
@@ -268,7 +277,6 @@ class FilterItemAttribute extends FilterBaseAttribute
                     'tartikelmerkmal.kMerkmal',
                     'tartikelmerkmal.kMerkmalWert',
                     'tmerkmalwert.cBildPfad AS cMMWBildPfad',
-                    'tmerkmalwertsprache.cWert',
                     'tmerkmal.nSort AS nSortMerkmal',
                     'tmerkmalwert.nSort',
                     'tmerkmal.cTyp',
@@ -285,7 +293,7 @@ class FilterItemAttribute extends FilterBaseAttribute
                 true
             );
 
-            $query = "SELECT tseo.cSeo, ssMerkmal.kMerkmal, ssMerkmal.kMerkmalWert, ssMerkmal.cMMWBildPfad, 
+            $query = "SELECT ssMerkmal.cSeo, ssMerkmal.kMerkmal, ssMerkmal.kMerkmalWert, ssMerkmal.cMMWBildPfad, 
                 ssMerkmal.nMehrfachauswahl,
                 ssMerkmal.cWert, ssMerkmal.cName, ssMerkmal.cTyp, ssMerkmal.cMMBildPfad, COUNT(*) AS nAnzahl
                 FROM (" . $query . ") AS ssMerkmal

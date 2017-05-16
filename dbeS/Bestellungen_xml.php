@@ -494,7 +494,7 @@ function bearbeiteUpdate($xml)
         }
     }
 
-    bearbeiteBestellattribute((int)$oBestellung->kBestellung, mapArray($xml['tbestellung'], 'tbestellattribut', $GLOBALS['mBestellattribut']));
+    bearbeiteBestellattribute($oBestellung->kBestellung, is_assoc($xml['tbestellung']['tbestellattribut']) ? [$xml['tbestellung']['tbestellattribut']] : $xml['tbestellung']['tbestellattribut']);
 
     //sende Versandmail
     $oModule = gibZahlungsmodul($oBestellungAlt->kBestellung);
@@ -736,7 +736,8 @@ function bearbeiteBestellattribute($kBestellung, $oBestellattribut_arr)
 {
     $keys_updated = [];
     if (isset($oBestellattribut_arr) && count($oBestellattribut_arr)) {
-        foreach ($oBestellattribut_arr as $oBestellattribut) {
+        foreach ($oBestellattribut_arr as $bestellattribut) {
+            $oBestellattribut      = (object)$bestellattribut;
             $oBestellattribute_old = Shop::DB()->select('tbestellattribut', ['kBestellung', 'cName'], [$kBestellung, $oBestellattribut->key]);
             if (isset($oBestellattribute_old->kBestellattribut)) {
                 Shop::DB()->update('tbestellattribut', 'kBestellattribut', $oBestellattribute_old->kBestellattribut, (object)[

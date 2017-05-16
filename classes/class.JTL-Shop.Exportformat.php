@@ -1232,7 +1232,10 @@ class Exportformat
                 $Artikel->Lieferbar_01          = ($Artikel->fLagerbestand <= 0) ? 0 : 1;
                 $Artikel->Verfuegbarkeit_kelkoo = ($Artikel->fLagerbestand > 0) ? '001' : '003';
 
-                $cOutput .= $this->smarty->assign('Artikel', $Artikel)->fetch('db:' . $this->getExportformat()) . "\n";
+                $_out = $this->smarty->assign('Artikel', $Artikel)->fetch('db:' . $this->getExportformat());
+                if (!empty($_out)) {
+                    $cOutput .= $_out . "\n";
+                }
 
                 executeHook(HOOK_DO_EXPORT_OUTPUT_FETCHED);
                 if (!$isAsync) {

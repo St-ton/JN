@@ -127,7 +127,7 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
         }
     } else {
         $_SESSION['Warenkorb']->kKunde = $_SESSION['Kunde']->kKunde;
-        Shop::DB()->query("UPDATE tkunde SET cAbgeholt = 'N' WHERE kKunde = " . (int)$_SESSION['Kunde']->kKunde, 4);
+        Shop::DB()->update('tkunde', 'kKunde', (int)$_SESSION['Kunde']->kKunde, (object)['cAbgeholt' => 'N']);
     }
     //Lieferadresse
     $_SESSION['Warenkorb']->kLieferadresse = 0; //=rechnungsadresse
@@ -283,7 +283,7 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
         $Bestellung->fGuthaben = -$_SESSION['Bestellung']->fGuthabenGenutzt;
         Shop::DB()->query(
             "UPDATE tkunde
-                SET fGuthaben = fGuthaben - " . $_SESSION['Bestellung']->fGuthabenGenutzt . " 
+                SET fGuthaben = fGuthaben - " . (float)$_SESSION['Bestellung']->fGuthabenGenutzt . "
                 WHERE kKunde = " . (int)$Bestellung->kKunde, 4
         );
         $_SESSION['Kunde']->fGuthaben -= $_SESSION['Bestellung']->fGuthabenGenutzt;
@@ -764,11 +764,7 @@ function AktualisiereStueckliste($kStueckliste, $fPackeinheitSt, $fLagerbestandS
             $fLagerbestand = $ofMin->fMin;
         }
     }
-    Shop::DB()->query(
-        "UPDATE tartikel
-            SET tartikel.fLagerbestand = {$fLagerbestand}
-            WHERE tartikel.kStueckliste = {$kStueckliste}", 4
-    );
+    Shop::DB()->update('tartikel', 'kStueckliste', $kStueckliste, (object)['fLagerbestand' => $fLagerbestand]);
 }
 
 /**
@@ -850,7 +846,7 @@ function KuponVerwendungen($oBestellung)
     }
     $kKupon = (int)$kKupon;
     if ($kKupon > 0) {
-        Shop::DB()->query("UPDATE tkupon SET nVerwendungenBisher = nVerwendungenBisher+1 WHERE kKupon = " . $kKupon, 4);
+        Shop::DB()->query("UPDATE tkupon SET nVerwendungenBisher = nVerwendungenBisher + 1 WHERE kKupon = " . $kKupon, 4);
         $KuponKunde                = new stdClass();
         $KuponKunde->kKupon        = $kKupon;
         $KuponKunde->kKunde        = $_SESSION['Warenkorb']->kKunde;

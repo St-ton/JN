@@ -315,11 +315,11 @@ function pruefeLieferadresseStep($cGet_arr)
         resetNeuKundenKupon();
         unset($_SESSION['Zahlungsart'], $_SESSION['TrustedShops'], $_SESSION['Versandart']);
         $Lieferadresse = $_SESSION['Lieferadresse'];
-        $step          = 'edit_customer_address';
+        $step          = 'Lieferadresse';
     }
     if (pruefeFehlendeAngaben('shipping_address')) {
         $Lieferadresse = $_SESSION['Lieferadresse'];
-        $step          = 'edit_customer_address';
+        $step          = 'Lieferadresse';
     }
 }
 

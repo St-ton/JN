@@ -95,6 +95,9 @@ if (isset($_POST['shipping_address'])) {
     } elseif (isset($_POST['register']['shipping_address'])) {
         pruefeLieferdaten($_POST['register']['shipping_address'], $fehlendeAngaben);
     }
+} elseif (isset($_POST['lieferdaten']) && (int)$_POST['lieferdaten'] === 1) {
+    // compatibility with older template
+    pruefeLieferdaten($_POST, $fehlendeAngaben);
 }
 if (isset($_POST['unreg_form']) && (int)$_POST['unreg_form'] === 0) {
     $_POST['checkout'] = 1;

@@ -2,7 +2,11 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  *}
-
+{if isset($fehlendeAngaben.shipping_address)}
+    {assign var="fehlendeAngabenShipping" value=$fehlendeAngaben.shipping_address}
+{else}
+    {assign var="fehlendeAngabenShipping" value=null}
+{/if}
 <div class="form-group checkbox">
     <input type="hidden" name="shipping_address" value="1">
     <label for="checkout_register_shipping_address" class="btn-block" data-toggle="collapse" data-target="#select_shipping_address">
@@ -44,14 +48,14 @@
         </fieldset>
         <fieldset id="register_shipping_address" class="collapse collapse-non-validate{if $kLieferadresse == -1}} in{/if}" aria-expanded="{if $kLieferadresse == -1}}true{else}false{/if}">
             <legend>{lang key="createNewShippingAdress" section="account data"}</legend>
-            {include file="register/form/customer_shipping_address.tpl" prefix="register" fehlendeAngaben=$fehlendeAngaben.shipping_address}
-            {include file="register/form/customer_shipping_contact.tpl" prefix="register" fehlendeAngaben=$fehlendeAngaben.shipping_address}
+            {include file="register/form/customer_shipping_address.tpl" prefix="register" fehlendeAngaben=$fehlendeAngabenShipping}
+            {include file="register/form/customer_shipping_contact.tpl" prefix="register" fehlendeAngaben=$fehlendeAngabenShipping}
         </fieldset>
     {else}
         <fieldset>
             <legend>{lang key="createNewShippingAdress" section="account data"}</legend>
-            {include file="register/form/customer_shipping_address.tpl" prefix="register" fehlendeAngaben=$fehlendeAngaben.shipping_address}
-            {include file="register/form/customer_shipping_contact.tpl" prefix="register" fehlendeAngaben=$fehlendeAngaben.shipping_address}
+            {include file="register/form/customer_shipping_address.tpl" prefix="register" fehlendeAngaben=$fehlendeAngabenShipping}
+            {include file="register/form/customer_shipping_contact.tpl" prefix="register" fehlendeAngaben=$fehlendeAngabenShipping}
         </fieldset>
     {/if}
     {/block}

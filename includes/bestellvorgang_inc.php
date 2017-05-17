@@ -315,11 +315,11 @@ function pruefeLieferadresseStep($cGet_arr)
         resetNeuKundenKupon();
         unset($_SESSION['Zahlungsart'], $_SESSION['TrustedShops'], $_SESSION['Versandart']);
         $Lieferadresse = $_SESSION['Lieferadresse'];
-        $step          = 'Lieferadresse';
+        $step          = 'edit_customer_address';
     }
     if (pruefeFehlendeAngaben('shipping_address')) {
         $Lieferadresse = $_SESSION['Lieferadresse'];
-        $step          = 'Lieferadresse';
+        $step          = 'edit_customer_address';
     }
 }
 
@@ -631,8 +631,7 @@ function gibStepZahlung()
             if (!isset($_SESSION['TrustedShops'])) {
                 $_SESSION['TrustedShops'] = new stdClass();
             }
-            $_SESSION['TrustedShops']->oKaeuferschutzProduktIDAssoc_arr =
-                gibKaeuferschutzProdukteAssocID($oTrustedShops->oKaeuferschutzProdukte->item);
+            $_SESSION['TrustedShops']->oKaeuferschutzProduktIDAssoc_arr = gibKaeuferschutzProdukteAssocID($oTrustedShops->oKaeuferschutzProdukte->item);
             Shop::Smarty()->assign('oTrustedShops', $oTrustedShops)
                 ->assign('PFAD_GFX_TRUSTEDSHOPS', PFAD_GFX_TRUSTEDSHOPS);
         }
@@ -689,9 +688,10 @@ function gibStepZahlung()
         }
     } elseif (!is_array($oZahlungsart_arr) || count($oZahlungsart_arr) === 0) {
         if (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-            Jtllog::writeLog(utf8_decode('Es konnte keine Zahlungsart für folgende Daten gefunden werden: Versandart: ' .
-                $_SESSION['Versandart']->kVersandart . ', Kundengruppe: ' . $_SESSION['Kundengruppe']->kKundengruppe),
-                JTLLOG_LEVEL_ERROR);
+            Jtllog::writeLog(utf8_decode(
+                'Es konnte keine Zahlungsart für folgende Daten gefunden werden: Versandart: ' .
+                $_SESSION['Versandart']->kVersandart . ', Kundengruppe: ' . $_SESSION['Kundengruppe']->kKundengruppe
+            ), JTLLOG_LEVEL_ERROR);
         }
     }
 
@@ -808,8 +808,7 @@ function gibStepBestaetigung($cGet_arr)
     ) {
         foreach ($_SESSION['Warenkorb']->PositionenArr as $i => $oPosition) {
             if ($oPosition->nPosTyp == C_WARENKORBPOS_TYP_VERSANDPOS) {
-                $_SESSION['Warenkorb']->PositionenArr[$i]->cHinweis =
-                    $_SESSION['Versandart']->angezeigterHinweistext[$_SESSION['cISOSprache']];
+                $_SESSION['Warenkorb']->PositionenArr[$i]->cHinweis = $_SESSION['Versandart']->angezeigterHinweistext[$_SESSION['cISOSprache']];
             }
         }
     }
@@ -824,6 +823,7 @@ function gibStepBestaetigung($cGet_arr)
  */
 function gibStepVersand()
 {
+    /** @var array('Warenkorb' => Warenkorb) $_SESSION */
     global $step;
     unset($_SESSION['TrustedShopsZahlung']);
     pruefeVersandkostenfreiKuponVorgemerkt();
@@ -839,7 +839,7 @@ function gibStepVersand()
     if (!$kKundengruppe) {
         $kKundengruppe = $_SESSION['Kundengruppe']->kKundengruppe;
     }
-    $oVersandart_arr = VersandartHelper::getPossibleShippingMethods(
+    $oVersandart_arr  = VersandartHelper::getPossibleShippingMethods(
         $lieferland,
         $plz,
         VersandartHelper::getShippingClasses($_SESSION['Warenkorb']),
@@ -936,13 +936,13 @@ function plausiNeukundenKupon()
     if ((!isset($_SESSION['Kupon']->cKuponTyp) || $_SESSION['Kupon']->cKuponTyp !== 'standard')
         && !empty($_SESSION['Kunde']->cMail)
     ) {
-        $query = "SELECT tbestellung.kBestellung
+        $query  = "SELECT tbestellung.kBestellung
             FROM tkunde
             JOIN tbestellung
                 ON tbestellung.kKunde = tkunde.kKunde
             WHERE tkunde.cMail = :mail";
         $values = ['mail' => $_SESSION['Kunde']->cMail];
-        $conf = Shop::getSettings([CONF_KAUFABWICKLUNG]);
+        $conf   = Shop::getSettings([CONF_KAUFABWICKLUNG]);
         if (empty($_SESSION['Kunde']->kKunde)
             && $conf['kaufabwicklung']['bestellvorgang_unregneukundenkupon_zulassen'] === 'N'
         ) {
@@ -951,10 +951,10 @@ function plausiNeukundenKupon()
         }
         if (!empty($_SESSION['Kunde']->kKunde)) {
             // registrierte Kunden und Neukunden mit Kundenkonto
-            $query .= " OR tkunde.kKunde = :kkunde";
+            $query           .= " OR tkunde.kKunde = :kkunde";
             $values['kkunde'] = $_SESSION['Kunde']->kKunde;
         }
-        $query .= " LIMIT 1";
+        $query      .= " LIMIT 1";
         $oBestellung = Shop::DB()->executeQueryPrepared($query, $values, 1);
 
         if (empty($oBestellung)) {
@@ -966,7 +966,7 @@ function plausiNeukundenKupon()
                     if ((empty($verwendet) || $verwendet === 'N') && angabenKorrekt(checkeKupon($NeukundenKupon))) {
                         kuponAnnehmen($NeukundenKupon);
                         if (empty($verwendet)) {
-                            $hash = Kuponneukunde::Hash(
+                            $hash    = Kuponneukunde::Hash(
                                 null,
                                 trim($_SESSION['Kunde']->cNachname),
                                 trim($_SESSION['Kunde']->cStrasse),
@@ -982,6 +982,7 @@ function plausiNeukundenKupon()
                                 'Erstellt' => 'now()',
                                 'Verwendet' => 'N'
                             ];
+
                             $Kuponneukunde = new Kuponneukunde();
                             $Kuponneukunde->setOptions($Options);
                             $Kuponneukunde->Save();
@@ -1084,7 +1085,7 @@ function plausiIban($iban)
         . strval(ord($iban{0}) - 55)
         . strval(ord($iban{1}) - 55)
         . substr($iban, 2, 2);
-    $len = strlen($iban1);
+    $len   = strlen($iban1);
     for ($i = 0; $i < $len; $i++) {
         if (ord($iban1{$i}) > 64 && ord($iban1{$i}) < 91) {
             $iban1 = substr($iban1, 0, $i) . strval(ord($iban1{$i}) - 55) . substr($iban1, $i + 1);
@@ -1092,7 +1093,7 @@ function plausiIban($iban)
     }
 
     $rest = 0;
-    $len = strlen($iban1);
+    $len  = strlen($iban1);
     for ($pos = 0; $pos < $len; $pos += 7) {
         $part = (string)$rest . substr($iban1, $pos, 7);
         $rest = (int)$part % 97;
@@ -1160,7 +1161,7 @@ function zahlungsartKorrekt($kZahlungsart)
                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZINSAUFSCHLAG)
                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR)
                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR);
-    if ($kZahlungsart > 0 && 
+    if ($kZahlungsart > 0 &&
         isset($_SESSION['Versandart']->kVersandart) &&
         (int)$_SESSION['Versandart']->kVersandart > 0
     ) {
@@ -1218,10 +1219,11 @@ function zahlungsartKorrekt($kZahlungsart)
                 $Zahlungsart->cPreisLocalized = gibPreisStringLocalized(
                     ($_SESSION['Warenkorb']->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true) * $Zahlungsart->fAufpreis) / 100.0
                 );
+
                 $Aufpreis = ($_SESSION['Warenkorb']->gibGesamtsummeWarenExt(
-                                [C_WARENKORBPOS_TYP_ARTIKEL],
-                                true
-                            ) * $Zahlungsart->fAufpreis) / 100.0;
+                    [C_WARENKORBPOS_TYP_ARTIKEL],
+                    true
+                ) * $Zahlungsart->fAufpreis) / 100.0;
             }
             //posname lokalisiert ablegen
             if (!isset($Spezialpos)) {
@@ -1424,8 +1426,7 @@ function gibZahlungsart($kZahlungsart)
     }
     $oPlugin = gibPluginZahlungsart($Zahlungsart->cModulId);
     if ($oPlugin) {
-        $Zahlungsart->cZusatzschrittTemplate =
-            $oPlugin->oPluginZahlungsmethodeAssoc_arr[$Zahlungsart->cModulId]->cZusatzschrittTemplate;
+        $Zahlungsart->cZusatzschrittTemplate = $oPlugin->oPluginZahlungsmethodeAssoc_arr[$Zahlungsart->cModulId]->cZusatzschrittTemplate;
     }
 
     return $Zahlungsart;
@@ -1546,10 +1547,8 @@ function gibZahlungsarten($kVersandart, $kKundengruppe)
         }
         $Zahlungsarten[$i]->cPreisLocalized = gibPreisStringLocalized($Zahlungsarten[$i]->fAufpreis);
         if ($Zahlungsarten[$i]->cAufpreisTyp === 'prozent') {
-            $Zahlungsarten[$i]->cPreisLocalized = '';
-            $Zahlungsarten[$i]->cPreisLocalized = ($Zahlungsarten[$i]->fAufpreis < 0)
-                ? ' '
-                : '+ ';
+            $Zahlungsarten[$i]->cPreisLocalized  = '';
+            $Zahlungsarten[$i]->cPreisLocalized  = ($Zahlungsarten[$i]->fAufpreis < 0) ? ' ' : '+ ';
             $Zahlungsarten[$i]->cPreisLocalized .= $Zahlungsarten[$i]->fAufpreis . '%';
         }
         if ($Zahlungsarten[$i]->fAufpreis == 0) {
@@ -1687,7 +1686,7 @@ function zahlungsartGueltig($Zahlungsart)
         }
         if ($oZahlungsart && !$oZahlungsart->isValidIntern()) {
             Jtllog::writeLog(
-                utf8_decode('Die Zahlungsartprüfung (' . 
+                utf8_decode('Die Zahlungsartprüfung (' .
                     $Zahlungsart->cModulId . ') wurde nicht erfolgreich validiert (isValidIntern).'),
                 JTLLOG_LEVEL_DEBUG,
                 false,
@@ -1742,7 +1741,7 @@ function pruefeZahlungsartMinBestellungen($nMinBestellungen)
 function pruefeZahlungsartMinBestellwert($fMinBestellwert)
 {
     /** @var array('Warenkorb' => Warenkorb) $_SESSION */
-    if ($fMinBestellwert > 0 && 
+    if ($fMinBestellwert > 0 &&
         $_SESSION['Warenkorb']->gibGesamtsummeWarenOhne([C_WARENKORBPOS_TYP_VERSANDPOS], true) < $fMinBestellwert
     ) {
         if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
@@ -1767,7 +1766,7 @@ function pruefeZahlungsartMinBestellwert($fMinBestellwert)
 function pruefeZahlungsartMaxBestellwert($fMaxBestellwert)
 {
     /** @var array('Warenkorb' => Warenkorb) $_SESSION */
-    if ($fMaxBestellwert > 0 && 
+    if ($fMaxBestellwert > 0 &&
         $_SESSION['Warenkorb']->gibGesamtsummeWarenOhne([C_WARENKORBPOS_TYP_VERSANDPOS], true) >= $fMaxBestellwert
     ) {
         if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
@@ -1795,7 +1794,7 @@ function versandartKorrekt($kVersandart, $aFormValues = 0)
     /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
     $kVersandart = (int)$kVersandart;
     //Verpackung beachten
-    $kVerpackung_arr = (isset($_POST['kVerpackung']) && is_array($_POST['kVerpackung']) && count($_POST['kVerpackung']) > 0)
+    $kVerpackung_arr        = (isset($_POST['kVerpackung']) && is_array($_POST['kVerpackung']) && count($_POST['kVerpackung']) > 0)
         ? $_POST['kVerpackung']
         : $aFormValues['kVerpackung'];
     $fSummeWarenkorb        = $_SESSION['Warenkorb']->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true);
@@ -1813,6 +1812,7 @@ function versandartKorrekt($kVersandart, $aFormValues = 0)
                         AND " . $fSummeWarenkorb . " >= tverpackung.fMindestbestellwert
                         AND nAktiv = 1", 1
             );
+
             $oVerpackung->kVerpackung = (int)$oVerpackung->kVerpackung;
             if ($oVerpackung->kVerpackung > 0) {
                 $cName_arr              = [];
@@ -1902,8 +1902,8 @@ function versandartKorrekt($kVersandart, $aFormValues = 0)
             if (isset($versandart->Zuschlag->fZuschlag)) {
                 $fVersandpreis = $versandart->fEndpreis - $versandart->Zuschlag->fZuschlag;
             }
-            if ($versandart->fEndpreis == 0 && 
-                isset($versandart->Zuschlag->fZuschlag) && 
+            if ($versandart->fEndpreis == 0 &&
+                isset($versandart->Zuschlag->fZuschlag) &&
                 $versandart->Zuschlag->fZuschlag > 0
             ) {
                 $fVersandpreis = $versandart->fEndpreis;
@@ -2017,10 +2017,10 @@ function checkKundenFormularArray($data, $kundenaccount, $checkpass = 1)
         $ret['email'] = 5;
     }
     if (empty($_SESSION['check_plzort']) &&
-        $data['plz'] && 
-        $data['ort'] && 
-        $data['land'] && 
-        $conf['kunden']['kundenregistrierung_abgleichen_plz'] === 'Y'        
+        $data['plz'] &&
+        $data['ort'] &&
+        $data['land'] &&
+        $conf['kunden']['kundenregistrierung_abgleichen_plz'] === 'Y'
     ) {
         if (!valid_plzort($data['plz'], $data['ort'], $data['land'])) {
             $ret['plz']               = 2;
@@ -2030,10 +2030,10 @@ function checkKundenFormularArray($data, $kundenaccount, $checkpass = 1)
     } else {
         unset($_SESSION['check_plzort']);
     }
-    if (!$data['titel'] && $conf['kunden']['kundenregistrierung_abfragen_titel'] === 'Y') {
+    if (empty($data['titel']) && $conf['kunden']['kundenregistrierung_abfragen_titel'] === 'Y') {
         $ret['titel'] = 1;
     }
-    if (!$data['adresszusatz'] && $conf['kunden']['kundenregistrierung_abfragen_adresszusatz'] === 'Y') {
+    if (empty($data['adresszusatz']) && $conf['kunden']['kundenregistrierung_abfragen_adresszusatz'] === 'Y') {
         $ret['adresszusatz'] = 1;
     }
     if ($conf['kunden']['kundenregistrierung_abfragen_mobil'] === 'Y' && checkeTel($data['mobil']) > 0) {
@@ -2046,8 +2046,8 @@ function checkKundenFormularArray($data, $kundenaccount, $checkpass = 1)
         ? Shop::DB()->select('tland', 'cISO', $data['land'])
         : null;
 
-    if ($deliveryCountry->nEU === '0' &&
-        isset($deliveryCountry->nEU) &&
+    if (isset($deliveryCountry->nEU) &&
+        $deliveryCountry->nEU === '0' &&
         $conf['kunden']['kundenregistrierung_abfragen_ustid'] === 'Y'
     ) {
         //skip
@@ -2069,6 +2069,7 @@ function checkKundenFormularArray($data, $kundenaccount, $checkpass = 1)
                 'Nein',
                 (isset($data['hausnummer']) ? StringHandler::filterXSS($data['hausnummer']) : '')
             );
+
             $bBZStPruefung = false;
             //Admin-Einstellung BZST pruefen und checken ob Auslaendische USt-ID angegeben (deutsche USt-IDs koennen nicht geprueft werden)
             $ustLaendercode = strtolower(substr($data['ustid'], 0, 2));
@@ -2089,18 +2090,18 @@ function checkKundenFormularArray($data, $kundenaccount, $checkpass = 1)
             }
         }
     }
-    if ($conf['kunden']['kundenregistrierung_abfragen_geburtstag'] === 'Y' && 
+    if ($conf['kunden']['kundenregistrierung_abfragen_geburtstag'] === 'Y' &&
         checkeDatum(StringHandler::filterXSS($data['geburtstag'])) > 0
     ) {
         $ret['geburtstag'] = checkeDatum(StringHandler::filterXSS($data['geburtstag']));
     }
-    if ($conf['kunden']['kundenregistrierung_abfragen_www'] === 'Y' && !$data['www']) {
+    if ($conf['kunden']['kundenregistrierung_abfragen_www'] === 'Y' && empty($data['www'])) {
         $ret['www'] = 1;
     }
     if ($conf['kunden']['kundenregistrierung_abfragen_tel'] === 'Y' && checkeTel($data['tel']) > 0) {
         $ret['tel'] = checkeTel($data['tel']);
     }
-    if ($conf['kunden']['kundenregistrierung_abfragen_bundesland'] === 'Y' && !$data['bundesland']) {
+    if ($conf['kunden']['kundenregistrierung_abfragen_bundesland'] === 'Y' && empty($data['bundesland'])) {
         $ret['bundesland'] = 1;
     }
     if ($kundenaccount == 1) {
@@ -2140,13 +2141,13 @@ function checkKundenFormularArray($data, $kundenaccount, $checkpass = 1)
             foreach ($oKundenfeld_arr as $oKundenfeld) {
                 // Kundendaten ändern?
                 if ((int)$data['editRechnungsadresse'] === 1) {
-                    if (!isset($data['custom_' . $oKundenfeld->kKundenfeld]) && 
-                        $oKundenfeld->nPflicht == 1 && 
+                    if (!isset($data['custom_' . $oKundenfeld->kKundenfeld]) &&
+                        $oKundenfeld->nPflicht == 1 &&
                         $oKundenfeld->nEditierbar == 1
                     ) {
                         $ret['custom'][$oKundenfeld->kKundenfeld] = 1;
                     } else {
-                        if (isset($data['custom_' . $oKundenfeld->kKundenfeld]) && 
+                        if (isset($data['custom_' . $oKundenfeld->kKundenfeld]) &&
                             $data['custom_' . $oKundenfeld->kKundenfeld]
                         ) {
                             // Datum
@@ -2164,8 +2165,7 @@ function checkKundenFormularArray($data, $kundenaccount, $checkpass = 1)
                                 }
                             } elseif ($oKundenfeld->cTyp === 'zahl') {
                                 // Zahl, 4 = keine Zahl
-                                if ($data['custom_' . $oKundenfeld->kKundenfeld] != 
-                                    (float)$data['custom_' . $oKundenfeld->kKundenfeld]
+                                if ($data['custom_' . $oKundenfeld->kKundenfeld] != (float)$data['custom_' . $oKundenfeld->kKundenfeld]
                                 ) {
                                     $ret['custom'][$oKundenfeld->kKundenfeld] = 4;
                                 }
@@ -2173,7 +2173,7 @@ function checkKundenFormularArray($data, $kundenaccount, $checkpass = 1)
                         }
                     }
                 } else { // Neuer Kunde
-                    if (!$data['custom_' . $oKundenfeld->kKundenfeld] && $oKundenfeld->nPflicht == 1) {
+                    if (empty($data['custom_' . $oKundenfeld->kKundenfeld]) && $oKundenfeld->nPflicht == 1) {
                         $ret['custom'][$oKundenfeld->kKundenfeld] = 1;
                     } else {
                         if ($data['custom_' . $oKundenfeld->kKundenfeld]) {
@@ -2192,8 +2192,7 @@ function checkKundenFormularArray($data, $kundenaccount, $checkpass = 1)
                                 }
                             } elseif ($oKundenfeld->cTyp === 'zahl') {
                                 // Zahl, 4 = keine Zahl
-                                if ($data['custom_' . $oKundenfeld->kKundenfeld] != 
-                                    (float)$data['custom_' . $oKundenfeld->kKundenfeld]) {
+                                if ($data['custom_' . $oKundenfeld->kKundenfeld] != (float)$data['custom_' . $oKundenfeld->kKundenfeld]) {
                                     $ret['custom'][$oKundenfeld->kKundenfeld] = 4;
                                 }
                             }
@@ -2203,21 +2202,21 @@ function checkKundenFormularArray($data, $kundenaccount, $checkpass = 1)
             }
         }
     }
-    if (isset($conf['kunden']['kundenregistrierung_pruefen_ort']) && 
+    if (isset($conf['kunden']['kundenregistrierung_pruefen_ort']) &&
         $conf['kunden']['kundenregistrierung_pruefen_ort'] === 'Y' &&
         preg_match('#[0-9]+#', $data['ort'])
     ) {
         $ret['ort'] = 3;
     }
-    if (isset($conf['kunden']['kundenregistrierung_pruefen_name']) && 
-        $conf['kunden']['kundenregistrierung_pruefen_name'] === 'Y' && 
+    if (isset($conf['kunden']['kundenregistrierung_pruefen_name']) &&
+        $conf['kunden']['kundenregistrierung_pruefen_name'] === 'Y' &&
         preg_match('#[0-9]+#', $data['nachname'])
     ) {
         $ret['nachname'] = 2;
     }
 
     if (isset($conf['kunden']['kundenregistrierung_pruefen_zeit'], $data['editRechnungsadresse']) &&
-        $data['editRechnungsadresse'] != 1 && 
+        $data['editRechnungsadresse'] != 1 &&
         $conf['kunden']['kundenregistrierung_pruefen_zeit'] === 'Y'
     ) {
         $dRegZeit = (!isset($_SESSION['dRegZeit'])) ? 0 : $_SESSION['dRegZeit'];
@@ -2225,7 +2224,7 @@ function checkKundenFormularArray($data, $kundenaccount, $checkpass = 1)
             $ret['formular_zeit'] = 1;
         }
     }
-    if (isset($conf['kunden']['kundenregistrierung_pruefen_email'], $data['email']) && 
+    if (isset($conf['kunden']['kundenregistrierung_pruefen_email'], $data['email']) &&
         $conf['kunden']['kundenregistrierung_pruefen_email'] === 'Y' &&
         strlen($data['email']) > 0 &&
         !checkdnsrr(substr($data['email'], strpos($data['email'], '@') + 1))
@@ -2233,8 +2232,8 @@ function checkKundenFormularArray($data, $kundenaccount, $checkpass = 1)
         $ret['email'] = 4;
     }
 
-    if (isset($conf['kunden']['registrieren_captcha']) && 
-        $conf['kunden']['registrieren_captcha'] !== 'N' && 
+    if (isset($conf['kunden']['registrieren_captcha']) &&
+        $conf['kunden']['registrieren_captcha'] !== 'N' &&
         !validateCaptcha($data)
     ) {
         $ret['captcha'] = 2;
@@ -2289,7 +2288,7 @@ function checkLieferFormularArray($data)
     if ($conf['kunden']['lieferadresse_abfragen_email'] !== 'N') {
         $data['email'] = trim($data['email']);
 
-        if (!$data['email']) {
+        if (empty($data['email'])) {
             if ($conf['kunden']['lieferadresse_abfragen_email'] === 'Y') {
                 $ret['email'] = 1;
             }
@@ -2354,7 +2353,7 @@ function checkeKupon($Kupon)
     if ($Kupon->cArtikel && !warenkorbKuponFaehigArtikel($Kupon, $_SESSION['Warenkorb']->PositionenArr)) {
         $ret['ungueltig'] = 7;
     }
-    if ($Kupon->cKategorien && 
+    if ($Kupon->cKategorien &&
         $Kupon->cKategorien != -1 &&
         !warenkorbKuponFaehigKategorien($Kupon, $_SESSION['Warenkorb']->PositionenArr)
     ) {
@@ -2383,6 +2382,7 @@ function checkeKupon($Kupon)
             trim($_SESSION['Kunde']->cOrt),
             trim($_SESSION['Kunde']->cLand)
         );
+
         $Kuponneukunde = Kuponneukunde::Load($_SESSION['Kunde']->cMail, $Hash);
         if ($Kuponneukunde !== null && $Kuponneukunde->cVerwendet === 'Y') {
             $ret['ungueltig'] = 11;
@@ -2469,8 +2469,7 @@ function kuponAnnehmen($Kupon)
                 $couponPrice = ($articlePrice / 100) * (float)$Kupon->fWert;
             }
         } else { //Rabatt ermitteln für den ganzen WK
-            $couponPrice = ($_SESSION['Warenkorb']->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true) / 100.0) 
-                * $Kupon->fWert;
+            $couponPrice = ($_SESSION['Warenkorb']->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true) / 100.0) * $Kupon->fWert;
         }
     }
 
@@ -2483,19 +2482,19 @@ function kuponAnnehmen($Kupon)
     foreach ($_SESSION['Sprachen'] as $Sprache) {
         if ($Kupon->cWertTyp === 'prozent' && $Kupon->nGanzenWKRabattieren == 0
             && $Kupon->cKuponTyp !== 'neukundenkupon') {
-            $Spezialpos->cName[$Sprache->cISO]             .= ' ' . $Kupon->fWert . '% ';
-            $discountForArticle                             =
-                Shop::DB()->select(
-                    'tsprachwerte',
-                    'cName',
-                    'discountForArticle',
-                    'kSprachISO',
-                    $Sprache->kSprache,
-                    null,
-                    null,
-                    false,
-                    'cWert'
-                );
+            $Spezialpos->cName[$Sprache->cISO] .= ' ' . $Kupon->fWert . '% ';
+            $discountForArticle                 = Shop::DB()->select(
+                'tsprachwerte',
+                'cName',
+                'discountForArticle',
+                'kSprachISO',
+                $Sprache->kSprache,
+                null,
+                null,
+                false,
+                'cWert'
+            );
+
             $Spezialpos->discountForArticle[$Sprache->cISO] = $discountForArticle->cWert;
         } elseif ($Kupon->cWertTyp === 'prozent') {
             $Spezialpos->cName[$Sprache->cISO] .= ' ' . $Kupon->fWert . '%';
@@ -2537,7 +2536,7 @@ function kuponAnnehmen($Kupon)
         //$_SESSION['Warenkorb']->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS);
         $_SESSION['Warenkorb']->setzeVersandfreiKupon();
         $_SESSION['VersandKupon'] = $Kupon;
-        $couponPrice            = 0;
+        $couponPrice              = 0;
         $Spezialpos->cName        = $Kupon->translationList;
         unset($_POST['Kuponcode']);
         $_SESSION['Warenkorb']->erstelleSpezialPos(
@@ -2559,8 +2558,7 @@ function kuponAnnehmen($Kupon)
     }
     if ($Kupon->cWertTyp === 'prozent' || $Kupon->cWertTyp === 'festpreis') {
         unset($_POST['Kuponcode']);
-        $_SESSION['Warenkorb']->erstelleSpezialPos($Spezialpos->cName, 1, $couponPrice * -1, $Kupon->kSteuerklasse,
-            $postyp);
+        $_SESSION['Warenkorb']->erstelleSpezialPos($Spezialpos->cName, 1, $couponPrice * -1, $Kupon->kSteuerklasse, $postyp);
     }
 }
 
@@ -2672,7 +2670,7 @@ function warenkorbKuponFaehigKategorien($Kupon, $PositionenArr)
 function getKundendaten($post, $kundenaccount, $htmlentities = 1)
 {
     //erstelle neuen Kunden
-    $kKunde = (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) 
+    $kKunde = (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0)
         ? (int)$_SESSION['Kunde']->kKunde 
         : 0;
     $Kunde  = new Kunde($kKunde);
@@ -2851,6 +2849,7 @@ function getKundenattribute($cPost_arr)
             $oKundenfeld->cWert       = isset($cPost_arr['custom_' . $oKundenfeldTMP->kKundenfeld])
                 ? StringHandler::filterXSS($cPost_arr['custom_' . $oKundenfeldTMP->kKundenfeld])
                 : null;
+
             $cKundenattribut_arr[$oKundenfeldTMP->kKundenfeld] = $oKundenfeld;
         }
     }
@@ -2999,7 +2998,7 @@ function kuponMoeglich()
     $Kategorie_qry  = '';
     $Kunden_qry     = '';
     /** @var array('Warenkorb' => Warenkorb) $_SESSION */
-    if (isset($_SESSION['Zahlungsart']->cModulId) && strpos($_SESSION['Zahlungsart']->cModulId, 'za_billpay') === 0 ) {
+    if (isset($_SESSION['Zahlungsart']->cModulId) && strpos($_SESSION['Zahlungsart']->cModulId, 'za_billpay') === 0) {
         return 0;
     }
     if (is_array($_SESSION['Warenkorb']->PositionenArr) && count($_SESSION['Warenkorb']->PositionenArr) > 0) {
@@ -3279,7 +3278,7 @@ function setzeLieferadresseAusRechnungsadresse()
     $Lieferadresse->cMobil          = $_SESSION['Kunde']->cMobil;
     $Lieferadresse->cBundesland     = $_SESSION['Kunde']->cBundesland;
     $Lieferadresse->angezeigtesLand = ISO2land($Lieferadresse->cLand);
-    $_SESSION['Lieferadresse'] = $Lieferadresse;
+    $_SESSION['Lieferadresse']      = $Lieferadresse;
 
     return $Lieferadresse;
 }
@@ -3302,6 +3301,7 @@ function gibSelbstdefKundenfelder()
         foreach ($oKundenfeld_arr as $i => $oKundenfeld) {
             if ($oKundenfeld->cTyp === 'auswahl') {
                 $oKundenfeldWert_arr = Shop::DB()->selectAll('tkundenfeldwert', 'kKundenfeld', (int)$oKundenfeld->kKundenfeld);
+
                 $oKundenfeld_arr[$i]->oKundenfeldWert_arr = $oKundenfeldWert_arr;
             }
         }
@@ -3350,7 +3350,7 @@ function pruefeAjaxEinKlick()
                 );
 
                 if ($oLieferdaten->kLieferadresse > 0) {
-                    $oLieferdaten = new Lieferadresse($oLieferdaten->kLieferadresse);
+                    $oLieferdaten              = new Lieferadresse($oLieferdaten->kLieferadresse);
                     $_SESSION['Lieferadresse'] = $oLieferdaten;
                     if (!isset($_SESSION['Bestellung'])) {
                         $_SESSION['Bestellung'] = new stdClass();
@@ -3462,8 +3462,8 @@ function setzeSesssionAccountwahlLogin($oKunde)
     if (isset($oKunde->kKunde) && $oKunde->kKunde > 0) {
         //in tbesucher kKunde setzen
         if (isset($_SESSION['oBesucher']->kBesucher) && $_SESSION['oBesucher']->kBesucher > 0) {
-            $_upd              = new stdClass();
-            $_upd->kKunde      = (int)$oKunde->kKunde;
+            $_upd         = new stdClass();
+            $_upd->kKunde = (int)$oKunde->kKunde;
             Shop::DB()->update('tbesucher', 'kBesucher', (int)$_SESSION['oBesucher']->kBesucher, $_upd);
         }
         $_SESSION['Warenkorb']->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR)
@@ -3471,7 +3471,7 @@ function setzeSesssionAccountwahlLogin($oKunde)
                               ->loescheSpezialPos(C_WARENKORBPOS_TYP_KUPON)
                               ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR);
         unset(
-            $_SESSION['Zahlungsart'], 
+            $_SESSION['Zahlungsart'],
             $_SESSION['Versandart'],
             $_SESSION['Lieferadresse'],
             $_SESSION['ks'],
@@ -3519,9 +3519,9 @@ function setzeSessionRechnungsadresse($cPost_arr, $cFehlendeEingaben_arr)
         //selbstdef. Kundenattr in session setzen
         $oKunde->cKundenattribut_arr = $cKundenattribut_arr;
         $oKunde->nRegistriert        = 0;
-        $_SESSION['Kunde'] = $oKunde;
+        $_SESSION['Kunde']           = $oKunde;
         /** @var array('Warenkorb' => Warenkorb) $_SESSION */
-        if (isset($_SESSION['Warenkorb']->kWarenkorb) && 
+        if (isset($_SESSION['Warenkorb']->kWarenkorb) &&
             $_SESSION['Warenkorb']->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]) > 0
         ) {
             if ($_SESSION['Bestellung']->kLieferadresse == 0 && $_SESSION['Lieferadresse']) {
@@ -3584,7 +3584,7 @@ function setzeFehlerSmartyRechnungsadresse($cFehlendeEingaben_arr, $nUnreg = 0, 
 {
     $conf = Shop::getSettings([CONF_KUNDEN]);
     setzeFehlendeAngaben($cFehlendeEingaben_arr);
-    $herkunfte = Shop::DB()->query(
+    $herkunfte  = Shop::DB()->query(
         "SELECT *
             FROM tkundenherkunft
             ORDER BY nSort", 2
@@ -3638,10 +3638,10 @@ function plausiLieferadresse($cPost_arr)
             (int)$cPost_arr['kLieferadresse']
         );
         if (isset($oLieferadresse->kLieferadresse) && $oLieferadresse->kLieferadresse > 0) {
-            $oLieferadresse = new Lieferadresse($oLieferadresse->kLieferadresse);
+            $oLieferadresse            = new Lieferadresse($oLieferadresse->kLieferadresse);
             $_SESSION['Lieferadresse'] = $oLieferadresse;
         }
-    } elseif ((int)$cPost_arr['kLieferadresse'] === 0) { 
+    } elseif ((int)$cPost_arr['kLieferadresse'] === 0) {
         //lieferadresse gleich rechnungsadresse
         setzeLieferadresseAusRechnungsadresse();
     }
@@ -3691,11 +3691,11 @@ function setzeSessionLieferadresse($cPost_arr)
 {
     /** @var array('Warenkorb' => Warenkorb) $_SESSION */
     $kLieferadresse = isset($cPost_arr['kLieferadresse']) ? (int)$cPost_arr['kLieferadresse'] : -1;
+
     $_SESSION['Bestellung']->kLieferadresse = $kLieferadresse;
     //neue lieferadresse
     if ($kLieferadresse === -1) {
-        $Lieferadresse = getLieferdaten($cPost_arr);
-        $_SESSION['Lieferadresse'] = $Lieferadresse;
+        $_SESSION['Lieferadresse'] = getLieferdaten($cPost_arr);
     } elseif ($kLieferadresse > 0) {
         //vorhandene lieferadresse
         $LA = Shop::DB()->query(
@@ -3705,8 +3705,7 @@ function setzeSessionLieferadresse($cPost_arr)
                 AND kLieferadresse = " . (int)$cPost_arr['kLieferadresse'], 1
         );
         if ($LA->kLieferadresse > 0) {
-            $oLieferadresse = new Lieferadresse($LA->kLieferadresse);
-            $_SESSION['Lieferadresse'] = $oLieferadresse;
+            $_SESSION['Lieferadresse'] = new Lieferadresse($LA->kLieferadresse);
         }
     } elseif ($kLieferadresse === 0) { //lieferadresse gleich rechnungsadresse
         setzeLieferadresseAusRechnungsadresse();
@@ -3869,12 +3868,12 @@ function plausiZahlungsartZusatz($oZahlungsart, $cPost_arr)
             StringHandler::filterXSS($cPost_arr['cKaeuferschutzProdukt'])
         );
         $_SESSION['Warenkorb']->erstelleSpezialPos(
-            $cName, 
-            1, 
-            $fPreis, 
-            $kSteuerklasse, 
-            C_WARENKORBPOS_TYP_TRUSTEDSHOPS, 
-            true, 
+            $cName,
+            1,
+            $fPreis,
+            $kSteuerklasse,
+            C_WARENKORBPOS_TYP_TRUSTEDSHOPS,
+            true,
             true
         );
     }
@@ -4020,8 +4019,7 @@ function loescheSession($nStep)
             break;
 
         case 2:
-            unset($_SESSION['Lieferadresse'], $_SESSION['Versandart'], $_SESSION['oVersandfreiKupon']
-            );
+            unset($_SESSION['Lieferadresse'], $_SESSION['Versandart'], $_SESSION['oVersandfreiKupon']);
             $_SESSION['Warenkorb']->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS)
                                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDZUSCHLAG)
                                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSAND_ARTIKELABHAENGIG)
@@ -4051,8 +4049,7 @@ function loescheSession($nStep)
             break;
 
         case 4:
-            unset($_SESSION['Zahlungsart'],
-            $_SESSION['TrustedShops']);
+            unset($_SESSION['Zahlungsart'], $_SESSION['TrustedShops']);
             $_SESSION['Warenkorb']->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART)
                                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZINSAUFSCHLAG)
                                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR)

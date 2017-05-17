@@ -39,7 +39,7 @@
             </div>
         </div>
         {/if}
-        {if $Einstellungen.kunden.lieferadresse_abfragen_abfragen_mobil !== 'N'}
+        {if $Einstellungen.kunden.lieferadresse_abfragen_mobil !== 'N'}
             <div class="col-xs-12 col-md-6">
                 <div class="form-group float-label-control{if isset($fehlendeAngaben.mobil)} has-error{/if}{if $Einstellungen.kunden.lieferadresse_abfragen_mobil === 'Y'} required{/if} ">
                     <label class="control-label" for="mobile">{lang key="mobile" section="account data"}</label>

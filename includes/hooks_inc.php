@@ -403,7 +403,7 @@ define('HOOK_WARENKORB_PAGE_KUPONANNEHMEN', 54);
  *
  * @file warenkorb.php
  * @param array error
- * @param int nReturnValue
+ * @param int - nReturnValue
  */
 define('HOOK_WARENKORB_PAGE_KUPONANNEHMEN_PLAUSI', 55);
 
@@ -1677,12 +1677,19 @@ define('HOOK_GET_MANUFACTURERS', 226);
 define('HOOK_BACKEND_FUNCTIONS_GRAVATAR', 227);
 
 /**
+ * @since 4.06
+ * @file includes/bestellabschluss_inc.php
+ * @param Warenkorb - oWarenkorb
+ */
+define('HOOK_BESTELLABSCHLUSS_INC_WARENKORBINDB', 228);
+
+/**
  * in Navigationsfilter::initBaseStates() after initializing the base filters
  *
  * @file class.JTL-Shop.Navigationsfilter.php
  * @param Navigationsfilter navifilter
  */
-define('HOOK_NAVIGATIONSFILTER_INIT', 228);
+define('HOOK_NAVIGATIONSFILTER_INIT', 250);
 
 /**
  * in Navigationsfilter::initStates() after initializing the active filters
@@ -1691,7 +1698,7 @@ define('HOOK_NAVIGATIONSFILTER_INIT', 228);
  * @param Navigationsfilter navifilter
  * @param array params
  */
-define('HOOK_NAVIGATIONSFILTER_INIT_STATES', 229);
+define('HOOK_NAVIGATIONSFILTER_INIT_STATES', 251);
 
 /**
  * in Navigationsfilter::construct() when creating the instance
@@ -1699,4 +1706,4 @@ define('HOOK_NAVIGATIONSFILTER_INIT_STATES', 229);
  * @file class.JTL-Shop.Navigationsfilter.php
  * @param Navigationsfilter navifilter
  */
-define('HOOK_NAVIGATIONSFILTER_CREATE', 230);
+define('HOOK_NAVIGATIONSFILTER_CREATE', 252);

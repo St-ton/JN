@@ -4,7 +4,7 @@
             <thead>
                 <tr>
                     <th>Name / User-Agent</th>
-                    <th>Anzahl</th>
+                    <th class="tright">Anzahl</th>
                 </tr>
             </thead>
             <tbody>
@@ -19,7 +19,7 @@
                                 Unbekannt
                             {/if}
                         </td>
-                        <td>{$oBots->nCount}</td>
+                        <td class="tright">{$oBots->nCount}</td>
                     </tr>
                 {/foreach}
             </tbody>

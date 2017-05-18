@@ -276,10 +276,11 @@ $smarty->assign('SEARCHSPECIALS_TOPREVIEWS', SEARCHSPECIALS_TOPREVIEWS)
 
 executeHook(HOOK_FILTER_PAGE);
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
+$metaData = new Metadata($NaviFilter);
 $oGlobaleMetaAngabenAssoc_arr = holeGlobaleMetaAngaben();
 $smarty->assign(
     'meta_title',
-    $NaviFilter->getMetaTitle(
+    $metaData->getMetaTitle(
         $oMeta,
         $oSuchergebnisse,
         $oGlobaleMetaAngabenAssoc_arr,
@@ -288,7 +289,7 @@ $smarty->assign(
 );
 $smarty->assign(
     'meta_description',
-    $NaviFilter->getMetaDescription(
+    $metaData->getMetaDescription(
         $oMeta,
         $oSuchergebnisse->Artikel->elemente->getItems(),
         $oSuchergebnisse,
@@ -298,7 +299,7 @@ $smarty->assign(
 );
 $smarty->assign(
     'meta_keywords',
-    $NaviFilter->getMetaKeywords(
+    $metaData->getMetaKeywords(
         $oMeta,
         $oSuchergebnisse->Artikel->elemente->getItems(),
         $AktuelleKategorie

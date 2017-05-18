@@ -427,7 +427,7 @@ function pruefeZahlungsartwahlStep($cPost_arr)
             $cLandISO      = isset($_SESSION['Lieferadresse']->cLand) ? $_SESSION['Lieferadresse']->cLand : '';
             $kSteuerklasse = $_SESSION['Warenkorb']->gibVersandkostenSteuerklasse($cLandISO);
             $fPreis        = $_SESSION['Kundengruppe']->nNettoPreise
-                ? $fNetto 
+                ? $fNetto
                 : ($fNetto * ((100 + (float)$_SESSION['Steuersatz'][$kSteuerklasse]) / 100));
             $cName['ger']  = Shop::Lang()->get('trustedshopsName', 'global');
             $cName['eng']  = Shop::Lang()->get('trustedshopsName', 'global');
@@ -668,8 +668,8 @@ function gibStepZahlung()
     $aktiveVersandart = gibAktiveVersandart($oVersandart_arr);
     $oZahlungsart_arr = gibZahlungsarten($aktiveVersandart, $_SESSION['Kundengruppe']->kKundengruppe);
     if (is_array($oZahlungsart_arr) && count($oZahlungsart_arr) === 1 &&
-        !isset($_GET['editZahlungsart']) && empty($_SESSION['TrustedShopsZahlung'])
-    ) {
+        !isset($_GET['editZahlungsart']) && empty($_SESSION['TrustedShopsZahlung']) &&
+        isset($_POST['zahlungsartwahl']) && (int)$_POST['zahlungsartwahl'] === 1) {
         // Prüfe Zahlungsart
         $nZahglungsartStatus = zahlungsartKorrekt($oZahlungsart_arr[0]->kZahlungsart);
         if ($nZahglungsartStatus === 2) {
@@ -2671,7 +2671,7 @@ function getKundendaten($post, $kundenaccount, $htmlentities = 1)
 {
     //erstelle neuen Kunden
     $kKunde = (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0)
-        ? (int)$_SESSION['Kunde']->kKunde 
+        ? (int)$_SESSION['Kunde']->kKunde
         : 0;
     $Kunde  = new Kunde($kKunde);
     if ($htmlentities) {

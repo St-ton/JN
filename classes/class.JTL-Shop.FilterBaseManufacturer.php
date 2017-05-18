@@ -159,13 +159,7 @@ class FilterBaseManufacturer extends AbstractFilter
                     ORDER BY ssMerkmal.nSortNr, ssMerkmal.cName";
 
             $manufacturers    = $this->db->query($query, 2);
-            $additionalFilter = new FilterItemManufacturer(
-                $this->naviFilter,
-                $this->getLanguageID(),
-                $this->getCustomerGroupID(),
-                $this->getConfig(),
-                $this->getAvailableLanguages()
-            );
+            $additionalFilter = new FilterItemManufacturer($this->naviFilter);
 
             foreach ($manufacturers as $manufacturer) {
                 // attributes for old filter templates

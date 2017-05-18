@@ -242,12 +242,7 @@ class FilterBaseSearchQuery extends AbstractFilter
                 $searchFilters = array_merge($searchFilters);
             }
             //baue URL
-            $additionalFilter = new FilterBaseSearchQuery(
-                $this->getLanguageID(),
-                $this->getCustomerGroupID(),
-                $this->getConfig(),
-                $this->getAvailableLanguages()
-            );
+            $additionalFilter = new FilterBaseSearchQuery($this->naviFilter);
             // Priorität berechnen
             $nPrioStep = 0;
             $nCount    = count($searchFilters);

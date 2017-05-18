@@ -141,13 +141,7 @@ class FilterItemCategory extends FilterBaseCategory
                     GROUP BY ssMerkmal.kKategorie
                     ORDER BY ssMerkmal.nSort, ssMerkmal.cName";
             $categories       = $this->db->query($query, 2);
-            $additionalFilter = new FilterItemCategory(
-                $this->naviFilter,
-                $this->getLanguageID(),
-                $this->getCustomerGroupID(),
-                $this->getConfig(),
-                $this->getAvailableLanguages()
-            );
+            $additionalFilter = new FilterItemCategory($this->naviFilter);
             foreach ($categories as $category) {
                 // Anzeigen als KategoriePfad
                 if ($categoryFilterType === 'KP') {

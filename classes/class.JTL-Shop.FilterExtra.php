@@ -6,6 +6,20 @@
 
 /**
  * Class FilterExtra
+ *
+ * @property $kHersteller
+ * @property $nAnzahlTagging
+ * @property $kTag
+ * @property $kKategorie
+ * @property $nVon
+ * @property $cVonLocalized
+ * @property $nBis
+ * @property $cBisLocalized
+ * @property $nAnzahlArtikel
+ * @property $nStern
+ * @property $kKey
+ * @property $cSuche
+ * @property $kSuchanfrage
  */
 class FilterExtra //extends AbstractFilter implements IFilter
 {

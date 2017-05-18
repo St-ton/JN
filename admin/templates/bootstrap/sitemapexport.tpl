@@ -41,7 +41,7 @@
                 <div class="alert alert-danger">{$errorNoWrite}</div>
             {/if}
 
-            <p><input style="width:550px;" type="text" readonly="readonly" value="{$URL}" class="form-control" /></p>
+            <p><input type="text" readonly="readonly" value="{$URL}" class="form-control" /></p>
 
             <div class="alert alert-info">
                 <p>{#searchEngines#}</p>
@@ -90,8 +90,8 @@
                         <input type="hidden" name="download_edit" value="1" />
                         <input type="hidden" name="tab" value="downloads" />
                         <input type="hidden" name="nYear_downloads" value="{$nSitemapDownloadYear}" />
-                        <div id="payment" class="table-responsive">
-                            <div id="tabellenBewertung">
+                        <div id="payment">
+                            <div id="tabellenBewertung" class="table-responsive">
                                 <table class="table">
                                     <tr>
                                         <th>&nbsp;</th>
@@ -123,10 +123,10 @@
                                         <td colspan="6" class="TD7"><label for="ALLMSGS">{#sitemapSelectAll#}</label></td>
                                     </tr>
                                 </table>
-                                <div class="panel-footer">
-                                    <div class="button-group">
-                                        <button class="btn btn-danger" name="loeschen" type="submit" value="{#sitemapDelete#}"><i class="fa fa-trash"></i> {#deleteSelected#}</button>
-                                    </div>
+                            </div>
+                            <div class="panel-footer">
+                                <div class="button-group">
+                                    <button class="btn btn-danger" name="loeschen" type="submit" value="{#sitemapDelete#}"><i class="fa fa-trash"></i> {#deleteSelected#}</button>
                                 </div>
                             </div>
                         </div>

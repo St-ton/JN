@@ -42,33 +42,35 @@
                         <div class="panel-heading">
                             <h3 class="panel-title">{#warenkorbpers#}</h3>
                         </div>
-                        <table class="table">
-                            <thead>
-                            <tr>
-                                <th class="tleft">{#warenkorbpersCompany#}</th>
-                                <th class="tleft">{#warenkorbpersClientName#}</th>
-                                <th class="th-3">{#warenkorbpersCount#}</th>
-                                <th class="th-4">{#warenkorbpersDate#}</th>
-                                <th class="th-5">{#warenkorbpersAction#}</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {foreach name=warenkorbkunden from=$oKunde_arr item=oKunde}
-                                <tr class="tab_bg{$smarty.foreach.warenkorbkunden.iteration%2}">
-                                    <td class="TD1">{$oKunde->cFirma}</td>
-                                    <td class="TD2">{$oKunde->cVorname} {$oKunde->cNachname}</td>
-                                    <td class="tcenter">{$oKunde->nAnzahl}</td>
-                                    <td class="tcenter">{$oKunde->Datum}</td>
-                                    <td class="tcenter">
-                                        <div class="btn-group">
-                                            <a href="warenkorbpers.php?a={$oKunde->kKunde}&token={$smarty.session.jtl_token}" class="btn btn-default">{#warenkorbpersShow#}</a>
-                                            <a href="warenkorbpers.php?l={$oKunde->kKunde}&token={$smarty.session.jtl_token}" class="btn btn-danger"><i class="fa fa-trash"></i></a>
-                                        </div>
-                                    </td>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th class="tleft">{#warenkorbpersCompany#}</th>
+                                    <th class="tleft">{#warenkorbpersClientName#}</th>
+                                    <th class="th-3">{#warenkorbpersCount#}</th>
+                                    <th class="th-4">{#warenkorbpersDate#}</th>
+                                    <th class="th-5">{#warenkorbpersAction#}</th>
                                 </tr>
-                            {/foreach}
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                {foreach name=warenkorbkunden from=$oKunde_arr item=oKunde}
+                                    <tr class="tab_bg{$smarty.foreach.warenkorbkunden.iteration%2}">
+                                        <td class="TD1">{$oKunde->cFirma}</td>
+                                        <td class="TD2">{$oKunde->cVorname} {$oKunde->cNachname}</td>
+                                        <td class="tcenter">{$oKunde->nAnzahl}</td>
+                                        <td class="tcenter">{$oKunde->Datum}</td>
+                                        <td class="tcenter">
+                                            <div class="btn-group">
+                                                <a href="warenkorbpers.php?a={$oKunde->kKunde}&token={$smarty.session.jtl_token}" class="btn btn-default">{#warenkorbpersShow#}</a>
+                                                <a href="warenkorbpers.php?l={$oKunde->kKunde}&token={$smarty.session.jtl_token}" class="btn btn-danger"><i class="fa fa-trash"></i></a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {/foreach}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 {else}
                     <div class="alert alert-info" role="alert">{#noDataAvailable#}</div>
@@ -85,26 +87,28 @@
             <div class="panel-heading">
                 <h3 class="panel-title">{#warenkorbpersClient#} {$oWarenkorbPersPos_arr[0]->cVorname} {$oWarenkorbPersPos_arr[0]->cNachname}</h3>
             </div>
-            <table class="table">
-                <thead>
-                <tr>
-                    <th class="tleft">{#warenkorbpersProduct#}</th>
-                    <th class="th-2">{#warenkorbpersCount#}</th>
-                    <th class="th-3">{#warenkorbpersDate#}</th>
-                </tr>
-                </thead>
-                <tbody>
-                {foreach name=warenkorbpers from=$oWarenkorbPersPos_arr item=oWarenkorbPersPos}
-                    <tr class="tab_bg{$smarty.foreach.warenkorbpers.iteration%2}">
-                        <td class="tleft">
-                            <a href="{$shopURL}/index.php?a={$oWarenkorbPersPos->kArtikel}" target="_blank">{$oWarenkorbPersPos->cArtikelName}</a>
-                        </td>
-                        <td class="tcenter">{$oWarenkorbPersPos->fAnzahl}</td>
-                        <td class="tcenter">{$oWarenkorbPersPos->Datum}</td>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th class="tleft">{#warenkorbpersProduct#}</th>
+                        <th class="th-2">{#warenkorbpersCount#}</th>
+                        <th class="th-3">{#warenkorbpersDate#}</th>
                     </tr>
-                {/foreach}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                    {foreach name=warenkorbpers from=$oWarenkorbPersPos_arr item=oWarenkorbPersPos}
+                        <tr class="tab_bg{$smarty.foreach.warenkorbpers.iteration%2}">
+                            <td class="tleft">
+                                <a href="{$shopURL}/index.php?a={$oWarenkorbPersPos->kArtikel}" target="_blank">{$oWarenkorbPersPos->cArtikelName}</a>
+                            </td>
+                            <td class="tcenter">{$oWarenkorbPersPos->fAnzahl}</td>
+                            <td class="tcenter">{$oWarenkorbPersPos->Datum}</td>
+                        </tr>
+                    {/foreach}
+                    </tbody>
+                </table>
+            </div>
         </div>
     {/if}
 </div>

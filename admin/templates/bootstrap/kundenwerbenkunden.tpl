@@ -28,7 +28,7 @@
                     <input type="hidden" name="nichtreggt_loeschen" value="1" />
                     <input type="hidden" name="tab" value="einladungen" />
                     <div id="payment">
-                        <div id="tabellenLivesuche">
+                        <div id="tabellenLivesuche" class="table-responsive">
                             <table class="table">
                                 <tr>
                                     <th class="check"></th>
@@ -98,7 +98,7 @@
             {if $oKwKBestandBonus_arr|@count > 0 && $oKwKBestandBonus_arr}
                 {include file='tpl_inc/pagination.tpl' oPagination=$oPagiPraemie cAnchor='praemie'}
                 <div id="payment">
-                    <div id="tabellenLivesuche">
+                    <div id="tabellenLivesuche" class="table-responsive">
                         <table class="table">
                             <tr>
                                 <th class="tleft">{#kundenwerbenkundenFromReg#}</th>

@@ -149,48 +149,50 @@
                 <div class="panel-heading">
                     <h3 class="panel-title">{#invisibleBoxes#}</h3>
                 </div>
-                <table class="table">
-                    <tr class="boxRow">
-                        <th class="check">&nbsp;</th>
-                        <th>
-                            <strong>{#boxTitle#}</strong>
-                        </th>
-                        <th>
-                            <strong>{#boxLabel#}</strong>
-                        </th>
-                        <th>
-                            <strong>{#boxTemplate#}</strong>
-                        </th>
-                        <th>
-                            <strong>{#boxPosition#}</strong>
-                        </th>
-                    </tr>
-                    {foreach from=$invisibleBoxes item=invisibleBox name=invisibleBoxList}
+                <div class="table-responsive">
+                    <table class="table">
+                        <tr class="boxRow">
+                            <th class="check">&nbsp;</th>
+                            <th>
+                                <strong>{#boxTitle#}</strong>
+                            </th>
+                            <th>
+                                <strong>{#boxLabel#}</strong>
+                            </th>
+                            <th>
+                                <strong>{#boxTemplate#}</strong>
+                            </th>
+                            <th>
+                                <strong>{#boxPosition#}</strong>
+                            </th>
+                        </tr>
+                        {foreach from=$invisibleBoxes item=invisibleBox name=invisibleBoxList}
+                            <tr>
+                                <td class="check">
+                                    <input name="kInvisibleBox[]" type="checkbox" value="{$invisibleBox->kBox}" id="kInvisibleBox-{$smarty.foreach.invisibleBoxList.index}">
+                                </td>
+                                <td>
+                                    <label for="kInvisibleBox-{$smarty.foreach.invisibleBoxList.index}">{$invisibleBox->cTitel}</label>
+                                </td>
+                                <td>
+                                    {$invisibleBox->cName}
+                                </td>
+                                <td>
+                                    {$invisibleBox->cTemplate}
+                                </td>
+                                <td>
+                                    {$invisibleBox->ePosition}
+                                </td>
+                            </tr>
+                        {/foreach}
                         <tr>
                             <td class="check">
-                                <input name="kInvisibleBox[]" type="checkbox" value="{$invisibleBox->kBox}" id="kInvisibleBox-{$smarty.foreach.invisibleBoxList.index}">
+                                <input name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);">
                             </td>
-                            <td>
-                                <label for="kInvisibleBox-{$smarty.foreach.invisibleBoxList.index}">{$invisibleBox->cTitel}</label>
-                            </td>
-                            <td>
-                                {$invisibleBox->cName}
-                            </td>
-                            <td>
-                                {$invisibleBox->cTemplate}
-                            </td>
-                            <td>
-                                {$invisibleBox->ePosition}
-                            </td>
+                            <td colspan="4" class="tleft"><label for="ALLMSGS">{#globalSelectAll#}</label></td>
                         </tr>
-                    {/foreach}
-                    <tr>
-                        <td class="check">
-                            <input name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);">
-                        </td>
-                        <td colspan="4" class="tleft"><label for="ALLMSGS">{#globalSelectAll#}</label></td>
-                    </tr>
-                </table>
+                    </table>
+                </div>
                 <div class="panel-footer">
                     <button name="action" type="submit" class="btn btn-danger" value="delete-invisible"><i class="fa fa-trash"></i> {#deleteSelected#}</button>
                 </div>

@@ -52,7 +52,7 @@ class FilterBaseManufacturer extends AbstractFilter
      */
     public function setSeo($languages)
     {
-        $oSeo_arr = Shop::DB()->query("
+        $oSeo_arr = $this->db->query("
                 SELECT tseo.cSeo, tseo.kSprache, thersteller.cName
                     FROM tseo
                         LEFT JOIN thersteller
@@ -158,7 +158,7 @@ class FilterBaseManufacturer extends AbstractFilter
                     GROUP BY ssMerkmal.kHersteller
                     ORDER BY ssMerkmal.nSortNr, ssMerkmal.cName";
 
-            $manufacturers    = Shop::DB()->query($query, 2);
+            $manufacturers    = $this->db->query($query, 2);
             $additionalFilter = new FilterItemManufacturer(
                 $this->naviFilter,
                 $this->getLanguageID(),

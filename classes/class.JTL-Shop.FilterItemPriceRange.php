@@ -335,7 +335,7 @@ class FilterItemPriceRange extends AbstractFilter
             ? $_SESSION['Waehrung']
             : null;
         if (!isset($currency->kWaehrung)) {
-            $currency = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
+            $currency = $this->db->select('twaehrung', 'cStandard', 'Y');
         }
 
         $order = $this->naviFilter->getOrder();
@@ -435,7 +435,7 @@ class FilterItemPriceRange extends AbstractFilter
                 GROUP BY tartikel.kArtikel
                 " . $state->having . "
             ) AS ssMerkmal";
-            $oPreisspannenFilterMaxMin = Shop::DB()->query($qry, 1);
+            $oPreisspannenFilterMaxMin = $this->db->query($qry, 1);
             if (isset($oPreisspannenFilterMaxMin->fMax) && $oPreisspannenFilterMaxMin->fMax > 0) {
                 // Berechnet Max, Min, Step, Anzahl, Diff und liefert diese Werte in einem Objekt
                 $oPreis = $this->calculateSteps($oPreisspannenFilterMaxMin->fMax * $currency->fFaktor,
@@ -463,7 +463,7 @@ class FilterItemPriceRange extends AbstractFilter
                         " . $state->having . "
                     ) AS ssMerkmal
                     ";
-                $oPreisspannenFilterDB     = Shop::DB()->query($qry, 1);
+                $oPreisspannenFilterDB     = $this->db->query($qry, 1);
                 $nPreisspannenAnzahl_arr   = is_object($oPreisspannenFilterDB)
                     ? get_object_vars($oPreisspannenFilterDB)
                     : null;
@@ -513,7 +513,7 @@ class FilterItemPriceRange extends AbstractFilter
                 }
             }
         } else {
-            $oPreisspannenfilter_arr = Shop::DB()->query("SELECT * FROM tpreisspannenfilter", 2);
+            $oPreisspannenfilter_arr = $this->db->query("SELECT * FROM tpreisspannenfilter", 2);
             if (is_array($oPreisspannenfilter_arr) && count($oPreisspannenfilter_arr) > 0) {
                 // Berechnet Max, Min, Step, Anzahl, Diff
                 $oPreis = $this->calculateSteps(
@@ -532,7 +532,7 @@ class FilterItemPriceRange extends AbstractFilter
                     $cSelectSQL .= "SUM(ssMerkmal.anz" . $i . ") AS anz" . $i;
                 }
 
-                $oPreisspannenFilterDB     = Shop::DB()->query(
+                $oPreisspannenFilterDB     = $this->db->query(
                     "SELECT " . $cSelectSQL . "
                         FROM
                         (

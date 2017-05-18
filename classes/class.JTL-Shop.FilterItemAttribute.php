@@ -69,7 +69,7 @@ class FilterItemAttribute extends FilterBaseAttribute
     public function setSeo($languages)
     {
         $value    = $this->getValue();
-        $oSeo_arr = Shop::DB()->selectAll(
+        $oSeo_arr = $this->db->selectAll(
             'tseo',
             ['cKey', 'kKey'],
             ['kMerkmalWert', $value],
@@ -86,7 +86,7 @@ class FilterItemAttribute extends FilterBaseAttribute
                 }
             }
         }
-        $seo_obj = Shop::DB()->executeQueryPrepared('
+        $seo_obj = $this->db->executeQueryPrepared('
             SELECT tmerkmalwertsprache.cWert, tmerkmalwert.kMerkmal
                 FROM tmerkmalwertsprache
                 JOIN tmerkmalwert 
@@ -142,6 +142,21 @@ class FilterItemAttribute extends FilterBaseAttribute
     }
 
     /**
+     * @param int $kMerkmalWert
+     * @return bool
+     */
+    public function attributeValueIsActive($kMerkmalWert)
+    {
+        foreach ($this->naviFilter->MerkmalFilter as $i => $oMerkmalauswahl) {
+            if ($oMerkmalauswahl->getValue() === $kMerkmalWert) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * @param mixed|null $mixed
      * @return array
      */
@@ -156,7 +171,6 @@ class FilterItemAttribute extends FilterBaseAttribute
         $bForce                      = isset($mixed['bForce'])
             ? $mixed['bForce']
             : false;
-        $attributeFilters            = [];
         $cKatAttribMerkmalFilter_arr = [];
         $activeOrFilterIDs           = [];
         $attributeFilters            = [];
@@ -289,8 +303,7 @@ class FilterItemAttribute extends FilterBaseAttribute
                 $state->having,
                 $order->orderBy,
                 '',
-                ['tartikelmerkmal.kMerkmalWert', 'tartikel.kArtikel'],
-                true
+                ['tartikelmerkmal.kMerkmalWert', 'tartikel.kArtikel']
             );
 
             $query = "SELECT ssMerkmal.cSeo, ssMerkmal.kMerkmal, ssMerkmal.kMerkmalWert, ssMerkmal.cMMWBildPfad, 
@@ -304,7 +317,7 @@ class FilterItemAttribute extends FilterBaseAttribute
                 GROUP BY ssMerkmal.kMerkmalWert
                 ORDER BY ssMerkmal.nSortMerkmal, ssMerkmal.nSort, ssMerkmal.cWert";
 
-            $oMerkmalFilterDB_arr = Shop::DB()->query($query, 2);
+            $oMerkmalFilterDB_arr = $this->db->query($query, 2);
 
             if (is_array($oMerkmalFilterDB_arr)) {
                 $additionalFilter = new FilterItemAttribute($this->naviFilter);
@@ -314,7 +327,7 @@ class FilterItemAttribute extends FilterBaseAttribute
                     $oMerkmalWerte->cWert        = $oMerkmalFilterDB->cWert;
                     $oMerkmalWerte->nAnzahl      = (int)$oMerkmalFilterDB->nAnzahl;
                     $oMerkmalWerte->nAktiv       = ($this->naviFilter->MerkmalWert->getValue() === $oMerkmalWerte->kMerkmalWert ||
-                        $this->naviFilter->attributeValueIsActive($oMerkmalWerte->kMerkmalWert))
+                        $this->attributeValueIsActive($oMerkmalWerte->kMerkmalWert))
                         ? 1
                         : 0;
 

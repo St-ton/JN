@@ -1151,7 +1151,7 @@ function baueExportURL($kKey, $cKey, $dLetzteAktualisierung, $oSprach_arr, $kSpr
     $kKey           = (int)$kKey;
 
     Shop::setLanguage($kSprache);
-    $naviFilter = new Navigationsfilter(['languages' => $oSprach_arr, 'config' => $config]);
+    $naviFilter = new Navigationsfilter($oSprach_arr, $kSprache, $config);
     switch ($cKey) {
         case 'kKategorie':
             $params['kKategorie'] = $kKey;

@@ -132,10 +132,18 @@ function bearbeiteUpdates($xml)
             if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
                 Jtllog::writeLog('oWarenlager_arr: ' . print_r($oWarenlager_arr, true), JTLLOG_LEVEL_DEBUG, false, 'Globals_xml');
             }
-            //Alle Einträge in twarenlager löschen - Wawi 1.0.1 sendet immer alle Warenlager. 
+            //Lagersichtbarkeit für Shop zwischenspeichern
+            $lagersichtbarkeit_arr = Shop::DB()->query("SELECT kWarenlager, nAktiv FROM twarenlager WHERE nAktiv = 1", 2);
+            //Alle Einträge in twarenlager löschen - Wawi 1.0.1 sendet immer alle Warenlager.
             Shop::DB()->query("DELETE FROM twarenlager WHERE 1", 4);
             
             DBUpdateInsert('twarenlager', $oWarenlager_arr, 'kWarenlager');
+            //Lagersichtbarkeit übertragen
+            if (!empty($lagersichtbarkeit_arr)) {
+                foreach ($lagersichtbarkeit_arr as $lager) {
+                    Shop::DB()->update('twarenlager', 'kWarenlager', $lager->kWarenlager, $lager);
+                }
+            }
         }
         // Masseinheit
         if (isset($xml['globals']['tmasseinheit']) && is_array($xml['globals']['tmasseinheit'])) {

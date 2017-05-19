@@ -830,7 +830,9 @@ function plausiNeukundenKupon()
     if (isset($_SESSION['NeukundenKuponAngenommen']) && $_SESSION['NeukundenKuponAngenommen'] === true) {
         return;
     }
-    if ((!isset($_SESSION['Kupon']->cKuponTyp) || $_SESSION['Kupon']->cKuponTyp !== 'standard') && !empty($_SESSION['Kunde']->cMail)) {
+    if ((!isset($_SESSION['Kupon']->cKuponTyp) || $_SESSION['Kupon']->cKuponTyp !== 'standard')
+        && !empty($_SESSION['Kunde']->cMail)
+    ) {
         $query = "SELECT tbestellung.kBestellung
             FROM tkunde
             JOIN tbestellung
@@ -838,11 +840,16 @@ function plausiNeukundenKupon()
             WHERE tkunde.cMail = :mail";
         $values = ['mail' => $_SESSION['Kunde']->cMail];
         $conf = Shop::getSettings([CONF_KAUFABWICKLUNG]);
-        if (!empty($_SESSION['Kunde']->kKunde) && $conf['kaufabwicklung']['bestellvorgang_unregneukundenkupon_zulassen'] === 'N') {
-            $query .= " OR tkunde.kKunde = :kkunde";
-            $values["kkunde"] = $_SESSION['Kunde']->kKunde;
-        } else {
+        if (empty($_SESSION['Kunde']->kKunde)
+            && $conf['kaufabwicklung']['bestellvorgang_unregneukundenkupon_zulassen'] === 'N'
+        ) {
+            //unregistrierte Neukunden, keine Kupons für Gastbestellungen zugelassen
             return;
+        }
+        if (!empty($_SESSION['Kunde']->kKunde)) {
+            // registrierte Kunden und Neukunden mit Kundenkonto
+            $query .= " OR tkunde.kKunde = :kkunde";
+            $values['kkunde'] = $_SESSION['Kunde']->kKunde;
         }
         $query .= " LIMIT 1";
         $oBestellung = Shop::DB()->executeQueryPrepared($query, $values, 1);
@@ -2206,7 +2213,7 @@ function checkeKupon($Kupon)
         }
     }
     //Hersteller
-    if ($Kupon->cHersteller != -1 && !warenkorbKuponFaehigHersteller($Kupon, $_SESSION['Warenkorb']->PositionenArr)) {
+    if ($Kupon->cHersteller != -1 && !empty($Kupon->cHersteller) && !warenkorbKuponFaehigHersteller($Kupon, $_SESSION['Warenkorb']->PositionenArr)) {
         $ret['ungueltig'] = 12;
     }
     $alreadyUsedSQL = '';
@@ -2393,8 +2400,8 @@ function gibGesamtsummeKuponartikelImWarenkorb($Kupon, $PositionenArr)
     $gesamtsumme = 0;
     if (is_array($PositionenArr)) {
         foreach ($PositionenArr as $Position) {
-            if (warenkorbKuponFaehigArtikel($Kupon, [$Position]) ||
-                warenkorbKuponFaehigHersteller($Kupon, [$Position]) ||
+            if ((empty($Kupon->cArtikel) || warenkorbKuponFaehigArtikel($Kupon, [$Position])) ||
+                (empty($Kupon->cHersteller) || warenkorbKuponFaehigHersteller($Kupon, [$Position])) ||
                 warenkorbKuponFaehigKategorien($Kupon, [$Position])) {
                 $gesamtsumme += $Position->fPreis * $Position->nAnzahl * ((100 + gibUst($Position->kSteuerklasse)) / 100);
             }
@@ -2633,7 +2640,7 @@ function getKundendaten($post, $kundenaccount, $htmlentities = 1)
         }
     }
     if (preg_match('/^\d{2}\.\d{2}\.(\d{4})$/', $Kunde->dGeburtstag)) {
-        $Kunde->dGeburtstag = convertDate2German($Kunde->dGeburtstag);
+        $Kunde->dGeburtstag = DateTime::createFromFormat('d.m.Y', $Kunde->dGeburtstag)->format('Y-m-d');
     }
     $Kunde->angezeigtesLand = ISO2land($Kunde->cLand);
     if (!empty($Kunde->cBundesland)) {
@@ -2870,7 +2877,7 @@ function kuponMoeglich()
                 AND (nVerwendungen = 0 
                     OR nVerwendungen > nVerwendungenBisher)
                 AND (cArtikel = '' $Artikel_qry)
-                AND (cHersteller = '-1' $Hersteller_qry) 
+                AND (cHersteller IS NULL OR cHersteller = '' OR cHersteller = '-1' $Hersteller_qry) 
                 AND (cKategorien = '' 
                     OR cKategorien = '-1' $Kategorie_qry)
                 AND (cKunden = '' 

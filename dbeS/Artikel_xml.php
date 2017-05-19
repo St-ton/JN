@@ -1399,14 +1399,14 @@ function clearProductCaches($kArtikel)
         array_walk($parentIDs, function (&$i) {
             $i = CACHING_GROUP_ARTICLE . '_' . $i;
         });
-        //flush config parents cache
+        // flush config parents cache
         $totalCount += Shop::Cache()->flushTags($parentIDs);
-        //flush cache tags associated with the article's manufacturer ID
+        // flush cache tags associated with the article's manufacturer ID
         $oArticleManufacturer = Shop::DB()->query("SELECT kHersteller FROM tartikel WHERE kArtikel = " . $kArtikel, 1);
         if (isset($oArticleManufacturer->kHersteller) && (int)$oArticleManufacturer->kHersteller > 0) {
             $totalCount += Shop::Cache()->flushTags([CACHING_GROUP_MANUFACTURER . '_' . $oArticleManufacturer->kHersteller]);
         }
-        //flush cache tags associated with the article's category IDs
+        // flush cache tags associated with the article's category IDs
         $oArticleCategories = Shop::DB()->selectAll('tkategorieartikel', 'kArtikel', $kArtikel);
         if (is_array($oArticleCategories)) {
             foreach ($oArticleCategories as $_articleCategory) {
@@ -1418,7 +1418,7 @@ function clearProductCaches($kArtikel)
         });
         $cacheTags[] = CACHING_GROUP_ARTICLE . '_' . $kArtikel;
         $cacheTags[] = 'jtl_mmf';
-        //flush article cache, category cache and cache for gibMerkmalFilterOptionen() and mega menu/category boxes
+        // flush article cache, category cache and cache for gibMerkmalFilterOptionen() and mega menu/category boxes
         $totalCount += Shop::Cache()->flushTags($cacheTags);
         $end        = microtime(true);
         dbeSlog('Flushed a total of ' . $totalCount . ' keys in ' . ($end - $start) . 's');
@@ -1428,7 +1428,6 @@ function clearProductCaches($kArtikel)
 
         if (isset($kArtikel[0]['kArtikel'])) {
             // deleted articles
-//            dbeSlog('flushing caches for DELETED articles ' . print_r($kArtikel, true));
             dbeSlog('flushing caches for DELETED articles');
             foreach ($kArtikel as $article) {
                 $cacheTags[] = CACHING_GROUP_ARTICLE . '_' . (int)$article['kArtikel'];
@@ -1439,9 +1438,7 @@ function clearProductCaches($kArtikel)
             }
 
         } else {
-//            dbeSlog('flushing caches for articles ' . print_r($kArtikel, true));
             dbeSlog('flushing caches for articles');
-
             foreach ($kArtikel as $articleID) {
                 $parentIDs = getConfigParents($articleID);
                 foreach ($parentIDs as $parentID) {
@@ -1450,14 +1447,14 @@ function clearProductCaches($kArtikel)
                 $cacheTags[] = CACHING_GROUP_ARTICLE . '_' . (int)$articleID;
             }
 
-            //flush cache tags associated with the article's manufacturer ID
+            // flush cache tags associated with the article's manufacturer ID
             $oArticleManufacturer = Shop::DB()->query("SELECT kHersteller FROM tartikel WHERE kArtikel IN (" . implode(',',
                     $kArtikel) . ")", 2);
 
             foreach ($oArticleManufacturer as $manufacturers) {
                 $cacheTags[] = CACHING_GROUP_MANUFACTURER . '_' . $manufacturers->kHersteller;
             }
-            //flush cache tags associated with the article's category IDs
+            //f lush cache tags associated with the article's category IDs
             $oArticleCategories = Shop::DB()->query('SELECT kKategorie FROM tkategorieartikel WHERE kArtikel IN (' . implode(',',
                     $kArtikel) . ')', 2);
             foreach ($oArticleCategories as $_articleCategory) {
@@ -1468,8 +1465,7 @@ function clearProductCaches($kArtikel)
 
         $cacheTags[] = 'jtl_mmf';
         $cacheTags = array_unique($cacheTags);
-//        dbeSlog('Complete list of cache tags: ' . print_r($cacheTags, true));
-        //flush article cache, category cache and cache for gibMerkmalFilterOptionen() and mega menu/category boxes
+        // flush article cache, category cache and cache for gibMerkmalFilterOptionen() and mega menu/category boxes
         $totalCount = Shop::Cache()->flushTags($cacheTags);
         $end        = microtime(true);
         dbeSlog('Flushed a total of ' . $totalCount . ' keys for ' . count($cacheTags) . ' tags in ' . ($end - $start) . 's');

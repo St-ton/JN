@@ -3174,7 +3174,7 @@ class Artikel
                 $this->oVariationDetailPreisKind_arr[$oVariationKombi->kEigenschaftWert]         = new stdClass();
                 $this->oVariationDetailPreisKind_arr[$oVariationKombi->kEigenschaftWert]->Preise = $this->Preise;
                 // Grundpreis?
-                if ($this->fVPEWert > 0) {
+                if ($this->cVPE === 'Y' && $this->fVPEWert > 0) {
                     $nGenauigkeit = 2;
                     if (isset($this->FunktionsAttribute[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT]) && (int)$this->FunktionsAttribute[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT] > 0) {
                         $nGenauigkeit = (int)$this->FunktionsAttribute[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT];
@@ -3273,7 +3273,7 @@ class Artikel
                         );
                     }
                     // Grundpreis?
-                    if (isset($oArtikelTMP->fVPEWert) && $oArtikelTMP->fVPEWert > 0) {
+                    if (!empty($oArtikelTMP->cVPE) && $oArtikelTMP->cVPE === 'Y' && isset($oArtikelTMP->fVPEWert) && $oArtikelTMP->fVPEWert > 0) {
                         if (isset($this->FunktionsAttribute[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT]) &&
                             (int)$this->FunktionsAttribute[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT] > 0
                         ) {
@@ -5119,7 +5119,7 @@ class Artikel
         }
         // cheapest shipping except shippings that offer cash payment
         $shipping = Shop::DB()->query(
-            "SELECT va.kVersandart, IF(vas.fPreis IS NOT NULL, vas.fPreis, va.fPreis) AS minPrice
+            "SELECT va.kVersandart, IF(vas.fPreis IS NOT NULL, vas.fPreis, va.fPreis) AS minPrice, va.nSort
                 FROM tversandart va
                 LEFT JOIN tversandartstaffel vas
                     ON vas.kVersandart = va.kVersandart
@@ -5137,7 +5137,7 @@ class Artikel
                     OR ( va.kVersandberechnung = 2 AND vas.fBis > 0 AND {$this->fGewicht} <= vas.fBis )
                     OR ( va.kVersandberechnung = 3 AND vas.fBis > 0 AND {$this->Preise->fVKNetto} <= vas.fBis )
                     )
-                ORDER BY minPrice ASC LIMIT 1", 1
+                ORDER BY minPrice, nSort ASC LIMIT 1", 1
         );
         if (isset($shipping->kVersandart)) {
             $this->oFavourableShipping = new Versandart($shipping->kVersandart);
@@ -5160,7 +5160,6 @@ class Artikel
     {
         //Language-Fallback fuer Exportformate - #6663.
         //@todo: Abfrage der aktuellen Sprache in Session-Class oder System-Class auslagern
-        //@todo: Verwendung von $allMaxDeliveryDays / $allMinDeliveryDays prüfen
         if ($languageISO === null && !isset($_SESSION['cISOSprache'])) {
             $oSprache                = gibStandardsprache(true);
             $_SESSION['cISOSprache'] = $oSprache->cISO;
@@ -5203,15 +5202,13 @@ class Artikel
             $this->holeStueckliste($_SESSION['Kundengruppe']->kKundengruppe, true);
         }
         if (!empty($this->oStueckliste_arr) && !empty($this->kStueckliste)) {
-            $allMaxDeliveryDays = $maxDeliveryDays;
-            $allMinDeliveryDays = $minDeliveryDays;
             foreach ($this->oStueckliste_arr as $piece) {
                 $piece->getDeliveryTime($countryCode, $purchaseQuantity * (float)$piece->fAnzahl_stueckliste, null, null, $shippingID);
                 if (isset($piece->nMaxDeliveryDays)) {
-                    $allMaxDeliveryDays = max($allMaxDeliveryDays, $piece->nMaxDeliveryDays);
+                    $maxDeliveryDays = max($maxDeliveryDays, $piece->nMaxDeliveryDays);
                 }
                 if (isset($piece->nMinDeliveryDays)) {
-                    $allMinDeliveryDays = max($allMinDeliveryDays, $piece->nMinDeliveryDays);
+                    $minDeliveryDays = max($minDeliveryDays, $piece->nMinDeliveryDays);
                 }
             }
             if (!empty($resetArray)) {
@@ -5220,8 +5217,6 @@ class Artikel
             }
         }
         if ($this->bHasKonfig && !empty($this->oKonfig_arr)) {
-            $allMaxDeliveryDays = $maxDeliveryDays;
-            $allMinDeliveryDays = $minDeliveryDays;
             foreach ($this->oKonfig_arr as $gruppe) {
                 /** @var Konfigitem $piece */
                 foreach ($gruppe->oItem_arr as $piece) {
@@ -5235,10 +5230,10 @@ class Artikel
                             $shippingID
                         );
                         if (isset($konfigItemArticle->nMaxDeliveryDays)) {
-                            $allMaxDeliveryDays = max($allMaxDeliveryDays, $konfigItemArticle->nMaxDeliveryDays);
+                            $maxDeliveryDays = max($maxDeliveryDays, $konfigItemArticle->nMaxDeliveryDays);
                         }
                         if (isset($konfigItemArticle->nMinDeliveryDays)) {
-                            $allMinDeliveryDays = max($allMinDeliveryDays, $konfigItemArticle->nMinDeliveryDays);
+                            $minDeliveryDays = max($minDeliveryDays, $konfigItemArticle->nMinDeliveryDays);
                         }
                     }
                 }

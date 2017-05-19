@@ -148,7 +148,7 @@ class FilterBaseSearchQuery extends AbstractFilter
                     $kSucheCache_arr[] = (int)$oSuchFilter->kSuchCache;
                 }
             }
-        } elseif (isset($searchFilter->kSuchCache)) {
+        } elseif (isset($searchFilter->kSuchCache) && $searchFilter->kSuchCache > 0) {
             $kSucheCache_arr[] = (int)$searchFilter->kSuchCache;
             $count = 1;
         } else {

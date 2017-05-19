@@ -1135,22 +1135,6 @@ function flushCategoryTreeCache()
 }
 
 /**
- * @param string $text
- * @return bool|int
- */
-function dbeSlog($text)
-{
-    $date     = new DateTime();
-    $fileName = PFAD_LOGFILES . 'dbeSlog_' . $date->format('Y-m-d');
-    $handle   = fopen($fileName, 'a+b');
-    $text     = $date->format('Y-m-d H:i:s') . ': ' . $text . "\n";
-    $res      = fwrite($handle, $text);
-    fclose($handle);
-
-    return $res;
-}
-
-/**
  * @param int $kKunde
  * @return bool|int
  */

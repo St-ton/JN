@@ -428,7 +428,7 @@ function erstelleFilterLoesenURLs($bSeo, $oSuchergebnisse)
 function truncateMetaTitle($cTitle)
 {
     trigger_error('filter_inc.php: truncateMetaTitle() called.', E_USER_DEPRECATED);
-    return Shop::getNaviFilter()->truncateMetaTitle($cTitle);
+    return (new Metadata(Shop::getNaviFilter()))->truncateMetaTitle($cTitle);
 }
 
 /**
@@ -442,7 +442,7 @@ function gibNaviMetaTitle($NaviFilter, $oSuchergebnisse, $GlobaleMetaAngaben_arr
 {
     trigger_error('filter_inc.php: gibNaviMetaTitle() called.', E_USER_DEPRECATED);
     global $oMeta;
-    return Shop::getNaviFilter()->getMetaTitle($oMeta, $oSuchergebnisse, $GlobaleMetaAngaben_arr);
+    return (new Metadata(Shop::getNaviFilter()))->getMetaTitle($oMeta, $oSuchergebnisse, $GlobaleMetaAngaben_arr);
 }
 
 /**
@@ -457,7 +457,7 @@ function gibNaviMetaDescription($oArtikel_arr, $NaviFilter, $oSuchergebnisse, $G
 {
     trigger_error('filter_inc.php: gibNaviMetaDescription() called.', E_USER_DEPRECATED);
     global $oMeta;
-    return Shop::getNaviFilter()->getMetaDescription($oMeta, $oArtikel_arr, $oSuchergebnisse, $GlobaleMetaAngaben_arr);
+    return (new Metadata(Shop::getNaviFilter()))->getMetaDescription($oMeta, $oArtikel_arr, $oSuchergebnisse, $GlobaleMetaAngaben_arr);
 }
 
 /**
@@ -471,7 +471,7 @@ function gibNaviMetaKeywords($oArtikel_arr, $NaviFilter, $oExcludesKeywords_arr 
 {
     trigger_error('filter_inc.php: gibNaviMetaKeywords() called.', E_USER_DEPRECATED);
     global $oMeta;
-    return Shop::getNaviFilter()->getMetaKeywords($oMeta, $oArtikel_arr);
+    return (new Metadata(Shop::getNaviFilter()))->getMetaKeywords($oMeta, $oArtikel_arr);
 }
 
 /**
@@ -485,7 +485,7 @@ function gibNaviMetaKeywords($oArtikel_arr, $NaviFilter, $oExcludesKeywords_arr 
 function gibMetaStart($NaviFilter, $oSuchergebnisse)
 {
     trigger_error('filter_inc.php: gibMetaStart() called.', E_USER_DEPRECATED);
-    return Shop::getNaviFilter()->getMetaStart($oSuchergebnisse);
+    return (new Metadata(Shop::getNaviFilter()))->getMetaStart($oSuchergebnisse);
 }
 
 /**
@@ -496,7 +496,7 @@ function gibMetaStart($NaviFilter, $oSuchergebnisse)
  */
 function gibSuchanfrageKey($cSuche, $kSprache)
 {
-    if (strlen($cSuche) > 0 && $kSprache > 0) {
+    if ($kSprache > 0 && strlen($cSuche) > 0) {
         $oSuchanfrage = Shop::DB()->select('tsuchanfrage', 'cSuche', Shop::DB()->escape($cSuche), 'kSprache', (int)$kSprache);
 
         if (isset($oSuchanfrage->kSuchanfrage) && $oSuchanfrage->kSuchanfrage > 0) {

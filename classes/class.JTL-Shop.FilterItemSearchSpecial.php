@@ -55,7 +55,7 @@ class FilterItemSearchSpecial extends AbstractFilter
      */
     public function setSeo($languages)
     {
-        $oSeo_arr = Shop::DB()->query("
+        $oSeo_arr = $this->db->query("
                 SELECT cSeo, kSprache
                     FROM tseo
                     WHERE cKey = 'suchspecial'
@@ -310,7 +310,7 @@ class FilterItemSearchSpecial extends AbstractFilter
                     $state->conditions,
                     $state->having
                 );
-                $oSuchspecialFilterDB  = Shop::DB()->query($qry, 2);
+                $oSuchspecialFilterDB  = $this->db->query($qry, 2);
 
                 $fe = (new FilterExtra())
                     ->setType($this->getType())

@@ -739,7 +739,7 @@ final class Shop
 
         self::Event()->fire('shop.run');
 
-        self::$NaviFilter = new Navigationsfilter();
+        self::$NaviFilter = new Navigationsfilter(self::Lang()->getLangArray(), self::$kSprache, null, NiceDB::getInstance());
 
         self::seoCheck();
 
@@ -1295,7 +1295,7 @@ final class Shop
     public static function buildNaviFilter($cParameter_arr, $NaviFilter = null)
     {
         if (self::$NaviFilter === null) {
-            self::$NaviFilter = new Navigationsfilter();
+            self::$NaviFilter = new Navigationsfilter(self::Lang()->getLangArray(), self::$kSprache);
         }
         return self::$NaviFilter->initStates($cParameter_arr);
     }

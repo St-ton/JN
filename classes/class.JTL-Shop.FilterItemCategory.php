@@ -140,14 +140,8 @@ class FilterItemCategory extends FilterBaseCategory
                         AND tseo.kSprache = " . $this->getLanguageID() . "
                     GROUP BY ssMerkmal.kKategorie
                     ORDER BY ssMerkmal.nSort, ssMerkmal.cName";
-            $categories       = Shop::DB()->query($query, 2);
-            $additionalFilter = new FilterItemCategory(
-                $this->naviFilter,
-                $this->getLanguageID(),
-                $this->getCustomerGroupID(),
-                $this->getConfig(),
-                $this->getAvailableLanguages()
-            );
+            $categories       = $this->db->query($query, 2);
+            $additionalFilter = new FilterItemCategory($this->naviFilter);
             foreach ($categories as $category) {
                 // Anzeigen als KategoriePfad
                 if ($categoryFilterType === 'KP') {

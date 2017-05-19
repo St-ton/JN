@@ -52,7 +52,7 @@ class FilterBaseTag extends AbstractFilter
      */
     public function setSeo($languages)
     {
-        $oSeo_obj = Shop::DB()->query("
+        $oSeo_obj = $this->db->query("
                 SELECT tseo.cSeo, tseo.kSprache, ttag.cName
                     FROM tseo
                     LEFT JOIN ttag
@@ -166,14 +166,8 @@ class FilterBaseTag extends AbstractFilter
                     AND tseo.kSprache = " . $this->getLanguageID() . "
                 GROUP BY ssMerkmal.kTag
                 ORDER BY nAnzahl DESC LIMIT 0, " . (int)$this->getConfig()['navigationsfilter']['tagfilter_max_anzeige'];
-            $tags             = Shop::DB()->query($query, 2);
-            $additionalFilter = new FilterItemTag(
-                $this->naviFilter,
-                $this->getLanguageID(),
-                $this->getCustomerGroupID(),
-                $this->getConfig(),
-                $this->getAvailableLanguages()
-            );
+            $tags             = $this->db->query($query, 2);
+            $additionalFilter = new FilterItemTag($this->naviFilter);
             // Priorität berechnen
             $nPrioStep = 0;
             $nCount    = count($tags);

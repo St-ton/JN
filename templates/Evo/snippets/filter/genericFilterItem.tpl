@@ -34,7 +34,10 @@
             {/if}
         {/foreach}
     {else}
-        {if $filter->isInitialized() && $filter->getType() !== $filter::FILTER_TYPE_OR}
+        {if is_array($filter)}
+            {*@todo! - catch this - search filters will be arrays.*}
+            <pre>{$filter|@var_dump}</pre>
+        {elseif $filter->isInitialized() && $filter->getType() !== $filter::FILTER_TYPE_OR}
             <li>
                 <a href="{$filter->getUnsetFilterURL()}" rel="nofollow" class="active">
                     <span class="value">

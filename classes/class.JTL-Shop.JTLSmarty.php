@@ -302,7 +302,9 @@ class JTLSmarty extends SmartyBC
                  ->registerPlugin('modifier', 'truncate', [$this, 'truncate']);
 
             if ($isAdmin === false) {
-                $this->cache_lifetime = (isset($cacheOptions['expiration']) && ((int)$cacheOptions['expiration'] > 0)) ? $cacheOptions['expiration'] : 86400;
+                $this->cache_lifetime = (isset($cacheOptions['expiration']) && ((int)$cacheOptions['expiration'] > 0))
+                    ? $cacheOptions['expiration']
+                    : 86400;
                 //assign variables moved from $_SESSION to cache to smarty
                 $linkHelper = LinkHelper::getInstance();
                 $linkGroups = $linkHelper->getLinkGroups();
@@ -322,17 +324,13 @@ class JTLSmarty extends SmartyBC
                 $this->setCachingParams($this->config);
             }
             $_tplDir = $this->getTemplateDir($this->context);
+            global $smarty;
+            $smarty = $this;
             if (file_exists($_tplDir . 'php/functions_custom.php')) {
-                global $smarty;
-                $smarty = $this;
                 require_once $_tplDir . 'php/functions_custom.php';
             } elseif (file_exists($_tplDir . 'php/functions.php')) {
-                global $smarty;
-                $smarty = $this;
                 require_once $_tplDir . 'php/functions.php';
             } elseif ($parent !== null && file_exists(PFAD_ROOT . PFAD_TEMPLATES . $parent . '/php/functions.php')) {
-                global $smarty;
-                $smarty = $this;
                 require_once PFAD_ROOT . PFAD_TEMPLATES . $parent . '/php/functions.php';
             }
         }
@@ -394,9 +392,13 @@ class JTLSmarty extends SmartyBC
             }
             $tplOutput = $GLOBALS['doc']->htmlOuter();
         }
-        if (isset($this->config['template']['general']['minify_html']) && $this->config['template']['general']['minify_html'] === 'Y') {
-            $minifyCSS = (isset($this->config['template']['general']['minify_html_css']) && $this->config['template']['general']['minify_html_css'] === 'Y');
-            $minifyJS  = (isset($this->config['template']['general']['minify_html_js']) && $this->config['template']['general']['minify_html_js'] === 'Y');
+        if (isset($this->config['template']['general']['minify_html'])
+            && $this->config['template']['general']['minify_html'] === 'Y'
+        ) {
+            $minifyCSS = (isset($this->config['template']['general']['minify_html_css'])
+                && $this->config['template']['general']['minify_html_css'] === 'Y');
+            $minifyJS  = (isset($this->config['template']['general']['minify_html_js'])
+                && $this->config['template']['general']['minify_html_js'] === 'Y');
             $tplOutput = $this->minify_html($tplOutput, $minifyCSS, $minifyJS);
         }
 
@@ -566,11 +568,10 @@ class JTLSmarty extends SmartyBC
             if (!$break_words && !$middle) {
                 $string = preg_replace('/\s+?(\S+)?$/', '', substr($string, 0, $length + 1));
             }
-            if (!$middle) {
-                return substr($string, 0, $length) . $etc;
-            }
 
-            return substr($string, 0, $length / 2) . $etc . substr($string, -$length / 2);
+            return !$middle
+                ? substr($string, 0, $length) . $etc
+                : substr($string, 0, $length / 2) . $etc . substr($string, -$length / 2);
         }
 
         return $string;
@@ -795,7 +796,18 @@ class jtlTplClass extends Smarty_Internal_Template
      * @param string  $content_func   function name
      *
      */
-    public function _subTemplateRender($template, $cache_id, $compile_id, $caching, $cache_lifetime, $data, $scope, $forceTplCache, $uid = null, $content_func = null)
+    public function _subTemplateRender(
+        $template,
+        $cache_id,
+        $compile_id,
+        $caching,
+        $cache_lifetime,
+        $data,
+        $scope,
+        $forceTplCache,
+        $uid = null,
+        $content_func = null
+    )
     {
         return parent::_subTemplateRender(
             $this->smarty->getResourceName($template),

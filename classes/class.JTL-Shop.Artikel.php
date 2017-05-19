@@ -4188,6 +4188,10 @@ class Artikel
             : $this->cName;
 
         $cacheTags = [CACHING_GROUP_ARTICLE . '_' . $this->kArtikel, CACHING_GROUP_ARTICLE];
+        $basePrice = clone $this->Preise;
+        $this->rabattierePreise();
+        // Versandkostenfrei-Länder aufgrund rabattierter Preise neu setzen
+        $this->taxData['shippingFreeCountries'] = $this->gibMwStVersandLaenderString();
         executeHook(HOOK_ARTIKEL_CLASS_FUELLEARTIKEL, [
             'oArtikel'  => &$this,
             'cacheTags' => &$cacheTags,
@@ -4195,16 +4199,17 @@ class Artikel
         ]);
 
         if ($noCache === false) {
-            //oVariationKombiKinderAssoc_arr can contain a lot of article objects - do not save to cache
+            // oVariationKombiKinderAssoc_arr can contain a lot of article objects, prices may depend on customers
+            // so do not save to cache
+            $newPrice                             = $this->Preise;
             $children                             = $this->oVariationKombiKinderAssoc_arr;
             $this->oVariationKombiKinderAssoc_arr = null;
+            $this->Preise                         = $basePrice;
             Shop::Cache()->set($cacheID, $this, $cacheTags);
-            //restore oVariationKombiKinderAssoc_arr to class instance
+            // restore oVariationKombiKinderAssoc_arr and Preise to class instance
             $this->oVariationKombiKinderAssoc_arr = $children;
+            $this->Preise                         = $newPrice;
         }
-        $this->rabattierePreise();
-        // Versandkostenfrei-Länder aufgrund rabattierter Preise neu setzen
-        $this->taxData['shippingFreeCountries'] = $this->gibMwStVersandLaenderString();
 
         return $this;
     }

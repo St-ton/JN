@@ -24,7 +24,7 @@
  * @method string getErrorMessage()
  * @method mixed getError()
  */
-class NiceDB
+class NiceDB implements Serializable
 {
     /**
      * @var pdo
@@ -1352,4 +1352,21 @@ class NiceDB
 
         return preg_replace($keys, $values, $query, 1, $count);
     }
+
+    /**
+     * @return null
+     */
+    public function serialize()
+    {
+        return null;
+    }
+
+    /**
+     * @param string $serialized
+     */
+    public function unserialize($serialized)
+    {
+
+    }
 }
+

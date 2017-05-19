@@ -124,15 +124,15 @@ class FilterSearch extends AbstractFilter
     }
 
     /**
-     * @param string $cSuche
      * @param int    $nAnzahlTreffer
+     * @param string $cSuche
      * @param bool   $bEchteSuche
      * @param int    $kSpracheExt
      * @param bool   $bSpamFilter
      * @return bool
      * @former suchanfragenSpeichern
      */
-    public function saveQuery($cSuche = '', $nAnzahlTreffer, $bEchteSuche = false, $kSpracheExt = 0, $bSpamFilter = true)
+    public function saveQuery($nAnzahlTreffer, $cSuche = '', $bEchteSuche = false, $kSpracheExt = 0, $bSpamFilter = true)
     {
         if ($cSuche === '') {
             $cSuche = $this->cSuche;

@@ -116,7 +116,7 @@ function pruefeSuchspaltenKlassen($searchColumns, $searchColumn, $nonAllowed)
  */
 function suchanfragenSpeichern($cSuche, $nAnzahlTreffer, $bEchteSuche = false, $kSpracheExt = 0, $bSpamFilter = true)
 {
-    return Shop::getNaviFilter()->Suche->saveQuery($cSuche, $nAnzahlTreffer, $bEchteSuche, $kSpracheExt, $bSpamFilter);
+    return Shop::getNaviFilter()->Suche->saveQuery($nAnzahlTreffer, $cSuche, $bEchteSuche, $kSpracheExt, $bSpamFilter);
 }
 
 /**

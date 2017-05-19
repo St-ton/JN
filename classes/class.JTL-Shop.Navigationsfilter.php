@@ -1405,9 +1405,10 @@ class Navigationsfilter
                     } else {
                         $data->joins[] = $itemJoin;
                     }
-
-                    $data->conditions[] = "\n#condition from filter " . $type . "\n" .
-                        $filters[0]->getSQLCondition();
+                    $_condition = $filters[0]->getSQLCondition();
+                    if (!empty($_condition)) {
+                        $data->conditions[] = "\n#condition from filter " . $type . "\n" . $_condition;
+                    }
                 }
             } elseif ($count > 0 && ($type !== 'misc' || $type !== 'custom')) {
                 // this is the most clean and usual behaviour.
@@ -1421,9 +1422,10 @@ class Navigationsfilter
                     } else {
                         $data->joins[] = $itemJoin;
                     }
-
-                    $data->conditions[] = "\n#condition from filter " . $type . "\n" .
-                        $filter->getSQLCondition();
+                    $_condition = $filter->getSQLCondition();
+                    if (!empty($_condition)) {
+                        $data->conditions[] = "\n#condition from filter " . $type . "\n" . $_condition;
+                    }
                 }
             }
         }

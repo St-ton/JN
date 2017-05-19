@@ -164,14 +164,35 @@ function navigation()
 }
 
 function addValidationListener() {
-    var forms = $('form');
-    var inputs = $('input,select,textarea');
+    var forms  = $('form'),
+        inputs = $('input,select,textarea'),
+        $body  = $('body');
 
     for (var i = 0; i < forms.length; i++) {
         forms[i].addEventListener('invalid', function (event) {
             event.preventDefault();
             $(event.target).closest('.form-group').find('div.form-error-msg').remove();
             $(event.target).closest('.form-group').addClass('has-error').append('<div class="form-error-msg text-danger"><i class="fa fa-warning"></i> ' + event.target.validationMessage + '</div>');
+
+            if (!$body.data('doScrolling')) {
+                var $firstError = $(event.target).closest('.form-group.has-error');
+                if ($firstError.length > 0) {
+                    $body.data('doScrolling', true);
+                    var $nav        = $('#evo-main-nav-wrapper.do-affix'),
+                        fixedOffset = $nav.length > 0 ? $nav.outerHeight() : 0;
+                    $('html, body').animate(
+                        {
+                            scrollTop: $firstError.offset().top - fixedOffset - parseInt($firstError.css('margin-top'))
+                        },
+                        {
+                            done: function() {
+                                console.log('end scrolling');
+                                $body.data('doScrolling', false);
+                            }
+                        }, 300
+                    );
+                }
+            }
         }, true);
     }
 

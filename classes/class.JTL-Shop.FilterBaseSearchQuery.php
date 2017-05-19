@@ -165,7 +165,7 @@ class FilterBaseSearchQuery extends AbstractFilter
                               HAVING COUNT(*) = ' . $count . '
                           ) AS jSuche')
                                  ->setOn('jSuche.kArtikel = tartikel.kArtikel')
-                                 ->setComment('JOIN1 from FilterSearch');
+                                 ->setComment('JOIN1 from BaseFilterSearch');
     }
 
     /**

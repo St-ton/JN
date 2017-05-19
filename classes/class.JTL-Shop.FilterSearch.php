@@ -296,8 +296,8 @@ class FilterSearch extends AbstractFilter
                                       WHERE tsuchcachetreffer.kSuchCache IN (' . implode(',', $kSucheCache_arr) . ') 
                                       GROUP BY tsuchcachetreffer.kArtikel
                                       HAVING COUNT(*) = ' . $count . '
-                                  ) AS jSuche')
-                                 ->setOn('jSuche.kArtikel = tartikel.kArtikel')
+                                  ) AS jfSuche')
+                                 ->setOn('jfSuche.kArtikel = tartikel.kArtikel')
                                  ->setComment('JOIN1 from FilterSearch');
     }
 

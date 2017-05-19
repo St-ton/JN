@@ -540,6 +540,7 @@ class Navigationsfilter
         } elseif (strlen($params['cSuche']) > 0) {
             $params['cSuche']              = StringHandler::filterXSS($params['cSuche']);
             $this->Suche->cSuche           = $params['cSuche'];
+            $this->Suchanfrage->cSuche     = $this->Suche->cSuche;
             $oSuchanfrage                  = $this->db->select(
                 'tsuchanfrage',
                 'cSuche', $this->db->escape($this->Suche->cSuche),

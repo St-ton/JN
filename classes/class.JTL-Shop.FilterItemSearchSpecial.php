@@ -330,6 +330,7 @@ class FilterItemSearchSpecial extends AbstractFilter
                 }
             }
         }
+        $this->options = $options;
 
         return $options;
     }

@@ -599,6 +599,7 @@ class FilterItemPriceRange extends AbstractFilter
             }
             $options = $oPreisspanneTMP_arr;
         }
+        $this->options = $options;
 
         return $options;
     }

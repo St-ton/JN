@@ -201,6 +201,7 @@ class FilterBaseTag extends AbstractFilter
                 $options[] = $fe->setClass($class);
             }
         }
+        $this->options = $options;
 
         return $options;
     }

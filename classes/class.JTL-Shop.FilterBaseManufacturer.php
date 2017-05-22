@@ -188,6 +188,7 @@ class FilterBaseManufacturer extends AbstractFilter
                 $options[] = $fe;
             }
         }
+        $this->options = $options;
 
         return $options;
     }

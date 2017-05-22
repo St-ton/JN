@@ -176,6 +176,7 @@ class FilterItemCategory extends FilterBaseCategory
                 });
             }
         }
+        $this->options = $options;
 
         return $options;
     }

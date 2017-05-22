@@ -69,14 +69,16 @@ class FilterSearch extends AbstractFilter
      */
     public function setSeo($languages)
     {
-        $oSeo_obj = $this->db->executeQueryPrepared("
-            SELECT tseo.cSeo, tseo.kSprache, tsuchanfrage.cSuche
+        $oSeo_obj = $this->db->executeQueryPrepared(
+            "SELECT tseo.cSeo, tseo.kSprache, tsuchanfrage.cSuche
                 FROM tseo
                 LEFT JOIN tsuchanfrage
                     ON tsuchanfrage.kSuchanfrage = tseo.kKey
                     AND tsuchanfrage.kSprache = tseo.kSprache
                 WHERE cKey = 'kSuchanfrage' 
-                    AND kKey = :key", ['key' => $this->getValue()], 1
+                    AND kKey = :key", 
+            ['key' => $this->getValue()], 
+            1
         );
         foreach ($languages as $language) {
             $this->cSeo[$language->kSprache] = '';
@@ -124,32 +126,32 @@ class FilterSearch extends AbstractFilter
     }
 
     /**
-     * @param int    $nAnzahlTreffer
-     * @param string $cSuche
-     * @param bool   $bEchteSuche
-     * @param int    $kSpracheExt
-     * @param bool   $bSpamFilter
+     * @param int    $hits
+     * @param string $query
+     * @param bool   $real
+     * @param int    $languageIDExt
+     * @param bool   $filterSpam
      * @return bool
      * @former suchanfragenSpeichern
      */
-    public function saveQuery($nAnzahlTreffer, $cSuche = '', $bEchteSuche = false, $kSpracheExt = 0, $bSpamFilter = true)
+    public function saveQuery($hits, $query = '', $real = false, $languageIDExt = 0, $filterSpam = true)
     {
-        if ($cSuche === '') {
-            $cSuche = $this->cSuche;
+        if ($query === '') {
+            $query = $this->cSuche;
         }
-        if (strlen($cSuche) > 0) {
-            $Suchausdruck = str_replace(["'", "\\", "*", "%"], '', $cSuche);
-            $kSprache     = (int)$kSpracheExt > 0 ? (int)$kSpracheExt : $this->getLanguageID();
-            //db füllen für auswertugnen / suggest, dabei Blacklist beachten
-            $Suchausdruck_tmp_arr = explode(';', $Suchausdruck);
-            $blacklist_erg        = $this->db->select(
+        if (strlen($query) > 0) {
+            $Suchausdruck = str_replace(["'", "\\", "*", "%"], '', $query);
+            $languageID   = (int)$languageIDExt > 0 ? (int)$languageIDExt : $this->getLanguageID();
+            // db füllen für auswertugnen / suggest, dabei Blacklist beachten
+            $tempQueries = explode(';', $Suchausdruck);
+            $blacklist   = $this->db->select(
                 'tsuchanfrageblacklist',
                 'kSprache',
-                $kSprache,
+                $languageID,
                 'cSuche',
-                $this->db->escape($Suchausdruck_tmp_arr[0])
+                $this->db->escape($tempQueries[0])
             );
-            if (!$bSpamFilter || !isset($blacklist_erg->kSuchanfrageBlacklist) || $blacklist_erg->kSuchanfrageBlacklist == 0) {
+            if (!$filterSpam || !isset($blacklist->kSuchanfrageBlacklist) || $blacklist->kSuchanfrageBlacklist == 0) {
                 // Ist MD5(IP) bereits X mal im Cache
                 $max_ip_count = (int)$this->getConfig()['artikeluebersicht']['livesuche_max_ip_count'] * 100;
                 $ip_cache_erg = $this->db->executeQueryPrepared(
@@ -157,13 +159,13 @@ class FilterSearch extends AbstractFilter
                         FROM tsuchanfragencache
                         WHERE kSprache = :lang
                         AND cIP = :ip",
-                    ['lang' => $kSprache, 'ip' => gibIP()],
+                    ['lang' => $languageID, 'ip' => gibIP()],
                     1
                 );
-                $ip_used = $this->db->select(
+                $ipUsed = $this->db->select(
                     'tsuchanfragencache',
                     'kSprache',
-                    $kSprache,
+                    $languageID,
                     'cSuche',
                     $Suchausdruck,
                     'cIP',
@@ -171,92 +173,93 @@ class FilterSearch extends AbstractFilter
                     false,
                     'kSuchanfrageCache'
                 );
-                if (!$bSpamFilter
+                if (!$filterSpam
                     || (isset($ip_cache_erg->anzahl) && $ip_cache_erg->anzahl < $max_ip_count
-                        && (!isset($ip_used->kSuchanfrageCache) || !$ip_used->kSuchanfrageCache))
+                        && (!isset($ipUsed->kSuchanfrageCache) || !$ipUsed->kSuchanfrageCache))
                 ) {
                     // Fülle Suchanfragencache
-                    $tsuchanfragencache_obj           = new stdClass();
-                    $tsuchanfragencache_obj->kSprache = $kSprache;
-                    $tsuchanfragencache_obj->cIP      = gibIP();
-                    $tsuchanfragencache_obj->cSuche   = $Suchausdruck;
-                    $tsuchanfragencache_obj->dZeit    = 'now()';
-                    $this->db->insert('tsuchanfragencache', $tsuchanfragencache_obj);
+                    $searchQueryCache           = new stdClass();
+                    $searchQueryCache->kSprache = $languageID;
+                    $searchQueryCache->cIP      = gibIP();
+                    $searchQueryCache->cSuche   = $Suchausdruck;
+                    $searchQueryCache->dZeit    = 'now()';
+                    $this->db->insert('tsuchanfragencache', $searchQueryCache);
                     // Cacheeinträge die > 1 Stunde sind, löschen
                     $this->db->query("
                         DELETE 
                             FROM tsuchanfragencache 
                             WHERE dZeit < DATE_SUB(now(),INTERVAL 1 HOUR)", 4
                     );
-                    if ($nAnzahlTreffer > 0) {
+                    if ($hits > 0) {
                         require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
-                        $suchanfrage = new stdClass();
-                        $suchanfrage->kSprache        = $kSprache;
-                        $suchanfrage->cSuche          = $Suchausdruck;
-                        $suchanfrage->nAnzahlTreffer  = $nAnzahlTreffer;
-                        $suchanfrage->nAnzahlGesuche  = 1;
-                        $suchanfrage->dZuletztGesucht = 'now()';
-                        $suchanfrage->cSeo            = getSeo($Suchausdruck);
-                        $suchanfrage->cSeo            = checkSeo($suchanfrage->cSeo);
-                        $suchanfrage_old              = $this->db->select(
+                        $searchQuery = new stdClass();
+                        $searchQuery->kSprache        = $languageID;
+                        $searchQuery->cSuche          = $Suchausdruck;
+                        $searchQuery->nAnzahlTreffer  = $hits;
+                        $searchQuery->nAnzahlGesuche  = 1;
+                        $searchQuery->dZuletztGesucht = 'now()';
+                        $searchQuery->cSeo            = getSeo($Suchausdruck);
+                        $searchQuery->cSeo            = checkSeo($searchQuery->cSeo);
+                        $previuousQuery              = $this->db->select(
                             'tsuchanfrage',
-                            'kSprache', (int)$suchanfrage->kSprache,
+                            'kSprache', (int)$searchQuery->kSprache,
                             'cSuche', $Suchausdruck,
                             null, null,
                             false,
                             'kSuchanfrage'
                         );
-                        if (isset($suchanfrage_old->kSuchanfrage) && $suchanfrage_old->kSuchanfrage > 0 && $bEchteSuche) {
+                        if (isset($previuousQuery->kSuchanfrage) && $previuousQuery->kSuchanfrage > 0 && $real) {
                             $this->db->query(
                                 "UPDATE tsuchanfrage
-                                    SET nAnzahlTreffer = $suchanfrage->nAnzahlTreffer, 
+                                    SET nAnzahlTreffer = $searchQuery->nAnzahlTreffer, 
                                         nAnzahlGesuche = nAnzahlGesuche+1, 
                                         dZuletztGesucht = now()
-                                    WHERE kSuchanfrage = " . (int)$suchanfrage_old->kSuchanfrage, 4
+                                    WHERE kSuchanfrage = " . (int)$previuousQuery->kSuchanfrage, 4
                             );
-                        } elseif (!isset($suchanfrage_old->kSuchanfrage) || !$suchanfrage_old->kSuchanfrage) {
+                        } elseif (!isset($previuousQuery->kSuchanfrage) || !$previuousQuery->kSuchanfrage) {
                             $this->db->delete(
                                 'tsuchanfrageerfolglos',
                                 ['kSprache', 'cSuche'],
-                                [(int)$suchanfrage->kSprache, $this->db->realEscape($Suchausdruck)]
+                                [(int)$searchQuery->kSprache, $this->db->realEscape($Suchausdruck)]
                             );
-                            $kSuchanfrage = $this->db->insert('tsuchanfrage', $suchanfrage);
-                            writeLog(PFAD_LOGFILES . 'suchanfragen.log', print_r($suchanfrage, true), 1);
+                            $queryID = $this->db->insert('tsuchanfrage', $searchQuery);
+                            writeLog(PFAD_LOGFILES . 'suchanfragen.log', print_r($searchQuery, true), 1);
 
-                            return (int)$kSuchanfrage;
+                            return (int)$queryID;
                         }
                     } else {
-                        $suchanfrageerfolglos                  = new stdClass();
-                        $suchanfrageerfolglos->kSprache        = $kSprache;
-                        $suchanfrageerfolglos->cSuche          = $Suchausdruck;
-                        $suchanfrageerfolglos->nAnzahlGesuche  = 1;
-                        $suchanfrageerfolglos->dZuletztGesucht = 'now()';
-                        $suchanfrageerfolglos_old              = $this->db->select(
+                        $queryMiss                  = new stdClass();
+                        $queryMiss->kSprache        = $languageID;
+                        $queryMiss->cSuche          = $Suchausdruck;
+                        $queryMiss->nAnzahlGesuche  = 1;
+                        $queryMiss->dZuletztGesucht = 'now()';
+                        $queryMiss_old              = $this->db->select(
                             'tsuchanfrageerfolglos',
-                            'kSprache', (int)$suchanfrageerfolglos->kSprache,
+                            'kSprache', (int)$queryMiss->kSprache,
                             'cSuche', $Suchausdruck,
                             null, null,
                             false,
                             'kSuchanfrageErfolglos'
                         );
-                        if (isset($suchanfrageerfolglos_old->kSuchanfrageErfolglos) &&
-                            $suchanfrageerfolglos_old->kSuchanfrageErfolglos > 0 &&
-                            $bEchteSuche) {
+                        if (isset($queryMiss_old->kSuchanfrageErfolglos) &&
+                            $queryMiss_old->kSuchanfrageErfolglos > 0 &&
+                            $real
+                        ) {
                             $this->db->query(
                                 "UPDATE tsuchanfrageerfolglos
                                     SET nAnzahlGesuche = nAnzahlGesuche+1, 
                                         dZuletztGesucht = now()
                                     WHERE kSuchanfrageErfolglos = " .
-                                    (int)$suchanfrageerfolglos_old->kSuchanfrageErfolglos,
+                                    (int)$queryMiss_old->kSuchanfrageErfolglos,
                                 4
                             );
                         } else {
                             $this->db->delete(
                                 'tsuchanfrage',
                                 ['kSprache', 'cSuche'],
-                                [(int)$suchanfrageerfolglos->kSprache, $this->db->realEscape($Suchausdruck)]
+                                [(int)$queryMiss->kSprache, $this->db->realEscape($Suchausdruck)]
                             );
-                            $this->db->insert('tsuchanfrageerfolglos', $suchanfrageerfolglos);
+                            $this->db->insert('tsuchanfrageerfolglos', $queryMiss);
                         }
                     }
                 }
@@ -271,21 +274,21 @@ class FilterSearch extends AbstractFilter
      */
     public function getSQLJoin()
     {
-        $count           = 0;
-        $kSucheCache_arr = [];
-        $searchFilter    = $this->naviFilter->getActiveState();
+        $count        = 0;
+        $searchCache  = [];
+        $searchFilter = $this->naviFilter->getActiveState();
         if (is_array($searchFilter)) {
             $count = count($searchFilter);
             foreach ($searchFilter as $oSuchFilter) {
                 if (isset($oSuchFilter->kSuchCache)) {
-                    $kSucheCache_arr[] = (int)$oSuchFilter->kSuchCache;
+                    $searchCache[] = (int)$oSuchFilter->kSuchCache;
                 }
             }
         } elseif (isset($searchFilter->kSuchCache)) {
-            $kSucheCache_arr[] = (int)$searchFilter->kSuchCache;
+            $searchCache[] = (int)$searchFilter->kSuchCache;
             $count             = 1;
         } elseif (($value = $searchFilter->getValue()) > 0) {
-            $kSucheCache_arr = [$value];
+            $searchCache = [$value];
             $count           = 1;
         }
 
@@ -293,7 +296,7 @@ class FilterSearch extends AbstractFilter
                                  ->setTable('(SELECT tsuchcachetreffer.kArtikel, tsuchcachetreffer.kSuchCache, 
                                   MIN(tsuchcachetreffer.nSort) AS nSort
                                       FROM tsuchcachetreffer
-                                      WHERE tsuchcachetreffer.kSuchCache IN (' . implode(',', $kSucheCache_arr) . ') 
+                                      WHERE tsuchcachetreffer.kSuchCache IN (' . implode(',', $searchCache) . ') 
                                       GROUP BY tsuchcachetreffer.kArtikel
                                       HAVING COUNT(*) = ' . $count . '
                                   ) AS jfSuche')
@@ -314,7 +317,7 @@ class FilterSearch extends AbstractFilter
         if ($this->getConfig()['navigationsfilter']['suchtrefferfilter_nutzen'] !== 'N') {
             $nLimit     = (isset($this->getConfig()['navigationsfilter']['suchtrefferfilter_anzahl']) &&
                 ($limit = (int)$this->getConfig()['navigationsfilter']['suchtrefferfilter_anzahl']) > 0)
-                ? " LIMIT " . $limit
+                ? ' LIMIT ' . $limit
                 : '';
             $order      = $this->naviFilter->getOrder();
             $state      = $this->naviFilter->getCurrentStateData();
@@ -345,25 +348,25 @@ class FilterSearch extends AbstractFilter
                 '',
                 ['tsuchanfrage.kSuchanfrage', 'tartikel.kArtikel']
             );
-            $query            = "SELECT ssMerkmal.kSuchanfrage, ssMerkmal.cSuche, count(*) AS nAnzahl
+            $query         = "SELECT ssMerkmal.kSuchanfrage, ssMerkmal.cSuche, count(*) AS nAnzahl
                 FROM (" . $query . ") AS ssMerkmal
                     GROUP BY ssMerkmal.kSuchanfrage
                     ORDER BY ssMerkmal.cSuche" . $nLimit;
-            $searchFilters    = $this->db->query($query, 2);
-            $kSuchanfrage_arr = [];
+            $searchFilters = $this->db->query($query, 2);
+            $searchQueries = [];
             if ($this->naviFilter->Suche->kSuchanfrage > 0) {
-                $kSuchanfrage_arr[] = (int)$this->naviFilter->Suche->kSuchanfrage;
+                $searchQueries[] = (int)$this->naviFilter->Suche->kSuchanfrage;
             }
             if (count($this->naviFilter->SuchFilter) > 0) {
                 foreach ($this->naviFilter->SuchFilter as $oSuchFilter) {
                     if ($oSuchFilter->getValue() > 0) {
-                        $kSuchanfrage_arr[] = (int)$oSuchFilter->getValue();
+                        $searchQueries[] = (int)$oSuchFilter->getValue();
                     }
                 }
             }
             // entferne bereits gesetzte Filter aus dem Ergebnis-Array
             foreach ($searchFilters as $j => $searchFilter) {
-                foreach ($kSuchanfrage_arr as $searchQuery) {
+                foreach ($searchQueries as $searchQuery) {
                     if ($searchFilter->kSuchanfrage === $searchQuery) {
                         unset($searchFilters[$j]);
                         break;
@@ -373,7 +376,6 @@ class FilterSearch extends AbstractFilter
             if (is_array($searchFilters)) {
                 $searchFilters = array_merge($searchFilters);
             }
-            //baue URL
             $additionalFilter = new FilterBaseSearchQuery($this->naviFilter);
             // Priorität berechnen
             $nPrioStep = 0;
@@ -407,6 +409,7 @@ class FilterSearch extends AbstractFilter
                 $options[] = $fe;
             }
         }
+        $this->options = $options;
 
         return $options;
     }

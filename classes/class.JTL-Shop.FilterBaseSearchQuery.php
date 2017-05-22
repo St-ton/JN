@@ -272,6 +272,7 @@ class FilterBaseSearchQuery extends AbstractFilter
                 $options[] = $fe;
             }
         }
+        $this->options = $options;
 
         return $options;
     }

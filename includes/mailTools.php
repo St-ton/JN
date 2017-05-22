@@ -442,9 +442,13 @@ function sendeMail($ModulId, $Object, $mail = null)
                        ->assign('oKunde', $Object->oKunde)
                        ->assign('cAnzeigeOrt', $Object->cAnzeigeOrt)
                        ->assign('oSprache', $Sprache);
+            if (empty($Object->oKunde->cVorname) && empty($Object->oKunde->cNachname)) {
+                $subjectLineCustomer = $Object->oKunde->cMail;
+            } else {
+                $subjectLineCustomer = $Object->oKunde->cVorname . ' ' . $Object->oKunde->cNachname;
+            }
             $Emailvorlage->cBetreff = $Object->oCheckBox->cName .
-                ' - ' . $Object->oKunde->cVorname .
-                ' ' . $Object->oKunde->cNachname;
+                ' - ' . $subjectLineCustomer;
             break;
 
         case MAILTEMPLATE_RMA_ABGESENDET:

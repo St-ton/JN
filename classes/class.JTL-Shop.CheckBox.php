@@ -582,6 +582,7 @@ class CheckBox
             $oObj->oKunde        = $oKunde;
             $oObj->tkunde        = $oKunde;
             $oObj->cAnzeigeOrt   = $this->mappeCheckBoxOrte($nAnzeigeOrt);
+            $oObj->mail          = new stdClass();
             $oObj->mail->toEmail = $Einstellungen['emails']['email_master_absender'];
 
             sendeMail(MAILTEMPLATE_CHECKBOX_SHOPBETREIBER, $oObj);

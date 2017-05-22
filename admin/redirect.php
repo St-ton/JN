@@ -106,6 +106,7 @@ $nRedirectCount = Redirect::getRedirectCount($oFilter->getWhereSQL());
 
 $oPagination = (new Pagination())
     ->setItemCount($nRedirectCount)
+    ->setItemsPerPageOptions([10, 20, 50, 100])
     ->setSortByOptions([['cFromUrl', 'URL'],
                         ['cToUrl', 'Weiterleitung nach'],
                         ['nCount', 'Aufrufe']])

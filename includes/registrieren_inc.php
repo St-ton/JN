@@ -191,7 +191,7 @@ function kundeSpeichern($cPost_arr)
     } else {
         if ((int)$cPost_arr['checkout'] === 1) {
             //weiterleitung zum chekout
-            $_SESSION['checkout.step']            = 'accountwahl';
+            $_SESSION['checkout.register']        = 1;
             $_SESSION['checkout.fehlendeAngaben'] = $fehlendeAngaben;
             $_SESSION['checkout.cPost_arr']       = $cPost_arr;
 

@@ -298,7 +298,10 @@ function pruefeRechnungsadresseStep($cGet_arr)
     //sondersteps Rechnungsadresse ändern
     if (isset($cGet_arr['editRechnungsadresse']) && $cGet_arr['editRechnungsadresse'] == 1 && $_SESSION['Kunde']) {
         resetNeuKundenKupon();
-        pruefeLieferadresseStep(['editLieferadresse' => $cGet_arr['editRechnungsadresse']]);
+        if (!isset($cGet_arr['editLieferadresse'])) {
+            // Shipping address and customer address are now on same site - check shipping address also
+            pruefeLieferadresseStep(['editLieferadresse' => $cGet_arr['editRechnungsadresse']]);
+        }
         $Kunde = $_SESSION['Kunde'];
         $step  = 'edit_customer_address';
     }
@@ -507,7 +510,7 @@ function gibStepAccountwahl()
 
     executeHook(HOOK_BESTELLVORGANG_PAGE_STEPACCOUNTWAHL);
 
-    if (isset($_SESSION['checkout.step']) && $_SESSION['checkout.step'] === 'accountwahl') {
+    if (isset($_SESSION['checkout.register']) && (int)$_SESSION['checkout.register'] === 1) {
         if (isset($_SESSION['checkout.fehlendeAngaben'])) {
             setzeFehlendeAngaben($_SESSION['checkout.fehlendeAngaben']);
             unset($_SESSION['checkout.fehlendeAngaben']);
@@ -522,7 +525,7 @@ function gibStepAccountwahl()
             }
             unset($_SESSION['checkout.cPost_arr']);
         }
-        unset($_SESSION['checkout.step']);
+        unset($_SESSION['checkout.register']);
     }
 }
 

@@ -118,3 +118,12 @@
         </form>
     </div>
 </div>
+{if isset($smarty.get.editZahlungsart)}
+{literal}
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $.evo.extended().smoothScrollToAnchor('#fieldset-payment');
+        });
+    </script>
+{/literal}
+{/if}

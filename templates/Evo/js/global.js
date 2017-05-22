@@ -186,7 +186,6 @@ function addValidationListener() {
                         },
                         {
                             done: function() {
-                                console.log('end scrolling');
                                 $body.data('doScrolling', false);
                             }
                         }, 300

@@ -43,7 +43,7 @@
                                 <p>
                                     {include file='checkout/inc_delivery_address.tpl'}
                                 </p>
-                                <a class="small edit" href="{get_static_route id='bestellvorgang.php'}?editRechnungsadresse=1#select_shipping_address">
+                                <a class="small edit" href="{get_static_route id='bestellvorgang.php'}?editLieferadresse=1">
                                     <span class="fa fa-pencil"></span> {lang key="modifyShippingAdress" section="checkout"}
                                 </a>
                             {/block}
@@ -90,7 +90,7 @@
                             {if isset($smarty.session.Zahlungsart->cHinweisText) && !empty($smarty.session.Zahlungsart->cHinweisText)}{* this should be localized *}
                                 <p class="small text-muted">{$smarty.session.Zahlungsart->cHinweisText}</p>
                             {/if}
-                            <a class="small edit" href="{get_static_route id='bestellvorgang.php'}?editZahlungsart=1#fieldset-payment">
+                            <a class="small edit" href="{get_static_route id='bestellvorgang.php'}?editZahlungsart=1">
                                 <span class="fa fa-pencil"></span> {lang key="modifyPaymentOption" section="checkout"}
                             </a>
                         {/block}

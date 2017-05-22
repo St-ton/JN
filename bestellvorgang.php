@@ -85,6 +85,10 @@ if (isset($_POST['unreg_form']) && (int)$_POST['unreg_form'] === 1 &&
 ) {
     pruefeUnregistriertBestellen($_POST);
 }
+if (isset($_GET['editLieferadresse'])) {
+    // Shipping address and customer address are now on same site
+    $_GET['editRechnungsadresse'] = $_GET['editLieferadresse'];
+}
 if (isset($_POST['shipping_address'])) {
     if ((int)$_POST['shipping_address'] === 0) {
         $_POST['kLieferadresse'] = 0;

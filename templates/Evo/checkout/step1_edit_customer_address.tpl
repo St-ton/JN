@@ -29,4 +29,3 @@
         {/block}
     </div>
 </div>
-

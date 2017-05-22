@@ -61,3 +61,12 @@
     {/block}
 </div>
 {/block}
+{if isset($smarty.get.editLieferadresse)}
+{literal}
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $.evo.extended().smoothScrollToAnchor('#checkout_register_shipping_address');
+        });
+    </script>
+{/literal}
+{/if}

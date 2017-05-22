@@ -102,8 +102,10 @@ $oSelect->addSelectOption('vorhanden', '', 9);
 $oSelect->addSelectOption('fehlend', '', 4);
 $oFilter->assemble();
 
+$nRedirectCount = Redirect::getRedirectCount($oFilter->getWhereSQL());
+
 $oPagination = (new Pagination())
-    ->setItemCount(Redirect::getTotalRedirectCount())
+    ->setItemCount($nRedirectCount)
     ->setSortByOptions([['cFromUrl', 'URL'],
                         ['cToUrl', 'Weiterleitung nach'],
                         ['nCount', 'Aufrufe']])

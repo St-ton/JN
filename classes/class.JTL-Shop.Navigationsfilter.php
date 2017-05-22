@@ -1079,8 +1079,7 @@ class Navigationsfilter
             $state->having,
             $order->orderBy,
             '',
-            ['tartikel.kArtikel'],
-            false
+            ['tartikel.kArtikel']
         );
         $keys = $this->db->query($qry, 2);
         $res  = [];
@@ -1610,7 +1609,6 @@ class Navigationsfilter
      * @param string $order
      * @param string $limit
      * @param array  $groupBy
-     * @param bool   $or - testing
      * @return string
      * @throws InvalidArgumentException
      */

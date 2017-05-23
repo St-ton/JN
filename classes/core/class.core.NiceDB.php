@@ -171,7 +171,9 @@ class NiceDB implements Serializable
      */
     public static function getInstance($DBHost = null, $DBUser = null, $DBpass = null, $DBdatabase = null)
     {
-        return (self::$instance !== null) ? self::$instance : new self($DBHost, $DBUser, $DBpass, $DBdatabase);
+        return self::$instance !== null
+            ? self::$instance
+            : new self($DBHost, $DBUser, $DBpass, $DBdatabase);
     }
 
     /**
@@ -228,7 +230,7 @@ class NiceDB implements Serializable
     {
         $mapping = self::map($method);
 
-        return ($mapping !== null)
+        return $mapping !== null
             ? call_user_func_array([$this, $mapping], $arguments)
             : null;
     }
@@ -245,7 +247,7 @@ class NiceDB implements Serializable
     {
         $mapping = self::map($method);
 
-        return ($mapping !== null)
+        return $mapping !== null
             ? call_user_func_array([self::$instance, $mapping], $arguments)
             : null;
     }
@@ -258,7 +260,7 @@ class NiceDB implements Serializable
      */
     private static function map($method)
     {
-        $mapping = [
+        static $mapping = [
             'query'           => 'executeQuery',
             'queryPrepared'   => 'executeQueryPrepared',
             'exQuery'         => 'executeExQuery',
@@ -533,53 +535,52 @@ class NiceDB implements Serializable
             }
 
             return 0;
-        } else {
-            $id = $this->pdo->lastInsertId();
-            if (($this->debug === true || $this->collectData === true) && strpos($tableName, 'tprofiler') !== 0) {
-                $end       = microtime(true);
-                $backtrace = null;
-                if ($this->debugLevel > 2) {
-                    $backtrace = debug_backtrace();
-                }
-                $arr = get_object_vars($object);
-                if (!is_array($arr)) {
-                    if ($this->logErrors && $this->logfileName) {
-                        $this->writeLog('insertRow: Objekt enthaelt nichts! - Tablename:' . $tableName);
-                    }
-
-                    return 0;
-                }
-                $columns  = '(';
-                $values   = '(';
-                $keys     = array_keys($arr);
-                $keyCount = count($keys);
-                for ($i = 0; $i < $keyCount; $i++) {
-                    $property = $keys[$i];
-                    if ($i === (count($keys) - 1)) {
-                        $columns .= $property . ') values';
-                        if ($object->$property === '_DBNULL_') {
-                            $values .= 'null' . ')';
-                        } elseif ($object->$property === 'now()') {
-                            $values .= $object->$property . ')';
-                        } else {
-                            $values .= '"' . $this->pdoEscape($object->$property) . '")';
-                        }
-                    } else {
-                        $columns .= $property . ', ';
-                        if ($object->$property === '_DBNULL_') {
-                            $values .= 'null' . ', ';
-                        } elseif ($object->$property === 'now()') {
-                            $values .= $object->$property . ', ';
-                        } else {
-                            $values .= '"' . $this->pdoEscape($object->$property) . '", ';
-                        }
-                    }
-                }
-                $this->analyzeQuery('insert', "INSERT INTO $tableName $columns $values", $end - $start, $backtrace);
-            }
-
-            return ($id > 0) ? $id : 1;
         }
+        $id = $this->pdo->lastInsertId();
+        if (($this->debug === true || $this->collectData === true) && strpos($tableName, 'tprofiler') !== 0) {
+            $end       = microtime(true);
+            $backtrace = null;
+            if ($this->debugLevel > 2) {
+                $backtrace = debug_backtrace();
+            }
+            $arr = get_object_vars($object);
+            if (!is_array($arr)) {
+                if ($this->logErrors && $this->logfileName) {
+                    $this->writeLog('insertRow: Objekt enthaelt nichts! - Tablename:' . $tableName);
+                }
+
+                return 0;
+            }
+            $columns  = '(';
+            $values   = '(';
+            $keys     = array_keys($arr);
+            $keyCount = count($keys);
+            for ($i = 0; $i < $keyCount; $i++) {
+                $property = $keys[$i];
+                if ($i === (count($keys) - 1)) {
+                    $columns .= $property . ') values';
+                    if ($object->$property === '_DBNULL_') {
+                        $values .= 'null' . ')';
+                    } elseif ($object->$property === 'now()') {
+                        $values .= $object->$property . ')';
+                    } else {
+                        $values .= '"' . $this->pdoEscape($object->$property) . '")';
+                    }
+                } else {
+                    $columns .= $property . ', ';
+                    if ($object->$property === '_DBNULL_') {
+                        $values .= 'null' . ', ';
+                    } elseif ($object->$property === 'now()') {
+                        $values .= $object->$property . ', ';
+                    } else {
+                        $values .= '"' . $this->pdoEscape($object->$property) . '", ';
+                    }
+                }
+            }
+            $this->analyzeQuery('insert', "INSERT INTO $tableName $columns $values", $end - $start, $backtrace);
+        }
+
+        return ($id > 0) ? $id : 1;
     }
 
     /**
@@ -741,6 +742,7 @@ class NiceDB implements Serializable
             }
             ++$i;
         }
+        unset($_key);
         $stmt = 'SELECT ' . $select . ' FROM ' . $tableName . ((count($keys) > 0) ? (' WHERE ' . implode(' AND ', $keys)) : '');
         if ($echo) {
             echo $stmt;
@@ -974,7 +976,10 @@ class NiceDB implements Serializable
 
         if (!$res) {
             if ($this->logErrors && $this->logfileName) {
-                $this->writeLog($stmt . "\n" . $this->pdo->errorCode() . ': ' . $this->pdo->errorInfo() . "\n\nBacktrace: " . print_r(debug_backtrace(), true));
+                $this->writeLog($stmt . "\n" .
+                    $this->pdo->errorCode() . ': ' .
+                    $this->pdo->errorInfo() . "\n\nBacktrace: " . print_r(debug_backtrace(), true)
+                );
             }
 
             return 0;
@@ -1053,7 +1058,10 @@ class NiceDB implements Serializable
         if (is_array($keyname) && is_array($keyvalue)) {
             if (count($keyname) !== count($keyvalue)) {
                 if ($this->logErrors && $this->logfileName) {
-                    $this->writeLog('deleteRow: Anzahl an Schluesseln passt nicht zu Anzahl an Werten - Tablename:' . $tableName);
+                    $this->writeLog('NiceDB::deleteRow: ' .
+                        'Anzahl Schluessel passt nicht zu Anzahl Werten. ' .
+                        'Betroffene Tabelle: ' . $tableName
+                    );
                 }
 
                 return -1;
@@ -1203,7 +1211,11 @@ class NiceDB implements Serializable
     public function writeLog($entry)
     {
         $logfile = fopen($this->logfileName, 'a');
-        fwrite($logfile, "\n[" . date('m.d.y H:i:s') . ' ' . microtime() . '] ' . $_SERVER['SCRIPT_NAME'] . "\n" . $entry);
+        fwrite(
+            $logfile,
+            "\n[" . date('m.d.y H:i:s') . ' ' . microtime() . '] ' .
+            $_SERVER['SCRIPT_NAME'] . "\n" . $entry
+        );
         fclose($logfile);
 
         return $this;
@@ -1303,7 +1315,7 @@ class NiceDB implements Serializable
                 case is_int($value):
                     $type = PDO::PARAM_INT;
                     break;
-                case is_null($value):
+                case $value === null:
                     $type = PDO::PARAM_NULL;
                     break;
                 default:
@@ -1321,11 +1333,9 @@ class NiceDB implements Serializable
      */
     protected function _bindName($name)
     {
-        if (is_string($name)) {
-            return ':' . ltrim($name, ':');
-        }
-
-        return $name;
+        return is_string($name)
+            ? (':' . ltrim($name, ':'))
+            : $name;
     }
 
     /**

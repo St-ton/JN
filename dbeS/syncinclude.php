@@ -567,7 +567,7 @@ function versendeVerfuegbarkeitsbenachrichtigung($oArtikel)
             // Kampagne
             $oKampagne = new Kampagne(KAMPAGNE_INTERN_VERFUEGBARKEIT);
             if (isset($oKampagne->kKampagne) && $oKampagne->kKampagne > 0) {
-                $cSep = (strpos($Artikel->cURL, '.php') === false) ? '?' : '&';
+                $cSep           = (strpos($Artikel->cURL, '.php') === false) ? '?' : '&';
                 $Artikel->cURL .= $cSep . $oKampagne->cParameter . '=' . $oKampagne->cWert;
             }
             foreach ($Benachrichtigungen as $Benachrichtigung) {
@@ -692,7 +692,7 @@ function handleError($output)
     if (function_exists('error_get_last')) {
         $error = error_get_last();
         if ($error['type'] == 1) {
-            $cError = translateError($error['message']) . "\n";
+            $cError  = translateError($error['message']) . "\n";
             $cError .= 'Datei: ' . $error['file'];
             if (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
                 Jtllog::writeLog($cError, JTLLOG_LEVEL_ERROR);
@@ -967,7 +967,7 @@ function handleNewPriceFormat($xml)
                 }
                 $hasDefaultPrice = false;
                 foreach ($preisdetails as $preisdetail) {
-                    $o            = (object)[
+                    $o = (object)[
                         'kPreis'    => $kPreis,
                         'nAnzahlAb' => $preisdetail->nAnzahlAb,
                         'fVKNetto'  => $preisdetail->fNettoPreis
@@ -994,8 +994,8 @@ function handleNewPriceFormat($xml)
             foreach ($kKundengruppen_arr as $customergroup) {
                 $kKundengruppe = $customergroup->getKundengruppe();
                 if (isset($xml['fStandardpreisNetto']) && !in_array($kKundengruppe, $customerGroupHandled, true)) {
-                    $kPreis       = handlePriceFormat($kArtikel, $kKundengruppe);
-                    $o            = (object)[
+                    $kPreis = handlePriceFormat($kArtikel, $kKundengruppe);
+                    $o      = (object)[
                         'kPreis'    => $kPreis,
                         'nAnzahlAb' => 0,
                         'fVKNetto'  => $xml['fStandardpreisNetto']

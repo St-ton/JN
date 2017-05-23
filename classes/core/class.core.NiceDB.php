@@ -127,15 +127,15 @@ class NiceDB implements Serializable
         if (defined('DB_PERSISTENT_CONNECTIONS') && is_bool(DB_PERSISTENT_CONNECTIONS)) {
             $options[PDO::ATTR_PERSISTENT] = DB_PERSISTENT_CONNECTIONS;
         }
+        if (JTL_CHARSET === 'iso-8859-1') {
+            $options[PDO::MYSQL_ATTR_INIT_COMMAND] = "SET NAMES 'latin1'";
+        }
         $this->pdo = new PDO($dsn, $dbUser, $dbPass, $options);
         if (defined('NICEDB_EXCEPTION_BACKTRACE') && NICEDB_EXCEPTION_BACKTRACE === true) {
             $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         }
-        if (JTL_CHARSET === 'iso-8859-1') {
-            $this->pdo->query("SET NAMES 'latin1'");
-        }
         if (!(defined('DB_DEFAULT_SQL_MODE') && DB_DEFAULT_SQL_MODE === true)) {
-            $this->pdo->query("SET SQL_MODE=''");
+            $this->pdo->exec("SET SQL_MODE=''");
         }
         if (defined('PFAD_LOGFILES')) {
             $this->logfileName = PFAD_LOGFILES . 'DB_errors.log';
@@ -212,7 +212,7 @@ class NiceDB implements Serializable
         }
         $this->pdo = new PDO($dsn, $this->config['username'], $this->config['password']);
         if (JTL_CHARSET === 'iso-8859-1') {
-            $this->pdo->query("SET NAMES 'latin1'");
+            $this->pdo->exec("SET NAMES 'latin1'");
         }
 
         return $this;
@@ -1161,7 +1161,7 @@ class NiceDB implements Serializable
      */
     protected function isMysqliResult($res)
     {
-        return (is_object($res) && get_class($res) === 'mysqli_result');
+        return is_object($res) && get_class($res) === 'mysqli_result';
     }
 
     /**
@@ -1170,7 +1170,7 @@ class NiceDB implements Serializable
      */
     protected function isPdoResult($res)
     {
-        return (is_object($res) && get_class($res) === 'PDOStatement');
+        return is_object($res) && get_class($res) === 'PDOStatement';
     }
 
     /**
@@ -1196,10 +1196,8 @@ class NiceDB implements Serializable
      */
     public function escape($string)
     {
-        $quotedString = $this->quote($string);
-
         // remove outer single quotes
-        return preg_replace('/^\'(.*)\'$/', '$1', $quotedString);
+        return preg_replace('/^\'(.*)\'$/', '$1', $this->quote($string));
     }
 
     /**

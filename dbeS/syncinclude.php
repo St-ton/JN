@@ -605,60 +605,42 @@ function versendeVerfuegbarkeitsbenachrichtigung($oArtikel)
  */
 function setzePreisverlauf($kArtikel, $kKundengruppe, $fVKNetto)
 {
-    $oPreis  = Shop::DB()->query(
-        "SELECT fVKNetto
-                FROM tpreisverlauf
-                WHERE kArtikel = " . $kArtikel . "
-                    AND kKundengruppe = " . $kKundengruppe . "
-                    AND dDate != DATE(NOW())
-                ORDER BY dDate DESC
-                LIMIT 1", 1
+    $kArtikel      = (int)$kArtikel;
+    $kKundengruppe = (int)$kKundengruppe;
+    $fVKNetto      = (float)$fVKNetto;
+
+    $oPreis_arr = Shop::DB()->query(
+        "SELECT kPreisverlauf, fVKNetto, dDate, IF(dDate = CURDATE(), 1, 0) bToday
+            FROM tpreisverlauf
+            WHERE kArtikel = {$kArtikel}
+	            AND kKundengruppe = {$kKundengruppe}
+            ORDER BY dDate DESC LIMIT 2", 2
     );
-    // gleicher Wert wie letzter Eintrag?
-    if (!isset($oPreis->fVKNetto) ||
-        (isset($oPreis->fVKNetto) && (int)($oPreis->fVKNetto * 100) !== (int)($fVKNetto * 100))
-    ) {
-        $oPreisverlauf                = new stdClass();
-        $oPreisverlauf->fVKNetto      = $fVKNetto;
-        $nReihen                      = Shop::DB()->update(
-            'tpreisverlauf',
-            ['kArtikel', 'kKundengruppe', 'dDate'],
-            [$kArtikel, $kKundengruppe, date('Y-m-d')],
-            $oPreisverlauf
-        );
+
+    // if a record from today and from the nearest past exists and the record from the past has same fVKNetto...
+    if (isset($oPreis_arr) && count($oPreis_arr) === 2 &&
+        (int)$oPreis_arr[0]->bToday === 1 &&
+        round($oPreis_arr[1]->fVKNetto * 100) === round($fVKNetto * 100)) {
+        // ...delete the record from today
+
+        Shop::DB()->delete('tpreisverlauf', 'kPreisverlauf', (int)$oPreis_arr[0]->kPreisverlauf);
+    } elseif (isset($oPreis_arr) && count($oPreis_arr) > 0 && (int)$oPreis_arr[0]->bToday === 1) {
+        // ...otherwise, if a record from today exists... UPDATE
+
+        Shop::DB()->update('tpreisverlauf', 'kPreisverlauf', (int)$oPreis_arr[0]->kPreisverlauf, (object)[
+           'fVKNetto' => $fVKNetto,
+        ]);
     } else {
-        // Eintrag entfernen um Dopplung zu vermeiden
-        $nReihen = Shop::DB()->delete(
-            'tpreisverlauf',
-            ['kArtikel', 'kKundengruppe', 'dDate'],
-            [$kArtikel, $kKundengruppe, date('Y-m-d')]
-        );
-    }
+        // ...in all other cases... INSERT
 
-    if ((int)$nReihen === 0) {
-        $oPreisverlauf                = new stdClass();
-        $oPreisverlauf->kArtikel      = $kArtikel;
-        $oPreisverlauf->kKundengruppe = $kKundengruppe;
-        $oPreisverlauf->fVKNetto      = $fVKNetto;
-        $oPreisverlauf->dDate         = 'now()';
-
-        $oPreis = Shop::DB()->query(
-            "SELECT fVKNetto
-                FROM tpreisverlauf
-                WHERE kArtikel = " . $kArtikel . "
-                    AND kKundengruppe = " . $kKundengruppe . "
-                ORDER BY dDate DESC
-                LIMIT 1", 1
-        );
-        //no pricehistory or price changed?
-        if (!isset($oPreis->fVKNetto) ||
-            (isset($oPreis->fVKNetto) && (int)($oPreis->fVKNetto * 100) !== (int)($fVKNetto * 100))
-        ) {
-            Shop::DB()->insert('tpreisverlauf', $oPreisverlauf);
-            // Clear Artikel Cache
-            $cache = Shop::Cache();
-            $cache->flushTags([CACHING_GROUP_ARTICLE . '_' . $kArtikel]);
-        }
+        Shop::DB()->insert('tpreisverlauf', (object)[
+            'kArtikel'      => $kArtikel,
+            'kKundengruppe' => $kKundengruppe,
+            'fVKNetto'      => $fVKNetto,
+            'dDate'         => 'now()',
+        ]);
+        // Clear Artikel Cache
+        Shop::Cache()->flushTags([CACHING_GROUP_ARTICLE . '_' . $kArtikel]);
     }
 }
 

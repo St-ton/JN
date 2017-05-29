@@ -216,32 +216,6 @@ class WarenkorbHelper
     /**
      * @return string
      */
-    public function getLanguageISO()
-    {
-        return $_SESSION['cISOSprache'];
-    }
-
-    /**
-     * @return string
-     */
-    public function getStateISO()
-    {
-        return PayPalHelper::isStateRequired($this->getLanguageISO())
-            ? PayPalHelper::getStateISO(@$this->getShippingAddress()->cBundesland)
-            : @$this->getShippingAddress()->cBundesland;
-    }
-
-    /**
-     * @return string
-     */
-    public function getCountryISO()
-    {
-        return PayPalHelper::getCountryISO($this->getShippingAddress()->cLand);
-    }
-
-    /**
-     * @return string
-     */
     public function getInvoiceID()
     {
         return;

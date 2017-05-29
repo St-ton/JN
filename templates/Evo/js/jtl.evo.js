@@ -318,7 +318,7 @@
         },
 
         smoothScrollToAnchor: function(href, pushToHistory) {
-            var anchorRegex = /^#[\w]+$/;
+            var anchorRegex = /^#[\w\-]+$/;
             if (!anchorRegex.test(href)) {
                 return false;
             }

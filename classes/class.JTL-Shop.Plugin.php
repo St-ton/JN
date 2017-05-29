@@ -889,23 +889,27 @@ class Plugin
         if (self::$templatePaths !== null) {
             return self::$templatePaths;
         }
+
         $cacheID = 'template_paths';
         if (($templatePaths = Shop::Cache()->get($cacheID)) !== false) {
             self::$templatePaths = $templatePaths;
+
             return $templatePaths;
         }
+
         $templatePaths = [];
-        $plugins = Shop::DB()->selectAll('tplugin', 'nStatus', 2, 'cPluginID,cVerzeichnis,nVersion', 'nPrio');
-        if (is_array($plugins)) {
-            foreach ($plugins as $plugin) {
-                $path = PFAD_ROOT . PFAD_PLUGIN . $plugin->cVerzeichnis . '/' .
-                    PFAD_PLUGIN_VERSION . $plugin->nVersion . '/' . PFAD_PLUGIN_FRONTEND . PFAD_PLUGIN_TEMPLATE;
-                if (is_dir($path)) {
-                    $templatePaths[$plugin->cPluginID] = $path;
-                }
+        $plugins       = Shop::DB()->selectAll('tplugin', 'nStatus', 2, 'cPluginID,cVerzeichnis,nVersion', 'nPrio');
+
+        foreach ($plugins as $plugin) {
+            $path = PFAD_ROOT . PFAD_PLUGIN . $plugin->cVerzeichnis . '/' .
+                PFAD_PLUGIN_VERSION . $plugin->nVersion . '/' . PFAD_PLUGIN_FRONTEND . PFAD_PLUGIN_TEMPLATE;
+            if (is_dir($path)) {
+                $templatePaths[$plugin->cPluginID] = $path;
             }
-            Shop::Cache()->set($cacheID, $templatePaths, [CACHING_GROUP_PLUGIN]);
         }
+
+        Shop::Cache()->set($cacheID, $templatePaths, [CACHING_GROUP_PLUGIN]);
+
         return $templatePaths;
     }
 
@@ -926,6 +930,7 @@ class Plugin
             $vfDone[$szCanonicalFileName] = true; // we're using always a hash here, for speed-up reasons!
             return file_exists($szCanonicalFileName); // do the actual check
         }
+
         return false;
     }
 }

@@ -71,12 +71,13 @@
             onchange="this.form.submit()">
         {foreach $oPagination->getItemsPerPageOptions() as $nItemsPerPageOption}
             <option value="{$nItemsPerPageOption}"{if $oPagination->getItemsPerPage() == $nItemsPerPageOption} selected="selected"{/if}>
-                {$nItemsPerPageOption}
+                {if $nItemsPerPageOption === -1}
+                    alle
+                {else}
+                    {$nItemsPerPageOption}
+                {/if}
             </option>
         {/foreach}
-        <option value="-1"{if $oPagination->getItemsPerPage() == -1} selected="selected"{/if}>
-            alle
-        </option>
     </select>
 {/function}
 

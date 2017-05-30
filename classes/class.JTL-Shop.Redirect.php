@@ -27,7 +27,7 @@ class Redirect
     /**
      * @var string
      */
-    public $bAvailable;
+    public $cAvailable;
 
     /**
      * @param int $kRedirect
@@ -142,7 +142,7 @@ class Redirect
                 $this->saveExt($oTarget->cFromUrl, $cDestination);
                 $oObj             = new stdClass();
                 $oObj->cToUrl     = StringHandler::convertISO($cDestination);
-                $oObj->bAvailable = 1;
+                $oObj->cAvailable = 'y';
                 Shop::DB()->update('tredirect', 'cToUrl', $cSource, $oObj);
             }
 
@@ -151,7 +151,7 @@ class Redirect
                 $oObj             = new stdClass();
                 $oObj->cFromUrl   = StringHandler::convertISO($cSource);
                 $oObj->cToUrl     = StringHandler::convertISO($cDestination);
-                $oObj->bAvailable = 1;
+                $oObj->cAvailable = 'y';
 
                 $kRedirect = Shop::DB()->insert('tredirect', $oObj);
                 if ((int)$kRedirect > 0) {

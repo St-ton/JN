@@ -159,11 +159,11 @@
                                                 <i class="fa fa-spinner"></i>
                                             </span>
                                             <span class="input-group-addon alert-success state-available"
-                                                  {if $oRedirect->bAvailable === '0'}style="display:none;"{/if}>
+                                                  {if $oRedirect->cAvailable !== 'n'}style="display:none;"{/if}>
                                                 <i class="fa fa-check"></i>
                                             </span>
                                             <span class="input-group-addon alert-danger state-unavailable"
-                                                  {if $oRedirect->bAvailable === '1'}style="display:none;"{/if}>
+                                                  {if $oRedirect->cAvailable !== 'y'}style="display:none;"{/if}>
                                                 <i class="fa fa-warning"></i>
                                             </span>
                                             <input id="url_{$oRedirect->kRedirect}"

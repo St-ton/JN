@@ -29,7 +29,7 @@ class Migration_20170509165900 extends Migration implements IMigration
     {
         $this->execute(
             "ALTER TABLE tredirect
-                ADD COLUMN bAvailable BOOL DEFAULT FALSE"
+                ADD COLUMN cAvailable CHAR(1) DEFAULT 'u'"
         );
     }
 

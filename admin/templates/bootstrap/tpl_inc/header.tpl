@@ -63,7 +63,8 @@
             </div>
         </div>
         <script>
-        var $grid = null;
+        var $grid    = null;
+        var jtlToken = '{$smarty.session.jtl_token}';
 
         $(function () {
             var lastQuery = null;
@@ -93,15 +94,10 @@
                     setResult(null);
                     lastQuery = null;
                 }
-                else if(query != lastQuery) {
+                else if(query !== lastQuery) {
                     lastQuery = query;
-                    ajaxCallV2('suche.php', { query: query, suggest: true }, function(result, error) {
-                        if (error) {
-                            setResult(null);
-                        }
-                        else {
-                            setResult(result.data.tpl);
-                        }
+                    ioCall('adminSearch', [query], function (data) {
+                        setResult(data.data.tpl);
                     });
                 }
             }

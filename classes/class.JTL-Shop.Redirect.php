@@ -553,7 +553,7 @@ class Redirect
      * @param $cLimitSQL
      * @return array
      */
-    public static function getRedirects ($cWhereSQL, $cOrderSQL, $cLimitSQL = '')
+    public static function getRedirects($cWhereSQL, $cOrderSQL, $cLimitSQL = '')
     {
         $oRedirect_arr = Shop::DB()->query("
             SELECT *
@@ -570,6 +570,19 @@ class Redirect
         }
 
         return $oRedirect_arr;
+    }
+
+    /**
+     * @param $cWhereSQL
+     */
+    public static function getRedirectCount($cWhereSQL)
+    {
+        return Shop::DB()->query(
+            "SELECT count(*) AS nCount
+                FROM tredirect
+                " . ($cWhereSQL !== '' ? "WHERE " . $cWhereSQL : ""),
+            1
+        )->nCount;
     }
 
     /**

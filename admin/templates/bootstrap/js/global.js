@@ -352,6 +352,7 @@ function retract(elemID, picExpandID, picRetractID) {
 }
 
 /**
+ * @deprecated since 4.06
  * @param url
  * @param params
  * @param callback
@@ -380,6 +381,7 @@ function ajaxCall(url, params, callback) {
 var _queryTimeout = null;
 
 /**
+ * @deprecated since 4.06
  * @param url
  * @param params
  * @param callback
@@ -504,18 +506,16 @@ function createNotify(options, settings) {
 }
 
 function updateNotifyDrop() {
-    ajaxCall('status.php', { action: 'notify' }, function(result, xhr) {
-        if (xhr && xhr.error && xhr.error.code == 401) {
-            // auth session expired
-        }
-        else if(!result.error) {
-            if (result.data.tpl) {
-                $('#notify-drop').html(result.data.tpl);
+    ioCall(
+        'getNotifyDropIO', [],
+        function (result) {
+            if (result.tpl) {
+                $('#notify-drop').html(result.tpl);
             } else {
                 $('#notify-drop').html('');
             }
         }
-    });
+    );
 }
 
 function massCreationCoupons() {
@@ -526,6 +526,9 @@ function massCreationCoupons() {
     $("#informCustomers").toggleClass("hidden", checkboxCreationCoupons);
 }
 
+/**
+ * @deprecated since 4.06
+ */
 function addFav(title, url, success) {
     ajaxCallV2('favs.php?action=add', { title: title, url: url }, function(result, error) {
         if (!error) {
@@ -537,6 +540,9 @@ function addFav(title, url, success) {
     });
 }
 
+/**
+ * @deprecated since 4.06
+ */
 function reloadFavs() {
     ajaxCallV2('favs.php?action=list', {}, function(result, error) {
         if (!error) {
@@ -615,7 +621,10 @@ $(document).ready(function () {
     $('#fav-add').click(function() {
         var title = $('.content-header h1').text();
         var url = window.location.href;
-        addFav(title, url, function() {
+        ioCall('addFav', [title, url], function() {
+            ioCall('reloadFavs', [], function (data) {
+                $('#favs-drop').html(data.tpl);
+            });
             showNotify('success', 'Favoriten', 'Wurde erfolgreich hinzugef&uuml;gt');
         });
 
@@ -658,7 +667,7 @@ $(document).ready(function () {
     });
     $('.switcher').on('show.bs.dropdown', function () {
         showBackdrop();
-        xajax_getAvailableWidgetsAjax();
+        ioCall('getAvailableWidgets');
     }).on('hide.bs.dropdown', function () {
         hideBackdrop();
     });
@@ -684,4 +693,156 @@ function showBackdrop() {
 
 function hideBackdrop() {
     $('.menu-backdrop').remove();
+}
+
+/**
+ * Call a function asynchronously on the server. The server answers with a JSON-encoded IOResponse object, that ioCall()
+ * will interpret afterwards.an or an IOError on failure or with some other generic data depending on the called
+ * function on the server.
+ *
+ * @param name - name of the AJAX-function registered on the server
+ * @param args - array of arguments passed to the function
+ * @param success - (optional) function (data, context) success-callback
+ * @param error - (optional) function (data) error-callback
+ * @param context - object to be assigned 'this' in eval()-code (default: { } = a new empty anonymous object)
+ * @returns XMLHttpRequest jqxhr
+ */
+function ioCall(name, args, success, error, context)
+{
+    'use strict';
+
+    args    = args || [];
+    success = success || function () { };
+    error   = error || function () { };
+    context = context || { };
+
+    var evalInContext = function (code) { eval(code); }.bind(context);
+
+    return $.ajax({
+        url: 'io.php',
+        method: 'post',
+        dataType: 'json',
+        data: {
+            jtl_token: jtlToken,
+            io : JSON.stringify({
+                name: name,
+                params : args
+            })
+        },
+        success: function (data, textStatus, jqXHR) {
+            if (data) {
+                var jslist = data.js || [];
+                var csslist = data.css || [];
+
+                csslist.forEach(function (assign) {
+                    var $target = $('#' + assign.target);
+                    if($target.length > 0) {
+                        $target[0][assign.attr] = assign.data;
+                    }
+                });
+
+                jslist.forEach(function (js) {
+                    evalInContext(js);
+                });
+            }
+
+            success(data, context);
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            error(jqXHR.responseJSON);
+        }
+    });
+}
+
+/**
+ * Induce a file download provided by an AJAX function
+ *
+ * @param name
+ * @param args
+ */
+function ioDownload(name, args)
+{
+    window.location.href = 'io.php?token=' + jtlToken + '&io=' + encodeURIComponent(JSON.stringify({
+        name: name,
+        params: args
+    }));
+}
+
+/**
+ * @param adminPath
+ * @param funcname
+ * @param params
+ * @param callback
+ */
+function ioManagedCall(adminPath, funcname, params, callback)
+{
+    ioCall(
+        funcname, params,
+        function (result) {
+            if (typeof callback === 'function') {
+                callback(result, result.error);
+            }
+        },
+        function (result) {
+            if (result.error && result.error.code === 401) {
+                createNotify(
+                    {
+                        title: 'Sitzung abgelaufen',
+                        message: 'Sie werden zur Anmelde-Maske weitergeleitet...',
+                        icon: 'fa fa-lock'
+                    },
+                    {
+                        type: 'danger',
+                        onClose: function() {
+                            window.location.pathname = '/' + adminPath + 'index.php';
+                        }
+                    }
+                );
+            }
+        }
+    );
+}
+
+/**
+ * Make an input element selected by 'selector' a typeahead input field. The data is queried on an ajax-function named
+ * funcName. When an item from the suggestion list ist selected the callback onSelect is executed.
+ *
+ * @param selector the CSS selector to apply the typeahead onto
+ * @param funcName the AJAX function name that provides the sugesstion data
+ * @param display for a given suggestion, determines the string representation of it. This will be used when setting
+ *      the value of the input control after a suggestion is selected. Can be either a key string or a function that
+ *      transforms a suggestion object into a string. Defaults to stringifying the suggestion.
+ * @param suggestion (default: null) a callback function to customize the sugesstion entry. Takes the item object and
+ *      returns a HTML string
+ * @param onSelect
+ */
+function enableTypeahead(selector, funcName, display, suggestion, onSelect)
+{
+    var pendingRequest = null;
+
+    $(selector)
+        .typeahead(
+            {
+                highlight: true,
+                hint: true
+            },
+            {
+                limit: 50,
+                source: function (query, syncResults, asyncResults) {
+                    if(pendingRequest !== null) {
+                        pendingRequest.abort();
+                    }
+                    pendingRequest = ioCall(funcName, [query, 100], function (data) {
+                        pendingRequest = null;
+                        asyncResults(data);
+                    });
+                },
+                display: display,
+                templates: {
+                    suggestion: suggestion
+                }
+            }
+        )
+        .bind('typeahead:select', onSelect)
+    ;
 }

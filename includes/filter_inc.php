@@ -1457,68 +1457,124 @@ function gibMerkmalFilterOptionen($FilterSQL, $NaviFilter, $oAktuelleKategorie =
         ) {
             $cKatAttribMerkmalFilter_arr = explode(';', $oAktuelleKategorie->categoryFunctionAttributes[KAT_ATTRIBUT_MERKMALFILTER]);
         }
-        //Sprache beachten
-        $oSQLMM          = new stdClass();
-        $oSQLMM->cSELECT = 'tmerkmal.cName, ';
-        $oSQLMM->cJOIN   = '';
-        if (Shop::$kSprache > 0 && !standardspracheAktiv()) {
-            $oSQLMM->cSELECT = "tmerkmalsprache.cName, ";
-            $oSQLMM->cJOIN   = " JOIN tmerkmalsprache ON tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal
-                                    AND tmerkmalsprache.kSprache = " . (int)Shop::$kSprache;
-        }
         if (!isset($FilterSQL->oMerkmalFilterSQL->cJoinMMW)) {
             $FilterSQL->oMerkmalFilterSQL->cJoinMMW  = null;
             $FilterSQL->oMerkmalFilterSQL->cWhereMMW = null;
         }
+        //Sprache beachten
+        $kSprache         = (int)Shop::$kSprache;
+        $kStandardSprache = (int)gibStandardsprache()->kSprache;
+        if ($kSprache !== $kStandardSprache) {
+            $cSelectMerkmal     = "COALESCE(tmerkmalsprache.cName, tmerkmal.cName) AS cName, ";
+            $cJoinMerkmal       = "LEFT JOIN tmerkmalsprache
+                                        ON tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal
+                                        AND tmerkmalsprache.kSprache = " . $kSprache;
+            $cSelectMerkmalwert = "COALESCE(fremdSprache.cSeo, standardSprache.cSeo) AS cSeo,
+                                    COALESCE(fremdSprache.cWert, standardSprache.cWert) AS cWert,";
+            $cJoinMerkmalwert   = "INNER JOIN tmerkmalwertsprache AS standardSprache
+                                        ON standardSprache.kMerkmalWert = tartikelmerkmal.kMerkmalWert
+                                        AND standardSprache.kSprache = " . $kStandardSprache . "
+                                    LEFT JOIN tmerkmalwertsprache AS fremdSprache 
+                                        ON fremdSprache.kMerkmalWert = tartikelmerkmal.kMerkmalWert
+                                        AND fremdSprache.kSprache = " . $kSprache . "";
+        } else {
+            $cSelectMerkmalwert = "tmerkmalwertsprache.cWert, tmerkmalwertsprache.cSeo,";
+            $cJoinMerkmalwert   = "INNER JOIN tmerkmalwertsprache
+                                        ON tmerkmalwertsprache.kMerkmalWert = tartikelmerkmal.kMerkmalWert
+                                        AND tmerkmalwertsprache.kSprache = " . $kSprache;
+            $cSelectMerkmal     = 'tmerkmal.cName, ';
+            $cJoinMerkmal       = '';
+        }
         $oMerkmalFilterDB_arr = Shop::DB()->query(
-            "SELECT tseo.cSeo, ssMerkmal.kMerkmal, ssMerkmal.kMerkmalWert, ssMerkmal.cMMWBildPfad, ssMerkmal.cWert, 
+            "SELECT ssMerkmal.cSeo, ssMerkmal.kMerkmal, ssMerkmal.kMerkmalWert, ssMerkmal.cMMWBildPfad, ssMerkmal.cWert, 
                 ssMerkmal.cName, ssMerkmal.cTyp, ssMerkmal.cMMBildPfad, COUNT(*) AS nAnzahl
                 FROM
                 (
                     SELECT tartikelmerkmal.kMerkmal, tartikelmerkmal.kMerkmalWert, tmerkmalwert.cBildPfad AS cMMWBildPfad,
-                    tmerkmalwertsprache.cWert, tmerkmal.nSort AS nSortMerkmal, 
-                    tmerkmalwert.nSort, " . $oSQLMM->cSELECT . " tmerkmal.cTyp, tmerkmal.cBildPfad AS cMMBildPfad
-                FROM tartikel
-                JOIN tartikelmerkmal 
-                ON tartikel.kArtikel = tartikelmerkmal.kArtikel
-                JOIN tmerkmalwert 
-                    ON tmerkmalwert.kMerkmalWert = tartikelmerkmal.kMerkmalWert
-                JOIN tmerkmalwertsprache 
-                    ON tmerkmalwertsprache.kMerkmalWert = tartikelmerkmal.kMerkmalWert
-                    AND tmerkmalwertsprache.kSprache = " . (int)Shop::$kSprache . "
-                JOIN tmerkmal 
-                    ON tmerkmal.kMerkmal = tartikelmerkmal.kMerkmal
-                " . $oSQLMM->cJOIN . "
-                " . (isset($FilterSQL->oHerstellerFilterSQL->cJoin) ? $FilterSQL->oHerstellerFilterSQL->cJoin : '') . "
-                " . (isset($FilterSQL->oSuchspecialFilterSQL->cJoin) ? $FilterSQL->oSuchspecialFilterSQL->cJoin : '') . "
-                " . (isset($FilterSQL->oSuchFilterSQL->cJoin) ? $FilterSQL->oSuchFilterSQL->cJoin : '') . "
-                " . (isset($FilterSQL->oKategorieFilterSQL->cJoin) ? $FilterSQL->oKategorieFilterSQL->cJoin : '') . "
-                " . (isset($FilterSQL->oMerkmalFilterSQL->cJoinMMW) ? $FilterSQL->oMerkmalFilterSQL->cJoinMMW : '') . "
-                " . (isset($FilterSQL->oTagFilterSQL->cJoin) ? $FilterSQL->oTagFilterSQL->cJoin : '') . "
-                " . (isset($FilterSQL->oBewertungSterneFilterSQL->cJoin) ? $FilterSQL->oBewertungSterneFilterSQL->cJoin : '') . "
-                " . (isset($FilterSQL->oPreisspannenFilterSQL->cJoin) ? $FilterSQL->oPreisspannenFilterSQL->cJoin : '') . "
-                LEFT JOIN tartikelsichtbarkeit 
-                    ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                    AND tartikelsichtbarkeit.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
-                WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                    AND tartikel.kVaterArtikel = 0
-                    " . gibLagerfilter() . "
-                    " . (isset($FilterSQL->oSuchspecialFilterSQL->cWhere) ? $FilterSQL->oSuchspecialFilterSQL->cWhere : '') . "
-                    " . (isset($FilterSQL->oSuchFilterSQL->cWhere) ? $FilterSQL->oSuchFilterSQL->cWhere : '') . "
-                    " . (isset($FilterSQL->oHerstellerFilterSQL->cWhere) ? $FilterSQL->oHerstellerFilterSQL->cWhere : '') . "
-                    " . (isset($FilterSQL->oKategorieFilterSQL->cWhere) ? $FilterSQL->oKategorieFilterSQL->cWhere : '') . "
-                    " . (isset($FilterSQL->oMerkmalFilterSQL->cWhereMMW) ? $FilterSQL->oMerkmalFilterSQL->cWhereMMW : '') . "
-                    " . (isset($FilterSQL->oTagFilterSQL->cWhere) ? $FilterSQL->oTagFilterSQL->cWhere : '') . "
-                    " . (isset($FilterSQL->oBewertungSterneFilterSQL->cWhere) ? $FilterSQL->oBewertungSterneFilterSQL->cWhere : '') . "
-                    " . (isset($FilterSQL->oPreisspannenFilterSQL->cWhere) ? $FilterSQL->oPreisspannenFilterSQL->cWhere : '') . "
-                GROUP BY tartikelmerkmal.kMerkmalWert, tartikel.kArtikel
-            ) AS ssMerkmal
-            LEFT JOIN tseo 
-                ON tseo.kKey = ssMerkmal.kMerkmalWert
-                AND tseo.cKey = 'kMerkmalWert'
-                AND tseo.kSprache = " . (int)Shop::$kSprache . "
-            GROUP BY ssMerkmal.kMerkmalWert
-            ORDER BY ssMerkmal.nSortMerkmal, ssMerkmal.nSort, ssMerkmal.cWert", 2
+                    " . $cSelectMerkmalwert . " tmerkmal.nSort AS nSortMerkmal, tmerkmalwert.nSort, 
+                        " . $cSelectMerkmal . " tmerkmal.cTyp, tmerkmal.cBildPfad AS cMMBildPfad
+                        FROM tartikel
+                        JOIN tartikelmerkmal 
+                            ON tartikel.kArtikel = tartikelmerkmal.kArtikel
+                        JOIN tmerkmalwert 
+                            ON tmerkmalwert.kMerkmalWert = tartikelmerkmal.kMerkmalWert
+                        " . $cJoinMerkmalwert . "
+                        JOIN tmerkmal 
+                            ON tmerkmal.kMerkmal = tartikelmerkmal.kMerkmal
+                        " . $cJoinMerkmal . "
+                        " . ((isset($FilterSQL->oHerstellerFilterSQL->cJoin))
+                                ? $FilterSQL->oHerstellerFilterSQL->cJoin
+                                : ''
+                            ) . "
+                        " . ((isset($FilterSQL->oSuchspecialFilterSQL->cJoin))
+                                ? $FilterSQL->oSuchspecialFilterSQL->cJoin : ''
+                            ) . "
+                        " . ((isset($FilterSQL->oSuchFilterSQL->cJoin))
+                                ? $FilterSQL->oSuchFilterSQL->cJoin
+                                : ''
+                            ) . "
+                        " . ((isset($FilterSQL->oKategorieFilterSQL->cJoin))
+                                ? $FilterSQL->oKategorieFilterSQL->cJoin
+                                : ''
+                            ) . "
+                        " . ((isset($FilterSQL->oMerkmalFilterSQL->cJoinMMW))
+                                ? $FilterSQL->oMerkmalFilterSQL->cJoinMMW
+                                : ''
+                            ) . "
+                        " . ((isset($FilterSQL->oTagFilterSQL->cJoin))
+                                ? $FilterSQL->oTagFilterSQL->cJoin
+                                : ''
+                            ) . "
+                        " . ((isset($FilterSQL->oBewertungSterneFilterSQL->cJoin))
+                                ? $FilterSQL->oBewertungSterneFilterSQL->cJoin
+                                : ''
+                            ) . "
+                        " . ((isset($FilterSQL->oPreisspannenFilterSQL->cJoin))
+                                ? $FilterSQL->oPreisspannenFilterSQL->cJoin
+                                : ''
+                            ) . "
+                        LEFT JOIN tartikelsichtbarkeit 
+                            ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
+                            AND tartikelsichtbarkeit.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
+                        WHERE tartikelsichtbarkeit.kArtikel IS NULL
+                            AND tartikel.kVaterArtikel = 0
+                            " . gibLagerfilter() . "
+                            " . ((isset($FilterSQL->oSuchspecialFilterSQL->cWhere))
+                                    ? $FilterSQL->oSuchspecialFilterSQL->cWhere
+                                    : ''
+                                ) . "
+                            " . ((isset($FilterSQL->oSuchFilterSQL->cWhere))
+                                    ? $FilterSQL->oSuchFilterSQL->cWhere
+                                    : ''
+                                ) . "
+                            " . ((isset($FilterSQL->oHerstellerFilterSQL->cWhere))
+                                    ? $FilterSQL->oHerstellerFilterSQL->cWhere
+                                    : ''
+                                ) . "
+                            " . ((isset($FilterSQL->oKategorieFilterSQL->cWhere))
+                                    ? $FilterSQL->oKategorieFilterSQL->cWhere
+                                    : ''
+                                ) . "
+                            " . ((isset($FilterSQL->oMerkmalFilterSQL->cWhereMMW))
+                                    ? $FilterSQL->oMerkmalFilterSQL->cWhereMMW
+                                    : ''
+                                ) . "
+                            " . ((isset($FilterSQL->oTagFilterSQL->cWhere))
+                                    ? $FilterSQL->oTagFilterSQL->cWhere
+                                    : ''
+                                ) . "
+                            " . ((isset($FilterSQL->oBewertungSterneFilterSQL->cWhere))
+                                    ? $FilterSQL->oBewertungSterneFilterSQL->cWhere
+                                    : ''
+                                ) . "
+                            " . ((isset($FilterSQL->oPreisspannenFilterSQL->cWhere))
+                                    ? $FilterSQL->oPreisspannenFilterSQL->cWhere
+                                    : ''
+                                ) . "
+                        GROUP BY tartikelmerkmal.kMerkmalWert, tartikel.kArtikel
+                ) AS ssMerkmal
+                GROUP BY ssMerkmal.kMerkmalWert
+                ORDER BY ssMerkmal.nSortMerkmal, ssMerkmal.nSort, ssMerkmal.cWert", 2
         );
 
         if (is_array($oMerkmalFilterDB_arr) && count($oMerkmalFilterDB_arr) > 0) {

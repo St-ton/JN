@@ -232,3 +232,142 @@ function naechsterUpdateStep($nTyp, $nZeileBis = 1)
     header('Location: ' . Shop::getURL() . '/' . PFAD_ADMIN . 'dbupdater.php?nErrorCode=-1');
     exit();
 }
+
+/**
+ * @return array|IOError
+ */
+function dbUpdateIO()
+{
+    $template = Template::getInstance();
+    $updater  = new Updater();
+
+    try {
+        if ($template->xmlData->cShopVersion != $template->shopVersion) {
+            if ($template->setTemplate($template->xmlData->cName, $template->xmlData->eTyp)) {
+                unset($_SESSION['cTemplate'], $_SESSION['template']);
+            }
+        }
+
+        $dbVersion       = $updater->getCurrentDatabaseVersion();
+        $updateResult    = $updater->update();
+        $availableUpdate = $updater->hasPendingUpdates();
+
+        if ($updateResult instanceof IMigration) {
+            $updateResult = sprintf('Migration: %s', $updateResult->getDescription());
+        } else {
+            $updateResult = sprintf('Version: %.2f', $updateResult / 100);
+        }
+
+        return [
+            'result'          => $updateResult,
+            'currentVersion'  => $dbVersion,
+            'updatedVersion'  => $dbVersion,
+            'availableUpdate' => $availableUpdate,
+            'action'          => 'update'
+        ];
+    } catch (Exception $e) {
+        return new IOError($e->getMessage());
+    }
+}
+
+/**
+ * @return array|IOError
+ */
+function dbupdaterBackup()
+{
+    $updater = new Updater();
+
+    try {
+        $file = $updater->createSqlDumpFile(true);
+        $updater->createSqlDump($file, true);
+
+        $file   = basename($file);
+        $params = http_build_query(['action' => 'download', 'file' => $file], '', '&');
+        $url    = Shop::getAdminURL() . '/dbupdater.php?' . $params;
+
+        return [
+            'url'  => $url,
+            'file' => $file,
+            'type' => 'backup'
+        ];
+    } catch (Exception $e) {
+        return new IOError($e->getMessage());
+    }
+}
+
+/**
+ * @param $file
+ * @return IOFile|IOError
+ */
+function dbupdaterDownload($file)
+{
+    if (!preg_match('/^([0-9_a-z]+).sql.gz$/', $file, $m)) {
+        return new IOError('Wrong download request');
+    }
+
+    $filePath = PFAD_ROOT . PFAD_EXPORT_BACKUP . $file;
+
+    if (!file_exists($filePath)) {
+        return new IOError('Download file does not exist');
+    }
+
+    return new IOFile($filePath, 'application/x-gzip');
+}
+
+/**
+ * @return array
+ */
+function dbupdaterStatusTpl()
+{
+    $smarty   = Shop::Smarty();
+    $updater  = new Updater();
+    $template = Template::getInstance();
+
+    $currentFileVersion     = $updater->getCurrentFileVersion();
+    $currentDatabaseVersion = $updater->getCurrentDatabaseVersion();
+    $version                = $updater->getVersion();
+    $updatesAvailable       = $updater->hasPendingUpdates();
+    $updateError            = $updater->error();
+
+    if (defined('ADMIN_MIGRATION') && ADMIN_MIGRATION) {
+        $smarty->assign('manager', new MigrationManager());
+    }
+
+    $smarty
+        ->assign('updatesAvailable', $updatesAvailable)
+        ->assign('currentFileVersion', $currentFileVersion)
+        ->assign('currentDatabaseVersion', $currentDatabaseVersion)
+        ->assign('version', $version)
+        ->assign('updateError', $updateError)
+        ->assign('currentTemplateFileVersion', $template->xmlData->cShopVersion)
+        ->assign('currentTemplateDatabaseVersion', $template->shopVersion);
+
+    return [
+        'tpl' => $smarty->fetch('tpl_inc/dbupdater_status.tpl'),
+        'type' => 'status_tpl'
+    ];
+}
+
+/**
+ * @param null $id
+ * @param null $version
+ * @param null $dir
+ * @return array|IOError
+ */
+function dbupdaterMigration($id = null, $version = null, $dir = null)
+{
+    try {
+        $migration = new MigrationManager($version);
+
+        if ($id !== null && in_array($dir, [IMigration::UP, IMigration::DOWN], true)) {
+            $migration->executeMigrationById($id, $dir);
+        }
+
+        $result = ['id' => $id];
+    } catch (Exception $e) {
+        $result = new IOError($e->getMessage());
+    }
+
+    $result['type'] = 'migration';
+    return $result;
+}

@@ -130,6 +130,6 @@
 
 {if isset($oVersandzuschlag->kVersandzuschlag) && $oVersandzuschlag->kVersandzuschlag > 0}
     <script type="text/javascript">
-        xajax_getCurrencyConversionAjax(0, document.getElementById('fZuschlag').value, 'ajaxzuschlag');
+        ioCall('getCurrencyConversion', [0, $('#fZuschlag').val(), 'ajaxzuschlag']);
     </script>
 {/if}

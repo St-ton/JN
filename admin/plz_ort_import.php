@@ -2,13 +2,14 @@
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
+ * @global JTLSmarty $smarty
+ * @global AdminAccount $oAccount
  */
+
 require_once __DIR__ . '/includes/admininclude.php';
 require_once __DIR__ . '/includes/plz_ort_import_inc.php';
 
 $oAccount->permission('PLZ_ORT_IMPORT_VIEW', true, true);
-
-/** @global JTLSmarty $smarty */
 
 $cAction  = 'index';
 $messages = [
@@ -16,47 +17,5 @@ $messages = [
     'error'  => '',
 ];
 
-if (isset($_REQUEST['action']) && validateToken()) {
-    $cAction = StringHandler::filterXSS($_REQUEST['action']);
-}
-
-switch ($cAction) {
-    case 'callStatus':
-        plzimportActionCallStatus();
-        break;
-    case 'checkStatus':
-        plzimportActionCheckStatus();
-        break;
-    case 'delTempImport':
-        plzimportActionDelTempImport();
-        break;
-    case 'doImport':
-        plzimportActionDoImport(
-            isset($_REQUEST['target']) ? StringHandler::filterXSS($_REQUEST['target']) : '',
-            isset($_REQUEST['part']) ? StringHandler::filterXSS($_REQUEST['part']) : '',
-            isset($_REQUEST['step']) ? (int)$_REQUEST['step'] : 0
-        );
-        break;
-    case 'doLocalImport':
-        plzimportActionDoImport(
-            isset($_REQUEST['target']) ? StringHandler::filterXSS($_REQUEST['target']) : '',
-            'import',
-            isset($_REQUEST['step']) ? (int)$_REQUEST['step'] : 0
-        );
-        break;
-    case 'loadAvailableDownloads':
-        plzimportActionLoadAvailableDownloads($smarty);
-        break;
-    case 'loadBackup':
-        plzimportActionRestoreBackup(isset($_REQUEST['target']) ? StringHandler::filterXSS($_REQUEST['target']) : '');
-        break;
-    case 'updateIndex':
-        plzimportActionUpdateIndex($smarty);
-        break;
-    case 'index':
-    default:
-        plzimportActionIndex($smarty, $messages);
-        break;
-}
-
+plzimportActionIndex($smarty, $messages);
 plzimportFinalize($cAction, $smarty, $messages);

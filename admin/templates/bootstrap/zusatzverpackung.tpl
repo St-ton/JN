@@ -189,9 +189,9 @@
 
 </div>
 <script type="text/javascript">
-    xajax_getCurrencyConversionAjax(0, document.getElementById('fBrutto').value, 'WertAjax');
-    xajax_getCurrencyConversionAjax(0, document.getElementById('fMindestbestellwert').value, 'MindestWertAjax');
-    xajax_getCurrencyConversionAjax(0, document.getElementById('fKostenfrei').value, 'KostenfreiAjax');
+    ioCall('getCurrencyConversion', [0, $('#fBrutto').val(), 'WertAjax']);
+    ioCall('getCurrencyConversion', [0, $('#fMindestbestellwert').val(), 'MindestWertAjax']);
+    ioCall('getCurrencyConversion', [0, $('#fKostenfrei').val(), 'KostenfreiAjax']);
 </script>
 
 {include file='tpl_inc/footer.tpl'}

@@ -6,8 +6,6 @@
 
 /**
  * Class Redirect
- *
- * @access public
  */
 class Redirect
 {
@@ -82,7 +80,7 @@ class Redirect
 
     /**
      * @param string $cUrl
-     * @return mixed
+     * @return null|stdClass
      */
     public function find($cUrl)
     {
@@ -93,7 +91,7 @@ class Redirect
      * Get a redirect by target
      *
      * @param string $cToUrl target to search for
-     * @return mixed returns null if fails, redirect object if successful
+     * @return null|string - null if fails, string if successful
      */
     public function getRedirectByTarget($cToUrl)
     {
@@ -369,7 +367,9 @@ class Redirect
             $oItem = $this->find($cUrl);
             if (!is_object($oItem)) {
                 $conf = Shop::getSettings([CONF_GLOBAL]);
-                if (!isset($_GET['notrack']) && (!isset($conf['global']['redirect_save_404']) || $conf['global']['redirect_save_404'] === 'Y')) {
+                if (!isset($_GET['notrack'])  &&
+                    (!isset($conf['global']['redirect_save_404']) || $conf['global']['redirect_save_404'] === 'Y')
+                ) {
                     $oItem           = new self();
                     $oItem->cFromUrl = $cUrl;
                     $oItem->cToUrl   = '';
@@ -462,39 +462,37 @@ class Redirect
         $oUrl = new UrlHelper();
         $oUrl->setUrl($cUrl);
 
-        $cUrl = $oUrl->normalize();
-        $cUrl = trim($cUrl, "\\/");
-        $cUrl = "/{$cUrl}";
-
-        return $cUrl;
+        return '/' . trim($oUrl->normalize(), "\\/");
     }
 
     /**
-     * @param string $bUmgeleiteteUrls
+     * @param int    $bUmgeleiteteUrls
      * @param string $cSuchbegriff
      * @return int
      */
     public function getCount($bUmgeleiteteUrls, $cSuchbegriff)
     {
-        $where = '';
-        if ($bUmgeleiteteUrls === '1' || !empty($cSuchbegriff)) {
-            $where .= 'WHERE ';
+        $bUmgeleiteteUrls = (int)$bUmgeleiteteUrls;
+        $qry              = 'SELECT COUNT(*) AS nCount FROM tredirect ';
+        $prep             = [];
+        if ($bUmgeleiteteUrls === 1 || !empty($cSuchbegriff)) {
+            $qry .= 'WHERE ';
         }
-        if ($bUmgeleiteteUrls === '1') {
-            $where .= ' cToUrl != ""';
+        if ($bUmgeleiteteUrls === 1) {
+            $qry .= ' cToUrl != ""';
         }
-        if (!empty($cSuchbegriff) && $bUmgeleiteteUrls === '1') {
-            $where .= ' AND ';
+        if (!empty($cSuchbegriff) && $bUmgeleiteteUrls === 1) {
+            $qry .= ' AND ';
         }
         if (!empty($cSuchbegriff)) {
-            $where .= "cFromUrl like '%{$cSuchbegriff}%'";
+            $qry  .= "cFromUrl LIKE :search";
+            $prep = ['search' => '%' . $cSuchbegriff . '%'];
         }
-        $oCount = Shop::DB()->query("SELECT COUNT(*) AS nCount FROM tredirect {$where}", 1);
-        if (is_object($oCount)) {
-            return (int)$oCount->nCount;
-        }
+        $oCount = Shop::DB()->executeQueryPrepared($qry, $prep, 1);
 
-        return 0;
+        return isset($oCount->nCount)
+            ? (int)$oCount->nCount
+            : 0;
     }
 
     /**
@@ -534,7 +532,7 @@ class Redirect
 
     /**
      * @param int $kRedirect
-     * @return mixed
+     * @return array
      * @deprecated since 4.05 - use Redirect::getReferers()
      */
     public function getVerweise($kRedirect)
@@ -548,7 +546,7 @@ class Redirect
      * @param $cLimitSQL
      * @return array
      */
-    public static function getRedirects ($cWhereSQL, $cOrderSQL, $cLimitSQL = '')
+    public static function getRedirects($cWhereSQL, $cOrderSQL, $cLimitSQL = '')
     {
         $oRedirect_arr = Shop::DB()->query("
             SELECT *
@@ -565,6 +563,19 @@ class Redirect
         }
 
         return $oRedirect_arr;
+    }
+
+    /**
+     * @param $cWhereSQL
+     */
+    public static function getRedirectCount($cWhereSQL)
+    {
+        return Shop::DB()->query(
+            "SELECT count(*) AS nCount
+                FROM tredirect
+                " . ($cWhereSQL !== '' ? "WHERE " . $cWhereSQL : ""),
+            1
+        )->nCount;
     }
 
     /**
@@ -591,11 +602,11 @@ class Redirect
      */
     public static function getTotalRedirectCount()
     {
-        return Shop::DB()->query("SELECT count(kRedirect) AS nCount FROM tredirect", 1)->nCount;
+        return (int)Shop::DB()->query("SELECT COUNT(kRedirect) AS nCount FROM tredirect", 1)->nCount;
     }
 
     /**
-     * @param $cUrl - one of
+     * @param string $cUrl - one of
      *   * full URL (must be inside the same shop) e.g. http://www.shop.com/path/to/page
      *   * url path e.g. /path/to/page
      *   * path relative to the shop root url

@@ -159,9 +159,8 @@
             };
 
             $('.variations .bootstrap-select select').change(function() {
-                var tmp_idx = parseInt($('.variations .bootstrap-select li.selected').attr('data-original-index')) + 1;
-                var sel     = $(this).find('option:nth-child(' + tmp_idx + ')');
-                var cont    = $(this).closest('.variations');
+                var sel  = $(this).find('[value=' + this.value + ']');
+                var cont = $(this).closest('.variations');
                 if (cont.hasClass('simple-variations')) {
                     inner(sel, false, false);
                 } else {

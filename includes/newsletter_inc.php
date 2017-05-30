@@ -124,8 +124,8 @@ function fuegeNewsletterEmpfaengerEin($oKunde, $bPruefeDaten = false)
                 $oNewsletterEmpfaenger->dEingetragen       = 'now()';
                 $oNewsletterEmpfaenger->dLetzterNewsletter = '0000-00-00';
 
-                executeHook(HOOK_NEWSLETTER_PAGE_EMPFAENGEREINTRAGEN, ['
-                    oNewsletterEmpfaenger' => $oNewsletterEmpfaenger
+                executeHook(HOOK_NEWSLETTER_PAGE_EMPFAENGEREINTRAGEN, [
+                    'oNewsletterEmpfaenger' => $oNewsletterEmpfaenger
                 ]);
 
                 Shop::DB()->insert('tnewsletterempfaenger', $oNewsletterEmpfaenger);

@@ -84,13 +84,7 @@
                         {/foreach}
                         {/block}
                     {/if}{* /merkmalfilter *}
-                    {if isset($Suchergebnisse->Suchspecialauswahl) && (
-                    (isset($Suchergebnisse->Suchspecialauswahl[1]->nAnzahl) && $Suchergebnisse->Suchspecialauswahl[1]->nAnzahl > 0) ||
-                    (isset($Suchergebnisse->Suchspecialauswahl[2]->nAnzahl) && $Suchergebnisse->Suchspecialauswahl[2]->nAnzahl > 0) ||
-                    (isset($Suchergebnisse->Suchspecialauswahl[3]->nAnzahl) && $Suchergebnisse->Suchspecialauswahl[3]->nAnzahl > 0) ||
-                    (isset($Suchergebnisse->Suchspecialauswahl[4]->nAnzahl) && $Suchergebnisse->Suchspecialauswahl[4]->nAnzahl > 0) ||
-                    (isset($Suchergebnisse->Suchspecialauswahl[5]->nAnzahl) && $Suchergebnisse->Suchspecialauswahl[5]->nAnzahl > 0) ||
-                    (isset($Suchergebnisse->Suchspecialauswahl[6]->nAnzahl) && $Suchergebnisse->Suchspecialauswahl[6]->nAnzahl > 0))}
+                    {if !empty($Suchergebnisse->Suchspecialauswahl)}
                         <div class="form-group dropdown filter-type-special">
                             <a href="#" class="btn btn-default dropdown-toggle form-control" data-toggle="dropdown" role="button" aria-expanded="false">
                                 {lang key="specificProducts" section="global"} <span class="caret"></span>

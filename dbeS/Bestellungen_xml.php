@@ -494,7 +494,9 @@ function bearbeiteUpdate($xml)
         }
     }
 
-    bearbeiteBestellattribute($oBestellung->kBestellung, is_assoc($xml['tbestellung']['tbestellattribut']) ? [$xml['tbestellung']['tbestellattribut']] : $xml['tbestellung']['tbestellattribut']);
+    if (isset($xml['tbestellung']['tbestellattribut'])) {
+        bearbeiteBestellattribute($oBestellung->kBestellung, is_assoc($xml['tbestellung']['tbestellattribut']) ? [$xml['tbestellung']['tbestellattribut']] : $xml['tbestellung']['tbestellattribut']);
+    }
 
     //sende Versandmail
     $oModule = gibZahlungsmodul($oBestellungAlt->kBestellung);

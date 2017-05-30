@@ -4188,6 +4188,10 @@ class Artikel
             : $this->cName;
 
         $cacheTags = [CACHING_GROUP_ARTICLE . '_' . $this->kArtikel, CACHING_GROUP_ARTICLE];
+        $basePrice = clone $this->Preise;
+        $this->rabattierePreise();
+        // Versandkostenfrei-Länder aufgrund rabattierter Preise neu setzen
+        $this->taxData['shippingFreeCountries'] = $this->gibMwStVersandLaenderString();
         executeHook(HOOK_ARTIKEL_CLASS_FUELLEARTIKEL, [
             'oArtikel'  => &$this,
             'cacheTags' => &$cacheTags,
@@ -4195,16 +4199,17 @@ class Artikel
         ]);
 
         if ($noCache === false) {
-            //oVariationKombiKinderAssoc_arr can contain a lot of article objects - do not save to cache
+            // oVariationKombiKinderAssoc_arr can contain a lot of article objects, prices may depend on customers
+            // so do not save to cache
+            $newPrice                             = $this->Preise;
             $children                             = $this->oVariationKombiKinderAssoc_arr;
             $this->oVariationKombiKinderAssoc_arr = null;
+            $this->Preise                         = $basePrice;
             Shop::Cache()->set($cacheID, $this, $cacheTags);
-            //restore oVariationKombiKinderAssoc_arr to class instance
+            // restore oVariationKombiKinderAssoc_arr and Preise to class instance
             $this->oVariationKombiKinderAssoc_arr = $children;
+            $this->Preise                         = $newPrice;
         }
-        $this->rabattierePreise();
-        // Versandkostenfrei-Länder aufgrund rabattierter Preise neu setzen
-        $this->taxData['shippingFreeCountries'] = $this->gibMwStVersandLaenderString();
 
         return $this;
     }
@@ -5160,7 +5165,6 @@ class Artikel
     {
         //Language-Fallback fuer Exportformate - #6663.
         //@todo: Abfrage der aktuellen Sprache in Session-Class oder System-Class auslagern
-        //@todo: Verwendung von $allMaxDeliveryDays / $allMinDeliveryDays prüfen
         if ($languageISO === null && !isset($_SESSION['cISOSprache'])) {
             $oSprache                = gibStandardsprache(true);
             $_SESSION['cISOSprache'] = $oSprache->cISO;
@@ -5203,15 +5207,13 @@ class Artikel
             $this->holeStueckliste($_SESSION['Kundengruppe']->kKundengruppe, true);
         }
         if (!empty($this->oStueckliste_arr) && !empty($this->kStueckliste)) {
-            $allMaxDeliveryDays = $maxDeliveryDays;
-            $allMinDeliveryDays = $minDeliveryDays;
             foreach ($this->oStueckliste_arr as $piece) {
                 $piece->getDeliveryTime($countryCode, $purchaseQuantity * (float)$piece->fAnzahl_stueckliste, null, null, $shippingID);
                 if (isset($piece->nMaxDeliveryDays)) {
-                    $allMaxDeliveryDays = max($allMaxDeliveryDays, $piece->nMaxDeliveryDays);
+                    $maxDeliveryDays = max($maxDeliveryDays, $piece->nMaxDeliveryDays);
                 }
                 if (isset($piece->nMinDeliveryDays)) {
-                    $allMinDeliveryDays = max($allMinDeliveryDays, $piece->nMinDeliveryDays);
+                    $minDeliveryDays = max($minDeliveryDays, $piece->nMinDeliveryDays);
                 }
             }
             if (!empty($resetArray)) {
@@ -5220,8 +5222,6 @@ class Artikel
             }
         }
         if ($this->bHasKonfig && !empty($this->oKonfig_arr)) {
-            $allMaxDeliveryDays = $maxDeliveryDays;
-            $allMinDeliveryDays = $minDeliveryDays;
             foreach ($this->oKonfig_arr as $gruppe) {
                 /** @var Konfigitem $piece */
                 foreach ($gruppe->oItem_arr as $piece) {
@@ -5235,10 +5235,10 @@ class Artikel
                             $shippingID
                         );
                         if (isset($konfigItemArticle->nMaxDeliveryDays)) {
-                            $allMaxDeliveryDays = max($allMaxDeliveryDays, $konfigItemArticle->nMaxDeliveryDays);
+                            $maxDeliveryDays = max($maxDeliveryDays, $konfigItemArticle->nMaxDeliveryDays);
                         }
                         if (isset($konfigItemArticle->nMinDeliveryDays)) {
-                            $allMinDeliveryDays = max($allMinDeliveryDays, $konfigItemArticle->nMinDeliveryDays);
+                            $minDeliveryDays = max($minDeliveryDays, $konfigItemArticle->nMinDeliveryDays);
                         }
                     }
                 }

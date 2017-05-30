@@ -18,7 +18,7 @@ if (auth()) {
             tbestellung.cTracking, tbestellung.cKommentar, tbestellung.cAbgeholt, tbestellung.cStatus, 
             date_format(tbestellung.dErstellt, \"%d.%m.%Y\") AS dErstellt_formatted,  tbestellung.dErstellt, 
             tzahlungsart.cModulId, tbestellung.cPUIZahlungsdaten, tbestellung.nLongestMinDelivery, 
-            tbestellung.nLongestMaxDelivery
+            tbestellung.nLongestMaxDelivery, tbestellung.fWaehrungsFaktor
             FROM tbestellung
             LEFT JOIN tzahlungsart
                 ON tzahlungsart.kZahlungsart = tbestellung.kZahlungsart
@@ -144,6 +144,11 @@ if (auth()) {
             if (count($xml_obj['bestellungen']['tbestellung'][$i]['tbestellattribut']) === 0) {
                 unset($xml_obj['bestellungen']['tbestellung'][$i]['tbestellattribut']);
             }
+
+            // Sicherstellen, dass fWaehrungsFaktor als letztes Element im XML steht
+            $tmpWaehrungsfaktor = $xml_obj['bestellungen']['tbestellung'][$i]['fWaehrungsFaktor'];
+            unset($xml_obj['bestellungen']['tbestellung'][$i]['fWaehrungsFaktor']);
+            $xml_obj['bestellungen']['tbestellung'][$i]['fWaehrungsFaktor'] = $tmpWaehrungsfaktor;
         }
     }
 }

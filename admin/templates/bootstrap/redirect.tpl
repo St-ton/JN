@@ -22,9 +22,27 @@
                 $csvimport.fadeOut();
             }
         });
-        {*{foreach $oRedirect_arr as $oRedirect}*}
-            {*check_url({$oRedirect->kRedirect}, '{$oRedirect->cToUrl}');*}
-        {*{/foreach}*}
+        {foreach $oRedirect_arr as $oRedirect}
+            {if $oRedirect->cAvailable === 'u'}
+                ioCall(
+                    'updateRedirectState',
+                    [{$oRedirect->kRedirect}],
+                    function (data) {
+                        var $stateChecking = $('#frm_{$oRedirect->kRedirect} .state-checking');
+                        var $stateAvailable = $('#frm_{$oRedirect->kRedirect} .state-available');
+                        var $stateUnavailable = $('#frm_{$oRedirect->kRedirect} .state-unavailable');
+                        $stateChecking.hide();
+                        $stateAvailable.hide();
+                        $stateUnavailable.hide();
+                        if (data === 'y') {
+                            $stateAvailable.show();
+                        } else {
+                            $stateUnavailable.show();
+                        }
+                    }
+                );
+            {/if}
+        {/foreach}
         check_url('cToUrl', '{if isset($cPost_arr.cToUrl)}{$cPost_arr.cToUrl}{/if}');
     });
     
@@ -155,7 +173,7 @@
                                     <td class="tleft">
                                         <div id="frm_{$oRedirect->kRedirect}" class="input-group input-group-sm" style="margin-right:30px;">
                                             <span class="input-group-addon alert-info state-checking"
-                                                  style="display:none;">
+                                                  {if $oRedirect->cAvailable !== 'u'}style="display:none;"{/if}>
                                                 <i class="fa fa-spinner"></i>
                                             </span>
                                             <span class="input-group-addon alert-success state-available"

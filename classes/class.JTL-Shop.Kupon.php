@@ -909,10 +909,6 @@ class Kupon
         foreach ($newCustomerCoupons as $newCustomerCoupon) {
             if (isset($newCustomerCoupon->kKupon) && $newCustomerCoupon->kKupon > 0) {
                 $newCustomerCoupon->translationList = $this->getTranslation($newCustomerCoupon->kKupon);
-                $cMember_arr                        = array_keys(get_object_vars($newCustomerCoupon));
-                foreach ($cMember_arr as $cMember) {
-                    $newCustomerCoupon->$cMember;
-                }
 
                 $newCustomerCoupons_arr[] = $newCustomerCoupon;
             }

@@ -403,7 +403,7 @@ define('HOOK_WARENKORB_PAGE_KUPONANNEHMEN', 54);
  *
  * @file warenkorb.php
  * @param array error
- * @param int nReturnValue
+ * @param int - nReturnValue
  */
 define('HOOK_WARENKORB_PAGE_KUPONANNEHMEN_PLAUSI', 55);
 
@@ -1667,3 +1667,18 @@ define('HOOK_QUICKSYNC_XML_BEARBEITEINSERT', 225);
  * @param array - manufacturers
  */
 define('HOOK_GET_MANUFACTURERS', 226);
+
+/**
+ * @since 4.06
+ * @file admin/templates/bootstrap/php/functions.php
+ * @param AdminAccount - oAdminAccount
+ * @param string       - url
+ */
+define('HOOK_BACKEND_FUNCTIONS_GRAVATAR', 227);
+
+/**
+ * @since 4.06
+ * @file includes/bestellabschluss_inc.php
+ * @param Warenkorb - oWarenkorb
+ */
+define('HOOK_BESTELLABSCHLUSS_INC_WARENKORBINDB', 228);

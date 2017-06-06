@@ -183,7 +183,7 @@ class JTLCache
      */
     private static function map($method)
     {
-        $mapping = [
+        static $mapping = [
             'get'                => '_get',
             'fetch'              => '_get',
             'set'                => '_set',

@@ -52,7 +52,7 @@ class FilterBaseSearchSpecial extends AbstractFilter
      */
     public function setSeo($languages)
     {
-        $oSeo_arr = $this->db->selectAll(
+        $oSeo_arr = Shop::DB()->selectAll(
             'tseo',
             ['cKey', 'kKey'],
             ['suchspecial', $this->getValue()],

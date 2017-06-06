@@ -132,7 +132,7 @@ class FilterItemRating extends AbstractFilter
                         FROM (" . $query . " ) AS ssMerkmal
                         GROUP BY ssMerkmal.nSterne
                         ORDER BY ssMerkmal.nSterne DESC";
-            $res   = $this->db->query($query, 2);
+            $res   = Shop::DB()->query($query, 2);
             if (is_array($res)) {
                 $nSummeSterne     = 0;
                 $additionalFilter = new FilterItemRating($this->getNaviFilter());

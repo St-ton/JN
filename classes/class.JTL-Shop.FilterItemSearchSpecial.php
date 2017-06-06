@@ -55,7 +55,7 @@ class FilterItemSearchSpecial extends AbstractFilter
      */
     public function setSeo($languages)
     {
-        $oSeo_arr = $this->db->query("
+        $oSeo_arr = Shop::DB()->query("
                 SELECT cSeo, kSprache
                     FROM tseo
                     WHERE cKey = 'suchspecial'
@@ -219,9 +219,9 @@ class FilterItemSearchSpecial extends AbstractFilter
                 return $this->naviFilter->BewertungFilter->isInitialized()
                     ? []
                     : (new FilterJoin())->setType('JOIN')
-                                             ->setTable('tartikelext AS taex ')
-                                             ->setOn('taex.kArtikel = tartikel.kArtikel')
-                                             ->setComment('JOIN from FilterItemSearchSpecial top reviews');
+                                        ->setTable('tartikelext AS taex ')
+                                        ->setOn('taex.kArtikel = tartikel.kArtikel')
+                                        ->setComment('JOIN from FilterItemSearchSpecial top reviews');
 
             default:
                 return [];
@@ -310,7 +310,7 @@ class FilterItemSearchSpecial extends AbstractFilter
                     $state->conditions,
                     $state->having
                 );
-                $oSuchspecialFilterDB  = $this->db->query($qry, 2);
+                $oSuchspecialFilterDB  = Shop::DB()->query($qry, 2);
 
                 $fe = (new FilterExtra())
                     ->setType($this->getType())

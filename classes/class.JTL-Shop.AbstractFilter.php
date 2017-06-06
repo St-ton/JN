@@ -149,11 +149,6 @@ abstract class AbstractFilter implements IFilter
     protected $options;
 
     /**
-     * @var NiceDB
-     */
-    protected $db;
-
-    /**
      * AbstractFilter constructor
      *
      * @param Navigationsfilter $naviFilter
@@ -376,7 +371,6 @@ abstract class AbstractFilter implements IFilter
         $this->customerGroupID    = $naviFilter->getCustomerGroupID();
         $this->config             = $naviFilter->getConfig();
         $this->availableLanguages = $naviFilter->getAvailableLanguages();
-        $this->db                 = $naviFilter->getDB();
 
         return $this;
     }

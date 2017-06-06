@@ -194,9 +194,9 @@ class Navigationsfilter
     private $baseURL;
 
     /**
-     * @var NiceDB
+     * @var stdClass
      */
-    private $db;
+    private $searchResults;
 
     /**
      * @param array  $languages
@@ -232,14 +232,11 @@ class Navigationsfilter
                 CONF_METAANGABEN
             ])
             : $config;
-        $this->db              = $db === null
-            ? NiceDB::getInstance()
-            : $db;
         $this->languageID      = $currentLanguageID === null
             ? Shop::getLanguage()
             : (int)$currentLanguageID;
         $this->customerGroupID = !isset($_SESSION['Kundengruppe']->kKundengruppe)
-            ? (int)$this->db->select('tkundengruppe', 'cStandard', 'Y')->kKundengruppe
+            ? (int)Shop::DB()->select('tkundengruppe', 'cStandard', 'Y')->kKundengruppe
             : (int)$_SESSION['Kundengruppe']->kKundengruppe;
         $this->baseURL         = Shop::getURL() . '/';
         executeHook(HOOK_NAVIGATIONSFILTER_CREATE, ['navifilter' => $this]);
@@ -305,14 +302,6 @@ class Navigationsfilter
         $this->languageID = (int)$id;
 
         return $this;
-    }
-
-    /**
-     * @return NiceDB
-     */
-    public function getDB()
-    {
-        return $this->db;
     }
 
     /**
@@ -525,7 +514,7 @@ class Navigationsfilter
             $this->nAnzahlProSeite = (int)$params['nArtikelProSeite'];
         }
         if ($params['kSuchanfrage'] > 0) {
-            $oSuchanfrage = $this->db->select('tsuchanfrage', 'kSuchanfrage', $params['kSuchanfrage']);
+            $oSuchanfrage = Shop::DB()->select('tsuchanfrage', 'kSuchanfrage', $params['kSuchanfrage']);
             if (isset($oSuchanfrage->cSuche) && strlen($oSuchanfrage->cSuche) > 0) {
                 $this->Suche->cSuche = $oSuchanfrage->cSuche;
             }
@@ -541,9 +530,9 @@ class Navigationsfilter
             $params['cSuche']              = StringHandler::filterXSS($params['cSuche']);
             $this->Suche->cSuche           = $params['cSuche'];
             $this->Suchanfrage->cSuche     = $this->Suche->cSuche;
-            $oSuchanfrage                  = $this->db->select(
+            $oSuchanfrage                  = Shop::DB()->select(
                 'tsuchanfrage',
-                'cSuche', $this->db->escape($this->Suche->cSuche),
+                'cSuche', Shop::DB()->escape($this->Suche->cSuche),
                 'kSprache', $this->getLanguageID(),
                 'nAktiv', 1,
                 false,
@@ -576,10 +565,10 @@ class Navigationsfilter
                     if (is_array($_GET[$filterParam])) {
                         $filterValue = [];
                         foreach ($_GET[$filterParam] as $idx => $param) {
-                            $filterValue[$idx] = $this->db->realEscape($param);
+                            $filterValue[$idx] = Shop::DB()->realEscape($param);
                         }
                     } else {
-                        $filterValue = $this->db->realEscape($_GET[$filterParam]);
+                        $filterValue = Shop::DB()->realEscape($_GET[$filterParam]);
                     }
                     $this->addActiveFilter($filter, $filterValue);
                     $params[$filterParam] = $filterValue;
@@ -600,6 +589,11 @@ class Navigationsfilter
             ]
         );
         $this->params = $params;
+        if (isset($_GET['cache']) && ($obj = Shop::Cache()->get($this->getHash())) !== false) {
+            foreach (get_object_vars($obj) as $i => $v) {
+                $this->$i = $v;
+            }
+        }
 
         return $this->validate();
     }
@@ -610,7 +604,7 @@ class Navigationsfilter
      */
     private function setAttributeFilters($values)
     {
-        $attributes = $this->db->query('
+        $attributes = Shop::DB()->query('
             SELECT tmerkmalwert.kMerkmal, tmerkmalwert.kMerkmalWert, tmerkmal.nMehrfachauswahl
                 FROM tmerkmalwert
                 JOIN tmerkmal 
@@ -1081,7 +1075,7 @@ class Navigationsfilter
             '',
             ['tartikel.kArtikel']
         );
-        $keys = $this->db->query($qry, 2);
+        $keys = Shop::DB()->query($qry, 2);
         $res  = [];
         foreach ($keys as $key) {
             $res[] = (int)$key->kArtikel;
@@ -1122,7 +1116,7 @@ class Navigationsfilter
     {
         $_SESSION['nArtikelUebersichtVLKey_arr'] = []; // Nur Artikel, die auch wirklich auf der Seite angezeigt werden
 
-        $hash            = $this->getHash();
+//        $hash            = $this->getHash();
         $limitPerPage    = $limit > 0 ? $limit : $this->getArticlesPerPageLimit();
         $nLimitN         = ($this->nSeite - 1) * $limitPerPage;
         $paginationLimit = $nLimitN >= 50 // 50 nach links und 50 nach rechts für Artikeldetails blättern
@@ -1131,50 +1125,52 @@ class Navigationsfilter
         $offsetEnd       = max(100, $limitPerPage + 50) - $paginationLimit;
         $nLimitN         = $limitPerPage * ($this->nSeite - 1);
         $max             = (int)$this->conf['artikeluebersicht']['artikeluebersicht_max_seitenzahl'];
-        if (($searchResults = Shop::Cache()->get($hash)) === false) {
-            $searchResults                       = new stdClass();
-            $searchResults->Artikel              = new stdClass();
-            $searchResults->Artikel->articleKeys = [];
-            $searchResults->Artikel->elemente    = new Collection();
-            $searchResults->Artikel->articleKeys = $this->getProductKeys();
-            $searchResults->GesamtanzahlArtikel  = count($searchResults->Artikel->articleKeys);
+//        if (($searchResults = Shop::Cache()->get($hash)) === false) {
+        if ($this->searchResults === null) {
+            $this->searchResults                       = new stdClass();
+            $this->searchResults->Artikel              = new stdClass();
+            $this->searchResults->Artikel->articleKeys = [];
+            $this->searchResults->Artikel->elemente    = new Collection();
+            $this->searchResults->Artikel->articleKeys = $this->getProductKeys();
+            $this->searchResults->GesamtanzahlArtikel  = count($this->searchResults->Artikel->articleKeys);
 
             if (!empty($this->Suche->cSuche)) {
-                $this->Suche->saveQuery($searchResults->GesamtanzahlArtikel);
+                $this->Suche->saveQuery($this->searchResults->GesamtanzahlArtikel);
                 $this->Suche->kSuchanfrage = gibSuchanfrageKey($this->Suche->cSuche, $this->getLanguageID());
                 $this->Suchanfrage->setValue($this->Suche->kSuchanfrage)->setSeo($this->oSprache_arr);
             }
 
-            $searchResults->ArtikelVon                  = $nLimitN + 1;
-            $searchResults->ArtikelBis                  = min(
+            $this->searchResults->ArtikelVon                  = $nLimitN + 1;
+            $this->searchResults->ArtikelBis                  = min(
                 $nLimitN + $limitPerPage,
-                $searchResults->GesamtanzahlArtikel
+                $this->searchResults->GesamtanzahlArtikel
             );
-            $searchResults->Seitenzahlen                = new stdClass();
-            $searchResults->Seitenzahlen->AktuelleSeite = $this->nSeite;
-            $searchResults->Seitenzahlen->MaxSeiten     = ceil(
-                $searchResults->GesamtanzahlArtikel / $limitPerPage
+            $this->searchResults->Seitenzahlen                = new stdClass();
+            $this->searchResults->Seitenzahlen->AktuelleSeite = $this->nSeite;
+            $this->searchResults->Seitenzahlen->MaxSeiten     = ceil(
+                $this->searchResults->GesamtanzahlArtikel / $limitPerPage
             );
-            $searchResults->Seitenzahlen->minSeite      = min(
-                $searchResults->Seitenzahlen->AktuelleSeite - $max / 2,
+            $this->searchResults->Seitenzahlen->minSeite      = min(
+                $this->searchResults->Seitenzahlen->AktuelleSeite - $max / 2,
                 0
             );
-            $searchResults->Seitenzahlen->maxSeite      = max(
-                $searchResults->Seitenzahlen->MaxSeiten,
-                $searchResults->Seitenzahlen->minSeite + $max - 1
+            $this->searchResults->Seitenzahlen->maxSeite      = max(
+                $this->searchResults->Seitenzahlen->MaxSeiten,
+                $this->searchResults->Seitenzahlen->minSeite + $max - 1
             );
-            if ($searchResults->Seitenzahlen->maxSeite > $searchResults->Seitenzahlen->MaxSeiten) {
-                $searchResults->Seitenzahlen->maxSeite = $searchResults->Seitenzahlen->MaxSeiten;
+            if ($this->searchResults->Seitenzahlen->maxSeite > $this->searchResults->Seitenzahlen->MaxSeiten) {
+                $this->searchResults->Seitenzahlen->maxSeite = $this->searchResults->Seitenzahlen->MaxSeiten;
             }
             if ($currentCategory !== null) {
-                $searchResults = $this->setFilterOptions($searchResults, $currentCategory);
+                $this->searchResults = $this->setFilterOptions($this->searchResults, $currentCategory);
             }
             // Header bauen
-            $searchResults->SuchausdruckWrite = $this->getHeader();
-            Shop::Cache()->set($hash, $searchResults, [CACHING_GROUP_CATEGORY]);
-        } elseif ($currentCategory !== null) {
-            $searchResults = $this->setFilterOptions($searchResults, $currentCategory);
+            $this->searchResults->SuchausdruckWrite = $this->getHeader();
+//            Shop::Cache()->set($hash, $this->searchResults, [CACHING_GROUP_CATEGORY]);
         }
+//        elseif ($currentCategory !== null) {
+//            $this->searchResults = $this->setFilterOptions($this->searchResults, $currentCategory);
+//        }
         if ($fillArticles === true) {
             // @todo: slice list of IDs when not filling?
             $opt                        = new stdClass();
@@ -1187,7 +1183,7 @@ class Navigationsfilter
             if (PRODUCT_LIST_SHOW_RATINGS === true) {
                 $opt->nRatings = 1;
             }
-            foreach (array_slice($searchResults->Artikel->articleKeys, $paginationLimit, $offsetEnd) as $i => $id) {
+            foreach (array_slice($this->searchResults->Artikel->articleKeys, $paginationLimit, $offsetEnd) as $i => $id) {
                 $nLaufLimitN = $i + $paginationLimit;
                 if ($nLaufLimitN >= $nLimitN && $nLaufLimitN < $nLimitN + $limitPerPage) {
                     $article = (new Artikel())->fuelleArtikel($id, $opt);
@@ -1195,17 +1191,19 @@ class Navigationsfilter
                     if ($article->nIstVater === 0) {
                         $_SESSION['nArtikelUebersichtVLKey_arr'][] = $article->kArtikel;
                     }
-                    $searchResults->Artikel->elemente->addItem($article);
+                    $this->searchResults->Artikel->elemente->addItem($article);
                 }
             }
         }
-        $this->createUnsetFilterURLs(true, $searchResults);
-        $_SESSION['oArtikelUebersichtKey_arr']   = $searchResults->Artikel->articleKeys;
-        $_SESSION['nArtikelUebersichtVLKey_arr'] = [];
+        $this->createUnsetFilterURLs(true);
+//        $_SESSION['oArtikelUebersichtKey_arr']   = $this->searchResults->Artikel->articleKeys;
+//        $_SESSION['nArtikelUebersichtVLKey_arr'] = [];
+
+        Shop::Cache()->set($this->getHash(), $this, ['jtl_mmf']);
 
         return $forProductListing === true
-            ? $searchResults
-            : $searchResults->Artikel->elemente;
+            ? $this->searchResults
+            : $this->searchResults->Artikel->elemente;
     }
 
     /**
@@ -1970,11 +1968,14 @@ class Navigationsfilter
      * URLs generieren, die Filter lösen
      *
      * @param bool     $bSeo
-     * @param stdClass $oSuchergebnisse
+     * @param stdClass $searchResults
      * @return $this
      */
-    public function createUnsetFilterURLs($bSeo, $oSuchergebnisse)
+    public function createUnsetFilterURLs($bSeo, $searchResults = null)
     {
+        if ($searchResults === null) {
+            $searchResults = $this->searchResults;
+        }
         // @todo: why?
         if (false && $this->SuchspecialFilter->isInitialized()) {
             $bSeo = false;
@@ -2086,8 +2087,8 @@ class Navigationsfilter
             }
         }
         // Filter reset
-        $cSeite = $oSuchergebnisse->Seitenzahlen->AktuelleSeite > 1
-            ? SEP_SEITE . $oSuchergebnisse->Seitenzahlen->AktuelleSeite
+        $cSeite = $searchResults->Seitenzahlen->AktuelleSeite > 1
+            ? SEP_SEITE . $searchResults->Seitenzahlen->AktuelleSeite
             : '';
 
         $this->URL->cNoFilter = $this->getURL(true, null, true) . $cSeite;

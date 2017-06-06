@@ -69,7 +69,7 @@ class FilterItemAttribute extends FilterBaseAttribute
     public function setSeo($languages)
     {
         $value    = $this->getValue();
-        $oSeo_arr = $this->db->selectAll(
+        $oSeo_arr = Shop::DB()->selectAll(
             'tseo',
             ['cKey', 'kKey'],
             ['kMerkmalWert', $value],
@@ -86,7 +86,7 @@ class FilterItemAttribute extends FilterBaseAttribute
                 }
             }
         }
-        $seo_obj = $this->db->executeQueryPrepared('
+        $seo_obj = Shop::DB()->executeQueryPrepared('
             SELECT tmerkmalwertsprache.cWert, tmerkmalwert.kMerkmal
                 FROM tmerkmalwertsprache
                 JOIN tmerkmalwert 
@@ -317,7 +317,7 @@ class FilterItemAttribute extends FilterBaseAttribute
                 GROUP BY ssMerkmal.kMerkmalWert
                 ORDER BY ssMerkmal.nSortMerkmal, ssMerkmal.nSort, ssMerkmal.cWert";
 
-            $oMerkmalFilterDB_arr = $this->db->query($query, 2);
+            $oMerkmalFilterDB_arr = Shop::DB()->query($query, 2);
 
             if (is_array($oMerkmalFilterDB_arr)) {
                 $additionalFilter = new FilterItemAttribute($this->naviFilter);

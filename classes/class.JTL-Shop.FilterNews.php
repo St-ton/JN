@@ -52,7 +52,7 @@ class FilterNews extends AbstractFilter
      */
     public function setSeo($languages)
     {
-        $oSeo_obj = $this->db->query("
+        $oSeo_obj = Shop::DB()->query("
                 SELECT tseo.cSeo, tseo.kSprache, tnews.cBetreff
                     FROM tseo
                     LEFT JOIN tnews

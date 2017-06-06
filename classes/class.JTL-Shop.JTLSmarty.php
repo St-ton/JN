@@ -265,7 +265,13 @@ class JTLSmarty extends SmartyBC
             if (!file_exists($_compileDir)) {
                 mkdir($_compileDir);
             }
-            $this->setTemplateDir([$this->context => PFAD_ROOT . PFAD_TEMPLATES . $cTemplate . '/'])
+            $templatePaths[$this->context] = PFAD_ROOT . PFAD_TEMPLATES . $cTemplate . '/';
+            $pluginTemplatePaths           = Plugin::getTemplatePaths();
+            foreach ($pluginTemplatePaths as $moduleId => $path) {
+                $templateKey                 = 'plugin_' . $moduleId;
+                $templatePaths[$templateKey] = $path;
+            }
+            $this->setTemplateDir($templatePaths)
                  ->setCompileDir($_compileDir)
                  ->setCacheDir(PFAD_ROOT . PFAD_COMPILEDIR . $cTemplate . '/' . 'page_cache/')
                  ->setPluginsDir(SMARTY_PLUGINS_DIR);
@@ -604,8 +610,8 @@ class JTLSmarty extends SmartyBC
             //disabled on child templates for now
             return $cFilename;
         }
-        $cFile    = basename($cFilename, '.tpl');
-        $cSubPath = dirname($cFilename);
+        $cFile       = basename($cFilename, '.tpl');
+        $cSubPath    = dirname($cFilename);
         $cCustomFile = (strpos($cSubPath, PFAD_ROOT) === false)
             ? $this->getTemplateDir($this->context) . (($cSubPath === '.')
                 ? ''
@@ -715,6 +721,25 @@ class JTLSmarty extends SmartyBC
             'transform' => $transform
         ]);
 
+        if ($this->context === 'frontend' && $resource_name === $resource_cfb_name) {
+            if (file_exists($this->getTemplateDir('frontend') . $resource_cfb_name)) {
+                $pluginTemplateExtends = [];
+
+                foreach (Plugin::getTemplatePaths() as $moduleId => $pluginTemplatePath) {
+                    $templateKey = 'plugin_' . $moduleId;
+                    $file        = $this->_realpath($pluginTemplatePath . '/' . $resource_cfb_name, true);
+                    if (file_exists($file)) {
+                        $pluginTemplateExtends[] = sprintf('[%s]%s', $templateKey, $resource_cfb_name);
+                    }
+                }
+
+                if (count($pluginTemplateExtends) > 0) {
+                    $transform         = false;
+                    $resource_cfb_name = sprintf('extends:[frontend]%s|%s', $resource_cfb_name, implode('|', $pluginTemplateExtends));
+                }
+            }
+        }
+
         return $transform ? ('file:' . $resource_cfb_name) : $resource_cfb_name;
     }
 
@@ -807,8 +832,7 @@ class jtlTplClass extends Smarty_Internal_Template
         $forceTplCache,
         $uid = null,
         $content_func = null
-    )
-    {
+    ) {
         return parent::_subTemplateRender(
             $this->smarty->getResourceName($template),
             $cache_id,

@@ -1297,6 +1297,7 @@ final class Shop
         if (self::$NaviFilter === null) {
             self::$NaviFilter = new Navigationsfilter(self::Lang()->getLangArray(), self::$kSprache);
         }
+
         return self::$NaviFilter->initStates($cParameter_arr);
     }
 

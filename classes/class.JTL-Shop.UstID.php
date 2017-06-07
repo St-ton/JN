@@ -93,7 +93,7 @@ class UstID
     public function bearbeiteAnfrage($bBZStPruefung = false)
     {
         $oReturn = $this->pruefeUstIDString($this->cUstId_2);
-        if (isset($oReturn->nRichtig) && $oReturn->nRichtig == 1) {
+        if (isset($oReturn->nRichtig) && $oReturn->nRichtig === 1) {
             if ($bBZStPruefung === true) {
                 if ($this->pruefePHPEinstellung()) {
                     // Uhrzeit pruefen da die API Ruhezeit hat -.-

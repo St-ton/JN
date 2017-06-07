@@ -1,6 +1,6 @@
 {includeMailTemplate template=header type=plain}
 
-Hallo{if $Benachrichtigung->cVorname} {$Benachrichtigung->cVorname}{/if}{if $Benachrichtigung->cNachname} {$Benachrichtigung->cNachname}{/if},<br>
+Hallo{if !empty($Benachrichtigung->cVorname)} {$Benachrichtigung->cVorname}{/if}{if !empty($Benachrichtigung->cNachname)} {$Benachrichtigung->cNachname}{/if},<br>
 <br>
 wir freuen uns, Ihnen mitteilen zu dürfen, dass das Produkt {$Artikel->cName} ab sofort wieder bei uns erhältlich ist.<br>
 <br>

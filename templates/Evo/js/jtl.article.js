@@ -275,11 +275,8 @@
 
             $('.variations .bootstrap-select select', $wrapper)
                 .change(function() {
-                    var tmp_idx = parseInt($('li.selected', $(this).closest('.bootstrap-select'))
-                                .attr('data-original-index')) + 1,
-                        rule    = 'option:nth-child(' + tmp_idx + ')',
-                        sel     = $(this).find(rule),
-                        cont    = $(this).closest('.variations');
+                    var sel  = $(this).find('[value=' + this.value + ']'),
+                        cont = $(this).closest('.variations');
 
                     if (cont.hasClass('simple-variations')) {
                         imgSwitch(sel, false, false);

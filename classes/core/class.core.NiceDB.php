@@ -489,7 +489,11 @@ class NiceDB implements Serializable
 
         if (!$res) {
             if ($this->logErrors && $this->logfileName) {
-                $this->writeLog($stmt . "\n" . $this->pdo->errorCode() . ': ' . $this->pdo->errorInfo() . "\n\nBacktrace:" . print_r(debug_backtrace(), 1));
+                $this->writeLog(
+                    $stmt . "\n" .
+                    $this->pdo->errorCode() . ': ' . $this->pdo->errorInfo() .
+                    "\n\nBacktrace:" . print_r(debug_backtrace(), 1)
+                );
             }
             if ($this->debug === true || $this->collectData === true) {
                 $end       = microtime(true);
@@ -580,7 +584,7 @@ class NiceDB implements Serializable
             $this->analyzeQuery('insert', "INSERT INTO $tableName $columns $values", $end - $start, $backtrace);
         }
 
-        return ($id > 0) ? $id : 1;
+        return $id > 0 ? $id : 1;
     }
 
     /**
@@ -611,7 +615,12 @@ class NiceDB implements Serializable
         }
         if (!$keyname || !$keyvalue) {
             if ($this->logErrors && $this->logfileName) {
-                $this->writeLog('updateRow: Kein keyname oder keyvalue! - Tablename:' . $tableName . ' Keyname: ' . $keyname . ' - Keyvalue: ' . $keyvalue);
+                $this->writeLog(
+                    'updateRow: Kein keyname oder keyvalue! - ' .
+                    'Tablename:' . $tableName .
+                    ' Keyname: ' . $keyname .
+                    ' - Keyvalue: ' . $keyvalue
+                );
             }
 
             return -1;
@@ -632,7 +641,11 @@ class NiceDB implements Serializable
         if (is_array($keyname) && is_array($keyvalue)) {
             if (count($keyname) !== count($keyvalue)) {
                 if ($this->logErrors && $this->logfileName) {
-                    $this->writeLog('updateRow: Anzahl an Schluesseln passt nicht zu Anzahl an Werten - Tablename:' . $tableName);
+                    $this->writeLog(
+                        'updateRow: ' .
+                        'Anzahl an Schluesseln passt nicht zu Anzahl an Werten - ' .
+                        'Tablename:' . $tableName
+                    );
                 }
 
                 return -1;
@@ -724,7 +737,17 @@ class NiceDB implements Serializable
      * @param string           $select - the key to select
      * @return null|object - null if fails, resultObject if successful
      */
-    public function selectSingleRow($tableName, $keyname, $keyvalue, $keyname1 = null, $keyvalue1 = null, $keyname2 = null, $keyvalue2 = null, $echo = false, $select = '*')
+    public function selectSingleRow(
+        $tableName,
+        $keyname,
+        $keyvalue,
+        $keyname1 = null,
+        $keyvalue1 = null,
+        $keyname2 = null,
+        $keyvalue2 = null,
+        $echo = false,
+        $select = '*'
+    )
     {
         $start   = ($this->debug === true || $this->collectData === true)
             ? microtime(true)
@@ -743,7 +766,12 @@ class NiceDB implements Serializable
             ++$i;
         }
         unset($_key);
-        $stmt = 'SELECT ' . $select . ' FROM ' . $tableName . ((count($keys) > 0) ? (' WHERE ' . implode(' AND ', $keys)) : '');
+        $stmt = 'SELECT ' . $select .
+            ' FROM ' . $tableName .
+            ((count($keys) > 0)
+                ? (' WHERE ' . implode(' AND ', $keys))
+                : ''
+            );
         if ($echo) {
             echo $stmt;
         }
@@ -795,11 +823,17 @@ class NiceDB implements Serializable
                 }
                 ++$i;
             }
-            $stmt = 'SELECT ' . $select . ' FROM ' . $tableName . ((count($keys) > 0) ? (' WHERE ' . implode(' AND ', $keys)) : '');
+            unset($k);
+            $stmt = 'SELECT ' . $select .
+                ' FROM ' . $tableName .
+                ((count($keys) > 0)
+                    ? (' WHERE ' . implode(' AND ', $keys))
+                    : ''
+                );
             $this->analyzeQuery('select', $stmt, $end - $start, $backtrace);
         }
 
-        return ($ret !== false) ? $ret : null;
+        return $ret !== false ? $ret : null;
     }
 
     /**
@@ -809,7 +843,7 @@ class NiceDB implements Serializable
      * @param string       $select
      * @param string       $orderBy
      * @param string       $limit
-     * @return array|int|object
+     * @return array
      * @throws InvalidArgumentException
      */
     public function selectArray($tableName, $keys, $values, $select = '*', $orderBy = '', $limit = '')
@@ -976,9 +1010,10 @@ class NiceDB implements Serializable
 
         if (!$res) {
             if ($this->logErrors && $this->logfileName) {
-                $this->writeLog($stmt . "\n" .
-                    $this->pdo->errorCode() . ': ' .
-                    $this->pdo->errorInfo() . "\n\nBacktrace: " . print_r(debug_backtrace(), true)
+                $this->writeLog(
+                    $stmt . "\n" .
+                    $this->pdo->errorCode() . ': ' . $this->pdo->errorInfo() .
+                    "\n\nBacktrace: " . print_r(debug_backtrace(), true)
                 );
             }
 
@@ -1058,9 +1093,9 @@ class NiceDB implements Serializable
         if (is_array($keyname) && is_array($keyvalue)) {
             if (count($keyname) !== count($keyvalue)) {
                 if ($this->logErrors && $this->logfileName) {
-                    $this->writeLog('NiceDB::deleteRow: ' .
-                        'Anzahl Schluessel passt nicht zu Anzahl Werten. ' .
-                        'Betroffene Tabelle: ' . $tableName
+                    $this->writeLog('deleteRow: ' .
+                        'Anzahl an Schluesseln passt nicht zu Anzahl an Werten - ' .
+                        'Tablename:' . $tableName
                     );
                 }
 

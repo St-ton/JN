@@ -225,11 +225,21 @@ class FilterItemAttribute extends FilterBaseAttribute
                 $select = 'COALESCE(tmerkmalsprache.cName, tmerkmal.cName) AS cName, ' .
                     'COALESCE(fremdSprache.cSeo, standardSprache.cSeo) AS cSeo, ' .
                     'COALESCE(fremdSprache.cWert, standardSprache.cWert) AS cWert';
-                $state->joins[] = (new FilterJoin())->setComment('join5 non default lang from FilterItemAttribute::getOptions()')
+                $state->joins[] = (new FilterJoin())->setComment('join5a non default lang from FilterItemAttribute::getOptions()')
                                                     ->setType('LEFT JOIN')
                                                     ->setTable('tmerkmalsprache')
                                                     ->setOn('tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal 
-                                                    AND tmerkmalsprache.kSprache = ' . $kSprache);
+                                                        AND tmerkmalsprache.kSprache = ' . $kSprache);
+                $state->joins[] = (new FilterJoin())->setComment('join5a non default lang from FilterItemAttribute::getOptions()')
+                                                    ->setType('INNER JOIN')
+                                                    ->setTable('tmerkmalwertsprache AS standardSprache')
+                                                    ->setOn('standardSprache.kMerkmalWert = tartikelmerkmal.kMerkmalWert
+                                                        AND standardSprache.kSprache = ' . $kStandardSprache);
+                $state->joins[] = (new FilterJoin())->setComment('join5c non default lang from FilterItemAttribute::getOptions()')
+                                                    ->setType('LEFT JOIN')
+                                                    ->setTable('tmerkmalwertsprache AS fremdSprache')
+                                                    ->setOn('fremdSprache.kMerkmalWert = tartikelmerkmal.kMerkmalWert 
+                                                        AND fremdSprache.kSprache = ' . $kSprache);
             } else {
                 $select = 'tmerkmalwertsprache.cWert, tmerkmalwertsprache.cSeo, tmerkmal.cName';
                 $state->joins[] = (new FilterJoin())->setComment('join5 default lang from FilterItemAttribute::getOptions()')

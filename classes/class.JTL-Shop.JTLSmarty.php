@@ -721,22 +721,27 @@ class JTLSmarty extends SmartyBC
             'transform' => $transform
         ]);
 
-        if ($this->context === 'frontend' && $resource_name === $resource_cfb_name) {
-            if (file_exists($this->getTemplateDir('frontend') . $resource_cfb_name)) {
-                $pluginTemplateExtends = [];
+        if ($this->context === 'frontend'
+            && $resource_name === $resource_cfb_name
+            && file_exists($this->getTemplateDir('frontend') . $resource_cfb_name)
+        ) {
+            $pluginTemplateExtends = [];
 
-                foreach (Plugin::getTemplatePaths() as $moduleId => $pluginTemplatePath) {
-                    $templateKey = 'plugin_' . $moduleId;
-                    $file        = $this->_realpath($pluginTemplatePath . '/' . $resource_cfb_name, true);
-                    if (file_exists($file)) {
-                        $pluginTemplateExtends[] = sprintf('[%s]%s', $templateKey, $resource_cfb_name);
-                    }
+            foreach (Plugin::getTemplatePaths() as $moduleId => $pluginTemplatePath) {
+                $templateKey = 'plugin_' . $moduleId;
+                $file        = $this->_realpath($pluginTemplatePath . '/' . $resource_cfb_name, true);
+                if (file_exists($file)) {
+                    $pluginTemplateExtends[] = sprintf('[%s]%s', $templateKey, $resource_cfb_name);
                 }
+            }
 
-                if (count($pluginTemplateExtends) > 0) {
-                    $transform         = false;
-                    $resource_cfb_name = sprintf('extends:[frontend]%s|%s', $resource_cfb_name, implode('|', $pluginTemplateExtends));
-                }
+            if (count($pluginTemplateExtends) > 0) {
+                $transform         = false;
+                $resource_cfb_name = sprintf(
+                    'extends:[frontend]%s|%s',
+                    $resource_cfb_name,
+                    implode('|', $pluginTemplateExtends)
+                );
             }
         }
 

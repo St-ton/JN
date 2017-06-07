@@ -1381,11 +1381,13 @@ class Navigationsfilter
                         $groupedOrFilters[$primaryKeyRow][] = $filter;
                     }
                     foreach ($groupedOrFilters as $primaryKeyRow => $orFilters) {
-                        $values = implode(',', array_map(function ($f) { return $f->getValue(); }, $orFilters));
-                        $data->conditions[] = "\n#combined conditions from OR filter " . $primaryKeyRow . "\n" .
-                            $orFilters[0]->getTableName() . '.kArtikel IN ' .
-                            '(SELECT kArtikel FROM ' . $orFilters[0]->getTableName() . ' WHERE ' .
-                                $primaryKeyRow . ' IN (' . $values . '))';
+                        if ($ignore === null || $orFilters[0]->getClassName() !== $ignore) {
+                            $values = implode(',', array_map(function ($f) { return $f->getValue(); }, $orFilters));
+                            $data->conditions[] = "\n#combined conditions from OR filter " . $primaryKeyRow . "\n" .
+                                $orFilters[0]->getTableName() . '.kArtikel IN ' .
+                                '(SELECT kArtikel FROM ' . $orFilters[0]->getTableName() . ' WHERE ' .
+                                    $primaryKeyRow . ' IN (' . $values . '))';
+                        }
                     }
                 }
                 if (!empty($singleConditions)) {

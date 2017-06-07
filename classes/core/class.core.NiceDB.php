@@ -128,7 +128,7 @@ class NiceDB
             $options[PDO::ATTR_PERSISTENT] = DB_PERSISTENT_CONNECTIONS;
         }
         if (JTL_CHARSET === 'iso-8859-1') {
-            $options[PDO::MYSQL_ATTR_INIT_COMMAND] = 'SET NAMES "latin1"';
+            $options[PDO::MYSQL_ATTR_INIT_COMMAND] = "SET NAMES 'latin1'";
         }
         $this->pdo = new PDO($dsn, $dbUser, $dbPass, $options);
         if (defined('NICEDB_EXCEPTION_BACKTRACE') && NICEDB_EXCEPTION_BACKTRACE === true) {
@@ -212,7 +212,7 @@ class NiceDB
         }
         $this->pdo = new PDO($dsn, $this->config['username'], $this->config['password']);
         if (JTL_CHARSET === 'iso-8859-1') {
-            $this->pdo->exec('SET NAMES "latin1"');
+            $this->pdo->exec("SET NAMES 'latin1'");
         }
 
         return $this;

@@ -135,7 +135,7 @@ class NiceDB
             $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         }
         if (!(defined('DB_DEFAULT_SQL_MODE') && DB_DEFAULT_SQL_MODE === true)) {
-            $this->pdo->exec('SET SQL_MODE=""');
+            $this->pdo->exec("SET SQL_MODE=''");
         }
         if (defined('PFAD_LOGFILES')) {
             $this->logfileName = PFAD_LOGFILES . 'DB_errors.log';

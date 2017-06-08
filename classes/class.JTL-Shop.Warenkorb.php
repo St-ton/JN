@@ -855,7 +855,11 @@ class Warenkorb
             $nSteuersatz_arr = [];
             foreach ($this->PositionenArr as $i => $Position) {
                 if ($Position->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL && $Position->kSteuerklasse > 0) {
-                    $nSteuersatz_arr[$Position->kSteuerklasse] += $Position->fPreisEinzelNetto * $Position->nAnzahl;
+                    if (empty($nSteuersatz_arr[$Position->kSteuerklasse])) {
+                        $nSteuersatz_arr[$Position->kSteuerklasse] = $Position->fPreisEinzelNetto * $Position->nAnzahl;
+                    } else {
+                        $nSteuersatz_arr[$Position->kSteuerklasse] += $Position->fPreisEinzelNetto * $Position->nAnzahl;
+                    }
                 }
             }
             $fMaxValue = max($nSteuersatz_arr);

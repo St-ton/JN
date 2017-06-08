@@ -856,7 +856,7 @@ function plausiNeukundenKupon()
 
         if (empty($oBestellung)) {
             $NeukundenKupons = (new Kupon())->getNewCustomerCoupon();
-            if ($NeukundenKupons !== false) {
+            if (!empty($NeukundenKupons)) {
                 $verwendet = Shop::DB()->select('tkuponneukunde', 'cEmail', $_SESSION['Kunde']->cMail);
                 $verwendet = !empty($verwendet) ? $verwendet->cVerwendet : null;
                 foreach ($NeukundenKupons as $NeukundenKupon) {

@@ -2,6 +2,14 @@
 {if $Einstellungen.artikeluebersicht.suchfilter_anzeigen_ab == 0 || count($Suchergebnisse->Artikel->elemente) >= $Einstellungen.artikeluebersicht.suchfilter_anzeigen_ab || $NaviFilter->nAnzahlFilter > 0}
     {assign var='show_filters' value=true}
 {/if}
+<style>
+    /*@todo: remove inline styles*/
+    ul.no-dropdown {
+        list-style: none;
+        margin: 0 0 0 10px;
+        padding: 0;
+    }
+</style>
 <div id="result-options" class="panel-wrap{if !$show_filters} hidden-xs{/if}">
     <style>li span.value { padding-right:40px; }</style>
     <div class="row">
@@ -66,11 +74,20 @@
                                     {/block}
                                 {else}
                                     {block name='productlist-result-options-'|cat:$filter->getClassName()}
-                                        <div class="form-group dropdown filter-type-{$filter->getClassName()}">
-                                            <a href="#" class="btn btn-default dropdown-toggle form-control" data-toggle="dropdown" role="button" aria-expanded="false">
-                                                {$filter->getFrontendName()|escape:'html'} <span class="caret"></span>
-                                            </a>
-                                            {include file='snippets/filter/genericFilterItem.tpl' class='dropdown-menu' filter=$filter}
+                                        {if $filter->getInputType() === $filter::INPUT_SELECT}
+                                            {assign var=outerClass value='form-group dropdown filter-type-'|cat:$filter->getClassName()}
+                                            {assign var=innerClass value='dropdown-menu'}
+                                        {else}
+                                            {assign var=outerClass value='form-group no-dropdown filter-type-'|cat:$filter->getClassName()}
+                                            {assign var=innerClass value='no-dropdown'}
+                                        {/if}
+                                        <div class="{$outerClass}">
+                                            {if $filter->getInputType() !== $filter::INPUT_CHECKBOX}
+                                                <a href="#" class="btn btn-default dropdown-toggle form-control" data-toggle="dropdown" role="button" aria-expanded="false">
+                                                    {$filter->getFrontendName()|escape:'html'} <span class="caret"></span>
+                                                </a>
+                                            {/if}
+                                            {include file='snippets/filter/genericFilterItem.tpl' class=$innerClass filter=$filter}
                                         </div>
                                     {/block}
                                 {/if}

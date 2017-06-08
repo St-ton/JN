@@ -1855,10 +1855,10 @@ function checkKundenFormularArray($data, $kundenaccount, $checkpass = 1)
     } else {
         unset($_SESSION['check_plzort']);
     }
-    if (!$data['titel'] && $conf['kunden']['kundenregistrierung_abfragen_titel'] === 'Y') {
+    if (empty($data['titel']) && $conf['kunden']['kundenregistrierung_abfragen_titel'] === 'Y') {
         $ret['titel'] = 1;
     }
-    if (!$data['adresszusatz'] && $conf['kunden']['kundenregistrierung_abfragen_adresszusatz'] === 'Y') {
+    if (empty($data['adresszusatz']) && $conf['kunden']['kundenregistrierung_abfragen_adresszusatz'] === 'Y') {
         $ret['adresszusatz'] = 1;
     }
     if ($conf['kunden']['kundenregistrierung_abfragen_mobil'] === 'Y' && checkeTel($data['mobil']) > 0) {
@@ -1871,8 +1871,8 @@ function checkKundenFormularArray($data, $kundenaccount, $checkpass = 1)
         ? Shop::DB()->select('tland', 'cISO', $data['land'])
         : null;
 
-    if ($deliveryCountry->nEU === '0' &&
-        isset($deliveryCountry->nEU) &&
+    if (isset($deliveryCountry->nEU) &&
+        $deliveryCountry->nEU === '0' &&
         $conf['kunden']['kundenregistrierung_abfragen_ustid'] === 'Y'
     ) {
         //skip

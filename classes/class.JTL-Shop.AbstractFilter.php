@@ -36,6 +36,16 @@ abstract class AbstractFilter implements IFilter
     const SHOW_ALWAYS = 3;
 
     /**
+     * filter type selectbox
+     */
+    const INPUT_SELECT = 1;
+
+    /**
+     * filter type checkbox
+     */
+    const INPUT_CHECKBOX = 2;
+
+    /**
      * @var bool
      */
     public $isCustom = true;
@@ -99,6 +109,11 @@ abstract class AbstractFilter implements IFilter
      * @var string
      */
     private $className = '';
+
+    /**
+     * @var int
+     */
+    private $inputType = self::INPUT_SELECT;
 
     /**
      * workaround since built-in filters can be registered multiple times (for example Navigationsfilter->KategorieFilter)
@@ -497,6 +512,25 @@ abstract class AbstractFilter implements IFilter
     public function setDoUnset($doUnset)
     {
         $this->doUnset = $doUnset;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getInputType()
+    {
+        return $this->inputType;
+    }
+
+    /**
+     * @param int $type
+     * @return $this
+     */
+    public function setInputType($type)
+    {
+        $this->inputType = $type;
 
         return $this;
     }

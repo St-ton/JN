@@ -260,4 +260,16 @@ interface IFilter
      * @return array
      */
     public function getFilterCollection();
+
+    /**
+     * @param int $type
+     * @return $this
+     */
+    public function setInputType($type);
+
+    /**
+     * @return int
+     */
+    public function getInputType();
+
 }

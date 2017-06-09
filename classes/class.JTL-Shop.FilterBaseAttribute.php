@@ -70,32 +70,23 @@ class FilterBaseAttribute extends AbstractFilter
             }
         }
         $oSQL            = new stdClass();
-        $oSQL->cMMSelect = "tmerkmal.cName";
+        $oSQL->cMMSelect = 'tmerkmal.cName';
         $oSQL->cMMJOIN   = '';
         $oSQL->cMMWhere  = '';
         if (Shop::getLanguage() > 0 && !standardspracheAktiv()) {
-            $oSQL->cMMSelect = "tmerkmalsprache.cName, tmerkmal.cName AS cMMName";
-            $oSQL->cMMJOIN   = " JOIN tmerkmalsprache ON tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal
-                                     AND tmerkmalsprache.kSprache = " . Shop::getLanguage();
+            $oSQL->cMMSelect = 'tmerkmalsprache.cName, tmerkmal.cName AS cMMName';
+            $oSQL->cMMJOIN   = ' JOIN tmerkmalsprache ON tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal
+                                     AND tmerkmalsprache.kSprache = ' . Shop::getLanguage();
         }
-        $oSQL->cMMWhere = "tmerkmalwert.kMerkmalWert = " . $this->getValue();
-
-//        if (isset($cParameter_arr['MerkmalFilter_arr']) &&
-//            is_array($cParameter_arr['MerkmalFilter_arr']) &&
-//            count($cParameter_arr['MerkmalFilter_arr']) > 0
-//        ) {
-//            foreach ($cParameter_arr['MerkmalFilter_arr'] as $kMerkmalWert) {
-//                $oSQL->cMMWhere .= " OR tmerkmalwert.kMerkmalWert = " . (int)$kMerkmalWert . " ";
-//            }
-//        }
+        $oSQL->cMMWhere   = 'tmerkmalwert.kMerkmalWert = ' . $this->getValue();
         $oMerkmalWert_arr = Shop::DB()->query(
-            "SELECT tmerkmalwertsprache.cWert, " . $oSQL->cMMSelect . "
+            'SELECT tmerkmalwertsprache.cWert, ' . $oSQL->cMMSelect . '
                 FROM tmerkmalwert
                 JOIN tmerkmalwertsprache ON tmerkmalwertsprache.kMerkmalWert = tmerkmalwert.kMerkmalWert
-                    AND kSprache = " . Shop::getLanguage() . "
+                    AND kSprache = ' . Shop::getLanguage() . '
                 JOIN tmerkmal ON tmerkmal.kMerkmal = tmerkmalwert.kMerkmal
-                " . $oSQL->cMMJOIN . "
-                WHERE " . $oSQL->cMMWhere, 2
+                ' . $oSQL->cMMJOIN . '
+                WHERE ' . $oSQL->cMMWhere, 2
         );
         if (is_array($oMerkmalWert_arr) && count($oMerkmalWert_arr) > 0) {
             $oMerkmalWert = $oMerkmalWert_arr[0];

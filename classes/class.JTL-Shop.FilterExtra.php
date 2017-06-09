@@ -21,7 +21,7 @@
  * @property $cSuche
  * @property $kSuchanfrage
  */
-class FilterExtra //extends AbstractFilter implements IFilter
+class FilterExtra
 {
     /**
      * @var mixed

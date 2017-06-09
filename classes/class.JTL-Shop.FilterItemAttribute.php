@@ -165,300 +165,295 @@ class FilterItemAttribute extends FilterBaseAttribute
         if ($this->options !== null) {
             return $this->options;
         }
-        $oAktuelleKategorie          = isset($mixed['oAktuelleKategorie'])
+        $currentCategory     = isset($mixed['oAktuelleKategorie'])
             ? $mixed['oAktuelleKategorie']
             : null;
-        $bForce                      = isset($mixed['bForce'])
+        $bForce              = isset($mixed['bForce'])
             ? $mixed['bForce']
             : false;
-        $cKatAttribMerkmalFilter_arr = [];
-        $activeOrFilterIDs           = [];
-        $attributeFilters            = [];
-        $activeValues                = [];
+        $catAttributeFilters = [];
+        $activeOrFilterIDs   = [];
+        $attributeFilters    = [];
+        $activeValues        = [];
+        $useAttributeFilter  = $this->getConfig()['navigationsfilter']['merkmalfilter_verwenden'] !== 'N';
 
-        if ($bForce ||
-            (isset($this->getConfig()['navigationsfilter']['merkmalfilter_verwenden'])
-                && $this->getConfig()['navigationsfilter']['merkmalfilter_verwenden'] !== 'N')
+        if (!$bForce && !$useAttributeFilter) {
+            return $attributeFilters;
+        }
+        // Ist Kategorie Mainword, dann prüfe die Kategorie-Funktionsattribute auf merkmalfilter
+        if (isset($currentCategory->categoryFunctionAttributes) 
+            && is_array($currentCategory->categoryFunctionAttributes) 
+            && count($currentCategory->categoryFunctionAttributes) > 0 
+            && !empty($currentCategory->categoryFunctionAttributes[KAT_ATTRIBUT_MERKMALFILTER]) 
+            && $this->naviFilter->KategorieFilter->isInitialized()
         ) {
-            // Ist Kategorie Mainword, dann prüfe die Kategorie-Funktionsattribute auf merkmalfilter
-            if (isset($oAktuelleKategorie->categoryFunctionAttributes) &&
-                is_array($oAktuelleKategorie->categoryFunctionAttributes) &&
-                count($oAktuelleKategorie->categoryFunctionAttributes) > 0 &&
-                !empty($oAktuelleKategorie->categoryFunctionAttributes[KAT_ATTRIBUT_MERKMALFILTER]) &&
-                $this->naviFilter->KategorieFilter->isInitialized()
-            ) {
-                $cKatAttribMerkmalFilter_arr = explode(
-                    ';',
-                    $oAktuelleKategorie->categoryFunctionAttributes[KAT_ATTRIBUT_MERKMALFILTER]
-                );
-            }
-            $order          = $this->naviFilter->getOrder();
-            $state          = $this->naviFilter->getCurrentStateData('FilterItemAttribute');
-            $state->joins[] = $order->join;
-
-            $select = 'tmerkmal.cName';
-            // @todo?
-            if (true || (!$this->naviFilter->MerkmalWert->isInitialized() && count($this->naviFilter->MerkmalFilter) === 0)) {
-                $state->joins[] = (new FilterJoin())->setComment('join1 from FilterItemAttribute::getOptions()')
-                                                    ->setType('JOIN')
-                                                    ->setTable('tartikelmerkmal')
-                                                    ->setOn('tartikel.kArtikel = tartikelmerkmal.kArtikel');
-            }
-            $state->joins[] = (new FilterJoin())->setComment('join2 from FilterItemAttribute::getOptions()')
-                                                ->setType('JOIN')
-                                                ->setTable('tmerkmalwert')
-                                                ->setOn('tmerkmalwert.kMerkmalWert = tartikelmerkmal.kMerkmalWert');
-//            $state->joins[] = (new FilterJoin())->setComment('join3 from FilterItemAttribute::getOptions()')
-//                                                ->setType('JOIN')
-//                                                ->setTable('tmerkmalwertsprache')
-//                                                ->setOn('tmerkmalwertsprache.kMerkmalWert = tartikelmerkmal.kMerkmalWert
-//                                                            AND tmerkmalwertsprache.kSprache = ' .
-//                                                            $this->getLanguageID());
-            $state->joins[] = (new FilterJoin())->setComment('join4 from FilterItemAttribute::getOptions()')
-                                                ->setType('JOIN')
-                                                ->setTable('tmerkmal')
-                                                ->setOn('tmerkmal.kMerkmal = tartikelmerkmal.kMerkmal');
-
-            $kSprache         = $this->getLanguageID();
-            $kStandardSprache = (int)gibStandardsprache()->kSprache;
-            if ($kSprache !== $kStandardSprache) {
-                $select = 'COALESCE(tmerkmalsprache.cName, tmerkmal.cName) AS cName, ' .
-                    'COALESCE(fremdSprache.cSeo, standardSprache.cSeo) AS cSeo, ' .
-                    'COALESCE(fremdSprache.cWert, standardSprache.cWert) AS cWert';
-                $state->joins[] = (new FilterJoin())->setComment('join5a non default lang from FilterItemAttribute::getOptions()')
-                                                    ->setType('LEFT JOIN')
-                                                    ->setTable('tmerkmalsprache')
-                                                    ->setOn('tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal 
-                                                        AND tmerkmalsprache.kSprache = ' . $kSprache);
-                $state->joins[] = (new FilterJoin())->setComment('join5a non default lang from FilterItemAttribute::getOptions()')
-                                                    ->setType('INNER JOIN')
-                                                    ->setTable('tmerkmalwertsprache AS standardSprache')
-                                                    ->setOn('standardSprache.kMerkmalWert = tartikelmerkmal.kMerkmalWert
-                                                        AND standardSprache.kSprache = ' . $kStandardSprache);
-                $state->joins[] = (new FilterJoin())->setComment('join5c non default lang from FilterItemAttribute::getOptions()')
-                                                    ->setType('LEFT JOIN')
-                                                    ->setTable('tmerkmalwertsprache AS fremdSprache')
-                                                    ->setOn('fremdSprache.kMerkmalWert = tartikelmerkmal.kMerkmalWert 
-                                                        AND fremdSprache.kSprache = ' . $kSprache);
-            } else {
-                $select = 'tmerkmalwertsprache.cWert, tmerkmalwertsprache.cSeo, tmerkmal.cName';
-                $state->joins[] = (new FilterJoin())->setComment('join5 default lang from FilterItemAttribute::getOptions()')
-                                                    ->setType('INNER JOIN')
-                                                    ->setTable('tmerkmalwertsprache')
-                                                    ->setOn('tmerkmalwertsprache.kMerkmalWert = tartikelmerkmal.kMerkmalWert
-                                                    AND tmerkmalwertsprache.kSprache = ' . $kSprache);
-            }
-
-            if (count($this->naviFilter->MerkmalFilter) > 0) {
-                $activeAndFilterIDs = [];
-                foreach ($this->naviFilter->MerkmalFilter as $filter) {
-                    $values = $filter->getValue();
-                    if (is_array($values)) {
-                        $activeValues = $values;
-                    } else {
-                        $activeValues[] = $values;
-                    }
-                    if ($filter->getType() === AbstractFilter::FILTER_TYPE_OR) {
-                        if (is_array($values)) {
-                            $activeOrFilterIDs = $values;
-                        } else {
-                            $activeOrFilterIDs[] = $values;
-                        }
-                    } else {
-                        if (is_array($values)) {
-                            $activeAndFilterIDs = $values;
-                        } else {
-                            $activeAndFilterIDs[] = $values;
-                        }
-                    }
-                }
-                if (count($activeAndFilterIDs) > 0) {
-                    $state->joins[] = (new FilterJoin())->setComment('join6a AND from FilterItemAttribute::getOptions()')
-                                                        ->setType('JOIN')
-                                                        ->setTable('(
-                                                            SELECT kArtikel
-                                                                FROM tartikelmerkmal
-                                                                    WHERE kMerkmalWert IN (' . implode(', ', $activeAndFilterIDs) . ' )
-                                                                GROUP BY kArtikel
-                                                                HAVING count(*) = ' . count($activeAndFilterIDs) . '
-                                                                ) AS ssj1')
-                                                        ->setOn('tartikel.kArtikel = ssj1.kArtikel');
-                }
-                if (count($activeOrFilterIDs) > 0) {
-                    $state->joins[] = (new FilterJoin())->setComment('join6b OR from FilterItemAttribute::getOptions()')
-                                                        ->setType('LEFT JOIN')
-                                                        ->setTable('(
-                                                            SELECT kArtikel
-                                                                FROM tartikelmerkmal
-                                                                    WHERE kMerkmalWert IN (' . implode(', ', $activeOrFilterIDs) . ' )
-                                                                GROUP BY kArtikel
-                                                                ) AS ssj2')
-                                                        ->setOn('tartikel.kArtikel = ssj2.kArtikel');
-                }
-            }
-            $query = $this->naviFilter->getBaseQuery(
-                [
-                    'tartikelmerkmal.kMerkmal',
-                    'tartikelmerkmal.kMerkmalWert',
-                    'tmerkmalwert.cBildPfad AS cMMWBildPfad',
-                    'tmerkmal.nSort AS nSortMerkmal',
-                    'tmerkmalwert.nSort',
-                    'tmerkmal.cTyp',
-                    'tmerkmal.nMehrfachauswahl',
-                    'tmerkmal.cBildPfad AS cMMBildPfad',
-                    $select
-                ],
-                $state->joins,
-                $state->conditions,
-                $state->having,
-                $order->orderBy,
-                '',
-                ['tartikelmerkmal.kMerkmalWert', 'tartikel.kArtikel']
+            $catAttributeFilters = explode(
+                ';',
+                $currentCategory->categoryFunctionAttributes[KAT_ATTRIBUT_MERKMALFILTER]
             );
+        }
+        $select         = 'tmerkmal.cName';
+        $order          = $this->naviFilter->getOrder();
+        $state          = $this->naviFilter->getCurrentStateData('FilterItemAttribute');
+        $state->joins[] = $order->join;
 
-            $query = "SELECT ssMerkmal.cSeo, ssMerkmal.kMerkmal, ssMerkmal.kMerkmalWert, ssMerkmal.cMMWBildPfad, 
-                ssMerkmal.nMehrfachauswahl,
-                ssMerkmal.cWert, ssMerkmal.cName, ssMerkmal.cTyp, ssMerkmal.cMMBildPfad, COUNT(*) AS nAnzahl
-                FROM (" . $query . ") AS ssMerkmal
-                LEFT JOIN tseo 
-                    ON tseo.kKey = ssMerkmal.kMerkmalWert
-                    AND tseo.cKey = 'kMerkmalWert'
-                    AND tseo.kSprache = " . $this->getLanguageID() . "
-                GROUP BY ssMerkmal.kMerkmalWert
-                ORDER BY ssMerkmal.nSortMerkmal, ssMerkmal.nSort, ssMerkmal.cWert";
+        // @todo?
+        if (true || (!$this->naviFilter->MerkmalWert->isInitialized() && count($this->naviFilter->MerkmalFilter) === 0)) {
+            $state->joins[] = (new FilterJoin())->setComment('join1 from FilterItemAttribute::getOptions()')
+                                                ->setType('JOIN')
+                                                ->setTable('tartikelmerkmal')
+                                                ->setOn('tartikel.kArtikel = tartikelmerkmal.kArtikel');
+        }
+        $state->joins[] = (new FilterJoin())->setComment('join2 from FilterItemAttribute::getOptions()')
+                                            ->setType('JOIN')
+                                            ->setTable('tmerkmalwert')
+                                            ->setOn('tmerkmalwert.kMerkmalWert = tartikelmerkmal.kMerkmalWert');
+        $state->joins[] = (new FilterJoin())->setComment('join4 from FilterItemAttribute::getOptions()')
+                                            ->setType('JOIN')
+                                            ->setTable('tmerkmal')
+                                            ->setOn('tmerkmal.kMerkmal = tartikelmerkmal.kMerkmal');
 
-            $oMerkmalFilterDB_arr = Shop::DB()->query($query, 2);
+        $kSprache         = $this->getLanguageID();
+        $kStandardSprache = (int)gibStandardsprache()->kSprache;
+        if ($kSprache !== $kStandardSprache) {
+            $select = 'COALESCE(tmerkmalsprache.cName, tmerkmal.cName) AS cName, ' .
+                'COALESCE(fremdSprache.cSeo, standardSprache.cSeo) AS cSeo, ' .
+                'COALESCE(fremdSprache.cWert, standardSprache.cWert) AS cWert';
+            $state->joins[] = (new FilterJoin())
+                ->setComment('join5a non default lang from FilterItemAttribute::getOptions()')
+                ->setType('LEFT JOIN')
+                ->setTable('tmerkmalsprache')
+                ->setOn('tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal 
+                            AND tmerkmalsprache.kSprache = ' . $kSprache);
+            $state->joins[] = (new FilterJoin())
+                ->setComment('join5a non default lang from FilterItemAttribute::getOptions()')
+                ->setType('INNER JOIN')
+                ->setTable('tmerkmalwertsprache AS standardSprache')
+                ->setOn('standardSprache.kMerkmalWert = tartikelmerkmal.kMerkmalWert
+                            AND standardSprache.kSprache = ' . $kStandardSprache);
+            $state->joins[] = (new FilterJoin())
+                ->setComment('join5c non default lang from FilterItemAttribute::getOptions()')
+                ->setType('LEFT JOIN')
+                ->setTable('tmerkmalwertsprache AS fremdSprache')
+                ->setOn('fremdSprache.kMerkmalWert = tartikelmerkmal.kMerkmalWert 
+                            AND fremdSprache.kSprache = ' . $kSprache);
+        } else {
+            $select = 'tmerkmalwertsprache.cWert, tmerkmalwertsprache.cSeo, tmerkmal.cName';
+            $state->joins[] = (new FilterJoin())
+                ->setComment('join5 default lang from FilterItemAttribute::getOptions()')
+                ->setType('INNER JOIN')
+                ->setTable('tmerkmalwertsprache')
+                ->setOn('tmerkmalwertsprache.kMerkmalWert = tartikelmerkmal.kMerkmalWert
+                            AND tmerkmalwertsprache.kSprache = ' . $kSprache);
+        }
 
-            if (is_array($oMerkmalFilterDB_arr)) {
-                $additionalFilter = new FilterItemAttribute($this->naviFilter);
-                foreach ($oMerkmalFilterDB_arr as $i => $oMerkmalFilterDB) {
-                    $oMerkmalWerte = new stdClass();
-                    $oMerkmalWerte->kMerkmalWert = (int)$oMerkmalFilterDB->kMerkmalWert;
-                    $oMerkmalWerte->cWert        = $oMerkmalFilterDB->cWert;
-                    $oMerkmalWerte->nAnzahl      = (int)$oMerkmalFilterDB->nAnzahl;
-                    $oMerkmalWerte->nAktiv       = ($this->naviFilter->MerkmalWert->getValue() === $oMerkmalWerte->kMerkmalWert ||
-                        $this->attributeValueIsActive($oMerkmalWerte->kMerkmalWert))
-                        ? 1
-                        : 0;
-
-                    if (strlen($oMerkmalFilterDB->cMMWBildPfad) > 0) {
-                        $oMerkmalWerte->cBildpfadKlein  = PFAD_MERKMALWERTBILDER_KLEIN . $oMerkmalFilterDB->cMMWBildPfad;
-                        $oMerkmalWerte->cBildpfadNormal = PFAD_MERKMALWERTBILDER_NORMAL . $oMerkmalFilterDB->cMMWBildPfad;
+        if (count($this->naviFilter->MerkmalFilter) > 0) {
+            $activeAndFilterIDs = [];
+            foreach ($this->naviFilter->MerkmalFilter as $filter) {
+                $values = $filter->getValue();
+                if (is_array($values)) {
+                    $activeValues = $values;
+                } else {
+                    $activeValues[] = $values;
+                }
+                if ($filter->getType() === AbstractFilter::FILTER_TYPE_OR) {
+                    if (is_array($values)) {
+                        $activeOrFilterIDs = $values;
                     } else {
-                        $oMerkmalWerte->cBildpfadKlein = BILD_KEIN_MERKMALWERTBILD_VORHANDEN;
-                        $oMerkmalWerte->cBildpfadGross = BILD_KEIN_MERKMALWERTBILD_VORHANDEN;
+                        $activeOrFilterIDs[] = $values;
                     }
-                    // baue URL
-                    $oMerkmalWerte->cURL = $this->naviFilter->getURL(
-                        true,
-                        $additionalFilter->init((int)$oMerkmalFilterDB->kMerkmalWert)
-                    );
-                    // hack for #4815
-                    $seoURL = $additionalFilter->getSeo($this->getLanguageID());
-                    if ($oMerkmalWerte->nAktiv === 1 && !empty($seoURL)) {
-                        // remove '__attrY' from '<url>attrX__attrY'
-                        $newURL = str_replace('__' . $seoURL, '', $oMerkmalWerte->cURL);
-                        // remove 'attrY__' from '<url>attrY__attrX'
-                        $newURL              = str_replace($seoURL . '__', '', $newURL);
-                        $oMerkmalWerte->cURL = $newURL;
+                } else {
+                    if (is_array($values)) {
+                        $activeAndFilterIDs = $values;
+                    } else {
+                        $activeAndFilterIDs[] = $values;
                     }
+                }
+            }
+            if (count($activeAndFilterIDs) > 0) {
+                $state->joins[] = (new FilterJoin())
+                    ->setComment('join6a AND from FilterItemAttribute::getOptions()')
+                    ->setType('JOIN')
+                    ->setTable('(SELECT kArtikel
+                                    FROM tartikelmerkmal
+                                        WHERE kMerkmalWert IN (' . implode(', ', $activeAndFilterIDs) . ' )
+                                    GROUP BY kArtikel
+                                    HAVING count(*) = ' . count($activeAndFilterIDs) . '
+                                ) AS ssj1')
+                    ->setOn('tartikel.kArtikel = ssj1.kArtikel');
+            }
+            if (count($activeOrFilterIDs) > 0) {
+                $state->joins[] = (new FilterJoin())
+                    ->setComment('join6b OR from FilterItemAttribute::getOptions()')
+                    ->setType('LEFT JOIN')
+                    ->setTable('(SELECT kArtikel
+                                    FROM tartikelmerkmal
+                                        WHERE kMerkmalWert IN (' . implode(', ', $activeOrFilterIDs) . ' )
+                                    GROUP BY kArtikel
+                                ) AS ssj2')
+                    ->setOn('tartikel.kArtikel = ssj2.kArtikel');
+            }
+        }
+        $baseQry  = $this->naviFilter->getBaseQuery(
+            [
+                'tartikelmerkmal.kMerkmal',
+                'tartikelmerkmal.kMerkmalWert',
+                'tmerkmalwert.cBildPfad AS cMMWBildPfad',
+                'tmerkmal.nSort AS nSortMerkmal',
+                'tmerkmalwert.nSort',
+                'tmerkmal.cTyp',
+                'tmerkmal.nMehrfachauswahl',
+                'tmerkmal.cBildPfad AS cMMBildPfad',
+                $select
+            ],
+            $state->joins,
+            $state->conditions,
+            $state->having,
+            $order->orderBy,
+            '',
+            ['tartikelmerkmal.kMerkmalWert', 'tartikel.kArtikel']
+        );
+        $qry      = "SELECT ssMerkmal.cSeo, ssMerkmal.kMerkmal, ssMerkmal.kMerkmalWert, ssMerkmal.cMMWBildPfad, 
+            ssMerkmal.nMehrfachauswahl,
+            ssMerkmal.cWert, ssMerkmal.cName, ssMerkmal.cTyp, ssMerkmal.cMMBildPfad, COUNT(*) AS nAnzahl
+            FROM (" . $baseQry . ") AS ssMerkmal
+            LEFT JOIN tseo 
+                ON tseo.kKey = ssMerkmal.kMerkmalWert
+                AND tseo.cKey = 'kMerkmalWert'
+                AND tseo.kSprache = " . $this->getLanguageID() . "
+            GROUP BY ssMerkmal.kMerkmalWert
+            ORDER BY ssMerkmal.nSortMerkmal, ssMerkmal.nSort, ssMerkmal.cWert";
+        $qryRes   = Shop::DB()->query($qry, 2);
 
-                    $oMerkmal = null;
-                    foreach ($attributeFilters as $attributeFilter) {
-                        if ($attributeFilter->kMerkmal === (int)$oMerkmalFilterDB->kMerkmal) {
-                            $oMerkmal = $attributeFilter;
-                            break;
-                        }
-                    }
-                    if ($oMerkmal === null) {
-                        $oMerkmal = new FilterItemAttribute($this->naviFilter);
-                        $oMerkmal->setFrontendName($oMerkmalFilterDB->cName);
-                        $oMerkmal->cName             = $oMerkmalFilterDB->cName;
-                        $oMerkmal->cSeo              = $oMerkmalFilterDB->cSeo;
-                        $oMerkmal->nAnzahl           = (int)$oMerkmalFilterDB->nAnzahl;
-                        $oMerkmal->cTyp              = $oMerkmalFilterDB->cTyp;
-                        $oMerkmal->kMerkmal          = (int)$oMerkmalFilterDB->kMerkmal;
-                        $oMerkmal->kMerkmalWert      = (int)$oMerkmalFilterDB->kMerkmalWert;
-                        if (in_array($oMerkmal->kMerkmalWert, $activeValues, true) === true) {
-                            $oMerkmal->isInitialized = true;
-                        }
-                        $oMerkmal->oMerkmalWerte_arr = [];
-                        if (strlen($oMerkmalFilterDB->cMMBildPfad) > 0) {
-                            $oMerkmal->cBildpfadKlein  = PFAD_MERKMALBILDER_KLEIN . $oMerkmalFilterDB->cMMBildPfad;
-                            $oMerkmal->cBildpfadNormal = PFAD_MERKMALBILDER_NORMAL . $oMerkmalFilterDB->cMMBildPfad;
-                        } else {
-                            $oMerkmal->cBildpfadKlein = BILD_KEIN_MERKMALBILD_VORHANDEN;
-                            $oMerkmal->cBildpfadGross = BILD_KEIN_MERKMALBILD_VORHANDEN;
-                        }
-                        if ((int)$oMerkmalFilterDB->nMehrfachauswahl === 1) {
-                            $oMerkmal->setType(AbstractFilter::FILTER_TYPE_OR);
-                        } else {
-                            $oMerkmal->setType(AbstractFilter::FILTER_TYPE_AND);
-                            if ($oMerkmal->isInitialized() === true) {
-                                $oMerkmal->setVisibility(AbstractFilter::SHOW_NEVER);
-                            }
-                        }
-                        $attributeFilters[] = $oMerkmal;
-                    }
-                    // #533 Anzahl max Merkmale erreicht?
-                    if (($max = $this->getConfig()['navigationsfilter']['merkmalfilter_maxmerkmale']) > 0 &&
-                        count($attributeFilters) >= $max
-                    ) {
-                        continue;
-                    }
-                    $oMerkmal->oMerkmalWerte_arr[] = $oMerkmalWerte;
-                }
-            }
-            // Filter durchgehen und die Merkmalwerte entfernen, die zuviel sind und deren Anzahl am geringsten ist.
-            foreach ($attributeFilters as $o => $oMerkmalFilter) {
-                // #534 Anzahl max Merkmalwerte erreicht?
-                if (($max = $this->getConfig()['navigationsfilter']['merkmalfilter_maxmerkmalwerte']) > 0) {
-                    while (count($attributeFilters[$o]->oMerkmalWerte_arr) > $max) {
-                        $nMinAnzahl = 999999;
-                        $nIndex     = -1;
-                        foreach($attributeFilters[$o]->oMerkmalWerte_arr as $l => $attributeValues) {
-                            if ($attributeValues->nAnzahl < $nMinAnzahl) {
-                                $nMinAnzahl = (int)$attributeValues->nAnzahl;
-                                $nIndex     = $l;
-                            }
-                        }
+        if (is_array($qryRes)) {
+            $additionalFilter = new FilterItemAttribute($this->naviFilter);
+            foreach ($qryRes as $i => $oMerkmalFilterDB) {
+                $attributeValues = new stdClass();
+                $attributeValues->kMerkmalWert = (int)$oMerkmalFilterDB->kMerkmalWert;
+                $attributeValues->cWert        = $oMerkmalFilterDB->cWert;
+                $attributeValues->nAnzahl      = (int)$oMerkmalFilterDB->nAnzahl;
+                $attributeValues->nAktiv       = ($this->naviFilter->MerkmalWert->getValue() === $attributeValues->kMerkmalWert ||
+                    $this->attributeValueIsActive($attributeValues->kMerkmalWert))
+                    ? 1
+                    : 0;
 
-                        if ($nIndex >= 0) {
-                            unset($attributeFilters[$o]->oMerkmalWerte_arr[$nIndex]);
-                            $attributeFilters[$o]->oMerkmalWerte_arr =
-                                array_merge($attributeFilters[$o]->oMerkmalWerte_arr);
-                        }
-                    }
+                if (strlen($oMerkmalFilterDB->cMMWBildPfad) > 0) {
+                    $attributeValues->cBildpfadKlein  = PFAD_MERKMALWERTBILDER_KLEIN . $oMerkmalFilterDB->cMMWBildPfad;
+                    $attributeValues->cBildpfadNormal = PFAD_MERKMALWERTBILDER_NORMAL . $oMerkmalFilterDB->cMMWBildPfad;
+                } else {
+                    $attributeValues->cBildpfadKlein = BILD_KEIN_MERKMALWERTBILD_VORHANDEN;
+                    $attributeValues->cBildpfadGross = BILD_KEIN_MERKMALWERTBILD_VORHANDEN;
                 }
-            }
-            // Falls merkmalfilter Kategorieattribut gesetzt ist, alle Merkmale die nicht enthalten sein dürfen entfernen
-            if (count($cKatAttribMerkmalFilter_arr) > 0) {
-                foreach ($attributeFilters as $i => $attributeFilter) {
-                    if (!in_array($attributeFilter->cName, $cKatAttribMerkmalFilter_arr, true)) {
-                        unset($attributeFilters[$i]);
-                    }
+                // baue URL
+                $attributeValues->cURL = $this->naviFilter->getURL(
+                    true,
+                    $additionalFilter->init((int)$oMerkmalFilterDB->kMerkmalWert)
+                );
+                // hack for #4815
+                $seoURL = $additionalFilter->getSeo($this->getLanguageID());
+                if ($attributeValues->nAktiv === 1 && !empty($seoURL)) {
+                    // remove '__attrY' from '<url>attrX__attrY'
+                    $newURL = str_replace('__' . $seoURL, '', $attributeValues->cURL);
+                    // remove 'attrY__' from '<url>attrY__attrX'
+                    $newURL              = str_replace($seoURL . '__', '', $newURL);
+                    $attributeValues->cURL = $newURL;
                 }
-                $attributeFilters = array_merge($attributeFilters);
-            }
-            // Merkmalwerte numerisch sortieren, wenn alle Merkmalwerte eines Merkmals numerisch sind
-            foreach ($attributeFilters as $o => $oMerkmalFilter) {
-                $bAlleNumerisch = true;
-                foreach ($oMerkmalFilter->oMerkmalWerte_arr as $attributeValue) {
-                    if (!is_numeric($attributeValue->cWert)) {
-                        $bAlleNumerisch = false;
+
+                $attribute = null;
+                foreach ($attributeFilters as $attributeFilter) {
+                    if ($attributeFilter->kMerkmal === (int)$oMerkmalFilterDB->kMerkmal) {
+                        $attribute = $attributeFilter;
                         break;
                     }
                 }
-                if ($bAlleNumerisch) {
-                    usort($attributeFilters[$o]->oMerkmalWerte_arr, function ($a, $b) {
-                        return $a === $b
-                            ? 0
-                            : (($a->cWert < $b->cWert)
-                                ? -1
-                                : 1
-                            );
-                    });
+                if ($attribute === null) {
+                    $attribute = new FilterItemAttribute($this->naviFilter);
+                    $attribute->setFrontendName($oMerkmalFilterDB->cName);
+                    $attribute->cName             = $oMerkmalFilterDB->cName;
+                    $attribute->cSeo              = $oMerkmalFilterDB->cSeo;
+                    $attribute->nAnzahl           = (int)$oMerkmalFilterDB->nAnzahl;
+                    $attribute->cTyp              = $oMerkmalFilterDB->cTyp;
+                    $attribute->kMerkmal          = (int)$oMerkmalFilterDB->kMerkmal;
+                    $attribute->kMerkmalWert      = (int)$oMerkmalFilterDB->kMerkmalWert;
+                    if (in_array($attribute->kMerkmalWert, $activeValues, true) === true) {
+                        $attribute->isInitialized = true;
+                    }
+                    $attribute->oMerkmalWerte_arr = [];
+                    if (strlen($oMerkmalFilterDB->cMMBildPfad) > 0) {
+                        $attribute->cBildpfadKlein  = PFAD_MERKMALBILDER_KLEIN . $oMerkmalFilterDB->cMMBildPfad;
+                        $attribute->cBildpfadNormal = PFAD_MERKMALBILDER_NORMAL . $oMerkmalFilterDB->cMMBildPfad;
+                    } else {
+                        $attribute->cBildpfadKlein = BILD_KEIN_MERKMALBILD_VORHANDEN;
+                        $attribute->cBildpfadGross = BILD_KEIN_MERKMALBILD_VORHANDEN;
+                    }
+                    if ((int)$oMerkmalFilterDB->nMehrfachauswahl === 1) {
+                        $attribute->setType(AbstractFilter::FILTER_TYPE_OR);
+                    } else {
+                        $attribute->setType(AbstractFilter::FILTER_TYPE_AND);
+                        if ($attribute->isInitialized() === true) {
+                            $attribute->setVisibility(AbstractFilter::SHOW_NEVER);
+                        }
+                    }
+                    $attributeFilters[] = $attribute;
                 }
+                // #533 Anzahl max Merkmale erreicht?
+                if (($max = $this->getConfig()['navigationsfilter']['merkmalfilter_maxmerkmale']) > 0 &&
+                    count($attributeFilters) >= $max
+                ) {
+                    continue;
+                }
+                $attribute->oMerkmalWerte_arr[] = $attributeValues;
+            }
+        }
+        // Filter durchgehen und die Merkmalwerte entfernen, die zuviel sind und deren Anzahl am geringsten ist.
+        foreach ($attributeFilters as $o => $oMerkmalFilter) {
+            // #534 Anzahl max Merkmalwerte erreicht?
+            if (($max = $this->getConfig()['navigationsfilter']['merkmalfilter_maxmerkmalwerte']) > 0) {
+                while (count($attributeFilters[$o]->oMerkmalWerte_arr) > $max) {
+                    $nMinAnzahl = 999999;
+                    $nIndex     = -1;
+                    foreach($attributeFilters[$o]->oMerkmalWerte_arr as $l => $attributeValues) {
+                        if ($attributeValues->nAnzahl < $nMinAnzahl) {
+                            $nMinAnzahl = (int)$attributeValues->nAnzahl;
+                            $nIndex     = $l;
+                        }
+                    }
+
+                    if ($nIndex >= 0) {
+                        unset($attributeFilters[$o]->oMerkmalWerte_arr[$nIndex]);
+                        $attributeFilters[$o]->oMerkmalWerte_arr =
+                            array_merge($attributeFilters[$o]->oMerkmalWerte_arr);
+                    }
+                }
+            }
+        }
+        // Falls merkmalfilter Kategorieattribut gesetzt ist, alle Merkmale die nicht enthalten sein dürfen entfernen
+        if (count($catAttributeFilters) > 0) {
+            foreach ($attributeFilters as $i => $attributeFilter) {
+                if (!in_array($attributeFilter->cName, $catAttributeFilters, true)) {
+                    unset($attributeFilters[$i]);
+                }
+            }
+            $attributeFilters = array_merge($attributeFilters);
+        }
+        // Merkmalwerte numerisch sortieren, wenn alle Merkmalwerte eines Merkmals numerisch sind
+        foreach ($attributeFilters as $o => $oMerkmalFilter) {
+            $numeric = true;
+            foreach ($oMerkmalFilter->oMerkmalWerte_arr as $attributeValue) {
+                if (!is_numeric($attributeValue->cWert)) {
+                    $numeric = false;
+                    break;
+                }
+            }
+            if ($numeric) {
+                usort($attributeFilters[$o]->oMerkmalWerte_arr, function ($a, $b) {
+                    return $a === $b
+                        ? 0
+                        : (($a->cWert < $b->cWert)
+                            ? -1
+                            : 1
+                        );
+                });
             }
         }
         $this->options = $attributeFilters;

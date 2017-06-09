@@ -52,8 +52,8 @@ class FilterBaseManufacturer extends AbstractFilter
      */
     public function setSeo($languages)
     {
-        $oSeo_arr = Shop::DB()->query("
-                SELECT tseo.cSeo, tseo.kSprache, thersteller.cName
+        $oSeo_arr = Shop::DB()->query(
+                "SELECT tseo.cSeo, tseo.kSprache, thersteller.cName
                     FROM tseo
                         LEFT JOIN thersteller
                             ON thersteller.kHersteller = tseo.kKey

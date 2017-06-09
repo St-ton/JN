@@ -72,22 +72,22 @@ class FilterBaseSearchSpecial extends AbstractFilter
         }
         switch ($this->getValue()) {
             case SEARCHSPECIALS_BESTSELLER:
-                $this->cName = Shop::Lang()->get('bestsellers', 'global');
+                $this->cName = Shop::Lang()->get('bestsellers');
                 break;
             case SEARCHSPECIALS_SPECIALOFFERS:
-                $this->cName = Shop::Lang()->get('specialOffers', 'global');
+                $this->cName = Shop::Lang()->get('specialOffers');
                 break;
             case SEARCHSPECIALS_NEWPRODUCTS:
-                $this->cName = Shop::Lang()->get('newProducts', 'global');
+                $this->cName = Shop::Lang()->get('newProducts');
                 break;
             case SEARCHSPECIALS_TOPOFFERS:
-                $this->cName = Shop::Lang()->get('topOffers', 'global');
+                $this->cName = Shop::Lang()->get('topOffers');
                 break;
             case SEARCHSPECIALS_UPCOMINGPRODUCTS:
-                $this->cName = Shop::Lang()->get('upcomingProducts', 'global');
+                $this->cName = Shop::Lang()->get('upcomingProducts');
                 break;
             case SEARCHSPECIALS_TOPREVIEWS:
-                $this->cName = Shop::Lang()->get('topReviews', 'global');
+                $this->cName = Shop::Lang()->get('topReviews');
                 break;
             default:
                 //invalid search special ID
@@ -156,7 +156,7 @@ class FilterBaseSearchSpecial extends AbstractFilter
                 return "tartikel.cTopArtikel = 'Y'";
 
             case SEARCHSPECIALS_UPCOMINGPRODUCTS:
-                return "now() < tartikel.dErscheinungsdatum";
+                return 'now() < tartikel.dErscheinungsdatum';
 
             case SEARCHSPECIALS_TOPREVIEWS:
                 if (!$this->naviFilter->BewertungFilter->isInitialized()) {
@@ -164,7 +164,7 @@ class FilterBaseSearchSpecial extends AbstractFilter
                         ? (int)$min
                         : 4;
 
-                    return " ROUND(taex.fDurchschnittsBewertung) >= " . $nMindestSterne;
+                    return ' ROUND(taex.fDurchschnittsBewertung) >= ' . $nMindestSterne;
                 }
                 break;
 
@@ -193,7 +193,7 @@ class FilterBaseSearchSpecial extends AbstractFilter
                     : (new FilterJoin())->setType('JOIN')
                                              ->setTable('tartikelsonderpreis AS tasp')
                                              ->setOn('tasp.kArtikel = tartikel.kArtikel JOIN tsonderpreise AS tsp 
-                                      ON tsp.kArtikelSonderpreis = tasp.kArtikelSonderpreis')
+                                                ON tsp.kArtikelSonderpreis = tasp.kArtikelSonderpreis')
                                              ->setComment('JOIN from FilterBaseSearchSpecial special offers');
 
             case SEARCHSPECIALS_NEWPRODUCTS:

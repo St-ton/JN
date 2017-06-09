@@ -80,14 +80,16 @@ class FilterBaseSearchQuery extends AbstractFilter
      */
     public function setSeo($languages)
     {
-        $oSeo_obj = Shop::DB()->executeQueryPrepared("
-            SELECT tseo.cSeo, tseo.kSprache, tsuchanfrage.cSuche
+        $oSeo_obj = Shop::DB()->executeQueryPrepared(
+            "SELECT tseo.cSeo, tseo.kSprache, tsuchanfrage.cSuche
                 FROM tseo
                 LEFT JOIN tsuchanfrage
                     ON tsuchanfrage.kSuchanfrage = tseo.kKey
                     AND tsuchanfrage.kSprache = tseo.kSprache
                 WHERE cKey = 'kSuchanfrage' 
-                    AND kKey = :key", ['key' => $this->getValue()], 1
+                    AND kKey = :key", 
+            ['key' => $this->getValue()], 
+            1
         );
         foreach ($languages as $language) {
             $this->cSeo[$language->kSprache] = '';
@@ -158,12 +160,12 @@ class FilterBaseSearchQuery extends AbstractFilter
 
         return (new FilterJoin())->setType('JOIN')
                                  ->setTable('(SELECT tsuchcachetreffer.kArtikel, tsuchcachetreffer.kSuchCache, 
-                          MIN(tsuchcachetreffer.nSort) AS nSort
-                              FROM tsuchcachetreffer
-                              WHERE tsuchcachetreffer.kSuchCache IN (' . implode(',', $kSucheCache_arr) . ') 
-                              GROUP BY tsuchcachetreffer.kArtikel
-                              HAVING COUNT(*) = ' . $count . '
-                          ) AS jSuche')
+                                  MIN(tsuchcachetreffer.nSort) AS nSort
+                                      FROM tsuchcachetreffer
+                                      WHERE tsuchcachetreffer.kSuchCache IN (' . implode(',', $kSucheCache_arr) . ') 
+                                      GROUP BY tsuchcachetreffer.kArtikel
+                                      HAVING COUNT(*) = ' . $count . '
+                                  ) AS jSuche')
                                  ->setOn('jSuche.kArtikel = tartikel.kArtikel')
                                  ->setComment('JOIN1 from BaseFilterSearch');
     }
@@ -181,7 +183,7 @@ class FilterBaseSearchQuery extends AbstractFilter
         if ($this->getConfig()['navigationsfilter']['suchtrefferfilter_nutzen'] !== 'N') {
             $nLimit     = (isset($this->getConfig()['navigationsfilter']['suchtrefferfilter_anzahl']) &&
                 ($limit = (int)$this->getConfig()['navigationsfilter']['suchtrefferfilter_anzahl']) > 0)
-                ? " LIMIT " . $limit
+                ? ' LIMIT ' . $limit
                 : '';
             $order      = $this->naviFilter->getOrder();
             $state      = $this->naviFilter->getCurrentStateData();
@@ -199,9 +201,9 @@ class FilterBaseSearchQuery extends AbstractFilter
                                                 ->setType('JOIN')
                                                 ->setTable('tsuchanfrage')
                                                 ->setOn('tsuchanfrage.cSuche = tsuchcache.cSuche 
-                              AND tsuchanfrage.kSprache = ' . $this->getLanguageID());
+                                                    AND tsuchanfrage.kSprache = ' . $this->getLanguageID());
 
-            $state->conditions[] = "tsuchanfrage.nAktiv = 1";
+            $state->conditions[] = 'tsuchanfrage.nAktiv = 1';
 
             $query         = $this->naviFilter->getBaseQuery(
                 ['tsuchanfrage.kSuchanfrage', 'tsuchanfrage.cSuche', 'tartikel.kArtikel'],
@@ -212,10 +214,10 @@ class FilterBaseSearchQuery extends AbstractFilter
                 '',
                 ['tsuchanfrage.kSuchanfrage', 'tartikel.kArtikel']
             );
-            $query         = "SELECT ssMerkmal.kSuchanfrage, ssMerkmal.cSuche, count(*) AS nAnzahl
-                FROM (" . $query . ") AS ssMerkmal
+            $query         = 'SELECT ssMerkmal.kSuchanfrage, ssMerkmal.cSuche, count(*) AS nAnzahl
+                FROM (' . $query . ') AS ssMerkmal
                     GROUP BY ssMerkmal.kSuchanfrage
-                    ORDER BY ssMerkmal.cSuche" . $nLimit;
+                    ORDER BY ssMerkmal.cSuche' . $nLimit;
             $searchFilters = Shop::DB()->query($query, 2);
 
             $kSuchanfrage_arr = [];
@@ -331,14 +333,14 @@ class FilterBaseSearchQuery extends AbstractFilter
             ? (int)$kSpracheExt
             : $this->getLanguageID();
         // Suchcache wurde zwar gefunden, ist jedoch nicht mehr gültig
-        Shop::DB()->query("
+        Shop::DB()->query('
             DELETE tsuchcache, tsuchcachetreffer
                 FROM tsuchcache
                 LEFT JOIN tsuchcachetreffer 
                     ON tsuchcachetreffer.kSuchCache = tsuchcache.kSuchCache
-                WHERE tsuchcache.kSprache = " . $kSprache . "
+                WHERE tsuchcache.kSprache = ' . $kSprache . '
                     AND tsuchcache.dGueltigBis IS NOT NULL
-                    AND DATE_ADD(tsuchcache.dGueltigBis, INTERVAL 5 MINUTE) < now()", 3
+                    AND DATE_ADD(tsuchcache.dGueltigBis, INTERVAL 5 MINUTE) < now()', 3
         );
 
         $keySuche = $cSuche . ';' .
@@ -346,11 +348,11 @@ class FilterBaseSearchQuery extends AbstractFilter
             (int)$_SESSION['Kundengruppe']->kKundengruppe;
         // Suchcache checken, ob bereits vorhanden
         $oSuchCache = Shop::DB()->executeQueryPrepared(
-            "SELECT kSuchCache
+            'SELECT kSuchCache
                 FROM tsuchcache
                 WHERE kSprache =  :lang
                     AND cSuche = :search
-                    AND (dGueltigBis > now() OR dGueltigBis IS NULL)",
+                    AND (dGueltigBis > now() OR dGueltigBis IS NULL)',
             ['lang' => $kSprache, 'search' => Shop::DB()->escape($keySuche)],
             1
         );
@@ -401,36 +403,36 @@ class FilterBaseSearchQuery extends AbstractFilter
         }
 
         if ($this->getLanguageID() > 0 && !standardspracheAktiv()) {
-            $cSQL = "SELECT " . $kSuchCache . ", IF(tartikel.kVaterArtikel > 0, 
-                        tartikel.kVaterArtikel, tartikelsprache.kArtikel) AS kArtikelTMP, ";
+            $cSQL = 'SELECT ' . $kSuchCache . ', IF(tartikel.kVaterArtikel > 0, 
+                        tartikel.kVaterArtikel, tartikelsprache.kArtikel) AS kArtikelTMP, ';
         } else {
-            $cSQL = "SELECT " . $kSuchCache . ", IF(kVaterArtikel > 0, 
-                        kVaterArtikel, kArtikel) AS kArtikelTMP, ";
+            $cSQL = 'SELECT ' . $kSuchCache . ', IF(kVaterArtikel > 0, 
+                        kVaterArtikel, kArtikel) AS kArtikelTMP, ';
         }
         // Shop2 Suche - mehr als 3 Suchwörter *
         if (count($cSuch_arr) > 3) {
             $cSQL .= " 1 ";
             if ($this->getLanguageID() > 0 && !standardspracheAktiv()) {
-                $cSQL .= " FROM tartikelsprache
+                $cSQL .= ' FROM tartikelsprache
                                 LEFT JOIN tartikel 
-                                    ON tartikelsprache.kArtikel = tartikel.kArtikel";
+                                    ON tartikelsprache.kArtikel = tartikel.kArtikel';
             } else {
-                $cSQL .= " FROM tartikel ";
+                $cSQL .= ' FROM tartikel ';
             }
-            $cSQL .= " WHERE ";
+            $cSQL .= ' WHERE ';
 
             foreach ($searchColumnn_arr as $i => $searchColumnn) {
                 if ($i > 0) {
-                    $cSQL .= " OR";
+                    $cSQL .= ' OR';
                 }
-                $cSQL .= "(";
+                $cSQL .= '(';
                 foreach ($cSuchTMP_arr as $j => $cSuch) {
                     if ($j > 0) {
-                        $cSQL .= " AND";
+                        $cSQL .= ' AND';
                     }
-                    $cSQL .= " " . $searchColumnn . " LIKE '%" . $cSuch . "%'";
+                    $cSQL .= ' ' . $searchColumnn . " LIKE '%" . $cSuch . "%'";
                 }
-                $cSQL .= ")";
+                $cSQL .= ')';
             }
         } else {
             $nKlammern = 0;
@@ -689,20 +691,20 @@ class FilterBaseSearchQuery extends AbstractFilter
                 }
 
                 if ($i === (count($searchColumnn_arr) - 1)) {
-                    $cSQL .= "254)";
+                    $cSQL .= '254)';
                 }
             }
 
             for ($i = 0; $i < ($nKlammern - 1); ++$i) {
-                $cSQL .= ")";
+                $cSQL .= ')';
             }
 
             if ($this->getLanguageID() > 0 && !standardspracheAktiv()) {
-                $cSQL .= " FROM tartikelsprache
+                $cSQL .= ' FROM tartikelsprache
                             LEFT JOIN tartikel 
-                                ON tartikelsprache.kArtikel = tartikel.kArtikel";
+                                ON tartikelsprache.kArtikel = tartikel.kArtikel';
             } else {
-                $cSQL .= " FROM tartikel ";
+                $cSQL .= ' FROM tartikel ';
             }
             $cSQL .= " WHERE ";
             if ($this->getLanguageID() > 0 && !standardspracheAktiv()) {
@@ -710,24 +712,24 @@ class FilterBaseSearchQuery extends AbstractFilter
             }
             foreach ($searchColumnn_arr as $i => $searchColumnn) {
                 if ($i > 0) {
-                    $cSQL .= " OR";
+                    $cSQL .= ' OR';
                 }
-                $cSQL .= "(";
+                $cSQL .= '(';
 
                 foreach ($cSuchTMP_arr as $j => $cSuch) {
                     if ($j > 0) {
-                        $cSQL .= " AND";
+                        $cSQL .= ' AND';
                     }
                     $cSQL .= " " . $searchColumnn . " LIKE '%" . $cSuch . "%'";
                 }
-                $cSQL .= ")";
+                $cSQL .= ')';
             }
         }
-        Shop::DB()->query("
-            INSERT INTO tsuchcachetreffer " .
-            $cSQL . "
-                GROUP BY kArtikelTMP
-                LIMIT " . (int)$this->getConfig()['artikeluebersicht']['suche_max_treffer'], 3
+        Shop::DB()->query('
+            INSERT INTO tsuchcachetreffer ' .
+            $cSQL .
+                ' GROUP BY kArtikelTMP
+                LIMIT ' . (int)$this->getConfig()['artikeluebersicht']['suche_max_treffer'], 3
         );
 
         return (int)$kSuchCache;

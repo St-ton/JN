@@ -155,10 +155,10 @@ class FilterSearch extends AbstractFilter
                 // Ist MD5(IP) bereits X mal im Cache
                 $max_ip_count = (int)$this->getConfig()['artikeluebersicht']['livesuche_max_ip_count'] * 100;
                 $ip_cache_erg = Shop::DB()->executeQueryPrepared(
-                    "SELECT count(*) AS anzahl
+                    'SELECT count(*) AS anzahl
                         FROM tsuchanfragencache
                         WHERE kSprache = :lang
-                        AND cIP = :ip",
+                        AND cIP = :ip',
                     ['lang' => $languageID, 'ip' => gibIP()],
                     1
                 );
@@ -185,10 +185,10 @@ class FilterSearch extends AbstractFilter
                     $searchQueryCache->dZeit    = 'now()';
                     Shop::DB()->insert('tsuchanfragencache', $searchQueryCache);
                     // Cacheeinträge die > 1 Stunde sind, löschen
-                    Shop::DB()->query("
+                    Shop::DB()->query('
                         DELETE 
                             FROM tsuchanfragencache 
-                            WHERE dZeit < DATE_SUB(now(),INTERVAL 1 HOUR)", 4
+                            WHERE dZeit < DATE_SUB(now(),INTERVAL 1 HOUR)', 4
                     );
                     if ($hits > 0) {
                         require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
@@ -210,11 +210,11 @@ class FilterSearch extends AbstractFilter
                         );
                         if (isset($previuousQuery->kSuchanfrage) && $previuousQuery->kSuchanfrage > 0 && $real) {
                             Shop::DB()->query(
-                                "UPDATE tsuchanfrage
+                                'UPDATE tsuchanfrage
                                     SET nAnzahlTreffer = $searchQuery->nAnzahlTreffer, 
                                         nAnzahlGesuche = nAnzahlGesuche+1, 
                                         dZuletztGesucht = now()
-                                    WHERE kSuchanfrage = " . (int)$previuousQuery->kSuchanfrage, 4
+                                    WHERE kSuchanfrage = ' . (int)$previuousQuery->kSuchanfrage, 4
                             );
                         } elseif (!isset($previuousQuery->kSuchanfrage) || !$previuousQuery->kSuchanfrage) {
                             Shop::DB()->delete(
@@ -223,7 +223,6 @@ class FilterSearch extends AbstractFilter
                                 [(int)$searchQuery->kSprache, Shop::DB()->realEscape($Suchausdruck)]
                             );
                             $queryID = Shop::DB()->insert('tsuchanfrage', $searchQuery);
-                            writeLog(PFAD_LOGFILES . 'suchanfragen.log', print_r($searchQuery, true), 1);
 
                             return (int)$queryID;
                         }
@@ -246,10 +245,10 @@ class FilterSearch extends AbstractFilter
                             $real
                         ) {
                             Shop::DB()->query(
-                                "UPDATE tsuchanfrageerfolglos
+                                'UPDATE tsuchanfrageerfolglos
                                     SET nAnzahlGesuche = nAnzahlGesuche+1, 
                                         dZuletztGesucht = now()
-                                    WHERE kSuchanfrageErfolglos = " .
+                                    WHERE kSuchanfrageErfolglos = ' .
                                     (int)$queryMiss_old->kSuchanfrageErfolglos,
                                 4
                             );
@@ -348,10 +347,10 @@ class FilterSearch extends AbstractFilter
                 '',
                 ['tsuchanfrage.kSuchanfrage', 'tartikel.kArtikel']
             );
-            $query         = "SELECT ssMerkmal.kSuchanfrage, ssMerkmal.cSuche, count(*) AS nAnzahl
-                FROM (" . $query . ") AS ssMerkmal
+            $query         = 'SELECT ssMerkmal.kSuchanfrage, ssMerkmal.cSuche, count(*) AS nAnzahl
+                FROM (' . $query . ') AS ssMerkmal
                     GROUP BY ssMerkmal.kSuchanfrage
-                    ORDER BY ssMerkmal.cSuche" . $nLimit;
+                    ORDER BY ssMerkmal.cSuche' . $nLimit;
             $searchFilters = Shop::DB()->query($query, 2);
             $searchQueries = [];
             if ($this->naviFilter->Suche->kSuchanfrage > 0) {

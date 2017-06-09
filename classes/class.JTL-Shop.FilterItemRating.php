@@ -28,7 +28,7 @@ class FilterItemRating extends AbstractFilter
         $this->urlParam    = 'bf';
         $this->urlParamSEO = null;
         $this->setVisibility($this->getConfig()['navigationsfilter']['bewertungsfilter_benutzen'])
-             ->setFrontendName(Shop::Lang()->get('Votes', 'global'));
+             ->setFrontendName(Shop::Lang()->get('Votes'));
     }
 
     /**
@@ -59,8 +59,8 @@ class FilterItemRating extends AbstractFilter
         $this->cName = Shop::Lang()->get('from', 'productDetails') . ' ' .
             $this->getValue() . ' ' .
             ($this->getValue() > 0
-                ? Shop::Lang()->get('starPlural', 'global')
-                : Shop::Lang()->get('starSingular', 'global')
+                ? Shop::Lang()->get('starPlural')
+                : Shop::Lang()->get('starSingular')
             );
 
         return $this;
@@ -128,10 +128,10 @@ class FilterItemRating extends AbstractFilter
                 $state->having,
                 $order->orderBy
             );
-            $query = "SELECT ssMerkmal.nSterne, COUNT(*) AS nAnzahl
-                        FROM (" . $query . " ) AS ssMerkmal
+            $query = 'SELECT ssMerkmal.nSterne, COUNT(*) AS nAnzahl
+                        FROM (' . $query . ' ) AS ssMerkmal
                         GROUP BY ssMerkmal.nSterne
-                        ORDER BY ssMerkmal.nSterne DESC";
+                        ORDER BY ssMerkmal.nSterne DESC';
             $res   = Shop::DB()->query($query, 2);
             if (is_array($res)) {
                 $nSummeSterne     = 0;
@@ -147,8 +147,8 @@ class FilterItemRating extends AbstractFilter
                             Shop::Lang()->get('from', 'productDetails') . ' ' .
                             $row->nSterne . ' ' .
                             ($row->nSterne > 1
-                                ? Shop::Lang()->get('starPlural', 'global')
-                                : Shop::Lang()->get('starSingular', 'global'))
+                                ? Shop::Lang()->get('starPlural')
+                                : Shop::Lang()->get('starSingular'))
                         )
                         ->setValue((int)$row->nSterne)
                         ->setCount($nSummeSterne)

@@ -53,8 +53,8 @@ class FilterBaseCategory extends AbstractFilter
     public function setSeo($languages)
     {
         if ($this->getValue() > 0) {
-            $oSeo_arr = Shop::DB()->query("
-                    SELECT tseo.cSeo, tseo.kSprache, tkategorie.cName AS cKatName, tkategoriesprache.cName
+            $oSeo_arr = Shop::DB()->query(
+                    "SELECT tseo.cSeo, tseo.kSprache, tkategorie.cName AS cKatName, tkategoriesprache.cName
                         FROM tseo
                             LEFT JOIN tkategorie
                                 ON tkategorie.kKategorie = tseo.kKey

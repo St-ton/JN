@@ -6,8 +6,11 @@
     /*@todo: remove inline styles*/
     ul.no-dropdown {
         list-style: none;
-        margin: 0 0 0 10px;
+        margin: 0;
         padding: 0;
+    }
+    .no-dropdown .btn {
+        border-radius: 4px;
     }
 </style>
 <div id="result-options" class="panel-wrap{if !$show_filters} hidden-xs{/if}">
@@ -77,17 +80,23 @@
                                         {if $filter->getInputType() === $filter::INPUT_SELECT}
                                             {assign var=outerClass value='form-group dropdown filter-type-'|cat:$filter->getClassName()}
                                             {assign var=innerClass value='dropdown-menu'}
+                                            {assign var=itemClass value=''}
+                                        {elseif $filter->getInputType() === $filter::INPUT_BUTTON}
+                                            {assign var=outerClass value='form-group no-dropdown filter-type-'|cat:$filter->getClassName()}
+                                            {assign var=innerClass value='no-dropdown'}
+                                            {assign var=itemClass value='btn btn-default'}
                                         {else}
                                             {assign var=outerClass value='form-group no-dropdown filter-type-'|cat:$filter->getClassName()}
                                             {assign var=innerClass value='no-dropdown'}
+                                            {assign var=itemClass value=''}
                                         {/if}
                                         <div class="{$outerClass}">
-                                            {if $filter->getInputType() !== $filter::INPUT_CHECKBOX}
+                                            {if $filter->getInputType() === $filter::INPUT_SELECT}
                                                 <a href="#" class="btn btn-default dropdown-toggle form-control" data-toggle="dropdown" role="button" aria-expanded="false">
                                                     {$filter->getFrontendName()|escape:'html'} <span class="caret"></span>
                                                 </a>
                                             {/if}
-                                            {include file='snippets/filter/genericFilterItem.tpl' class=$innerClass filter=$filter}
+                                            {include file='snippets/filter/genericFilterItem.tpl' class=$innerClass itemClass=$itemClass filter=$filter}
                                         </div>
                                     {/block}
                                 {/if}

@@ -272,4 +272,14 @@ interface IFilter
      */
     public function getInputType();
 
+    /**
+     * @param string $icon
+     * @return $this
+     */
+    public function setIcon($icon);
+
+    /**
+     * @return string
+     */
+    public function getIcon();
 }

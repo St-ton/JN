@@ -46,6 +46,16 @@ abstract class AbstractFilter implements IFilter
     const INPUT_CHECKBOX = 2;
 
     /**
+     * filter type button
+     */
+    const INPUT_BUTTON = 3;
+
+    /**
+     * @var string
+     */
+    public $icon;
+
+    /**
      * @var bool
      */
     public $isCustom = true;
@@ -531,6 +541,25 @@ abstract class AbstractFilter implements IFilter
     public function setInputType($type)
     {
         $this->inputType = $type;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getIcon()
+    {
+        return $this->icon;
+    }
+
+    /**
+     * @param string $icon
+     * @return $this
+     */
+    public function setIcon($icon)
+    {
+        $this->icon = $icon;
 
         return $this;
     }

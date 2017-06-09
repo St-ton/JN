@@ -259,6 +259,17 @@ class Navigationsfilter
     }
 
     /**
+     * @param IFilter $filter
+     * @return $this
+     */
+    public function setBaseState($filter)
+    {
+        $this->baseState = $filter;
+
+        return $this;
+    }
+
+    /**
      * @return array
      */
     public function getConfig()
@@ -1071,9 +1082,7 @@ class Navigationsfilter
             $state->joins,
             $state->conditions,
             $state->having,
-            $order->orderBy,
-            '',
-            ['tartikel.kArtikel']
+            $order->orderBy
         );
         $keys = Shop::DB()->query($qry, 2);
         $res  = [];

@@ -36,9 +36,12 @@
             this.options = $.extend({}, BasketClass.DEFAULTS, options);
         },
 
-        addToBasket: function($form) {
+        addToBasket: function($form, data) {
             var $main = $form;
-            var data = $form.serializeObject();
+
+            if (typeof data === 'undefined') {
+                data = $form.serializeObject();
+            }
 
             var productId = parseInt(data[this.options.input.id]);
             var quantity = parseFloat(

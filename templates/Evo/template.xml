@@ -120,6 +120,23 @@
                 <Option Value="N">Inaktiv</Option>
             </Setting>
         </Section>
+        <Section Name="Listen- und Gallerieansicht" Key="productlist">
+            <Setting Description="Variationsauswahl anzeigen" Key="variation_select_productlist" Type="select" Value="N">
+                <Option Value="N"><![CDATA[Nein]]></Option>
+                <Option Value="1"><![CDATA[max. Eine]]></Option>
+                <Option Value="2"><![CDATA[max. Zwei]]></Option>
+                <Option Value="3"><![CDATA[max. Drei]]></Option>
+                <Option Value="5"><![CDATA[max. F&uuml;nf]]></Option>
+            </Setting>
+            <Setting Description="Quickview für Artikeldetails" Key="quickview_productlist" Type="select" Value="N">
+                <Option Value="Y">Ja</Option>
+                <Option Value="N">Nein</Option>
+            </Setting>
+            <Setting Description="Hovereffekt für Zusatzinfos (nur Gallerie)" Key="hover_productlist" Type="select" Value="N">
+                <Option Value="Y">Ja</Option>
+                <Option Value="N">Nein</Option>
+            </Setting>
+        </Section>
         <Section Name="Footer-Einstellungen" Key="footer">
             <Setting Description="Newsletter-Anmeldung im Footer" Key="newsletter_footer" Type="select" Value="N">
                 <Option Value="Y">Ja</Option>

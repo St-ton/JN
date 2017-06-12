@@ -29,7 +29,7 @@
         <div id="settings">
             <div class="panel panel-default">
                 <div class="panel-heading"><h3 class="panel-title">Trennzeichen</h3></div>
-                <div class="panel-body">
+                <div class="panel-body table-responsive">
                     <table class="list table">
                     <thead>
                     <tr>

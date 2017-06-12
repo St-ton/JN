@@ -29,44 +29,46 @@
                 <div class="panel-heading">
                     <h3 class="panel-title">{#order#}</h3>
                 </div>
-                <table class="list table">
-                    <thead>
-                    <tr>
-                        <th></th>
-                        <th class="tleft">{#orderNumber#}</th>
-                        <th class="tleft">{#orderCostumer#}</th>
-                        <th class="tleft">{#orderShippingName#}</th>
-                        <th class="tleft">{#orderPaymentName#}</th>
-                        <th>{#orderWawiPickedUp#}</th>
-                        <th>{#orderSum#}</th>
-                        <th class="tright">{#orderDate#}</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {foreach name=bestellungen from=$oBestellung_arr item=oBestellung}
-                        <tr class="tab_bg{$smarty.foreach.bestellungen.iteration%2}">
-                            <td class="check">{if $oBestellung->cAbgeholt === 'Y' && $oBestellung->cZahlungsartName !== 'Amazon Payment' && $oBestellung->oKunde !== null}
-                                <input type="checkbox" name="kBestellung[]" value="{$oBestellung->kBestellung}" />{/if}
-                            </td>
-                            <td>{$oBestellung->cBestellNr}</td>
-                            <td>{if isset($oBestellung->oKunde->cVorname) || isset($oBestellung->oKunde->cNachname) || isset($oBestellung->oKunde->cFirma)}{$oBestellung->oKunde->cVorname} {$oBestellung->oKunde->cNachname}{if isset($oBestellung->oKunde->cFirma) && $oBestellung->oKunde->cFirma|strlen > 0} ({$oBestellung->oKunde->cFirma}){/if}{else}{#noAccount#}{/if}</td>
-                            <td>{$oBestellung->cVersandartName}</td>
-                            <td>{$oBestellung->cZahlungsartName}</td>
-                            <td class="tcenter">{if $oBestellung->cAbgeholt === 'Y'}{#yes#}{else}{#no#}{/if}</td>
-                            <td class="tcenter">{$oBestellung->WarensummeLocalized[0]}</td>
-                            <td class="tright">{$oBestellung->dErstelldatum_de}</td>
+                <div class="table-responsive">
+                    <table class="list table">
+                        <thead>
+                        <tr>
+                            <th></th>
+                            <th class="tleft">{#orderNumber#}</th>
+                            <th class="tleft">{#orderCostumer#}</th>
+                            <th class="tleft">{#orderShippingName#}</th>
+                            <th class="tleft">{#orderPaymentName#}</th>
+                            <th>{#orderWawiPickedUp#}</th>
+                            <th>{#orderSum#}</th>
+                            <th class="tright">{#orderDate#}</th>
                         </tr>
-                    {/foreach}
-                    </tbody>
-                    <tfoot>
-                    <tr>
-                        <td class="check">
-                            <input name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);" />
-                        </td>
-                        <td colspan="8"><label for="ALLMSGS">Alle ausw&auml;hlen</label></td>
-                    </tr>
-                    </tfoot>
-                </table>
+                        </thead>
+                        <tbody>
+                        {foreach name=bestellungen from=$oBestellung_arr item=oBestellung}
+                            <tr class="tab_bg{$smarty.foreach.bestellungen.iteration%2}">
+                                <td class="check">{if $oBestellung->cAbgeholt === 'Y' && $oBestellung->cZahlungsartName !== 'Amazon Payment' && $oBestellung->oKunde !== null}
+                                    <input type="checkbox" name="kBestellung[]" value="{$oBestellung->kBestellung}" />{/if}
+                                </td>
+                                <td>{$oBestellung->cBestellNr}</td>
+                                <td>{if isset($oBestellung->oKunde->cVorname) || isset($oBestellung->oKunde->cNachname) || isset($oBestellung->oKunde->cFirma)}{$oBestellung->oKunde->cVorname} {$oBestellung->oKunde->cNachname}{if isset($oBestellung->oKunde->cFirma) && $oBestellung->oKunde->cFirma|strlen > 0} ({$oBestellung->oKunde->cFirma}){/if}{else}{#noAccount#}{/if}</td>
+                                <td>{$oBestellung->cVersandartName}</td>
+                                <td>{$oBestellung->cZahlungsartName}</td>
+                                <td class="tcenter">{if $oBestellung->cAbgeholt === 'Y'}{#yes#}{else}{#no#}{/if}</td>
+                                <td class="tcenter">{$oBestellung->WarensummeLocalized[0]}</td>
+                                <td class="tright">{$oBestellung->dErstelldatum_de}</td>
+                            </tr>
+                        {/foreach}
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <td class="check">
+                                <input name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);" />
+                            </td>
+                            <td colspan="8"><label for="ALLMSGS">Alle ausw&auml;hlen</label></td>
+                        </tr>
+                        </tfoot>
+                    </table>
+                </div>
                 <div class="panel-footer">
                     <button name="zuruecksetzenBTN" type="submit" class="btn btn-danger"><i class="fa fa-refresh"></i> {#orderPickedUpResetBTN#}</button>
                 </div>

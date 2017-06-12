@@ -5,7 +5,8 @@
     {if $title|strlen > 0}
         <h4>{$title}</h4>
     {/if}
-    
+
+    <div class="table-responsive">
     <table class="table table-hover">
         <thead>
         <tr>
@@ -40,6 +41,7 @@
           {/foreach}
         </tbody>
     </table>
+    </div>
 {/function}
 
 <form name="updateForm" method="post" id="form-update">

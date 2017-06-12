@@ -217,6 +217,7 @@ function getRandomPassword()
 }
 
 /**
+ * @deprecated since 4.06
  * @param string $cSearch
  * @param array $aParam
  * @return array
@@ -264,6 +265,7 @@ function getArticleList($cSearch, $aParam)
 }
 
 /**
+ * @deprecated since 4.06
  * @param string $cArray
  * @return xajaxResponse
  */
@@ -302,6 +304,7 @@ function getArticleListFromString($cArray)
 }
 
 /**
+ * @deprecated since 4.06
  * @param string $cSearch
  * @param array $aParam
  * @return array
@@ -343,6 +346,7 @@ function getManufacturerList($cSearch, $aParam)
 }
 
 /**
+ * @deprecated since 4.06
  * @param string $cArray
  * @return xajaxResponse
  */
@@ -381,6 +385,7 @@ function getManufacturerListFromString($cArray)
 }
 
 /**
+ * @deprecated since 4.06
  * @param string $cSearch
  * @param array $aParam
  * @return array
@@ -421,6 +426,7 @@ function getCategoryList($cSearch, $aParam)
 }
 
 /**
+ * @deprecated since 4.06
  * @param string $cArray
  * @return xajaxResponse
  */
@@ -459,6 +465,7 @@ function getCategoryListFromString($cArray)
 }
 
 /**
+ * @deprecated since 4.06
  * @param string $cSearch
  * @param string $cWrapperID
  * @return xajaxResponse
@@ -491,6 +498,7 @@ function getTagList($cSearch, $cWrapperID)
 }
 
 /**
+ * @deprecated since 4.06
  * @param string $cSearch
  * @param string $cWrapperID
  * @return xajaxResponse
@@ -529,6 +537,7 @@ function getAttributeList($cSearch, $cWrapperID)
 }
 
 /**
+ * @deprecated since 4.06
  * @param string $cSearch
  * @param array $aParam
  * @return xajaxResponse
@@ -667,69 +676,6 @@ function truncateJtllog()
     return $oResponse;
 }
 
-/**
- * @param string $searchString
- * @param array  $kKundeSelected_arr
- * @return xajaxResponse
- */
-function getCustomerList($searchString, $kKundeSelected_arr)
-{
-    global $smarty, $oAccount;
-    $oResponse = new xajaxResponse();
-    if ($oAccount->permission('ORDER_COUPON_VIEW')) {
-        $searchString = utf8_decode($searchString);
-
-        if ($searchString === '') {
-            if (count($kKundeSelected_arr) === 0) {
-                $oKunde_arr = [];
-                $listTitle  = 'Bisher sind keine Kunden ausgew&auml;hlt. Suchen Sie jetzt nach Kunden!';
-            } else {
-                foreach ($kKundeSelected_arr as &$kKundeSelected) {
-                    $kKundeSelected = (int)$kKundeSelected;
-                }
-
-                $oKunde_arr = Shop::DB()->query("
-                    SELECT kKunde
-                        FROM tkunde
-                        WHERE kKunde IN (" . implode(',', $kKundeSelected_arr) . ")", 2
-                );
-                $listTitle  = 'Alle ausgew&auml;hlten Kunden: ' . count($oKunde_arr);
-            }
-        } else {
-            $oKunde_arr = Shop::DB()->executeQueryPrepared("
-                SELECT kKunde
-                    FROM tkunde
-                    WHERE cVorname LIKE :search
-                          OR cMail LIKE :search
-                          OR cOrt LIKE :search
-                          OR cPLZ LIKE :search
-                    LIMIT 100",
-                ['search' => '%' . $searchString . '%'],
-                2
-            );
-            $listTitle  = 'Gefundene Kunden: ' . (count($oKunde_arr) >= 100 ? '>= ' : '') . count($oKunde_arr);
-        }
-
-        $oKundeFull_arr = [];
-        foreach ($oKunde_arr as $oKunde) {
-            $oKundeFull_arr[] = new Kunde($oKunde->kKunde);
-        }
-
-        $customerListHtml = $smarty->assign('cPart', 'customerlist')
-                                   ->assign('oKunde_arr', $oKundeFull_arr)
-                                   ->assign('kKundeSelected_arr', $kKundeSelected_arr)
-                                   ->fetch('tpl_inc/customer_search.tpl');
-
-
-        $oResponse->assign('customer-search-result-list', 'innerHTML', $customerListHtml);
-        $oResponse->assign('customer-list-title', 'innerHTML', $listTitle);
-        $oResponse->script('shownCustomers=[' . implode(',', array_map(function ($e) {
-                return $e->kKunde;
-            }, $oKunde_arr)) . ']');
-    }
-
-    return $oResponse;
-}
 if ($oAccount->getIsAuthenticated()) {
     executeHook(HOOK_TOOLSAJAX_SERVER_ADMIN, ['xajax' => &$xajax]);
 
@@ -758,7 +704,6 @@ if ($oAccount->getIsAuthenticated()) {
     $xajax->registerFunction('saveBannerAreas');
     $xajax->registerFunction('getContentTemplate');
     $xajax->registerFunction('truncateJtllog');
-    $xajax->registerFunction('getCustomerList');
 
     $xajax->processRequest();
     header('Content-Type:text/html;charset=' . JTL_CHARSET . ';');

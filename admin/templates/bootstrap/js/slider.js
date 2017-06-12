@@ -218,18 +218,6 @@ $(document).ready(function() {
         typeChanged($(selected).val());
     }).change();
 
-    $('.nl').find('a').each(function() {
-        var type = $(this).attr('id');
-        $(this).click(function() {
-            show_simple_search(type);
-        });
-    });
-     
-    init_simple_search(function(type, res) {
-        $(".nl input[name='" + type + "_key']").val(res.kKey);
-        $(".nl input[name='" + type + "_name']").val(res.cName);
-    });
-
 });
 
 function typeChanged(type) {

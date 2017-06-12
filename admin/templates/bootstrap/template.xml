@@ -42,6 +42,7 @@
             <File Path="js/masonry.pkgd.min.js"/>
             <File Path="js/moment.js"/>
             <File Path="js/daterangepicker.js"/>
+            <File Path="js/searchpicker.js"/>
             <File Path="js/typeahead.bundle.js"/>
         </JS>
     </Minify>

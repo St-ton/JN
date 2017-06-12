@@ -4,10 +4,15 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+/**
+ * Update and return the availability of a redirect
+ *
+ * @param int $kRedirect
+ * @return string 'y' if the redirect is available 'n' if not
+ */
 function updateRedirectState($kRedirect)
 {
-    $url = Shop::DB()->select('tredirect', 'kRedirect', $kRedirect, null, null, null, null, false, 'cToUrl')->cToUrl;
-
+    $url        = Shop::DB()->select('tredirect', 'kRedirect', $kRedirect, null, null, null, null, false, 'cToUrl')->cToUrl;
     $cAvailable = $url !== '' && Redirect::checkAvailability($url) ? 'y' : 'n';
 
     Shop::DB()->update('tredirect', 'kRedirect', $kRedirect, (object)['cAvailable' => $cAvailable]);

@@ -26,6 +26,7 @@ if (isset($_SERVER['REQUEST_URI'])) {
 $xajax = new xajax($url);
 
 /**
+ * @deprecated since 4.06
  * @return xajaxResponse
  */
 function reloadAdminLoginCaptcha()
@@ -40,6 +41,7 @@ function reloadAdminLoginCaptcha()
 }
 
 /**
+ * @deprecated since 4.06
  * @param float  $fPreisNetto
  * @param float  $fPreisBrutto
  * @param string $cTargetID
@@ -55,6 +57,7 @@ function getCurrencyConversionAjax($fPreisNetto, $fPreisBrutto, $cTargetID)
 }
 
 /**
+ * @deprecated since 4.06
  * @param float  $fPreisNetto
  * @param float  $fPreisBrutto
  * @param string $cTooltipID
@@ -70,6 +73,7 @@ function setCurrencyConversionAjaxTooltip($fPreisNetto, $fPreisBrutto, $cTooltip
 }
 
 /**
+ * @deprecated since 4.06
  * @param int    $kWidget
  * @param string $cContainer
  * @param int    $nPos
@@ -84,6 +88,7 @@ function setWidgetPositionAjax($kWidget, $cContainer, $nPos)
 }
 
 /**
+ * @deprecated since 4.06
  * @param int $kWidget
  * @return xajaxResponse
  */
@@ -96,6 +101,7 @@ function closeWidgetAjax($kWidget)
 }
 
 /**
+ * @deprecated since 4.06
  * @param int $kWidget
  * @return xajaxResponse
  */
@@ -108,6 +114,7 @@ function addWidgetAjax($kWidget)
 }
 
 /**
+ * @deprecated since 4.06
  * @param int  $kWidget
  * @param bool $bExpand
  * @return xajaxResponse
@@ -124,6 +131,7 @@ function expandWidgetAjax($kWidget, $bExpand)
 }
 
 /**
+ * @deprecated since 4.06
  * @return xajaxResponse
  */
 function getAvailableWidgetsAjax()
@@ -144,6 +152,7 @@ function getAvailableWidgetsAjax()
 }
 
 /**
+ * @deprecated since 4.06
  * @param string $cURL
  * @param string $cDataName
  * @param string $cTpl
@@ -175,6 +184,7 @@ function getRemoteDataAjax($cURL, $cDataName, $cTpl, $cWrapperID, $cPost = null,
 }
 
 /**
+ * @deprecated since 4.06
  * @param string $cURL
  * @param string $cDataName
  * @param string $cTpl
@@ -195,6 +205,7 @@ function getRemoteDataApiAjax($cURL, $cDataName, $cTpl, $cWrapperID)
 }
 
 /**
+ * @deprecated since 4.06
  * @return xajaxResponse
  */
 function getRandomPassword()
@@ -551,6 +562,7 @@ function getLinkList($cSearch, $aParam)
 /**
  * Auswahlassistent
  *
+ * @deprecated since 4.06
  * @param array $kMM_arr
  * @param int   $kSprache
  * @return xajaxResponse
@@ -590,6 +602,7 @@ function getMerkmalWerteAA($kMM_arr, $kSprache)
 }
 
 /**
+ * @deprecated since 4.06
  * @param string $cData
  * @return xajaxResponse
  */
@@ -617,6 +630,7 @@ function saveBannerAreas($cData)
 }
 
 /**
+ * @deprecated since 4.06
  * @param string $cTemplate
  * @return xajaxResponse
  */
@@ -638,6 +652,7 @@ function getContentTemplate($cTemplate)
 }
 
 /**
+ * @deprecated since 4.06
  * @return xajaxResponse
  */
 function truncateJtllog()

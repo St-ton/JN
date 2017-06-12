@@ -856,7 +856,7 @@ function plausiNeukundenKupon()
 
         if (empty($oBestellung)) {
             $NeukundenKupons = (new Kupon())->getNewCustomerCoupon();
-            if ($NeukundenKupons !== false) {
+            if (!empty($NeukundenKupons)) {
                 $verwendet = Shop::DB()->select('tkuponneukunde', 'cEmail', $_SESSION['Kunde']->cMail);
                 $verwendet = !empty($verwendet) ? $verwendet->cVerwendet : null;
                 foreach ($NeukundenKupons as $NeukundenKupon) {
@@ -2640,7 +2640,7 @@ function getKundendaten($post, $kundenaccount, $htmlentities = 1)
         }
     }
     if (preg_match('/^\d{2}\.\d{2}\.(\d{4})$/', $Kunde->dGeburtstag)) {
-        $Kunde->dGeburtstag = convertDate2German($Kunde->dGeburtstag);
+        $Kunde->dGeburtstag = DateTime::createFromFormat('d.m.Y', $Kunde->dGeburtstag)->format('Y-m-d');
     }
     $Kunde->angezeigtesLand = ISO2land($Kunde->cLand);
     if (!empty($Kunde->cBundesland)) {

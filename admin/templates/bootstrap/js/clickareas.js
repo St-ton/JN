@@ -19,7 +19,7 @@
             $(options.save).click(function() {
                saveEditor();
                var data = JSON.stringify(options.data);
-               xajax_saveBannerAreas(data);
+               ioCall('saveBannerAreas', [data]);
                showInfo('Zonen wurden erfolgreich gespeichert');
                return false;
             });

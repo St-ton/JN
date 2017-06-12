@@ -2967,3 +2967,12 @@ h2 .btn-group {
         color: #fff;
     }
 }
+
+.tt-menu {
+    max-height: 256px;
+    overflow-y: auto;
+}
+
+.tt-suggestion {
+    cursor: pointer;
+}

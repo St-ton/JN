@@ -132,123 +132,126 @@
                     {$jtl_token}
                     <input type="hidden" name="aData[action]" value="save">
                     {if $oRedirect_arr|@count > 0}
-                        <table class="list table">
-                            <thead>
-                            <tr>
-                                <th class="tcenter" style="width:24px"></th>
-                                <th class="tleft" style="width:35%;">
-                                    URL {call sortControls oPagination=$oPagination nSortBy=0}
-                                </th>
-                                <th class="tleft">
-                                    Wird weitergeleitet nach {call sortControls oPagination=$oPagination nSortBy=1}
-                                </th>
-                                <th class="tright" style="width:85px">
-                                    Aufrufe {call sortControls oPagination=$oPagination nSortBy=2}
-                                </th>
-                                <th class="tcenter">Optionen</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {foreach from=$oRedirect_arr item="oRedirect"}
+                        <div class="table-responsive">
+                            <table class="list table">
+                                <thead>
                                 <tr>
-                                    {assign var=redirectCount value=$oRedirect->nCount}
-                                    <td class="tcenter" style="vertical-align:middle;">
-                                        <input type="checkbox"  name="aData[redirect][{$oRedirect->kRedirect}][active]" value="1" />
-                                    </td>
-                                    <td class="tleft" style="vertical-align:middle;">
-                                        <a href="{$oRedirect->cFromUrl}" target="_blank">{$oRedirect->cFromUrl|truncate:52:"..."}</a>
-                                    </td>
-                                    <td class="tleft">
-                                        <div id="frm_{$oRedirect->kRedirect}" class="input-group input-group-sm">
-                                            <span class="input-group-addon alert-info state-checking"><i class="fa fa-spinner fa-pulse"></i></span>
-                                            <span class="input-group-addon alert-success state-available" style="display:none;"><i class="fa fa-check"></i></span>
-                                            <span class="input-group-addon alert-danger state-unavailable" style="display:none;"><i class="fa fa-warning"></i></span>
-                                            <input id="url_{$oRedirect->kRedirect}"
-                                                   name="aData[redirect][{$oRedirect->kRedirect}][url]" type="text"
-                                                   class="form-control cToUrl" autocomplete="off"
-                                                   value="{$oRedirect->cToUrl}"
-                                                   onblur="check_url('{$oRedirect->kRedirect}', this.value);">
-                                            <script>
-                                                enableTypeahead(
-                                                    '#url_{$oRedirect->kRedirect}', 'getSeos',
-                                                    function (item) { return '/' + item.cSeo; },
-                                                    function (item) {
-                                                        var type = '';
-                                                        switch(item.cKey) {
-                                                            case 'kLink': type = 'Seite'; break;
-                                                            case 'kNews': type = 'News'; break;
-                                                            case 'kNewsKategorie': type = 'News-Kategorie'; break;
-                                                            case 'kNewsMonatsUebersicht': type = 'News-Montas&uuml;bersicht'; break;
-                                                            case 'kUmfrage': type = 'Umfrage'; break;
-                                                            case 'kArtikel': type = 'Artikel'; break;
-                                                            case 'kKategorie': type = 'Kategorie'; break;
-                                                            case 'kHersteller': type = 'Hersteller'; break;
-                                                            case 'kMerkmalWert': type = 'Merkmal-Wert'; break;
-                                                            case 'suchspecial': type = 'Suchspecial'; break;
-                                                            default: type = 'Anderes'; break;
-                                                        }
-                                                        return '<span>/' + item.cSeo + ' <small class="text-muted">- ' + type + '</small></span>';
-                                                    },
-                                                    function (e) { check_url('{$oRedirect->kRedirect}', e.target.value); }
-                                                );
-                                            </script>
-                                        </div>
-                                    </td>
-                                    <td class="text-right" style="vertical-align:middle;"><span class="badge">{$redirectCount}</span></td>
-                                    <td class="tcenter">
-                                        {if $redirectCount > 0}
-                                            <a class="btn btn-sm btn-default" data-toggle="collapse" href="#collapse-{$oRedirect->kRedirect}">Details</a>
-                                        {/if}
-                                    </td>
+                                    <th class="tcenter" style="width:24px"></th>
+                                    <th class="tleft" style="width:35%;">
+                                        URL {call sortControls oPagination=$oPagination nSortBy=0}
+                                    </th>
+                                    <th class="tleft">
+                                        Wird weitergeleitet nach {call sortControls oPagination=$oPagination nSortBy=1}
+                                    </th>
+                                    <th class="tright" style="width:85px">
+                                        Aufrufe {call sortControls oPagination=$oPagination nSortBy=2}
+                                    </th>
+                                    <th class="tcenter">Optionen</th>
                                 </tr>
-                                {if $redirectCount > 0}
-                                    <tr class="collapse" id="collapse-{$oRedirect->kRedirect}">
-                                        <td></td>
-                                        <td colspan="5">
-                                            <table class="innertable table">
-                                                <thead>
-                                                <tr>
-                                                    <th class="tleft">Verweis</th>
-                                                    <th class="tcenter" width="200">Datum</th>
-                                                </tr>
-                                                </thead>
-                                                <tbody>
-                                                {foreach from=$oRedirect->oRedirectReferer_arr item="oRedirectReferer"}
-                                                    <tr>
-                                                        <td class="tleft">
-                                                            {if $oRedirectReferer->kBesucherBot > 0}
-                                                                {if $oRedirectReferer->cBesucherBotName|strlen > 0}
-                                                                    {$oRedirectReferer->cBesucherBotName}
-                                                                {else}
-                                                                    {$oRedirectReferer->cBesucherBotAgent}
-                                                                {/if}
-                                                                (Bot)
-                                                            {elseif $oRedirectReferer->cRefererUrl|strlen > 0}
-                                                                <a href="{$oRedirectReferer->cRefererUrl}" target="_blank">{$oRedirectReferer->cRefererUrl}</a>
-                                                            {else}
-                                                                <i>Direkteinstieg</i>
-                                                            {/if}
-                                                        </td>
-                                                        <td class="tcenter">
-                                                            {$oRedirectReferer->dDate|date_format:"%d.%m.%Y %H:%M:%S"}
-                                                        </td>
-                                                    </tr>
-                                                {/foreach}
-                                                </tbody>
-                                            </table>
+                                </thead>
+                                <tbody>
+                                {foreach from=$oRedirect_arr item="oRedirect"}
+                                    <tr>
+                                        {assign var=redirectCount value=$oRedirect->nCount}
+                                        <td class="tcenter" style="vertical-align:middle;">
+                                            <input type="checkbox"  name="aData[redirect][{$oRedirect->kRedirect}][active]" value="1" />
+                                        </td>
+                                        <td class="tleft" style="vertical-align:middle;">
+                                            <a href="{$oRedirect->cFromUrl}" target="_blank">{$oRedirect->cFromUrl|truncate:52:"..."}</a>
+                                        </td>
+                                        <td class="tleft">
+                                            <div id="frm_{$oRedirect->kRedirect}" class="input-group input-group-sm">
+                                                <span class="input-group-addon alert-info state-checking"><i class="fa fa-spinner fa-pulse"></i></span>
+                                                <span class="input-group-addon alert-success state-available" style="display:none;"><i class="fa fa-check"></i></span>
+                                                <span class="input-group-addon alert-danger state-unavailable" style="display:none;"><i class="fa fa-warning"></i></span>
+                                                <input id="url_{$oRedirect->kRedirect}"
+                                                       name="aData[redirect][{$oRedirect->kRedirect}][url]" type="text"
+                                                       class="form-control cToUrl" autocomplete="off"
+                                                       value="{$oRedirect->cToUrl}"
+                                                       onblur="check_url('{$oRedirect->kRedirect}', this.value);">
+                                                <script>
+                                                    enableTypeahead(
+                                                        '#url_{$oRedirect->kRedirect}', 'getSeos',
+                                                        function (item) { return '/' + item.cSeo; },
+                                                        function (item) {
+                                                            var type = '';
+                                                            switch(item.cKey) {
+                                                                case 'kLink': type = 'Seite'; break;
+                                                                case 'kNews': type = 'News'; break;
+                                                                case 'kNewsKategorie': type = 'News-Kategorie'; break;
+                                                                case 'kNewsMonatsUebersicht': type = 'News-Montas&uuml;bersicht'; break;
+                                                                case 'kUmfrage': type = 'Umfrage'; break;
+                                                                case 'kArtikel': type = 'Artikel'; break;
+                                                                case 'kKategorie': type = 'Kategorie'; break;
+                                                                case 'kHersteller': type = 'Hersteller'; break;
+                                                                case 'kMerkmalWert': type = 'Merkmal-Wert'; break;
+                                                                case 'suchspecial': type = 'Suchspecial'; break;
+                                                                default: type = 'Anderes'; break;
+                                                            }
+                                                            return '<span>/' + item.cSeo + ' <small class="text-muted">- ' + type + '</small></span>';
+                                                        },
+                                                        function (e) { check_url('{$oRedirect->kRedirect}', e.target.value); }
+                                                    );
+                                                </script>
+                                            </div>
+                                        </td>
+                                        <td class="text-right" style="vertical-align:middle;"><span class="badge">{$redirectCount}</span></td>
+                                        <td class="tcenter">
+                                            {if $redirectCount > 0}
+                                                <a class="btn btn-sm btn-default" data-toggle="collapse" href="#collapse-{$oRedirect->kRedirect}">Details</a>
+                                            {/if}
                                         </td>
                                     </tr>
-                                {/if}
-                            {/foreach}
-                            </tbody>
-                            <tfoot>
-                            <tr>
-                                <td colspan="5">
-                                    <label for="ALLMSGS"><input name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);" />&nbsp; Alle ausw&auml;hlen</label>
-                                </td>
-                            </tr>
-                            </tfoot>
-                        </table>
+
+                                    {if $redirectCount > 0}
+                                        <tr class="collapse" id="collapse-{$oRedirect->kRedirect}">
+                                            <td></td>
+                                            <td colspan="5">
+                                                <table class="innertable table">
+                                                    <thead>
+                                                    <tr>
+                                                        <th class="tleft">Verweis</th>
+                                                        <th class="tcenter" width="200">Datum</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    {foreach from=$oRedirect->oRedirectReferer_arr item="oRedirectReferer"}
+                                                        <tr>
+                                                            <td class="tleft">
+                                                                {if $oRedirectReferer->kBesucherBot > 0}
+                                                                    {if $oRedirectReferer->cBesucherBotName|strlen > 0}
+                                                                        {$oRedirectReferer->cBesucherBotName}
+                                                                    {else}
+                                                                        {$oRedirectReferer->cBesucherBotAgent}
+                                                                    {/if}
+                                                                    (Bot)
+                                                                {elseif $oRedirectReferer->cRefererUrl|strlen > 0}
+                                                                    <a href="{$oRedirectReferer->cRefererUrl}" target="_blank">{$oRedirectReferer->cRefererUrl}</a>
+                                                                {else}
+                                                                    <i>Direkteinstieg</i>
+                                                                {/if}
+                                                            </td>
+                                                            <td class="tcenter">
+                                                                {$oRedirectReferer->dDate|date_format:"%d.%m.%Y %H:%M:%S"}
+                                                            </td>
+                                                        </tr>
+                                                    {/foreach}
+                                                    </tbody>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    {/if}
+                                {/foreach}
+                                </tbody>
+                                <tfoot>
+                                <tr>
+                                    <td colspan="5">
+                                        <label for="ALLMSGS"><input name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);" />&nbsp; Alle ausw&auml;hlen</label>
+                                    </td>
+                                </tr>
+                                </tfoot>
+                            </table>
+                        </div>
                     {elseif $nRedirectCount > 0}
                         <div class="alert alert-info" role="alert">{#noFilterResults#}</div>
                     {else}

@@ -1,22 +1,22 @@
 <li class="list-group-item {if $oBox->kContainer > 0}boxRowContainer{/if}">
     <div class="row">
         {if $oBox->bContainer}
-            <div class="col-xs-8{if $oBox->bAktiv == 0} inactive text-muted{/if}">
+            <div class="col-sm-8 col-xs-12{if $oBox->bAktiv == 0} inactive text-muted{/if}">
                 <b>Container #{$oBox->kBox}</b>
             </div>
         {else}
-            <div class="col-xs-3{if $oBox->bAktiv == 0} inactive text-muted{/if}
+            <div class="col-sm-3 col-xs-4{if $oBox->bAktiv == 0} inactive text-muted{/if}
                         {if $oBox->kContainer > 0}boxSubName{/if}">
                 {$oBox->cTitel}
             </div>
-            <div class="col-xs-2{if $oBox->bAktiv == 0} inactive text-muted{/if}">
+            <div class="col-sm-2 col-xs-3{if $oBox->bAktiv == 0} inactive text-muted{/if}">
                 {$oBox->eTyp|ucfirst}
             </div>
-            <div class="col-xs-3{if $oBox->bAktiv == 0} inactive text-muted{/if}">
+            <div class="col-sm-3 col-xs-4{if $oBox->bAktiv == 0} inactive text-muted{/if}">
                 {$oBox->cName}
             </div>
         {/if}
-        <div class="col-xs-2">
+        <div class="col-sm-2 col-xs-6 {if $oBox->kContainer > 0}boxSubName{/if}">
             <input type="hidden" name="box[]" value="{$oBox->kBox}">
             {if $nPage == 0}
                 {if $oBox->bAktiv == 1}
@@ -29,7 +29,7 @@
             <input class="form-control text-right" type="number" size="3" name="sort[]" value="{$oBox->nSort}"
                    autocomplete="off" id="{$oBox->nSort}">
         </div>
-        <div class="col-xs-2 btn-group">
+        <div class="col-sm-2 col-xs-6 btn-group">
             {if $nPage == 0}
                 {if $oBox->bAktiv == 0}
                     <input type="hidden" name="box_show" value="0" />

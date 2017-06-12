@@ -14,83 +14,85 @@
                 {$jtl_token}
                 <input type="hidden" name="cKuponTyp" id="cKuponTyp" value="{$cKuponTyp}">
                 {if $oKupon_arr|@count > 0}
-                    <table class="list table">
-                        <thead>
-                            <tr>
-                                <th title="Aktiv"></th>
-                                <th></th>
-                                <th>{#name#} {call sortControls oPagination=$oPagination nSortBy=0}</th>
-                                {if $cKuponTyp === 'standard' || $cKuponTyp === 'neukundenkupon'}<th>{#value#}</th>{/if}
-                                {if $cKuponTyp === 'standard' || $cKuponTyp === 'versandkupon'}
-                                    <th>{#code#} {call sortControls oPagination=$oPagination nSortBy=1}</th>
-                                {/if}
-                                <th>{#mbw#}</th>
-                                <th>{#curmaxusage#} {call sortControls oPagination=$oPagination nSortBy=2}</th>
-                                <th>{#customerGroup#}</th>
-                                <th>{#restrictions#}</th>
-                                <th>{#restrictionsManufacturers#}</th>
-                                <th>{#validityPeriod#}</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {foreach $oKupon_arr as $oKupon}
-                                <tr{if $oKupon->cAktiv === 'N'} class="text-danger"{/if}>
-                                    <td>{if $oKupon->cAktiv === 'N'}<i class="fa fa-times"></i>{/if}</td>
-                                    <td><input type="checkbox" name="kKupon_arr[]" id="kupon-{$oKupon->kKupon}" value="{$oKupon->kKupon}"></td>
-                                    <td>
-                                        <label for="kupon-{$oKupon->kKupon}">
-                                            {$oKupon->cName}
-                                        </label>
-                                    </td>
-                                    {if $cKuponTyp === 'standard' || $cKuponTyp === 'neukundenkupon'}
-                                        <td>
-                                            {if $oKupon->cWertTyp === 'festpreis'}
-                                                <span data-toggle="tooltip" data-placement="right" data-html="true"
-                                                      title='{getCurrencyConversionSmarty fPreisBrutto=$oKupon->fWert}'>
-                                                    {$oKupon->cLocalizedValue}
-                                                </span>
-                                            {else}
-                                                {$oKupon->fWert} %
-                                            {/if}
-                                        </td>
+                    <div class="table-responsive">
+                        <table class="list table">
+                            <thead>
+                                <tr>
+                                    <th title="Aktiv"></th>
+                                    <th></th>
+                                    <th>{#name#} {call sortControls oPagination=$oPagination nSortBy=0}</th>
+                                    {if $cKuponTyp === 'standard' || $cKuponTyp === 'neukundenkupon'}<th>{#value#}</th>{/if}
+                                    {if $cKuponTyp === 'standard' || $cKuponTyp === 'versandkupon'}
+                                        <th>{#code#} {call sortControls oPagination=$oPagination nSortBy=1}</th>
                                     {/if}
-                                    {if $cKuponTyp === 'standard' || $cKuponTyp === 'versandkupon'}<td>{$oKupon->cCode}</td>{/if}
-                                    <td>
-                                        <span data-toggle="tooltip" data-placement="right" data-html="true"
-                                              title='{getCurrencyConversionSmarty fPreisBrutto=$oKupon->fMindestbestellwert}'>
-                                            {$oKupon->cLocalizedMbw}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        {$oKupon->nVerwendungenBisher}
-                                        {if $oKupon->nVerwendungen > 0}
-                                            von {$oKupon->nVerwendungen}</td>
-                                        {/if}
-                                    <td>{$oKupon->cKundengruppe}</td>
-                                    <td>{$oKupon->cArtikelInfo}</td>
-                                    <td>{$oKupon->cHerstellerInfo}</td>
-                                    <td>
-                                        {#from#}: {$oKupon->cGueltigAbShort}<br>
-                                        {#to#}: {$oKupon->cGueltigBisShort}
-                                    </td>
-                                    <td>
-                                        <a href="kupons.php?kKupon={$oKupon->kKupon}&token={$smarty.session.jtl_token}"
-                                           class="btn btn-default" title="{#modify#}">
-                                            <i class="fa fa-edit"></i>
-                                        </a>
-                                    </td>
+                                    <th>{#mbw#}</th>
+                                    <th>{#curmaxusage#} {call sortControls oPagination=$oPagination nSortBy=2}</th>
+                                    <th>{#customerGroup#}</th>
+                                    <th>{#restrictions#}</th>
+                                    <th>{#restrictionsManufacturers#}</th>
+                                    <th>{#validityPeriod#}</th>
+                                    <th></th>
                                 </tr>
-                            {/foreach}
-                        </tbody>
-                        <tfoot>
-                            <tr>
-                                <td></td>
-                                <td><input type="checkbox" name="ALLMSGS" id="ALLMSGS_{$cKuponTyp}" onclick="AllMessages(this.form);"></td>
-                                <td colspan="9"><label for="ALLMSGS_{$cKuponTyp}">Alle ausw&auml;hlen</label></td>
-                            </tr>
-                        </tfoot>
-                    </table>
+                            </thead>
+                            <tbody>
+                                {foreach $oKupon_arr as $oKupon}
+                                    <tr{if $oKupon->cAktiv === 'N'} class="text-danger"{/if}>
+                                        <td>{if $oKupon->cAktiv === 'N'}<i class="fa fa-times"></i>{/if}</td>
+                                        <td><input type="checkbox" name="kKupon_arr[]" id="kupon-{$oKupon->kKupon}" value="{$oKupon->kKupon}"></td>
+                                        <td>
+                                            <label for="kupon-{$oKupon->kKupon}">
+                                                {$oKupon->cName}
+                                            </label>
+                                        </td>
+                                        {if $cKuponTyp === 'standard' || $cKuponTyp === 'neukundenkupon'}
+                                            <td>
+                                                {if $oKupon->cWertTyp === 'festpreis'}
+                                                    <span data-toggle="tooltip" data-placement="right" data-html="true"
+                                                          title='{getCurrencyConversionSmarty fPreisBrutto=$oKupon->fWert}'>
+                                                        {$oKupon->cLocalizedValue}
+                                                    </span>
+                                                {else}
+                                                    {$oKupon->fWert} %
+                                                {/if}
+                                            </td>
+                                        {/if}
+                                        {if $cKuponTyp === 'standard' || $cKuponTyp === 'versandkupon'}<td>{$oKupon->cCode}</td>{/if}
+                                        <td>
+                                            <span data-toggle="tooltip" data-placement="right" data-html="true"
+                                                  title='{getCurrencyConversionSmarty fPreisBrutto=$oKupon->fMindestbestellwert}'>
+                                                {$oKupon->cLocalizedMbw}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            {$oKupon->nVerwendungenBisher}
+                                            {if $oKupon->nVerwendungen > 0}
+                                                von {$oKupon->nVerwendungen}</td>
+                                            {/if}
+                                        <td>{$oKupon->cKundengruppe}</td>
+                                        <td>{$oKupon->cArtikelInfo}</td>
+                                        <td>{$oKupon->cHerstellerInfo}</td>
+                                        <td>
+                                            {#from#}: {$oKupon->cGueltigAbShort}<br>
+                                            {#to#}: {$oKupon->cGueltigBisShort}
+                                        </td>
+                                        <td>
+                                            <a href="kupons.php?kKupon={$oKupon->kKupon}&token={$smarty.session.jtl_token}"
+                                               class="btn btn-default" title="{#modify#}">
+                                                <i class="fa fa-edit"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {/foreach}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td></td>
+                                    <td><input type="checkbox" name="ALLMSGS" id="ALLMSGS_{$cKuponTyp}" onclick="AllMessages(this.form);"></td>
+                                    <td colspan="9"><label for="ALLMSGS_{$cKuponTyp}">Alle ausw&auml;hlen</label></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
                 {elseif $nKuponCount > 0}
                     <div class="alert alert-info" role="alert">{#noFilterResults#}</div>
                 {else}

@@ -119,9 +119,9 @@
 
     function updateIndex() {
         $('[data-callback]').attr('disabled', true);
-        ajaxCall('plz_ort_import.php', {action: 'updateIndex', token: jtlToken}, function(result) {
-            if (result && result.data) {
-                $('#importForm .panel-body').html(result.data.listHTML);
+        ioCall('plzimportActionUpdateIndex', [], function(result) {
+            if (result) {
+                $('#importForm .panel-body').html(result.listHTML);
             }
             $('[data-callback]').attr('disabled', false);
         });
@@ -129,16 +129,16 @@
 
     function refreshNotify() {
         if (running) {
-            ajaxCall('plz_ort_import.php', {action: 'callStatus', token: jtlToken}, function(result) {
-                if (result && result.data && result.data.running) {
+            ioCall('plzimportActionCallStatus', [], function(result) {
+                if (result && result.running) {
                     var offsetTick = new Date().getTime() - startTick,
-                        perItem    = Math.floor(offsetTick / result.data.step),
-                        eta        = Math.max(0, Math.ceil((100 - result.data.step) * perItem)),
+                        perItem    = Math.floor(offsetTick / result.step),
+                        eta        = Math.max(0, Math.ceil((100 - result.step) * perItem)),
                         readable   = shortGermanHumanizer(eta);
 
                     notify.update({
-                        progress: result.data.step,
-                        message: result.data.status + ' (' + readable + ' verbleiben)'
+                        progress: result.step,
+                        message: result.status + ' (' + readable + ' verbleiben)'
                     });
 
                     window.setTimeout(refreshNotify, 1500);
@@ -151,21 +151,22 @@
         }
     }
 
-    function startImport(ref, impAction) {
+    function startImport(ref, part) {
         $('[data-callback]').attr('disabled', true);
+        part      = part || '';
         running   = true;
         startTick = new Date();
         notify    = showImportNotify('PLZ-Orte Import', 'Import wird gestartet...');
 
         window.setTimeout(refreshNotify, 1500);
-        ajaxCall('plz_ort_import.php', {action: impAction, target: ref, token: jtlToken}, function(result) {
+        ioCall('plzimportActionDoImport', [ref, part], function(result) {
             stopImport();
             updateIndex();
             notify.update({
                 progress: 100,
                 message: '&nbsp;',
-                type: result && result.data ? result.data.type : 'danger',
-                title: result && result.data ? result.data.message : 'Ups...'
+                type: result ? result.type : 'danger',
+                title: result ? result.message : 'Ups...'
             });
             window.setTimeout(function(){
                 notify.close();
@@ -175,24 +176,24 @@
 
     function startBackup(ref) {
         var $modalWait = showModalWait();
-        ajaxCall('plz_ort_import.php', {action: 'loadBackup', target: ref, token: jtlToken}, function(result) {
+        ioCall('plzimportActionRestoreBackup', [ref], function(result) {
             $modalWait.modal('hide');
             updateIndex();
         });
     }
 
     function checkRunning() {
-        ajaxCall('plz_ort_import.php', {action: 'checkStatus', token: jtlToken}, function(result) {
-            if (result && result.data) {
-                if (result.data.running) {
+        ioCall('plzimportActionCheckStatus', [], function(result) {
+            if (result) {
+                if (result.running) {
                     $('[data-callback]').attr('disabled', true);
                     running   = true;
                     startTick = new Date();
-                    startTick.setTime(result.data.start);
+                    startTick.setTime(result.start);
                     notify = showImportNotify('PLZ-Orte Import', 'Import wird gestartet...');
 
                     refreshNotify();
-                } else if (result.data.tmp > 0) {
+                } else if (result.tmp > 0) {
                     plz_ort_import_exists();
                 }
             }
@@ -210,12 +211,12 @@
 
     function plz_ort_import_delete_temp() {
         notify = showImportNotify('PLZ-Orte Import', 'Tempor&auml;rer Import wird gel&ouml;scht...');
-        ajaxCall('plz_ort_import.php', {action: 'delTempImport', token: jtlToken}, function(result) {
+        ioCall('plzimportActionDelTempImport', [], function(result) {
             notify.update({
                 progress: 100,
                 message: '&nbsp;',
-                type: result && result.data ? result.data.type : 'danger',
-                title: result && result.data ? result.data.message : 'Ups...'
+                type: result ? result.type : 'danger',
+                title: result ? result.message : 'Ups...'
             });
             window.setTimeout(function(){
                 notify.close();
@@ -226,10 +227,10 @@
     function plz_ort_import_new($el) {
         showBackdrop();
         var $modal = $('#modalSelect');
-        if ($modal.length == 0) {
+        if ($modal.length === 0) {
             var $modalWait = showModalWait();
-            ajaxCall('plz_ort_import.php', {action: 'loadAvailableDownloads', token: jtlToken}, function(result) {
-                $modal = $(result.data.dialogHTML);
+            ioCall('plzimportActionLoadAvailableDownloads', [], function (result) {
+                $modal = $(result.dialogHTML);
                 $modal.on('hide.bs.modal', function () {
                     hideBackdrop();
                 });
@@ -245,12 +246,12 @@
     function plz_ort_import($el) {
         var ref = $el.data('ref');
         $('#modalSelect').modal('hide');
-        startImport(ref, 'doImport');
+        startImport(ref);
     }
 
     function plz_ort_import_refresh($el) {
         var ref = $el.data('ref');
-        startImport(ref, 'doLocalImport');
+        startImport(ref, 'import');
     }
 
     function plz_ort_import_reset($el) {

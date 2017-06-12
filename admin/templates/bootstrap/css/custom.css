@@ -2933,3 +2933,12 @@ h2 .btn-group {
 .template-favicon-upload .file-input {
     overflow-x: hidden;
 }
+
+.tt-menu {
+    max-height: 256px;
+    overflow-y: auto;
+}
+
+.tt-suggestion {
+    cursor: pointer;
+}

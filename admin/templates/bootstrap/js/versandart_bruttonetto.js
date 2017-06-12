@@ -8,15 +8,22 @@ function setzeNetto(elem, targetElemID, fSteuersatz)
    document.getElementById(targetElemID).value = Math.round(Number(elem.value) * (100 / (100 + Number(fSteuersatz))) * 100) / 100;
 }
 
+/**
+ * @deprecated since 4.06
+ * @param cTargetID
+ * @param elem
+ * @param targetElemID
+ * @param fSteuersatz
+ */
 function setzeBruttoAjax(cTargetID, elem, targetElemID, fSteuersatz)
 {
    offset = $(elem).offset();
    if ($('#' + cTargetID).length > 0)
       $('#' + cTargetID).fadeIn('fast');
-   
-	setzeBrutto(elem, targetElemID, fSteuersatz);
-	xajax_getCurrencyConversionAjax(parseFloat(elem.value), 0, cTargetID);
-   
+
+   setzeBrutto(elem, targetElemID, fSteuersatz);
+   ioCall('getCurrencyConversion', [parseFloat(elem.value), 0, cTargetID]);
+
    $('#' + cTargetID).css({
       position: 'absolute',
       top: offset.top + $(elem).outerHeight(),
@@ -29,14 +36,21 @@ function setzeBruttoAjax(cTargetID, elem, targetElemID, fSteuersatz)
    });
 }
 
+/**
+ * @deprecated since 4.06
+ * @param cTargetID
+ * @param elem
+ * @param targetElemID
+ * @param fSteuersatz
+ */
 function setzeNettoAjax(cTargetID, elem, targetElemID, fSteuersatz)
 {   
    offset = $(elem).offset();
    if ($('#' + cTargetID).length > 0)
       $('#' + cTargetID).fadeIn('fast');
-   
-	setzeNetto(elem, targetElemID, fSteuersatz);
-	xajax_getCurrencyConversionAjax(0, parseFloat(elem.value), cTargetID);
+
+    setzeNetto(elem, targetElemID, fSteuersatz);
+    ioCall('getCurrencyConversion', [0, parseFloat(elem.value), cTargetID]);
    
    $('#' + cTargetID).css({
       position: 'absolute',
@@ -52,18 +66,20 @@ function setzeNettoAjax(cTargetID, elem, targetElemID, fSteuersatz)
 
 function setzePreisAjax(bNetto, cTargetID, elem)
 {
-   if(bNetto)
-      xajax_getCurrencyConversionAjax(parseFloat(elem.value), 0, cTargetID);
-   else
-      xajax_getCurrencyConversionAjax(0, parseFloat(elem.value), cTargetID);
+    if (bNetto) {
+        ioCall('getCurrencyConversion', [parseFloat(elem.value), 0, cTargetID]);
+    } else {
+        ioCall('getCurrencyConversion', [0, parseFloat(elem.value), cTargetID]);
+    }
 }
 
 function setzePreisTooltipAjax(bNetto, cTooltipID, sourceElem)
 {
-   if(bNetto)
-      xajax_setCurrencyConversionAjaxTooltip(parseFloat($(sourceElem).val().replace(',', '.')), 0, cTooltipID);
-   else
-      xajax_setCurrencyConversionAjaxTooltip(0, parseFloat($(sourceElem).val().replace(',', '.')), cTooltipID);
+    if (bNetto) {
+        ioCall('setCurrencyConversionTooltip', [parseFloat($(sourceElem).val().replace(',', '.')), 0, cTooltipID]);
+    } else {
+        ioCall('setCurrencyConversionTooltip', [0, parseFloat($(sourceElem).val().replace(',', '.')), cTooltipID]);
+    }
 }
 
 function setzeAufpreisTyp(elem, bruttoElemID, nettoElemID)

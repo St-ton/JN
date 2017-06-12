@@ -131,9 +131,9 @@
 
 <script type="text/javascript">
     {foreach name=conf from=$oConfig_arr item=oConfig}
-    {if $oConfig->cWertName|strpos:"_bestandskundenguthaben" || $oConfig->cWertName|strpos:"_neukundenguthaben"}
-    xajax_getCurrencyConversionAjax(0, document.getElementById('{$oConfig->cWertName}').value, 'EinstellungAjax_{$oConfig->cWertName}');
-    {/if}
+        {if $oConfig->cWertName|strpos:"_bestandskundenguthaben" || $oConfig->cWertName|strpos:"_neukundenguthaben"}
+            ioCall('getCurrencyConversion', [0, $('#{$oConfig->cWertName}').val(), 'EinstellungAjax_{$oConfig->cWertName}']);
+        {/if}
     {/foreach}
 </script>
 {include file='tpl_inc/footer.tpl'}

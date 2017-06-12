@@ -5789,44 +5789,66 @@ function make_http_request($cURL, $nTimeout = 15, $cPost = null, $bReturnStatus 
 }
 
 /**
- * @param string|array|object $xData
- * @param bool                $bEncode
- * @return string|array|object
+ * @param string|array|object $data the string, array or object to convert recursively
+ * @param bool                $encode true if data should be utf-8-encoded or false if data should be utf-8-decoded
+ * @param bool                $copy false if objects should be changed, true if they should be cloned first
+ * @return string|array|object converted data
  */
-function utf8_convert_recursive($xData, $bEncode = true)
+function utf8_convert_recursive($data, $encode = true, $copy = false)
 {
-    if (is_string($xData)) {
-        $cEncoding = mb_detect_encoding($xData, 'UTF-8, ISO-8859-1, ISO-8859-15', true);
-        $bUTF8     = (strtoupper($cEncoding) === 'UTF-8');
-        if (($bEncode && $bUTF8) || (!$bUTF8 && !$bEncode)) {
-            return $xData;
+    if (is_string($data)) {
+        $isUtf8 = mb_detect_encoding($data, 'UTF-8', true) !== false;
+
+        if (!$isUtf8 && $encode || $isUtf8 && !$encode) {
+            $data = $encode ? utf8_encode($data) : utf8_decode($data);
+        }
+    } elseif (is_array($data)) {
+        foreach ($data as $key => $val) {
+            $newKey = (string)utf8_convert_recursive($key, $encode);
+            $newVal = utf8_convert_recursive($val, $encode);
+            unset($data[$key]);
+            $data[$newKey] = $newVal;
+        }
+    } elseif (is_object($data)) {
+        if ($copy) {
+            $data = clone $data;
         }
 
-        return $bEncode ? utf8_encode($xData) : utf8_decode($xData);
-    }
-    if (is_object($xData)) {
-        $xData_arr = get_object_vars($xData);
-        $xNewData  = $xData;
-        foreach ($xData_arr as $cKey => $xTmp) {
-            $tmp    = utf8_convert_recursive($xNewData->$cKey, $bEncode);
-            $newKey = utf8_convert_recursive($cKey, $bEncode);
-            unset($xNewData->$cKey);
-            $xNewData->$newKey = $tmp;
-            unset($tmp);
+        foreach (get_object_vars($data) as $key => $val) {
+            $newKey = (string)utf8_convert_recursive($key, $encode);
+            $newVal = utf8_convert_recursive($val, $encode);
+            unset($data->$key);
+            $data->$newKey = $newVal;
         }
-
-        return $xNewData;
-    }
-    if (!is_array($xData)) {
-        return $xData;
-    }
-    $xData_rr = [];
-    foreach ($xData as $cKey => $xTmp) {
-        $cKey            = utf8_convert_recursive($cKey, $bEncode);
-        $xData_rr[$cKey] = utf8_convert_recursive($xTmp, $bEncode);
     }
 
-    return $xData_rr;
+    return $data;
+}
+
+/**
+ * JSON-Encode $data only if it is not already encoded, meaning it avoids double encoding
+ *
+ * @param mixed $data
+ * @return string or false when $data is not encodable
+ * @throws Exception
+ */
+function json_safe_encode($data)
+{
+    $data = utf8_convert_recursive($data);
+
+    // encode data if not already encoded
+    if (is_string($data)) {
+        // data is a string
+        json_decode($data);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            // it is not a JSON string yet
+            $data = json_encode($data);
+        }
+    } else {
+        $data = json_encode($data);
+    }
+
+    return $data;
 }
 
 /**

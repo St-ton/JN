@@ -9,6 +9,7 @@ jQuery.fn.center = function () {
 };
 
 /**
+ * @deprecated since 4.06
  * @param type
  * @param assign
  */
@@ -59,6 +60,7 @@ jQuery.fn.set_search = function (type, assign) {
 };
 
 /**
+ * @deprecated since 4.06
  * @param type
  * @param list
  */
@@ -85,6 +87,7 @@ function set_selected_list(type, list) {
 }
 
 /**
+ * @deprecated since 4.06
  * @param type
  * @param search
  * @returns {boolean}
@@ -118,6 +121,7 @@ function search_list(type, search) {
 }
 
 /**
+ * @deprecated since 4.06
  * @param type
  * @param id
  * @returns {*}
@@ -152,6 +156,8 @@ function get_list_callback(type, id) {
 
 /**
  * single search browser
+ * @deprecated since 4.06 the functionality of this component can simply be covered with a twitter typeahead. See
+ *      the function enableTypeahead() in global.js to turn a text input into a suggestion input.
  * @param callback
  */
 function init_simple_search(callback) {
@@ -204,6 +210,8 @@ function init_simple_search(callback) {
 }
 
 /**
+ * @deprecated since 4.06 the functionality of this component can simply be covered with a twitter typeahead. See
+ *      the function enableTypeahead() in global.js to turn a text input into a suggestion input.
  * @param type
  */
 function show_simple_search(type) {
@@ -215,6 +223,8 @@ function show_simple_search(type) {
 }
 
 /**
+ * @deprecated since 4.06 the functionality of this component can simply be covered with a twitter typeahead. See
+ *      the function enableTypeahead() in global.js to turn a text input into a suggestion input.
  * @param type
  * @param search
  * @param callback
@@ -567,9 +577,6 @@ function switchCouponTooltipVisibility() {
  */
 $(document).ready(function () {
     switchCouponTooltipVisibility();
-    $('#show_article_list').set_search('article', '#assign_article_list');
-    $('#show_manufacturer_list').set_search('manufacturer', '#assign_manufacturer_list');
-    $('#show_categories_list').set_search('categories', '#assign_categories_list');
     $('.collapse').removeClass('in');
 
     $('.accordion-toggle').click(function () {

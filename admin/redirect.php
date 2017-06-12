@@ -22,14 +22,6 @@ $shopURL   = Shop::getURL();
 
 if (isset($aData['action']) && validateToken()) {
     switch ($aData['action']) {
-        case 'search':
-            $ret = [
-                'article'      => getArticleList($aData['search'], ['cLimit' => 10, 'return' => 'object']),
-                'category'     => getCategoryList($aData['search'], ['cLimit' => 10, 'return' => 'object']),
-                'manufacturer' => getManufacturerList($aData['search'], ['cLimit' => 10, 'return' => 'object']),
-            ];
-            exit(json_encode($ret));
-            break;
         case 'check_url':
             exit($aData['url'] !== '' && Redirect::checkAvailability($aData['url']) ? '1' : '0');
             break;

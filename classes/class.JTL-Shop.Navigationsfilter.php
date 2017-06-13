@@ -1647,15 +1647,28 @@ class Navigationsfilter
                 unset($joins[$i]);
             }
         }
-//        $conditionsString = implode(' AND ', array_map(function ($a) use ($or) {
+        // default base conditions
+        $conditions[] = 'tartikelsichtbarkeit.kArtikel IS NULL';
+        $conditions[] = 'tartikel.kVaterArtikel = 0';
+        $conditions[] = $this->getStorageFilter();
+        // remove empty conditions
+        $conditions = array_filter($conditions);
+        executeHook(HOOK_NAVIGATIONSFILTER_GET_BASE_QUERY, [
+            'select'     => &$select,
+            'joins'       => &$joins,
+            'conditions' => &$conditions,
+            'groupBy'    => &$groupBy,
+            'having'     => &$having,
+            'order'      => &$order,
+            'limit'      => &$limit,
+            'navifilter' => null
+        ]);
+        // build sql string
         $conditionsString = implode(' AND ', array_map(function ($a) {
             if (is_string($a)) {
                 return $a;
             }
             return '(' . implode(' AND ', $a) . ')';
-//            return $or === false
-//                ? '(' . implode(' OR ', $a) . ')'
-//                : 'NOT(' . implode(' OR ', $a) . ')';
         }, $conditions));
         $joinString       = implode("\n", $joins);
         $havingString     = implode(' AND ', $having);
@@ -1666,27 +1679,22 @@ class Navigationsfilter
             $order = 'ORDER BY ' . $order;
         }
         if (!empty($conditionsString)) {
-            $conditionsString = ' AND ' . $conditionsString;
+            $conditionsString = ' WHERE ' . $conditionsString;
         }
         $groupByString = !empty($groupBy)
             ? 'GROUP BY ' . implode(', ', $groupBy)
             : '';
 
         return 'SELECT ' . implode(', ', $select) . '
-            FROM tartikel ' . $joinString . '
-            #default conditions
-            WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                AND tartikel.kVaterArtikel = 0
-                #stock filter
-                ' . $this->getStorageFilter() . "\n" .
-            $conditionsString . '
-            #default group by
-            ' . $groupByString . '
-            ' . $havingString . '
-            #order by
-            ' . $order . '
-            #limit sql
-            ' . $limit;
+            FROM tartikel ' . $joinString . "\n" .
+            $conditionsString . "\n" .
+            '#default group by' . "\n" .
+            $groupByString . "\n" .
+            $havingString . "\n" .
+            '#order by' . "\n" .
+            $order . "\n" .
+            '#limit sql' . "\n" .
+            $limit;
     }
 
     /**

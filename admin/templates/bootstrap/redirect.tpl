@@ -3,7 +3,7 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=#redirect# cBeschreibung=#redirectDesc# cDokuURL=#redirectURL#}
 {include file='tpl_inc/sortcontrols.tpl'}
 
-<script>{literal}
+<script>
     $(document).ready(function () {
         $('.import').click(function () {
             var $csvimport = $('.csvimport');
@@ -13,12 +13,28 @@
                 $csvimport.fadeOut();
             }
         });
-        {/literal}
-            {foreach $oRedirect_arr as $oRedirect}
-                check_url({$oRedirect->kRedirect}, '{$oRedirect->cToUrl}');
-            {/foreach}
-            check_url('cToUrl', '{if isset($cPost_arr.cToUrl)}{$cPost_arr.cToUrl}{/if}');
-        {literal}
+        {foreach $oRedirect_arr as $oRedirect}
+            {if $oRedirect->cAvailable === 'u'}
+                ioCall(
+                    'updateRedirectState',
+                    [{$oRedirect->kRedirect}],
+                    function (data) {
+                        var $stateChecking = $('#frm_{$oRedirect->kRedirect} .state-checking');
+                        var $stateAvailable = $('#frm_{$oRedirect->kRedirect} .state-available');
+                        var $stateUnavailable = $('#frm_{$oRedirect->kRedirect} .state-unavailable');
+                        $stateChecking.hide();
+                        $stateAvailable.hide();
+                        $stateUnavailable.hide();
+                        if (data === 'y') {
+                            $stateAvailable.show();
+                        } else {
+                            $stateUnavailable.show();
+                        }
+                    }
+                );
+            {/if}
+        {/foreach}
+        check_url('cToUrl', '{if isset($cPost_arr.cToUrl)}{$cPost_arr.cToUrl}{/if}');
     });
     
     check_url = function(id,url) {
@@ -32,9 +48,7 @@
             type: 'POST',
             url: 'redirect.php',
             data: {
-                {/literal}
-                    'jtl_token': '{$smarty.session.jtl_token}',
-                {literal}
+                'jtl_token': '{$smarty.session.jtl_token}',
                 'aData[action]': 'check_url',
                 'aData[url]': url
             },
@@ -50,7 +64,7 @@
             }
         });
     };
-{/literal}</script>
+</script>
 
 <div id="content" class="container-fluid">
     <ul class="nav nav-tabs" role="tablist">
@@ -78,6 +92,66 @@
                             <table class="list table">
                                 <thead>
                                 <tr>
+<<<<<<< HEAD
+                                    {assign var=redirectCount value=$oRedirect->nCount}
+                                    <td class="tcenter" style="vertical-align:middle;">
+                                        <input type="checkbox"  name="aData[redirect][{$oRedirect->kRedirect}][active]" value="1" />
+                                    </td>
+                                    <td class="tleft" style="vertical-align:middle;">
+                                        <a href="{$oRedirect->cFromUrl}" target="_blank">{$oRedirect->cFromUrl|truncate:52:"..."}</a>
+                                    </td>
+                                    <td class="tleft">
+                                        <div id="frm_{$oRedirect->kRedirect}" class="input-group input-group-sm" style="margin-right:30px;">
+                                            <span class="input-group-addon alert-info state-checking"
+                                                  {if $oRedirect->cAvailable !== 'u'}style="display:none;"{/if}>
+                                                <i class="fa fa-spinner"></i>
+                                            </span>
+                                            <span class="input-group-addon alert-success state-available"
+                                                  {if $oRedirect->cAvailable !== 'y'}style="display:none;"{/if}>
+                                                <i class="fa fa-check"></i>
+                                            </span>
+                                            <span class="input-group-addon alert-danger state-unavailable"
+                                                  {if $oRedirect->cAvailable !== 'n'}style="display:none;"{/if}>
+                                                <i class="fa fa-warning"></i>
+                                            </span>
+                                            <input id="url_{$oRedirect->kRedirect}"
+                                                   name="aData[redirect][{$oRedirect->kRedirect}][url]" type="text"
+                                                   class="form-control cToUrl" autocomplete="off"
+                                                   value="{$oRedirect->cToUrl}"
+                                                   onblur="check_url('{$oRedirect->kRedirect}', this.value);">
+                                            <script>
+                                                enableTypeahead(
+                                                    '#url_{$oRedirect->kRedirect}', 'getSeos',
+                                                    function (item) { return '/' + item.cSeo; },
+                                                    function (item) {
+                                                        var type = '';
+                                                        switch(item.cKey) {
+                                                            case 'kLink': type = 'Seite'; break;
+                                                            case 'kNews': type = 'News'; break;
+                                                            case 'kNewsKategorie': type = 'News-Kategorie'; break;
+                                                            case 'kNewsMonatsUebersicht': type = 'News-Montas&uuml;bersicht'; break;
+                                                            case 'kUmfrage': type = 'Umfrage'; break;
+                                                            case 'kArtikel': type = 'Artikel'; break;
+                                                            case 'kKategorie': type = 'Kategorie'; break;
+                                                            case 'kHersteller': type = 'Hersteller'; break;
+                                                            case 'kMerkmalWert': type = 'Merkmal-Wert'; break;
+                                                            case 'suchspecial': type = 'Suchspecial'; break;
+                                                            default: type = 'Anderes'; break;
+                                                        }
+                                                        return '<span>/' + item.cSeo + ' <small class="text-muted">- ' + type + '</small></span>';
+                                                    },
+                                                    function (e) { check_url('{$oRedirect->kRedirect}', e.target.value); }
+                                                );
+                                            </script>
+                                        </div>
+                                    </td>
+                                    <td class="text-right" style="vertical-align:middle;"><span class="badge">{$redirectCount}</span></td>
+                                    <td class="tcenter">
+                                        {if $redirectCount > 0}
+                                            <a class="btn btn-sm btn-default" data-toggle="collapse" href="#collapse-{$oRedirect->kRedirect}">Details</a>
+                                        {/if}
+                                    </td>
+=======
                                     <th class="tcenter" style="width:24px"></th>
                                     <th class="tleft" style="width:35%;">
                                         URL {call sortControls oPagination=$oPagination nSortBy=0}
@@ -89,6 +163,7 @@
                                         Aufrufe {call sortControls oPagination=$oPagination nSortBy=2}
                                     </th>
                                     <th class="tcenter">Optionen</th>
+>>>>>>> master
                                 </tr>
                                 </thead>
                                 <tbody>

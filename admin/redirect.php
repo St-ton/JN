@@ -10,6 +10,7 @@ $oAccount->permission('REDIRECT_VIEW', true, true);
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'csv_exporter_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'csv_importer_inc.php';
+require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'redirect_inc.php';
 
 handleCsvImportAction('redirects', 'tredirect');
 
@@ -32,9 +33,10 @@ if (isset($aData['action']) && validateToken()) {
                 if (!empty($cToUrl)) {
                     $urls[$oItem->kRedirect] = $cToUrl;
                 }
-                if ($oItem->kRedirect > 0) {
+                if ($oItem->kRedirect > 0 && $oItem->cToUrl !== $cToUrl) {
                     $oItem->cToUrl = $cToUrl;
                     if (Redirect::checkAvailability($cToUrl)) {
+                        $oItem->bAvailable = $cToUrl !== '' ? '1' : '0';
                         Shop::DB()->update('tredirect', 'kRedirect', $oItem->kRedirect, $oItem);
                     } else {
                         $cFehler .= "&Auml;nderungen konnten nicht gespeichert werden, da die weiterzuleitende URL {$cToUrl} nicht erreichbar ist.<br />";

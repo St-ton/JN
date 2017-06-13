@@ -58,34 +58,32 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {if $oBewertung_arr && $oBewertung_arr|@count > 0}
-                                {foreach name=bewertung from=$oBewertung_arr item=oBewertung key=kKey}
-                                <tr class="tab_bg{$smarty.foreach.bewertung.iteration%2}">
-                                    <td class="check">
-                                        <input type="hidden" name="kArtikel[{$kKey}]" value="{$oBewertung->kArtikel}" />
-                                        <input name="kBewertung[{$kKey}]" type="checkbox" value="{$oBewertung->kBewertung}" />
-                                    </td>
-                                    <td class="TD2"><a href="../index.php?a={$oBewertung->kArtikel}" target="_blank">{$oBewertung->ArtikelName}</a></td>
-                                    <td class="TD3">{$oBewertung->cName}.</td>
-                                    <td class="TD4"><b>{$oBewertung->cTitel}</b><br />{$oBewertung->cText}</td>
-                                    <td class="tcenter">{$oBewertung->nSterne}</td>
-                                    <td class="tcenter">{$oBewertung->Datum}</td>
-                                    <td class="tcenter">
-                                        <a href="bewertung.php?a=editieren&kBewertung={$oBewertung->kBewertung}&tab=freischalten&token={$smarty.session.jtl_token}"
-                                           class="btn btn-default" title="{#modify#}">
-                                            <i class="fa fa-edit"></i>
-                                        </a>
-                                    </td>
-                                </tr>
+                                    {foreach name=bewertung from=$oBewertung_arr item=oBewertung key=kKey}
+                                        <tr class="tab_bg{$smarty.foreach.bewertung.iteration%2}">
+                                            <td class="check">
+                                                <input type="hidden" name="kArtikel[{$kKey}]" value="{$oBewertung->kArtikel}" />
+                                                <input name="kBewertung[{$kKey}]" type="checkbox" value="{$oBewertung->kBewertung}" />
+                                            </td>
+                                            <td class="TD2"><a href="../index.php?a={$oBewertung->kArtikel}" target="_blank">{$oBewertung->ArtikelName}</a></td>
+                                            <td class="TD3">{$oBewertung->cName}.</td>
+                                            <td class="TD4"><b>{$oBewertung->cTitel}</b><br />{$oBewertung->cText}</td>
+                                            <td class="tcenter">{$oBewertung->nSterne}</td>
+                                            <td class="tcenter">{$oBewertung->Datum}</td>
+                                            <td class="tcenter">
+                                                <a href="bewertung.php?a=editieren&kBewertung={$oBewertung->kBewertung}&tab=freischalten&token={$smarty.session.jtl_token}"
+                                                   class="btn btn-default" title="{#modify#}">
+                                                    <i class="fa fa-edit"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {/foreach}
                                 </tbody>
-                                {/foreach}
                                 <tfoot>
-                                <tr>
-                                    <td class="check"><input name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);"></td>
-                                    <td colspan="6" class="TD7"><label for="ALLMSGS">{#ratingSelectAll#}</label></td>
-                                </tr>
+                                    <tr>
+                                        <td class="check"><input name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);"></td>
+                                        <td colspan="6" class="TD7"><label for="ALLMSGS">{#ratingSelectAll#}</label></td>
+                                    </tr>
                                 </tfoot>
-                                {/if}
                             </table>
                         </div>
                         <div class="panel-footer">
@@ -112,7 +110,7 @@
                             <h3 class="panel-title">{#ratingLast50#}</h3>
                         </div>
                         <div class="table-responsive">
-                            <table  class="table">
+                            <table class="table">
                                 <thead>
                                 <tr>
                                     <th class="check">&nbsp;</th>
@@ -130,14 +128,31 @@
                                         <td class="check"><input name="kBewertung[]" type="checkbox" value="{$oBewertungLetzten50->kBewertung}"><input type="hidden" name="kArtikel[]" value="{$oBewertungLetzten50->kArtikel}"></td>
                                         <td class="TD2"><a href="../index.php?a={$oBewertungLetzten50->kArtikel}" target="_blank">{$oBewertungLetzten50->ArtikelName}</a></td>
                                         <td class="TD3">{$oBewertungLetzten50->cName}.</td>
-                                        <td class="TD4"><b>{$oBewertungLetzten50->cTitel}</b><br />{$oBewertungLetzten50->cText}</td>
+                                        <td class="TD4">
+                                            <strong>{$oBewertungLetzten50->cTitel}</strong><br>
+                                            {$oBewertungLetzten50->cText}
+                                            {if !empty($oBewertungLetzten50->cAntwort)}
+                                                <blockquote class="review-reply">
+                                                    <strong>{#ratingReply#}:</strong><br>
+                                                    {$oBewertungLetzten50->cAntwort}
+                                                </blockquote>
+                                            {/if}
+                                        </td>
                                         <td class="tcenter">{$oBewertungLetzten50->nSterne}</td>
                                         <td class="tcenter">{$oBewertungLetzten50->Datum}</td>
-                                        <td class="tcenter7">
-                                            <a href="bewertung.php?a=editieren&kBewertung={$oBewertungLetzten50->kBewertung}&tab=letzten50&token={$smarty.session.jtl_token}"
-                                               class="btn btn-default" title="{#modify#}">
-                                                <i class="fa fa-edit"></i>
-                                            </a>
+                                        <td class="tcenter7 tright" style="min-width: 100px;">
+                                            <div class="btn-group">
+                                                {if !empty($oBewertungLetzten50->cAntwort)}
+                                                    <a href="bewertung.php?a=delreply&kBewertung={$oBewertungLetzten50->kBewertung}&tab=letzten50&token={$smarty.session.jtl_token}"
+                                                       class="btn btn-danger" title="{#removeReply#}">
+                                                        <i class="fa fa-times-circle-o"></i>
+                                                    </a>
+                                                {/if}
+                                                <a href="bewertung.php?a=editieren&kBewertung={$oBewertungLetzten50->kBewertung}&tab=letzten50&token={$smarty.session.jtl_token}"
+                                                   class="btn btn-default" title="{#modify#}">
+                                                    <i class="fa fa-edit"></i>
+                                                </a>
+                                            </div>
                                         </td>
                                     </tr>
                                 {/foreach}
@@ -288,9 +303,9 @@
 </div>
 
 <script type="text/javascript">
-{foreach name=conf from=$oConfig_arr item=oConfig}
-    {if $oConfig->cWertName|strpos:"_guthaben"}
-        ioCall('getCurrencyConversion', [0, $('#{$oConfig->cWertName}').val(), 'EinstellungAjax_{$oConfig->cWertName}']);
-    {/if}
-{/foreach}
+    {foreach name=conf from=$oConfig_arr item=oConfig}
+        {if $oConfig->cWertName|strpos:"_guthaben"}
+            ioCall('getCurrencyConversion', [0, $('#{$oConfig->cWertName}').val(), 'EinstellungAjax_{$oConfig->cWertName}']);
+        {/if}
+    {/foreach}
 </script>

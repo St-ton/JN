@@ -2934,6 +2934,10 @@ h2 .btn-group {
     overflow-x: hidden;
 }
 
+.review-reply {
+    margin: 0;
+}
+
 @media (max-width: 767px) {
     .dropdown .dropdown-menu .list-wrapper {
         float: none;

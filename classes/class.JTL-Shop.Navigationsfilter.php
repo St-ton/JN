@@ -1189,9 +1189,13 @@ class Navigationsfilter
             $opt->nArtikelAttribute     = 1;
             $opt->nVariationKombiKinder = 1;
             $opt->nWarenlager           = 1;
+            $opt->nVariationDetailPreis = (isset($this->conf['artikeldetails']['artikel_variationspreisanzeige'])
+                && (int)$this->conf['artikeldetails']['artikel_variationspreisanzeige'] !== 0
+            ) ? 1 : 0;
             if (PRODUCT_LIST_SHOW_RATINGS === true) {
                 $opt->nRatings = 1;
             }
+
             foreach (array_slice($this->searchResults->Artikel->articleKeys, $paginationLimit, $offsetEnd) as $i => $id) {
                 $nLaufLimitN = $i + $paginationLimit;
                 if ($nLaufLimitN >= $nLimitN && $nLaufLimitN < $nLimitN + $limitPerPage) {

@@ -1707,3 +1707,18 @@ define('HOOK_NAVIGATIONSFILTER_INIT_STATES', 251);
  * @param Navigationsfilter navifilter
  */
 define('HOOK_NAVIGATIONSFILTER_CREATE', 252);
+
+/**
+ * in Navigationsfilter::construct() when creating the instance
+ *
+ * @file class.JTL-Shop.Navigationsfilter.php
+ * @param array select
+ * @param array joins
+ * @param array conditions
+ * @param array groupBy
+ * @param array having
+ * @param array order
+ * @param array limit
+ * @param Navigationsfilter navifilter
+ */
+define('HOOK_NAVIGATIONSFILTER_GET_BASE_QUERY', 253);

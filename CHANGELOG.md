@@ -12,7 +12,7 @@
 ### Bugfixes 
 
 * Varkombivorschaubilder werden nicht mehr gruppiert angezeigt (#985)
-* Detailinformationen von Seiteninhalten gegen beim Speichern von eigenen Seiten verloren (#998)
+* Detailinformationen von Seiteninhalten gehen beim Speichern von eigenen Seiten verloren (#998)
 * Fehlende Vorschaubilder in der Newsübersicht (#1011)
 * Admin Sitemapexport speicherhungrig (zeitlich unbegrenzte Statistikauswertung) (#986)
 * E-Mail-Bestellbestätigung: Lieferzeit an Bestellpositionen fehlt (#1004)

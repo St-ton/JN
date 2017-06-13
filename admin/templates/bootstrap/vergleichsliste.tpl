@@ -18,7 +18,7 @@
         <div id="letztenvergleiche" class="tab-pane fade {if !isset($cTab) || $cTab === 'letztenvergleiche'} active in{/if}">
             {if $Letzten20Vergleiche && $Letzten20Vergleiche|@count > 0}
                 {include file='tpl_inc/pagination.tpl' oPagination=$oPagination cAnchor='letztenvergleiche'}
-                <div class="settings panel panel-default">
+                <div class="settings panel panel-default table-responsive">
                     <table  class="table">
                         <tr>
                             <th class="th-1">{#compareID#}</th>
@@ -96,7 +96,7 @@
             </form>
 
             {if isset($TopVergleiche) && $TopVergleiche|@count > 0}
-                <div class="settings panel panel-default">
+                <div class="settings panel panel-default table-responsive">
                     <table class="bottom table">
                         <tr>
                             <th class="tleft">{#compareProduct#}</th>

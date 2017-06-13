@@ -32,6 +32,8 @@ $io
     ->register('getManufacturers', [$jsonApi, 'getManufacturers'])
     ->register('getCustomers', [$jsonApi, 'getCustomers'])
     ->register('getSeos', [$jsonApi, 'getSeos'])
+    ->register('getTags', [$jsonApi, 'getTags'])
+    ->register('getAttributes', [$jsonApi, 'getAttributes'])
     // Allround-IO-calls
     ->register('getCurrencyConversion', 'getCurrencyConversionIO')
     ->register('setCurrencyConversionTooltip', 'setCurrencyConversionTooltipIO')

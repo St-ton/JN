@@ -382,7 +382,7 @@
 
             $wrapper.addClass('loading');
 
-            $.ajax(url, {data: 'isAjax'})
+            $.ajax(url, {data: {'isAjax':1, 'quickView':1}})
                 .done(function(data) {
                     var content = $('<div />')
                         .html(data)
@@ -406,12 +406,6 @@
                         $modal.find('.modal-title').text(title.text());
                         title.remove();
                     }
-
-                    $('#article-tabs', $modalBody).remove();
-                    $('#article_popups', $modalBody).remove();
-                    $('#product-actions', $modalBody).remove();
-                    $('.recommendations', $modalBody).remove();
-                    $('hr', $modalBody).remove();
 
                     $('form', $modalBody).on('submit', function(event) {
                         event.preventDefault();

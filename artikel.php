@@ -292,6 +292,10 @@ $smarty->assign('meta_title', $AktuellerArtikel->getMetaTitle())
        ->assign('meta_keywords', $AktuellerArtikel->getMetaKeywords());
 executeHook(HOOK_ARTIKEL_PAGE, ['oArtikel' => $AktuellerArtikel]);
 
+if (isAjaxRequest()) {
+    $smarty->assign('listStyle', isset($_GET['isListStyle']) ? StringHandler::filterXSS($_GET['isListStyle']) : '');
+}
+
 $smarty->display('productdetails/index.tpl');
 
 require PFAD_ROOT . PFAD_INCLUDES . 'profiler_inc.php';

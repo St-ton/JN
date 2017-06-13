@@ -138,4 +138,25 @@ class ZahlungsLog
                 LIMIT " . (int)$nStart . ", " . (int)$nLimit, 2
         );
     }
+
+    public static function count($cModulId, $nLevel = -1)
+    {
+        if ($nLevel === -1)
+        {
+            $count = (int) Shop::DB()->queryPrepared(
+                "SELECT * FROM tzahlungslog WHERE cModulId = :cModulId",
+                ['cModulId' => $cModulId],
+                3
+            );
+        }
+        else {
+            $count = (int) Shop::DB()->queryPrepared(
+                "SELECT * FROM tzahlungslog WHERE cModulId = :cModulId AND nLevel = :nLevel",
+                ['nLevel' => $nLevel, 'cModulId' => $cModulId],
+                3
+            );
+        }
+
+        return $count;
+    }
 }

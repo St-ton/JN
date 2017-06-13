@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -23,14 +22,6 @@ $shopURL   = Shop::getURL();
 
 if (isset($aData['action']) && validateToken()) {
     switch ($aData['action']) {
-        case 'search':
-            $ret = [
-                'article'      => getArticleList($aData['search'], ['cLimit' => 10, 'return' => 'object']),
-                'category'     => getCategoryList($aData['search'], ['cLimit' => 10, 'return' => 'object']),
-                'manufacturer' => getManufacturerList($aData['search'], ['cLimit' => 10, 'return' => 'object']),
-            ];
-            exit(json_encode($ret));
-            break;
         case 'check_url':
             exit($aData['url'] !== '' && Redirect::checkAvailability($aData['url']) ? '1' : '0');
             break;
@@ -102,8 +93,11 @@ $oSelect->addSelectOption('vorhanden', '', 9);
 $oSelect->addSelectOption('fehlend', '', 4);
 $oFilter->assemble();
 
+$nRedirectCount = Redirect::getRedirectCount($oFilter->getWhereSQL());
+
 $oPagination = (new Pagination())
-    ->setItemCount(Redirect::getTotalRedirectCount())
+    ->setItemCount($nRedirectCount)
+    ->setItemsPerPageOptions([10, 20, 50, 100])
     ->setSortByOptions([['cFromUrl', 'URL'],
                         ['cToUrl', 'Weiterleitung nach'],
                         ['nCount', 'Aufrufe']])

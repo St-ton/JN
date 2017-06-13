@@ -59,8 +59,13 @@
         function finish_export(cb) {
             var elem = '#progress' + cb.kExportformat;
             $(elem).find('div').fadeOut(250, function () {
-                var text = $(elem).find('p').html();
-                $(elem).find('p').html(text).fadeIn(1000);
+                $('#error-msg-' + cb.kExportformat).remove();
+                var text  = $(elem).find('p').html(),
+                    error = '';
+                if (cb.errorMessage.length > 0) {
+                    error = '<span class="red" id="error-msg-' + cb.kExportformat + '"><br>' + cb.errorMessage + '</span>';
+                }
+                $(elem).find('p').html(text).append(error).fadeIn(1000);
             });
         }
         {/literal}
@@ -70,52 +75,54 @@
         <div class="panel-heading">
             <h3 class="panel-title">Vorhandene Exportformate</h3>
         </div>
-        <table class="table">
-            <thead>
-            <tr>
-                <th class="tleft">{#name#}</th>
-                <th class="tleft" style="width:320px">{#filename#}</th>
-                <th class="tcenter">{#language#}</th>
-                <th class="tcenter">{#currency#}</th>
-                <th class="tcenter">{#customerGroup#}</th>
-                <th class="tcenter">{#lastModified#}</th>
-                <th class="tcenter" width="200">{#actions#}</th>
-            </tr>
-            </thead>
-            <tbody>
-            {foreach name=exportformate from=$exportformate item=exportformat}
-                {if $exportformat->nSpecial == 0}
-                    <tr>
-                        <td class="tleft"> {$exportformat->cName}</td>
-                        <td class="tleft" id="progress{$exportformat->kExportformat}">
-                            <p>{$exportformat->cDateiname}</p>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th class="tleft">{#name#}</th>
+                    <th class="tleft" style="width:320px">{#filename#}</th>
+                    <th class="tcenter">{#language#}</th>
+                    <th class="tcenter">{#currency#}</th>
+                    <th class="tcenter">{#customerGroup#}</th>
+                    <th class="tcenter">{#lastModified#}</th>
+                    <th class="tcenter" width="200">{#actions#}</th>
+                </tr>
+                </thead>
+                <tbody>
+                {foreach name=exportformate from=$exportformate item=exportformat}
+                    {if $exportformat->nSpecial == 0}
+                        <tr>
+                            <td class="tleft"> {$exportformat->cName}</td>
+                            <td class="tleft" id="progress{$exportformat->kExportformat}">
+                                <p>{$exportformat->cDateiname}</p>
 
-                            <div></div>
-                        </td>
-                        <td class="tcenter">{$exportformat->Sprache->cNameDeutsch}</td>
-                        <td class="tcenter">{$exportformat->Waehrung->cName}</td>
-                        <td class="tcenter">{$exportformat->Kundengruppe->cName}</td>
-                        <td class="tcenter">{if !empty($exportformat->dZuletztErstellt) && $exportformat->dZuletztErstellt !== '0000-00-00 00:00:00'}{$exportformat->dZuletztErstellt}{else}-{/if}</td>
-                        <td class="tcenter">
-                            <form method="post" action="exportformate.php">
-                                {$jtl_token}
-                                <input type="hidden" name="kExportformat" value="{$exportformat->kExportformat}" />
-                                <div class="btn-group">
-                                    <button name="action" value="export" class="btn btn-default btn-sm extract notext" title="{#createExportFile#}"><i class="fa fa-plus"></i></button>
-                                    {if !$exportformat->bPluginContentExtern}
-                                        <a href="#" onclick="return init_export('{$exportformat->kExportformat}');" class="btn btn-primary btn-sm extract_async notext" title="{#createExportFileAsync#}"><i class="fa fa-plus-square"></i></a>
-                                    {/if}
-                                    <button name="action" value="download" class="btn btn-default btn-sm download notext" title="{#download#}"><i class="fa fa-download"></i></button>
-                                    <button name="action" value="edit" class="btn btn-default btn-sm edit notext" title="{#edit#}"><i class="fa fa-edit"></i></button>
-                                    <button name="action" value="delete" class="btn btn-danger btn-sm remove notext" title="{#delete#}" onclick="return confirm('Exportformat l&ouml;schen?');"><i class="fa fa-trash"></i></button>
-                                </div>
-                            </form>
-                        </td>
-                    </tr>
-                {/if}
-            {/foreach}
-            </tbody>
-        </table>
+                                <div></div>
+                            </td>
+                            <td class="tcenter">{$exportformat->Sprache->cNameDeutsch}</td>
+                            <td class="tcenter">{$exportformat->Waehrung->cName}</td>
+                            <td class="tcenter">{$exportformat->Kundengruppe->cName}</td>
+                            <td class="tcenter">{if !empty($exportformat->dZuletztErstellt) && $exportformat->dZuletztErstellt !== '0000-00-00 00:00:00'}{$exportformat->dZuletztErstellt}{else}-{/if}</td>
+                            <td class="tcenter">
+                                <form method="post" action="exportformate.php">
+                                    {$jtl_token}
+                                    <input type="hidden" name="kExportformat" value="{$exportformat->kExportformat}" />
+                                    <div class="btn-group">
+                                        <button name="action" value="export" class="btn btn-default btn-sm extract notext" title="{#createExportFile#}"><i class="fa fa-plus"></i></button>
+                                        {if !$exportformat->bPluginContentExtern}
+                                            <a href="#" onclick="return init_export('{$exportformat->kExportformat}');" class="btn btn-primary btn-sm extract_async notext" title="{#createExportFileAsync#}"><i class="fa fa-plus-square"></i></a>
+                                        {/if}
+                                        <button name="action" value="download" class="btn btn-default btn-sm download notext" title="{#download#}"><i class="fa fa-download"></i></button>
+                                        <button name="action" value="edit" class="btn btn-default btn-sm edit notext" title="{#edit#}"><i class="fa fa-edit"></i></button>
+                                        <button name="action" value="delete" class="btn btn-danger btn-sm remove notext" title="{#delete#}" onclick="return confirm('Exportformat l&ouml;schen?');"><i class="fa fa-trash"></i></button>
+                                    </div>
+                                </form>
+                            </td>
+                        </tr>
+                    {/if}
+                {/foreach}
+                </tbody>
+            </table>
+        </div>
         <div class="panel-footer">
             <div class="submit-wrap btn-group">
                 <a class="btn btn-primary" href="exportformate.php?neuerExport=1&token={$smarty.session.jtl_token}"><i class="fa fa-share"></i> {#newExportformat#}</a>

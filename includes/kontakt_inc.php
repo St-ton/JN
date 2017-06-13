@@ -303,11 +303,13 @@ function floodSchutz($min)
         return false;
     }
     $min     = (int)$min;
-    $history = Shop::DB()->query("
-        SELECT kKontaktHistory 
+    $history = Shop::DB()->executeQueryPrepared(
+        "SELECT kKontaktHistory 
             FROM tkontakthistory 
-            WHERE cIP = '" . Shop::DB()->escape(gibIP()) . "' 
-                AND date_sub(now(), INTERVAL $min MINUTE) < dErstellt", 1
+            WHERE cIP = :ip 
+                AND date_sub(now(), INTERVAL :min MINUTE) < dErstellt",
+        ['ip' => Shop::DB()->escape(gibIP()), 'min' => $min],
+        1
     );
 
     return (isset($history->kKontaktHistory) && $history->kKontaktHistory > 0);

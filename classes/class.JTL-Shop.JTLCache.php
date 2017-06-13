@@ -319,9 +319,7 @@ class JTLCache
             'collect_stats'    => false, //used to tell caching methods to collect statistical data or not (if not provided transparently)
             'debug'            => false, //enable or disable collecting of debug data
             'debug_method'     => 'echo', //'ssd'/'jtld' for SmarterSmartyDebug/JTLDebug, 'echo' for direct echo
-            'cache_dir'        => (defined('PFAD_ROOT') && defined('PFAD_COMPILEDIR'))
-                ? (PFAD_ROOT . PFAD_COMPILEDIR . 'filecache/')
-                : sys_get_temp_dir(), //file cache directory
+            'cache_dir'        => OBJECT_CACHE_DIR, //file cache directory
             'file_extension'   => '.fc', //file extension for file cache
             'page_cache'       => false, //smarty page cache switch
             'types_disabled'   => [] //disabled cache groups
@@ -332,10 +330,13 @@ class JTLCache
         if (substr($this->options['cache_dir'], strlen($this->options['cache_dir']) - 1) !== '/') {
             $this->options['cache_dir'] .= '/';
         }
+        if ($this->options['method'] !== 'redis' && (int)$this->options['lifetime'] < 0) {
+            $this->options['lifetime'] = 0;
+        }
         //accept only valid integer lifetime values
-        $this->options['lifetime'] = ($this->options['lifetime'] === '' || (int)$this->options['lifetime'] <= 0) ?
-            self::DEFAULT_LIFETIME :
-            (int)$this->options['lifetime'];
+        $this->options['lifetime'] = ($this->options['lifetime'] === '' || (int)$this->options['lifetime'] === 0)
+            ? self::DEFAULT_LIFETIME
+            : (int)$this->options['lifetime'];
         if ($this->options['types_disabled'] === null) {
             $this->options['types_disabled'] = [];
         }
@@ -867,7 +868,7 @@ class JTLCache
         if (is_array($files)) {
             foreach ($files as $_file) {
                 if (strpos($_file, 'class.cachingMethod') !== false) {
-                    $methodNames[] = str_replace('class.cachingMethod.', '', str_replace('.php', '', $_file));
+                    $methodNames[] = str_replace(['class.cachingMethod.', '.php'], '', $_file);
                 }
             }
         }
@@ -983,6 +984,7 @@ class JTLCache
     public function _benchmark($methods = 'all', $testData = 'simple string', $runCount = 1000, $repeat = 1, $echo = true, $format = false)
     {
         $this->options['activated'] = true;
+        $this->options['lifetime']  = self::DEFAULT_LIFETIME;
         //sanitize input
         if (!is_int($runCount) || $runCount < 1) {
             $runCount = 1;
@@ -1029,7 +1031,7 @@ class JTLCache
                     for ($j = 0; $j < $runCount; ++$j) {
                         $cacheID = 'c_' . $j;
                         $res     = $this->get($cacheID);
-                        if ($res != $testData) {
+                        if ($res !== $testData) {
                             $validResults = false;
                         }
                     }

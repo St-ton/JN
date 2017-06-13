@@ -105,7 +105,7 @@ $(function() {
                 <div class="panel-body">
                     <table class="table table-hover table-striped table-blank text-x1 last-child">
                         <tbody>
-                            {render_item title='Datenbank-Struktur' val=$status->validDatabateStruct() more='dbcheck.php'}
+                            {render_item title='Datenbank-Struktur' val=$status->validDatabaseStruct() more='dbcheck.php'}
                             {render_item title='Datei-Struktur' val=$status->validFileStruct() more='filecheck.php'}
                             {render_item title='Verzeichnisrechte' val=$status->validFolderPermissions() more='permissioncheck.php'}
                             {render_item title='Ausstehende Updates' val=!$status->hasPendingUpdates() more='dbupdater.php'}
@@ -192,7 +192,7 @@ $(function() {
                             {foreach $incorrectPaymentMethods as $s}
                                 <tr class="text-vcenter">
                                     <td class="text-left" width="55">
-                                        <h4 class="label-wrap"><span class="label label-danger" style="display:inline-block;width:3em">{$s->logs|@count}</span></h4>
+                                        <h4 class="label-wrap"><span class="label label-danger" style="display:inline-block;width:3em">{$s->logCount}</span></h4>
                                     </td>
                                     <td class="text-muted"><strong>{$s->cName}</strong></td>
                                     <td class="text-right">

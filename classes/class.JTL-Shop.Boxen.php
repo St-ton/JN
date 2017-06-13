@@ -120,9 +120,9 @@ class Boxen
      */
     public function gibBoxInhalt($kBox, $cISO = '')
     {
-        return (strlen($cISO) > 0) ?
-            Shop::DB()->select('tboxsprache', 'kBox', (int)$kBox, 'cISO', $cISO) :
-            Shop::DB()->selectAll('tboxsprache', 'kBox', (int)$kBox);
+        return (strlen($cISO) > 0)
+            ? Shop::DB()->select('tboxsprache', 'kBox', (int)$kBox, 'cISO', $cISO)
+            : Shop::DB()->selectAll('tboxsprache', 'kBox', (int)$kBox);
     }
 
     /**
@@ -259,7 +259,7 @@ class Boxen
                         }
                         //add the filter for admin backend
                         foreach ($oVisible_arr as $oVisible) {
-                            if ($nSeite === $oVisible->kSeite) {
+                            if ((int)$nSeite === (int)$oVisible->kSeite) {
                                 if (!empty($oVisible->cFilter)) {
                                     $_tmp          = explode(',', $oVisible->cFilter);
                                     $filterOptions = [];
@@ -1508,7 +1508,7 @@ class Boxen
             return $oBoxAnzeige;
         }
 
-        if ($nSeite != 0 && $bGlobal) {
+        if ($nSeite !== 0 && $bGlobal) {
             return $this->holeBoxAnzeige(0);
         }
 
@@ -1528,22 +1528,26 @@ class Boxen
         if ($nSeite === 0) {
             $bOk = true;
             for ($i = 0; $i < PAGE_MAX && $bOk; $i++) {
-                $bOk = Shop::DB()->query("
+                $bOk = Shop::DB()->executeQueryPrepared("
                   REPLACE INTO tboxenanzeige 
-                      SET bAnzeigen = " . $bAnzeigen . ",
-                          nSeite = " . $i . ", 
-                          ePosition = '" . $ePosition . "'", 4
+                      SET bAnzeigen = :show,
+                          nSeite = :page, 
+                          ePosition = :position",
+                        ['show' => $bAnzeigen, 'page' => $i, 'position' => $ePosition],
+                        4
                     ) && $bOk;
             }
 
             return $bOk;
         }
 
-        return Shop::DB()->query("
+        return Shop::DB()->executeQueryPrepared("
             REPLACE INTO tboxenanzeige 
-                SET bAnzeigen = " . $bAnzeigen . ", 
-                    nSeite = " . $nSeite . ", 
-                    ePosition = '" . $ePosition . "'", 4
+                SET bAnzeigen = :show, 
+                    nSeite = :page, 
+                    ePosition = :position",
+            ['show' => $bAnzeigen, 'page' => $nSeite, 'position' => $ePosition],
+            4
         );
     }
 
@@ -1862,6 +1866,9 @@ class Boxen
                 count($oSuchergebnisse->Preisspanne) > 0 &&
                 $this->boxConfig['navigationsfilter']['preisspannenfilter_benutzen'] === 'box' &&
                 $conf['global']['global_sichtbarkeit'] == 1)
+            || (isset($oSuchergebnisse->Suchspecialauswahl) &&
+                count($oSuchergebnisse->Suchspecialauswahl) > 0 &&
+                $this->boxConfig['navigationsfilter']['allgemein_suchspecialfilter_benutzen'] === 'Y')
             || (isset($NaviFilter->SuchspecialFilter->kKey) &&
                 $NaviFilter->SuchspecialFilter->kKey > 0 &&
                 $this->boxConfig['navigationsfilter']['allgemein_suchspecialfilter_benutzen'] === 'Y')

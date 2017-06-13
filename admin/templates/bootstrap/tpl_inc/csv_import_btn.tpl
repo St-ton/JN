@@ -25,7 +25,7 @@
                 {/if}
             })
             .click();
-        $('body').append($form);
+        $('body').append($form_{$importerId});
     }
 
     {if $bCustomStrategy === true}

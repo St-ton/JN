@@ -48,9 +48,9 @@ class ArtikelListe
             '_' . $kKundengruppe;
         $objArr        = Shop::Cache()->get($cacheID);
         if ($objArr === false) {
-            $qry = ($topneu === 'neu') ?
-                "cNeu = 'Y'" :
-                "tartikel.cTopArtikel = 'Y'";
+            $qry = ($topneu === 'neu')
+                ? "cNeu = 'Y'"
+                : "tartikel.cTopArtikel = 'Y'";
             if (!$kKundengruppe) {
                 $kKundengruppe = (int)$_SESSION['Kundengruppe']->kKundengruppe;
             }

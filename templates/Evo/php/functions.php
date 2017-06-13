@@ -21,6 +21,7 @@ $smarty->registerPlugin('function', 'gibPreisStringLocalizedSmarty', 'gibPreisSt
        ->registerPlugin('function', 'get_manufacturers', 'get_manufacturers')
        ->registerPlugin('function', 'get_cms_content', 'get_cms_content')
        ->registerPlugin('function', 'get_static_route', 'get_static_route')
+       ->registerPlugin('function', 'hasOnlyListableVariations', 'hasOnlyListableVariations')
        ->registerPlugin('modifier', 'has_trans', 'has_translation')
        ->registerPlugin('modifier', 'trans', 'get_translation')
        ->registerPlugin('function', 'get_product_list', 'get_product_list');
@@ -452,11 +453,13 @@ function hasCheckBoxForLocation($params, &$smarty)
  */
 function getCheckBoxForLocation($params, &$smarty)
 {
-    require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.CheckBox.php';
-
-    $oCheckBox     = new CheckBox();
-    $oCheckBox_arr = $oCheckBox->getCheckBoxFrontend((int)$params['nAnzeigeOrt'], 0, true, true);
-
+    $cid = 'cb_' . (int)$params['nAnzeigeOrt'] . '_' . (int)$_SESSION['kSprache'];
+    if (Shop::has($cid)) {
+        $oCheckBox_arr = Shop::get($cid);
+    } else {
+        $oCheckBox     = new CheckBox();
+        $oCheckBox_arr = $oCheckBox->getCheckBoxFrontend((int)$params['nAnzeigeOrt'], 0, true, true);
+    }
     if (count($oCheckBox_arr) > 0) {
         $linkHelper = LinkHelper::getInstance();
         foreach ($oCheckBox_arr as $oCheckBox) {
@@ -464,17 +467,6 @@ function getCheckBoxForLocation($params, &$smarty)
             $cLinkURL     = '';
             $cLinkURLFull = '';
             if ($oCheckBox->kLink > 0) {
-                $oLinkTMP = Shop::DB()->select(
-                    'tseo',
-                    'cKey', 'kLink',
-                    'kKey', (int)$oCheckBox->kLink,
-                    'kSprache', (int)$_SESSION['kSprache'],
-                    false,
-                    'cSeo'
-                );
-                if (isset($oLinkTMP->cSeo) && strlen($oLinkTMP->cSeo) > 0) {
-                    $oCheckBox->oLink->cLocalizedSeo[$_SESSION['cISOSprache']] = $oLinkTMP->cSeo;
-                }
                 $page = $linkHelper->findCMSLinkInSession($oCheckBox->oLink->kLink);
                 if (!empty($page->URL)) {
                     $cLinkURL     = $page->URL;
@@ -505,7 +497,7 @@ function getCheckBoxForLocation($params, &$smarty)
                 $oCheckBox->cErrormsg = Shop::Lang()->get('pleasyAccept', 'account data');
             }
         }
-
+        Shop::set($cid, $oCheckBox_arr);
         if (isset($params['assign'])) {
             $smarty->assign($params['assign'], $oCheckBox_arr);
         }
@@ -722,7 +714,59 @@ function get_cms_content($params, &$smarty)
         }
     }
 
-    return;
+    return null;
+}
+
+/**
+ * @param array $params - variationen, maxVariationCount, maxWerteCount
+ * @param JTLSmarty $smarty
+ * @return int - 0: no listable variations, 1: normal listable variations, 2: only child listable variations
+ */
+function hasOnlyListableVariations($params, &$smarty)
+{
+    if (!isset($params['artikel']->Variationen)) {
+        if (isset($params['assign'])) {
+            $smarty->assign($params['assign'], 0);
+
+            return null;
+        } else {
+            return 0;
+        }
+    }
+
+    $maxVariationCount = isset($params['maxVariationCount']) ? (int)$params['maxVariationCount'] : 1;
+    $maxWerteCount     = isset($params['maxWerteCount']) ? (int)$params['maxWerteCount'] : 3;
+    $variationCheck    = function ($Variationen, $maxVariationCount, $maxWerteCount) {
+        $result = true;
+
+        if (is_array($Variationen) && count($Variationen) > 0 && count($Variationen) <= $maxVariationCount) {
+            foreach ($Variationen as $oVariation) {
+                if ($oVariation->cTyp != 'SELECTBOX'
+                    && (!in_array($oVariation->cTyp, ['TEXTSWATCHES', 'IMGSWATCHES', 'RADIO']) || count($oVariation->Werte) > $maxWerteCount)) {
+                    $result = false;
+                    break;
+                }
+            }
+        } else {
+            $result = false;
+        }
+
+        return $result;
+    };
+
+    $result = $variationCheck($params['artikel']->Variationen, $maxVariationCount, $maxWerteCount) ? 1 : 0;
+    if ($result === 0 && $params['artikel']->kVaterArtikel > 0) {
+        // Hat das Kind evtl. mehr Variationen als der Vater?
+        $result = $variationCheck($params['artikel']->oVariationenNurKind_arr, $maxVariationCount, $maxWerteCount) ? 2 : 0;
+    }
+
+    if (isset($params['assign'])) {
+        $smarty->assign($params['assign'], $result);
+
+        return null;
+    }
+
+    return $result;
 }
 
 /**
@@ -740,7 +784,7 @@ function get_translation($mixed, $to = null)
         return is_string($mixed) ? $mixed : $mixed[$to];
     }
 
-    return;
+    return null;
 }
 
 /**

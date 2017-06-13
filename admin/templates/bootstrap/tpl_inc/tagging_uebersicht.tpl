@@ -39,33 +39,35 @@
                         <div class="panel-heading">
                             <h3 class="panel-title">{#tags#}</h3>
                         </div>
-                        <table class="table">
-                            <tr>
-                                <th class="th-1"></th>
-                                <th class="tleft">{#tag#}</th>
-                                <th class="th-3">{#tagcount#}</th>
-                                <th class="th-4">{#active#}</th>
-                                <th class="th-5">{#mapping#}</th>
-                            </tr>
-                            {foreach name=tags from=$Tags item=tag}
-                                <tr class="tab_bg{$smarty.foreach.tags.iteration%2}">
-                                    <td class="TD1">
-                                        <input type="checkbox" name="kTag[]" value="{$tag->kTag}" />
-                                        <input name="kTagAll[]" type="hidden" value="{$tag->kTag}" />
-                                    </td>
-                                    <td class="">
-                                        <a href="tagging.php?tagdetail=1&kTag={$tag->kTag}&tab=tags&token={$smarty.session.jtl_token}">{$tag->cName}</a>
-                                    </td>
-                                    <td class="tcenter">{$tag->Anzahl}</td>
-                                    <td class="tcenter">
-                                        <input type="checkbox" name="nAktiv[]" value="{$tag->kTag}" {if $tag->nAktiv==1}checked{/if} />
-                                    </td>
-                                    <td class="tcenter">
-                                        <input class="form-control fieldOther" type="text" name="mapping_{$tag->kTag}" />
-                                    </td>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <tr>
+                                    <th class="th-1"></th>
+                                    <th class="tleft">{#tag#}</th>
+                                    <th class="th-3">{#tagcount#}</th>
+                                    <th class="th-4">{#active#}</th>
+                                    <th class="th-5">{#mapping#}</th>
                                 </tr>
-                            {/foreach}
-                        </table>
+                                {foreach name=tags from=$Tags item=tag}
+                                    <tr class="tab_bg{$smarty.foreach.tags.iteration%2}">
+                                        <td class="TD1">
+                                            <input type="checkbox" name="kTag[]" value="{$tag->kTag}" />
+                                            <input name="kTagAll[]" type="hidden" value="{$tag->kTag}" />
+                                        </td>
+                                        <td class="">
+                                            <a href="tagging.php?tagdetail=1&kTag={$tag->kTag}&tab=tags&token={$smarty.session.jtl_token}">{$tag->cName}</a>
+                                        </td>
+                                        <td class="tcenter">{$tag->Anzahl}</td>
+                                        <td class="tcenter">
+                                            <input type="checkbox" name="nAktiv[]" value="{$tag->kTag}" {if $tag->nAktiv==1}checked{/if} />
+                                        </td>
+                                        <td class="tcenter">
+                                            <input class="form-control fieldOther" type="text" name="mapping_{$tag->kTag}" />
+                                        </td>
+                                    </tr>
+                                {/foreach}
+                            </table>
+                        </div>
                         <div class="panel-footer">
                             <div class="btn-group">
                                 <button name="update" type="submit" value="{#update#}" class="btn btn-default"><i class="fa fa-refresh"></i> {#update#}</button>
@@ -89,28 +91,30 @@
                         <div class="panel-heading">
                             <h3 class="panel-title">{#mapping#}</h3>
                         </div>
-                        <table class="table">
-                            <tr>
-                                <th class="th-1"></th>
-                                <th class="th-2">{#tag#}</th>
-                                <th class="th-3">{#tagnew#}</th>
-                            </tr>
-                            {foreach name=tagsmapping from=$Tagmapping item=tagmapping}
-                                <tr class="tab_bg{$smarty.foreach.tagsmapping.iteration%2}">
-                                    <td class="TD1">
-                                        <input name="kTagMapping[]" type="checkbox" value="{$tagmapping->kTagMapping}" />
-                                    </td>
-                                    <td class="tcenter">{$tagmapping->cName}</td>
-                                    <td class="tcenter">{$tagmapping->cNameNeu}</td>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <tr>
+                                    <th class="th-1"></th>
+                                    <th class="th-2">{#tag#}</th>
+                                    <th class="th-3">{#tagnew#}</th>
                                 </tr>
-                            {/foreach}
-                            <tr>
-                                <td class="check">
-                                    <input name="ALLMSGS" id="ALLMSGS1" type="checkbox" onclick="AllMessages(this.form);" />
-                                </td>
-                                <td colspan="2" class="TD7"><label for="ALLMSGS1">{#globalSelectAll#}</label></td>
-                            </tr>
-                        </table>
+                                {foreach name=tagsmapping from=$Tagmapping item=tagmapping}
+                                    <tr class="tab_bg{$smarty.foreach.tagsmapping.iteration%2}">
+                                        <td class="TD1">
+                                            <input name="kTagMapping[]" type="checkbox" value="{$tagmapping->kTagMapping}" />
+                                        </td>
+                                        <td class="tcenter">{$tagmapping->cName}</td>
+                                        <td class="tcenter">{$tagmapping->cNameNeu}</td>
+                                    </tr>
+                                {/foreach}
+                                <tr>
+                                    <td class="check">
+                                        <input name="ALLMSGS" id="ALLMSGS1" type="checkbox" onclick="AllMessages(this.form);" />
+                                    </td>
+                                    <td colspan="2" class="TD7"><label for="ALLMSGS1">{#globalSelectAll#}</label></td>
+                                </tr>
+                            </table>
+                        </div>
                         <div class="panel-footer">
                             <button name="delete" type="submit" value="{#delete#}" class="btn btn-danger"><i class="fa fa-trash"></i> {#delete#}</button>
                         </div>

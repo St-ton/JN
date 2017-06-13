@@ -153,9 +153,9 @@ class Bewertung
                 $cSprachSQL = '';
             }
             // Anzahl Bewertungen für jeden Stern
-            if ($nSterne != -1) {
+            if ($nSterne !== -1) {
                 if ($nSterne > 0) {
-                    $cSQL = ' AND nSterne=' . $nSterne;
+                    $cSQL = ' AND nSterne = ' . $nSterne;
                 }
                 $oBewertungAnzahl_arr = Shop::DB()->query(
                     "SELECT count(*) AS nAnzahl, nSterne

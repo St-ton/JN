@@ -32,14 +32,8 @@ class AdminSession
      */
     public function __construct()
     {
-        session_write_close(); // save previously created session
         self::$_instance = $this;
         session_name('eSIdAdm');
-
-        // if a session id came as cookie, set it as the current one
-        if (isset($_COOKIE['eSIdAdm'])) {
-            session_id($_COOKIE['eSIdAdm']);
-        }
 
         if (ES_SESSIONS === 1) {
             // Sessions in DB speichern

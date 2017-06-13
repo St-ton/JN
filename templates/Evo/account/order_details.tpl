@@ -64,12 +64,8 @@
             <div class="panel-heading"><h3 class="panel-title">{block name="order-details-payment-title"}{lang key="paymentOptions" section="global"}: {$Bestellung->cZahlungsartName}{/block}</h3></div>
             <div class="panel-body">
             {block name="order-details-payment-body"}
-            {if $Bestellung->cStatus >= BESTELLUNG_STATUS_BEZAHLT}
-                {if $Bestellung->dBezahldatum_de !== '00.00.0000'}
-                    {lang key="payedOn" section="login"} {$Bestellung->dBezahldatum_de}
-                {else}
-                    {lang key="notPayedYet" section="login"}
-                {/if}
+            {if $Bestellung->cStatus != BESTELLUNG_STATUS_STORNO && $Bestellung->dBezahldatum_de !== '00.00.0000'}
+                {lang key="payedOn" section="login"} {$Bestellung->dBezahldatum_de}
             {else}
                 {if ($Bestellung->cStatus == BESTELLUNG_STATUS_OFFEN || $Bestellung->cStatus == BESTELLUNG_STATUS_IN_BEARBEITUNG) && (($Bestellung->Zahlungsart->cModulId !== 'za_ueberweisung_jtl' && $Bestellung->Zahlungsart->cModulId !== 'za_nachnahme_jtl' && $Bestellung->Zahlungsart->cModulId !== 'za_rechnung_jtl' && $Bestellung->Zahlungsart->cModulId !== 'za_barzahlung_jtl' && $Bestellung->Zahlungsart->cModulId !== 'za_billpay_jtl') && (isset($Bestellung->Zahlungsart->bPayAgain) && $Bestellung->Zahlungsart->bPayAgain))}
                     <a href="bestellab_again.php?kBestellung={$Bestellung->kBestellung}">{lang key="payNow" section="global"}</a>

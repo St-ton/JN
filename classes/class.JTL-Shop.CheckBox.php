@@ -135,6 +135,13 @@ class CheckBox
                     }
                 }
                 // Global Identifier
+                $this->kCheckBox         = (int)$this->kCheckBox;
+                $this->kLink             = (int)$this->kLink;
+                $this->kCheckBoxFunktion = (int)$this->kCheckBoxFunktion;
+                $this->nAktiv            = (int)$this->nAktiv;
+                $this->nPflicht          = (int)$this->nPflicht;
+                $this->nLogging          = (int)$this->nLogging;
+                $this->nSort             = (int)$this->nSort;
                 $this->cID               = 'CheckBox_' . $this->kCheckBox;
                 $this->kKundengruppe_arr = gibKeyArrayFuerKeyString($oCheckBox->cKundengruppe, ';');
                 $this->kAnzeigeOrt_arr   = gibKeyArrayFuerKeyString($oCheckBox->cAnzeigeOrt, ';');
@@ -164,9 +171,18 @@ class CheckBox
                 }
                 // Mapping Link
                 if ($this->kLink > 0) {
-                    $oLink = Shop::DB()->select('tlink', 'kLink', (int)$this->kLink);
+                    $oLink = Shop::DB()->query("
+                        SELECT tlink.*, tseo.cSeo, tseo.kSprache, tsprache.cISO
+                            FROM tlink
+                            LEFT JOIN tseo
+                                ON tseo.cKey = 'kLink'
+                                AND tseo.kKey = " . (int)$this->kLink . "
+                            LEFT JOIN tsprache
+                                ON tsprache.kSprache = tseo.kSprache
+                            WHERE tlink.kLink = " . (int)$this->kLink, 1
+                    );
                     if (isset($oLink->kLink) && $oLink->kLink > 0) {
-                        $this->oLink = $oLink;
+                        $this->oLink = new Link(null, $oLink);
                     }
                 } else {
                     $this->cLink = 'kein interner Link';
@@ -566,6 +582,7 @@ class CheckBox
             $oObj->oKunde        = $oKunde;
             $oObj->tkunde        = $oKunde;
             $oObj->cAnzeigeOrt   = $this->mappeCheckBoxOrte($nAnzeigeOrt);
+            $oObj->mail          = new stdClass();
             $oObj->mail->toEmail = $Einstellungen['emails']['email_master_absender'];
 
             sendeMail(MAILTEMPLATE_CHECKBOX_SHOPBETREIBER, $oObj);

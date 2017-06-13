@@ -135,7 +135,8 @@ function bearbeiteInsert($xml)
                 updateXMLinDB($xml['merkmale']['tmerkmal'], 'tmerkmalsprache', $GLOBALS['mMerkmalSprache'], 'kMerkmal', 'kSprache');
 
                 if (is_array($MerkmalWert_arr) && count($MerkmalWert_arr) > 0) {
-                    for ($o = 0; $o < count($MerkmalWert_arr); $o++) {
+                    $mmwCountO = count($MerkmalWert_arr);
+                    for ($o = 0; $o < $mmwCountO; $o++) {
                         $oMM_arr[$i]->oMMW_arr[$o]->kMerkmalWert = $MerkmalWert_arr[$o]->kMerkmalWert;
                         $oMM_arr[$i]->oMMW_arr[$o]->kSprache_arr = [];
 

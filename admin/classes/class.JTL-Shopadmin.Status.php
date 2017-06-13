@@ -64,9 +64,12 @@ class Status
     }
 
     /**
-     * @return bool
+     * checks the db-structure against 'admin/includes/shopmd5files/dbstruct_[shop-version].json'
+     * (the 'shop-Version' is here needed without points)
+     *
+     * @return bool  true='no errors', false='something is wrong'
      */
-    protected function validDatabateStruct()
+    protected function validDatabaseStruct()
     {
         require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dbcheck_inc.php';
 
@@ -81,7 +84,10 @@ class Status
     }
 
     /**
-     * @return bool
+     * checks the shop-filesystem-structure against 'admin/includes/shopmd5files/[shop-version].csv'
+     * (the 'shop-Version' is here needed without points)
+     *
+     * @return bool  true='no errors', false='something is wrong'
      */
     protected function validFileStruct()
     {
@@ -114,9 +120,9 @@ class Status
     {
         $sharedPlugins = [];
         $sharedHookIds = Shop::DB()->executeQuery(
-            "SELECT nHook 
-                FROM tpluginhook 
-                GROUP BY nHook 
+            "SELECT nHook
+                FROM tpluginhook
+                GROUP BY nHook
                 HAVING COUNT(DISTINCT kPlugin) > 1", 2
         );
 
@@ -127,11 +133,11 @@ class Status
         foreach ($sharedHookIds as $hookId) {
             $sharedPlugins[$hookId] = [];
             $plugins                = Shop::DB()->executeQuery(
-                "SELECT DISTINCT tpluginhook.kPlugin, tplugin.cName, tplugin.cPluginID 
-                    FROM tpluginhook 
-                    INNER JOIN tplugin 
-                        ON tpluginhook.kPlugin = tplugin.kPlugin 
-                    WHERE tpluginhook.nHook = " . $hookId . " 
+                "SELECT DISTINCT tpluginhook.kPlugin, tplugin.cName, tplugin.cPluginID
+                    FROM tpluginhook
+                    INNER JOIN tplugin
+                        ON tpluginhook.kPlugin = tplugin.kPlugin
+                    WHERE tpluginhook.nHook = " . $hookId . "
                         AND tplugin.nStatus = 2", 2
             );
             foreach ($plugins as $plugin) {
@@ -297,19 +303,9 @@ class Status
 
         if (is_array($paymentMethods)) {
             foreach ($paymentMethods as $i => $method) {
-                $log  = new ZahlungsLog($method->cModulId);
-                $logs = $log->holeLog();
-
-                if (!is_array($logs)) {
-                    continue;
-                }
-
-                foreach ($logs as $entry) {
-                    if ((int)$entry->nLevel === JTLLOG_LEVEL_ERROR) {
-                        $method->logs              = $logs;
-                        $incorrectPaymentMethods[] = $method;
-                        break;
-                    }
+                if (($logCount = ZahlungsLog::count($method->cModulId, JTLLOG_LEVEL_ERROR)) > 0) {
+                    $method->logCount = $logCount;
+                    $incorrectPaymentMethods[] = $method;
                 }
             }
         }
@@ -370,9 +366,9 @@ class Status
     protected function getOrphanedCategories($has = true)
     {
         $categories = Shop::DB()->query("
-            SELECT kKategorie, cName 
-                FROM tkategorie 
-                WHERE kOberkategorie > 0 
+            SELECT kKategorie, cName
+                FROM tkategorie
+                WHERE kOberkategorie > 0
                     AND kOberkategorie NOT IN (SELECT DISTINCT kKategorie FROM tkategorie)", 2
         );
 
@@ -380,4 +376,5 @@ class Status
             ? count($categories) === 0
             : $categories;
     }
+
 }

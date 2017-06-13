@@ -26,8 +26,6 @@ $Einstellungen = Shop::getSettings([
     CONF_KONTAKTFORMULAR,
     CONF_CACHING
 ]);
-
-loeseHttps();
 $oGlobaleMetaAngabenAssoc_arr = holeGlobaleMetaAngaben();
 // Bewertungsguthaben
 $fBelohnung = (isset($_GET['fB']) && (float)$_GET['fB'] > 0) ? (float)$_GET['fB'] : 0.0;
@@ -293,6 +291,10 @@ $smarty->assign('meta_title', $AktuellerArtikel->getMetaTitle())
        ->assign('meta_description', $AktuellerArtikel->getMetaDescription($AufgeklappteKategorien))
        ->assign('meta_keywords', $AktuellerArtikel->getMetaKeywords());
 executeHook(HOOK_ARTIKEL_PAGE, ['oArtikel' => $AktuellerArtikel]);
+
+if (isAjaxRequest()) {
+    $smarty->assign('listStyle', isset($_GET['isListStyle']) ? StringHandler::filterXSS($_GET['isListStyle']) : '');
+}
 
 $smarty->display('productdetails/index.tpl');
 

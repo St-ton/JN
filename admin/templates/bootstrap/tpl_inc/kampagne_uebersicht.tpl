@@ -20,56 +20,9 @@
             <div class="panel panel-default">
                 <div class="panel-heading"><h3 class="panel-title">{#kampagneIntern#}</h3></div>
                 {if isset($oKampagne_arr[0]->kKampagne) && $oKampagne_arr[0]->kKampagne < 1000}
-                    <table class="table">
-                        <tr>
-                            <th class="tleft">{#kampagneName#}</th>
-                            <th class="tleft">{#kampagneParam#}</th>
-                            <th class="tleft">{#kampagneValue#}</th>
-                            <th class="th-4">{#kampagnenActive#}</th>
-                            <th class="th-5">{#kampagnenDate#}</th>
-                            <th class="th-6"></th>
-                        </tr>
-
-                        {foreach name="kampagnen" from=$oKampagne_arr item=oKampagne}
-                            {if isset($oKampagne->kKampagne) && $oKampagne->kKampagne < 1000}
-                                <tr class="tab_bg{$smarty.foreach.kampagnen.iteration%2}">
-                                    <td class="TD2">
-                                        <strong><a href="kampagne.php?kKampagne={$oKampagne->kKampagne}&detail=1&token={$smarty.session.jtl_token}">{$oKampagne->cName}</a></strong>
-                                    </td>
-                                    <td class="TD3">{$oKampagne->cParameter}</td>
-                                    <td class="TD3">
-                                        {if isset($oKampagne->nDynamisch) && $oKampagne->nDynamisch == 1}
-                                            {#kampagneDynamic#}
-                                        {else}
-                                            {#kampagneStatic#}
-                                            <br />
-                                            <strong>{#kampagneValueStatic#}:</strong>
-                                            {$oKampagne->cWert}
-                                        {/if}
-                                    </td>
-                                    <td class="tcenter">{if isset($oKampagne->nAktiv) && $oKampagne->nAktiv == 1}{#yes#}{else}{#no#}{/if}</td>
-                                    <td class="tcenter">{$oKampagne->dErstellt_DE}</td>
-                                    <td class="tcenter">
-                                        <a href="kampagne.php?kKampagne={$oKampagne->kKampagne}&editieren=1&token={$smarty.session.jtl_token}" class="btn btn-default">{#kampagneEditBTN#}</a>
-                                    </td>
-                                </tr>
-                            {/if}
-                        {/foreach}
-                    </table>
-                {else}
-                    <div class="alert alert-info" role="alert">{#noDataAvailable#}</div>
-                {/if}
-            </div>
-            <div class="panel panel-default">
-                <div class="panel-heading"><h3 class="panel-title">{#kampagneExtern#}</h3></div>
-                <form name="kampagnen" method="post" action="kampagne.php">
-                    {if isset($nGroessterKey) && $nGroessterKey >= 1000}
-                        {$jtl_token}
-                        <input type="hidden" name="tab" value="uebersicht" />
-                        <input type="hidden" name="delete" value="1" />
+                    <div class="table-responsive">
                         <table class="table">
                             <tr>
-                                <th class="check"></th>
                                 <th class="tleft">{#kampagneName#}</th>
                                 <th class="tleft">{#kampagneParam#}</th>
                                 <th class="tleft">{#kampagneValue#}</th>
@@ -79,11 +32,8 @@
                             </tr>
 
                             {foreach name="kampagnen" from=$oKampagne_arr item=oKampagne}
-                                {if $oKampagne->kKampagne >= 1000}
+                                {if isset($oKampagne->kKampagne) && $oKampagne->kKampagne < 1000}
                                     <tr class="tab_bg{$smarty.foreach.kampagnen.iteration%2}">
-                                        <td class="check">
-                                            <input name="kKampagne[]" type="checkbox" value="{$oKampagne->kKampagne}">
-                                        </td>
                                         <td class="TD2">
                                             <strong><a href="kampagne.php?kKampagne={$oKampagne->kKampagne}&detail=1&token={$smarty.session.jtl_token}">{$oKampagne->cName}</a></strong>
                                         </td>
@@ -101,21 +51,75 @@
                                         <td class="tcenter">{if isset($oKampagne->nAktiv) && $oKampagne->nAktiv == 1}{#yes#}{else}{#no#}{/if}</td>
                                         <td class="tcenter">{$oKampagne->dErstellt_DE}</td>
                                         <td class="tcenter">
-                                            <a href="kampagne.php?kKampagne={$oKampagne->kKampagne}&editieren=1&token={$smarty.session.jtl_token}"
-                                               class="btn btn-default" title="{#modify#}">
-                                                <i class="fa fa-edit"></i>
-                                            </a>
+                                            <a href="kampagne.php?kKampagne={$oKampagne->kKampagne}&editieren=1&token={$smarty.session.jtl_token}" class="btn btn-default">{#kampagneEditBTN#}</a>
                                         </td>
                                     </tr>
                                 {/if}
                             {/foreach}
-                            <tr>
-                                <td class="check">
-                                    <input name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);" />
-                                </td>
-                                <td colspan="6"><label for="ALLMSGS">{#globalSelectAll#}</label></td>
-                            </tr>
                         </table>
+                    </div>
+                {else}
+                    <div class="alert alert-info" role="alert">{#noDataAvailable#}</div>
+                {/if}
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading"><h3 class="panel-title">{#kampagneExtern#}</h3></div>
+                <form name="kampagnen" method="post" action="kampagne.php">
+                    {if isset($nGroessterKey) && $nGroessterKey >= 1000}
+                        {$jtl_token}
+                        <input type="hidden" name="tab" value="uebersicht" />
+                        <input type="hidden" name="delete" value="1" />
+                        <div class="table-responsive">
+                            <table class="table">
+                                <tr>
+                                    <th class="check"></th>
+                                    <th class="tleft">{#kampagneName#}</th>
+                                    <th class="tleft">{#kampagneParam#}</th>
+                                    <th class="tleft">{#kampagneValue#}</th>
+                                    <th class="th-4">{#kampagnenActive#}</th>
+                                    <th class="th-5">{#kampagnenDate#}</th>
+                                    <th class="th-6"></th>
+                                </tr>
+
+                                {foreach name="kampagnen" from=$oKampagne_arr item=oKampagne}
+                                    {if $oKampagne->kKampagne >= 1000}
+                                        <tr class="tab_bg{$smarty.foreach.kampagnen.iteration%2}">
+                                            <td class="check">
+                                                <input name="kKampagne[]" type="checkbox" value="{$oKampagne->kKampagne}">
+                                            </td>
+                                            <td class="TD2">
+                                                <strong><a href="kampagne.php?kKampagne={$oKampagne->kKampagne}&detail=1&token={$smarty.session.jtl_token}">{$oKampagne->cName}</a></strong>
+                                            </td>
+                                            <td class="TD3">{$oKampagne->cParameter}</td>
+                                            <td class="TD3">
+                                                {if isset($oKampagne->nDynamisch) && $oKampagne->nDynamisch == 1}
+                                                    {#kampagneDynamic#}
+                                                {else}
+                                                    {#kampagneStatic#}
+                                                    <br />
+                                                    <strong>{#kampagneValueStatic#}:</strong>
+                                                    {$oKampagne->cWert}
+                                                {/if}
+                                            </td>
+                                            <td class="tcenter">{if isset($oKampagne->nAktiv) && $oKampagne->nAktiv == 1}{#yes#}{else}{#no#}{/if}</td>
+                                            <td class="tcenter">{$oKampagne->dErstellt_DE}</td>
+                                            <td class="tcenter">
+                                                <a href="kampagne.php?kKampagne={$oKampagne->kKampagne}&editieren=1&token={$smarty.session.jtl_token}"
+                                                   class="btn btn-default" title="{#modify#}">
+                                                    <i class="fa fa-edit"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {/if}
+                                {/foreach}
+                                <tr>
+                                    <td class="check">
+                                        <input name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);" />
+                                    </td>
+                                    <td colspan="6"><label for="ALLMSGS">{#globalSelectAll#}</label></td>
+                                </tr>
+                            </table>
+                        </div>
                     {else}
                         <div class="alert alert-info" role="alert">{#noDataAvailable#}</div>
                     {/if}

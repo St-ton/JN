@@ -24,7 +24,6 @@ $KuponcodeUngueltig       = false;
 $nVersandfreiKuponGueltig = false;
 $cart                     = $_SESSION['Warenkorb'];
 
-pruefeHttps();
 Shop::setPageType(PAGE_WARENKORB);
 $kLink = $linkHelper->getSpecialPageLinkKey(LINKTYP_WARENKORB);
 //Warenkorbaktualisierung?
@@ -59,9 +58,6 @@ if ($cart !== null &&
             if (isset($Kupon->kKupon) && $Kupon->kKupon > 0 && $Kupon->cKuponTyp === 'standard') {
                 kuponAnnehmen($Kupon);
                 executeHook(HOOK_WARENKORB_PAGE_KUPONANNEHMEN);
-                if (freeGiftStillValid() === false) {
-                    $MsgWarning = Shop::Lang()->get('freegiftsMinimum', 'errorMessages');
-                }
             } elseif (!empty($Kupon->kKupon) && $Kupon->cKuponTyp === 'versandkupon') {
                 // Aktiven Kupon aus der Session löschen und dessen Warenkorbposition
                 $_SESSION['Warenkorb']->loescheSpezialPos(C_WARENKORBPOS_TYP_KUPON);

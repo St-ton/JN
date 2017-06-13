@@ -310,12 +310,12 @@ for ($i = 0; $i < $settingsCount; ++$i) {
         ? $oSetValue->cWert
         : null;
 }
-$advancedSettings = Shop::DB()->selectAll(
-    'teinstellungenconf',
-    ['nStandardAnzeigen', 'kEinstellungenSektion'],
-    [0, CONF_CACHING],
-    '*',
-    'nSort'
+$advancedSettings = Shop::DB()->query(
+    "SELECT * 
+        FROM teinstellungenconf 
+        WHERE (nStandardAnzeigen = 0 OR nStandardAnzeigen = 2)
+            AND kEinstellungenSektion = " . CONF_CACHING . "
+        ORDER BY nSort", 2
 );
 $settingsCount    = count($advancedSettings);
 for ($i = 0; $i < $settingsCount; ++$i) {

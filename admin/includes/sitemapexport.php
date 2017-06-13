@@ -36,25 +36,13 @@ function baueSitemap($nDatei, $data)
 }
 
 /**
- * the sitemap generation could be called from ssl-enabled backend
- * in that case, all URLs would be rewritten to https:// by Shop::getURL()
- * if  kaufabwicklung_ssl_nutzen === 'Z'
- * in the case of CMS pages with force SSL this is actually correct, otherwise not *
- *
+ * @deprecated since 4.06
  * @param bool $ssl
  * @return mixed|string
  */
 function getSitemapBaseURL($ssl = false)
 {
-    if (pruefeSSL() === 2 && !$ssl) {
-        $conf       = Shop::getSettings([CONF_GLOBAL]);
-        $cSSLNutzen = $conf['global']['kaufabwicklung_ssl_nutzen'];
-        if ($cSSLNutzen === 'Z') {
-            return str_replace('https://', 'http://', Shop::getURL());
-        }
-    }
-
-    return Shop::getURL();
+    return Shop::getURL($ssl);
 }
 
 /**
@@ -64,7 +52,7 @@ function getSitemapBaseURL($ssl = false)
  */
 function baueSitemapIndex($nDatei, $bGZ)
 {
-    $shopURL = getSitemapBaseURL();
+    $shopURL = Shop::getURL();
     $conf    = Shop::getSettings([CONF_SITEMAP]);
     $cIndex  = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
     $cIndex .= '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
@@ -110,7 +98,7 @@ function makeURL(
 )
 {
     $strRet = "  <url>\n" .
-        "     <loc>" . StringHandler::htmlentities(utf8_encode(getSitemapBaseURL($ssl))) . '/' .
+        "     <loc>" . StringHandler::htmlentities(utf8_encode(Shop::getURL($ssl))) . '/' .
         StringHandler::htmlentities(utf8_encode($strLoc)) . "</loc>\n";
     if (strlen($cGoogleImageURL) > 0) {
         $strRet .=
@@ -290,7 +278,7 @@ function generateSitemapXML()
     $nAnzahlURL_arr = [];
     $nSitemapLimit  = 25000;
     $sitemap_data   = '';
-    $shopURL        = getSitemapBaseURL();
+    $shopURL        = Shop::getURL();
     //Hauptseite
     $sitemap_data .= makeURL('', null, FREQ_ALWAYS, PRIO_VERYHIGH);
     //Alte Sitemaps löschen
@@ -1199,8 +1187,8 @@ function baueExportURL($kKey, $cKey, $dLetzteAktualisierung, $oSprach_arr, $kSpr
 
     baueArtikelAnzahl($FilterSQL, $GLOBALS['oSuchergebnisse'], $nArtikelProSeite, 0);
 
-    $shopURL    = getSitemapBaseURL();
-    $shopURLSSL = getSitemapBaseURL(true);
+    $shopURL    = Shop::getURL();
+    $shopURLSSL = Shop::getURL(true);
     $search     = [$shopURL . '/', $shopURLSSL . '/'];
     $replace    = ['', ''];
     if ($GLOBALS['oSuchergebnisse']->GesamtanzahlArtikel > 0) {

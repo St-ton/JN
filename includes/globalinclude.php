@@ -64,8 +64,8 @@ $cache->setJtlCacheConfig();
 
 $conf = Shop::getSettings([CONF_GLOBAL]);
 
-if ($conf['global']['kaufabwicklung_ssl_nutzen'] === 'P' &&
-    PHP_SAPI !== 'cli' &&
+if (PHP_SAPI !== 'cli' &&
+    $conf['global']['kaufabwicklung_ssl_nutzen'] === 'P' &&
     (!isset($_SERVER['HTTPS']) || (strtolower($_SERVER['HTTPS']) !== 'on' && (int)$_SERVER['HTTPS'] !== 1))
 ) {
     $https = false;
@@ -131,9 +131,9 @@ if (!JTL_INCLUDE_ONLY_DB) {
     // Boxen
     $oBoxen = Boxen::getInstance();
     // Session
-    $session = (defined('JTLCRON') && JTLCRON === true) ?
-        Session::getInstance(true, true, 'JTLCRON') :
-        Session::getInstance();
+    $session = (defined('JTLCRON') && JTLCRON === true)
+        ? Session::getInstance(true, true, 'JTLCRON')
+        : Session::getInstance();
     //Wartungsmodus aktiviert?
     $bAdminWartungsmodus = false;
     if ($GlobaleEinstellungen['global']['wartungsmodus_aktiviert'] === 'Y' &&

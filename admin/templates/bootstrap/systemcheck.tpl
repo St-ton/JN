@@ -106,48 +106,17 @@
             <div class="page-header">
                 <h1>Empfohlene Anpassungen</h1>
             </div>
-            <table class="table table-striped table-hover">
-                <thead>
-                    <tr>
-                        <th class="col-xs-7">&nbsp;</th>
-                        <th class="col-xs-3 text-center">Empfohlener Wert</th>
-                        <th class="col-xs-2 text-center">Ihr System</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {foreach $tests.recommendations as $test}
-                    <tr>
-                        <td>
-                            <div class="test-name">
-                                <strong>{$test->getName()|utf8_decode}</strong><br>
-                                {if $test->getDescription()|@count_characters > 0}
-                                    <p class="hidden-xs expandable">{$test->getDescription()|utf8_decode}</p>
-                                {/if}
-                            </div>
-                        </td>
-                        <td class="text-center">{$test->getRequiredState()}</td>
-                        <td class="text-center">{call test_result test=$test}</td>
-                    </tr>
-                    {/foreach}
-                </tbody>
-            </table>
-        {/if}
-
-        {if $tests.programs|count > 0}
-            <div class="page-header">
-                <h1>Installierte Software</h1>
-            </div>
-            <table class="table table-striped table-hover">
-                <thead>
-                    <tr>
-                        <th class="col-xs-7">Software</th>
-                        <th class="col-xs-3 text-center">Voraussetzung</th>
-                        <th class="col-xs-2 text-center">Vorhanden</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {foreach $tests.programs as $test}
-                        {if !$test->getIsOptional() || $test->getIsRecommended()}
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th class="col-xs-7">&nbsp;</th>
+                            <th class="col-xs-3 text-center">Empfohlener Wert</th>
+                            <th class="col-xs-2 text-center">Ihr System</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {foreach $tests.recommendations as $test}
                         <tr>
                             <td>
                                 <div class="test-name">
@@ -160,58 +129,28 @@
                             <td class="text-center">{$test->getRequiredState()}</td>
                             <td class="text-center">{call test_result test=$test}</td>
                         </tr>
-                        {/if}
-                    {/foreach}
-                </tbody>
-            </table>
+                        {/foreach}
+                    </tbody>
+                </table>
+            </div>
         {/if}
 
-        {if $tests.php_modules|count > 0}
+        {if $tests.programs|count > 0}
             <div class="page-header">
-                <h1>Ben&ouml;tigte PHP-Erweiterungen und -Funktionen</h1>
+                <h1>Installierte Software</h1>
             </div>
-            <table class="table table-striped table-hover">
-                <thead>
-                    <tr>
-                        <th class="col-xs-10">Bezeichnung</th>
-                        <th class="col-xs-2 text-center">Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {foreach $tests.php_modules as $test}
-                        {if !$test->getIsOptional() || $test->getIsRecommended()}
-                            <tr>
-                                <td>
-                                    <div class="test-name">
-                                        <strong>{$test->getName()|utf8_decode}</strong><br>
-                                        {if $test->getDescription()|@count_characters > 0}
-                                            <p class="hidden-xs expandable">{$test->getDescription()|utf8_decode}</p>
-                                        {/if}
-                                    </div>
-                                </td>
-                                <td class="text-center">{call test_result test=$test}</td>
-                            </tr>
-                        {/if}
-                    {/foreach}
-                </tbody>
-            </table>
-        {/if}
-
-        {if $tests.php_config|count > 0}
-            <div class="page-header">
-                <h1>Ben&ouml;tigte PHP-Einstellungen</h1>
-            </div>
-            <table class="table table-striped table-hover">
-                <thead>
-                    <tr>
-                        <th class="col-xs-7">Einstellung</th>
-                        <th class="col-xs-3 text-center">Ben&ouml;tigter Wert</th>
-                        <th class="col-xs-2 text-center">Ihr System</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {foreach $tests.php_config as $test}
-                        {if !$test->getIsOptional() || $test->getIsRecommended()}
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th class="col-xs-7">Software</th>
+                            <th class="col-xs-3 text-center">Voraussetzung</th>
+                            <th class="col-xs-2 text-center">Vorhanden</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {foreach $tests.programs as $test}
+                            {if !$test->getIsOptional() || $test->getIsRecommended()}
                             <tr>
                                 <td>
                                     <div class="test-name">
@@ -224,10 +163,79 @@
                                 <td class="text-center">{$test->getRequiredState()}</td>
                                 <td class="text-center">{call test_result test=$test}</td>
                             </tr>
-                        {/if}
-                    {/foreach}
-                </tbody>
-            </table>
+                            {/if}
+                        {/foreach}
+                    </tbody>
+                </table>
+            </div>
+        {/if}
+
+        {if $tests.php_modules|count > 0}
+            <div class="page-header">
+                <h1>Ben&ouml;tigte PHP-Erweiterungen und -Funktionen</h1>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th class="col-xs-10">Bezeichnung</th>
+                            <th class="col-xs-2 text-center">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {foreach $tests.php_modules as $test}
+                            {if !$test->getIsOptional() || $test->getIsRecommended()}
+                                <tr>
+                                    <td>
+                                        <div class="test-name">
+                                            <strong>{$test->getName()|utf8_decode}</strong><br>
+                                            {if $test->getDescription()|@count_characters > 0}
+                                                <p class="hidden-xs expandable">{$test->getDescription()|utf8_decode}</p>
+                                            {/if}
+                                        </div>
+                                    </td>
+                                    <td class="text-center">{call test_result test=$test}</td>
+                                </tr>
+                            {/if}
+                        {/foreach}
+                    </tbody>
+                </table>
+            </div>
+        {/if}
+
+        {if $tests.php_config|count > 0}
+            <div class="page-header">
+                <h1>Ben&ouml;tigte PHP-Einstellungen</h1>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th class="col-xs-7">Einstellung</th>
+                            <th class="col-xs-3 text-center">Ben&ouml;tigter Wert</th>
+                            <th class="col-xs-2 text-center">Ihr System</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {foreach $tests.php_config as $test}
+                            {if !$test->getIsOptional() || $test->getIsRecommended()}
+                                <tr>
+                                    <td>
+                                        <div class="test-name">
+                                            <strong>{$test->getName()|utf8_decode}</strong><br>
+                                            {if $test->getDescription()|@count_characters > 0}
+                                                <p class="hidden-xs expandable">{$test->getDescription()|utf8_decode}</p>
+                                            {/if}
+                                        </div>
+                                    </td>
+                                    <td class="text-center">{$test->getRequiredState()}</td>
+                                    <td class="text-center">{call test_result test=$test}</td>
+                                </tr>
+                            {/if}
+                        {/foreach}
+                    </tbody>
+                </table>
+            </div>
         {/if}
     </div>
 </div>

@@ -1,6 +1,6 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=#kampagneDetailStatsDef#}
 <div id="content" class="container-fluid">
-    <div id="tabellenLivesuche">
+    <div id="tabellenLivesuche" class="table-responsive">
         <table class="table">
             <tr>
                 <th class="tleft"><strong>{$oKampagneDef->cName}</strong></th>
@@ -20,7 +20,7 @@
                      cParam_arr=['kKampagne'=>$oKampagne->kKampagne, 'defdetail'=>1,
                                  'kKampagneDef'=>$oKampagneDef->kKampagneDef, 'cZeitParam'=>$cZeitraumParam,
                                  'token'=>$smarty.session.jtl_token]}
-            <div id="tabellenLivesuche">
+            <div id="tabellenLivesuche" class="table-responsive">
                 <table class="table">
                     <tr>
                         {foreach name="kampagnendefs" from=$cMember_arr key=cMember item=cMemberAnzeige}

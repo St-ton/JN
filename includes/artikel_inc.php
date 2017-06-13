@@ -57,7 +57,7 @@ function gibArtikelXSelling($kArtikel, $isParent = null)
                 }
                 $xSelling->Standard->XSellGruppen[$i]->Artikel = [];
                 foreach ($xsell as $xs) {
-                    if ($xs->kXSellGruppe == $xsellgruppen[$i]) {
+                    if ($xs->kXSellGruppe === $xsellgruppen[$i]) {
                         $artikel = new Artikel();
                         $artikel->fuelleArtikel($xs->kXSellArtikel, $defaultOptions);
                         if ($artikel->kArtikel > 0 && $artikel->aufLagerSichtbarkeit()) {
@@ -172,11 +172,12 @@ function bearbeiteFrageZumProdukt()
 
                 executeHook(HOOK_ARTIKEL_INC_FRAGEZUMPRODUKT);
 
-                // Bei anonymen Anfragen die E-Mail-Adresse als Name verwenden
+                // Set empty string if it not exists
                 if (empty($oAnfrage->cNachname)) {
-                    $oAnfrage->cNachname = $oAnfrage->cMail;
+                    $oAnfrage->cNachname = '';
                 }
-                if (!isset($oAnfrage->cVorname)) {
+                // Set empty string if it not exists
+                if (empty($oAnfrage->cVorname)) {
                     $oAnfrage->cVorname = '';
                 }
                 // CheckBox Spezialfunktion ausfuehren
@@ -382,11 +383,13 @@ function floodSchutzProduktanfrage($min = 0)
     if ($min <= 0) {
         return false;
     }
-    $history = Shop::DB()->query(
+    $history = Shop::DB()->executeQueryPrepared(
         "SELECT kProduktanfrageHistory
             FROM tproduktanfragehistory
-            WHERE cIP = '" . gibIP() . "'
-                AND date_sub(now(), INTERVAL $min MINUTE) < dErstellt", 1
+            WHERE cIP = :ip
+                AND date_sub(now(), INTERVAL :min MINUTE) < dErstellt",
+        ['ip'  => gibIP(), 'min' => $min],
+        1
     );
 
     return (isset($history->kProduktanfrageHistory) && $history->kProduktanfrageHistory > 0);
@@ -430,11 +433,12 @@ function bearbeiteBenachrichtigung()
 
                 executeHook(HOOK_ARTIKEL_INC_BENACHRICHTIGUNG);
 
-                // Bei anonymen Anfragen die E-Mail-Adresse als Name verwenden
+                // Set empty string if not exists
                 if (empty($Benachrichtigung->cNachname)) {
-                    $Benachrichtigung->cNachname = $Benachrichtigung->cMail;
+                    $Benachrichtigung->cNachname = '';
                 }
-                if (!isset($Benachrichtigung->cVorname)) {
+                // Set empty string if it not exists
+                if (empty($Benachrichtigung->cVorname)) {
                     $Benachrichtigung->cVorname = '';
                 }
                 // CheckBox Spezialfunktion ausfuehren
@@ -515,10 +519,14 @@ function gibFehlendeEingabenBenachrichtigungsformular()
  */
 function baueFormularVorgabenBenachrichtigung()
 {
-    $msg            = new stdClass();
-    $msg->cVorname  = StringHandler::filterXSS($_POST['vorname']);
-    $msg->cNachname = StringHandler::filterXSS($_POST['nachname']);
-    $msg->cMail     = StringHandler::filterXSS($_POST['email']);
+    $msg  = new stdClass();
+    $conf = Shop::getSettings([CONF_ARTIKELDETAILS]);
+    if (!empty($_POST['vorname']) && $conf['artikeldetails']['benachrichtigung_abfragen_vorname'] !== 'N') {
+        $msg->cVorname = StringHandler::filterXSS($_POST['vorname']);
+    }
+    if (!empty($_POST['nachname']) && $conf['artikeldetails']['benachrichtigung_abfragen_nachname'] !== 'N') {
+        $msg->cNachname = StringHandler::filterXSS($_POST['nachname']);
+    }
 
     return $msg;
 }
@@ -533,14 +541,16 @@ function floodSchutzBenachrichtigung($min)
     if (!$min) {
         return false;
     }
-    $history = Shop::DB()->query(
+    $history = Shop::DB()->executeQueryPrepared(
         'SELECT kVerfuegbarkeitsbenachrichtigung
             FROM tverfuegbarkeitsbenachrichtigung
-            WHERE cIP = "' . gibIP() . '"
-            AND date_sub(now(), INTERVAL ' . $min . ' MINUTE) < dErstellt', 1
+            WHERE cIP = :ip
+            AND date_sub(now(), INTERVAL :min MINUTE) < dErstellt',
+        ['ip' => gibIP(), 'min' => $min],
+        1
     );
 
-    return (isset($history->kVerfuegbarkeitsbenachrichtigung) && $history->kVerfuegbarkeitsbenachrichtigung > 0);
+    return isset($history->kVerfuegbarkeitsbenachrichtigung) && $history->kVerfuegbarkeitsbenachrichtigung > 0;
 }
 
 /**
@@ -798,11 +808,13 @@ function bearbeiteProdukttags($AktuellerArtikel)
                     );
                     $kKunde = (int)$_SESSION['Kunde']->kKunde;
                 } else { // Wenn nicht, dann hat ein anonymer Besucher ein Tag gepostet
-                    $count_tag_postings = Shop::DB()->query(
+                    $count_tag_postings = Shop::DB()->executeQueryPrepared(
                         "SELECT count(kTagKunde) AS Anzahl FROM ttagkunde
                             WHERE dZeit > DATE_SUB(now(), INTERVAL 1 DAY)
-                                AND cIP = '" . $ip . "'
-                                AND kKunde = 0", 1
+                                AND cIP = :ip
+                                AND kKunde = 0",
+                        ['ip' => $ip],
+                        1
                     );
                     $kKunde = 0;
                 }
@@ -1241,7 +1253,7 @@ function holeAehnlicheArtikel($kArtikel)
     ) {
         foreach ($oArtikel_arr as $i => $oArtikel) {
             foreach ($kArtikelXSellerKey_arr as $kArtikelXSellerKey) {
-                if ($oArtikel->kArtikel == $kArtikelXSellerKey) {
+                if ($oArtikel->kArtikel === $kArtikelXSellerKey) {
                     unset($oArtikel_arr[$i]);
                 }
             }
@@ -1309,13 +1321,22 @@ function buildConfig($kArtikel, $fAnzahl, $nVariation_arr, $nKonfiggruppe_arr, $
     $oArtikelOptionen->nVariationKombiKinder = 1;
     $oArtikel->fuelleArtikel($kArtikel, $oArtikelOptionen);
 
+    $oKonfig->nMinDeliveryDays      = $oArtikel->nMinDeliveryDays;
+    $oKonfig->nMaxDeliveryDays      = $oArtikel->nMaxDeliveryDays;
+    $oKonfig->cEstimatedDelivery    = $oArtikel->cEstimatedDelivery;
+    $oKonfig->Lageranzeige          = new stdClass();
+    $oKonfig->Lageranzeige->nStatus = $oArtikel->Lageranzeige->nStatus;
+
     $fAnzahl = max($fAnzahl, 1);
     if ($oArtikel->cTeilbar !== 'Y' && (int)$fAnzahl != $fAnzahl) {
         $fAnzahl = (int)$fAnzahl;
     }
 
     $oKonfig->fGesamtpreis = [
-        berechneBrutto($oArtikel->gibPreis($fAnzahl, $oEigenschaftwerte_arr), gibUst($oArtikel->kSteuerklasse)) * $fAnzahl,
+        berechneBrutto(
+            $oArtikel->gibPreis($fAnzahl, $oEigenschaftwerte_arr),
+            gibUst($oArtikel->kSteuerklasse)
+        ) * $fAnzahl,
         $oArtikel->gibPreis($fAnzahl, $oEigenschaftwerte_arr) * $fAnzahl
     ];
     $oKonfig->oKonfig_arr = $oArtikel->oKonfig_arr;
@@ -1355,10 +1376,21 @@ function buildConfig($kArtikel, $fAnzahl, $nVariation_arr, $nKonfiggruppe_arr, $
                 $oKonfig->fGesamtpreis[0] += $oKonfigitem->getPreis() * $oKonfigitem->fAnzahlWK;
                 $oKonfig->fGesamtpreis[1] += $oKonfigitem->getPreis(true) * $oKonfigitem->fAnzahlWK;
                 $oKonfiggruppe->bAktiv = true;
+                //Konfigitem mit Lagerinfos
+                if ($oKonfigitem->getArtikel()->cLagerBeachten === 'Y'
+                    && $oKonfig->nMinDeliveryDays < $oKonfigitem->getArtikel()->nMinDeliveryDays
+                ) {
+                    $oKonfig->nMinDeliveryDays      = $oKonfigitem->getArtikel()->nMinDeliveryDays;
+                    $oKonfig->nMaxDeliveryDays      = $oKonfigitem->getArtikel()->nMaxDeliveryDays;
+                    $oKonfig->cEstimatedDelivery    = $oKonfigitem->getArtikel()->cEstimatedDelivery;
+                    $oKonfig->Lageranzeige->nStatus = $oKonfigitem->getArtikel()->Lageranzeige->nStatus;
+                }
             }
         }
+        unset($oKonfigitem);
         $oKonfiggruppe->oItem_arr = array_values($oKonfiggruppe->oItem_arr);
     }
+    unset($oKonfiggruppe);
     if ($_SESSION['Kundengruppe']->darfPreiseSehen) {
         $oKonfig->cPreisLocalized = [
             gibPreisStringLocalized($oKonfig->fGesamtpreis[0]),

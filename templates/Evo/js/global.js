@@ -143,6 +143,12 @@ function loadContent(url)
 {
     $.evo.extended().loadContent(url, function() {
         $.evo.extended().register();
+
+        if (typeof $.evo.article === 'function') {
+            $.evo.article().onLoad();
+            $.evo.article().register();
+        }
+
         $('html,body').animate({
             scrollTop: $('.list-pageinfo').offset().top - $('#evo-main-nav-wrapper').outerHeight() - 10 
         }, 100);
@@ -189,6 +195,10 @@ function addValidationListener() {
 
 function captcha_filled() {
     $('.g-recaptcha').closest('.form-group').find('div.form-error-msg').remove();
+}
+
+function isTouchCapable() {
+    return 'ontouchstart' in window || (window.DocumentTouch && document instanceof window.DocumentTouch);
 }
 
 $(window).load(function(){
@@ -335,15 +345,54 @@ $(document).ready(function () {
     });
 
     /*
+     * Banner
+     */
+    var bannerLink = $('.banner > a');
+    bannerLink.popover({
+        placement: 'auto bottom',
+        html:      true,
+        trigger:   'hover',
+        container: 'body',
+        content:   function () {
+            return $(this).children('.area-desc').html()
+        }
+    });
+
+    bannerLink.mouseenter(function () {
+        $(this).animate({
+            borderWidth: 10,
+            opacity:     0
+        }, 900, function () {
+            $(this).css({opacity: 1, borderWidth: 0});
+        });
+    });
+
+    $('.banner').mouseenter(function () {
+        $(this).children('a').animate({
+            borderWidth: 10,
+            opacity:     0
+        }, 900, function () {
+            $(this).css({opacity: 1, borderWidth: 0});
+        });
+    });
+
+    $('.banner > a[href=""]').click(function () {
+        return false;
+    });
+
+    /*
      * set bootstrap viewport
      */
     (function($, document, window, viewport){ 
+        var $body = $('body');
+
         $(window).resize(
             viewport.changed(function() {
-                $('body').attr('data-viewport', viewport.current());
+                $body.attr('data-viewport', viewport.current());
             })
         );
-        $('body').attr('data-viewport', viewport.current());
+        $body.attr('data-viewport', viewport.current());
+        $body.attr('data-touchcapable', isTouchCapable() ? 'true' : 'false');
     })(jQuery, document, window, ResponsiveBootstrapToolkit);
 
     categoryMenu();

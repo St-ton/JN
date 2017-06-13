@@ -36,16 +36,13 @@ class Session
     protected static $_storage;
 
     /**
-     * @param bool        $start - call session_start()?
-     * @param bool        $force - force new instance?
-     * @param string|null $sessionName - if null, then default to current session name
+     * @param bool   $start - call session_start()?
+     * @param bool   $force - force new instance?
+     * @param string $sessionName - if null, then default to current session name
      * @return Session
      */
-    public static function getInstance($start = true, $force = false, $sessionName = null)
+    public static function getInstance($start = true, $force = false, $sessionName = self::DefaultSession)
     {
-        if ($sessionName === null) {
-            $sessionName = self::$_sessionName;
-        }
         if (self::$_sessionName !== $sessionName) {
             $force = true;
         }
@@ -64,7 +61,6 @@ class Session
      */
     public function __construct($start = true, $sessionName = self::DefaultSession)
     {
-        session_write_close(); // save previously created session
         self::$_instance    = $this;
         self::$_sessionName = $sessionName;
         $bot                = false;
@@ -74,10 +70,6 @@ class Session
             $bot            = self::getIsCrawler($_SERVER['HTTP_USER_AGENT']);
         }
         session_name(self::$_sessionName);
-        // if a session id came as cookie, set it as the current one
-        if (isset($_COOKIE[self::$_sessionName])) {
-            session_id($_COOKIE[self::$_sessionName]);
-        }
         if ($bot === false || $saveBotSession === 0) {
             if (ES_SESSIONS === 1) { // Sessions in DB speichern
                 self::$_handler = new SessionHandlerDB();
@@ -198,6 +190,16 @@ class Session
             if (!isset($_SESSION['jtl_token'])) {
                 $_SESSION['jtl_token'] = generateCSRFToken();
             }
+            array_map(function ($lang) {
+                $lang->kSprache = (int)$lang->kSprache;
+
+                return $lang;
+            }, $_SESSION['Sprachen']);
+            array_map(function ($currency) {
+                $currency->kWaehrung = (int)$currency->kWaehrung;
+
+                return $currency;
+            }, $_SESSION['Waehrungen']);
             // Sprache anhand der Browsereinstellung ermitteln
             $cLangDefault = '';
             $cAllowed_arr = [];
@@ -226,6 +228,13 @@ class Session
             if (!isset($_SESSION['Waehrung'])) {
                 foreach ($_SESSION['Waehrungen'] as $Waehrung) {
                     if ($Waehrung->cStandard === 'Y') {
+                        memberCopy($Waehrung, $_SESSION['Waehrung']);
+                        $_SESSION['cWaehrungName'] = $Waehrung->cName;
+                    }
+                }
+            } else {
+                foreach ($_SESSION['Waehrungen'] as $Waehrung) {
+                    if ($Waehrung->cISO === $_SESSION['Waehrung']->cISO) {
                         memberCopy($Waehrung, $_SESSION['Waehrung']);
                         $_SESSION['cWaehrungName'] = $Waehrung->cName;
                     }

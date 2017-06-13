@@ -1,7 +1,12 @@
 {* template to display products in product-lists *}
 
-<div class="product-cell">
-    <div class="product-body row {if $tplscope !== 'list'} text-center{/if}">
+{if $Einstellungen.template.productlist.variation_select_productlist === 'N'}
+    {assign var="hasOnlyListableVariations" value=0}
+{else}
+    {hasOnlyListableVariations artikel=$Artikel maxVariationCount=$Einstellungen.template.productlist.variation_select_productlist assign="hasOnlyListableVariations"}
+{/if}
+<div class="product-cell thumbnail">
+    <div id="result-wrapper_buy_form_{$Artikel->kArtikel}" class="product-body row {if $tplscope !== 'list'} text-center{/if}">
         <div class="col-xs-3 col-sm-2 col-lg-3 text-center">
             {block name="image-wrapper"}
                 <a class="image-wrapper" href="{$Artikel->cURL}">
@@ -16,6 +21,10 @@
                     {if isset($Artikel->oSuchspecialBild)}
                         <img class="overlay-img visible-lg" src="{$Artikel->oSuchspecialBild->cPfadKlein}"
                              alt="{if isset($Artikel->oSuchspecialBild->cSuchspecial)}{$Artikel->oSuchspecialBild->cSuchspecial}{else}{$Artikel->cName}{/if}">
+                    {/if}
+
+                    {if $Einstellungen.template.productlist.quickview_productlist === 'Y' && !$Artikel->bHasKonfig}
+                        <span class="quickview badge hidden-xs" data-src="{$Artikel->cURL}" data-target="buy_form_{$Artikel->kArtikel}" title="{$Artikel->cName}">{lang key="downloadPreview" section="productDownloads"}</span>
                     {/if}
                 </a>
             {/block}
@@ -97,7 +106,7 @@
                             </li>
                         {/if}
                     </ul>{* /attr-group *}
-                    {if $Artikel->oVariationKombiVorschau_arr|@count > 0 && $Artikel->oVariationKombiVorschau_arr && $Einstellungen.artikeluebersicht.artikeluebersicht_varikombi_anzahl > 0}
+                    {if ($hasOnlyListableVariations == 0 || $Artikel->bHasKonfig) && $Artikel->oVariationKombiVorschau_arr|@count > 0 && $Artikel->oVariationKombiVorschau_arr && $Einstellungen.artikeluebersicht.artikeluebersicht_varikombi_anzahl > 0}
                         <div class="varikombis-thumbs">
                             {foreach name=varikombis from=$Artikel->oVariationKombiVorschau_arr item=oVariationKombiVorschau}
                                 <a href="{$oVariationKombiVorschau->cURL}" class="thumbnail pull-left"><img src="{$oVariationKombiVorschau->cBildMini}" alt="" /></a>
@@ -110,7 +119,7 @@
         </div>{* /col-md-9 *}
 
         <div class="col-xs-3 col-sm-4">
-            <form action="navi.php" method="post" class="form form-basket" data-toggle="basket-add">
+            <form id="buy_form_{$Artikel->kArtikel}" action="navi.php" method="post" class="form form-basket" data-toggle="basket-add">
                 {block name="form-basket"}
                     {assign var=price_image value=""}
                     {if isset($Artikel->Preise->strPreisGrafik_Suche)}
@@ -124,7 +133,7 @@
                             <div class="availablefrom">
                                 <small>{lang key="productAvailable" section="global"}: {$Artikel->Erscheinungsdatum_de}</small>
                             </div>
-                            {if $Einstellungen.global.global_erscheinende_kaeuflich === 'Y' && $Artikel->inWarenkorbLegbar == 1}
+                            {if $Einstellungen.global.global_erscheinende_kaeuflich === 'Y' && $Artikel->inWarenkorbLegbar === 1}
                                 <div class="attr attr-preorder"><small class="value">{lang key="preorderPossible" section="global"}</small></div>
                             {/if}
                         {elseif $anzeige !== 'nichts' && $Artikel->cLagerBeachten === 'Y' && ($Artikel->cLagerKleinerNull === 'N' ||
@@ -147,10 +156,17 @@
                         {/if}
                     {/block}
                     </div>
-
+                    {if $hasOnlyListableVariations > 0 && !$Artikel->bHasKonfig}
+                        <div class="hidden-xs basket-variations">
+                            {assign var="singleVariation" value=true}
+                            {include file="productdetails/variation.tpl" simple=$Artikel->isSimpleVariation showMatrix=false smallView=true ohneFreifeld=($hasOnlyListableVariations == 2)}
+                        </div>
+                    {/if}
                     <div class="hidden-xs basket-details">
                         {block name="basket-details"}
-                            {if ($Artikel->inWarenkorbLegbar == 1 || ($Artikel->nErscheinendesProdukt == 1 && $Einstellungen.global.global_erscheinende_kaeuflich === 'Y')) && $Artikel->nIstVater == 0 && $Artikel->Variationen|@count == 0 && !$Artikel->bHasKonfig}
+                            {if ($Artikel->inWarenkorbLegbar === 1 || ($Artikel->nErscheinendesProdukt === 1 && $Einstellungen.global.global_erscheinende_kaeuflich === 'Y')) &&
+                                (($Artikel->nIstVater === 0 && $Artikel->Variationen|@count === 0) || $hasOnlyListableVariations === 1) && !$Artikel->bHasKonfig
+                            }
                                 <div class="quantity-wrapper form-group top7">
                                     {if $Artikel->cEinheit}
                                         <div class="input-group input-group-sm">
@@ -225,7 +241,7 @@
                 {$jtl_token}
                 <div class="actions btn-group btn-group-xs btn-group-justified" role="group" aria-label="...">
                 {block name="product-actions"}
-                    {if !($Artikel->nIstVater && $Artikel->kVaterArtikel == 0)}
+                    {if !($Artikel->nIstVater && $Artikel->kVaterArtikel === 0)}
                         {if $Einstellungen.artikeluebersicht.artikeluebersicht_vergleichsliste_anzeigen === 'Y'}
                             <div class="btn-group btn-group-xs" role="group">
                                 <button name="Vergleichsliste" type="submit" class="compare btn btn-default" title="{lang key="addToCompare" section="productOverview"}">
@@ -240,7 +256,7 @@
                                 </button>
                             </div>
                         {/if}
-                        {if $Artikel->verfuegbarkeitsBenachrichtigung == 3 && (($Artikel->cLagerBeachten === 'Y' && $Artikel->cLagerKleinerNull !== 'Y') || $Artikel->cLagerBeachten !== 'Y')}
+                        {if $Artikel->verfuegbarkeitsBenachrichtigung === 3 && (($Artikel->cLagerBeachten === 'Y' && $Artikel->cLagerKleinerNull !== 'Y') || $Artikel->cLagerBeachten !== 'Y')}
                             <div class="btn-group btn-group-xs" role="group">
                                 <button type="button" id="n{$Artikel->kArtikel}" class="popup-dep notification btn btn-default btn-left" title="{lang key="requestNotification" section="global"}">
                                     <span class="fa fa-bell"></span>
@@ -257,7 +273,7 @@
 </div>{* /product-cell *}
 
 {* popup-content *}
-{if $Artikel->verfuegbarkeitsBenachrichtigung == 3}
+{if $Artikel->verfuegbarkeitsBenachrichtigung === 3}
     <div id="popupn{$Artikel->kArtikel}" class="hidden">
         {include file='productdetails/availability_notification_form.tpl' position="popup" tplscope='artikeldetails'}
     </div>

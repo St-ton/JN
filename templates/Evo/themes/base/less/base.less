@@ -731,6 +731,84 @@ ul.filter_state li a.active:before {
     opacity: 0.9;
 }
 
+@media (min-width: @screen-md-min) {
+    .quickview.badge {
+        position: absolute;
+        top: @input-height-large;
+        left: 50%;
+        width: 40%;
+        min-width: 80px;
+        margin-left: -20%;
+        padding: 1em;
+        border-radius: @border-radius-small;
+        background-color: @body-bg;
+        color: @text-color;
+        border: 1px solid @btn-default-border;
+        opacity: 0.8;
+    }
+}
+
+[data-touchcapable="false"] .gallery .product-cell {
+    @media (min-width: @screen-md-min) {
+        .quickview.badge {
+            transition: 0.5s;
+            opacity: 0;
+        }
+
+        .image-wrapper:hover .quickview.badge {
+            opacity: 0.8;
+        }
+
+        &.hover-enabled {
+            transition: none;
+
+            .expandable {
+                display: none;
+            }
+
+            .quickview.badge {
+                display: none;
+            }
+
+            &:hover, &.active {
+                position: absolute;
+                z-index: @zindex-navbar - 10;
+                left: 0;
+                top: 0;
+                height: auto !important;
+                min-height: 100%;
+                width: 100%;
+                padding-left: @grid-gutter-width / 2 + 10;
+                padding-right: @grid-gutter-width / 2 + 10;
+                .box-shadow(0 0 @margin-base rgba(0, 0, 0, 0.45));
+                transition: box-shadow 0.3s;
+
+                .expandable {
+                    display: block;
+                }
+
+                .quickview.badge {
+                    display: inline-block;
+                    opacity: 0.8;
+                }
+            }
+        }
+    }
+}
+
+[data-touchcapable="false"] .list .product-cell {
+    @media (min-width: @screen-md-min) {
+        .quickview.badge {
+            transition: 0.5s;
+            opacity: 0;
+        }
+
+        .image-wrapper:hover .quickview.badge {
+            opacity: 0.8;
+        }
+    }
+}
+
 /* Fix issue # 248 */
 .price_img img {
     display: inline !important;
@@ -973,8 +1051,8 @@ aside .badge {
     margin-bottom: 20px;
 }
 
-.product-attributes .value a.label {
-    line-height: 2;
+.product-attributes td{
+    line-height: @line-height-base + .3em;
 }
 
 /* ARTICLE MATRIX */
@@ -1684,7 +1762,6 @@ fieldset {
 }
 
 .row.gallery .product-wrapper {
-    overflow: hidden;
     border-bottom: 1px solid @panel-default-border;
     border-right: 1px solid @panel-default-border;
 }

@@ -868,7 +868,6 @@ class Kupon
      */
     public function getTranslation($kKupon = 0)
     {
-        //dump($_SESSION);
         $translationList = [];
         if(isset($_SESSION['Sprachen'])){
             foreach ($_SESSION['Sprachen'] as $Sprache) {
@@ -898,7 +897,8 @@ class Kupon
      */
     public function getNewCustomerCoupon()
     {
-        $newCustomerCoupons = Shop::DB()->selectAll(
+        $newCustomerCoupons_arr = [];
+        $newCustomerCoupons     = Shop::DB()->selectAll(
             'tkupon',
             ['cKuponTyp', 'cAktiv'],
             ['neukundenkupon', 'Y'],
@@ -909,18 +909,12 @@ class Kupon
         foreach ($newCustomerCoupons as $newCustomerCoupon) {
             if (isset($newCustomerCoupon->kKupon) && $newCustomerCoupon->kKupon > 0) {
                 $newCustomerCoupon->translationList = $this->getTranslation($newCustomerCoupon->kKupon);
-                $cMember_arr                        = array_keys(get_object_vars($newCustomerCoupon));
-                foreach ($cMember_arr as $cMember) {
-                    $this->$cMember = $newCustomerCoupon->$cMember;
-                }
 
-                $newCustomerCoupons_arr[] = $this;
-
-                return $newCustomerCoupons_arr;
+                $newCustomerCoupons_arr[] = $newCustomerCoupon;
             }
         }
 
-        return false;
+        return $newCustomerCoupons_arr;
     }
 
     /**
@@ -939,7 +933,7 @@ class Kupon
         $numbersString = $numbers ? '0123456789' : null;
         $cCode         = '';
         $allCoupons    = Shop::DB()->query("SELECT * FROM tkupon", 2);
-        while (empty($cCode) || ((count($allCoupons) == 0) 
+        while (empty($cCode) || ((count($allCoupons) === 0)
                 ? empty($cCode) 
                 : Shop::DB()->select('tkupon', 'cCode', $cCode))) {
             $cCode = $prefix . substr(str_shuffle(str_repeat(

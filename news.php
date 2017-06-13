@@ -16,8 +16,6 @@ if (Shop::$directEntry === true) {
 } else {
     $cParameter_arr = [];
 }
-
-loeseHttps();
 $cHinweis               = '';
 $cFehler                = '';
 $step                   = 'news_uebersicht';
@@ -314,8 +312,12 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
         // News total count
         $oNewsUebersichtAll = getFullNewsOverview($oSQL);
         // Pagination
-        $oPagination = (new Pagination())
-            ->setItemsPerPageOptions([2, 5, 10])
+        $newsCountShow = isset($Einstellungen['news']['news_anzahl_uebersicht'])
+                && (int)$Einstellungen['news']['news_anzahl_uebersicht'] > 0
+            ? (int)$Einstellungen['news']['news_anzahl_uebersicht']
+            : 10;
+        $oPagination   = (new Pagination())
+            ->setItemsPerPageOptions([$newsCountShow, $newsCountShow * 2, $newsCountShow * 5])
             ->setDefaultItemsPerPage(0)
             ->setItemCount($oNewsUebersichtAll->nAnzahl)
             ->assemble();

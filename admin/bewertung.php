@@ -69,17 +69,22 @@ if (verifyGPCDataInteger('bewertung_editieren') === 1) {
 } elseif (isset($_POST['bewertung_aktiv']) && (int)$_POST['bewertung_aktiv'] === 1) {
     if (isset($_POST['cArtNr'])) {
         // Bewertungen holen
-        $oBewertungAktiv_arr = Shop::DB()->query(
+        $oBewertungAktiv_arr = Shop::DB()->executeQueryPrepared(
             "SELECT tbewertung.*, DATE_FORMAT(tbewertung.dDatum, '%d.%m.%Y') AS Datum, tartikel.cName AS ArtikelName
                 FROM tbewertung
-                LEFT JOIN tartikel ON tbewertung.kArtikel = tartikel.kArtikel
-                WHERE tbewertung.kSprache = " . (int)$_SESSION['kSprache'] . "
-                    AND (tartikel.cArtNr LIKE '%" . Shop::DB()->escape($_POST['cArtNr']) . "%'
-                        OR tartikel.cName LIKE '%" . Shop::DB()->escape($_POST['cArtNr']) . "%')
-                ORDER BY tbewertung.kArtikel, tbewertung.dDatum DESC", 2
+                LEFT JOIN tartikel 
+                    ON tbewertung.kArtikel = tartikel.kArtikel
+                WHERE tbewertung.kSprache = :lang
+                    AND (tartikel.cArtNr LIKE :cartnr
+                        OR tartikel.cName LIKE :cartnr)
+                ORDER BY tbewertung.kArtikel, tbewertung.dDatum DESC",
+            [
+                'lang' => (int)$_SESSION['kSprache'],
+                'cartnr' => '%' .  $_POST['cArtNr'] . '%'
+            ],
+            2
         );
-
-        $smarty->assign('cArtNr', $_POST['cArtNr']);
+        $smarty->assign('cArtNr', StringHandler::filterXSS($_POST['cArtNr']));
     }
     // Bewertungen loeschen
     if (isset($_POST['loeschen']) && is_array($_POST['kBewertung']) && count($_POST['kBewertung']) > 0) {

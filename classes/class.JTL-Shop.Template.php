@@ -491,7 +491,7 @@ class Template
         $cacheID = 'mobile_template';
         if (($oTemplate = Shop::Cache()->get($cacheID)) === false) {
             $oTemplate = Shop::DB()->select('ttemplate', 'eTyp', 'mobil');
-            if ($oTemplate === false) {
+            if ($oTemplate === null) {
                 Shop::Cache()->set($cacheID, 'false', [CACHING_GROUP_TEMPLATE]);
             } else {
                 Shop::Cache()->set($cacheID, $oTemplate, [CACHING_GROUP_TEMPLATE]);
@@ -659,7 +659,7 @@ class Template
                         }
                         $oSetting->bEditable = (strlen($oSetting->bEditable) === 0)
                             ? true
-                            : (boolean)intval($oSetting->bEditable);
+                            : (boolean)(int)$oSetting->bEditable;
                         if ($oSetting->bEditable && isset($oDBSettings[$oSection->cKey][$oSetting->cKey])) {
                             $oSetting->cValue = $oDBSettings[$oSection->cKey][$oSetting->cKey];
                         }
@@ -732,7 +732,7 @@ class Template
                 /** @var SimpleXMLElement $oXMLContainer */
                 foreach ($oXMLBoxes_arr as $oXMLContainer) {
                     $cPosition             = (string)$oXMLContainer->attributes()->Position;
-                    $bAvailable            = (boolean)intval($oXMLContainer->attributes()->Available);
+                    $bAvailable            = (boolean)(int)$oXMLContainer->attributes()->Available;
                     $oItem_arr[$cPosition] = $bAvailable;
                 }
             }
@@ -787,7 +787,11 @@ class Template
                 return false;
             }
             self::$parent = $tplConfig->Parent;
+            $parentConfig = self::$helper->getXML(self::$parent);
+        } else {
+            $parentConfig = false;
         }
+
         $tplObject              = new stdClass();
         $tplObject->cTemplate   = $cOrdner;
         $tplObject->eTyp        = $eTyp;
@@ -795,8 +799,8 @@ class Template
         $tplObject->name        = (string)$tplConfig->Name;
         $tplObject->author      = (string)$tplConfig->Author;
         $tplObject->url         = (string)$tplConfig->URL;
-        $tplObject->version     = (float)$tplConfig->Version;
-        $tplObject->shopversion = (int)$tplConfig->ShopVersion;
+        $tplObject->version     = empty($tplConfig->Version) && $parentConfig ? (float)$parentConfig->Version : (float)$tplConfig->Version;
+        $tplObject->shopversion = empty($tplConfig->ShopVersion) && $parentConfig ? (int)$parentConfig->ShopVersion : (int)$tplConfig->ShopVersion;
         $tplObject->preview     = (string)$tplConfig->Preview;
         $bCheck                 = Shop::DB()->insert('ttemplate', $tplObject);
         if ($bCheck) {
@@ -943,7 +947,7 @@ class Template
     public function check($bRedirect = true)
     {
         if (isset($_GET['mt'])) {
-            $this->setzeKundenTemplate((boolean)intval($_GET['mt']));
+            $this->setzeKundenTemplate((boolean)(int)$_GET['mt']);
             $cUrlShop_arr    = parse_url(Shop::getURL());
             $ref             = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
             $cUrlReferer_arr = parse_url($ref);

@@ -170,8 +170,8 @@ class JTLFont
                 $image,
                 $this->nSize,
                 0,
-                ($wh[2] + $this->nPadding / 2),
-                ($this->nMaxHeight + $this->nPadding / 2),
+                $wh[2] + $this->nPadding / 2,
+                $this->nMaxHeight + $this->nPadding / 2,
                 $cTextColor,
                 $this->cFontDir . '/' . $this->cFont,
                 $char

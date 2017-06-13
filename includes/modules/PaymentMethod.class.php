@@ -485,7 +485,7 @@ class PaymentMethod
         if ($this->getSetting('min') > 0 && $cart->gibGesamtsummeWaren(1) <= $this->getSetting('min')) {
             ZahlungsLog::add($this->moduleID,
                 'Bestellwert ' . $cart->gibGesamtsummeWaren(1) .
-                    ' ist kleiner als der Mindestbestellwert von ' . $this->getSetting('min_bestellungen'),
+                    ' ist kleiner als der Mindestbestellwert von ' . $this->getSetting('min'),
                 null,
                 LOGLEVEL_NOTICE
             );
@@ -496,7 +496,7 @@ class PaymentMethod
         if ($this->getSetting('max') > 0 && $cart->gibGesamtsummeWaren(1) >= $this->getSetting('max')) {
             ZahlungsLog::add($this->moduleID,
                 'Bestellwert ' . $cart->gibGesamtsummeWaren(1) .
-                    ' ist groesser als der Mindestbestellwert von ' . $this->getSetting('min_bestellungen'),
+                    ' ist groesser als der maximale Bestellwert von ' . $this->getSetting('max'),
                 null,
                 LOGLEVEL_NOTICE
             );
@@ -773,7 +773,7 @@ class PaymentMethod
         } elseif ($moduleId === 'za_paymentpartner_jtl') {
             require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'paymentpartner/PaymentPartner.class.php';
             $paymentMethod = new PaymentPartner($moduleId);
-        } elseif (substr($moduleId, 0, 8) === 'za_mbqc_') {
+        } elseif (strpos($moduleId, 'za_mbqc_') === 0) {
             require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'moneybookers_qc/MoneyBookersQC.class.php';
             $paymentMethod = new MoneyBookersQC($moduleId);
         } elseif ($moduleId === 'za_ut_stand_jtl') {

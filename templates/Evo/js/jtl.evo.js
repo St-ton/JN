@@ -165,44 +165,24 @@
             }
         },
 
-        productTabs: function() {
-            var tabAnchor = $('#article-tabs');
-            if (tabAnchor && tabAnchor.hasClass('tab-content')) {
-                var items = '<ul id="article-tabs-list" class="nav nav-tabs">';
-
-                $('.panel-heading[data-parent="#article-tabs"]').each(function () {
-                    var href = $(this).attr('data-target'),
-                        aria = href.replace('#', ''),
-                        title = $(this).text();
-                    items += '<li role="presentation" class="' + aria + '-list"><a href="' + href + '" aria-controls="' + aria + '" role="tab" data-toggle="tab">' + title + '</a></li>';
-                    $(this).remove();
-                });
-
-                $('#article-tabs.tab-content').before(items + '</ul>');
-
-                $('#article-tabs-list li:first,#article-tabs.tab-content div:first').addClass('active');
-
-                $('#article-tabs-list').on('click', 'a', function (e) {
-                    e.preventDefault();
-                    $(this).tab('show');
-                    if ($(e.target).attr('aria-controls') === 'tab-preisverlauf' && typeof window.priceHistoryChart !== 'undefined' && window.priceHistoryChart === null) {
-                        window.priceHistoryChart = new Chart(window.ctx).Bar(window.chartData, {
-                            responsive:      true,
-                            scaleBeginAtZero: false,
-                            tooltipTemplate: "<%if (label){%><%=label%> - <%}%><%= parseFloat(value).toFixed(2).replace('.', ',') %> " + window.chartDataCurrency
-                        });
-                    }
-                });
-
-                if (window.location.hash) {
-                    $('#article-tabs-list').find('a[href="' + window.location.hash + '"]').tab('show');
+        productTabsPriceFlow: function() {
+            $('a[href="#priceFlow"]').on('shown.bs.tab', function () {
+                if (typeof window.priceHistoryChart !== 'undefined' && window.priceHistoryChart === null) {
+                    window.priceHistoryChart = new Chart(window.ctx).Bar(window.chartData, {
+                        responsive:      true,
+                        scaleBeginAtZero: false,
+                        tooltipTemplate: "<%if (label){%><%=label%> - <%}%><%= parseFloat(value).toFixed(2).replace('.', ',') %> " + window.chartDataCurrency
+                    });
                 }
-            }
+            });
         },
 
         autoheight: function() {
             $('.row-eq-height').each(function(i, e) {
-                $(e).find('[class*="col-"] > *').responsiveEqualHeightGrid();
+                $(e).children('[class*="col-"]').children().responsiveEqualHeightGrid();
+            });
+            $('.row-eq-height.gallery > [class*="col-"]').each(function(i, e) {
+                $(e).height($('div', $(e)).outerHeight());
             });
         },
         
@@ -210,8 +190,10 @@
             $('[data-toggle="tooltip"]').tooltip();
         },
 
-        imagebox: function() {
-            $('.image-box').each(function(i, item) {
+        imagebox: function(wrapper) {
+            var $wrapper = (typeof wrapper === 'undefined' || wrapper.length === 0) ? $('#result-wrapper') : $(wrapper);
+
+            $('.image-box', $wrapper).each(function(i, item) {
                 var box = $(this),
                     img = box.find('img'),
                     src = img.data('src');
@@ -271,12 +253,12 @@
         },
         
         renderCaptcha: function(parameters) {
-            if (typeof parameters != 'undefined') {
+            if (typeof parameters !== 'undefined') {
                 this.options.captcha = 
                     $.extend({}, this.options.captcha, parameters);
             }
 
-            if (typeof grecaptcha == 'undefined' && !this.options.captcha.loaded) {
+            if (typeof grecaptcha === 'undefined' && !this.options.captcha.loaded) {
                 this.options.captcha.loaded = true;
                 var lang                    = document.documentElement.lang;
                 $.getScript("https://www.google.com/recaptcha/api.js?render=explicit&onload=g_recaptcha_callback&hl=" + lang);
@@ -341,7 +323,7 @@
         },
 
         smoothScrollToAnchor: function(href, pushToHistory) {
-            var anchorRegex = /^#[\w]+$/;
+            var anchorRegex = /^#[\w\-]+$/;
             if (!anchorRegex.test(href)) {
                 return false;
             }
@@ -395,7 +377,7 @@
 
         register: function() {
             this.addSliderTouchSupport();
-            this.productTabs();
+            this.productTabsPriceFlow();
             // this.generateEvoSlider();
             this.generateSlickSlider();
             $('.nav-pills, .nav-tabs').tabdrop();
@@ -409,9 +391,10 @@
             this.smoothScroll();
         },
         
-        loadContent: function(url, callback, error, animation) {
-            var that = this;
-            var $wrapper = $('#result-wrapper');
+        loadContent: function(url, callback, error, animation, wrapper) {
+            var that     = this;
+            var $wrapper = (typeof wrapper === 'undefined' || wrapper.length === 0) ? $('#result-wrapper') : $(wrapper);
+
             if (animation) {
                 $wrapper.addClass('loading');
             }
@@ -423,12 +406,12 @@
                 }
                 $wrapper.replaceWith($data);
                 $wrapper = $data;
-                if (typeof callback == 'function') {
+                if (typeof callback === 'function') {
                     callback();
                 }
             })
             .fail(function() {
-                if (typeof error == 'function') {
+                if (typeof error === 'function') {
                     error();
                 }
             })
@@ -438,7 +421,7 @@
             });
         },
         
-        spinner: function() {
+        spinner: function(target) {
             var opts = {
               lines: 12             // The number of lines to draw
             , length: 7             // The length of each line
@@ -460,10 +443,13 @@
             , shadow: false         // Whether to render a shadow
             , hwaccel: false        // Whether to use hardware acceleration (might be buggy)
             , position: 'absolute'  // Element positioning
+            };
+
+            if (typeof target === 'undefined') {
+                target = document.getElementsByClassName('product-offer')[0];
             }
-            var target = document.getElementsByClassName('product-offer')[0];
-            var elem = new Spinner(opts).spin(target);
-            return elem;
+
+            return new Spinner(opts).spin(target);
         },
 
         trigger: function(event, args) {

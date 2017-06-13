@@ -58,13 +58,15 @@ function pruefeNewsKategorie($cName, $nNewskategorieEditSpeichern = 0)
 }
 
 /**
+ * @deprecated since 4.06
+ *
  * @param string $string
  * @return string
  */
 function convertDate($string)
 {
     list($dDatum, $dZeit) = explode(' ', $string);
-    if (count(explode(':', $dZeit)) === 2) {
+    if (substr_count(':', $dZeit) === 2 ) {
         list($nStunde, $nMinute) = explode(':', $dZeit);
     } else {
         list($nStunde, $nMinute, $nSekunde) = explode(':', $dZeit);
@@ -183,6 +185,8 @@ function mappeDatumName($cMonat, $nJahr, $cISOSprache)
 }
 
 /**
+ * @deprecated since 4.06
+ *
  * @param string $cDateTimeStr
  * @return stdClass
  */

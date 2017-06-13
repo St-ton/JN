@@ -93,7 +93,7 @@ class UstID
     public function bearbeiteAnfrage($bBZStPruefung = false)
     {
         $oReturn = $this->pruefeUstIDString($this->cUstId_2);
-        if (isset($oReturn->nRichtig) && $oReturn->nRichtig == 1) {
+        if (isset($oReturn->nRichtig) && $oReturn->nRichtig === 1) {
             if ($bBZStPruefung === true) {
                 if ($this->pruefePHPEinstellung()) {
                     // Uhrzeit pruefen da die API Ruhezeit hat -.-
@@ -232,7 +232,7 @@ class UstID
 
         switch (substr($cUstID, 0, 2)) {
             case 'AT':
-                if (substr($cIDNummer, 0, 1) !== 'U') {
+                if (strpos($cIDNummer, 'U') !== 0) {
                     $oReturn->cError = 'ATU99999999';
                 } elseif (preg_match('/^[0-9A-Z]{9}$/', $cIDNummer) !== 1) {
                     $oReturn->cError = 'ATU99999999';

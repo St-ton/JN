@@ -4,9 +4,7 @@
             <tbody>
             {foreach from=$smarty.session.Warenkorb->PositionenArr item=oPosition}
                 {if !$oPosition->istKonfigKind()}
-                    {if ($oPosition->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL ||
-                    $oPosition->nPosTyp == C_WARENKORBPOS_TYP_KUPON ||
-                    $oPosition->nPosTyp == C_WARENKORBPOS_TYP_NEUKUNDENKUPON) && !$oPosition->istKonfigKind()}
+                    {if $oPosition->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL}
                         <tr>
                             <td class="item-image">
                                 {if $oPosition->Artikel->Bilder[0]->cPfadNormal !== $BILD_KEIN_ARTIKELBILD_VORHANDEN}
@@ -31,7 +29,7 @@
                         <tr>
                             <td></td>
                             <td class="item-name" colspan="2">
-                                {$oPosition->nAnzahl|replace_delim}&nbsp;&times;&nbsp;{$oPosition->cName|trans}
+                                {$oPosition->nAnzahl|replace_delim}&nbsp;&times;&nbsp;{$oPosition->cName|trans|escape:"htmlall"}
                             </td>
                             <td class="item-price">
                                 {$oPosition->cEinzelpreisLocalized[$NettoPreise][$smarty.session.cWaehrungName]}

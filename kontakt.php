@@ -21,8 +21,6 @@ $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 $startKat             = new Kategorie();
 $startKat->kKategorie = 0;
 $cCanonicalURL        = '';
-// SSL?
-pruefeHttps();
 if (pruefeBetreffVorhanden()) {
     $step            = 'formular';
     $fehlendeAngaben = [];

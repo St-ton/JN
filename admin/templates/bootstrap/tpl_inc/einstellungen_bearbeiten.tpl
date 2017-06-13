@@ -73,6 +73,9 @@
                                     {getHelpDesc cDesc=$cnf->cBeschreibung cID=$cnf->kEinstellungenConf}
                                 {/if}
                             </span>
+                            {if isset($oSections[$kEinstellungenSektion]) && $oSections[$kEinstellungenSektion]->hasValueMarkup}
+                            {$oSections[$kEinstellungenSektion]->getValueMarkup($cnf)}
+                            {/if}
                         </div>
                     {else}
                         {if $smarty.foreach.conf.index !== 0}
@@ -82,6 +85,9 @@
                         <div class="panel panel-default">
                             <div class="panel-heading">
                                 <h3 class="panel-title">{$cnf->cName} <span class="pull-right">{getHelpDesc cID=$cnf->kEinstellungenConf}</span>{if !empty($cnf->cSektionsPfad)} <span class="path right"><strong>{#settingspath#}:</strong> {$cnf->cSektionsPfad} </span> {/if}</h3>
+                                {if isset($oSections[$cnf->kEinstellungenSektion]) && $oSections[$cnf->kEinstellungenSektion]->hasSectionMarkup}
+                                {$oSections[$cnf->kEinstellungenSektion]->getSectionMarkup()}
+                                {/if}
                             </div>
                             <div class="panel-body">
                     {/if}

@@ -72,66 +72,68 @@
                 <form action="sprache.php" method="post">
                     {$jtl_token}
                     {if $oWert_arr|@count > 0}
-                        <table class="list table">
-                            <thead>
-                                <tr>
-                                    {if $bAllSections}<th>{#section#}</th>{/if}
-                                    <th>{#variableName#}</th>
-                                    <th>{#variableContent#}</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {foreach $oWert_arr as $oWert}
+                        <div class="table-responsive">
+                            <table class="list table">
+                                <thead>
                                     <tr>
-                                        {if $bAllSections}<td>{$oWert->cSektionName}</td>{/if}
-                                        <td onclick="toggleTextarea({$oWert->kSprachsektion}, '{$oWert->cName}');"
-                                            style="cursor:pointer;">
-                                            <label for="cWert_{$oWert->kSprachsektion}_{$oWert->cName}">
-                                                {if $cSearchString !== ''}
-                                                    {$oWert->cName|regex_replace:"/($cSearchString)/i":"<mark>\$1</mark>"}
-                                                {else}
-                                                    {$oWert->cName}
-                                                {/if}
-                                            </label>
-                                        </td>
-                                        <td onclick="toggleTextarea({$oWert->kSprachsektion}, '{$oWert->cName}');"
-                                            style="cursor:pointer;">
-                                            <span id="cWert_caption_{$oWert->kSprachsektion}_{$oWert->cName}">
-                                                {if $cSearchString !== ''}
-                                                    {$oWert->cWert|escape|regex_replace:"/($cSearchString)/i":"<mark>\$1</mark>"}
-                                                {else}
-                                                    {$oWert->cWert|escape}
-                                                {/if}
-                                            </span>
-                                            <textarea id="cWert_{$oWert->kSprachsektion}_{$oWert->cName}" class="form-control"
-                                                      name="cWert_arr[{$oWert->kSprachsektion}][{$oWert->cName}]"
-                                                      style="display:none;">{$oWert->cWert|escape}</textarea>
-                                            <input type="hidden" id="bChanged_{$oWert->kSprachsektion}_{$oWert->cName}"
-                                                   name="bChanged_arr[{$oWert->kSprachsektion}][{$oWert->cName}]"
-                                                   value="0">
-                                            <span style="display:none;"
-                                                  id="cStandard_{$oWert->kSprachsektion}_{$oWert->cName}">{$oWert->cStandard|escape}</span>
-                                        </td>
-                                        <td style="width:6em;">
-                                            <div class="btn-group right">
-                                                <button type="button" class="btn btn-default"
-                                                        onclick="resetVarText({$oWert->kSprachsektion},
-                                                                              '{$oWert->cName}');">
-                                                    <i class="fa fa-refresh"></i>
-                                                </button>
-                                                {if $oWert->bSystem === '0'}
-                                                    <a href="sprache.php?token={$smarty.session.jtl_token}&action=delvar&kSprachsektion={$oWert->kSprachsektion}&cName={$oWert->cName}"
-                                                       class="btn btn-danger">
-                                                        <i class="fa fa-trash"></i>
-                                                    </a>
-                                                {/if}
-                                            </div>
-                                        </td>
+                                        {if $bAllSections}<th>{#section#}</th>{/if}
+                                        <th>{#variableName#}</th>
+                                        <th>{#variableContent#}</th>
+                                        <th></th>
                                     </tr>
-                                {/foreach}
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    {foreach $oWert_arr as $oWert}
+                                        <tr>
+                                            {if $bAllSections}<td>{$oWert->cSektionName}</td>{/if}
+                                            <td onclick="toggleTextarea({$oWert->kSprachsektion}, '{$oWert->cName}');"
+                                                style="cursor:pointer;">
+                                                <label for="cWert_{$oWert->kSprachsektion}_{$oWert->cName}">
+                                                    {if $cSearchString !== ''}
+                                                        {$oWert->cName|regex_replace:"/($cSearchString)/i":"<mark>\$1</mark>"}
+                                                    {else}
+                                                        {$oWert->cName}
+                                                    {/if}
+                                                </label>
+                                            </td>
+                                            <td onclick="toggleTextarea({$oWert->kSprachsektion}, '{$oWert->cName}');"
+                                                style="cursor:pointer;">
+                                                <span id="cWert_caption_{$oWert->kSprachsektion}_{$oWert->cName}">
+                                                    {if $cSearchString !== ''}
+                                                        {$oWert->cWert|escape|regex_replace:"/($cSearchString)/i":"<mark>\$1</mark>"}
+                                                    {else}
+                                                        {$oWert->cWert|escape}
+                                                    {/if}
+                                                </span>
+                                                <textarea id="cWert_{$oWert->kSprachsektion}_{$oWert->cName}" class="form-control"
+                                                          name="cWert_arr[{$oWert->kSprachsektion}][{$oWert->cName}]"
+                                                          style="display:none;">{$oWert->cWert|escape}</textarea>
+                                                <input type="hidden" id="bChanged_{$oWert->kSprachsektion}_{$oWert->cName}"
+                                                       name="bChanged_arr[{$oWert->kSprachsektion}][{$oWert->cName}]"
+                                                       value="0">
+                                                <span style="display:none;"
+                                                      id="cStandard_{$oWert->kSprachsektion}_{$oWert->cName}">{$oWert->cStandard|escape}</span>
+                                            </td>
+                                            <td style="width:6em;">
+                                                <div class="btn-group right">
+                                                    <button type="button" class="btn btn-default"
+                                                            onclick="resetVarText({$oWert->kSprachsektion},
+                                                                                  '{$oWert->cName}');">
+                                                        <i class="fa fa-refresh"></i>
+                                                    </button>
+                                                    {if $oWert->bSystem === '0'}
+                                                        <a href="sprache.php?token={$smarty.session.jtl_token}&action=delvar&kSprachsektion={$oWert->kSprachsektion}&cName={$oWert->cName}"
+                                                           class="btn btn-danger">
+                                                            <i class="fa fa-trash"></i>
+                                                        </a>
+                                                    {/if}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {/foreach}
+                                </tbody>
+                            </table>
+                        </div>
                     {elseif $bSpracheAktiv}
                         <div class="alert alert-info" role="alert">{#noFilterResults#}</div>
                     {else}

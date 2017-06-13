@@ -99,6 +99,14 @@ class Notification implements IteratorAggregate, Countable
             $this->add(NotificationEntry::TYPE_WARNING, 'System', 'Bitte l&ouml;schen Sie das Installationsverzeichnis "/install/" im Shop-Wurzelverzeichnis.');
         }
 
+        if (!$status->validDatabaseStruct()) {
+            $this->add(NotificationEntry::TYPE_DANGER, 'Datenbank', 'Es liegen Fehler in der Datenbankstruktur vor.', 'dbcheck.php');
+        }
+
+        if (!$status->validFileStruct()) {
+            $this->add(NotificationEntry::TYPE_DANGER, 'Filesystem', 'Es liegen Fehler in der Shop-Dateistruktur vor.', 'filecheck.php');
+        }
+
         if ($status->hasDifferentTemplateVersion()) {
             $this->add(NotificationEntry::TYPE_WARNING, 'Template', 'Ihre Template-Version unterscheidet sich von Ihrer Shop-Version.<br />Weitere Hilfe zu Template-Updates finden Sie im <i class="fa fa-external-link"></i> Wiki', 'shoptemplate.php');
         }

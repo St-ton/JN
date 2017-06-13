@@ -13,7 +13,7 @@
     {/if}
     
     <div class="container-fluid">
-        <table  class="table">
+        <table class="table">
             <tr>
                 <td colspan="2"><p><label>Trusted Shops - Europas Internet-G&uuml;tesiegel Nr. 1</strong></label></p></td>
             </tr>

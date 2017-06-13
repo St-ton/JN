@@ -60,9 +60,9 @@ class AdminAccount
                 $now  = new DateTime();
                 $diff = $now->diff($createdAt);
                 $secs = ($diff->format('%a') * (60 * 60 * 24)); //total days
-                $secs += intval($diff->format('%h')) * (60 * 60); //hours
-                $secs += intval($diff->format('%i')) * 60; //minutes
-                $secs += intval($diff->format('%s')); //seconds
+                $secs += (int)$diff->format('%h') * (60 * 60); //hours
+                $secs += (int)$diff->format('%i') * 60; //minutes
+                $secs += (int)$diff->format('%s'); //seconds
                 if ($secs > (60 * 60 * 24)) {
                     return false;
                 }
@@ -223,7 +223,7 @@ class AdminAccount
      */
     public function logged()
     {
-        return $this->twoFaAuthenticated && $this->_bLogged;
+        return $this->getIsTwoFaAuthenticated() && $this->getIsAuthenticated();
     }
 
     /**
@@ -248,9 +248,9 @@ class AdminAccount
     public function redirectOnFailure()
     {
         if (!$this->logged()) {
-            $url = (strpos(basename($_SERVER['REQUEST_URI']), 'logout.php') === false) ?
-                '?uri=' . base64_encode(basename($_SERVER['REQUEST_URI'])) :
-                '';
+            $url = (strpos(basename($_SERVER['REQUEST_URI']), 'logout.php') === false)
+                ? '?uri=' . base64_encode(basename($_SERVER['REQUEST_URI']))
+                : '';
             header('Location: index.php' . $url);
             exit();
         }
@@ -318,7 +318,7 @@ class AdminAccount
         if (isset($_SESSION['AdminAccount']->cLogin, $_SESSION['AdminAccount']->cPass, $_SESSION['AdminAccount']->cURL) &&
             $_SESSION['AdminAccount']->cURL === Shop::getURL()
         ) {
-            $oAccount                 = Shop::DB()->select(
+            $oAccount = Shop::DB()->select(
                 'tadminlogin',
                 'cLogin', $_SESSION['AdminAccount']->cLogin,
                 'cPass', $_SESSION['AdminAccount']->cPass
@@ -341,9 +341,9 @@ class AdminAccount
             $oTwoFA = new TwoFA();
             $oTwoFA->setUserByName($_SESSION['AdminAccount']->cLogin);
             // check the 2fa-code here really
-            $_SESSION['AdminAccount']->TwoFA_valid = $oTwoFA->isCodeValid($_POST['TwoFA_code']);
+            $this->twoFaAuthenticated = $_SESSION['AdminAccount']->TwoFA_valid = $oTwoFA->isCodeValid($_POST['TwoFA_code']);
 
-            return $_SESSION['AdminAccount']->TwoFA_valid;
+            return $this->twoFaAuthenticated;
         }
 
         return false;

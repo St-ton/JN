@@ -53,7 +53,7 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
                     $ele           = new stdClass();
                     $ele->hasChild = false;
                     $ele->name     = $KategorieListe->elemente[$i]->cKurzbezeichnung;
-                    $ele->url      = $KategorieListe->elemente[$i]->cURL;
+                    $ele->url      = $KategorieListe->elemente[$i]->cURLFull;
                     $brotnavi[]    = $ele;
                 }
             }
@@ -1637,11 +1637,11 @@ function checkSetPercentCouponWKPos($oWKPosition, $Kupon)
                     OR kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . ")
                 AND (nVerwendungen = 0 
                     OR nVerwendungen > nVerwendungenBisher)
-                AND (cArtikel = '' " . $Artikel_qry . ")
+                AND (cArtikel = '' {$Artikel_qry})
                 AND (cKategorien = '' 
-                    OR cKategorien = '-1' " . $Kategorie_qry . ")
+                    OR cKategorien = '-1' {$Kategorie_qry})
                 AND (cKunden = '' 
-                    OR cKunden = '-1' " . $Kunden_qry . ")
+                    OR cKunden = '-1' {$Kunden_qry})
                 AND kKupon = " . (int)$Kupon->kKupon, 1
     );
     $waehrung    = isset($_SESSION['Waehrung']) ? $_SESSION['Waehrung'] : null;
@@ -1670,12 +1670,26 @@ function gibLagerfilter()
     $conf      = Shop::getSettings([CONF_GLOBAL]);
     $filterSQL = '';
     if ((int)$conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER) {
-        $filterSQL = "AND (NOT (tartikel.fLagerbestand <= 0 
-                                AND tartikel.cLagerBeachten = 'Y') 
-                            OR tartikel.cLagerVariation = 'Y')";
+        $filterSQL = "AND (tartikel.cLagerBeachten != 'Y'
+                        OR tartikel.fLagerbestand > 0
+                        OR (tartikel.cLagerVariation = 'Y'
+                            AND (
+                                SELECT MAX(teigenschaftwert.fLagerbestand)
+                                FROM teigenschaft
+                                INNER JOIN teigenschaftwert ON teigenschaftwert.kEigenschaft = teigenschaft.kEigenschaft
+                                WHERE teigenschaft.kArtikel = tartikel.kArtikel
+                            ) > 0))";
     } elseif ((int)$conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL) {
-        $filterSQL = "AND (NOT (tartikel.fLagerbestand <= 0 AND tartikel.cLagerBeachten = 'Y') 
-                            OR tartikel.cLagerKleinerNull = 'Y' OR tartikel.cLagerVariation = 'Y')";
+        $filterSQL = "AND (tartikel.cLagerBeachten != 'Y'
+                        OR tartikel.fLagerbestand > 0
+                        OR tartikel.cLagerKleinerNull = 'Y'
+                        OR (tartikel.cLagerVariation = 'Y'
+                            AND (
+                                SELECT MAX(teigenschaftwert.fLagerbestand)
+                                FROM teigenschaft
+                                INNER JOIN teigenschaftwert ON teigenschaftwert.kEigenschaft = teigenschaft.kEigenschaft
+                                WHERE teigenschaft.kArtikel = tartikel.kArtikel
+                            ) > 0))";
     }
     executeHook(HOOK_STOCK_FILTER, [
         'conf'      => (int)$conf['global']['artikel_artikelanzeigefilter'],
@@ -1792,7 +1806,8 @@ function setzeSteuersaetze($steuerland = 0)
         $merchantCountryCode !== $deliveryCountryCode &&
         $merchantCountryCode !== $billingCountryCode &&
         strlen($_SESSION['Kunde']->cUSTID) > 0 &&
-        strcasecmp($billingCountryCode, substr($_SESSION['Kunde']->cUSTID, 0, 2)) === 0
+        strcasecmp($billingCountryCode, substr($_SESSION['Kunde']->cUSTID, 0, 2)) === 0 ||
+        (strcasecmp($billingCountryCode, 'GR') === 0 && strcasecmp(substr($_SESSION['Kunde']->cUSTID, 0, 2), 'EL') === 0)
     ) {
         $deliveryCountry = Shop::DB()->select('tland', 'cISO', $deliveryCountryCode);
         $shopCountry     = Shop::DB()->select('tland', 'cISO', $merchantCountryCode);
@@ -2626,7 +2641,7 @@ function gibGuenstigsteVersandart($lieferland, $versandklassen, $kKundengruppe, 
             WHERE cNurAbhaengigeVersandart = '" . $cNurAbhaengigeVersandart . "'
                 AND cLaender LIKE '%" . $cISO . "%'
                 AND (cVersandklassen = '-1' 
-                    OR cVersandklassen RLIKE '^([0-9- ]* )?" . $versandklassen . " ')
+                    OR cVersandklassen RLIKE '^([0-9 -]* )?" . $versandklassen . " ')
                 AND (cKundengruppen = '-1' 
                     OR cKundengruppen RLIKE '^([0-9;]*;)?" . $kKundengruppe . ";') 
             ORDER BY nSort", 2
@@ -2899,7 +2914,7 @@ function gibGuenstigsteVersandkosten($cISO, $Artikel, $barzahlungZulassen, $kKun
             FROM tversandart
             WHERE cLaender LIKE '%" . $cISO . "%'
                 AND (cVersandklassen = '-1' 
-                    OR cVersandklassen RLIKE '^([0-9- ]* )?" . $Artikel->kVersandklasse . " ')
+                    OR cVersandklassen RLIKE '^([0-9 -]* )?" . $Artikel->kVersandklasse . " ')
                 AND (cKundengruppen = '-1' 
                     OR cKundengruppen RLIKE '^([0-9;]*;)?" . $kKundengruppe . ";')", 2
     );
@@ -3578,7 +3593,7 @@ function gibVersandkostenfreiAb($kKundengruppe, $cLand = '')
                     AND tversandartsprache.cISOSprache = '" . $_SESSION['cISOSprache'] . "'
                 WHERE fVersandkostenfreiAbX > 0
                     AND (cVersandklassen = '-1' 
-                        OR cVersandklassen RLIKE '^([0-9- ]* )?" . $versandklassen . " ')
+                        OR cVersandklassen RLIKE '^([0-9 -]* )?" . $versandklassen . " ')
                     AND (cKundengruppen = '-1' 
                         OR cKundengruppen RLIKE '^([0-9;]*;)?" . $kKundengruppe . ";')
                     " . $cKundeSQLWhere . "
@@ -4092,6 +4107,13 @@ function holeAlleSuchspecialOverlays($kSprache = 0)
             $oSuchspecialOverlay_arr = [];
             if (is_array($oSuchspecialOverlayTMP_arr) && count($oSuchspecialOverlayTMP_arr) > 0) {
                 foreach ($oSuchspecialOverlayTMP_arr as $oSuchspecialOverlayTMP) {
+                    $oSuchspecialOverlayTMP->kSuchspecialOverlay = (int)$oSuchspecialOverlayTMP->kSuchspecialOverlay;
+                    $oSuchspecialOverlayTMP->nAktiv              = (int)$oSuchspecialOverlayTMP->nAktiv;
+                    $oSuchspecialOverlayTMP->nPrio               = (int)$oSuchspecialOverlayTMP->nPrio;
+                    $oSuchspecialOverlayTMP->nMargin             = (int)$oSuchspecialOverlayTMP->nMargin;
+                    $oSuchspecialOverlayTMP->nTransparenz        = (int)$oSuchspecialOverlayTMP->nTransparenz;
+                    $oSuchspecialOverlayTMP->nGroesse            = (int)$oSuchspecialOverlayTMP->nGroesse;
+                    $oSuchspecialOverlayTMP->nPosition           = (int)$oSuchspecialOverlayTMP->nPosition;
                     $cSuchSpecial = strtolower(str_replace([' ', '-', '_'], '', $oSuchspecialOverlayTMP->cSuchspecial));
                     $cSuchSpecial = preg_replace(
                         ['/Ä/', '/Ö/', '/Ü/', '/ä/', '/ö/', '/ü/', '/ß/',
@@ -4489,7 +4511,6 @@ function setzeSpracheUndWaehrungLink()
  * -1 = SSL nicht aktiv und nicht erlaubt
  * 1 = SSL aktiv durch Einstellung nicht erwünscht
  * 2 = SSL aktiv und erlaubt
- * 3 = SSL nicht aktiv aber erlaubt
  * 4 = SSL nicht aktiv aber erzwungen
  *
  * @return int
@@ -4501,10 +4522,9 @@ function pruefeSSL()
     if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
         $_SERVER['HTTPS'] = 'on';
     }
-
     // Ist im Server SSL aktiv?
     if (isset($_SERVER['HTTPS']) && (strtolower($_SERVER['HTTPS']) === 'on' || $_SERVER['HTTPS'] === '1')) {
-        if ($cSSLNutzen === 'P' || $cSSLNutzen === 'Z') { // SSL durch Einstellung erlaubt?
+        if ($cSSLNutzen === 'P') { // SSL durch Einstellung erlaubt?
             return 2;
         }
 
@@ -4512,9 +4532,6 @@ function pruefeSSL()
     }
     if ($cSSLNutzen === 'P') {
         return 4;
-    }
-    if ($cSSLNutzen === 'Z') { // SSL durch Einstellung erlaubt?
-        return 3;
     }
 
     return -1;
@@ -4524,113 +4541,18 @@ function pruefeSSL()
  * https? wenn erwünscht reload mit https
  *
  * @return bool
+ * @deprecated since 4.06
  */
 function pruefeHttps()
 {
-    $conf = Shop::getSettings([CONF_GLOBAL]);
-    if ($conf['global']['kaufabwicklung_ssl_nutzen'] === 'Z' &&
-        (!isset($_SERVER['HTTPS']) || strtolower($_SERVER['HTTPS']) !== 'on')
-    ) {
-        $https = false;
-        //Ausnahmen
-        //hosteurope
-        if (isset($_SERVER['HTTP_X_FORWARDED_HOST']) && $_SERVER['HTTP_X_FORWARDED_HOST'] === 'ssl.webpack.de') {
-            $https = true;
-        }
-        //strato
-        if (isset($_SERVER['SCRIPT_URI']) && preg_match('/^ssl-id/', $_SERVER['SCRIPT_URI'])) {
-            $https = true;
-        }
-        //1&1
-        if (isset($_SERVER['HTTP_X_FORWARDED_HOST']) && preg_match('/^ssl/', $_SERVER['HTTP_X_FORWARDED_HOST'])) {
-            $https = true;
-        }
-        if (isset($_SERVER['HTTPS']) && ($_SERVER['HTTPS'] === 'on' || (int)$_SERVER['HTTPS'] === 1)) {
-            $https = true;
-        }
-        if (!$https) {
-            $lang = '';
-            if (!standardspracheAktiv(true)) {
-                if (strpos($_SERVER['REQUEST_URI'], '?')) {
-                    $lang = '&lang=' . $_SESSION['cISOSprache'];
-                } else {
-                    $lang = '?lang=' . $_SESSION['cISOSprache'];
-                }
-            }
-            $www = $conf['global']['global_ssl_www'];
-            //www. schon im servernamen enthalten?
-            if ($_SERVER['SERVER_NAME']{0} === 'w' && $_SERVER['SERVER_NAME']{1} === 'w' &&
-                $_SERVER['SERVER_NAME']{2} === 'w' && $_SERVER['SERVER_NAME']{3} === '.'
-            ) {
-                $www = '';
-            }
-            header('Location: https://' . $www . $_SERVER['SERVER_NAME'] .
-                $_SERVER['REQUEST_URI'] . $lang, true, 301);
-            exit();
-        }
-    }
-
     return false;
 }
 
 /**
- *
+ * @deprecated since 4.06
  */
 function loeseHttps()
 {
-    $conf = Shop::getSettings([CONF_GLOBAL]);
-    if ($conf['global']['kaufabwicklung_ssl_nutzen'] === 'Z' &&
-        (isset($_SERVER['HTTPS']) && (strtolower($_SERVER['HTTPS']) === 'on' || (int)$_SERVER['HTTPS'] === 1)) &&
-        !(isset($_GET['exclusive_content']) && (int)$_GET['exclusive_content'] === 1) &&
-        (verifyGPDataString('isAjax') !== 'true')
-    ) {
-        $https = false;
-        if (isset($_SERVER['HTTP_X_FORWARDED_HOST']) && $_SERVER['HTTP_X_FORWARDED_HOST'] === 'ssl.webpack.de') {
-            //hosteurope
-            $https = true;
-        } elseif (isset($_SERVER['SCRIPT_URI']) && preg_match('/^ssl-id/', $_SERVER['SCRIPT_URI'])) {
-            //strato
-            $https = true;
-        } elseif (isset($_SERVER['HTTP_X_FORWARDED_HOST']) && preg_match('/^ssl/', $_SERVER['HTTP_X_FORWARDED_HOST'])) {
-            //1&1
-            $https = true;
-        } elseif (isset($conf['global']['kaufabwicklung_ssl_proxy']) &&
-            preg_match('/^' . $conf['global']['kaufabwicklung_ssl_proxy'] . '/', $_SERVER['HTTP_X_FORWARDED_HOST'])
-        ) {
-            //ist proxy im fw host?
-            $https = true;
-        } elseif (isset($_SERVER['HTTPS']) && (strtolower($_SERVER['HTTPS']) === 'on' || (int)$_SERVER['HTTPS'] === 1)) {
-            $https = true;
-        }
-        if ($https) {
-            if (Shop::$kLink > 0) {
-                $lh = LinkHelper::getInstance();
-                if (!empty($lh->linkGroups->staticRoutes)) {
-                    foreach ($lh->linkGroups->staticRoutes as $id => $languages) {
-                        foreach ($languages as $link) {
-                            if ((int)$link->kLink === (int)Shop::$kLink) {
-                                if ($id !== 'umfrage.php' && $id !== 'news.php' && $id !== 'vergleichsliste.php') {
-                                    return;
-                                }
-                            }
-                        }
-
-                    }
-                }
-            }
-            $lang = '';
-            if (!standardspracheAktiv(true)) {
-                if (strpos($_SERVER['REQUEST_URI'], '?')) {
-                    $lang = '&lang=' . $_SESSION['cISOSprache'];
-                } else {
-                    $lang = '?lang=' . $_SESSION['cISOSprache'];
-                }
-            }
-            header('Location: http://' . $_SERVER['SERVER_NAME'] .
-                str_replace($lang, '', $_SERVER['REQUEST_URI']) . $lang, true, 302);
-            exit();
-        }
-    }
 }
 
 /**
@@ -4638,7 +4560,7 @@ function loeseHttps()
  * @param string $cString
  * @return bool|string
  */
-function gibUID($nAnzahlStellen, $cString = '')
+function gibUID($nAnzahlStellen = 40, $cString = '')
 {
     $cUID            = '';
     $cSalt           = '';
@@ -4666,7 +4588,7 @@ function gibUID($nAnzahlStellen, $cString = '')
                 if (((int)date('w') % 2) <= strlen($cString)) {
                     $nPos = (int)date('w') % 2;
                 }
-                $cUID .= md5(substr($cString, $nPos, 1) . $cSalt . md5(PFAD_ROOT . (microtime() - mt_rand())));
+                $cUID .= md5(substr($cString, $nPos, 1) . $cSalt . md5(PFAD_ROOT . (microtime(true) - mt_rand())));
             }
         }
         $cUID = cryptPasswort($cUID . $cSalt);
@@ -5125,7 +5047,7 @@ function formatCurrency($fSumme)
         $fSummeABS = abs($fSumme);
         $fSumme    = floor($fSumme * 100);
         $fCents    = $fSumme % 100;
-        $fSumme    = (string)(floor($fSumme / 100));
+        $fSumme    = (string)floor($fSumme / 100);
         if ($fCents < 10) {
             $fCents = '0' . $fCents;
         }
@@ -5817,44 +5739,66 @@ function make_http_request($cURL, $nTimeout = 15, $cPost = null, $bReturnStatus 
 }
 
 /**
- * @param string|array|object $xData
- * @param bool                $bEncode
- * @return string|array|object
+ * @param string|array|object $data the string, array or object to convert recursively
+ * @param bool                $encode true if data should be utf-8-encoded or false if data should be utf-8-decoded
+ * @param bool                $copy false if objects should be changed, true if they should be cloned first
+ * @return string|array|object converted data
  */
-function utf8_convert_recursive($xData, $bEncode = true)
+function utf8_convert_recursive($data, $encode = true, $copy = false)
 {
-    if (is_string($xData)) {
-        $cEncoding = mb_detect_encoding($xData, 'UTF-8, ISO-8859-1, ISO-8859-15', true);
-        $bUTF8     = (strtoupper($cEncoding) === 'UTF-8');
-        if (($bEncode && $bUTF8) || (!$bUTF8 && !$bEncode)) {
-            return $xData;
+    if (is_string($data)) {
+        $isUtf8 = mb_detect_encoding($data, 'UTF-8', true) !== false;
+
+        if (!$isUtf8 && $encode || $isUtf8 && !$encode) {
+            $data = $encode ? utf8_encode($data) : utf8_decode($data);
+        }
+    } elseif (is_array($data)) {
+        foreach ($data as $key => $val) {
+            $newKey = (string)utf8_convert_recursive($key, $encode);
+            $newVal = utf8_convert_recursive($val, $encode);
+            unset($data[$key]);
+            $data[$newKey] = $newVal;
+        }
+    } elseif (is_object($data)) {
+        if ($copy) {
+            $data = clone $data;
         }
 
-        return $bEncode ? utf8_encode($xData) : utf8_decode($xData);
-    }
-    if (is_object($xData)) {
-        $xData_arr = get_object_vars($xData);
-        $xNewData  = $xData;
-        foreach ($xData_arr as $cKey => $xTmp) {
-            $tmp    = utf8_convert_recursive($xNewData->$cKey, $bEncode);
-            $newKey = utf8_convert_recursive($cKey, $bEncode);
-            unset($xNewData->$cKey);
-            $xNewData->$newKey = $tmp;
-            unset($tmp);
+        foreach (get_object_vars($data) as $key => $val) {
+            $newKey = (string)utf8_convert_recursive($key, $encode);
+            $newVal = utf8_convert_recursive($val, $encode);
+            unset($data->$key);
+            $data->$newKey = $newVal;
         }
-
-        return $xNewData;
-    }
-    if (!is_array($xData)) {
-        return $xData;
-    }
-    $xData_rr = [];
-    foreach ($xData as $cKey => $xTmp) {
-        $cKey            = utf8_convert_recursive($cKey, $bEncode);
-        $xData_rr[$cKey] = utf8_convert_recursive($xTmp, $bEncode);
     }
 
-    return $xData_rr;
+    return $data;
+}
+
+/**
+ * JSON-Encode $data only if it is not already encoded, meaning it avoids double encoding
+ *
+ * @param mixed $data
+ * @return string or false when $data is not encodable
+ * @throws Exception
+ */
+function json_safe_encode($data)
+{
+    $data = utf8_convert_recursive($data);
+
+    // encode data if not already encoded
+    if (is_string($data)) {
+        // data is a string
+        json_decode($data);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            // it is not a JSON string yet
+            $data = json_encode($data);
+        }
+    } else {
+        $data = json_encode($data);
+    }
+
+    return $data;
 }
 
 /**
@@ -5996,6 +5940,7 @@ function pruefeWarenkorbStueckliste($oArtikel, $fAnzahl)
 }
 
 /**
+ * @deprecated since 4.06
  * return trimmed description without (double) line breaks
  *
  * @param string $cDesc
@@ -6003,13 +5948,26 @@ function pruefeWarenkorbStueckliste($oArtikel, $fAnzahl)
  */
 function truncateMetaDescription($cDesc)
 {
-    $cDesc = str_replace('"', '', $cDesc);
-    $conf  = Shop::getSettings([CONF_METAANGABEN]);
-    if ($conf['metaangaben']['global_meta_maxlaenge_description'] > 0) {
-        $cDesc = substr($cDesc, 0, (int)$conf['metaangaben']['global_meta_maxlaenge_description']);
+    $conf = Shop::getSettings([CONF_METAANGABEN]);
+    $maxLength = !empty($conf['metaangaben']['global_meta_maxlaenge_description']) ? (int)$conf['metaangaben']['global_meta_maxlaenge_description'] : 0;
+
+    return prepareMeta($cDesc, null, $maxLength);
+}
+
+/**
+ * @param string $metaProposal the proposed meta text value.
+ * @param string $metaSuffix append suffix to meta value that wont be shortened
+ * @param int $maxLength $metaProposal will be truncated to $maxlength - strlen($metaSuffix) characters
+ * @return string truncated meta value with optional suffix (always appended if set)
+ */
+function prepareMeta($metaProposal, $metaSuffix = null, $maxLength = null) {
+    $metaProposal = str_replace('"', '', $metaProposal);
+    $metaSuffix = !empty($metaSuffix) ? $metaSuffix : '';
+    if (!empty($maxLength) && $maxLength > 0) {
+        $metaProposal = substr($metaProposal, 0, (int)$maxLength);
     }
 
-    return trim(preg_replace('/\s\s+/', ' ', $cDesc));
+    return trim(preg_replace('/\s\s+/', ' ', $metaProposal)) . $metaSuffix;
 }
 
 /**
@@ -6184,7 +6142,7 @@ function urlNotFoundRedirect(array $hookInfos = null, $forceExit = false)
     if ($redirectUrl !== false && $redirectUrl !== $url && '/' . $redirectUrl !== $url) {
         $cUrl_arr = parse_url($redirectUrl);
         if (!array_key_exists('scheme', $cUrl_arr)) {
-            $redirectUrl = (substr($redirectUrl, 0, 1) === '/')
+            $redirectUrl = strpos($redirectUrl, '/') === 0
                 ? Shop::getURL() . $redirectUrl
                 : Shop::getURL() . '/' . $redirectUrl;
         }

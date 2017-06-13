@@ -379,7 +379,7 @@ function bearbeite($xml, $unzipPath)
                     WHERE kHersteller = " . (int)$Herstellerbild->kHersteller, 1
             );
             if (isset($Hersteller->cSeo) && strlen($Hersteller->cSeo) > 0) {
-                $Herstellerbild->cPfad = $Hersteller->cSeo . '.' . $Bildformat;
+                $Herstellerbild->cPfad = str_replace("/", "_", $Hersteller->cSeo . '.' . $Bildformat);
             } elseif (stripos(strrev($Herstellerbild->cPfad), strrev($Bildformat)) !== 0) {
                 $Herstellerbild->cPfad .= '.' . $Bildformat;
             }
@@ -1406,7 +1406,6 @@ function imagecopymerge_alpha($dst_im, $src_im, $dst_x, $dst_y, $src_x, $src_y, 
  * @param int      $src_w
  * @param int      $src_h
  * @param int      $pct
- * @return bool
  */
 function imagecopymerge_alpha_fast($dst_im, $src_im, $dst_x, $dst_y, $src_x, $src_y, $src_w, $src_h, $pct)
 {

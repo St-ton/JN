@@ -18,6 +18,7 @@
             <File Path="css/animate.css"/>
             <File Path="css/custom.css"/>
             <File Path="css/daterangepicker.css"/>
+            <File Path="css/typeaheadjs.css"/>
         </CSS>
         <JS Name="admin_js">
             <File Path="js/jquery-1.12.4.min.js"/>
@@ -32,7 +33,6 @@
             <File Path="js/versandart_bruttonetto.js"/>
             <File Path="js/fileinput.min.js"/>
             <File Path="js/fileinput_locale_de.js"/>
-            <File Path="js/bootstrap-typeahead.min.js"/>
             <File Path="js/bootstrap-ladda.js"/>
             <File Path="js/bootstrap-notify.min.js"/>
             <File Path="js/humanize-duration.js"/>
@@ -42,6 +42,8 @@
             <File Path="js/masonry.pkgd.min.js"/>
             <File Path="js/moment.js"/>
             <File Path="js/daterangepicker.js"/>
+            <File Path="js/searchpicker.js"/>
+            <File Path="js/typeahead.bundle.js"/>
         </JS>
     </Minify>
 </Template>

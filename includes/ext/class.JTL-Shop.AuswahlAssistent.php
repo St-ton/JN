@@ -80,7 +80,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
         /**
          * @var array
          */
-        private $config = [];
+        private $config;
 
         /**
          * AuswahlAssistent constructor.
@@ -113,15 +113,17 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
          */
         private function loadFromDB($cKey, $kKey, $kSprache, $bOnlyActive = true)
         {
-            $oDbResult = Shop::DB()->query("
+            $oDbResult = Shop::DB()->executeQueryPrepared("
                 SELECT *
                     FROM tauswahlassistentort AS ao
                         JOIN tauswahlassistentgruppe AS ag
                             ON ao.kAuswahlAssistentGruppe = ag.kAuswahlAssistentGruppe
-                                AND ao.cKey = '" . Shop::DB()->escape($cKey) . "'
-                                AND ao.kKey = " . $kKey . "
-                                AND ag.kSprache = " . $kSprache .
-                                ($bOnlyActive ? " AND ag.nAktiv = 1" : ""), 1
+                                AND ao.cKey = :ckey
+                                AND ao.kKey = :kkey
+                                AND ag.kSprache = :ksprache" .
+                                ($bOnlyActive ? " AND ag.nAktiv = 1" : ""),
+                ['ckey' => $cKey, 'kkey' => $kKey, 'ksprache' => $kSprache],
+                1
             );
 
             if ($oDbResult !== null && $oDbResult !== false) {
@@ -436,14 +438,16 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
         public static function getGroupsByLocation($cKey, $kKey, $kSprache)
         {
             if ((int)$kKey > 0 && (int)$kSprache > 0 && strlen($cKey) > 0) {
-                $oOrt = Shop::DB()->query(
+                $oOrt = Shop::DB()->executeQueryPrepared(
                     "SELECT tao.kAuswahlAssistentGruppe
                         FROM tauswahlassistentort tao
                         JOIN tauswahlassistentgruppe  tag
                             ON tag.kAuswahlAssistentGruppe = tao.kAuswahlAssistentGruppe
-                            AND tag.kSprache = " . (int)$kSprache . "
-                        WHERE tao.cKey = '" . Shop::DB()->escape($cKey) . "'
-                            AND tao.kKey = " . (int)$kKey, 1
+                            AND tag.kSprache = :lang
+                        WHERE tao.cKey = :ckey
+                            AND tao.kKey = :kkey",
+                    ['lang' => $kSprache, 'ckey' => $cKey, 'kkey' => $kKey],
+                    1
                 );
 
                 if (isset($oOrt->kAuswahlAssistentGruppe) && $oOrt->kAuswahlAssistentGruppe > 0) {

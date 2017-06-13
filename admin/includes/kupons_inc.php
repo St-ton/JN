@@ -36,17 +36,16 @@ function loescheKupons($kKupon_arr)
  */
 function getCouponNames($kKupon)
 {
-    $namen = [];
+    $names = [];
     if (!$kKupon) {
-        return $namen;
+        return $names;
     }
-    $kuponnamen = Shop::DB()->selectAll('tkuponsprache', 'kKupon', (int)$kKupon);
-    $kCount     = count($kuponnamen);
-    for ($i = 0; $i < $kCount; $i++) {
-        $namen[$kuponnamen[$i]->cISOSprache] = $kuponnamen[$i]->cName;
+    $coupons = Shop::DB()->selectAll('tkuponsprache', 'kKupon', (int)$kKupon);
+    foreach ($coupons as $coupon) {
+        $names[$coupon->cISOSprache] = $coupon->cName;
     }
 
-    return $namen;
+    return $names;
 }
 
 /**

@@ -322,19 +322,25 @@ class FilterSearch extends AbstractFilter
             $state      = $this->naviFilter->getCurrentStateData();
 
             $state->joins[] = $order->join;
-            $state->joins[] = (new FilterJoin())->setComment('join1 from getSearchFilterOptions')
-                                                ->setType('JOIN')
-                                                ->setTable('tsuchcachetreffer')
-                                                ->setOn('tartikel.kArtikel = tsuchcachetreffer.kArtikel');
-            $state->joins[] = (new FilterJoin())->setComment('join2 from getSearchFilterOptions')
-                                                ->setType('JOIN')
-                                                ->setTable('tsuchcache')
-                                                ->setOn('tsuchcache.kSuchCache = tsuchcachetreffer.kSuchCache');
-            $state->joins[] = (new FilterJoin())->setComment('join3 from getSearchFilterOptions')
-                                                ->setType('JOIN')
-                                                ->setTable('tsuchanfrage')
-                                                ->setOn('tsuchanfrage.cSuche = tsuchcache.cSuche 
-                                                            AND tsuchanfrage.kSprache = ' . $this->getLanguageID());
+            $state->joins[] = (new FilterJoin())
+                ->setComment('join1 from getSearchFilterOptions')
+                ->setType('JOIN')
+                ->setTable('tsuchcachetreffer')
+                ->setOn('tartikel.kArtikel = tsuchcachetreffer.kArtikel')
+                ->setOrigin(__CLASS__);
+            $state->joins[] = (new FilterJoin())
+                ->setComment('join2 from getSearchFilterOptions')
+                ->setType('JOIN')
+                ->setTable('tsuchcache')
+                ->setOn('tsuchcache.kSuchCache = tsuchcachetreffer.kSuchCache')
+                ->setOrigin(__CLASS__);
+            $state->joins[] = (new FilterJoin())
+                ->setComment('join3 from getSearchFilterOptions')
+                ->setType('JOIN')
+                ->setTable('tsuchanfrage')
+                ->setOn('tsuchanfrage.cSuche = tsuchcache.cSuche 
+                            AND tsuchanfrage.kSprache = ' . $this->getLanguageID())
+                ->setOrigin(__CLASS__);
 
             $state->conditions[] = 'tsuchanfrage.nAktiv = 1';
 

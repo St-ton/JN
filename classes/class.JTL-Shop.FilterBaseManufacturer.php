@@ -130,10 +130,12 @@ class FilterBaseManufacturer extends AbstractFilter
             $state      = $this->naviFilter->getCurrentStateData();
 
             $state->joins[] = $order->join;
-            $state->joins[] = (new FilterJoin())->setComment('join from FilterManufacturer::getOptions()')
-                                                ->setType('JOIN')
-                                                ->setTable('thersteller')
-                                                ->setOn('tartikel.kHersteller = thersteller.kHersteller');
+            $state->joins[] = (new FilterJoin())
+                ->setComment('join from FilterManufacturer::getOptions()')
+                ->setType('JOIN')
+                ->setTable('thersteller')
+                ->setOn('tartikel.kHersteller = thersteller.kHersteller')
+                ->setOrigin(__CLASS__);
 
             $query = $this->naviFilter->getBaseQuery(
                 [

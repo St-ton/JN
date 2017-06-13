@@ -135,10 +135,12 @@ class FilterItemAttribute extends FilterBaseAttribute
      */
     public function getSQLJoin()
     {
-        return (new FilterJoin())->setType('JOIN')
-                                 ->setTable('tartikelmerkmal')
-                                 ->setOn('tartikel.kArtikel = tartikelmerkmal.kArtikel')
-                                 ->setComment('join from FilterItemAttribute::getSQLJoin()');
+        return (new FilterJoin())
+            ->setType('JOIN')
+            ->setTable('tartikelmerkmal')
+            ->setOn('tartikel.kArtikel = tartikelmerkmal.kArtikel')
+            ->setComment('join from FilterItemAttribute::getSQLJoin()')
+            ->setOrigin(__CLASS__);
     }
 
     /**
@@ -199,19 +201,25 @@ class FilterItemAttribute extends FilterBaseAttribute
 
         // @todo?
         if (true || (!$this->naviFilter->MerkmalWert->isInitialized() && count($this->naviFilter->MerkmalFilter) === 0)) {
-            $state->joins[] = (new FilterJoin())->setComment('join1 from FilterItemAttribute::getOptions()')
-                                                ->setType('JOIN')
-                                                ->setTable('tartikelmerkmal')
-                                                ->setOn('tartikel.kArtikel = tartikelmerkmal.kArtikel');
+            $state->joins[] = (new FilterJoin())
+                ->setComment('join1 from FilterItemAttribute::getOptions()')
+                ->setType('JOIN')
+                ->setTable('tartikelmerkmal')
+                ->setOn('tartikel.kArtikel = tartikelmerkmal.kArtikel')
+                ->setOrigin(__CLASS__);
         }
-        $state->joins[] = (new FilterJoin())->setComment('join2 from FilterItemAttribute::getOptions()')
-                                            ->setType('JOIN')
-                                            ->setTable('tmerkmalwert')
-                                            ->setOn('tmerkmalwert.kMerkmalWert = tartikelmerkmal.kMerkmalWert');
-        $state->joins[] = (new FilterJoin())->setComment('join4 from FilterItemAttribute::getOptions()')
-                                            ->setType('JOIN')
-                                            ->setTable('tmerkmal')
-                                            ->setOn('tmerkmal.kMerkmal = tartikelmerkmal.kMerkmal');
+        $state->joins[] = (new FilterJoin())
+            ->setComment('join2 from FilterItemAttribute::getOptions()')
+            ->setType('JOIN')
+            ->setTable('tmerkmalwert')
+            ->setOn('tmerkmalwert.kMerkmalWert = tartikelmerkmal.kMerkmalWert')
+            ->setOrigin(__CLASS__);
+        $state->joins[] = (new FilterJoin())
+            ->setComment('join4 from FilterItemAttribute::getOptions()')
+            ->setType('JOIN')
+            ->setTable('tmerkmal')
+            ->setOn('tmerkmal.kMerkmal = tartikelmerkmal.kMerkmal')
+            ->setOrigin(__CLASS__);
 
         $kSprache         = $this->getLanguageID();
         $kStandardSprache = (int)gibStandardsprache()->kSprache;
@@ -224,19 +232,22 @@ class FilterItemAttribute extends FilterBaseAttribute
                 ->setType('LEFT JOIN')
                 ->setTable('tmerkmalsprache')
                 ->setOn('tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal 
-                            AND tmerkmalsprache.kSprache = ' . $kSprache);
+                            AND tmerkmalsprache.kSprache = ' . $kSprache)
+                ->setOrigin(__CLASS__);
             $state->joins[] = (new FilterJoin())
                 ->setComment('join5a non default lang from FilterItemAttribute::getOptions()')
                 ->setType('INNER JOIN')
                 ->setTable('tmerkmalwertsprache AS standardSprache')
                 ->setOn('standardSprache.kMerkmalWert = tartikelmerkmal.kMerkmalWert
-                            AND standardSprache.kSprache = ' . $kStandardSprache);
+                            AND standardSprache.kSprache = ' . $kStandardSprache)
+                ->setOrigin(__CLASS__);
             $state->joins[] = (new FilterJoin())
                 ->setComment('join5c non default lang from FilterItemAttribute::getOptions()')
                 ->setType('LEFT JOIN')
                 ->setTable('tmerkmalwertsprache AS fremdSprache')
                 ->setOn('fremdSprache.kMerkmalWert = tartikelmerkmal.kMerkmalWert 
-                            AND fremdSprache.kSprache = ' . $kSprache);
+                            AND fremdSprache.kSprache = ' . $kSprache)
+                ->setOrigin(__CLASS__);
         } else {
             $select = 'tmerkmalwertsprache.cWert, tmerkmalwertsprache.cSeo, tmerkmal.cName';
             $state->joins[] = (new FilterJoin())
@@ -244,7 +255,8 @@ class FilterItemAttribute extends FilterBaseAttribute
                 ->setType('INNER JOIN')
                 ->setTable('tmerkmalwertsprache')
                 ->setOn('tmerkmalwertsprache.kMerkmalWert = tartikelmerkmal.kMerkmalWert
-                            AND tmerkmalwertsprache.kSprache = ' . $kSprache);
+                            AND tmerkmalwertsprache.kSprache = ' . $kSprache)
+                ->setOrigin(__CLASS__);
         }
 
         if (count($this->naviFilter->MerkmalFilter) > 0) {
@@ -280,7 +292,8 @@ class FilterItemAttribute extends FilterBaseAttribute
                                     GROUP BY kArtikel
                                     HAVING count(*) = ' . count($activeAndFilterIDs) . '
                                 ) AS ssj1')
-                    ->setOn('tartikel.kArtikel = ssj1.kArtikel');
+                    ->setOn('tartikel.kArtikel = ssj1.kArtikel')
+                    ->setOrigin(__CLASS__);
             }
             if (count($activeOrFilterIDs) > 0) {
                 $state->joins[] = (new FilterJoin())
@@ -291,7 +304,8 @@ class FilterItemAttribute extends FilterBaseAttribute
                                         WHERE kMerkmalWert IN (' . implode(', ', $activeOrFilterIDs) . ' )
                                     GROUP BY kArtikel
                                 ) AS ssj2')
-                    ->setOn('tartikel.kArtikel = ssj2.kArtikel');
+                    ->setOn('tartikel.kArtikel = ssj2.kArtikel')
+                    ->setOrigin(__CLASS__);
             }
         }
         $baseQry  = $this->naviFilter->getBaseQuery(

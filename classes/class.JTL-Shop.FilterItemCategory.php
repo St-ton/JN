@@ -83,12 +83,14 @@ class FilterItemCategory extends FilterBaseCategory
                     ->setComment('join1 from FilterItemCategory::getOptions()')
                     ->setType('JOIN')
                     ->setTable('tkategorieartikelgesamt')
-                    ->setOn('tartikel.kArtikel = tkategorieartikelgesamt.kArtikel ' . $kKatFilter);
+                    ->setOn('tartikel.kArtikel = tkategorieartikelgesamt.kArtikel ' . $kKatFilter)
+                    ->setOrigin(__CLASS__);
                 $state->joins[] = (new FilterJoin())
                     ->setComment('join2 from FilterItemCategory::getOptions()')
                     ->setType('JOIN')
                     ->setTable('tkategorie')
-                    ->setOn('tkategorie.kKategorie = tkategorieartikelgesamt.kKategorie');
+                    ->setOn('tkategorie.kKategorie = tkategorieartikelgesamt.kKategorie')
+                    ->setOrigin(__CLASS__);
             } else {
                 //@todo: this instead of $naviFilter->Kategorie?
                 if (!$this->naviFilter->Kategorie->isInitialized()) {
@@ -96,19 +98,22 @@ class FilterItemCategory extends FilterBaseCategory
                         ->setComment('join3 from FilterItemCategory::getOptions()')
                         ->setType('JOIN')
                         ->setTable('tkategorieartikel')
-                        ->setOn('tartikel.kArtikel = tkategorieartikel.kArtikel');
+                        ->setOn('tartikel.kArtikel = tkategorieartikel.kArtikel')
+                        ->setOrigin(__CLASS__);
                 }
                 $state->joins[] = (new FilterJoin())
                     ->setComment('join4 from FilterItemCategory::getOptions()')
                     ->setType('JOIN')
                     ->setTable('tkategorie')
-                    ->setOn('tkategorie.kKategorie = tkategorieartikel.kKategorie');
+                    ->setOn('tkategorie.kKategorie = tkategorieartikel.kKategorie')
+                    ->setOrigin(__CLASS__);
             }
             $state->joins[] = (new FilterJoin())
                 ->setComment('join5 from FilterItemCategory::getOptions()')
                 ->setType('LEFT JOIN')
                 ->setTable('tkategoriesichtbarkeit')
-                ->setOn('tkategoriesichtbarkeit.kKategorie = tkategorie.kKategorie');
+                ->setOn('tkategoriesichtbarkeit.kKategorie = tkategorie.kKategorie')
+                ->setOrigin(__CLASS__);
 
             $state->conditions[] = "tkategoriesichtbarkeit.kKategorie IS NULL";
 
@@ -123,7 +128,8 @@ class FilterItemCategory extends FilterBaseCategory
                     ->setType('JOIN')
                     ->setTable('tkategoriesprache')
                     ->setOn('tkategoriesprache.kKategorie = tkategorie.kKategorie 
-                                AND tkategoriesprache.kSprache = ' . $this->getLanguageID());
+                                AND tkategoriesprache.kSprache = ' . $this->getLanguageID())
+                    ->setOrigin(__CLASS__);
             } else {
                 $select[] = 'tkategorie.cName';
             }

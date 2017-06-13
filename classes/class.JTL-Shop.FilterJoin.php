@@ -30,6 +30,30 @@ class FilterJoin
     private $on;
 
     /**
+     * @var string
+     */
+    private $origin;
+
+    /**
+     * @param string $origin
+     * @return $this
+     */
+    public function setOrigin($origin)
+    {
+        $this->origin = $origin;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getOrigin()
+    {
+        return $this->origin;
+    }
+
+    /**
      * @param string $type
      * @return $this
      */

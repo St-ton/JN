@@ -29,12 +29,16 @@ class FilterItemTag extends FilterBaseTag
     public function getSQLJoin()
     {
         return [
-            (new FilterJoin())->setType('JOIN')
-                              ->setTable('ttagartikel')
-                              ->setOn('tartikel.kArtikel = ttagartikel.kArtikel'),
-            (new FilterJoin())->setType('JOIN')
-                              ->setTable('ttag')
-                              ->setOn('ttagartikel.kTag = ttag.kTag')
+            (new FilterJoin())
+                ->setType('JOIN')
+                ->setTable('ttagartikel')
+                ->setOn('tartikel.kArtikel = ttagartikel.kArtikel')
+                ->setOrigin(__CLASS__),
+            (new FilterJoin())
+                ->setType('JOIN')
+                ->setTable('ttag')
+                ->setOn('ttagartikel.kTag = ttag.kTag')
+                ->setOrigin(__CLASS__)
         ];
     }
 }

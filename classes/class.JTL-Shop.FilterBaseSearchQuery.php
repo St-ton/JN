@@ -158,16 +158,18 @@ class FilterBaseSearchQuery extends AbstractFilter
             $count = 1;
         }
 
-        return (new FilterJoin())->setType('JOIN')
-                                 ->setTable('(SELECT tsuchcachetreffer.kArtikel, tsuchcachetreffer.kSuchCache, 
-                                  MIN(tsuchcachetreffer.nSort) AS nSort
-                                      FROM tsuchcachetreffer
-                                      WHERE tsuchcachetreffer.kSuchCache IN (' . implode(',', $kSucheCache_arr) . ') 
-                                      GROUP BY tsuchcachetreffer.kArtikel
-                                      HAVING COUNT(*) = ' . $count . '
-                                  ) AS jSuche')
-                                 ->setOn('jSuche.kArtikel = tartikel.kArtikel')
-                                 ->setComment('JOIN1 from BaseFilterSearch');
+        return (new FilterJoin())
+            ->setType('JOIN')
+            ->setTable('(SELECT tsuchcachetreffer.kArtikel, tsuchcachetreffer.kSuchCache, 
+                          MIN(tsuchcachetreffer.nSort) AS nSort
+                              FROM tsuchcachetreffer
+                              WHERE tsuchcachetreffer.kSuchCache IN (' . implode(',', $kSucheCache_arr) . ') 
+                              GROUP BY tsuchcachetreffer.kArtikel
+                              HAVING COUNT(*) = ' . $count . '
+                          ) AS jSuche')
+            ->setOn('jSuche.kArtikel = tartikel.kArtikel')
+            ->setComment('JOIN1 from BaseFilterSearch')
+            ->setOrigin(__CLASS__);
     }
 
     /**
@@ -189,19 +191,25 @@ class FilterBaseSearchQuery extends AbstractFilter
             $state      = $this->naviFilter->getCurrentStateData();
 
             $state->joins[] = $order->join;
-            $state->joins[] = (new FilterJoin())->setComment('join1 from getSearchFilterOptions')
-                                                ->setType('JOIN')
-                                                ->setTable('tsuchcachetreffer')
-                                                ->setOn('tartikel.kArtikel = tsuchcachetreffer.kArtikel');
-            $state->joins[] = (new FilterJoin())->setComment('join2 from getSearchFilterOptions')
-                                                ->setType('JOIN')
-                                                ->setTable('tsuchcache')
-                                                ->setOn('tsuchcache.kSuchCache = tsuchcachetreffer.kSuchCache');
-            $state->joins[] = (new FilterJoin())->setComment('join3 from getSearchFilterOptions')
-                                                ->setType('JOIN')
-                                                ->setTable('tsuchanfrage')
-                                                ->setOn('tsuchanfrage.cSuche = tsuchcache.cSuche 
-                                                    AND tsuchanfrage.kSprache = ' . $this->getLanguageID());
+            $state->joins[] = (new FilterJoin())
+                ->setComment('join1 from getSearchFilterOptions')
+                ->setType('JOIN')
+                ->setTable('tsuchcachetreffer')
+                ->setOn('tartikel.kArtikel = tsuchcachetreffer.kArtikel')
+                ->setOrigin(__CLASS__);
+            $state->joins[] = (new FilterJoin())
+                ->setComment('join2 from getSearchFilterOptions')
+                ->setType('JOIN')
+                ->setTable('tsuchcache')
+                ->setOn('tsuchcache.kSuchCache = tsuchcachetreffer.kSuchCache')
+                ->setOrigin(__CLASS__);
+            $state->joins[] = (new FilterJoin())
+                ->setComment('join3 from getSearchFilterOptions')
+                ->setType('JOIN')
+                ->setTable('tsuchanfrage')
+                ->setOn('tsuchanfrage.cSuche = tsuchcache.cSuche 
+                            AND tsuchanfrage.kSprache = ' . $this->getLanguageID())
+                ->setOrigin(__CLASS__);
 
             $state->conditions[] = 'tsuchanfrage.nAktiv = 1';
 

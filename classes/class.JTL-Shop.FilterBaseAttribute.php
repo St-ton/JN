@@ -149,6 +149,7 @@ class FilterBaseAttribute extends AbstractFilter
                             WHERE kMerkmalWert = ' . $this->getValue() . '
                             GROUP BY tartikelmerkmal.kArtikel
                             ) AS tmerkmaljoin')
+             ->setOrigin(__CLASS__)
              ->setOn('tmerkmaljoin.kArtikel = tartikel.kArtikel');
     }
 }

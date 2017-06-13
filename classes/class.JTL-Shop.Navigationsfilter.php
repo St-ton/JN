@@ -942,7 +942,7 @@ class Navigationsfilter
     {
         $Artikelsortierung = $this->conf['artikeluebersicht']['artikeluebersicht_artikelsortierung'];
         $sort              = new stdClass();
-        $sort->join        = new FilterJoin();
+        $sort->join        = (new FilterJoin())->setOrigin(__CLASS__);
         if (isset($_SESSION['Usersortierung'])) {
             $Artikelsortierung          = $this->mapUserSorting($_SESSION['Usersortierung']);
             $_SESSION['Usersortierung'] = $Artikelsortierung;
@@ -1027,7 +1027,7 @@ class Navigationsfilter
     /**
      * @return int
      */
-    private function getArticlesPerPageLimit()
+    public function getArticlesPerPageLimit()
     {
         if (isset($_SESSION['ArtikelProSeite']) && $_SESSION['ArtikelProSeite'] > 0) {
             $limit = (int)$_SESSION['ArtikelProSeite'];
@@ -1630,10 +1630,12 @@ class Navigationsfilter
         $limit = '',
         $groupBy = ['tartikel.kArtikel']
     ) {
-        $joins[] = (new FilterJoin())->setComment('article visiblity join from getBaseQuery')
-                                     ->setType('LEFT JOIN')
-                                     ->setTable('tartikelsichtbarkeit')
-                                     ->setOn('tartikel.kArtikel = tartikelsichtbarkeit.kArtikel 
+        $joins[] = (new FilterJoin())
+            ->setComment('article visiblity join from getBaseQuery')
+            ->setType('LEFT JOIN')
+            ->setTable('tartikelsichtbarkeit')
+            ->setOrigin(__CLASS__)
+            ->setOn('tartikel.kArtikel = tartikelsichtbarkeit.kArtikel 
                         AND tartikelsichtbarkeit.kKundengruppe = ' . $this->getCustomerGroupID());
         // remove duplicate joins
         $joinedTables = [];
@@ -1661,7 +1663,7 @@ class Navigationsfilter
             'having'     => &$having,
             'order'      => &$order,
             'limit'      => &$limit,
-            'navifilter' => null
+            'navifilter' => $this
         ]);
         // build sql string
         $conditionsString = implode(' AND ', array_map(function ($a) {

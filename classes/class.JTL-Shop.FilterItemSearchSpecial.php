@@ -193,22 +193,28 @@ class FilterItemSearchSpecial extends AbstractFilter
     {
         switch ($this->kKey) {
             case SEARCHSPECIALS_BESTSELLER:
-                return (new FilterJoin())->setType('JOIN')
-                                         ->setTable('tbestseller')
-                                         ->setOn('tbestseller.kArtikel = tartikel.kArtikel')
-                                         ->setComment('JOIN from FilterItemSearchSpecial bestseller');
+                return (new FilterJoin())
+                    ->setType('JOIN')
+                    ->setTable('tbestseller')
+                    ->setOn('tbestseller.kArtikel = tartikel.kArtikel')
+                    ->setComment('JOIN from FilterItemSearchSpecial bestseller')
+                    ->setOrigin(__CLASS__);
 
             case SEARCHSPECIALS_SPECIALOFFERS:
                 if (!$this->naviFilter->PreisspannenFilter->isInitialized()) {
                     return [
-                        (new FilterJoin())->setType('JOIN')
-                                          ->setTable('tartikelsonderpreis AS tasp')
-                                          ->setOn('tasp.kArtikel = tartikel.kArtikel')
-                                          ->setComment('JOIN from FilterItemSearchSpecial special offers'),
-                        (new FilterJoin())->setType('JOIN')
-                                          ->setTable('tsonderpreise AS tsp')
-                                          ->setOn('tsp.kArtikelSonderpreis = tasp.kArtikelSonderpreis')
-                                          ->setComment('JOIN2 from FilterItemSearchSpecial special offers')
+                        (new FilterJoin())
+                            ->setType('JOIN')
+                            ->setTable('tartikelsonderpreis AS tasp')
+                            ->setOn('tasp.kArtikel = tartikel.kArtikel')
+                            ->setComment('JOIN from FilterItemSearchSpecial special offers')
+                            ->setOrigin(__CLASS__),
+                        (new FilterJoin())
+                            ->setType('JOIN')
+                            ->setTable('tsonderpreise AS tsp')
+                            ->setOn('tsp.kArtikelSonderpreis = tasp.kArtikelSonderpreis')
+                            ->setComment('JOIN2 from FilterItemSearchSpecial special offers')
+                            ->setOrigin(__CLASS__)
                     ];
                 }
 
@@ -222,10 +228,12 @@ class FilterItemSearchSpecial extends AbstractFilter
             case SEARCHSPECIALS_TOPREVIEWS:
                 return $this->naviFilter->BewertungFilter->isInitialized()
                     ? []
-                    : (new FilterJoin())->setType('JOIN')
-                                        ->setTable('tartikelext AS taex ')
-                                        ->setOn('taex.kArtikel = tartikel.kArtikel')
-                                        ->setComment('JOIN from FilterItemSearchSpecial top reviews');
+                    : (new FilterJoin())
+                        ->setType('JOIN')
+                        ->setTable('tartikelext AS taex ')
+                        ->setOn('taex.kArtikel = tartikel.kArtikel')
+                        ->setComment('JOIN from FilterItemSearchSpecial top reviews')
+                        ->setOrigin(__CLASS__);
 
             default:
                 return [];
@@ -258,7 +266,8 @@ class FilterItemSearchSpecial extends AbstractFilter
                             ->setComment('join from FilterItemSearchSpecial::getOptions() bestseller')
                             ->setType('JOIN')
                             ->setTable('tbestseller')
-                            ->setOn('tbestseller.kArtikel = tartikel.kArtikel');
+                            ->setOn('tbestseller.kArtikel = tartikel.kArtikel')
+                            ->setOrigin(__CLASS__);
 
                         $state->conditions[] = 'ROUND(tbestseller.fAnzahl) >= ' . $nAnzahl;
                         break;
@@ -269,13 +278,15 @@ class FilterItemSearchSpecial extends AbstractFilter
                                 ->setComment('join1 from FilterItemSearchSpecial::getOptions() special offer')
                                 ->setType('JOIN')
                                 ->setTable('tartikelsonderpreis')
-                                ->setOn('tartikelsonderpreis.kArtikel = tartikel.kArtikel');
+                                ->setOn('tartikelsonderpreis.kArtikel = tartikel.kArtikel')
+                                ->setOrigin(__CLASS__);
 
                             $state->joins[] = (new FilterJoin())
                                 ->setComment('join2 from FilterItemSearchSpecial::getOptions() special offer')
                                 ->setType('JOIN')
                                 ->setTable('tsonderpreise')
-                                ->setOn('tsonderpreise.kArtikelSonderpreis = tartikelsonderpreis.kArtikelSonderpreis');
+                                ->setOn('tsonderpreise.kArtikelSonderpreis = tartikelsonderpreis.kArtikelSonderpreis')
+                                ->setOrigin(__CLASS__);
                             $tsonderpreise  = 'tsonderpreise';
                         } else {
                             $tsonderpreise = 'tsonderpreise';//'tspgspqf';
@@ -309,7 +320,8 @@ class FilterItemSearchSpecial extends AbstractFilter
                                 ->setComment('join from FilterItemSearchSpecial::getOptions() top reviews')
                                 ->setType('JOIN')
                                 ->setTable('tartikelext')
-                                ->setOn('tartikelext.kArtikel = tartikel.kArtikel');
+                                ->setOn('tartikelext.kArtikel = tartikel.kArtikel')
+                                ->setOrigin(__CLASS__);
                         }
                         $state->conditions[] = 'ROUND(tartikelext.fDurchschnittsBewertung) >= ' .
                             (int)$this->getConfig()['boxen']['boxen_topbewertet_minsterne'];

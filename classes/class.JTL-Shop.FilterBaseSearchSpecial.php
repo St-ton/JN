@@ -182,19 +182,23 @@ class FilterBaseSearchSpecial extends AbstractFilter
     {
         switch ($this->kKey) {
             case SEARCHSPECIALS_BESTSELLER:
-                return (new FilterJoin())->setType('JOIN')
-                                         ->setTable('tbestseller')
-                                         ->setOn('tbestseller.kArtikel = tartikel.kArtikel')
-                                         ->setComment('JOIN from FilterBaseSearchSpecial bestseller');
+                return (new FilterJoin())
+                    ->setType('JOIN')
+                    ->setTable('tbestseller')
+                    ->setOn('tbestseller.kArtikel = tartikel.kArtikel')
+                    ->setComment('JOIN from FilterBaseSearchSpecial bestseller')
+                    ->setOrigin(__CLASS__);
 
             case SEARCHSPECIALS_SPECIALOFFERS:
                 return $this->naviFilter->PreisspannenFilter->isInitialized()
                     ? []
-                    : (new FilterJoin())->setType('JOIN')
-                                             ->setTable('tartikelsonderpreis AS tasp')
-                                             ->setOn('tasp.kArtikel = tartikel.kArtikel JOIN tsonderpreise AS tsp 
-                                                ON tsp.kArtikelSonderpreis = tasp.kArtikelSonderpreis')
-                                             ->setComment('JOIN from FilterBaseSearchSpecial special offers');
+                    : (new FilterJoin())
+                        ->setType('JOIN')
+                        ->setTable('tartikelsonderpreis AS tasp')
+                        ->setOn('tasp.kArtikel = tartikel.kArtikel JOIN tsonderpreise AS tsp 
+                                    ON tsp.kArtikelSonderpreis = tasp.kArtikelSonderpreis')
+                        ->setComment('JOIN from FilterBaseSearchSpecial special offers')
+                        ->setOrigin(__CLASS__);
 
             case SEARCHSPECIALS_NEWPRODUCTS:
             case SEARCHSPECIALS_TOPOFFERS:
@@ -204,10 +208,12 @@ class FilterBaseSearchSpecial extends AbstractFilter
             case SEARCHSPECIALS_TOPREVIEWS:
                 return $this->naviFilter->BewertungFilter->isInitialized()
                     ? []
-                    : (new FilterJoin())->setType('JOIN')
-                                             ->setTable('tartikelext AS taex ')
-                                             ->setOn('taex.kArtikel = tartikel.kArtikel')
-                                             ->setComment('JOIN from FilterBaseSearchSpecial top reviews');
+                    : (new FilterJoin())
+                        ->setType('JOIN')
+                        ->setTable('tartikelext AS taex ')
+                        ->setOn('taex.kArtikel = tartikel.kArtikel')
+                        ->setComment('JOIN from FilterBaseSearchSpecial top reviews')
+                        ->setOrigin(__CLASS__);
 
             default:
                 return [];

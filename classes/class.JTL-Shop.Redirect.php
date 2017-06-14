@@ -25,6 +25,11 @@ class Redirect
     public $cToUrl;
 
     /**
+     * @var string
+     */
+    public $cAvailable;
+
+    /**
      * @param int $kRedirect
      */
     public function __construct($kRedirect = 0)
@@ -135,16 +140,18 @@ class Redirect
             $oTarget = $this->getRedirectByTarget($cSource);
             if (!empty($oTarget)) {
                 $this->saveExt($oTarget->cFromUrl, $cDestination);
-                $oObj         = new stdClass();
-                $oObj->cToUrl = StringHandler::convertISO($cDestination);
+                $oObj             = new stdClass();
+                $oObj->cToUrl     = StringHandler::convertISO($cDestination);
+                $oObj->cAvailable = 'y';
                 Shop::DB()->update('tredirect', 'cToUrl', $cSource, $oObj);
             }
 
             $oRedirect = $this->find($cSource);
             if (empty($oRedirect)) {
-                $oObj           = new stdClass();
-                $oObj->cFromUrl = StringHandler::convertISO($cSource);
-                $oObj->cToUrl   = StringHandler::convertISO($cDestination);
+                $oObj             = new stdClass();
+                $oObj->cFromUrl   = StringHandler::convertISO($cSource);
+                $oObj->cToUrl     = StringHandler::convertISO($cDestination);
+                $oObj->cAvailable = 'y';
 
                 $kRedirect = Shop::DB()->insert('tredirect', $oObj);
                 if ((int)$kRedirect > 0) {

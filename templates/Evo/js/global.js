@@ -170,14 +170,34 @@ function navigation()
 }
 
 function addValidationListener() {
-    var forms = $('form');
-    var inputs = $('input,select,textarea');
+    var forms  = $('form'),
+        inputs = $('input,select,textarea'),
+        $body  = $('body');
 
     for (var i = 0; i < forms.length; i++) {
         forms[i].addEventListener('invalid', function (event) {
             event.preventDefault();
             $(event.target).closest('.form-group').find('div.form-error-msg').remove();
             $(event.target).closest('.form-group').addClass('has-error').append('<div class="form-error-msg text-danger"><i class="fa fa-warning"></i> ' + event.target.validationMessage + '</div>');
+
+            if (!$body.data('doScrolling')) {
+                var $firstError = $(event.target).closest('.form-group.has-error');
+                if ($firstError.length > 0) {
+                    $body.data('doScrolling', true);
+                    var $nav        = $('#evo-main-nav-wrapper.do-affix'),
+                        fixedOffset = $nav.length > 0 ? $nav.outerHeight() : 0;
+                    $('html, body').animate(
+                        {
+                            scrollTop: $firstError.offset().top - fixedOffset - parseInt($firstError.css('margin-top'))
+                        },
+                        {
+                            done: function() {
+                                $body.data('doScrolling', false);
+                            }
+                        }, 300
+                    );
+                }
+            }
         }, true);
     }
 
@@ -206,6 +226,37 @@ $(window).load(function(){
 });
 
 $(document).ready(function () {
+    $('.collapse-non-validate')
+        .on('hidden.bs.collapse', function(e) {
+            $(e.target)
+                .addClass('hidden')
+                .find('fieldset, .form-control')
+                .attr('disabled', true);
+            e.stopPropagation();
+        })
+        .on('show.bs.collapse', function(e) {
+            $(e.target)
+                .removeClass('hidden')
+                .attr('disabled', false);
+            e.stopPropagation();
+        }).on('shown.bs.collapse', function(e) {
+            $(e.target)
+                .find('fieldset, .form-control')
+                .filter(function (i, e) {
+                    return $(e).closest('.collapse-non-validate.collapse').hasClass('in');
+                })
+                .attr('disabled', false);
+            e.stopPropagation();
+        });
+    $('.collapse-non-validate.collapse.in')
+        .removeClass('hidden')
+        .find('fieldset, .form-control')
+        .attr('disabled', false);
+    $('.collapse-non-validate.collapse:not(.in)')
+        .addClass('hidden')
+        .find('fieldset, .form-control')
+        .attr('disabled', true);
+
     $('#complete-order-button').click(function () {
         var commentField = $('#comment'),
             commentFieldHidden = $('#comment-hidden');
@@ -280,14 +331,14 @@ $(document).ready(function () {
         dataType: "json"
     });
 
-    $('#neukunde #plz, #new_customer #plz').change(function(){
+    $('#neukunde #plz, #new_customer #plz, #form-register #plz').change(function(){
         citySuggestion.remote.url = 'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $('#country').val() + '", "' + $('#plz').val() + '"]}';
     });
-    $('#neukunde #country, #new_customer #country').change(function(){
+    $('#neukunde #country, #new_customer #country, #form-register #country').change(function(){
         citySuggestion.remote.url = 'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $('#country').val() + '", "' + $('#plz').val() + '"]}';
     });
 
-    $('#neukunde #city, #new_customer #city').typeahead(
+    $('#neukunde #city, #new_customer #city, #form-register #city').typeahead(
         {
             hint: true,
             minLength: 1
@@ -295,6 +346,34 @@ $(document).ready(function () {
         {
             name:       'cities',
             source:     citySuggestion
+        }
+    );
+
+    var citySuggestionRegShip = new Bloodhound({
+        datumTokenizer: Bloodhound.tokenizers.obj.whitespace('keyword'),
+        queryTokenizer: Bloodhound.tokenizers.whitespace,
+        remote:         {
+            url:      'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $('#register-shipping_address-country').val() + '", "' + $('#register-shipping_address-postcode').val() + '"]}',
+            wildcard: '%QUERY'
+        },
+        dataType: "json"
+    });
+
+    $('#form-register #register-shipping_address-postcode, #neukunde #register-shipping_address-postcode').change(function(){
+        citySuggestionRegShip.remote.url = 'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $('#register-shipping_address-country').val() + '", "' + $('#register-shipping_address-postcode').val() + '"]}';
+    });
+    $('#form-register #register-shipping_address-country, #neukunde #register-shipping_address-country').change(function(){
+        citySuggestionRegShip.remote.url = 'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $('#register-shipping_address-country').val() + '", "' + $('#register-shipping_address-postcode').val() + '"]}';
+    });
+
+    $('#form-register #register-shipping_address-city, #neukunde #register-shipping_address-city').typeahead(
+        {
+            hint: true,
+            minLength: 1
+        },
+        {
+            name:       'cities',
+            source:     citySuggestionRegShip
         }
     );
 

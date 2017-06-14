@@ -103,109 +103,111 @@
                     <div class="panel-heading">
                         <h3 class="panel-title">{if isset($oKundenfeld->kKundenfeld) && $oKundenfeld->kKundenfeld > 0}{#kundenfeldEdit#}{else}{#kundenfeldCreate#}{/if}</h3>
                     </div>
-                    <table class="table list table-bordered" id="formtable">
-                        <tr>
-                            <td><label for="cName">{#kundenfeldName#}</label></td>
-                            <td>
-                                <input id="cName" name="cName" type="text" class="{if isset($xPlausiVar_arr.cName)}fieldfillout{/if} form-control" value="{if isset($xPostVar_arr.cName)}{$xPostVar_arr.cName}{elseif isset($oKundenfeld->cName)}{$oKundenfeld->cName}{/if}" />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><label for="cWawi">{#kundenfeldWawi#}</label></td>
-                            <td>
-                                <input id="cWawi" name="cWawi" type="text" class="{if isset($xPlausiVar_arr.cWawi)}fieldfillout{/if} form-control" value="{if isset($xPostVar_arr.cWawi)}{$xPostVar_arr.cWawi}{elseif isset($oKundenfeld->cWawi)}{$oKundenfeld->cWawi}{/if}" />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><label for="nSort">{#kundenfeldSort#}</label></td>
-                            <td>
-                                <input id="nSort" name="nSort" type="text" class="{if isset($xPlausiVar_arr.nSort)}fieldfillout{/if} form-control" value="{if isset($xPostVar_arr.nSort)}{$xPostVar_arr.nSort}{elseif isset($oKundenfeld->nSort)}{$oKundenfeld->nSort}{/if}" placeholder="{#kundenfeldSortDesc#}"/>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><label for="nPflicht">{#kundenfeldPflicht#}</label></td>
-                            <td>
-                                <select id="nPflicht" name="nPflicht" class="{if isset($xPlausiVar_arr.nPflicht)} fieldfillout {/if}form-control">
-                                    <option value="1"{if (isset($xPostVar_arr.nPflicht) && $xPostVar_arr.nPflicht == 1) || (isset($oKundenfeld->nPflicht) && $oKundenfeld->nPflicht == 1)} selected{/if}>
-                                        Ja
-                                    </option>
-                                    <option value="0"{if (isset($xPostVar_arr.nPflicht) && $xPostVar_arr.nPflicht == 0) || (isset($oKundenfeld->nPflicht) && $oKundenfeld->nPflicht == 0)} selected{/if}>
-                                        Nein
-                                    </option>
-                                </select>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><label for="nEdit">{#kundenfeldEditable#}</label></td>
-                            <td>
-                                <select id="nEdit" name="nEdit" class="{if isset($xPlausiVar_arr.nEdit)} fieldfillout{/if} form-control">
-                                    <option value="1"{if (isset($xPostVar_arr.nEdit) && $xPostVar_arr.nEdit == 1) || (isset($oKundenfeld->nEdit) && $oKundenfeld->nEdit == 1)} selected{/if}>
-                                        Ja
-                                    </option>
-                                    <option value="0"{if (isset($xPostVar_arr.nEdit) && $xPostVar_arr.nEdit == 0) || (isset($oKundenfeld->nEdit) && $oKundenfeld->nEdit == 1)} selected{/if}>
-                                        Nein
-                                    </option>
-                                </select>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><label for="cTyp">{#kundenfeldTyp#}</label></td>
-                            <td>
-                                <select id="cTyp" name="cTyp" onchange="selectCheck(this);" class="{if isset($xPlausiVar_arr.cTyp)} fieldfillout{/if} form-control">
-                                    <option value="text"{if (isset($xPostVar_arr.cTyp) && $xPostVar_arr.cTyp === 'text') || (isset($oKundenfeld->cTyp) && $oKundenfeld->cTyp === 'text')} selected{/if}>
-                                        Text
-                                    </option>
-                                    <option value="zahl"{if (isset($xPostVar_arr.cTyp) && $xPostVar_arr.cTyp === 'zahl') || (isset($oKundenfeld->cTyp) && $oKundenfeld->cTyp === 'zahl')} selected{/if}>
-                                        Zahl
-                                    </option>
-                                    <option value="datum"{if (isset($xPostVar_arr.cTyp) && $xPostVar_arr.cTyp === 'datum') || (isset($oKundenfeld->cTyp) && $oKundenfeld->cTyp === 'datum')} selected{/if}>
-                                        Datum
-                                    </option>
-                                    <option value="auswahl"{if (isset($xPostVar_arr.cTyp) && $xPostVar_arr.cTyp === 'auswahl') || (isset($oKundenfeld->cTyp) && $oKundenfeld->cTyp === 'auswahl')} selected{/if}>
-                                        Auswahl
-                                    </option>
-                                </select>
-                                {if (isset($xPostVar_arr.cTyp) && $xPostVar_arr.cTyp === 'auswahl') || (isset($oKundenfeld->cTyp) && $oKundenfeld->cTyp === 'auswahl')}
-                                    <div class="kundenfeld_wert">
-                                        <button name="button" type="button" class="btn btn-primary add" value="Wert hinzuf&uuml;gen" onclick="addKundenfeldWert()"><i class="fa fa-plus-square-o"></i> Wert hinzuf&uuml;gen</button>
-                                    </div>
-                                {/if}
-                            </td>
-                        </tr>
-                        {if isset($oKundenfeld->oKundenfeldWert_arr) && $oKundenfeld->oKundenfeldWert_arr|@count > 0}
-                            {foreach name=kundenfeldwerte from=$oKundenfeld->oKundenfeldWert_arr key=key item=oKundenfeldWert}
-                                {assign var=i value=$key+1}
-                                {assign var=j value=$key+6}
-                                <tr class="kundenfeld_wert">
-                                    <td class="kundenfeld_wert_label">Wert {$i}:</td>
-                                    <td class="row">
-                                        <div class="col-lg-3 jtl-list-group">
-                                            <input name="cWert[]" type="text" class="field form-control" value="{$oKundenfeldWert->cWert}" />
+                    <div class="table-responsive">
+                        <table class="table list table-bordered" id="formtable">
+                            <tr>
+                                <td><label for="cName">{#kundenfeldName#}</label></td>
+                                <td>
+                                    <input id="cName" name="cName" type="text" class="{if isset($xPlausiVar_arr.cName)}fieldfillout{/if} form-control" value="{if isset($xPostVar_arr.cName)}{$xPostVar_arr.cName}{elseif isset($oKundenfeld->cName)}{$oKundenfeld->cName}{/if}" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><label for="cWawi">{#kundenfeldWawi#}</label></td>
+                                <td>
+                                    <input id="cWawi" name="cWawi" type="text" class="{if isset($xPlausiVar_arr.cWawi)}fieldfillout{/if} form-control" value="{if isset($xPostVar_arr.cWawi)}{$xPostVar_arr.cWawi}{elseif isset($oKundenfeld->cWawi)}{$oKundenfeld->cWawi}{/if}" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><label for="nSort">{#kundenfeldSort#}</label></td>
+                                <td>
+                                    <input id="nSort" name="nSort" type="text" class="{if isset($xPlausiVar_arr.nSort)}fieldfillout{/if} form-control" value="{if isset($xPostVar_arr.nSort)}{$xPostVar_arr.nSort}{elseif isset($oKundenfeld->nSort)}{$oKundenfeld->nSort}{/if}" placeholder="{#kundenfeldSortDesc#}"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><label for="nPflicht">{#kundenfeldPflicht#}</label></td>
+                                <td>
+                                    <select id="nPflicht" name="nPflicht" class="{if isset($xPlausiVar_arr.nPflicht)} fieldfillout {/if}form-control">
+                                        <option value="1"{if (isset($xPostVar_arr.nPflicht) && $xPostVar_arr.nPflicht == 1) || (isset($oKundenfeld->nPflicht) && $oKundenfeld->nPflicht == 1)} selected{/if}>
+                                            Ja
+                                        </option>
+                                        <option value="0"{if (isset($xPostVar_arr.nPflicht) && $xPostVar_arr.nPflicht == 0) || (isset($oKundenfeld->nPflicht) && $oKundenfeld->nPflicht == 0)} selected{/if}>
+                                            Nein
+                                        </option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><label for="nEdit">{#kundenfeldEditable#}</label></td>
+                                <td>
+                                    <select id="nEdit" name="nEdit" class="{if isset($xPlausiVar_arr.nEdit)} fieldfillout{/if} form-control">
+                                        <option value="1"{if (isset($xPostVar_arr.nEdit) && $xPostVar_arr.nEdit == 1) || (isset($oKundenfeld->nEdit) && $oKundenfeld->nEdit == 1)} selected{/if}>
+                                            Ja
+                                        </option>
+                                        <option value="0"{if (isset($xPostVar_arr.nEdit) && $xPostVar_arr.nEdit == 0) || (isset($oKundenfeld->nEdit) && $oKundenfeld->nEdit == 1)} selected{/if}>
+                                            Nein
+                                        </option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><label for="cTyp">{#kundenfeldTyp#}</label></td>
+                                <td>
+                                    <select id="cTyp" name="cTyp" onchange="selectCheck(this);" class="{if isset($xPlausiVar_arr.cTyp)} fieldfillout{/if} form-control">
+                                        <option value="text"{if (isset($xPostVar_arr.cTyp) && $xPostVar_arr.cTyp === 'text') || (isset($oKundenfeld->cTyp) && $oKundenfeld->cTyp === 'text')} selected{/if}>
+                                            Text
+                                        </option>
+                                        <option value="zahl"{if (isset($xPostVar_arr.cTyp) && $xPostVar_arr.cTyp === 'zahl') || (isset($oKundenfeld->cTyp) && $oKundenfeld->cTyp === 'zahl')} selected{/if}>
+                                            Zahl
+                                        </option>
+                                        <option value="datum"{if (isset($xPostVar_arr.cTyp) && $xPostVar_arr.cTyp === 'datum') || (isset($oKundenfeld->cTyp) && $oKundenfeld->cTyp === 'datum')} selected{/if}>
+                                            Datum
+                                        </option>
+                                        <option value="auswahl"{if (isset($xPostVar_arr.cTyp) && $xPostVar_arr.cTyp === 'auswahl') || (isset($oKundenfeld->cTyp) && $oKundenfeld->cTyp === 'auswahl')} selected{/if}>
+                                            Auswahl
+                                        </option>
+                                    </select>
+                                    {if (isset($xPostVar_arr.cTyp) && $xPostVar_arr.cTyp === 'auswahl') || (isset($oKundenfeld->cTyp) && $oKundenfeld->cTyp === 'auswahl')}
+                                        <div class="kundenfeld_wert">
+                                            <button name="button" type="button" class="btn btn-primary add" value="Wert hinzuf&uuml;gen" onclick="addKundenfeldWert()"><i class="fa fa-plus-square-o"></i> Wert hinzuf&uuml;gen</button>
                                         </div>
-                                        <div class="btn-group">
-                                            <button name="delete" type="button" class="btn btn-danger" value="Entfernen" onclick="delKundenfeldWert(this)"><i class="fa fa-trash"></i> Entfernen</button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            {/foreach}
-                        {elseif isset($xPostVar_arr.cWert) && $xPostVar_arr.cWert|@count > 0}
-                            {foreach name=kundenfeldwerte from=$xPostVar_arr.cWert key=key item=cKundenfeldWert}
-                                {assign var=i value=$key+1}
-                                {assign var=j value=$key+6}
-                                <tr class="kundenfeld_wert">
-                                    <td class="kundenfeld_wert_label">Wert {$i}:</td>
-                                    <td class="row">
-                                        <div class="col-lg-3 jtl-list-group">
-                                            <input name="cWert[]" type="text" class="field form-control" value="{$cKundenfeldWert}" />
-                                        </div>
-                                        <div class="btn-group">
-                                            <button name="delete" type="button" class="btn btn-danger" value="Entfernen" onclick="delKundenfeldWert(this)"><i class="fa fa-trash"></i> Entfernen</button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            {/foreach}
-                        {/if}
-                    </table>
+                                    {/if}
+                                </td>
+                            </tr>
+                            {if isset($oKundenfeld->oKundenfeldWert_arr) && $oKundenfeld->oKundenfeldWert_arr|@count > 0}
+                                {foreach name=kundenfeldwerte from=$oKundenfeld->oKundenfeldWert_arr key=key item=oKundenfeldWert}
+                                    {assign var=i value=$key+1}
+                                    {assign var=j value=$key+6}
+                                    <tr class="kundenfeld_wert">
+                                        <td class="kundenfeld_wert_label">Wert {$i}:</td>
+                                        <td class="row">
+                                            <div class="col-lg-3 jtl-list-group">
+                                                <input name="cWert[]" type="text" class="field form-control" value="{$oKundenfeldWert->cWert}" />
+                                            </div>
+                                            <div class="btn-group">
+                                                <button name="delete" type="button" class="btn btn-danger" value="Entfernen" onclick="delKundenfeldWert(this)"><i class="fa fa-trash"></i> Entfernen</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {/foreach}
+                            {elseif isset($xPostVar_arr.cWert) && $xPostVar_arr.cWert|@count > 0}
+                                {foreach name=kundenfeldwerte from=$xPostVar_arr.cWert key=key item=cKundenfeldWert}
+                                    {assign var=i value=$key+1}
+                                    {assign var=j value=$key+6}
+                                    <tr class="kundenfeld_wert">
+                                        <td class="kundenfeld_wert_label">Wert {$i}:</td>
+                                        <td class="row">
+                                            <div class="col-lg-3 jtl-list-group">
+                                                <input name="cWert[]" type="text" class="field form-control" value="{$cKundenfeldWert}" />
+                                            </div>
+                                            <div class="btn-group">
+                                                <button name="delete" type="button" class="btn btn-danger" value="Entfernen" onclick="delKundenfeldWert(this)"><i class="fa fa-trash"></i> Entfernen</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {/foreach}
+                            {/if}
+                        </table>
+                    </div>
                     <div class="panel-footer">
                         <button name="speichern" type="button" class="btn btn-primary" value="{#kundenfeldSave#}" onclick="document.kundenfeld.submit();"><i class="fa fa-save"></i> {#kundenfeldSave#}</button>
                     </div>
@@ -223,49 +225,51 @@
                         {$jtl_token}
                         <input name="kundenfelder" type="hidden" value="1">
                         <input name="tab" type="hidden" value="uebersicht">
-                        <table class="table">
-                            <thead>
-                            <tr>
-                                <th class="check"></th>
-                                <th class="tleft">{#kundenfeldNameShort#}</th>
-                                <th class="tleft">{#kundenfeldWawiShort#}</th>
-                                <th class="tleft">{#kundenfeldTyp#}</th>
-                                <th class="tleft">{#kundenfeldValue#}</th>
-                                <th class="th-6">{#kundenfeldEdit#}</th>
-                                <th class="th-7">{#kundenfeldSort#}</th>
-                                <th class="th-8"></th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {foreach name=kundenfeld from=$oKundenfeld_arr item=oKundenfeld}
-                                <tr class="tab_bg{$smarty.foreach.kundenfeld.iteration%2}">
-                                    <td class="check">
-                                        <input name="kKundenfeld[]" type="checkbox" value="{$oKundenfeld->kKundenfeld}" id="check-{$oKundenfeld->kKundenfeld}" />
-                                    </td>
-                                    <td class="TD2"><label for="check-{$oKundenfeld->kKundenfeld}">{$oKundenfeld->cName}{if $oKundenfeld->nPflicht == 1} *{/if}</label></td>
-                                    <td class="TD3">{$oKundenfeld->cWawi}</td>
-                                    <td class="TD4">{$oKundenfeld->cTyp}</td>
-                                    <td class="TD5">
-                                        {if isset($oKundenfeld->oKundenfeldWert_arr)}
-                                            {foreach name=kundenfeldwert from=$oKundenfeld->oKundenfeldWert_arr item=oKundenfeldWert}
-                                                {$oKundenfeldWert->cWert}{if !$smarty.foreach.kundenfeldwert.last}, {/if}
-                                            {/foreach}
-                                        {/if}
-                                    </td>
-                                    <td class="tcenter">{if $oKundenfeld->nEditierbar == 1}{#kundenfeldYes#}{else}{#kundenfeldNo#}{/if}</td>
-                                    <td class="tcenter">
-                                        <input class="form-control" name="nSort_{$oKundenfeld->kKundenfeld}" type="text" value="{$oKundenfeld->nSort}" size="5" />
-                                    </td>
-                                    <td class="tcenter">
-                                        <a href="kundenfeld.php?a=edit&kKundenfeld={$oKundenfeld->kKundenfeld}&tab=uebersicht&token={$smarty.session.jtl_token}"
-                                           class="btn btn-default btn-sm" title="{#modify#}">
-                                            <i class="fa fa-edit"></i>
-                                        </a>
-                                    </td>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th class="check"></th>
+                                    <th class="tleft">{#kundenfeldNameShort#}</th>
+                                    <th class="tleft">{#kundenfeldWawiShort#}</th>
+                                    <th class="tleft">{#kundenfeldTyp#}</th>
+                                    <th class="tleft">{#kundenfeldValue#}</th>
+                                    <th class="th-6">{#kundenfeldEdit#}</th>
+                                    <th class="th-7">{#kundenfeldSort#}</th>
+                                    <th class="th-8"></th>
                                 </tr>
-                            {/foreach}
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                {foreach name=kundenfeld from=$oKundenfeld_arr item=oKundenfeld}
+                                    <tr class="tab_bg{$smarty.foreach.kundenfeld.iteration%2}">
+                                        <td class="check">
+                                            <input name="kKundenfeld[]" type="checkbox" value="{$oKundenfeld->kKundenfeld}" id="check-{$oKundenfeld->kKundenfeld}" />
+                                        </td>
+                                        <td class="TD2"><label for="check-{$oKundenfeld->kKundenfeld}">{$oKundenfeld->cName}{if $oKundenfeld->nPflicht == 1} *{/if}</label></td>
+                                        <td class="TD3">{$oKundenfeld->cWawi}</td>
+                                        <td class="TD4">{$oKundenfeld->cTyp}</td>
+                                        <td class="TD5">
+                                            {if isset($oKundenfeld->oKundenfeldWert_arr)}
+                                                {foreach name=kundenfeldwert from=$oKundenfeld->oKundenfeldWert_arr item=oKundenfeldWert}
+                                                    {$oKundenfeldWert->cWert}{if !$smarty.foreach.kundenfeldwert.last}, {/if}
+                                                {/foreach}
+                                            {/if}
+                                        </td>
+                                        <td class="tcenter">{if $oKundenfeld->nEditierbar == 1}{#kundenfeldYes#}{else}{#kundenfeldNo#}{/if}</td>
+                                        <td class="tcenter">
+                                            <input class="form-control" name="nSort_{$oKundenfeld->kKundenfeld}" type="text" value="{$oKundenfeld->nSort}" size="5" />
+                                        </td>
+                                        <td class="tcenter">
+                                            <a href="kundenfeld.php?a=edit&kKundenfeld={$oKundenfeld->kKundenfeld}&tab=uebersicht&token={$smarty.session.jtl_token}"
+                                               class="btn btn-default btn-sm" title="{#modify#}">
+                                                <i class="fa fa-edit"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {/foreach}
+                                </tbody>
+                            </table>
+                        </div>
                         <div class="panel-body">
                             <div class="alert alert-info">{#kundenfeldPflichtDesc#}</div>
                         </div>

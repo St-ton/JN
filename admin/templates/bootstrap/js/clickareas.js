@@ -1,5 +1,6 @@
 ;(function($) {
    $.clickareas = function(options) {
+       window.options = options;
       $(window).on("load", function() {
          var unique = 0;
          var factor = ($('#clickarea').prop("naturalWidth") / $('#clickarea').prop("width")).toFixed(2);
@@ -19,7 +20,7 @@
             $(options.save).click(function() {
                saveEditor();
                var data = JSON.stringify(options.data);
-               xajax_saveBannerAreas(data);
+               ioCall('saveBannerAreas', [data]);
                showInfo('Zonen wurden erfolgreich gespeichert');
                return false;
             });
@@ -80,12 +81,10 @@
                $(options.editor).find('#title').val(data.cTitel);
                $(options.editor).find('#desc').val(data.cBeschreibung);
                $(options.editor).find('#url').val(data.cUrl);
-               $(options.editor).find('#article').val(data.kArtikel);
+               $(options.editor).find('#article_id').val(data.kArtikel);
+               $(options.editor).find('#article_name').val(data.oArtikel ? data.oArtikel.cName : '');
                $(options.editor).find('#style').val(data.cStyle);
                $(options.editor).find('#id').val(id);
-
-               $(options.editor).find('#article_info').html((data.kArtikel > 0) ?
-                  '<span class="success">Verkn&uuml;pft</span>' : '<span class="error">Nicht verkn&uuml;pft</span>');
 
                $(options.editor).show();
             }
@@ -101,10 +100,16 @@
             $(options.data.oArea_arr).each(function(idx, item) {
                if (item.uid == id) {
                   saved = true;
+
+                  if(!item.oArtikel) {
+                      item.oArtikel = { cName: '' };
+                  }
+
                   item.cTitel = $(options.editor).find('#title').val();
                   item.cBeschreibung = $(options.editor).find('#desc').val();
                   item.cUrl = $(options.editor).find('#url').val();
-                  item.kArtikel = $(options.editor).find('#article').val();
+                  item.kArtikel = $(options.editor).find('#article_id').val();
+                  item.oArtikel.cName = $(options.editor).find('#article_name').val();
                   item.cStyle = $(options.editor).find('#style').val();
                }
             });

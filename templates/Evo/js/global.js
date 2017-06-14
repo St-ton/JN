@@ -143,6 +143,12 @@ function loadContent(url)
 {
     $.evo.extended().loadContent(url, function() {
         $.evo.extended().register();
+
+        if (typeof $.evo.article === 'function') {
+            $.evo.article().onLoad();
+            $.evo.article().register();
+        }
+
         $('html,body').animate({
             scrollTop: $('.list-pageinfo').offset().top - $('#evo-main-nav-wrapper').outerHeight() - 10 
         }, 100);
@@ -209,6 +215,10 @@ function addValidationListener() {
 
 function captcha_filled() {
     $('.g-recaptcha').closest('.form-group').find('div.form-error-msg').remove();
+}
+
+function isTouchCapable() {
+    return 'ontouchstart' in window || (window.DocumentTouch && document instanceof window.DocumentTouch);
 }
 
 $(window).load(function(){
@@ -453,12 +463,15 @@ $(document).ready(function () {
      * set bootstrap viewport
      */
     (function($, document, window, viewport){ 
+        var $body = $('body');
+
         $(window).resize(
             viewport.changed(function() {
-                $('body').attr('data-viewport', viewport.current());
+                $body.attr('data-viewport', viewport.current());
             })
         );
-        $('body').attr('data-viewport', viewport.current());
+        $body.attr('data-viewport', viewport.current());
+        $body.attr('data-touchcapable', isTouchCapable() ? 'true' : 'false');
     })(jQuery, document, window, ResponsiveBootstrapToolkit);
 
     categoryMenu();

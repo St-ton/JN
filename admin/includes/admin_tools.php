@@ -518,3 +518,85 @@ function getMaxFileSize($size_str)
             return $size_str;
     }
 }
+
+/**
+ * @param float  $fPreisNetto
+ * @param float  $fPreisBrutto
+ * @param string $cTargetID
+ * @return IOResponse
+ */
+function getCurrencyConversionIO($fPreisNetto, $fPreisBrutto, $cTargetID)
+{
+    $response = new IOResponse();
+    $cString  = getCurrencyConversion($fPreisNetto, $fPreisBrutto);
+    $response->assign($cTargetID, 'innerHTML', $cString);
+
+    return $response;
+}
+
+/**
+ * @param float  $fPreisNetto
+ * @param float  $fPreisBrutto
+ * @param string $cTooltipID
+ * @return IOResponse
+ */
+function setCurrencyConversionTooltipIO($fPreisNetto, $fPreisBrutto, $cTooltipID)
+{
+    $response = new IOResponse();
+    $cString  = getCurrencyConversion($fPreisNetto, $fPreisBrutto);
+    $response->assign($cTooltipID, 'dataset.originalTitle', $cString);
+
+    return $response;
+}
+
+/**
+ * @param $title
+ * @param $utl
+ */
+function addFav($title, $url)
+{
+    $success     = false;
+    $title       = utf8_decode($title);
+    $url         = utf8_decode($url);
+    $kAdminlogin = (int)$_SESSION['AdminAccount']->kAdminlogin;
+
+    if (!empty($title) && !empty($url)) {
+        $success = AdminFavorite::add($kAdminlogin, $title, $url);
+    }
+
+    if ($success) {
+        $result = [
+            'title' => $title,
+            'url'   => $url
+        ];
+    } else {
+        $result = new IOError('Unauthorized', 401);
+    }
+
+    return $result;
+}
+
+/**
+ * @return array
+ */
+function reloadFavs()
+{
+    global $smarty, $oAccount;
+
+    $smarty->assign('favorites', $oAccount->favorites());
+    $tpl = $smarty->fetch('tpl_inc/favs_drop.tpl');
+
+    return [ 'tpl' => $tpl ];
+}
+
+/**
+ * @return array
+ */
+function getNotifyDropIO()
+{
+    Shop::Smarty()->assign('notifications', Notification::getInstance());
+    return [
+        'tpl' => Shop::Smarty()->fetch('tpl_inc/notify_drop.tpl'),
+        'type' => 'notify'
+    ];
+}

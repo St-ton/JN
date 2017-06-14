@@ -36,7 +36,7 @@
     {/if}
     <form name="formnewslettervorlagestd" id="formnewslettervorlagestd" method="post" action="newsletter.php" enctype="multipart/form-data">
         {$jtl_token}
-        <div class="panel panel-default">
+        <div class="panel panel-default settings">
             <div class="panel-heading">
                 <h3 class="panel-title">{if isset($cPostVar_arr.cName)}{$cPostVar_arr.cName}{elseif isset($oNewslettervorlageStd->cName)}{$oNewslettervorlageStd->cName}{/if} bearbeiten</h3>
             </div>
@@ -220,37 +220,130 @@
                     </div>
                 </div>
 
+                {include file='tpl_inc/searchpicker_modal.tpl'
+                    searchPickerName='articlePicker'
+                    modalTitle='Artikel ausw&auml;hlen'
+                    searchInputLabel='Suche nach Artikelnamen'
+                }
+                <script>
+                    $(function () {
+                        articlePicker = new SearchPicker({
+                            searchPickerName:  'articlePicker',
+                            getDataIoFuncName: 'getProducts',
+                            keyName:           'cArtNr',
+                            renderItemCb:      function (item) { return item.cName; },
+                            onApply:           onApplySelectedArticles,
+                            selectedKeysInit:  $('#cArtikel').val().split(';').filter(Boolean)
+                        });
+                        onApplySelectedArticles(articlePicker.getSelection());
+                    });
+                    function onApplySelectedArticles(selected)
+                    {
+                        $('#articleSelectionInfo')
+                            .val(selected.length > 0 ? selected.length + ' Artikel' : '');
+                        $('#cArtikel')
+                            .val(selected.length > 0 ? selected.join(';') + ';' : '');
+                    }
+                </script>
                 <div class="input-group">
-                    <div class="input-group-addon">
-                        <label for="assign_article_list">{#newsletterartnr#}</label>
-                    </div>
-                    <input class="form-control" name="cArtikel" id="assign_article_list" type="text" value="{if !empty($cPostVar_arr.cArtikel)}{$cPostVar_arr.cArtikel}{elseif isset($oNewslettervorlageStd->cArtikel)}{$oNewslettervorlageStd->cArtikel}{/if}" />
-                    <div class="input-group-btn">
-                        <a href="#" class="btn btn-success" id="show_article_list"><i class="fa fa-search"></i> Artikel verwalten</a>
-                    </div>
+                    <span class="input-group-addon">
+                        <label for="articleSelectionInfo">{#newsletterartnr#}</label>
+                    </span>
+                    <span class="input-group-wrap">
+                        <input type="text" class="form-control" readonly="readonly" id="articleSelectionInfo">
+                        <input type="hidden" id="cArtikel" name="cArtikel"
+                               value="{if !empty($cPostVar_arr.cArtikel)}{$cPostVar_arr.cArtikel}{elseif isset($oNewslettervorlageStd->cArtikel)}{$oNewslettervorlageStd->cArtikel}{/if}">
+                    </span>
+                    <span class="input-group-addon">
+                        <button type="button" class="btn btn-info btn-xs" data-toggle="modal"
+                                data-target="#articlePicker-modal" title="Artikel verwalten">
+                            <i class="fa fa-edit"></i>
+                        </button>
+                    </span>
                 </div>
-                <div id="ajax_list_picker1" class="ajax_list_picker article">{include file="tpl_inc/popup_artikelsuche.tpl"}</div>
+                {include file='tpl_inc/searchpicker_modal.tpl'
+                    searchPickerName='manufacturerPicker'
+                    modalTitle='Hersteller ausw&auml;hlen'
+                    searchInputLabel='Suche nach Herstellernamen'
+                }
+                <script>
+                    $(function () {
+                        manufacturerPicker = new SearchPicker({
+                            searchPickerName:  'manufacturerPicker',
+                            getDataIoFuncName: 'getManufacturers',
+                            keyName:           'kHersteller',
+                            renderItemCb:      function (item) { return item.cName; },
+                            onApply:           onApplySelectedManufacturers,
+                            selectedKeysInit:  $('#cHersteller').val().split(';').filter(Boolean)
+                        });
+                        onApplySelectedManufacturers(manufacturerPicker.getSelection());
+                    });
+                    function onApplySelectedManufacturers(selected)
+                    {
+                        $('#manufacturerSelectionInfo')
+                            .val(selected.length > 0 ? selected.length + ' Hersteller' : '');
+                        $('#cHersteller')
+                            .val(selected.length > 0 ? selected.join(';') + ';' : '');
+                    }
+                </script>
                 <div class="input-group">
-                    <div class="input-group-addon">
-                        <label for="assign_manufacturer_list">{#newslettermanufacturer#}</label>
-                    </div>
-                    <input class="form-control" id="assign_manufacturer_list" name="cHersteller" type="text" value="{if !empty($cPostVar_arr.cHersteller)}{$cPostVar_arr.cHersteller}{elseif isset($oNewslettervorlageStd->cHersteller)}{$oNewslettervorlageStd->cHersteller}{/if}">
-                    <div class="input-group-btn">
-                        <a href="#" class="btn btn-success" id="show_manufacturer_list"><i class="fa fa-search"></i> Hersteller verwalten</a>
-                    </div>
+                    <span class="input-group-addon">
+                        <label for="manufacturerSelectionInfo">{#newslettermanufacturer#}</label>
+                    </span>
+                    <span class="input-group-wrap">
+                        <input type="text" class="form-control" readonly="readonly" id="manufacturerSelectionInfo">
+                        <input type="hidden" id="cHersteller" name="cHersteller"
+                               value="{if !empty($cPostVar_arr.cHersteller)}{$cPostVar_arr.cHersteller}{elseif isset($oNewslettervorlageStd->cHersteller)}{$oNewslettervorlageStd->cHersteller}{/if}">
+                    </span>
+                    <span class="input-group-addon">
+                        <button type="button" class="btn btn-info btn-xs" data-toggle="modal"
+                                data-target="#manufacturerPicker-modal" title="Hersteller verwalten">
+                            <i class="fa fa-edit"></i>
+                        </button>
+                    </span>
                 </div>
-                <div id="ajax_list_picker2" class="ajax_list_picker manufacturer">{include file="tpl_inc/popup_herstellersuche.tpl"}</div>
+                {include file='tpl_inc/searchpicker_modal.tpl'
+                    searchPickerName='categoryPicker'
+                    modalTitle='Kategorien ausw&auml;hlen'
+                    searchInputLabel='Suche nach Kategorienamen'
+                }
+                <script>
+                    $(function () {
+                        categoryPicker = new SearchPicker({
+                            searchPickerName:  'categoryPicker',
+                            getDataIoFuncName: 'getCategories',
+                            keyName:           'kKategorie',
+                            renderItemCb:      function (item) { return item.cName; },
+                            onApply:           onApplySelectedCategories,
+                            selectedKeysInit:  $('#cKategorie').val().split(';').filter(Boolean)
+                        });
+                        onApplySelectedCategories(categoryPicker.getSelection());
+                    });
+                    function onApplySelectedCategories(selected)
+                    {
+                        $('#categorySelectionInfo')
+                            .val(selected.length > 0 ? selected.length + ' Kategorien' : '');
+                        $('#cKategorie')
+                            .val(selected.length > 0 ? selected.join(';') + ';' : '');
+                    }
+                </script>
+                <div class="input-group">
+                    <span class="input-group-addon">
+                        <label for="categorySelectionInfo">{#newslettercategory#}</label>
+                    </span>
+                    <span class="input-group-wrap">
+                        <input type="text" class="form-control" readonly="readonly" id="categorySelectionInfo">
+                        <input type="hidden" id="cKategorie" name="cKategorie"
+                               value="{if !empty($cPostVar_arr.cKategorie)}{$cPostVar_arr.cKategorie}{elseif isset($oNewslettervorlageStd->cKategorie)}{$oNewslettervorlageStd->cKategorie}{/if}">
+                    </span>
+                    <span class="input-group-addon">
+                        <button type="button" class="btn btn-info btn-xs" data-toggle="modal"
+                                data-target="#categoryPicker-modal" title="Kategorien verwalten">
+                            <i class="fa fa-edit"></i>
+                        </button>
+                    </span>
+                </div>
 
-                <div class="input-group">
-                    <div class="input-group-addon">
-                        <label for="assign_categories_list">{#newslettercategory#}</label>
-                    </div>
-                    <input class="form-control" id="assign_categories_list" name="cKategorie" type="text" value="{if !empty($cPostVar_arr.cKategorie)}{$cPostVar_arr.cKategorie}{elseif isset($oNewslettervorlageStd->cKategorie)}{$oNewslettervorlageStd->cKategorie}{/if}" />
-                    <div class="input-group-btn">
-                        <a href="#" class="btn btn-success" id="show_categories_list"><i class="fa fa-search"></i> Kategorien verwalten</a>
-                    </div>
-                </div>
-                <div id="ajax_list_picker3" class="ajax_list_picker categories">{include file="tpl_inc/popup_kategoriesuche.tpl"}</div>
                 {if isset($oNewslettervorlageStd->oNewslettervorlageStdVar_arr) && $oNewslettervorlageStd->oNewslettervorlageStdVar_arr|@count > 0}
                     {foreach name=newslettervorlagestdvar from=$oNewslettervorlageStd->oNewslettervorlageStdVar_arr item=oNewslettervorlageStdVar}
                         {if $oNewslettervorlageStdVar->cTyp === 'BILD'}

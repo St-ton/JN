@@ -10,7 +10,7 @@ require PFAD_ROOT . PFAD_ADMIN . PFAD_CLASSES . 'class.JTL-Shopadmin.JSONAPI.php
 
 $oAccount->permission('BOXES_VIEW', true, true);
 
-$jsonAPI = new JSONAPI();
+$jsonAPI = JSONAPI::getInstance();
 
 if (isset($_GET['query'], $_GET['type']) && validateToken()) {
     switch ($_GET['type']) {

@@ -397,7 +397,7 @@
                 var url = 'bestellvorgang.php?kVersandart=' + id;
                 $.evo.extended().loadContent(url, function() {
                     $.evo.extended().checkout();
-                }, null, true, 'html');
+                }, null, true);
             });
         },
 
@@ -419,9 +419,9 @@
         },
         
         loadContent: function(url, callback, error, animation, wrapper) {
-            var that     = this;
-            var $wrapper = (typeof wrapper === 'undefined' || wrapper.length === 0) ? $('#result-wrapper') : $(wrapper);
-
+            var that        = this;
+            var $wrapper    = (typeof wrapper === 'undefined' || wrapper.length === 0) ? $('#result-wrapper') : $(wrapper);
+            var ajaxOptions = {data: 'isAjax'};
             if (animation) {
                 $wrapper.addClass('loading');
             }

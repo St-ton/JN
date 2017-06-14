@@ -819,8 +819,6 @@ final class Shop
                     ? (strlen($xShopurl_arr['path']) + 1)
                     : 1)
                 : false;
-            // remove possible trailing slashes
-            $seo = rtrim($seo, '/');
             //Fremdparameter
             $seo = extFremdeParameter($seo);
             if ($seo) {

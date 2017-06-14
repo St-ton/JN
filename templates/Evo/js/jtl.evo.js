@@ -375,6 +375,32 @@
             });
         },
 
+        checkout: function() {
+            // show only the first submit button (i.g. the button from payment plugin)
+            var $submits = $('#checkout-shipping-payment')
+                .closest('form')
+                .find('input[type="submit"]');
+            $submits.addClass('hidden');
+            $submits.first().removeClass('hidden');
+
+            $('input[name="Versandart"]', '#checkout-shipping-payment').change(function() {
+                var id    = parseInt($(this).val());
+                var $form = $(this).closest('form');
+
+                if (isNaN(id)) {
+                    return;
+                }
+
+                $form.find('fieldset, input[type="submit"]')
+                    .attr('disabled', true);
+
+                var url = 'bestellvorgang.php?kVersandart=' + id;
+                $.evo.extended().loadContent(url, function() {
+                    $.evo.extended().checkout();
+                }, null, true, 'html');
+            });
+        },
+
         register: function() {
             this.addSliderTouchSupport();
             this.productTabsPriceFlow();
@@ -389,6 +415,7 @@
             this.popover();
             this.preventDropdownToggle();
             this.smoothScroll();
+            this.checkout();
         },
         
         loadContent: function(url, callback, error, animation, wrapper) {
@@ -399,7 +426,7 @@
                 $wrapper.addClass('loading');
             }
 
-            $.ajax(url, {data: 'isAjax'}).done(function(html) {
+            $.ajax(url, ajaxOptions).done(function(html) {
                 var $data = $(html);
                 if (animation) {
                     $data.addClass('loading');

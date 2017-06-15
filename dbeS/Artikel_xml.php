@@ -45,14 +45,14 @@ if (auth()) {
                 $xml = XML_unserialize($d);
 
                 if ($zip['filename'] === 'artdel.xml') {
-                    $articleIDs = bearbeiteDeletes($xml, $conf);
+                    $articleIDs = array_merge($articleIDs, bearbeiteDeletes($xml, $conf));
                 } else {
                     foreach (bearbeiteInsert($xml, $conf) as $articleID) {
                         $articleIDs[] = $articleID;
                     }
                 }
                 if ($i === 0) {
-                    //Suchcachetimer setzen.
+                    // Suchcachetimer setzen.
                     Shop::DB()->query(
                         "UPDATE tsuchcache
                             SET dGueltigBis = DATE_ADD(now(), INTERVAL " . SUCHCACHE_LEBENSDAUER . " MINUTE)
@@ -62,15 +62,13 @@ if (auth()) {
                 removeTemporaryFiles($entzippfad . $zip['filename']);
             }
             removeTemporaryFiles(substr($entzippfad, 0, -1), true);
+            clearProductCaches($articleIDs);
         } elseif (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
             Jtllog::writeLog('Error : ' . $archive->errorInfo(true), JTLLOG_LEVEL_ERROR, false, 'Artikel_xml');
         }
-    } else {
-        if (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-            Jtllog::writeLog('Error : ' . $archive->errorInfo(true), JTLLOG_LEVEL_ERROR, false, 'Artikel_xml');
-        }
+    } elseif (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
+        Jtllog::writeLog('Error : ' . $archive->errorInfo(true), JTLLOG_LEVEL_ERROR, false, 'Artikel_xml');
     }
-    clearProductCaches($articleIDs);
 }
 if ($return === 2) {
     syncException('Error : ' . $archive->errorInfo(true));
@@ -89,58 +87,39 @@ if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
 function bearbeiteDeletes($xml, $conf)
 {
     $res = [];
+    if (!is_array($xml['del_artikel'])) {
+        return $res;
+    }
+    if (!is_array($xml['del_artikel']['kArtikel'])) {
+        $xml['del_artikel']['kArtikel'] = [$xml['del_artikel']['kArtikel']];
+    }
     require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Artikel.php';
 
-    if (is_array($xml['del_artikel']) && is_array($xml['del_artikel']['kArtikel'])) {
-        foreach ($xml['del_artikel']['kArtikel'] as $kArtikel) {
-            $kArtikel = (int)$kArtikel;
-            if ($kArtikel > 0) {
-                $kVaterArtikel = ArtikelHelper::getParent($kArtikel);
-                $nIstVater     = $kVaterArtikel > 0 ? 0 : 1;
-                checkArtikelBildLoeschung($kArtikel);
-
-                Shop::DB()->query(
-                    "DELETE teigenschaftkombiwert
-                        FROM teigenschaftkombiwert
-                        JOIN tartikel 
-                        ON tartikel.kArtikel = {$kArtikel}
-                        AND tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi", 4
-                );
-                $res[] = loescheArtikel($kArtikel, $nIstVater, false, $conf);
-                // Lösche Artikel aus tartikelkategorierabatt
-                Shop::DB()->delete('tartikelkategorierabatt', 'kArtikel', $kArtikel);
-                // Lösche Artikel aus tkategorieartikelgesamt
-                Shop::DB()->delete('tkategorieartikelgesamt', 'kArtikel', $kArtikel);
-                // Aktualisiere Merkmale in tartikelmerkmal vom Vaterartikel
-                if ($kVaterArtikel > 0) {
-                    Artikel::beachteVarikombiMerkmalLagerbestand($kVaterArtikel);
-                }
-
-                executeHook(HOOK_ARTIKEL_XML_BEARBEITEDELETES, ['kArtikel' => $kArtikel]);
-            }
-        }
-    } else {
-        if (is_array($xml['del_artikel']) && (int)$xml['del_artikel']['kArtikel'] > 0) {
-            $kVaterArtikel = ArtikelHelper::getParent((int)$xml['del_artikel']['kArtikel']);
+    foreach ($xml['del_artikel']['kArtikel'] as $kArtikel) {
+        $kArtikel = (int)$kArtikel;
+        if ($kArtikel > 0) {
+            $kVaterArtikel = ArtikelHelper::getParent($kArtikel);
             $nIstVater     = $kVaterArtikel > 0 ? 0 : 1;
-            checkArtikelBildLoeschung((int)$xml['del_artikel']['kArtikel']);
+            checkArtikelBildLoeschung($kArtikel);
+
             Shop::DB()->query(
                 "DELETE teigenschaftkombiwert
                     FROM teigenschaftkombiwert
                     JOIN tartikel 
-                        ON tartikel.kArtikel = " . (int)$xml['del_artikel']['kArtikel'] . "
-                        AND tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi", 4
+                    ON tartikel.kArtikel = {$kArtikel}
+                    AND tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi", 4
             );
-
-            $res[] = loescheArtikel((int)$xml['del_artikel']['kArtikel'], $nIstVater, false, $conf);
+            $res[] = loescheArtikel($kArtikel, $nIstVater, false, $conf);
             // Lösche Artikel aus tartikelkategorierabatt
-            Shop::DB()->delete('tartikelkategorierabatt', 'kArtikel', (int)$xml['del_artikel']['kArtikel']);
+            Shop::DB()->delete('tartikelkategorierabatt', 'kArtikel', $kArtikel);
+            // Lösche Artikel aus tkategorieartikelgesamt
+            Shop::DB()->delete('tkategorieartikelgesamt', 'kArtikel', $kArtikel);
             // Aktualisiere Merkmale in tartikelmerkmal vom Vaterartikel
             if ($kVaterArtikel > 0) {
                 Artikel::beachteVarikombiMerkmalLagerbestand($kVaterArtikel);
             }
 
-            executeHook(HOOK_ARTIKEL_XML_BEARBEITEDELETES, ['kArtikel' => $xml['del_artikel']['kArtikel']]);
+            executeHook(HOOK_ARTIKEL_XML_BEARBEITEDELETES, ['kArtikel' => $kArtikel]);
         }
     }
 
@@ -177,9 +156,9 @@ function bearbeiteInsert($xml, array $conf)
         $oSeoAssoc_arr = getSeoFromDB($Artikel->kArtikel, 'kArtikel', null, 'kSprache');
         $isParent      = isset($artikel_arr[0]->nIstVater) ? 1 : 0;
 
-        if (isset($xml['tartikel']['tkategorieartikel']) &&
-            $conf['global']['kategorien_anzeigefilter'] == EINSTELLUNGEN_KATEGORIEANZEIGEFILTER_NICHTLEERE &&
-            Shop::Cache()->isCacheGroupActive(CACHING_GROUP_CATEGORY)
+        if (isset($xml['tartikel']['tkategorieartikel'])
+            && $conf['global']['kategorien_anzeigefilter'] == EINSTELLUNGEN_KATEGORIEANZEIGEFILTER_NICHTLEERE
+            && Shop::Cache()->isCacheGroupActive(CACHING_GROUP_CATEGORY)
         ) {
             $currentArticleCategories = [];
             $newArticleCategories     = [];
@@ -237,7 +216,9 @@ function bearbeiteInsert($xml, array $conf)
                     }
                 }
             }
-            if ($flush === false && $conf['global']['artikel_artikelanzeigefilter'] != EINSTELLUNGEN_ARTIKELANZEIGEFILTER_ALLE) {
+            if ($flush === false
+                && $conf['global']['artikel_artikelanzeigefilter'] != EINSTELLUNGEN_ARTIKELANZEIGEFILTER_ALLE
+            ) {
                 $check         = false;
                 $currentStatus = Shop::DB()->select(
                     'tartikel',
@@ -254,13 +235,13 @@ function bearbeiteInsert($xml, array $conf)
                     } elseif ($currentStatus->fLagerbestand > 0 && $xml['tartikel']['fLagerbestand'] <= 0) {
                         // article was in stock before but is not anymore - check if flush is necessary
                         $check = true;
-                    } elseif ($conf['global']['artikel_artikelanzeigefilter'] == EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL &&
-                        $currentStatus->cLagerKleinerNull !== $xml['tartikel']['cLagerKleinerNull']
+                    } elseif ($conf['global']['artikel_artikelanzeigefilter'] == EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL
+                        && $currentStatus->cLagerKleinerNull !== $xml['tartikel']['cLagerKleinerNull']
                     ) {
                         // overselling status changed - check if flush is necessary
                         $check = true;
-                    } elseif ($currentStatus->cLagerBeachten !== $xml['tartikel']['cLagerBeachten'] &&
-                        $xml['tartikel']['fLagerbestand'] <= 0
+                    } elseif ($currentStatus->cLagerBeachten !== $xml['tartikel']['cLagerBeachten']
+                        && $xml['tartikel']['fLagerbestand'] <= 0
                     ) {
                         $check = true;
                     }
@@ -1415,7 +1396,7 @@ function clearProductCaches($kArtikel)
         // flush article cache, category cache and cache for gibMerkmalFilterOptionen() and mega menu/category boxes
         $totalCount += Shop::Cache()->flushTags($cacheTags);
         $end        = microtime(true);
-    } elseif (is_array($kArtikel)) {
+    } elseif (is_array($kArtikel) && count($kArtikel) > 0) {
         $start     = microtime(true);
         $cacheTags = [];
 

@@ -152,7 +152,14 @@ function bearbeiteInsert($xml, array $conf)
     if (is_array($xml['tartikel'])) {
         $artikel_arr = mapArray($xml, 'tartikel', $GLOBALS['mArtikel']);
         // Alten SEO-Pfad merken. Eintrag in tredirect, wenn sich der Pfad geändert hat.
-        $oSeoOld       = Shop::DB()->select('tartikel', 'kArtikel', (int)$Artikel->kArtikel, null, null, null, null, false, 'cSeo');
+        $oSeoOld       = Shop::DB()->select(
+            'tartikel',
+            'kArtikel', (int)$Artikel->kArtikel,
+            null, null,
+            null, null,
+            false,
+            'cSeo'
+        );
         $oSeoAssoc_arr = getSeoFromDB($Artikel->kArtikel, 'kArtikel', null, 'kSprache');
         $isParent      = isset($artikel_arr[0]->nIstVater) ? 1 : 0;
 
@@ -418,10 +425,22 @@ function bearbeiteInsert($xml, array $conf)
             for ($i = 0; $i < $aArrCount; ++$i) {
                 if (count($Attribut_arr) < 2) {
                     loescheAttribute($xml['tartikel']['tattribut attr']['kAttribut']);
-                    updateXMLinDB($xml['tartikel']['tattribut'], 'tattributsprache', $GLOBALS['mAttributSprache'], 'kAttribut', 'kSprache');
+                    updateXMLinDB(
+                        $xml['tartikel']['tattribut'],
+                        'tattributsprache',
+                        $GLOBALS['mAttributSprache'],
+                        'kAttribut',
+                        'kSprache'
+                    );
                 } else {
                     loescheAttribute($xml['tartikel']['tattribut'][$i . ' attr']['kAttribut']);
-                    updateXMLinDB($xml['tartikel']['tattribut'][$i], 'tattributsprache', $GLOBALS['mAttributSprache'], 'kAttribut', 'kSprache');
+                    updateXMLinDB(
+                        $xml['tartikel']['tattribut'][$i],
+                        'tattributsprache',
+                        $GLOBALS['mAttributSprache'],
+                        'kAttribut',
+                        'kSprache'
+                    );
                 }
             }
             DBUpdateInsert('tattribut', $Attribut_arr, 'kAttribut');
@@ -433,12 +452,34 @@ function bearbeiteInsert($xml, array $conf)
             for ($i = 0; $i < $mediaCount; ++$i) {
                 if ($mediaCount < 2) {
                     loescheMediendateien($xml['tartikel']['tmediendatei attr']['kMedienDatei']);
-                    updateXMLinDB($xml['tartikel']['tmediendatei'], 'tmediendateisprache', $GLOBALS['mMediendateisprache'], 'kMedienDatei', 'kSprache');
-                    updateXMLinDB($xml['tartikel']['tmediendatei'], 'tmediendateiattribut', $GLOBALS['mMediendateiattribut'], 'kMedienDateiAttribut');
+                    updateXMLinDB(
+                        $xml['tartikel']['tmediendatei'],
+                        'tmediendateisprache',
+                        $GLOBALS['mMediendateisprache'],
+                        'kMedienDatei',
+                        'kSprache'
+                    );
+                    updateXMLinDB(
+                        $xml['tartikel']['tmediendatei'],
+                        'tmediendateiattribut',
+                        $GLOBALS['mMediendateiattribut'],
+                        'kMedienDateiAttribut'
+                    );
                 } else {
                     loescheMediendateien($xml['tartikel']['tmediendatei'][$i . ' attr']['kMedienDatei']);
-                    updateXMLinDB($xml['tartikel']['tmediendatei'][$i], 'tmediendateisprache', $GLOBALS['mMediendateisprache'], 'kMedienDatei', 'kSprache');
-                    updateXMLinDB($xml['tartikel']['tmediendatei'][$i], 'tmediendateiattribut', $GLOBALS['mMediendateiattribut'], 'kMedienDateiAttribut');
+                    updateXMLinDB(
+                        $xml['tartikel']['tmediendatei'][$i],
+                        'tmediendateisprache',
+                        $GLOBALS['mMediendateisprache'],
+                        'kMedienDatei',
+                        'kSprache'
+                    );
+                    updateXMLinDB(
+                        $xml['tartikel']['tmediendatei'][$i],
+                        'tmediendateiattribut',
+                        $GLOBALS['mMediendateiattribut'],
+                        'kMedienDateiAttribut'
+                    );
                 }
             }
             DBUpdateInsert('tmediendatei', $oMediendatei_arr, 'kMedienDatei');
@@ -447,7 +488,9 @@ function bearbeiteInsert($xml, array $conf)
         if (isset($xml['tartikel']['tArtikelDownload']) && is_array($xml['tartikel']['tArtikelDownload'])) {
             $oDownload_arr = [];
             loescheDownload($Artikel->kArtikel);
-            if (isset($xml['tartikel']['tArtikelDownload']['kDownload']) && is_array($xml['tartikel']['tArtikelDownload']['kDownload'])) {
+            if (isset($xml['tartikel']['tArtikelDownload']['kDownload'])
+                && is_array($xml['tartikel']['tArtikelDownload']['kDownload'])
+            ) {
                 $kDownload_arr = $xml['tartikel']['tArtikelDownload']['kDownload'];
                 foreach ($kDownload_arr as $kDownload) {
                     $oArtikelDownload            = new stdClass();
@@ -455,7 +498,7 @@ function bearbeiteInsert($xml, array $conf)
                     $oArtikelDownload->kArtikel  = $Artikel->kArtikel;
                     $oDownload_arr[]             = $oArtikelDownload;
 
-                    if (($idx = array_search($oArtikelDownload->kDownload, $downloadKeys)) !== false) {
+                    if (($idx = array_search($oArtikelDownload->kDownload, $downloadKeys, true)) !== false) {
                         unset($downloadKeys[$idx]);
                     }
                 }
@@ -465,7 +508,7 @@ function bearbeiteInsert($xml, array $conf)
                 $oArtikelDownload->kArtikel  = $Artikel->kArtikel;
                 $oDownload_arr[]             = $oArtikelDownload;
 
-                if (($idx = array_search($oArtikelDownload->kDownload, $downloadKeys)) !== false) {
+                if (($idx = array_search($oArtikelDownload->kDownload, $downloadKeys, true)) !== false) {
                     unset($downloadKeys[$idx]);
                 }
             }
@@ -502,27 +545,50 @@ function bearbeiteInsert($xml, array $conf)
                 $oArtikelUpload->nTyp          = 3;
                 $oArtikelUpload->kUploadSchema = $oArtikelUpload->kArtikelUpload;
                 $oArtikelUpload->kCustomID     = $oArtikelUpload->kArtikel;
-
                 unset($oArtikelUpload->kArtikelUpload, $oArtikelUpload->kArtikel);
             }
+            unset($oArtikelUpload);
             if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                Jtllog::writeLog('oArtikelUpload_arr: ' . print_r($oArtikelUpload_arr, true), JTLLOG_LEVEL_DEBUG, false, 'Artikel_xml');
+                Jtllog::writeLog(
+                    'oArtikelUpload_arr: ' . print_r($oArtikelUpload_arr, true),
+                    JTLLOG_LEVEL_DEBUG,
+                    false,
+                    'Artikel_xml'
+                );
             }
             DBUpdateInsert('tuploadschema', $oArtikelUpload_arr, 'kUploadSchema', 'kCustomID');
 
             // Upload-Sprachen
             if (count($oArtikelUpload_arr) < 2) {
-                $oArtikelUploadSprache_arr = mapArray($xml['tartikel']['tartikelupload'], 'tartikeluploadsprache', $GLOBALS['mArtikelUploadSprache']);
+                $oArtikelUploadSprache_arr = mapArray(
+                    $xml['tartikel']['tartikelupload'],
+                    'tartikeluploadsprache',
+                    $GLOBALS['mArtikelUploadSprache'])
+                ;
                 if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                    Jtllog::writeLog('oArtikelUploadSprache_arr: ' . print_r($oArtikelUploadSprache_arr, true), JTLLOG_LEVEL_DEBUG, false, 'Artikel_xml');
+                    Jtllog::writeLog(
+                        'oArtikelUploadSprache_arr: ' . print_r($oArtikelUploadSprache_arr, true),
+                        JTLLOG_LEVEL_DEBUG,
+                        false,
+                        'Artikel_xml'
+                    );
                 }
                 DBUpdateInsert('tuploadschemasprache', $oArtikelUploadSprache_arr, 'kArtikelUpload', 'kSprache');
             } else {
                 $ulCount = count($oArtikelUpload_arr);
                 for ($i = 0; $i < $ulCount; ++$i) {
-                    $oArtikelUploadSprache_arr = mapArray($xml['tartikel']['tartikelupload'][$i], 'tartikeluploadsprache', $GLOBALS['mArtikelUploadSprache']);
+                    $oArtikelUploadSprache_arr = mapArray(
+                        $xml['tartikel']['tartikelupload'][$i],
+                        'tartikeluploadsprache',
+                        $GLOBALS['mArtikelUploadSprache']
+                    );
                     if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                        Jtllog::writeLog('oArtikelUploadSprache_arr: ' . print_r($oArtikelUploadSprache_arr, true), JTLLOG_LEVEL_DEBUG, false, 'Artikel_xml');
+                        Jtllog::writeLog(
+                            'oArtikelUploadSprache_arr: ' . print_r($oArtikelUploadSprache_arr, true),
+                            JTLLOG_LEVEL_DEBUG,
+                            false,
+                            'Artikel_xml'
+                        );
                     }
                     DBUpdateInsert('tuploadschemasprache', $oArtikelUploadSprache_arr, 'kArtikelUpload', 'kSprache');
                 }
@@ -539,7 +605,12 @@ function bearbeiteInsert($xml, array $conf)
         if (isset($xml['tartikel']['tartikelkonfiggruppe']) && is_array($xml['tartikel']['tartikelkonfiggruppe'])) {
             $oArtikelKonfig_arr = mapArray($xml['tartikel'], 'tartikelkonfiggruppe', $GLOBALS['mArtikelkonfiggruppe']);
             if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                Jtllog::writeLog('oArtikelKonfig_arr: ' . print_r($oArtikelKonfig_arr, true), JTLLOG_LEVEL_DEBUG, false, 'Artikel_xml');
+                Jtllog::writeLog(
+                    'oArtikelKonfig_arr: ' . print_r($oArtikelKonfig_arr, true),
+                    JTLLOG_LEVEL_DEBUG,
+                    false,
+                    'Artikel_xml'
+                );
             }
             DBUpdateInsert('tartikelkonfiggruppe', $oArtikelKonfig_arr, 'kArtikel', 'kKonfiggruppe');
         }
@@ -588,7 +659,10 @@ function bearbeiteInsert($xml, array $conf)
                     WHERE kArtikel = " . (int)$artikel_arr[0]->kArtikel, 3
             );
             // Aktualisiere Merkmale in tartikelmerkmal vom Vaterartikel
-            Artikel::beachteVarikombiMerkmalLagerbestand($artikel_arr[0]->kArtikel, $conf['global']['artikel_artikelanzeigefilter']);
+            Artikel::beachteVarikombiMerkmalLagerbestand(
+                $artikel_arr[0]->kArtikel,
+                $conf['global']['artikel_artikelanzeigefilter']
+            );
         } elseif (isset($artikel_arr[0]->kVaterArtikel) && $artikel_arr[0]->kVaterArtikel > 0) {
             //Lagerbestand-Update: Lagerbestand des Vaterartikels berechnet sich aus der Summe der Kindartikel-Lagerbestände
             Shop::DB()->query("
@@ -601,7 +675,10 @@ function bearbeiteInsert($xml, array $conf)
                     )
                     WHERE kArtikel = " . (int)$artikel_arr[0]->kVaterArtikel, 3);
             // Aktualisiere Merkmale in tartikelmerkmal vom Vaterartikel
-            Artikel::beachteVarikombiMerkmalLagerbestand($artikel_arr[0]->kVaterArtikel, $conf['global']['artikel_artikelanzeigefilter']);
+            Artikel::beachteVarikombiMerkmalLagerbestand(
+                $artikel_arr[0]->kVaterArtikel,
+                $conf['global']['artikel_artikelanzeigefilter']
+            );
         }
         // SQL DEL
         if (isset($xml['tartikel']['SQLDEL']) && strlen($xml['tartikel']['SQLDEL']) > 10) { // teigenschaftkombiwert sqls absetzen
@@ -624,10 +701,10 @@ function bearbeiteInsert($xml, array $conf)
             foreach ($cSQL_arr as $cSQL) {
                 if (strlen($cSQL) > 10) {
                     // Pre Wawi 0.99862 fix
-                    if (!isset($xml['tartikel']['SQLDEL']) &&
-                        strpos($cSQL, 'teigenschaftkombiwert') !== false &&
-                        isset($artikel_arr[0]->kVaterArtikel) &&
-                        $artikel_arr[0]->kVaterArtikel > 0
+                    if (isset($artikel_arr[0]->kVaterArtikel)
+                        && $artikel_arr[0]->kVaterArtikel > 0
+                        && !isset($xml['tartikel']['SQLDEL'])
+                        && strpos($cSQL, 'teigenschaftkombiwert') !== false
                     ) {
                         $cDel     = substr($cSQL, strpos($cSQL, 'values ') + strlen('values '));
                         $cDel_arr = str_replace(['(', ')'], '', explode('),(', $cDel));
@@ -686,10 +763,10 @@ function bearbeiteInsert($xml, array $conf)
                 if ($ende_jahr > 0) {
                     $nEndStamp = mktime(0, 0, 0, $ende_monat, $ende_tag + 1, $ende_jahr);
                 }
-                $bTesteSonderpreis = ($nNowStamp >= $nStartStamp &&
-                    ($nNowStamp < $nEndStamp || (int)$ArtikelSonderpreis_arr[0]->dEnde === 0) &&
-                    ($ArtikelSonderpreis_arr[0]->nIstAnzahl === 0 || ($ArtikelSonderpreis_arr[0]->nIstAnzahl === '1' &&
-                    (int)$ArtikelSonderpreis_arr[0]->nAnzahl < (int)$xml['tartikel']['fLagerbestand'])));
+                $bTesteSonderpreis = ($nNowStamp >= $nStartStamp
+                    && ($nNowStamp < $nEndStamp || (int)$ArtikelSonderpreis_arr[0]->dEnde === 0)
+                    && ($ArtikelSonderpreis_arr[0]->nIstAnzahl === 0 || ($ArtikelSonderpreis_arr[0]->nIstAnzahl === '1'
+                            && (int)$ArtikelSonderpreis_arr[0]->nAnzahl < (int)$xml['tartikel']['fLagerbestand'])));
             }
             $spCount = count($ArtikelSonderpreis_arr);
             for ($i = 0; $i < $spCount; ++$i) {
@@ -1250,8 +1327,8 @@ function fuelleKategorieGesamt($oKategorieArtikel_arr)
                     $oOberKategorie_arr[] = $oKategorie;
                 }
             }
-
-            $oOberKategorie_arr = array_reverse($oOberKategorie_arr); // Dreh das Array um, damit wir an Array[0] auch das Level 0 haben
+            // Arrayreihenfolge umkehren, damit an Array[0] auch Level 0 steht
+            $oOberKategorie_arr = array_reverse($oOberKategorie_arr);
 
             if (count($oOberKategorie_arr) > 0) {
                 // Speicher den kompletten Kategoriepfad zum aktuellen KategorieArtikel nach Level sortiert in die Datenbank
@@ -1291,13 +1368,13 @@ function checkArtikelBildLoeschung($kArtikel)
             'kArtikelPict, kMainArtikelBild, cPfad'
         );
         // Besitzt der zu löschende Artikel Bilder?
-        if (isset($oArtikelPict_arr) && count($oArtikelPict_arr) > 0) {
+        if (count($oArtikelPict_arr) > 0) {
             // Hat der Artikel Bilder die auf eine Verknüpfung verlinken wobei der Eigentümer Artikel des Bilder gelöscht wurde
             // und nun der zu löschende Artikel die letzte Refenz darauf ist?
             foreach ($oArtikelPict_arr as $oArtikelPict) {
                 deleteArticleImage($oArtikelPict, $kArtikel);
             }
-            //flush article images cache
+            // flush article images cache
             Shop::Cache()->flush('arr_article_images_' . $kArtikel);
         }
     }
@@ -1360,43 +1437,11 @@ function getDownloadKeys($kArtikel)
  * clear all caches associated with a product ID
  * including manufacturers, categories, parent products
  *
- * @param array|int $kArtikel
+ * @param array $kArtikel
  */
 function clearProductCaches($kArtikel)
 {
-    if (is_numeric($kArtikel)) {
-        $start      = microtime(true);
-        $totalCount = 0;
-        $kArtikel   = (int)$kArtikel;
-        $parentIDs  = getConfigParents($kArtikel);
-        $cacheTags  = [];
-        array_walk($parentIDs, function (&$i) {
-            $i = CACHING_GROUP_ARTICLE . '_' . $i;
-        });
-        // flush config parents cache
-        $totalCount += Shop::Cache()->flushTags($parentIDs);
-        // flush cache tags associated with the article's manufacturer ID
-        $oArticleManufacturer = Shop::DB()->query('SELECT kHersteller FROM tartikel WHERE kArtikel = ' . $kArtikel, 1);
-        if (isset($oArticleManufacturer->kHersteller) && (int)$oArticleManufacturer->kHersteller > 0) {
-            $totalCount += Shop::Cache()->flushTags([CACHING_GROUP_MANUFACTURER . '_' .
-                                                     $oArticleManufacturer->kHersteller]);
-        }
-        // flush cache tags associated with the article's category IDs
-        $oArticleCategories = Shop::DB()->selectAll('tkategorieartikel', 'kArtikel', $kArtikel);
-        if (is_array($oArticleCategories)) {
-            foreach ($oArticleCategories as $_articleCategory) {
-                $cacheTags[] = (int)$_articleCategory->kKategorie;
-            }
-        }
-        array_walk($cacheTags, function (&$i) {
-            $i = CACHING_GROUP_CATEGORY . '_' . $i;
-        });
-        $cacheTags[] = CACHING_GROUP_ARTICLE . '_' . $kArtikel;
-        $cacheTags[] = 'jtl_mmf';
-        // flush article cache, category cache and cache for gibMerkmalFilterOptionen() and mega menu/category boxes
-        $totalCount += Shop::Cache()->flushTags($cacheTags);
-        $end        = microtime(true);
-    } elseif (is_array($kArtikel) && count($kArtikel) > 0) {
+    if (count($kArtikel) > 0) {
         $start     = microtime(true);
         $cacheTags = [];
 

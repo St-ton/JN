@@ -132,6 +132,14 @@ table,
     border: 1px solid @brand-danger;
   }
 }
+.tt-hint,
+.tt-input {
+  .twitter-typeahead & {
+    .has-error & {
+      .typeahead-form-control(@state-danger-bg);
+    }
+  }
+}
 
 .has-success {
   .help-block,
@@ -234,7 +242,7 @@ a.list-group-item {
     &.active {
       background-color: @state-warning-bg;
     }
-    
+
     &.active:hover,
     &.active:focus {
       background-color: darken(@state-warning-bg, 5%);
@@ -245,7 +253,7 @@ a.list-group-item {
     &.active {
       background-color: @state-danger-bg;
     }
-    
+
     &.active:hover,
     &.active:focus {
       background-color: darken(@state-danger-bg, 5%);
@@ -285,14 +293,14 @@ a.list-group-item {
 
 
 #footer {
-    > .container-block, &.container-block {
-        #gradient > .vertical(@start-color: darken(@gray-dark, 70%); @end-color: #000);
-        h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
-            color: #fff;
-        }
-    }   
+  > .container-block, &.container-block {
+    #gradient > .vertical(@start-color: darken(@gray-dark, 70%); @end-color: #000);
+    h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+      color: #fff;
+    }
+  }
 }
 
 #footer .panel > div > h5 {
-        border-bottom: 1px dotted @gray;
-    }
+  border-bottom: 1px dotted @gray;
+}

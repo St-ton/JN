@@ -1500,7 +1500,7 @@ class Warenkorb
 
         if (is_array($oWarenkorb->PositionenArr)) {
             foreach ($oWarenkorb->PositionenArr as $wkPos) {
-                $checks['PositionenArr'][] = [
+                $checks['PositionenArr'][] = md5(serialize([
                     'kArtikel'          => isset($wkPos->kArtikel) ? $wkPos->kArtikel : 0,
                     'nAnzahl'           => isset($wkPos->nAnzahl) ? $wkPos->nAnzahl : 0,
                     'kVersandklasse'    => isset($wkPos->kVersandklasse) ? $wkPos->kVersandklasse : 0,
@@ -1508,8 +1508,9 @@ class Warenkorb
                     'fPreisEinzelNetto' => isset($wkPos->fPreisEinzelNetto) ? $wkPos->fPreisEinzelNetto : 0.0,
                     'fPreis'            => isset($wkPos->fPreis) ? $wkPos->fPreis : 0.0,
                     'cHinweis'          => isset($wkPos->cHinweis) ? $wkPos->cHinweis : '',
-                ];
+                ]));
             }
+            sort($checks['PositionenArr']);
         }
 
         return md5(serialize($checks));

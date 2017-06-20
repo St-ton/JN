@@ -44,7 +44,6 @@ if (isset($_POST['zuruecksetzen']) && (int)$_POST['zuruecksetzen'] === 1 && vali
                     Shop::DB()->query("TRUNCATE teinheit", 4);
                     Shop::DB()->query("TRUNCATE tkategorie", 4);
                     Shop::DB()->query("TRUNCATE tkategorieartikel", 4);
-                    Shop::DB()->query("TRUNCATE tkategorieartikelgesamt", 4);
                     Shop::DB()->query("TRUNCATE tkategorieattribut", 4);
                     Shop::DB()->query("TRUNCATE tkategorieattributsprache", 4);
                     Shop::DB()->query("TRUNCATE tkategoriekundengruppe", 4);
@@ -77,8 +76,8 @@ if (isset($_POST['zuruecksetzen']) && (int)$_POST['zuruecksetzen'] === 1 && vali
                     Shop::DB()->query("TRUNCATE twarenlager", 4);
                     Shop::DB()->query("TRUNCATE twarenlagersprache", 4);
 
-                    Shop::DB()->query("
-                        DELETE FROM tseo
+                    Shop::DB()->query(
+                        "DELETE FROM tseo
                             WHERE cKey = 'kArtikel'
                             OR cKey = 'kKategorie'
                             OR cKey = 'kMerkmalWert'
@@ -103,8 +102,8 @@ if (isset($_POST['zuruecksetzen']) && (int)$_POST['zuruecksetzen'] === 1 && vali
                     Shop::DB()->query("TRUNCATE tnewskommentar", 4);
                     Shop::DB()->query("TRUNCATE tnewsmonatsuebersicht", 4);
 
-                    Shop::DB()->query("
-                        DELETE FROM tseo
+                    Shop::DB()->query(
+                        "DELETE FROM tseo
                             WHERE cKey = 'kNews'
                               OR cKey = 'kNewsKategorie'
                               OR cKey = 'kNewsMonatsUebersicht'", 4

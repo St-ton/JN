@@ -702,6 +702,9 @@
                             quantityWrapper.slideUp(200);
                         }
                     }
+
+                    $.evo.extended()
+                        .trigger('priceChanged', result);
                 });
             }
         },

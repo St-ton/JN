@@ -29,7 +29,7 @@ if (!$cParameter_arr['kWunschliste'] &&
     strlen(verifyGPDataString('wlid')) > 0
 ) {
     header(
-        'Location: ' . $linkHelper->getStaticRoute('wunschliste.php', true) .
+        'Location: ' . $linkHelper->getStaticRoute('wunschliste.php') .
         '?wlid=' . verifyGPDataString('wlid') . '&error=1',
         true,
         303
@@ -47,7 +47,7 @@ if (!$_SESSION['Kundengruppe']->darfArtikelKategorienSehen &&
     ($cParameter_arr['kArtikel'] > 0 || $cParameter_arr['kKategorie'] > 0)
 ) {
     //falls Artikel/Kategorien nicht gesehen werden duerfen -> login
-    header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true) . '?li=1', true, 303);
+    header('Location: ' . $linkHelper->getStaticRoute('jtl.php') . '?li=1', true, 303);
     exit;
 }
 if ($cParameter_arr['kKategorie'] > 0 &&

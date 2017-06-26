@@ -30,6 +30,7 @@ if (isset($_GET['i'])) {
     if (isset($bestellid->kBestellung) && $bestellid->kBestellung > 0) {
         $bestellung = new Bestellung($bestellid->kBestellung);
         $bestellung->fuelleBestellung(0);
+        speicherUploads($bestellung);
         Shop::DB()->delete('tbestellid', 'kBestellung', (int)$bestellid->kBestellung);
         // Zahlungsanbieter
         if (isset($_GET['za']) && $_GET['za'] === 'eos') {

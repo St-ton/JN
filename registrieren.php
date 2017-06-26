@@ -75,7 +75,7 @@ $smarty->assign('Navigation', createNavigation($AktuelleSeite))
        ->assign('nAnzeigeOrt', CHECKBOX_ORT_REGISTRIERUNG)
        ->assign('code_registrieren', generiereCaptchaCode($Einstellungen['kunden']['registrieren_captcha']));
 
-$cCanonicalURL = $linkHelper->getStaticRoute('registrieren.php', true);
+$cCanonicalURL = $linkHelper->getStaticRoute('registrieren.php');
 // Metaangaben
 $oMeta            = $linkHelper->buildSpecialPageMeta(LINKTYP_REGISTRIEREN);
 $cMetaTitle       = $oMeta->cTitle;

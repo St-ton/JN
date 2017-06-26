@@ -922,12 +922,16 @@ function baueArtikelDetail($oArtikel, $xPost_arr)
 
     if (isset($xPost_arr['fragezumprodukt']) && (int)$xPost_arr['fragezumprodukt'] === 1) {
         bearbeiteFrageZumProdukt();
-    } elseif (isset($xPost_arr['benachrichtigung_verfuegbarkeit']) && (int)$xPost_arr['benachrichtigung_verfuegbarkeit'] === 1) {
+    } elseif (isset($xPost_arr['benachrichtigung_verfuegbarkeit'])
+        && (int)$xPost_arr['benachrichtigung_verfuegbarkeit'] === 1
+    ) {
         bearbeiteBenachrichtigung();
     }
     //url
     $requestURL = baueURL($oArtikel, URLART_ARTIKEL);
-    $sprachURL  = ($oArtikel->cSprachURL_arr !== null) ? $oArtikel->cSprachURL_arr : baueSprachURLS($oArtikel, URLART_ARTIKEL);
+    $sprachURL  = $oArtikel->cSprachURL_arr !== null
+        ? $oArtikel->cSprachURL_arr :
+        baueSprachURLS($oArtikel, URLART_ARTIKEL);
     //hole aktuelle Kategorie, falls eine gesetzt
     $kKategorie             = $oArtikel->gibKategorie();
     $AktuelleKategorie      = new Kategorie($kKategorie);
@@ -979,9 +983,9 @@ function baueArtikelDetail($oArtikel, $xPost_arr)
     }
     $oArtikel->Bewertungen->Sortierung = $nSortierung;
     //$nAnzahlBewertungen = $oArtikel->Bewertungen->oBewertungGesamt->nAnzahl;
-    $nAnzahlBewertungen = ($bewertung_sterne == 0) ?
-        $oArtikel->Bewertungen->nAnzahlSprache :
-        $oArtikel->Bewertungen->nSterne_arr[5 - $bewertung_sterne];
+    $nAnzahlBewertungen = $bewertung_sterne == 0
+        ? $oArtikel->Bewertungen->nAnzahlSprache
+        : $oArtikel->Bewertungen->nSterne_arr[5 - $bewertung_sterne];
     // Baue Blätter Navigation
     $oBlaetterNavi = baueBewertungNavi(
         $bewertung_seite,

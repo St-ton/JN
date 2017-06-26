@@ -24,17 +24,16 @@ if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
 
         header('Location: ' . $url . 'bewertung_anzeigen=1&cFehler=f02', true, 301);
         exit();
-    } else {
-        // Versuche die Bewertung zu speichern
-        speicherBewertung(
-            $cParameter_arr['kArtikel'],
-            $_SESSION['Kunde']->kKunde,
-            Shop::getLanguage(),
-            verifyGPDataString('cTitel'),
-            verifyGPDataString('cText'),
-            $cParameter_arr['nSterne']
-        );
     }
+    // Versuche die Bewertung zu speichern
+    speicherBewertung(
+        $cParameter_arr['kArtikel'],
+        $_SESSION['Kunde']->kKunde,
+        Shop::getLanguage(),
+        verifyGPDataString('cTitel'),
+        verifyGPDataString('cText'),
+        $cParameter_arr['nSterne']
+    );
 } elseif (isset($_POST['bhjn']) && (int)$_POST['bhjn'] === 1) { // Hilfreich abspeichern
     // Bewertungen holen
     $bewertung_seite  = verifyGPCDataInteger('btgseite');

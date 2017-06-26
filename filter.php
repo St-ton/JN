@@ -79,9 +79,9 @@ $NaviFilter->setUserSort($AktuelleKategorie);
 $smarty->assign('oErweiterteDarstellung', $NaviFilter->getExtendedView($cParameter_arr['nDarstellung']));
 $oSuchergebnisse = $NaviFilter->getProducts(true, $AktuelleKategorie);
 if ($hasError) {
-    $cFehler                              = Shop::Lang()->get('expressionHasTo', 'global') .
+    $cFehler                              = Shop::Lang()->get('expressionHasTo') .
         ' ' . $nMindestzeichen . ' ' .
-        Shop::Lang()->get('lettersDigits', 'global');
+        Shop::Lang()->get('lettersDigits');
     $oSuchergebnisse->GesamtanzahlArtikel = 0;
     $oSuchergebnisse->SucheErfolglos      = 1;
     $oSuchergebnisse->Fehler              = $cFehler;
@@ -205,7 +205,7 @@ if ($NaviFilter->Kategorie->isInitialized()) {
     if (isset($oNavigationsinfo->oHersteller->cMetaKeywords)) {
         $oMeta->cMetaKeywords = $oNavigationsinfo->oHersteller->cMetaKeywords;
     }
-    $cBrotNavi = createNavigation('', '', 0, $NaviFilter->cBrotNaviName, $NaviFilter->getURL(true, null));
+    $cBrotNavi = createNavigation('', '', 0, $NaviFilter->cBrotNaviName, $NaviFilter->getURL());
 } elseif ($NaviFilter->MerkmalWert->isInitialized()) {
     $oNavigationsinfo->oMerkmalWert = new MerkmalWert($NaviFilter->MerkmalWert->getValue());
 
@@ -228,7 +228,7 @@ if ($NaviFilter->Kategorie->isInitialized()) {
     }
 }
 // Canonical
-if (strpos(basename($NaviFilter->getURL(true, null)), '.php') === false) {
+if (strpos(basename($NaviFilter->getURL()), '.php') === false) {
     $cSeite = '';
     if (isset($oSuchergebnisse->Seitenzahlen->AktuelleSeite) && $oSuchergebnisse->Seitenzahlen->AktuelleSeite > 1) {
         $cSeite = SEP_SEITE . $oSuchergebnisse->Seitenzahlen->AktuelleSeite;

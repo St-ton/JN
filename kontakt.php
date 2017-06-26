@@ -89,7 +89,7 @@ if (pruefeBetreffVorhanden()) {
     }
     $Vorgaben = baueKontaktFormularVorgaben();
     // Canonical
-    $cCanonicalURL = $linkHelper->getStaticRoute('kontakt.php', true);
+    $cCanonicalURL = $linkHelper->getStaticRoute('kontakt.php');
     // Metaangaben
     $oMeta            = $linkHelper->buildSpecialPageMeta(LINKTYP_KONTAKT, $lang);
     $cMetaTitle       = $oMeta->cTitle;

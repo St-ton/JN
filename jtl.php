@@ -47,7 +47,9 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
 // wird dieser hier her umgeleitet und es werden die passenden Parameter erstellt.
 // Nach dem erfolgreichen einloggen wird die zuvor angestrebte Aktion durchgeführt.
 if (isset($_SESSION['JTL_REDIRECT']) || verifyGPCDataInteger('r') > 0) {
-    $smarty->assign('oRedirect', (isset($_SESSION['JTL_REDIRECT']) ? $_SESSION['JTL_REDIRECT'] : gibRedirect(verifyGPCDataInteger('r'))));
+    $smarty->assign('oRedirect', (isset($_SESSION['JTL_REDIRECT'])
+        ? $_SESSION['JTL_REDIRECT']
+        : gibRedirect(verifyGPCDataInteger('r'))));
     executeHook(HOOK_JTL_PAGE_REDIRECT_DATEN);
 }
 // Upload zum Download freigeben
@@ -130,7 +132,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
         $_SESSION['Waehrung']    = $Waehrung;
         Shop::setLanguage($kSprache, $cISOSprache);
 
-        header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true) . '?loggedout=1', true, 303);
+        header('Location: ' . $linkHelper->getStaticRoute('jtl.php') . '?loggedout=1', true, 303);
         exit();
     }
 
@@ -140,7 +142,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
     // Vorhandenen Warenkorb mit persistenten Warenkorb mergen?
     if (verifyGPCDataInteger('basket2Pers') === 1) {
         setzeWarenkorbPersInWarenkorb($_SESSION['Kunde']->kKunde);
-        header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true), true, 303);
+        header('Location: ' . $linkHelper->getStaticRoute('jtl.php'), true, 303);
         exit();
     }
     // Wunschliste loeschen
@@ -196,7 +198,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
             }
             $cParamWLID = (strlen($cURLID) > 0) ? ('&wlid=' . $cURLID) : '';
             header(
-                'Location: ' . $linkHelper->getStaticRoute('jtl.php', true) .
+                'Location: ' . $linkHelper->getStaticRoute('jtl.php') .
                 '?wl=' . $kWunschliste .
                 '&wlidmsg=1' . $cParamWLID, true, 303
             );
@@ -225,7 +227,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
                 }
             }
             header(
-                'Location: ' . $linkHelper->getStaticRoute('jtl.php', true) .
+                'Location: ' . $linkHelper->getStaticRoute('jtl.php') .
                 '?wl=' . $kWunschliste .
                 '&wlid=' . $cURLID .
                 '&wlidmsg=2', true, 303

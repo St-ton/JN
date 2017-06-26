@@ -43,9 +43,9 @@ if (isset($_POST['passwort_vergessen'], $_POST['email']) && (int)$_POST['passwor
 
         $smarty->assign('Kunde', $oKunde);
     } elseif (isset($kunde->kKunde) && $kunde->kKunde > 0 && $kunde->cSperre === 'Y') {
-        $hinweis = Shop::Lang()->get('accountLocked', 'global');
+        $hinweis = Shop::Lang()->get('accountLocked');
     } else {
-        $hinweis = Shop::Lang()->get('incorrectEmail', 'global');
+        $hinweis = Shop::Lang()->get('incorrectEmail');
     }
 } elseif (isset($_POST['pw_new'], $_POST['pw_new_confirm'], $_POST['fpm'], $_POST['fpwh'])) {
     if ($_POST['pw_new'] === $_POST['pw_new_confirm']) {
@@ -65,7 +65,7 @@ if (isset($_POST['passwort_vergessen'], $_POST['email']) && (int)$_POST['passwor
             $verified = $oKunde->verifyResetPasswordHash($_POST['fpwh'], $_POST['fpm']);
             if ($verified === true) {
                 $oKunde->updatePassword($_POST['pw_new']);
-                header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true) . '?updated_pw=true');
+                header('Location: ' . $linkHelper->getStaticRoute('jtl.php') . '?updated_pw=true');
             } else {
                 $cFehler = Shop::Lang()->get('invalidHash', 'productDetails');
             }
@@ -83,7 +83,7 @@ if (isset($_POST['passwort_vergessen'], $_POST['email']) && (int)$_POST['passwor
            ->assign('fpm', $_GET['mail']);
     $step = 'confirm';
 }
-$cCanonicalURL    = $linkHelper->getStaticRoute('pass.php', true);
+$cCanonicalURL    = $linkHelper->getStaticRoute('pass.php');
 $oMeta            = $linkHelper->buildSpecialPageMeta(LINKTYP_PASSWORD_VERGESSEN);
 $cMetaTitle       = $oMeta->cTitle;
 $cMetaDescription = $oMeta->cDesc;

@@ -11,9 +11,8 @@ require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'wunschliste_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'jtl_inc.php';
-
 /** @global JTLSmarty $smarty */
-
+Shop::setPageType(PAGE_BESTELLVORGANG);
 $AktuelleSeite = 'BESTELLVORGANG';
 $Einstellungen = Shop::getSettings([
     CONF_GLOBAL,
@@ -24,9 +23,8 @@ $Einstellungen = Shop::getSettings([
     CONF_TRUSTEDSHOPS,
     CONF_ARTIKELDETAILS
 ]);
-Shop::setPageType(PAGE_BESTELLVORGANG);
-$step     = 'accountwahl';
-$cHinweis = '';
+$step          = 'accountwahl';
+$cHinweis      = '';
 // Kill Ajaxcheckout falls vorhanden
 unset($_SESSION['ajaxcheckout']);
 // Loginbenutzer?
@@ -112,7 +110,7 @@ if (isset($_POST['unreg_form']) && (int)$_POST['unreg_form'] === 0) {
         'Lieferadresse'   => $_SESSION['Lieferadresse'],
         'fehlendeAngaben' => $fehlendeAngaben,
     ];
-    include 'registrieren.php';
+    include PFAD_ROOT . 'registrieren.php';
 } elseif (isset($_SESSION['tmpShipping'])) {
     // restore delivery address after registering customer
     $_SESSION['Lieferadresse'] = $_SESSION['tmpShipping']['Lieferadresse'];
@@ -148,12 +146,23 @@ if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']) {
     }
 
     if (!isset($_SESSION['Versandart']) || !is_object($_SESSION['Versandart'])) {
-        $land          = isset($_SESSION['Lieferadresse']->cLand) ? $_SESSION['Lieferadresse']->cLand : $_SESSION['Kunde']->cLand;
-        $plz           = isset($_SESSION['Lieferadresse']->cPLZ) ? $_SESSION['Lieferadresse']->cPLZ : $_SESSION['Kunde']->cPLZ;
-        $kKundengruppe = isset($_SESSION['Kunde']->kKundengruppe) ? $_SESSION['Kunde']->kKundengruppe : $_SESSION['Kundengruppe']->kKundengruppe;
+        $land          = isset($_SESSION['Lieferadresse']->cLand)
+            ? $_SESSION['Lieferadresse']->cLand
+            : $_SESSION['Kunde']->cLand;
+        $plz           = isset($_SESSION['Lieferadresse']->cPLZ)
+            ? $_SESSION['Lieferadresse']->cPLZ
+            : $_SESSION['Kunde']->cPLZ;
+        $kKundengruppe = isset($_SESSION['Kunde']->kKundengruppe)
+            ? $_SESSION['Kunde']->kKundengruppe
+            : $_SESSION['Kundengruppe']->kKundengruppe;
 
         $oGuenstigsteVersandart = null;
-        $oVersandart_arr        = VersandartHelper::getPossibleShippingMethods($land, $plz, VersandartHelper::getShippingClasses($_SESSION['Warenkorb']), $kKundengruppe);
+        $oVersandart_arr        = VersandartHelper::getPossibleShippingMethods(
+            $land,
+            $plz,
+            VersandartHelper::getShippingClasses($_SESSION['Warenkorb']),
+            $kKundengruppe
+        );
         $activeVersandart       = gibAktiveVersandart($oVersandart_arr);
 
         if (empty($activeVersandart)) {
@@ -164,18 +173,24 @@ if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']) {
             }
 
             if ($oGuenstigsteVersandart !== null) {
-                pruefeVersandartWahl($oGuenstigsteVersandart->kVersandart, ['kVerpackung' => array_keys(gibAktiveVerpackung(gibMoeglicheVerpackungen($kKundengruppe)))]);
+                pruefeVersandartWahl(
+                    $oGuenstigsteVersandart->kVersandart,
+                    ['kVerpackung' => array_keys(gibAktiveVerpackung(gibMoeglicheVerpackungen($kKundengruppe)))]
+                );
             }
         } else {
-            pruefeVersandartWahl($activeVersandart, ['kVerpackung' => array_keys(gibAktiveVerpackung(gibMoeglicheVerpackungen($kKundengruppe)))]);
+            pruefeVersandartWahl(
+                $activeVersandart,
+                ['kVerpackung' => array_keys(gibAktiveVerpackung(gibMoeglicheVerpackungen($kKundengruppe)))]
+            );
         }
     }
 }
 //Download-Artikel vorhanden?
 if ($step !== 'accountwahl' &&
+    empty($_SESSION['Kunde']->cPasswort) &&
     class_exists('Download') &&
-    Download::hasDownloads($_SESSION['Warenkorb']) &&
-    (!isset($_SESSION['Kunde']->cPasswort) || strlen($_SESSION['Kunde']->cPasswort) === 0)
+    Download::hasDownloads($_SESSION['Warenkorb'])
 ) {
     // Falls unregistrierter Kunde bereits im Checkout war und einen Downloadartikel hinzugefuegt hat
     $step = 'accountwahl';

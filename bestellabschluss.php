@@ -20,10 +20,10 @@ $Einstellungen = Shop::getSettings([
     CONF_EMAILS,
     CONF_TRUSTEDSHOPS
 ]);
+Shop::setPageType(PAGE_BESTELLABSCHLUSS);
 $linkHelper    = LinkHelper::getInstance();
 $AktuelleSeite = 'BESTELLVORGANG';
-Shop::setPageType(PAGE_BESTELLABSCHLUSS);
-$kLink = $linkHelper->getSpecialPageLinkKey(LINKTYP_BESTELLABSCHLUSS);
+$kLink         = $linkHelper->getSpecialPageLinkKey(LINKTYP_BESTELLABSCHLUSS);
 if (isset($_GET['i'])) {
     $bestellung = null;
     $bestellid  = Shop::DB()->select('tbestellid', 'cId', Shop::DB()->escape($_GET['i']));
@@ -49,55 +49,53 @@ if (isset($_GET['i'])) {
         header('Location: ' . $linkHelper->getStaticRoute('bestellvorgang.php') .
             '?mailBlocked=1', true, 303);
         exit;
-    } elseif (!bestellungKomplett()) {
+    }
+    if (!bestellungKomplett()) {
         header('Location: ' . $linkHelper->getStaticRoute('bestellvorgang.php') .
             '?fillOut=' . gibFehlendeEingabe(), true, 303);
         exit;
-    } else {
-        //pruefen, ob von jedem Artikel im WK genug auf Lager sind. Wenn nicht, WK verkleinern und Redirect zum WK
-        $_SESSION['Warenkorb']->pruefeLagerbestaende();
+    }
+    //pruefen, ob von jedem Artikel im WK genug auf Lager sind. Wenn nicht, WK verkleinern und Redirect zum WK
+    $_SESSION['Warenkorb']->pruefeLagerbestaende();
 
-        if ($_SESSION['Warenkorb']->checkIfCouponIsStillValid() === false) {
-            $_SESSION['checkCouponResult']['ungueltig'] = 3;
+    if ($_SESSION['Warenkorb']->checkIfCouponIsStillValid() === false) {
+        $_SESSION['checkCouponResult']['ungueltig'] = 3;
+        header('Location: ' . $linkHelper->getStaticRoute('warenkorb.php'), true, 303);
+        exit;
+    }
+
+    if (empty($_SESSION['Zahlungsart']->nWaehrendBestellung)) {
+        $_SESSION['Warenkorb']->loescheDeaktiviertePositionen();
+        $wkChecksum = Warenkorb::getChecksum($_SESSION['Warenkorb']);
+        if (!empty($_SESSION['Warenkorb']->cChecksumme) &&
+            $wkChecksum != $_SESSION['Warenkorb']->cChecksumme
+        ) {
+            if (!$_SESSION['Warenkorb']->enthaltenSpezialPos(C_WARENKORBPOS_TYP_ARTIKEL)) {
+                loescheAlleSpezialPos();
+            }
+            $_SESSION['Warenkorbhinweise'][] = Shop::Lang()->get('yourbasketismutating', 'checkout');
             header('Location: ' . $linkHelper->getStaticRoute('warenkorb.php'), true, 303);
             exit;
         }
-
-        if (!isset($_SESSION['Zahlungsart']->nWaehrendBestellung) ||
-            $_SESSION['Zahlungsart']->nWaehrendBestellung == 0
+        $bestellung = finalisiereBestellung();
+        $bestellid  = (isset($bestellung->kBestellung) && $bestellung->kBestellung > 0)
+            ? Shop::DB()->select('tbestellid', 'kBestellung', $bestellung->kBestellung)
+            : false;
+        if ($bestellung->Lieferadresse === null &&
+            isset($_SESSION['Lieferadresse']) &&
+            strlen($_SESSION['Lieferadresse']->cVorname) > 0
         ) {
-            $_SESSION['Warenkorb']->loescheDeaktiviertePositionen();
-            $wkChecksum = Warenkorb::getChecksum($_SESSION['Warenkorb']);
-            if (!empty($_SESSION['Warenkorb']->cChecksumme) &&
-                $wkChecksum != $_SESSION['Warenkorb']->cChecksumme
-            ) {
-                if (!$_SESSION['Warenkorb']->enthaltenSpezialPos(C_WARENKORBPOS_TYP_ARTIKEL)) {
-                    loescheAlleSpezialPos();
-                }
-                $_SESSION['Warenkorbhinweise'][] = Shop::Lang()->get('yourbasketismutating', 'checkout');
-                header('Location: ' . $linkHelper->getStaticRoute('warenkorb.php'), true, 303);
-                exit;
-            }
-            $bestellung = finalisiereBestellung();
-            $bestellid  = (isset($bestellung->kBestellung) && $bestellung->kBestellung > 0)
-                ? Shop::DB()->select('tbestellid', 'kBestellung', $bestellung->kBestellung)
-                : false;
-            if ($bestellung->Lieferadresse === null &&
-                isset($_SESSION['Lieferadresse']) &&
-                strlen($_SESSION['Lieferadresse']->cVorname) > 0
-            ) {
-                $bestellung->Lieferadresse = gibLieferadresseAusSession();
-            }
-            $orderCompleteURL  = $linkHelper->getStaticRoute('bestellabschluss.php', true);
-            $successPaymentURL = (!empty($bestellid->cId)) ?
-                ($orderCompleteURL . '?i=' . $bestellid->cId)
-                : Shop::getURL();
-            $smarty->assign('Bestellung', $bestellung);
-        } else {
-            $bestellung = fakeBestellung();
+            $bestellung->Lieferadresse = gibLieferadresseAusSession();
         }
-        setzeSmartyWeiterleitung($bestellung);
+        $orderCompleteURL  = $linkHelper->getStaticRoute('bestellabschluss.php', true);
+        $successPaymentURL = (!empty($bestellid->cId))
+            ? ($orderCompleteURL . '?i=' . $bestellid->cId)
+            : Shop::getURL();
+        $smarty->assign('Bestellung', $bestellung);
+    } else {
+        $bestellung = fakeBestellung();
     }
+    setzeSmartyWeiterleitung($bestellung);
 }
 //hole aktuelle Kategorie, falls eine gesetzt
 $AktuelleKategorie      = new Kategorie(verifyGPCDataInteger('kategorie'));
@@ -131,10 +129,7 @@ if ($kPlugin > 0) {
     $oPlugin = new Plugin($kPlugin);
     $smarty->assign('oPlugin', $oPlugin);
 }
-if (!isset($_SESSION['Zahlungsart']->nWaehrendBestellung) ||
-    $_SESSION['Zahlungsart']->nWaehrendBestellung == 0 ||
-    isset($_GET['i'])
-) {
+if (empty($_SESSION['Zahlungsart']->nWaehrendBestellung) || isset($_GET['i'])) {
     if ($Einstellungen['trustedshops']['trustedshops_kundenbewertung_anzeigen'] === 'Y') {
         $smarty->assign('oTrustedShopsBewertenButton',
             gibTrustedShopsBewertenButton($bestellung->oRechnungsadresse->cMail, $bestellung->cBestellNr)

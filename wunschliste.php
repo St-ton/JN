@@ -159,7 +159,7 @@ if ($action !== null && isset($_POST['kWunschliste'], $_SESSION['Kunde']->kKunde
                 $cURLID = gibUID(32, substr(md5($kWunschliste), 0, 16) . time());
                 // Kampagne
                 $oKampagne = new Kampagne(KAMPAGNE_INTERN_OEFFENTL_WUNSCHZETTEL);
-                if (isset($oKampagne->kKampagne) && $oKampagne->kKampagne > 0) {
+                if ($oKampagne->kKampagne > 0) {
                     $cURLID .= '&' . $oKampagne->cParameter . '=' . $oKampagne->cWert;
                 }
                 $upd               = new stdClass();
@@ -276,7 +276,7 @@ if (verifyGPCDataInteger('error') === 1) {
     }
     if (!$kWunschliste) {
         header('Location: ' .
-            $linkHelper->getStaticRoute('jtl.php', true) .
+            $linkHelper->getStaticRoute('jtl.php') .
             '?u=' . $cParameter_arr['kUmfrage'] . '&r=' . R_LOGIN_WUNSCHLISTE
         );
         exit;

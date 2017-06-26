@@ -1596,19 +1596,19 @@ class Navigationsfilter
             return $this->cBrotNaviName;
         }
         if ($this->Hersteller->isInitialized()) {
-            return Shop::Lang()->get('productsFrom', 'global') . ' ' . $this->cBrotNaviName;
+            return Shop::Lang()->get('productsFrom') . ' ' . $this->cBrotNaviName;
         }
         if ($this->MerkmalWert->isInitialized()) {
-            return Shop::Lang()->get('productsWith', 'global') . ' ' . $this->cBrotNaviName;
+            return Shop::Lang()->get('productsWith') . ' ' . $this->cBrotNaviName;
         }
         if ($this->Tag->isInitialized()) {
-            return Shop::Lang()->get('showAllProductsTaggedWith', 'global') . ' ' . $this->cBrotNaviName;
+            return Shop::Lang()->get('showAllProductsTaggedWith') . ' ' . $this->cBrotNaviName;
         }
         if ($this->Suchspecial->isInitialized()) {
             return $this->cBrotNaviName;
         }
         if (!empty($this->Suche->cSuche) || !empty($this->Suchanfrage->cSuche)) {
-            return Shop::Lang()->get('for', 'global') . ' ' . $this->cBrotNaviName;
+            return Shop::Lang()->get('for') . ' ' . $this->cBrotNaviName;
         }
 
         return '';
@@ -1793,14 +1793,8 @@ class Navigationsfilter
                 ? $extraFilter->MerkmalFilter->kMerkmalWert
                 : $extraFilter->FilterLoesen->MerkmalWert
             );
-        } elseif (
-            isset($extraFilter->MerkmalFilter->kMerkmalWert) ||
-            isset($extraFilter->FilterLoesen->Merkmale))
-        {
-            $filter = (new FilterItemAttribute($this))->init(isset($extraFilter->MerkmalFilter->kMerkmalWert)
-                ? $extraFilter->MerkmalFilter->kMerkmalWert
-                : $extraFilter->FilterLoesen->Merkmale
-            );
+        } elseif (isset($extraFilter->FilterLoesen->Merkmale)) {
+            $filter = (new FilterItemAttribute($this))->init($extraFilter->FilterLoesen->Merkmale);
         } elseif (
             isset($extraFilter->PreisspannenFilter->fVon) ||
             (isset($extraFilter->FilterLoesen->Preisspannen) && $extraFilter->FilterLoesen->Preisspannen === true)
@@ -2469,7 +2463,7 @@ class Navigationsfilter
                 $obj                  = new stdClass();
                 $obj->name            = $name;
                 $obj->value           = $values[$i];
-                $obj->angezeigterName = Shop::Lang()->get($languages[$i], 'global');
+                $obj->angezeigterName = Shop::Lang()->get($languages[$i]);
 
                 $sortingOptions[] = $obj;
             }
@@ -2500,7 +2494,7 @@ class Navigationsfilter
             $obj                  = new stdClass();
             $obj->name            = 'suche_sortierprio_name';
             $obj->value           = SEARCH_SORT_NAME_ASC;
-            $obj->angezeigterName = Shop::Lang()->get('sortNameAsc', 'global');
+            $obj->angezeigterName = Shop::Lang()->get('sortNameAsc');
             $max                  = $this->conf['artikeluebersicht']['suche_sortierprio_name'];
         }
         if ($max < $this->conf['artikeluebersicht']['suche_sortierprio_name_ab'] &&
@@ -2509,7 +2503,7 @@ class Navigationsfilter
             $obj                  = new stdClass();
             $obj->name            = 'suche_sortierprio_name_ab';
             $obj->value           = SEARCH_SORT_NAME_DESC;
-            $obj->angezeigterName = Shop::Lang()->get('sortNameDesc', 'global');
+            $obj->angezeigterName = Shop::Lang()->get('sortNameDesc');
             $max                  = $this->conf['artikeluebersicht']['suche_sortierprio_name_ab'];
         }
         if ($max < $this->conf['artikeluebersicht']['suche_sortierprio_preis'] &&
@@ -2518,7 +2512,7 @@ class Navigationsfilter
             $obj                  = new stdClass();
             $obj->name            = 'suche_sortierprio_preis';
             $obj->value           = SEARCH_SORT_PRICE_ASC;
-            $obj->angezeigterName = Shop::Lang()->get('sortPriceAsc', 'global');
+            $obj->angezeigterName = Shop::Lang()->get('sortPriceAsc');
             $max                  = $this->conf['artikeluebersicht']['suche_sortierprio_preis'];
         }
         if ($max < $this->conf['artikeluebersicht']['suche_sortierprio_preis_ab'] &&
@@ -2527,7 +2521,7 @@ class Navigationsfilter
             $obj                  = new stdClass();
             $obj->name            = 'suche_sortierprio_preis_ab';
             $obj->value           = SEARCH_SORT_PRICE_DESC;
-            $obj->angezeigterName = Shop::Lang()->get('sortPriceDesc', 'global');
+            $obj->angezeigterName = Shop::Lang()->get('sortPriceDesc');
             $max                  = $this->conf['artikeluebersicht']['suche_sortierprio_preis_ab'];
         }
         if ($max < $this->conf['artikeluebersicht']['suche_sortierprio_ean'] &&
@@ -2536,7 +2530,7 @@ class Navigationsfilter
             $obj                  = new stdClass();
             $obj->name            = 'suche_sortierprio_ean';
             $obj->value           = SEARCH_SORT_EAN;
-            $obj->angezeigterName = Shop::Lang()->get('sortEan', 'global');
+            $obj->angezeigterName = Shop::Lang()->get('sortEan');
             $max                  = $this->conf['artikeluebersicht']['suche_sortierprio_ean'];
         }
         if ($max < $this->conf['artikeluebersicht']['suche_sortierprio_erstelldatum'] &&
@@ -2545,7 +2539,7 @@ class Navigationsfilter
             $obj                  = new stdClass();
             $obj->name            = 'suche_sortierprio_erstelldatum';
             $obj->value           = SEARCH_SORT_NEWEST_FIRST;
-            $obj->angezeigterName = Shop::Lang()->get('sortNewestFirst', 'global');
+            $obj->angezeigterName = Shop::Lang()->get('sortNewestFirst');
             $max                  = $this->conf['artikeluebersicht']['suche_sortierprio_erstelldatum'];
         }
         if ($max < $this->conf['artikeluebersicht']['suche_sortierprio_artikelnummer'] &&
@@ -2554,7 +2548,7 @@ class Navigationsfilter
             $obj                  = new stdClass();
             $obj->name            = 'suche_sortierprio_artikelnummer';
             $obj->value           = SEARCH_SORT_PRODUCTNO;
-            $obj->angezeigterName = Shop::Lang()->get('sortProductno', 'global');
+            $obj->angezeigterName = Shop::Lang()->get('sortProductno');
             $max                  = $this->conf['artikeluebersicht']['suche_sortierprio_artikelnummer'];
         }
         if ($max < $this->conf['artikeluebersicht']['suche_sortierprio_lagerbestand'] &&
@@ -2563,7 +2557,7 @@ class Navigationsfilter
             $obj                  = new stdClass();
             $obj->name            = 'suche_sortierprio_lagerbestand';
             $obj->value           = SEARCH_SORT_AVAILABILITY;
-            $obj->angezeigterName = Shop::Lang()->get('sortAvailability', 'global');
+            $obj->angezeigterName = Shop::Lang()->get('sortAvailability');
             $max                  = $this->conf['artikeluebersicht']['suche_sortierprio_lagerbestand'];
         }
         if ($max < $this->conf['artikeluebersicht']['suche_sortierprio_gewicht'] &&
@@ -2572,7 +2566,7 @@ class Navigationsfilter
             $obj                  = new stdClass();
             $obj->name            = 'suche_sortierprio_gewicht';
             $obj->value           = SEARCH_SORT_WEIGHT;
-            $obj->angezeigterName = Shop::Lang()->get('sortWeight', 'global');
+            $obj->angezeigterName = Shop::Lang()->get('sortWeight');
             $max                  = $this->conf['artikeluebersicht']['suche_sortierprio_gewicht'];
         }
         if ($max < $this->conf['artikeluebersicht']['suche_sortierprio_erscheinungsdatum'] &&
@@ -2581,7 +2575,7 @@ class Navigationsfilter
             $obj                  = new stdClass();
             $obj->name            = 'suche_sortierprio_erscheinungsdatum';
             $obj->value           = SEARCH_SORT_DATEOFISSUE;
-            $obj->angezeigterName = Shop::Lang()->get('sortDateofissue', 'global');
+            $obj->angezeigterName = Shop::Lang()->get('sortDateofissue');
             $max                  = $this->conf['artikeluebersicht']['suche_sortierprio_erscheinungsdatum'];
         }
         if ($max < $this->conf['artikeluebersicht']['suche_sortierprio_bestseller'] &&
@@ -2590,7 +2584,7 @@ class Navigationsfilter
             $obj                  = new stdClass();
             $obj->name            = 'suche_sortierprio_bestseller';
             $obj->value           = SEARCH_SORT_BESTSELLER;
-            $obj->angezeigterName = Shop::Lang()->get('bestseller', 'global');
+            $obj->angezeigterName = Shop::Lang()->get('bestseller');
             $max                  = $this->conf['artikeluebersicht']['suche_sortierprio_bestseller'];
         }
         if ($max < $this->conf['artikeluebersicht']['suche_sortierprio_bewertung'] &&
@@ -2599,7 +2593,7 @@ class Navigationsfilter
             $obj                  = new stdClass();
             $obj->name            = 'suche_sortierprio_bewertung';
             $obj->value           = SEARCH_SORT_RATING;
-            $obj->angezeigterName = Shop::Lang()->get('rating', 'global');
+            $obj->angezeigterName = Shop::Lang()->get('rating');
         }
 
         return $obj;

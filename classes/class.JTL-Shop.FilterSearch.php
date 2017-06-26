@@ -151,7 +151,7 @@ class FilterSearch extends AbstractFilter
                 'cSuche',
                 Shop::DB()->escape($tempQueries[0])
             );
-            if (!$filterSpam || !isset($blacklist->kSuchanfrageBlacklist) || $blacklist->kSuchanfrageBlacklist == 0) {
+            if (!$filterSpam || empty($blacklist->kSuchanfrageBlacklist)) {
                 // Ist MD5(IP) bereits X mal im Cache
                 $max_ip_count = (int)$this->getConfig()['artikeluebersicht']['livesuche_max_ip_count'] * 100;
                 $ip_cache_erg = Shop::DB()->executeQueryPrepared(

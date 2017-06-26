@@ -53,7 +53,7 @@ class FilterItemPriceRange extends AbstractFilter
         $this->urlParam    = 'pf';
         $this->urlParamSEO = null;
         $this->setVisibility($this->getConfig()['navigationsfilter']['preisspannenfilter_benutzen'])
-             ->setFrontendName(Shop::Lang()->get('rangeOfPrices', 'global'));
+             ->setFrontendName(Shop::Lang()->get('rangeOfPrices'));
     }
 
     /**
@@ -649,10 +649,10 @@ class FilterItemPriceRange extends AbstractFilter
         $fMax *= 1000.0;
         $fMin *= 1000.0;
         $fStepWert      = $fStepWert_arr[$nStep] * 1000;
-        $fMaxPreis      = round(((($fMax * 100) - (($fMax * 100) % ($fStepWert * 100))) + ($fStepWert * 100)) / 100, 0);
-        $fMinPreis      = round((($fMin * 100) - (($fMin * 100) % ($fStepWert * 100))) / 100, 0);
+        $fMaxPreis      = round(((($fMax * 100) - (($fMax * 100) % ($fStepWert * 100))) + ($fStepWert * 100)) / 100);
+        $fMinPreis      = round((($fMin * 100) - (($fMin * 100) % ($fStepWert * 100))) / 100);
         $fDiffPreis     = $fMaxPreis - $fMinPreis;
-        $nAnzahlSpannen = round($fDiffPreis / $fStepWert, 0);
+        $nAnzahlSpannen = round($fDiffPreis / $fStepWert);
 
         $oObject                 = new stdClass();
         $oObject->fMaxPreis      = $fMaxPreis / 1000;

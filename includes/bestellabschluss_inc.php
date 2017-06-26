@@ -934,6 +934,17 @@ function baueBestellnummer()
 }
 
 /**
+ * @param Bestellung $oBestellung
+ */
+function speicherUploads($oBestellung)
+{
+    if (!empty($oBestellung->kBestellung) && class_exists('Upload')) {
+        // Uploads speichern
+        Upload::speicherUploadDateien($_SESSION['Warenkorb'], $oBestellung->kBestellung);
+    }
+}
+
+/**
  * @param Bestellung $bestellung
  */
 function setzeSmartyWeiterleitung($bestellung)
@@ -942,9 +953,8 @@ function setzeSmartyWeiterleitung($bestellung)
 
     $successPaymentURL = '';
     // Uploads speichern
-    if (class_exists('Upload')) {
-        Upload::speicherUploadDateien($_SESSION['Warenkorb'], $bestellung->kBestellung);
-    }
+    speicherUploads($bestellung);
+
     if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
         Jtllog::writeLog(
             'setzeSmartyWeiterleitung wurde mit folgender Zahlungsart ausgefuehrt: ' .

@@ -351,7 +351,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
                 $oBestellung = new Bestellung($kBestellung);
                 // Existiert die Bestellung und wurde Sie bezahlt?
                 if ($oBestellung->kBestellung > 0 &&
-                    ($oBestellung->dBezahltDatum !== '0000-00-00' || $oBestellung->dBezahltDatum !== null)
+                    (!empty($oBestellung->dBezahltDatum) && $oBestellung->dBezahltDatum !== '0000-00-00')
                 ) {
                     // Stimmt der Kunde?
                     if ((int)$oBestellung->kKunde === $kKunde) {

@@ -938,21 +938,9 @@ function baueBestellnummer()
  */
 function speicherUploads($oBestellung)
 {
-    if (!empty($oBestellung->kBestellung)) {
+    if (!empty($oBestellung->kBestellung) && class_exists('Upload')) {
         // Uploads speichern
-        if (class_exists('Upload')) {
-            Upload::speicherUploadDateien($_SESSION['Warenkorb'], $oBestellung->kBestellung);
-        }
-        if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-            Jtllog::writeLog(
-                'setzeSmartyWeiterleitung wurde mit folgender Zahlungsart ausgefuehrt: ' .
-                print_r($_SESSION['Zahlungsart'], true),
-                JTLLOG_LEVEL_DEBUG,
-                false,
-                'cModulId',
-                $_SESSION['Zahlungsart']->cModulId
-            );
-        }
+        Upload::speicherUploadDateien($_SESSION['Warenkorb'], $oBestellung->kBestellung);
     }
 }
 
@@ -966,6 +954,17 @@ function setzeSmartyWeiterleitung($bestellung)
     $successPaymentURL = '';
     // Uploads speichern
     speicherUploads($bestellung);
+
+    if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
+        Jtllog::writeLog(
+            'setzeSmartyWeiterleitung wurde mit folgender Zahlungsart ausgefuehrt: ' .
+            print_r($_SESSION['Zahlungsart'], true),
+            JTLLOG_LEVEL_DEBUG,
+            false,
+            'cModulId',
+            $_SESSION['Zahlungsart']->cModulId
+        );
+    }
     // Zahlungsart als Plugin
     $kPlugin = gibkPluginAuscModulId($_SESSION['Zahlungsart']->cModulId);
     if ($kPlugin > 0) {

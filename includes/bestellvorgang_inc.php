@@ -1827,7 +1827,7 @@ function checkKundenFormularArray($data, $kundenaccount, $checkpass = 1)
         }
     }
 
-    if ($ret['email'] === 1) {
+    if (isset($ret['email']) && $ret['email'] === 1) {
         // email is empty
     } elseif (!valid_email($data['email'])) {
         $ret['email'] = 2;
@@ -1835,10 +1835,12 @@ function checkKundenFormularArray($data, $kundenaccount, $checkpass = 1)
         $ret['email'] = 3;
     }
     if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
-        if ($ret['email'] !== 1 && $data['email'] !== $_SESSION['Kunde']->cMail && !isEmailAvailable($data['email'])) {
+        if (isset($ret['email']) && $ret['email'] !== 1 && $data['email'] !== $_SESSION['Kunde']->cMail &&
+            !isEmailAvailable($data['email'])
+        ) {
             $ret['email'] = 5;
         }
-    } elseif ($ret['email'] !== 1 && !isEmailAvailable($data['email'])) {
+    } elseif (isset($ret['email']) && $ret['email'] !== 1 && !isEmailAvailable($data['email'])) {
         $ret['email'] = 5;
     }
     if (empty($_SESSION['check_plzort']) &&

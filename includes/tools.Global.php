@@ -2750,7 +2750,7 @@ function gibVersandZuschlag($versandart, $cISO, $plz)
 
 /**
  * @todo Hier gilt noch zu beachten, dass fWarenwertNetto vom Zusatzartikel
- *       kein Netto sein darf, sondern der Preis muss in Brutto angegeben werden.
+ *       darf kein Netto sein, sondern der Preis muss in Brutto angegeben werden.
  * @param Versandart|object $versandart
  * @param String            $cISO
  * @param Artikel|stdClass  $oZusatzArtikel
@@ -2777,6 +2777,11 @@ function berechneVersandpreis($versandart, $cISO, $oZusatzArtikel, $Artikel = 0)
     switch ($versandberechnung->cModulId) {
         case 'vm_versandkosten_pauschale_jtl':
             $preis = $versandart->fPreis;
+            if ($versandart->cNurAbhaengigeVersandart === 'Y' &&
+            (!empty($Artikel->FunktionsAttribute['versandkosten']) || !empty($Artikel->FunktionsAttribute['versandkosten gestaffelt']))){
+                $fArticleSpecific = VersandartHelper::gibArtikelabhaengigeVersandkosten($cISO, $Artikel, 1);
+                $preis += $fArticleSpecific->fKosten;
+            }
             break;
 
         case 'vm_versandberechnung_gewicht_jtl':
@@ -2917,7 +2922,7 @@ function gibGuenstigsteVersandkosten($cISO, $Artikel, $barzahlungZulassen, $kKun
                 AND (cKundengruppen = '-1' 
                     OR cKundengruppen RLIKE '^([0-9;]*;)?" . $kKundengruppe . ";')";
     //artikelabhaengige Versandarten nur laden und prüfen wenn der Artikel das entsprechende Funktionasattribut hat
-    if (empty($Artikel->FunktionsAttribute['versandkosten'])) {
+    if (empty($Artikel->FunktionsAttribute['versandkosten']) && empty($Artikel->FunktionsAttribute['versandkosten gestaffelt'])) {
         $query .= " AND cNurAbhaengigeVersandart = 'N'";
     }
     $versandarten = Shop::DB()->query($query, 2);

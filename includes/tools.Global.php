@@ -2909,15 +2909,18 @@ function berechneVersandpreis($versandart, $cISO, $oZusatzArtikel, $Artikel = 0)
 function gibGuenstigsteVersandkosten($cISO, $Artikel, $barzahlungZulassen, $kKundengruppe)
 {
     $versandpreis = 99999;
-    $versandarten = Shop::DB()->query(
-        "SELECT *
+    $query = "SELECT *
             FROM tversandart
             WHERE cLaender LIKE '%" . $cISO . "%'
                 AND (cVersandklassen = '-1' 
                     OR cVersandklassen RLIKE '^([0-9 -]* )?" . $Artikel->kVersandklasse . " ')
                 AND (cKundengruppen = '-1' 
-                    OR cKundengruppen RLIKE '^([0-9;]*;)?" . $kKundengruppe . ";')", 2
-    );
+                    OR cKundengruppen RLIKE '^([0-9;]*;)?" . $kKundengruppe . ";')";
+    //artikelabhaengige Versandarten nur laden und prüfen wenn der Artikel das entsprechende Funktionasattribut hat
+    if (empty($Artikel->FunktionsAttribute['versandkosten'])) {
+        $query .= " AND cNurAbhaengigeVersandart = 'N'";
+    }
+    $versandarten = Shop::DB()->query($query, 2);
     $cnt = count($versandarten);
     for ($i = 0; $i < $cnt; $i++) {
         if (!$barzahlungZulassen) {

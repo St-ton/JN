@@ -245,14 +245,14 @@ class Boxen
                     $oBox->bContainer = $oBox->kBoxvorlage === 0;
                     if ($bVisible) {
                         $oBox->cVisibleOn = '';
-                        $oVisible_arr     = Shop::DB()->selectAll('tboxensichtbar', 'kBox', (int)$oBox->kBox);
-                        if (count($oVisible_arr) >= PAGE_MAX) {
+                        $oVisible_arr     = Shop::DB()->selectAll('tboxensichtbar', ['kBox', 'bAktiv'], [(int)$oBox->kBox, 1]);
+                        if (count($oVisible_arr) >= COUNT_PAGES) {
                             $oBox->cVisibleOn = "\n- Auf allen Seiten";
                         } elseif (count($oVisible_arr) === 0) {
                             $oBox->cVisibleOn = "\n- Auf allen Seiten deaktiviert";
                         } else {
                             foreach ($oVisible_arr as $oVisible) {
-                                if ($oVisible->kSeite > 0) {
+                                if ($oVisible->kSeite > 0 && $oVisible->kSeite != PAGE_NEWSARCHIV) {
                                     $oBox->cVisibleOn .= "\n- " . $this->mappekSeite($oVisible->kSeite);
                                 }
                             }
@@ -1527,7 +1527,7 @@ class Boxen
         $nSeite    = (int)$nSeite;
         if ($nSeite === 0) {
             $bOk = true;
-            for ($i = 0; $i < PAGE_MAX && $bOk; $i++) {
+            for ($i = 0; $i < COUNT_PAGES && $bOk; $i++) {
                 $bOk = Shop::DB()->executeQueryPrepared("
                   REPLACE INTO tboxenanzeige 
                       SET bAnzeigen = :show,
@@ -1598,7 +1598,7 @@ class Boxen
         if ($kBox) {
             $oBoxSichtbar       = new stdClass();
             $oBoxSichtbar->kBox = $kBox;
-            for ($i = 0; $i < PAGE_MAX; $i++) {
+            for ($i = 0; $i < COUNT_PAGES; $i++) {
                 $oBoxSichtbar->nSort  = $this->letzteSortierID($nSeite, $ePosition, $kContainer);
                 $oBoxSichtbar->kSeite = $i;
                 $oBoxSichtbar->bAktiv = ($nSeite == $i || $nSeite == 0) ? 1 : 0;
@@ -1734,7 +1734,7 @@ class Boxen
         $nSeite = (int)$nSeite;
         if ($nSeite === 0) {
             $bOk = true;
-            for ($i = 0; $i < PAGE_MAX && $bOk; $i++) {
+            for ($i = 0; $i < COUNT_PAGES && $bOk; $i++) {
                 $oBox = Shop::DB()->select('tboxensichtbar', 'kBox', $kBox);
                 $bOk  = (!empty($oBox))
                     ? (Shop::DB()->query("
@@ -1778,7 +1778,7 @@ class Boxen
         $nSeite = (int)$nSeite;
         if ($nSeite === 0) {
             $bOk = true;
-            for ($i = 0; $i < PAGE_MAX && $bOk; $i++) {
+            for ($i = 0; $i < COUNT_PAGES && $bOk; $i++) {
                 $_upd          = new stdClass();
                 $_upd->bAktiv  = $bAktiv;
                 $bOk           = Shop::DB()->update('tboxensichtbar', ['kBox', 'kSeite'], [$kBox, $i], $_upd) >= 0;

@@ -5701,8 +5701,8 @@ function make_http_request($cURL, $nTimeout = 15, $cPost = null, $bReturnStatus 
         curl_setopt($curl, CURLOPT_URL, $cURL);
         curl_setopt($curl, CURLOPT_TIMEOUT, $nTimeout);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, DEFAULT_CURL_OPT_VERIFYPEER);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, DEFAULT_CURL_OPT_VERIFYHOST);
         curl_setopt($curl, CURLOPT_REFERER, Shop::getURL());
 
         if ($cPost !== null) {

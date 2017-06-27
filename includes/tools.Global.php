@@ -2777,11 +2777,6 @@ function berechneVersandpreis($versandart, $cISO, $oZusatzArtikel, $Artikel = 0)
     switch ($versandberechnung->cModulId) {
         case 'vm_versandkosten_pauschale_jtl':
             $preis = $versandart->fPreis;
-            if ($versandart->cNurAbhaengigeVersandart === 'Y' &&
-            (!empty($Artikel->FunktionsAttribute['versandkosten']) || !empty($Artikel->FunktionsAttribute['versandkosten gestaffelt']))){
-                $fArticleSpecific = VersandartHelper::gibArtikelabhaengigeVersandkosten($cISO, $Artikel, 1);
-                $preis += $fArticleSpecific->fKosten;
-            }
             break;
 
         case 'vm_versandberechnung_gewicht_jtl':
@@ -2847,6 +2842,12 @@ function berechneVersandpreis($versandart, $cISO, $oZusatzArtikel, $Artikel = 0)
         default:
             //bearbeite fremdmodule
             break;
+    }
+    //artikelabhaengiger Versand?
+    if ($versandart->cNurAbhaengigeVersandart === 'Y' &&
+        (!empty($Artikel->FunktionsAttribute['versandkosten']) || !empty($Artikel->FunktionsAttribute['versandkosten gestaffelt']))){
+        $fArticleSpecific = VersandartHelper::gibArtikelabhaengigeVersandkosten($cISO, $Artikel, 1);
+        $preis += $fArticleSpecific->fKosten;
     }
     //Deckelung?
     if ($preis >= $versandart->fDeckelung && $versandart->fDeckelung > 0) {

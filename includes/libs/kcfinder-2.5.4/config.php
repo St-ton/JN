@@ -20,7 +20,6 @@ require_once __DIR__ . '/../../config.JTL-Shop.ini.php';
 require_once __DIR__ . '/../../defines.php';
 
 session_name('eSIdAdm');
-
 $_CONFIG = array(
 
 

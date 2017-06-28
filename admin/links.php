@@ -415,15 +415,16 @@ if (isset($_POST['aender_linkvater']) && (int)$_POST['aender_linkvater'] === 1 &
 if ($step === 'uebersicht') {
     $linkgruppen = Shop::DB()->query("SELECT * FROM tlinkgruppe", 2);
     $lCount      = count($linkgruppen);
-    for ($i = 0; $i < $lCount; $i++) {
-        $linkgruppen[$i]->links_nh = Shop::DB()->selectAll(
+
+    foreach ($linkgruppen as $linkgruppe) {
+        $linkgruppe->links_nh = Shop::DB()->selectAll(
             'tlink',
             'kLinkgruppe',
-            (int)$linkgruppen[$i]->kLinkgruppe,
+            (int)$linkgruppe->kLinkgruppe,
             '*',
             'nSort, cName'
         );
-        $linkgruppen[$i]->links    = build_navigation_subs_admin($linkgruppen[$i]->links_nh);
+        $linkgruppe->links    = build_navigation_subs_admin($linkgruppe->links_nh);
     }
 
     $smarty->assign('kPlugin', verifyGPCDataInteger('kPlugin'))

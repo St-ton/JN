@@ -1431,6 +1431,7 @@ function gibTagFilterJSONOptionen($FilterSQL, $NaviFilter)
  * @param object         $NaviFilter
  * @param Kategorie|null $oAktuelleKategorie
  * @param bool           $bForce
+ * @param bool           $forceNoLimit true if `merkmalfilter_maxmerkmale` should be ignored
  * @return array|mixed
  */
 function gibMerkmalFilterOptionen($FilterSQL, $NaviFilter, $oAktuelleKategorie = null, $bForce = false, $forceNoLimit = false)

@@ -1433,7 +1433,7 @@ function gibTagFilterJSONOptionen($FilterSQL, $NaviFilter)
  * @param bool           $bForce
  * @return array|mixed
  */
-function gibMerkmalFilterOptionen($FilterSQL, $NaviFilter, $oAktuelleKategorie = null, $bForce = false)
+function gibMerkmalFilterOptionen($FilterSQL, $NaviFilter, $oAktuelleKategorie = null, $bForce = false, $forceNoLimit = false)
 {
     $cacheID = 'filter_mm_' . md5(
             json_encode($FilterSQL) .
@@ -1638,7 +1638,7 @@ function gibMerkmalFilterOptionen($FilterSQL, $NaviFilter, $oAktuelleKategorie =
                     $oMerkmalFilter_arr[$nPos]->oMerkmalWerte_arr[] = $oMerkmalWerte;
                 } else {
                     //#533 Anzahl max Merkmale erreicht?
-                    if (isset($conf['navigationsfilter']['merkmalfilter_maxmerkmale']) &&
+                    if (!$forceNoLimit && isset($conf['navigationsfilter']['merkmalfilter_maxmerkmale']) &&
                         $conf['navigationsfilter']['merkmalfilter_maxmerkmale'] > 0 &&
                         count($oMerkmalFilter_arr) >= $conf['navigationsfilter']['merkmalfilter_maxmerkmale']
                     ) {

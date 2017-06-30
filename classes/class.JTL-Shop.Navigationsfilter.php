@@ -1209,8 +1209,8 @@ class Navigationsfilter
             }
         }
         $this->createUnsetFilterURLs(true);
-//        $_SESSION['oArtikelUebersichtKey_arr']   = $this->searchResults->Artikel->articleKeys;
-//        $_SESSION['nArtikelUebersichtVLKey_arr'] = [];
+        $_SESSION['oArtikelUebersichtKey_arr']   = $this->searchResults->Artikel->articleKeys;
+        $_SESSION['nArtikelUebersichtVLKey_arr'] = [];
 
         Shop::Cache()->set($this->getHash(), $this, ['jtl_mmf']);
 

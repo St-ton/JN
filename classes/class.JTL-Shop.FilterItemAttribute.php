@@ -170,7 +170,7 @@ class FilterItemAttribute extends FilterBaseAttribute
         $currentCategory     = isset($mixed['oAktuelleKategorie'])
             ? $mixed['oAktuelleKategorie']
             : null;
-        $bForce              = isset($mixed['bForce'])
+        $bForce              = isset($mixed['bForce']) // auswahlassistent
             ? $mixed['bForce']
             : false;
         $catAttributeFilters = [];
@@ -178,6 +178,8 @@ class FilterItemAttribute extends FilterBaseAttribute
         $attributeFilters    = [];
         $activeValues        = [];
         $useAttributeFilter  = $this->getConfig()['navigationsfilter']['merkmalfilter_verwenden'] !== 'N';
+        $attributeLimit      = $bForce ? 0 : $this->getConfig()['navigationsfilter']['merkmalfilter_maxmerkmale'];
+        $attributeValueLimit = $bForce ? 0 : $this->getConfig()['navigationsfilter']['merkmalfilter_maxmerkmalwerte'];
 
         if (!$bForce && !$useAttributeFilter) {
             return $attributeFilters;
@@ -338,7 +340,6 @@ class FilterItemAttribute extends FilterBaseAttribute
             GROUP BY ssMerkmal.kMerkmalWert
             ORDER BY ssMerkmal.nSortMerkmal, ssMerkmal.nSort, ssMerkmal.cWert";
         $qryRes   = Shop::DB()->query($qry, 2);
-
         if (is_array($qryRes)) {
             $additionalFilter = new FilterItemAttribute($this->naviFilter);
             foreach ($qryRes as $i => $oMerkmalFilterDB) {
@@ -381,8 +382,8 @@ class FilterItemAttribute extends FilterBaseAttribute
                     }
                 }
                 if ($attribute === null) {
-                    $attribute = new FilterItemAttribute($this->naviFilter);
-                    $attribute->setFrontendName($oMerkmalFilterDB->cName);
+                    $attribute = (new FilterItemAttribute($this->naviFilter))
+                        ->setFrontendName($oMerkmalFilterDB->cName);
                     $attribute->cName             = $oMerkmalFilterDB->cName;
                     $attribute->cSeo              = $oMerkmalFilterDB->cSeo;
                     $attribute->nAnzahl           = (int)$oMerkmalFilterDB->nAnzahl;
@@ -411,22 +412,20 @@ class FilterItemAttribute extends FilterBaseAttribute
                     $attributeFilters[] = $attribute;
                 }
                 // #533 Anzahl max Merkmale erreicht?
-                if (($max = $this->getConfig()['navigationsfilter']['merkmalfilter_maxmerkmale']) > 0 &&
-                    count($attributeFilters) >= $max
-                ) {
+                if ($attributeLimit > 0 && count($attributeFilters) >= $attributeLimit) {
                     continue;
                 }
                 $attribute->oMerkmalWerte_arr[] = $attributeValues;
             }
         }
         // Filter durchgehen und die Merkmalwerte entfernen, die zuviel sind und deren Anzahl am geringsten ist.
-        foreach ($attributeFilters as $o => $oMerkmalFilter) {
-            // #534 Anzahl max Merkmalwerte erreicht?
-            if (($max = $this->getConfig()['navigationsfilter']['merkmalfilter_maxmerkmalwerte']) > 0) {
-                while (count($attributeFilters[$o]->oMerkmalWerte_arr) > $max) {
+        // #534 Anzahl max Merkmalwerte erreicht?
+        if ($attributeValueLimit > 0) {
+            foreach ($attributeFilters as $o => $oMerkmalFilter) {
+                while (count($attributeFilters[$o]->oMerkmalWerte_arr) > $attributeValueLimit) {
                     $nMinAnzahl = 999999;
                     $nIndex     = -1;
-                    foreach($attributeFilters[$o]->oMerkmalWerte_arr as $l => $attributeValues) {
+                    foreach ($attributeFilters[$o]->oMerkmalWerte_arr as $l => $attributeValues) {
                         if ($attributeValues->nAnzahl < $nMinAnzahl) {
                             $nMinAnzahl = (int)$attributeValues->nAnzahl;
                             $nIndex     = $l;

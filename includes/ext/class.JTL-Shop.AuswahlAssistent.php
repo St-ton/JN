@@ -197,7 +197,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
             $FilterSQL                      = new stdClass();
             $FilterSQL->oMerkmalFilterSQL   = gibMerkmalFilterSQL($NaviFilter);
             $FilterSQL->oKategorieFilterSQL = gibKategorieFilterSQL($NaviFilter);
-            $oMerkmalFilter_arr             = gibMerkmalFilterOptionen($FilterSQL, $NaviFilter, null, true, true);
+            $oMerkmalFilter_arr             = gibMerkmalFilterOptionen($FilterSQL, $NaviFilter, null, true);
 
             foreach ($oMerkmalFilter_arr as $oMerkmalFilter) {
                 if (array_key_exists((int)$oMerkmalFilter->kMerkmal, $this->oFrage_assoc)) {

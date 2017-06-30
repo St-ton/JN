@@ -431,11 +431,9 @@ class FilterItemAttribute extends FilterBaseAttribute
                             $nIndex     = $l;
                         }
                     }
-
                     if ($nIndex >= 0) {
-                        unset($attributeFilters[$o]->oMerkmalWerte_arr[$nIndex]);
-                        $attributeFilters[$o]->oMerkmalWerte_arr =
-                            array_merge($attributeFilters[$o]->oMerkmalWerte_arr);
+                        unset($oMerkmalFilter->oMerkmalWerte_arr[$nIndex]);
+                        $oMerkmalFilter->oMerkmalWerte_arr = array_merge($oMerkmalFilter->oMerkmalWerte_arr);
                     }
                 }
             }

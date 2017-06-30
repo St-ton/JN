@@ -225,7 +225,7 @@ class AuswahlAssistent
     /**
      * Return the HTML for this selection wizard in its current state
      *
-     * @param Smarty $smarty
+     * @param JTLSmarty $smarty
      * @return string
      */
     public function fetchForm($smarty)
@@ -437,13 +437,13 @@ class AuswahlAssistent
     {
         if ((int)$kKey > 0 && (int)$kSprache > 0 && strlen($cKey) > 0) {
             $oOrt = Shop::DB()->executeQueryPrepared(
-                "SELECT tao.kAuswahlAssistentGruppe
+                'SELECT tao.kAuswahlAssistentGruppe
                         FROM tauswahlassistentort tao
                         JOIN tauswahlassistentgruppe  tag
                             ON tag.kAuswahlAssistentGruppe = tao.kAuswahlAssistentGruppe
                             AND tag.kSprache = :lang
                         WHERE tao.cKey = :ckey
-                            AND tao.kKey = :kkey",
+                            AND tao.kKey = :kkey',
                 ['lang' => $kSprache, 'ckey' => $cKey, 'kkey' => $kKey],
                 1
             );

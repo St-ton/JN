@@ -1448,9 +1448,10 @@ class Navigationsfilter
     /**
      * @param stdClass       $searchResults
      * @param null|Kategorie $currentCategory
+     * @param bool           $selectionWizard
      * @return mixed
      */
-    public function setFilterOptions($searchResults, $currentCategory = null)
+    public function setFilterOptions($searchResults, $currentCategory = null, $selectionWizard = false)
     {
         if (!isset($searchResults->Herstellerauswahl)) {
             $searchResults->Herstellerauswahl = $this->HerstellerFilter->getOptions();
@@ -1475,7 +1476,7 @@ class Navigationsfilter
         if (!isset($searchResults->MerkmalFilter)) {
             $searchResults->MerkmalFilter = $this->attributeFilterCompat->getOptions([
                 'oAktuelleKategorie' => $currentCategory,
-                'bForce'             => function_exists('starteAuswahlAssistent')
+                'bForce'             => $selectionWizard === true && function_exists('starteAuswahlAssistent')
             ]);
         }
         $this->attributeFilterCompat->setFilterCollection($searchResults->MerkmalFilter);

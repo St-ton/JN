@@ -195,7 +195,8 @@ class AuswahlAssistent
             : null;
         $oMerkmalFilter_arr                   = $NaviFilter->setFilterOptions(
             $oSuchergebnisse,
-            $AktuelleKategorie
+            $AktuelleKategorie,
+            true
         )->MerkmalFilter;
 
         foreach ($oMerkmalFilter_arr as $oMerkmalFilter) {

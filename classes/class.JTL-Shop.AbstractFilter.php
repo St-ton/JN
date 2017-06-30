@@ -103,11 +103,6 @@ abstract class AbstractFilter implements IFilter
     /**
      * @var array
      */
-    private $config = [];
-
-    /**
-     * @var array
-     */
     private $availableLanguages = [];
 
     /**
@@ -394,7 +389,6 @@ abstract class AbstractFilter implements IFilter
         $this->naviFilter         = $naviFilter;
         $this->languageID         = $naviFilter->getLanguageID();
         $this->customerGroupID    = $naviFilter->getCustomerGroupID();
-        $this->config             = $naviFilter->getConfig();
         $this->availableLanguages = $naviFilter->getAvailableLanguages();
 
         return $this;
@@ -445,7 +439,7 @@ abstract class AbstractFilter implements IFilter
      */
     public function getConfig()
     {
-        return $this->config;
+        return $this->naviFilter->getConfig();
     }
 
     /**

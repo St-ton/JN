@@ -86,7 +86,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
                                 $oSuchergebnisse->GesamtanzahlArtikel = 0;
                             }
 
-                            $oSuchergebnisse = $NaviFilter->setFilterOptions($oSuchergebnisse, $AktuelleKategorie);
+                            $oSuchergebnisse = $NaviFilter->setFilterOptions($oSuchergebnisse, $AktuelleKategorie, true);
 //                            Shop::dbg($test->MerkmalFilter, true, 'MerkmalFilter:');
 //                            $oSuchergebnisse->MerkmalFilter = gibMerkmalFilterOptionen(
 //                                $FilterSQL,
@@ -150,7 +150,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
         $NaviFilter                          = Shop::buildNaviFilter($cParameter_arr);
         $AktuelleKategorie                   = new Kategorie($kKategorie);
 
-        $oSuchergebnisse->MerkmalFilter = $NaviFilter->setFilterOptions($oSuchergebnisse, $AktuelleKategorie)->MerkmalFilter;
+        $oSuchergebnisse->MerkmalFilter = $NaviFilter->setFilterOptions($oSuchergebnisse, $AktuelleKategorie, true)->MerkmalFilter;
 
         $nLimitN = ($NaviFilter->nSeite - 1) * $nArtikelProSeite;
     }

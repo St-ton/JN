@@ -111,15 +111,15 @@ class AuswahlAssistent
      */
     private function loadFromDB($cKey, $kKey, $kSprache, $bOnlyActive = true)
     {
-        $oDbResult = Shop::DB()->executeQueryPrepared("
-                SELECT *
+        $oDbResult = Shop::DB()->executeQueryPrepared(
+                'SELECT *
                     FROM tauswahlassistentort AS ao
                         JOIN tauswahlassistentgruppe AS ag
                             ON ao.kAuswahlAssistentGruppe = ag.kAuswahlAssistentGruppe
                                 AND ao.cKey = :ckey
                                 AND ao.kKey = :kkey
-                                AND ag.kSprache = :ksprache" .
-            ($bOnlyActive ? " AND ag.nAktiv = 1" : ""),
+                                AND ag.kSprache = :ksprache' .
+            ($bOnlyActive ? ' AND ag.nAktiv = 1' : ''),
             ['ckey' => $cKey, 'kkey' => $kKey, 'ksprache' => $kSprache],
             1
         );
@@ -136,11 +136,11 @@ class AuswahlAssistent
             $this->nAktiv                  = (int)$this->nAktiv;
 
             $oAuswahlAssistentFrageDB_arr = Shop::DB()->query(
-                "SELECT kAuswahlAssistentFrage
+                'SELECT kAuswahlAssistentFrage
                     FROM tauswahlassistentfrage
-                    WHERE kAuswahlAssistentGruppe = " . $this->kAuswahlAssistentGruppe . "
-                        " . ($bOnlyActive ? "AND nAktiv = 1" : "") . "
-                    ORDER BY nSort",
+                    WHERE kAuswahlAssistentGruppe = ' . $this->kAuswahlAssistentGruppe . '
+                        ' . ($bOnlyActive ? 'AND nAktiv = 1' : '') . '
+                    ORDER BY nSort',
                 2
             );
 
@@ -181,13 +181,10 @@ class AuswahlAssistent
             if (count($this->kSelection_arr) > 0) {
                 $cParameter_arr['MerkmalFilter_arr'] = $this->kSelection_arr;
             }
-        } else {
-            if (count($this->kSelection_arr) > 0) {
-                $cParameter_arr['kMerkmalWert'] = $this->kSelection_arr[0];
-
-                if (count($this->kSelection_arr) > 1) {
-                    $cParameter_arr['MerkmalFilter_arr'] = array_slice($this->kSelection_arr, 1);
-                }
+        } elseif (count($this->kSelection_arr) > 0) {
+            $cParameter_arr['kMerkmalWert'] = $this->kSelection_arr[0];
+            if (count($this->kSelection_arr) > 1) {
+                $cParameter_arr['MerkmalFilter_arr'] = array_slice($this->kSelection_arr, 1);
             }
         }
         $NaviFilter                           = Shop::buildNaviFilter($cParameter_arr);
@@ -196,8 +193,10 @@ class AuswahlAssistent
         $AktuelleKategorie                    = isset($cParameter_arr['kKategorie'])
             ? new Kategorie($cParameter_arr['kKategorie'])
             : null;
-        $oMerkmalFilter_arr                   = $NaviFilter->setFilterOptions($oSuchergebnisse,
-            $AktuelleKategorie)->MerkmalFilter;
+        $oMerkmalFilter_arr                   = $NaviFilter->setFilterOptions(
+            $oSuchergebnisse,
+            $AktuelleKategorie
+        )->MerkmalFilter;
 
         foreach ($oMerkmalFilter_arr as $oMerkmalFilter) {
             if (array_key_exists((int)$oMerkmalFilter->kMerkmal, $this->oFrage_assoc)) {
@@ -209,7 +208,6 @@ class AuswahlAssistent
                     // Used by old AWA
                     $oFrage->oMerkmalWert_arr = $oFrage->oWert_arr;
                 }
-
                 foreach ($oMerkmalFilter->oMerkmalWerte_arr as $oWert) {
                     $oWert->kMerkmalWert                       = (int)$oWert->kMerkmalWert;
                     $oWert->nAnzahl                            = (int)$oWert->nAnzahl;
@@ -218,7 +216,6 @@ class AuswahlAssistent
                 }
             }
         }
-
         $this->oNaviFilter = $NaviFilter;
 
         return $this;

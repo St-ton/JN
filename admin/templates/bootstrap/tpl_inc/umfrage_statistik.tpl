@@ -42,7 +42,7 @@
                                 </div>
                                 <div class="panel-body">
                                     <div id="payment">
-                                        <div id="tabellenLivesuche">
+                                        <div id="tabellenLivesuche" class="table-responsive">
                                             <table class="table">
                                                 <tr>
                                                     <th class="th-1" style="width: 5%;">{#umfrageQASing#}</th>
@@ -85,7 +85,7 @@
                                 <div class="panel-body">
                                     <div id="payment">
                                         <div id="tabellenLivesuche">
-                                            <table class="table">
+                                            <table class="table table-responsive">
                                                 <tr>
                                                     <th class="th-1" style="width: 20%;">{#umfrageQASing#}</th>
                                                     <th class="th-2" style="width: 60%;"></th>

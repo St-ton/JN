@@ -211,4 +211,41 @@ class TwoFA
     {
         return print_r($this->oUserTuple, true);
     }
+
+    /**
+     * @param $userName
+     * @return string
+     */
+    public static function getNewTwoFA($userName)
+    {
+        $oTwoFA = new TwoFA();
+        $oTwoFA->setUserByName($userName);
+
+        $oUserData           = new stdClass();
+        $oUserData->szSecret = $oTwoFA->createNewSecret()->getSecret();
+        $oUserData->szQRcode = $oTwoFA->getQRcode();
+
+        return json_encode($oUserData);
+    }
+
+    /**
+     * @param $userName
+     * @return string
+     */
+    public static function genTwoFAEmergencyCodes($userName)
+    {
+        $oTwoFA = new TwoFA();
+        $oTwoFA->setUserByName($userName);
+
+        $data            = new stdClass();
+        $data->loginName = $oTwoFA->getUserTuple()->cLogin;
+        $data->shopName  = $oTwoFA->getShopName();
+
+        $oTwoFAgenEmergCodes = new TwoFAEmergency();
+        $oTwoFAgenEmergCodes->removeExistingCodes($oTwoFA->getUserTuple());
+
+        $data->vCodes = $oTwoFAgenEmergCodes->createNewCodes($oTwoFA->getUserTuple());
+
+        return $data;
+    }
 }

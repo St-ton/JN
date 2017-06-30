@@ -48,6 +48,7 @@
                     <div class="panel-heading">
                         <h3 class="panel-title">{#management#}</h3>
                     </div>
+                    <div class="table-responsive">
                     <table id="cache-type-status" class="table list">
                         <thead>
                         <tr>
@@ -86,6 +87,7 @@
                         {/foreach}
                         </tbody>
                     </table>
+                    </div>
                     <div class="panel-footer">
                         <div class="input-container" style="max-width: 50%;">
                             <div class="input-group">

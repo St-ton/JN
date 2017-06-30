@@ -119,14 +119,10 @@ if (isset($_REQUEST['action']) && validateToken()) {
             $sort_arr  = isset($_REQUEST['sort']) ? $_REQUEST['sort'] : null;
             $aktiv_arr = isset($_REQUEST['aktiv']) ? $_REQUEST['aktiv'] : [];
             $boxCount  = count($box_arr);
-            for ($i = 0; $i < $boxCount; $i++) {
-                $idx = 'box-filter-' . $box_arr[$i];
-                $oBoxen->sortBox($box_arr[$i], $nPage, $sort_arr[$i], in_array($box_arr[$i], $aktiv_arr) ? true : false);
-                $oBoxen->filterBoxVisibility(
-                    (int)$box_arr[$i],
-                    $nPage,
-                    isset($_POST[$idx]) ? $_POST[$idx] : ''
-                );
+            foreach ($box_arr as $i => $kBox) {
+                $idx = 'box-filter-' . $kBox;
+                $oBoxen->sortBox($kBox, $nPage, $sort_arr[$i], in_array($kBox, $aktiv_arr));
+                $oBoxen->filterBoxVisibility((int)$kBox, $nPage, isset($_POST[$idx]) ? $_POST[$idx] : '');
             }
             // see jtlshop/jtl-shop/issues#544 && jtlshop/shop4#41
             if ($ePosition !== 'left' || (int)$nPage > 0) {

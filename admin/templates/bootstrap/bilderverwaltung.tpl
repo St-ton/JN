@@ -64,25 +64,17 @@
     function updateStats() {
         $('#cache-items tbody > tr').each(function (i, item) {
             var type = $(item).data('type');
-            loadStats(type, function (stats) {
+            ioCall('loadStats', [type], function (data) {
                 var totalCached = 0;
-                $('.item-total', item).text(stats.total);
-                $('.item-corrupted', item).text(stats.corrupted);
-                $('.item-total-size', item).text(formatSize(stats.totalSize));
+                $('.item-total', item).text(data.total);
+                $('.item-corrupted', item).text(data.corrupted);
+                $('.item-total-size', item).text(formatSize(data.totalSize));
 
                 $(['xs', 'sm', 'md', 'lg']).each(function (i, size) {
-                    totalCached += stats.generated[size];
+                    totalCached += data.generated[size];
                 });
                 $('.item-generated', item).text(Math.round(totalCached / 4, 0));
             });
-        });
-    }
-
-    function loadStats(type, callback) {
-        return ajaxCall('bilderverwaltung.php', {action : 'stats', type : type}, function (result, xhr) {
-            if (typeof callback === 'function') {
-                callback(result.data);
-            }
         });
     }
 
@@ -122,7 +114,7 @@
 
     function doCleanup(index) {
         lastTick = new Date().getTime();
-        var call = loadCleanup(index, function (result) {
+        ioCall('cleanupStorage', [index], function (result) {
             var items = result.deletes,
                 deleted = result.deletedImages,
                 total = result.total,
@@ -160,15 +152,6 @@
                 doCleanup(result.nextIndex);
             }
         });
-        $.when(call).done();
-    }
-
-    function loadCleanup(index, callback) {
-        return ajaxCall('bilderverwaltung.php', {action: 'cleanup_storage', index: index}, function (result, xhr) {
-            if (typeof callback === 'function') {
-                callback(result.data);
-            }
-        });
     }
 
     function showCleanupNotify(title, message) {
@@ -187,16 +170,14 @@
 
     function flush(param) {
         var type = (typeof param.data('type') !== 'undefined') ? param.data('type') : 'product';
-        return ajaxCall('bilderverwaltung.php', {action: 'clear', type: type, isAjax: true}, function (result, xhr) {
-            if (typeof result.data.success !== 'undefined') {
-                updateStats();
-                showGenerateNotify(result.data.success).update({
-                    progress: 100,
-                    message: '&nbsp;',
-                    type: 'success',
-                    title: result.data.success
-                });
-            }
+        return ioCall('clearImageCache', [type, true], function (result) {
+            updateStats();
+            showGenerateNotify(result.success).update({
+                progress: 100,
+                message: '&nbsp;',
+                type: 'success',
+                title: result.success
+            });
         });
     }
 
@@ -301,10 +282,8 @@
     });
 
     function loadGenerate(type, index, callback) {
-        return ajaxCall('bilderverwaltung.php', {action: 'cache', type: type, index: index}, function (result, xhr) {
-            if (typeof callback === 'function') {
-                callback(result.data);
-            }
+        return ioCall('generateImageCache', [type, index], function (result) {
+            callback(result);
         });
     }
 

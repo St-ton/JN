@@ -33,19 +33,19 @@
                 {if $oBox_arr|@count > 0}
                     <ul class="list-group">
                         <li class="boxRow">
-                            <div class="col-xs-3">
+                            <div class="col-sm-3 col-xs-4">
                                 <strong>{#boxTitle#}</strong>
                             </div>
-                            <div class="col-xs-2">
+                            <div class="col-sm-2 col-xs-3">
                                 <strong>{#boxType#}</strong>
                             </div>
-                            <div class="col-xs-3">
+                            <div class="col-sm-3 col-xs-4">
                                 <strong>{#boxLabel#}</strong>
                             </div>
-                            <div class="col-xs-2">
+                            <div class="col-sm-2 col-xs-6">
                                 <strong>{#boxSort#}</strong>
                             </div>
-                            <div class="col-xs-2">
+                            <div class="col-sm-2 col-xs-6">
                                 <strong>{#boxActions#}</strong>
                             </div>
                         </li>

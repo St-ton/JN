@@ -29,7 +29,7 @@
                         <tr>
                             <td></td>
                             <td class="item-name" colspan="2">
-                                {$oPosition->nAnzahl|replace_delim}&nbsp;&times;&nbsp;{$oPosition->cName|trans}
+                                {$oPosition->nAnzahl|replace_delim}&nbsp;&times;&nbsp;{$oPosition->cName|trans|escape:"htmlall"}
                             </td>
                             <td class="item-price">
                                 {$oPosition->cEinzelpreisLocalized[$NettoPreise][$smarty.session.cWaehrungName]}

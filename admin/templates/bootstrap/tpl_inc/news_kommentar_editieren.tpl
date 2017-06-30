@@ -19,18 +19,20 @@
             <div class="panel-heading">
                 <h3 class="panel-title">{$oNewsKommentar->cName} - {#newsCommentEdit#}</h3>
             </div>
-            <table class="list table" id="formtable">
-                <tr>
-                    <td><label for="cName">{#newsHeadline#}</label></td>
-                    <td><input id="cName" name="cName" class="form-control" type="text" value="{$oNewsKommentar->cName}" /></td>
-                </tr>
-                <tr>
-                    <td><label for="cKommentar">{#newsText#}</label></td>
-                    <td>
-                        <textarea id="cKommentar" class="ckeditor form-control" name="cKommentar" rows="15" cols="60">{$oNewsKommentar->cKommentar}</textarea>
-                    </td>
-                </tr>
-            </table>
+            <div class="table-responsive">
+                <table class="list table" id="formtable">
+                    <tr>
+                        <td><label for="cName">{#newsHeadline#}</label></td>
+                        <td><input id="cName" name="cName" class="form-control" type="text" value="{$oNewsKommentar->cName}" /></td>
+                    </tr>
+                    <tr>
+                        <td><label for="cKommentar">{#newsText#}</label></td>
+                        <td>
+                            <textarea id="cKommentar" class="ckeditor form-control" name="cKommentar" rows="15" cols="60">{$oNewsKommentar->cKommentar}</textarea>
+                        </td>
+                    </tr>
+                </table>
+            </div>
             <div class="panel-footer">
                 <span class="btn-group">
                     <button name="newskommentarsavesubmit" type="submit" value="{#newsSave#}" class="btn btn-primary"><i class="fa fa-save"></i> {#newsSave#}</button>

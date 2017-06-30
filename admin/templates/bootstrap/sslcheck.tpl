@@ -19,22 +19,19 @@
     {
         var url = $element.attr('href');
 
-        ajaxManagedCall(url, {}, function(result, error) {
+        ioManagedCall(adminPath, 'getSSLCheck', [], function(result, error) {
             var res = result.data;
-            
-            /*
-            if (res.status != 'READY') {
-                window.setTimeout(function() {
-                    check($element);
-                }, 2000);
-            }
-            */
-            
             console.log(res.data);
             $('#result').html(res.tpl);
         });
     }
 
+    /**
+     * @deprecated since 4.06
+     * @param url
+     * @param params
+     * @param callback
+     */
     function ajaxManagedCall(url, params, callback)
     {
         ajaxCall(url, params, function(result, xhr) {

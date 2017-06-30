@@ -179,7 +179,10 @@
 
         autoheight: function() {
             $('.row-eq-height').each(function(i, e) {
-                $(e).find('[class*="col-"] > *').responsiveEqualHeightGrid();
+                $(e).children('[class*="col-"]').children().responsiveEqualHeightGrid();
+            });
+            $('.row-eq-height.gallery > [class*="col-"]').each(function(i, e) {
+                $(e).height($('div', $(e)).outerHeight());
             });
         },
         
@@ -187,8 +190,10 @@
             $('[data-toggle="tooltip"]').tooltip();
         },
 
-        imagebox: function() {
-            $('.image-box').each(function(i, item) {
+        imagebox: function(wrapper) {
+            var $wrapper = (typeof wrapper === 'undefined' || wrapper.length === 0) ? $('#result-wrapper') : $(wrapper);
+
+            $('.image-box', $wrapper).each(function(i, item) {
                 var box = $(this),
                     img = box.find('img'),
                     src = img.data('src');
@@ -248,12 +253,12 @@
         },
         
         renderCaptcha: function(parameters) {
-            if (typeof parameters != 'undefined') {
+            if (typeof parameters !== 'undefined') {
                 this.options.captcha = 
                     $.extend({}, this.options.captcha, parameters);
             }
 
-            if (typeof grecaptcha == 'undefined' && !this.options.captcha.loaded) {
+            if (typeof grecaptcha === 'undefined' && !this.options.captcha.loaded) {
                 this.options.captcha.loaded = true;
                 var lang                    = document.documentElement.lang;
                 $.getScript("https://www.google.com/recaptcha/api.js?render=explicit&onload=g_recaptcha_callback&hl=" + lang);
@@ -370,6 +375,32 @@
             });
         },
 
+        checkout: function() {
+            // show only the first submit button (i.g. the button from payment plugin)
+            var $submits = $('#checkout-shipping-payment')
+                .closest('form')
+                .find('input[type="submit"]');
+            $submits.addClass('hidden');
+            $submits.first().removeClass('hidden');
+
+            $('input[name="Versandart"]', '#checkout-shipping-payment').change(function() {
+                var id    = parseInt($(this).val());
+                var $form = $(this).closest('form');
+
+                if (isNaN(id)) {
+                    return;
+                }
+
+                $form.find('fieldset, input[type="submit"]')
+                    .attr('disabled', true);
+
+                var url = 'bestellvorgang.php?kVersandart=' + id;
+                $.evo.extended().loadContent(url, function() {
+                    $.evo.extended().checkout();
+                }, null, true);
+            });
+        },
+
         register: function() {
             this.addSliderTouchSupport();
             this.productTabsPriceFlow();
@@ -384,28 +415,30 @@
             this.popover();
             this.preventDropdownToggle();
             this.smoothScroll();
+            this.checkout();
         },
         
-        loadContent: function(url, callback, error, animation) {
-            var that = this;
-            var $wrapper = $('#result-wrapper');
+        loadContent: function(url, callback, error, animation, wrapper) {
+            var that        = this;
+            var $wrapper    = (typeof wrapper === 'undefined' || wrapper.length === 0) ? $('#result-wrapper') : $(wrapper);
+            var ajaxOptions = {data: 'isAjax'};
             if (animation) {
                 $wrapper.addClass('loading');
             }
 
-            $.ajax(url, {data: 'isAjax'}).done(function(html) {
+            $.ajax(url, ajaxOptions).done(function(html) {
                 var $data = $(html);
                 if (animation) {
                     $data.addClass('loading');
                 }
                 $wrapper.replaceWith($data);
                 $wrapper = $data;
-                if (typeof callback == 'function') {
+                if (typeof callback === 'function') {
                     callback();
                 }
             })
             .fail(function() {
-                if (typeof error == 'function') {
+                if (typeof error === 'function') {
                     error();
                 }
             })
@@ -415,7 +448,7 @@
             });
         },
         
-        spinner: function() {
+        spinner: function(target) {
             var opts = {
               lines: 12             // The number of lines to draw
             , length: 7             // The length of each line
@@ -437,10 +470,13 @@
             , shadow: false         // Whether to render a shadow
             , hwaccel: false        // Whether to use hardware acceleration (might be buggy)
             , position: 'absolute'  // Element positioning
+            };
+
+            if (typeof target === 'undefined') {
+                target = document.getElementsByClassName('product-offer')[0];
             }
-            var target = document.getElementsByClassName('product-offer')[0];
-            var elem = new Spinner(opts).spin(target);
-            return elem;
+
+            return new Spinner(opts).spin(target);
         },
 
         trigger: function(event, args) {

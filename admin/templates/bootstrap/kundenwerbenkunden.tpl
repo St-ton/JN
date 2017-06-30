@@ -28,7 +28,7 @@
                     <input type="hidden" name="nichtreggt_loeschen" value="1" />
                     <input type="hidden" name="tab" value="einladungen" />
                     <div id="payment">
-                        <div id="tabellenLivesuche">
+                        <div id="tabellenLivesuche" class="table-responsive">
                             <table class="table">
                                 <tr>
                                     <th class="check"></th>
@@ -67,7 +67,7 @@
             {if $oKwKReg_arr && $oKwKReg_arr|@count > 0}
                 {include file='tpl_inc/pagination.tpl' oPagination=$oPagiReg cAnchor='registrierung'}
                 <div id="payment">
-                    <div id="tabellenLivesuche">
+                    <div id="tabellenLivesuche" class="table-responsive">
                         <table class="table">
                             <tr>
                                 <th class="tleft">{#kundenwerbenkundenRegName#}</th>
@@ -98,7 +98,7 @@
             {if $oKwKBestandBonus_arr|@count > 0 && $oKwKBestandBonus_arr}
                 {include file='tpl_inc/pagination.tpl' oPagination=$oPagiPraemie cAnchor='praemie'}
                 <div id="payment">
-                    <div id="tabellenLivesuche">
+                    <div id="tabellenLivesuche" class="table-responsive">
                         <table class="table">
                             <tr>
                                 <th class="tleft">{#kundenwerbenkundenFromReg#}</th>
@@ -131,9 +131,9 @@
 
 <script type="text/javascript">
     {foreach name=conf from=$oConfig_arr item=oConfig}
-    {if $oConfig->cWertName|strpos:"_bestandskundenguthaben" || $oConfig->cWertName|strpos:"_neukundenguthaben"}
-    xajax_getCurrencyConversionAjax(0, document.getElementById('{$oConfig->cWertName}').value, 'EinstellungAjax_{$oConfig->cWertName}');
-    {/if}
+        {if $oConfig->cWertName|strpos:"_bestandskundenguthaben" || $oConfig->cWertName|strpos:"_neukundenguthaben"}
+            ioCall('getCurrencyConversion', [0, $('#{$oConfig->cWertName}').val(), 'EinstellungAjax_{$oConfig->cWertName}']);
+        {/if}
     {/foreach}
 </script>
 {include file='tpl_inc/footer.tpl'}

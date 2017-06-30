@@ -3949,12 +3949,6 @@ class Artikel
         if (isset($oArtikelOptionen->nProductBundle) && $oArtikelOptionen->nProductBundle) {
             $this->holeProductBundle();
         }
-        if ($this->cVPE === 'Y' && $this->fVPEWert > 0 && $this->cVPEEinheit && !empty($this->Preise)) {
-            // Grundpreis beim Artikelpreis
-            $this->baueVPE();
-            // Grundpreis bei Staffelpreise
-            $this->baueStaffelgrundpreis();
-        }
         // Kategorie
         if (isset($oArtikelOptionen->nKategorie) && $oArtikelOptionen->nKategorie == 1) {
             $kArtikel             = ($this->kVaterArtikel > 0) ? $this->kVaterArtikel : $this->kArtikel;
@@ -4190,6 +4184,12 @@ class Artikel
         $cacheTags = [CACHING_GROUP_ARTICLE . '_' . $this->kArtikel, CACHING_GROUP_ARTICLE];
         $basePrice = clone $this->Preise;
         $this->rabattierePreise();
+        if ($this->cVPE === 'Y' && $this->fVPEWert > 0 && $this->cVPEEinheit && !empty($this->Preise)) {
+            // Grundpreis beim Artikelpreis
+            $this->baueVPE();
+            // Grundpreis bei Staffelpreise
+            $this->baueStaffelgrundpreis();
+        }
         // Versandkostenfrei-Länder aufgrund rabattierter Preise neu setzen
         $this->taxData['shippingFreeCountries'] = $this->gibMwStVersandLaenderString();
         executeHook(HOOK_ARTIKEL_CLASS_FUELLEARTIKEL, [

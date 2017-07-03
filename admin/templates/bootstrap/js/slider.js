@@ -228,15 +228,12 @@ function typeChanged(type) {
         case '1':
             keyChanged('kArtikel');
             break;
-        case '24':
-            keyChanged('kHersteller');
-            break;
         case '31':
             keyChanged('kLink');
             break;
         default:
             $('select[name="cKey"]').val('');
-            $('.nl .key').hide();
+            $('.nl').hide();
             $('.nl input[type="text"], .nl input[type="hidden"]').each(function () {
                 $(this).val('');
             });
@@ -245,6 +242,12 @@ function typeChanged(type) {
 }
 
 function keyChanged(key) {
+    if (key !== '') {
+        $('.nl').show();
+    } else {
+        $('.nl').hide();
+    }
+
     $('.key').hide();
     $('#key' + key).show();
 }

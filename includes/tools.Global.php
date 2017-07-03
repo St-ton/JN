@@ -2784,8 +2784,8 @@ function berechneVersandpreis($versandart, $cISO, $oZusatzArtikel, $Artikel = 0)
                 ? $Artikel->fGewicht
                 : $_SESSION['Warenkorb']->getWeight();
             $warenkorbgewicht += $oZusatzArtikel->fGewicht;
-            $versand = Shop::DB()->query("
-              SELECT *
+            $versand = Shop::DB()->query(
+              "SELECT *
                   FROM tversandartstaffel 
                   WHERE kVersandart = " . (int)$versandart->kVersandart . " 
                       AND fBis >= " . $warenkorbgewicht . " 
@@ -2803,8 +2803,8 @@ function berechneVersandpreis($versandart, $cISO, $oZusatzArtikel, $Artikel = 0)
                 ? $Artikel->Preise->fVKNetto
                 : $_SESSION['Warenkorb']->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true);
             $warenkorbwert += $oZusatzArtikel->fWarenwertNetto;
-            $versand = Shop::DB()->query("
-                SELECT *
+            $versand = Shop::DB()->query(
+                "SELECT *
                     FROM tversandartstaffel 
                     WHERE kVersandart = " . (int)$versandart->kVersandart . " 
                         AND fBis >= " . $warenkorbwert . " 
@@ -2825,8 +2825,8 @@ function berechneVersandpreis($versandart, $cISO, $oZusatzArtikel, $Artikel = 0)
                     : 0;
             }
             $artikelanzahl += $oZusatzArtikel->fAnzahl;
-            $versand = Shop::DB()->query("
-                SELECT *
+            $versand = Shop::DB()->query(
+                "SELECT *
                     FROM tversandartstaffel 
                     WHERE kVersandart = " . (int)$versandart->kVersandart . " 
                         AND fBis >= " . $artikelanzahl . " 
@@ -2844,8 +2844,10 @@ function berechneVersandpreis($versandart, $cISO, $oZusatzArtikel, $Artikel = 0)
             break;
     }
     //artikelabhaengiger Versand?
-    if ($versandart->cNurAbhaengigeVersandart === 'Y' &&
-        (!empty($Artikel->FunktionsAttribute['versandkosten']) || !empty($Artikel->FunktionsAttribute['versandkosten gestaffelt']))){
+    if ($versandart->cNurAbhaengigeVersandart === 'Y'
+        && (!empty($Artikel->FunktionsAttribute['versandkosten'])
+            || !empty($Artikel->FunktionsAttribute['versandkosten gestaffelt']))
+    ) {
         $fArticleSpecific = VersandartHelper::gibArtikelabhaengigeVersandkosten($cISO, $Artikel, 1);
         $preis += $fArticleSpecific->fKosten;
     }
@@ -2906,6 +2908,8 @@ function berechneVersandpreis($versandart, $cISO, $oZusatzArtikel, $Artikel = 0)
 }
 
 /**
+ * calculate shipping costs for exports
+ *
  * @param string  $cISO
  * @param Artikel $Artikel
  * @param int     $barzahlungZulassen
@@ -2922,13 +2926,15 @@ function gibGuenstigsteVersandkosten($cISO, $Artikel, $barzahlungZulassen, $kKun
                     OR cVersandklassen RLIKE '^([0-9 -]* )?" . $Artikel->kVersandklasse . " ')
                 AND (cKundengruppen = '-1' 
                     OR cKundengruppen RLIKE '^([0-9;]*;)?" . $kKundengruppe . ";')";
-    //artikelabhaengige Versandarten nur laden und prüfen wenn der Artikel das entsprechende Funktionasattribut hat
-    if (empty($Artikel->FunktionsAttribute['versandkosten']) && empty($Artikel->FunktionsAttribute['versandkosten gestaffelt'])) {
+    // artikelabhaengige Versandarten nur laden und prüfen wenn der Artikel das entsprechende Funktionasattribut hat
+    if (empty($Artikel->FunktionsAttribute['versandkosten'])
+        && empty($Artikel->FunktionsAttribute['versandkosten gestaffelt'])
+    ) {
         $query .= " AND cNurAbhaengigeVersandart = 'N'";
     }
     $versandarten = Shop::DB()->query($query, 2);
-    $cnt = count($versandarten);
-    for ($i = 0; $i < $cnt; $i++) {
+    $cnt          = count($versandarten);
+    for ($i = 0; $i < $cnt; ++$i) {
         if (!$barzahlungZulassen) {
             $za_bar = Shop::DB()->select(
                 'tversandartzahlungsart',
@@ -2948,7 +2954,7 @@ function gibGuenstigsteVersandkosten($cISO, $Artikel, $barzahlungZulassen, $kKun
         }
     }
 
-    return ($versandpreis === 99999) ? -1 : $versandpreis;
+    return $versandpreis === 99999 ? -1 : $versandpreis;
 }
 
 /**
@@ -3012,7 +3018,7 @@ function gibBelieferbareLaender($kKundengruppe = 0, $bIgnoreSetting = false, $bF
                     return 0;
                 }
 
-                return ($a < $b) ? -1 : 1;
+                return $a < $b ? -1 : 1;
             }
         );
     }

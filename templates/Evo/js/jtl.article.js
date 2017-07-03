@@ -1122,7 +1122,7 @@
 
             if (typeof this.modalView === 'undefined' || this.modalView === null) {
                 this.modalView = $(
-                    '<div id="' + this.options.modal.id + '" class="modal fade" role="dialog" >' +
+                    '<div id="' + this.options.modal.id + '" class="modal fade" role="dialog" tabindex="-1" >' +
                     '   <div class="modal-dialog modal-lg">' +
                     '       <div class="modal-content">' +
                     '           <div class="modal-header">' +

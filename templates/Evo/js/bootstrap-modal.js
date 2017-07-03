@@ -440,6 +440,14 @@
             // Lazy loading
             var $ref = getModalInstance();
 
+            if (typeof params.keyboard !== 'undefined') {
+                $ref.attr('data-keyboard', params.keyboard);
+            }
+
+            if (typeof params.tabindex !== 'undefined') {
+                $ref.attr('tabindex', params.tabindex);
+            }
+
             //#region change size
             $ref.find(".modal-dialog")
                 .removeClass("modal-sm modal-lg")

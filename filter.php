@@ -121,8 +121,8 @@ if (isset($Einstellungen['artikeluebersicht']['artikelubersicht_bestseller_grupp
         : 10;
     $bestsellers = Bestseller::buildBestsellers(
         $products,
-        $_SESSION['Kundengruppe']->kKundengruppe,
-        $_SESSION['Kundengruppe']->darfArtikelKategorienSehen,
+        Session::CustomerGroup()->getID(),
+        Session::CustomerGroup()->mayViewCategories(),
         false,
         $limit,
         $minsells

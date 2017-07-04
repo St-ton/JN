@@ -1023,7 +1023,7 @@ class Artikel
                     FROM tkategorieartikel
                     LEFT JOIN tkategoriesichtbarkeit 
                         ON tkategoriesichtbarkeit.kKategorie = tkategorieartikel.kKategorie
-                        AND tkategoriesichtbarkeit.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
+                        AND tkategoriesichtbarkeit.kKundengruppe = " . Session::CustomerGroup()->getID() . "
                     JOIN tkategorie 
                         ON tkategorie.kKategorie = tkategorieartikel.kKategorie
                     WHERE tkategoriesichtbarkeit.kKategorie IS NULL
@@ -1067,9 +1067,9 @@ class Artikel
     public function holPreise($kKundengruppe, $oArtikelTMP)
     {
         if (!$kKundengruppe) {
-            $kKundengruppe = $_SESSION['Kundengruppe']->kKundengruppe;
+            $kKundengruppe = Session::CustomerGroup()->getID();
         }
-        if (isset($_SESSION['Kundengruppe']->darfPreiseSehen) && !$_SESSION['Kundengruppe']->darfPreiseSehen) {
+        if (!Session::CustomerGroup()->mayViewPrices()) {
             $this->Preise = null;
 
             return $this;
@@ -1086,9 +1086,8 @@ class Artikel
      */
     private function rabattierePreise()
     {
-        $kKundengruppe = $_SESSION['Kundengruppe']->kKundengruppe;
         if ($this->Preise !== null && method_exists($this->Preise, 'rabbatierePreise')) {
-            $this->Preise->rabbatierePreise($this->getDiscount($kKundengruppe, $this->kArtikel))->localizePreise();
+            $this->Preise->rabbatierePreise($this->getDiscount(Session::CustomerGroup()->getID(), $this->kArtikel))->localizePreise();
         }
 
         return $this;
@@ -1118,7 +1117,7 @@ class Artikel
      */
     public function gibPreis($anzahl, $Eigenschaft_arr, $kKundengruppe = 0)
     {
-        if (!$_SESSION['Kundengruppe']->darfPreiseSehen) {
+        if (!Session::CustomerGroup()->mayViewPrices()) {
             return null;
         }
         if ($this->kArtikel === null) {
@@ -1126,7 +1125,7 @@ class Artikel
         }
         $kKundengruppe = (int)$kKundengruppe;
         if (!$kKundengruppe) {
-            $kKundengruppe = (int)$_SESSION['Kundengruppe']->kKundengruppe;
+            $kKundengruppe = Session::CustomerGroup()->getID();
         }
         $kKunde       = isset($_SESSION['Kunde']) ? (int)$_SESSION['Kunde']->kKunde : 0;
         $this->Preise = new Preise($kKundengruppe, $this->kArtikel, $kKunde, (int)$this->kSteuerklasse);
@@ -1143,7 +1142,7 @@ class Artikel
                 $preis = $fPreis;
             }
         }
-        $nettopreise = ((int)$_SESSION['Kundengruppe']->nNettoPreise === 1) ? 1 : 0;
+        $nettopreise = Session::CustomerGroup()->useNetPrices();
         // Ticket #1247
         if (!$nettopreise) {
             //$preis = berechneBrutto($preis,gibUst($this->kSteuerklasse))/((100+gibUst($this->kSteuerklasse))/100);
@@ -1187,7 +1186,7 @@ class Artikel
                     $aufpreis   = $EW_aufpreis->fAufpreisNetto * ((100 - $fMaxRabatt) / 100);
                 }
                 // Ticket #1247
-                $aufpreis = (!$nettopreise)
+                $aufpreis = !$nettopreise
                     ? berechneBrutto($aufpreis, gibUst($this->kSteuerklasse), 4) / ((100 + gibUst($this->kSteuerklasse)) / 100)
                     : round($aufpreis, 4);
 
@@ -1923,7 +1922,7 @@ class Artikel
     public function holVariationen($kKundengruppe = 0, $kSprache = 0, $nVariationKombi = 0)
     {
         if (!$kKundengruppe) {
-            $kKundengruppe = $_SESSION['Kundengruppe']->kKundengruppe;
+            $kKundengruppe = Session::CustomerGroup()->getID();
         }
         if (!$kSprache) {
             $kSprache = Shop::getLanguage();
@@ -2295,7 +2294,7 @@ class Artikel
                         $this->Variationen[$nZaehler]->Werte[$i]->cPfadNormalFull = $shopURL . PFAD_VARIATIONSBILDER_NORMAL . $oVariationTMP->cPfad;
                         $this->Variationen[$nZaehler]->Werte[$i]->cPfadGrossFull  = $shopURL . PFAD_VARIATIONSBILDER_GROSS . $oVariationTMP->cPfad;
                     }
-                    if (empty($_SESSION['Kundengruppe']->darfPreiseSehen)) {
+                    if (!Session::CustomerGroup()->mayViewPrices()) {
                         unset(
                             $this->Variationen[$nZaehler]->Werte[$i]->fAufpreisNetto,
                             $this->Variationen[$nZaehler]->Werte[$i]->cAufpreisLocalized,
@@ -3495,21 +3494,22 @@ class Artikel
             return null;
         }
         if (!$kKundengruppe) {
-            if (!isset($_SESSION['Kundengruppe']) || !$_SESSION['Kundengruppe']->kKundengruppe) {
-                $conf                                                 = Shop::getSettings([CONF_GLOBAL]);
-                $_SESSION['Kundengruppe']                             = Kundengruppe::getDefault();
-                $_SESSION['Kundengruppe']->darfPreiseSehen            = 1;
-                $_SESSION['Kundengruppe']->darfArtikelKategorienSehen = 1;
+            if (!isset($_SESSION['Kundengruppe']) || Session::CustomerGroup()->getID() === 0) {
+                $conf          = Shop::getSettings([CONF_GLOBAL]);
+                $customerGroup = (new Kundengruppe())
+                    ->loadDefaultGroup()
+                    ->setMayViewPrices(1)
+                    ->setMayViewCategories(1);
                 if ((int)$conf['global']['global_sichtbarkeit'] === 2) {
-                    $_SESSION['Kundengruppe']->darfPreiseSehen = 0;
+                    $customerGroup->setMayViewPrices(0);
                 }
                 if ((int)$conf['global']['global_sichtbarkeit'] === 3) {
-                    $_SESSION['Kundengruppe']->darfPreiseSehen            = 0;
-                    $_SESSION['Kundengruppe']->darfArtikelKategorienSehen = 0;
+                    $customerGroup->setMayViewPrices(0)->setMayViewCategories(0);
                 }
-                $_SESSION['Kundengruppe']->Attribute = Kundengruppe::getAttributes($_SESSION['Kundengruppe']->kKundengruppe);
+                $customerGroup->initAttributes();
+                $_SESSION['Kundengruppe'] = $customerGroup;
             }
-            $kKundengruppe = (int)$_SESSION['Kundengruppe']->kKundengruppe;
+            $kKundengruppe = Session::CustomerGroup()->getID();
         } else {
             $kKundengruppe = (int)$kKundengruppe;
             // Holt eine neue Kundengruppe und setzt diese auch gleichzeitig in die Session
@@ -3998,7 +3998,7 @@ class Artikel
             $this->oVariationKombiKinderAssoc_arr = $this->holeVariationKombiKinderAssoc($kKundengruppe, $kSprache);
         }
         $this->cMwstVersandText = $this->gibMwStVersandString(
-            isset($_SESSION['Kundengruppe']->nNettoPreise) ? $_SESSION['Kundengruppe']->nNettoPreise : 0
+            isset($_SESSION['Kundengruppe']->nNettoPreise) ? Session::CustomerGroup()->useNetPrices() : false
         );
         // Download Dateien
         $this->oDownload_arr = [];
@@ -4076,7 +4076,7 @@ class Artikel
 
             if (is_array($oPreisanzeigeConf_arr) && count($oPreisanzeigeConf_arr) > 0) {
                 $strVKLocalized = isset($_SESSION['Kundengruppe']->nNettoPreise)
-                    ? $this->Preise->cVKLocalized[$_SESSION['Kundengruppe']->nNettoPreise]
+                    ? $this->Preise->cVKLocalized[Session::CustomerGroup()->getNettoPreise()]
                     : $this->Preise->cVKLocalized[0];
                 //$strVKLocalized = $this->Preise->cVKLocalized[0];
                 $strVKLocalized = StringHandler::htmlentitydecode($strVKLocalized);
@@ -4234,7 +4234,7 @@ class Artikel
         if ($kArtikel > 0) {
             $kArtikelKey = (int)$kArtikel;
         }
-        $kKdgKey = $_SESSION['Kundengruppe']->kKundengruppe;
+        $kKdgKey = Session::CustomerGroup()->getID();
         if ($kKundengruppe > 0) {
             $kKdgKey = (int)$kKundengruppe;
         }
@@ -5044,8 +5044,8 @@ class Artikel
             if (!isset($this->SieSparenX)) {
                 $this->SieSparenX = new stdClass();
             }
-            if ($_SESSION['Kundengruppe']->darfPreiseSehen) {
-                if ($_SESSION['Kundengruppe']->nNettoPreise) {
+            if (Session::CustomerGroup()->mayViewPrices()) {
+                if (Session::CustomerGroup()->useNetPrices()) {
                     $this->fUVP                             /= (1 + gibUst($this->kSteuerklasse) / 100);
                     $this->SieSparenX->anzeigen             = $anzeigen;
                     $this->SieSparenX->nProzent             = round((($this->fUVP - $this->Preise->fVKNetto) * 100) / $this->fUVP, 2);
@@ -5122,6 +5122,7 @@ class Artikel
         if ($this->Preise->fVKNetto === null) {
             $this->Preise->fVKNetto = 0;
         }
+        $customerGroupID = Session::CustomerGroup()->getID();
         // cheapest shipping except shippings that offer cash payment
         $shipping = Shop::DB()->query(
             "SELECT va.kVersandart, IF(vas.fPreis IS NOT NULL, vas.fPreis, va.fPreis) AS minPrice, va.nSort
@@ -5132,7 +5133,7 @@ class Artikel
                 AND (va.cVersandklassen = '-1'
                     OR va.cVersandklassen RLIKE '^([0-9 -]* )?{$this->kVersandklasse} ')
                 AND (va.cKundengruppen = '-1'
-                    OR va.cKundengruppen RLIKE '^([0-9;]*;)?{$_SESSION['Kundengruppe']->kKundengruppe};')
+                    OR va.cKundengruppen RLIKE '^([0-9;]*;)?{$customerGroupID};')
                 AND va.kVersandart NOT IN (
                     SELECT vaza.kVersandart
                         FROM tversandartzahlungsart vaza
@@ -5204,7 +5205,7 @@ class Artikel
             $resetArray           = true;
             $tmp_oStueckliste_arr = $this->oStueckliste_arr;
             unset($this->oStueckliste_arr);
-            $this->holeStueckliste($_SESSION['Kundengruppe']->kKundengruppe, true);
+            $this->holeStueckliste(Session::CustomerGroup()->getID(), true);
         }
         if (!empty($this->oStueckliste_arr) && !empty($this->kStueckliste)) {
             foreach ($this->oStueckliste_arr as $piece) {
@@ -5555,11 +5556,11 @@ class Artikel
         }
         $return['kArtikelXSellerKey_arr'] = $kArtikelXSellerKey_arr;
         if ($kArtikel > 0) {
+            $customerGroupID = Session::CustomerGroup()->getID();
             if ((int)$conf['artikeldetails']['artikeldetails_aehnlicheartikel_anzahl'] > 0) {
                 $cLimit = " LIMIT " . (int)$conf['artikeldetails']['artikeldetails_aehnlicheartikel_anzahl'];
             }
             $lagerFilter           = gibLagerfilter();
-            $kundenGruppe          = (int)$_SESSION['Kundengruppe']->kKundengruppe;
             $return['oArtikelArr'] = Shop::DB()->query(
                 "SELECT merkmalartikel.kArtikel, merkmalartikel.kVaterArtikel
                     FROM (
@@ -5572,7 +5573,7 @@ class Artikel
                             AND (tartikel.nIstVater = 1 OR tartikel.kEigenschaftKombi = 0)
                         LEFT JOIN tartikelsichtbarkeit 
                             ON tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
-                            AND tartikelsichtbarkeit.kKundengruppe = {$kundenGruppe}
+                            AND tartikelsichtbarkeit.kKundengruppe = {$customerGroupID}
                         WHERE tartikelsichtbarkeit.kArtikel IS NULL
                             AND tartikelmerkmal.kArtikel != {$kArtikel}
                             {$lagerFilter}
@@ -5602,7 +5603,7 @@ class Artikel
                             AND tsuchcachetreffer.kArtikel != " . $kArtikel . "
                         LEFT JOIN tartikelsichtbarkeit 
                             ON tsuchcachetreffer.kArtikel = tartikelsichtbarkeit.kArtikel
-                            AND tartikelsichtbarkeit.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
+                            AND tartikelsichtbarkeit.kKundengruppe = " . $customerGroupID . "
                         JOIN tartikel 
                             ON tartikel.kArtikel = tsuchcachetreffer.kArtikel
                             AND tartikel.kVaterArtikel != " . $kArtikel . "
@@ -5628,7 +5629,7 @@ class Artikel
                             AND ttagartikel.kArtikel != " . $kArtikel . "
                         LEFT JOIN tartikelsichtbarkeit 
                             ON ttagartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                            AND tartikelsichtbarkeit.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
+                            AND tartikelsichtbarkeit.kKundengruppe = " . $customerGroupID . "
                         JOIN tartikel 
                             ON tartikel.kArtikel = ttagartikel.kArtikel
                             AND tartikel.kVaterArtikel != " . $kArtikel . "
@@ -5702,7 +5703,7 @@ class Artikel
             $kArtikel = $this->kArtikel;
         }
         if (!$kKundengruppe) {
-            $kKundengruppe = $_SESSION['Kundengruppe']->kKundengruppe;
+            $kKundengruppe = Session::CustomerGroup()->getID();
         }
         $kArtikel      = (int)$kArtikel;
         $kKundengruppe = (int)$kKundengruppe;
@@ -5729,26 +5730,19 @@ class Artikel
             }
         }
         // Existiert für diese Kundengruppe ein Rabatt?
-        $kdgrp = (isset($_SESSION['Kundengruppe']->fRabatt) &&
-            $_SESSION['Kundengruppe']->kKundengruppe == $kKundengruppe)
+        $kdgrp = (isset($_SESSION['Kundengruppe']->fRabatt)
+            && Session::CustomerGroup()->getID() === $kKundengruppe)
             ? $_SESSION['Kundengruppe']
-            : Shop::DB()->select(
-                'tkundengruppe',
-                'kKundengruppe', $kKundengruppe,
-                null, null,
-                null, null,
-                false,
-                'fRabatt'
-            );
-        if (isset($kdgrp->fRabatt) && $kdgrp->fRabatt > 0) {
-            $Rabatt_arr[] = $kdgrp->fRabatt;
+            : new Kundengruppe($kKundengruppe);
+        if ($kdgrp->getRabatt() > 0) {
+            $Rabatt_arr[] = $kdgrp->getRabatt();
         }
         // Existiert für diesen Kunden ein Rabatt?
         if (
-            array_key_exists('Kunde', $_SESSION) &&
-            isset($_SESSION['Kunde']->kKunde) &&
-            $_SESSION['Kunde']->kKunde > 0 &&
-            $_SESSION['Kunde']->fRabatt > 0
+            array_key_exists('Kunde', $_SESSION)
+            && isset($_SESSION['Kunde']->kKunde)
+            && $_SESSION['Kunde']->kKunde > 0
+            && $_SESSION['Kunde']->fRabatt > 0
         ) {
             $Rabatt_arr[] = $_SESSION['Kunde']->fRabatt;
         }
@@ -5786,21 +5780,21 @@ class Artikel
     }
 
     /**
-     * @param int $NettoPreise
+     * @param int|bool $NettoPreise
      * @return string
      */
     public function gibMwStVersandString($NettoPreise)
     {
         // Standards
         if (!isset($_SESSION['Kundengruppe'])) {
-            $_SESSION['Kundengruppe'] = Kundengruppe::getDefault();
-            $NettoPreise              = $_SESSION['Kundengruppe']->nNettoPreise;
+            $_SESSION['Kundengruppe'] = (new Kundengruppe())->loadDefaultGroup();
+            $NettoPreise              = Session::CustomerGroup()->useNetPrices();
         }
         if (!isset($_SESSION['Link_Versandseite'])) {
             setzeLinks();
         }
-        $NettoPreise = (int)$NettoPreise;
-        $inklexkl    = ($NettoPreise === 1)
+        $NettoPreise = (bool)$NettoPreise;
+        $inklexkl    = $NettoPreise === true
             ? Shop::Lang()->get('excl', 'productDetails')
             : Shop::Lang()->get('incl', 'productDetails');
         $mwst        = $this->mwstFormat(gibUst($this->kSteuerklasse));
@@ -5881,10 +5875,10 @@ class Artikel
     public function gibMwStVersandLaenderString($bString = true)
     {
         if (!isset($_SESSION['Kundengruppe'])) {
-            $_SESSION['Kundengruppe'] = Kundengruppe::getDefault();
+            $_SESSION['Kundengruppe'] = (new Kundengruppe())->loadDefaultGroup();
         }
         $conf          = Shop::getSettings([CONF_GLOBAL]);
-        $kKundengruppe = $_SESSION['Kundengruppe']->kKundengruppe;
+        $kKundengruppe = Session::CustomerGroup()->getID();
         if (isset($_SESSION['Kunde']->kKundengruppe) && $_SESSION['Kunde']->kKundengruppe > 0) {
             $kKundengruppe = $_SESSION['Kunde']->kKundengruppe;
         }
@@ -6086,15 +6080,15 @@ class Artikel
                 $cGlobalMetaTitle = ' - ' . $oGlobaleMetaAngabenAssoc_arr[Shop::$kSprache]->Title;
             }
         }
-        if ($this->Preise->fVK[$_SESSION['Kundengruppe']->nNettoPreise] > 0 &&
-            $conf['metaangaben']['global_meta_title_preis'] === 'Y' &&
-            isset(
-                $_SESSION['Kundengruppe']->nNettoPreise,
-                $this->Preise->fVK[$_SESSION['Kundengruppe']->nNettoPreise],
-                $this->Preise->cVKLocalized[$_SESSION['Kundengruppe']->nNettoPreise]
+        $idx = Session::CustomerGroup()->getNettoPreise();
+        if ($conf['metaangaben']['global_meta_title_preis'] === 'Y' 
+            && isset(
+                $this->Preise->fVK[$idx],
+                $this->Preise->cVKLocalized[$idx]
             )
+            && $this->Preise->fVK[$idx] > 0
         ) {
-            $cPreis = ', ' . $this->Preise->cVKLocalized[$_SESSION['Kundengruppe']->nNettoPreise];
+            $cPreis = ', ' . $this->Preise->cVKLocalized[$idx];
         }
         if (!empty($this->AttributeAssoc[ART_ATTRIBUT_METATITLE])) {
             return $this->AttributeAssoc[ART_ATTRIBUT_METATITLE] . $cGlobalMetaTitle . $cPreis;
@@ -6280,11 +6274,11 @@ class Artikel
      */
     public function getShippingAndTaxData()
     {
-        $net = isset($_SESSION['Kundengruppe']->nNettoPreise) ? $_SESSION['Kundengruppe']->nNettoPreise : 0;
+        $net = isset($_SESSION['Kundengruppe']->nNettoPreise) ? Session::CustomerGroup()->useNetPrices() : false;
         // Standards
         if (!isset($_SESSION['Kundengruppe'])) {
-            $_SESSION['Kundengruppe'] = Kundengruppe::getDefault();
-            $net                      = $_SESSION['Kundengruppe']->nNettoPreise;
+            $_SESSION['Kundengruppe'] = (new Kundengruppe())->loadDefaultGroup();
+            $net                      = Session::CustomerGroup()->useNetPrices();
         }
         if (!isset($_SESSION['Link_Versandseite'])) {
             setzeLinks();
@@ -6298,7 +6292,7 @@ class Artikel
         }
 
         return [
-            'net'                   => (int)$net === 1,
+            'net'                   => $net,
             'text'                  => $taxText,
             'tax'                   => $this->mwstFormat(gibUst($this->kSteuerklasse)),
             'shippingFreeCountries' => $this->gibMwStVersandLaenderString(),

@@ -81,7 +81,7 @@ class ArtikelHelper
     public static function getArticleForParent($kArtikel)
     {
         $kArtikel            = (int)$kArtikel;
-        $kKundengruppe       = (int)$_SESSION['Kundengruppe']->kKundengruppe;
+        $kKundengruppe       = Session::CustomerGroup()->getID();
         $properties          = self::getChildPropertiesForParent($kArtikel, $kKundengruppe);
         $kVariationKombi_arr = [];
         $nGueltig            = 1;
@@ -224,7 +224,7 @@ class ArtikelHelper
                         AND tartikel.kArtikel = " . (int)$kArtikel . "
                     LEFT JOIN tartikelsichtbarkeit
                         ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                        AND tartikelsichtbarkeit.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
+                        AND tartikelsichtbarkeit.kKundengruppe = " . Session::CustomerGroup()->getID() . "
                     WHERE tartikelsichtbarkeit.kArtikel IS NULL
                     ORDER BY tartikel.kArtikel", 2
             );
@@ -283,10 +283,10 @@ class ArtikelHelper
                     FROM teigenschaftwert
                     LEFT JOIN teigenschaftwertsichtbarkeit
                         ON teigenschaftwertsichtbarkeit.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
-                        AND teigenschaftwertsichtbarkeit.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
+                        AND teigenschaftwertsichtbarkeit.kKundengruppe = " . Session::CustomerGroup()->getID() . "
                     JOIN teigenschaft ON teigenschaft.kEigenschaft = teigenschaftwert.kEigenschaft
                     LEFT JOIN teigenschaftsichtbarkeit ON teigenschaft.kEigenschaft = teigenschaftsichtbarkeit.kEigenschaft
-                        AND teigenschaftsichtbarkeit.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
+                        AND teigenschaftsichtbarkeit.kKundengruppe = " . Session::CustomerGroup()->getID() . "
                     " . $oSQLEigenschaft->cJOIN . "
                     " . $oSQLEigenschaftWert->cJOIN . "
                     WHERE teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL
@@ -300,7 +300,7 @@ class ArtikelHelper
                     FROM teigenschaft
                     LEFT JOIN teigenschaftsichtbarkeit
                         ON teigenschaft.kEigenschaft = teigenschaftsichtbarkeit.kEigenschaft
-                        AND teigenschaftsichtbarkeit.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
+                        AND teigenschaftsichtbarkeit.kKundengruppe = " . Session::CustomerGroup()->getID() . "
                     WHERE (teigenschaft.kArtikel = " . $kVaterArtikel . "
                         OR teigenschaft.kArtikel = " . $kArtikel . ")
                         AND teigenschaftsichtbarkeit.kEigenschaft IS NULL
@@ -322,7 +322,7 @@ class ArtikelHelper
                                     FROM teigenschaftwert
                                     LEFT JOIN teigenschaftwertsichtbarkeit
                                         ON teigenschaftwertsichtbarkeit.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
-                                        AND teigenschaftwertsichtbarkeit.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
+                                        AND teigenschaftwertsichtbarkeit.kKundengruppe = " . Session::CustomerGroup()->getID() . "
                                     WHERE teigenschaftwert.kEigenschaftWert = " . (int)$oEigenschaft->kEigenschaftWert . "
                                         AND teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL
                                         AND teigenschaftwert.kEigenschaft = " . (int)$oEigenschaft->kEigenschaft, 1
@@ -422,7 +422,7 @@ class ArtikelHelper
      */
     public static function getSelectedPropertiesForArticle($kArtikel, $bRedirect = true)
     {
-        $kKundengruppe = (int)$_SESSION['Kundengruppe']->kKundengruppe;
+        $kKundengruppe = Session::CustomerGroup()->getID();
         $kArtikel      = (int)$kArtikel;
         // Pruefe welche kEigenschaft gesetzt ist
         $oEigenschaft_arr = Shop::DB()->query(

@@ -32,7 +32,7 @@ function kundeSpeichern($cPost_arr)
         : checkKundenFormular(1, 0);
     $knd                 = getKundendaten($cPost_arr, 1, 0);
     $cKundenattribut_arr = getKundenattribute($cPost_arr);
-    $kKundengruppe       = Kundengruppe::getCurrent();
+    $kKundengruppe       = Session::CustomerGroup()->getID();
     // CheckBox Plausi
     require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.CheckBox.php';
     $oCheckBox       = new CheckBox();
@@ -98,8 +98,8 @@ function kundeSpeichern($cPost_arr)
             $_SESSION['Kunde']->cKundenattribut_arr = $cKundenattribut_arr;
         } else {
             // Guthaben des Neukunden aufstocken insofern er geworben wurde
-            $oNeukunde = Shop::DB()->select('tkundenwerbenkunden', 'cEmail', $knd->cMail, 'nRegistriert', 0);
-            $kKundengruppe = $_SESSION['Kundengruppe']->kKundengruppe;
+            $oNeukunde     = Shop::DB()->select('tkundenwerbenkunden', 'cEmail', $knd->cMail, 'nRegistriert', 0);
+            $kKundengruppe = Session::CustomerGroup()->getID();
             if ($oNeukunde->kKundenWerbenKunden > 0 &&
                 isset($oNeukunde->kKundenWerbenKunden, $Einstellungen['kundenwerbenkunden']['kwk_kundengruppen']) &&
                 (int)$Einstellungen['kundenwerbenkunden']['kwk_kundengruppen'] > 0
@@ -230,7 +230,7 @@ function gibFormularDaten($nCheckout = 0)
     $smarty->assign('herkunfte', $herkunfte)
            ->assign('Kunde', $Kunde)
            ->assign('cKundenattribut_arr', $cKundenattribut_arr)
-           ->assign('laender', gibBelieferbareLaender($_SESSION['Kundengruppe']->kKundengruppe))
+           ->assign('laender', gibBelieferbareLaender(Session::CustomerGroup()->getID()))
            ->assign('warning_passwortlaenge', lang_passwortlaenge($Einstellungen['kunden']['kundenregistrierung_passwortlaenge']))
            ->assign('oKundenfeld_arr', gibSelbstdefKundenfelder());
 

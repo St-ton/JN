@@ -457,7 +457,7 @@ class Warenkorb
         $NeuePosition->kKonfigitem   = $kKonfigitem;
         $NeuePosition->kArtikel      = $kArtikel;
         //fixes #4967
-        if (is_object($_SESSION['Kundengruppe']) && $_SESSION['Kundengruppe']->nNettoPreise > 0) {
+        if (is_object($_SESSION['Kundengruppe']) && Session::CustomerGroup()->useNetPrices()) {
             if ($brutto) {
                 $NeuePosition->fPreis = $preis / (100 + gibUst($kSteuerklasse)) * 100.0;
             }
@@ -555,10 +555,8 @@ class Warenkorb
         if (count($this->PositionenArr) < 1) {
             return 3;
         }
-        if (isset($_SESSION['Kundengruppe']->Attribute[KNDGRP_ATTRIBUT_MINDESTBESTELLWERT]) &&
-            $_SESSION['Kundengruppe']->Attribute[KNDGRP_ATTRIBUT_MINDESTBESTELLWERT] > 0 &&
-            $this->gibGesamtsummeWaren(1, 0) < $_SESSION['Kundengruppe']->Attribute[KNDGRP_ATTRIBUT_MINDESTBESTELLWERT]
-        ) {
+        $mbw = Session::CustomerGroup()->getAttribute(KNDGRP_ATTRIBUT_MINDESTBESTELLWERT);
+        if ($mbw > 0 && $this->gibGesamtsummeWaren(1, 0) < $mbw) {
             return 9;
         }
         $conf = Shop::getSettings([CONF_KAUFABWICKLUNG]);
@@ -1113,7 +1111,7 @@ class Warenkorb
                     $idx = array_search($ust, $steuersatz);
                     if (!isset($steuerpos[$idx]->fBetrag)) {
                         $steuerpos[$idx]                  = new stdClass();
-                        $steuerpos[$idx]->cName           = lang_steuerposition($ust, $_SESSION['Kundengruppe']->nNettoPreise);
+                        $steuerpos[$idx]->cName           = lang_steuerposition($ust, Session::CustomerGroup()->useNetPrices());
                         $steuerpos[$idx]->fUst            = $ust;
                         $steuerpos[$idx]->fBetrag         = ($position->fPreis * $position->nAnzahl * $ust) / 100.0;
                         $steuerpos[$idx]->cPreisLocalized = gibPreisStringLocalized($steuerpos[$idx]->fBetrag);

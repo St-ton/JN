@@ -101,7 +101,14 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
 
                     if (is_array($oObj_arr) && count($oObj_arr) > 0) {
                         foreach ($oObj_arr as $oObj) {
-                            $this->oRMAArtikel_arr[] = new RMAArtikel($oObj->kRMA, $oObj->kArtikel, true, false, $_SESSION['kSprache'], $_SESSION['Kundengruppe']->kKundengruppe);
+                            $this->oRMAArtikel_arr[] = new RMAArtikel(
+                                $oObj->kRMA,
+                                $oObj->kArtikel,
+                                true,
+                                false,
+                                $_SESSION['kSprache'],
+                                Session::CustomerGroup()->getID()
+                            );
                         }
                     }
                 }

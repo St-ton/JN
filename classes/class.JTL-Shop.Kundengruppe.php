@@ -1,4 +1,8 @@
 <?php
+/**
+ * @copyright (c) JTL-Software-GmbH
+ * @license http://jtl-url.de/jtlshoplicense
+ */
 
 /**
  * Class Kundengruppe
@@ -8,7 +12,7 @@ class Kundengruppe
     /**
      * @var int
      */
-    protected $kKundengruppe;
+    protected $kKundengruppe = 0;
 
     /**
      * @var string
@@ -18,7 +22,7 @@ class Kundengruppe
     /**
      * @var float
      */
-    protected $fRabatt;
+    protected $fRabatt = 0.0;
 
     /**
      * @var string
@@ -33,7 +37,7 @@ class Kundengruppe
     /**
      * @var int
      */
-    protected $nNettoPreise;
+    protected $nNettoPreise = 0;
 
     /**
      * @var int
@@ -64,7 +68,6 @@ class Kundengruppe
      * Constructor
      *
      * @param int $kKundengruppe
-     * @access public
      */
     public function __construct($kKundengruppe = 0)
     {
@@ -169,7 +172,6 @@ class Kundengruppe
      *
      * @param int $kKundengruppe primarykey
      * @return $this
-     * @access private
      */
     private function loadFromDB($kKundengruppe = 0)
     {
@@ -178,6 +180,10 @@ class Kundengruppe
             foreach (get_object_vars($oObj) as $k => $v) {
                 $this->$k = $v;
             }
+            $this->kKundengruppe              = (int)$this->kKundengruppe;
+            $this->nNettoPreise               = (int)$this->nNettoPreise;
+            $this->darfPreiseSehen            = (int)$this->darfPreiseSehen;
+            $this->darfArtikelKategorienSehen = (int)$this->darfArtikelKategorienSehen;
         }
 
         return $this;
@@ -188,7 +194,6 @@ class Kundengruppe
      *
      * @param bool $bPrim - Controls the return of the method
      * @return bool|int
-     * @access public
      */
     public function save($bPrim = true)
     {
@@ -213,7 +218,6 @@ class Kundengruppe
      * Update the class in the database
      *
      * @return int
-     * @access public
      */
     public function update()
     {
@@ -230,7 +234,6 @@ class Kundengruppe
     /**
      * Delete the class in the database
      *
-     * @access public
      * @return int
      */
     public function delete()
@@ -261,7 +264,7 @@ class Kundengruppe
      * @param int $id
      * @return $this
      */
-    public function setId($id)
+    public function setID($id)
     {
         $this->kKundengruppe = (int)$id;
 
@@ -269,9 +272,7 @@ class Kundengruppe
     }
 
     /**
-     * Sets the kKundengruppe
      *
-     * @access public
      * @param int $kKundengruppe
      * @return $this
      */
@@ -283,9 +284,6 @@ class Kundengruppe
     }
 
     /**
-     * Sets the cName
-     *
-     * @access public
      * @param string $cName
      * @return $this
      */
@@ -297,9 +295,6 @@ class Kundengruppe
     }
 
     /**
-     * Sets the fRabatt
-     *
-     * @access public
      * @param float $fRabatt
      * @return $this
      */
@@ -311,9 +306,6 @@ class Kundengruppe
     }
 
     /**
-     * Sets the cStandard
-     *
-     * @access public
      * @param string $cStandard
      * @return $this
      */
@@ -325,9 +317,6 @@ class Kundengruppe
     }
 
     /**
-     * Sets the cShopLogin
-     *
-     * @access public
      * @param string $cShopLogin
      * @return $this
      */
@@ -339,15 +328,21 @@ class Kundengruppe
     }
 
     /**
-     * Sets the nNettoPreise
-     *
-     * @access public
      * @param int $nNettoPreise
      * @return $this
      */
     public function setNettoPreise($nNettoPreise)
     {
-        $this->nNettoPreise = (int)$nNettoPreise;
+        return $this->setUseNetPrices($nNettoPreise);
+    }
+
+    /**
+     * @param int $net
+     * @return $this
+     */
+    public function setUseNetPrices($net)
+    {
+        $this->nNettoPreise = (int)$net;
 
         return $this;
     }
@@ -427,9 +422,6 @@ class Kundengruppe
     }
 
     /**
-     * Gets the kKundengruppe
-     *
-     * @access public
      * @return int
      */
     public function getKundengruppe()
@@ -438,9 +430,6 @@ class Kundengruppe
     }
 
     /**
-     * Gets the cName
-     *
-     * @access public
      * @return string
      */
     public function getName()
@@ -449,9 +438,6 @@ class Kundengruppe
     }
 
     /**
-     * Gets the fRabatt
-     *
-     * @access public
      * @return float
      */
     public function getRabatt()
@@ -460,9 +446,6 @@ class Kundengruppe
     }
 
     /**
-     * Gets the cStandard
-     *
-     * @access public
      * @return string
      */
     public function getStandard()
@@ -471,9 +454,6 @@ class Kundengruppe
     }
 
     /**
-     * Gets the cShopLogin
-     *
-     * @access public
      * @return string
      */
     public function getShopLogin()
@@ -482,9 +462,14 @@ class Kundengruppe
     }
 
     /**
-     * Gets the nNettoPreise
-     *
-     * @access public
+     * @return bool
+     */
+    public function useNetPrices()
+    {
+        return $this->nNettoPreise > 0;
+    }
+
+    /**
      * @return int
      */
     public function getNettoPreise()
@@ -528,7 +513,7 @@ class Kundengruppe
     {
         $kKundengruppe = 0;
         if (isset($_SESSION['Kundengruppe']->kKundengruppe)) {
-            $kKundengruppe = $_SESSION['Kundengruppe']->kKundengruppe;
+            $kKundengruppe = $_SESSION['Kundengruppe']->getID();
         } elseif (isset($_SESSION['Kunde']->kKundengruppe)) {
             $kKundengruppe = $_SESSION['Kunde']->kKundengruppe;
         }
@@ -541,8 +526,8 @@ class Kundengruppe
      */
     public static function getDefaultGroupID()
     {
-        if (isset($_SESSION['Kundengruppe']->kKundengruppe) && $_SESSION['Kundengruppe']->kKundengruppe > 0) {
-            return (int)$_SESSION['Kundengruppe']->kKundengruppe;
+        if (isset($_SESSION['Kundengruppe']->kKundengruppe) && $_SESSION['Kundengruppe']->getID() > 0) {
+            return $_SESSION['Kundengruppe']->getID();
         }
         $oKundengruppe = self::getDefault();
         if (isset($oKundengruppe->kKundengruppe) && $oKundengruppe->kKundengruppe > 0) {
@@ -558,7 +543,8 @@ class Kundengruppe
      */
     public static function reset($kKundengruppe)
     {
-        if (isset($_SESSION['Kundengruppe']->kKundengruppe) && $_SESSION['Kundengruppe']->kKundengruppe == $kKundengruppe) {
+        $kKundengruppe = (int)$kKundengruppe;
+        if (isset($_SESSION['Kundengruppe']->kKundengruppe) && $_SESSION['Kundengruppe']->getID() === $kKundengruppe) {
             return $_SESSION['Kundengruppe'];
         }
         $oKundengruppe = new stdClass();
@@ -566,20 +552,17 @@ class Kundengruppe
             $kKundengruppe = self::getDefaultGroupID();
         }
         if ($kKundengruppe > 0) {
-            $oKundengruppe = Shop::DB()->select('tkundengruppe', 'kKundengruppe', (int)$kKundengruppe);
-            if (isset($oKundengruppe->kKundengruppe) && $oKundengruppe->kKundengruppe > 0 && !isset($_SESSION['Kundengruppe'])) {
-                $_SESSION['Kundengruppe']                             = $oKundengruppe;
-                $_SESSION['Kundengruppe']->darfPreiseSehen            = 1;
-                $_SESSION['Kundengruppe']->darfArtikelKategorienSehen = 1;
+            $oKundengruppe = new self($kKundengruppe);
+            if ($oKundengruppe->getID() > 0 && !isset($_SESSION['Kundengruppe'])) {
+                $oKundengruppe->setMayViewPrices(1)->setMayViewCategories(1);
                 $conf                                                 = Shop::getSettings([CONF_GLOBAL]);
-                if ($conf['global']['global_sichtbarkeit'] == 2) {
-                    $_SESSION['Kundengruppe']->darfPreiseSehen = 0;
+                if ((int)$conf['global']['global_sichtbarkeit'] === 2) {
+                    $oKundengruppe->setMayViewPrices(0);
                 }
-                if ($conf['global']['global_sichtbarkeit'] == 3) {
-                    $_SESSION['Kundengruppe']->darfPreiseSehen            = 0;
-                    $_SESSION['Kundengruppe']->darfArtikelKategorienSehen = 0;
+                if ((int)$conf['global']['global_sichtbarkeit'] === 3) {
+                    $oKundengruppe->setMayViewPrices(0)->setMayViewCategories(0);
                 }
-                $_SESSION['Kundengruppe']->Attribute = self::getAttributes($_SESSION['Kundengruppe']->kKundengruppe);
+                $_SESSION['Kundengruppe'] = $oKundengruppe->initAttributes();
             }
         }
 
@@ -599,6 +582,17 @@ class Kundengruppe
         }
 
         return $this;
+    }
+
+    /**
+     * @param string $attributeName
+     * @return mixed|null
+     */
+    public function getAttribute($attributeName)
+    {
+        return isset($this->Attribute[$attributeName])
+            ? $this->Attribute[$attributeName]
+            : null;
     }
 
     /**

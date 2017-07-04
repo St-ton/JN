@@ -42,11 +42,11 @@ class KategorieListe
     public function holKategorienAufEinenBlick($levels = 2, $kKundengruppe = 0, $kSprache = 0)
     {
         $this->elemente = [];
-        if (!$_SESSION['Kundengruppe']->darfArtikelKategorienSehen) {
+        if (!Session::CustomerGroup()->mayViewCategories()) {
             return $this->elemente;
         }
         if (!$kKundengruppe) {
-            $kKundengruppe = $_SESSION['Kundengruppe']->kKundengruppe;
+            $kKundengruppe = Session::CustomerGroup()->getID();
         }
         if (!$kSprache) {
             $kSprache = Shop::$kSprache;
@@ -92,11 +92,11 @@ class KategorieListe
     public function getAllCategoriesOnLevel($kKategorie, $kKundengruppe = 0, $kSprache = 0)
     {
         $this->elemente = [];
-        if (!$_SESSION['Kundengruppe']->darfArtikelKategorienSehen) {
+        if (!Session::CustomerGroup()->mayViewCategories()) {
             return $this->elemente;
         }
         if (!$kKundengruppe) {
-            $kKundengruppe = $_SESSION['Kundengruppe']->kKundengruppe;
+            $kKundengruppe = Session::CustomerGroup()->getID();
         }
         if (!$kSprache) {
             $kSprache = Shop::$kSprache;
@@ -180,13 +180,13 @@ class KategorieListe
     public function getOpenCategories($AktuelleKategorie, $kKundengruppe = 0, $kSprache = 0)
     {
         $this->elemente = [];
-        if (!isset($_SESSION['Kundengruppe']->darfArtikelKategorienSehen) || !$_SESSION['Kundengruppe']->darfArtikelKategorienSehen) {
+        if (!Session::CustomerGroup()->mayViewCategories()) {
             return $this->elemente;
         }
         $this->elemente[]       = $AktuelleKategorie;
         $AktuellekOberkategorie = $AktuelleKategorie->kOberKategorie;
         if (!$kKundengruppe) {
-            $kKundengruppe = $_SESSION['Kundengruppe']->kKundengruppe;
+            $kKundengruppe = Session::CustomerGroup()->getID();
         }
         if (!$kSprache) {
             $kSprache = Shop::$kSprache;
@@ -219,11 +219,11 @@ class KategorieListe
     public function getUnterkategorien($AktuelleKategorie, $kKundengruppe = 0, $kSprache = 0)
     {
         $this->elemente = [];
-        if (!$_SESSION['Kundengruppe']->darfArtikelKategorienSehen) {
+        if (!Session::CustomerGroup()->mayViewCategories()) {
             return $this->elemente;
         }
         if (!$kKundengruppe) {
-            $kKundengruppe = $_SESSION['Kundengruppe']->kKundengruppe;
+            $kKundengruppe = Session::CustomerGroup()->getID();
         }
         if (!$kSprache) {
             $kSprache = Shop::$kSprache;
@@ -256,11 +256,11 @@ class KategorieListe
     {
         $kKategorie     = (int)$kKategorie;
         $oKategorie_arr = [];
-        if (!$_SESSION['Kundengruppe']->darfArtikelKategorienSehen) {
+        if (!Session::CustomerGroup()->mayViewCategories()) {
             return [];
         }
         if (!$kKundengruppe) {
-            $kKundengruppe = $_SESSION['Kundengruppe']->kKundengruppe;
+            $kKundengruppe = Session::CustomerGroup()->getID();
         }
         if (!$kSprache) {
             $kSprache = Shop::getLanguage();

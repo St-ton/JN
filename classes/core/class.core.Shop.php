@@ -738,7 +738,7 @@ final class Shop
     public static function getParameters()
     {
         self::seoCheck();
-        if (self::$kKategorie > 0 && !Kategorie::isVisible(self::$kKategorie, $_SESSION['Kundengruppe']->kKundengruppe)) {
+        if (self::$kKategorie > 0 && !Kategorie::isVisible(self::$kKategorie, Session::CustomerGroup()->getID())) {
             self::$kKategorie = 0;
         }
         //check variation combination
@@ -1054,8 +1054,8 @@ final class Shop
                 //special case: home page is accessible without seo url
                 $link        = null;
                 $linkHelper  = LinkHelper::getInstance();
-                if (!empty($_SESSION['Kundengruppe']->kKundengruppe)) {
-                    $cKundengruppenSQL = " AND (cKundengruppen RLIKE '^([0-9;]*;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";'
+                if (Session::CustomerGroup()->getID() > 0) {
+                    $cKundengruppenSQL = " AND (cKundengruppen RLIKE '^([0-9;]*;)?" . Session::CustomerGroup()->getID() . ";'
                         OR cKundengruppen IS NULL 
                         OR cKundengruppen = 'NULL' 
                         OR tlink.cKundengruppen = '')";

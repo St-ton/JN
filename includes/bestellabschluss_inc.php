@@ -10,24 +10,20 @@
 function bestellungKomplett()
 {
     require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.CheckBox.php';
-    $kKundengruppe = Kundengruppe::getCurrent();
     // CheckBox Plausi
     $oCheckBox               = new CheckBox();
-    $_SESSION['cPlausi_arr'] = $oCheckBox->validateCheckBox(CHECKBOX_ORT_BESTELLABSCHLUSS, $kKundengruppe, $_POST, true);
+    $_SESSION['cPlausi_arr'] = $oCheckBox->validateCheckBox(CHECKBOX_ORT_BESTELLABSCHLUSS, Session::CustomerGroup()->getID(), $_POST, true);
     $_SESSION['cPost_arr']   = $_POST;
 
-    return (isset($_SESSION['Kunde']) &&
-        isset($_SESSION['Lieferadresse']) &&
-        isset($_SESSION['Versandart']) &&
-        isset($_SESSION['Zahlungsart']) &&
-        $_SESSION['Kunde'] &&
-        $_SESSION['Lieferadresse'] &&
-        $_SESSION['Versandart'] &&
-        $_SESSION['Zahlungsart'] &&
-        (int)$_SESSION['Versandart']->kVersandart > 0 &&
-        (int)$_SESSION['Zahlungsart']->kZahlungsart > 0 &&
-        verifyGPCDataInteger('abschluss') === 1 &&
-        count($_SESSION['cPlausi_arr']) === 0
+    return (isset($_SESSION['Kunde'], $_SESSION['Lieferadresse'], $_SESSION['Versandart'], $_SESSION['Zahlungsart'])
+        && $_SESSION['Kunde']
+        && $_SESSION['Lieferadresse']
+        && $_SESSION['Versandart']
+        && $_SESSION['Zahlungsart']
+        && (int)$_SESSION['Versandart']->kVersandart > 0
+        && (int)$_SESSION['Zahlungsart']->kZahlungsart > 0
+        && verifyGPCDataInteger('abschluss') === 1
+        && count($_SESSION['cPlausi_arr']) === 0
     ) ? 1 : 0;
 }
 
@@ -81,8 +77,8 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
         // Kundenattribute sichern
         $cKundenattribut_arr = $_SESSION['Kunde']->cKundenattribut_arr;
 
-        $_SESSION['Kunde']->kKundengruppe = $_SESSION['Kundengruppe']->kKundengruppe;
-        $_SESSION['Kunde']->kSprache      = Shop::$kSprache;
+        $_SESSION['Kunde']->kKundengruppe = Session::CustomerGroup()->getID();
+        $_SESSION['Kunde']->kSprache      = Shop::getLanguage();
         $_SESSION['Kunde']->cAbgeholt     = 'N';
         $_SESSION['Kunde']->cAktiv        = 'Y';
         $_SESSION['Kunde']->cSperre       = 'N';
@@ -464,7 +460,7 @@ function unhtmlSession()
     if ($_SESSION['Kunde']->kKunde > 0) {
         $knd->kKunde = $_SESSION['Kunde']->kKunde;
     }
-    $knd->kKundengruppe = $_SESSION['Kundengruppe']->kKundengruppe;
+    $knd->kKundengruppe = Session::CustomerGroup()->getID();
     if ($_SESSION['Kunde']->kKundengruppe > 0) {
         $knd->kKundengruppe = $_SESSION['Kunde']->kKundengruppe;
     }
@@ -1317,7 +1313,7 @@ function finalisiereBestellung($cBestellNr = '', $bSendeMail = true)
         sendeMail(MAILTEMPLATE_BESTELLBESTAETIGUNG, $obj);
     }
     $_SESSION['Kunde'] = $oKunde;
-    $kKundengruppe     = Kundengruppe::getCurrent();
+    $kKundengruppe     = Session::CustomerGroup()->getID();
     require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.CheckBox.php';
     $oCheckBox = new CheckBox();
     // CheckBox Spezialfunktion ausführen

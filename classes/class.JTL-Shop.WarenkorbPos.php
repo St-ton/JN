@@ -203,7 +203,7 @@ class WarenkorbPos
         $Aufpreis_obj                                    = Shop::DB()->select(
             'teigenschaftwertaufpreis',
             'kEigenschaftWert',  (int)$NeueWarenkorbPosEigenschaft->kEigenschaftWert,
-            'kKundengruppe',  (int)$_SESSION['Kundengruppe']->kKundengruppe
+            'kKundengruppe',  Session::CustomerGroup()->getID()
         );
         if (isset($Aufpreis_obj->fAufpreisNetto) && $Aufpreis_obj->fAufpreisNetto) {
             if ($this->Artikel->Preise->rabatt > 0) {

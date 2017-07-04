@@ -194,7 +194,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                         : getDefaultLanguageID();
                 }
                 if (!$kKundengruppe) {
-                    $kKundengruppe = $_SESSION['Kundengruppe']->kKundengruppe;
+                    $kKundengruppe = Session::CustomerGroup()->getID();
                 }
                 $this->kKonfiggruppe     = (int)$this->kKonfiggruppe;
                 $this->kKonfigitem       = (int)$this->kKonfigitem;
@@ -562,7 +562,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 }
                 $fVKPreis *= (float)$waehrung->fFaktor;
             }
-            if (!$_SESSION['Kundengruppe']->nNettoPreise && !$bForceNetto) {
+            if (!$bForceNetto && !Session::CustomerGroup()->useNetPrices()) {
                 $fVKPreis = berechneBrutto($fVKPreis, gibUst($this->getSteuerklasse()), 4);
             }
 
@@ -595,10 +595,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 $fTmp = $this->oPreis->getPreis();
                 if ($fTmp < 0) {
                     $fRabatt = $fTmp * -1;
-                    if ($this->oPreis->getTyp() == 0) {
-                        if (!$_SESSION['Kundengruppe']->nNettoPreise) {
-                            $fRabatt = berechneBrutto($fRabatt, gibUst($this->getSteuerklasse()));
-                        }
+                    if ($this->oPreis->getTyp() == 0 && !Session::CustomerGroup()->useNetPrices()) {
+                        $fRabatt = berechneBrutto($fRabatt, gibUst($this->getSteuerklasse()));
                     }
                 }
             }
@@ -624,10 +622,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 $fTmp = $this->oPreis->getPreis();
                 if ($fTmp > 0) {
                     $fZuschlag = $fTmp;
-                    if ($this->oPreis->getTyp() == 0) {
-                        if (!$_SESSION['Kundengruppe']->nNettoPreise) {
-                            $fZuschlag = berechneBrutto($fZuschlag, gibUst($this->getSteuerklasse()));
-                        }
+                    if ($this->oPreis->getTyp() == 0 && !Session::CustomerGroup()->useNetPrices()) {
+                        $fZuschlag = berechneBrutto($fZuschlag, gibUst($this->getSteuerklasse()));
                     }
                 }
             }

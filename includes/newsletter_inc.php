@@ -51,7 +51,7 @@ function fuegeNewsletterEmpfaengerEin($oKunde, $bPruefeDaten = false)
 
     if (valid_email($oKunde->cEmail) || !$bPruefeDaten) {
         $oPlausi->nPlausi_arr = newsletterAnmeldungPlausi($oKunde);
-        $kKundengruppe        = Kundengruppe::getCurrent();
+        $kKundengruppe        = Session::CustomerGroup()->getID();
         // CheckBox Plausi
         $oCheckBox            = new CheckBox();
         $oPlausi->nPlausi_arr = array_merge(

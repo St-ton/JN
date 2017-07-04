@@ -160,7 +160,7 @@ function eingabenKorrekt($fehlendeAngaben)
  */
 function pruefeBetreffVorhanden()
 {
-    $kKundengruppe = (int)$_SESSION['Kundengruppe']->kKundengruppe;
+    $kKundengruppe = Session::CustomerGroup()->getID();
     if (!$kKundengruppe) {
         $kKundengruppe = (int)$_SESSION['Kunde']->kKundengruppe;
         if (!$kKundengruppe) {

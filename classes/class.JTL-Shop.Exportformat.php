@@ -712,20 +712,20 @@ class Exportformat
         } else {
             $_SESSION['Kundengruppe'] = new stdClass();
         }
-        $this->currency = ($this->kWaehrung > 0)
+        $this->currency = $this->kWaehrung > 0
             ? Shop::DB()->select('twaehrung', 'kWaehrung', $this->kWaehrung)
             : Shop::DB()->select('twaehrung', 'cStandard', 'Y');
         setzeSteuersaetze();
         $net = Shop::DB()->select('tkundengruppe', 'kKundengruppe', $this->getKundengruppe());
 
-        $_SESSION['Kundengruppe']->darfPreiseSehen            = 1;
-        $_SESSION['Kundengruppe']->darfArtikelKategorienSehen = 1;
-        $_SESSION['Kundengruppe']->kKundengruppe              = $this->getKundengruppe();
-        $_SESSION['Kundengruppe']->nNettoPreise               = (int)$net->nNettoPreise;
-        $_SESSION['kKundengruppe']                            = $this->getKundengruppe();
-        $_SESSION['kSprache']                                 = $this->getSprache();
-        $_SESSION['Sprachen']                                 = Shop::DB()->query("SELECT * FROM tsprache", 2);
-        $_SESSION['Waehrung']                                 = $this->currency;
+        $_SESSION['Kundengruppe']  = (new Kundengruppe($this->getKundengruppe()))
+            ->setMayViewPrices(1)
+            ->setMayViewCategories(1)
+            ->setNettoPreise($net->nNettoPreise);
+        $_SESSION['kKundengruppe'] = $this->getKundengruppe();
+        $_SESSION['kSprache']      = $this->getSprache();
+        $_SESSION['Sprachen']      = Shop::DB()->query("SELECT * FROM tsprache", 2);
+        $_SESSION['Waehrung']      = $this->currency;
 
         return $this;
     }

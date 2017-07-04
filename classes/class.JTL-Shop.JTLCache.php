@@ -930,7 +930,7 @@ class JTLCache
         if ($customerGroup === true) {
             $baseID .= '_cgid';
             $baseID .= isset($_SESSION['Kundengruppe']->kKundengruppe)
-                ? $_SESSION['Kundengruppe']->kKundengruppe
+                ? Session::CustomerGroup()->getID()
                 : Kundengruppe::getDefaultGroupID();
         } elseif (is_numeric($customerGroup)) {
             $baseID .= '_cgid' . (int)$customerGroup;

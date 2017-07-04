@@ -52,14 +52,14 @@ function buildSearchResults($FilterSQL, $NaviFilter)
  */
 function baueArtikelAnzahl($FilterSQL, &$oSuchergebnisse, $nArtikelProSeite = 20, $nLimitN = 20)
 {
-    $kKundengruppe = isset($_SESSION['Kundengruppe']->kKundengruppe) ? (int)$_SESSION['Kundengruppe']->kKundengruppe : null;
+    $kKundengruppe = isset($_SESSION['Kundengruppe']->kKundengruppe) ? Session::CustomerGroup()->getID() : null;
     if (!$kKundengruppe) {
-        $oKundengruppe = Shop::DB()->query("SELECT kKundengruppe FROM tkundengruppe WHERE cStandard = 'Y'", 1);
-        $kKundengruppe = (int)$oKundengruppe->kKundengruppe;
+        $oKundengruppe = (new Kundengruppe())->loadDefaultGroup();
+        $kKundengruppe = $oKundengruppe->getID();
         if (!isset($_SESSION['Kundengruppe'])) {
             $_SESSION['Kundengruppe'] = new stdClass();
+            $_SESSION['Kundengruppe']->kKundengruppe = $kKundengruppe;
         }
-        $_SESSION['Kundengruppe']->kKundengruppe = $oKundengruppe->kKundengruppe;
     }
     //Anzahl holen
     $oAnzahl = Shop::DB()->query(
@@ -162,11 +162,10 @@ function gibArtikelKeys($FilterSQL, $nArtikelProSeite, $NaviFilter, $bExtern, $o
     $conf         = Shop::getSettings([CONF_ARTIKELUEBERSICHT, CONF_BOXEN, CONF_NAVIGATIONSFILTER, CONF_ARTIKELDETAILS]);
     //Sortierung
     $cSortSQL      = gibArtikelsortierung($NaviFilter);
-    $kKundengruppe = (int)$_SESSION['Kundengruppe']->kKundengruppe;
+    $kKundengruppe = Session::CustomerGroup()->getID();
     if (!$kKundengruppe) {
-        $oKundengruppe                           = Shop::DB()->query("SELECT kKundengruppe FROM tkundengruppe WHERE cStandard = 'Y'", 1);
-        $kKundengruppe                           = (int)$oKundengruppe->kKundengruppe;
-        $_SESSION['Kundengruppe']->kKundengruppe = $oKundengruppe->kKundengruppe;
+        $_SESSION['Kundengruppe'] = (new Kundengruppe())->loadDefaultGroup();
+        $kKundengruppe            = $_SESSION['Kundengruppe']->getID();
     }
     // Work around Preissortierung
     $oSortierungsSQL         = new stdClass();
@@ -493,7 +492,7 @@ function gibHerstellerFilterOptionen($FilterSQL, $NaviFilter)
                 " . $FilterSQL->oBewertungSterneFilterSQL->cJoin . "
                 " . $FilterSQL->oPreisspannenFilterSQL->cJoin . "
                 LEFT JOIN tartikelsichtbarkeit ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                    AND tartikelsichtbarkeit.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
+                    AND tartikelsichtbarkeit.kKundengruppe = " . Session::CustomerGroup()->getID() . "
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
                     AND tartikel.kVaterArtikel = 0
                     " . gibLagerfilter() . "
@@ -564,11 +563,10 @@ function gibKategorieFilterOptionen($FilterSQL, $NaviFilter)
         }
     }
     if (!isset($_SESSION['Kundengruppe']->kKundengruppe)) {
-        $oKundengruppe                           = Shop::DB()->select('tkundengruppe', 'cStandard', 'Y');
-        $kKundengruppe                           = $oKundengruppe->kKundengruppe;
-        $_SESSION['Kundengruppe']->kKundengruppe = $oKundengruppe->kKundengruppe;
+        $_SESSION['Kundengruppe'] = (new Kundengruppe())->loadDefaultGroup();
+        $kKundengruppe            = $_SESSION['Kundengruppe']->getID();
     } else {
-        $kKundengruppe = $_SESSION['Kundengruppe']->kKundengruppe;
+        $kKundengruppe = Session::CustomerGroup()->getID();
     }
     $cacheID = 'filter_kfo_' . md5(
         $kKundengruppe .
@@ -714,7 +712,7 @@ function gibSuchFilterOptionen($FilterSQL, $NaviFilter)
         $kSprache = (int)$oSprache->kSprache;
     }
     $cacheID = 'sfo_' . md5(json_encode($FilterSQL)) . '_' . (isset($_SESSION['Kundengruppe']->kKundengruppe)
-            ? $_SESSION['Kundengruppe']->kKundengruppe
+            ? Session::CustomerGroup()->getID()
             : '0') . '_' . $kSprache;
     if (($oSuchFilterDB_arr = Shop::Cache()->get($cacheID)) !== false) {
         return $oSuchFilterDB_arr;
@@ -750,7 +748,7 @@ function gibSuchFilterOptionen($FilterSQL, $NaviFilter)
                 " . $FilterSQL->oPreisspannenFilterSQL->cJoin . "
                 LEFT JOIN tartikelsichtbarkeit 
                     ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                    AND tartikelsichtbarkeit.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
+                    AND tartikelsichtbarkeit.kKundengruppe = " . Session::CustomerGroup()->getID() . "
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
                     AND tartikel.kVaterArtikel = 0
                     " . gibLagerfilter() . "
@@ -845,7 +843,7 @@ function gibBewertungSterneFilterOptionen($FilterSQL, $NaviFilter)
     $cacheID = 'filter_ps_' . md5(
         serialize($NaviFilter) .
         json_encode($FilterSQL)
-    ) . '_' . $kSprache . '_' . (int)$_SESSION['Kundengruppe']->kKundengruppe;
+    ) . '_' . $kSprache . '_' . Session::CustomerGroup()->getID();
     if (($oBewertungFilter_arr = Shop::Cache()->get($cacheID)) !== false) {
         return $oBewertungFilter_arr;
     }
@@ -867,7 +865,7 @@ function gibBewertungSterneFilterOptionen($FilterSQL, $NaviFilter)
                 JOIN tartikelext ON tartikel.kArtikel = tartikelext.kArtikel
                 " . $FilterSQL->oPreisspannenFilterSQL->cJoin . "
                 LEFT JOIN tartikelsichtbarkeit ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                    AND tartikelsichtbarkeit.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
+                    AND tartikelsichtbarkeit.kKundengruppe = " . Session::CustomerGroup()->getID() . "
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
                     AND tartikel.kVaterArtikel = 0
                     " . gibLagerfilter() . "
@@ -971,7 +969,7 @@ function gibBewertungSterneFilterOptionen($FilterSQL, $NaviFilter)
 function gibPreisspannenFilterOptionen($FilterSQL, $NaviFilter, $oSuchergebnisse)
 {
     $conf = Shop::getSettings([CONF_NAVIGATIONSFILTER]);
-    if ($conf['navigationsfilter']['preisspannenfilter_benutzen'] === 'N' || !$_SESSION['Kundengruppe']->darfPreiseSehen) {
+    if ($conf['navigationsfilter']['preisspannenfilter_benutzen'] === 'N' || !Session::CustomerGroup()->mayViewPrices()) {
         return [];
     }
     if (isset(Shop::$kSprache)) {
@@ -988,7 +986,7 @@ function gibPreisspannenFilterOptionen($FilterSQL, $NaviFilter, $oSuchergebnisse
         $waehrung = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
     }
     $cacheID = 'filter_ps_' . md5(
-        json_encode($_SESSION['Kundengruppe']->kKundengruppe) .
+        Session::CustomerGroup()->getID() .
         (isset($NaviFilter->PreisspannenFilter->fVon) ? json_encode($NaviFilter->PreisspannenFilter->fVon) : '') .
         (isset($NaviFilter->PreisspannenFilter->fBis) ? json_encode($NaviFilter->PreisspannenFilter->fBis) : '') .
         json_encode($FilterSQL) .
@@ -1006,26 +1004,26 @@ function gibPreisspannenFilterOptionen($FilterSQL, $NaviFilter, $oSuchergebnisse
         return $oPreisspanne_arr;
     }
 
-    $cPreisspannenJOIN = "LEFT JOIN tartikelkategorierabatt ON tartikelkategorierabatt.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
+    $cPreisspannenJOIN = "LEFT JOIN tartikelkategorierabatt ON tartikelkategorierabatt.kKundengruppe = " . Session::CustomerGroup()->getID() . "
                                 AND tartikelkategorierabatt.kArtikel = tartikel.kArtikel
                             LEFT JOIN tartikelsonderpreis ON tartikelsonderpreis.kArtikel = tartikel.kArtikel
                                 AND tartikelsonderpreis.cAktiv='Y'
                                 AND tartikelsonderpreis.dStart <= now()
                                 AND (tartikelsonderpreis.dEnde >= CURDATE() OR tartikelsonderpreis.dEnde = '0000-00-00')
                             LEFT JOIN tsonderpreise ON tartikelsonderpreis.kArtikelSonderpreis = tsonderpreise.kArtikelSonderpreis
-                                AND tsonderpreise.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe;
+                                AND tsonderpreise.kKundengruppe = " . Session::CustomerGroup()->getID();
 
     // Automatisch
     if ($conf['navigationsfilter']['preisspannenfilter_anzeige_berechnung'] === 'A') {
         // Finde den höchsten und kleinsten Steuersatz
-        if (is_array($_SESSION['Steuersatz']) && $_SESSION['Kundengruppe']->nNettoPreise === '0') {
+        if (is_array($_SESSION['Steuersatz']) && !Session::CustomerGroup()->useNetPrices()) {
             $fSteuersatz_arr = [];
             foreach ($_SESSION['Steuersatz'] as $fSteuersatz) {
                 $fSteuersatz_arr[] = $fSteuersatz;
             }
             $fSteuersatzMax = count($fSteuersatz_arr) ? max($fSteuersatz_arr) : 0;
             $fSteuersatzMin = count($fSteuersatz_arr) ? min($fSteuersatz_arr) : 0;
-        } elseif ($_SESSION['Kundengruppe']->nNettoPreise > 0) {
+        } elseif (Session::CustomerGroup()->useNetPrices()) {
             $fSteuersatzMax = 0.0;
             $fSteuersatzMin = 0.0;
         }
@@ -1039,14 +1037,14 @@ function gibPreisspannenFilterOptionen($FilterSQL, $NaviFilter, $oSuchergebnisse
                     SELECT ROUND(
                         LEAST(
                             (tpreise.fVKNetto * " . $_SESSION['Waehrung']->fFaktor . ") *
-                            ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), " . $_SESSION['Kundengruppe']->fRabatt . ", " . $fKundenrabatt . ", 0)) / 100),
+                            ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), " . Session::CustomerGroup()->getRabatt() . ", " . $fKundenrabatt . ", 0)) / 100),
                             IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * " . $_SESSION['Waehrung']->fFaktor . "))) * ((100 + " . $fSteuersatzMax . ") / 100), 2) AS fMax,
                  ROUND(LEAST((tpreise.fVKNetto * " . $_SESSION['Waehrung']->fFaktor . ") *
-                 ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), " . $_SESSION['Kundengruppe']->fRabatt . ", " . $fKundenrabatt . ", 0)) / 100),
+                 ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), " . Session::CustomerGroup()->getRabatt() . ", " . $fKundenrabatt . ", 0)) / 100),
                  IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * " . $_SESSION['Waehrung']->fFaktor . "))) * ((100 + " . $fSteuersatzMin . ") / 100), 2) AS fMin
                 FROM tartikel
                 JOIN tpreise ON tpreise.kArtikel = tartikel.kArtikel
-                    AND tpreise.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
+                    AND tpreise.kKundengruppe = " . Session::CustomerGroup()->getID() . "
                 " . $FilterSQL->oHerstellerFilterSQL->cJoin . "
 
                 " . $FilterSQL->oSuchspecialFilterSQL->cJoin . "
@@ -1059,7 +1057,7 @@ function gibPreisspannenFilterOptionen($FilterSQL, $NaviFilter, $oSuchergebnisse
                 " . $cPreisspannenJOIN . "
 
                 LEFT JOIN tartikelsichtbarkeit ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                    AND tartikelsichtbarkeit.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
+                    AND tartikelsichtbarkeit.kKundengruppe = " . Session::CustomerGroup()->getID() . "
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
                     AND tartikel.kVaterArtikel = 0
                     " . gibLagerfilter() . "
@@ -1109,7 +1107,7 @@ function gibPreisspannenFilterOptionen($FilterSQL, $NaviFilter, $oSuchergebnisse
                         SELECT " . berechnePreisspannenSQL($oPreis) . "
                         FROM tartikel
                         JOIN tpreise ON tpreise.kArtikel = tartikel.kArtikel
-                            AND tpreise.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
+                            AND tpreise.kKundengruppe = " . Session::CustomerGroup()->getID() . "
                         " . $FilterSQL->oHerstellerFilterSQL->cJoin . "
                         " . $FilterSQL->oSuchspecialFilterSQL->cJoin . "
                         " . $FilterSQL->oSuchFilterSQL->cJoin . "
@@ -1118,7 +1116,7 @@ function gibPreisspannenFilterOptionen($FilterSQL, $NaviFilter, $oSuchergebnisse
                         " . $FilterSQL->oTagFilterSQL->cJoin . "
                         " . $FilterSQL->oBewertungSterneFilterSQL->cJoin . "
                         LEFT JOIN tartikelsichtbarkeit ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                            AND tartikelsichtbarkeit.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
+                            AND tartikelsichtbarkeit.kKundengruppe = " . Session::CustomerGroup()->getID() . "
 
                         " . $cPreisspannenJOIN . "
 
@@ -1212,7 +1210,7 @@ function gibPreisspannenFilterOptionen($FilterSQL, $NaviFilter, $oSuchergebnisse
                         SELECT " . berechnePreisspannenSQL($oPreis, $oPreisspannenfilter_arr) . "
                         FROM tartikel
                         JOIN tpreise ON tpreise.kArtikel = tartikel.kArtikel
-                            AND tpreise.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
+                            AND tpreise.kKundengruppe = " . Session::CustomerGroup()->getID() . "
                         " . $FilterSQL->oHerstellerFilterSQL->cJoin . "
                         " . $FilterSQL->oSuchspecialFilterSQL->cJoin . "
                         " . $FilterSQL->oSuchFilterSQL->cJoin . "
@@ -1221,7 +1219,7 @@ function gibPreisspannenFilterOptionen($FilterSQL, $NaviFilter, $oSuchergebnisse
                         " . $FilterSQL->oTagFilterSQL->cJoin . "
                         " . $FilterSQL->oBewertungSterneFilterSQL->cJoin . "
                         LEFT JOIN tartikelsichtbarkeit ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                            AND tartikelsichtbarkeit.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
+                            AND tartikelsichtbarkeit.kKundengruppe = " . Session::CustomerGroup()->getID() . "
 
                         " . $cPreisspannenJOIN . "
 
@@ -1303,7 +1301,7 @@ function gibTagFilterOptionen($FilterSQL, $NaviFilter)
         $oSprache = gibStandardsprache(true);
         $kSprache = (int)$oSprache->kSprache;
     }
-    $cacheID = 'gtfo_' . md5(json_encode($FilterSQL) . serialize($NaviFilter)) . '_' . (int)$_SESSION['Kundengruppe']->kKundengruppe . '_' . $kSprache;
+    $cacheID = 'gtfo_' . md5(json_encode($FilterSQL) . serialize($NaviFilter)) . '_' . Session::CustomerGroup()->getID() . '_' . $kSprache;
     if (($oTagFilter_arr = Shop::Cache()->get($cacheID)) !== false) {
         return $oTagFilter_arr;
     }
@@ -1326,7 +1324,7 @@ function gibTagFilterOptionen($FilterSQL, $NaviFilter)
                 " . $FilterSQL->oBewertungSterneFilterSQL->cJoin . "
                 " . $FilterSQL->oPreisspannenFilterSQL->cJoin . "
                 LEFT JOIN tartikelsichtbarkeit ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                    AND tartikelsichtbarkeit.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
+                    AND tartikelsichtbarkeit.kKundengruppe = " . Session::CustomerGroup()->getID() . "
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
                     AND tartikel.kVaterArtikel = 0
                     AND ttag.nAktiv = 1
@@ -1440,7 +1438,7 @@ function gibMerkmalFilterOptionen($FilterSQL, $NaviFilter, $oAktuelleKategorie =
             json_encode($FilterSQL) .
             (isset($NaviFilter->Kategorie->kKategorie) ? json_encode($NaviFilter->Kategorie->kKategorie) : 0)
         ) . '_' . (isset($_SESSION['Kundengruppe']->kKundengruppe) ?
-            (int)$_SESSION['Kundengruppe']->kKundengruppe : '0') . '_' . (int)Shop::$kSprache . (($bForce === true) ? '_f'
+            Session::CustomerGroup()->getID() : '0') . '_' . Shop::getLanguage() . (($bForce === true) ? '_f'
             : '');
     if (($oMerkmalFilter_arr = Shop::Cache()->get($cacheID)) !== false) {
         return $oMerkmalFilter_arr;
@@ -1539,7 +1537,7 @@ function gibMerkmalFilterOptionen($FilterSQL, $NaviFilter, $oAktuelleKategorie =
                             ) . "
                         LEFT JOIN tartikelsichtbarkeit 
                             ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                            AND tartikelsichtbarkeit.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
+                            AND tartikelsichtbarkeit.kKundengruppe = " . Session::CustomerGroup()->getID() . "
                         WHERE tartikelsichtbarkeit.kArtikel IS NULL
                             AND tartikel.kVaterArtikel = 0
                             " . gibLagerfilter() . "
@@ -1731,7 +1729,7 @@ function sortierMerkmalWerteNumerisch($a, $b)
  */
 function gibSuchspecialFilterOptionen($FilterSQL, $NaviFilter)
 {
-    $cacheID = 'gssfo_' . md5(json_encode($FilterSQL)) . '_' . (int)$_SESSION['Kundengruppe']->kKundengruppe;
+    $cacheID = 'gssfo_' . md5(json_encode($FilterSQL)) . '_' . Session::CustomerGroup()->getID();
     if (($oSuchspecialFilterDB_arr = Shop::Cache()->get($cacheID)) !== false) {
         return $oSuchspecialFilterDB_arr;
     }
@@ -1760,7 +1758,7 @@ function gibSuchspecialFilterOptionen($FilterSQL, $NaviFilter)
                     }
                     $oFilter->cWhere = " AND tartikelsonderpreis.cAktiv='Y' AND tartikelsonderpreis.dStart <= now()
                                             AND (tartikelsonderpreis.dEnde >= CURDATE() OR tartikelsonderpreis.dEnde = '0000-00-00')
-                                            AND " . $tsonderpreise . ".kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe;
+                                            AND " . $tsonderpreise . ".kKundengruppe = " . Session::CustomerGroup()->getID();
                     break;
                 case SEARCHSPECIALS_NEWPRODUCTS:
                     $alter_tage = 30;
@@ -1804,7 +1802,7 @@ function gibSuchspecialFilterOptionen($FilterSQL, $NaviFilter)
                     " . $FilterSQL->oBewertungSterneFilterSQL->cJoin . "
                     " . $FilterSQL->oPreisspannenFilterSQL->cJoin . "
                     LEFT JOIN tartikelsichtbarkeit ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                        AND tartikelsichtbarkeit.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
+                        AND tartikelsichtbarkeit.kKundengruppe = " . Session::CustomerGroup()->getID() . "
                     WHERE tartikelsichtbarkeit.kArtikel IS NULL
                         AND tartikel.kVaterArtikel = 0
                         " . gibLagerfilter() . "
@@ -1868,7 +1866,7 @@ function bearbeiteSuchCache($NaviFilter, $kSpracheExt = 0)
 
     // Suchergebnis ist abhängig von Kundengruppe und Lagerfiltereinstellungen
     $conf     = Shop::getSettings([CONF_ARTIKELUEBERSICHT, CONF_GLOBAL]);
-    $keySuche = $cSuche . ';' . $conf['global']['artikel_artikelanzeigefilter'] . ';' . $_SESSION['Kundengruppe']->kKundengruppe;
+    $keySuche = $cSuche . ';' . $conf['global']['artikel_artikelanzeigefilter'] . ';' . Session::CustomerGroup()->getID();
 
     // Suchcache checken, ob bereits vorhanden
     $oSuchCache = Shop::DB()->executeQueryPrepared(
@@ -1933,12 +1931,12 @@ function bearbeiteSuchCache($NaviFilter, $kSpracheExt = 0)
                                             ON tartikelsprache.kArtikel = tartikel.kArtikel
                                         LEFT JOIN tartikelsichtbarkeit 
                                             ON tartikelsichtbarkeit.kArtikel = IF(tartikel.kVaterArtikel > 0, tartikel.kVaterArtikel, tartikelsprache.kArtikel)
-                                            AND tartikelsichtbarkeit.kKundengruppe = " . ((int)$_SESSION['Kundengruppe']->kKundengruppe);
+                                            AND tartikelsichtbarkeit.kKundengruppe = " . Session::CustomerGroup()->getID();
                     } else {
                         $cSQL .= " FROM tartikel
                                         LEFT JOIN tartikelsichtbarkeit 
                                             ON tartikelsichtbarkeit.kArtikel = IF(tartikel.kVaterArtikel > 0, tartikel.kVaterArtikel, tartikel.kArtikel)
-                                            AND tartikelsichtbarkeit.kKundengruppe = " . ((int)$_SESSION['Kundengruppe']->kKundengruppe);
+                                            AND tartikelsichtbarkeit.kKundengruppe = " . Session::CustomerGroup()->getID();
                     }
                     $cSQL .= " WHERE tartikelsichtbarkeit.kArtikel IS NULL " . gibLagerfilter() . " AND ";
                     if (Shop::$kSprache > 0 && !standardspracheAktiv()) {
@@ -2235,12 +2233,12 @@ function bearbeiteSuchCache($NaviFilter, $kSpracheExt = 0)
                                             ON tartikelsprache.kArtikel = tartikel.kArtikel
                                         LEFT JOIN tartikelsichtbarkeit 
                                             ON tartikelsichtbarkeit.kArtikel = IF(tartikel.kVaterArtikel > 0, tartikel.kVaterArtikel, tartikelsprache.kArtikel)
-                                            AND tartikelsichtbarkeit.kKundengruppe = " . ((int)$_SESSION['Kundengruppe']->kKundengruppe);
+                                            AND tartikelsichtbarkeit.kKundengruppe = " . Session::CustomerGroup()->getID();
                     } else {
                         $cSQL .= " FROM tartikel
                                         LEFT JOIN tartikelsichtbarkeit 
                                             ON tartikelsichtbarkeit.kArtikel = IF(tartikel.kVaterArtikel > 0, tartikel.kVaterArtikel, tartikel.kArtikel)
-                                            AND tartikelsichtbarkeit.kKundengruppe = " . ((int)$_SESSION['Kundengruppe']->kKundengruppe);
+                                            AND tartikelsichtbarkeit.kKundengruppe = " . Session::CustomerGroup()->getID();
                     }
 
                     $cSQL .= " WHERE tartikelsichtbarkeit.kArtikel IS NULL " . gibLagerfilter() . " AND ";
@@ -2323,7 +2321,7 @@ function bearbeiteSuchCacheFulltext($oSuchCache, $cSuchspalten_arr, $cSuch_arr, 
                     SELECT kSuchCache, kArtikelTMP, ROUND(MAX(15 - score) * 10)
                     FROM ($cSQL) AS i
                     LEFT JOIN tartikelsichtbarkeit ON tartikelsichtbarkeit.kArtikel = i.kArtikelTMP
-                        AND tartikelsichtbarkeit.kKundengruppe = " . ((int)$_SESSION['Kundengruppe']->kKundengruppe) . "
+                        AND tartikelsichtbarkeit.kKundengruppe = " . Session::CustomerGroup()->getID() . "
                     WHERE tartikelsichtbarkeit.kKundengruppe IS NULL
                     GROUP BY kSuchCache, kArtikelTMP" . ($nLimit > 0 ? " LIMIT $nLimit" : '');
 
@@ -2466,6 +2464,7 @@ function gibPreisspannenFilterSQL($NaviFilter)
     $oFilter         = new stdClass();
     $oFilter->cJoin  = '';
     $oFilter->cWhere = '';
+    $customerGroupID = Session::CustomerGroup()->getID();
     // Preisspannen Filter?
     if (isset($NaviFilter->PreisspannenFilter->fVon, $NaviFilter->PreisspannenFilter->fBis) &&
         $NaviFilter->PreisspannenFilter->fVon >= 0 &&
@@ -2473,9 +2472,9 @@ function gibPreisspannenFilterSQL($NaviFilter)
     ) {
         $oFilter->cJoin = "JOIN tpreise 
                                 ON tartikel.kArtikel = tpreise.kArtikel 
-                                AND tpreise.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
+                                AND tpreise.kKundengruppe = " . $customerGroupID . "
                             LEFT JOIN tartikelkategorierabatt 
-                                ON tartikelkategorierabatt.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
+                                ON tartikelkategorierabatt.kKundengruppe = " . $customerGroupID . "
                                 AND tartikelkategorierabatt.kArtikel = tartikel.kArtikel
                             LEFT JOIN tartikelsonderpreis 
                                 ON tartikelsonderpreis.kArtikel = tartikel.kArtikel
@@ -2484,7 +2483,7 @@ function gibPreisspannenFilterSQL($NaviFilter)
                                 AND (tartikelsonderpreis.dEnde >= CURDATE() OR tartikelsonderpreis.dEnde = '0000-00-00')
                             LEFT JOIN tsonderpreise 
                                 ON tartikelsonderpreis.kArtikelSonderpreis = tsonderpreise.kArtikelSonderpreis
-                                AND tsonderpreise.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe;
+                                AND tsonderpreise.kKundengruppe = " . $customerGroupID;
         $oFilter->cWhere .= " AND";
 
         $fKundenrabatt = 0.0;
@@ -2494,10 +2493,10 @@ function gibPreisspannenFilterSQL($NaviFilter)
 
         $nSteuersatzKeys_arr = array_keys($_SESSION['Steuersatz']);
         // bis
-        if (isset($_SESSION['Kundengruppe']->nNettoPreise) && (int)$_SESSION['Kundengruppe']->nNettoPreise > 0) {
+        if (isset($_SESSION['Kundengruppe']->nNettoPreise) && Session::CustomerGroup()->useNetPrices()) {
             $oFilter->cWhere .= " ROUND(LEAST((tpreise.fVKNetto * " .
                 $_SESSION['Waehrung']->fFaktor . ") * ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), " .
-                $_SESSION['Kundengruppe']->fRabatt . ", " . $fKundenrabatt .
+                Session::CustomerGroup()->getRabatt() . ", " . $fKundenrabatt .
                 ", 0)) / 100), IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * " .
                 $_SESSION['Waehrung']->fFaktor . "))), 2)";
         } else {
@@ -2505,14 +2504,14 @@ function gibPreisspannenFilterSQL($NaviFilter)
                 $fSteuersatz = (float)$_SESSION['Steuersatz'][$nSteuersatzKeys];
                 $oFilter->cWhere .= " IF(tartikel.kSteuerklasse = " . $nSteuersatzKeys . ",
                             ROUND(LEAST(tpreise.fVKNetto * ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), " .
-                    $_SESSION['Kundengruppe']->fRabatt . ", " .
+                    Session::CustomerGroup()->getRabatt() . ", " .
                     $fKundenrabatt . ", 0)) / 100), IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * " .
                     $_SESSION['Waehrung']->fFaktor . "))) * ((100 + " . $fSteuersatz . ") / 100
                         ), 2),";
             }
         }
 
-        if ((int)$_SESSION['Kundengruppe']->nNettoPreise === 0) {
+        if (!Session::CustomerGroup()->useNetPrices()) {
             $oFilter->cWhere .= "0";
 
             $count = count($nSteuersatzKeys_arr);
@@ -2522,9 +2521,9 @@ function gibPreisspannenFilterSQL($NaviFilter)
         }
         $oFilter->cWhere .= " < " . $NaviFilter->PreisspannenFilter->fBis . " AND ";
         // von
-        if ((int)$_SESSION['Kundengruppe']->nNettoPreise > 0) {
+        if (Session::CustomerGroup()->useNetPrices()) {
             $oFilter->cWhere .= " ROUND(LEAST(tpreise.fVKNetto * ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), " .
-                $_SESSION['Kundengruppe']->fRabatt . ", " . $fKundenrabatt .
+                Session::CustomerGroup()->getRabatt() . ", " . $fKundenrabatt .
                 ", 0)) / 100), IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * " .
                 $_SESSION['Waehrung']->fFaktor . "))), 2)";
         } else {
@@ -2532,13 +2531,13 @@ function gibPreisspannenFilterSQL($NaviFilter)
                 $fSteuersatz = (float)$_SESSION['Steuersatz'][$nSteuersatzKeys];
                 $oFilter->cWhere .= " IF(tartikel.kSteuerklasse = " . $nSteuersatzKeys . ",
                             ROUND(LEAST(tpreise.fVKNetto * ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), " .
-                    $_SESSION['Kundengruppe']->fRabatt . ", " . $fKundenrabatt .
+                    Session::CustomerGroup()->getRabatt() . ", " . $fKundenrabatt .
                     ", 0)) / 100), IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * " .
                     $_SESSION['Waehrung']->fFaktor . "))) * ((100 + " . $fSteuersatz . ") / 100
                         ), 2),";
             }
         }
-        if ((int)$_SESSION['Kundengruppe']->nNettoPreise === 0) {
+        if (!Session::CustomerGroup()->useNetPrices()) {
             $oFilter->cWhere .= "0";
             $count = count($nSteuersatzKeys_arr);
             for ($x = 0; $x < $count; $x++) {
@@ -2671,7 +2670,7 @@ function gibSuchspecialFilterSQL($NaviFilter)
                 $oFilter->cWhere = " AND " . $tasp . " .kArtikel = tartikel.kArtikel
                                     AND " . $tasp . ".cAktiv = 'Y' AND " . $tasp . ".dStart <= now()
                                     AND (" . $tasp . ".dEnde >= curdate() OR " . $tasp . ".dEnde = '0000-00-00')
-                                    AND " . $tsp . " .kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe;
+                                    AND " . $tsp . " .kKundengruppe = " . Session::CustomerGroup()->getID();
                 $oFilter->tasp = $tasp;
                 $oFilter->tsp  = $tsp;
 
@@ -3321,14 +3320,14 @@ function berechnePreisspannenSQL($oPreis, $oPreisspannenfilter_arr = null)
                 $nBis = $nPreisMax;
             }
             // Finde den höchsten und kleinsten Steuersatz
-            if (is_array($_SESSION['Steuersatz']) && (int)$_SESSION['Kundengruppe']->nNettoPreise === 0) {
+            if (is_array($_SESSION['Steuersatz']) && !Session::CustomerGroup()->useNetPrices()) {
                 $nSteuersatzKeys_arr = array_keys($_SESSION['Steuersatz']);
                 foreach ($nSteuersatzKeys_arr as $nSteuersatzKeys) {
                     $fSteuersatz = (float)$_SESSION['Steuersatz'][$nSteuersatzKeys];
                     $cSQL .= "IF(tartikel.kSteuerklasse = " . $nSteuersatzKeys . ",
                                 ROUND(LEAST((tpreise.fVKNetto * " . $_SESSION['Waehrung']->fFaktor .
                         ") * ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), " .
-                        $_SESSION['Kundengruppe']->fRabatt . ", " . $fKundenrabatt .
+                        Session::CustomerGroup()->getRabatt() . ", " . $fKundenrabatt .
                         ", 0)) / 100), IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * " .
                         $_SESSION['Waehrung']->fFaktor . "))) * ((100 + " . $fSteuersatz . ") / 100)
                             , 2),";
@@ -3339,10 +3338,10 @@ function berechnePreisspannenSQL($oPreis, $oPreisspannenfilter_arr = null)
                 for ($x = 0; $x < $count; ++$x) {
                     $cSQL .= ")";
                 }
-            } elseif ((int)$_SESSION['Kundengruppe']->nNettoPreise > 0) {
+            } elseif (Session::CustomerGroup()->useNetPrices()) {
                 $cSQL .= "ROUND(LEAST((tpreise.fVKNetto * " . $_SESSION['Waehrung']->fFaktor .
                     ") * ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), " .
-                    $_SESSION['Kundengruppe']->fRabatt . ", " . $fKundenrabatt .
+                    Session::CustomerGroup()->getRabatt() . ", " . $fKundenrabatt .
                     ", 0)) / 100), IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * " .
                     $_SESSION['Waehrung']->fFaktor . "))), 2)";
             }
@@ -3358,14 +3357,14 @@ function berechnePreisspannenSQL($oPreis, $oPreisspannenfilter_arr = null)
 
             $nBis = $oPreisspannenfilter->nBis;
             // Finde den höchsten und kleinsten Steuersatz
-            if (is_array($_SESSION['Steuersatz']) && (int)$_SESSION['Kundengruppe']->nNettoPreise === 0) {
+            if (is_array($_SESSION['Steuersatz']) && !Session::CustomerGroup()->useNetPrices()) {
                 $nSteuersatzKeys_arr = array_keys($_SESSION['Steuersatz']);
                 foreach ($nSteuersatzKeys_arr as $nSteuersatzKeys) {
                     $fSteuersatz = (float)$_SESSION['Steuersatz'][$nSteuersatzKeys];
                     $cSQL .= "IF(tartikel.kSteuerklasse = " . $nSteuersatzKeys . ",
                             ROUND(LEAST((tpreise.fVKNetto * " . $_SESSION['Waehrung']->fFaktor .
                         ") * ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), " .
-                        $_SESSION['Kundengruppe']->fRabatt . ", " .
+                        Session::CustomerGroup()->getRabatt() . ", " .
                         $fKundenrabatt . ", 0)) / 100), IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * " .
                         $_SESSION['Waehrung']->fFaktor . "))) * ((100 + " . $fSteuersatz . ") / 100)
                         , 2),";
@@ -3375,10 +3374,10 @@ function berechnePreisspannenSQL($oPreis, $oPreisspannenfilter_arr = null)
                 for ($x = 0; $x < $count; ++$x) {
                     $cSQL .= ")";
                 }
-            } elseif ((int)$_SESSION['Kundengruppe']->nNettoPreise > 0) {
+            } elseif (Session::CustomerGroup()->useNetPrices()) {
                 $cSQL .= "ROUND(LEAST((tpreise.fVKNetto * " . $_SESSION['Waehrung']->fFaktor .
                     ") * ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), " .
-                    $_SESSION['Kundengruppe']->fRabatt . ", " . $fKundenrabatt .
+                    Session::CustomerGroup()->getRabatt() . ", " . $fKundenrabatt .
                     ", 0)) / 100), IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * " .
                     $_SESSION['Waehrung']->fFaktor . "))), 2)";
             }

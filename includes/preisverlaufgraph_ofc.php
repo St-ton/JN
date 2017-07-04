@@ -44,7 +44,7 @@ if (isset($_GET['kArtikel'])) {
     if (count($Einstellungen) > 0) {
         $oPreisConfig           = new stdClass();
         $oPreisConfig->Waehrung = $_SESSION['Waehrung']->cName;
-        $oPreisConfig->Netto    = ($_SESSION['Kundengruppe']->nNettoPreise == 1)
+        $oPreisConfig->Netto    = Session::CustomerGroup()->useNetPrices()
             ? 0
             : $_GET['fMwSt'];
         $oVerlauf     = new Preisverlauf();

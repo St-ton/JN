@@ -304,8 +304,8 @@ class LinkHelper
                 : Kundengruppe::getDefaultGroupID();
             $Linkgruppen = Shop::DB()->query("SELECT * FROM tlinkgruppe", 2);
             $linkGroups  = new stdClass();
-            $shopURL     = Shop::getURL();
-            $shopURLSSL  = Shop::getURL(true);
+            $shopURL     = Shop::getURL() . '/';
+            $shopURLSSL  = Shop::getURL(true) . '/';
             foreach ($Linkgruppen as $Linkgruppe) {
                 if (trim($Linkgruppe->cTemplatename) === '') {
                     continue;
@@ -326,8 +326,8 @@ class LinkHelper
                 $loginSichtbarkeit = (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0)
                     ? ''
                     : " AND tlink.cSichtbarNachLogin = 'N' ";
-                $linkData = Shop::DB()->query("
-                    SELECT tlink.*, tplugin.nStatus AS nPluginStatus
+                $linkData = Shop::DB()->query(
+                    "SELECT tlink.*, tplugin.nStatus AS nPluginStatus
                         FROM tlink
                         LEFT JOIN tplugin
                             ON tplugin.kPlugin = tlink.kPlugin
@@ -345,8 +345,8 @@ class LinkHelper
                     if ($link->kPlugin > 0 && (int)$item->nPluginStatus !== 2) {
                         continue;
                     }
-                    $linkLanguages = Shop::DB()->query("
-                        SELECT tlinksprache.cISOSprache, tlinksprache.cName, tlinksprache.cTitle, tseo.cSeo
+                    $linkLanguages = Shop::DB()->query(
+                        "SELECT tlinksprache.cISOSprache, tlinksprache.cName, tlinksprache.cTitle, tseo.cSeo
                             FROM tlinksprache
                             JOIN tsprache
                                 ON tsprache.cISO = tlinksprache.cISOSprache
@@ -370,7 +370,7 @@ class LinkHelper
                         $link->cURLFull = $link->cURL;
                     } else {
                         $link->URL      = baueURL($link, URLART_SEITE);
-                        $link->cURLFull = $shopURL . '/' . $link->URL;
+                        $link->cURLFull = $shopURL . $link->URL;
                         if ($link->bSSL === 2) {
                             //if link has forced ssl, modify cURLFull accordingly
                             $link->cURLFull = str_replace('http://', 'https://', $link->cURLFull);
@@ -383,8 +383,8 @@ class LinkHelper
             }
             $cDatei = 'navi.php';
             //startseite
-            $start_arr = Shop::DB()->query("
-                SELECT tseo.cSeo, tlinksprache.cISOSprache, tlink.kLink
+            $start_arr = Shop::DB()->query(
+                "SELECT tseo.cSeo, tlinksprache.cISOSprache, tlink.kLink
                     FROM tlinksprache
                     JOIN tlink
                         ON tlink.kLink = tlinksprache.kLink
@@ -402,7 +402,7 @@ class LinkHelper
             $session['Link_Startseite'] = [];
 
             if (is_array($start_arr) && count($start_arr) > 0) {
-                $oSprache = gibStandardsprache(true);
+                $oSprache = gibStandardsprache();
                 foreach ($start_arr as $start) {
                     $session['Link_Startseite'][$start->cISOSprache] = $cDatei . '?s=' . (int)$start->kLink;
                     if ($start->cSeo && strlen($start->cSeo) > 1) {
@@ -419,8 +419,8 @@ class LinkHelper
                 $cKundengruppenSQL = " AND (tlink.cKundengruppen RLIKE '^([0-9;]*;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";'
                     OR tlink.cKundengruppen IS NULL OR tlink.cKundengruppen = 'NULL' OR tlink.cKundengruppen = '')";
             }
-            $versand_arr = Shop::DB()->query("
-                SELECT tseo.cSeo, tlinksprache.cISOSprache, tlink.kLink
+            $versand_arr = Shop::DB()->query(
+                "SELECT tseo.cSeo, tlinksprache.cISOSprache, tlink.kLink
                     FROM tlinksprache
                     JOIN tlink
                         ON tlink.kLink = tlinksprache.kLink
@@ -446,8 +446,8 @@ class LinkHelper
                 }
             }
             //AGB
-            $agb_arr = Shop::DB()->query("
-                SELECT tseo.cSeo, tlinksprache.cISOSprache, tlink.kLink
+            $agb_arr = Shop::DB()->query(
+                "SELECT tseo.cSeo, tlinksprache.cISOSprache, tlink.kLink
                     FROM tlinksprache
                     JOIN tlink
                         ON tlink.kLink = tlinksprache.kLink
@@ -473,8 +473,8 @@ class LinkHelper
                 }
             }
             //Link_Datenschutz
-            $agb_arr = Shop::DB()->query("
-                SELECT tseo.cSeo, tlinksprache.cISOSprache, tlink.kLink
+            $agb_arr = Shop::DB()->query(
+                "SELECT tseo.cSeo, tlinksprache.cISOSprache, tlink.kLink
                     FROM tlinksprache
                     JOIN tlink
                         ON tlink.kLink = tlinksprache.kLink
@@ -506,8 +506,8 @@ class LinkHelper
             $linkGroups->Link_AGB          = $session['Link_AGB'];
             $linkGroups->Link_Versandseite = $session['Link_Versandseite'];
 
-            $staticRoutes_arr = Shop::DB()->query("
-                SELECT tspezialseite.kSpezialseite, tspezialseite.cName AS baseName, tspezialseite.cDateiname, 
+            $staticRoutes_arr = Shop::DB()->query(
+                "SELECT tspezialseite.kSpezialseite, tspezialseite.cName AS baseName, tspezialseite.cDateiname, 
                         tspezialseite.nLinkart, tlink.kLink, tlinksprache.cName AS seoName, tlink.cKundengruppen, 
                         tseo.cSeo, tsprache.cISO, tsprache.kSprache, tlink.kVaterLink, tspezialseite.kPlugin, 
                         tlink.kLinkgruppe, tlink.cName, tlink.cNoFollow, tlink.cSichtbarNachLogin, tlink.cDruckButton, 
@@ -546,8 +546,8 @@ class LinkHelper
                 }
                 unset($customerGroup);
                 $link = new Link(null, $sr);
-                $link->setURLFull($shopURL . '/' . $link->cSeo)
-                     ->setURLFullSSL($shopURLSSL . '/' . $link->cSeo);
+                $link->setURLFull($shopURL . $link->cSeo)
+                     ->setURLFullSSL($shopURLSSL . $link->cSeo);
                 $link->customerGroups = $customerGroups;
                 $currentIndex         = $sr->cDateiname;
                 if (!isset($linkGroups->staticRoutes[$sr->cDateiname])) {
@@ -598,8 +598,8 @@ class LinkHelper
         }
         $oSpeziallinks            = [];
         $_SESSION['Speziallinks'] = [];
-        $oLink_arr                = Shop::DB()->query("
-            SELECT kLink, nLinkart, cName 
+        $oLink_arr                = Shop::DB()->query(
+            "SELECT kLink, nLinkart, cName 
                 FROM tlink 
                 WHERE nLinkart >= 5 
                 ORDER BY nLinkart", 2
@@ -618,6 +618,7 @@ class LinkHelper
             }
             $oSpeziallinks[$oObj->nLinkart] = $oObj;
         }
+        unset($oLink);
         Shop::Cache()->set($cacheID, $oSpeziallinks, [CACHING_GROUP_CORE]);
 
         return $oSpeziallinks;
@@ -642,9 +643,9 @@ class LinkHelper
             $cMember_arr = array_keys(get_object_vars($linkGroups));
             if (is_array($cMember_arr) && count($cMember_arr) > 0) {
                 foreach ($cMember_arr as $cMember) {
-                    if (isset($linkGroups->$cMember->Links) &&
-                        is_array($linkGroups->$cMember->Links) &&
-                        count($linkGroups->$cMember->Links) > 0
+                    if (isset($linkGroups->$cMember->Links)
+                        && is_array($linkGroups->$cMember->Links)
+                        && count($linkGroups->$cMember->Links) > 0
                     ) {
                         foreach ($linkGroups->$cMember->Links as $oLink) {
                             if ($kLink > 0 && isset($oLink->kLink) && $oLink->kLink === $kLink) {
@@ -685,17 +686,17 @@ class LinkHelper
             default:
                 break;
         }
-        if (isset($NaviFilter->Suche->cSuche) &&
-            strlen($NaviFilter->Suche->cSuche) > 0
+        if (isset($NaviFilter->Suche->cSuche)
+            && strlen($NaviFilter->Suche->cSuche) > 0
         ) {
             $bNoIndex = true;
         }
         if (!$bNoIndex) {
             $shopsetting = Shopsetting::getInstance();
-            $bNoIndex    = isset($NaviFilter->MerkmalWert->kMerkmalWert) &&
-                $NaviFilter->MerkmalWert->kMerkmalWert > 0 &&
-                isset($shopsetting['global']['global_merkmalwert_url_indexierung']) &&
-                $shopsetting['global']['global_merkmalwert_url_indexierung'] === 'N';
+            $bNoIndex    = isset($NaviFilter->MerkmalWert->kMerkmalWert)
+                && $NaviFilter->MerkmalWert->kMerkmalWert > 0
+                && isset($shopsetting['global']['global_merkmalwert_url_indexierung'])
+                && $shopsetting['global']['global_merkmalwert_url_indexierung'] === 'N';
         }
 
         return $bNoIndex;
@@ -833,8 +834,8 @@ class LinkHelper
                 ? ''
                 : " AND tlink.cSichtbarNachLogin = 'N' ";
             //get links for ALL languages
-            $linkData = Shop::DB()->query("
-                SELECT tlink.*, tseo.cSeo, tseo.kSprache, tsprache.cISO
+            $linkData = Shop::DB()->query(
+                "SELECT tlink.*, tseo.cSeo, tseo.kSprache, tsprache.cISO
                     FROM tlink
                     LEFT JOIN tseo
                         ON tseo.cKey = 'kLink'
@@ -915,13 +916,13 @@ class LinkHelper
             return $oLinkSprache;
         }
 
-        if ($kLink > 0 &&
-            isset($_SESSION['kSprache'], $_SESSION['cISOSprache']) &&
-            $_SESSION['kSprache'] > 0 &&
-            strlen($_SESSION['cISOSprache']) > 0
+        if ($kLink > 0
+            && isset($_SESSION['kSprache'], $_SESSION['cISOSprache'])
+            && $_SESSION['kSprache'] > 0
+            && strlen($_SESSION['cISOSprache']) > 0
         ) {
-            $oLinkSprache = Shop::DB()->executeQueryPrepared("
-                SELECT tlinksprache.kLink, tlinksprache.cISOSprache, tlinksprache.cName, tlinksprache.cTitle, 
+            $oLinkSprache = Shop::DB()->executeQueryPrepared(
+                "SELECT tlinksprache.kLink, tlinksprache.cISOSprache, tlinksprache.cName, tlinksprache.cTitle, 
                         tlinksprache.cContent, tlinksprache.cMetaTitle, tlinksprache.cMetaKeywords, 
                         tlinksprache.cMetaDescription , tseo.cSeo
                     FROM tlinksprache
@@ -985,7 +986,7 @@ class LinkHelper
             if ($shopISO !== null && strlen($shopISO) > 0) {
                 $cISOSprache = $shopISO;
             } else {
-                $oSprache    = gibStandardsprache(true);
+                $oSprache    = gibStandardsprache();
                 $cISOSprache = $oSprache->cISO;
             }
         }
@@ -995,8 +996,8 @@ class LinkHelper
         $oMeta->cKeywords = '';
 
         if ($nLinkArt > 0 && strlen($cISOSprache) > 0) {
-            $oLink = Shop::DB()->executeQueryPrepared("
-                SELECT tlinksprache.*
+            $oLink = Shop::DB()->executeQueryPrepared(
+                "SELECT tlinksprache.*
                     FROM tlinksprache
                     JOIN tlink
                         ON tlink.nLinkart = :type

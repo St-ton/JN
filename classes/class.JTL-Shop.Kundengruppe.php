@@ -81,7 +81,7 @@ class Kundengruppe
      */
     public function __set($name, $value)
     {
-        if (property_exists($this, $name)) {
+        if (isset($this->$name)) {
             trigger_error('Kundengruppe: setter should be use to set ' . $name, E_USER_DEPRECATED);
             $this->$name = $value;
 
@@ -92,14 +92,23 @@ class Kundengruppe
 
     /**
      * @param string $name
+     * @return bool
+     */
+    public function __isset($name)
+    {
+        return property_exists($this, $name);
+    }
+
+    /**
+     * @param string $name
      * @return mixed
      * @throws OutOfBoundsException
      */
     public function __get($name)
     {
-        if (property_exists($this, $name)) {
+        if (isset($this->$name)) {
             trigger_error('Kundengruppe: getter should be use to get ' . $name, E_USER_DEPRECATED);
-            Shop::dbg($name, false, 'bt: ', 3);
+
             return $this->$name;
         }
 

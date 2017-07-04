@@ -506,7 +506,6 @@ function updateXMLinDB($xml, $tabelle, $map, $pk1, $pk2 = 0)
 /**
  * @param object $oArtikel
  * @param array  $oKundengruppe_arr
- * @global JTLSmarty $smarty
  */
 function fuelleArtikelKategorieRabatt($oArtikel, $oKundengruppe_arr)
 {

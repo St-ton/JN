@@ -5271,8 +5271,8 @@ function pruefeKampagnenParameter()
             // Wurde für die aktuelle Kampagne der Parameter via GET oder POST uebergeben?
             if (strlen(verifyGPDataString($oKampagne->cParameter)) > 0) {
                 // Wurde bei nicht dynamischen Kampagnen der richtige Wert uebergeben?
-                if (isset($oKampagne->nDynamisch) && ($oKampagne->nDynamisch == 1 ||
-                        ($oKampagne->nDynamisch == 0 &&
+                if (isset($oKampagne->nDynamisch) && ((int)$oKampagne->nDynamisch === 1 ||
+                        ((int)$oKampagne->nDynamisch === 0 &&
                             isset($oKampagne->cWert) &&
                             strtolower($oKampagne->cWert) === strtolower(verifyGPDataString($oKampagne->cParameter))))
                 ) {
@@ -5297,15 +5297,16 @@ function pruefeKampagnenParameter()
                         $oKampagnenVorgang->fWert        = 1.0;
                         $oKampagnenVorgang->cParamWert   = verifyGPDataString($oKampagne->cParameter);
                         $oKampagnenVorgang->cCustomData  = StringHandler::filterXSS($_SERVER['REQUEST_URI']) . ';' . $referrer;
-                        if ($oKampagne->nDynamisch == 0) {
+                        if ((int)$oKampagne->nDynamisch === 0) {
                             $oKampagnenVorgang->cParamWert = $oKampagne->cWert;
                         }
                         $oKampagnenVorgang->dErstellt = 'now()';
 
                         Shop::DB()->insert('tkampagnevorgang', $oKampagnenVorgang);
                         // Kampagnenbesucher in die Session
-                        $_SESSION['Kampagnenbesucher'] = new stdClass();
-                        $_SESSION['Kampagnenbesucher'] = $oKampagne;
+                        $_SESSION['Kampagnenbesucher']        = new stdClass();
+                        $_SESSION['Kampagnenbesucher']        = $oKampagne;
+                        $_SESSION['Kampagnenbesucher']->cWert = $oKampagnenVorgang->cParamWert;
 
                         break;
                     }
@@ -5330,10 +5331,15 @@ function pruefeKampagnenParameter()
                     $oKampagnenVorgang->cParamWert   = $oKampagne->cWert;
                     $oKampagnenVorgang->dErstellt    = 'now()';
 
+                    if ((int)$oKampagne->nDynamisch === 1) {
+                        $oKampagnenVorgang->cParamWert = verifyGPDataString($oKampagne->cParameter);
+                    }
+
                     Shop::DB()->insert('tkampagnevorgang', $oKampagnenVorgang);
                     // Kampagnenbesucher in die Session
-                    $_SESSION['Kampagnenbesucher'] = new stdClass();
-                    $_SESSION['Kampagnenbesucher'] = $oKampagne;
+                    $_SESSION['Kampagnenbesucher']        = new stdClass();
+                    $_SESSION['Kampagnenbesucher']        = $oKampagne;
+                    $_SESSION['Kampagnenbesucher']->cWert = $oKampagnenVorgang->cParamWert;
                 }
             }
         }

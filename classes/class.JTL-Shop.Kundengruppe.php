@@ -140,7 +140,6 @@ class Kundengruppe
                 }
             }
             $this->localize()->initAttributes();
-
         }
 
         return $this;

@@ -2,8 +2,8 @@
     function ackCheck(kPluginSprachvariable, kPlugin)
     {
         var bCheck = confirm(
-            'Wollen Sie Ihre Sprachvariablen wirklich wieder auf den Installationszustand zurücksetzen? ' +
-            '*Vorsicht* Alle bisherigen editierten Sprachvariablen, gehen für diese eine Variable verloren.'
+            'Wollen Sie diese Sprachvariable wirklich wieder auf den Installationszustand zurücksetzen?\n\n' +
+            '*Vorsicht* Alle geänderten Übersetzungen der Variable gehen dabei verloren.'
         );
 
         if(bCheck) {

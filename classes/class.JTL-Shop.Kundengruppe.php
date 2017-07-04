@@ -57,7 +57,7 @@ class Kundengruppe
     /**
      * @var array
      */
-    protected $Attribute = [];
+    protected $Attribute;
 
     /**
      * @var string

@@ -266,11 +266,11 @@ class Session
                 $_SESSION['Kunde']->kSprache = $_SESSION['kSprache'];
                 $_SESSION['Kunde']->updateInDB();
             }
-            if (empty($_SESSION['Kundengruppe']->Attribute)) {
+            if (!isset($_SESSION['Kundengruppe']->Attribute)) {
                 $_SESSION['Kundengruppe']->initAttributes();
             }
-            $linkHelper                          = LinkHelper::getInstance();
-            $linkGroups                          = $linkHelper->getLinkGroups();
+            $linkHelper = LinkHelper::getInstance();
+            $linkGroups = $linkHelper->getLinkGroups();
             if (TEMPLATE_COMPATIBILITY === true || Shop::Cache()->isCacheGroupActive(CACHING_GROUP_CORE) === false) {
                 $_SESSION['Linkgruppen'] = $linkGroups;
                 $manufacturerHelper      = HerstellerHelper::getInstance();

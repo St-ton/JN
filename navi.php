@@ -9,10 +9,10 @@ $cart = isset($_SESSION['Warenkorb'])
     ? $_SESSION['Warenkorb']
     : new Warenkorb();
 
-if (!$_SESSION['Kundengruppe']->darfArtikelKategorienSehen) {
+if (!Session::CustomerGroup()->mayViewCategories()) {
     //falls Artikel/Kategorien nicht gesehen werden dürfen -> login
     $linkHelper = LinkHelper::getInstance();
-    header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true) . '?li=1', true, 303);
+    header('Location: ' . $linkHelper->getStaticRoute('jtl.php') . '?li=1', true, 303);
     exit;
 }
 // Wurde ein Kindartikel zum Vater umgeleitet? Falls ja => Redirect POST Daten entpacken und zuweisen
@@ -338,8 +338,8 @@ if ($cParameter_arr['kHersteller'] > 0 ||
             : 10;
         $bestsellers = Bestseller::buildBestsellers(
             $products,
-            $_SESSION['Kundengruppe']->kKundengruppe,
-            $_SESSION['Kundengruppe']->darfArtikelKategorienSehen,
+            Session::CustomerGroup()->getID(),
+            Session::CustomerGroup()->mayViewCategories(),
             false,
             $limit,
             $minsells

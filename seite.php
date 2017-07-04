@@ -92,10 +92,10 @@ if ($link->nLinkart === LINKTYP_STARTSEITE) {
     Shop::setPageType(PAGE_DATENSCHUTZ);
 } elseif ($link->nLinkart === LINKTYP_AGB) {
     Shop::setPageType(PAGE_AGB);
-    $smarty->assign('AGB', gibAGBWRB(Shop::getLanguage(), $_SESSION['Kundengruppe']->kKundengruppe));
+    $smarty->assign('AGB', gibAGBWRB(Shop::getLanguage(), Session::CustomerGroup()->getID()));
 } elseif ($link->nLinkart === LINKTYP_WRB) {
     Shop::setPageType(PAGE_WRB);
-    $smarty->assign('WRB', gibAGBWRB(Shop::getLanguage(), $_SESSION['Kundengruppe']->kKundengruppe));
+    $smarty->assign('WRB', gibAGBWRB(Shop::getLanguage(), Session::CustomerGroup()->getID()));
 } elseif ($link->nLinkart === LINKTYP_VERSAND) {
     Shop::setPageType(PAGE_VERSAND);
     if (isset($_POST['land'], $_POST['plz']) && !VersandartHelper::getShippingCosts($_POST['land'], $_POST['plz'])) {

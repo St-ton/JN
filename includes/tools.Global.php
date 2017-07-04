@@ -581,7 +581,7 @@ function checkeWarenkorbEingang()
                 $oSichtbarkeit = Shop::DB()->select(
                     'tartikelsichtbarkeit',
                     'kArtikel', $kArtikel,
-                    'kKundengruppe', (int)$_SESSION['Kundengruppe']->kKundengruppe,
+                    'kKundengruppe', Session::CustomerGroup()->getID(),
                     null, null,
                     false,
                     'kArtikel'
@@ -665,7 +665,7 @@ function checkeWarenkorbEingang()
                     $oSichtbarkeit = Shop::DB()->select(
                         'tartikelsichtbarkeit',
                         'kArtikel', $kArtikel,
-                        'kKundengruppe', (int)$_SESSION['Kundengruppe']->kKundengruppe,
+                        'kKundengruppe', Session::CustomerGroup()->getID(),
                         null, null,
                         false,
                         'kArtikel'
@@ -882,7 +882,7 @@ function checkeWarenkorbEingang()
                                     $oKonfigitem->getSteuerklasse(),
                                     C_WARENKORBPOS_TYP_ARTIKEL,
                                     false,
-                                    !$_SESSION['Kundengruppe']->nNettoPreise,
+                                    !Session::CustomerGroup()->useNetPrices(),
                                     '',
                                     $cUnique,
                                     $oKonfigitem->getKonfigitem(),
@@ -1119,7 +1119,7 @@ function fuegeEinInWarenkorbPers($kArtikel, $fAnzahl, $oEigenschaftwerte_arr, $c
                 $oSichtbarkeit = Shop::DB()->select(
                     'tartikelsichtbarkeit',
                     'kArtikel', $kArtikel,
-                    'kKundengruppe', (int)$_SESSION['Kundengruppe']->kKundengruppe,
+                    'kKundengruppe', Session::CustomerGroup()->getID(),
                     null, null,
                     false,
                     'kArtikel'
@@ -1230,7 +1230,7 @@ function pruefeFuegeEinInWarenkorb($Artikel, $anzahl, $oEigenschaftwerte_arr, $n
         $redirectParam[] = R_LAGER;
     }
     //darf preise sehen und somit einkaufen?
-    if ($_SESSION['Kundengruppe']->darfPreiseSehen !== 1 || $_SESSION['Kundengruppe']->darfArtikelKategorienSehen !== 1) {
+    if (!Session::CustomerGroup()->mayViewPrices() || !Session::CustomerGroup()->mayViewCategories()) {
         $redirectParam[] = R_LOGIN;
     }
     //kein vorbestellbares Produkt, aber mit Erscheinungsdatum in Zukunft
@@ -1534,7 +1534,7 @@ function checkeKuponWKPos($oWKPosition, $Kupon)
                 AND fMindestbestellwert <= " . $_SESSION['Warenkorb']->gibGesamtsummeWaren(true, false) . "
                 AND (kKundengruppe = -1 
                     OR kKundengruppe = 0 
-                    OR kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . ")
+                    OR kKundengruppe = " . Session::CustomerGroup()->getID() . ")
                 AND (nVerwendungen = 0 
                     OR nVerwendungen > nVerwendungenBisher)
                 AND (cArtikel = '' {$Artikel_qry})
@@ -1634,7 +1634,7 @@ function checkSetPercentCouponWKPos($oWKPosition, $Kupon)
                 AND fMindestbestellwert <= " . $_SESSION['Warenkorb']->gibGesamtsummeWaren(true, false) . "
                 AND (kKundengruppe = -1 
                     OR kKundengruppe = 0 
-                    OR kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . ")
+                    OR kKundengruppe = " . Session::CustomerGroup()->getID() . ")
                 AND (nVerwendungen = 0 
                     OR nVerwendungen > nVerwendungenBisher)
                 AND (cArtikel = '' {$Artikel_qry})
@@ -6446,7 +6446,7 @@ function filterXSSArray($array)
  */
 function gibAktuelleKundengruppe()
 {
-    return Kundengruppe::getCurrent();
+    return Session::CustomerGroup()->getID();
 }
 
 /**

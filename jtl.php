@@ -425,7 +425,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
         $smarty->assign('cPost_arr', $cPost_arr);
 
         $fehlendeAngaben = checkKundenFormularArray($cPost_arr, 1, 0);
-        $kKundengruppe   = Kundengruppe::getCurrent();
+        $kKundengruppe   = Session::CustomerGroup()->getID();
         // CheckBox Plausi
         $oCheckBox           = new CheckBox();
         $fehlendeAngaben     = array_merge(

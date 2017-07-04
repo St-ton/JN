@@ -26,7 +26,7 @@ if (pruefeBetreffVorhanden()) {
     $fehlendeAngaben = [];
     if (isset($_POST['kontakt']) && (int)$_POST['kontakt'] === 1) {
         $fehlendeAngaben = gibFehlendeEingabenKontaktformular();
-        $kKundengruppe   = Kundengruppe::getCurrent();
+        $kKundengruppe   = Session::CustomerGroup()->getID();
         // CheckBox Plausi
         $oCheckBox       = new CheckBox();
         $fehlendeAngaben = array_merge(
@@ -71,7 +71,7 @@ if (pruefeBetreffVorhanden()) {
         "SELECT *
             FROM tkontaktbetreff
             WHERE (cKundengruppen = 0
-            OR cKundengruppen RLIKE '^([0-9;]*;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";') 
+            OR cKundengruppen RLIKE '^([0-9;]*;)?" . Session::CustomerGroup()->getID() . ";') 
             ORDER BY nSort", 2
     );
     $bCount = count($betreffs);

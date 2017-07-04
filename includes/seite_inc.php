@@ -10,8 +10,8 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'artikelsuchspecial_inc.php';
  */
 function gibStartBoxen()
 {
-    $kKundengruppe = $_SESSION['Kundengruppe']->kKundengruppe;
-    if (!$kKundengruppe || !$_SESSION['Kundengruppe']->darfArtikelKategorienSehen) {
+    $kKundengruppe = Session::CustomerGroup()->getID();
+    if (!$kKundengruppe || !Session::CustomerGroup()->mayViewCategories()) {
         return [];
     }
     $cURL          = 0;
@@ -139,7 +139,7 @@ function gibNews($Einstellungen)
                     AND tnews.dGueltigVon <= now()
                     AND (
                         tnews.cKundengruppe LIKE '%;-1;%' 
-                        OR tnews.cKundengruppe RLIKE '^([0-9;]*;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";'
+                        OR tnews.cKundengruppe RLIKE '^([0-9;]*;)?" . Session::CustomerGroup()->getID() . ";'
                         )
                 GROUP BY tnews.kNews
                 ORDER BY tnews.dGueltigVon DESC" . $cSQL, 2
@@ -597,7 +597,7 @@ function gibBoxNews($BoxenEinstellungen)
                 AND nAktiv = 1
                 AND (
                     cKundengruppe LIKE '%;-1;%' 
-                    OR cKundengruppe RLIKE '^([0-9;]*;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";'
+                    OR cKundengruppe RLIKE '^([0-9;]*;)?" . Session::CustomerGroup()->getID() . ";'
                     )
             GROUP BY DATE_FORMAT(dErstellt, '%M')
             ORDER BY dErstellt DESC
@@ -647,7 +647,7 @@ function gibSitemapNews()
                             AND tnews.nAktiv = 1
                             AND (
                                 tnews.cKundengruppe LIKE '%;-1;%' 
-                                OR tnews.cKundengruppe RLIKE '^([0-9;]*;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";'
+                                OR tnews.cKundengruppe RLIKE '^([0-9;]*;)?" . Session::CustomerGroup()->getID() . ";'
                                 )
                             AND (MONTH(tnews.dGueltigVon) = '" . $oNewsMonatsUebersicht->nMonat . "') 
                             && (tnews.dGueltigVon <= now())
@@ -679,7 +679,7 @@ function gibSitemapNews()
  */
 function gibNewsKategorie()
 {
-    $cacheID = 'news_category_' . (int)$_SESSION['kSprache'] . '_' . (int)$_SESSION['Kundengruppe']->kKundengruppe;
+    $cacheID = 'news_category_' . (int)$_SESSION['kSprache'] . '_' . Session::CustomerGroup()->getID();
     if (($oNewsKategorie_arr = Shop::Cache()->get($cacheID)) === false) {
         $oNewsKategorie_arr = Shop::DB()->query("
             SELECT tnewskategorie.kNewsKategorie, tnewskategorie.kSprache, tnewskategorie.cName,
@@ -702,7 +702,7 @@ function gibNewsKategorie()
                     AND tnews.dGueltigVon <= now()
                     AND (
                             tnews.cKundengruppe LIKE '%;-1;%' 
-                            OR tnews.cKundengruppe RLIKE '^([0-9;]*;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";'
+                            OR tnews.cKundengruppe RLIKE '^([0-9;]*;)?" . Session::CustomerGroup()->getID() . ";'
                         )
                 GROUP BY tnewskategorienews.kNewsKategorie
                 ORDER BY tnewskategorie.nSort DESC", 2
@@ -730,7 +730,7 @@ function gibNewsKategorie()
                             AND tnews.dGueltigVon <= now()
                             AND (
                                     tnews.cKundengruppe LIKE '%;-1;%' 
-                                    OR tnews.cKundengruppe RLIKE '^([0-9;]*;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";'
+                                    OR tnews.cKundengruppe RLIKE '^([0-9;]*;)?" . Session::CustomerGroup()->getID() . ";'
                                 )
                         GROUP BY tnews.kNews
                         ORDER BY tnews.dGueltigVon DESC", 2
@@ -768,15 +768,15 @@ function gibGratisGeschenkArtikel($Einstellungen)
     $cSQLLimit = ((int)$Einstellungen['sonstiges']['sonstiges_gratisgeschenk_anzahl'] > 0)
         ? " LIMIT " . (int)$Einstellungen['sonstiges']['sonstiges_gratisgeschenk_anzahl']
         : '';
-    $oArtikelGeschenkTMP_arr = Shop::DB()->query("
-        SELECT tartikel.kArtikel, tartikelattribut.cWert
+    $oArtikelGeschenkTMP_arr = Shop::DB()->query(
+        "SELECT tartikel.kArtikel, tartikelattribut.cWert
             FROM tartikel
             JOIN tartikelattribut 
                 ON tartikelattribut.kArtikel = tartikel.kArtikel
             LEFT JOIN tartikelsichtbarkeit 
                 ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                AND tartikelsichtbarkeit.kKundengruppe = {$_SESSION['Kundengruppe']->kKundengruppe}
-            WHERE tartikelsichtbarkeit.kArtikel IS NULL
+                AND tartikelsichtbarkeit.kKundengruppe = " . Session::CustomerGroup()->getID() .
+            "WHERE tartikelsichtbarkeit.kArtikel IS NULL
             AND tartikelattribut.cName = '" . FKT_ATTRIBUT_GRATISGESCHENK . "' " .
             gibLagerfilter() .
             $cSQLSort .
@@ -921,7 +921,7 @@ function gibNewsArchiv()
                 AND MONTH(tnews.dErstellt) = '" . date('m') . "'
                 AND (
                         tnews.cKundengruppe LIKE '%;-1;%' 
-                        OR tnews.cKundengruppe RLIKE '^([0-9;]*;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";'
+                        OR tnews.cKundengruppe RLIKE '^([0-9;]*;)?" . Session::CustomerGroup()->getID() . ";'
                     )
             GROUP BY tnews.kNews
             ORDER BY tnews.dErstellt DESC", 2

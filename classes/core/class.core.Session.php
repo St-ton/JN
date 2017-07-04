@@ -50,7 +50,7 @@ class Session
             return new self($start, $sessionName);
         }
 
-        return (self::$_instance === null)
+        return self::$_instance === null
             ? new self($start, $sessionName)
             : self::$_instance;
     }
@@ -170,6 +170,10 @@ class Session
         if (isset($_GET['lang']) && (!isset($_SESSION['cISOSprache']) || $_GET['lang'] !== $_SESSION['cISOSprache'])) {
             $globalsAktualisieren = true;
             $updateLanguage       = true;
+        }
+        if (!$globalsAktualisieren && isset($_SESSION['Kundengruppe']) && get_class($_SESSION['Kundengruppe']) === 'stdClass') {
+            // session upgrade from 4.05 -> 4.06 - update with class instance
+            $globalsAktualisieren = true;
         }
         $lang    = isset($_GET['lang']) ? $_GET['lang'] : '';
         $checked = false;

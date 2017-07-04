@@ -4,13 +4,6 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 require_once __DIR__ . '/syncinclude.php';
-//smarty lib
-global $smarty;
-
-if ($smarty === null) {
-    require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
-    $smarty = Shop::Smarty();
-}
 
 $return = 3;
 if (auth()) {

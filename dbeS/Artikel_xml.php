@@ -6,13 +6,6 @@
 
 require_once __DIR__ . '/syncinclude.php';
 
-global $smarty;
-
-if ($smarty === null) {
-    require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
-    $smarty = Shop::Smarty();
-}
-
 $return  = 3;
 $archive = null;
 if (auth()) {

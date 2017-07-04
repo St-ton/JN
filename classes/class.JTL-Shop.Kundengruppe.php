@@ -8,7 +8,7 @@ class Kundengruppe
     /**
      * @var int
      */
-    public $kKundengruppe;
+    protected $kKundengruppe;
 
     /**
      * @var string
@@ -33,17 +33,17 @@ class Kundengruppe
     /**
      * @var int
      */
-    public $nNettoPreise;
+    protected $nNettoPreise;
 
     /**
      * @var int
      */
-    public $darfPreiseSehen = 1;
+    protected $darfPreiseSehen = 1;
 
     /**
      * @var int
      */
-    public $darfArtikelKategorienSehen = 1;
+    protected $darfArtikelKategorienSehen = 1;
 
     /**
      * @var int
@@ -53,8 +53,12 @@ class Kundengruppe
     /**
      * @var array
      */
-    public $Attribute = [];
+    protected $Attribute = [];
 
+    /**
+     * @var string
+     */
+    private $cNameLocalized;
 
     /**
      * Constructor
@@ -67,6 +71,39 @@ class Kundengruppe
         if ((int)$kKundengruppe > 0) {
             $this->loadFromDB($kKundengruppe);
         }
+    }
+
+    /**
+     * @param string $name
+     * @param mixed $value
+     * @return $this
+     * @throws OutOfBoundsException
+     */
+    public function __set($name, $value)
+    {
+        if (property_exists($this, $name)) {
+            trigger_error('Kundengruppe: setter should be use to set ' . $name, E_USER_DEPRECATED);
+            $this->$name = $value;
+
+            return $this;
+        }
+        throw new OutOfBoundsException('Unable to get ' . $name);
+    }
+
+    /**
+     * @param string $name
+     * @return mixed
+     * @throws OutOfBoundsException
+     */
+    public function __get($name)
+    {
+        if (property_exists($this, $name)) {
+            trigger_error('Kundengruppe: getter should be use to get ' . $name, E_USER_DEPRECATED);
+            Shop::dbg($name, false, 'bt: ', 3);
+            return $this->$name;
+        }
+
+        throw new OutOfBoundsException('Unable to get ' . $name);
     }
 
     /**

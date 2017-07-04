@@ -498,7 +498,9 @@ class Session
      */
     public static function CustomerGroup()
     {
-        return $_SESSION['Kundengruppe'];
+        return isset($_SESSION['Kundengruppe'])
+            ? $_SESSION['Kundengruppe']
+            : (new Kundengruppe())->loadDefaultGroup();
     }
 
     /**

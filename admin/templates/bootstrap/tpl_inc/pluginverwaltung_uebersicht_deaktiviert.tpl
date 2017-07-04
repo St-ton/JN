@@ -77,7 +77,7 @@
                                 </td>
                                 <td class="tcenter">
                                     {if isset($PluginInstalliert->dUpdate) && $PluginInstalliert->dUpdate|strlen > 0 && $PluginInstalliert->cUpdateFehler == 1}
-                                        <a onclick="ackCheck({$PluginInstalliert->kPlugin}, '#deaktiviert'); return false;" class="btn btn-primary btn-sm" title="{#pluginBtnUpdate#}"><i class="fa fa-refresh"></i></a>
+                                        <a onclick="ackCheck({$PluginInstalliert->kPlugin}, 'deaktiviert'); return false;" class="btn btn-primary btn-sm" title="{#pluginBtnUpdate#}"><i class="fa fa-refresh"></i></a>
                                     {/if}
                                 </td>
                             </tr>

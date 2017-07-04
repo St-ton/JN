@@ -8,11 +8,11 @@
                     {foreach name=navi from=$Brotnavi item=oItem}
                         {if $smarty.foreach.navi.first}
                             <li class="breadcrumb-item first" itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
-                                <a itemprop="item" href="{$oItem->url}" title="{$oItem->name|escape:"html"}">
+                                <a itemprop="item" href="{$oItem->urlFull}" title="{$oItem->name|escape:'html'}">
                                     <span class="fa fa-home"></span>
-                                    <span itemprop="name" class="hidden">{$oItem->name|escape:"html"}</span>
+                                    <span itemprop="name" class="hidden">{$oItem->name|escape:'html'}</span>
                                 </a>
-                                <meta itemprop="url" content="{$oItem->url}" />
+                                <meta itemprop="url" content="{$oItem->urlFull}" />
                                 <meta itemprop="position" content="{$smarty.foreach.navi.iteration}" />
                             </li>
                         {elseif $smarty.foreach.navi.last}
@@ -20,7 +20,7 @@
                                 <span itemprop="name">
                                     {if $oItem->name !== null}
                                         {if $oItem->hasChild === true}
-                                            <a href="{$oItem->url}" title="{$oItem->name|escape:"html"}">{$oItem->name}</a>
+                                            <a href="{$oItem->urlFull}" title="{$oItem->name|escape:'html'}">{$oItem->name}</a>
                                         {else}
                                             {$oItem->name}
                                         {/if}
@@ -32,10 +32,10 @@
                             </li>
                         {else}
                             <li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
-                                <a itemprop="item" href="{$ShopURL}/{$oItem->url}" title="{$oItem->name|escape:"html"}">
+                                <a itemprop="item" href="{$oItem->urlFull}" title="{$oItem->name|escape:'html'}">
                                     <span itemprop="name">{$oItem->name}</span>
                                 </a>
-                                <meta itemprop="url" content="{$ShopURL}/{$oItem->url}" />
+                                <meta itemprop="url" content="{$oItem->urlFull}" />
                                 <meta itemprop="position" content="{$smarty.foreach.navi.iteration}" />
                             </li>
                         {/if}

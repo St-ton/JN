@@ -305,8 +305,8 @@ class LinkHelper
                 : Kundengruppe::getDefaultGroupID();
             $Linkgruppen = Shop::DB()->query("SELECT * FROM tlinkgruppe", 2);
             $linkGroups  = new stdClass();
-            $shopURL     = Shop::getURL();
-            $shopURLSSL  = Shop::getURL(true);
+            $shopURL     = Shop::getURL() . '/';
+            $shopURLSSL  = Shop::getURL(true) . '/';
             foreach ($Linkgruppen as $Linkgruppe) {
                 if (trim($Linkgruppe->cTemplatename) === '') {
                     continue;
@@ -372,7 +372,7 @@ class LinkHelper
                         $link->cURLFull = $link->cURL;
                     } else {
                         $link->URL      = baueURL($link, URLART_SEITE);
-                        $link->cURLFull = $shopURL . '/' . $link->URL;
+                        $link->cURLFull = $shopURL . $link->URL;
                         if ($link->bSSL === 2) {
                             // if link has forced ssl, modify cURLFull accordingly
                             $link->cURLFull = str_replace('http://', 'https://', $link->cURLFull);
@@ -549,8 +549,8 @@ class LinkHelper
                 }
                 unset($customerGroup);
                 $link = new Link(null, $sr);
-                $link->setURLFull($shopURL . '/' . $link->cSeo)
-                     ->setURLFullSSL($shopURLSSL . '/' . $link->cSeo);
+                $link->setURLFull($shopURL . $link->cSeo)
+                     ->setURLFullSSL($shopURLSSL . $link->cSeo);
                 $link->customerGroups = $customerGroups;
                 $currentIndex         = $sr->cDateiname;
                 if (!isset($linkGroups->staticRoutes[$sr->cDateiname])) {
@@ -646,9 +646,9 @@ class LinkHelper
             $cMember_arr = array_keys(get_object_vars($linkGroups));
             if (is_array($cMember_arr) && count($cMember_arr) > 0) {
                 foreach ($cMember_arr as $cMember) {
-                    if (isset($linkGroups->$cMember->Links) &&
-                        is_array($linkGroups->$cMember->Links) &&
-                        count($linkGroups->$cMember->Links) > 0
+                    if (isset($linkGroups->$cMember->Links)
+                        && is_array($linkGroups->$cMember->Links)
+                        && count($linkGroups->$cMember->Links) > 0
                     ) {
                         foreach ($linkGroups->$cMember->Links as $oLink) {
                             if ($kLink > 0 && isset($oLink->kLink) && $oLink->kLink === $kLink) {
@@ -689,8 +689,8 @@ class LinkHelper
             default:
                 break;
         }
-        if (isset($NaviFilter->Suche->cSuche) &&
-            strlen($NaviFilter->Suche->cSuche) > 0
+        if (isset($NaviFilter->Suche->cSuche)
+            && strlen($NaviFilter->Suche->cSuche) > 0
         ) {
             $bNoIndex = true;
         }

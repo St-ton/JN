@@ -378,8 +378,7 @@ if ($cParameter_arr['kHersteller'] > 0 ||
         $oSuchergebnisse->TagsJSON          = gibTagFilterJSONOptionen($FilterSQL, $NaviFilter);
         $oSuchergebnisse->MerkmalFilter     = gibMerkmalFilterOptionen($FilterSQL,
             $NaviFilter,
-            $AktuelleKategorie,
-            class_exists('AuswahlAssistent')
+            $AktuelleKategorie
         );
         $oSuchergebnisse->Preisspanne       = gibPreisspannenFilterOptionen($FilterSQL, $NaviFilter, $oSuchergebnisse);
         $oSuchergebnisse->Kategorieauswahl  = gibKategorieFilterOptionen($FilterSQL, $NaviFilter);

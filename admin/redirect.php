@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -11,6 +10,7 @@ $oAccount->permission('REDIRECT_VIEW', true, true);
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'csv_exporter_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'csv_importer_inc.php';
+require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'redirect_inc.php';
 
 handleCsvImportAction('redirects', 'tredirect');
 
@@ -23,14 +23,6 @@ $shopURL   = Shop::getURL();
 
 if (isset($aData['action']) && validateToken()) {
     switch ($aData['action']) {
-        case 'search':
-            $ret = [
-                'article'      => getArticleList($aData['search'], ['cLimit' => 10, 'return' => 'object']),
-                'category'     => getCategoryList($aData['search'], ['cLimit' => 10, 'return' => 'object']),
-                'manufacturer' => getManufacturerList($aData['search'], ['cLimit' => 10, 'return' => 'object']),
-            ];
-            exit(json_encode($ret));
-            break;
         case 'check_url':
             exit($aData['url'] !== '' && Redirect::checkAvailability($aData['url']) ? '1' : '0');
             break;
@@ -41,9 +33,10 @@ if (isset($aData['action']) && validateToken()) {
                 if (!empty($cToUrl)) {
                     $urls[$oItem->kRedirect] = $cToUrl;
                 }
-                if ($oItem->kRedirect > 0) {
+                if ($oItem->kRedirect > 0 && $oItem->cToUrl !== $cToUrl) {
                     $oItem->cToUrl = $cToUrl;
                     if (Redirect::checkAvailability($cToUrl)) {
+                        $oItem->bAvailable = $cToUrl !== '' ? '1' : '0';
                         Shop::DB()->update('tredirect', 'kRedirect', $oItem->kRedirect, $oItem);
                     } else {
                         $cFehler .= "&Auml;nderungen konnten nicht gespeichert werden, da die weiterzuleitende URL {$cToUrl} nicht erreichbar ist.<br />";
@@ -102,8 +95,11 @@ $oSelect->addSelectOption('vorhanden', '', 9);
 $oSelect->addSelectOption('fehlend', '', 4);
 $oFilter->assemble();
 
+$nRedirectCount = Redirect::getRedirectCount($oFilter->getWhereSQL());
+
 $oPagination = (new Pagination())
-    ->setItemCount(Redirect::getTotalRedirectCount())
+    ->setItemCount($nRedirectCount)
+    ->setItemsPerPageOptions([10, 20, 50, 100])
     ->setSortByOptions([['cFromUrl', 'URL'],
                         ['cToUrl', 'Weiterleitung nach'],
                         ['nCount', 'Aufrufe']])

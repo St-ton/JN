@@ -16,8 +16,8 @@
 // you are using session configuration.
 // See http://kcfinder.sunhater.com/install for setting descriptions
 
-require_once '../../config.JTL-Shop.ini.php';
-require_once '../../defines.php';
+require_once __DIR__ . '/../../config.JTL-Shop.ini.php';
+require_once __DIR__ . '/../../defines.php';
 
 session_name('eSIdAdm');
 $_CONFIG = array(
@@ -27,7 +27,7 @@ $_CONFIG = array(
 
     'disabled' => true,
     'theme' => 'oxygen',
-    'uploadURL' => URL_SHOP . '/' . PFAD_MEDIAFILES,
+    'uploadURL' => parse_url(URL_SHOP . '/' . PFAD_MEDIAFILES, PHP_URL_PATH),
     'uploadDir' => PFAD_ROOT . PFAD_MEDIAFILES,
 
     'types' => array(

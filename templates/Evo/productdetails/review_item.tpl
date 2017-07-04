@@ -54,6 +54,16 @@
             </small>
         </blockquote>
         <img itemprop="image" src="{$Artikel->cVorschaubild}" alt="{$oBewertung->cTitel}" class="hidden" />
+        {if !empty($oBewertung->cAntwort)}
+            <div class="review-reply">
+                <strong>Antwort von {$cShopName}:</strong>
+                <hr class="hr-sm">
+                <blockquote>
+                    <p>{$oBewertung->cAntwort}</p>
+                    <small>{$oBewertung->AntwortDatum}</small>
+                </blockquote>
+            </div>
+        {/if}
     </div>
     {/block}
 </div>

@@ -58,6 +58,8 @@ function pruefeNewsKategorie($cName, $nNewskategorieEditSpeichern = 0)
 }
 
 /**
+ * @deprecated since 4.06
+ *
  * @param string $string
  * @return string
  */
@@ -183,6 +185,8 @@ function mappeDatumName($cMonat, $nJahr, $cISOSprache)
 }
 
 /**
+ * @deprecated since 4.06
+ *
  * @param string $cDateTimeStr
  * @return stdClass
  */
@@ -281,6 +285,37 @@ function holeNewsBilder($kNews, $cUploadVerzeichnis)
                     $oDatei         = new stdClass();
                     $oDatei->cName  = substr($Datei, 0, strpos($Datei, '.'));
                     $oDatei->cURL   = '<img src="' . $shopURL . PFAD_NEWSBILDER . $kNews . '/' . $Datei . '" />';
+                    $oDatei->cDatei = $Datei;
+
+                    $oDatei_arr[] = $oDatei;
+                }
+            }
+
+            usort($oDatei_arr, 'cmp_obj');
+        }
+    }
+
+    return $oDatei_arr;
+}
+
+/**
+ * @param int    $kNewsKategorie
+ * @param string $cUploadVerzeichnis
+ * @return array
+ */
+function holeNewsKategorieBilder($kNewsKategorie, $cUploadVerzeichnis)
+{
+    $oDatei_arr = [];
+    $kNewsKategorie      = (int)$kNewsKategorie;
+    if ($kNewsKategorie > 0) {
+        if (is_dir($cUploadVerzeichnis . $kNewsKategorie)) {
+            $DirHandle = opendir($cUploadVerzeichnis . $kNewsKategorie);
+            $shopURL   = Shop::getURL() . '/';
+            while (false !== ($Datei = readdir($DirHandle))) {
+                if ($Datei !== '.' && $Datei !== '..') {
+                    $oDatei         = new stdClass();
+                    $oDatei->cName  = substr($Datei, 0, strpos($Datei, '.'));
+                    $oDatei->cURL   = '<img src="' . $shopURL . PFAD_NEWSKATEGORIEBILDER . $kNewsKategorie . '/' . $Datei . '" />';
                     $oDatei->cDatei = $Datei;
 
                     $oDatei_arr[] = $oDatei;
@@ -423,7 +458,11 @@ function loescheNewsBild($cBildname, $kNews, $cUploadVerzeichnis)
                 if ($cBildname === 'preview') {
                     $upd                = new stdClass();
                     $upd->cPreviewImage = '';
-                    Shop::DB()->update('tnews', 'kNews', $kNews, $upd);
+                    if (strpos($cUploadVerzeichnis, PFAD_NEWSKATEGORIEBILDER) === false){
+                        Shop::DB()->update('tnews', 'kNews', $kNews, $upd);
+                    } else {
+                        Shop::DB()->update('tnewskategorie', 'kNewsKategorie', $kNews, $upd);
+                    }
                 }
 
                 return true;

@@ -289,6 +289,11 @@ class Plugin
     /**
      * @var array
      */
+    private static $templatePaths;
+
+    /**
+     * @var array
+     */
     private static $bootstrapper = [];
 
     /**
@@ -877,6 +882,38 @@ class Plugin
     }
 
     /**
+     * @return array
+     */
+    public static function getTemplatePaths()
+    {
+        if (self::$templatePaths !== null) {
+            return self::$templatePaths;
+        }
+
+        $cacheID = 'template_paths';
+        if (($templatePaths = Shop::Cache()->get($cacheID)) !== false) {
+            self::$templatePaths = $templatePaths;
+
+            return $templatePaths;
+        }
+
+        $templatePaths = [];
+        $plugins       = Shop::DB()->selectAll('tplugin', 'nStatus', 2, 'cPluginID,cVerzeichnis,nVersion', 'nPrio');
+
+        foreach ($plugins as $plugin) {
+            $path = PFAD_ROOT . PFAD_PLUGIN . $plugin->cVerzeichnis . '/' .
+                PFAD_PLUGIN_VERSION . $plugin->nVersion . '/' . PFAD_PLUGIN_FRONTEND . PFAD_PLUGIN_TEMPLATE;
+            if (is_dir($path)) {
+                $templatePaths[$plugin->cPluginID] = $path;
+            }
+        }
+
+        Shop::Cache()->set($cacheID, $templatePaths, [CACHING_GROUP_PLUGIN]);
+
+        return $templatePaths;
+    }
+
+    /**
      * perform a "search for a particular file" only once
      *
      * we want to do expensive checks for files existence only one times!
@@ -893,6 +930,7 @@ class Plugin
             $vfDone[$szCanonicalFileName] = true; // we're using always a hash here, for speed-up reasons!
             return file_exists($szCanonicalFileName); // do the actual check
         }
+
         return false;
     }
 }

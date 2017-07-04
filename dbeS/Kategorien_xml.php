@@ -40,6 +40,12 @@ if (auth()) {
                 $d   = file_get_contents($entzippfad . $zip['filename']);
                 $xml = XML_unserialize($d);
 
+                if (isset($xml['tkategorie attr']['nGesamt']) || isset($xml['tkategorie attr']['nAktuell'])) {
+                    setMetaLimit($xml['tkategorie attr']['nAktuell'], $xml['tkategorie attr']['nGesamt']);
+                    unset($xml['tkategorie attr']['nGesamt']);
+                    unset($xml['tkategorie attr']['nAktuell']);
+                }
+
                 if ($zip['filename'] === 'katdel.xml') {
                     bearbeiteDeletes($xml);
                 } else {
@@ -302,4 +308,15 @@ function saveKategorieAttribut($xmlParent, $oAttribut)
     }
 
     return $oAttribut->kKategorieAttribut;
+}
+
+/**
+ * ToDo: Implement different updatestrategies in dependece of total and current category blocks
+ * @param $nAktuell
+ * @param $nGesamt
+ * @return bool
+ */
+function setMetaLimit($nAktuell, $nGesamt)
+{
+    return false;
 }

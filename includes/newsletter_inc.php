@@ -100,7 +100,7 @@ function fuegeNewsletterEmpfaengerEin($oKunde, $bPruefeDaten = false)
 
                 // Neuen Newsletterempfaenger hinzufuegen
                 $oNewsletterEmpfaenger           = new stdClass();
-                $oNewsletterEmpfaenger->kSprache = (int)$_SESSION['kSprache'];
+                $oNewsletterEmpfaenger->kSprache = Shop::getLanguage();
                 $oNewsletterEmpfaenger->kKunde   = isset($_SESSION['Kunde']->kKunde)
                     ? (int)$_SESSION['Kunde']->kKunde
                     : 0;
@@ -131,7 +131,7 @@ function fuegeNewsletterEmpfaengerEin($oKunde, $bPruefeDaten = false)
                 Shop::DB()->insert('tnewsletterempfaenger', $oNewsletterEmpfaenger);
                 // Protokollieren (hinzufuegen)
                 $oNewsletterEmpfaengerHistory               = new stdClass();
-                $oNewsletterEmpfaengerHistory->kSprache     = (int)$_SESSION['kSprache'];
+                $oNewsletterEmpfaengerHistory->kSprache     = Shop::getLanguage();
                 $oNewsletterEmpfaengerHistory->kKunde       = isset($_SESSION['Kunde']->kKunde)
                     ? (int)$_SESSION['Kunde']->kKunde
                     : 0;

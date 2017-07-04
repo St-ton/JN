@@ -968,7 +968,7 @@ function baueArtikelDetail($oArtikel, $xPost_arr)
     // Bewertungen holen
     if (!isset($oArtikel->Bewertungen)) {
         $oArtikel->holeBewertung(
-            $_SESSION['kSprache'],
+            Shop::getLanguage(),
             $conf['bewertung']['bewertung_anzahlseite'],
             $bewertung_seite,
             $bewertung_sterne,

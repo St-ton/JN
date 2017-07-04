@@ -67,7 +67,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
                     FROM tuploadschema
                     LEFT JOIN tuploadschemasprache
                         ON tuploadschemasprache.kArtikelUpload = tuploadschema.kUploadSchema
-                        AND tuploadschemasprache.kSprache = " . (int)$_SESSION['kSprache'] . "
+                        AND tuploadschemasprache.kSprache = " . Shop::getLanguage() . "
                     WHERE kUploadSchema =  " . (int)$kUploadSchema, 1
             );
 
@@ -125,7 +125,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
                     FROM tuploadschema
                     LEFT JOIN tuploadschemasprache
                         ON tuploadschemasprache.kArtikelUpload = tuploadschema.kUploadSchema
-                        AND tuploadschemasprache.kSprache = " . (int)$_SESSION['kSprache'] . "
+                        AND tuploadschemasprache.kSprache = " . Shop::getLanguage() . "
                     WHERE nTyp = " . (int)$nTyp . $cSql, 2
             );
         }

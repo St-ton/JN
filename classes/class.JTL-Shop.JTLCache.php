@@ -941,8 +941,8 @@ class JTLCache
             $lang = Shop::getLanguage();
             if ($lang > 0) {
                 $baseID .= $lang;
-            } elseif (isset($_SESSION['kSprache'])) {
-                $baseID .= $_SESSION['kSprache'];
+            } elseif (Shop::getLanguage() > 0) {
+                $baseID .= Shop::getLanguage();
             } else {
                 $baseID .= '0';
             }

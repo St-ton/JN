@@ -852,7 +852,8 @@ class LinkHelper
                         $loginSichtbarkeit . "
                         AND (tlink.cKundengruppen IS NULL
                         OR tlink.cKundengruppen = 'NULL'
-                        OR tlink.cKundengruppen RLIKE '^([0-9;]*;)?" . Session::CustomerGroup()->getID() . ";')",
+                        OR tlink.cKundengruppen RLIKE '^([0-9;]*;)?" .
+Session::CustomerGroup()->getID() . ";')",
                 2
             );
             if (!empty($linkData)) {

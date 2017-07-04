@@ -413,11 +413,9 @@ class News extends MainModel
     {
         $kKey = (int)$kKey;
         if ($kKey > 0) {
-            $kSprache = null;
-            if (isset($_SESSION['kSprache'])) {
-                $kSprache = (int)$_SESSION['kSprache'];
-            } else {
-                $oSprache = gibStandardsprache(true);
+            $kSprache = Shop::getLanguage();
+            if (!$kSprache > 0) {
+                $oSprache = gibStandardsprache();
                 $kSprache = (int)$oSprache->kSprache;
             }
 
@@ -479,10 +477,9 @@ class News extends MainModel
         } else {
             $kKundengruppe = Kundengruppe::getDefaultGroupID();
         }
-        if (isset($_SESSION['kSprache'])) {
-            $kSprache = (int)$_SESSION['kSprache'];
-        } else {
-            $oSprache = gibStandardsprache(true);
+        $kSprache = Shop::getLanguage();
+        if (!$kSprache > 0) {
+            $oSprache = gibStandardsprache();
             $kSprache = (int)$oSprache->kSprache;
         }
         $oObj_arr = Shop::DB()->query(

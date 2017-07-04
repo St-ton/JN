@@ -255,9 +255,7 @@ class ArtikelHelper
                     $j++;
                 }
             }
-            $kSprache                     = isset($_SESSION['kSprache'])
-                ? (int)$_SESSION['kSprache']
-                : Shop::getLanguage();
+            $kSprache                     = Shop::getLanguage();
             $oSQLEigenschaft              = new stdClass();
             $oSQLEigenschaft->cSELECT     = '';
             $oSQLEigenschaft->cJOIN       = '';

@@ -482,7 +482,7 @@ function getArticleStockInfo($kArtikel, $kEigenschaftWert_arr)
             $oTMPArtikel->kArtikel,
             $oArtikelOptionen,
             Kundengruppe::getCurrent(),
-            $_SESSION['kSprache']
+            Shop::getLanguage()
         );
         $oTestArtikel->Lageranzeige->AmpelText = utf8_encode($oTestArtikel->Lageranzeige->AmpelText);
 
@@ -521,7 +521,7 @@ function checkDependencies($aValues)
         $oArtikelOptionen->nMain                     = 1;
         $oArtikelOptionen->nWarenlager               = 1;
         $oArtikel                                    = new Artikel();
-        $oArtikel->fuelleArtikel($kVaterArtikel, $oArtikelOptionen, Session::CustomerGroup()->getID(), $_SESSION['kSprache']);
+        $oArtikel->fuelleArtikel($kVaterArtikel, $oArtikelOptionen, Session::CustomerGroup()->getID());
         $weightDiff   = 0;
         $newProductNr = '';
         foreach ($valueID_arr as $valueID) {
@@ -531,8 +531,8 @@ function checkDependencies($aValues)
                 ? $currentValue->cArtNr
                 : $oArtikel->cArtNr;
         }
-        $weightTotal        = Trennzeichen::getUnit(JTLSEPARATER_WEIGHT, $_SESSION['kSprache'], $oArtikel->fGewicht + $weightDiff);
-        $weightArticleTotal = Trennzeichen::getUnit(JTLSEPARATER_WEIGHT, $_SESSION['kSprache'], $oArtikel->fArtikelgewicht + $weightDiff);
+        $weightTotal        = Trennzeichen::getUnit(JTLSEPARATER_WEIGHT, Shop::getLanguage(), $oArtikel->fGewicht + $weightDiff);
+        $weightArticleTotal = Trennzeichen::getUnit(JTLSEPARATER_WEIGHT, Shop::getLanguage(), $oArtikel->fArtikelgewicht + $weightDiff);
         $cUnitWeightLabel   = Shop::Lang()->get('weightUnit');
 
         // Alle Variationen ohne Freifeld

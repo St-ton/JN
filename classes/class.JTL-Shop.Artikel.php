@@ -3516,11 +3516,11 @@ class Artikel
             // (falls keine Kundengruppe in der Session existiert)
             Kundengruppe::reset($kKundengruppe);
         }
-        if (!$kSprache && isset($_SESSION['kSprache'])) {
-            $kSprache = $_SESSION['kSprache'];
+        if (!$kSprache) {
+            $kSprache = Shop::getLanguage();
         }
         if (!$kSprache) {
-            $oSprache = gibStandardsprache(true);
+            $oSprache = gibStandardsprache();
             $kSprache = $oSprache->kSprache;
         }
         $kSprache = (int)$kSprache;
@@ -3923,7 +3923,7 @@ class Artikel
         $this->holBilder();
         // Warenlager
         if (isset($oArtikelOptionen->nWarenlager) && $oArtikelOptionen->nWarenlager == 1) {
-            $this->holWarenlager();
+            $this->holWarenlager($kSprache);
         }
         $this->baueLageranzeige();
         if (isset($oArtikelOptionen->nMerkmale) && $oArtikelOptionen->nMerkmale) {
@@ -4153,7 +4153,7 @@ class Artikel
             $this->cEstimatedDelivery = $this->getDeliveryTime($_SESSION['cLieferlandISO']);
         }
         // Suchspecialbildoverlay
-        $this->baueSuchspecialBildoverlay();
+        $this->baueSuchspecialBildoverlay($kSprache);
         $this->staffelPreis_arr  = $this->getTierPrices();
         $this->isSimpleVariation = false;
         if (count($this->Variationen) > 0) {
@@ -4162,7 +4162,7 @@ class Artikel
         $this->metaKeywords    = $this->getMetaKeywords();
         $this->metaTitle       = $this->getMetaTitle();
         $this->metaDescription = $this->setMetaDescription();
-        $this->tags            = $this->getTags();
+        $this->tags            = $this->getTags($kSprache);
         $this->taxData         = $this->getShippingAndTaxData();
         if (isset($oArtikelOptionen->nRatings) &&
             $oArtikelOptionen->nRatings === 1 &&
@@ -4261,11 +4261,12 @@ class Artikel
     }
 
     /**
+     * @param int $kSprache
      * @return $this
      */
-    public function baueSuchspecialBildoverlay()
+    public function baueSuchspecialBildoverlay($kSprache = 0)
     {
-        $languageID        = isset($_SESSION['kSprache']) ? $_SESSION['kSprache'] : getDefaultLanguageID();
+        $languageID        = $kSprache > 0 ? $kSprache : Shop::getLanguage();
         $searchSpecial_arr = holeAlleSuchspecialOverlays($languageID);
         // Suchspecialbildoverlay
         // Kleinste Prio und somit die Wichtigste, steht immer im Element 0 vom Array (nPrio ASC)
@@ -4530,11 +4531,13 @@ class Artikel
     }
 
     /**
+     * @param int $kSprache
      * @return $this
      */
-    public function holWarenlager()
+    public function holWarenlager($kSprache = 0)
     {
         $conf        = Shop::getSettings([CONF_GLOBAL]);
+        $languageID  = $kSprache > 0 ? $kSprache : Shop::getLanguage();
         $xOption_arr = [
             'cLagerBeachten'                => $this->cLagerBeachten,
             'cEinheit'                      => $this->cEinheit,
@@ -4545,15 +4548,15 @@ class Artikel
             'artikel_ampel_lagernull_gruen' => $conf['global']['artikel_ampel_lagernull_gruen'],
             'attribut_ampeltext_gelb'       => (!empty($this->AttributeAssoc[ART_ATTRIBUT_AMPELTEXT_GELB]))
                 ? $this->AttributeAssoc[ART_ATTRIBUT_AMPELTEXT_GELB]
-                : Shop::Lang()->get('ampelGelb', 'global'),
+                : Shop::Lang()->get('ampelGelb'),
             'attribut_ampeltext_gruen'      => (!empty($this->AttributeAssoc[ART_ATTRIBUT_AMPELTEXT_GRUEN]))
                 ? $this->AttributeAssoc[ART_ATTRIBUT_AMPELTEXT_GRUEN]
-                : Shop::Lang()->get('ampelGruen', 'global'),
+                : Shop::Lang()->get('ampelGruen'),
             'attribut_ampeltext_rot'        => (!empty($this->AttributeAssoc[ART_ATTRIBUT_AMPELTEXT_ROT]))
                 ? $this->AttributeAssoc[ART_ATTRIBUT_AMPELTEXT_ROT]
-                : Shop::Lang()->get('ampelRot', 'global')
+                : Shop::Lang()->get('ampelRot')
         ];
-        $this->oWarenlager_arr = Warenlager::getByProduct($this->kArtikel, $_SESSION['kSprache'], $xOption_arr);
+        $this->oWarenlager_arr = Warenlager::getByProduct($this->kArtikel, $languageID, $xOption_arr);
 
         return $this;
     }
@@ -6188,22 +6191,24 @@ class Artikel
      * get article tags - this once was holeProduktTagging()
      * invalidation in admin/tagging_inc.php
      *
+     * @param int $kSprache
      * @return array
      */
-    public function getTags()
+    public function getTags($kSprache = 0)
     {
         $conf      = Shop::getSettings([CONF_ARTIKELDETAILS]);
         $nLimit    = (int)$conf['artikeldetails']['tagging_max_count'];
         $tag_limit = ($nLimit > 0) ? ' LIMIT ' . $nLimit : '';
-        $kSprache  = null;
-        if (Shop::$kSprache) {
-            $kSprache = Shop::getLanguage();
-        } elseif (isset($_SESSION['kSprache'])) {
-            $kSprache = $_SESSION['kSprache'];
-        }
-        if (!$kSprache) {
-            $oSprache = gibStandardsprache(true);
-            $kSprache = $oSprache->kSprache;
+        if ($kSprache === 0) {
+            if (Shop::$kSprache) {
+                $kSprache = Shop::getLanguage();
+            } elseif (isset($_SESSION['kSprache'])) {
+                $kSprache = $_SESSION['kSprache'];
+            }
+            if (!$kSprache) {
+                $oSprache = gibStandardsprache();
+                $kSprache = $oSprache->kSprache;
+            }
         }
         $kSprache = (int)$kSprache;
         $tags     = Shop::DB()->query(

@@ -38,8 +38,8 @@ class HerstellerHelper
         $this->cacheID = 'manuf_' . Shop::Cache()->getBaseID() . (($lagerfilter !== '') ? md5($lagerfilter) : '');
         self::$langID  = Shop::getLanguage();
         if (!self::$langID > 0) {
-            if (isset($_SESSION['kSprache'])) {
-                self::$langID = (int)$_SESSION['kSprache'];
+            if (Shop::getLanguage() > 0) {
+                self::$langID = Shop::getLanguage();
             } else {
                 $_lang        = gibStandardsprache();
                 self::$langID = (int)$_lang->kSprache;

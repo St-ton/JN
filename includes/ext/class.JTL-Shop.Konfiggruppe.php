@@ -121,7 +121,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                     $this->$cMember = $oObj->$cMember;
                 }
                 if (!$kSprache) {
-                    $kSprache = $_SESSION['kSprache'];
+                    $kSprache = Shop::getLanguage();
                 }
                 $this->oSprache  = new Konfiggruppesprache($this->kKonfiggruppe, $kSprache);
                 $this->oItem_arr = Konfigitem::fetchAll($this->kKonfiggruppe);

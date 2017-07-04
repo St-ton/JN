@@ -108,11 +108,11 @@ function kundeSpeichern($cPost_arr)
             }
 
             $knd->kKundengruppe = $kKundengruppe;
-            $knd->kSprache      = $_SESSION['kSprache'];
+            $knd->kSprache      = Shop::getLanguage();
             $knd->cAbgeholt     = 'N';
             $knd->cSperre       = 'N';
             //konto sofort aktiv?
-            $knd->cAktiv = ($GlobaleEinstellungen['global']['global_kundenkonto_aktiv'] === 'A')
+            $knd->cAktiv = $GlobaleEinstellungen['global']['global_kundenkonto_aktiv'] === 'A'
                 ? 'N'
                 : 'Y';
             $customer             = new Kunde();

@@ -274,9 +274,9 @@ function gibYategoExport($exportformat, $oJobQueue, $ExportEinstellungen)
     setzeSteuersaetze();
     $_SESSION['Kundengruppe']->darfPreiseSehen            = 1;
     $_SESSION['Kundengruppe']->darfArtikelKategorienSehen = 1;
-    $_SESSION['kSprache']                                 = $exportformat->kSprache;
-    $_SESSION['kKundengruppe']                            = $exportformat->kKundengruppe;
-    $_SESSION['Kundengruppe']->kKundengruppe              = $exportformat->kKundengruppe;
+    $_SESSION['kSprache']                                 = (int)$exportformat->kSprache;
+    $_SESSION['kKundengruppe']                            = (int)$exportformat->kKundengruppe;
+    $_SESSION['Kundengruppe']->kKundengruppe              = (int)$exportformat->kKundengruppe;
 
     $KategorieListe = [];
     $oArtikel_arr   = Shop::DB()->query(

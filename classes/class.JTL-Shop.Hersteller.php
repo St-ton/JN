@@ -198,7 +198,7 @@ class Hersteller
     public static function getAll($productLookup = true)
     {
         $sqlWhere = '';
-        $kSprache = isset($_SESSION['kSprache']) ? (int)$_SESSION['kSprache'] : Shop::getLanguage();
+        $kSprache = Shop::getLanguage();
         if ($productLookup) {
             $sqlWhere = "WHERE EXISTS (
                             SELECT 1

@@ -1193,7 +1193,7 @@ function fuegeEinInWarenkorbPers($kArtikel, $fAnzahl, $oEigenschaftwerte_arr, $c
             }
         // Konfigitems ohne Artikelbezug
         } elseif ($kArtikel === 0 && !empty($kKonfigitem)) {
-            $konfItem = new Konfigitemsprache($kKonfigitem, $_SESSION['kSprache']);
+            $konfItem = new Konfigitemsprache($kKonfigitem, Shop::getLanguage());
             $oWarenkorbPers = new WarenkorbPers($_SESSION['Kunde']->kKunde);
             $oWarenkorbPers->fuegeEin($kArtikel, $konfItem->getName(), $oEigenschaftwerte_arr, $fAnzahl, $cUnique, $kKonfigitem, $nPosTyp);
         }
@@ -2202,7 +2202,7 @@ function checkeSpracheWaehrung($lang = '')
         foreach ($Sprachen as $Sprache) {
             if ($Sprache->cISO === $lang) {
                 $_SESSION['cISOSprache'] = $Sprache->cISO;
-                $_SESSION['kSprache']    = $Sprache->kSprache;
+                $_SESSION['kSprache']    = (int)$Sprache->kSprache;
                 Shop::setLanguage($Sprache->kSprache, $Sprache->cISO);
                 unset($_SESSION['Suche']);
                 $bSpracheDa = true;
@@ -2218,7 +2218,7 @@ function checkeSpracheWaehrung($lang = '')
             }
         }
         // Suchspecialoverlays
-        $GLOBALS['oSuchspecialoverlay_arr'] = holeAlleSuchspecialOverlays($_SESSION['kSprache']);
+        $GLOBALS['oSuchspecialoverlay_arr'] = holeAlleSuchspecialOverlays(Shop::getLanguage());
         if (!$bSpracheDa) { //lang mitgegeben, aber nicht mehr in db vorhanden -> alter Sprachlink
             $kArtikel              = verifyGPCDataInteger('a');
             $kKategorie            = verifyGPCDataInteger('k');
@@ -2241,7 +2241,7 @@ function checkeSpracheWaehrung($lang = '')
                     'tseo',
                     'cKey', 'kArtikel',
                     'kKey', $kArtikel,
-                    'kSprache', (int)$_SESSION['kSprache']
+                    'kSprache', Shop::getLanguage()
                 );
                 $cSeo  = $dbRes->cSeo;
             } elseif ($kKategorie > 0) {
@@ -2249,7 +2249,7 @@ function checkeSpracheWaehrung($lang = '')
                     'tseo',
                     'cKey', 'kKategorie',
                     'kKey', $kKategorie,
-                    'kSprache', (int)$_SESSION['kSprache']
+                    'kSprache', Shop::getLanguage()
                 );
                 $cSeo  = $dbRes->cSeo;
             } elseif ($kSeite > 0) {
@@ -2257,7 +2257,7 @@ function checkeSpracheWaehrung($lang = '')
                     'tseo',
                     'cKey', 'kLink',
                     'kKey', $kSeite,
-                    'kSprache', (int)$_SESSION['kSprache']
+                    'kSprache', Shop::getLanguage()
                 );
                 $cSeo  = $dbRes->cSeo;
             } elseif ($kVariKindArtikel > 0) {
@@ -2265,7 +2265,7 @@ function checkeSpracheWaehrung($lang = '')
                     'tseo',
                     'cKey', 'kArtikel',
                     'kKey', $kVariKindArtikel,
-                    'kSprache', (int)$_SESSION['kSprache']
+                    'kSprache', Shop::getLanguage()
                 );
                 $cSeo  = $dbRes->cSeo;
             } elseif ($kHersteller > 0) {
@@ -2273,7 +2273,7 @@ function checkeSpracheWaehrung($lang = '')
                     'tseo',
                     'cKey', 'kHersteller',
                     'kKey', $kHersteller,
-                    'kSprache', (int)$_SESSION['kSprache']
+                    'kSprache', Shop::getLanguage()
                 );
                 $cSeo  = $dbRes->cSeo;
             } elseif ($kSuchanfrage > 0) {
@@ -2281,7 +2281,7 @@ function checkeSpracheWaehrung($lang = '')
                     'tseo',
                     'cKey', 'kSuchanfrage',
                     'kKey', $kSuchanfrage,
-                    'kSprache', (int)$_SESSION['kSprache']
+                    'kSprache', Shop::getLanguage()
                 );
                 $cSeo  = $dbRes->cSeo;
             } elseif ($kMerkmalWert > 0) {
@@ -2289,7 +2289,7 @@ function checkeSpracheWaehrung($lang = '')
                     'tseo',
                     'cKey', 'kMerkmalWert',
                     'kKey', $kMerkmalWert,
-                    'kSprache', (int)$_SESSION['kSprache']
+                    'kSprache', Shop::getLanguage()
                 );
                 $cSeo  = $dbRes->cSeo;
             } elseif ($kTag > 0) {
@@ -2297,7 +2297,7 @@ function checkeSpracheWaehrung($lang = '')
                     'tseo',
                     'cKey', 'kTag',
                     'kKey', $kTag,
-                    'kSprache', (int)$_SESSION['kSprache']
+                    'kSprache', Shop::getLanguage()
                 );
                 $cSeo  = $dbRes->cSeo;
             } elseif ($kSuchspecial > 0) {
@@ -2305,7 +2305,7 @@ function checkeSpracheWaehrung($lang = '')
                     'tseo',
                     'cKey', 'kSuchspecial',
                     'kKey', $kSuchspecial,
-                    'kSprache', (int)$_SESSION['kSprache']
+                    'kSprache', Shop::getLanguage()
                 );
                 $cSeo  = $dbRes->cSeo;
             } elseif ($kNews > 0) {
@@ -2313,7 +2313,7 @@ function checkeSpracheWaehrung($lang = '')
                     'tseo',
                     'cKey', 'kNews',
                     'kKey', $kNews,
-                    'kSprache', (int)$_SESSION['kSprache']
+                    'kSprache', Shop::getLanguage()
                 );
                 $cSeo  = $dbRes->cSeo;
             } elseif ($kNewsMonatsUebersicht > 0) {
@@ -2321,7 +2321,7 @@ function checkeSpracheWaehrung($lang = '')
                     'tseo',
                     'cKey', 'kNewsMonatsUebersicht',
                     'kKey', $kNewsMonatsUebersicht,
-                    'kSprache', (int)$_SESSION['kSprache']
+                    'kSprache', Shop::getLanguage()
                 );
                 $cSeo  = $dbRes->cSeo;
             } elseif ($kNewsKategorie > 0) {
@@ -2329,7 +2329,7 @@ function checkeSpracheWaehrung($lang = '')
                     'tseo',
                     'cKey', 'kNewsKategorie',
                     'kKey', $kNewsKategorie,
-                    'kSprache', (int)$_SESSION['kSprache']
+                    'kSprache', Shop::getLanguage()
                 );
                 $cSeo  = $dbRes->cSeo;
             } elseif ($kUmfrage > 0) {
@@ -2337,7 +2337,7 @@ function checkeSpracheWaehrung($lang = '')
                     'tseo',
                     'cKey', 'kUmfrage',
                     'kKey', $kUmfrage,
-                    'kSprache', (int)$_SESSION['kSprache']
+                    'kSprache', Shop::getLanguage()
                 );
                 $cSeo  = $dbRes->cSeo;
             }
@@ -2556,7 +2556,7 @@ function standardspracheAktiv($bShop = false, $kSprache = null)
     if ($kSprache === null && !isset($_SESSION['kSprache'])) {
         return true;
     }
-    $langToCheckAgainst = ($kSprache !== null) ? (int)$kSprache : (int)$_SESSION['kSprache'];
+    $langToCheckAgainst = $kSprache !== null ? (int)$kSprache : Shop::getLanguage();
     if (isset($_SESSION['Sprachen']) && is_array($_SESSION['Sprachen']) && $langToCheckAgainst > 0) {
         foreach ($_SESSION['Sprachen'] as $Sprache) {
             if ($Sprache->cStandard === 'Y' && $Sprache->kSprache == $langToCheckAgainst && !$bShop) {
@@ -3019,7 +3019,7 @@ function gibBelieferbareLaender($kKundengruppe = 0, $bIgnoreSetting = false, $bF
     if (empty($kKundengruppe)) {
         $kKundengruppe = Kundengruppe::getDefaultGroupID();
     }
-    $sprache = Shop::DB()->select('tsprache', 'kSprache', (int)$_SESSION['kSprache']);
+    $sprache = Shop::DB()->select('tsprache', 'kSprache', Shop::getLanguage());
     $sel_var = 'cDeutsch';
     $conf    = Shop::getSettings([CONF_KUNDEN]);
     if (strtolower($sprache->cNameEnglisch) !== 'german') {
@@ -3745,7 +3745,7 @@ function baueVersandkostenfreiLaenderString($oVersandart, $fWarenkorbSumme = 0.0
         $cacheID = 'bvkfls_' .
             $oVersandart->fVersandkostenfreiAbX .
             strlen($oVersandart->cLaender) . '_' .
-            (int)$_SESSION['kSprache'];
+            Shop::getLanguage();
         if (($vkfls = Shop::Cache()->get($cacheID)) === false) {
             // remove empty strings
             $cLaender_arr = array_filter(explode(' ', $oVersandart->cLaender));
@@ -4257,7 +4257,7 @@ function baueAlleSuchspecialURLs()
 function baueSuchSpecialURL($kKey)
 {
     $kKey    = (int)$kKey;
-    $cacheID = 'bsurl_' . $kKey . '_' . $_SESSION['kSprache'];
+    $cacheID = 'bsurl_' . $kKey . '_' . Shop::getLanguage();
     if (($url = Shop::Cache()->get($cacheID)) !== false) {
         executeHook(HOOK_BOXEN_INC_SUCHSPECIALURL);
 
@@ -4265,7 +4265,7 @@ function baueSuchSpecialURL($kKey)
     }
     $oSeo = Shop::DB()->select(
         'tseo',
-        'kSprache', (int)$_SESSION['kSprache'],
+        'kSprache', Shop::getLanguage(),
         'cKey', 'suchspecial',
         'kKey', $kKey,
         false,
@@ -4555,7 +4555,7 @@ function setzeSpracheUndWaehrungLink()
                         $NaviFilter,
                         true,
                         $oZusatzFilter,
-                        $_SESSION['kSprache']
+                        Shop::getLanguage()
                     ) . '?curr=' . $oWaehrung->cISO;
             }
             $_SESSION['Waehrungen'][$i]->cURLFull = $shopURL . $_SESSION['Waehrungen'][$i]->cURL;
@@ -6807,8 +6807,8 @@ function gibURLzuNewsArchiv()
             LEFT JOIN tseo 
                 ON tseo.cKey = 'kNewsMonatsUebersicht'
                 AND tseo.kKey = tnewsmonatsuebersicht.kNewsMonatsUebersicht
-                AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
-            WHERE tnewsmonatsuebersicht.kSprache = " . (int)$_SESSION['kSprache'] . "
+                AND tseo.kSprache = " . Shop::getLanguage() . "
+            WHERE tnewsmonatsuebersicht.kSprache = " . Shop::getLanguage() . "
                 AND tnewsmonatsuebersicht.nMonat = " . (int)date('m') . "
                 AND tnewsmonatsuebersicht.nJahr = " . (int)date('Y'), 1
     );
@@ -6821,8 +6821,8 @@ function gibURLzuNewsArchiv()
                 LEFT JOIN tseo 
                     ON tseo.cKey = 'kNewsMonatsUebersicht'
                     AND tseo.kKey = tnewsmonatsuebersicht.kNewsMonatsUebersicht
-                    AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
-                WHERE tnewsmonatsuebersicht.kSprache = " . (int)$_SESSION['kSprache'] . "
+                    AND tseo.kSprache = " . Shop::getLanguage() . "
+                WHERE tnewsmonatsuebersicht.kSprache = " . Shop::getLanguage() . "
                 AND tnewsmonatsuebersicht.nJahr <= " . (int)date('Y') . "
                 ORDER BY nJahr DESC, nMonat DESC", 1
         );

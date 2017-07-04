@@ -42,7 +42,7 @@ class Bewertung
     public function __construct($kArtikel, $kSprache, $nAnzahlSeite = -1, $nSeite = 1, $nSterne = 0, $cFreischalten = 'N', $nOption = 0, $bAlleSprachen = false)
     {
         if (!$kSprache) {
-            $kSprache = $_SESSION['kSprache'];
+            $kSprache = Shop::getLanguage();
         }
         $kArtikel     = (int)$kArtikel;
         $kSprache     = (int)$kSprache;

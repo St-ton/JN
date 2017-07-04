@@ -2,7 +2,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  *}
-{if $smarty.session.Kundengruppe->darfPreiseSehen}
+{if $smarty.session.Kundengruppe->mayViewPrices()}
     <div class="price_wrapper">
     {block name="price-wrapper"}
     {* --- Preis auf Anfrage? --- *}

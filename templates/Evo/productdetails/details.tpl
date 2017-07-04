@@ -144,7 +144,7 @@
                     <input type="hidden" id="AktuellerkArtikel" class="current_article" name="a" value="{$Artikel->kArtikel}" />
                     <input type="hidden" name="wke" value="1" />
                     <input type="hidden" name="show" value="1" />
-                    <input type="hidden" name="kKundengruppe" value="{$smarty.session.Kundengruppe->kKundengruppe}" />
+                    <input type="hidden" name="kKundengruppe" value="{$smarty.session.Kundengruppe->getID()}" />
                     <input type="hidden" name="kSprache" value="{$smarty.session.kSprache}" />
                     {/block}
                     {block name="productdetails-info-variation"}

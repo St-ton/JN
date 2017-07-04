@@ -6,40 +6,55 @@
 class Kundengruppe
 {
     /**
-     * @access protected
      * @var int
      */
-    protected $kKundengruppe;
+    public $kKundengruppe;
 
     /**
-     * @access protected
      * @var string
      */
     protected $cName;
 
     /**
-     * @access protected
      * @var float
      */
     protected $fRabatt;
 
     /**
-     * @access protected
      * @var string
      */
     protected $cStandard;
 
     /**
-     * @access protected
      * @var string
      */
     protected $cShopLogin;
 
     /**
-     * @access protected
      * @var int
      */
-    protected $nNettoPreise;
+    public $nNettoPreise;
+
+    /**
+     * @var int
+     */
+    public $darfPreiseSehen = 1;
+
+    /**
+     * @var int
+     */
+    public $darfArtikelKategorienSehen = 1;
+
+    /**
+     * @var int
+     */
+    protected $kSprache = 0;
+
+    /**
+     * @var array
+     */
+    public $Attribute = [];
+
 
     /**
      * Constructor
@@ -52,6 +67,55 @@ class Kundengruppe
         if ((int)$kKundengruppe > 0) {
             $this->loadFromDB($kKundengruppe);
         }
+    }
+
+    /**
+     * @return $this
+     */
+    public function loadDefaultGroup()
+    {
+        $oObj = Shop::DB()->select('tkundengruppe', 'cStandard', 'Y');
+        if ($oObj !== null) {
+            $conf = Shop::getSettings([CONF_GLOBAL]);
+            foreach (get_object_vars($oObj) as $k => $v) {
+                $this->$k = $v;
+            }
+            $this->kKundengruppe = (int)$this->kKundengruppe;
+            $this->nNettoPreise  = (int)$this->nNettoPreise;
+            if ($this->cStandard === 'Y') {
+                if ((int)$conf['global']['global_sichtbarkeit'] === 2) {
+                    $this->darfPreiseSehen = 0;
+                } elseif ((int)$conf['global']['global_sichtbarkeit'] === 3) {
+                    $this->darfPreiseSehen            = 0;
+                    $this->darfArtikelKategorienSehen = 0;
+                }
+            }
+            $this->localize()->initAttributes();
+
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    private function localize()
+    {
+        if ($this->kKundengruppe > 0 && $this->kSprache > 0) {
+            $oKundengruppeSprache = Shop::DB()->select(
+                'tkundengruppensprache',
+                'kKundengruppe',
+                (int)$this->kKundengruppe,
+                'kSprache',
+                (int)$this->kSprache
+            );
+            if (isset($oKundengruppeSprache->cName)) {
+                $this->cNameLocalized = $oKundengruppeSprache->cName;
+            }
+        }
+
+        return $this;
     }
 
     /**
@@ -126,6 +190,36 @@ class Kundengruppe
     public function delete()
     {
         return Shop::DB()->delete('tkundengruppe', 'kKundengruppe', (int)$this->kKundengruppe);
+    }
+
+    /**
+     * @param $id
+     * @return $this
+     */
+    public function setLanguageID($id)
+    {
+        $this->kSprache = $id;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getID()
+    {
+        return $this->kKundengruppe;
+    }
+
+    /**
+     * @param int $id
+     * @return $this
+     */
+    public function setId($id)
+    {
+        $this->kKundengruppe = (int)$id;
+
+        return $this;
     }
 
     /**
@@ -210,6 +304,80 @@ class Kundengruppe
         $this->nNettoPreise = (int)$nNettoPreise;
 
         return $this;
+    }
+
+    /**
+     * @param int $n
+     * @return $this
+     */
+    public function setDarfPreiseSehen($n)
+    {
+        return $this->setMayViewPrices($n);
+    }
+
+    /**
+     * @return bool
+     */
+    public function getDarfPreiseSehen()
+    {
+        return $this->mayViewPrices();
+    }
+
+    /**
+     * @param $n
+     * @return $this
+     */
+    public function setMayViewPrices($n)
+    {
+        $this->darfPreiseSehen = (int)$n;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function mayViewPrices()
+    {
+        return (int)$this->darfPreiseSehen === 1;
+    }
+
+    /**
+     * @param $n
+     * @return $this
+     */
+    public function setDarfKategorienSehen($n)
+    {
+        $this->darfArtikelKategorienSehen = (int)$n;
+
+        return $this;
+    }
+
+    /**
+     * @param $n
+     * @return $this
+     */
+    public function setMayViewCategories($n)
+    {
+        $this->darfArtikelKategorienSehen = (int)$n;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getDarfArtikelKategorienSehen()
+    {
+        return $this->mayViewCategories();
+    }
+
+    /**
+     * @return bool
+     */
+    public function mayViewCategories()
+    {
+        return (int)$this->darfArtikelKategorienSehen === 1;
     }
 
     /**
@@ -373,8 +541,24 @@ class Kundengruppe
     }
 
     /**
+     * @return $this
+     */
+    public function initAttributes()
+    {
+        if ($this->kKundengruppe > 0) {
+            $attributes = Shop::DB()->selectAll('tkundengruppenattribut', 'kKundengruppe', (int)$this->kKundengruppe);
+            foreach ($attributes as $attribute) {
+                $this->Attribute[strtolower($attribute->cName)] = $attribute->cWert;
+            }
+        }
+
+        return $this;
+    }
+
+    /**
      * @param int $kKundengruppe
      * @return array
+     * @deprecated since 4.06
      */
     public static function getAttributes($kKundengruppe)
     {

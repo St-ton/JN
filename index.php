@@ -43,11 +43,11 @@ if ($smarty->getTemplateVars('bWarenkorbHinzugefuegt')) {
         $smarty->assign('Xselling', gibArtikelXSelling($_POST['a']));
     }
 }
-if (!$_SESSION['Kundengruppe']->darfArtikelKategorienSehen &&
-    ($cParameter_arr['kArtikel'] > 0 || $cParameter_arr['kKategorie'] > 0)
+if (($cParameter_arr['kArtikel'] > 0 || $cParameter_arr['kKategorie'] > 0)
+    && !Session::CustomerGroup()->mayViewCategories()
 ) {
     //falls Artikel/Kategorien nicht gesehen werden duerfen -> login
-    header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true) . '?li=1', true, 303);
+    header('Location: ' . $linkHelper->getStaticRoute('jtl.php') . '?li=1', true, 303);
     exit;
 }
 if ($cParameter_arr['kKategorie'] > 0 &&

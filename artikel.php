@@ -112,10 +112,8 @@ if (Shop::$kVariKindArtikel > 0) {
                Shop::Lang()->get('resetSelection', 'global') . '</button></li></ul>');
 }
 // Hat Artikel einen Preisverlauf?
-$smarty->assign('bPreisverlauf', !empty($_SESSION['Kundengruppe']->darfPreiseSehen));
-if (!empty($_SESSION['Kundengruppe']->darfPreiseSehen) &&
-    $Einstellungen['preisverlauf']['preisverlauf_anzeigen'] === 'Y'
-) {
+$smarty->assign('bPreisverlauf', Session::CustomerGroup()->mayViewPrices());
+if ($Einstellungen['preisverlauf']['preisverlauf_anzeigen'] === 'Y' && Session::CustomerGroup()->mayViewPrices()) {
     Shop::$kArtikel = Shop::$kVariKindArtikel > 0
         ? Shop::$kVariKindArtikel
         : $AktuellerArtikel->kArtikel;

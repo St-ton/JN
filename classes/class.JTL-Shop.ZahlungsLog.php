@@ -61,10 +61,12 @@ class ZahlungsLog
      */
     public function logCount()
     {
-        $oCount = Shop::DB()->query("
-            SELECT count(*) AS nCount 
+        $oCount = Shop::DB()->executeQueryPrepared(
+            "SELECT COUNT(*) AS nCount 
                 FROM tzahlungslog 
-                WHERE cModulId = '" . $this->cModulId . "'", 1
+                WHERE cModulId = :module",
+            ['module' => $this->cModulId],
+            1
         );
 
         return isset($oCount->nCount) ? (int)$oCount->nCount : 0;
@@ -139,22 +141,25 @@ class ZahlungsLog
         );
     }
 
+    /**
+     * @param string $cModulId
+     * @param int    $nLevel
+     * @return int
+     */
     public static function count($cModulId, $nLevel = -1)
     {
-        if ($nLevel === -1)
-        {
-            $count = (int) Shop::DB()->queryPrepared(
-                "SELECT * FROM tzahlungslog WHERE cModulId = :cModulId",
+        if ($nLevel === -1) {
+            $count = (int)Shop::DB()->queryPrepared(
+                "SELECT COUNT(*) AS count FROM tzahlungslog WHERE cModulId = :cModulId",
                 ['cModulId' => $cModulId],
-                3
-            );
-        }
-        else {
-            $count = (int) Shop::DB()->queryPrepared(
-                "SELECT * FROM tzahlungslog WHERE cModulId = :cModulId AND nLevel = :nLevel",
+                1
+            )->count;
+        } else {
+            $count = (int)Shop::DB()->queryPrepared(
+                "SELECT COUNT(*) AS count FROM tzahlungslog WHERE cModulId = :cModulId AND nLevel = :nLevel",
                 ['nLevel' => $nLevel, 'cModulId' => $cModulId],
-                3
-            );
+                1
+            )->count;
         }
 
         return $count;

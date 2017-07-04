@@ -250,16 +250,16 @@ if ($step === 'einstellen') {
 
         $kundengruppen = Shop::DB()->query("SELECT * FROM tkundengruppe ORDER BY cName", 2);
         $smarty->assign('Conf', $Conf)
-                ->assign('zahlungsart', $zahlungsart)
-                ->assign('kundengruppen', $kundengruppen)
-                ->assign('gesetzteKundengruppen', getGesetzteKundengruppen($zahlungsart))
-                ->assign('sprachen', gibAlleSprachen())
-                ->assign('Zahlungsartname', getNames($zahlungsart->kZahlungsart))
-                ->assign('Gebuehrname', getshippingTimeNames($zahlungsart->kZahlungsart))
-                ->assign('cHinweisTexte_arr', getHinweisTexte($zahlungsart->kZahlungsart))
-                ->assign('cHinweisTexteShop_arr', getHinweisTexteShop($zahlungsart->kZahlungsart))
-                ->assign('ZAHLUNGSART_MAIL_EINGANG', ZAHLUNGSART_MAIL_EINGANG)
-                ->assign('ZAHLUNGSART_MAIL_STORNO', ZAHLUNGSART_MAIL_STORNO);
+               ->assign('zahlungsart', $zahlungsart)
+               ->assign('kundengruppen', $kundengruppen)
+               ->assign('gesetzteKundengruppen', getGesetzteKundengruppen($zahlungsart))
+               ->assign('sprachen', gibAlleSprachen())
+               ->assign('Zahlungsartname', getNames($zahlungsart->kZahlungsart))
+               ->assign('Gebuehrname', getshippingTimeNames($zahlungsart->kZahlungsart))
+               ->assign('cHinweisTexte_arr', getHinweisTexte($zahlungsart->kZahlungsart))
+               ->assign('cHinweisTexteShop_arr', getHinweisTexteShop($zahlungsart->kZahlungsart))
+               ->assign('ZAHLUNGSART_MAIL_EINGANG', ZAHLUNGSART_MAIL_EINGANG)
+               ->assign('ZAHLUNGSART_MAIL_STORNO', ZAHLUNGSART_MAIL_STORNO);
     }
 } elseif ($step === 'log') {
     require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.ZahlungsLog.php';
@@ -334,7 +334,7 @@ if ($step === 'uebersicht') {
         'cAnbieter, cName, nSort, kZahlungsart'
     );
 
-    foreach ($oZahlungsart_arr as $i => &$oZahlungsart) {
+    foreach ($oZahlungsart_arr as $oZahlungsart) {
         $oZahlungsart->nEingangAnzahl = (int)Shop::DB()->query("
                     SELECT count(*) AS nAnzahl
                         FROM tzahlungseingang AS ze
@@ -343,15 +343,14 @@ if ($step === 'uebersicht') {
                         WHERE b.kZahlungsart = " . $oZahlungsart->kZahlungsart,
             1)->nAnzahl;
 
-        $oZahlungsart_arr[$i]->nLogCount = ZahlungsLog::count($oZahlungsart->cModulId);
-
+        $oZahlungsart->nLogCount = ZahlungsLog::count($oZahlungsart->cModulId);
         // jtl-shop/issues#288
-        $oZahlungsart_arr[$i]->nErrorLogCount = ZahlungsLog::count($oZahlungsart->cModulId, JTLLOG_LEVEL_ERROR);
+        $oZahlungsart->nErrorLogCount = ZahlungsLog::count($oZahlungsart->cModulId, JTLLOG_LEVEL_ERROR);
     }
 
     $oNice = Nice::getInstance();
     $smarty->assign('zahlungsarten', $oZahlungsart_arr)
-           ->assign('nFinanzierungAktiv', $oNice->checkErweiterung(SHOP_ERWEITERUNG_FINANZIERUNG) ? 1 : 0);
+           ->assign('nFinanzierungAktiv', 0);
 }
 $smarty->assign('step', $step)
        ->assign('waehrung', $standardwaehrung->cName)

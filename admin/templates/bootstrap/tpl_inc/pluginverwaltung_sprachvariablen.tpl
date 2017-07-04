@@ -1,11 +1,16 @@
 <script type="text/javascript">
     function ackCheck(kPluginSprachvariable, kPlugin)
-    {ldelim}
-        var bCheck = confirm("Wollen Sie Ihre Sprachvariablen wirklich wieder auf den Installationszustand zurücksetzen? *Vorsicht* Alle bisherigen editierten Sprachvariablen, gehen für diese eine Variable verloren.");
+    {
+        var bCheck = confirm(
+            'Wollen Sie diese Sprachvariable wirklich wieder auf den Installationszustand zurücksetzen?\n\n' +
+            '*Vorsicht* Alle geänderten Übersetzungen der Variable gehen dabei verloren.'
+        );
 
-        if(bCheck)
-            window.location.href = "pluginverwaltung.php?pluginverwaltung_sprachvariable=1&kPlugin=" + kPlugin + "&kPluginSprachvariable=" + kPluginSprachvariable + "&token={$smarty.session.jtl_token}";
-        {rdelim}
+        if(bCheck) {
+            window.location.href = 'pluginverwaltung.php?pluginverwaltung_sprachvariable=1&kPlugin=' + kPlugin +
+                '&kPluginSprachvariable=' + kPluginSprachvariable + '&token={$smarty.session.jtl_token}';
+        }
+    }
 </script>
 {include file='tpl_inc/seite_header.tpl' cTitel=#pluginverwaltung# cBeschreibung=#pluginverwaltungDesc#}
 <div id="content" class="container-fluid">

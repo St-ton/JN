@@ -1,15 +1,17 @@
 <script type="text/javascript">
-function ackCheck(kPlugin, hash) {ldelim}
-    var bCheck = confirm("Wollen Sie das Plugin wirklich updaten?"),
-            href = '';
-    if (bCheck) {ldelim}
-        href += "pluginverwaltung.php?pluginverwaltung_uebersicht=1&updaten=1&token={$smarty.session.jtl_token}&kPlugin=" + kPlugin;
-        if (hash && hash.length > 0) {ldelim}
+function ackCheck(kPlugin, hash)
+{
+    var bCheck = confirm('Wollen Sie das Plugin wirklich updaten?');
+    var href = '';
+
+    if (bCheck) {
+        href += 'pluginverwaltung.php?pluginverwaltung_uebersicht=1&updaten=1&token={$smarty.session.jtl_token}&kPlugin=' + kPlugin;
+        if (hash && hash.length > 0) {
             href += '#' + hash;
-        {rdelim}
+        }
         window.location.href = href;
-    {rdelim}
-{rdelim}
+    }
+}
 
 {if isset($bReload) && $bReload}
     window.location.href = window.location.href + "?h={$hinweis64}";

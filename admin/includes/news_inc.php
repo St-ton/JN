@@ -299,6 +299,37 @@ function holeNewsBilder($kNews, $cUploadVerzeichnis)
 }
 
 /**
+ * @param int    $kNewsKategorie
+ * @param string $cUploadVerzeichnis
+ * @return array
+ */
+function holeNewsKategorieBilder($kNewsKategorie, $cUploadVerzeichnis)
+{
+    $oDatei_arr = [];
+    $kNewsKategorie      = (int)$kNewsKategorie;
+    if ($kNewsKategorie > 0) {
+        if (is_dir($cUploadVerzeichnis . $kNewsKategorie)) {
+            $DirHandle = opendir($cUploadVerzeichnis . $kNewsKategorie);
+            $shopURL   = Shop::getURL() . '/';
+            while (false !== ($Datei = readdir($DirHandle))) {
+                if ($Datei !== '.' && $Datei !== '..') {
+                    $oDatei         = new stdClass();
+                    $oDatei->cName  = substr($Datei, 0, strpos($Datei, '.'));
+                    $oDatei->cURL   = '<img src="' . $shopURL . PFAD_NEWSKATEGORIEBILDER . $kNewsKategorie . '/' . $Datei . '" />';
+                    $oDatei->cDatei = $Datei;
+
+                    $oDatei_arr[] = $oDatei;
+                }
+            }
+
+            usort($oDatei_arr, 'cmp_obj');
+        }
+    }
+
+    return $oDatei_arr;
+}
+
+/**
  * @param int    $kNews
  * @param string $cUploadVerzeichnis
  * @return bool
@@ -427,7 +458,11 @@ function loescheNewsBild($cBildname, $kNews, $cUploadVerzeichnis)
                 if ($cBildname === 'preview') {
                     $upd                = new stdClass();
                     $upd->cPreviewImage = '';
-                    Shop::DB()->update('tnews', 'kNews', $kNews, $upd);
+                    if (strpos($cUploadVerzeichnis, PFAD_NEWSKATEGORIEBILDER) === false){
+                        Shop::DB()->update('tnews', 'kNews', $kNews, $upd);
+                    } else {
+                        Shop::DB()->update('tnewskategorie', 'kNewsKategorie', $kNews, $upd);
+                    }
                 }
 
                 return true;

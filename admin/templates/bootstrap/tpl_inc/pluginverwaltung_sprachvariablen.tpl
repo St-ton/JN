@@ -8,7 +8,7 @@
 
         if(bCheck) {
             window.location.href = 'pluginverwaltung.php?pluginverwaltung_sprachvariable=1&kPlugin=' + kPlugin +
-                '&kPluginSprachvariable=' + kPluginSprachvariable + '&token={$smarty.session.jtl_token}'';
+                '&kPluginSprachvariable=' + kPluginSprachvariable + '&token={$smarty.session.jtl_token}';
         }
     }
 </script>

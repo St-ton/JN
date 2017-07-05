@@ -164,7 +164,7 @@
             $('.switch-variations input[type="radio"], .switch-variations select', $wrapper)
                 .each(function(i, item) {
                     var $item   = $(item),
-                        wrapper = '#' + $item.closest('form').closest('div').attr('id');
+                        wrapper = '#' + $item.closest('form').closest('div[id]').attr('id');
 
                     $item.on('change', function () {
                         that.variationSwitch($(this), true, wrapper);
@@ -873,8 +873,9 @@
                     $.evo.extended().imagebox(wrapper);
                     $.evo.article().register(wrapper);
 
-                    $('*[data-toggle="basket-add"]', $wrapper).on('submit', function(event) {
+                    $('[data-toggle="basket-add"]', $(wrapper)).on('submit', function(event) {
                         event.preventDefault();
+                        event.stopPropagation();
 
                         var $form = $(this);
                         var data  = $form.serializeObject();

@@ -167,7 +167,7 @@
                         wrapper = '#' + $item.closest('form').closest('div').attr('id');
 
                     $item.on('change', function () {
-                        that.variationSwitch($(this), true, wrapper);
+                        that.variationSwitch($(this), false, wrapper);
                     });
                 });
 
@@ -707,8 +707,8 @@
             }
         },
 
-        variationRefreshAll: function() {
-            $('.variations select').selectpicker('refresh');
+        variationRefreshAll: function($wrapper) {
+            $('.variations select', $wrapper).selectpicker('refresh');
         },
 
         getConfigGroupQuantity: function (groupId) {

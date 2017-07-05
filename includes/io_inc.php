@@ -808,7 +808,7 @@ function checkVarkombiDependencies($aValues, $kEigenschaft = 0, $kEigenschaftWer
     } else {
         $objResponse->jsfunc('$.evo.error', 'Article not found', $kVaterArtikel);
     }
-    $objResponse->jsfunc("$.evo.article().variationRefreshAll");
+    $objResponse->jsfunc("$.evo.article().variationRefreshAll", $wrapper);
 
     return $objResponse;
 }

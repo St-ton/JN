@@ -118,10 +118,8 @@ class Kundengruppe
             trigger_error('Kundengruppe: getter should be use to get ' . $name, E_USER_DEPRECATED);
             $method = 'get' . $mapped;
 
-            Shop::dbg($name, true, '__get exception: ', 4);
             return $this->$method();
         }
-        Shop::dbg($name, true, '__get exception: ', 4);
         throw new OutOfBoundsException('Unable to get ' . $name);
     }
 
@@ -145,7 +143,6 @@ class Kundengruppe
 
             return $this->$method($value);
         }
-        Shop::dbg($name, true, '__set exception: ', 4);
         throw new OutOfBoundsException('Unable to get ' . $name);
     }
 

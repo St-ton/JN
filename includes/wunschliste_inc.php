@@ -369,7 +369,7 @@ function bauecPreis($oWunschliste)
     // Wunschliste durchlaufen und cPreis setzen (Artikelanzahl mit eingerechnet)
     if (is_array($oWunschliste->CWunschlistePos_arr) && count($oWunschliste->CWunschlistePos_arr) > 0) {
         foreach ($oWunschliste->CWunschlistePos_arr as $oWunschlistePos) {
-            if (Session::CustomerGroup()->useNetPrices()) {
+            if (Session::CustomerGroup()->isMerchant()) {
                 $fPreis = isset($oWunschlistePos->Artikel->Preise->fVKNetto)
                     ? (int)$oWunschlistePos->fAnzahl * $oWunschlistePos->Artikel->Preise->fVKNetto
                     : 0;

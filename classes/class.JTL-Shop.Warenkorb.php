@@ -457,7 +457,7 @@ class Warenkorb
         $NeuePosition->kKonfigitem   = $kKonfigitem;
         $NeuePosition->kArtikel      = $kArtikel;
         //fixes #4967
-        if (is_object($_SESSION['Kundengruppe']) && Session::CustomerGroup()->useNetPrices()) {
+        if (is_object($_SESSION['Kundengruppe']) && Session::CustomerGroup()->isMerchant()) {
             if ($brutto) {
                 $NeuePosition->fPreis = $preis / (100 + gibUst($kSteuerklasse)) * 100.0;
             }
@@ -1111,7 +1111,7 @@ class Warenkorb
                     $idx = array_search($ust, $steuersatz);
                     if (!isset($steuerpos[$idx]->fBetrag)) {
                         $steuerpos[$idx]                  = new stdClass();
-                        $steuerpos[$idx]->cName           = lang_steuerposition($ust, Session::CustomerGroup()->useNetPrices());
+                        $steuerpos[$idx]->cName           = lang_steuerposition($ust, Session::CustomerGroup()->isMerchant());
                         $steuerpos[$idx]->fUst            = $ust;
                         $steuerpos[$idx]->fBetrag         = ($position->fPreis * $position->nAnzahl * $ust) / 100.0;
                         $steuerpos[$idx]->cPreisLocalized = gibPreisStringLocalized($steuerpos[$idx]->fBetrag);

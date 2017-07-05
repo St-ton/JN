@@ -19,7 +19,7 @@ if ((int)$_GET['kArtikel'] > 0 && (int)$_GET['kKundengruppe'] > 0 && (int)$_GET[
     if (count($oConfig_arr) > 0) {
         $oPreisConfig           = new stdClass();
         $oPreisConfig->Waehrung = $_SESSION['Waehrung']->cName;
-        $oPreisConfig->Netto    = Session::CustomerGroup()->useNetPrices()
+        $oPreisConfig->Netto    = Session::CustomerGroup()->isMerchant()
             ? 0
             : $_SESSION['Steuersatz'][$kSteuerklasse];
         $oPreisverlauf          = Shop::DB()->query(

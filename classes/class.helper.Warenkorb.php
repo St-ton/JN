@@ -19,7 +19,7 @@ class WarenkorbHelper
     public function getTotal($decimals = 0)
     {
         $info            = new stdClass();
-        $info->type      = Session::CustomerGroup()->useNetPrices() ? self::NET : self::GROSS;
+        $info->type      = Session::CustomerGroup()->isMerchant() ? self::NET : self::GROSS;
         $info->currency  = null;
         $info->article   = [0, 0];
         $info->shipping  = [0, 0];

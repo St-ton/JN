@@ -834,7 +834,7 @@ class Boxen
                             $cDeleteParam .
                             $CWunschlistePos->kWunschlistePos .
                             $cZusatzParams;
-                        if (Session::CustomerGroup()->useNetPrices()) {
+                        if (Session::CustomerGroup()->isMerchant()) {
                             $fPreis = isset($CWunschlistePos->Artikel->Preise->fVKNetto)
                                 ? (int)$CWunschlistePos->fAnzahl * $CWunschlistePos->Artikel->Preise->fVKNetto
                                 : 0;
@@ -1256,7 +1256,7 @@ class Boxen
         $smarty          = Shop::Smarty();
         $originalArticle = $smarty->getTemplateVars('Artikel');
         if (isset($_SESSION['Kundengruppe']->nNettoPreise)) {
-            $smarty->assign('NettoPreise', Session::CustomerGroup()->getNettoPreise());
+            $smarty->assign('NettoPreise', Session::CustomerGroup()->getIsMerchant());
         }
         //check whether filters should be displayed after a box
         $filterAfter = (!empty($this->boxConfig) && isset($GLOBALS['NaviFilter']) && isset($GLOBALS['oSuchergebnisse']))

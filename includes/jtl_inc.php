@@ -419,7 +419,7 @@ function fuehreLoginAus($userLogin, $passLogin)
                                         $oKonfigitem->getSteuerklasse(),
                                         C_WARENKORBPOS_TYP_ARTIKEL,
                                         false,
-                                        !Session::CustomerGroup()->useNetPrices(),
+                                        !Session::CustomerGroup()->isMerchant(),
                                         '',
                                         $oWarenkorbPersPos->cUnique,
                                         $oWarenkorbPersPos->kKonfigitem,

@@ -422,7 +422,7 @@ class TrustedShops
                     gibPreisStringLocalized($oItem->protectedAmountDecimal);
 
                 if (isset($_SESSION['Warenkorb'], $_SESSION['Steuersatz']) &&
-                    (!isset($_SESSION['Kundengruppe']->nNettoPreise) || !Session::CustomerGroup()->useNetPrices())
+                    (!isset($_SESSION['Kundengruppe']->nNettoPreise) || !Session::CustomerGroup()->isMerchant())
                 ) {
                     $this->oKaeuferschutzProdukte->item[$i]->grossFeeLocalized = gibPreisStringLocalized($oItem->netFee *
                         ((100 + (float)$_SESSION['Steuersatz'][$_SESSION['Warenkorb']->gibVersandkostenSteuerklasse($cLandISO)]) / 100));

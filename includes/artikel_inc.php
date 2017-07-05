@@ -1399,7 +1399,7 @@ function buildConfig($kArtikel, $fAnzahl, $nVariation_arr, $nKonfiggruppe_arr, $
     } else {
         $oKonfig->cPreisLocalized = [Shop::Lang()->get('priceHidden', 'global')];
     }
-    $oKonfig->nNettoPreise = Session::CustomerGroup()->getNettoPreise();
+    $oKonfig->nNettoPreise = Session::CustomerGroup()->getIsMerchant();
 
     return $oKonfig;
 }

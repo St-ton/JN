@@ -12,22 +12,22 @@ class Kundengruppe
     /**
      * @var int
      */
-    protected $kKundengruppe = 0;
+    protected $id = 0;
 
     /**
      * @var string
      */
-    protected $cName;
+    protected $name;
 
     /**
      * @var float
      */
-    protected $fRabatt = 0.0;
+    protected $discount = 0.0;
 
     /**
      * @var string
      */
-    protected $cStandard;
+    protected $default;
 
     /**
      * @var string
@@ -37,22 +37,22 @@ class Kundengruppe
     /**
      * @var int
      */
-    protected $nNettoPreise = 0;
+    protected $isMerchant = 0;
 
     /**
      * @var int
      */
-    protected $darfPreiseSehen = 1;
+    protected $mayViewPrices = 1;
 
     /**
      * @var int
      */
-    protected $darfArtikelKategorienSehen = 1;
+    protected $mayViewCategories = 1;
 
     /**
      * @var int
      */
-    protected $kSprache = 0;
+    protected $languageID = 0;
 
     /**
      * @var array
@@ -62,7 +62,22 @@ class Kundengruppe
     /**
      * @var string
      */
-    private $cNameLocalized;
+    private $nameLocalized;
+
+    /**
+     * @var array
+     */
+    private static $mapping = [
+        'kKundengruppe'              => 'ID',
+        'kSprache'                   => 'LanguageID',
+        'nNettoPreise'               => 'IsMerchant',
+        'darfPreiseSehen'            => 'MayViewPrices',
+        'darfArtikelKategorienSehen' => 'MayViewCategories',
+        'cName'                      => 'Name',
+        'cStandard'                  => 'Default',
+        'fRabatt'                    => 'Discount',
+        'cNameLocalized'             => 'nameLocalized'
+    ];
 
     /**
      * Constructor
@@ -77,29 +92,14 @@ class Kundengruppe
     }
 
     /**
-     * @param string $name
-     * @param mixed $value
-     * @return $this
-     * @throws OutOfBoundsException
+     * @param string $value
+     * @return string|null
      */
-    public function __set($name, $value)
+    private static function getMapping($value)
     {
-        if (isset($this->$name)) {
-            trigger_error('Kundengruppe: setter should be use to set ' . $name, E_USER_DEPRECATED);
-            $this->$name = $value;
-
-            return $this;
-        }
-        throw new OutOfBoundsException('Unable to get ' . $name);
-    }
-
-    /**
-     * @param string $name
-     * @return bool
-     */
-    public function __isset($name)
-    {
-        return property_exists($this, $name);
+        return isset(self::$mapping[$value])
+            ? self::$mapping[$value]
+            : null;
     }
 
     /**
@@ -114,8 +114,48 @@ class Kundengruppe
 
             return $this->$name;
         }
+        if (($mapped = self::getMapping($name)) !== null) {
+            trigger_error('Kundengruppe: getter should be use to get ' . $name, E_USER_DEPRECATED);
+            $method = 'get' . $mapped;
 
+            Shop::dbg($name, true, '__get exception: ', 4);
+            return $this->$method();
+        }
+        Shop::dbg($name, true, '__get exception: ', 4);
         throw new OutOfBoundsException('Unable to get ' . $name);
+    }
+
+    /**
+     * @param string $name
+     * @param mixed  $value
+     * @return $this
+     * @throws OutOfBoundsException
+     */
+    public function __set($name, $value)
+    {
+        if (isset($this->$name)) {
+            trigger_error('Kundengruppe: setter should be use to set ' . $name, E_USER_DEPRECATED);
+            $this->$name = $value;
+
+            return $this;
+        }
+        if (($mapped = self::getMapping($name)) !== null) {
+            trigger_error('Kundengruppe: getter should be use to get ' . $name, E_USER_DEPRECATED);
+            $method = 'set' . $mapped;
+
+            return $this->$method($value);
+        }
+        Shop::dbg($name, true, '__set exception: ', 4);
+        throw new OutOfBoundsException('Unable to get ' . $name);
+    }
+
+    /**
+     * @param string $name
+     * @return bool
+     */
+    public function __isset($name)
+    {
+        return property_exists($this, $name);
     }
 
     /**
@@ -126,17 +166,18 @@ class Kundengruppe
         $oObj = Shop::DB()->select('tkundengruppe', 'cStandard', 'Y');
         if ($oObj !== null) {
             $conf = Shop::getSettings([CONF_GLOBAL]);
-            foreach (get_object_vars($oObj) as $k => $v) {
-                $this->$k = $v;
-            }
-            $this->kKundengruppe = (int)$this->kKundengruppe;
-            $this->nNettoPreise  = (int)$this->nNettoPreise;
-            if ($this->cStandard === 'Y') {
+            $this->setID($oObj->kKundengruppe)
+                 ->setName($oObj->cName)
+                 ->setDiscount($oObj->fRabatt)
+                 ->setDefault($oObj->cStandard)
+                 ->setShopLogin($oObj->cShopLogin)
+                 ->setIsMerchant($oObj->nNettoPreise);
+            if ($this->isDefault()) {
                 if ((int)$conf['global']['global_sichtbarkeit'] === 2) {
-                    $this->darfPreiseSehen = 0;
+                    $this->mayViewPrices = 0;
                 } elseif ((int)$conf['global']['global_sichtbarkeit'] === 3) {
-                    $this->darfPreiseSehen            = 0;
-                    $this->darfArtikelKategorienSehen = 0;
+                    $this->mayViewPrices     = 0;
+                    $this->mayViewCategories = 0;
                 }
             }
             $this->localize()->initAttributes();
@@ -150,16 +191,16 @@ class Kundengruppe
      */
     private function localize()
     {
-        if ($this->kKundengruppe > 0 && $this->kSprache > 0) {
+        if ($this->id > 0 && $this->languageID > 0) {
             $oKundengruppeSprache = Shop::DB()->select(
                 'tkundengruppensprache',
                 'kKundengruppe',
-                (int)$this->kKundengruppe,
+                (int)$this->id,
                 'kSprache',
-                (int)$this->kSprache
+                (int)$this->languageID
             );
             if (isset($oKundengruppeSprache->cName)) {
-                $this->cNameLocalized = $oKundengruppeSprache->cName;
+                $this->nameLocalized = $oKundengruppeSprache->cName;
             }
         }
 
@@ -176,13 +217,12 @@ class Kundengruppe
     {
         $oObj = Shop::DB()->select('tkundengruppe', 'kKundengruppe', (int)$kKundengruppe);
         if (isset($oObj->kKundengruppe) && $oObj->kKundengruppe > 0) {
-            foreach (get_object_vars($oObj) as $k => $v) {
-                $this->$k = $v;
-            }
-            $this->kKundengruppe              = (int)$this->kKundengruppe;
-            $this->nNettoPreise               = (int)$this->nNettoPreise;
-            $this->darfPreiseSehen            = (int)$this->darfPreiseSehen;
-            $this->darfArtikelKategorienSehen = (int)$this->darfArtikelKategorienSehen;
+            $this->setID($oObj->kKundengruppe)
+                 ->setName($oObj->cName)
+                 ->setDiscount($oObj->fRabatt)
+                 ->setDefault($oObj->cStandard)
+                 ->setShopLogin($oObj->cShopLogin)
+                 ->setIsMerchant($oObj->nNettoPreise);
         }
 
         return $this;
@@ -196,16 +236,13 @@ class Kundengruppe
      */
     public function save($bPrim = true)
     {
-        $oObj        = new stdClass();
-        $cMember_arr = array_keys(get_object_vars($this));
-        if (is_array($cMember_arr) && count($cMember_arr) > 0) {
-            foreach ($cMember_arr as $cMember) {
-                $oObj->$cMember = $this->$cMember;
-            }
-        }
-
-        unset($oObj->kKundengruppe);
-        $kPrim = Shop::DB()->insert('tkundengruppe', $oObj);
+        $obj               = new stdClass();
+        $obj->cName        = $this->name;
+        $obj->fRabatt      = $this->discount;
+        $obj->cStandard    = strtoupper($this->default);
+        $obj->cShopLogin   = $this->cShopLogin;
+        $obj->nNettoPreise = (int)$this->isMerchant;
+        $kPrim             = Shop::DB()->insert('tkundengruppe', $obj);
         if ($kPrim > 0) {
             return $bPrim ? $kPrim : true;
         }
@@ -221,13 +258,13 @@ class Kundengruppe
     public function update()
     {
         $_upd               = new stdClass();
-        $_upd->cName        = $this->cName;
+        $_upd->cName        = $this->name;
         $_upd->fRabatt      = $this->fRabatt;
         $_upd->cStandard    = $this->cStandard;
         $_upd->cShopLogin   = $this->cShopLogin;
-        $_upd->nNettoPreise = $this->nNettoPreise;
+        $_upd->nNettoPreise = $this->isMerchant;
 
-        return Shop::DB()->update('tkundengruppe', 'kKundengruppe', (int)$this->kKundengruppe, $_upd);
+        return Shop::DB()->update('tkundengruppe', 'kKundengruppe', (int)$this->id, $_upd);
     }
 
     /**
@@ -237,18 +274,7 @@ class Kundengruppe
      */
     public function delete()
     {
-        return Shop::DB()->delete('tkundengruppe', 'kKundengruppe', (int)$this->kKundengruppe);
-    }
-
-    /**
-     * @param $id
-     * @return $this
-     */
-    public function setLanguageID($id)
-    {
-        $this->kSprache = $id;
-
-        return $this;
+        return Shop::DB()->delete('tkundengruppe', 'kKundengruppe', (int)$this->id);
     }
 
     /**
@@ -256,7 +282,7 @@ class Kundengruppe
      */
     public function getID()
     {
-        return $this->kKundengruppe;
+        return $this->id;
     }
 
     /**
@@ -265,7 +291,7 @@ class Kundengruppe
      */
     public function setID($id)
     {
-        $this->kKundengruppe = (int)$id;
+        $this->id = (int)$id;
 
         return $this;
     }
@@ -274,21 +300,23 @@ class Kundengruppe
      *
      * @param int $kKundengruppe
      * @return $this
+     * @deprecated since 4.06
      */
     public function setKundengruppe($kKundengruppe)
     {
-        $this->kKundengruppe = (int)$kKundengruppe;
+        trigger_error('Kundengruppe::setKundengruppe() is deprecated - use setID() instead', E_USER_DEPRECATED);
+        $this->id = (int)$kKundengruppe;
 
         return $this;
     }
 
     /**
-     * @param string $cName
+     * @param string $name
      * @return $this
      */
-    public function setName($cName)
+    public function setName($name)
     {
-        $this->cName = Shop::DB()->escape($cName);
+        $this->name = Shop::DB()->escape($name);
 
         return $this;
     }
@@ -296,21 +324,53 @@ class Kundengruppe
     /**
      * @param float $fRabatt
      * @return $this
+     * @deprecated since 4.06
      */
     public function setRabatt($fRabatt)
     {
-        $this->fRabatt = (float)$fRabatt;
+        trigger_error('Kundengruppe::setRabatt() is deprecated - use setDiscount() instead', E_USER_DEPRECATED);
+
+        return $this->setDiscount($fRabatt);
+    }
+
+    /**
+     * @param float $discount
+     * @return $this
+     */
+    public function setDiscount($discount)
+    {
+        $this->discount = (float)$discount;
 
         return $this;
     }
 
     /**
+     * @return float
+     */
+    public function getDiscount()
+    {
+        return $this->discount;
+    }
+
+    /**
      * @param string $cStandard
      * @return $this
+     * @deprecated since 4.06
      */
     public function setStandard($cStandard)
     {
-        $this->cStandard = Shop::DB()->escape($cStandard);
+        trigger_error('Kundengruppe::setStandard() is deprecated - use setDefault() instead', E_USER_DEPRECATED);
+
+        return $this->setDefault($cStandard);
+    }
+
+    /**
+     * @param string $default
+     * @return $this
+     */
+    public function setDefault($default)
+    {
+        $this->default = Shop::DB()->escape($default);
 
         return $this;
     }
@@ -332,35 +392,20 @@ class Kundengruppe
      */
     public function setNettoPreise($nNettoPreise)
     {
-        return $this->setUseNetPrices($nNettoPreise);
+        trigger_error('Kundengruppe::setNettoPreise() is deprecated - use setIsMerchant() instead', E_USER_DEPRECATED);
+
+        return $this->setIsMerchant($nNettoPreise);
     }
 
     /**
-     * @param int $net
+     * @param int $is
      * @return $this
      */
-    public function setUseNetPrices($net)
+    public function setIsMerchant($is)
     {
-        $this->nNettoPreise = (int)$net;
+        $this->isMerchant = (int)$is;
 
         return $this;
-    }
-
-    /**
-     * @param int $n
-     * @return $this
-     */
-    public function setDarfPreiseSehen($n)
-    {
-        return $this->setMayViewPrices($n);
-    }
-
-    /**
-     * @return bool
-     */
-    public function getDarfPreiseSehen()
-    {
-        return $this->mayViewPrices();
     }
 
     /**
@@ -369,7 +414,7 @@ class Kundengruppe
      */
     public function setMayViewPrices($n)
     {
-        $this->darfPreiseSehen = (int)$n;
+        $this->mayViewPrices = (int)$n;
 
         return $this;
     }
@@ -379,27 +424,24 @@ class Kundengruppe
      */
     public function mayViewPrices()
     {
-        return (int)$this->darfPreiseSehen === 1;
+        return (int)$this->mayViewPrices === 1;
     }
 
     /**
-     * @param $n
-     * @return $this
+     * @return bool
      */
-    public function setDarfKategorienSehen($n)
+    public function getMayViewPrices()
     {
-        $this->darfArtikelKategorienSehen = (int)$n;
-
-        return $this;
+        return $this->mayViewPrices;
     }
 
     /**
-     * @param $n
+     * @param int $n
      * @return $this
      */
     public function setMayViewCategories($n)
     {
-        $this->darfArtikelKategorienSehen = (int)$n;
+        $this->mayViewCategories = (int)$n;
 
         return $this;
     }
@@ -407,9 +449,9 @@ class Kundengruppe
     /**
      * @return int
      */
-    public function getDarfArtikelKategorienSehen()
+    public function getMayViewCategories()
     {
-        return $this->mayViewCategories();
+        return $this->mayViewCategories;
     }
 
     /**
@@ -417,15 +459,18 @@ class Kundengruppe
      */
     public function mayViewCategories()
     {
-        return (int)$this->darfArtikelKategorienSehen === 1;
+        return (int)$this->mayViewCategories === 1;
     }
 
     /**
      * @return int
+     * @deprecated since 4.06
      */
     public function getKundengruppe()
     {
-        return (int)$this->kKundengruppe;
+        trigger_error('Kundengruppe::getKundengruppe() is deprecated - use getID() instead', E_USER_DEPRECATED);
+
+        return $this->getID();
     }
 
     /**
@@ -433,15 +478,18 @@ class Kundengruppe
      */
     public function getName()
     {
-        return $this->cName;
+        return $this->name;
     }
 
     /**
      * @return float
+     * @deprecated since 4.06
      */
     public function getRabatt()
     {
-        return $this->fRabatt;
+        trigger_error('Kundengruppe::getRabatt() is deprecated - use getDiscount() instead', E_USER_DEPRECATED);
+
+        return $this->getDiscount();
     }
 
     /**
@@ -449,7 +497,25 @@ class Kundengruppe
      */
     public function getStandard()
     {
-        return $this->cStandard;
+        trigger_error('Kundengruppe::getStandard() is deprecated - use getDefault() instead', E_USER_DEPRECATED);
+
+        return $this->getDefault();
+    }
+
+    /**
+     * @return string
+     */
+    public function getIsDefault()
+    {
+        return $this->default;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isDefault()
+    {
+        return $this->default === 'Y';
     }
 
     /**
@@ -461,11 +527,19 @@ class Kundengruppe
     }
 
     /**
+     * @return int
+     */
+    public function getIsMerchant()
+    {
+        return $this->isMerchant;
+    }
+
+    /**
      * @return bool
      */
-    public function useNetPrices()
+    public function isMerchant()
     {
-        return $this->nNettoPreise > 0;
+        return $this->isMerchant > 0;
     }
 
     /**
@@ -473,7 +547,9 @@ class Kundengruppe
      */
     public function getNettoPreise()
     {
-        return $this->nNettoPreise;
+        trigger_error('Kundengruppe::getNettoPreise() is deprecated - use getIsMerchant() instead', E_USER_DEPRECATED);
+
+        return $this->getIsMerchant();
     }
 
     /**
@@ -503,6 +579,25 @@ class Kundengruppe
     public static function getDefault()
     {
         return Shop::DB()->select('tkundengruppe', 'cStandard', 'Y');
+    }
+
+    /**
+     * @return int
+     */
+    public function getLanguageID()
+    {
+        return $this->languageID;
+    }
+
+    /**
+     * @param int $languageID
+     * @return $this
+     */
+    public function setLanguageID($languageID)
+    {
+        $this->languageID = (int)$languageID;
+
+        return $this;
     }
 
     /**
@@ -554,7 +649,7 @@ class Kundengruppe
             $oKundengruppe = new self($kKundengruppe);
             if ($oKundengruppe->getID() > 0 && !isset($_SESSION['Kundengruppe'])) {
                 $oKundengruppe->setMayViewPrices(1)->setMayViewCategories(1);
-                $conf                                                 = Shop::getSettings([CONF_GLOBAL]);
+                $conf = Shop::getSettings([CONF_GLOBAL]);
                 if ((int)$conf['global']['global_sichtbarkeit'] === 2) {
                     $oKundengruppe->setMayViewPrices(0);
                 }
@@ -573,8 +668,8 @@ class Kundengruppe
      */
     public function initAttributes()
     {
-        if ($this->kKundengruppe > 0) {
-            $attributes = Shop::DB()->selectAll('tkundengruppenattribut', 'kKundengruppe', (int)$this->kKundengruppe);
+        if ($this->id > 0) {
+            $attributes = Shop::DB()->selectAll('tkundengruppenattribut', 'kKundengruppe', (int)$this->id);
             foreach ($attributes as $attribute) {
                 $this->Attribute[strtolower($attribute->cName)] = $attribute->cWert;
             }

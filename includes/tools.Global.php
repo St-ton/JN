@@ -933,7 +933,7 @@ function checkeWarenkorbEingang()
                                     $oKonfigitem->getSteuerklasse(),
                                     C_WARENKORBPOS_TYP_ARTIKEL,
                                     false,
-                                    !Session::CustomerGroup()->useNetPrices(),
+                                    !Session::CustomerGroup()->isMerchant(),
                                     '',
                                     $cUnique,
                                     $oKonfigitem->getKonfigitem(),

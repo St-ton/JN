@@ -186,7 +186,7 @@ class VersandartHelper
                 ORDER BY nSort", 2
         );
         $cnt             = count($versandarten);
-        $netPricesActive = Session::CustomerGroup()->useNetPrices();
+        $netPricesActive = Session::CustomerGroup()->isMerchant();
 
         for ($i = 0; $i < $cnt; $i++) {
             $bSteuerPos                  = $versandarten[$i]->eSteuer !== 'netto';
@@ -759,7 +759,7 @@ class VersandartHelper
         if ($bHookReturn) {
             return false;
         }
-        $netPricesActive = Session::CustomerGroup()->useNetPrices();
+        $netPricesActive = Session::CustomerGroup()->isMerchant();
         // Steuersatz nur benötigt, wenn Nettokunde
         /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
         if ($netPricesActive === true) {

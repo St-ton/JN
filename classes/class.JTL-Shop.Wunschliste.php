@@ -316,7 +316,7 @@ class Wunschliste
                     $oWunschlistePosSuche_arr[$i]->Artikel->fuelleArtikel($oSuchergebnis->kArtikel, Artikel::getDefaultOptions());
                     $oWunschlistePosSuche_arr[$i]->cArtikelName = $oWunschlistePosSuche_arr[$i]->Artikel->cName;
 
-                    if (Session::CustomerGroup()->useNetPrices()) {
+                    if (Session::CustomerGroup()->isMerchant()) {
                         $fPreis = (int)$oWunschlistePosSuche_arr[$i]->fAnzahl *
                             $oWunschlistePosSuche_arr[$i]->Artikel->Preise->fVKNetto;
                     } else {

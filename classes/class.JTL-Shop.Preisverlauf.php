@@ -82,7 +82,7 @@ class Preisverlauf
                     if (isset($_pv->timestamp)) {
                         $dt->setTimestamp($_pv->timestamp);
                         $_pv->date   = $dt->format('d.m.');
-                        $_pv->fPreis = Session::CustomerGroup()->useNetPrices()
+                        $_pv->fPreis = Session::CustomerGroup()->isMerchant()
                             ? round($_pv->fVKNetto * $_currency->fFaktor, 2)
                             : berechneBrutto($_pv->fVKNetto * $_currency->fFaktor, $_pv->fMwst);
                         $_pv->currency = $_currency->cISO;

@@ -210,7 +210,7 @@ function pushToBasket($kArtikel, $anzahl, $oEigenschaftwerte_arr = '')
             )))
                ->assign('zuletztInWarenkorbGelegterArtikel', $cart->gibLetztenWKArtikel())
                ->assign('fAnzahl', $anzahl)
-               ->assign('NettoPreise', Session::CustomerGroup()->getNettoPreise())
+               ->assign('NettoPreise', Session::CustomerGroup()->getIsMerchant())
                ->assign('Einstellungen', $Einstellungen)
                ->assign('Xselling', $oXSelling)
                ->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())
@@ -414,7 +414,7 @@ function getBasketItems($nTyp)
                    ->assign('zuletztInWarenkorbGelegterArtikel', $_SESSION['Warenkorb']->gibLetztenWKArtikel())
                    ->assign('WarenkorbGesamtgewicht', $_SESSION['Warenkorb']->getWeight())
                    ->assign('Warenkorbtext', lang_warenkorb_warenkorbEnthaeltXArtikel($_SESSION['Warenkorb']))
-                   ->assign('NettoPreise', Session::CustomerGroup()->getNettoPreise())
+                   ->assign('NettoPreise', Session::CustomerGroup()->getIsMerchant())
                    ->assign('WarenkorbVersandkostenfreiHinweis', baueVersandkostenfreiString($versandkostenfreiAb,
                        $_SESSION['Warenkorb']->gibGesamtsummeWarenExt(
                            [C_WARENKORBPOS_TYP_ARTIKEL, C_WARENKORBPOS_TYP_KUPON, C_WARENKORBPOS_TYP_NEUKUNDENKUPON],
@@ -546,7 +546,7 @@ function checkDependencies($aValues)
             }
         }
 
-        $nNettoPreise = Session::CustomerGroup()->getNettoPreise();
+        $nNettoPreise = Session::CustomerGroup()->getIsMerchant();
         $fVKNetto     = $oArtikel->gibPreis($fAnzahl, $valueID_arr, Session::CustomerGroup()->getID());
 
         $fVK = [

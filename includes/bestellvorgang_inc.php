@@ -429,7 +429,7 @@ function pruefeZahlungsartwahlStep($cPost_arr)
             )];
             $cLandISO      = isset($_SESSION['Lieferadresse']->cLand) ? $_SESSION['Lieferadresse']->cLand : '';
             $kSteuerklasse = $_SESSION['Warenkorb']->gibVersandkostenSteuerklasse($cLandISO);
-            $fPreis        = Session::CustomerGroup()->useNetPrices()
+            $fPreis        = Session::CustomerGroup()->isMerchant()
                 ? $fNetto
                 : ($fNetto * ((100 + (float)$_SESSION['Steuersatz'][$kSteuerklasse]) / 100));
             $cName['ger']  = Shop::Lang()->get('trustedshopsName');
@@ -441,7 +441,7 @@ function pruefeZahlungsartwahlStep($cPost_arr)
                 $kSteuerklasse,
                 C_WARENKORBPOS_TYP_TRUSTEDSHOPS,
                 true,
-                !Session::CustomerGroup()->useNetPrices()
+                !Session::CustomerGroup()->isMerchant()
             );
         }
 
@@ -3866,7 +3866,7 @@ function plausiZahlungsartZusatz($oZahlungsart, $cPost_arr)
         )];
         $kSteuerklasse = $_SESSION['Warenkorb']->gibVersandkostenSteuerklasse();
         $fPreis        = $fNetto;
-        if (!Session::CustomerGroup()->useNetPrices()) {
+        if (!Session::CustomerGroup()->isMerchant()) {
             $fPreis = $fNetto * ((100 + (float)$_SESSION['Steuersatz'][$kSteuerklasse]) / 100);
         }
         $cName['ger']                                    = Shop::Lang()->get('trustedshopsName', 'global');

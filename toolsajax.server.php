@@ -162,7 +162,7 @@ function gibVergleichsliste($nVLKeys = 0, $bWarenkorb = true)
            ->assign('Navigation', createNavigation($AktuelleSeite, 0, 0))
            ->assign('Einstellungen', $GLOBALS['GlobaleEinstellungen'])
            ->assign('Einstellungen_Vergleichsliste', $Einstellungen_Vergleichsliste)
-           ->assign('NettoPreise', Session::CustomerGroup()->getNettoPreise())
+           ->assign('NettoPreise', Session::CustomerGroup()->getIsMerchant())
            ->assign('bAjax', true)
            ->assign('bWarenkorb', $bWarenkorb);
 
@@ -338,7 +338,7 @@ function fuegeEinInWarenkorbAjax($kArtikel, $anzahl, $oEigenschaftwerte_arr = ''
                ->assign('oArtikel', $Artikel)// deprecated 3.12
                ->assign('zuletztInWarenkorbGelegterArtikel', $Artikel)
                ->assign('fAnzahl', $anzahl)
-               ->assign('NettoPreise', Session::CustomerGroup()->getNettoPreise())
+               ->assign('NettoPreise', Session::CustomerGroup()->getIsMerchant())
                ->assign('Einstellungen', $Einstellungen)
                ->assign('Xselling', $oXSelling);
 

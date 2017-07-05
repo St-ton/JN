@@ -1142,7 +1142,7 @@ class Artikel
                 $preis = $fPreis;
             }
         }
-        $nettopreise = Session::CustomerGroup()->useNetPrices();
+        $nettopreise = Session::CustomerGroup()->isMerchant();
         // Ticket #1247
         if (!$nettopreise) {
             //$preis = berechneBrutto($preis,gibUst($this->kSteuerklasse))/((100+gibUst($this->kSteuerklasse))/100);
@@ -3998,7 +3998,7 @@ class Artikel
             $this->oVariationKombiKinderAssoc_arr = $this->holeVariationKombiKinderAssoc($kKundengruppe, $kSprache);
         }
         $this->cMwstVersandText = $this->gibMwStVersandString(
-            isset($_SESSION['Kundengruppe']->nNettoPreise) ? Session::CustomerGroup()->useNetPrices() : false
+            isset($_SESSION['Kundengruppe']->nNettoPreise) ? Session::CustomerGroup()->isMerchant() : false
         );
         // Download Dateien
         $this->oDownload_arr = [];
@@ -4076,7 +4076,7 @@ class Artikel
 
             if (is_array($oPreisanzeigeConf_arr) && count($oPreisanzeigeConf_arr) > 0) {
                 $strVKLocalized = isset($_SESSION['Kundengruppe']->nNettoPreise)
-                    ? $this->Preise->cVKLocalized[Session::CustomerGroup()->getNettoPreise()]
+                    ? $this->Preise->cVKLocalized[Session::CustomerGroup()->getIsMerchant()]
                     : $this->Preise->cVKLocalized[0];
                 //$strVKLocalized = $this->Preise->cVKLocalized[0];
                 $strVKLocalized = StringHandler::htmlentitydecode($strVKLocalized);
@@ -5048,7 +5048,7 @@ class Artikel
                 $this->SieSparenX = new stdClass();
             }
             if (Session::CustomerGroup()->mayViewPrices()) {
-                if (Session::CustomerGroup()->useNetPrices()) {
+                if (Session::CustomerGroup()->isMerchant()) {
                     $this->fUVP                             /= (1 + gibUst($this->kSteuerklasse) / 100);
                     $this->SieSparenX->anzeigen             = $anzeigen;
                     $this->SieSparenX->nProzent             = round((($this->fUVP - $this->Preise->fVKNetto) * 100) / $this->fUVP, 2);
@@ -5737,8 +5737,8 @@ class Artikel
             && Session::CustomerGroup()->getID() === $kKundengruppe)
             ? $_SESSION['Kundengruppe']
             : new Kundengruppe($kKundengruppe);
-        if ($kdgrp->getRabatt() > 0) {
-            $Rabatt_arr[] = $kdgrp->getRabatt();
+        if ($kdgrp->getDiscount() > 0) {
+            $Rabatt_arr[] = $kdgrp->getDiscount();
         }
         // Existiert für diesen Kunden ein Rabatt?
         if (
@@ -5791,7 +5791,7 @@ class Artikel
         // Standards
         if (!isset($_SESSION['Kundengruppe'])) {
             $_SESSION['Kundengruppe'] = (new Kundengruppe())->loadDefaultGroup();
-            $NettoPreise              = Session::CustomerGroup()->useNetPrices();
+            $NettoPreise              = Session::CustomerGroup()->isMerchant();
         }
         if (!isset($_SESSION['Link_Versandseite'])) {
             setzeLinks();
@@ -6083,7 +6083,7 @@ class Artikel
                 $cGlobalMetaTitle = ' - ' . $oGlobaleMetaAngabenAssoc_arr[Shop::$kSprache]->Title;
             }
         }
-        $idx = Session::CustomerGroup()->getNettoPreise();
+        $idx = Session::CustomerGroup()->getIsMerchant();
         if ($conf['metaangaben']['global_meta_title_preis'] === 'Y' 
             && isset(
                 $this->Preise->fVK[$idx],
@@ -6279,11 +6279,11 @@ class Artikel
      */
     public function getShippingAndTaxData()
     {
-        $net = isset($_SESSION['Kundengruppe']->nNettoPreise) ? Session::CustomerGroup()->useNetPrices() : false;
+        $net = isset($_SESSION['Kundengruppe']->nNettoPreise) ? Session::CustomerGroup()->isMerchant() : false;
         // Standards
         if (!isset($_SESSION['Kundengruppe'])) {
             $_SESSION['Kundengruppe'] = (new Kundengruppe())->loadDefaultGroup();
-            $net                      = Session::CustomerGroup()->useNetPrices();
+            $net                      = Session::CustomerGroup()->isMerchant();
         }
         if (!isset($_SESSION['Link_Versandseite'])) {
             setzeLinks();

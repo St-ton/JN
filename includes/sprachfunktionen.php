@@ -55,7 +55,7 @@ function lang_warenkorb_warenkorbLabel($warenkorb)
         $cLabel .= ' (' . gibPreisStringLocalized(
             $warenkorb->gibGesamtsummeWarenExt(
                 [C_WARENKORBPOS_TYP_ARTIKEL],
-                !Session::CustomerGroup()->useNetPrices()
+                !Session::CustomerGroup()->isMerchant()
             )) . ')';
     }
 

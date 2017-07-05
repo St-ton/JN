@@ -475,8 +475,8 @@ class Session
         $Kunde->angezeigtesLand   = ISO2land($Kunde->cLand);
         $_SESSION['Kunde']        = $Kunde;
         $_SESSION['Kundengruppe'] = new Kundengruppe((int)$Kunde->kKundengruppe);
-        $_SESSION['Kundengruppe']->setDarfKategorienSehen(1)
-                                 ->setDarfPreiseSehen(1)
+        $_SESSION['Kundengruppe']->setMayViewCategories(1)
+                                 ->setMayViewPrices(1)
                                  ->initAttributes();
         $_SESSION['Warenkorb']->setzePositionsPreise();
         setzeSteuersaetze();

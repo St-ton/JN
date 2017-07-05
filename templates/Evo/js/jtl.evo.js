@@ -246,6 +246,8 @@
                 buttons: false,
                 title: options.title, 
                 message: options.text,
+                keyboard: true,
+                tabindex: -1,
                 onShown: function() {
                     $.evo.extended().generateSlickSlider();
                 }

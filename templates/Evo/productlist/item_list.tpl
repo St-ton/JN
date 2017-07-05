@@ -196,6 +196,12 @@
                         {/block}
                     </div>
 
+                    {if $Artikel->kArtikelVariKombi > 0}
+                        <input type="hidden" name="aK" value="{$Artikel->kArtikelVariKombi}" />
+                    {/if}
+                    {if isset($Artikel->kVariKindArtikel)}
+                        <input type="hidden" name="VariKindArtikel" value="{$Artikel->kVariKindArtikel}" />
+                    {/if}
                     <input type="hidden" name="a" value="{$Artikel->kArtikel}" />
                     <input type="hidden" name="wke" value="1" />
                     <input type="hidden" name="overview" value="1" />

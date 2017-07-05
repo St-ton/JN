@@ -5,7 +5,7 @@
 {else}
     {hasOnlyListableVariations artikel=$Artikel maxVariationCount=$Einstellungen.template.productlist.variation_select_productlist assign="hasOnlyListableVariations"}
 {/if}
-<div id="result-wrapper_buy_form_{$Artikel->kArtikel}" class="product-cell text-center{if $Einstellungen.template.productlist.hover_productlist === 'Y'} hover-enabled{/if}{if $bAjaxRequest} active{/if}{if isset($class)} {$class}{/if}">
+<div id="result-wrapper_buy_form_{$Artikel->kArtikel}" class="product-cell text-center{if $Einstellungen.template.productlist.hover_productlist === 'Y'} hover-enabled{/if}{if isset($listStyle) && $listStyle === 'gallery'} active{/if}{if isset($class)} {$class}{/if}">
     {block name="productlist-image"}
         <a class="image-wrapper" href="{$Artikel->cURL}">
             {if isset($Artikel->Bilder[0]->cAltAttribut)}
@@ -111,6 +111,12 @@
                 {/block}
             </div>
 
+            {if $Artikel->kArtikelVariKombi > 0}
+                <input type="hidden" name="aK" value="{$Artikel->kArtikelVariKombi}" />
+            {/if}
+            {if isset($Artikel->kVariKindArtikel)}
+                <input type="hidden" name="VariKindArtikel" value="{$Artikel->kVariKindArtikel}" />
+            {/if}
             <input type="hidden" name="a" value="{$Artikel->kArtikel}" />
             <input type="hidden" name="wke" value="1" />
             <input type="hidden" name="overview" value="1" />

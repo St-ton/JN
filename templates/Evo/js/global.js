@@ -185,17 +185,21 @@ function addValidationListener() {
                 if ($firstError.length > 0) {
                     $body.data('doScrolling', true);
                     var $nav        = $('#evo-main-nav-wrapper.do-affix'),
-                        fixedOffset = $nav.length > 0 ? $nav.outerHeight() : 0;
-                    $('html, body').animate(
-                        {
-                            scrollTop: $firstError.offset().top - fixedOffset - parseInt($firstError.css('margin-top'))
-                        },
-                        {
-                            done: function() {
-                                $body.data('doScrolling', false);
-                            }
-                        }, 300
-                    );
+                        fixedOffset = $nav.length > 0 ? $nav.outerHeight() : 0,
+                        vpHeight    = $(window).height(),
+                        scrollTop   = $(window).scrollTop();
+                    if ($firstError.offset().top > (scrollTop + vpHeight) || $firstError.offset().top < scrollTop) {
+                        $('html, body').animate(
+                            {
+                                scrollTop: $firstError.offset().top - fixedOffset - parseInt($firstError.css('margin-top'))
+                            },
+                            {
+                                done: function () {
+                                    $body.data('doScrolling', false);
+                                }
+                            }, 300
+                        );
+                    }
                 }
             }
         }, true);

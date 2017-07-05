@@ -342,7 +342,7 @@
 
         registerFinish: function($wrapper) {
             $('#jump-to-votes-tab', $wrapper).click(function () {
-                $('#content a[href="#tab-votes"]', $wrapper).tab('show');
+                $('#content a[href="#tab-votes"]').tab('show');
             });
 
             /*if ($('.switch-variations', $wrapper).length === 1) {

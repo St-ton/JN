@@ -140,6 +140,19 @@ if (auth()) {
             $tmpWaehrungsfaktor = $xml_obj['bestellungen']['tbestellung'][$i]['fWaehrungsFaktor'];
             unset($xml_obj['bestellungen']['tbestellung'][$i]['fWaehrungsFaktor']);
             $xml_obj['bestellungen']['tbestellung'][$i]['fWaehrungsFaktor'] = $tmpWaehrungsfaktor;
+
+            $xml_obj['bestellungen']['tbestellung'][$i]['tkampagne'] = Shop::DB()->query(
+                "SELECT tkampagne.cParameter cKampagne, tkampagne.cName,
+                        COALESCE(tkampagnevorgang.cParamWert, '') cKampagneWert,
+                        COALESCE(tbesucher.cUserAgent, '') cUserAgent
+                    FROM tkampagnevorgang
+                    INNER JOIN tkampagne ON tkampagne.kKampagne = tkampagnevorgang.kKampagne
+                    INNER JOIN tkampagnedef ON tkampagnedef.kKampagneDef = tkampagnevorgang.kKampagneDef
+                    LEFT JOIN tbesucher ON tbesucher.kBestellung = " . (int)$xml_obj['bestellungen']['tbestellung'][$i . ' attr']['kBestellung'] . "
+                    WHERE tkampagnedef.cKey = 'kBestellung'
+                                AND tkampagnevorgang.kKey = " . (int)$xml_obj['bestellungen']['tbestellung'][$i . ' attr']['kBestellung'] . "
+                    ORDER BY tkampagnevorgang.kKampagneDef DESC LIMIT 1", 8
+            );
         }
     }
 }

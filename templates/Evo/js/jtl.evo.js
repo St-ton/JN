@@ -166,7 +166,7 @@
         },
 
         productTabsPriceFlow: function() {
-            $('a[href="#priceFlow"]').on('shown.bs.tab', function () {
+            $('a[href="#tab-priceFlow"]').on('shown.bs.tab', function () {
                 if (typeof window.priceHistoryChart !== 'undefined' && window.priceHistoryChart === null) {
                     window.priceHistoryChart = new Chart(window.ctx).Bar(window.chartData, {
                         responsive:      true,

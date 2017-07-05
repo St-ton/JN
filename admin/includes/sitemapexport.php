@@ -1156,14 +1156,14 @@ function baueExportURL($kKey, $cKey, $dLetzteAktualisierung, $oSprach_arr, $kSpr
         case 'kKategorie':
             $params['kKategorie'] = $kKey;
             $naviFilter->initStates($params);
-            $filterSeo = $naviFilter->Kategorie->getSeo($kSprache);
+            $filterSeo = $naviFilter->getCategory()->getSeo($kSprache);
             $bSeoCheck = !empty($filterSeo);
             break;
 
         case 'kHersteller':
             $params['kHersteller'] = $kKey;
             $naviFilter->initStates($params);
-            $filterSeo = $naviFilter->Hersteller->getSeo($kSprache);
+            $filterSeo = $naviFilter->getManufacturer()->getSeo($kSprache);
             $bSeoCheck = !empty($filterSeo);
             break;
 
@@ -1178,35 +1178,36 @@ function baueExportURL($kKey, $cKey, $dLetzteAktualisierung, $oSprach_arr, $kSpr
                         ORDER BY kSuchanfrage", 1
                 );
                 if (!empty($oSuchanfrage->cSuche)) {
-                    if (!isset($naviFilter->Suche)) {
+                    // @todo
+                    if (!$naviFilter->hasSearch()) {
                         $naviFilter->Suche = new stdClass();
                     }
                     $naviFilter->Suche->kSuchanfrage = $kKey;
                     $naviFilter->Suche->cSuche       = $oSuchanfrage->cSuche;
                 }
             }
-            $filterSeo = $naviFilter->Suchanfrage->getSeo($kSprache);
+            $filterSeo = $naviFilter->getSearchQuery()->getSeo($kSprache);
             $bSeoCheck = !empty($filterSeo);
             break;
 
         case 'kMerkmalWert':
             $params['kMerkmalWert'] = $kKey;
             $naviFilter->initStates($params);
-            $filterSeo = $naviFilter->MerkmalWert->getSeo($kSprache);
+            $filterSeo = $naviFilter->getAttributeValue()->getSeo($kSprache);
             $bSeoCheck = !empty($filterSeo);
             break;
 
         case 'kTag':
             $params['kTag'] = $kKey;
             $naviFilter->initStates($params);
-            $filterSeo = $naviFilter->Tag->getSeo($kSprache);
+            $filterSeo = $naviFilter->getTag()->getSeo($kSprache);
             $bSeoCheck = !empty($filterSeo);
             break;
 
         case 'kSuchspecial':
             $params['kSuchspecial'] = $kKey;
             $naviFilter->initStates($params);
-            $filterSeo = $naviFilter->Suchspecial->getSeo($kSprache);
+            $filterSeo = $naviFilter->getSearchSpecial()->getSeo($kSprache);
             $bSeoCheck = !empty($filterSeo);
             break;
 
@@ -1224,14 +1225,14 @@ function baueExportURL($kKey, $cKey, $dLetzteAktualisierung, $oSprach_arr, $kSpr
                 if ($bSeoCheck) {
                     if ($i > 1) {
                         $cURL_arr[] = makeURL(
-                            str_replace($search, $replace, $naviFilter->getURL(true)) . '_s' . $i,
+                            str_replace($search, $replace, $naviFilter->getURL()) . '_s' . $i,
                             $dLetzteAktualisierung,
                             FREQ_WEEKLY,
                             PRIO_NORMAL
                         );
                     } else {
                         $cURL_arr[] = makeURL(
-                            str_replace($search, $replace, $naviFilter->getURL(true)),
+                            str_replace($search, $replace, $naviFilter->getURL()),
                             $dLetzteAktualisierung,
                             FREQ_WEEKLY,
                             PRIO_NORMAL

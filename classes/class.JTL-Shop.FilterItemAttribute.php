@@ -122,7 +122,7 @@ class FilterItemAttribute extends FilterBaseAttribute
      */
     public function getSQLCondition()
     {
-        return "\n" . 'tartikelmerkmal.kArtikel  IN (' .
+        return "\n" . 'tartikelmerkmal.kArtikel IN (' .
             'SELECT kArtikel FROM ' . $this->getTableName() .
             ' WHERE ' . $this->getPrimaryKeyRow() . ' IN (' .
             $this->getValue() .
@@ -149,7 +149,7 @@ class FilterItemAttribute extends FilterBaseAttribute
      */
     public function attributeValueIsActive($kMerkmalWert)
     {
-        foreach ($this->naviFilter->MerkmalFilter as $i => $oMerkmalauswahl) {
+        foreach ($this->naviFilter->getAttributeFilters() as $i => $oMerkmalauswahl) {
             if ($oMerkmalauswahl->getValue() === $kMerkmalWert) {
                 return true;
             }
@@ -178,18 +178,18 @@ class FilterItemAttribute extends FilterBaseAttribute
         $attributeFilters    = [];
         $activeValues        = [];
         $useAttributeFilter  = $this->getConfig()['navigationsfilter']['merkmalfilter_verwenden'] !== 'N';
-        $attributeLimit      = $bForce ? 0 : $this->getConfig()['navigationsfilter']['merkmalfilter_maxmerkmale'];
-        $attributeValueLimit = $bForce ? 0 : $this->getConfig()['navigationsfilter']['merkmalfilter_maxmerkmalwerte'];
+        $attributeLimit      = $bForce ? 0 : (int)$this->getConfig()['navigationsfilter']['merkmalfilter_maxmerkmale'];
+        $attributeValueLimit = $bForce ? 0 : (int)$this->getConfig()['navigationsfilter']['merkmalfilter_maxmerkmalwerte'];
 
         if (!$bForce && !$useAttributeFilter) {
             return $attributeFilters;
         }
         // Ist Kategorie Mainword, dann prüfe die Kategorie-Funktionsattribute auf merkmalfilter
-        if (isset($currentCategory->categoryFunctionAttributes) 
-            && is_array($currentCategory->categoryFunctionAttributes) 
-            && count($currentCategory->categoryFunctionAttributes) > 0 
-            && !empty($currentCategory->categoryFunctionAttributes[KAT_ATTRIBUT_MERKMALFILTER]) 
-            && $this->naviFilter->KategorieFilter->isInitialized()
+        if (isset($currentCategory->categoryFunctionAttributes)
+            && is_array($currentCategory->categoryFunctionAttributes)
+            && count($currentCategory->categoryFunctionAttributes) > 0
+            && !empty($currentCategory->categoryFunctionAttributes[KAT_ATTRIBUT_MERKMALFILTER])
+            && $this->naviFilter->hasCategoryFilter()
         ) {
             $catAttributeFilters = explode(
                 ';',
@@ -202,7 +202,7 @@ class FilterItemAttribute extends FilterBaseAttribute
         $state->joins[] = $order->join;
 
         // @todo?
-        if (true || (!$this->naviFilter->MerkmalWert->isInitialized() && count($this->naviFilter->MerkmalFilter) === 0)) {
+        if (true || (!$this->naviFilter->hasAttributeValue() && !$this->naviFilter->hasAttributeFilter())) {
             $state->joins[] = (new FilterJoin())
                 ->setComment('join1 from FilterItemAttribute::getOptions()')
                 ->setType('JOIN')
@@ -261,9 +261,9 @@ class FilterItemAttribute extends FilterBaseAttribute
                 ->setOrigin(__CLASS__);
         }
 
-        if (count($this->naviFilter->MerkmalFilter) > 0) {
+        if ($this->naviFilter->hasAttributeFilter()) {
             $activeAndFilterIDs = [];
-            foreach ($this->naviFilter->MerkmalFilter as $filter) {
+            foreach ($this->naviFilter->getAttributeFilters() as $filter) {
                 $values = $filter->getValue();
                 if (is_array($values)) {
                     $activeValues = $values;
@@ -347,7 +347,7 @@ class FilterItemAttribute extends FilterBaseAttribute
                 $attributeValues->kMerkmalWert = (int)$oMerkmalFilterDB->kMerkmalWert;
                 $attributeValues->cWert        = $oMerkmalFilterDB->cWert;
                 $attributeValues->nAnzahl      = (int)$oMerkmalFilterDB->nAnzahl;
-                $attributeValues->nAktiv       = ($this->naviFilter->MerkmalWert->getValue() === $attributeValues->kMerkmalWert ||
+                $attributeValues->nAktiv       = ($this->naviFilter->getAttributeValue()->getValue() === $attributeValues->kMerkmalWert ||
                     $this->attributeValueIsActive($attributeValues->kMerkmalWert))
                     ? 1
                     : 0;

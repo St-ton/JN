@@ -392,8 +392,7 @@ class AuswahlAssistent
     {
         // only start if enabled in the backend settings
         if (self::isRequired()) {
-            $nAnzahlFilter = isset($GLOBALS['NaviFilter']) ? (int)$GLOBALS['NaviFilter']->nAnzahlFilter : 0;
-
+            $nAnzahlFilter = Shop::getNaviFilter()->getFilterCount();
             // only start if no filters are already set
             if ($nAnzahlFilter === 0) {
                 $AWA = new self($cKey, $kKey, $kSprache, true);

@@ -138,7 +138,7 @@ class FilterItemSearchSpecial extends AbstractFilter
             case SEARCHSPECIALS_SPECIALOFFERS:
                 $tasp = 'tartikelsonderpreis';
                 $tsp  = 'tsonderpreise';
-                if (!$this->naviFilter->PreisspannenFilter->isInitialized()) {
+                if (!$this->naviFilter->hasPriceRangeFilter()) {
                     $tasp = 'tasp';
                     $tsp  = 'tsp';
                 }
@@ -170,7 +170,7 @@ class FilterItemSearchSpecial extends AbstractFilter
                 return "now() < tartikel.dErscheinungsdatum";
 
             case SEARCHSPECIALS_TOPREVIEWS:
-                if (!$this->naviFilter->BewertungFilter->isInitialized()) {
+                if (!$this->naviFilter->hasPriceRangeFilter()) {
                     $nMindestSterne = ((int)$conf['boxen']['boxen_topbewertet_minsterne'] > 0)
                         ? (int)$conf['boxen']['boxen_topbewertet_minsterne']
                         : 4;
@@ -201,7 +201,7 @@ class FilterItemSearchSpecial extends AbstractFilter
                     ->setOrigin(__CLASS__);
 
             case SEARCHSPECIALS_SPECIALOFFERS:
-                if (!$this->naviFilter->PreisspannenFilter->isInitialized()) {
+                if (!$this->naviFilter->hasPriceRangeFilter()) {
                     return [
                         (new FilterJoin())
                             ->setType('JOIN')
@@ -226,7 +226,7 @@ class FilterItemSearchSpecial extends AbstractFilter
                 return [];
 
             case SEARCHSPECIALS_TOPREVIEWS:
-                return $this->naviFilter->BewertungFilter->isInitialized()
+                return $this->naviFilter->hasRatingFilter()
                     ? []
                     : (new FilterJoin())
                         ->setType('JOIN')
@@ -315,7 +315,7 @@ class FilterItemSearchSpecial extends AbstractFilter
                         break;
                     case SEARCHSPECIALS_TOPREVIEWS:
                         $name = Shop::Lang()->get('topReviews');
-                        if (!$this->naviFilter->BewertungFilter->isInitialized()) {
+                        if (!$this->naviFilter->hasRatingFilter()) {
                             $state->joins[] = (new FilterJoin())
                                 ->setComment('join from FilterItemSearchSpecial::getOptions() top reviews')
                                 ->setType('JOIN')

@@ -94,34 +94,46 @@
 
 {if count($Suchergebnisse->Artikel->elemente) > 0}
     <form id="improve_search" action="index.php" method="get" class="form-inline clearfix">
-        {if isset($NaviFilter->Kategorie->kKategorie) && $NaviFilter->Kategorie->kKategorie > 0}
-            <input type="hidden" name="k" value="{$NaviFilter->Kategorie->kKategorie}" />{/if}
-        {if isset($NaviFilter->Hersteller->kHersteller) && $NaviFilter->Hersteller->kHersteller > 0}
-            <input type="hidden" name="h" value="{$NaviFilter->Hersteller->kHersteller}" />{/if}
-        {if isset($NaviFilter->Suchanfrage->kSuchanfrage) && $NaviFilter->Suchanfrage->kSuchanfrage > 0}
-            <input type="hidden" name="l" value="{$NaviFilter->Suchanfrage->kSuchanfrage}" />{/if}
-        {if isset($NaviFilter->MerkmalWert->kMerkmalWert) && $NaviFilter->MerkmalWert->kMerkmalWert > 0}
-            <input type="hidden" name="m" value="{$NaviFilter->MerkmalWert->kMerkmalWert}" />{/if}
-        {if isset($NaviFilter->Suchspecial->kKey) && $NaviFilter->Suchspecial->kKey > 0}
-            <input type="hidden" name="q" value="{$NaviFilter->Suchspecial->kKey}" />{/if}
-        {if isset($NaviFilter->Suche->cSuche) && $NaviFilter->Suche->cSuche|count > 0}
-            <input type="hidden" name="suche" value="{$NaviFilter->Suche->cSuche|escape:'htmlall'}" />{/if}
-        {if isset($NaviFilter->Tag->kTag) && $NaviFilter->Tag->kTag > 0}
-            <input type="hidden" name="t" value="{$NaviFilter->Tag->kTag}" />{/if}
+        {if $NaviFilter->hasCategory()}
+            <input type="hidden" name="k" value="{$NaviFilter->getCategory()->getValue()}" />
+        {/if}
+        {if $NaviFilter->hasManufacturer()}
+            <input type="hidden" name="h" value="{$NaviFilter->getManufacturer()->getValue()}" />
+        {/if}
+        {if $NaviFilter->hasSearchQuery()}
+            <input type="hidden" name="l" value="{$NaviFilter->getSearchQuery()->getValue()}" />
+        {/if}
+        {if $NaviFilter->hasAttributeValue()}
+            <input type="hidden" name="m" value="{$NaviFilter->getAttributeValue()->getValue()}" />
+        {/if}
+        {if $NaviFilter->hasSearchSpecial()}
+            <input type="hidden" name="q" value="{$NaviFilter->getSearchSpecial()->getValue()}" />
+        {/if}
+        {if $NaviFilter->hasSearch()}
+            <input type="hidden" name="suche" value="{$NaviFilter->getSearch()->getName()|escape:'htmlall'}" />
+        {/if}
+        {if $NaviFilter->hasTag()}
+            <input type="hidden" name="t" value="{$NaviFilter->getTag()->getValue()}" />
+        {/if}
         {*Suchergebnisfilter*}
-        {if isset($NaviFilter->KategorieFilter->kKategorie) && $NaviFilter->KategorieFilter->kKategorie > 0}
-            <input type="hidden" name="kf" value="{$NaviFilter->KategorieFilter->kKategorie}" />{/if}
-        {if isset($NaviFilter->HerstellerFilter->kHersteller) && $NaviFilter->HerstellerFilter->kHersteller > 0}
-            <input type="hidden" name="hf" value="{$NaviFilter->HerstellerFilter->kHersteller}" />{/if}
-        {if isset($NaviFilter->SuchspecialFilter->kKey) && $NaviFilter->SuchspecialFilter->kKey > 0}
-            <input type="hidden" name="qf" value="{$NaviFilter->SuchspecialFilter->kKey}" />{/if}
-        {if isset($NaviFilter->BewertungFilter->nSterne) && $NaviFilter->BewertungFilter->nSterne > 0}
-            <input type="hidden" name="bf" value="{$NaviFilter->BewertungFilter->nSterne}" />{/if}
-        {if isset($NaviFilter->PreisspannenFilter->cWert) && $NaviFilter->PreisspannenFilter->cWert|count > 0}
-            <input type="hidden" name="pf" value="{$NaviFilter->PreisspannenFilter->cWert}" />{/if}
-        {if isset($NaviFilter->MerkmalFilter) && is_array($NaviFilter->MerkmalFilter)}
-            {foreach name=merkmalfilter from=$NaviFilter->MerkmalFilter item=mmfilter}
-                <input type="hidden" name="mf{$smarty.foreach.merkmalfilter.iteration}" value="{$mmfilter->kMerkmalWert}" />
+        {if $NaviFilter->hasCategoryFilter()}
+            <input type="hidden" name="kf" value="{$NaviFilter->getCategoryFilter()->getValue()}" />
+        {/if}
+        {if $NaviFilter->hasManufacturerFilter()}
+            <input type="hidden" name="hf" value="{$NaviFilter->getManufacturerFilter()->getValue()}" />
+        {/if}
+        {if $NaviFilter->hasSearchSpecialFilter()}
+            <input type="hidden" name="qf" value="{$NaviFilter->getSearchSpecialFilter()->kKey}" />
+        {/if}
+        {if $NaviFilter->hasRatingFilter()}
+            <input type="hidden" name="bf" value="{$NaviFilter->getRatingFilter()->getValue()}" />
+        {/if}
+        {if $NaviFilter->hasPriceRangeFilter()}
+            <input type="hidden" name="pf" value="{$NaviFilter->getPriceRangeFilter()->getValue()}" />
+        {/if}
+        {if $NaviFilter->hasAttributeFilter()}
+            {foreach name=merkmalfilter from=$NaviFilter->getAttributeFilters() item=attributeFilter}
+                <input type="hidden" name="mf{$smarty.foreach.merkmalfilter.iteration}" value="{$attributeFilter->getValue()}" />
             {/foreach}
         {/if}
         {if isset($cJTLSearchStatedFilter_arr) && is_array($cJTLSearchStatedFilter_arr)}
@@ -129,14 +141,14 @@
                 <input name="fq{$key}" type="hidden" value="{$cJTLSearchStatedFilter}" />
             {/foreach}
         {/if}
-        {if isset($NaviFilter->TagFilter) && is_array($NaviFilter->TagFilter)}
-            {foreach name=tagfilter from=$NaviFilter->TagFilter item=tag}
-                <input type="hidden" name="tf{$smarty.foreach.tagfilter.iteration}" value="{$tag->kTag}" />
+        {if $NaviFilter->hasTagFilter()}
+            {foreach name=tagfilter from=$NaviFilter->getTagFilters() item=tagFilter}
+                <input type="hidden" name="tf{$smarty.foreach.tagfilter.iteration}" value="{$tagFilter->getValue()}" />
             {/foreach}
         {/if}
-        {if isset($NaviFilter->SuchFilter) && is_array($NaviFilter->SuchFilter)}
-            {foreach name=suchfilter from=$NaviFilter->SuchFilter item=oSuche}
-                <input type="hidden" name="sf{$smarty.foreach.suchfilter.iteration}" value="{$oSuche->kSuchanfrage}" />
+        {if $NaviFilter->hasSearchFilter()}
+            {foreach name=suchfilter from=$NaviFilter->getSearchFilters() item=searchFilter}
+                <input type="hidden" name="sf{$smarty.foreach.suchfilter.iteration}" value="{$searchFilter->getValue()}" />
             {/foreach}
         {/if}
         {include file='productlist/result_options.tpl'}

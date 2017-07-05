@@ -5,7 +5,7 @@
         </div>
         <div class="box-body">
             {*{include file='snippets/filter/pricerange.tpl'}*}
-            {include file='snippets/filter/genericFilterItem.tpl' filter=$NaviFilter->PreisspannenFilter}
+            {include file='snippets/filter/genericFilterItem.tpl' filter=$NaviFilter->getPriceRangeFilter()}
         </div>
     </section>
 {/if}

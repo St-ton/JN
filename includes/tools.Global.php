@@ -4506,11 +4506,11 @@ function setzeSpracheUndWaehrungLink()
                 $NaviFilter->setLanguageID($oSprache->kSprache);
                 $cUrl = $NaviFilter->getURL(true, $oZusatzFilter);
                 $NaviFilter->setLanguageID($originalLanguage);
-                if (!empty($NaviFilter->nSeite) && $NaviFilter->nSeite > 1) {
+                if ($NaviFilter->getPage() > 1) {
                     if (strpos($sprachURL, 'navi.php') !== false) {
-                        $cUrl .= '&amp;seite=' . $NaviFilter->nSeite;
+                        $cUrl .= '&amp;seite=' . $NaviFilter->getPage();
                     } else {
-                        $cUrl .= SEP_SEITE . $NaviFilter->nSeite;
+                        $cUrl .= SEP_SEITE . $NaviFilter->getPage();
                     }
                 }
                 $_SESSION['Sprachen'][$i]->cURL     = $cUrl;
@@ -5951,7 +5951,7 @@ function doMainwordRedirect($NaviFilter, $nAnzahl, $bSeo = false)
         ]
     ];
 
-    if ($nAnzahl == 0) {
+    if ((int)$nAnzahl === 0) {
         $kSprache = 1;
         if (isset($_SESSION['kSprache'])) {
             $kSprache = (int)$_SESSION['kSprache'];
@@ -5962,6 +5962,7 @@ function doMainwordRedirect($NaviFilter, $nAnzahl, $bSeo = false)
                 $cParam = $cInfo_arr['cParam'];
                 if (isset($NaviFilter->$cMainword) && (int)$NaviFilter->$cMainword->$cKey > 0) {
                     $cUrl = "index.php?{$cParam}={$NaviFilter->$cMainword->$cKey}";
+                    // @todo: use getter
                     if ($bSeo && isset($NaviFilter->$cMainword->cSeo) && is_array($NaviFilter->$cMainword->cSeo)) {
                         $cUrl = "{$NaviFilter->$cMainword->cSeo[$kSprache]}";
                     }

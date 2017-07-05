@@ -4,7 +4,7 @@
             <h5 class="panel-title">{lang key='Votes' section='global'}</h5>
         </div>
         <div class="box-body">
-            {include file='snippets/filter/genericFilterItem.tpl' filter=$NaviFilter->BewertungFilter}
+            {include file='snippets/filter/genericFilterItem.tpl' filter=$NaviFilter->getRatingFilter()}
         </div>
     </section>
 {/if}

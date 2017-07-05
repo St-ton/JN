@@ -1,5 +1,5 @@
 {assign var='show_filters' value=false}
-{if $Einstellungen.artikeluebersicht.suchfilter_anzeigen_ab == 0 || count($Suchergebnisse->Artikel->elemente) >= $Einstellungen.artikeluebersicht.suchfilter_anzeigen_ab || $NaviFilter->nAnzahlFilter > 0}
+{if $Einstellungen.artikeluebersicht.suchfilter_anzeigen_ab == 0 || count($Suchergebnisse->Artikel->elemente) >= $Einstellungen.artikeluebersicht.suchfilter_anzeigen_ab || $NaviFilter->getFilterCount() > 0}
     {assign var='show_filters' value=true}
 {/if}
 <style>
@@ -133,9 +133,9 @@
                             {/if}
                         {/if}
                     {/foreach}
-                    {if !empty($NaviFilter->URL->cNoFilter)}
+                    {if $NaviFilter->getUnsetAllFiltersURL() !== null}
                         {strip}
-                            <a href="{$NaviFilter->URL->cNoFilter}" title="{lang key="removeFilters" section='global'}" class="label label-warning">
+                            <a href="{$NaviFilter->getUnsetAllFiltersURL()}" title="{lang key="removeFilters" section='global'}" class="label label-warning">
                                 {lang key='removeFilters' section='global'}
                             </a>
                         {/strip}

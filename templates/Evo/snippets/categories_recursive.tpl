@@ -11,8 +11,8 @@
         {/if}
         {if !isset($activeId)}
             {assign var='activeId' value='0'}
-            {if isset($NaviFilter->Kategorie) && intval($NaviFilter->Kategorie->kKategorie) > 0}
-                {assign var='activeId' value=$NaviFilter->Kategorie->kKategorie}
+            {if $NaviFilter->hasCategory()}
+                {assign var='activeId' value=$NaviFilter->getCategory()->getValue()}
             {elseif $nSeitenTyp == 1 && isset($Artikel)}
                 {assign var='activeId' value=$Artikel->gibKategorie()}
             {elseif $nSeitenTyp == 1 && isset($smarty.session.LetzteKategorie)}

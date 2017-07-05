@@ -1,12 +1,13 @@
 <ul class="{if isset($class)}{$class}{else}nav nav-list{/if}">
     {foreach name=bewertungen from=$Suchergebnisse->Bewertung item=oBewertung}
-        {if isset($NaviFilter->BewertungFilter) && $NaviFilter->BewertungFilter->nSterne == $oBewertung->nStern}
+        {if $NaviFilter->hasRatingFilter() && $NaviFilter->getRatingFilter()->getValue() == $oBewertung->nStern}
             <li>
+                {* @todo: use getter *}
                 <a rel="nofollow" href="{$NaviFilter->URL->cAlleBewertungen}" class="active">
                     <i class="fa fa-check-square-o text-muted"></i>
                     <span class="value">
                         {include file='productdetails/rating.tpl' stars=$oBewertung->nStern}
-                        {if $NaviFilter->BewertungFilter->nSterne < 5}
+                        {if $NaviFilter->getRatingFilter()->getValue() < 5}
                             <em>({lang key='from' section='productDetails'} {$oBewertung->nStern}
                                 {if $oBewertung->nStern > 1}
                                     {lang key='starPlural'}

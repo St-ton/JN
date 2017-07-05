@@ -55,8 +55,8 @@ class FilterBaseSearchQuery extends AbstractFilter
      */
     public function getValue()
     {
-        if (!empty($this->naviFilter->EchteSuche->cSuche) && empty($this->naviFilter->Suchanfrage->kSuchanfrage)) {
-            return urlencode($this->naviFilter->EchteSuche->cSuche);
+        if ($this->naviFilter->getRealSearch() !== null && !$this->naviFilter->hasSuchanfrage()) {
+            return urlencode($this->naviFilter->getRealSearch()->cSuche);
         }
 
         return $this->kSuchanfrage;
@@ -67,7 +67,7 @@ class FilterBaseSearchQuery extends AbstractFilter
      */
     public function getUrlParam()
     {
-        if (!empty($this->naviFilter->EchteSuche->cSuche) && empty($this->naviFilter->Suchanfrage->kSuchanfrage)) {
+        if ($this->naviFilter->getRealSearch() !== null && !$this->naviFilter->hasSuchanfrage()) {
             return 'suche';
         }
 
@@ -229,11 +229,11 @@ class FilterBaseSearchQuery extends AbstractFilter
             $searchFilters = Shop::DB()->query($query, 2);
 
             $kSuchanfrage_arr = [];
-            if ($this->naviFilter->Suche->getValue() > 0) {
-                $kSuchanfrage_arr[] = (int)$this->naviFilter->Suche->getValue();
+            if ($this->naviFilter->hasSearch()) {
+                $kSuchanfrage_arr[] = (int)$this->naviFilter->getSearch()->getValue();
             }
-            if (count($this->naviFilter->SuchFilter) > 0) {
-                foreach ($this->naviFilter->SuchFilter as $oSuchFilter) {
+            if ($this->naviFilter->hasSearchFilter()) {
+                foreach ($this->naviFilter->getSearchFilters() as $oSuchFilter) {
                     if ($oSuchFilter->getValue() > 0) {
                         $kSuchanfrage_arr[] = (int)$oSuchFilter->getValue();
                     }

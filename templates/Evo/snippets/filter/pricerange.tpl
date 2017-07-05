@@ -1,10 +1,11 @@
 <ul class="{if isset($class)}{$class}{else}nav nav-list{/if}">
-    {if isset($NaviFilter->PreisspannenFilter) && $NaviFilter->PreisspannenFilter->cWert}
-        {if $NaviFilter->PreisspannenFilter->fVon >= 0 && $NaviFilter->PreisspannenFilter->fBis > 0}
+    {if $NaviFilter->hasPriceRangeFilter()}
+        {if $NaviFilter->getPriceRangeFilter()->fVon >= 0 && $NaviFilter->getPriceRangeFilter()->fBis > 0}
             <li>
+                {*@todo: use getter*}
                 <a href="{$NaviFilter->URL->cAllePreisspannen}" rel="nofollow" class="active">
                     <span class="value">
-                        <i class="fa fa-check-square-o text-muted"></i> {$NaviFilter->PreisspannenFilter->cVonLocalized} - {$NaviFilter->PreisspannenFilter->cBisLocalized}
+                        <i class="fa fa-check-square-o text-muted"></i> {$NaviFilter->getPriceRangeFilter()->cVonLocalized} - {$NaviFilter->getPriceRangeFilter()->cBisLocalized}
                     </span>
                 </a>
             </li>

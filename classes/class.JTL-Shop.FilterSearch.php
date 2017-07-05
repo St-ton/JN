@@ -359,11 +359,11 @@ class FilterSearch extends AbstractFilter
                     ORDER BY ssMerkmal.cSuche' . $nLimit;
             $searchFilters = Shop::DB()->query($query, 2);
             $searchQueries = [];
-            if ($this->naviFilter->Suche->kSuchanfrage > 0) {
-                $searchQueries[] = (int)$this->naviFilter->Suche->kSuchanfrage;
+            if ($this->naviFilter->hasSearch()) {
+                $searchQueries[] = $this->naviFilter->getSearch()->getValue();
             }
-            if (count($this->naviFilter->SuchFilter) > 0) {
-                foreach ($this->naviFilter->SuchFilter as $oSuchFilter) {
+            if ($this->naviFilter->hasSearchFilter()) {
+                foreach ($this->naviFilter->getSearchFilters() as $oSuchFilter) {
                     if ($oSuchFilter->getValue() > 0) {
                         $searchQueries[] = (int)$oSuchFilter->getValue();
                     }

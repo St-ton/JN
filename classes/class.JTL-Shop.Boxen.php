@@ -1832,7 +1832,7 @@ class Boxen
     }
 
     /**
-     * @param stdClass $NaviFilter
+     * @param Navigationsfilter $NaviFilter
      * @param stdClass $oSuchergebnisse
      * @return bool
      */
@@ -1840,40 +1840,48 @@ class Boxen
     {
         $conf = Shop::getSettings([CONF_GLOBAL]);
 
-        return ((isset($NaviFilter->KategorieFilter->kKategorie) && $NaviFilter->KategorieFilter->kKategorie > 0 &&
-                $this->boxConfig['navigationsfilter']['allgemein_kategoriefilter_benutzen'] === 'Y')
-            || (isset($NaviFilter->HerstellerFilter->kHersteller) && $NaviFilter->HerstellerFilter->kHersteller > 0 &&
-                $this->boxConfig['navigationsfilter']['allgemein_herstellerfilter_benutzen'] === 'Y')
-            || (isset($NaviFilter->PreisspannenFilter->fBis) && ($NaviFilter->PreisspannenFilter->fVon >= 0 &&
-                    $NaviFilter->PreisspannenFilter->fBis > 0) &&
-                $this->boxConfig['navigationsfilter']['preisspannenfilter_benutzen'] !== 'N' &&
-                $conf['global']['global_sichtbarkeit'] == 1)
-            || (isset($NaviFilter->BewertungFilter->nSterne) && $NaviFilter->BewertungFilter->nSterne > 0 &&
-                $this->boxConfig['navigationsfilter']['bewertungsfilter_benutzen'] !== 'N')
-            || (isset($NaviFilter->TagFilter) &&
-                count($NaviFilter->TagFilter) > 0 &&
-                $this->boxConfig['navigationsfilter']['allgemein_tagfilter_benutzen'] === 'Y')
-            || (isset($oSuchergebnisse->MerkmalFilter) &&
-                count($oSuchergebnisse->MerkmalFilter) > 0 &&
-                $this->boxConfig['navigationsfilter']['merkmalfilter_verwenden'] === 'box')
-            || (isset($NaviFilter->MerkmalFilter) &&
-                count($NaviFilter->MerkmalFilter) > 0 &&
-                $this->boxConfig['navigationsfilter']['merkmalfilter_verwenden'] === 'box')
-            || (isset($oSuchergebnisse->Bewertung) &&
-                count($oSuchergebnisse->Bewertung) > 0 &&
-                $this->boxConfig['navigationsfilter']['bewertungsfilter_benutzen'] === 'box')
-            || (isset($oSuchergebnisse->Preisspanne) &&
-                count($oSuchergebnisse->Preisspanne) > 0 &&
-                $this->boxConfig['navigationsfilter']['preisspannenfilter_benutzen'] === 'box' &&
-                $conf['global']['global_sichtbarkeit'] == 1)
-            || (isset($oSuchergebnisse->Suchspecialauswahl) &&
-                count($oSuchergebnisse->Suchspecialauswahl) > 0 &&
-                $this->boxConfig['navigationsfilter']['allgemein_suchspecialfilter_benutzen'] === 'Y')
-            || (isset($NaviFilter->SuchspecialFilter->kKey) &&
-                $NaviFilter->SuchspecialFilter->kKey > 0 &&
-                $this->boxConfig['navigationsfilter']['allgemein_suchspecialfilter_benutzen'] === 'Y')
-            || (isset($NaviFilter->SuchFilter) && count($NaviFilter->SuchFilter) > 0 &&
-                $this->boxConfig['navigationsfilter']['suchtrefferfilter_nutzen'] === 'Y')
+        return (
+            ($NaviFilter->hasCategoryFilter()
+                && $this->boxConfig['navigationsfilter']['allgemein_kategoriefilter_benutzen'] === 'Y')
+            ||
+            ($NaviFilter->hasManufacturerFilter()
+                && $this->boxConfig['navigationsfilter']['allgemein_herstellerfilter_benutzen'] === 'Y')
+            ||
+            ($NaviFilter->hasPriceRangeFilter()
+                && $this->boxConfig['navigationsfilter']['preisspannenfilter_benutzen'] !== 'N'
+                && (int)$conf['global']['global_sichtbarkeit'] === 1)
+            ||
+            ($NaviFilter->hasRatingFilter()
+                && $this->boxConfig['navigationsfilter']['bewertungsfilter_benutzen'] !== 'N')
+            ||
+            ($NaviFilter->hasTagFilter()
+                && $this->boxConfig['navigationsfilter']['allgemein_tagfilter_benutzen'] === 'Y')
+            ||
+            (isset($oSuchergebnisse->MerkmalFilter)
+                && count($oSuchergebnisse->MerkmalFilter) > 0
+                && $this->boxConfig['navigationsfilter']['merkmalfilter_verwenden'] === 'box')
+            ||
+            ($NaviFilter->hasAttributeFilter()
+                && $this->boxConfig['navigationsfilter']['merkmalfilter_verwenden'] === 'box')
+            ||
+            (isset($oSuchergebnisse->Bewertung)
+                && count($oSuchergebnisse->Bewertung) > 0
+                && $this->boxConfig['navigationsfilter']['bewertungsfilter_benutzen'] === 'box')
+            ||
+            (isset($oSuchergebnisse->Preisspanne)
+                && count($oSuchergebnisse->Preisspanne) > 0
+                && $this->boxConfig['navigationsfilter']['preisspannenfilter_benutzen'] === 'box'
+                && (int)$conf['global']['global_sichtbarkeit'] === 1)
+            ||
+            (isset($oSuchergebnisse->Suchspecialauswahl)
+                && count($oSuchergebnisse->Suchspecialauswahl) > 0
+                && $this->boxConfig['navigationsfilter']['allgemein_suchspecialfilter_benutzen'] === 'Y')
+            ||
+            ($NaviFilter->hasSearchSpecialFilter()
+                && $this->boxConfig['navigationsfilter']['allgemein_suchspecialfilter_benutzen'] === 'Y')
+            ||
+            ($NaviFilter->hasSearchFilter()
+                && $this->boxConfig['navigationsfilter']['suchtrefferfilter_nutzen'] === 'Y')
         );
     }
 

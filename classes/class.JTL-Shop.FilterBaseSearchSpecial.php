@@ -131,7 +131,7 @@ class FilterBaseSearchSpecial extends AbstractFilter
             case SEARCHSPECIALS_SPECIALOFFERS:
                 $tasp = 'tartikelsonderpreis';
                 $tsp  = 'tsonderpreise';
-                if (!$this->naviFilter->PreisspannenFilter->isInitialized()) {
+                if (!$this->naviFilter->hasPriceRangeFilter()) {
                     $tasp = 'tasp';
                     $tsp  = 'tsp';
                 }
@@ -159,8 +159,8 @@ class FilterBaseSearchSpecial extends AbstractFilter
                 return 'now() < tartikel.dErscheinungsdatum';
 
             case SEARCHSPECIALS_TOPREVIEWS:
-                if (!$this->naviFilter->BewertungFilter->isInitialized()) {
-                    $nMindestSterne = (($min = $this->getConfig()['boxen']['boxen_topbewertet_minsterne']) > 0)
+                if (!$this->naviFilter->hasRatingFilter()) {
+                    $nMindestSterne = ($min = $this->getConfig()['boxen']['boxen_topbewertet_minsterne']) > 0
                         ? (int)$min
                         : 4;
 
@@ -190,7 +190,7 @@ class FilterBaseSearchSpecial extends AbstractFilter
                     ->setOrigin(__CLASS__);
 
             case SEARCHSPECIALS_SPECIALOFFERS:
-                return $this->naviFilter->PreisspannenFilter->isInitialized()
+                return $this->naviFilter->hasPriceRangeFilter()
                     ? []
                     : (new FilterJoin())
                         ->setType('JOIN')
@@ -206,7 +206,7 @@ class FilterBaseSearchSpecial extends AbstractFilter
                 return [];
 
             case SEARCHSPECIALS_TOPREVIEWS:
-                return $this->naviFilter->BewertungFilter->isInitialized()
+                return $this->naviFilter->hasRatingFilter()
                     ? []
                     : (new FilterJoin())
                         ->setType('JOIN')

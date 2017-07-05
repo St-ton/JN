@@ -152,7 +152,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
 
         $oSuchergebnisse->MerkmalFilter = $NaviFilter->setFilterOptions($oSuchergebnisse, $AktuelleKategorie, true)->MerkmalFilter;
 
-        $nLimitN = ($NaviFilter->nSeite - 1) * $nArtikelProSeite;
+        $nLimitN = ($NaviFilter->getPage() - 1) * $nArtikelProSeite;
     }
 
     /**

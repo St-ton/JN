@@ -1,4 +1,4 @@
-{assign var=ssf value=$NaviFilter->SuchspecialFilter}
+{assign var=ssf value=$NaviFilter->getSearchSpecialFilter()}
 {if $bBoxenFilterNach && $ssf->getVisibility() === $ssf::SHOW_ALWAYS && (!empty($Suchergebnisse->Suchspecialauswahl) || $ssf->isInitialized())}
     <section class="panel panel-default box box-filter-special" id="sidebox{$oBox->kBox}">
         <div class="panel-heading">

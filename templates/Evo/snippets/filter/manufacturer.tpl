@@ -4,7 +4,7 @@
             <li>
                 <a rel="nofollow" href="{$Hersteller->cURL}">
                     <span class="value">
-                        <i class="fa {if isset($NaviFilter->HerstellerFilter) && $NaviFilter->HerstellerFilter->kHersteller == $Hersteller->kHersteller}fa-check-square-o{else}fa-square-o{/if} text-muted"></i>
+                        <i class="fa {if $NaviFilter->hasManufacturerFilter() && $NaviFilter->getManufacturerFilter()->getValue() == $Hersteller->kHersteller}fa-check-square-o{else}fa-square-o{/if} text-muted"></i>
                         {$Hersteller->cName|escape:'html'}
                         <span class="badge pull-right">{if !isset($nMaxAnzahlArtikel) || !$nMaxAnzahlArtikel}{$Hersteller->nAnzahl}{/if}</span>
                     </span>

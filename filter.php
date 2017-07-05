@@ -87,7 +87,8 @@ if ($hasError) {
     $oSuchergebnisse->Fehler              = $cFehler;
     $oSuchergebnisse->cSuche              = strip_tags(trim($cParameter_arr['cSuche']));
 }
-$NaviFilter->Suche->kSuchanfrage = gibSuchanfrageKey($NaviFilter->Suche->cSuche, Shop::$kSprache);
+// @todo: this is already called in Navigationsfilter::getProduct() - remove line?
+//$NaviFilter->Suche->kSuchanfrage = gibSuchanfrageKey($NaviFilter->Suche->cSuche, Shop::getLanguage());
 // Umleiten falls SEO keine Artikel ergibt
 doMainwordRedirect($NaviFilter, $oSuchergebnisse->Artikel->elemente->count(), true);
 // Bestsellers
@@ -135,11 +136,11 @@ $oSuchergebnisse->Artikel->elemente->transform(function ($article) use ($Einstel
 });
 
 if ($oSuchergebnisse->Artikel->elemente->count() === 0) {
-    if ($NaviFilter->Kategorie->isInitialized()) {
+    if ($NaviFilter->hasCategory()) {
         // hole alle enthaltenen Kategorien
         $KategorieInhalt                  = new stdClass();
         $KategorieInhalt->Unterkategorien = new KategorieListe();
-        $KategorieInhalt->Unterkategorien->getAllCategoriesOnLevel($NaviFilter->Kategorie->getValue());
+        $KategorieInhalt->Unterkategorien->getAllCategoriesOnLevel($NaviFilter->getCategory()->getValue());
         // wenn keine eigenen Artikel in dieser Kat, Top Angebote / Bestseller
         // aus unterkats + unterunterkats rausholen und anzeigen?
         if ($Einstellungen['artikeluebersicht']['topbest_anzeigen'] === 'Top' ||
@@ -173,7 +174,7 @@ $oMeta                   = new stdClass();
 $oMeta->cMetaTitle       = '';
 $oMeta->cMetaDescription = '';
 $oMeta->cMetaKeywords    = '';
-if ($NaviFilter->Kategorie->isInitialized()) {
+if ($NaviFilter->hasCategory()) {
     $oNavigationsinfo->oKategorie = $AktuelleKategorie;
 
     if ($Einstellungen['navigationsfilter']['kategorie_bild_anzeigen'] === 'Y') {
@@ -185,8 +186,8 @@ if ($NaviFilter->Kategorie->isInitialized()) {
         $oNavigationsinfo->cBildURL = $AktuelleKategorie->getKategorieBild();
     }
     $cBrotNavi = createNavigation('PRODUKTE', $AufgeklappteKategorien);
-} elseif ($NaviFilter->Hersteller->isInitialized()) {
-    $oNavigationsinfo->oHersteller = new Hersteller($NaviFilter->Hersteller->getValue());
+} elseif ($NaviFilter->hasManufacturer()) {
+    $oNavigationsinfo->oHersteller = new Hersteller($NaviFilter->getManufacturer()->getValue());
 
     if ($Einstellungen['navigationsfilter']['hersteller_bild_anzeigen'] === 'Y') {
         $oNavigationsinfo->cName = $oNavigationsinfo->oHersteller->cName;
@@ -205,9 +206,9 @@ if ($NaviFilter->Kategorie->isInitialized()) {
     if (isset($oNavigationsinfo->oHersteller->cMetaKeywords)) {
         $oMeta->cMetaKeywords = $oNavigationsinfo->oHersteller->cMetaKeywords;
     }
-    $cBrotNavi = createNavigation('', '', 0, $NaviFilter->cBrotNaviName, $NaviFilter->getURL());
-} elseif ($NaviFilter->MerkmalWert->isInitialized()) {
-    $oNavigationsinfo->oMerkmalWert = new MerkmalWert($NaviFilter->MerkmalWert->getValue());
+    $cBrotNavi = createNavigation('', '', 0, $NaviFilter->getBreadCrumbName(), $NaviFilter->getURL());
+} elseif ($NaviFilter->hasAttributeValue()) {
+    $oNavigationsinfo->oMerkmalWert = new MerkmalWert($NaviFilter->getAttributeValue()->getValue());
 
     if ($Einstellungen['navigationsfilter']['merkmalwert_bild_anzeigen'] === 'Y') {
         $oNavigationsinfo->cName = $oNavigationsinfo->oMerkmalWert->cWert;
@@ -306,6 +307,17 @@ $smarty->assign(
     )
 );
 executeHook(HOOK_FILTER_ENDE);
+foreach ($NaviFilter->getAvailableFilters() as $availableFilter) {
+//    if (get_class($availableFilter) === 'FilterItemAttribute') {
+//        Shop::dbg($availableFilter, true, $availableFilter->getFrontendName());
+//    }
+    if ($availableFilter->getFilterCollection()) {
+        foreach ($availableFilter->getFilterCollection() as $f) {
+//            Shop::dbg($f->getOptions(), false, 'qqoptions:');
+        }
+    }
+//    Shop::dbg($availableFilter->getFilterCollection(), false, 'collection:');
+}
 $smarty->display('productlist/index.tpl');
 
 require PFAD_ROOT . PFAD_INCLUDES . 'profiler_inc.php';

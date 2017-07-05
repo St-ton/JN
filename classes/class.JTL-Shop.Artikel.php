@@ -2990,37 +2990,34 @@ class Artikel
             CONF_ARTIKELUEBERSICHT,
             CONF_ARTIKELDETAILS
         ]);
-        if ((int)$conf['artikeluebersicht']['artikeluebersicht_varikombi_anzahl'] > 0 ||
-            (int)$conf['artikeldetails']['artikeldetails_varikombi_anzahl'] > 0
+        if ((int)$conf['artikeluebersicht']['artikeluebersicht_varikombi_anzahl'] > 0
+            || (int)$conf['artikeldetails']['artikeldetails_varikombi_anzahl'] > 0
         ) {
-            if ((int)$conf['artikeluebersicht']['artikeluebersicht_varikombi_anzahl'] > 0 &&
-                Shop::getPageType() === PAGE_ARTIKELLISTE
+            if ($conf['artikeluebersicht']['artikeluebersicht_varikombi_anzahl'] > 0
+                && Shop::getPageType() === PAGE_ARTIKELLISTE
             ) {
                 $nLimit = (int)$conf['artikeluebersicht']['artikeluebersicht_varikombi_anzahl'];
             }
-            if ((int)$conf['artikeldetails']['artikeldetails_varikombi_anzahl'] > 0 &&
-                Shop::getPageType() === PAGE_ARTIKEL
+            if ($conf['artikeldetails']['artikeldetails_varikombi_anzahl'] > 0
+                && Shop::getPageType() === PAGE_ARTIKEL
             ) {
                 $nLimit = (int)$conf['artikeldetails']['artikeldetails_varikombi_anzahl'];
             }
+            $naviFilter = Shop::getNaviFilter();
             // Merkmalfilter gesetzt?
-            if (isset($GLOBALS['NaviFilter']->MerkmalFilter) &&
-                is_array($GLOBALS['NaviFilter']->MerkmalFilter) &&
-                count($GLOBALS['NaviFilter']->MerkmalFilter) > 0
-            ) {
+            if ($naviFilter->hasAttributeFilter()) {
                 $cSQL .= "JOIN tartikelmerkmal ON tartikelmerkmal.kArtikel = tartikel.kArtikel
                             AND tartikelmerkmal.kMerkmalWert IN(";
 
                 $kMerkmal_arr = [];
-                foreach ($GLOBALS['NaviFilter']->MerkmalFilter as $i => $oMerkmal) {
-                    $oMerkmal->kMerkmal = (int)$oMerkmal->kMerkmal;
+                foreach ($naviFilter->getAttributeFilters() as $i => $oMerkmal) {
                     if ($i > 0) {
-                        $cSQL .= ',' . $oMerkmal->kMerkmalWert;
+                        $cSQL .= ',' . $oMerkmal->getValue();
                     } else {
-                        $cSQL .= $oMerkmal->kMerkmalWert;
+                        $cSQL .= $oMerkmal->getValue();
                     }
                     if (isset($oMerkmal->kMerkmal) && !in_array($oMerkmal->kMerkmal, $kMerkmal_arr, true)) {
-                        $kMerkmal_arr[] = $oMerkmal->kMerkmal;
+                        $kMerkmal_arr[] = (int)$oMerkmal->kMerkmal;
                     }
                 }
                 $cSQL .= ')';

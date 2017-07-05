@@ -1,15 +1,28 @@
 <?php
 
+/**
+ * Class Metadata
+ */
 class Metadata
 {
+    /**
+     * @var Navigationsfilter
+     */
     private $navigationsfilter;
-    
+
+    /**
+     * @var array
+     */
     private $conf;
-    
+
+    /**
+     * Metadata constructor.
+     * @param Navigationsfilter $navigationsfilter
+     */
     public function __construct(Navigationsfilter $navigationsfilter)
     {
         $this->navigationsfilter = $navigationsfilter;
-        $this->conf = $navigationsfilter->getConfig();
+        $this->conf              = $navigationsfilter->getConfig();
         
     }
 
@@ -39,10 +52,10 @@ class Metadata
         // Kategorieattribut?
         $cKatDescription = '';
         $languageID      = $this->navigationsfilter->getLanguageID();
-        if ($this->navigationsfilter->Kategorie->isInitialized()) {
+        if ($this->navigationsfilter->hasCategory()) {
             $oKategorie = $oKategorie !== null
                 ? $oKategorie
-                : new Kategorie($this->navigationsfilter->Kategorie->getValue());
+                : new Kategorie($this->navigationsfilter->getCategory()->getValue());
             if (!empty($oKategorie->cMetaDescription)) {
                 // meta description via new method
                 return prepareMeta(
@@ -159,10 +172,10 @@ class Metadata
         }
         // Kategorieattribut?
         $cKatKeywords = '';
-        if ($this->navigationsfilter->Kategorie->isInitialized()) {
+        if ($this->navigationsfilter->hasCategory()) {
             $oKategorie = $oKategorie !== null
                 ? $oKategorie
-                : new Kategorie($this->navigationsfilter->Kategorie->getValue());
+                : new Kategorie($this->navigationsfilter->getCategory()->getValue());
             if (!empty($oKategorie->cMetaKeywords)) {
                 // meta keywords via new method
                 return strip_tags($oKategorie->cMetaKeywords);
@@ -281,10 +294,10 @@ class Metadata
         $cMetaTitle = str_replace('"', "'", $cMetaTitle);
         $cMetaTitle = StringHandler::htmlentitydecode($cMetaTitle, ENT_NOQUOTES);
         // Kategorieattribute koennen Standard-Titles ueberschreiben
-        if ($this->navigationsfilter->Kategorie->isInitialized()) {
+        if ($this->navigationsfilter->hasCategory()) {
             $oKategorie = $oKategorie !== null
                 ? $oKategorie
-                : new Kategorie($this->navigationsfilter->Kategorie->getValue());
+                : new Kategorie($this->navigationsfilter->getCategory()->getValue());
             if (!empty($oKategorie->cTitleTag)) {
                 // meta title via new method
                 $cMetaTitle = strip_tags($oKategorie->cTitleTag);
@@ -326,75 +339,72 @@ class Metadata
         $cMetaTitle = '';
         // @todo: simplify
         // MerkmalWert
-        if ($this->navigationsfilter->MerkmalWert->isInitialized()) {
-            $cMetaTitle .= $this->navigationsfilter->MerkmalWert->getName();
-        } elseif ($this->navigationsfilter->Kategorie->isInitialized()) { // Kategorie
-            $cMetaTitle .= $this->navigationsfilter->Kategorie->getName();
-        } elseif ($this->navigationsfilter->Hersteller->isInitialized()) { // Hersteller
-            $cMetaTitle .= $this->navigationsfilter->Hersteller->getName();
-        } elseif ($this->navigationsfilter->Tag->isInitialized()) { // Tag
-            $cMetaTitle .= $this->navigationsfilter->Tag->getName();
-        } elseif ($this->navigationsfilter->Suche->isInitialized()) { // Suchebegriff
-            $cMetaTitle .= $this->navigationsfilter->Suche->cSuche;
+        if ($this->navigationsfilter->hasAttributeValue()) {
+            $cMetaTitle .= $this->navigationsfilter->getAttributeValue()->getName();
+        } elseif ($this->navigationsfilter->hasCategory()) { // Kategorie
+            $cMetaTitle .= $this->navigationsfilter->getCategory()->getName();
+        } elseif ($this->navigationsfilter->hasManufacturer()) { // Hersteller
+            $cMetaTitle .= $this->navigationsfilter->getManufacturer()->getName();
+        } elseif ($this->navigationsfilter->hasTag()) { // Tag
+            $cMetaTitle .= $this->navigationsfilter->getTag()->getName();
+        } elseif ($this->navigationsfilter->hasSearch()) { // Suchebegriff
+            $cMetaTitle .= $this->navigationsfilter->getSearch()->getName();
             //@todo: does this work?
             //$cMetaTitle .= $this->Suche->getName();
-        } elseif ($this->navigationsfilter->Suchanfrage->isInitialized()) { // Suchebegriff
-            $cMetaTitle .= $this->navigationsfilter->Suchanfrage->cSuche;
-        }  elseif ($this->navigationsfilter->Suchspecial->isInitialized()) { // Suchspecial
-            $cMetaTitle .= $this->navigationsfilter->Suchspecial->getName();
+        } elseif ($this->navigationsfilter->hasSearchQuery()) { // Suchebegriff
+            $cMetaTitle .= $this->navigationsfilter->getSearchQuery()->getName();
+        }  elseif ($this->navigationsfilter->hasSearchSpecial()) { // Suchspecial
+            $cMetaTitle .= $this->navigationsfilter->getSearchSpecial()->getName();
         }
         // Kategoriefilter
-        if ($this->navigationsfilter->KategorieFilter->isInitialized()) {
-            $cMetaTitle .= ' ' . $this->navigationsfilter->KategorieFilter->getName();
+        if ($this->navigationsfilter->hasCategoryFilter()) {
+            $cMetaTitle .= ' ' . $this->navigationsfilter->getCategoryFilter()->getName();
         }
         // Herstellerfilter
         if (!empty($oSuchergebnisse->Herstellerauswahl[0]->cName) 
-            && $this->navigationsfilter->HerstellerFilter->isInitialized()
+            && $this->navigationsfilter->hasManufacturerFilter()
         ) {
-            $cMetaTitle .= ' ' . $this->navigationsfilter->HerstellerFilter->getName();
+            $cMetaTitle .= ' ' . $this->navigationsfilter->getManufacturerFilter()->getName();
         }
         // Tagfilter
-        if (is_array($this->navigationsfilter->TagFilter) 
-            && count($this->navigationsfilter->TagFilter) > 0 
-            && $this->navigationsfilter->TagFilter[0]->cName !== null
+        if ($this->navigationsfilter->hasTagFilter()
+            && $this->navigationsfilter->getTagFilters()[0]->cName !== null
         ) {
-            $cMetaTitle .= ' ' . $this->navigationsfilter->TagFilter[0]->cName;
+            $cMetaTitle .= ' ' . $this->navigationsfilter->getTagFilters()[0]->cName;
         }
         // Suchbegrifffilter
-        if (is_array($this->navigationsfilter->SuchFilter) 
-            && count($this->navigationsfilter->SuchFilter) > 0
-        ) {
-            foreach ($this->navigationsfilter->SuchFilter as $i => $oSuchFilter) {
+        if ($this->navigationsfilter->hasSearchFilter()) {
+            foreach ($this->navigationsfilter->getSearchFilters() as $i => $oSuchFilter) {
                 if ($oSuchFilter->cName !== null) {
-                    $cMetaTitle .= ' ' . $oSuchFilter->cName;
+                    $cMetaTitle .= ' ' . $oSuchFilter->getName();
                 }
             }
         }
         // Suchspecialfilter
-        if ($this->navigationsfilter->SuchspecialFilter->isInitialized()) {
-            switch ($this->navigationsfilter->SuchspecialFilter->getValue()) {
+        if ($this->navigationsfilter->hasSearchSpecialFilter()) {
+            switch ($this->navigationsfilter->getSearchSpecialFilter()->getValue()) {
                 case SEARCHSPECIALS_BESTSELLER:
-                    $cMetaTitle .= ' ' . Shop::Lang()->get('bestsellers', 'global');
+                    $cMetaTitle .= ' ' . Shop::Lang()->get('bestsellers');
                     break;
 
                 case SEARCHSPECIALS_SPECIALOFFERS:
-                    $cMetaTitle .= ' ' . Shop::Lang()->get('specialOffers', 'global');
+                    $cMetaTitle .= ' ' . Shop::Lang()->get('specialOffers');
                     break;
 
                 case SEARCHSPECIALS_NEWPRODUCTS:
-                    $cMetaTitle .= ' ' . Shop::Lang()->get('newProducts', 'global');
+                    $cMetaTitle .= ' ' . Shop::Lang()->get('newProducts');
                     break;
 
                 case SEARCHSPECIALS_TOPOFFERS:
-                    $cMetaTitle .= ' ' . Shop::Lang()->get('topOffers', 'global');
+                    $cMetaTitle .= ' ' . Shop::Lang()->get('topOffers');
                     break;
 
                 case SEARCHSPECIALS_UPCOMINGPRODUCTS:
-                    $cMetaTitle .= ' ' . Shop::Lang()->get('upcomingProducts', 'global');
+                    $cMetaTitle .= ' ' . Shop::Lang()->get('upcomingProducts');
                     break;
 
                 case SEARCHSPECIALS_TOPREVIEWS:
-                    $cMetaTitle .= ' ' . Shop::Lang()->get('topReviews', 'global');
+                    $cMetaTitle .= ' ' . Shop::Lang()->get('topReviews');
                     break;
 
                 default:
@@ -402,10 +412,8 @@ class Metadata
             }
         }
         // MerkmalWertfilter
-        if (is_array($this->navigationsfilter->MerkmalFilter) 
-            && count($this->navigationsfilter->MerkmalFilter) > 0
-        ) {
-            foreach ($this->navigationsfilter->MerkmalFilter as $oMerkmalFilter) {
+        if ($this->navigationsfilter->hasAttributeFilter()) {
+            foreach ($this->navigationsfilter->getAttributeFilters() as $oMerkmalFilter) {
                 if ($oMerkmalFilter->cName !== null) {
                     $cMetaTitle .= ' ' . $oMerkmalFilter->cName;
                 }

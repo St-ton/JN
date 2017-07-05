@@ -5,7 +5,7 @@
         </div>
         <div class="box-body">
             {*{include file='snippets/filter/search.tpl'}*}
-            {include file='snippets/filter/genericFilterItem.tpl' filter=$NaviFilter->SuchFilter}
+            {include file='snippets/filter/genericFilterItem.tpl' filter=$NaviFilter->getSearchFilter()}
         </div>
     </section>
 {/if}

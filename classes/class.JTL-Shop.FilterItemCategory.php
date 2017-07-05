@@ -73,11 +73,11 @@ class FilterItemCategory extends FilterBaseCategory
             $state->joins[] = $order->join;
 
             // Kategoriefilter anzeige
-            if ($categoryFilterType === 'HF' && (!$this->naviFilter->Kategorie->isInitialized())) {
+            if ($categoryFilterType === 'HF' && (!$this->naviFilter->hasCategory())) {
                 //@todo: $this instead of $naviFilter->KategorieFilter?
-                $kKatFilter = $this->naviFilter->KategorieFilter->isInitialized()
+                $kKatFilter = $this->naviFilter->hasCategoryFilter()
                     ? ''
-                    : " AND tkategorieartikelgesamt.kOberKategorie = 0";
+                    : ' AND tkategorieartikelgesamt.kOberKategorie = 0';
 
                 $state->joins[] = (new FilterJoin())
                     ->setComment('join1 from FilterItemCategory::getOptions()')
@@ -93,7 +93,7 @@ class FilterItemCategory extends FilterBaseCategory
                     ->setOrigin(__CLASS__);
             } else {
                 //@todo: this instead of $naviFilter->Kategorie?
-                if (!$this->naviFilter->Kategorie->isInitialized()) {
+                if (!$this->naviFilter->hasCategory()) {
                     $state->joins[] = (new FilterJoin())
                         ->setComment('join3 from FilterItemCategory::getOptions()')
                         ->setType('JOIN')

@@ -12,7 +12,7 @@ class Navigationsfilter
     /**
      * @var string
      */
-    public $cBrotNaviName = '';
+    private $cBrotNaviName = '';
 
     /**
      * @var array
@@ -21,122 +21,122 @@ class Navigationsfilter
     /**
      * @var array
      */
-    public $oSprache_arr;
+    private $oSprache_arr;
 
     /**
      * @var FilterBaseCategory
      */
-    public $Kategorie;
+    private $Kategorie;
 
     /**
      * @var FilterItemCategory
      */
-    public $KategorieFilter;
+    private $KategorieFilter;
 
     /**
      * @var FilterBaseManufacturer
      */
-    public $Hersteller;
+    private $Hersteller;
 
     /**
      * @var FilterItemManufacturer
      */
-    public $HerstellerFilter;
+    private $HerstellerFilter;
 
     /**
      * @var FilterBaseAttribute
      */
-    public $MerkmalWert;
+    private $MerkmalWert;
 
     /**
      * @var FilterBaseSearchQuery
      */
-    public $Suchanfrage;
+    private $Suchanfrage;
 
     /**
      * @var FilterSearch[]
      */
-    public $SuchFilter = [];
+    private $SuchFilter = [];
 
     /**
      * @var FilterItemTag[]
      */
-    public $TagFilter = [];
+    private $TagFilter = [];
 
     /**
      * @var FilterItemAttribute[]
      */
-    public $MerkmalFilter = [];
+    private $MerkmalFilter = [];
 
     /**
      * @var FilterItemSearchSpecial
      */
-    public $SuchspecialFilter;
+    private $SuchspecialFilter;
 
     /**
      * @var FilterItemRating
      */
-    public $BewertungFilter;
+    private $BewertungFilter;
 
     /**
      * @var FilterItemPriceRange
      */
-    public $PreisspannenFilter;
+    private $PreisspannenFilter;
 
     /**
      * @var FilterBaseTag
      */
-    public $Tag;
+    private $Tag;
 
     /**
      * @var FilterNews
      */
-    public $News;
+    private $News;
 
     /**
      * @var FilterNewsOverview
      */
-    public $NewsMonat;
+    private $NewsMonat;
 
     /**
      * @var FilterNewsCategory
      */
-    public $NewsKategorie;
+    private $NewsKategorie;
 
     /**
      * @var FilterBaseSearchSpecial
      */
-    public $Suchspecial;
+    private $Suchspecial;
 
     /**
      * @var FilterSearch
      */
-    public $Suche;
+    private $Suche;
 
     /**
      * @var object
      */
-    public $EchteSuche;
+    private $EchteSuche;
 
     /**
      * @var int
      */
-    public $nAnzahlProSeite = 0;
+    private $nAnzahlProSeite = 0;
 
     /**
      * @var int
      */
-    public $nAnzahlFilter = 0;
+    private $nAnzahlFilter = 0;
 
     /**
      * @var int
      */
-    public $nSeite = 1;
+    private $nSeite = 1;
 
     /**
      * @var int
      */
-    public $nSortierung = 0;
+    private $nSortierung = 0;
 
     /**
      * @var int
@@ -240,6 +240,47 @@ class Navigationsfilter
             : (int)$_SESSION['Kundengruppe']->kKundengruppe;
         $this->baseURL         = Shop::getURL() . '/';
         executeHook(HOOK_NAVIGATIONSFILTER_CREATE, ['navifilter' => $this]);
+    }
+
+    /**
+     * @param string $name
+     * @return mixed
+     * @throws OutOfBoundsException
+     */
+    public function __get($name)
+    {
+        if (isset($this->$name)) {
+            trigger_error('Navigationsfilter: getter should be use to get ' . $name, E_USER_DEPRECATED);
+
+            return $this->$name;
+        }
+        throw new OutOfBoundsException('Navigationsfilter: unable to get ' . $name);
+    }
+
+    /**
+     * @param string $name
+     * @param mixed $value
+     * @return $this
+     * @throws OutOfBoundsException
+     */
+    public function __set($name, $value)
+    {
+        if (isset($this->$name)) {
+            trigger_error('Navigationsfilter: setter should be use to set ' . $name, E_USER_DEPRECATED);
+            $this->$name = $value;
+
+            return $this;
+        }
+        throw new OutOfBoundsException('Navigationsfilter: unable to get ' . $name);
+    }
+
+    /**
+     * @param string $name
+     * @return bool
+     */
+    public function __isset($name)
+    {
+        return property_exists($this, $name);
     }
 
     /**
@@ -783,6 +824,139 @@ class Navigationsfilter
     }
 
     /**
+     * @return FilterItemManufacturer
+     */
+    public function getManufacturerFilter()
+    {
+        return $this->HerstellerFilter;
+    }
+
+    /**
+     * @return FilterBaseManufacturer
+     */
+    public function getManufacturer()
+    {
+        return $this->Hersteller;
+    }
+
+    /**
+     * @param null|int $idx
+     * @return FilterItemAttribute|FilterItemAttribute[]
+     */
+    public function getAttributeFilters($idx = null)
+    {
+        return $idx === null ? $this->MerkmalFilter : $this->MerkmalFilter[$idx];
+    }
+
+    /**
+     * @return FilterBaseAttribute
+     */
+    public function getAttributeValue()
+    {
+        return $this->MerkmalWert;
+    }
+
+    /**
+     * @param null|int $idx
+     * @return FilterItemTag|FilterItemTag[]
+     */
+    public function getTagFilters($idx = null)
+    {
+        return $idx === null ? $this->TagFilter : $this->TagFilter[$idx];
+    }
+
+    /**
+     * @return FilterBaseTag
+     */
+    public function getTag()
+    {
+        return $this->Tag;
+    }
+
+    /**
+     * @return FilterBaseCategory
+     */
+    public function getCategory()
+    {
+        return $this->Kategorie;
+    }
+
+    /**
+     * @return FilterItemCategory
+     */
+    public function getCategoryFilter()
+    {
+        return $this->KategorieFilter;
+    }
+
+    /**
+     * @return FilterSearch
+     */
+    public function getSearch()
+    {
+        return $this->Suche;
+    }
+
+    /**
+     * @return FilterBaseSearchQuery
+     */
+    public function getSearchQuery()
+    {
+        return $this->Suchanfrage;
+    }
+
+    /**
+     * @param null|int $idx
+     * @return FilterSearch|FilterSearch[]
+     */
+    public function getSearchFilters($idx = null)
+    {
+        return $idx === null ? $this->SuchFilter : $this->SuchFilter[$idx];
+    }
+
+    /**
+     * @return FilterBaseSearchSpecial
+     */
+    public function getSearchSpecial()
+    {
+        return $this->Suchspecial;
+    }
+
+    /**
+     * @return FilterItemSearchSpecial
+     */
+    public function getSearchSpecialFilter()
+    {
+        return $this->SuchspecialFilter;
+    }
+
+    /**
+     * @return null|object
+     */
+    public function getRealSearch()
+    {
+        return empty($this->EchteSuche->cSuche)
+            ? null
+            : $this->EchteSuche;
+    }
+
+    /**
+     * @return FilterItemRating
+     */
+    public function getRatingFilter()
+    {
+        return $this->BewertungFilter;
+    }
+
+    /**
+     * @return FilterItemPriceRange
+     */
+    public function getPriceRangeFilter()
+    {
+        return $this->PreisspannenFilter;
+    }
+
+    /**
      * @return bool
      */
     public function hasManufacturerFilter()
@@ -819,7 +993,23 @@ class Navigationsfilter
      */
     public function hasSearchFilter()
     {
-        return $this->Suche->isInitialized();
+        return count($this->SuchFilter) > 0;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasSearch()
+    {
+        return $this->Suche->kSuchanfrage > 0;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasSearchQuery()
+    {
+        return $this->Suchanfrage->isInitialized();
     }
 
     /**
@@ -836,6 +1026,22 @@ class Navigationsfilter
     public function hasTagFilter()
     {
         return count($this->TagFilter) > 0;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasAttributeFilter()
+    {
+        return count($this->MerkmalFilter) > 0;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasPriceRangeFilter()
+    {
+        return $this->PreisspannenFilter->isInitialized();
     }
 
     /**
@@ -884,6 +1090,22 @@ class Navigationsfilter
     public function hasSearchSpecial()
     {
         return $this->Suchspecial->isInitialized();
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasSearchSpecialFilter()
+    {
+        return $this->SuchspecialFilter->isInitialized();
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasRatingFilter()
+    {
+        return $this->BewertungFilter->isInitialized();
     }
 
     /**
@@ -1022,6 +1244,14 @@ class Navigationsfilter
         }
 
         return $sort;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPage()
+    {
+        return $this->nSeite;
     }
 
     /**
@@ -1353,7 +1583,13 @@ class Navigationsfilter
             $count = count($filters);
             if ($count > 1 && $type !== 'misc' && $type !== 'custom') {
                 $singleConditions = [];
-                $orFilters        = array_filter($filters, function($f) { return $f->getType() === AbstractFilter::FILTER_TYPE_OR; });
+                $orFilters        = array_filter(
+                    $filters,
+                    function($f) {
+                        /** @var IFilter $f */
+                        return $f->getType() === AbstractFilter::FILTER_TYPE_OR;
+                    }
+                );
 
                 /** @var AbstractFilter $filter */
                 foreach ($filters as $idx => $filter) {
@@ -1394,8 +1630,12 @@ class Navigationsfilter
                         $groupedOrFilters[$primaryKeyRow][] = $filter;
                     }
                     foreach ($groupedOrFilters as $primaryKeyRow => $orFilters) {
+                        /** @var IFilter[] $orFilters */
                         if ($ignore === null || $orFilters[0]->getClassName() !== $ignore) {
-                            $values = implode(',', array_map(function ($f) { return $f->getValue(); }, $orFilters));
+                            $values = implode(
+                                ',',
+                                array_map(function ($f) { /** @var IFilter $f */ return $f->getValue(); }, $orFilters)
+                            );
                             $data->conditions[] = "\n#combined conditions from OR filter " . $primaryKeyRow . "\n" .
                                 $orFilters[0]->getTableName() . '.kArtikel IN ' .
                                 '(SELECT kArtikel FROM ' . $orFilters[0]->getTableName() . ' WHERE ' .
@@ -1570,6 +1810,24 @@ class Navigationsfilter
         }
 
         return -1;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBreadCrumbName()
+    {
+        return $this->cBrotNaviName;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getUnsetAllFiltersURL()
+    {
+        return isset($this->URL->cNoFilter)
+            ? $this->URL->cNoFilter
+            : null;
     }
 
     /**

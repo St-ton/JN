@@ -689,15 +689,13 @@ class LinkHelper
             default:
                 break;
         }
-        if (isset($NaviFilter->Suche->cSuche)
-            && strlen($NaviFilter->Suche->cSuche) > 0
-        ) {
+        if ($NaviFilter->hasSearch()) {
             $bNoIndex = true;
         }
         if (!$bNoIndex) {
             $shopsetting = Shopsetting::getInstance();
-            $bNoIndex    = isset($NaviFilter->MerkmalWert->kMerkmalWert)
-                && $NaviFilter->MerkmalWert->kMerkmalWert > 0
+            $bNoIndex    = $NaviFilter->hasAttributeValue()
+                && $NaviFilter->getAttributeValue()->getValue() > 0
                 && isset($shopsetting['global']['global_merkmalwert_url_indexierung'])
                 && $shopsetting['global']['global_merkmalwert_url_indexierung'] === 'N';
         }

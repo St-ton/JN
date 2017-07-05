@@ -477,7 +477,6 @@ abstract class AbstractFilter implements IFilter
         $res               = get_object_vars($this);
         $res['config']     = '*truncated*';
         $res['naviFilter'] = '*truncated*';
-        $res['db']         = '*truncated*';
 
         return $res;
     }

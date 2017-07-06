@@ -5350,9 +5350,10 @@ function pruefeKampagnenParameter()
  * @param int $kKampagneDef
  * @param int $kKey
  * @param float $fWert
+ * @param string $cCustomData
  * @return int
  */
-function setzeKampagnenVorgang($kKampagneDef, $kKey, $fWert)
+function setzeKampagnenVorgang($kKampagneDef, $kKey, $fWert, $cCustomData = null)
 {
     if ($kKampagneDef > 0 && $kKey > 0 && $fWert > 0 && isset($_SESSION['Kampagnenbesucher'])) {
         $oKampagnenVorgang               = new stdClass();
@@ -5362,6 +5363,10 @@ function setzeKampagnenVorgang($kKampagneDef, $kKey, $fWert)
         $oKampagnenVorgang->fWert        = $fWert;
         $oKampagnenVorgang->cParamWert   = $_SESSION['Kampagnenbesucher']->cWert;
         $oKampagnenVorgang->dErstellt    = 'now()';
+
+        if (isset($cCustomData)) {
+            $oKampagnenVorgang->cCustomData = strlen($cCustomData) > 255 ? substr($cCustomData, 0, 255) : $cCustomData;
+        }
 
         return Shop::DB()->insert('tkampagnevorgang', $oKampagnenVorgang);
     }

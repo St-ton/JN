@@ -142,6 +142,15 @@ class Boxen
             return $oBox_arr;
         }
         $this->visibility = $this->holeBoxAnzeige($nSeite);
+        $validPageTypes = [
+            PAGE_UNBEKANNT, PAGE_ARTIKEL, PAGE_ARTIKELLISTE, PAGE_WARENKORB, PAGE_MEINKONTO,
+            PAGE_KONTAKT, PAGE_UMFRAGE, PAGE_NEWS, PAGE_NEWSLETTER, PAGE_LOGIN, PAGE_REGISTRIERUNG, PAGE_BESTELLVORGANG,
+            PAGE_BEWERTUNG, PAGE_DRUCKANSICHT, PAGE_PASSWORTVERGESSEN, PAGE_WARTUNG, PAGE_WUNSCHLISTE,
+            PAGE_VERGLEICHSLISTE, PAGE_STARTSEITE, PAGE_VERSAND, PAGE_AGB, PAGE_DATENSCHUTZ, PAGE_TAGGING,
+            PAGE_LIVESUCHE, PAGE_HERSTELLER, PAGE_SITEMAP, PAGE_GRATISGESCHENK, PAGE_WRB, PAGE_PLUGIN,
+            PAGE_NEWSLETTERARCHIV, PAGE_NEWSARCHIV, PAGE_EIGENE, PAGE_AUSWAHLASSISTENT, PAGE_BESTELLABSCHLUSS,
+            PAGE_RMA
+        ];
         $oBox_arr         = [];
         $cacheTags        = [CACHING_GROUP_OBJECT, CACHING_GROUP_BOX, 'boxes'];
         $cSQLAktiv        = $bAktiv ? " AND bAktiv = 1 " : "";
@@ -246,7 +255,7 @@ class Boxen
                     if ($bVisible) {
                         $oBox->cVisibleOn = '';
                         $oVisible_arr     = Shop::DB()->selectAll('tboxensichtbar', ['kBox', 'bAktiv'], [(int)$oBox->kBox, 1]);
-                        if (count($oVisible_arr) >= COUNT_PAGES) {
+                        if (count($oVisible_arr) >= count($validPageTypes)) {
                             $oBox->cVisibleOn = "\n- Auf allen Seiten";
                         } elseif (count($oVisible_arr) === 0) {
                             $oBox->cVisibleOn = "\n- Auf allen Seiten deaktiviert";
@@ -1482,7 +1491,7 @@ class Boxen
             case PAGE_BESTELLABSCHLUSS:
                 return 'Bestellabschluss';
             case PAGE_RMA:
-                return 'Warenrücksendung';
+                return 'Warenr&uuml;cksendung';
         }
     }
 

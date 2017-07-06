@@ -373,12 +373,10 @@ define('PAGE_EIGENE', 31); // Eigene Seite
 define('PAGE_AUSWAHLASSISTENT', 32); // Auswahlassistent
 define('PAGE_BESTELLABSCHLUSS', 33); // Bestellabschluss
 define('PAGE_RMA', 34); // Warenruecksendung
-define('PAGE_404', 35);
-define('PAGE_IO', 36);
-define('PAGE_BESTELLSTATUS', 37);
-define('PAGE_MEDIA', 38);
-// Gesamtzahl der Seiten, welche in der Boxenverwaltung behandelt werden
-define('COUNT_PAGES', 35);
+define('PAGE_404', 36);
+define('PAGE_IO', 37);
+define('PAGE_BESTELLSTATUS', 38);
+define('PAGE_MEDIA', 39);
 // Boxen
 define('BOX_BESTSELLER', 1);
 define('BOX_KATEGORIEN', 2);

@@ -1430,7 +1430,8 @@ function gibTagFilterJSONOptionen($FilterSQL, $NaviFilter)
  * @param object         $FilterSQL
  * @param object         $NaviFilter
  * @param Kategorie|null $oAktuelleKategorie
- * @param bool           $bForce
+ * @param bool           $bForce true if `merkmalfilter_verwenden`, `merkmalfilter_maxmerkmale` and
+ *      `merkmalfilter_maxmerkmalwerte` should be ignored
  * @return array|mixed
  */
 function gibMerkmalFilterOptionen($FilterSQL, $NaviFilter, $oAktuelleKategorie = null, $bForce = false)
@@ -1638,7 +1639,7 @@ function gibMerkmalFilterOptionen($FilterSQL, $NaviFilter, $oAktuelleKategorie =
                     $oMerkmalFilter_arr[$nPos]->oMerkmalWerte_arr[] = $oMerkmalWerte;
                 } else {
                     //#533 Anzahl max Merkmale erreicht?
-                    if (isset($conf['navigationsfilter']['merkmalfilter_maxmerkmale']) &&
+                    if (!$bForce && isset($conf['navigationsfilter']['merkmalfilter_maxmerkmale']) &&
                         $conf['navigationsfilter']['merkmalfilter_maxmerkmale'] > 0 &&
                         count($oMerkmalFilter_arr) >= $conf['navigationsfilter']['merkmalfilter_maxmerkmale']
                     ) {
@@ -1650,22 +1651,23 @@ function gibMerkmalFilterOptionen($FilterSQL, $NaviFilter, $oAktuelleKategorie =
             }
         }
         //Filter durchgehen und die Merkmalwerte raustun, die zuviel sind und deren Anzahl am geringsten ist.
-        foreach ($oMerkmalFilter_arr as $o => $oMerkmalFilter) {
-            //#534 Anzahl max Merkmalwerte erreicht?
-            if (isset($conf['navigationsfilter']['merkmalfilter_maxmerkmalwerte']) && $conf['navigationsfilter']['merkmalfilter_maxmerkmalwerte'] > 0) {
-                while (count($oMerkmalFilter_arr[$o]->oMerkmalWerte_arr) > $conf['navigationsfilter']['merkmalfilter_maxmerkmalwerte']) {
+        if (!$bForce && isset($conf['navigationsfilter']['merkmalfilter_maxmerkmalwerte']) &&
+            $conf['navigationsfilter']['merkmalfilter_maxmerkmalwerte'] > 0
+        ) {
+            foreach ($oMerkmalFilter_arr as $oMerkmalFilter) {
+                //#534 Anzahl max Merkmalwerte erreicht?
+                while (count($oMerkmalFilter->oMerkmalWerte_arr) > $conf['navigationsfilter']['merkmalfilter_maxmerkmalwerte']) {
                     $nMinAnzahl = 999999;
                     $nIndex     = -1;
-                    $count      = count($oMerkmalFilter_arr[$o]->oMerkmalWerte_arr);
-                    for ($l = 0; $l < $count; $l++) {
-                        if ($oMerkmalFilter_arr[$o]->oMerkmalWerte_arr[$l]->nAnzahl < $nMinAnzahl) {
-                            $nMinAnzahl = $oMerkmalFilter_arr[$o]->oMerkmalWerte_arr[$l]->nAnzahl;
+                    foreach ($oMerkmalFilter->oMerkmalWerte_arr as $l => $oMerkmalWert) {
+                        if ($oMerkmalWert->nAnzahl < $nMinAnzahl) {
+                            $nMinAnzahl = $oMerkmalWert->nAnzahl;
                             $nIndex     = $l;
                         }
                     }
                     if ($nIndex >= 0) {
-                        unset($oMerkmalFilter_arr[$o]->oMerkmalWerte_arr[$nIndex]);
-                        $oMerkmalFilter_arr[$o]->oMerkmalWerte_arr = array_merge($oMerkmalFilter_arr[$o]->oMerkmalWerte_arr);
+                        unset($oMerkmalFilter->oMerkmalWerte_arr[$nIndex]);
+                        $oMerkmalFilter->oMerkmalWerte_arr = array_merge($oMerkmalFilter->oMerkmalWerte_arr);
                     }
                 }
             }

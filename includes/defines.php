@@ -25,6 +25,8 @@ ifndef('PROFILE_SHOP', false);
 ifndef('PROFILE_QUERIES', false);
 ifndef('PROFILE_QUERIES_ECHO', false);
 ifndef('IO_LOG_CONSOLE', false);
+ifndef('DEFAULT_CURL_OPT_VERIFYPEER', true);
+ifndef('DEFAULT_CURL_OPT_VERIFYHOST', 2);
 ini_set('session.use_trans_sid', 0);
 // Logging (in logs/) 0 => aus, 1 => nur errors, 2 => errors, notifications, 3 => errors, notifications, debug
 ifndef('ES_LOGGING', 1);

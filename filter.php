@@ -148,8 +148,7 @@ if (isset($Einstellungen['navigationsfilter']['allgemein_tagfilter_benutzen']) &
 $oSuchergebnisse->MerkmalFilter    = gibMerkmalFilterOptionen(
     $FilterSQL,
     $NaviFilter,
-    $AktuelleKategorie,
-    class_exists('AuswahlAssistent')
+    $AktuelleKategorie
 );
 $oSuchergebnisse->Preisspanne      = gibPreisspannenFilterOptionen($FilterSQL, $NaviFilter, $oSuchergebnisse);
 $oSuchergebnisse->Kategorieauswahl = gibKategorieFilterOptionen($FilterSQL, $NaviFilter);

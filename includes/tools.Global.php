@@ -15,18 +15,24 @@
  */
 function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname = '', $linkURL = '', $kLink = 0)
 {
+    $shopURL = Shop::getURL() . '/';
+    if (strpos($linkURL, $shopURL) !== false) {
+        $linkURL = str_replace($shopURL, '', $linkURL);
+    }
     $brotnavi          = [];
     $SieSindHierString = Shop::Lang()->get('youarehere', 'breadcrumb') .
-        ': <a href="' . Shop::getURL() . '">' .
+        ': <a href="' . $shopURL . '">' .
         Shop::Lang()->get('startpage', 'breadcrumb') . '</a>';
-    $ele0               = new stdClass();
-    $ele0->name         = Shop::Lang()->get('startpage', 'breadcrumb');
-    $ele0->url          = Shop::getURL();
-    $ele0->hasChild     = false;
-    $brotnavi[]        = $ele0;
-    $linkHelper        = LinkHelper::getInstance();
-    $ele               = new stdClass();
-    $ele->hasChild     = false;
+    $ele0              = new stdClass();
+    $ele0->name        = Shop::Lang()->get('startpage', 'breadcrumb');
+    $ele0->url         = '/';
+    $ele0->urlFull     = $shopURL;
+    $ele0->hasChild    = false;
+
+    $brotnavi[]    = $ele0;
+    $linkHelper    = LinkHelper::getInstance();
+    $ele           = new stdClass();
+    $ele->hasChild = false;
     switch ($seite) {
         case 'STARTSEITE':
             $SieSindHierString .= '<br />';
@@ -44,7 +50,7 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
             for ($i = $elemCount; $i >= 0; $i--) {
                 if (isset($KategorieListe->elemente[$i]->cKurzbezeichnung, $KategorieListe->elemente[$i]->cURL)) {
                     if ($cntchr < 80) {
-                        $SieSindHierString .= ' &gt; <a href="' . $KategorieListe->elemente[$i]->cURL . '">'
+                        $SieSindHierString .= ' &gt; <a href="' . $KategorieListe->elemente[$i]->cURLFull . '">'
                             . $KategorieListe->elemente[$i]->cKurzbezeichnung . '</a>';
                     } else {
                         $cntchr            -= strlen($KategorieListe->elemente[$i]->cKurzbezeichnung);
@@ -53,25 +59,28 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
                     $ele           = new stdClass();
                     $ele->hasChild = false;
                     $ele->name     = $KategorieListe->elemente[$i]->cKurzbezeichnung;
-                    $ele->url      = $KategorieListe->elemente[$i]->cURLFull;
+                    $ele->url      = $KategorieListe->elemente[$i]->cURL;
+                    $ele->urlFull  = $KategorieListe->elemente[$i]->cURLFull;
                     $brotnavi[]    = $ele;
                 }
             }
             $SieSindHierString .= ' &gt; <a href="' . $Artikel->cURLFull . '">' . $Artikel->cKurzbezeichnung . '</a>';
-            $ele           = new stdClass();
-            $ele->hasChild = false;
-            $ele->name     = $Artikel->cKurzbezeichnung;
-            $ele->url      = $Artikel->cURLFull;
+            $ele               = new stdClass();
+            $ele->hasChild     = false;
+            $ele->name         = $Artikel->cKurzbezeichnung;
+            $ele->url          = $Artikel->cURL;
+            $ele->urlFull      = $Artikel->cURLFull;
             if ($Artikel->isChild()) {
-                $Vater = new Artikel();
+                $Vater                   = new Artikel();
                 $oArtikelOptionen        = new stdClass();
                 $oArtikelOptionen->nMain = 1;
                 $Vater->fuelleArtikel($Artikel->kVaterArtikel, $oArtikelOptionen);
-                $ele->name          = $Vater->cKurzbezeichnung;
-                $ele->url           = $Vater->cURLFull;
-                $ele->hasChild      = true;
+                $ele->name     = $Vater->cKurzbezeichnung;
+                $ele->url      = $Vater->cURL;
+                $ele->urlFull  = $Vater->cURLFull;
+                $ele->hasChild = true;
             }
-            $brotnavi[]         = $ele;
+            $brotnavi[]        = $ele;
             $SieSindHierString .= '<br />';
             break;
 
@@ -83,7 +92,7 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
             }
             for ($i = $elemCount - 1; $i >= 0; $i--) {
                 if ($cntchr < 80) {
-                    $SieSindHierString .= ' &gt; <a href="' . $KategorieListe->elemente[$i]->cURL . '">'
+                    $SieSindHierString .= ' &gt; <a href="' . $KategorieListe->elemente[$i]->cURLFull . '">'
                         . $KategorieListe->elemente[$i]->cKurzbezeichnung . '</a>';
                 } else {
                     $cntchr            -= strlen($KategorieListe->elemente[$i]->cKurzbezeichnung);
@@ -93,6 +102,7 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
                 $ele->hasChild = false;
                 $ele->name     = $KategorieListe->elemente[$i]->cKurzbezeichnung;
                 $ele->url      = $KategorieListe->elemente[$i]->cURL;
+                $ele->urlFull  = $KategorieListe->elemente[$i]->cURLFull;
                 $brotnavi[]    = $ele;
             }
 
@@ -100,158 +110,197 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
             break;
 
         case 'WARENKORB':
-            $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('warenkorb.php') . '">' .
+            $url               = $linkHelper->getStaticRoute('warenkorb.php', false);
+            $urlFull           = $linkHelper->getStaticRoute('warenkorb.php');
+            $SieSindHierString .= ' &gt; <a href="' . $urlFull . '">' .
                 Shop::Lang()->get('basket', 'breadcrumb') . '</a>';
-            $ele->name     = Shop::Lang()->get('basket', 'breadcrumb');
-            $ele->url      = $linkHelper->getStaticRoute('warenkorb.php');
-            $brotnavi[]    = $ele;
+            $ele->name         = Shop::Lang()->get('basket', 'breadcrumb');
+            $ele->url          = $url;
+            $ele->urlFull      = $urlFull;
+            $brotnavi[]        = $ele;
             $SieSindHierString .= '<br />';
             break;
 
         case 'PASSWORT VERGESSEN':
-            $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('pass.php') . '">' .
+            $url               = $linkHelper->getStaticRoute('pass.php', false);
+            $urlFull           = $linkHelper->getStaticRoute('pass.php');
+            $SieSindHierString .= ' &gt; <a href="' . $urlFull . '">' .
                 Shop::Lang()->get('forgotpassword', 'breadcrumb') . '</a>';
-            $ele->name  = Shop::Lang()->get('forgotpassword', 'breadcrumb');
-            $ele->url   = $linkHelper->getStaticRoute('pass.php');
-            $brotnavi[] = $ele;
+            $ele->name         = Shop::Lang()->get('forgotpassword', 'breadcrumb');
+            $ele->url          = $url;
+            $ele->urlFull      = $urlFull;
+            $brotnavi[]        = $ele;
             $SieSindHierString .= '<br />';
             break;
 
         case 'MEIN KONTO':
-            $cText = (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0)
+            $cText             = (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0)
                 ? Shop::Lang()->get('account', 'breadcrumb')
                 : Shop::Lang()->get('login', 'breadcrumb');
-            $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('jtl.php') . '">' . $cText . '</a>';
-            $ele->name  = $cText;
-            $ele->url   = 'jtl.php';
-            $brotnavi[] = $ele;
+            $url               = $linkHelper->getStaticRoute('jtl.php', false);
+            $urlFull           = $linkHelper->getStaticRoute('jtl.php');
+            $SieSindHierString .= ' &gt; <a href="' . $urlFull . '">' . $cText . '</a>';
+            $ele->name         = $cText;
+            $ele->url          = $url;
+            $ele->urlFull      = $urlFull;
+            $brotnavi[]        = $ele;
             $SieSindHierString .= '<br />';
             break;
 
         case 'BESTELLVORGANG':
-            $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('bestellvorgang.php') . '">' .
+            $url               = $linkHelper->getStaticRoute('jtl.php', false);
+            $urlFull           = $linkHelper->getStaticRoute('jtl.php');
+            $SieSindHierString .= ' &gt; <a href="' . $urlFull . '">' .
                 Shop::Lang()->get('checkout', 'breadcrumb') . '</a>';
-            $ele->name  = Shop::Lang()->get('checkout', 'breadcrumb');
-            $ele->url   = $linkHelper->getStaticRoute('bestellvorgang.php');
-            $brotnavi[] = $ele;
+            $ele->name         = Shop::Lang()->get('checkout', 'breadcrumb');
+            $ele->url          = $url;
+            $ele->urlFull      = $urlFull;
+            $brotnavi[]        = $ele;
             $SieSindHierString .= '<br />';
             break;
 
         case 'REGISTRIEREN':
-            $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('registrieren.php') . '">' .
+            $url               = $linkHelper->getStaticRoute('registrieren.php', false);
+            $urlFull           = $linkHelper->getStaticRoute('registrieren.php');
+            $SieSindHierString .= ' &gt; <a href="' . $urlFull . '">' .
                 Shop::Lang()->get('register', 'breadcrumb') . '</a>';
-            $ele->name  = Shop::Lang()->get('register', 'breadcrumb');
-            $ele->url   = $linkHelper->getStaticRoute('registrieren.php');
-            $brotnavi[] = $ele;
+            $ele->name         = Shop::Lang()->get('register', 'breadcrumb');
+            $ele->url          = $url;
+            $ele->urlFull      = $urlFull;
+            $brotnavi[]        = $ele;
             $SieSindHierString .= '<br />';
             break;
 
         case 'KONTAKT':
+            $url               = $linkHelper->getStaticRoute('kontakt.php', false);
+            $urlFull           = $linkHelper->getStaticRoute('kontakt.php');
             $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('kontakt.php') . '">' .
                 Shop::Lang()->get('contact', 'breadcrumb') . '</a>';
-            $ele->name  = Shop::Lang()->get('contact', 'breadcrumb');
-            $ele->url   = $linkHelper->getStaticRoute('kontakt.php');
-            $brotnavi[] = $ele;
+            $ele->name         = Shop::Lang()->get('contact', 'breadcrumb');
+            $ele->url          = $url;
+            $ele->urlFull      = $urlFull;
+            $brotnavi[]        = $ele;
             $SieSindHierString .= '<br />';
             break;
 
         case 'WARTUNG':
-            $SieSindHierString .= ' &gt; <a href="wartung.php">' .
+            $url               = $linkHelper->getStaticRoute('wartung.php', false);
+            $urlFull           = $linkHelper->getStaticRoute('wartung.php');
+            $SieSindHierString .= ' &gt; <a href="' . $urlFull . '">' .
                 Shop::Lang()->get('maintainance', 'breadcrumb') . '</a>';
-            $ele->name  = Shop::Lang()->get('maintainance', 'breadcrumb');
-            $ele->url   = 'wartung.php';
-            $brotnavi[] = $ele;
+            $ele->name         = Shop::Lang()->get('maintainance', 'breadcrumb');
+            $ele->url          = $url;
+            $ele->urlFull      = $urlFull;
+            $brotnavi[]        = $ele;
             $SieSindHierString .= '<br />';
             break;
 
         case 'NEWSLETTER':
-            $SieSindHierString .= ' &gt; <a href="' . $linkURL . '">' .
+            $SieSindHierString .= ' &gt; <a href="' . $shopURL . $linkURL . '">' .
                 Shop::Lang()->get('newsletter', 'breadcrumb') . '</a>';
-            $ele->name  = $linkname;
-            $ele->url   = $linkURL;
-            $brotnavi[] = $ele;
+            $ele->name         = $linkname;
+            $ele->url          = $linkURL;
+            $ele->urlFull      = $shopURL . $linkURL;
+            $brotnavi[]        = $ele;
             $SieSindHierString .= '<br />';
             break;
 
         case 'NEWS':
-            $SieSindHierString .= ' &gt; <a href="' . $linkURL . '">' . $linkname . '</a>';
-            $ele->name  = $linkname;
-            $ele->url   = $linkURL;
-            $brotnavi[] = $ele;
+            $SieSindHierString .= ' &gt; <a href="' . $shopURL . $linkURL . '">' . $linkname . '</a>';
+            $ele->name         = $linkname;
+            $ele->url          = $linkURL;
+            $ele->urlFull      = $shopURL . $linkURL;
+            $brotnavi[]        = $ele;
             $SieSindHierString .= '<br />';
             break;
 
         case 'NEWSDETAIL':
-            $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('news.php') . '">' .
+            $url               = $linkHelper->getStaticRoute('news.php', false);
+            $urlFull           = $linkHelper->getStaticRoute('news.php');
+            $SieSindHierString .= ' &gt; <a href="' . $urlFull . '">' .
                 Shop::Lang()->get('news', 'breadcrumb') . '</a>';
-            $ele->name  = Shop::Lang()->get('news', 'breadcrumb');
-            $ele->url   = $linkHelper->getStaticRoute('news.php');
-            $brotnavi[] = $ele;
+            $ele->name         = Shop::Lang()->get('news', 'breadcrumb');
+            $ele->url          = $url;
+            $ele->urlFull      = $urlFull;
+            $brotnavi[]        = $ele;
 
             $SieSindHierString .= ' &gt; <a href="' . $linkURL . '">' . $linkname . '</a>';
-            $ele           = new stdClass();
-            $ele->hasChild = false;
-            $ele->name     = $linkname;
-            $ele->url      = $linkURL;
-            $brotnavi[]    = $ele;
+            $ele               = new stdClass();
+            $ele->hasChild     = false;
+            $ele->name         = $linkname;
+            $ele->url          = $linkURL;
+            $ele->urlFull      = $shopURL . $linkURL;
+            $brotnavi[]        = $ele;
             $SieSindHierString .= '<br />';
             break;
 
         case 'NEWSKATEGORIE':
-            $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('news.php') . '">' .
+            $url               = $linkHelper->getStaticRoute('news.php', false);
+            $urlFull           = $linkHelper->getStaticRoute('news.php');
+            $SieSindHierString .= ' &gt; <a href="' . $urlFull . '">' .
                 Shop::Lang()->get('newskat', 'breadcrumb') . '</a>';
-            $ele->name  = Shop::Lang()->get('newskat', 'breadcrumb');
-            $ele->url   = $linkHelper->getStaticRoute('news.php');
-            $brotnavi[] = $ele;
+            $ele->name         = Shop::Lang()->get('newskat', 'breadcrumb');
+            $ele->url          = $url;
+            $ele->urlFull      = $urlFull;
+            $brotnavi[]        = $ele;
 
             $SieSindHierString .= ' &gt; <a href="' . $linkURL . '">' . $linkname . '</a>';
-            $ele           = new stdClass();
-            $ele->hasChild = false;
-            $ele->name     = $linkname;
-            $ele->url      = $linkURL;
-            $brotnavi[]    = $ele;
+            $ele               = new stdClass();
+            $ele->hasChild     = false;
+            $ele->name         = $linkname;
+            $ele->url          = $linkURL;
+            $ele->urlFull      = $shopURL . $linkURL;
+            $brotnavi[]        = $ele;
             $SieSindHierString .= '<br />';
             break;
 
         case 'NEWSMONAT':
-            $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('news.php') . '">' .
+            $url               = $linkHelper->getStaticRoute('news.php', false);
+            $urlFull           = $linkHelper->getStaticRoute('news.php');
+            $SieSindHierString .= ' &gt; <a href="' . $urlFull . '">' .
                 Shop::Lang()->get('newsmonat', 'breadcrumb') . '</a>';
-            $ele->name  = Shop::Lang()->get('newsmonat', 'breadcrumb');
-            $ele->url   = $linkHelper->getStaticRoute('news.php');
-            $brotnavi[] = $ele;
+            $ele->name         = Shop::Lang()->get('newsmonat', 'breadcrumb');
+            $ele->url          = $url;
+            $ele->urlFull      = $urlFull;
+            $brotnavi[]        = $ele;
 
-            $SieSindHierString .= ' &gt; <a href="' . $linkURL . '">' . $linkname . '</a>';
-            $ele           = new stdClass();
-            $ele->hasChild = false;
-            $ele->name     = $linkname;
-            $ele->url      = $linkURL;
-            $brotnavi[]    = $ele;
+            $SieSindHierString .= ' &gt; <a href="' . $shopURL . $linkURL . '">' . $linkname . '</a>';
+            $ele               = new stdClass();
+            $ele->hasChild     = false;
+            $ele->name         = $linkname;
+            $ele->url          = $linkURL;
+            $ele->urlFull      = $shopURL . $linkURL;
+            $brotnavi[]        = $ele;
             $SieSindHierString .= '<br />';
             break;
 
         case 'UMFRAGE':
-            $SieSindHierString .= ' &gt; <a href="' . $linkURL . '">' . $linkname . '</a>';
-            $ele->name  = $linkname;
-            $ele->url   = $linkURL;
-            $brotnavi[] = $ele;
+            $SieSindHierString .= ' &gt; <a href="' . $shopURL . $linkURL . '">' . $linkname . '</a>';
+            $ele->name         = $linkname;
+            $ele->url          = $linkURL;
+            $ele->urlFull      = $shopURL . $linkURL;
+            $brotnavi[]        = $ele;
             $SieSindHierString .= '<br />';
             break;
 
         case 'VERGLEICHSLISTE':
-            $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('vergleichsliste.php') . '">' .
-                Shop::Lang()->get('compare', 'global') . '</a>';
-            $ele->name  = Shop::Lang()->get('compare', 'global');
-            $ele->url   = $linkHelper->getStaticRoute('vergleichsliste.php');
-            $brotnavi[] = $ele;
+            $url               = $linkHelper->getStaticRoute('news.php', false);
+            $urlFull           = $linkHelper->getStaticRoute('news.php');
+            $SieSindHierString .= ' &gt; <a href="' . $urlFull . '">' .
+                Shop::Lang()->get('compare') . '</a>';
+            $ele->name         = Shop::Lang()->get('compare');
+            $ele->url          = $url;
+            $ele->urlFull      = $urlFull;
+            $brotnavi[]        = $ele;
             $SieSindHierString .= '<br />';
             break;
 
         default:
-            $SieSindHierString .= ' &gt; <a href="' . $linkURL . '">' . $linkname . '</a>';
+            $SieSindHierString .= ' &gt; <a href="' . $shopURL . $linkURL . '">' . $linkname . '</a>';
             $SieSindHierString .= '<br />';
-            $oLink      = ($kLink > 0) ? $linkHelper->getLinkObject($kLink) : null;
-            $kVaterLink = isset($oLink->kVaterLink) ? (int)$oLink->kVaterLink : null;
-            $elems      = [];
+            $oLink             = $kLink > 0 ? $linkHelper->getLinkObject($kLink) : null;
+            $kVaterLink        = isset($oLink->kVaterLink) ? (int)$oLink->kVaterLink : null;
+            $elems             = [];
             do {
                 if ($kVaterLink === 0 || $kVaterLink === null) {
                     break;
@@ -265,16 +314,18 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
                 $itm            = new stdClass();
                 $itm->name      = $oItem->Sprache->cName;
                 $itm->url       = baueURL($oItem, URLART_SEITE);
+                $itm->urlFull   = baueURL($oItem, URLART_SEITE, 0, false, true);
                 $itm->hasChild  = false;
                 $elems[]        = $itm;
                 $kVaterLink     = (int)$oItem->kVaterLink;
             } while (true);
 
-            $elems      = array_reverse($elems);
-            $brotnavi   = array_merge($brotnavi, $elems);
-            $ele->name  = $linkname;
-            $ele->url   = $linkURL;
-            $brotnavi[] = $ele;
+            $elems        = array_reverse($elems);
+            $brotnavi     = array_merge($brotnavi, $elems);
+            $ele->name    = $linkname;
+            $ele->url     = $linkURL;
+            $ele->urlFull = $shopURL . $linkURL;
+            $brotnavi[]   = $ele;
             break;
     }
     executeHook(HOOK_TOOLSGLOBAL_INC_SWITCH_CREATENAVIGATION, ['navigation' => &$brotnavi]);
@@ -1924,7 +1975,7 @@ function baueURL($obj, $art, $row = 0, $bForceNonSeo = false, $bFull = false)
     $lang   = ''; // muss umgebaut werden
     $sid    = '';
     $cDatei = 'index.php';
-    $prefix = ($bFull === false) ? '' : Shop::getURL() . '/';
+    $prefix = $bFull === false ? '' : Shop::getURL() . '/';
 
     if (!standardspracheAktiv(true)) {
         $lang = '&lang=' . $_SESSION['cISOSprache'];
@@ -2470,8 +2521,8 @@ function getFsession()
         }
     }
     if (time() % 10 === 0) {
-        Shop::DB()->query("
-            DELETE
+        Shop::DB()->query(
+            "DELETE
                 FROM tfsession
                 WHERE date_sub(now(), INTERVAL 60 MINUTE) > dErstellt", 4
         );
@@ -2750,7 +2801,7 @@ function gibVersandZuschlag($versandart, $cISO, $plz)
 
 /**
  * @todo Hier gilt noch zu beachten, dass fWarenwertNetto vom Zusatzartikel
- *       kein Netto sein darf, sondern der Preis muss in Brutto angegeben werden.
+ *       darf kein Netto sein, sondern der Preis muss in Brutto angegeben werden.
  * @param Versandart|object $versandart
  * @param String            $cISO
  * @param Artikel|stdClass  $oZusatzArtikel
@@ -2784,8 +2835,8 @@ function berechneVersandpreis($versandart, $cISO, $oZusatzArtikel, $Artikel = 0)
                 ? $Artikel->fGewicht
                 : $_SESSION['Warenkorb']->getWeight();
             $warenkorbgewicht += $oZusatzArtikel->fGewicht;
-            $versand = Shop::DB()->query("
-              SELECT *
+            $versand = Shop::DB()->query(
+              "SELECT *
                   FROM tversandartstaffel 
                   WHERE kVersandart = " . (int)$versandart->kVersandart . " 
                       AND fBis >= " . $warenkorbgewicht . " 
@@ -2803,8 +2854,8 @@ function berechneVersandpreis($versandart, $cISO, $oZusatzArtikel, $Artikel = 0)
                 ? $Artikel->Preise->fVKNetto
                 : $_SESSION['Warenkorb']->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true);
             $warenkorbwert += $oZusatzArtikel->fWarenwertNetto;
-            $versand = Shop::DB()->query("
-                SELECT *
+            $versand = Shop::DB()->query(
+                "SELECT *
                     FROM tversandartstaffel 
                     WHERE kVersandart = " . (int)$versandart->kVersandart . " 
                         AND fBis >= " . $warenkorbwert . " 
@@ -2825,8 +2876,8 @@ function berechneVersandpreis($versandart, $cISO, $oZusatzArtikel, $Artikel = 0)
                     : 0;
             }
             $artikelanzahl += $oZusatzArtikel->fAnzahl;
-            $versand = Shop::DB()->query("
-                SELECT *
+            $versand = Shop::DB()->query(
+                "SELECT *
                     FROM tversandartstaffel 
                     WHERE kVersandart = " . (int)$versandart->kVersandart . " 
                         AND fBis >= " . $artikelanzahl . " 
@@ -2842,6 +2893,14 @@ function berechneVersandpreis($versandart, $cISO, $oZusatzArtikel, $Artikel = 0)
         default:
             //bearbeite fremdmodule
             break;
+    }
+    //artikelabhaengiger Versand?
+    if ($versandart->cNurAbhaengigeVersandart === 'Y'
+        && (!empty($Artikel->FunktionsAttribute['versandkosten'])
+            || !empty($Artikel->FunktionsAttribute['versandkosten gestaffelt']))
+    ) {
+        $fArticleSpecific = VersandartHelper::gibArtikelabhaengigeVersandkosten($cISO, $Artikel, 1);
+        $preis += $fArticleSpecific->fKosten;
     }
     //Deckelung?
     if ($preis >= $versandart->fDeckelung && $versandart->fDeckelung > 0) {
@@ -2900,6 +2959,8 @@ function berechneVersandpreis($versandart, $cISO, $oZusatzArtikel, $Artikel = 0)
 }
 
 /**
+ * calculate shipping costs for exports
+ *
  * @param string  $cISO
  * @param Artikel $Artikel
  * @param int     $barzahlungZulassen
@@ -2909,17 +2970,22 @@ function berechneVersandpreis($versandart, $cISO, $oZusatzArtikel, $Artikel = 0)
 function gibGuenstigsteVersandkosten($cISO, $Artikel, $barzahlungZulassen, $kKundengruppe)
 {
     $versandpreis = 99999;
-    $versandarten = Shop::DB()->query(
-        "SELECT *
+    $query = "SELECT *
             FROM tversandart
             WHERE cLaender LIKE '%" . $cISO . "%'
                 AND (cVersandklassen = '-1' 
                     OR cVersandklassen RLIKE '^([0-9 -]* )?" . $Artikel->kVersandklasse . " ')
                 AND (cKundengruppen = '-1' 
-                    OR cKundengruppen RLIKE '^([0-9;]*;)?" . $kKundengruppe . ";')", 2
-    );
-    $cnt = count($versandarten);
-    for ($i = 0; $i < $cnt; $i++) {
+                    OR cKundengruppen RLIKE '^([0-9;]*;)?" . $kKundengruppe . ";')";
+    // artikelabhaengige Versandarten nur laden und prüfen wenn der Artikel das entsprechende Funktionasattribut hat
+    if (empty($Artikel->FunktionsAttribute['versandkosten'])
+        && empty($Artikel->FunktionsAttribute['versandkosten gestaffelt'])
+    ) {
+        $query .= " AND cNurAbhaengigeVersandart = 'N'";
+    }
+    $versandarten = Shop::DB()->query($query, 2);
+    $cnt          = count($versandarten);
+    for ($i = 0; $i < $cnt; ++$i) {
         if (!$barzahlungZulassen) {
             $za_bar = Shop::DB()->select(
                 'tversandartzahlungsart',
@@ -2939,7 +3005,7 @@ function gibGuenstigsteVersandkosten($cISO, $Artikel, $barzahlungZulassen, $kKun
         }
     }
 
-    return ($versandpreis === 99999) ? -1 : $versandpreis;
+    return $versandpreis === 99999 ? -1 : $versandpreis;
 }
 
 /**
@@ -2961,8 +3027,8 @@ function gibBelieferbareLaender($kKundengruppe = 0, $bIgnoreSetting = false, $bF
     }
     if (!$bForceAll && ($conf['kunden']['kundenregistrierung_nur_lieferlaender'] === 'Y' || $bIgnoreSetting)) {
         $laender_arr = [];
-        $ll_obj_arr  = Shop::DB()->query("
-            SELECT cLaender 
+        $ll_obj_arr  = Shop::DB()->query(
+            "SELECT cLaender 
                 FROM tversandart 
                 WHERE (cKundengruppen = '-1' 
                   OR cKundengruppen RLIKE '^([0-9;]*;)?" . $kKundengruppe . ";')", 2
@@ -3003,7 +3069,7 @@ function gibBelieferbareLaender($kKundengruppe = 0, $bIgnoreSetting = false, $bF
                     return 0;
                 }
 
-                return ($a < $b) ? -1 : 1;
+                return $a < $b ? -1 : 1;
             }
         );
     }
@@ -3055,8 +3121,8 @@ function baueKategorieListenHTML($startKat, $AufgeklappteKategorien, $AktuelleKa
                 )
                 : '';
 
-            $dist_kategorieboxen = Shop::DB()->query("
-                SELECT DISTINCT(cWert) 
+            $dist_kategorieboxen = Shop::DB()->query(
+                "SELECT DISTINCT(cWert) 
                     FROM tkategorieattribut 
                     WHERE cName = '" . KAT_ATTRIBUT_KATEGORIEBOX . "'", 2
             );
@@ -3573,8 +3639,8 @@ function gibVersandkostenfreiAb($kKundengruppe, $cLand = '')
         if (strlen($cLand) > 0) {
             $cKundeSQLWhere = " AND cLaender LIKE '%" . StringHandler::filterXSS($cLand) . "%'";
         } else {
-            $landIso        = Shop::DB()->query("
-                SELECT cISO 
+            $landIso        = Shop::DB()->query(
+                "SELECT cISO 
                     FROM tfirma 
                     JOIN tland 
                         ON tfirma.cLand = tland.cDeutsch 
@@ -5701,8 +5767,8 @@ function make_http_request($cURL, $nTimeout = 15, $cPost = null, $bReturnStatus 
         curl_setopt($curl, CURLOPT_URL, $cURL);
         curl_setopt($curl, CURLOPT_TIMEOUT, $nTimeout);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, DEFAULT_CURL_OPT_VERIFYPEER);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, DEFAULT_CURL_OPT_VERIFYHOST);
         curl_setopt($curl, CURLOPT_REFERER, Shop::getURL());
 
         if ($cPost !== null) {

@@ -95,24 +95,40 @@
         <ul class="nav nav-tabs bottom15" role="tablist">
             {foreach from=$tabsPaneleArr item=tabPanel name=tabPanelItem}
                 <li role="presentation"
-                    {if isset($smarty.get.ratings_nPage) && count($smarty.get.ratings_nPage) > 0 && $tabPanel.id === "votes"}
+                    {if $tabPanel.id === "votes" &&
+                        (isset($smarty.get.ratings_nPage) && count($smarty.get.ratings_nPage) > 0
+                        || isset($smarty.get.bewertung_anzeigen) && count($smarty.get.bewertung_anzeigen) > 0
+                        || isset($smarty.get.ratings_nItemsPerPage) && count($smarty.get.ratings_nItemsPerPage) > 0
+                        || isset($smarty.get.ratings_nSortByDir) && count($smarty.get.ratings_nSortByDir) > 0
+                        || isset($smarty.get.btgsterne) && count($smarty.get.btgsterne) > 0)}
                         class="active"
                     {else}
-                        {if $smarty.foreach.tabPanelItem.first && !isset($smarty.get.ratings_nPage)} class="active"{/if}
+                        {if $smarty.foreach.tabPanelItem.first && !isset($smarty.get.ratings_nPage)
+                            && !isset($smarty.get.bewertung_anzeigen) && !isset($smarty.get.btgsterne)
+                            && !isset($smarty.get.ratings_nItemsPerPage) && !isset($smarty.get.ratings_nSortByDir)}
+                            class="active"
+                        {/if}
                     {/if}>
-                    <a href="#tab-{$tabPanel.id}" role="tab" data-toggle="tab">{$tabPanel.cName}</a>
+                    <a href="#tab-{$tabPanel.id}" aria-controls="tab-{$tabPanel.id}" role="tab" data-toggle="tab">{$tabPanel.cName}</a>
                 </li>
             {/foreach}
         </ul>
     {/if}
-    <div class="tab-content">
+    <div class="tab-content" id="article-tabs">
         {foreach from=$tabsPaneleArr item=tabPanele name=tabPaneleItem}
             {if $tabanzeige}
-                {if isset($smarty.get.ratings_nPage) && count($smarty.get.ratings_nPage) > 0 && $tabPanele.id === "votes"}
+                {if $tabPanele.id === "votes" &&
+                    (isset($smarty.get.ratings_nPage) && count($smarty.get.ratings_nPage) > 0
+                    || isset($smarty.get.bewertung_anzeigen) && count($smarty.get.bewertung_anzeigen) > 0
+                    || isset($smarty.get.ratings_nItemsPerPage) && count($smarty.get.ratings_nItemsPerPage) > 0
+                    || isset($smarty.get.ratings_nSortByDir) && count($smarty.get.ratings_nSortByDir) > 0
+                    || isset($smarty.get.btgsterne) && count($smarty.get.btgsterne) > 0)}
                     <div role="tabpanel" class="tab-pane fade in active"
                 {else}
                     <div role="tabpanel" class="tab-pane fade
-                        {if $smarty.foreach.tabPaneleItem.first && !isset($smarty.get.ratings_nPage)} in active{/if}"
+                        {if $smarty.foreach.tabPaneleItem.first && !isset($smarty.get.ratings_nPage)
+                            && !isset($smarty.get.bewertung_anzeigen) && !isset($smarty.get.btgsterne)
+                            && !isset($smarty.get.ratings_nItemsPerPage)&& !isset($smarty.get.ratings_nSortByDir)} in active{/if}"
                 {/if}
                      id="tab-{$tabPanele.id}">
             {else}

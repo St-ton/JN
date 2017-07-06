@@ -25,8 +25,7 @@ class ImageMap implements IExtensionPoint
      */
     public function __construct()
     {
-        $oSprache            = gibStandardsprache(true);
-        $this->kSprache      = $oSprache->kSprache;
+        $this->kSprache      = Shop::getLanguage();
         $this->kKundengruppe = (isset($_SESSION['Kundengruppe']->kKundengruppe) ? $_SESSION['Kundengruppe']->kKundengruppe : null);
         if (isset($_SESSION['Kunde']->kKundengruppe) && $_SESSION['Kunde']->kKundengruppe > 0) {
             $this->kKundengruppe = $_SESSION['Kunde']->kKundengruppe;

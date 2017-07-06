@@ -5,6 +5,10 @@
 
 {if !isset($bAjaxRequest) || !$bAjaxRequest}
     {include file='layout/header.tpl'}
+{else}
+    {if isset($smarty.get.quickView) && $smarty.get.quickView == 1}
+        {include file='layout/modal_open.tpl'}
+    {/if}
 {/if}
 {if isset($bAjaxRequest) && $bAjaxRequest && isset($listStyle) && ($listStyle === 'list' || $listStyle === 'gallery')}
     {if $listStyle === 'list'}
@@ -29,4 +33,8 @@
 {/if}
 {if !isset($bAjaxRequest) || !$bAjaxRequest}
     {include file='layout/footer.tpl'}
+{else}
+    {if isset($smarty.get.quickView) && $smarty.get.quickView == 1}
+        {include file='layout/modal_close.tpl'}
+    {/if}
 {/if}

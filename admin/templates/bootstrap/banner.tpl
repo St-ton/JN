@@ -301,7 +301,7 @@
                                     $('#manufacturer_key').val(item.kHersteller);
                                 });
                                 {if (isset($cKey) && $cKey === 'kHersteller') || (isset($oExtension->cKey) && $oExtension->cKey === 'kHersteller')}
-                                    ioCall('getCategories', [[$('#manufacturer_key').val()]], function (data) {
+                                    ioCall('getManufacturers', [[$('#manufacturer_key').val()]], function (data) {
                                         $('#manufacturer_name').val(data[0].cName);
                                     });
                                 {/if}

@@ -70,6 +70,7 @@
                 case '1':
                     $nl.show();
                     $('#keykArtikel').show();
+                    $cKey.val('');
                     break;
                 case '2':
                     $type2.show();
@@ -81,8 +82,10 @@
                 case '31':
                     $nl.show();
                     $('#keykLink').show();
+                    $cKey.val('');
                     break;
                 default:
+                    $cKey.val('');
                     break;
             }
         }

@@ -305,14 +305,27 @@ class SofortUeberweisung extends PaymentMethod
                 writeLog(D_PFAD, ': verifyNotification pass. addIncomingPayment', 1);
             }
 
-            $this->setOrderStatusToPaid($order);
-            $incomingPayment          = new stdClass();
-            $incomingPayment->fBetrag = $args['amount'];
-            $incomingPayment->cISO    = $args['currency_id'];
+            $transaction = Shop::DB()->query(
+                "SELECT tzahlungseingang.cZahlungsanbieter, tzahlungseingang.fBetrag, tzahlungsession.nBezahlt
+                    FROM tzahlungsession
+                    INNER JOIN tzahlungseingang ON tzahlungseingang.kBestellung = " . (int)$order->kBestellung . "
+                    WHERE tzahlungsession.cZahlungsID = '" . substr($paymentHash, 1) . "'", 1
+            );
 
-            $this->addIncomingPayment($order, $incomingPayment);
-            $this->sendConfirmationMail($order);
-            $this->updateNotificationID($order->kBestellung, $args['transaction']);
+            if (!isset($transaction)
+                || (int)$transaction->nBezahlt === 0
+                || $transaction->cZahlungsanbieter != $order->cZahlungsartName
+                || round($transaction->fBetrag * 100) !== round($args['amount'] * 100)
+            ) {
+                $this->setOrderStatusToPaid($order);
+                $incomingPayment          = new stdClass();
+                $incomingPayment->fBetrag = $args['amount'];
+                $incomingPayment->cISO    = $args['currency_id'];
+
+                $this->addIncomingPayment($order, $incomingPayment);
+                $this->sendConfirmationMail($order);
+                $this->updateNotificationID($order->kBestellung, $args['transaction']);
+            }
         }
 
         $url    = $this->getReturnURL($order);

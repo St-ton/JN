@@ -7,7 +7,7 @@
     {include file='layout/header.tpl'}
 {else}
     {if isset($smarty.get.quickView) && $smarty.get.quickView == 1}
-        {include file='layout/modal_open.tpl'}
+        {include file='layout/modal_header.tpl'}
     {/if}
 {/if}
 {if isset($bAjaxRequest) && $bAjaxRequest && isset($listStyle) && ($listStyle === 'list' || $listStyle === 'gallery')}
@@ -35,6 +35,6 @@
     {include file='layout/footer.tpl'}
 {else}
     {if isset($smarty.get.quickView) && $smarty.get.quickView == 1}
-        {include file='layout/modal_close.tpl'}
+        {include file='layout/modal_footer.tpl'}
     {/if}
 {/if}

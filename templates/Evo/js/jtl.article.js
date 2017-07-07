@@ -468,7 +468,9 @@
                                 var errorlist = '<ul><li>' + response.cHints.join('</li><li>') + '</li></ul>';
                                 eModal.alert({
                                     title: response.cTitle,
-                                    message: errorlist
+                                    message: errorlist,
+                                    keyboard: true,
+                                    tabindex: -1
                                 });
                                 break;
                             case 1: // forwarding
@@ -478,7 +480,9 @@
                                 that.updateComparelist(response);
                                 eModal.alert({
                                     title: response.cTitle,
-                                    message: response.cNotification
+                                    message: response.cNotification,
+                                    keyboard: true,
+                                    tabindex: -1
                                 });
                                 break;
                         }
@@ -508,7 +512,9 @@
                                 var errorlist = '<ul><li>' + response.cHints.join('</li><li>') + '</li></ul>';
                                 eModal.alert({
                                     title: response.cTitle,
-                                    message: errorlist
+                                    message: errorlist,
+                                    keyboard: true,
+                                    tabindex: -1
                                 });
                                 break;
                             case 1: // forwarding
@@ -542,8 +548,10 @@
                     var url = e.currentTarget.href;
                     url += (url.indexOf('?') === -1) ? '?isAjax=true' : '&isAjax=true';
                     eModal.ajax({
-                        'size': 'lg',
-                        'url': url
+                        size: 'lg',
+                        url: url,
+                        keyboard: true,
+                        tabindex: -1
                     });
                     e.stopPropagation();
 

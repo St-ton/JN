@@ -213,7 +213,7 @@ abstract class AbstractFilter implements IFilter
      * @return $this
      */
     public function setFrontendName($name) {
-        $this->frontendName = $name;
+        $this->frontendName = htmlspecialchars($name);
 
         return $this;
     }

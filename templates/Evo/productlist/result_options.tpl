@@ -118,16 +118,14 @@
                                 {foreach $activeFilterValue as $value}
                                     {strip}
                                     <a href="{$activeFilter->getUnsetFilterURL($value)}" rel="nofollow" title="Filter {lang key='delete' section='global'}" class="label label-info filter-type-{$activeFilter->getClassName()}">
-                                        {$activeFilter->getName()|cat:': '|cat:$value}
-                                        &nbsp;<span class="fa fa-trash-o"></span>
+                                        {$activeFilter->getFrontendName()|cat:': '|cat:$value} &nbsp;<span class="fa fa-trash-o"></span>
                                     </a>
                                     {/strip}
                                 {/foreach}
                             {else}
                                 {strip}
                                 <a href="{$activeFilter->getUnsetFilterURL()}" rel="nofollow" title="Filter {lang key='delete' section='global'}" class="label label-info filter-type-{$activeFilter->getClassName()}">
-                                    {$activeFilter->getName()}
-                                    &nbsp;<span class="fa fa-trash-o"></span>
+                                    {$activeFilter->getFrontendName()}&nbsp;<span class="fa fa-trash-o"></span>
                                 </a>
                                 {/strip}
                             {/if}

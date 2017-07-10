@@ -275,7 +275,7 @@ class FilterSearch extends AbstractFilter
     {
         $count        = 0;
         $searchCache  = [];
-        $searchFilter = $this->naviFilter->getActiveState();
+        $searchFilter = $this->naviFilter->getBaseState();
         if (is_array($searchFilter)) {
             $count = count($searchFilter);
             foreach ($searchFilter as $oSuchFilter) {

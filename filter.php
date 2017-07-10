@@ -57,7 +57,7 @@ if (isset($cParameter_arr['kKategorie']) && $cParameter_arr['kKategorie'] > 0) {
     $AktuelleSeite               = 'PRODUKTE';
 }
 if ($NaviFilter->hasCategory()) {
-    $kKategorie        = $NaviFilter->getActiveState()->getValue();
+    $kKategorie        = $NaviFilter->getBaseState()->getValue();
     $AktuelleKategorie = new Kategorie($kKategorie);
     if ($AktuelleKategorie->kKategorie === null) {
         //temp. workaround: do not return 404 when non-localized existing category is loaded
@@ -74,9 +74,9 @@ if ($NaviFilter->hasCategory()) {
     $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 }
 // Usersortierung
-$NaviFilter->setUserSort($AktuelleKategorie);
+$NaviFilter->getMetaData()->setUserSort($AktuelleKategorie);
 // Erweiterte Darstellung Artikelübersicht
-$smarty->assign('oErweiterteDarstellung', $NaviFilter->getExtendedView($cParameter_arr['nDarstellung']));
+$smarty->assign('oErweiterteDarstellung', $NaviFilter->getMetaData()->getExtendedView($cParameter_arr['nDarstellung']));
 $oSuchergebnisse = $NaviFilter->getProducts(true, $AktuelleKategorie);
 if ($hasError) {
     $cFehler                              = Shop::Lang()->get('expressionHasTo') .
@@ -206,7 +206,7 @@ if ($NaviFilter->hasCategory()) {
     if (isset($oNavigationsinfo->oHersteller->cMetaKeywords)) {
         $oMeta->cMetaKeywords = $oNavigationsinfo->oHersteller->cMetaKeywords;
     }
-    $cBrotNavi = createNavigation('', '', 0, $NaviFilter->getBreadCrumbName(), $NaviFilter->getURL());
+    $cBrotNavi = createNavigation('', '', 0, $NaviFilter->getMetaData()->getBreadCrumbName(), $NaviFilter->getURL());
 } elseif ($NaviFilter->hasAttributeValue()) {
     $oNavigationsinfo->oMerkmalWert = new MerkmalWert($NaviFilter->getAttributeValue()->getValue());
 
@@ -256,7 +256,7 @@ if (TEMPLATE_COMPATIBILITY === true && function_exists('starteAuswahlAssistent')
 $smarty->assign('SEARCHSPECIALS_TOPREVIEWS', SEARCHSPECIALS_TOPREVIEWS)
        ->assign('code_benachrichtigung_verfuegbarkeit',
            generiereCaptchaCode($Einstellungen['artikeldetails']['benachrichtigung_abfragen_captcha']))
-       ->assign('oNaviSeite_arr', $NaviFilter->buildPageNavigation(
+       ->assign('oNaviSeite_arr', $NaviFilter->getMetaData()->buildPageNavigation(
            true,
            $oSuchergebnisse->Seitenzahlen,
            $Einstellungen['artikeluebersicht']['artikeluebersicht_max_seitenzahl']))
@@ -264,7 +264,7 @@ $smarty->assign('SEARCHSPECIALS_TOPREVIEWS', SEARCHSPECIALS_TOPREVIEWS)
        ->assign('ArtikelProSeite', $nArtikelProSeite_arr)
        ->assign('Navigation', $cBrotNavi)
        ->assign('Einstellungen', $Einstellungen)
-       ->assign('Sortierliste', $NaviFilter->getSortingOptions())
+       ->assign('Sortierliste', $NaviFilter->getMetaData()->getSortingOptions())
        ->assign('Einstellungen', $Einstellungen)
        ->assign('Suchergebnisse', $oSuchergebnisse)
        ->assign('requestURL', isset($requestURL) ? $requestURL : null)
@@ -277,11 +277,10 @@ $smarty->assign('SEARCHSPECIALS_TOPREVIEWS', SEARCHSPECIALS_TOPREVIEWS)
 
 executeHook(HOOK_FILTER_PAGE);
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
-$metaData = new Metadata($NaviFilter);
 $oGlobaleMetaAngabenAssoc_arr = holeGlobaleMetaAngaben();
 $smarty->assign(
     'meta_title',
-    $metaData->getMetaTitle(
+    $NaviFilter->getMetaData()->getMetaTitle(
         $oMeta,
         $oSuchergebnisse,
         $oGlobaleMetaAngabenAssoc_arr,
@@ -290,7 +289,7 @@ $smarty->assign(
 );
 $smarty->assign(
     'meta_description',
-    $metaData->getMetaDescription(
+    $NaviFilter->getMetaData()->getMetaDescription(
         $oMeta,
         $oSuchergebnisse->Artikel->elemente->getItems(),
         $oSuchergebnisse,
@@ -300,24 +299,13 @@ $smarty->assign(
 );
 $smarty->assign(
     'meta_keywords',
-    $metaData->getMetaKeywords(
+    $NaviFilter->getMetaData()->getMetaKeywords(
         $oMeta,
         $oSuchergebnisse->Artikel->elemente->getItems(),
         $AktuelleKategorie
     )
 );
 executeHook(HOOK_FILTER_ENDE);
-foreach ($NaviFilter->getAvailableFilters() as $availableFilter) {
-//    if (get_class($availableFilter) === 'FilterItemAttribute') {
-//        Shop::dbg($availableFilter, true, $availableFilter->getFrontendName());
-//    }
-    if ($availableFilter->getFilterCollection()) {
-        foreach ($availableFilter->getFilterCollection() as $f) {
-//            Shop::dbg($f->getOptions(), false, 'qqoptions:');
-        }
-    }
-//    Shop::dbg($availableFilter->getFilterCollection(), false, 'collection:');
-}
 $smarty->display('productlist/index.tpl');
 
 require PFAD_ROOT . PFAD_INCLUDES . 'profiler_inc.php';

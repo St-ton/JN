@@ -66,7 +66,7 @@ function gibAnzahlFilter($NaviFilter)
 function gibHerstellerFilterOptionen($FilterSQL, $NaviFilter)
 {
     trigger_error('filter_inc.php: gibHerstellerFilterOptionen() called.', E_USER_DEPRECATED);
-    return Shop::getNaviFilter()->HerstellerFilter->getOptions();
+    return Shop::getNaviFilter()->getManufacturerFilter()->getOptions();
 }
 
 /**
@@ -78,7 +78,7 @@ function gibHerstellerFilterOptionen($FilterSQL, $NaviFilter)
 function gibKategorieFilterOptionen($FilterSQL, $NaviFilter)
 {
     trigger_error('filter_inc.php: gibKategorieFilterOptionen() called.', E_USER_DEPRECATED);
-    return Shop::getNaviFilter()->KategorieFilter->getOptions();
+    return Shop::getNaviFilter()->getCategoryFilter()->getOptions();
 }
 
 /**
@@ -102,7 +102,7 @@ function gibSuchFilterOptionen($FilterSQL, $NaviFilter)
 function gibBewertungSterneFilterOptionen($FilterSQL, $NaviFilter)
 {
     trigger_error('filter_inc.php: gibBewertungSterneFilterOptionen() called.', E_USER_DEPRECATED);
-    return Shop::getNaviFilter()->BewertungFilter->getOptions();
+    return Shop::getNaviFilter()->getRatingFilter()->getOptions();
 }
 
 /**
@@ -115,7 +115,7 @@ function gibBewertungSterneFilterOptionen($FilterSQL, $NaviFilter)
 function gibPreisspannenFilterOptionen($FilterSQL, $NaviFilter, $oSuchergebnisse)
 {
     trigger_error('filter_inc.php: gibPreisspannenFilterOptionen() called.', E_USER_DEPRECATED);
-    return Shop::getNaviFilter()->PreisspannenFilter->getOptions();
+    return Shop::getNaviFilter()->getPriceRangeFilter()->getOptions();
 }
 
 /**
@@ -175,7 +175,7 @@ function gibTagFilterJSONOptionen($FilterSQL, $NaviFilter)
 function gibMerkmalFilterOptionen($FilterSQL, $NaviFilter, $oAktuelleKategorie = null, $bForce = false)
 {
     trigger_error('filter_inc.php: gibMerkmalFilterOptionen() called.', E_USER_DEPRECATED);
-    return Shop::getNaviFilter()->attributeFilterCompat->getOptions();
+    return Shop::getNaviFilter()->getAttributeFilterCollection()->getOptions();
 }
 
 /**
@@ -214,7 +214,7 @@ function gibSuchspecialFilterOptionen($FilterSQL, $NaviFilter)
 function bearbeiteSuchCache($NaviFilter, $kSpracheExt = 0)
 {
     trigger_error('filter_inc.php: bearbeiteSuchCache() called.', E_USER_DEPRECATED);
-    return Shop::getNaviFilter()->Suchanfrage->editSearchCache($kSpracheExt);
+    return Shop::getNaviFilter()->getSearchQuery()->editSearchCache($kSpracheExt);
 }
 
 /**
@@ -342,7 +342,7 @@ function gibArtikelsortierung($NaviFilter)
 function mappeUsersortierung($nUsersortierung)
 {
     trigger_error('filter_inc.php: mappeUsersortierung() called.', E_USER_DEPRECATED);
-    return Shop::getNaviFilter()->mapUserSorting($nUsersortierung);
+    return Shop::getNaviFilter()->getMetaData()->mapUserSorting($nUsersortierung);
 }
 
 /**
@@ -374,7 +374,7 @@ function berechnePreisspannenSQL($oPreis, $oPreisspannenfilter_arr = null)
     if (!isset($currency->kWaehrung)) {
         $currency = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
     }
-    return Shop::getNaviFilter()->PreisspannenFilter->getPriceRangeSQL($oPreis, $currency, $oPreisspannenfilter_arr);
+    return Shop::getNaviFilter()->getPriceRangeFilter()->getPriceRangeSQL($oPreis, $currency, $oPreisspannenfilter_arr);
 }
 
 /**
@@ -385,7 +385,7 @@ function berechnePreisspannenSQL($oPreis, $oPreisspannenfilter_arr = null)
 function berechneMaxMinStep($fMax, $fMin)
 {
     trigger_error('filter_inc.php: berechneMaxMinStep() called.', E_USER_DEPRECATED);
-    return Shop::getNaviFilter()->PreisspannenFilter->calculateSteps($fMax, $fMin);
+    return Shop::getNaviFilter()->getPriceRangeFilter()->calculateSteps($fMax, $fMin);
 }
 
 /**
@@ -395,7 +395,9 @@ function berechneMaxMinStep($fMax, $fMin)
 function gibBrotNaviName()
 {
     trigger_error('filter_inc.php: gibBrotNaviName() called.', E_USER_DEPRECATED);
-    return Shop::getNaviFilter()->cBrotNaviName;
+    $md = Shop::getNaviFilter()->getMetaData();
+    $md->getHeader();
+    return $md->getBreadCrumbName();
 }
 
 /**
@@ -405,7 +407,7 @@ function gibBrotNaviName()
 function gibHeaderAnzeige()
 {
     trigger_error('filter_inc.php: gibHeaderAnzeige() called.', E_USER_DEPRECATED);
-    return Shop::getNaviFilter()->getHeader();
+    return Shop::getNaviFilter()->getMetaData()->getHeader();
 }
 
 /**
@@ -515,7 +517,7 @@ function setzeUsersortierung($NaviFilter)
 {
     trigger_error('filter_inc.php: setzeUsersortierung() called.', E_USER_DEPRECATED);
     global $AktuelleKategorie;
-    Shop::getNaviFilter()->setUserSort($AktuelleKategorie);
+    Shop::getNaviFilter()->getMetaData()->setUserSort($AktuelleKategorie);
 }
 
 /**
@@ -527,7 +529,7 @@ function setzeUsersortierung($NaviFilter)
 function gibErweiterteDarstellung($Einstellungen, $NaviFilter, $nDarstellung = 0)
 {
     trigger_error('filter_inc.php: gibErweiterteDarstellung() called.', E_USER_DEPRECATED);
-    Shop::getNaviFilter()->getExtendedView($nDarstellung);
+    Shop::getNaviFilter()->getMetaData()->getExtendedView($nDarstellung);
     if (isset($_SESSION['oErweiterteDarstellung'])) {
         global $smarty;
         $smarty->assign('oErweiterteDarstellung', $_SESSION['oErweiterteDarstellung']);
@@ -546,7 +548,7 @@ function gibErweiterteDarstellung($Einstellungen, $NaviFilter, $nDarstellung = 0
 function baueSeitenNaviURL($NaviFilter, $bSeo, $oSeitenzahlen, $nMaxAnzeige = 7, $cFilterShopURL = '')
 {
     trigger_error('filter_inc.php: baueSeitenNaviURL() called.', E_USER_DEPRECATED);
-    return Shop::getNaviFilter()->buildPageNavigation($bSeo, $oSeitenzahlen, $nMaxAnzeige, $cFilterShopURL);
+    return Shop::getNaviFilter()->getMetaData()->buildPageNavigation($bSeo, $oSeitenzahlen, $nMaxAnzeige, $cFilterShopURL);
 }
 
 /**
@@ -588,7 +590,7 @@ function sortierKategoriepfade($a, $b)
 function gibSortierliste($Einstellungen = null, $bExtendedJTLSearch = false)
 {
     trigger_error('filter_inc.php: gibSortierliste() called.', E_USER_DEPRECATED);
-    return Shop::getNaviFilter()->getSortingOptions($bExtendedJTLSearch);
+    return Shop::getNaviFilter()->getMetaData()->getSortingOptions($bExtendedJTLSearch);
 }
 
 /**
@@ -600,7 +602,7 @@ function gibSortierliste($Einstellungen = null, $bExtendedJTLSearch = false)
 function gibNextSortPrio($search, $Einstellungen = null)
 {
     trigger_error('filter_inc.php: gibNextSortPrio() called.', E_USER_DEPRECATED);
-    return Shop::getNaviFilter()->getNextSearchPriority($search);
+    return Shop::getNaviFilter()->getMetaData()->getNextSearchPriority($search);
 }
 
 /**

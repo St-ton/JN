@@ -55,7 +55,7 @@ class FilterBaseSearchQuery extends AbstractFilter
      */
     public function getValue()
     {
-        if ($this->naviFilter->getRealSearch() !== null && !$this->naviFilter->hasSuchanfrage()) {
+        if ($this->naviFilter->getRealSearch() !== null && !$this->naviFilter->hasSearchQuery()) {
             return urlencode($this->naviFilter->getRealSearch()->cSuche);
         }
 
@@ -67,7 +67,7 @@ class FilterBaseSearchQuery extends AbstractFilter
      */
     public function getUrlParam()
     {
-        if ($this->naviFilter->getRealSearch() !== null && !$this->naviFilter->hasSuchanfrage()) {
+        if ($this->naviFilter->getRealSearch() !== null && !$this->naviFilter->hasSearchQuery()) {
             return 'suche';
         }
 
@@ -142,7 +142,7 @@ class FilterBaseSearchQuery extends AbstractFilter
     public function getSQLJoin()
     {
         $kSucheCache_arr = [];
-        $searchFilter    = $this->naviFilter->getActiveState();
+        $searchFilter    = $this->naviFilter->getBaseState();
         if (is_array($searchFilter)) {
             $count = count($searchFilter);
             foreach ($searchFilter as $oSuchFilter) {

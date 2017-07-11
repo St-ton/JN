@@ -13,7 +13,7 @@ Shop::$AktuelleSeite             = 'PASSWORT VERGESSEN';
 $Einstellungen                   = Shop::getSettings([CONF_GLOBAL, CONF_RSS]);
 $GLOBALS['GlobaleEinstellungen'] = array_merge($GLOBALS['GlobaleEinstellungen'], $Einstellungen);
 $linkHelper                      = LinkHelper::getInstance();
-$kLink      = $linkHelper->getSpecialPageLinkKey(LINKTYP_PASSWORD_VERGESSEN);
+$kLink                           = $linkHelper->getSpecialPageLinkKey(LINKTYP_PASSWORD_VERGESSEN);
 //hole alle OberKategorien
 $AktuelleKategorie      = new Kategorie(verifyGPCDataInteger('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();

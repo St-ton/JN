@@ -16,6 +16,9 @@
     {if $Einstellungen.artikeldetails.tagging_freischaltung !== 'N'}
         <input type="hidden" name="a" value="{$Artikel->kArtikel}" />
         <input type="hidden" name="produktTag" value="1" />
+        {if !empty($Artikel->kVariKindArtikel)}
+            <input type="hidden" name="variKindArtikel" value="{$Artikel->kVariKindArtikel}" />
+        {/if}
         {if ($Einstellungen.artikeldetails.tagging_freischaltung === 'Y' && !empty($smarty.session.Kunde->kKunde)) || $Einstellungen.artikeldetails.tagging_freischaltung === 'O'}
             <div class="row">
                 <div class="col-sm-12 col-md-6">

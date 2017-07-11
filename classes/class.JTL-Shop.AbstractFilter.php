@@ -1,4 +1,8 @@
 <?php
+/**
+ * @copyright (c) JTL-Software-GmbH
+ * @license http://jtl-url.de/jtlshoplicense
+ */
 
 /**
  * class AbstractFilter
@@ -53,12 +57,12 @@ abstract class AbstractFilter implements IFilter
     /**
      * @var string
      */
-    public $icon;
+    protected $icon;
 
     /**
      * @var bool
      */
-    public $isCustom = true;
+    protected $isCustom = true;
 
     /**
      * @var string
@@ -73,37 +77,37 @@ abstract class AbstractFilter implements IFilter
     /**
      * @var int
      */
-    private $type = self::FILTER_TYPE_AND;
+    protected $type = self::FILTER_TYPE_AND;
 
     /**
      * @var string
      */
-    public $urlParam = '';
+    protected $urlParam = '';
 
     /**
      * @var string
      */
-    public $urlParamSEO = '';
+    protected $urlParamSEO = '';
 
     /**
      * @var int|string|array
      */
-    public $value;
+    protected $value;
 
     /**
      * @var int
      */
-    private $languageID = 0;
+    protected $languageID = 0;
 
     /**
      * @var int
      */
-    private $customerGroupID = 0;
+    protected $customerGroupID = 0;
 
     /**
      * @var array
      */
-    private $availableLanguages = [];
+    protected $availableLanguages = [];
 
     /**
      * @var bool
@@ -113,12 +117,12 @@ abstract class AbstractFilter implements IFilter
     /**
      * @var string
      */
-    private $className = '';
+    protected $className = '';
 
     /**
      * @var int
      */
-    private $inputType = self::INPUT_SELECT;
+    protected $inputType = self::INPUT_SELECT;
 
     /**
      * workaround since built-in filters can be registered multiple times (for example Navigationsfilter->KategorieFilter)
@@ -127,7 +131,7 @@ abstract class AbstractFilter implements IFilter
      *
      * @var bool
      */
-    public $isChecked = false;
+    private $isChecked = false;
 
     /**
      * used to create FilterLoesenURLs

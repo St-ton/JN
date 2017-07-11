@@ -319,6 +319,21 @@ final class Shop
     public static $customFilters = [];
 
     /**
+     * @var array
+     */
+    private static $mapping = [
+        'DB'       => '_DB',
+        'Cache'    => '_Cache',
+        'Lang'     => '_Language',
+        'Smarty'   => '_Smarty',
+        'Media'    => '_Media',
+        'Event'    => '_Event',
+        'has'      => '_has',
+        'set'      => '_set',
+        'get'      => '_get'
+    ];
+
+    /**
      *
      */
     private function __construct()
@@ -403,20 +418,8 @@ final class Shop
      */
     private static function map($method)
     {
-        $mapping = [
-            'DB'       => '_DB',
-            'Cache'    => '_Cache',
-            'Lang'     => '_Language',
-            'Smarty'   => '_Smarty',
-            'Media'    => '_Media',
-            'Event'    => '_Event',
-            'has'      => '_has',
-            'set'      => '_set',
-            'get'      => '_get'
-        ];
-
-        return isset($mapping[$method])
-            ? $mapping[$method]
+        return isset(self::$mapping[$method])
+            ? self::$mapping[$method]
             : null;
     }
 
@@ -690,7 +693,6 @@ final class Shop
         self::$is404           = false;
 
         self::$nSterne = verifyGPCDataInteger('nSterne');
-
         self::$isSeoMainword = !(!isset($oSeo) || !is_object($oSeo) || !isset($oSeo->cSeo) || trim($oSeo->cSeo) === '');
 
         self::$kWunschliste = checkeWunschlisteParameter();
@@ -719,20 +721,21 @@ final class Shop
         self::$isInitialized = true;
 
         $redirect = verifyGPDataString('r');
-        if (self::$kNews > 0 && self::$kArtikel > 0 && !empty($redirect)) {
-            //GET param "n" is often misused as "amount of article"
-            self::$kNews    = 0;
-            if ((int)$redirect === R_LOGIN_WUNSCHLISTE) {
-                //login redirect on wishlist add when not logged in uses get param "n" as amount and "a" for the article ID
-                //but we wont to go to the login page, not to the article page
+        if (self::$kArtikel > 0) {
+            if (self::$kNews > 0 && !empty($redirect)) {
+                //GET param "n" is often misused as "amount of article"
+                self::$kNews    = 0;
+                if ((int)$redirect === R_LOGIN_WUNSCHLISTE) {
+                    // login redirect on wishlist add when not logged in uses get param "n" as amount
+                    // and "a" for the article ID - but we want to go to the login page, not to the article page
+                    self::$kArtikel = 0;
+                }
+            } elseif (((int)$redirect === R_LOGIN_BEWERTUNG || (int)$redirect === R_LOGIN_TAG)
+                && empty($_SESSION['Kunde']->kKunde)
+            ) {
+                // avoid redirect to article page for ratings that require logged in customers
                 self::$kArtikel = 0;
             }
-        } elseif (self::$kArtikel > 0 &&
-            ((int)$redirect === R_LOGIN_BEWERTUNG || (int)$redirect === R_LOGIN_TAG) &&
-            empty($_SESSION['Kunde']->kKunde)
-        ) {
-            //avoid redirect to article page for ratings that require logged in customers
-            self::$kArtikel = 0;
         }
 
         $_SESSION['cTemplate'] = Template::$cTemplate;
@@ -921,6 +924,7 @@ final class Shop
                         }
                     }
                 }
+                unset($merkmal);
                 $oHersteller_arr = explode(SEP_HST, $seo);
                 if (is_array($oHersteller_arr) && count($oHersteller_arr) > 1) {
                     list($seo, $hstseo) = $oHersteller_arr;
@@ -1014,9 +1018,8 @@ final class Shop
                         self::$bHerstellerFilterNotFound = true;
                     }
                 }
-                //attribute filter
+                // attribute filter
                 if (count($cSEOMerkmal_arr) > 1) {
-                    $nMerkmalZaehler = 1;
                     $_GET['mf'] = [];
                     foreach ($cSEOMerkmal_arr as $i => $cSEOMerkmal) {
                         if ($i > 0 && strlen($cSEOMerkmal) > 0) {
@@ -1024,7 +1027,6 @@ final class Shop
                             if (isset($oSeo->kKey) && strcasecmp($oSeo->cSeo, $cSEOMerkmal) === 0) {
                                 //haenge an GET, damit baueMerkmalFilter die Merkmalfilter setzen kann - @todo?
                                 $_GET['mf'][] = (int)$oSeo->kKey;
-                                ++$nMerkmalZaehler;
                                 self::$bSEOMerkmalNotFound = false;
                             } else {
                                 self::$bSEOMerkmalNotFound = true;
@@ -1162,16 +1164,15 @@ final class Shop
 
             self::setPageType(PAGE_ARTIKEL);
             self::$fileName = 'artikel.php';
-        } elseif ((!isset(self::$bSEOMerkmalNotFound) || self::$bSEOMerkmalNotFound === false) &&
-            (!isset(self::$bKatFilterNotFound) || self::$bKatFilterNotFound === false) &&
-            (!isset(self::$bHerstellerFilterNotFound) || self::$bHerstellerFilterNotFound === false) &&
-            ((self::$isSeoMainword || self::$NaviFilter->getFilterCount() == 0) || !self::$bSeo) &&
-            (self::$kHersteller > 0 || self::$kSuchanfrage > 0 || self::$kMerkmalWert > 0 || self::$kTag > 0 || self::$kKategorie > 0 ||
-                (isset(self::$cPreisspannenFilter) && self::$cPreisspannenFilter > 0) ||
-                (isset(self::$nBewertungSterneFilter) && self::$nBewertungSterneFilter > 0) || self::$kHerstellerFilter > 0 ||
-                self::$kKategorieFilter > 0 || self::$kSuchspecial > 0 || self::$kSuchFilter > 0)
+        } elseif ((self::$bSEOMerkmalNotFound === null || self::$bSEOMerkmalNotFound === false)
+            && (self::$bKatFilterNotFound === null || self::$bKatFilterNotFound === false)
+            && (self::$bHerstellerFilterNotFound === null || self::$bHerstellerFilterNotFound === false)
+            && (self::$isSeoMainword || self::$NaviFilter->getFilterCount() === 0 || !self::$bSeo)
+            && (self::$kHersteller > 0 || self::$kSuchanfrage > 0 || self::$kMerkmalWert > 0 || self::$kTag > 0 || self::$kKategorie > 0 ||
+                (self::$cPreisspannenFilter !== null && self::$cPreisspannenFilter > 0)
+                || (self::$nBewertungSterneFilter > 0) || self::$kHerstellerFilter > 0
+                || self::$kKategorieFilter > 0 || self::$kSuchspecial > 0 || self::$kSuchFilter > 0)
         ) {
-            //these are some serious changes! - create 404 if attribute or filtered category is empty
             self::$fileName      = 'filter.php';
             self::$AktuelleSeite = 'ARTIKEL';
             self::setPageType(PAGE_ARTIKELLISTE);

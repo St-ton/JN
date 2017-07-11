@@ -81,27 +81,14 @@ function get_product_list($params, &$smarty)
             $cParameter_arr['kArtikel'] = [$cParameter_arr['kArtikel']];
         }
         foreach ($cParameter_arr['kArtikel'] as $kArtikel) {
-            $article = new Artikel();
-            $article->fuelleArtikel($kArtikel, Artikel::getDefaultOptions());
-            $oArtikel_arr[] = $article;
+            $oArtikel_arr[] = (new Artikel())->fuelleArtikel($kArtikel, Artikel::getDefaultOptions());
         }
     } else {
         // Filter
-        // @todo: use new navifilter correctly
-        $NaviFilter = Shop::buildNaviFilter($cParameter_arr);
-        if ($NaviFilter->hasSearch()) {
-            $search = $NaviFilter->getSearch();
-            $search->cSuche     = StringHandler::filterXSS($search->Suche->cSuche, 1);
-            $search->kSuchCache = bearbeiteSuchCache($NaviFilter);
-        }
-        // Artikelattribut
-        if (isset($cParameter_arr['cArtAttrib']) && strlen($cParameter_arr['cArtAttrib']) > 0) {
-            $NaviFilter->ArtikelAttributFilter->cArtAttrib = $cParameter_arr['cArtAttrib'];
-        }
-        //Filter SQLs Objekte
-        $FilterSQL = bauFilterSQL($NaviFilter);
+        $NaviFilter = new Navigationsfilter();
+        $NaviFilter->initBaseStates()->initStates($params);
         // Artikelliste
-        $oArtikel_arr = gibArtikelKeys($FilterSQL, $nLimit, $NaviFilter, true, null);
+        $oArtikel_arr = $NaviFilter->getProducts(false, null, true, $nLimit);
     }
 
     $smarty->assign($cAssign, $oArtikel_arr);
@@ -372,7 +359,7 @@ function gibPreisStringLocalizedSmarty($params, &$smarty)
         $cVPEEinheit            = $params['cVPEEinheit'];
         $FunktionsAttribute_arr = $params['FunktionsAttribute'];
         $nGenauigkeit = (isset($FunktionsAttribute_arr[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT]) &&
-                (int)$FunktionsAttribute_arr[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT] > 0)
+            (int)$FunktionsAttribute_arr[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT] > 0)
             ? (int)$FunktionsAttribute_arr[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT]
             : 2;
 

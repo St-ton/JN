@@ -171,7 +171,10 @@ class Session
             $globalsAktualisieren = true;
             $updateLanguage       = true;
         }
-        if (!$globalsAktualisieren && isset($_SESSION['Kundengruppe']) && get_class($_SESSION['Kundengruppe']) === 'stdClass') {
+        if (!$globalsAktualisieren
+            && ((isset($_SESSION['Kundengruppe']) && get_class($_SESSION['Kundengruppe']) === 'stdClass')
+                || (isset($_SESSION['Waehrung']) && get_class($_SESSION['Waehrung']) === 'stdClass'))
+        ) {
             // session upgrade from 4.05 -> 4.06 - update with class instance
             $globalsAktualisieren = true;
         }
@@ -237,6 +240,9 @@ class Session
                     }
                 }
             } else {
+                if (get_class($_SESSION['Waehrung']) === 'stdClass') {
+                    $_SESSION['Waehrung'] = new Currency($_SESSION['Waehrung']->kWaehrung);
+                }
                 foreach ($_SESSION['Waehrungen'] as $currency) {
                     /** @var $currency Currency */
                     if ($currency->getCode() === $_SESSION['Waehrung']->getCode()) {

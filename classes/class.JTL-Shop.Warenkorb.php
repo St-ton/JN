@@ -1443,23 +1443,22 @@ class Warenkorb
      */
     public function useSummationRounding($precision = 2)
     {
-        $count             = count($this->PositionenArr);
         $cumulatedDelta    = 0;
         $cumulatedDeltaNet = 0;
-        foreach ($_SESSION['Waehrungen'] as $Waehrung) {
-            for ($i = 0; $i < $count; $i++) {
-                $position           = $this->PositionenArr[$i];
+        foreach (Session::Currencies() as $currency) {
+            $currencyName = $currency->getName();
+            foreach ($this->PositionenArr as $i => $position) {
                 $grossAmount        = berechneBrutto($position->fPreis * $position->nAnzahl, gibUst($position->kSteuerklasse), 12);
                 $netAmount          = $position->fPreis * $position->nAnzahl;
                 $roundedGrossAmount = berechneBrutto($position->fPreis * $position->nAnzahl + $cumulatedDelta, gibUst($position->kSteuerklasse), $precision);
                 $roundedNetAmount   = round($position->fPreis * $position->nAnzahl + $cumulatedDeltaNet, $precision);
 
-                if ($i != 0 && $position->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL) {
+                if ($i !== 0 && $position->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL) {
                     if ($grossAmount != 0) {
-                        $this->PositionenArr[$i]->cGesamtpreisLocalized[0][$Waehrung->cName] = gibPreisStringLocalized($roundedGrossAmount, $Waehrung);
+                        $position->cGesamtpreisLocalized[0][$currencyName] = gibPreisStringLocalized($roundedGrossAmount, $currency);
                     }
                     if ($netAmount != 0) {
-                        $this->PositionenArr[$i]->cGesamtpreisLocalized[1][$Waehrung->cName] = gibPreisStringLocalized($roundedNetAmount, $Waehrung);
+                        $position->cGesamtpreisLocalized[1][$currencyName] = gibPreisStringLocalized($roundedNetAmount, $currency);
                     }
                 }
                 $cumulatedDelta += ($grossAmount - $roundedGrossAmount);

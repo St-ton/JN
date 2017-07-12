@@ -18,7 +18,6 @@ $Einstellungen = Shop::getSettings([
     CONF_ARTIKELUEBERSICHT,
     CONF_SONSTIGES
 ]);
-$NaviFilter               = Shop::run();
 $Schnellkaufhinweis       = checkeSchnellkauf();
 $linkHelper               = LinkHelper::getInstance();
 $KuponcodeUngueltig       = false;
@@ -167,7 +166,6 @@ if (isset($_SESSION['Warenkorbhinweise']) && $_SESSION['Warenkorbhinweise']) {
 WarenkorbHelper::addVariationPictures($cart);
 //specific assigns
 $smarty->assign('Navigation', createNavigation($AktuelleSeite))
-       ->assign('NaviFilter', $NaviFilter)
        ->assign('Einstellungen', $Einstellungen)
        ->assign('MsgWarning', $MsgWarning)
        ->assign('Schnellkaufhinweis', $Schnellkaufhinweis)

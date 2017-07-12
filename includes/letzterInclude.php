@@ -85,7 +85,9 @@ if (isset($AktuelleKategorie)) {
 } else {
     $AktuelleKategorie = null;
 }
-
+if (!isset($NaviFilter)) {
+    $smarty->assign('NaviFilter', Shop::run());
+}
 //Standardassigns
 $smarty->assign('cPluginCss_arr', $cMinify_arr['plugin_css'])
        ->assign('bMobilMoeglich', $bMobile)

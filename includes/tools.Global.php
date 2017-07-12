@@ -355,6 +355,9 @@ function gibPreisStringLocalized($preis, $waehrung = 0, $html = 1, $nNachkommast
     if (!$waehrung) {
         $waehrung = Session::Currency();
     }
+    if (get_class($waehrung) === 'stdClass') {
+        $waehrung = new Currency($waehrung->kWaehrung);
+    }
     $localized    = number_format(
         $preis * $waehrung->getConversionFactor(),
         $nNachkommastellen,

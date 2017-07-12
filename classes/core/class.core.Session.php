@@ -560,7 +560,7 @@ class Session
     /**
      * @return Currency[]
      */
-    public function Currencies()
+    public static function Currencies()
     {
         return $_SESSION['Waehrungen'];
     }

@@ -327,51 +327,53 @@ class WarenkorbPos
     public function setzeGesamtpreisLocalized()
     {
         /** @var array('Warenkorb' => Warenkorb) $_SESSION */
-        if (is_array($_SESSION['Waehrungen'])) {
-            foreach ($_SESSION['Waehrungen'] as $Waehrung) {
-                // Standardartikel
-                $this->cGesamtpreisLocalized[0][$Waehrung->cName] = gibPreisStringLocalized(berechneBrutto($this->fPreis * $this->nAnzahl, gibUst($this->kSteuerklasse)), $Waehrung);
-                $this->cGesamtpreisLocalized[1][$Waehrung->cName] = gibPreisStringLocalized($this->fPreis * $this->nAnzahl, $Waehrung);
-                $this->cEinzelpreisLocalized[0][$Waehrung->cName] = gibPreisStringLocalized(berechneBrutto($this->fPreis, gibUst($this->kSteuerklasse)), $Waehrung);
-                $this->cEinzelpreisLocalized[1][$Waehrung->cName] = gibPreisStringLocalized($this->fPreis, $Waehrung);
+        if (!is_array($_SESSION['Waehrungen'])) {
+            return $this;
+        }
+        foreach (Session::Currencies() as $currency) {
+            $currencyName = $currency->getName();
+            // Standardartikel
+            $this->cGesamtpreisLocalized[0][$currencyName] = gibPreisStringLocalized(berechneBrutto($this->fPreis * $this->nAnzahl, gibUst($this->kSteuerklasse)), $currency);
+            $this->cGesamtpreisLocalized[1][$currencyName] = gibPreisStringLocalized($this->fPreis * $this->nAnzahl, $currency);
+            $this->cEinzelpreisLocalized[0][$currencyName] = gibPreisStringLocalized(berechneBrutto($this->fPreis, gibUst($this->kSteuerklasse)), $currency);
+            $this->cEinzelpreisLocalized[1][$currencyName] = gibPreisStringLocalized($this->fPreis, $currency);
 
-                if (!empty($this->Artikel->cVPEEinheit) && isset($this->Artikel->cVPE) && $this->Artikel->cVPE === 'Y' && $this->Artikel->fVPEWert > 0) {
-                    $this->Artikel->baueVPE($this->fPreis);
-                }
+            if (!empty($this->Artikel->cVPEEinheit) && isset($this->Artikel->cVPE) && $this->Artikel->cVPE === 'Y' && $this->Artikel->fVPEWert > 0) {
+                $this->Artikel->baueVPE($this->fPreis);
+            }
 
-                if ($this->istKonfigVater()) {
-                    $this->cKonfigpreisLocalized[0][$Waehrung->cName]       = gibPreisStringLocalized(berechneBrutto($this->fPreis * $this->nAnzahl, gibUst($this->kSteuerklasse)), $Waehrung);
-                    $this->cKonfigpreisLocalized[1][$Waehrung->cName]       = gibPreisStringLocalized($this->fPreis * $this->nAnzahl, $Waehrung);
-                    $this->cKonfigeinzelpreisLocalized[0][$Waehrung->cName] = gibPreisStringLocalized(berechneBrutto($this->fPreis, gibUst($this->kSteuerklasse)), $Waehrung);
-                    $this->cKonfigeinzelpreisLocalized[1][$Waehrung->cName] = gibPreisStringLocalized($this->fPreis, $Waehrung);
-                }
+            if ($this->istKonfigVater()) {
+                $this->cKonfigpreisLocalized[0][$currencyName]       = gibPreisStringLocalized(berechneBrutto($this->fPreis * $this->nAnzahl, gibUst($this->kSteuerklasse)), $currency);
+                $this->cKonfigpreisLocalized[1][$currencyName]       = gibPreisStringLocalized($this->fPreis * $this->nAnzahl, $currency);
+                $this->cKonfigeinzelpreisLocalized[0][$currencyName] = gibPreisStringLocalized(berechneBrutto($this->fPreis, gibUst($this->kSteuerklasse)), $currency);
+                $this->cKonfigeinzelpreisLocalized[1][$currencyName] = gibPreisStringLocalized($this->fPreis, $currency);
+            }
 
-                // Konfigurationsartikel
-                if ($this->istKonfigKind()) {
-                    $fPreisNetto  = 0;
-                    $fPreisBrutto = 0;
-                    $nVaterPos    = null;
-                    /** @var WarenkorbPos $oPosition */
-                    foreach ($_SESSION['Warenkorb']->PositionenArr as $nPos => $oPosition) {
-                        if ($this->cUnique == $oPosition->cUnique) {
-                            $fPreisNetto += $oPosition->fPreis * $oPosition->nAnzahl;
-                            $fPreisBrutto += berechneBrutto($oPosition->fPreis * $oPosition->nAnzahl, gibUst($oPosition->kSteuerklasse), 4);
+            // Konfigurationsartikel
+            if ($this->istKonfigKind()) {
+                $fPreisNetto  = 0;
+                $fPreisBrutto = 0;
+                $nVaterPos    = null;
+                /** @var WarenkorbPos $oPosition */
+                foreach ($_SESSION['Warenkorb']->PositionenArr as $nPos => $oPosition) {
+                    if ($this->cUnique == $oPosition->cUnique) {
+                        $fPreisNetto += $oPosition->fPreis * $oPosition->nAnzahl;
+                        $fPreisBrutto += berechneBrutto($oPosition->fPreis * $oPosition->nAnzahl, gibUst($oPosition->kSteuerklasse), 4);
 
-                            if ($oPosition->istKonfigVater()) {
-                                $nVaterPos = $nPos;
-                            }
+                        if ($oPosition->istKonfigVater()) {
+                            $nVaterPos = $nPos;
                         }
                     }
+                }
 
-                    if ($nVaterPos !== null) {
-                        $oVaterPos = $_SESSION['Warenkorb']->PositionenArr[$nVaterPos];
-                        if (is_object($oVaterPos)) {
-                            $this->nAnzahlEinzel                                         = $this->nAnzahl / $oVaterPos->nAnzahl;
-                            $oVaterPos->cKonfigpreisLocalized[0][$Waehrung->cName]       = gibPreisStringLocalized($fPreisBrutto, $Waehrung);
-                            $oVaterPos->cKonfigpreisLocalized[1][$Waehrung->cName]       = gibPreisStringLocalized($fPreisNetto, $Waehrung);
-                            $oVaterPos->cKonfigeinzelpreisLocalized[0][$Waehrung->cName] = gibPreisStringLocalized($fPreisBrutto / $oVaterPos->nAnzahl, $Waehrung);
-                            $oVaterPos->cKonfigeinzelpreisLocalized[1][$Waehrung->cName] = gibPreisStringLocalized($fPreisNetto / $oVaterPos->nAnzahl, $Waehrung);
-                        }
+                if ($nVaterPos !== null) {
+                    $oVaterPos = $_SESSION['Warenkorb']->PositionenArr[$nVaterPos];
+                    if (is_object($oVaterPos)) {
+                        $this->nAnzahlEinzel                                         = $this->nAnzahl / $oVaterPos->nAnzahl;
+                        $oVaterPos->cKonfigpreisLocalized[0][$currencyName]       = gibPreisStringLocalized($fPreisBrutto, $currency);
+                        $oVaterPos->cKonfigpreisLocalized[1][$currencyName]       = gibPreisStringLocalized($fPreisNetto, $currency);
+                        $oVaterPos->cKonfigeinzelpreisLocalized[0][$currencyName] = gibPreisStringLocalized($fPreisBrutto / $oVaterPos->nAnzahl, $currency);
+                        $oVaterPos->cKonfigeinzelpreisLocalized[1][$currencyName] = gibPreisStringLocalized($fPreisNetto / $oVaterPos->nAnzahl, $currency);
                     }
                 }
             }

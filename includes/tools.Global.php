@@ -1607,22 +1607,23 @@ function checkeKuponWKPos($oWKPosition, $Kupon)
             }
         }
         if (is_array($_SESSION['Waehrungen'])) {
-            foreach ($_SESSION['Waehrungen'] as $Waehrung) {
-                $oWKPosition->cGesamtpreisLocalized[0][$Waehrung->cName] = gibPreisStringLocalized(
+            foreach (Session::Currencies() as $currency) {
+                $currencyName = $currency->getName();
+                $oWKPosition->cGesamtpreisLocalized[0][$currencyName] = gibPreisStringLocalized(
                     berechneBrutto($oWKPosition->fPreis * $oWKPosition->nAnzahl, gibUst($oWKPosition->kSteuerklasse)),
-                    $Waehrung
+                    $currency
                 );
-                $oWKPosition->cGesamtpreisLocalized[1][$Waehrung->cName] = gibPreisStringLocalized(
+                $oWKPosition->cGesamtpreisLocalized[1][$currencyName] = gibPreisStringLocalized(
                     $oWKPosition->fPreis * $oWKPosition->nAnzahl,
-                    $Waehrung
+                    $currency
                 );
-                $oWKPosition->cEinzelpreisLocalized[0][$Waehrung->cName] = gibPreisStringLocalized(
+                $oWKPosition->cEinzelpreisLocalized[0][$currencyName] = gibPreisStringLocalized(
                     berechneBrutto($oWKPosition->fPreis, gibUst($oWKPosition->kSteuerklasse)),
-                    $Waehrung
+                    $currency
                 );
-                $oWKPosition->cEinzelpreisLocalized[1][$Waehrung->cName] = gibPreisStringLocalized(
+                $oWKPosition->cEinzelpreisLocalized[1][$currencyName] = gibPreisStringLocalized(
                     $oWKPosition->fPreis,
-                    $Waehrung
+                    $currency
                 );
             }
         }
@@ -6143,11 +6144,15 @@ function validToken()
 function convertCurrency($price, $iso = null, $id = null, $useRounding = true, $nGenauigkeit = 2)
 {
     if (!isset($_SESSION['Waehrungen']) || !is_array($_SESSION['Waehrungen'])) {
-        $_SESSION['Waehrungen'] = Shop::DB()->query("SELECT * FROM twaehrung", 2);
+        $_SESSION['Waehrungen'] = [];
+        $allCurrencies          = Shop::DB()->selectAll('twaehrung', [], [], 'kWaehrung');
+        foreach ($allCurrencies as $currency) {
+            $_SESSION['Waehrungen'][] = new Currency($currency->kWaehrung);
+        }
     }
-    foreach ($_SESSION['Waehrungen'] as $waehrung) {
-        if (($iso !== null && $waehrung->cISO === $iso) || ($id !== null && (int)$waehrung->kWaehrung === (int)$id)) {
-            $newprice = $price * $waehrung->fFaktor;
+    foreach (Session::Currencies() as $currency) {
+        if (($iso !== null && $currency->getCode() === $iso) || ($id !== null && $currency->getID() === (int)$id)) {
+            $newprice = $price * $currency->getConversionFactor();
 
             return $useRounding ? round($newprice, $nGenauigkeit) : $newprice;
         }

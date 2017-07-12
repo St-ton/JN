@@ -671,9 +671,8 @@ class LinkHelper
      */
     public function checkNoIndex()
     {
-        global $NaviFilter;
-
-        $bNoIndex = false;
+        $NaviFilter = Shop::getNaviFilter();
+        $bNoIndex   = false;
         switch (basename($_SERVER['SCRIPT_NAME'])) {
             case 'wartung.php':
             case 'navi.php':
@@ -689,12 +688,13 @@ class LinkHelper
             default:
                 break;
         }
-        if ($NaviFilter->hasSearch()) {
+        if ($NaviFilter !== null && $NaviFilter->hasSearch()) {
             $bNoIndex = true;
         }
         if (!$bNoIndex) {
             $shopsetting = Shopsetting::getInstance();
-            $bNoIndex    = $NaviFilter->hasAttributeValue()
+            $bNoIndex    = $NaviFilter !== null
+                && $NaviFilter->hasAttributeValue()
                 && $NaviFilter->getAttributeValue()->getValue() > 0
                 && isset($shopsetting['global']['global_merkmalwert_url_indexierung'])
                 && $shopsetting['global']['global_merkmalwert_url_indexierung'] === 'N';
@@ -1040,7 +1040,7 @@ Session::CustomerGroup()->getID() . ";')",
                 $localized = isset($index[$language])
                     ? $index[$language]
                     : null;
-                $customerGroupID = isset($_SESSION['Kundengruppe']->kKundengruppe)
+                $customerGroupID = isset($_SESSION['Kundengruppe'])
                     ? Session::CustomerGroup()->getID()
                     : 0;
                 if ($full === true) {
@@ -1048,6 +1048,7 @@ Session::CustomerGroup()->getID() . ";')",
                         if (!is_array($localized)) {
                             return Shop::getURL(true) . '/' . $id;
                         }
+
                         return empty($localized[$customerGroupID]->cURLFullSSL)
                             ? $localized[0]->cURLFullSSL
                             : $localized[$customerGroupID]->cURLFullSSL;
@@ -1055,6 +1056,7 @@ Session::CustomerGroup()->getID() . ";')",
                     if (!is_array($localized)) {
                         return Shop::getURL() . '/' . $id;
                     }
+
                     return empty($localized[$customerGroupID]->cURLFull)
                         ? $localized[0]->cURLFull
                         : $localized[$customerGroupID]->cURLFull;

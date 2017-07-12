@@ -40,7 +40,7 @@ class WarenkorbHelper
                     }
                 }
             }
-            $amount      = $amountItem * $info->currency->fFaktor;
+            $amount      = $amountItem * $info->currency->getConversionFactor();
             $amountGross = $amount * ((100 + gibUst($oPosition->kSteuerklasse)) / 100);
 
             switch ($oPosition->nPosTyp) {

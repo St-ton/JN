@@ -1190,7 +1190,7 @@ class Exportformat
                 );
                 $Artikel->fUst                  = gibUst($Artikel->kSteuerklasse);
                 $Artikel->Preise->fVKBrutto     = berechneBrutto(
-                    $Artikel->Preise->fVKNetto * $this->currency->fFaktor,
+                    $Artikel->Preise->fVKNetto * $this->currency->getConversionFactor(),
                     $Artikel->fUst
                 );
                 $Artikel->Preise->fVKNetto      = round($Artikel->Preise->fVKNetto, 2);

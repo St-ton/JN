@@ -70,6 +70,6 @@ trait MagicCompatibilityTrait
      */
     public function __isset($name)
     {
-        return property_exists($this, $name);
+        return property_exists($this, $name) || self::getMapping($name) !== null;
     }
 }

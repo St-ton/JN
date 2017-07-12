@@ -244,9 +244,7 @@ class Navigationsfilter
         $this->languageID      = $currentLanguageID === null
             ? Shop::getLanguage()
             : (int)$currentLanguageID;
-        $this->customerGroupID = isset($_SESSION['Kundengruppe']->kKundengruppe)
-            ? (int)$_SESSION['Kundengruppe']->kKundengruppe
-            : (int)Shop::DB()->select('tkundengruppe', 'cStandard', 'Y')->kKundengruppe;
+        $this->customerGroupID = Session::CustomerGroup()->getID();
         $this->baseURL         = Shop::getURL() . '/';
         $this->metaData        = new Metadata($this);
         executeHook(HOOK_NAVIGATIONSFILTER_CREATE, ['navifilter' => $this]);

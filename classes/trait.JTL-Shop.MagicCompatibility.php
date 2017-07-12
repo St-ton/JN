@@ -35,7 +35,6 @@ trait MagicCompatibilityTrait
         if (($mapped = self::getMapping($name)) !== null) {
             trigger_error(__CLASS__ . ': getter should be use to get ' . $name, E_USER_DEPRECATED);
             $method = 'get' . $mapped;
-            Shop::dbg($method, false, 'm', 3);
 
             return $this->$method();
         }

@@ -558,12 +558,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 $isConverted = true;
             }
             if ($bConvertCurrency && !$isConverted) {
-                if (isset($_SESSION['Waehrung'])) {
-                    $waehrung = $_SESSION['Waehrung'];
-                } else {
-                    $waehrung = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
-                }
-                $fVKPreis *= (float)$waehrung->fFaktor;
+                $fVKPreis *= Session::Currency()->getConversionFactor();
             }
             if (!$bForceNetto && !Session::CustomerGroup()->isMerchant()) {
                 $fVKPreis = berechneBrutto($fVKPreis, gibUst($this->getSteuerklasse()), 4);

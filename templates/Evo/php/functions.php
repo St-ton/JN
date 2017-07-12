@@ -384,16 +384,16 @@ function gibPreisStringLocalizedSmarty($params, &$smarty)
             if ($fVPEWert > 0) {
                 $oAufpreis->cPreisVPEWertAufpreis = gibPreisStringLocalized(
                         $fAufpreisNetto / $fVPEWert,
-                        $_SESSION['Waehrung'],
+                        Session::Currency()->getCode(),
                         1,
                         $nGenauigkeit
-                    ) . ' ' . Shop::Lang()->get('vpePer', 'global') . ' ' . $cVPEEinheit;
+                    ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
                 $oAufpreis->cPreisVPEWertInklAufpreis = gibPreisStringLocalized(
                         ($fAufpreisNetto + $fVKNetto) / $fVPEWert,
-                        $_SESSION['Waehrung'],
+                        Session::Currency()->getCode(),
                         1,
                         $nGenauigkeit
-                    ) . ' ' . Shop::Lang()->get('vpePer', 'global') . ' ' . $cVPEEinheit;
+                    ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
 
                 $oAufpreis->cAufpreisLocalized = $oAufpreis->cAufpreisLocalized . ', ' . $oAufpreis->cPreisVPEWertAufpreis;
                 $oAufpreis->cPreisInklAufpreis = $oAufpreis->cPreisInklAufpreis . ', ' . $oAufpreis->cPreisVPEWertInklAufpreis;
@@ -408,18 +408,18 @@ function gibPreisStringLocalizedSmarty($params, &$smarty)
             if ($fVPEWert > 0) {
                 $oAufpreis->cPreisVPEWertAufpreis = gibPreisStringLocalized(
                         berechneBrutto($fAufpreisNetto / $fVPEWert, $_SESSION['Steuersatz'][$kSteuerklasse]),
-                        $_SESSION['Waehrung'],
+                        Session::Currency()->getCode(),
                         1, $nGenauigkeit
-                    ) . ' ' . Shop::Lang()->get('vpePer', 'global') . ' ' . $cVPEEinheit;
+                    ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
                 $oAufpreis->cPreisVPEWertInklAufpreis = gibPreisStringLocalized(
                         berechneBrutto(
                             ($fAufpreisNetto + $fVKNetto) / $fVPEWert,
                             $_SESSION['Steuersatz'][$kSteuerklasse]
                         ),
-                        $_SESSION['Waehrung'],
+                        Session::Currency()->getCode(),
                         1,
                         $nGenauigkeit
-                    ) . ' ' . Shop::Lang()->get('vpePer', 'global') . ' ' . $cVPEEinheit;
+                    ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
 
                 $oAufpreis->cAufpreisLocalized = $oAufpreis->cAufpreisLocalized . ', ' . $oAufpreis->cPreisVPEWertAufpreis;
                 $oAufpreis->cPreisInklAufpreis = $oAufpreis->cPreisInklAufpreis . ', ' . $oAufpreis->cPreisVPEWertInklAufpreis;

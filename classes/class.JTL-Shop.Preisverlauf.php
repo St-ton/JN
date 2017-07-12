@@ -70,12 +70,7 @@ class Preisverlauf
                         AND DATE_SUB(now(), INTERVAL " . $nMonat . " MONTH) < tpreisverlauf.dDate
                     ORDER BY tpreisverlauf.dDate DESC", 2
             );
-            if (isset($_SESSION['Waehrung'])) {
-                $_currency = $_SESSION['Waehrung'];
-            }
-            if (!isset($_SESSION['Waehrung'])) {
-                $_currency = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
-            }
+            $_currency = Session::Currency();
             if (is_array($obj_arr)) {
                 $dt = new DateTime();
                 foreach ($obj_arr as &$_pv) {
@@ -83,11 +78,12 @@ class Preisverlauf
                         $dt->setTimestamp($_pv->timestamp);
                         $_pv->date   = $dt->format('d.m.');
                         $_pv->fPreis = Session::CustomerGroup()->isMerchant()
-                            ? round($_pv->fVKNetto * $_currency->fFaktor, 2)
-                            : berechneBrutto($_pv->fVKNetto * $_currency->fFaktor, $_pv->fMwst);
-                        $_pv->currency = $_currency->cISO;
+                            ? round($_pv->fVKNetto * $_currency->getConversionFactor(), 2)
+                            : berechneBrutto($_pv->fVKNetto * $_currency->getConversionFactor(), $_pv->fMwst);
+                        $_pv->currency = $_currency->getCode();
                     }
                 }
+                unset($_pv);
             }
             Shop::Cache()->set($cacheID, $obj_arr, [CACHING_GROUP_ARTICLE, CACHING_GROUP_ARTICLE . '_' . $kArtikel]);
         }

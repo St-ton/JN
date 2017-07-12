@@ -371,9 +371,7 @@ class Boxen
     {
         $kKundengruppe     = Session::CustomerGroup()->getID();
         $kBoxVorlage       = (int)$kBoxVorlage;
-        $currencyCachePart = isset($_SESSION['Waehrung']->kWaehrung)
-            ? '_cur_' . $_SESSION['Waehrung']->kWaehrung
-            : '';
+        $currencyCachePart = '_cur_' . Session::Currency()->getID();
         $kSprache          = Shop::getLanguage();
         switch ($kBoxVorlage) {
             case BOX_BESTSELLER :
@@ -844,7 +842,7 @@ class Boxen
                                     (100 + $_SESSION['Steuersatz'][$CWunschlistePos->Artikel->kSteuerklasse]) / 100)
                                 : 0;
                         }
-                        $CWunschlistePos->cPreis = gibPreisStringLocalized($fPreis, $_SESSION['Waehrung']);
+                        $CWunschlistePos->cPreis = gibPreisStringLocalized($fPreis, Session::Currency());
                     }
                     $oBox->anzeigen            = 'Y';
                     $oBox->nAnzeigen           = (int)$this->boxConfig['boxen']['boxen_wunschzettel_anzahl'];

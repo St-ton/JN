@@ -5,19 +5,19 @@
         {if isset($smarty.session.Waehrungen) && $smarty.session.Waehrungen|@count > 1}
             <li class="currency-dropdown dropdown">
                 <a href="#" class="dropdown-toggle btn btn-default btn-xs" data-toggle="dropdown">
-                    {if $smarty.session.Waehrung->cISO === 'EUR'}
-                        <i class="fa fa-eur" title="{$smarty.session.Waehrung->cName}"></i>
-                    {elseif $smarty.session.Waehrung->cISO === 'USD'}
-                        <i class="fa fa-usd" title="{$smarty.session.Waehrung->cName}"></i>
-                    {elseif $smarty.session.Waehrung->cISO === 'GBP'}
-                        <i class="fa fa-gbp" title="{$smarty.session.Waehrung->cName}"></i>
+                    {if $smarty.session.Waehrung->getCode() === 'EUR'}
+                        <i class="fa fa-eur" title="{$smarty.session.Waehrung->getName()}"></i>
+                    {elseif $smarty.session.Waehrung->getCode() === 'USD'}
+                        <i class="fa fa-usd" title="{$smarty.session.Waehrung->getName()}"></i>
+                    {elseif $smarty.session.Waehrung->getCode() === 'GBP'}
+                        <i class="fa fa-gbp" title="{$smarty.session.Waehrung->getName()}"></i>
                     {else}
-                        {$smarty.session.Waehrung->cName}
+                        {$smarty.session.Waehrung->getName()}
                     {/if} <span class="caret"></span></a>
                 <ul id="currency-dropdown" class="dropdown-menu dropdown-menu-right">
                 {foreach from=$smarty.session.Waehrungen item=oWaehrung}
                     <li>
-                        <a href="{$oWaehrung->cURL}" rel="nofollow">{$oWaehrung->cName}</a>
+                        <a href="{$oWaehrung->getURL()}" rel="nofollow">{$oWaehrung->getName()}</a>
                     </li>
                 {/foreach}
                 </ul>

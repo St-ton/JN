@@ -909,7 +909,7 @@ Session::CustomerGroup()->getID() . ";')",
         $kLink = (int)$kLink;
         if ((int)$_SESSION['kSprache'] === 0) {
             $oSprache                = gibStandardsprache();
-            $_SESSION['kSprache']    = $oSprache->kSprache;
+            $_SESSION['kSprache']    = (int)$oSprache->kSprache;
             $_SESSION['cISOSprache'] = $oSprache->cISO;
             Shop::Lang()->autoload();
         }

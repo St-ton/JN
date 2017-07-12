@@ -265,7 +265,7 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
     $Bestellung->kZahlungsart      = $_SESSION['Zahlungsart']->kZahlungsart;
     $Bestellung->kVersandart       = $_SESSION['Versandart']->kVersandart;
     $Bestellung->kSprache          = Shop::getLanguage();
-    $Bestellung->kWaehrung         = $_SESSION['Waehrung']->kWaehrung;
+    $Bestellung->kWaehrung         = Session::Currency()->getID();
     $Bestellung->fGesamtsumme      = $_SESSION['Warenkorb']->gibGesamtsummeWaren(1);
     $Bestellung->cVersandartName   = $_SESSION['Versandart']->angezeigterName[$_SESSION['cISOSprache']];
     $Bestellung->cZahlungsartName  = $_SESSION['Zahlungsart']->angezeigterName[$_SESSION['cISOSprache']];
@@ -292,7 +292,7 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
     }
     $Bestellung->cIP = isset($_SESSION['IP']->cIP) ? $_SESSION['IP']->cIP : gibIP(true);
     //#8544
-    $Bestellung->fWaehrungsFaktor = $_SESSION['Waehrung']->fFaktor;
+    $Bestellung->fWaehrungsFaktor = Session::Currency()->getConversionFactor();
 
     executeHook(HOOK_BESTELLABSCHLUSS_INC_BESTELLUNGINDB, ['oBestellung' => &$Bestellung]);
 
@@ -309,8 +309,8 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
     ) {
         $oTrustedShops                    = new TrustedShops(-1, StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
         $oTrustedShops->tsProductId       = $_SESSION['TrustedShops']->cKaeuferschutzProdukt;
-        $oTrustedShops->amount            = $_SESSION['Waehrung']->fFaktor * $_SESSION['Warenkorb']->gibGesamtsummeWaren(true);
-        $oTrustedShops->currency          = $_SESSION['Waehrung']->cISO;
+        $oTrustedShops->amount            = Session::Currency()->getConversionFactor() * $_SESSION['Warenkorb']->gibGesamtsummeWaren(true);
+        $oTrustedShops->currency          = Session::Currency()->getCode();
         $oTrustedShops->paymentType       = $_SESSION['Zahlungsart']->cTSCode;
         $oTrustedShops->buyerEmail        = $_SESSION['Kunde']->cMail;
         $oTrustedShops->shopCustomerID    = $_SESSION['Kunde']->kKunde;
@@ -1117,7 +1117,7 @@ function fakeBestellung()
     $bestellung->kZahlungsart     = $_SESSION['Zahlungsart']->kZahlungsart;
     $bestellung->kVersandart      = $_SESSION['Versandart']->kVersandart;
     $bestellung->kSprache         = Shop::getLanguage();
-    $bestellung->kWaehrung        = $_SESSION['Waehrung']->kWaehrung;
+    $bestellung->kWaehrung        = Session::Currency()->getID();
     $bestellung->fGesamtsumme     = $_SESSION['Warenkorb']->gibGesamtsummeWaren(1);
     $bestellung->fWarensumme      = $bestellung->fGesamtsumme;
     $bestellung->cVersandartName  = $_SESSION['Versandart']->angezeigterName[$_SESSION['cISOSprache']];
@@ -1129,9 +1129,9 @@ function fakeBestellung()
     $bestellung->dErstellt        = 'now()';
     $bestellung->Zahlungsart      = $_SESSION['Zahlungsart'];
     $bestellung->Positionen       = [];
-    $bestellung->Waehrung         = $_SESSION['Waehrung'];
-    $bestellung->kWaehrung        = $_SESSION['Waehrung']->kWaehrung;
-    $bestellung->fWaehrungsFaktor = $_SESSION['Waehrung']->fFaktor;
+    $bestellung->Waehrung         = $_SESSION['Waehrung']; // @todo - check if this matches the new Currency class
+    $bestellung->kWaehrung        = Session::Currency()->getID();
+    $bestellung->fWaehrungsFaktor = Session::Currency()->getConversionFactor();
     if ($bestellung->oRechnungsadresse === null) {
         $bestellung->oRechnungsadresse = new stdClass();
     }

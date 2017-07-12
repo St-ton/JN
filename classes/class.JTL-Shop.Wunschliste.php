@@ -326,7 +326,7 @@ class Wunschliste
                                 100);
                     }
 
-                    $oWunschlistePosSuche_arr[$i]->cPreis = gibPreisStringLocalized($fPreis, $_SESSION['Waehrung']);
+                    $oWunschlistePosSuche_arr[$i]->cPreis = gibPreisStringLocalized($fPreis, Session::Currency());
                 }
             }
 

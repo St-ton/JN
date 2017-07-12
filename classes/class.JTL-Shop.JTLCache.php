@@ -951,10 +951,7 @@ class JTLCache
         }
         //add currency ID
         if ($currencyID === true) {
-            $baseID .= '_curid';
-            $baseID .= isset($_SESSION['Waehrung']->kWaehrung)
-                ? $_SESSION['Waehrung']->kWaehrung
-                : '0';
+            $baseID .= '_curid' . Session::Currency()->getID();
         } elseif (is_numeric($currencyID)) {
             $baseID .= '_curid' . (int)$currencyID;
         }

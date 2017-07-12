@@ -198,11 +198,11 @@ class WarenkorbHelper
     }
 
     /**
-     * @return object
+     * @return Currency
      */
     public function getCurrency()
     {
-        return (is_object($_SESSION['Waehrung']) && $_SESSION['Waehrung']->kWaehrung) ? $_SESSION['Waehrung'] : gibStandardWaehrung();
+        return Session::Currency();
     }
 
     /**
@@ -210,7 +210,7 @@ class WarenkorbHelper
      */
     public function getCurrencyISO()
     {
-        return $this->getCurrency()->cISO;
+        return $this->getCurrency()->getCode();
     }
 
     /**

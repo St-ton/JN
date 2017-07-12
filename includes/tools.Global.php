@@ -352,21 +352,18 @@ function gibPreisString($preis)
  */
 function gibPreisStringLocalized($preis, $waehrung = 0, $html = 1, $nNachkommastellen = 2)
 {
-    if (!$waehrung && isset($_SESSION['Waehrung'])) {
-        $waehrung = $_SESSION['Waehrung'];
-    }
-    if (!isset($waehrung->kWaehrung) || !$waehrung->kWaehrung) {
-        $waehrung = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
+    if (!$waehrung) {
+        $waehrung = Session::Currency();
     }
     $localized    = number_format(
-        $preis * $waehrung->fFaktor,
+        $preis * $waehrung->getConversionFactor(),
         $nNachkommastellen,
-        $waehrung->cTrennzeichenCent,
-        $waehrung->cTrennzeichenTausend
+        $waehrung->getDecimalSeparator(),
+        $waehrung->getThousandsSeparator()
     );
-    $waherungname = (!$html) ? $waehrung->cName : $waehrung->cNameHTML;
+    $waherungname = $html ? $waehrung->getHtmlEntity() : $waehrung->getName();
 
-    return ($waehrung->cVorBetrag === 'Y')
+    return $waehrung->getForcePlacementBeforeNumber()
         ? ($waherungname . ' ' . $localized)
         : ($localized . ' ' . $waherungname);
 }
@@ -1695,16 +1692,9 @@ function checkSetPercentCouponWKPos($oWKPosition, $Kupon)
                     OR cKunden = '-1' {$Kunden_qry})
                 AND kKupon = " . (int)$Kupon->kKupon, 1
     );
-    $waehrung    = isset($_SESSION['Waehrung']) ? $_SESSION['Waehrung'] : null;
-    if ($waehrung === null || !isset($waehrung->kWaehrung)) {
-        $waehrung = $this->Waehrung;
-    }
-    if ($waehrung === null || !isset($waehrung->kWaehrung)) {
-        $waehrung = Shop::DB()->query("SELECT * FROM twaehrung WHERE cStandard = 'Y'", 1);
-    }
     if (isset($kupons_mgl->kKupon) && $kupons_mgl->kKupon > 0 && $kupons_mgl->cWertTyp === 'prozent') {
         $wkPos->fPreis = $oWKPosition->fPreis *
-            $waehrung->fFaktor *
+            Session::Currency()->getConversionFactor() *
             $oWKPosition->nAnzahl *
             ((100 + gibUst($oWKPosition->kSteuerklasse)) / 100);
         $wkPos->cName  = $oWKPosition->cName;
@@ -2348,12 +2338,14 @@ function checkeSpracheWaehrung($lang = '')
 
     $waehrung = verifyGPDataString('curr');
     if ($waehrung) {
-        $Waehrungen = Shop::DB()->query("SELECT * FROM twaehrung", 2);
+        $Waehrungen = Shop::DB()->query("SELECT cISO FROM twaehrung", 2);
         foreach ($Waehrungen as $Waehrung) {
             if ($Waehrung->cISO === $waehrung) {
                 setFsession($Waehrung->kWaehrung, 0, 0);
-                memberCopy($Waehrung, $_SESSION['Waehrung']);
-                $_SESSION['cWaehrungName'] = $Waehrung->cName;
+                $currency = new Currency($Waehrung->kWaehrung);
+
+                $_SESSION['Waehrung']      = $currency;
+                $_SESSION['cWaehrungName'] = $currency->getName();
 
                 if (isset($_SESSION['Wunschliste'])) {
                     $_SESSION['Wunschliste']->umgebungsWechsel();
@@ -2513,11 +2505,10 @@ function getFsession()
             $_SESSION['Usersortierung'] = $fsess->nUserSortierung;
         }
         if ($fsess->kWaehrung) {
-            $Waehrung = Shop::DB()->select('twaehrung', 'kWaehrung', $fsess->kWaehrung);
-            if (!empty($Waehrung->kWaehrung)) {
-                $_SESSION['Waehrung']      = $Waehrung;
-                $_SESSION['cWaehrungName'] = $Waehrung->cName;
-            }
+            $currency = new Currency($fsess->kWaehrung);
+
+            $_SESSION['Waehrung']      = $currency;
+            $_SESSION['cWaehrungName'] = $currency->getName();
         }
     }
     if (time() % 10 === 0) {
@@ -2607,12 +2598,7 @@ function gibStandardsprache($bShop = true)
  */
 function gibStandardWaehrung($bISO = false)
 {
-    if (isset($_SESSION['Waehrung']) && $_SESSION['Waehrung']->kWaehrung > 0) {
-        return $bISO === true ? $_SESSION['Waehrung']->cISO : $_SESSION['Waehrung']->kWaehrung;
-    }
-    $oWaehrung = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
-
-    return ($bISO === true) ? $oWaehrung->cISO : $oWaehrung->kWaehrung;
+    return $bISO === true ? Session::Currency()->getCode() : Session::Currency()->getID();
 }
 
 /**
@@ -2736,6 +2722,7 @@ function gibMoeglicheVerpackungen($kKundengruppe)
     );
     // Array bearbeiten
     if ($oVerpackung_arr !== false && count($oVerpackung_arr) > 0) {
+        $currencyCode = Session::Currency()->getID();
         foreach ($oVerpackung_arr as $i => $oVerpackung) {
             $oVerpackung_arr[$i]->nKostenfrei = 0;
             if ($fSummeWarenkorb >= $oVerpackung->fKostenfrei &&
@@ -2746,7 +2733,7 @@ function gibMoeglicheVerpackungen($kKundengruppe)
             }
             $oVerpackung_arr[$i]->fBruttoLocalized = gibPreisStringLocalized(
                 $oVerpackung_arr[$i]->fBrutto,
-                $_SESSION['Waehrung']->kWaehrung
+                $currencyCode
             );
         }
     } else {
@@ -3775,23 +3762,21 @@ function baueVersandkostenfreiLaenderString($oVersandart, $fWarenkorbSumme = 0.0
 }
 
 /**
- * @param float      $preis
- * @param int|object $waehrung
- * @param int        $html
+ * @param float        $preis
+ * @param int|Currency $waehrung
+ * @param int          $html
  * @return string
  */
 function gibPreisLocalizedOhneFaktor($preis, $waehrung = 0, $html = 1)
 {
-    if (!$waehrung && isset($_SESSION['Waehrung'])) {
-        $waehrung = $_SESSION['Waehrung'];
+    $currency     = !$waehrung ? Session::Currency() : $waehrung;
+    if (get_class($currency) === 'stdClass') {
+        $currency = new Currency($currency->kWaehrung);
     }
-    if (!isset($waehrung->kWaehrung)) {
-        $waehrung = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
-    }
-    $localized    = number_format($preis, 2, $waehrung->cTrennzeichenCent, $waehrung->cTrennzeichenTausend);
-    $waherungname = (!$html) ? $waehrung->cName : $waehrung->cNameHTML;
+    $localized    = number_format($preis, 2, $currency->getDecimalSeparator(), $currency->getThousandsSeparator());
+    $waherungname = $html ? $currency->getHtmlEntity() : $currency->getName();
 
-    return $waehrung->cVorBetrag === 'Y'
+    return $currency->getForcePlacementBeforeNumber()
         ? $waherungname . ' ' . $localized
         : $localized . ' ' . $waherungname;
 }
@@ -4475,12 +4460,12 @@ function setzeSpracheUndWaehrungLink()
             $AktuellerArtikel->baueArtikelSprachURL(false);
         }
         foreach ($_SESSION['Waehrungen'] as $i => $oWaehrung) {
-            if (isset($AktuellerArtikel->kArtikel) &&
-                $AktuellerArtikel->kArtikel > 0 &&
-                isset($_SESSION['kSprache'], $AktuellerArtikel->cSprachURL_arr[$_SESSION['cISOSprache']])
+            if (isset($AktuellerArtikel->kArtikel)
+                && $AktuellerArtikel->kArtikel > 0
+                && isset($_SESSION['kSprache'], $AktuellerArtikel->cSprachURL_arr[$_SESSION['cISOSprache']])
             ) {
-                $_SESSION['Waehrungen'][$i]->cURL = $AktuellerArtikel->cSprachURL_arr[$_SESSION['cISOSprache']] .
-                    '?curr=' . $oWaehrung->cISO;
+                $_SESSION['Waehrungen'][$i]->setURL($AktuellerArtikel->cSprachURL_arr[$_SESSION['cISOSprache']] .
+                    '?curr=' . $oWaehrung->getCode());
             } elseif ($AktuelleSeite === 'WARENKORB'
                 || $AktuelleSeite === 'KONTAKT'
                 || $AktuelleSeite === 'REGISTRIEREN'
@@ -4541,24 +4526,24 @@ function setzeSpracheUndWaehrungLink()
                     $url = $helper->getStaticRoute($id, false, false);
                     //check if there is a SEO link for the given file
                     if ($url === $id) { //no SEO link - fall back to php file with GET param
-                        $url = $shopURL . $id . '?lang=' . $_SESSION['cISOSprache'] . '&curr=' . $oWaehrung->cISO;
+                        $url = $shopURL . $id . '?lang=' . $_SESSION['cISOSprache'] . '&curr=' . $oWaehrung->getCode();
                     } else { //there is a SEO link - make it a full URL
-                        $url = $helper->getStaticRoute($id, true, false) . '?curr=' . $oWaehrung->cISO;
+                        $url = $helper->getStaticRoute($id, true, false) . '?curr=' . $oWaehrung->getCode();
                     }
-                    $_SESSION['Waehrungen'][$i]->cURL = $url;
+                    $_SESSION['Waehrungen'][$i]->setURL($url);
                 }
             } elseif ($kLink > 0) {
-                $_SESSION['Waehrungen'][$i]->cURL = 'navi.php?s=' . $kLink .
-                    '&lang=' . $_SESSION['cISOSprache'] . '&amp;curr=' . $oWaehrung->cISO;
+                $_SESSION['Waehrungen'][$i]->setURL('navi.php?s=' . $kLink .
+                    '&lang=' . $_SESSION['cISOSprache'] . '&amp;curr=' . $oWaehrung->getCode());
             } else {
-                $_SESSION['Waehrungen'][$i]->cURL = gibNaviURL(
+                $_SESSION['Waehrungen'][$i]->setURL(gibNaviURL(
                         $NaviFilter,
                         true,
                         $oZusatzFilter,
                         Shop::getLanguage()
-                    ) . '?curr=' . $oWaehrung->cISO;
+                    ) . '?curr=' . $oWaehrung->getCode());
             }
-            $_SESSION['Waehrungen'][$i]->cURLFull = $shopURL . $_SESSION['Waehrungen'][$i]->cURL;
+            $_SESSION['Waehrungen'][$i]->setURLFull($shopURL . $_SESSION['Waehrungen'][$i]->getURL());
         }
     }
     executeHook(HOOK_TOOLSGLOBAL_INC_SETZESPRACHEUNDWAEHRUNG_WAEHRUNG, [

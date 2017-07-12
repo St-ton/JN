@@ -189,8 +189,12 @@ class Session
             $_SESSION['oKategorie_arr']                   = [];
             $_SESSION['kKategorieVonUnterkategorien_arr'] = [];
             $_SESSION['ks']                               = [];
-            $_SESSION['Waehrungen']                       = Shop::DB()->query("SELECT * FROM twaehrung", 2);
+            $_SESSION['Waehrungen']                       = [];
             $_SESSION['Sprachen']                         = Sprache::getInstance(false)->gibInstallierteSprachen();
+            $allCurrencies = Shop::DB()->selectAll('twaehrung', [], [], 'kWaehrung');
+            foreach ($allCurrencies as $currency) {
+                $_SESSION['Waehrungen'][] = new Currency($currency->kWaehrung);
+            }
             if (!isset($_SESSION['jtl_token'])) {
                 $_SESSION['jtl_token'] = generateCSRFToken();
             }
@@ -199,11 +203,6 @@ class Session
 
                 return $lang;
             }, $_SESSION['Sprachen']);
-            array_map(function ($currency) {
-                $currency->kWaehrung = (int)$currency->kWaehrung;
-
-                return $currency;
-            }, $_SESSION['Waehrungen']);
             // Sprache anhand der Browsereinstellung ermitteln
             $cLangDefault = '';
             $cAllowed_arr = [];
@@ -230,21 +229,23 @@ class Session
                 }
             }
             if (!isset($_SESSION['Waehrung'])) {
-                foreach ($_SESSION['Waehrungen'] as $Waehrung) {
-                    if ($Waehrung->cStandard === 'Y') {
-                        memberCopy($Waehrung, $_SESSION['Waehrung']);
-                        $_SESSION['cWaehrungName'] = $Waehrung->cName;
+                foreach ($_SESSION['Waehrungen'] as $currency) {
+                    /** @var $currency Currency */
+                    if ($currency->isDefault()) {
+                        $_SESSION['Waehrung']      = $currency;
+                        $_SESSION['cWaehrungName'] = $currency->getName();
                     }
                 }
             } else {
-                foreach ($_SESSION['Waehrungen'] as $Waehrung) {
-                    if ($Waehrung->cISO === $_SESSION['Waehrung']->cISO) {
-                        memberCopy($Waehrung, $_SESSION['Waehrung']);
-                        $_SESSION['cWaehrungName'] = $Waehrung->cName;
+                foreach ($_SESSION['Waehrungen'] as $currency) {
+                    /** @var $currency Currency */
+                    if ($currency->getCode() === $_SESSION['Waehrung']->getCode()) {
+                        $_SESSION['Waehrung']      = $currency;
+                        $_SESSION['cWaehrungName'] = $currency->getName();
                     }
                 }
             }
-            //EXPERIMENTAL_MULTILANG_SHOP
+            // EXPERIMENTAL_MULTILANG_SHOP
             foreach ($_SESSION['Sprachen'] as $Sprache) {
                 if (defined('URL_SHOP_' . strtoupper($Sprache->cISO))) {
                     $shopLangURL = constant('URL_SHOP_' . strtoupper($Sprache->cISO));
@@ -256,7 +257,7 @@ class Session
                     }
                 }
             }
-            //EXPERIMENTAL_MULTILANG_SHOP END
+            // EXPERIMENTAL_MULTILANG_SHOP END
 
             if (!isset($_SESSION['Kunde']->kKunde, $_SESSION['Kundengruppe']->kKundengruppe)
                 || get_class($_SESSION['Kundengruppe']) === 'stdClass'
@@ -541,15 +542,17 @@ class Session
     }
 
     /**
-     * @return stdClass
+     * @return Currency
      */
-    public function Currency()
+    public static function Currency()
     {
-        return $_SESSION['Waehrung'];
+        return isset($_SESSION['Waehrung'])
+            ? $_SESSION['Waehrung']
+            : (new Currency())->getDefault();
     }
 
     /**
-     * @return mixed
+     * @return Currency[]
      */
     public function Currencies()
     {

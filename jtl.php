@@ -102,7 +102,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
         // Sprache und Waehrung beibehalten
         $kSprache    = Shop::getLanguage();
         $cISOSprache = Shop::getLanguage(true);
-        $Waehrung    = $_SESSION['Waehrung'];
+        $Waehrung    = Session::Currency();
         // Kategoriecache loeschen
         unset(
             $_SESSION['kKategorieVonUnterkategorien_arr'],

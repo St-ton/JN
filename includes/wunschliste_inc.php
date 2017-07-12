@@ -382,7 +382,7 @@ function bauecPreis($oWunschliste)
                         )
                     : 0;
             }
-            $oWunschlistePos->cPreis = gibPreisStringLocalized($fPreis, $_SESSION['Waehrung']);
+            $oWunschlistePos->cPreis = gibPreisStringLocalized($fPreis, Session::Currency());
         }
     }
 

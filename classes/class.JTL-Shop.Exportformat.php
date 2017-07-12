@@ -693,7 +693,7 @@ class Exportformat
                      ->setConfigDir($this->smarty->getTemplateDir($this->smarty->context) . 'lang/')
                      ->registerResource('db', new SmartyResourceNiceDB('export'))
                      ->assign('URL_SHOP', Shop::getURL())
-                     ->assign('Waehrung', $_SESSION['Waehrung'])
+                     ->assign('Waehrung', Session::Currency())
                      ->assign('Einstellungen', $this->getConfig());
 
         return $this;
@@ -708,7 +708,7 @@ class Exportformat
             $this->oldSession               = new stdClass();
             $this->oldSession->Kundengruppe = $_SESSION['Kundengruppe'];
             $this->oldSession->kSprache     = $_SESSION['kSprache'];
-            $this->oldSession->Waehrung     = $_SESSION['Waehrung'];
+            $this->oldSession->Waehrung     = Session::Currency();
         } else {
             $_SESSION['Kundengruppe'] = new stdClass();
         }

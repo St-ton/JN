@@ -1930,12 +1930,9 @@ class Artikel
         $this->nVariationsAufpreisVorhanden = 0;
         $kSprache                           = (int)$kSprache;
         $kKundengruppe                      = (int)$kKundengruppe;
-        $waehrung                           = isset($_SESSION['Waehrung']) ? $_SESSION['Waehrung'] : null;
+        $currencyFactor                     = Session::Currency()->getConversionFactor();
         $conf                               = Shop::getSettings([CONF_GLOBAL, CONF_ARTIKELDETAILS]);
         $shopURL                            = Shop::getURL() . '/';
-        if (!isset($waehrung->kWaehrung) || !$waehrung->kWaehrung) {
-            $waehrung = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
-        }
         if ($this->kArtikel > 0) {
             // Nicht Standardsprache?
             $oSQLEigenschaft              = new stdClass();
@@ -2316,33 +2313,33 @@ class Artikel
                                 $this->Variationen[$nZaehler]->Werte[$i]->fAufpreisNetto / $this->Variationen[$nZaehler]->Werte[$i]->fVPEWert,
                                 $_SESSION['Steuersatz'][$this->kSteuerklasse]
                             ),
-                            $_SESSION['Waehrung'],
+                            Session::Currency(),
                             1,
                             $nGenauigkeit
-                        ) . ' ' . Shop::Lang()->get('vpePer', 'global') . ' ' . $this->cVPEEinheit;
+                        ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $this->cVPEEinheit;
 
                         $this->Variationen[$nZaehler]->Werte[$i]->cPreisVPEWertAufpreis[1] = gibPreisStringLocalized(
                             $this->Variationen[$nZaehler]->Werte[$i]->fAufpreisNetto / $this->Variationen[$nZaehler]->Werte[$i]->fVPEWert,
-                            $_SESSION['Waehrung'],
+                            Session::Currency(),
                             1,
                             $nGenauigkeit
-                        ) . ' ' . Shop::Lang()->get('vpePer', 'global') . ' ' . $this->cVPEEinheit;
+                        ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $this->cVPEEinheit;
 
                         $this->Variationen[$nZaehler]->Werte[$i]->cPreisVPEWertInklAufpreis[0] = gibPreisStringLocalized(
                             berechneBrutto(
                                 ($this->Variationen[$nZaehler]->Werte[$i]->fAufpreisNetto + $this->Preise->fVKNetto) / $this->Variationen[$nZaehler]->Werte[$i]->fVPEWert,
                                 $_SESSION['Steuersatz'][$this->kSteuerklasse]
                             ),
-                            $_SESSION['Waehrung'],
+                            Session::Currency(),
                             1,
                             $nGenauigkeit
-                        ) . ' ' . Shop::Lang()->get('vpePer', 'global') . ' ' . $this->cVPEEinheit;
+                        ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $this->cVPEEinheit;
                         $this->Variationen[$nZaehler]->Werte[$i]->cPreisVPEWertInklAufpreis[1] = gibPreisStringLocalized(
                             ($this->Variationen[$nZaehler]->Werte[$i]->fAufpreisNetto + $this->Preise->fVKNetto) / $this->Variationen[$nZaehler]->Werte[$i]->fVPEWert,
-                            $_SESSION['Waehrung'],
+                            Session::Currency(),
                             1,
                             $nGenauigkeit
-                        ) . ' ' . Shop::Lang()->get('vpePer', 'global') . ' ' . $this->cVPEEinheit;
+                        ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $this->cVPEEinheit;
                     }
 
                     if (isset($this->Variationen[$nZaehler]->Werte[$i]->fAufpreisNetto) && $this->Variationen[$nZaehler]->Werte[$i]->fAufpreisNetto != 0) {
@@ -2375,10 +2372,10 @@ class Artikel
                         }
 
                         $this->Variationen[$nZaehler]->Werte[$i]->fAufpreis[0] = berechneBrutto(
-                            $this->Variationen[$nZaehler]->Werte[$i]->fAufpreisNetto * $waehrung->fFaktor,
+                            $this->Variationen[$nZaehler]->Werte[$i]->fAufpreisNetto * $currencyFactor,
                             $_SESSION['Steuersatz'][$this->kSteuerklasse]
                         );
-                        $this->Variationen[$nZaehler]->Werte[$i]->fAufpreis[1] = $this->Variationen[$nZaehler]->Werte[$i]->fAufpreisNetto * $waehrung->fFaktor;
+                        $this->Variationen[$nZaehler]->Werte[$i]->fAufpreis[1] = $this->Variationen[$nZaehler]->Werte[$i]->fAufpreisNetto * $currencyFactor;
 
                         if ($this->Variationen[$nZaehler]->Werte[$i]->fAufpreisNetto > 0) {
                             $this->nVariationsAufpreisVorhanden = 1;
@@ -2890,25 +2887,26 @@ class Artikel
                                     $oVariationKombiKinderAssoc_arr[$i]->Preise->fVKNetto / $oVariationKombiKinderAssoc_arr[$i]->fVPEWert,
                                     $_SESSION['Steuersatz'][$this->kSteuerklasse]
                                 ),
-                                $_SESSION['Waehrung'],
+                                Session::Currency(),
                                 1,
                                 $nGenauigkeit
-                            ) . ' ' . Shop::Lang()->get('vpePer', 'global') . ' ' . $oVariationKombiKinderAssoc_arr[$i]->cVPEEinheit;
+                            ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $oVariationKombiKinderAssoc_arr[$i]->cVPEEinheit;
                             $oVariationKombiKinderAssoc_arr[$i]->Preise->cPreisVPEWertInklAufpreis[1] = gibPreisStringLocalized(
                                 $oVariationKombiKinderAssoc_arr[$i]->Preise->fVKNetto / $oVariationKombiKinderAssoc_arr[$i]->fVPEWert,
-                                $_SESSION['Waehrung'],
+                                Session::Currency(),
                                 1,
                                 $nGenauigkeit
-                            ) . ' ' . Shop::Lang()->get('vpePer', 'global') . ' ' . $oVariationKombiKinderAssoc_arr[$i]->cVPEEinheit;
+                            ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $oVariationKombiKinderAssoc_arr[$i]->cVPEEinheit;
                         }
                         // Lieferbar?
-                        if ($oVariationKombiKinderAssoc_arr[$i]->cLagerBeachten === 'Y' && $oVariationKombiKinderAssoc_arr[$i]->cLagerKleinerNull === 'N' &&
-                            $oVariationKombiKinderAssoc_arr[$i]->fLagerbestand <= 0
+                        if ($oVariationKombiKinderAssoc_arr[$i]->cLagerBeachten === 'Y'
+                            && $oVariationKombiKinderAssoc_arr[$i]->cLagerKleinerNull === 'N'
+                            && $oVariationKombiKinderAssoc_arr[$i]->fLagerbestand <= 0
                         ) {
                             $oVariationKombiKinderAssoc_arr[$i]->nNichtLieferbar = 1;
                         }
                     }
-                    $this->sortVarCombinationArray($oVariationKombiKinderAssoc_arr, array('nSort' => SORT_ASC, 'cName' => SORT_ASC));
+                    $this->sortVarCombinationArray($oVariationKombiKinderAssoc_arr, ['nSort' => SORT_ASC, 'cName' => SORT_ASC]);
                 }
             }
         }
@@ -3180,16 +3178,16 @@ class Artikel
                     }
                     $this->oVariationDetailPreisKind_arr[$oVariationKombi->kEigenschaftWert]->Preise->PreisecPreisVPEWertInklAufpreis[0] = gibPreisStringLocalized(
                         berechneBrutto($this->Preise->fVKNetto / $this->fVPEWert, $_SESSION['Steuersatz'][$this->kSteuerklasse]),
-                        $_SESSION['Waehrung'],
+                        Session::Currency(),
                         1,
                         $nGenauigkeit
-                    ) . ' ' . Shop::Lang()->get('vpePer', 'global') . ' ' . $this->cVPEEinheit;
+                    ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $this->cVPEEinheit;
                     $this->oVariationDetailPreisKind_arr[$oVariationKombi->kEigenschaftWert]->Preise->PreisecPreisVPEWertInklAufpreis[1] = gibPreisStringLocalized(
                         $this->Preise->fVKNetto / $this->fVPEWert,
-                        $_SESSION['Waehrung'],
+                        Session::Currency(),
                         1,
                         $nGenauigkeit
-                    ) . ' ' . Shop::Lang()->get('vpePer', 'global') . ' ' . $this->cVPEEinheit;
+                    ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $this->cVPEEinheit;
                 }
             }
         }
@@ -3260,13 +3258,13 @@ class Artikel
                     if ($oArtikelTMP->Preise->fVK[0] > $this->Preise->fVK[0] || $oArtikelTMP->Preise->fVK[0] < $this->Preise->fVK[0]) {
                         $this->oVariationDetailPreis_arr[$oVariationDetailPreis->kEigenschaftWert]->Preise->cAufpreisLocalized[0] = $cAufpreisVorzeichen . gibPreisStringLocalized(
                             abs($oArtikelTMP->Preise->fVK[0] - $this->Preise->fVK[0]),
-                            $_SESSION['Waehrung'],
+                            Session::Currency(),
                             1,
                             $nGenauigkeit
                         );
                         $this->oVariationDetailPreis_arr[$oVariationDetailPreis->kEigenschaftWert]->Preise->cAufpreisLocalized[1] = $cAufpreisVorzeichen . gibPreisStringLocalized(
                             abs($oArtikelTMP->Preise->fVK[1] - $this->Preise->fVK[1]),
-                            $_SESSION['Waehrung'],
+                            Session::Currency(),
                             1,
                             $nGenauigkeit
                         );
@@ -3284,13 +3282,13 @@ class Artikel
                                 $oArtikelTMP->Preise->fVKNetto / $oArtikelTMP->fVPEWert,
                                 $_SESSION['Steuersatz'][$this->kSteuerklasse]
                             ),
-                            $_SESSION['Waehrung'],
+                            Session::Currency(),
                             1,
                             $nGenauigkeit
                         ) . ' ' . Shop::Lang()->get('vpePer', 'global') . ' ' . $oArtikelTMP->cVPEEinheit;
                         $this->oVariationDetailPreis_arr[$oVariationDetailPreis->kEigenschaftWert]->Preise->PreisecPreisVPEWertInklAufpreis[1] = gibPreisStringLocalized(
                             $oArtikelTMP->Preise->fVKNetto / $oArtikelTMP->fVPEWert,
-                            $_SESSION['Waehrung'],
+                            Session::Currency(),
                             1,
                             $nGenauigkeit
                         ) . ' ' . Shop::Lang()->get('vpePer', 'global') . ' ' . $oArtikelTMP->cVPEEinheit;
@@ -4575,24 +4573,21 @@ class Artikel
             ? (int)$this->FunktionsAttribute[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT]
             : 2;
         $fPreis        = ($fPreisStaffel > 0) ? $fPreisStaffel : $this->Preise->fVKNetto;
-        $currency      = isset($_SESSION['Waehrung']) ? $_SESSION['Waehrung'] : null;
-        if (!isset($currency->kWaehrung) || !$currency->kWaehrung) {
-            $currency = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
-        }
+        $currency      = Session::Currency();
 
         $this->cLocalizedVPE[0] = gibPreisStringLocalized(
             berechneBrutto($fPreis / $this->fVPEWert, gibUst($this->kSteuerklasse), $nGenauigkeit),
             $currency,
             1,
             $nGenauigkeit
-        ) . ' ' . Shop::Lang()->get('vpePer', 'global') . ' ' . $basepriceUnit;
+        ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $basepriceUnit;
 
         $this->cLocalizedVPE[1] = gibPreisStringLocalized(
             $fPreis / $this->fVPEWert,
             $currency,
             1,
             $nGenauigkeit
-        ) . ' ' . Shop::Lang()->get('vpePer', 'global') . ' ' . $basepriceUnit;
+        ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $basepriceUnit;
 
         return $this;
     }
@@ -4620,14 +4615,11 @@ class Artikel
     public function baueStaffelgrundpreis()
     {
         $nGenauigkeit = 2;
+        $currency     = Session::Currency();
         if (isset($this->FunktionsAttribute[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT]) &&
             (int)$this->FunktionsAttribute[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT] > 0
         ) {
             $nGenauigkeit = (int)$this->FunktionsAttribute[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT];
-        }
-        $currency = isset($_SESSION['Waehrung']) ? $_SESSION['Waehrung'] : null;
-        if (!isset($currency->kWaehrung) || !$currency->kWaehrung) {
-            $currency = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
         }
 
         $basePriceUnit = ArtikelHelper::getBasePriceUnit($this, $this->Preise->fPreis1, $this->Preise->nAnzahl1);
@@ -4640,13 +4632,13 @@ class Artikel
             $currency,
             1,
             $nGenauigkeit
-        ) . ' ' . Shop::Lang()->get('vpePer', 'global') . ' ' . $basePriceUnit->cVPEEinheit;
+        ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $basePriceUnit->cVPEEinheit;
         $this->cStaffelpreisLocalizedVPE1[1] = gibPreisStringLocalized(
             $basePriceUnit->fBasePreis,
             $currency,
             1,
             $nGenauigkeit
-        ) . ' ' . Shop::Lang()->get('vpePer', 'global') . ' ' . $basePriceUnit->cVPEEinheit;
+        ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $basePriceUnit->cVPEEinheit;
         $this->fStaffelpreisVPE1[0] = berechneBrutto(
             $basePriceUnit->fBasePreis,
             gibUst($this->kSteuerklasse),
@@ -4662,13 +4654,13 @@ class Artikel
                 $nGenauigkeit
             ),
             $currency, 1, $nGenauigkeit
-        ) . ' ' . Shop::Lang()->get('vpePer', 'global') . ' ' . $basePriceUnit->cVPEEinheit;
+        ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $basePriceUnit->cVPEEinheit;
         $this->cStaffelpreisLocalizedVPE2[1] = gibPreisStringLocalized(
             $basePriceUnit->fBasePreis,
             $currency,
             1,
             $nGenauigkeit
-        ) . ' ' . Shop::Lang()->get('vpePer', 'global') . ' ' . $basePriceUnit->cVPEEinheit;
+        ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $basePriceUnit->cVPEEinheit;
         $this->fStaffelpreisVPE2[0] = berechneBrutto(
             $basePriceUnit->fBasePreis,
             gibUst($this->kSteuerklasse),
@@ -4686,13 +4678,13 @@ class Artikel
             $currency,
             1,
             $nGenauigkeit
-        ) . ' ' . Shop::Lang()->get('vpePer', 'global') . ' ' . $basePriceUnit->cVPEEinheit;
+        ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $basePriceUnit->cVPEEinheit;
         $this->cStaffelpreisLocalizedVPE3[1] = gibPreisStringLocalized(
             $basePriceUnit->fBasePreis,
             $currency,
             1,
             $nGenauigkeit
-        ) . ' ' . Shop::Lang()->get('vpePer', 'global') . ' ' . $basePriceUnit->cVPEEinheit;
+        ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $basePriceUnit->cVPEEinheit;
         $this->fStaffelpreisVPE3[0] = berechneBrutto(
             $basePriceUnit->fBasePreis,
             gibUst($this->kSteuerklasse),
@@ -4710,13 +4702,13 @@ class Artikel
             $currency,
             1,
             $nGenauigkeit
-        ) . ' ' . Shop::Lang()->get('vpePer', 'global') . ' ' . $basePriceUnit->cVPEEinheit;
+        ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $basePriceUnit->cVPEEinheit;
         $this->cStaffelpreisLocalizedVPE4[1] = gibPreisStringLocalized(
             $basePriceUnit->fBasePreis,
             $currency,
             1,
             $nGenauigkeit
-        ) . ' ' . Shop::Lang()->get('vpePer', 'global') . ' ' . $basePriceUnit->cVPEEinheit;
+        ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $basePriceUnit->cVPEEinheit;
         $this->fStaffelpreisVPE4[0] = berechneBrutto(
             $basePriceUnit->fBasePreis,
             gibUst($this->kSteuerklasse),
@@ -4733,13 +4725,13 @@ class Artikel
             ),
             $currency,
             1, $nGenauigkeit
-        ) . ' ' . Shop::Lang()->get('vpePer', 'global') . ' ' . $basePriceUnit->cVPEEinheit;
+        ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $basePriceUnit->cVPEEinheit;
         $this->cStaffelpreisLocalizedVPE5[1] = gibPreisStringLocalized(
             $basePriceUnit->fBasePreis,
             $currency,
             1,
             $nGenauigkeit
-        ) . ' ' . Shop::Lang()->get('vpePer', 'global') . ' ' . $basePriceUnit->cVPEEinheit;
+        ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $basePriceUnit->cVPEEinheit;
         $this->fStaffelpreisVPE5[0] = berechneBrutto(
             $basePriceUnit->fBasePreis,
             gibUst($this->kSteuerklasse),
@@ -4759,13 +4751,13 @@ class Artikel
                     $currency,
                     1,
                     $nGenauigkeit
-                ) . ' ' . Shop::Lang()->get('vpePer', 'global') . ' ' . $basePriceUnit->cVPEEinheit,
+                ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $basePriceUnit->cVPEEinheit,
                 gibPreisStringLocalized(
                     $basePriceUnit->fBasePreis,
                     $currency,
                     1,
                     $nGenauigkeit
-                ) . ' ' . Shop::Lang()->get('vpePer', 'global') . ' ' . $basePriceUnit->cVPEEinheit
+                ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $basePriceUnit->cVPEEinheit
             ];
             $this->cStaffelpreisLocalizedVPE_arr[] = [
                 berechneBrutto(
@@ -5817,9 +5809,9 @@ class Artikel
                         }
                     }
 
-                    $versand .= Shop::Lang()->get('noShippingcostsTo', 'global') . ' ' .
+                    $versand .= Shop::Lang()->get('noShippingcostsTo') . ' ' .
                         Shop::Lang()->get('noShippingCostsAtExtended', 'basket', '') .
-                        trim($cLaender) . ', ' . Shop::Lang()->get('else', 'global') . ' ' .
+                        trim($cLaender) . ', ' . Shop::Lang()->get('else') . ' ' .
                         Shop::Lang()->get('plus', 'basket') .
                         ' <a href="' . $_SESSION['Link_Versandseite'][$_SESSION['cISOSprache']] .
                         '" rel="nofollow" class="shipment">' .
@@ -5828,9 +5820,9 @@ class Artikel
                     $versand .= '<a href="' .
                         $_SESSION['Link_Versandseite'][$_SESSION['cISOSprache']] .
                         '" rel="nofollow" class="shipment" data-toggle="tooltip" data-placement="left" title="' .
-                        $versandfreielaender . ', ' . Shop::Lang()->get('else', 'global') . ' ' .
+                        $versandfreielaender . ', ' . Shop::Lang()->get('else') . ' ' .
                         Shop::Lang()->get('plus', 'basket') . ' ' . Shop::Lang()->get('shipping', 'basket') . '">' .
-                        Shop::Lang()->get('noShippingcostsTo', 'global') . '</a>';
+                        Shop::Lang()->get('noShippingcostsTo') . '</a>';
                 }
             } elseif (isset($_SESSION['cISOSprache'], $_SESSION['Link_Versandseite'][$_SESSION['cISOSprache']])) {
                 $versand .= Shop::Lang()->get('plus', 'basket') .

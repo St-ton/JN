@@ -50,7 +50,7 @@ class Session
             return new self($start, $sessionName);
         }
 
-        return (self::$_instance === null)
+        return self::$_instance === null
             ? new self($start, $sessionName)
             : self::$_instance;
     }
@@ -171,6 +171,10 @@ class Session
             $globalsAktualisieren = true;
             $updateLanguage       = true;
         }
+        if (!$globalsAktualisieren && isset($_SESSION['Kundengruppe']) && get_class($_SESSION['Kundengruppe']) === 'stdClass') {
+            // session upgrade from 4.05 -> 4.06 - update with class instance
+            $globalsAktualisieren = true;
+        }
         $lang    = isset($_GET['lang']) ? $_GET['lang'] : '';
         $checked = false;
         if (isset($_SESSION['kSprache'])) {
@@ -185,8 +189,12 @@ class Session
             $_SESSION['oKategorie_arr']                   = [];
             $_SESSION['kKategorieVonUnterkategorien_arr'] = [];
             $_SESSION['ks']                               = [];
-            $_SESSION['Waehrungen']                       = Shop::DB()->query("SELECT * FROM twaehrung", 2);
+            $_SESSION['Waehrungen']                       = [];
             $_SESSION['Sprachen']                         = Sprache::getInstance(false)->gibInstallierteSprachen();
+            $allCurrencies = Shop::DB()->selectAll('twaehrung', [], [], 'kWaehrung');
+            foreach ($allCurrencies as $currency) {
+                $_SESSION['Waehrungen'][] = new Currency($currency->kWaehrung);
+            }
             if (!isset($_SESSION['jtl_token'])) {
                 $_SESSION['jtl_token'] = generateCSRFToken();
             }
@@ -195,11 +203,6 @@ class Session
 
                 return $lang;
             }, $_SESSION['Sprachen']);
-            array_map(function ($currency) {
-                $currency->kWaehrung = (int)$currency->kWaehrung;
-
-                return $currency;
-            }, $_SESSION['Waehrungen']);
             // Sprache anhand der Browsereinstellung ermitteln
             $cLangDefault = '';
             $cAllowed_arr = [];
@@ -226,21 +229,23 @@ class Session
                 }
             }
             if (!isset($_SESSION['Waehrung'])) {
-                foreach ($_SESSION['Waehrungen'] as $Waehrung) {
-                    if ($Waehrung->cStandard === 'Y') {
-                        memberCopy($Waehrung, $_SESSION['Waehrung']);
-                        $_SESSION['cWaehrungName'] = $Waehrung->cName;
+                foreach ($_SESSION['Waehrungen'] as $currency) {
+                    /** @var $currency Currency */
+                    if ($currency->isDefault()) {
+                        $_SESSION['Waehrung']      = $currency;
+                        $_SESSION['cWaehrungName'] = $currency->getName();
                     }
                 }
             } else {
-                foreach ($_SESSION['Waehrungen'] as $Waehrung) {
-                    if ($Waehrung->cISO === $_SESSION['Waehrung']->cISO) {
-                        memberCopy($Waehrung, $_SESSION['Waehrung']);
-                        $_SESSION['cWaehrungName'] = $Waehrung->cName;
+                foreach ($_SESSION['Waehrungen'] as $currency) {
+                    /** @var $currency Currency */
+                    if ($currency->getCode() === $_SESSION['Waehrung']->getCode()) {
+                        $_SESSION['Waehrung']      = $currency;
+                        $_SESSION['cWaehrungName'] = $currency->getName();
                     }
                 }
             }
-            //EXPERIMENTAL_MULTILANG_SHOP
+            // EXPERIMENTAL_MULTILANG_SHOP
             foreach ($_SESSION['Sprachen'] as $Sprache) {
                 if (defined('URL_SHOP_' . strtoupper($Sprache->cISO))) {
                     $shopLangURL = constant('URL_SHOP_' . strtoupper($Sprache->cISO));
@@ -252,44 +257,25 @@ class Session
                     }
                 }
             }
-            //EXPERIMENTAL_MULTILANG_SHOP END
+            // EXPERIMENTAL_MULTILANG_SHOP END
 
-            if (!isset($_SESSION['Kunde']->kKunde)) {
-                $_SESSION['Kundengruppe']                             = Kundengruppe::getDefault();
-                $_SESSION['Kundengruppe']->darfPreiseSehen            = 1;
-                $_SESSION['Kundengruppe']->darfArtikelKategorienSehen = 1;
-                $conf                                                 = Shop::getSettings([CONF_GLOBAL]);
-                if ($_SESSION['Kundengruppe']->cStandard === 'Y' && (int)$conf['global']['global_sichtbarkeit'] === 2) {
-                    $_SESSION['Kundengruppe']->darfPreiseSehen = 0;
-                }
-                if ($_SESSION['Kundengruppe']->cStandard === 'Y' && (int)$conf['global']['global_sichtbarkeit'] === 3) {
-                    $_SESSION['Kundengruppe']->darfPreiseSehen            = 0;
-                    $_SESSION['Kundengruppe']->darfArtikelKategorienSehen = 0;
-                }
-                if (isset($_SESSION['Kundengruppe']->kKundengruppe, $_SESSION['kSprache']) &&
-                    $_SESSION['Kundengruppe']->kKundengruppe &&
-                    $_SESSION['kSprache'] > 0
-                ) {
-                    $oKundengruppeSprache = Shop::DB()->select(
-                        'tkundengruppensprache',
-                        'kKundengruppe',
-                        (int)$_SESSION['Kundengruppe']->kKundengruppe,
-                        'kSprache',
-                        (int)$_SESSION['kSprache']
-                    );
-                    if (isset($oKundengruppeSprache->cName)) {
-                        $_SESSION['Kundengruppe']->cNameLocalized = $oKundengruppeSprache->cName;
-                    }
-                }
+            if (!isset($_SESSION['Kunde']->kKunde, $_SESSION['Kundengruppe']->kKundengruppe)
+                || get_class($_SESSION['Kundengruppe']) === 'stdClass'
+            ) {
+                $_SESSION['Kundengruppe'] = (new Kundengruppe())
+                    ->setLanguageID((int)$_SESSION['kSprache'])
+                    ->loadDefaultGroup();
             } elseif ($globalsAktualisieren && $updateLanguage) {
                 // Kundensprache ändern, wenn im eingeloggten Zustand die Sprache geändert wird
                 /** @var array('Kunde' => Kunde) $_SESSION */
                 $_SESSION['Kunde']->kSprache = $_SESSION['kSprache'];
                 $_SESSION['Kunde']->updateInDB();
             }
-            $_SESSION['Kundengruppe']->Attribute = Kundengruppe::getAttributes($_SESSION['Kundengruppe']->kKundengruppe);
-            $linkHelper                          = LinkHelper::getInstance();
-            $linkGroups                          = $linkHelper->getLinkGroups();
+            if (!isset($_SESSION['Kundengruppe']->Attribute)) {
+                $_SESSION['Kundengruppe']->initAttributes();
+            }
+            $linkHelper = LinkHelper::getInstance();
+            $linkGroups = $linkHelper->getLinkGroups();
             if (TEMPLATE_COMPATIBILITY === true || Shop::Cache()->isCacheGroupActive(CACHING_GROUP_CORE) === false) {
                 $_SESSION['Linkgruppen'] = $linkGroups;
                 $manufacturerHelper      = HerstellerHelper::getInstance();
@@ -487,17 +473,12 @@ class Session
     public function setCustomer($Kunde)
     {
         /** @var array('Warenkorb' => Warenkorb) $_SESSION */
-        $Kunde->angezeigtesLand                               = ISO2land($Kunde->cLand);
-        $_SESSION['Kunde']                                    = $Kunde;
-        $_SESSION['Kundengruppe']                             = Shop::DB()->select(
-            'tkundengruppe',
-            'kKundengruppe',
-            (int)$Kunde->kKundengruppe
-        );
-        $_SESSION['Kundengruppe']->darfPreiseSehen            = 1;
-        $_SESSION['Kundengruppe']->darfArtikelKategorienSehen = 1;
-        $_SESSION['Kundengruppe']->Attribute                  =
-            Kundengruppe::getAttributes($_SESSION['Kundengruppe']->kKundengruppe);
+        $Kunde->angezeigtesLand   = ISO2land($Kunde->cLand);
+        $_SESSION['Kunde']        = $Kunde;
+        $_SESSION['Kundengruppe'] = new Kundengruppe((int)$Kunde->kKundengruppe);
+        $_SESSION['Kundengruppe']->setMayViewCategories(1)
+                                 ->setMayViewPrices(1)
+                                 ->initAttributes();
         $_SESSION['Warenkorb']->setzePositionsPreise();
         setzeSteuersaetze();
         setzeLinks();
@@ -508,17 +489,19 @@ class Session
     /**
      * @return Kunde
      */
-    public function Customer()
+    public static function Customer()
     {
         return $_SESSION['Kunde'];
     }
 
     /**
-     * @return stdClass
+     * @return Kundengruppe
      */
-    public function CustomerGroup()
+    public static function CustomerGroup()
     {
-        return $_SESSION['Kundengruppe'];
+        return isset($_SESSION['Kundengruppe'])
+            ? $_SESSION['Kundengruppe']
+            : (new Kundengruppe())->loadDefaultGroup();
     }
 
     /**
@@ -527,8 +510,8 @@ class Session
     public function Language()
     {
         $o              = Sprache::getInstance(false);
-        $o->kSprache    = $_SESSION['kSprache'];
-        $o->kSprachISO  = $_SESSION['kSprache'];
+        $o->kSprache    = (int)$_SESSION['kSprache'];
+        $o->kSprachISO  = (int)$_SESSION['kSprache'];
         $o->cISOSprache = $_SESSION['cISOSprache'];
 
         return $o;
@@ -559,15 +542,17 @@ class Session
     }
 
     /**
-     * @return stdClass
+     * @return Currency
      */
-    public function Currency()
+    public static function Currency()
     {
-        return $_SESSION['Waehrung'];
+        return isset($_SESSION['Waehrung'])
+            ? $_SESSION['Waehrung']
+            : (new Currency())->getDefault();
     }
 
     /**
-     * @return mixed
+     * @return Currency[]
      */
     public function Currencies()
     {

@@ -199,7 +199,7 @@ function pushToBasket($kArtikel, $anzahl, $oEigenschaftwerte_arr = '')
 
         $kKundengruppe = (isset($_SESSION['Kunde']->kKundengruppe) && $_SESSION['Kunde']->kKundengruppe > 0)
             ? $_SESSION['Kunde']->kKundengruppe
-            : $_SESSION['Kundengruppe']->kKundengruppe;
+            : Session::CustomerGroup()->getID();
         $oXSelling     = gibArtikelXSelling($kArtikel, $Artikel->nIstVater > 0);
 
         $smarty->assign('WarenkorbVersandkostenfreiHinweis', baueVersandkostenfreiString(
@@ -210,7 +210,7 @@ function pushToBasket($kArtikel, $anzahl, $oEigenschaftwerte_arr = '')
             )))
                ->assign('zuletztInWarenkorbGelegterArtikel', $cart->gibLetztenWKArtikel())
                ->assign('fAnzahl', $anzahl)
-               ->assign('NettoPreise', $_SESSION['Kundengruppe']->nNettoPreise)
+               ->assign('NettoPreise', Session::CustomerGroup()->getIsMerchant())
                ->assign('Einstellungen', $Einstellungen)
                ->assign('Xselling', $oXSelling)
                ->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())
@@ -391,7 +391,7 @@ function getBasketItems($nTyp)
     switch ((int)$nTyp) {
         default:
         case 0:
-            $kKundengruppe = $_SESSION['Kundengruppe']->kKundengruppe;
+            $kKundengruppe = Session::CustomerGroup()->getID();
             $nAnzahl       = $_SESSION['Warenkorb']->gibAnzahlPositionenExt([C_WARENKORBPOS_TYP_ARTIKEL]);
             $cLand         = isset($_SESSION['cLieferlandISO']) ? $_SESSION['cLieferlandISO'] : '';
             $cPLZ          = '*';
@@ -414,7 +414,7 @@ function getBasketItems($nTyp)
                    ->assign('zuletztInWarenkorbGelegterArtikel', $_SESSION['Warenkorb']->gibLetztenWKArtikel())
                    ->assign('WarenkorbGesamtgewicht', $_SESSION['Warenkorb']->getWeight())
                    ->assign('Warenkorbtext', lang_warenkorb_warenkorbEnthaeltXArtikel($_SESSION['Warenkorb']))
-                   ->assign('NettoPreise', $_SESSION['Kundengruppe']->nNettoPreise)
+                   ->assign('NettoPreise', Session::CustomerGroup()->getIsMerchant())
                    ->assign('WarenkorbVersandkostenfreiHinweis', baueVersandkostenfreiString($versandkostenfreiAb,
                        $_SESSION['Warenkorb']->gibGesamtsummeWarenExt(
                            [C_WARENKORBPOS_TYP_ARTIKEL, C_WARENKORBPOS_TYP_KUPON, C_WARENKORBPOS_TYP_NEUKUNDENKUPON],
@@ -482,7 +482,7 @@ function getArticleStockInfo($kArtikel, $kEigenschaftWert_arr)
             $oTMPArtikel->kArtikel,
             $oArtikelOptionen,
             Kundengruppe::getCurrent(),
-            $_SESSION['kSprache']
+            Shop::getLanguage()
         );
         $oTestArtikel->Lageranzeige->AmpelText = utf8_encode($oTestArtikel->Lageranzeige->AmpelText);
 
@@ -521,7 +521,7 @@ function checkDependencies($aValues)
         $oArtikelOptionen->nMain                     = 1;
         $oArtikelOptionen->nWarenlager               = 1;
         $oArtikel                                    = new Artikel();
-        $oArtikel->fuelleArtikel($kVaterArtikel, $oArtikelOptionen, Kundengruppe::getCurrent(), $_SESSION['kSprache']);
+        $oArtikel->fuelleArtikel($kVaterArtikel, $oArtikelOptionen, Session::CustomerGroup()->getID());
         $weightDiff   = 0;
         $newProductNr = '';
         foreach ($valueID_arr as $valueID) {
@@ -531,9 +531,9 @@ function checkDependencies($aValues)
                 ? $currentValue->cArtNr
                 : $oArtikel->cArtNr;
         }
-        $weightTotal        = Trennzeichen::getUnit(JTLSEPARATER_WEIGHT, $_SESSION['kSprache'], $oArtikel->fGewicht + $weightDiff);
-        $weightArticleTotal = Trennzeichen::getUnit(JTLSEPARATER_WEIGHT, $_SESSION['kSprache'], $oArtikel->fArtikelgewicht + $weightDiff);
-        $cUnitWeightLabel   = Shop::Lang()->get('weightUnit', 'global');
+        $weightTotal        = Trennzeichen::getUnit(JTLSEPARATER_WEIGHT, Shop::getLanguage(), $oArtikel->fGewicht + $weightDiff);
+        $weightArticleTotal = Trennzeichen::getUnit(JTLSEPARATER_WEIGHT, Shop::getLanguage(), $oArtikel->fArtikelgewicht + $weightDiff);
+        $cUnitWeightLabel   = Shop::Lang()->get('weightUnit');
 
         // Alle Variationen ohne Freifeld
         $nKeyValueVariation_arr = $oArtikel->keyValueVariations($oArtikel->VariationenOhneFreifeld);
@@ -546,8 +546,8 @@ function checkDependencies($aValues)
             }
         }
 
-        $nNettoPreise = $_SESSION['Kundengruppe']->nNettoPreise;
-        $fVKNetto     = $oArtikel->gibPreis($fAnzahl, $valueID_arr, Kundengruppe::getCurrent());
+        $nNettoPreise = Session::CustomerGroup()->getIsMerchant();
+        $fVKNetto     = $oArtikel->gibPreis($fAnzahl, $valueID_arr, Session::CustomerGroup()->getID());
 
         $fVK = [
             berechneBrutto($fVKNetto, $_SESSION['Steuersatz'][$oArtikel->kSteuerklasse]),
@@ -561,7 +561,7 @@ function checkDependencies($aValues)
 
         $cPriceLabel = $oArtikel->nVariationOhneFreifeldAnzahl === count($valueID_arr)
             ? Shop::Lang()->get('priceAsConfigured', 'productDetails')
-            : Shop::Lang()->get('priceStarting', 'global');
+            : Shop::Lang()->get('priceStarting');
 
         $objResponse->jsfunc(
             '$.evo.article().setPrice',
@@ -580,7 +580,7 @@ function checkDependencies($aValues)
             $cStaffelVK = [0 => [], 1 => []];
             foreach ($oArtikel->staffelPreis_arr as $staffelPreis) {
                 $nAnzahl                 = &$staffelPreis['nAnzahl'];
-                $fStaffelVKNetto         = $oArtikel->gibPreis($nAnzahl, $valueID_arr, Kundengruppe::getCurrent());
+                $fStaffelVKNetto         = $oArtikel->gibPreis($nAnzahl, $valueID_arr, Session::CustomerGroup()->getID());
                 $fStaffelVK[0][$nAnzahl] = berechneBrutto(
                     $fStaffelVKNetto,
                     $_SESSION['Steuersatz'][$oArtikel->kSteuerklasse]
@@ -608,7 +608,7 @@ function checkDependencies($aValues)
             $cStaffelVPE = [0 => [], 1 => []];
             foreach ($oArtikel->staffelPreis_arr as $staffelPreis) {
                 $nAnzahl                  = &$staffelPreis['nAnzahl'];
-                $fStaffelVPENetto         = $oArtikel->gibPreis($nAnzahl, $valueID_arr, Kundengruppe::getCurrent());
+                $fStaffelVPENetto         = $oArtikel->gibPreis($nAnzahl, $valueID_arr, Session::CustomerGroup()->getID());
                 $fStaffelVPE[0][$nAnzahl] = berechneBrutto(
                     $fStaffelVPENetto / $oArtikel->fVPEWert,
                     $_SESSION['Steuersatz'][$oArtikel->kSteuerklasse]
@@ -666,7 +666,7 @@ function checkVarkombiDependencies($aValues, $kEigenschaft = 0, $kEigenschaftWer
         $oArtikelOptionen->nMain                     = 1;
         $oArtikelOptionen->nWarenlager               = 1;
         $oArtikel                                    = new Artikel();
-        $oArtikel->fuelleArtikel($kVaterArtikel, $oArtikelOptionen, Kundengruppe::getCurrent(), $_SESSION['kSprache']);
+        $oArtikel->fuelleArtikel($kVaterArtikel, $oArtikelOptionen);
 
         // Alle Variationen ohne Freifeld
         $nKeyValueVariation_arr = $oArtikel->keyValueVariations($oArtikel->VariationenOhneFreifeld);
@@ -846,7 +846,7 @@ function getArticleByVariations($kArtikel, $kVariationKombi_arr)
                 AND tseo.kSprache = " . $kSprache .  "
             LEFT JOIN tartikelsichtbarkeit 
                 ON a.kArtikel = tartikelsichtbarkeit.kArtikel
-                AND tartikelsichtbarkeit.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
+                AND tartikelsichtbarkeit.kKundengruppe = " . Session::CustomerGroup()->getID() . "
         WHERE teigenschaftkombiwert.kEigenschaft IN (" . $cSQL1 . ")
             AND teigenschaftkombiwert.kEigenschaftWert IN (" . $cSQL2 . ")
             AND tartikelsichtbarkeit.kArtikel IS NULL

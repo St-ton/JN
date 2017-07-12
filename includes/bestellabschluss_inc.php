@@ -10,24 +10,20 @@
 function bestellungKomplett()
 {
     require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.CheckBox.php';
-    $kKundengruppe = Kundengruppe::getCurrent();
     // CheckBox Plausi
     $oCheckBox               = new CheckBox();
-    $_SESSION['cPlausi_arr'] = $oCheckBox->validateCheckBox(CHECKBOX_ORT_BESTELLABSCHLUSS, $kKundengruppe, $_POST, true);
+    $_SESSION['cPlausi_arr'] = $oCheckBox->validateCheckBox(CHECKBOX_ORT_BESTELLABSCHLUSS, Session::CustomerGroup()->getID(), $_POST, true);
     $_SESSION['cPost_arr']   = $_POST;
 
-    return (isset($_SESSION['Kunde']) &&
-        isset($_SESSION['Lieferadresse']) &&
-        isset($_SESSION['Versandart']) &&
-        isset($_SESSION['Zahlungsart']) &&
-        $_SESSION['Kunde'] &&
-        $_SESSION['Lieferadresse'] &&
-        $_SESSION['Versandart'] &&
-        $_SESSION['Zahlungsart'] &&
-        (int)$_SESSION['Versandart']->kVersandart > 0 &&
-        (int)$_SESSION['Zahlungsart']->kZahlungsart > 0 &&
-        verifyGPCDataInteger('abschluss') === 1 &&
-        count($_SESSION['cPlausi_arr']) === 0
+    return (isset($_SESSION['Kunde'], $_SESSION['Lieferadresse'], $_SESSION['Versandart'], $_SESSION['Zahlungsart'])
+        && $_SESSION['Kunde']
+        && $_SESSION['Lieferadresse']
+        && $_SESSION['Versandart']
+        && $_SESSION['Zahlungsart']
+        && (int)$_SESSION['Versandart']->kVersandart > 0
+        && (int)$_SESSION['Zahlungsart']->kZahlungsart > 0
+        && verifyGPCDataInteger('abschluss') === 1
+        && count($_SESSION['cPlausi_arr']) === 0
     ) ? 1 : 0;
 }
 
@@ -81,8 +77,8 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
         // Kundenattribute sichern
         $cKundenattribut_arr = $_SESSION['Kunde']->cKundenattribut_arr;
 
-        $_SESSION['Kunde']->kKundengruppe = $_SESSION['Kundengruppe']->kKundengruppe;
-        $_SESSION['Kunde']->kSprache      = Shop::$kSprache;
+        $_SESSION['Kunde']->kKundengruppe = Session::CustomerGroup()->getID();
+        $_SESSION['Kunde']->kSprache      = Shop::getLanguage();
         $_SESSION['Kunde']->cAbgeholt     = 'N';
         $_SESSION['Kunde']->cAktiv        = 'Y';
         $_SESSION['Kunde']->cSperre       = 'N';
@@ -269,7 +265,7 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
     $Bestellung->kZahlungsart      = $_SESSION['Zahlungsart']->kZahlungsart;
     $Bestellung->kVersandart       = $_SESSION['Versandart']->kVersandart;
     $Bestellung->kSprache          = Shop::getLanguage();
-    $Bestellung->kWaehrung         = $_SESSION['Waehrung']->kWaehrung;
+    $Bestellung->kWaehrung         = Session::Currency()->getID();
     $Bestellung->fGesamtsumme      = $_SESSION['Warenkorb']->gibGesamtsummeWaren(1);
     $Bestellung->cVersandartName   = $_SESSION['Versandart']->angezeigterName[$_SESSION['cISOSprache']];
     $Bestellung->cZahlungsartName  = $_SESSION['Zahlungsart']->angezeigterName[$_SESSION['cISOSprache']];
@@ -296,7 +292,7 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
     }
     $Bestellung->cIP = isset($_SESSION['IP']->cIP) ? $_SESSION['IP']->cIP : gibIP(true);
     //#8544
-    $Bestellung->fWaehrungsFaktor = $_SESSION['Waehrung']->fFaktor;
+    $Bestellung->fWaehrungsFaktor = Session::Currency()->getConversionFactor();
 
     executeHook(HOOK_BESTELLABSCHLUSS_INC_BESTELLUNGINDB, ['oBestellung' => &$Bestellung]);
 
@@ -313,8 +309,8 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
     ) {
         $oTrustedShops                    = new TrustedShops(-1, StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
         $oTrustedShops->tsProductId       = $_SESSION['TrustedShops']->cKaeuferschutzProdukt;
-        $oTrustedShops->amount            = $_SESSION['Waehrung']->fFaktor * $_SESSION['Warenkorb']->gibGesamtsummeWaren(true);
-        $oTrustedShops->currency          = $_SESSION['Waehrung']->cISO;
+        $oTrustedShops->amount            = Session::Currency()->getConversionFactor() * $_SESSION['Warenkorb']->gibGesamtsummeWaren(true);
+        $oTrustedShops->currency          = Session::Currency()->getCode();
         $oTrustedShops->paymentType       = $_SESSION['Zahlungsart']->cTSCode;
         $oTrustedShops->buyerEmail        = $_SESSION['Kunde']->cMail;
         $oTrustedShops->shopCustomerID    = $_SESSION['Kunde']->kKunde;
@@ -464,7 +460,7 @@ function unhtmlSession()
     if ($_SESSION['Kunde']->kKunde > 0) {
         $knd->kKunde = $_SESSION['Kunde']->kKunde;
     }
-    $knd->kKundengruppe = $_SESSION['Kundengruppe']->kKundengruppe;
+    $knd->kKundengruppe = Session::CustomerGroup()->getID();
     if ($_SESSION['Kunde']->kKundengruppe > 0) {
         $knd->kKundengruppe = $_SESSION['Kunde']->kKundengruppe;
     }
@@ -1121,7 +1117,7 @@ function fakeBestellung()
     $bestellung->kZahlungsart     = $_SESSION['Zahlungsart']->kZahlungsart;
     $bestellung->kVersandart      = $_SESSION['Versandart']->kVersandart;
     $bestellung->kSprache         = Shop::getLanguage();
-    $bestellung->kWaehrung        = $_SESSION['Waehrung']->kWaehrung;
+    $bestellung->kWaehrung        = Session::Currency()->getID();
     $bestellung->fGesamtsumme     = $_SESSION['Warenkorb']->gibGesamtsummeWaren(1);
     $bestellung->fWarensumme      = $bestellung->fGesamtsumme;
     $bestellung->cVersandartName  = $_SESSION['Versandart']->angezeigterName[$_SESSION['cISOSprache']];
@@ -1133,9 +1129,9 @@ function fakeBestellung()
     $bestellung->dErstellt        = 'now()';
     $bestellung->Zahlungsart      = $_SESSION['Zahlungsart'];
     $bestellung->Positionen       = [];
-    $bestellung->Waehrung         = $_SESSION['Waehrung'];
-    $bestellung->kWaehrung        = $_SESSION['Waehrung']->kWaehrung;
-    $bestellung->fWaehrungsFaktor = $_SESSION['Waehrung']->fFaktor;
+    $bestellung->Waehrung         = $_SESSION['Waehrung']; // @todo - check if this matches the new Currency class
+    $bestellung->kWaehrung        = Session::Currency()->getID();
+    $bestellung->fWaehrungsFaktor = Session::Currency()->getConversionFactor();
     if ($bestellung->oRechnungsadresse === null) {
         $bestellung->oRechnungsadresse = new stdClass();
     }
@@ -1317,7 +1313,7 @@ function finalisiereBestellung($cBestellNr = '', $bSendeMail = true)
         sendeMail(MAILTEMPLATE_BESTELLBESTAETIGUNG, $obj);
     }
     $_SESSION['Kunde'] = $oKunde;
-    $kKundengruppe     = Kundengruppe::getCurrent();
+    $kKundengruppe     = Session::CustomerGroup()->getID();
     require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.CheckBox.php';
     $oCheckBox = new CheckBox();
     // CheckBox Spezialfunktion ausführen

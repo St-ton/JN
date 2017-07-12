@@ -167,7 +167,7 @@ function bearbeiteFrageZumProdukt()
         if ($nReturnValue) {
             if (!floodSchutzProduktanfrage((int)$conf['artikeldetails']['produktfrage_sperre_minuten'])) {
                 $oCheckBox     = new CheckBox();
-                $kKundengruppe = Kundengruppe::getCurrent();
+                $kKundengruppe = Session::CustomerGroup()->getID();
                 $oAnfrage      = baueProduktanfrageFormularVorgaben();
 
                 executeHook(HOOK_ARTIKEL_INC_FRAGEZUMPRODUKT);
@@ -247,10 +247,9 @@ function gibFehlendeEingabenProduktanfrageformular()
     }
     // CheckBox Plausi
     $oCheckBox     = new CheckBox();
-    $kKundengruppe = Kundengruppe::getCurrent();
     $ret           = array_merge(
         $ret,
-        $oCheckBox->validateCheckBox(CHECKBOX_ORT_FRAGE_ZUM_PRODUKT, $kKundengruppe, $_POST, true)
+        $oCheckBox->validateCheckBox(CHECKBOX_ORT_FRAGE_ZUM_PRODUKT, Session::CustomerGroup()->getID(), $_POST, true)
     );
 
     return $ret;
@@ -429,7 +428,7 @@ function bearbeiteBenachrichtigung()
                 $Benachrichtigung->dErstellt = 'now()';
                 $Benachrichtigung->nStatus   = 0;
                 $oCheckBox                   = new CheckBox();
-                $kKundengruppe               = Kundengruppe::getCurrent();
+                $kKundengruppe               = Session::CustomerGroup()->getID();
 
                 executeHook(HOOK_ARTIKEL_INC_BENACHRICHTIGUNG);
 
@@ -505,7 +504,7 @@ function gibFehlendeEingabenBenachrichtigungsformular()
     }
     // CheckBox Plausi
     $oCheckBox     = new CheckBox();
-    $kKundengruppe = Kundengruppe::getCurrent();
+    $kKundengruppe = Session::CustomerGroup()->getID();
     $ret           = array_merge(
         $ret,
         $oCheckBox->validateCheckBox(CHECKBOX_ORT_FRAGE_VERFUEGBARKEIT, $kKundengruppe, $_POST, true)
@@ -560,9 +559,10 @@ function floodSchutzBenachrichtigung($min)
  */
 function gibNaviBlaettern($kArtikel, $kKategorie)
 {
-    $kArtikel   = (int)$kArtikel;
-    $kKategorie = (int)$kKategorie;
-    $navi       = new stdClass();
+    $kArtikel        = (int)$kArtikel;
+    $kKategorie      = (int)$kKategorie;
+    $navi            = new stdClass();
+    $customerGroupID = Session::CustomerGroup()->getID();
     // Wurde der Artikel von der Artikelübersicht aus angeklickt?
     if ($kArtikel > 0 &&
         isset($_SESSION['oArtikelUebersichtKey_arr']) &&
@@ -617,13 +617,13 @@ function gibNaviBlaettern($kArtikel, $kKategorie)
                 FROM tkategorieartikel, tpreise, tartikel
                 LEFT JOIN tartikelsichtbarkeit 
                     ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                    AND tartikelsichtbarkeit.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
+                    AND tartikelsichtbarkeit.kKundengruppe = " . $customerGroupID . "
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
                     AND tartikel.kArtikel = tkategorieartikel.kArtikel
                     AND tkategorieartikel.kKategorie = $kKategorie
                     AND tpreise.kArtikel = tartikel.kArtikel
                     AND tartikel.kArtikel < $kArtikel
-                    AND tpreise.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
+                    AND tpreise.kKundengruppe = " . $customerGroupID . "
                     " . gibLagerfilter() . "
                 ORDER BY tartikel.kArtikel DESC
                 LIMIT 1", 1
@@ -633,13 +633,13 @@ function gibNaviBlaettern($kArtikel, $kKategorie)
                 FROM tkategorieartikel, tpreise, tartikel
                 LEFT JOIN tartikelsichtbarkeit 
                     ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                    AND tartikelsichtbarkeit.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
+                    AND tartikelsichtbarkeit.kKundengruppe = " . $customerGroupID . "
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
                     AND tartikel.kArtikel = tkategorieartikel.kArtikel
                     AND tkategorieartikel.kKategorie = $kKategorie
                     AND tpreise.kArtikel = tartikel.kArtikel
                     AND tartikel.kArtikel > $kArtikel
-                    AND tpreise.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
+                    AND tpreise.kKundengruppe = " . $customerGroupID . "
                     " . gibLagerfilter() . "
                 ORDER BY tartikel.kArtikel
                 LIMIT 1", 1
@@ -1125,7 +1125,7 @@ function holeAehnlicheArtikel($kArtikel)
             $cLimit = " LIMIT " . (int)$conf['artikeldetails']['artikeldetails_aehnlicheartikel_anzahl'];
         }
         $lagerFilter         = gibLagerfilter();
-        $kundenGruppe        = (int)$_SESSION['Kundengruppe']->kKundengruppe;
+        $customerGroupID     = Session::CustomerGroup()->getID();
         $oArtikelMerkmal_arr = Shop::DB()->query(
             "SELECT merkmalartikel.kArtikel, merkmalartikel.kVaterArtikel
                 FROM (
@@ -1138,7 +1138,7 @@ function holeAehnlicheArtikel($kArtikel)
                         AND (tartikel.nIstVater = 1 OR tartikel.kEigenschaftKombi = 0)
 	                LEFT JOIN tartikelsichtbarkeit 
 	                    ON tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
-                        AND tartikelsichtbarkeit.kKundengruppe = {$kundenGruppe}
+                        AND tartikelsichtbarkeit.kKundengruppe = {$customerGroupID}
 	                WHERE tartikelsichtbarkeit.kArtikel IS NULL
                         AND tartikelmerkmal.kArtikel != {$kArtikel}
                         {$lagerFilter}
@@ -1179,7 +1179,7 @@ function holeAehnlicheArtikel($kArtikel)
                         AND tsuchcachetreffer.kArtikel != " . $kArtikel . "
                     LEFT JOIN tartikelsichtbarkeit 
                         ON tsuchcachetreffer.kArtikel = tartikelsichtbarkeit.kArtikel
-                        AND tartikelsichtbarkeit.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
+                        AND tartikelsichtbarkeit.kKundengruppe = " . $customerGroupID . "
                     JOIN tartikel 
                         ON tartikel.kArtikel = tsuchcachetreffer.kArtikel
                         AND tartikel.kVaterArtikel != " . $kArtikel . "
@@ -1217,7 +1217,7 @@ function holeAehnlicheArtikel($kArtikel)
                             AND ttagartikel.kArtikel != " . $kArtikel . "
                         LEFT JOIN tartikelsichtbarkeit 
                             ON ttagartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                            AND tartikelsichtbarkeit.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
+                            AND tartikelsichtbarkeit.kKundengruppe = " . $customerGroupID . "
                         JOIN tartikel 
                             ON tartikel.kArtikel = ttagartikel.kArtikel
                             AND tartikel.kVaterArtikel != " . $kArtikel . "
@@ -1391,7 +1391,7 @@ function buildConfig($kArtikel, $fAnzahl, $nVariation_arr, $nKonfiggruppe_arr, $
         $oKonfiggruppe->oItem_arr = array_values($oKonfiggruppe->oItem_arr);
     }
     unset($oKonfiggruppe);
-    if ($_SESSION['Kundengruppe']->darfPreiseSehen) {
+    if (Session::CustomerGroup()->mayViewPrices()) {
         $oKonfig->cPreisLocalized = [
             gibPreisStringLocalized($oKonfig->fGesamtpreis[0]),
             gibPreisStringLocalized($oKonfig->fGesamtpreis[1])
@@ -1399,7 +1399,7 @@ function buildConfig($kArtikel, $fAnzahl, $nVariation_arr, $nKonfiggruppe_arr, $
     } else {
         $oKonfig->cPreisLocalized = [Shop::Lang()->get('priceHidden', 'global')];
     }
-    $oKonfig->nNettoPreise = $_SESSION['Kundengruppe']->nNettoPreise;
+    $oKonfig->nNettoPreise = Session::CustomerGroup()->getIsMerchant();
 
     return $oKonfig;
 }

@@ -40,11 +40,12 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 return [];
             }
             if (!$kSprache) {
-                $kSprache = $_SESSION['kSprache'];
+                $kSprache = Shop::getLanguage();
             }
             foreach ($oGruppen_arr as &$oGruppe) {
                 $oGruppe = new Konfiggruppe($oGruppe->kKonfigGruppe, $kSprache);
             }
+            unset($oGruppe);
 
             self::$oGruppen_arr[$kArtikel] = $oGruppen_arr;
 

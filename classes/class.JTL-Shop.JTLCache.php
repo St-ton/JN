@@ -930,7 +930,7 @@ class JTLCache
         if ($customerGroup === true) {
             $baseID .= '_cgid';
             $baseID .= isset($_SESSION['Kundengruppe']->kKundengruppe)
-                ? $_SESSION['Kundengruppe']->kKundengruppe
+                ? Session::CustomerGroup()->getID()
                 : Kundengruppe::getDefaultGroupID();
         } elseif (is_numeric($customerGroup)) {
             $baseID .= '_cgid' . (int)$customerGroup;
@@ -941,8 +941,8 @@ class JTLCache
             $lang = Shop::getLanguage();
             if ($lang > 0) {
                 $baseID .= $lang;
-            } elseif (isset($_SESSION['kSprache'])) {
-                $baseID .= $_SESSION['kSprache'];
+            } elseif (Shop::getLanguage() > 0) {
+                $baseID .= Shop::getLanguage();
             } else {
                 $baseID .= '0';
             }
@@ -951,10 +951,7 @@ class JTLCache
         }
         //add currency ID
         if ($currencyID === true) {
-            $baseID .= '_curid';
-            $baseID .= isset($_SESSION['Waehrung']->kWaehrung)
-                ? $_SESSION['Waehrung']->kWaehrung
-                : '0';
+            $baseID .= '_curid' . Session::Currency()->getID();
         } elseif (is_numeric($currencyID)) {
             $baseID .= '_curid' . (int)$currencyID;
         }

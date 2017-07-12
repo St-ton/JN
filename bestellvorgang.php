@@ -152,9 +152,7 @@ if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']) {
         $plz           = isset($_SESSION['Lieferadresse']->cPLZ)
             ? $_SESSION['Lieferadresse']->cPLZ
             : $_SESSION['Kunde']->cPLZ;
-        $kKundengruppe = isset($_SESSION['Kunde']->kKundengruppe)
-            ? $_SESSION['Kunde']->kKundengruppe
-            : $_SESSION['Kundengruppe']->kKundengruppe;
+        $kKundengruppe = Session::CustomerGroup()->getID();
 
         $oGuenstigsteVersandart = null;
         $oVersandart_arr        = VersandartHelper::getPossibleShippingMethods(
@@ -271,7 +269,7 @@ WarenkorbHelper::addVariationPictures($_SESSION['Warenkorb']);
 
 //specific assigns
 $smarty->assign('Navigation', createNavigation($AktuelleSeite))
-       ->assign('AGB', gibAGBWRB(Shop::getLanguage(), $_SESSION['Kundengruppe']->kKundengruppe))
+       ->assign('AGB', gibAGBWRB(Shop::getLanguage(), Session::CustomerGroup()->getID()))
        ->assign('Ueberschrift', Shop::Lang()->get('orderStep0Title', 'checkout'))
        ->assign('UeberschriftKlein', Shop::Lang()->get('orderStep0Title2', 'checkout'))
        ->assign('Einstellungen', $Einstellungen)

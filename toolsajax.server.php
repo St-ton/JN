@@ -162,7 +162,7 @@ function gibVergleichsliste($nVLKeys = 0, $bWarenkorb = true)
            ->assign('Navigation', createNavigation($AktuelleSeite, 0, 0))
            ->assign('Einstellungen', $GLOBALS['GlobaleEinstellungen'])
            ->assign('Einstellungen_Vergleichsliste', $Einstellungen_Vergleichsliste)
-           ->assign('NettoPreise', $_SESSION['Kundengruppe']->nNettoPreise)
+           ->assign('NettoPreise', Session::CustomerGroup()->getIsMerchant())
            ->assign('bAjax', true)
            ->assign('bWarenkorb', $bWarenkorb);
 
@@ -323,7 +323,7 @@ function fuegeEinInWarenkorbAjax($kArtikel, $anzahl, $oEigenschaftwerte_arr = ''
         $warensumme[1] = gibPreisStringLocalized($_SESSION['Warenkorb']->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], false));
         $smarty->assign('WarenkorbWarensumme', $warensumme);
 
-        $kKundengruppe = $_SESSION['Kundengruppe']->kKundengruppe;
+        $kKundengruppe = Session::CustomerGroup()->getID();
         if (isset($_SESSION['Kunde']->kKundengruppe) && $_SESSION['Kunde']->kKundengruppe > 0) {
             $kKundengruppe = $_SESSION['Kunde']->kKundengruppe;
         }
@@ -338,7 +338,7 @@ function fuegeEinInWarenkorbAjax($kArtikel, $anzahl, $oEigenschaftwerte_arr = ''
                ->assign('oArtikel', $Artikel)// deprecated 3.12
                ->assign('zuletztInWarenkorbGelegterArtikel', $Artikel)
                ->assign('fAnzahl', $anzahl)
-               ->assign('NettoPreise', $_SESSION['Kundengruppe']->nNettoPreise)
+               ->assign('NettoPreise', Session::CustomerGroup()->getIsMerchant())
                ->assign('Einstellungen', $Einstellungen)
                ->assign('Xselling', $oXSelling);
 
@@ -707,7 +707,7 @@ function tauscheVariationKombi($aFormValues, $nVater = 0, $kEigenschaft = 0, $kE
                             AND tartikel.kArtikel = " . (int)$oArtikel->kArtikelVariKombi . "
                         LEFT JOIN tartikelsichtbarkeit 
                             ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                            AND tartikelsichtbarkeit.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
+                            AND tartikelsichtbarkeit.kKundengruppe = " . Session::CustomerGroup()->getID() . "
                         WHERE tartikelsichtbarkeit.kArtikel IS NULL
                         ORDER BY tartikel.kArtikel", 2
                 );
@@ -849,7 +849,7 @@ function tauscheVariationKombi($aFormValues, $nVater = 0, $kEigenschaft = 0, $kE
                             $oTestArtikel->fuelleArtikel(
                                 $oTMPArtikel->kArtikel,
                                 $oArtikelOptionen,
-                                Kundengruppe::getCurrent(),
+                                Session::CustomerGroup()->getID(),
                                 Shop::getLanguage()
                             );
 
@@ -972,7 +972,7 @@ function baueArtikelDetail($oArtikel, $xPost_arr)
     // Bewertungen holen
     if (!isset($oArtikel->Bewertungen)) {
         $oArtikel->holeBewertung(
-            $_SESSION['kSprache'],
+            Shop::getLanguage(),
             $conf['bewertung']['bewertung_anzahlseite'],
             $bewertung_seite,
             $bewertung_sterne,
@@ -1270,7 +1270,7 @@ function checkVarkombiDependencies($kVaterArtikel, $cVaterURL, $kEigenschaft = 0
             $oArtikelOptionen->nMain                     = 1;
             $oArtikelOptionen->nWarenlager               = 1;
 
-            $oArtikel->fuelleArtikel($kVaterArtikel, $oArtikelOptionen, Kundengruppe::getCurrent(), Shop::getLanguage());
+            $oArtikel->fuelleArtikel($kVaterArtikel, $oArtikelOptionen, Session::CustomerGroup()->getID(), Shop::getLanguage());
 
             $kGesetzeEigenschaft_arr       = array_keys($_SESSION['oVarkombiAuswahl']->kGesetzteEigeschaftWert_arr);
             $kNichtGesetzteEigenschaft_arr = array_values(array_diff($oArtikel->kEigenschaftKombi_arr, $kGesetzeEigenschaft_arr));
@@ -1300,7 +1300,7 @@ function checkVarkombiDependencies($kVaterArtikel, $cVaterURL, $kEigenschaft = 0
                     $oTestArtikel->fuelleArtikel(
                         $oTMPArtikel->kArtikel,
                         $oArtikelOptionen,
-                        Kundengruppe::getCurrent(),
+                        Session::CustomerGroup()->getID(),
                         Shop::getLanguage()
                     );
 
@@ -1398,7 +1398,7 @@ function gibArtikelByVariationen($kArtikel, $kVariationKombi_arr)
                 ON tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
             LEFT JOIN tartikelsichtbarkeit 
                 ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                AND tartikelsichtbarkeit.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
+                AND tartikelsichtbarkeit.kKundengruppe = " . Session::CustomerGroup()->getID() . "
             WHERE teigenschaftkombiwert.kEigenschaft IN (" . $cSQL1 . ")
                 AND teigenschaftkombiwert.kEigenschaftWert IN (" . $cSQL2 . ")
                 AND tartikelsichtbarkeit.kArtikel IS NULL

@@ -524,10 +524,10 @@ class Bestellung
                         $this->Positionen[$i]->Artikel->fuelleArtikel($this->Positionen[$i]->kArtikel, $defaultOptions);
                     }
 
-                    $kSprache = (isset($_SESSION['kSprache']) ? $_SESSION['kSprache'] : null);
+                    $kSprache = Shop::getLanguage();
                     if (!$kSprache) {
-                        $oSprache             = Shop::DB()->query("SELECT kSprache FROM tsprache WHERE cStandard = 'Y'", 1);
-                        $kSprache             = $oSprache->kSprache;
+                        $oSprache             = gibStandardsprache();
+                        $kSprache             = (int)$oSprache->kSprache;
                         $_SESSION['kSprache'] = $kSprache;
                     }
                     // Downloads
@@ -619,7 +619,6 @@ class Bestellung
                                 }
                             }
                         }
-
                         if ($nVaterPos !== null) {
                             $oVaterPos = $this->Positionen[$nVaterPos];
                             if (is_object($oVaterPos)) {
@@ -676,6 +675,7 @@ class Bestellung
                             }
                         }
                     }
+                    unset($oPosition);
                     // Charge, MDH & Seriennummern
                     if (isset($oLieferscheinPos->oPosition) && is_object($oLieferscheinPos->oPosition)) {
                         /** @var Lieferscheinposinfo $oLieferscheinPosInfo */
@@ -696,8 +696,10 @@ class Bestellung
                         }
                     }
                 }
+                unset($oLieferscheinPos);
                 $this->oLieferschein_arr[] = $oLieferschein;
             }
+            unset($oLieferschein);
             // Wenn Konfig-Vater, alle Kinder ueberpruefen
             foreach ($this->oLieferschein_arr as &$oLieferschein) {
                 foreach ($oLieferschein->oPosition_arr as &$oPosition) {
@@ -714,7 +716,9 @@ class Bestellung
                         $oPosition->bAusgeliefert = $bAlleAusgeliefert;
                     }
                 }
+                unset($oPosition);
             }
+            unset($oLieferschein);
             // Fallback for Non-Beta
             if ($this->cStatus == BESTELLUNG_STATUS_VERSANDT) {
                 $positionCountB = count($this->Positionen);

@@ -64,11 +64,11 @@ class KategorieHelper
      */
     public static function getInstance($kSprache = 0, $kKundengruppe = 0)
     {
-        $kSprache      = ($kSprache === 0)
+        $kSprache      = $kSprache === 0
             ? Shop::getLanguage()
             : (int)$kSprache;
-        $kKundengruppe = ($kKundengruppe === 0)
-            ? (int)$_SESSION['Kundengruppe']->kKundengruppe
+        $kKundengruppe = $kKundengruppe === 0
+            ? Session::CustomerGroup()->getID()
             : (int)$kKundengruppe;
         $config        = Shop::getSettings([CONF_GLOBAL, CONF_TEMPLATE]);
         if (self::$instance !== null && self::$kSprache !== $kSprache) {

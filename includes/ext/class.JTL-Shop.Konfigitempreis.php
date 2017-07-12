@@ -247,11 +247,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         {
             $fPreis = $this->fPreis;
             if ($bConvertCurrency && $fPreis > 0) {
-                $oWaehrung = $_SESSION['Waehrung'];
-                if (!$oWaehrung->kWaehrung) {
-                    $oWaehrung = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
-                }
-                $fPreis *= (float)$oWaehrung->fFaktor;
+                $fPreis *= Session::Currency()->getConversionFactor();
             }
 
             return $fPreis;

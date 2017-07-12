@@ -19,7 +19,7 @@ class WarenkorbHelper
     public function getTotal($decimals = 0)
     {
         $info            = new stdClass();
-        $info->type      = (int)$_SESSION['Kundengruppe']->nNettoPreise === 1 ? self::NET : self::GROSS;
+        $info->type      = Session::CustomerGroup()->isMerchant() ? self::NET : self::GROSS;
         $info->currency  = null;
         $info->article   = [0, 0];
         $info->shipping  = [0, 0];
@@ -198,11 +198,11 @@ class WarenkorbHelper
     }
 
     /**
-     * @return object
+     * @return Currency
      */
     public function getCurrency()
     {
-        return (is_object($_SESSION['Waehrung']) && $_SESSION['Waehrung']->kWaehrung) ? $_SESSION['Waehrung'] : gibStandardWaehrung();
+        return Session::Currency();
     }
 
     /**
@@ -210,7 +210,7 @@ class WarenkorbHelper
      */
     public function getCurrencyISO()
     {
-        return $this->getCurrency()->cISO;
+        return $this->getCurrency()->getCode();
     }
 
     /**

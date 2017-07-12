@@ -149,16 +149,19 @@ class Kategorie
         $oSpracheTmp            = null;
         $oKategorieAttribut_arr = null;
         if (!$kKundengruppe) {
+            $kKundengruppe = Session::CustomerGroup()->getID();
+        }
+        if (!$kKundengruppe) {
             $kKundengruppe = Kundengruppe::getDefaultGroupID();
-            if (!isset($_SESSION['Kundengruppe'])) { //auswahlassistent admin fix
+            if (!isset($_SESSION['Kundengruppe']->kKundengruppe)) { //auswahlassistent admin fix
                 $_SESSION['Kundengruppe'] = new stdClass();
+                $_SESSION['Kundengruppe']->kKundengruppe = $kKundengruppe;
             }
-            $_SESSION['Kundengruppe']->kKundengruppe = $kKundengruppe;
         }
         if (!$kSprache) {
             $kSprache = Shop::getLanguage();
             if (!$kSprache) {
-                $oSpracheTmp = gibStandardsprache(true);
+                $oSpracheTmp = gibStandardsprache();
                 $kSprache    = $oSpracheTmp->kSprache;
             }
         }

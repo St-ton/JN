@@ -457,7 +457,7 @@ class Warenkorb
         $NeuePosition->kKonfigitem   = $kKonfigitem;
         $NeuePosition->kArtikel      = $kArtikel;
         //fixes #4967
-        if (is_object($_SESSION['Kundengruppe']) && $_SESSION['Kundengruppe']->nNettoPreise > 0) {
+        if (is_object($_SESSION['Kundengruppe']) && Session::CustomerGroup()->isMerchant()) {
             if ($brutto) {
                 $NeuePosition->fPreis = $preis / (100 + gibUst($kSteuerklasse)) * 100.0;
             }
@@ -555,10 +555,8 @@ class Warenkorb
         if (count($this->PositionenArr) < 1) {
             return 3;
         }
-        if (isset($_SESSION['Kundengruppe']->Attribute[KNDGRP_ATTRIBUT_MINDESTBESTELLWERT]) &&
-            $_SESSION['Kundengruppe']->Attribute[KNDGRP_ATTRIBUT_MINDESTBESTELLWERT] > 0 &&
-            $this->gibGesamtsummeWaren(1, 0) < $_SESSION['Kundengruppe']->Attribute[KNDGRP_ATTRIBUT_MINDESTBESTELLWERT]
-        ) {
+        $mbw = Session::CustomerGroup()->getAttribute(KNDGRP_ATTRIBUT_MINDESTBESTELLWERT);
+        if ($mbw > 0 && $this->gibGesamtsummeWaren(1, 0) < $mbw) {
             return 9;
         }
         $conf = Shop::getSettings([CONF_KAUFABWICKLUNG]);
@@ -905,20 +903,15 @@ class Warenkorb
      */
     public function gibGesamtsummeWaren($Brutto = false, $gutscheinBeruecksichtigen = true)
     {
-        $waehrung = isset($_SESSION['Waehrung']) ? $_SESSION['Waehrung'] : null;
-        if ($waehrung === null || !isset($waehrung->kWaehrung)) {
-            $waehrung = $this->Waehrung;
-        }
-        if ($waehrung === null || !isset($waehrung->kWaehrung)) {
-            $waehrung = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
-        }
-        $gesamtsumme = 0;
+        $currency         = $this->Waehrung === null ? Session::Currency() : $this->Waehrung;
+        $conversionFactor = $currency->getConversionFactor();
+        $gesamtsumme      = 0;
         foreach ($this->PositionenArr as $i => $Position) {
             // Lokalisierte Preise addieren
             if ($Brutto) {
-                $gesamtsumme += $Position->fPreis * $waehrung->fFaktor * $Position->nAnzahl * ((100 + gibUst($Position->kSteuerklasse)) / 100);
+                $gesamtsumme += $Position->fPreis * $conversionFactor * $Position->nAnzahl * ((100 + gibUst($Position->kSteuerklasse)) / 100);
             } else {
-                $gesamtsumme += $Position->fPreis * $waehrung->fFaktor * $Position->nAnzahl;
+                $gesamtsumme += $Position->fPreis * $conversionFactor * $Position->nAnzahl;
             }
         }
         if ($Brutto) {
@@ -928,10 +921,10 @@ class Warenkorb
             (isset($_SESSION['Bestellung']->GuthabenNutzen) && $_SESSION['Bestellung']->GuthabenNutzen == 1) &&
             (isset($_SESSION['Bestellung']->fGuthabenGenutzt) && $_SESSION['Bestellung']->fGuthabenGenutzt > 0)
         ) {
-            $gesamtsumme -= $_SESSION['Bestellung']->fGuthabenGenutzt * $waehrung->fFaktor;
+            $gesamtsumme -= $_SESSION['Bestellung']->fGuthabenGenutzt * $conversionFactor;
         }
         // Lokalisierung aufheben
-        $gesamtsumme /= $waehrung->fFaktor;
+        $gesamtsumme /= $conversionFactor;
         $this->useSummationRounding();
 
         return $this->optionaleRundung($gesamtsumme);
@@ -980,19 +973,14 @@ class Warenkorb
             return 0;
         }
         $gesamtsumme = 0;
-        $waehrung    = isset($_SESSION['Waehrung']) ? $_SESSION['Waehrung'] : null;
-        if ($waehrung === null || !isset($waehrung->kWaehrung)) {
-            $waehrung = $this->Waehrung;
-        }
-        if ($waehrung === null || !isset($waehrung->kWaehrung)) {
-            $waehrung = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
-        }
+        $currency    = $this->Waehrung === null ? Session::Currency() : $this->Waehrung;
+        $factor      = $currency->getConversionFactor();
         foreach ($this->PositionenArr as $i => $Position) {
             if (!in_array($Position->nPosTyp, $postyp_arr)) {
                 if ($Brutto) {
-                    $gesamtsumme += $Position->fPreis * $waehrung->fFaktor * $Position->nAnzahl * ((100 + gibUst($Position->kSteuerklasse)) / 100);
+                    $gesamtsumme += $Position->fPreis * $factor * $Position->nAnzahl * ((100 + gibUst($Position->kSteuerklasse)) / 100);
                 } else {
-                    $gesamtsumme += $Position->fPreis * $waehrung->fFaktor * $Position->nAnzahl;
+                    $gesamtsumme += $Position->fPreis * $factor* $Position->nAnzahl;
                 }
             }
         }
@@ -1000,7 +988,7 @@ class Warenkorb
             $gesamtsumme = round($gesamtsumme, 2);
         }
         // Lokalisierung aufheben
-        $gesamtsumme /= $waehrung->fFaktor;
+        $gesamtsumme /= $factor;
         //$this->useSummationRounding(); // auskommentiert, da momentan nur für Billpay verwendet
         return $gesamtsumme; // optionale Rundung entfernt, da Rappenrundung nicht auf den Betrag bei Billpay angewendet wird.
     }
@@ -1013,19 +1001,13 @@ class Warenkorb
     {
         $conf = Shop::getSettings([CONF_KAUFABWICKLUNG]);
         if (isset($conf['kaufabwicklung']['bestellabschluss_runden5']) && $conf['kaufabwicklung']['bestellabschluss_runden5'] == 1) {
-            $waehrung = isset($_SESSION['Waehrung']) ? $_SESSION['Waehrung'] : null;
-            if ($waehrung === null || !isset($waehrung->kWaehrung)) {
-                $waehrung = $this->Waehrung;
-            }
-            if ($waehrung === null || !isset($waehrung->kWaehrung)) {
-                $waehrung = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
-            }
-            $faktor = $waehrung->fFaktor;
-            $gesamtsumme *= $faktor;
+            $currency = $this->Waehrung === null ? Session::Currency() : $this->Waehrung;
+            $factor   = $currency->getConversionFactor();
+            $gesamtsumme *= $factor;
 
             // simplification. see https://de.wikipedia.org/wiki/Rundung#Rappenrundung
             $gesamtsumme = round($gesamtsumme * 20) / 20;
-            $gesamtsumme /= $faktor;
+            $gesamtsumme /= $factor;
         }
 
         return $gesamtsumme;
@@ -1113,7 +1095,7 @@ class Warenkorb
                     $idx = array_search($ust, $steuersatz);
                     if (!isset($steuerpos[$idx]->fBetrag)) {
                         $steuerpos[$idx]                  = new stdClass();
-                        $steuerpos[$idx]->cName           = lang_steuerposition($ust, $_SESSION['Kundengruppe']->nNettoPreise);
+                        $steuerpos[$idx]->cName           = lang_steuerposition($ust, Session::CustomerGroup()->isMerchant());
                         $steuerpos[$idx]->fUst            = $ust;
                         $steuerpos[$idx]->fBetrag         = ($position->fPreis * $position->nAnzahl * $ust) / 100.0;
                         $steuerpos[$idx]->cPreisLocalized = gibPreisStringLocalized($steuerpos[$idx]->fBetrag);

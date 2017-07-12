@@ -186,7 +186,7 @@ class VersandartHelper
                 ORDER BY nSort", 2
         );
         $cnt             = count($versandarten);
-        $netPricesActive = (int)$_SESSION['Kundengruppe']->nNettoPreise === 1;
+        $netPricesActive = Session::CustomerGroup()->isMerchant();
 
         for ($i = 0; $i < $cnt; $i++) {
             $bSteuerPos                  = $versandarten[$i]->eSteuer !== 'netto';
@@ -320,7 +320,7 @@ class VersandartHelper
     public static function getShippingCosts($cLand, $cPLZ, &$cError = '')
     {
         if ($cLand !== null && $cPLZ !== null && strlen($cLand) > 0 && strlen($cPLZ) > 0) {
-            $kKundengruppe = $_SESSION['Kundengruppe']->kKundengruppe;
+            $kKundengruppe = Session::CustomerGroup()->getID();
             if (isset($_SESSION['Kunde']->kKundengruppe) && $_SESSION['Kunde']->kKundengruppe > 0) {
                 $kKundengruppe = $_SESSION['Kunde']->kKundengruppe;
             }
@@ -374,7 +374,7 @@ class VersandartHelper
             $cLandISO = 'DE';
         }
 
-        $kKundengruppe = $_SESSION['Kundengruppe']->kKundengruppe;
+        $kKundengruppe = Session::CustomerGroup()->getID();
         // Baue ZusatzArtikel
         $oZusatzArtikel                  = new stdClass();
         $oZusatzArtikel->fAnzahl         = 0;
@@ -759,7 +759,7 @@ class VersandartHelper
         if ($bHookReturn) {
             return false;
         }
-        $netPricesActive = $_SESSION['Kundengruppe']->nNettoPreise === '1';
+        $netPricesActive = Session::CustomerGroup()->isMerchant();
         // Steuersatz nur benötigt, wenn Nettokunde
         /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
         if ($netPricesActive === true) {

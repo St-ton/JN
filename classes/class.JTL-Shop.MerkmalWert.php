@@ -106,10 +106,7 @@ class MerkmalWert
      */
     public function loadFromDB($kMerkmalWert)
     {
-        $kSprache = null;
-        if (isset($_SESSION['kSprache'])) {
-            $kSprache = (int)$_SESSION['kSprache'];
-        }
+        $kSprache = Shop::getLanguage();
         if (!$kSprache) {
             $oSprache = gibStandardsprache();
             if (isset($oSprache->kSprache) && $oSprache->kSprache > 0) {

@@ -368,13 +368,7 @@ function gibNaviURL($NaviFilter, $bSeo, $oZusatzFilter, $kSprache = 0, $bCanonic
 function berechnePreisspannenSQL($oPreis, $oPreisspannenfilter_arr = null)
 {
     trigger_error('filter_inc.php: berechnePreisspannenSQL() called.', E_USER_DEPRECATED);
-    $currency = isset($_SESSION['Waehrung'])
-        ? $_SESSION['Waehrung']
-        : null;
-    if (!isset($currency->kWaehrung)) {
-        $currency = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
-    }
-    return Shop::getNaviFilter()->getPriceRangeFilter()->getPriceRangeSQL($oPreis, $currency, $oPreisspannenfilter_arr);
+    return Shop::getNaviFilter()->getPriceRangeFilter()->getPriceRangeSQL($oPreis, Session::Currency(), $oPreisspannenfilter_arr);
 }
 
 /**
@@ -702,16 +696,6 @@ function gibArtikelKeysExtendedJTLSearch($oExtendedJTLSearchResponse)
 function baueArtikelAnzahl($FilterSQL, &$oSuchergebnisse, $nArtikelProSeite = 20, $nLimitN = 20)
 {
     trigger_error('filter_inc.php: baueArtikelAnzahl() called.', E_USER_DEPRECATED);
-    $kKundengruppe = isset($_SESSION['Kundengruppe']->kKundengruppe) ? (int)$_SESSION['Kundengruppe']->kKundengruppe : null;
-    if (!$kKundengruppe) {
-        $oKundengruppe = Shop::DB()->query("SELECT kKundengruppe FROM tkundengruppe WHERE cStandard = 'Y'", 1);
-        $kKundengruppe = (int)$oKundengruppe->kKundengruppe;
-        if (!isset($_SESSION['Kundengruppe'])) {
-            $_SESSION['Kundengruppe'] = new stdClass();
-        }
-        $_SESSION['Kundengruppe']->kKundengruppe = $oKundengruppe->kKundengruppe;
-    }
-    //Anzahl holen
     $oAnzahl = Shop::DB()->query(
         "SELECT count(*) AS nGesamtAnzahl
             FROM(
@@ -725,7 +709,7 @@ function baueArtikelAnzahl($FilterSQL, &$oSuchergebnisse, $nArtikelProSeite = 20
             " . (isset($FilterSQL->oBewertungSterneFilterSQL->cJoin) ? $FilterSQL->oBewertungSterneFilterSQL->cJoin : '') . "
             " . (isset($FilterSQL->oPreisspannenFilterSQL->cJoin) ? $FilterSQL->oPreisspannenFilterSQL->cJoin : '') . "
             LEFT JOIN tartikelsichtbarkeit ON tartikel.kArtikel=tartikelsichtbarkeit.kArtikel
-                AND tartikelsichtbarkeit.kKundengruppe = " . $kKundengruppe . "
+                AND tartikelsichtbarkeit.kKundengruppe = " . Session::CustomerGroup()->getID() . "
             WHERE tartikelsichtbarkeit.kArtikel IS NULL
                 AND tartikel.kVaterArtikel = 0
                 " . gibLagerfilter() . "

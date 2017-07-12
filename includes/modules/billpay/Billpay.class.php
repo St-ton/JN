@@ -79,7 +79,7 @@ class Billpay extends PaymentMethod
             'apiKey'         => $this->getCoreSetting('publicapicode'),
             'cartTotalGross' => BPHelper::fmtAmount($oBasketInfo->fTotal[AMT_GROSS], true),
             'baseAmount'     => BPHelper::fmtAmount($oBasketInfo->fTotal[AMT_GROSS] - $oBasketInfo->fShipping[AMT_GROSS], true),
-            'orderCurrency'  => $oBasketInfo->cCurrency->cISO,
+            'orderCurrency'  => $oBasketInfo->cCurrency->getCode(),
             'lang'           => BPHelper::toISO6391(BPHelper::getLanguage()),
             'billingCountry' => BPHelper::mapCountryCode($oCustomer->cLand)
         ];
@@ -149,7 +149,7 @@ class Billpay extends PaymentMethod
             $oCapture->set_capture_params(
                 $oData->cTXID,
                 BPHelper::fmtAmount($oBasketInfo->fTotal[AMT_GROSS], true),
-                BPHelper::strEncode(strtoupper($oBasketInfo->cCurrency->cISO)),
+                BPHelper::strEncode(strtoupper($oBasketInfo->cCurrency->getCode())),
                 BPHelper::strEncode($cOrderNumber),
                 $oOrder->kKunde
             );
@@ -164,7 +164,7 @@ class Billpay extends PaymentMethod
                     if ($this->getCoreSetting('aspaid') === 'Y') {
                         $oIncomingPayment          = new stdClass();
                         $oIncomingPayment->fBetrag = $oBasketInfo->fTotal[AMT_GROSS];
-                        $oIncomingPayment->cISO    = $oBasketInfo->cCurrency->cISO;
+                        $oIncomingPayment->cISO    = $oBasketInfo->cCurrency->getCode();
                         $this->addIncomingPayment($oOrder, $oIncomingPayment);
                         $this->setOrderStatusToPaid($oOrder);
                     }
@@ -552,7 +552,7 @@ class Billpay extends PaymentMethod
             'order' => [
                 'cartAmount'  => $oBasketInfo->fArticle[AMT_GROSS] - $oBasketInfo->fRebate[AMT_GROSS],
                 'orderAmount' => $oBasketInfo->fTotal[AMT_GROSS],
-                'currency'    => $oBasketInfo->cCurrency->cISO
+                'currency'    => $oBasketInfo->cCurrency->getCode()
             ],
             'customer' => [
                 'customerGroup'  => $oData->cKundengruppe,
@@ -798,7 +798,7 @@ class Billpay extends PaymentMethod
                     }
                 }
             }
-            $fNet = $fPreisEinzelNetto * $oBasketInfo->cCurrency->fFaktor;
+            $fNet = $fPreisEinzelNetto * $oBasketInfo->cCurrency->getConversionFactor();
 
             $fAmount[AMT_NET]   = BPHelper::fmtAmount($fNet);
             $fAmount[AMT_GROSS] = BPHelper::fmtAmount(berechneBrutto($fNet, gibUst($oPosition->kSteuerklasse)));
@@ -836,7 +836,7 @@ class Billpay extends PaymentMethod
             ),                                                             // shippingpricegross
             BPHelper::fmtAmount($oBasketInfo->fTotal[AMT_NET], true),      // carttotalprice
             BPHelper::fmtAmount($oBasketInfo->fTotal[AMT_GROSS], true),    // carttotalpricegross
-            BPHelper::strEncode($_SESSION['Waehrung']->cISO, 3),           // currency
+            BPHelper::strEncode(Session::Currency()->getCode(), 3),        // currency
             $cReference                                                    // reference
         );
 
@@ -927,9 +927,7 @@ class Billpay extends PaymentMethod
                         // new positions
                         $cName['ger']   = 'Zinsaufschlag';
                         $cName['eng']   = 'Interest charge';
-                        $currencyFactor = (isset($oBasketInfo->cCurrency) && isset($oBasketInfo->cCurrency->fFaktor))
-                            ? $oBasketInfo->cCurrency->fFaktor
-                            : 1;
+                        $currencyFactor = $oBasketInfo->cCurrency->getConversionFactor();
                         $this->addSpecialPosition($cName, 1, $oRate->feeAbsolute / $currencyFactor, C_WARENKORBPOS_TYP_ZINSAUFSCHLAG, true, true/*, $cNotice*/);
                         $cName['ger'] = 'Bearbeitungsgeb&uuml;hr';
                         $cName['eng'] = 'Processing fee';
@@ -1152,16 +1150,7 @@ class Billpay extends PaymentMethod
         $oBasketInfo->fRebate    = [0, 0];// rabatt
         $oBasketInfo->fSurcharge = [0, 0];// zuschlag
         $oBasketInfo->fTotal     = [0, 0];// warenkorb
-
-        $cCurrency = isset($_SESSION['Waehrung']) ? $_SESSION['Waehrung'] : null;
-        if ($cCurrency === null || !isset($cCurrency->kWaehrung)) {
-            $cCurrency = $oBasket->Waehrung;
-        }
-        if ($cCurrency === null || !isset($cCurrency->kWaehrung)) {
-            $cCurrency = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
-        }
-
-        $oBasketInfo->cCurrency = $cCurrency;
+        $oBasketInfo->cCurrency  = Session::Currency();
 
         foreach ($oBasket->PositionenArr as $oPosition) {
             $fPreisEinzelNetto = $oPosition->fPreisEinzelNetto;
@@ -1174,7 +1163,7 @@ class Billpay extends PaymentMethod
                     }
                 }
             }
-            $fAmount      = $fPreisEinzelNetto * $oBasketInfo->cCurrency->fFaktor;
+            $fAmount      = $fPreisEinzelNetto * $oBasketInfo->cCurrency->getConversionFactor();
             $fAmountGross = $fAmount * ((100 + gibUst($oPosition->kSteuerklasse)) / 100);
 
             switch ($oPosition->nPosTyp) {
@@ -1486,7 +1475,7 @@ class BPHelper
             $cAmount *= 100;
         }
         if ($bFmt) {
-            $cAmount = gibPreisStringLocalized($cAmount, $_SESSION['Waehrung']->cISO, true, 2);
+            $cAmount = gibPreisStringLocalized($cAmount, Session::Currency()->getCode(), true, 2);
         }
 
         return $cAmount;
@@ -1503,7 +1492,7 @@ class BPHelper
         $fAmount = round($fAmount, 2);
         $cAmount = number_format($fAmount / 100, 2, '.', '');
         if ($bFmt) {
-            $cAmount = gibPreisStringLocalized($cAmount, $_SESSION['Waehrung']->cISO, $bHTML, 2);
+            $cAmount = gibPreisStringLocalized($cAmount, Session::Currency()->getCode(), $bHTML, 2);
         }
 
         return $cAmount;

@@ -53,7 +53,7 @@ if (!$bMobilAktiv) {
 }
 $kKundengruppe = (isset($_SESSION['Kunde']->kKundengruppe) && $_SESSION['Kunde']->kKundengruppe > 0)
     ? $_SESSION['Kunde']->kKundengruppe
-    : $_SESSION['Kundengruppe']->kKundengruppe;
+    : Session::CustomerGroup()->getID();
 $cKundenherkunft = (isset($_SESSION['Kunde']->cLand) && strlen($_SESSION['Kunde']->cLand) > 0)
     ? $_SESSION['Kunde']->cLand
     : '';
@@ -62,8 +62,8 @@ $warensumme[1]         = gibPreisStringLocalized($cart->gibGesamtsummeWarenExt([
 $gesamtsumme[0]        = gibPreisStringLocalized($cart->gibGesamtsummeWaren(true, true));
 $gesamtsumme[1]        = gibPreisStringLocalized($cart->gibGesamtsummeWaren(false, true));
 $oVersandartKostenfrei = gibVersandkostenfreiAb($kKundengruppe, $cKundenherkunft);
-$oGlobaleMetaAngaben   = isset($oGlobaleMetaAngabenAssoc_arr[$_SESSION['kSprache']])
-    ? $oGlobaleMetaAngabenAssoc_arr[$_SESSION['kSprache']]
+$oGlobaleMetaAngaben   = isset($oGlobaleMetaAngabenAssoc_arr[Shop::getLanguage()])
+    ? $oGlobaleMetaAngabenAssoc_arr[Shop::getLanguage()]
     : null;
 $pagetType             = Shop::getPageType();
 
@@ -107,13 +107,13 @@ $smarty->assign('cPluginCss_arr', $cMinify_arr['plugin_css'])
        ->assign('lang', $_SESSION['cISOSprache'])
        ->assign('ShopURL', Shop::getURL())
        ->assign('ShopURLSSL', Shop::getURL(true))
-       ->assign('NettoPreise', $_SESSION['Kundengruppe']->nNettoPreise)
+       ->assign('NettoPreise', Session::CustomerGroup()->getIsMerchant())
        ->assign('PFAD_GFX_BEWERTUNG_STERNE', PFAD_GFX_BEWERTUNG_STERNE)
        ->assign('PFAD_BILDER_BANNER', PFAD_BILDER_BANNER)
-       ->assign('Anrede_m', Shop::Lang()->get('salutationM', 'global'))
-       ->assign('Anrede_w', Shop::Lang()->get('salutationW', 'global'))
-       ->assign('oTrennzeichenGewicht', Trennzeichen::getUnit(JTLSEPARATER_WEIGHT, $_SESSION['kSprache']))
-       ->assign('oTrennzeichenMenge', Trennzeichen::getUnit(JTLSEPARATER_AMOUNT, $_SESSION['kSprache']))
+       ->assign('Anrede_m', Shop::Lang()->get('salutationM'))
+       ->assign('Anrede_w', Shop::Lang()->get('salutationW'))
+       ->assign('oTrennzeichenGewicht', Trennzeichen::getUnit(JTLSEPARATER_WEIGHT, Shop::getLanguage()))
+       ->assign('oTrennzeichenMenge', Trennzeichen::getUnit(JTLSEPARATER_AMOUNT, Shop::getLanguage()))
        ->assign('cShopName', $cShopName)
        ->assign('KaufabwicklungsURL', $linkHelper->getStaticRoute('bestellvorgang.php'))
        ->assign('WarenkorbArtikelanzahl', $cart->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]))
@@ -147,7 +147,7 @@ $smarty->assign('cPluginCss_arr', $cMinify_arr['plugin_css'])
        ->assign('PFAD_FLASHCLOUD', PFAD_FLASHCLOUD)
        ->assign('PFAD_UPLOADIFY', PFAD_UPLOADIFY)
        ->assign('PFAD_UPLOAD_CALLBACK', PFAD_UPLOAD_CALLBACK)
-       ->assign('oSuchspecialoverlay_arr', holeAlleSuchspecialOverlays($_SESSION['kSprache']))
+       ->assign('oSuchspecialoverlay_arr', holeAlleSuchspecialOverlays(Shop::getLanguage()))
        ->assign('oSuchspecial_arr', baueAlleSuchspecialURLs())
        ->assign('ShopLogoURL', Shop::getLogo())
        ->assign('ShopLogoURL_abs', Shop::getLogo(true))

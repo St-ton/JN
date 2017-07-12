@@ -422,7 +422,7 @@ class TrustedShops
                     gibPreisStringLocalized($oItem->protectedAmountDecimal);
 
                 if (isset($_SESSION['Warenkorb'], $_SESSION['Steuersatz']) &&
-                    (!isset($_SESSION['Kundengruppe']->nNettoPreise) || !$_SESSION['Kundengruppe']->nNettoPreise)
+                    (!isset($_SESSION['Kundengruppe']->nNettoPreise) || !Session::CustomerGroup()->isMerchant())
                 ) {
                     $this->oKaeuferschutzProdukte->item[$i]->grossFeeLocalized = gibPreisStringLocalized($oItem->netFee *
                         ((100 + (float)$_SESSION['Steuersatz'][$_SESSION['Warenkorb']->gibVersandkostenSteuerklasse($cLandISO)]) / 100));
@@ -500,9 +500,9 @@ class TrustedShops
                     // Std Währung
                     $oWaehrung = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
                     // Nicht Standard im Shop?
-                    if ($_SESSION['Waehrung']->kWaehrung != $oWaehrung->kWaehrung) {
-                        $fPreis = $oItem->fNetto / $_SESSION['Waehrung']->fFaktor;
-                        $nWert  = $oItem->nWert / $_SESSION['Waehrung']->fFaktor;
+                    if (Session::Currency()->getID() !== (int)$oWaehrung->kWaehrung) {
+                        $fPreis = $oItem->fNetto / Session::Currency()->getConversionFactor();
+                        $nWert  = $oItem->nWert / Session::Currency()->getConversionFactor();
                     }
                     if ($this->oKaeuferschutzProdukte === null) {
                         $this->oKaeuferschutzProdukte = new stdClass();

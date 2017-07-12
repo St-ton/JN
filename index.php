@@ -15,14 +15,14 @@ if (Shop::$kLink > 0) {
     $link = $linkHelper->getPageLink(Shop::$kLink);
 }
 executeHook(HOOK_INDEX_NAVI_HEAD_POSTGET);
-//prg
+// prg
 if (isset($_SESSION['bWarenkorbHinzugefuegt'], $_SESSION['bWarenkorbAnzahl'], $_SESSION['hinweis'])) {
     $smarty->assign('bWarenkorbHinzugefuegt', $_SESSION['bWarenkorbHinzugefuegt'])
            ->assign('bWarenkorbAnzahl', $_SESSION['bWarenkorbAnzahl'])
            ->assign('hinweis', $_SESSION['hinweis']);
     unset($_SESSION['hinweis'], $_SESSION['bWarenkorbAnzahl'], $_SESSION['bWarenkorbHinzugefuegt']);
 }
-//wurde ein artikel in den Warenkorb gelegt?
+// wurde ein artikel in den Warenkorb gelegt?
 checkeWarenkorbEingang();
 if (!$cParameter_arr['kWunschliste'] &&
     verifyGPDataString('error') === '' &&
@@ -36,22 +36,22 @@ if (!$cParameter_arr['kWunschliste'] &&
     );
     exit();
 }
-//support for artikel_after_cart_add
+// support for artikel_after_cart_add
 if ($smarty->getTemplateVars('bWarenkorbHinzugefuegt')) {
     require_once PFAD_ROOT . PFAD_INCLUDES . 'artikel_inc.php';
     if (isset($_POST['a']) && function_exists('gibArtikelXSelling')) {
         $smarty->assign('Xselling', gibArtikelXSelling($_POST['a']));
     }
 }
-if (!$_SESSION['Kundengruppe']->darfArtikelKategorienSehen &&
-    ($cParameter_arr['kArtikel'] > 0 || $cParameter_arr['kKategorie'] > 0)
+if (($cParameter_arr['kArtikel'] > 0 || $cParameter_arr['kKategorie'] > 0)
+    && !Session::CustomerGroup()->mayViewCategories()
 ) {
-    //falls Artikel/Kategorien nicht gesehen werden duerfen -> login
+    // falls Artikel/Kategorien nicht gesehen werden duerfen -> login
     header('Location: ' . $linkHelper->getStaticRoute('jtl.php') . '?li=1', true, 303);
     exit;
 }
 if ($cParameter_arr['kKategorie'] > 0 &&
-    !Kategorie::isVisible($cParameter_arr['kKategorie'], $_SESSION['Kundengruppe']->kKundengruppe)
+    !Kategorie::isVisible($cParameter_arr['kKategorie'], Session::CustomerGroup()->getID())
 ) {
     $cParameter_arr['kKategorie'] = 0;
     $oLink                        = Shop::DB()->select('tlink', 'nLinkart', LINKTYP_404);

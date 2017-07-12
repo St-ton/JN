@@ -398,13 +398,13 @@ function holeAktuelleUmfrage($kUmfrage)
             LEFT JOIN tseo 
                 ON tseo.cKey = 'kUmfrage'
                 AND tseo.kKey = tumfrage.kUmfrage
-                AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
+                AND tseo.kSprache = " . Shop::getLanguage() . "
             WHERE tumfrage.kUmfrage = " . (int)$kUmfrage . "
                 AND tumfrage.nAktiv = 1
-                AND tumfrage.kSprache = " . (int)$_SESSION['kSprache'] . "
+                AND tumfrage.kSprache = " . Shop::getLanguage() . "
                 AND (
                     cKundengruppe LIKE '%;-1;%' 
-                    OR cKundengruppe RLIKE '^([0-9;]*;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";'
+                    OR cKundengruppe RLIKE '^([0-9;]*;)?" . Session::CustomerGroup()->getID() . ";'
                     )
                 AND (
                     (dGueltigVon <= now() 
@@ -438,12 +438,12 @@ function holeUmfrageUebersicht()
             JOIN tumfragefrage ON tumfragefrage.kUmfrage = tumfrage.kUmfrage
             LEFT JOIN tseo ON tseo.cKey = 'kUmfrage'
                 AND tseo.kKey = tumfrage.kUmfrage
-                AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
+                AND tseo.kSprache = " . Shop::getLanguage() . "
             WHERE tumfrage.nAktiv = 1
-                AND tumfrage.kSprache = " . (int)$_SESSION['kSprache'] . "
+                AND tumfrage.kSprache = " . Shop::getLanguage() . "
                 AND (
                     cKundengruppe LIKE '%;-1;%' 
-                    OR cKundengruppe RLIKE '^([0-9;]*;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";'
+                    OR cKundengruppe RLIKE '^([0-9;]*;)?" . Session::CustomerGroup()->getID() . ";'
                     )
                 AND (
                     (dGueltigVon <= now() 
@@ -484,7 +484,7 @@ function bearbeiteUmfrageAuswertung($oUmfrage)
     if ($_SESSION['Kunde']->kKunde > 0) {
         // Bekommt der Kunde einen Kupon und ist dieser Gültig?
         if ($oUmfrage->kKupon > 0) {
-            $oSprache = Shop::DB()->select('tsprache', 'kSprache', (int)$_SESSION['kSprache']);
+            $oSprache = Shop::DB()->select('tsprache', 'kSprache', Shop::getLanguage());
             $oKupon   = Shop::DB()->query(
                 "SELECT tkuponsprache.cName, tkupon.kKupon, tkupon.cCode
                     FROM tkupon

@@ -10,8 +10,8 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'artikelsuchspecial_inc.php';
  */
 function gibStartBoxen()
 {
-    $kKundengruppe = $_SESSION['Kundengruppe']->kKundengruppe;
-    if (!$kKundengruppe || !$_SESSION['Kundengruppe']->darfArtikelKategorienSehen) {
+    $kKundengruppe = Session::CustomerGroup()->getID();
+    if (!$kKundengruppe || !Session::CustomerGroup()->mayViewCategories()) {
         return [];
     }
     $cURL          = 0;
@@ -86,7 +86,7 @@ function gibAuswahlAssistentFragen($Einstellungen)
         if (function_exists('gibAAFrage')) {
             $oSpracheStd            = gibStandardsprache(true);
 
-            return gibAAFrage($_SESSION['AuswahlAssistent']['nFrage'], $_SESSION['kSprache'], $oSpracheStd->kSprache);
+            return gibAAFrage($_SESSION['AuswahlAssistent']['nFrage'], Shop::getLanguage(), (int)$oSpracheStd->kSprache);
         }
     } else {
         unset($_SESSION['AuswahlAssistent']);
@@ -109,7 +109,7 @@ function gibNews($Einstellungen)
     ) {
         return $oNews_arr;
     }
-    $cacheID = 'news_' . md5(json_encode($Einstellungen['news']) . '_' . (int)$_SESSION['kSprache']);
+    $cacheID = 'news_' . md5(json_encode($Einstellungen['news']) . '_' . Shop::getLanguage());
 
     if (($oNews_arr = Shop::Cache()->get($cacheID)) === false) {
         if ((int)$Einstellungen['news']['news_anzahl_content'] > 0) {
@@ -133,13 +133,13 @@ function gibNews($Einstellungen)
                     AND tnewskommentar.nAktiv = 1
                 LEFT JOIN tseo ON tseo.cKey = 'kNews'
                     AND tseo.kKey = tnews.kNews
-                    AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
-                WHERE tnews.kSprache = " . (int)$_SESSION['kSprache'] . "
+                    AND tseo.kSprache = " . Shop::getLanguage() . "
+                WHERE tnews.kSprache = " . Shop::getLanguage() . "
                     AND tnews.nAktiv = 1
                     AND tnews.dGueltigVon <= now()
                     AND (
                         tnews.cKundengruppe LIKE '%;-1;%' 
-                        OR tnews.cKundengruppe RLIKE '^([0-9;]*;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";'
+                        OR tnews.cKundengruppe RLIKE '^([0-9;]*;)?" . Session::CustomerGroup()->getID() . ";'
                         )
                 GROUP BY tnews.kNews
                 ORDER BY tnews.dGueltigVon DESC" . $cSQL, 2
@@ -248,8 +248,8 @@ function gibLivesucheTop($Einstellungen)
             LEFT JOIN tseo 
                 ON tseo.cKey = 'kSuchanfrage' 
                 AND tseo.kKey = tsuchanfrage.kSuchanfrage 
-                AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
-            WHERE tsuchanfrage.kSprache = " . (int)$_SESSION['kSprache'] . "
+                AND tseo.kSprache = " . Shop::getLanguage() . "
+            WHERE tsuchanfrage.kSprache = " . Shop::getLanguage() . "
                 AND tsuchanfrage.nAktiv = 1
             ORDER BY tsuchanfrage.nAnzahlGesuche DESC
             LIMIT " . $limit, 2
@@ -310,8 +310,8 @@ function gibLivesucheLast($Einstellungen)
             LEFT JOIN tseo 
                 ON tseo.cKey = 'kSuchanfrage' 
                 AND tseo.kKey = tsuchanfrage.kSuchanfrage 
-                AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
-            WHERE tsuchanfrage.kSprache = " . (int)$_SESSION['kSprache'] . "
+                AND tseo.kSprache = " . Shop::getLanguage() . "
+            WHERE tsuchanfrage.kSprache = " . Shop::getLanguage() . "
                 AND tsuchanfrage.nAktiv = 1
             ORDER BY tsuchanfrage.dZuletztGesucht DESC
             LIMIT " . $limit, 2
@@ -355,9 +355,9 @@ function gibTagging($Einstellungen)
             LEFT JOIN tseo 
                 ON tseo.cKey = 'kTag' 
                 AND tseo.kKey = ttag.kTag 
-                AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
+                AND tseo.kSprache = " . Shop::getLanguage() . "
             WHERE ttag.nAktiv = 1
-                AND ttag.kSprache = " . (int)$_SESSION['kSprache'] . "
+                AND ttag.kSprache = " . Shop::getLanguage() . "
             GROUP BY ttag.cName
             ORDER BY Anzahl DESC LIMIT " . $limit, 2
     );
@@ -395,7 +395,7 @@ function gibNewsletterHistory()
     $oNewsletterHistory_arr = Shop::DB()->selectAll(
         'tnewsletterhistory',
         'kSprache',
-        (int)$_SESSION['kSprache'],
+        Shop::getLanguage(),
         'kNewsletterHistory, cBetreff, DATE_FORMAT(dStart, \'%d.%m.%Y %H:%i\') AS Datum, cHTMLStatic',
         'dStart DESC'
     );
@@ -427,7 +427,7 @@ function gibSitemapKategorien()
 function gibSitemapGlobaleMerkmale()
 {
     $isDefaultLanguage = standardspracheAktiv();
-    $cacheID           = 'gsgm_' . (($isDefaultLanguage === true) ? 'd_' : '') . (int)$_SESSION['kSprache'];
+    $cacheID           = 'gsgm_' . (($isDefaultLanguage === true) ? 'd_' : '') . Shop::getLanguage();
     if (($oMerkmal_arr = Shop::Cache()->get($cacheID)) === false) {
         $oMerkmal_arr    = [];
         $cDatei          = 'index.php';
@@ -440,7 +440,7 @@ function gibSitemapGlobaleMerkmale()
             $cSQL            = " JOIN tmerkmal ON tmerkmal.kMerkmal = tmerkmalsprache.kMerkmal";
             $cSQL .= " JOIN tmerkmalwert ON tmerkmalwert.kMerkmal = tmerkmal.kMerkmal";
             $cSQL .= " JOIN tmerkmalwertsprache ON tmerkmalwertsprache.kMerkmalWert = tmerkmalwert.kMerkmalWert";
-            $cMerkmalWhere = " AND tmerkmalsprache.kSprache = " . (int)$_SESSION['kSprache'];
+            $cMerkmalWhere = " AND tmerkmalsprache.kSprache = " . Shop::getLanguage();
         }
         $oMerkmalTMP_arr = Shop::DB()->query("
             SELECT {$cMerkmalTabelle}.*, tmerkmalwertsprache.cWert, tseo.cSeo, tmerkmalwertsprache.kMerkmalWert, 
@@ -453,9 +453,9 @@ function gibSitemapGlobaleMerkmale()
                 LEFT JOIN tseo 
                     ON tseo.cKey = 'kMerkmalWert'
                     AND tseo.kKey = tmerkmalwertsprache.kMerkmalWert
-                    AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
+                    AND tseo.kSprache = " . Shop::getLanguage() . "
                 WHERE tmerkmal.nGlobal = 1
-                    AND tmerkmalwertsprache.kSprache = " . (int)$_SESSION['kSprache'] . "
+                    AND tmerkmalwertsprache.kSprache = " . Shop::getLanguage() . "
                     {$cMerkmalWhere}
                 GROUP BY tmerkmalwertsprache.kMerkmalWert
                 ORDER BY tmerkmal.nSort, {$cMerkmalTabelle}.cName, tmerkmalwert.nSort, tmerkmalwertsprache.cWert", 2
@@ -593,11 +593,11 @@ function gibBoxNews($BoxenEinstellungen)
         SELECT DATE_FORMAT(dErstellt, '%M, %Y') AS Datum, count(*) AS nAnzahl, 
             DATE_FORMAT(dErstellt, '%m') AS nMonat
             FROM tnews
-            WHERE kSprache = " . (int)$_SESSION['kSprache'] . "
+            WHERE kSprache = " . Shop::getLanguage() . "
                 AND nAktiv = 1
                 AND (
                     cKundengruppe LIKE '%;-1;%' 
-                    OR cKundengruppe RLIKE '^([0-9;]*;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";'
+                    OR cKundengruppe RLIKE '^([0-9;]*;)?" . Session::CustomerGroup()->getID() . ";'
                     )
             GROUP BY DATE_FORMAT(dErstellt, '%M')
             ORDER BY dErstellt DESC
@@ -621,10 +621,10 @@ function gibSitemapNews()
                     AND tnewsmonatsuebersicht.kSprache =1
                 LEFT JOIN tseo ON cKey = 'kNewsMonatsUebersicht'
                     AND kKey = tnewsmonatsuebersicht.kNewsMonatsUebersicht
-                    AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
+                    AND tseo.kSprache = " . Shop::getLanguage() . "
                 WHERE tnews.dGueltigVon < now()
                     AND tnews.nAktiv = 1
-                    AND tnews.kSprache = " . (int)$_SESSION['kSprache'] . "
+                    AND tnews.kSprache = " . Shop::getLanguage() . "
                 GROUP BY year(tnews.dGueltigVon) , month(tnews.dGueltigVon)
                 ORDER BY tnews.dGueltigVon DESC", 2
         );
@@ -642,12 +642,12 @@ function gibSitemapNews()
                         LEFT JOIN tseo 
                             ON tseo.cKey = 'kNews'
                             AND tseo.kKey = tnews.kNews
-                            AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
-                        WHERE tnews.kSprache = " . (int)$_SESSION['kSprache'] . "
+                            AND tseo.kSprache = " . Shop::getLanguage() . "
+                        WHERE tnews.kSprache = " . Shop::getLanguage() . "
                             AND tnews.nAktiv = 1
                             AND (
                                 tnews.cKundengruppe LIKE '%;-1;%' 
-                                OR tnews.cKundengruppe RLIKE '^([0-9;]*;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";'
+                                OR tnews.cKundengruppe RLIKE '^([0-9;]*;)?" . Session::CustomerGroup()->getID() . ";'
                                 )
                             AND (MONTH(tnews.dGueltigVon) = '" . $oNewsMonatsUebersicht->nMonat . "') 
                             && (tnews.dGueltigVon <= now())
@@ -679,7 +679,7 @@ function gibSitemapNews()
  */
 function gibNewsKategorie()
 {
-    $cacheID = 'news_category_' . (int)$_SESSION['kSprache'] . '_' . (int)$_SESSION['Kundengruppe']->kKundengruppe;
+    $cacheID = 'news_category_' . Shop::getLanguage() . '_' . Session::CustomerGroup()->getID();
     if (($oNewsKategorie_arr = Shop::Cache()->get($cacheID)) === false) {
         $oNewsKategorie_arr = Shop::DB()->query("
             SELECT tnewskategorie.kNewsKategorie, tnewskategorie.kSprache, tnewskategorie.cName,
@@ -695,14 +695,14 @@ function gibNewsKategorie()
                 LEFT JOIN tseo 
                     ON tseo.cKey = 'kNewsKategorie'
                     AND tseo.kKey = tnewskategorie.kNewsKategorie
-                    AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
-                WHERE tnewskategorie.kSprache = " . (int)$_SESSION['kSprache'] . "
+                    AND tseo.kSprache = " . Shop::getLanguage() . "
+                WHERE tnewskategorie.kSprache = " . Shop::getLanguage() . "
                     AND tnewskategorie.nAktiv = 1
                     AND tnews.nAktiv = 1
                     AND tnews.dGueltigVon <= now()
                     AND (
                             tnews.cKundengruppe LIKE '%;-1;%' 
-                            OR tnews.cKundengruppe RLIKE '^([0-9;]*;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";'
+                            OR tnews.cKundengruppe RLIKE '^([0-9;]*;)?" . Session::CustomerGroup()->getID() . ";'
                         )
                 GROUP BY tnewskategorienews.kNewsKategorie
                 ORDER BY tnewskategorie.nSort DESC", 2
@@ -723,14 +723,14 @@ function gibNewsKategorie()
                         LEFT JOIN tseo 
                             ON tseo.cKey = 'kNews'
                             AND tseo.kKey = tnews.kNews
-                            AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
-                        WHERE tnews.kSprache = " . (int)$_SESSION['kSprache'] . "
+                            AND tseo.kSprache = " . Shop::getLanguage() . "
+                        WHERE tnews.kSprache = " . Shop::getLanguage() . "
                             AND tnewskategorienews.kNewsKategorie = " . (int)$oNewsKategorie->kNewsKategorie . "
                             AND tnews.nAktiv = 1
                             AND tnews.dGueltigVon <= now()
                             AND (
                                     tnews.cKundengruppe LIKE '%;-1;%' 
-                                    OR tnews.cKundengruppe RLIKE '^([0-9;]*;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";'
+                                    OR tnews.cKundengruppe RLIKE '^([0-9;]*;)?" . Session::CustomerGroup()->getID() . ";'
                                 )
                         GROUP BY tnews.kNews
                         ORDER BY tnews.dGueltigVon DESC", 2
@@ -768,15 +768,15 @@ function gibGratisGeschenkArtikel($Einstellungen)
     $cSQLLimit = ((int)$Einstellungen['sonstiges']['sonstiges_gratisgeschenk_anzahl'] > 0)
         ? " LIMIT " . (int)$Einstellungen['sonstiges']['sonstiges_gratisgeschenk_anzahl']
         : '';
-    $oArtikelGeschenkTMP_arr = Shop::DB()->query("
-        SELECT tartikel.kArtikel, tartikelattribut.cWert
+    $oArtikelGeschenkTMP_arr = Shop::DB()->query(
+        "SELECT tartikel.kArtikel, tartikelattribut.cWert
             FROM tartikel
             JOIN tartikelattribut 
                 ON tartikelattribut.kArtikel = tartikel.kArtikel
             LEFT JOIN tartikelsichtbarkeit 
                 ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                AND tartikelsichtbarkeit.kKundengruppe = {$_SESSION['Kundengruppe']->kKundengruppe}
-            WHERE tartikelsichtbarkeit.kArtikel IS NULL
+                AND tartikelsichtbarkeit.kKundengruppe = " . Session::CustomerGroup()->getID() .
+            "WHERE tartikelsichtbarkeit.kArtikel IS NULL
             AND tartikelattribut.cName = '" . FKT_ATTRIBUT_GRATISGESCHENK . "' " .
             gibLagerfilter() .
             $cSQLSort .
@@ -915,13 +915,13 @@ function gibNewsArchiv()
             LEFT JOIN tseo 
                 ON tseo.cKey = 'kNews'
                 AND tseo.kKey = tnews.kNews
-                AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
-            WHERE tnews.kSprache = " . (int)$_SESSION['kSprache'] . "
+                AND tseo.kSprache = " . Shop::getLanguage() . "
+            WHERE tnews.kSprache = " . Shop::getLanguage() . "
                 AND tnews.nAktiv = 1
                 AND MONTH(tnews.dErstellt) = '" . date('m') . "'
                 AND (
                         tnews.cKundengruppe LIKE '%;-1;%' 
-                        OR tnews.cKundengruppe RLIKE '^([0-9;]*;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";'
+                        OR tnews.cKundengruppe RLIKE '^([0-9;]*;)?" . Session::CustomerGroup()->getID() . ";'
                     )
             GROUP BY tnews.kNews
             ORDER BY tnews.dErstellt DESC", 2

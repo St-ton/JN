@@ -301,7 +301,7 @@ class LinkHelper
             $session = [];
             // fixes for admin backend
             $customerGroupID = isset($_SESSION['Kundengruppe']->kKundengruppe)
-                ? (int)$_SESSION['Kundengruppe']->kKundengruppe
+                ? Session::CustomerGroup()->getID()
                 : Kundengruppe::getDefaultGroupID();
             $Linkgruppen = Shop::DB()->query("SELECT * FROM tlinkgruppe", 2);
             $linkGroups  = new stdClass();
@@ -417,9 +417,9 @@ class LinkHelper
             }
             // versand
             $cKundengruppenSQL = '';
-            if (isset($_SESSION['Kundengruppe']->kKundengruppe) && $_SESSION['Kundengruppe']->kKundengruppe > 0) {
+            if (Session::CustomerGroup()->getID() > 0) {
                 $cKundengruppenSQL = " AND (tlink.cKundengruppen RLIKE '^([0-9;]*;)?" .
-                    (int)$_SESSION['Kundengruppe']->kKundengruppe . ";'
+                    Session::CustomerGroup()->getID() . ";'
                     OR tlink.cKundengruppen IS NULL OR tlink.cKundengruppen = 'NULL' OR tlink.cKundengruppen = '')";
             }
             $versand_arr = Shop::DB()->query(
@@ -851,7 +851,7 @@ class LinkHelper
                         AND (tlink.cKundengruppen IS NULL
                         OR tlink.cKundengruppen = 'NULL'
                         OR tlink.cKundengruppen RLIKE '^([0-9;]*;)?" .
-                            (int)$_SESSION['Kundengruppe']->kKundengruppe . ";')",
+Session::CustomerGroup()->getID() . ";')",
                 2
             );
             if (!empty($linkData)) {
@@ -907,7 +907,7 @@ class LinkHelper
         $kLink = (int)$kLink;
         if ((int)$_SESSION['kSprache'] === 0) {
             $oSprache                = gibStandardsprache();
-            $_SESSION['kSprache']    = $oSprache->kSprache;
+            $_SESSION['kSprache']    = (int)$oSprache->kSprache;
             $_SESSION['cISOSprache'] = $oSprache->cISO;
             Shop::Lang()->autoload();
         }
@@ -1041,7 +1041,7 @@ class LinkHelper
                     ? $index[$language]
                     : null;
                 $customerGroupID = isset($_SESSION['Kundengruppe']->kKundengruppe)
-                    ? (int)$_SESSION['Kundengruppe']->kKundengruppe
+                    ? Session::CustomerGroup()->getID()
                     : 0;
                 if ($full === true) {
                     if ($secure === true) {

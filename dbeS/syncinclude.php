@@ -991,7 +991,7 @@ function handleNewPriceFormat($xml)
             $kKundengruppen_arr = Kundengruppe::getGroups();
             /** @var Kundengruppe $customergroup */
             foreach ($kKundengruppen_arr as $customergroup) {
-                $kKundengruppe = $customergroup->getKundengruppe();
+                $kKundengruppe = $customergroup->getID();
                 if (isset($xml['fStandardpreisNetto']) && !in_array($kKundengruppe, $customerGroupHandled, true)) {
                     $kPreis = handlePriceFormat($kArtikel, $kKundengruppe);
                     $o      = (object)[

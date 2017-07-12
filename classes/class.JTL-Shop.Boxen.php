@@ -369,16 +369,14 @@ class Boxen
      */
     public function prepareBox($kBoxVorlage, $oBox)
     {
-        $kKundengruppe     = (int)$_SESSION['Kundengruppe']->kKundengruppe;
+        $kKundengruppe     = Session::CustomerGroup()->getID();
         $kBoxVorlage       = (int)$kBoxVorlage;
-        $currencyCachePart = isset($_SESSION['Waehrung']->kWaehrung)
-            ? '_cur_' . $_SESSION['Waehrung']->kWaehrung
-            : '';
+        $currencyCachePart = '_cur_' . Session::Currency()->getID();
         $kSprache          = Shop::getLanguage();
         switch ($kBoxVorlage) {
             case BOX_BESTSELLER :
                 $oBox->compatName = 'Bestseller';
-                if (!$_SESSION['Kundengruppe']->darfArtikelKategorienSehen) {
+                if (!Session::CustomerGroup()->mayViewCategories()) {
                     $oBox->anzeigen = 'N';
                     break;
                 }
@@ -496,7 +494,7 @@ class Boxen
                 ) {
                     $cSQL = ' LIMIT ' . (int)$this->boxConfig['umfrage']['umfrage_box_anzahl'];
                 }
-                $cacheID = 'bu_' . $kSprache . '_' . $_SESSION['Kundengruppe']->kKundengruppe . md5($cSQL);
+                $cacheID = 'bu_' . $kSprache . '_' . Session::CustomerGroup()->getID() . md5($cSQL);
                 if (($oUmfrage_arr = Shop::Cache()->get($cacheID)) === false) {
                     // Umfrage Übersicht
                     $oUmfrage_arr = Shop::DB()->query(
@@ -516,7 +514,7 @@ class Boxen
                             WHERE tumfrage.nAktiv = 1
                                 AND tumfrage.kSprache = " . $kSprache . "
                                 AND (cKundengruppe LIKE '%;-1;%' 
-                                    OR cKundengruppe RLIKE '^([0-9;]*;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";')
+                                    OR cKundengruppe RLIKE '^([0-9;]*;)?" . Session::CustomerGroup()->getID() . ";')
                                 AND ((dGueltigVon <= now() 
                                     AND dGueltigBis >= now()) || (dGueltigVon <= now() 
                                     AND dGueltigBis = '0000-00-00 00:00:00'))
@@ -546,9 +544,9 @@ class Boxen
                 $nTage   = (isset($this->boxConfig['boxen']['boxen_preisradar_anzahltage']) && (int)$this->boxConfig['boxen']['boxen_preisradar_anzahltage'] > 0)
                     ? (int)$this->boxConfig['boxen']['boxen_preisradar_anzahltage']
                     : 30;
-                $cacheID = 'box_price_radar_' . $currencyCachePart . $nTage . '_' . $nLimit . '_' . $kSprache . '_' . $_SESSION['Kundengruppe']->kKundengruppe;
+                $cacheID = 'box_price_radar_' . $currencyCachePart . $nTage . '_' . $nLimit . '_' . $kSprache . '_' . Session::CustomerGroup()->getID();
                 if (($oBoxCached = Shop::Cache()->get($cacheID)) === false) {
-                    $oPreisradar_arr         = Preisradar::getProducts($_SESSION['Kundengruppe']->kKundengruppe, $nLimit, $nTage);
+                    $oPreisradar_arr         = Preisradar::getProducts(Session::CustomerGroup()->getID(), $nLimit, $nTage);
                     $oBox->Artikel           = new stdClass();
                     $oBox->Artikel->elemente = [];
                     if (count($oPreisradar_arr) > 0) {
@@ -582,7 +580,7 @@ class Boxen
                 if ((int)$this->boxConfig['news']['news_anzahl_box'] > 0) {
                     $cSQL = " LIMIT " . (int)$this->boxConfig['news']['news_anzahl_box'];
                 }
-                $cacheID = 'bnk_' . $kSprache . '_' . (int)$_SESSION['Kundengruppe']->kKundengruppe . '_' . md5($cSQL);
+                $cacheID = 'bnk_' . $kSprache . '_' . Session::CustomerGroup()->getID() . '_' . md5($cSQL);
                 if (($oBoxCached = Shop::Cache()->get($cacheID)) === false) {
                     $oNewsKategorie_arr = Shop::DB()->query(
                         "SELECT tnewskategorie.kNewsKategorie, tnewskategorie.kSprache, tnewskategorie.cName,
@@ -601,7 +599,7 @@ class Boxen
                                 AND tnews.nAktiv = 1
                                 AND tnews.dGueltigVon <= now()
                                 AND (tnews.cKundengruppe LIKE '%;-1;%' 
-                                    OR tnews.cKundengruppe RLIKE '^([0-9;]*;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";')
+                                    OR tnews.cKundengruppe RLIKE '^([0-9;]*;)?" . Session::CustomerGroup()->getID() . ";')
                                 AND tnews.kSprache = " . $kSprache . "
                             GROUP BY tnewskategorienews.kNewsKategorie
                             ORDER BY tnewskategorie.nSort DESC" . $cSQL, 2
@@ -834,7 +832,7 @@ class Boxen
                             $cDeleteParam .
                             $CWunschlistePos->kWunschlistePos .
                             $cZusatzParams;
-                        if ((int)$_SESSION['Kundengruppe']->nNettoPreise > 0) {
+                        if (Session::CustomerGroup()->isMerchant()) {
                             $fPreis = isset($CWunschlistePos->Artikel->Preise->fVKNetto)
                                 ? (int)$CWunschlistePos->fAnzahl * $CWunschlistePos->Artikel->Preise->fVKNetto
                                 : 0;
@@ -844,7 +842,7 @@ class Boxen
                                     (100 + $_SESSION['Steuersatz'][$CWunschlistePos->Artikel->kSteuerklasse]) / 100)
                                 : 0;
                         }
-                        $CWunschlistePos->cPreis = gibPreisStringLocalized($fPreis, $_SESSION['Waehrung']);
+                        $CWunschlistePos->cPreis = gibPreisStringLocalized($fPreis, Session::Currency());
                     }
                     $oBox->anzeigen            = 'Y';
                     $oBox->nAnzeigen           = (int)$this->boxConfig['boxen']['boxen_wunschzettel_anzahl'];
@@ -952,7 +950,7 @@ class Boxen
 
             case BOX_IN_KUERZE_VERFUEGBAR :
                 $oBox->compatName = 'ErscheinendeProdukte';
-                if (!$_SESSION['Kundengruppe']->darfArtikelKategorienSehen || !$kKundengruppe) {
+                if (!Session::CustomerGroup()->mayViewCategories() || !$kKundengruppe) {
                     $oBox->anzeigen = 'N';
                     break;
                 }
@@ -996,7 +994,7 @@ class Boxen
 
             case BOX_ZULETZT_ANGESEHEN :
                 $oBox->compatName = 'ZuletztAngesehen';
-                if (!$_SESSION['Kundengruppe']->darfArtikelKategorienSehen) {
+                if (!Session::CustomerGroup()->mayViewCategories()) {
                     $oBox->anzeigen = 'N';
                     break;
                 }
@@ -1023,7 +1021,7 @@ class Boxen
 
             case BOX_TOP_ANGEBOT :
                 $oBox->compatName = 'TopAngebot';
-                if (!$_SESSION['Kundengruppe']->darfArtikelKategorienSehen) {
+                if (!Session::CustomerGroup()->mayViewCategories()) {
                     $oBox->anzeigen = 'N';
                     break;
                 }
@@ -1071,7 +1069,7 @@ class Boxen
 
             case BOX_NEUE_IM_SORTIMENT :
                 $oBox->compatName = 'NeuImSortiment';
-                if (!$_SESSION['Kundengruppe']->darfArtikelKategorienSehen) {
+                if (!Session::CustomerGroup()->mayViewCategories()) {
                     $oBox->anzeigen = 'N';
                     break;
                 }
@@ -1125,7 +1123,7 @@ class Boxen
 
             case BOX_SONDERANGEBOT :
                 $oBox->compatName = 'Sonderangebote';
-                if (!$_SESSION['Kundengruppe']->darfArtikelKategorienSehen) {
+                if (!Session::CustomerGroup()->mayViewCategories()) {
                     $oBox->anzeigen = 'N';
                     break;
                 }
@@ -1202,7 +1200,7 @@ class Boxen
                 $oBox->compatName = 'oGlobalMerkmal_arr';
                 $oBox->anzeigen   = 'Y';
                 require_once PFAD_ROOT . PFAD_INCLUDES . 'seite_inc.php';
-                $oBox->globaleMerkmale = $_SESSION['Kundengruppe']->darfArtikelKategorienSehen
+                $oBox->globaleMerkmale = Session::CustomerGroup()->mayViewCategories()
                     ? gibSitemapGlobaleMerkmale()
                     : [];
                 break;
@@ -1256,7 +1254,7 @@ class Boxen
         $smarty          = Shop::Smarty();
         $originalArticle = $smarty->getTemplateVars('Artikel');
         if (isset($_SESSION['Kundengruppe']->nNettoPreise)) {
-            $smarty->assign('NettoPreise', $_SESSION['Kundengruppe']->nNettoPreise);
+            $smarty->assign('NettoPreise', Session::CustomerGroup()->getIsMerchant());
         }
         //check whether filters should be displayed after a box
         $filterAfter = (!empty($this->boxConfig) && isset($GLOBALS['NaviFilter']) && isset($GLOBALS['oSuchergebnisse']))

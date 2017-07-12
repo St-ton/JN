@@ -347,7 +347,7 @@ class WarenkorbPers
                         $oSichtbarkeit = Shop::DB()->select(
                             'tartikelsichtbarkeit',
                             'kArtikel', (int)$WarenkorbPersPos->kArtikel,
-                            'kKundengruppe', (int)$_SESSION['Kundengruppe']->kKundengruppe
+                            'kKundengruppe', Session::CustomerGroup()->getID()
                         );
                         if ($oSichtbarkeit === null || !isset($oSichtbarkeit->kArtikel) || !$oSichtbarkeit->kArtikel) {
                             // Prüfe welche kEigenschaft gesetzt ist

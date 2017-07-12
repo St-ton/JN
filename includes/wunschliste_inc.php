@@ -369,7 +369,7 @@ function bauecPreis($oWunschliste)
     // Wunschliste durchlaufen und cPreis setzen (Artikelanzahl mit eingerechnet)
     if (is_array($oWunschliste->CWunschlistePos_arr) && count($oWunschliste->CWunschlistePos_arr) > 0) {
         foreach ($oWunschliste->CWunschlistePos_arr as $oWunschlistePos) {
-            if ((int)$_SESSION['Kundengruppe']->nNettoPreise > 0) {
+            if (Session::CustomerGroup()->isMerchant()) {
                 $fPreis = isset($oWunschlistePos->Artikel->Preise->fVKNetto)
                     ? (int)$oWunschlistePos->fAnzahl * $oWunschlistePos->Artikel->Preise->fVKNetto
                     : 0;
@@ -382,7 +382,7 @@ function bauecPreis($oWunschliste)
                         )
                     : 0;
             }
-            $oWunschlistePos->cPreis = gibPreisStringLocalized($fPreis, $_SESSION['Waehrung']);
+            $oWunschlistePos->cPreis = gibPreisStringLocalized($fPreis, Session::Currency());
         }
     }
 

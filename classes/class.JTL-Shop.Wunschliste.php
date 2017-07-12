@@ -316,7 +316,7 @@ class Wunschliste
                     $oWunschlistePosSuche_arr[$i]->Artikel->fuelleArtikel($oSuchergebnis->kArtikel, Artikel::getDefaultOptions());
                     $oWunschlistePosSuche_arr[$i]->cArtikelName = $oWunschlistePosSuche_arr[$i]->Artikel->cName;
 
-                    if ((int)$_SESSION['Kundengruppe']->nNettoPreise > 0) {
+                    if (Session::CustomerGroup()->isMerchant()) {
                         $fPreis = (int)$oWunschlistePosSuche_arr[$i]->fAnzahl *
                             $oWunschlistePosSuche_arr[$i]->Artikel->Preise->fVKNetto;
                     } else {
@@ -326,7 +326,7 @@ class Wunschliste
                                 100);
                     }
 
-                    $oWunschlistePosSuche_arr[$i]->cPreis = gibPreisStringLocalized($fPreis, $_SESSION['Waehrung']);
+                    $oWunschlistePosSuche_arr[$i]->cPreis = gibPreisStringLocalized($fPreis, Session::Currency());
                 }
             }
 
@@ -477,7 +477,7 @@ class Wunschliste
                         $oSichtbarkeit = Shop::DB()->select(
                             'tartikelsichtbarkeit',
                             'kArtikel', (int)$CWunschlistePos->kArtikel,
-                            'kKundengruppe', (int)$_SESSION['Kundengruppe']->kKundengruppe
+                            'kKundengruppe', Session::CustomerGroup()->getID()
                         );
                         if ($oSichtbarkeit === null || empty($oSichtbarkeit->kArtikel)) {
                             // Prüfe welche kEigenschaft gesetzt ist

@@ -197,7 +197,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                         : getDefaultLanguageID();
                 }
                 if (!$kKundengruppe) {
-                    $kKundengruppe = $_SESSION['Kundengruppe']->kKundengruppe;
+                    $kKundengruppe = Session::CustomerGroup()->getID();
                 }
                 $this->kKonfiggruppe     = (int)$this->kKonfiggruppe;
                 $this->kKonfigitem       = (int)$this->kKonfigitem;
@@ -558,14 +558,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 $isConverted = true;
             }
             if ($bConvertCurrency && !$isConverted) {
-                if (isset($_SESSION['Waehrung'])) {
-                    $waehrung = $_SESSION['Waehrung'];
-                } else {
-                    $waehrung = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
-                }
-                $fVKPreis *= (float)$waehrung->fFaktor;
+                $fVKPreis *= Session::Currency()->getConversionFactor();
             }
-            if (!$_SESSION['Kundengruppe']->nNettoPreise && !$bForceNetto) {
+            if (!$bForceNetto && !Session::CustomerGroup()->isMerchant()) {
                 $fVKPreis = berechneBrutto($fVKPreis, gibUst($this->getSteuerklasse()), 4);
             }
 
@@ -598,10 +593,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 $fTmp = $this->oPreis->getPreis();
                 if ($fTmp < 0) {
                     $fRabatt = $fTmp * -1;
-                    if ($this->oPreis->getTyp() == 0) {
-                        if (!$_SESSION['Kundengruppe']->nNettoPreise) {
-                            $fRabatt = berechneBrutto($fRabatt, gibUst($this->getSteuerklasse()));
-                        }
+                    if ($this->oPreis->getTyp() == 0 && !Session::CustomerGroup()->isMerchant()) {
+                        $fRabatt = berechneBrutto($fRabatt, gibUst($this->getSteuerklasse()));
                     }
                 }
             }
@@ -627,10 +620,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 $fTmp = $this->oPreis->getPreis();
                 if ($fTmp > 0) {
                     $fZuschlag = $fTmp;
-                    if ($this->oPreis->getTyp() == 0) {
-                        if (!$_SESSION['Kundengruppe']->nNettoPreise) {
-                            $fZuschlag = berechneBrutto($fZuschlag, gibUst($this->getSteuerklasse()));
-                        }
+                    if ($this->oPreis->getTyp() == 0 && !Session::CustomerGroup()->isMerchant()) {
+                        $fZuschlag = berechneBrutto($fZuschlag, gibUst($this->getSteuerklasse()));
                     }
                 }
             }

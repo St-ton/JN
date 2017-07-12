@@ -198,7 +198,7 @@ class Hersteller
     public static function getAll($productLookup = true)
     {
         $sqlWhere = '';
-        $kSprache = isset($_SESSION['kSprache']) ? (int)$_SESSION['kSprache'] : Shop::getLanguage();
+        $kSprache = Shop::getLanguage();
         if ($productLookup) {
             $sqlWhere = "WHERE EXISTS (
                             SELECT 1
@@ -208,8 +208,8 @@ class Hersteller
                                 AND NOT EXISTS (
                                 SELECT 1 FROM tartikelsichtbarkeit
                                 WHERE tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
-                                    AND tartikelsichtbarkeit.kKundengruppe = {$_SESSION['Kundengruppe']->kKundengruppe}
-							)
+                                    AND tartikelsichtbarkeit.kKundengruppe = ". Session::CustomerGroup()->getID() .
+							")
                         )";
         }
         $objs = Shop::DB()->query(

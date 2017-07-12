@@ -352,21 +352,18 @@ function gibPreisString($preis)
  */
 function gibPreisStringLocalized($preis, $waehrung = 0, $html = 1, $nNachkommastellen = 2)
 {
-    if (!$waehrung && isset($_SESSION['Waehrung'])) {
-        $waehrung = $_SESSION['Waehrung'];
-    }
-    if (!isset($waehrung->kWaehrung) || !$waehrung->kWaehrung) {
-        $waehrung = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
+    if (!$waehrung) {
+        $waehrung = Session::Currency();
     }
     $localized    = number_format(
-        $preis * $waehrung->fFaktor,
+        $preis * $waehrung->getConversionFactor(),
         $nNachkommastellen,
-        $waehrung->cTrennzeichenCent,
-        $waehrung->cTrennzeichenTausend
+        $waehrung->getDecimalSeparator(),
+        $waehrung->getThousandsSeparator()
     );
-    $waherungname = (!$html) ? $waehrung->cName : $waehrung->cNameHTML;
+    $waherungname = $html ? $waehrung->getHtmlEntity() : $waehrung->getName();
 
-    return ($waehrung->cVorBetrag === 'Y')
+    return $waehrung->getForcePlacementBeforeNumber()
         ? ($waherungname . ' ' . $localized)
         : ($localized . ' ' . $waherungname);
 }
@@ -632,7 +629,7 @@ function checkeWarenkorbEingang()
                 $oSichtbarkeit = Shop::DB()->select(
                     'tartikelsichtbarkeit',
                     'kArtikel', $kArtikel,
-                    'kKundengruppe', (int)$_SESSION['Kundengruppe']->kKundengruppe,
+                    'kKundengruppe', Session::CustomerGroup()->getID(),
                     null, null,
                     false,
                     'kArtikel'
@@ -716,7 +713,7 @@ function checkeWarenkorbEingang()
                     $oSichtbarkeit = Shop::DB()->select(
                         'tartikelsichtbarkeit',
                         'kArtikel', $kArtikel,
-                        'kKundengruppe', (int)$_SESSION['Kundengruppe']->kKundengruppe,
+                        'kKundengruppe', Session::CustomerGroup()->getID(),
                         null, null,
                         false,
                         'kArtikel'
@@ -933,7 +930,7 @@ function checkeWarenkorbEingang()
                                     $oKonfigitem->getSteuerklasse(),
                                     C_WARENKORBPOS_TYP_ARTIKEL,
                                     false,
-                                    !$_SESSION['Kundengruppe']->nNettoPreise,
+                                    !Session::CustomerGroup()->isMerchant(),
                                     '',
                                     $cUnique,
                                     $oKonfigitem->getKonfigitem(),
@@ -1167,7 +1164,7 @@ function fuegeEinInWarenkorbPers($kArtikel, $fAnzahl, $oEigenschaftwerte_arr, $c
                 $oSichtbarkeit = Shop::DB()->select(
                     'tartikelsichtbarkeit',
                     'kArtikel', $kArtikel,
-                    'kKundengruppe', (int)$_SESSION['Kundengruppe']->kKundengruppe,
+                    'kKundengruppe', Session::CustomerGroup()->getID(),
                     null, null,
                     false,
                     'kArtikel'
@@ -1190,7 +1187,7 @@ function fuegeEinInWarenkorbPers($kArtikel, $fAnzahl, $oEigenschaftwerte_arr, $c
             }
         // Konfigitems ohne Artikelbezug
         } elseif ($kArtikel === 0 && !empty($kKonfigitem)) {
-            $konfItem = new Konfigitemsprache($kKonfigitem, $_SESSION['kSprache']);
+            $konfItem = new Konfigitemsprache($kKonfigitem, Shop::getLanguage());
             $oWarenkorbPers = new WarenkorbPers($_SESSION['Kunde']->kKunde);
             $oWarenkorbPers->fuegeEin($kArtikel, $konfItem->getName(), $oEigenschaftwerte_arr, $fAnzahl, $cUnique, $kKonfigitem, $nPosTyp);
         }
@@ -1278,7 +1275,7 @@ function pruefeFuegeEinInWarenkorb($Artikel, $anzahl, $oEigenschaftwerte_arr, $n
         $redirectParam[] = R_LAGER;
     }
     //darf preise sehen und somit einkaufen?
-    if ($_SESSION['Kundengruppe']->darfPreiseSehen !== 1 || $_SESSION['Kundengruppe']->darfArtikelKategorienSehen !== 1) {
+    if (!Session::CustomerGroup()->mayViewPrices() || !Session::CustomerGroup()->mayViewCategories()) {
         $redirectParam[] = R_LOGIN;
     }
     //kein vorbestellbares Produkt, aber mit Erscheinungsdatum in Zukunft
@@ -1582,7 +1579,7 @@ function checkeKuponWKPos($oWKPosition, $Kupon)
                 AND fMindestbestellwert <= " . $_SESSION['Warenkorb']->gibGesamtsummeWaren(true, false) . "
                 AND (kKundengruppe = -1 
                     OR kKundengruppe = 0 
-                    OR kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . ")
+                    OR kKundengruppe = " . Session::CustomerGroup()->getID() . ")
                 AND (nVerwendungen = 0 
                     OR nVerwendungen > nVerwendungenBisher)
                 AND (cArtikel = '' {$Artikel_qry})
@@ -1682,7 +1679,7 @@ function checkSetPercentCouponWKPos($oWKPosition, $Kupon)
                 AND fMindestbestellwert <= " . $_SESSION['Warenkorb']->gibGesamtsummeWaren(true, false) . "
                 AND (kKundengruppe = -1 
                     OR kKundengruppe = 0 
-                    OR kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . ")
+                    OR kKundengruppe = " . Session::CustomerGroup()->getID() . ")
                 AND (nVerwendungen = 0 
                     OR nVerwendungen > nVerwendungenBisher)
                 AND (cArtikel = '' {$Artikel_qry})
@@ -1692,16 +1689,9 @@ function checkSetPercentCouponWKPos($oWKPosition, $Kupon)
                     OR cKunden = '-1' {$Kunden_qry})
                 AND kKupon = " . (int)$Kupon->kKupon, 1
     );
-    $waehrung    = isset($_SESSION['Waehrung']) ? $_SESSION['Waehrung'] : null;
-    if ($waehrung === null || !isset($waehrung->kWaehrung)) {
-        $waehrung = $this->Waehrung;
-    }
-    if ($waehrung === null || !isset($waehrung->kWaehrung)) {
-        $waehrung = Shop::DB()->query("SELECT * FROM twaehrung WHERE cStandard = 'Y'", 1);
-    }
     if (isset($kupons_mgl->kKupon) && $kupons_mgl->kKupon > 0 && $kupons_mgl->cWertTyp === 'prozent') {
         $wkPos->fPreis = $oWKPosition->fPreis *
-            $waehrung->fFaktor *
+            Session::Currency()->getConversionFactor() *
             $oWKPosition->nAnzahl *
             ((100 + gibUst($oWKPosition->kSteuerklasse)) / 100);
         $wkPos->cName  = $oWKPosition->cName;
@@ -2199,7 +2189,7 @@ function checkeSpracheWaehrung($lang = '')
         foreach ($Sprachen as $Sprache) {
             if ($Sprache->cISO === $lang) {
                 $_SESSION['cISOSprache'] = $Sprache->cISO;
-                $_SESSION['kSprache']    = $Sprache->kSprache;
+                $_SESSION['kSprache']    = (int)$Sprache->kSprache;
                 Shop::setLanguage($Sprache->kSprache, $Sprache->cISO);
                 unset($_SESSION['Suche']);
                 $bSpracheDa = true;
@@ -2215,7 +2205,7 @@ function checkeSpracheWaehrung($lang = '')
             }
         }
         // Suchspecialoverlays
-        $GLOBALS['oSuchspecialoverlay_arr'] = holeAlleSuchspecialOverlays($_SESSION['kSprache']);
+        $GLOBALS['oSuchspecialoverlay_arr'] = holeAlleSuchspecialOverlays(Shop::getLanguage());
         if (!$bSpracheDa) { //lang mitgegeben, aber nicht mehr in db vorhanden -> alter Sprachlink
             $kArtikel              = verifyGPCDataInteger('a');
             $kKategorie            = verifyGPCDataInteger('k');
@@ -2238,7 +2228,7 @@ function checkeSpracheWaehrung($lang = '')
                     'tseo',
                     'cKey', 'kArtikel',
                     'kKey', $kArtikel,
-                    'kSprache', (int)$_SESSION['kSprache']
+                    'kSprache', Shop::getLanguage()
                 );
                 $cSeo  = $dbRes->cSeo;
             } elseif ($kKategorie > 0) {
@@ -2246,7 +2236,7 @@ function checkeSpracheWaehrung($lang = '')
                     'tseo',
                     'cKey', 'kKategorie',
                     'kKey', $kKategorie,
-                    'kSprache', (int)$_SESSION['kSprache']
+                    'kSprache', Shop::getLanguage()
                 );
                 $cSeo  = $dbRes->cSeo;
             } elseif ($kSeite > 0) {
@@ -2254,7 +2244,7 @@ function checkeSpracheWaehrung($lang = '')
                     'tseo',
                     'cKey', 'kLink',
                     'kKey', $kSeite,
-                    'kSprache', (int)$_SESSION['kSprache']
+                    'kSprache', Shop::getLanguage()
                 );
                 $cSeo  = $dbRes->cSeo;
             } elseif ($kVariKindArtikel > 0) {
@@ -2262,7 +2252,7 @@ function checkeSpracheWaehrung($lang = '')
                     'tseo',
                     'cKey', 'kArtikel',
                     'kKey', $kVariKindArtikel,
-                    'kSprache', (int)$_SESSION['kSprache']
+                    'kSprache', Shop::getLanguage()
                 );
                 $cSeo  = $dbRes->cSeo;
             } elseif ($kHersteller > 0) {
@@ -2270,7 +2260,7 @@ function checkeSpracheWaehrung($lang = '')
                     'tseo',
                     'cKey', 'kHersteller',
                     'kKey', $kHersteller,
-                    'kSprache', (int)$_SESSION['kSprache']
+                    'kSprache', Shop::getLanguage()
                 );
                 $cSeo  = $dbRes->cSeo;
             } elseif ($kSuchanfrage > 0) {
@@ -2278,7 +2268,7 @@ function checkeSpracheWaehrung($lang = '')
                     'tseo',
                     'cKey', 'kSuchanfrage',
                     'kKey', $kSuchanfrage,
-                    'kSprache', (int)$_SESSION['kSprache']
+                    'kSprache', Shop::getLanguage()
                 );
                 $cSeo  = $dbRes->cSeo;
             } elseif ($kMerkmalWert > 0) {
@@ -2286,7 +2276,7 @@ function checkeSpracheWaehrung($lang = '')
                     'tseo',
                     'cKey', 'kMerkmalWert',
                     'kKey', $kMerkmalWert,
-                    'kSprache', (int)$_SESSION['kSprache']
+                    'kSprache', Shop::getLanguage()
                 );
                 $cSeo  = $dbRes->cSeo;
             } elseif ($kTag > 0) {
@@ -2294,7 +2284,7 @@ function checkeSpracheWaehrung($lang = '')
                     'tseo',
                     'cKey', 'kTag',
                     'kKey', $kTag,
-                    'kSprache', (int)$_SESSION['kSprache']
+                    'kSprache', Shop::getLanguage()
                 );
                 $cSeo  = $dbRes->cSeo;
             } elseif ($kSuchspecial > 0) {
@@ -2302,7 +2292,7 @@ function checkeSpracheWaehrung($lang = '')
                     'tseo',
                     'cKey', 'kSuchspecial',
                     'kKey', $kSuchspecial,
-                    'kSprache', (int)$_SESSION['kSprache']
+                    'kSprache', Shop::getLanguage()
                 );
                 $cSeo  = $dbRes->cSeo;
             } elseif ($kNews > 0) {
@@ -2310,7 +2300,7 @@ function checkeSpracheWaehrung($lang = '')
                     'tseo',
                     'cKey', 'kNews',
                     'kKey', $kNews,
-                    'kSprache', (int)$_SESSION['kSprache']
+                    'kSprache', Shop::getLanguage()
                 );
                 $cSeo  = $dbRes->cSeo;
             } elseif ($kNewsMonatsUebersicht > 0) {
@@ -2318,7 +2308,7 @@ function checkeSpracheWaehrung($lang = '')
                     'tseo',
                     'cKey', 'kNewsMonatsUebersicht',
                     'kKey', $kNewsMonatsUebersicht,
-                    'kSprache', (int)$_SESSION['kSprache']
+                    'kSprache', Shop::getLanguage()
                 );
                 $cSeo  = $dbRes->cSeo;
             } elseif ($kNewsKategorie > 0) {
@@ -2326,7 +2316,7 @@ function checkeSpracheWaehrung($lang = '')
                     'tseo',
                     'cKey', 'kNewsKategorie',
                     'kKey', $kNewsKategorie,
-                    'kSprache', (int)$_SESSION['kSprache']
+                    'kSprache', Shop::getLanguage()
                 );
                 $cSeo  = $dbRes->cSeo;
             } elseif ($kUmfrage > 0) {
@@ -2334,7 +2324,7 @@ function checkeSpracheWaehrung($lang = '')
                     'tseo',
                     'cKey', 'kUmfrage',
                     'kKey', $kUmfrage,
-                    'kSprache', (int)$_SESSION['kSprache']
+                    'kSprache', Shop::getLanguage()
                 );
                 $cSeo  = $dbRes->cSeo;
             }
@@ -2345,12 +2335,14 @@ function checkeSpracheWaehrung($lang = '')
 
     $waehrung = verifyGPDataString('curr');
     if ($waehrung) {
-        $Waehrungen = Shop::DB()->query("SELECT * FROM twaehrung", 2);
+        $Waehrungen = Shop::DB()->query("SELECT cISO FROM twaehrung", 2);
         foreach ($Waehrungen as $Waehrung) {
             if ($Waehrung->cISO === $waehrung) {
                 setFsession($Waehrung->kWaehrung, 0, 0);
-                memberCopy($Waehrung, $_SESSION['Waehrung']);
-                $_SESSION['cWaehrungName'] = $Waehrung->cName;
+                $currency = new Currency($Waehrung->kWaehrung);
+
+                $_SESSION['Waehrung']      = $currency;
+                $_SESSION['cWaehrungName'] = $currency->getName();
 
                 if (isset($_SESSION['Wunschliste'])) {
                     $_SESSION['Wunschliste']->umgebungsWechsel();
@@ -2510,11 +2502,10 @@ function getFsession()
             $_SESSION['Usersortierung'] = $fsess->nUserSortierung;
         }
         if ($fsess->kWaehrung) {
-            $Waehrung = Shop::DB()->select('twaehrung', 'kWaehrung', $fsess->kWaehrung);
-            if (!empty($Waehrung->kWaehrung)) {
-                $_SESSION['Waehrung']      = $Waehrung;
-                $_SESSION['cWaehrungName'] = $Waehrung->cName;
-            }
+            $currency = new Currency($fsess->kWaehrung);
+
+            $_SESSION['Waehrung']      = $currency;
+            $_SESSION['cWaehrungName'] = $currency->getName();
         }
     }
     if (time() % 10 === 0) {
@@ -2553,7 +2544,7 @@ function standardspracheAktiv($bShop = false, $kSprache = null)
     if ($kSprache === null && !isset($_SESSION['kSprache'])) {
         return true;
     }
-    $langToCheckAgainst = ($kSprache !== null) ? (int)$kSprache : (int)$_SESSION['kSprache'];
+    $langToCheckAgainst = $kSprache !== null ? (int)$kSprache : Shop::getLanguage();
     if (isset($_SESSION['Sprachen']) && is_array($_SESSION['Sprachen']) && $langToCheckAgainst > 0) {
         foreach ($_SESSION['Sprachen'] as $Sprache) {
             if ($Sprache->cStandard === 'Y' && $Sprache->kSprache == $langToCheckAgainst && !$bShop) {
@@ -2604,12 +2595,7 @@ function gibStandardsprache($bShop = true)
  */
 function gibStandardWaehrung($bISO = false)
 {
-    if (isset($_SESSION['Waehrung']) && $_SESSION['Waehrung']->kWaehrung > 0) {
-        return $bISO === true ? $_SESSION['Waehrung']->cISO : $_SESSION['Waehrung']->kWaehrung;
-    }
-    $oWaehrung = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
-
-    return ($bISO === true) ? $oWaehrung->cISO : $oWaehrung->kWaehrung;
+    return $bISO === true ? Session::Currency()->getCode() : Session::Currency()->getID();
 }
 
 /**
@@ -2733,6 +2719,7 @@ function gibMoeglicheVerpackungen($kKundengruppe)
     );
     // Array bearbeiten
     if ($oVerpackung_arr !== false && count($oVerpackung_arr) > 0) {
+        $currencyCode = Session::Currency()->getID();
         foreach ($oVerpackung_arr as $i => $oVerpackung) {
             $oVerpackung_arr[$i]->nKostenfrei = 0;
             if ($fSummeWarenkorb >= $oVerpackung->fKostenfrei &&
@@ -2743,7 +2730,7 @@ function gibMoeglicheVerpackungen($kKundengruppe)
             }
             $oVerpackung_arr[$i]->fBruttoLocalized = gibPreisStringLocalized(
                 $oVerpackung_arr[$i]->fBrutto,
-                $_SESSION['Waehrung']->kWaehrung
+                $currencyCode
             );
         }
     } else {
@@ -3016,7 +3003,7 @@ function gibBelieferbareLaender($kKundengruppe = 0, $bIgnoreSetting = false, $bF
     if (empty($kKundengruppe)) {
         $kKundengruppe = Kundengruppe::getDefaultGroupID();
     }
-    $sprache = Shop::DB()->select('tsprache', 'kSprache', (int)$_SESSION['kSprache']);
+    $sprache = Shop::DB()->select('tsprache', 'kSprache', Shop::getLanguage());
     $sel_var = 'cDeutsch';
     $conf    = Shop::getSettings([CONF_KUNDEN]);
     if (strtolower($sprache->cNameEnglisch) !== 'german') {
@@ -3792,7 +3779,7 @@ function baueVersandkostenfreiLaenderString($oVersandart, $fWarenkorbSumme = 0.0
         $cacheID = 'bvkfls_' .
             $oVersandart->fVersandkostenfreiAbX .
             strlen($oVersandart->cLaender) . '_' .
-            (int)$_SESSION['kSprache'];
+            Shop::getLanguage();
         if (($vkfls = Shop::Cache()->get($cacheID)) === false) {
             // remove empty strings
             $cLaender_arr = array_filter(explode(' ', $oVersandart->cLaender));
@@ -3822,23 +3809,21 @@ function baueVersandkostenfreiLaenderString($oVersandart, $fWarenkorbSumme = 0.0
 }
 
 /**
- * @param float      $preis
- * @param int|object $waehrung
- * @param int        $html
+ * @param float        $preis
+ * @param int|Currency $waehrung
+ * @param int          $html
  * @return string
  */
 function gibPreisLocalizedOhneFaktor($preis, $waehrung = 0, $html = 1)
 {
-    if (!$waehrung && isset($_SESSION['Waehrung'])) {
-        $waehrung = $_SESSION['Waehrung'];
+    $currency     = !$waehrung ? Session::Currency() : $waehrung;
+    if (get_class($currency) === 'stdClass') {
+        $currency = new Currency($currency->kWaehrung);
     }
-    if (!isset($waehrung->kWaehrung)) {
-        $waehrung = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
-    }
-    $localized    = number_format($preis, 2, $waehrung->cTrennzeichenCent, $waehrung->cTrennzeichenTausend);
-    $waherungname = (!$html) ? $waehrung->cName : $waehrung->cNameHTML;
+    $localized    = number_format($preis, 2, $currency->getDecimalSeparator(), $currency->getThousandsSeparator());
+    $waherungname = $html ? $currency->getHtmlEntity() : $currency->getName();
 
-    return $waehrung->cVorBetrag === 'Y'
+    return $currency->getForcePlacementBeforeNumber()
         ? $waherungname . ' ' . $localized
         : $localized . ' ' . $waherungname;
 }
@@ -4304,7 +4289,7 @@ function baueAlleSuchspecialURLs()
 function baueSuchSpecialURL($kKey)
 {
     $kKey    = (int)$kKey;
-    $cacheID = 'bsurl_' . $kKey . '_' . $_SESSION['kSprache'];
+    $cacheID = 'bsurl_' . $kKey . '_' . Shop::getLanguage();
     if (($url = Shop::Cache()->get($cacheID)) !== false) {
         executeHook(HOOK_BOXEN_INC_SUCHSPECIALURL);
 
@@ -4312,7 +4297,7 @@ function baueSuchSpecialURL($kKey)
     }
     $oSeo = Shop::DB()->select(
         'tseo',
-        'kSprache', (int)$_SESSION['kSprache'],
+        'kSprache', Shop::getLanguage(),
         'cKey', 'suchspecial',
         'kKey', $kKey,
         false,
@@ -4527,12 +4512,12 @@ function setzeSpracheUndWaehrungLink()
             $AktuellerArtikel->baueArtikelSprachURL(false);
         }
         foreach ($_SESSION['Waehrungen'] as $i => $oWaehrung) {
-            if (isset($AktuellerArtikel->kArtikel) &&
-                $AktuellerArtikel->kArtikel > 0 &&
-                isset($_SESSION['kSprache'], $AktuellerArtikel->cSprachURL_arr[$_SESSION['cISOSprache']])
+            if (isset($AktuellerArtikel->kArtikel)
+                && $AktuellerArtikel->kArtikel > 0
+                && isset($_SESSION['kSprache'], $AktuellerArtikel->cSprachURL_arr[$_SESSION['cISOSprache']])
             ) {
-                $_SESSION['Waehrungen'][$i]->cURL = $AktuellerArtikel->cSprachURL_arr[$_SESSION['cISOSprache']] .
-                    '?curr=' . $oWaehrung->cISO;
+                $_SESSION['Waehrungen'][$i]->setURL($AktuellerArtikel->cSprachURL_arr[$_SESSION['cISOSprache']] .
+                    '?curr=' . $oWaehrung->getCode());
             } elseif ($AktuelleSeite === 'WARENKORB'
                 || $AktuelleSeite === 'KONTAKT'
                 || $AktuelleSeite === 'REGISTRIEREN'
@@ -4593,22 +4578,25 @@ function setzeSpracheUndWaehrungLink()
                     $url = $helper->getStaticRoute($id, false, false);
                     //check if there is a SEO link for the given file
                     if ($url === $id) { //no SEO link - fall back to php file with GET param
-                        $url = $shopURL . $id . '?lang=' . $_SESSION['cISOSprache'] . '&curr=' . $oWaehrung->cISO;
+                        $url = $shopURL . $id . '?lang=' . $_SESSION['cISOSprache'] . '&curr=' . $oWaehrung->getCode();
                     } else { //there is a SEO link - make it a full URL
-                        $url = $helper->getStaticRoute($id, true, false) . '?curr=' . $oWaehrung->cISO;
+                        $url = $helper->getStaticRoute($id, true, false) . '?curr=' . $oWaehrung->getCode();
                     }
-                    $_SESSION['Waehrungen'][$i]->cURL = $url;
+                    $_SESSION['Waehrungen'][$i]->setURL($url);
                 }
             } elseif ($kLink > 0) {
-                $_SESSION['Waehrungen'][$i]->cURL = 'index.php?s=' . $kLink .
-                    '&lang=' . $_SESSION['cISOSprache'] . '&amp;curr=' . $oWaehrung->cISO;
+                $_SESSION['Waehrungen'][$i]->setURL('index.php?s=' . $kLink .
+                    '&lang=' . $_SESSION['cISOSprache'] . '&amp;curr=' . $oWaehrung->getCode()
+                );
             } else {
-                $_SESSION['Waehrungen'][$i]->cURL = $NaviFilter->getURL(
+                $_SESSION['Waehrungen'][$i]->setURL(
+                    $NaviFilter->getURL(
                         true,
                         $oZusatzFilter
-                    ) . '?curr=' . $oWaehrung->cISO;
+                    ) . '?curr=' . $oWaehrung->getCode()
+                );
             }
-            $_SESSION['Waehrungen'][$i]->cURLFull = $shopURL . $_SESSION['Waehrungen'][$i]->cURL;
+            $_SESSION['Waehrungen'][$i]->setURLFull($shopURL . $_SESSION['Waehrungen'][$i]->getURL());
         }
     }
     executeHook(HOOK_TOOLSGLOBAL_INC_SETZESPRACHEUNDWAEHRUNG_WAEHRUNG, [
@@ -6564,7 +6552,7 @@ function filterXSSArray($array)
  */
 function gibAktuelleKundengruppe()
 {
-    return Kundengruppe::getCurrent();
+    return Session::CustomerGroup()->getID();
 }
 
 /**
@@ -6859,8 +6847,8 @@ function gibURLzuNewsArchiv()
             LEFT JOIN tseo 
                 ON tseo.cKey = 'kNewsMonatsUebersicht'
                 AND tseo.kKey = tnewsmonatsuebersicht.kNewsMonatsUebersicht
-                AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
-            WHERE tnewsmonatsuebersicht.kSprache = " . (int)$_SESSION['kSprache'] . "
+                AND tseo.kSprache = " . Shop::getLanguage() . "
+            WHERE tnewsmonatsuebersicht.kSprache = " . Shop::getLanguage() . "
                 AND tnewsmonatsuebersicht.nMonat = " . (int)date('m') . "
                 AND tnewsmonatsuebersicht.nJahr = " . (int)date('Y'), 1
     );
@@ -6873,8 +6861,8 @@ function gibURLzuNewsArchiv()
                 LEFT JOIN tseo 
                     ON tseo.cKey = 'kNewsMonatsUebersicht'
                     AND tseo.kKey = tnewsmonatsuebersicht.kNewsMonatsUebersicht
-                    AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
-                WHERE tnewsmonatsuebersicht.kSprache = " . (int)$_SESSION['kSprache'] . "
+                    AND tseo.kSprache = " . Shop::getLanguage() . "
+                WHERE tnewsmonatsuebersicht.kSprache = " . Shop::getLanguage() . "
                 AND tnewsmonatsuebersicht.nJahr <= " . (int)date('Y') . "
                 ORDER BY nJahr DESC, nMonat DESC", 1
         );

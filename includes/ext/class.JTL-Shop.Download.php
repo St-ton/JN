@@ -109,7 +109,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
                 if ($bInfo) {
                     // Sprache
                     if (!$kSprache) {
-                        $kSprache = $_SESSION['kSprache'];
+                        $kSprache = Shop::getLanguage();
                     }
                     $this->oDownloadSprache = new DownloadSprache($oDownload->kDownload, $kSprache);
                     // History

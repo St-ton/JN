@@ -491,17 +491,17 @@ class Warenkorb
         $NeuePosition->cHinweis = $hinweis;
         $nOffset                = array_push($this->PositionenArr, $NeuePosition);
         $NeuePosition           = $this->PositionenArr[$nOffset - 1];
-
-        foreach ($_SESSION['Waehrungen'] as $Waehrung) {
+        foreach (Session::Currencies() as $currency) {
+            $currencyName = $currency->getName();
             // Standardartikel
-            $NeuePosition->cGesamtpreisLocalized[0][$Waehrung->cName] =
-                gibPreisStringLocalized(berechneBrutto($NeuePosition->fPreis * $NeuePosition->nAnzahl, gibUst($NeuePosition->kSteuerklasse)), $Waehrung);
-            $NeuePosition->cGesamtpreisLocalized[1][$Waehrung->cName] =
-                gibPreisStringLocalized($NeuePosition->fPreis * $NeuePosition->nAnzahl, $Waehrung);
-            $NeuePosition->cEinzelpreisLocalized[0][$Waehrung->cName] =
-                gibPreisStringLocalized(berechneBrutto($NeuePosition->fPreis, gibUst($NeuePosition->kSteuerklasse)), $Waehrung);
-            $NeuePosition->cEinzelpreisLocalized[1][$Waehrung->cName] =
-                gibPreisStringLocalized($NeuePosition->fPreis, $Waehrung);
+            $NeuePosition->cGesamtpreisLocalized[0][$currencyName] =
+                gibPreisStringLocalized(berechneBrutto($NeuePosition->fPreis * $NeuePosition->nAnzahl, gibUst($NeuePosition->kSteuerklasse)), $currency);
+            $NeuePosition->cGesamtpreisLocalized[1][$currencyName] =
+                gibPreisStringLocalized($NeuePosition->fPreis * $NeuePosition->nAnzahl, $currency);
+            $NeuePosition->cEinzelpreisLocalized[0][$currencyName] =
+                gibPreisStringLocalized(berechneBrutto($NeuePosition->fPreis, gibUst($NeuePosition->kSteuerklasse)), $currency);
+            $NeuePosition->cEinzelpreisLocalized[1][$currencyName] =
+                gibPreisStringLocalized($NeuePosition->fPreis, $currency);
 
             // Konfigurationsartikel: mapto: 9a87wdgad
             if ((int)$NeuePosition->kKonfigitem > 0 &&
@@ -530,8 +530,8 @@ class Warenkorb
                     $oVaterPos = $this->PositionenArr[$nVaterPos];
                     if (is_object($oVaterPos)) {
                         $NeuePosition->nAnzahlEinzel                           = $NeuePosition->nAnzahl / $oVaterPos->nAnzahl;
-                        $oVaterPos->cKonfigpreisLocalized[0][$Waehrung->cName] = gibPreisStringLocalized($fPreisBrutto, $Waehrung);
-                        $oVaterPos->cKonfigpreisLocalized[1][$Waehrung->cName] = gibPreisStringLocalized($fPreisNetto, $Waehrung);
+                        $oVaterPos->cKonfigpreisLocalized[0][$currencyName] = gibPreisStringLocalized($fPreisBrutto, $currency);
+                        $oVaterPos->cKonfigpreisLocalized[1][$currencyName] = gibPreisStringLocalized($fPreisNetto, $currency);
                     }
                 }
             }

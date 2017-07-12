@@ -27,7 +27,7 @@ trait MagicCompatibilityTrait
      */
     public function __get($name)
     {
-        if (isset($this->$name)) {
+        if (property_exists($this, $name)) {
             trigger_error(__CLASS__ . ': getter should be use to get ' . $name, E_USER_DEPRECATED);
 
             return $this->$name;
@@ -49,7 +49,7 @@ trait MagicCompatibilityTrait
      */
     public function __set($name, $value)
     {
-        if (isset($this->$name)) {
+        if (property_exists($this, $name)) {
             trigger_error(__CLASS__ . ': setter should be use to set ' . $name, E_USER_DEPRECATED);
             $this->$name = $value;
 

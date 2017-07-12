@@ -352,7 +352,7 @@ function gibPreisString($preis)
  */
 function gibPreisStringLocalized($preis, $waehrung = 0, $html = 1, $nNachkommastellen = 2)
 {
-    if (!$waehrung) {
+    if (!$waehrung || is_numeric($waehrung)) {
         $waehrung = Session::Currency();
     }
     if (get_class($waehrung) === 'stdClass') {

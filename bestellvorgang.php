@@ -13,6 +13,7 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'wunschliste_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'jtl_inc.php';
 /** @global JTLSmarty $smarty */
 Shop::setPageType(PAGE_BESTELLVORGANG);
+$NaviFilter = Shop::run();
 $AktuelleSeite = 'BESTELLVORGANG';
 $Einstellungen = Shop::getSettings([
     CONF_GLOBAL,
@@ -269,6 +270,7 @@ WarenkorbHelper::addVariationPictures($_SESSION['Warenkorb']);
 
 //specific assigns
 $smarty->assign('Navigation', createNavigation($AktuelleSeite))
+       ->assign('NaviFilter', $NaviFilter)
        ->assign('AGB', gibAGBWRB(Shop::getLanguage(), Session::CustomerGroup()->getID()))
        ->assign('Ueberschrift', Shop::Lang()->get('orderStep0Title', 'checkout'))
        ->assign('UeberschriftKlein', Shop::Lang()->get('orderStep0Title2', 'checkout'))

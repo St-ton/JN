@@ -565,9 +565,9 @@ function reloadFavs() {
 function switchCouponTooltipVisibility() {
     $('#cWertTyp').change(function() {
         if($(this).val() === 'prozent') {
-            $('#fWertTooltip').parent().show();
-        } else {
             $('#fWertTooltip').parent().hide();
+        } else {
+            $('#fWertTooltip').parent().show();
         }
     });
 }

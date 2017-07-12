@@ -38,7 +38,7 @@ trait MagicCompatibilityTrait
 
             return $this->$method();
         }
-        throw new OutOfBoundsException('Unable to get ' . $name);
+        throw new OutOfBoundsException(__CLASS__ . ': Unable to get ' . $name);
     }
 
     /**
@@ -61,7 +61,7 @@ trait MagicCompatibilityTrait
 
             return $this->$method($value);
         }
-        throw new OutOfBoundsException('Unable to get ' . $name);
+        throw new OutOfBoundsException(__CLASS__ . ': Unable to set ' . $name);
     }
 
     /**

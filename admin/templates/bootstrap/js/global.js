@@ -742,10 +742,12 @@ function ioCall(name, args, success, error, context)
                 var csslist = data.css || [];
 
                 csslist.forEach(function (assign) {
-                    var $target = $('#' + assign.target);
-                    if($target.length > 0) {
-                        $target[0][assign.attr] = assign.data;
-                    }
+                    var value = assign.data.replace(/'/g, "\\'").replace(/\n/g, "\\n");
+                    var js =
+                        "if ($('#" + assign.target + "').length > 0) {" +
+                        "   $('#" + assign.target + "')[0]." + assign.attr + " = '" + value + "';" +
+                        "}";
+                    jslist.push(js);
                 });
 
                 jslist.forEach(function (js) {

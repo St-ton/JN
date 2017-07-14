@@ -52,7 +52,7 @@ class MediaImageRequest
     /**
      * @var array
      */
-    public static $cache = [];
+    protected static $cache = [];
 
     /**
      * @param array|object $mixed

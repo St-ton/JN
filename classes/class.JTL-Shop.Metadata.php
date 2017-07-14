@@ -373,9 +373,9 @@ class Metadata
         }
         // Tagfilter
         if ($this->navigationsfilter->hasTagFilter()
-            && $this->navigationsfilter->getTagFilters()[0]->cName !== null
+            && $this->navigationsfilter->getTagFilter()[0]->cName !== null
         ) {
-            $cMetaTitle .= ' ' . $this->navigationsfilter->getTagFilters()[0]->cName;
+            $cMetaTitle .= ' ' . $this->navigationsfilter->getTagFilter()[0]->cName;
         }
         // Suchbegrifffilter
         if ($this->navigationsfilter->hasSearchFilter()) {
@@ -418,7 +418,7 @@ class Metadata
         }
         // MerkmalWertfilter
         if ($this->navigationsfilter->hasAttributeFilter()) {
-            foreach ($this->navigationsfilter->getAttributeFilters() as $oMerkmalFilter) {
+            foreach ($this->navigationsfilter->getAttributeFilter() as $oMerkmalFilter) {
                 if ($oMerkmalFilter->cName !== null) {
                     $cMetaTitle .= ' ' . $oMerkmalFilter->cName;
                 }

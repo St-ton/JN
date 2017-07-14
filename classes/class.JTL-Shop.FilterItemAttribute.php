@@ -149,7 +149,7 @@ class FilterItemAttribute extends FilterBaseAttribute
      */
     public function attributeValueIsActive($kMerkmalWert)
     {
-        foreach ($this->naviFilter->getAttributeFilters() as $i => $oMerkmalauswahl) {
+        foreach ($this->naviFilter->getAttributeFilter() as $i => $oMerkmalauswahl) {
             if ($oMerkmalauswahl->getValue() === $kMerkmalWert) {
                 return true;
             }
@@ -263,7 +263,7 @@ class FilterItemAttribute extends FilterBaseAttribute
 
         if ($this->naviFilter->hasAttributeFilter()) {
             $activeAndFilterIDs = [];
-            foreach ($this->naviFilter->getAttributeFilters() as $filter) {
+            foreach ($this->naviFilter->getAttributeFilter() as $filter) {
                 $values = $filter->getValue();
                 if (is_array($values)) {
                     $activeValues = $values;

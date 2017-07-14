@@ -187,6 +187,8 @@ class Navigationsfilter
 
     /**
      * @var array
+     * @todo: fix working with arrays
+     * @see https://stackoverflow.com/questions/13421661/getting-indirect-modification-of-overloaded-property-has-no-effect-notice
      */
     private static $mapping = [
         'nAnzahlFilter'      => 'FilterCount',
@@ -205,7 +207,8 @@ class Navigationsfilter
         'SuchspecialFilter'  => 'SearchSpecialFilter',
         'BewertungFilter'    => 'RatingFilter',
         'PreisspannenFilter' => 'PriceRangeFilter',
-        'Suche'              => 'Search'
+        'Suche'              => 'Search',
+        'EchteSuche'         => 'RealSearch'
     ];
 
     /**
@@ -850,9 +853,31 @@ class Navigationsfilter
      * @param null|int $idx
      * @return FilterItemAttribute|FilterItemAttribute[]
      */
-    public function getAttributeFilters($idx = null)
+    public function getAttributeFilter($idx = null)
     {
         return $idx === null ? $this->attributeFilter : $this->attributeFilter[$idx];
+    }
+
+    /**
+     * @param array $filter
+     * @return $this
+     */
+    public function setAttributeFilter(array $filter)
+    {
+        $this->attributeFilter = $filter;
+
+        return $this;
+    }
+
+    /**
+     * @param IFilter $filter
+     * @return $this
+     */
+    public function addAttributeFilter($filter)
+    {
+        $this->attributeFilter[] = $filter;
+
+        return $this;
     }
 
     /**
@@ -902,7 +927,7 @@ class Navigationsfilter
      * @param null|int $idx
      * @return FilterItemTag|FilterItemTag[]
      */
-    public function getTagFilters($idx = null)
+    public function getTagFilter($idx = null)
     {
         return $idx === null ? $this->tagFilter : $this->tagFilter[$idx];
     }

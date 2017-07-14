@@ -146,12 +146,12 @@
                 <input type="hidden" name="hf" value="{$NaviFilter->getManufacturerFilter()->getValue()}" />
             {/if}
             {if $NaviFilter->hasAttributeFilter()}
-                {foreach name=merkmalfilter from=$NaviFilter->getAttributeFilters() item=attributeFilter}
+                {foreach name=merkmalfilter from=$NaviFilter->getAttributeFilter() item=attributeFilter}
                     <input type="hidden" name="mf{$smarty.foreach.merkmalfilter.iteration}" value="{$attributeFilter->getValue()}" />
                 {/foreach}
             {/if}
             {if $NaviFilter->hasTagFilter()}
-                {foreach name=tagfilter from=$NaviFilter->getTagFilters() item=tagFilter}
+                {foreach name=tagfilter from=$NaviFilter->getTagFilter() item=tagFilter}
                     <input type="hidden" name="tf{$smarty.foreach.tagfilter.iteration}" value="{$tagFilter->getValue()}" />
                 {/foreach}
             {/if}

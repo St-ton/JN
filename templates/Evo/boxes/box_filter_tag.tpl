@@ -6,7 +6,7 @@
         <div class="box-body">
             <ul class="nav nav-list">
              {foreach $Suchergebnisse->Tags as $oTag}
-                 {if $NaviFilter->hasTagFilter() && $NaviFilter->getTagFilters(0)->getValue() === $oTag->kTag}
+                 {if $NaviFilter->hasTagFilter() && $NaviFilter->getTagFilter(0)->getValue() === $oTag->kTag}
                      <li>
                          {* @todo: use getter *}
                          <a rel="nofollow" href="{$NaviFilter->tagFilterCompat->getUnsetFilterURL()}" class="active">

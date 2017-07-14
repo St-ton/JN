@@ -3007,7 +3007,7 @@ class Artikel
                             AND tartikelmerkmal.kMerkmalWert IN(";
 
                 $kMerkmal_arr = [];
-                foreach ($naviFilter->getAttributeFilters() as $i => $oMerkmal) {
+                foreach ($naviFilter->getAttributeFilter() as $i => $oMerkmal) {
                     if ($i > 0) {
                         $cSQL .= ',' . $oMerkmal->getValue();
                     } else {

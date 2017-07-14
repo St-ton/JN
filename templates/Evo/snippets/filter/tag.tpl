@@ -1,5 +1,5 @@
 <ul class="filter_tag nav nav-list">
-    {foreach name=tagfilter from=$NaviFilter->getTagFilters() item=oTagFilter}
+    {foreach name=tagfilter from=$NaviFilter->getTagFilter() item=oTagFilter}
         <li>
             {* @todo: use getter *}
             <a rel="nofollow" href="{$NaviFilter->URL->cAlleTags}" class="active">

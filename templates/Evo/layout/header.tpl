@@ -106,7 +106,9 @@
 {block name="body-tag"}
 <body data-page="{$nSeitenTyp}" class="body-offcanvas"{if isset($Link) && !empty($Link->cIdentifier)} id="{$Link->cIdentifier}"{/if}>
 {/block}
+{block name="main-wrapper-starttag"}
 <div id="main-wrapper" class="main-wrapper{if $bExclusive} exclusive{/if}{if isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout === 'boxed'} boxed{else} fluid{/if}{if $hasLeftPanel} aside-active{/if}">
+{/block}
 {if !$bExclusive}
 
 {if isset($bAdminWartungsmodus) && $bAdminWartungsmodus}

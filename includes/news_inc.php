@@ -630,3 +630,44 @@ function getNewsDateArray($oSQL)
             ORDER BY dGueltigVon DESC", 2
     );
 }
+
+/**
+ * @param object $a
+ * @param object $b
+ * @return int
+ */
+function cmp_obj($a, $b)
+{
+    return strcmp($a->cName, $b->cName);
+}
+
+/**
+ * @param int    $kNews
+ * @param string $cUploadVerzeichnis
+ * @return array
+ */
+function holeNewsBilder($kNews, $cUploadVerzeichnis)
+{
+    $oDatei_arr = [];
+    $kNews      = (int)$kNews;
+    if ($kNews > 0) {
+        if (is_dir($cUploadVerzeichnis . $kNews)) {
+            $DirHandle = opendir($cUploadVerzeichnis . $kNews);
+            $shopURL   = Shop::getURL() . '/';
+            while (false !== ($Datei = readdir($DirHandle))) {
+                if ($Datei !== '.' && $Datei !== '..') {
+                    $oDatei         = new stdClass();
+                    $oDatei->cName  = substr($Datei, 0, strpos($Datei, '.'));
+                    $oDatei->cURL   = PFAD_NEWSBILDER . $kNews . '/' . $Datei;
+                    $oDatei->cDatei = $Datei;
+
+                    $oDatei_arr[] = $oDatei;
+                }
+            }
+
+            usort($oDatei_arr, 'cmp_obj');
+        }
+    }
+
+    return $oDatei_arr;
+}

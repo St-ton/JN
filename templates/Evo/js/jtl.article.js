@@ -167,7 +167,7 @@
                         wrapper = '#' + $item.closest('form').closest('div[id]').attr('id');
 
                     $item.on('change', function () {
-                        that.variationSwitch($(this), true, wrapper);
+                        that.variationSwitch($(this), false, wrapper);
                     });
                 });
 
@@ -313,10 +313,17 @@
                     });
             }
 
-            $('.variations.simple-variations .variation', $wrapper)
-                .click(function() {
-                    imgSwitch(this, false);
-                });
+            $('#jump-to-votes-tab').click(function () {
+                $('#content a[href="#tab-votes"]').tab('show');
+            });
+            
+            if ($('.switch-variations').length == 1) {
+                this.variationSwitch(0, false);
+                $('.variations.simple-variations .variation', $wrapper)
+                    .click(function () {
+                        imgSwitch(this, false);
+                    });
+            }
 
             if (!isTouchCapable() || ResponsiveBootstrapToolkit.current() !== 'xs') {
                 $('.variations .variation', $wrapper)
@@ -717,6 +724,10 @@
             }
         },
 
+        variationRefreshAll: function($wrapper) {
+            $('.variations select', $wrapper).selectpicker('refresh');
+        },
+
         getConfigGroupQuantity: function (groupId) {
             return $('.cfg-group[data-id="' + groupId + '"] .quantity');
         },
@@ -924,18 +935,14 @@
         variationSetVal: function(key, value, wrapper) {
             var $wrapper = this.getWrapper(wrapper);
 
-            $('[data-key="' + key + '"]', $wrapper).val(value)
-                .closest('select')
-                .selectpicker('refresh');
+            $('[data-key="' + key + '"]', $wrapper).val(value);
         },
 
         variationEnable: function(key, value, wrapper) {
             var $wrapper = this.getWrapper(wrapper),
                 $item    = $('[data-value="' + value + '"].variation', $wrapper);
 
-            $item.removeClass('not-available')
-                .closest('select')
-                .selectpicker('refresh');
+            $item.removeClass('not-available');
         },
 
         variationActive: function(key, value, def, wrapper) {
@@ -948,9 +955,6 @@
                 .prop('checked', true)
                 .end()
                 .prop('selected', true);
-
-            $item.closest('select')
-                .selectpicker('refresh');
 
             $('[data-id="'+key+'"].swatches-selected')
                 .text($item.attr('data-original'));
@@ -974,8 +978,6 @@
                         $item.data('content', label)
                             .attr('data-content', label);
 
-                        $item.closest('select')
-                            .selectpicker('refresh');
                         break;
                     case 'radio':
                         elem = $item.find('.label-not-available');
@@ -1061,6 +1063,8 @@
                 if (animation) {
                     $wrapper.addClass('loading');
                     $spinner = $.evo.extended().spinner();
+                } else {
+                    $('.variations #updatingStockInfo').show();
                 }
 
                 $current.addClass('loading');
@@ -1074,6 +1078,7 @@
                     if (animation) {
                         $spinner.stop();
                     }
+                    $('.variations #updatingStockInfo').hide();
                     if (error) {
                         $.evo.error('checkVarkombiDependencies');
                     }

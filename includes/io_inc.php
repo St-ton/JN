@@ -776,28 +776,31 @@ function checkVarkombiDependencies($aValues, $kEigenschaft = 0, $kEigenschaftWer
                 array_keys($kGesetzteEigeschaftWert_arr)
             )
         );
+        $kZuletztGesetzteEigenschaft = $kEigenschaft;
         if (count($kNichtGesetzteEigenschaft_arr) <= 1) {
             foreach ($nKeyValueVariation_arr as $kEigenschaft => $kEigenschaftWert) {
                 $kVerfuegbareEigenschaftWert_arr = $nKeyValueVariation_arr[$kEigenschaft];
                 $kMoeglicheEigeschaftWert_arr    = $kGesetzteEigeschaftWert_arr;
 
                 foreach ($kVerfuegbareEigenschaftWert_arr as $kVerfuegbareEigenschaftWert) {
-                    $kMoeglicheEigeschaftWert_arr[$kEigenschaft] = $kVerfuegbareEigenschaftWert;
-                    $oKindArtikel                                = getArticleStockInfo(
-                        $kVaterArtikel,
-                        $kMoeglicheEigeschaftWert_arr
-                    );
-
-                    if ($oKindArtikel !== null &&
-                        $oKindArtikel->status == 0 &&
-                        !in_array($kVerfuegbareEigenschaftWert, $kGesetzteEigeschaftWert_arr)
-                    ) {
-                        $objResponse->jsfunc(
-                            '$.evo.article().variationInfo',
-                            $kVerfuegbareEigenschaftWert,
-                            $oKindArtikel->status,
-                            $oKindArtikel->text
+                    //nur für noch auswählbare Varkombis Lagerbestand holen und Infos setzen
+                    if (in_array($kEigenschaft, $kNichtGesetzteEigenschaft_arr) || $kZuletztGesetzteEigenschaft === 0) {
+                        $kMoeglicheEigeschaftWert_arr[$kEigenschaft] = $kVerfuegbareEigenschaftWert;
+                        $oKindArtikel = getArticleStockInfo(
+                            $kVaterArtikel,
+                            $kMoeglicheEigeschaftWert_arr
                         );
+
+                        if ($oKindArtikel !== null && $oKindArtikel->status == 0) {
+                            if (!in_array($kVerfuegbareEigenschaftWert, $kGesetzteEigeschaftWert_arr)) {
+                                $objResponse->jsfunc(
+                                    '$.evo.article().variationInfo',
+                                    $kVerfuegbareEigenschaftWert,
+                                    $oKindArtikel->status,
+                                    $oKindArtikel->text
+                                );
+                            }
+                        }
                     }
                 }
             }
@@ -805,6 +808,7 @@ function checkVarkombiDependencies($aValues, $kEigenschaft = 0, $kEigenschaftWer
     } else {
         $objResponse->jsfunc('$.evo.error', 'Article not found', $kVaterArtikel);
     }
+    $objResponse->jsfunc("$.evo.article().variationRefreshAll", $wrapper);
 
     return $objResponse;
 }

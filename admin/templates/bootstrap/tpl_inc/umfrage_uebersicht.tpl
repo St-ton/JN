@@ -50,43 +50,45 @@
                                     <div class="panel-heading">
                                         <h3 class="panel-title">Aktive Umfragen</h3>
                                     </div>
-                                    <table class="table">
-                                        <tr>
-                                            <th class="th-1"></th>
-                                            <th class="th-2">{#umfrageName#}</th>
-                                            <th class="th-3">{#umfrageCustomerGrp#}</th>
-                                            <th class="th-4">{#umfrageValidation#}</th>
-                                            <th class="th-5">{#umfrageActive#}</th>
-                                            <th class="th-6">{#umfrageQCount#}</th>
-                                            <th class="th-7">{#umfrageDate#}</th>
-                                            <th class="th-8">Aktionen</th>
-                                        </tr>
-                                        {foreach name=umfrage from=$oUmfrage_arr item=oUmfrage}
-                                            <tr class="tab_bg{$smarty.foreach.umfrage.iteration%2}">
-                                                <td class="TD1"><input type="checkbox" name="kUmfrage[]" value="{$oUmfrage->kUmfrage}" /></td>
-                                                <td class="TD2">
-                                                    <a href="umfrage.php?umfrage=1&token={$smarty.session.jtl_token}&ud=1&kUmfrage={$oUmfrage->kUmfrage}&tab=umfrage">{$oUmfrage->cName}</a>
-                                                </td>
-                                                <td class="TD3">
-                                                    {foreach name=kundengruppen from=$oUmfrage->cKundengruppe_arr item=cKundengruppe}
-                                                        {$cKundengruppe}{if !$smarty.foreach.kundengruppen.last},{/if}
-                                                    {/foreach}
-                                                </td>
-                                                <td class="TD4">{$oUmfrage->dGueltigVon_de}-{if $oUmfrage->dGueltigBis|truncate:10:"" === '0000-00-00'}{#umfrageInfinite#}{else}{$oUmfrage->dGueltigBis_de}{/if}</td>
-                                                <td class="TD5">{$oUmfrage->nAktiv}</td>
-                                                <td class="TD6">{$oUmfrage->nAnzahlFragen}</td>
-                                                <td class="TD7">{$oUmfrage->dErstellt_de}</td>
-                                                <td class="TD8">
-                                                    <div class="btn-group">
-                                                        <a href="umfrage.php?umfrage=1&token={$smarty.session.jtl_token}&umfrage_editieren=1&kUmfrage={$oUmfrage->kUmfrage}&tab=umfrage" class="btn btn-default" title="{#modify#}">
-                                                            <i class="fa fa-edit"></i>
-                                                        </a>
-                                                        <a href="umfrage.php?umfrage=1&token={$smarty.session.jtl_token}&kUmfrage={$oUmfrage->kUmfrage}&umfrage_statistik=1" class="btn btn-default" title="{#umfrageStats#}"><i class="fa fa-bar-chart"></i></a>
-                                                    </div>
-                                                </td>
+                                    <div class="table-responsive">
+                                        <table class="table">
+                                            <tr>
+                                                <th class="th-1"></th>
+                                                <th class="th-2">{#umfrageName#}</th>
+                                                <th class="th-3">{#umfrageCustomerGrp#}</th>
+                                                <th class="th-4">{#umfrageValidation#}</th>
+                                                <th class="th-5">{#umfrageActive#}</th>
+                                                <th class="th-6">{#umfrageQCount#}</th>
+                                                <th class="th-7">{#umfrageDate#}</th>
+                                                <th class="th-8">Aktionen</th>
                                             </tr>
-                                        {/foreach}
-                                    </table>
+                                            {foreach name=umfrage from=$oUmfrage_arr item=oUmfrage}
+                                                <tr class="tab_bg{$smarty.foreach.umfrage.iteration%2}">
+                                                    <td class="TD1"><input type="checkbox" name="kUmfrage[]" value="{$oUmfrage->kUmfrage}" /></td>
+                                                    <td class="TD2">
+                                                        <a href="umfrage.php?umfrage=1&token={$smarty.session.jtl_token}&ud=1&kUmfrage={$oUmfrage->kUmfrage}&tab=umfrage">{$oUmfrage->cName}</a>
+                                                    </td>
+                                                    <td class="TD3">
+                                                        {foreach name=kundengruppen from=$oUmfrage->cKundengruppe_arr item=cKundengruppe}
+                                                            {$cKundengruppe}{if !$smarty.foreach.kundengruppen.last},{/if}
+                                                        {/foreach}
+                                                    </td>
+                                                    <td class="TD4">{$oUmfrage->dGueltigVon_de}-{if $oUmfrage->dGueltigBis|truncate:10:"" === '0000-00-00'}{#umfrageInfinite#}{else}{$oUmfrage->dGueltigBis_de}{/if}</td>
+                                                    <td class="TD5">{$oUmfrage->nAktiv}</td>
+                                                    <td class="TD6">{$oUmfrage->nAnzahlFragen}</td>
+                                                    <td class="TD7">{$oUmfrage->dErstellt_de}</td>
+                                                    <td class="TD8">
+                                                        <div class="btn-group">
+                                                            <a href="umfrage.php?umfrage=1&token={$smarty.session.jtl_token}&umfrage_editieren=1&kUmfrage={$oUmfrage->kUmfrage}&tab=umfrage" class="btn btn-default" title="{#modify#}">
+                                                                <i class="fa fa-edit"></i>
+                                                            </a>
+                                                            <a href="umfrage.php?umfrage=1&token={$smarty.session.jtl_token}&kUmfrage={$oUmfrage->kUmfrage}&umfrage_statistik=1" class="btn btn-default" title="{#umfrageStats#}"><i class="fa fa-bar-chart"></i></a>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            {/foreach}
+                                        </table>
+                                    </div>
                                     <div class="panel-footer">
                                         <button name="loeschen" type="submit" class="btn btn-danger"><i class="fa fa-trash"></i> {#deleteSelected#}</button>
                                     </div>

@@ -720,3 +720,11 @@ function benutzerverwaltungFinalize($step, JTLSmarty $smarty, array &$messages)
            ->assign('cTab', StringHandler::filterXSS(verifyGPDataString('tab')))
            ->display('benutzer.tpl');
 }
+
+function getRandomPasswordIO()
+{
+    $response = new IOResponse();
+    $response->assign('cPass', 'value', gibUID(8));
+
+    return $response;
+}

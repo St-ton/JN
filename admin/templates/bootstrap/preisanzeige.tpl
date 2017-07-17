@@ -18,7 +18,8 @@
                 <div class="panel-heading">
                     <h3 class="panel-title">Preisanzeige</h3>
                 </div>
-                <table class="list table">
+                <div class="table-responsive">
+                    <table class="list table">
                     <thead>
                     <tr>
                         <th class="tleft">{#priceIn#}</th>
@@ -78,6 +79,7 @@
                     {/foreach}
                     </tbody>
                 </table>
+                </div>
                 <div class="panel-footer">
                     <button name="speichern" type="submit" value="{#savePreferences#}" class="btn btn-primary"><i class="fa fa-save"></i> Speichern</button>
                 </div>

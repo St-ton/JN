@@ -25,28 +25,30 @@
             <div class="panel-heading">
                 <h3 class="panel-title">{#slider#}</h3>
             </div>
-            <table id="tableSlide" class="table">
-                <thead>
-                <tr>
-                    <th class="tleft"></th>
-                    <th width="10%">Bild</th>
-                    <th width="40%">Titel / Link</th>
-                    <th width="40%">Text</th>
-                    <th width="5%"></th>
-                </tr>
-                </thead>
-                <tbody>
-                {foreach name="slide" from=$oSlider->oSlide_arr item=oSlide}
-                    {slide kSlide=$oSlide->kSlide oSlide=$oSlide}
-                {/foreach}
-                </tbody>
-            </table>
+            <div class="table-responsive">
+                <table id="tableSlide" class="table">
+                    <thead>
+                    <tr>
+                        <th class="tleft"></th>
+                        <th width="10%">Bild</th>
+                        <th width="40%">Titel / Link</th>
+                        <th width="40%">Text</th>
+                        <th width="5%"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {foreach name="slide" from=$oSlider->oSlide_arr item=oSlide}
+                        {slide kSlide=$oSlide->kSlide oSlide=$oSlide}
+                    {/foreach}
+                    </tbody>
+                </table>
+            </div>
             <table class="hidden"><tbody id="newSlide">{slide oSlide=null kSlide='NEU'}</tbody></table>
             <div class="panel-footer">
                 <div class="upload_info kcfinder_path">{$shopURL}/{$PFAD_KCFINDER}</div>
                 <div class="upload_info shop_url">{$shopURL}</div>
-                <button type="button" class="btn btn-default" onclick="window.location.href = 'slider.php';"><i class="fa fa-angle-double-left"></i> zur&uuml;ck</button>
-                <div class="btn-group right">
+                <div class="btn-group">
+                    <button type="button" class="btn btn-default" onclick="window.location.href = 'slider.php';"><i class="fa fa-angle-double-left"></i> zur&uuml;ck</button>
                     <button type="button" class="btn btn-success" onclick="addSlide();"><i class="glyphicon glyphicon-plus"></i> Hinzuf&uuml;gen</button>
                     <button type="button" class="btn btn-danger" onclick="location.reload();"><i class="glyphicon glyphicon-remove"></i> Abbrechen</button>
                     <button type="submit" class="btn btn-primary" id="saveButton"><i class=" fa fa-save"></i> Speichern</button>

@@ -363,7 +363,7 @@ function loescheAlleSpezialPos()
         $_SESSION['Versandart'],
         $_SESSION['VersandKupon'],
         $_SESSION['oVersandfreiKupon'],
-        $_SESSION['Verpackungen'],
+        $_SESSION['Verpackung'],
         $_SESSION['TrustedShops'],
         $_SESSION['Zahlungsart']
     );

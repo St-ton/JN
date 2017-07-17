@@ -13,8 +13,6 @@
 {/if}
 
 {include file='tpl_inc/seite_header.tpl' cTitel=$cTitel cBeschreibung=#couponsDesc# cDokuURL=#couponsURL#}
-{include file='tpl_inc/customer_search.tpl' cUrl='kupons.php' kKundeSelected_arr=$kKunde_arr
-         onSave='onApplySelectedCustomers'}
 
 <script>
     $(function () {
@@ -24,7 +22,6 @@
         makeCurrencyTooltip('fMindestbestellwert');
         $('#bOpenEnd').change(onEternalCheckboxChange);
         onEternalCheckboxChange();
-        onApplySelectedCustomers();
     });
 
     function onEternalCheckboxChange () {
@@ -37,16 +34,6 @@
             $('#dGueltigBis').val('');
         } else {
             $('#dDauerTage').val('');
-        }
-    }
-
-    function onApplySelectedCustomers () {
-        if (selectedCustomers.length > 0) {
-            $('#customerSelectionInfo').val(selectedCustomers.length + ' Kunden');
-            $('#cKunden').val(selectedCustomers.join(';'));
-        } else {
-            $('#customerSelectionInfo').val('Alle Kunden');
-            $('#cKunden').val('-1');
         }
     }
 </script>
@@ -164,7 +151,7 @@
                                 </option>
                             </select>
                         </span>
-                        <span class="input-group-addon" {if $oKupon->cWertTyp == 'festpreis'} style="display: none;"{/if}>
+                        <span class="input-group-addon" {if $oKupon->cWertTyp == 'prozent'} style="display: none;"{/if}>
                             {getCurrencyConversionTooltipButton inputId='fWert'}
                         </span>
                     </div>
@@ -310,17 +297,45 @@
                 <h3 class="panel-title">{#restrictions#}</h3>
             </div>
             <div class="panel-body">
-                <div id="ajax_list_picker" class="ajax_list_picker article">{include file="tpl_inc/popup_artikelsuche.tpl"}</div>
+                {include file='tpl_inc/searchpicker_modal.tpl'
+                    searchPickerName='articlePicker'
+                    modalTitle='Artikel ausw&auml;hlen'
+                    searchInputLabel='Suche nach Artikelnamen'
+                }
+                <script>
+                    $(function () {
+                        articlePicker = new SearchPicker({
+                            searchPickerName:  'articlePicker',
+                            getDataIoFuncName: 'getProducts',
+                            keyName:           'cArtNr',
+                            renderItemCb:      function (item) { return '<p class="list-group-item-text">' + item.cName + '</p>'; },
+                            onApply:           onApplySelectedArticles,
+                            selectedKeysInit:  '{$oKupon->cArtikel}'.split(';').filter(function (i) { return i !== ''; })
+                        });
+                        onApplySelectedArticles(articlePicker.getSelection());
+                    });
+                    function onApplySelectedArticles(selectedArticles)
+                    {
+                        if (selectedArticles.length > 0) {
+                            $('#articleSelectionInfo').val(selectedArticles.length + ' Artikel');
+                            $('#cArtikel').val(selectedArticles.join(';') + ';');
+                        } else {
+                            $('#articleSelectionInfo').val('Alle Artikel');
+                            $('#cArtikel').val('');
+                        }
+                    }
+                </script>
                 <div class="input-group">
                     <span class="input-group-addon">
-                        <label for="assign_article_list">{#productRestrictions#}</label>
+                        <label for="articleSelectionInfo">{#productRestrictions#}</label>
                     </span>
                     <span class="input-group-wrap">
-                        <input type="text" class="form-control" name="cArtikel" id="assign_article_list" value="{$oKupon->cArtikel}">
+                        <input type="text" class="form-control" readonly="readonly" id="articleSelectionInfo">
+                        <input type="hidden" id="cArtikel" name="cArtikel" value="{$oKupon->cArtikel}">
                     </span>
                     <span class="input-group-addon">
-                        <button type="button" class="btn btn-info btn-xs btn-tooltip" id="show_article_list" data-html="true"
-                                data-toggle="tooltip" data-placement="left" data-original-title="{#manageArticlesHint#}">
+                        <button type="button" class="btn btn-info btn-xs" data-toggle="modal"
+                                data-target="#articlePicker-modal">
                             <i class="fa fa-edit"></i>
                         </button>
                     </span>
@@ -387,6 +402,41 @@
                     <span class="input-group-addon">{getHelpDesc cDesc=#multipleChoice#}</span>
                 </div>
                 {if $oKupon->cKuponTyp === 'standard' || $oKupon->cKuponTyp === 'versandkupon'}
+                    {include file='tpl_inc/searchpicker_modal.tpl'
+                        searchPickerName='customerPicker'
+                        modalTitle='Kunden ausw&auml;hlen'
+                        searchInputLabel='Suche nach Vornamen, E-Mail-Adresse, Wohnort oder Postleitzahl'
+                    }
+                    <script>
+                        $(function () {
+                            customerPicker = new SearchPicker({
+                                searchPickerName:  'customerPicker',
+                                getDataIoFuncName: 'getCustomers',
+                                keyName:           'kKunde',
+                                renderItemCb:      renderCustomerItem,
+                                onApply:           onApplySelectedCustomers,
+                                selectedKeysInit:  [{foreach $kKunde_arr as $kKunde}'{$kKunde}',{/foreach}]
+                            });
+                            onApplySelectedCustomers(customerPicker.getSelection());
+                        });
+                        function renderCustomerItem(item)
+                        {
+                            return '<p class="list-group-item-text">' +
+                                item.cVorname + ' ' + item.cNachname + '<em>(' + item.cMail + ')</em></p>' +
+                                '<p class="list-group-item-text">' +
+                                item.cStrasse + ' ' + item.cHausnummer + ', ' + item.cPLZ + ' ' + item.cOrt + '</p>';
+                        }
+                        function onApplySelectedCustomers(selectedCustomers)
+                        {
+                            if (selectedCustomers.length > 0) {
+                                $('#customerSelectionInfo').val(selectedCustomers.length + ' Kunden');
+                                $('#cKunden').val(selectedCustomers.join(';'));
+                            } else {
+                                $('#customerSelectionInfo').val('Alle Kunden');
+                                $('#cKunden').val('-1');
+                            }
+                        }
+                    </script>
                     <div class="input-group{if isset($oKupon->massCreationCoupon)} hidden{/if}" id="limitedByCustomers">
                         <span class="input-group-addon">
                             <label for="customerSelectionInfo">{#restrictedToCustomers#}</label>
@@ -396,8 +446,8 @@
                             <input type="hidden" id="cKunden" name="cKunden" value="{$oKupon->cKunden}">
                         </span>
                         <span class="input-group-addon">
-                            <button type="button" class="btn btn-info btn-xs"
-                                    data-toggle="modal" data-target="#customer-search-modal">
+                            <button type="button" class="btn btn-info btn-xs" data-toggle="modal"
+                                    data-target="#customerPicker-modal">
                                 <i class="fa fa-edit"></i>
                             </button>
                         </span>

@@ -6,6 +6,7 @@
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'einstellungen_inc.php';
 /** @global JTLSmarty $smarty */
+/** @global AdminAccount $oAccount */
 $kSektion = isset($_REQUEST['kSektion']) ? (int)$_REQUEST['kSektion'] : 0;
 $bSuche   = isset($_REQUEST['einstellungen_suchen']) && (int)$_REQUEST['einstellungen_suchen'] === 1;
 
@@ -54,6 +55,7 @@ $cHinweis         = '';
 $cFehler          = '';
 $section          = null;
 $step             = 'uebersicht';
+$oSections        = [];
 if ($kSektion > 0) {
     $step    = 'einstellungen bearbeiten';
     $section = Shop::DB()->select('teinstellungensektion', 'kEinstellungenSektion', $kSektion);
@@ -92,13 +94,14 @@ if (isset($_POST['einstellungen_bearbeiten']) &&
                 FROM teinstellungenconf
                 WHERE kEinstellungenSektion = " . (int)$section->kEinstellungenSektion . "
                     AND cConf = 'Y'
-                    AND nModul = 0 " .
-                    $oSQL->cWHERE . "
+                    AND nModul = 0
+                    {$oSQL->cWHERE}
                 ORDER BY nSort", 2
         );
     }
     foreach ($Conf as $i => $oConfig) {
-        $aktWert = new stdClass();
+        $aktWert  = new stdClass();
+        $oSection = SettingSection::getInstance((int)$oConfig->kEinstellungenSektion);
         if (isset($_POST[$Conf[$i]->cWertName])) {
             $aktWert->cWert                 = $_POST[$Conf[$i]->cWertName];
             $aktWert->cName                 = $Conf[$i]->cWertName;
@@ -118,18 +121,20 @@ if (isset($_POST['einstellungen_bearbeiten']) &&
                     $aktWert->cWert = substr($aktWert->cWert, 0, 255);
                     break;
             }
-            Shop::DB()->delete(
-                'teinstellungen',
-                ['kEinstellungenSektion', 'cName'],
-                [$Conf[$i]->kEinstellungenSektion, $Conf[$i]->cWertName]
-            );
-            if (is_array($_POST[$Conf[$i]->cWertName])) {
-                foreach ($_POST[$Conf[$i]->cWertName] as $cWert) {
-                    $aktWert->cWert = $cWert;
+            if ($oSection->validate($Conf[$i], $_POST[$Conf[$i]->cWertName])) {
+                Shop::DB()->delete(
+                    'teinstellungen',
+                    ['kEinstellungenSektion', 'cName'],
+                    [$Conf[$i]->kEinstellungenSektion, $Conf[$i]->cWertName]
+                );
+                if (is_array($_POST[$Conf[$i]->cWertName])) {
+                    foreach ($_POST[$Conf[$i]->cWertName] as $cWert) {
+                        $aktWert->cWert = $cWert;
+                        Shop::DB()->insert('teinstellungen', $aktWert);
+                    }
+                } else {
                     Shop::DB()->insert('teinstellungen', $aktWert);
                 }
-            } else {
-                Shop::DB()->insert('teinstellungen', $aktWert);
             }
         }
     }
@@ -160,6 +165,7 @@ if ($step === 'uebersicht') {
                     AND cConf = 'Y'
                     AND nModul = 0", 1
         );
+
         $sections[$i]->anz = $anz_einstellunen->anz;
     }
     $smarty->assign('Sektionen', $sections);
@@ -184,13 +190,14 @@ if ($step === 'einstellungen bearbeiten') {
             "SELECT *
                 FROM teinstellungenconf
                 WHERE nModul = 0 
-                    AND kEinstellungenSektion = " . (int)$section->kEinstellungenSektion . " " .
-                $oSQL->cWHERE . "
+                    AND kEinstellungenSektion = " . (int)$section->kEinstellungenSektion . "
+                {$oSQL->cWHERE}
                 ORDER BY nSort", 2
         );
     }
     $configCount = count($Conf);
     for ($i = 0; $i < $configCount; $i++) {
+        $oSection = SettingSection::getInstance((int)$Conf[$i]->kEinstellungenSektion);
         //@ToDo: Setting 492 is the only one listbox at the moment.
         //But In special case of setting 492 values come from kKundengruppe instead of teinstellungenconfwerte
         if ($Conf[$i]->cInputTyp === 'listbox' && $Conf[$i]->kEinstellungenConf == 492) {
@@ -230,10 +237,13 @@ if ($step === 'einstellungen bearbeiten') {
                 ? StringHandler::htmlentities($setValue->cWert)
                 : null;
         }
+        $oSection->setValue($Conf[$i], $setValue);
+        $oSections[(int)$Conf[$i]->kEinstellungenSektion] = $oSection;
     }
 
     $smarty->assign('Sektion', $section)
-           ->assign('Conf', $Conf);
+           ->assign('Conf', $Conf)
+           ->assign('oSections', $oSections);
 }
 
 $smarty->configLoad('german.conf', 'einstellungen')

@@ -18,7 +18,7 @@
                 {if isset($li->cLocalizedName[$smarty.session.cISOSprache])}
                     <a href="{$li->cURLFull}"{if $li->cNoFollow === 'Y'} rel="nofollow"{/if}{if !empty($li->cTitle)} title="{$li->cTitle}"{/if}{if !empty($li->oSub_arr) && isset($dropdownSupport)} class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-hover-delay="100" data-delay="300"{/if}>
                         {$li->cLocalizedName|trans}
-                        {if !empty($li->oSub_arr) && isset($dropdownSupport)} <span class="caret"></span>{/if}
+                        {if !empty($li->oSub_arr) && isset($dropdownSupport)} <span class="{if !empty($caret)}{$caret}{else}caret{/if}"></span>{/if}
                     </a>
                     {if !empty($li->oSub_arr)}
                         <ul class="{if isset($dropdownSupport)}{if $tplscope !== 'megamenu'}inline {/if}dropdown-menu keepopen{else}submenu list-unstyled{/if}">

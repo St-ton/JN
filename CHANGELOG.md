@@ -1,11 +1,18 @@
 # JTL-Shop Changelog
 
-## [4.05.2]
+## [4.05.3]
+
+## Bugfixes
+
+* Beim Export von Exportformaten wird der neue Dateiinhalt an alte Datei angehängt (#1217)
+* Bei News-Kategoriebeschreibung kann kein HTML verwendet werden (#1197)
+
+## [4.05.2] - 2017-04-04
 
 ### Bugfixes 
 
 * Varkombivorschaubilder werden nicht mehr gruppiert angezeigt (#985)
-* Detailinformationen von Seiteninhalten gegen beim Speichern von eigenen Seiten verloren (#998)
+* Detailinformationen von Seiteninhalten gehen beim Speichern von eigenen Seiten verloren (#998)
 * Fehlende Vorschaubilder in der Newsübersicht (#1011)
 * Admin Sitemapexport speicherhungrig (zeitlich unbegrenzte Statistikauswertung) (#986)
 * E-Mail-Bestellbestätigung: Lieferzeit an Bestellpositionen fehlt (#1004)

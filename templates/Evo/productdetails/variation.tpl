@@ -1,15 +1,21 @@
 {if isset($Artikel->Variationen) && $Artikel->Variationen|@count > 0 && !$showMatrix}
+    {assign var="VariationsSource" value="Variationen"}
+    {if isset($ohneFreifeld) && $ohneFreifeld}
+        {assign var="VariationsSource" value="VariationenOhneFreifeld"}
+    {/if}
     {assign var="oVariationKombi_arr" value=$Artikel->getChildVariations()}
     <div class="variations {if $simple}simple{else}switch{/if}-variations top15 row">
         <div class="col-xs-12">
             <dl>
-            {foreach name=Variationen from=$Artikel->Variationen key=i item=Variation}
+            {foreach name=Variationen from=$Artikel->$VariationsSource key=i item=Variation}
             {strip}
+                {if !isset($smallView) || !$smallView}
                 <dt>{$Variation->cName}{if $Variation->cTyp === 'IMGSWATCHES'} <span class="swatches-selected text-muted" data-id="{$Variation->kEigenschaft}"></span>{/if}</dt>
+                {/if}
                 <dd class="form-group{if $Variation->cTyp !== 'FREIFELD' && !$showMatrix} required{/if}">
                     {if $Variation->cTyp === 'SELECTBOX'}
                         {block name="productdetails-info-variation-select"}
-                        <select class="form-control" title="{lang key="pleaseChooseVariation" section="productDetails"}" name="eigenschaftwert[{$Variation->kEigenschaft}]"{if !$showMatrix} required{/if}>
+                        <select class="form-control" title="{if isset($smallView) && $smallView}{$Variation->cName} - {/if}{lang key="pleaseChooseVariation" section="productDetails"}" name="eigenschaftwert[{$Variation->kEigenschaft}]"{if !$showMatrix} required{/if}>
                             {foreach name=Variationswerte from=$Variation->Werte key=y item=Variationswert}
                                 {assign var="bSelected" value=false}
                                 {if isset($oVariationKombi_arr[$Variationswert->kEigenschaft])}
@@ -32,6 +38,9 @@
                                             {if !empty($Variationswert->cBildPfadMini)}
                                                 data-list='{prepare_image_details item=$Variationswert json=true}'
                                                 data-title='{$Variationswert->cName}'
+                                            {/if}
+                                            {if isset($Variationswert->oVariationsKombi)}
+                                                data-ref="{$Variationswert->oVariationsKombi->kArtikel}"
                                             {/if}
                                             {if $bSelected} selected="selected"{/if}>
                                         {$cVariationsWert|trim}
@@ -62,6 +71,9 @@
                                        {if !empty($Variationswert->cBildPfadMini)}
                                             data-list='{prepare_image_details item=$Variationswert json=true}'
                                             data-title='{$Variationswert->cName}'
+                                       {/if}
+                                       {if isset($Variationswert->oVariationsKombi)}
+                                            data-ref="{$Variationswert->oVariationsKombi->kArtikel}"
                                        {/if}>
                                     <input type="radio"
                                            name="eigenschaftwert[{$Variation->kEigenschaft}]"
@@ -100,6 +112,9 @@
                                             {if !empty($Variationswert->cBildPfadMini)}
                                                 data-list='{prepare_image_details item=$Variationswert json=true}'
                                                 data-title='{$Variationswert->cName}'
+                                            {/if}
+                                            {if isset($Variationswert->oVariationsKombi)}
+                                                data-ref="{$Variationswert->oVariationsKombi->kArtikel}"
                                             {/if}>
                                         <input type="radio"
                                                class="control-hidden"
@@ -138,5 +153,6 @@
             {/foreach}
             </dl>
         </div>
+        <div id="updatingStockInfo" class="col-xs-12 text-center"><i class="fa fa-spinner fa-spin" title="{lang key="updatingStockInformation" section="productDetails"}" /></div>
     </div>
 {/if}

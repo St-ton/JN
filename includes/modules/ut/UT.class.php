@@ -448,9 +448,9 @@ class UT extends PaymentMethod
         curl_setopt($oCURL, CURLOPT_POST, 1);
         curl_setopt($oCURL, CURLOPT_POSTFIELDS, $cDataString);
         curl_setopt($oCURL, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($oCURL, CURLOPT_SSL_VERIFYPEER, 0);
-        curl_setopt($oCURL, CURLOPT_SSL_VERIFYHOST, 0);
-        curl_setopt($oCURL, CURLOPT_USERAGENT, "UOS Payment Request");
+        curl_setopt($oCURL, CURLOPT_SSL_VERIFYPEER, DEFAULT_CURL_OPT_VERIFYPEER);
+        curl_setopt($oCURL, CURLOPT_SSL_VERIFYHOST, DEFAULT_CURL_OPT_VERIFYHOST);
+        curl_setopt($oCURL, CURLOPT_USERAGENT, 'UOS Payment Request');
 
         $cRes     = curl_exec($oCURL);
         $cCURLErr = curl_error($oCURL);

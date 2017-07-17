@@ -9,7 +9,7 @@
         <div class="panel-heading">
             <h3 class="panel-title">Installierte Zahlungsarten</h3>
         </div>
-        <div class="panel-body">
+        <div class="panel-body table-responsive">
             <table class="list table">
                 <thead>
                     <tr>
@@ -37,15 +37,15 @@
                                 <div class="btn-group" role="group">
                                     <a href="zahlungsarten.php?a=log&kZahlungsart={$zahlungsart->kZahlungsart}&token={$smarty.session.jtl_token}"
                                        class="btn btn-sm down
-                                              {if isset($zahlungsart->oZahlungsLog->oLog_arr) && $zahlungsart->oZahlungsLog->oLog_arr|@count > 0}
-                                                    {if $zahlungsart->oZahlungsLog->hasError}btn-danger{else}btn-default{/if}
+                                              {if $zahlungsart->nLogCount > 0}
+                                                    {if $zahlungsart->nErrorLogCount}btn-danger{else}btn-default{/if}
                                               {else}
                                                     btn-default disabled
                                               {/if}"
                                        title="{#viewLog#}">
                                         <i class="fa
-                                                  {if isset($zahlungsart->oZahlungsLog->oLog_arr) && $zahlungsart->oZahlungsLog->oLog_arr|@count > 0}
-                                                        {if $zahlungsart->oZahlungsLog->hasError}fa-warning{else}fa-bars{/if}
+                                                  {if $zahlungsart->nLogCount > 0}
+                                                        {if $zahlungsart->nErrorLogCount}fa-warning{else}fa-bars{/if}
                                                   {else}
                                                         fa-check
                                                   {/if}"></i>

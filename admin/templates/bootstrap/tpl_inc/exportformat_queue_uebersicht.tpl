@@ -19,7 +19,7 @@
                     </div>
                     {if $oExportformatCron_arr|@count > 0 && $oExportformatCron_arr}
                         <div id="payment">
-                            <div id="tabellenLivesuche">
+                            <div id="tabellenLivesuche" class="table-responsive">
                                 <table class="table">
                                     <tr>
                                         <th class="tleft" style="width: 10px;">&nbsp;</th>
@@ -102,7 +102,7 @@
                 </div>
                 {if $oExportformatQueueBearbeitet_arr|@count > 0}
                     <div id="payment">
-                        <div id="tabellenLivesuche">
+                        <div id="tabellenLivesuche" class="table-responsive">
                             <table class="table">
                                 <tr>
                                     <th class="th-1">{#exportformatFormatSingle#}</th>

@@ -42,10 +42,10 @@
 
         init: function(element, options) {
             var items = [];
-            this.index = 0;
 
+            this.stack   = [];
+            this.index   = 0;
             this.element = element;
-
             this.options =
                 $.extend({}, GalleryClass.DEFAULTS, options);
 

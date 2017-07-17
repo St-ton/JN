@@ -897,7 +897,8 @@ class Kupon
      */
     public function getNewCustomerCoupon()
     {
-        $newCustomerCoupons = Shop::DB()->selectAll(
+        $newCustomerCoupons_arr = [];
+        $newCustomerCoupons     = Shop::DB()->selectAll(
             'tkupon',
             ['cKuponTyp', 'cAktiv'],
             ['neukundenkupon', 'Y'],
@@ -908,18 +909,12 @@ class Kupon
         foreach ($newCustomerCoupons as $newCustomerCoupon) {
             if (isset($newCustomerCoupon->kKupon) && $newCustomerCoupon->kKupon > 0) {
                 $newCustomerCoupon->translationList = $this->getTranslation($newCustomerCoupon->kKupon);
-                $cMember_arr                        = array_keys(get_object_vars($newCustomerCoupon));
-                foreach ($cMember_arr as $cMember) {
-                    $this->$cMember = $newCustomerCoupon->$cMember;
-                }
 
-                $newCustomerCoupons_arr[] = $this;
-
-                return $newCustomerCoupons_arr;
+                $newCustomerCoupons_arr[] = $newCustomerCoupon;
             }
         }
 
-        return false;
+        return $newCustomerCoupons_arr;
     }
 
     /**

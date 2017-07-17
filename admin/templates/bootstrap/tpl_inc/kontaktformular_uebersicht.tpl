@@ -57,35 +57,37 @@
                 <div class="panel-heading">
                     <h3 class="panel-title">{#subjects#}</h3>
                 </div>
-                <table class="list table">
-                    <thead>
-                    <tr>
-                        <th class="tleft">{#subject#}</th>
-                        <th class="tleft">{#mail#}</th>
-                        <th>{#custgrp#}</th>
-                        <th>Aktionen</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {foreach name=betreffs from=$Betreffs item=Betreff}
+                <div class="table-responsive">
+                    <table class="list table">
+                        <thead>
                         <tr>
-                            <td class="TD1">
-                                <a href="kontaktformular.php?kKontaktBetreff={$Betreff->kKontaktBetreff}&token={$smarty.session.jtl_token}">{$Betreff->cName}</a>
-                            </td>
-                            <td class="TD2">{$Betreff->cMail}</td>
-                            <td class="tcenter">{$Betreff->Kundengruppen}</td>
-                            <td class="tcenter">
-                                <span class="btn-group">
-                                    <a href="kontaktformular.php?kKontaktBetreff={$Betreff->kKontaktBetreff}&token={$smarty.session.jtl_token}"
-                                       class="btn btn-default" title="{#modify#}"><i class="fa fa-edit"></i>
-                                    </a>
-                                    <a href="kontaktformular.php?del={$Betreff->kKontaktBetreff}&token={$smarty.session.jtl_token}" class="btn btn-danger" title="{#delete#}"><i class="fa fa-trash"></i></a>
-                                </span>
-                            </td>
+                            <th class="tleft">{#subject#}</th>
+                            <th class="tleft">{#mail#}</th>
+                            <th>{#custgrp#}</th>
+                            <th>Aktionen</th>
                         </tr>
-                    {/foreach}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                        {foreach name=betreffs from=$Betreffs item=Betreff}
+                            <tr>
+                                <td class="TD1">
+                                    <a href="kontaktformular.php?kKontaktBetreff={$Betreff->kKontaktBetreff}&token={$smarty.session.jtl_token}">{$Betreff->cName}</a>
+                                </td>
+                                <td class="TD2">{$Betreff->cMail}</td>
+                                <td class="tcenter">{$Betreff->Kundengruppen}</td>
+                                <td class="tcenter">
+                                    <span class="btn-group">
+                                        <a href="kontaktformular.php?kKontaktBetreff={$Betreff->kKontaktBetreff}&token={$smarty.session.jtl_token}"
+                                           class="btn btn-default" title="{#modify#}"><i class="fa fa-edit"></i>
+                                        </a>
+                                        <a href="kontaktformular.php?del={$Betreff->kKontaktBetreff}&token={$smarty.session.jtl_token}" class="btn btn-danger" title="{#delete#}"><i class="fa fa-trash"></i></a>
+                                    </span>
+                                </td>
+                            </tr>
+                        {/foreach}
+                        </tbody>
+                    </table>
+                </div>
                 <div class="panel-footer">
                     <a class="btn btn-primary" href="kontaktformular.php?neu=1&token={$smarty.session.jtl_token}"><i class="fa fa-share"></i> {#newSubject#}</a>
                 </div>

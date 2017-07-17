@@ -212,7 +212,7 @@
                 <div class="panel-body">
                     <ul class="jtl-list-group">
 
-                        <li class="input-group2">
+                        <li class="input-group2 table-responsive">
                             <table class="list table">
                                 <thead>
                                 <tr>
@@ -286,7 +286,7 @@
                 </div>
                 <div class="panel-body">
                     <ul class="jtl-list-group">
-                        <li class="input-group2">
+                        <li class="input-group2 table-responsive">
                             <table class="list table">
                                 <thead>
                                 <tr>
@@ -318,7 +318,7 @@
                 </div>
                 <div class="panel-body">
                     <ul class="jtl-list-group">
-                        <li class="input-group2">
+                        <li class="input-group2 table-responsive">
                             <table id="price_range" class="table">
                                 <thead>
                                 <tr>
@@ -383,7 +383,7 @@
                 </div>
                 <div class="panel-body">
                     <ul class="jtl-list-group">
-                        <li class="input-group2">
+                        <li class="input-group2 table-responsive">
                             <table class="list table">
                                 <thead>
                                 <tr>

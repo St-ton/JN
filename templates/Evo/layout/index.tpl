@@ -1,7 +1,9 @@
 {if isset($nFullscreenTemplate) && $nFullscreenTemplate == 1}
     {include file=$cPluginTemplate}
 {else}
-    {include file='layout/header.tpl'}
+    {if !isset($bAjaxRequest) || !$bAjaxRequest}
+        {include file='layout/header.tpl'}
+    {/if}
     {if !empty($Link->Sprache->cTitle)}
         <h1>{$Link->Sprache->cTitle}</h1>
     {elseif isset($bAjaxRequest) && $bAjaxRequest}
@@ -53,5 +55,7 @@
     {elseif $Link->nLinkart == $smarty.const.LINKTYP_404}
         {include file='page/404.tpl'}
     {/if}
-    {include file='layout/footer.tpl'}
+    {if !isset($bAjaxRequest) || !$bAjaxRequest}
+        {include file='layout/footer.tpl'}
+    {/if}
 {/if}

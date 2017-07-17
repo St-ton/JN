@@ -84,39 +84,41 @@
                 <div class="panel-heading">
                     <h3 class="panel-title">{#gruppenKategorie#}</h3>
                 </div>
-                <table class="list table">
-                    <thead>
-                    <tr>
-                        <th class="tleft">#</th>
-                        <th class="tleft">{#gruppenName#}</th>
-                        <th class="tleft">{#gruppenDesc#}</th>
-                        <th class="tcenter">{#gruppenBenutzer#}</th>
-                        <th class="tcenter">{#benutzerAktion#}</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {foreach from=$oAdminGroup_arr item="oGroup"}
+                <div class="table-responsive">
+                    <table class="list table">
+                        <thead>
                         <tr>
-                            <td class="tleft">{$oGroup->kAdminlogingruppe}</td>
-                            <td class="tleft">{$oGroup->cGruppe}</td>
-                            <td class="tleft">{$oGroup->cBeschreibung}</td>
-                            <td class="tcenter">{$oGroup->nCount}</td>
-                            <td class="tcenter">
-                                {if $oGroup->kAdminlogingruppe !== '1'}
-                                    <form method="post" action="benutzerverwaltung.php">
-                                        {$jtl_token}
-                                        <input type="hidden" value="{$oGroup->kAdminlogingruppe}" name="id" />
-                                        <div class="btn-group">
-                                            <button type="submit" class="edit btn btn-default" name="action" value="group_edit" title="{#modify#}"><i class="fa fa-edit"></i></button>
-                                            <button type="submit" class="delete btn btn-danger" name="action" value="group_delete" onclick="return confirm('Sind Sie sicher, dass die Gruppe entfernt werden soll?');" {if 0 < (int)$oGroup->nCount}title="{#loeschenLabelDeaktiviert#}" disabled="disabled"{else}title="{#loeschenLabel#}"{/if}><i class="fa fa-trash"></i></button>
-                                        </div>
-                                    </form>
-                                {/if}
-                            </td>
+                            <th class="tleft">#</th>
+                            <th class="tleft">{#gruppenName#}</th>
+                            <th class="tleft">{#gruppenDesc#}</th>
+                            <th class="tcenter">{#gruppenBenutzer#}</th>
+                            <th class="tcenter">{#benutzerAktion#}</th>
                         </tr>
-                    {/foreach}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                        {foreach from=$oAdminGroup_arr item="oGroup"}
+                            <tr>
+                                <td class="tleft">{$oGroup->kAdminlogingruppe}</td>
+                                <td class="tleft">{$oGroup->cGruppe}</td>
+                                <td class="tleft">{$oGroup->cBeschreibung}</td>
+                                <td class="tcenter">{$oGroup->nCount}</td>
+                                <td class="tcenter">
+                                    {if $oGroup->kAdminlogingruppe !== '1'}
+                                        <form method="post" action="benutzerverwaltung.php">
+                                            {$jtl_token}
+                                            <input type="hidden" value="{$oGroup->kAdminlogingruppe}" name="id" />
+                                            <div class="btn-group">
+                                                <button type="submit" class="edit btn btn-default" name="action" value="group_edit" title="{#modify#}"><i class="fa fa-edit"></i></button>
+                                                <button type="submit" class="delete btn btn-danger" name="action" value="group_delete" onclick="return confirm('Sind Sie sicher, dass die Gruppe entfernt werden soll?');" {if 0 < (int)$oGroup->nCount}title="{#loeschenLabelDeaktiviert#}" disabled="disabled"{else}title="{#loeschenLabel#}"{/if}><i class="fa fa-trash"></i></button>
+                                            </div>
+                                        </form>
+                                    {/if}
+                                </td>
+                            </tr>
+                        {/foreach}
+                        </tbody>
+                    </table>
+                </div>
                 <div class="panel-footer">
                     <form action="benutzerverwaltung.php" method="post">
                         <input type="hidden" name="action" value="group_edit" />

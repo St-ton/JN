@@ -232,6 +232,13 @@ class Session
                         $_SESSION['cWaehrungName'] = $Waehrung->cName;
                     }
                 }
+            } else {
+                foreach ($_SESSION['Waehrungen'] as $Waehrung) {
+                    if ($Waehrung->cISO === $_SESSION['Waehrung']->cISO) {
+                        memberCopy($Waehrung, $_SESSION['Waehrung']);
+                        $_SESSION['cWaehrungName'] = $Waehrung->cName;
+                    }
+                }
             }
             //EXPERIMENTAL_MULTILANG_SHOP
             foreach ($_SESSION['Sprachen'] as $Sprache) {

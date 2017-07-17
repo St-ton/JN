@@ -44,48 +44,48 @@
                         <div class="panel-heading">
                             <h3 class="panel-title">{#ratingsInaktive#}</h3>
                         </div>
-                        <table  class="table">
-                            <thead>
-                            <tr>
-                                <th class="check">&nbsp;</th>
-                                <th class="tleft">{#productName#}</th>
-                                <th class="tleft">{#customerName#}</th>
-                                <th class="tleft">{#ratingText#}</th>
-                                <th class="th-5">{#ratingStars#}</th>
-                                <th class="th-6">{#ratingDate#}</th>
-                                <th class="th-7">&nbsp;</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {if $oBewertung_arr && $oBewertung_arr|@count > 0}
-                            {foreach name=bewertung from=$oBewertung_arr item=oBewertung key=kKey}
-                            <tr class="tab_bg{$smarty.foreach.bewertung.iteration%2}">
-                                <td class="check">
-                                    <input type="hidden" name="kArtikel[{$kKey}]" value="{$oBewertung->kArtikel}" />
-                                    <input name="kBewertung[{$kKey}]" type="checkbox" value="{$oBewertung->kBewertung}" />
-                                </td>
-                                <td class="TD2"><a href="../index.php?a={$oBewertung->kArtikel}" target="_blank">{$oBewertung->ArtikelName}</a></td>
-                                <td class="TD3">{$oBewertung->cName}.</td>
-                                <td class="TD4"><b>{$oBewertung->cTitel}</b><br />{$oBewertung->cText}</td>
-                                <td class="tcenter">{$oBewertung->nSterne}</td>
-                                <td class="tcenter">{$oBewertung->Datum}</td>
-                                <td class="tcenter">
-                                    <a href="bewertung.php?a=editieren&kBewertung={$oBewertung->kBewertung}&tab=freischalten&token={$smarty.session.jtl_token}"
-                                       class="btn btn-default" title="{#modify#}">
-                                        <i class="fa fa-edit"></i>
-                                    </a>
-                                </td>
-                            </tr>
-                            </tbody>
-                            {/foreach}
-                            <tfoot>
-                            <tr>
-                                <td class="check"><input name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);"></td>
-                                <td colspan="6" class="TD7"><label for="ALLMSGS">{#ratingSelectAll#}</label></td>
-                            </tr>
-                            </tfoot>
-                            {/if}
-                        </table>
+                        <div class="table-responsive">
+                            <table  class="table">
+                                <thead>
+                                <tr>
+                                    <th class="check">&nbsp;</th>
+                                    <th class="tleft">{#productName#}</th>
+                                    <th class="tleft">{#customerName#}</th>
+                                    <th class="tleft">{#ratingText#}</th>
+                                    <th class="th-5">{#ratingStars#}</th>
+                                    <th class="th-6">{#ratingDate#}</th>
+                                    <th class="th-7">&nbsp;</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                    {foreach name=bewertung from=$oBewertung_arr item=oBewertung key=kKey}
+                                        <tr class="tab_bg{$smarty.foreach.bewertung.iteration%2}">
+                                            <td class="check">
+                                                <input type="hidden" name="kArtikel[{$kKey}]" value="{$oBewertung->kArtikel}" />
+                                                <input name="kBewertung[{$kKey}]" type="checkbox" value="{$oBewertung->kBewertung}" />
+                                            </td>
+                                            <td class="TD2"><a href="../index.php?a={$oBewertung->kArtikel}" target="_blank">{$oBewertung->ArtikelName}</a></td>
+                                            <td class="TD3">{$oBewertung->cName}.</td>
+                                            <td class="TD4"><b>{$oBewertung->cTitel}</b><br />{$oBewertung->cText}</td>
+                                            <td class="tcenter">{$oBewertung->nSterne}</td>
+                                            <td class="tcenter">{$oBewertung->Datum}</td>
+                                            <td class="tcenter">
+                                                <a href="bewertung.php?a=editieren&kBewertung={$oBewertung->kBewertung}&tab=freischalten&token={$smarty.session.jtl_token}"
+                                                   class="btn btn-default" title="{#modify#}">
+                                                    <i class="fa fa-edit"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {/foreach}
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td class="check"><input name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);"></td>
+                                        <td colspan="6" class="TD7"><label for="ALLMSGS">{#ratingSelectAll#}</label></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
                         <div class="panel-footer">
                             <div class="btn-group">
                                 <button name="aktivieren" type="submit" value="{#ratingActive#}" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> {#ratingActive#}</button>
@@ -109,43 +109,62 @@
                         <div class="panel-heading">
                             <h3 class="panel-title">{#ratingLast50#}</h3>
                         </div>
-                        <table  class="table">
-                            <thead>
-                            <tr>
-                                <th class="check">&nbsp;</th>
-                                <th class="tleft">{#productName#}</th>
-                                <th class="tleft">{#customerName#}</th>
-                                <th class="tleft">{#ratingText#}</th>
-                                <th class="th-5">{#ratingStars#}</th>
-                                <th class="th-6">{#ratingDate#}</th>
-                                <th class="th-7">&nbsp;</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {foreach name=bewertungletzten50 from=$oBewertungLetzten50_arr item=oBewertungLetzten50}
-                                <tr class="tab_bg{$smarty.foreach.bewertungletzten50.iteration%2}">
-                                    <td class="check"><input name="kBewertung[]" type="checkbox" value="{$oBewertungLetzten50->kBewertung}"><input type="hidden" name="kArtikel[]" value="{$oBewertungLetzten50->kArtikel}"></td>
-                                    <td class="TD2"><a href="../index.php?a={$oBewertungLetzten50->kArtikel}" target="_blank">{$oBewertungLetzten50->ArtikelName}</a></td>
-                                    <td class="TD3">{$oBewertungLetzten50->cName}.</td>
-                                    <td class="TD4"><b>{$oBewertungLetzten50->cTitel}</b><br />{$oBewertungLetzten50->cText}</td>
-                                    <td class="tcenter">{$oBewertungLetzten50->nSterne}</td>
-                                    <td class="tcenter">{$oBewertungLetzten50->Datum}</td>
-                                    <td class="tcenter7">
-                                        <a href="bewertung.php?a=editieren&kBewertung={$oBewertungLetzten50->kBewertung}&tab=letzten50&token={$smarty.session.jtl_token}"
-                                           class="btn btn-default" title="{#modify#}">
-                                            <i class="fa fa-edit"></i>
-                                        </a>
-                                    </td>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th class="check">&nbsp;</th>
+                                    <th class="tleft">{#productName#}</th>
+                                    <th class="tleft">{#customerName#}</th>
+                                    <th class="tleft">{#ratingText#}</th>
+                                    <th class="th-5">{#ratingStars#}</th>
+                                    <th class="th-6">{#ratingDate#}</th>
+                                    <th class="th-7">&nbsp;</th>
                                 </tr>
-                            {/foreach}
-                            </tbody>
-                            <tfoot>
-                            <tr>
-                                <td class="check"><input name="ALLMSGS" id="ALLMSGS3" type="checkbox" onclick="AllMessages(this.form);"></td>
-                                <td colspan="6" class="TD7"><label for="ALLMSGS3">{#ratingSelectAll#}</label></td>
-                            </tr>
-                            </tfoot>
-                        </table>
+                                </thead>
+                                <tbody>
+                                {foreach name=bewertungletzten50 from=$oBewertungLetzten50_arr item=oBewertungLetzten50}
+                                    <tr class="tab_bg{$smarty.foreach.bewertungletzten50.iteration%2}">
+                                        <td class="check"><input name="kBewertung[]" type="checkbox" value="{$oBewertungLetzten50->kBewertung}"><input type="hidden" name="kArtikel[]" value="{$oBewertungLetzten50->kArtikel}"></td>
+                                        <td class="TD2"><a href="../index.php?a={$oBewertungLetzten50->kArtikel}" target="_blank">{$oBewertungLetzten50->ArtikelName}</a></td>
+                                        <td class="TD3">{$oBewertungLetzten50->cName}.</td>
+                                        <td class="TD4">
+                                            <strong>{$oBewertungLetzten50->cTitel}</strong><br>
+                                            {$oBewertungLetzten50->cText}
+                                            {if !empty($oBewertungLetzten50->cAntwort)}
+                                                <blockquote class="review-reply">
+                                                    <strong>{#ratingReply#}:</strong><br>
+                                                    {$oBewertungLetzten50->cAntwort}
+                                                </blockquote>
+                                            {/if}
+                                        </td>
+                                        <td class="tcenter">{$oBewertungLetzten50->nSterne}</td>
+                                        <td class="tcenter">{$oBewertungLetzten50->Datum}</td>
+                                        <td class="tcenter7 tright" style="min-width: 100px;">
+                                            <div class="btn-group">
+                                                {if !empty($oBewertungLetzten50->cAntwort)}
+                                                    <a href="bewertung.php?a=delreply&kBewertung={$oBewertungLetzten50->kBewertung}&tab=letzten50&token={$smarty.session.jtl_token}"
+                                                       class="btn btn-danger" title="{#removeReply#}">
+                                                        <i class="fa fa-times-circle-o"></i>
+                                                    </a>
+                                                {/if}
+                                                <a href="bewertung.php?a=editieren&kBewertung={$oBewertungLetzten50->kBewertung}&tab=letzten50&token={$smarty.session.jtl_token}"
+                                                   class="btn btn-default" title="{#modify#}">
+                                                    <i class="fa fa-edit"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {/foreach}
+                                </tbody>
+                                <tfoot>
+                                <tr>
+                                    <td class="check"><input name="ALLMSGS" id="ALLMSGS3" type="checkbox" onclick="AllMessages(this.form);"></td>
+                                    <td colspan="6" class="TD7"><label for="ALLMSGS3">{#ratingSelectAll#}</label></td>
+                                </tr>
+                                </tfoot>
+                            </table>
+                        </div>
                         <div class="panel-footer">
                             <button name="loeschen" type="submit" value="{#ratingDelete#}" class="btn btn-danger"><i class="fa fa-trash"></i> {#deleteSelected#}</button>
                         </div>
@@ -178,43 +197,45 @@
                         <div class="panel-heading">
                             <h3 class="panel-title">{#ratingsInaktive#}</h3>
                         </div>
-                        <table class="table">
-                            <thead>
-                            <tr>
-                                <th class="th-1">&nbsp;</th>
-                                <th class="tleft">{#productName#}</th>
-                                <th class="tleft">{#customerName#}</th>
-                                <th class="tleft">{#ratingText#}</th>
-                                <th class="th-5">{#ratingStars#}</th>
-                                <th class="th-6">{#ratingDate#}</th>
-                                <th class="th-7">&nbsp;</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {foreach name=bewertungaktiv from=$oBewertungAktiv_arr item=oBewertungAktiv}
-                                <tr class="tab_bg{$smarty.foreach.bewertungaktiv.iteration%2}">
-                                    <td class="TD1"><input name="kBewertung[]" type="checkbox" value="{$oBewertungAktiv->kBewertung}"><input type="hidden" name="kArtikel[]" value="{$oBewertungAktiv->kArtikel}"></td>
-                                    <td class="TD2"><a href="../index.php?a={$oBewertungAktiv->kArtikel}" target="_blank">{$oBewertungAktiv->ArtikelName}</a></td>
-                                    <td class="TD3">{$oBewertungAktiv->cName}.</td>
-                                    <td class="TD4"><b>{$oBewertungAktiv->cTitel}</b><br />{$oBewertungAktiv->cText}</td>
-                                    <td class="tcenter">{$oBewertungAktiv->nSterne}</td>
-                                    <td class="tcenter">{$oBewertungAktiv->Datum}</td>
-                                    <td class="tcenter">
-                                        <a href="bewertung.php?a=editieren&kBewertung={$oBewertungAktiv->kBewertung}&tab=artikelbewertung"
-                                           class="btn btn-default" title="{#modify#}">
-                                            <i class="fa fa-edit"></i>
-                                        </a>
-                                    </td>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th class="th-1">&nbsp;</th>
+                                    <th class="tleft">{#productName#}</th>
+                                    <th class="tleft">{#customerName#}</th>
+                                    <th class="tleft">{#ratingText#}</th>
+                                    <th class="th-5">{#ratingStars#}</th>
+                                    <th class="th-6">{#ratingDate#}</th>
+                                    <th class="th-7">&nbsp;</th>
                                 </tr>
-                            {/foreach}
-                            </tbody>
-                            <tfoot>
-                            <tr>
-                                <td class="TD1"><input name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);"></td>
-                                <td colspan="6" class="TD7"><label for="ALLMSGS2">{#ratingSelectAll#}</label></td>
-                            </tr>
-                            </tfoot>
-                        </table>
+                                </thead>
+                                <tbody>
+                                {foreach name=bewertungaktiv from=$oBewertungAktiv_arr item=oBewertungAktiv}
+                                    <tr class="tab_bg{$smarty.foreach.bewertungaktiv.iteration%2}">
+                                        <td class="TD1"><input name="kBewertung[]" type="checkbox" value="{$oBewertungAktiv->kBewertung}"><input type="hidden" name="kArtikel[]" value="{$oBewertungAktiv->kArtikel}"></td>
+                                        <td class="TD2"><a href="../index.php?a={$oBewertungAktiv->kArtikel}" target="_blank">{$oBewertungAktiv->ArtikelName}</a></td>
+                                        <td class="TD3">{$oBewertungAktiv->cName}.</td>
+                                        <td class="TD4"><b>{$oBewertungAktiv->cTitel}</b><br />{$oBewertungAktiv->cText}</td>
+                                        <td class="tcenter">{$oBewertungAktiv->nSterne}</td>
+                                        <td class="tcenter">{$oBewertungAktiv->Datum}</td>
+                                        <td class="tcenter">
+                                            <a href="bewertung.php?a=editieren&kBewertung={$oBewertungAktiv->kBewertung}&tab=artikelbewertung"
+                                               class="btn btn-default" title="{#modify#}">
+                                                <i class="fa fa-edit"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {/foreach}
+                                </tbody>
+                                <tfoot>
+                                <tr>
+                                    <td class="TD1"><input name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);"></td>
+                                    <td colspan="6" class="TD7"><label for="ALLMSGS2">{#ratingSelectAll#}</label></td>
+                                </tr>
+                                </tfoot>
+                            </table>
+                        </div>
                         <div class="panel-footer">
                             <button name="loeschen" type="submit" class="btn btn-danger"><i class="fa fa-trash"></i> {#ratingDelete#}</button>
                         </div>
@@ -282,9 +303,9 @@
 </div>
 
 <script type="text/javascript">
-{foreach name=conf from=$oConfig_arr item=oConfig}
-    {if $oConfig->cWertName|strpos:"_guthaben"}
-        xajax_getCurrencyConversionAjax(0, document.getElementById('{$oConfig->cWertName}').value, 'EinstellungAjax_{$oConfig->cWertName}');
-    {/if}
-{/foreach}
+    {foreach name=conf from=$oConfig_arr item=oConfig}
+        {if $oConfig->cWertName|strpos:"_guthaben"}
+            ioCall('getCurrencyConversion', [0, $('#{$oConfig->cWertName}').val(), 'EinstellungAjax_{$oConfig->cWertName}']);
+        {/if}
+    {/foreach}
 </script>

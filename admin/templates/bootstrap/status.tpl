@@ -192,7 +192,7 @@ $(function() {
                             {foreach $incorrectPaymentMethods as $s}
                                 <tr class="text-vcenter">
                                     <td class="text-left" width="55">
-                                        <h4 class="label-wrap"><span class="label label-danger" style="display:inline-block;width:3em">{$s->logs|@count}</span></h4>
+                                        <h4 class="label-wrap"><span class="label label-danger" style="display:inline-block;width:3em">{$s->logCount}</span></h4>
                                     </td>
                                     <td class="text-muted"><strong>{$s->cName}</strong></td>
                                     <td class="text-right">

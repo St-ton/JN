@@ -303,19 +303,9 @@ class Status
 
         if (is_array($paymentMethods)) {
             foreach ($paymentMethods as $i => $method) {
-                $log  = new ZahlungsLog($method->cModulId);
-                $logs = $log->holeLog();
-
-                if (!is_array($logs)) {
-                    continue;
-                }
-
-                foreach ($logs as $entry) {
-                    if ((int)$entry->nLevel === JTLLOG_LEVEL_ERROR) {
-                        $method->logs              = $logs;
-                        $incorrectPaymentMethods[] = $method;
-                        break;
-                    }
+                if (($logCount = ZahlungsLog::count($method->cModulId, JTLLOG_LEVEL_ERROR)) > 0) {
+                    $method->logCount = $logCount;
+                    $incorrectPaymentMethods[] = $method;
                 }
             }
         }

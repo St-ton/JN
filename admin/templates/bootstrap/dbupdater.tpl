@@ -23,40 +23,42 @@
         var download = !!$element.data('download');
 
         pushEvent('Starte Sicherungskopie');
-        ajaxManagedCall(url, {}, function(result, error) {
+        ioManagedCall(
+            adminPath, 'dbupdaterBackup', [],
+            function (result, error) {
+                disableUpdateControl(false);
 
-            disableUpdateControl(false);
-
-            var message = error
+                var message = error
                     ? 'Sicherungskopie konnte nicht erstellt werden'
                     : (download
-                    ? 'Sicherungskopie "<strong>' + result.data.file + '</strong>" wird heruntergeladen'
-                    : 'Sicherungskopie "<strong>' + result.data.file + '</strong>" wurde erfolgreich erstellt');
+                        ? 'Sicherungskopie "<strong>' + result.file + '</strong>" wird heruntergeladen'
+                        : 'Sicherungskopie "<strong>' + result.file + '</strong>" wurde erfolgreich erstellt');
 
-            showNotify(error ? 'danger' : 'info', 'Sicherungskopie', message);
-            pushEvent(message);
+                showNotify(error ? 'danger' : 'info', 'Sicherungskopie', message);
+                pushEvent(message);
 
-            if (!error && download) {
-                location.href = result.data.url;
-            }
-        });
-    }
-
-    function doUpdate(url, callback)
-    {
-        ajaxManagedCall(url, {}, function(result, error) {
-            if (error) {
-                callback(undefined, error);
-            }
-            else {
-                var data = result.data;
-                callback(data);
-
-                if (data.availableUpdate) {
-                    doUpdate(url, callback);
+                if (!error && download) {
+                    ioDownload('dbupdaterDownload', [result.file]);
                 }
             }
-        });
+        );
+    }
+
+    function doUpdate(callback)
+    {
+        ioManagedCall(
+            adminPath, 'dbUpdateIO', [],
+            function (result) {
+                callback(result);
+
+                if (result.availableUpdate) {
+                    doUpdate(callback);
+                }
+            },
+            function (result) {
+                callback(undefined, error);
+            }
+        );
     }
 
     function update($element)
@@ -66,7 +68,7 @@
         disableUpdateControl(true);
         pushEvent('Starte Update');
 
-        doUpdate(url, function(data, error) {
+        doUpdate(function(data, error) {
             var _once = function() {
                 var message = error
                         ? 'Update wurde angehalten: ' + error.message
@@ -93,14 +95,14 @@
 
     function updateStatusTpl()
     {
-        ajaxManagedCall('dbupdater.php', {action: 'status_tpl'}, function(result, error) {
-             if (error) {
-                 pushEvent(error.message);
-             }
-             else {
-                 $('#update-status').html(result.data.tpl);
-                 init_bindings();
-             }
+        ioManagedCall(adminPath, 'dbupdaterStatusTpl', [], function (result, error) {
+            if (error) {
+                pushEvent(error.message);
+            }
+            else {
+                $('#update-status').html(result.tpl);
+                init_bindings();
+            }
         });
 
         // update notifications
@@ -115,6 +117,10 @@
                 .toggle();
     }
 
+    /**
+     * @deprecated since 4.06
+     * @param $element
+     */
     function migrate($element)
     {
         var url = $element.attr('href');
@@ -149,7 +155,7 @@
             params = $.extend({}, { id: id }, params);
         }
 
-        ajaxManagedCall(url, params, function(result, error) {
+        ioManagedCall(adminPath, 'dbupdaterMigration', [id, null, dir], function(result, error) {
             $element
                 .attr('disabled', false)
                 .closest('tr')
@@ -161,8 +167,8 @@
             }
 
             var message = error
-                    ? error.message
-                    : 'Migration wurde erfolgreich ausgef&uuml;hrt';
+                ? error.message
+                : 'Migration wurde erfolgreich ausgef&uuml;hrt';
 
             showNotify(error ? 'danger' : 'info', 'Migration', message);
 
@@ -172,6 +178,12 @@
         });
     }
 
+    /**
+     * @deprecated since 4.06
+     * @param url
+     * @param params
+     * @param callback
+     */
     function ajaxManagedCall(url, params, callback)
     {
         ajaxCall(url, params, function(result, xhr) {

@@ -18,46 +18,45 @@ function baueFilterSQL($bActiveOnly = false)
     if ($_SESSION['NewsNaviFilter']->nSort > 0) {
         switch ($_SESSION['NewsNaviFilter']->nSort) {
             case 1: // Datum absteigend
-                $oSQL->cSortSQL = " ORDER BY tnews.dGueltigVon DESC, tnews.dErstellt DESC";
+                $oSQL->cSortSQL = ' ORDER BY tnews.dGueltigVon DESC, tnews.dErstellt DESC';
                 break;
             case 2: // Datum aufsteigend
-                $oSQL->cSortSQL = " ORDER BY tnews.dGueltigVon";
+                $oSQL->cSortSQL = ' ORDER BY tnews.dGueltigVon';
                 break;
             case 3: // Name a ... z
-                $oSQL->cSortSQL = " ORDER BY tnews.cBetreff";
+                $oSQL->cSortSQL = ' ORDER BY tnews.cBetreff';
                 break;
             case 4: // Name z ... a
-                $oSQL->cSortSQL = " ORDER BY tnews.cBetreff DESC";
+                $oSQL->cSortSQL = ' ORDER BY tnews.cBetreff DESC';
                 break;
             case 5: // Anzahl Kommentare absteigend
-                $oSQL->cSortSQL = " ORDER BY nNewsKommentarAnzahl DESC";
+                $oSQL->cSortSQL = ' ORDER BY nNewsKommentarAnzahl DESC';
                 break;
             case 6: // Anzahl Kommentare aufsteigend
-                $oSQL->cSortSQL = " ORDER BY nNewsKommentarAnzahl";
+                $oSQL->cSortSQL = ' ORDER BY nNewsKommentarAnzahl';
                 break;
         }
     } elseif ($_SESSION['NewsNaviFilter']->nSort == -1) {
         // Standard
-        $oSQL->cSortSQL = " ORDER BY tnews.dGueltigVon DESC, tnews.dErstellt DESC";
+        $oSQL->cSortSQL = ' ORDER BY tnews.dGueltigVon DESC, tnews.dErstellt DESC';
     }
     // Datum Filter
     $oSQL->cDatumSQL = '';
-    if (strlen($_SESSION['NewsNaviFilter']->cDatum) > 0 && $_SESSION['NewsNaviFilter']->cDatum != -1) {
+    if ($_SESSION['NewsNaviFilter']->cDatum != -1 && strlen($_SESSION['NewsNaviFilter']->cDatum) > 0) {
         $_date = explode('-', $_SESSION['NewsNaviFilter']->cDatum);
         if (count($_date) > 1) {
             list($nMonat, $nJahr) = $_date;
-            $oSQL->cDatumSQL      = " AND MONTH(tnews.dGueltigVon)='" . (int)$nMonat . "' 
-                                      AND YEAR(tnews.dGueltigVon)='" . (int)$nJahr . "'";
+            $oSQL->cDatumSQL      = " AND MONTH(tnews.dGueltigVon) = '" . (int)$nMonat . "' 
+                                      AND YEAR(tnews.dGueltigVon) = '" . (int)$nJahr . "'";
         } else { //invalid date given/xss -> reset to -1
             $_SESSION['NewsNaviFilter']->cDatum = -1;
         }
     }
     // NewsKat Filter
+    $oSQL->cNewsKatSQL = ' JOIN tnewskategorienews ON tnewskategorienews.kNews = tnews.kNews';
     if ($_SESSION['NewsNaviFilter']->nNewsKat > 0) {
         $oSQL->cNewsKatSQL = " JOIN tnewskategorienews ON tnewskategorienews.kNews = tnews.kNews
                                AND tnewskategorienews.kNewsKategorie = " . (int)$_SESSION['NewsNaviFilter']->nNewsKat;
-    } else {
-        $oSQL->cNewsKatSQL = ' JOIN tnewskategorienews ON tnewskategorienews.kNews = tnews.kNews';
     }
 
     if ($bActiveOnly) {
@@ -137,12 +136,14 @@ function pruefeKundenKommentar($cKommentar, $cName = '', $cEmail = '', $kNews, $
 function gibNewskommentarFehler($nPlausiValue_arr)
 {
     $cFehler = '';
-    // Kommentarfeld ist leer
-    if (isset($nPlausiValue_arr['cKommentar']) && $nPlausiValue_arr['cKommentar'] == 1) {
-        $cFehler .= Shop::Lang()->get('newscommentMissingtext', 'errorMessages') . '<br />';
-    } elseif (isset($nPlausiValue_arr['cKommentar']) && $nPlausiValue_arr['cKommentar'] == 2) {
-        // Kommentar ist länger als 1000 Zeichen
-        $cFehler .= Shop::Lang()->get('newscommentLongtext', 'errorMessages') . '<br />';
+    if (isset($nPlausiValue_arr['cKommentar'])) {
+        // Kommentarfeld ist leer
+        if ($nPlausiValue_arr['cKommentar'] == 1) {
+            $cFehler .= Shop::Lang()->get('newscommentMissingtext', 'errorMessages') . '<br />';
+        } elseif ($nPlausiValue_arr['cKommentar'] == 2) {
+            // Kommentar ist länger als 1000 Zeichen
+            $cFehler .= Shop::Lang()->get('newscommentLongtext', 'errorMessages') . '<br />';
+        }
     }
     // Kunde hat bereits einen Newskommentar zu der aktuellen News geschrieben
     if (isset($nPlausiValue_arr['nAnzahl']) && $nPlausiValue_arr['nAnzahl'] == 1) {
@@ -380,9 +381,9 @@ function baueNewsMetaStart($oNewsNaviFilter)
 }
 
 /**
- * @param JTLSmarty $smarty
- * @param string    $AktuelleSeite
- * @param string    $cCanonicalURL
+ * @param JTLSmarty   $smarty
+ * @param string|null $AktuelleSeite
+ * @param string      $cCanonicalURL
  */
 function baueNewsKruemel($smarty, $AktuelleSeite, &$cCanonicalURL)
 {
@@ -391,7 +392,7 @@ function baueNewsKruemel($smarty, $AktuelleSeite, &$cCanonicalURL)
         //hole Link
         $linkHelper    = LinkHelper::getInstance();
         $Link          = $linkHelper->getPageLink($oLink->kLink);
-        $Link->Sprache = $linkHelper->getPageLink($oLink->kLink);
+        $Link->Sprache = $linkHelper->getPageLinkLanguage($oLink->kLink);
         //url
         global $sprachURL, $requestURL;
         $requestURL = baueURL($Link, URLART_SEITE);
@@ -402,7 +403,7 @@ function baueNewsKruemel($smarty, $AktuelleSeite, &$cCanonicalURL)
         if (strpos($requestURL, '.php') === false) {
             $cCanonicalURL = Shop::getURL() . '/' . $requestURL;
         }
-        if (!isset($AktuelleSeite)) {
+        if (empty($AktuelleSeite)) {
             $AktuelleSeite = null;
         }
         $smarty->assign('Navigation', createNavigation($AktuelleSeite, 0, 0, $Link->Sprache->cName, $requestURL));
@@ -458,8 +459,8 @@ function getCurrentNewsCategory($kNewsKategorie, $bActiveOnly = false)
 {
     $activeFilter = $bActiveOnly ? ' AND tnewskategorie.nAktiv = 1 ' : '';
 
-    return Shop::DB()->query("
-        SELECT tnewskategorie.cName, tnewskategorie.cMetaTitle, tnewskategorie.cMetaDescription, tseo.cSeo
+    return Shop::DB()->query(
+        "SELECT tnewskategorie.cName, tnewskategorie.cMetaTitle, tnewskategorie.cMetaDescription, tseo.cSeo
             FROM tnewskategorie
             LEFT JOIN tseo 
                 ON tseo.cKey = 'kNewsKategorie'
@@ -492,8 +493,8 @@ function getNewsCategory($kNews)
         }
     }
 
-    return Shop::DB()->query("
-        SELECT tnewskategorie.kNewsKategorie, tnewskategorie.kSprache, tnewskategorie.cName,
+    return Shop::DB()->query(
+        "SELECT tnewskategorie.kNewsKategorie, tnewskategorie.kSprache, tnewskategorie.cName,
             tnewskategorie.cBeschreibung, tnewskategorie.cMetaTitle, tnewskategorie.cMetaDescription,
             tnewskategorie.nSort, tnewskategorie.nAktiv, tnewskategorie.dLetzteAktualisierung,
             tnewskategorie.cPreviewImage, tseo.cSeo,
@@ -520,8 +521,8 @@ function getNewsCategory($kNews)
  */
 function getNewsComments($kNews, $cLimitSQL)
 {
-    return Shop::DB()->query("
-        SELECT *, DATE_FORMAT(tnewskommentar.dErstellt, '%d.%m.%Y %H:%i') AS dErstellt_de
+    return Shop::DB()->query(
+        "SELECT *, DATE_FORMAT(tnewskommentar.dErstellt, '%d.%m.%Y %H:%i') AS dErstellt_de
             FROM tnewskommentar
             WHERE tnewskommentar.kNews = " . (int)$kNews . "
                 AND tnewskommentar.nAktiv = 1
@@ -536,8 +537,8 @@ function getNewsComments($kNews, $cLimitSQL)
  */
 function getCommentCount($kNews)
 {
-    return Shop::DB()->query("
-        SELECT count(*) AS nAnzahl
+    return Shop::DB()->query(
+        "SELECT count(*) AS nAnzahl
             FROM tnewskommentar
             WHERE kNews = " . (int)$kNews . "
             AND nAktiv = 1", 1
@@ -550,8 +551,8 @@ function getCommentCount($kNews)
  */
 function getMonthOverview($kNewsMonatsUebersicht)
 {
-    return Shop::DB()->query("
-        SELECT tnewsmonatsuebersicht.*, tseo.cSeo
+    return Shop::DB()->query(
+        "SELECT tnewsmonatsuebersicht.*, tseo.cSeo
             FROM tnewsmonatsuebersicht
             LEFT JOIN tseo 
                 ON tseo.cKey = 'kNewsMonatsUebersicht'
@@ -568,8 +569,8 @@ function getMonthOverview($kNewsMonatsUebersicht)
  */
 function getNewsOverview($oSQL, $cLimitSQL)
 {
-    return Shop::DB()->query("
-        SELECT tseo.cSeo, tnews.*, DATE_FORMAT(tnews.dGueltigVon, '%d.%m.%Y %H:%i') AS dErstellt_de, 
+    return Shop::DB()->query(
+        "SELECT tseo.cSeo, tnews.*, DATE_FORMAT(tnews.dGueltigVon, '%d.%m.%Y %H:%i') AS dErstellt_de, 
             count(*) AS nAnzahl, count(DISTINCT(tnewskommentar.kNewsKommentar)) AS nNewsKommentarAnzahl
             FROM tnews
             LEFT JOIN tseo ON tseo.cKey = 'kNews'
@@ -597,8 +598,8 @@ function getNewsOverview($oSQL, $cLimitSQL)
  */
 function getFullNewsOverview($oSQL)
 {
-    return Shop::DB()->query("
-        SELECT count(DISTINCT(tnews.kNews)) AS nAnzahl
+    return Shop::DB()->query(
+        "SELECT count(DISTINCT(tnews.kNews)) AS nAnzahl
             FROM tnews
             " . $oSQL->cNewsKatSQL . "
             WHERE tnews.nAktiv = 1
@@ -616,8 +617,8 @@ function getFullNewsOverview($oSQL)
  */
 function getNewsDateArray($oSQL)
 {
-    return Shop::DB()->query("
-      SELECT month(tnews.dGueltigVon) AS nMonat, year(tnews.dGueltigVon) AS nJahr
+    return Shop::DB()->query(
+      "SELECT month(tnews.dGueltigVon) AS nMonat, year(tnews.dGueltigVon) AS nJahr
             FROM tnews
             " . $oSQL->cNewsKatSQL . "
             WHERE tnews.nAktiv = 1
@@ -628,4 +629,45 @@ function getNewsDateArray($oSQL)
             GROUP BY nJahr, nMonat
             ORDER BY dGueltigVon DESC", 2
     );
+}
+
+/**
+ * @param object $a
+ * @param object $b
+ * @return int
+ */
+function cmp_obj($a, $b)
+{
+    return strcmp($a->cName, $b->cName);
+}
+
+/**
+ * @param int    $kNews
+ * @param string $cUploadVerzeichnis
+ * @return array
+ */
+function holeNewsBilder($kNews, $cUploadVerzeichnis)
+{
+    $oDatei_arr = [];
+    $kNews      = (int)$kNews;
+    if ($kNews > 0) {
+        if (is_dir($cUploadVerzeichnis . $kNews)) {
+            $DirHandle = opendir($cUploadVerzeichnis . $kNews);
+            $shopURL   = Shop::getURL() . '/';
+            while (false !== ($Datei = readdir($DirHandle))) {
+                if ($Datei !== '.' && $Datei !== '..') {
+                    $oDatei         = new stdClass();
+                    $oDatei->cName  = substr($Datei, 0, strpos($Datei, '.'));
+                    $oDatei->cURL   = PFAD_NEWSBILDER . $kNews . '/' . $Datei;
+                    $oDatei->cDatei = $Datei;
+
+                    $oDatei_arr[] = $oDatei;
+                }
+            }
+
+            usort($oDatei_arr, 'cmp_obj');
+        }
+    }
+
+    return $oDatei_arr;
 }

@@ -175,7 +175,7 @@ function kundeSpeichern($cPost_arr)
             setzeSteuersaetze();
             $_SESSION['Warenkorb']->gibGesamtsummeWarenLocalized();
         }
-        if ($cPost_arr['checkout'] == 1) {
+        if ((int)$cPost_arr['checkout'] === 1) {
             //weiterleitung zum chekout
             $linkHelper = LinkHelper::getInstance();
             header('Location: ' . $linkHelper->getStaticRoute('bestellvorgang.php', true) . '?reg=1', true, 303);
@@ -189,6 +189,16 @@ function kundeSpeichern($cPost_arr)
             exit;
         }
     } else {
+        if ((int)$cPost_arr['checkout'] === 1) {
+            //weiterleitung zum chekout
+            $_SESSION['checkout.register']        = 1;
+            $_SESSION['checkout.fehlendeAngaben'] = $fehlendeAngaben;
+            $_SESSION['checkout.cPost_arr']       = $cPost_arr;
+
+            $linkHelper = LinkHelper::getInstance();
+            header('Location: ' . $linkHelper->getStaticRoute('bestellvorgang.php', true) . '?reg=1', true, 303);
+            exit;
+        }
         $smarty->assign('fehlendeAngaben', $fehlendeAngaben);
         $Kunde = $knd;
 

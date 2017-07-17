@@ -11,19 +11,20 @@
 
     // xajax_getAvailableWidgetsAjax();
 
-    function registerWidgetSettings() {ldelim}
-        $('[data-widget="add"]').click(function() {ldelim}
-            var kWidget = $(this).data('id'),
-                myCallback = xajax.callback.create();
-            myCallback.onComplete = function(obj) {ldelim}
-                window.location.href='index.php?kWidget=' + kWidget;
-            {rdelim};
-            xajax.call('addWidgetAjax', {ldelim} parameters: [kWidget], callback: myCallback, context: this {rdelim} );
-        {rdelim});
-    {rdelim}
+    function registerWidgetSettings()
+    {
+        $('[data-widget="add"]').click(function() {
+            var kWidget = $(this).data('id');
+            ioCall(
+                'addWidget', [kWidget], function () {
+                    window.location.href='index.php?kWidget=' + kWidget;
+                }
+            );
+        });
+    }
 
     $(function() {ldelim}
-        xajax_truncateJtllog();
+        ioCall('truncateJtllog');
         registerWidgetSettings();
     {rdelim});
     </script>

@@ -97,31 +97,41 @@
 			</table>
 		</td>
 	</tr>
-	<tr>
-		<td class="column mobile-left" align="right" valign="top">
-			<table cellpadding="0" cellspacing="0">
-				<tr>
-					<td align="right" valign="top">
-						<font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-							<strong>Customer data:</strong>
-						</font>
-					</td>
-				</tr>
-			</table>
-		</td>
-		<td class="column" align="left" valign="top" bgcolor="#ffffff">
-			<table cellpadding="0" cellspacing="0">
-				<tr>
-					<td align="left" valign="top">
-						<font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-							{if $Nachricht->cAnredeLocalized}{$Nachricht->cAnredeLocalized} {/if}{if $Nachricht->cVorname}{$Nachricht->cVorname} {/if}{if $Nachricht->cNachname}{$Nachricht->cNachname}{/if}
-							{if $Nachricht->cFirma}<br>{$Nachricht->cFirma}{/if}
-						</font>
-					</td>
-				</tr>
-			</table>
-		</td>
-	</tr>
+    {if !empty($Nachricht->cAnredeLocalized) && !empty($Nachricht->cVorname)
+		|| !empty($Nachricht->cAnredeLocalized) && !empty($Nachricht->cNachname) || !empty($Nachricht->cFirma)
+		|| !empty($Nachricht->cAnredeLocalized) && !empty($Nachricht->cVorname) && !empty($Nachricht->cNachname)}
+		<tr>
+			<td class="column mobile-left" align="right" valign="top">
+				<table cellpadding="0" cellspacing="0">
+					<tr>
+						<td align="right" valign="top">
+							<font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
+								<strong>Customer data:</strong>
+							</font>
+						</td>
+					</tr>
+				</table>
+			</td>
+			<td class="column" align="left" valign="top" bgcolor="#ffffff">
+				<table cellpadding="0" cellspacing="0">
+					<tr>
+						<td align="left" valign="top">
+							<font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
+                                {if !empty($Nachricht->cAnredeLocalized)}{$Nachricht->cAnredeLocalized} {/if}
+                                {if !empty($Nachricht->cVorname)}{$Nachricht->cVorname} {/if}
+                                {if !empty($Nachricht->cNachname)}{$Nachricht->cNachname}{/if}
+                                {if !empty($Nachricht->cAnredeLocalized) && !empty($Nachricht->cVorname)
+                                	&& !empty($Nachricht->cNachname)}
+									<br>
+                                {/if}
+                                {if !empty($Nachricht->cFirma)}{$Nachricht->cFirma}{/if}
+							</font>
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+    {/if}
 	<tr>
 		<td class="column mobile-left" align="right" valign="top">
 			<table cellpadding="0" cellspacing="0">
@@ -146,84 +156,84 @@
 			</table>
 		</td>
 	</tr>
-	{if $Nachricht->cTel}
-	<tr>
-		<td class="column mobile-left" align="right" valign="top">
-			<table cellpadding="0" cellspacing="0">
-				<tr>
-					<td align="right" valign="top">
-						<font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-							<strong>Tel:</strong>
-						</font>
-					</td>
-				</tr>
-			</table>
-		</td>
-		<td class="column" align="left" valign="top" bgcolor="#ffffff">
-			<table cellpadding="0" cellspacing="0">
-				<tr>
-					<td align="left" valign="top">
-						<font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-							{$Nachricht->cTel}
-						</font>
-					</td>
-				</tr>
-			</table>
-		</td>
-	</tr>
-	{/if}
-	{if $Nachricht->cMobil}
-	<tr>
-		<td class="column mobile-left" align="right" valign="top">
-			<table cellpadding="0" cellspacing="0">
-				<tr>
-					<td align="right" valign="top">
-						<font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-							<strong>Mobile:</strong>
-						</font>
-					</td>
-				</tr>
-			</table>
-		</td>
-		<td class="column" align="left" valign="top" bgcolor="#ffffff">
-			<table cellpadding="0" cellspacing="0">
-				<tr>
-					<td align="left" valign="top">
-						<font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-							{$Nachricht->cMobil}
-						</font>
-					</td>
-				</tr>
-			</table>
-		</td>
-	</tr>
-	{/if}
-	{if $Nachricht->cFax}
-	<tr>
-		<td class="column mobile-left" align="right" valign="top">
-			<table cellpadding="0" cellspacing="0">
-				<tr>
-					<td align="right" valign="top">
-						<font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-							<strong>Fax:</strong>
-						</font>
-					</td>
-				</tr>
-			</table>
-		</td>
-		<td class="column" align="left" valign="top" bgcolor="#ffffff">
-			<table cellpadding="0" cellspacing="0">
-				<tr>
-					<td align="left" valign="top">
-						<font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-							{$Nachricht->cFax}
-						</font>
-					</td>
-				</tr>
-			</table>
-		</td>
-	</tr>
-	{/if}
+    {if !empty($Nachricht->cTel)}
+		<tr>
+			<td class="column mobile-left" align="right" valign="top">
+				<table cellpadding="0" cellspacing="0">
+					<tr>
+						<td align="right" valign="top">
+							<font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
+								<strong>Tel:</strong>
+							</font>
+						</td>
+					</tr>
+				</table>
+			</td>
+			<td class="column" align="left" valign="top" bgcolor="#ffffff">
+				<table cellpadding="0" cellspacing="0">
+					<tr>
+						<td align="left" valign="top">
+							<font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
+                                {$Nachricht->cTel}
+							</font>
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+    {/if}
+    {if !empty($Nachricht->cMobil)}
+		<tr>
+			<td class="column mobile-left" align="right" valign="top">
+				<table cellpadding="0" cellspacing="0">
+					<tr>
+						<td align="right" valign="top">
+							<font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
+								<strong>Mobile:</strong>
+							</font>
+						</td>
+					</tr>
+				</table>
+			</td>
+			<td class="column" align="left" valign="top" bgcolor="#ffffff">
+				<table cellpadding="0" cellspacing="0">
+					<tr>
+						<td align="left" valign="top">
+							<font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
+                                {$Nachricht->cMobil}
+							</font>
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+    {/if}
+    {if !empty($Nachricht->cFax)}
+		<tr>
+			<td class="column mobile-left" align="right" valign="top">
+				<table cellpadding="0" cellspacing="0">
+					<tr>
+						<td align="right" valign="top">
+							<font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
+								<strong>Fax:</strong>
+							</font>
+						</td>
+					</tr>
+				</table>
+			</td>
+			<td class="column" align="left" valign="top" bgcolor="#ffffff">
+				<table cellpadding="0" cellspacing="0">
+					<tr>
+						<td align="left" valign="top">
+							<font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
+                                {$Nachricht->cFax}
+							</font>
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+    {/if}
 </table>
 
 {includeMailTemplate template=footer type=html}

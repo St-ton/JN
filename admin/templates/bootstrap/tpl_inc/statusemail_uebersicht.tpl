@@ -28,7 +28,11 @@
                         <span class="input-group-addon">
                             <label for="cEmail">{#statusemailEmail#}</label>
                         </span>
-                        <input class="form-control" type="text" name="cEmail" id="cEmail" value="{if isset($oStatusemailEinstellungen->cEmail)}{$oStatusemailEinstellungen->cEmail}{/if}" tabindex="1" />
+                        <span class="input-group-wrap">
+                            <input class="form-control" type="text" name="cEmail" id="cEmail"
+                                   value="{if isset($oStatusemailEinstellungen->cEmail)}{$oStatusemailEinstellungen->cEmail}{/if}"
+                                   tabindex="1">
+                        </span>
                         <span class="input-group-addon">
                             {getHelpDesc cDesc=#statusemailEmailDesc#}
                         </span>

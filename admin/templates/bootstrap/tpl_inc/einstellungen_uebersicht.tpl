@@ -9,17 +9,19 @@
 
 {include file='tpl_inc/seite_header.tpl' cTitel=#preferences# cBeschreibung=#preferencesDesc# cDokuURL=#preferencesURL#}
 <div id="content" class="container-fluid">
-    <table class="list table">
-        <tbody>
-        {foreach name=einst from=$Sektionen item=Sektion}
-            <tr>
-                <td>{$Sektion->cName}</td>
-                <td>{$Sektion->anz} {#preferences#}</td>
-                <td>
-                    <a href="einstellungen.php?kSektion={$Sektion->kEinstellungenSektion}" class="btn btn-primary">{#configure#}</a>
-                </td>
-            </tr>
-        {/foreach}
-        </tbody>
-    </table>
+    <div class="table-responsive">
+        <table class="list table">
+            <tbody>
+            {foreach name=einst from=$Sektionen item=Sektion}
+                <tr>
+                    <td>{$Sektion->cName}</td>
+                    <td>{$Sektion->anz} {#preferences#}</td>
+                    <td>
+                        <a href="einstellungen.php?kSektion={$Sektion->kEinstellungenSektion}" class="btn btn-primary">{#configure#}</a>
+                    </td>
+                </tr>
+            {/foreach}
+            </tbody>
+        </table>
+    </div>
 </div>

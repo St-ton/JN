@@ -93,7 +93,9 @@
             body { background-color: {$Einstellungen.template.theme.backgroundcolor}!important; }
         </style>
     {/if}
-    <script src="{$currentTemplateDir}js/jquery-1.12.4.min.js"></script>
+    {block name="head-resources-jquery"}
+        <script src="{if empty($parentTemplateDir)}{$currentTemplateDir}{else}{$parentTemplateDir}{/if}js/jquery-1.12.4.min.js"></script>
+    {/block}
     {include file='layout/header_inline_js.tpl'}
 </head>
 {assign var="isFluidContent" value=false}
@@ -104,7 +106,9 @@
 {block name="body-tag"}
 <body data-page="{$nSeitenTyp}" class="body-offcanvas"{if isset($Link) && !empty($Link->cIdentifier)} id="{$Link->cIdentifier}"{/if}>
 {/block}
+{block name="main-wrapper-starttag"}
 <div id="main-wrapper" class="main-wrapper{if $bExclusive} exclusive{/if}{if isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout === 'boxed'} boxed{else} fluid{/if}{if $hasLeftPanel} aside-active{/if}">
+{/block}
 {if !$bExclusive}
 
 {if isset($bAdminWartungsmodus) && $bAdminWartungsmodus}

@@ -21,6 +21,7 @@ $smarty->registerPlugin('function', 'gibPreisStringLocalizedSmarty', 'gibPreisSt
        ->registerPlugin('function', 'get_manufacturers', 'get_manufacturers')
        ->registerPlugin('function', 'get_cms_content', 'get_cms_content')
        ->registerPlugin('function', 'get_static_route', 'get_static_route')
+       ->registerPlugin('function', 'hasOnlyListableVariations', 'hasOnlyListableVariations')
        ->registerPlugin('modifier', 'has_trans', 'has_translation')
        ->registerPlugin('modifier', 'trans', 'get_translation')
        ->registerPlugin('function', 'get_product_list', 'get_product_list');
@@ -714,6 +715,58 @@ function get_cms_content($params, &$smarty)
     }
 
     return null;
+}
+
+/**
+ * @param array $params - variationen, maxVariationCount, maxWerteCount
+ * @param JTLSmarty $smarty
+ * @return int - 0: no listable variations, 1: normal listable variations, 2: only child listable variations
+ */
+function hasOnlyListableVariations($params, &$smarty)
+{
+    if (!isset($params['artikel']->Variationen)) {
+        if (isset($params['assign'])) {
+            $smarty->assign($params['assign'], 0);
+
+            return null;
+        } else {
+            return 0;
+        }
+    }
+
+    $maxVariationCount = isset($params['maxVariationCount']) ? (int)$params['maxVariationCount'] : 1;
+    $maxWerteCount     = isset($params['maxWerteCount']) ? (int)$params['maxWerteCount'] : 3;
+    $variationCheck    = function ($Variationen, $maxVariationCount, $maxWerteCount) {
+        $result = true;
+
+        if (is_array($Variationen) && count($Variationen) > 0 && count($Variationen) <= $maxVariationCount) {
+            foreach ($Variationen as $oVariation) {
+                if ($oVariation->cTyp != 'SELECTBOX'
+                    && (!in_array($oVariation->cTyp, ['TEXTSWATCHES', 'IMGSWATCHES', 'RADIO']) || count($oVariation->Werte) > $maxWerteCount)) {
+                    $result = false;
+                    break;
+                }
+            }
+        } else {
+            $result = false;
+        }
+
+        return $result;
+    };
+
+    $result = $variationCheck($params['artikel']->Variationen, $maxVariationCount, $maxWerteCount) ? 1 : 0;
+    if ($result === 0 && $params['artikel']->kVaterArtikel > 0) {
+        // Hat das Kind evtl. mehr Variationen als der Vater?
+        $result = $variationCheck($params['artikel']->oVariationenNurKind_arr, $maxVariationCount, $maxWerteCount) ? 2 : 0;
+    }
+
+    if (isset($params['assign'])) {
+        $smarty->assign($params['assign'], $result);
+
+        return null;
+    }
+
+    return $result;
 }
 
 /**

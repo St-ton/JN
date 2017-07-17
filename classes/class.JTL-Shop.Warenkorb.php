@@ -855,7 +855,11 @@ class Warenkorb
             $nSteuersatz_arr = [];
             foreach ($this->PositionenArr as $i => $Position) {
                 if ($Position->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL && $Position->kSteuerklasse > 0) {
-                    $nSteuersatz_arr[$Position->kSteuerklasse] += $Position->fPreisEinzelNetto * $Position->nAnzahl;
+                    if (empty($nSteuersatz_arr[$Position->kSteuerklasse])) {
+                        $nSteuersatz_arr[$Position->kSteuerklasse] = $Position->fPreisEinzelNetto * $Position->nAnzahl;
+                    } else {
+                        $nSteuersatz_arr[$Position->kSteuerklasse] += $Position->fPreisEinzelNetto * $Position->nAnzahl;
+                    }
                 }
             }
             $fMaxValue = max($nSteuersatz_arr);
@@ -1496,7 +1500,7 @@ class Warenkorb
 
         if (is_array($oWarenkorb->PositionenArr)) {
             foreach ($oWarenkorb->PositionenArr as $wkPos) {
-                $checks['PositionenArr'][] = [
+                $checks['PositionenArr'][] = md5(serialize([
                     'kArtikel'          => isset($wkPos->kArtikel) ? $wkPos->kArtikel : 0,
                     'nAnzahl'           => isset($wkPos->nAnzahl) ? $wkPos->nAnzahl : 0,
                     'kVersandklasse'    => isset($wkPos->kVersandklasse) ? $wkPos->kVersandklasse : 0,
@@ -1504,8 +1508,9 @@ class Warenkorb
                     'fPreisEinzelNetto' => isset($wkPos->fPreisEinzelNetto) ? $wkPos->fPreisEinzelNetto : 0.0,
                     'fPreis'            => isset($wkPos->fPreis) ? $wkPos->fPreis : 0.0,
                     'cHinweis'          => isset($wkPos->cHinweis) ? $wkPos->cHinweis : '',
-                ];
+                ]));
             }
+            sort($checks['PositionenArr']);
         }
 
         return md5(serialize($checks));

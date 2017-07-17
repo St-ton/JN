@@ -191,85 +191,87 @@
         </div>
     </form>
 {else}
-    <table class="table">
-        <thead>
-        <tr>
-            <th></th>
-            <th></th>
-            <th class="text-center">Status</th>
-            <th class="text-center">Version</th>
-            <th></th>
-        </tr>
-        </thead>
-        <tbody>
-        {foreach name="template" from=$oTemplate_arr item=oTemplate}
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
             <tr>
-                <td class="text-vcenter text-center" width="140">
-                    <div class="thumb-box thumb-sm">
-                        <div class="thumb" style="background-image:url({if $oTemplate->cPreview|strlen > 0}{$shopURL}/templates/{$oTemplate->cOrdner}/{$oTemplate->cPreview}{else}{$shopURL}/gfx/keinBild.gif{/if})"></div>
-                    </div>
-                </td>
-                <td>
-                    <ul class="list-unstyled">
-                        <li>
-                            <h3 style="margin:0">{$oTemplate->cName}</h3>
-                            {if !empty($oTemplate->cDescription)}
-                                <p class="small">{$oTemplate->cDescription}</p>
-                            {/if}
-                            <span class="label label-default">
-                             <i class="fa fa-folder-o" aria-hidden="true"></i> {$oTemplate->cOrdner}
-                            </span> 
-                            {if $oTemplate->bChild === true}<span class="label label-info"><i class="fa fa-level-up" aria-hidden="true"></i> <abbr title="Erbt von {$oTemplate->cParent}">{$oTemplate->cParent}</abbr></span>{/if}
+                <th></th>
+                <th></th>
+                <th class="text-center">Status</th>
+                <th class="text-center">Version</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            {foreach name="template" from=$oTemplate_arr item=oTemplate}
+                <tr>
+                    <td class="text-vcenter text-center" width="140">
+                        <div class="thumb-box thumb-sm">
+                            <div class="thumb" style="background-image:url({if $oTemplate->cPreview|strlen > 0}{$shopURL}/templates/{$oTemplate->cOrdner}/{$oTemplate->cPreview}{else}{$shopURL}/gfx/keinBild.gif{/if})"></div>
+                        </div>
+                    </td>
+                    <td>
+                        <ul class="list-unstyled">
+                            <li>
+                                <h3 style="margin:0">{$oTemplate->cName}</h3>
+                                {if !empty($oTemplate->cDescription)}
+                                    <p class="small">{$oTemplate->cDescription}</p>
+                                {/if}
+                                <span class="label label-default">
+                                 <i class="fa fa-folder-o" aria-hidden="true"></i> {$oTemplate->cOrdner}
+                                </span>
+                                {if $oTemplate->bChild === true}<span class="label label-info"><i class="fa fa-level-up" aria-hidden="true"></i> <abbr title="Erbt von {$oTemplate->cParent}">{$oTemplate->cParent}</abbr></span>{/if}
 
-                            {if isset($oStoredTemplate_arr[$oTemplate->cOrdner])}
-                                {foreach $oStoredTemplate_arr[$oTemplate->cOrdner] as $oStored}
-                                    <span class="label label-warning"><i class="fa fa-info-circle" aria-hidden="true"></i> <abbr title="Originalversion {$oStored->cVersion} vorhanden">{$oStored->cVersion}</abbr></span>
-                                {/foreach}
-                            {/if}                            
-                            <!--
-                            {if !empty($oTemplate->cURL)}<a href="{$oTemplate->cURL}">{/if}
-                                {$oTemplate->cAuthor}
-                                {if !empty($oTemplate->cURL)}</a>
-                            {/if}
-                            -->
-                        </li>
-                    </ul>
-                </td>
-                <td class="text-vcenter text-center">
-                    {if !empty($oTemplate->bHasError) && $oTemplate->bHasError === true}
-                        <h4 class="label-wrap">
-                            <span class="label label-danger">Fehlerhaft</span>
-                        </h4>
-                    {elseif $oTemplate->bAktiv}
-                        <h4 class="label-wrap">
-                            <span class="label label-success">Aktiviert {if $oTemplate->eTyp === 'mobil'}(Mobile Endger&auml;te){/if}</span>
-                        </h4>
-                    {/if}
-                </td>
-                <td class="text-vcenter text-center">
-                    {$oTemplate->cVersion}
-                </td>
-                <td class="text-vcenter text-center">
-                    {if !empty($oTemplate->bHasError) && $oTemplate->bHasError === true}
-                        <span class="error"><strong>Achtung:</strong><br />Parent-Template fehlt.</span>
-                    {else}
-                        {if !$oTemplate->bAktiv}
-                            {if $oTemplate->bEinstellungen}
-                                <a class="btn btn-primary" href="shoptemplate.php?settings={$oTemplate->cOrdner}&activate=1&token={$smarty.session.jtl_token}"><i class="fa fa-share"></i> Aktivieren</a>
-                            {else}
-                                <a class="btn btn-primary" href="shoptemplate.php?switch={$oTemplate->cOrdner}&token={$smarty.session.jtl_token}"><i class="fa fa-share"></i> Aktivieren</a>
-                            {/if}
+                                {if isset($oStoredTemplate_arr[$oTemplate->cOrdner])}
+                                    {foreach $oStoredTemplate_arr[$oTemplate->cOrdner] as $oStored}
+                                        <span class="label label-warning"><i class="fa fa-info-circle" aria-hidden="true"></i> <abbr title="Originalversion {$oStored->cVersion} vorhanden">{$oStored->cVersion}</abbr></span>
+                                    {/foreach}
+                                {/if}
+                                <!--
+                                {if !empty($oTemplate->cURL)}<a href="{$oTemplate->cURL}">{/if}
+                                    {$oTemplate->cAuthor}
+                                    {if !empty($oTemplate->cURL)}</a>
+                                {/if}
+                                -->
+                            </li>
+                        </ul>
+                    </td>
+                    <td class="text-vcenter text-center">
+                        {if !empty($oTemplate->bHasError) && $oTemplate->bHasError === true}
+                            <h4 class="label-wrap">
+                                <span class="label label-danger">Fehlerhaft</span>
+                            </h4>
+                        {elseif $oTemplate->bAktiv}
+                            <h4 class="label-wrap">
+                                <span class="label label-success">Aktiviert {if $oTemplate->eTyp === 'mobil'}(Mobile Endger&auml;te){/if}</span>
+                            </h4>
+                        {/if}
+                    </td>
+                    <td class="text-vcenter text-center">
+                        {$oTemplate->cVersion}
+                    </td>
+                    <td class="text-vcenter text-center">
+                        {if !empty($oTemplate->bHasError) && $oTemplate->bHasError === true}
+                            <span class="error"><strong>Achtung:</strong><br />Parent-Template fehlt.</span>
                         {else}
-                            {if $oTemplate->bEinstellungen}
-                                <a class="btn btn-default" href="shoptemplate.php?settings={$oTemplate->cOrdner}&token={$smarty.session.jtl_token}"><i class="fa fa-edit"></i> Einstellungen</a>
+                            {if !$oTemplate->bAktiv}
+                                {if $oTemplate->bEinstellungen}
+                                    <a class="btn btn-primary" href="shoptemplate.php?settings={$oTemplate->cOrdner}&activate=1&token={$smarty.session.jtl_token}"><i class="fa fa-share"></i> Aktivieren</a>
+                                {else}
+                                    <a class="btn btn-primary" href="shoptemplate.php?switch={$oTemplate->cOrdner}&token={$smarty.session.jtl_token}"><i class="fa fa-share"></i> Aktivieren</a>
+                                {/if}
+                            {else}
+                                {if $oTemplate->bEinstellungen}
+                                    <a class="btn btn-default" href="shoptemplate.php?settings={$oTemplate->cOrdner}&token={$smarty.session.jtl_token}"><i class="fa fa-edit"></i> Einstellungen</a>
+                                {/if}
                             {/if}
                         {/if}
-                    {/if}
-                </td>
-            </tr>
-        {/foreach}
-        </tbody>
-    </table>
+                    </td>
+                </tr>
+            {/foreach}
+            </tbody>
+        </table>
+    </div>
 {/if}
 </div>
 {include file='tpl_inc/footer.tpl'}

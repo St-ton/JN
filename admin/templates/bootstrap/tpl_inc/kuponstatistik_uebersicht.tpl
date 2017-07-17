@@ -39,7 +39,7 @@
         </form>
     </div>
 
-    <div class="block">
+    <div class="table-responsive">
         <table class="table">
             <tr>
                 <td>{#countUsedCoupons#}:</td>
@@ -64,81 +64,83 @@
         </table>
     </div>
     {if $usedCouponsOrder|@count > 0}
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>{#couponName#}</th>
-                    <th>{#customerName#}</th>
-                    <th>{#orderNumber#}</th>
-                    <th>{#couponValue#}</th>
-                    <th>{#orderValue#}</th>
-                    <th>{#date#}</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                {foreach from=$usedCouponsOrder item=usedCouponOrder}
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
                     <tr>
-                        <td>
-                            {if $usedCouponOrder.kKupon}
-                                <a href="kupons.php?&kKupon={$usedCouponOrder.kKupon}&token={$smarty.session.jtl_token}">{$usedCouponOrder.cName}</a>
-                            {else}
-                                {$usedCouponOrder.cName}
-                            {/if}
-                        </td>
-                        <td>{$usedCouponOrder.cUserName}</td>
-                        <td>{$usedCouponOrder.cBestellNr}</td>
-                        <td>{$usedCouponOrder.nCouponValue}</td>
-                        <td>{$usedCouponOrder.nShoppingCartAmount}</td>
-                        <td>{$usedCouponOrder.dErstellt|date_format:"%d.%m.%Y %H:%M:%S"}</td>
-                        <td>
-                            <button type="button" class="btn btn-xs btn-info" data-toggle="modal" data-target="#order_{$usedCouponOrder.cBestellNr}"><i class="fa fa-info"></i></button>
-                            <div class="modal fade bs-example-modal-lg" id="order_{$usedCouponOrder.cBestellNr}" role="dialog">
-                                <div class="modal-dialog modal-lg" role="document">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <strong>{#order#}: </strong><span class="value">{$usedCouponOrder.cBestellNr} ({$usedCouponOrder.cUserName})</span>
-                                            <button type="button" class="close" data-dismiss="modal" aria-label="close"><span aria-hidden="true">&times;</span></button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <table class="table table-striped">
-                                                <thead>
-                                                <tr>
-                                                    <th>{#orderPosition#}</th>
-                                                    <th>{#amount#}</th>
-                                                    <th>{#unitPrice#}</th>
-                                                    <th>{#totalPrice#}</th>
-                                                </tr>
-                                                </thead>
-                                                <tbody>
-                                                {foreach from=$usedCouponOrder.cOrderPos_arr item=cOrderPos_arr}
-                                                    <tr>
-                                                        <td>{$cOrderPos_arr.cName}</td>
-                                                        <td>{$cOrderPos_arr.nAnzahl}</td>
-                                                        <td>{$cOrderPos_arr.nPreis}</td>
-                                                        <td>{$cOrderPos_arr.nGesamtPreis}</td>
-                                                    </tr>
-                                                {/foreach}
-                                                </tbody>
-                                                <tfoot>
-                                                <tr>
-                                                    <td>{#totalAmount#}:</td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td>{$usedCouponOrder.nShoppingCartAmount}</td>
-                                                </tr>
-                                                </tfoot>
-                                            </table>
-                                        </div>
-                                    </div>
-
-                                </div>
-                            </div>
-                        </td>
+                        <th>{#couponName#}</th>
+                        <th>{#customerName#}</th>
+                        <th>{#orderNumber#}</th>
+                        <th>{#couponValue#}</th>
+                        <th>{#orderValue#}</th>
+                        <th>{#date#}</th>
+                        <th></th>
                     </tr>
-                {/foreach}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    {foreach from=$usedCouponsOrder item=usedCouponOrder}
+                        <tr>
+                            <td>
+                                {if $usedCouponOrder.kKupon}
+                                    <a href="kupons.php?&kKupon={$usedCouponOrder.kKupon}&token={$smarty.session.jtl_token}">{$usedCouponOrder.cName}</a>
+                                {else}
+                                    {$usedCouponOrder.cName}
+                                {/if}
+                            </td>
+                            <td>{$usedCouponOrder.cUserName}</td>
+                            <td>{$usedCouponOrder.cBestellNr}</td>
+                            <td>{$usedCouponOrder.nCouponValue}</td>
+                            <td>{$usedCouponOrder.nShoppingCartAmount}</td>
+                            <td>{$usedCouponOrder.dErstellt|date_format:"%d.%m.%Y %H:%M:%S"}</td>
+                            <td>
+                                <button type="button" class="btn btn-xs btn-info" data-toggle="modal" data-target="#order_{$usedCouponOrder.cBestellNr}"><i class="fa fa-info"></i></button>
+                                <div class="modal fade bs-example-modal-lg" id="order_{$usedCouponOrder.cBestellNr}" role="dialog">
+                                    <div class="modal-dialog modal-lg" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <strong>{#order#}: </strong><span class="value">{$usedCouponOrder.cBestellNr} ({$usedCouponOrder.cUserName})</span>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="close"><span aria-hidden="true">&times;</span></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <table class="table table-striped">
+                                                    <thead>
+                                                    <tr>
+                                                        <th>{#orderPosition#}</th>
+                                                        <th>{#amount#}</th>
+                                                        <th>{#unitPrice#}</th>
+                                                        <th>{#totalPrice#}</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    {foreach from=$usedCouponOrder.cOrderPos_arr item=cOrderPos_arr}
+                                                        <tr>
+                                                            <td>{$cOrderPos_arr.cName}</td>
+                                                            <td>{$cOrderPos_arr.nAnzahl}</td>
+                                                            <td>{$cOrderPos_arr.nPreis}</td>
+                                                            <td>{$cOrderPos_arr.nGesamtPreis}</td>
+                                                        </tr>
+                                                    {/foreach}
+                                                    </tbody>
+                                                    <tfoot>
+                                                    <tr>
+                                                        <td>{#totalAmount#}:</td>
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td>{$usedCouponOrder.nShoppingCartAmount}</td>
+                                                    </tr>
+                                                    </tfoot>
+                                                </table>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    {/foreach}
+                </tbody>
+            </table>
+        </div>
     {else}
         <div class="alert alert-info" role="alert">{#noDataAvailable#}</div>
     {/if}

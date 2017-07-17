@@ -202,6 +202,13 @@ input[type=number],
   }
 }
 
+.form-group.required{
+  input[type="radio"],
+  input[type="checkbox"]{
+    background-image: none;
+  }
+}
+
 select,
 select.form-control {
   border: 0;
@@ -280,8 +287,8 @@ input[type="radio"],
 
   &:before {
     position: absolute;
-    left: 0;
-    top: 0;
+    //left: 0;
+    //top: 0;
     background-color: @brand-primary;
     .scale(0);
   }

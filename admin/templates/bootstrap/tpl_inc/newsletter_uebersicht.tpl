@@ -76,34 +76,36 @@
                             <input type="hidden" name="cSucheInaktiv" value="{$cSucheInaktiv}" />
                         {/if}
                         <div class="panel panel-default">
-                            <table class="table">
-                                <tr>
-                                    <th class="th-1">&nbsp;</th>
-                                    <th class="tleft">{#newslettersubscriberfirstname#}</th>
-                                    <th class="tleft">{#newslettersubscriberlastname#}</th>
-                                    <th class="tleft">{#newslettersubscriberCustomerGrp#}</th>
-                                    <th class="tleft">{#newslettersubscriberemail#}</th>
-                                    <th class="tcenter">{#newslettersubscriberdate#}</th>
-                                </tr>
-                                {foreach name=newsletterletztenempfaenger from=$oNewsletterEmpfaenger_arr item=oNewsletterEmpfaenger}
-                                    <tr class="tab_bg{$smarty.foreach.newsletterletztenempfaenger.iteration%2}">
-                                        <td class="tleft">
-                                            <input name="kNewsletterEmpfaenger[]" type="checkbox" value="{$oNewsletterEmpfaenger->kNewsletterEmpfaenger}">
-                                        </td>
-                                        <td class="tleft">{if $oNewsletterEmpfaenger->cVorname != ""}{$oNewsletterEmpfaenger->cVorname}{else}{$oNewsletterEmpfaenger->newsVorname}{/if}</td>
-                                        <td class="tleft">{if $oNewsletterEmpfaenger->cNachname != ""}{$oNewsletterEmpfaenger->cNachname}{else}{$oNewsletterEmpfaenger->newsNachname}{/if}</td>
-                                        <td class="tleft">{if isset($oNewsletterEmpfaenger->cName) && $oNewsletterEmpfaenger->cName|strlen > 0}{$oNewsletterEmpfaenger->cName}{else}{#NotAvailable#}{/if}</td>
-                                        <td class="tleft">{$oNewsletterEmpfaenger->cEmail}{if $oNewsletterEmpfaenger->nAktiv == 0} *{/if}</td>
-                                        <td class="tcenter">{$oNewsletterEmpfaenger->Datum}</td>
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <tr>
+                                        <th class="th-1">&nbsp;</th>
+                                        <th class="tleft">{#newslettersubscriberfirstname#}</th>
+                                        <th class="tleft">{#newslettersubscriberlastname#}</th>
+                                        <th class="tleft">{#newslettersubscriberCustomerGrp#}</th>
+                                        <th class="tleft">{#newslettersubscriberemail#}</th>
+                                        <th class="tcenter">{#newslettersubscriberdate#}</th>
                                     </tr>
-                                {/foreach}
-                                <tr>
-                                    <td class="TD1">
-                                        <input name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);">
-                                    </td>
-                                    <td colspan="6" class="TD7"><label for="ALLMSGS2">{#globalSelectAll#}</label></td>
-                                </tr>
-                            </table>
+                                    {foreach name=newsletterletztenempfaenger from=$oNewsletterEmpfaenger_arr item=oNewsletterEmpfaenger}
+                                        <tr class="tab_bg{$smarty.foreach.newsletterletztenempfaenger.iteration%2}">
+                                            <td class="tleft">
+                                                <input name="kNewsletterEmpfaenger[]" type="checkbox" value="{$oNewsletterEmpfaenger->kNewsletterEmpfaenger}">
+                                            </td>
+                                            <td class="tleft">{if $oNewsletterEmpfaenger->cVorname != ""}{$oNewsletterEmpfaenger->cVorname}{else}{$oNewsletterEmpfaenger->newsVorname}{/if}</td>
+                                            <td class="tleft">{if $oNewsletterEmpfaenger->cNachname != ""}{$oNewsletterEmpfaenger->cNachname}{else}{$oNewsletterEmpfaenger->newsNachname}{/if}</td>
+                                            <td class="tleft">{if isset($oNewsletterEmpfaenger->cName) && $oNewsletterEmpfaenger->cName|strlen > 0}{$oNewsletterEmpfaenger->cName}{else}{#NotAvailable#}{/if}</td>
+                                            <td class="tleft">{$oNewsletterEmpfaenger->cEmail}{if $oNewsletterEmpfaenger->nAktiv == 0} *{/if}</td>
+                                            <td class="tcenter">{$oNewsletterEmpfaenger->Datum}</td>
+                                        </tr>
+                                    {/foreach}
+                                    <tr>
+                                        <td class="TD1">
+                                            <input name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);">
+                                        </td>
+                                        <td colspan="6" class="TD7"><label for="ALLMSGS2">{#globalSelectAll#}</label></td>
+                                    </tr>
+                                </table>
+                            </div>
                             <div class="panel-footer">
                                 <div class="btn-group">
                                     <button name="abonnentfreischaltenSubmit" type="submit" value="{#newsletterUnlock#}" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> {#newsletterUnlock#}</button>
@@ -151,34 +153,36 @@
                             <div class="panel-heading">
                                 <h3 class="panel-title">{#newsletterAllSubscriber#}</h3>
                             </div>
-                            <table class="table">
-                                <tr>
-                                    <th class="th-1">&nbsp;</th>
-                                    <th class="tleft">{#newslettersubscribername#}</th>
-                                    <th class="tleft">{#newslettersubscriberCustomerGrp#}</th>
-                                    <th class="tleft">{#newslettersubscriberemail#}</th>
-                                    <th class="tcenter">{#newslettersubscriberdate#}</th>
-                                    <th class="tcenter">{#newslettersubscriberLastNewsletter#}</th>
-                                </tr>
-                                {foreach name=newsletterabonnenten from=$oAbonnenten_arr item=oAbonnenten}
-                                    <tr class="tab_bg{$smarty.foreach.newsletterabonnenten.iteration%2}">
-                                        <td class="tleft">
-                                            <input name="kNewsletterEmpfaenger[]" type="checkbox" value="{$oAbonnenten->kNewsletterEmpfaenger}" />
-                                        </td>
-                                        <td class="tleft">{$oAbonnenten->cVorname} {$oAbonnenten->cNachname}</td>
-                                        <td class="tleft">{$oAbonnenten->cName}</td>
-                                        <td class="tleft">{$oAbonnenten->cEmail}</td>
-                                        <td class="tcenter">{$oAbonnenten->dEingetragen_de}</td>
-                                        <td class="tcenter">{$oAbonnenten->dLetzterNewsletter_de}</td>
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <tr>
+                                        <th class="th-1">&nbsp;</th>
+                                        <th class="tleft">{#newslettersubscribername#}</th>
+                                        <th class="tleft">{#newslettersubscriberCustomerGrp#}</th>
+                                        <th class="tleft">{#newslettersubscriberemail#}</th>
+                                        <th class="tcenter">{#newslettersubscriberdate#}</th>
+                                        <th class="tcenter">{#newslettersubscriberLastNewsletter#}</th>
                                     </tr>
-                                {/foreach}
-                                <tr>
-                                    <td class="TD1">
-                                        <input name="ALLMSGS" id="ALLMSGS3" type="checkbox" onclick="AllMessages(this.form);">
-                                    </td>
-                                    <td colspan="6" class="TD7"><label for="ALLMSGS3">{#globalSelectAll#}</label></td>
-                                </tr>
-                            </table>
+                                    {foreach name=newsletterabonnenten from=$oAbonnenten_arr item=oAbonnenten}
+                                        <tr class="tab_bg{$smarty.foreach.newsletterabonnenten.iteration%2}">
+                                            <td class="tleft">
+                                                <input name="kNewsletterEmpfaenger[]" type="checkbox" value="{$oAbonnenten->kNewsletterEmpfaenger}" />
+                                            </td>
+                                            <td class="tleft">{$oAbonnenten->cVorname} {$oAbonnenten->cNachname}</td>
+                                            <td class="tleft">{$oAbonnenten->cName}</td>
+                                            <td class="tleft">{$oAbonnenten->cEmail}</td>
+                                            <td class="tcenter">{$oAbonnenten->dEingetragen_de}</td>
+                                            <td class="tcenter">{$oAbonnenten->dLetzterNewsletter_de}</td>
+                                        </tr>
+                                    {/foreach}
+                                    <tr>
+                                        <td class="TD1">
+                                            <input name="ALLMSGS" id="ALLMSGS3" type="checkbox" onclick="AllMessages(this.form);">
+                                        </td>
+                                        <td colspan="6" class="TD7"><label for="ALLMSGS3">{#globalSelectAll#}</label></td>
+                                    </tr>
+                                </table>
+                            </div>
                             <div class="panel-footer">
                                 <button name="loeschen" type="submit" class="btn btn-danger"><i class="fa fa-trash"></i> {#deleteSelected#}</button>
                             </div>
@@ -269,43 +273,45 @@
                             <div class="panel-heading">
                                 <h3 class="panel-title">{#newsletterqueue#}</h3>
                             </div>
-                            <table class="table">
-                                <tr>
-                                    <th class="th-1" style="width: 4%;">&nbsp;</th>
-                                    <th class="th-2" style="width: 40%;">{#newsletterqueuesubject#}</th>
-                                    <th class="th-3" style="width: 30%;">{#newsletterqueuedate#}</th>
-                                    <th class="th-4" style="width: 26%;">{#newsletterqueueimprovement#}</th>
-                                    <th class="th-5" style="width: 26%;">{#newsletterqueuecount#}</th>
-                                    <th class="th-6" style="width: 26%;">{#newsletterqueuecustomergrp#}</th>
-                                </tr>
-                                {foreach name=newsletterqueue from=$oNewsletterQueue_arr item=oNewsletterQueue}
-                                    {if isset($oNewsletterQueue->nAnzahlEmpfaenger) && $oNewsletterQueue->nAnzahlEmpfaenger > 0}
-                                        <tr class="tab_bg{$smarty.foreach.newsletterqueue.iteration%2}">
-                                            <td class="TD1">
-                                                <input name="kNewsletterQueue[]" type="checkbox" value="{$oNewsletterQueue->kNewsletterQueue}">
-                                            </td>
-                                            <td class="TD2">{$oNewsletterQueue->cBetreff}</td>
-                                            <td class="TD3">{$oNewsletterQueue->Datum}</td>
-                                            <td class="TD4">{$oNewsletterQueue->nLimitN}</td>
-                                            <td class="TD5">{$oNewsletterQueue->nAnzahlEmpfaenger}</td>
-                                            <td class="TD6">
-                                                {foreach name=kundengruppen from=$oNewsletterQueue->cKundengruppe_arr item=cKundengruppe}
-                                                    {if $cKundengruppe == "0"}Newsletterempf&auml;nger ohne Kundenkonto{if !$smarty.foreach.kundengruppen.last}, {/if}{/if}
-                                                    {foreach name=kundengruppe from=$oKundengruppe_arr item=oKundengruppe}
-                                                        {if $cKundengruppe == $oKundengruppe->kKundengruppe}{$oKundengruppe->cName}{if !$smarty.foreach.kundengruppen.last}, {/if}{/if}
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <tr>
+                                        <th class="th-1" style="width: 4%;">&nbsp;</th>
+                                        <th class="th-2" style="width: 40%;">{#newsletterqueuesubject#}</th>
+                                        <th class="th-3" style="width: 30%;">{#newsletterqueuedate#}</th>
+                                        <th class="th-4" style="width: 26%;">{#newsletterqueueimprovement#}</th>
+                                        <th class="th-5" style="width: 26%;">{#newsletterqueuecount#}</th>
+                                        <th class="th-6" style="width: 26%;">{#newsletterqueuecustomergrp#}</th>
+                                    </tr>
+                                    {foreach name=newsletterqueue from=$oNewsletterQueue_arr item=oNewsletterQueue}
+                                        {if isset($oNewsletterQueue->nAnzahlEmpfaenger) && $oNewsletterQueue->nAnzahlEmpfaenger > 0}
+                                            <tr class="tab_bg{$smarty.foreach.newsletterqueue.iteration%2}">
+                                                <td class="TD1">
+                                                    <input name="kNewsletterQueue[]" type="checkbox" value="{$oNewsletterQueue->kNewsletterQueue}">
+                                                </td>
+                                                <td class="TD2">{$oNewsletterQueue->cBetreff}</td>
+                                                <td class="TD3">{$oNewsletterQueue->Datum}</td>
+                                                <td class="TD4">{$oNewsletterQueue->nLimitN}</td>
+                                                <td class="TD5">{$oNewsletterQueue->nAnzahlEmpfaenger}</td>
+                                                <td class="TD6">
+                                                    {foreach name=kundengruppen from=$oNewsletterQueue->cKundengruppe_arr item=cKundengruppe}
+                                                        {if $cKundengruppe == "0"}Newsletterempf&auml;nger ohne Kundenkonto{if !$smarty.foreach.kundengruppen.last}, {/if}{/if}
+                                                        {foreach name=kundengruppe from=$oKundengruppe_arr item=oKundengruppe}
+                                                            {if $cKundengruppe == $oKundengruppe->kKundengruppe}{$oKundengruppe->cName}{if !$smarty.foreach.kundengruppen.last}, {/if}{/if}
+                                                        {/foreach}
                                                     {/foreach}
-                                                {/foreach}
-                                            </td>
-                                        </tr>
-                                    {/if}
-                                {/foreach}
-                                <tr>
-                                    <td class="TD1">
-                                        <input name="ALLMSGS" id="ALLMSGS4" type="checkbox" onclick="AllMessages(this.form);">
-                                    </td>
-                                    <td colspan="6" class="TD7"><label for="ALLMSGS4">{#globalSelectAll#}</label></td>
-                                </tr>
-                            </table>
+                                                </td>
+                                            </tr>
+                                        {/if}
+                                    {/foreach}
+                                    <tr>
+                                        <td class="TD1">
+                                            <input name="ALLMSGS" id="ALLMSGS4" type="checkbox" onclick="AllMessages(this.form);">
+                                        </td>
+                                        <td colspan="6" class="TD7"><label for="ALLMSGS4">{#globalSelectAll#}</label></td>
+                                    </tr>
+                                </table>
+                            </div>
                             <div class="panel-footer">
                                 <button name="loeschen" type="submit" value="{#newsletterdelete#}" class="btn btn-danger"><i class="fa fa-trash"></i> {#newsletterdelete#}</button>
                             </div>
@@ -328,48 +334,58 @@
                             <div class="panel-heading">
                                 <h3 class="panel-title">Vorhandene Vorlagen</h3>
                             </div>
-                            <table class="table">
-                                <tr>
-                                    <th class="th-1">&nbsp;</th>
-                                    <th class="th-2">{#newsletterdraftname#}</th>
-                                    <th class="th-3">{#newsletterdraftsubject#}</th>
-                                    <th class="th-4">{#newsletterdraftStdShort#}</th>
-                                    <th class="th-5" style="width: 385px;">{#newsletterdraftoptions#}</th>
-                                </tr>
-                                {foreach name=newslettervorlage from=$oNewsletterVorlage_arr item=oNewsletterVorlage}
-                                    <tr class="tab_bg{$smarty.foreach.newslettervorlage.iteration%2}">
-                                        <td class="TD1">
-                                            <input name="kNewsletterVorlage[]" type="checkbox" value="{$oNewsletterVorlage->kNewsletterVorlage}">
-                                        </td>
-                                        <td class="TD2">{$oNewsletterVorlage->cName}</td>
-                                        <td class="TD3">{$oNewsletterVorlage->cBetreff}</td>
-                                        <td class="TD4">
-                                            {if $oNewsletterVorlage->kNewslettervorlageStd > 0}
-                                                {#yes#}
-                                            {else}
-                                                {#no#}
-                                            {/if}
-                                        </td>
-                                        <td class="TD5">
-                                            <div class="btn-group">
-                                                <a class="btn btn-default" href="newsletter.php?&vorschau={$oNewsletterVorlage->kNewsletterVorlage}&iframe=1&tab=newslettervorlagen&token={$smarty.session.jtl_token}" title="{#newsletterPreview#}"><i class="fa fa-eye"></i></a>
-                                                {if $oNewsletterVorlage->kNewslettervorlageStd > 0}
-                                                    <a class="btn btn-default" href="newsletter.php?newslettervorlagenstd=1&editieren={$oNewsletterVorlage->kNewsletterVorlage}&tab=newslettervorlagen&token={$smarty.session.jtl_token}" title="{#modify#}"><i class="fa fa-edit"></i></a>
-                                                {else}
-                                                    <a class="btn btn-default" href="newsletter.php?newslettervorlagen=1&editieren={$oNewsletterVorlage->kNewsletterVorlage}&tab=newslettervorlagen&token={$smarty.session.jtl_token}" title="{#modify#}"><i class="fa fa-edit"></i></a>
-                                                {/if}
-                                                <a class="btn btn-default" href="newsletter.php?newslettervorlagen=1&vorbereiten={$oNewsletterVorlage->kNewsletterVorlage}&tab=newslettervorlagen&token={$smarty.session.jtl_token}" title="{#newsletterprepare#}">{#newsletterprepare#}</a>
-                                            </div>
-                                        </td>
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <tr>
+                                        <th class="th-1">&nbsp;</th>
+                                        <th class="th-2">{#newsletterdraftname#}</th>
+                                        <th class="th-3">{#newsletterdraftsubject#}</th>
+                                        <th class="th-4">{#newsletterdraftStdShort#}</th>
+                                        <th class="th-5" style="width: 385px;">{#newsletterdraftoptions#}</th>
                                     </tr>
-                                {/foreach}
-                                <tr>
-                                    <td class="TD1">
-                                        <input name="ALLMSGS" id="ALLMSGS5" type="checkbox" onclick="AllMessages(this.form);">
-                                    </td>
-                                    <td colspan="6" class="TD7"><label for="ALLMSGS5">{#globalSelectAll#}</label></td>
-                                </tr>
-                            </table>
+                                    {foreach name=newslettervorlage from=$oNewsletterVorlage_arr item=oNewsletterVorlage}
+                                        <tr class="tab_bg{$smarty.foreach.newslettervorlage.iteration%2}">
+                                            <td class="TD1">
+                                                <input name="kNewsletterVorlage[]" type="checkbox" value="{$oNewsletterVorlage->kNewsletterVorlage}">
+                                            </td>
+                                            <td class="TD2">{$oNewsletterVorlage->cName}</td>
+                                            <td class="TD3">{$oNewsletterVorlage->cBetreff}</td>
+                                            <td class="TD4">
+                                                {if $oNewsletterVorlage->kNewslettervorlageStd > 0}
+                                                    {#yes#}
+                                                {else}
+                                                    {#no#}
+                                                {/if}
+                                            </td>
+                                            <td class="TD5">
+                                                <div class="btn-group">
+                                                    <a class="btn btn-default"
+                                                       href="newsletter.php?&vorschau={$oNewsletterVorlage->kNewsletterVorlage}&iframe=1&tab=newslettervorlagen&token={$smarty.session.jtl_token}"
+                                                       title="{#newsletterPreview#}"><i class="fa fa-eye"></i></a>
+                                                    {if $oNewsletterVorlage->kNewslettervorlageStd > 0}
+                                                        <a class="btn btn-default"
+                                                           href="newsletter.php?newslettervorlagenstd=1&editieren={$oNewsletterVorlage->kNewsletterVorlage}&tab=newslettervorlagen&token={$smarty.session.jtl_token}"
+                                                           title="{#modify#}"><i class="fa fa-edit"></i></a>
+                                                    {else}
+                                                        <a class="btn btn-default"
+                                                           href="newsletter.php?newslettervorlagen=1&editieren={$oNewsletterVorlage->kNewsletterVorlage}&tab=newslettervorlagen&token={$smarty.session.jtl_token}"
+                                                           title="{#modify#}"><i class="fa fa-edit"></i></a>
+                                                    {/if}
+                                                    <a class="btn btn-default"
+                                                       href="newsletter.php?newslettervorlagen=1&vorbereiten={$oNewsletterVorlage->kNewsletterVorlage}&tab=newslettervorlagen&token={$smarty.session.jtl_token}"
+                                                       title="{#newsletterprepare#}">{#newsletterprepare#}</a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {/foreach}
+                                    <tr>
+                                        <td class="TD1">
+                                            <input name="ALLMSGS" id="ALLMSGS5" type="checkbox" onclick="AllMessages(this.form);">
+                                        </td>
+                                        <td colspan="6" class="TD7"><label for="ALLMSGS5">{#globalSelectAll#}</label></td>
+                                    </tr>
+                                </table>
+                            </div>
                             <div class="panel-footer">
                                 <div class="{if isset($oNewsletterVorlage_arr) && $oNewsletterVorlage_arr|@count > 0}btn-group{/if}">
                                     <button name="vorlage_erstellen" class="btn btn-primary" type="submit">{#newsletterdraftcreate#}</button>
@@ -409,20 +425,22 @@
                             <div class="panel-heading">
                                 <h3 class="panel-title">{#newsletterdraftStd#}</h3>
                             </div>
-                            <table class="table">
-                                <tr>
-                                    <th class="th-1">{#newsletterdraftname#}</th>
-                                    <th class="th-2">{#newsletterdraftStdPicture#}</th>
-                                </tr>
-                                {foreach name=newslettervorlagestsd from=$oNewslettervorlageStd_arr item=oNewslettervorlageStd}
-                                    <tr class="tab_bg{$smarty.foreach.newslettervorlagestsd.iteration%2}">
-                                        <td class="TD1">
-                                            <input name="kNewsletterVorlageStd" id="knvls-{$smarty.foreach.newslettervorlagestsd.iteration}" type="radio" value="{$oNewslettervorlageStd->kNewslettervorlageStd}" /> <label for="knvls-{$smarty.foreach.newslettervorlagestsd.iteration}">{$oNewslettervorlageStd->cName}</label>
-                                        </td>
-                                        <td class="TD2" valign="top">{$oNewslettervorlageStd->cBild}</td>
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <tr>
+                                        <th class="th-1">{#newsletterdraftname#}</th>
+                                        <th class="th-2">{#newsletterdraftStdPicture#}</th>
                                     </tr>
-                                {/foreach}
-                            </table>
+                                    {foreach name=newslettervorlagestsd from=$oNewslettervorlageStd_arr item=oNewslettervorlageStd}
+                                        <tr class="tab_bg{$smarty.foreach.newslettervorlagestsd.iteration%2}">
+                                            <td class="TD1">
+                                                <input name="kNewsletterVorlageStd" id="knvls-{$smarty.foreach.newslettervorlagestsd.iteration}" type="radio" value="{$oNewslettervorlageStd->kNewslettervorlageStd}" /> <label for="knvls-{$smarty.foreach.newslettervorlagestsd.iteration}">{$oNewslettervorlageStd->cName}</label>
+                                            </td>
+                                            <td class="TD2" valign="top">{$oNewslettervorlageStd->cBild}</td>
+                                        </tr>
+                                    {/foreach}
+                                </table>
+                            </div>
                             <div class="panel-footer">
                                 <button name="submitVorlageStd" type="submit" value="{#newsletterdraftStdUse#}" class="btn btn-primary"><i class="fa fa-share"></i> {#newsletterdraftStdUse#}</button>
                             </div>
@@ -445,34 +463,36 @@
                             <div class="panel-heading">
                                 <h3 class="panel-title">{#newsletterhistory#}</h3>
                             </div>
-                            <table class="table">
-                                <tr>
-                                    <th class="th-1">&nbsp;</th>
-                                    <th class="tleft">{#newsletterhistorysubject#}</th>
-                                    <th class="tleft">{#newsletterhistorycount#}</th>
-                                    <th class="tleft">{#newsletterqueuecustomergrp#}</th>
-                                    <th class="tcenter">{#newsletterhistorydate#}</th>
-                                </tr>
-                                {foreach name=newsletterhistory from=$oNewsletterHistory_arr item=oNewsletterHistory}
-                                    <tr class="tab_bg{$smarty.foreach.newsletterhistory.iteration%2}">
-                                        <td class="tleft">
-                                            <input name="kNewsletterHistory[]" type="checkbox" value="{$oNewsletterHistory->kNewsletterHistory}">
-                                        </td>
-                                        <td class="tleft">
-                                            <a href="newsletter.php?newsletterhistory=1&anzeigen={$oNewsletterHistory->kNewsletterHistory}&tab=newsletterhistory&token={$smarty.session.jtl_token}">{$oNewsletterHistory->cBetreff}</a>
-                                        </td>
-                                        <td class="tleft">{$oNewsletterHistory->nAnzahl}</td>
-                                        <td class="tleft">{$oNewsletterHistory->cKundengruppe}</td>
-                                        <td class="tcenter">{$oNewsletterHistory->Datum}</td>
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <tr>
+                                        <th class="th-1">&nbsp;</th>
+                                        <th class="tleft">{#newsletterhistorysubject#}</th>
+                                        <th class="tleft">{#newsletterhistorycount#}</th>
+                                        <th class="tleft">{#newsletterqueuecustomergrp#}</th>
+                                        <th class="tcenter">{#newsletterhistorydate#}</th>
                                     </tr>
-                                {/foreach}
-                                <tr>
-                                    <td class="TD1">
-                                        <input name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);">
-                                    </td>
-                                    <td colspan="6" class="TD7"><label for="ALLMSGS">{#globalSelectAll#}</label></td>
-                                </tr>
-                            </table>
+                                    {foreach name=newsletterhistory from=$oNewsletterHistory_arr item=oNewsletterHistory}
+                                        <tr class="tab_bg{$smarty.foreach.newsletterhistory.iteration%2}">
+                                            <td class="tleft">
+                                                <input name="kNewsletterHistory[]" type="checkbox" value="{$oNewsletterHistory->kNewsletterHistory}">
+                                            </td>
+                                            <td class="tleft">
+                                                <a href="newsletter.php?newsletterhistory=1&anzeigen={$oNewsletterHistory->kNewsletterHistory}&tab=newsletterhistory&token={$smarty.session.jtl_token}">{$oNewsletterHistory->cBetreff}</a>
+                                            </td>
+                                            <td class="tleft">{$oNewsletterHistory->nAnzahl}</td>
+                                            <td class="tleft">{$oNewsletterHistory->cKundengruppe}</td>
+                                            <td class="tcenter">{$oNewsletterHistory->Datum}</td>
+                                        </tr>
+                                    {/foreach}
+                                    <tr>
+                                        <td class="TD1">
+                                            <input name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);">
+                                        </td>
+                                        <td colspan="6" class="TD7"><label for="ALLMSGS">{#globalSelectAll#}</label></td>
+                                    </tr>
+                                </table>
+                            </div>
                             <div class="panel-footer">
                                 <button name="loeschen" type="submit" class="btn btn-danger" value="{#newsletterdelete#}"><i class="fa fa-trash"></i> {#newsletterdelete#}</button>
                             </div>

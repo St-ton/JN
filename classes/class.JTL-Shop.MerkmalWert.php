@@ -126,19 +126,33 @@ class MerkmalWert
 
             return $this;
         }
+        $kStandardSprache = (int)gibStandardsprache()->kSprache;
+        if ($kSprache !== $kStandardSprache) {
+            $cSelect = "COALESCE(fremdSprache.kSprache, standardSprache.kSprache) AS kSprache, 
+                        COALESCE(fremdSprache.cWert, standardSprache.cWert) AS cWert,
+                        COALESCE(fremdSprache.cMetaTitle, standardSprache.cMetaTitle) AS cMetaTitle, 
+                        COALESCE(fremdSprache.cMetaKeywords, standardSprache.cMetaKeywords) AS cMetaKeywords,
+                        COALESCE(fremdSprache.cMetaDescription, standardSprache.cMetaDescription) AS cMetaDescription, 
+                        COALESCE(fremdSprache.cBeschreibung, standardSprache.cBeschreibung) AS cBeschreibung,
+                        COALESCE(fremdSprache.cSeo, standardSprache.cSeo) AS cSeo";
+            $cJoin   = "INNER JOIN tmerkmalwertsprache AS standardSprache 
+                            ON standardSprache.kMerkmalWert = tmerkmalwert.kMerkmalWert
+                            AND standardSprache.kSprache = " . $kStandardSprache . "
+                        LEFT JOIN tmerkmalwertsprache AS fremdSprache 
+                            ON fremdSprache.kMerkmalWert = tmerkmalwert.kMerkmalWert
+                            AND fremdSprache.kSprache = " . $kSprache . "";
+        } else {
+            $cSelect = "tmerkmalwertsprache.kSprache, tmerkmalwertsprache.cWert, tmerkmalwertsprache.cMetaTitle,
+                        tmerkmalwertsprache.cMetaKeywords, tmerkmalwertsprache.cMetaDescription,
+                        tmerkmalwertsprache.cBeschreibung, tmerkmalwertsprache.cSeo";
+            $cJoin   = "INNER JOIN tmerkmalwertsprache ON tmerkmalwertsprache.kMerkmalWert = tmerkmalwert.kMerkmalWert
+                            AND tmerkmalwertsprache.kSprache = " . $kSprache;
+        }
         $oMerkmalWert = Shop::DB()->query(
-            "SELECT tmerkmalwert.*, tmerkmalwertsprache.kSprache, tmerkmalwertsprache.cWert,
-                tmerkmalwertsprache.cMetaTitle, tmerkmalwertsprache.cMetaKeywords, 
-                tmerkmalwertsprache.cMetaDescription, tmerkmalwertsprache.cBeschreibung, tseo.cSeo
+            "SELECT tmerkmalwert.*, {$cSelect}
                 FROM tmerkmalwert
-                JOIN tmerkmalwertsprache 
-                    ON tmerkmalwertsprache.kMerkmalWert = tmerkmalwert.kMerkmalWert
-                LEFT JOIN tseo 
-                    ON tseo.cKey = 'kMerkmalWert'
-                    AND tseo.kKey = tmerkmalwertsprache.kMerkmalWert
-                    AND tseo.kSprache = tmerkmalwertsprache.kSprache
-                WHERE tmerkmalwertsprache.kSprache = " . $kSprache . "
-                AND tmerkmalwert.kMerkmalWert = " . (int)$kMerkmalWert, 1
+                {$cJoin}
+                WHERE tmerkmalwert.kMerkmalWert = {$kMerkmalWert}", 1
         );
         if (isset($oMerkmalWert->kMerkmalWert) && $oMerkmalWert->kMerkmalWert > 0) {
             $cMember_arr = array_keys(get_object_vars($oMerkmalWert));
@@ -187,20 +201,33 @@ class MerkmalWert
                     $kSprache = (int)$oSprache->kSprache;
                 }
             }
+            $kStandardSprache = (int)gibStandardsprache()->kSprache;
+            if ($kSprache !== $kStandardSprache) {
+                $cSelect = "COALESCE(fremdSprache.kSprache, standardSprache.kSprache) AS kSprache, 
+                            COALESCE(fremdSprache.cWert, standardSprache.cWert) AS cWert,
+                            COALESCE(fremdSprache.cMetaTitle, standardSprache.cMetaTitle) AS cMetaTitle, 
+                            COALESCE(fremdSprache.cMetaKeywords, standardSprache.cMetaKeywords) AS cMetaKeywords,
+                            COALESCE(fremdSprache.cMetaDescription, standardSprache.cMetaDescription) AS cMetaDescription, 
+                            COALESCE(fremdSprache.cBeschreibung, standardSprache.cBeschreibung) AS cBeschreibung,
+                            COALESCE(fremdSprache.cSeo, standardSprache.cSeo) AS cSeo";
+                $cJoin   = "INNER JOIN tmerkmalwertsprache AS standardSprache 
+                                ON standardSprache.kMerkmalWert = tmerkmalwert.kMerkmalWert
+                                AND standardSprache.kSprache = " . $kStandardSprache . "
+                        LEFT JOIN tmerkmalwertsprache AS fremdSprache 
+                            ON fremdSprache.kMerkmalWert = tmerkmalwert.kMerkmalWert
+                            AND fremdSprache.kSprache = " . $kSprache . "";
+            } else {
+                $cSelect = "tmerkmalwertsprache.kSprache, tmerkmalwertsprache.cWert, tmerkmalwertsprache.cMetaTitle,
+                        tmerkmalwertsprache.cMetaKeywords, tmerkmalwertsprache.cMetaDescription,
+                        tmerkmalwertsprache.cBeschreibung, tmerkmalwertsprache.cSeo";
+                $cJoin   = "INNER JOIN tmerkmalwertsprache ON tmerkmalwertsprache.kMerkmalWert = tmerkmalwert.kMerkmalWert
+                                AND tmerkmalwertsprache.kSprache = " . $kSprache;
+            }
             $oMerkmalWert_arr = Shop::DB()->query(
-                "SELECT tmerkmalwert.*, tmerkmalwertsprache.kMerkmalWert, tmerkmalwertsprache.kSprache, 
-                    tmerkmalwertsprache.cWert, tmerkmalwertsprache.cMetaTitle, tmerkmalwertsprache.cMetaKeywords, 
-                    tmerkmalwertsprache.cMetaDescription, tmerkmalwertsprache.cBeschreibung, tseo.cSeo
+                "SELECT tmerkmalwert.*, {$cSelect}
                     FROM tmerkmalwert
-                    JOIN tmerkmalwertsprache 
-                        ON tmerkmalwertsprache.kMerkmalWert = tmerkmalwert.kMerkmalWert
-                    LEFT JOIN tseo 
-                        ON tseo.cKey = 'kMerkmalWert'
-                        AND tseo.kKey = tmerkmalwertsprache.kMerkmalWert
-                        AND tseo.kSprache = tmerkmalwertsprache.kSprache
-                    WHERE tmerkmalwertsprache.kSprache = " . $kSprache . "
-                        AND tmerkmalwert.kMerkmal = " . $kMerkmal . "
-                    GROUP BY tmerkmalwert.kMerkmalWert
+                    {$cJoin}
+                    WHERE tmerkmalwert.kMerkmal = " . (int)$kMerkmal . "
                     ORDER BY tmerkmalwert.nSort", 2
             );
 

@@ -16,6 +16,7 @@
 			<Hook id="33">33_jtl_backend_account_news_uebersicht.php</Hook>
             <Hook id="222">222_jtl_backend_account_edit.php</Hook>
 			<Hook id="223">223_jtl_backend_account_prepare_edit.php</Hook>
+			<Hook id="227">227_jtl_backend_functions_gravatar.php</Hook>
 		</Hooks>
 		<Adminmenu>
             <Settingslink sort="1">

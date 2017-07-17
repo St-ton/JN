@@ -49,51 +49,53 @@
                         <div class="panel-heading">
                             <h3 class="panel-title">{#newsCommentActivate#}</h3>
                         </div>
-                        <table class="list table">
-                            <thead>
-                            <tr>
-                                <th class="check">&nbsp;</th>
-                                <th class="tleft">{#newsUser#}</th>
-                                <th class="tleft">{#newsHeadline#}</th>
-                                <th class="tleft">{#newsText#}</th>
-                                <th class="th-5">{#newsDate#}</th>
-                                <th class="th-6" style="min-width: 140px;"></th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {foreach name=newskommentare from=$oNewsKommentar_arr item=oNewsKommentar}
-                                <tr class="tab_bg{$smarty.foreach.newskommentare.iteration%2}">
-                                    <td class="check">
-                                        <input type="checkbox" name="kNewsKommentar[]" value="{$oNewsKommentar->kNewsKommentar}" id="comment-{$oNewsKommentar->kNewsKommentar}" />
-                                    </td>
-                                    <td class="TD2">
-                                        <label for="comment-{$oNewsKommentar->kNewsKommentar}">
-                                        {if $oNewsKommentar->cVorname|strlen > 0}
-                                            {$oNewsKommentar->cVorname} {$oNewsKommentar->cNachname}
-                                        {else}
-                                            {$oNewsKommentar->cName}
-                                        {/if}
-                                        </label>
-                                    </td>
-                                    <td class="TD3">{$oNewsKommentar->cBetreff|truncate:50:"..."}</td>
-                                    <td class="TD4">{$oNewsKommentar->cKommentar|truncate:150:"..."}</td>
-                                    <td class="tcenter">{$oNewsKommentar->dErstellt_de}</td>
-                                    <td class="tcenter">
-                                        <a href="news.php?news=1&kNews={$oNewsKommentar->kNews}&kNewsKommentar={$oNewsKommentar->kNewsKommentar}&nkedit=1&tab=inaktiv&token={$smarty.session.jtl_token}"
-                                           class="btn btn-primary" title="{#modify#}">
-                                            <i class="fa fa-edit"></i>
-                                        </a>
-                                    </td>
-                                </tr>
-                            {/foreach}
-                            </tbody>
-                            <tfoot>
+                        <div class="table-responsive">
+                            <table class="list table">
+                                <thead>
                                 <tr>
-                                    <td class="check"><input name="ALLMSGS" id="ALLMSGS1" type="checkbox" onclick="AllMessages(this.form);" /></td>
-                                    <td colspan="5"><label for="ALLMSGS1">Alle ausw&auml;hlen</label></td>
+                                    <th class="check">&nbsp;</th>
+                                    <th class="tleft">{#newsUser#}</th>
+                                    <th class="tleft">{#newsHeadline#}</th>
+                                    <th class="tleft">{#newsText#}</th>
+                                    <th class="th-5">{#newsDate#}</th>
+                                    <th class="th-6" style="min-width: 140px;"></th>
                                 </tr>
-                            </tfoot>
-                        </table>
+                                </thead>
+                                <tbody>
+                                {foreach name=newskommentare from=$oNewsKommentar_arr item=oNewsKommentar}
+                                    <tr class="tab_bg{$smarty.foreach.newskommentare.iteration%2}">
+                                        <td class="check">
+                                            <input type="checkbox" name="kNewsKommentar[]" value="{$oNewsKommentar->kNewsKommentar}" id="comment-{$oNewsKommentar->kNewsKommentar}" />
+                                        </td>
+                                        <td class="TD2">
+                                            <label for="comment-{$oNewsKommentar->kNewsKommentar}">
+                                            {if $oNewsKommentar->cVorname|strlen > 0}
+                                                {$oNewsKommentar->cVorname} {$oNewsKommentar->cNachname}
+                                            {else}
+                                                {$oNewsKommentar->cName}
+                                            {/if}
+                                            </label>
+                                        </td>
+                                        <td class="TD3">{$oNewsKommentar->cBetreff|truncate:50:"..."}</td>
+                                        <td class="TD4">{$oNewsKommentar->cKommentar|truncate:150:"..."}</td>
+                                        <td class="tcenter">{$oNewsKommentar->dErstellt_de}</td>
+                                        <td class="tcenter">
+                                            <a href="news.php?news=1&kNews={$oNewsKommentar->kNews}&kNewsKommentar={$oNewsKommentar->kNewsKommentar}&nkedit=1&tab=inaktiv&token={$smarty.session.jtl_token}"
+                                               class="btn btn-primary" title="{#modify#}">
+                                                <i class="fa fa-edit"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {/foreach}
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td class="check"><input name="ALLMSGS" id="ALLMSGS1" type="checkbox" onclick="AllMessages(this.form);" /></td>
+                                        <td colspan="5"><label for="ALLMSGS1">Alle ausw&auml;hlen</label></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
                         <div class="panel-footer">
                             <div class="btn-group">
                                 <button name="freischalten" type="submit" value="{#newsActivate#}" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> {#newsActivate#}</button>
@@ -118,71 +120,73 @@
                     <div class="panel-heading">
                         <h3 class="panel-title">{#newsOverview#}</h3>
                     </div>
-                    <table class="sortable list table">
-                        <thead>
-                        <tr>
-                            <th class="check"></th>
-                            <th class="tleft">{#newsHeadline#}</th>
-                            <th class="tleft">{#newsCategory#}</th>
-                            <th class="tleft">{#newsCustomerGrp#}</th>
-                            <th class="tleft">{#newsValidation#}</th>
-                            <th>{#newsActive#}</th>
-                            <th>{#newsComments#}</th>
-                            <th>{#newsCatLastUpdate#}</th>
-                            <th style="min-width: 100px;"></th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {if $oNews_arr|@count > 0 && $oNews_arr}
-                            {foreach name=news from=$oNews_arr item=oNews}
-                                <tr class="tab_bg{$smarty.foreach.news.iteration%2}">
-                                    <td class="check"><input type="checkbox" name="kNews[]" value="{$oNews->kNews}" id="news-cb-{$oNews->kNews}" /></td>
-                                    <td class="TD2"><label for="news-cb-{$oNews->kNews}">{$oNews->cBetreff}</label></td>
-                                    <td class="TD3">{$oNews->KategorieAusgabe}</td>
-                                    <td class="TD4">
-                                        {foreach name=kundengruppen from=$oNews->cKundengruppe_arr item=cKundengruppe}
-                                            {$cKundengruppe}{if !$smarty.foreach.kundengruppen.last},{/if}
-                                        {/foreach}
-                                    </td>
-                                    <td class="TD5">{$oNews->dGueltigVon_de}</td>
-                                    <td class="tcenter"><i class="fa fa-{if $oNews->nAktiv == 1}check{else}close{/if}"></i></td>
-                                    <td class="tcenter">
-                                        {if $oNews->nNewsKommentarAnzahl > 0}
-                                            <a href="news.php?news=1&nd=1&kNews={$oNews->kNews}&tab=aktiv&token={$smarty.session.jtl_token}">{$oNews->nNewsKommentarAnzahl}</a>
-                                        {else}
-                                            {$oNews->nNewsKommentarAnzahl}
-                                        {/if}
-                                    </td>
-                                    <td class="tcenter">{$oNews->Datum}</td>
-                                    <td class="tcenter">
-                                        <div class="btn-group">
-                                            <a href="news.php?news=1&news_editieren=1&kNews={$oNews->kNews}&tab=aktiv&token={$smarty.session.jtl_token}"
-                                               class="btn btn-primary" title="{#modify#}">
-                                                <i class="fa fa-edit"></i>
-                                            </a>
-                                            <a href="news.php?news=1&nd=1&kNews={$oNews->kNews}&tab=aktiv&token={$smarty.session.jtl_token}"
-                                               class="btn btn-default" title="{#newsPreview#}">
-                                                <i class="fa fa-eye"></i>
-                                            </a>
-                                        </div>
+                    <div class="table-responsive">
+                        <table class="sortable list table">
+                            <thead>
+                            <tr>
+                                <th class="check"></th>
+                                <th class="tleft">{#newsHeadline#}</th>
+                                <th class="tleft">{#newsCategory#}</th>
+                                <th class="tleft">{#newsCustomerGrp#}</th>
+                                <th class="tleft">{#newsValidation#}</th>
+                                <th>{#newsActive#}</th>
+                                <th>{#newsComments#}</th>
+                                <th>{#newsCatLastUpdate#}</th>
+                                <th style="min-width: 100px;"></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {if $oNews_arr|@count > 0 && $oNews_arr}
+                                {foreach name=news from=$oNews_arr item=oNews}
+                                    <tr class="tab_bg{$smarty.foreach.news.iteration%2}">
+                                        <td class="check"><input type="checkbox" name="kNews[]" value="{$oNews->kNews}" id="news-cb-{$oNews->kNews}" /></td>
+                                        <td class="TD2"><label for="news-cb-{$oNews->kNews}">{$oNews->cBetreff}</label></td>
+                                        <td class="TD3">{$oNews->KategorieAusgabe}</td>
+                                        <td class="TD4">
+                                            {foreach name=kundengruppen from=$oNews->cKundengruppe_arr item=cKundengruppe}
+                                                {$cKundengruppe}{if !$smarty.foreach.kundengruppen.last},{/if}
+                                            {/foreach}
+                                        </td>
+                                        <td class="TD5">{$oNews->dGueltigVon_de}</td>
+                                        <td class="tcenter"><i class="fa fa-{if $oNews->nAktiv == 1}check{else}close{/if}"></i></td>
+                                        <td class="tcenter">
+                                            {if $oNews->nNewsKommentarAnzahl > 0}
+                                                <a href="news.php?news=1&nd=1&kNews={$oNews->kNews}&tab=aktiv&token={$smarty.session.jtl_token}">{$oNews->nNewsKommentarAnzahl}</a>
+                                            {else}
+                                                {$oNews->nNewsKommentarAnzahl}
+                                            {/if}
+                                        </td>
+                                        <td class="tcenter">{$oNews->Datum}</td>
+                                        <td class="tcenter">
+                                            <div class="btn-group">
+                                                <a href="news.php?news=1&news_editieren=1&kNews={$oNews->kNews}&tab=aktiv&token={$smarty.session.jtl_token}"
+                                                   class="btn btn-primary" title="{#modify#}">
+                                                    <i class="fa fa-edit"></i>
+                                                </a>
+                                                <a href="news.php?news=1&nd=1&kNews={$oNews->kNews}&tab=aktiv&token={$smarty.session.jtl_token}"
+                                                   class="btn btn-default" title="{#newsPreview#}">
+                                                    <i class="fa fa-eye"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {/foreach}
+                            {else}
+                                <tr>
+                                    <td colspan="9">
+                                        <div class="alert alert-info" role="alert">{#noDataAvailable#}</div>
                                     </td>
                                 </tr>
-                            {/foreach}
-                        {else}
+                            {/if}
+                            </tbody>
+                            <tfoot>
                             <tr>
-                                <td colspan="9">
-                                    <div class="alert alert-info" role="alert">{#noDataAvailable#}</div>
-                                </td>
+                                <td class="check"><input name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);" /></td>
+                                <td colspan="8"><label for="ALLMSGS2">Alle ausw&auml;hlen</label></td>
                             </tr>
-                        {/if}
-                        </tbody>
-                        <tfoot>
-                        <tr>
-                            <td class="check"><input name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);" /></td>
-                            <td colspan="8"><label for="ALLMSGS2">Alle ausw&auml;hlen</label></td>
-                        </tr>
-                        </tfoot>
-                    </table>
+                            </tfoot>
+                        </table>
+                    </div>
                     <input type="hidden" name="news" value="1" />
                     <input type="hidden" name="erstellen" value="1" />
                     <input type="hidden" name="tab" value="aktiv" />
@@ -212,51 +216,53 @@
                     <div class="panel-heading">
                         <h3 class="panel-title">{#newsCatOverview#}</h3>
                     </div>
-                    <table class="list table">
-                        <thead>
-                        <tr>
-                            <th class="check"></th>
-                            <th class="tleft">{#newsCatName#}</th>
-                            <th class="">{#newsCatSortShort#}</th>
-                            <th class="th-4">{#newsActive#}</th>
-                            <th class="th-5">{#newsCatLastUpdate#}</th>
-                            <th class="th-5">&nbsp;</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {if $oNewsKategorie_arr|@count > 0 && $oNewsKategorie_arr}
-                            {foreach name=newskategorie from=$oNewsKategorie_arr item=oNewsKategorie}
-                                <tr class="tab_bg{$smarty.foreach.newskategorie.iteration%2}">
-                                    <td class="check">
-                                        <input type="checkbox" name="kNewsKategorie[]" value="{$oNewsKategorie->kNewsKategorie}" id="newscat-{$oNewsKategorie->kNewsKategorie}" />
-                                    </td>
-                                    <td class="TD2"><label for="newscat-{$oNewsKategorie->kNewsKategorie}">{$oNewsKategorie->cName}</label></td>
-                                    <td class="tcenter">{$oNewsKategorie->nSort}</td>
-                                    <td class="tcenter">{if $oNewsKategorie->nAktiv === '1'}ja{else}nein{/if}</td>
-                                    <td class="tcenter">{$oNewsKategorie->dLetzteAktualisierung_de}</td>
-                                    <td class="tcenter">
-                                        <a href="news.php?news=1&newskategorie_editieren=1&kNewsKategorie={$oNewsKategorie->kNewsKategorie}&tab=kategorien&token={$smarty.session.jtl_token}"
-                                           class="btn btn-primary" title="{#modify#}">
-                                            <i class="fa fa-edit"></i>
-                                        </a>
+                    <div class="table-responsive">
+                        <table class="list table">
+                            <thead>
+                            <tr>
+                                <th class="check"></th>
+                                <th class="tleft">{#newsCatName#}</th>
+                                <th class="">{#newsCatSortShort#}</th>
+                                <th class="th-4">{#newsActive#}</th>
+                                <th class="th-5">{#newsCatLastUpdate#}</th>
+                                <th class="th-5">&nbsp;</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {if $oNewsKategorie_arr|@count > 0 && $oNewsKategorie_arr}
+                                {foreach name=newskategorie from=$oNewsKategorie_arr item=oNewsKategorie}
+                                    <tr class="tab_bg{$smarty.foreach.newskategorie.iteration%2}">
+                                        <td class="check">
+                                            <input type="checkbox" name="kNewsKategorie[]" value="{$oNewsKategorie->kNewsKategorie}" id="newscat-{$oNewsKategorie->kNewsKategorie}" />
+                                        </td>
+                                        <td class="TD2"><label for="newscat-{$oNewsKategorie->kNewsKategorie}">{$oNewsKategorie->cName}</label></td>
+                                        <td class="tcenter">{$oNewsKategorie->nSort}</td>
+                                        <td class="tcenter">{if $oNewsKategorie->nAktiv === '1'}ja{else}nein{/if}</td>
+                                        <td class="tcenter">{$oNewsKategorie->dLetzteAktualisierung_de}</td>
+                                        <td class="tcenter">
+                                            <a href="news.php?news=1&newskategorie_editieren=1&kNewsKategorie={$oNewsKategorie->kNewsKategorie}&tab=kategorien&token={$smarty.session.jtl_token}"
+                                               class="btn btn-primary" title="{#modify#}">
+                                                <i class="fa fa-edit"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {/foreach}
+                            {else}
+                                <tr>
+                                    <td colspan="6">
+                                        <div class="alert alert-info" role="alert">{#noDataAvailable#}</div>
                                     </td>
                                 </tr>
-                            {/foreach}
-                        {else}
+                            {/if}
+                            </tbody>
+                            <tfoot>
                             <tr>
-                                <td colspan="6">
-                                    <div class="alert alert-info" role="alert">{#noDataAvailable#}</div>
-                                </td>
+                                <td class="check"><input name="ALLMSGS" id="ALLMSGS3" type="checkbox" onclick="AllMessages(this.form);" /></td>
+                                <td colspan="5"><label for="ALLMSGS3">Alle ausw&auml;hlen</label></td>
                             </tr>
-                        {/if}
-                        </tbody>
-                        <tfoot>
-                        <tr>
-                            <td class="check"><input name="ALLMSGS" id="ALLMSGS3" type="checkbox" onclick="AllMessages(this.form);" /></td>
-                            <td colspan="5"><label for="ALLMSGS3">Alle ausw&auml;hlen</label></td>
-                        </tr>
-                        </tfoot>
-                    </table>
+                            </tfoot>
+                        </table>
+                    </div>
                     <input type="hidden" name="news" value="1" />
                     <input type="hidden" name="erstellen" value="1" />
                     <input type="hidden" name="tab" value="kategorien" />

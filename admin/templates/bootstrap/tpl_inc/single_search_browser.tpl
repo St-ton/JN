@@ -1,3 +1,7 @@
+{*
+     @deprecated since 4.06 the functionality of this component can simply be covered with a twitter typeahead. See
+        the function enableTypeahead() in global.js to turn a text input into a suggestion input.
+*}
 <div class="single_search_browser">
     <fieldset>
         <div class="input-group">

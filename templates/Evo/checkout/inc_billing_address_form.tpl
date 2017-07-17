@@ -515,7 +515,7 @@
 <fieldset>
     <div class="row">
         <div class="col-xs-12 col-md-6">
-            {if ($step === 'formular' || $step === 'unregistriert bestellen' || $step === 'rechnungsdaten') && empty($smarty.session.Kunde->kKunde)}
+            {if $step === 'formular' || $step === 'edit_customer_address' || $step === 'rechnungsdaten'}
                 {foreach name=kundenfeld from=$oKundenfeld_arr item=oKundenfeld}
                     {assign var=kKundenfeld value=$oKundenfeld->kKundenfeld}
                     <div class="form-group float-label-control{if isset($fehlendeAngaben.custom[$kKundenfeld])} has-error{/if}{if $oKundenfeld->nPflicht == 1} required{/if}">
@@ -525,7 +525,7 @@
                             type="{if $oKundenfeld->cTyp === 'zahl'}number{elseif $oKundenfeld->cTyp === 'datum'}date{else}text{/if}"
                             name="custom_{$kKundenfeld}"
                             id="custom_{$kKundenfeld}"
-                            value="{if isset($cKundenattribut_arr[$kKundenfeld]->cWert) && ($step === 'formular' || $step === 'unregistriert bestellen')}{$cKundenattribut_arr[$kKundenfeld]->cWert}{elseif isset($Kunde->cKundenattribut_arr[$kKundenfeld]->cWert)}{$Kunde->cKundenattribut_arr[$kKundenfeld]->cWert}{/if}"
+                            value="{if isset($cKundenattribut_arr[$kKundenfeld]->cWert) && ($step === 'formular' || $step === 'edit_customer_address')}{$cKundenattribut_arr[$kKundenfeld]->cWert}{elseif isset($Kunde->cKundenattribut_arr[$kKundenfeld]->cWert)}{$Kunde->cKundenattribut_arr[$kKundenfeld]->cWert}{/if}"
                             class="form-control"
                             placeholder="{$oKundenfeld->cName}"
                             {if ($oKundenfeld->nPflicht == 1 && $oKundenfeld->nEditierbar == 1) || ($oKundenfeld->nEditierbar == 0 && !empty($cKundenattribut_arr[$kKundenfeld]->cWert))} required{/if}

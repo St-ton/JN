@@ -56,7 +56,7 @@
             {if $Einstellungen.template.footer.socialmedia_footer === 'Y' || $Einstellungen.template.footer.newsletter_footer === 'Y'}
             <div class="row footer-additional">
                 {if $Einstellungen.template.footer.newsletter_footer === 'Y'}
-                    <div class="col-xs-12 col-md-7 newsletter-footer">
+                    <div class="{block name="footer-newsletter-class"}col-xs-12 col-md-7 newsletter-footer{/block}">
                         <div class="row">
                             {block name="footer-newsletter"}
                                 <div class="col-xs-12 col-sm-4">
@@ -89,7 +89,7 @@
                 {/if}
 
                 {if $Einstellungen.template.footer.socialmedia_footer === 'Y'}
-                    <div class="col-xs-12 col-md-5 pull-right">
+                    <div class="{block name="footer-socialmedia-class"}col-xs-12 col-md-5 pull-right{/block}">
                         <div class="footer-additional-wrapper pull-right">
                             {block name="footer-socialmedia"}
                                 {if !empty($Einstellungen.template.footer.facebook)}
@@ -130,6 +130,7 @@
             {/if}
             {/block}{* /footer-additional *}
             <div class="row">
+                {block name="footer-language"}
                 {if isset($smarty.session.Sprachen) && $smarty.session.Sprachen|@count > 1}
                     <div class="language-dropdown dropdown visible-xs col-xs-6 text-center">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
@@ -152,6 +153,8 @@
                         </ul>
                     </div>
                 {/if}
+                {/block}
+                {block name="footer-currency"}
                 {if isset($smarty.session.Waehrungen) && $smarty.session.Waehrungen|@count > 1}
                     <div class="currency-dropdown dropdown visible-xs col-xs-6 text-center">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
@@ -174,6 +177,7 @@
                         </ul>
                     </div>
                 {/if}
+                {/block}
             </div>
             <div class="footnote-vat text-center">
                 {if $NettoPreise == 1}
@@ -226,7 +230,9 @@
         </div>
     </footer>
 {/if}
+{block name="main-wrapper-closingtag"}
 </div> {* /mainwrapper *}
+{/block}
 
 {* JavaScripts *}
 {block name="footer-js"}

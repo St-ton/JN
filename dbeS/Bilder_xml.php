@@ -379,7 +379,7 @@ function bearbeite($xml, $unzipPath)
                     WHERE kHersteller = " . (int)$Herstellerbild->kHersteller, 1
             );
             if (isset($Hersteller->cSeo) && strlen($Hersteller->cSeo) > 0) {
-                $Herstellerbild->cPfad = $Hersteller->cSeo . '.' . $Bildformat;
+                $Herstellerbild->cPfad = str_replace("/", "_", $Hersteller->cSeo . '.' . $Bildformat);
             } elseif (stripos(strrev($Herstellerbild->cPfad), strrev($Bildformat)) !== 0) {
                 $Herstellerbild->cPfad .= '.' . $Bildformat;
             }

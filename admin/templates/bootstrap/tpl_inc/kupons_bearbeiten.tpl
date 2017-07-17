@@ -308,7 +308,9 @@
                             searchPickerName:  'articlePicker',
                             getDataIoFuncName: 'getProducts',
                             keyName:           'cArtNr',
-                            renderItemCb:      function (item) { return '<p class="list-group-item-text">' + item.cName + '</p>'; },
+                            renderItemCb:      function (item) {
+                                return '<p class="list-group-item-text">' + item.cName + ' <em>(' + item.cArtNr + ')</em></p>';
+                            },
                             onApply:           onApplySelectedArticles,
                             selectedKeysInit:  '{$oKupon->cArtikel}'.split(';').filter(function (i) { return i !== ''; })
                         });

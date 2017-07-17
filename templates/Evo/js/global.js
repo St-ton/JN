@@ -273,9 +273,11 @@ $(document).ready(function () {
         var url = e.currentTarget.href;
         url += (url.indexOf('?') === -1) ? '?isAjax=true' : '&isAjax=true';
         eModal.ajax({
-            'size': 'lg',
-            'url': url,
-            'title': typeof e.currentTarget.title !== 'undefined' ? e.currentTarget.title : ''
+            size: 'lg',
+            url: url,
+            title: typeof e.currentTarget.title !== 'undefined' ? e.currentTarget.title : '',
+            keyboard: true,
+            tabindex: -1
         });
         e.stopPropagation();
         return false;

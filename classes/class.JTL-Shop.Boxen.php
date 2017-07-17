@@ -142,6 +142,7 @@ class Boxen
             return $oBox_arr;
         }
         $this->visibility = $this->holeBoxAnzeige($nSeite);
+        $validPageTypes   = $this->getValidPageTypes();
         $oBox_arr         = [];
         $cacheTags        = [CACHING_GROUP_OBJECT, CACHING_GROUP_BOX, 'boxes'];
         $cSQLAktiv        = $bAktiv ? " AND bAktiv = 1 " : "";
@@ -245,14 +246,14 @@ class Boxen
                     $oBox->bContainer = $oBox->kBoxvorlage === 0;
                     if ($bVisible) {
                         $oBox->cVisibleOn = '';
-                        $oVisible_arr     = Shop::DB()->selectAll('tboxensichtbar', 'kBox', (int)$oBox->kBox);
-                        if (count($oVisible_arr) >= PAGE_MAX) {
+                        $oVisible_arr     = Shop::DB()->selectAll('tboxensichtbar', ['kBox', 'bAktiv'], [(int)$oBox->kBox, 1]);
+                        if (count($oVisible_arr) >= count($validPageTypes)) {
                             $oBox->cVisibleOn = "\n- Auf allen Seiten";
                         } elseif (count($oVisible_arr) === 0) {
                             $oBox->cVisibleOn = "\n- Auf allen Seiten deaktiviert";
                         } else {
                             foreach ($oVisible_arr as $oVisible) {
-                                if ($oVisible->kSeite > 0) {
+                                if ($oVisible->kSeite > 0 && $oVisible->kSeite != PAGE_NEWSARCHIV) {
                                     $oBox->cVisibleOn .= "\n- " . $this->mappekSeite($oVisible->kSeite);
                                 }
                             }
@@ -1482,7 +1483,7 @@ class Boxen
             case PAGE_BESTELLABSCHLUSS:
                 return 'Bestellabschluss';
             case PAGE_RMA:
-                return 'Warenrücksendung';
+                return 'Warenr&uuml;cksendung';
         }
     }
 
@@ -1523,11 +1524,12 @@ class Boxen
      */
     public function setzeBoxAnzeige($nSeite, $ePosition, $bAnzeigen)
     {
-        $bAnzeigen = (int)$bAnzeigen;
-        $nSeite    = (int)$nSeite;
+        $bAnzeigen      = (int)$bAnzeigen;
+        $nSeite         = (int)$nSeite;
+        $validPageTypes = $this->getValidPageTypes();
         if ($nSeite === 0) {
             $bOk = true;
-            for ($i = 0; $i < PAGE_MAX && $bOk; $i++) {
+            for ($i = 0; $i < count($validPageTypes) && $bOk; $i++) {
                 $bOk = Shop::DB()->executeQueryPrepared("
                   REPLACE INTO tboxenanzeige 
                       SET bAnzeigen = :show,
@@ -1578,11 +1580,12 @@ class Boxen
      */
     public function setzeBox($kBoxvorlage, $nSeite, $ePosition = 'left', $kContainer = 0)
     {
-        $kBoxvorlage  = (int)$kBoxvorlage;
-        $nSeite       = (int)$nSeite;
-        $oBox         = new stdClass();
-        $oBoxVorlage  = $this->holeVorlage($kBoxvorlage);
-        $oBox->cTitel = '';
+        $kBoxvorlage    = (int)$kBoxvorlage;
+        $nSeite         = (int)$nSeite;
+        $validPageTypes = $this->getValidPageTypes();
+        $oBox           = new stdClass();
+        $oBoxVorlage    = $this->holeVorlage($kBoxvorlage);
+        $oBox->cTitel   = '';
         if ($oBoxVorlage) {
             $oBox->cTitel = $oBoxVorlage->cName;
         }
@@ -1598,7 +1601,7 @@ class Boxen
         if ($kBox) {
             $oBoxSichtbar       = new stdClass();
             $oBoxSichtbar->kBox = $kBox;
-            for ($i = 0; $i < PAGE_MAX; $i++) {
+            for ($i = 0; $i < count($validPageTypes); $i++) {
                 $oBoxSichtbar->nSort  = $this->letzteSortierID($nSeite, $ePosition, $kContainer);
                 $oBoxSichtbar->kSeite = $i;
                 $oBoxSichtbar->bAktiv = ($nSeite == $i || $nSeite == 0) ? 1 : 0;
@@ -1729,12 +1732,13 @@ class Boxen
      */
     public function sortBox($kBox, $nSeite, $nSort, $bAktiv = true)
     {
-        $bAktiv = (int)$bAktiv;
-        $kBox   = (int)$kBox;
-        $nSeite = (int)$nSeite;
+        $bAktiv         = (int)$bAktiv;
+        $kBox           = (int)$kBox;
+        $nSeite         = (int)$nSeite;
+        $validPageTypes = $this->getValidPageTypes();
         if ($nSeite === 0) {
             $bOk = true;
-            for ($i = 0; $i < PAGE_MAX && $bOk; $i++) {
+            for ($i = 0; $i < count($validPageTypes) && $bOk; $i++) {
                 $oBox = Shop::DB()->select('tboxensichtbar', 'kBox', $kBox);
                 $bOk  = (!empty($oBox))
                     ? (Shop::DB()->query("
@@ -1773,12 +1777,13 @@ class Boxen
      */
     public function aktiviereBox($kBox, $nSeite, $bAktiv = true)
     {
-        $bAktiv = (int)$bAktiv;
-        $kBox   = (int)$kBox;
-        $nSeite = (int)$nSeite;
+        $bAktiv         = (int)$bAktiv;
+        $kBox           = (int)$kBox;
+        $nSeite         = (int)$nSeite;
+        $validPageTypes = $this->getValidPageTypes();
         if ($nSeite === 0) {
             $bOk = true;
-            for ($i = 0; $i < PAGE_MAX && $bOk; $i++) {
+            for ($i = 0; $i < count($validPageTypes) && $bOk; $i++) {
                 $_upd          = new stdClass();
                 $_upd->bAktiv  = $bAktiv;
                 $bOk           = Shop::DB()->update('tboxensichtbar', ['kBox', 'kSeite'], [$kBox, $i], $_upd) >= 0;
@@ -2015,5 +2020,23 @@ class Boxen
         }
 
         return $invisibleBoxes;
+    }
+
+    /**
+     * @return array
+     */
+    public function getValidPageTypes()
+    {
+        $validPageTypes = [
+            PAGE_UNBEKANNT, PAGE_ARTIKEL, PAGE_ARTIKELLISTE, PAGE_WARENKORB, PAGE_MEINKONTO,
+            PAGE_KONTAKT, PAGE_UMFRAGE, PAGE_NEWS, PAGE_NEWSLETTER, PAGE_LOGIN, PAGE_REGISTRIERUNG, PAGE_BESTELLVORGANG,
+            PAGE_BEWERTUNG, PAGE_DRUCKANSICHT, PAGE_PASSWORTVERGESSEN, PAGE_WARTUNG, PAGE_WUNSCHLISTE,
+            PAGE_VERGLEICHSLISTE, PAGE_STARTSEITE, PAGE_VERSAND, PAGE_AGB, PAGE_DATENSCHUTZ, PAGE_TAGGING,
+            PAGE_LIVESUCHE, PAGE_HERSTELLER, PAGE_SITEMAP, PAGE_GRATISGESCHENK, PAGE_WRB, PAGE_PLUGIN,
+            PAGE_NEWSLETTERARCHIV, PAGE_NEWSARCHIV, PAGE_EIGENE, PAGE_AUSWAHLASSISTENT, PAGE_BESTELLABSCHLUSS,
+            PAGE_RMA
+        ];
+
+        return $validPageTypes;
     }
 }

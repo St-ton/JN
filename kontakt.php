@@ -70,8 +70,9 @@ if (pruefeBetreffVorhanden()) {
     $betreffs = Shop::DB()->query(
         "SELECT *
             FROM tkontaktbetreff
-            WHERE (cKundengruppen = 0
-            OR cKundengruppen RLIKE '^([0-9;]*;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";') 
+            WHERE (cKundengruppen = 0 
+            OR FIND_IN_SET('" . (int)$_SESSION['Kundengruppe']->kKundengruppe
+                . "', REPLACE(cKundengruppen, ';', ',')) > 0) 
             ORDER BY nSort", 2
     );
     $bCount = count($betreffs);

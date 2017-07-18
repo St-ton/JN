@@ -139,7 +139,8 @@ function gibNews($Einstellungen)
                     AND tnews.dGueltigVon <= now()
                     AND (
                         tnews.cKundengruppe LIKE '%;-1;%' 
-                        OR tnews.cKundengruppe RLIKE '^([0-9;]*;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";'
+                        OR FIND_IN_SET('" . (int)$_SESSION['Kundengruppe']->kKundengruppe
+                            . "', REPLACE(tnews.cKundengruppe, ';', ',')) > 0
                         )
                 GROUP BY tnews.kNews
                 ORDER BY tnews.dGueltigVon DESC" . $cSQL, 2
@@ -597,7 +598,8 @@ function gibBoxNews($BoxenEinstellungen)
                 AND nAktiv = 1
                 AND (
                     cKundengruppe LIKE '%;-1;%' 
-                    OR cKundengruppe RLIKE '^([0-9;]*;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";'
+                    OR FIND_IN_SET('" . (int)$_SESSION['Kundengruppe']->kKundengruppe
+                        . "', REPLACE(cKundengruppe, ';', ',')) > 0
                     )
             GROUP BY DATE_FORMAT(dErstellt, '%M')
             ORDER BY dErstellt DESC
@@ -647,7 +649,8 @@ function gibSitemapNews()
                             AND tnews.nAktiv = 1
                             AND (
                                 tnews.cKundengruppe LIKE '%;-1;%' 
-                                OR tnews.cKundengruppe RLIKE '^([0-9;]*;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";'
+                                OR FIND_IN_SET('" . (int)$_SESSION['Kundengruppe']->kKundengruppe
+                                    . "', REPLACE(tnews.cKundengruppe, ';', ',')) > 0
                                 )
                             AND (MONTH(tnews.dGueltigVon) = '" . $oNewsMonatsUebersicht->nMonat . "') 
                             && (tnews.dGueltigVon <= now())
@@ -701,8 +704,9 @@ function gibNewsKategorie()
                     AND tnews.nAktiv = 1
                     AND tnews.dGueltigVon <= now()
                     AND (
-                            tnews.cKundengruppe LIKE '%;-1;%' 
-                            OR tnews.cKundengruppe RLIKE '^([0-9;]*;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";'
+                        tnews.cKundengruppe LIKE '%;-1;%' 
+                        OR FIND_IN_SET('" . (int)$_SESSION['Kundengruppe']->kKundengruppe
+                            . "', REPLACE(tnews.cKundengruppe, ';', ',')) > 0
                         )
                 GROUP BY tnewskategorienews.kNewsKategorie
                 ORDER BY tnewskategorie.nSort DESC", 2
@@ -729,8 +733,9 @@ function gibNewsKategorie()
                             AND tnews.nAktiv = 1
                             AND tnews.dGueltigVon <= now()
                             AND (
-                                    tnews.cKundengruppe LIKE '%;-1;%' 
-                                    OR tnews.cKundengruppe RLIKE '^([0-9;]*;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";'
+                                tnews.cKundengruppe LIKE '%;-1;%' 
+                                OR FIND_IN_SET('" . (int)$_SESSION['Kundengruppe']->kKundengruppe
+                                    . "', REPLACE(tnews.cKundengruppe, ';', ',')) > 0
                                 )
                         GROUP BY tnews.kNews
                         ORDER BY tnews.dGueltigVon DESC", 2
@@ -920,8 +925,9 @@ function gibNewsArchiv()
                 AND tnews.nAktiv = 1
                 AND MONTH(tnews.dErstellt) = '" . date('m') . "'
                 AND (
-                        tnews.cKundengruppe LIKE '%;-1;%' 
-                        OR tnews.cKundengruppe RLIKE '^([0-9;]*;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";'
+                    tnews.cKundengruppe LIKE '%;-1;%' 
+                    OR FIND_IN_SET('" . (int)$_SESSION['Kundengruppe']->kKundengruppe
+                        . "', REPLACE(tnews.cKundengruppe, ';', ',')) > 0
                     )
             GROUP BY tnews.kNews
             ORDER BY tnews.dErstellt DESC", 2

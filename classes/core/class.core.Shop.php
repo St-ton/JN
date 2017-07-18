@@ -1055,7 +1055,8 @@ final class Shop
                 $link        = null;
                 $linkHelper  = LinkHelper::getInstance();
                 if (!empty($_SESSION['Kundengruppe']->kKundengruppe)) {
-                    $cKundengruppenSQL = " AND (cKundengruppen RLIKE '^([0-9;]*;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";'
+                    $cKundengruppenSQL = " AND (FIND_IN_SET('" . (int)$_SESSION['Kundengruppe']->kKundengruppe
+                        . "', REPLACE(cKundengruppen, ';', ',')) > 0
                         OR cKundengruppen IS NULL 
                         OR cKundengruppen = 'NULL' 
                         OR tlink.cKundengruppen = '')";

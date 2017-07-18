@@ -32,6 +32,6 @@ class Migration_20170718083700 extends Migration implements IMigration
 
     public function down()
     {
-
+        $this->execute("UPDATE temailvorlage SET cName='Warenrücksendung abegeschickt' WHERE cModulId='core_jtl_rma_submitted' AND cDateiname ='rma'");
     }
 }

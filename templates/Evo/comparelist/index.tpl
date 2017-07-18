@@ -233,9 +233,11 @@
             var kArtikel = $(e.currentTarget).data('id');
             $('section.box-compare tr[data-id="' + kArtikel + '"]').remove();
             eModal.ajax({
-                'size': 'lg',
-                'url': e.currentTarget.href,
-                'title': '{lang key="compare" section="global"}'
+                size: 'lg',
+                url: e.currentTarget.href,
+                title: '{lang key="compare" section="global"}',
+                keyboard: true,
+                tabindex: -1
             });
 
             return false;

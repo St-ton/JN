@@ -284,6 +284,8 @@
                 eModal.alert({
                     message: html,
                     title: title,
+                    keyboard: true,
+                    tabindex: -1,
                     onShown:function () {
                         //the modal just copies all the html.. so we got duplicate IDs which confuses recaptcha
                         var recaptcha = $('.tmp-modal-content .g-recaptcha');

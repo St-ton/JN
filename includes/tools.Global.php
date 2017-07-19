@@ -1550,8 +1550,12 @@ function checkeKuponWKPos($oWKPosition, $Kupon)
     if ($oWKPosition->nPosTyp != C_WARENKORBPOS_TYP_ARTIKEL) {
         return $oWKPosition;
     }
-    $Artikel_qry    = " OR cArtikel RLIKE '^([0-9;]*;)?" . str_replace('%', '\%', Shop::DB()->escape($oWKPosition->Artikel->cArtNr)) . ";'";
-    $Hersteller_qry = " OR cHersteller RLIKE '^([0-9;]*;)?" . str_replace('%', '\%', Shop::DB()->escape($oWKPosition->Artikel->kHersteller)) . ";'";
+    $Artikel_qry    = " OR FIND_IN_SET('" .
+        str_replace('%', '\%', Shop::DB()->escape($oWKPosition->Artikel->cArtNr))
+        . "', REPLACE(cArtikel, ';', ',')) > 0";
+    $Hersteller_qry = " OR FIND_IN_SET('" .
+        str_replace('%', '\%', Shop::DB()->escape($oWKPosition->Artikel->kHersteller))
+        . "', REPLACE(cHersteller, ';', ',')) > 0";
     $Kategorie_qry  = '';
     $Kunden_qry     = '';
     $kKategorie_arr = [];
@@ -1571,10 +1575,10 @@ function checkeKuponWKPos($oWKPosition, $Kupon)
         }
     }
     foreach ($kKategorie_arr as $kKategorie) {
-        $Kategorie_qry .= " OR cKategorien RLIKE '^([0-9;]*;)?" . $kKategorie . ";'";
+        $Kategorie_qry .= " OR FIND_IN_SET('" . $kKategorie . "', REPLACE(cKategorien, ';', ',')) > 0";
     }
     if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
-        $Kunden_qry = " OR cKunden RLIKE '^([0-9;]*;)?" . (int)$_SESSION['Kunde']->kKunde . ";'";
+        $Kunden_qry = " OR FIND_IN_SET('" . (int)$_SESSION['Kunde']->kKunde . "', REPLACE(cKunden, ';', ',')) > 0";
     }
     $kupons_mgl = Shop::DB()->query(
         "SELECT *
@@ -1651,7 +1655,12 @@ function checkSetPercentCouponWKPos($oWKPosition, $Kupon)
     if ($oWKPosition->nPosTyp != C_WARENKORBPOS_TYP_ARTIKEL) {
         return $wkPos;
     }
-    $Artikel_qry    = " OR cArtikel RLIKE '^([0-9;]*;)?" . str_replace('%', '\%', Shop::DB()->escape($oWKPosition->Artikel->cArtNr)) . ";'";
+    $Artikel_qry    = " OR FIND_IN_SET('" .
+        str_replace('%', '\%', Shop::DB()->escape($oWKPosition->Artikel->cArtNr))
+        . "', REPLACE(cArtikel, ';', ',')) > 0";
+    $Hersteller_qry = " OR FIND_IN_SET('" .
+        str_replace('%', '\%', Shop::DB()->escape($oWKPosition->Artikel->kHersteller))
+        . "', REPLACE(cHersteller, ';', ',')) > 0";
     $Kategorie_qry  = '';
     $Kunden_qry     = '';
     $kKategorie_arr = [];
@@ -1671,10 +1680,10 @@ function checkSetPercentCouponWKPos($oWKPosition, $Kupon)
         }
     }
     foreach ($kKategorie_arr as $kKategorie) {
-        $Kategorie_qry .= " OR cKategorien RLIKE '^([0-9;]*;)?" . $kKategorie . ";'";
+        $Kategorie_qry .= " OR FIND_IN_SET('" . $kKategorie . "', REPLACE(cKategorien, ';', ',')) > 0";
     }
     if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
-        $Kunden_qry = " OR cKunden RLIKE '^([0-9;]*;)?" . (int)$_SESSION['Kunde']->kKunde . ";'";
+        $Kunden_qry = " OR FIND_IN_SET('" . (int)$_SESSION['Kunde']->kKunde . "', REPLACE(cKunden, ';', ',')) > 0";
     }
     $kupons_mgl = Shop::DB()->query(
         "SELECT *
@@ -1686,13 +1695,11 @@ function checkSetPercentCouponWKPos($oWKPosition, $Kupon)
                 AND (kKundengruppe = -1 
                     OR kKundengruppe = 0 
                     OR kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . ")
-                AND (nVerwendungen = 0 
-                    OR nVerwendungen > nVerwendungenBisher)
+                AND (nVerwendungen = 0 OR nVerwendungen > nVerwendungenBisher)
                 AND (cArtikel = '' {$Artikel_qry})
-                AND (cKategorien = '' 
-                    OR cKategorien = '-1' {$Kategorie_qry})
-                AND (cKunden = '' 
-                    OR cKunden = '-1' {$Kunden_qry})
+                AND (cHersteller = '-1' {$Hersteller_qry})
+                AND (cKategorien = '' OR cKategorien = '-1' {$Kategorie_qry})
+                AND (cKunden = '' OR cKunden = '-1' {$Kunden_qry})
                 AND kKupon = " . (int)$Kupon->kKupon, 1
     );
     $waehrung    = isset($_SESSION['Waehrung']) ? $_SESSION['Waehrung'] : null;
@@ -2694,7 +2701,7 @@ function gibGuenstigsteVersandart($lieferland, $versandklassen, $kKundengruppe, 
                 AND (cVersandklassen = '-1' 
                     OR cVersandklassen RLIKE '^([0-9 -]* )?" . $versandklassen . " ')
                 AND (cKundengruppen = '-1' 
-                    OR cKundengruppen RLIKE '^([0-9;]*;)?" . $kKundengruppe . ";') 
+                    OR FIND_IN_SET('{$kKundengruppe}', REPLACE(cKundengruppen, ';', ',')) > 0) 
             ORDER BY nSort", 2
     );
 
@@ -2729,7 +2736,7 @@ function gibMoeglicheVerpackungen($kKundengruppe)
                 ON tverpackung.kVerpackung = tverpackungsprache.kVerpackung
             WHERE tverpackungsprache.cISOSprache = '" . $_SESSION['cISOSprache'] . "'
             AND (tverpackung.cKundengruppe = '-1' 
-                OR tverpackung.cKundengruppe RLIKE '^([0-9;]*;)?" . (int)$kKundengruppe . ";')
+                OR FIND_IN_SET('" . (int)$kKundengruppe . "', REPLACE(tverpackung.cKundengruppe, ';', ',')) > 0)
             AND " . $fSummeWarenkorb . " >= tverpackung.fMindestbestellwert
             AND tverpackung.nAktiv = 1
             ORDER BY tverpackung.kVerpackung", 2
@@ -2976,7 +2983,7 @@ function gibGuenstigsteVersandkosten($cISO, $Artikel, $barzahlungZulassen, $kKun
                 AND (cVersandklassen = '-1' 
                     OR cVersandklassen RLIKE '^([0-9 -]* )?" . $Artikel->kVersandklasse . " ')
                 AND (cKundengruppen = '-1' 
-                    OR cKundengruppen RLIKE '^([0-9;]*;)?" . $kKundengruppe . ";')";
+                    OR FIND_IN_SET('{$kKundengruppe}', REPLACE(cKundengruppen, ';', ',')) > 0)";
     // artikelabhaengige Versandarten nur laden und prüfen wenn der Artikel das entsprechende Funktionasattribut hat
     if (empty($Artikel->FunktionsAttribute['versandkosten'])
         && empty($Artikel->FunktionsAttribute['versandkosten gestaffelt'])
@@ -3031,7 +3038,7 @@ function gibBelieferbareLaender($kKundengruppe = 0, $bIgnoreSetting = false, $bF
             "SELECT cLaender 
                 FROM tversandart 
                 WHERE (cKundengruppen = '-1' 
-                  OR cKundengruppen RLIKE '^([0-9;]*;)?" . $kKundengruppe . ";')", 2
+                  OR FIND_IN_SET('{$kKundengruppe}', REPLACE(cKundengruppen, ';', ',')) > 0)", 2
         );
         $where       = '';
         foreach ($ll_obj_arr as $cLaender) {
@@ -3661,7 +3668,7 @@ function gibVersandkostenfreiAb($kKundengruppe, $cLand = '')
                     AND (cVersandklassen = '-1' 
                         OR cVersandklassen RLIKE '^([0-9 -]* )?" . $versandklassen . " ')
                     AND (cKundengruppen = '-1' 
-                        OR cKundengruppen RLIKE '^([0-9;]*;)?" . $kKundengruppe . ";')
+                        OR FIND_IN_SET('{$kKundengruppe}', REPLACE(cKundengruppen, ';', ',')) > 0)
                     " . $cKundeSQLWhere . "
                 ORDER BY fVersandkostenfreiAbX
                 LIMIT 1", 1

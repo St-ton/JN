@@ -5,8 +5,8 @@
 {else}
     {hasOnlyListableVariations artikel=$Artikel maxVariationCount=$Einstellungen.template.productlist.variation_select_productlist assign="hasOnlyListableVariations"}
 {/if}
-<div class="product-cell thumbnail">
-    <div id="result-wrapper_buy_form_{$Artikel->kArtikel}" class="product-body row {if $tplscope !== 'list'} text-center{/if}">
+<div id="result-wrapper_buy_form_{$Artikel->kArtikel}" class="product-cell thumbnail">
+    <div class="product-body row {if $tplscope !== 'list'} text-center{/if}">
         <div class="col-xs-3 col-sm-2 col-lg-3 text-center">
             {block name="image-wrapper"}
                 <a class="image-wrapper" href="{$Artikel->cURL}">

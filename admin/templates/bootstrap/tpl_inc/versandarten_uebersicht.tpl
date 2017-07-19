@@ -34,9 +34,13 @@
                     <tr>
                         <td>{#shippingclasses#}</td>
                         <td>
-                            {foreach name=versandklassen from=$versandart->versandklassen item=versandklasse}
-                                [{$versandklasse}] &nbsp;
-                            {/foreach}
+                            {if $versandart->versandklassen|@count == 1 && $versandart->versandklassen[0] === 'Alle'}
+                                {$versandart->versandklassen[0]}
+                            {else}
+                                {foreach name=versandklassen from=$versandart->versandklassen item=versandklasse}
+                                    [{$versandklasse}] &nbsp;
+                                {/foreach}
+                            {/if}
                         </td>
                     </tr>
                     <tr>

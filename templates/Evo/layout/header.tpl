@@ -38,7 +38,8 @@
                     rel="shortcut icon">
             {else}
                 <link type="image/x-icon"
-                    href="{$currentTemplateDir}themes/base/images/{$Einstellungen.template.theme.favicon}" rel="shortcut icon">
+                    href="{$currentTemplateDir}themes/base/images/{$Einstellungen.template.theme.favicon}"
+                      rel="shortcut icon">
             {/if}
         {else}
             <link type="image/x-icon" href="favicon-default.ico" rel="shortcut icon">

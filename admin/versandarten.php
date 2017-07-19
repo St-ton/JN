@@ -231,6 +231,9 @@ if (isset($_POST['neueVersandart']) && (int)$_POST['neueVersandart'] > 0 && vali
     $Versandart->cSendConfirmationMail    = isset($_POST['cSendConfirmationMail'])
         ? $_POST['cSendConfirmationMail'] 
         : 'Y';
+    $Versandart->cIgnoreShippingProposal  = isset($_POST['cIgnoreShippingProposal'])
+        ? $_POST['cIgnoreShippingProposal']
+        : 'N';
     $Versandart->eSteuer                  = $_POST['eSteuer'];
     $Versandart->fPreis                   = (float)str_replace(',', '.', isset($_POST['fPreis'])
         ? $_POST['fPreis'] 

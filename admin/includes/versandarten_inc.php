@@ -134,7 +134,7 @@ function gibGesetzteVersandklassenUebersicht($cVersandklassen)
             }
         }
     }
-    if ($cVersandklassen == '-1') {
+    if (trim($cVersandklassen) == '-1') {
         $gesetzteVK[] = 'Alle';
     }
 

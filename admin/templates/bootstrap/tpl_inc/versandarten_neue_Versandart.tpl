@@ -255,7 +255,7 @@
                                 <selectX class="selectX2 form-control" name="Versandklassen"
                                          onchange="checkCombination();updateVK();"
                                          multiple>
-                                    <option value="-1">{#all#}</option>
+                                    <option value="-1">{#allCombinations#}</option>
                                     {foreach from=$versandKlassen item=vk}
                                         <option value="{$vk->kVersandklasse}">{$vk->cName}</option>
                                     {/foreach}
@@ -268,15 +268,33 @@
                                             class="glyphicon glyphicon-remove"></span></button>
                             </div>
                         </li>
-                        {if $Versandart->cVersandklassen != '-1'}
-                            {$aVK = ' '|explode:$Versandart->cVersandklassen}
-                            {foreach name="vKombi" from=$aVK item=VK}
+                        {$aVK = ' '|explode:$Versandart->cVersandklassen}
+                        {foreach name="vKombi" from=$aVK item=VK}
+                            {if $VK === '-1'}
+                                <li class="input-group">
+                                    <span class="input-group-wrap">
+                                        <select class="select2 form-control" name="Versandklassen"
+                                                onchange="checkCombination();updateVK();" multiple="multiple">
+                                            <option value="-1"{if $smarty.foreach.vKombi.iteration >1} disabled="disabled"{/if} selected>{#allCombinations#}</option>
+                                            {foreach from=$versandKlassen item=vk}
+                                                <option value="{$vk->kVersandklasse}">{$vk->cName}</option>
+                                            {/foreach}
+                                        </select>
+                                    </span>
+                                    <span class="input-group-addon">{getHelpDesc cDesc=#shippingclassDesc#}</span>
+                                    <div class="input-group-btn">
+                                        <button class="btn btn-danger" type="button"
+                                                onclick="$(this).parent().parent().detach(); updateVK();">
+                                            <span class="glyphicon glyphicon-remove"></span></button>
+                                    </div>
+                                </li>
+                            {else}
                                 {$vkID = '-'|explode:$VK}
                                 <li class="input-group">
                                     <span class="input-group-wrap">
                                         <select class="select2 form-control" name="Versandklassen"
                                                 onchange="checkCombination();updateVK();" multiple="multiple">
-                                            <option value="-1"{if $smarty.foreach.vKombi.iteration >1} disabled="disabled"{/if}>{#all#}</option>
+                                            <option value="-1"{if $smarty.foreach.vKombi.iteration >1} disabled="disabled"{/if}>{#allCombinations#}</option>
                                             {foreach from=$versandKlassen item=vk}
                                                 <option value="{$vk->kVersandklasse}"
                                                         {if $vk->kVersandklasse|in_array:$vkID}selected{/if}>{$vk->cName}</option>
@@ -290,8 +308,8 @@
                                             <span class="glyphicon glyphicon-remove"></span></button>
                                     </div>
                                 </li>
-                            {/foreach}
-                        {/if}
+                            {/if}
+                        {/foreach}
                     </ul>
                 </div>
                 <div class="panel-footer">

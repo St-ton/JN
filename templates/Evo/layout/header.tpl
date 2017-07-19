@@ -35,7 +35,7 @@
         {if !empty($Einstellungen.template.theme.favicon)}
             {if file_exists("{$currentTemplateDir}{$Einstellungen.template.theme.favicon}")}
                 <link type="image/x-icon" href="{$currentTemplateDir}{$Einstellungen.template.theme.favicon}"
-                      rel="shortcut icon">
+                    rel="shortcut icon">
             {else}
                 <link type="image/x-icon" href="{$currentTemplateDir}themes/base/images/{$Einstellungen.template.theme.favicon}" rel="shortcut icon">
             {/if}

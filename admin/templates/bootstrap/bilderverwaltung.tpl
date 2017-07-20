@@ -1,59 +1,90 @@
 {include file='tpl_inc/header.tpl'}
 {config_load file="$lang.conf" section="bilderverwaltung"}
+{$corruptedPics=[]}
 
 {include file='tpl_inc/seite_header.tpl' cTitel=#bilderverwaltung# cBeschreibung=#bilderverwaltungDesc# cDokuURL=#bilderverwaltungURL#}
 <div id="content">
     {if isset($success)}
         <div class="alert alert-success"><i class="fa fa-info-circle"></i> {$success}</div>
     {/if}
-    <div class="panel panel-default">
+    <div class="table-responsive">
+        <table class="list table" id="cache-items">
+            <thead>
+            <tr>
+                <th class="tleft">{#headlineTyp#}</th>
+                <th class="text-center">{#headlineTotal#}</th>
+                <th class="text-center abbr">{#headlineCache#}</th>
+                <th class="text-center">{#headlineCorrupted#}</th>
+                <th class="text-center" width="125">{#headlineSize#}</th>
+                <th class="text-center" width="200">{#headlineAction#}</th>
+            </tr>
+            </thead>
+            <tbody>
+            {foreach from=$items item="item"}
+                {$corruptedPics[{$item->name}] = $item->stats->corrupted}
+                <tr data-type="{$item->type}">
+                    <td class="item-name">{$item->name}</td>
+                    <td class="text-center">
+                        <span class="item-total">
+                          {$item->stats->total}
+                        </span>
+                    </td>
+                    <td class="text-center">
+                        <span class="item-generated">
+                          {(($item->stats->generated[$SIZE_XS] + $item->stats->generated[$SIZE_SM] + $item->stats->generated[$SIZE_MD] + $item->stats->generated[$SIZE_LG]) / 4)|round:0}
+                        </span>
+                        (
+                        <span class="item-fallback">
+                            {$item->stats->fallback}
+                        </span>
+                        )
+                    </td>
+                    <td class="text-center">
+                        <span class="item-corrupted">{$item->stats->corrupted}</span>
+                    </td>
+                    <td class="text-center item-total-size">
+                        <i class="fa fa-spinner fa-spin"></i>
+                    </td>
+                    <td class="text-center action-buttons">
+                        <div class="btn-group btn-group-xs" role="group">
+                            <a class="btn btn-default" href="#" data-callback="flush" data-type="{$item->type}"><i class="fa fa-trash-o"></i>{#deleteCachedPics#}</a>
+                            <a class="btn btn-default" href="#" data-callback="generate"><i class="fa fa-cog"></i>{#generatePics#}</a>
+                        </div>
+                    </td>
+                </tr>
+            {/foreach}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="footnote small text-muted">
+        <p>{#fallbackNote#}</p>
+    </div>
+
+    {if $corruptedPics.Produkte > 0}
+        <h3 class="top40">
+            {#currentCorruptedPics#}
+        </h3>
+        <p class="small text-muted">{#corruptedPicsNote#}</p>
         <div class="table-responsive">
-            <table class="list table" id="cache-items">
+            <table class="list table table-condensed">
                 <thead>
                 <tr>
-                    <th class="tleft">Typ</th>
-                    <th class="text-center">Insgesamt</th>
-                    <th class="text-center">Im Cache</th>
-                    <th class="text-center">Fehlerhaft</th>
-                    <th class="text-center" width="125">Gr&ouml;&szlig;e</th>
-                    <th class="text-center" width="300">Aktionen</th>
+                    <th>{#articlenr#}</th>
+                    <th>{#articlePic#}</th>
                 </tr>
                 </thead>
                 <tbody>
-                {foreach from=$items item="item"}
-                    <tr data-type="{$item->type}">
-                        <td class="item-name">{$item->name}</td>
-                        <td class="text-center">
-                            <span class="item-total">
-                              {$item->stats->total}
-                            </span>
-                        </td>
-                        <td class="text-center">
-                            <span class="item-generated">
-                              {(($item->stats->generated[$SIZE_XS] + $item->stats->generated[$SIZE_SM] + $item->stats->generated[$SIZE_MD] + $item->stats->generated[$SIZE_LG]) / 4)|round:0}
-                            </span>
-                        </td>
-                        <td class="text-center">
-                            <span class="item-corrupted">
-                              {$item->stats->corrupted}
-                            </span>
-                        </td>
-                        <td class="text-center item-total-size">
-                            <i class="fa fa-spinner fa-spin"></i>
-                        </td>
-                        <td class="text-center action-buttons">
-                            <div class="btn-group btn-group-xs" role="group">
-                                <a class="btn btn-default" href="#" data-callback="cleanup" data-type="{$item->type}"><i class="fa fa-trash-o"></i> Verwaiste l&ouml;schen</a>
-                                <a class="btn btn-default" href="#" data-callback="flush" data-type="{$item->type}"><i class="fa fa-trash-o"></i> Cache leeren</a>
-                                <a class="btn btn-default" href="#" data-callback="generate"><i class="fa fa-cog"></i> Generieren</a>
-                            </div>
-                        </td>
+                {foreach from=$details item="detail"}
+                    <tr>
+                        <td><a href="{$detail->articleURLFull}" rel="nofollow" target="_blank">{$detail->articleNr}</a></td>
+                        <td>{$detail->picture}</td>
                     </tr>
                 {/foreach}
                 </tbody>
             </table>
         </div>
-    </div>
+    {/if}
 </div>
 <script>
     {literal}

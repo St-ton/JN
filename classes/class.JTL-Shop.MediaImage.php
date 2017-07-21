@@ -149,35 +149,6 @@ class MediaImage implements IMedia
     }
 
     /**
-     * @param string $type
-     * @return array
-     */
-    public static function getDetails($type)
-    {
-        $corruptedImages = [];
-        $images = self::getImages($type);
-        foreach ($images as $image) {
-            $raw = $image->getRaw(true);
-            $fallback = $image->getFallbackThumb(Image::SIZE_XS);
-            if (!file_exists($raw) && !file_exists(PFAD_ROOT . $fallback)) {
-                $corruptedImage  = (object) [
-                    'articleNr'      => '',
-                    'articleURLFull' => '',
-                    'picture'        => ''
-                ];
-                $article                        = Shop::DB()->select('tartikel', 'kArtikel', $image->getId());
-                $article->cURLFull              = baueURL($article, URLART_ARTIKEL, 0, false, true);
-                $corruptedImage->articleNr      = $article->cArtNr;
-                $corruptedImage->articleURLFull = $article->cURLFull;
-                $corruptedImage->picture        = $image->getPath();
-                $corruptedImages[]              = $corruptedImage;
-            }
-        }
-
-        return $corruptedImages;
-    }
-
-    /**
      * @param string   $type
      * @param null|int $id
      */

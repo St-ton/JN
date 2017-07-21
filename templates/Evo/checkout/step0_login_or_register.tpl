@@ -4,7 +4,8 @@
  *}
 
 {if !empty($hinweis)}
-    <div class="alert alert-info">{$hinweis}</div>{/if}
+    <div class="alert alert-info">{$hinweis}</div>
+{/if}
 {if !empty($fehlendeAngaben) && !$hinweis}
     <div class="alert alert-danger">{lang key="yourDataDesc" section="account data"}</div>
 {/if}

@@ -10,6 +10,18 @@
     {/if}
 
     {include file="snippets/extension.tpl"}
+    {if !empty($hinweis)}
+        <div class="alert alert-info">{$hinweis}</div>
+    {/if}
+    {if !empty($fehlendeAngaben) && !$hinweis}
+        <div class="alert alert-danger">{lang key="yourDataDesc" section="account data"}</div>
+    {/if}
+    {if isset($fehlendeAngaben.email_vorhanden) && $fehlendeAngaben.email_vorhanden == 1}
+        <div class="alert alert-danger">{lang key="emailAlreadyExists" section="account data"}</div>
+    {/if}
+    {if isset($fehlendeAngaben.formular_zeit) && $fehlendeAngaben.formular_zeit == 1}
+        <div class="alert alert-danger">{lang key="formToFast" section="account data"}</div>
+    {/if}
     <div id="new_customer" class="row">
     <div class="col-xs-12">
         {if !isset($checkout) && empty($smarty.session.Kunde->kKunde)}

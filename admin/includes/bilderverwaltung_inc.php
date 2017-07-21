@@ -14,7 +14,7 @@ function getItems($filesize = false)
     $smarty->configLoad("german.conf", 'bilderverwaltung');
 
     $item = (object) [
-        'name'  => $smarty->config_vars["typArticle"],
+        'name'  => $smarty->config_vars["typeProduct"],
         'type'  => Image::TYPE_PRODUCT,
         'stats' => MediaImage::getStats(Image::TYPE_PRODUCT, $filesize)
     ];

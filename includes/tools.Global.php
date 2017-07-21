@@ -2979,7 +2979,8 @@ function gibGuenstigsteVersandkosten($cISO, $Artikel, $barzahlungZulassen, $kKun
     $versandpreis = 99999;
     $query = "SELECT *
             FROM tversandart
-            WHERE cLaender LIKE '%" . $cISO . "%'
+            WHERE cIgnoreShippingProposal != 'Y' 
+                AND cLaender LIKE '%" . $cISO . "%'
                 AND (cVersandklassen = '-1' 
                     OR cVersandklassen RLIKE '^([0-9 -]* )?" . $Artikel->kVersandklasse . " ')
                 AND (cKundengruppen = '-1' 

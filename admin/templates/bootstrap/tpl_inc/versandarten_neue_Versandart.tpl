@@ -156,6 +156,19 @@
 
                         <li class="input-group">
                             <span class="input-group-addon">
+                                <label for="cIgnoreShippingProposal">{#excludeShippingProposal#}</label>
+                            </span>
+                            <span class="input-group-wrap">
+                                <select name="cIgnoreShippingProposal" id="cIgnoreShippingProposal" class="form-control combo">
+                                    <option value="N" {if isset($Versandart->cIgnoreShippingProposal) && $Versandart->cIgnoreShippingProposal === 'N'}selected{/if}>{#no#}</option>
+                                    <option value="Y" {if isset($Versandart->cIgnoreShippingProposal) && $Versandart->cIgnoreShippingProposal === 'Y'}selected{/if}>{#yes#}</option>
+                                </select>
+                            </span>
+                            <span class="input-group-addon">{getHelpDesc cDesc=#excludeShippingProposalDesc#}</span>
+                        </li>
+
+                        <li class="input-group">
+                            <span class="input-group-addon">
                                 <label for="cNurAbhaengigeVersandart">{#onlyForOwnShippingPrices#}</label>
                             </span>
                             <span class="input-group-wrap">

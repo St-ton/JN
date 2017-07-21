@@ -99,10 +99,10 @@ class UstID
                     // Uhrzeit pruefen da die API Ruhezeit hat -.-
                     // Taeglich von 5 Uhr - 23 Uhr
                     if ((int)date('H') >= 5 && (int)date('H') < 23) {
-                        $cURL = 'http://evatr.bff-online.de/evatrRPC?UstId_1=' . urlencode($this->cUstId_1) . '&UstId_2=' .
-                            urlencode($this->cUstId_2) . '&Firmenname=' . urlencode($this->cFirmenname) . '&Ort=' . urlencode($this->cOrt) . '&PLZ=' .
-                            urlencode($this->cPLZ) . '&Strasse=' . urlencode($this->cStrasse . ' ' . $this->cHausnummer) . '&Druck=' . urlencode($this->cDruck);
-                        $xml = file_get_contents($cURL);
+                        $cURL = 'http://evatr.bff-online.de/evatrRPC?UstId_1=' . $this->cUstId_1 . '&UstId_2=' .
+                            $this->cUstId_2 . '&Firmenname=' . $this->cFirmenname . '&Ort=' . $this->cOrt . '&PLZ=' .
+                            $this->cPLZ . '&Strasse=' . $this->cStrasse . ' ' . $this->cHausnummer . '&Druck=' . $this->cDruck;
+                        $xml = file_get_contents(str_replace(' ', '%20', $cURL));
                         $this->cAntwort = XML_unserialize($xml);
                         $paramCount     = count($this->cAntwort['params']['param']);
                         for ($i = 0; $i < $paramCount; $i++) {
@@ -121,6 +121,7 @@ class UstID
                         return $nFehlerCode;
                     }
                     $this->mappeFehlerCode(999);
+
                     return 999;
                 }
 

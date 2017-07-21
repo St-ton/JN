@@ -104,6 +104,7 @@ class MediaImage implements IMedia
         $result = (object) [
             'total'     => 0,
             'corrupted' => 0,
+            'fallback'  => 0,
             'generated' => [
                 Image::SIZE_XS => 0,
                 Image::SIZE_SM => 0,
@@ -124,7 +125,12 @@ class MediaImage implements IMedia
             $raw = $image->getRaw(true);
             ++$result->total;
             if (!file_exists($raw)) {
-                ++$result->corrupted;
+                $fallback = $image->getFallbackThumb(Image::SIZE_XS);
+                if (file_exists(PFAD_ROOT . $fallback)) {
+                    ++$result->fallback;
+                } else {
+                    ++$result->corrupted;
+                }
             } else {
                 foreach ([Image::SIZE_XS, Image::SIZE_SM, Image::SIZE_MD, Image::SIZE_LG] as $size) {
                     $thumb = $image->getThumb($size, true);

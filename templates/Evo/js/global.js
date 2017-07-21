@@ -337,17 +337,17 @@ $(document).ready(function () {
         dataType: "json"
     });
 
-    $('#neukunde #plz, #new_customer #plz, #form-register #plz').change(function(){
+    $('#neukunde #plz, #new_customer #plz, #form-register #plz, #rechnungsdaten #plz').change(function(){
         citySuggestion.remote.url = 'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $('#country').val() + '", "' + $('#plz').val() + '"]}';
     });
-    $('#neukunde #country, #new_customer #country, #form-register #country').change(function(){
+    $('#neukunde #country, #new_customer #country, #form-register #country, #rechnungsdaten #country').change(function(){
         citySuggestion.remote.url = 'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $('#country').val() + '", "' + $('#plz').val() + '"]}';
     });
 
-    $('#neukunde #city, #new_customer #city, #form-register #city').typeahead(
+    $('#neukunde #city, #new_customer #city, #form-register #city, #rechnungsdaten #city').typeahead(
         {
             hint: true,
-            minLength: 1
+            minLength: 0
         },
         {
             name:       'cities',

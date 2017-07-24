@@ -212,5 +212,5 @@ function getCorruptedImages($type, $limit)
         $offset += count($images);
     } while(count($corruptedImages) < $limit && $offset < $totalImages);
 
-    return array_slice($corruptedImages, 0, $limit);
+    return [Image::TYPE_PRODUCT => array_slice($corruptedImages, 0, $limit)];
 }

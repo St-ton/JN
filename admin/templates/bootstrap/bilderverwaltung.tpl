@@ -1,5 +1,6 @@
 {include file='tpl_inc/header.tpl'}
-{$corruptedPics=[]}
+{$corruptedPicsTypes = []}
+{$corruptedPics = false}
 
 {include file='tpl_inc/seite_header.tpl' cTitel=#bilderverwaltung# cBeschreibung=#bilderverwaltungDesc# cDokuURL=#bilderverwaltungURL#}
 <div id="content">
@@ -20,7 +21,7 @@
             </thead>
             <tbody>
             {foreach from=$items item="item"}
-                {$corruptedPics[{$item->name}] = $item->stats->corrupted}
+                {$corruptedPicsTypes[{$item->type}] = $item->stats->corrupted}
                 <tr data-type="{$item->type}">
                     <td class="item-name">{$item->name}</td>
                     <td class="text-center">
@@ -60,61 +61,68 @@
         <p>{#fallbackNote#}</p>
     </div>
 
-    {$type = #typeProduct#}
-    {if $corruptedPics.$type > 0}
+    {foreach $corruptedPicsTypes as $corruptedPicsType}
+        {if $corruptedPicsType > 0}
+            {$corruptedPics = true}
+        {/if}
+    {/foreach}
+
+    {if $corruptedPics}
         <h3 class="top40">
             {#currentCorruptedPics#}
         </h3>
         <p class="small text-muted">{#corruptedPicsNote#}</p>
         <table class="list table table-condensed">
-            <thead>
-            <tr>
-                <th>{#articlePic#}</th>
-                <th>{#articlenr#}</th>
-            </tr>
-            </thead>
-            <tbody>
-            {foreach from=$corruptedImages key=key item="corruptedImage"}
+            {foreach $corruptedImagesByType as $corruptedImages}
+                <thead>
                 <tr>
-                    <td class="col-xs-6">{$corruptedImage->picture}</td>
-                    <td class="col-xs-6">
-                        {$moreCorruptedImages = false}
-                        <div class="input-group">
-                            {foreach name='corruptedImageArticle' from=$corruptedImage->article item="article"}
-                                {if $smarty.foreach.corruptedImageArticle.iteration <= 3}
-                                    <a href="{$article->articleURLFull}" rel="nofollow" target="_blank">
-                                        {$article->articleNr}
-                                    </a>
-                                    {if !$smarty.foreach.corruptedImageArticle.last
-                                    && $smarty.foreach.corruptedImageArticle.iteration < 3} |{/if}
-                                {else}
-                                    {$moreCorruptedImages = true}
-                                    {$moreCorruptedImage = $key}
-                                    {break}
-                                {/if}
-                            {/foreach}
-                            {if $moreCorruptedImages}
-                                <a class="btn btn-default btn-xs" data-toggle="collapse"
-                                    href="#dropdownCorruptedImages-{$moreCorruptedImage}"
-                                    aria-controls="dropdownCorruptedImages-{$moreCorruptedImage}">
-                                    {#more#} <span class="caret"></span>
-                                </a>
-                                <div class="collapse" id="dropdownCorruptedImages-{$moreCorruptedImage}">
-                                    {foreach name='corruptedImageArticle' from=$corruptedImage->article item="article"}
-                                        {if $smarty.foreach.corruptedImageArticle.iteration > 3}
-                                            <a href="{$article->articleURLFull}" rel="nofollow" target="_blank">
-                                                {$article->articleNr}
-                                            </a>
-                                            {if !$smarty.foreach.corruptedImageArticle.last} |{/if}
-                                        {/if}
-                                    {/foreach}
-                                </div>
-                            {/if}
-                        </div>
-                    </td>
+                    <th>{#articlePic#}</th>
+                    <th>{#articlenr#}</th>
                 </tr>
+                </thead>
+                <tbody>
+                {foreach from=$corruptedImages key=key item="corruptedImage"}
+                    <tr>
+                        <td class="col-xs-6">{$corruptedImage->picture}</td>
+                        <td class="col-xs-6">
+                            {$moreCorruptedImages = false}
+                            <div class="input-group">
+                                {foreach name='corruptedImageArticle' from=$corruptedImage->article item="article"}
+                                    {if $smarty.foreach.corruptedImageArticle.iteration <= 3}
+                                        <a href="{$article->articleURLFull}" rel="nofollow" target="_blank">
+                                            {$article->articleNr}
+                                        </a>
+                                        {if !$smarty.foreach.corruptedImageArticle.last
+                                        && $smarty.foreach.corruptedImageArticle.iteration < 3} |{/if}
+                                    {else}
+                                        {$moreCorruptedImages = true}
+                                        {$moreCorruptedImage = $key}
+                                        {break}
+                                    {/if}
+                                {/foreach}
+                                {if $moreCorruptedImages}
+                                    <a class="btn btn-default btn-xs" data-toggle="collapse"
+                                        href="#dropdownCorruptedImages-{$moreCorruptedImage}"
+                                        aria-controls="dropdownCorruptedImages-{$moreCorruptedImage}">
+                                        {#more#} <span class="caret"></span>
+                                    </a>
+                                    <div class="collapse" id="dropdownCorruptedImages-{$moreCorruptedImage}">
+                                        {foreach name='corruptedImageArticle' from=$corruptedImage->article item="article"}
+                                            {if $smarty.foreach.corruptedImageArticle.iteration > 3}
+                                                <a href="{$article->articleURLFull}" rel="nofollow" target="_blank">
+                                                    {$article->articleNr}
+                                                </a>
+                                                {if !$smarty.foreach.corruptedImageArticle.last} |{/if}
+                                            {/if}
+                                        {/foreach}
+                                    </div>
+                                {/if}
+                            </div>
+                        </td>
+                    </tr>
+                {/foreach}
+                </tbody>
             {/foreach}
-            </tbody>
         </table>
     {/if}
 </div>

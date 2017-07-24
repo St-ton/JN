@@ -60,7 +60,8 @@
         <p>{#fallbackNote#}</p>
     </div>
 
-    {if $corruptedPics.Produkte > 0}
+    {$type = #typeProduct#}
+    {if $corruptedPics.$type > 0}
         <h3 class="top40">
             {#currentCorruptedPics#}
         </h3>

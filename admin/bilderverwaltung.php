@@ -13,7 +13,7 @@ $oAccount->permission('ORDER_COUPON_VIEW', true, true);
 
 $smarty->configLoad("german.conf", 'bilderverwaltung')
     ->assign('items', getItems())
-    ->assign('corruptedImages', getCorruptedImages(Image::TYPE_PRODUCT, 50))
+    ->assign('corruptedImagesByType', getCorruptedImages(Image::TYPE_PRODUCT, 50))
     ->assign('TYPE_PRODUCT', Image::TYPE_PRODUCT)
     ->assign('SIZE_XS', Image::SIZE_XS)
     ->assign('SIZE_SM', Image::SIZE_SM)

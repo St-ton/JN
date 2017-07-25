@@ -164,10 +164,10 @@
             $('.switch-variations input[type="radio"], .switch-variations select', $wrapper)
                 .each(function(i, item) {
                     var $item   = $(item),
-                        wrapper = '#' + $item.closest('form').closest('div').attr('id');
+                        wrapper = '#' + $item.closest('form').closest('div[id]').attr('id');
 
                     $item.on('change', function () {
-                        that.variationSwitch($(this), true, wrapper);
+                        that.variationSwitch($(this), false, wrapper);
                     });
                 });
 
@@ -313,10 +313,17 @@
                     });
             }
 
-            $('.variations.simple-variations .variation', $wrapper)
-                .click(function() {
-                    imgSwitch(this, false);
-                });
+            $('#jump-to-votes-tab').click(function () {
+                $('#content a[href="#tab-votes"]').tab('show');
+            });
+            
+            if ($('.switch-variations').length == 1) {
+                this.variationSwitch(0, false);
+                $('.variations.simple-variations .variation', $wrapper)
+                    .click(function () {
+                        imgSwitch(this, false);
+                    });
+            }
 
             if (!isTouchCapable() || ResponsiveBootstrapToolkit.current() !== 'xs') {
                 $('.variations .variation', $wrapper)
@@ -342,7 +349,7 @@
 
         registerFinish: function($wrapper) {
             $('#jump-to-votes-tab', $wrapper).click(function () {
-                $('#content a[href="#tab-votes"]', $wrapper).tab('show');
+                $('#content a[href="#tab-votes"]').tab('show');
             });
 
             /*if ($('.switch-variations', $wrapper).length === 1) {
@@ -384,10 +391,27 @@
 
             $.ajax(url, {data: {'isAjax':1, 'quickView':1}})
                 .done(function(data) {
-                    var content = $('<div />')
-                        .html(data)
-                        .find(that.options.modal.wrapper)
-                        .html();
+                    var $html      = $('<div />').html(data);
+                    var $headerCSS = $html.find('link[type="text/css"]');
+                    var $headerJS  = $html.find('script[src][src!=""]');
+                    var content    = $html.find(that.options.modal.wrapper).html();
+
+                    $headerCSS.each(function (pos, item) {
+                        var $cssLink = $('head link[href="' + item.href + '"]');
+                        if ($cssLink.length === 0) {
+                            $('head').append('<link rel="stylesheet" type="text/css" href="' + item.href + '" >');
+                        }
+                    });
+
+                    $headerJS.each(function (pos, item) {
+                        if (typeof item.src !== 'undefined' && item.src.length > 0) {
+                            var $jsLink = $('head script[src="' + item.src + '"]');
+                            if ($jsLink.length === 0) {
+                                $('head').append('<script type="text/javascript" src="' + item.src + '" >');
+                            }
+                        }
+                    });
+
                     $modalBody.html($('<div id="' + id + '" />').html(content));
 
                     var $modal  = $modalBody.closest(".modal-dialog"),
@@ -451,7 +475,9 @@
                                 var errorlist = '<ul><li>' + response.cHints.join('</li><li>') + '</li></ul>';
                                 eModal.alert({
                                     title: response.cTitle,
-                                    message: errorlist
+                                    message: errorlist,
+                                    keyboard: true,
+                                    tabindex: -1
                                 });
                                 break;
                             case 1: // forwarding
@@ -461,7 +487,9 @@
                                 that.updateComparelist(response);
                                 eModal.alert({
                                     title: response.cTitle,
-                                    message: response.cNotification
+                                    message: response.cNotification,
+                                    keyboard: true,
+                                    tabindex: -1
                                 });
                                 break;
                         }
@@ -491,7 +519,9 @@
                                 var errorlist = '<ul><li>' + response.cHints.join('</li><li>') + '</li></ul>';
                                 eModal.alert({
                                     title: response.cTitle,
-                                    message: errorlist
+                                    message: errorlist,
+                                    keyboard: true,
+                                    tabindex: -1
                                 });
                                 break;
                             case 1: // forwarding
@@ -525,8 +555,10 @@
                     var url = e.currentTarget.href;
                     url += (url.indexOf('?') === -1) ? '?isAjax=true' : '&isAjax=true';
                     eModal.ajax({
-                        'size': 'lg',
-                        'url': url
+                        size: 'lg',
+                        url: url,
+                        keyboard: true,
+                        tabindex: -1
                     });
                     e.stopPropagation();
 
@@ -700,6 +732,10 @@
             }
         },
 
+        variationRefreshAll: function($wrapper) {
+            $('.variations select', $wrapper).selectpicker('refresh');
+        },
+
         getConfigGroupQuantity: function (groupId) {
             return $('.cfg-group[data-id="' + groupId + '"] .quantity');
         },
@@ -856,8 +892,9 @@
                     $.evo.extended().imagebox(wrapper);
                     $.evo.article().register(wrapper);
 
-                    $('*[data-toggle="basket-add"]', $wrapper).on('submit', function(event) {
+                    $('[data-toggle="basket-add"]', $(wrapper)).on('submit', function(event) {
                         event.preventDefault();
+                        event.stopPropagation();
 
                         var $form = $(this);
                         var data  = $form.serializeObject();
@@ -906,18 +943,14 @@
         variationSetVal: function(key, value, wrapper) {
             var $wrapper = this.getWrapper(wrapper);
 
-            $('[data-key="' + key + '"]', $wrapper).val(value)
-                .closest('select')
-                .selectpicker('refresh');
+            $('[data-key="' + key + '"]', $wrapper).val(value);
         },
 
         variationEnable: function(key, value, wrapper) {
             var $wrapper = this.getWrapper(wrapper),
                 $item    = $('[data-value="' + value + '"].variation', $wrapper);
 
-            $item.removeClass('not-available')
-                .closest('select')
-                .selectpicker('refresh');
+            $item.removeClass('not-available');
         },
 
         variationActive: function(key, value, def, wrapper) {
@@ -930,9 +963,6 @@
                 .prop('checked', true)
                 .end()
                 .prop('selected', true);
-
-            $item.closest('select')
-                .selectpicker('refresh');
 
             $('[data-id="'+key+'"].swatches-selected')
                 .text($item.attr('data-original'));
@@ -956,8 +986,6 @@
                         $item.data('content', label)
                             .attr('data-content', label);
 
-                        $item.closest('select')
-                            .selectpicker('refresh');
                         break;
                     case 'radio':
                         elem = $item.find('.label-not-available');
@@ -1043,6 +1071,8 @@
                 if (animation) {
                     $wrapper.addClass('loading');
                     $spinner = $.evo.extended().spinner();
+                } else {
+                    $('.variations #updatingStockInfo').show();
                 }
 
                 $current.addClass('loading');
@@ -1056,6 +1086,7 @@
                     if (animation) {
                         $spinner.stop();
                     }
+                    $('.variations #updatingStockInfo').hide();
                     if (error) {
                         $.evo.error('checkVarkombiDependencies');
                     }
@@ -1096,7 +1127,7 @@
 
             if (typeof this.modalView === 'undefined' || this.modalView === null) {
                 this.modalView = $(
-                    '<div id="' + this.options.modal.id + '" class="modal fade" role="dialog" >' +
+                    '<div id="' + this.options.modal.id + '" class="modal fade" role="dialog" tabindex="-1" >' +
                     '   <div class="modal-dialog modal-lg">' +
                     '       <div class="modal-content">' +
                     '           <div class="modal-header">' +

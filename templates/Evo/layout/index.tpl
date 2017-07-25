@@ -3,6 +3,8 @@
 {else}
     {if !isset($bAjaxRequest) || !$bAjaxRequest}
         {include file='layout/header.tpl'}
+    {else}
+        {include file='layout/modal_header.tpl'}
     {/if}
     {if !empty($Link->Sprache->cTitle)}
         <h1>{$Link->Sprache->cTitle}</h1>
@@ -57,5 +59,7 @@
     {/if}
     {if !isset($bAjaxRequest) || !$bAjaxRequest}
         {include file='layout/footer.tpl'}
+    {else}
+        {include file='layout/modal_footer.tpl'}
     {/if}
 {/if}

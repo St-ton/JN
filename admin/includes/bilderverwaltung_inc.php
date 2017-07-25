@@ -10,8 +10,11 @@
  */
 function getItems($filesize = false)
 {
+    $smarty = JTLSmarty::getInstance(false, true);
+    $smarty->configLoad("german.conf", 'bilderverwaltung');
+
     $item = (object) [
-        'name'  => 'Produkte',
+        'name'  => $smarty->config_vars["typeProduct"],
         'type'  => Image::TYPE_PRODUCT,
         'stats' => MediaImage::getStats(Image::TYPE_PRODUCT, $filesize)
     ];
@@ -168,4 +171,46 @@ function generateImageCache($type, $index)
     }
 
     return $result;
+}
+
+/**
+ * @param $type
+ * @param $limit
+ * @return array
+ */
+function getCorruptedImages($type, $limit)
+{
+    static $offset = 0;
+    $corruptedImages = [];
+    $totalImages = count(MediaImage::getImages($type));
+
+    do {
+        $images = MediaImage::getImages($type, false, $offset, $limit);
+        foreach ($images as $image) {
+            $raw = $image->getRaw(true);
+            $fallback = $image->getFallbackThumb(Image::SIZE_XS);
+            if (!file_exists($raw) && !file_exists(PFAD_ROOT . $fallback)) {
+                $corruptedImage  = (object) [
+                    'article' => [],
+                    'picture' => ''
+                ];
+                $articleDB           = Shop::DB()->select('tartikel', 'kArtikel', $image->getId());
+                $articleDB->cURLFull = baueURL($articleDB, URLART_ARTIKEL, 0, false, true);
+                $article             = (object) [
+                    'articleNr'      => $articleDB->cArtNr,
+                    'articleURLFull' => $articleDB->cURLFull
+                ];
+                $corruptedImage->article[] = $article;
+                $corruptedImage->picture   = $image->getPath();
+                if (array_key_exists($image->getPath(), $corruptedImages)) {
+                    $corruptedImages[$corruptedImage->picture]->article[] = $article;
+                } else {
+                    $corruptedImages[$corruptedImage->picture] = $corruptedImage;
+                }
+            }
+        }
+        $offset += count($images);
+    } while(count($corruptedImages) < $limit && $offset < $totalImages);
+
+    return [Image::TYPE_PRODUCT => array_slice($corruptedImages, 0, $limit)];
 }

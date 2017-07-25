@@ -71,6 +71,7 @@ body.no-bg {
     font-size: @font-size-small;
     padding-top: 5px;
     text-transform: initial;
+    line-height: @line-height-base;
 }
 
 .order-items .form-inline label, label.variation {
@@ -89,6 +90,7 @@ label {
             font-size: @font-size-base;
             text-transform: none;
             color: @input-color;
+            background-color: transparent;
         }
     }
 }
@@ -1094,6 +1096,11 @@ aside {
     dt, dd {
         line-height: 3;
     }
+}
+
+#updatingStockInfo{
+    position: absolute;
+    display: none;
 }
 
 #sortierenID {
@@ -2739,41 +2746,43 @@ div#add-to-cart {
 .image-box {
     width: 100%;
     overflow: hidden;
-
-    .image-content img {
-        display: inline-block;
-        max-width: 100%;
-        max-height: 100%;
-    }
-    .image-content {
-        display: inline-block;
-        height: 100%;
-        width: 100%;
-    }
-    &.loading {
-        opacity: 0.25;
-        background: transparent url("../images/loader.gif") no-repeat center center;
-    }
-    &.loaded {
-        background: none;
-        .image-content img {
-            opacity: 1;
-            visibility: visible;
-        }
-        &:before {
-            content: "";
-            display: block;
-            padding-top: 0;
-        }
+    &:before {
+        content: "";
+        display: block;
+        padding-top: 100%;
     }
     &.none {
         opacity: 0.2;
         background: transparent url("../images/placeholder.png") no-repeat center center;
     }
-    &:before {
-        content: "";
-        display: block;
-        padding-top: 100%;
+    &.loaded {
+        background: none;
+        &:before {
+            content: "";
+            display: block;
+            padding-top: 0;
+        }
+        .image-content {
+            display: inline-block;
+            img {
+                opacity: 1;
+                visibility: visible;
+            }
+        }
+    }
+    &.loading {
+        opacity: 0.25;
+        background: transparent url("../images/loader.gif") no-repeat center center;
+    }
+    .image-content {
+        display: none;
+        height: 100%;
+        width: 100%;
+        img {
+            display: inline-block;
+            max-width: 100%;
+            max-height: 100%;
+        }
     }
 }
 

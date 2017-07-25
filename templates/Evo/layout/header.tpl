@@ -33,8 +33,14 @@
 
     {block name="head-icons"}
         {if !empty($Einstellungen.template.theme.favicon)}
-            <link type="image/x-icon" href="{$currentTemplateDir}{$Einstellungen.template.theme.favicon}"
-                rel="shortcut icon">
+            {if file_exists("{$currentTemplateDir}{$Einstellungen.template.theme.favicon}")}
+                <link type="image/x-icon" href="{$currentTemplateDir}{$Einstellungen.template.theme.favicon}"
+                    rel="shortcut icon">
+            {else}
+                <link type="image/x-icon"
+                    href="{$currentTemplateDir}themes/base/images/{$Einstellungen.template.theme.favicon}"
+                        rel="shortcut icon">
+            {/if}
         {else}
             <link type="image/x-icon" href="favicon-default.ico" rel="shortcut icon">
         {/if}
@@ -106,7 +112,9 @@
 {block name="body-tag"}
 <body data-page="{$nSeitenTyp}" class="body-offcanvas"{if isset($Link) && !empty($Link->cIdentifier)} id="{$Link->cIdentifier}"{/if}>
 {/block}
+{block name="main-wrapper-starttag"}
 <div id="main-wrapper" class="main-wrapper{if $bExclusive} exclusive{/if}{if isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout === 'boxed'} boxed{else} fluid{/if}{if $hasLeftPanel} aside-active{/if}">
+{/block}
 {if !$bExclusive}
 
 {if isset($bAdminWartungsmodus) && $bAdminWartungsmodus}

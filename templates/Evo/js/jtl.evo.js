@@ -166,7 +166,7 @@
         },
 
         productTabsPriceFlow: function() {
-            $('a[href="#priceFlow"]').on('shown.bs.tab', function () {
+            $('a[href="#tab-priceFlow"]').on('shown.bs.tab', function () {
                 if (typeof window.priceHistoryChart !== 'undefined' && window.priceHistoryChart === null) {
                     window.priceHistoryChart = new Chart(window.ctx).Bar(window.chartData, {
                         responsive:      true,
@@ -246,6 +246,8 @@
                 buttons: false,
                 title: options.title, 
                 message: options.text,
+                keyboard: true,
+                tabindex: -1,
                 onShown: function() {
                     $.evo.extended().generateSlickSlider();
                 }
@@ -282,6 +284,8 @@
                 eModal.alert({
                     message: html,
                     title: title,
+                    keyboard: true,
+                    tabindex: -1,
                     onShown:function () {
                         //the modal just copies all the html.. so we got duplicate IDs which confuses recaptcha
                         var recaptcha = $('.tmp-modal-content .g-recaptcha');

@@ -22,7 +22,7 @@
 <option value="21" {if $nPage == 21}selected="selected"{/if}>Datenschutz</option>
 <option value="22" {if $nPage == 22}selected="selected"{/if}>Tagging</option>
 <option value="23" {if $nPage == 23}selected="selected"{/if}>Livesuche</option>
-<option value="24" {if $nPage == 24}selected="selected"{/if}>Hersteller</option>
+<option value="24" {if $nPage == 24}selected="selected"{/if}>Alle Hersteller</option>
 <option value="25" {if $nPage == 25}selected="selected"{/if}>Sitemap</option>
 <option value="26" {if $nPage == 26}selected="selected"{/if}>Gratis Geschenk </option>
 <option value="27" {if $nPage == 27}selected="selected"{/if}>WRB</option>

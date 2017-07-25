@@ -5,7 +5,7 @@
  */
 
 /**
- * Class MediaImageRequest
+ * Class MediaImageRequest.
  */
 class MediaImageRequest
 {
@@ -50,12 +50,18 @@ class MediaImageRequest
     public $ext;
 
     /**
+     * @var array
+     */
+    protected static $cache = [];
+
+    /**
      * @param array|object $mixed
+     *
      * @return MediaImageRequest
      */
     public static function create($mixed)
     {
-        $new = new self;
+        $new = new self();
 
         return $new->copy($mixed, $new);
     }
@@ -63,17 +69,18 @@ class MediaImageRequest
     /**
      * @param array|object      $mixed
      * @param MediaImageRequest $new
+     *
      * @return MediaImageRequest
      */
     public function copy(&$mixed, MediaImageRequest $new)
     {
-        $mixed = (object)$mixed;
+        $mixed = (object) $mixed;
         foreach ($mixed as $property => &$value) {
             $new->$property = &$value;
             unset($mixed->$property);
         }
         unset($value);
-        $mixed = (unset)$mixed;
+        $mixed = (unset) $mixed;
 
         return $new;
     }
@@ -83,7 +90,7 @@ class MediaImageRequest
      */
     public function getId()
     {
-        return (int)$this->id;
+        return (int) $this->id;
     }
 
     /**
@@ -127,7 +134,7 @@ class MediaImageRequest
      */
     public function getNumber()
     {
-        return max((int)$this->number, 1);
+        return max((int) $this->number, 1);
     }
 
     /**
@@ -135,7 +142,7 @@ class MediaImageRequest
      */
     public function getRatio()
     {
-        return max((int)$this->ratio, 1);
+        return max((int) $this->ratio, 1);
     }
 
     /**
@@ -167,6 +174,7 @@ class MediaImageRequest
 
     /**
      * @param bool $absolute
+     *
      * @return null|string
      */
     public function getRaw($absolute = false)
@@ -182,14 +190,15 @@ class MediaImageRequest
     /**
      * @param null|MediaImageSize $size
      * @param bool                $absolute
+     *
      * @return string
      */
     public function getThumb($size = null, $absolute = false)
     {
-        $size     = $size !== null
+        $size = $size !== null
             ? $size
             : $this->getSize();
-        $number   = $this->getNumber() > 1
+        $number = $this->getNumber() > 1
             ? '~' . $this->getNumber()
             : '';
         $settings = Image::getSettings();
@@ -204,11 +213,12 @@ class MediaImageRequest
 
     /**
      * @param null|string|MediaImageSize $size
+     *
      * @return string
      */
     public function getFallbackThumb($size = null)
     {
-        $size  = $size !== null
+        $size = $size !== null
             ? $size
             : $this->getSize();
 
@@ -217,6 +227,7 @@ class MediaImageRequest
 
     /**
      * @param null|string $size
+     *
      * @return string
      */
     public function getThumbUrl($size = null)
@@ -230,16 +241,45 @@ class MediaImageRequest
     public function getPathById()
     {
         $id     = $this->getId();
+        $type   = $this->getType();
         $number = $this->getNumber();
-        $item   = Shop::DB()->query("
+
+        if ($path = $this->cachedPath()) {
+            return $path;
+        }
+
+        $item = Shop::DB()->query("
           SELECT kArtikel AS id, nNr AS number, cPfad AS path
             FROM tartikelpict
             WHERE kArtikel = {$id} AND nNr = {$number} ORDER BY nNr LIMIT 1", 1
         );
 
-        return isset($item->path)
+        $path = isset($item->path)
             ? $item->path
             : null;
+
+        $this->cachedPath($path);
+
+        return $path;
+    }
+
+    /**
+     * @return string|null
+     */
+    protected function cachedPath($path = null)
+    {
+        $hash = sprintf('%s-%s-%s', $this->getId(),
+            $this->getNumber(), $this->getType());
+
+        if ($path === null) {
+            if (array_key_exists($hash, static::$cache)) {
+                return static::$cache[$hash];
+            }
+
+            return;
+        }
+
+        static::$cache[$hash] = $path;
     }
 
     /**
@@ -252,6 +292,7 @@ class MediaImageRequest
 
     /**
      * @param string $type
+     *
      * @return string
      */
     public static function getCachePath($type)

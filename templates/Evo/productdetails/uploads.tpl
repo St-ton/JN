@@ -45,24 +45,25 @@
                         {/if}
                         <div class="col-xs-6 word-break text-right">
                             <div id="queue{$smarty.foreach.schema.index}{$smarty.foreach.upload.index}" style="margin-bottom: 15px;" class="uploadifyMsg">
-                                <span class="current-upload{if $oUpload->bVorhanden} alert-success{/if}">
+                                <span class="current-upload small text-success">
                                     {if $oUpload->bVorhanden}
+                                        <i class="fa fa-check" aria-hidden="true"></i>
                                         {$oUpload->cDateiname} ({$oUpload->cDateigroesse})
                                     {/if}
                                 </span>
-                                {if isset($smarty.get.fillOut) && $smarty.get.fillOut == 12 && ($oUpload->nPflicht && !$oUpload->bVorhanden)}
-                                    <span class="alert-danger">
-                                        {lang key="selectUpdateFile"}
-                                    </span>
-                                {/if}
                             </div>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-xs-12">
-                            <div class="text-center" id="upload-{$smarty.foreach.schema.index}{$smarty.foreach.upload.index}">
-                                <input id="fileinput{$smarty.foreach.schema.index}{$smarty.foreach.upload.index}" type="file" multiple class="file-upload file-loading" />
-                                <div id="kv-error-{$smarty.foreach.schema.index}{$smarty.foreach.upload.index}" style="margin-top:10px; display:none;"></div>
+                            <div class="text-center
+                                {if isset($smarty.get.fillOut) && $smarty.get.fillOut == 12 && ($oUpload->nPflicht
+                                    && !$oUpload->bVorhanden)} upload-error{/if}"
+                                 id="upload-{$smarty.foreach.schema.index}{$smarty.foreach.upload.index}">
+                                <input id="fileinput{$smarty.foreach.schema.index}{$smarty.foreach.upload.index}"
+                                    type="file" multiple class="file-upload file-loading" />
+                                <div id="kv-error-{$smarty.foreach.schema.index}{$smarty.foreach.upload.index}"
+                                    style="margin-top:10px; display:none;"></div>
                             </div>
                             <script type="text/javascript">
                                 $(function () {ldelim}
@@ -93,13 +94,13 @@
                                             msgField = $('#queue{$smarty.foreach.schema.index}{$smarty.foreach.upload.index} .current-upload'),
                                             uploadMsgField = $('.uploadifyMsg');
                                         if (typeof data.response !== 'undefined' && typeof data.response.cName !== 'undefined') {
-                                            msgField.html(data.response.cName + ' (' + data.response.cKB + ' KB)');
+                                            msgField.html('<i class="fa fa-check" aria-hidden="true"></i>' + data.response.cName + ' (' + data.response.cKB + ' KB)');
                                         } else {
                                             msgField.html('{lang key="uploadError"}');
                                         }
                                         $('#msgWarning').hide();
                                         uploadMsgField.find('.alert-danger').hide();
-                                        uploadMsgField.find('.current-upload').addClass('alert-success');
+                                        $('#cart-form').find('.upload-error').removeClass('upload-error');
                                         ip.fileinput('reset');
                                         ip.fileinput('refresh');
                                         ip.fileinput('clear');

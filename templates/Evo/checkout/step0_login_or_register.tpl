@@ -15,24 +15,20 @@
     <div class="alert alert-danger">{lang key="formToFast" section="account data"}</div>
 {/if}
 <div id="register-customer" class="row">
-    <div id="existing-customer" class="col-xs-12 {if isset($boxes.left) && !$bExclusive && !empty($boxes.left)}col-md-3{else}col-md-4{/if}">
+    <div id="existing-customer" class="col-xs-12 col-md-3">
         <form method="post" action="{get_static_route id='bestellvorgang.php'}" class="form" id="order_register_or_login">
             {block name="checkout-login"}
-            <div class="panel panel-default">
-                <div class="panel-body">
-                    {block name="checkout-login-body"}
-                    <fieldset>
-                        {$jtl_token}
-                        <legend>{block name="checkout-login-title"}{lang key="alreadyCustomer" section="global"}{/block}</legend>
-                        {include file="register/form/customer_login.tpl"}
-                    </fieldset>
-                    {/block}
-                </div>
-            </div>
+                {block name="checkout-login-body"}
+                <fieldset>
+                    {$jtl_token}
+                    <legend>{block name="checkout-login-title"}{lang key="alreadyCustomer" section="global"}{/block}</legend>
+                    {include file="register/form/customer_login.tpl"}
+                </fieldset>
+                {/block}
             {/block}
         </form>
     </div>
-    <div id="customer" class="col-xs-12 {if isset($boxes.left) && !$bExclusive && !empty($boxes.left)}col-md-9{else}col-md-8{/if}">
+    <div id="customer" class="col-xs-12 col-md-9">
         <div>
             {include file='register/inc_vcard_upload.tpl' id='bestellvorgang.php'}
             <form method="post" action="{get_static_route id='bestellvorgang.php'}" class="form" id="form-register">

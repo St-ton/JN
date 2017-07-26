@@ -5,7 +5,11 @@
 
 <fieldset>
     <legend>
-        {lang key="address" section="account data"}
+        {if isset($checkout)}
+            {lang key="proceedNewCustomer" section="checkout"}
+        {else}
+            {lang key="address" section="account data"}
+        {/if}
     </legend>
     {* salutation / title *}
     <div class="row">

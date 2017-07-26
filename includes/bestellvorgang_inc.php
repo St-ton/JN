@@ -668,67 +668,69 @@ function gibStepZahlung()
         }
     }
 
-    $aktiveVersandart = gibAktiveVersandart($oVersandart_arr);
-    $oZahlungsart_arr = gibZahlungsarten($aktiveVersandart, $_SESSION['Kundengruppe']->kKundengruppe);
-    if (is_array($oZahlungsart_arr) && count($oZahlungsart_arr) === 1 &&
-        !isset($_GET['editZahlungsart']) && empty($_SESSION['TrustedShopsZahlung']) &&
-        isset($_POST['zahlungsartwahl']) && (int)$_POST['zahlungsartwahl'] === 1) {
-        // Prüfe Zahlungsart
-        $nZahglungsartStatus = zahlungsartKorrekt($oZahlungsart_arr[0]->kZahlungsart);
-        if ($nZahglungsartStatus === 2) {
-            // Prüfen ab es ein Trusted Shops Zertifikat gibt
-            if ($conf['trustedshops']['trustedshops_nutzen'] === 'Y') {
-                require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.TrustedShops.php';
-                $oTrustedShops = new TrustedShops(-1, StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
+    if (is_array($oVersandart_arr) && count($oVersandart_arr) > 0) {
+        $aktiveVersandart = gibAktiveVersandart($oVersandart_arr);
+        $oZahlungsart_arr = gibZahlungsarten($aktiveVersandart, $_SESSION['Kundengruppe']->kKundengruppe);
+        if (is_array($oZahlungsart_arr) && count($oZahlungsart_arr) === 1 &&
+            !isset($_GET['editZahlungsart']) && empty($_SESSION['TrustedShopsZahlung']) &&
+            isset($_POST['zahlungsartwahl']) && (int)$_POST['zahlungsartwahl'] === 1) {
+            // Prüfe Zahlungsart
+            $nZahglungsartStatus = zahlungsartKorrekt($oZahlungsart_arr[0]->kZahlungsart);
+            if ($nZahglungsartStatus === 2) {
+                // Prüfen ab es ein Trusted Shops Zertifikat gibt
+                if ($conf['trustedshops']['trustedshops_nutzen'] === 'Y') {
+                    require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.TrustedShops.php';
+                    $oTrustedShops = new TrustedShops(-1, StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
+                }
+                if (isset($oTrustedShops->tsId) &&
+                    $oTrustedShops->eType === TS_BUYERPROT_EXCELLENCE &&
+                    strlen($oTrustedShops->tsId) > 0
+                ) {
+                    $_SESSION['TrustedShopsZahlung'] = true;
+                    gibStepZahlung();
+                }
             }
-            if (isset($oTrustedShops->tsId) &&
-                $oTrustedShops->eType === TS_BUYERPROT_EXCELLENCE &&
-                strlen($oTrustedShops->tsId) > 0
-            ) {
-                $_SESSION['TrustedShopsZahlung'] = true;
-                gibStepZahlung();
+        } elseif (!is_array($oZahlungsart_arr) || count($oZahlungsart_arr) === 0) {
+            if (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
+                Jtllog::writeLog(utf8_decode(
+                    'Es konnte keine Zahlungsart für folgende Daten gefunden werden: Versandart: ' .
+                    $_SESSION['Versandart']->kVersandart . ', Kundengruppe: ' . $_SESSION['Kundengruppe']->kKundengruppe
+                ), JTLLOG_LEVEL_ERROR);
             }
         }
-    } elseif (!is_array($oZahlungsart_arr) || count($oZahlungsart_arr) === 0) {
-        if (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-            Jtllog::writeLog(utf8_decode(
-                'Es konnte keine Zahlungsart für folgende Daten gefunden werden: Versandart: ' .
-                $_SESSION['Versandart']->kVersandart . ', Kundengruppe: ' . $_SESSION['Kundengruppe']->kKundengruppe
-            ), JTLLOG_LEVEL_ERROR);
+
+        $aktiveVerpackung  = gibAktiveVerpackung($oVerpackung_arr);
+        $aktiveZahlungsart = gibAktiveZahlungsart($oZahlungsart_arr);
+        if (!isset($_SESSION['Versandart']) && !empty($aktiveVersandart)) {
+            // dieser Workaround verhindert die Anzeige der Standardzahlungsarten wenn ein Zahlungsplugin aktiv ist
+            $_SESSION['Versandart'] = (object)[
+                'kVersandart' => $aktiveVersandart,
+            ];
         }
+
+        Shop::Smarty()->assign('Zahlungsarten', $oZahlungsart_arr)
+            ->assign('Versandarten', $oVersandart_arr)
+            ->assign('Verpackungsarten', $oVerpackung_arr)
+            ->assign('AktiveVersandart', $aktiveVersandart)
+            ->assign('AktiveZahlungsart', $aktiveZahlungsart)
+            ->assign('AktiveVerpackung', $aktiveVerpackung)
+            ->assign('Kunde', $_SESSION['Kunde'])
+            ->assign('Lieferadresse', $_SESSION['Lieferadresse']);
+
+        executeHook(HOOK_BESTELLVORGANG_PAGE_STEPZAHLUNG);
+
+        /**
+         * This is for compatibility in 3-step checkout and will prevent form in form tags trough payment plugins
+         * @see /templates/Evo/checkout/step4_payment_options.tpl
+         * ToDo: Replace with more convenient solution in later versions (after 4.06)
+         */
+        $step4_payment_content = Shop::Smarty()->fetch('checkout/step4_payment_options.tpl');
+        if (preg_match('/<form([^>]*)>/', $step4_payment_content, $hits)) {
+            $step4_payment_content = str_replace($hits[0], '<div' . $hits[1] . '>', $step4_payment_content);
+            $step4_payment_content = str_replace('</form>', '</div>', $step4_payment_content);
+        }
+        Shop::Smarty()->assign('step4_payment_content', $step4_payment_content);
     }
-
-    $aktiveVerpackung  = gibAktiveVerpackung($oVerpackung_arr);
-    $aktiveZahlungsart = gibAktiveZahlungsart($oZahlungsart_arr);
-    if (!isset($_SESSION['Versandart']) && !empty($aktiveVersandart)) {
-        // dieser Workaround verhindert die Anzeige der Standardzahlungsarten wenn ein Zahlungsplugin aktiv ist
-        $_SESSION['Versandart'] = (object)[
-            'kVersandart' => $aktiveVersandart,
-        ];
-    }
-
-    Shop::Smarty()->assign('Zahlungsarten', $oZahlungsart_arr)
-        ->assign('Versandarten', $oVersandart_arr)
-        ->assign('Verpackungsarten', $oVerpackung_arr)
-        ->assign('AktiveVersandart', $aktiveVersandart)
-        ->assign('AktiveZahlungsart', $aktiveZahlungsart)
-        ->assign('AktiveVerpackung', $aktiveVerpackung)
-        ->assign('Kunde', $_SESSION['Kunde'])
-        ->assign('Lieferadresse', $_SESSION['Lieferadresse']);
-
-    executeHook(HOOK_BESTELLVORGANG_PAGE_STEPZAHLUNG);
-
-    /**
-     * This is for compatibility in 3-step checkout and will prevent form in form tags trough payment plugins
-     * @see /templates/Evo/checkout/step4_payment_options.tpl
-     * ToDo: Replace with more convenient solution in later versions (after 4.06)
-     */
-    $step4_payment_content = Shop::Smarty()->fetch('checkout/step4_payment_options.tpl');
-    if (preg_match('/<form([^>]*)>/', $step4_payment_content, $hits)) {
-        $step4_payment_content = str_replace($hits[0], '<div' . $hits[1] . '>', $step4_payment_content);
-        $step4_payment_content = str_replace('</form>', '</div>', $step4_payment_content);
-    }
-    Shop::Smarty()->assign('step4_payment_content', $step4_payment_content);
 }
 
 /**

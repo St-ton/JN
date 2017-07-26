@@ -356,11 +356,10 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
     KuponVerwendungen($Bestellung);
     // Kampagne
     if (isset($_SESSION['Kampagnenbesucher'])) {
-        $cUserAgent = isset($_SESSION['oBesucher']->cUserAgent) ? $_SESSION['oBesucher']->cUserAgent : null;
         // Verkauf
-        setzeKampagnenVorgang(KAMPAGNE_DEF_VERKAUF, $Bestellung->kBestellung, 1.0, $cUserAgent);
+        setzeKampagnenVorgang(KAMPAGNE_DEF_VERKAUF, $Bestellung->kBestellung, 1.0);
         // Verkaufssumme
-        setzeKampagnenVorgang(KAMPAGNE_DEF_VERKAUFSSUMME, $Bestellung->kBestellung, $Bestellung->fGesamtsumme, $cUserAgent);
+        setzeKampagnenVorgang(KAMPAGNE_DEF_VERKAUFSSUMME, $Bestellung->kBestellung, $Bestellung->fGesamtsumme);
     }
 
     executeHook(HOOK_BESTELLABSCHLUSS_INC_BESTELLUNGINDB_ENDE, [

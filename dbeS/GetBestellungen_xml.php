@@ -8,7 +8,7 @@ require_once __DIR__ . '/syncinclude.php';
 
 $return  = 3;
 $xml_obj = [];
-if (auth() || 1) {
+if (auth()) {
     $return = 0;
     $oBestellung_arr = Shop::DB()->query(
         "SELECT tbestellung.kBestellung, tbestellung.kWarenkorb, tbestellung.kKunde, tbestellung.kLieferadresse,

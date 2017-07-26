@@ -211,7 +211,27 @@ class MediaImage implements IMedia
             $thumbPath = $mediaReq->getThumb(null, true);
 
             if (!is_file($thumbPath)) {
-                Image::render($mediaReq, null);
+                $mixed = Shop::DB()->query(
+                    "SELECT a.kArtikel, a.cBarcode, a.cName, a.cArtNr, a.cSeo, ap.nNr
+                        FROM tartikel AS a
+                            JOIN tartikelpict AS ap
+                                ON ap.kArtikel = a.kArtikel
+                        WHERE
+                            a.kArtikel = " . (int)$mediaReq->id .
+                            ((int)$mediaReq->number > 0 ? " AND ap.nNr = " . (int)$mediaReq->number : ''),
+                    1
+                );
+
+                $correctedPath = MediaImage::getThumb(
+                    $mediaReq->type, $mediaReq->id, $mixed, $mediaReq->size, $mediaReq->number
+                );
+
+                if (PFAD_ROOT . $correctedPath === $thumbPath) {
+                    Image::render($mediaReq, null);
+                } else {
+                    header('Location: ' . Shop::getURL() . '/' . $correctedPath, true, 301);
+                    exit;
+                }
             }
 
             $imanee = new Imanee($thumbPath);

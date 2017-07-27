@@ -318,7 +318,6 @@
             });
             
             if ($('.switch-variations').length == 1) {
-                this.variationSwitch(0, false);
                 $('.variations.simple-variations .variation', $wrapper)
                     .click(function () {
                         imgSwitch(this, false);
@@ -352,9 +351,9 @@
                 $('#content a[href="#tab-votes"]').tab('show');
             });
 
-            /*if ($('.switch-variations', $wrapper).length === 1) {
+            if ($('.switch-variations', $wrapper).length === 1) {
                 this.variationSwitch($('.switch-variations', $wrapper), false, '#' + $wrapper.attr('id'));
-            }*/
+            }
 
             this.registerProductActions($wrapper);
         },

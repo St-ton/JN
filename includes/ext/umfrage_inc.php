@@ -404,7 +404,8 @@ function holeAktuelleUmfrage($kUmfrage)
                 AND tumfrage.kSprache = " . (int)$_SESSION['kSprache'] . "
                 AND (
                     cKundengruppe LIKE '%;-1;%' 
-                    OR cKundengruppe RLIKE '^([0-9;]*;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";'
+                    OR FIND_IN_SET('" . (int)$_SESSION['Kundengruppe']->kKundengruppe
+                        . "', REPLACE(cKundengruppe, ';', ',')) > 0
                     )
                 AND (
                     (dGueltigVon <= now() 
@@ -443,7 +444,8 @@ function holeUmfrageUebersicht()
                 AND tumfrage.kSprache = " . (int)$_SESSION['kSprache'] . "
                 AND (
                     cKundengruppe LIKE '%;-1;%' 
-                    OR cKundengruppe RLIKE '^([0-9;]*;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";'
+                    OR FIND_IN_SET('" . (int)$_SESSION['Kundengruppe']->kKundengruppe
+                        . "', REPLACE(cKundengruppe, ';', ',')) > 0
                     )
                 AND (
                     (dGueltigVon <= now() 

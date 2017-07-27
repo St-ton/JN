@@ -7,7 +7,7 @@ require_once PFAD_ROOT . PFAD_CLASSES_CORE . 'class.core.Shop.php';
 
 /**
  * @param string $nDatei
- * @param mixed $data
+ * @param mixed  $data
  */
 function baueSitemap($nDatei, $data)
 {
@@ -37,7 +37,9 @@ function baueSitemap($nDatei, $data)
 
 /**
  * @deprecated since 4.06
+ *
  * @param bool $ssl
+ *
  * @return mixed|string
  */
 function getSitemapBaseURL($ssl = false)
@@ -48,6 +50,7 @@ function getSitemapBaseURL($ssl = false)
 /**
  * @param string $nDatei
  * @param bool   $bGZ
+ *
  * @return string
  */
 function baueSitemapIndex($nDatei, $bGZ)
@@ -56,7 +59,7 @@ function baueSitemapIndex($nDatei, $bGZ)
     $conf    = Shop::getSettings([CONF_SITEMAP]);
     $cIndex  = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
     $cIndex .= '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
-    for ($i = 0; $i <= $nDatei; $i++) {
+    for ($i = 0; $i <= $nDatei; ++$i) {
         if ($bGZ) {
             $cIndex .= '<sitemap><loc>' .
                 StringHandler::htmlentities(utf8_encode($shopURL . '/' . PFAD_EXPORT . 'sitemap_' . $i . '.xml.gz')) .
@@ -86,6 +89,7 @@ function baueSitemapIndex($nDatei, $bGZ)
  * @param null|string $strPriority
  * @param string      $cGoogleImageURL
  * @param bool        $ssl
+ *
  * @return string
  */
 function makeURL(
@@ -95,25 +99,24 @@ function makeURL(
     $strPriority = null,
     $cGoogleImageURL = '',
     $ssl = false
-)
-{
+) {
     $strRet = "  <url>\n" .
-        "     <loc>" . StringHandler::htmlentities(utf8_encode(Shop::getURL($ssl))) . '/' .
+        '     <loc>' . StringHandler::htmlentities(utf8_encode(Shop::getURL($ssl))) . '/' .
         StringHandler::htmlentities(utf8_encode($strLoc)) . "</loc>\n";
     if (strlen($cGoogleImageURL) > 0) {
         $strRet .=
             "     <image:image>\n" .
-            "        <image:loc>" . StringHandler::htmlentities(utf8_encode($cGoogleImageURL)) . "</image:loc>\n" .
+            '        <image:loc>' . StringHandler::htmlentities(utf8_encode($cGoogleImageURL)) . "</image:loc>\n" .
             "     </image:image>\n";
     }
     if ($strLastMod) {
-        $strRet .= "     <lastmod>" . StringHandler::htmlentities($strLastMod) . "</lastmod>\n";
+        $strRet .= '     <lastmod>' . StringHandler::htmlentities($strLastMod) . "</lastmod>\n";
     }
     if ($strChangeFreq) {
-        $strRet .= "     <changefreq>" . StringHandler::htmlentities($strChangeFreq) . "</changefreq>\n";
+        $strRet .= '     <changefreq>' . StringHandler::htmlentities($strChangeFreq) . "</changefreq>\n";
     }
     if ($strPriority) {
-        $strRet .= "     <priority>" . StringHandler::htmlentities($strPriority) . "</priority>\n";
+        $strRet .= '     <priority>' . StringHandler::htmlentities($strPriority) . "</priority>\n";
     }
     $strRet .= "  </url>\n";
 
@@ -123,6 +126,7 @@ function makeURL(
 /**
  * @param string $cISO
  * @param array  $Sprachen
+ *
  * @return bool
  */
 function spracheEnthalten($cISO, $Sprachen)
@@ -143,6 +147,7 @@ function spracheEnthalten($cISO, $Sprachen)
 
 /**
  * @param string $cUrl
+ *
  * @return bool
  */
 function isSitemapBlocked($cUrl)
@@ -153,7 +158,7 @@ function isSitemapBlocked($cUrl)
         'jtl.php',
         'pass.php',
         'registrieren.php',
-        'warenkorb.php'
+        'warenkorb.php',
     ];
 
     foreach ($cExclude_arr as $cExclude) {
@@ -246,29 +251,29 @@ function generateSitemapXML()
         'merkmal'          => 0,
         'merkmalsprache'   => 0,
         'news'             => 0,
-        'newskategorie'    => 0
+        'newskategorie'    => 0,
     ];
     // Artikelübersicht - max. Artikel pro Seite
-    $nArtikelProSeite = ((int)$conf['artikeluebersicht']['artikeluebersicht_artikelproseite'] > 0)
-        ? (int)$conf['artikeluebersicht']['artikeluebersicht_artikelproseite']
+    $nArtikelProSeite = ((int) $conf['artikeluebersicht']['artikeluebersicht_artikelproseite'] > 0)
+        ? (int) $conf['artikeluebersicht']['artikeluebersicht_artikelproseite']
         : 20;
     if (isset($conf['artikeluebersicht']['artikeluebersicht_erw_darstellung']) &&
         $conf['artikeluebersicht']['artikeluebersicht_erw_darstellung'] === 'Y'
     ) {
         $nStdDarstellung = (isset($conf['artikeluebersicht']['artikeluebersicht_erw_darstellung_stdansicht']) &&
-                (int)$conf['artikeluebersicht']['artikeluebersicht_erw_darstellung_stdansicht'] > 0)
-            ? (int)$conf['artikeluebersicht']['artikeluebersicht_erw_darstellung_stdansicht']
+                (int) $conf['artikeluebersicht']['artikeluebersicht_erw_darstellung_stdansicht'] > 0)
+            ? (int) $conf['artikeluebersicht']['artikeluebersicht_erw_darstellung_stdansicht']
             : ERWDARSTELLUNG_ANSICHT_LISTE;
         if ($nStdDarstellung > 0) {
             switch ($nStdDarstellung) {
                 case ERWDARSTELLUNG_ANSICHT_LISTE:
-                    $nArtikelProSeite = (int)$conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung1'];
+                    $nArtikelProSeite = (int) $conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung1'];
                     break;
                 case ERWDARSTELLUNG_ANSICHT_GALERIE:
-                    $nArtikelProSeite = (int)$conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung2'];
+                    $nArtikelProSeite = (int) $conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung2'];
                     break;
                 case ERWDARSTELLUNG_ANSICHT_MOSAIK:
-                    $nArtikelProSeite = (int)$conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung3'];
+                    $nArtikelProSeite = (int) $conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung3'];
                     break;
             }
         }
@@ -292,10 +297,10 @@ function generateSitemapXML()
         $andWhere .= ' AND tartikel.kVaterArtikel = 0';
     }
     // Artikelanzeigefilter
-    if ((int)$conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER) {
+    if ((int) $conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER) {
         // 'Nur Artikel mit Lagerbestand>0 anzeigen'
         $andWhere .= " AND (tartikel.cLagerBeachten = 'N' OR tartikel.fLagerbestand > 0)";
-    } elseif ((int)$conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL) {
+    } elseif ((int) $conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL) {
         // 'Nur Artikel mit Lagerbestand>0 oder deren Lagerbestand<0 werden darf'
         $andWhere .= " AND (tartikel.cLagerBeachten = 'N' OR tartikel.cLagerKleinerNull = 'Y' OR
             tartikel.fLagerbestand > 0)";
@@ -304,37 +309,39 @@ function generateSitemapXML()
     $modification = ($conf['sitemap']['sitemap_insert_lastmod'] === 'Y') ?
         ', tartikel.dLetzteAktualisierung' :
         '';
-    $strSQL = "SELECT tartikel.kArtikel, tartikel.cName, tseo.cSeo, tartikel.cArtNr" . $modification .
-            " FROM tartikel
+    $strSQL = 'SELECT tartikel.kArtikel, tartikel.cName, tseo.cSeo, tartikel.cArtNr' . $modification .
+            ' FROM tartikel
             LEFT JOIN tartikelsichtbarkeit ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-               AND tartikelsichtbarkeit.kKundengruppe = " . $stdKundengruppe->kKundengruppe .
+               AND tartikelsichtbarkeit.kKundengruppe = ' . $stdKundengruppe->kKundengruppe .
             " LEFT JOIN tseo ON tseo.cKey = 'kArtikel'
                AND tseo.kKey = tartikel.kArtikel
-                AND tseo.kSprache = " . $Sprache->kSprache . "
-            WHERE tartikelsichtbarkeit.kArtikel IS NULL" . $andWhere;
+                AND tseo.kSprache = " . $Sprache->kSprache . '
+            WHERE tartikelsichtbarkeit.kArtikel IS NULL' . $andWhere;
     $res = Shop::DB()->query($strSQL, 10);
     while ($oArtikel = $res->fetch(PDO::FETCH_OBJ)) {
         if ($nSitemap > $nSitemapLimit) {
             $nSitemap = 1;
             baueSitemap($nDatei, $sitemap_data);
-            $nDatei++;
+            ++$nDatei;
             $nAnzahlURL_arr[$nDatei] = 0;
             $sitemap_data            = '';
         }
         // GoogleImages einbinden?
         $cGoogleImage = '';
         if (isset($conf['sitemap']['sitemap_googleimage_anzeigen']) &&
-            $conf['sitemap']['sitemap_googleimage_anzeigen'] === 'Y' &&
-            MediaImage::hasImage(Image::TYPE_PRODUCT, $oArtikel->kArtikel)
+            $conf['sitemap']['sitemap_googleimage_anzeigen'] === 'Y'
         ) {
-            $cGoogleImage = MediaImage::getThumb(
-                Image::TYPE_PRODUCT,
-                $oArtikel->kArtikel,
-                $oArtikel,
-                Image::SIZE_LG
-            );
-            if (strlen($cGoogleImage) > 0) {
-                $cGoogleImage = $shopURL . '/' . $cGoogleImage;
+            if (($number = MediaImage::getPrimaryNumber(Image::TYPE_PRODUCT, $oArtikel->kArtikel)) !== null) {
+                $cGoogleImage = MediaImage::getThumb(
+                    Image::TYPE_PRODUCT,
+                    $oArtikel->kArtikel,
+                    $oArtikel,
+                    Image::SIZE_LG,
+                    $number
+                );
+                if (strlen($cGoogleImage) > 0) {
+                    $cGoogleImage = $shopURL . '/' . $cGoogleImage;
+                }
             }
         }
         $cUrl = baueURL($oArtikel, URLART_ARTIKEL);
@@ -349,12 +356,12 @@ function generateSitemapXML()
                 PRIO_HIGH,
                 $cGoogleImage
             );
-            $nSitemap++;
+            ++$nSitemap;
             if (!isset($nAnzahlURL_arr[$nDatei])) {
                 $nAnzahlURL_arr[$nDatei] = 0;
             }
-            $nAnzahlURL_arr[$nDatei]++;
-            $nStat_arr['artikelbild']++;
+            ++$nAnzahlURL_arr[$nDatei];
+            ++$nStat_arr['artikelbild'];
         }
     }
     //Artikel sonstige Sprachen
@@ -362,26 +369,26 @@ function generateSitemapXML()
         if ($SpracheTMP->kSprache == $Sprache->kSprache) {
             continue;
         }
-        $strSQL = "SELECT tartikel.kArtikel, tartikel.dLetzteAktualisierung, tseo.cSeo
+        $strSQL = 'SELECT tartikel.kArtikel, tartikel.dLetzteAktualisierung, tseo.cSeo
                FROM tartikelsprache, tartikel
                LEFT JOIN tartikelsichtbarkeit 
                   ON tartikel.kArtikel=tartikelsichtbarkeit.kArtikel
-                  AND tartikelsichtbarkeit.kKundengruppe = " . $stdKundengruppe->kKundengruppe . "
+                  AND tartikelsichtbarkeit.kKundengruppe = ' . $stdKundengruppe->kKundengruppe . "
                LEFT JOIN tseo 
                   ON tseo.cKey = 'kArtikel'
                   AND tseo.kKey = tartikel.kArtikel
-                  AND tseo.kSprache = " . $SpracheTMP->kSprache . "
+                  AND tseo.kSprache = " . $SpracheTMP->kSprache . '
                WHERE tartikelsichtbarkeit.kArtikel IS NULL
                   AND tartikel.kArtikel = tartikelsprache.kArtikel
                   AND tartikel.kVaterArtikel = 0 
-                  AND tartikelsprache.kSprache = " . $SpracheTMP->kSprache . "
-               ORDER BY tartikel.kArtikel";
+                  AND tartikelsprache.kSprache = ' . $SpracheTMP->kSprache . '
+               ORDER BY tartikel.kArtikel';
         $res = Shop::DB()->query($strSQL, 10);
         while ($oArtikel = $res->fetch(PDO::FETCH_OBJ)) {
             if ($nSitemap > $nSitemapLimit) {
                 $nSitemap = 1;
                 baueSitemap($nDatei, $sitemap_data);
-                $nDatei++;
+                ++$nDatei;
                 $nAnzahlURL_arr[$nDatei] = 0;
                 $sitemap_data            = '';
             }
@@ -394,9 +401,9 @@ function generateSitemapXML()
                         FREQ_DAILY,
                         PRIO_HIGH
                     );
-                    $nSitemap++;
-                    $nAnzahlURL_arr[$nDatei]++;
-                    $nStat_arr['artikelsprache']++;
+                    ++$nSitemap;
+                    ++$nAnzahlURL_arr[$nDatei];
+                    ++$nStat_arr['artikelsprache'];
                 }
             }
         }
@@ -418,7 +425,7 @@ function generateSitemapXML()
                         AND tlinkgruppe.cTemplatename != 'hidden'
                         AND (tlink.cKundengruppen IS NULL
                           OR tlink.cKundengruppen = 'NULL'
-                          OR tlink.cKundengruppen RLIKE '^([0-9;]*;)?" . $stdKundengruppe->kKundengruppe . ";')
+                          OR FIND_IN_SET('{$stdKundengruppe->kKundengruppe}', REPLACE(tlink.cKundengruppen, ';', ',')) > 0)
                      ORDER BY tlinksprache.kLink";
 
         $res = Shop::DB()->query($strSQL, 10);
@@ -428,8 +435,8 @@ function generateSitemapXML()
                     SELECT cSeo
                         FROM tseo
                         WHERE cKey = 'kLink'
-                            AND kKey = " . $tlink->kLink . "
-                            AND kSprache = " . $oSpracheAssoc_arr[$tlink->cISOSprache], 1
+                            AND kKey = " . $tlink->kLink . '
+                            AND kSprache = ' . $oSpracheAssoc_arr[$tlink->cISOSprache], 1
                 );
                 if (isset($oSeo->cSeo) && strlen($oSeo->cSeo) > 0) {
                     $tlink->cSeo = $oSeo->cSeo;
@@ -439,7 +446,7 @@ function generateSitemapXML()
                     if ($nSitemap > $nSitemapLimit) {
                         $nSitemap = 1;
                         baueSitemap($nDatei, $sitemap_data);
-                        $nDatei++;
+                        ++$nDatei;
                         $nAnzahlURL_arr[$nDatei] = 0;
                         $sitemap_data            = '';
                     }
@@ -454,10 +461,10 @@ function generateSitemapXML()
                         $link = $tlink->cSeo;
                     }
                     if (!isSitemapBlocked($link)) {
-                        $sitemap_data .= makeURL($link, null, FREQ_MONTHLY, PRIO_LOW, '', (int)$tlink->bSSL === 2);
-                        $nSitemap++;
-                        $nAnzahlURL_arr[$nDatei]++;
-                        $nStat_arr['link']++;
+                        $sitemap_data .= makeURL($link, null, FREQ_MONTHLY, PRIO_LOW, '', (int) $tlink->bSSL === 2);
+                        ++$nSitemap;
+                        ++$nAnzahlURL_arr[$nDatei];
+                        ++$nStat_arr['link'];
                     }
                 }
             }
@@ -476,9 +483,9 @@ function generateSitemapXML()
                  LEFT JOIN tseo 
                     ON tseo.cKey = 'kKategorie'
                     AND tseo.kKey = tkategorie.kKategorie
-                    AND tseo.kSprache = " . $Sprache->kSprache . "
+                    AND tseo.kSprache = " . $Sprache->kSprache . '
                  WHERE tkategoriesichtbarkeit.kKategorie IS NULL
-                 ORDER BY tkategorie.kKategorie";
+                 ORDER BY tkategorie.kKategorie';
         $res = Shop::DB()->query($strSQL, 10);
         while ($tkategorie = $res->fetch(PDO::FETCH_OBJ)) {
             if (($seoAktiv && strlen($tkategorie->cSeo) > 0) || !$seoAktiv) {
@@ -499,15 +506,15 @@ function generateSitemapXML()
                             if ($nSitemap > $nSitemapLimit) {
                                 $nSitemap = 1;
                                 baueSitemap($nDatei, $sitemap_data);
-                                $nDatei++;
+                                ++$nDatei;
                                 $nAnzahlURL_arr[$nDatei] = 0;
                                 $sitemap_data            = '';
                             }
                             if (!isSitemapBlocked($cURL)) {
                                 $sitemap_data .= $cURL;
-                                $nSitemap++;
-                                $nAnzahlURL_arr[$nDatei]++;
-                                $nStat_arr['kategorie']++;
+                                ++$nSitemap;
+                                ++$nAnzahlURL_arr[$nDatei];
+                                ++$nStat_arr['kategorie'];
                             }
                         }
                     }
@@ -516,19 +523,19 @@ function generateSitemapXML()
         }
         //Kategorien sonstige Sprachen
         foreach ($Sprachen as $SpracheTMP) {
-            $strSQL = "SELECT tkategorie.kKategorie, tkategorie.dLetzteAktualisierung, tseo.cSeo
+            $strSQL = 'SELECT tkategorie.kKategorie, tkategorie.dLetzteAktualisierung, tseo.cSeo
                       FROM tkategoriesprache, tkategorie
                       LEFT JOIN tkategoriesichtbarkeit 
                           ON tkategorie.kKategorie=tkategoriesichtbarkeit.kKategorie
-                          AND tkategoriesichtbarkeit.kKundengruppe = " . $stdKundengruppe->kKundengruppe . "
+                          AND tkategoriesichtbarkeit.kKundengruppe = ' . $stdKundengruppe->kKundengruppe . "
                       LEFT JOIN tseo 
                           ON tseo.cKey = 'kKategorie'
                           AND tseo.kKey = tkategorie.kKategorie
-                          AND tseo.kSprache = " . $SpracheTMP->kSprache . "
+                          AND tseo.kSprache = " . $SpracheTMP->kSprache . '
                       WHERE tkategoriesichtbarkeit.kKategorie IS NULL
                           AND tkategorie.kKategorie = tkategoriesprache.kKategorie
-                          AND tkategoriesprache.kSprache = " . $SpracheTMP->kSprache . "
-                      ORDER BY tkategorie.kKategorie";
+                          AND tkategoriesprache.kSprache = ' . $SpracheTMP->kSprache . '
+                      ORDER BY tkategorie.kKategorie';
             $res = Shop::DB()->query($strSQL, 10);
             while ($tkategorie = $res->fetch(PDO::FETCH_OBJ)) {
                 if (($seoAktiv && strlen($tkategorie->cSeo) > 0) || !$seoAktiv) {
@@ -549,15 +556,15 @@ function generateSitemapXML()
                                 if ($nSitemap > $nSitemapLimit) {
                                     $nSitemap = 1;
                                     baueSitemap($nDatei, $sitemap_data);
-                                    $nDatei++;
+                                    ++$nDatei;
                                     $nAnzahlURL_arr[$nDatei] = 0;
                                     $sitemap_data            = '';
                                 }
                                 if (!isSitemapBlocked($cURL)) {
                                     $sitemap_data .= $cURL;
-                                    $nSitemap++;
-                                    $nAnzahlURL_arr[$nDatei]++;
-                                    $nStat_arr['kategoriesprache']++;
+                                    ++$nSitemap;
+                                    ++$nAnzahlURL_arr[$nDatei];
+                                    ++$nStat_arr['kategoriesprache'];
                                 }
                             }
                         }
@@ -574,10 +581,10 @@ function generateSitemapXML()
                LEFT JOIN tseo 
                   ON tseo.cKey = 'kTag'
                   AND tseo.kKey = ttag.kTag
-                  AND tseo.kSprache = " . $Sprache->kSprache . "
-               WHERE ttag.kSprache = " . $Sprache->kSprache . "
+                  AND tseo.kSprache = " . $Sprache->kSprache . '
+               WHERE ttag.kSprache = ' . $Sprache->kSprache . '
                   AND ttag.nAktiv = 1
-               ORDER BY ttag.kTag", 10
+               ORDER BY ttag.kTag', 10
         );
         while ($oTag = $res->fetch(PDO::FETCH_OBJ)) {
             if (($seoAktiv && strlen($oTag->cSeo) > 0) || !$seoAktiv) {
@@ -588,15 +595,15 @@ function generateSitemapXML()
                         if ($nSitemap > $nSitemapLimit) {
                             $nSitemap = 1;
                             baueSitemap($nDatei, $sitemap_data);
-                            $nDatei++;
+                            ++$nDatei;
                             $nAnzahlURL_arr[$nDatei] = 0;
                             $sitemap_data            = '';
                         }
                         if (!isSitemapBlocked($cURL)) {
                             $sitemap_data .= $cURL;
-                            $nSitemap++;
-                            $nAnzahlURL_arr[$nDatei]++;
-                            $nStat_arr['tag']++;
+                            ++$nSitemap;
+                            ++$nAnzahlURL_arr[$nDatei];
+                            ++$nStat_arr['tag'];
                         }
                     }
                 }
@@ -614,10 +621,10 @@ function generateSitemapXML()
                       LEFT JOIN tseo 
                           ON tseo.cKey = 'kTag'
                           AND tseo.kKey = ttag.kTag
-                          AND tseo.kSprache = " . (int)$SpracheTMP->kSprache . "
-                      WHERE ttag.kSprache = " . (int)$SpracheTMP->kSprache . "
+                          AND tseo.kSprache = " . (int) $SpracheTMP->kSprache . '
+                      WHERE ttag.kSprache = ' . (int) $SpracheTMP->kSprache . '
                           AND ttag.nAktiv = 1
-                      ORDER BY ttag.kTag", 10
+                      ORDER BY ttag.kTag', 10
             );
             while ($oTag = $res->fetch(PDO::FETCH_OBJ)) {
                 if (($seoAktiv && strlen($oTag->cSeo) > 0) || !$seoAktiv) {
@@ -629,15 +636,15 @@ function generateSitemapXML()
                             if ($nSitemap > $nSitemapLimit) {
                                 $nSitemap = 1;
                                 baueSitemap($nDatei, $sitemap_data);
-                                $nDatei++;
+                                ++$nDatei;
                                 $nAnzahlURL_arr[$nDatei] = 0;
                                 $sitemap_data            = '';
                             }
                             if (!isSitemapBlocked($cURL)) {
                                 $sitemap_data .= $cURL;
-                                $nSitemap++;
-                                $nAnzahlURL_arr[$nDatei]++;
-                                $nStat_arr['tagsprache']++;
+                                ++$nSitemap;
+                                ++$nAnzahlURL_arr[$nDatei];
+                                ++$nStat_arr['tagsprache'];
                             }
                         }
                     }
@@ -654,8 +661,8 @@ function generateSitemapXML()
                  FROM thersteller
                  LEFT JOIN tseo ON tseo.cKey = 'kHersteller'
                     AND tseo.kKey = thersteller.kHersteller
-                    AND tseo.kSprache = " . (int)$Sprache->kSprache . "
-                 ORDER BY thersteller.kHersteller", 10
+                    AND tseo.kSprache = " . (int) $Sprache->kSprache . '
+                 ORDER BY thersteller.kHersteller', 10
         );
 
         while ($oHersteller = $res->fetch(PDO::FETCH_OBJ)) {
@@ -667,15 +674,15 @@ function generateSitemapXML()
                         if ($nSitemap > $nSitemapLimit) {
                             $nSitemap = 1;
                             baueSitemap($nDatei, $sitemap_data);
-                            $nDatei++;
+                            ++$nDatei;
                             $nAnzahlURL_arr[$nDatei] = 0;
                             $sitemap_data            = '';
                         }
                         if (!isSitemapBlocked($cURL)) {
                             $sitemap_data .= $cURL;
-                            $nSitemap++;
-                            $nAnzahlURL_arr[$nDatei]++;
-                            $nStat_arr['hersteller']++;
+                            ++$nSitemap;
+                            ++$nAnzahlURL_arr[$nDatei];
+                            ++$nStat_arr['hersteller'];
                         }
                     }
                 }
@@ -691,10 +698,10 @@ function generateSitemapXML()
                  FROM tsuchanfrage
                  LEFT JOIN tseo ON tseo.cKey = 'kSuchanfrage'
                     AND tseo.kKey = tsuchanfrage.kSuchanfrage
-                    AND tseo.kSprache = " . (int)$Sprache->kSprache . "
-                 WHERE tsuchanfrage.kSprache = " . (int)$Sprache->kSprache . "
+                    AND tseo.kSprache = " . (int) $Sprache->kSprache . '
+                 WHERE tsuchanfrage.kSprache = ' . (int) $Sprache->kSprache . '
                     AND tsuchanfrage.nAktiv = 1
-                 ORDER BY tsuchanfrage.kSuchanfrage", 10
+                 ORDER BY tsuchanfrage.kSuchanfrage', 10
         );
         while ($oSuchanfrage = $res->fetch(PDO::FETCH_OBJ)) {
             if (($seoAktiv && strlen($oSuchanfrage->cSeo) > 0) || !$seoAktiv) {
@@ -706,15 +713,15 @@ function generateSitemapXML()
                         if ($nSitemap > $nSitemapLimit) {
                             $nSitemap = 1;
                             baueSitemap($nDatei, $sitemap_data);
-                            $nDatei++;
+                            ++$nDatei;
                             $nAnzahlURL_arr[$nDatei] = 0;
                             $sitemap_data            = '';
                         }
                         if (!isSitemapBlocked($cURL)) {
                             $sitemap_data .= $cURL;
-                            $nSitemap++;
-                            $nAnzahlURL_arr[$nDatei]++;
-                            $nStat_arr['livesuche']++;
+                            ++$nSitemap;
+                            ++$nAnzahlURL_arr[$nDatei];
+                            ++$nStat_arr['livesuche'];
                         }
                     }
                 }
@@ -731,10 +738,10 @@ function generateSitemapXML()
                      FROM tsuchanfrage
                      LEFT JOIN tseo ON tseo.cKey = 'kSuchanfrage'
                         AND tseo.kKey = tsuchanfrage.kSuchanfrage
-                        AND tseo.kSprache = " . (int)$SpracheTMP->kSprache . "
-                     WHERE tsuchanfrage.kSprache = " . (int)$SpracheTMP->kSprache . "
+                        AND tseo.kSprache = " . (int) $SpracheTMP->kSprache . '
+                     WHERE tsuchanfrage.kSprache = ' . (int) $SpracheTMP->kSprache . '
                         AND tsuchanfrage.nAktiv = 1
-                     ORDER BY tsuchanfrage.kSuchanfrage", 10
+                     ORDER BY tsuchanfrage.kSuchanfrage', 10
             );
             while ($oSuchanfrage = $res->fetch(PDO::FETCH_OBJ)) {
                 if (($seoAktiv && strlen($oSuchanfrage->cSeo) > 0) || !$seoAktiv) {
@@ -746,15 +753,15 @@ function generateSitemapXML()
                             if ($nSitemap > $nSitemapLimit) {
                                 $nSitemap = 1;
                                 baueSitemap($nDatei, $sitemap_data);
-                                $nDatei++;
+                                ++$nDatei;
                                 $nAnzahlURL_arr[$nDatei] = 0;
                                 $sitemap_data            = '';
                             }
                             if (!isSitemapBlocked($cURL)) {
                                 $sitemap_data .= $cURL;
-                                $nSitemap++;
-                                $nAnzahlURL_arr[$nDatei]++;
-                                $nStat_arr['livesuchesprache']++;
+                                ++$nSitemap;
+                                ++$nAnzahlURL_arr[$nDatei];
+                                ++$nStat_arr['livesuchesprache'];
                             }
                         }
                     }
@@ -793,15 +800,15 @@ function generateSitemapXML()
                         if ($nSitemap > $nSitemapLimit) {
                             $nSitemap = 1;
                             baueSitemap($nDatei, $sitemap_data);
-                            $nDatei++;
+                            ++$nDatei;
                             $nAnzahlURL_arr[$nDatei] = 0;
                             $sitemap_data            = '';
                         }
                         if (!isSitemapBlocked($cURL)) {
                             $sitemap_data .= $cURL;
-                            $nSitemap++;
-                            $nAnzahlURL_arr[$nDatei]++;
-                            $nStat_arr['merkmal']++;
+                            ++$nSitemap;
+                            ++$nAnzahlURL_arr[$nDatei];
+                            ++$nStat_arr['merkmal'];
                         }
                     }
                 }
@@ -830,9 +837,9 @@ function generateSitemapXML()
                             AND tseo.kKey = tmerkmalwert.kMerkmalWert
                             AND tseo.kSprache = tmerkmalsprache.kSprache
                         WHERE tmerkmal.nGlobal = 1
-                            AND tmerkmalsprache.kSprache = " . (int)$SpracheTMP->kSprache . "
+                            AND tmerkmalsprache.kSprache = " . (int) $SpracheTMP->kSprache . '
                         GROUP BY tmerkmalwert.kMerkmalWert
-                        ORDER BY tmerkmal.kMerkmal, tmerkmal.cName", 10
+                        ORDER BY tmerkmal.kMerkmal, tmerkmal.cName', 10
             );
 
             while ($oMerkmalWert = $res->fetch(PDO::FETCH_OBJ)) {
@@ -845,15 +852,15 @@ function generateSitemapXML()
                             if ($nSitemap > $nSitemapLimit) {
                                 $nSitemap = 1;
                                 baueSitemap($nDatei, $sitemap_data);
-                                $nDatei++;
+                                ++$nDatei;
                                 $nAnzahlURL_arr[$nDatei] = 0;
                                 $sitemap_data            = '';
                             }
                             if (!isSitemapBlocked($cURL)) {
                                 $sitemap_data .= $cURL;
-                                $nSitemap++;
-                                $nAnzahlURL_arr[$nDatei]++;
-                                $nStat_arr['merkmalsprache']++;
+                                ++$nSitemap;
+                                ++$nAnzahlURL_arr[$nDatei];
+                                ++$nStat_arr['merkmalsprache'];
                             }
                         }
                     }
@@ -873,7 +880,7 @@ function generateSitemapXML()
                 WHERE tnews.nAktiv = 1
                     AND tnews.dGueltigVon <= now()
                     AND (tnews.cKundengruppe LIKE '%;-1;%'
-                    OR tnews.cKundengruppe RLIKE '^([0-9;]*;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";') 
+                    OR FIND_IN_SET('" . (int) $_SESSION['Kundengruppe']->kKundengruppe . "', REPLACE(tnews.cKundengruppe, ';',',')) > 0) 
                     ORDER BY tnews.dErstellt", 10
         );
         while ($oNews = $res->fetch(PDO::FETCH_OBJ)) {
@@ -884,15 +891,15 @@ function generateSitemapXML()
                 if ($nSitemap > $nSitemapLimit) {
                     $nSitemap = 1;
                     baueSitemap($nDatei, $sitemap_data);
-                    $nDatei++;
+                    ++$nDatei;
                     $nAnzahlURL_arr[$nDatei] = 0;
                     $sitemap_data            = '';
                 }
                 if (!isSitemapBlocked($cURL)) {
                     $sitemap_data .= $cURL;
-                    $nSitemap++;
-                    $nAnzahlURL_arr[$nDatei]++;
-                    $nStat_arr['news']++;
+                    ++$nSitemap;
+                    ++$nAnzahlURL_arr[$nDatei];
+                    ++$nStat_arr['news'];
                 }
             }
         }
@@ -919,15 +926,15 @@ function generateSitemapXML()
                 if ($nSitemap > $nSitemapLimit) {
                     $nSitemap = 1;
                     baueSitemap($nDatei, $sitemap_data);
-                    $nDatei++;
+                    ++$nDatei;
                     $nAnzahlURL_arr[$nDatei] = 0;
                     $sitemap_data            = '';
                 }
                 if (!isSitemapBlocked($cURL)) {
                     $sitemap_data .= $cURL;
-                    $nSitemap++;
-                    $nAnzahlURL_arr[$nDatei]++;
-                    $nStat_arr['newskategorie']++;
+                    ++$nSitemap;
+                    ++$nAnzahlURL_arr[$nDatei];
+                    ++$nStat_arr['newskategorie'];
                 }
             }
         }
@@ -961,6 +968,7 @@ function generateSitemapXML()
 
 /**
  * @param string $cGoogleImageEinstellung
+ *
  * @return string
  */
 function getXMLHeader($cGoogleImageEinstellung)
@@ -981,6 +989,7 @@ function getXMLHeader($cGoogleImageEinstellung)
 
 /**
  * @param stdClass $artikel
+ *
  * @return string|null
  */
 function holeGoogleImage($artikel)
@@ -1008,13 +1017,13 @@ function holeGoogleImage($artikel)
     }
 
     if (empty($oBild->cPfad)) {
-        $oBild = Shop::DB()->query("
+        $oBild = Shop::DB()->query('
             SELECT cPfad 
                 FROM tartikelpict 
-                WHERE kArtikel = " . (int)$oArtikel->kArtikel . " 
+                WHERE kArtikel = ' . (int) $oArtikel->kArtikel . ' 
                 GROUP BY cPfad 
                 ORDER BY nNr 
-                LIMIT 1", 1
+                LIMIT 1', 1
         );
     }
 
@@ -1085,6 +1094,7 @@ function baueSitemapReport($nAnzahlURL_arr, $fTotalZeit)
  * @param array  $oSprach_arr
  * @param int    $kSprache
  * @param int    $nArtikelProSeite
+ *
  * @return array
  */
 function baueExportURL($kKey, $cKey, $dLetzteAktualisierung, $oSprach_arr, $kSprache, $nArtikelProSeite)
@@ -1133,10 +1143,10 @@ function baueExportURL($kKey, $cKey, $dLetzteAktualisierung, $oSprach_arr, $kSpr
             $cParameter_arr['kSuchanfrage'] = $kKey;
             if ($GLOBALS['kSuchanfrage'] > 0) {
                 $oSuchanfrage = Shop::DB()->query(
-                    "SELECT cSuche
+                    'SELECT cSuche
                         FROM tsuchanfrage
-                        WHERE kSuchanfrage = " . (int)$GLOBALS['kSuchanfrage'] . "
-                        ORDER BY kSuchanfrage", 1
+                        WHERE kSuchanfrage = ' . (int) $GLOBALS['kSuchanfrage'] . '
+                        ORDER BY kSuchanfrage', 1
                 );
 
                 if (strlen($oSuchanfrage->cSuche) > 0) {
@@ -1193,7 +1203,7 @@ function baueExportURL($kKey, $cKey, $dLetzteAktualisierung, $oSprach_arr, $kSpr
     $replace    = ['', ''];
     if ($GLOBALS['oSuchergebnisse']->GesamtanzahlArtikel > 0) {
         if ($GLOBALS['oSuchergebnisse']->Seitenzahlen->MaxSeiten > 1) {
-            for ($i = 1; $i <= $GLOBALS['oSuchergebnisse']->Seitenzahlen->MaxSeiten; $i++) {
+            for ($i = 1; $i <= $GLOBALS['oSuchergebnisse']->Seitenzahlen->MaxSeiten; ++$i) {
                 if ($bSeoCheck) {
                     if ($i > 1) {
                         $cURL_arr[] = makeURL(
@@ -1300,6 +1310,7 @@ function baueExportURL($kKey, $cKey, $dLetzteAktualisierung, $oSprach_arr, $kSpr
 
 /**
  * @param array $Sprachen
+ *
  * @return array
  */
 function gibAlleSprachenAssoc($Sprachen)

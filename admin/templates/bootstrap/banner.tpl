@@ -23,7 +23,6 @@
 
     {if $cAction === 'edit' || $cAction === 'new'}
     <script type="text/javascript">
-        {literal}
         var file2large = false;
 
         function checkfile(e){
@@ -34,24 +33,19 @@
         }
 
         $(document).ready(function () {
-            $("select[name='cKey']").change(function () {
-                var selected = $("select[name='cKey'] option:selected");
-                keyChanged($(selected).val());
-            }).change();
+            $('#nSeitenTyp').change(filterConfigUpdate);
+            $('#cKey').change(filterConfigUpdate);
 
-            $("select[name='nSeitenTyp']").change(function () {
-                var selected = $("select[name='nSeitenTyp'] option:selected");
-                typeChanged($(selected).val());
-            }).change();
+            filterConfigUpdate();
 
             $('form #oFile').change(function(e){
                 $('form div.alert').slideUp();
                 var filesize= this.files[0].size;
-                {/literal}
                 var maxsize = {$nMaxFileSize};
-                {literal}
                 if (filesize >= maxsize) {
-                    $('.input-group.file-input').after('<div class="alert alert-danger"><i class="fa fa-warning"></i> Die Datei ist gr&ouml;&szlig;er als das Uploadlimit des Servers.</div>').slideDown();
+                    $('.input-group.file-input')
+                        .after('<div class="alert alert-danger"><i class="fa fa-warning"></i> Die Datei ist gr&ouml;&szlig;er als das Uploadlimit des Servers.</div>')
+                        .slideDown();
                     file2large = true;
                 } else {
                     $('form div.alert').slideUp();
@@ -61,37 +55,40 @@
 
         });
 
-        function typeChanged(type) {
-            $('.custom').hide();
-            $('#type' + type).show();
+        function filterConfigUpdate()
+        {
+            var $nSeitenTyp = $('#nSeitenTyp');
+            var $type2      = $('#type2');
+            var $nl         = $('.nl');
+            var $cKey       = $('#cKey');
 
-            switch (type) {
+            $nl.hide();
+            $('.key').hide();
+            $type2.hide();
+
+            switch ($nSeitenTyp.val()) {
                 case '1':
-                    keyChanged('kArtikel');
+                    $nl.show();
+                    $('#keykArtikel').show();
+                    $cKey.val('');
                     break;
-                case '24':
-                    keyChanged('kHersteller');
+                case '2':
+                    $type2.show();
+                    if ($cKey.val() !== '') {
+                        $('#key' + $cKey.val()).show();
+                        $nl.show();
+                    }
                     break;
                 case '31':
-                    keyChanged('kLink');
+                    $nl.show();
+                    $('#keykLink').show();
+                    $cKey.val('');
                     break;
                 default:
-                    $('select[name="cKey"]').val('');
-                    $('.nl .key').hide();
-                    $('.nl input[type="text"], .nl input[type="hidden"]').each(function () {
-                        $(this).val('');
-                    });
+                    $cKey.val('');
                     break;
             }
         }
-
-        function keyChanged(key) {
-            $('.key').hide();
-            $('#key' + key).show();
-        }
-
-
-        {/literal}
     </script>
     <div id="settings">
         <form name="banner" action="banner.php" method="post" enctype="multipart/form-data" onsubmit="checkfile(event);">
@@ -282,14 +279,14 @@
                         <div id="keykKategorie" class="input-group key">
                             <span class="input-group-addon"><label for="categories_name">Kategorie</label></span>
                             <input type="hidden" name="categories_key" id="categories_key"
-                                   value="{if (isset($cKey) && $cKey === 'keykKategorie') || (isset($oExtension->cKey) && $oExtension->cKey === 'keykKategorie')}{$oExtension->cValue}{/if}">
+                                   value="{if (isset($cKey) && $cKey === 'kKategorie') || (isset($oExtension->cKey) && $oExtension->cKey === 'kKategorie')}{$oExtension->cValue}{/if}">
                             <input class="form-control" type="text" name="categories_name" id="categories_name">
                             <script>
                                 enableTypeahead('#categories_name', 'getCategories', 'cName', null, function(e, item) {
                                     $('#categories_name').val(item.cName);
                                     $('#categories_key').val(item.kKategorie);
                                 });
-                                {if (isset($cKey) && $cKey === 'keykKategorie') || (isset($oExtension->cKey) && $oExtension->cKey === 'keykKategorie')}
+                                {if (isset($cKey) && $cKey === 'kKategorie') || (isset($oExtension->cKey) && $oExtension->cKey === 'kKategorie')}
                                     ioCall('getCategories', [[$('#categories_key').val()]], function (data) {
                                         $('#categories_name').val(data[0].cName);
                                     });
@@ -299,15 +296,15 @@
                         <div id="keykHersteller" class="input-group key">
                             <span class="input-group-addon"><label for="manufacturer_name">Hersteller</label></span>
                             <input type="hidden" name="manufacturer_key" id="manufacturer_key"
-                                   value="{if (isset($cKey) && $cKey === 'keykHersteller') || (isset($oExtension->cKey) && $oExtension->cKey === 'keykHersteller')}{$oExtension->cValue}{/if}">
+                                   value="{if (isset($cKey) && $cKey === 'kHersteller') || (isset($oExtension->cKey) && $oExtension->cKey === 'kHersteller')}{$oExtension->cValue}{/if}">
                             <input class="form-control" type="text" name="manufacturer_name" id="manufacturer_name">
                             <script>
                                 enableTypeahead('#manufacturer_name', 'getManufacturers', 'cName', null, function(e, item) {
                                     $('#manufacturer_name').val(item.cName);
                                     $('#manufacturer_key').val(item.kHersteller);
                                 });
-                                {if (isset($cKey) && $cKey === 'keykHersteller') || (isset($oExtension->cKey) && $oExtension->cKey === 'keykHersteller')}
-                                    ioCall('getCategories', [[$('#manufacturer_key').val()]], function (data) {
+                                {if (isset($cKey) && $cKey === 'kHersteller') || (isset($oExtension->cKey) && $oExtension->cKey === 'kHersteller')}
+                                    ioCall('getManufacturers', [[$('#manufacturer_key').val()]], function (data) {
                                         $('#manufacturer_name').val(data[0].cName);
                                     });
                                 {/if}
@@ -315,7 +312,8 @@
                         </div>
                         <div id="keycSuche" class="key input-group">
                             <span class="input-group-addon"><label for="ikeycSuche">Suchbegriff</label></span>
-                            <input class="form-control" type="text" id="ikeycSuche" name="keycSuche" value="{if (isset($cKey) &&  $cKey === 'cSuche') || (isset($oExtension->cKey) && $oExtension->cKey === 'cSuche')}{if isset($keycSuche) && $keycSuche !== ''}{$keycSuche}{else}{$oExtension->cValue}{/if}{/if}" />
+                            <input class="form-control" type="text" id="ikeycSuche" name="keycSuche"
+                                   value="{if (isset($cKey) &&  $cKey === 'cSuche') || (isset($oExtension->cKey) && $oExtension->cKey === 'cSuche')}{if isset($keycSuche) && $keycSuche !== ''}{$keycSuche}{else}{$oExtension->cValue}{/if}{/if}" />
                         </div>
                     </div>
                     {* extensionpoint end *}

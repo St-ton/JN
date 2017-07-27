@@ -37,7 +37,7 @@
             <option value="-1"{if $nNewsKat == -1} selected{/if}>{lang key="newsCategorie" section="news"}</option>
             {if !empty($oNewsKategorie_arr)}
                 {foreach name="newskats" from=$oNewsKategorie_arr item=oNewsKategorie}
-                    {if $nNewsKat == $oNewsKategorie->kNewsKategorie}{assign var="cCurrentKategorie" value=$oNewsKategorie->cName}{/if}
+                    {if $nNewsKat == $oNewsKategorie->kNewsKategorie}{assign var="oCurNewsCat" value=$oNewsKategorie}{/if}
                     <option value="{$oNewsKategorie->kNewsKategorie}"{if $nNewsKat == $oNewsKategorie->kNewsKategorie} selected{/if}>{$oNewsKategorie->cName}</option>
                 {/foreach}
             {/if}
@@ -63,8 +63,16 @@
     <div class="alert alert-info">{lang key="noNewsArchiv" section="news"}.</div>
 {elseif !empty($oNewsUebersicht_arr)}
     <div id="newsContent" itemprop="mainEntity" itemscope itemtype="https://schema.org/Blog">
-        {if !empty($cCurrentKategorie)}
-            <h2>{$cCurrentKategorie}</h2>
+        {if !empty($oCurNewsCat)}
+            <h2>{$oCurNewsCat->cName}</h2>
+            <div class="row">
+                {if !empty($oCurNewsCat->cPreviewImage)}
+                    <div class="col-sm-8 col-xs-12">{$oCurNewsCat->cBeschreibung}</div>
+                    <div class="col-sm-4 col-xs-12"><img src="{$oCurNewsCat->cPreviewImage}" class="img-responsive center-block"></div>
+                {else}
+                    <div class="col-sm-12">{$oCurNewsCat->cBeschreibung}</div>
+                {/if}
+            </div>
             <hr>
             {include file='snippets/pagination.tpl' oPagination=$oPagination cThisUrl='news.php' parts=['label']}
         {/if}

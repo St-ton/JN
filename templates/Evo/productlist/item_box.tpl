@@ -5,7 +5,7 @@
 {else}
     {hasOnlyListableVariations artikel=$Artikel maxVariationCount=$Einstellungen.template.productlist.variation_select_productlist assign="hasOnlyListableVariations"}
 {/if}
-<div id="result-wrapper_buy_form_{$Artikel->kArtikel}" class="product-cell text-center{if $Einstellungen.template.productlist.hover_productlist === 'Y'} hover-enabled{/if}{if $bAjaxRequest} active{/if}{if isset($class)} {$class}{/if}">
+<div id="result-wrapper_buy_form_{$Artikel->kArtikel}" class="product-cell text-center{if $Einstellungen.template.productlist.hover_productlist === 'Y'} hover-enabled{/if}{if isset($listStyle) && $listStyle === 'gallery'} active{/if}{if isset($class)} {$class}{/if}">
     {block name="productlist-image"}
         <a class="image-wrapper" href="{$Artikel->cURL}">
             {if isset($Artikel->Bilder[0]->cAltAttribut)}
@@ -50,17 +50,22 @@
                     <div class="availablefrom">
                         <small>{lang key="productAvailable" section="global"}: {$Artikel->Erscheinungsdatum_de}</small>
                     </div>
-                    {if $Einstellungen.global.global_erscheinende_kaeuflich === 'Y' && $Artikel->inWarenkorbLegbar == 1}
+                    {if $Einstellungen.global.global_erscheinende_kaeuflich === 'Y' && $Artikel->inWarenkorbLegbar === 1}
                         <div class="attr attr-preorder"><small class="value">{lang key="preorderPossible" section="global"}</small></div>
                     {/if}
-                {elseif $anzeige !== 'nichts' && $Artikel->cLagerBeachten === 'Y' && ($Artikel->cLagerKleinerNull === 'N' ||
-                        $Einstellungen.artikeluebersicht.artikeluebersicht_lagerbestandanzeige_anzeigen === 'U') &&
-                        $Artikel->fLagerbestand <= 0 && $Artikel->fZulauf > 0 && isset($Artikel->dZulaufDatum_de)}
+                {elseif $anzeige !== 'nichts' &&
+                    $Einstellungen.artikeluebersicht.artikeluebersicht_lagerbestandanzeige_anzeigen !== 'N' &&
+                    $Artikel->cLagerBeachten === 'Y' && ($Artikel->cLagerKleinerNull === 'N' ||
+                    $Einstellungen.artikeluebersicht.artikeluebersicht_lagerbestandanzeige_anzeigen === 'U') &&
+                    $Artikel->fLagerbestand <= 0 && $Artikel->fZulauf > 0 && isset($Artikel->dZulaufDatum_de)}
                     {assign var=cZulauf value=$Artikel->fZulauf|cat:':::'|cat:$Artikel->dZulaufDatum_de}
                     <div class="signal_image status-1"><small>{lang key="productInflowing" section="productDetails" printf=$cZulauf}</small></div>
-                {elseif $anzeige !== 'nichts' && $Einstellungen.artikeluebersicht.artikeluebersicht_lagerbestandanzeige_anzeigen !== 'N' &&
-                        $Artikel->cLagerBeachten === 'Y' && $Artikel->fLagerbestand <= 0 && $Artikel->fLieferantenlagerbestand > 0 &&
-                        $Artikel->fLieferzeit > 0 && ($Artikel->cLagerKleinerNull === 'N' || $Einstellungen.artikeluebersicht.artikeluebersicht_lagerbestandanzeige_anzeigen === 'U')}
+                {elseif $anzeige !== 'nichts' &&
+                    $Einstellungen.artikeluebersicht.artikeluebersicht_lagerbestandanzeige_anzeigen !== 'N' &&
+                    $Artikel->cLagerBeachten === 'Y' && $Artikel->fLagerbestand <= 0 &&
+                    $Artikel->fLieferantenlagerbestand > 0 && $Artikel->fLieferzeit > 0 &&
+                    ($Artikel->cLagerKleinerNull === 'N' ||
+                    $Einstellungen.artikeluebersicht.artikeluebersicht_lagerbestandanzeige_anzeigen === 'U')}
                     <div class="signal_image status-1"><small>{lang key="supplierStockNotice" section="global" printf=$Artikel->fLieferzeit}</small></div>
                 {elseif $anzeige === 'verfuegbarkeit' || $anzeige === 'genau'}
                     <div class="signal_image status-{$Artikel->Lageranzeige->nStatus}"><small>{$Artikel->Lageranzeige->cLagerhinweis[$anzeige]}</small></div>
@@ -111,6 +116,12 @@
                 {/block}
             </div>
 
+            {if $Artikel->kArtikelVariKombi > 0}
+                <input type="hidden" name="aK" value="{$Artikel->kArtikelVariKombi}" />
+            {/if}
+            {if isset($Artikel->kVariKindArtikel)}
+                <input type="hidden" name="VariKindArtikel" value="{$Artikel->kVariKindArtikel}" />
+            {/if}
             <input type="hidden" name="a" value="{$Artikel->kArtikel}" />
             <input type="hidden" name="wke" value="1" />
             <input type="hidden" name="overview" value="1" />

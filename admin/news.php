@@ -473,6 +473,10 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
                     strpos($_FILES['previewImage']['type'], '/') + 1,
                     strlen($_FILES['previewImage']['type'] - strpos($_FILES['previewImage']['type'], '/')) + 1
                 );
+                //not elegant, but since it's 99% jpg..
+                if ($extension === 'jpe') {
+                    $extension = 'jpg';
+                }
                 $cUploadDatei = $cUploadVerzeichnisKat . $kNewsKategorie . '/preview.' . $extension;
                 move_uploaded_file($_FILES['previewImage']['tmp_name'], $cUploadDatei);
                 $oNewsKategorie->cPreviewImage = PFAD_NEWSKATEGORIEBILDER . $kNewsKategorie . '/preview.' . $extension;
@@ -511,11 +515,24 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
         }
     } elseif (isset($_GET['newskategorie_editieren']) && (int)$_GET['newskategorie_editieren'] === 1) {
         // Newskategorie editieren
+        // Soll Preview geloescht werden?
+        $kNewsKategorie = (int) $_GET['kNewsKategorie'];
+        if (strlen(verifyGPDataString('delpic')) > 0) {
+            if (loescheNewsBild(verifyGPDataString('delpic'), $kNewsKategorie, $cUploadVerzeichnisKat)) {
+                $cHinweis .= 'Ihr ausgew&auml;hltes Newsbild wurde erfolgreich gel&ouml;scht.';
+            } else {
+                $cFehler .= 'Fehler: Ihr ausgew&auml;hltes Newsbild konnte nicht gel&ouml;scht werden.';
+            }
+        }
         if (isset($_GET['kNewsKategorie']) && (int)$_GET['kNewsKategorie'] > 0) {
             $step           = 'news_kategorie_erstellen';
             $oNewsKategorie = editiereNewskategorie($_GET['kNewsKategorie'], $_SESSION['kSprache']);
             if (isset($oNewsKategorie->kNewsKategorie) && (int)$oNewsKategorie->kNewsKategorie > 0) {
                 $smarty->assign('oNewsKategorie', $oNewsKategorie);
+                // Hole Bilder
+                if (is_dir($cUploadVerzeichnisKat . $oNewsKategorie->kNewsKategorie)) {
+                    $smarty->assign('oDatei_arr', holeNewsKategorieBilder($oNewsKategorie->kNewsKategorie, $cUploadVerzeichnisKat));
+                }
             } else {
                 $step = 'news_uebersicht';
                 $cFehler .= 'Fehler: Die Newskategorie mit der ID "' . (int)$_GET['kNewsKategorie'] .

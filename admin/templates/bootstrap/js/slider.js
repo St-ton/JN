@@ -207,46 +207,47 @@ $(document).ready(function() {
             $(this).remove();
         });
     });
-     
-    $("select[name='cKey']").change(function () {
-        var selected = $("select[name='cKey'] option:selected");
-        keyChanged($(selected).val());
-    }).change();
-    
-    $("select[name='nSeitenTyp']").change(function () {
-        var selected = $("select[name='nSeitenTyp'] option:selected");
-        typeChanged($(selected).val());
-    }).change();
+
+    $('#nSeitenTyp').change(filterConfigUpdate);
+    $('#cKey').change(filterConfigUpdate);
+
+    filterConfigUpdate();
 
 });
 
-function typeChanged(type) {
-    $('.custom').hide();
-    $('#type' + type).show();
+function filterConfigUpdate()
+{
+    var $nSeitenTyp = $('#nSeitenTyp');
+    var $type2      = $('#type2');
+    var $nl         = $('.nl');
+    var $cKey       = $('#cKey');
 
-    switch (type) {
+    $nl.hide();
+    $('.key').hide();
+    $type2.hide();
+
+    switch ($nSeitenTyp.val()) {
         case '1':
-            keyChanged('kArtikel');
+            $nl.show();
+            $('#keykArtikel').show();
+            $cKey.val('');
             break;
-        case '24':
-            keyChanged('kHersteller');
+        case '2':
+            $type2.show();
+            if ($cKey.val() !== '') {
+                $('#key' + $cKey.val()).show();
+                $nl.show();
+            }
             break;
         case '31':
-            keyChanged('kLink');
+            $nl.show();
+            $('#keykLink').show();
+            $cKey.val('');
             break;
         default:
-            $('select[name="cKey"]').val('');
-            $('.nl .key').hide();
-            $('.nl input[type="text"], .nl input[type="hidden"]').each(function () {
-                $(this).val('');
-            });
+            $cKey.val('');
             break;
     }
-}
-
-function keyChanged(key) {
-    $('.key').hide();
-    $('#key' + key).show();
 }
 
 function hideOverlayEdit(id) {

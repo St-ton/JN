@@ -21,7 +21,7 @@
     </div>
 {/if}
 {if !empty($MsgWarning)}
-    <p class="alert alert-danger">{$MsgWarning}</p>
+    <p class="alert alert-danger" id="msgWarning">{$MsgWarning}</p>
 {/if}
 
 {if ($Warenkorb->PositionenArr|@count > 0)}

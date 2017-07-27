@@ -1,3 +1,35 @@
+<script type="text/javascript">
+    var file2large = false;
+    {literal}
+
+    $(document).ready(function () {
+
+        $('form input[type=file]').change(function(e){
+            $('form div.alert').slideUp();
+            var filesize= this.files[0].size;
+            {/literal}
+            var maxsize = {$nMaxFileSize};
+            {literal}
+            if (filesize >= maxsize) {
+                $(this).after('<div class="alert alert-danger"><i class="fa fa-warning"></i> Die Datei ist gr&ouml;&szlig;er als das Uploadlimit des Servers.</div>').slideDown();
+                file2large = true;
+            } else {
+                $(this).closest('div.alert').slideUp();
+                file2large = false;
+            }
+        });
+
+    });
+
+    function checkfile(e){
+        e.preventDefault();
+        if (!file2large){
+            document.news.submit();
+        }
+    }
+    {/literal}
+</script>
+
 {include file='tpl_inc/seite_header.tpl' cTitel=#newsCat#}
 <div id="content">
     <form name="news" method="post" action="news.php" enctype="multipart/form-data">
@@ -76,6 +108,29 @@
                         <td>
                             <textarea id="cBeschreibung" class="ckeditor" name="cBeschreibung" rows="15" cols="60">{if isset($cPostVar_arr.cBeschreibung)}{$cPostVar_arr.cBeschreibung}{elseif isset($oNewsKategorie->cBeschreibung)}{$oNewsKategorie->cBeschreibung}{/if}</textarea>
                         </td>
+                    </tr>
+                    <tr>
+                    <tr>
+                        <td><label>{#newsPics#}</label></td>
+                        {if isset($oDatei_arr) && $oDatei_arr|@count > 0}
+                            <td valign="top">
+                                {foreach name=bilder from=$oDatei_arr item=oDatei}
+                                    <div class="well col-xs-3">
+                                        <div class="thumbnail">{$oDatei->cURL}</div>
+                                        <label>Link: </label>
+                                        <div class="input-group">
+                                            <input class="form-control" type="text" disabled="disabled" value="$#{$oDatei->cName}#$">
+                                            <div class="input-group-addon">
+                                                <a href="news.php?news=1&newskategorie_editieren=1&kNewsKategorie={$oNewsKategorie->kNewsKategorie}&delpic={$oDatei->cName}&token={$smarty.session.jtl_token}" title="{#delete#}"><i class="fa fa-trash"></i></a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {/foreach}
+                            </td>
+                        {else}
+                            <td valign="top"></td>
+                        {/if}
+                    </tr>
                     </tr>
                 </table>
             </div>

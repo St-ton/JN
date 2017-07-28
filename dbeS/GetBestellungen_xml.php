@@ -143,8 +143,8 @@ if (auth()) {
 
             $xml_obj['bestellungen']['tbestellung'][$i]['tkampagne'] = Shop::DB()->query(
                 "SELECT tkampagne.cName,
-                        COALESCE(tkampagnevorgang.cParamWert, '') cIdentifier,
-                        tkampagne.cParameter cWert
+                        tkampagne.cParameter cIdentifier,
+                        COALESCE(tkampagnevorgang.cParamWert, '') cWert
                     FROM tkampagnevorgang
                     INNER JOIN tkampagne ON tkampagne.kKampagne = tkampagnevorgang.kKampagne
                     INNER JOIN tkampagnedef ON tkampagnedef.kKampagneDef = tkampagnevorgang.kKampagneDef

@@ -102,12 +102,13 @@ function pruefeUnregistriertBestellen($cPost_arr)
         executeHook(HOOK_BESTELLVORGANG_INC_UNREGISTRIERTBESTELLEN);
 
         return 1;
-    }
-    setzeFehlendeAngaben($fehlendeAngaben);
-    Shop::Smarty()->assign('cKundenattribut_arr', $cKundenattribut_arr)
-        ->assign('cPost_var', StringHandler::filterXSS($cPost_arr));
+    } else {
+        setzeFehlendeAngaben($fehlendeAngaben);
+        Shop::Smarty()->assign('cKundenattribut_arr', $cKundenattribut_arr)
+            ->assign('cPost_var', StringHandler::filterXSS($cPost_arr));
 
-    return 0;
+        return 0;
+    }
 }
 
 /**
@@ -304,6 +305,28 @@ function pruefeRechnungsadresseStep($cGet_arr)
         }
         $Kunde = $_SESSION['Kunde'];
         $step  = 'edit_customer_address';
+    }
+
+    if (isset($_SESSION['checkout.register']) && (int)$_SESSION['checkout.register'] === 1) {
+        if (isset($_SESSION['checkout.fehlendeAngaben'])) {
+            setzeFehlendeAngaben($_SESSION['checkout.fehlendeAngaben']);
+            unset($_SESSION['checkout.fehlendeAngaben']);
+            $step = 'edit_customer_address';
+        }
+        if (isset($_SESSION['checkout.cPost_arr'])) {
+            $Kunde                      = getKundendaten($_SESSION['checkout.cPost_arr'], 0, 0);
+            $Kunde->cKundenattribut_arr = getKundenattribute($_SESSION['checkout.cPost_arr']);
+            Shop::Smarty()->assign('Kunde', $Kunde)
+                ->assign('cPost_var', $_SESSION['checkout.cPost_arr']);
+
+            if (isset($_SESSION['Lieferadresse']) && (int)$_SESSION['checkout.cPost_arr']['shipping_address'] !== 0) {
+                Shop::Smarty()->assign('Lieferadresse', $_SESSION['Lieferadresse']);
+            }
+
+            $_POST = array_merge($_POST, $_SESSION['checkout.cPost_arr']);
+            unset($_SESSION['checkout.cPost_arr']);
+        }
+        unset($_SESSION['checkout.register']);
     }
 }
 
@@ -509,24 +532,6 @@ function gibStepAccountwahl()
     Shop::Smarty()->assign('untertitel', lang_warenkorb_bestellungEnthaeltXArtikel($_SESSION['Warenkorb']));
 
     executeHook(HOOK_BESTELLVORGANG_PAGE_STEPACCOUNTWAHL);
-
-    if (isset($_SESSION['checkout.register']) && (int)$_SESSION['checkout.register'] === 1) {
-        if (isset($_SESSION['checkout.fehlendeAngaben'])) {
-            setzeFehlendeAngaben($_SESSION['checkout.fehlendeAngaben']);
-            unset($_SESSION['checkout.fehlendeAngaben']);
-        }
-        if (isset($_SESSION['checkout.cPost_arr'])) {
-            $Kunde                      = getKundendaten($_SESSION['checkout.cPost_arr'], 0, 0);
-            $Kunde->cKundenattribut_arr = getKundenattribute($_SESSION['checkout.cPost_arr']);
-            Shop::Smarty()->assign('Kunde', $Kunde);
-
-            if (isset($_SESSION['Lieferadresse'])) {
-                Shop::Smarty()->assign('Lieferadresse', $_SESSION['Lieferadresse']);
-            }
-            unset($_SESSION['checkout.cPost_arr']);
-        }
-        unset($_SESSION['checkout.register']);
-    }
 }
 
 /**

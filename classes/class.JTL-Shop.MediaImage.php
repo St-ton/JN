@@ -207,31 +207,44 @@ class MediaImage implements IMedia
     public function handle($request)
     {
         try {
-            $mediaReq  = $this->create($request);
-            $thumbPath = $mediaReq->getThumb(null, true);
+            $mediaReq = $this->create($request);
+
+            $imgNames = Shop::DB()->executeQueryPrepared(
+                "SELECT kArtikel, cName, cSeo, cArtNr, cBarcode
+                    FROM tartikel AS a
+                    WHERE kArtikel = :kArtikel
+                UNION SELECT asp.kArtikel, asp.cName, asp.cSeo, a.cArtNr, a.cBarcode
+                    FROM tartikelsprache AS asp JOIN tartikel AS a ON asp.kArtikel = a.kArtikel
+                    WHERE asp.kArtikel = :kArtikel",
+                ['kArtikel' => (int)$mediaReq->id],
+                2
+            );
+
+            if (count($imgNames) === 0) {
+                throw new Exception("No such product id: " . (int)$mediaReq->id);
+            }
+
+            $matchFound = false;
+
+            foreach ($imgNames as $imgName) {
+                $imgName->imgPath = MediaImage::getThumb(
+                    $mediaReq->type, $mediaReq->id, $imgName, $mediaReq->size, $mediaReq->number
+                );
+
+                if ('/' . $imgName->imgPath === $request) {
+                    $matchFound = true;
+                    $thumbPath  = PFAD_ROOT . $imgName->imgPath;
+                    break;
+                }
+            }
+
+            if ($matchFound === false) {
+                header('Location: ' . Shop::getURL() . '/' . $imgNames[0]->imgPath, true, 301);
+                exit;
+            }
 
             if (!is_file($thumbPath)) {
-                $mixed = Shop::DB()->query(
-                    "SELECT a.kArtikel, a.cBarcode, a.cName, a.cArtNr, a.cSeo, ap.nNr
-                        FROM tartikel AS a
-                            JOIN tartikelpict AS ap
-                                ON ap.kArtikel = a.kArtikel
-                        WHERE
-                            a.kArtikel = " . (int)$mediaReq->id .
-                            ((int)$mediaReq->number > 0 ? " AND ap.nNr = " . (int)$mediaReq->number : ''),
-                    1
-                );
-
-                $correctedPath = MediaImage::getThumb(
-                    $mediaReq->type, $mediaReq->id, $mixed, $mediaReq->size, $mediaReq->number
-                );
-
-                if (PFAD_ROOT . $correctedPath === $thumbPath) {
-                    Image::render($mediaReq, null);
-                } else {
-                    header('Location: ' . Shop::getURL() . '/' . $correctedPath, true, 301);
-                    exit;
-                }
+                Image::render($mediaReq, null);
             }
 
             $imanee = new Imanee($thumbPath);

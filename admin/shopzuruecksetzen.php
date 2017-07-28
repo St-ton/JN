@@ -219,6 +219,8 @@ if (isset($_POST['zuruecksetzen']) && (int)$_POST['zuruecksetzen'] === 1 && vali
     } else {
         $cFehler = 'Bitte w&auml;hlen Sie mindestens eine Option aus.';
     }
+
+    executeHook(HOOK_BACKEND_SHOP_RESET_AFTER);
 }
 
 $smarty->assign('hinweis', $cHinweis)

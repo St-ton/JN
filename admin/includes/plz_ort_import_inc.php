@@ -116,7 +116,7 @@ function plzimportDoImport($target, array $sessData, $result)
                                     'params' => [$target, 'import', $sessData['step']]
                                 ]
                             )
-                        );
+                        ) . '&token=' . StringHandler::filterXSS($_REQUEST['jtl_token']);
                     header('Location: ' . $cRedirectUrl);
                     exit;
                 }
@@ -255,7 +255,7 @@ function plzimportDoDownload($target, array $sessData, $result)
                     'params' => [$target, 'import', $sessData['step']]
                 ]
             )
-        );
+        ) . '&token=' . StringHandler::filterXSS($_REQUEST['jtl_token']);
     header('Location: ' . $cRedirectUrl);
     exit;
 }
@@ -339,6 +339,31 @@ function plzimportActionDoImport($target = '', $part = '', $step = 0)
 
         plzimportCloseSession('Import');
     }
+
+    return $result;
+}
+
+/**
+ * @param string $target
+ * @param string $type
+ * @param string $message
+ * @return object
+ */
+function plzimportActionResetImport($type = 'success', $message = 'Import wurde abgebrochen!')
+{
+    session_write_close();
+
+    $step   = 100;
+    $result = (object)[
+        'type'    => StringHandler::filterXSS($type),
+        'message' => StringHandler::filterXSS($message),
+    ];
+
+    $sessData         = plzimportReadSession('Import');
+    $sessData['step'] = $step;
+
+    plzimportWriteSession('Import', $sessData);
+    plzimportCloseSession('Import');
 
     return $result;
 }

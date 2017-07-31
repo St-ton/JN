@@ -539,7 +539,7 @@
                             <select name="custom_{$kKundenfeld}" class="form-control{if $oKundenfeld->nPflicht == 1} required{/if}" {if $oKundenfeld->nEditierbar == 0 && !empty($cKundenattribut_arr[$kKundenfeld]->cWert)}disabled{/if}{if $oKundenfeld->nPflicht == 1} required{/if}>
                                 <option value="" selected disabled>{lang key="pleaseChoose" section="global"}</option>
                                 {foreach name=select from=$oKundenfeld->oKundenfeldWert_arr item=oKundenfeldWert}
-                                    <option value="{$oKundenfeldWert->cWert}" {if ($step == 'formular' || $step === 'edit_customer_address') && isset($cKundenattribut_arr[$kKundenfeld]->cWert) && ($oKundenfeldWert->cWert == $cKundenattribut_arr[$kKundenfeld]->cWert)}selected{elseif isset($Kunde->cKundenattribut_arr[$kKundenfeld]->cWert) && ($oKundenfeldWert->cWert == $Kunde->cKundenattribut_arr[$kKundenfeld]->cWert)}selected{/if}>{$oKundenfeldWert->cWert}</option>
+                                    <option value="{$oKundenfeldWert->cWert}" {if ($step === 'formular' || $step === 'edit_customer_address') && isset($cKundenattribut_arr[$kKundenfeld]->cWert) && ($oKundenfeldWert->cWert == $cKundenattribut_arr[$kKundenfeld]->cWert)}selected{elseif isset($Kunde->cKundenattribut_arr[$kKundenfeld]->cWert) && ($oKundenfeldWert->cWert == $Kunde->cKundenattribut_arr[$kKundenfeld]->cWert)}selected{/if}>{$oKundenfeldWert->cWert}</option>
                                 {/foreach}
                             </select>
                         {/if}

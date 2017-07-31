@@ -6426,7 +6426,8 @@ class Artikel
                 if ($this->aufLagerSichtbarkeit($oEigenschaft) &&
                     ((int)$conf['global']['artikel_artikelanzeigefilter'] !== EINSTELLUNGEN_ARTIKELANZEIGEFILTER_ALLE ||
                     (int)$conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_ALLE &&
-                    !($oEigenschaft->fLagerbestand <= 0 && $oEigenschaft->cLagerBeachten === 'Y')) &&
+                    !($oEigenschaft->fLagerbestand <= 0 && $oEigenschaft->cLagerBeachten === 'Y' &&
+                    $oEigenschaft->cLagerKleinerNull === 'N')) &&
                     !in_array($oEigenschaft->kEigenschaftWert, $nPossibleVariation_arr[$oEigenschaft->kEigenschaft], true)
                 ) {
                     $nPossibleVariation_arr[$oEigenschaft->kEigenschaft][] = $oEigenschaft->kEigenschaftWert;

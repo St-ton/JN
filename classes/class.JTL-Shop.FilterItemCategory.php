@@ -46,7 +46,12 @@ class FilterItemCategory extends FilterBaseCategory
         $join->setComment('join from FilterItemCategory')
              ->setType('JOIN');
         if ($this->getConfig()['navigationsfilter']['kategoriefilter_anzeigen_als'] === 'HF') {
-            $join->setTable('tkategorieartikelgesamt')
+            $join->setTable('(
+                SELECT tkategorieartikel.kArtikel, oberkategorie.kOberKategorie, oberkategorie.kKategorie
+                FROM tkategorieartikel
+                INNER JOIN tkategorie ON tkategorie.kKategorie = tkategorieartikel.kKategorie
+                INNER JOIN tkategorie oberkategorie ON tkategorie.lft BETWEEN oberkategorie.lft AND oberkategorie.rght
+                ) tkategorieartikelgesamt')
                  ->setOn('tartikel.kArtikel = tkategorieartikelgesamt.kArtikel');
         }
         $join->setTable('tkategorieartikel')
@@ -82,7 +87,12 @@ class FilterItemCategory extends FilterBaseCategory
                 $state->joins[] = (new FilterJoin())
                     ->setComment('join1 from FilterItemCategory::getOptions()')
                     ->setType('JOIN')
-                    ->setTable('tkategorieartikelgesamt')
+                    ->setTable('(
+                SELECT tkategorieartikel.kArtikel, oberkategorie.kOberKategorie, oberkategorie.kKategorie
+                FROM tkategorieartikel
+                INNER JOIN tkategorie ON tkategorie.kKategorie = tkategorieartikel.kKategorie
+                INNER JOIN tkategorie oberkategorie ON tkategorie.lft BETWEEN oberkategorie.lft AND oberkategorie.rght
+                ) tkategorieartikelgesamt')
                     ->setOn('tartikel.kArtikel = tkategorieartikelgesamt.kArtikel ' . $kKatFilter)
                     ->setOrigin(__CLASS__);
                 $state->joins[] = (new FilterJoin())

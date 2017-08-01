@@ -501,12 +501,12 @@ function bearbeiteUpdate($xml)
     //bei JTL-Wawi Version <= 099780 ist dieses Flag nicht gesetzt, Mail soll hier immer versendet werden.
     require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Emailvorlage.php';
     $emailvorlage = Emailvorlage::load(MAILTEMPLATE_BESTELLUNG_AKTUALISIERT);
+    $kunde        = new Kunde((int)$oBestellungAlt->kKunde);
 
     if ($emailvorlage !== null && $emailvorlage->getAktiv() === 'Y' && ($oBestellung->cSendeEMail === 'Y' || !isset($oBestellung->cSendeEMail))) {
         if ($oModule) {
             $oModule->sendMail($oBestellungAlt->kBestellung, MAILTEMPLATE_BESTELLUNG_AKTUALISIERT);
         } else {
-            $kunde         = new Kunde((int)$oBestellungAlt->kKunde);
             $bestellungTmp = new Bestellung((int)$oBestellungAlt->kBestellung);
             $bestellungTmp->fuelleBestellung();
 

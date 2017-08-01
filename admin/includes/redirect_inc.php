@@ -17,5 +17,5 @@ function updateRedirectState($kRedirect)
 
     Shop::DB()->update('tredirect', 'kRedirect', $kRedirect, (object)['cAvailable' => $cAvailable]);
 
-    return $cAvailable;
+    return $cAvailable === 'y';
 }

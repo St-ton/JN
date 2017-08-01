@@ -59,28 +59,22 @@ class Redirect
     /**
      * @param int $kRedirect
      * @return $this
+     * @deprecated since 4.06 - use Redirect::deleteRedirect() instead
      */
     public function delete($kRedirect)
     {
-        $kRedirect = (int)$kRedirect;
-        Shop::DB()->delete('tredirect', 'kRedirect', $kRedirect);
-        Shop::DB()->delete('tredirectreferer', 'kRedirect', $kRedirect);
+        Redirect::deleteRedirect($kRedirect);
 
         return $this;
     }
 
     /**
      * @return int
+     * @deprecated since 4.06 - use Redirect::deleteUnassigned() instead
      */
     public function deleteAll()
     {
-        return Shop::DB()->query("
-            DELETE tredirect, tredirectreferer
-                FROM tredirect
-                LEFT JOIN tredirectreferer 
-                    ON tredirect.kRedirect = tredirectreferer.kRedirect
-                WHERE tredirect.cToUrl = ''", 3
-        );
+        return Redirect::deleteUnassigned();
     }
 
     /**
@@ -553,14 +547,14 @@ class Redirect
      * @param $cLimitSQL
      * @return array
      */
-    public static function getRedirects($cWhereSQL, $cOrderSQL, $cLimitSQL = '')
+    public static function getRedirects($cWhereSQL = '', $cOrderSQL = '', $cLimitSQL = '')
     {
         $oRedirect_arr = Shop::DB()->query("
             SELECT *
-                FROM tredirect
-                " . ($cWhereSQL !== '' ? "WHERE " . $cWhereSQL : "") . "
-                ORDER BY " . $cOrderSQL . "
-                " . ($cLimitSQL !== '' ? "LIMIT " . $cLimitSQL : ""),
+                FROM tredirect" .
+                ($cWhereSQL !== '' ? " WHERE " . $cWhereSQL : "") .
+                ($cOrderSQL !== '' ? " ORDER BY " . $cOrderSQL : "") .
+                ($cLimitSQL !== '' ? " LIMIT " . $cLimitSQL : ""),
             2);
 
         if (is_array($oRedirect_arr) && count($oRedirect_arr) > 0) {
@@ -575,12 +569,12 @@ class Redirect
     /**
      * @param $cWhereSQL
      */
-    public static function getRedirectCount($cWhereSQL)
+    public static function getRedirectCount($cWhereSQL = '')
     {
         return Shop::DB()->query(
-            "SELECT count(*) AS nCount
-                FROM tredirect
-                " . ($cWhereSQL !== '' ? "WHERE " . $cWhereSQL : ""),
+            "SELECT COUNT(kRedirect) AS nCount
+                FROM tredirect" .
+                ($cWhereSQL !== '' ? " WHERE " . $cWhereSQL : ""),
             1
         )->nCount;
     }
@@ -621,6 +615,10 @@ class Redirect
      */
     public static function checkAvailability($cUrl)
     {
+        if (empty($cUrl)) {
+            return false;
+        }
+
         $parsedUrl     = parse_url($cUrl);
         $parsedShopUrl = parse_url(Shop::getURL() . '/');
         $fullUrlParts  = $parsedUrl;
@@ -660,5 +658,29 @@ class Redirect
         }
 
         return false;
+    }
+
+    /**
+     * @param $kRedirect
+     */
+    public static function deleteRedirect($kRedirect)
+    {
+        $kRedirect = (int)$kRedirect;
+        Shop::DB()->delete('tredirect', 'kRedirect', $kRedirect);
+        Shop::DB()->delete('tredirectreferer', 'kRedirect', $kRedirect);
+    }
+
+    /**
+     * @return int
+     */
+    public static function deleteUnassigned()
+    {
+        return Shop::DB()->query("
+            DELETE tredirect, tredirectreferer
+                FROM tredirect
+                LEFT JOIN tredirectreferer 
+                    ON tredirect.kRedirect = tredirectreferer.kRedirect
+                WHERE tredirect.cToUrl = ''", 3
+        );
     }
 }

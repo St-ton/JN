@@ -44,13 +44,11 @@ class LinkHelper
     }
 
     /**
-     * singleton
-     *
-     * @return LinkHelper|null
+     * @return LinkHelper
      */
     public static function getInstance()
     {
-        return (self::$_instance === null) ? new self() : self::$_instance;
+        return self::$_instance === null ? new self() : self::$_instance;
     }
 
     /**
@@ -300,7 +298,7 @@ class LinkHelper
         if ($linkGroups === null || !is_object($linkGroups) || $force === true) {
             $session = [];
             // fixes for admin backend
-            $customerGroupID = isset($_SESSION['Kundengruppe']->kKundengruppe)
+            $customerGroupID = isset($_SESSION['Kundengruppe'])
                 ? Session::CustomerGroup()->getID()
                 : Kundengruppe::getDefaultGroupID();
             $Linkgruppen = Shop::DB()->query("SELECT * FROM tlinkgruppe", 2);

@@ -234,8 +234,8 @@ class CheckBox
         }
         $oCheckBoxTMP_arr = Shop::DB()->query(
             "SELECT kCheckBox FROM tcheckbox
-                WHERE cAnzeigeOrt RLIKE '^([0-9;]*;)?" . (int)$nAnzeigeOrt . ";'
-                    AND cKundengruppe RLIKE '^([0-9;]*;)?" . $kKundengruppe . ";'
+                WHERE FIND_IN_SET('" . (int)$nAnzeigeOrt . "', REPLACE(cAnzeigeOrt, ';', ',')) > 0
+                    AND FIND_IN_SET('{$kKundengruppe}', REPLACE(cKundengruppe, ';', ',')) > 0
                     " . $cSQL . "
                 ORDER BY nSort", 2
         );

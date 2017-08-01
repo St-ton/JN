@@ -348,9 +348,7 @@ if ($step === 'uebersicht') {
         $oZahlungsart->nErrorLogCount = ZahlungsLog::count($oZahlungsart->cModulId, JTLLOG_LEVEL_ERROR);
     }
 
-    $oNice = Nice::getInstance();
-    $smarty->assign('zahlungsarten', $oZahlungsart_arr)
-           ->assign('nFinanzierungAktiv', 0);
+    $smarty->assign('zahlungsarten', $oZahlungsart_arr);
 }
 $smarty->assign('step', $step)
        ->assign('waehrung', $standardwaehrung->cName)

@@ -1,59 +1,130 @@
 {include file='tpl_inc/header.tpl'}
-{config_load file="$lang.conf" section="bilderverwaltung"}
+{$corruptedPicsTypes = []}
+{$corruptedPics = false}
 
 {include file='tpl_inc/seite_header.tpl' cTitel=#bilderverwaltung# cBeschreibung=#bilderverwaltungDesc# cDokuURL=#bilderverwaltungURL#}
 <div id="content">
     {if isset($success)}
         <div class="alert alert-success"><i class="fa fa-info-circle"></i> {$success}</div>
     {/if}
-    <div class="panel panel-default">
-        <div class="table-responsive">
-            <table class="list table" id="cache-items">
+    <div class="table-responsive">
+        <table class="list table" id="cache-items">
+            <thead>
+            <tr>
+                <th class="tleft">{#headlineTyp#}</th>
+                <th class="text-center">{#headlineTotal#}</th>
+                <th class="text-center abbr">{#headlineCache#}</th>
+                <th class="text-center">{#headlineCorrupted#}</th>
+                <th class="text-center" width="125">{#headlineSize#}</th>
+                <th class="text-center" width="200">{#headlineAction#}</th>
+            </tr>
+            </thead>
+            <tbody>
+            {foreach from=$items item="item"}
+                {$corruptedPicsTypes[{$item->type}] = $item->stats->corrupted}
+                <tr data-type="{$item->type}">
+                    <td class="item-name">{$item->name}</td>
+                    <td class="text-center">
+                        <span class="item-total">
+                          {$item->stats->total}
+                        </span>
+                    </td>
+                    <td class="text-center">
+                        <span class="item-generated">
+                          {(($item->stats->generated[$SIZE_XS] + $item->stats->generated[$SIZE_SM] + $item->stats->generated[$SIZE_MD] + $item->stats->generated[$SIZE_LG]) / 4)|round:0}
+                        </span>
+                        (
+                        <span class="item-fallback">
+                            {$item->stats->fallback}
+                        </span>
+                        )
+                    </td>
+                    <td class="text-center">
+                        <span class="item-corrupted">{$item->stats->corrupted}</span>
+                    </td>
+                    <td class="text-center item-total-size">
+                        <i class="fa fa-spinner fa-spin"></i>
+                    </td>
+                    <td class="text-center action-buttons">
+                        <div class="btn-group btn-group-xs" role="group">
+                            <a class="btn btn-default" href="#" data-callback="flush" data-type="{$item->type}"><i class="fa fa-trash-o"></i>{#deleteCachedPics#}</a>
+                            <a class="btn btn-default" href="#" data-callback="generate"><i class="fa fa-cog"></i>{#generatePics#}</a>
+                        </div>
+                    </td>
+                </tr>
+            {/foreach}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="footnote small text-muted">
+        <p>{#fallbackNote#}</p>
+    </div>
+
+    {foreach $corruptedPicsTypes as $corruptedPicsType}
+        {if $corruptedPicsType > 0}
+            {$corruptedPics = true}
+        {/if}
+    {/foreach}
+
+    {if $corruptedPics}
+        <h3 class="top40">
+            {#currentCorruptedPics#}
+        </h3>
+        <p class="small text-muted">{#corruptedPicsNote#}</p>
+        <table class="list table table-condensed">
+            {foreach $corruptedImagesByType as $corruptedImages}
                 <thead>
                 <tr>
-                    <th class="tleft">Typ</th>
-                    <th class="text-center">Insgesamt</th>
-                    <th class="text-center">Im Cache</th>
-                    <th class="text-center">Fehlerhaft</th>
-                    <th class="text-center" width="125">Gr&ouml;&szlig;e</th>
-                    <th class="text-center" width="300">Aktionen</th>
+                    <th>{#articlePic#}</th>
+                    <th>{#articlenr#}</th>
                 </tr>
                 </thead>
                 <tbody>
-                {foreach from=$items item="item"}
-                    <tr data-type="{$item->type}">
-                        <td class="item-name">{$item->name}</td>
-                        <td class="text-center">
-                            <span class="item-total">
-                              {$item->stats->total}
-                            </span>
-                        </td>
-                        <td class="text-center">
-                            <span class="item-generated">
-                              {(($item->stats->generated[$SIZE_XS] + $item->stats->generated[$SIZE_SM] + $item->stats->generated[$SIZE_MD] + $item->stats->generated[$SIZE_LG]) / 4)|round:0}
-                            </span>
-                        </td>
-                        <td class="text-center">
-                            <span class="item-corrupted">
-                              {$item->stats->corrupted}
-                            </span>
-                        </td>
-                        <td class="text-center item-total-size">
-                            <i class="fa fa-spinner fa-spin"></i>
-                        </td>
-                        <td class="text-center action-buttons">
-                            <div class="btn-group btn-group-xs" role="group">
-                                <a class="btn btn-default" href="#" data-callback="cleanup" data-type="{$item->type}"><i class="fa fa-trash-o"></i> Verwaiste l&ouml;schen</a>
-                                <a class="btn btn-default" href="#" data-callback="flush" data-type="{$item->type}"><i class="fa fa-trash-o"></i> Cache leeren</a>
-                                <a class="btn btn-default" href="#" data-callback="generate"><i class="fa fa-cog"></i> Generieren</a>
+                {foreach from=$corruptedImages key=key item="corruptedImage"}
+                    <tr>
+                        <td class="col-xs-6">{$corruptedImage->picture}</td>
+                        <td class="col-xs-6">
+                            {$moreCorruptedImages = false}
+                            <div class="input-group">
+                                {foreach name='corruptedImageArticle' from=$corruptedImage->article item="article"}
+                                    {if $smarty.foreach.corruptedImageArticle.iteration <= 3}
+                                        <a href="{$article->articleURLFull}" rel="nofollow" target="_blank">
+                                            {$article->articleNr}
+                                        </a>
+                                        {if !$smarty.foreach.corruptedImageArticle.last
+                                        && $smarty.foreach.corruptedImageArticle.iteration < 3} |{/if}
+                                    {else}
+                                        {$moreCorruptedImages = true}
+                                        {$moreCorruptedImage = $key}
+                                        {break}
+                                    {/if}
+                                {/foreach}
+                                {if $moreCorruptedImages}
+                                    <a class="btn btn-default btn-xs" data-toggle="collapse"
+                                        href="#dropdownCorruptedImages-{$moreCorruptedImage}"
+                                        aria-controls="dropdownCorruptedImages-{$moreCorruptedImage}">
+                                        {#more#} <span class="caret"></span>
+                                    </a>
+                                    <div class="collapse" id="dropdownCorruptedImages-{$moreCorruptedImage}">
+                                        {foreach name='corruptedImageArticle' from=$corruptedImage->article item="article"}
+                                            {if $smarty.foreach.corruptedImageArticle.iteration > 3}
+                                                <a href="{$article->articleURLFull}" rel="nofollow" target="_blank">
+                                                    {$article->articleNr}
+                                                </a>
+                                                {if !$smarty.foreach.corruptedImageArticle.last} |{/if}
+                                            {/if}
+                                        {/foreach}
+                                    </div>
+                                {/if}
                             </div>
                         </td>
                     </tr>
                 {/foreach}
                 </tbody>
-            </table>
-        </div>
-    </div>
+            {/foreach}
+        </table>
+    {/if}
 </div>
 <script>
     {literal}

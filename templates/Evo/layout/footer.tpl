@@ -230,7 +230,9 @@
         </div>
     </footer>
 {/if}
+{block name="main-wrapper-closingtag"}
 </div> {* /mainwrapper *}
+{/block}
 
 {* JavaScripts *}
 {block name="footer-js"}

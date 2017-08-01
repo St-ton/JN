@@ -30,7 +30,7 @@ if (!$cParameter_arr['kWunschliste'] &&
 ) {
     header(
         'Location: ' . $linkHelper->getStaticRoute('wunschliste.php') .
-        '?wlid=' . verifyGPDataString('wlid') . '&error=1',
+        '?wlid=' . StringHandler::filterXSS(verifyGPDataString('wlid')) . '&error=1',
         true,
         303
     );

@@ -1205,7 +1205,8 @@ final class Shop
                 $link        = null;
                 $linkHelper  = LinkHelper::getInstance();
                 if (Session::CustomerGroup()->getID() > 0) {
-                    $cKundengruppenSQL = " AND (cKundengruppen RLIKE '^([0-9;]*;)?" . Session::CustomerGroup()->getID() . ";'
+                    $cKundengruppenSQL = " AND (FIND_IN_SET('" . Session::CustomerGroup()->getID()
+                        . "', REPLACE(cKundengruppen, ';', ',')) > 0
                         OR cKundengruppen IS NULL 
                         OR cKundengruppen = 'NULL' 
                         OR tlink.cKundengruppen = '')";

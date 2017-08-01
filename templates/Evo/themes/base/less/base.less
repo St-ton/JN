@@ -90,6 +90,7 @@ label {
             font-size: @font-size-base;
             text-transform: none;
             color: @input-color;
+            background-color: transparent;
         }
     }
 }
@@ -1095,6 +1096,11 @@ aside {
     dt, dd {
         line-height: 3;
     }
+}
+
+#updatingStockInfo{
+    position: absolute;
+    display: none;
 }
 
 #sortierenID {
@@ -3325,4 +3331,8 @@ header.fixed-navbar {
 
 .review-reply {
     padding: 0 15px;
+}
+
+#cart-form .upload-error .form-control.file-caption.kv-fileinput-caption {
+    border: 2px solid @alert-danger-border;
 }

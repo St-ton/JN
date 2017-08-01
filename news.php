@@ -36,6 +36,7 @@ $AktuelleKategorie      = new Kategorie(verifyGPCDataInteger('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
 $startKat               = new Kategorie();
 $startKat->kKategorie   = 0;
+$cUploadVerzeichnis     = PFAD_ROOT . PFAD_NEWSBILDER;
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 
 if ($Einstellungen['news']['news_benutzen'] === 'Y') {
@@ -74,6 +75,10 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
         if ($oNewsArchiv !== false) {
             if (isset($oNewsArchiv->kNews) && $oNewsArchiv->kNews > 0) {
                 $oNewsArchiv->cText = parseNewsText($oNewsArchiv->cText);
+                $oNewsArchiv->oDatei_arr = [];
+                if (is_dir($cUploadVerzeichnis . $oNewsArchiv->kNews)) {
+                    $oNewsArchiv->oDatei_arr     = holeNewsBilder($oNewsArchiv->kNews, $cUploadVerzeichnis);
+                }
                 $smarty->assign('oNewsArchiv', $oNewsArchiv);
             }
             // Metas
@@ -335,6 +340,9 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
                 $oNewsUebersicht_arr[$i]->cPreviewImageFull = empty($oNewsUebersicht_arr[$i]->cPreviewImage)
                     ? ''
                     : $shopURL . $oNewsUebersicht_arr[$i]->cPreviewImage;
+                if (is_dir($cUploadVerzeichnis . $oNewsUebersicht->kNews)) {
+                    $oNewsUebersicht_arr[$i]->oDatei_arr = holeNewsBilder($oNewsUebersicht->kNews, $cUploadVerzeichnis);
+                }
                 $oNewsUebersicht_arr[$i]->cText             = parseNewsText($oNewsUebersicht_arr[$i]->cText);
                 $oNewsUebersicht_arr[$i]->cURL              = baueURL($oNewsUebersicht, URLART_NEWS);
                 $oNewsUebersicht_arr[$i]->cURLFull          = $shopURL . $oNewsUebersicht_arr[$i]->cURL;

@@ -167,7 +167,7 @@
                         wrapper = '#' + $item.closest('form').closest('div[id]').attr('id');
 
                     $item.on('change', function () {
-                        that.variationSwitch($(this), true, wrapper);
+                        that.variationSwitch($(this), false, wrapper);
                     });
                 });
 
@@ -313,10 +313,16 @@
                     });
             }
 
-            $('.variations.simple-variations .variation', $wrapper)
-                .click(function() {
-                    imgSwitch(this, false);
-                });
+            $('#jump-to-votes-tab').click(function () {
+                $('#content a[href="#tab-votes"]').tab('show');
+            });
+            
+            if ($('.switch-variations').length == 1) {
+                $('.variations.simple-variations .variation', $wrapper)
+                    .click(function () {
+                        imgSwitch(this, false);
+                    });
+            }
 
             if (!isTouchCapable() || ResponsiveBootstrapToolkit.current() !== 'xs') {
                 $('.variations .variation', $wrapper)
@@ -345,9 +351,9 @@
                 $('#content a[href="#tab-votes"]').tab('show');
             });
 
-            /*if ($('.switch-variations', $wrapper).length === 1) {
+            if ($('.switch-variations', $wrapper).length === 1) {
                 this.variationSwitch($('.switch-variations', $wrapper), false, '#' + $wrapper.attr('id'));
-            }*/
+            }
 
             this.registerProductActions($wrapper);
         },
@@ -468,7 +474,9 @@
                                 var errorlist = '<ul><li>' + response.cHints.join('</li><li>') + '</li></ul>';
                                 eModal.alert({
                                     title: response.cTitle,
-                                    message: errorlist
+                                    message: errorlist,
+                                    keyboard: true,
+                                    tabindex: -1
                                 });
                                 break;
                             case 1: // forwarding
@@ -478,7 +486,9 @@
                                 that.updateComparelist(response);
                                 eModal.alert({
                                     title: response.cTitle,
-                                    message: response.cNotification
+                                    message: response.cNotification,
+                                    keyboard: true,
+                                    tabindex: -1
                                 });
                                 break;
                         }
@@ -508,7 +518,9 @@
                                 var errorlist = '<ul><li>' + response.cHints.join('</li><li>') + '</li></ul>';
                                 eModal.alert({
                                     title: response.cTitle,
-                                    message: errorlist
+                                    message: errorlist,
+                                    keyboard: true,
+                                    tabindex: -1
                                 });
                                 break;
                             case 1: // forwarding
@@ -542,8 +554,10 @@
                     var url = e.currentTarget.href;
                     url += (url.indexOf('?') === -1) ? '?isAjax=true' : '&isAjax=true';
                     eModal.ajax({
-                        'size': 'lg',
-                        'url': url
+                        size: 'lg',
+                        url: url,
+                        keyboard: true,
+                        tabindex: -1
                     });
                     e.stopPropagation();
 
@@ -715,6 +729,10 @@
                         .trigger('priceChanged', result);
                 });
             }
+        },
+
+        variationRefreshAll: function($wrapper) {
+            $('.variations select', $wrapper).selectpicker('refresh');
         },
 
         getConfigGroupQuantity: function (groupId) {
@@ -924,18 +942,14 @@
         variationSetVal: function(key, value, wrapper) {
             var $wrapper = this.getWrapper(wrapper);
 
-            $('[data-key="' + key + '"]', $wrapper).val(value)
-                .closest('select')
-                .selectpicker('refresh');
+            $('[data-key="' + key + '"]', $wrapper).val(value);
         },
 
         variationEnable: function(key, value, wrapper) {
             var $wrapper = this.getWrapper(wrapper),
                 $item    = $('[data-value="' + value + '"].variation', $wrapper);
 
-            $item.removeClass('not-available')
-                .closest('select')
-                .selectpicker('refresh');
+            $item.removeClass('not-available');
         },
 
         variationActive: function(key, value, def, wrapper) {
@@ -948,9 +962,6 @@
                 .prop('checked', true)
                 .end()
                 .prop('selected', true);
-
-            $item.closest('select')
-                .selectpicker('refresh');
 
             $('[data-id="'+key+'"].swatches-selected')
                 .text($item.attr('data-original'));
@@ -974,8 +985,6 @@
                         $item.data('content', label)
                             .attr('data-content', label);
 
-                        $item.closest('select')
-                            .selectpicker('refresh');
                         break;
                     case 'radio':
                         elem = $item.find('.label-not-available');
@@ -1061,6 +1070,8 @@
                 if (animation) {
                     $wrapper.addClass('loading');
                     $spinner = $.evo.extended().spinner();
+                } else {
+                    $('.variations #updatingStockInfo').show();
                 }
 
                 $current.addClass('loading');
@@ -1074,6 +1085,7 @@
                     if (animation) {
                         $spinner.stop();
                     }
+                    $('.variations #updatingStockInfo').hide();
                     if (error) {
                         $.evo.error('checkVarkombiDependencies');
                     }

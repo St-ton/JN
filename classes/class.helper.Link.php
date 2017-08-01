@@ -335,7 +335,7 @@ class LinkHelper
                             AND tlink.kLinkgruppe = " . (int)$Linkgruppe->kLinkgruppe . $loginSichtbarkeit . "
                             AND (tlink.cKundengruppen IS NULL
                             OR tlink.cKundengruppen = 'NULL'
-                            OR tlink.cKundengruppen RLIKE '^([0-9;]*;)?" . $customerGroupID . ";')
+                            OR FIND_IN_SET('{$customerGroupID}', REPLACE(tlink.cKundengruppen, ';', ',')) > 0)
                         ORDER BY tlink.nSort, tlink.cName", 2
                 );
                 $links = [];
@@ -416,8 +416,8 @@ class LinkHelper
             // versand
             $cKundengruppenSQL = '';
             if (Session::CustomerGroup()->getID() > 0) {
-                $cKundengruppenSQL = " AND (tlink.cKundengruppen RLIKE '^([0-9;]*;)?" .
-                    Session::CustomerGroup()->getID() . ";'
+                $cKundengruppenSQL = " AND (FIND_IN_SET('" . Session::CustomerGroup()->getID()
+                    . "', REPLACE(tlink.cKundengruppen, ';', ',')) > 0
                     OR tlink.cKundengruppen IS NULL OR tlink.cKundengruppen = 'NULL' OR tlink.cKundengruppen = '')";
             }
             $versand_arr = Shop::DB()->query(
@@ -848,8 +848,8 @@ class LinkHelper
                         $loginSichtbarkeit . "
                         AND (tlink.cKundengruppen IS NULL
                         OR tlink.cKundengruppen = 'NULL'
-                        OR tlink.cKundengruppen RLIKE '^([0-9;]*;)?" .
-Session::CustomerGroup()->getID() . ";')",
+                        OR FIND_IN_SET('" . Session::CustomerGroup()->getID()
+                            . "', REPLACE(tlink.cKundengruppen, ';', ',')) > 0)",
                 2
             );
             if (!empty($linkData)) {

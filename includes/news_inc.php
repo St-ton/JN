@@ -444,7 +444,8 @@ function getNewsArchive($kNews, $bActiveOnly = false)
                 AND tseo.kSprache = " . Shop::getLanguage() . "
             WHERE tnews.kNews = " . (int)$kNews . " 
                 AND (tnews.cKundengruppe LIKE '%;-1;%' 
-                    OR tnews.cKundengruppe RLIKE '^([0-9;]*;)?" . Session::CustomerGroup()->getID() . ";')
+                    OR FIND_IN_SET('" . Session::CustomerGroup()->getID()
+                        . "', REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
                 AND tnews.kSprache = " . Shop::getLanguage()
                 . $activeFilter, 1
     );
@@ -583,7 +584,8 @@ function getNewsOverview($oSQL, $cLimitSQL)
             WHERE tnews.nAktiv = 1
                 AND tnews.dGueltigVon <= now()
                 AND (tnews.cKundengruppe LIKE '%;-1;%' 
-                    OR tnews.cKundengruppe RLIKE '^([0-9;]*;)?" . Session::CustomerGroup()->getID() . ";')
+                    OR FIND_IN_SET('" . Session::CustomerGroup()->getID()
+                        . "', REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
                 AND tnews.kSprache = " . Shop::getLanguage() . "
                 " . $oSQL->cDatumSQL . "
             GROUP BY tnews.kNews
@@ -605,7 +607,8 @@ function getFullNewsOverview($oSQL)
             WHERE tnews.nAktiv = 1
                 AND tnews.dGueltigVon <= now()
                 AND (tnews.cKundengruppe LIKE '%;-1;%' 
-                    OR tnews.cKundengruppe RLIKE '^([0-9;]*;)?" . Session::CustomerGroup()->getID() . ";')
+                    OR FIND_IN_SET('" . Session::CustomerGroup()->getID()
+                        . "', REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
                 " . $oSQL->cDatumSQL . "
                 AND tnews.kSprache = " . Shop::getLanguage(), 1
     );
@@ -624,9 +627,51 @@ function getNewsDateArray($oSQL)
             WHERE tnews.nAktiv = 1
                 AND tnews.dGueltigVon <= now()
                 AND (tnews.cKundengruppe LIKE '%;-1;%' 
-                    OR tnews.cKundengruppe RLIKE '^([0-9;]*;)?" . Session::CustomerGroup()->getID() . ";')
+                    OR FIND_IN_SET('" . Session::CustomerGroup()->getID()
+                        . "', REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
                 AND tnews.kSprache = " . Shop::getLanguage() . "
             GROUP BY nJahr, nMonat
             ORDER BY dGueltigVon DESC", 2
     );
+}
+
+/**
+ * @param object $a
+ * @param object $b
+ * @return int
+ */
+function cmp_obj($a, $b)
+{
+    return strcmp($a->cName, $b->cName);
+}
+
+/**
+ * @param int    $kNews
+ * @param string $cUploadVerzeichnis
+ * @return array
+ */
+function holeNewsBilder($kNews, $cUploadVerzeichnis)
+{
+    $oDatei_arr = [];
+    $kNews      = (int)$kNews;
+    if ($kNews > 0) {
+        if (is_dir($cUploadVerzeichnis . $kNews)) {
+            $DirHandle = opendir($cUploadVerzeichnis . $kNews);
+            $shopURL   = Shop::getURL() . '/';
+            while (false !== ($Datei = readdir($DirHandle))) {
+                if ($Datei !== '.' && $Datei !== '..') {
+                    $oDatei         = new stdClass();
+                    $oDatei->cName  = substr($Datei, 0, strpos($Datei, '.'));
+                    $oDatei->cURL   = PFAD_NEWSBILDER . $kNews . '/' . $Datei;
+                    $oDatei->cDatei = $Datei;
+
+                    $oDatei_arr[] = $oDatei;
+                }
+            }
+
+            usort($oDatei_arr, 'cmp_obj');
+        }
+    }
+
+    return $oDatei_arr;
 }

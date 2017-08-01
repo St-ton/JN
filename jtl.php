@@ -346,7 +346,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
     }
     // Wunschliste Artikelsuche
     if (verifyGPCDataInteger('wlsearch') === 1) {
-        $cSuche       = strip_tags(StringHandler::filterXSS(verifyGPDataString('cSuche')));
+        $cSuche       = StringHandler::filterXSS(verifyGPDataString('cSuche'));
         $kWunschliste = verifyGPCDataInteger('wl');
         if ($kWunschliste) {
             $oWunschliste = new Wunschliste($kWunschliste);

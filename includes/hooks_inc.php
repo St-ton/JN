@@ -1684,6 +1684,14 @@ define('HOOK_BACKEND_FUNCTIONS_GRAVATAR', 227);
 define('HOOK_BESTELLABSCHLUSS_INC_WARENKORBINDB', 228);
 
 /**
+ * after truncating tables in database
+ *
+ * @since 4.06
+ * @file admin/shopzuruecksetzen.php
+ */
+define('HOOK_BACKEND_SHOP_RESET_AFTER', 229);
+
+/**
  * in Navigationsfilter::initBaseStates() after initializing the base filters
  *
  * @file class.JTL-Shop.Navigationsfilter.php

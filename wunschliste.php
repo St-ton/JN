@@ -215,7 +215,7 @@ if ($action !== null && isset($_POST['kWunschliste'], $_SESSION['Kunde']->kKunde
             break;
 
         case 'search':
-            $cSuche = strip_tags(StringHandler::filterXSS(verifyGPDataString('cSuche')));
+            $cSuche = StringHandler::filterXSS(verifyGPDataString('cSuche'));
             if ($userOK === true && strlen($cSuche) > 0) {
                 $oWunschliste                      = new Wunschliste($kWunschliste);
                 $oWunschlistePosSuche_arr          = $oWunschliste->sucheInWunschliste($cSuche);
@@ -229,7 +229,7 @@ if ($action !== null && isset($_POST['kWunschliste'], $_SESSION['Kunde']->kKunde
     }
 } elseif ($action === 'search' && $kWunschliste > 0 && validateToken()) {
     // Suche in einer öffentlichen Wunschliste
-    $cSuche = strip_tags(StringHandler::filterXSS(verifyGPDataString('cSuche')));
+    $cSuche = StringHandler::filterXSS(verifyGPDataString('cSuche'));
     if (strlen($cSuche) > 0) {
         $oWunschliste                      = new Wunschliste($kWunschliste);
         $oWunschlistePosSuche_arr          = $oWunschliste->sucheInWunschliste($cSuche);

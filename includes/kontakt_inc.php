@@ -171,7 +171,7 @@ function pruefeBetreffVorhanden()
     $oBetreff_arr = Shop::DB()->query(
         "SELECT kKontaktBetreff
             FROM tkontaktbetreff
-            WHERE cKundengruppen RLIKE '^([0-9;]*;)?" . (int)$kKundengruppe . ";'
+            WHERE FIND_IN_SET('" . (int)$kKundengruppe . "', REPLACE(cKundengruppen, ';', ',')) > 0
                 OR cKundengruppen = '0'", 2
     );
 

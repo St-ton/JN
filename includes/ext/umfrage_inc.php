@@ -404,7 +404,8 @@ function holeAktuelleUmfrage($kUmfrage)
                 AND tumfrage.kSprache = " . Shop::getLanguage() . "
                 AND (
                     cKundengruppe LIKE '%;-1;%' 
-                    OR cKundengruppe RLIKE '^([0-9;]*;)?" . Session::CustomerGroup()->getID() . ";'
+                    OR FIND_IN_SET('" . Session::CustomerGroup()->getID()
+                        . "', REPLACE(cKundengruppe, ';', ',')) > 0
                     )
                 AND (
                     (dGueltigVon <= now() 
@@ -443,7 +444,8 @@ function holeUmfrageUebersicht()
                 AND tumfrage.kSprache = " . Shop::getLanguage() . "
                 AND (
                     cKundengruppe LIKE '%;-1;%' 
-                    OR cKundengruppe RLIKE '^([0-9;]*;)?" . Session::CustomerGroup()->getID() . ";'
+                    OR FIND_IN_SET('" . Session::CustomerGroup()->getID()
+                        . "', REPLACE(cKundengruppe, ';', ',')) > 0
                     )
                 AND (
                     (dGueltigVon <= now() 

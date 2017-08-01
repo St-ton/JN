@@ -954,9 +954,9 @@ class Metadata
             // Gibt die Suchspecials als Assoc Array zurück, wobei die Keys des Arrays der kKey vom Suchspecial sind.
             $oSuchspecialEinstellung_arr = gibSuchspecialEinstellungMapping($this->conf['suchspecials']);
             // -1 = Keine spezielle Sortierung
-            $ssConf = isset($oSuchspecialEinstellung_arr[$this->searchSpecial->getValue()]) ?: null;
+            $ssConf = isset($oSuchspecialEinstellung_arr[$this->navigationsfilter->getSearchSpecial()->getValue()]) ?: null;
             if ($ssConf !== null && $ssConf !== -1 && count($oSuchspecialEinstellung_arr) > 0) {
-                $_SESSION['Usersortierung'] = (int)$oSuchspecialEinstellung_arr[$this->searchSpecial->getValue()];
+                $_SESSION['Usersortierung'] = (int)$oSuchspecialEinstellung_arr[$this->navigationsfilter->getSearchSpecial()->getValue()];
             }
         }
         // Der User hat expliziet eine Sortierung eingestellt

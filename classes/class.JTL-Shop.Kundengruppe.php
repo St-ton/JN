@@ -555,7 +555,10 @@ class Kundengruppe
      */
     public static function getDefaultGroupID()
     {
-        if (isset($_SESSION['Kundengruppe']->kKundengruppe) && $_SESSION['Kundengruppe']->getID() > 0) {
+        if (isset($_SESSION['Kundengruppe'])
+            && get_class($_SESSION['Kundengruppe']) === 'Kundengruppe'
+            && $_SESSION['Kundengruppe']->getID() > 0
+        ) {
             return $_SESSION['Kundengruppe']->getID();
         }
         $oKundengruppe = self::getDefault();
@@ -573,7 +576,10 @@ class Kundengruppe
     public static function reset($kKundengruppe)
     {
         $kKundengruppe = (int)$kKundengruppe;
-        if (isset($_SESSION['Kundengruppe']->kKundengruppe) && $_SESSION['Kundengruppe']->getID() === $kKundengruppe) {
+        if (isset($_SESSION['Kundengruppe'])
+            && get_class($_SESSION['Kundengruppe']) === 'Kundengruppe'
+            && $_SESSION['Kundengruppe']->getID() === $kKundengruppe
+        ) {
             return $_SESSION['Kundengruppe'];
         }
         $oKundengruppe = new stdClass();

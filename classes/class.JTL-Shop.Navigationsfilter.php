@@ -253,6 +253,7 @@ class Navigationsfilter
         $this->baseURL         = Shop::getURL() . '/';
         $this->metaData        = new Metadata($this);
         executeHook(HOOK_NAVIGATIONSFILTER_CREATE, ['navifilter' => $this]);
+        $this->initBaseStates();
     }
 
     /**
@@ -465,7 +466,6 @@ class Navigationsfilter
      */
     public function initStates($params)
     {
-        $this->initBaseStates();
         $params = array_merge($this->getParamsPrototype(), $params);
         if ($params['kKategorie'] > 0) {
             $this->baseState = $this->category->init($params['kKategorie']);
@@ -1264,7 +1264,7 @@ class Navigationsfilter
         switch ((int)$Artikelsortierung) {
             case SEARCH_SORT_STANDARD:
                 $sort->orderBy = 'tartikel.nSort, tartikel.cName';
-                if ($this->category->kKategorie > 0) {
+                if ($this->category->getValue() > 0) {
                     $sort->orderBy = 'tartikel.nSort, tartikel.cName';
                 } elseif (isset($_SESSION['Usersortierung'])
                     && (int)$_SESSION['Usersortierung'] === 100

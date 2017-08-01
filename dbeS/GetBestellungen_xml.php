@@ -9,7 +9,7 @@ require_once __DIR__ . '/syncinclude.php';
 $return  = 3;
 $xml_obj = [];
 if (auth()) {
-    $return = 0;
+    $return          = 0;
     $oBestellung_arr = Shop::DB()->query(
         "SELECT tbestellung.kBestellung, tbestellung.kWarenkorb, tbestellung.kKunde, tbestellung.kLieferadresse,
             tbestellung.kRechnungsadresse,  tbestellung.kZahlungsart, tbestellung.kVersandart, tbestellung.kSprache, 
@@ -135,6 +135,15 @@ if (auth()) {
 
             $xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo attr'] = buildAttributes($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']);
             unset($xml_obj['bestellungen']['tbestellung'][$i . ' attr']['kVersandArt'], $xml_obj['bestellungen']['tbestellung'][$i . ' attr']['kWarenkorb']);
+
+            $xml_obj['bestellungen']['tbestellung'][$i]['tbestellattribut'] = Shop::DB()->query(
+                "SELECT cName AS 'key', cValue AS 'value'
+                    FROM tbestellattribut
+                    WHERE kBestellung = " . (int)$xml_obj['bestellungen']['tbestellung'][$i . ' attr']['kBestellung'], 9
+            );
+            if (count($xml_obj['bestellungen']['tbestellung'][$i]['tbestellattribut']) === 0) {
+                unset($xml_obj['bestellungen']['tbestellung'][$i]['tbestellattribut']);
+            }
 
             // Sicherstellen, dass fWaehrungsFaktor als letztes Element im XML steht
             $tmpWaehrungsfaktor = $xml_obj['bestellungen']['tbestellung'][$i]['fWaehrungsFaktor'];

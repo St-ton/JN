@@ -157,7 +157,7 @@ class JTLCache
     {
         $mapping = self::map($method);
 
-        return ($mapping !== null) ? call_user_func_array([$this, $mapping], $arguments) : null;
+        return $mapping !== null ? call_user_func_array([$this, $mapping], $arguments) : null;
     }
 
     /**
@@ -172,7 +172,7 @@ class JTLCache
     {
         $mapping = self::map($method);
 
-        return ($mapping !== null) ? call_user_func_array([self::$instance, $mapping], $arguments) : null;
+        return $mapping !== null ? call_user_func_array([self::$instance, $mapping], $arguments) : null;
     }
 
     /**
@@ -919,23 +919,20 @@ class JTLCache
     public function _getBaseID($hash = false, $customerID = false, $customerGroup = true, $languageID = true, $currencyID = true, $sslStatus = true)
     {
         $baseID = 'b';
-        //add customer ID
+        // add customer ID
         if ($customerID === true) {
             $baseID .= '_cid';
             $baseID .= isset($_SESSION['Kunde']->kKunde)
                 ? $_SESSION['Kunde']->kKunde
                 : '-1';
         }
-        //add customer group
+        // add customer group
         if ($customerGroup === true) {
-            $baseID .= '_cgid';
-            $baseID .= isset($_SESSION['Kundengruppe']->kKundengruppe)
-                ? Session::CustomerGroup()->getID()
-                : Kundengruppe::getDefaultGroupID();
+            $baseID .= '_cgid' . Session::CustomerGroup()->getID();
         } elseif (is_numeric($customerGroup)) {
             $baseID .= '_cgid' . (int)$customerGroup;
         }
-        //add language ID
+        // add language ID
         if ($languageID === true) {
             $baseID .= '_lid';
             $lang = Shop::getLanguage();
@@ -949,13 +946,13 @@ class JTLCache
         } elseif (is_numeric($languageID)) {
             $baseID .= '_lid' . (int)$languageID;
         }
-        //add currency ID
+        // add currency ID
         if ($currencyID === true) {
             $baseID .= '_curid' . Session::Currency()->getID();
         } elseif (is_numeric($currencyID)) {
             $baseID .= '_curid' . (int)$currencyID;
         }
-        //add current SSL status
+        // add current SSL status
         if ($sslStatus === true && function_exists('pruefeSSL')) {
             $baseID .= '_ssl' . pruefeSSL();
         }

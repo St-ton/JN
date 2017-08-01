@@ -51,7 +51,7 @@ class Boxen
      */
     public static function getInstance()
     {
-        return (self::$_instance === null) ? new self() : self::$_instance;
+        return self::$_instance === null ? new self() : self::$_instance;
     }
 
     /**
@@ -148,8 +148,8 @@ class Boxen
         $cPluginAktiv     = $bAktiv
             ? " AND (tplugin.nStatus IS NULL OR tplugin.nStatus = 2  OR tboxvorlage.eTyp != 'plugin')"
             : "";
-        $oBoxen_arr       = Shop::DB()->query("
-            SELECT tboxen.kBox, tboxen.kBoxvorlage, tboxen.kCustomID, tboxen.kContainer, 
+        $oBoxen_arr       = Shop::DB()->query(
+            "SELECT tboxen.kBox, tboxen.kBoxvorlage, tboxen.kCustomID, tboxen.kContainer, 
                    tboxen.cTitel, tboxen.ePosition, tboxensichtbar.kSeite, tboxensichtbar.nSort, 
                    tboxensichtbar.bAktiv, tboxensichtbar.cFilter, tboxvorlage.eTyp, 
                    tboxvorlage.cName, tboxvorlage.cTemplate, tplugin.nStatus AS pluginStatus
@@ -184,8 +184,8 @@ class Boxen
                     $oBox->oContainer_arr = [];
                     $oBox->nContainer     = 0;
                     if ($kContainer > 0) {
-                        $oContainerBoxen_arr = Shop::DB()->query("
-                            SELECT tboxen.kBox, tboxen.kBoxvorlage, tboxen.kCustomID, tboxen.kContainer, tboxen.cTitel, 
+                        $oContainerBoxen_arr = Shop::DB()->query(
+                            "SELECT tboxen.kBox, tboxen.kBoxvorlage, tboxen.kCustomID, tboxen.kContainer, tboxen.cTitel, 
                                 tboxen.ePosition, tboxensichtbar.kSeite, tboxensichtbar.nSort, tboxensichtbar.bAktiv, 
                                 tboxvorlage.eTyp, tboxvorlage.cName, tboxvorlage.cTemplate
                                 FROM tboxen
@@ -216,7 +216,7 @@ class Boxen
                         $oBox->cTitel = $oBox->cName;
                     }
                     if ($bAktiv && ($oBox->eTyp === 'text' || $oBox->eTyp === 'catbox')) {
-                        $cISO           = isset($_SESSION['cISOSprache']) && strlen($_SESSION['cISOSprache'])
+                        $cISO           = !empty($_SESSION['cISOSprache'])
                             ? $_SESSION['cISOSprache']
                             : 'ger';
                         $oBox->cTitel   = '';
@@ -229,7 +229,7 @@ class Boxen
                     } elseif ($bAktiv && $oBox->kBoxvorlage === 0 && !empty($oBox->oContainer_arr)) { //container
                         foreach ($oBox->oContainer_arr as $_box) {
                             if (isset($_box->eTyp) && ($_box->eTyp === 'text' || $_box->eTyp === 'catbox')) {
-                                $cISO           = isset($_SESSION['cISOSprache']) && strlen($_SESSION['cISOSprache'])
+                                $cISO           = !empty($_SESSION['cISOSprache'])
                                     ? $_SESSION['cISOSprache']
                                     : 'ger';
                                 $_box->cTitel   = '';
@@ -538,13 +538,16 @@ class Boxen
             case BOX_PREISRADAR :
                 $oBox->compatName = 'Preisradar';
                 $oBox->anzeigen   = 'N';
-                $nLimit  = (isset($this->boxConfig['boxen']['boxen_preisradar_anzahl']) && (int)$this->boxConfig['boxen']['boxen_preisradar_anzahl'] > 0)
+                $nLimit  = (isset($this->boxConfig['boxen']['boxen_preisradar_anzahl'])
+                    && (int)$this->boxConfig['boxen']['boxen_preisradar_anzahl'] > 0)
                     ? (int)$this->boxConfig['boxen']['boxen_preisradar_anzahl']
                     : 3;
-                $nTage   = (isset($this->boxConfig['boxen']['boxen_preisradar_anzahltage']) && (int)$this->boxConfig['boxen']['boxen_preisradar_anzahltage'] > 0)
+                $nTage   = (isset($this->boxConfig['boxen']['boxen_preisradar_anzahltage'])
+                    && (int)$this->boxConfig['boxen']['boxen_preisradar_anzahltage'] > 0)
                     ? (int)$this->boxConfig['boxen']['boxen_preisradar_anzahltage']
                     : 30;
-                $cacheID = 'box_price_radar_' . $currencyCachePart . $nTage . '_' . $nLimit . '_' . $kSprache . '_' . Session::CustomerGroup()->getID();
+                $cacheID = 'box_price_radar_' . $currencyCachePart . $nTage . '_' . $nLimit .
+                    '_' . $kSprache . '_' . Session::CustomerGroup()->getID();
                 if (($oBoxCached = Shop::Cache()->get($cacheID)) === false) {
                     $oPreisradar_arr         = Preisradar::getProducts(Session::CustomerGroup()->getID(), $nLimit, $nTage);
                     $oBox->Artikel           = new stdClass();
@@ -950,7 +953,7 @@ class Boxen
 
             case BOX_IN_KUERZE_VERFUEGBAR :
                 $oBox->compatName = 'ErscheinendeProdukte';
-                if (!Session::CustomerGroup()->mayViewCategories() || !$kKundengruppe) {
+                if (!$kKundengruppe || !Session::CustomerGroup()->mayViewCategories()) {
                     $oBox->anzeigen = 'N';
                     break;
                 }
@@ -1253,11 +1256,11 @@ class Boxen
     {
         $smarty          = Shop::Smarty();
         $originalArticle = $smarty->getTemplateVars('Artikel');
-        if (isset($_SESSION['Kundengruppe']->nNettoPreise)) {
+        if (isset($_SESSION['Kundengruppe'])) {
             $smarty->assign('NettoPreise', Session::CustomerGroup()->getIsMerchant());
         }
         //check whether filters should be displayed after a box
-        $filterAfter = (!empty($this->boxConfig) && isset($GLOBALS['NaviFilter']) && isset($GLOBALS['oSuchergebnisse']))
+        $filterAfter = (!empty($this->boxConfig) && isset($GLOBALS['NaviFilter'], $GLOBALS['oSuchergebnisse']))
             ? $this->gibBoxenFilterNach(Shop::$NaviFilter, $GLOBALS['oSuchergebnisse'])
             : 0;
         $path              = 'boxes/';
@@ -1277,21 +1280,21 @@ class Boxen
                 foreach ($_boxes as $_box) {
                     if (!empty($_box->cFilter)) {
                         $pageType   = (int)$_box->kSeite;
-                        $allowedIDs = explode(',', $_box->cFilter);
+                        $allowedIDs = array_map('intval', explode(',', $_box->cFilter));
                         if ($pageType === PAGE_ARTIKELLISTE) {
-                            if (!in_array(Shop::$kKategorie, $allowedIDs)) {
+                            if (!in_array((int)Shop::$kKategorie, $allowedIDs, true)) {
                                 continue;
                             }
                         } elseif ($pageType === PAGE_ARTIKEL) {
-                            if (!in_array(Shop::$kArtikel, $allowedIDs)) {
+                            if (!in_array((int)Shop::$kArtikel, $allowedIDs, true)) {
                                 continue;
                             }
                         } elseif ($pageType === PAGE_EIGENE) {
-                            if (!in_array(Shop::$kLink, $allowedIDs)) {
+                            if (!in_array((int)Shop::$kLink, $allowedIDs, true)) {
                                 continue;
                             }
                         } elseif ($pageType === PAGE_HERSTELLER) {
-                            if (!in_array(Shop::$kHersteller, $allowedIDs)) {
+                            if (!in_array((int)Shop::$kHersteller, $allowedIDs, true)) {
                                 continue;
                             }
                         }
@@ -1735,15 +1738,15 @@ class Boxen
             for ($i = 0; $i < PAGE_MAX && $bOk; $i++) {
                 $oBox = Shop::DB()->select('tboxensichtbar', 'kBox', $kBox);
                 $bOk  = (!empty($oBox))
-                    ? (Shop::DB()->query("
-                        UPDATE tboxensichtbar 
+                    ? (Shop::DB()->query(
+                        "UPDATE tboxensichtbar 
                             SET nSort = " . $nSort . ",
                                 bAktiv = " . $bAktiv . " 
                             WHERE kBox = " . $kBox . " 
                                 AND kSeite = " . $i, 4
                         ) !== false)
-                    : (Shop::DB()->query("
-                        INSERT INTO tboxensichtbar 
+                    : (Shop::DB()->query(
+                        "INSERT INTO tboxensichtbar 
                             SET kBox = " . $kBox . ",
                                 kSeite = " . $i . ", 
                                 nSort = " . $nSort . ", 
@@ -1754,8 +1757,8 @@ class Boxen
             return $bOk;
         }
 
-        return Shop::DB()->query("
-            REPLACE INTO tboxensichtbar 
+        return Shop::DB()->query(
+            "REPLACE INTO tboxensichtbar 
               SET kBox = " . $kBox . ", 
                   kSeite = " . $nSeite . ", 
                   nSort = " . $nSort . ", 
@@ -2006,8 +2009,8 @@ class Boxen
             if ($isAvailable === false) {
                 $box = Shop::DB()->select('tboxen', 'ePosition', $position);
                 if ($box !== null && isset($box->kBox)) {
-                    $boxes = Shop::DB()->query("
-                        SELECT tboxen.*, tboxvorlage.eTyp, tboxvorlage.cName, tboxvorlage.cTemplate 
+                    $boxes = Shop::DB()->query(
+                        "SELECT tboxen.*, tboxvorlage.eTyp, tboxvorlage.cName, tboxvorlage.cTemplate 
                             FROM tboxen 
                                 LEFT JOIN tboxvorlage
                                 ON tboxen.kBoxvorlage = tboxvorlage.kBoxvorlage

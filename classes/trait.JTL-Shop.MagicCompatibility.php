@@ -27,13 +27,12 @@ trait MagicCompatibilityTrait
      */
     public function __get($name)
     {
+        trigger_error(__CLASS__ . ': getter should be used to get ' . $name, E_USER_DEPRECATED);
         if (property_exists($this, $name)) {
-            trigger_error(__CLASS__ . ': getter should be use to get ' . $name, E_USER_DEPRECATED);
 
             return $this->$name;
         }
         if (($mapped = self::getMapping($name)) !== null) {
-            trigger_error(__CLASS__ . ': getter should be use to get ' . $name, E_USER_DEPRECATED);
             $method = 'get' . $mapped;
 
             return $this->$method();
@@ -49,14 +48,13 @@ trait MagicCompatibilityTrait
      */
     public function __set($name, $value)
     {
+        trigger_error(__CLASS__ . ': setter should be used to set ' . $name, E_USER_DEPRECATED);
         if (property_exists($this, $name)) {
-            trigger_error(__CLASS__ . ': setter should be use to set ' . $name, E_USER_DEPRECATED);
             $this->$name = $value;
 
             return $this;
         }
         if (($mapped = self::getMapping($name)) !== null) {
-            trigger_error(__CLASS__ . ': getter should be use to get ' . $name, E_USER_DEPRECATED);
             $method = 'set' . $mapped;
 
             return $this->$method($value);

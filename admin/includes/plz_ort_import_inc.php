@@ -85,7 +85,7 @@ function plzimportDoImport($target, array $sessData, $result)
             $read += strlen(implode(',', $data));
             $data  = fgetcsv($fHandle, 0, "\t");
 
-            if (isset($data[13]) && !in_array($data[13], [2, 6])) {
+            if (isset($data[13]) && in_array($data[13], [6, 8])) {
                 $plz_arr       = explode(',', $data[7]);
                 $oPLZOrt->cOrt = utf8_decode($data[3]);
 

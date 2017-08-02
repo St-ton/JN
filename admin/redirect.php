@@ -18,67 +18,65 @@ handleCsvImportAction('redirects', 'tredirect');
 
 $cHinweis  = '';
 $cFehler   = '';
-$cTab      = '';//verifyGPDataString('cTab');
 $redirects = isset($_POST['redirects']) ? $_POST['redirects'] : [];
+$oRedirect = new Redirect();
 
-switch (verifyGPDataString('action')) {
-    case 'save':
-        foreach ($redirects as $kRedirect => $redirect) {
-            $oRedirect = new Redirect($kRedirect);
-
-            if ($oRedirect->kRedirect > 0 && $oRedirect->cToUrl !== $redirect['cToUrl']) {
-                if (Redirect::checkAvailability($redirect['cToUrl'])) {
-                    $oRedirect->cToUrl     = $redirect['cToUrl'];
-                    $oRedirect->cAvailable = 'y';
-                    Shop::DB()->update('tredirect', 'kRedirect', $oRedirect->kRedirect, $oRedirect);
-                } else {
-                    $cFehler .=
-                        "&Auml;nderungen konnten nicht gespeichert werden, da die weiterzuleitende URL " .
-                        "'" . $redirect['cToUrl'] . "' nicht erreichbar ist.<br>";
+if (validateToken()) {
+    switch (verifyGPDataString('action')) {
+        case 'save':
+            foreach ($redirects as $kRedirect => $redirect) {
+                if ($oRedirect->kRedirect > 0 && $oRedirect->cToUrl !== $redirect['cToUrl']) {
+                    if (Redirect::checkAvailability($redirect['cToUrl'])) {
+                        $oRedirect->cToUrl     = $redirect['cToUrl'];
+                        $oRedirect->cAvailable = 'y';
+                        Shop::DB()->update('tredirect', 'kRedirect', $oRedirect->kRedirect, $oRedirect);
+                    } else {
+                        $cFehler .=
+                            "&Auml;nderungen konnten nicht gespeichert werden, da die weiterzuleitende URL " .
+                            "'" . $redirect['cToUrl'] . "' nicht erreichbar ist.<br>";
+                    }
                 }
             }
-        }
-        break;
-    case 'delete':
-        foreach ($redirects as $kRedirect => $redirect) {
-            if (isset($redirect['enabled']) && (int)$redirect['enabled'] === 1) {
-                Redirect::deleteRedirect($kRedirect);
+            break;
+        case 'delete':
+            foreach ($redirects as $kRedirect => $redirect) {
+                if (isset($redirect['enabled']) && (int)$redirect['enabled'] === 1) {
+                    Redirect::deleteRedirect($kRedirect);
+                }
             }
-        }
-        break;
-    case 'delete_all':
-        Redirect::deleteUnassigned();
-        break;
-    case 'new':
-        $oRedirect = new Redirect();
-        if ($oRedirect->saveExt(verifyGPDataString('cFromUrl'), verifyGPDataString('cToUrl'))) {
-            $cHinweis = 'Ihre Weiterleitung wurde erfolgreich gespeichert';
-        } else {
-            $cFehler = 'Fehler: Bitte pr&uuml;fen Sie Ihre Eingaben';
-            $cTab    = 'new_redirect';
-            $smarty
-                ->assign('cFromUrl', verifyGPDataString('cFromUrl'))
-                ->assign('cToUrl', verifyGPDataString('cToUrl'));
-        }
-        break;
-    case 'csvimport':
-        $oRedirect = new Redirect();
-        if (is_uploaded_file($_FILES['cFile']['tmp_name'])) {
-            $cFile = PFAD_ROOT . PFAD_EXPORT . md5($_FILES['cFile']['name'] . time());
-            if (move_uploaded_file($_FILES['cFile']['tmp_name'], $cFile)) {
-                $cError_arr = $oRedirect->doImport($cFile);
-                if (count($cError_arr) === 0) {
-                    $cHinweis = 'Der Import wurde erfolgreich durchgef&uuml;hrt';
-                } else {
-                    @unlink($cFile);
-                    $cFehler = 'Fehler: Der Import konnte nicht durchgef&uuml;hrt werden." .
+            break;
+        case 'delete_all':
+            Redirect::deleteUnassigned();
+            break;
+        case 'new':
+            if ($oRedirect->saveExt(verifyGPDataString('cFromUrl'), verifyGPDataString('cToUrl'))) {
+                $cHinweis = 'Ihre Weiterleitung wurde erfolgreich gespeichert';
+            } else {
+                $cFehler = 'Fehler: Bitte pr&uuml;fen Sie Ihre Eingaben';
+                $smarty
+                    ->assign('cTab', 'new_redirect')
+                    ->assign('cFromUrl', verifyGPDataString('cFromUrl'))
+                    ->assign('cToUrl', verifyGPDataString('cToUrl'));
+            }
+            break;
+        case 'csvimport':
+            if (is_uploaded_file($_FILES['cFile']['tmp_name'])) {
+                $cFile = PFAD_ROOT . PFAD_EXPORT . md5($_FILES['cFile']['name'] . time());
+                if (move_uploaded_file($_FILES['cFile']['tmp_name'], $cFile)) {
+                    $cError_arr = $oRedirect->doImport($cFile);
+                    if (count($cError_arr) === 0) {
+                        $cHinweis = 'Der Import wurde erfolgreich durchgef&uuml;hrt';
+                    } else {
+                        @unlink($cFile);
+                        $cFehler = 'Fehler: Der Import konnte nicht durchgef&uuml;hrt werden." .
                         "Bitte pr&uuml;fen Sie die CSV-Datei<br><br>' . implode('<br>', $cError_arr);
+                    }
                 }
             }
-        }
-        break;
-    default:
-        break;
+            break;
+        default:
+            break;
+    }
 }
 
 $oFilter = new Filter();
@@ -117,7 +115,6 @@ handleCsvExportAction(
 $smarty
     ->assign('cHinweis', $cHinweis)
     ->assign('cFehler', $cFehler)
-    ->assign('cTab', $cTab)
     ->assign('oFilter', $oFilter)
     ->assign('oPagination', $oPagination)
     ->assign('oRedirect_arr', $oRedirect_arr)

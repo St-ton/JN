@@ -80,6 +80,19 @@
         return '<span>/' + item.cSeo +
             ' <small class="text-muted">- ' + type + '</small></span>';
     }
+
+    function toggleReferer(kRedirect)
+    {
+        var $refTr  = $('#referer-tr-' + kRedirect);
+        var $refDiv = $('#referer-div-' + kRedirect);
+
+        if(!$refTr.is(':visible')) {
+            $refTr.show();
+            $refDiv.slideDown();
+        } else {
+            $refDiv.slideUp(500, $refTr.hide.bind($refTr));
+        }
+    }
 </script>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -153,8 +166,59 @@
                                             <span class="badge">{$oRedirect->nCount}</span>
                                         {/if}
                                     </td>
-                                    <td></td>
+                                    <td>
+                                        {if $oRedirect->nCount > 0}
+                                            <div class="btn-group">
+                                                <button type="button" class="btn btn-default btn-sm" title="Details"
+                                                        onclick="toggleReferer({$oRedirect->kRedirect});">
+                                                    <i class="fa fa-list"></i>
+                                                </button>
+                                            </div>
+                                        {/if}
+                                    </td>
                                 </tr>
+                                {if $oRedirect->nCount > 0}
+                                    <tr id="referer-tr-{$oRedirect->kRedirect}" style="display:none;">
+                                        <td></td>
+                                        <td colspan="5">
+                                            <div id="referer-div-{$oRedirect->kRedirect}" style="display:none;">
+                                                <table class="table">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Verweis</th>
+                                                            <th>Datum</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {foreach $oRedirect->oRedirectReferer_arr as $oRedirectReferer}
+                                                            <tr>
+                                                                <td>
+                                                                    {if $oRedirectReferer->kBesucherBot > 0}
+                                                                        {if $oRedirectReferer->cBesucherBotName|strlen > 0}
+                                                                            {$oRedirectReferer->cBesucherBotName}
+                                                                        {else}
+                                                                            {$oRedirectReferer->cBesucherBotAgent}
+                                                                        {/if}
+                                                                        (Bot)
+                                                                    {elseif $oRedirectReferer->cRefererUrl|strlen > 0}
+                                                                        <a href="{$oRedirectReferer->cRefererUrl}" target="_blank">
+                                                                            {$oRedirectReferer->cRefererUrl}
+                                                                        </a>
+                                                                    {else}
+                                                                        <i>Direkteinstieg</i>
+                                                                    {/if}
+                                                                </td>
+                                                                <td>
+                                                                    {$oRedirectReferer->dDate|date_format:"%d.%m.%Y - %H:%M:%S"}
+                                                                </td>
+                                                            </tr>
+                                                        {/foreach}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {/if}
                             {/foreach}
                         </tbody>
                         <tfoot>

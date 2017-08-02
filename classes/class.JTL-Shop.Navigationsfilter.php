@@ -1457,7 +1457,7 @@ class Navigationsfilter
 
             if (!empty($this->search->cSuche)) {
                 $this->search->saveQuery($this->searchResults->GesamtanzahlArtikel);
-                $this->search->kSuchanfrage = gibSuchanfrageKey($this->search->cSuche, $this->getLanguageID());
+                $this->search->setQueryID($this->search->cSuche, $this->getLanguageID());
                 $this->searchQuery->setValue($this->search->kSuchanfrage)->setSeo($this->languages);
             }
 

@@ -344,7 +344,6 @@ function plzimportActionDoImport($target = '', $part = '', $step = 0)
 }
 
 /**
- * @param string $target
  * @param string $type
  * @param string $message
  * @return object
@@ -391,7 +390,6 @@ function plzimportActionCallStatus()
 }
 
 /**
- * @param bool $return
  * @return object
  */
 function plzimportActionCheckStatus()

@@ -94,6 +94,28 @@ class FilterSearch extends AbstractFilter
     }
 
     /**
+     * @param int    $languageID
+     * @param string $searchTerm
+     * @return $this
+     */
+    public function setQueryID($languageID, $searchTerm)
+    {
+        $searchQuery = null;
+        if ($languageID > 0 && strlen($searchTerm) > 0) {
+            $searchQuery = Shop::DB()->select(
+                'tsuchanfrage',
+                'cSuche', Shop::DB()->escape($searchTerm),
+                'kSprache', $languageID
+            );
+        }
+        $this->kSuchanfrage = (isset($searchQuery->kSuchanfrage) && $searchQuery->kSuchanfrage > 0)
+            ? (int)$searchQuery->kSuchanfrage
+            : 0;
+
+        return $this;
+    }
+
+    /**
      * @return string
      */
     public function getName()

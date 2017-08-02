@@ -196,17 +196,19 @@
             $('.image-box', $wrapper).each(function(i, item) {
                 var box = $(this),
                     img = box.find('img'),
-                    src = img.data('src');
-                box.addClass('loading');
-                    
+                    src = img.data('src'),
+                    square = box.width() + 'px';
+                img.css('max-height', square);
+                box.css('max-height', square)
+                    .addClass('loading');
+
                 if (src && src.length > 0) {
                     //if (src === 'gfx/keinBild.gif') {
                     //    box.removeClass('loading')
                     //        .addClass('none');
                     //    box.parent().find('.overlay-img').remove();
                     //} else {
-                        var padding = $(window).height() / 2,
-                            square = box.width() + 'px';
+                        var  padding = $(window).height() / 2;
                         $(img).lazy(padding, function() {
                             $(this).load(function() {
                                 img.css('max-height', square);

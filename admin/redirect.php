@@ -69,7 +69,7 @@ if (validateToken()) {
                     } else {
                         @unlink($cFile);
                         $cFehler = 'Fehler: Der Import konnte nicht durchgef&uuml;hrt werden." .
-                        "Bitte pr&uuml;fen Sie die CSV-Datei<br><br>' . implode('<br>', $cError_arr);
+                            "Bitte pr&uuml;fen Sie die CSV-Datei<br><br>' . implode('<br>', $cError_arr);
                     }
                 }
             }

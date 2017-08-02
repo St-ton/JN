@@ -97,10 +97,10 @@
 
 <ul class="nav nav-tabs" role="tablist">
     <li role="presentation"{if $cTab === 'redirects'} class="active"{/if}>
-        <a data-toggle="tab" role="tab" href="#redirects">Redirects</a>
+        <a data-toggle="tab" role="tab" href="#redirects">{#redirectOverview#}</a>
     </li>
     <li role="presentation"{if $cTab === 'new_redirect'} class="active"{/if}>
-        <a data-toggle="tab" role="tab" href="#new_redirect">Neuer Redirect</a>
+        <a data-toggle="tab" role="tab" href="#new_redirect">{#redirectCreate#}</a>
     </li>
 </ul>
 
@@ -116,9 +116,9 @@
                         <thead>
                             <tr>
                                 <th style="width:24px"></th>
-                                <th style="width:35%">URL {call sortControls oPagination=$oPagination nSortBy=0}</th>
-                                <th>Ziel-URL {call sortControls oPagination=$oPagination nSortBy=1}</th>
-                                <th style="width:85px">Aufrufe {call sortControls oPagination=$oPagination nSortBy=2}</th>
+                                <th style="width:35%">{#redirectFrom#} {call sortControls oPagination=$oPagination nSortBy=0}</th>
+                                <th>{#redirectTo#} {call sortControls oPagination=$oPagination nSortBy=1}</th>
+                                <th style="width:85px">{#redirectRefererCount#} {call sortControls oPagination=$oPagination nSortBy=2}</th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -185,8 +185,8 @@
                                                 <table class="table">
                                                     <thead>
                                                         <tr>
-                                                            <th>Verweis</th>
-                                                            <th>Datum</th>
+                                                            <th>{#redirectReferer#}</th>
+                                                            <th>{#redirectRefererDate#}</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
@@ -205,7 +205,7 @@
                                                                             {$oRedirectReferer->cRefererUrl}
                                                                         </a>
                                                                     {else}
-                                                                        <i>Direkteinstieg</i>
+                                                                        <i>{#redirectRefererDirect#}</i>
                                                                     {/if}
                                                                 </td>
                                                                 <td>
@@ -227,7 +227,7 @@
                                     <input type="checkbox" name="ALLMSGS" id="ALLMSGS" onclick="AllMessages(this.form);">
                                 </td>
                                 <td colspan="4">
-                                    <label for="ALLMSGS">Alle ausw&auml;hlen</label>
+                                    <label for="ALLMSGS">{#globalSelectAll#}</label>
                                 </td>
                             </tr>
                         </tfoot>
@@ -247,7 +247,7 @@
                                 <i class="fa fa-trash"></i> {#deleteSelected#}
                             </button>
                             <button name="action" value="delete_all" class="btn btn-warning">
-                                Alle ohne Weiterleitung l&ouml;schen
+                                {#redirectDelUnassigned#}
                             </button>
                             {include file='tpl_inc/csv_export_btn.tpl' exporterId='redirects'}
                         {/if}
@@ -262,19 +262,19 @@
             {$jtl_token}
             <div class="panel panel-default settings">
                 <div class="panel-heading">
-                    <h3 class="panel-title">Neue Weiterleitung</h3>
+                    <h3 class="panel-title">{#redirectNew#}</h3>
                 </div>
                 <div class="panel-body">
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <label for="cFromUrl">Quell-URL:</label>
+                            <label for="cFromUrl">{#redirectFrom#}:</label>
                         </span>
                         <input class="form-control" id="cFromUrl" name="cFromUrl" required
                                {if !empty($cFromUrl)}value="{$cFromUrl}"{/if}>
                     </div>
                     <div class="input-group" id="input-group-0">
                         <span class="input-group-addon">
-                            <label for="cToUrl">Ziel-URL:</label>
+                            <label for="cToUrl">{#redirectTo#}:</label>
                         </span>
                         <span class="input-group-addon alert-info state-checking" style="display:none;">
                             <i class="fa fa-spinner fa-pulse"></i>
@@ -297,7 +297,7 @@
                 </div>
                 <div class="panel-footer">
                     <button name="action" value="new" class="btn btn-primary">
-                        <i class="fa fa-save"></i> Anlegen
+                        <i class="fa fa-save"></i> {#redirectCreate#}
                     </button>
                 </div>
             </div>
@@ -306,19 +306,19 @@
             {$jtl_token}
             <div class="panel panel-default settings">
                 <div class="panel-heading">
-                    <h3 class="panel-title">CSV-Import</h3>
+                    <h3 class="panel-title">{#redirectCsvImport#}</h3>
                 </div>
                 <div class="panel-body">
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <label for="cFile">Datei:</label>
+                            <label for="cFile">{#file#}:</label>
                         </span>
                         <input class="form-control" name="cFile" type="file" required>
                     </div>
                 </div>
                 <div class="panel-footer">
                     <button name="action" value="csvimport" class="btn btn-primary">
-                        Importieren
+                        {#import#}
                     </button>
                 </div>
             </div>

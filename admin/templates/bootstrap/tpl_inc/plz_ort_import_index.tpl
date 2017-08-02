@@ -158,8 +158,7 @@
         startTick = new Date();
         notify    = showImportNotify('PLZ-Orte Import', 'Import wird gestartet...');
 
-        window.setTimeout(refreshNotify, 1500);
-        ioCall('plzimportActionDoImport', [ref, part], function(result) {
+        var callback = function(result) {
             stopImport();
             updateIndex();
             notify.update({
@@ -171,6 +170,11 @@
             window.setTimeout(function(){
                 notify.close();
             }, 3000);
+        };
+
+        window.setTimeout(refreshNotify, 1500);
+        ioCall('plzimportActionDoImport', [ref, part], callback, function(result) {
+            ioCall('plzimportActionResetImport', ['danger', 'Fehler beim Import... Import abgebrochen!'], callback);
         });
     }
 

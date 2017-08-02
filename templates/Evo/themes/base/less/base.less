@@ -3188,16 +3188,9 @@ header.fixed-navbar {
 }
 
 .summary {
-    h4 {
-        margin-bottom: 10px;
-    }
-
-    .dl-horizontal dt {
-        width: 40px !important;
-    }
-
-    .dl-horizontal dd {
-        margin-left: 50px !important;
+    td[colspan="3"] {
+        padding-top: 1em;
+        border-top: 3px solid @table-border-color;
     }
 }
 
@@ -3335,4 +3328,15 @@ header.fixed-navbar {
 
 #cart-form .upload-error .form-control.file-caption.kv-fileinput-caption {
     border: 2px solid @alert-danger-border;
+}
+#product-configuration-sidebar #quantity-grp {
+    &.input-group {
+        display: block;
+    }
+    > input {
+        margin-left: -1px;
+    }
+    .submit.btn {
+        width: 100%;
+    }
 }

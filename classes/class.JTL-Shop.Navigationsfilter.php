@@ -1068,7 +1068,7 @@ class Navigationsfilter
      * @param null|int $idx
      * @return FilterSearch|FilterSearch[]
      */
-    public function getSearchFilters($idx = null)
+    public function getSearchFilter($idx = null)
     {
         return $idx === null ? $this->searchFilter : $this->searchFilter[$idx];
     }

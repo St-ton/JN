@@ -28,5 +28,5 @@
         <input type="hidden" name="r" value="{$oRedirect->nRedirect}" />
         <input type="hidden" name="cURL" value="{$oRedirect->cURL}" />
     {/if}
-    <input type="submit" value="{lang key="login" section="checkout"}" class="btn btn-primary btn-block btn-lg submit" />
+    <input type="submit" value="{lang key="login" section="checkout"}" class="btn btn-primary {if !isset($withSidebar) || $withSidebar === 0}btn-block{/if} btn-lg submit" />
 </div>

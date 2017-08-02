@@ -14,21 +14,26 @@
 {if isset($fehlendeAngaben.formular_zeit) && $fehlendeAngaben.formular_zeit == 1}
     <div class="alert alert-danger">{lang key="formToFast" section="account data"}</div>
 {/if}
+{if isset($boxes.left) && !$bExclusive && !empty($boxes.left)}
+    {assign var="withSidebar" value=1}
+{else}
+    {assign var="withSidebar" value=0}
+{/if}
 <div id="register-customer" class="row">
-    <div id="existing-customer" class="col-xs-12 col-md-3">
+    <div id="existing-customer" class="col-xs-12 {if $withSidebar === 0}col-md-4{else}col-md-12{/if}">
         <form method="post" action="{get_static_route id='bestellvorgang.php'}" class="form" id="order_register_or_login">
             {block name="checkout-login"}
                 {block name="checkout-login-body"}
                 <fieldset>
                     {$jtl_token}
                     <legend>{block name="checkout-login-title"}{lang key="alreadyCustomer" section="global"}{/block}</legend>
-                    {include file="register/form/customer_login.tpl"}
+                    {include file="register/form/customer_login.tpl" withSidebar=$withSidebar}
                 </fieldset>
                 {/block}
             {/block}
         </form>
     </div>
-    <div id="customer" class="col-xs-12 col-md-9">
+    <div id="customer" class="col-xs-12 {if $withSidebar === 0}col-md-8{else}col-md-12 top30{/if}">
         <div>
             {include file='register/inc_vcard_upload.tpl' id='bestellvorgang.php'}
             <form method="post" action="{get_static_route id='bestellvorgang.php'}" class="form" id="form-register">

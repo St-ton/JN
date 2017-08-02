@@ -10,6 +10,11 @@
 trait MagicCompatibilityTrait
 {
     /**
+     * @var array
+     */
+    private $data = [];
+
+    /**
      * @param string $value
      * @return string|null
      */
@@ -23,7 +28,6 @@ trait MagicCompatibilityTrait
     /**
      * @param string $name
      * @return mixed
-     * @throws OutOfBoundsException
      */
     public function __get($name)
     {
@@ -37,14 +41,17 @@ trait MagicCompatibilityTrait
 
             return $this->$method();
         }
-        throw new OutOfBoundsException(__CLASS__ . ': Unable to get ' . $name);
+        if (isset($this->data[$name])) {
+            return $this->data[$name];
+        }
+
+        return null;
     }
 
     /**
      * @param string $name
      * @param mixed  $value
      * @return $this
-     * @throws OutOfBoundsException
      */
     public function __set($name, $value)
     {
@@ -59,7 +66,9 @@ trait MagicCompatibilityTrait
 
             return $this->$method($value);
         }
-        throw new OutOfBoundsException(__CLASS__ . ': Unable to set ' . $name);
+        $this->data[$name] = $value;
+
+        return $this;
     }
 
     /**

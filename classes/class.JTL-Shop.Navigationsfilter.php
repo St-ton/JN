@@ -182,11 +182,6 @@ class Navigationsfilter
 
     /**
      * @var array
-     */
-    private $data;
-
-    /**
-     * @var array
      * @todo: fix working with arrays
      * @see https://stackoverflow.com/questions/13421661/getting-indirect-modification-of-overloaded-property-has-no-effect-notice
      */

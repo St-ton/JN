@@ -1,8 +1,19 @@
 # JTL-Shop Changelog
 
+## [4.06] - 2017-08-xx
+
+### Neue Features
+
+* Verkürzter Checkout mit 3 Schritten
+    * `checkout/step1_proceed_as_guest.tpl` und `checkout/step2_delivery_address.tpl` sind als `@deprecated` markiert und werden nicht mehr verwendet
+    * `checkout/step4_payment_options.tpl` wurde grundlegend geändert
+    * `checkout/step1_edit_customer_address.tpl` ist neu und muss in Drittanbieter-Templates integriert werden, da sie vom Shop-Core verwendet wird
+    * Hinweise zu Template-Änderungen finden Sie [hier](http://docs.jtl-shop.de/de/latest/shop_templates/short_checkout.html)
+    * Hinweise für Plugin-Anpassungen finden Sie [hier](http://docs.jtl-shop.de/de/latest/shop_plugins/short_checkout.html)
+
 ## [4.05.3]
 
-## Bugfixes
+### Bugfixes
 
 * Beim Export von Exportformaten wird der neue Dateiinhalt an alte Datei angehängt (#1217)
 * Bei News-Kategoriebeschreibung kann kein HTML verwendet werden (#1197)

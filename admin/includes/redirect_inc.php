@@ -8,7 +8,7 @@
  * Update and return the availability of a redirect
  *
  * @param int $kRedirect
- * @return string 'y' if the redirect is available 'n' if not
+ * @return bool
  */
 function updateRedirectState($kRedirect)
 {

@@ -584,7 +584,7 @@ class NiceDB implements Serializable
             $this->analyzeQuery('insert', "INSERT INTO $tableName $columns $values", $end - $start, $backtrace);
         }
 
-        return $id > 0 ? $id : 1;
+        return $id > 0 ? (int)$id : 1;
     }
 
     /**

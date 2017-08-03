@@ -1517,7 +1517,7 @@ class Navigationsfilter
         $_SESSION['oArtikelUebersichtKey_arr']   = $this->searchResults->Artikel->articleKeys;
         $_SESSION['nArtikelUebersichtVLKey_arr'] = [];
 
-        Shop::Cache()->set($this->getHash(), $this, ['jtl_mmf']);
+//        Shop::Cache()->set($this->getHash(), $this, ['jtl_mmf']);
 
         return $forProductListing === true
             ? $this->searchResults
@@ -1801,6 +1801,7 @@ class Navigationsfilter
      * @param array $oMerkmalauswahl_arr
      * @param int   $kMerkmal
      * @return int
+     * @throws InvalidArgumentException
      * @todo use again?
      */
     public function getAttributePosition($oMerkmalauswahl_arr, $kMerkmal)
@@ -1808,12 +1809,12 @@ class Navigationsfilter
         if (is_array($oMerkmalauswahl_arr)) {
             // @todo: remove test
             if ($kMerkmal !== (int)$kMerkmal) {
-                die('fix type check 1 @getAttributePosition');
+                throw new InvalidArgumentException('fix type check 1 @getAttributePosition');
             }
             foreach ($oMerkmalauswahl_arr as $i => $oMerkmalauswahl) {
                 // @todo: remove test
                 if ($oMerkmalauswahl->kMerkmal !== (int)$oMerkmalauswahl->kMerkmal) {
-                    die('fix type check 2 @getAttributePosition');
+                    throw new InvalidArgumentException('fix type check 2 @getAttributePosition');
                 }
                 if ($oMerkmalauswahl->kMerkmal === $kMerkmal) {
                     return $i;
@@ -1937,25 +1938,22 @@ class Navigationsfilter
             return $extraFilter;
         }
         $filter = null;
-        if (
-            isset($extraFilter->KategorieFilter->kKategorie) ||
-            (isset($extraFilter->FilterLoesen->Kategorie) && $extraFilter->FilterLoesen->Kategorie === true)
+        if (isset($extraFilter->KategorieFilter->kKategorie)
+            || (isset($extraFilter->FilterLoesen->Kategorie) && $extraFilter->FilterLoesen->Kategorie === true)
         ) {
             $filter = (new FilterItemCategory($this))->init(isset($extraFilter->KategorieFilter->kKategorie)
                 ? $extraFilter->KategorieFilter->kKategorie
                 : null
             );
-        } elseif (
-            isset($extraFilter->HerstellerFilter->kHersteller) ||
-            (isset($extraFilter->FilterLoesen->Hersteller) && $extraFilter->FilterLoesen->Hersteller === true)
+        } elseif (isset($extraFilter->HerstellerFilter->kHersteller)
+            || (isset($extraFilter->FilterLoesen->Hersteller) && $extraFilter->FilterLoesen->Hersteller === true)
         ) {
             $filter = (new FilterItemManufacturer($this))->init(isset($extraFilter->HerstellerFilter->kHersteller)
                 ? $extraFilter->HerstellerFilter->kHersteller
                 : null
             );
-        } elseif (
-            isset($extraFilter->MerkmalFilter->kMerkmalWert) ||
-            isset($extraFilter->FilterLoesen->MerkmalWert)
+        } elseif (isset($extraFilter->MerkmalFilter->kMerkmalWert)
+            || isset($extraFilter->FilterLoesen->MerkmalWert)
         ) {
             $filter = (new FilterItemAttribute($this))->init(isset($extraFilter->MerkmalFilter->kMerkmalWert)
                 ? $extraFilter->MerkmalFilter->kMerkmalWert
@@ -1963,41 +1961,36 @@ class Navigationsfilter
             );
         } elseif (isset($extraFilter->FilterLoesen->Merkmale)) {
             $filter = (new FilterItemAttribute($this))->init($extraFilter->FilterLoesen->Merkmale);
-        } elseif (
-            isset($extraFilter->PreisspannenFilter->fVon) ||
-            (isset($extraFilter->FilterLoesen->Preisspannen) && $extraFilter->FilterLoesen->Preisspannen === true)
+        } elseif (isset($extraFilter->PreisspannenFilter->fVon)
+            || (isset($extraFilter->FilterLoesen->Preisspannen) && $extraFilter->FilterLoesen->Preisspannen === true)
         ) {
             $filter = (new FilterItemPriceRange($this))->init(isset($extraFilter->PreisspannenFilter->fVon)
                 ? ($extraFilter->PreisspannenFilter->fVon . '_' . $extraFilter->PreisspannenFilter->fBis)
                 : null
             );
-        } elseif (
-            isset($extraFilter->BewertungFilter->nSterne) ||
-            (isset($extraFilter->FilterLoesen->Bewertungen) && $extraFilter->FilterLoesen->Bewertungen === true)
+        } elseif (isset($extraFilter->BewertungFilter->nSterne)
+            || (isset($extraFilter->FilterLoesen->Bewertungen) && $extraFilter->FilterLoesen->Bewertungen === true)
         ) {
             $filter = (new FilterItemRating($this))->init(isset($extraFilter->BewertungFilter->nSterne)
                 ? $extraFilter->BewertungFilter->nSterne
                 : null
             );
-        } elseif (
-            isset($extraFilter->TagFilter->kTag) ||
-            (isset($extraFilter->FilterLoesen->Tags) && $extraFilter->FilterLoesen->Tags === true)
+        } elseif (isset($extraFilter->TagFilter->kTag)
+            || (isset($extraFilter->FilterLoesen->Tags) && $extraFilter->FilterLoesen->Tags === true)
         ) {
             $filter = (new FilterItemTag($this))->init(isset($extraFilter->TagFilter->kTag)
                 ? $extraFilter->TagFilter->kTag
                 : null
             );
-        } elseif (
-            isset($extraFilter->SuchspecialFilter->kKey) ||
-            (isset($extraFilter->FilterLoesen->Suchspecials) && $extraFilter->FilterLoesen->Suchspecials === true)
+        } elseif (isset($extraFilter->SuchspecialFilter->kKey)
+            || (isset($extraFilter->FilterLoesen->Suchspecials) && $extraFilter->FilterLoesen->Suchspecials === true)
         ) {
             $filter = (new FilterItemSearchSpecial($this))->init(isset($extraFilter->SuchspecialFilter->kKey)
                 ? $extraFilter->SuchspecialFilter->kKey
                 : null
             );
-        } elseif (
-            isset($extraFilter->searchFilter->kSuchanfrage) ||
-            !empty($extraFilter->FilterLoesen->searchFilter)
+        } elseif (isset($extraFilter->searchFilter->kSuchanfrage)
+            || !empty($extraFilter->FilterLoesen->searchFilter)
         ) {
             $filter = (new FilterBaseSearchQuery($this))->init(isset($extraFilter->searchFilter->kSuchanfrage)
                 ? $extraFilter->searchFilter->kSuchanfrage
@@ -2005,8 +1998,8 @@ class Navigationsfilter
             );
         } elseif (isset($extraFilter->FilterLoesen->searchFilter)) {
             $filter = (new FilterBaseSearchQuery($this))->init($extraFilter->FilterLoesen->searchFilter);
-        } elseif (isset($extraFilter->FilterLoesen->Erscheinungsdatum) &&
-            $extraFilter->FilterLoesen->Erscheinungsdatum === true
+        } elseif (isset($extraFilter->FilterLoesen->Erscheinungsdatum)
+            && $extraFilter->FilterLoesen->Erscheinungsdatum === true
         ) {
             //@todo@todo@todo
             return $filter;
@@ -2113,10 +2106,8 @@ class Navigationsfilter
                                     unset($active->value[$idx]);
                                 }
                             }
-                        } else {
-                            if ($extraFilter->getValue() === $active->value) {
-                                unset($urlParams[$urlParam][$i]);
-                            }
+                        } elseif ($extraFilter->getValue() === $active->value) {
+                            unset($urlParams[$urlParam][$i]);
                         }
                     }
                 }
@@ -2217,8 +2208,8 @@ class Navigationsfilter
 
         }
         // kinda hacky: try to build url that removes a merkmalwert url from merkmalfilter url
-        if ($this->attributeValue->isInitialized() &&
-            !isset($this->URL->cAlleMerkmalWerte[$this->attributeValue->getValue()])
+        if ($this->attributeValue->isInitialized()
+            && !isset($this->URL->cAlleMerkmalWerte[$this->attributeValue->getValue()])
         ) {
             // the url should be <shop>/<merkmalwert-url>__<merkmalfilter>[__<merkmalfilter>]
             $_mmwSeo = str_replace(

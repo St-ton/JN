@@ -1731,6 +1731,13 @@ class Navigationsfilter
                 'bForce'             => $selectionWizard === true && function_exists('starteAuswahlAssistent')
             ]);
         }
+        // @todo: test.
+        foreach ($searchResults->MerkmalFilter as $i => $attributeFilter) {
+            /** @var IFilter $attributeFilter */
+            if (count($attributeFilter->oMerkmalWerte_arr) < 1) {
+                $attributeFilter->setVisibility(AbstractFilter::SHOW_NEVER);
+            }
+        }
         $this->attributeFilterCollection->setFilterCollection($searchResults->MerkmalFilter);
 
         if (!isset($searchResults->Preisspanne)) {

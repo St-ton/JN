@@ -63,7 +63,7 @@ class Redirect
      */
     public function delete($kRedirect)
     {
-        Redirect::deleteRedirect($kRedirect);
+        self::deleteRedirect($kRedirect);
 
         return $this;
     }
@@ -74,7 +74,7 @@ class Redirect
      */
     public function deleteAll()
     {
-        return Redirect::deleteUnassigned();
+        return self::deleteUnassigned();
     }
 
     /**
@@ -108,7 +108,7 @@ class Redirect
         $cDestination = isset($xPath_arr['path']) ? $xPath_arr['path'] . '/' . $cDestination : $cDestination;
         $oObj         = Shop::DB()->select('tredirect', 'cFromUrl', $cDestination, 'cToUrl', $cSource);
 
-        return (isset($oObj->kRedirect) && (int)$oObj->kRedirect > 0);
+        return isset($oObj->kRedirect) && (int)$oObj->kRedirect > 0;
     }
 
     /**
@@ -151,9 +151,9 @@ class Redirect
                 if ((int)$kRedirect > 0) {
                     return true;
                 }
-            } elseif ($this->normalize($oRedirect->cFromUrl) === $this->normalize($cSource) &&
-                empty($oRedirect->cToUrl) &&
-                (int)Shop::DB()->update(
+            } elseif ($this->normalize($oRedirect->cFromUrl) === $this->normalize($cSource)
+                && empty($oRedirect->cToUrl)
+                && (int)Shop::DB()->update(
                     'tredirect', 'cFromUrl', $this->normalize($cSource),
                     (object)['cToUrl' => StringHandler::convertISO($cDestination)]
                 ) > 0
@@ -333,11 +333,11 @@ class Redirect
             $lastPath = $exploded[count($exploded) - 1];
             $filename = strtok($lastPath, '?');
             $seoPath  = Shop::DB()->select('tseo', 'cSeo', $lastPath);
-            if ($filename === 'jtl.php' ||
-                $filename === 'warenkorb.php' ||
-                $filename === 'kontakt.php' ||
-                $filename === 'news.php' ||
-                (isset($seoPath->cSeo) && strlen($seoPath->cSeo) > 0)
+            if ($filename === 'jtl.php'
+                || $filename === 'warenkorb.php'
+                || $filename === 'kontakt.php'
+                || $filename === 'news.php'
+                || (isset($seoPath->cSeo) && strlen($seoPath->cSeo) > 0)
             ) {
                 return $lastPath;
             }

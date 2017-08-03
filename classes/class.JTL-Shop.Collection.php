@@ -44,11 +44,14 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
     {
         if (is_array($items)) {
             return $items;
-        } elseif ($items instanceof self) {
+        }
+        if ($items instanceof self) {
             return $items->getItems();
-        } elseif ($items instanceof JsonSerializable) {
+        }
+        if ($items instanceof JsonSerializable) {
             return $items->jsonSerialize();
-        } elseif ($items instanceof Traversable) {
+        }
+        if ($items instanceof Traversable) {
             return iterator_to_array($items);
         }
 
@@ -91,7 +94,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
      */
     public function sum($callback = null)
     {
-        if (is_null($callback)) {
+        if ($callback === null) {
             return array_sum($this->items);
         }
         $callback = $this->valueRetriever($callback);
@@ -121,30 +124,30 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
     /**
      * Get an item from an array or object using "dot" notation
      *
-     * @param  mixed   $target
-     * @param  string|array  $key
-     * @param  mixed   $default
+     * @param  mixed        $target
+     * @param  string|array $key
+     * @param  mixed        $default
      * @return mixed
      */
     protected function data_get($target, $key, $default = null)
     {
-        if (is_null($key)) {
+        if ($key === null) {
             return $target;
         }
 
         $key = is_array($key) ? $key : explode('.', $key);
 
-        while (! is_null($segment = array_shift($key))) {
+        while (($segment = array_shift($key)) !== null) {
             if ($segment === '*') {
                 if ($target instanceof Collection) {
                     $target = $target->getItems();
                 } elseif (!is_array($target)) {
-                    return  $default instanceof Closure ? $default() : $default;
+                    return $default instanceof Closure ? $default() : $default;
                 }
 
                 $result = Arr::pluck($target, $key);
 
-                return in_array('*', $key) ? Arr::collapse($result) : $result;
+                return in_array('*', $key, true) ? Arr::collapse($result) : $result;
             }
 
             if (Arr::accessible($target) && Arr::exists($target, $segment)) {
@@ -162,7 +165,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
     /**
      * Get the values of a given key
      *
-     * @param  string|array  $value
+     * @param  string|array $value
      * @param  string|null  $key
      * @return static
      */
@@ -323,14 +326,14 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
     /**
      * Sort the collection using the given callback.
      *
-     * @param  callable|string  $callback
-     * @param  int  $options
-     * @param  bool  $descending
+     * @param  callable|string $callback
+     * @param  int             $options
+     * @param  bool            $descending
      * @return static
      */
     public function sortBy($callback, $options = SORT_REGULAR, $descending = false)
     {
-        $results = [];
+        $results  = [];
         $callback = $this->valueRetriever($callback);
         // First we will loop through the items and get the comparator from a callback
         // function which we were given. Then, we will sort the returned values and
@@ -346,13 +349,15 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
         foreach (array_keys($results) as $key) {
             $results[$key] = $this->items[$key];
         }
+
         return new static($results);
     }
+
     /**
      * Sort the collection in descending order using the given callback.
      *
-     * @param  callable|string  $callback
-     * @param  int  $options
+     * @param  callable|string $callback
+     * @param  int             $options
      * @return static
      */
     public function sortByDesc($callback, $options = SORT_REGULAR)
@@ -363,7 +368,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
     /**
      * Create a new collection instance if the value isn't one already
      *
-     * @param  mixed  $items
+     * @param  mixed $items
      * @return static
      */
     public static function make($items = [])
@@ -402,7 +407,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
      */
     public function offsetSet($key, $value)
     {
-        if (is_null($key)) {
+        if ($key === null) {
             $this->items[] = $value;
         } else {
             $this->items[$key] = $value;

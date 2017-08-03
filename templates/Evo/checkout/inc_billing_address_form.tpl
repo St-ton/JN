@@ -5,7 +5,11 @@
 
 <fieldset>
     <legend>
-        {lang key="address" section="account data"}
+        {if isset($checkout)}
+            {lang key="proceedNewCustomer" section="checkout"}
+        {else}
+            {lang key="address" section="account data"}
+        {/if}
     </legend>
     {* salutation / title *}
     <div class="row">
@@ -15,8 +19,8 @@
                     <label for="salutation" class="control-label">{lang key="salutation" section="account data"}</label>
                     <select name="anrede" id="salutation" class="form-control" required>
                         <option value="" selected="selected" disabled>{lang key="salutation" section="account data"}</option>
-                        <option value="w" {if isset($Kunde->cAnrede) && $Kunde->cAnrede === 'w'}selected="selected"{/if}>{$Anrede_w}</option>
-                        <option value="m" {if isset($Kunde->cAnrede) && $Kunde->cAnrede === 'm'}selected="selected"{/if}>{$Anrede_m}</option>
+                        <option value="w" {if isset($cPost_var['anrede']) && $cPost_var['anrede'] === 'w'}selected="selected"{elseif isset($Kunde->cAnrede) && $Kunde->cAnrede === 'w'}selected="selected"{/if}>{$Anrede_w}</option>
+                        <option value="m" {if isset($cPost_var['anrede']) && $cPost_var['anrede'] === 'm'}selected="selected"{elseif isset($Kunde->cAnrede) && $Kunde->cAnrede === 'm'}selected="selected"{/if}>{$Anrede_m}</option>
                     </select>
                     {if isset($fehlendeAngaben.anrede)}
                         <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
@@ -34,7 +38,7 @@
                     <input 
                     type="text" 
                     name="titel" 
-                    value="{if isset($Kunde->cTitel)}{$Kunde->cTitel}{/if}" 
+                    value="{if isset($cPost_var['titel'])}{$cPost_var['titel']}{elseif isset($Kunde->cTitel)}{$Kunde->cTitel}{/if}"
                     id="title" 
                     class="form-control" 
                     placeholder="{lang key="title" section="account data"}" 
@@ -57,7 +61,7 @@
                 <input 
                 type="text" 
                 name="vorname" 
-                value="{if isset($Kunde->cVorname)}{$Kunde->cVorname}{/if}" 
+                value="{if isset($cPost_var['vorname'])}{$cPost_var['vorname']}{elseif isset($Kunde->cVorname)}{$Kunde->cVorname}{/if}"
                 id="firstName" 
                 class="form-control" 
                 placeholder="{lang key="firstName" section="account data"}"
@@ -80,7 +84,7 @@
                 <input 
                 type="text" 
                 name="nachname" 
-                value="{if isset($Kunde->cNachname)}{$Kunde->cNachname}{/if}" 
+                value="{if isset($cPost_var['nachname'])}{$cPost_var['nachname']}{elseif isset($Kunde->cNachname)}{$Kunde->cNachname}{/if}"
                 id="lastName" 
                 class="form-control" 
                 placeholder="{lang key="lastName" section="account data"}" 
@@ -107,7 +111,7 @@
                 <input 
                 type="text" 
                 name="firma" 
-                value="{if !empty($Kunde->cFirma)}{$Kunde->cFirma}{/if}"
+                value="{if isset($cPost_var['firma'])}{$cPost_var['firma']}{elseif !empty($Kunde->cFirma)}{$Kunde->cFirma}{/if}"
                 id="firm" 
                 class="form-control" 
                 placeholder="{lang key="firm" section="account data"}" 
@@ -129,7 +133,7 @@
                 <input 
                 type="text" 
                 name="firmazusatz" 
-                value="{if isset($Kunde->cZusatz)}{$Kunde->cZusatz}{/if}" 
+                value="{if isset($cPost_var['firmazusatz'])}{$cPost_var['firmazusatz']}{elseif isset($Kunde->cZusatz)}{$Kunde->cZusatz}{/if}"
                 id="firm" 
                 class="form-control" 
                 placeholder="{lang key="firmext" section="account data"}"
@@ -152,7 +156,7 @@
                 <input 
                 type="text" 
                 name="strasse" 
-                value="{if isset($Kunde->cStrasse)}{$Kunde->cStrasse}{/if}" 
+                value="{if isset($cPost_var['strasse'])}{$cPost_var['strasse']}{elseif isset($Kunde->cStrasse)}{$Kunde->cStrasse}{/if}"
                 id="street" 
                 class="form-control" 
                 placeholder="{lang key="street" section="account data"}" 
@@ -172,7 +176,7 @@
                 <input 
                 type="text" 
                 name="hausnummer" 
-                value="{if isset($Kunde->cHausnummer)}{$Kunde->cHausnummer}{/if}" 
+                value="{if isset($cPost_var['hausnummer'])}{$cPost_var['hausnummer']}{elseif isset($Kunde->cHausnummer)}{$Kunde->cHausnummer}{/if}"
                 id="streetnumber" 
                 class="form-control" 
                 placeholder="{lang key="streetnumber" section="account data"}" 
@@ -195,7 +199,7 @@
                     <input 
                     type="text" 
                     name="adresszusatz" 
-                    value="{if isset($Kunde->cAdressZusatz)}{$Kunde->cAdressZusatz}{/if}" 
+                    value="{if isset($cPost_var['adresszusatz'])}{$cPost_var['adresszusatz']}{elseif isset($Kunde->cAdressZusatz)}{$Kunde->cAdressZusatz}{/if}"
                     id="street2" 
                     class="form-control"
                     placeholder="{lang key="street2" section="account data"}" 
@@ -218,7 +222,7 @@
                 <select name="land" id="country" class="country_input form-control" required>
                 <option value="" disabled>{lang key="country" section="account data"}</option>
                 {foreach name=land from=$laender item=land}
-                    <option value="{$land->cISO}" {if ($Einstellungen.kunden.kundenregistrierung_standardland==$land->cISO && empty($Kunde->cLand)) || !empty($Kunde->cLand) && $Kunde->cLand == $land->cISO}selected="selected"{/if}>{$land->cName}</option>
+                    <option value="{$land->cISO}" {if isset($cPost_var['land']) && $cPost_var['land'] === $land->cISO}selected="selected"{elseif ($Einstellungen.kunden.kundenregistrierung_standardland==$land->cISO && empty($Kunde->cLand)) || !empty($Kunde->cLand) && $Kunde->cLand == $land->cISO}selected="selected"{/if}>{$land->cName}</option>
                 {/foreach}
                 </select>
                 {if isset($fehlendeAngaben.land)}
@@ -240,7 +244,7 @@
                 type="text" 
                 title="{lang key=pleaseChoose}" 
                 name="bundesland" 
-                value="{if !empty($Kunde->cBundesland)}{$Kunde->cBundesland}{/if}"
+                value="{if isset($cPost_var['bundesland'])}{$cPost_var['bundesland']}{elseif !empty($Kunde->cBundesland)}{$Kunde->cBundesland}{/if}"
                 id="state" 
                 class="form-control"
                 placeholder="{lang key="state" section="account data"}"
@@ -263,7 +267,7 @@
                 <input 
                 type="text" 
                 name="plz" 
-                value="{if isset($Kunde->cPLZ)}{$Kunde->cPLZ}{/if}" 
+                value="{if isset($cPost_var['plz'])}{$cPost_var['plz']}{elseif isset($Kunde->cPLZ)}{$Kunde->cPLZ}{/if}"
                 id="plz" 
                 class="plz_input form-control" 
                 placeholder="{lang key="plz" section="account data"}"
@@ -287,7 +291,7 @@
                 <input 
                 type="text" 
                 name="ort" 
-                value="{if isset($Kunde->cOrt)}{$Kunde->cOrt}{/if}" 
+                value="{if isset($cPost_var['ort'])}{$cPost_var['ort']}{elseif isset($Kunde->cOrt)}{$Kunde->cOrt}{/if}"
                 id="city" 
                 class="city_input form-control typeahead"
                 placeholder="{lang key="city" section="account data"}" 
@@ -314,7 +318,7 @@
                 <input 
                 type="text" 
                 name="ustid" 
-                value="{if isset($Kunde->cUSTID)}{$Kunde->cUSTID}{/if}" 
+                value="{if isset($cPost_var['ustid'])}{$cPost_var['ustid']}{elseif isset($Kunde->cUSTID)}{$Kunde->cUSTID}{/if}"
                 id="ustid" 
                 class="form-control" 
                 placeholder="{lang key="ustid" section="account data"}" 
@@ -347,7 +351,7 @@
                 <input 
                 type="email" 
                 name="email"
-                value="{if isset($Kunde->cMail)}{$Kunde->cMail}{/if}" 
+                value="{if isset($cPost_var['email'])}{$cPost_var['email']}{elseif isset($Kunde->cMail)}{$Kunde->cMail}{/if}"
                 id="email" 
                 class="form-control"
                 placeholder="{lang key="email" section="account data"}" 
@@ -381,7 +385,7 @@
                     <input 
                     type="tel" 
                     name="tel" 
-                    value="{if isset($Kunde->cTel)}{$Kunde->cTel}{/if}" 
+                    value="{if isset($cPost_var['tel'])}{$cPost_var['tel']}{elseif isset($Kunde->cTel)}{$Kunde->cTel}{/if}"
                     id="tel" 
                     class="form-control"
                     placeholder="{lang key="tel" section="account data"}" 
@@ -407,7 +411,7 @@
                     <input 
                     type="tel" 
                     name="fax" 
-                    value="{if isset($Kunde->cFax)}{$Kunde->cFax}{/if}" 
+                    value="{if isset($cPost_var['fax'])}{$cPost_var['fax']}{elseif isset($Kunde->cFax)}{$Kunde->cFax}{/if}"
                     id="fax" 
                     class="form-control"
                     placeholder="{lang key="fax" section="account data"}" 
@@ -437,7 +441,7 @@
                         <input 
                         type="tel" 
                         name="mobil" 
-                        value="{if isset($Kunde->cMobil)}{$Kunde->cMobil}{/if}" 
+                        value="{if isset($cPost_var['mobil'])}{$cPost_var['mobil']}{elseif isset($Kunde->cMobil)}{$Kunde->cMobil}{/if}"
                         id="mobile" 
                         class="form-control"
                         placeholder="{lang key="mobile" section="account data"}" 
@@ -463,7 +467,7 @@
                         <input 
                         type="text" 
                         name="www" 
-                        value="{if isset($Kunde->cWWW)}{$Kunde->cWWW}{/if}" 
+                        value="{if isset($cPost_var['www'])}{$cPost_var['www']}{elseif isset($Kunde->cWWW)}{$Kunde->cWWW}{/if}"
                         id="www" 
                         class="form-control"
                         placeholder="{lang key="www" section="account data"}" 
@@ -488,7 +492,7 @@
                     <input 
                     type="text"
                     name="geburtstag"
-                    value="{if isset($Kunde->dGeburtstag) && $Kunde->dGeburtstag !== '00.00.0000'}{$Kunde->dGeburtstag|date_format:"%d.%m.%Y"}{/if}"
+                    value="{if isset($cPost_var['geburtstag'])}{$cPost_var['geburtstag']}{elseif isset($Kunde->dGeburtstag) && $Kunde->dGeburtstag !== '00.00.0000'}{$Kunde->dGeburtstag|date_format:"%d.%m.%Y"}{/if}"
                     id="birthday" 
                     class="birthday form-control" 
                     placeholder="{lang key="birthdayFormat" section="account data"}"
@@ -510,7 +514,6 @@
         </div>
     {/if}
 </fieldset>
-
 {if $Einstellungen.kundenfeld.kundenfeld_anzeigen === 'Y' && !empty($oKundenfeld_arr)}
 <fieldset>
     <div class="row">
@@ -536,7 +539,7 @@
                             <select name="custom_{$kKundenfeld}" class="form-control{if $oKundenfeld->nPflicht == 1} required{/if}" {if $oKundenfeld->nEditierbar == 0 && !empty($cKundenattribut_arr[$kKundenfeld]->cWert)}disabled{/if}{if $oKundenfeld->nPflicht == 1} required{/if}>
                                 <option value="" selected disabled>{lang key="pleaseChoose" section="global"}</option>
                                 {foreach name=select from=$oKundenfeld->oKundenfeldWert_arr item=oKundenfeldWert}
-                                    <option value="{$oKundenfeldWert->cWert}" {if $step == 'formular' && isset($cKundenattribut_arr[$kKundenfeld]->cWert) && ($oKundenfeldWert->cWert == $cKundenattribut_arr[$kKundenfeld]->cWert)}selected{elseif isset($Kunde->cKundenattribut_arr[$kKundenfeld]->cWert) && ($oKundenfeldWert->cWert == $Kunde->cKundenattribut_arr[$kKundenfeld]->cWert)}selected{/if}>{$oKundenfeldWert->cWert}</option>
+                                    <option value="{$oKundenfeldWert->cWert}" {if ($step === 'formular' || $step === 'edit_customer_address') && isset($cKundenattribut_arr[$kKundenfeld]->cWert) && ($oKundenfeldWert->cWert == $cKundenattribut_arr[$kKundenfeld]->cWert)}selected{elseif isset($Kunde->cKundenattribut_arr[$kKundenfeld]->cWert) && ($oKundenfeldWert->cWert == $Kunde->cKundenattribut_arr[$kKundenfeld]->cWert)}selected{/if}>{$oKundenfeldWert->cWert}</option>
                                 {/foreach}
                             </select>
                         {/if}

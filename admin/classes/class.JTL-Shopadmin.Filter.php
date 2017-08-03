@@ -3,12 +3,35 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+/**
+ * Class Filter
+ */
 class Filter
 {
+    /**
+     * @var string
+     */
     protected $cId          = 'filter';
+
+    /**
+     * @var array
+     */
     protected $oField_arr   = [];
+
+    /**
+     * @var string
+     */
     protected $cWhereSQL    = '';
+
+    /**
+     * @var string
+     */
     protected $cAction      = '';
+
+    /**
+     * @var array
+     */
     protected $cSession_arr = [];
 
     /**

@@ -5956,46 +5956,45 @@ function json_safe_encode($data)
 function doMainwordRedirect($NaviFilter, $nAnzahl, $bSeo = false)
 {
     $cMainword_arr = [
-        'Kategorie'   => [
+        'getCategory'   => [
                 'cKey'   => 'kKategorie',
                 'cParam' => 'k'
             ],
-        'Hersteller'  => [
+        'getManufacturer'  => [
             'cKey'   => 'kHersteller',
             'cParam' => 'h'
         ],
-        'Suchanfrage' => [
+        'getSearchQuery' => [
             'cKey'   => 'kSuchanfrage',
             'cParam' => 'l'
         ],
-        'MerkmalWert' => [
+        'getAttributeValue' => [
             'cKey'   => 'kMerkmalWert',
             'cParam' => 'm'
         ],
-        'Tag'         => [
+        'getTag'         => [
             'cKey'   => 'kTag',
             'cParam' => 't'
         ],
-        'Suchspecial' => [
+        'getSearchSpecial' => [
             'cKey'   => 'kKey',
             'cParam' => 'q'
         ]
     ];
 
     if ((int)$nAnzahl === 0) {
-        $kSprache = 1;
-        if (isset($_SESSION['kSprache'])) {
-            $kSprache = (int)$_SESSION['kSprache'];
-        }
+        $kSprache = Shop::getLanguage();
         if (Shop::getNaviFilter()->getFilterCount() > 0) {
-            foreach ($cMainword_arr as $cMainword => $cInfo_arr) {
+            foreach ($cMainword_arr as $function => $cInfo_arr) {
                 $cKey   = $cInfo_arr['cKey'];
                 $cParam = $cInfo_arr['cParam'];
-                if (isset($NaviFilter->$cMainword) && (int)$NaviFilter->$cMainword->$cKey > 0) {
-                    $cUrl = "index.php?{$cParam}={$NaviFilter->$cMainword->$cKey}";
-                    // @todo: use getter
-                    if ($bSeo && isset($NaviFilter->$cMainword->cSeo) && is_array($NaviFilter->$cMainword->cSeo)) {
-                        $cUrl = "{$NaviFilter->$cMainword->cSeo[$kSprache]}";
+                $data   = method_exists($NaviFilter, $function)
+                    ? $NaviFilter->$function()
+                    : null;
+                if (isset($data->$cKey) && (int)$data->$cKey > 0) {
+                    $cUrl = "index.php?{$cParam}={$data->$cKey}";
+                    if ($bSeo && isset($data->cSeo) && is_array($data->cSeo)) {
+                        $cUrl = "{$data->cSeo[$kSprache]}";
                     }
                     if (strlen($cUrl) > 0) {
                         header("Location: {$cUrl}", true, 301);

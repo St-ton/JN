@@ -75,14 +75,16 @@ class FilterBaseAttribute extends AbstractFilter
         $oSQL->cMMWhere  = '';
         if (Shop::getLanguage() > 0 && !standardspracheAktiv()) {
             $oSQL->cMMSelect = 'tmerkmalsprache.cName, tmerkmal.cName AS cMMName';
-            $oSQL->cMMJOIN   = ' JOIN tmerkmalsprache ON tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal
+            $oSQL->cMMJOIN   = ' JOIN tmerkmalsprache 
+                                     ON tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal
                                      AND tmerkmalsprache.kSprache = ' . Shop::getLanguage();
         }
         $oSQL->cMMWhere   = 'tmerkmalwert.kMerkmalWert = ' . $this->getValue();
         $oMerkmalWert_arr = Shop::DB()->query(
             'SELECT tmerkmalwertsprache.cWert, ' . $oSQL->cMMSelect . '
                 FROM tmerkmalwert
-                JOIN tmerkmalwertsprache ON tmerkmalwertsprache.kMerkmalWert = tmerkmalwert.kMerkmalWert
+                JOIN tmerkmalwertsprache 
+                    ON tmerkmalwertsprache.kMerkmalWert = tmerkmalwert.kMerkmalWert
                     AND kSprache = ' . Shop::getLanguage() . '
                 JOIN tmerkmal ON tmerkmal.kMerkmal = tmerkmalwert.kMerkmal
                 ' . $oSQL->cMMJOIN . '
@@ -143,12 +145,11 @@ class FilterBaseAttribute extends AbstractFilter
     {
         return (new FilterJoin())->setType('JOIN')
              ->setComment('join1 from FilterBaseAttribute')
-             ->setTable('(
-                            SELECT kArtikel
-                            FROM tartikelmerkmal
-                            WHERE kMerkmalWert = ' . $this->getValue() . '
-                            GROUP BY tartikelmerkmal.kArtikel
-                            ) AS tmerkmaljoin')
+             ->setTable('(SELECT kArtikel
+                              FROM tartikelmerkmal
+                              WHERE kMerkmalWert = ' . $this->getValue() . '
+                              GROUP BY tartikelmerkmal.kArtikel
+                              ) AS tmerkmaljoin')
              ->setOrigin(__CLASS__)
              ->setOn('tmerkmaljoin.kArtikel = tartikel.kArtikel');
     }

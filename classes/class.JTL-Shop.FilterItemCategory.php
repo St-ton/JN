@@ -48,10 +48,13 @@ class FilterItemCategory extends FilterBaseCategory
         if ($this->getConfig()['navigationsfilter']['kategoriefilter_anzeigen_als'] === 'HF') {
             $join->setTable('(
                 SELECT tkategorieartikel.kArtikel, oberkategorie.kOberKategorie, oberkategorie.kKategorie
-                FROM tkategorieartikel
-                INNER JOIN tkategorie ON tkategorie.kKategorie = tkategorieartikel.kKategorie
-                INNER JOIN tkategorie oberkategorie ON tkategorie.lft BETWEEN oberkategorie.lft AND oberkategorie.rght
-                ) tkategorieartikelgesamt')
+                    FROM tkategorieartikel
+                        INNER JOIN tkategorie 
+                            ON tkategorie.kKategorie = tkategorieartikel.kKategorie
+                        INNER JOIN tkategorie oberkategorie 
+                            ON tkategorie.lft BETWEEN oberkategorie.lft 
+                            AND oberkategorie.rght
+                    ) tkategorieartikelgesamt')
                  ->setOn('tartikel.kArtikel = tkategorieartikelgesamt.kArtikel');
         }
         $join->setTable('tkategorieartikel')
@@ -90,8 +93,11 @@ class FilterItemCategory extends FilterBaseCategory
                     ->setTable('(
                 SELECT tkategorieartikel.kArtikel, oberkategorie.kOberKategorie, oberkategorie.kKategorie
                 FROM tkategorieartikel
-                INNER JOIN tkategorie ON tkategorie.kKategorie = tkategorieartikel.kKategorie
-                INNER JOIN tkategorie oberkategorie ON tkategorie.lft BETWEEN oberkategorie.lft AND oberkategorie.rght
+                INNER JOIN tkategorie 
+                    ON tkategorie.kKategorie = tkategorieartikel.kKategorie
+                INNER JOIN tkategorie oberkategorie 
+                    ON tkategorie.lft BETWEEN oberkategorie.lft 
+                    AND oberkategorie.rght
                 ) tkategorieartikelgesamt')
                     ->setOn('tartikel.kArtikel = tkategorieartikelgesamt.kArtikel ' . $kKatFilter)
                     ->setOrigin(__CLASS__);
@@ -102,7 +108,7 @@ class FilterItemCategory extends FilterBaseCategory
                     ->setOn('tkategorie.kKategorie = tkategorieartikelgesamt.kKategorie')
                     ->setOrigin(__CLASS__);
             } else {
-                //@todo: this instead of $naviFilter->Kategorie?
+                // @todo: this instead of $naviFilter->Kategorie?
                 if (!$this->naviFilter->hasCategory()) {
                     $state->joins[] = (new FilterJoin())
                         ->setComment('join3 from FilterItemCategory::getOptions()')
@@ -125,7 +131,7 @@ class FilterItemCategory extends FilterBaseCategory
                 ->setOn('tkategoriesichtbarkeit.kKategorie = tkategorie.kKategorie')
                 ->setOrigin(__CLASS__);
 
-            $state->conditions[] = "tkategoriesichtbarkeit.kKategorie IS NULL";
+            $state->conditions[] = 'tkategoriesichtbarkeit.kKategorie IS NULL';
 
             // nicht Standardsprache? Dann hole Namen nicht aus tkategorie sondern aus tkategoriesprache
             $cSQLKategorieSprache        = new stdClass();
@@ -162,13 +168,12 @@ class FilterItemCategory extends FilterBaseCategory
                     GROUP BY ssMerkmal.kKategorie
                     ORDER BY ssMerkmal.nSort, ssMerkmal.cName";
             $categories       = Shop::DB()->query($query, 2);
-            $additionalFilter = new FilterItemCategory($this->naviFilter);
+            $additionalFilter = new self($this->naviFilter);
             foreach ($categories as $category) {
                 // Anzeigen als KategoriePfad
                 if ($categoryFilterType === 'KP') {
-                    $oKategorie      = new Kategorie($category->kKategorie);
                     $category->cName = gibKategoriepfad(
-                        $oKategorie,
+                        new Kategorie($category->kKategorie, $this->getLanguageID(), $this->getCustomerGroupID()),
                         $this->getCustomerGroupID(),
                         $this->getLanguageID()
                     );

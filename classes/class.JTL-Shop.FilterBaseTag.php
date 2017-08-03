@@ -199,7 +199,7 @@ class FilterBaseTag extends AbstractFilter
                 $class                      = '';
                 // generic attributes for new filter templates
                 if ($fe->kTag > 0) {
-                    $class = ($nPrioStep < 1)
+                    $class = $nPrioStep < 1
                         ? rand(1, 10)
                         : round(
                             ($fe->nAnzahlTagging - $tags[$nCount - 1]->nAnzahlTagging) /

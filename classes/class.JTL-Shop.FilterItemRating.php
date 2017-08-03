@@ -137,7 +137,7 @@ class FilterItemRating extends AbstractFilter
             $res   = Shop::DB()->query($query, 2);
             if (is_array($res)) {
                 $nSummeSterne     = 0;
-                $additionalFilter = new FilterItemRating($this->getNaviFilter());
+                $additionalFilter = new self($this->getNaviFilter());
                 foreach ($res as $row) {
                     $nSummeSterne += (int)$row->nAnzahl;
 

@@ -145,7 +145,7 @@ class FilterJoin
      */
     public function getSql()
     {
-        return ($this->getTable() !== null)
+        return $this->getTable() !== null
             ? $this->getComment() . $this->getType() . ' ' . $this->getTable() . ' ON ' . $this->getOn()
             : '';
     }

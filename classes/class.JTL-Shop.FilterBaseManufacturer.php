@@ -75,7 +75,7 @@ class FilterBaseManufacturer extends AbstractFilter
         if (isset($oSeo_arr[0]->cName)) {
             $this->cName = $oSeo_arr[0]->cName;
         } else {
-            //invalid manufacturer ID
+            // invalid manufacturer ID
             Shop::$kHersteller = 0;
             Shop::$is404       = true;
         }
@@ -151,8 +151,8 @@ class FilterBaseManufacturer extends AbstractFilter
             );
             $query = "SELECT tseo.cSeo, ssMerkmal.kHersteller, ssMerkmal.cName, ssMerkmal.nSortNr, COUNT(*) AS nAnzahl
                 FROM (" .
-                    $query . "
-                ) AS ssMerkmal
+                    $query .
+                ") AS ssMerkmal
                     LEFT JOIN tseo 
                         ON tseo.kKey = ssMerkmal.kHersteller
                         AND tseo.cKey = 'kHersteller'

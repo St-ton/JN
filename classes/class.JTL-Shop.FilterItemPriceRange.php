@@ -208,40 +208,38 @@ class FilterItemPriceRange extends AbstractFilter
      */
     public function getSQLJoin()
     {
-        $res = [];
-
-        $res[] = (new FilterJoin())
-            ->setComment('join1 from FilterItemPriceRange')
-            ->setType('JOIN')
-            ->setTable('tpreise')
-            ->setOn('tartikel.kArtikel = tpreise.kArtikel 
+        return [
+            (new FilterJoin())
+                ->setComment('join1 from FilterItemPriceRange')
+                ->setType('JOIN')
+                ->setTable('tpreise')
+                ->setOn('tartikel.kArtikel = tpreise.kArtikel 
                         AND tpreise.kKundengruppe = ' . Session::CustomerGroup()->getID())
-            ->setOrigin(__CLASS__);
-        $res[] = (new FilterJoin())
-            ->setComment('join2 from FilterItemPriceRange')
-            ->setType('LEFT JOIN')
-            ->setTable('tartikelkategorierabatt')
-            ->setOn('tartikelkategorierabatt.kKundengruppe = ' . Session::CustomerGroup()->getID() .
+                ->setOrigin(__CLASS__),
+            (new FilterJoin())
+                ->setComment('join2 from FilterItemPriceRange')
+                ->setType('LEFT JOIN')
+                ->setTable('tartikelkategorierabatt')
+                ->setOn('tartikelkategorierabatt.kKundengruppe = ' . Session::CustomerGroup()->getID() .
                     ' AND tartikelkategorierabatt.kArtikel = tartikel.kArtikel')
-            ->setOrigin(__CLASS__);
-        $res[] = (new FilterJoin())
-            ->setComment('join3 from FilterItemPriceRange')
-            ->setType('LEFT JOIN')
-            ->setTable('tartikelsonderpreis')
-            ->setOn("tartikelsonderpreis.kArtikel = tartikel.kArtikel
+                ->setOrigin(__CLASS__),
+            (new FilterJoin())
+                ->setComment('join3 from FilterItemPriceRange')
+                ->setType('LEFT JOIN')
+                ->setTable('tartikelsonderpreis')
+                ->setOn("tartikelsonderpreis.kArtikel = tartikel.kArtikel
                          AND tartikelsonderpreis.cAktiv = 'Y'
                          AND tartikelsonderpreis.dStart <= now()
                          AND (tartikelsonderpreis.dEnde >= curDATE() OR tartikelsonderpreis.dEnde = '0000-00-00')")
-            ->setOrigin(__CLASS__);
-        $res[] = (new FilterJoin())
-            ->setComment('join4 from FilterItemPriceRange')
-            ->setType('LEFT JOIN')
-            ->setTable('tsonderpreise')
-            ->setOn('tartikelsonderpreis.kArtikelSonderpreis = tsonderpreise.kArtikelSonderpreis 
+                ->setOrigin(__CLASS__),
+            (new FilterJoin())
+                ->setComment('join4 from FilterItemPriceRange')
+                ->setType('LEFT JOIN')
+                ->setTable('tsonderpreise')
+                ->setOn('tartikelsonderpreis.kArtikelSonderpreis = tsonderpreise.kArtikelSonderpreis 
                          AND tsonderpreise.kKundengruppe = ' . Session::CustomerGroup()->getID())
-            ->setOrigin(__CLASS__);
-
-        return $res;
+                ->setOrigin(__CLASS__)
+        ];
     }
 
     /**
@@ -470,7 +468,7 @@ class FilterItemPriceRange extends AbstractFilter
                 $nPreisMax        = $oPreis->fMaxPreis;
                 $nPreisMin        = $oPreis->fMinPreis;
                 $nStep            = $oPreis->fStep;
-                $additionalFilter = new FilterItemPriceRange($this->naviFilter);
+                $additionalFilter = new self($this->naviFilter);
                 foreach ($priceRanges as $i => $count) {
                     $fe       = new FilterExtra();
                     $fe->nVon = $nPreisMin + $i * $nStep;
@@ -532,13 +530,12 @@ class FilterItemPriceRange extends AbstractFilter
                 if (!empty($state->conditions)) {
                     $state->conditions = ' AND ' . $state->conditions;
                 }
-                $dbRes     = Shop::DB()->query(
+                $dbRes            = Shop::DB()->query(
                     'SELECT ' . $cSelectSQL . '
                         FROM
                         (
                             SELECT ' . $this->getPriceRangeSQL($oPreis, $currency, $oPreisspannenfilter_arr) . '
-                                FROM tartikel ' .
-                                implode("\n", $state->joins) . '
+                                FROM tartikel ' . implode("\n", $state->joins) . '
                                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
                                     AND tartikel.kVaterArtikel = 0
                                     ' . $this->naviFilter->getStorageFilterSQL() . '
@@ -548,8 +545,8 @@ class FilterItemPriceRange extends AbstractFilter
                         ) AS ssMerkmal
                     ', 1
                 );
-                $priceRangeCounts   = get_object_vars($dbRes);
-                $priceRanges = [];
+                $priceRangeCounts = get_object_vars($dbRes);
+                $priceRanges      = [];
                 if (is_array($priceRangeCounts)) {
                     $count = count($priceRangeCounts);
                     for ($i = 0; $i < $count; ++$i) {
@@ -559,7 +556,7 @@ class FilterItemPriceRange extends AbstractFilter
                         $priceRanges[] = $priceRangeCounts['anz' . $i] - $sub;
                     }
                 }
-                $additionalFilter = new FilterItemPriceRange($this->naviFilter);
+                $additionalFilter = new self($this->naviFilter);
                 foreach ($oPreisspannenfilter_arr as $i => $oPreisspannenfilter) {
                     $fe                 = new FilterExtra();
                     $fe->nVon           = $oPreisspannenfilter->nVon;

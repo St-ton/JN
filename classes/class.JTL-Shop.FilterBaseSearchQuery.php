@@ -152,10 +152,10 @@ class FilterBaseSearchQuery extends AbstractFilter
             }
         } elseif (isset($searchFilter->kSuchCache) && $searchFilter->kSuchCache > 0) {
             $kSucheCache_arr[] = (int)$searchFilter->kSuchCache;
-            $count = 1;
+            $count             = 1;
         } else {
             $kSucheCache_arr = [$searchFilter->getValue()];
-            $count = 1;
+            $count           = 1;
         }
 
         return (new FilterJoin())
@@ -233,7 +233,7 @@ class FilterBaseSearchQuery extends AbstractFilter
                 $kSuchanfrage_arr[] = (int)$this->naviFilter->getSearch()->getValue();
             }
             if ($this->naviFilter->hasSearchFilter()) {
-                foreach ($this->naviFilter->getSearchFilters() as $oSuchFilter) {
+                foreach ($this->naviFilter->getSearchFilter() as $oSuchFilter) {
                     if ($oSuchFilter->getValue() > 0) {
                         $kSuchanfrage_arr[] = (int)$oSuchFilter->getValue();
                     }
@@ -252,7 +252,7 @@ class FilterBaseSearchQuery extends AbstractFilter
                 $searchFilters = array_merge($searchFilters);
             }
             //baue URL
-            $additionalFilter = new FilterBaseSearchQuery($this->naviFilter);
+            $additionalFilter = new self($this->naviFilter);
             // Priorität berechnen
             $nPrioStep = 0;
             $nCount    = count($searchFilters);
@@ -295,7 +295,7 @@ class FilterBaseSearchQuery extends AbstractFilter
      */
     private function getMapping($Suchausdruck, $kSpracheExt = 0)
     {
-        $kSprache = ($kSpracheExt > 0)
+        $kSprache = $kSpracheExt > 0
             ? (int)$kSpracheExt
             : $this->getLanguageID();
         if (strlen($Suchausdruck) > 0) {
@@ -337,12 +337,12 @@ class FilterBaseSearchQuery extends AbstractFilter
         // Mapping beachten
         $cSuche       = $this->getMapping($this->cSuche, $kSpracheExt);
         $this->cSuche = $cSuche;
-        $kSprache     = ($kSpracheExt > 0)
+        $kSprache     = $kSpracheExt > 0
             ? (int)$kSpracheExt
             : $this->getLanguageID();
         // Suchcache wurde zwar gefunden, ist jedoch nicht mehr gültig
-        Shop::DB()->query('
-            DELETE tsuchcache, tsuchcachetreffer
+        Shop::DB()->query(
+            'DELETE tsuchcache, tsuchcachetreffer
                 FROM tsuchcache
                 LEFT JOIN tsuchcachetreffer 
                     ON tsuchcachetreffer.kSuchCache = tsuchcache.kSuchCache
@@ -353,7 +353,7 @@ class FilterBaseSearchQuery extends AbstractFilter
 
         $keySuche = $cSuche . ';' .
             $this->getConfig()['global']['artikel_artikelanzeigefilter'] . ';' .
-            (int)$_SESSION['Kundengruppe']->kKundengruppe;
+            Session::CustomerGroup()->getID();
         // Suchcache checken, ob bereits vorhanden
         $oSuchCache = Shop::DB()->executeQueryPrepared(
             'SELECT kSuchCache
@@ -386,13 +386,13 @@ class FilterBaseSearchQuery extends AbstractFilter
             return 0;
         }
         // Array mit nach Prio sort. Suchspalten holen
-        $searchColumnn_arr       = gibSuchSpalten();
-        $searchColumns = $this->getSearchColumnClasses($searchColumnn_arr);
-        $oSuchCache             = new stdClass();
-        $oSuchCache->kSprache   = $kSprache;
-        $oSuchCache->cSuche     = $cSuche;
-        $oSuchCache->dErstellt  = 'now()';
-        $kSuchCache             = Shop::DB()->insert('tsuchcache', $oSuchCache);
+        $searchColumnn_arr     = gibSuchSpalten();
+        $searchColumns         = $this->getSearchColumnClasses($searchColumnn_arr);
+        $oSuchCache            = new stdClass();
+        $oSuchCache->kSprache  = $kSprache;
+        $oSuchCache->cSuche    = $cSuche;
+        $oSuchCache->dErstellt = 'now()';
+        $kSuchCache            = Shop::DB()->insert('tsuchcache', $oSuchCache);
 
         if ($this->getConfig()['artikeluebersicht']['suche_fulltext'] === 'Y'
             && $this->isFulltextIndexActive()
@@ -443,8 +443,8 @@ class FilterBaseSearchQuery extends AbstractFilter
                 $cSQL .= ')';
             }
         } else {
-            $nKlammern = 0;
-            $nPrio     = 1;
+            $brackets = 0;
+            $nPrio    = 1;
             foreach ($searchColumnn_arr as $i => $searchColumnn) {
                 // Fülle bei 1, 2 oder 3 Suchwörtern aufsplitten
                 switch (count($cSuchTMP_arr)) {
@@ -452,55 +452,55 @@ class FilterBaseSearchQuery extends AbstractFilter
                         // "A"
                         $nonAllowed = [2];
                         if ($this->checkColumnClasses($searchColumns, $searchColumnn, $nonAllowed)) {
-                            $nKlammern++;
+                            ++$brackets;
                             $cSQL .= "IF(" . $searchColumnn . " = '" . $cSuchTMP_arr[0] . "', " . ++$nPrio . ", ";
                         }
                         // "A_%"
                         $nonAllowed = [2, 3];
                         if ($this->checkColumnClasses($searchColumns, $searchColumnn, $nonAllowed)) {
-                            $nKlammern++;
+                            ++$brackets;
                             $cSQL .= "IF(" . $searchColumnn . " LIKE '" . $cSuchTMP_arr[0] . " %', " . ++$nPrio . ", ";
                         }
                         // "%_A_%"
                         $nonAllowed = [3];
                         if ($this->checkColumnClasses($searchColumns, $searchColumnn, $nonAllowed)) {
-                            $nKlammern++;
+                            ++$brackets;
                             $cSQL .= "IF(" . $searchColumnn . " LIKE '% " . $cSuchTMP_arr[0] . " %', " . ++$nPrio . ", ";
                         }
                         // "%_A"
                         $nonAllowed = [2, 3];
                         if ($this->checkColumnClasses($searchColumns, $searchColumnn, $nonAllowed)) {
-                            $nKlammern++;
+                            ++$brackets;
                             $cSQL .= "IF(" . $searchColumnn . " LIKE '% " . $cSuchTMP_arr[0] . "', " . ++$nPrio . ", ";
                         }
                         // "%_A%"
                         $nonAllowed = [3];
                         if ($this->checkColumnClasses($searchColumns, $searchColumnn, $nonAllowed)) {
-                            $nKlammern++;
+                            ++$brackets;
                             $cSQL .= "IF(" . $searchColumnn . " LIKE '% " . $cSuchTMP_arr[0] . "%', " . ++$nPrio . ", ";
                         }
                         // "%A_%"
                         $nonAllowed = [3];
                         if ($this->checkColumnClasses($searchColumns, $searchColumnn, $nonAllowed)) {
-                            $nKlammern++;
+                            ++$brackets;
                             $cSQL .= "IF(" . $searchColumnn . " LIKE '%" . $cSuchTMP_arr[0] . " %', " . ++$nPrio . ", ";
                         }
                         // "A%"
                         $nonAllowed = [2, 3];
                         if ($this->checkColumnClasses($searchColumns, $searchColumnn, $nonAllowed)) {
-                            $nKlammern++;
+                            ++$brackets;
                             $cSQL .= "IF(" . $searchColumnn . " LIKE '" . $cSuchTMP_arr[0] . "%', " . ++$nPrio . ", ";
                         }
                         // "%A"
                         $nonAllowed = [2, 3];
                         if ($this->checkColumnClasses($searchColumns, $searchColumnn, $nonAllowed)) {
-                            $nKlammern++;
+                            ++$brackets;
                             $cSQL .= "IF(" . $searchColumnn . " LIKE '%" . $cSuchTMP_arr[0] . "', " . ++$nPrio . ", ";
                         }
                         // "%A%"
                         $nonAllowed = [3];
                         if ($this->checkColumnClasses($searchColumns, $searchColumnn, $nonAllowed)) {
-                            $nKlammern++;
+                            ++$brackets;
                             $cSQL .= "IF(" . $searchColumnn . " LIKE '%" . $cSuchTMP_arr[0] . "%', " . ++$nPrio . ", ";
                         }
                         break;
@@ -508,121 +508,121 @@ class FilterBaseSearchQuery extends AbstractFilter
                         // "A_B"
                         $nonAllowed = [2];
                         if ($this->checkColumnClasses($searchColumns, $searchColumnn, $nonAllowed)) {
-                            $nKlammern++;
+                            ++$brackets;
                             $cSQL .= "IF(" . $searchColumnn . " LIKE '" . $cSuchTMP_arr[0] . " " . $cSuchTMP_arr[1] . "', " . ++$nPrio . ", ";
                         }
                         // "B_A"
                         $nonAllowed = [2, 3];
                         if ($this->checkColumnClasses($searchColumns, $searchColumnn, $nonAllowed)) {
-                            $nKlammern++;
+                            ++$brackets;
                             $cSQL .= "IF(" . $searchColumnn . " LIKE '" . $cSuchTMP_arr[1] . " " . $cSuchTMP_arr[0] . "', " . ++$nPrio . ", ";
                         }
                         // "A_B_%"
                         $nonAllowed = [2, 3];
                         if ($this->checkColumnClasses($searchColumns, $searchColumnn, $nonAllowed)) {
-                            $nKlammern++;
+                            ++$brackets;
                             $cSQL .= "IF(" . $searchColumnn . " LIKE '" . $cSuchTMP_arr[0] . " " . $cSuchTMP_arr[1] . " %', " . ++$nPrio . ", ";
                         }
                         // "B_A_%"
                         $nonAllowed = [2, 3];
                         if ($this->checkColumnClasses($searchColumns, $searchColumnn, $nonAllowed)) {
-                            $nKlammern++;
+                            ++$brackets;
                             $cSQL .= "IF(" . $searchColumnn . " LIKE '" . $cSuchTMP_arr[1] . " " . $cSuchTMP_arr[0] . " %', " . ++$nPrio . ", ";
                         }
                         // "%_A_B"
                         $nonAllowed = [2, 3];
                         if ($this->checkColumnClasses($searchColumns, $searchColumnn, $nonAllowed)) {
-                            $nKlammern++;
+                            ++$brackets;
                             $cSQL .= "IF(" . $searchColumnn . " LIKE '% " . $cSuchTMP_arr[0] . " " . $cSuchTMP_arr[1] . "', " . ++$nPrio . ", ";
                         }
                         // "%_B_A"
                         $nonAllowed = [2, 3];
                         if ($this->checkColumnClasses($searchColumns, $searchColumnn, $nonAllowed)) {
-                            $nKlammern++;
+                            ++$brackets;
                             $cSQL .= "IF(" . $searchColumnn . " LIKE '% " . $cSuchTMP_arr[1] . " " . $cSuchTMP_arr[0] . "', " . ++$nPrio . ", ";
                         }
                         // "%_A_B_%"
                         $nonAllowed = [3];
                         if ($this->checkColumnClasses($searchColumns, $searchColumnn, $nonAllowed)) {
-                            $nKlammern++;
+                            ++$brackets;
                             $cSQL .= "IF(" . $searchColumnn . " LIKE '% " . $cSuchTMP_arr[0] . " " . $cSuchTMP_arr[1] . " %', " . ++$nPrio . ", ";
                         }
                         // "%_B_A_%"
                         $nonAllowed = [3];
                         if ($this->checkColumnClasses($searchColumns, $searchColumnn, $nonAllowed)) {
-                            $nKlammern++;
+                            ++$brackets;
                             $cSQL .= "IF(" . $searchColumnn . " LIKE '% " . $cSuchTMP_arr[1] . " " . $cSuchTMP_arr[0] . " %', " . ++$nPrio . ", ";
                         }
                         // "%A_B_%"
                         $nonAllowed = [3];
                         if ($this->checkColumnClasses($searchColumns, $searchColumnn, $nonAllowed)) {
-                            $nKlammern++;
+                            ++$brackets;
                             $cSQL .= "IF(" . $searchColumnn . " LIKE '%" . $cSuchTMP_arr[0] . " " . $cSuchTMP_arr[1] . " %', " . ++$nPrio . ", ";
                         }
                         // "%B_A_%"
                         $nonAllowed = [3];
                         if ($this->checkColumnClasses($searchColumns, $searchColumnn, $nonAllowed)) {
-                            $nKlammern++;
+                            ++$brackets;
                             $cSQL .= "IF(" . $searchColumnn . " LIKE '%" . $cSuchTMP_arr[1] . " " . $cSuchTMP_arr[0] . " %', " . ++$nPrio . ", ";
                         }
                         // "%_A_B%"
                         $nonAllowed = [3];
                         if ($this->checkColumnClasses($searchColumns, $searchColumnn, $nonAllowed)) {
-                            $nKlammern++;
+                            ++$brackets;
                             $cSQL .= "IF(" . $searchColumnn . " LIKE '% " . $cSuchTMP_arr[0] . " " . $cSuchTMP_arr[1] . "%', " . ++$nPrio . ", ";
                         }
                         // "%_B_A%"
                         $nonAllowed = [3];
                         if ($this->checkColumnClasses($searchColumns, $searchColumnn, $nonAllowed)) {
-                            $nKlammern++;
+                            ++$brackets;
                             $cSQL .= "IF(" . $searchColumnn . " LIKE '% " . $cSuchTMP_arr[1] . " " . $cSuchTMP_arr[0] . "%', " . ++$nPrio . ", ";
                         }
                         // "%A_B%"
                         $nonAllowed = [3];
                         if ($this->checkColumnClasses($searchColumns, $searchColumnn, $nonAllowed)) {
-                            $nKlammern++;
+                            ++$brackets;
                             $cSQL .= "IF(" . $searchColumnn . " LIKE '%" . $cSuchTMP_arr[0] . " " . $cSuchTMP_arr[1] . "%', " . ++$nPrio . ", ";
                         }
                         // "%B_A%"
                         $nonAllowed = [3];
                         if ($this->checkColumnClasses($searchColumns, $searchColumnn, $nonAllowed)) {
-                            $nKlammern++;
+                            ++$brackets;
                             $cSQL .= "IF(" . $searchColumnn . " LIKE '%" . $cSuchTMP_arr[1] . " " . $cSuchTMP_arr[0] . "%', " . ++$nPrio . ", ";
                         }
                         // "%_A%_B_%"
                         $nonAllowed = [3];
                         if ($this->checkColumnClasses($searchColumns, $searchColumnn, $nonAllowed)) {
-                            $nKlammern++;
+                            ++$brackets;
                             $cSQL .= "IF(" . $searchColumnn . " LIKE '% " . $cSuchTMP_arr[0] . "% " . $cSuchTMP_arr[1] . " %', " . ++$nPrio . ", ";
                         }
                         // "%_B%_A_%"
                         $nonAllowed = [3];
                         if ($this->checkColumnClasses($searchColumns, $searchColumnn, $nonAllowed)) {
-                            $nKlammern++;
+                            ++$brackets;
                             $cSQL .= "IF(" . $searchColumnn . " LIKE '% " . $cSuchTMP_arr[1] . "% " . $cSuchTMP_arr[0] . " %', " . ++$nPrio . ", ";
                         }
                         // "%_A_%B_%"
                         $nonAllowed = [3];
                         if ($this->checkColumnClasses($searchColumns, $searchColumnn, $nonAllowed)) {
-                            $nKlammern++;
+                            ++$brackets;
                             $cSQL .= "IF(" . $searchColumnn . " LIKE '% " . $cSuchTMP_arr[0] . " %" . $cSuchTMP_arr[1] . " %', " . ++$nPrio . ", ";
                         }
                         // "%_B_%A_%"
                         $nonAllowed = [3];
                         if ($this->checkColumnClasses($searchColumns, $searchColumnn, $nonAllowed)) {
-                            $nKlammern++;
+                            ++$brackets;
                             $cSQL .= "IF(" . $searchColumnn . " LIKE '% " . $cSuchTMP_arr[1] . " %" . $cSuchTMP_arr[0] . " %', " . ++$nPrio . ", ";
                         }
                         // "%_A%_%B_%"
                         $nonAllowed = [2, 3];
                         if ($this->checkColumnClasses($searchColumns, $searchColumnn, $nonAllowed)) {
-                            $nKlammern++;
+                            ++$brackets;
                             $cSQL .= "IF(" . $searchColumnn . " LIKE '% " . $cSuchTMP_arr[0] . "% %" . $cSuchTMP_arr[1] . " %', " . ++$nPrio . ", ";
                         }
                         // "%_B%_%A_%"
                         $nonAllowed = [2, 3];
                         if ($this->checkColumnClasses($searchColumns, $searchColumnn, $nonAllowed)) {
-                            $nKlammern++;
+                            ++$brackets;
                             $cSQL .= "IF(" . $searchColumnn . " LIKE '% " . $cSuchTMP_arr[1] . "% %" . $cSuchTMP_arr[0] . " %', " . ++$nPrio . ", ";
                         }
                         break;
@@ -630,68 +630,68 @@ class FilterBaseSearchQuery extends AbstractFilter
                         // "%A_%_B_%_C%"
                         $nonAllowed = [3];
                         if ($this->checkColumnClasses($searchColumns, $searchColumnn, $nonAllowed)) {
-                            $nKlammern++;
+                            ++$brackets;
                             $cSQL .= "IF(" . $searchColumnn . " LIKE '%" . $cSuchTMP_arr[0] . " % " . $cSuchTMP_arr[1] . " % " . $cSuchTMP_arr[2] . "%', " . ++$nPrio . ", ";
                         }
                         // "%_A_% AND %_B_% AND %_C_%"
                         $nonAllowed = [3];
                         if ($this->checkColumnClasses($searchColumns, $searchColumnn, $nonAllowed)) {
-                            $nKlammern++;
+                            ++$brackets;
                             $cSQL .= "IF((" . $searchColumnn . " LIKE '% " . $cSuchTMP_arr[0] . " %') AND (" . $searchColumnn .
                                 " LIKE '% " . $cSuchTMP_arr[1] . " %') AND (" . $searchColumnn . " LIKE '% " . $cSuchTMP_arr[2] . " %'), " . ++$nPrio . ", ";
                         }
                         // "%_A_% AND %_B_% AND %C%"
                         $nonAllowed = [3];
                         if ($this->checkColumnClasses($searchColumns, $searchColumnn, $nonAllowed)) {
-                            $nKlammern++;
+                            ++$brackets;
                             $cSQL .= "IF((" . $searchColumnn . " LIKE '" . $cSuchTMP_arr[0] . "') AND (" . $searchColumnn .
                                 " LIKE '" . $cSuchTMP_arr[1] . "') AND (" . $searchColumnn . " LIKE '%" . $cSuchTMP_arr[2] . "%'), " . ++$nPrio . ", ";
                         }
                         // "%_A_% AND %B% AND %_C_%"
                         $nonAllowed = [3];
                         if ($this->checkColumnClasses($searchColumns, $searchColumnn, $nonAllowed)) {
-                            $nKlammern++;
+                            ++$brackets;
                             $cSQL .= "IF((" . $searchColumnn . " LIKE '% " . $cSuchTMP_arr[0] . " %') AND (" . $searchColumnn .
                                 " LIKE '%" . $cSuchTMP_arr[1] . "%') AND (" . $searchColumnn . " LIKE '% " . $cSuchTMP_arr[2] . " %'), " . ++$nPrio . ", ";
                         }
                         // "%_A_% AND %B% AND %C%"
                         $nonAllowed = [3];
                         if ($this->checkColumnClasses($searchColumns, $searchColumnn, $nonAllowed)) {
-                            $nKlammern++;
+                            ++$brackets;
                             $cSQL .= "IF((" . $searchColumnn . " LIKE '% " . $cSuchTMP_arr[0] . " %') AND (" . $searchColumnn .
                                 " LIKE '%" . $cSuchTMP_arr[1] . "%') AND (" . $searchColumnn . " LIKE '%" . $cSuchTMP_arr[2] . "%'), " . ++$nPrio . ", ";
                         }
                         // "%A% AND %_B_% AND %_C_%"
                         $nonAllowed = [3];
                         if ($this->checkColumnClasses($searchColumns, $searchColumnn, $nonAllowed)) {
-                            $nKlammern++;
+                            ++$brackets;
                             $cSQL .= "IF((" . $searchColumnn . " LIKE '%" . $cSuchTMP_arr[0] . "%') AND (" . $searchColumnn .
                                 " LIKE '% " . $cSuchTMP_arr[1] . " %') AND (" . $searchColumnn . " LIKE '% " . $cSuchTMP_arr[2] . " %'), " . ++$nPrio . ", ";
                         }
                         // "%A% AND %_B_% AND %C%"
                         $nonAllowed = [3];
                         if ($this->checkColumnClasses($searchColumns, $searchColumnn, $nonAllowed)) {
-                            $nKlammern++;
+                            ++$brackets;
                             $cSQL .= "IF((" . $searchColumnn . " LIKE '%" . $cSuchTMP_arr[0] . "%') AND (" . $searchColumnn .
                                 " LIKE '% " . $cSuchTMP_arr[1] . " %') AND (" . $searchColumnn . " LIKE '%" . $cSuchTMP_arr[2] . "%'), " . ++$nPrio . ", ";
                         }
                         // "%A% AND %B% AND %_C_%"
                         $nonAllowed = [3];
                         if ($this->checkColumnClasses($searchColumns, $searchColumnn, $nonAllowed)) {
-                            $nKlammern++;
+                            ++$brackets;
                             $cSQL .= "IF((" . $searchColumnn . " LIKE '%" . $cSuchTMP_arr[0] . "%') AND (" . $searchColumnn .
                                 " LIKE '%" . $cSuchTMP_arr[1] . "%') AND (" . $searchColumnn . " LIKE '% " . $cSuchTMP_arr[2] . " %'), " . ++$nPrio . ", ";
                         }
                         // "%A%B%C%"
                         $nonAllowed = [3];
                         if ($this->checkColumnClasses($searchColumns, $searchColumnn, $nonAllowed)) {
-                            $nKlammern++;
+                            ++$brackets;
                             $cSQL .= "IF(" . $searchColumnn . " LIKE '%" . $cSuchTMP_arr[0] . "%" . $cSuchTMP_arr[1] . "%" . $cSuchTMP_arr[2] . "%', " . ++$nPrio . ", ";
                         }
                         // "%A% AND %B% AND %C%"
                         $nonAllowed = [3];
                         if ($this->checkColumnClasses($searchColumns, $searchColumnn, $nonAllowed)) {
-                            $nKlammern++;
+                            ++$brackets;
                             $cSQL .= "IF((" . $searchColumnn . " LIKE '%" . $cSuchTMP_arr[0] . "%') AND (" . $searchColumnn .
                                 " LIKE '%" . $cSuchTMP_arr[1] . "%') AND (" . $searchColumnn . " LIKE '%" . $cSuchTMP_arr[2] . "%'), " . ++$nPrio . ", ";
                         }
@@ -703,7 +703,7 @@ class FilterBaseSearchQuery extends AbstractFilter
                 }
             }
 
-            for ($i = 0; $i < ($nKlammern - 1); ++$i) {
+            for ($i = 0; $i < ($brackets - 1); ++$i) {
                 $cSQL .= ')';
             }
 
@@ -733,14 +733,14 @@ class FilterBaseSearchQuery extends AbstractFilter
                 $cSQL .= ')';
             }
         }
-        Shop::DB()->query('
-            INSERT INTO tsuchcachetreffer ' .
+        Shop::DB()->query(
+            'INSERT INTO tsuchcachetreffer ' .
             $cSQL .
                 ' GROUP BY kArtikelTMP
                 LIMIT ' . (int)$this->getConfig()['artikeluebersicht']['suche_max_treffer'], 3
         );
 
-        return (int)$kSuchCache;
+        return $kSuchCache;
     }
 
     /**
@@ -749,19 +749,18 @@ class FilterBaseSearchQuery extends AbstractFilter
      */
     public function prepareSearchQuery($query)
     {
-        $query        = str_replace(["'", '\\', '*', '%'], '', strip_tags($query));
-        $searchArray  = [];
-        $cSuchTMP_arr = explode(' ', $query);
-
+        $query          = str_replace(["'", '\\', '*', '%'], '', strip_tags($query));
+        $searchArray    = [];
+        $cSuchTMP_arr   = explode(' ', $query);
         $query_stripped = stripslashes($query);
         if ($query_stripped{0} !== '"' || $query_stripped{strlen($query_stripped) - 1} !== '"') {
             foreach ($cSuchTMP_arr as $i => $cSuchTMP) {
                 if (strpos($cSuchTMP, '+') !== false) {
-                    $cSuchTMP_teil = explode('+', $cSuchTMP);
-                    foreach ($cSuchTMP_teil as $cTeil) {
-                        $cTeil = trim($cTeil);
-                        if ($cTeil) {
-                            $searchArray[] = $cTeil;
+                    $searchPart = explode('+', $cSuchTMP);
+                    foreach ($searchPart as $part) {
+                        $part = trim($part);
+                        if ($part) {
+                            $searchArray[] = $part;
                         }
                     }
                 } else {
@@ -801,7 +800,8 @@ class FilterBaseSearchQuery extends AbstractFilter
                 return preg_match('/tartikelsprache\.(.*)/', $item) ? true : false;
             });
 
-            $match = "MATCH (" . implode(', ', $cArtikelSpalten_arr) . ") AGAINST ('" . implode(' ', $cSuch_arr) . "' IN NATURAL LANGUAGE MODE)";
+            $match = "MATCH (" . implode(', ', $cArtikelSpalten_arr) . ") 
+                        AGAINST ('" . implode(' ', $cSuch_arr) . "' IN NATURAL LANGUAGE MODE)";
             $cSQL  = "SELECT {$oSuchCache->kSuchCache} AS kSuchCache,
                     IF(tartikel.kVaterArtikel > 0, tartikel.kVaterArtikel, tartikel.kArtikel) AS kArtikelTMP,
                     $match AS score
@@ -809,7 +809,8 @@ class FilterBaseSearchQuery extends AbstractFilter
                     WHERE $match " . gibLagerfilter() . " ";
 
             if (Shop::getLanguage() > 0 && !standardspracheAktiv()) {
-                $match  = "MATCH (" . implode(', ', $cSprachSpalten_arr) . ") AGAINST ('" . implode(' ', $cSuch_arr) . "' IN NATURAL LANGUAGE MODE)";
+                $match  = "MATCH (" . implode(', ', $cSprachSpalten_arr) . ") 
+                            AGAINST ('" . implode(' ', $cSuch_arr) . "' IN NATURAL LANGUAGE MODE)";
                 $cSQL  .= "UNION DISTINCT
                 SELECT {$oSuchCache->kSuchCache} AS kSuchCache,
                     IF(tartikel.kVaterArtikel > 0, tartikel.kVaterArtikel, tartikel.kArtikel) AS kArtikelTMP,
@@ -822,8 +823,9 @@ class FilterBaseSearchQuery extends AbstractFilter
             $cISQL = "INSERT INTO tsuchcachetreffer
                     SELECT kSuchCache, kArtikelTMP, ROUND(MAX(15 - score) * 10)
                     FROM ($cSQL) AS i
-                    LEFT JOIN tartikelsichtbarkeit ON tartikelsichtbarkeit.kArtikel = i.kArtikelTMP
-                        AND tartikelsichtbarkeit.kKundengruppe = " . ((int)$_SESSION['Kundengruppe']->kKundengruppe) . "
+                    LEFT JOIN tartikelsichtbarkeit 
+                        ON tartikelsichtbarkeit.kArtikel = i.kArtikelTMP
+                        AND tartikelsichtbarkeit.kKundengruppe = " . Session::CustomerGroup()->getID() . "
                     WHERE tartikelsichtbarkeit.kKundengruppe IS NULL
                     GROUP BY kSuchCache, kArtikelTMP" . ($nLimit > 0 ? " LIMIT $nLimit" : '');
 
@@ -843,22 +845,25 @@ class FilterBaseSearchQuery extends AbstractFilter
         if (is_array($searchColumns) && count($searchColumns) > 0) {
             foreach ($searchColumns as $columns) {
                 // Klasse 1: Artikelname und Artikel SEO
-                if (strpos($columns, 'cName') !== false ||
-                    strpos($columns, 'cSeo') !== false ||
-                    strpos($columns, 'cSuchbegriffe') !== false) {
+                if (strpos($columns, 'cName') !== false
+                    || strpos($columns, 'cSeo') !== false
+                    || strpos($columns, 'cSuchbegriffe') !== false
+                ) {
                     $result[1][] = $columns;
                 }
                 // Klasse 2: Artikelname und Artikel SEO
-                if (strpos($columns, 'cKurzBeschreibung') !== false ||
-                    strpos($columns, 'cBeschreibung') !== false ||
-                    strpos($columns, 'cAnmerkung') !== false) {
+                if (strpos($columns, 'cKurzBeschreibung') !== false
+                    || strpos($columns, 'cBeschreibung') !== false
+                    || strpos($columns, 'cAnmerkung') !== false
+                ) {
                     $result[2][] = $columns;
                 }
                 // Klasse 3: Artikelname und Artikel SEO
-                if (strpos($columns, 'cArtNr') !== false ||
-                    strpos($columns, 'cBarcode') !== false ||
-                    strpos($columns, 'cISBN') !== false ||
-                    strpos($columns, 'cHAN') !== false) {
+                if (strpos($columns, 'cArtNr') !== false
+                    || strpos($columns, 'cBarcode') !== false
+                    || strpos($columns, 'cISBN') !== false
+                    || strpos($columns, 'cHAN') !== false
+                ) {
                     $result[3][] = $columns;
                 }
             }

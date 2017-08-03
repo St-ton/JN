@@ -244,9 +244,8 @@ class FilterSearch extends AbstractFilter
                                 ['kSprache', 'cSuche'],
                                 [(int)$searchQuery->kSprache, Shop::DB()->realEscape($Suchausdruck)]
                             );
-                            $queryID = Shop::DB()->insert('tsuchanfrage', $searchQuery);
 
-                            return (int)$queryID;
+                            return Shop::DB()->insert('tsuchanfrage', $searchQuery);
                         }
                     } else {
                         $queryMiss                  = new stdClass();
@@ -262,9 +261,9 @@ class FilterSearch extends AbstractFilter
                             false,
                             'kSuchanfrageErfolglos'
                         );
-                        if (isset($queryMiss_old->kSuchanfrageErfolglos) &&
-                            $queryMiss_old->kSuchanfrageErfolglos > 0 &&
-                            $real
+                        if (isset($queryMiss_old->kSuchanfrageErfolglos)
+                            && $queryMiss_old->kSuchanfrageErfolglos > 0
+                            && $real
                         ) {
                             Shop::DB()->query(
                                 'UPDATE tsuchanfrageerfolglos
@@ -307,22 +306,23 @@ class FilterSearch extends AbstractFilter
             }
         } elseif (isset($searchFilter->kSuchCache)) {
             $searchCache[] = (int)$searchFilter->kSuchCache;
-            $count             = 1;
+            $count         = 1;
         } elseif (($value = $searchFilter->getValue()) > 0) {
             $searchCache = [$value];
-            $count           = 1;
+            $count       = 1;
         }
 
-        return (new FilterJoin())->setType('JOIN')
-                                 ->setTable('(SELECT tsuchcachetreffer.kArtikel, tsuchcachetreffer.kSuchCache, 
-                                  MIN(tsuchcachetreffer.nSort) AS nSort
-                                      FROM tsuchcachetreffer
-                                      WHERE tsuchcachetreffer.kSuchCache IN (' . implode(',', $searchCache) . ') 
-                                      GROUP BY tsuchcachetreffer.kArtikel
-                                      HAVING COUNT(*) = ' . $count . '
-                                  ) AS jfSuche')
-                                 ->setOn('jfSuche.kArtikel = tartikel.kArtikel')
-                                 ->setComment('JOIN1 from FilterSearch');
+        return (new FilterJoin())
+            ->setType('JOIN')
+            ->setTable('(SELECT tsuchcachetreffer.kArtikel, tsuchcachetreffer.kSuchCache, 
+                            MIN(tsuchcachetreffer.nSort) AS nSort
+                              FROM tsuchcachetreffer
+                              WHERE tsuchcachetreffer.kSuchCache IN (' . implode(',', $searchCache) . ') 
+                              GROUP BY tsuchcachetreffer.kArtikel
+                              HAVING COUNT(*) = ' . $count . '
+                        ) AS jfSuche')
+            ->setOn('jfSuche.kArtikel = tartikel.kArtikel')
+            ->setComment('JOIN1 from FilterSearch');
     }
 
     /**
@@ -336,12 +336,12 @@ class FilterSearch extends AbstractFilter
         }
         $options = [];
         if ($this->getConfig()['navigationsfilter']['suchtrefferfilter_nutzen'] !== 'N') {
-            $nLimit     = (isset($this->getConfig()['navigationsfilter']['suchtrefferfilter_anzahl']) &&
-                ($limit = (int)$this->getConfig()['navigationsfilter']['suchtrefferfilter_anzahl']) > 0)
+            $nLimit = (isset($this->getConfig()['navigationsfilter']['suchtrefferfilter_anzahl'])
+                && ($limit = (int)$this->getConfig()['navigationsfilter']['suchtrefferfilter_anzahl']) > 0)
                 ? ' LIMIT ' . $limit
                 : '';
-            $order      = $this->naviFilter->getOrder();
-            $state      = $this->naviFilter->getCurrentStateData();
+            $order  = $this->naviFilter->getOrder();
+            $state  = $this->naviFilter->getCurrentStateData();
 
             $state->joins[] = $order->join;
             $state->joins[] = (new FilterJoin())
@@ -366,7 +366,7 @@ class FilterSearch extends AbstractFilter
 
             $state->conditions[] = 'tsuchanfrage.nAktiv = 1';
 
-            $query            = $this->naviFilter->getBaseQuery(
+            $query         = $this->naviFilter->getBaseQuery(
                 ['tsuchanfrage.kSuchanfrage', 'tsuchanfrage.cSuche', 'tartikel.kArtikel'],
                 $state->joins,
                 $state->conditions,
@@ -385,7 +385,7 @@ class FilterSearch extends AbstractFilter
                 $searchQueries[] = $this->naviFilter->getSearch()->getValue();
             }
             if ($this->naviFilter->hasSearchFilter()) {
-                foreach ($this->naviFilter->getSearchFilters() as $oSuchFilter) {
+                foreach ($this->naviFilter->getSearchFilter() as $oSuchFilter) {
                     if ($oSuchFilter->getValue() > 0) {
                         $searchQueries[] = (int)$oSuchFilter->getValue();
                     }
@@ -404,12 +404,10 @@ class FilterSearch extends AbstractFilter
                 $searchFilters = array_merge($searchFilters);
             }
             $additionalFilter = new FilterBaseSearchQuery($this->naviFilter);
-            // Priorität berechnen
-            $nPrioStep = 0;
-            $nCount    = count($searchFilters);
-            if ($nCount > 0) {
-                $nPrioStep = ($searchFilters[0]->nAnzahl - $searchFilters[$nCount - 1]->nAnzahl) / 9;
-            }
+            $nCount           = count($searchFilters);
+            $nPrioStep        = $nCount > 0
+                ? ($searchFilters[0]->nAnzahl - $searchFilters[$nCount - 1]->nAnzahl) / 9
+                : 0;
             foreach ($searchFilters as $searchFilter) {
                 $class = rand(1, 10);
                 if (isset($searchFilter->kSuchCache) && $searchFilter->kSuchCache > 0 && $nPrioStep >= 0) {

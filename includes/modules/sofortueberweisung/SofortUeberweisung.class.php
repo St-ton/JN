@@ -155,12 +155,12 @@ class SofortUeberweisung extends PaymentMethod
     {
         $smarty = Shop::Smarty();
         if (D_MODE === 1) {
-            Jtllog::writeLog(': preparePaymentProcess enter.', JTLLOG_LEVEL_ERROR);
+            Jtllog::writeLog(': preparePaymentProcess enter.', JTLLOG_LEVEL_DEBUG);
         }
 
         if ($order->fGesamtsummeKundenwaehrung > 0) {
             if (D_MODE === 1) {
-                Jtllog::writeLog(': preparePaymentProcess fGesamtsummeKundenwaehrung > 0', JTLLOG_LEVEL_ERROR);
+                Jtllog::writeLog(': preparePaymentProcess fGesamtsummeKundenwaehrung > 0', JTLLOG_LEVEL_DEBUG);
             }
             $this->sofortueberweisung_id         = $this->paymentConfig['zahlungsart_sofortueberweisung_id'];
             $this->sofortueberweisung_project_id = $this->paymentConfig['zahlungsart_sofortueberweisung_project_id'];
@@ -222,7 +222,7 @@ class SofortUeberweisung extends PaymentMethod
                 '</form>';
 
             if (D_MODE === 1) {
-                Jtllog::writeLog(': preparePaymentProcess strReturn: ' . $strReturn, JTLLOG_LEVEL_ERROR);
+                Jtllog::writeLog(': preparePaymentProcess strReturn: ' . $strReturn, JTLLOG_LEVEL_DEBUG);
             }
 
             $smarty->assign('sofortueberweisungform', $strReturn);
@@ -282,9 +282,9 @@ class SofortUeberweisung extends PaymentMethod
         $this->hash   = sha1(utf8_encode($data_implode));
 
         if (D_MODE === 1) {
-            Jtllog::writeLog(': baueSicherheitsHash data: ' . print_r($data, true), JTLLOG_LEVEL_ERROR);
-            Jtllog::writeLog(': baueSicherheitsHash data_implode: ' . $data_implode, JTLLOG_LEVEL_ERROR);
-            Jtllog::writeLog(': baueSicherheitsHash hash: ' . $this->hash, JTLLOG_LEVEL_ERROR);
+            Jtllog::writeLog(': baueSicherheitsHash data: ' . print_r($data, true), JTLLOG_LEVEL_DEBUG);
+            Jtllog::writeLog(': baueSicherheitsHash data_implode: ' . $data_implode, JTLLOG_LEVEL_DEBUG);
+            Jtllog::writeLog(': baueSicherheitsHash hash: ' . $this->hash, JTLLOG_LEVEL_DEBUG);
         }
     }
 
@@ -298,12 +298,12 @@ class SofortUeberweisung extends PaymentMethod
         $this->doLog(print_r($args, true));
 
         if (D_MODE === 1) {
-            Jtllog::writeLog(': handleNotification args: ' . print_r($args, true), JTLLOG_LEVEL_ERROR);
+            Jtllog::writeLog(': handleNotification args: ' . print_r($args, true), JTLLOG_LEVEL_DEBUG);
         }
 
         if ($this->verifyNotification($order, $paymentHash, $args)) {
             if (D_MODE === 1) {
-                Jtllog::writeLog(': verifyNotification pass. addIncomingPayment', JTLLOG_LEVEL_ERROR);
+                Jtllog::writeLog(': verifyNotification pass. addIncomingPayment', JTLLOG_LEVEL_DEBUG);
             }
 
             $transaction = Shop::DB()->query(
@@ -343,8 +343,8 @@ class SofortUeberweisung extends PaymentMethod
     public function verifyNotification($order, $paymentHash, $args)
     {
         if (D_MODE === 1) {
-            Jtllog::writeLog(': verifyNotification args: ' . print_r($args, true), JTLLOG_LEVEL_ERROR);
-            Jtllog::writeLog(': verifyNotification args als REQUEST: ' . print_r($_REQUEST, true), JTLLOG_LEVEL_ERROR);
+            Jtllog::writeLog(': verifyNotification args: ' . print_r($args, true), JTLLOG_LEVEL_DEBUG);
+            Jtllog::writeLog(': verifyNotification args als REQUEST: ' . print_r($_REQUEST, true), JTLLOG_LEVEL_DEBUG);
         }
         extract($args);
         $data                  = [
@@ -388,8 +388,8 @@ class SofortUeberweisung extends PaymentMethod
         $hashTMP      = sha1($data_implode);
 
         if (D_MODE === 1) {
-            Jtllog::writeLog(': verifyNotification data: ' . print_r($data, true), JTLLOG_LEVEL_ERROR);
-            Jtllog::writeLog(': verifyNotification hashTMP: ' . $hashTMP . ' - hash: ' . $hash, JTLLOG_LEVEL_ERROR);
+            Jtllog::writeLog(': verifyNotification data: ' . print_r($data, true), JTLLOG_LEVEL_DEBUG);
+            Jtllog::writeLog(': verifyNotification hashTMP: ' . $hashTMP . ' - hash: ' . $hash, JTLLOG_LEVEL_DEBUG);
         }
 
         return ($hashTMP === $hash);

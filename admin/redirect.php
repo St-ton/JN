@@ -19,12 +19,12 @@ handleCsvImportAction('redirects', 'tredirect');
 $cHinweis  = '';
 $cFehler   = '';
 $redirects = isset($_POST['redirects']) ? $_POST['redirects'] : [];
-$oRedirect = new Redirect();
 
 if (validateToken()) {
     switch (verifyGPDataString('action')) {
         case 'save':
             foreach ($redirects as $kRedirect => $redirect) {
+                $oRedirect = new Redirect($kRedirect);
                 if ($oRedirect->kRedirect > 0 && $oRedirect->cToUrl !== $redirect['cToUrl']) {
                     if (Redirect::checkAvailability($redirect['cToUrl'])) {
                         $oRedirect->cToUrl     = $redirect['cToUrl'];
@@ -49,6 +49,7 @@ if (validateToken()) {
             Redirect::deleteUnassigned();
             break;
         case 'new':
+            $oRedirect = new Redirect();
             if ($oRedirect->saveExt(verifyGPDataString('cFromUrl'), verifyGPDataString('cToUrl'))) {
                 $cHinweis = 'Ihre Weiterleitung wurde erfolgreich gespeichert';
             } else {
@@ -60,6 +61,7 @@ if (validateToken()) {
             }
             break;
         case 'csvimport':
+            $oRedirect = new Redirect();
             if (is_uploaded_file($_FILES['cFile']['tmp_name'])) {
                 $cFile = PFAD_ROOT . PFAD_EXPORT . md5($_FILES['cFile']['name'] . time());
                 if (move_uploaded_file($_FILES['cFile']['tmp_name'], $cFile)) {

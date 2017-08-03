@@ -542,9 +542,9 @@ class Redirect
     }
 
     /**
-     * @param $cWhereSQL
-     * @param $cOrderSQL
-     * @param $cLimitSQL
+     * @param string $cWhereSQL
+     * @param string $cOrderSQL
+     * @param string $cLimitSQL
      * @return array
      */
     public static function getRedirects($cWhereSQL = '', $cOrderSQL = '', $cLimitSQL = '')
@@ -567,7 +567,7 @@ class Redirect
     }
 
     /**
-     * @param $cWhereSQL
+     * @param string $cWhereSQL
      */
     public static function getRedirectCount($cWhereSQL = '')
     {
@@ -586,8 +586,8 @@ class Redirect
      */
     public static function getReferers($kRedirect, $nLimit = 100)
     {
-        return Shop::DB()->query("
-            SELECT tredirectreferer.*, tbesucherbot.cName AS cBesucherBotName, 
+        return Shop::DB()->query(
+            "SELECT tredirectreferer.*, tbesucherbot.cName AS cBesucherBotName,
                     tbesucherbot.cUserAgent AS cBesucherBotAgent
                 FROM tredirectreferer
                 LEFT JOIN tbesucherbot
@@ -595,7 +595,8 @@ class Redirect
                     WHERE kRedirect = " . (int)$kRedirect . "
                 ORDER BY dDate ASC
                 LIMIT " . (int)$nLimit,
-            2);
+            2
+        );
     }
 
     /**
@@ -661,7 +662,7 @@ class Redirect
     }
 
     /**
-     * @param $kRedirect
+     * @param int $kRedirect
      */
     public static function deleteRedirect($kRedirect)
     {
@@ -675,12 +676,13 @@ class Redirect
      */
     public static function deleteUnassigned()
     {
-        return Shop::DB()->query("
-            DELETE tredirect, tredirectreferer
+        return Shop::DB()->query(
+            "DELETE tredirect, tredirectreferer
                 FROM tredirect
                 LEFT JOIN tredirectreferer 
                     ON tredirect.kRedirect = tredirectreferer.kRedirect
-                WHERE tredirect.cToUrl = ''", 3
+                WHERE tredirect.cToUrl = ''",
+            3
         );
     }
 }

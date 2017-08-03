@@ -53,7 +53,7 @@ function handleCsvImportAction ($importerId, $target, $fields = [], $cDelim = nu
                 Shop::DB()->delete($target, [], []);
             }
 
-            while ($row = fgetcsv($fs, 0, $cDelim)) {
+            while (($row = fgetcsv($fs, 0, $cDelim)) !== false) {
                 $obj = new stdClass();
 
                 foreach ($fields as $i => $field) {
@@ -65,7 +65,7 @@ function handleCsvImportAction ($importerId, $target, $fields = [], $cDelim = nu
                     $res = $target($obj);
 
                     if ($res === false) {
-                        $nErrors ++;
+                        ++$nErrors;
                     }
                 } elseif (is_string($target)) {
                     $cTable = $target;
@@ -74,14 +74,14 @@ function handleCsvImportAction ($importerId, $target, $fields = [], $cDelim = nu
                         $res = Shop::DB()->insert($cTable, $obj);
 
                         if ($res === 0) {
-                            $nErrors ++;
+                            ++$nErrors;
                         }
                     } elseif ($importType === 1) {
                         Shop::DB()->delete($target, $fields, $row);
                         $res = Shop::DB()->insert($cTable, $obj);
 
                         if ($res === 0) {
-                            $nErrors ++;
+                            ++$nErrors;
                         }
                     }
                 }

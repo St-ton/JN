@@ -381,16 +381,20 @@ class Image
 
         $imanee->resize($width, $height, true, $settings['scale']);
 
-        if ($settings['container'] === true) {
-            $background = $settings['format'] === 'png'
-                ? 'transparent' : $settings['background'];
+        $background = $settings['format'] === 'png'
+            ? 'transparent' : $settings['background'];
 
-            $container = (new Imanee())
+        if ($settings['container'] === true) {
+            $imanee = (new Imanee())
                 ->newImage($width, $height, $background)
                 ->setFormat($settings['format'])
                 ->placeImage($imanee, Imanee::IM_POS_MID_CENTER, $width, $height);
-
-            $imanee = $container;
+        }
+        else {
+            $imanee = (new Imanee())
+                ->newImage($imanee->getWidth(), $imanee->getHeight(), $background)
+                ->setFormat($settings['format'])
+                ->placeImage($imanee, Imanee::IM_POS_MID_CENTER, $imanee->getWidth(), $imanee->getHeight());
         }
 
         if (isset($settings['branding']) && $req->getSize()->getType() === self::SIZE_LG) {

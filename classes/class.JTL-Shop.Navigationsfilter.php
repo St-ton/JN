@@ -1711,6 +1711,9 @@ class Navigationsfilter
         if (!isset($searchResults->Bewertung)) {
             $searchResults->Bewertung = $this->ratingFilter->getOptions();
         }
+        if (empty($searchResults->Bewertung)) {
+            $this->ratingFilter->setVisibility(AbstractFilter::SHOW_NEVER);
+        }
         if (!isset($searchResults->Tags)) {
             $searchResults->Tags = $this->tag->getOptions();
         }
@@ -1731,6 +1734,13 @@ class Navigationsfilter
                 'bForce'             => $selectionWizard === true && function_exists('starteAuswahlAssistent')
             ]);
         }
+        // @todo: test. funktioniert bei mir auch ohne, bei marco nur mit diesen zeilen.
+//        foreach ($searchResults->MerkmalFilter as $i => $attributeFilter) {
+//            /** @var IFilter $attributeFilter */
+//            if (count($attributeFilter->oMerkmalWerte_arr) < 1) {
+//                $attributeFilter->setVisibility(AbstractFilter::SHOW_NEVER);
+//            }
+//        }
         $this->attributeFilterCollection->setFilterCollection($searchResults->MerkmalFilter);
 
         if (!isset($searchResults->Preisspanne)) {

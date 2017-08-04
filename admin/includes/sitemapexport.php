@@ -232,9 +232,9 @@ function generateSitemapXML()
     $_SESSION['kSprache']    = $Sprache->kSprache;
     $_SESSION['cISOSprache'] = $Sprache->cISO;
     if (!isset($_SESSION['Kundengruppe'])) {
-        $_SESSION['Kundengruppe'] = new stdClass();
+        $_SESSION['Kundengruppe'] = new Kundengruppe();
     }
-    $_SESSION['Kundengruppe']->kKundengruppe = (int)$stdKundengruppe->kKundengruppe;
+    $_SESSION['Kundengruppe']->setID($stdKundengruppe->kKundengruppe);
     // Stat Array
     $nStat_arr = [
         'artikel'          => 0,

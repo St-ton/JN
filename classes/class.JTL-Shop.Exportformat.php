@@ -709,19 +709,17 @@ class Exportformat
             $this->oldSession->Kundengruppe = $_SESSION['Kundengruppe'];
             $this->oldSession->kSprache     = $_SESSION['kSprache'];
             $this->oldSession->Waehrung     = Session::Currency();
-        } else {
-            $_SESSION['Kundengruppe'] = new stdClass();
         }
         $this->currency = $this->kWaehrung > 0
-            ? Shop::DB()->select('twaehrung', 'kWaehrung', $this->kWaehrung)
-            : Shop::DB()->select('twaehrung', 'cStandard', 'Y');
+            ? new Currency($this->kWaehrung)
+            : (new Currency())->getDefault();
         setzeSteuersaetze();
         $net = Shop::DB()->select('tkundengruppe', 'kKundengruppe', $this->getKundengruppe());
 
         $_SESSION['Kundengruppe']  = (new Kundengruppe($this->getKundengruppe()))
             ->setMayViewPrices(1)
             ->setMayViewCategories(1)
-            ->setNettoPreise($net->nNettoPreise);
+            ->setIsMerchant($net->nNettoPreise);
         $_SESSION['kKundengruppe'] = $this->getKundengruppe();
         $_SESSION['kSprache']      = $this->getSprache();
         $_SESSION['Sprachen']      = Shop::DB()->query("SELECT * FROM tsprache", 2);

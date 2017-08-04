@@ -618,7 +618,7 @@ function gibStepLieferadresse()
  */
 function gibStepZahlung()
 {
-    global $step;
+    global $step, $Einstellungen;
     /** @var array('Warenkorb' => Warenkorb) $_SESSION */
     $conf          = Shop::getSettings([CONF_TRUSTEDSHOPS]);
     $oTrustedShops = new stdClass();
@@ -707,7 +707,10 @@ function gibStepZahlung()
         ];
     }
 
+    // globaleAssigns();
+
     Shop::Smarty()->assign('Zahlungsarten', $oZahlungsart_arr)
+        ->assign('Einstellungen', $Einstellungen)
         ->assign('Versandarten', $oVersandart_arr)
         ->assign('Verpackungsarten', $oVerpackung_arr)
         ->assign('AktiveVersandart', $aktiveVersandart)

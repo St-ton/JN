@@ -11,13 +11,12 @@
  * Missing fields in the CSV will be set to the DB-tables default value if your DB is configured so.
  *
  * @param string $importerId
- * @param string|callable $target - either target table name or callback function that takes an object to be
- *      imported
+ * @param string|callable $target - either target table name or callback function that takes an object to be imported
  * @param string[] $fields - array of names of the fields in the order they appear in one data row. If and only if this
  *      array is empty, a header line of field names is expected, otherwise not.
  * @param string|null $cDelim - delimiter character or null to guess it from the first row
  * @param int $importType -
- *      0 = reset table, then import (careful!!! again: this will clear the table denoted by $target)
+ *      0 = clear table, then import (careful!!! again: this will clear the table denoted by $target)
  *      1 = insert new, overwrite existing
  *      2 = insert only non-existing
  * @return int - -1 if importer-id-mismatch / 0 on success / >1 import error count
@@ -34,7 +33,7 @@ function handleCsvImportAction ($importerId, $target, $fields = [], $cDelim = nu
             )
         ) {
             $csvFilename = $_FILES['csvfile']['tmp_name'];
-            $fs          = fopen($_FILES['csvfile']['tmp_name'], 'r');
+            $fs          = fopen($_FILES['csvfile']['tmp_name'], 'rb');
             $nErrors     = 0;
 
             if ($cDelim === null) {
@@ -54,10 +53,11 @@ function handleCsvImportAction ($importerId, $target, $fields = [], $cDelim = nu
                 Shop::DB()->delete($target, [], []);
             }
 
-            while($row = fgetcsv($fs, 0, $cDelim)) {
+            while (($row = fgetcsv($fs, 0, $cDelim)) !== false) {
                 $obj = new stdClass();
 
                 foreach ($fields as $i => $field) {
+                    $row[$i]     = Shop::DB()->escape($row[$i]);
                     $obj->$field = $row[$i];
                 }
 
@@ -65,7 +65,7 @@ function handleCsvImportAction ($importerId, $target, $fields = [], $cDelim = nu
                     $res = $target($obj);
 
                     if ($res === false) {
-                        $nErrors ++;
+                        ++$nErrors;
                     }
                 } elseif (is_string($target)) {
                     $cTable = $target;
@@ -74,15 +74,15 @@ function handleCsvImportAction ($importerId, $target, $fields = [], $cDelim = nu
                         $res = Shop::DB()->insert($cTable, $obj);
 
                         if ($res === 0) {
-                            $nErrors ++;
+                            ++$nErrors;
                         }
                     } elseif ($importType === 1) {
-                        Shop::DB()->query(
-                            "REPLACE INTO " . $target. "
-                                (" . implode(',', $fields). ")
-                                VALUES (" . implode(',', $row) . ")",
-                            4
-                        );
+                        Shop::DB()->delete($target, $fields, $row);
+                        $res = Shop::DB()->insert($cTable, $obj);
+
+                        if ($res === 0) {
+                            ++$nErrors;
+                        }
                     }
                 }
             }

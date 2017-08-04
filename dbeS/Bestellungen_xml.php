@@ -394,7 +394,7 @@ function bearbeiteUpdate($xml)
         $currentCurrency = Shop::DB()->select('twaehrung', 'kWaehrung', $oBestellung->kWaehrung);
         $defaultCurrency = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
         if (isset($currentCurrency->kWaehrung, $defaultCurrency->kWaehrung)) {
-            $correctionFactor = (float)$currentCurrency->fFaktor;
+            $correctionFactor           = (float)$currentCurrency->fFaktor;
             $oBestellung->fGesamtsumme /= $correctionFactor;
         }
     }
@@ -469,9 +469,9 @@ function bearbeiteUpdate($xml)
             ? $WarenkorbposAlt_arr[$WarenkorbposAlt_map[$Warenkorbpos_arr[$i]->kArtikel]]
             : null;
         unset($Warenkorbpos_arr[$i]->kWarenkorbPos);
-        $Warenkorbpos_arr[$i]->kWarenkorb          = $oBestellungAlt->kWarenkorb;
-        $Warenkorbpos_arr[$i]->fPreis             /= $correctionFactor;
-        $Warenkorbpos_arr[$i]->fPreisEinzelNetto  /= $correctionFactor;
+        $Warenkorbpos_arr[$i]->kWarenkorb         = $oBestellungAlt->kWarenkorb;
+        $Warenkorbpos_arr[$i]->fPreis            /= $correctionFactor;
+        $Warenkorbpos_arr[$i]->fPreisEinzelNetto /= $correctionFactor;
         // persistiere nLongestMin/MaxDelivery wenn nicht von Wawi übetragen
         if (!isset($Warenkorbpos_arr[$i]->nLongestMinDelivery)) {
             $Warenkorbpos_arr[$i]->nLongestMinDelivery = isset($oWarenkorbposAlt) ? $oWarenkorbposAlt->nLongestMinDelivery : 0;
@@ -494,6 +494,10 @@ function bearbeiteUpdate($xml)
         }
     }
 
+    if (isset($xml['tbestellung']['tbestellattribut'])) {
+        bearbeiteBestellattribute($oBestellung->kBestellung, is_assoc($xml['tbestellung']['tbestellattribut']) ? [$xml['tbestellung']['tbestellattribut']] : $xml['tbestellung']['tbestellattribut']);
+    }
+
     //sende Versandmail
     $oModule = gibZahlungsmodul($oBestellungAlt->kBestellung);
     //neues flag 'cSendeEMail' ab JTL-Wawi 099781 damit die email nur versandt wird wenns auch wirklich für den kunden interessant ist
@@ -501,12 +505,12 @@ function bearbeiteUpdate($xml)
     //bei JTL-Wawi Version <= 099780 ist dieses Flag nicht gesetzt, Mail soll hier immer versendet werden.
     require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Emailvorlage.php';
     $emailvorlage = Emailvorlage::load(MAILTEMPLATE_BESTELLUNG_AKTUALISIERT);
+    $kunde        = new Kunde((int)$oBestellungAlt->kKunde);
 
     if ($emailvorlage !== null && $emailvorlage->getAktiv() === 'Y' && ($oBestellung->cSendeEMail === 'Y' || !isset($oBestellung->cSendeEMail))) {
         if ($oModule) {
             $oModule->sendMail($oBestellungAlt->kBestellung, MAILTEMPLATE_BESTELLUNG_AKTUALISIERT);
         } else {
-            $kunde         = new Kunde((int)$oBestellungAlt->kKunde);
             $bestellungTmp = new Bestellung((int)$oBestellungAlt->kBestellung);
             $bestellungTmp->fuelleBestellung();
 
@@ -537,8 +541,8 @@ function bearbeiteSet($xml)
             if (strlen($oBestellungWawi->cIdentCode) > 0) {
                 $cTrackingURL = $oBestellungWawi->cLogistikURL;
                 if ($oBestellungShop->kLieferadresse > 0) {
-                    $Lieferadresse = Shop::DB()->query("
-                        SELECT cPLZ 
+                    $Lieferadresse = Shop::DB()->query(
+                        "SELECT cPLZ
                             FROM tlieferadresse 
                             WHERE kLieferadresse = " . (int)$oBestellungShop->kLieferadresse, 1
                     );
@@ -723,5 +727,42 @@ function checkGuestAccount($kKunde)
             Shop::DB()->delete('tkundenattribut', 'kKunde', (int)$kunde->kKunde);
             Shop::DB()->delete('tkunde', 'kKunde', (int)$kunde->kKunde);
         }
+    }
+}
+
+/**
+ * @param int $kBestellung
+ * @param stdClass[] $oBestellatribute_arr
+ */
+function bearbeiteBestellattribute($kBestellung, $oBestellattribut_arr)
+{
+    $keys_updated = [];
+    if (isset($oBestellattribut_arr) && count($oBestellattribut_arr)) {
+        foreach ($oBestellattribut_arr as $bestellattribut) {
+            $oBestellattribut      = (object)$bestellattribut;
+            $oBestellattribute_old = Shop::DB()->select('tbestellattribut', ['kBestellung', 'cName'], [$kBestellung, $oBestellattribut->key]);
+            if (isset($oBestellattribute_old->kBestellattribut)) {
+                Shop::DB()->update('tbestellattribut', 'kBestellattribut', $oBestellattribute_old->kBestellattribut, (object)[
+                    'cValue' => $oBestellattribut->value,
+                ]);
+                $keys_updated[] = $oBestellattribute_old->kBestellattribut;
+            } else {
+                $keys_updated[] = Shop::DB()->insert('tbestellattribut', (object)[
+                    'kBestellung' => $kBestellung,
+                    'cName'       => $oBestellattribut->key,
+                    'cValue'      => $oBestellattribut->value,
+                ]);
+            }
+        }
+    }
+
+    if (count($keys_updated) > 0) {
+        Shop::DB()->query(
+            "DELETE FROM tbestellattribut
+                WHERE kBestellung = {$kBestellung}
+                    AND kBestellattribut NOT IN (" . implode(', ', $keys_updated) . ")", 10
+        );
+    } else {
+        Shop::DB()->delete('tbestellattribut', 'kBestellung', $kBestellung);
     }
 }

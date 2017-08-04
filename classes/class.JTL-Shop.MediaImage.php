@@ -104,6 +104,7 @@ class MediaImage implements IMedia
         $result = (object) [
             'total'     => 0,
             'corrupted' => 0,
+            'fallback'  => 0,
             'generated' => [
                 Image::SIZE_XS => 0,
                 Image::SIZE_SM => 0,
@@ -124,7 +125,12 @@ class MediaImage implements IMedia
             $raw = $image->getRaw(true);
             ++$result->total;
             if (!file_exists($raw)) {
-                ++$result->corrupted;
+                $fallback = $image->getFallbackThumb(Image::SIZE_XS);
+                if (file_exists(PFAD_ROOT . $fallback)) {
+                    ++$result->fallback;
+                } else {
+                    ++$result->corrupted;
+                }
             } else {
                 foreach ([Image::SIZE_XS, Image::SIZE_SM, Image::SIZE_MD, Image::SIZE_LG] as $size) {
                     $thumb = $image->getThumb($size, true);
@@ -201,8 +207,41 @@ class MediaImage implements IMedia
     public function handle($request)
     {
         try {
-            $mediaReq  = $this->create($request);
-            $thumbPath = $mediaReq->getThumb(null, true);
+            $mediaReq = $this->create($request);
+
+            $imgNames = Shop::DB()->executeQueryPrepared(
+                "SELECT kArtikel, cName, cSeo, cArtNr, cBarcode
+                    FROM tartikel AS a
+                    WHERE kArtikel = :kArtikel
+                UNION SELECT asp.kArtikel, asp.cName, asp.cSeo, a.cArtNr, a.cBarcode
+                    FROM tartikelsprache AS asp JOIN tartikel AS a ON asp.kArtikel = a.kArtikel
+                    WHERE asp.kArtikel = :kArtikel",
+                ['kArtikel' => (int)$mediaReq->id],
+                2
+            );
+
+            if (count($imgNames) === 0) {
+                throw new Exception("No such product id: " . (int)$mediaReq->id);
+            }
+
+            $matchFound = false;
+
+            foreach ($imgNames as $imgName) {
+                $imgName->imgPath = MediaImage::getThumb(
+                    $mediaReq->type, $mediaReq->id, $imgName, $mediaReq->size, $mediaReq->number
+                );
+
+                if ('/' . $imgName->imgPath === $request) {
+                    $matchFound = true;
+                    $thumbPath  = PFAD_ROOT . $imgName->imgPath;
+                    break;
+                }
+            }
+
+            if ($matchFound === false) {
+                header('Location: ' . Shop::getURL() . '/' . $imgNames[0]->imgPath, true, 301);
+                exit;
+            }
 
             if (!is_file($thumbPath)) {
                 Image::render($mediaReq, null);

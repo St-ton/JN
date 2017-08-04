@@ -261,7 +261,7 @@
                     <h3 class="panel-title">{#validOnShippingClasses#}</h3>
                 </div>
                 <div class="panel-body">
-                    <input name="kVersandklasse" type="hidden" value="{$Versandart->cVersandklassen}">
+                    <input name="kVersandklasse" type="hidden" value="{if !empty($Versandart->cVersandklassen)}{$Versandart->cVersandklassen}{else}-1{/if}">
                     <ul id="ulVK" class="jtl-list-group">
                         <li id='liVKneu' class="input-group" style="display:none;">
                             <span class="input-group-wrap">
@@ -281,48 +281,51 @@
                                             class="glyphicon glyphicon-remove"></span></button>
                             </div>
                         </li>
-                        {$aVK = ' '|explode:$Versandart->cVersandklassen}
-                        {foreach name="vKombi" from=$aVK item=VK}
-                            {if $VK === '-1'}
+                        {if !empty($Versandart->cVersandklassen)}
+                            {$aVK = ' '|explode:$Versandart->cVersandklassen}
+                            {foreach name="vKombi" from=$aVK item=VK}
                                 <li class="input-group">
                                     <span class="input-group-wrap">
                                         <select class="select2 form-control" name="Versandklassen"
                                                 onchange="checkCombination();updateVK();" multiple="multiple">
-                                            <option value="-1"{if $smarty.foreach.vKombi.iteration >1} disabled="disabled"{/if} selected>{#allCombinations#}</option>
-                                            {foreach from=$versandKlassen item=vk}
-                                                <option value="{$vk->kVersandklasse}">{$vk->cName}</option>
-                                            {/foreach}
+                                            <option value="-1"{if $smarty.foreach.vKombi.iteration >1} disabled="disabled"{/if}{if $VK === '-1'} selected{/if}>{#allCombinations#}</option>
+                                            {if $VK === '-1'}
+                                                {foreach from=$versandKlassen item=vk}
+                                                    <option value="{$vk->kVersandklasse}">{$vk->cName}</option>
+                                                {/foreach}
+                                            {else}
+                                                {$vkID = '-'|explode:$VK}
+                                                {foreach from=$versandKlassen item=vk}
+                                                    <option value="{$vk->kVersandklasse}"
+                                                            {if $vk->kVersandklasse|in_array:$vkID}selected{/if}>{$vk->cName}</option>
+                                                {/foreach}
+                                            {/if}
                                         </select>
                                     </span>
                                     <span class="input-group-addon">{getHelpDesc cDesc=#shippingclassDesc#}</span>
+                                    {if  $smarty.foreach.vKombi.iteration != 1}
                                     <div class="input-group-btn">
                                         <button class="btn btn-danger" type="button"
                                                 onclick="$(this).parent().parent().detach(); updateVK();">
                                             <span class="glyphicon glyphicon-remove"></span></button>
                                     </div>
+                                    {/if}
                                 </li>
-                            {else}
-                                {$vkID = '-'|explode:$VK}
-                                <li class="input-group">
-                                    <span class="input-group-wrap">
-                                        <select class="select2 form-control" name="Versandklassen"
-                                                onchange="checkCombination();updateVK();" multiple="multiple">
-                                            <option value="-1"{if $smarty.foreach.vKombi.iteration >1} disabled="disabled"{/if}>{#allCombinations#}</option>
-                                            {foreach from=$versandKlassen item=vk}
-                                                <option value="{$vk->kVersandklasse}"
-                                                        {if $vk->kVersandklasse|in_array:$vkID}selected{/if}>{$vk->cName}</option>
-                                            {/foreach}
-                                        </select>
-                                    </span>
-                                    <span class="input-group-addon">{getHelpDesc cDesc=#shippingclassDesc#}</span>
-                                    <div class="input-group-btn">
-                                        <button class="btn btn-danger" type="button"
-                                                onclick="$(this).parent().parent().detach(); updateVK();">
-                                            <span class="glyphicon glyphicon-remove"></span></button>
-                                    </div>
-                                </li>
-                            {/if}
-                        {/foreach}
+                            {/foreach}
+                        {else}
+                            <li class="input-group">
+                                        <span class="input-group-wrap">
+                                            <select class="select2 form-control" name="Versandklassen"
+                                                    onchange="checkCombination();updateVK();" multiple="multiple">
+                                                <option value="-1"{if $smarty.foreach.vKombi.iteration >1} disabled="disabled"{/if} selected>{#allCombinations#}</option>
+                                                {foreach from=$versandKlassen item=vk}
+                                                    <option value="{$vk->kVersandklasse}">{$vk->cName}</option>
+                                                {/foreach}
+                                            </select>
+                                        </span>
+                                <span class="input-group-addon">{getHelpDesc cDesc=#shippingclassDesc#}</span>
+                            </li>
+                        {/if}
                     </ul>
                 </div>
                 <div class="panel-footer">

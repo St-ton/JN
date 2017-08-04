@@ -24,7 +24,6 @@ class FilterBaseTag extends AbstractFilter
         parent::__construct($naviFilter);
         $this->isCustom    = false;
         $this->urlParam    = 't';
-        $this->urlParamSEO = null;
     }
 
     /**

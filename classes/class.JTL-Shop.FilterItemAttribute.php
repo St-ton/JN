@@ -343,7 +343,7 @@ class FilterItemAttribute extends FilterBaseAttribute
         if (is_array($qryRes)) {
             $additionalFilter = new self($this->naviFilter);
             foreach ($qryRes as $i => $oMerkmalFilterDB) {
-                $attributeValues = new stdClass();
+                $attributeValues               = new stdClass();
                 $attributeValues->kMerkmalWert = (int)$oMerkmalFilterDB->kMerkmalWert;
                 $attributeValues->cWert        = $oMerkmalFilterDB->cWert;
                 $attributeValues->nAnzahl      = (int)$oMerkmalFilterDB->nAnzahl;
@@ -383,7 +383,7 @@ class FilterItemAttribute extends FilterBaseAttribute
                     }
                 }
                 if ($attribute === null) {
-                    $attribute = (new self($this->naviFilter))
+                    $attribute                    = (new self($this->naviFilter))
                         ->setFrontendName($oMerkmalFilterDB->cName);
                     $attribute->cName             = $oMerkmalFilterDB->cName;
                     $attribute->cSeo              = $oMerkmalFilterDB->cSeo;
@@ -391,9 +391,7 @@ class FilterItemAttribute extends FilterBaseAttribute
                     $attribute->cTyp              = $oMerkmalFilterDB->cTyp;
                     $attribute->kMerkmal          = (int)$oMerkmalFilterDB->kMerkmal;
                     $attribute->kMerkmalWert      = (int)$oMerkmalFilterDB->kMerkmalWert;
-                    if (in_array($attribute->kMerkmalWert, $activeValues, true) === true) {
-                        $attribute->isInitialized = true;
-                    }
+                    $attribute->isInitialized     = in_array($attribute->kMerkmalWert, $activeValues, true);
                     $attribute->oMerkmalWerte_arr = [];
                     if (strlen($oMerkmalFilterDB->cMMBildPfad) > 0) {
                         $attribute->cBildpfadKlein  = PFAD_MERKMALBILDER_KLEIN . $oMerkmalFilterDB->cMMBildPfad;
@@ -406,9 +404,6 @@ class FilterItemAttribute extends FilterBaseAttribute
                         $attribute->setType(AbstractFilter::FILTER_TYPE_OR);
                     } else {
                         $attribute->setType(AbstractFilter::FILTER_TYPE_AND);
-                        if ($attribute->isInitialized() === true) {
-                            $attribute->setVisibility(AbstractFilter::SHOW_NEVER);
-                        }
                     }
                     $attributeFilters[] = $attribute;
                 }
@@ -451,11 +446,19 @@ class FilterItemAttribute extends FilterBaseAttribute
         // Merkmalwerte numerisch sortieren, wenn alle Merkmalwerte eines Merkmals numerisch sind
         foreach ($attributeFilters as $o => $oMerkmalFilter) {
             $numeric = true;
+            $reset   = true;
             foreach ($oMerkmalFilter->oMerkmalWerte_arr as $attributeValue) {
                 if (!is_numeric($attributeValue->cWert)) {
                     $numeric = false;
-                    break;
                 }
+                if ($attributeValue->nAktiv === 0) {
+                    $reset = false;
+                }
+            }
+            if ($reset === true) {
+                // hide attribute filters that only have already active options
+                $oMerkmalFilter->oMerkmalWerte_arr = [];
+                $oMerkmalFilter->setVisibility(AbstractFilter::SHOW_NEVER);
             }
             if ($numeric) {
                 usort($attributeFilters[$o]->oMerkmalWerte_arr, function ($a, $b) {

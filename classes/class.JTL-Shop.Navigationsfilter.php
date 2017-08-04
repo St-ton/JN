@@ -1731,13 +1731,6 @@ class Navigationsfilter
                 'bForce'             => $selectionWizard === true && function_exists('starteAuswahlAssistent')
             ]);
         }
-        // @todo: test.
-        foreach ($searchResults->MerkmalFilter as $i => $attributeFilter) {
-            /** @var IFilter $attributeFilter */
-            if (count($attributeFilter->oMerkmalWerte_arr) < 1) {
-                $attributeFilter->setVisibility(AbstractFilter::SHOW_NEVER);
-            }
-        }
         $this->attributeFilterCollection->setFilterCollection($searchResults->MerkmalFilter);
 
         if (!isset($searchResults->Preisspanne)) {
@@ -2128,13 +2121,12 @@ class Navigationsfilter
         // make sure those filters with seo separators are at the beginning so we dont get URLs
         // like http://shop.url/?foo=bar::baz but http://shop.url/baz?foo=bar
         uasort($urlParams, function($a, $b) {
-            if (!isset($a[0]->sep, $b[0]->sep)) {
+            if (!isset($a[0]->sep) && !isset($b[0]->sep)) {
                 return 0;
             }
 
-            return $a[0]->sep === '' && $b[0]->sep !== '' ? 1 : -1;
+            return empty($a[0]->sep) && !empty($b[0]->sep) ? 1 : -1;
         });
-
         // build url string from url array
         foreach ($urlParams as $filterID => $filters) {
             $filters = array_map('unserialize', array_unique(array_map('serialize', $filters)));

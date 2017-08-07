@@ -330,7 +330,7 @@ $(document).ready(function () {
     var citySuggestion = new Bloodhound({
         datumTokenizer: Bloodhound.tokenizers.obj.whitespace('keyword'),
         queryTokenizer: Bloodhound.tokenizers.whitespace,
-        remote:         {
+        remote: {
             url:      'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $('#country').val() + '", "' + $('#plz').val() + '"]}',
             wildcard: '%QUERY'
         },
@@ -359,7 +359,7 @@ $(document).ready(function () {
         datumTokenizer: Bloodhound.tokenizers.obj.whitespace('keyword'),
         queryTokenizer: Bloodhound.tokenizers.whitespace,
         remote: {
-        url:          'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $('#register-shipping_address-country').val() + '", "' + $('#register-shipping_address-postcode').val() + '"]}',
+            url:      'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $('#register-shipping_address-country').val() + '", "' + $('#register-shipping_address-postcode').val() + '"]}',
             wildcard: '%QUERY'
         },
         dataType: "json"

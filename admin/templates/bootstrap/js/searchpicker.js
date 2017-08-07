@@ -59,13 +59,10 @@ function SearchPicker(options)
 
     self.onShow = function ()
     {
-        console.log(searchPickerName, 'show');
         backupSelectedKeys = selectedKeys.slice();
     };
 
     self.onHide = function () {
-        console.log(searchPickerName, 'hide');
-
         if (closeAction === 'apply') {
             onApplyBefore();
             ioCall(
@@ -86,13 +83,11 @@ function SearchPicker(options)
 
     self.onApply = function ()
     {
-        console.log(searchPickerName, 'apply');
         closeAction = 'apply';
     };
 
     self.onCancel = function ()
     {
-        console.log(searchPickerName, 'cancel');
         closeAction = 'cancel';
     };
 

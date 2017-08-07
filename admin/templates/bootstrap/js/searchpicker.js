@@ -154,11 +154,14 @@ function SearchPicker(options)
         $searchResultList.empty();
 
         items.forEach(function (item) {
+            var key      = item[keyName];
+            var cleanKey = key.replace(/[^a-zA-Z0-9]/g, '-');
+
             $('<a>')
-                .addClass('list-group-item' + (self.isSelected(item[keyName]) ? ' active' : ''))
-                .attr('id', searchPickerName + '-' + item[keyName])
+                .addClass('list-group-item' + (self.isSelected(key) ? ' active' : ''))
+                .attr('id', searchPickerName + '-' + cleanKey)
                 .css('cursor', 'pointer')
-                .click(function () { self.select(item[keyName], !self.isSelected(item[keyName])); })
+                .click(function () { self.select(key, !self.isSelected(key)); })
                 .html(getRenderedItem(item))
                 .appendTo($searchResultList);
         });
@@ -177,18 +180,19 @@ function SearchPicker(options)
         }
     };
 
-    self.select = function (id, selected)
+    self.select = function (key, selected)
     {
-        var index = selectedKeys.indexOf(id);
+        var index    = selectedKeys.indexOf(key);
+        var cleanKey = key.replace(/[^a-zA-Z0-9]/g, '-');
 
         if (selected) {
-            $('#' + searchPickerName + '-' + id).addClass('active');
+            $('#' + searchPickerName + '-' + cleanKey).addClass('active');
 
             if (index === -1) {
-                selectedKeys.push(id);
+                selectedKeys.push(key);
             }
         } else {
-            $('#' + searchPickerName + '-' + id).removeClass('active');
+            $('#' + searchPickerName + '-' + cleanKey).removeClass('active');
 
             if (index !== -1) {
                 selectedKeys.splice(index, 1);
@@ -198,9 +202,9 @@ function SearchPicker(options)
         self.updateListTitle();
     };
 
-    self.isSelected = function (id)
+    self.isSelected = function (key)
     {
-        return selectedKeys.indexOf(id) !== -1;
+        return selectedKeys.indexOf(key) !== -1;
     };
 
     self.getSelection = function ()

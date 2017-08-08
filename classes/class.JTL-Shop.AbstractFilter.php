@@ -125,6 +125,11 @@ abstract class AbstractFilter implements IFilter
     protected $inputType = self::INPUT_SELECT;
 
     /**
+     * @var FilterExtra|FilterExtra[]
+     */
+    protected $activeValues;
+
+    /**
      * workaround since built-in filters can be registered multiple times (for example Navigationsfilter->KategorieFilter)
      * this makes sure there value is not used more then once when Navigationsfilter::getURL()
      * generates the current URL.
@@ -189,8 +194,38 @@ abstract class AbstractFilter implements IFilter
     public function init($value)
     {
         $this->isInitialized = true;
+//        if (get_class($this) !== 'FilterBaseCategory')
+//        Shop::dbg($value, false, 'init with value: ' . get_class($this));
+
 
         return $this->setValue($value)->setSeo($this->availableLanguages);
+    }
+
+    /**
+     * @return $this
+     */
+    public function generateActiveFilterData()
+    {
+//        Shop::dbg($this->getSeo());
+//        Shop::dbg($this->getName(), false, 'name:');
+//        Shop::dbg($this->getFrontendName(), false, 'FEN:');
+//        Shop::dbg($this->getValue(), true, 'generateActiveFilterData:');
+        $this->activeValues = [];
+        $values             = $this->getValue();
+        if (!is_array($values)) {
+            $values = [$values];
+        }
+        foreach ($values as $value) {
+            $activeValue = new FilterExtra();
+            $activeValue->setFrontendName($this->getName())
+                        ->setURL($this->getSeo($this->languageID))
+                        ->setValue($value)
+                        ->setName($this->getFrontendName())
+                        ->setType($this->getType());
+            $this->activeValues[] = $activeValue;
+        }
+
+        return $this;
     }
 
     /**
@@ -216,7 +251,8 @@ abstract class AbstractFilter implements IFilter
      * @param string $name
      * @return $this
      */
-    public function setFrontendName($name) {
+    public function setFrontendName($name)
+    {
         $this->frontendName = htmlspecialchars($name);
 
         return $this;
@@ -275,7 +311,9 @@ abstract class AbstractFilter implements IFilter
      */
     public function getUnsetFilterURL($idx = null)
     {
-        return $idx === null ? $this->unsetFilterURL : $this->unsetFilterURL[$idx];
+        return $idx === null || is_string($this->unsetFilterURL)
+            ? $this->unsetFilterURL
+            : $this->unsetFilterURL[$idx];
     }
 
     /**
@@ -311,7 +349,7 @@ abstract class AbstractFilter implements IFilter
      */
     public function getSeo($idx = null)
     {
-        return ($idx !== null)
+        return $idx !== null
             ? (isset($this->cSeo[$idx])
                 ? $this->cSeo[$idx]
                 : null)
@@ -559,5 +597,29 @@ abstract class AbstractFilter implements IFilter
         $this->icon = $icon;
 
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTableAlias()
+    {
+        return '';
+    }
+
+    /**
+     * @param null|int $idx
+     * @return FilterExtra|FilterExtra[]|IFilter
+     */
+    public function getActiveValues($idx = null)
+    {
+        $activeValues = $this->activeValues !== null
+            ? $this->activeValues
+            : $this;
+        if (is_array($activeValues) && count($activeValues) === 1) {
+            $activeValues = $activeValues[0];
+        }
+
+        return $activeValues;
     }
 }

@@ -86,6 +86,13 @@ interface IFilter
     public function getTableName();
 
     /**
+     * alias the filter's base MySQL table name
+     *
+     * @return string
+     */
+    public function getTableAlias();
+
+    /**
      * the filter's primary key row
      *
      * @return string
@@ -282,4 +289,11 @@ interface IFilter
      * @return string
      */
     public function getIcon();
+
+    /**
+     * @return FilterExtra|FilterExtra[]
+     */
+    public function getActiveValues();
+
+    public function generateActiveFilterData();
 }

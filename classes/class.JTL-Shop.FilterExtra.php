@@ -113,6 +113,30 @@ class FilterExtra
     private $data = [];
 
     /**
+     * @var string
+     */
+    private $frontendName = '';
+
+    /**
+     * @return string
+     */
+    public function getFrontendName()
+    {
+        return $this->frontendName;
+    }
+
+    /**
+     * @param string $frontendName
+     * @return FilterExtra
+     */
+    public function setFrontendName($frontendName)
+    {
+        $this->frontendName = $frontendName;
+
+        return $this;
+    }
+
+    /**
      * @return int
      */
     public function getSort()

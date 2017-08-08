@@ -2,7 +2,7 @@
     {assign var=itemClass value=''}
 {/if}
 <ul class="{if isset($class)}{$class}{else}nav nav-list{/if}">
-    {if isset($filter->oMerkmalWerte_arr)}
+    {if false && isset($filter->oMerkmalWerte_arr)}
         {foreach $filter->oMerkmalWerte_arr as $MerkmalWert}
             {if $MerkmalWert->nAktiv}
                 <li class="active">

@@ -65,7 +65,8 @@
                                 {if count($filter->getFilterCollection()) > 0}
                                     {block name='productlist-result-options-'|cat:$filter->getClassName()}
                                         {foreach $filter->getOptions() as $subFilter}
-                                            {if $subFilter->getVisibility() > 0} {*hide AND filters that are currently active*}
+                                            <pre>{$subFilter|@var_dump}</pre>
+                                            {if $subFilter->getVisibility() > 0} hide AND filters that are currently active
                                                 <div class="form-group dropdown filter-type-{$filter->getClassName()}">
                                                     <a href="#" class="btn btn-default dropdown-toggle form-control" data-toggle="dropdown" role="button" aria-expanded="false">
                                                         {$subFilter->getFrontendName()|escape:'html'} <span class="caret"></span>
@@ -113,19 +114,36 @@
                 <div class="panel-body">
                     {foreach $NaviFilter->getActiveFilters() as $activeFilter}
                         {assign var=activeFilterValue value=$activeFilter->getValue()}
+                        {assign var=activeValues value=$activeFilter->getActiveValues()}
                         {if $activeFilterValue !== null}
                             {if $activeFilterValue|is_array}
-                                {foreach $activeFilterValue as $value}
-                                    {strip}
-                                    <a href="{$activeFilter->getUnsetFilterURL($value)}" rel="nofollow" title="Filter {lang key='delete' section='global'}" class="label label-info filter-type-{$activeFilter->getClassName()}">
-                                        {$activeFilter->getFrontendName()|cat:': '|cat:$value} &nbsp;<span class="fa fa-trash-o"></span>
-                                    </a>
-                                    {/strip}
-                                {/foreach}
+                                {*NEW variant with FilterExtra instances:*}
+                                {assign var=activeValues value=$activeFilter->getActiveValues()}
+                                {*$activeValues: <pre>{$activeValues|@var_dump}</pre>*}
+                                {if $activeValues|is_array}
+                                    {foreach $activeValues as $filterExtra}
+                                        {strip}
+                                            <a href="{$activeFilter->getUnsetFilterURL($filterExtra->getValue())}" rel="nofollow" title="Filter {lang key='delete' section='global'}" class="label label-info filter-type-{$activeFilter->getClassName()}">
+                                                {$filterExtra->getFrontendName()|escape:'html'} &nbsp;<span class="fa fa-trash-o"></span>
+                                            </a>
+                                        {/strip}
+                                    {/foreach}
+                                {*OLD variant with arrays of integers:*}
+                                {else}
+                                    THIS SHOULD NOT HAPPEN!
+                                    {foreach $activeFilterValue as $value}
+                                        {strip}
+                                            <a href="{$activeFilter->getUnsetFilterURL($value)}" rel="nofollow" title="Filter {lang key='delete' section='global'}" class="label label-info filter-type-{$activeFilter->getClassName()}">
+                                                {$activeFilter->getFrontendName()|escape:'html'|cat:': '|cat:$value} &nbsp;<span class="fa fa-trash-o"></span>
+                                            </a>
+                                        {/strip}
+                                    {/foreach}
+                                {/if}
                             {else}
+                                {assign var=activeValues value=$activeFilter->getActiveValues(0)}
                                 {strip}
-                                <a href="{$activeFilter->getUnsetFilterURL()}" rel="nofollow" title="Filter {lang key='delete' section='global'}" class="label label-info filter-type-{$activeFilter->getClassName()}">
-                                    {$activeFilter->getFrontendName()}&nbsp;<span class="fa fa-trash-o"></span>
+                                <a href="{$activeFilter->getUnsetFilterURL($activeFilter->getValue())}" rel="nofollow" title="Filter {lang key='delete' section='global'}" class="label label-info filter-type-{$activeFilter->getClassName()}">
+                                    {$activeValues->getFrontendName()}&nbsp;<span class="fa fa-trash-o"></span>
                                 </a>
                                 {/strip}
                             {/if}

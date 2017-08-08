@@ -617,13 +617,13 @@ function setzePreisverlauf($kArtikel, $kKundengruppe, $fVKNetto)
             ORDER BY dDate DESC LIMIT 2", 2
     );
 
-    if ((int)$oPreis_arr[0]->bToday === 1) {
+    if (!empty($oPreis_arr[0]) && (int)$oPreis_arr[0]->bToday === 1) {
         // price for today exists
-        if (!empty($oPreis_arr[0]) && round($oPreis_arr[0]->fVKNetto * 100) === round($fVKNetto * 100)) {
+        if (round($oPreis_arr[0]->fVKNetto * 100) === round($fVKNetto * 100)) {
             // return if there is no difference
             return;
         }
-        if(round($oPreis_arr[1]->fVKNetto * 100) === round($fVKNetto * 100)) {
+        if(!empty($oPreis_arr[1]) && round($oPreis_arr[1]->fVKNetto * 100) === round($fVKNetto * 100)) {
             // delete todays price if the new price for today is the same as the latest price
             Shop::DB()->delete('tpreisverlauf', 'kPreisverlauf', (int)$oPreis_arr[0]->kPreisverlauf);
         } else {

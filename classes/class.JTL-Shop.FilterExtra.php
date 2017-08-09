@@ -352,6 +352,14 @@ class FilterExtra
     }
 
     /**
+     * @return array
+     */
+    public function getOptions()
+    {
+        return [$this];
+    }
+
+    /**
      * @param string $name
      * @param mixed  $value
      * @return $this

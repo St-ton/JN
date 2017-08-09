@@ -295,5 +295,18 @@ interface IFilter
      */
     public function getActiveValues();
 
+    /**
+     * @return $this
+     */
     public function generateActiveFilterData();
+
+    /**
+     * @return $this
+     */
+    public function hide();
+
+    /**
+     * @return bool
+     */
+    public function isHidden();
 }

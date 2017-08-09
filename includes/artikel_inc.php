@@ -1295,6 +1295,7 @@ function ProductBundleWK($Productkey)
 function buildConfig($kArtikel, $fAnzahl, $nVariation_arr, $nKonfiggruppe_arr, $nKonfiggruppeAnzahl_arr, $nKonfigitemAnzahl_arr)
 {
     $oKonfig                  = new stdClass;
+    $oKonfig->fAnzahl         = $fAnzahl;
     $oKonfig->fGesamtpreis    = [0.0, 0.0];
     $oKonfig->cPreisLocalized = [];
     $oKonfig->cPreisString    = Shop::Lang()->get('priceAsConfigured', 'productDetails');

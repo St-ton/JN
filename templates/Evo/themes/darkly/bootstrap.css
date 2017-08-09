@@ -11277,14 +11277,9 @@ header.fixed-navbar .visible-affix .cart-dropdown {
 .group-image {
   padding-right: 0 !important;
 }
-.summary h4 {
-  margin-bottom: 10px;
-}
-.summary .dl-horizontal dt {
-  width: 40px !important;
-}
-.summary .dl-horizontal dd {
-  margin-left: 50px !important;
+.summary td[colspan="3"] {
+  padding-top: 1em;
+  border-top: 3px solid #464545;
 }
 @media (max-width: 767px) {
   .comparelist table td {
@@ -11393,6 +11388,15 @@ header.fixed-navbar .visible-affix .cart-dropdown {
 }
 #cart-form .upload-error .form-control.file-caption.kv-fileinput-caption {
   border: 2px solid #e74c3c;
+}
+#product-configuration-sidebar #quantity-grp.input-group {
+  display: block;
+}
+#product-configuration-sidebar #quantity-grp > input {
+  margin-left: -1px;
+}
+#product-configuration-sidebar #quantity-grp .submit.btn {
+  width: 100%;
 }
 @font-face {
   font-family: 'Lato';

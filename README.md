@@ -21,7 +21,7 @@
 * MySQL or MariaDB >= v5.0
 
 **PHP**
-* Version 7.0 or 5.6 recommended. Support for 5.4 and 5.5 will be dropped soon. 
+* Version 7.0 or 5.6 recommended. Support for php 5.4 and 5.5 will be dropped in JTL-Shop version 4.07. 
 * PHP-Modules: 
  * [GD](http://php.net/manual/en/book.image.php)
  * [SimpleXML](http://php.net/manual/en/book.simplexml.php)

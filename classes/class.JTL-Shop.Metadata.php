@@ -333,6 +333,8 @@ class Metadata
         if ($append === true && !empty($globalMeta[$languageID]->Title)) {
             $cMetaTitle .= ' - ' . $globalMeta[$languageID]->Title;
         }
+        // @todo: temp. fix to avoid destroyed header
+        $cMetaTitle = str_replace(['<', '>'], ['&lt;', '&gt;'], $cMetaTitle);
 
         return $this->truncateMetaTitle($cMetaTitle);
     }

@@ -194,9 +194,6 @@ abstract class AbstractFilter implements IFilter
     public function init($value)
     {
         $this->isInitialized = true;
-//        if (get_class($this) !== 'FilterBaseCategory')
-//        Shop::dbg($value, false, 'init with value: ' . get_class($this));
-
 
         return $this->setValue($value)->setSeo($this->availableLanguages);
     }
@@ -206,23 +203,17 @@ abstract class AbstractFilter implements IFilter
      */
     public function generateActiveFilterData()
     {
-//        Shop::dbg($this->getSeo());
-//        Shop::dbg($this->getName(), false, 'name:');
-//        Shop::dbg($this->getFrontendName(), false, 'FEN:');
-//        Shop::dbg($this->getValue(), true, 'generateActiveFilterData:');
         $this->activeValues = [];
         $values             = $this->getValue();
         if (!is_array($values)) {
             $values = [$values];
         }
         foreach ($values as $value) {
-            $activeValue = new FilterExtra();
-            $activeValue->setFrontendName($this->getName())
-                        ->setURL($this->getSeo($this->languageID))
-                        ->setValue($value)
-                        ->setName($this->getFrontendName())
-                        ->setType($this->getType());
-            $this->activeValues[] = $activeValue;
+            $this->activeValues[] = (new FilterExtra())->setFrontendName($this->getName())
+                                                       ->setURL($this->getSeo($this->languageID))
+                                                       ->setValue($value)
+                                                       ->setName($this->getFrontendName())
+                                                       ->setType($this->getType());
         }
 
         return $this;
@@ -613,13 +604,34 @@ abstract class AbstractFilter implements IFilter
      */
     public function getActiveValues($idx = null)
     {
-        $activeValues = $this->activeValues !== null
+        return $this->activeValues !== null
             ? $this->activeValues
             : $this;
-        if (is_array($activeValues) && count($activeValues) === 1) {
-            $activeValues = $activeValues[0];
-        }
+//        $activeValues = $this->activeValues !== null
+//            ? $this->activeValues
+//            : $this;
+//        if (is_array($activeValues) && count($activeValues) === 1) {
+//            $activeValues = $activeValues[0];
+//        }
 
-        return $activeValues;
+//        return $activeValues;
+    }
+
+    /**
+     * @return $this
+     */
+    public function hide()
+    {
+        $this->visibility = self::SHOW_NEVER;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isHidden()
+    {
+        return $this->visibility === self::SHOW_NEVER;
     }
 }

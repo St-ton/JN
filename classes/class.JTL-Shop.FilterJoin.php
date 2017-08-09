@@ -97,9 +97,9 @@ class FilterJoin
      */
     public function getComment()
     {
-        return (!empty($this->comment))
-            ? "\n#" . $this->comment . "\n"
-            : '';
+        return empty($this->comment)
+            ? ''
+            : "\n#" . $this->comment . "\n";
     }
 
     /**

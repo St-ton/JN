@@ -392,7 +392,7 @@ class FilterItemPriceRange extends AbstractFilter
                 ? $discount
                 : 0.0;
             $state->conditions = implode(' AND ', array_map(function ($a) {
-                return is_string($a)
+                return is_string($a) || (is_object($a) && get_class($a) === 'FilterQuery')
                     ? $a
                     : ('(' . implode(' OR ', $a) . ')');
             }, $state->conditions));

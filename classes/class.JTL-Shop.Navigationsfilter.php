@@ -182,6 +182,11 @@ class Navigationsfilter
 
     /**
      * @var array
+     */
+    private $advancedAttributeFilters = [];
+
+    /**
+     * @var array
      * @todo: fix working with arrays
      * @see https://stackoverflow.com/questions/13421661/getting-indirect-modification-of-overloaded-property-has-no-effect-notice
      */
@@ -581,7 +586,6 @@ class Navigationsfilter
                         $params[$filterParam] = $filterValue;
                     }
                 }
-
             }
         }
         executeHook(HOOK_NAVIGATIONSFILTER_INIT_STATES, [
@@ -605,35 +609,11 @@ class Navigationsfilter
      */
     private function initAttributeFilters($values)
     {
-        $qry = 'SELECT tmerkmalwert.kMerkmal, tmerkmalwert.kMerkmalWert, tmerkmal.nMehrfachauswahl
-                FROM tmerkmalwert
-                JOIN tmerkmal 
-                    ON tmerkmal.kMerkmal = tmerkmalwert.kMerkmal';
+        $maxAttributeFilters = (int)$this->getConfig()['navigationsfilter']['merkmalfilter_maxmerkmale'];
         if (count($values) > 0) {
-            $qry .= ' WHERE kMerkmalWert IN (' . implode(',', array_map('intval', $values)) . ')';
-        }
-        $attributes = Shop::DB()->query($qry, 2);
-        foreach ($attributes as $attribute) {
-            $attribute->kMerkmal         = (int)$attribute->kMerkmal;
-            $attribute->kMerkmalWert     = (int)$attribute->kMerkmalWert;
-            $attribute->nMehrfachauswahl = (int)$attribute->nMehrfachauswahl;
-//            $this->attributeFilter[]     = $this->addActiveFilter(new FilterItemAttribute($this), $attribute);
-        }
-
-        return $this->initAttributeFilters2($values);
-    }
-
-    public $advancedAttributeFilters = [];
-
-    /**
-     * @param array $values
-     * @return $this
-     */
-    private function initAttributeFilters2($values)
-    {
-        if (count($values) > 0) {
-            $activeFilterIDs = array_map('intval', $values);
-            $attributes      = Shop::DB()->query(
+            $activeFilterIDs     = array_map('intval', $values);
+            $maxAttributeFilters = max($maxAttributeFilters, count($activeFilterIDs));
+            $attributes          = Shop::DB()->query(
                 'SELECT tmerkmalwert.kMerkmal, tmerkmalwert.kMerkmalWert, tmerkmalsprache.cName,
                     tmerkmal.nMehrfachauswahl, IF(tmerkmalwert.kMerkmalWert IN (' . implode(', ', $activeFilterIDs) . '), 1, 0) AS isActive 
                     FROM tmerkmalwert
@@ -641,7 +621,8 @@ class Navigationsfilter
                         ON tmerkmal.kMerkmal = tmerkmalwert.kMerkmal
                     JOIN tmerkmalsprache 
                         ON tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal
-                    WHERE tmerkmalsprache.kSprache = ' . $this->languageID,
+                    WHERE tmerkmalsprache.kSprache = ' . $this->languageID .
+                    ' ORDER BY tmerkmalwert.nSort',
                 2
             );
         } else {
@@ -655,14 +636,14 @@ class Navigationsfilter
                         ON tmerkmal.kMerkmal = tmerkmalwert.kMerkmal
                     JOIN tmerkmalsprache 
                         ON tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal
-                    WHERE tmerkmalsprache.kSprache = ' . $this->languageID,
+                    WHERE tmerkmalsprache.kSprache = ' . $this->languageID .
+                    ' ORDER BY tmerkmalwert.nSort',
                 2
             );
         }
         $res     = [];
         $checked = [];
         foreach ($attributes as $i => $attribute) {
-//            Shop::dbg($attribute, false, '$attribute:');
             $attribute->isActive = (bool)$attribute->isActive;
             $attribute->kMerkmal = (int)$attribute->kMerkmal;
             if ($attribute->isActive === false && in_array($attribute->kMerkmal, $checked, true)) {
@@ -671,13 +652,10 @@ class Navigationsfilter
             $checked[]                   = $attribute->kMerkmal;
             $attribute->kMerkmalWert     = (int)$attribute->kMerkmalWert;
             $attribute->nMehrfachauswahl = (int)$attribute->nMehrfachauswahl;
-//            Shop::dbg($attribute->isActive, false, 'active ' . $attribute->kMerkmalWert);
-
             if (!isset($res[$attribute->kMerkmal])) {
                 $res[$attribute->kMerkmal] = $attribute;
             } else {
                 if (!is_array($res[$attribute->kMerkmal]->kMerkmalWert)) {
-//                    Shop::dbg($attribute->kMerkmalWert, false, 'expanding for kmmw:');
                     if ($res[$attribute->kMerkmal]->isActive) {
                         $res[$attribute->kMerkmal]->kMerkmalWert = [$res[$attribute->kMerkmal]->kMerkmalWert];
                     } else {
@@ -686,30 +664,27 @@ class Navigationsfilter
                 }
                 $res[$attribute->kMerkmal]->kMerkmalWert[] = $attribute->kMerkmalWert;
                 $res[$attribute->kMerkmal]->isActive       = $res[$attribute->kMerkmal]->isActive || $attribute->isActive;
-//                Shop::dbg($res[$attribute->kMerkmal]->kMerkmalWert, false, 'new mmw array:');
             }
         }
+        $filterCount = 0;
         foreach ($res as $attribute) {
-//            $this->attributeFilter[] = $this->addActiveFilter(new FilterItemAttribute($this), $attribute);
-
             if ($attribute->isActive) {
-//                Shop::dbg($res, false, 'res:');
-//                Shop::dbg($attribute, false, 'activating:');
-                $filter = $this->addActiveFilter(new FilterItemAttributeAdvanced($this), $attribute);
+                $filter                           = $this->addActiveFilter(
+                    new FilterItemAttributeAdvanced($this),
+                    $attribute
+                );
                 $this->advancedAttributeFilters[] = $filter;
-                $this->filters[] = $filter;
+                $this->filters[]                  = $filter;
             } else {
-//                $filter = (new FilterItemAttributeAdvanced($this))->init($attribute);
                 $filter = new FilterItemAttributeAdvanced($this);
                 $filter->setFrontendName($attribute->cName);
                 $filter->kMerkmal = $attribute->kMerkmal;
-//                Shop::dbg($attribute, true);
                 $this->registerFilter($filter);
             }
-//            $this->filters[] = $filter;
+            if (++$filterCount > $maxAttributeFilters) {
+                break;
+            }
         }
-
-//        Shop::dbg($this->attributeFilter, true, '$this->attributeFilter:');
 
         return $this;
     }
@@ -1681,7 +1656,7 @@ class Navigationsfilter
      * @param null|string $ignore - filter class to ignore
      * @return stdClass
      */
-    public function getCurrentStateData($ignore = null, $test = false)
+    public function getCurrentStateData($ignore = null)
     {
         $state            = $this->getBaseState();
         $stateCondition   = $state->getSQLCondition();
@@ -1713,19 +1688,17 @@ class Navigationsfilter
                     if ($ignore === null
                         || (is_string($ignore) && $filter->getClassName() !== $ignore)
                         || (is_object($ignore) && $filter !== $ignore)
-                    ){
-//                        if ($idx === 0) {
-                            $itemJoin = $filter->getSQLJoin();
-                            // alternatively:
-                            // $data->joins = array_merge($data->joins, is_array($itemJoin) ? $itemJoin : [$itemJoin]);
-                            if (is_array($itemJoin)) {
-                                foreach ($itemJoin as $filterJoin) {
-                                    $data->joins[] = $filterJoin;
-                                }
-                            } else {
-                                $data->joins[] = $itemJoin;
+                    ) {
+                        $itemJoin = $filter->getSQLJoin();
+                        // alternatively:
+                        // $data->joins = array_merge($data->joins, is_array($itemJoin) ? $itemJoin : [$itemJoin]);
+                        if (is_array($itemJoin)) {
+                            foreach ($itemJoin as $filterJoin) {
+                                $data->joins[] = $filterJoin;
                             }
-//                        }
+                        } else {
+                            $data->joins[] = $itemJoin;
+                        }
                         if (!in_array($filter, $orFilters, true)) {
                             $singleConditions[] = $filter->getSQLCondition();
                         }
@@ -1742,22 +1715,22 @@ class Navigationsfilter
                         }
                         $groupedOrFilters[$primaryKeyRow][] = $filter;
                     }
-//                    Shop::dbg($groupedOrFilters, true, '$groupedOrFilters:');
                     foreach ($groupedOrFilters as $primaryKeyRow => $orFilters) {
                         /** @var IFilter[] $orFilters */
                         if ($ignore === null
                             || (is_string($ignore) && $orFilters[0]->getClassName() !== $ignore)
                             || (is_object($ignore) && $orFilters[0] !== $ignore)
-                        ){
-                            $values             = implode(
+                        ) {
+                            $values = implode(
                                 ',',
                                 array_map(function ($f) {
                                     /** @var IFilter $f */
                                     $val = $f->getValue();
+
                                     return is_array($val) ? $val[0] : $val;
                                 }, $orFilters)
                             );
-                            $table = $orFilters[0]->getTableAlias();
+                            $table  = $orFilters[0]->getTableAlias();
                             if (empty($table)) {
                                 $table = $orFilters[0]->getTableName();
                             }
@@ -1778,7 +1751,7 @@ class Navigationsfilter
                 if ($ignore === null
                     || (is_string($ignore) && $filters[0]->getClassName() !== $ignore)
                     || (is_object($ignore) && $filters[0] !== $ignore)
-                ){
+                ) {
                     $itemJoin = $filters[0]->getSQLJoin();
                     if (is_array($itemJoin)) {
                         foreach ($itemJoin as $filterJoin) {
@@ -1829,9 +1802,6 @@ class Navigationsfilter
         if (!isset($searchResults->Bewertung)) {
             $searchResults->Bewertung = $this->ratingFilter->getOptions();
         }
-        if (empty($searchResults->Bewertung)) {
-            $this->ratingFilter->setVisibility(AbstractFilter::SHOW_NEVER);
-        }
         if (!isset($searchResults->Tags)) {
             $searchResults->Tags = $this->tag->getOptions();
         }
@@ -1848,55 +1818,35 @@ class Navigationsfilter
         }
         $searchResults->MerkmalFilter = null;
         if (!isset($searchResults->MerkmalFilter)) {
-//            Shop::dbg($this->attributeFilter, false, 'attribFilter:');
-//            Shop::dbg($this->attributeFilterCollection, true, '$this->attributeFilterCollection:');
-//            $searchResults->MerkmalFilter = $this->attributeFilterCollection->getOptions([
-//                'oAktuelleKategorie' => $currentCategory,
-//                'bForce'             => $selectionWizard === true && function_exists('starteAuswahlAssistent')
-//            ]);
-//            Shop::dbg($searchResults->MerkmalFilter, false);
             $searchResults->MerkmalFilter = [];
-//            Shop::dbg($this->advancedAttributeFilters, false, '$this->advancedAttributeFilters:');
-            $attributeFilters = array_filter(
+            $attributeFilters             = array_filter(
                 $this->filters,
                 function ($e) {
                     /** @var IFilter $e */
                     return $e->getClassName() === 'FilterItemAttributeAdvanced';
                 }
             );
-//            Shop::dbg($attributeFilters, true);
             foreach ($attributeFilters as $attributeFilter) {
-//                continue;
                 $res = $attributeFilter->getOptions([
                     'oAktuelleKategorie' => $currentCategory,
                     'bForce'             => $selectionWizard === true && function_exists('starteAuswahlAssistent')
                 ]);
-//                Shop::dbg($res, false, '$res:');
                 if (is_array($res)) {
-                    if (count($res) > 1) {
-//                        Shop::dbg($res, true, 'wrong count for options: ');
-                    }
                     if (count($res) === 0) {
-//                        Shop::dbg($attributeFilter, false, 'no res for');
-                        $attributeFilter->setVisibility(AbstractFilter::SHOW_NEVER);
+                        $attributeFilter->hide();
                         continue;
-                    };
+                    }
                     $searchResults->MerkmalFilter[] = $res[0];
                 } else {
                     Shop::dbg($res, true, 'No array @options');
                 }
-//                Shop::dbg($res, false, 'single getOptions()');
             }
-//            Shop::dbg($searchResults->MerkmalFilter, true);
-
         }
-//        dd($searchResults->MerkmalFilter);
-//        Shop::dbg($searchResults->MerkmalFilter, true);
         // @todo: test. funktioniert bei mir auch ohne, bei marco nur mit diesen zeilen.
 //        foreach ($searchResults->MerkmalFilter as $i => $attributeFilter) {
 //            /** @var IFilter $attributeFilter */
 //            if (count($attributeFilter->oMerkmalWerte_arr) < 1) {
-//                $attributeFilter->setVisibility(AbstractFilter::SHOW_NEVER);
+//                $attributeFilter->hide();
 //            }
 //        }
 //        echo '<br>setting collection!';
@@ -1929,44 +1879,47 @@ class Navigationsfilter
         }
         if (empty($searchResults->Suchspecialauswahl)) {
             // hide category filter when a category is being browsed
-            $this->searchSpecialFilter->setVisibility(AbstractFilter::SHOW_NEVER);
+            $this->searchSpecialFilter->hide();
         }
         $searchResults->customFilters = [];
 
         if (empty($searchResults->Kategorieauswahl) || count($searchResults->Kategorieauswahl) <= 1) {
             // hide category filter when a category is being browsed
-            $this->categoryFilter->setVisibility(AbstractFilter::SHOW_NEVER);
+            $this->categoryFilter->hide();
         }
         if (empty($searchResults->Preisspanne) || count($searchResults->Preisspanne) === 0) {
             // hide manufacturer filter when browsing manufacturer products
-            $this->priceRangeFilter->setVisibility(AbstractFilter::SHOW_NEVER);
+            $this->priceRangeFilter->hide();
         }
         if (empty($searchResults->Herstellerauswahl) || count($searchResults->Herstellerauswahl) === 0
             || $this->manufacturer->isInitialized()
             || ($this->manufacturerFilter->isInitialized() && count($searchResults->Herstellerauswahl) === 1)
         ) {
             // hide manufacturer filter when browsing manufacturer products
-            $this->manufacturerFilter->setVisibility(AbstractFilter::SHOW_NEVER);
+            $this->manufacturerFilter->hide();
         }
-        if (count($searchResults->MerkmalFilter) === 0) {
+        if (empty($searchResults->Bewertung)) {
+            $this->ratingFilter->hide();
+        }
+//        if (count($searchResults->MerkmalFilter) === 0) {
             // hide attribute filter when none available
-//            $this->attributeFilterCollection->setVisibility(AbstractFilter::SHOW_NEVER);
-        }
+//            $this->attributeFilterCollection->hide();
+//        }
         $searchResults->customFilters = array_filter(
             $this->filters,
             function ($e) {
                 /** @var IFilter $e */
                 $isCustom = $e->isCustom();
                 if ($isCustom && count($e->getOptions()) === 0) {
-                    $e->setVisibility(AbstractFilter::SHOW_NEVER);
+                    $e->hide();
                 }
 
                 return $isCustom;
             }
         );
-
-//        dd($searchResults);
-
+//        Shop::dbg($searchResults->customFilters, true);
+//        Shop::dbg($searchResults->MerkmalFilter[0]->getOptions(), true);
+//        Shop::dbg($searchResults->MerkmalFilter, true);
         return $searchResults;
     }
 
@@ -2026,10 +1979,8 @@ class Navigationsfilter
         array $having = [],
         $order = '',
         $limit = '',
-        $groupBy = ['tartikel.kArtikel'],
-        $debug = false
+        $groupBy = ['tartikel.kArtikel']
     ) {
-//        if ($debug) Shop::dbg($joins, false, 'joins:');
         $joins[] = (new FilterJoin())
             ->setComment('article visiblity join from getBaseQuery')
             ->setType('LEFT JOIN')
@@ -2065,9 +2016,36 @@ class Navigationsfilter
             'limit'      => &$limit,
             'navifilter' => $this
         ]);
+        // merge FilterQuery-Conditions
+        $filterQueryIndices = [];
+        foreach ($conditions as $idx => $condition) {
+            if (is_object($condition) && get_class($condition) === 'FilterQuery') {
+                /** @var FilterQuery $condition */
+                if (count($filterQueryIndices) === 0) {
+                    $filterQueryIndices[] = $idx;
+                    continue;
+                }
+                $found        = false;
+                $currentWhere = $condition->getWhere();
+                foreach ($filterQueryIndices as $i) {
+                    $check = $conditions[$i];
+                    /** @var FilterQuery $check */
+
+                    if ($currentWhere === $check->getWhere()) {
+                        $found = true;
+                        $check->setParams(array_merge_recursive($check->getParams(), $condition->getParams()));
+                        unset($conditions[$idx]);
+                        break;
+                    }
+                }
+                if ($found === false) {
+                    $filterQueryIndices[] = $idx;
+                }
+            }
+        }
         // build sql string
         $conditionsString = implode(' AND ', array_map(function ($a) {
-            if (is_string($a)) {
+            if (is_string($a) || (is_object($a) && get_class($a) === 'FilterQuery')) {
                 return $a;
             }
 
@@ -2232,13 +2210,15 @@ class Navigationsfilter
                 ? $filter->getSeo($this->getLanguageID())
                 : '';
             if ($debug) {
-//                Shop::dbg($filter, false, 'active filter:');
                 Shop::dbg($filterSeo, false, '$filterSeo:');
             }
             if (empty($filterSeo)) {
                 if ($debug) {
                     Shop::dbg($filter, false, 'empty lang for filter:');
                     echo '<br>No filter SEO found for language ' . $this->getLanguageID() . ' - disable SEO mode.<br>';
+                }
+                if ($filterSeo === []) {
+                    $filterSeo = '';
                 }
                 $bSeo = false;
             }
@@ -2264,21 +2244,31 @@ class Navigationsfilter
 //                }
                 $activeValues = $filter->getActiveValues();
                 if (is_array($activeValues) && count($activeValues) > 0) {
-                    if ($debug) Shop::dbg($filterSeoData, false, 'act! before:');
-                    if ($debug) Shop::dbg($activeValues, false, '$activeValues:');
+                    if ($debug) {
+                        Shop::dbg($filterSeoData, false, 'act! before:');
+                    }
                     $filterSeoData->value = [];
                     $filterSeoData->seo   = [];
                     foreach ($activeValues as $activeValue) {
                         $filterSeoData->value[] = $activeValue->getValue();
                         $filterSeoData->seo[]   = $activeValue->getURL();
                     }
-                    if ($debug) Shop::dbg($filterSeoData, false, 'act! AFTER:');
+                }
+                if ($debug) {
+                    Shop::dbg($filterSeoData, false, 'act! AFTER:');
                 }
             } elseif (isset($urlParams[$urlParam][0]->value)
                 && is_array($urlParams[$urlParam][0]->value)
             ) {
-                $urlParams[$urlParam][0]->value[] = $filter->getValue();
-                $urlParams[$urlParam][0]->seo[]   = $filterSeo;
+                $val = $filter->getValue();
+                if (is_array($val)) {
+                    foreach ($val as $v) {
+                        $urlParams[$urlParam][0]->value[] = $v;
+                    }
+                } else {
+                    $urlParams[$urlParam][0]->value[] = $val;
+                }
+                $urlParams[$urlParam][0]->seo[] = $filterSeo;
             } else {
                 $filterSeoData          = new stdClass();
                 $filterSeoData->value   = $filter->getValue();
@@ -2343,6 +2333,9 @@ class Navigationsfilter
                 if (!empty($filterItem->sep) && !empty($filterItem->seo)) {
                     if (is_array($filterItem->seo)) {
                         foreach ($filterItem->seo as $s) {
+                            if (is_array($s)) {
+                                Shop::dbg($urlParams, true, 'pa', 6);
+                            }
                             $url .= $filterItem->sep . $s;
                         }
                     } else {
@@ -2363,7 +2356,9 @@ class Navigationsfilter
                 }
             }
         }
-        if ($debug) Shop::dbg($url, false, 'returning:');
+        if ($debug) {
+            Shop::dbg($url, false, 'returning:');
+        }
 
         return $url;
     }
@@ -2399,59 +2394,32 @@ class Navigationsfilter
         );
         foreach ($attributeFilters as $oMerkmal) {
             if ($oMerkmal->kMerkmal > 0) {
-//                $f = $additionalFilter->init($oMerkmal->kMerkmal)->setSeo($this->languages);
                 $this->URL->cAlleMerkmale[$oMerkmal->kMerkmal] = $this->getURL(
                     $bSeo,
                     $additionalFilter->init($oMerkmal->kMerkmal)->setSeo($this->languages)
-//                    , false, $oMerkmal->kMerkmal
                 );
-//                Shop::dbg($this->URL->cAlleMerkmale[$oMerkmal->kMerkmal], false, 'unset url:');
                 $oMerkmal->setUnsetFilterURL($this->URL->cAlleMerkmale);
-//                Shop::dbg($this->URL->cAlleMerkmale, false, 'getUnset:');
             }
-//            if (is_array($oMerkmal->kMerkmalWert)) {
-//                foreach ($oMerkmal->kMerkmalWert as $mmw) {
-//                    $this->URL->cAlleMerkmalWerte[$mmw] = $this->getURL(
-//                        $bSeo,
-//                        $additionalFilter->init($oMerkmal)
-//                    );
-//                    $oMerkmal->setUnsetFilterURL($this->URL->cAlleMerkmalWerte[$mmw]);
-//                }
-//            } else {
-//                $this->URL->cAlleMerkmalWerte[$oMerkmal->kMerkmalWert] = $this->getURL(
-//                    $bSeo,
-//                    $additionalFilter->init($oMerkmal)
-//                );
-//                $oMerkmal->setUnsetFilterURL($this->URL->cAlleMerkmalWerte[$oMerkmal->kMerkmalWert]);
-//            }
             if (is_array($oMerkmal->kMerkmalWert)) {
                 $urls = [];
                 foreach ($oMerkmal->kMerkmalWert as $mmw) {
                     $additionalFilter->init($mmw);
-                    $additionalFilter->kMerkmalWert = $mmw;
-//                    Shop::dbg($additionalFilter->kMerkmalWert, false, 'kMMW:');
+                    $additionalFilter->kMerkmalWert     = $mmw;
                     $this->URL->cAlleMerkmalWerte[$mmw] = $this->getURL(
                         $bSeo,
                         $additionalFilter
-//                        ,false,
-//                        true
                     );
                     $urls[$mmw]                         = $this->URL->cAlleMerkmalWerte[$mmw];
-//                    Shop::dbg($this->URL->cAlleMerkmalWerte[$mmw], false, 'unsetURL foreach' . $mmw);
                 }
-//                Shop::dbg($urls, false, 'setting unsetURLs:');
                 $oMerkmal->setUnsetFilterURL($urls);
             } else {
                 $this->URL->cAlleMerkmalWerte[$oMerkmal->kMerkmalWert] = $this->getURL(
                     $bSeo,
                     $additionalFilter->init($oMerkmal->kMerkmalWert)
                 );
-//                Shop::dbg($this->URL->cAlleMerkmalWerte[$oMerkmal->kMerkmalWert], false, 'unsetURL single:');
                 $oMerkmal->setUnsetFilterURL($this->URL->cAlleMerkmalWerte);
             }
         }
-//        die();
-//        Shop::dbg($this->URL->cAlleMerkmalWerte, false, '$this->URL->cAlleMerkmalWerte:');
         // kinda hacky: try to build url that removes a merkmalwert url from merkmalfilter url
         if ($this->attributeValue->isInitialized()
             && !isset($this->URL->cAlleMerkmalWerte[$this->attributeValue->getValue()])

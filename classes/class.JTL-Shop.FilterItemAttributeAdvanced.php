@@ -49,18 +49,6 @@ class FilterItemAttributeAdvanced extends FilterBaseAttribute
     }
 
     /**
-     * @return null|object
-     */
-    private function getFilterName()
-    {
-        if ($this->kMerkmal > 0) {
-            return Shop::DB()->select('tmerkmalsprache', ['kMerkmal', 'kSprache'], [$this->kMerkmal, Shop::getLanguage()]);
-        }
-
-        return null;
-    }
-
-    /**
      * @param null|int $idx
      * @return FilterExtra|FilterExtra[]
      */
@@ -78,15 +66,12 @@ class FilterItemAttributeAdvanced extends FilterBaseAttribute
         $this->isInitialized = true;
         if (is_object($value)) {
             $this->kMerkmal         = (int)$value->kMerkmal;
-            $this->kMerkmalWert     = is_array($value->kMerkmalWert) ? $value->kMerkmalWert : (int)$value->kMerkmalWert;
+            $this->kMerkmalWert     = is_array($value->kMerkmalWert)
+                ? $value->kMerkmalWert
+                : (int)$value->kMerkmalWert;
             $this->nMehrfachauswahl = (int)$value->nMehrfachauswahl;
             if (isset($value->cName)) {
                 $this->setFrontendName($value->cName);
-            } else {
-                $filterName = $this->getFilterName();
-                if (isset($filterName->cName)) {
-//                    $this->setFrontendName($filterName->cName);
-                }
             }
 
             return $this->setSeo($this->availableLanguages)
@@ -113,37 +98,19 @@ class FilterItemAttributeAdvanced extends FilterBaseAttribute
         return $this;
     }
 
-//    /**
-//     * @return int|array
-//     */
-//    public function getValue()
-//    {
-//        if (is_array($this->kMerkmalWert) && count($this->kMerkmalWert) === 1) {
-//            return $this->kMerkmalWert[0];
-//        }
-//        return $this->kMerkmalWert;
-//    }
-
     /**
      * @param array $languages
      * @return $this
      */
     public function setSeo($languages)
     {
-//        if ($this->kMerkmal == 1) {
-//            Shop::dbg($this->getValue(), false, 'getValue for merkmal 1');
-//            if (is_array($this->getValue())) {
-//                Shop::dbg($this->getValue(), true, 'bt', 6);
-//            }
-//            die();
-//        }
         $value = $this->getValue();
         if (is_array($value)) {
-            $oSeo_arr = Shop::DB()->query(
+            $oSeo_arr  = Shop::DB()->query(
                 "SELECT cSeo, kSprache, kKey 
                     FROM tseo 
                     WHERE cKey = 'kMerkmalWert'
-                        AND kKey IN (" . implode(', ', $this->getValue()) .  ") 
+                        AND kKey IN (" . implode(', ', $this->getValue()) . ") 
                     ORDER BY kSprache",
                 2
             );
@@ -151,7 +118,7 @@ class FilterItemAttributeAdvanced extends FilterBaseAttribute
                 "SELECT * 
                     FROM tmerkmalsprache 
                     WHERE kMerkmal = " . (int)$this->kMerkmal .
-                    " AND kSprache = " . $this->languageID,
+                " AND kSprache = " . $this->languageID,
                 2
             );
             foreach ($languages as $language) {
@@ -186,12 +153,13 @@ class FilterItemAttributeAdvanced extends FilterBaseAttribute
             foreach ($activeValues as $activeValue) {
                 $activeFilterItem = new FilterExtra();
                 $activeFilterItem->setType($this->getType())
-                    ->setFrontendName($activeValue->cWert)
-                    ->setValue((int)$activeValue->kMerkmalWert)
-                    ->setURL($activeValue->cSeo);
+                                 ->setFrontendName($activeValue->cWert)
+                                 ->setValue((int)$activeValue->kMerkmalWert)
+                                 ->setURL($activeValue->cSeo)
+                    ->setSort(444);
                 $activeFilterItem->kMerkmalWert = $activeValue->kMerkmalWert;
-                $activeFilterItem->kMerkmal = $activeValue->kMerkmal;
-                $this->activeValues[] = $activeFilterItem;
+                $activeFilterItem->kMerkmal     = $activeValue->kMerkmal;
+                $this->activeValues[]           = $activeFilterItem;
             }
 
             return $this;
@@ -230,25 +198,17 @@ class FilterItemAttributeAdvanced extends FilterBaseAttribute
             $this->kMerkmal = (int)$seo_obj->kMerkmal;
             $this->cWert    = $seo_obj->cWert;
             $this->cName    = $seo_obj->cWert;
-//            Shop::dbg($this->cName, false, 'setting FEN:');
-//            $this->setFrontendName($this->cName);
 
-            $value = $this->getType() === AbstractFilter::FILTER_TYPE_OR
-                ? [$this->kMerkmal]
-                : $this->kMerkmal;
-
-            $activeFilterItem = new FilterExtra();
-            $activeFilterItem->setType($this->getType())
-                             ->setFrontendName($this->cWert)
-                             ->setValue($value)
-                             ->setURL($this->cSeo[$this->languageID]);
+            $value                          = $this->getType() === AbstractFilter::FILTER_TYPE_OR
+                ? [$this->kMerkmalWert]
+                : $this->kMerkmalWert;
+            $activeFilterItem               = (new FilterExtra())->setType($this->getType())
+                                                                 ->setFrontendName($this->cWert)
+                                                                 ->setValue($value)
+                                                                 ->setURL($this->cSeo[$this->languageID]);
             $activeFilterItem->kMerkmalWert = $this->kMerkmalWert;
-            $activeFilterItem->kMerkmal = $this->kMerkmal;
-            $this->activeValues = [$activeFilterItem];
-//            if ($seo_obj->kMerkmal == 6) {
-//                Shop::dbg($activeFilterItem, false, '$activeFilterItem');
-//                Shop::dbg($this);
-//            }
+            $activeFilterItem->kMerkmal     = $this->kMerkmal;
+            $this->activeValues             = [$activeFilterItem];
         }
 
         return $this;
@@ -267,16 +227,22 @@ class FilterItemAttributeAdvanced extends FilterBaseAttribute
      */
     public function getSQLCondition()
     {
+        return (new FilterQuery())->setComment('condition from FilterItemAttribute::getSQLCondition() ' . $this->getName())
+                                  ->setWhere('tartikelmerkmal.kArtikel IN (SELECT kArtikel FROM ' . $this->getTableName() .
+                                      ' WHERE ' . $this->getPrimaryKeyRow() . ' IN ({value}))')
+                                  ->setParams(['value' => $this->getValue()])
+                                  ->setType('IN');
+
         $value = $this->getValue();
         if (is_array($value)) {
             $value = implode(', ', $value);
         }
-        return "\n" . 'tartikelmerkmal.kArtikel IN (' .
+
+        return "\n" . ' #START condition from FilterItemAttribute::getSQLCondition() ' . $this->getName() . "\n" .
+            'tartikelmerkmal.kArtikel IN (' .
             'SELECT kArtikel FROM ' . $this->getTableName() .
-            ' WHERE ' . $this->getPrimaryKeyRow() . ' IN (' .
-            $value .
-            '))' .
-            ' #condition from FilterItemAttribute::getSQLCondition() ' . $this->getName() . "\n";
+            ' WHERE ' . $this->getPrimaryKeyRow() . ' IN (' . $value . '))' .
+            ' #END condition from FilterItemAttribute::getSQLCondition() ' . $this->getName() . "\n";
     }
 
     /**
@@ -301,7 +267,6 @@ class FilterItemAttributeAdvanced extends FilterBaseAttribute
     {
         foreach ($this->naviFilter->getAttributeFilter() as $i => $oMerkmalauswahl) {
             $value = $oMerkmalauswahl->getValue();
-//            Shop::dbg($value, false, 'active attribute value vs. kMerkmalWert ' . $kMerkmalWert);
             if ($oMerkmalauswahl->isInitialized()
                 && ((!is_array($value) && $value === $kMerkmalWert)
                     || (is_array($value) && in_array($kMerkmalWert, $value, true)))
@@ -333,7 +298,7 @@ class FilterItemAttributeAdvanced extends FilterBaseAttribute
         $attributeFilters    = [];
         $activeValues        = [];
         $useAttributeFilter  = $this->getConfig()['navigationsfilter']['merkmalfilter_verwenden'] !== 'N';
-        $attributeLimit      = $bForce ? 0 : (int)$this->getConfig()['navigationsfilter']['merkmalfilter_maxmerkmale'];
+//        $attributeLimit      = $bForce ? 0 : (int)$this->getConfig()['navigationsfilter']['merkmalfilter_maxmerkmale'];
         $attributeValueLimit = $bForce ? 0 : (int)$this->getConfig()['navigationsfilter']['merkmalfilter_maxmerkmalwerte'];
 
         if (!$bForce && !$useAttributeFilter) {
@@ -351,8 +316,8 @@ class FilterItemAttributeAdvanced extends FilterBaseAttribute
                 $currentCategory->categoryFunctionAttributes[KAT_ATTRIBUT_MERKMALFILTER]
             );
         }
-        $select         = 'tmerkmal.cName';
-        $order          = $this->naviFilter->getOrder();
+        $select = 'tmerkmal.cName';
+        $order  = $this->naviFilter->getOrder();
 //        $state          = $this->naviFilter->getCurrentStateData(__CLASS__);
         $state          = $this->naviFilter->getCurrentStateData($this);
         $state->joins[] = $order->join;
@@ -362,14 +327,14 @@ class FilterItemAttributeAdvanced extends FilterBaseAttribute
                 ->setTable('tartikelmerkmal AS z')
                 ->setOn('tartikel.kArtikel = z.kArtikel
                              AND z.kMerkmal = ' . $this->kMerkmal)
-                ->setComment('join from FilterItemAttributeAdvanced::getSQLJoin()')
+                ->setComment('join from FilterItemAttributeAdvanced::getOptions()')
                 ->setOrigin(__CLASS__);
         } else {
             $state->joins[] = (new FilterJoin())
                 ->setType('JOIN')
                 ->setTable('tartikelmerkmal AS z')
                 ->setOn('tartikel.kArtikel = z.kArtikel')
-                ->setComment('join from FilterItemAttributeAdvanced::getSQLJoin()')
+                ->setComment('join from FilterItemAttributeAdvanced::getOptions()')
                 ->setOrigin(__CLASS__);
         }
         $state->joins[] = (new FilterJoin())
@@ -388,7 +353,7 @@ class FilterItemAttributeAdvanced extends FilterBaseAttribute
         $kSprache         = $this->getLanguageID();
         $kStandardSprache = (int)gibStandardsprache()->kSprache;
         if ($kSprache !== $kStandardSprache) {
-            $select = 'COALESCE(tmerkmalsprache.cName, tmerkmal.cName) AS cName, ' .
+            $select         = 'COALESCE(tmerkmalsprache.cName, tmerkmal.cName) AS cName, ' .
                 'COALESCE(fremdSprache.cSeo, standardSprache.cSeo) AS cSeo, ' .
                 'COALESCE(fremdSprache.cWert, standardSprache.cWert) AS cWert';
             $state->joins[] = (new FilterJoin())
@@ -413,7 +378,7 @@ class FilterItemAttributeAdvanced extends FilterBaseAttribute
                             AND fremdSprache.kSprache = ' . $kSprache)
                 ->setOrigin(__CLASS__);
         } else {
-            $select = 'tmerkmalwertsprache.cWert, tmerkmalwertsprache.cSeo, tmerkmal.cName';
+            $select         = 'tmerkmalwertsprache.cWert, tmerkmalwertsprache.cSeo, tmerkmal.cName';
             $state->joins[] = (new FilterJoin())
                 ->setComment('join default lang from FilterItemAttribute::getOptions()')
                 ->setType('INNER JOIN')
@@ -472,11 +437,6 @@ class FilterItemAttributeAdvanced extends FilterBaseAttribute
                     ->setOrigin(__CLASS__);
             }
         }
-//        Shop::dbg($activeAndFilterIDs, false, 'active AND');
-//        Shop::dbg($activeOrFilterIDs, false, 'active OR');
-//        Shop::dbg($state, false);
-//        unset($state->conditions[1]);
-//        Shop::dbg($state, true);
         $filterValue = $this->getValue();
         if ($this->getType() === AbstractFilter::FILTER_TYPE_OR) {
             if (is_numeric($filterValue)) {
@@ -484,7 +444,7 @@ class FilterItemAttributeAdvanced extends FilterBaseAttribute
             }
             $state->conditions[] = 'z.kMerkmalWert NOT IN (' . implode(', ', $filterValue) . ')';
         }
-        $baseQry  = $this->naviFilter->getBaseQuery(
+        $baseQry = $this->naviFilter->getBaseQuery(
             [
                 'z.kMerkmal',
                 'z.kMerkmalWert',
@@ -504,7 +464,7 @@ class FilterItemAttributeAdvanced extends FilterBaseAttribute
             ['z.kMerkmalWert', 'tartikel.kArtikel'],
             true
         );
-        $qry      = "SELECT ssMerkmal.cSeo, ssMerkmal.kMerkmal, ssMerkmal.kMerkmalWert, ssMerkmal.cMMWBildPfad, 
+        $qry     = "SELECT ssMerkmal.cSeo, ssMerkmal.kMerkmal, ssMerkmal.kMerkmalWert, ssMerkmal.cMMWBildPfad, 
             ssMerkmal.nMehrfachauswahl,
             ssMerkmal.cWert, ssMerkmal.cName, ssMerkmal.cTyp, ssMerkmal.cMMBildPfad, COUNT(*) AS nAnzahl
             FROM (" . $baseQry . ") AS ssMerkmal
@@ -514,18 +474,8 @@ class FilterItemAttributeAdvanced extends FilterBaseAttribute
                 AND tseo.kSprache = " . $this->getLanguageID() . "
             GROUP BY ssMerkmal.kMerkmalWert
             ORDER BY ssMerkmal.nSortMerkmal, ssMerkmal.nSort, ssMerkmal.cWert";
-        $qryRes   = Shop::DB()->query($qry, 2);
-
-//        if ($this->kMerkmal == 3) {
-//            Shop::dbg($this->getValue(), false, 'value:');
-////            Shop::dbg($state->conditions, true);
-////            Shop::dbg($this->naviFilter->hasAttributeFilter(), true);
-//            Shop::dbg($qry, false, 'qry:');
-////            Shop::dbg($this->kMerkmal, false, 'kMerkmal:');
-//            Shop::dbg($qryRes, true);
-//        }
+        $qryRes  = Shop::DB()->query($qry, 2);
         if (is_array($qryRes)) {
-//            Shop::dbg($this->naviFilter->getAttributeValue()->getValue(), false, 'navi attrib:');
             foreach ($qryRes as $i => $oMerkmalFilterDB) {
                 $additionalFilter = (new self($this->naviFilter))->init((int)$oMerkmalFilterDB->kMerkmalWert);
 
@@ -550,59 +500,42 @@ class FilterItemAttributeAdvanced extends FilterBaseAttribute
                 $attributeValues->cURL = $this->naviFilter->getURL(
                     true,
                     $additionalFilter->init((int)$oMerkmalFilterDB->kMerkmalWert)->setSeo($this->getAvailableLanguages())
-                    ,false,
-                    $this->kMerkmal == 123 && $additionalFilter->getValue() != 12 && $additionalFilter->getValue() != 6
                 );
                 // hack for #4815
-                if ($this->kMerkmal == 123 && $additionalFilter->getValue() != 12 && $additionalFilter->getValue() != 6) {
-//                    Shop::dbg($this->isInitialized(), true);
-                    Shop::dbg($this->getValue(), false, 'this->getValue:');
-                    Shop::dbg($additionalFilter->getValue(), false, 'kmmw:');
-                    Shop::dbg($additionalFilter->getValue(), false, '$additionalFilter->getValue()');
-                    Shop::dbg($additionalFilter->getSeo(), false, '$additionalFilter->getSeo()');
-                    Shop::dbg($attributeValues->cURL, true);
-                }
                 $seoURL = $additionalFilter->getSeo($this->getLanguageID());
                 if ($attributeValues->nAktiv === 1 && !empty($seoURL)) {
                     // remove '__attrY' from '<url>attrX__attrY'
                     $newURL = str_replace('__' . $seoURL, '', $attributeValues->cURL);
                     // remove 'attrY__' from '<url>attrY__attrX'
-                    $newURL              = str_replace($seoURL . '__', '', $newURL);
+                    $newURL                = str_replace($seoURL . '__', '', $newURL);
                     $attributeValues->cURL = $newURL;
                 }
-//                if ($this->kMerkmal == 3) {
-//                    Shop::dbg($additionalFilter->getSeo(), true);
-//                    Shop::dbg($newURL, true);
-//                }
-                    $attribute                    = (new FilterExtra())
-                        ->setType($this->getType())
-                        ->setClassName($this->getClassName())
-                        ->setParam($this->getUrlParam())
-                        ->setName(htmlentities($oMerkmalFilterDB->cWert))
-                        ->setValue((int)$oMerkmalFilterDB->kMerkmalWert)
-                        ->setCount($attributeValues->nAnzahl)
-                        ->setURL($attributeValues->cURL);
-//                    $attribute->cName             = $oMerkmalFilterDB->cName;
-//                    $attribute->cSeo              = $oMerkmalFilterDB->cSeo;
-//                    $attribute->nAnzahl           = (int)$oMerkmalFilterDB->nAnzahl;
-                    $attribute->cTyp              = $oMerkmalFilterDB->cTyp;
-                    $attribute->kMerkmal          = (int)$oMerkmalFilterDB->kMerkmal;
-                    $attribute->kMerkmalWert      = (int)$oMerkmalFilterDB->kMerkmalWert;
-                    $attribute->isInitialized     = in_array($attribute->kMerkmalWert, $activeValues, true);
-                    $attribute->oMerkmalWerte_arr = [];
-                    if (strlen($oMerkmalFilterDB->cMMBildPfad) > 0) {
-                        $attribute->cBildpfadKlein  = PFAD_MERKMALBILDER_KLEIN . $oMerkmalFilterDB->cMMBildPfad;
-                        $attribute->cBildpfadNormal = PFAD_MERKMALBILDER_NORMAL . $oMerkmalFilterDB->cMMBildPfad;
-                    } else {
-                        $attribute->cBildpfadKlein = BILD_KEIN_MERKMALBILD_VORHANDEN;
-                        $attribute->cBildpfadGross = BILD_KEIN_MERKMALBILD_VORHANDEN;
-                    }
-                    if ((int)$oMerkmalFilterDB->nMehrfachauswahl === 1) {
-                        $attribute->setType(AbstractFilter::FILTER_TYPE_OR);
-                    } else {
-                        $attribute->setType(AbstractFilter::FILTER_TYPE_AND);
-                    }
-                    $attributeFilters[] = $attribute;
+                $attribute                    = (new FilterExtra())
+                    ->setType($this->getType())
+                    ->setClassName($this->getClassName())
+                    ->setParam($this->getUrlParam())
+                    ->setName(htmlentities($oMerkmalFilterDB->cWert))
+                    ->setValue((int)$oMerkmalFilterDB->kMerkmalWert)
+                    ->setCount($attributeValues->nAnzahl)
+                    ->setURL($attributeValues->cURL);
+                $attribute->cTyp              = $oMerkmalFilterDB->cTyp;
+                $attribute->kMerkmal          = (int)$oMerkmalFilterDB->kMerkmal;
+                $attribute->kMerkmalWert      = (int)$oMerkmalFilterDB->kMerkmalWert;
+                $attribute->isInitialized     = in_array($attribute->kMerkmalWert, $activeValues, true);
+                $attribute->oMerkmalWerte_arr = [];
+                if (strlen($oMerkmalFilterDB->cMMBildPfad) > 0) {
+                    $attribute->cBildpfadKlein  = PFAD_MERKMALBILDER_KLEIN . $oMerkmalFilterDB->cMMBildPfad;
+                    $attribute->cBildpfadNormal = PFAD_MERKMALBILDER_NORMAL . $oMerkmalFilterDB->cMMBildPfad;
+                } else {
+                    $attribute->cBildpfadKlein = BILD_KEIN_MERKMALBILD_VORHANDEN;
+                    $attribute->cBildpfadGross = BILD_KEIN_MERKMALBILD_VORHANDEN;
+                }
+                if ((int)$oMerkmalFilterDB->nMehrfachauswahl === 1) {
+                    $attribute->setType(AbstractFilter::FILTER_TYPE_OR);
+                } else {
+                    $attribute->setType(AbstractFilter::FILTER_TYPE_AND);
+                }
+                $attributeFilters[] = $attribute;
                 // #533 Anzahl max Merkmale erreicht?
 //                if ($attributeLimit > 0 && count($attributeFilters) >= $attributeLimit) {
 //                    continue;
@@ -656,7 +589,8 @@ class FilterItemAttributeAdvanced extends FilterBaseAttribute
                 $oMerkmalFilter->oMerkmalWerte_arr = [];
 //                $oMerkmalFilter->setVisibility(AbstractFilter::SHOW_NEVER);
             }
-            if (false&&$numeric) {
+            // @todo: re-implement
+            if (false && $numeric) {
                 usort($attributeFilters[$o]->oMerkmalWerte_arr, function ($a, $b) {
                     return $a === $b
                         ? 0
@@ -668,10 +602,6 @@ class FilterItemAttributeAdvanced extends FilterBaseAttribute
             }
         }
         $this->options = $attributeFilters;
-//        if ($this->kMerkmal == 3) {
-//            Shop::dbg($attributeFilters, false, '$attributeFilters:');
-//            die();
-//        }
 
         return $attributeFilters;
     }

@@ -284,7 +284,7 @@ class Metadata
     {
         executeHook(HOOK_FILTER_INC_GIBNAVIMETATITLE);
         $languageID = $this->navigationsfilter->getLanguageID();
-        $append = $this->conf['metaangaben']['global_meta_title_anhaengen'] === 'Y';
+        $append     = $this->conf['metaangaben']['global_meta_title_anhaengen'] === 'Y';
         // Pruefen ob bereits eingestellte Metas gesetzt sind
         if (strlen($oMeta->cMetaTitle) > 0) {
             $oMeta->cMetaTitle = strip_tags($oMeta->cMetaTitle);

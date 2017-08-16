@@ -19,6 +19,12 @@ Nachfolgend sind die wichtigsten Änderungen aufgeführt:
  * Hinweise zu Template-Änderungen finden Sie [hier](http://docs.jtl-shop.de/de/latest/shop_templates/short_checkout.html)
  * Hinweise für Plugin-Anpassungen finden Sie [hier](http://docs.jtl-shop.de/de/latest/shop_plugins/short_checkout.html)
 
+#### Lieferzeiten-Berechnung nicht mehr nach günstigster Versandart sondern nach niedrigster Versandart-Sortiernummer
+Bis JTL-Shop 4.05 zählte für die Lieferzeitberechnung immer die günstigste Versandart, mit welcher der Artikel geliefert werden kann. 
+Ab 4.05 wird die Versandart mit der niedrigsten Sortiernummer für die Lieferzeitberechnung priorisiert. 
+Die Sortiernummer lässt sich im Shop-Backend an der Versandart editieren. 
+Dies ermöglicht Händlern, nun selbst zu steuern, welche Versandarten für die Lieferzeit-Berechnung priorisiert werden. 
+
 #### Weitere Anpassungen
 Das PayPal-Plugin wird in Version 1.08 ausgeliefert und beinhaltet nun auch die Zahlart Ratenzahlung powered by PayPal. 
 Bitte beachten Sie auch das aktualisierte Handbuch zum PayPal-Plugin: http://jtl-url.de/paypaldocs

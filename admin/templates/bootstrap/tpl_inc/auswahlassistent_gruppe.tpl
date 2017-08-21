@@ -8,7 +8,7 @@
 
 <div id="content">
     {if !isset($noModule) || !$noModule}
-        <form class="navbar-form settings" method="post" action="auswahlassistent.php">
+        <form class="settings" method="post" action="auswahlassistent.php">
             {$jtl_token}
             <input name="kSprache" type="hidden" value="{$smarty.session.kSprache}">
             <input name="tab" type="hidden" value="gruppe">
@@ -38,6 +38,32 @@
                         <span class="input-group-addon">{getHelpDesc cDesc="Wie soll die Beschreibung lauten?"}</span>
                     </div>
 
+                    {include file='tpl_inc/searchpicker_modal.tpl'
+                        searchPickerName='categoryPicker'
+                        modalTitle='Kategorien ausw&auml;hlen'
+                        searchInputLabel='Suche Kategorien'
+                    }
+                    <script>
+                        $(function () {
+                            categoryPicker = new SearchPicker({
+                                searchPickerName:  'categoryPicker',
+                                getDataIoFuncName: 'getCategories',
+                                keyName:           'kKategorie',
+                                renderItemCb:      renderCategoryItem,
+                                onApply:           onApplySelectedCategories,
+                                selectedKeysInit:  $('#assign_categories_list').val().split(';').filter(function (i) { return i !== ''; })
+                            });
+                        });
+                        function renderCategoryItem(item)
+                        {
+                            return '<p class="list-group-item-text">' + item.cName + '</p>';
+                        }
+                        function onApplySelectedCategories(selected)
+                        {
+                            $('#assign_categories_list').val(selected.join(';'));
+                        }
+                    </script>
+
                     <div class="input-group">
                         <span class="input-group-addon">
                             <label for="assign_categories_list">{#aaKat#}{if isset($cPlausi_arr.cOrt)} <span class="fillout">{#FillOut#}</span>{/if}
@@ -45,12 +71,17 @@
                                 {if isset($cPlausi_arr.cKategorie) && $cPlausi_arr.cKategorie == 3} <span class="fillout">{#aaKatTaken#}</span>{/if}
                             </label>
                         </span>
-                        <input name="cKategorie" id="assign_categories_list" type="text"
-                               class="form-control{if isset($cPlausi_arr.cOrt)} fieldfillout{/if}"
-                               value="{if isset($cPost_arr.cKategorie)}{$cPost_arr.cKategorie}{elseif isset($oGruppe->cKategorie)}{$oGruppe->cKategorie}{/if}">
+                        <span class="input-group-wrap">
+                            <input name="cKategorie" id="assign_categories_list" type="text"
+                                   class="form-control{if isset($cPlausi_arr.cOrt)} fieldfillout{/if}"
+                                   value="{if isset($cPost_arr.cKategorie)}{$cPost_arr.cKategorie}{elseif isset($oGruppe->cKategorie)}{$oGruppe->cKategorie}{/if}">
+                        </span>
                         <span class="input-group-addon">
-                            <a href="#" class="button edit" id="show_categories_list">Kategorien verwalten</a>
-                            {getHelpDesc cDesc="In welcher Kategorie soll die Gruppe angezeigt werden?"}
+                            <button type="button" class="btn btn-info btn-xs" data-toggle="modal"
+                                    data-target="#categoryPicker-modal"
+                                    title="In welcher Kategorie soll die Gruppe angezeigt werden?">
+                                <i class="fa fa-edit"></i>
+                            </button>
                         </span>
                     </div>
 

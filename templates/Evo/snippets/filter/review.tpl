@@ -5,6 +5,7 @@
                 {* @todo: use getter *}
                 <a rel="nofollow" href="{$NaviFilter->URL->cAlleBewertungen}" class="active">
                     <i class="fa fa-check-square-o text-muted"></i>
+                    <span class="badge pull-right">{$oBewertung->nAnzahl}</span>
                     <span class="value">
                         {include file='productdetails/rating.tpl' stars=$oBewertung->nStern}
                         {if $NaviFilter->getRatingFilter()->getValue() < 5}
@@ -17,7 +18,6 @@
                                 {/if})
                             </em>
                         {/if}
-                        <span class="badge pull-right">{$oBewertung->nAnzahl}</span>
                     </span>
                 </a>
             </li>
@@ -25,6 +25,7 @@
             <li>
                 <a rel="nofollow" href="{$oBewertung->cURL}">
                     <i class="fa fa-square-o text-muted"></i>
+                    <span class="badge pull-right">{$oBewertung->nAnzahl}</span>
                     <span class="value">
                         {include file='productdetails/rating.tpl' stars=$oBewertung->nStern}
                         {if $oBewertung->nStern < 5}
@@ -37,7 +38,6 @@
                                 {/if})
                             </em>
                         {/if}
-                        <span class="badge pull-right">{$oBewertung->nAnzahl}</span>
                     </span>
                 </a>
             </li>

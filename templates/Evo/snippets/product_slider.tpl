@@ -9,7 +9,7 @@
                 <h5 class="panel-title">
                     {$title}
                     {if !empty($moreLink)}
-                        <a class="more pull-right" href="{$moreLink}" title="{$moreTitle}" data-toggle="tooltip" data-placement="auto right">
+                        <a class="more pull-right" href="{$moreLink}" title="{$moreTitle}" data-toggle="tooltip" data-placement="auto right" aria-label="{$moreTitle}">
                             <i class="fa fa-arrow-circle-right"></i>
                         </a>
                     {/if}

@@ -188,7 +188,7 @@
                                     <div class="qty-wrapper dropdown modify">
                                         {$oPosition->nAnzahl|replace_delim} {if !empty($oPosition->Artikel->cEinheit)}{$oPosition->Artikel->cEinheit}{/if}
                                         <input name="anzahl[{$smarty.foreach.positionen.index}]" type="hidden" class="form-control" value="{$oPosition->nAnzahl}" />
-                                        <button class="btn btn-default btn-xs dropdown-toggle" type="button" data-toggle="dropdown">
+                                        <button class="btn btn-default btn-xs dropdown-toggle" type="button" data-toggle="dropdown" aria-label="{lang key='configure'}">
                                             <span class="caret"></span>
                                         </button>
                                         <div id="cartitem-dropdown-menu{$smarty.foreach.positionen.index}" class="dropdown-menu dropdown-menu-right keepopen">
@@ -198,7 +198,7 @@
                                                         <a class="btn btn-default configurepos"
                                                            href="index.php?a={$oPosition->kArtikel}&ek={$smarty.foreach.positionen.index}">
                                                             <span class="visible-xs visible-sm"><i class="fa fa-cogs"></i></span>
-                                                            <span class="hidden-xs hidden-sm">{lang key="configure" section="global"}</span>
+                                                            <span class="hidden-xs hidden-sm">{lang key='configure'}</span>
                                                         </a>
                                                     </span>
                                                 </div>
@@ -208,13 +208,13 @@
                                 {else}
                                     <div class="qty-wrapper dropdown modify">
                                         {$oPosition->nAnzahl|replace_delim} {if !empty($oPosition->Artikel->cEinheit)}{$oPosition->Artikel->cEinheit}{/if}
-                                        <button class="btn btn-default btn-xs dropdown-toggle" type="button" data-toggle="dropdown">
+                                        <button class="btn btn-default btn-xs dropdown-toggle" type="button" data-toggle="dropdown" aria-label="{lang key='quantity'}">
                                             <span class="caret"></span>
                                         </button>
                                         <div id="cartitem-dropdown-menu{$smarty.foreach.positionen.index}" class="dropdown-menu dropdown-menu-right keepopen">
                                             <div class="panel-body text-center">
                                                 <div class="form-inline">
-                                                    <label for="quantity{$smarty.foreach.positionen.index}">{lang key="quantity" section="global"}
+                                                    <label for="quantity{$smarty.foreach.positionen.index}">{lang key='quantity'}
                                                         {if $oPosition->Artikel->cEinheit}
                                                             ({$oPosition->Artikel->cEinheit})
                                                         {/if}

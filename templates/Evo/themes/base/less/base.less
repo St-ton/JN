@@ -1098,7 +1098,7 @@ aside {
     }
 }
 
-#updatingStockInfo{
+.updatingStockInfo{
     position: absolute;
     display: none;
 }
@@ -3320,9 +3320,15 @@ header.fixed-navbar {
     overflow: hidden;
 }
 
-.pagination-wrapper .pagination {
-    margin-top: 0;
-    margin-bottom: 0;
+.pagination-wrapper {
+    .pagination {
+        margin-top: 0;
+        margin-bottom: 0;
+    }
+
+    span {
+        margin-right: 10px;
+    }
 }
 
 .review-reply {

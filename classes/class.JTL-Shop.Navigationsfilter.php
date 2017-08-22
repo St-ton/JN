@@ -911,6 +911,24 @@ class Navigationsfilter
     }
 
     /**
+     * returns ALL registered attribute filters
+     *
+     * @return array|IFilter[]
+     */
+    public function getAttributeFilters()
+    {
+        return array_filter(
+            $this->filters,
+            function ($e) {
+                /** @var IFilter $e */
+                return $e->getClassName() === 'FilterItemAttributeAdvanced';
+            }
+        );
+    }
+
+    /**
+     * this method works like pre Shop 4.06 - only returns ACTIVE attribute filters
+     *
      * @param null|int $idx
      * @return FilterItemAttribute|FilterItemAttribute[]
      */

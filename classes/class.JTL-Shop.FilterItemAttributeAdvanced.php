@@ -26,6 +26,9 @@ class FilterItemAttributeAdvanced extends FilterBaseAttribute
      */
     public $nMehrfachauswahl = 0;
 
+    public $cBildpfadKlein = '';
+    public $cBildpfadNormal = '';
+
     /**
      * FilterItemAttribute constructor.
      *
@@ -114,13 +117,6 @@ class FilterItemAttributeAdvanced extends FilterBaseAttribute
                     ORDER BY kSprache",
                 2
             );
-            $attribute = Shop::DB()->query(
-                "SELECT * 
-                    FROM tmerkmalsprache 
-                    WHERE kMerkmal = " . (int)$this->kMerkmal .
-                " AND kSprache = " . $this->languageID,
-                2
-            );
             foreach ($languages as $language) {
                 $this->cSeo[$language->kSprache] = [];
                 if (is_array($oSeo_arr)) {
@@ -182,10 +178,12 @@ class FilterItemAttributeAdvanced extends FilterBaseAttribute
             }
         }
         $seo_obj = Shop::DB()->executeQueryPrepared(
-            'SELECT tmerkmalwertsprache.cWert, tmerkmalwert.kMerkmal
+            'SELECT tmerkmalwertsprache.cWert, tmerkmalwert.kMerkmal, tmerkmal.cBildpfad
                 FROM tmerkmalwertsprache
                 JOIN tmerkmalwert 
                     ON tmerkmalwert.kMerkmalWert = tmerkmalwertsprache.kMerkmalWert
+                JOIN tmerkmal
+					ON tmerkmal.kMerkmal = tmerkmalwert.kMerkmal
                 WHERE tmerkmalwertsprache.kSprache = :lid
                    AND tmerkmalwertsprache.kMerkmalWert = :val',
             [
@@ -198,6 +196,14 @@ class FilterItemAttributeAdvanced extends FilterBaseAttribute
             $this->kMerkmal = (int)$seo_obj->kMerkmal;
             $this->cWert    = $seo_obj->cWert;
             $this->cName    = $seo_obj->cWert;
+
+            if (strlen($seo_obj->cBildpfad) > 0) {
+                $this->cBildpfadKlein  = PFAD_MERKMALBILDER_KLEIN . $seo_obj->cBildpfad;
+                $this->cBildpfadNormal = PFAD_MERKMALBILDER_NORMAL . $seo_obj->cBildpfad;
+            } else {
+                $this->cBildpfadKlein = BILD_KEIN_MERKMALBILD_VORHANDEN;
+                $this->cBildpfadGross = BILD_KEIN_MERKMALBILD_VORHANDEN;
+            }
 
             $value                          = $this->getType() === AbstractFilter::FILTER_TYPE_OR
                 ? [$this->kMerkmalWert]
@@ -298,7 +304,6 @@ class FilterItemAttributeAdvanced extends FilterBaseAttribute
         $attributeFilters    = [];
         $activeValues        = [];
         $useAttributeFilter  = $this->getConfig()['navigationsfilter']['merkmalfilter_verwenden'] !== 'N';
-//        $attributeLimit      = $bForce ? 0 : (int)$this->getConfig()['navigationsfilter']['merkmalfilter_maxmerkmale'];
         $attributeValueLimit = $bForce ? 0 : (int)$this->getConfig()['navigationsfilter']['merkmalfilter_maxmerkmalwerte'];
 
         if (!$bForce && !$useAttributeFilter) {
@@ -489,13 +494,13 @@ class FilterItemAttributeAdvanced extends FilterBaseAttribute
                     ? 1
                     : 0;
 
-                if (strlen($oMerkmalFilterDB->cMMWBildPfad) > 0) {
-                    $attributeValues->cBildpfadKlein  = PFAD_MERKMALWERTBILDER_KLEIN . $oMerkmalFilterDB->cMMWBildPfad;
-                    $attributeValues->cBildpfadNormal = PFAD_MERKMALWERTBILDER_NORMAL . $oMerkmalFilterDB->cMMWBildPfad;
-                } else {
-                    $attributeValues->cBildpfadKlein = BILD_KEIN_MERKMALWERTBILD_VORHANDEN;
-                    $attributeValues->cBildpfadGross = BILD_KEIN_MERKMALWERTBILD_VORHANDEN;
-                }
+//                if (strlen($oMerkmalFilterDB->cMMWBildPfad) > 0) {
+//                    $attributeValues->cBildpfadKlein  = PFAD_MERKMALWERTBILDER_KLEIN . $oMerkmalFilterDB->cMMWBildPfad;
+//                    $attributeValues->cBildpfadNormal = PFAD_MERKMALWERTBILDER_NORMAL . $oMerkmalFilterDB->cMMWBildPfad;
+//                } else {
+//                    $attributeValues->cBildpfadKlein = BILD_KEIN_MERKMALWERTBILD_VORHANDEN;
+//                    $attributeValues->cBildpfadGross = BILD_KEIN_MERKMALWERTBILD_VORHANDEN;
+//                }
                 // baue URL
                 $attributeValues->cURL = $this->naviFilter->getURL(
                     true,
@@ -523,12 +528,20 @@ class FilterItemAttributeAdvanced extends FilterBaseAttribute
                 $attribute->kMerkmalWert      = (int)$oMerkmalFilterDB->kMerkmalWert;
                 $attribute->isInitialized     = in_array($attribute->kMerkmalWert, $activeValues, true);
                 $attribute->oMerkmalWerte_arr = [];
-                if (strlen($oMerkmalFilterDB->cMMBildPfad) > 0) {
-                    $attribute->cBildpfadKlein  = PFAD_MERKMALBILDER_KLEIN . $oMerkmalFilterDB->cMMBildPfad;
-                    $attribute->cBildpfadNormal = PFAD_MERKMALBILDER_NORMAL . $oMerkmalFilterDB->cMMBildPfad;
+                $attribute->cWert             = htmlentities($oMerkmalFilterDB->cWert); // compat. with AWA
+//                if (strlen($oMerkmalFilterDB->cMMBildPfad) > 0) {
+//                    $attribute->cBildpfadKlein  = PFAD_MERKMALBILDER_KLEIN . $oMerkmalFilterDB->cMMBildPfad;
+//                    $attribute->cBildpfadNormal = PFAD_MERKMALBILDER_NORMAL . $oMerkmalFilterDB->cMMBildPfad;
+//                } else {
+//                    $attribute->cBildpfadKlein = BILD_KEIN_MERKMALBILD_VORHANDEN;
+//                    $attribute->cBildpfadGross = BILD_KEIN_MERKMALBILD_VORHANDEN;
+//                }
+                if (strlen($oMerkmalFilterDB->cMMWBildPfad) > 0) {
+                    $attribute->cBildpfadKlein  = PFAD_MERKMALWERTBILDER_KLEIN . $oMerkmalFilterDB->cMMWBildPfad;
+                    $attribute->cBildpfadNormal = PFAD_MERKMALWERTBILDER_NORMAL . $oMerkmalFilterDB->cMMWBildPfad;
                 } else {
-                    $attribute->cBildpfadKlein = BILD_KEIN_MERKMALBILD_VORHANDEN;
-                    $attribute->cBildpfadGross = BILD_KEIN_MERKMALBILD_VORHANDEN;
+                    $attribute->cBildpfadKlein = BILD_KEIN_MERKMALWERTBILD_VORHANDEN;
+                    $attribute->cBildpfadGross = BILD_KEIN_MERKMALWERTBILD_VORHANDEN;
                 }
                 if ((int)$oMerkmalFilterDB->nMehrfachauswahl === 1) {
                     $attribute->setType(AbstractFilter::FILTER_TYPE_OR);

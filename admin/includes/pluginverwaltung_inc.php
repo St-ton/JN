@@ -96,13 +96,13 @@ function gibAllePlugins($PluginInstalliert_arr)
 
         // Pluginsortierung nach Name
         usort($Plugins->installiert, function ($left, $right) {
-            return strcmp($left->cName, $right->cName);
+            return strcasecmp($left->cName, $right->cName);
         });
         usort($Plugins->verfuegbar, function ($left, $right) {
-            return strcmp($left->cName, $right->cName);
+            return strcasecmp($left->cName, $right->cName);
         });
         usort($Plugins->fehlerhaft, function ($left, $right) {
-            return strcmp($left->cName, $right->cName);
+            return strcasecmp($left->cName, $right->cName);
         });
     }
 

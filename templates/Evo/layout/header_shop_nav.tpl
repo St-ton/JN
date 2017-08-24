@@ -24,7 +24,7 @@
             </a>
             <ul id="login-dropdown" class="dropdown-menu dropdown-menu-right">
                 <li>
-                    <form action="{get_static_route id='jtl.php' secure="true"}" method="post" class="form">
+                    <form action="{get_static_route id='jtl.php' secure=true}" method="post" class="form">
                         {$jtl_token}
                         <fieldset id="quick-login">
                             <div class="form-group">

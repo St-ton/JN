@@ -8296,6 +8296,8 @@ button.close {
   left: 0;
   top: 0;
   display: block;
+  margin-left: auto;
+  margin-right: auto;
 }
 .slick-track:before,
 .slick-track:after {
@@ -9388,7 +9390,7 @@ aside .badge {
 .variations dd {
   line-height: 3;
 }
-#updatingStockInfo {
+.updatingStockInfo {
   position: absolute;
   display: none;
 }
@@ -9603,7 +9605,7 @@ table.matrix tbody > tr > td {
 }
 #navbar-filter .dropdown-menu span.value,
 .box .nav-list span.value {
-  padding-right: 45px;
+  padding-right: 35px;
 }
 @media (max-width: 480px) {
   #navbar-filter ul.nav.navbar-nav,
@@ -10014,9 +10016,6 @@ fieldset {
     background-color: transparent;
     border: none;
   }
-  .basket-final {
-    border: 1px solid #999999 !important;
-  }
   .order-items,
   .order-items a.btn {
     font-size: 85%;
@@ -10030,6 +10029,12 @@ fieldset {
 .navbar-form.navbar-left.filter-select {
   margin-left: 5px;
   margin-right: 10px;
+}
+.basket-final {
+  border: none;
+}
+.basket-final .panel {
+  border-color: #999999 !important;
 }
 /* product variations */
 .form-inner dt {
@@ -11129,7 +11134,7 @@ header.fixed-navbar .visible-affix .cart-dropdown {
 }
 .nav-wizard {
   border-radius: 4px;
-  margin: 0 0 15px;
+  margin: 0 0 30px;
   overflow: hidden;
   position: relative;
   border: 1px solid #272b2e;
@@ -11175,6 +11180,10 @@ header.fixed-navbar .visible-affix .cart-dropdown {
   top: 0;
   left: 3px;
   z-index: 3;
+}
+.nav-wizard > li:not(:first-child) > a,
+.nav-wizard > li:not(:first-child) .nav-badge {
+  padding-left: 20px !important;
 }
 .nav-wizard > li:not(:last-child):after {
   width: 0;
@@ -11382,6 +11391,9 @@ header.fixed-navbar .visible-affix .cart-dropdown {
 .pagination-wrapper .pagination {
   margin-top: 0;
   margin-bottom: 0;
+}
+.pagination-wrapper span {
+  margin-right: 10px;
 }
 .review-reply {
   padding: 0 15px;

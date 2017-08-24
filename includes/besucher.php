@@ -32,6 +32,7 @@ if (!isset($_SESSION['oBesucher'])) {
         $besucher->kBestellung       = 0;
         $besucher->cEinstiegsseite   = $_SERVER['REQUEST_URI'];
         $besucher->cReferer          = gibReferer();
+        $besucher->cUserAgent        = StringHandler::filterXSS($_SERVER['HTTP_USER_AGENT']);
         $besucher->cBrowser          = gibBrowser();
         $besucher->cAusstiegsseite   = $_SERVER['REQUEST_URI'];
         $besucher->dLetzteAktivitaet = 'now()';

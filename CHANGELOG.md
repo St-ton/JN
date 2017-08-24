@@ -1,8 +1,38 @@
 # JTL-Shop Changelog
 
+## [4.06] - 2017-08-xx
+
+### Wichtige Änderungen
+
+#### Teilverschlüsselung wird nicht länger unterstützt
+JTL-Shop 4.06 unterstützt nicht länger die Option Teilverschlüsselung, also den automatischen Wechsel von http auf https z.B. beim Wechsel in den Warenkorb. 
+Ein Umstieg auf permanentes SSL ist generell empfehlenswert und sollte idealerweise bereits vor dem Update durchgeführt werden (Einstellung 192 im Shop-Backend).
+Sofern noch Teilverschlüsselung in den Einstellungen aktiv ist, wird beim Shop-Update permanentes SSL aktiviert. 
+
+#### Verkürzter Checkout mit 3 Schritten
+Der Bestellvorgang wurde von 5 auf nur noch 3 Schritte reduziert und benutzerfreundlicher umgestaltet. 
+Bei angepassten Templates oder individuellen Plugins sind unter Umständen Änderungen notwendig. 
+Nachfolgend sind die wichtigsten Änderungen aufgeführt: 
+ * `checkout/step1_proceed_as_guest.tpl` und `checkout/step2_delivery_address.tpl` sind als `@deprecated` markiert und werden nicht mehr verwendet
+ * `checkout/step4_payment_options.tpl` wurde grundlegend geändert
+ * `checkout/step1_edit_customer_address.tpl` ist neu und muss in Drittanbieter-Templates integriert werden, da sie vom Shop-Core verwendet wird
+ * Hinweise zu Template-Änderungen finden Sie [hier](http://docs.jtl-shop.de/de/latest/shop_templates/short_checkout.html)
+ * Hinweise für Plugin-Anpassungen finden Sie [hier](http://docs.jtl-shop.de/de/latest/shop_plugins/short_checkout.html)
+
+#### Lieferzeiten-Berechnung nicht mehr nach günstigster Versandart sondern nach niedrigster Versandart-Sortiernummer
+Bis JTL-Shop 4.05 zählte für die Lieferzeitberechnung immer die günstigste Versandart, mit welcher der Artikel geliefert werden kann. 
+Ab 4.05 wird die Versandart mit der niedrigsten Sortiernummer für die Lieferzeitberechnung priorisiert. 
+Die Sortiernummer lässt sich im Shop-Backend an der Versandart editieren. 
+Dies ermöglicht Händlern, nun selbst zu steuern, welche Versandarten für die Lieferzeit-Berechnung priorisiert werden. 
+
+#### Weitere Anpassungen
+Das PayPal-Plugin wird in Version 1.08 ausgeliefert und beinhaltet nun auch die Zahlart Ratenzahlung powered by PayPal. 
+Bitte beachten Sie auch das aktualisierte Handbuch zum PayPal-Plugin: http://jtl-url.de/paypaldocs
+
+
 ## [4.05.3]
 
-## Bugfixes
+### Bugfixes
 
 * Beim Export von Exportformaten wird der neue Dateiinhalt an alte Datei angehängt (#1217)
 * Bei News-Kategoriebeschreibung kann kein HTML verwendet werden (#1197)

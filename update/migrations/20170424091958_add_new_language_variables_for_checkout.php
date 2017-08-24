@@ -43,6 +43,8 @@ class Migration_20170424091958 extends Migration implements IMigration
         $this->setLocalization('eng', 'account data', 'editAddressData', 'Edit address data');
         $this->setLocalization('ger', 'checkout', 'additionalPackaging', 'Zusatzverpackungen');
         $this->setLocalization('eng', 'checkout', 'additionalPackaging', 'Additional packaging');
+        $this->setLocalization('ger', 'checkout', 'proceedNewCustomer', 'Als Neukunde fortfahren');
+        $this->setLocalization('eng', 'checkout', 'proceedNewCustomer', 'Proceed as new customer');
 
         $this->setLocalization('eng', 'global', 'paymentOptions', 'Payment options');
     }
@@ -57,6 +59,7 @@ class Migration_20170424091958 extends Migration implements IMigration
         $this->removeLocalization('alreadyCustomer');
         $this->removeLocalization('editAddressData');
         $this->removeLocalization('additionalPackaging');
+        $this->removeLocalization('proceedNewCustomer');
 
         $this->setLocalization('eng', 'global', 'paymentOptions', 'payment options');
     }

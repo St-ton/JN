@@ -19,12 +19,6 @@ Nachfolgend sind die wichtigsten Änderungen aufgeführt:
  * Hinweise zu Template-Änderungen finden Sie [hier](http://docs.jtl-shop.de/de/latest/shop_templates/short_checkout.html)
  * Hinweise für Plugin-Anpassungen finden Sie [hier](http://docs.jtl-shop.de/de/latest/shop_plugins/short_checkout.html)
 
-#### Lieferzeiten-Berechnung nicht mehr nach günstigster Versandart sondern nach niedrigster Versandart-Sortiernummer
-Bis JTL-Shop 4.05 zählte für die Lieferzeitberechnung immer die günstigste Versandart, mit welcher der Artikel geliefert werden kann. 
-Ab 4.05 wird die Versandart mit der niedrigsten Sortiernummer für die Lieferzeitberechnung priorisiert. 
-Die Sortiernummer lässt sich im Shop-Backend an der Versandart editieren. 
-Dies ermöglicht Händlern, nun selbst zu steuern, welche Versandarten für die Lieferzeit-Berechnung priorisiert werden. 
-
 #### Template-Kompatibilität zu JTL-Shop3-Tiny standardmäßig inaktiv
 Der Kompatibilitätsmodus für die Nutzung eines Tiny-basierten Templates in JTL-Shop 4 ist ab Version 4.06 standardmäßig inaktiv.
 Shops mit Evo oder kompatiblen Shop4-Templates benötigen diesen Modus nicht und profitieren mit einem leichten Performancegewinn von der Deaktivierung.   

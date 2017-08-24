@@ -25,6 +25,12 @@ Ab 4.05 wird die Versandart mit der niedrigsten Sortiernummer für die Lieferzei
 Die Sortiernummer lässt sich im Shop-Backend an der Versandart editieren. 
 Dies ermöglicht Händlern, nun selbst zu steuern, welche Versandarten für die Lieferzeit-Berechnung priorisiert werden. 
 
+#### Template-Kompatibilität zu JTL-Shop3-Tiny standardmäßig inaktiv
+Der Kompatibilitätsmodus für die Nutzung eines Tiny-basierten Templates in JTL-Shop 4 ist ab Version 4.06 standardmäßig inaktiv.
+Shops mit Evo oder kompatiblen Shop4-Templates benötigen diesen Modus nicht und profitieren mit einem leichten Performancegewinn von der Deaktivierung.   
+Wer den Kompatibilitätsmodus zum Betrieb seines Templates benötigt, kann diesen mit einer zusätzlichen Zeile in der config.JTL-Shop.ini.php 
+aktivieren: define('TEMPLATE_COMPATIBILITY', true);
+
 #### Weitere Anpassungen
 Das PayPal-Plugin wird in Version 1.08 ausgeliefert und beinhaltet nun auch die Zahlart Ratenzahlung powered by PayPal. 
 Bitte beachten Sie auch das aktualisierte Handbuch zum PayPal-Plugin: http://jtl-url.de/paypaldocs

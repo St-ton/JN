@@ -21,7 +21,7 @@ Nachfolgend sind die wichtigsten Änderungen aufgeführt:
 
 #### Lieferzeiten-Berechnung nicht mehr nach günstigster Versandart sondern nach niedrigster Versandart-Sortiernummer
 Bis JTL-Shop 4.05 zählte für die Lieferzeitberechnung immer die günstigste Versandart, mit welcher der Artikel geliefert werden kann. 
-Ab 4.05 wird die Versandart mit der niedrigsten Sortiernummer für die Lieferzeitberechnung priorisiert. 
+Ab Version 4.06 wird die Versandart mit der niedrigsten Sortiernummer für die Lieferzeitberechnung priorisiert. 
 Die Sortiernummer lässt sich im Shop-Backend an der Versandart editieren. 
 Dies ermöglicht Händlern, nun selbst zu steuern, welche Versandarten für die Lieferzeit-Berechnung priorisiert werden. 
 

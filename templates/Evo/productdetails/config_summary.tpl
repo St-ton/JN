@@ -11,7 +11,7 @@
                     {if $oKonfigitem->bAktiv && !$oKonfigitem->ignoreMultiplier()}
                         <tr>
                             <td class="no-wrap">{$oKonfigitem->fAnzahl} &times;</td>
-                            <td>{$oKonfigitem->getName()}</td>
+                            <td class="word-break">{$oKonfigitem->getName()}</td>
                             <td class="text-right no-wrap">{$oKonfigitem->getFullPriceLocalized(true, false, $oKonfig->fAnzahl)}</td>
                         </tr>
                     {elseif $oKonfigitem->bAktiv && $oKonfigitem->ignoreMultiplier()}
@@ -30,7 +30,7 @@
                         {if $oKonfigitem->bAktiv && $oKonfigitem->ignoreMultiplier()}
                             <tr>
                                 <td class="no-wrap">{$oKonfigitem->fAnzahl} &times;</td>
-                                <td>{$oKonfigitem->getName()}</td>
+                                <td class="word-break">{$oKonfigitem->getName()}</td>
                                 <td class="text-right">{$oKonfigitem->getFullPriceLocalized()}</td>
                             </tr>
                         {/if}

@@ -788,6 +788,8 @@
                     $('.price_label', $price).html(priceLabel);
                 }
             }
+
+            $.evo.trigger('updated.article.price', { price: price });
         },
 
         setStockInformation: function(cEstimatedDelivery, wrapper) {

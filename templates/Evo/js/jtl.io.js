@@ -31,6 +31,8 @@
         request: function (req, context, callback) {
             var that = this;
 
+            $.evo.trigger('load.io.request', { req: req });
+
             return $.ajax({
                 type: "POST",
                 dataType: "json",
@@ -47,6 +49,12 @@
                     if (typeof callback === 'function') {
                         callback(true, textStatus);
                     }
+                },
+                complete: function(jqXHR, textStatus) {
+                    $.evo.trigger('loaded.io.request', {
+                        req: req,
+                        status: textStatus
+                    });
                 }
             });
         },

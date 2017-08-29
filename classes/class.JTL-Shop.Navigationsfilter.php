@@ -610,39 +610,30 @@ class Navigationsfilter
     private function initAttributeFilters($values)
     {
         $maxAttributeFilters = (int)$this->getConfig()['navigationsfilter']['merkmalfilter_maxmerkmale'];
+        $filterCount         = 0;
+        $res                 = [];
+        $checked             = [];
         if (count($values) > 0) {
             $activeFilterIDs     = array_map('intval', $values);
             $maxAttributeFilters = max($maxAttributeFilters, count($activeFilterIDs));
-            $attributes          = Shop::DB()->query(
-                'SELECT tmerkmalwert.kMerkmal, tmerkmalwert.kMerkmalWert, tmerkmalsprache.cName,
-                    tmerkmal.nMehrfachauswahl, IF(tmerkmalwert.kMerkmalWert IN (' . implode(', ', $activeFilterIDs) . '), 1, 0) AS isActive 
-                    FROM tmerkmalwert
-                    JOIN tmerkmal 
-                        ON tmerkmal.kMerkmal = tmerkmalwert.kMerkmal
-                    JOIN tmerkmalsprache 
-                        ON tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal
-                    WHERE tmerkmalsprache.kSprache = ' . $this->languageID .
-                    ' ORDER BY tmerkmalwert.nSort',
-                2
-            );
+            $activeQueryPart     = 'IF(tmerkmalwert.kMerkmalWert IN (' . implode(', ', $activeFilterIDs) . '), 1, 0) AS isActive';
         } else {
             $activeFilterIDs = [];
-            $attributes      = Shop::DB()->query(
-                'SELECT tmerkmalwert.kMerkmal, tmerkmalwert.kMerkmalWert, 
-                    tmerkmal.nMehrfachauswahl, 0 AS isActive,
-                    tmerkmalsprache.cName 
-                    FROM tmerkmalwert
+            $activeQueryPart = '0 AS isActive';
+        }
+        $attributes = Shop::DB()->query(
+            'SELECT tmerkmalwert.kMerkmal, tmerkmalwert.kMerkmalWert, tmerkmalsprache.cName, 
+                    tmerkmal.nMehrfachauswahl, ' . $activeQueryPart .
+                    ' FROM tmerkmalwert
                     JOIN tmerkmal 
                         ON tmerkmal.kMerkmal = tmerkmalwert.kMerkmal
                     JOIN tmerkmalsprache 
                         ON tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal
                     WHERE tmerkmalsprache.kSprache = ' . $this->languageID .
-                    ' ORDER BY tmerkmalwert.nSort',
-                2
-            );
-        }
-        $res     = [];
-        $checked = [];
+            ' ORDER BY tmerkmalwert.nSort',
+            2
+        );
+
         foreach ($attributes as $i => $attribute) {
             $attribute->isActive = (bool)$attribute->isActive;
             $attribute->kMerkmal = (int)$attribute->kMerkmal;
@@ -656,17 +647,14 @@ class Navigationsfilter
                 $res[$attribute->kMerkmal] = $attribute;
             } else {
                 if (!is_array($res[$attribute->kMerkmal]->kMerkmalWert)) {
-                    if ($res[$attribute->kMerkmal]->isActive) {
-                        $res[$attribute->kMerkmal]->kMerkmalWert = [$res[$attribute->kMerkmal]->kMerkmalWert];
-                    } else {
-                        $res[$attribute->kMerkmal]->kMerkmalWert = [];
-                    }
+                    $res[$attribute->kMerkmal]->kMerkmalWert = $res[$attribute->kMerkmal]->isActive
+                        ? [$res[$attribute->kMerkmal]->kMerkmalWert]
+                        : [];
                 }
                 $res[$attribute->kMerkmal]->kMerkmalWert[] = $attribute->kMerkmalWert;
                 $res[$attribute->kMerkmal]->isActive       = $res[$attribute->kMerkmal]->isActive || $attribute->isActive;
             }
         }
-        $filterCount = 0;
         foreach ($res as $attribute) {
             if ($attribute->isActive) {
                 $filter                           = $this->addActiveFilter(
@@ -676,8 +664,7 @@ class Navigationsfilter
                 $this->advancedAttributeFilters[] = $filter;
                 $this->filters[]                  = $filter;
             } else {
-                $filter = new FilterItemAttributeAdvanced($this);
-                $filter->setFrontendName($attribute->cName);
+                $filter = (new FilterItemAttributeAdvanced($this))->setFrontendName($attribute->cName);
                 $filter->kMerkmal = $attribute->kMerkmal;
                 $this->registerFilter($filter);
             }

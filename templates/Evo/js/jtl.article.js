@@ -789,7 +789,7 @@
                 }
             }
 
-            $.evo.trigger('updated.article.price', { price: price });
+            $.evo.trigger('changed.article.price', { price: price });
         },
 
         setStockInformation: function(cEstimatedDelivery, wrapper) {

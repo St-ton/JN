@@ -186,6 +186,14 @@ class Navigationsfilter
     private $advancedAttributeFilters = [];
 
     /**
+     * temp. workaround
+     * @todo: remove usages
+     *
+     * @var bool
+     */
+    private $attributeFiltersAreInitialized = false;
+
+    /**
      * @var array
      * @todo: fix working with arrays
      * @see https://stackoverflow.com/questions/13421661/getting-indirect-modification-of-overloaded-property-has-no-effect-notice
@@ -484,9 +492,9 @@ class Navigationsfilter
             $this->attributeValue = (new FilterBaseAttribute($this))->init($params['kMerkmalWert']);
             $this->baseState      = $this->attributeValue;
         }
-//        if (count($params['MerkmalFilter_arr']) > 0) {
-        $this->initAttributeFilters($params['MerkmalFilter_arr']);
-//        }
+        if (count($params['MerkmalFilter_arr']) > 0) {
+            $this->initAttributeFilters($params['MerkmalFilter_arr']);
+        }
         if ($params['kTag'] > 0) {
             $this->tag->init($params['kTag']);
             $this->baseState = $this->tag;
@@ -623,24 +631,24 @@ class Navigationsfilter
         }
         $attributes = Shop::DB()->query(
             'SELECT tmerkmalwert.kMerkmal, tmerkmalwert.kMerkmalWert, tmerkmalsprache.cName, 
-                    tmerkmal.nMehrfachauswahl, ' . $activeQueryPart .
-                    ' FROM tmerkmalwert
-                    JOIN tmerkmal 
-                        ON tmerkmal.kMerkmal = tmerkmalwert.kMerkmal
-                    JOIN tmerkmalsprache 
-                        ON tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal
-                    WHERE tmerkmalsprache.kSprache = ' . $this->languageID .
+                tmerkmal.nMehrfachauswahl, ' . $activeQueryPart .
+            ' FROM tmerkmalwert
+                JOIN tmerkmal 
+                    ON tmerkmal.kMerkmal = tmerkmalwert.kMerkmal
+                JOIN tmerkmalsprache 
+                    ON tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal
+                WHERE tmerkmalsprache.kSprache = ' . $this->languageID .
             ' ORDER BY tmerkmalwert.nSort',
             2
         );
-
         foreach ($attributes as $i => $attribute) {
             $attribute->isActive = (bool)$attribute->isActive;
             $attribute->kMerkmal = (int)$attribute->kMerkmal;
-            if ($attribute->isActive === false && in_array($attribute->kMerkmal, $checked, true)) {
+            if ($attribute->isActive === false && isset($checked[$attribute->kMerkmal])) {
                 continue;
             }
-            $checked[]                   = $attribute->kMerkmal;
+            $checked[$attribute->kMerkmal] = 1;
+
             $attribute->kMerkmalWert     = (int)$attribute->kMerkmalWert;
             $attribute->nMehrfachauswahl = (int)$attribute->nMehrfachauswahl;
             if (!isset($res[$attribute->kMerkmal])) {
@@ -672,6 +680,7 @@ class Navigationsfilter
                 break;
             }
         }
+        $this->attributeFiltersAreInitialized = true;
 
         return $this;
     }
@@ -1823,6 +1832,9 @@ class Navigationsfilter
         }
         $searchResults->MerkmalFilter = null;
         if (!isset($searchResults->MerkmalFilter)) {
+            if (!$this->attributeFiltersAreInitialized) {
+                $this->initAttributeFilters($this->params['MerkmalFilter_arr']);
+            }
             $searchResults->MerkmalFilter = [];
             $attributeFilters             = array_filter(
                 $this->filters,

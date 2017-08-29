@@ -81,7 +81,7 @@
         <div class="col-xs-12 col-md-6">
             <div class="form-group float-label-control{if !empty($fehlendeAngaben.firmazusatz)} has-error{/if}"{if $Einstellungen.kunden.kundenregistrierung_abfragen_firmazusatz === 'Y'} required{/if}>
                 <label for="{$prefix}-{$name}-firmext" class="control-label">{lang key="firmext" section="account data"}</label>
-                <input type="text" name="{$prefix}[{$name}][firmazusatz]" value="{if isset($Lieferadresse->cZusatz)}{$Lieferadresse->cZusatz}{/if}" id="{$prefix}-{$name}-firm" class="form-control" placeholder="{lang key="firmext" section="account data"}"{if $Einstellungen.kunden.kundenregistrierung_abfragen_firmazusatz === 'Y'} required{/if}>
+                <input type="text" name="{$prefix}[{$name}][firmazusatz]" value="{if isset($Lieferadresse->cZusatz)}{$Lieferadresse->cZusatz}{/if}" id="{$prefix}-{$name}-firmext" class="form-control" placeholder="{lang key="firmext" section="account data"}"{if $Einstellungen.kunden.kundenregistrierung_abfragen_firmazusatz === 'Y'} required{/if}>
                 {if !empty($fehlendeAngaben.firmazusatz)}
                     <div class="alert alert-danger">{lang key="fillOut" section="global"}</div>
                 {/if}

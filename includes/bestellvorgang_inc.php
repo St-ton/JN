@@ -623,7 +623,7 @@ function gibStepLieferadresse()
  */
 function gibStepZahlung()
 {
-    global $step;
+    global $step, $Einstellungen;
     /** @var array('Warenkorb' => Warenkorb) $_SESSION */
     $conf          = Shop::getSettings([CONF_TRUSTEDSHOPS]);
     $oTrustedShops = new stdClass();
@@ -714,6 +714,7 @@ function gibStepZahlung()
         }
 
         Shop::Smarty()->assign('Zahlungsarten', $oZahlungsart_arr)
+            ->assign('Einstellungen', $Einstellungen)
             ->assign('Versandarten', $oVersandart_arr)
             ->assign('Verpackungsarten', $oVerpackung_arr)
             ->assign('AktiveVersandart', $aktiveVersandart)
@@ -1872,7 +1873,7 @@ function versandartKorrekt($kVersandart, $aFormValues = 0)
                 WHERE cLaender LIKE '%" . $cISO . "%'
                     AND cNurAbhaengigeVersandart = '" . $cNurAbhaengigeVersandart . "'
                     AND (
-                            cVersandklassen = '-1' OR 
+                            cVersandklassen = '-1' OR
                             cVersandklassen RLIKE '^([0-9 -]* )?" . $versandklassen . " '
                         )
                     AND kVersandart = " . $kVersandart, 1
@@ -2265,7 +2266,7 @@ function checkKundenFormularArray($data, $kundenaccount, $checkpass = 1)
 function checkKundenFormular($kundenaccount, $checkpass = 1)
 {
     $data = $_POST; // create a copy
-    
+
     return checkKundenFormularArray($data, $kundenaccount, $checkpass);
 }
 
@@ -2410,9 +2411,9 @@ function checkeKupon($Kupon)
     $alreadyUsedSQL = '';
     $bindings       = [];
     if (!empty($_SESSION['Kunde']->kKunde) && !empty($_SESSION['Kunde']->cMail)) {
-        $alreadyUsedSQL = "SELECT SUM(nVerwendungen) AS nVerwendungen 
-                              FROM tkuponkunde 
-                              WHERE (kKunde = :customer OR cMail = :mail) 
+        $alreadyUsedSQL = "SELECT SUM(nVerwendungen) AS nVerwendungen
+                              FROM tkuponkunde
+                              WHERE (kKunde = :customer OR cMail = :mail)
                                   AND kKupon = :coupon";
         $bindings       = [
             'customer' => (int)$_SESSION['Kunde']->kKunde,
@@ -2420,18 +2421,18 @@ function checkeKupon($Kupon)
             'coupon'   => (int)$Kupon->kKupon
         ];
     } elseif (!empty($_SESSION['Kunde']->cMail)) {
-        $alreadyUsedSQL = "SELECT SUM(nVerwendungen) AS nVerwendungen 
-                              FROM tkuponkunde 
-                              WHERE cMail = :mail 
+        $alreadyUsedSQL = "SELECT SUM(nVerwendungen) AS nVerwendungen
+                              FROM tkuponkunde
+                              WHERE cMail = :mail
                                   AND kKupon = :coupon";
         $bindings       = [
             'mail'   => $_SESSION['Kunde']->cMail,
             'coupon' => (int)$Kupon->kKupon
         ];
     } elseif (!empty($_SESSION['Kunde']->kKunde)) {
-        $alreadyUsedSQL = "SELECT SUM(nVerwendungen) AS nVerwendungen 
-                              FROM tkuponkunde 
-                              WHERE kKunde = :customer 
+        $alreadyUsedSQL = "SELECT SUM(nVerwendungen) AS nVerwendungen
+                              FROM tkuponkunde
+                              WHERE kKunde = :customer
                                   AND kKupon = :coupon";
         $bindings       = [
             'customer' => (int)$_SESSION['Kunde']->kKunde,
@@ -2889,8 +2890,8 @@ function getNonEditableCustomerFields()
     $oKundenattribute_arr = Shop::DB()->query(
         "SELECT ka.kKundenfeld
              FROM tkundenattribut AS ka
-             LEFT JOIN tkundenfeld AS kf 
-                ON ka.kKundenfeld = kf.kKundenfeld 
+             LEFT JOIN tkundenfeld AS kf
+                ON ka.kKundenfeld = kf.kKundenfeld
              WHERE kKunde = " . (int)$_SESSION['Kunde']->kKunde . "
              AND kf.nEditierbar = 0", 2
     );
@@ -3060,21 +3061,21 @@ function kuponMoeglich()
         "SELECT * FROM tkupon
             WHERE cAktiv = 'Y'
                 AND dGueltigAb <= now()
-                AND (dGueltigBis > now() 
+                AND (dGueltigBis > now()
                     OR dGueltigBis = '0000-00-00 00:00:00')
                 AND fMindestbestellwert <= " . $_SESSION['Warenkorb']->gibGesamtsummeWaren(true, false) . "
-                AND (cKuponTyp='versandkupon' 
+                AND (cKuponTyp='versandkupon'
                     OR cKuponTyp = 'standard')
-                AND (kKundengruppe = -1 
-                    OR kKundengruppe = 0 
+                AND (kKundengruppe = -1
+                    OR kKundengruppe = 0
                     OR kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . ")
-                AND (nVerwendungen = 0 
+                AND (nVerwendungen = 0
                     OR nVerwendungen > nVerwendungenBisher)
                 AND (cArtikel = '' $Artikel_qry)
-                AND (cHersteller IS NULL OR cHersteller = '' OR cHersteller = '-1' $Hersteller_qry) 
-                AND (cKategorien = '' 
+                AND (cHersteller IS NULL OR cHersteller = '' OR cHersteller = '-1' $Hersteller_qry)
+                AND (cKategorien = ''
                     OR cKategorien = '-1' $Kategorie_qry)
-                AND (cKunden = '' 
+                AND (cKunden = ''
                     OR cKunden = '-1' $Kunden_qry)", 1
     );
     if (!empty($kupons_mgl->kKupon)) {
@@ -3340,16 +3341,16 @@ function pruefeAjaxEinKlick()
         $oLetzteBestellung = Shop::DB()->query(
             "SELECT tbestellung.kBestellung, tbestellung.kLieferadresse, tbestellung.kZahlungsart, tbestellung.kVersandart
                 FROM tbestellung
-                JOIN tzahlungsart 
+                JOIN tzahlungsart
                     ON tzahlungsart.kZahlungsart = tbestellung.kZahlungsart
-                    AND (tzahlungsart.cKundengruppen IS NULL 
+                    AND (tzahlungsart.cKundengruppen IS NULL
                         OR tzahlungsart.cKundengruppen = ''
                         OR FIND_IN_SET('{$_SESSION['Kunde']->kKundengruppe}', REPLACE(tzahlungsart.cKundengruppen, ';', ',')) > 0)
-                JOIN tversandart 
+                JOIN tversandart
                     ON tversandart.kVersandart = tbestellung.kVersandart
-                    AND (tversandart.cKundengruppen = '-1' 
+                    AND (tversandart.cKundengruppen = '-1'
                         OR FIND_IN_SET('{$_SESSION['Kunde']->kKundengruppe}', REPLACE(tversandart.cKundengruppen, ';', ',')) > 0)
-                JOIN tversandartzahlungsart 
+                JOIN tversandartzahlungsart
                     ON tversandartzahlungsart.kVersandart = tversandart.kVersandart
                     AND tversandartzahlungsart.kZahlungsart = tzahlungsart.kZahlungsart
                 WHERE tbestellung.kKunde = {$_SESSION['Kunde']->kKunde}
@@ -3671,8 +3672,8 @@ function plausiLieferadresse($cPost_arr)
         $plz_x = Shop::DB()->executeQueryPrepared(
             "SELECT kVersandzuschlagPlz
                 FROM tversandzuschlagplz, tversandzuschlag
-                WHERE tversandzuschlag.kVersandart = :id 
-                    AND tversandzuschlag.kVersandzuschlag = tversandzuschlagplz.kVersandzuschlag 
+                WHERE tversandzuschlag.kVersandart = :id
+                    AND tversandzuschlag.kVersandzuschlag = tversandzuschlagplz.kVersandzuschlag
                     AND ((tversandzuschlagplz.cPLZAb <= :plz
                         AND tversandzuschlagplz.cPLZBis >= :plz)
                         OR tversandzuschlagplz.cPLZ = :plz)",

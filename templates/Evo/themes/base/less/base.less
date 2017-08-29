@@ -1098,7 +1098,7 @@ aside {
     }
 }
 
-#updatingStockInfo{
+.updatingStockInfo{
     position: absolute;
     display: none;
 }
@@ -1363,7 +1363,7 @@ table.matrix tbody > tr > td {
 
 #navbar-filter .dropdown-menu span.value,
 .box .nav-list span.value {
-    padding-right: 45px;
+    padding-right: 35px;
 }
 
 @media (max-width: 480px) {
@@ -1828,10 +1828,6 @@ fieldset {
         border: none;
     }
 
-    .basket-final {
-        border: 1px solid @brand-primary !important;
-    }
-
     .order-items, .order-items a.btn {
         font-size: 85%;
     }
@@ -1846,6 +1842,13 @@ fieldset {
 .navbar-form.navbar-left.filter-select {
     margin-left: 5px;
     margin-right: 10px;
+}
+
+.basket-final {
+    border: none;
+    .panel {
+        border-color: @brand-primary !important;
+    }
 }
 
 /* product variations */
@@ -3066,6 +3069,9 @@ header.fixed-navbar {
                 left: @arrow-sep;
                 z-index: 3;
             }
+            > a, .nav-badge {
+                padding-left: @arrow-size !important;
+            }
         }
         &:not(:last-child) {
             &:after {
@@ -3188,16 +3194,9 @@ header.fixed-navbar {
 }
 
 .summary {
-    h4 {
-        margin-bottom: 10px;
-    }
-
-    .dl-horizontal dt {
-        width: 40px !important;
-    }
-
-    .dl-horizontal dd {
-        margin-left: 50px !important;
+    td[colspan="3"] {
+        padding-top: 1em;
+        border-top: 3px solid @table-border-color;
     }
 }
 
@@ -3324,9 +3323,15 @@ header.fixed-navbar {
     overflow: hidden;
 }
 
-.pagination-wrapper .pagination {
-    margin-top: 0;
-    margin-bottom: 0;
+.pagination-wrapper {
+    .pagination {
+        margin-top: 0;
+        margin-bottom: 0;
+    }
+
+    span {
+        margin-right: 10px;
+    }
 }
 
 .review-reply {
@@ -3335,4 +3340,15 @@ header.fixed-navbar {
 
 #cart-form .upload-error .form-control.file-caption.kv-fileinput-caption {
     border: 2px solid @alert-danger-border;
+}
+#product-configuration-sidebar #quantity-grp {
+    &.input-group {
+        display: block;
+    }
+    > input {
+        margin-left: -1px;
+    }
+    .submit.btn {
+        width: 100%;
+    }
 }

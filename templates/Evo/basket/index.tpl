@@ -30,13 +30,13 @@
     {/if}
 
     {if !empty($invalidCouponCode)}
-        <p class="alert alert-danger">{lang key="invalidCouponCode" section="checkout"}</p>
+        <p class="alert alert-danger">{lang key='invalidCouponCode' section='checkout'}</p>
     {elseif !empty($cKuponfehler)}
-        <p class="alert alert-danger">{lang key="couponErr$cKuponfehler" section="global"}</p>
+        <p class="alert alert-danger">{lang key="couponErr$cKuponfehler"}</p>
     {/if}
     {if $nVersandfreiKuponGueltig}
         <div class="alert alert-success">
-            {lang key="couponSucc1" section="global"}
+            {lang key='couponSucc1'}
             {foreach name=lieferlaender from=$cVersandfreiKuponLieferlaender_arr item=cVersandfreiKuponLieferlaender}
                 {$cVersandfreiKuponLieferlaender}{if !$smarty.foreach.lieferlaender.last}, {/if}
             {/foreach}
@@ -65,9 +65,9 @@
                                     {block name="basket-coupon"}
                                         <div class="form-group{if !empty($invalidCouponCode) || !empty($cKuponfehler)} has-error{/if}">
                                             <p class="input-group">
-                                                <input class="form-control" type="text" name="Kuponcode" id="couponCode" maxlength="32" placeholder="{lang key="couponCode" section="account data"}" />
+                                                <input aria-label="{lang key='couponCode' section='account data'}" class="form-control" type="text" name="Kuponcode" id="couponCode" maxlength="32" placeholder="{lang key='couponCode' section='account data'}" />
                                                 <span class="input-group-btn">
-                                                    <input class="btn btn-default" type="submit" value="{lang key="useCoupon" section="checkout"}" />
+                                                    <input class="btn btn-default" type="submit" value="{lang key='useCoupon' section='checkout'}" />
                                                 </span>
                                             </p>
                                         </div>
@@ -76,7 +76,7 @@
                             </div>
                         {/if}
                         <div class="proceed col-xs-12{if $showCoupon} col-sm-6 col-lg-8{/if}">
-                            <a href="{get_static_route id='bestellvorgang.php'}?wk=1" class="submit btn btn-primary btn-lg pull-right">{lang key="nextStepCheckout" section="checkout"}</a>
+                            <a href="{get_static_route id='bestellvorgang.php'}?wk=1" class="submit btn btn-primary btn-lg pull-right">{lang key='nextStepCheckout' section='checkout'}</a>
                         </div>
                     </div>
                 {/block}
@@ -92,7 +92,7 @@
             {if $oArtikelGeschenk_arr|@count > 0}
                 {block name="basket-freegift"}
                     <div id="freegift" class="panel panel-info">
-                        <div class="panel-heading"><div class="panel-title">{block name="basket-freegift-title"}{lang key="freeGiftFromOrderValueBasket" section="global"}{/block}</div></div>
+                        <div class="panel-heading"><div class="panel-title">{block name="basket-freegift-title"}{lang key='freeGiftFromOrderValueBasket'}{/block}</div></div>
                         <div class="panel-body">
                             {block name="basket-freegift-body"}
                                 <form method="post" name="freegift" action="{get_static_route id='warenkorb.php'}">
@@ -103,7 +103,7 @@
                                                 <label class="thumbnail" for="gift{$oArtikelGeschenk->kArtikel}">
                                                     <img src="{$oArtikelGeschenk->Bilder[0]->cPfadKlein}" class="image" />
                                                     <div class="caption">
-                                                        <p class="small text-muted">{lang key="freeGiftFrom1" section="global"} {$oArtikelGeschenk->cBestellwert} {lang key="freeGiftFrom2" section="global"}</p>
+                                                        <p class="small text-muted">{lang key='freeGiftFrom1'} {$oArtikelGeschenk->cBestellwert} {lang key='freeGiftFrom2'}</p>
                                                         <p>{$oArtikelGeschenk->cName}</p>
                                                         <input name="gratisgeschenk" type="radio" value="{$oArtikelGeschenk->kArtikel}" id="gift{$oArtikelGeschenk->kArtikel}" />
                                                     </div>
@@ -113,7 +113,7 @@
                                     </div>{* /row *}
                                     <div class="text-center">
                                         <input type="hidden" name="gratis_geschenk" value="1" />
-                                        <input name="gratishinzufuegen" type="submit" value="{lang key="addToCart" section="global"}" class="submit btn btn-primary" />
+                                        <input name="gratishinzufuegen" type="submit" value="{lang key='addToCart'}" class="submit btn btn-primary" />
                                     </div>
                                 </form>
                             {/block}
@@ -124,7 +124,7 @@
 
             {if !empty($xselling->Kauf) && count($xselling->Kauf->Artikel) > 0}
                 {block name="basket-xsell"}
-                    {lang key="basketCustomerWhoBoughtXBoughtAlsoY" section="global" assign="panelTitle"}
+                    {lang key='basketCustomerWhoBoughtXBoughtAlsoY' section='global' assign='panelTitle'}
                     {include file='snippets/product_slider.tpl' productlist=$xselling->Kauf->Artikel title=$panelTitle}
                 {/block}
             {/if}

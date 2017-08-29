@@ -207,6 +207,7 @@ class MediaImage implements IMedia
     public function handle($request)
     {
         try {
+            $request  = '/' . ltrim($request, '/');
             $mediaReq = $this->create($request);
 
             $imgNames = Shop::DB()->executeQueryPrepared(

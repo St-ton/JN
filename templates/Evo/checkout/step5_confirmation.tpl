@@ -22,7 +22,7 @@
                 </div>
                 <div class="panel-body">
                     <div class="row">
-                        <div class="col-xxs-12 col-xs-6" id="billing-address">
+                        <div class="col-xs-6" id="billing-address">
                             {block name="checkout-confirmation-billing-address"}
                                 <p class="title">
                                     <strong>{lang key="billingAdress" section="account data"}</strong>
@@ -35,7 +35,7 @@
                                 </a>
                             {/block}
                         </div>
-                        <div class="col-xxs-12 col-xs-6" id="shipping-address">
+                        <div class="col-xs-6" id="shipping-address">
                             {block name="checkout-confirmation-shipping-address"}
                                 <p class="title">
                                     <strong>{lang key="shippingAdress" section="account data"}</strong>

@@ -134,7 +134,7 @@
                 type="text" 
                 name="firmazusatz" 
                 value="{if isset($cPost_var['firmazusatz'])}{$cPost_var['firmazusatz']}{elseif isset($Kunde->cZusatz)}{$Kunde->cZusatz}{/if}"
-                id="firm" 
+                id="firmext"
                 class="form-control" 
                 placeholder="{lang key="firmext" section="account data"}"
                 {if $Einstellungen.kunden.kundenregistrierung_abfragen_firmazusatz === 'Y'} required{/if} 

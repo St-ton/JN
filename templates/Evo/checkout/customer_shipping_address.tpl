@@ -172,7 +172,7 @@
                 name="{$prefix}[{$name}][plz]"
                 value="{if isset($Lieferadresse->cPLZ)}{$Lieferadresse->cPLZ}{/if}"
                 id="{$prefix}-{$name}-postcode"
-                class="plz_input form-control"
+                class="postcode_input form-control"
                 placeholder="{lang key="plz" section="account data"}"
                 data-toggle="postcode" data-city="#{$prefix}-{$name}-city" data-country="#{$prefix}-{$name}-country"
                 required>

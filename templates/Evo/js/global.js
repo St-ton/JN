@@ -331,55 +331,29 @@ $(document).ready(function () {
         datumTokenizer: Bloodhound.tokenizers.obj.whitespace('keyword'),
         queryTokenizer: Bloodhound.tokenizers.whitespace,
         remote:         {
-            url:      'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $('#country').val() + '", "' + $('#plz').val() + '"]}',
+            url:      'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $(this).closest('fieldset').find('.country_input').val() + '", "' + $(this).closest('fieldset').find('.postcode_input').val() + '"]}',
             wildcard: '%QUERY'
         },
         dataType: "json"
     });
-
-    $('#neukunde #plz, #new_customer #plz, #form-register #plz').change(function(){
-        citySuggestion.remote.url = 'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $('#country').val() + '", "' + $('#plz').val() + '"]}';
+    $('.city_input').focusin(function () {
+        citySuggestion.remote.url = 'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $(this).closest('fieldset').find('.country_input').val() + '", "' + $(this).closest('fieldset').find('.postcode_input').val() + '"]}';
     });
-    $('#neukunde #country, #new_customer #country, #form-register #country').change(function(){
-        citySuggestion.remote.url = 'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $('#country').val() + '", "' + $('#plz').val() + '"]}';
+    $('.postcode_input').change(function () {
+        citySuggestion.remote.url = 'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $(this).closest('fieldset').find('.country_input').val() + '", "' + $(this).val() + '"]}';
+    });
+    $('.country_input').change(function () {
+        citySuggestion.remote.url = 'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $(this).val() + '", "' + $(this).closest('fieldset').find('.postcode_input').val() + '"]}';
     });
 
-    $('#neukunde #city, #new_customer #city, #form-register #city').typeahead(
+    $('.city_input').typeahead(
         {
             hint: true,
-            minLength: 1
+            minLength: 0
         },
         {
-            name:       'cities',
-            source:     citySuggestion
-        }
-    );
-
-    var citySuggestionRegShip = new Bloodhound({
-        datumTokenizer: Bloodhound.tokenizers.obj.whitespace('keyword'),
-        queryTokenizer: Bloodhound.tokenizers.whitespace,
-        remote:         {
-            url:      'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $('#register-shipping_address-country').val() + '", "' + $('#register-shipping_address-postcode').val() + '"]}',
-            wildcard: '%QUERY'
-        },
-        dataType: "json"
-    });
-
-    $('#form-register #register-shipping_address-postcode, #neukunde #register-shipping_address-postcode').change(function(){
-        citySuggestionRegShip.remote.url = 'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $('#register-shipping_address-country').val() + '", "' + $('#register-shipping_address-postcode').val() + '"]}';
-    });
-    $('#form-register #register-shipping_address-country, #neukunde #register-shipping_address-country').change(function(){
-        citySuggestionRegShip.remote.url = 'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $('#register-shipping_address-country').val() + '", "' + $('#register-shipping_address-postcode').val() + '"]}';
-    });
-
-    $('#form-register #register-shipping_address-city, #neukunde #register-shipping_address-city').typeahead(
-        {
-            hint: true,
-            minLength: 1
-        },
-        {
-            name:       'cities',
-            source:     citySuggestionRegShip
+            name:   'cities',
+            source: citySuggestion
         }
     );
 

@@ -71,7 +71,7 @@ function suggestions($keyword)
 function getCitiesByZip($cityQuery, $country, $zip)
 {
     $results    = [];
-    if (!empty($country) && !empty($zip) && strlen($cityQuery) >= 1) {
+    if (!empty($country) && !empty($zip)) {
         $cityQuery = "%" . StringHandler::filterXSS($cityQuery) . "%";
         $country   = StringHandler::filterXSS($country);
         $zip       = StringHandler::filterXSS($zip);

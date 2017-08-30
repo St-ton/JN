@@ -263,13 +263,13 @@
     <div class="row">
         <div class="col-xs-12 col-md-3">
             <div class="form-group float-label-control{if isset($fehlendeAngaben.plz)} has-error{/if} required">
-                <label class="control-label" for="plz">{lang key="plz" section="account data"}</label>
+                <label class="control-label" for="postcode">{lang key="plz" section="account data"}</label>
                 <input 
                 type="text" 
                 name="plz" 
                 value="{if isset($cPost_var['plz'])}{$cPost_var['plz']}{elseif isset($Kunde->cPLZ)}{$Kunde->cPLZ}{/if}"
-                id="plz" 
-                class="plz_input form-control" 
+                id="postcode"
+                class="postcode_input form-control"
                 placeholder="{lang key="plz" section="account data"}"
                 required
                 >

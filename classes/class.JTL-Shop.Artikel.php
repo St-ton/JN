@@ -6100,14 +6100,14 @@ class Artikel
             return prepareMeta(
                 $this->AttributeAssoc[ART_ATTRIBUT_METATITLE] . $cGlobalMetaTitle,
                 $cPreis,
-                isset($conf['metaangaben']['global_meta_maxlaenge_title']) ? $conf['metaangaben']['global_meta_maxlaenge_title'] : 0
+                (int)$conf['metaangaben']['global_meta_maxlaenge_title']
             );
         }
         if (!empty($this->FunktionsAttribute[ART_ATTRIBUT_METATITLE])) {
             return prepareMeta(
                 $this->FunktionsAttribute[ART_ATTRIBUT_METATITLE] . $cGlobalMetaTitle,
                 $cPreis,
-                isset($conf['metaangaben']['global_meta_maxlaenge_title']) ? $conf['metaangaben']['global_meta_maxlaenge_title'] : 0
+                (int)$conf['metaangaben']['global_meta_maxlaenge_title']
             );
         }
         if (!empty($this->cName)) {
@@ -6123,7 +6123,7 @@ class Artikel
         return prepareMeta(
             $cTitle,
             $cPreis,
-            isset($conf['metaangaben']['global_meta_maxlaenge_title']) ? $conf['metaangaben']['global_meta_maxlaenge_title'] : 0
+            (int)$conf['metaangaben']['global_meta_maxlaenge_title']
         );
     }
 

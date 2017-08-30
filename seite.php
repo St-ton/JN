@@ -206,7 +206,7 @@ if (empty($cMetaTitle) || empty($cMetaDescription) || empty($cMetaKeywords)) {
     }
 }
 
-$cMetaTitle = prepareMeta($cMetaTitle, null, isset($Einstellungen['metaangaben']['global_meta_maxlaenge_title']) ? $Einstellungen['metaangaben']['global_meta_maxlaenge_title'] : 0);
+$cMetaTitle = prepareMeta($cMetaTitle, null, (int)$Einstellungen['metaangaben']['global_meta_maxlaenge_title']);
 
 $smarty->assign('meta_title', $cMetaTitle)
        ->assign('meta_description', $cMetaDescription)

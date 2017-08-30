@@ -384,7 +384,7 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
         executeHook(HOOK_NEWS_PAGE_NEWSUEBERSICHT);
     }
 
-    $cMetaTitle = prepareMeta($cMetaTitle, null, isset($Einstellungen['metaangaben']['global_meta_maxlaenge_title']) ? $Einstellungen['metaangaben']['global_meta_maxlaenge_title'] : 0);
+    $cMetaTitle = prepareMeta($cMetaTitle, null, (int)$Einstellungen['metaangaben']['global_meta_maxlaenge_title']);
 
     $smarty->assign('Einstellungen', $Einstellungen)
            ->assign('hinweis', $cHinweis)

@@ -1242,7 +1242,7 @@ function brandImage($im, $brand, $oBranding)
     $transparency = $oBranding->oBrandingEinstellung->dTransparenz;
     $brandingSize = $oBranding->oBrandingEinstellung->dGroesse;
     $randabstand  = $oBranding->oBrandingEinstellung->dRandabstand / 100;
-    $branding     = imageload_alpha($brandingImage);
+    $branding     = imageload_alpha($brandingImage, 0, 0, true);
 
     if ($im && $branding) {
         $bildInfo           = getimagesize($brandingImage);
@@ -1258,7 +1258,7 @@ function brandImage($im, $brand, $oBranding)
             $brandingNeueBreite = round(($bildBreite * $brandingSize) / 100.0);
             $brandingNeueHoehe  = round(($brandingNeueBreite / $brandingBreite) * $brandingHoehe);
 
-            $image_branding = imageload_alpha($brandingImage, $brandingNeueBreite, $brandingNeueHoehe);
+            $image_branding = imageload_alpha($brandingImage, $brandingNeueBreite, $brandingNeueHoehe, true);
         }
         //position bestimmen
         $brandingPosX = 0;
@@ -1515,11 +1515,12 @@ function imageload_container($img, $nWidth, $nHeight, $nContainerWidth, $nContai
 
 /**
  * @param string $img
- * @param int    $nWidth
- * @param int    $nHeight
+ * @param int $nWidth
+ * @param int $nHeight
+ * @param bool $branding
  * @return resource
  */
-function imageload_alpha($img, $nWidth = 0, $nHeight = 0)
+function imageload_alpha($img, $nWidth = 0, $nHeight = 0, $branding = false)
 {
     $imgInfo = getimagesize($img);
     switch ($imgInfo[2]) {
@@ -1555,7 +1556,11 @@ function imageload_alpha($img, $nWidth = 0, $nHeight = 0)
     if ($format === 'jpg') {
         $rgb   = html2rgb($GLOBALS['Einstellungen']['bilder']['bilder_hintergrundfarbe']);
         $color = imagecolorallocate($newImg, $rgb[0], $rgb[1], $rgb[2]);
-        imagealphablending($newImg, true);
+        if ($branding) {
+            imagealphablending($newImg, false);
+        } else {
+            imagealphablending($newImg, true);
+        }
     } else {
         $color = imagecolorallocatealpha($newImg, 255, 255, 255, 127);
         imagealphablending($newImg, false);

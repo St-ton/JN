@@ -12,13 +12,12 @@
 {/if}
 <div class="row">
     <div class="col-xs-12">
-        <form method="post" action="{get_static_route id='bestellvorgang.php'}" class="form">
-            {$jtl_token}
-            <fieldset id="checkout-shipping-payment">
-                {*{$Versandarten|@var_dump}*}
-                {if !isset($Versandarten)}
-                    <div class="alert alert-danger">{lang key="noShippingMethodsAvailable" section="checkout"}</div>
-                {else}
+        {if !isset($Versandarten)}
+            <div class="alert alert-danger">{lang key="noShippingMethodsAvailable" section="checkout"}</div>
+        {else}
+            <form method="post" action="{get_static_route id='bestellvorgang.php'}" class="form">
+                {$jtl_token}
+                <fieldset id="checkout-shipping-payment">
                     <legend>{lang section='global' key='shippingOptions'}</legend>
                     <div class="row bottom15 form-group">
                         {foreach name=shipment from=$Versandarten item=versandart}
@@ -75,47 +74,47 @@
                         </div>
                         {/foreach}
                     </div>
-                {/if}
-            </fieldset>
-            <fieldset>
-                {if isset($Verpackungsarten) && $Verpackungsarten|@count > 0}
-                    <legend>{lang section='checkout' key='additionalPackaging'}</legend>
-                    <div class="row bottom15 form-group">
-                        {foreach name=zusatzverpackungen from=$Verpackungsarten item=oVerpackung}
-                        <div id="packaging_{$oVerpackung->kVerpackung}" class="col-xs-12">
-                            <div class="checkbox">
-                                <label for="pac{$oVerpackung->kVerpackung}" class="btn-block">
-                                    <input name="kVerpackung[]" type="checkbox" class="radio-checkbox" value="{$oVerpackung->kVerpackung}" id="pac{$oVerpackung->kVerpackung}" {if isset($oVerpackung->bWarenkorbAktiv) && $oVerpackung->bWarenkorbAktiv === true || (isset($AktiveVerpackung[$oVerpackung->kVerpackung]) && $AktiveVerpackung[$oVerpackung->kVerpackung] === 1)}checked{/if}/>
-                                    <span class="control-label label-default">
-                                        <span class="content">
-                                            <span class="title">{$oVerpackung->cName}</span>
+                </fieldset>
+                <fieldset>
+                    {if isset($Verpackungsarten) && $Verpackungsarten|@count > 0}
+                        <legend>{lang section='checkout' key='additionalPackaging'}</legend>
+                        <div class="row bottom15 form-group">
+                            {foreach name=zusatzverpackungen from=$Verpackungsarten item=oVerpackung}
+                            <div id="packaging_{$oVerpackung->kVerpackung}" class="col-xs-12">
+                                <div class="checkbox">
+                                    <label for="pac{$oVerpackung->kVerpackung}" class="btn-block">
+                                        <input name="kVerpackung[]" type="checkbox" class="radio-checkbox" value="{$oVerpackung->kVerpackung}" id="pac{$oVerpackung->kVerpackung}" {if isset($oVerpackung->bWarenkorbAktiv) && $oVerpackung->bWarenkorbAktiv === true || (isset($AktiveVerpackung[$oVerpackung->kVerpackung]) && $AktiveVerpackung[$oVerpackung->kVerpackung] === 1)}checked{/if}/>
+                                        <span class="control-label label-default">
+                                            <span class="content">
+                                                <span class="title">{$oVerpackung->cName}</span>
+                                            </span>
+                                            <span class="badge pull-right">
+                                                {if $oVerpackung->nKostenfrei == 1}{lang key="ExemptFromCharges" section="global"}{else}{$oVerpackung->fBruttoLocalized}{/if}
+                                            </span>
+                                            <span class="btn-block">
+                                                <small>{$oVerpackung->cBeschreibung}</small>
+                                            </span>
                                         </span>
-                                        <span class="badge pull-right">
-                                            {if $oVerpackung->nKostenfrei == 1}{lang key="ExemptFromCharges" section="global"}{else}{$oVerpackung->fBruttoLocalized}{/if}
-                                        </span>
-                                        <span class="btn-block">
-                                            <small>{$oVerpackung->cBeschreibung}</small>
-                                        </span>
-                                    </span>
-                                </label>
+                                    </label>
+                                </div>
                             </div>
+                            {/foreach}
                         </div>
-                        {/foreach}
-                    </div>
+                    {/if}
+                </fieldset>
+                <fieldset id="fieldset-payment">
+                    <legend>{lang section='global' key='paymentOptions'}</legend>
+                    {$step4_payment_content}
+                </fieldset>
+                {if isset($Versandarten)}
+                <div class="text-right">
+                    <input type="hidden" name="versandartwahl" value="1" />
+                    <input type="hidden" name="zahlungsartwahl" value="1" />
+                    <input type="submit" value="{lang key="continueOrder" section="account data"}" class="submit btn btn-lg submit-once btn-primary hidden" />
+                </div>
                 {/if}
-            </fieldset>
-            <fieldset id="fieldset-payment">
-                <legend>{lang section='global' key='paymentOptions'}</legend>
-                {$step4_payment_content}
-            </fieldset>
-            {if isset($Versandarten)}
-            <div class="text-right">
-                <input type="hidden" name="versandartwahl" value="1" />
-                <input type="hidden" name="zahlungsartwahl" value="1" />
-                <input type="submit" value="{lang key="continueOrder" section="account data"}" class="submit btn btn-lg submit-once btn-primary hidden" />
-            </div>
-            {/if}
-        </form>
+            </form>
+        {/if}
     </div>
 </div>
 {if isset($smarty.get.editZahlungsart)}

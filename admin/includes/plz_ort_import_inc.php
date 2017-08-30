@@ -85,7 +85,7 @@ function plzimportDoImport($target, array $sessData, $result)
             $read += strlen(implode(',', $data));
             $data  = fgetcsv($fHandle, 0, "\t");
 
-            if (isset($data[13]) && !in_array($data[13], [2, 6])) {
+            if (isset($data[13]) && in_array($data[13], [6, 8])) {
                 $plz_arr       = explode(',', $data[7]);
                 $oPLZOrt->cOrt = utf8_decode($data[3]);
 
@@ -116,7 +116,7 @@ function plzimportDoImport($target, array $sessData, $result)
                                     'params' => [$target, 'import', $sessData['step']]
                                 ]
                             )
-                        );
+                        ) . '&token=' . StringHandler::filterXSS($_REQUEST['jtl_token']);
                     header('Location: ' . $cRedirectUrl);
                     exit;
                 }
@@ -255,7 +255,7 @@ function plzimportDoDownload($target, array $sessData, $result)
                     'params' => [$target, 'import', $sessData['step']]
                 ]
             )
-        );
+        ) . '&token=' . StringHandler::filterXSS($_REQUEST['jtl_token']);
     header('Location: ' . $cRedirectUrl);
     exit;
 }
@@ -344,6 +344,30 @@ function plzimportActionDoImport($target = '', $part = '', $step = 0)
 }
 
 /**
+ * @param string $type
+ * @param string $message
+ * @return object
+ */
+function plzimportActionResetImport($type = 'success', $message = 'Import wurde abgebrochen!')
+{
+    session_write_close();
+
+    $step   = 100;
+    $result = (object)[
+        'type'    => StringHandler::filterXSS($type),
+        'message' => StringHandler::filterXSS($message),
+    ];
+
+    $sessData         = plzimportReadSession('Import');
+    $sessData['step'] = $step;
+
+    plzimportWriteSession('Import', $sessData);
+    plzimportCloseSession('Import');
+
+    return $result;
+}
+
+/**
  * @return object
  */
 function plzimportActionCallStatus()
@@ -366,7 +390,6 @@ function plzimportActionCallStatus()
 }
 
 /**
- * @param bool $return
  * @return object
  */
 function plzimportActionCheckStatus()

@@ -153,6 +153,6 @@
             {/foreach}
             </dl>
         </div>
-        <div id="updatingStockInfo" class="col-xs-12 text-center"><i class="fa fa-spinner fa-spin" title="{lang key="updatingStockInformation" section="productDetails"}"></i></div>
+        <div class="updatingStockInfo col-xs-12 text-center"><i class="fa fa-spinner fa-spin" title="{lang key="updatingStockInformation" section="productDetails"}"></i></div>
     </div>
 {/if}

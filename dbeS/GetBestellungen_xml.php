@@ -45,7 +45,27 @@ if (auth()) {
     if (is_array($xml_obj['bestellungen']['tbestellung'])) {
         $xml_obj['bestellungen attr']['anzahl'] = count($xml_obj['bestellungen']['tbestellung']);
         for ($i = 0; $i < $xml_obj['bestellungen attr']['anzahl']; $i++) {
-            $xml_obj['bestellungen']['tbestellung'][$i . ' attr']        = buildAttributes($xml_obj['bestellungen']['tbestellung'][$i]);
+            $xml_obj['bestellungen']['tbestellung'][$i . ' attr'] = buildAttributes($xml_obj['bestellungen']['tbestellung'][$i]);
+
+            $xml_obj['bestellungen']['tbestellung'][$i]['tkampagne'] = Shop::DB()->query(
+                "SELECT tkampagne.cName,
+                        tkampagne.cParameter cIdentifier,
+                        COALESCE(tkampagnevorgang.cParamWert, '') cWert
+                    FROM tkampagnevorgang
+                    INNER JOIN tkampagne ON tkampagne.kKampagne = tkampagnevorgang.kKampagne
+                    INNER JOIN tkampagnedef ON tkampagnedef.kKampagneDef = tkampagnevorgang.kKampagneDef
+                    WHERE tkampagnedef.cKey = 'kBestellung'
+                        AND tkampagnevorgang.kKey = " . (int)$xml_obj['bestellungen']['tbestellung'][$i . ' attr']['kBestellung'] . "
+                    ORDER BY tkampagnevorgang.kKampagneDef DESC LIMIT 1", 8
+            );
+
+            $xml_obj['bestellungen']['tbestellung'][$i]['ttrackinginfo'] = Shop::DB()->query(
+                "SELECT cUserAgent, cReferer
+                    FROM tbesucher
+                    WHERE kBestellung = " . (int)$xml_obj['bestellungen']['tbestellung'][$i . ' attr']['kBestellung'] . "
+                    LIMIT 1", 8
+            );
+
             $xml_obj['bestellungen']['tbestellung'][$i]['twarenkorbpos'] = Shop::DB()->query(
                 "SELECT *
                     FROM twarenkorbpos
@@ -144,30 +164,6 @@ if (auth()) {
             if (count($xml_obj['bestellungen']['tbestellung'][$i]['tbestellattribut']) === 0) {
                 unset($xml_obj['bestellungen']['tbestellung'][$i]['tbestellattribut']);
             }
-
-            // Sicherstellen, dass fWaehrungsFaktor als letztes Element im XML steht
-            $tmpWaehrungsfaktor = $xml_obj['bestellungen']['tbestellung'][$i]['fWaehrungsFaktor'];
-            unset($xml_obj['bestellungen']['tbestellung'][$i]['fWaehrungsFaktor']);
-            $xml_obj['bestellungen']['tbestellung'][$i]['fWaehrungsFaktor'] = $tmpWaehrungsfaktor;
-
-            $xml_obj['bestellungen']['tbestellung'][$i]['tkampagne'] = Shop::DB()->query(
-                "SELECT tkampagne.cName,
-                        tkampagne.cParameter cIdentifier,
-                        COALESCE(tkampagnevorgang.cParamWert, '') cWert
-                    FROM tkampagnevorgang
-                    INNER JOIN tkampagne ON tkampagne.kKampagne = tkampagnevorgang.kKampagne
-                    INNER JOIN tkampagnedef ON tkampagnedef.kKampagneDef = tkampagnevorgang.kKampagneDef
-                    WHERE tkampagnedef.cKey = 'kBestellung'
-                        AND tkampagnevorgang.kKey = " . (int)$xml_obj['bestellungen']['tbestellung'][$i . ' attr']['kBestellung'] . "
-                    ORDER BY tkampagnevorgang.kKampagneDef DESC LIMIT 1", 8
-            );
-
-            $xml_obj['bestellungen']['tbestellung'][$i]['ttrackinginfo'] = Shop::DB()->query(
-                "SELECT cUserAgent, cReferer
-                    FROM tbesucher
-                    WHERE kBestellung = " . (int)$xml_obj['bestellungen']['tbestellung'][$i . ' attr']['kBestellung'] . "
-                    LIMIT 1", 8
-            );
         }
     }
 }

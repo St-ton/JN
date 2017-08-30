@@ -398,7 +398,7 @@ class Kunde
                 'kKunde',
                 (int)$oUser->kKunde,
                 false,
-                '*, date_format(dGeburtstag, \'%d.%m.%Y\') AS dGeburtstag'
+                '*, date_format(dGeburtstag, \'%d.%m.%Y\') AS dGeburtstag_formatted'
             );
         } elseif ($verify === true) {
             //get customer by mail since new hash verification was successful
@@ -411,11 +411,12 @@ class Kunde
                 null,
                 null,
                 false,
-                '*, date_format(dGeburtstag, \'%d.%m.%Y\') AS dGeburtstag'
+                '*, date_format(dGeburtstag, \'%d.%m.%Y\') AS dGeburtstag_formatted'
             );
             //reset unsuccessful login attempts
             if ($oUser->nLoginversuche > 0) {
                 $upd = new stdClass();
+
                 $upd->nLoginversuche = 0;
                 Shop::DB()->update('tkunde', 'kKunde', (int)$oUser->kKunde, $upd);
             }
@@ -766,9 +767,9 @@ class Kunde
             $cPasswortKlartext = $this->generatePassword(12);
             $this->cPasswort   = $this->generatePasswordHash($cPasswortKlartext);
 
-            $_upd                     = new stdClass();
-            $_upd->cPasswort          = $this->cPasswort;
-            $_upd->nLoginversuche     = 0;
+            $_upd                 = new stdClass();
+            $_upd->cPasswort      = $this->cPasswort;
+            $_upd->nLoginversuche = 0;
             Shop::DB()->update('tkunde', 'kKunde', (int)$this->kKunde, $_upd);
 
             $obj                 = new stdClass();
@@ -855,9 +856,9 @@ class Kunde
                 //check if the link is not expired (=24 hours valid)
                 $createdAt = new DateTime();
                 $createdAt->setTimestamp((int)$timeStamp);
-                $now  = new DateTime();
-                $diff = $now->diff($createdAt);
-                $secs = $diff->format('%a') * (60 * 60 * 24); //total days
+                $now   = new DateTime();
+                $diff  = $now->diff($createdAt);
+                $secs  = $diff->format('%a') * (60 * 60 * 24); //total days
                 $secs += (int)$diff->format('%h') * (60 * 60); //hours
                 $secs += (int)$diff->format('%i') * 60; //minutes
                 $secs += (int)$diff->format('%s'); //seconds

@@ -57,16 +57,18 @@
                                             </a>
                                         </li>
                                         {if $oSubKategorie->Unterkategorien|@count > 0}
-                                            <ul class="list-unstyled">
-                                                {foreach name=SubSubkategorien from=$oSubKategorie->Unterkategorien item=oSubSubKategorie}
-                                                    <li>
-                                                        <a href="{$oSubSubKategorie->cURLFull}"
-                                                           title="{$oKategorie->cName}">
-                                                            {$oSubSubKategorie->cKurzbezeichnung}
-                                                        </a>
-                                                    </li>
-                                                {/foreach}
-                                            </ul>
+                                            <li>
+                                                <ul class="list-unstyled sub-categories">
+                                                    {foreach name=SubSubkategorien from=$oSubKategorie->Unterkategorien item=oSubSubKategorie}
+                                                        <li>
+                                                            <a href="{$oSubSubKategorie->cURLFull}"
+                                                               title="{$oKategorie->cName}">
+                                                                {$oSubSubKategorie->cKurzbezeichnung}
+                                                            </a>
+                                                        </li>
+                                                    {/foreach}
+                                                </ul>
+                                            </li>
                                         {/if}
                                     {/foreach}
                                 </ul>

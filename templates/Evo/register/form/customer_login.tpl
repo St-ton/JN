@@ -4,13 +4,13 @@
  *}
 
 <div class="form-group float-label-control required">
-    <label for="email" class="control-label">{lang key="emailadress" section="global"}</label>
-    <input type="text" name="email" id="email" class="form-control" placeholder="{lang key="emailadress" section="global"}*" required />
+    <label for="email" class="control-label">{lang key="email" section="account data"}</label>
+    <input type="text" name="email" id="email" class="form-control" placeholder="{lang key="email" section="account data"}" required />
 </div>
-
 <div class="form-group float-label-control required">
     <label for="password" class="control-label">{lang key="password" section="account data"}</label>
     <input type="password" name="passwort" id="password" class="form-control" placeholder="{lang key="password" section="account data"}" required />
+    <a class="small" href="{get_static_route id='pass.php'}"><span class="fa fa-question-circle"></span> {lang key="forgotPassword" section="global"}</a>
 </div>
 
 {if isset($showLoginCaptcha) && $showLoginCaptcha}
@@ -18,10 +18,6 @@
         <div class="g-recaptcha" data-sitekey="{$Einstellungen.global.global_google_recaptcha_public}"></div>
     </div>
 {/if}
-
-<p>
-    <a  href="{get_static_route id='pass.php'}"><span class="fa fa-question-circle"></span> {lang key="forgotPassword" section="global"}</a>
-</p>
 
 <div class="form-group">
     <input type="hidden" name="login" value="1" />
@@ -32,5 +28,5 @@
         <input type="hidden" name="r" value="{$oRedirect->nRedirect}" />
         <input type="hidden" name="cURL" value="{$oRedirect->cURL}" />
     {/if}
-    <input type="submit" value="{lang key="login" section="checkout"}" class="btn btn-primary btn-block submit" />
+    <input type="submit" value="{lang key="login" section="checkout"}" class="btn btn-primary {if !isset($withSidebar) || $withSidebar === 0}btn-block{/if} btn-lg submit" />
 </div>

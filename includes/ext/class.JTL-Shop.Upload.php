@@ -75,7 +75,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
                         if (!empty($oPosition->WarenkorbPosEigenschaftArr)) {
                             foreach ($oPosition->WarenkorbPosEigenschaftArr as $eigenschaft) {
                                 $eigenschaftArr[$eigenschaft->kEigenschaft] =
-                                    (!empty(array_values($eigenschaft->cEigenschaftWertName)[0]))
+                                    (is_array($eigenschaft->cEigenschaftWertName)
+                                        && !empty(array_values($eigenschaft->cEigenschaftWertName)[0]))
                                         ? array_values($eigenschaft->cEigenschaftWertName)[0]
                                         : $eigenschaft->cEigenschaftWertName;
                             }

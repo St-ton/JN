@@ -191,13 +191,15 @@
         },
 
         imagebox: function(wrapper) {
-            var $wrapper = (typeof wrapper === 'undefined' || wrapper.length === 0) ? $('#result-wrapper') : $(wrapper);
+            var $wrapper = (typeof wrapper === 'undefined' || wrapper.length === 0) ? $('#result-wrapper') : $(wrapper),
+                square = $('.image-box', $wrapper).first('img').height() + 'px',
+                padding = $(window).height() / 2;
 
             $('.image-box', $wrapper).each(function(i, item) {
                 var box = $(this),
                     img = box.find('img'),
-                    src = img.data('src'),
-                    square = box.width() + 'px';
+                    src = img.data('src');
+
                 img.css('max-height', square);
                 box.css('max-height', square)
                     .addClass('loading');
@@ -208,7 +210,6 @@
                     //        .addClass('none');
                     //    box.parent().find('.overlay-img').remove();
                     //} else {
-                        var  padding = $(window).height() / 2;
                         $(img).lazy(padding, function() {
                             $(this).load(function() {
                                 img.css('max-height', square);

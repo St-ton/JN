@@ -449,7 +449,7 @@ class Navigationsfilter
         $this->priceRangeFilter = new FilterItemPriceRange($this);
 
         $this->tagFilterCompat = new FilterItemTag($this);
-//        $this->attributeFilterCollection = new FilterItemAttributeAdvanced($this);
+        $this->attributeFilterCollection = new FilterItemAttribute($this);
         $this->searchFilterCompat = new FilterSearch($this);
 
         $this->search = new FilterSearch($this);
@@ -460,7 +460,7 @@ class Navigationsfilter
 
         $this->filters[] = $this->categoryFilter;
         $this->filters[] = $this->manufacturerFilter;
-//        $this->filters[] = $this->attributeFilterCollection;
+        $this->filters[] = $this->attributeFilterCollection;
         $this->filters[] = $this->searchSpecialFilter;
         $this->filters[] = $this->priceRangeFilter;
         $this->filters[] = $this->ratingFilter;
@@ -617,6 +617,23 @@ class Navigationsfilter
      */
     private function initAttributeFilters($values)
     {
+        $attributes = Shop::DB()->query('
+            SELECT tmerkmalwert.kMerkmal, tmerkmalwert.kMerkmalWert, tmerkmal.nMehrfachauswahl
+                FROM tmerkmalwert
+                JOIN tmerkmal 
+                    ON tmerkmal.kMerkmal = tmerkmalwert.kMerkmal
+                WHERE kMerkmalWert IN (' . implode(',', array_map('intval', $values)) . ')',
+            2
+        );
+        foreach ($attributes as $attribute) {
+            $attribute->kMerkmal         = (int)$attribute->kMerkmal;
+            $attribute->kMerkmalWert     = (int)$attribute->kMerkmalWert;
+            $attribute->nMehrfachauswahl = (int)$attribute->nMehrfachauswahl;
+            $this->attributeFilter[]     = $this->addActiveFilter(new FilterItemAttribute($this), $attribute);
+        }
+
+        return $this;
+
         $maxAttributeFilters = (int)$this->getConfig()['navigationsfilter']['merkmalfilter_maxmerkmale'];
         $filterCount         = 0;
         $res                 = [];
@@ -913,6 +930,7 @@ class Navigationsfilter
      */
     public function getAttributeFilters()
     {
+        return $this->attributeFilterCollection;
         return array_filter(
             $this->filters,
             function ($e) {
@@ -930,6 +948,7 @@ class Navigationsfilter
      */
     public function getAttributeFilter($idx = null)
     {
+        return $idx === null ? $this->attributeFilter : $this->attributeFilter[$idx];
         return $idx === null ? $this->advancedAttributeFilters : $this->advancedAttributeFilters[$idx];
     }
 
@@ -2125,12 +2144,12 @@ class Navigationsfilter
         } elseif (isset($extraFilter->MerkmalFilter->kMerkmalWert)
             || isset($extraFilter->FilterLoesen->MerkmalWert)
         ) {
-            $filter = (new FilterItemAttributeAdvanced($this))->init(isset($extraFilter->MerkmalFilter->kMerkmalWert)
+            $filter = (new FilterItemAttribute($this))->init(isset($extraFilter->MerkmalFilter->kMerkmalWert)
                 ? $extraFilter->MerkmalFilter->kMerkmalWert
                 : $extraFilter->FilterLoesen->MerkmalWert
             );
         } elseif (isset($extraFilter->FilterLoesen->Merkmale)) {
-            $filter = (new FilterItemAttributeAdvanced($this))->init($extraFilter->FilterLoesen->Merkmale);
+            $filter = (new FilterItemAttribute($this))->init($extraFilter->FilterLoesen->Merkmale);
         } elseif (isset($extraFilter->PreisspannenFilter->fVon)
             || (isset($extraFilter->FilterLoesen->Preisspannen) && $extraFilter->FilterLoesen->Preisspannen === true)
         ) {
@@ -2401,7 +2420,7 @@ class Navigationsfilter
         $this->manufacturer->setUnsetFilterURL($this->URL->cAlleHersteller);
         $this->manufacturerFilter->setUnsetFilterURL($this->URL->cAlleHersteller);
 
-        $additionalFilter = (new FilterItemAttributeAdvanced($this))->setDoUnset(true);
+        $additionalFilter = (new FilterItemAttribute($this))->setDoUnset(true);
         $attributeFilters = array_filter(
             $this->activeFilters,
             function ($e) {

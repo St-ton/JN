@@ -298,17 +298,21 @@ class FilterItemAttribute extends FilterBaseAttribute
                     ->setOrigin(__CLASS__);
             }
             if (count($activeOrFilterIDs) > 0) {
+                $select        .= ', IF(tmerkmal.nMehrfachauswahl, tartikel.kArtikel, ssj2.kArtikel) AS kArtikel';
                 $state->joins[] = (new FilterJoin())
                     ->setComment('join active OR filter from FilterItemAttribute::getOptions()')
                     ->setType('LEFT JOIN')
-                    ->setTable('(SELECT kArtikel
+                    ->setTable('(SELECT DISTINCT kArtikel
                                     FROM tartikelmerkmal
                                         WHERE kMerkmalWert IN (' . implode(', ', $activeOrFilterIDs) . ' )
-                                    GROUP BY kArtikel
                                 ) AS ssj2')
                     ->setOn('tartikel.kArtikel = ssj2.kArtikel')
                     ->setOrigin(__CLASS__);
+            } else {
+                $select .= ', tartikel.kArtikel AS kArtikel';
             }
+        } else {
+            $select .= ', tartikel.kArtikel AS kArtikel';
         }
         $baseQry  = $this->naviFilter->getBaseQuery(
             [
@@ -331,7 +335,7 @@ class FilterItemAttribute extends FilterBaseAttribute
         );
         $qry      = "SELECT ssMerkmal.cSeo, ssMerkmal.kMerkmal, ssMerkmal.kMerkmalWert, ssMerkmal.cMMWBildPfad, 
             ssMerkmal.nMehrfachauswahl,
-            ssMerkmal.cWert, ssMerkmal.cName, ssMerkmal.cTyp, ssMerkmal.cMMBildPfad, COUNT(*) AS nAnzahl
+            ssMerkmal.cWert, ssMerkmal.cName, ssMerkmal.cTyp, ssMerkmal.cMMBildPfad, COUNT(DISTINCT ssMerkmal.kArtikel) AS nAnzahl
             FROM (" . $baseQry . ") AS ssMerkmal
             LEFT JOIN tseo 
                 ON tseo.kKey = ssMerkmal.kMerkmalWert
@@ -343,6 +347,7 @@ class FilterItemAttribute extends FilterBaseAttribute
         if (is_array($qryRes)) {
             $additionalFilter = new self($this->naviFilter);
             foreach ($qryRes as $i => $oMerkmalFilterDB) {
+                if ($oMerkmalFilterDB->nAnzahl < 1) continue;
                 $attributeValues               = new stdClass();
                 $attributeValues->kMerkmalWert = (int)$oMerkmalFilterDB->kMerkmalWert;
                 $attributeValues->cWert        = $oMerkmalFilterDB->cWert;

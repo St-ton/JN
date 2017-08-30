@@ -1741,7 +1741,7 @@ class Navigationsfilter
                                     /** @var IFilter $f */
                                     $val = $f->getValue();
 
-                                    return is_array($val) ? $val[0] : $val;
+                                    return is_array($val) ? implode(',', $val) : $val;
                                 }, $orFilters)
                             );
                             $table  = $orFilters[0]->getTableAlias();

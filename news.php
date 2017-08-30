@@ -27,7 +27,8 @@ $Einstellungen          = Shop::getSettings([
     CONF_GLOBAL,
     CONF_RSS,
     CONF_NEWS,
-    CONF_KONTAKTFORMULAR
+    CONF_KONTAKTFORMULAR,
+    CONF_METAANGABEN
 ]);
 $nAktuelleSeite         = (Shop::$kSeite !== null && Shop::$kSeite > 0) ? Shop::$kSeite : 1;
 $oNewsUebersicht_arr    = [];
@@ -357,7 +358,7 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
         }
         $cMetaTitle       = (strlen($cMetaDescription) < 1)
             ? Shop::Lang()->get('news', 'news') . ' ' .
-                Shop::Lang()->get('from', 'global') . ' ' . $conf['global']['global_shopname']
+                Shop::Lang()->get('from', 'global') . ' ' . $Einstellungen['global']['global_shopname']
             : $cMetaTitle;
         $cMetaDescription = (strlen($cMetaDescription) < 1)
             ? Shop::Lang()->get('newsMetaDesc', 'news')
@@ -382,6 +383,8 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
 
         executeHook(HOOK_NEWS_PAGE_NEWSUEBERSICHT);
     }
+
+    $cMetaTitle = prepareMeta($cMetaTitle, null, isset($Einstellungen['metaangaben']['global_meta_maxlaenge_title']) ? $Einstellungen['metaangaben']['global_meta_maxlaenge_title'] : 0);
 
     $smarty->assign('Einstellungen', $Einstellungen)
            ->assign('hinweis', $cHinweis)

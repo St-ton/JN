@@ -6,7 +6,7 @@
 {include file='checkout/inc_billing_address_form.tpl'}
 {if !$editRechnungsadresse}
     {if isset($checkout) && $Einstellungen.kaufabwicklung.bestellvorgang_unregistriert === 'Y'}
-        <div class="form-group checkbox">
+        <div class="form-group checkbox control-toggle">
             <input type="hidden" name="unreg_form" value="1">
             <label class="btn-block" for="checkout_create_account_unreg" data-toggle="collapse" data-target="#create_account_data">
                 <input id="checkout_create_account_unreg" class="radio-checkbox" type="checkbox" name="unreg_form" value="0" checked="checked" />

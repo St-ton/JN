@@ -17,7 +17,8 @@
         {else}
             <form method="post" action="{get_static_route id='bestellvorgang.php'}" class="form">
                 {$jtl_token}
-                <fieldset id="checkout-shipping-payment">
+                <div class="panel panel-wrap">
+                    <fieldset id="checkout-shipping-payment">
                     <legend>{lang section='global' key='shippingOptions'}</legend>
                     <div class="row bottom15 form-group">
                         {foreach name=shipment from=$Versandarten item=versandart}
@@ -75,7 +76,9 @@
                         {/foreach}
                     </div>
                 </fieldset>
-                <fieldset>
+                </div>
+                <div class="panel panel-wrap">
+                    <fieldset>
                     {if isset($Verpackungsarten) && $Verpackungsarten|@count > 0}
                         <legend>{lang section='checkout' key='additionalPackaging'}</legend>
                         <div class="row bottom15 form-group">
@@ -102,10 +105,13 @@
                         </div>
                     {/if}
                 </fieldset>
-                <fieldset id="fieldset-payment">
-                    <legend>{lang section='global' key='paymentOptions'}</legend>
-                    {$step4_payment_content}
-                </fieldset>
+                </div>
+                <div class="panel panel-wrap">
+                    <fieldset id="fieldset-payment">
+                        <legend>{lang section='global' key='paymentOptions'}</legend>
+                        {$step4_payment_content}
+                    </fieldset>
+                </div>
                 {if isset($Versandarten)}
                 <div class="text-right">
                     <input type="hidden" name="versandartwahl" value="1" />

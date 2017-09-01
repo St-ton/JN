@@ -21,32 +21,12 @@
  * @property $cSuche
  * @property $kSuchanfrage
  */
-class FilterExtra
+class FilterExtra extends AbstractFilter
 {
-    /**
-     * @var mixed
-     */
-    private $value;
-
-    /**
-     * @var int
-     */
-    private $type;
-
     /**
      * @var string
      */
     private $name;
-
-    /**
-     * @var string
-     */
-    public $cName;
-
-    /**
-     * @var string
-     */
-    private $className;
 
     /**
      * @var string
@@ -84,13 +64,6 @@ class FilterExtra
     public $nSortNr = 0;
 
     /**
-     * used to create FilterLoesenURLs
-     *
-     * @var bool
-     */
-    private $doUnset = false;
-
-    /**
      * if set to true, Navigationsfilter::getURL() will not return a SEO URL
      *
      * @var bool
@@ -113,25 +86,35 @@ class FilterExtra
     private $data = [];
 
     /**
-     * @var string
+     * @var bool
      */
-    private $frontendName = '';
+    protected $isActive = false;
 
     /**
-     * @return string
+     * FilterExtra constructor.
+     * @param null $naviFilter
      */
-    public function getFrontendName()
+    public function __construct($naviFilter = null)
     {
-        return $this->frontendName;
+        $this->isInitialized = true;
     }
 
     /**
-     * @param string $frontendName
-     * @return FilterExtra
+     * @return bool
      */
-    public function setFrontendName($frontendName)
+    public function isActive()
     {
-        $this->frontendName = $frontendName;
+        return $this->isActive;
+    }
+
+    /**
+     * @param $isActive
+     * @return $this
+     */
+    public function setIsActive($isActive)
+    {
+        $this->isActive = (bool)$isActive;
+        $this->nAktiv   = (int)$isActive;
 
         return $this;
     }
@@ -199,25 +182,6 @@ class FilterExtra
     /**
      * @return int
      */
-    public function getType()
-    {
-        return $this->type;
-    }
-
-    /**
-     * @param int $type
-     * @return $this
-     */
-    public function setType($type)
-    {
-        $this->type = (int)$type;
-
-        return $this;
-    }
-
-    /**
-     * @return int
-     */
     public function getParam()
     {
         return $this->param;
@@ -230,25 +194,6 @@ class FilterExtra
     public function setParam($param)
     {
         $this->param = $param;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getClassName()
-    {
-        return $this->className;
-    }
-
-    /**
-     * @param string $className
-     * @return $this
-     */
-    public function setClassName($className)
-    {
-        $this->className = $className;
 
         return $this;
     }
@@ -316,25 +261,6 @@ class FilterExtra
     /**
      * @return bool
      */
-    public function getDoUnset()
-    {
-        return $this->doUnset;
-    }
-
-    /**
-     * @param bool $doUnset
-     * @return $this
-     */
-    public function setDoUnset($doUnset)
-    {
-        $this->doUnset = $doUnset;
-
-        return $this;
-    }
-
-    /**
-     * @return bool
-     */
     public function getDisableSeoURLs()
     {
         return $this->disableSeoURLs;
@@ -352,11 +278,12 @@ class FilterExtra
     }
 
     /**
+     * @param null $mixed
      * @return array
      */
-    public function getOptions()
+    public function getOptions($mixed = null)
     {
-        return [$this];
+        return $this->options;
     }
 
     /**
@@ -389,5 +316,46 @@ class FilterExtra
     public function __isset($name)
     {
         return isset($this->data[$name]);
+    }
+
+    /**
+     * @param array $languages
+     * @return $this
+     */
+    public function setSeo($languages)
+    {
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTableName()
+    {
+        return '';
+    }
+
+    /**
+     * @return string
+     */
+    public function getPrimaryKeyRow()
+    {
+        return '';
+    }
+
+    /**
+     * @return string
+     */
+    public function getSQLJoin()
+    {
+        return '';
+    }
+
+    /**
+     * @return string
+     */
+    public function getSQLCondition()
+    {
+        return '';
     }
 }

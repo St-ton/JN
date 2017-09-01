@@ -158,7 +158,7 @@ abstract class AbstractFilter implements IFilter
     /**
      * @var string
      */
-    private $frontendName = '';
+    protected $frontendName = '';
 
     /**
      * list of filter options for AttributeFilters etc. that consist of multiple different filter options

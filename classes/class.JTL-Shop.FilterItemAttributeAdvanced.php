@@ -493,18 +493,10 @@ class FilterItemAttributeAdvanced extends FilterBaseAttribute
                     || $this->attributeValueIsActive($attributeValues->kMerkmalWert))
                     ? 1
                     : 0;
-
-//                if (strlen($oMerkmalFilterDB->cMMWBildPfad) > 0) {
-//                    $attributeValues->cBildpfadKlein  = PFAD_MERKMALWERTBILDER_KLEIN . $oMerkmalFilterDB->cMMWBildPfad;
-//                    $attributeValues->cBildpfadNormal = PFAD_MERKMALWERTBILDER_NORMAL . $oMerkmalFilterDB->cMMWBildPfad;
-//                } else {
-//                    $attributeValues->cBildpfadKlein = BILD_KEIN_MERKMALWERTBILD_VORHANDEN;
-//                    $attributeValues->cBildpfadGross = BILD_KEIN_MERKMALWERTBILD_VORHANDEN;
-//                }
                 // baue URL
                 $attributeValues->cURL = $this->naviFilter->getURL(
                     true,
-                    $additionalFilter->init((int)$oMerkmalFilterDB->kMerkmalWert)->setSeo($this->getAvailableLanguages())
+                    $additionalFilter->setSeo($this->getAvailableLanguages())
                 );
                 // hack for #4815
                 $seoURL = $additionalFilter->getSeo($this->getLanguageID());
@@ -529,13 +521,6 @@ class FilterItemAttributeAdvanced extends FilterBaseAttribute
                 $attribute->isInitialized     = in_array($attribute->kMerkmalWert, $activeValues, true);
                 $attribute->oMerkmalWerte_arr = [];
                 $attribute->cWert             = htmlentities($oMerkmalFilterDB->cWert); // compat. with AWA
-//                if (strlen($oMerkmalFilterDB->cMMBildPfad) > 0) {
-//                    $attribute->cBildpfadKlein  = PFAD_MERKMALBILDER_KLEIN . $oMerkmalFilterDB->cMMBildPfad;
-//                    $attribute->cBildpfadNormal = PFAD_MERKMALBILDER_NORMAL . $oMerkmalFilterDB->cMMBildPfad;
-//                } else {
-//                    $attribute->cBildpfadKlein = BILD_KEIN_MERKMALBILD_VORHANDEN;
-//                    $attribute->cBildpfadGross = BILD_KEIN_MERKMALBILD_VORHANDEN;
-//                }
                 if (strlen($oMerkmalFilterDB->cMMWBildPfad) > 0) {
                     $attribute->cBildpfadKlein  = PFAD_MERKMALWERTBILDER_KLEIN . $oMerkmalFilterDB->cMMWBildPfad;
                     $attribute->cBildpfadNormal = PFAD_MERKMALWERTBILDER_NORMAL . $oMerkmalFilterDB->cMMWBildPfad;

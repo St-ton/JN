@@ -12,11 +12,5 @@
  * @global Plugin $oPlugin
  */
 
-// insert a author-object in each news-array-element
-//
-$oContenAuthor = ContentAuthor::getInstance();
-foreach ($args_arr['oNews_arr'] as $i => $oNews) {
-    $oNews->oAuthor = $oContenAuthor->getAuthor('NEWS', $oNews->kNews);
-}
-
-
+require_once $oPlugin->cAdminmenuPfad . 'include/backend_account_helper.php';
+BackendAccountHelper::getInstance($oPlugin)->getFrontend($args_arr['oNews_arr'], 'NEWS', 'kNews');

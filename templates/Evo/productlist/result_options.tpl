@@ -62,30 +62,46 @@
                     <div class="form-inline2">
                         {foreach $NaviFilter->getAvailableFilters() as $filter}
                             {if ($filter->getVisibility() === $filter::SHOW_ALWAYS || $filter->getVisibility() === $filter::SHOW_CONTENT)
-                            && (!$filter->isInitialized() || $filter->getType() === $filter::FILTER_TYPE_OR)}
-                                {block name='productlist-result-options-'|cat:$filter->getClassName()}
-                                    {if $filter->getInputType() === $filter::INPUT_SELECT}
-                                        {assign var=outerClass value='form-group dropdown filter-type-'|cat:$filter->getClassName()}
-                                        {assign var=innerClass value='dropdown-menu'}
-                                        {assign var=itemClass value=''}
-                                    {elseif $filter->getInputType() === $filter::INPUT_BUTTON}
-                                        {assign var=outerClass value='form-group no-dropdown filter-type-'|cat:$filter->getClassName()}
-                                        {assign var=innerClass value='no-dropdown'}
-                                        {assign var=itemClass value='btn btn-default'}
-                                    {else}
-                                        {assign var=outerClass value='form-group no-dropdown filter-type-'|cat:$filter->getClassName()}
-                                        {assign var=innerClass value='no-dropdown'}
-                                        {assign var=itemClass value=''}
-                                    {/if}
-                                    <div class="{$outerClass}">
+                                && (!$filter->isInitialized() || $filter->getType() === $filter::FILTER_TYPE_OR)}
+                                {if count($filter->getFilterCollection()) > 0}
+                                    {*classFilter1: {get_class($filter)}*}
+                                    {block name='productlist-result-options-'|cat:$filter->getClassName()}
+                                        {foreach $filter->getOptions() as $subFilter}
+                                            {*{if $subFilter->getVisibility() !== $filter::SHOW_NEVER}*}
+                                                <div class="form-group dropdown filter-type-{$filter->getClassName()}">
+                                                    <a href="#" class="btn btn-default dropdown-toggle form-control" data-toggle="dropdown" role="button" aria-expanded="false">
+                                                        {$subFilter->getFrontendName()|escape:'html'} <span class="caret"></span>
+                                                    </a>
+                                                    {include file='snippets/filter/genericFilterItem.tpl' class='dropdown-menu' filter=$subFilter sub=true}
+                                                </div>
+                                            {*{/if}*}
+                                        {/foreach}
+                                    {/block}
+                                {else}
+                                    {block name='productlist-result-options-'|cat:$filter->getClassName()}
                                         {if $filter->getInputType() === $filter::INPUT_SELECT}
-                                            <a href="#" class="btn btn-default dropdown-toggle form-control" data-toggle="dropdown" role="button" aria-expanded="false">
-                                                {$filter->getFrontendName()|escape:'html'} <span class="caret"></span>
-                                            </a>
+                                            {assign var=outerClass value='form-group dropdown filter-type-'|cat:$filter->getClassName()}
+                                            {assign var=innerClass value='dropdown-menu'}
+                                            {assign var=itemClass value=''}
+                                        {elseif $filter->getInputType() === $filter::INPUT_BUTTON}
+                                            {assign var=outerClass value='form-group no-dropdown filter-type-'|cat:$filter->getClassName()}
+                                            {assign var=innerClass value='no-dropdown'}
+                                            {assign var=itemClass value='btn btn-default'}
+                                        {else}
+                                            {assign var=outerClass value='form-group no-dropdown filter-type-'|cat:$filter->getClassName()}
+                                            {assign var=innerClass value='no-dropdown'}
+                                            {assign var=itemClass value=''}
                                         {/if}
-                                        {include file='snippets/filter/genericFilterItem.tpl' class=$innerClass itemClass=$itemClass filter=$filter}
-                                    </div>
-                                {/block}
+                                        <div class="{$outerClass}">
+                                            {if $filter->getInputType() === $filter::INPUT_SELECT}
+                                                <a href="#" class="btn btn-default dropdown-toggle form-control" data-toggle="dropdown" role="button" aria-expanded="false">
+                                                    {$filter->getFrontendName()|escape:'html'} <span class="caret"></span>
+                                                </a>
+                                            {/if}
+                                            {include file='snippets/filter/genericFilterItem.tpl' class=$innerClass itemClass=$itemClass filter=$filter}
+                                        </div>
+                                    {/block}
+                                {/if}
                             {/if}
                         {/foreach}
                     </div>{* /form-inline *}

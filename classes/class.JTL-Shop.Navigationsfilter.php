@@ -1849,35 +1849,38 @@ class Navigationsfilter
             }
             $searchResults->TagsJSON = Boxen::gibJSONString($oTags_arr);
         }
-        $searchResults->MerkmalFilter = null;
         if (!isset($searchResults->MerkmalFilter)) {
-            if (!$this->attributeFiltersAreInitialized) {
-                $this->initAttributeFilters($this->params['MerkmalFilter_arr']);
-            }
-            $searchResults->MerkmalFilter = [];
-            $attributeFilters             = array_filter(
-                $this->filters,
-                function ($e) {
-                    /** @var IFilter $e */
-                    return $e->getClassName() === 'FilterItemAttributeAdvanced';
-                }
-            );
-            foreach ($attributeFilters as $attributeFilter) {
-                $res = $attributeFilter->getOptions([
-                    'oAktuelleKategorie' => $currentCategory,
-                    'bForce'             => $selectionWizard === true && function_exists('starteAuswahlAssistent')
-                ]);
-                if (is_array($res)) {
-                    if (count($res) === 0) {
-                        $attributeFilter->hide();
-                        continue;
-                    }
-                    $searchResults->MerkmalFilter[] = $res[0];
-                } else {
-                    Shop::dbg($res, true, 'No array @options');
-                }
-            }
+            $searchResults->MerkmalFilter = $this->attributeFilterCollection->getOptions([
+                'oAktuelleKategorie' => $currentCategory,
+                'bForce'             => $selectionWizard === true && function_exists('starteAuswahlAssistent')
+            ]);
         }
+//        $searchResults->MerkmalFilter = null;
+//        if (!isset($searchResults->MerkmalFilter)) {
+//            $searchResults->MerkmalFilter = [];
+//            $attributeFilters             = array_filter(
+//                $this->filters,
+//                function ($e) {
+//                    /** @var IFilter $e */
+//                    return $e->getClassName() === 'FilterItemAttributeAdvanced';
+//                }
+//            );
+//            foreach ($attributeFilters as $attributeFilter) {
+//                $res = $attributeFilter->getOptions([
+//                    'oAktuelleKategorie' => $currentCategory,
+//                    'bForce'             => $selectionWizard === true && function_exists('starteAuswahlAssistent')
+//                ]);
+//                if (is_array($res)) {
+//                    if (count($res) === 0) {
+//                        $attributeFilter->hide();
+//                        continue;
+//                    }
+//                    $searchResults->MerkmalFilter[] = $res[0];
+//                } else {
+//                    Shop::dbg($res, true, 'No array @options');
+//                }
+//            }
+//        }
         // @todo: test. funktioniert bei mir auch ohne, bei marco nur mit diesen zeilen.
 //        foreach ($searchResults->MerkmalFilter as $i => $attributeFilter) {
 //            /** @var IFilter $attributeFilter */
@@ -1887,7 +1890,7 @@ class Navigationsfilter
 //        }
 //        echo '<br>setting collection!';
 //        Shop::dbg($searchResults->MerkmalFilter);
-//        $this->attributeFilterCollection->setFilterCollection($searchResults->MerkmalFilter);
+        $this->attributeFilterCollection->setFilterCollection($searchResults->MerkmalFilter);
 //        Shop::dbg($this->attributeFilterCollection, true);
 
         if (!isset($searchResults->Preisspanne)) {
@@ -2421,14 +2424,14 @@ class Navigationsfilter
         $this->manufacturerFilter->setUnsetFilterURL($this->URL->cAlleHersteller);
 
         $additionalFilter = (new FilterItemAttribute($this))->setDoUnset(true);
-        $attributeFilters = array_filter(
-            $this->activeFilters,
-            function ($e) {
-                /** @var IFilter $e */
-                return $e->getClassName() === 'FilterItemAttributeAdvanced' && $e->isInitialized();
-            }
-        );
-        foreach ($attributeFilters as $oMerkmal) {
+//        $attributeFilters = array_filter(
+//            $this->activeFilters,
+//            function ($e) {
+//                /** @var IFilter $e */
+//                return $e->getClassName() === 'FilterItemAttributeAdvanced' && $e->isInitialized();
+//            }
+//        );
+        foreach ($this->attributeFilter as $oMerkmal) {
             if ($oMerkmal->kMerkmal > 0) {
                 $this->URL->cAlleMerkmale[$oMerkmal->kMerkmal] = $this->getURL(
                     $bSeo,

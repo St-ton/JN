@@ -1524,4 +1524,13 @@ class Warenkorb
     {
         $oWarenkorb->cChecksumme = self::getChecksum($oWarenkorb);
     }
+
+    public function hasDigitalProducts()
+    {
+        if (class_exists('Download') && Download::hasDownloads($this)) {
+            return true;
+        }
+
+        return false;
+    }
 }

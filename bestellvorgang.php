@@ -138,7 +138,6 @@ if (isset($_GET['unreg']) && (int)$_GET['unreg'] === 1 &&
 ) {
     $step = 'edit_customer_address';
 }
-
 //autom. step ermitteln
 if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']) {
     $step = 'Lieferadresse';
@@ -178,7 +177,8 @@ if ($step !== 'accountwahl' &&
     (!isset($_SESSION['Kunde']->cPasswort) || strlen($_SESSION['Kunde']->cPasswort) === 0)
 ) {
     // Falls unregistrierter Kunde bereits im Checkout war und einen Downloadartikel hinzugefuegt hat
-    $step = 'accountwahl';
+    $cHinweis = Shop::Lang()->get('digitalProductsRegisterInfo', 'checkout');
+    $step     = 'accountwahl';
     unset($_SESSION['Kunde']);
 }
 //autom. step ermitteln

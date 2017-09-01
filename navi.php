@@ -141,6 +141,7 @@ if ($cParameter_arr['kHersteller'] > 0 ||
                 }
             }
             require_once PFAD_ROOT . 'seite.php';
+            exit;
         }
     }
     //Artikelanzahl pro Seite

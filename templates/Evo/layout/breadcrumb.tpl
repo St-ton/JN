@@ -1,4 +1,3 @@
-{block name="breadcrumb"}
 {strip}
 {has_boxes position='left' assign='hasLeftBox'}
 {if !empty($Brotnavi) && !$bExclusive && !$bAjaxRequest && $nSeitenTyp != 18 && $nSeitenTyp != 11 && $nSeitenTyp != 38}
@@ -53,4 +52,3 @@
     </div>
 {/if}
 {/strip}
-{/block}

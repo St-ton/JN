@@ -264,6 +264,7 @@
             }();
         </script>
     {/if}
+{/block}
 
 {block name="footer"}
     {include file='layout/footer.tpl'}

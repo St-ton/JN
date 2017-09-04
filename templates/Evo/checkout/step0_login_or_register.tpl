@@ -24,7 +24,7 @@
     <div id="existing-customer" class="col-xs-12 {if $withSidebar === 0}col-md-4{else}col-md-12{/if}">
         <form method="post" action="{get_static_route id='bestellvorgang.php'}" class="form" id="order_register_or_login">
             {block name="checkout-login"}
-                <div class="panel panel-wrap">
+                <div class="panel-wrap">
                     {block name="checkout-login-body"}
                     <fieldset>
                         {$jtl_token}
@@ -41,7 +41,7 @@
             {include file='register/inc_vcard_upload.tpl' id='bestellvorgang.php'}
             <form method="post" action="{get_static_route id='bestellvorgang.php'}" class="form" id="form-register">
                 {block name="checkout-register"}
-                    <div class="panel panel-wrap">
+                    <div class="panel-wrap">
                         {block name="checkout-register-body"}
                             {$jtl_token}
                             {include file='register/form/customer_account.tpl' checkout=1 step="formular"}

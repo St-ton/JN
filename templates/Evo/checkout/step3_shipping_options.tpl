@@ -17,7 +17,7 @@
         {else}
             <form method="post" action="{get_static_route id='bestellvorgang.php'}" class="form">
                 {$jtl_token}
-                <div class="panel panel-wrap">
+                <div class="panel-wrap">
                     <fieldset id="checkout-shipping-payment">
                     <legend>{lang section='global' key='shippingOptions'}</legend>
                     <div class="row bottom15 form-group">
@@ -77,7 +77,7 @@
                     </div>
                 </fieldset>
                 </div>
-                <div class="panel panel-wrap">
+                <div class="panel-wrap">
                     <fieldset>
                     {if isset($Verpackungsarten) && $Verpackungsarten|@count > 0}
                         <legend>{lang section='checkout' key='additionalPackaging'}</legend>
@@ -106,7 +106,7 @@
                     {/if}
                 </fieldset>
                 </div>
-                <div class="panel panel-wrap">
+                <div class="panel-wrap">
                     <fieldset id="fieldset-payment">
                         <legend>{lang section='global' key='paymentOptions'}</legend>
                         {$step4_payment_content}

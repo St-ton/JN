@@ -22,7 +22,7 @@
         </li>
         <li class="{if $step2_active}active col-xs-8 col-sm-6{else}col-xs-2 col-sm-3{/if} col-md-4">
             {if $bestellschritt[3] < 3 || $bestellschritt[4] < 3}
-                <a href="{get_static_route id='bestellvorgang.php'}?editZahlungsart=1" title="{lang section='account data' key='shippingAndPaymentOptions'}">
+                <a href="{get_static_route id='bestellvorgang.php'}?editVersandart=1" title="{lang section='account data' key='shippingAndPaymentOptions'}">
                     <i class="fa fa-truck hidden-md hidden-lg{if $step2_active} hidden{/if}"></i>
                     <span class="{if !$step2_active}hidden-sm hidden-xs{/if}">{lang section='account data' key='shippingAndPaymentOptions'}</span>
                 </a>

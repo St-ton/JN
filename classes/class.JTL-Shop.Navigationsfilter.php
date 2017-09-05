@@ -986,7 +986,7 @@ class Navigationsfilter
 //                return $e->getClassName() === 'FilterItemAttributeAdvanced';
 //            }
 //        );
-        return count($this->advancedAttributeFilters) > 0;
+        return count($this->attributeFilter) > 0;
     }
 
     /**

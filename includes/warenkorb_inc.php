@@ -403,7 +403,7 @@ function gibXSelling()
                         WHERE kArtikel IN ({$cArtikel_str})
                             AND kXSellArtikel NOT IN ({$cArtikel_str})
                         GROUP BY kXSellArtikel
-                        ORDER BY nAnzahl DESC, rand()
+                        ORDER BY nAnzahl DESC
                         LIMIT " . (int)$conf['kaufabwicklung']['warenkorb_xselling_anzahl'], 2
                 );
 

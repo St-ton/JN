@@ -410,7 +410,7 @@ class Boxen
                                 AND round(tbestseller.fAnzahl) >= " . $nAnzahl . "
                                 $this->cVaterSQL
                                 $this->lagerFilter
-                            ORDER BY fAnzahl DESC, rand() LIMIT " . $limit, 2
+                            ORDER BY fAnzahl DESC LIMIT " . $limit, 2
                     );
                     if (is_array($menge) && count($menge) > 0) {
                         $rndkeys = array_rand($menge, min($anzahl, count($menge)));

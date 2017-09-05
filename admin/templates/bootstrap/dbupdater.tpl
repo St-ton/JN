@@ -19,8 +19,8 @@
     {
         disableUpdateControl(true);
 
-        var url = $element.attr('href');
-        var download = !!$element.data('download');
+        var url = $element.attr('href'),
+            download = !!$element.data('download');
 
         pushEvent('Starte Sicherungskopie');
         ioManagedCall(
@@ -99,8 +99,7 @@
         ioManagedCall(adminPath, 'dbupdaterStatusTpl', [], function(result, error) {
             if (error) {
                 pushEvent(error.message);
-            }
-            else {
+            } else {
                 $('#update-status').html(result.tpl);
                 init_bindings();
             }
@@ -124,8 +123,8 @@
      */
     function migrate($element)
     {
-        var url = $element.attr('href');
-        var $ladda = Ladda.create($('#migrate-button')[0]);
+        var url = $element.attr('href'),
+            $ladda = Ladda.create($('#migrate-button')[0]);
 
         $ladda.start();
 
@@ -145,13 +144,13 @@
 
     function migration($element)
     {
-        var id = $element.data('id');
-        var url = $element.attr('href');
-        var dir = $element.data('dir');
+        var id = $element.data('id'),
+            url = $element.attr('href'),
+            dir = $element.data('dir'),
+            params = {dir: dir};
 
         $element.attr('disabled', true);
 
-        var params = { dir: dir };
         if (id !== undefined) {
             params = $.extend({}, { id: id }, params);
         }
@@ -221,15 +220,14 @@
 
     function disableUpdateControl(disable)
     {
-        var $container = $('#btn-update-group');
-        var $buttons = $('#btn-update-group a.btn');
-        var $ladda = Ladda.create($('#backup-button')[0]);
+        var $container = $('#btn-update-group'),
+            $buttons = $('#btn-update-group a.btn'),
+            $ladda = Ladda.create($('#backup-button')[0]);
 
         if (!!disable) {
             $ladda.start();
             $buttons.attr('disabled', true);
-        }
-        else {
+        } else {
             $ladda.stop();
             $buttons.attr('disabled', false);
         }

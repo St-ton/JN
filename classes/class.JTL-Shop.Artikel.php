@@ -1069,11 +1069,6 @@ class Artikel
         if (!$kKundengruppe) {
             $kKundengruppe = $_SESSION['Kundengruppe']->kKundengruppe;
         }
-        if (isset($_SESSION['Kundengruppe']->darfPreiseSehen) && !$_SESSION['Kundengruppe']->darfPreiseSehen) {
-            $this->Preise = null;
-
-            return $this;
-        }
         $kKunde       = isset($_SESSION['Kunde']) ? (int)$_SESSION['Kunde']->kKunde : 0;
         $this->Preise = new Preise($kKundengruppe, $oArtikelTMP->kArtikel, $kKunde, (int)$oArtikelTMP->kSteuerklasse);
         $this->Preise->localizePreise();
@@ -5115,12 +5110,6 @@ class Artikel
         }
         if ($this->fGewicht === null) {
             $this->fGewicht = 0;
-        }
-        if ($this->Preise === null) {
-            $this->Preise = new stdClass();
-        }
-        if ($this->Preise->fVKNetto === null) {
-            $this->Preise->fVKNetto = 0;
         }
         // cheapest shipping except shippings that offer cash payment
         $shipping = Shop::DB()->query(

@@ -106,20 +106,20 @@ function bearbeiteInsert($xml)
         foreach ($oArtikel_arr as $oArtikel) {
             //any new orders since last wawi-sync? see https://gitlab.jtl-software.de/jtlshop/jtl-shop/issues/304
             if (isset($oArtikel->fLagerbestand) && $oArtikel->fLagerbestand > 0) {
-                $delta = Shop::DB()->query("
-                  SELECT SUM(pos.nAnzahl) AS totalquantity 
-                    FROM tbestellung b 
-                    JOIN twarenkorbpos pos 
-                      ON pos.kWarenkorb = b.kWarenkorb 
-                      WHERE b.cAbgeholt = 'N' 
-                        AND pos.kArtikel = " . (int)$oArtikel->kArtikel, 1
+                $delta = Shop::DB()->query(
+                    "SELECT SUM(pos.nAnzahl) AS totalquantity
+                        FROM tbestellung b
+                        JOIN twarenkorbpos pos
+                        ON pos.kWarenkorb = b.kWarenkorb
+                        WHERE b.cAbgeholt = 'N'
+                            AND pos.kArtikel = " . (int)$oArtikel->kArtikel, 1
                 );
                 if ($delta->totalquantity > 0) {
                     //subtract delta from stocklevel
                     $oArtikel->fLagerbestand -= $delta->totalquantity;
                     if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
                         Jtllog::writeLog("Artikel-Quicksync: Lagerbestand von kArtikel {$oArtikel->kArtikel} wurde wegen nicht-abgeholter Bestellungen "
-                        . "um {$delta->totalquantity} auf {$oArtikel->fLagerbestand} reduziert." , JTLLOG_LEVEL_DEBUG, false, 'Artikel_xml');
+                        . "um {$delta->totalquantity} auf {$oArtikel->fLagerbestand} reduziert.", JTLLOG_LEVEL_DEBUG, false, 'Artikel_xml');
                     }
                 }
             }
@@ -127,8 +127,10 @@ function bearbeiteInsert($xml)
             if ($oArtikel->fLagerbestand < 0) {
                 $oArtikel->fLagerbestand = 0;
             }
+
             $upd                        = new stdClass();
             $upd->fLagerbestand         = $oArtikel->fLagerbestand;
+            $upd->fStandardpreisNetto   = $oArtikel->fStandardpreisNetto;
             $upd->dLetzteAktualisierung = 'now()';
             Shop::DB()->update('tartikel', 'kArtikel', (int)$oArtikel->kArtikel, $upd);
             executeHook(HOOK_QUICKSYNC_XML_BEARBEITEINSERT, ['oArtikel' => $oArtikel]);

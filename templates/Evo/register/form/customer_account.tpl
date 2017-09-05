@@ -5,16 +5,21 @@
 
 {include file='checkout/inc_billing_address_form.tpl'}
 {if !$editRechnungsadresse}
-    {if isset($checkout) && $Einstellungen.kaufabwicklung.bestellvorgang_unregistriert === 'Y'}
+    {if !$smarty.session.Warenkorb->hasDigitalProducts() && isset($checkout)
+        && $Einstellungen.kaufabwicklung.bestellvorgang_unregistriert === 'Y'}
         <div class="form-group checkbox">
             <input type="hidden" name="unreg_form" value="1">
-            <label class="btn-block" for="checkout_create_account_unreg" data-toggle="collapse" data-target="#create_account_data">
-                <input id="checkout_create_account_unreg" class="radio-checkbox" type="checkbox" name="unreg_form" value="0" checked="checked" />
+            <label class="btn-block" for="checkout_create_account_unreg" data-toggle="collapse"
+                data-target="#create_account_data">
+                <input id="checkout_create_account_unreg" class="radio-checkbox" type="checkbox" name="unreg_form"
+                    value="0" checked="checked" />
                 <span class="control-label label-default">
                     {lang key="createNewAccount" section="account data"}
                 </span>
             </label>
         </div>
+    {else}
+        <input type="hidden" name="unreg_form" value="0">
     {/if}
     <div id="create_account_data" class="row collapse in collapse-non-validate" aria-expanded="true">
         <div class="col-xs-6">

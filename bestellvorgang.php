@@ -182,7 +182,12 @@ if ($step !== 'accountwahl' &&
     $cPost_arr = StringHandler::filterXSS($_POST);
 
     Shop::Smarty()->assign('cKundenattribut_arr', getKundenattribute($cPost_arr))
+                  ->assign('kLieferadresse', $cPost_arr['kLieferadresse'])
                   ->assign('cPost_var', $cPost_arr);
+
+    if ((int)$cPost_arr['shipping_address'] === 1) {
+        Shop::Smarty()->assign('Lieferadresse', mappeLieferadresseKontaktdaten($cPost_arr['register']['shipping_address']));
+    }
 
     unset($_SESSION['Kunde']);
 }

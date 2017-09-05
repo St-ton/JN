@@ -1,3 +1,4 @@
+{block name='news-author'}
 <div itemprop="author" itemscope itemtype="https://schema.org/Person">
     <a itemprop="name" class="dropdown-toggle" href="#" title="{$oAuthor->cName}" data-toggle="modal" data-target="#author-{$oAuthor->kContentAuthor}">{$oAuthor->cName}</a>&nbsp;&ndash;&nbsp;
     <div class="modal fade" tabindex="-1" role="dialog" id="author-{$oAuthor->kContentAuthor}">
@@ -24,8 +25,11 @@
         </div>
     </div>
 </div>
+{/block}
+{block name='news-publisher'}
 <div itemprop="publisher" itemscope itemtype="http://schema.org/Organization" class="hidden">
     <span itemprop="name">{$meta_publisher}</span>
     <meta itemprop="url" content="{$ShopURL}">
     <meta itemprop="logo" content="{$ShopURL}/{$ShopLogoURL}">
 </div>
+{/block}

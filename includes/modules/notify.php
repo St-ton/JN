@@ -245,7 +245,7 @@ if ($moduleId !== null) {
         if (NO_MODE === 1) {
             writeLog(NO_PFAD, 'Payment Hash ' . $cPh . ' ergab ' . print_r($paymentMethod, true), 1);
         }
-
+        $paymentHash = Shop::DB()->escape(StringHandler::htmlentities(StringHandler::filterXSS($cPh)));
         $paymentMethod->handleNotification($order, $paymentHash, $_REQUEST);
         if ($paymentMethod->redirectOnPaymentSuccess() === true) {
             header('Location: ' . $paymentMethod->getReturnURL($order));

@@ -1,28 +1,38 @@
-{block name="content-closingtag"}
-</div>{* /content *}
-{/block}
-
-{has_boxes position='left' assign='hasLeftBox'}
-{if !$bExclusive && $hasLeftBox && isset($boxes) && !empty($boxes.left)}
-    {block name="footer-sidepanel-left"}
-    <aside id="sidepanel_left"
-           class="hidden-print col-xs-12 {if $nSeitenTyp === 2} col-md-4 col-md-pull-8 {/if} col-lg-3 col-lg-pull-9">
-        {block name="footer-sidepanel-left-content"}{$boxes.left}{/block}
-    </aside>
+{block name="content-all-closingtags"}
+    {block name="content-closingtag"}
+    </div>{* /content *}
     {/block}
-{/if}
-</div>{* /row *}
-
-{block name="content-container-block-closingtag"}
-</div>{* /container-block *}
+    
+    {block name="aside"}
+    {has_boxes position='left' assign='hasLeftBox'}
+    {if !$bExclusive && $hasLeftBox && isset($boxes) && !empty($boxes.left)}
+        {block name="footer-sidepanel-left"}
+        <aside id="sidepanel_left"
+               class="hidden-print col-xs-12 {if $nSeitenTyp === 2} col-md-4 col-md-pull-8 {/if} col-lg-3 col-lg-pull-9">
+            {block name="footer-sidepanel-left-content"}{$boxes.left}{/block}
+        </aside>
+        {/block}
+    {/if}
+    {/block}
+    
+    {block name="content-row-closingtag"}
+    </div>{* /row *}
+    {/block}
+    
+    {block name="content-container-block-closingtag"}
+    </div>{* /container-block *}
+    {/block}
+    
+    {block name="content-container-closingtag"}
+    </div>{* /container *}
+    {/block}
+    
+    {block name="content-wrapper-closingtag"}
+    </div>{* /content-wrapper*}
+    {/block}
 {/block}
 
-</div>{* /container *}
-
-{block name="content-wrapper-closingtag"}
-</div>{* /content-wrapper*}
-{/block}
-
+{block name="footer"}
 {if !$bExclusive}
     <div class="clearfix"></div>
     <footer id="footer"{if isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout === 'fluid'} class="container-block"{/if}>
@@ -96,7 +106,7 @@
                                     <a href="{if $Einstellungen.template.footer.facebook|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.facebook}" class="btn-social btn-facebook" title="Facebook" target="_blank" rel="noopener"><i class="fa fa-facebook-square"></i></a>
                                 {/if}
                                 {if !empty($Einstellungen.template.footer.twitter)}
-                                    <a href="{if $Einstellungen.template.footer.twitter|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.twitter}" class="btn-social btn-twitter" title="Twitter" target="_blank"> rel="noopener"<i class="fa fa-twitter-square"></i></a>
+                                    <a href="{if $Einstellungen.template.footer.twitter|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.twitter}" class="btn-social btn-twitter" title="Twitter" target="_blank" rel="noopener"><i class="fa fa-twitter-square"></i></a>
                                 {/if}
                                 {if !empty($Einstellungen.template.footer.googleplus)}
                                     <a href="{if $Einstellungen.template.footer.googleplus|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.googleplus}" class="btn-social btn-googleplus" title="Google+" target="_blank" rel="noopener"><i class="fa fa-google-plus-square"></i></a>
@@ -230,6 +240,8 @@
         </div>
     </footer>
 {/if}
+{/block}
+
 {block name="main-wrapper-closingtag"}
 </div> {* /mainwrapper *}
 {/block}

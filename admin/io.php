@@ -7,9 +7,13 @@
 
 require_once __DIR__ . '/includes/admininclude.php';
 
-if (!$oAccount->getIsAuthenticated() || !validateToken()) {
-    http_response_code(403);
-    exit();
+if (!$oAccount->getIsAuthenticated()) {
+    makeHTTPHeader(401);
+    exit;
+}
+if (!validateToken()) {
+    $io = IO::getInstance();
+    $io->respondAndExit(new IOError('CSRF validation failed.', 500));
 }
 
 $jsonApi             = JSONAPI::getInstance();

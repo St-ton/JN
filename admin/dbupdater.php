@@ -53,7 +53,7 @@ $buildStatus = function () use ($updater, $smarty, $template) {
         ->assign('currentTemplateFileVersion', $template->xmlData->cShopVersion)
         ->assign('currentTemplateDatabaseVersion', $template->shopVersion);
 };
-
+$verified = validateToken();
 switch ($action) {
     default:
         $buildStatus();
@@ -76,33 +76,38 @@ switch ($action) {
         break;
 
     case 'update':
-        try {
-            if ($template->xmlData->cShopVersion != $template->shopVersion) {
-                if ($template->setTemplate($template->xmlData->cName, $template->xmlData->eTyp)) {
-                    unset($_SESSION['cTemplate'], $_SESSION['template']);
+        if ($verified) {
+            try {
+                if ($template->xmlData->cShopVersion != $template->shopVersion) {
+                    if ($template->setTemplate($template->xmlData->cName, $template->xmlData->eTyp)) {
+                        unset($_SESSION['cTemplate'], $_SESSION['template']);
+                    }
                 }
+
+                $fileVersion     = $updater->getCurrentFileVersion();
+                $dbVersion       = $updater->getCurrentDatabaseVersion();
+
+                $updateResult    = $updater->update();
+                $availableUpdate = $updater->hasPendingUpdates();
+
+                if ($updateResult instanceof IMigration) {
+                    $updateResult = sprintf('Migration: %s', $updateResult->getDescription());
+                } else {
+                    $updateResult = sprintf('Version: %.2f', $updateResult / 100);
+                }
+
+                $result = $response->buildResponse([
+                    'result'          => $updateResult,
+                    'currentVersion'  => $dbVersion,
+                    'updatedVersion'  => $dbVersion,
+                    'availableUpdate' => $availableUpdate
+                ]);
+            } catch (Exception $e) {
+                $result = $response->buildError($e->getMessage());
             }
-
-            $fileVersion     = $updater->getCurrentFileVersion();
-            $dbVersion       = $updater->getCurrentDatabaseVersion();
-
-            $updateResult    = $updater->update();
-            $availableUpdate = $updater->hasPendingUpdates();
-
-            if ($updateResult instanceof IMigration) {
-                $updateResult = sprintf('Migration: %s', $updateResult->getDescription());
-            } else {
-                $updateResult = sprintf('Version: %.2f', $updateResult / 100);
-            }
-
-            $result = $response->buildResponse([
-                'result'          => $updateResult,
-                'currentVersion'  => $dbVersion,
-                'updatedVersion'  => $dbVersion,
-                'availableUpdate' => $availableUpdate
-            ]);
-        } catch (Exception $e) {
-            $result = $response->buildError($e->getMessage());
+        } else {
+            $result = $response->buildError('CSRF validation failed.', 401);
+            $response->makeResponse($result, $action);
         }
 
         $response->makeResponse($result, $action);
@@ -110,23 +115,27 @@ switch ($action) {
 
     case 'backup':
         $result = null;
+        if ($verified) {
+            try {
+                $file = $updater->createSqlDumpFile(true);
+                $updater->createSqlDump($file, true);
 
-        try {
-            $file = $updater->createSqlDumpFile(true);
-            $updater->createSqlDump($file, true);
+                $file   = basename($file);
+                $params = http_build_query(['action' => 'download', 'file' => $file], '', '&');
+                $url    = Shop::getAdminURL() . '/dbupdater.php?' . $params;
 
-            $file   = basename($file);
-            $params = http_build_query(['action' => 'download', 'file' => $file], '', '&');
-            $url    = Shop::getAdminURL() . '/dbupdater.php?' . $params;
+                $data = (object) [
+                    'url'  => $url,
+                    'file' => $file
+                ];
 
-            $data = (object) [
-                'url'  => $url,
-                'file' => $file
-            ];
-
-            $result = $response->buildResponse($data);
-        } catch (Exception $e) {
-            $result = $response->buildError($e->getMessage());
+                $result = $response->buildResponse($data);
+            } catch (Exception $e) {
+                $result = $response->buildError($e->getMessage());
+            }
+        } else {
+            $result = $response->buildError('CSRF validation failed.', 401);
+            $response->makeResponse($result, $action);
         }
 
         $response->makeResponse($result, $action);
@@ -161,27 +170,31 @@ switch ($action) {
     */
 
     case 'migration':
-        $id        = isset($_GET['id']) ? $_GET['id'] : null;
-        $version   = isset($_GET['version']) ? (int)$_GET['version'] : null;
-        $direction = isset($_GET['dir']) ? $_GET['dir'] : null;
+        if ($verified) {
+            $id        = isset($_GET['id']) ? $_GET['id'] : null;
+            $version   = isset($_GET['version']) ? (int)$_GET['version'] : null;
+            $direction = isset($_GET['dir']) ? $_GET['dir'] : null;
 
-        try {
-            $migration = new MigrationManager($version);
+            try {
+                $migration = new MigrationManager($version);
 
-            if ($id !== null && in_array($direction, [IMigration::UP, IMigration::DOWN], true)) {
-                $migration->executeMigrationById($id, $direction);
+                if ($id !== null && in_array($direction, [IMigration::UP, IMigration::DOWN], true)) {
+                    $migration->executeMigrationById($id, $direction);
+                }
+
+                $result = $response->buildResponse($id);
+            } catch (Exception $e) {
+                $result = $response->buildError($e->getMessage());
             }
-
-            $result = $response->buildResponse($id);
-        } catch (Exception $e) {
-            $result = $response->buildError($e->getMessage());
+        } else {
+            $result = $response->buildError('CSRF validation failed.', 401);
         }
 
         $response->makeResponse($result, $action);
         break;
 
     case 'download':
-        if (!isset($_GET['file'])) {
+        if (!$verified || !isset($_GET['file'])) {
             return;
         }
 

@@ -177,8 +177,13 @@ if ($step !== 'accountwahl' &&
     (!isset($_SESSION['Kunde']->cPasswort) || strlen($_SESSION['Kunde']->cPasswort) === 0)
 ) {
     // Falls unregistrierter Kunde bereits im Checkout war und einen Downloadartikel hinzugefuegt hat
-    $cHinweis = Shop::Lang()->get('digitalProductsRegisterInfo', 'checkout');
-    $step     = 'accountwahl';
+    $step      = 'accountwahl';
+    $cHinweis  = Shop::Lang()->get('digitalProductsRegisterInfo', 'checkout');
+    $cPost_arr = StringHandler::filterXSS($_POST);
+
+    Shop::Smarty()->assign('cKundenattribut_arr', getKundenattribute($cPost_arr))
+                  ->assign('cPost_var', $cPost_arr);
+
     unset($_SESSION['Kunde']);
 }
 //autom. step ermitteln

@@ -34,7 +34,7 @@
                         ? 'Sicherungskopie "<strong>' + result.file + '</strong>" wird heruntergeladen'
                         : 'Sicherungskopie "<strong>' + result.file + '</strong>" wurde erfolgreich erstellt');
 
-                showNotify(error ? 'danger' : 'info', 'Sicherungskopie', message);
+                showNotify(error ? 'danger' : 'success', 'Sicherungskopie', message);
                 pushEvent(message);
 
                 if (!error && download) {
@@ -48,15 +48,16 @@
     {
         ioManagedCall(
             adminPath, 'dbUpdateIO', [],
-            function (result) {
-                callback(result);
+            function (result, error) {
+                if (!error) {
+                    callback(result);
 
-                if (result.availableUpdate) {
-                    doUpdate(callback);
+                    if (result.availableUpdate) {
+                        doUpdate(callback);
+                    }
+                } else {
+                    callback(undefined, error);
                 }
-            },
-            function (result) {
-                callback(undefined, error);
             }
         );
     }
@@ -74,7 +75,7 @@
                         ? 'Update wurde angehalten: ' + error.message
                         : 'Update wurde erfolgreich durchgef&uuml;hrt'
 
-                showNotify(error ? 'danger' : 'info', 'Update', message);
+                showNotify(error ? 'danger' : 'success', 'Update', message);
                 disableUpdateControl(false);
             };
 
@@ -95,7 +96,7 @@
 
     function updateStatusTpl()
     {
-        ioManagedCall(adminPath, 'dbupdaterStatusTpl', [], function (result, error) {
+        ioManagedCall(adminPath, 'dbupdaterStatusTpl', [], function(result, error) {
             if (error) {
                 pushEvent(error.message);
             }
@@ -130,7 +131,7 @@
 
         ajaxManagedCall(url, {}, function(result, error) {
             var count = error
-                ? 0 : (typeof result.data.migrations == 'object'
+                ? 0 : (typeof result.data.migrations === 'object'
                     ? result.data.migrations.length : 0);
             var message = error
                     ? error.message
@@ -138,7 +139,7 @@
 
             $ladda.stop();
             updateStatusTpl();
-            showNotify(error ? 'danger' : 'info', 'Migration', message);
+            showNotify(error ? 'danger' : 'success', 'Migration', message);
         });
     }
 
@@ -170,7 +171,7 @@
                 ? error.message
                 : 'Migration wurde erfolgreich ausgef&uuml;hrt';
 
-            showNotify(error ? 'danger' : 'info', 'Migration', message);
+            showNotify(error ? 'danger' : 'success', 'Migration', message);
 
             if (!error) {
                 updateStatusTpl();
@@ -187,7 +188,7 @@
     function ajaxManagedCall(url, params, callback)
     {
         ajaxCall(url, params, function(result, xhr) {
-            if (xhr && xhr.error && xhr.error.code == 401) {
+            if (xhr && xhr.error && xhr.error.code === 401) {
                 createNotify({
                     title: 'Sitzung abgelaufen',
                     message: 'Sie werden zur Anmelde-Maske weitergeleitet...',
@@ -198,8 +199,7 @@
                         window.location.pathname = '/' + adminPath + 'index.php';
                     }
                 });
-            }
-            else if (typeof callback === 'function') {
+            } else if (typeof callback === 'function') {
                 callback(result, result.error);
             }
         });
@@ -256,7 +256,5 @@
 
     {/literal}
 </script>
-
-
 
 {include file='tpl_inc/footer.tpl'}

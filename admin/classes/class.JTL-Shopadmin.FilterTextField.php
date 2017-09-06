@@ -53,7 +53,7 @@ class FilterTextField extends FilterField
      */
     public function getWhereClause()
     {
-        if ($this->cValue !== '' || $this->nTestOp == 4 || $this->nTestOp == 9) {
+        if ($this->cValue !== '' || ($this->nDataType === 0 && ($this->nTestOp == 4 || $this->nTestOp == 9))) {
             if (is_array($this->cColumn)) {
                 $cColumn_arr = $this->cColumn;
             } else {

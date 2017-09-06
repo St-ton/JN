@@ -41,8 +41,8 @@
                                     <div class="col-md-2 toolbar-col">
                                         <label for="{$oFilter->getId()}_{$oField->getId()}">{$oField->getTitle()}</label>
                                 {/if}
-                                        <input type="text" class="form-control"
-                                               name="{$oFilter->getId()}_{$oField->getId()}"
+                                        <input type="{if $oField->getDataType() == 1}number{else}text{/if}"
+                                               class="form-control" name="{$oFilter->getId()}_{$oField->getId()}"
                                                id="{$oFilter->getId()}_{$oField->getId()}"
                                                value="{$oField->getValue()}" placeholder="{$oField->getTitle()}"
                                                {if $oField->getTitleLong() !== ''}data-toggle="tooltip"

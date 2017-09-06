@@ -2299,8 +2299,7 @@ class Artikel
                             $this->Variationen[$nZaehler]->Werte[$i]->cAufpreisLocalized,
                             $this->Variationen[$nZaehler]->Werte[$i]->cPreisInklAufpreis
                         );
-                    }
-                    elseif (isset($this->Variationen[$nZaehler]->Werte[$i]->fVPEWert) &&
+                    } elseif (isset($this->Variationen[$nZaehler]->Werte[$i]->fVPEWert) &&
                         $this->Variationen[$nZaehler]->Werte[$i]->fVPEWert > 0
                     ) {
                         $nGenauigkeit = 2;

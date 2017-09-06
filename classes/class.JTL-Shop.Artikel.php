@@ -2300,7 +2300,7 @@ class Artikel
                             $this->Variationen[$nZaehler]->Werte[$i]->cPreisInklAufpreis
                         );
                     }
-                    if (isset($this->Variationen[$nZaehler]->Werte[$i]->fVPEWert) &&
+                    elseif (isset($this->Variationen[$nZaehler]->Werte[$i]->fVPEWert) &&
                         $this->Variationen[$nZaehler]->Werte[$i]->fVPEWert > 0
                     ) {
                         $nGenauigkeit = 2;
@@ -4058,10 +4058,8 @@ class Artikel
         ) {
             $this->inWarenkorbLegbar = INWKNICHTLEGBAR_LAGER;
         }
-        if ((!$this->bHasKonfig) &&
-            $this->Preise->fVKNetto == 0 &&
-            isset($this->Preise->fVKNetto, $conf['global']['global_preis0']) &&
-            $conf['global']['global_preis0'] === 'N'
+        if (isset($this->Preise->fVKNetto, $conf['global']['global_preis0']) && (!$this->bHasKonfig)
+            && $this->Preise->fVKNetto == 0 && $conf['global']['global_preis0'] === 'N'
         ) {
             $this->inWarenkorbLegbar = INWKNICHTLEGBAR_PREISAUFANFRAGE;
         }
@@ -6078,13 +6076,12 @@ class Artikel
                 $cGlobalMetaTitle = ' - ' . $oGlobaleMetaAngabenAssoc_arr[Shop::$kSprache]->Title;
             }
         }
-        if ($this->Preise->fVK[$_SESSION['Kundengruppe']->nNettoPreise] > 0 &&
-            $conf['metaangaben']['global_meta_title_preis'] === 'Y' &&
-            isset(
-                $_SESSION['Kundengruppe']->nNettoPreise,
-                $this->Preise->fVK[$_SESSION['Kundengruppe']->nNettoPreise],
-                $this->Preise->cVKLocalized[$_SESSION['Kundengruppe']->nNettoPreise]
-            )
+        if (isset(
+            $_SESSION['Kundengruppe']->nNettoPreise,
+            $this->Preise->fVK[$_SESSION['Kundengruppe']->nNettoPreise],
+            $this->Preise->cVKLocalized[$_SESSION['Kundengruppe']->nNettoPreise]
+            ) && $this->Preise->fVK[$_SESSION['Kundengruppe']->nNettoPreise] > 0
+            && $conf['metaangaben']['global_meta_title_preis'] === 'Y'
         ) {
             $cPreis = ', ' . $this->Preise->cVKLocalized[$_SESSION['Kundengruppe']->nNettoPreise];
         }

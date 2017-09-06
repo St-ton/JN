@@ -27,9 +27,7 @@
                                     {/if}
                                     <th>{#mbw#}</th>
                                     <th>{#curmaxusage#} {call sortControls oPagination=$oPagination nSortBy=2}</th>
-                                    <th>{#customerGroup#}</th>
                                     <th>{#restrictions#}</th>
-                                    <th>{#restrictionsManufacturers#}</th>
                                     <th>{#validityPeriod#}</th>
                                     <th></th>
                                 </tr>
@@ -68,9 +66,23 @@
                                             {if $oKupon->nVerwendungen > 0}
                                                 von {$oKupon->nVerwendungen}</td>
                                             {/if}
-                                        <td>{$oKupon->cKundengruppe}</td>
-                                        <td>{$oKupon->cArtikelInfo}</td>
-                                        <td>{$oKupon->cHerstellerInfo}</td>
+                                        <td>
+                                            {if !empty({$oKupon->cKundengruppe})}
+                                                {$oKupon->cKundengruppe}<br>
+                                            {/if}
+                                            {if !empty({$oKupon->cArtikelInfo})}
+                                                {$oKupon->cArtikelInfo} Artikel<br>
+                                            {/if}
+                                            {if !empty({$oKupon->cHerstellerInfo})}
+                                                {$oKupon->cHerstellerInfo} Hersteller<br>
+                                            {/if}
+                                            {if !empty({$oKupon->cKategorieInfo})}
+                                                {$oKupon->cKategorieInfo} Kategorie(n)<br>
+                                            {/if}
+                                            {if !empty({$oKupon->cKundenInfo})}
+                                                {$oKupon->cKundenInfo} Kunde(n)<br>
+                                            {/if}
+                                        </td>
                                         <td>
                                             {#from#}: {$oKupon->cGueltigAbShort}<br>
                                             {#to#}: {$oKupon->cGueltigBisShort}

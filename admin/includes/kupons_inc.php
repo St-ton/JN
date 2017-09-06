@@ -228,7 +228,7 @@ function augmentCoupon($oKupon)
     }
 
     if ((int)$oKupon->kKundengruppe === -1) {
-        $oKupon->cKundengruppe = 'Alle';
+        $oKupon->cKundengruppe = '';
     } else {
         $oKundengruppe         = Shop::DB()->query("
             SELECT cName 
@@ -238,12 +238,23 @@ function augmentCoupon($oKupon)
         $oKupon->cKundengruppe = $oKundengruppe->cName;
     }
 
+    $cArtNr_arr      = StringHandler::parseSSK($oKupon->cArtikel);
+    $cHersteller_arr = StringHandler::parseSSK($oKupon->cHersteller);
+    $cKategorie_arr  = StringHandler::parseSSK($oKupon->cKategorien);
+    $cKunde_arr      = StringHandler::parseSSK($oKupon->cKunden);
+
     $oKupon->cArtikelInfo    = ($oKupon->cArtikel === '')
-        ? 'Alle'
-        : 'eingeschr&auml;nkt';
+        ? ''
+        : (string)count($cArtNr_arr);
     $oKupon->cHerstellerInfo = (empty($oKupon->cHersteller) || $oKupon->cHersteller === '-1')
-        ? 'Alle'
-        : 'eingeschr&auml;nkt';
+        ? ''
+        : (string)count($cHersteller_arr);
+    $oKupon->cKategorieInfo  = (empty($oKupon->cKategorien) || $oKupon->cKategorien=== '-1')
+        ? ''
+        : (string)count($cKategorie_arr);
+    $oKupon->cKundenInfo  = (empty($oKupon->cKunden) || $oKupon->cKunden=== '-1')
+        ? ''
+        : (string)count($cKunde_arr);
 
     $oMaxErstelltDB   = Shop::DB()->query("
         SELECT max(dErstellt) as dLastUse

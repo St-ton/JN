@@ -162,7 +162,7 @@
                         <tbody class="summary"></tbody>
                         <tfoot>
                         <tr>
-                            <td colspan="3" class="text-right no-wrap">
+                            <td colspan="3" class="text-right word-break">
                                 <strong class="price"></strong>
                             </td>
                         </tr>

@@ -1069,13 +1069,11 @@ class Artikel
         if (!$kKundengruppe) {
             $kKundengruppe = $_SESSION['Kundengruppe']->kKundengruppe;
         }
-        if (isset($_SESSION['Kundengruppe']->darfPreiseSehen) && !$_SESSION['Kundengruppe']->darfPreiseSehen) {
-            $this->Preise = null;
-
-            return $this;
-        }
         $kKunde       = isset($_SESSION['Kunde']) ? (int)$_SESSION['Kunde']->kKunde : 0;
         $this->Preise = new Preise($kKundengruppe, $oArtikelTMP->kArtikel, $kKunde, (int)$oArtikelTMP->kSteuerklasse);
+        if (isset($_SESSION['Kundengruppe']->darfPreiseSehen) && !$_SESSION['Kundengruppe']->darfPreiseSehen) {
+            $this->Preise->setPricesToZero();
+        }
         $this->Preise->localizePreise();
 
         return $this;
@@ -2301,8 +2299,7 @@ class Artikel
                             $this->Variationen[$nZaehler]->Werte[$i]->cAufpreisLocalized,
                             $this->Variationen[$nZaehler]->Werte[$i]->cPreisInklAufpreis
                         );
-                    }
-                    if (isset($this->Variationen[$nZaehler]->Werte[$i]->fVPEWert) &&
+                    } elseif (isset($this->Variationen[$nZaehler]->Werte[$i]->fVPEWert) &&
                         $this->Variationen[$nZaehler]->Werte[$i]->fVPEWert > 0
                     ) {
                         $nGenauigkeit = 2;
@@ -4060,10 +4057,8 @@ class Artikel
         ) {
             $this->inWarenkorbLegbar = INWKNICHTLEGBAR_LAGER;
         }
-        if ((!$this->bHasKonfig) &&
-            $this->Preise->fVKNetto == 0 &&
-            isset($this->Preise->fVKNetto, $conf['global']['global_preis0']) &&
-            $conf['global']['global_preis0'] === 'N'
+        if (isset($this->Preise->fVKNetto, $conf['global']['global_preis0']) && (!$this->bHasKonfig)
+            && $this->Preise->fVKNetto == 0 && $conf['global']['global_preis0'] === 'N'
         ) {
             $this->inWarenkorbLegbar = INWKNICHTLEGBAR_PREISAUFANFRAGE;
         }
@@ -5116,12 +5111,6 @@ class Artikel
         if ($this->fGewicht === null) {
             $this->fGewicht = 0;
         }
-        if ($this->Preise === null) {
-            $this->Preise = new stdClass();
-        }
-        if ($this->Preise->fVKNetto === null) {
-            $this->Preise->fVKNetto = 0;
-        }
         // cheapest shipping except shippings that offer cash payment
         $shipping = Shop::DB()->query(
             "SELECT va.kVersandart, IF(vas.fPreis IS NOT NULL, vas.fPreis, va.fPreis) AS minPrice, va.nSort
@@ -6086,13 +6075,12 @@ class Artikel
                 $cGlobalMetaTitle = ' - ' . $oGlobaleMetaAngabenAssoc_arr[Shop::$kSprache]->Title;
             }
         }
-        if ($this->Preise->fVK[$_SESSION['Kundengruppe']->nNettoPreise] > 0 &&
-            $conf['metaangaben']['global_meta_title_preis'] === 'Y' &&
-            isset(
-                $_SESSION['Kundengruppe']->nNettoPreise,
-                $this->Preise->fVK[$_SESSION['Kundengruppe']->nNettoPreise],
-                $this->Preise->cVKLocalized[$_SESSION['Kundengruppe']->nNettoPreise]
-            )
+        if (isset(
+            $_SESSION['Kundengruppe']->nNettoPreise,
+            $this->Preise->fVK[$_SESSION['Kundengruppe']->nNettoPreise],
+            $this->Preise->cVKLocalized[$_SESSION['Kundengruppe']->nNettoPreise]
+            ) && $this->Preise->fVK[$_SESSION['Kundengruppe']->nNettoPreise] > 0
+            && $conf['metaangaben']['global_meta_title_preis'] === 'Y'
         ) {
             $cPreis = ', ' . $this->Preise->cVKLocalized[$_SESSION['Kundengruppe']->nNettoPreise];
         }

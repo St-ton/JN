@@ -68,19 +68,19 @@
                                             {/if}
                                         <td>
                                             {if !empty({$oKupon->cKundengruppe})}
-                                                {$oKupon->cKundengruppe}<br>
+                                                nur {$oKupon->cKundengruppe}<br>
                                             {/if}
                                             {if !empty({$oKupon->cArtikelInfo})}
-                                                {$oKupon->cArtikelInfo} Artikel<br>
+                                                {$oKupon->cArtikelInfo} {#products#}<br>
                                             {/if}
                                             {if !empty({$oKupon->cHerstellerInfo})}
-                                                {$oKupon->cHerstellerInfo} Hersteller<br>
+                                                {$oKupon->cHerstellerInfo} {#manufacturers#}<br>
                                             {/if}
                                             {if !empty({$oKupon->cKategorieInfo})}
-                                                {$oKupon->cKategorieInfo} Kategorie(n)<br>
+                                                {$oKupon->cKategorieInfo} {#categories#}<br>
                                             {/if}
                                             {if !empty({$oKupon->cKundenInfo})}
-                                                {$oKupon->cKundenInfo} Kunde(n)<br>
+                                                {$oKupon->cKundenInfo} {#customers#}<br>
                                             {/if}
                                         </td>
                                         <td>

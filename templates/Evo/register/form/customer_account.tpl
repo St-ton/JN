@@ -7,7 +7,7 @@
 {if !$editRechnungsadresse}
     {if !$smarty.session.Warenkorb->hasDigitalProducts() && isset($checkout)
         && $Einstellungen.kaufabwicklung.bestellvorgang_unregistriert === 'Y'}
-        <div class="form-group checkbox">
+        <div class="form-group checkbox control-toggle">
             <input type="hidden" name="unreg_form" value="1">
             <label class="btn-block" for="checkout_create_account_unreg" data-toggle="collapse"
                 data-target="#create_account_data">

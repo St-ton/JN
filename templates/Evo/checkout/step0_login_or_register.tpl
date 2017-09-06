@@ -24,13 +24,15 @@
     <div id="existing-customer" class="col-xs-12 {if $withSidebar === 0}col-md-4{else}col-md-12{/if}">
         <form method="post" action="{get_static_route id='bestellvorgang.php'}" class="form" id="order_register_or_login">
             {block name="checkout-login"}
-                {block name="checkout-login-body"}
-                <fieldset>
-                    {$jtl_token}
-                    <legend>{block name="checkout-login-title"}{lang key="alreadyCustomer" section="global"}{/block}</legend>
-                    {include file="register/form/customer_login.tpl" withSidebar=$withSidebar}
-                </fieldset>
-                {/block}
+                <div class="panel-wrap">
+                    {block name="checkout-login-body"}
+                    <fieldset>
+                        {$jtl_token}
+                        <legend>{block name="checkout-login-title"}{lang key="alreadyCustomer" section="global"}{/block}</legend>
+                        {include file="register/form/customer_login.tpl" withSidebar=$withSidebar}
+                    </fieldset>
+                    {/block}
+                </div>
             {/block}
         </form>
     </div>
@@ -38,16 +40,22 @@
         <div>
             {include file='register/inc_vcard_upload.tpl' id='bestellvorgang.php'}
             <form method="post" action="{get_static_route id='bestellvorgang.php'}" class="form" id="form-register">
-                {$jtl_token}
-                {include file='register/form/customer_account.tpl' checkout=1 step="formular"}
-                <hr/>
-                {include file='checkout/inc_shipping_address.tpl'}
-
-                <input type="hidden" name="checkout" value="1">
-                <input type="hidden" name="form" value="1">
-                <input type="hidden" name="editRechnungsadresse" value="0">
-
-                <input type="submit" class="btn btn-primary btn-lg submit submit_once pull-right" value="{lang key="sendCustomerData" section="account data"}">
+                {block name="checkout-register"}
+                    <div class="panel-wrap">
+                        {block name="checkout-register-body"}
+                            {$jtl_token}
+                            {include file='register/form/customer_account.tpl' checkout=1 step="formular"}
+                            <hr/>
+                            {include file='checkout/inc_shipping_address.tpl'}
+                        {/block}
+                    </div>
+                {/block}
+                <div class="text-right">
+                    <input type="hidden" name="checkout" value="1">
+                    <input type="hidden" name="form" value="1">
+                    <input type="hidden" name="editRechnungsadresse" value="0">
+                    <input type="submit" class="btn btn-primary btn-lg submit submit_once" value="{lang key="sendCustomerData" section="account data"}">
+                </div>
             </form>
         </div>
     </div>

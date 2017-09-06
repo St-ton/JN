@@ -7,7 +7,7 @@
 {else}
     {assign var="fehlendeAngabenShipping" value=null}
 {/if}
-<div class="form-group checkbox">
+<div class="form-group checkbox control-toggle">
     <input type="hidden" name="shipping_address" value="1">
     <label for="checkout_register_shipping_address" class="btn-block" data-toggle="collapse" data-target="#select_shipping_address">
         <input id="checkout_register_shipping_address" class="radio-checkbox" type="checkbox" name="shipping_address" value="0"{if !isset($Lieferadresse) && empty($kLieferadresse)} checked="checked"{/if} />

@@ -1962,7 +1962,7 @@ fieldset {
     position: fixed;
     top: 0;
     left: 0;
-    z-index: 4;
+    z-index: @zindex-navbar - 10;
     background-color: rgba(0, 0, 0, 0.3);
 }
 
@@ -2215,6 +2215,10 @@ fieldset {
 #main-wrapper.fluid {
     .navbar, #footer {
         margin-bottom: 0;
+    }
+
+    #content-wrapper > .container > .container-block {
+        padding-top: @padding-large / 2;
     }
 
     @media (min-width: @screen-sm-min) {
@@ -2483,7 +2487,6 @@ div#add-to-cart {
 //for wrapper
 .twitter-typeahead {
     width: 100%;
-    float: left;
 
     .input-group & {
         //overwrite `display:inline-block` style
@@ -3133,6 +3136,12 @@ header.fixed-navbar {
     width: 36px;
     line-height: 36px;
     text-align: center;
+}
+
+.control-toggle {
+    + .collapse, + .collapsing {
+        margin-top: @margin-large;
+    }
 }
 
 .sidebar-offcanvas {

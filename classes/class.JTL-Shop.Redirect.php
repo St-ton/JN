@@ -366,10 +366,10 @@ class Redirect
                 $cUrlQueryString = $parsedUrl['query'];
             }
             $foundRedirectWithQuery = false;
-            if(!empty($cUrlQueryString)) {
+            if (!empty($cUrlQueryString)) {
                 $oItem = $this->find($cUrl . '?' . $cUrlQueryString);
                 if (is_object($oItem)) {
-                    $cUrl = $cUrl . '?' . $cUrlQueryString;
+                    $cUrl                   = $cUrl . '?' . $cUrlQueryString;
                     $foundRedirectWithQuery = true;
                 }
             } else {

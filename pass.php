@@ -43,9 +43,9 @@ if (isset($_POST['passwort_vergessen'], $_POST['email']) && (int)$_POST['passwor
 
         $smarty->assign('Kunde', $oKunde);
     } elseif (isset($kunde->kKunde) && $kunde->kKunde > 0 && $kunde->cSperre === 'Y') {
-        $hinweis = Shop::Lang()->get('accountLocked', 'global');
+        $hinweis = Shop::Lang()->get('accountLocked');
     } else {
-        $hinweis = Shop::Lang()->get('incorrectEmail', 'global');
+        $hinweis = Shop::Lang()->get('incorrectEmail');
     }
 } elseif (isset($_POST['pw_new'], $_POST['pw_new_confirm'], $_POST['fpm'], $_POST['fpwh'])) {
     if ($_POST['pw_new'] === $_POST['pw_new_confirm']) {
@@ -76,14 +76,14 @@ if (isset($_POST['passwort_vergessen'], $_POST['email']) && (int)$_POST['passwor
         $cFehler = Shop::Lang()->get('passwordsMustBeEqual', 'account data');
     }
     $step = 'confirm';
-    $smarty->assign('fpwh', $_POST['fpwh'])
-           ->assign('fpm', $_POST['fpm']);
+    $smarty->assign('fpwh', StringHandler::filterXSS($_POST['fpwh']))
+           ->assign('fpm', StringHandler::filterXSS($_POST['fpm']));
 } elseif (isset($_GET['fpwh'], $_GET['mail'])) {
-    $smarty->assign('fpwh', $_GET['fpwh'])
-           ->assign('fpm', $_GET['mail']);
+    $smarty->assign('fpwh', StringHandler::filterXSS($_GET['fpwh']))
+           ->assign('fpm', StringHandler::filterXSS($_GET['mail']));
     $step = 'confirm';
 }
-$cCanonicalURL    = $linkHelper->getStaticRoute('pass.php', true);
+$cCanonicalURL    = $linkHelper->getStaticRoute('pass.php');
 $oMeta            = $linkHelper->buildSpecialPageMeta(LINKTYP_PASSWORD_VERGESSEN);
 $cMetaTitle       = $oMeta->cTitle;
 $cMetaDescription = $oMeta->cDesc;

@@ -193,26 +193,16 @@ class AuswahlAssistent
         $AktuelleKategorie                    = isset($cParameter_arr['kKategorie'])
             ? new Kategorie($cParameter_arr['kKategorie'])
             : null;
-//        $oMerkmalFilter_arr                   = $NaviFilter->setFilterOptions(
-//            $oSuchergebnisse,
-//            $AktuelleKategorie,
-//            true
-//        )->MerkmalFilter;
-
-        $oMerkmalFilter_arr = array_filter(
-            $NaviFilter->getAvailableFilters(),
-            function ($e) {
-                /** @var IFilter $e */
-                return $e->getClassName() === 'FilterItemAttributeAdvanced';
-            }
-        );
-//        Shop::dbg($oMerkmalFilter_arr, true);
+        $oMerkmalFilter_arr                   = $NaviFilter->setFilterOptions(
+            $oSuchergebnisse,
+            $AktuelleKategorie,
+            true
+        )->MerkmalFilter;
 
         foreach ($oMerkmalFilter_arr as $oMerkmalFilter) {
-//            Shop::dbg($oMerkmalFilter->cBildpfadKlein, false, 'cBildpfadKlein:');
+            /** @var FilterItemAttribute $oMerkmalFilter */
             if (array_key_exists((int)$oMerkmalFilter->kMerkmal, $this->oFrage_assoc)) {
                 $oFrage                    = $this->oFrage_assoc[(int)$oMerkmalFilter->kMerkmal];
-//                $oFrage->oWert_arr         = $oMerkmalFilter->oMerkmalWerte_arr;
                 $oFrage->oWert_arr         = $oMerkmalFilter->getOptions();
                 $oFrage->nTotalResultCount = 0;
 

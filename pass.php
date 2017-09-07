@@ -76,11 +76,11 @@ if (isset($_POST['passwort_vergessen'], $_POST['email']) && (int)$_POST['passwor
         $cFehler = Shop::Lang()->get('passwordsMustBeEqual', 'account data');
     }
     $step = 'confirm';
-    $smarty->assign('fpwh', $_POST['fpwh'])
-           ->assign('fpm', $_POST['fpm']);
+    $smarty->assign('fpwh', StringHandler::filterXSS($_POST['fpwh']))
+           ->assign('fpm', StringHandler::filterXSS($_POST['fpm']));
 } elseif (isset($_GET['fpwh'], $_GET['mail'])) {
-    $smarty->assign('fpwh', $_GET['fpwh'])
-           ->assign('fpm', $_GET['mail']);
+    $smarty->assign('fpwh', StringHandler::filterXSS($_GET['fpwh']))
+           ->assign('fpm', StringHandler::filterXSS($_GET['mail']));
     $step = 'confirm';
 }
 $cCanonicalURL    = $linkHelper->getStaticRoute('pass.php');

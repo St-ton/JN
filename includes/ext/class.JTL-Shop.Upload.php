@@ -74,10 +74,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
                         $eigenschaftArr = [];
                         if (!empty($oPosition->WarenkorbPosEigenschaftArr)) {
                             foreach ($oPosition->WarenkorbPosEigenschaftArr as $eigenschaft) {
-                                $eigenschaftArr[$eigenschaft->kEigenschaft] =
-                                    (!empty(array_values($eigenschaft->cEigenschaftWertName)[0]))
-                                        ? array_values($eigenschaft->cEigenschaftWertName)[0]
-                                        : $eigenschaft->cEigenschaftWertName;
+                                $eigenschaftArr[$eigenschaft->kEigenschaft] = is_string($eigenschaft->cEigenschaftWertName)
+                                    ? $eigenschaft->cEigenschaftWertName
+                                    : reset($eigenschaft->cEigenschaftWertName);
                             }
                         }
                         $oUpload              = new stdClass();

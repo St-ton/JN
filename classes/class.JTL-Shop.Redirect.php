@@ -365,7 +365,16 @@ class Redirect
                 $cUrl            = $parsedUrl['path'];
                 $cUrlQueryString = $parsedUrl['query'];
             }
-            $oItem = $this->find($cUrl);
+            $foundRedirectWithQuery = false;
+            if (!empty($cUrlQueryString)) {
+                $oItem = $this->find($cUrl . '?' . $cUrlQueryString);
+                if (is_object($oItem)) {
+                    $cUrl                   = $cUrl . '?' . $cUrlQueryString;
+                    $foundRedirectWithQuery = true;
+                }
+            } else {
+                $oItem = $this->find($cUrl);
+            }
             if (!is_object($oItem)) {
                 $conf = Shop::getSettings([CONF_GLOBAL]);
                 if (!isset($_GET['notrack'])  &&
@@ -378,7 +387,10 @@ class Redirect
                     $oItem->kRedirect = Shop::DB()->insert('tredirect', $oItem);
                 }
             } elseif (strlen($oItem->cToUrl) > 0) {
-                $cRedirectUrl = $oItem->cToUrl . (($cUrlQueryString !== null) ? ('?' . $cUrlQueryString) : '');
+                $cRedirectUrl  = $oItem->cToUrl;
+                $cRedirectUrl .= $cUrlQueryString !== null && !$foundRedirectWithQuery
+                    ? '?' . $cUrlQueryString
+                    : '';
             }
             $cReferer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
             if (strlen($cReferer) > 0) {

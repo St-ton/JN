@@ -6246,10 +6246,7 @@ function urlNotFoundRedirect(array $hookInfos = null, $forceExit = false)
 {
     $url         = $_SERVER['REQUEST_URI'];
     $redirect    = new Redirect();
-    $redirectUrl = $redirect->checkFallbackRedirect($url);
-    if ($redirectUrl === false) {
-        $redirectUrl = $redirect->test($url);
-    }
+    $redirectUrl = $redirect->test($url);
     if ($redirectUrl !== false && $redirectUrl !== $url && '/' . $redirectUrl !== $url) {
         $cUrl_arr = parse_url($redirectUrl);
         if (!array_key_exists('scheme', $cUrl_arr)) {

@@ -1050,6 +1050,11 @@ final class Shop
             //check path
             $cPath        = self::getRequestUri();
             $cRequestFile = '/' . ltrim($cPath, '/');
+            if ($cRequestFile === '/index.php') {
+                // special case: /index.php shall be redirected to Shop-URL
+                header('Location: ' . Shop::getURL(), true, 301);
+                exit;
+            }
             if ($cRequestFile === '/') {
                 //special case: home page is accessible without seo url
                 $link        = null;

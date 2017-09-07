@@ -860,7 +860,7 @@ function gibStepVersand()
         VersandartHelper::getShippingClasses($_SESSION['Warenkorb']),
         $kKundengruppe
     );
-    $oZahlungsart_arr = array();
+    $oZahlungsart_arr = [];
     foreach ($oVersandart_arr as $oVersandart) {
         $oTmp_arr = gibZahlungsarten($oVersandart->kVersandart, Session::CustomerGroup()->getID());
         foreach ($oTmp_arr as $oTmp) {
@@ -3068,19 +3068,12 @@ function kuponMoeglich()
                 AND (dGueltigBis > now()
                     OR dGueltigBis = '0000-00-00 00:00:00')
                 AND fMindestbestellwert <= " . $_SESSION['Warenkorb']->gibGesamtsummeWaren(true, false) . "
-                AND (cKuponTyp='versandkupon'
+                AND (cKuponTyp = 'versandkupon'
                     OR cKuponTyp = 'standard')
-<<<<<<< HEAD
                 AND (kKundengruppe = -1 
                     OR kKundengruppe = 0 
                     OR kKundengruppe = " . Session::CustomerGroup()->getID() . ")
                 AND (nVerwendungen = 0 
-=======
-                AND (kKundengruppe = -1
-                    OR kKundengruppe = 0
-                    OR kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . ")
-                AND (nVerwendungen = 0
->>>>>>> master
                     OR nVerwendungen > nVerwendungenBisher)
                 AND (cArtikel = '' $Artikel_qry)
                 AND (cHersteller IS NULL OR cHersteller = '' OR cHersteller = '-1' $Hersteller_qry)

@@ -88,6 +88,7 @@ $oSelect = $oFilter->addSelectfield('Umleitung', 'cToUrl');
 $oSelect->addSelectOption('alle', '');
 $oSelect->addSelectOption('vorhanden', '', 9);
 $oSelect->addSelectOption('fehlend', '', 4);
+$oFilter->addTextfield('Aufrufe', 'nCount', 0, 1);
 $oFilter->assemble();
 
 $nRedirectCount = Redirect::getRedirectCount($oFilter->getWhereSQL());

@@ -253,7 +253,7 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
     $kRechnungsadresse = $oRechnungsadresse->insertInDB();
 
     if (isset($_POST['kommentar'])) {
-        $_SESSION['kommentar'] = substr(strip_tags(Shop::DB()->escape($_POST['kommentar'])), 0, 1000);
+        $_SESSION['kommentar'] = substr(strip_tags($_POST['kommentar']), 0, 1000);
     } elseif (!isset($_SESSION['kommentar'])) {
         $_SESSION['kommentar'] = '';
     }
@@ -270,7 +270,7 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
     $Bestellung->cVersandartName   = $_SESSION['Versandart']->angezeigterName[$_SESSION['cISOSprache']];
     $Bestellung->cZahlungsartName  = $_SESSION['Zahlungsart']->angezeigterName[$_SESSION['cISOSprache']];
     $Bestellung->cSession          = session_id();
-    $Bestellung->cKommentar        = stripslashes($_SESSION['kommentar']);
+    $Bestellung->cKommentar        = $_SESSION['kommentar'];
     $Bestellung->cAbgeholt         = 'N';
     $Bestellung->cStatus           = BESTELLUNG_STATUS_OFFEN;
     $Bestellung->dErstellt         = 'now()';

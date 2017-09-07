@@ -191,22 +191,25 @@
         },
 
         imagebox: function(wrapper) {
-            var $wrapper = (typeof wrapper === 'undefined' || wrapper.length === 0) ? $('#result-wrapper') : $(wrapper);
+            var $wrapper = (typeof wrapper === 'undefined' || wrapper.length === 0) ? $('#result-wrapper') : $(wrapper),
+                square = $('.image-box', $wrapper).first('img').height() + 'px',
+                padding = $(window).height() / 2;
 
             $('.image-box', $wrapper).each(function(i, item) {
                 var box = $(this),
                     img = box.find('img'),
                     src = img.data('src');
-                box.addClass('loading');
-                    
+
+                img.css('max-height', square);
+                box.css('max-height', square)
+                    .addClass('loading');
+
                 if (src && src.length > 0) {
                     //if (src === 'gfx/keinBild.gif') {
                     //    box.removeClass('loading')
                     //        .addClass('none');
                     //    box.parent().find('.overlay-img').remove();
                     //} else {
-                        var padding = $(window).height() / 2,
-                            square = box.width() + 'px';
                         $(img).lazy(padding, function() {
                             $(this).load(function() {
                                 img.css('max-height', square);

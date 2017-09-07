@@ -136,7 +136,6 @@ if (isset($_GET['unreg']) && (int)$_GET['unreg'] === 1 &&
 ) {
     $step = 'edit_customer_address';
 }
-
 //autom. step ermitteln
 if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']) {
     $step = 'Lieferadresse';
@@ -191,7 +190,18 @@ if ($step !== 'accountwahl' &&
     Download::hasDownloads($_SESSION['Warenkorb'])
 ) {
     // Falls unregistrierter Kunde bereits im Checkout war und einen Downloadartikel hinzugefuegt hat
-    $step = 'accountwahl';
+    $step      = 'accountwahl';
+    $cHinweis  = Shop::Lang()->get('digitalProductsRegisterInfo', 'checkout');
+    $cPost_arr = StringHandler::filterXSS($_POST);
+
+    Shop::Smarty()->assign('cKundenattribut_arr', getKundenattribute($cPost_arr))
+                  ->assign('kLieferadresse', $cPost_arr['kLieferadresse'])
+                  ->assign('cPost_var', $cPost_arr);
+
+    if ((int)$cPost_arr['shipping_address'] === 1) {
+        Shop::Smarty()->assign('Lieferadresse', mappeLieferadresseKontaktdaten($cPost_arr['register']['shipping_address']));
+    }
+
     unset($_SESSION['Kunde']);
 }
 //autom. step ermitteln

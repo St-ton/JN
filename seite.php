@@ -20,7 +20,8 @@ $Einstellungen = Shop::getSettings([
     CONF_SITEMAP,
     CONF_ARTIKELUEBERSICHT,
     CONF_AUSWAHLASSISTENT,
-    CONF_CACHING
+    CONF_CACHING,
+    CONF_METAANGABEN
 ]);
 
 //hole alle OberKategorien
@@ -204,6 +205,8 @@ if (empty($cMetaTitle) || empty($cMetaDescription) || empty($cMetaKeywords)) {
         }
     }
 }
+
+$cMetaTitle = prepareMeta($cMetaTitle, null, (int)$Einstellungen['metaangaben']['global_meta_maxlaenge_title']);
 
 $smarty->assign('meta_title', $cMetaTitle)
        ->assign('meta_description', $cMetaDescription)

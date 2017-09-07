@@ -133,9 +133,23 @@ class TwoFA
     public function getQRcode()
     {
         if ('' !== $this->oUserTuple->c2FAauthSecret) {
+            $szTotpUrl = rawurlencode('JTL-Shop ' . $this->oUserTuple->cLogin . '@' . $this->getShopName());
+            // by the QR-Code there are 63 bytes allowed for this URL-appendix
+            // so we shorten that string (and we take care about the hex-character-replacements!)
+            $nOverhang = strlen($szTotpUrl) - 63;
+            if (0 < $nOverhang) {
+                for ($i=0; $i < $nOverhang; $i++) {
+                    if ('%' == $szTotpUrl[strlen($szTotpUrl)-3]) {
+                        $szTotpUrl  = substr($szTotpUrl, 0, -3); // shorten by 3 byte..
+                        $nOverhang -= 2;                         // ..and correct the counter (here nOverhang)
+                    } else {
+                        $szTotpUrl = substr($szTotpUrl, 0, -1);  // shorten by 1 byte
+                    }
+                }
+            }
             // create the QR-code
             $szQRString = new QRCode(
-                  'otpauth://totp/'.rawurlencode('JTL-Shop ' . $this->oUserTuple->cLogin . '@' . $this->getShopName())
+                  'otpauth://totp/'.$szTotpUrl
                 . '?secret=' . $this->oUserTuple->c2FAauthSecret
                 . '&issuer=JTL-Software'
                 , new QRString()
@@ -197,7 +211,7 @@ class TwoFA
             $this->szShopName = ('' !== $oResult->cWert) ? $oResult->cWert : '';
         }
 
-        return $this->szShopName;
+        return trim($this->szShopName);
     }
 
 

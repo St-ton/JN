@@ -71,7 +71,7 @@ function suggestions($keyword)
 function getCitiesByZip($cityQuery, $country, $zip)
 {
     $results    = [];
-    if (!empty($country) && !empty($zip) && strlen($cityQuery) >= 1) {
+    if (!empty($country) && !empty($zip)) {
         $cityQuery = "%" . StringHandler::filterXSS($cityQuery) . "%";
         $country   = StringHandler::filterXSS($country);
         $zip       = StringHandler::filterXSS($zip);
@@ -445,13 +445,20 @@ function buildConfiguration($aValues)
     global $smarty;
 
     $oResponse       = new IOResponse();
+    $Artikel         = new Artikel();
     $articleId       = isset($aValues['VariKindArtikel']) ? (int)$aValues['VariKindArtikel'] : (int)$aValues['a'];
     $items           = isset($aValues['item']) ? $aValues['item'] : [];
     $quantities      = isset($aValues['quantity']) ? $aValues['quantity'] : [];
     $variationValues = isset($aValues['eigenschaftwert']) ? $aValues['eigenschaftwert'] : [];
     $oKonfig         = buildConfig($articleId, $aValues['anzahl'], $variationValues, $items, $quantities, []);
+    $Artikel->fuelleArtikel($articleId, null);
+    $Artikel->Preise->cVKLocalized[$_SESSION['Kundengruppe']->nNettoPreise]
+        = gibPreisStringLocalized($Artikel->Preise->fVK[$_SESSION['Kundengruppe']->nNettoPreise] * $aValues['anzahl'], 0, true);
 
-    $smarty->assign('oKonfig', $oKonfig);
+
+    $smarty->assign('oKonfig', $oKonfig)
+        ->assign('NettoPreise', $_SESSION['Kundengruppe']->nNettoPreise)
+        ->assign('Artikel', $Artikel);
     $oKonfig->cTemplate = utf8_encode(
         $smarty->fetch('productdetails/config_summary.tpl')
     );

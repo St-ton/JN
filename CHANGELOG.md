@@ -1,8 +1,38 @@
 # JTL-Shop Changelog
 
+## [4.06] - 2017-08-xx
+
+### Wichtige Änderungen
+
+#### Teilverschlüsselung wird nicht länger unterstützt
+JTL-Shop 4.06 unterstützt nicht länger die Option Teilverschlüsselung, also den automatischen Wechsel von http auf https z.B. beim Wechsel in den Warenkorb. 
+Ein Umstieg auf permanentes SSL ist generell empfehlenswert und sollte idealerweise bereits vor dem Update durchgeführt werden (Einstellung 192 im Shop-Backend).
+Sofern noch Teilverschlüsselung in den Einstellungen aktiv ist, wird beim Shop-Update permanentes SSL aktiviert. 
+
+#### Verkürzter Checkout mit 3 Schritten
+Der Bestellvorgang wurde von 5 auf nur noch 3 Schritte reduziert und benutzerfreundlicher umgestaltet. 
+Bei angepassten Templates oder individuellen Plugins sind unter Umständen Änderungen notwendig. 
+Nachfolgend sind die wichtigsten Änderungen aufgeführt: 
+ * `checkout/step1_proceed_as_guest.tpl` und `checkout/step2_delivery_address.tpl` sind als `@deprecated` markiert und werden nicht mehr verwendet
+ * `checkout/step4_payment_options.tpl` wurde grundlegend geändert
+ * `checkout/step1_edit_customer_address.tpl` ist neu und muss in Drittanbieter-Templates integriert werden, da sie vom Shop-Core verwendet wird
+ * Hinweise zu Template-Änderungen finden Sie [hier](http://docs.jtl-shop.de/de/latest/shop_templates/short_checkout.html)
+ * Hinweise für Plugin-Anpassungen finden Sie [hier](http://docs.jtl-shop.de/de/latest/shop_plugins/short_checkout.html)
+
+#### Template-Kompatibilität zu JTL-Shop3-Tiny standardmäßig inaktiv
+Der Kompatibilitätsmodus für die Nutzung eines Tiny-basierten Templates in JTL-Shop 4 ist ab Version 4.06 standardmäßig inaktiv.
+Shops mit Evo oder kompatiblen Shop4-Templates benötigen diesen Modus nicht und profitieren mit einem leichten Performancegewinn von der Deaktivierung.   
+Wer den Kompatibilitätsmodus zum Betrieb seines Templates benötigt, kann diesen mit einer zusätzlichen Zeile in der config.JTL-Shop.ini.php 
+aktivieren: define('TEMPLATE_COMPATIBILITY', true);
+
+#### Weitere Anpassungen
+Das PayPal-Plugin wird in Version 1.08 ausgeliefert und beinhaltet nun auch die Zahlart Ratenzahlung powered by PayPal. 
+Bitte beachten Sie auch das aktualisierte Handbuch zum PayPal-Plugin: http://jtl-url.de/paypaldocs
+
+
 ## [4.05.3]
 
-## Bugfixes
+### Bugfixes
 
 * Beim Export von Exportformaten wird der neue Dateiinhalt an alte Datei angehängt (#1217)
 * Bei News-Kategoriebeschreibung kann kein HTML verwendet werden (#1197)

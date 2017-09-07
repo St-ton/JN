@@ -112,6 +112,7 @@ class WarenkorbHelper
                     }
                     break;
 
+                case C_WARENKORBPOS_TYP_TRUSTEDSHOPS:
                 case C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR:
                     $info->surcharge[self::NET] += $amount * $oPosition->nAnzahl;
                     $info->surcharge[self::GROSS] += $amountGross * $oPosition->nAnzahl;

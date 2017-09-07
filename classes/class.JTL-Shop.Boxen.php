@@ -408,7 +408,7 @@ class Boxen
                                 AND round(tbestseller.fAnzahl) >= " . $nAnzahl . "
                                 $this->cVaterSQL
                                 $this->lagerFilter
-                            ORDER BY fAnzahl DESC, rand() LIMIT " . $limit, 2
+                            ORDER BY fAnzahl DESC LIMIT " . $limit, 2
                     );
                     if (is_array($menge) && count($menge) > 0) {
                         $rndkeys = array_rand($menge, min($anzahl, count($menge)));
@@ -441,7 +441,7 @@ class Boxen
 
             case BOX_TRUSTEDSHOPS_GUETESIEGEL :
                 $oBox->compatName = 'TrustedShopsSiegelbox';
-                if ($this->boxConfig['trustedshops']['trustedshops_siegelbox_anzeigen'] === 'Y') {
+                if ($this->boxConfig['trustedshops']['trustedshops_nutzen'] === 'Y') {
                     $oTrustedShops    = new TrustedShops(-1, StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
                     $shopURL          = Shop::getURL(true) . '/';
                     if ($oTrustedShops->nAktiv == 1 && strlen($oTrustedShops->tsId) > 0) {
@@ -457,7 +457,7 @@ class Boxen
             case BOX_TRUSTEDSHOPS_KUNDENBEWERTUNGEN :
                 $oBox->compatName    = 'TrustedShopsKundenbewertung';
                 $cValidSprachISO_arr = ['de', 'en', 'fr', 'pl', 'es'];
-                if ($this->boxConfig['trustedshops']['trustedshops_kundenbewertung_anzeigen'] === 'Y' &&
+                if ($this->boxConfig['trustedshops']['trustedshops_nutzen'] === 'Y' &&
                     in_array(StringHandler::convertISO2ISO639($_SESSION['cISOSprache']), $cValidSprachISO_arr, true)) {
                     $oTrustedShops                = new TrustedShops(-1, StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
                     $oTrustedShopsKundenbewertung = $oTrustedShops->holeKundenbewertungsstatus(StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
@@ -482,6 +482,7 @@ class Boxen
                         }
                         $oBox->cBildPfad    = Shop::getURL(true) . '/' . PFAD_GFX_TRUSTEDSHOPS . $filename;
                         $oBox->cBildPfadURL = $cURLSprachISO_arr[StringHandler::convertISO2ISO639($_SESSION['cISOSprache'])];
+                        $oBox->oStatistik   = $oTrustedShops->gibKundenbewertungsStatistik();
                     }
                 }
                 break;

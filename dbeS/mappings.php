@@ -238,7 +238,8 @@ $mArtikel = [
 ];
 
 $mArtikelQuickSync = [
-    'fLagerbestand'
+    'fLagerbestand',
+    'fStandardpreisNetto'
 ];
 
 $mPreise = [

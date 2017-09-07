@@ -37,13 +37,19 @@
             <img src="{$oNavigationsinfo->cBildURL}" alt="{if isset($oNavigationsinfo->oKategorie->cBeschreibung)}{$oNavigationsinfo->oKategorie->cBeschreibung|strip_tags|truncate:40|escape:"html"}{elseif isset($oNavigationsinfo->oHersteller->cBeschreibung)}{$oNavigationsinfo->oHersteller->cBeschreibung|strip_tags|truncate:40|escape:"html"}{/if}" />
           </div>
         {/if}
-        {if $Einstellungen.navigationsfilter.kategorie_beschreibung_anzeigen === 'Y' && isset($oNavigationsinfo->oKategorie) && $oNavigationsinfo->oKategorie->cBeschreibung|strlen > 0}
+        {if $Einstellungen.navigationsfilter.kategorie_beschreibung_anzeigen === 'Y'
+            && isset($oNavigationsinfo->oKategorie) && $oNavigationsinfo->oKategorie->cBeschreibung|strlen > 0
+            && $Einstellungen.navigationsfilter.kategorie_bild_anzeigen !== 'B'}
             <div class="item_desc custom_content">{$oNavigationsinfo->oKategorie->cBeschreibung}</div>
         {/if}
-        {if $Einstellungen.navigationsfilter.hersteller_beschreibung_anzeigen === 'Y' && isset($oNavigationsinfo->oHersteller) && $oNavigationsinfo->oHersteller->cBeschreibung|strlen > 0}
+        {if $Einstellungen.navigationsfilter.hersteller_beschreibung_anzeigen === 'Y'
+            && isset($oNavigationsinfo->oHersteller) && $oNavigationsinfo->oHersteller->cBeschreibung|strlen > 0
+            && $Einstellungen.navigationsfilter.hersteller_bild_anzeigen !== 'B'}
             <div class="item_desc custom_content">{$oNavigationsinfo->oHersteller->cBeschreibung}</div>
         {/if}
-        {if $Einstellungen.navigationsfilter.merkmalwert_beschreibung_anzeigen === 'Y' && isset($oNavigationsinfo->oMerkmalWert) && $oNavigationsinfo->oMerkmalWert->cBeschreibung|strlen > 0}
+        {if $Einstellungen.navigationsfilter.merkmalwert_beschreibung_anzeigen === 'Y'
+            && isset($oNavigationsinfo->oMerkmalWert) && $oNavigationsinfo->oMerkmalWert->cBeschreibung|strlen > 0
+            && $Einstellungen.navigationsfilter.merkmalwert_bild_anzeigen !== 'B'}
             <div class="item_desc custom_content">{$oNavigationsinfo->oMerkmalWert->cBeschreibung}</div>
         {/if}
     </div>

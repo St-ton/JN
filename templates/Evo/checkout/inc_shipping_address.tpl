@@ -7,7 +7,7 @@
 {else}
     {assign var="fehlendeAngabenShipping" value=null}
 {/if}
-<div class="form-group checkbox">
+<div class="form-group checkbox control-toggle">
     <input type="hidden" name="shipping_address" value="1">
     <label for="checkout_register_shipping_address" class="btn-block" data-toggle="collapse" data-target="#select_shipping_address">
         <input id="checkout_register_shipping_address" class="radio-checkbox" type="checkbox" name="shipping_address" value="0"{if !isset($Lieferadresse) && empty($kLieferadresse)} checked="checked"{/if} />
@@ -48,14 +48,14 @@
         </fieldset>
         <fieldset id="register_shipping_address" class="collapse collapse-non-validate{if $kLieferadresse == -1}} in{/if}" aria-expanded="{if $kLieferadresse == -1}}true{else}false{/if}">
             <legend>{lang key="createNewShippingAdress" section="account data"}</legend>
-            {include file="register/form/customer_shipping_address.tpl" prefix="register" fehlendeAngaben=$fehlendeAngabenShipping}
-            {include file="register/form/customer_shipping_contact.tpl" prefix="register" fehlendeAngaben=$fehlendeAngabenShipping}
+            {include file="checkout/customer_shipping_address.tpl" prefix="register" fehlendeAngaben=$fehlendeAngabenShipping}
+            {include file="checkout/customer_shipping_contact.tpl" prefix="register" fehlendeAngaben=$fehlendeAngabenShipping}
         </fieldset>
     {else}
         <fieldset>
             <legend>{lang key="createNewShippingAdress" section="account data"}</legend>
-            {include file="register/form/customer_shipping_address.tpl" prefix="register" fehlendeAngaben=$fehlendeAngabenShipping}
-            {include file="register/form/customer_shipping_contact.tpl" prefix="register" fehlendeAngaben=$fehlendeAngabenShipping}
+            {include file="checkout/customer_shipping_address.tpl" prefix="register" fehlendeAngaben=$fehlendeAngabenShipping}
+            {include file="checkout/customer_shipping_contact.tpl" prefix="register" fehlendeAngaben=$fehlendeAngabenShipping}
         </fieldset>
     {/if}
     {/block}

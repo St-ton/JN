@@ -76,6 +76,7 @@
                         <div class="panel-footer">
                             <div class="btn-group">
                                 <button name="action[erstellen]" type="submit" value="1" class="btn btn-primary add"><i class="fa fa-share"></i> {#exportformatAdd#}</button>
+                                <button name="action[triggern]" type="submit" value="1" class="btn btn-default"><i class="fa fa-play-circle-o"></i> {#exportformatTriggerCron#}</button>
                             </div>
                         </div>
                     {/if}

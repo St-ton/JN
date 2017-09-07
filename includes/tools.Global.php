@@ -6110,13 +6110,13 @@ function truncateMetaDescription($cDesc)
  */
 function prepareMeta($metaProposal, $metaSuffix = null, $maxLength = null)
 {
-    $metaProposal = str_replace('"', '', $metaProposal);
+    $metaProposal = str_replace('"', '', StringHandler::unhtmlentities($metaProposal));
     $metaSuffix   = !empty($metaSuffix) ? $metaSuffix : '';
     if (!empty($maxLength) && $maxLength > 0) {
         $metaProposal = substr($metaProposal, 0, (int)$maxLength);
     }
 
-    return trim(preg_replace('/\s\s+/', ' ', $metaProposal)) . $metaSuffix;
+    return StringHandler::htmlentities(trim(preg_replace('/\s\s+/', ' ', $metaProposal))) . $metaSuffix;
 }
 
 /**
@@ -6250,7 +6250,12 @@ function holeKonfigBearbeitenModus($kKonfig, &$smarty)
                     $oKonfigitem                                              = new Konfigitem($oPosition->kKonfigitem);
                     $nKonfigitem_arr[]                                        = $oKonfigitem->getKonfigitem();
                     $nKonfigitemAnzahl_arr[$oKonfigitem->getKonfigitem()]     = $oPosition->nAnzahl / $oBasePosition->nAnzahl;
-                    $nKonfiggruppeAnzahl_arr[$oKonfigitem->getKonfiggruppe()] = $oPosition->nAnzahl / $oBasePosition->nAnzahl;
+                    if ($oKonfigitem->ignoreMultiplier()) {
+                        $nKonfiggruppeAnzahl_arr[$oKonfigitem->getKonfiggruppe()] = $oPosition->nAnzahl;
+                    } else {
+                        $nKonfiggruppeAnzahl_arr[$oKonfigitem->getKonfiggruppe()] = $oPosition->nAnzahl / $oBasePosition->nAnzahl;
+                    }
+
                 }
             }
             unset($oPosition);

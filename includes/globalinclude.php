@@ -64,25 +64,24 @@ $cache->setJtlCacheConfig();
 
 $conf = Shop::getSettings([CONF_GLOBAL]);
 
-if (PHP_SAPI !== 'cli' &&
-    $conf['global']['kaufabwicklung_ssl_nutzen'] === 'P' &&
-    (!isset($_SERVER['HTTPS']) || (strtolower($_SERVER['HTTPS']) !== 'on' && (int)$_SERVER['HTTPS'] !== 1))
+if (PHP_SAPI !== 'cli'
+    && $conf['global']['kaufabwicklung_ssl_nutzen'] === 'P'
+    && (!isset($_SERVER['HTTPS']) || (strtolower($_SERVER['HTTPS']) !== 'on' && (int)$_SERVER['HTTPS'] !== 1))
 ) {
     $https = false;
-    if ((isset($_SERVER['HTTP_X_FORWARDED_HOST']) && $_SERVER['HTTP_X_FORWARDED_HOST'] === 'ssl.webpack.de') ||
-        (isset($_SERVER['SCRIPT_URI']) && preg_match('/^ssl-id/', $_SERVER['SCRIPT_URI'])) ||
-        (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') ||
-        (isset($_SERVER['HTTP_X_FORWARDED_HOST']) && preg_match('/^ssl/', $_SERVER['HTTP_X_FORWARDED_HOST']))) {
+    if ((isset($_SERVER['HTTP_X_FORWARDED_HOST']) && $_SERVER['HTTP_X_FORWARDED_HOST'] === 'ssl.webpack.de')
+        || (isset($_SERVER['SCRIPT_URI']) && preg_match('/^ssl-id/', $_SERVER['SCRIPT_URI']))
+        || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')
+        || (isset($_SERVER['HTTP_X_FORWARDED_HOST']) && preg_match('/^ssl/', $_SERVER['HTTP_X_FORWARDED_HOST']))
+    ) {
         $https = true;
     }
     if (!$https) {
         $lang = '';
         if (!standardspracheAktiv(true)) {
-            if (strpos($_SERVER['REQUEST_URI'], '?')) {
-                $lang = '&lang=' . $_SESSION['cISOSprache'];
-            } else {
-                $lang = '?lang=' . $_SESSION['cISOSprache'];
-            }
+            $lang = strpos($_SERVER['REQUEST_URI'], '?')
+                ? '&lang=' . $_SESSION['cISOSprache']
+                : '?lang=' . $_SESSION['cISOSprache'];
         }
         header('Location: https://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'] . $lang, true, 301);
         exit();
@@ -105,7 +104,7 @@ if (!JTL_INCLUDE_ONLY_DB) {
     require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.ExtensionPoint.php';
     require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Boxen.php';
     require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Sprache.php';
-    //globale Werkzeuge
+    // globale Werkzeuge
     require_once PFAD_ROOT . PFAD_XAJAX . 'xajax_core/xajax.inc.php';
     require_once PFAD_ROOT . PFAD_INCLUDES_EXT . 'auswahlassistent_ext_inc.php';
     require_once PFAD_ROOT . PFAD_INCLUDES . 'artikelsuchspecial_inc.php';
@@ -136,16 +135,16 @@ if (!JTL_INCLUDE_ONLY_DB) {
         : Session::getInstance();
     //Wartungsmodus aktiviert?
     $bAdminWartungsmodus = false;
-    if ($GlobaleEinstellungen['global']['wartungsmodus_aktiviert'] === 'Y' &&
-        basename($_SERVER['SCRIPT_FILENAME']) !== 'wartung.php'
+    if ($GlobaleEinstellungen['global']['wartungsmodus_aktiviert'] === 'Y'
+        && basename($_SERVER['SCRIPT_FILENAME']) !== 'wartung.php'
     ) {
         require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'benutzerverwaltung_inc.php';
         if (!Shop::isAdmin()) {
-            header('Location: ' . Shop::getURL() . '/wartung.php', true, 307);
+            http_response_code(503);
+            require_once PFAD_ROOT . 'wartung.php';
             exit;
-        } else {
-            $bAdminWartungsmodus = true;
         }
+        $bAdminWartungsmodus = true;
     }
     $GLOBALS['oSprache'] = Sprache::getInstance();
 }

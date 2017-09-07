@@ -642,4 +642,47 @@ class Preise
                 JOIN tpreisdetail AS {$detailAlias} ON {$detailAlias}.kPreis = {$priceAlias}.kPreis
                     AND {$detailAlias}.nAnzahlAb = 0";
     }
+
+    /**
+     * Set all fvk prices to zero.
+     */
+    public function setPricesToZero()
+    {
+        $this->fVKNetto  = 0;
+        $this->fVKBrutto = 0;
+        foreach ($this->fVK as $key => $fVK) {
+            $this->fVK[$key] = 0;
+        }
+        foreach ($this->alterVK as $key => $alterVK) {
+            $this->alterVK[$key] = 0;
+        }
+        $this->fPreis1 = 0;
+        $this->fPreis2 = 0;
+        $this->fPreis3 = 0;
+        $this->fPreis4 = 0;
+        $this->fPreis5 = 0;
+        foreach ($this->fStaffelpreis1 as $key => $fSteffelpreis1) {
+            $this->fStaffelpreis1[$key] = 0;
+        }
+        foreach ($this->fStaffelpreis2 as $key => $fSteffelpreis2) {
+            $this->fStaffelpreis2[$key] = 0;
+        }
+        foreach ($this->fStaffelpreis3 as $key => $fSteffelpreis3) {
+            $this->fStaffelpreis3[$key] = 0;
+        }
+        foreach ($this->fStaffelpreis4 as $key => $fSteffelpreis4) {
+            $this->fStaffelpreis4[$key] = 0;
+        }
+        foreach ($this->fStaffelpreis5 as $key => $fSteffelpreis5) {
+            $this->fStaffelpreis5[$key] = 0;
+        }
+        foreach ($this->fPreis_arr as $key => $fPreis) {
+            $this->fPreis_arr[$key] = 0;
+        }
+        foreach ($this->fStaffelpreis_arr as $fStaffelpreisKey => $fStaffelpreis) {
+            foreach ($fStaffelpreis as $fPreisKey => $fPreis) {
+                $this->fStaffelpreis_arr[$fStaffelpreisKey][$fPreisKey] = 0;
+            }
+        }
+    }
 }

@@ -18,12 +18,15 @@
                     <div id="quantity-grp" class="choose_quantity input-group">
                         <input type="{if $Artikel->cTeilbar === 'Y' && $Artikel->fAbnahmeintervall == 0}text{else}number{/if}" min="0"{if $Artikel->fAbnahmeintervall > 0} required step="{$Artikel->fAbnahmeintervall}"{/if}
                                id="quantity" class="quantity form-control text-right" name="anzahl"
+                               aria-label="{lang key='quantity'}"
                                value="{if $Artikel->fAbnahmeintervall > 0}{if $Artikel->fMindestbestellmenge > $Artikel->fAbnahmeintervall}{$Artikel->fMindestbestellmenge}{else}{$Artikel->fAbnahmeintervall}{/if}{else}1{/if}" />
                         {if $Artikel->cEinheit}
                             <span class="input-group-addon unit">{$Artikel->cEinheit}</span>
                         {/if}
                         <span class="input-group-btn">
-                            <button name="inWarenkorb" type="submit" value="{lang key="addToCart" section="global"}" class="submit btn btn-primary"><span class="fa fa-shopping-cart visible-xs"></span><span class="hidden-xs">{lang key="addToCart" section="global"}</span></button>
+                            <button aria-label="{lang key='addToCart'}" name="inWarenkorb" type="submit" value="{lang key='addToCart'}" class="submit btn btn-primary">
+                                <span class="fa fa-shopping-cart visible-xs"></span><span class="hidden-xs">{lang key='addToCart'}</span>
+                            </button>
                         </span>
                     </div>
                 </div>

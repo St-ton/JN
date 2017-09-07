@@ -81,7 +81,7 @@
         <div class="col-xs-12 col-md-6">
             <div class="form-group float-label-control{if !empty($fehlendeAngaben.firmazusatz)} has-error{/if}"{if $Einstellungen.kunden.kundenregistrierung_abfragen_firmazusatz === 'Y'} required{/if}>
                 <label for="{$prefix}-{$name}-firmext" class="control-label">{lang key="firmext" section="account data"}</label>
-                <input type="text" name="{$prefix}[{$name}][firmazusatz]" value="{if isset($Lieferadresse->cZusatz)}{$Lieferadresse->cZusatz}{/if}" id="{$prefix}-{$name}-firm" class="form-control" placeholder="{lang key="firmext" section="account data"}"{if $Einstellungen.kunden.kundenregistrierung_abfragen_firmazusatz === 'Y'} required{/if}>
+                <input type="text" name="{$prefix}[{$name}][firmazusatz]" value="{if isset($Lieferadresse->cZusatz)}{$Lieferadresse->cZusatz}{/if}" id="{$prefix}-{$name}-firmext" class="form-control" placeholder="{lang key="firmext" section="account data"}"{if $Einstellungen.kunden.kundenregistrierung_abfragen_firmazusatz === 'Y'} required{/if}>
                 {if !empty($fehlendeAngaben.firmazusatz)}
                     <div class="alert alert-danger">{lang key="fillOut" section="global"}</div>
                 {/if}
@@ -145,14 +145,14 @@
             <div class="form-group float-label-control{if !empty($fehlendeAngaben.bundesland)} has-error{/if}{if $Einstellungen.kunden.lieferadresse_abfragen_bundesland === 'Y'} required{/if}">
                 <label class="control-label" for="{$prefix}-{$name}-state">{lang key="state" section="account data"}</label>
                 <input
-                        type="text"
-                        title="{lang key=pleaseChoose}"
-                        name="{$prefix}[{$name}][bundesland]"
-                        value="{if isset($Lieferadresse->cBundesland)}{$Lieferadresse->cBundesland}{/if}"
-                        id="{$prefix}-{$name}-state"
-                        class="form-control"
-                        data-toggle="state" data-target="#{$prefix}-{$name}-country"
-                        placeholder="{lang key="state" section="account data"}"{if $Einstellungen.kunden.lieferadresse_abfragen_bundesland === 'Y'} required{/if}>
+                    type="text"
+                    title="{lang key=pleaseChoose}"
+                    name="{$prefix}[{$name}][bundesland]"
+                    value="{if isset($Lieferadresse->cBundesland)}{$Lieferadresse->cBundesland}{/if}"
+                    id="{$prefix}-{$name}-state"
+                    class="form-control"
+                    data-toggle="state" data-target="#{$prefix}-{$name}-country"
+                    placeholder="{lang key="state" section="account data"}"{if $Einstellungen.kunden.lieferadresse_abfragen_bundesland === 'Y'} required{/if}>
 
                 {if !empty($fehlendeAngaben.bundesland)}
                     <div class="alert alert-danger">{lang key="fillOut" section="global"}</div>
@@ -168,14 +168,14 @@
         <div class="form-group float-label-control{if !empty($fehlendeAngaben.plz)} has-error{/if} required">
             <label class="control-label" for="{$prefix}-{$name}-postcode">{lang key="plz" section="account data"}</label>
             <input
-                    type="text"
-                    name="{$prefix}[{$name}][plz]"
-                    value="{if isset($Lieferadresse->cPLZ)}{$Lieferadresse->cPLZ}{/if}"
-                    id="{$prefix}-{$name}-postcode"
-                    class="plz_input form-control"
-                    placeholder="{lang key="plz" section="account data"}"
-                    data-toggle="postcode" data-city="#{$prefix}-{$name}-city" data-country="#{$prefix}-{$name}-country"
-                    required>
+                type="text"
+                name="{$prefix}[{$name}][plz]"
+                value="{if isset($Lieferadresse->cPLZ)}{$Lieferadresse->cPLZ}{/if}"
+                id="{$prefix}-{$name}-postcode"
+                class="postcode_input form-control"
+                placeholder="{lang key="plz" section="account data"}"
+                data-toggle="postcode" data-city="#{$prefix}-{$name}-city" data-country="#{$prefix}-{$name}-country"
+                required>
             {if !empty($fehlendeAngaben.plz)}
                 <div class="alert alert-danger">{lang key="fillOut" section="global"}</div>{/if}
         </div>

@@ -556,7 +556,6 @@ function addFav(title, url, success) {
 function reloadFavs() {
     ajaxCallV2('favs.php?action=list', {}, function(result, error) {
         if (!error) {
-            console.log(result.data.tpl);
             $('#favs-drop').html(result.data.tpl);
         }
     });
@@ -717,7 +716,6 @@ function hideBackdrop() {
 function ioCall(name, args, success, error, context)
 {
     'use strict';
-
     args    = args || [];
     success = success || function () { };
     error   = error || function () { };
@@ -793,20 +791,35 @@ function ioManagedCall(adminPath, funcname, params, callback)
             }
         },
         function (result) {
-            if (result.error && result.error.code === 401) {
-                createNotify(
-                    {
-                        title: 'Sitzung abgelaufen',
-                        message: 'Sie werden zur Anmelde-Maske weitergeleitet...',
-                        icon: 'fa fa-lock'
-                    },
-                    {
-                        type: 'danger',
-                        onClose: function() {
-                            window.location.pathname = '/' + adminPath + 'index.php';
+            if (typeof callback === 'function') {
+                callback(result, result.error);
+            } else if (result.error) {
+                if (result.error.code === 401) {
+                    createNotify(
+                        {
+                            title: 'Sitzung abgelaufen',
+                            message: 'Sie werden zur Anmelde-Maske weitergeleitet...',
+                            icon: 'fa fa-lock'
+                        },
+                        {
+                            type: 'danger',
+                            onClose: function() {
+                                window.location.pathname = '/' + adminPath + 'index.php';
+                            }
                         }
-                    }
-                );
+                    );
+                } else if (result.error.message) {
+                    createNotify(
+                        {
+                            title: 'Fehler',
+                            message: result.error.message,
+                            icon: 'fa fa-lock'
+                        },
+                        {
+                            type: 'danger'
+                        }
+                    );
+                }
             }
         }
     );

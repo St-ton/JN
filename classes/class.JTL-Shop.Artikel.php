@@ -1069,13 +1069,11 @@ class Artikel
         if (!$kKundengruppe) {
             $kKundengruppe = Session::CustomerGroup()->getID();
         }
-        if (!Session::CustomerGroup()->mayViewPrices()) {
-            $this->Preise = null;
-
-            return $this;
-        }
         $kKunde       = isset($_SESSION['Kunde']) ? (int)$_SESSION['Kunde']->kKunde : 0;
         $this->Preise = new Preise($kKundengruppe, $oArtikelTMP->kArtikel, $kKunde, (int)$oArtikelTMP->kSteuerklasse);
+        if (!Session::CustomerGroup()->mayViewPrices()) {
+            $this->Preise->setPricesToZero();
+        }
         $this->Preise->localizePreise();
 
         return $this;
@@ -2297,8 +2295,7 @@ class Artikel
                             $this->Variationen[$nZaehler]->Werte[$i]->cAufpreisLocalized,
                             $this->Variationen[$nZaehler]->Werte[$i]->cPreisInklAufpreis
                         );
-                    }
-                    if (isset($this->Variationen[$nZaehler]->Werte[$i]->fVPEWert) &&
+                    } elseif (isset($this->Variationen[$nZaehler]->Werte[$i]->fVPEWert) &&
                         $this->Variationen[$nZaehler]->Werte[$i]->fVPEWert > 0
                     ) {
                         $nGenauigkeit = 2;
@@ -4055,10 +4052,8 @@ class Artikel
         ) {
             $this->inWarenkorbLegbar = INWKNICHTLEGBAR_LAGER;
         }
-        if ((!$this->bHasKonfig) &&
-            $this->Preise->fVKNetto == 0 &&
-            isset($this->Preise->fVKNetto, $conf['global']['global_preis0']) &&
-            $conf['global']['global_preis0'] === 'N'
+        if (isset($this->Preise->fVKNetto, $conf['global']['global_preis0']) && (!$this->bHasKonfig)
+            && $this->Preise->fVKNetto == 0 && $conf['global']['global_preis0'] === 'N'
         ) {
             $this->inWarenkorbLegbar = INWKNICHTLEGBAR_PREISAUFANFRAGE;
         }
@@ -5108,12 +5103,6 @@ class Artikel
         if ($this->fGewicht === null) {
             $this->fGewicht = 0;
         }
-        if ($this->Preise === null) {
-            $this->Preise = new stdClass();
-        }
-        if ($this->Preise->fVKNetto === null) {
-            $this->Preise->fVKNetto = 0;
-        }
         $customerGroupID = Session::CustomerGroup()->getID();
         // cheapest shipping except shippings that offer cash payment
         $shipping = Shop::DB()->query(
@@ -6073,35 +6062,45 @@ class Artikel
             }
         }
         $idx = Session::CustomerGroup()->getIsMerchant();
-        if ($conf['metaangaben']['global_meta_title_preis'] === 'Y' 
-            && isset(
+        if (isset(
+                $_SESSION['Kundengruppe']->nNettoPreise,
                 $this->Preise->fVK[$idx],
-                $this->Preise->cVKLocalized[$idx]
+                $this->Preise->cVKLocalized[$_SESSION['Kundengruppe']->nNettoPreise]
             )
             && $this->Preise->fVK[$idx] > 0
+            && $conf['metaangaben']['global_meta_title_preis'] === 'Y'
         ) {
             $cPreis = ', ' . $this->Preise->cVKLocalized[$idx];
         }
         if (!empty($this->AttributeAssoc[ART_ATTRIBUT_METATITLE])) {
-            return $this->AttributeAssoc[ART_ATTRIBUT_METATITLE] . $cGlobalMetaTitle . $cPreis;
+            return prepareMeta(
+                $this->AttributeAssoc[ART_ATTRIBUT_METATITLE] . $cGlobalMetaTitle,
+                $cPreis,
+                (int)$conf['metaangaben']['global_meta_maxlaenge_title']
+            );
         }
         if (!empty($this->FunktionsAttribute[ART_ATTRIBUT_METATITLE])) {
-            return $this->FunktionsAttribute[ART_ATTRIBUT_METATITLE] . $cGlobalMetaTitle . $cPreis;
+            return prepareMeta(
+                $this->FunktionsAttribute[ART_ATTRIBUT_METATITLE] . $cGlobalMetaTitle,
+                $cPreis,
+                (int)$conf['metaangaben']['global_meta_maxlaenge_title']
+            );
         }
         if (!empty($this->cName)) {
             $title = (!isset($conf['global']['global_artikelname_htmlentities']) ||
                 $conf['global']['global_artikelname_htmlentities'] === 'N')
-                ? StringHandler::htmlentities($this->cName) . $cPreis
-                : $title = $this->cName . $cPreis;
+                ? StringHandler::htmlentities($this->cName)
+                : $this->cName;
         }
         $cTitle = str_replace('"', '', $title) . $cGlobalMetaTitle;
 
         executeHook(HOOK_ARTIKEL_INC_METATITLE, ['cTitle' => &$cTitle]);
 
-        return (isset($conf['metaangaben']['global_meta_maxlaenge_title']) &&
-            $conf['metaangaben']['global_meta_maxlaenge_title'] > 0)
-            ? substr($cTitle, 0, (int)$conf['metaangaben']['global_meta_maxlaenge_title'])
-            : $cTitle;
+        return prepareMeta(
+            $cTitle,
+            $cPreis,
+            (int)$conf['metaangaben']['global_meta_maxlaenge_title']
+        );
     }
 
     /**

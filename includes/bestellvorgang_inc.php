@@ -102,12 +102,13 @@ function pruefeUnregistriertBestellen($cPost_arr)
         executeHook(HOOK_BESTELLVORGANG_INC_UNREGISTRIERTBESTELLEN);
 
         return 1;
-    }
-    setzeFehlendeAngaben($fehlendeAngaben);
-    Shop::Smarty()->assign('cKundenattribut_arr', $cKundenattribut_arr)
-        ->assign('cPost_var', StringHandler::filterXSS($cPost_arr));
+    } else {
+        setzeFehlendeAngaben($fehlendeAngaben);
+        Shop::Smarty()->assign('cKundenattribut_arr', $cKundenattribut_arr)
+            ->assign('cPost_var', StringHandler::filterXSS($cPost_arr));
 
-    return 0;
+        return 0;
+    }
 }
 
 /**
@@ -304,6 +305,28 @@ function pruefeRechnungsadresseStep($cGet_arr)
         }
         $Kunde = $_SESSION['Kunde'];
         $step  = 'edit_customer_address';
+    }
+
+    if (isset($_SESSION['checkout.register']) && (int)$_SESSION['checkout.register'] === 1) {
+        if (isset($_SESSION['checkout.fehlendeAngaben'])) {
+            setzeFehlendeAngaben($_SESSION['checkout.fehlendeAngaben']);
+            unset($_SESSION['checkout.fehlendeAngaben']);
+            $step = 'edit_customer_address';
+        }
+        if (isset($_SESSION['checkout.cPost_arr'])) {
+            $Kunde                      = getKundendaten($_SESSION['checkout.cPost_arr'], 0, 0);
+            $Kunde->cKundenattribut_arr = getKundenattribute($_SESSION['checkout.cPost_arr']);
+            Shop::Smarty()->assign('Kunde', $Kunde)
+                ->assign('cPost_var', $_SESSION['checkout.cPost_arr']);
+
+            if (isset($_SESSION['Lieferadresse']) && (int)$_SESSION['checkout.cPost_arr']['shipping_address'] !== 0) {
+                Shop::Smarty()->assign('Lieferadresse', $_SESSION['Lieferadresse']);
+            }
+
+            $_POST = array_merge($_POST, $_SESSION['checkout.cPost_arr']);
+            unset($_SESSION['checkout.cPost_arr']);
+        }
+        unset($_SESSION['checkout.register']);
     }
 }
 
@@ -509,24 +532,6 @@ function gibStepAccountwahl()
     Shop::Smarty()->assign('untertitel', lang_warenkorb_bestellungEnthaeltXArtikel($_SESSION['Warenkorb']));
 
     executeHook(HOOK_BESTELLVORGANG_PAGE_STEPACCOUNTWAHL);
-
-    if (isset($_SESSION['checkout.register']) && (int)$_SESSION['checkout.register'] === 1) {
-        if (isset($_SESSION['checkout.fehlendeAngaben'])) {
-            setzeFehlendeAngaben($_SESSION['checkout.fehlendeAngaben']);
-            unset($_SESSION['checkout.fehlendeAngaben']);
-        }
-        if (isset($_SESSION['checkout.cPost_arr'])) {
-            $Kunde                      = getKundendaten($_SESSION['checkout.cPost_arr'], 0, 0);
-            $Kunde->cKundenattribut_arr = getKundenattribute($_SESSION['checkout.cPost_arr']);
-            Shop::Smarty()->assign('Kunde', $Kunde);
-
-            if (isset($_SESSION['Lieferadresse'])) {
-                Shop::Smarty()->assign('Lieferadresse', $_SESSION['Lieferadresse']);
-            }
-            unset($_SESSION['checkout.cPost_arr']);
-        }
-        unset($_SESSION['checkout.register']);
-    }
 }
 
 /**
@@ -618,7 +623,7 @@ function gibStepLieferadresse()
  */
 function gibStepZahlung()
 {
-    global $step;
+    global $step, $Einstellungen;
     /** @var array('Warenkorb' => Warenkorb) $_SESSION */
     $conf          = Shop::getSettings([CONF_TRUSTEDSHOPS]);
     $oTrustedShops = new stdClass();
@@ -668,67 +673,74 @@ function gibStepZahlung()
         }
     }
 
-    $aktiveVersandart = gibAktiveVersandart($oVersandart_arr);
-    $oZahlungsart_arr = gibZahlungsarten($aktiveVersandart, Session::CustomerGroup()->getID());
-    if (is_array($oZahlungsart_arr) && count($oZahlungsart_arr) === 1 &&
-        !isset($_GET['editZahlungsart']) && empty($_SESSION['TrustedShopsZahlung']) &&
-        isset($_POST['zahlungsartwahl']) && (int)$_POST['zahlungsartwahl'] === 1) {
-        // Prüfe Zahlungsart
-        $nZahglungsartStatus = zahlungsartKorrekt($oZahlungsart_arr[0]->kZahlungsart);
-        if ($nZahglungsartStatus === 2) {
-            // Prüfen ab es ein Trusted Shops Zertifikat gibt
-            if ($conf['trustedshops']['trustedshops_nutzen'] === 'Y') {
-                require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.TrustedShops.php';
-                $oTrustedShops = new TrustedShops(-1, StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
+    if (is_array($oVersandart_arr) && count($oVersandart_arr) > 0) {
+        $aktiveVersandart = gibAktiveVersandart($oVersandart_arr);
+        $oZahlungsart_arr = gibZahlungsarten($aktiveVersandart, Session::CustomerGroup()->getID());
+        if (is_array($oZahlungsart_arr)
+            && count($oZahlungsart_arr) === 1
+            && !isset($_GET['editZahlungsart'])
+            && empty($_SESSION['TrustedShopsZahlung'])
+            && isset($_POST['zahlungsartwahl'])
+            && (int)$_POST['zahlungsartwahl'] === 1
+        ) {
+            // Prüfe Zahlungsart
+            $nZahglungsartStatus = zahlungsartKorrekt($oZahlungsart_arr[0]->kZahlungsart);
+            if ($nZahglungsartStatus === 2) {
+                // Prüfen ab es ein Trusted Shops Zertifikat gibt
+                if ($conf['trustedshops']['trustedshops_nutzen'] === 'Y') {
+                    require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.TrustedShops.php';
+                    $oTrustedShops = new TrustedShops(-1, StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
+                }
+                if (isset($oTrustedShops->tsId) &&
+                    $oTrustedShops->eType === TS_BUYERPROT_EXCELLENCE &&
+                    strlen($oTrustedShops->tsId) > 0
+                ) {
+                    $_SESSION['TrustedShopsZahlung'] = true;
+                    gibStepZahlung();
+                }
             }
-            if (isset($oTrustedShops->tsId) &&
-                $oTrustedShops->eType === TS_BUYERPROT_EXCELLENCE &&
-                strlen($oTrustedShops->tsId) > 0
-            ) {
-                $_SESSION['TrustedShopsZahlung'] = true;
-                gibStepZahlung();
+        } elseif (!is_array($oZahlungsart_arr) || count($oZahlungsart_arr) === 0) {
+            if (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
+                Jtllog::writeLog(utf8_decode(
+                    'Es konnte keine Zahlungsart für folgende Daten gefunden werden: Versandart: ' .
+                    $_SESSION['Versandart']->kVersandart . ', Kundengruppe: ' . Session::CustomerGroup()->getID()
+                ), JTLLOG_LEVEL_ERROR);
             }
         }
-    } elseif (!is_array($oZahlungsart_arr) || count($oZahlungsart_arr) === 0) {
-        if (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-            Jtllog::writeLog(utf8_decode(
-                'Es konnte keine Zahlungsart für folgende Daten gefunden werden: Versandart: ' .
-                $_SESSION['Versandart']->kVersandart . ', Kundengruppe: ' . Session::CustomerGroup()->getID()
-            ), JTLLOG_LEVEL_ERROR);
+
+        $aktiveVerpackung  = gibAktiveVerpackung($oVerpackung_arr);
+        $aktiveZahlungsart = gibAktiveZahlungsart($oZahlungsart_arr);
+        if (!isset($_SESSION['Versandart']) && !empty($aktiveVersandart)) {
+            // dieser Workaround verhindert die Anzeige der Standardzahlungsarten wenn ein Zahlungsplugin aktiv ist
+            $_SESSION['Versandart'] = (object)[
+                'kVersandart' => $aktiveVersandart,
+            ];
         }
+
+        Shop::Smarty()->assign('Zahlungsarten', $oZahlungsart_arr)
+            ->assign('Einstellungen', $Einstellungen)
+            ->assign('Versandarten', $oVersandart_arr)
+            ->assign('Verpackungsarten', $oVerpackung_arr)
+            ->assign('AktiveVersandart', $aktiveVersandart)
+            ->assign('AktiveZahlungsart', $aktiveZahlungsart)
+            ->assign('AktiveVerpackung', $aktiveVerpackung)
+            ->assign('Kunde', $_SESSION['Kunde'])
+            ->assign('Lieferadresse', $_SESSION['Lieferadresse']);
+
+        executeHook(HOOK_BESTELLVORGANG_PAGE_STEPZAHLUNG);
+
+        /**
+         * This is for compatibility in 3-step checkout and will prevent form in form tags trough payment plugins
+         * @see /templates/Evo/checkout/step4_payment_options.tpl
+         * ToDo: Replace with more convenient solution in later versions (after 4.06)
+         */
+        $step4_payment_content = Shop::Smarty()->fetch('checkout/step4_payment_options.tpl');
+        if (preg_match('/<form([^>]*)>/', $step4_payment_content, $hits)) {
+            $step4_payment_content = str_replace($hits[0], '<div' . $hits[1] . '>', $step4_payment_content);
+            $step4_payment_content = str_replace('</form>', '</div>', $step4_payment_content);
+        }
+        Shop::Smarty()->assign('step4_payment_content', $step4_payment_content);
     }
-
-    $aktiveVerpackung  = gibAktiveVerpackung($oVerpackung_arr);
-    $aktiveZahlungsart = gibAktiveZahlungsart($oZahlungsart_arr);
-    if (!isset($_SESSION['Versandart']) && !empty($aktiveVersandart)) {
-        // dieser Workaround verhindert die Anzeige der Standardzahlungsarten wenn ein Zahlungsplugin aktiv ist
-        $_SESSION['Versandart'] = (object)[
-            'kVersandart' => $aktiveVersandart,
-        ];
-    }
-
-    Shop::Smarty()->assign('Zahlungsarten', $oZahlungsart_arr)
-        ->assign('Versandarten', $oVersandart_arr)
-        ->assign('Verpackungsarten', $oVerpackung_arr)
-        ->assign('AktiveVersandart', $aktiveVersandart)
-        ->assign('AktiveZahlungsart', $aktiveZahlungsart)
-        ->assign('AktiveVerpackung', $aktiveVerpackung)
-        ->assign('Kunde', $_SESSION['Kunde'])
-        ->assign('Lieferadresse', $_SESSION['Lieferadresse']);
-
-    executeHook(HOOK_BESTELLVORGANG_PAGE_STEPZAHLUNG);
-
-    /**
-     * This is for compatibility in 3-step checkout and will prevent form in form tags trough payment plugins
-     * @see /templates/Evo/checkout/step4_payment_options.tpl
-     * ToDo: Replace with more convenient solution in later versions (after 4.06)
-     */
-    $step4_payment_content = Shop::Smarty()->fetch('checkout/step4_payment_options.tpl');
-    if (preg_match('/<form([^>]*)>/', $step4_payment_content, $hits)) {
-        $step4_payment_content = str_replace($hits[0], '<div' . $hits[1] . '>', $step4_payment_content);
-        $step4_payment_content = str_replace('</form>', '</div>', $step4_payment_content);
-    }
-    Shop::Smarty()->assign('step4_payment_content', $step4_payment_content);
 }
 
 /**
@@ -1865,7 +1877,7 @@ function versandartKorrekt($kVersandart, $aFormValues = 0)
                 WHERE cLaender LIKE '%" . $cISO . "%'
                     AND cNurAbhaengigeVersandart = '" . $cNurAbhaengigeVersandart . "'
                     AND (
-                            cVersandklassen = '-1' OR 
+                            cVersandklassen = '-1' OR
                             cVersandklassen RLIKE '^([0-9 -]* )?" . $versandklassen . " '
                         )
                     AND kVersandart = " . $kVersandart, 1
@@ -2258,7 +2270,7 @@ function checkKundenFormularArray($data, $kundenaccount, $checkpass = 1)
 function checkKundenFormular($kundenaccount, $checkpass = 1)
 {
     $data = $_POST; // create a copy
-    
+
     return checkKundenFormularArray($data, $kundenaccount, $checkpass);
 }
 
@@ -2403,9 +2415,9 @@ function checkeKupon($Kupon)
     $alreadyUsedSQL = '';
     $bindings       = [];
     if (!empty($_SESSION['Kunde']->kKunde) && !empty($_SESSION['Kunde']->cMail)) {
-        $alreadyUsedSQL = "SELECT SUM(nVerwendungen) AS nVerwendungen 
-                              FROM tkuponkunde 
-                              WHERE (kKunde = :customer OR cMail = :mail) 
+        $alreadyUsedSQL = "SELECT SUM(nVerwendungen) AS nVerwendungen
+                              FROM tkuponkunde
+                              WHERE (kKunde = :customer OR cMail = :mail)
                                   AND kKupon = :coupon";
         $bindings       = [
             'customer' => (int)$_SESSION['Kunde']->kKunde,
@@ -2413,18 +2425,18 @@ function checkeKupon($Kupon)
             'coupon'   => (int)$Kupon->kKupon
         ];
     } elseif (!empty($_SESSION['Kunde']->cMail)) {
-        $alreadyUsedSQL = "SELECT SUM(nVerwendungen) AS nVerwendungen 
-                              FROM tkuponkunde 
-                              WHERE cMail = :mail 
+        $alreadyUsedSQL = "SELECT SUM(nVerwendungen) AS nVerwendungen
+                              FROM tkuponkunde
+                              WHERE cMail = :mail
                                   AND kKupon = :coupon";
         $bindings       = [
             'mail'   => $_SESSION['Kunde']->cMail,
             'coupon' => (int)$Kupon->kKupon
         ];
     } elseif (!empty($_SESSION['Kunde']->kKunde)) {
-        $alreadyUsedSQL = "SELECT SUM(nVerwendungen) AS nVerwendungen 
-                              FROM tkuponkunde 
-                              WHERE kKunde = :customer 
+        $alreadyUsedSQL = "SELECT SUM(nVerwendungen) AS nVerwendungen
+                              FROM tkuponkunde
+                              WHERE kKunde = :customer
                                   AND kKupon = :coupon";
         $bindings       = [
             'customer' => (int)$_SESSION['Kunde']->kKunde,
@@ -2882,8 +2894,8 @@ function getNonEditableCustomerFields()
     $oKundenattribute_arr = Shop::DB()->query(
         "SELECT ka.kKundenfeld
              FROM tkundenattribut AS ka
-             LEFT JOIN tkundenfeld AS kf 
-                ON ka.kKundenfeld = kf.kKundenfeld 
+             LEFT JOIN tkundenfeld AS kf
+                ON ka.kKundenfeld = kf.kKundenfeld
              WHERE kKunde = " . (int)$_SESSION['Kunde']->kKunde . "
              AND kf.nEditierbar = 0", 2
     );
@@ -3053,21 +3065,28 @@ function kuponMoeglich()
         "SELECT * FROM tkupon
             WHERE cAktiv = 'Y'
                 AND dGueltigAb <= now()
-                AND (dGueltigBis > now() 
+                AND (dGueltigBis > now()
                     OR dGueltigBis = '0000-00-00 00:00:00')
                 AND fMindestbestellwert <= " . $_SESSION['Warenkorb']->gibGesamtsummeWaren(true, false) . "
-                AND (cKuponTyp='versandkupon' 
+                AND (cKuponTyp='versandkupon'
                     OR cKuponTyp = 'standard')
+<<<<<<< HEAD
                 AND (kKundengruppe = -1 
                     OR kKundengruppe = 0 
                     OR kKundengruppe = " . Session::CustomerGroup()->getID() . ")
                 AND (nVerwendungen = 0 
+=======
+                AND (kKundengruppe = -1
+                    OR kKundengruppe = 0
+                    OR kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . ")
+                AND (nVerwendungen = 0
+>>>>>>> master
                     OR nVerwendungen > nVerwendungenBisher)
                 AND (cArtikel = '' $Artikel_qry)
-                AND (cHersteller IS NULL OR cHersteller = '' OR cHersteller = '-1' $Hersteller_qry) 
-                AND (cKategorien = '' 
+                AND (cHersteller IS NULL OR cHersteller = '' OR cHersteller = '-1' $Hersteller_qry)
+                AND (cKategorien = ''
                     OR cKategorien = '-1' $Kategorie_qry)
-                AND (cKunden = '' 
+                AND (cKunden = ''
                     OR cKunden = '-1' $Kunden_qry)", 1
     );
     if (!empty($kupons_mgl->kKupon)) {
@@ -3333,16 +3352,16 @@ function pruefeAjaxEinKlick()
         $oLetzteBestellung = Shop::DB()->query(
             "SELECT tbestellung.kBestellung, tbestellung.kLieferadresse, tbestellung.kZahlungsart, tbestellung.kVersandart
                 FROM tbestellung
-                JOIN tzahlungsart 
+                JOIN tzahlungsart
                     ON tzahlungsart.kZahlungsart = tbestellung.kZahlungsart
-                    AND (tzahlungsart.cKundengruppen IS NULL 
+                    AND (tzahlungsart.cKundengruppen IS NULL
                         OR tzahlungsart.cKundengruppen = ''
                         OR FIND_IN_SET('{$_SESSION['Kunde']->kKundengruppe}', REPLACE(tzahlungsart.cKundengruppen, ';', ',')) > 0)
-                JOIN tversandart 
+                JOIN tversandart
                     ON tversandart.kVersandart = tbestellung.kVersandart
-                    AND (tversandart.cKundengruppen = '-1' 
+                    AND (tversandart.cKundengruppen = '-1'
                         OR FIND_IN_SET('{$_SESSION['Kunde']->kKundengruppe}', REPLACE(tversandart.cKundengruppen, ';', ',')) > 0)
-                JOIN tversandartzahlungsart 
+                JOIN tversandartzahlungsart
                     ON tversandartzahlungsart.kVersandart = tversandart.kVersandart
                     AND tversandartzahlungsart.kZahlungsart = tzahlungsart.kZahlungsart
                 WHERE tbestellung.kKunde = {$_SESSION['Kunde']->kKunde}
@@ -3664,8 +3683,8 @@ function plausiLieferadresse($cPost_arr)
         $plz_x = Shop::DB()->executeQueryPrepared(
             "SELECT kVersandzuschlagPlz
                 FROM tversandzuschlagplz, tversandzuschlag
-                WHERE tversandzuschlag.kVersandart = :id 
-                    AND tversandzuschlag.kVersandzuschlag = tversandzuschlagplz.kVersandzuschlag 
+                WHERE tversandzuschlag.kVersandart = :id
+                    AND tversandzuschlag.kVersandzuschlag = tversandzuschlagplz.kVersandzuschlag
                     AND ((tversandzuschlagplz.cPLZAb <= :plz
                         AND tversandzuschlagplz.cPLZBis >= :plz)
                         OR tversandzuschlagplz.cPLZ = :plz)",

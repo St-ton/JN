@@ -19,8 +19,8 @@
     {
         disableUpdateControl(true);
 
-        var url = $element.attr('href');
-        var download = !!$element.data('download');
+        var url = $element.attr('href'),
+            download = !!$element.data('download');
 
         pushEvent('Starte Sicherungskopie');
         ioManagedCall(
@@ -34,7 +34,7 @@
                         ? 'Sicherungskopie "<strong>' + result.file + '</strong>" wird heruntergeladen'
                         : 'Sicherungskopie "<strong>' + result.file + '</strong>" wurde erfolgreich erstellt');
 
-                showNotify(error ? 'danger' : 'info', 'Sicherungskopie', message);
+                showNotify(error ? 'danger' : 'success', 'Sicherungskopie', message);
                 pushEvent(message);
 
                 if (!error && download) {
@@ -48,15 +48,16 @@
     {
         ioManagedCall(
             adminPath, 'dbUpdateIO', [],
-            function (result) {
-                callback(result);
+            function (result, error) {
+                if (!error) {
+                    callback(result);
 
-                if (result.availableUpdate) {
-                    doUpdate(callback);
+                    if (result.availableUpdate) {
+                        doUpdate(callback);
+                    }
+                } else {
+                    callback(undefined, error);
                 }
-            },
-            function (result) {
-                callback(undefined, error);
             }
         );
     }
@@ -74,7 +75,7 @@
                         ? 'Update wurde angehalten: ' + error.message
                         : 'Update wurde erfolgreich durchgef&uuml;hrt'
 
-                showNotify(error ? 'danger' : 'info', 'Update', message);
+                showNotify(error ? 'danger' : 'success', 'Update', message);
                 disableUpdateControl(false);
             };
 
@@ -95,11 +96,10 @@
 
     function updateStatusTpl()
     {
-        ioManagedCall(adminPath, 'dbupdaterStatusTpl', [], function (result, error) {
+        ioManagedCall(adminPath, 'dbupdaterStatusTpl', [], function(result, error) {
             if (error) {
                 pushEvent(error.message);
-            }
-            else {
+            } else {
                 $('#update-status').html(result.tpl);
                 init_bindings();
             }
@@ -123,14 +123,14 @@
      */
     function migrate($element)
     {
-        var url = $element.attr('href');
-        var $ladda = Ladda.create($('#migrate-button')[0]);
+        var url = $element.attr('href'),
+            $ladda = Ladda.create($('#migrate-button')[0]);
 
         $ladda.start();
 
         ajaxManagedCall(url, {}, function(result, error) {
             var count = error
-                ? 0 : (typeof result.data.migrations == 'object'
+                ? 0 : (typeof result.data.migrations === 'object'
                     ? result.data.migrations.length : 0);
             var message = error
                     ? error.message
@@ -138,19 +138,19 @@
 
             $ladda.stop();
             updateStatusTpl();
-            showNotify(error ? 'danger' : 'info', 'Migration', message);
+            showNotify(error ? 'danger' : 'success', 'Migration', message);
         });
     }
 
     function migration($element)
     {
-        var id = $element.data('id');
-        var url = $element.attr('href');
-        var dir = $element.data('dir');
+        var id = $element.data('id'),
+            url = $element.attr('href'),
+            dir = $element.data('dir'),
+            params = {dir: dir};
 
         $element.attr('disabled', true);
 
-        var params = { dir: dir };
         if (id !== undefined) {
             params = $.extend({}, { id: id }, params);
         }
@@ -170,7 +170,7 @@
                 ? error.message
                 : 'Migration wurde erfolgreich ausgef&uuml;hrt';
 
-            showNotify(error ? 'danger' : 'info', 'Migration', message);
+            showNotify(error ? 'danger' : 'success', 'Migration', message);
 
             if (!error) {
                 updateStatusTpl();
@@ -187,7 +187,7 @@
     function ajaxManagedCall(url, params, callback)
     {
         ajaxCall(url, params, function(result, xhr) {
-            if (xhr && xhr.error && xhr.error.code == 401) {
+            if (xhr && xhr.error && xhr.error.code === 401) {
                 createNotify({
                     title: 'Sitzung abgelaufen',
                     message: 'Sie werden zur Anmelde-Maske weitergeleitet...',
@@ -198,8 +198,7 @@
                         window.location.pathname = '/' + adminPath + 'index.php';
                     }
                 });
-            }
-            else if (typeof callback === 'function') {
+            } else if (typeof callback === 'function') {
                 callback(result, result.error);
             }
         });
@@ -221,15 +220,14 @@
 
     function disableUpdateControl(disable)
     {
-        var $container = $('#btn-update-group');
-        var $buttons = $('#btn-update-group a.btn');
-        var $ladda = Ladda.create($('#backup-button')[0]);
+        var $container = $('#btn-update-group'),
+            $buttons = $('#btn-update-group a.btn'),
+            $ladda = Ladda.create($('#backup-button')[0]);
 
         if (!!disable) {
             $ladda.start();
             $buttons.attr('disabled', true);
-        }
-        else {
+        } else {
             $ladda.stop();
             $buttons.attr('disabled', false);
         }
@@ -256,7 +254,5 @@
 
     {/literal}
 </script>
-
-
 
 {include file='tpl_inc/footer.tpl'}

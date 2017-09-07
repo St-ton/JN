@@ -6,26 +6,39 @@
 *}
 {assign var='bCustomStrategy' value=$bCustomStrategy|default:true}
 <script>
-    var $form_{$importerId} = $('<form>', { method: 'post', enctype: 'multipart/form-data',
-        action: window.location.pathname });
+    var $form_{$importerId} = null;
+    var $fileInput_{$importerId} = null;
+
+    $(function ()
+    {
+        var $importcsvInput = $('<input>', { type: 'hidden', name: 'importcsv', value: '{$importerId}' });
+        var $tokenInput     = $('{$jtl_token}');
+
+        $fileInput_{$importerId} = $('<input>', { type: 'file', name: 'csvfile', accept: '.csv,.slf' });
+        $fileInput_{$importerId}.hide();
+        $fileInput_{$importerId}.change(function () {
+            {if $bCustomStrategy === true}
+                $('#modal-{$importerId}').modal('show');
+            {else}
+                $form_{$importerId}.submit();
+            {/if}
+        });
+
+        $form_{$importerId} = $(
+            '<form>',
+            {
+                method: 'post', enctype: 'multipart/form-data',
+                action: window.location.pathname
+            }
+        );
+        $form_{$importerId}.append($importcsvInput, $fileInput_{$importerId}, $tokenInput);
+
+        $('body').append($form_{$importerId});
+    });
 
     function onClickCsvImport_{$importerId} ()
     {
-        var $importcsvInput = $('<input>', { type: 'hidden', name: 'importcsv', value: '{$importerId}' });
-        var $fileInput      = $('<input>', { type: 'file', name: 'csvfile', accept: '.csv,.slf' });
-        var $tokenInput     = $('{$jtl_token}');
-        $form_{$importerId}
-            .append($importcsvInput, $fileInput, $tokenInput);
-        $fileInput
-            .change(function () {
-                {if $bCustomStrategy === true}
-                    $('#modal-{$importerId}').modal('show');
-                {else}
-                    $form_{$importerId}.submit();
-                {/if}
-            })
-            .click();
-        $('body').append($form_{$importerId});
+        $fileInput_{$importerId}.click();
     }
 
     {if $bCustomStrategy === true}

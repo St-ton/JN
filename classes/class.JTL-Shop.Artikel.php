@@ -6058,14 +6058,14 @@ class Artikel
         if ($conf['metaangaben']['global_meta_title_anhaengen'] === 'Y') {
             $oGlobaleMetaAngabenAssoc_arr = holeGlobaleMetaAngaben();
             if (!empty($oGlobaleMetaAngabenAssoc_arr[Shop::$kSprache]->Title)) {
-                $cGlobalMetaTitle = ' - ' . $oGlobaleMetaAngabenAssoc_arr[Shop::$kSprache]->Title;
+                $cGlobalMetaTitle = ' - ' . $oGlobaleMetaAngabenAssoc_arr[Shop::getLanguage()]->Title;
             }
         }
         $idx = Session::CustomerGroup()->getIsMerchant();
         if (isset(
                 $_SESSION['Kundengruppe']->nNettoPreise,
                 $this->Preise->fVK[$idx],
-                $this->Preise->cVKLocalized[$_SESSION['Kundengruppe']->nNettoPreise]
+                $this->Preise->cVKLocalized[Session::CustomerGroup()->isMerchant()]
             )
             && $this->Preise->fVK[$idx] > 0
             && $conf['metaangaben']['global_meta_title_preis'] === 'Y'

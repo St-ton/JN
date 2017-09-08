@@ -1,11 +1,5 @@
 # JTL-Shop
 
-[![Build Status](https://jenkins.jtl-software.de/buildStatus/icon?job=Shop4)](https://jenkins.jtl-software.de/job/Shop4/)
-[![Dependency Status](https://www.versioneye.com/user/projects/57334a7fac902b0011f6760a/badge.svg)](https://www.versioneye.com/user/projects/57334a7fac902b0011f6760a)
-[![Build Status](https://img.shields.io/badge/release-4.05-blue.svg)](https://gitlab.jtl-software.de/jtlshop/shop4)
-
-<br>
-
 |**JTL-Shop** is a commercial open source shopsoftware designed for use with JTL-Wawi. |
 |:-----------------:|
 | ![Screenshot](https://images.jtl-software.de/shop4/shop_release_showcase.png "JTL-Shop 4") |

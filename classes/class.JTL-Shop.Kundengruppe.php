@@ -547,7 +547,7 @@ class Kundengruppe
             $kKundengruppe = $_SESSION['Kunde']->kKundengruppe;
         }
 
-        return $kKundengruppe;
+        return (int)$kKundengruppe;
     }
 
     /**

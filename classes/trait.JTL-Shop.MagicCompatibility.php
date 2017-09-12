@@ -41,11 +41,10 @@ trait MagicCompatibilityTrait
 
             return $this->$method();
         }
-        if (isset($this->data[$name])) {
-            return $this->data[$name];
-        }
 
-        return null;
+        return isset($this->data[$name])
+            ? $this->data[$name]
+            : null;
     }
 
     /**

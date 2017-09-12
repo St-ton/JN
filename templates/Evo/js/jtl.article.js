@@ -313,16 +313,10 @@
                     });
             }
 
-            $('#jump-to-votes-tab').click(function () {
-                $('#content a[href="#tab-votes"]').tab('show');
-            });
-            
-            if ($('.switch-variations').length == 1) {
-                $('.variations.simple-variations .variation', $wrapper)
-                    .click(function () {
-                        imgSwitch(this, false);
-                    });
-            }
+            $('.variations.simple-variations .variation', $wrapper)
+                .click(function () {
+                    imgSwitch(this, false);
+                });
 
             if (!isTouchCapable() || ResponsiveBootstrapToolkit.current() !== 'xs') {
                 $('.variations .variation', $wrapper)

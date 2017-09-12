@@ -1854,6 +1854,9 @@ class Navigationsfilter
                 'oAktuelleKategorie' => $currentCategory,
                 'bForce'             => $selectionWizard === true && function_exists('starteAuswahlAssistent')
             ]);
+            if (count($searchResults->MerkmalFilter) < 1) {
+                $this->attributeFilterCollection->setVisibility(AbstractFilter::SHOW_NEVER);
+            }
         }
 //        $searchResults->MerkmalFilter = null;
 //        if (!isset($searchResults->MerkmalFilter)) {

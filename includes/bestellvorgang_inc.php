@@ -3218,6 +3218,7 @@ function gibBestellschritt($step)
     $schritt[4] = 3;
     $schritt[5] = 3;
     switch ($step) {
+        case 'accountwahl':
         case 'edit_customer_address':
             $schritt[1] = 1;
             $schritt[2] = 3;

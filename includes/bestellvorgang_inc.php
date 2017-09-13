@@ -2686,30 +2686,32 @@ function warenkorbKuponFaehigKategorien($Kupon, $PositionenArr)
 function getKundendaten($post, $kundenaccount, $htmlentities = 1)
 {
     $mapping = [
-        'anrede' => 'cAnrede',
-        'vorname' => 'cVorname',
-        'nachname' => 'cNachname',
-        'strasse' => 'cStrasse',
-        'hausenummer' => 'cHausnummer',
-        'plz' => 'cPLZ',
-        'ort' => 'cOrt',
-        'land' => 'cLand',
-        'email' => 'cMail',
-        'tel' => 'cTel',
-        'fax' => 'cFax',
-        'firma' => 'cFirma',
-        'firmazusatz' => 'cZusatz',
-        'bundesland' => 'cBundesland',
-        'titel' => 'cTitel',
-        'adresszusatz' => 'cAdressZusatz',
-        'mobil' => 'cMobil',
-        'www' => 'cWWWW',
-        'ustid' => 'cUSTID',
-        'geburtstag' => 'dGeburtstag',
-        'kundenherkunft' => 'cHerkunft',
+        'anrede'            => 'cAnrede',
+        'vorname'           => 'cVorname',
+        'nachname'          => 'cNachname',
+        'strasse'           => 'cStrasse',
+        'hausenummer'       => 'cHausnummer',
+        'plz'               => 'cPLZ',
+        'ort'               => 'cOrt',
+        'land'              => 'cLand',
+        'email'             => 'cMail',
+        'tel'               => 'cTel',
+        'fax'               => 'cFax',
+        'firma'             => 'cFirma',
+        'firmazusatz'       => 'cZusatz',
+        'bundesland'        => 'cBundesland',
+        'titel'             => 'cTitel',
+        'adresszusatz'      => 'cAdressZusatz',
+        'mobil'             => 'cMobil',
+        'www'               => 'cWWWW',
+        'ustid'             => 'cUSTID',
+        'geburtstag'        => 'dGeburtstag',
+        'kundenherkunft'    => 'cHerkunft',
     ];
 
-    if($kundenaccount != 0) $mapping['pass'] = 'cPasswort';
+    if($kundenaccount != 0) {
+        $mapping['pass'] = 'cPasswort';
+    }
 
     //erstelle neuen Kunden
     $kKunde = isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0 ? (int)$_SESSION['Kunde']->kKunde : 0;

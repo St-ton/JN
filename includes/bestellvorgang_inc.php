@@ -2717,7 +2717,7 @@ function getKundendaten($post, $kundenaccount, $htmlentities = 1)
 
     foreach($mapping as $external => $internal) {
         if(isset($post[$external])) {
-            $val = StringHandler::filterXSS($post['anrede']);
+            $val = StringHandler::filterXSS($post[$external]);
             if($htmlentities) $val = StringHandler::htmlentities($val);
             $customer->$internal = $val;
         }

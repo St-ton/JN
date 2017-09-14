@@ -25,6 +25,10 @@ Shops mit Evo oder kompatiblen Shop4-Templates benötigen diesen Modus nicht und
 Wer den Kompatibilitätsmodus zum Betrieb seines Templates benötigt, kann diesen mit einer zusätzlichen Zeile in der config.JTL-Shop.ini.php 
 aktivieren: define('TEMPLATE_COMPATIBILITY', true);
 
+#### Variationsauswahl und Detailvorschau in Artikelübersichten
+In den Artikelübersichten ist es jetzt möglich direkt Variationsauswahlen vorzunehmen und eine verkürzte Detailansicht als Popup in der Liste
+anzeigen zu lassen. Die Anzahl der möglichen Variationen und die Detailansicht lassen sich in der Templatekonfiguration einstellen.
+
 #### Weitere Anpassungen
 Das PayPal-Plugin wird in Version 1.08 ausgeliefert und beinhaltet nun auch die Zahlart Ratenzahlung powered by PayPal. 
 Bitte beachten Sie auch das aktualisierte Handbuch zum PayPal-Plugin: http://jtl-url.de/paypaldocs
@@ -203,9 +207,12 @@ Bitte beachten Sie auch das aktualisierte Handbuch zum PayPal-Plugin: http://jtl
 #### Story / Feature
 * [SHOP-3] - Hook in admin/shopzuruecksetzen.php
 * [SHOP-180] - Schnittstellenerweiterung: Wawi-Sync von Bestellattributen
+* [SHOP-204] - Verbesserung: Variationsauswahl für Varianten + Varkombis direkt in Artikelliste
+* [SHOP-336] - Neue Option, um Versandarten für Lieferzeitberechnung und günstigste Versandberechnung auszuschließen
 * [SHOP-355] - Backend-Feature: OpenGeoDB-Import
 * [SHOP-370] - Beschränkung auf max 5 Versandklassen aufheben, Darstellungsform ändern
 * [SHOP-380] - Refactoring des Auswahlassistenten
+* [SHOP-401] - Variationen per AJAX in WK legbar machen
 * [SHOP-410] - Neue Youtube Shortlinks (youtu.be) unterstützen
 * [SHOP-439] - FR: Kupons auf Hersteller beschränken
 * [SHOP-466] - Sprachverwaltung Benutzerfreundlichkeit verbessern
@@ -242,8 +249,6 @@ Bitte beachten Sie auch das aktualisierte Handbuch zum PayPal-Plugin: http://jtl
 * [SHOP-1660] - Template-Vererbung (Smarty-Blocks) über Plugins unterstützen
 * [SHOP-1667] - Backend Weiterleitungen nach Aufrufen filtern
 * [SHOP-1674] - Neue Smarty Blocks in snippets/shipping_tax_info.tpl und productdetails/price.tpl
-* [SHOP-336] - Neue Option, um Versandarten für Lieferzeitberechnung und günstigste Versandberechnung auszuschließen
-
 
 
 ## [4.05.3]

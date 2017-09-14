@@ -136,6 +136,7 @@
                 var box = $(this),
                     img = box.find('img'),
                     src = img.data('src');
+
                 img.css('max-height', square);
                 box.css('max-height', square)
                     .addClass('loading');

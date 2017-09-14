@@ -329,30 +329,28 @@ class FilterItemAttribute extends FilterBaseAttribute
             $state->joins,
             $state->conditions,
             $state->having,
-            $order->orderBy,
+            '', // $order->orderBy,
             '',
-            ['tartikelmerkmal.kMerkmalWert', 'tartikel.kArtikel']
+            '' // ['tartikelmerkmal.kMerkmalWert', 'tartikel.kArtikel']
         );
         $qry      = "SELECT ssMerkmal.cSeo, ssMerkmal.kMerkmal, ssMerkmal.kMerkmalWert, ssMerkmal.cMMWBildPfad, 
             ssMerkmal.nMehrfachauswahl,
             ssMerkmal.cWert, ssMerkmal.cName, ssMerkmal.cTyp, ssMerkmal.cMMBildPfad, COUNT(DISTINCT ssMerkmal.kArtikel) AS nAnzahl
             FROM (" . $baseQry . ") AS ssMerkmal
-            LEFT JOIN tseo 
-                ON tseo.kKey = ssMerkmal.kMerkmalWert
-                AND tseo.cKey = 'kMerkmalWert'
-                AND tseo.kSprache = " . $this->getLanguageID() . "
+            #LEFT JOIN tseo 
+                #ON tseo.kKey = ssMerkmal.kMerkmalWert
+                #AND tseo.cKey = 'kMerkmalWert'
+                #AND tseo.kSprache = " . $this->getLanguageID() . "
             GROUP BY ssMerkmal.kMerkmalWert
             ORDER BY ssMerkmal.nSortMerkmal, ssMerkmal.nSort, ssMerkmal.cWert";
         $qryRes   = Shop::DB()->query($qry, 2);
-//        Shop::dbg($qry);
-//        Shop::dbg($qryRes);
         if (is_array($qryRes)) {
             $currentAttributeValue = $this->naviFilter->getAttributeValue()->getValue();
             $additionalFilter = new self($this->naviFilter);
             foreach ($qryRes as $i => $oMerkmalFilterDB) {
-                if ($oMerkmalFilterDB->nAnzahl < 1) continue;
-
-
+                if ($oMerkmalFilterDB->nAnzahl < 1)  {
+                    continue;
+                }
                 $attributeValue                   = (new FilterExtra())
                     ->setType((int)$oMerkmalFilterDB->nMehrfachauswahl === 1
                         ? AbstractFilter::FILTER_TYPE_OR

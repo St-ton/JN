@@ -6,4 +6,5 @@ archive:
     - shopcli build:archive "$CI_PROJECT_DIR" -n -v -o "$HOME/archives/shop-$CI_COMMIT_REF_SLUG.zip"
   only:
     - master
+    - /^release\/.*$/
     - tags

@@ -831,6 +831,10 @@ ul.filter_state {
                 display: none;
             }
 
+            form {
+                margin-bottom: @line-height-computed;
+            }
+
             &:hover, &.active {
                 position: absolute;
                 z-index: @zindex-navbar - 10;
@@ -852,6 +856,10 @@ ul.filter_state {
                 .quickview.badge {
                     display: inline-block;
                     opacity: 0.8;
+                }
+
+                form {
+                    margin-bottom: 0;
                 }
             }
         }

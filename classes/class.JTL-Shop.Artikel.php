@@ -5728,10 +5728,8 @@ class Artikel
             $Rabatt_arr[] = $_SESSION['Kunde']->fRabatt;
         }
         // Maximalen Rabatt setzen
-        if (count($Rabatt_arr) > 1) {
+        if (count($Rabatt_arr) > 0) {
             $maxRabatt = (float)max($Rabatt_arr);
-        } elseif (count($Rabatt_arr) === 1) {
-            $maxRabatt = (float)$Rabatt_arr[0];
         }
 
         return $maxRabatt;

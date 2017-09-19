@@ -231,6 +231,7 @@ class UstID
      */
     public function pruefeUstIDString($cUstID)
     {
+        $cUstID            = strtoupper($cUstID);
         $cIDNummer         = substr($cUstID, 2, strlen($cUstID));
         $oReturn           = new stdClass();
         $oReturn->nRichtig = 0;

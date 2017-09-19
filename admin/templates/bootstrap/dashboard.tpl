@@ -9,24 +9,17 @@
     <script type="text/javascript" src="{$currentTemplateDir}js/dashboard.js"></script>
     <script type="text/javascript">
 
-    // xajax_getAvailableWidgetsAjax();
-
-    function registerWidgetSettings()
-    {
-        $('[data-widget="add"]').click(function() {
-            var kWidget = $(this).data('id');
-            ioCall(
-                'addWidget', [kWidget], function () {
-                    window.location.href='index.php?kWidget=' + kWidget;
-                }
-            );
-        });
+    function addWidget(kWidget) {
+        ioCall(
+            'addWidget', [kWidget], function () {
+                window.location.href='index.php?kWidget=' + kWidget;
+            }
+        );
     }
 
-    $(function() {ldelim}
+    $(function() {
         ioCall('truncateJtllog');
-        registerWidgetSettings();
-    {rdelim});
+    });
     </script>
 
     <div id="content" class="nomargin">
@@ -39,8 +32,6 @@
 
     <div id="switcher">
         <div class="switcher" id="dashboard-config">
-            {*<a href="#" data-toggle="active" data-target="#dashboard-config" class="btn-toggle"><i class="fa fa-gear"></i></a>*}
-            
             <a href="#" class="dropdown-toggle parent btn-toggle" data-toggle="dropdown">
                 <i class="fa fa-gear"></i>
             </a>

@@ -47,9 +47,6 @@
         {/if}
         {block name="basket"}
             <div class="basket_wrapper">
-                {if $Schnellkaufhinweis}
-                    <div class="alert alert-info">{$Schnellkaufhinweis}</div>
-                {/if}
                 <div class="basket-well">
                     {block name="basket-items"}
                         <form id="cart-form" method="post" action="{get_static_route id='warenkorb.php'}">

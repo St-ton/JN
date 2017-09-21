@@ -7,6 +7,8 @@ require_once PFAD_ROOT . PFAD_DBES . 'xml_tools.php';
 
 /**
  * Class UstID
+ * @deprecated cause we're using from the shop version 4.07 upwards
+ * @deprecated the MIAS-system of the VIES of the European Commission
  */
 class UstID
 {

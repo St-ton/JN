@@ -185,7 +185,6 @@ function getAvailableWidgetsIO()
     $cWrapper = Shop::Smarty()->fetch('tpl_inc/widget_selector.tpl');
     $cWrapper = utf8_encode($cWrapper);
     $response->assign('settings', 'innerHTML', $cWrapper);
-    $response->script('registerWidgetSettings();');
 
     return $response;
 }

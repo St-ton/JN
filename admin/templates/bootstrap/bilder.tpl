@@ -11,135 +11,137 @@
                 <div class="panel-heading">
                     <h3 class="panel-title">Bildgr&ouml;&szlig;en</h3>
                 </div>
-                <table class="list table table-images">
-                    <thead>
-                    <tr>
-                        <th class="tleft">Typ</th>
-                        <th class="tcenter">Mini <small>(Breite x H&ouml;he)</small></th>
-                        <th class="tcenter">Klein <small>(Breite x H&ouml;he)</small></th>
-                        <th class="tcenter">Normal <small>(Breite x H&ouml;he)</small></th>
-                        <th class="tcenter">Gro&szlig; <small>(Breite x H&ouml;he)</small></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <td class="tleft">Kategorien</td>
-                        <td class="tcenter"></td>
-                        <td class="tcenter"></td>
-                        <td class="widthheight tcenter">
-                            <input size="4" class="form-control left" type="number" name="bilder_kategorien_breite" value="{$oConfig.bilder_kategorien_breite}" />
-                            <span class="cross-sign left">x</span>
-                            <input size="4" class="form-control left" type="number" name="bilder_kategorien_hoehe" value="{$oConfig.bilder_kategorien_hoehe}" />
-                        </td>
-                        <td class="tcenter"></td>
-                    </tr>
+                <div class="table-responsive">
+                    <table class="list table table-images">
+                        <thead>
+                        <tr>
+                            <th class="tleft">Typ</th>
+                            <th class="tcenter">Mini <small>(Breite x H&ouml;he)</small></th>
+                            <th class="tcenter">Klein <small>(Breite x H&ouml;he)</small></th>
+                            <th class="tcenter">Normal <small>(Breite x H&ouml;he)</small></th>
+                            <th class="tcenter">Gro&szlig; <small>(Breite x H&ouml;he)</small></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td class="tleft">Kategorien</td>
+                            <td class="tcenter"></td>
+                            <td class="tcenter"></td>
+                            <td class="widthheight tcenter">
+                                <input size="4" class="form-control left" type="number" name="bilder_kategorien_breite" value="{$oConfig.bilder_kategorien_breite}" />
+                                <span class="cross-sign left">x</span>
+                                <input size="4" class="form-control left" type="number" name="bilder_kategorien_hoehe" value="{$oConfig.bilder_kategorien_hoehe}" />
+                            </td>
+                            <td class="tcenter"></td>
+                        </tr>
 
-                    <tr>
-                        <td class="tleft">Variationen</td>
-                        <td class="widthheight tcenter">
-                            <input size="4" class="form-control left" type="number" name="bilder_variationen_mini_breite" value="{$oConfig.bilder_variationen_mini_breite}" />
-                            <span class="cross-sign left">x</span>
-                            <input size="4" class="form-control left" type="number" name="bilder_variationen_mini_hoehe" value="{$oConfig.bilder_variationen_mini_hoehe}" />
-                        </td>
-                        <td class="tcenter"></td>
-                        <td class="widthheight tcenter">
-                            <input size="4" class="form-control left" type="number" name="bilder_variationen_breite" value="{$oConfig.bilder_variationen_breite}" />
-                            <span class="cross-sign left">x</span>
-                            <input size="4" class="form-control left" type="number" name="bilder_variationen_hoehe" value="{$oConfig.bilder_variationen_hoehe}" />
-                        </td>
-                        <td class="widthheight tcenter">
-                            <input size="4" class="form-control left" type="number" name="bilder_variationen_gross_breite" value="{$oConfig.bilder_variationen_gross_breite}" />
-                            <span class="cross-sign left">x</span>
-                            <input size="4" class="form-control left" type="number" name="bilder_variationen_gross_hoehe" value="{$oConfig.bilder_variationen_gross_hoehe}" />
-                        </td>
-                    </tr>
+                        <tr>
+                            <td class="tleft">Variationen</td>
+                            <td class="widthheight tcenter">
+                                <input size="4" class="form-control left" type="number" name="bilder_variationen_mini_breite" value="{$oConfig.bilder_variationen_mini_breite}" />
+                                <span class="cross-sign left">x</span>
+                                <input size="4" class="form-control left" type="number" name="bilder_variationen_mini_hoehe" value="{$oConfig.bilder_variationen_mini_hoehe}" />
+                            </td>
+                            <td class="tcenter"></td>
+                            <td class="widthheight tcenter">
+                                <input size="4" class="form-control left" type="number" name="bilder_variationen_breite" value="{$oConfig.bilder_variationen_breite}" />
+                                <span class="cross-sign left">x</span>
+                                <input size="4" class="form-control left" type="number" name="bilder_variationen_hoehe" value="{$oConfig.bilder_variationen_hoehe}" />
+                            </td>
+                            <td class="widthheight tcenter">
+                                <input size="4" class="form-control left" type="number" name="bilder_variationen_gross_breite" value="{$oConfig.bilder_variationen_gross_breite}" />
+                                <span class="cross-sign left">x</span>
+                                <input size="4" class="form-control left" type="number" name="bilder_variationen_gross_hoehe" value="{$oConfig.bilder_variationen_gross_hoehe}" />
+                            </td>
+                        </tr>
 
-                    <tr>
-                        <td class="tleft">Produkte</td>
-                        <td class="widthheight tcenter">
-                            <input size="4" class="form-control left" type="number" name="bilder_artikel_mini_breite" value="{$oConfig.bilder_artikel_mini_breite}" />
-                            <span class="cross-sign left">x</span>
-                            <input size="4" class="form-control left" type="number" name="bilder_artikel_mini_hoehe" value="{$oConfig.bilder_artikel_mini_hoehe}" />
-                        </td>
-                        <td class="widthheight tcenter">
-                            <input size="4" class="form-control left" type="number" name="bilder_artikel_klein_breite" value="{$oConfig.bilder_artikel_klein_breite}" />
-                            <span class="cross-sign left">x</span>
-                            <input size="4" class="form-control left" type="number" name="bilder_artikel_klein_hoehe" value="{$oConfig.bilder_artikel_klein_hoehe}" />
-                        </td>
-                        <td class="widthheight tcenter">
-                            <input size="4" class="form-control left" type="number" name="bilder_artikel_normal_breite" value="{$oConfig.bilder_artikel_normal_breite}" />
-                            <span class="cross-sign left">x</span>
-                            <input size="4" class="form-control left" type="number" name="bilder_artikel_normal_hoehe" value="{$oConfig.bilder_artikel_normal_hoehe}" />
-                        </td>
-                        <td class="widthheight tcenter">
-                            <input size="4" class="form-control left" type="number" name="bilder_artikel_gross_breite" value="{$oConfig.bilder_artikel_gross_breite}" />
-                            <span class="cross-sign left">x</span>
-                            <input size="4" class="form-control left" type="number" name="bilder_artikel_gross_hoehe" value="{$oConfig.bilder_artikel_gross_hoehe}" />
-                        </td>
-                    </tr>
+                        <tr>
+                            <td class="tleft">Produkte</td>
+                            <td class="widthheight tcenter">
+                                <input size="4" class="form-control left" type="number" name="bilder_artikel_mini_breite" value="{$oConfig.bilder_artikel_mini_breite}" />
+                                <span class="cross-sign left">x</span>
+                                <input size="4" class="form-control left" type="number" name="bilder_artikel_mini_hoehe" value="{$oConfig.bilder_artikel_mini_hoehe}" />
+                            </td>
+                            <td class="widthheight tcenter">
+                                <input size="4" class="form-control left" type="number" name="bilder_artikel_klein_breite" value="{$oConfig.bilder_artikel_klein_breite}" />
+                                <span class="cross-sign left">x</span>
+                                <input size="4" class="form-control left" type="number" name="bilder_artikel_klein_hoehe" value="{$oConfig.bilder_artikel_klein_hoehe}" />
+                            </td>
+                            <td class="widthheight tcenter">
+                                <input size="4" class="form-control left" type="number" name="bilder_artikel_normal_breite" value="{$oConfig.bilder_artikel_normal_breite}" />
+                                <span class="cross-sign left">x</span>
+                                <input size="4" class="form-control left" type="number" name="bilder_artikel_normal_hoehe" value="{$oConfig.bilder_artikel_normal_hoehe}" />
+                            </td>
+                            <td class="widthheight tcenter">
+                                <input size="4" class="form-control left" type="number" name="bilder_artikel_gross_breite" value="{$oConfig.bilder_artikel_gross_breite}" />
+                                <span class="cross-sign left">x</span>
+                                <input size="4" class="form-control left" type="number" name="bilder_artikel_gross_hoehe" value="{$oConfig.bilder_artikel_gross_hoehe}" />
+                            </td>
+                        </tr>
 
-                    <tr>
-                        <td class="tleft">Hersteller</td>
-                        <td class="tcenter"></td>
-                        <td class="widthheight tcenter">
-                            <input size="4" class="form-control left" type="number" name="bilder_hersteller_klein_breite" value="{$oConfig.bilder_hersteller_klein_breite}" />
-                            <span class="cross-sign left">x</span>
-                            <input size="4" class="form-control left" type="number" name="bilder_hersteller_klein_hoehe" value="{$oConfig.bilder_hersteller_klein_hoehe}" />
-                        </td>
-                        <td class="widthheight tcenter">
-                            <input size="4" class="form-control left" type="number" name="bilder_hersteller_normal_breite" value="{$oConfig.bilder_hersteller_normal_breite}" />
-                            <span class="cross-sign left">x</span>
-                            <input size="4" class="form-control left" type="number" name="bilder_hersteller_normal_hoehe" value="{$oConfig.bilder_hersteller_normal_hoehe}" />
-                        </td>
-                        <td class="tcenter"></td>
-                    </tr>
+                        <tr>
+                            <td class="tleft">Hersteller</td>
+                            <td class="tcenter"></td>
+                            <td class="widthheight tcenter">
+                                <input size="4" class="form-control left" type="number" name="bilder_hersteller_klein_breite" value="{$oConfig.bilder_hersteller_klein_breite}" />
+                                <span class="cross-sign left">x</span>
+                                <input size="4" class="form-control left" type="number" name="bilder_hersteller_klein_hoehe" value="{$oConfig.bilder_hersteller_klein_hoehe}" />
+                            </td>
+                            <td class="widthheight tcenter">
+                                <input size="4" class="form-control left" type="number" name="bilder_hersteller_normal_breite" value="{$oConfig.bilder_hersteller_normal_breite}" />
+                                <span class="cross-sign left">x</span>
+                                <input size="4" class="form-control left" type="number" name="bilder_hersteller_normal_hoehe" value="{$oConfig.bilder_hersteller_normal_hoehe}" />
+                            </td>
+                            <td class="tcenter"></td>
+                        </tr>
 
-                    <tr>
-                        <td class="tleft">Merkmale</td>
-                        <td class="tcenter"></td>
-                        <td class="widthheight tcenter">
-                            <input size="4" class="form-control left" type="number" name="bilder_merkmal_klein_breite" value="{$oConfig.bilder_merkmal_klein_breite}" />
-                            <span class="cross-sign left">x</span>
-                            <input size="4" class="form-control left" type="number" name="bilder_merkmal_klein_hoehe" value="{$oConfig.bilder_merkmal_klein_hoehe}" />
-                        </td>
-                        <td class="widthheight tcenter">
-                            <input size="4" class="form-control left" type="number" name="bilder_merkmal_normal_breite" value="{$oConfig.bilder_merkmal_normal_breite}" />
-                            <span class="cross-sign left">x</span>
-                            <input size="4" class="form-control left" type="number" name="bilder_merkmal_normal_hoehe" value="{$oConfig.bilder_merkmal_normal_hoehe}" />
-                        </td>
-                        <td class="tcenter"></td>
-                    </tr>
+                        <tr>
+                            <td class="tleft">Merkmale</td>
+                            <td class="tcenter"></td>
+                            <td class="widthheight tcenter">
+                                <input size="4" class="form-control left" type="number" name="bilder_merkmal_klein_breite" value="{$oConfig.bilder_merkmal_klein_breite}" />
+                                <span class="cross-sign left">x</span>
+                                <input size="4" class="form-control left" type="number" name="bilder_merkmal_klein_hoehe" value="{$oConfig.bilder_merkmal_klein_hoehe}" />
+                            </td>
+                            <td class="widthheight tcenter">
+                                <input size="4" class="form-control left" type="number" name="bilder_merkmal_normal_breite" value="{$oConfig.bilder_merkmal_normal_breite}" />
+                                <span class="cross-sign left">x</span>
+                                <input size="4" class="form-control left" type="number" name="bilder_merkmal_normal_hoehe" value="{$oConfig.bilder_merkmal_normal_hoehe}" />
+                            </td>
+                            <td class="tcenter"></td>
+                        </tr>
 
-                    <tr>
-                        <td class="tleft">Merkmalwerte</td>
-                        <td class="tcenter"></td>
-                        <td class="widthheight tcenter">
-                            <input size="4" class="form-control left" type="number" name="bilder_merkmalwert_klein_breite" value="{$oConfig.bilder_merkmalwert_klein_breite}" />
-                            <span class="cross-sign left">x</span>
-                            <input size="4" class="form-control left" type="number" name="bilder_merkmalwert_klein_hoehe" value="{$oConfig.bilder_merkmalwert_klein_hoehe}" />
-                        </td>
-                        <td class="widthheight tcenter">
-                            <input size="4" class="form-control left" type="number" name="bilder_merkmalwert_normal_breite" value="{$oConfig.bilder_merkmalwert_normal_breite}" />
-                            <span class="cross-sign left">x</span>
-                            <input size="4" class="form-control left" type="number" name="bilder_merkmalwert_normal_hoehe" value="{$oConfig.bilder_merkmalwert_normal_hoehe}" />
-                        </td>
-                        <td class="tcenter"></td>
-                    </tr>
+                        <tr>
+                            <td class="tleft">Merkmalwerte</td>
+                            <td class="tcenter"></td>
+                            <td class="widthheight tcenter">
+                                <input size="4" class="form-control left" type="number" name="bilder_merkmalwert_klein_breite" value="{$oConfig.bilder_merkmalwert_klein_breite}" />
+                                <span class="cross-sign left">x</span>
+                                <input size="4" class="form-control left" type="number" name="bilder_merkmalwert_klein_hoehe" value="{$oConfig.bilder_merkmalwert_klein_hoehe}" />
+                            </td>
+                            <td class="widthheight tcenter">
+                                <input size="4" class="form-control left" type="number" name="bilder_merkmalwert_normal_breite" value="{$oConfig.bilder_merkmalwert_normal_breite}" />
+                                <span class="cross-sign left">x</span>
+                                <input size="4" class="form-control left" type="number" name="bilder_merkmalwert_normal_hoehe" value="{$oConfig.bilder_merkmalwert_normal_hoehe}" />
+                            </td>
+                            <td class="tcenter"></td>
+                        </tr>
 
-                    <tr>
-                        <td class="tleft">Konfiggruppe</td>
-                        <td class="tcenter"></td>
-                        <td class="widthheight tcenter">
-                            <input size="4" class="form-control left" type="number" name="bilder_konfiggruppe_klein_breite" value="{$oConfig.bilder_konfiggruppe_klein_breite}" />
-                            <span class="cross-sign left">x</span>
-                            <input size="4" class="form-control left" type="number" name="bilder_konfiggruppe_klein_hoehe" value="{$oConfig.bilder_konfiggruppe_klein_hoehe}" />
-                        </td>
-                        <td class="tcenter"></td>
-                        <td class="tcenter"></td>
-                    </tr>
+                        <tr>
+                            <td class="tleft">Konfiggruppe</td>
+                            <td class="tcenter"></td>
+                            <td class="widthheight tcenter">
+                                <input size="4" class="form-control left" type="number" name="bilder_konfiggruppe_klein_breite" value="{$oConfig.bilder_konfiggruppe_klein_breite}" />
+                                <span class="cross-sign left">x</span>
+                                <input size="4" class="form-control left" type="number" name="bilder_konfiggruppe_klein_hoehe" value="{$oConfig.bilder_konfiggruppe_klein_hoehe}" />
+                            </td>
+                            <td class="tcenter"></td>
+                            <td class="tcenter"></td>
+                        </tr>
 
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
+                </div>
             </div>
             {assign var=open value=false}
             {foreach name=conf from=$oConfig_arr item=cnf}

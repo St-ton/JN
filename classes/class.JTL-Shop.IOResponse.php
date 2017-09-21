@@ -20,9 +20,10 @@ class IOResponse implements JsonSerializable
     private $scripts = [];
 
     /**
-     * @param $target
-     * @param $attr
-     * @param $data
+     * @param string $target
+     * @param string $attr
+     * @param mixed $data
+     * @return $this
      */
     public function assign($target, $attr, $data)
     {
@@ -31,18 +32,24 @@ class IOResponse implements JsonSerializable
             'attr'   => $attr,
             'data'   => $data
         ];
+
+        return $this;
     }
 
     /**
      * @param string $js
+     * @return $this
      */
     public function script($js)
     {
         $this->scripts[] = $js;
+
+        return $this;
     }
 
     /**
-     * @param $function
+     * @param string $function
+     * @return $this
      */
     public function jsfunc($function)
     {
@@ -104,6 +111,8 @@ class IOResponse implements JsonSerializable
             $this->script("console.groupEnd();");
             $this->script("console.groupEnd();");
         }
+
+        return $this;
     }
 
     /**
@@ -111,8 +120,7 @@ class IOResponse implements JsonSerializable
      */
     public function generateCallTrace()
     {
-        $str = (new Exception())
-            ->getTraceAsString();
+        $str   = (new Exception())->getTraceAsString();
         $trace = explode("\n", $str);
         $trace = array_reverse($trace);
         array_shift($trace);

@@ -16,7 +16,7 @@ ifndef('SMARTY_LOG_LEVEL', E_ERROR | E_PARSE);
 error_reporting(SHOP_LOG_LEVEL);
 // if this is set to false, Hersteller, Linkgruppen and oKategorie_arr will not be added to $_SESSION
 // this requires changes in templates!
-ifndef('TEMPLATE_COMPATIBILITY', true);
+ifndef('TEMPLATE_COMPATIBILITY', false);
 // Image compatibility level 0 => disabled, 1 => referenced in history table, 2 => automatic detection
 ifndef('IMAGE_COMPATIBILITY_LEVEL', 1);
 ifndef('KEEP_SYNC_FILES', false);
@@ -25,6 +25,8 @@ ifndef('PROFILE_SHOP', false);
 ifndef('PROFILE_QUERIES', false);
 ifndef('PROFILE_QUERIES_ECHO', false);
 ifndef('IO_LOG_CONSOLE', false);
+ifndef('DEFAULT_CURL_OPT_VERIFYPEER', true);
+ifndef('DEFAULT_CURL_OPT_VERIFYHOST', 2);
 ini_set('session.use_trans_sid', 0);
 // Logging (in logs/) 0 => aus, 1 => nur errors, 2 => errors, notifications, 3 => errors, notifications, debug
 ifndef('ES_LOGGING', 1);

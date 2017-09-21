@@ -35,12 +35,13 @@ if (isset($_POST['del']) && (int)$_POST['del'] > 0 && validateToken() && Versand
     $cHinweis .= 'Versandart erfolgreich gel&ouml;scht!';
     Shop::Cache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
 }
-if (isset($_POST['edit']) && (int)$_POST['edit'] > 0 && validateToken()) {
-    $step                    = 'neue Versandart';
-    $Versandart              = Shop::DB()->select('tversandart', 'kVersandart', (int)$_POST['edit']);
-    $VersandartZahlungsarten = Shop::DB()->selectAll('tversandartzahlungsart', 'kVersandart', (int)$_POST['edit'], '*', 'kZahlungsart');
-    $VersandartStaffeln      = Shop::DB()->selectAll('tversandartstaffel', 'kVersandart', (int)$_POST['edit'], '*', 'fBis');
-    $versandberechnung       = Shop::DB()->select('tversandberechnung', 'kVersandberechnung', (int)$Versandart->kVersandberechnung);
+if (isset($_POST['edit']) && intval($_POST['edit']) > 0 && validateToken()) {
+    $step                        = 'neue Versandart';
+    $Versandart                  = Shop::DB()->select('tversandart', 'kVersandart', (int)$_POST['edit']);
+    $VersandartZahlungsarten     = Shop::DB()->selectAll('tversandartzahlungsart', 'kVersandart', (int)$_POST['edit'], '*', 'kZahlungsart');
+    $VersandartStaffeln          = Shop::DB()->selectAll('tversandartstaffel', 'kVersandart', (int)$_POST['edit'], '*', 'fBis');
+    $versandberechnung           = Shop::DB()->select('tversandberechnung', 'kVersandberechnung', (int)$Versandart->kVersandberechnung);
+    $Versandart->cVersandklassen = trim($Versandart->cVersandklassen);
 
     $smarty->assign('VersandartZahlungsarten', reorganizeObjectArray($VersandartZahlungsarten, 'kZahlungsart'))
            ->assign('VersandartStaffeln', $VersandartStaffeln)
@@ -230,6 +231,9 @@ if (isset($_POST['neueVersandart']) && (int)$_POST['neueVersandart'] > 0 && vali
     $Versandart->cSendConfirmationMail    = isset($_POST['cSendConfirmationMail'])
         ? $_POST['cSendConfirmationMail'] 
         : 'Y';
+    $Versandart->cIgnoreShippingProposal  = isset($_POST['cIgnoreShippingProposal'])
+        ? $_POST['cIgnoreShippingProposal']
+        : 'N';
     $Versandart->eSteuer                  = $_POST['eSteuer'];
     $Versandart->fPreis                   = (float)str_replace(',', '.', isset($_POST['fPreis'])
         ? $_POST['fPreis'] 
@@ -315,46 +319,7 @@ if (isset($_POST['neueVersandart']) && (int)$_POST['neueVersandart'] > 0 && vali
         }
     }
     //Versandklassen
-    $Versandart->cVersandklassen = '';
-    if (!$_POST['kVersandklasse']) {
-        $_POST['kVersandklasse'] = [-1];
-    }
-    if (is_array($_POST['kVersandklasse'])) {
-        if (in_array(-1, $_POST['kVersandklasse'])) {
-            $Versandart->cVersandklassen = '-1';
-        }  // Alle Versandklassen
-        else {
-            $oVersandklasse_arr = Shop::DB()->query("SELECT * FROM tversandklasse ORDER BY kVersandklasse", 2);
-            if (count($oVersandklasse_arr) <= 5) {
-                $oVersandklasse_arr = P($oVersandklasse_arr);
-                if (is_array($oVersandklasse_arr) && count($oVersandklasse_arr) > 0) {
-                    $bAlleEnthalten = true; // Flag ob alle Versandklassen enthalten sind im POST
-                    foreach ($oVersandklasse_arr as $oVersandklasse) {
-                        // Laufe alle verfuegbaren Versandklassen aus der DB durch
-                        $bEnthalten = false; // Flag der schaut, ob die aktuelle Versandklasse enthalten ist im POST
-                        foreach ($_POST['kVersandklasse'] as $kVersandklasse) {
-                            if ($oVersandklasse->kVersandklasse == $kVersandklasse) {
-                                $bEnthalten = true; // Versandklasse aus der DB ist im POST enthalten => break
-                                break;
-                            }
-                        }
-                        if (!$bEnthalten) {
-                            // Falls aktuelle Versandklasse aus der DB nicht im POST vorhanden ist
-                            // wird auch die Ueberpruefung auf weitere hinfaellig => break
-                            $bAlleEnthalten = false;
-                            break;
-                        }
-                    }
-                    if ($bAlleEnthalten) {
-                        $Versandart->cVersandklassen = '-1';
-                    } else {
-                        // Alle Versandklassen aus der DB sind im POST vorhanden => -1
-                        $Versandart->cVersandklassen = ' ' . implode(' ', $_POST['kVersandklasse']) . ' ';
-                    } // Ansonsten speicher die ausgewaehlten Versandklassen
-                }
-            }
-        }
-    }
+    $Versandart->cVersandklassen = ((!empty($_POST['kVersandklasse']) && $_POST['kVersandklasse'] !== '-1') ? ' ' . $_POST['kVersandklasse'] . ' ' : '-1');
 
     if (count($_POST['land']) >= 1 && count($_POST['kZahlungsart']) >= 1 &&
         $Versandart->cName && $staffelDa && $bVersandkostenfreiGueltig) {
@@ -449,12 +414,7 @@ if ($step === 'neue Versandart') {
     }
     $zahlungsarten      = Shop::DB()->selectAll('tzahlungsart', 'nActive', 1, '*', 'cAnbieter, nSort, cName');
     $oVersandklasse_arr = Shop::DB()->selectAll('tversandklasse', [], [], '*', 'kVersandklasse');
-    if (count($oVersandklasse_arr) <= 5) {
-        $smarty->assign('versandklassen', P($oVersandklasse_arr));
-        $smarty->assign('versandklassenExceeded', 0);
-    } else {
-        $smarty->assign('versandklassenExceeded', 1);
-    }
+    $smarty->assign('versandKlassen', $oVersandklasse_arr);
     $kVersandartTMP = 0;
     if (isset($Versandart->kVersandart) && $Versandart->kVersandart > 0) {
         $kVersandartTMP = $Versandart->kVersandart;

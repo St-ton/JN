@@ -1,152 +1,168 @@
-{if
-    $Artikel->cBeschreibung|strlen > 0 ||
-    $Einstellungen.artikeldetails.artikeldetails_fragezumprodukt_anzeigen === 'Y' ||
-    ($Einstellungen.artikeldetails.merkmale_anzeigen === 'Y' && $Artikel->oMerkmale_arr|count > 1) ||
-    $Einstellungen.bewertung.bewertung_anzeigen === 'Y' ||
-    ($Einstellungen.preisverlauf.preisverlauf_anzeigen === 'Y' && $bPreisverlauf) ||
-    $verfuegbarkeitsBenachrichtigung == 1 ||
-    ((($Einstellungen.artikeldetails.mediendatei_anzeigen === 'YM' && $Artikel->cMedienDateiAnzeige !== 'beschreibung') || $Artikel->cMedienDateiAnzeige === 'tab') && $Artikel->cMedienTyp_arr|@count > 0 && $Artikel->cMedienTyp_arr)}
-    {if $Einstellungen.artikeldetails.artikeldetails_tabs_nutzen !== 'N'}
-        {assign var=tabanzeige value=true}
-    {else}
-        {assign var=tabanzeige value=false}
+{$tabanzeige = $Einstellungen.artikeldetails.artikeldetails_tabs_nutzen !== 'N'}
+{if $Artikel->cBeschreibung|strlen > 0 || $Einstellungen.artikeldetails.merkmale_anzeigen === 'Y'
+    && $Artikel->oMerkmale_arr|count > 1}
+    {$tabsPaneleArr['description'] = [
+        'id' => 'description',
+        'cName' => "{block name='tab-description-title'}{lang key='description' section='productDetails'}{/block}",
+        'content' => '<div class="desc">' ,
+        'content2' => {$Artikel->cBeschreibung},
+        'content3' => '',
+        'content4' => '</div>',
+        'content5' => "{block name='tab-description-attributes'}{include file='productdetails/attributes.tpl' tplscope='details'}{/block}"
+    ]}
+    {if (($Einstellungen.artikeldetails.mediendatei_anzeigen === 'YA' && $Artikel->cMedienDateiAnzeige !== 'tab')
+        || $Artikel->cMedienDateiAnzeige === 'beschreibung') && !empty($Artikel->cMedienTyp_arr)}
+        {foreach name="mediendateigruppen" from=$Artikel->cMedienTyp_arr item=cMedienTyp}
+            {$mediaDescriptionContentArr[$cMedienTyp] = [
+                'content' => '<div class="media">',
+                'content2' => {include file='productdetails/mediafile.tpl'},
+                'content3' => '</div>'
+            ]}
+        {/foreach}
+        {$tabsPaneleArr.description.content3 = $mediaDescriptionContentArr}
     {/if}
+{/if}
+{if isset($Artikel->oDownload_arr) && $Artikel->oDownload_arr|@count > 0}
+    {$tabsPaneleArr['downloads'] = [
+    'id'      => 'downloads',
+    'cName'   => {lang section="productDownloads" key="downloadSection"},
+    'content' => {include file="productdetails/download.tpl"}
+    ]}
+{/if}
+{section name=iterator start=1 loop=10}
+    {$tab = tab}
+    {$tabname = $tab|cat:$smarty.section.iterator.index|cat:" name"}
+    {$tabinhalt = $tab|cat:$smarty.section.iterator.index|cat:" inhalt"}
+    {if isset($Artikel->AttributeAssoc[$tabname]) && $Artikel->AttributeAssoc[$tabname]
+        && $Artikel->AttributeAssoc[$tabinhalt]}
+        {$tabsPaneleArr[{$tabname|replace:' ':'-'}] = [
+            'id'      => {$tabname|replace:' ':'-'},
+            'cName'   => {$Artikel->AttributeAssoc[$tabname]},
+            'content' => {$Artikel->AttributeAssoc[$tabinhalt]}
+        ]}
+    {/if}
+{/section}
+{if $Einstellungen.bewertung.bewertung_anzeigen === 'Y'}
+    {$tabsPaneleArr['votes'] = [
+        'id'      => 'votes',
+        'cName'   => {lang key="Votes" section="global"},
+        'content' => {include file="productdetails/reviews.tpl" stars=$Artikel->Bewertungen->oBewertungGesamt->fDurchschnitt}
+    ]}
+{/if}
+{if $Einstellungen.artikeldetails.artikeldetails_fragezumprodukt_anzeigen === 'Y'}
+    {$tabsPaneleArr['questionOnItem'] = [
+        'id'      => 'questionOnItem',
+        'cName'   => {lang key="productQuestion" section="productDetails"},
+        'content' => {include file="productdetails/question_on_item.tpl" position="tab"}
+    ]}
+{/if}
+{if $Einstellungen.preisverlauf.preisverlauf_anzeigen === 'Y' && $bPreisverlauf}
+    {$tabsPaneleArr['priceFlow'] = [
+        'id'      => 'priceFlow',
+        'cName'   => {lang key="priceFlow" section="productDetails"},
+        'content' => {include file="productdetails/price_history.tpl"}
+    ]}
+{/if}
+{if $verfuegbarkeitsBenachrichtigung == 1 && $Artikel->cLagerBeachten === 'Y'}
+    {$tabsPaneleArr['availabilityNotification'] = [
+        'id'      => 'availabilityNotification',
+        'cName'   => {lang key="notifyMeWhenProductAvailableAgain" section="global"},
+        'content' => {include file="productdetails/availability_notification_form.tpl" position="tab" tplscope="artikeldetails"}
+    ]}
+{/if}
+{if (($Einstellungen.artikeldetails.mediendatei_anzeigen === 'YM' && $Artikel->cMedienDateiAnzeige !== 'beschreibung')
+    || $Artikel->cMedienDateiAnzeige === 'tab') && !empty($Artikel->cMedienTyp_arr)}
+    {foreach name="mediendateigruppen" from=$Artikel->cMedienTyp_arr item=cMedienTyp}
+        {$cMedienTypId = $cMedienTyp|regex_replace:"/[\'\"\/ ]/":""}
+        {$tabsPaneleArr[{$cMedienTypId}] = [
+            'id'      => {$cMedienTypId},
+            'cName'   => {$cMedienTyp},
+            'content' => {include file="productdetails/mediafile.tpl"}
+        ]}
+    {/foreach}
+{/if}
+{if $Einstellungen.artikeldetails.tagging_anzeigen === 'Y' && (count($ProduktTagging) > 0
+    || $Einstellungen.artikeldetails.tagging_freischaltung !== 'N')}
+    {$tabsPaneleArr['tags'] = [
+        'id'      => 'tags',
+        'cName'   => {lang key="productTags" section="productDetails"},
+        'content' => {include file="productdetails/tags.tpl"}
+    ]}
+{/if}
 
-    <div id="article-tabs" {if $tabanzeige}class="tab-content"{/if}>
-        {* DOWNLOADS *}
-        {if isset($Artikel->oDownload_arr) && $Artikel->oDownload_arr|@count > 0}
-            {include file="productdetails/download.tpl"}
-        {/if}
-        {* ARTIKELBESCHREIBUNG *}
-        <div role="tabpanel" class="{if $tabanzeige}tab-pane{else}panel panel-default{/if}" id="tab-description">
-            <div class="panel-heading" {if $tabanzeige}data-toggle="collapse" {/if}data-parent="#article-tabs" data-target="#tab-description">
-                <h3 class="panel-title">{block name="tab-description-title"}{lang key="description" section="productDetails"}{/block}</h3>
-            </div>
-            {assign var=cArtikelBeschreibung value=$Artikel->cBeschreibung}
-            <div class="panel-body">
-                <div class="tab-content-wrapper">
-                    {block name="tab-description-content"}
-                    <div class="desc">
-                        {$cArtikelBeschreibung}
-
-                        {if ($Einstellungen.artikeldetails.mediendatei_anzeigen === 'YA' && $Artikel->cMedienDateiAnzeige !== 'tab') || $Artikel->cMedienDateiAnzeige === 'beschreibung'}
-                            {if !empty($Artikel->cMedienTyp_arr)}
-                                {foreach name="mediendateigruppen" from=$Artikel->cMedienTyp_arr item=cMedienTyp}
-                                    <div class="media">
-                                        {include file='productdetails/mediafile.tpl'}
-                                    </div>
-                                {/foreach}
-                            {/if}
+{if !empty($tabsPaneleArr)}
+    {if $tabanzeige}
+        <ul class="nav nav-tabs bottom15" role="tablist">
+            {foreach from=$tabsPaneleArr item=tabPanel name=tabPanelItem}
+                <li role="presentation"
+                    {if $tabPanel.id === "votes" &&
+                        (isset($smarty.get.ratings_nPage) && count($smarty.get.ratings_nPage) > 0
+                        || isset($smarty.get.bewertung_anzeigen) && count($smarty.get.bewertung_anzeigen) > 0
+                        || isset($smarty.get.ratings_nItemsPerPage) && count($smarty.get.ratings_nItemsPerPage) > 0
+                        || isset($smarty.get.ratings_nSortByDir) && count($smarty.get.ratings_nSortByDir) > 0
+                        || isset($smarty.get.btgsterne) && count($smarty.get.btgsterne) > 0)}
+                        class="active"
+                    {else}
+                        {if $smarty.foreach.tabPanelItem.first && !isset($smarty.get.ratings_nPage)
+                            && !isset($smarty.get.bewertung_anzeigen) && !isset($smarty.get.btgsterne)
+                            && !isset($smarty.get.ratings_nItemsPerPage) && !isset($smarty.get.ratings_nSortByDir)}
+                            class="active"
                         {/if}
+                    {/if}>
+                    <a href="#tab-{$tabPanel.id}" aria-controls="tab-{$tabPanel.id}" role="tab" data-toggle="tab">{$tabPanel.cName}</a>
+                </li>
+            {/foreach}
+        </ul>
+    {/if}
+    <div class="tab-content" id="article-tabs">
+        {foreach from=$tabsPaneleArr item=tabPanele name=tabPaneleItem}
+            {if $tabanzeige}
+                {if $tabPanele.id === "votes" &&
+                    (isset($smarty.get.ratings_nPage) && count($smarty.get.ratings_nPage) > 0
+                    || isset($smarty.get.bewertung_anzeigen) && count($smarty.get.bewertung_anzeigen) > 0
+                    || isset($smarty.get.ratings_nItemsPerPage) && count($smarty.get.ratings_nItemsPerPage) > 0
+                    || isset($smarty.get.ratings_nSortByDir) && count($smarty.get.ratings_nSortByDir) > 0
+                    || isset($smarty.get.btgsterne) && count($smarty.get.btgsterne) > 0)}
+                    <div role="tabpanel" class="tab-pane fade in active"
+                {else}
+                    <div role="tabpanel" class="tab-pane fade
+                        {if $smarty.foreach.tabPaneleItem.first && !isset($smarty.get.ratings_nPage)
+                            && !isset($smarty.get.bewertung_anzeigen) && !isset($smarty.get.btgsterne)
+                            && !isset($smarty.get.ratings_nItemsPerPage)&& !isset($smarty.get.ratings_nSortByDir)} in active{/if}"
+                {/if}
+                     id="tab-{$tabPanele.id}">
+            {else}
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">{$tabPanele.cName}</h3>
                     </div>
-                    {/block}
-                    {block name="tab-description-attributes"}
-                    {include file="productdetails/attributes.tpl" tplscope="details"}
-                    {/block}
+                    <div class="panel-body" id="tab-{$tabPanele.id}">
+            {/if}
+            {$tabPanele.content}
+            {if !empty($tabPanele.content2)}
+                {$tabPanele.content2}
+            {/if}
+            {if !empty($tabPanele.content3)}
+                <div class="top15">
+                    {foreach from=$tabPanele.content3 item=content3}
+                        {$content3.content}
+                        {$content3.content2}
+                        {$content3.content3}
+                    {/foreach}
                 </div>
-            </div>
-        </div>
-
-        {section name=iterator start=1 loop=10}
-            {assign var=tab value=tab}
-            {assign var=tabname value=$tab|cat:$smarty.section.iterator.index|cat:" name"}
-            {assign var=tabinhalt value=$tab|cat:$smarty.section.iterator.index|cat:" inhalt"}
-            {if isset($tab1)}{$tab1}{/if}
-            {if isset($Artikel->AttributeAssoc[$tabname]) && $Artikel->AttributeAssoc[$tabname] && $Artikel->AttributeAssoc[$tabinhalt]}
-                <div role="tabpanel" class="{if $tabanzeige}tab-pane{else}panel panel-default{/if}" id="{$tabname|replace:' ':'-'}">
-                    <div class="panel-heading" {if $tabanzeige}data-toggle="collapse" {/if}data-parent="#article-tabs" data-target="#{$tabname|replace:' ':'-'}">
-                        <h3 class="panel-title">{$Artikel->AttributeAssoc[$tabname]}</h3>
-                    </div>
-                    <div class="panel-body">
-                        <div class="tab-content-wrapper">
-                            {$Artikel->AttributeAssoc[$tabinhalt]}
-                        </div>
+            {/if }
+            {if !empty($tabPanele.content4)}
+                {$tabPanele.content4}
+            {/if}
+            {if !empty($tabPanele.content5)}
+                {$tabPanele.content5}
+            {/if}
+            {if $tabanzeige}
+                </div>
+            {else}
                     </div>
                 </div>
             {/if}
-        {/section}
-        {* BEWERTUNGEN *}
-        {if $Einstellungen.bewertung.bewertung_anzeigen === 'Y'}
-            <div role="tabpanel" class="{if $tabanzeige}tab-pane{else}panel panel-default{/if}" id="tab-votes">
-                <div class="panel-heading" {if $tabanzeige}data-toggle="collapse" {/if}data-parent="#article-tabs" data-target="#tab-votes">
-                    <h3 class="panel-title">{lang key="Votes" section="global"} ({$Artikel->Bewertungen->oBewertungGesamt->nAnzahl})</h3>
-                </div>
-                <div class="tab-content-wrapper">
-                    <div class="panel-body">
-                        {include file='productdetails/reviews.tpl' stars=$Artikel->Bewertungen->oBewertungGesamt->fDurchschnitt}
-                    </div>
-                </div>
-            </div>
-        {/if}
-        {* FRAGE ZUM PRODUKT *}
-        {if $Einstellungen.artikeldetails.artikeldetails_fragezumprodukt_anzeigen === 'Y'}
-            <div role="tabpanel" class="{if $tabanzeige}tab-pane{else}panel panel-default{/if}" id="tab-productquestion">
-                <div class="panel-heading" {if $tabanzeige}data-toggle="collapse" {/if}data-parent="#article-tabs" data-target="#tab-productquestion">
-                    <h3 class="panel-title">{lang key="productQuestion" section="productDetails"}</h3>
-                </div>
-                <div class="tab-content-wrapper">
-                    <div class="panel-body">
-                        {include file='productdetails/question_on_item.tpl' position="tab"}
-                    </div>
-                </div>
-            </div>
-        {/if}
-        {* PREISVERLAUF *}
-        {if $Einstellungen.preisverlauf.preisverlauf_anzeigen === 'Y' && $bPreisverlauf}
-            <div role="tabpanel" class="{if $tabanzeige}tab-pane{else}panel panel-default{/if}" id="tab-preisverlauf">
-                <div class="panel-heading" {if $tabanzeige}data-toggle="collapse" {/if}data-parent="#article-tabs" data-target="#tab-preisverlauf">
-                    <h3 class="panel-title">{lang key="priceFlow" section="productDetails"}</h3>
-                </div>
-                <div class="tab-content-wrapper">
-                    <div class="panel-body">
-                        {include file='productdetails/price_history.tpl'}
-                    </div>
-                </div>
-            </div>
-        {/if}
-        {* VERFUEGBARKEITSBENACHRICHTIGUNG *}
-        {if $verfuegbarkeitsBenachrichtigung == 1 && $Artikel->cLagerBeachten === 'Y' && $Artikel->cLagerKleinerNull !== 'Y'}
-            <div role="tabpanel" class="{if $tabanzeige}tab-pane{else}panel panel-default{/if}" id="tab-benachrichtigung">
-                <div class="panel-heading" {if $tabanzeige}data-toggle="collapse" {/if}data-parent="#article-tabs" data-target="#tab-benachrichtigung">
-                    <h3 class="panel-title">{lang key="notifyMeWhenProductAvailableAgain" section="global"}</h3>
-                </div>
-                <div class="tab-content-wrapper">
-                    <div class="panel-body">
-                        {include file='productdetails/availability_notification_form.tpl' position="tab" tplscope='artikeldetails'}
-                    </div>
-                </div>
-            </div>
-        {/if}
-        {* MEDIENDATEIEN *}
-        {if ($Einstellungen.artikeldetails.mediendatei_anzeigen === 'YM' && $Artikel->cMedienDateiAnzeige !== 'beschreibung') || $Artikel->cMedienDateiAnzeige === 'tab'}
-            {if !empty($Artikel->cMedienTyp_arr)}
-                {foreach name="mediendateigruppen" from=$Artikel->cMedienTyp_arr item=cMedienTyp}
-                    {$cMedienTypId = $cMedienTyp|regex_replace:"/[\'\" ]/":""}
-                    <div role="tabpanel" class="{if $tabanzeige}tab-pane{else}panel panel-default{/if}" id="tab-{$cMedienTypId}">
-                        <div class="panel-heading" {if $tabanzeige}data-toggle="collapse" {/if}data-parent="#article-tabs" data-target="#tab-{$cMedienTypId}">
-                            <h3 class="panel-title">{$cMedienTyp}</h3>
-                        </div>
-                        <div class="tab-content-wrapper">
-                            <div class="panel-body">
-                                {include file='productdetails/mediafile.tpl'}
-                            </div>
-                        </div>
-                    </div>
-                {/foreach}
-            {/if}
-        {/if}
-        {* TAGS *}
-        {if $Einstellungen.artikeldetails.tagging_anzeigen === 'Y' && (count($ProduktTagging) > 0 || $Einstellungen.artikeldetails.tagging_freischaltung !== 'N')}
-            <div role="tabpanel" class="{if $tabanzeige}tab-pane{else}panel panel-default{/if}" id="tab-tags">
-                <div class="panel-heading" {if $tabanzeige}data-toggle="collapse" {/if}data-parent="#article-tabs" data-target="#tab-tags">
-                    <h3 class="panel-title">{lang key="productTags" section="productDetails"}</h3>
-                </div>
-                <div class="tab-content-wrapper">
-                    <div class="panel-body">
-                        {include file='productdetails/tags.tpl'}
-                    </div>
-                </div>
-            </div>
-        {/if}
-    </div>{* /article-tabs *}
+        {/foreach}
+    </div>
 {/if}

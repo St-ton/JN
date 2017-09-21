@@ -567,7 +567,7 @@ class Link extends MainModel
      * @param null|int    $kKey
      * @param null|object $oObj
      * @param null|mixed  $xOption
-     * @param nulll|int   $kLinkgruppe
+     * @param null|int   $kLinkgruppe
      */
     public function __construct($kKey = null, $oObj = null, $xOption = null, $kLinkgruppe = null)
     {

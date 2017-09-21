@@ -84,31 +84,33 @@ if (isset($_POST['resetEmailvorlage']) && (int)$_POST['resetEmailvorlage'] === 1
                     WHERE " . $cTableSpracheOriginal . ".kEmailvorlage = " . (int)$_POST['kEmailvorlage'], 4
             );
             $languages = gibAlleSprachen();
-            $vorlage   = Shop::DB()->select('temailvorlageoriginal', 'kEmailvorlage', (int)$_POST['kEmailvorlage']);
-            if (isset($vorlage->cDateiname) && strlen($vorlage->cDateiname) > 0) {
-                foreach ($languages as $_lang) {
-                    $path = PFAD_ROOT . PFAD_EMAILVORLAGEN . $_lang->cISO;
-                    if (isset($_lang->cISO) && file_exists(PFAD_ROOT . PFAD_EMAILVORLAGEN . $_lang->cISO)) {
-                        $fileHtml  = $path . '/' . $vorlage->cDateiname . '_html.tpl';
-                        $filePlain = $path . '/' . $vorlage->cDateiname . '_plain.tpl';
-                        if (file_exists($fileHtml) && file_exists($filePlain)) {
-                            $upd               = new stdClass();
-                            $html              = file_get_contents($fileHtml);
-                            $text              = file_get_contents($filePlain);
-                            $doDecodeHtml      = function_exists('mb_detect_encoding')
-                                ? (mb_detect_encoding($html, 'UTF-8', true) === 'UTF-8')
-                                : (StringHandler::is_utf8($html) === 1);
-                            $doDecodeText      = function_exists('mb_detect_encoding')
-                                ? (mb_detect_encoding($text, 'UTF-8', true) === 'UTF-8')
-                                : (StringHandler::is_utf8($text) === 1);
-                            $upd->cContentHtml = ($doDecodeHtml === true) ? utf8_decode($html) : $html;
-                            $upd->cContentText = ($doDecodeText === true) ? utf8_decode($text) : $text;
-                            Shop::DB()->update(
-                                $cTableSprache,
-                                ['kEmailVorlage', 'kSprache'],
-                                [(int)$_POST['kEmailvorlage'], (int)$_lang->kSprache],
-                                $upd
-                            );
+            if (empty(verifyGPCDataInteger('kPlugin'))) {
+                $vorlage   = Shop::DB()->select('temailvorlageoriginal', 'kEmailvorlage', (int)$_POST['kEmailvorlage']);
+                if (isset($vorlage->cDateiname) && strlen($vorlage->cDateiname) > 0) {
+                    foreach ($languages as $_lang) {
+                        $path = PFAD_ROOT . PFAD_EMAILVORLAGEN . $_lang->cISO;
+                        if (isset($_lang->cISO) && file_exists(PFAD_ROOT . PFAD_EMAILVORLAGEN . $_lang->cISO)) {
+                            $fileHtml  = $path . '/' . $vorlage->cDateiname . '_html.tpl';
+                            $filePlain = $path . '/' . $vorlage->cDateiname . '_plain.tpl';
+                            if (file_exists($fileHtml) && file_exists($filePlain)) {
+                                $upd               = new stdClass();
+                                $html              = file_get_contents($fileHtml);
+                                $text              = file_get_contents($filePlain);
+                                $doDecodeHtml      = function_exists('mb_detect_encoding')
+                                    ? (mb_detect_encoding($html, 'UTF-8', true) === 'UTF-8')
+                                    : (StringHandler::is_utf8($html) === 1);
+                                $doDecodeText      = function_exists('mb_detect_encoding')
+                                    ? (mb_detect_encoding($text, 'UTF-8', true) === 'UTF-8')
+                                    : (StringHandler::is_utf8($text) === 1);
+                                $upd->cContentHtml = ($doDecodeHtml === true) ? utf8_decode($html) : $html;
+                                $upd->cContentText = ($doDecodeText === true) ? utf8_decode($text) : $text;
+                                Shop::DB()->update(
+                                    $cTableSprache,
+                                    ['kEmailVorlage', 'kSprache'],
+                                    [(int)$_POST['kEmailvorlage'], (int)$_lang->kSprache],
+                                    $upd
+                                );
+                            }
                         }
                     }
                 }

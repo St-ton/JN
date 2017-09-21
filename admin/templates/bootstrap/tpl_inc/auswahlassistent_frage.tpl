@@ -112,7 +112,7 @@ cDokuURL=#auswahlassistentURL#}
                 </div>
                 <div class="panel-footer">
                     <div class="btn-group">
-                        <button name="speichernSubmit" type="submit" value="{$btnTitle}" class="btn btn-primary"><i class="fa fa-save"></i> {#save#}</button>
+                        <button name="speichernSubmit" type="submit" class="btn btn-primary"><i class="fa fa-save"></i> {#save#}</button>
                         <a href="auswahlassistent.php" class="btn btn-danger">{#goBack#}</a>
                     </div>
                 </div>

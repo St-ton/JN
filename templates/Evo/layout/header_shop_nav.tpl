@@ -4,9 +4,9 @@
         <li id="search">
             <form action="navi.php" method="GET">
                 <div class="input-group">
-                    <input name="qs" type="text" class="form-control ac_input" placeholder="{lang key='search'}" autocomplete="off" />
+                    <input name="qs" type="text" class="form-control ac_input" placeholder="{lang key='search'}" autocomplete="off" aria-label="{lang key='search'}"/>
                     <span class="input-group-addon">
-                        <button type="submit">
+                        <button type="submit" name="search" id="search-submit-button" aria-label="{lang key='search'}">
                             <span class="fa fa-search"></span>
                         </button>
                     </span>
@@ -19,12 +19,12 @@
     {*  ACCOUNT *}
     <li class="dropdown hidden-xs">
         {if empty($smarty.session.Kunde->kKunde)}
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                <i class="fa fa-user"></i> <span class="hidden-xs hidden-sm"> {lang key="login" section="global"} </span> <i class="caret"></i>
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="{lang key='login'}">
+                <i class="fa fa-user"></i> <span class="hidden-xs hidden-sm"> {lang key='login'} </span> <i class="caret"></i>
             </a>
             <ul id="login-dropdown" class="dropdown-menu dropdown-menu-right">
                 <li>
-                    <form action="{get_static_route id='jtl.php' secure="true"}" method="post" class="form">
+                    <form action="{get_static_route id='jtl.php' secure=true}" method="post" class="form">
                         {$jtl_token}
                         <fieldset id="quick-login">
                             <div class="form-group">
@@ -52,23 +52,25 @@
                         </fieldset>
                     </form>
                 </li>
-                <li><a href="{get_static_route id='pass.php'}" rel="nofollow">{lang key="forgotPassword" section="global"}</a></li>
                 <li>
-                    <a href="{get_static_route id='registrieren.php'}">{lang key="newHere" section="global"} {lang key="registerNow" section="global"}</a>
+                    <a href="{get_static_route id='pass.php'}" rel="nofollow" title="{lang key='forgotPassword'}">{lang key='forgotPassword'}</a>
+                </li>
+                <li>
+                    <a href="{get_static_route id='registrieren.php'}" title="{lang key='registerNow'}">{lang key='newHere'} {lang key='registerNow'}</a>
                 </li>
             </ul>
         {else}
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="{lang key='hello'}">
                 <span class="fa fa-user"></span>
-                <span class="hidden-xs hidden-sm hidden-md"> {lang key="hello" section="global"} {if $smarty.session.Kunde->cAnrede === 'w'}{$Anrede_w}{elseif $smarty.session.Kunde->cAnrede === 'm'}{$Anrede_m}{/if} {$smarty.session.Kunde->cNachname}</span>
+                <span class="hidden-xs hidden-sm hidden-md"> {lang key='hello'} {if $smarty.session.Kunde->cAnrede === 'w'}{$Anrede_w}{elseif $smarty.session.Kunde->cAnrede === 'm'}{$Anrede_m}{/if} {$smarty.session.Kunde->cNachname}</span>
                 <span class="caret"></span>
             </a>
             <ul class="dropdown-menu dropdown-menu-right">
                 <li>
-                    <a href="{get_static_route id='jtl.php' secure="true"}">{lang key="myAccount" section="global"}</a>
+                    <a href="{get_static_route id='jtl.php' secure=true}" title="{lang key='myAccount'}">{lang key='myAccount'}</a>
                 </li>
                 <li>
-                    <a href="{get_static_route id='jtl.php' secure="true"}?logout=1">{lang key="logOut" section="global"}</a>
+                    <a href="{get_static_route id='jtl.php' secure=true}?logout=1" title="{lang key='logOut'}">{lang key='logOut'}</a>
                 </li>
             </ul>
         {/if}

@@ -4,8 +4,6 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-$oAccount->permission('PLZ_ORT_IMPORT_VIEW', true, true);
-
 defined('PLZIMPORT_HOST') || define('PLZIMPORT_HOST', 'www.fa-technik.adfc.de');
 defined('PLZIMPORT_URL') || define('PLZIMPORT_URL', 'http://' . PLZIMPORT_HOST . '/code/opengeodb/');
 defined('PLZIMPORT_ISO_REGEX') || define('PLZIMPORT_ISO_REGEX', '/([A-Z]{2})\.tab/');
@@ -87,7 +85,7 @@ function plzimportDoImport($target, array $sessData, $result)
             $read += strlen(implode(',', $data));
             $data  = fgetcsv($fHandle, 0, "\t");
 
-            if (isset($data[13]) && !in_array($data[13], [2, 6])) {
+            if (isset($data[13]) && in_array($data[13], [6, 8])) {
                 $plz_arr       = explode(',', $data[7]);
                 $oPLZOrt->cOrt = utf8_decode($data[3]);
 
@@ -110,7 +108,15 @@ function plzimportDoImport($target, array $sessData, $result)
                     plzimportWriteSession('Import', $sessData);
                     fclose($fHandle);
 
-                    $cRedirectUrl = Shop::getURL() . '/' . PFAD_ADMIN . 'plz_ort_import.php?action=doImport&target=' . urlencode($target) . '&part=import&step=' . $sessData['step'] . '&token=' . $_SESSION['jtl_token'];
+                    $cRedirectUrl = Shop::getURL() . '/' . PFAD_ADMIN . 'io.php?io=' .
+                        urlencode(
+                            json_encode(
+                                [
+                                    'name' => 'plzimportActionDoImport',
+                                    'params' => [$target, 'import', $sessData['step']]
+                                ]
+                            )
+                        ) . '&token=' . StringHandler::filterXSS($_REQUEST['jtl_token']);
                     header('Location: ' . $cRedirectUrl);
                     exit;
                 }
@@ -241,7 +247,15 @@ function plzimportDoDownload($target, array $sessData, $result)
     $result->message = $target . ' wurde erfolgreich heruntergeladen!';
 
     // Download fertig - weiter mit dem Import
-    $cRedirectUrl = Shop::getURL() . '/' . PFAD_ADMIN . 'plz_ort_import.php?action=doImport&target=' . urlencode($target) . '&part=import&step=' . $sessData['step'] . '&token=' . $_SESSION['jtl_token'];
+    $cRedirectUrl = Shop::getURL() . '/' . PFAD_ADMIN . 'io.php?io=' .
+        urlencode(
+            json_encode(
+                [
+                    'name' => 'plzimportActionDoImport',
+                    'params' => [$target, 'import', $sessData['step']]
+                ]
+            )
+        ) . '&token=' . StringHandler::filterXSS($_REQUEST['jtl_token']);
     header('Location: ' . $cRedirectUrl);
     exit;
 }
@@ -253,7 +267,7 @@ function plzimportDoDownload($target, array $sessData, $result)
  */
 function plzimportActionIndex(JTLSmarty $smarty, array &$messages)
 {
-    $status     = plzimportActionCheckStatus(true);
+    $status = plzimportActionCheckStatus();
 
     if (isset($status) && $status->running) {
         $messages['notice'] = 'Es l&auml;uft bereits ein Import. Bitte warten Sie bis dieser abgeschlossen ist!';
@@ -263,27 +277,28 @@ function plzimportActionIndex(JTLSmarty $smarty, array &$messages)
 }
 
 /**
- * @param JTLSmarty $smarty
- * @return void
+ * @return array
  */
-function plzimportActionUpdateIndex(JTLSmarty $smarty)
+function plzimportActionUpdateIndex()
 {
-    $result = (object)[
-        'listHTML' => $smarty->assign('oPlzOrt_arr', plzimportGetPLZOrt())
-            ->fetch('tpl_inc/plz_ort_import_index_list.tpl'),
+    Shop::Smarty()->assign('oPlzOrt_arr', plzimportGetPLZOrt());
+    return [
+        'listHTML' => Shop::Smarty()->fetch('tpl_inc/plz_ort_import_index_list.tpl')
     ];
-
-    plzimportMakeResponse($result);
 }
 
 /**
  * @param string $target
  * @param string $part
  * @param int $step
- * @return void
+ * @return object
  */
-function plzimportActionDoImport($target, $part, $step)
+function plzimportActionDoImport($target = '', $part = '', $step = 0)
 {
+    $target = StringHandler::filterXSS($target);
+    $part   = StringHandler::filterXSS($part);
+    $step   = (int)$step;
+
     session_write_close();
     ini_set('max_execution_time', 30);
 
@@ -306,7 +321,7 @@ function plzimportActionDoImport($target, $part, $step)
                 'status'  => 'Importiere ' . $target . '...',
             ];
         } else {
-            $sessData = plzimportReadSession('Import');
+            $sessData         = plzimportReadSession('Import');
             $sessData['step'] = $step;
         }
 
@@ -325,11 +340,35 @@ function plzimportActionDoImport($target, $part, $step)
         plzimportCloseSession('Import');
     }
 
-    plzimportMakeResponse($result);
+    return $result;
 }
 
 /**
- * @return void
+ * @param string $type
+ * @param string $message
+ * @return object
+ */
+function plzimportActionResetImport($type = 'success', $message = 'Import wurde abgebrochen!')
+{
+    session_write_close();
+
+    $step   = 100;
+    $result = (object)[
+        'type'    => StringHandler::filterXSS($type),
+        'message' => StringHandler::filterXSS($message),
+    ];
+
+    $sessData         = plzimportReadSession('Import');
+    $sessData['step'] = $step;
+
+    plzimportWriteSession('Import', $sessData);
+    plzimportCloseSession('Import');
+
+    return $result;
+}
+
+/**
+ * @return object
  */
 function plzimportActionCallStatus()
 {
@@ -347,14 +386,13 @@ function plzimportActionCallStatus()
         ];
     }
 
-    plzimportMakeResponse($result);
+    return $result;
 }
 
 /**
- * @param bool $return
  * @return object
  */
-function plzimportActionCheckStatus($return = false)
+function plzimportActionCheckStatus()
 {
     session_write_close();
 
@@ -381,33 +419,25 @@ function plzimportActionCheckStatus($return = false)
         ];
     }
 
-    if ($return === true) {
-        return $result;
-    }
-
-    plzimportMakeResponse($result);
-    return null;
+    return $result;
 }
 
 /**
- * @return void
+ * @return array
  */
 function plzimportActionDelTempImport()
 {
     Shop::DB()->delete('tplz', 'cLandISO', 'IMP');
-    $result = (object)[
+    return [
         'type'    => 'success',
         'message' => 'Tempor&auml;rer Import wurde gel&ouml;scht!',
     ];
-
-    plzimportMakeResponse($result);
 }
 
 /**
- * @param JTLSmarty $smarty
- * @return void
+ * @return array
  */
-function plzimportActionLoadAvailableDownloads(JTLSmarty $smarty)
+function plzimportActionLoadAvailableDownloads()
 {
     $oLand_arr = isset($_SESSION['plzimport.oLand_arr']) ? $_SESSION['plzimport.oLand_arr'] : Shop::Cache()->get('plzimport.oLand_arr');
 
@@ -420,7 +450,7 @@ function plzimportActionLoadAvailableDownloads(JTLSmarty $smarty)
         @curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
         @curl_setopt($ch, CURLOPT_TIMEOUT, 30);
 
-        $cContent  = @curl_exec($ch);
+        $cContent = @curl_exec($ch);
         curl_close($ch);
 
         if (preg_match_all(PLZIMPORT_REGEX, $cContent, $hits, PREG_PATTERN_ORDER)) {
@@ -431,13 +461,13 @@ function plzimportActionLoadAvailableDownloads(JTLSmarty $smarty)
                     ORDER BY cISO", 2
             );
 
-            foreach (array_keys($oLand_arr) as $key) {
-                $idx = array_search($oLand_arr[$key]->cISO, $hits[2], true);
+            foreach ($oLand_arr as $key => $oLand) {
+                $idx = array_search($oLand->cISO, $hits[2], true);
                 if ($idx !== false) {
-                    $date = date_create_from_format('d-M-Y H:i', $hits[3][$idx]);
-                    $oLand_arr[$key]->cURL  = urlencode($hits[1][$idx]);
-                    $oLand_arr[$key]->cDate = $date !== false ? $date->format('d.m.Y') : $hits[3][$idx];
-                    $oLand_arr[$key]->cSize = $hits[4][$idx];
+                    $date         = date_create_from_format('d-M-Y H:i', $hits[3][$idx]);
+                    $oLand->cURL  = urlencode($hits[1][$idx]);
+                    $oLand->cDate = $date !== false ? $date->format('d.m.Y') : $hits[3][$idx];
+                    $oLand->cSize = $hits[4][$idx];
                 }
             }
 
@@ -448,19 +478,20 @@ function plzimportActionLoadAvailableDownloads(JTLSmarty $smarty)
         }
     }
 
-    $result = (object)[
-        'dialogHTML' => $smarty->assign('oLand_arr', $oLand_arr)
-            ->fetch('tpl_inc/plz_ort_import_auswahl.tpl'),
-    ];
+    Shop::Smarty()->assign('oLand_arr', $oLand_arr);
 
-    plzimportMakeResponse($result);
+    return [
+        'dialogHTML' => Shop::Smarty()->fetch('tpl_inc/plz_ort_import_auswahl.tpl')
+    ];
 }
 
 /**
  * @param string $target
  */
-function plzimportActionRestoreBackup($target)
+function plzimportActionRestoreBackup($target = '')
 {
+    $target = StringHandler::filterXSS($target);
+
     if (!empty($target)) {
         Shop::DB()->delete('tplz', 'cLandISO', $target);
         Shop::DB()->query("INSERT INTO tplz SELECT * FROM tplz_backup WHERE cLandISO = '" . $target . "'", 3);
@@ -475,7 +506,7 @@ function plzimportActionRestoreBackup($target)
         ];
     }
 
-    plzimportMakeResponse($result);
+    return $result;
 }
 
 /**

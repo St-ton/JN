@@ -15,7 +15,7 @@
             <input type="hidden" name="kTag" value="{$kTag}" />
 
             <div id="payment">
-                <div id="tabellenLivesuche">
+                <div id="tabellenLivesuche" class="table-responsive">
                     <table class="table">
                         <tr>
                             <th class="check">&nbsp;</th>

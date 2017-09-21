@@ -121,6 +121,7 @@ function getWidgetContent($kWidget)
  * @param string $cURL
  * @param int    $nTimeout
  * @return mixed|string
+ * @deprecated since 4.06
  */
 function getRemoteData($cURL, $nTimeout = 15)
 {
@@ -148,4 +149,42 @@ function getRemoteData($cURL, $nTimeout = 15)
     }
 
     return $cData;
+}
+
+/**
+ * @param string $cURL
+ * @param string $cDataName
+ * @param string $cTpl
+ * @param string $cWrapperID
+ * @param string $cPost
+ * @param bool $bDecodeUTF8
+ * @return IOResponse
+ */
+function getRemoteDataIO($cURL, $cDataName, $cTpl, $cWrapperID, $cPost = null, $cCallback = null, $bDecodeUTF8 = false)
+{
+    $response = new IOResponse();
+    $cData    = http_get_contents($cURL, 15, $cPost);
+    $oData    = json_decode($cData);
+    $oData    = $bDecodeUTF8 ? utf8_convert_recursive($oData) : $oData;
+    Shop::Smarty()->assign($cDataName, $oData);;
+    $cWrapper = Shop::Smarty()->fetch('tpl_inc/' . $cTpl);
+    $response->assign($cWrapperID, 'innerHTML', $cWrapper);
+
+    if ($cCallback !== null) {
+        $response->script("if(typeof {$cCallback} === 'function') {$cCallback}({$cData});");
+    }
+
+    return $response;
+}
+
+function getAvailableWidgetsIO()
+{
+    $response             = new IOResponse();
+    $oAvailableWidget_arr = getWidgets(false);
+    Shop::Smarty()->assign('oAvailableWidget_arr', $oAvailableWidget_arr);
+    $cWrapper = Shop::Smarty()->fetch('tpl_inc/widget_selector.tpl');
+    $cWrapper = utf8_encode($cWrapper);
+    $response->assign('settings', 'innerHTML', $cWrapper);
+
+    return $response;
 }

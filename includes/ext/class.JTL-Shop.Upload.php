@@ -54,6 +54,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
 
             if ($oUploads_arr !== false) {
                 foreach ($oUploads_arr as &$oUpload) {
+                    unset($_SESSION['Uploader'][$oUpload->cUnique]);
+
                     if ($oUpload->bVorhanden) {
                         unlink(PFAD_UPLOADS . $oUpload->cUnique);
                     }
@@ -74,10 +76,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
                         $eigenschaftArr = [];
                         if (!empty($oPosition->WarenkorbPosEigenschaftArr)) {
                             foreach ($oPosition->WarenkorbPosEigenschaftArr as $eigenschaft) {
-                                $eigenschaftArr[$eigenschaft->kEigenschaft] =
-                                    (!empty(array_values($eigenschaft->cEigenschaftWertName)[0]))
-                                        ? array_values($eigenschaft->cEigenschaftWertName)[0]
-                                        : $eigenschaft->cEigenschaftWertName;
+                                $eigenschaftArr[$eigenschaft->kEigenschaft] = is_string($eigenschaft->cEigenschaftWertName)
+                                    ? $eigenschaft->cEigenschaftWertName
+                                    : reset($eigenschaft->cEigenschaftWertName);
                             }
                         }
                         $oUpload              = new stdClass();
@@ -243,7 +244,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
          */
         public static function uniqueDateiname($oUpload)
         {
-            $unique = $oUpload->kUploadSchema . $oUpload->kCustomID . $oUpload->nTyp . session_id();
+            $unique = $oUpload->kUploadSchema . $oUpload->kCustomID . $oUpload->nTyp . self::getSessionKey();
             if (!empty($oUpload->nEigenschaften_arr)) {
                 $eigenschaften = '';
                 foreach ($oUpload->nEigenschaften_arr as $k => $v) {
@@ -253,6 +254,18 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
             }
 
             return md5($unique);
+        }
+
+        /**
+         * @return string
+         */
+        private static function getSessionKey()
+        {
+            if (!isset($_SESSION['Uploader']['sessionKey'])) {
+                $_SESSION['Uploader']['sessionKey'] = uniqid();
+            }
+
+            return $_SESSION['Uploader']['sessionKey'];
         }
 
         /**

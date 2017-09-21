@@ -265,7 +265,13 @@ class JTLSmarty extends SmartyBC
             if (!file_exists($_compileDir)) {
                 mkdir($_compileDir);
             }
-            $this->setTemplateDir([$this->context => PFAD_ROOT . PFAD_TEMPLATES . $cTemplate . '/'])
+            $templatePaths[$this->context] = PFAD_ROOT . PFAD_TEMPLATES . $cTemplate . '/';
+            $pluginTemplatePaths           = Plugin::getTemplatePaths();
+            foreach ($pluginTemplatePaths as $moduleId => $path) {
+                $templateKey                 = 'plugin_' . $moduleId;
+                $templatePaths[$templateKey] = $path;
+            }
+            $this->setTemplateDir($templatePaths)
                  ->setCompileDir($_compileDir)
                  ->setCacheDir(PFAD_ROOT . PFAD_COMPILEDIR . $cTemplate . '/' . 'page_cache/')
                  ->setPluginsDir(SMARTY_PLUGINS_DIR);
@@ -302,7 +308,9 @@ class JTLSmarty extends SmartyBC
                  ->registerPlugin('modifier', 'truncate', [$this, 'truncate']);
 
             if ($isAdmin === false) {
-                $this->cache_lifetime = (isset($cacheOptions['expiration']) && ((int)$cacheOptions['expiration'] > 0)) ? $cacheOptions['expiration'] : 86400;
+                $this->cache_lifetime = (isset($cacheOptions['expiration']) && ((int)$cacheOptions['expiration'] > 0))
+                    ? $cacheOptions['expiration']
+                    : 86400;
                 //assign variables moved from $_SESSION to cache to smarty
                 $linkHelper = LinkHelper::getInstance();
                 $linkGroups = $linkHelper->getLinkGroups();
@@ -322,17 +330,13 @@ class JTLSmarty extends SmartyBC
                 $this->setCachingParams($this->config);
             }
             $_tplDir = $this->getTemplateDir($this->context);
+            global $smarty;
+            $smarty = $this;
             if (file_exists($_tplDir . 'php/functions_custom.php')) {
-                global $smarty;
-                $smarty = $this;
                 require_once $_tplDir . 'php/functions_custom.php';
             } elseif (file_exists($_tplDir . 'php/functions.php')) {
-                global $smarty;
-                $smarty = $this;
                 require_once $_tplDir . 'php/functions.php';
             } elseif ($parent !== null && file_exists(PFAD_ROOT . PFAD_TEMPLATES . $parent . '/php/functions.php')) {
-                global $smarty;
-                $smarty = $this;
                 require_once PFAD_ROOT . PFAD_TEMPLATES . $parent . '/php/functions.php';
             }
         }
@@ -394,9 +398,13 @@ class JTLSmarty extends SmartyBC
             }
             $tplOutput = $GLOBALS['doc']->htmlOuter();
         }
-        if (isset($this->config['template']['general']['minify_html']) && $this->config['template']['general']['minify_html'] === 'Y') {
-            $minifyCSS = (isset($this->config['template']['general']['minify_html_css']) && $this->config['template']['general']['minify_html_css'] === 'Y');
-            $minifyJS  = (isset($this->config['template']['general']['minify_html_js']) && $this->config['template']['general']['minify_html_js'] === 'Y');
+        if (isset($this->config['template']['general']['minify_html'])
+            && $this->config['template']['general']['minify_html'] === 'Y'
+        ) {
+            $minifyCSS = (isset($this->config['template']['general']['minify_html_css'])
+                && $this->config['template']['general']['minify_html_css'] === 'Y');
+            $minifyJS  = (isset($this->config['template']['general']['minify_html_js'])
+                && $this->config['template']['general']['minify_html_js'] === 'Y');
             $tplOutput = $this->minify_html($tplOutput, $minifyCSS, $minifyJS);
         }
 
@@ -566,11 +574,10 @@ class JTLSmarty extends SmartyBC
             if (!$break_words && !$middle) {
                 $string = preg_replace('/\s+?(\S+)?$/', '', substr($string, 0, $length + 1));
             }
-            if (!$middle) {
-                return substr($string, 0, $length) . $etc;
-            }
 
-            return substr($string, 0, $length / 2) . $etc . substr($string, -$length / 2);
+            return !$middle
+                ? substr($string, 0, $length) . $etc
+                : substr($string, 0, $length / 2) . $etc . substr($string, -$length / 2);
         }
 
         return $string;
@@ -603,8 +610,8 @@ class JTLSmarty extends SmartyBC
             //disabled on child templates for now
             return $cFilename;
         }
-        $cFile    = basename($cFilename, '.tpl');
-        $cSubPath = dirname($cFilename);
+        $cFile       = basename($cFilename, '.tpl');
+        $cSubPath    = dirname($cFilename);
         $cCustomFile = (strpos($cSubPath, PFAD_ROOT) === false)
             ? $this->getTemplateDir($this->context) . (($cSubPath === '.')
                 ? ''
@@ -714,6 +721,37 @@ class JTLSmarty extends SmartyBC
             'transform' => $transform
         ]);
 
+        if ($this->context === 'frontend'
+            && $resource_name === $resource_cfb_name
+            && file_exists($this->getTemplateDir('frontend') . $resource_cfb_name)
+        ) {
+            $pluginTemplateExtends = [];
+
+            foreach (Plugin::getTemplatePaths() as $moduleId => $pluginTemplatePath) {
+                $templateKey = 'plugin_' . $moduleId;
+                $templateVar = 'oPlugin_' . $moduleId;
+
+                if ($this->getTemplateVars($templateVar) === null) {
+                    $oPlugin = Plugin::getPluginById($moduleId);
+                    $this->assign($templateVar, $oPlugin);
+                }
+
+                $file        = $this->_realpath($pluginTemplatePath . $resource_cfb_name, true);
+                if (file_exists($file)) {
+                    $pluginTemplateExtends[] = sprintf('[%s]%s', $templateKey, $resource_cfb_name);
+                }
+            }
+
+            if (count($pluginTemplateExtends) > 0) {
+                $transform         = false;
+                $resource_cfb_name = sprintf(
+                    'extends:[frontend]%s|%s',
+                    $resource_cfb_name,
+                    implode('|', $pluginTemplateExtends)
+                );
+            }
+        }
+
         return $transform ? ('file:' . $resource_cfb_name) : $resource_cfb_name;
     }
 
@@ -795,8 +833,18 @@ class jtlTplClass extends Smarty_Internal_Template
      * @param string  $content_func   function name
      *
      */
-    public function _subTemplateRender($template, $cache_id, $compile_id, $caching, $cache_lifetime, $data, $scope, $forceTplCache, $uid = null, $content_func = null)
-    {
+    public function _subTemplateRender(
+        $template,
+        $cache_id,
+        $compile_id,
+        $caching,
+        $cache_lifetime,
+        $data,
+        $scope,
+        $forceTplCache,
+        $uid = null,
+        $content_func = null
+    ) {
         return parent::_subTemplateRender(
             $this->smarty->getResourceName($template),
             $cache_id,

@@ -160,5 +160,7 @@
     {/block}
     </div>{* /price_wrapper *}
 {else}
-    <span class="price_label price_invisible">{lang key="priceHidden" section="global"}</span>
+    {block name="price-invisible"}
+        <span class="price_label price_invisible">{lang key="priceHidden" section="global"}</span>
+    {/block}
 {/if}

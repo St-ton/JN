@@ -183,7 +183,8 @@ function download($url)
     curl_setopt($ch, CURLOPT_TIMEOUT, 1000);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, DEFAULT_CURL_OPT_VERIFYHOST);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, DEFAULT_CURL_OPT_VERIFYPEER);
     curl_setopt($ch, CURLOPT_USERAGENT, 'JTL-Shop/' . JTL_VERSION);
 
     $data = curl_exec($ch);

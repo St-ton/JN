@@ -316,6 +316,9 @@ function gibArtikelKeys($FilterSQL, $nArtikelProSeite, $NaviFilter, $bExtern, $o
         if (PRODUCT_LIST_SHOW_RATINGS === true) {
             $oArtikelOptionen->nRatings = 1;
         }
+        if (isset($conf['artikeldetails']['artikel_variationspreisanzeige']) && $conf['artikeldetails']['artikel_variationspreisanzeige'] != 0) {
+            $oArtikelOptionen->nVariationDetailPreis = 1;
+        }
 
         foreach ($oArtikelKey_arr as $i => $oArtikelKey) {
             $nLaufLimitN = $i + $nLimitNBlaetter;
@@ -595,9 +598,14 @@ function gibKategorieFilterOptionen($FilterSQL, $NaviFilter)
             $kKatFilter        = (isset($NaviFilter->KategorieFilter->kKategorie) && $NaviFilter->KategorieFilter->kKategorie > 0)
                 ? ''
                 : "AND tkategorieartikelgesamt.kOberKategorie = 0";
-            $cSQLFilterAnzeige = "JOIN tkategorieartikelgesamt ON tartikel.kArtikel = tkategorieartikelgesamt.kArtikel
-                                    " . $kKatFilter . "
-                                    JOIN tkategorie ON tkategorie.kKategorie = tkategorieartikelgesamt.kKategorie";
+            $cSQLFilterAnzeige = "JOIN (
+                SELECT tkategorieartikel.kArtikel, oberkategorie.kOberKategorie, oberkategorie.kKategorie
+                FROM tkategorieartikel
+                INNER JOIN tkategorie ON tkategorie.kKategorie = tkategorieartikel.kKategorie
+                INNER JOIN tkategorie oberkategorie ON tkategorie.lft BETWEEN oberkategorie.lft AND oberkategorie.rght
+                ) tkategorieartikelgesamt ON tartikel.kArtikel = tkategorieartikelgesamt.kArtikel
+                " . $kKatFilter . "
+                JOIN tkategorie ON tkategorie.kKategorie = tkategorieartikelgesamt.kKategorie";
         }
         // nicht Standardsprache? Dann hole Namen nicht aus tkategorie sondern aus tkategoriesprache
         $cSQLKategorieSprache          = new stdClass();
@@ -1427,7 +1435,8 @@ function gibTagFilterJSONOptionen($FilterSQL, $NaviFilter)
  * @param object         $FilterSQL
  * @param object         $NaviFilter
  * @param Kategorie|null $oAktuelleKategorie
- * @param bool           $bForce
+ * @param bool           $bForce true if `merkmalfilter_verwenden`, `merkmalfilter_maxmerkmale` and
+ *      `merkmalfilter_maxmerkmalwerte` should be ignored
  * @return array|mixed
  */
 function gibMerkmalFilterOptionen($FilterSQL, $NaviFilter, $oAktuelleKategorie = null, $bForce = false)
@@ -1457,68 +1466,124 @@ function gibMerkmalFilterOptionen($FilterSQL, $NaviFilter, $oAktuelleKategorie =
         ) {
             $cKatAttribMerkmalFilter_arr = explode(';', $oAktuelleKategorie->categoryFunctionAttributes[KAT_ATTRIBUT_MERKMALFILTER]);
         }
-        //Sprache beachten
-        $oSQLMM          = new stdClass();
-        $oSQLMM->cSELECT = 'tmerkmal.cName, ';
-        $oSQLMM->cJOIN   = '';
-        if (Shop::$kSprache > 0 && !standardspracheAktiv()) {
-            $oSQLMM->cSELECT = "tmerkmalsprache.cName, ";
-            $oSQLMM->cJOIN   = " JOIN tmerkmalsprache ON tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal
-                                    AND tmerkmalsprache.kSprache = " . (int)Shop::$kSprache;
-        }
         if (!isset($FilterSQL->oMerkmalFilterSQL->cJoinMMW)) {
             $FilterSQL->oMerkmalFilterSQL->cJoinMMW  = null;
             $FilterSQL->oMerkmalFilterSQL->cWhereMMW = null;
         }
+        //Sprache beachten
+        $kSprache         = (int)Shop::$kSprache;
+        $kStandardSprache = (int)gibStandardsprache()->kSprache;
+        if ($kSprache !== $kStandardSprache) {
+            $cSelectMerkmal     = "COALESCE(tmerkmalsprache.cName, tmerkmal.cName) AS cName, ";
+            $cJoinMerkmal       = "LEFT JOIN tmerkmalsprache
+                                        ON tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal
+                                        AND tmerkmalsprache.kSprache = " . $kSprache;
+            $cSelectMerkmalwert = "COALESCE(fremdSprache.cSeo, standardSprache.cSeo) AS cSeo,
+                                    COALESCE(fremdSprache.cWert, standardSprache.cWert) AS cWert,";
+            $cJoinMerkmalwert   = "INNER JOIN tmerkmalwertsprache AS standardSprache
+                                        ON standardSprache.kMerkmalWert = tartikelmerkmal.kMerkmalWert
+                                        AND standardSprache.kSprache = " . $kStandardSprache . "
+                                    LEFT JOIN tmerkmalwertsprache AS fremdSprache 
+                                        ON fremdSprache.kMerkmalWert = tartikelmerkmal.kMerkmalWert
+                                        AND fremdSprache.kSprache = " . $kSprache . "";
+        } else {
+            $cSelectMerkmalwert = "tmerkmalwertsprache.cWert, tmerkmalwertsprache.cSeo,";
+            $cJoinMerkmalwert   = "INNER JOIN tmerkmalwertsprache
+                                        ON tmerkmalwertsprache.kMerkmalWert = tartikelmerkmal.kMerkmalWert
+                                        AND tmerkmalwertsprache.kSprache = " . $kSprache;
+            $cSelectMerkmal     = 'tmerkmal.cName, ';
+            $cJoinMerkmal       = '';
+        }
         $oMerkmalFilterDB_arr = Shop::DB()->query(
-            "SELECT tseo.cSeo, ssMerkmal.kMerkmal, ssMerkmal.kMerkmalWert, ssMerkmal.cMMWBildPfad, ssMerkmal.cWert, 
+            "SELECT ssMerkmal.cSeo, ssMerkmal.kMerkmal, ssMerkmal.kMerkmalWert, ssMerkmal.cMMWBildPfad, ssMerkmal.cWert, 
                 ssMerkmal.cName, ssMerkmal.cTyp, ssMerkmal.cMMBildPfad, COUNT(*) AS nAnzahl
                 FROM
                 (
                     SELECT tartikelmerkmal.kMerkmal, tartikelmerkmal.kMerkmalWert, tmerkmalwert.cBildPfad AS cMMWBildPfad,
-                    tmerkmalwertsprache.cWert, tmerkmal.nSort AS nSortMerkmal, 
-                    tmerkmalwert.nSort, " . $oSQLMM->cSELECT . " tmerkmal.cTyp, tmerkmal.cBildPfad AS cMMBildPfad
-                FROM tartikel
-                JOIN tartikelmerkmal 
-                ON tartikel.kArtikel = tartikelmerkmal.kArtikel
-                JOIN tmerkmalwert 
-                    ON tmerkmalwert.kMerkmalWert = tartikelmerkmal.kMerkmalWert
-                JOIN tmerkmalwertsprache 
-                    ON tmerkmalwertsprache.kMerkmalWert = tartikelmerkmal.kMerkmalWert
-                    AND tmerkmalwertsprache.kSprache = " . (int)Shop::$kSprache . "
-                JOIN tmerkmal 
-                    ON tmerkmal.kMerkmal = tartikelmerkmal.kMerkmal
-                " . $oSQLMM->cJOIN . "
-                " . (isset($FilterSQL->oHerstellerFilterSQL->cJoin) ? $FilterSQL->oHerstellerFilterSQL->cJoin : '') . "
-                " . (isset($FilterSQL->oSuchspecialFilterSQL->cJoin) ? $FilterSQL->oSuchspecialFilterSQL->cJoin : '') . "
-                " . (isset($FilterSQL->oSuchFilterSQL->cJoin) ? $FilterSQL->oSuchFilterSQL->cJoin : '') . "
-                " . (isset($FilterSQL->oKategorieFilterSQL->cJoin) ? $FilterSQL->oKategorieFilterSQL->cJoin : '') . "
-                " . (isset($FilterSQL->oMerkmalFilterSQL->cJoinMMW) ? $FilterSQL->oMerkmalFilterSQL->cJoinMMW : '') . "
-                " . (isset($FilterSQL->oTagFilterSQL->cJoin) ? $FilterSQL->oTagFilterSQL->cJoin : '') . "
-                " . (isset($FilterSQL->oBewertungSterneFilterSQL->cJoin) ? $FilterSQL->oBewertungSterneFilterSQL->cJoin : '') . "
-                " . (isset($FilterSQL->oPreisspannenFilterSQL->cJoin) ? $FilterSQL->oPreisspannenFilterSQL->cJoin : '') . "
-                LEFT JOIN tartikelsichtbarkeit 
-                    ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                    AND tartikelsichtbarkeit.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
-                WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                    AND tartikel.kVaterArtikel = 0
-                    " . gibLagerfilter() . "
-                    " . (isset($FilterSQL->oSuchspecialFilterSQL->cWhere) ? $FilterSQL->oSuchspecialFilterSQL->cWhere : '') . "
-                    " . (isset($FilterSQL->oSuchFilterSQL->cWhere) ? $FilterSQL->oSuchFilterSQL->cWhere : '') . "
-                    " . (isset($FilterSQL->oHerstellerFilterSQL->cWhere) ? $FilterSQL->oHerstellerFilterSQL->cWhere : '') . "
-                    " . (isset($FilterSQL->oKategorieFilterSQL->cWhere) ? $FilterSQL->oKategorieFilterSQL->cWhere : '') . "
-                    " . (isset($FilterSQL->oMerkmalFilterSQL->cWhereMMW) ? $FilterSQL->oMerkmalFilterSQL->cWhereMMW : '') . "
-                    " . (isset($FilterSQL->oTagFilterSQL->cWhere) ? $FilterSQL->oTagFilterSQL->cWhere : '') . "
-                    " . (isset($FilterSQL->oBewertungSterneFilterSQL->cWhere) ? $FilterSQL->oBewertungSterneFilterSQL->cWhere : '') . "
-                    " . (isset($FilterSQL->oPreisspannenFilterSQL->cWhere) ? $FilterSQL->oPreisspannenFilterSQL->cWhere : '') . "
-                GROUP BY tartikelmerkmal.kMerkmalWert, tartikel.kArtikel
-            ) AS ssMerkmal
-            LEFT JOIN tseo 
-                ON tseo.kKey = ssMerkmal.kMerkmalWert
-                AND tseo.cKey = 'kMerkmalWert'
-                AND tseo.kSprache = " . (int)Shop::$kSprache . "
-            GROUP BY ssMerkmal.kMerkmalWert
-            ORDER BY ssMerkmal.nSortMerkmal, ssMerkmal.nSort, ssMerkmal.cWert", 2
+                    " . $cSelectMerkmalwert . " tmerkmal.nSort AS nSortMerkmal, tmerkmalwert.nSort, 
+                        " . $cSelectMerkmal . " tmerkmal.cTyp, tmerkmal.cBildPfad AS cMMBildPfad
+                        FROM tartikel
+                        JOIN tartikelmerkmal 
+                            ON tartikel.kArtikel = tartikelmerkmal.kArtikel
+                        JOIN tmerkmalwert 
+                            ON tmerkmalwert.kMerkmalWert = tartikelmerkmal.kMerkmalWert
+                        " . $cJoinMerkmalwert . "
+                        JOIN tmerkmal 
+                            ON tmerkmal.kMerkmal = tartikelmerkmal.kMerkmal
+                        " . $cJoinMerkmal . "
+                        " . ((isset($FilterSQL->oHerstellerFilterSQL->cJoin))
+                                ? $FilterSQL->oHerstellerFilterSQL->cJoin
+                                : ''
+                            ) . "
+                        " . ((isset($FilterSQL->oSuchspecialFilterSQL->cJoin))
+                                ? $FilterSQL->oSuchspecialFilterSQL->cJoin : ''
+                            ) . "
+                        " . ((isset($FilterSQL->oSuchFilterSQL->cJoin))
+                                ? $FilterSQL->oSuchFilterSQL->cJoin
+                                : ''
+                            ) . "
+                        " . ((isset($FilterSQL->oKategorieFilterSQL->cJoin))
+                                ? $FilterSQL->oKategorieFilterSQL->cJoin
+                                : ''
+                            ) . "
+                        " . ((isset($FilterSQL->oMerkmalFilterSQL->cJoinMMW))
+                                ? $FilterSQL->oMerkmalFilterSQL->cJoinMMW
+                                : ''
+                            ) . "
+                        " . ((isset($FilterSQL->oTagFilterSQL->cJoin))
+                                ? $FilterSQL->oTagFilterSQL->cJoin
+                                : ''
+                            ) . "
+                        " . ((isset($FilterSQL->oBewertungSterneFilterSQL->cJoin))
+                                ? $FilterSQL->oBewertungSterneFilterSQL->cJoin
+                                : ''
+                            ) . "
+                        " . ((isset($FilterSQL->oPreisspannenFilterSQL->cJoin))
+                                ? $FilterSQL->oPreisspannenFilterSQL->cJoin
+                                : ''
+                            ) . "
+                        LEFT JOIN tartikelsichtbarkeit 
+                            ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
+                            AND tartikelsichtbarkeit.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
+                        WHERE tartikelsichtbarkeit.kArtikel IS NULL
+                            AND tartikel.kVaterArtikel = 0
+                            " . gibLagerfilter() . "
+                            " . ((isset($FilterSQL->oSuchspecialFilterSQL->cWhere))
+                                    ? $FilterSQL->oSuchspecialFilterSQL->cWhere
+                                    : ''
+                                ) . "
+                            " . ((isset($FilterSQL->oSuchFilterSQL->cWhere))
+                                    ? $FilterSQL->oSuchFilterSQL->cWhere
+                                    : ''
+                                ) . "
+                            " . ((isset($FilterSQL->oHerstellerFilterSQL->cWhere))
+                                    ? $FilterSQL->oHerstellerFilterSQL->cWhere
+                                    : ''
+                                ) . "
+                            " . ((isset($FilterSQL->oKategorieFilterSQL->cWhere))
+                                    ? $FilterSQL->oKategorieFilterSQL->cWhere
+                                    : ''
+                                ) . "
+                            " . ((isset($FilterSQL->oMerkmalFilterSQL->cWhereMMW))
+                                    ? $FilterSQL->oMerkmalFilterSQL->cWhereMMW
+                                    : ''
+                                ) . "
+                            " . ((isset($FilterSQL->oTagFilterSQL->cWhere))
+                                    ? $FilterSQL->oTagFilterSQL->cWhere
+                                    : ''
+                                ) . "
+                            " . ((isset($FilterSQL->oBewertungSterneFilterSQL->cWhere))
+                                    ? $FilterSQL->oBewertungSterneFilterSQL->cWhere
+                                    : ''
+                                ) . "
+                            " . ((isset($FilterSQL->oPreisspannenFilterSQL->cWhere))
+                                    ? $FilterSQL->oPreisspannenFilterSQL->cWhere
+                                    : ''
+                                ) . "
+                        GROUP BY tartikelmerkmal.kMerkmalWert, tartikel.kArtikel
+                ) AS ssMerkmal
+                GROUP BY ssMerkmal.kMerkmalWert
+                ORDER BY ssMerkmal.nSortMerkmal, ssMerkmal.nSort, ssMerkmal.cWert", 2
         );
 
         if (is_array($oMerkmalFilterDB_arr) && count($oMerkmalFilterDB_arr) > 0) {
@@ -1579,7 +1644,7 @@ function gibMerkmalFilterOptionen($FilterSQL, $NaviFilter, $oAktuelleKategorie =
                     $oMerkmalFilter_arr[$nPos]->oMerkmalWerte_arr[] = $oMerkmalWerte;
                 } else {
                     //#533 Anzahl max Merkmale erreicht?
-                    if (isset($conf['navigationsfilter']['merkmalfilter_maxmerkmale']) &&
+                    if (!$bForce && isset($conf['navigationsfilter']['merkmalfilter_maxmerkmale']) &&
                         $conf['navigationsfilter']['merkmalfilter_maxmerkmale'] > 0 &&
                         count($oMerkmalFilter_arr) >= $conf['navigationsfilter']['merkmalfilter_maxmerkmale']
                     ) {
@@ -1591,22 +1656,23 @@ function gibMerkmalFilterOptionen($FilterSQL, $NaviFilter, $oAktuelleKategorie =
             }
         }
         //Filter durchgehen und die Merkmalwerte raustun, die zuviel sind und deren Anzahl am geringsten ist.
-        foreach ($oMerkmalFilter_arr as $o => $oMerkmalFilter) {
-            //#534 Anzahl max Merkmalwerte erreicht?
-            if (isset($conf['navigationsfilter']['merkmalfilter_maxmerkmalwerte']) && $conf['navigationsfilter']['merkmalfilter_maxmerkmalwerte'] > 0) {
-                while (count($oMerkmalFilter_arr[$o]->oMerkmalWerte_arr) > $conf['navigationsfilter']['merkmalfilter_maxmerkmalwerte']) {
+        if (!$bForce && isset($conf['navigationsfilter']['merkmalfilter_maxmerkmalwerte']) &&
+            $conf['navigationsfilter']['merkmalfilter_maxmerkmalwerte'] > 0
+        ) {
+            foreach ($oMerkmalFilter_arr as $oMerkmalFilter) {
+                //#534 Anzahl max Merkmalwerte erreicht?
+                while (count($oMerkmalFilter->oMerkmalWerte_arr) > $conf['navigationsfilter']['merkmalfilter_maxmerkmalwerte']) {
                     $nMinAnzahl = 999999;
                     $nIndex     = -1;
-                    $count      = count($oMerkmalFilter_arr[$o]->oMerkmalWerte_arr);
-                    for ($l = 0; $l < $count; $l++) {
-                        if ($oMerkmalFilter_arr[$o]->oMerkmalWerte_arr[$l]->nAnzahl < $nMinAnzahl) {
-                            $nMinAnzahl = $oMerkmalFilter_arr[$o]->oMerkmalWerte_arr[$l]->nAnzahl;
+                    foreach ($oMerkmalFilter->oMerkmalWerte_arr as $l => $oMerkmalWert) {
+                        if ($oMerkmalWert->nAnzahl < $nMinAnzahl) {
+                            $nMinAnzahl = $oMerkmalWert->nAnzahl;
                             $nIndex     = $l;
                         }
                     }
                     if ($nIndex >= 0) {
-                        unset($oMerkmalFilter_arr[$o]->oMerkmalWerte_arr[$nIndex]);
-                        $oMerkmalFilter_arr[$o]->oMerkmalWerte_arr = array_merge($oMerkmalFilter_arr[$o]->oMerkmalWerte_arr);
+                        unset($oMerkmalFilter->oMerkmalWerte_arr[$nIndex]);
+                        $oMerkmalFilter->oMerkmalWerte_arr = array_merge($oMerkmalFilter->oMerkmalWerte_arr);
                     }
                 }
             }
@@ -1769,7 +1835,9 @@ function gibSuchspecialFilterOptionen($FilterSQL, $NaviFilter)
             $oZusatzFilter->SuchspecialFilter       = new stdClass();
             $oZusatzFilter->SuchspecialFilter->kKey = $i;
             $oSuchspecial->cURL                     = gibNaviURL($NaviFilter, false, $oZusatzFilter);
-            $oSuchspecialFilterDB_arr[$i]           = $oSuchspecial;
+            if ($oSuchspecial->nAnzahl > 0) {
+                $oSuchspecialFilterDB_arr[$i]       = $oSuchspecial;
+            }
         }
     }
 
@@ -2367,7 +2435,12 @@ function gibKategorieFilterSQL($NaviFilter)
         $oFilter->cJoin  = 'JOIN tkategorieartikel ON tartikel.kArtikel = tkategorieartikel.kArtikel';
         $oFilter->cWhere = ' AND tkategorieartikel.kKategorie = ' . (int)$NaviFilter->KategorieFilter->kKategorie;
         if ($conf['navigationsfilter']['kategoriefilter_anzeigen_als'] === 'HF') {
-            $oFilter->cJoin  = 'JOIN tkategorieartikelgesamt ON tartikel.kArtikel = tkategorieartikelgesamt.kArtikel';
+            $oFilter->cJoin  = 'JOIN (
+                SELECT tkategorieartikel.kArtikel, oberkategorie.kOberKategorie, oberkategorie.kKategorie
+                FROM tkategorieartikel
+                INNER JOIN tkategorie ON tkategorie.kKategorie = tkategorieartikel.kKategorie
+                INNER JOIN tkategorie oberkategorie ON tkategorie.lft BETWEEN oberkategorie.lft AND oberkategorie.rght
+                ) tkategorieartikelgesamt ON tartikel.kArtikel = tkategorieartikelgesamt.kArtikel';
             $oFilter->cWhere = ' AND (tkategorieartikelgesamt.kOberKategorie = ' . (int)$NaviFilter->KategorieFilter->kKategorie . ' 
                                     OR tkategorieartikelgesamt.kKategorie = ' . (int)$NaviFilter->KategorieFilter->kKategorie . ') ';
         }
@@ -3528,19 +3601,16 @@ function erstelleFilterLoesenURLs($bSeo, $oSuchergebnisse)
 }
 
 /**
+ * @deprecated since 4.06
  * @param string $cTitle
  * @return string
  */
 function truncateMetaTitle($cTitle)
 {
     $conf = Shop::getSettings([CONF_METAANGABEN]);
-    if (isset($conf['metaangaben']['global_meta_maxlaenge_title']) &&
-        $conf['metaangaben']['global_meta_maxlaenge_title'] > 0
-    ) {
-        return substr($cTitle, 0, (int)$conf['metaangaben']['global_meta_maxlaenge_title']);
-    }
+    $maxLength = !empty($conf['metaangaben']['global_meta_maxlaenge_title']) ? (int)$conf['metaangaben']['global_meta_maxlaenge_title'] : 0;
 
-    return $cTitle;
+    return prepareMeta($cTitle, null, $maxLength);
 }
 
 /**
@@ -3552,9 +3622,15 @@ function truncateMetaTitle($cTitle)
 function gibNaviMetaTitle($NaviFilter, $oSuchergebnisse, $GlobaleMetaAngaben_arr)
 {
     global $oMeta;
-    $conf = Shop::getSettings([CONF_METAANGABEN]);
+    $conf      = Shop::getSettings([CONF_METAANGABEN]);
+    $cSuffix   = '';
+    $maxLength = !empty($conf['metaangaben']['global_meta_maxlaenge_title']) ? (int)$conf['metaangaben']['global_meta_maxlaenge_title'] : 0;
 
     executeHook(HOOK_FILTER_INC_GIBNAVIMETATITLE);
+    // Seitenzahl anhaengen ab Seite 2 (Doppelte Titles vermeiden, #5992)
+    if ($oSuchergebnisse->Seitenzahlen->AktuelleSeite > 1) {
+        $cSuffix = ', ' . Shop::Lang()->get('page', 'global') . " {$oSuchergebnisse->Seitenzahlen->AktuelleSeite}";
+    }
     // Pruefen ob bereits eingestellte Metas gesetzt sind
     if (strlen($oMeta->cMetaTitle) > 0) {
         $oMeta->cMetaTitle = strip_tags($oMeta->cMetaTitle);
@@ -3562,10 +3638,10 @@ function gibNaviMetaTitle($NaviFilter, $oSuchergebnisse, $GlobaleMetaAngaben_arr
         if ($conf['metaangaben']['global_meta_title_anhaengen'] === 'Y' &&
             strlen($GlobaleMetaAngaben_arr[Shop::getLanguage()]->Title) > 0
         ) {
-            return truncateMetaTitle($oMeta->cMetaTitle . ' ' . $GlobaleMetaAngaben_arr[Shop::$kSprache]->Title);
+            return prepareMeta($oMeta->cMetaTitle . ' ' . $GlobaleMetaAngaben_arr[Shop::$kSprache]->Title, $cSuffix);
         }
 
-        return truncateMetaTitle($oMeta->cMetaTitle);
+        return prepareMeta($oMeta->cMetaTitle, $cSuffix, $maxLength);
     }
     // Set Default Titles
     $cMetaTitle = gibMetaStart($NaviFilter, $oSuchergebnisse);
@@ -3591,10 +3667,7 @@ function gibNaviMetaTitle($NaviFilter, $oSuchergebnisse, $GlobaleMetaAngaben_arr
             $cMetaTitle = StringHandler::htmlentitydecode($cMetaTitle, ENT_NOQUOTES);
         }
     }
-    // Seitenzahl anhaengen ab Seite 2 (Doppelte Titles vermeiden, #5992)
-    if ($oSuchergebnisse->Seitenzahlen->AktuelleSeite > 1) {
-        $cMetaTitle .= ', ' . Shop::Lang()->get('page', 'global') . " {$oSuchergebnisse->Seitenzahlen->AktuelleSeite}";
-    }
+
     // Globalen Meta Title ueberall anhaengen
     if ($conf['metaangaben']['global_meta_title_anhaengen'] === 'Y' &&
         !empty($GlobaleMetaAngaben_arr[Shop::getLanguage()]->Title)
@@ -3602,7 +3675,7 @@ function gibNaviMetaTitle($NaviFilter, $oSuchergebnisse, $GlobaleMetaAngaben_arr
         $cMetaTitle .= ' - ' . $GlobaleMetaAngaben_arr[Shop::getLanguage()]->Title;
     }
 
-    return truncateMetaTitle($cMetaTitle);
+    return prepareMeta($cMetaTitle, $cSuffix, $maxLength);
 }
 
 /**
@@ -3615,13 +3688,23 @@ function gibNaviMetaTitle($NaviFilter, $oSuchergebnisse, $GlobaleMetaAngaben_arr
 function gibNaviMetaDescription($oArtikel_arr, $NaviFilter, $oSuchergebnisse, $GlobaleMetaAngaben_arr)
 {
     global $oMeta;
+    $conf      = Shop::getSettings([CONF_METAANGABEN]);
+    $maxLength = $conf['metaangaben']['global_meta_maxlaenge_description'] > 0 ? (int)$conf['metaangaben']['global_meta_maxlaenge_description'] : 0;
 
     executeHook(HOOK_FILTER_INC_GIBNAVIMETADESCRIPTION);
+    $cSuffix = '';
+    if ($oSuchergebnisse->Seitenzahlen->AktuelleSeite > 1 &&
+        $oSuchergebnisse->ArtikelVon > 0 &&
+        $oSuchergebnisse->ArtikelBis > 0
+    ) {
+        $cSuffix = ', ' . Shop::Lang()->get('products', 'global') .
+            " {$oSuchergebnisse->ArtikelVon} - {$oSuchergebnisse->ArtikelBis}";
+    }
     // Prüfen ob bereits eingestellte Metas gesetzt sind
     if (strlen($oMeta->cMetaDescription) > 0) {
         $oMeta->cMetaDescription = strip_tags($oMeta->cMetaDescription);
 
-        return truncateMetaDescription($oMeta->cMetaDescription);
+        return prepareMeta($oMeta->cMetaDescription, $cSuffix, $maxLength);
     }
     // Kategorieattribut?
     $cKatDescription = '';
@@ -3631,17 +3714,17 @@ function gibNaviMetaDescription($oArtikel_arr, $NaviFilter, $oSuchergebnisse, $G
             // meta description via new method
             $cKatDescription = strip_tags($oKategorie->cMetaDescription);
 
-            return truncateMetaDescription($cKatDescription);
+            return prepareMeta($cKatDescription, $cSuffix, $maxLength);
         } elseif (!empty($oKategorie->categoryAttributes['meta_description']->cWert)) {
             // Hat die aktuelle Kategorie als Kategorieattribut eine Meta Description gesetzt?
             $cKatDescription = strip_tags($oKategorie->categoryAttributes['meta_description']->cWert);
 
-            return truncateMetaDescription($cKatDescription);
+            return prepareMeta($cKatDescription, $cSuffix, $maxLength);
         } elseif (!empty($oKategorie->KategorieAttribute['meta_description'])) {
             /** @deprecated since 4.05 - this is for compatibilty only! */
             $cKatDescription = strip_tags($oKategorie->KategorieAttribute['meta_description']);
 
-            return truncateMetaDescription($cKatDescription);
+            return prepareMeta($cKatDescription, $cSuffix, $maxLength);
         } else {
             // Hat die aktuelle Kategorie eine Beschreibung?
             if (isset($oKategorie->cBeschreibung) && strlen($oKategorie->cBeschreibung) > 0) {
@@ -3675,16 +3758,9 @@ function gibNaviMetaDescription($oArtikel_arr, $NaviFilter, $oSuchergebnisse, $G
                 } else {
                     $cMetaDescription = trim($cKatDescription);
                 }
-                // Seitenzahl anhaengen ab Seite 2 (Doppelte Meta-Descriptions vermeiden, #5992)
-                if ($oSuchergebnisse->Seitenzahlen->AktuelleSeite > 1 &&
-                    $oSuchergebnisse->ArtikelVon > 0 &&
-                    $oSuchergebnisse->ArtikelBis > 0
-                ) {
-                    $cMetaDescription .= ', ' . Shop::Lang()->get('products', 'global') .
-                        " {$oSuchergebnisse->ArtikelVon} - {$oSuchergebnisse->ArtikelBis}";
-                }
+                $cMetaDescription = $cMetaDescription;
 
-                return truncateMetaDescription($cMetaDescription);
+                return prepareMeta($cMetaDescription, $cSuffix, $maxLength);
             }
         }
     }
@@ -3715,17 +3791,10 @@ function gibNaviMetaDescription($oArtikel_arr, $NaviFilter, $oSuchergebnisse, $G
         } else {
             $cMetaDescription = gibMetaStart($NaviFilter, $oSuchergebnisse) . ': ' . $cArtikelName;
         }
-        // Seitenzahl anhaengen ab Seite 2 (Doppelte Meta-Descriptions vermeiden, #5992)
-        if ($oSuchergebnisse->Seitenzahlen->AktuelleSeite > 1 &&
-            $oSuchergebnisse->ArtikelVon > 0 &&
-            $oSuchergebnisse->ArtikelBis > 0
-        ) {
-            $cMetaDescription .= ', ' . Shop::Lang()->get('products', 'global') .
-                " {$oSuchergebnisse->ArtikelVon} - {$oSuchergebnisse->ArtikelBis}";
-        }
+        $cMetaDescription = $cMetaDescription;
     }
 
-    return truncateMetaDescription(strip_tags($cMetaDescription));
+    return prepareMeta(strip_tags($cMetaDescription), $cSuffix, $maxLength);
 }
 
 /**

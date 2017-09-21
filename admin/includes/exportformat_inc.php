@@ -79,7 +79,8 @@ function splitteExportDatei($oExportformat)
 {
     if (isset($oExportformat->nSplitgroesse) &&
         (int)$oExportformat->nSplitgroesse > 0 &&
-        file_exists(PFAD_ROOT . PFAD_EXPORT . $oExportformat->cDateiname)) {
+        file_exists(PFAD_ROOT . PFAD_EXPORT . $oExportformat->cDateiname)
+    ) {
         $nDateiZaehler       = 1;
         $cDateinameSplit_arr = [];
         $nFileTypePos        = strrpos($oExportformat->cDateiname, '.');
@@ -100,7 +101,7 @@ function splitteExportDatei($oExportformat)
             $nZeile     = 1;
             $new_handle = fopen(gibDateiPfad($cDateinameSplit_arr, $nDateiZaehler), 'w');
             $nSizeDatei = 0;
-            while ($cContent = fgets($handle)) {
+            while (($cContent = fgets($handle)) !== false) {
                 if ($nZeile > 1) {
                     $nSizeZeile = strlen($cContent) + 2;
                     //Schwelle erreicht?
@@ -179,7 +180,7 @@ function loescheExportDateien($cDateiname, $cDateinameSplit)
     if (is_dir(PFAD_ROOT . PFAD_EXPORT)) {
         $dir = opendir(PFAD_ROOT . PFAD_EXPORT);
         if ($dir !== false) {
-            while ($cDatei = readdir($dir)) {
+            while (($cDatei = readdir($dir)) !== false) {
                 if ($cDatei !== $cDateiname && strpos($cDatei, $cDateinameSplit) !== false) {
                     @unlink(PFAD_ROOT . PFAD_EXPORT . $cDatei);
                 }

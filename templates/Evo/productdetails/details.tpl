@@ -87,6 +87,8 @@
                             <div class="rating-wrapper col-xs-4 text-right" itemprop="aggregateRating" itemscope itemtype="http://schema.org/AggregateRating">
                             <span itemprop="ratingValue"
                                   class="hidden">{$Artikel->Bewertungen->oBewertungGesamt->fDurchschnitt}</span>
+                            <span itemprop="bestRating" class="hidden">5</span>
+                            <span itemprop="worstRating" class="hidden">1</span>
                             <span itemprop="reviewCount" class="hidden">{$Artikel->Bewertungen->oBewertungGesamt->nAnzahl}</span>
                             <a href="{$Artikel->cURLFull}#tab-votes" id="jump-to-votes-tab" class="hidden-print">
                                 {include file='productdetails/rating.tpl' stars=$Artikel->Bewertungen->oBewertungGesamt->fDurchschnitt total=$Artikel->Bewertungen->oBewertungGesamt->nAnzahl}
@@ -198,56 +200,58 @@
     {/block}
 </form>
 
-<div class="clearfix"></div>
+{if !isset($smarty.get.quickView) || $smarty.get.quickView != 1}
+    <div class="clearfix"></div>
 
-{block name="details-tabs"}
-{include file="productdetails/tabs.tpl"}
-{/block}
+    {block name="details-tabs"}
+    {include file="productdetails/tabs.tpl"}
+    {/block}
 
-<div class="clearfix"></div>
+    <div class="clearfix"></div>
 
-{*SLIDERS*}
-{if isset($Einstellungen.artikeldetails.artikeldetails_stueckliste_anzeigen) && $Einstellungen.artikeldetails.artikeldetails_stueckliste_anzeigen === 'Y' && isset($Artikel->oStueckliste_arr) && $Artikel->oStueckliste_arr|@count > 0
-    || isset($Einstellungen.artikeldetails.artikeldetails_produktbundle_nutzen) && $Einstellungen.artikeldetails.artikeldetails_produktbundle_nutzen == 'Y' && isset($Artikel->oProduktBundle_arr) && $Artikel->oProduktBundle_arr|@count > 0
-    || isset($Xselling->Standard->XSellGruppen) && count($Xselling->Standard->XSellGruppen) > 0
-    || isset($Xselling->Kauf->Artikel) && count($Xselling->Kauf->Artikel) > 0
-    || isset($oAehnlicheArtikel_arr) && count($oAehnlicheArtikel_arr) > 0}
-    <hr>
-    {if isset($Einstellungen.artikeldetails.artikeldetails_stueckliste_anzeigen) && $Einstellungen.artikeldetails.artikeldetails_stueckliste_anzeigen === 'Y' && isset($Artikel->oStueckliste_arr) && $Artikel->oStueckliste_arr|@count > 0}
-        <div class="partslist">
-            {lang key='listOfItems' section='global' assign='slidertitle'}
-            {include file='snippets/product_slider.tpl' id='slider-partslist' productlist=$Artikel->oStueckliste_arr title=$slidertitle showPartsList=true}
-        </div>
+    {*SLIDERS*}
+    {if isset($Einstellungen.artikeldetails.artikeldetails_stueckliste_anzeigen) && $Einstellungen.artikeldetails.artikeldetails_stueckliste_anzeigen === 'Y' && isset($Artikel->oStueckliste_arr) && $Artikel->oStueckliste_arr|@count > 0
+        || isset($Einstellungen.artikeldetails.artikeldetails_produktbundle_nutzen) && $Einstellungen.artikeldetails.artikeldetails_produktbundle_nutzen == 'Y' && isset($Artikel->oProduktBundle_arr) && $Artikel->oProduktBundle_arr|@count > 0
+        || isset($Xselling->Standard->XSellGruppen) && count($Xselling->Standard->XSellGruppen) > 0
+        || isset($Xselling->Kauf->Artikel) && count($Xselling->Kauf->Artikel) > 0
+        || isset($oAehnlicheArtikel_arr) && count($oAehnlicheArtikel_arr) > 0}
+        <hr>
+        {if isset($Einstellungen.artikeldetails.artikeldetails_stueckliste_anzeigen) && $Einstellungen.artikeldetails.artikeldetails_stueckliste_anzeigen === 'Y' && isset($Artikel->oStueckliste_arr) && $Artikel->oStueckliste_arr|@count > 0}
+            <div class="partslist">
+                {lang key='listOfItems' section='global' assign='slidertitle'}
+                {include file='snippets/product_slider.tpl' id='slider-partslist' productlist=$Artikel->oStueckliste_arr title=$slidertitle showPartsList=true}
+            </div>
+        {/if}
+
+        {if isset($Einstellungen.artikeldetails.artikeldetails_produktbundle_nutzen) && $Einstellungen.artikeldetails.artikeldetails_produktbundle_nutzen == 'Y' && isset($Artikel->oProduktBundle_arr) && $Artikel->oProduktBundle_arr|@count > 0}
+            <div class="bundle">
+                {include file="productdetails/bundle.tpl" ProductKey=$Artikel->kArtikel Products=$Artikel->oProduktBundle_arr ProduktBundle=$Artikel->oProduktBundlePrice ProductMain=$Artikel->oProduktBundleMain}
+            </div>
+        {/if}
+
+        {if isset($Xselling->Standard) || isset($Xselling->Kauf) || isset($oAehnlicheArtikel_arr)}
+            <div class="recommendations hidden-print">
+                {block name="productdetails-recommendations"}
+                {if isset($Xselling->Standard->XSellGruppen) && count($Xselling->Standard->XSellGruppen) > 0}
+                    {foreach name=Xsell_gruppen from=$Xselling->Standard->XSellGruppen item=Gruppe}
+                        {include file='snippets/product_slider.tpl' class='x-supplies' id='slider-xsell-group-'|cat:$smarty.foreach.Xsell_gruppen.iteration productlist=$Gruppe->Artikel title=$Gruppe->Name}
+                    {/foreach}
+                {/if}
+
+                {if isset($Xselling->Kauf->Artikel) && count($Xselling->Kauf->Artikel) > 0}
+                    {lang key='customerWhoBoughtXBoughtAlsoY' section='productDetails' assign='slidertitle'}
+                    {include file='snippets/product_slider.tpl' class='x-sell' id='slider-xsell' productlist=$Xselling->Kauf->Artikel title=$slidertitle}
+                {/if}
+
+                {if isset($oAehnlicheArtikel_arr) && count($oAehnlicheArtikel_arr) > 0}
+                    {lang key='RelatedProducts' section='productDetails' assign='slidertitle'}
+                    {include file='snippets/product_slider.tpl' class='x-related' id='slider-related' productlist=$oAehnlicheArtikel_arr title=$slidertitle}
+                {/if}
+                {/block}
+            </div>
+        {/if}
     {/if}
-
-    {if isset($Einstellungen.artikeldetails.artikeldetails_produktbundle_nutzen) && $Einstellungen.artikeldetails.artikeldetails_produktbundle_nutzen == 'Y' && isset($Artikel->oProduktBundle_arr) && $Artikel->oProduktBundle_arr|@count > 0}
-        <div class="bundle">
-            {include file="productdetails/bundle.tpl" ProductKey=$Artikel->kArtikel Products=$Artikel->oProduktBundle_arr ProduktBundle=$Artikel->oProduktBundlePrice ProductMain=$Artikel->oProduktBundleMain}
-        </div>
-    {/if}
-
-    {if isset($Xselling->Standard) || isset($Xselling->Kauf) || isset($oAehnlicheArtikel_arr)}
-        <div class="recommendations hidden-print">
-            {block name="productdetails-recommendations"}
-            {if isset($Xselling->Standard->XSellGruppen) && count($Xselling->Standard->XSellGruppen) > 0}
-                {foreach name=Xsell_gruppen from=$Xselling->Standard->XSellGruppen item=Gruppe}
-                    {include file='snippets/product_slider.tpl' class='x-supplies' id='slider-xsell-group-'|cat:$smarty.foreach.Xsell_gruppen.iteration productlist=$Gruppe->Artikel title=$Gruppe->Name}
-                {/foreach}
-            {/if}
-
-            {if isset($Xselling->Kauf->Artikel) && count($Xselling->Kauf->Artikel) > 0}
-                {lang key='customerWhoBoughtXBoughtAlsoY' section='productDetails' assign='slidertitle'}
-                {include file='snippets/product_slider.tpl' class='x-sell' id='slider-xsell' productlist=$Xselling->Kauf->Artikel title=$slidertitle}
-            {/if}
-
-            {if isset($oAehnlicheArtikel_arr) && count($oAehnlicheArtikel_arr) > 0}
-                {lang key='RelatedProducts' section='productDetails' assign='slidertitle'}
-                {include file='snippets/product_slider.tpl' class='x-related' id='slider-related' productlist=$oAehnlicheArtikel_arr title=$slidertitle}
-            {/if}
-            {/block}
-        </div>
-    {/if}
+    <div id="article_popups">
+        {include file='productdetails/popups.tpl'}
+    </div>
 {/if}
-<div id="article_popups">
-    {include file='productdetails/popups.tpl'}
-</div>

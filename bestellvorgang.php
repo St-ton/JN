@@ -5,6 +5,7 @@
  */
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';
+require_once PFAD_ROOT . PFAD_INCLUDES . 'registrieren_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'trustedshops_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
@@ -24,7 +25,7 @@ $Einstellungen = Shop::getSettings([
     CONF_ARTIKELDETAILS
 ]);
 Shop::setPageType(PAGE_BESTELLVORGANG);
-$step    = 'accountwahl';
+$step     = 'accountwahl';
 $cHinweis = '';
 // Kill Ajaxcheckout falls vorhanden
 unset($_SESSION['ajaxcheckout']);
@@ -72,25 +73,102 @@ if ($Einstellungen['kaufabwicklung']['bestellvorgang_kaufabwicklungsmethode'] ==
 if (verifyGPCDataInteger('wk') === 1) {
     resetNeuKundenKupon();
 }
-if (isset($_POST['versandartwahl']) && (int)$_POST['versandartwahl'] === 1) {
-    pruefeVersandartWahl(isset($_POST['Versandart']) ? $_POST['Versandart'] : null);
+if (isset($_FILES['vcard']) &&
+    $Einstellungen['kunden']['kundenregistrierung_vcardupload'] === 'Y' &&
+    validateToken()
+) {
+    gibKundeFromVCard($_FILES['vcard']['tmp_name']);
+    @unlink($_FILES['vcard']['tmp_name']);
 }
 if (isset($_POST['unreg_form']) && (int)$_POST['unreg_form'] === 1 &&
     $Einstellungen['kaufabwicklung']['bestellvorgang_unregistriert'] === 'Y'
 ) {
     pruefeUnregistriertBestellen($_POST);
 }
+if (isset($_GET['editLieferadresse'])) {
+    // Shipping address and customer address are now on same site
+    $_GET['editRechnungsadresse'] = $_GET['editLieferadresse'];
+}
+if (isset($_POST['shipping_address'])) {
+    if ((int)$_POST['shipping_address'] === 0) {
+        $_POST['kLieferadresse'] = 0;
+        $_POST['lieferdaten']    = 1;
+        pruefeLieferdaten($_POST);
+    } elseif (isset($_POST['kLieferadresse']) && (int)$_POST['kLieferadresse'] > 0) {
+        pruefeLieferdaten($_POST);
+    } elseif (isset($_POST['register']['shipping_address'])) {
+        pruefeLieferdaten($_POST['register']['shipping_address'], $fehlendeAngaben);
+    }
+} elseif (isset($_POST['lieferdaten']) && (int)$_POST['lieferdaten'] === 1) {
+    // compatibility with older template
+    pruefeLieferdaten($_POST, $fehlendeAngaben);
+}
+if (isset($_POST['unreg_form']) && (int)$_POST['unreg_form'] === 0) {
+    $_POST['checkout'] = 1;
+    $_POST['form']     = 1;
+
+    // persistent delivery address during custom register
+    $_SESSION['tmpShipping'] = [
+        'Lieferadresse'   => $_SESSION['Lieferadresse'],
+        'fehlendeAngaben' => $fehlendeAngaben,
+    ];
+    include 'registrieren.php';
+} elseif (isset($_SESSION['tmpShipping'])) {
+    // restore delivery address after registering customer
+    $_SESSION['Lieferadresse'] = $_SESSION['tmpShipping']['Lieferadresse'];
+    if (is_array($_SESSION['tmpShipping']['fehlendeAngaben'])) {
+        setzeFehlendeAngaben($_SESSION['tmpShipping']['fehlendeAngaben'], 'shipping_address');
+    }
+    unset($_SESSION['tmpShipping']);
+}
+if (isset($_POST['versandartwahl']) && (int)$_POST['versandartwahl'] === 1 || isset($_GET['kVersandart'])) {
+    unset($_SESSION['Zahlungsart']);
+    $kVersandart = null;
+
+    if (isset($_GET['kVersandart'])) {
+        $kVersandart = (int)$_GET['kVersandart'];
+    } elseif (isset($_POST['Versandart'])) {
+        $kVersandart = (int)$_POST['Versandart'];
+    }
+
+    pruefeVersandartWahl($kVersandart);
+}
 if (isset($_GET['unreg']) && (int)$_GET['unreg'] === 1 &&
     $Einstellungen['kaufabwicklung']['bestellvorgang_unregistriert'] === 'Y'
 ) {
-    $step = 'unregistriert bestellen';
-}
-if (isset($_POST['lieferdaten']) && (int)$_POST['lieferdaten'] === 1) {
-    pruefeLieferdaten($_POST);
+    $step = 'edit_customer_address';
 }
 //autom. step ermitteln
 if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']) {
     $step = 'Lieferadresse';
+
+    if (!isset($_SESSION['Lieferadresse'])) {
+        pruefeLieferdaten(['kLieferadresse' => 0]);
+    }
+
+    if (!isset($_SESSION['Versandart']) || !is_object($_SESSION['Versandart'])) {
+        $land          = isset($_SESSION['Lieferadresse']->cLand) ? $_SESSION['Lieferadresse']->cLand : $_SESSION['Kunde']->cLand;
+        $plz           = isset($_SESSION['Lieferadresse']->cPLZ) ? $_SESSION['Lieferadresse']->cPLZ : $_SESSION['Kunde']->cPLZ;
+        $kKundengruppe = isset($_SESSION['Kunde']->kKundengruppe) ? $_SESSION['Kunde']->kKundengruppe : $_SESSION['Kundengruppe']->kKundengruppe;
+
+        $oGuenstigsteVersandart = null;
+        $oVersandart_arr        = VersandartHelper::getPossibleShippingMethods($land, $plz, VersandartHelper::getShippingClasses($_SESSION['Warenkorb']), $kKundengruppe);
+        $activeVersandart       = gibAktiveVersandart($oVersandart_arr);
+
+        if (empty($activeVersandart)) {
+            foreach ($oVersandart_arr as $oVersandart) {
+                if ($oGuenstigsteVersandart === null || $oVersandart->fEndpreis < $oGuenstigsteVersandart->fEndpreis) {
+                    $oGuenstigsteVersandart = $oVersandart;
+                }
+            }
+
+            if ($oGuenstigsteVersandart !== null) {
+                pruefeVersandartWahl($oGuenstigsteVersandart->kVersandart, ['kVerpackung' => array_keys(gibAktiveVerpackung(gibMoeglicheVerpackungen($kKundengruppe)))]);
+            }
+        } else {
+            pruefeVersandartWahl($activeVersandart, ['kVerpackung' => array_keys(gibAktiveVerpackung(gibMoeglicheVerpackungen($kKundengruppe)))]);
+        }
+    }
 }
 //Download-Artikel vorhanden?
 if ($step !== 'accountwahl' &&
@@ -99,7 +177,18 @@ if ($step !== 'accountwahl' &&
     (!isset($_SESSION['Kunde']->cPasswort) || strlen($_SESSION['Kunde']->cPasswort) === 0)
 ) {
     // Falls unregistrierter Kunde bereits im Checkout war und einen Downloadartikel hinzugefuegt hat
-    $step = 'accountwahl';
+    $step      = 'accountwahl';
+    $cHinweis  = Shop::Lang()->get('digitalProductsRegisterInfo', 'checkout');
+    $cPost_arr = StringHandler::filterXSS($_POST);
+
+    Shop::Smarty()->assign('cKundenattribut_arr', getKundenattribute($cPost_arr))
+                  ->assign('kLieferadresse', $cPost_arr['kLieferadresse'])
+                  ->assign('cPost_var', $cPost_arr);
+
+    if ((int)$cPost_arr['shipping_address'] === 1) {
+        Shop::Smarty()->assign('Lieferadresse', mappeLieferadresseKontaktdaten($cPost_arr['register']['shipping_address']));
+    }
+
     unset($_SESSION['Kunde']);
 }
 //autom. step ermitteln
@@ -120,19 +209,15 @@ pruefeZahlungsartwahlStep($_POST);
 
 if ($step === 'accountwahl') {
     gibStepAccountwahl();
-}
-if ($step === 'unregistriert bestellen') {
     gibStepUnregistriertBestellen();
 }
-if ($step === 'Lieferadresse') {
+if ($step === 'edit_customer_address' || $step === 'Lieferadresse') {
     validateCouponInCheckout();
+    gibStepUnregistriertBestellen();
     gibStepLieferadresse();
 }
-if ($step === 'Versand') {
+if ($step === 'Versand' || $step === 'Zahlung') {
     gibStepVersand();
-    Warenkorb::refreshChecksum($_SESSION['Warenkorb']);
-}
-if ($step === 'Zahlung') {
     gibStepZahlung();
     Warenkorb::refreshChecksum($_SESSION['Warenkorb']);
 }
@@ -158,8 +243,8 @@ if (isset($_SESSION['Zahlungsart']->cModulId) &&
     $smarty->assign('safetypay_form', gib_safetypay_form(
         $_SESSION['Kunde'],
         $_SESSION['Warenkorb'],
-        $Einstellungen['zahlungsarten'])
-    );
+        $Einstellungen['zahlungsarten']
+    ));
 }
 //Billpay
 if (isset($_SESSION['Zahlungsart']) &&
@@ -187,6 +272,7 @@ $smarty->assign('Navigation', createNavigation($AktuelleSeite))
        ->assign('Einstellungen', $Einstellungen)
        ->assign('hinweis', $cHinweis)
        ->assign('step', $step)
+       ->assign('editRechnungsadresse', verifyGPCDataInteger('editRechnungsadresse'))
        ->assign('WarensummeLocalized', $_SESSION['Warenkorb']->gibGesamtsummeWarenLocalized())
        ->assign('Warensumme', $_SESSION['Warenkorb']->gibGesamtsummeWaren())
        ->assign('Steuerpositionen', $_SESSION['Warenkorb']->gibSteuerpositionen())

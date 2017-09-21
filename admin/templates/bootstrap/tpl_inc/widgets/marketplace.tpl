@@ -1,16 +1,25 @@
 <script type="text/javascript">
-    $(document).ready(function() {ldelim}
-       xajax_getRemoteDataAjax('{$JTLURL_GET_SHOPMARKETPLACE}?v={$nVersionDB}', 'oMarketplace_arr', 'widgets/marketplace_data.tpl', 'marketplace_data_wrapper');
-       {if $cPluginCheck|strlen > 0}
-       xajax_getRemoteDataAjax('{$JTLURL_GET_SHOPMARKETPLACE}', 'oMarketplaceUpdates_arr', 'widgets/marketplace_update_data.tpl', 'marketplace_update_data_wrapper', 'check={$cPluginCheck}', 'marketplace_showUpdateCount');
-       {/if}
-    {rdelim});
+    $(document).ready(function() {
+        ioCall(
+            'getRemoteData', ['{$JTLURL_GET_SHOPMARKETPLACE}?v={$nVersionDB}', 'oMarketplace_arr',
+            'widgets/marketplace_data.tpl', 'marketplace_data_wrapper']
+        );
+        {if $cPluginCheck|strlen > 0}
+            ioCall(
+                'getRemoteData',
+                [
+                    '{$JTLURL_GET_SHOPMARKETPLACE}', 'oMarketplaceUpdates_arr', 'widgets/marketplace_update_data.tpl',
+                    'marketplace_update_data_wrapper', 'check={$cPluginCheck}', 'marketplace_showUpdateCount'
+                ]
+            );
+        {/if}
+    });
     
-    function marketplace_showUpdateCount(oMarketplaceUpdates_arr) {ldelim}
-        if(typeof(oMarketplaceUpdates_arr) === 'object') {ldelim}
+    function marketplace_showUpdateCount(oMarketplaceUpdates_arr) {
+        if(typeof(oMarketplaceUpdates_arr) === 'object') {
             $('#marketplace_update_data_count').html(oMarketplaceUpdates_arr.length);
-        {rdelim}
-    {rdelim}
+        }
+    }
 </script>
 
 <div class="widget-custom-data widget-patch tabber" id="widget-tabber">

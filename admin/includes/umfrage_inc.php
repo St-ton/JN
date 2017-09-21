@@ -8,6 +8,8 @@
 define('UMFRAGE_MAXANZAHLANZEIGEN', 20);
 
 /**
+ * @deprecated since 4.06
+ *
  * @param string $string
  * @return string
  */
@@ -26,6 +28,8 @@ function convertDate($string)
 }
 
 /**
+ * @deprecated since 4.06
+ *
  * @param string $cDateTimeStr
  * @return stdClass
  */

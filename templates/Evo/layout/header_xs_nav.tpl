@@ -13,18 +13,18 @@
             <ul class="nav navbar-nav navbar-right force-float action-nav">
                 {if isset($smarty.session.Kunde) && isset($smarty.session.Kunde->kKunde) && $smarty.session.Kunde->kKunde > 0}
                     <li>
-                        <a href="{get_static_route id='jtl.php'}?logout=1">
+                        <a href="{get_static_route id='jtl.php'}?logout=1" title="{lang key='logOut'}">
                             <span class="fa fa-sign-out"></span>
                         </a>
                     </li>
                 {/if}
                 <li>
-                    <a href="{get_static_route id='jtl.php'}">
+                    <a href="{get_static_route id='jtl.php'}" title="{lang key='myAccount'}">
                         <span class="fa fa-user"></span>
                     </a>
                 </li>
                 <li>
-                    <a href="{get_static_route id='warenkorb.php'}">
+                    <a href="{get_static_route id='warenkorb.php'}" title="{lang key='basket'}">
                         <span class="fa fa-shopping-cart"></span>
                         {if $WarenkorbArtikelPositionenanzahl >= 1}
                             <sup class="badge">
@@ -71,14 +71,16 @@
                             <div class="navbar-manufacturers">
                                 <ul class="nav navbar-nav navbar-right">
                                     <li class="dropdown">
-                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{lang key="manufacturers" section="global"} <span class="fa fa-caret-down pull-right"></span></a>
-                                            <ul class="dropdown-menu keepopen">
-                                                {foreach name='hersteller' from=$manufacturers item='hst'}
-                                                    <li role="presentation">
-                                                        <a role="menuitem" tabindex="-1" href="{$hst->cSeo}">{$hst->cName|escape:"html"}</a>
-                                                    </li>
-                                                {/foreach}
-                                            </ul>
+                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" title="{lang key='manufacturers'}">
+                                            {lang key='manufacturers'} <span class="fa fa-caret-down pull-right"></span>
+                                        </a>
+                                        <ul class="dropdown-menu keepopen">
+                                            {foreach name='hersteller' from=$manufacturers item='hst'}
+                                                <li role="presentation">
+                                                    <a role="menuitem" tabindex="-1" href="{$hst->cSeo}" title="{$hst->cName|escape:"html"}">{$hst->cName|escape:"html"}</a>
+                                                </li>
+                                            {/foreach}
+                                        </ul>
                                     </li>
                                 </ul>
                             </div>
@@ -93,7 +95,7 @@
                     {/if}
                     {$firstelement = true}
                     <ul class="nav navbar-nav">
-                        {include file='snippets/linkgroup_list.tpl' linkgroupIdentifier='megamenu' dropdownSupport=true tplscope='megamenu'}
+                        {include file='snippets/linkgroup_list.tpl' linkgroupIdentifier='megamenu' dropdownSupport=true tplscope='megamenu' caret="fa fa-caret-down pull-right"}
                     </ul>
                 {/if}
             {/block}{* megamenu-pages *}
@@ -106,7 +108,7 @@
                         {foreach name=kopflinks from=$linkgroups->Kopf->Links item=Link}
                             {if $Link->cLocalizedName|has_trans}
                                 <li class="{if isset($Link->aktiv) && $Link->aktiv == 1}active{/if}">
-                                    <a href="{$Link->URL}">{$Link->cLocalizedName|trans}</a>
+                                    <a href="{$Link->URL}" title="{$Link->cLocalizedName|trans}">{$Link->cLocalizedName|trans}</a>
                                 </li>
                             {/if}
                         {/foreach}

@@ -245,9 +245,7 @@ class TemplateHelper
      */
     public function getXML($cOrdner, $isAdmin = null)
     {
-        $isAdmin  = ($isAdmin !== null) ?
-            $isAdmin
-            : $this->isAdmin;
+        $isAdmin  = ($isAdmin !== null) ? $isAdmin : $this->isAdmin;
         $cXMLFile = ($isAdmin === false)
             ? PFAD_ROOT . PFAD_TEMPLATES . $cOrdner . DIRECTORY_SEPARATOR . TEMPLATE_XML
             : PFAD_ROOT . PFAD_ADMIN . PFAD_TEMPLATES . $cOrdner . DIRECTORY_SEPARATOR . TEMPLATE_XML;
@@ -261,7 +259,12 @@ class TemplateHelper
             if ($oXML === false) {
                 $oXML = simplexml_load_string(file_get_contents($cXMLFile));
             }
-            $oXML->Ordner = $cOrdner;
+
+            if (is_a($oXML, 'SimpleXMLElement')) {
+                $oXML->Ordner = $cOrdner;
+            } else {
+                $oXML = null;
+            }
 
             return $oXML;
         }
@@ -309,6 +312,7 @@ class TemplateHelper
         if (!$oXMLTemplate) {
             return false;
         }
+
         $oTemplate->cName        = (string)trim($oXMLTemplate->Name);
         $oTemplate->cOrdner      = (string)$cOrdner;
         $oTemplate->cAuthor      = (string)trim($oXMLTemplate->Author);
@@ -327,6 +331,17 @@ class TemplateHelper
         $oTemplate->cDescription = (!empty($oXMLTemplate->Description)) ? (string)trim($oXMLTemplate->Description) : '';
         if (StringHandler::is_utf8($oTemplate->cDescription)) {
             $oTemplate->cDescription = utf8_decode($oTemplate->cDescription);
+        }
+
+        if (!empty($oXMLTemplate->Parent)) {
+            $parentConfig = $this->getData($oXMLTemplate->Parent, $isAdmin);
+
+            if ($parentConfig !== false && empty($oTemplate->cVersion)) {
+                $oTemplate->cVersion = $parentConfig->cVersion;
+            }
+            if ($parentConfig !== false && empty($oTemplate->cShopVersion)) {
+                $oTemplate->cShopVersion = $parentConfig->cShopVersion;
+            }
         }
 
         $oTemplate_arr = Shop::DB()->query("SELECT * FROM ttemplate", 2);

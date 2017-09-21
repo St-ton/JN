@@ -18,7 +18,7 @@ $(function () {
 
             $(container).children().each(function (i, widget) {
                 var id = $(widget).attr('ref');
-                xajax_setWidgetPositionAjax(id, containerName, i);
+                ioCall('setWidgetPosition', [id, containerName, i]);
             });
         });
     });
@@ -33,11 +33,11 @@ $(function () {
         $('<a href="#"><i class="fa fa-chevron-circle-' + (hidden ? 'down' : 'up') + '"></li></a>')
             .click(function (e) {
                 if ($widgetContent.is(':hidden')) {
-                    xajax_expandWidgetAjax(widgetId, 1);
+                    ioCall('expandWidget', [widgetId, 1]);
                     $widgetContent.slideDown('fast');
                     $('i', this).attr('class', 'fa fa-chevron-circle-up');
                 } else {
-                    xajax_expandWidgetAjax(widgetId, 0);
+                    ioCall('expandWidget', [widgetId, 0]);
                     $widgetContent.slideUp('fast');
                     $('i', this).attr('class', 'fa fa-chevron-circle-down');
                 }
@@ -48,7 +48,7 @@ $(function () {
         // add click handler for widgets close button
         $('<a href="#"><i class="fa fa-times"></li></a>')
             .click(function (e) {
-                xajax_closeWidgetAjax(widgetId);
+                ioCall('closeWidget', [widgetId]);
                 $widget.slideUp('fast');
                 e.preventDefault();
             })

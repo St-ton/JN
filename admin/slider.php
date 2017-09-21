@@ -75,10 +75,6 @@ switch ($cAction) {
 
                 $cKeyValue = $aFilter_arr[$cKey];
                 $cValue    = $_POST[$cKeyValue];
-            } elseif ($nSeite === PAGE_HERSTELLER) {
-                $cKey      = 'kHersteller';
-                $cKeyValue = 'manufacturer_key';
-                $cValue    = $_POST[$cKeyValue];
             } elseif ($nSeite === PAGE_EIGENE) {
                 $cKey      = 'kLink';
                 $cKeyValue = 'link_key';

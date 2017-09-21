@@ -1,31 +1,43 @@
-{if $bestellschritt[1] != 3 }
-<div class="stepwizard" id="checkout_steps">
-    <ol class="list-unstyled stepwizard-row row">
-        <li class="col-md-1 hidden-xs"></li>
-        <li class="col-sm-3 col-md-2 stepwizard-step step2 state{$bestellschritt[1]} first{if $bestellschritt[1] == 3} text-muted{/if}">
-            {if $bestellschritt[1] == 2}<a href="bestellvorgang.php?editRechnungsadresse=1">{/if}
-            <span {if $bestellschritt[1] == 1}class="btn btn-circle btn-primary"{else}class="btn btn-circle btn-default"{if $bestellschritt[1] != 2} disabled{/if}{/if}>1</span><div class="step-name hidden-xs">{lang key="billingAdress" section="checkout"}</div>
-            {if $bestellschritt[1] == 2}</a>{/if}
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license http://jtl-url.de/jtlshoplicense
+ *}
+{assign var="step1_active" value=($bestellschritt[1] == 1 || $bestellschritt[2] == 1)}
+{assign var="step2_active" value=($bestellschritt[3] == 1 || $bestellschritt[4] == 1)}
+{assign var="step3_active" value=($bestellschritt[5] == 1)}
+{if $bestellschritt[1] != 3}
+    <ul class="nav nav-wizard row">
+        <li class="{if $step1_active}active col-xs-8 col-sm-6{else}col-xs-2 col-sm-3{/if} col-md-4">
+            {if $bestellschritt[1] < 3 || $bestellschritt[2] < 3}
+                <a href="{get_static_route id='bestellvorgang.php'}?editRechnungsadresse=1" title="{lang section='account data' key='billingAndDeliveryAddress'}">
+                    <i class="fa fa-user hidden-md hidden-lg{if $step1_active} hidden{/if}"></i>
+                    <span class="{if !$step1_active}hidden-sm hidden-xs{/if}">{lang section='account data' key='billingAndDeliveryAddress'}</span>
+                </a>
+            {else}
+                <span class="nav-badge">
+                    <i class="fa fa-user hidden-md hidden-lg{if $step1_active} hidden{/if}"></i>
+                    <span class="{if !$step1_active}hidden-sm hidden-xs{/if}">{lang section='account data' key='billingAndDeliveryAddress'}</span>
+                </span>
+            {/if}
         </li>
-        <li class="col-sm-2 stepwizard-step step3 state{$bestellschritt[2]}{if $bestellschritt[2] == 3} text-muted{/if}">
-            {if $bestellschritt[2] == 2}<a href="bestellvorgang.php?editLieferadresse=1">{/if}
-            <span {if $bestellschritt[2] == 1}class="btn btn-circle btn-primary"{else}class="btn btn-circle btn-default"{if $bestellschritt[2] != 2} disabled{/if}{/if}>2</span><div class="step-name hidden-xs">{lang key="shippingAdress" section="checkout"}</div>
-            {if $bestellschritt[2] == 2}</a>{/if}
+        <li class="{if $step2_active}active col-xs-8 col-sm-6{else}col-xs-2 col-sm-3{/if} col-md-4">
+            {if $bestellschritt[3] < 3 || $bestellschritt[4] < 3}
+                <a href="{get_static_route id='bestellvorgang.php'}?editVersandart=1" title="{lang section='account data' key='shippingAndPaymentOptions'}">
+                    <i class="fa fa-truck hidden-md hidden-lg{if $step2_active} hidden{/if}"></i>
+                    <span class="{if !$step2_active}hidden-sm hidden-xs{/if}">{lang section='account data' key='shippingAndPaymentOptions'}</span>
+                </a>
+            {else}
+                <span class="nav-badge">
+                    <i class="fa fa-truck hidden-md hidden-lg{if $step2_active} hidden{/if}"></i>
+                    <span class="{if !$step2_active}hidden-sm hidden-xs{/if}">{lang section='account data' key='shippingAndPaymentOptions'}</span>
+                </span>
+            {/if}
         </li>
-        <li class="col-sm-2 stepwizard-step step4 state{$bestellschritt[3]}{if $bestellschritt[3] == 3} text-muted{/if}">
-            {if $bestellschritt[3] == 2}<a href="bestellvorgang.php?editVersandart=1">{/if}
-            <span {if $bestellschritt[3] == 1}class="btn btn-circle btn-primary"{else}class="btn btn-circle btn-default"{if $bestellschritt[3] != 2} disabled{/if}{/if}>3</span><div class="step-name hidden-xs">{lang key="shipmentMode" section="checkout"}</div>
-            {if $bestellschritt[3] == 2}</a>{/if}
+        <li class="{if $step3_active}active col-xs-8 col-sm-6{else}col-xs-2 col-sm-3{/if} col-md-4">
+            <span class="nav-badge">
+                <i class="fa fa-wpforms hidden-md hidden-lg{if $step3_active} hidden{/if}"></i>
+                <span class="{if !$step3_active}hidden-sm hidden-xs{/if}">{lang section='checkout' key='summary'}</span>
+            </span>
         </li>
-        <li class="col-sm-2 stepwizard-step step5 state{$bestellschritt[4]}{if $bestellschritt[4] == 3} text-muted{/if}">
-            {if $bestellschritt[4] == 2 || $step === 'ZahlungZusatzschritt'}<a href="bestellvorgang.php?editZahlungsart=1">{/if}
-            <span {if $bestellschritt[4] == 1}class="btn btn-circle btn-primary"{else}class="btn btn-circle btn-default"{if $bestellschritt[4] != 2} disabled{/if}{/if}>4</span><div class="step-name hidden-xs">{lang key="paymentMethod" section="checkout"}</div>
-            {if $bestellschritt[4] == 2 || $step === 'ZahlungZusatzschritt'}</a>{/if}
-        </li>
-        <li class="col-sm-2 stepwizard-step step6 state{$bestellschritt[5]}{if $bestellschritt[5] == 3} text-muted{/if}">
-            <span {if $bestellschritt[5] == 1}class="btn btn-circle btn-primary"{else}class="btn btn-circle btn-default"{if $bestellschritt[5] != 2} disabled{/if}{/if}>5</span><div class="step-name hidden-xs">{lang key="summary" section="checkout"}</div>
-        </li>
-    </ol>
-</div>
-<div class="clearfix top15"></div>
+    </ul>
 {/if}

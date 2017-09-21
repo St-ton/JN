@@ -96,7 +96,8 @@ class VersandartHelper
                     WHERE fVersandkostenfreiAbX > 0
                         AND (cVersandklassen = '-1'
                         OR cVersandklassen RLIKE '^([0-9 -]* )?" . $versandklasse . " ')
-                        AND (cKundengruppen = '-1' OR cKundengruppen RLIKE '^([0-9;]*;)?" . (int)$kKundengruppe . ";')", 2
+                        AND (cKundengruppen = '-1' OR FIND_IN_SET('" . (int)$kKundengruppe
+                            . "', REPLACE(cKundengruppen, ';', ',')) > 0)", 2
             );
         }
         $shippingFreeCountries = [];
@@ -182,11 +183,11 @@ class VersandartHelper
                     AND (cVersandklassen = '-1'
                     OR cVersandklassen RLIKE '^([0-9 -]* )?" . addcslashes($versandklassen, '%_') . " ')
                     AND (cKundengruppen = '-1'
-                    OR cKundengruppen RLIKE '^([0-9;]*;)?" . $kKundengruppe . ";')
+                    OR FIND_IN_SET('{$kKundengruppe}', REPLACE(cKundengruppen, ';', ',')) > 0)
                 ORDER BY nSort", 2
         );
         $cnt             = count($versandarten);
-        $netPricesActive = $_SESSION['Kundengruppe']->nNettoPreise === '1';
+        $netPricesActive = (int)$_SESSION['Kundengruppe']->nNettoPreise === 1;
 
         for ($i = 0; $i < $cnt; $i++) {
             $bSteuerPos                  = $versandarten[$i]->eSteuer !== 'netto';
@@ -263,7 +264,7 @@ class VersandartHelper
                      WHERE tversandartzahlungsart.kVersandart = " . (int)$versandarten[$i]->kVersandart . "
                          AND tversandartzahlungsart.kZahlungsart = tzahlungsart.kZahlungsart
                          AND (tzahlungsart.cKundengruppen IS NULL OR tzahlungsart.cKundengruppen=''
-                         OR tzahlungsart.cKundengruppen RLIKE '^([0-9;]*;)?" . $kKundengruppe . ";')
+                         OR FIND_IN_SET('{$kKundengruppe}', REPLACE(tzahlungsart.cKundengruppen, ';', ',')) > 0)
                          AND tzahlungsart.nActive = 1
                          AND tzahlungsart.nNutzbar = 1
                      ORDER BY tzahlungsart.nSort", 2

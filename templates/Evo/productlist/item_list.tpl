@@ -1,6 +1,11 @@
 {* template to display products in product-lists *}
 
-<div class="product-cell thumbnail">
+{if $Einstellungen.template.productlist.variation_select_productlist === 'N'}
+    {assign var="hasOnlyListableVariations" value=0}
+{else}
+    {hasOnlyListableVariations artikel=$Artikel maxVariationCount=$Einstellungen.template.productlist.variation_select_productlist assign="hasOnlyListableVariations"}
+{/if}
+<div id="result-wrapper_buy_form_{$Artikel->kArtikel}" class="product-cell thumbnail">
     <div class="product-body row {if $tplscope !== 'list'} text-center{/if}">
         <div class="col-xs-3 col-sm-2 col-lg-3 text-center">
             {block name="image-wrapper"}
@@ -16,6 +21,10 @@
                     {if isset($Artikel->oSuchspecialBild)}
                         <img class="overlay-img visible-lg" src="{$Artikel->oSuchspecialBild->cPfadKlein}"
                              alt="{if isset($Artikel->oSuchspecialBild->cSuchspecial)}{$Artikel->oSuchspecialBild->cSuchspecial}{else}{$Artikel->cName}{/if}">
+                    {/if}
+
+                    {if $Einstellungen.template.productlist.quickview_productlist === 'Y' && !$Artikel->bHasKonfig}
+                        <span class="quickview badge hidden-xs" data-src="{$Artikel->cURL}" data-target="buy_form_{$Artikel->kArtikel}" title="{$Artikel->cName}">{lang key="downloadPreview" section="productDownloads"}</span>
                     {/if}
                 </a>
             {/block}
@@ -97,7 +106,7 @@
                             </li>
                         {/if}
                     </ul>{* /attr-group *}
-                    {if $Artikel->oVariationKombiVorschau_arr|@count > 0 && $Artikel->oVariationKombiVorschau_arr && $Einstellungen.artikeluebersicht.artikeluebersicht_varikombi_anzahl > 0}
+                    {if ($hasOnlyListableVariations == 0 || $Artikel->bHasKonfig) && $Artikel->oVariationKombiVorschau_arr|@count > 0 && $Artikel->oVariationKombiVorschau_arr && $Einstellungen.artikeluebersicht.artikeluebersicht_varikombi_anzahl > 0}
                         <div class="varikombis-thumbs">
                             {foreach name=varikombis from=$Artikel->oVariationKombiVorschau_arr item=oVariationKombiVorschau}
                                 <a href="{$oVariationKombiVorschau->cURL}" class="thumbnail pull-left"><img src="{$oVariationKombiVorschau->cBildMini}" alt="" /></a>
@@ -110,7 +119,7 @@
         </div>{* /col-md-9 *}
 
         <div class="col-xs-3 col-sm-4">
-            <form action="navi.php" method="post" class="form form-basket" data-toggle="basket-add">
+            <form id="buy_form_{$Artikel->kArtikel}" action="navi.php" method="post" class="form form-basket" data-toggle="basket-add">
                 {block name="form-basket"}
                     {assign var=price_image value=""}
                     {if isset($Artikel->Preise->strPreisGrafik_Suche)}
@@ -127,13 +136,19 @@
                             {if $Einstellungen.global.global_erscheinende_kaeuflich === 'Y' && $Artikel->inWarenkorbLegbar === 1}
                                 <div class="attr attr-preorder"><small class="value">{lang key="preorderPossible" section="global"}</small></div>
                             {/if}
-                        {elseif $anzeige !== 'nichts' && $Artikel->cLagerBeachten === 'Y' && ($Artikel->cLagerKleinerNull === 'N' ||
-                        $Einstellungen.artikeluebersicht.artikeluebersicht_lagerbestandanzeige_anzeigen === 'U') && $Artikel->fLagerbestand <= 0 && $Artikel->fZulauf > 0 && isset($Artikel->dZulaufDatum_de)}
+                        {elseif $anzeige !== 'nichts' &&
+                            $Einstellungen.artikeluebersicht.artikeluebersicht_lagerbestandanzeige_anzeigen !== 'N' &&
+                            $Artikel->cLagerBeachten === 'Y' && ($Artikel->cLagerKleinerNull === 'N' ||
+                            $Einstellungen.artikeluebersicht.artikeluebersicht_lagerbestandanzeige_anzeigen === 'U') &&
+                            $Artikel->fLagerbestand <= 0 && $Artikel->fZulauf > 0 && isset($Artikel->dZulaufDatum_de)}
                             {assign var=cZulauf value=$Artikel->fZulauf|cat:':::'|cat:$Artikel->dZulaufDatum_de}
                             <div class="signal_image status-1"><small>{lang key="productInflowing" section="productDetails" printf=$cZulauf}</small></div>
-                        {elseif $anzeige !== 'nichts' && $Einstellungen.artikeluebersicht.artikeluebersicht_lagerbestandanzeige_anzeigen !== 'N' && $Artikel->cLagerBeachten === 'Y' &&
-                        $Artikel->fLagerbestand <= 0 && $Artikel->fLieferantenlagerbestand > 0 && $Artikel->fLieferzeit > 0 &&
-                        ($Artikel->cLagerKleinerNull === 'N' || $Einstellungen.artikeluebersicht.artikeluebersicht_lagerbestandanzeige_anzeigen === 'U')}
+                        {elseif $anzeige !== 'nichts' &&
+                            $Einstellungen.artikeluebersicht.artikeluebersicht_lagerbestandanzeige_anzeigen !== 'N' &&
+                            $Artikel->cLagerBeachten === 'Y' && $Artikel->fLagerbestand <= 0 &&
+                            $Artikel->fLieferantenlagerbestand > 0 && $Artikel->fLieferzeit > 0 &&
+                            ($Artikel->cLagerKleinerNull === 'N' ||
+                            $Einstellungen.artikeluebersicht.artikeluebersicht_lagerbestandanzeige_anzeigen === 'U')}
                             <div class="signal_image status-1"><small>{lang key="supplierStockNotice" section="global" printf=$Artikel->fLieferzeit}</small></div>
                         {elseif $anzeige === 'verfuegbarkeit' || $anzeige === 'genau'}
                             <div class="signal_image status-{$Artikel->Lageranzeige->nStatus}"><small>{$Artikel->Lageranzeige->cLagerhinweis[$anzeige]}</small></div>
@@ -147,10 +162,17 @@
                         {/if}
                     {/block}
                     </div>
-
+                    {if $hasOnlyListableVariations > 0 && !$Artikel->bHasKonfig}
+                        <div class="hidden-xs basket-variations">
+                            {assign var="singleVariation" value=true}
+                            {include file="productdetails/variation.tpl" simple=$Artikel->isSimpleVariation showMatrix=false smallView=true ohneFreifeld=($hasOnlyListableVariations == 2)}
+                        </div>
+                    {/if}
                     <div class="hidden-xs basket-details">
                         {block name="basket-details"}
-                            {if ($Artikel->inWarenkorbLegbar === 1 || ($Artikel->nErscheinendesProdukt === 1 && $Einstellungen.global.global_erscheinende_kaeuflich === 'Y')) && $Artikel->nIstVater === 0 && $Artikel->Variationen|@count === 0 && !$Artikel->bHasKonfig}
+                            {if ($Artikel->inWarenkorbLegbar === 1 || ($Artikel->nErscheinendesProdukt === 1 && $Einstellungen.global.global_erscheinende_kaeuflich === 'Y')) &&
+                                (($Artikel->nIstVater === 0 && $Artikel->Variationen|@count === 0) || $hasOnlyListableVariations === 1) && !$Artikel->bHasKonfig
+                            }
                                 <div class="quantity-wrapper form-group top7">
                                     {if $Artikel->cEinheit}
                                         <div class="input-group input-group-sm">
@@ -180,6 +202,12 @@
                         {/block}
                     </div>
 
+                    {if $Artikel->kArtikelVariKombi > 0}
+                        <input type="hidden" name="aK" value="{$Artikel->kArtikelVariKombi}" />
+                    {/if}
+                    {if isset($Artikel->kVariKindArtikel)}
+                        <input type="hidden" name="VariKindArtikel" value="{$Artikel->kVariKindArtikel}" />
+                    {/if}
                     <input type="hidden" name="a" value="{$Artikel->kArtikel}" />
                     <input type="hidden" name="wke" value="1" />
                     <input type="hidden" name="overview" value="1" />

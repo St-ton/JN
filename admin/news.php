@@ -166,8 +166,8 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
             $oNews->cMetaTitle       = htmlspecialchars($cMetaTitle, ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
             $oNews->cMetaDescription = htmlspecialchars($cMetaDescription, ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
             $oNews->cMetaKeywords    = htmlspecialchars($cMetaKeywords, ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
-            $oNews->dErstellt        = 'now()';
-            $oNews->dGueltigVon      = convertDate($dGueltigVon);
+            $oNews->dErstellt        = (new DateTime())->format('Y-m-d H:i:s');
+            $oNews->dGueltigVon      = DateTime::createFromFormat('d.m.Y H:i', $dGueltigVon)->format('Y-m-d H:i:00');
             $oNews->cPreviewImage    = $cPreviewImage;
 
             $nNewsOld = 0;
@@ -273,9 +273,9 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
             }
             // tnewsmonatsuebersicht updaten
             if ($nAktiv === 1) {
-                $oDatum = gibJahrMonatVonDateTime($oNews->dGueltigVon);
-                $dMonat = $oDatum->Monat;
-                $dJahr  = $oDatum->Jahr;
+                $oDatum = DateTime::createFromFormat('Y-m-d H:i:s', $oNews->dGueltigVon);
+                $dMonat = (int)$oDatum->format('m');
+                $dJahr = (int)$oDatum->format('Y');
 
                 $oNewsMonatsUebersicht = Shop::DB()->select(
                     'tnewsmonatsuebersicht',
@@ -374,13 +374,15 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
                     Shop::DB()->delete('tnewskategorienews', 'kNews', $kNews);
                     // War das die letzte News fuer einen bestimmten Monat?
                     // => Falls ja, tnewsmonatsuebersicht Monat loeschen
-                    $oDatum       = gibJahrMonatVonDateTime($oNewsTMP->dGueltigVon);
+                    $oDatum = DateTime::createFromFormat('Y-m-d H:i:s', $oNewsTMP->dGueltigVon);
+                    $dMonat = (int)$oDatum->format('m');
+                    $dJahr = (int)$oDatum->format('Y');
                     $kSpracheTMP  = (int)$oNewsTMP->kSprache;
                     $oNewsTMP_arr = Shop::DB()->query(
                         "SELECT kNews
                             FROM tnews
-                            WHERE month(dGueltigVon) = " . $oDatum->Monat . "
-                                AND year(dGueltigVon) = " . $oDatum->Jahr . "
+                            WHERE month(dGueltigVon) = " . $dMonat . "
+                                AND year(dGueltigVon) = " . $dJahr . "
                                 AND kSprache = " . $kSpracheTMP, 2
                     );
                     if (is_array($oNewsTMP_arr) && count($oNewsTMP_arr) === 0) {
@@ -390,8 +392,8 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
                                     ON tseo.cKey = 'kNewsMonatsUebersicht'
                                     AND tseo.kKey = tnewsmonatsuebersicht.kNewsMonatsUebersicht
                                     AND tseo.kSprache = tnewsmonatsuebersicht.kSprache
-                                WHERE tnewsmonatsuebersicht.nMonat = " . $oDatum->Monat . "
-                                    AND tnewsmonatsuebersicht.nJahr = " . $oDatum->Jahr . "
+                                WHERE tnewsmonatsuebersicht.nMonat = " . $dMonat . "
+                                    AND tnewsmonatsuebersicht.nJahr = " . $dJahr . "
                                     AND tnewsmonatsuebersicht.kSprache = " . $kSpracheTMP, 4
                         );
                     }
@@ -412,7 +414,7 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
         $nAktiv           = (int)$_POST['nAktiv'];
         $cMetaTitle       = htmlspecialchars($_POST['cMetaTitle'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
         $cMetaDescription = htmlspecialchars($_POST['cMetaDescription'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
-        $cBeschreibung    = htmlspecialchars($_POST['cBeschreibung'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
+        $cBeschreibung    = $_POST['cBeschreibung'];
         $cPreviewImage    = $_POST['previewImage'];
         $cPlausiValue_arr = pruefeNewsKategorie($_POST['cName'], isset($_POST['newskategorie_edit_speichern'])
             ? (int)$_POST['newskategorie_edit_speichern']
@@ -437,7 +439,7 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
             $oNewsKategorie->nAktiv                = $nAktiv;
             $oNewsKategorie->cMetaTitle            = $cMetaTitle;
             $oNewsKategorie->cMetaDescription      = $cMetaDescription;
-            $oNewsKategorie->dLetzteAktualisierung = 'now()';
+            $oNewsKategorie->dLetzteAktualisierung = (new DateTime())->format('Y-m-d H:i:s');
             $oNewsKategorie->cSeo                  = (strlen($cSeo) > 0)
                 ? checkSeo(getSeo($cSeo))
                 : checkSeo(getSeo($cName));
@@ -471,6 +473,10 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
                     strpos($_FILES['previewImage']['type'], '/') + 1,
                     strlen($_FILES['previewImage']['type'] - strpos($_FILES['previewImage']['type'], '/')) + 1
                 );
+                //not elegant, but since it's 99% jpg..
+                if ($extension === 'jpe') {
+                    $extension = 'jpg';
+                }
                 $cUploadDatei = $cUploadVerzeichnisKat . $kNewsKategorie . '/preview.' . $extension;
                 move_uploaded_file($_FILES['previewImage']['tmp_name'], $cUploadDatei);
                 $oNewsKategorie->cPreviewImage = PFAD_NEWSKATEGORIEBILDER . $kNewsKategorie . '/preview.' . $extension;
@@ -509,11 +515,24 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
         }
     } elseif (isset($_GET['newskategorie_editieren']) && (int)$_GET['newskategorie_editieren'] === 1) {
         // Newskategorie editieren
+        // Soll Preview geloescht werden?
+        $kNewsKategorie = (int) $_GET['kNewsKategorie'];
+        if (strlen(verifyGPDataString('delpic')) > 0) {
+            if (loescheNewsBild(verifyGPDataString('delpic'), $kNewsKategorie, $cUploadVerzeichnisKat)) {
+                $cHinweis .= 'Ihr ausgew&auml;hltes Newsbild wurde erfolgreich gel&ouml;scht.';
+            } else {
+                $cFehler .= 'Fehler: Ihr ausgew&auml;hltes Newsbild konnte nicht gel&ouml;scht werden.';
+            }
+        }
         if (isset($_GET['kNewsKategorie']) && (int)$_GET['kNewsKategorie'] > 0) {
             $step           = 'news_kategorie_erstellen';
             $oNewsKategorie = editiereNewskategorie($_GET['kNewsKategorie'], $_SESSION['kSprache']);
             if (isset($oNewsKategorie->kNewsKategorie) && (int)$oNewsKategorie->kNewsKategorie > 0) {
                 $smarty->assign('oNewsKategorie', $oNewsKategorie);
+                // Hole Bilder
+                if (is_dir($cUploadVerzeichnisKat . $oNewsKategorie->kNewsKategorie)) {
+                    $smarty->assign('oDatei_arr', holeNewsKategorieBilder($oNewsKategorie->kNewsKategorie, $cUploadVerzeichnisKat));
+                }
             } else {
                 $step = 'news_uebersicht';
                 $cFehler .= 'Fehler: Die Newskategorie mit der ID "' . (int)$_GET['kNewsKategorie'] .

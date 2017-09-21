@@ -53,7 +53,7 @@
                     <div class="alert alert-info" role="alert">{#noDataAvailable#}</div>
                 {else}
                     {include file='tpl_inc/pagination.tpl' oPagination=$oPagiLog cAnchor='log'}
-                    <div class="container-fluid2">
+                    <div class="container-fluid2 table-responsive">
                         <table class="list table">
                             <thead>
                             <tr>

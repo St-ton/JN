@@ -19,7 +19,7 @@ class WarenkorbHelper
     public function getTotal($decimals = 0)
     {
         $info            = new stdClass();
-        $info->type      = $_SESSION['Kundengruppe']->nNettoPreise == 1 ? self::NET : self::GROSS;
+        $info->type      = (int)$_SESSION['Kundengruppe']->nNettoPreise === 1 ? self::NET : self::GROSS;
         $info->currency  = null;
         $info->article   = [0, 0];
         $info->shipping  = [0, 0];
@@ -112,6 +112,7 @@ class WarenkorbHelper
                     }
                     break;
 
+                case C_WARENKORBPOS_TYP_TRUSTEDSHOPS:
                 case C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR:
                     $info->surcharge[self::NET] += $amount * $oPosition->nAnzahl;
                     $info->surcharge[self::GROSS] += $amountGross * $oPosition->nAnzahl;
@@ -211,32 +212,6 @@ class WarenkorbHelper
     public function getCurrencyISO()
     {
         return $this->getCurrency()->cISO;
-    }
-
-    /**
-     * @return string
-     */
-    public function getLanguageISO()
-    {
-        return $_SESSION['cISOSprache'];
-    }
-
-    /**
-     * @return string
-     */
-    public function getStateISO()
-    {
-        return PayPalHelper::isStateRequired($this->getLanguageISO())
-            ? PayPalHelper::getStateISO(@$this->getShippingAddress()->cBundesland)
-            : @$this->getShippingAddress()->cBundesland;
-    }
-
-    /**
-     * @return string
-     */
-    public function getCountryISO()
-    {
-        return PayPalHelper::getCountryISO($this->getShippingAddress()->cLand);
     }
 
     /**

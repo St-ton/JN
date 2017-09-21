@@ -44,7 +44,7 @@ class MigrationManager
             return [];
         }
 
-        if ($identifier == null) {
+        if ($identifier === null) {
             $identifier = max(array_merge($executedMigrations, array_keys($migrations)));
         }
 

@@ -9,7 +9,7 @@ require_once __DIR__ . '/syncinclude.php';
 $return  = 3;
 $xml_obj = [];
 if (auth()) {
-    $return = 0;
+    $return          = 0;
     $oBestellung_arr = Shop::DB()->query(
         "SELECT tbestellung.kBestellung, tbestellung.kWarenkorb, tbestellung.kKunde, tbestellung.kLieferadresse,
             tbestellung.kRechnungsadresse,  tbestellung.kZahlungsart, tbestellung.kVersandart, tbestellung.kSprache, 
@@ -18,7 +18,7 @@ if (auth()) {
             tbestellung.cTracking, tbestellung.cKommentar, tbestellung.cAbgeholt, tbestellung.cStatus, 
             date_format(tbestellung.dErstellt, \"%d.%m.%Y\") AS dErstellt_formatted,  tbestellung.dErstellt, 
             tzahlungsart.cModulId, tbestellung.cPUIZahlungsdaten, tbestellung.nLongestMinDelivery, 
-            tbestellung.nLongestMaxDelivery
+            tbestellung.nLongestMaxDelivery, tbestellung.fWaehrungsFaktor
             FROM tbestellung
             LEFT JOIN tzahlungsart
                 ON tzahlungsart.kZahlungsart = tbestellung.kZahlungsart
@@ -45,7 +45,27 @@ if (auth()) {
     if (is_array($xml_obj['bestellungen']['tbestellung'])) {
         $xml_obj['bestellungen attr']['anzahl'] = count($xml_obj['bestellungen']['tbestellung']);
         for ($i = 0; $i < $xml_obj['bestellungen attr']['anzahl']; $i++) {
-            $xml_obj['bestellungen']['tbestellung'][$i . ' attr']        = buildAttributes($xml_obj['bestellungen']['tbestellung'][$i]);
+            $xml_obj['bestellungen']['tbestellung'][$i . ' attr'] = buildAttributes($xml_obj['bestellungen']['tbestellung'][$i]);
+
+            $xml_obj['bestellungen']['tbestellung'][$i]['tkampagne'] = Shop::DB()->query(
+                "SELECT tkampagne.cName,
+                        tkampagne.cParameter cIdentifier,
+                        COALESCE(tkampagnevorgang.cParamWert, '') cWert
+                    FROM tkampagnevorgang
+                    INNER JOIN tkampagne ON tkampagne.kKampagne = tkampagnevorgang.kKampagne
+                    INNER JOIN tkampagnedef ON tkampagnedef.kKampagneDef = tkampagnevorgang.kKampagneDef
+                    WHERE tkampagnedef.cKey = 'kBestellung'
+                        AND tkampagnevorgang.kKey = " . (int)$xml_obj['bestellungen']['tbestellung'][$i . ' attr']['kBestellung'] . "
+                    ORDER BY tkampagnevorgang.kKampagneDef DESC LIMIT 1", 8
+            );
+
+            $xml_obj['bestellungen']['tbestellung'][$i]['ttrackinginfo'] = Shop::DB()->query(
+                "SELECT cUserAgent, cReferer
+                    FROM tbesucher
+                    WHERE kBestellung = " . (int)$xml_obj['bestellungen']['tbestellung'][$i . ' attr']['kBestellung'] . "
+                    LIMIT 1", 8
+            );
+
             $xml_obj['bestellungen']['tbestellung'][$i]['twarenkorbpos'] = Shop::DB()->query(
                 "SELECT *
                     FROM twarenkorbpos
@@ -135,6 +155,15 @@ if (auth()) {
 
             $xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo attr'] = buildAttributes($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']);
             unset($xml_obj['bestellungen']['tbestellung'][$i . ' attr']['kVersandArt'], $xml_obj['bestellungen']['tbestellung'][$i . ' attr']['kWarenkorb']);
+
+            $xml_obj['bestellungen']['tbestellung'][$i]['tbestellattribut'] = Shop::DB()->query(
+                "SELECT cName AS 'key', cValue AS 'value'
+                    FROM tbestellattribut
+                    WHERE kBestellung = " . (int)$xml_obj['bestellungen']['tbestellung'][$i . ' attr']['kBestellung'], 9
+            );
+            if (count($xml_obj['bestellungen']['tbestellung'][$i]['tbestellattribut']) === 0) {
+                unset($xml_obj['bestellungen']['tbestellung'][$i]['tbestellattribut']);
+            }
         }
     }
 }

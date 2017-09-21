@@ -41,7 +41,7 @@
                 <div class="alert alert-danger">{$errorNoWrite}</div>
             {/if}
 
-            <p><input style="width:550px;" type="text" readonly="readonly" value="{$URL}" class="form-control" /></p>
+            <p><input type="text" readonly="readonly" value="{$URL}" class="form-control" /></p>
 
             <div class="alert alert-info">
                 <p>{#searchEngines#}</p>
@@ -90,8 +90,8 @@
                         <input type="hidden" name="download_edit" value="1" />
                         <input type="hidden" name="tab" value="downloads" />
                         <input type="hidden" name="nYear_downloads" value="{$nSitemapDownloadYear}" />
-                        <div id="payment" class="table-responsive">
-                            <div id="tabellenBewertung">
+                        <div id="payment">
+                            <div id="tabellenBewertung" class="table-responsive">
                                 <table class="table">
                                     <tr>
                                         <th>&nbsp;</th>
@@ -123,10 +123,10 @@
                                         <td colspan="6" class="TD7"><label for="ALLMSGS">{#sitemapSelectAll#}</label></td>
                                     </tr>
                                 </table>
-                                <div class="panel-footer">
-                                    <div class="button-group">
-                                        <button class="btn btn-danger" name="loeschen" type="submit" value="{#sitemapDelete#}"><i class="fa fa-trash"></i> {#deleteSelected#}</button>
-                                    </div>
+                            </div>
+                            <div class="panel-footer">
+                                <div class="button-group">
+                                    <button class="btn btn-danger" name="loeschen" type="submit" value="{#sitemapDelete#}"><i class="fa fa-trash"></i> {#deleteSelected#}</button>
                                 </div>
                             </div>
                         </div>
@@ -168,62 +168,64 @@
                         <input type="hidden" name="report_edit" value="1">
                         <input type="hidden" name="tab" value="report">
                         <input type="hidden" name="nYear_reports" value="{$nSitemapReportYear}" />
-                        <table class="table">
-                            <tr>
-                                <th class="check"></th>
-                                <th class="th-1"></th>
-                                <th class="tleft">{#sitemapProcessTime#}</th>
-                                <th class="th-3">{#sitemapTotalURL#}</th>
-                                <th class="th-5">{#sitemapDate#}</th>
-                            </tr>
-                            {foreach name=sitemapreports from=$oSitemapReport_arr item=oSitemapReport}
-                                <tr class="tab_bg{$smarty.foreach.sitemapreports.iteration%2}">
-                                    <td class="check">
-                                        <input name="kSitemapReport[]" type="checkbox" value="{$oSitemapReport->kSitemapReport}">
-                                    </td>
-                                    {if isset($oSitemapReport->oSitemapReportFile_arr) && $oSitemapReport->oSitemapReportFile_arr|@count > 0}
-                                        <td>
-                                            <a href="#" onclick="$('#info_{$oSitemapReport->kSitemapReport}').toggle();return false;"><i class="fa fa-plus-circle"></i></a>
-                                        </td>
-                                    {else}
-                                        <td class="TD1">&nbsp;</td>
-                                    {/if}
-                                    <td class="tcenter">{$oSitemapReport->fVerarbeitungszeit}s</td>
-                                    <td class="tcenter">{$oSitemapReport->nTotalURL}</td>
-                                    <td class="tcenter">{$oSitemapReport->dErstellt_DE}</td>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <tr>
+                                    <th class="check"></th>
+                                    <th class="th-1"></th>
+                                    <th class="tleft">{#sitemapProcessTime#}</th>
+                                    <th class="th-3">{#sitemapTotalURL#}</th>
+                                    <th class="th-5">{#sitemapDate#}</th>
                                 </tr>
-                                {if isset($oSitemapReport->oSitemapReportFile_arr) && $oSitemapReport->oSitemapReportFile_arr|@count > 0}
-                                    <tr id="info_{$oSitemapReport->kSitemapReport}" style="display: none;">
-                                        <td>&nbsp;</td>
-                                        <td colspan="4">
-
-                                            <table border="0" cellspacing="1" cellpadding="0" width="100%">
-                                                <tr>
-                                                    <th class="tleft">{#sitemapName#}</th>
-                                                    <th class="th-2">{#sitemapCountURL#}</th>
-                                                    <th class="th-3">{#sitemapSize#}</th>
-                                                </tr>
-
-                                                {foreach name=sitemapreportfiles from=$oSitemapReport->oSitemapReportFile_arr item=oSitemapReportFile}
-                                                    <tr class="tab_bg{$smarty.foreach.sitemapreports.iteration%2}">
-                                                        <td class="TD1">{$oSitemapReportFile->cDatei}</td>
-                                                        <td class="tcenter">{$oSitemapReportFile->nAnzahlURL}</td>
-                                                        <td class="tcenter">{$oSitemapReportFile->fGroesse} KB</td>
-                                                    </tr>
-                                                {/foreach}
-                                            </table>
-
+                                {foreach name=sitemapreports from=$oSitemapReport_arr item=oSitemapReport}
+                                    <tr class="tab_bg{$smarty.foreach.sitemapreports.iteration%2}">
+                                        <td class="check">
+                                            <input name="kSitemapReport[]" type="checkbox" value="{$oSitemapReport->kSitemapReport}">
                                         </td>
+                                        {if isset($oSitemapReport->oSitemapReportFile_arr) && $oSitemapReport->oSitemapReportFile_arr|@count > 0}
+                                            <td>
+                                                <a href="#" onclick="$('#info_{$oSitemapReport->kSitemapReport}').toggle();return false;"><i class="fa fa-plus-circle"></i></a>
+                                            </td>
+                                        {else}
+                                            <td class="TD1">&nbsp;</td>
+                                        {/if}
+                                        <td class="tcenter">{$oSitemapReport->fVerarbeitungszeit}s</td>
+                                        <td class="tcenter">{$oSitemapReport->nTotalURL}</td>
+                                        <td class="tcenter">{$oSitemapReport->dErstellt_DE}</td>
                                     </tr>
-                                {/if}
-                            {/foreach}
-                            <tr>
-                                <td class="check">
-                                    <input name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);">
-                                </td>
-                                <td colspan="4" class="TD5"><label for="ALLMSGS2">{#sitemapSelectAll#}</label></td>
-                            </tr>
-                        </table>
+                                    {if isset($oSitemapReport->oSitemapReportFile_arr) && $oSitemapReport->oSitemapReportFile_arr|@count > 0}
+                                        <tr id="info_{$oSitemapReport->kSitemapReport}" style="display: none;">
+                                            <td>&nbsp;</td>
+                                            <td colspan="4">
+
+                                                <table border="0" cellspacing="1" cellpadding="0" width="100%">
+                                                    <tr>
+                                                        <th class="tleft">{#sitemapName#}</th>
+                                                        <th class="th-2">{#sitemapCountURL#}</th>
+                                                        <th class="th-3">{#sitemapSize#}</th>
+                                                    </tr>
+
+                                                    {foreach name=sitemapreportfiles from=$oSitemapReport->oSitemapReportFile_arr item=oSitemapReportFile}
+                                                        <tr class="tab_bg{$smarty.foreach.sitemapreports.iteration%2}">
+                                                            <td class="TD1">{$oSitemapReportFile->cDatei}</td>
+                                                            <td class="tcenter">{$oSitemapReportFile->nAnzahlURL}</td>
+                                                            <td class="tcenter">{$oSitemapReportFile->fGroesse} KB</td>
+                                                        </tr>
+                                                    {/foreach}
+                                                </table>
+
+                                            </td>
+                                        </tr>
+                                    {/if}
+                                {/foreach}
+                                <tr>
+                                    <td class="check">
+                                        <input name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);">
+                                    </td>
+                                    <td colspan="4" class="TD5"><label for="ALLMSGS2">{#sitemapSelectAll#}</label></td>
+                                </tr>
+                            </table>
+                        </div>
                         <div class="panel-footer">
                             <div class="button-group">
                                 <button name="loeschen" type="submit" value="{#sitemapDelete#}" class="btn btn-danger"><i class="fa fa-trash"></i> {#deleteSelected#}</button>

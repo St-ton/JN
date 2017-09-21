@@ -14,7 +14,6 @@ $step                = 'uebersicht';
 $oSmartyError        = new stdClass();
 $oSmartyError->nCode = 0;
 $link                = null;
-
 if (isset($_GET['neuerExport']) && (int)$_GET['neuerExport'] === 1 && validateToken()) {
     $step = 'neuer Export';
 }
@@ -90,10 +89,10 @@ if (isset($_POST['neu_export']) && (int)$_POST['neu_export'] === 1 && validateTo
 }
 $cAction       = null;
 $kExportformat = null;
-if (isset($_POST['action']) && strlen($_POST['action']) > 0 && (int)$_POST['kExportformat'] > 0 && validateToken()) {
+if (isset($_POST['action']) && strlen($_POST['action']) > 0 && (int)$_POST['kExportformat'] > 0) {
     $cAction       = $_POST['action'];
     $kExportformat = (int)$_POST['kExportformat'];
-} elseif (isset($_GET['action']) && strlen($_GET['action']) > 0 && (int)$_GET['kExportformat'] > 0 && validateToken()) {
+} elseif (isset($_GET['action']) && strlen($_GET['action']) > 0 && (int)$_GET['kExportformat'] > 0) {
     $cAction       = $_GET['action'];
     $kExportformat = (int)$_GET['kExportformat'];
 }
@@ -160,10 +159,17 @@ if ($cAction !== null && $kExportformat !== null && validateToken()) {
                     file_exists(PFAD_ROOT . PFAD_EXPORT . $exportformat->cDateiname . '.zip') ||
                     (isset($exportformat->nSplitgroesse) && (int)$exportformat->nSplitgroesse > 0))
             ) {
-                $hinweis = 'Das Exportformat <b>' . $exportformat->cName . '</b> wurde erfolgreich erstellt.';
+                if (empty($_GET['hasError'])) {
+                    $hinweis = 'Das Exportformat <b>' . $exportformat->cName . '</b> wurde erfolgreich erstellt.';
+                } else {
+                    $fehler = 'Das Exportformat <b>' . $exportformat->cName . '</b> konnte nicht erstellt werden.' .
+                        ' Fehlende Schreibrechte?';
+                }
             } else {
                 $fehler = 'Das Exportformat <b>' . $exportformat->cName . '</b> konnte nicht erstellt werden.';
             }
+            break;
+        default:
             break;
     }
 }

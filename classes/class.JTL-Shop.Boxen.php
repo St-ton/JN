@@ -120,9 +120,9 @@ class Boxen
      */
     public function gibBoxInhalt($kBox, $cISO = '')
     {
-        return (strlen($cISO) > 0) ?
-            Shop::DB()->select('tboxsprache', 'kBox', (int)$kBox, 'cISO', $cISO) :
-            Shop::DB()->selectAll('tboxsprache', 'kBox', (int)$kBox);
+        return (strlen($cISO) > 0)
+            ? Shop::DB()->select('tboxsprache', 'kBox', (int)$kBox, 'cISO', $cISO)
+            : Shop::DB()->selectAll('tboxsprache', 'kBox', (int)$kBox);
     }
 
     /**
@@ -142,6 +142,7 @@ class Boxen
             return $oBox_arr;
         }
         $this->visibility = $this->holeBoxAnzeige($nSeite);
+        $validPageTypes   = $this->getValidPageTypes();
         $oBox_arr         = [];
         $cacheTags        = [CACHING_GROUP_OBJECT, CACHING_GROUP_BOX, 'boxes'];
         $cSQLAktiv        = $bAktiv ? " AND bAktiv = 1 " : "";
@@ -245,14 +246,14 @@ class Boxen
                     $oBox->bContainer = $oBox->kBoxvorlage === 0;
                     if ($bVisible) {
                         $oBox->cVisibleOn = '';
-                        $oVisible_arr     = Shop::DB()->selectAll('tboxensichtbar', 'kBox', (int)$oBox->kBox);
-                        if (count($oVisible_arr) >= PAGE_MAX) {
+                        $oVisible_arr     = Shop::DB()->selectAll('tboxensichtbar', ['kBox', 'bAktiv'], [(int)$oBox->kBox, 1]);
+                        if (count($oVisible_arr) >= count($validPageTypes)) {
                             $oBox->cVisibleOn = "\n- Auf allen Seiten";
                         } elseif (count($oVisible_arr) === 0) {
                             $oBox->cVisibleOn = "\n- Auf allen Seiten deaktiviert";
                         } else {
                             foreach ($oVisible_arr as $oVisible) {
-                                if ($oVisible->kSeite > 0) {
+                                if ($oVisible->kSeite > 0 && $oVisible->kSeite != PAGE_NEWSARCHIV) {
                                     $oBox->cVisibleOn .= "\n- " . $this->mappekSeite($oVisible->kSeite);
                                 }
                             }
@@ -409,7 +410,7 @@ class Boxen
                                 AND round(tbestseller.fAnzahl) >= " . $nAnzahl . "
                                 $this->cVaterSQL
                                 $this->lagerFilter
-                            ORDER BY fAnzahl DESC, rand() LIMIT " . $limit, 2
+                            ORDER BY fAnzahl DESC LIMIT " . $limit, 2
                     );
                     if (is_array($menge) && count($menge) > 0) {
                         $rndkeys = array_rand($menge, min($anzahl, count($menge)));
@@ -442,7 +443,7 @@ class Boxen
 
             case BOX_TRUSTEDSHOPS_GUETESIEGEL :
                 $oBox->compatName = 'TrustedShopsSiegelbox';
-                if ($this->boxConfig['trustedshops']['trustedshops_siegelbox_anzeigen'] === 'Y') {
+                if ($this->boxConfig['trustedshops']['trustedshops_nutzen'] === 'Y') {
                     $oTrustedShops    = new TrustedShops(-1, StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
                     $shopURL          = Shop::getURL(true) . '/';
                     if ($oTrustedShops->nAktiv == 1 && strlen($oTrustedShops->tsId) > 0) {
@@ -458,7 +459,7 @@ class Boxen
             case BOX_TRUSTEDSHOPS_KUNDENBEWERTUNGEN :
                 $oBox->compatName    = 'TrustedShopsKundenbewertung';
                 $cValidSprachISO_arr = ['de', 'en', 'fr', 'pl', 'es'];
-                if ($this->boxConfig['trustedshops']['trustedshops_kundenbewertung_anzeigen'] === 'Y' &&
+                if ($this->boxConfig['trustedshops']['trustedshops_nutzen'] === 'Y' &&
                     in_array(StringHandler::convertISO2ISO639($_SESSION['cISOSprache']), $cValidSprachISO_arr, true)) {
                     $oTrustedShops                = new TrustedShops(-1, StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
                     $oTrustedShopsKundenbewertung = $oTrustedShops->holeKundenbewertungsstatus(StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
@@ -483,6 +484,7 @@ class Boxen
                         }
                         $oBox->cBildPfad    = Shop::getURL(true) . '/' . PFAD_GFX_TRUSTEDSHOPS . $filename;
                         $oBox->cBildPfadURL = $cURLSprachISO_arr[StringHandler::convertISO2ISO639($_SESSION['cISOSprache'])];
+                        $oBox->oStatistik   = $oTrustedShops->gibKundenbewertungsStatistik();
                     }
                 }
                 break;
@@ -516,7 +518,7 @@ class Boxen
                             WHERE tumfrage.nAktiv = 1
                                 AND tumfrage.kSprache = " . $kSprache . "
                                 AND (cKundengruppe LIKE '%;-1;%' 
-                                    OR cKundengruppe RLIKE '^([0-9;]*;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";')
+                                    OR FIND_IN_SET('" . (int)$_SESSION['Kundengruppe']->kKundengruppe . "', REPLACE(cKundengruppe, ';', ',')) > 0)
                                 AND ((dGueltigVon <= now() 
                                     AND dGueltigBis >= now()) || (dGueltigVon <= now() 
                                     AND dGueltigBis = '0000-00-00 00:00:00'))
@@ -601,7 +603,8 @@ class Boxen
                                 AND tnews.nAktiv = 1
                                 AND tnews.dGueltigVon <= now()
                                 AND (tnews.cKundengruppe LIKE '%;-1;%' 
-                                    OR tnews.cKundengruppe RLIKE '^([0-9;]*;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";')
+                                    OR FIND_IN_SET('" . (int)$_SESSION['Kundengruppe']->kKundengruppe
+                                    . "', REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
                                 AND tnews.kSprache = " . $kSprache . "
                             GROUP BY tnewskategorienews.kNewsKategorie
                             ORDER BY tnewskategorie.nSort DESC" . $cSQL, 2
@@ -1482,7 +1485,7 @@ class Boxen
             case PAGE_BESTELLABSCHLUSS:
                 return 'Bestellabschluss';
             case PAGE_RMA:
-                return 'Warenrücksendung';
+                return 'Warenr&uuml;cksendung';
         }
     }
 
@@ -1508,7 +1511,7 @@ class Boxen
             return $oBoxAnzeige;
         }
 
-        if ($nSeite != 0 && $bGlobal) {
+        if ($nSeite !== 0 && $bGlobal) {
             return $this->holeBoxAnzeige(0);
         }
 
@@ -1523,11 +1526,12 @@ class Boxen
      */
     public function setzeBoxAnzeige($nSeite, $ePosition, $bAnzeigen)
     {
-        $bAnzeigen = (int)$bAnzeigen;
-        $nSeite    = (int)$nSeite;
+        $bAnzeigen      = (int)$bAnzeigen;
+        $nSeite         = (int)$nSeite;
+        $validPageTypes = $this->getValidPageTypes();
         if ($nSeite === 0) {
             $bOk = true;
-            for ($i = 0; $i < PAGE_MAX && $bOk; $i++) {
+            for ($i = 0; $i < count($validPageTypes) && $bOk; $i++) {
                 $bOk = Shop::DB()->executeQueryPrepared("
                   REPLACE INTO tboxenanzeige 
                       SET bAnzeigen = :show,
@@ -1578,11 +1582,12 @@ class Boxen
      */
     public function setzeBox($kBoxvorlage, $nSeite, $ePosition = 'left', $kContainer = 0)
     {
-        $kBoxvorlage  = (int)$kBoxvorlage;
-        $nSeite       = (int)$nSeite;
-        $oBox         = new stdClass();
-        $oBoxVorlage  = $this->holeVorlage($kBoxvorlage);
-        $oBox->cTitel = '';
+        $kBoxvorlage    = (int)$kBoxvorlage;
+        $nSeite         = (int)$nSeite;
+        $validPageTypes = $this->getValidPageTypes();
+        $oBox           = new stdClass();
+        $oBoxVorlage    = $this->holeVorlage($kBoxvorlage);
+        $oBox->cTitel   = '';
         if ($oBoxVorlage) {
             $oBox->cTitel = $oBoxVorlage->cName;
         }
@@ -1598,7 +1603,7 @@ class Boxen
         if ($kBox) {
             $oBoxSichtbar       = new stdClass();
             $oBoxSichtbar->kBox = $kBox;
-            for ($i = 0; $i < PAGE_MAX; $i++) {
+            for ($i = 0; $i < count($validPageTypes); $i++) {
                 $oBoxSichtbar->nSort  = $this->letzteSortierID($nSeite, $ePosition, $kContainer);
                 $oBoxSichtbar->kSeite = $i;
                 $oBoxSichtbar->bAktiv = ($nSeite == $i || $nSeite == 0) ? 1 : 0;
@@ -1729,12 +1734,13 @@ class Boxen
      */
     public function sortBox($kBox, $nSeite, $nSort, $bAktiv = true)
     {
-        $bAktiv = (int)$bAktiv;
-        $kBox   = (int)$kBox;
-        $nSeite = (int)$nSeite;
+        $bAktiv         = (int)$bAktiv;
+        $kBox           = (int)$kBox;
+        $nSeite         = (int)$nSeite;
+        $validPageTypes = $this->getValidPageTypes();
         if ($nSeite === 0) {
             $bOk = true;
-            for ($i = 0; $i < PAGE_MAX && $bOk; $i++) {
+            for ($i = 0; $i < count($validPageTypes) && $bOk; $i++) {
                 $oBox = Shop::DB()->select('tboxensichtbar', 'kBox', $kBox);
                 $bOk  = (!empty($oBox))
                     ? (Shop::DB()->query("
@@ -1773,12 +1779,13 @@ class Boxen
      */
     public function aktiviereBox($kBox, $nSeite, $bAktiv = true)
     {
-        $bAktiv = (int)$bAktiv;
-        $kBox   = (int)$kBox;
-        $nSeite = (int)$nSeite;
+        $bAktiv         = (int)$bAktiv;
+        $kBox           = (int)$kBox;
+        $nSeite         = (int)$nSeite;
+        $validPageTypes = $this->getValidPageTypes();
         if ($nSeite === 0) {
             $bOk = true;
-            for ($i = 0; $i < PAGE_MAX && $bOk; $i++) {
+            for ($i = 0; $i < count($validPageTypes) && $bOk; $i++) {
                 $_upd          = new stdClass();
                 $_upd->bAktiv  = $bAktiv;
                 $bOk           = Shop::DB()->update('tboxensichtbar', ['kBox', 'kSeite'], [$kBox, $i], $_upd) >= 0;
@@ -1866,6 +1873,9 @@ class Boxen
                 count($oSuchergebnisse->Preisspanne) > 0 &&
                 $this->boxConfig['navigationsfilter']['preisspannenfilter_benutzen'] === 'box' &&
                 $conf['global']['global_sichtbarkeit'] == 1)
+            || (isset($oSuchergebnisse->Suchspecialauswahl) &&
+                count($oSuchergebnisse->Suchspecialauswahl) > 0 &&
+                $this->boxConfig['navigationsfilter']['allgemein_suchspecialfilter_benutzen'] === 'Y')
             || (isset($NaviFilter->SuchspecialFilter->kKey) &&
                 $NaviFilter->SuchspecialFilter->kKey > 0 &&
                 $this->boxConfig['navigationsfilter']['allgemein_suchspecialfilter_benutzen'] === 'Y')
@@ -2012,5 +2022,23 @@ class Boxen
         }
 
         return $invisibleBoxes;
+    }
+
+    /**
+     * @return array
+     */
+    public function getValidPageTypes()
+    {
+        $validPageTypes = [
+            PAGE_UNBEKANNT, PAGE_ARTIKEL, PAGE_ARTIKELLISTE, PAGE_WARENKORB, PAGE_MEINKONTO,
+            PAGE_KONTAKT, PAGE_UMFRAGE, PAGE_NEWS, PAGE_NEWSLETTER, PAGE_LOGIN, PAGE_REGISTRIERUNG, PAGE_BESTELLVORGANG,
+            PAGE_BEWERTUNG, PAGE_DRUCKANSICHT, PAGE_PASSWORTVERGESSEN, PAGE_WARTUNG, PAGE_WUNSCHLISTE,
+            PAGE_VERGLEICHSLISTE, PAGE_STARTSEITE, PAGE_VERSAND, PAGE_AGB, PAGE_DATENSCHUTZ, PAGE_TAGGING,
+            PAGE_LIVESUCHE, PAGE_HERSTELLER, PAGE_SITEMAP, PAGE_GRATISGESCHENK, PAGE_WRB, PAGE_PLUGIN,
+            PAGE_NEWSLETTERARCHIV, PAGE_NEWSARCHIV, PAGE_EIGENE, PAGE_AUSWAHLASSISTENT, PAGE_BESTELLABSCHLUSS,
+            PAGE_RMA
+        ];
+
+        return $validPageTypes;
     }
 }

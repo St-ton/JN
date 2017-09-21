@@ -185,7 +185,8 @@ class KategorieHelper
                         ON node.kKategorie = tkategoriesichtbarkeit.kKategorie
                         AND tkategoriesichtbarkeit.kKundengruppe = " . self::$kKundengruppe . $seoJoin . $imageJoin .
                 $hasArticlesCheckJoin . $stockJoin . $visibilityJoin . "                     
-                WHERE tkategoriesichtbarkeit.kKategorie IS NULL AND node.lft BETWEEN parent.lft AND parent.rght 
+                WHERE node.nLevel > 0 AND parent.nLevel > 0
+                    AND tkategoriesichtbarkeit.kKategorie IS NULL AND node.lft BETWEEN parent.lft AND parent.rght
                     AND parent.kOberKategorie = 0 " . $visibilityWhere . $depthWhere . "
                     
                 GROUP BY node.kKategorie
@@ -402,7 +403,8 @@ class KategorieHelper
                     ON node.kKategorie = tkategoriesichtbarkeit.kKategorie
                     AND tkategoriesichtbarkeit.kKundengruppe = " . self::$kKundengruppe . $seoJoin . $imageJoin .
             $hasArticlesCheckJoin . $stockJoin . $visibilityJoin . "                     
-            WHERE tkategoriesichtbarkeit.kKategorie IS NULL AND node.lft BETWEEN parent.lft AND parent.rght 
+            WHERE node.nLevel > 0 AND parent.nLevel > 0
+                AND tkategoriesichtbarkeit.kKategorie IS NULL AND node.lft BETWEEN parent.lft AND parent.rght
                 AND node.kKategorie = " . (int)$categoryID . $visibilityWhere . "
                 
             GROUP BY parent.kKategorie

@@ -29,7 +29,7 @@
                         <tr>
                             <td></td>
                             <td class="item-name" colspan="2">
-                                {$oPosition->nAnzahl|replace_delim}&nbsp;&times;&nbsp;{$oPosition->cName|trans}
+                                {$oPosition->nAnzahl|replace_delim}&nbsp;&times;&nbsp;{$oPosition->cName|trans|escape:"htmlall"}
                             </td>
                             <td class="item-price">
                                 {$oPosition->cEinzelpreisLocalized[$NettoPreise][$smarty.session.cWaehrungName]}
@@ -68,12 +68,12 @@
             </p>
         {/if}
         <div class="btn-group btn-group-justified btn-group-full">
-            <a href="{get_static_route id='warenkorb.php'}" class="btn btn-primary"><i class="fa fa-shopping-cart"></i> {lang key="gotoBasket"}</a>
+            <a href="{get_static_route id='warenkorb.php'}" class="btn btn-primary" title="{lang key='gotoBasket'}"><i class="fa fa-shopping-cart"></i> {lang key='gotoBasket'}</a>
             {*
             <a href="{get_static_route id='bestellvorgang.php'}" class="btn btn-primary">{lang key="checkout" section="basketpreview"}</a>
             *}
         </div>
     {else}
-        <a href="{get_static_route id='warenkorb.php'}">{lang section="checkout" key="emptybasket"}</a>
+        <a href="{get_static_route id='warenkorb.php'}" title="{lang section='checkout' key='emptybasket'}">{lang section='checkout' key='emptybasket'}</a>
     {/if}
 </li>

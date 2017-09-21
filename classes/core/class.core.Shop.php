@@ -1050,12 +1050,18 @@ final class Shop
             //check path
             $cPath        = self::getRequestUri();
             $cRequestFile = '/' . ltrim($cPath, '/');
+            if ($cRequestFile === '/index.php') {
+                // special case: /index.php shall be redirected to Shop-URL
+                header('Location: ' . Shop::getURL(), true, 301);
+                exit;
+            }
             if ($cRequestFile === '/') {
                 //special case: home page is accessible without seo url
                 $link        = null;
                 $linkHelper  = LinkHelper::getInstance();
                 if (!empty($_SESSION['Kundengruppe']->kKundengruppe)) {
-                    $cKundengruppenSQL = " AND (cKundengruppen RLIKE '^([0-9;]*;)?" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";'
+                    $cKundengruppenSQL = " AND (FIND_IN_SET('" . (int)$_SESSION['Kundengruppe']->kKundengruppe
+                        . "', REPLACE(cKundengruppen, ';', ',')) > 0
                         OR cKundengruppen IS NULL 
                         OR cKundengruppen = 'NULL' 
                         OR tlink.cKundengruppen = '')";

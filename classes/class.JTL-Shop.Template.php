@@ -787,7 +787,11 @@ class Template
                 return false;
             }
             self::$parent = $tplConfig->Parent;
+            $parentConfig = self::$helper->getXML(self::$parent);
+        } else {
+            $parentConfig = false;
         }
+
         $tplObject              = new stdClass();
         $tplObject->cTemplate   = $cOrdner;
         $tplObject->eTyp        = $eTyp;
@@ -795,8 +799,8 @@ class Template
         $tplObject->name        = (string)$tplConfig->Name;
         $tplObject->author      = (string)$tplConfig->Author;
         $tplObject->url         = (string)$tplConfig->URL;
-        $tplObject->version     = (float)$tplConfig->Version;
-        $tplObject->shopversion = (int)$tplConfig->ShopVersion;
+        $tplObject->version     = empty($tplConfig->Version) && $parentConfig ? (float)$parentConfig->Version : (float)$tplConfig->Version;
+        $tplObject->shopversion = empty($tplConfig->ShopVersion) && $parentConfig ? (int)$parentConfig->ShopVersion : (int)$tplConfig->ShopVersion;
         $tplObject->preview     = (string)$tplConfig->Preview;
         $bCheck                 = Shop::DB()->insert('ttemplate', $tplObject);
         if ($bCheck) {

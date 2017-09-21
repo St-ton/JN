@@ -44,41 +44,43 @@
                 <div class="panel-heading">
                     <h3 class="panel-title">{#emailhistory#}</h3>
                 </div>
-                <table class="list table">
-                    <thead>
-                    <tr>
-                        <th></th>
-                        <th class="tleft">{#subject#}</th>
-                        <th class="tleft">{#fromname#}</th>
-                        <th class="tleft">{#fromemail#}</th>
-                        <th class="tleft">{#toname#}</th>
-                        <th class="tleft">{#toemail#}</th>
-                        <th class="tleft">{#date#}</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {foreach name=emailhistory from=$oEmailhistory_arr item=oEmailhistory}
-                        <tr class="tab_bg{$smarty.foreach.emailhistory.iteration%2}">
-                            <td class="check">
-                                <input type="checkbox" name="kEmailhistory[]" value="{$oEmailhistory->getEmailhistory()}" />
-                            </td>
-                            <td>{$oEmailhistory->getSubject()}</td>
-                            <td>{$oEmailhistory->getFromName()}</td>
-                            <td>{$oEmailhistory->getFromEmail()}</td>
-                            <td>{$oEmailhistory->getToName()}</td>
-                            <td>{$oEmailhistory->getToEmail()}</td>
-                            <td>{SmartyConvertDate date=$oEmailhistory->getSent()}</td>
+                <div class="table-responsive">
+                    <table class="list table">
+                        <thead>
+                        <tr>
+                            <th></th>
+                            <th class="tleft">{#subject#}</th>
+                            <th class="tleft">{#fromname#}</th>
+                            <th class="tleft">{#fromemail#}</th>
+                            <th class="tleft">{#toname#}</th>
+                            <th class="tleft">{#toemail#}</th>
+                            <th class="tleft">{#date#}</th>
                         </tr>
-                    {/foreach}
-                    </tbody>
-                    <tfoot>
-                    <tr>
-                        <td class="check">
-                            <input name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);" /></td>
-                        <td colspan="8"><label for="ALLMSGS">Alle ausw&auml;hlen</label></td>
-                    </tr>
-                    </tfoot>
-                </table>
+                        </thead>
+                        <tbody>
+                        {foreach name=emailhistory from=$oEmailhistory_arr item=oEmailhistory}
+                            <tr class="tab_bg{$smarty.foreach.emailhistory.iteration%2}">
+                                <td class="check">
+                                    <input type="checkbox" name="kEmailhistory[]" value="{$oEmailhistory->getEmailhistory()}" />
+                                </td>
+                                <td>{$oEmailhistory->getSubject()}</td>
+                                <td>{$oEmailhistory->getFromName()}</td>
+                                <td>{$oEmailhistory->getFromEmail()}</td>
+                                <td>{$oEmailhistory->getToName()}</td>
+                                <td>{$oEmailhistory->getToEmail()}</td>
+                                <td>{SmartyConvertDate date=$oEmailhistory->getSent()}</td>
+                            </tr>
+                        {/foreach}
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <td class="check">
+                                <input name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);" /></td>
+                            <td colspan="8"><label for="ALLMSGS">Alle ausw&auml;hlen</label></td>
+                        </tr>
+                        </tfoot>
+                    </table>
+                </div>
                 <div class="panel-footer">
                     <div class="btn-group">
                         <button name="zuruecksetzenBTN" type="submit" class="btn btn-warning"><i class="fa fa-trash"></i> {#deleteSelected#}</button>

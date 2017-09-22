@@ -44,7 +44,9 @@
             {if !empty($oNewsUebersicht->cPreviewImageFull)}
                 <div class="col-sm-4 col-xs-12">
                     <a href="{$oNewsUebersicht->cURLFull}" title="{$oNewsUebersicht->cBetreff}">
-                        <img src="{$ShopURL}/{$oNewsUebersicht->cPreviewImage}" alt="" class="img-responsive center-block"/>
+                        <img src="{$ShopURL}/{$oNewsUebersicht->cPreviewImage}"
+                             alt="{$oNewsUebersicht->cBetreff} - {$oNewsUebersicht->cMetaTitle}"
+                             title="{$oNewsUebersicht->cMetaTitle}" class="img-responsive center-block"/>
                         <meta itemprop="image" content="{$ShopURL}/{$oNewsUebersicht->cPreviewImage}">
                     </a>
                 </div>

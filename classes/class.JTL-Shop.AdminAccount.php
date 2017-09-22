@@ -291,6 +291,42 @@ class AdminAccount
     }
 
     /**
+     * @param int   $nAdminLoginGroup
+     * @param int   $nAdminMenuGroup
+     * @return object
+     */
+    public function getVisibleMenu($nAdminLoginGroup, $nAdminMenuGroup)
+    {
+        $nAdminLoginGroup = (int)$nAdminLoginGroup;
+        $nAdminMenuGroup  = (int)$nAdminMenuGroup;
+
+        if ($nAdminLoginGroup === ADMINGROUP) {
+            $oLink_arr = Shop::DB()->selectAll(
+                'tadminmenu',
+                'kAdminmenueGruppe',
+                $nAdminMenuGroup,
+                '*',
+                'cLinkname, nSort'
+            );
+        } else {
+            $oLink_arr = Shop::DB()->queryPrepared(
+                'SELECT tadminmenu.* 
+                    FROM tadminmenu 
+                        JOIN tadminrechtegruppe ON tadminmenu.cRecht = tadminrechtegruppe.cRecht 
+                    WHERE kAdminmenueGruppe = :kAdminmenueGruppe AND kAdminlogingruppe = :kAdminlogingruppe 
+                    ORDER BY cLinkname, nSort;',
+                [
+                    'kAdminmenueGruppe' => $nAdminMenuGroup,
+                    'kAdminlogingruppe' => $nAdminLoginGroup
+                ],
+                2
+            );
+        }
+
+        return $oLink_arr;
+    }
+
+    /**
      *
      */
     public function redirectOnUrl()

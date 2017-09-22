@@ -59,28 +59,8 @@ if (is_array($oLinkOberGruppe_arr) && count($oLinkOberGruppe_arr) > 0) {
                 if (!isset($oLinkGruppe->oLink_arr)) {
                     $oLinkGruppe->oLink_arr = [];
                 }
-                if ($adminLoginGruppe === ADMINGROUP) {
-                    $oLinkGruppe_arr[$j]->oLink_arr = Shop::DB()->selectAll(
-                        'tadminmenu',
-                        'kAdminmenueGruppe',
-                        (int)$oLinkGruppe->kAdminmenueGruppe,
-                        '*',
-                        'cLinkname, nSort'
-                    );
-                } else{
-                    $oLinkGruppe_arr[$j]->oLink_arr = Shop::DB()->queryPrepared(
-                        'SELECT tadminmenu.* 
-                    FROM tadminmenu 
-                        JOIN tadminrechtegruppe ON tadminmenu.cRecht = tadminrechtegruppe.cRecht 
-                    WHERE kAdminmenueGruppe = :kAdminmenueGruppe AND kAdminlogingruppe = :kAdminlogingruppe 
-                    ORDER BY cLinkname, nSort;',
-                        [
-                            'kAdminmenueGruppe' => (int)$oLinkGruppe->kAdminmenueGruppe,
-                            'kAdminlogingruppe' => $adminLoginGruppe
-                        ],
-                        2
-                    );
-                }
+                $oLinkGruppe_arr[$j]->oLink_arr = $oAccount->getVisibleMenu((int)$adminLoginGruppe,
+                    (int)$oLinkGruppe->kAdminmenueGruppe);
                 foreach ($configSections as $_k => $_configSection) {
                     if (isset($_configSection->kAdminmenueGruppe) &&
                         $_configSection->kAdminmenueGruppe == $oLinkGruppe->kAdminmenueGruppe &&
@@ -147,28 +127,8 @@ if (is_array($oLinkOberGruppe_arr) && count($oLinkOberGruppe_arr) > 0) {
                 objectSort($oLinkOberGruppe_arr[$i]->oLink_arr, 'cLinkname');
             }
         } else {
-            if ($adminLoginGruppe === ADMINGROUP) {
-                $oLinkOberGruppe_arr[$i]->oLink_arr = Shop::DB()->selectAll(
-                    'tadminmenu',
-                    'kAdminmenueGruppe',
-                    (int)$oLinkOberGruppe->kAdminmenueGruppe,
-                    '*',
-                    'cLinkname'
-                );
-            } else {
-                $oLinkOberGruppe_arr[$i]->oLink_arr = Shop::DB()->queryPrepared(
-                    'SELECT tadminmenu.* 
-                    FROM tadminmenu 
-                        JOIN tadminrechtegruppe ON tadminmenu.cRecht = tadminrechtegruppe.cRecht 
-                    WHERE kAdminmenueGruppe = :kAdminmenueGruppe AND (kAdminlogingruppe = :kAdminlogingruppe OR 1 = :kAdminlogingruppe)
-                    ORDER BY cLinkname;',
-                    [
-                        'kAdminmenueGruppe' => (int)$oLinkOberGruppe->kAdminmenueGruppe,
-                        'kAdminlogingruppe' => $adminLoginGruppe
-                    ],
-                    2
-                );
-            }
+            $oLinkOberGruppe_arr[$i]->oLink_arr = $oAccount->getVisibleMenu((int)$adminLoginGruppe,
+                (int)$oLinkOberGruppe->kAdminmenueGruppe);
         }
         if (empty($oLinkOberGruppe_arr[$i]->oLinkGruppe_arr) && empty($oLinkOberGruppe_arr[$i]->oLink_arr)) {
             unset($oLinkOberGruppe_arr[$i]);

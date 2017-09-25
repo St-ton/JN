@@ -400,7 +400,7 @@ class Jtllog
 
         if (is_array($nFlag_arr) && count($nFlag_arr) > 0) {
             foreach ($nFlag_arr as $nFlag) {
-                $nVal |= $nFlag;
+                $nVal |= (int)$nFlag;
             }
         }
 

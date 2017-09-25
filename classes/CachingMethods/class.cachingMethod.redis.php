@@ -74,7 +74,7 @@ class cache_redis implements ICachingMethod
                 }
             } catch (RedisException $e) {
                 Shop::dbg($e->getMessage(), false, 'exception:');
-                Jtllog::writeLog('RedisException: ' . $e->getMessage(), JTLLOG_LEVEL_ERROR);
+                Jtllog::writeLog('RedisException: ' . $e->getMessage(), JTLLOG_LEVEL_ERROR, true);
 
                 return false;
             }

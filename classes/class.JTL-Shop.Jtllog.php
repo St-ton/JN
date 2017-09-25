@@ -234,6 +234,18 @@ class Jtllog
         return $oJtllog_arr;
     }
 
+    public static function getLogWhere($cWhereSQL = '', $cLimitSQL = '')
+    {
+        return Shop::DB()->query(
+            "SELECT *
+                FROM tjtllog" .
+                    ($cWhereSQL !== '' ? " WHERE " . $cWhereSQL : "") .
+                    " ORDER BY dErstellt DESC " .
+                    ($cLimitSQL !== '' ? " LIMIT " . $cLimitSQL : ""),
+            2
+        );
+    }
+
     /**
      * Get Logcount from the database
      *

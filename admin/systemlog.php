@@ -16,10 +16,10 @@ $cHinweis = '';
 $cFehler  = '';
 
 if (validateToken()) {
-    if ($_REQUEST['action'] === 'clearsyslog') {
+    if (verifyGPDataString('action') === 'clearsyslog') {
         Jtllog::deleteAll();
         $cHinweis = 'Ihr Systemlog wurde erfolgreich gel&ouml;scht.';
-    } elseif ($_REQUEST['action'] === 'save') {
+    } elseif (verifyGPDataString('action') === 'save') {
         $obj = (object)[
             'cWert' => isset($_REQUEST['nLevelFlags']) ? Jtllog::setBitFlag($_REQUEST['nLevelFlags']) : 0
         ];
@@ -40,26 +40,16 @@ $oFilter->addDaterangefield('Zeitraum', 'dErstellt');
 $oSearchfield = $oFilter->addTextfield('Suchtext', 'cLog', 1);
 $oFilter->assemble();
 
+$cSearchString     = $oSearchfield->getValue();
+$nSelectedLevel    = $oLevelSelect->getSelectedOption()->getValue();
 $nTotalLogCount    = Jtllog::getLogCount('');
-$nFilteredLogCount = Jtllog::getLogCount($oSearchfield->getValue(), $oLevelSelect->getSelectedOption()->getValue());
-$oPagination       = (new Pagination('syslog'))
+$nFilteredLogCount = Jtllog::getLogCount($cSearchString, $nSelectedLevel);
+
+$oPagination = (new Pagination('syslog'))
     ->setItemCount($nFilteredLogCount)
     ->assemble();
 
-$cOrderSQL = $oPagination->getOrderSQL();
-$cLimitSQL = $oPagination->getLimitSQL();
-$cWhereSQL = $oFilter->getWhereSQL();
-
-$oLog_arr = Shop::DB()->query(
-    "SELECT *
-        FROM tjtllog" .
-        ($cWhereSQL !== '' ? " WHERE " . $cWhereSQL : "") .
-        " ORDER BY dErstellt DESC " .
-        ($cLimitSQL !== '' ? " LIMIT " . $cLimitSQL : ""),
-    2
-);
-
-
+$oLog_arr       = Jtllog::getLogWhere($oFilter->getWhereSQL(), $oPagination->getLimitSQL());
 $nSystemlogFlag = getSytemlogFlag(false);
 $nLevelFlag_arr = [
     JTLLOG_LEVEL_ERROR => Jtllog::isBitFlagSet(JTLLOG_LEVEL_ERROR, $nSystemlogFlag),
@@ -74,7 +64,7 @@ foreach ($oLog_arr as $oLog) {
         $oLog->cLog
     );
 
-    if($oSearchfield->getValue()) {
+    if ($oSearchfield->getValue()) {
         $oLog->cLog = preg_replace(
             '/(' . preg_quote($oSearchfield->getValue(), '/') . ')/i',
             '<mark>$1</mark>',

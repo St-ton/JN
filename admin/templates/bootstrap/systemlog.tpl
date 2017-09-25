@@ -37,8 +37,6 @@
                                         <span class="label label-success">{#systemlogNotice#}</span>
                                     {elseif $oLog->nLevel == 4}
                                         <span class="label label-info info">{#systemlogDebug#}</span>
-                                    {else}
-                                        <span class="label labe-default">Unbekannt</span>
                                     {/if}
                                     {$oLog->dErstellt|date_format:"d.m.Y - H:i:s"}
                                 </div>
@@ -57,7 +55,7 @@
                 <div class="btn-group">
                     <a href="systemlog.php?action=clearsyslog&token={$smarty.session.jtl_token}"
                        class="btn btn-danger">
-                        Log zur&uuml;cksetzen
+                        {#systemlogReset#}
                     </a>
                 </div>
             </div>
@@ -72,7 +70,7 @@
             <div class="panel-body">
                 <div class="input-group">
                     <span class="input-group-addon">
-                        <label for="JTLLOG_LEVEL_ERROR">Fehler</label>
+                        <label for="JTLLOG_LEVEL_ERROR">{#systemlogError#}</label>
                     </span>
                     <span class="input-group-wrap">
                         <input type="checkbox" name="nLevelFlags[]" value="{$JTLLOG_LEVEL_ERROR}"
@@ -81,7 +79,7 @@
                 </div>
                 <div class="input-group">
                     <span class="input-group-addon">
-                        <label for="JTLLOG_LEVEL_NOTICE">Hinweis</label>
+                        <label for="JTLLOG_LEVEL_NOTICE">{#systemlogNotice#}</label>
                     </span>
                     <span class="input-group-wrap">
                         <input type="checkbox" name="nLevelFlags[]" value="{$JTLLOG_LEVEL_NOTICE}"
@@ -90,7 +88,7 @@
                 </div>
                 <div class="input-group">
                     <span class="input-group-addon">
-                        <label for="JTLLOG_LEVEL_DEBUG">Debug</label>
+                        <label for="JTLLOG_LEVEL_DEBUG">{#systemlogDebug#}</label>
                     </span>
                     <span class="input-group-wrap">
                         <input type="checkbox" name="nLevelFlags[]" value="{$JTLLOG_LEVEL_DEBUG}"

@@ -24,42 +24,38 @@ if (validateToken()) {
             'cWert' => isset($_REQUEST['nLevelFlags']) ? Jtllog::setBitFlag($_REQUEST['nLevelFlags']) : 0
         ];
         Shop::DB()->update('teinstellungen', 'cName', 'systemlog_flag', $obj);
+        Shop::Cache()->flushTags([CACHING_GROUP_OPTION]);
         $cHinweis = 'Ihre Einstellungen wurden erfolgreich gespeichert.';
         $smarty->assign('cTab', 'config');
     }
 }
 
-$oFilter = new Filter('syslog');
-$oLevelSelectField = $oFilter->addSelectfield('Loglevel', 'nLevel');
-$oLevelSelectField->addSelectOption('alle', '');
-$oLevelSelectField->addSelectOption('Fehler', '1', 4);
-$oLevelSelectField->addSelectOption('Hinweis', '2', 4);
-$oLevelSelectField->addSelectOption('Debug', '4', 4);
+$oFilter      = new Filter('syslog');
+$oLevelSelect = $oFilter->addSelectfield('Loglevel', 'nLevel');
+$oLevelSelect->addSelectOption('alle', '');
+$oLevelSelect->addSelectOption('Fehler', '1', 4);
+$oLevelSelect->addSelectOption('Hinweis', '2', 4);
+$oLevelSelect->addSelectOption('Debug', '4', 4);
 $oFilter->addDaterangefield('Zeitraum', 'dErstellt');
 $oSearchfield = $oFilter->addTextfield('Suchtext', 'cLog', 1);
 $oFilter->assemble();
 
-$cWhereSQL = $oFilter->getWhereSQL();
-
-$nFilteredLogCount = Shop::DB()->query(
-    "SELECT COUNT(kLog) AS nCount
-        FROM tjtllog
-        " . ($cWhereSQL !== '' ? " WHERE " . $cWhereSQL : ""),
-    1
-)->nCount;
-
-$oPagination = (new Pagination('syslog'))
+$nTotalLogCount    = Jtllog::getLogCount('');
+$nFilteredLogCount = Jtllog::getLogCount($oSearchfield->getValue(), $oLevelSelect->getSelectedOption()->getValue());
+$oPagination       = (new Pagination('syslog'))
     ->setItemCount($nFilteredLogCount)
     ->assemble();
+
 $cOrderSQL = $oPagination->getOrderSQL();
 $cLimitSQL = $oPagination->getLimitSQL();
+$cWhereSQL = $oFilter->getWhereSQL();
 
 $oLog_arr = Shop::DB()->query(
     "SELECT *
-        FROM tjtllog
-        " . ($cWhereSQL !== '' ? " WHERE " . $cWhereSQL : "") . "
-        ORDER BY dErstellt DESC
-        " . ($cLimitSQL !== '' ? " LIMIT " . $cLimitSQL : ""),
+        FROM tjtllog" .
+        ($cWhereSQL !== '' ? " WHERE " . $cWhereSQL : "") .
+        " ORDER BY dErstellt DESC " .
+        ($cLimitSQL !== '' ? " LIMIT " . $cLimitSQL : ""),
     2
 );
 
@@ -94,6 +90,7 @@ $smarty
     ->assign('oPagination', $oPagination)
     ->assign('oLog_arr', $oLog_arr)
     ->assign('nLevelFlag_arr', $nLevelFlag_arr)
+    ->assign('nTotalLogCount', $nTotalLogCount)
     ->assign('JTLLOG_LEVEL_ERROR', JTLLOG_LEVEL_ERROR)
     ->assign('JTLLOG_LEVEL_NOTICE', JTLLOG_LEVEL_NOTICE)
     ->assign('JTLLOG_LEVEL_DEBUG', JTLLOG_LEVEL_DEBUG)

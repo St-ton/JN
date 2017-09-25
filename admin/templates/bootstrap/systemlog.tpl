@@ -15,36 +15,44 @@
 
 <div class="tab-content">
     <div role="tabpanel" class="tab-pane fade{if $cTab === 'log'} active in{/if}" id="log">
-        {include file='tpl_inc/filtertools.tpl' oFilter=$oFilter}
-        {include file='tpl_inc/pagination.tpl' oPagination=$oPagination}
+        {if $nTotalLogCount !== 0}
+            {include file='tpl_inc/filtertools.tpl' oFilter=$oFilter}
+            {include file='tpl_inc/pagination.tpl' oPagination=$oPagination}
+        {/if}
 
         <div class="panel panel-default">
-            <div class="listgroup">
-                {foreach $oLog_arr as $oLog}
-                    <div class="list-group-item">
-                        <div class="row">
-                            <div class="col-md-3 col-xs-12">
-                                {if $oLog->nLevel == 1}
-                                    <span class="label label-danger">{#systemlogError#}</span>
-                                {elseif $oLog->nLevel == 2}
-                                    <span class="label label-success">{#systemlogNotice#}</span>
-                                {elseif $oLog->nLevel == 4}
-                                    <span class="label label-info info">{#systemlogDebug#}</span>
-                                {else}
-                                    <span class="label labe-default">Unbekannt</span>
-                                {/if}
-                                {$oLog->dErstellt|date_format:"d.m.Y - H:i:s"}
-                            </div>
-                            <div class="col-md-9 col-xs-12">
-                                <pre class="logtext
-                                    {if $oLog->nLevel == 1}bg-danger
-                                    {elseif $oLog->nLevel == 2}bg-success
-                                    {elseif $oLog->nLevel == 4}bg-info{/if}">{$oLog->cLog}</pre>
+            {if $nTotalLogCount === 0}
+                <div class="alert alert-info" role="alert">{#noDataAvailable#}</div>
+            {elseif $oLog_arr|@count === 0}
+                <div class="alert alert-info" role="alert">{#noFilterResults#}</div>
+            {else}
+                <div class="listgroup">
+                    {foreach $oLog_arr as $oLog}
+                        <div class="list-group-item">
+                            <div class="row">
+                                <div class="col-md-3 col-xs-12">
+                                    {if $oLog->nLevel == 1}
+                                        <span class="label label-danger">{#systemlogError#}</span>
+                                    {elseif $oLog->nLevel == 2}
+                                        <span class="label label-success">{#systemlogNotice#}</span>
+                                    {elseif $oLog->nLevel == 4}
+                                        <span class="label label-info info">{#systemlogDebug#}</span>
+                                    {else}
+                                        <span class="label labe-default">Unbekannt</span>
+                                    {/if}
+                                    {$oLog->dErstellt|date_format:"d.m.Y - H:i:s"}
+                                </div>
+                                <div class="col-md-9 col-xs-12">
+                                    <pre class="logtext
+                                        {if $oLog->nLevel == 1}bg-danger
+                                        {elseif $oLog->nLevel == 2}bg-success
+                                        {elseif $oLog->nLevel == 4}bg-info{/if}">{$oLog->cLog}</pre>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                {/foreach}
-            </div>
+                    {/foreach}
+                </div>
+            {/if}
             <div class="panel-footer">
                 <div class="btn-group">
                     <a href="systemlog.php?action=clearsyslog&token={$smarty.session.jtl_token}"

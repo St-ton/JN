@@ -2072,6 +2072,7 @@ function checkKundenFormularArray($data, $kundenaccount, $checkpass = 1)
     } elseif ($conf['kunden']['kundenregistrierung_abfragen_ustid'] !== 'N' &&
         isset($data['ustid']) && $data['ustid'] !== ''
     ) {
+// ------------------------------------------
         if (!isset($_SESSION['Kunde']->cUSTID) ||
             (isset($_SESSION['Kunde']->cUSTID) && $_SESSION['Kunde']->cUSTID !== $data['ustid'])
         ) {
@@ -2085,6 +2086,21 @@ function checkKundenFormularArray($data, $kundenaccount, $checkpass = 1)
                 'Nein',
                 (isset($data['hausnummer']) ? StringHandler::filterXSS($data['hausnummer']) : '')
             );
+
+
+            $oLogger->debug('data->ustid: '.print_r($data['ustid'],true )); // --DEBUG--
+            //$VIES = new UstIDvies($data['ustid']); // --DEBUG--
+
+            //$VIES = new UstIDvies('TEX2345678912345L'); // --DEBUG--
+            //$VIES = new UstIDvies('TELL345678912345L'); // --DEBUG--
+            $VIES = new UstIDvies('TELL34567891XL92B'); // --DEBUG--
+            if (true === ($result = $VIES->doCheckID())) {
+                $oLogger->debug('VIES result: '.$result); // --DEBUG--
+            } else {
+                //$oLogger->debug('VIES result (else): '.$result); // --DEBUG--
+                $oLogger->debug('VIEW result (error): '.$VIES->getErrorStr()); // --DEBUG--
+            }
+
 
             $bBZStPruefung = false;
             //Admin-Einstellung BZST pruefen und checken ob Auslaendische USt-ID angegeben (deutsche USt-IDs koennen nicht geprueft werden)
@@ -2105,6 +2121,7 @@ function checkKundenFormularArray($data, $kundenaccount, $checkpass = 1)
                 $ret['ustid'] = 5;
             }
         }
+// ------------------------------------------
     }
     if ($conf['kunden']['kundenregistrierung_abfragen_geburtstag'] === 'Y' &&
         checkeDatum(StringHandler::filterXSS($data['geburtstag'])) > 0

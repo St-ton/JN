@@ -27,6 +27,19 @@ if (validateToken()) {
         Shop::Cache()->flushTags([CACHING_GROUP_OPTION]);
         $cHinweis = 'Ihre Einstellungen wurden erfolgreich gespeichert.';
         $smarty->assign('cTab', 'config');
+    } elseif (verifyGPDataString('action') === 'delselected') {
+        if (isset($_REQUEST['selected'])) {
+            foreach ($_REQUEST['selected'] as $kLog) {
+                $oLog = new Jtllog($kLog);
+                if ($oLog->delete() === -1) {
+                    $cFehler .= 'Log-Eintrag vom ' . $oLog->getErstellt() . ' konnte nicht gel&ouml;scht werden.<br>';
+                }
+            }
+
+            if ($cFehler === '') {
+                $cHinweis = 'Alle markierten Log-Eintr&auml;ge wurden gel&ouml;scht.';
+            }
+        }
     }
 }
 
@@ -46,6 +59,7 @@ $nTotalLogCount    = Jtllog::getLogCount('');
 $nFilteredLogCount = Jtllog::getLogCount($cSearchString, $nSelectedLevel);
 
 $oPagination = (new Pagination('syslog'))
+    ->setItemsPerPageOptions([10, 20, 50, 100, -1])
     ->setItemCount($nFilteredLogCount)
     ->assemble();
 

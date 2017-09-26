@@ -21,44 +21,67 @@
         {/if}
 
         <div class="panel panel-default">
-            {if $nTotalLogCount === 0}
-                <div class="alert alert-info" role="alert">{#noDataAvailable#}</div>
-            {elseif $oLog_arr|@count === 0}
-                <div class="alert alert-info" role="alert">{#noFilterResults#}</div>
-            {else}
-                <div class="listgroup">
-                    {foreach $oLog_arr as $oLog}
+            <form method="post" action="systemlog.php">
+                {$jtl_token}
+                {if $nTotalLogCount === 0}
+                    <div class="alert alert-info" role="alert">{#noDataAvailable#}</div>
+                {elseif $oLog_arr|@count === 0}
+                    <div class="alert alert-info" role="alert">{#noFilterResults#}</div>
+                {else}
+                    <div class="listgroup">
                         <div class="list-group-item">
-                            <div class="row">
-                                <div class="col-md-3 col-xs-12">
-                                    {if $oLog->nLevel == 1}
-                                        <span class="label label-danger">{#systemlogError#}</span>
-                                    {elseif $oLog->nLevel == 2}
-                                        <span class="label label-success">{#systemlogNotice#}</span>
-                                    {elseif $oLog->nLevel == 4}
-                                        <span class="label label-info info">{#systemlogDebug#}</span>
-                                    {/if}
-                                    {$oLog->dErstellt|date_format:"d.m.Y - H:i:s"}
-                                </div>
-                                <div class="col-md-9 col-xs-12">
-                                    <pre class="logtext
-                                        {if $oLog->nLevel == 1}bg-danger
-                                        {elseif $oLog->nLevel == 2}bg-success
-                                        {elseif $oLog->nLevel == 4}bg-info{/if}">{$oLog->cLog}</pre>
+                            <label>
+                                <input type="checkbox" name="aaa" value="bbb"
+                                       onchange="selectAllItems(this, $(this).prop('checked'))">
+                                {#selectAllShown#}
+                            </label>
+                        </div>
+                        {foreach $oLog_arr as $oLog}
+                            <div class="list-group-item">
+                                <div class="row">
+                                    <div class="col-md-3 col-xs-12">
+                                        <label>
+                                            <input type="checkbox" name="selected[]" value="{$oLog->kLog}">
+                                            {if $oLog->nLevel == 1}
+                                                <span class="label label-danger">{#systemlogError#}</span>
+                                            {elseif $oLog->nLevel == 2}
+                                                <span class="label label-success">{#systemlogNotice#}</span>
+                                            {elseif $oLog->nLevel == 4}
+                                                <span class="label label-info info">{#systemlogDebug#}</span>
+                                            {/if}
+                                            {$oLog->dErstellt|date_format:"d.m.Y - H:i:s"}
+                                        </label>
+                                    </div>
+                                    <div class="col-md-9 col-xs-12">
+                                        <pre class="logtext
+                                            {if $oLog->nLevel == 1}bg-danger
+                                            {elseif $oLog->nLevel == 2}bg-success
+                                            {elseif $oLog->nLevel == 4}bg-info{/if}">{$oLog->cLog}</pre>
+                                    </div>
                                 </div>
                             </div>
+                        {/foreach}
+                        <div class="list-group-item">
+                            <label>
+                                <input type="checkbox" name="aaa" value="bbb"
+                                       onchange="selectAllItems(this, $(this).prop('checked'))">
+                                {#selectAllShown#}
+                            </label>
                         </div>
-                    {/foreach}
+                    </div>
+                {/if}
+                <div class="panel-footer">
+                    <div class="btn-group">
+                        <a href="systemlog.php?action=clearsyslog&token={$smarty.session.jtl_token}"
+                           class="btn btn-danger">
+                            <i class="fa fa-trash"></i> {#systemlogReset#}
+                        </a>
+                        <button name="action" value="delselected" class="btn btn-warning">
+                            <i class="fa fa-trash"></i> {#deleteSelected#}
+                        </button>
+                    </div>
                 </div>
-            {/if}
-            <div class="panel-footer">
-                <div class="btn-group">
-                    <a href="systemlog.php?action=clearsyslog&token={$smarty.session.jtl_token}"
-                       class="btn btn-danger">
-                        {#systemlogReset#}
-                    </a>
-                </div>
-            </div>
+            </form>
         </div>
     </div>
     <div role="tabpanel" class="tab-pane fade{if $cTab === 'config'} active in{/if}" id="config">

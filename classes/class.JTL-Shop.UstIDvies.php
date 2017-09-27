@@ -137,19 +137,22 @@ class UstIDvies
         $this->oLogger->debug('VAT as PARAMS: '.print_r($vParams ,true )); // --DEBUG--
 
         list($szCountryCode, $szVatNumber) = $vParams;
-        if (! $this->oDownTimes->isDown($szCountryCode)) {
+        if (false === $this->oDownTimes->isDown($szCountryCode)) {
 
-            // ask the remote service
+            // asking the remote service
             $this->oLogger->debug('asking the remote service..'); // --DEBUG--
             /*
              *$oSoapClient = new SoapClient($this->szViesWSDL);
              *$result = $oSoapClient->checkVat(['countryCode' => $szCountryCode, 'vatNumber' => $szVatNumber]); // --TODO--
              */
 
-        } // else ...
-        // --TODO-- : inform the user, the VAT-office in this country has closed this time
-        // log that event, and offer a methode to fetch it elsewhere
-        // (maybe write a specified Exception ...)
+        } else {
+            // --TODO-- : inform the user, the VAT-office in this country has closed this time
+            // log that event, and offer a methode to fetch it elsewhere
+            // (maybe write a specified Exception ...)
+            $this->szErrorStr = $this->oDownTimes->getDownInfo();
+            return false;
+        }
 
         // return
     }

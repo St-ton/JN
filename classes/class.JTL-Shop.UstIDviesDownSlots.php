@@ -155,6 +155,11 @@ class UstIDviesDownSlots
         $this->oNow = new DateTime();
     }
 
+    public function getDownInfo()
+    {
+        return $this->szDownInfo;
+    }
+
     public function isDown($szCountryCode)
     {
           $this->oLogger->debug('checking country down-time: '.$szCountryCode); // --DEBUG--
@@ -177,7 +182,7 @@ class UstIDviesDownSlots
         //$this->oLogger->debug('AT start OOP: '.print_r( $date ,true )); // --DEBUG--
 
         foreach ($this->vDownTimeSlots[$szCountryCode] as $vCountryDownTimes) {
-            $this->oLogger->debug('+++++++ checking time-slot '.print_r($vCountryDownTimes,true)); // --DEBUG--
+            //$this->oLogger->debug('+++++++ checking time-slot '.print_r($vCountryDownTimes,true)); // --DEBUG--
 
             // if no weekday was given (which means "every weekday"), we replace the weekday in the check-array with the current weekday here
             if ('' === $vCountryDownTimes[self::WEEKDAY]) {
@@ -195,14 +200,15 @@ class UstIDviesDownSlots
                 //$this->oLogger->debug('- - - - - - - - - - - - - - - - - - - - '); // --DEBUG--
 
                 // inform the user and/or log this event
-                // --TODO--
                 $this->oLogger->debug('service is down till '.$oEndTime->format('l y-m-d, H:i')); // --DEBUG--
+                $this->szDownInfo = 'Der Dienst dieses Landes ist bis '.$oEndTime->format('l y-m-d, H:i').' nicht erreichbar.';
 
-                // if we see ANY VALID DOWNTIME, we go back with TRUE (what means "DOWN NOW")
+                // if we see ANY VALID DOWNTIME, we go back with TRUE (what means "service is DOWN NOW")
                 return true;
             }
         }
 
+        // the service is not down. all is fine to proceed normally.
         return false;
     }
 

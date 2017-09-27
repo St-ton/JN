@@ -2709,19 +2709,21 @@ function getKundendaten($post, $kundenaccount, $htmlentities = 1)
         'kundenherkunft'    => 'cHerkunft',
     ];
 
-    if($kundenaccount != 0) {
+    if ($kundenaccount != 0) {
         $mapping['pass'] = 'cPasswort';
     }
 
     //erstelle neuen Kunden
-    $kKunde = isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0 ? (int)$_SESSION['Kunde']->kKunde : 0;
+    $kKunde    = isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0 ? (int)$_SESSION['Kunde']->kKunde : 0;
     $customer  = new Kunde($kKunde);
 
-    foreach($mapping as $external => $internal) {
-        if(isset($post[$external])) {
-            $val = StringHandler::filterXSS($post[$external]);
-            if($htmlentities) $val = StringHandler::htmlentities($val);
-            $customer->$internal = $val;
+    foreach ($mapping as $external => $internal) {
+        if (isset($post[$external])) {
+            $val                   = StringHandler::filterXSS($post[$external]);
+            if ($htmlentities) {
+                $val = StringHandler::htmlentities($val);
+            }
+            $customer->$internal   = $val;
         }
     }
 

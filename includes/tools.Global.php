@@ -2897,7 +2897,7 @@ function berechneVersandpreis($versandart, $cISO, $oZusatzArtikel, $Artikel = 0)
             || !empty($Artikel->FunktionsAttribute['versandkosten gestaffelt']))
     ) {
         $fArticleSpecific = VersandartHelper::gibArtikelabhaengigeVersandkosten($cISO, $Artikel, 1);
-        $preis           += $fArticleSpecific->fKosten;
+        $preis           += isset($fArticleSpecific->fKosten) ? $fArticleSpecific->fKosten : 0;
     }
     //Deckelung?
     if ($preis >= $versandart->fDeckelung && $versandart->fDeckelung > 0) {

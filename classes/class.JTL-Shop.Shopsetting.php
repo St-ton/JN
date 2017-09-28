@@ -20,6 +20,49 @@ final class Shopsetting implements ArrayAccess
     private $_container = [];
 
     /**
+     * @var array
+     */
+    private static $mapping = [
+        CONF_GLOBAL              => 'global',
+        CONF_STARTSEITE          => 'startseite',
+        CONF_EMAILS              => 'emails',
+        CONF_ARTIKELUEBERSICHT   => 'artikeluebersicht',
+        CONF_ARTIKELDETAILS      => 'artikeldetails',
+        CONF_KUNDEN              => 'kunden',
+        CONF_LOGO                => 'logo',
+        CONF_KAUFABWICKLUNG      => 'kaufabwicklung',
+        CONF_BOXEN               => 'boxen',
+        CONF_BILDER              => 'bilder',
+        CONF_SONSTIGES           => 'sonstiges',
+        CONF_ZAHLUNGSARTEN       => 'zahlungsarten',
+        CONF_PLUGINZAHLUNGSARTEN => 'pluginzahlungsarten',
+        CONF_KONTAKTFORMULAR     => 'kontakt',
+        CONF_SHOPINFO            => 'shopinfo',
+        CONF_RSS                 => 'rss',
+        CONF_VERGLEICHSLISTE     => 'vergleichsliste',
+        CONF_PREISVERLAUF        => 'preisverlauf',
+        CONF_BEWERTUNG           => 'bewertung',
+        CONF_NEWSLETTER          => 'newsletter',
+        CONF_KUNDENFELD          => 'kundenfeld',
+        CONF_NAVIGATIONSFILTER   => 'navigationsfilter',
+        CONF_EMAILBLACKLIST      => 'emailblacklist',
+        CONF_METAANGABEN         => 'metaangaben',
+        CONF_NEWS                => 'news',
+        CONF_SITEMAP             => 'sitemap',
+        CONF_UMFRAGE             => 'umfrage',
+        CONF_KUNDENWERBENKUNDEN  => 'kundenwerbenkunden',
+        CONF_TRUSTEDSHOPS        => 'trustedshops',
+        CONF_SUCHSPECIAL         => 'suchspecials',
+        CONF_TEMPLATE            => 'template',
+        CONF_PREISANZEIGE        => 'preisanzeige',
+        CONF_CHECKBOX            => 'checkbox',
+        CONF_AUSWAHLASSISTENT    => 'auswahlassistent',
+        CONF_RMA                 => 'rma',
+        CONF_OBJECTCACHING       => 'objectcaching',
+        CONF_CACHING             => 'caching'
+    ];
+
+    /**
      *
      */
     private function __construct()
@@ -128,7 +171,7 @@ final class Shopsetting implements ArrayAccess
                 } catch (Exception $exc) {
                     Jtllog::writeLog("Setting Caching Exception: " . $exc->getMessage(), JTLLOG_LEVEL_ERROR);
                 }
-                if ($section == 126) {
+                if ($section === CONF_PLUGINZAHLUNGSARTEN) {
                     $settings = Shop::DB()->query("
                          SELECT cName, cWert
                              FROM tplugineinstellungen
@@ -203,11 +246,10 @@ final class Shopsetting implements ArrayAccess
         if ($section === null && $name === null) {
             return false;
         }
-        $mappings = self::getMappings();
-        if ($section !== null && isset($mappings[$section])) {
-            return $mappings[$section];
+        if ($section !== null && isset(self::$mapping[$section])) {
+            return self::$mapping[$section];
         }
-        if ($name !== null && ($key = array_search($name, $mappings, true)) !== false) {
+        if ($name !== null && ($key = array_search($name, self::$mapping, true)) !== false) {
             return $key;
         }
 
@@ -224,14 +266,13 @@ final class Shopsetting implements ArrayAccess
     {
         $cacheID = 'settings_all_preload';
         if (($result = Shop::Cache()->get($cacheID)) === false) {
-            $mappings = self::getMappings();
             $settings = Shop::DB()->query("
                 SELECT kEinstellungenSektion, cName, cWert
                     FROM teinstellungen
                     ORDER BY kEinstellungenSektion", 9
             );
             $result = [];
-            foreach ($mappings as $mappingID => $sectionName) {
+            foreach (self::$mapping as $mappingID => $sectionName) {
                 foreach ($settings as $setting) {
                     $kEinstellungenSektion = (int)$setting['kEinstellungenSektion'];
                     if ($kEinstellungenSektion === $mappingID) {
@@ -254,44 +295,6 @@ final class Shopsetting implements ArrayAccess
      */
     private static function getMappings()
     {
-        return [
-            CONF_GLOBAL              => 'global',
-            CONF_STARTSEITE          => 'startseite',
-            CONF_EMAILS              => 'emails',
-            CONF_ARTIKELUEBERSICHT   => 'artikeluebersicht',
-            CONF_ARTIKELDETAILS      => 'artikeldetails',
-            CONF_KUNDEN              => 'kunden',
-            CONF_LOGO                => 'logo',
-            CONF_KAUFABWICKLUNG      => 'kaufabwicklung',
-            CONF_BOXEN               => 'boxen',
-            CONF_BILDER              => 'bilder',
-            CONF_SONSTIGES           => 'sonstiges',
-            CONF_ZAHLUNGSARTEN       => 'zahlungsarten',
-            CONF_PLUGINZAHLUNGSARTEN => 'pluginzahlungsarten',
-            CONF_KONTAKTFORMULAR     => 'kontakt',
-            CONF_SHOPINFO            => 'shopinfo',
-            CONF_RSS                 => 'rss',
-            CONF_VERGLEICHSLISTE     => 'vergleichsliste',
-            CONF_PREISVERLAUF        => 'preisverlauf',
-            CONF_BEWERTUNG           => 'bewertung',
-            CONF_NEWSLETTER          => 'newsletter',
-            CONF_KUNDENFELD          => 'kundenfeld',
-            CONF_NAVIGATIONSFILTER   => 'navigationsfilter',
-            CONF_EMAILBLACKLIST      => 'emailblacklist',
-            CONF_METAANGABEN         => 'metaangaben',
-            CONF_NEWS                => 'news',
-            CONF_SITEMAP             => 'sitemap',
-            CONF_UMFRAGE             => 'umfrage',
-            CONF_KUNDENWERBENKUNDEN  => 'kundenwerbenkunden',
-            CONF_TRUSTEDSHOPS        => 'trustedshops',
-            CONF_SUCHSPECIAL         => 'suchspecials',
-            CONF_TEMPLATE            => 'template',
-            CONF_PREISANZEIGE        => 'preisanzeige',
-            CONF_CHECKBOX            => 'checkbox',
-            CONF_AUSWAHLASSISTENT    => 'auswahlassistent',
-            CONF_RMA                 => 'rma',
-            CONF_OBJECTCACHING       => 'objectcaching',
-            CONF_CACHING             => 'caching'
-        ];
+        return self::$mapping;
     }
 }

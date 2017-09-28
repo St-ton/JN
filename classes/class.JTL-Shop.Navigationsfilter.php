@@ -614,13 +614,12 @@ class Navigationsfilter
      */
     private function initAttributeFilters($values)
     {
-        $attributes = Shop::DB()->query('
-            SELECT tmerkmalwert.kMerkmal, tmerkmalwert.kMerkmalWert, tmerkmal.nMehrfachauswahl
+        $attributes = Shop::DB()->executeYield(
+            'SELECT tmerkmalwert.kMerkmal, tmerkmalwert.kMerkmalWert, tmerkmal.nMehrfachauswahl
                 FROM tmerkmalwert
                 JOIN tmerkmal 
                     ON tmerkmal.kMerkmal = tmerkmalwert.kMerkmal
-                WHERE kMerkmalWert IN (' . implode(',', array_map('intval', $values)) . ')',
-            2
+                WHERE kMerkmalWert IN (' . implode(',', array_map('intval', $values)) . ')'
         );
         foreach ($attributes as $attribute) {
             $attribute->kMerkmal         = (int)$attribute->kMerkmal;

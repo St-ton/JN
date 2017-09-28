@@ -70,7 +70,7 @@
                                             {*{if $subFilter->getVisibility() !== $filter::SHOW_NEVER}*}
                                                 <div class="form-group dropdown filter-type-{$filter->getClassName()}">
                                                     <a href="#" class="btn btn-default dropdown-toggle form-control" data-toggle="dropdown" role="button" aria-expanded="false">
-                                                        {$subFilter->getFrontendName()|escape:'html'} <span class="caret"></span>
+                                                        {$subFilter->getFrontendName()} <span class="caret"></span>
                                                     </a>
                                                     {include file='snippets/filter/genericFilterItem.tpl' class='dropdown-menu' filter=$subFilter sub=true}
                                                 </div>
@@ -95,7 +95,7 @@
                                         <div class="{$outerClass}">
                                             {if $filter->getInputType() === $filter::INPUT_SELECT}
                                                 <a href="#" class="btn btn-default dropdown-toggle form-control" data-toggle="dropdown" role="button" aria-expanded="false">
-                                                    {$filter->getFrontendName()|escape:'html'} <span class="caret"></span>
+                                                    {$filter->getFrontendName()} <span class="caret"></span>
                                                 </a>
                                             {/if}
                                             {include file='snippets/filter/genericFilterItem.tpl' class=$innerClass itemClass=$itemClass filter=$filter}
@@ -121,7 +121,7 @@
                                 {foreach $activeValues as $filterExtra}
                                     {strip}
                                         <a href="{$activeFilter->getUnsetFilterURL($filterExtra->getValue())}" rel="nofollow" title="Filter {lang key='delete' section='global'}" class="label label-info filter-type-{$activeFilter->getClassName()}">
-                                            {$filterExtra->getFrontendName()|escape:'html'} &nbsp;<span class="fa fa-trash-o"></span>
+                                            {$filterExtra->getFrontendName()} &nbsp;<span class="fa fa-trash-o"></span>
                                         </a>
                                     {/strip}
                                 {/foreach}

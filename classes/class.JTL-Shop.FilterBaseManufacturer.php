@@ -65,8 +65,7 @@ class FilterBaseManufacturer extends AbstractFilter
         foreach ($languages as $language) {
             $this->cSeo[$language->kSprache] = '';
             foreach ($oSeo_arr as $oSeo) {
-                $oSeo->kSprache = (int)$oSeo->kSprache;
-                if ($language->kSprache === $oSeo->kSprache) {
+                if ($language->kSprache === (int)$oSeo->kSprache) {
                     $this->cSeo[$language->kSprache] = $oSeo->cSeo;
                 }
             }

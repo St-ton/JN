@@ -90,6 +90,15 @@ class NiceDB
      */
     private $transactionCount = 0;
 
+    const RET_SINGLE_OBJECT         = 1;
+    const RET_ARRAY_OF_OBJECTS      = 2;
+    const RET_AFFECTED_ROWS         = 3;
+    const RET_LAST_INSERTED_ID      = 7;
+    const RET_SINGLE_ASSOC_ARRAY    = 8;
+    const RET_ARRAY_OF_ASSOC_ARRAYS = 9;
+    const RET_QUERYSINGLE           = 10;
+    const RET_ARRAY_OF_BOTH_ARRAYS  = 11;
+
     /**
      * create DB Connection with default parameters
      *
@@ -878,9 +887,11 @@ class NiceDB
      * 1  - single fetched object
      * 2  - array of fetched objects
      * 3  - affected rows
+     * 7  - last inserted id
      * 8  - fetched assoc array
      * 9  - array of fetched assoc arrays
      * 10 - result of querysingle
+     * 11 - fetch both arrays
      * @param int|bool $echo print current stmt
      * @param bool     $bExecuteHook should function executeHook be executed
      * @param callable $fnInfo statistic callback
@@ -902,9 +913,11 @@ class NiceDB
      * 1  - single fetched object
      * 2  - array of fetched objects
      * 3  - affected rows
+     * 7  - last inserted id
      * 8  - fetched assoc array
      * 9  - array of fetched assoc arrays
      * 10 - result of querysingle
+     * 11 - fetch both arrays
      * @param int|bool $echo print current stmt
      * @param bool     $bExecuteHook should function executeHook be executed
      * @param callable $fnInfo statistic callback
@@ -934,6 +947,7 @@ class NiceDB
      * 8  - fetched assoc array
      * 9  - array of fetched assoc arrays
      * 10 - result of querysingle
+     * 11 - fetch both arrays
      * @return array|object|int - 0 if fails, 1 if successful or LastInsertID if specified
      * @throws InvalidArgumentException
      */

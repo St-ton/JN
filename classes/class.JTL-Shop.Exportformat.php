@@ -1087,7 +1087,6 @@ class Exportformat
         }
         $content                                     = $this->getContent();
         $categoryFallback                            = (strpos($content, '->oKategorie_arr') !== false);
-        $articles                                    = Shop::DB()->query($this->getExportSQL(), 2);
         $oArtikelOptionen                            = new stdClass();
         $oArtikelOptionen->nMerkmale                 = 1;
         $oArtikelOptionen->nAttribute                = 1;
@@ -1124,10 +1123,10 @@ class Exportformat
             $findTwo[]    = ';';
             $replaceTwo[] = $this->config['exportformate_semikolon'];
         }
-        foreach ($articles as $articleObj) {
+        foreach (Shop::DB()->query($this->getExportSQL(), 10) as $iterArticle) {
             $Artikel = new Artikel();
             $Artikel->fuelleArtikel(
-                $articleObj->kArtikel,
+                $iterArticle['kArtikel'],
                 $oArtikelOptionen,
                 $this->kKundengruppe,
                 $this->kSprache,

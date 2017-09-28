@@ -54,25 +54,24 @@ class FilterBaseCategory extends AbstractFilter
     {
         if ($this->getValue() > 0) {
             $oSeo_arr = Shop::DB()->query(
-                    "SELECT tseo.cSeo, tseo.kSprache, tkategorie.cName AS cKatName, tkategoriesprache.cName
-                        FROM tseo
-                            LEFT JOIN tkategorie
-                                ON tkategorie.kKategorie = tseo.kKey
-                            LEFT JOIN tkategoriesprache
-                                ON tkategoriesprache.kKategorie = tkategorie.kKategorie
-                                AND tkategoriesprache.kSprache = tseo.kSprache
-                        WHERE cKey = 'kKategorie' 
-                            AND kKey = " . $this->getValue() . "
-                        ORDER BY tseo.kSprache", 2
+                "SELECT tseo.cSeo, tseo.kSprache, tkategorie.cName AS cKatName, tkategoriesprache.cName
+                    FROM tseo
+                        LEFT JOIN tkategorie
+                            ON tkategorie.kKategorie = tseo.kKey
+                        LEFT JOIN tkategoriesprache
+                            ON tkategoriesprache.kKategorie = tkategorie.kKategorie
+                            AND tkategoriesprache.kSprache = tseo.kSprache
+                    WHERE cKey = 'kKategorie' 
+                        AND kKey = " . $this->getValue() . "
+                    ORDER BY tseo.kSprache",
+                2
             );
             foreach ($languages as $language) {
                 $this->cSeo[$language->kSprache] = '';
-                if (is_array($oSeo_arr)) {
-                    foreach ($oSeo_arr as $oSeo) {
-                        $oSeo->kSprache = (int)$oSeo->kSprache;
-                        if ($language->kSprache === $oSeo->kSprache) {
-                            $this->cSeo[$language->kSprache] = $oSeo->cSeo;
-                        }
+                foreach ($oSeo_arr as $oSeo) {
+                    $oSeo->kSprache = (int)$oSeo->kSprache;
+                    if ($language->kSprache === $oSeo->kSprache) {
+                        $this->cSeo[$language->kSprache] = $oSeo->cSeo;
                     }
                 }
             }

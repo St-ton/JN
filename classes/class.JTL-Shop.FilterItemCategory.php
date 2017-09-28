@@ -159,15 +159,17 @@ class FilterItemCategory extends FilterBaseCategory
                 '',
                 ['tkategorie.kKategorie', 'tartikel.kArtikel']
             );
-            $query            = "SELECT tseo.cSeo, ssMerkmal.kKategorie, ssMerkmal.cName, 
-                ssMerkmal.nSort, COUNT(*) AS nAnzahl
-                FROM (" . $query . " ) AS ssMerkmal
-                    LEFT JOIN tseo ON tseo.kKey = ssMerkmal.kKategorie
-                        AND tseo.cKey = 'kKategorie'
-                        AND tseo.kSprache = " . $this->getLanguageID() . "
-                    GROUP BY ssMerkmal.kKategorie
-                    ORDER BY ssMerkmal.nSort, ssMerkmal.cName";
-            $categories       = Shop::DB()->query($query, 2);
+            $categories       = Shop::DB()->executeQuery(
+                "SELECT tseo.cSeo, ssMerkmal.kKategorie, ssMerkmal.cName, 
+                    ssMerkmal.nSort, COUNT(*) AS nAnzahl
+                    FROM (" . $query . " ) AS ssMerkmal
+                        LEFT JOIN tseo ON tseo.kKey = ssMerkmal.kKategorie
+                            AND tseo.cKey = 'kKategorie'
+                            AND tseo.kSprache = " . $this->getLanguageID() . "
+                        GROUP BY ssMerkmal.kKategorie
+                        ORDER BY ssMerkmal.nSort, ssMerkmal.cName"
+                    , 2
+            );
             $additionalFilter = new self($this->naviFilter);
             foreach ($categories as $category) {
                 // Anzeigen als KategoriePfad

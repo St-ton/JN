@@ -55,22 +55,20 @@ class FilterItemSearchSpecial extends AbstractFilter
      */
     public function setSeo($languages)
     {
-        $oSeo_arr = Shop::DB()->query("
-                SELECT cSeo, kSprache
-                    FROM tseo
-                    WHERE cKey = 'suchspecial'
-                        AND kKey = " . $this->getValue() . "
-                    ORDER BY kSprache", 2
+        $oSeo_arr = Shop::DB()->query(
+            "SELECT cSeo, kSprache
+                FROM tseo
+                WHERE cKey = 'suchspecial'
+                    AND kKey = " . $this->getValue() . "
+                ORDER BY kSprache", 2
         );
 
         foreach ($languages as $language) {
             $this->cSeo[$language->kSprache] = '';
-            if (is_array($oSeo_arr)) {
-                foreach ($oSeo_arr as $oSeo) {
-                    $oSeo->kSprache = (int)$oSeo->kSprache;
-                    if ($language->kSprache === $oSeo->kSprache) {
-                        $this->cSeo[$language->kSprache] = $oSeo->cSeo;
-                    }
+            foreach ($oSeo_arr as $oSeo) {
+                $oSeo->kSprache = (int)$oSeo->kSprache;
+                if ($language->kSprache === $oSeo->kSprache) {
+                    $this->cSeo[$language->kSprache] = $oSeo->cSeo;
                 }
             }
         }

@@ -53,22 +53,21 @@ class FilterBaseManufacturer extends AbstractFilter
     public function setSeo($languages)
     {
         $oSeo_arr = Shop::DB()->query(
-                "SELECT tseo.cSeo, tseo.kSprache, thersteller.cName
-                    FROM tseo
-                        LEFT JOIN thersteller
-                            ON thersteller.kHersteller = tseo.kKey
-                    WHERE cKey = 'kHersteller' 
-                        AND kKey = " . $this->getValue() . "
-                    ORDER BY kSprache", 2
+            "SELECT tseo.cSeo, tseo.kSprache, thersteller.cName
+                FROM tseo
+                    LEFT JOIN thersteller
+                        ON thersteller.kHersteller = tseo.kKey
+                WHERE cKey = 'kHersteller' 
+                    AND kKey = " . $this->getValue() . "
+                ORDER BY kSprache",
+            2
         );
         foreach ($languages as $language) {
             $this->cSeo[$language->kSprache] = '';
-            if (is_array($oSeo_arr)) {
-                foreach ($oSeo_arr as $oSeo) {
-                    $oSeo->kSprache = (int)$oSeo->kSprache;
-                    if ($language->kSprache === $oSeo->kSprache) {
-                        $this->cSeo[$language->kSprache] = $oSeo->cSeo;
-                    }
+            foreach ($oSeo_arr as $oSeo) {
+                $oSeo->kSprache = (int)$oSeo->kSprache;
+                if ($language->kSprache === $oSeo->kSprache) {
+                    $this->cSeo[$language->kSprache] = $oSeo->cSeo;
                 }
             }
         }
@@ -149,20 +148,20 @@ class FilterBaseManufacturer extends AbstractFilter
                 $state->having,
                 $order->orderBy
             );
-            $query = "SELECT tseo.cSeo, ssMerkmal.kHersteller, ssMerkmal.cName, ssMerkmal.nSortNr, COUNT(*) AS nAnzahl
-                FROM (" .
+            $manufacturers    = Shop::DB()->query(
+                "SELECT tseo.cSeo, ssMerkmal.kHersteller, ssMerkmal.cName, ssMerkmal.nSortNr, COUNT(*) AS nAnzahl
+                    FROM (" .
                     $query .
-                ") AS ssMerkmal
-                    LEFT JOIN tseo 
-                        ON tseo.kKey = ssMerkmal.kHersteller
-                        AND tseo.cKey = 'kHersteller'
-                        AND tseo.kSprache = " . $this->getLanguageID() . "
-                    GROUP BY ssMerkmal.kHersteller
-                    ORDER BY ssMerkmal.nSortNr, ssMerkmal.cName";
-
-            $manufacturers    = Shop::DB()->query($query, 2);
+                    ") AS ssMerkmal
+                        LEFT JOIN tseo 
+                            ON tseo.kKey = ssMerkmal.kHersteller
+                            AND tseo.cKey = 'kHersteller'
+                            AND tseo.kSprache = " . $this->getLanguageID() . "
+                        GROUP BY ssMerkmal.kHersteller
+                        ORDER BY ssMerkmal.nSortNr, ssMerkmal.cName",
+                2
+            );
             $additionalFilter = new FilterItemManufacturer($this->naviFilter);
-
             foreach ($manufacturers as $manufacturer) {
                 // attributes for old filter templates
                 $manufacturer->kHersteller = (int)$manufacturer->kHersteller;

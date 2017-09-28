@@ -222,12 +222,13 @@ class FilterBaseSearchQuery extends AbstractFilter
                 '',
                 ['tsuchanfrage.kSuchanfrage', 'tartikel.kArtikel']
             );
-            $query         = 'SELECT ssMerkmal.kSuchanfrage, ssMerkmal.cSuche, count(*) AS nAnzahl
-                FROM (' . $query . ') AS ssMerkmal
-                    GROUP BY ssMerkmal.kSuchanfrage
-                    ORDER BY ssMerkmal.cSuche' . $nLimit;
-            $searchFilters = Shop::DB()->query($query, 2);
-
+            $searchFilters    = Shop::DB()->query(
+                'SELECT ssMerkmal.kSuchanfrage, ssMerkmal.cSuche, COUNT(*) AS nAnzahl
+                    FROM (' . $query . ') AS ssMerkmal
+                        GROUP BY ssMerkmal.kSuchanfrage
+                        ORDER BY ssMerkmal.cSuche' . $nLimit,
+                2
+            );
             $kSuchanfrage_arr = [];
             if ($this->naviFilter->hasSearch()) {
                 $kSuchanfrage_arr[] = (int)$this->naviFilter->getSearch()->getValue();

@@ -134,37 +134,36 @@ class FilterItemRating extends AbstractFilter
             $state->having,
             $order->orderBy
         );
-        $query = 'SELECT ssMerkmal.nSterne, COUNT(*) AS nAnzahl
-                    FROM (' . $query . ' ) AS ssMerkmal
-                    GROUP BY ssMerkmal.nSterne
-                    ORDER BY ssMerkmal.nSterne DESC';
-        $res   = Shop::DB()->query($query, 2);
-        if (is_array($res)) {
-            $nSummeSterne     = 0;
-            $additionalFilter = new self($this->getNaviFilter());
-            foreach ($res as $row) {
-                $nSummeSterne += (int)$row->nAnzahl;
+        $res              = Shop::DB()->query(
+            'SELECT ssMerkmal.nSterne, COUNT(*) AS nAnzahl
+                FROM (' . $query . ' ) AS ssMerkmal
+                GROUP BY ssMerkmal.nSterne
+                ORDER BY ssMerkmal.nSterne DESC', 2
+        );
+        $nSummeSterne     = 0;
+        $additionalFilter = new self($this->getNaviFilter());
+        foreach ($res as $row) {
+            $nSummeSterne += (int)$row->nAnzahl;
 
-                $fe         = (new FilterExtra())
-                    ->setType($this->getType())
-                    ->setClassName($this->getClassName())
-                    ->setParam($this->getUrlParam())
-                    ->setName(
-                        Shop::Lang()->get('from', 'productDetails') . ' ' .
-                        $row->nSterne . ' ' .
-                        ($row->nSterne > 1
-                            ? Shop::Lang()->get('starPlural')
-                            : Shop::Lang()->get('starSingular'))
-                    )
-                    ->setValue((int)$row->nSterne)
-                    ->setCount($nSummeSterne)
-                    ->setURL($this->naviFilter->getURL(
-                        true,
-                        $additionalFilter->init((int)$row->nSterne)
-                    ));
-                $fe->nStern = (int)$row->nSterne;
-                $options[] = $fe;
-            }
+            $fe         = (new FilterExtra())
+                ->setType($this->getType())
+                ->setClassName($this->getClassName())
+                ->setParam($this->getUrlParam())
+                ->setName(
+                    Shop::Lang()->get('from', 'productDetails') . ' ' .
+                    $row->nSterne . ' ' .
+                    ($row->nSterne > 1
+                        ? Shop::Lang()->get('starPlural')
+                        : Shop::Lang()->get('starSingular'))
+                )
+                ->setValue((int)$row->nSterne)
+                ->setCount($nSummeSterne)
+                ->setURL($this->naviFilter->getURL(
+                    true,
+                    $additionalFilter->init((int)$row->nSterne)
+                ));
+            $fe->nStern = (int)$row->nSterne;
+            $options[] = $fe;
         }
         $this->options = $options;
         if (count($options) === 0) {

@@ -331,7 +331,7 @@ class FilterItemAttribute extends FilterBaseAttribute
             '',
             '' // ['tartikelmerkmal.kMerkmalWert', 'tartikel.kArtikel']
         );
-        $qryRes                = Shop::DB()->query(
+        $qryRes                = Shop::DB()->executeQuery(
             "SELECT ssMerkmal.cSeo, ssMerkmal.kMerkmal, ssMerkmal.kMerkmalWert, ssMerkmal.cMMWBildPfad, 
             ssMerkmal.nMehrfachauswahl,
             ssMerkmal.cWert, ssMerkmal.cName, ssMerkmal.cTyp, ssMerkmal.cMMBildPfad, COUNT(DISTINCT ssMerkmal.kArtikel) AS nAnzahl

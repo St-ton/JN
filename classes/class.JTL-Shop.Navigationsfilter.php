@@ -569,21 +569,18 @@ class Navigationsfilter
             $filterParam = $filter->getUrlParam();
             $filterClass = $filter->getClassName();
             if (isset($_GET[$filterParam])) {
+                // OR filters should always get an array as input - even if there is just one value active
                 if (!is_array($_GET[$filterParam]) && $filter->getType() === AbstractFilter::FILTER_TYPE_OR) {
                     $_GET[$filterParam] = [$_GET[$filterParam]];
                 }
+                // escape all input values
                 if (($filter->getType() === AbstractFilter::FILTER_TYPE_OR && is_array($_GET[$filterParam]))
                     || ($filter->getType() === AbstractFilter::FILTER_TYPE_AND
                         && (verifyGPCDataInteger($filterParam) > 0 || verifyGPDataString($filterParam) !== ''))
                 ) {
-                    if (is_array($_GET[$filterParam])) {
-                        $filterValue = [];
-                        foreach ($_GET[$filterParam] as $idx => $param) {
-                            $filterValue[$idx] = Shop::DB()->realEscape($param);
-                        }
-                    } else {
-                        $filterValue = Shop::DB()->realEscape($_GET[$filterParam]);
-                    }
+                    $filterValue = is_array($_GET[$filterParam])
+                        ? array_map([Shop::DB(), 'realEscape'], $_GET[$filterParam])
+                        : Shop::DB()->realEscape($_GET[$filterParam]);
                     $this->addActiveFilter($filter, $filterValue);
                     $params[$filterParam] = $filterValue;
                 }
@@ -766,28 +763,26 @@ class Navigationsfilter
      */
     public function getFilterValue($filterClassName)
     {
-        foreach ($this->activeFilters as $filter) {
-            if ($filterClassName === $filter->getClassName()) {
-                return $filter->getValue();
+        return array_reduce(
+            $this->activeFilters,
+            function ($carry, $item) use ($filterClassName) {
+                /** @var IFilter $item */
+                return $carry !== null
+                    ? $carry
+                    : ($item->getClassName() === $filterClassName
+                        ? $item->getValue()
+                        : null);
             }
-        }
-
-        return null;
+        );
     }
 
     /**
-     * @param string $filterName
+     * @param string $filterClassName
      * @return bool
      */
-    public function hasFilter($filterName)
+    public function hasFilter($filterClassName)
     {
-        foreach ($this->activeFilters as $filter) {
-            if ($filterName === $filter->getName()) {
-                return true;
-            }
-        }
-
-        return false;
+        return $this->getActiveFilterByClassName($filterClassName) !== null;
     }
 
     /**
@@ -796,13 +791,15 @@ class Navigationsfilter
      */
     public function getFilterByClassName($filterClassName)
     {
-        foreach ($this->filters as $filter) {
-            if ($filter->getClassName() === $filterClassName) {
-                return $filter;
+        $filter = array_filter(
+            $this->filters,
+            function ($f) use ($filterClassName) {
+                /** @var IFilter $f */
+                return $f->getClassName() === $filterClassName;
             }
-        }
+        );
 
-        return null;
+        return is_array($filter) ? current($filter) : null;
     }
 
     /**
@@ -811,13 +808,15 @@ class Navigationsfilter
      */
     public function getActiveFilterByClassName($filterClassName)
     {
-        foreach ($this->activeFilters as $filter) {
-            if ($filter->getClassName() === $filterClassName) {
-                return $filter;
+        $filter = array_filter(
+            $this->activeFilters,
+            function ($f) use ($filterClassName) {
+                /** @var IFilter $f */
+                return $f->getClassName() === $filterClassName;
             }
-        }
+        );
 
-        return null;
+        return is_array($filter) ? current($filter) : null;
     }
 
     /**
@@ -1488,25 +1487,21 @@ class Navigationsfilter
     {
         $order = $this->getOrder();
         $state = $this->getCurrentStateData();
-//        Shop::dbg($state->conditions, true);
-//        Shop::dbg($this->getActiveFilters(true), false, 'active filters:');
+
         $state->joins[] = $order->join;
 
-        $qry  = $this->getBaseQuery(
-            ['tartikel.kArtikel'],
-            $state->joins,
-            $state->conditions,
-            $state->having,
-            $order->orderBy
+        return array_map(
+            function ($e) {
+                return (int)$e->kArtikel;
+            },
+            Shop::DB()->query($this->getBaseQuery(
+                ['tartikel.kArtikel'],
+                $state->joins,
+                $state->conditions,
+                $state->having,
+                $order->orderBy
+            ), 2)
         );
-        $keys = Shop::DB()->query($qry, 2);
-//        Shop::dbg($qry, true);
-        $res = [];
-        foreach ($keys as $key) {
-            $res[] = (int)$key->kArtikel;
-        }
-
-        return $res;
     }
 
     /**
@@ -1609,8 +1604,7 @@ class Navigationsfilter
             $opt->nVariationDetailPreis = (int)$this->conf['artikeldetails']['artikel_variationspreisanzeige'] !== 0
                 ? 1
                 : 0;
-            foreach (array_slice($this->searchResults->Artikel->articleKeys, $paginationLimit,
-                $offsetEnd) as $i => $id) {
+            foreach (array_slice($this->searchResults->Artikel->articleKeys, $paginationLimit, $offsetEnd) as $i => $id) {
                 $nLaufLimitN = $i + $paginationLimit;
                 if ($nLaufLimitN >= $nLimitN && $nLaufLimitN < $nLimitN + $limitPerPage) {
                     $article = (new Artikel())->fuelleArtikel($id, $opt);
@@ -1619,6 +1613,8 @@ class Navigationsfilter
                         $_SESSION['nArtikelUebersichtVLKey_arr'][] = $article->kArtikel;
                     }
                     $this->searchResults->Artikel->elemente->addItem($article);
+                } else {
+                    break;
                 }
             }
         }
@@ -1707,6 +1703,15 @@ class Navigationsfilter
             $count = count($filters);
             if ($count > 1 && $type !== 'misc' && $type !== 'custom') {
                 $singleConditions = [];
+                $filters          = array_filter(
+                    $filters,
+                    function ($f) use ($ignore) {
+                        /** @var IFilter $f */
+                        return $ignore === null
+                                || (is_string($ignore) && $f->getClassName() !== $ignore)
+                                || (is_object($ignore) && $f !== $ignore);
+                    }
+                );
                 $orFilters        = array_filter(
                     $filters,
                     function ($f) {
@@ -1718,26 +1723,12 @@ class Navigationsfilter
                 /** @var AbstractFilter $filter */
                 foreach ($filters as $idx => $filter) {
                     // the built-in filter behave quite strangely and have to be combined this way
-                    if ($ignore === null
-                        || (is_string($ignore) && $filter->getClassName() !== $ignore)
-                        || (is_object($ignore) && $filter !== $ignore)
-                    ) {
-                        $itemJoin = $filter->getSQLJoin();
-                        // alternatively:
-                        // $data->joins = array_merge($data->joins, is_array($itemJoin) ? $itemJoin : [$itemJoin]);
-                        if (is_array($itemJoin)) {
-                            foreach ($itemJoin as $filterJoin) {
-                                $data->joins[] = $filterJoin;
-                            }
-                        } else {
-                            $data->joins[] = $itemJoin;
-                        }
-                        if (!in_array($filter, $orFilters, true)) {
-                            $singleConditions[] = $filter->getSQLCondition();
-                        }
+                    $itemJoin = $filter->getSQLJoin();
+                    $data->joins = array_merge($data->joins, is_array($itemJoin) ? $itemJoin : [$itemJoin]);
+                    if (!in_array($filter, $orFilters, true)) {
+                        $singleConditions[] = $filter->getSQLCondition();
                     }
                 }
-
                 if (count($orFilters) > 0) {
                     // group OR filters by their primary key row
                     $groupedOrFilters = [];
@@ -1750,34 +1741,27 @@ class Navigationsfilter
                     }
                     foreach ($groupedOrFilters as $primaryKeyRow => $orFilters) {
                         /** @var IFilter[] $orFilters */
-                        if ($ignore === null
-                            || (is_string($ignore) && $orFilters[0]->getClassName() !== $ignore)
-                            || (is_object($ignore) && $orFilters[0] !== $ignore)
-                        ) {
-                            $values = implode(
-                                ',',
-                                array_map(function ($f) {
-                                    /** @var IFilter $f */
-                                    $val = $f->getValue();
+                        $values = implode(
+                            ',',
+                            array_map(function ($f) {
+                                /** @var IFilter $f */
+                                $val = $f->getValue();
 
-                                    return is_array($val) ? implode(',', $val) : $val;
-                                }, $orFilters)
-                            );
-                            $table  = $orFilters[0]->getTableAlias();
-                            if (empty($table)) {
-                                $table = $orFilters[0]->getTableName();
-                            }
-                            $data->conditions[] = "\n#combined conditions from OR filter " . $primaryKeyRow . "\n" .
-                                $table . '.kArtikel IN ' .
-                                '(SELECT kArtikel FROM ' . $orFilters[0]->getTableName() . ' WHERE ' .
-                                $primaryKeyRow . ' IN (' . $values . '))';
+                                return is_array($val) ? implode(',', $val) : $val;
+                            }, $orFilters)
+                        );
+                        $table  = $orFilters[0]->getTableAlias();
+                        if (empty($table)) {
+                            $table = $orFilters[0]->getTableName();
                         }
+                        $data->conditions[] = "\n#combined conditions from OR filter " . $primaryKeyRow . "\n" .
+                            $table . '.kArtikel IN ' .
+                            '(SELECT kArtikel FROM ' . $orFilters[0]->getTableName() . ' WHERE ' .
+                            $primaryKeyRow . ' IN (' . $values . '))';
                     }
                 }
                 if (!empty($singleConditions)) {
-                    foreach ($singleConditions as $singleCondition) {
-                        $data->conditions[] = $singleCondition;
-                    }
+                    $data->conditions = array_merge($singleConditions);
                 }
             } elseif ($count === 1) {
                 /** @var array(IFilter) $filters */
@@ -1786,13 +1770,7 @@ class Navigationsfilter
                     || (is_object($ignore) && $filters[0] !== $ignore)
                 ) {
                     $itemJoin = $filters[0]->getSQLJoin();
-                    if (is_array($itemJoin)) {
-                        foreach ($itemJoin as $filterJoin) {
-                            $data->joins[] = $filterJoin;
-                        }
-                    } else {
-                        $data->joins[] = $itemJoin;
-                    }
+                    $data->joins = array_merge($data->joins, is_array($itemJoin) ? $itemJoin : [$itemJoin]);
                     $_condition = $filters[0]->getSQLCondition();
                     if (!empty($_condition)) {
                         $data->conditions[] = "\n#condition from filter " . $type . "\n" . $_condition;
@@ -1803,13 +1781,7 @@ class Navigationsfilter
                 // 'misc' and custom contain clean new filters that can be calculated by just iterating over the array
                 foreach ($filters as $filter) {
                     $itemJoin = $filter->getSQLJoin();
-                    if (is_array($itemJoin)) {
-                        foreach ($itemJoin as $filterJoin) {
-                            $data->joins[] = $filterJoin;
-                        }
-                    } else {
-                        $data->joins[] = $itemJoin;
-                    }
+                    $data->joins = array_merge($data->joins, is_array($itemJoin) ? $itemJoin : [$itemJoin]);
                     $_condition = $filter->getSQLCondition();
                     if (!empty($_condition)) {
                         $data->conditions[] = "\n#condition from filter " . $type . "\n" . $_condition;
@@ -1842,12 +1814,13 @@ class Navigationsfilter
         if (!isset($searchResults->TagsJSON)
             && $this->conf['navigationsfilter']['allgemein_tagfilter_benutzen'] === 'Y'
         ) {
-            $oTags_arr = [];
-            foreach ($searchResults->Tags as $key => $oTags) {
-                $oTags_arr[$key]       = $oTags;
-                $oTags_arr[$key]->cURL = StringHandler::htmlentitydecode($oTags->cURL);
-            }
-            $searchResults->TagsJSON = Boxen::gibJSONString($oTags_arr);
+            $searchResults->TagsJSON = Boxen::gibJSONString(array_map(
+                function ($e) {
+                    $e->cURL = StringHandler::htmlentitydecode($e->cURL);
+                    return $e;
+                },
+                $searchResults->Tags
+            ));
         }
         if (!isset($searchResults->MerkmalFilter)) {
             $searchResults->MerkmalFilter = $this->attributeFilterCollection->getOptions([
@@ -1891,10 +1864,7 @@ class Navigationsfilter
 //                $attributeFilter->hide();
 //            }
 //        }
-//        echo '<br>setting collection!';
-//        Shop::dbg($searchResults->MerkmalFilter);
         $this->attributeFilterCollection->setFilterCollection($searchResults->MerkmalFilter);
-//        Shop::dbg($this->attributeFilterCollection, true);
 
         if (!isset($searchResults->Preisspanne)) {
             $searchResults->Preisspanne = $this->priceRangeFilter->getOptions($searchResults->GesamtanzahlArtikel);
@@ -1906,13 +1876,13 @@ class Navigationsfilter
             $searchResults->SuchFilter = $this->searchFilterCompat->getOptions();
         }
         if (!isset($searchResults->SuchFilterJSON)) {
-            $searchResults->SuchFilterJSON = [];
-
-            foreach ($searchResults->SuchFilter as $key => $oSuchfilter) {
-                $searchResults->SuchFilterJSON[$key]       = $oSuchfilter;
-                $searchResults->SuchFilterJSON[$key]->cURL = StringHandler::htmlentitydecode($oSuchfilter->cURL);
-            }
-            $searchResults->SuchFilterJSON = Boxen::gibJSONString($searchResults->SuchFilterJSON);
+            $searchResults->SuchFilterJSON = Boxen::gibJSONString(array_map(
+                function ($e) {
+                    $e->cURL = StringHandler::htmlentitydecode($e->cURL);
+                    return $e;
+                },
+                $searchResults->SuchFilter
+            ));
         }
         if (!isset($searchResults->Suchspecialauswahl)) {
             $searchResults->Suchspecialauswahl = !$this->params['kSuchspecial'] && !$this->params['kSuchspecialFilter']
@@ -1959,38 +1929,8 @@ class Navigationsfilter
                 return $isCustom;
             }
         );
-//        Shop::dbg($searchResults->customFilters, true);
-//        Shop::dbg($searchResults->MerkmalFilter[0]->getOptions(), true);
-//        Shop::dbg($searchResults->MerkmalFilter, true);
+
         return $searchResults;
-    }
-
-    /**
-     * @param array $oMerkmalauswahl_arr
-     * @param int   $kMerkmal
-     * @return int
-     * @throws InvalidArgumentException
-     * @todo use again?
-     */
-    public function getAttributePosition($oMerkmalauswahl_arr, $kMerkmal)
-    {
-        if (is_array($oMerkmalauswahl_arr)) {
-            // @todo: remove test
-            if ($kMerkmal !== (int)$kMerkmal) {
-                throw new InvalidArgumentException('fix type check 1 @getAttributePosition');
-            }
-            foreach ($oMerkmalauswahl_arr as $i => $oMerkmalauswahl) {
-                // @todo: remove test
-                if ($oMerkmalauswahl->kMerkmal !== (int)$oMerkmalauswahl->kMerkmal) {
-                    throw new InvalidArgumentException('fix type check 2 @getAttributePosition');
-                }
-                if ($oMerkmalauswahl->kMerkmal === $kMerkmal) {
-                    return $i;
-                }
-            }
-        }
-
-        return -1;
     }
 
     /**
@@ -2031,17 +1971,22 @@ class Navigationsfilter
             ->setOn('tartikel.kArtikel = tartikelsichtbarkeit.kArtikel 
                         AND tartikelsichtbarkeit.kKundengruppe = ' . $this->getCustomerGroupID());
         // remove duplicate joins
-        $joinedTables = [];
-        foreach ($joins as $i => $stateJoin) {
-            if (is_string($stateJoin)) {
-                throw new \InvalidArgumentException('getBaseQuery() got join as string: ' . $stateJoin);
+        $checked = [];
+        $joins   = array_filter(
+            $joins,
+            function ($j) use (&$checked) {
+                if (is_string($j)) {
+                    throw new \InvalidArgumentException('getBaseQuery() got join as string: ' . $j);
+                }
+                /** @var FilterJoin $j */
+                if (!in_array($j->getTable(), $checked, true)) {
+                    $checked[] = $j->getTable();
+                    return true;
+                }
+
+                return false;
             }
-            if (!in_array($stateJoin->getTable(), $joinedTables, true)) {
-                $joinedTables[] = $stateJoin->getTable();
-            } else {
-                unset($joins[$i]);
-            }
-        }
+        );
         // default base conditions
         $conditions[] = 'tartikelsichtbarkeit.kArtikel IS NULL';
         $conditions[] = 'tartikel.kVaterArtikel = 0';
@@ -2072,7 +2017,6 @@ class Navigationsfilter
                 foreach ($filterQueryIndices as $i) {
                     $check = $conditions[$i];
                     /** @var FilterQuery $check */
-
                     if ($currentWhere === $check->getWhere()) {
                         $found = true;
                         $check->setParams(array_merge_recursive($check->getParams(), $condition->getParams()));
@@ -2373,16 +2317,9 @@ class Navigationsfilter
             }
             foreach ($filters as $filterItem) {
                 if (!empty($filterItem->sep) && !empty($filterItem->seo)) {
-                    if (is_array($filterItem->seo)) {
-                        foreach ($filterItem->seo as $s) {
-                            if (is_array($s)) {
-                                Shop::dbg($urlParams, true, 'pa', 6);
-                            }
-                            $url .= $filterItem->sep . $s;
-                        }
-                    } else {
-                        $url .= $filterItem->sep . $filterItem->seo;
-                    }
+                    $url .= $filterItem->sep . (is_array($filterItem->seo)
+                        ? implode($filterItem->sep, $filterItem->seo)
+                        : $filterItem->seo);
                 } else {
                     $getParam = $hasQuestionMark ? '&' : '?';
                     if (is_array($filterItem->value)) {
@@ -2507,26 +2444,29 @@ class Navigationsfilter
             }
         }
 
-        foreach ($this->filters as $filter) {
-            if ($filter->isInitialized() && $filter->isCustom()) {
-                $className       = $filter->getClassName();
-                $idx             = 'cAlle' . $className;
-                $this->URL->$idx = [];
-                if ($filter->getType() === AbstractFilter::FILTER_TYPE_OR) {
-                    $extraFilter = clone $filter;
-                    $extraFilter->setDoUnset(true);
-                    foreach ($filter->getValue() as $filterValue) {
-                        $extraFilter->setValue($filterValue);
-                        $this->URL->$idx[$filterValue] = $this->getURL($bSeo, $extraFilter);
-                    }
-                    $filter->setUnsetFilterURL($this->URL->$idx);
-                } else {
-                    $extraFilter = clone $filter;
-                    $extraFilter->setDoUnset(true)->setValue($filter->getValue());
-                    $this->URL->$idx = $this->getURL($bSeo, $extraFilter);
-                    $filter->setUnsetFilterURL($this->URL->$idx);
+        foreach (array_filter(
+                     $this->filters,
+                     function ($f) {
+                         /** @var IFilter $f */
+                         return $f->isInitialized() && $f->isCustom();
+                     }
+                 ) as $filter
+        ) {
+            $className       = $filter->getClassName();
+            $idx             = 'cAlle' . $className;
+            $extraFilter     = clone $filter;
+            $this->URL->$idx = [];
+            $extraFilter->setDoUnset(true);
+            if ($filter->getType() === AbstractFilter::FILTER_TYPE_OR) {
+                foreach ($filter->getValue() as $filterValue) {
+                    $extraFilter->setValue($filterValue);
+                    $this->URL->$idx[$filterValue] = $this->getURL($bSeo, $extraFilter);
                 }
+            } else {
+                $extraFilter->setValue($filter->getValue());
+                $this->URL->$idx = $this->getURL($bSeo, $extraFilter);
             }
+            $filter->setUnsetFilterURL($this->URL->$idx);
         }
         // Filter reset
         $cSeite = $searchResults->Seitenzahlen->AktuelleSeite > 1

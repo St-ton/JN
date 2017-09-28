@@ -1,6 +1,6 @@
 # JTL-Shop Changelog
 
-## [4.06] - 2017-08-xx
+## [4.06]
 
 ### Wichtige Änderungen
 

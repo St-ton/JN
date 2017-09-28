@@ -147,13 +147,13 @@ class FilterItemAttribute extends FilterBaseAttribute
      */
     public function attributeValueIsActive($kMerkmalWert)
     {
-        foreach ($this->naviFilter->getAttributeFilter() as $i => $oMerkmalauswahl) {
-            if ($oMerkmalauswahl->getValue() === $kMerkmalWert) {
-                return true;
-            }
-        }
-
-        return false;
+        return array_reduce($this->naviFilter->getAttributeFilter(),
+            function ($a, $b) use ($kMerkmalWert) {
+                /** @var FilterItemAttribute $b */
+                return $a || $b->getValue() === $kMerkmalWert;
+            },
+            false
+        );
     }
 
     /**
@@ -183,7 +183,8 @@ class FilterItemAttribute extends FilterBaseAttribute
             return $attributeFilters;
         }
         // Ist Kategorie Mainword, dann prüfe die Kategorie-Funktionsattribute auf merkmalfilter
-        if (isset($currentCategory->categoryFunctionAttributes)
+        if ($currentCategory !== null
+            && isset($currentCategory->categoryFunctionAttributes)
             && is_array($currentCategory->categoryFunctionAttributes)
             && count($currentCategory->categoryFunctionAttributes) > 0
             && !empty($currentCategory->categoryFunctionAttributes[KAT_ATTRIBUT_MERKMALFILTER])
@@ -353,8 +354,8 @@ class FilterItemAttribute extends FilterBaseAttribute
             $attributeValue                   = (new FilterExtra())
                 ->setType((int)$oMerkmalFilterDB->nMehrfachauswahl === 1
                     ? AbstractFilter::FILTER_TYPE_OR
-                    : AbstractFilter::FILTER_TYPE_AND
-                )->setClassName($this->getClassName())
+                    : AbstractFilter::FILTER_TYPE_AND)
+                ->setClassName($this->getClassName())
                 ->setParam($this->getUrlParam())
                 ->setName(htmlentities($oMerkmalFilterDB->cWert))
                 ->setValue($oMerkmalFilterDB->cWert)
@@ -447,9 +448,6 @@ class FilterItemAttribute extends FilterBaseAttribute
         foreach ($attributeFilters as $attributeFilter) {
             $attributeFilter->setCount(count($attributeFilter->getOptions()));
         }
-
-
-//        Shop::dbg($attributeFilters, true);
         // Filter durchgehen und die Merkmalwerte entfernen, die zuviel sind und deren Anzahl am geringsten ist.
         // #534 Anzahl max Merkmalwerte erreicht?
         if (false&&$attributeValueLimit > 0) {

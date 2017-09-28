@@ -6996,7 +6996,7 @@ if (!function_exists('array_flatten')) {
         if (!is_array($array)) {
             return false;
         }
-        $result = array();
+        $result = [];
         foreach ($array as $key => $value) {
             if (is_array($value)) {
                 $result = array_merge($result, array_flatten($value));

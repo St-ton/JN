@@ -43,10 +43,10 @@
         <div class=" row">
             {if !empty($oNewsUebersicht->cPreviewImageFull)}
                 <div class="col-sm-4 col-xs-12">
-                    <a href="{$oNewsUebersicht->cURLFull}" title="{$oNewsUebersicht->cBetreff}">
+                    <a href="{$oNewsUebersicht->cURLFull}" title="{$oNewsUebersicht->cBetreff|escape:'quotes'}">
                         <img src="{$ShopURL}/{$oNewsUebersicht->cPreviewImage}"
-                             alt="{$oNewsUebersicht->cBetreff} - {$oNewsUebersicht->cMetaTitle}"
-                             title="{$oNewsUebersicht->cMetaTitle}" class="img-responsive center-block"/>
+                             alt="{$oNewsUebersicht->cBetreff|escape:'quotes'} - {$oNewsUebersicht->cMetaTitle|escape:'quotes'}"
+                             class="img-responsive center-block"/>
                         <meta itemprop="image" content="{$ShopURL}/{$oNewsUebersicht->cPreviewImage}">
                     </a>
                 </div>

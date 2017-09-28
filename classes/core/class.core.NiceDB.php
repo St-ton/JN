@@ -111,6 +111,8 @@ class NiceDB
      */
     public function __construct($dbHost, $dbUser, $dbPass, $dbName, $debugOverride = false)
     {
+        $options      = [];
+        $dsn          = 'mysql:dbname=' . $dbName;
         $this->config = [
             'driver'   => 'mysql',
             'host'     => $dbHost,
@@ -119,8 +121,6 @@ class NiceDB
             'password' => $dbPass,
             'charset'  => 'latin1',
         ];
-        $options = [];
-        $dsn     = 'mysql:dbname=' . $dbName;
         if (defined('DB_SOCKET')) {
             $dsn .= ';unix_socket=' . DB_SOCKET;
         } else {
@@ -155,7 +155,7 @@ class NiceDB
                     $this->debugLevel = (int)DEBUG_LEVEL;
                 }
                 if (defined('PROFILE_QUERIES_ACTIVATION_FUNCTION') && is_callable(PROFILE_QUERIES_ACTIVATION_FUNCTION)) {
-                    $this->collectData = (bool) call_user_func(PROFILE_QUERIES_ACTIVATION_FUNCTION);
+                    $this->collectData = (bool)call_user_func(PROFILE_QUERIES_ACTIVATION_FUNCTION);
                 } elseif (PROFILE_QUERIES === true) {
                     $this->debug = true;
                 }
@@ -302,8 +302,11 @@ class NiceDB
      * @param null|array $backtrace
      * @return $this
      */
-    private function analyzeQuery($type = '', $stmt, $time = 0, $backtrace = null)
+    private function analyzeQuery($type, $stmt, $time = 0, $backtrace = null)
     {
+        if (!isset($type)) {
+            $type = '';
+        }
         $explain = 'EXPLAIN ' . $stmt;
         try {
             $res = $this->pdo->query($explain);
@@ -323,8 +326,7 @@ class NiceDB
                 if (!isset($_bt['function'])) {
                     $_bt['function'] = '';
                 }
-                if (
-                    isset($_bt['file']) &&
+                if (isset($_bt['file']) &&
                     !($_bt['class'] === 'NiceDB' && $_bt['function'] === '__call') &&
                     strpos($_bt['file'], 'class.core.NiceDB.php') === false
                 ) {
@@ -662,7 +664,7 @@ class NiceDB
             $keynamePrepared = array_map(function ($_v) {
                 return $_v . '=?';
             }, $keyname);
-            $where   = ' WHERE ' . implode(' AND ', $keynamePrepared);
+            $where = ' WHERE ' . implode(' AND ', $keynamePrepared);
             foreach ($keyvalue as $_v) {
                 $assigns[] = $_v;
             }
@@ -756,8 +758,7 @@ class NiceDB
         $keyvalue2 = null,
         $echo = false,
         $select = '*'
-    )
-    {
+    ) {
         $start   = ($this->debug === true || $this->collectData === true)
             ? microtime(true)
             : 0;
@@ -767,7 +768,7 @@ class NiceDB
         $i       = 0;
         foreach ($keys as &$_key) {
             if ($_key !== null) {
-                $_key .= '=?';
+                $_key     .= '=?';
                 $assigns[] = $values[$i];
             } else {
                 unset($keys[$i]);
@@ -816,9 +817,9 @@ class NiceDB
             if ($this->debug === true || $this->collectData === true) {
                 $start = microtime(true);
             }
-            $keys    = is_array($keyname) ? $keyname : [$keyname, $keyname1, $keyname2];
-            $values  = is_array($keyvalue) ? $keyvalue : [$keyvalue, $keyvalue1, $keyvalue2];
-            $i       = 0;
+            $keys   = is_array($keyname) ? $keyname : [$keyname, $keyname1, $keyname2];
+            $values = is_array($keyvalue) ? $keyvalue : [$keyvalue, $keyvalue1, $keyvalue2];
+            $i      = 0;
             foreach ($keys as &$k) {
                 if ($k !== null) {
                     $k .= '=';
@@ -857,9 +858,9 @@ class NiceDB
      */
     public function selectArray($tableName, $keys, $values, $select = '*', $orderBy = '', $limit = '')
     {
-        $keys         = is_array($keys) ? $keys : [$keys];
-        $values       = is_array($values) ? $values : [$values];
-        $kv           = [];
+        $keys   = is_array($keys) ? $keys : [$keys];
+        $values = is_array($values) ? $values : [$values];
+        $kv     = [];
         if (count($keys) !== count($values)) {
             throw new InvalidArgumentException('Number of keys must be equal to number of given keys. Got ' .
                 count($keys) . ' key(s) and ' . count($values) . ' value(s).');
@@ -1048,7 +1049,7 @@ class NiceDB
                 $ret = $res->rowCount();
                 break;
             case 7:
-                $id = $this->pdo->lastInsertId();
+                $id  = $this->pdo->lastInsertId();
                 $ret = ($id > 0) ? $id : 1;
                 break;
             case 8:
@@ -1107,7 +1108,8 @@ class NiceDB
         if (is_array($keyname) && is_array($keyvalue)) {
             if (count($keyname) !== count($keyvalue)) {
                 if ($this->logErrors && $this->logfileName) {
-                    $this->writeLog('deleteRow: ' .
+                    $this->writeLog(
+                        'deleteRow: ' .
                         'Anzahl an Schluesseln passt nicht zu Anzahl an Werten - ' .
                         'Tablename:' . $tableName
                     );
@@ -1118,7 +1120,7 @@ class NiceDB
             $keyname = array_map(function ($_v) {
                 return $_v . '=?';
             }, $keyname);
-            $where   = implode(' AND ', $keyname);
+            $where = implode(' AND ', $keyname);
             foreach ($keyvalue as $_v) {
                 $assigns[] = $_v;
             }

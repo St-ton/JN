@@ -347,123 +347,121 @@ class FilterItemAttribute extends FilterBaseAttribute
         );
         $currentAttributeValue = $this->naviFilter->getAttributeValue()->getValue();
         $additionalFilter      = new self($this->naviFilter);
-        foreach ($qryRes as $i => $oMerkmalFilterDB) {
-            if ($oMerkmalFilterDB->nAnzahl < 1)  {
-                continue;
-            }
-            $attributeValue                   = (new FilterExtra())
-                ->setType((int)$oMerkmalFilterDB->nMehrfachauswahl === 1
-                    ? AbstractFilter::FILTER_TYPE_OR
-                    : AbstractFilter::FILTER_TYPE_AND)
-                ->setClassName($this->getClassName())
-                ->setParam($this->getUrlParam())
-                ->setName(htmlentities($oMerkmalFilterDB->cWert))
-                ->setValue($oMerkmalFilterDB->cWert)
-                ->setCount($oMerkmalFilterDB->nAnzahl);
 
-            $attributeValue->kMerkmalWert = (int)$oMerkmalFilterDB->kMerkmalWert;
-            $attributeValue->kMerkmal = (int)$oMerkmalFilterDB->kMerkmal;
-            $attributeValue->cWert        = $oMerkmalFilterDB->cWert;
-            $attributeValue->setIsActive($currentAttributeValue === $attributeValue->kMerkmalWert
-                || $this->attributeValueIsActive($attributeValue->kMerkmalWert));
-
-            if (strlen($oMerkmalFilterDB->cMMWBildPfad) > 0) {
-                $attributeValue->cBildpfadKlein  = PFAD_MERKMALWERTBILDER_KLEIN . $oMerkmalFilterDB->cMMWBildPfad;
-                $attributeValue->cBildpfadNormal = PFAD_MERKMALWERTBILDER_NORMAL . $oMerkmalFilterDB->cMMWBildPfad;
-            } else {
-                $attributeValue->cBildpfadKlein = BILD_KEIN_MERKMALWERTBILD_VORHANDEN;
-                $attributeValue->cBildpfadGross = BILD_KEIN_MERKMALWERTBILD_VORHANDEN;
+        // get unique attributes from query result
+        $checked = [];
+        $attributeFilterCollection = [];
+        foreach ($qryRes as $attributeValue) {
+            $attributeValue->kMerkmal = (int)$attributeValue->kMerkmal;
+            $attributeValue->nAnzahl = (int)$attributeValue->nAnzahl;
+            $attributeValue->nMehrfachauswahl = (int)$attributeValue->nMehrfachauswahl;
+            if (!in_array($attributeValue->kMerkmal, $checked, true)) {
+                $attribute = new stdClass();
+                $attribute->kMerkmal = $attributeValue->kMerkmal;
+                $attribute->cName = $attributeValue->cName;
+                $attribute->cMMBildPfad = $attributeValue->cMMBildPfad;
+                $attribute->cTyp = $attributeValue->cTyp;
+                $attribute->nMehrfachauswahl = (int)$attributeValue->nMehrfachauswahl;
+                $attribute->attributeValues = [];
+                $attributeFilterCollection[$attributeValue->kMerkmal] = $attribute;
             }
-            // baue URL
-            $attributeValueURL = $this->naviFilter->getURL(
-                true,
-                $additionalFilter->init((int)$oMerkmalFilterDB->kMerkmalWert)
-            );
-            // hack for #4815
-            $seoURL = $additionalFilter->getSeo($this->getLanguageID());
-            if (!empty($seoURL) && $attributeValue->isActive()) {
-                // remove '__attrY' from '<url>attrX__attrY'
-                $newURL = str_replace('__' . $seoURL, '', $attributeValueURL);
-                // remove 'attrY__' from '<url>attrY__attrX'
-                $newURL              = str_replace($seoURL . '__', '', $newURL);
-                $attributeValueURL = $newURL;
+            unset($attributeValue->nMehrfachauswahl, $attributeValue->cMMBildPfad, $attributeValue->cName, $attributeValue->cTyp);
+        }
+        // add attribute values to corresponding attributes
+        foreach ($qryRes as $attributeValue) {
+            if ($attributeValue->nAnzahl >= 1) {
+                $attributeFilterCollection[$attributeValue->kMerkmal]->attributeValues[] = $attributeValue;
             }
-            $attributeValue->setURL($attributeValueURL);
-
-            // we get attribute values from the db - not attributes.
-            // so we have to group them by unique attributes
-            $attribute = null;
-            foreach ($attributeFilters as $attributeFilter) {
-                if ($attributeFilter->kMerkmal === (int)$oMerkmalFilterDB->kMerkmal) {
-                    $attribute = $attributeFilter;
-                    break;
-                }
-            }
-            if ($attribute === null) {
-                $attribute                    = (new FilterExtra())
-                    ->setType($this->getType())
-                    ->setClassName($this->getClassName())
-                    ->setParam($this->getUrlParam())
-                    ->setName($oMerkmalFilterDB->cName)
-                    ->setFrontendName($oMerkmalFilterDB->cName)
-                    ->setValue((int)$oMerkmalFilterDB->kMerkmal)
-                    ->setCount(0)
-                    ->setURL('');
-
-                if (strlen($oMerkmalFilterDB->cMMBildPfad) > 0) {
-                    $attributeValue->cBildpfadKlein  = PFAD_MERKMALBILDER_KLEIN . $oMerkmalFilterDB->cMMBildPfad;
-                    $attributeValue->cBildpfadNormal = PFAD_MERKMALBILDER_NORMAL . $oMerkmalFilterDB->cMMBildPfad;
-                } else {
-                    $attributeValue->cBildpfadKlein = BILD_KEIN_MERKMALBILD_VORHANDEN;
-                    $attributeValue->cBildpfadGross = BILD_KEIN_MERKMALBILD_VORHANDEN;
-                }
-
-                $attribute->cName             = $oMerkmalFilterDB->cName;
-                $attribute->cSeo              = $oMerkmalFilterDB->cSeo;
-                $attribute->cTyp              = $oMerkmalFilterDB->cTyp;
-                $attribute->kMerkmal          = (int)$oMerkmalFilterDB->kMerkmal;
-                $attribute->kMerkmalWert      = (int)$oMerkmalFilterDB->kMerkmalWert;
-                $attribute->isInitialized     = in_array($attribute->kMerkmalWert, $activeValues, true);
-                $attribute->oMerkmalWerte_arr = [];
-                if (strlen($oMerkmalFilterDB->cMMBildPfad) > 0) {
-                    $attribute->cBildpfadKlein  = PFAD_MERKMALBILDER_KLEIN . $oMerkmalFilterDB->cMMBildPfad;
-                    $attribute->cBildpfadNormal = PFAD_MERKMALBILDER_NORMAL . $oMerkmalFilterDB->cMMBildPfad;
-                } else {
-                    $attribute->cBildpfadKlein = BILD_KEIN_MERKMALBILD_VORHANDEN;
-                    $attribute->cBildpfadGross = BILD_KEIN_MERKMALBILD_VORHANDEN;
-                }
-                $attribute->setType((int)$oMerkmalFilterDB->nMehrfachauswahl === 1
-                    ? AbstractFilter::FILTER_TYPE_OR
-                    : AbstractFilter::FILTER_TYPE_AND
-                );
-                $attributeFilters[] = $attribute;
-            }
-            // #533 Anzahl max Merkmale erreicht?
-            if ($attributeLimit > 0 && count($attributeFilters) >= $attributeLimit) {
-                continue;
-            }
-            $attribute->options[] = $attributeValue;
         }
 
-        foreach ($attributeFilters as $attributeFilter) {
-            $attributeFilter->setCount(count($attributeFilter->getOptions()));
+        foreach ($attributeFilterCollection as $attributeFilter) {
+
+            $attribute                    = (new FilterExtra())
+                ->setType($this->getType())
+                ->setClassName($this->getClassName())
+                ->setParam($this->getUrlParam())
+                ->setName($attributeFilter->cName)
+                ->setFrontendName($attributeFilter->cName)
+                ->setValue($attributeFilter->kMerkmal)
+                ->setCount(0)
+                ->setURL('');
+
+            $attribute->cName             = $attributeFilter->cName;
+            $attribute->cTyp              = $attributeFilter->cTyp;
+            $attribute->kMerkmal          = $attributeFilter->kMerkmal;
+            $attribute->isInitialized     = in_array($attribute->kMerkmalWert, $activeValues, true);
+            $attribute->oMerkmalWerte_arr = [];
+            if (strlen($attributeFilter->cMMBildPfad) > 0) {
+                $attribute->cBildpfadKlein  = PFAD_MERKMALBILDER_KLEIN . $attributeFilter->cMMBildPfad;
+                $attribute->cBildpfadNormal = PFAD_MERKMALBILDER_NORMAL . $attributeFilter->cMMBildPfad;
+            } else {
+                $attribute->cBildpfadKlein = BILD_KEIN_MERKMALBILD_VORHANDEN;
+                $attribute->cBildpfadGross = BILD_KEIN_MERKMALBILD_VORHANDEN;
+            }
+            $attribute->setType($attributeFilter->nMehrfachauswahl === 1
+                ? AbstractFilter::FILTER_TYPE_OR
+                : AbstractFilter::FILTER_TYPE_AND
+            );
+            foreach ($attributeFilter->attributeValues as $filterValue) {
+                $attributeValue                   = (new FilterExtra())
+                    ->setType($attributeFilter->nMehrfachauswahl === 1
+                        ? AbstractFilter::FILTER_TYPE_OR
+                        : AbstractFilter::FILTER_TYPE_AND)
+                    ->setClassName($this->getClassName())
+                    ->setParam($this->getUrlParam())
+                    ->setName(htmlentities($filterValue->cWert))
+                    ->setValue($filterValue->cWert)
+                    ->setCount($filterValue->nAnzahl);
+
+                $attributeValue->kMerkmalWert = $filterValue->kMerkmalWert;
+                $attributeValue->kMerkmal = $attributeFilter->kMerkmal;
+                $attributeValue->cWert        = $filterValue->cWert;
+                $attributeValue->setIsActive($currentAttributeValue === $attributeValue->kMerkmalWert
+                    || $this->attributeValueIsActive($attributeValue->kMerkmalWert));
+
+                if (strlen($filterValue->cMMWBildPfad) > 0) {
+                    $attributeValue->cBildpfadKlein  = PFAD_MERKMALWERTBILDER_KLEIN . $filterValue->cMMWBildPfad;
+                    $attributeValue->cBildpfadNormal = PFAD_MERKMALWERTBILDER_NORMAL . $filterValue->cMMWBildPfad;
+                } else {
+                    $attributeValue->cBildpfadKlein = BILD_KEIN_MERKMALWERTBILD_VORHANDEN;
+                    $attributeValue->cBildpfadGross = BILD_KEIN_MERKMALWERTBILD_VORHANDEN;
+                }
+                // baue URL
+                $attributeValueURL = $this->naviFilter->getURL(
+                    true,
+                    $additionalFilter->init($filterValue->kMerkmalWert)
+                );
+                // hack for #4815
+                $seoURL = $additionalFilter->getSeo($this->getLanguageID());
+                if (!empty($seoURL) && $attributeValue->isActive()) {
+                    // remove '__attrY' from '<url>attrX__attrY'
+                    $newURL = str_replace('__' . $seoURL, '', $attributeValueURL);
+                    // remove 'attrY__' from '<url>attrY__attrX'
+                    $newURL              = str_replace($seoURL . '__', '', $newURL);
+                    $attributeValueURL = $newURL;
+                }
+                $attributeValue->setURL($attributeValueURL);
+                $attribute->options[] = $attributeValue;
+            }
+            $attribute->setCount(count($attribute->getOptions()));
+            $attributeFilters[] = $attribute;
         }
         // Filter durchgehen und die Merkmalwerte entfernen, die zuviel sind und deren Anzahl am geringsten ist.
         // #534 Anzahl max Merkmalwerte erreicht?
-        if (false&&$attributeValueLimit > 0) {
+        if ($attributeValueLimit > 0) {
             foreach ($attributeFilters as $o => $oMerkmalFilter) {
-                while (count($attributeFilters[$o]->oMerkmalWerte_arr) > $attributeValueLimit) {
+                while (count($oMerkmalFilter->options) > $attributeValueLimit) {
                     $nMinAnzahl = 999999;
                     $nIndex     = -1;
-                    foreach ($attributeFilters[$o]->oMerkmalWerte_arr as $l => $attributeValues) {
+                    foreach ($oMerkmalFilter->options as $l => $attributeValues) {
                         if ($attributeValues->nAnzahl < $nMinAnzahl) {
                             $nMinAnzahl = (int)$attributeValues->nAnzahl;
                             $nIndex     = $l;
                         }
                     }
                     if ($nIndex >= 0) {
-                        unset($oMerkmalFilter->oMerkmalWerte_arr[$nIndex]);
-                        $oMerkmalFilter->oMerkmalWerte_arr = array_merge($oMerkmalFilter->oMerkmalWerte_arr);
+                        unset($oMerkmalFilter->options[$nIndex]);
+                        $oMerkmalFilter->options = array_merge($oMerkmalFilter->options);
                     }
                 }
             }

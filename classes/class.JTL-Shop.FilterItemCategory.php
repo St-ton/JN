@@ -42,9 +42,9 @@ class FilterItemCategory extends FilterBaseCategory
      */
     public function getSQLJoin()
     {
-        $join = new FilterJoin();
-        $join->setComment('join from FilterItemCategory')
-             ->setType('JOIN');
+        $join = (new FilterJoin())
+            ->setComment('join from FilterItemCategory')
+            ->setType('JOIN');
         if ($this->getConfig()['navigationsfilter']['kategoriefilter_anzeigen_als'] === 'HF') {
             $join->setTable('(
                 SELECT tkategorieartikel.kArtikel, oberkategorie.kOberKategorie, oberkategorie.kKategorie
@@ -57,10 +57,9 @@ class FilterItemCategory extends FilterBaseCategory
                     ) tkategorieartikelgesamt')
                  ->setOn('tartikel.kArtikel = tkategorieartikelgesamt.kArtikel');
         }
-        $join->setTable('tkategorieartikel')
-             ->setOn('tartikel.kArtikel = tkategorieartikel.kArtikel');
 
-        return $join;
+        return $join->setTable('tkategorieartikel')
+                    ->setOn('tartikel.kArtikel = tkategorieartikel.kArtikel');
     }
 
     /**
@@ -172,7 +171,7 @@ class FilterItemCategory extends FilterBaseCategory
             );
             $additionalFilter = new self($this->naviFilter);
             foreach ($categories as $category) {
-                // Anzeigen als KategoriePfad
+                // Anzeigen als Kategoriepfad
                 if ($categoryFilterType === 'KP') {
                     $category->cName = gibKategoriepfad(
                         new Kategorie($category->kKategorie, $this->getLanguageID(), $this->getCustomerGroupID()),
@@ -195,7 +194,7 @@ class FilterItemCategory extends FilterBaseCategory
                 $fe->kKategorie = (int)$category->kKategorie;
                 $options[]      = $fe;
             }
-            //neue Sortierung
+            // neue Sortierung
             if ($categoryFilterType === 'KP') {
                 usort($options, function ($a, $b) {
                     /** @var FilterExtra $a */

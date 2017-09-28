@@ -917,6 +917,43 @@ class NiceDB implements Serializable
     }
 
     /**
+     * @param string $stmt
+     * @param array  $params
+     * @return Generator|int
+     */
+    public function executeYield($stmt, array $params = [])
+    {
+        try {
+            $res  = $this->pdo->prepare($stmt);
+            $stmt = $this->readableQuery($stmt, $params);
+            foreach ($params as $k => $v) {
+                $this->_bind($res, $k, $v);
+            }
+            if ($res->execute() === false) {
+                return 0;
+            }
+        } catch (PDOException $e) {
+            if (defined('NICEDB_EXCEPTION_ECHO') && NICEDB_EXCEPTION_ECHO === true) {
+                Shop::dbg($stmt, false, 'Exception when trying to execute query: ');
+                Shop::dbg($e->getMessage(), false, 'Exception:');
+            }
+
+            if (defined('NICEDB_EXCEPTION_BACKTRACE') && NICEDB_EXCEPTION_BACKTRACE === true) {
+                Shop::dbg(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS), false, 'Backtrace:');
+            }
+
+            if ($this->transactionCount > 0) {
+                throw $e;
+            }
+
+            return 0;
+        }
+        while (($row = $res->fetchObject()) !== false) {
+            yield $row;
+        }
+    }
+
+    /**
      * executes query and returns misc data
      *
      * @access protected

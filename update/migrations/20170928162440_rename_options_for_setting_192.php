@@ -22,7 +22,7 @@
  */
 class Migration_20170928162440 extends Migration implements IMigration
 {
-    protected $author      = 'fpr';
+    protected $author      = 'fp';
     protected $description = 'Rename options for setting 192';
 
     public function up()

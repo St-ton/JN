@@ -1,9 +1,6 @@
 [submodule "includes/plugins/jtl_debug"]
 	path = includes/plugins/jtl_debug
 	url = git@gitlab.jtl-software.de:jtlshop/jtldebug.git
-[submodule "includes/plugins/jtl_example_plugin"]
-	path = includes/plugins/jtl_example_plugin
-	url = git@gitlab.jtl-software.de:jtlshop/exampleplugin.git
 [submodule "includes/plugins/jtl_widgets"]
 	path = includes/plugins/jtl_widgets
 	url = git@gitlab.jtl-software.de:jtlshop/JTLWidgets.git

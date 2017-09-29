@@ -1,4 +1,4 @@
-{if $BoxenEinstellungen.navigationsfilter.merkmalfilter_verwenden === 'box'} && isset($Suchergebnisse) && $Suchergebnisse->MerkmalFilter|@count > 0}
+{if $BoxenEinstellungen.navigationsfilter.merkmalfilter_verwenden === 'box' && isset($Suchergebnisse->MerkmalFilter) && $Suchergebnisse->MerkmalFilter|@count > 0}
     {foreach name=merkmalfilter from=$Suchergebnisse->MerkmalFilter item=Merkmal}
         {assign var=kMerkmal value=$Merkmal->kMerkmal}
         <section class="panel panel-default box box-filter-characteristics">

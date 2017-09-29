@@ -5321,10 +5321,12 @@ function pruefeKampagnenParameter()
             // Wurde für die aktuelle Kampagne der Parameter via GET oder POST uebergeben?
             if (strlen(verifyGPDataString($oKampagne->cParameter)) > 0) {
                 // Wurde bei nicht dynamischen Kampagnen der richtige Wert uebergeben?
-                if (isset($oKampagne->nDynamisch) && ((int)$oKampagne->nDynamisch === 1 ||
-                        ((int)$oKampagne->nDynamisch === 0 &&
-                            isset($oKampagne->cWert) &&
-                            strtolower($oKampagne->cWert) === strtolower(verifyGPDataString($oKampagne->cParameter))))
+                if (isset($oKampagne->nDynamisch)
+                    && ((int)$oKampagne->nDynamisch === 1
+                        || ((int)$oKampagne->nDynamisch === 0
+                            && isset($oKampagne->cWert)
+                            && strtolower($oKampagne->cWert) === strtolower(verifyGPDataString($oKampagne->cParameter)))
+                    )
                 ) {
                     $referrer = gibReferer();
                     //wurde der HIT für diesen Besucher schon gezaehlt?
@@ -5354,7 +5356,6 @@ function pruefeKampagnenParameter()
 
                         Shop::DB()->insert('tkampagnevorgang', $oKampagnenVorgang);
                         // Kampagnenbesucher in die Session
-                        $_SESSION['Kampagnenbesucher']        = new stdClass();
                         $_SESSION['Kampagnenbesucher']        = $oKampagne;
                         $_SESSION['Kampagnenbesucher']->cWert = $oKampagnenVorgang->cParamWert;
 
@@ -6328,11 +6329,11 @@ function urlNotFoundRedirect(array $hookInfos = null, $forceExit = false)
 function getDeliverytimeEstimationText($minDeliveryDays, $maxDeliveryDays)
 {
     $deliveryText = ($minDeliveryDays === $maxDeliveryDays) ? str_replace(
-        '#DELIVERYDAYS#', $minDeliveryDays, Shop::Lang()->get('deliverytimeEstimationSimple', 'global')
+        '#DELIVERYDAYS#', $minDeliveryDays, Shop::Lang()->get('deliverytimeEstimationSimple')
     ) : str_replace(
         ['#MINDELIVERYDAYS#', '#MAXDELIVERYDAYS#'],
         [$minDeliveryDays, $maxDeliveryDays],
-        Shop::Lang()->get('deliverytimeEstimation', 'global')
+        Shop::Lang()->get('deliverytimeEstimation')
     );
 
     executeHook(HOOK_GET_DELIVERY_TIME_ESTIMATION_TEXT, [
@@ -6353,9 +6354,7 @@ function reCaptchaConfigured()
 {
     $settings = Shop::getSettings([CONF_GLOBAL]);
 
-    return isset($settings['global']['global_google_recaptcha_private'])
-        && isset($settings['global']['global_google_recaptcha_public'])
-        && !empty($settings['global']['global_google_recaptcha_private'])
+    return !empty($settings['global']['global_google_recaptcha_private'])
         && !empty($settings['global']['global_google_recaptcha_public']);
 }
 
@@ -6402,12 +6401,13 @@ function validateCaptcha(array $requestData)
     // oder ausgeschaltetem Captcha nicht notwendig
     if (!empty($_SESSION['Kunde']->kKunde)
         || (isset($_SESSION['bAnti_spam_already_checked']) && $_SESSION['bAnti_spam_already_checked'] === true)
-        || $confGlobal['global']['anti_spam_method'] === 'N') {
+        || $confGlobal['global']['anti_spam_method'] === 'N'
+    ) {
         return true;
     }
 
     // Captcha Prüfung für reCaptcha ist nicht möglich, wenn keine Konfiguration hinterlegt ist
-    if ($confGlobal['global']['anti_spam_method'] == 7 && !$reCaptcha) {
+    if (!$reCaptcha && (int)$confGlobal['global']['anti_spam_method'] === 7) {
         return true;
     }
 
@@ -6415,7 +6415,7 @@ function validateCaptcha(array $requestData)
     // $confGlobal['global']['anti_spam_method'] angegeben ist.
     if ($reCaptcha) {
         $valid = validateReCaptcha($requestData['g-recaptcha-response']);
-    } elseif ($confGlobal['global']['anti_spam_method'] == 5) {
+    } elseif ((int)$confGlobal['global']['anti_spam_method'] === 5) {
         $valid = validToken();
     } elseif (isset($requestData['captcha'], $requestData['md5'])) {
         $valid = $requestData['md5'] === md5(PFAD_ROOT . $requestData['captcha']);
@@ -6991,6 +6991,10 @@ if (!function_exists('dd')) {
 }
 
 if (!function_exists('array_flatten')) {
+    /**
+     * @param array $array
+     * @return array|bool
+     */
     function array_flatten($array)
     {
         if (!is_array($array)) {
@@ -7004,6 +7008,7 @@ if (!function_exists('array_flatten')) {
                 $result[$key] = $value;
             }
         }
+
         return $result;
     }
 }

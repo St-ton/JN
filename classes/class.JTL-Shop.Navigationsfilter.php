@@ -841,6 +841,25 @@ class Navigationsfilter
     }
 
     /**
+     * get filters that can be displayed at content level
+     *
+     * @return array|IFilter[]
+     */
+    public function getAvailableContentFilters()
+    {
+        return array_filter(
+            $this->filters,
+            function ($f) {
+                /** @var IFilter $f */
+                return ($f->getVisibility() === AbstractFilter::SHOW_ALWAYS
+                        || $f->getVisibility() === AbstractFilter::SHOW_CONTENT)
+                    && count($f->getOptions()) > 0
+                    && (!$f->isInitialized() || $f->getType() === AbstractFilter::FILTER_TYPE_OR);
+            }
+        );
+    }
+
+    /**
      * @return int
      */
     public function getFilterCount()

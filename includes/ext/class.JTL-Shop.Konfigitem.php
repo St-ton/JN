@@ -602,7 +602,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 }
                 $fVKPreis *= (float)$waehrung->fFaktor;
             }
-            if (!$_SESSION['Kundengruppe']->nNettoPreise && !$bForceNetto) {
+            if (!$bForceNetto && !Session::CustomerGroup()->getIsMerchant()) {
                 $fVKPreis = berechneBrutto($fVKPreis, gibUst($this->getSteuerklasse()), 4);
             }
 

@@ -659,22 +659,21 @@ final class Shop
      */
     public static function run()
     {
-        self::$kKonfigPos            = verifyGPCDataInteger('ek');
-        self::$kKategorie            = verifyGPCDataInteger('k');
-        self::$kArtikel              = verifyGPCDataInteger('a');
-        self::$kVariKindArtikel      = verifyGPCDataInteger('a2');
-        self::$kSeite                = verifyGPCDataInteger('s');
-        self::$kLink                 = verifyGPCDataInteger('s');
-        self::$kHersteller           = verifyGPCDataInteger('h');
-        self::$kSuchanfrage          = verifyGPCDataInteger('l');
-        self::$kMerkmalWert          = verifyGPCDataInteger('m');
-        self::$kTag                  = verifyGPCDataInteger('t');
-        self::$kSuchspecial          = verifyGPCDataInteger('q');
-        self::$kNews                 = verifyGPCDataInteger('n');
-        self::$kNewsMonatsUebersicht = verifyGPCDataInteger('nm');
-        self::$kNewsKategorie        = verifyGPCDataInteger('nk');
-        self::$kUmfrage              = verifyGPCDataInteger('u');
-
+        self::$kKonfigPos             = verifyGPCDataInteger('ek');
+        self::$kKategorie             = verifyGPCDataInteger('k');
+        self::$kArtikel               = verifyGPCDataInteger('a');
+        self::$kVariKindArtikel       = verifyGPCDataInteger('a2');
+        self::$kSeite                 = verifyGPCDataInteger('s');
+        self::$kLink                  = verifyGPCDataInteger('s');
+        self::$kHersteller            = verifyGPCDataInteger('h');
+        self::$kSuchanfrage           = verifyGPCDataInteger('l');
+        self::$kMerkmalWert           = verifyGPCDataInteger('m');
+        self::$kTag                   = verifyGPCDataInteger('t');
+        self::$kSuchspecial           = verifyGPCDataInteger('q');
+        self::$kNews                  = verifyGPCDataInteger('n');
+        self::$kNewsMonatsUebersicht  = verifyGPCDataInteger('nm');
+        self::$kNewsKategorie         = verifyGPCDataInteger('nk');
+        self::$kUmfrage               = verifyGPCDataInteger('u');
         self::$nBewertungSterneFilter = verifyGPCDataInteger('bf');
         self::$cPreisspannenFilter    = verifyGPDataString('pf');
         self::$kHerstellerFilter      = verifyGPCDataInteger('hf');
@@ -719,12 +718,14 @@ final class Shop
         }
 
         self::$isInitialized = true;
-
         $redirect = verifyGPDataString('r');
         if (self::$kArtikel > 0) {
-            if (self::$kNews > 0 && !empty($redirect)) {
+            if (!empty($redirect)
+                && (self::$kNews > 0 // get param "n" was used a article amount
+                    || (isset($_GET['n']) && (float)$_GET['n'] > 0)) // article amount was a float >0 and <1
+            ){
                 //GET param "n" is often misused as "amount of article"
-                self::$kNews    = 0;
+                self::$kNews = 0;
                 if ((int)$redirect === R_LOGIN_WUNSCHLISTE) {
                     // login redirect on wishlist add when not logged in uses get param "n" as amount
                     // and "a" for the article ID - but we want to go to the login page, not to the article page

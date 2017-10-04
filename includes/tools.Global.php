@@ -598,8 +598,8 @@ function checkeWarenkorbEingang()
         'fAnzahl'  => $fAnzahl
     ]);
     // Wunschliste?
-    if ((isset($_POST['Wunschliste']) || isset($_GET['Wunschliste'])) &&
-        $conf['global']['global_wunschliste_anzeigen'] === 'Y'
+    if ((isset($_POST['Wunschliste']) || isset($_GET['Wunschliste']))
+        && $conf['global']['global_wunschliste_anzeigen'] === 'Y'
     ) {
         $linkHelper = LinkHelper::getInstance();
         // Prüfe ob Kunde eingeloggt
@@ -615,7 +615,7 @@ function checkeWarenkorbEingang()
             exit();
         }
 
-        if ($kArtikel > 0) {
+        if ($kArtikel > 0 && isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
             // Prüfe auf kArtikel
             $oArtikelVorhanden = Shop::DB()->select(
                 'tartikel',
@@ -769,10 +769,10 @@ function checkeWarenkorbEingang()
                 Shop::Smarty()->assign('fehler', Shop::Lang()->get('compareMaxlimit', 'errorMessages'));
             }
         }
-    } elseif (isset($_POST['wke']) &&
-        (int)$_POST['wke'] === 1 &&
-        !isset($_POST['Vergleichsliste']) &&
-        !isset($_POST['Wunschliste'])
+    } elseif (isset($_POST['wke'])
+        && (int)$_POST['wke'] === 1
+        && !isset($_POST['Vergleichsliste'])
+        && !isset($_POST['Wunschliste'])
     ) { //warenkorbeingang?
         // VariationsBox ist vorhanden => Prüfen ob Anzahl gesetzt wurde
         if (isset($_POST['variBox']) && (int)$_POST['variBox'] === 1) {
@@ -5315,7 +5315,7 @@ function mappeKundenanrede($cAnrede, $kSprache, $kKunde = 0)
 function pruefeKampagnenParameter()
 {
     $campaigns = Kampagne::getAvailable();
-    if (count($campaigns) > 0 && isset($_SESSION['oBesucher']) && $_SESSION['oBesucher']->kBesucher > 0) {
+    if (count($campaigns) > 0 && isset($_SESSION['oBesucher']->kBesucher) && $_SESSION['oBesucher']->kBesucher > 0) {
         $bKampagnenHit = false;
         foreach ($campaigns as $oKampagne) {
             // Wurde für die aktuelle Kampagne der Parameter via GET oder POST uebergeben?
@@ -5388,7 +5388,6 @@ function pruefeKampagnenParameter()
 
                     Shop::DB()->insert('tkampagnevorgang', $oKampagnenVorgang);
                     // Kampagnenbesucher in die Session
-                    $_SESSION['Kampagnenbesucher']        = new stdClass();
                     $_SESSION['Kampagnenbesucher']        = $oKampagne;
                     $_SESSION['Kampagnenbesucher']->cWert = $oKampagnenVorgang->cParamWert;
                 }

@@ -42,7 +42,6 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
         $session->setCustomer($Kunde);
     }
 }
-
 // Redirect - Falls jemand eine Aktion durchführt die ein Kundenkonto beansprucht und der Gast nicht einloggt ist,
 // wird dieser hier her umgeleitet und es werden die passenden Parameter erstellt.
 // Nach dem erfolgreichen einloggen wird die zuvor angestrebte Aktion durchgeführt.

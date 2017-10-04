@@ -451,17 +451,15 @@ function buildConfiguration($aValues)
     $quantities      = isset($aValues['quantity']) ? $aValues['quantity'] : [];
     $variationValues = isset($aValues['eigenschaftwert']) ? $aValues['eigenschaftwert'] : [];
     $oKonfig         = buildConfig($articleId, $aValues['anzahl'], $variationValues, $items, $quantities, []);
+    $net             = Session::CustomerGroup()->getIsMerchant();
     $Artikel->fuelleArtikel($articleId, null);
-    $Artikel->Preise->cVKLocalized[$_SESSION['Kundengruppe']->nNettoPreise]
-        = gibPreisStringLocalized($Artikel->Preise->fVK[$_SESSION['Kundengruppe']->nNettoPreise] * $aValues['anzahl'], 0, true);
-
+    $Artikel->Preise->cVKLocalized[$net]
+        = gibPreisStringLocalized($Artikel->Preise->fVK[$net] * $aValues['anzahl'], 0, true);
 
     $smarty->assign('oKonfig', $oKonfig)
-        ->assign('NettoPreise', $_SESSION['Kundengruppe']->nNettoPreise)
-        ->assign('Artikel', $Artikel);
-    $oKonfig->cTemplate = utf8_encode(
-        $smarty->fetch('productdetails/config_summary.tpl')
-    );
+           ->assign('NettoPreise', $net)
+           ->assign('Artikel', $Artikel);
+    $oKonfig->cTemplate = utf8_encode($smarty->fetch('productdetails/config_summary.tpl'));
 
     $oResponse->script('this.response = ' . json_encode($oKonfig) . ';');
 

@@ -1,7 +1,7 @@
-{assign var='show_filters' value=false}
-{if $Einstellungen.artikeluebersicht.suchfilter_anzeigen_ab == 0 || count($Suchergebnisse->Artikel->elemente) >= $Einstellungen.artikeluebersicht.suchfilter_anzeigen_ab || $NaviFilter->getFilterCount() > 0}
-    {assign var='show_filters' value=true}
-{/if}
+{assign var=contentFilters value=$NaviFilter->getAvailableContentFilters()}
+{assign var=show_filters value=$Einstellungen.artikeluebersicht.suchfilter_anzeigen_ab == 0
+        || count($Suchergebnisse->Artikel->elemente) >= $Einstellungen.artikeluebersicht.suchfilter_anzeigen_ab
+        || $NaviFilter->getFilterCount() > 0}
 <style>
     /*@todo: remove inline styles*/
     ul.no-dropdown {
@@ -13,6 +13,7 @@
         border-radius: 4px;
     }
 </style>
+
 <div id="result-options" class="panel-wrap{if !$show_filters} hidden-xs{/if}">
     <style>li span.value { padding-right:40px; }</style>
     <div class="row">
@@ -46,7 +47,7 @@
             {/if}
             {/block}
         </div>
-        {if $show_filters}
+        {if $show_filters && count($contentFilters) > 0}
             <div class="col-sm-4 col-sm-pull-8 filter-collapsible-control">
                 <a class="btn btn-default" data-toggle="collapse" href="#filter-collapsible" aria-expanded="true" aria-controls="filter-collapsible">
                     <span class="fa fa-filter"></span> {lang key='filterBy' section='global'}
@@ -56,25 +57,21 @@
         {/if}
     </div>{* /row *}
     {if $show_filters}
-        <div id="filter-collapsible" class="collapse in top10" aria-expanded="true">
-            <nav class="panel panel-default">
-                <div id="navbar-filter" class="panel-body">
-                    <div class="form-inline2">
-                        {foreach $NaviFilter->getAvailableFilters() as $filter}
-                            {if ($filter->getVisibility() === $filter::SHOW_ALWAYS || $filter->getVisibility() === $filter::SHOW_CONTENT)
-                                && (!$filter->isInitialized() || $filter->getType() === $filter::FILTER_TYPE_OR)}
+        {if count($contentFilters) > 0}
+            <div id="filter-collapsible" class="collapse in top10" aria-expanded="true">
+                <nav class="panel panel-default">
+                    <div id="navbar-filter" class="panel-body">
+                        <div class="form-inline2">
+                            {foreach $contentFilters as $filter}
                                 {if count($filter->getFilterCollection()) > 0}
-                                    {*classFilter1: {get_class($filter)}*}
                                     {block name='productlist-result-options-'|cat:$filter->getClassName()}
                                         {foreach $filter->getOptions() as $subFilter}
-                                            {*{if $subFilter->getVisibility() !== $filter::SHOW_NEVER}*}
-                                                <div class="form-group dropdown filter-type-{$filter->getClassName()}">
-                                                    <a href="#" class="btn btn-default dropdown-toggle form-control" data-toggle="dropdown" role="button" aria-expanded="false">
-                                                        {$subFilter->getFrontendName()} <span class="caret"></span>
-                                                    </a>
-                                                    {include file='snippets/filter/genericFilterItem.tpl' class='dropdown-menu' filter=$subFilter sub=true}
-                                                </div>
-                                            {*{/if}*}
+                                            <div class="form-group dropdown filter-type-{$filter->getClassName()}">
+                                                <a href="#" class="btn btn-default dropdown-toggle form-control" data-toggle="dropdown" role="button" aria-expanded="false">
+                                                    {$subFilter->getFrontendName()} <span class="caret"></span>
+                                                </a>
+                                                {include file='snippets/filter/genericFilterItem.tpl' class='dropdown-menu' filter=$subFilter sub=true}
+                                            </div>
                                         {/foreach}
                                     {/block}
                                 {else}
@@ -102,13 +99,13 @@
                                         </div>
                                     {/block}
                                 {/if}
-                            {/if}
-                        {/foreach}
-                    </div>{* /form-inline *}
-                </div>
-                {*/.navbar-collapse*}
-            </nav>
-        </div>
+                            {/foreach}
+                        </div>{* /form-inline2 *}
+                    </div>
+                    {*/.navbar-collapse*}
+                </nav>
+            </div>
+        {/if}
         {if $NaviFilter->getFilterCount() > 0}
             <div class="clearfix top10"></div>
             <div class="active-filters panel panel-default">

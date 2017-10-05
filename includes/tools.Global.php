@@ -174,7 +174,7 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
         case 'KONTAKT':
             $url                = $linkHelper->getStaticRoute('kontakt.php', false);
             $urlFull            = $linkHelper->getStaticRoute('kontakt.php');
-            $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('kontakt.php') . '">' .
+            $SieSindHierString .= ' &gt; <a href="' . $urlFull . '">' .
                 Shop::Lang()->get('contact', 'breadcrumb') . '</a>';
             $ele->name          = Shop::Lang()->get('contact', 'breadcrumb');
             $ele->url           = $url;
@@ -1115,18 +1115,11 @@ function fuegeVariBoxInWK($variBoxAnzahl_arr, $kArtikel, $bIstVater, $bExtern = 
 function pruefeVariBoxAnzahl($variBoxAnzahl_arr)
 {
     if (is_array($variBoxAnzahl_arr) && count($variBoxAnzahl_arr) > 0) {
-        $cKeys_arr = array_keys($variBoxAnzahl_arr);
         // Wurde die variBox überhaupt mit einer Anzahl gefüllt?
-        $bAnzahlEnthalten = false;
-        foreach ($cKeys_arr as $cKeys) {
+        foreach (array_keys($variBoxAnzahl_arr) as $cKeys) {
             if ((float)$variBoxAnzahl_arr[$cKeys] > 0) {
-                $bAnzahlEnthalten = true;
-                break;
+                return true;
             }
-        }
-
-        if ($bAnzahlEnthalten) {
-            return true;
         }
     }
 
@@ -1147,54 +1140,63 @@ function fuegeEinInWarenkorbPers($kArtikel, $fAnzahl, $oEigenschaftwerte_arr, $c
     if (!isset($_SESSION['Kunde']->kKunde)) {
         return;
     }
-    $kArtikel = (int)$kArtikel;
     // Pruefe Einstellungen fuer persistenten Warenkorb
     $conf = Shop::getSettings([CONF_GLOBAL]);
-    if ($conf['global']['warenkorbpers_nutzen'] === 'Y') {
-        // Persistenter Warenkorb
-        if ($kArtikel > 0) {
-            // Pruefe auf kArtikel
-            $oArtikelVorhanden = Shop::DB()->select(
-                'tartikel',
+    if ($conf['global']['warenkorbpers_nutzen'] !== 'Y') {
+        return;
+    }
+    $kArtikel = (int)$kArtikel;
+    // Persistenter Warenkorb
+    if ($kArtikel > 0) {
+        // Pruefe auf kArtikel
+        $oArtikelVorhanden = Shop::DB()->select(
+            'tartikel',
+            'kArtikel', $kArtikel,
+            null, null,
+            null, null,
+            false,
+            'kArtikel, cName'
+        );
+        // Falls Artikel vorhanden
+        if (isset($oArtikelVorhanden->kArtikel)) {
+            // Sichtbarkeit pruefen
+            $oSichtbarkeit = Shop::DB()->select(
+                'tartikelsichtbarkeit',
                 'kArtikel', $kArtikel,
-                null, null,
+                'kKundengruppe', Session::CustomerGroup()->getID(),
                 null, null,
                 false,
-                'kArtikel, cName'
+                'kArtikel'
             );
-            // Falls Artikel vorhanden
-            if (isset($oArtikelVorhanden->kArtikel)) {
-                // Sichtbarkeit pruefen
-                $oSichtbarkeit = Shop::DB()->select(
-                    'tartikelsichtbarkeit',
-                    'kArtikel', $kArtikel,
-                    'kKundengruppe', Session::CustomerGroup()->getID(),
-                    null, null,
-                    false,
-                    'kArtikel'
-                );
-                if (empty($oSichtbarkeit) || !isset($oSichtbarkeit->kArtikel) || !$oSichtbarkeit->kArtikel) {
-                    $oWarenkorbPers = new WarenkorbPers($_SESSION['Kunde']->kKunde);
-                    if ($nPosTyp === (int)C_WARENKORBPOS_TYP_GRATISGESCHENK) {
-                        $oWarenkorbPers->loescheGratisGeschenkAusWarenkorbPers();
-                    }
-                    $oWarenkorbPers->fuegeEin(
-                        $kArtikel,
-                        $oArtikelVorhanden->cName,
-                        $oEigenschaftwerte_arr,
-                        $fAnzahl,
-                        $cUnique,
-                        $kKonfigitem,
-                        $nPosTyp
-                    );
+            if (empty($oSichtbarkeit) || !isset($oSichtbarkeit->kArtikel) || !$oSichtbarkeit->kArtikel) {
+                $oWarenkorbPers = new WarenkorbPers($_SESSION['Kunde']->kKunde);
+                if ($nPosTyp === (int)C_WARENKORBPOS_TYP_GRATISGESCHENK) {
+                    $oWarenkorbPers->loescheGratisGeschenkAusWarenkorbPers();
                 }
+                $oWarenkorbPers->fuegeEin(
+                    $kArtikel,
+                    $oArtikelVorhanden->cName,
+                    $oEigenschaftwerte_arr,
+                    $fAnzahl,
+                    $cUnique,
+                    $kKonfigitem,
+                    $nPosTyp
+                );
             }
-        // Konfigitems ohne Artikelbezug
-        } elseif ($kArtikel === 0 && !empty($kKonfigitem)) {
-            $konfItem       = new Konfigitemsprache($kKonfigitem, Shop::getLanguage());
-            $oWarenkorbPers = new WarenkorbPers($_SESSION['Kunde']->kKunde);
-            $oWarenkorbPers->fuegeEin($kArtikel, $konfItem->getName(), $oEigenschaftwerte_arr, $fAnzahl, $cUnique, $kKonfigitem, $nPosTyp);
         }
+    } elseif ($kArtikel === 0 && !empty($kKonfigitem)) {
+        // Konfigitems ohne Artikelbezug
+        $konfItem       = new Konfigitemsprache($kKonfigitem, Shop::getLanguage());
+        $oWarenkorbPers = new WarenkorbPers($_SESSION['Kunde']->kKunde);
+        $oWarenkorbPers->fuegeEin(
+            $kArtikel,
+            $konfItem->getName(),
+            $oEigenschaftwerte_arr,
+            $fAnzahl,
+            $cUnique,
+            $kKonfigitem,
+            $nPosTyp
+        );
     }
 }
 
@@ -1253,7 +1255,6 @@ function pruefeFuegeEinInWarenkorb($Artikel, $anzahl, $oEigenschaftwerte_arr, $n
     $kArtikel      = $Artikel->kArtikel; // relevant für die Berechnung von Artikelsummen im Warenkorb
     $redirectParam = [];
     $conf          = Shop::getSettings([CONF_GLOBAL]);
-
     // Abnahmeintervall
     if ($Artikel->fAbnahmeintervall > 0) {
         $dVielfache = function_exists('bcdiv')
@@ -1304,8 +1305,8 @@ function pruefeFuegeEinInWarenkorb($Artikel, $anzahl, $oEigenschaftwerte_arr, $n
     // Preis auf Anfrage
     // verhindert, dass Konfigitems mit Preis=0 aus der Artikelkonfiguration fallen wenn 'Preis auf Anfrage' eingestellt ist
     if ($Artikel->bHasKonfig === false
-        && !empty($Artikel->isKonfigItem) &&
-        $Artikel->inWarenkorbLegbar === INWKNICHTLEGBAR_PREISAUFANFRAGE
+        && !empty($Artikel->isKonfigItem)
+        && $Artikel->inWarenkorbLegbar === INWKNICHTLEGBAR_PREISAUFANFRAGE
     ) {
         $Artikel->inWarenkorbLegbar = 1;
     }
@@ -1971,19 +1972,14 @@ function landISO($cLand)
  */
 function baueURL($obj, $art, $row = 0, $bForceNonSeo = false, $bFull = false)
 {
-    $lang   = ''; // muss umgebaut werden
+    $lang   = !standardspracheAktiv(true)
+        ? ('&lang=' . $_SESSION['cISOSprache'])
+        : '';
     $sid    = '';
     $cDatei = 'index.php';
     $prefix = $bFull === false ? '' : Shop::getURL() . '/';
-
-    if (!standardspracheAktiv(true)) {
-        $lang = '&lang=' . $_SESSION['cISOSprache'];
-    }
     if ($bForceNonSeo) {
         $obj->cSeo = '';
-    }
-    if (!$bForceNonSeo) {
-        $cDatei = 'index.php';
     }
     if ($art && $obj) {
         executeHook(HOOK_TOOLSGLOBAL_INC_SWITCH_BAUEURL, ['obj' => &$obj, 'art' => &$art]);
@@ -1994,14 +1990,14 @@ function baueURL($obj, $art, $row = 0, $bForceNonSeo = false, $bFull = false)
                 }
 
                 return $prefix . $cDatei . '?a=' . $obj->kArtikel . $lang . $sid;
-                break;
+
             case URLART_KATEGORIE:
                 if (isset($obj->cSeo) && $obj->cSeo && !$row) {
                     return $prefix . $obj->cSeo;
                 }
 
                 return $prefix . $cDatei . '?k=' . $obj->kKategorie . $lang . $sid;
-                break;
+
             case URLART_SEITE:
                 if (isset($_SESSION['cISOSprache'], $obj->cLocalizedSeo[$_SESSION['cISOSprache']]) &&
                     strlen($obj->cLocalizedSeo[$_SESSION['cISOSprache']]) && !$row
@@ -2019,63 +2015,62 @@ function baueURL($obj, $art, $row = 0, $bForceNonSeo = false, $bFull = false)
                 }
 
                 return $prefix . $cDatei . '?s=' . $obj->kLink . $lang . $sid;
-                break;
+
             case URLART_HERSTELLER:
                 if (isset($obj->cSeo) && $obj->cSeo && !$row) {
                     return $prefix . $obj->cSeo;
                 }
 
                 return $prefix . $cDatei . '?h=' . $obj->kHersteller . $lang . $sid;
-                break;
+
             case URLART_LIVESUCHE:
                 if (isset($obj->cSeo) && $obj->cSeo && !$row) {
                     return $prefix . $obj->cSeo;
                 }
 
                 return $prefix . $cDatei . '?l=' . $obj->kSuchanfrage . $lang . $sid;
-                break;
+
             case URLART_TAG:
                 if (isset($obj->cSeo) && $obj->cSeo && !$row) {
                     return $prefix . $obj->cSeo;
                 }
 
                 return $prefix . $cDatei . '?t=' . $obj->kTag . $lang . $sid;
-                break;
+
             case URLART_MERKMAL:
                 if (isset($obj->cSeo) && $obj->cSeo && !$row) {
                     return $prefix . $obj->cSeo;
                 }
 
                 return $prefix . $cDatei . '?m=' . $obj->kMerkmalWert . $lang . $sid;
-                break;
+
             case URLART_NEWS:
                 if (isset($obj->cSeo) && $obj->cSeo && !$row) {
                     return $prefix . $obj->cSeo;
                 }
 
                 return $prefix . $cDatei . '?n=' . $obj->kNews . $lang . $sid;
-                break;
+
             case URLART_NEWSMONAT:
                 if (isset($obj->cSeo) && $obj->cSeo && !$row) {
                     return $prefix . $obj->cSeo;
                 }
 
                 return $prefix . $cDatei . '?nm=' . $obj->kNewsMonatsUebersicht . $lang . $sid;
-                break;
+
             case URLART_NEWSKATEGORIE:
                 if (isset($obj->cSeo) && $obj->cSeo && !$row) {
                     return $prefix . $obj->cSeo;
                 }
 
                 return $prefix . $cDatei . '?nk=' . $obj->kNewsKategorie . $lang . $sid;
-                break;
+
             case URLART_UMFRAGE:
                 if (isset($obj->cSeo) && $obj->cSeo && !$row) {
                     return $prefix . $obj->cSeo;
                 }
 
                 return $prefix . $cDatei . '?u=' . $obj->kUmfrage . $lang . $sid;
-                break;
 
             case URLART_SEARCHSPECIALS:
                 if (isset($obj->cSeo) && $obj->cSeo && !$row) {
@@ -2083,7 +2078,6 @@ function baueURL($obj, $art, $row = 0, $bForceNonSeo = false, $bFull = false)
                 }
 
                 return $prefix . $cDatei . '?q=' . $obj->kSuchspecial . $lang . $sid;
-                break;
         }
     }
 
@@ -2099,86 +2093,88 @@ function baueSprachURLS($obj, $art)
 {
     $urls   = [];
     $seoobj = null;
-    if ($art && $obj && count($_SESSION['Sprachen']) > 0) {
-        foreach ($_SESSION['Sprachen'] as $Sprache) {
-            if ($Sprache->kSprache != $_SESSION['kSprache']) {
-                switch ($art) {
-                    case URLART_ARTIKEL:
-                        //@deprecated since 4.05 - this is now done within the article class itself
-                        if ($Sprache->cStandard !== 'Y') {
-                            $seoobj = Shop::DB()->query(
-                                "SELECT tseo.cSeo
-                                    FROM tartikelsprache
-                                    LEFT JOIN tseo ON tseo.cKey = 'kArtikel'
-                                        AND tseo.kKey = tartikelsprache.kArtikel
-                                        AND tseo.kSprache = " . (int)$Sprache->kSprache . "
-                                    WHERE tartikelsprache.kArtikel = " . (int)$obj->kArtikel . "
-                                    AND tartikelsprache.kSprache = " . (int)$Sprache->kSprache, 1
-                            );
-                        } else {
-                            $seoobj = Shop::DB()->query(
-                                "SELECT tseo.cSeo
-                                    FROM tartikel
-                                    LEFT JOIN tseo ON tseo.cKey = 'kArtikel'
-                                        AND tseo.kKey = tartikel.kArtikel
-                                        AND tseo.kSprache = " . (int)$Sprache->kSprache . "
-                                    WHERE tartikel.kArtikel = " . (int)$obj->kArtikel, 1
-                            );
-                        }
-                        $url = (isset($seoobj->cSeo) && $seoobj->cSeo)
-                            ? $seoobj->cSeo
-                            : 'index.php?a=' . $obj->kArtikel . '&amp;lang=' . $Sprache->cISO;
-                        break;
-
-                    case URLART_KATEGORIE:
-                        if ($Sprache->cStandard !== 'Y') {
-                            $seoobj = Shop::DB()->query(
-                                "SELECT tseo.cSeo
-                                    FROM tkategoriesprache
-                                    LEFT JOIN tseo ON tseo.cKey = 'kKategorie'
-                                        AND tseo.kKey = tkategoriesprache.kKategorie
-                                        AND tseo.kSprache = " . (int)$Sprache->kSprache . "
-                                        WHERE tkategoriesprache.kKategorie = " . (int)$obj->kKategorie . "
-                                    AND tkategoriesprache.kSprache = " . (int)$Sprache->kSprache, 1
-                            );
-                        } else {
-                            $seoobj = Shop::DB()->query(
-                                "SELECT tseo.cSeo
-                                    FROM tkategorie
-                                    LEFT JOIN tseo ON tseo.cKey = 'kKategorie'
-                                        AND tseo.kKey = tkategorie.kKategorie
-                                        AND tseo.kSprache = " . (int)$Sprache->kSprache . "
-                                    WHERE tkategorie.kKategorie = " . (int)$obj->kKategorie, 1
-                            );
-                        }
-                        $url = isset($seoobj->cSeo)
-                            ? $seoobj->cSeo
-                            : 'index.php?k=' . $obj->kKategorie . '&amp;lang=' . $Sprache->cISO;
-                        break;
-
-                    case URLART_SEITE:
-                        //@deprecated since 4.05 - this is now done within the link helper
-                        $seoobj = Shop::DB()->query(
-                            "SELECT tseo.cSeo
-                                FROM tlinksprache
-                                LEFT JOIN tseo ON tseo.cKey = 'kLink'
-                                    AND tseo.kKey = tlinksprache.kLink
-                                    AND tseo.kSprache = " . (int)$Sprache->kSprache . "
-                                WHERE tlinksprache.kLink = " . (int)$obj->kLink . "
-                                    AND tlinksprache.cISOSprache = '" . $Sprache->cISO . "'", 1
-                        );
-                        $url    = (isset($seoobj->cSeo) && $seoobj->cSeo)
-                            ? $seoobj->cSeo
-                            : 'index.php?s=' . $obj->kLink . '&amp;lang=' . $Sprache->cISO;
-                        break;
-
-                    default:
-                        $url = $obj . '&amp;lang=' . $Sprache->cISO;
-                        break;
-                }
-                $urls[$Sprache->cISO] = $url;
-            }
+    if (!($art && $obj && count($_SESSION['Sprachen']) > 0)) {
+        return [];
+    }
+    foreach ($_SESSION['Sprachen'] as $Sprache) {
+        if ((int)$Sprache->kSprache === Shop::getLanguage()) {
+            continue;
         }
+        switch ($art) {
+            case URLART_ARTIKEL:
+                //@deprecated since 4.05 - this is now done within the article class itself
+                if ($Sprache->cStandard !== 'Y') {
+                    $seoobj = Shop::DB()->query(
+                        "SELECT tseo.cSeo
+                            FROM tartikelsprache
+                            LEFT JOIN tseo ON tseo.cKey = 'kArtikel'
+                                AND tseo.kKey = tartikelsprache.kArtikel
+                                AND tseo.kSprache = " . (int)$Sprache->kSprache . "
+                            WHERE tartikelsprache.kArtikel = " . (int)$obj->kArtikel . "
+                            AND tartikelsprache.kSprache = " . (int)$Sprache->kSprache, 1
+                    );
+                } else {
+                    $seoobj = Shop::DB()->query(
+                        "SELECT tseo.cSeo
+                            FROM tartikel
+                            LEFT JOIN tseo ON tseo.cKey = 'kArtikel'
+                                AND tseo.kKey = tartikel.kArtikel
+                                AND tseo.kSprache = " . (int)$Sprache->kSprache . "
+                            WHERE tartikel.kArtikel = " . (int)$obj->kArtikel, 1
+                    );
+                }
+                $url = (isset($seoobj->cSeo) && $seoobj->cSeo)
+                    ? $seoobj->cSeo
+                    : 'index.php?a=' . $obj->kArtikel . '&amp;lang=' . $Sprache->cISO;
+                break;
+
+            case URLART_KATEGORIE:
+                if ($Sprache->cStandard !== 'Y') {
+                    $seoobj = Shop::DB()->query(
+                        "SELECT tseo.cSeo
+                            FROM tkategoriesprache
+                            LEFT JOIN tseo ON tseo.cKey = 'kKategorie'
+                                AND tseo.kKey = tkategoriesprache.kKategorie
+                                AND tseo.kSprache = " . (int)$Sprache->kSprache . "
+                                WHERE tkategoriesprache.kKategorie = " . (int)$obj->kKategorie . "
+                            AND tkategoriesprache.kSprache = " . (int)$Sprache->kSprache, 1
+                    );
+                } else {
+                    $seoobj = Shop::DB()->query(
+                        "SELECT tseo.cSeo
+                            FROM tkategorie
+                            LEFT JOIN tseo ON tseo.cKey = 'kKategorie'
+                                AND tseo.kKey = tkategorie.kKategorie
+                                AND tseo.kSprache = " . (int)$Sprache->kSprache . "
+                            WHERE tkategorie.kKategorie = " . (int)$obj->kKategorie, 1
+                    );
+                }
+                $url = isset($seoobj->cSeo)
+                    ? $seoobj->cSeo
+                    : 'index.php?k=' . $obj->kKategorie . '&amp;lang=' . $Sprache->cISO;
+                break;
+
+            case URLART_SEITE:
+                //@deprecated since 4.05 - this is now done within the link helper
+                $seoobj = Shop::DB()->query(
+                    "SELECT tseo.cSeo
+                        FROM tlinksprache
+                        LEFT JOIN tseo ON tseo.cKey = 'kLink'
+                            AND tseo.kKey = tlinksprache.kLink
+                            AND tseo.kSprache = " . (int)$Sprache->kSprache . "
+                        WHERE tlinksprache.kLink = " . (int)$obj->kLink . "
+                            AND tlinksprache.cISOSprache = '" . $Sprache->cISO . "'", 1
+                );
+                $url    = (isset($seoobj->cSeo) && $seoobj->cSeo)
+                    ? $seoobj->cSeo
+                    : 'index.php?s=' . $obj->kLink . '&amp;lang=' . $Sprache->cISO;
+                break;
+
+            default:
+                $url = $obj . '&amp;lang=' . $Sprache->cISO;
+                break;
+        }
+        $urls[$Sprache->cISO] = $url;
     }
 
     return $urls;
@@ -2385,7 +2381,7 @@ function gibAlleKategorienNoHTML($nKategorieBox = 0)
     $oKategorienNoHTML_arr = [];
     $nTiefe                = 0;
 
-    if ((int)K_KATEGORIE_TIEFE > 0) {
+    if (K_KATEGORIE_TIEFE > 0) {
         $oKategorien = new KategorieListe();
         $oKategorien->getAllCategoriesOnLevel(0);
         foreach ($oKategorien->elemente as $oKategorie) {
@@ -2401,7 +2397,7 @@ function gibAlleKategorienNoHTML($nKategorieBox = 0)
             $oKategorienNoHTML->oUnterKat_arr               = [];
             $oKategorienNoHTML_arr[$oKategorie->kKategorie] = $oKategorienNoHTML;
             //nur wenn unterkategorien enthalten sind!
-            if ((int)K_KATEGORIE_TIEFE > 1) {
+            if (K_KATEGORIE_TIEFE > 1) {
                 $oAktKategorie = new Kategorie($oKategorie->kKategorie);
                 if ($oAktKategorie->bUnterKategorien) {
                     $nTiefe           = 1;
@@ -2414,7 +2410,7 @@ function gibAlleKategorienNoHTML($nKategorieBox = 0)
                         $oKategorienNoHTML->oUnterKat_arr                                                        = [];
                         $oKategorienNoHTML_arr[$oKategorie->kKategorie]->oUnterKat_arr[$oUKategorie->kKategorie] = $oKategorienNoHTML;
 
-                        if ((int)K_KATEGORIE_TIEFE > 2) {
+                        if (K_KATEGORIE_TIEFE > 2) {
                             $nTiefe                = 2;
                             $oUnterUnterKategorien = new KategorieListe();
                             $oUnterUnterKategorien->getAllCategoriesOnLevel($oUKategorie->kKategorie);

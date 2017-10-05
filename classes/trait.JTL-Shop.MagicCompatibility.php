@@ -6,6 +6,10 @@
 
 /**
  * Trait MagicCompatibilityTrait
+ *
+ * allows a backwards compatable access to class properties
+ * that are now hidden behind getters and setters via a simple list of mappings
+ *
  */
 trait MagicCompatibilityTrait
 {

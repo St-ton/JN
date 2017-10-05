@@ -28,46 +28,50 @@ function gibArtikelXSelling($kArtikel, $isParent = null)
                 ORDER BY tartikel.cName", 2
         );
         if (count($xsell) > 0) {
-            $xsellgruppen = [];
-            foreach ($xsell as $xs) {
-                $xs->kXSellGruppe = (int)$xs->kXSellGruppe;
-                if (!in_array($xs->kXSellGruppe, $xsellgruppen, true)) {
-                    $xsellgruppen[] = (int)$xs->kXSellGruppe;
-                }
-            }
+            $xsellgruppen = array_unique(array_map(
+                function($e) {
+                    return (int)$e->kXSellGruppe;
+                },
+                $xsell
+            ));
             $xSelling->Standard->XSellGruppen = [];
             $xsCount                          = count($xsellgruppen);
             $defaultOptions                   = Artikel::getDefaultOptions();
-            for ($i = 0; $i < $xsCount; ++$i) {
+            $i = 0;
+            foreach ($xsellgruppen as $groupID) {
+                $group               = new stdClass();
+                $group->Artikel      = [];
+                $group->Name         = '';
+                $group->Beschreibung = '';
                 if (Shop::getLanguage() > 0) {
-                    //lokalisieren
+                    // lokalisieren
                     $objSprache = Shop::DB()->select(
                         'txsellgruppe',
                         'kXSellGruppe',
-                        (int)$xsellgruppen[$i],
+                        $groupID,
                         'kSprache',
                         Shop::getLanguage()
                     );
                     if (!isset($objSprache->cName)) {
                         continue;
                     }
-                    $xSelling->Standard->XSellGruppen[$i]               = new stdClass();
-                    $xSelling->Standard->XSellGruppen[$i]->Name         = $objSprache->cName;
-                    $xSelling->Standard->XSellGruppen[$i]->Beschreibung = $objSprache->cBeschreibung;
+                    $group->Name         = $objSprache->cName;
+                    $group->Beschreibung = $objSprache->cBeschreibung;
                 }
-                $xSelling->Standard->XSellGruppen[$i]->Artikel = [];
                 foreach ($xsell as $xs) {
-                    if ($xs->kXSellGruppe === $xsellgruppen[$i]) {
-                        $artikel = new Artikel();
-                        $artikel->fuelleArtikel($xs->kXSellArtikel, $defaultOptions);
+                    if ((int)$xs->kXSellGruppe === $groupID) {
+                        $artikel = (new Artikel())->fuelleArtikel($xs->kXSellArtikel, $defaultOptions);
                         if ($artikel->kArtikel > 0 && $artikel->aufLagerSichtbarkeit()) {
-                            $xSelling->Standard->XSellGruppen[$i]->Artikel[] = $artikel;
+                            $group->Artikel[] = $artikel;
                         }
                     }
                 }
+                $xSelling->Standard->XSellGruppen[$i] = $group;
+                ++$i;
             }
         }
     }
+
     if (isset($config['artikeldetails_xselling_kauf_anzeigen']) && $config['artikeldetails_xselling_kauf_anzeigen'] === 'Y') {
         $anzahl = (int)$config['artikeldetails_xselling_kauf_anzahl'];
         if ($isParent === null) {
@@ -97,35 +101,33 @@ function gibArtikelXSelling($kArtikel, $isParent = null)
                     ORDER BY SUM(txsellkauf.nAnzahl) DESC
                     LIMIT {$anzahl}", 2
             );
+        } elseif (isset($config['artikeldetails_xselling_kauf_parent']) && $config['artikeldetails_xselling_kauf_parent'] === 'Y') {
+            $xsell = Shop::DB()->query(
+                "SELECT txsellkauf.kArtikel,
+                    IF(tartikel.kVaterArtikel = 0, txsellkauf.kXSellArtikel, tartikel.kVaterArtikel) AS kXSellArtikel,
+                    SUM(txsellkauf.nAnzahl) nAnzahl
+                    FROM txsellkauf
+                    JOIN tartikel 
+                        ON tartikel.kArtikel = txsellkauf.kXSellArtikel
+                    WHERE txsellkauf.kArtikel = {$kArtikel}
+                        AND (tartikel.kVaterArtikel != (
+                            SELECT tartikel.kVaterArtikel
+                            FROM tartikel
+                            WHERE tartikel.kArtikel = {$kArtikel}
+                        ) OR tartikel.kVaterArtikel = 0)
+                    GROUP BY 1, 2
+                    ORDER BY SUM(txsellkauf.nAnzahl) DESC
+                    LIMIT {$anzahl}", 2
+            );
         } else {
-            if (isset($config['artikeldetails_xselling_kauf_parent']) && $config['artikeldetails_xselling_kauf_parent'] === 'Y') {
-                $xsell = Shop::DB()->query(
-                    "SELECT txsellkauf.kArtikel,
-                        IF(tartikel.kVaterArtikel = 0, txsellkauf.kXSellArtikel, tartikel.kVaterArtikel) AS kXSellArtikel,
-                        SUM(txsellkauf.nAnzahl) nAnzahl
-                        FROM txsellkauf
-                        JOIN tartikel 
-                            ON tartikel.kArtikel = txsellkauf.kXSellArtikel
-                        WHERE txsellkauf.kArtikel = {$kArtikel}
-                            AND (tartikel.kVaterArtikel != (
-                                SELECT tartikel.kVaterArtikel
-                                FROM tartikel
-                                WHERE tartikel.kArtikel = {$kArtikel}
-                            ) OR tartikel.kVaterArtikel = 0)
-                        GROUP BY 1, 2
-                        ORDER BY SUM(txsellkauf.nAnzahl) DESC
-                        LIMIT {$anzahl}", 2
-                );
-            } else {
-                $xsell = Shop::DB()->selectAll(
-                    'txsellkauf',
-                    'kArtikel',
-                    $kArtikel,
-                    '*',
-                    'nAnzahl DESC',
-                    $anzahl
-                );
-            }
+            $xsell = Shop::DB()->selectAll(
+                'txsellkauf',
+                'kArtikel',
+                $kArtikel,
+                '*',
+                'nAnzahl DESC',
+                $anzahl
+            );
         }
         $xsellCount2 = is_array($xsell) ? count($xsell) : 0;
         if ($xsellCount2 > 0) {
@@ -391,7 +393,7 @@ function floodSchutzProduktanfrage($min = 0)
         1
     );
 
-    return (isset($history->kProduktanfrageHistory) && $history->kProduktanfrageHistory > 0);
+    return isset($history->kProduktanfrageHistory) && $history->kProduktanfrageHistory > 0;
 }
 
 /**

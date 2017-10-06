@@ -1026,13 +1026,13 @@ final class Shop
                     } elseif (!is_array($_GET['mf'])) {
                         $_GET['mf'] = [(int)$_GET['mf']];
                     }
+                    self::$bSEOMerkmalNotFound = false;
                     foreach ($cSEOMerkmal_arr as $i => $cSEOMerkmal) {
                         if ($i > 0 && strlen($cSEOMerkmal) > 0) {
                             $oSeo = self::DB()->select('tseo', 'cKey', 'kMerkmalWert', 'cSeo', $cSEOMerkmal);
                             if (isset($oSeo->kKey) && strcasecmp($oSeo->cSeo, $cSEOMerkmal) === 0) {
                                 //haenge an GET, damit baueMerkmalFilter die Merkmalfilter setzen kann - @todo?
                                 $_GET['mf'][] = (int)$oSeo->kKey;
-                                self::$bSEOMerkmalNotFound = false;
                             } else {
                                 self::$bSEOMerkmalNotFound = true;
                             }

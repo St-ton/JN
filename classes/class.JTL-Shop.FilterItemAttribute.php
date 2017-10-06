@@ -446,6 +446,9 @@ class FilterItemAttribute extends FilterBaseAttribute
         foreach ($attributeFilters as &$af) {
             // Merkmalwerte numerisch sortieren, wenn alle Merkmalwerte eines Merkmals numerisch sind
             $options = $af->getOptions();
+            if (!is_array($options)) {
+                continue;
+            }
             $numeric = array_reduce(
                 $options,
                 function($carry, $option) {

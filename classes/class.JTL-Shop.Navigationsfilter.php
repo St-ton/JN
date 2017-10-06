@@ -1779,7 +1779,9 @@ class Navigationsfilter
                     }
                 }
                 if (!empty($singleConditions)) {
-                    $data->conditions = array_merge($singleConditions);
+                    foreach ($singleConditions as $singleCondition) {
+                        $data->conditions[] = $singleCondition;
+                    }
                 }
             } elseif ($count === 1) {
                 /** @var array(IFilter) $filters */

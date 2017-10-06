@@ -67,7 +67,7 @@ class FilterItemPriceRange extends AbstractFilter
     }
 
     /**
-     * @return int
+     * @return string
      */
     public function getValue()
     {

@@ -287,6 +287,17 @@ class FilterExtra extends AbstractFilter
     }
 
     /**
+     * @param FilterExtra $option
+     * @return $this
+     */
+    public function addOption($option)
+    {
+        $this->options[] = $option;
+
+        return $this;
+    }
+
+    /**
      * @param string $name
      * @param mixed  $value
      * @return $this

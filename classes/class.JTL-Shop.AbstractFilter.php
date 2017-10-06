@@ -386,7 +386,7 @@ abstract class AbstractFilter implements IFilter
     }
 
     /**
-     * @param mixed $mixed
+     * @param null|mixed $mixed
      * @return array
      */
     public function getOptions($mixed = null)

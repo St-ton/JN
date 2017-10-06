@@ -188,7 +188,7 @@ class FilterItemAttribute extends FilterBaseAttribute
             && is_array($currentCategory->categoryFunctionAttributes)
             && count($currentCategory->categoryFunctionAttributes) > 0
             && !empty($currentCategory->categoryFunctionAttributes[KAT_ATTRIBUT_MERKMALFILTER])
-            && $this->naviFilter->hasCategoryFilter()
+            && $this->naviFilter->hasCategory()
         ) {
             $catAttributeFilters = explode(
                 ';',
@@ -225,7 +225,7 @@ class FilterItemAttribute extends FilterBaseAttribute
         $kSprache         = $this->getLanguageID();
         $kStandardSprache = (int)gibStandardsprache()->kSprache;
         if ($kSprache !== $kStandardSprache) {
-            $select = 'COALESCE(tmerkmalsprache.cName, tmerkmal.cName) AS cName, ' .
+            $select         = 'COALESCE(tmerkmalsprache.cName, tmerkmal.cName) AS cName, ' .
                 'COALESCE(fremdSprache.cSeo, standardSprache.cSeo) AS cSeo, ' .
                 'COALESCE(fremdSprache.cWert, standardSprache.cWert) AS cWert';
             $state->joins[] = (new FilterJoin())
@@ -250,7 +250,7 @@ class FilterItemAttribute extends FilterBaseAttribute
                             AND fremdSprache.kSprache = ' . $kSprache)
                 ->setOrigin(__CLASS__);
         } else {
-            $select = 'tmerkmalwertsprache.cWert, tmerkmalwertsprache.cSeo, tmerkmal.cName';
+            $select         = 'tmerkmalwertsprache.cWert, tmerkmalwertsprache.cSeo, tmerkmal.cName';
             $state->joins[] = (new FilterJoin())
                 ->setComment('join default lang from FilterItemAttribute::getOptions()')
                 ->setType('INNER JOIN')
@@ -297,7 +297,7 @@ class FilterItemAttribute extends FilterBaseAttribute
                     ->setOrigin(__CLASS__);
             }
             if (count($activeOrFilterIDs) > 0) {
-                $select        .= ', IF(tmerkmal.nMehrfachauswahl, tartikel.kArtikel, ssj2.kArtikel) AS kArtikel';
+                $select         .= ', IF(tmerkmal.nMehrfachauswahl, tartikel.kArtikel, ssj2.kArtikel) AS kArtikel';
                 $state->joins[] = (new FilterJoin())
                     ->setComment('join active OR filter from FilterItemAttribute::getOptions()')
                     ->setType('LEFT JOIN')
@@ -313,7 +313,7 @@ class FilterItemAttribute extends FilterBaseAttribute
         } else {
             $select .= ', tartikel.kArtikel AS kArtikel';
         }
-        $baseQry  = $this->naviFilter->getBaseQuery(
+        $baseQry               = $this->naviFilter->getBaseQuery(
             [
                 'tartikelmerkmal.kMerkmal',
                 'tartikelmerkmal.kMerkmalWert',
@@ -347,22 +347,24 @@ class FilterItemAttribute extends FilterBaseAttribute
         );
         $currentAttributeValue = $this->naviFilter->getAttributeValue()->getValue();
         $additionalFilter      = new self($this->naviFilter);
-
         // get unique attributes from query result
-        $checked = [];
+        $checked                   = [];
         $attributeFilterCollection = [];
+        $hasCatAttributeFilter     = count($catAttributeFilters) > 0;
         foreach ($qryRes as $attributeValue) {
-            $attributeValue->kMerkmal = (int)$attributeValue->kMerkmal;
-            $attributeValue->nAnzahl = (int)$attributeValue->nAnzahl;
+            $attributeValue->kMerkmal         = (int)$attributeValue->kMerkmal;
+            $attributeValue->nAnzahl          = (int)$attributeValue->nAnzahl;
             $attributeValue->nMehrfachauswahl = (int)$attributeValue->nMehrfachauswahl;
-            if (!in_array($attributeValue->kMerkmal, $checked, true)) {
-                $attribute = new stdClass();
-                $attribute->kMerkmal = $attributeValue->kMerkmal;
-                $attribute->cName = $attributeValue->cName;
-                $attribute->cMMBildPfad = $attributeValue->cMMBildPfad;
-                $attribute->cTyp = $attributeValue->cTyp;
-                $attribute->nMehrfachauswahl = (int)$attributeValue->nMehrfachauswahl;
-                $attribute->attributeValues = [];
+            if (!in_array($attributeValue->kMerkmal, $checked, true)
+                && (!$hasCatAttributeFilter || in_array($attributeValue->cName, $catAttributeFilters, true))
+            ) {
+                $attribute                                            = new stdClass();
+                $attribute->kMerkmal                                  = $attributeValue->kMerkmal;
+                $attribute->cName                                     = $attributeValue->cName;
+                $attribute->cMMBildPfad                               = $attributeValue->cMMBildPfad;
+                $attribute->cTyp                                      = $attributeValue->cTyp;
+                $attribute->nMehrfachauswahl                          = $attributeValue->nMehrfachauswahl;
+                $attribute->attributeValues                           = [];
                 $attributeFilterCollection[$attributeValue->kMerkmal] = $attribute;
             }
             unset($attributeValue->nMehrfachauswahl, $attributeValue->cMMBildPfad, $attributeValue->cName, $attributeValue->cTyp);
@@ -375,7 +377,6 @@ class FilterItemAttribute extends FilterBaseAttribute
         }
 
         foreach ($attributeFilterCollection as $attributeFilter) {
-
             $attribute                    = (new FilterExtra())
                 ->setType($this->getType())
                 ->setClassName($this->getClassName())
@@ -385,7 +386,6 @@ class FilterItemAttribute extends FilterBaseAttribute
                 ->setValue($attributeFilter->kMerkmal)
                 ->setCount(0)
                 ->setURL('');
-
             $attribute->cName             = $attributeFilter->cName;
             $attribute->cTyp              = $attributeFilter->cTyp;
             $attribute->kMerkmal          = $attributeFilter->kMerkmal;
@@ -403,7 +403,7 @@ class FilterItemAttribute extends FilterBaseAttribute
                 : AbstractFilter::FILTER_TYPE_AND
             );
             foreach ($attributeFilter->attributeValues as $filterValue) {
-                $attributeValue                   = (new FilterExtra())
+                $attributeValue = (new FilterExtra())
                     ->setType($attributeFilter->nMehrfachauswahl === 1
                         ? AbstractFilter::FILTER_TYPE_OR
                         : AbstractFilter::FILTER_TYPE_AND)
@@ -413,12 +413,11 @@ class FilterItemAttribute extends FilterBaseAttribute
                     ->setValue($filterValue->cWert)
                     ->setCount($filterValue->nAnzahl);
 
-                $attributeValue->kMerkmalWert = $filterValue->kMerkmalWert;
-                $attributeValue->kMerkmal = $attributeFilter->kMerkmal;
+                $attributeValue->kMerkmalWert = (int)$filterValue->kMerkmalWert;
+                $attributeValue->kMerkmal     = (int)$attributeFilter->kMerkmal;
                 $attributeValue->cWert        = $filterValue->cWert;
                 $attributeValue->setIsActive($currentAttributeValue === $attributeValue->kMerkmalWert
                     || $this->attributeValueIsActive($attributeValue->kMerkmalWert));
-
                 if (strlen($filterValue->cMMWBildPfad) > 0) {
                     $attributeValue->cBildpfadKlein  = PFAD_MERKMALWERTBILDER_KLEIN . $filterValue->cMMWBildPfad;
                     $attributeValue->cBildpfadNormal = PFAD_MERKMALWERTBILDER_NORMAL . $filterValue->cMMWBildPfad;
@@ -435,77 +434,60 @@ class FilterItemAttribute extends FilterBaseAttribute
                 $seoURL = $additionalFilter->getSeo($this->getLanguageID());
                 if (!empty($seoURL) && $attributeValue->isActive()) {
                     // remove '__attrY' from '<url>attrX__attrY'
-                    $newURL = str_replace('__' . $seoURL, '', $attributeValueURL);
+                    $attributeValueURL = str_replace('__' . $seoURL, '', $attributeValueURL);
                     // remove 'attrY__' from '<url>attrY__attrX'
-                    $newURL              = str_replace($seoURL . '__', '', $newURL);
-                    $attributeValueURL = $newURL;
+                    $attributeValueURL = str_replace($seoURL . '__', '', $attributeValueURL);
                 }
-                $attributeValue->setURL($attributeValueURL);
-                $attribute->options[] = $attributeValue;
+                $attribute->addOption($attributeValue->setURL($attributeValueURL));
             }
             $attribute->setCount(count($attribute->getOptions()));
             $attributeFilters[] = $attribute;
         }
-        // Filter durchgehen und die Merkmalwerte entfernen, die zuviel sind und deren Anzahl am geringsten ist.
-        // #534 Anzahl max Merkmalwerte erreicht?
-        if ($attributeValueLimit > 0) {
-            foreach ($attributeFilters as $o => $oMerkmalFilter) {
-                while (count($oMerkmalFilter->options) > $attributeValueLimit) {
-                    $nMinAnzahl = 999999;
-                    $nIndex     = -1;
-                    foreach ($oMerkmalFilter->options as $l => $attributeValues) {
-                        if ($attributeValues->nAnzahl < $nMinAnzahl) {
-                            $nMinAnzahl = (int)$attributeValues->nAnzahl;
-                            $nIndex     = $l;
-                        }
-                    }
-                    if ($nIndex >= 0) {
-                        unset($oMerkmalFilter->options[$nIndex]);
-                        $oMerkmalFilter->options = array_merge($oMerkmalFilter->options);
-                    }
-                }
-            }
-        }
-        // Falls merkmalfilter Kategorieattribut gesetzt ist, alle Merkmale die nicht enthalten sein dürfen entfernen
-        if (count($catAttributeFilters) > 0) {
-            foreach ($attributeFilters as $i => $attributeFilter) {
-                if (!in_array($attributeFilter->cName, $catAttributeFilters, true)) {
-                    unset($attributeFilters[$i]);
-                }
-            }
-            $attributeFilters = array_merge($attributeFilters);
-        }
-        // Merkmalwerte numerisch sortieren, wenn alle Merkmalwerte eines Merkmals numerisch sind
-        foreach ($attributeFilters as $o => $oMerkmalFilter) {
-            $numeric = true;
-            $reset   = true;
-            foreach ($oMerkmalFilter->oMerkmalWerte_arr as $attributeValue) {
-                if (!is_numeric($attributeValue->cWert)) {
-                    $numeric = false;
-                }
-                if (!$attributeValue->isActive()) {
-                    $reset = false;
-                }
-            }
-            if ($reset === true) {
-                // hide attribute filters that only have already active options
-//                $oMerkmalFilter->oMerkmalWerte_arr = [];
-//                $oMerkmalFilter->setVisibility(AbstractFilter::SHOW_NEVER);
-            }
-            if (false && $numeric) {
-                usort($attributeFilters[$o]->oMerkmalWerte_arr, function ($a, $b) {
+        foreach ($attributeFilters as &$af) {
+            // Merkmalwerte numerisch sortieren, wenn alle Merkmalwerte eines Merkmals numerisch sind
+            $options = $af->getOptions();
+            $numeric = array_reduce(
+                $options,
+                function($carry, $option) {
+                    /** @var FilterExtra $option */
+                    return $carry && is_numeric($option->getValue());
+                },
+                true
+            );
+            if ($numeric) {
+                usort($options, function ($a, $b) {
+                    /** @var FilterExtra $a */
+                    /** @var FilterExtra $b */
                     return $a === $b
                         ? 0
-                        : (($a->cWert < $b->cWert)
+                        : (($a->getValue() < $b->getValue())
                             ? -1
                             : 1
                         );
                 });
+                $af->setOptions($options);
+            }
+            if ($attributeValueLimit > 0 && $attributeValueLimit < count($options)) {
+                // Merkmalwerte entfernen, deren Trefferanzahl am geringsten ist
+                while (count($options) > $attributeValueLimit) {
+                    $nMinAnzahl = 999999;
+                    $nIndex     = -1;
+                    foreach ($options as $l => $attributeValues) {
+                        /** @var FilterExtra $attributeValues */
+                        if ($attributeValues->nAnzahl < $nMinAnzahl) {
+                            $nMinAnzahl = $attributeValues->getCount();
+                            $nIndex     = $l;
+                        }
+                    }
+                    if ($nIndex >= 0) {
+                        unset($options[$nIndex]);
+                    }
+                }
+                $af->setOptions(array_merge($options));
             }
         }
+        unset($af);
         $this->options = $attributeFilters;
-
-//        Shop::dbg($attributeFilters, true);
 
         return $attributeFilters;
     }

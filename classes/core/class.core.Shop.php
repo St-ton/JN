@@ -1021,7 +1021,11 @@ final class Shop
                 }
                 // attribute filter
                 if (count($cSEOMerkmal_arr) > 1) {
-                    $_GET['mf'] = [];
+                    if (!isset($_GET['mf'])) {
+                        $_GET['mf'] = [];
+                    } elseif (!is_array($_GET['mf'])) {
+                        $_GET['mf'] = [(int)$_GET['mf']];
+                    }
                     foreach ($cSEOMerkmal_arr as $i => $cSEOMerkmal) {
                         if ($i > 0 && strlen($cSEOMerkmal) > 0) {
                             $oSeo = self::DB()->select('tseo', 'cKey', 'kMerkmalWert', 'cSeo', $cSEOMerkmal);

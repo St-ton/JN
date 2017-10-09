@@ -443,8 +443,9 @@ class FilterItemAttribute extends FilterBaseAttribute
                 }
                 $attribute->addOption($attributeValue->setURL($attributeValueURL));
             }
-            $attribute->setCount(count($attribute->getOptions()));
-            $attributeFilters[] = $attribute;
+            if (($optionsCount = count($attribute->getOptions())) > 0) {
+                $attributeFilters[] = $attribute->setCount($optionsCount);
+            }
         }
         foreach ($attributeFilters as &$af) {
             if ($af->getCount() === 1 && $af->getType() !== AbstractFilter::FILTER_TYPE_OR && $af->isActive()) {

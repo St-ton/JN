@@ -231,11 +231,19 @@ abstract class AbstractFilter implements IFilter
     }
 
     /**
+     * @param bool $onlyVisible - only show visible filters
      * @return array
      */
-    public function getFilterCollection()
+    public function getFilterCollection($onlyVisible = true)
     {
-        return $this->filterCollection;
+        return $onlyVisible === false
+            ? $this->filterCollection
+            : array_filter(
+                $this->filterCollection,
+                function ($f) {
+                    return $f->getVisibility() !== self::SHOW_NEVER;
+                }
+            );
     }
 
     /**
@@ -375,21 +383,21 @@ abstract class AbstractFilter implements IFilter
     }
 
     /**
-     * @param mixed $mixed
+     * @param mixed $data
      * @return $this
      */
-    public function setOptions($mixed)
+    public function setOptions($data)
     {
-        $this->options = $mixed;
+        $this->options = $data;
 
         return $this;
     }
 
     /**
-     * @param null|mixed $mixed
+     * @param null|mixed $data
      * @return array
      */
-    public function getOptions($mixed = null)
+    public function getOptions($data = null)
     {
         return [];
     }

@@ -56,7 +56,7 @@
         {/block}
         
         {block name="productlist-footer"}
-        {include file='productlist/footer.tpl'}
+            {include file='productlist/footer.tpl'}
         {/block}
     </div>
 {/block}

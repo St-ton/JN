@@ -980,6 +980,7 @@ final class Shop
                 }
                 if ($seite > 0) {
                     $_GET['seite'] = $seite;
+                    self::$kSeite  = $seite;
                 }
                 // split attribute/attribute value
                 $oMerkmal_arr = explode(SEP_MM_MMW, $seo);

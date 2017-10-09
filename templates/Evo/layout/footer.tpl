@@ -260,11 +260,13 @@
             {assign var="backstretchImgPath" value=$currentTemplateDir|cat:'themes/base/images/backgrounds/background_'|cat:$Einstellungen.template.theme.background_image|cat:'.jpg'}
         {/if}
         <script>
-            $(function() {
+            $(window).load(function() {
                 $.backstretch('{$backstretchImgPath}');
             });
         </script>
-    {/if} {if !empty($Einstellungen.global.global_google_analytics_id)}
+    {/if}
+
+    {if !empty($Einstellungen.global.global_google_analytics_id)}
         <script type="text/javascript">
             function gaOptout() {
               document.cookie = disableStr + '=true; expires=Thu, 31 Dec 2099 23:59:59 UTC; path=/';

@@ -66,12 +66,14 @@
                                 {if count($filter->getFilterCollection()) > 0}
                                     {block name='productlist-result-options-'|cat:$filter->getClassName()}
                                         {foreach $filter->getOptions() as $subFilter}
-                                            <div class="form-group dropdown filter-type-{$filter->getClassName()}">
-                                                <a href="#" class="btn btn-default dropdown-toggle form-control" data-toggle="dropdown" role="button" aria-expanded="false">
-                                                    {$subFilter->getFrontendName()} <span class="caret"></span>
-                                                </a>
-                                                {include file='snippets/filter/genericFilterItem.tpl' class='dropdown-menu' filter=$subFilter sub=true}
-                                            </div>
+                                            {if $subFilter->getVisibility() !== $subFilter::SHOW_NEVER}
+                                                <div class="form-group dropdown filter-type-{$filter->getClassName()}">
+                                                    <a href="#" class="btn btn-default dropdown-toggle form-control" data-toggle="dropdown" role="button" aria-expanded="false">
+                                                        {$subFilter->getFrontendName()} <span class="caret"></span>
+                                                    </a>
+                                                    {include file='snippets/filter/genericFilterItem.tpl' class='dropdown-menu' filter=$subFilter sub=true}
+                                                </div>
+                                            {/if}
                                         {/foreach}
                                     {/block}
                                 {else}

@@ -207,8 +207,8 @@ class FilterSearch extends AbstractFilter
                     $searchQueryCache->dZeit    = 'now()';
                     Shop::DB()->insert('tsuchanfragencache', $searchQueryCache);
                     // Cacheeinträge die > 1 Stunde sind, löschen
-                    Shop::DB()->query('
-                        DELETE 
+                    Shop::DB()->query(
+                        'DELETE 
                             FROM tsuchanfragencache 
                             WHERE dZeit < DATE_SUB(now(),INTERVAL 1 HOUR)', 4
                     );

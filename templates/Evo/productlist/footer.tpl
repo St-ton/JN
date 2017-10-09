@@ -29,7 +29,6 @@
         {/if}
     {/if}
 {/if}
-
 {if $Suchergebnisse->Seitenzahlen->maxSeite > 1 && !empty($oNaviSeite_arr) && $oNaviSeite_arr|@count > 0}
     <div class="row">
         <div class="col-xs-6 col-md-8 col-lg-9">
@@ -42,7 +41,7 @@
 
                 {foreach name=seite from=$oNaviSeite_arr item=oNaviSeite}
                     {if !isset($oNaviSeite->nBTN)}
-                        <li class="page {if !isset($oNaviSeite->cURL) || $oNaviSeite->cURL|strlen === 0}active{/if}">
+                        <li class="page{if !isset($oNaviSeite->cURL) || $oNaviSeite->cURL|strlen === 0} active{/if}">
                             {if !empty($oNaviSeite->cURL)}
                                 <a href="{$oNaviSeite->cURL}">{$oNaviSeite->nSeite}</a>
                             {else}

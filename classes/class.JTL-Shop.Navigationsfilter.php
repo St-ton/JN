@@ -1516,9 +1516,7 @@ class Navigationsfilter
             if ($this->searchResults->Seitenzahlen->maxSeite > $this->searchResults->Seitenzahlen->MaxSeiten) {
                 $this->searchResults->Seitenzahlen->maxSeite = $this->searchResults->Seitenzahlen->MaxSeiten;
             }
-            if ($currentCategory !== null) {
-                $this->searchResults = $this->setFilterOptions($this->searchResults, $currentCategory);
-            }
+            $this->searchResults = $this->setFilterOptions($this->searchResults, $currentCategory);
             // Header bauen
             $this->searchResults->SuchausdruckWrite = $this->metaData->getHeader();
 //            Shop::Cache()->set($hash, $this->searchResults, [CACHING_GROUP_CATEGORY]);

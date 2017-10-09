@@ -642,4 +642,35 @@ abstract class AbstractFilter implements IFilter
     {
         return $this->visibility === self::SHOW_NEVER;
     }
+
+    /**
+     * @return string
+     */
+    public function getTableName()
+    {
+        return '';
+    }
+
+    /**
+     * @return string
+     */
+    public function getPrimaryKeyRow() {
+        return '';
+    }
+
+    /**
+     * @return array
+     */
+    public function getSQLCondition()
+    {
+        return [];
+    }
+
+    /**
+     * @return FilterJoin
+     */
+    public function getSQLJoin()
+    {
+        return new FilterJoin();
+    }
 }

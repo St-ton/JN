@@ -1470,7 +1470,6 @@ class Navigationsfilter
     public function getProducts($forProductListing = true, $currentCategory = null, $fillArticles = true, $limit = 0)
     {
         $_SESSION['nArtikelUebersichtVLKey_arr'] = []; // Nur Artikel, die auch wirklich auf der Seite angezeigt werden
-
 //        $hash            = $this->getHash();
         $limitPerPage    = $limit > 0 ? $limit : $this->getArticlesPerPageLimit();
         $nLimitN         = ($this->nSeite - 1) * $limitPerPage;
@@ -1534,18 +1533,13 @@ class Navigationsfilter
             $opt->nVariationDetailPreis = (int)$this->conf['artikeldetails']['artikel_variationspreisanzeige'] !== 0
                 ? 1
                 : 0;
-            foreach (array_slice($this->searchResults->Artikel->articleKeys, $paginationLimit, $offsetEnd) as $i => $id) {
-                $nLaufLimitN = $i + $paginationLimit;
-                if ($nLaufLimitN >= $nLimitN && $nLaufLimitN < $nLimitN + $limitPerPage) {
-                    $article = (new Artikel())->fuelleArtikel($id, $opt);
-                    // Aktuelle Artikelmenge in die Session (Keine Vaterartikel)
-                    if ($article->nIstVater === 0) {
-                        $_SESSION['nArtikelUebersichtVLKey_arr'][] = $article->kArtikel;
-                    }
-                    $this->searchResults->Artikel->elemente->addItem($article);
-                } else {
-                    break;
+            foreach (array_slice($this->searchResults->Artikel->articleKeys, $nLimitN, $limitPerPage) as $i => $id) {
+                $article = (new Artikel())->fuelleArtikel($id, $opt);
+                // Aktuelle Artikelmenge in die Session (Keine Vaterartikel)
+                if ($article->nIstVater === 0) {
+                    $_SESSION['nArtikelUebersichtVLKey_arr'][] = $article->kArtikel;
                 }
+                $this->searchResults->Artikel->elemente->addItem($article);
             }
         }
         $this->createUnsetFilterURLs(true);

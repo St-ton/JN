@@ -102,13 +102,14 @@ class FilterItemPriceRange extends AbstractFilter
         $this->cName         = $this->cVonLocalized . ' - ' . $this->cBisLocalized;
         $this->isInitialized = true;
         $conversionFactor    = Session::Currency()->getConversionFactor();
+        $customerGroupID     = Session::CustomerGroup()->getID();
 
         $oFilter         = new stdClass();
         $oFilter->cJoin  = 'JOIN tpreise 
                 ON tartikel.kArtikel = tpreise.kArtikel 
-                AND tpreise.kKundengruppe = ' . Session::CustomerGroup()->getID() . '
+                AND tpreise.kKundengruppe = ' . $customerGroupID . '
             LEFT JOIN tartikelkategorierabatt 
-                ON tartikelkategorierabatt.kKundengruppe = ' . Session::CustomerGroup()->getID() . "
+                ON tartikelkategorierabatt.kKundengruppe = ' . $customerGroupID . "
                 AND tartikelkategorierabatt.kArtikel = tartikel.kArtikel
             LEFT JOIN tartikelsonderpreis 
                 ON tartikelsonderpreis.kArtikel = tartikel.kArtikel
@@ -117,7 +118,7 @@ class FilterItemPriceRange extends AbstractFilter
                 AND (tartikelsonderpreis.dEnde >= curDATE() OR tartikelsonderpreis.dEnde = '0000-00-00')
             LEFT JOIN tsonderpreise 
                 ON tartikelsonderpreis.kArtikelSonderpreis = tsonderpreise.kArtikelSonderpreis
-                AND tsonderpreise.kKundengruppe = " . Session::CustomerGroup()->getID();
+                AND tsonderpreise.kKundengruppe = " . $customerGroupID;
         $oFilter->cWhere = '';
 
         $fKundenrabatt       = (isset($_SESSION['Kunde']->fRabatt) && $_SESSION['Kunde']->fRabatt > 0)
@@ -304,21 +305,20 @@ class FilterItemPriceRange extends AbstractFilter
     }
 
     /**
-     * @param int $mixed - product count
+     * @param int $data - product count
      * @return array
      */
-    public function getOptions($mixed = null)
+    public function getOptions($data = null)
     {
         if ($this->options !== null) {
             return $this->options;
         }
-        $productCount = $mixed;
+        $productCount = $data;
         $options      = [];
         // Prüfe, ob es nur einen Artikel in der Artikelübersicht gibt
-        // falls ja und es ist noch kein Preisspannenfilter gesetzt,
-        // dürfen keine Preisspannenfilter angezeigt werden
-        if (($productCount === 1 && !$this->isInitialized()) ||
-            $this->getConfig()['navigationsfilter']['preisspannenfilter_benutzen'] === 'N'
+        // falls ja und es ist noch kein Preisspannenfilter gesetzt, dürfen keine Preisspannenfilter angezeigt werden
+        if (($productCount === 1 && !$this->isInitialized())
+            || $this->getConfig()['navigationsfilter']['preisspannenfilter_benutzen'] === 'N'
         ) {
             return $options;
         }
@@ -459,7 +459,7 @@ class FilterItemPriceRange extends AbstractFilter
                     ? get_object_vars($dbRes)
                     : null;
                 for ($i = 0; $i < $oPreis->nAnzahlSpannen; ++$i) {
-                    $sub                         = $i === 0
+                    $sub           = $i === 0
                         ? 0
                         : $priceRangeCounts['anz' . ($i - 1)];
                     $priceRanges[] = $priceRangeCounts['anz' . $i] - $sub;
@@ -587,13 +587,13 @@ class FilterItemPriceRange extends AbstractFilter
         if (count($options) > 0 
             && $this->getConfig()['navigationsfilter']['preisspannenfilter_spannen_ausblenden'] === 'Y'
         ) {
-            $oPreisspanneTMP_arr = [];
-            foreach ($options as $oPreisspanne) {
-                if ($oPreisspanne->nAnzahlArtikel > 0) {
-                    $oPreisspanneTMP_arr[] = $oPreisspanne;
+            $options = array_filter(
+                $options,
+                function($e) {
+                    /** @var FilterExtra $e */
+                    return $e->getCount() > 0;
                 }
-            }
-            $options = $oPreisspanneTMP_arr;
+            );
         }
         $this->options = $options;
 

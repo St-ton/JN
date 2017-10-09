@@ -114,10 +114,10 @@ class FilterBaseManufacturer extends AbstractFilter
     }
 
     /**
-     * @param null $mixed
+     * @param null $data
      * @return array|int|object
      */
-    public function getOptions($mixed = null)
+    public function getOptions($data = null)
     {
         if ($this->options !== null) {
             return $this->options;

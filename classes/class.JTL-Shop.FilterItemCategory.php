@@ -63,10 +63,10 @@ class FilterItemCategory extends FilterBaseCategory
     }
 
     /**
-     * @param null $mixed
+     * @param null $data
      * @return array|int|stdClass
      */
-    public function getOptions($mixed = null)
+    public function getOptions($data = null)
     {
         if ($this->options !== null) {
             return $this->options;
@@ -78,7 +78,6 @@ class FilterItemCategory extends FilterBaseCategory
             $state              = $this->naviFilter->getCurrentStateData();
 
             $state->joins[] = $order->join;
-
             // Kategoriefilter anzeige
             if ($categoryFilterType === 'HF' && (!$this->naviFilter->hasCategory())) {
                 //@todo: $this instead of $naviFilter->KategorieFilter?
@@ -131,7 +130,6 @@ class FilterItemCategory extends FilterBaseCategory
                 ->setOrigin(__CLASS__);
 
             $state->conditions[] = 'tkategoriesichtbarkeit.kKategorie IS NULL';
-
             // nicht Standardsprache? Dann hole Namen nicht aus tkategorie sondern aus tkategoriesprache
             $cSQLKategorieSprache        = new stdClass();
             $cSQLKategorieSprache->cJOIN = '';

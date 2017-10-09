@@ -278,10 +278,10 @@ class FilterExtra extends AbstractFilter
     }
 
     /**
-     * @param null $mixed
+     * @param null $data
      * @return array
      */
-    public function getOptions($mixed = null)
+    public function getOptions($data = null)
     {
         return $this->options;
     }

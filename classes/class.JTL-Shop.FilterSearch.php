@@ -76,8 +76,8 @@ class FilterSearch extends AbstractFilter
                     ON tsuchanfrage.kSuchanfrage = tseo.kKey
                     AND tsuchanfrage.kSprache = tseo.kSprache
                 WHERE cKey = 'kSuchanfrage' 
-                    AND kKey = :key", 
-            ['key' => $this->getValue()], 
+                    AND kKey = :kkey",
+            ['kkey' => $this->getValue()],
             1
         );
         foreach ($languages as $language) {
@@ -230,7 +230,7 @@ class FilterSearch extends AbstractFilter
                             false,
                             'kSuchanfrage'
                         );
-                        if (isset($previuousQuery->kSuchanfrage) && $previuousQuery->kSuchanfrage > 0 && $real) {
+                        if ($real && isset($previuousQuery->kSuchanfrage) && $previuousQuery->kSuchanfrage > 0) {
                             Shop::DB()->query(
                                 'UPDATE tsuchanfrage
                                     SET nAnzahlTreffer = $searchQuery->nAnzahlTreffer, 
@@ -326,10 +326,10 @@ class FilterSearch extends AbstractFilter
     }
 
     /**
-     * @param null $mixed
+     * @param null $data
      * @return array
      */
-    public function getOptions($mixed = null)
+    public function getOptions($data = null)
     {
         if ($this->options !== null) {
             return $this->options;

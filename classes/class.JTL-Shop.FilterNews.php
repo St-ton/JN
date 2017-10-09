@@ -52,14 +52,16 @@ class FilterNews extends AbstractFilter
      */
     public function setSeo($languages)
     {
-        $oSeo_obj = Shop::DB()->query("
-                SELECT tseo.cSeo, tseo.kSprache, tnews.cBetreff
+        $oSeo_obj = Shop::DB()->queryPrepared(
+                "SELECT tseo.cSeo, tseo.kSprache, tnews.cBetreff
                     FROM tseo
                     LEFT JOIN tnews
                         ON tnews.kNews = tseo.kKey                        
                     WHERE cKey = 'kNews'
-                        AND kKey = " . $this->getValue() . "
-                    ORDER BY kSprache", 1
+                        AND kKey = :kkey
+                    ORDER BY kSprache",
+                ['kkey' => $this->getValue()],
+                1
         );
         foreach ($languages as $language) {
             $this->cSeo[$language->kSprache] = '';

@@ -157,19 +157,19 @@ class FilterItemAttribute extends FilterBaseAttribute
     }
 
     /**
-     * @param mixed|null $mixed
+     * @param mixed|null $data
      * @return array
      */
-    public function getOptions($mixed = null)
+    public function getOptions($data = null)
     {
         if ($this->options !== null) {
             return $this->options;
         }
-        $currentCategory     = isset($mixed['oAktuelleKategorie'])
-            ? $mixed['oAktuelleKategorie']
+        $currentCategory     = isset($data['oAktuelleKategorie'])
+            ? $data['oAktuelleKategorie']
             : null;
-        $bForce              = isset($mixed['bForce']) // auswahlassistent
-            ? $mixed['bForce']
+        $bForce              = isset($data['bForce']) // auswahlassistent
+            ? $data['bForce']
             : false;
         $catAttributeFilters = [];
         $activeOrFilterIDs   = [];
@@ -418,6 +418,9 @@ class FilterItemAttribute extends FilterBaseAttribute
                 $attributeValue->cWert        = $filterValue->cWert;
                 $attributeValue->setIsActive($currentAttributeValue === $attributeValue->kMerkmalWert
                     || $this->attributeValueIsActive($attributeValue->kMerkmalWert));
+                if ($attributeValue->isActive()) {
+                    $attribute->setIsActive(true);
+                }
                 if (strlen($filterValue->cMMWBildPfad) > 0) {
                     $attributeValue->cBildpfadKlein  = PFAD_MERKMALWERTBILDER_KLEIN . $filterValue->cMMWBildPfad;
                     $attributeValue->cBildpfadNormal = PFAD_MERKMALWERTBILDER_NORMAL . $filterValue->cMMWBildPfad;
@@ -444,6 +447,9 @@ class FilterItemAttribute extends FilterBaseAttribute
             $attributeFilters[] = $attribute;
         }
         foreach ($attributeFilters as &$af) {
+            if ($af->getCount() === 1 && $af->getType() !== AbstractFilter::FILTER_TYPE_OR && $af->isActive()) {
+                $af->hide();
+            }
             // Merkmalwerte numerisch sortieren, wenn alle Merkmalwerte eines Merkmals numerisch sind
             $options = $af->getOptions();
             if (!is_array($options)) {

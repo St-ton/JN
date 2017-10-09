@@ -55,14 +55,13 @@ class FilterItemSearchSpecial extends AbstractFilter
      */
     public function setSeo($languages)
     {
-        $oSeo_arr = Shop::DB()->query(
-            "SELECT cSeo, kSprache
-                FROM tseo
-                WHERE cKey = 'suchspecial'
-                    AND kKey = " . $this->getValue() . "
-                ORDER BY kSprache", 2
+        $oSeo_arr = Shop::DB()->selectAll(
+            'tseo',
+            ['cKey', 'kKey'],
+            ['suchspecial', $this->getValue()],
+            'cSeo, kSprache',
+            'kSprache'
         );
-
         foreach ($languages as $language) {
             $this->cSeo[$language->kSprache] = '';
             foreach ($oSeo_arr as $oSeo) {
@@ -165,7 +164,7 @@ class FilterItemSearchSpecial extends AbstractFilter
                 return "tartikel.cTopArtikel = 'Y'";
 
             case SEARCHSPECIALS_UPCOMINGPRODUCTS:
-                return "now() < tartikel.dErscheinungsdatum";
+                return 'now() < tartikel.dErscheinungsdatum';
 
             case SEARCHSPECIALS_TOPREVIEWS:
                 if (!$this->naviFilter->hasPriceRangeFilter()) {
@@ -239,10 +238,10 @@ class FilterItemSearchSpecial extends AbstractFilter
     }
 
     /**
-     * @param null $mixed
+     * @param null $data
      * @return array
      */
-    public function getOptions($mixed = null)
+    public function getOptions($data = null)
     {
         if ($this->getConfig()['navigationsfilter']['allgemein_suchspecialfilter_benutzen'] !== 'Y') {
             $this->options = [];
@@ -250,9 +249,8 @@ class FilterItemSearchSpecial extends AbstractFilter
         if ($this->options !== null) {
             return $this->options;
         }
-        $name    = '';
-        $options = [];
-
+        $name             = '';
+        $options          = [];
         $additionalFilter = new self($this->naviFilter);
         for ($i = 1; $i < 7; ++$i) {
             $state = $this->naviFilter->getCurrentStateData();

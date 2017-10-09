@@ -104,10 +104,10 @@ class FilterItemRating extends AbstractFilter
     }
 
     /**
-     * @param null $mixed
+     * @param null $data
      * @return array
      */
-    public function getOptions($mixed = null)
+    public function getOptions($data = null)
     {
         if ($this->options !== null) {
             return $this->options;
@@ -117,7 +117,7 @@ class FilterItemRating extends AbstractFilter
 
             return $this->options;
         }
-        $options = [];
+        $options    = [];
         $order      = $this->naviFilter->getOrder();
         $state      = $this->naviFilter->getCurrentStateData();
 

@@ -285,19 +285,19 @@ class FilterItemAttributeAdvanced extends FilterBaseAttribute
     }
 
     /**
-     * @param mixed|null $mixed
+     * @param mixed|null $data
      * @return array
      */
-    public function getOptions($mixed = null)
+    public function getOptions($data = null)
     {
         if ($this->options !== null) {
             return $this->options;
         }
-        $currentCategory     = isset($mixed['oAktuelleKategorie'])
-            ? $mixed['oAktuelleKategorie']
+        $currentCategory     = isset($data['oAktuelleKategorie'])
+            ? $data['oAktuelleKategorie']
             : null;
-        $bForce              = isset($mixed['bForce']) // auswahlassistent
-            ? $mixed['bForce']
+        $bForce              = isset($data['bForce']) // auswahlassistent
+            ? $data['bForce']
             : false;
         $catAttributeFilters = [];
         $activeOrFilterIDs   = [];
@@ -323,7 +323,6 @@ class FilterItemAttributeAdvanced extends FilterBaseAttribute
         }
         $select = 'tmerkmal.cName';
         $order  = $this->naviFilter->getOrder();
-//        $state          = $this->naviFilter->getCurrentStateData(__CLASS__);
         $state          = $this->naviFilter->getCurrentStateData($this);
         $state->joins[] = $order->join;
         if ($this->kMerkmal > 0) {

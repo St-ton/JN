@@ -51,13 +51,14 @@ class FilterBaseTag extends AbstractFilter
      */
     public function setSeo($languages)
     {
-        $oSeo_obj = Shop::DB()->query("
-            SELECT tseo.cSeo, tseo.kSprache, ttag.cName
+        $oSeo_obj = Shop::DB()->queryPrepared(
+            "SELECT tseo.cSeo, tseo.kSprache, ttag.cName
                 FROM tseo
                 LEFT JOIN ttag
                     ON tseo.kKey = ttag.kTag
                 WHERE tseo.cKey = 'kTag' 
-                    AND tseo.kKey = " . $this->getValue(),
+                    AND tseo.kKey = :val",
+            ['val' => $this->getValue()],
             1
         );
         foreach ($languages as $language) {
@@ -119,10 +120,10 @@ class FilterBaseTag extends AbstractFilter
     }
 
     /**
-     * @param null $mixed
+     * @param null $data
      * @return array
      */
-    public function getOptions($mixed = null)
+    public function getOptions($data = null)
     {
         if ($this->options !== null) {
             return $this->options;
@@ -146,8 +147,7 @@ class FilterBaseTag extends AbstractFilter
                 ->setOn('ttagartikel.kTag = ttag.kTag')
                 ->setOrigin(__CLASS__);
             $state->joins[] = $order->join;
-
-            //remove duplicate joins
+            // remove duplicate joins
             foreach ($state->joins as $i => $stateJoin) {
                 if (!in_array($stateJoin->getTable(), $joinedTables, true)) {
                     $joinedTables[] = $stateJoin->getTable();
@@ -155,18 +155,21 @@ class FilterBaseTag extends AbstractFilter
                     unset($state->joins[$i]);
                 }
             }
-
             $state->conditions[] = 'ttag.nAktiv = 1';
             $state->conditions[] = 'ttag.kSprache = ' . $this->getLanguageID();
-            $query               = $this->naviFilter->getBaseQuery([
-                'ttag.kTag',
+            $query               = $this->naviFilter->getBaseQuery(
+                ['ttag.kTag',
                 'ttag.cName',
                 'ttagartikel.nAnzahlTagging',
-                'tartikel.kArtikel'
-            ], $state->joins, $state->conditions, $state->having, $order->orderBy, '',
-                ['ttag.kTag', 'tartikel.kArtikel']);
-
-            $tags             = Shop::DB()->query(
+                'tartikel.kArtikel'],
+                $state->joins,
+                $state->conditions,
+                $state->having,
+                $order->orderBy,
+                '',
+                ['ttag.kTag', 'tartikel.kArtikel']
+            );
+            $tags                = Shop::DB()->query(
                 "SELECT tseo.cSeo, ssMerkmal.kTag, ssMerkmal.cName, 
                     COUNT(*) AS nAnzahl, SUM(ssMerkmal.nAnzahlTagging) AS nAnzahlTagging
                         FROM (" . $query . ") AS ssMerkmal
@@ -174,7 +177,8 @@ class FilterBaseTag extends AbstractFilter
                         AND tseo.cKey = 'kTag'
                         AND tseo.kSprache = " . $this->getLanguageID() . "
                     GROUP BY ssMerkmal.kTag
-                    ORDER BY nAnzahl DESC LIMIT 0, " . (int)$this->getConfig()['navigationsfilter']['tagfilter_max_anzeige'],
+                    ORDER BY nAnzahl DESC LIMIT 0, " .
+                    (int)$this->getConfig()['navigationsfilter']['tagfilter_max_anzeige'],
                 2
             );
             $additionalFilter = new FilterItemTag($this->naviFilter);

@@ -536,7 +536,6 @@ class Plugin
 
         if (is_array($oPluginEmailvorlage_arr) && count($oPluginEmailvorlage_arr) > 0) {
             foreach ($oPluginEmailvorlage_arr as $i => $oPluginEmailvorlage) {
-                $oPluginEmailvorlage_arr[$i]->oPluginEmailvorlageSprache_arr = [];
                 $oPluginEmailvorlage_arr[$i]->oPluginEmailvorlageSprache_arr = Shop::DB()->selectAll(
                     'tpluginemailvorlagesprache',
                     'kEmailvorlage',

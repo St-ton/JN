@@ -673,4 +673,23 @@ abstract class AbstractFilter implements IFilter
     {
         return new FilterJoin();
     }
+
+    /**
+     * @param array|int|string $value
+     * @return $this
+     */
+    public function setValue($value)
+    {
+        $this->value = $value;
+
+        return $this;
+    }
+
+    /**
+     * @return array|int|string
+     */
+    public function getValue()
+    {
+        return $this->value;
+    }
 }

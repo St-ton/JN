@@ -515,12 +515,13 @@ class Metadata
         $nVon       = 0; // Die aktuellen Seiten in der Navigation, die angezeigt werden sollen.
         $nBis       = 0; // Begrenzt durch $nMaxAnzeige.
         $naviURL    = $this->navigationsfilter->getURL($bSeo);
-        if (isset($oSeitenzahlen->MaxSeiten, $oSeitenzahlen->AktuelleSeite) &&
-            $oSeitenzahlen->MaxSeiten > 0 &&
-            $oSeitenzahlen->AktuelleSeite > 0
+        $bSeo       = $bSeo && strpos($naviURL, '?') === false;
+        if (isset($oSeitenzahlen->MaxSeiten, $oSeitenzahlen->AktuelleSeite)
+            && $oSeitenzahlen->MaxSeiten > 0
+            && $oSeitenzahlen->AktuelleSeite > 0
         ) {
             $oSeitenzahlen->AktuelleSeite = (int)$oSeitenzahlen->AktuelleSeite;
-            $nMax                         = floor($nMaxAnzeige / 2);
+            $nMax                         = (int)floor($nMaxAnzeige / 2);
             if ($oSeitenzahlen->MaxSeiten > $nMaxAnzeige) {
                 if ($oSeitenzahlen->AktuelleSeite - $nMax >= 1) {
                     $nDiff = 0;
@@ -544,7 +545,6 @@ class Metadata
                 for ($i = $nVon; $i <= $nBis; ++$i) {
                     $oSeite         = new stdClass();
                     $oSeite->nSeite = $i;
-
                     if ($i === $oSeitenzahlen->AktuelleSeite) {
                         $oSeite->cURL = '';
                     } else {
@@ -561,12 +561,11 @@ class Metadata
                             }
                         }
                     }
-
                     $oSeite_arr[] = $oSeite;
                 }
             } else {
                 // Laufe alle Seiten durch und baue URLs + Seitenzahl
-                for ($i = 0; $i < $oSeitenzahlen->MaxSeiten; $i++) {
+                for ($i = 0; $i < $oSeitenzahlen->MaxSeiten; ++$i) {
                     $oSeite         = new stdClass();
                     $oSeite->nSeite = $i + 1;
 

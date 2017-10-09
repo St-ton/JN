@@ -2136,9 +2136,6 @@ class Navigationsfilter
                         $filterSeoData->seo[]   = $activeValue->getURL();
                     }
                 }
-                if ($debug) {
-                    Shop::dbg($filterSeoData, false, 'act! AFTER:');
-                }
             } elseif (isset($urlParams[$urlParam][0]->value)
                 && is_array($urlParams[$urlParam][0]->value)
             ) {
@@ -2382,7 +2379,6 @@ class Navigationsfilter
     {
         $res         = get_object_vars($this);
         $res['conf'] = '*truncated*';
-        $res['db']   = '*truncated*';
 
         return $res;
     }

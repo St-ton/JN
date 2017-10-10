@@ -11,7 +11,7 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_CLASSES . 'class.JTL-Shopadmin.Market
  */
 final class Marketplace
 {
-    const API_URL = 'http://api.jtl-software.de/';
+    const API_URL = 'https://api.jtl-software.de/';
 
     const API_TOKEN = '438ghKLb';
 

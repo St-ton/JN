@@ -265,6 +265,28 @@ class Navigationsfilter
     }
 
     /**
+     * @param bool $articles
+     * @return stdClass
+     */
+    public function getSearchResults($articles = true)
+    {
+        return $articles === true && isset($this->searchResults->Artikel->elemente)
+            ? $this->searchResults->Artikel->elemente
+            : $this->searchResults;
+    }
+
+    /**
+     * @param stdClass $results
+     * @return $this
+     */
+    public function setSearchResults($results)
+    {
+        $this->searchResults = $results;
+
+        return $this;
+    }
+
+    /**
      * @return Metadata
      */
     public function getMetaData()
@@ -1483,7 +1505,6 @@ class Navigationsfilter
         if ($this->searchResults === null) {
             $this->searchResults                       = new stdClass();
             $this->searchResults->Artikel              = new stdClass();
-            $this->searchResults->Artikel->articleKeys = [];
             $this->searchResults->Artikel->elemente    = new Collection();
             $this->searchResults->Artikel->articleKeys = $this->getProductKeys();
             $this->searchResults->GesamtanzahlArtikel  = count($this->searchResults->Artikel->articleKeys);
@@ -1778,7 +1799,7 @@ class Navigationsfilter
             ));
         }
         if (!isset($searchResults->Suchspecialauswahl)) {
-            $searchResults->Suchspecialauswahl = !$this->params['kSuchspecial'] && !$this->params['kSuchspecialFilter']
+            $searchResults->Suchspecialauswahl = empty($this->params['kSuchspecial']) && empty($this->params['kSuchspecialFilter'])
                 ? $this->searchSpecialFilter->getOptions()
                 : null;
         }

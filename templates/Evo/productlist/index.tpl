@@ -62,7 +62,5 @@
 {block name="footer"}
     {if !isset($bAjaxRequest) || !$bAjaxRequest}
         {include file='layout/footer.tpl'}
-    {else}
-        {include file='layout/modal_footer.tpl'}
     {/if}
 {/block}

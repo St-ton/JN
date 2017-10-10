@@ -81,7 +81,7 @@
                     .closest(".modal-dialog");
 
                 var title = $modal
-                    .find('.modal-body h1')
+                    .find('.modal-body h1');
 
                 if (title.length > 0 && title.text().length > 0) {
                     $modal.find('.modal-title').text(title.text());

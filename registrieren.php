@@ -9,11 +9,11 @@ require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
 
 $linkHelper = LinkHelper::getInstance();
-if (isset($_SESSION['Kunde']->kKunde) &&
-    $_SESSION['Kunde']->kKunde > 0 &&
-    verifyGPCDataInteger('editRechnungsadresse') === 0
+if (isset($_SESSION['Kunde']->kKunde)
+    && $_SESSION['Kunde']->kKunde > 0
+    && verifyGPCDataInteger('editRechnungsadresse') === 0
 ) {
-    header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true), true, 301);
+    header('Location: ' . $linkHelper->getStaticRoute('jtl.php'), true, 301);
 }
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';
@@ -61,10 +61,9 @@ if (isset($_FILES['vcard']) &&
 }
 //hole aktuelle Kategorie, falls eine gesetzt
 $AktuelleKategorie      = new Kategorie(verifyGPCDataInteger('kategorie'));
-$AufgeklappteKategorien = new KategorieListe();
-$AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
-$startKat             = new Kategorie();
-$startKat->kKategorie = 0;
+$AufgeklappteKategorien = (new KategorieListe())->getOpenCategories($AktuelleKategorie);
+$startKat               = new Kategorie();
+$startKat->kKategorie   = 0;
 //specific assigns
 $smarty->assign('Navigation', createNavigation($AktuelleSeite))
        ->assign('editRechnungsadresse', $editRechnungsadresse)

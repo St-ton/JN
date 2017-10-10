@@ -16,9 +16,9 @@ $Einstellungen = Shop::getSettings([
     CONF_KUNDEN,
     CONF_KAUFABWICKLUNG
 ]);
-$hinweis    = '';
-$requestURL = '';
-$linkHelper = LinkHelper::getInstance();
+$hinweis       = '';
+$requestURL    = '';
+$linkHelper    = LinkHelper::getInstance();
 
 if (strlen($_GET['uid']) === 40) {
     $status = Shop::DB()->executeQueryPrepared("
@@ -32,28 +32,24 @@ if (strlen($_GET['uid']) === 40) {
     if (empty($status->kBestellung)) {
         header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true), true, 303);
         exit;
-    } else {
-        $bestellung = new Bestellung($status->kBestellung);
-        $bestellung->fuelleBestellung();
-        $Kunde = new Kunde($bestellung->kKunde);
-        $smarty->assign('Bestellung', $bestellung)
-               ->assign('Kunde', $Kunde)
-               ->assign('Lieferadresse', $bestellung->Lieferadresse);
     }
+    $bestellung = new Bestellung($status->kBestellung);
+    $bestellung->fuelleBestellung();
+    $Kunde = new Kunde($bestellung->kKunde);
+    $smarty->assign('Bestellung', $bestellung)
+           ->assign('Kunde', $Kunde)
+           ->assign('Lieferadresse', $bestellung->Lieferadresse);
 } else {
     header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true), true, 303);
     exit;
 }
 
-$step = 'bestellung';
-//hole alle OberKategorien
+$step                   = 'bestellung';
 $AktuelleKategorie      = new Kategorie(verifyGPCDataInteger('kategorie'));
-$AufgeklappteKategorien = new KategorieListe();
-$AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
-$startKat             = new Kategorie();
-$startKat->kKategorie = 0;
+$AufgeklappteKategorien = (new KategorieListe())->getOpenCategories($AktuelleKategorie);
+$startKat               = new Kategorie();
+$startKat->kKategorie   = 0;
 
-//specific assigns
 $smarty->assign('step', $step)
        ->assign('hinweis', $hinweis)
        ->assign('Navigation', createNavigation($AktuelleSeite))

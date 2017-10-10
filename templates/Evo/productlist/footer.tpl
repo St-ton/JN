@@ -1,34 +1,29 @@
+{assign var=Suchergebnisse value=$NaviFilter->getSearchResults(false)}
 {if $Suchergebnisse->Artikel->elemente|@count > 0}
-    {if $Einstellungen.navigationsfilter.allgemein_tagfilter_benutzen === 'Y'}
-        {if $Suchergebnisse->Tags|@count > 0 && $Suchergebnisse->TagsJSON}
-            <hr>
-            <div class="panel panel-default tags">
-                <div class="panel-heading">{lang key="productsTaggedAs" section="productOverview"}</div>
-                <div class="panel-body">
-                    {foreach name=tagfilter from=$Suchergebnisse->Tags item=oTag}
-                        <a href="{$oTag->cURL}" class="label label-primary tag{$oTag->Klasse}">{$oTag->cName}</a>
-                    {/foreach}
-                </div>
+    {if $Einstellungen.navigationsfilter.allgemein_tagfilter_benutzen === 'Y' && $Suchergebnisse->Tags|@count > 0 && $Suchergebnisse->TagsJSON}
+        <hr>
+        <div class="panel panel-default tags">
+            <div class="panel-heading">{lang key="productsTaggedAs" section="productOverview"}</div>
+            <div class="panel-body">
+                {foreach name=tagfilter from=$Suchergebnisse->Tags item=oTag}
+                    <a href="{$oTag->cURL}" class="label label-primary tag{$oTag->Klasse}">{$oTag->cName}</a>
+                {/foreach}
             </div>
-        {/if}
+        </div>
     {/if}
-
-    {if $Einstellungen.navigationsfilter.suchtrefferfilter_nutzen === 'Y'}
-        {if $Suchergebnisse->SuchFilter|@count > 0 && $Suchergebnisse->SuchFilterJSON}
-            {if !$NaviFilter->hasSearchFilter()}
-                <hr>
-                <div class="panel panel-default tags">
-                    <div class="panel-heading">{lang key="productsSearchTerm" section="productOverview"}</div>
-                    <div class="panel-body">
-                        {foreach name=suchfilter from=$Suchergebnisse->SuchFilter item=oSuchFilter}
-                            <a href="{$oSuchFilter->cURL}" class="label label-primary tag{$oSuchFilter->Klasse}">{$oSuchFilter->cSuche}</a>
-                        {/foreach}
-                    </div>
-                </div>
-            {/if}
-        {/if}
+    {if $Einstellungen.navigationsfilter.suchtrefferfilter_nutzen === 'Y' && $Suchergebnisse->SuchFilter|@count > 0 && $Suchergebnisse->SuchFilterJSON && !$NaviFilter->hasSearchFilter()}
+        <hr>
+        <div class="panel panel-default tags">
+            <div class="panel-heading">{lang key="productsSearchTerm" section="productOverview"}</div>
+            <div class="panel-body">
+                {foreach name=suchfilter from=$Suchergebnisse->SuchFilter item=oSuchFilter}
+                    <a href="{$oSuchFilter->cURL}" class="label label-primary tag{$oSuchFilter->Klasse}">{$oSuchFilter->cSuche}</a>
+                {/foreach}
+            </div>
+        </div>
     {/if}
 {/if}
+
 {if $Suchergebnisse->Seitenzahlen->maxSeite > 1 && !empty($oNaviSeite_arr) && $oNaviSeite_arr|@count > 0}
     <div class="row">
         <div class="col-xs-6 col-md-8 col-lg-9">
@@ -52,11 +47,6 @@
                 {/foreach}
 
                 {if $Suchergebnisse->Seitenzahlen->AktuelleSeite < $Suchergebnisse->Seitenzahlen->maxSeite}
-                    {*
-                    <li>
-                        .. {lang key="of" section="productOverview"} {$Suchergebnisse->Seitenzahlen->MaxSeiten}
-                    </li>
-                    *}
                     <li class="next">
                         <a href="{$oNaviSeite_arr.vor->cURL}">{lang key="next" section="productOverview"} &raquo;</a>
                     </li>

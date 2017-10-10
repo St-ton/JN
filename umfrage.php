@@ -116,8 +116,7 @@ if ($step === 'umfrage_uebersicht') {
     executeHook(HOOK_UMFRAGE_PAGE_UEBERSICHT);
 }
 
-$smarty->assign('Einstellungen', $Einstellungen)
-       ->assign('hinweis', $cHinweis)
+$smarty->assign('hinweis', $cHinweis)
        ->assign('fehler', $cFehler)
        ->assign('step', $step);
 

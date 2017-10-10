@@ -305,7 +305,6 @@ $smarty->assign('CWunschliste', $CWunschliste)
        ->assign('isCurrenctCustomer', isset($CWunschliste->kKunde) &&
            isset($_SESSION['Kunde']->kKunde) &&
            (int)$CWunschliste->kKunde === (int)$_SESSION['Kunde']->kKunde)
-       ->assign('Einstellungen', $Einstellungen)
        ->assign('cURLID', $cURLID)
        ->assign('step', $step)
        ->assign('cFehler', $cFehler)

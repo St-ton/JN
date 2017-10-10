@@ -253,7 +253,6 @@ $startKat->kKategorie = 0;
 $smarty->assign('Navigation', createNavigation($AktuelleSeite))
        ->assign('Firma', Shop::DB()->query("SELECT * FROM tfirma", 1))
        ->assign('WarensummeLocalized', $_SESSION['Warenkorb']->gibGesamtsummeWarenLocalized())
-       ->assign('Einstellungen', $Einstellungen)
        ->assign('Bestellung', $bestellung);
 
 unset(

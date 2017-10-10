@@ -83,7 +83,6 @@ $smarty->assign('nBreiteTabelle', $nBreiteTabelle)
        ->assign('print', (isset($_GET['print']) && (int)$_GET['print'] === 1) ? 1 : 0)
        ->assign('oVergleichsliste', $oVergleichsliste)
        ->assign('Navigation', createNavigation($AktuelleSeite, 0, 0))
-       ->assign('Einstellungen', $GLOBALS['GlobaleEinstellungen'])
        ->assign('Einstellungen_Vergleichsliste', $conf);
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';

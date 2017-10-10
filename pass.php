@@ -93,8 +93,7 @@ $smarty->assign('step', $step)
        ->assign('hinweis', $hinweis)
        ->assign('cFehler', $cFehler)
        ->assign('Navigation', createNavigation($AktuelleSeite))
-       ->assign('requestURL', isset($requestURL) ? $requestURL : null)
-       ->assign('Einstellungen', $GLOBALS['GlobaleEinstellungen']);
+       ->assign('requestURL', isset($requestURL) ? $requestURL : null);
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 $smarty->display('account/password.tpl');

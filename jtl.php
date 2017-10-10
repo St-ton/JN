@@ -831,7 +831,6 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
         }
         $smarty->assign('Kunde', $knd)
                ->assign('cKundenattribut_arr', $cKundenattribut_arr)
-               ->assign('Einstellungen', $Einstellungen)
                ->assign('laender', gibBelieferbareLaender($_SESSION['Kunde']->kKundengruppe));
         // selbstdef. Kundenfelder
         $oKundenfeld_arr = Shop::DB()->selectAll('tkundenfeld', 'kSprache', Shop::getLanguage(), '*', 'nSort DESC');
@@ -875,7 +874,6 @@ $smarty->assign('cHinweis', $cHinweis)
        ->assign('step', $step)
        ->assign('Navigation', $cBrotNavi)
        ->assign('requestURL', isset($requestURL) ? $requestURL : null)
-       ->assign('Einstellungen', $Einstellungen)
        ->assign('BESTELLUNG_STATUS_BEZAHLT', BESTELLUNG_STATUS_BEZAHLT)
        ->assign('BESTELLUNG_STATUS_VERSANDT', BESTELLUNG_STATUS_VERSANDT)
        ->assign('BESTELLUNG_STATUS_OFFEN', BESTELLUNG_STATUS_OFFEN)

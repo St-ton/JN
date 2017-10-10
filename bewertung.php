@@ -97,7 +97,6 @@ if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
                0,
                Shop::Lang()->get('bewertung', 'breadcrumb'),
                'bewertung.php?a=' . $AktuellerArtikel->kArtikel . '&bfa=1'))
-           ->assign('Einstellungen', $Einstellungen)
            ->assign('Artikel', $AktuellerArtikel)
            ->assign('requestURL', isset($requestURL) ? $requestURL : null)
            ->assign('sprachURL', isset($sprachURL) ? $sprachURL : null);

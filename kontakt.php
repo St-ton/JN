@@ -18,6 +18,7 @@ $kLink         = $linkHelper->getSpecialPageLinkKey(LINKTYP_KONTAKT);
 $AktuelleKategorie      = new Kategorie(verifyGPCDataInteger('kategorie'));
 $AufgeklappteKategorien = (new KategorieListe())->getOpenCategories($AktuelleKategorie);
 $startKat               = new Kategorie();
+$startKat->kKategorie   = 0;
 $cCanonicalURL          = '';
 if (pruefeBetreffVorhanden()) {
     $step            = 'formular';

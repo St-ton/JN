@@ -310,6 +310,9 @@ abstract class AbstractFilter implements IFilter
      */
     public function getUnsetFilterURL($idx = null)
     {
+        if ($idx !== null && is_array($idx) && count($idx) === 1) {
+            $idx = $idx[0];
+        }
         return $idx === null || is_string($this->unsetFilterURL)
             ? $this->unsetFilterURL
             : $this->unsetFilterURL[$idx];

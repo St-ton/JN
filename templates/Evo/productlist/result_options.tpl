@@ -1,6 +1,6 @@
 {assign var=contentFilters value=$NaviFilter->getAvailableContentFilters()}
 {assign var=show_filters value=$Einstellungen.artikeluebersicht.suchfilter_anzeigen_ab == 0
-        || count($Suchergebnisse->Artikel->elemente) >= $Einstellungen.artikeluebersicht.suchfilter_anzeigen_ab
+        || count($NaviFilter->getSearchResults(true)) >= $Einstellungen.artikeluebersicht.suchfilter_anzeigen_ab
         || $NaviFilter->getFilterCount() > 0}
 <style>
     /*@todo: remove inline styles*/
@@ -22,7 +22,8 @@
             <div class="form-group">
                 <select name="Sortierung" onchange="$('#improve_search').submit();" class="form-control form-small">
                     {if !isset($Suchergebnisse->Sortierung) || !$Suchergebnisse->Sortierung}
-                        <option value="0">{lang key='sorting' section='productOverview'}</option>{/if}
+                        <option value="0">{lang key='sorting' section='productOverview'}</option>
+                    {/if}
                     <option value="100" {if isset($smarty.session.Usersortierung) && isset($Sort) && $smarty.session.Usersortierung==$Sort->value}selected="selected"{/if}>{lang key='standard' section='global'}</option>
                     {foreach name=sortierliste from=$Sortierliste item=Sort}
                         <option value="{$Sort->value}" {if $smarty.session.Usersortierung==$Sort->value}selected="selected"{/if}>{$Sort->angezeigterName}</option>

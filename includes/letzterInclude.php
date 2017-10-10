@@ -12,27 +12,14 @@ $currentTemplateFolder = $oTemplate->getDir();
 $currentTemplateDir    = PFAD_TEMPLATES . $currentTemplateFolder . '/';
 $bMobile               = false;
 $cart                  = isset($_SESSION['Warenkorb']) ? $_SESSION['Warenkorb'] : new Warenkorb();
-$EinstellungenTmp      = Shop::getSettings([
-    CONF_TEMPLATE,
-    CONF_ARTIKELDETAILS,
-    CONF_BOXEN,
-    CONF_GLOBAL,
-    CONF_RSS,
-    CONF_BEWERTUNG,
-    CONF_KUNDENWERBENKUNDEN,
-    CONF_METAANGABEN,
-    CONF_BILDER,
-    CONF_PREISVERLAUF,
-    CONF_VERGLEICHSLISTE,
-    CONF_KAUFABWICKLUNG
-]);
-$Einstellungen = isset($Einstellungen) ? array_merge($Einstellungen, $EinstellungenTmp) : $EinstellungenTmp;
-$themeDir      = (!empty($Einstellungen['template']['theme']['theme_default']))
-    ? $Einstellungen['template']['theme']['theme_default']
-    : 'evo';
-$cShopName     = (!empty($Einstellungen['global']['global_shopname']))
-    ? $Einstellungen['global']['global_shopname']
-    : 'JTL-Shop';
+$EinstellungenTmp      = Shopsetting::getInstance()->getAll();
+$Einstellungen         = isset($Einstellungen) ? array_merge($Einstellungen, $EinstellungenTmp) : $EinstellungenTmp;
+$themeDir              = empty($Einstellungen['template']['theme']['theme_default'])
+    ? 'evo'
+    : $Einstellungen['template']['theme']['theme_default'];
+$cShopName             = empty($Einstellungen['global']['global_shopname'])
+    ? 'JTL-Shop'
+    : $Einstellungen['global']['global_shopname'];
 //Wechsel auf Mobil-Template
 if (!$bMobilAktiv && $oBrowser->bMobile && !isset($_SESSION['bAskMobil']) && $oTemplate->hasMobileTemplate()) {
     $_SESSION['bAskMobil'] = true;

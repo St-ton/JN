@@ -742,15 +742,15 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage']) && (int)$_POST['Aendern'] 
     Shop::DB()->delete($cTableSetting, 'kEmailvorlage', $kEmailvorlage);
     // Email Ausgangsadresse
     if (isset($_POST['cEmailOut']) && strlen($_POST['cEmailOut']) > 0) {
-        saveEmailSetting($cTableSetting, $kEmailvorlage, "cEmailOut", $_POST['cEmailOut']);
+        saveEmailSetting($cTableSetting, $kEmailvorlage, 'cEmailOut', $_POST['cEmailOut']);
     }
     // Email Absendername
     if (isset($_POST['cEmailSenderName']) && strlen($_POST['cEmailSenderName']) > 0) {
-        saveEmailSetting($cTableSetting, $kEmailvorlage, "cEmailSenderName", $_POST['cEmailSenderName']);
+        saveEmailSetting($cTableSetting, $kEmailvorlage, 'cEmailSenderName', $_POST['cEmailSenderName']);
     }
     // Email Kopie
     if (isset($_POST['cEmailCopyTo']) && strlen($_POST['cEmailCopyTo']) > 0) {
-        saveEmailSetting($cTableSetting, $kEmailvorlage, "cEmailCopyTo", $_POST['cEmailCopyTo']);
+        saveEmailSetting($cTableSetting, $kEmailvorlage, 'cEmailCopyTo', $_POST['cEmailCopyTo']);
     }
 
     if ($nFehler == 1) {

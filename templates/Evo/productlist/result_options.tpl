@@ -128,9 +128,9 @@
                                 {/foreach}
                             {else}
                                 {strip}
-                                <a href="{$activeFilter->getUnsetFilterURL($activeFilter->getValue())}" rel="nofollow" title="Filter {lang key='delete'}" class="label label-info filter-type-{$activeFilter->getClassName()}">
-                                    {$activeValues->getFrontendName()|html_entity_decode}&nbsp;<span class="fa fa-trash-o"></span>
-                                </a>
+                                    <a href="{$activeFilter->getUnsetFilterURL($activeFilter->getValue())}" rel="nofollow" title="Filter {lang key='delete'}" class="label label-info filter-type-{$activeFilter->getClassName()}">
+                                        {$activeValues->getFrontendName()|html_entity_decode}&nbsp;<span class="fa fa-trash-o"></span>
+                                    </a>
                                 {/strip}
                             {/if}
                         {/if}

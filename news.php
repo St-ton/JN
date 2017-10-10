@@ -385,8 +385,7 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
 
     $cMetaTitle = prepareMeta($cMetaTitle, null, (int)$Einstellungen['metaangaben']['global_meta_maxlaenge_title']);
 
-    $smarty->assign('Einstellungen', $Einstellungen)
-           ->assign('hinweis', $cHinweis)
+    $smarty->assign('hinweis', $cHinweis)
            ->assign('fehler', $cFehler)
            ->assign('step', $step)
            ->assign('code_news', generiereCaptchaCode(isset($Einstellungen['news']['news_sicherheitscode'])

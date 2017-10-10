@@ -176,7 +176,6 @@ if ($bFileNotFound) {
     );
 }
 $smarty->assign('Navigation', $Navigation)
-       ->assign('Einstellungen', $Einstellungen)
        ->assign('Link', $link)
        ->assign('requestURL', $requestURL)
        ->assign('sprachURL', $sprachURL)

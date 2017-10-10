@@ -69,7 +69,6 @@ $startKat->kKategorie = 0;
 $smarty->assign('Navigation', createNavigation($AktuelleSeite))
        ->assign('editRechnungsadresse', $editRechnungsadresse)
        ->assign('Ueberschrift', $titel)
-       ->assign('Einstellungen', $Einstellungen)
        ->assign('hinweis', $hinweis)
        ->assign('step', $step)
        ->assign('nAnzeigeOrt', CHECKBOX_ORT_REGISTRIERUNG)

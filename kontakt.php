@@ -113,8 +113,7 @@ if (pruefeBetreffVorhanden()) {
 
 $smarty->assign('Navigation', createNavigation($AktuelleSeite))
        ->assign('Spezialcontent', $SpezialContent)
-       ->assign('requestURL', isset($requestURL) ? $requestURL : null)
-       ->assign('Einstellungen', $Einstellungen);
+       ->assign('requestURL', isset($requestURL) ? $requestURL : null);
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 executeHook(HOOK_KONTAKT_PAGE);

@@ -266,7 +266,6 @@ $cMetaKeywords    = $oMeta->cKeywords;
 $smarty->assign('hinweis', $cHinweis)
        ->assign('fehler', $cFehler)
        ->assign('cOption', $cOption)
-       ->assign('Einstellungen', $Einstellungen)
        ->assign('nAnzeigeOrt', CHECKBOX_ORT_NEWSLETTERANMELDUNG)
        ->assign('code_newsletter', generiereCaptchaCode($Einstellungen['newsletter']['newsletter_sicherheitscode']));
 

@@ -166,7 +166,6 @@ if (isset($_SESSION['Warenkorbhinweise']) && $_SESSION['Warenkorbhinweise']) {
 WarenkorbHelper::addVariationPictures($cart);
 //specific assigns
 $smarty->assign('Navigation', createNavigation($AktuelleSeite))
-       ->assign('Einstellungen', $Einstellungen)
        ->assign('MsgWarning', $MsgWarning)
        ->assign('Schnellkaufhinweis', $Schnellkaufhinweis)
        ->assign('requestURL', isset($requestURL) ? $requestURL : null)

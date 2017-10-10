@@ -29,8 +29,7 @@ switch ($cAction) {
 }
 
 $smarty->assign('bNoData', $bNoData)
-       ->assign('cAction', $cAction)
-       ->assign('Einstellungen', $Einstellungen);
+       ->assign('cAction', $cAction);
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 

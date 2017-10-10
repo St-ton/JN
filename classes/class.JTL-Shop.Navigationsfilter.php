@@ -796,6 +796,17 @@ class Navigationsfilter
     }
 
     /**
+     * @param IFilter[] $filters
+     * @return $this
+     */
+    public function setAvailableFilters($filters)
+    {
+        $this->filters = $filters;
+
+        return $this;
+    }
+
+    /**
      * get filters that can be displayed at content level
      *
      * @return array|IFilter[]

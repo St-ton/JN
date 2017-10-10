@@ -1,8 +1,6 @@
 {block name="header"}
     {if !isset($bAjaxRequest) || !$bAjaxRequest}
         {include file='layout/header.tpl'}
-    {else}
-        {include file='layout/modal_header.tpl'}
     {/if}
 {/block}
 

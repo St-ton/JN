@@ -1880,6 +1880,39 @@ function setzeSteuersaetze($steuerland = 0)
             WHERE tsteuerzoneland.cISO = '" . $deliveryCountryCode . "'
                 AND tsteuerzoneland.kSteuerzone = tsteuerzone.kSteuerzone", 2
     );
+    if (count($steuerzonen) === 0) {
+        // Keine Steuerzone für $deliveryCountryCode hinterlegt - das ist fatal!
+        $redirURL  = LinkHelper::getInstance()->getStaticRoute('bestellvorgang.php') . '?editRechnungsadresse=1';
+        $urlHelper = new UrlHelper(Shop::getURL() . $_SERVER['REQUEST_URI']);
+        $country   = ISO2land($deliveryCountryCode);
+
+        Jtllog::writeLog('Keine Steuerzone f&uuml;r "' . $country . '" hinterlegt!', JTLLOG_LEVEL_ERROR);
+
+        if (isAjaxRequest()) {
+            $link                  = new stdClass();
+            $link->nLinkart        = LINKTYP_STARTSEITE;
+            $link->Sprache         = new stdClass();
+            $link->Sprache->cTitle = Shop::Lang()->get('missingParamShippingDetermination', 'errorMessages');
+
+            Shop::Smarty()
+                ->assign('cFehler', Shop::Lang()->get('missingTaxZoneForDeliveryCountry', 'errorMessages', $country))
+                ->assign('Link', $link);
+            Shop::Smarty()->display('layout/index.tpl');
+            exit;
+        } elseif ($redirURL === $urlHelper->normalize()) {
+            Shop::Smarty()->assign(
+                'cFehler',
+                Shop::Lang()->get('missingParamShippingDetermination', 'errorMessages')
+                    . '<br/>'
+                    . Shop::Lang()->get('missingTaxZoneForDeliveryCountry', 'errorMessages', $country)
+            );
+
+            return;
+        } else {
+            header('Location: ' . $redirURL);
+            exit;
+        }
+    }
     $steuerklassen = Shop::DB()->query("SELECT * FROM tsteuerklasse", 2);
     $qry           = '';
     foreach ($steuerzonen as $i => $steuerzone) {

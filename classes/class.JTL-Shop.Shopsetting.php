@@ -22,6 +22,11 @@ final class Shopsetting implements ArrayAccess
     /**
      * @var array
      */
+    private $allSettings;
+
+    /**
+     * @var array
+     */
     private static $mapping = [
         CONF_GLOBAL              => 'global',
         CONF_STARTSEITE          => 'startseite',
@@ -82,7 +87,7 @@ final class Shopsetting implements ArrayAccess
      */
     public static function getInstance()
     {
-        return (self::$_instance === null) ? new self() : self::$_instance;
+        return self::$_instance === null ? new self() : self::$_instance;
     }
 
     /**
@@ -257,6 +262,38 @@ final class Shopsetting implements ArrayAccess
     }
 
     /**
+     * @return array
+     */
+    public function getAll()
+    {
+        if ($this->allSettings !== null) {
+            return $this->allSettings;
+        }
+        $settings = Shop::DB()->query(
+                "SELECT kEinstellungenSektion, cName, cWert
+                    FROM teinstellungen
+                    ORDER BY kEinstellungenSektion", 9
+        );
+        $result = [];
+        foreach (self::$mapping as $mappingID => $sectionName) {
+            foreach ($settings as $setting) {
+                $kEinstellungenSektion = (int)$setting['kEinstellungenSektion'];
+                if ($kEinstellungenSektion === $mappingID) {
+                    if (!isset($result[$sectionName])) {
+                        $result[$sectionName] = [];
+                    }
+                    $result[$sectionName][$setting['cName']] = $setting['cWert'];
+                }
+            }
+        }
+        $template           = Template::getInstance();
+        $result['template'] = $template->getConfig();
+        $this->allSettings  = $result;
+
+        return $result;
+    }
+
+    /**
      * preload the _container variable with one single sql statement or one single cache call
      * this is being called after successful cache initialisation in class.JTL-Shop.JTLCache.php
      *
@@ -266,26 +303,11 @@ final class Shopsetting implements ArrayAccess
     {
         $cacheID = 'settings_all_preload';
         if (($result = Shop::Cache()->get($cacheID)) === false) {
-            $settings = Shop::DB()->query("
-                SELECT kEinstellungenSektion, cName, cWert
-                    FROM teinstellungen
-                    ORDER BY kEinstellungenSektion", 9
-            );
-            $result = [];
-            foreach (self::$mapping as $mappingID => $sectionName) {
-                foreach ($settings as $setting) {
-                    $kEinstellungenSektion = (int)$setting['kEinstellungenSektion'];
-                    if ($kEinstellungenSektion === $mappingID) {
-                        if (!isset($result[$sectionName])) {
-                            $result[$sectionName] = [];
-                        }
-                        $result[$sectionName][$setting['cName']] = $setting['cWert'];
-                    }
-                }
-            }
+            $result = $this->getAll();
             Shop::Cache()->set($cacheID, $result, [CACHING_GROUP_TEMPLATE, CACHING_GROUP_OPTION, CACHING_GROUP_CORE]);
         }
-        $this->_container = $result;
+        $this->_container  = $result;
+        $this->allSettings = $result;
 
         return $result;
     }

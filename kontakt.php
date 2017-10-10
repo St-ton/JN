@@ -16,11 +16,9 @@ $linkHelper    = LinkHelper::getInstance();
 $kLink         = $linkHelper->getSpecialPageLinkKey(LINKTYP_KONTAKT);
 //hole alle OberKategorien
 $AktuelleKategorie      = new Kategorie(verifyGPCDataInteger('kategorie'));
-$AufgeklappteKategorien = new KategorieListe();
-$AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
-$startKat             = new Kategorie();
-$startKat->kKategorie = 0;
-$cCanonicalURL        = '';
+$AufgeklappteKategorien = (new KategorieListe())->getOpenCategories($AktuelleKategorie);
+$startKat               = new Kategorie();
+$cCanonicalURL          = '';
 if (pruefeBetreffVorhanden()) {
     $step            = 'formular';
     $fehlendeAngaben = [];
@@ -38,6 +36,7 @@ if (pruefeBetreffVorhanden()) {
         executeHook(HOOK_KONTAKT_PAGE_PLAUSI);
 
         if ($nReturnValue) {
+            $step = 'floodschutz';
             if (!floodSchutz($Einstellungen['kontakt']['kontakt_sperre_minuten'])) {
                 $oNachricht = baueKontaktFormularVorgaben();
                 // CheckBox Spezialfunktion ausfuehren
@@ -50,11 +49,7 @@ if (pruefeBetreffVorhanden()) {
                 )->checkLogging(CHECKBOX_ORT_KONTAKT, $kKundengruppe, $_POST, true);
                 bearbeiteNachricht();
                 $step = 'nachricht versendet';
-            } else {
-                $step = 'floodschutz';
             }
-        } else {
-            $smarty->assign('fehlendeAngaben', $fehlendeAngaben);
         }
     }
     $lang     = $_SESSION['cISOSprache'];
@@ -67,7 +62,7 @@ if (pruefeBetreffVorhanden()) {
     foreach ($Contents as $Content) {
         $SpezialContent->{$Content->cTyp} = $Content->cContent;
     }
-    $betreffs = Shop::DB()->query(
+    $subjects = Shop::DB()->query(
         "SELECT *
             FROM tkontaktbetreff
             WHERE (cKundengruppen = 0 
@@ -75,17 +70,16 @@ if (pruefeBetreffVorhanden()) {
                 . "', REPLACE(cKundengruppen, ';', ',')) > 0) 
             ORDER BY nSort", 2
     );
-    $bCount = count($betreffs);
-    for ($i = 0; $i < $bCount; $i++) {
-        if ($betreffs[$i]->kKontaktBetreff > 0) {
-            $betreffSprache = Shop::DB()->select(
+    foreach ($subjects as $subject) {
+        if ($subject->kKontaktBetreff > 0) {
+            $localization = Shop::DB()->select(
                 'tkontaktbetreffsprache',
                 'kKontaktBetreff',
-                (int)$betreffs[$i]->kKontaktBetreff,
+                (int)$subject->kKontaktBetreff,
                 'cISOSprache',
-                $_SESSION['cISOSprache']
+                $lang
             );
-            $betreffs[$i]->AngezeigterName = $betreffSprache->cName;
+            $subject->AngezeigterName = $localization->cName;
         }
     }
     $Vorgaben = baueKontaktFormularVorgaben();
@@ -99,7 +93,7 @@ if (pruefeBetreffVorhanden()) {
     //specific assigns
     $smarty->assign('step', $step)
            ->assign('code', generiereCaptchaCode($Einstellungen['kontakt']['kontakt_abfragen_captcha']))
-           ->assign('betreffs', $betreffs)
+           ->assign('betreffs', $subjects)
            ->assign('hinweis', isset($hinweis) ? $hinweis : null)
            ->assign('Vorgaben', $Vorgaben)
            ->assign('fehlendeAngaben', $fehlendeAngaben)

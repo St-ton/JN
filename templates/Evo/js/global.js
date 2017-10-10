@@ -147,6 +147,7 @@ function loadContent(url)
         if (typeof $.evo.article === 'function') {
             $.evo.article().onLoad();
             $.evo.article().register();
+            addValidationListener();
         }
 
         $('html,body').animate({

@@ -4649,24 +4649,6 @@ function pruefeSSL()
 }
 
 /**
- * https? wenn erwünscht reload mit https
- *
- * @return bool
- * @deprecated since 4.06
- */
-function pruefeHttps()
-{
-    return false;
-}
-
-/**
- * @deprecated since 4.06
- */
-function loeseHttps()
-{
-}
-
-/**
  * @param int    $nAnzahlStellen
  * @param string $cString
  * @return bool|string
@@ -4805,102 +4787,6 @@ function pruefeEmailblacklist($cEmail)
     }
 
     return false;
-}
-
-/**
- * Preisanzeige Einstellungen holen
- *
- * @return array|mixed
- */
-function holePreisanzeigeEinstellungen()
-{
-    $oPreisanzeigeConfTMP_arr = [];
-    $oPreisanzeigeConf_arr    = Shop::DB()->selectAll(
-        'teinstellungen',
-        'kEinstellungenSektion',
-        CONF_PREISANZEIGE,
-        '*',
-        'cName'
-    );
-    $cMapping_arr             = [
-        'preisanzeige_preisgrafik_artikeldetails_anzeigen'    => 'Artikeldetails',
-        'preisanzeige_preisgrafik_artikeluebersicht_anzeigen' => 'Artikeluebersicht',
-        'preisanzeige_preisgrafik_boxen_anzeigen'             => 'Boxen',
-        'preisanzeige_preisgrafik_startseite_anzeigen'        => 'Startseite',
-
-        'preisanzeige_groesse_artikeldetails'                 => 'Artikeldetails',
-        'preisanzeige_groesse_artikeluebersicht'              => 'Artikeluebersicht',
-        'preisanzeige_groesse_boxen'                          => 'Boxen',
-        'preisanzeige_groesse_startseite'                     => 'Startseite',
-
-        'preisanzeige_farbe_artikeldetails'                   => 'Artikeldetails',
-        'preisanzeige_farbe_artikeluebersicht'                => 'Artikeluebersicht',
-        'preisanzeige_farbe_boxen'                            => 'Boxen',
-        'preisanzeige_farbe_startseite'                       => 'Startseite',
-
-        'preisanzeige_schriftart_artikeldetails'              => 'Artikeldetails',
-        'preisanzeige_schriftart_artikeluebersicht'           => 'Artikeluebersicht',
-        'preisanzeige_schriftart_boxen'                       => 'Boxen',
-        'preisanzeige_schriftart_startseite'                  => 'Startseite'
-    ];
-    // Mapping
-    if (is_array($oPreisanzeigeConf_arr) && count($oPreisanzeigeConf_arr) > 0) {
-        foreach ($oPreisanzeigeConf_arr as $z => $oPreisanzeigeConf) {
-            foreach ($cMapping_arr as $i => $cMapping) {
-                if ($oPreisanzeigeConf->cName == $i) {
-                    $oPreisanzeigeConfTMP_arr[$cMapping][] = $oPreisanzeigeConf;
-                }
-            }
-        }
-    } else {
-        Shop::DB()->query("INSERT INTO teinstellungen (kEinstellungenSektion, cName, cWert, cModulId)
-                            VALUES(" . CONF_PREISANZEIGE . ", 'preisanzeige_preisgrafik_artikeldetails_anzeigen', 'N', NULL)", 4);
-        Shop::DB()->query("INSERT INTO teinstellungen (kEinstellungenSektion, cName, cWert, cModulId)
-                            VALUES(" . CONF_PREISANZEIGE . ", 'preisanzeige_preisgrafik_artikeluebersicht_anzeigen', 'N', NULL)", 4);
-        Shop::DB()->query("INSERT INTO teinstellungen (kEinstellungenSektion, cName, cWert, cModulId)
-                            VALUES(" . CONF_PREISANZEIGE . ", 'preisanzeige_preisgrafik_boxen_anzeigen', 'N', NULL)", 4);
-        Shop::DB()->query("INSERT INTO teinstellungen (kEinstellungenSektion, cName, cWert, cModulId)
-                            VALUES(" . CONF_PREISANZEIGE . ", 'preisanzeige_preisgrafik_startseite_anzeigen', 'N', NULL)", 4);
-
-        Shop::DB()->query("INSERT INTO teinstellungen (kEinstellungenSektion, cName, cWert, cModulId)
-                            VALUES(" . CONF_PREISANZEIGE . ", 'preisanzeige_groesse_artikeldetails', '18', NULL)", 4);
-        Shop::DB()->query("INSERT INTO teinstellungen (kEinstellungenSektion, cName, cWert, cModulId)
-                            VALUES(" . CONF_PREISANZEIGE . ", 'preisanzeige_groesse_artikeluebersicht', '18', NULL)", 4);
-        Shop::DB()->query("INSERT INTO teinstellungen (kEinstellungenSektion, cName, cWert, cModulId)
-                            VALUES(" . CONF_PREISANZEIGE . ", 'preisanzeige_groesse_boxen', '18', NULL)", 4);
-        Shop::DB()->query("INSERT INTO teinstellungen (kEinstellungenSektion, cName, cWert, cModulId)
-                            VALUES(" . CONF_PREISANZEIGE . ", 'preisanzeige_groesse_startseite', '18', NULL)", 4);
-
-        Shop::DB()->query("INSERT INTO teinstellungen (kEinstellungenSektion, cName, cWert, cModulId)
-                            VALUES(" . CONF_PREISANZEIGE . ", 'preisanzeige_farbe_artikeldetails', '#000000', NULL)", 4);
-        Shop::DB()->query("INSERT INTO teinstellungen (kEinstellungenSektion, cName, cWert, cModulId)
-                            VALUES(" . CONF_PREISANZEIGE . ", 'preisanzeige_farbe_artikeluebersicht', '#000000', NULL)", 4);
-        Shop::DB()->query("INSERT INTO teinstellungen (kEinstellungenSektion, cName, cWert, cModulId)
-                            VALUES(" . CONF_PREISANZEIGE . ", 'preisanzeige_farbe_boxen', '#000000', NULL)", 4);
-        Shop::DB()->query("INSERT INTO teinstellungen (kEinstellungenSektion, cName, cWert, cModulId)
-                            VALUES(" . CONF_PREISANZEIGE . ", 'preisanzeige_farbe_startseite', '#000000', NULL)", 4);
-
-        Shop::DB()->query("INSERT INTO teinstellungen (kEinstellungenSektion, cName, cWert, cModulId)
-                            VALUES(" . CONF_PREISANZEIGE . ", 'preisanzeige_schriftart_artikeldetails', 'GeosansLight.ttf', NULL)", 4);
-        Shop::DB()->query("INSERT INTO teinstellungen (kEinstellungenSektion, cName, cWert, cModulId)
-                            VALUES(" . CONF_PREISANZEIGE . ", 'preisanzeige_schriftart_artikeluebersicht', 'GeosansLight.ttf', NULL)", 4);
-        Shop::DB()->query("INSERT INTO teinstellungen (kEinstellungenSektion, cName, cWert, cModulId)
-                            VALUES(" . CONF_PREISANZEIGE . ", 'preisanzeige_schriftart_boxen', 'GeosansLight.ttf', NULL)", 4);
-        Shop::DB()->query("INSERT INTO teinstellungen (kEinstellungenSektion, cName, cWert, cModulId)
-                            VALUES(" . CONF_PREISANZEIGE . ", 'preisanzeige_schriftart_startseite', 'GeosansLight.ttf', NULL)", 4);
-
-        $oPreisanzeigeConf_arr = Shop::DB()->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_PREISANZEIGE, '*', 'cName ASC');
-        foreach ($oPreisanzeigeConf_arr as $z => $oPreisanzeigeConf) {
-            foreach ($cMapping_arr as $i => $cMapping) {
-                if ($oPreisanzeigeConf->cName == $i) {
-                    $oPreisanzeigeConfTMP_arr[$cMapping][] = $oPreisanzeigeConf;
-                }
-            }
-        }
-    }
-    $oPreisanzeigeConf_arr = $oPreisanzeigeConfTMP_arr;
-
-    return $oPreisanzeigeConf_arr;
 }
 
 /**
@@ -6056,23 +5942,6 @@ function pruefeWarenkorbStueckliste($oArtikel, $fAnzahl)
 }
 
 /**
- * @deprecated since 4.06
- * return trimmed description without (double) line breaks
- *
- * @param string $cDesc
- * @return string
- */
-function truncateMetaDescription($cDesc)
-{
-    $conf      = Shop::getSettings([CONF_METAANGABEN]);
-    $maxLength = !empty($conf['metaangaben']['global_meta_maxlaenge_description'])
-        ? (int)$conf['metaangaben']['global_meta_maxlaenge_description']
-        : 0;
-
-    return prepareMeta($cDesc, null, $maxLength);
-}
-
-/**
  * @param string $metaProposal the proposed meta text value.
  * @param string $metaSuffix append suffix to meta value that wont be shortened
  * @param int $maxLength $metaProposal will be truncated to $maxlength - strlen($metaSuffix) characters
@@ -6490,6 +6359,7 @@ function guessCsvDelimiter($filename)
  */
 function gibSeitenTyp()
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return Shop::getPageType();
 }
 
@@ -6499,6 +6369,7 @@ function gibSeitenTyp()
  */
 function getShopTemplate()
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return Template::getInstance()->getDir();
 }
 
@@ -6508,6 +6379,7 @@ function getShopTemplate()
  */
 function microtime_float()
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return microtime(true);
 }
 
@@ -6518,6 +6390,7 @@ function microtime_float()
  */
 function pruefeIstVaterArtikel($kArtikel)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return ArtikelHelper::isParent($kArtikel);
 }
 
@@ -6527,6 +6400,7 @@ function pruefeIstVaterArtikel($kArtikel)
  */
 function setzeKundeInSession($Kunde)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     Session::getInstance()->setCustomer($Kunde);
 }
 
@@ -6537,6 +6411,7 @@ function setzeKundeInSession($Kunde)
  */
 function gibkArtikelZuVaterArtikel($kArtikel)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return ArtikelHelper::getArticleForParent($kArtikel);
 }
 
@@ -6548,6 +6423,7 @@ function gibkArtikelZuVaterArtikel($kArtikel)
  */
 function filterXSS($cString, $nSuche = 0)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return StringHandler::filterXSS($cString, $nSuche);
 }
 
@@ -6558,6 +6434,7 @@ function filterXSS($cString, $nSuche = 0)
  */
 function filterXSSArray($array)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return StringHandler::filterXSS($array);
 }
 
@@ -6567,6 +6444,7 @@ function filterXSSArray($array)
  */
 function gibAktuelleKundengruppe()
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return Session::CustomerGroup()->getID();
 }
 
@@ -6576,6 +6454,7 @@ function gibAktuelleKundengruppe()
  */
 function gibStandardKundenGruppe()
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return Kundengruppe::getDefaultGroupID();
 }
 
@@ -6586,6 +6465,7 @@ function gibStandardKundenGruppe()
  */
 function convertUTF8($cData)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return StringHandler::convertUTF8($cData);
 }
 
@@ -6596,6 +6476,7 @@ function convertUTF8($cData)
  */
 function convertISO($cData)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return StringHandler::convertISO($cData);
 }
 
@@ -6606,6 +6487,7 @@ function convertISO($cData)
  */
 function convertISO2ISO639($ISO)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return StringHandler::convertISO2ISO639($ISO);
 }
 
@@ -6616,6 +6498,7 @@ function convertISO2ISO639($ISO)
  */
 function convertISO6392ISO($ISO)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return StringHandler::convertISO6392ISO($ISO);
 }
 
@@ -6629,6 +6512,7 @@ function convertISO6392ISO($ISO)
  */
 function gibMoeglicheVersandarten($lieferland, $plz, $versandklassen, $kKundengruppe)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return VersandartHelper::getPossibleShippingMethods($lieferland, $plz, $versandklassen, $kKundengruppe);
 }
 
@@ -6639,6 +6523,7 @@ function gibMoeglicheVersandarten($lieferland, $plz, $versandklassen, $kKundengr
  */
 function gibVersandklassen($Warenkorb)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return VersandartHelper::getShippingClasses($Warenkorb);
 }
 
@@ -6648,6 +6533,7 @@ function gibVersandklassen($Warenkorb)
  */
 function baueBoxen()
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return [];
 }
 
@@ -6657,6 +6543,7 @@ function baueBoxen()
  */
 function gibBoxen()
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return Boxen::getInstance()->compatGet();
 }
 
@@ -6667,6 +6554,7 @@ function gibBoxen()
  */
 function boxAnzeigen($ePosition)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $visibility = Boxen::getInstance()->holeBoxAnzeige(Shop::getPageType());
 
     return isset($visibility[$ePosition]) && $visibility[$ePosition] === true;
@@ -6679,6 +6567,7 @@ function boxAnzeigen($ePosition)
  */
 function gibShopURL($bForceSSL = false)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return Shop::getURL($bForceSSL);
 }
 
@@ -6691,6 +6580,7 @@ function gibShopURL($bForceSSL = false)
  */
 function ermittleVersandkosten($cLand, $cPLZ, &$cError = '')
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return VersandartHelper::getShippingCosts($cLand, $cPLZ, $cError);
 }
 
@@ -6704,6 +6594,7 @@ function ermittleVersandkosten($cLand, $cPLZ, &$cError = '')
  */
 function holUnterkategorien($kKategorie, $kKundengruppe, $kSprache, $all = false)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return (new KategorieListe())->holUnterkategorien($kKategorie, $kKundengruppe, $kSprache);
 }
 
@@ -6715,6 +6606,7 @@ function holUnterkategorien($kKategorie, $kKundengruppe, $kSprache, $all = false
  */
 function nichtLeer($kKategorie, $kKundengruppe)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return (new KategorieListe())->nichtLeer($kKategorie, $kKundengruppe);
 }
 
@@ -6726,6 +6618,7 @@ function nichtLeer($kKategorie, $kKundengruppe)
  */
 function artikelVorhanden($kKategorie, $kKundengruppe)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return (new KategorieListe())->artikelVorhanden($kKategorie, $kKundengruppe);
 }
 
@@ -6736,6 +6629,7 @@ function artikelVorhanden($kKategorie, $kKundengruppe)
  */
 function getEinstellungen($sektionen_arr)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return Shop::getSettings($sektionen_arr);
 }
 
@@ -6768,6 +6662,7 @@ function writeLog($logfile, $entry, $level)
  */
 function baueNaviFilter($NaviFilter, $cParameter_arr)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return Shop::buildNaviFilter($cParameter_arr, $NaviFilter);
 }
 
@@ -6777,6 +6672,7 @@ function baueNaviFilter($NaviFilter, $cParameter_arr)
  */
 function session_notwendig()
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and does not return correct values anymore.', E_USER_DEPRECATED);
     return false;
 }
 
@@ -6785,6 +6681,7 @@ function session_notwendig()
  */
 function gibFinanzierung()
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and does not return correct values anymore.', E_USER_DEPRECATED);
 }
 
 /**
@@ -6794,6 +6691,7 @@ function gibFinanzierung()
  */
 function setzeBesuch($keyname, $key)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     if (!$key || isset($_GET['notrack'])) {
         return;
     }
@@ -6823,6 +6721,7 @@ function setzeBesuch($keyname, $key)
  */
 function setzeBesuchExt($params)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     if ($params['kKategorie'] > 0) {
         setzeBesuch('kKategorie', $params['kKategorie']);
     } elseif ($params['kHersteller'] > 0) {
@@ -6846,6 +6745,7 @@ function setzeBesuchExt($params)
  */
 function gibURLzuNewsArchiv()
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $oNewsMonatsUebersicht = Shop::DB()->query(
         "SELECT tnewsmonatsuebersicht.kNewsMonatsUebersicht, tnewsmonatsuebersicht.kSprache, tseo.cSeo,
             tnewsmonatsuebersicht.cName, tnewsmonatsuebersicht.nMonat, tnewsmonatsuebersicht.nJahr
@@ -6878,6 +6778,52 @@ function gibURLzuNewsArchiv()
     }
 
     return baueURL($oNewsMonatsUebersicht, URLART_NEWSMONAT);
+}
+
+/**
+ * return trimmed description without (double) line breaks
+ *
+ * @param string $cDesc
+ * @return string
+ */
+function truncateMetaDescription($cDesc)
+{
+    $conf      = Shop::getSettings([CONF_METAANGABEN]);
+    $maxLength = !empty($conf['metaangaben']['global_meta_maxlaenge_description'])
+        ? (int)$conf['metaangaben']['global_meta_maxlaenge_description']
+        : 0;
+
+    return prepareMeta($cDesc, null, $maxLength);
+}
+
+/**
+ * https? wenn erwünscht reload mit https
+ *
+ * @return bool
+ * @deprecated since 4.06
+ */
+function pruefeHttps()
+{
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
+    return false;
+}
+
+/**
+ * @deprecated since 4.06
+ */
+function loeseHttps()
+{
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
+}
+
+/**
+ * @return array
+ * @deprecated since 4.07
+ */
+function holePreisanzeigeEinstellungen()
+{
+    trigger_error(__FUNCTION__ . ' is deprecated and does not return correct values anymore.', E_USER_DEPRECATED);
+    return [];
 }
 
 /**

@@ -19,10 +19,11 @@ $oUmfrageFrageTMP_arr   = [];
 $Einstellungen          = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_UMFRAGE]);
 $linkHelper             = LinkHelper::getInstance();
 $kLink                  = $linkHelper->getSpecialPageLinkKey(LINKTYP_UMFRAGE);
-$AufgeklappteKategorien = (new KategorieListe())->getOpenCategories($AktuelleKategorie);
+$AufgeklappteKategorien = new KategorieListe();
 $startKat               = new Kategorie();
 $startKat->kKategorie   = 0;
 $AktuelleKategorie      = new Kategorie(verifyGPCDataInteger('kategorie'));
+$AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 
 // Umfrage durchführen
 if (isset($cParameter_arr['kUmfrage']) && $cParameter_arr['kUmfrage'] > 0) {

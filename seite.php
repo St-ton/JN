@@ -25,11 +25,12 @@ $Einstellungen = Shop::getSettings([
 ]);
 
 // hole alle OberKategorien
-$AufgeklappteKategorien = (new KategorieListe())->getOpenCategories($AktuelleKategorie);
 $AktuelleKategorie      = new Kategorie(verifyGPCDataInteger('kategorie'));
+$AufgeklappteKategorien = new KategorieListe();
 $startKat               = new Kategorie();
 $startKat->kKategorie   = 0;
 $linkHelper             = LinkHelper::getInstance();
+$AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 // hole Link
 if (Shop::$isInitialized === true) {
     $kLink = Shop::$kLink;

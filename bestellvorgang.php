@@ -268,9 +268,10 @@ if (isset($_SESSION['Zahlungsart'])
     $paymentMethod->handleConfirmation();
 }
 $AktuelleKategorie      = new Kategorie(verifyGPCDataInteger('kategorie'));
-$AufgeklappteKategorien = (new KategorieListe())->getOpenCategories($AktuelleKategorie);
+$AufgeklappteKategorien = new KategorieListe();
 $startKat               = new Kategorie();
 $startKat->kKategorie   = 0;
+$AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 WarenkorbHelper::addVariationPictures($_SESSION['Warenkorb']);
 $smarty->assign('Navigation', createNavigation($AktuelleSeite))
        ->assign('AGB', gibAGBWRB(Shop::getLanguage(), Session::CustomerGroup()->getID()))

@@ -47,8 +47,7 @@ if (isset($_POST['a']) &&
     $cHinweis       = Shop::Lang()->get('basketAllAdded', 'messages');
     Shop::$kArtikel = (int)$_POST['aBundle'];
 }
-$AktuellerArtikel = new Artikel();
-$AktuellerArtikel->fuelleArtikel(Shop::$kArtikel, Artikel::getDetailOptions());
+$AktuellerArtikel = (new Artikel())->fuelleArtikel(Shop::$kArtikel, Artikel::getDetailOptions());
 if ($AktuellerArtikel->nIstVater === 1) {
     $_SESSION['oVarkombiAuswahl']                               = new stdClass();
     $_SESSION['oVarkombiAuswahl']->kGesetzteEigeschaftWert_arr  = [];
@@ -145,9 +144,10 @@ $sprachURL  = $AktuellerArtikel->getLanguageURLs();
 // hole aktuelle Kategorie, falls eine gesetzt
 $kKategorie             = $AktuellerArtikel->gibKategorie();
 $AktuelleKategorie      = new Kategorie($kKategorie);
-$AufgeklappteKategorien = (new KategorieListe())->getOpenCategories($AktuelleKategorie);
+$AufgeklappteKategorien = new KategorieListe();
 $startKat               = new Kategorie();
 $startKat->kKategorie   = 0;
+$AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 // Bewertungen holen
 $bewertung_seite    = verifyGPCDataInteger('btgseite');
 $bewertung_sterne   = verifyGPCDataInteger('btgsterne');

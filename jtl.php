@@ -77,10 +77,11 @@ if (isset($_POST['login']) && (int)$_POST['login'] === 1 && !empty($_POST['email
 }
 
 $AktuelleKategorie      = new Kategorie(verifyGPCDataInteger('kategorie'));
-$AufgeklappteKategorien = (new KategorieListe())->getOpenCategories($AktuelleKategorie);
+$AufgeklappteKategorien = new KategorieListe();
 $startKat               = new Kategorie();
 $startKat->kKategorie   = 0;
 $editRechnungsadresse   = 0;
+$AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 
 if (isset($Kunde)
     && !empty($Kunde->kKunde)

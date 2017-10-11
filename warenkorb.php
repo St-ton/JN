@@ -8,9 +8,9 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'warenkorb_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
 /** @global JTLSmarty $smarty */
-$AktuelleSeite = 'WARENKORB';
-$MsgWarning    = '';
-$Einstellungen = Shop::getSettings([
+$AktuelleSeite            = 'WARENKORB';
+$MsgWarning               = '';
+$Einstellungen            = Shop::getSettings([
     CONF_GLOBAL,
     CONF_RSS,
     CONF_KAUFABWICKLUNG,
@@ -26,18 +26,18 @@ $cart                     = $_SESSION['Warenkorb'];
 
 Shop::setPageType(PAGE_WARENKORB);
 $kLink = $linkHelper->getSpecialPageLinkKey(LINKTYP_WARENKORB);
-//Warenkorbaktualisierung?
+// Warenkorbaktualisierung?
 uebernehmeWarenkorbAenderungen();
-//validiere Konfigurationen
+// validiere Konfigurationen
 validiereWarenkorbKonfig();
 pruefeGuthabenNutzen();
-//Versandermittlung?
-if (isset($_POST['land'], $_POST['plz']) &&
-    !VersandartHelper::getShippingCosts($_POST['land'], $_POST['plz'], $MsgWarning)
+// Versandermittlung?
+if (isset($_POST['land'], $_POST['plz'])
+    && !VersandartHelper::getShippingCosts($_POST['land'], $_POST['plz'], $MsgWarning)
 ) {
     $MsgWarning = Shop::Lang()->get('missingParamShippingDetermination', 'errorMessages');
 }
-//Kupons bearbeiten
+// Kupons bearbeiten
 if ($cart !== null &&
     isset($_POST['Kuponcode']) &&
     strlen($_POST['Kuponcode']) > 0 &&
@@ -47,7 +47,7 @@ if ($cart !== null &&
     $Kupon             = new Kupon();
     $Kupon             = $Kupon->getByCode($_POST['Kuponcode']);
     $invalidCouponCode = false;
-    if (isset($Kupon->kKupon)) {
+    if ($Kupon !== false && $Kupon->kKupon > 0) {
         $Kuponfehler  = checkeKupon($Kupon);
         $nReturnValue = angabenKorrekt($Kuponfehler);
         executeHook(HOOK_WARENKORB_PAGE_KUPONANNEHMEN_PLAUSI, [
@@ -55,7 +55,7 @@ if ($cart !== null &&
             'nReturnValue' => &$nReturnValue
         ]);
         if ($nReturnValue) {
-            if (isset($Kupon->kKupon) && $Kupon->kKupon > 0 && $Kupon->cKuponTyp === 'standard') {
+            if ($Kupon->cKuponTyp === 'standard') {
                 kuponAnnehmen($Kupon);
                 executeHook(HOOK_WARENKORB_PAGE_KUPONANNEHMEN);
             } elseif (!empty($Kupon->kKupon) && $Kupon->cKuponTyp === 'versandkupon') {
@@ -74,15 +74,13 @@ if ($cart !== null &&
         $smarty->assign('invalidCouponCode', $invalidCouponCode);
     }
 }
-
-//Kupon nicht mehr verfügbar. Redirekt im Bestellabschluss. Fehlerausgabe
+// Kupon nicht mehr verfügbar. Redirect im Bestellabschluss. Fehlerausgabe
 if (isset($_SESSION['checkCouponResult'])) {
     $KuponcodeUngueltig = true;
     $Kuponfehler        = $_SESSION['checkCouponResult'];
     unset($_SESSION['checkCouponResult']);
     $smarty->assign('cKuponfehler', $Kuponfehler['ungueltig']);
 }
-
 // Gratis Geschenk bearbeiten
 if (isset($_POST['gratis_geschenk'], $_POST['gratishinzufuegen']) && (int)$_POST['gratis_geschenk'] === 1) {
     $kArtikelGeschenk = (int)$_POST['gratisgeschenk'];
@@ -112,12 +110,11 @@ if (isset($_POST['gratis_geschenk'], $_POST['gratishinzufuegen']) && (int)$_POST
         }
     }
 }
-//hole aktuelle Kategorie, falls eine gesetzt
+// hole aktuelle Kategorie, falls eine gesetzt
 $AktuelleKategorie      = new Kategorie(verifyGPCDataInteger('kategorie'));
-$AufgeklappteKategorien = new KategorieListe();
-$AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
-$startKat             = new Kategorie();
-$startKat->kKategorie = 0;
+$AufgeklappteKategorien = (new KategorieListe())->getOpenCategories($AktuelleKategorie);
+$startKat               = new Kategorie();
+$startKat->kKategorie   = 0;
 if (isset($_GET['fillOut'])) {
     $mbw = Session::CustomerGroup()->getAttribute(KNDGRP_ATTRIBUT_MINDESTBESTELLWERT);
     if ((int)$_GET['fillOut'] === 9 && $mbw > 0 && $cart->gibGesamtsummeWaren(1, 0) < $mbw) {
@@ -134,7 +131,6 @@ if (isset($_GET['fillOut'])) {
         $MsgWarning = Shop::Lang()->get('missingFilesUpload', 'checkout');
     }
 }
-
 $kKundengruppe = Session::CustomerGroup()->getID();
 if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']->kKundengruppe > 0) {
     $kKundengruppe = $_SESSION['Kunde']->kKundengruppe;

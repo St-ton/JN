@@ -168,7 +168,6 @@ if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']) {
                     $oGuenstigsteVersandart = $oVersandart;
                 }
             }
-
             if ($oGuenstigsteVersandart !== null) {
                 pruefeVersandartWahl(
                     $oGuenstigsteVersandart->kVersandart,
@@ -183,7 +182,7 @@ if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']) {
         }
     }
 }
-//Download-Artikel vorhanden?
+// Download-Artikel vorhanden?
 if ($step !== 'accountwahl' &&
     empty($_SESSION['Kunde']->cPasswort) &&
     class_exists('Download') &&
@@ -204,19 +203,19 @@ if ($step !== 'accountwahl' &&
 
     unset($_SESSION['Kunde']);
 }
-//autom. step ermitteln
+// autom. step ermitteln
 pruefeVersandkostenStep();
-//autom. step ermitteln
+// autom. step ermitteln
 pruefeZahlungStep();
-//autom. step ermitteln
+// autom. step ermitteln
 pruefeBestaetigungStep();
-//sondersteps Rechnungsadresse aendern
+// sondersteps Rechnungsadresse aendern
 pruefeRechnungsadresseStep($_GET);
-//sondersteps Lieferadresse aendern
+// sondersteps Lieferadresse aendern
 pruefeLieferadresseStep($_GET);
-//sondersteps Versandart aendern
+// sondersteps Versandart aendern
 pruefeVersandartStep($_GET);
-//sondersteps Zahlungsart aendern
+// sondersteps Zahlungsart aendern
 pruefeZahlungsartStep($_GET);
 pruefeZahlungsartwahlStep($_POST);
 
@@ -247,10 +246,10 @@ if ($step === 'Bestaetigung') {
     $_SESSION['Warenkorb']->cEstimatedDelivery = $_SESSION['Warenkorb']->getEstimatedDeliveryTime();
     Warenkorb::refreshChecksum($_SESSION['Warenkorb']);
 }
-//SafetyPay Work Around
-if (isset($_SESSION['Zahlungsart']->cModulId) &&
-    $_SESSION['Zahlungsart']->cModulId === 'za_safetypay' &&
-    $step === 'Bestaetigung'
+// SafetyPay Work Around
+if (isset($_SESSION['Zahlungsart']->cModulId)
+    && $_SESSION['Zahlungsart']->cModulId === 'za_safetypay'
+    && $step === 'Bestaetigung'
 ) {
     require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'safetypay/safetypay.php';
     $smarty->assign('safetypay_form', gib_safetypay_form(
@@ -259,25 +258,20 @@ if (isset($_SESSION['Zahlungsart']->cModulId) &&
         $Einstellungen['zahlungsarten']
     ));
 }
-//Billpay
-if (isset($_SESSION['Zahlungsart']) &&
-    $_SESSION['Zahlungsart']->cModulId === 'za_billpay_jtl' &&
-    $step === 'Bestaetigung'
+// Billpay
+if (isset($_SESSION['Zahlungsart'])
+    && $_SESSION['Zahlungsart']->cModulId === 'za_billpay_jtl'
+    && $step === 'Bestaetigung'
 ) {
     /** @var Billpay $paymentMethod */
     $paymentMethod = PaymentMethod::create('za_billpay_jtl');
     $paymentMethod->handleConfirmation();
 }
-//hole aktuelle Kategorie, falls eine gesetzt
 $AktuelleKategorie      = new Kategorie(verifyGPCDataInteger('kategorie'));
-$AufgeklappteKategorien = new KategorieListe();
-$AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
-$startKat             = new Kategorie();
-$startKat->kKategorie = 0;
-
+$AufgeklappteKategorien = (new KategorieListe())->getOpenCategories($AktuelleKategorie);
+$startKat               = new Kategorie();
+$startKat->kKategorie   = 0;
 WarenkorbHelper::addVariationPictures($_SESSION['Warenkorb']);
-
-//specific assigns
 $smarty->assign('Navigation', createNavigation($AktuelleSeite))
        ->assign('AGB', gibAGBWRB(Shop::getLanguage(), Session::CustomerGroup()->getID()))
        ->assign('Ueberschrift', Shop::Lang()->get('orderStep0Title', 'checkout'))

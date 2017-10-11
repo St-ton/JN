@@ -50,4 +50,4 @@ header('Cache-Control: no-cache, must-revalidate');
 header('Pragma: no-cache');
 header('Content-type: application/json');
 
-echo is_null($data) ? '{}' : json_encode($data);
+echo $data === null ? '{}' : json_encode($data);

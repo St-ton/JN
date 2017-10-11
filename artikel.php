@@ -12,7 +12,7 @@ require_once PFAD_ROOT . PFAD_CLASSES_CORE . 'class.core.NiceMail.php';
 /** @global JTLSmarty $smarty */
 $AktuelleSeite = 'ARTIKEL';
 Shop::setPageType(PAGE_ARTIKEL);
-$Einstellungen = Shop::getSettings([
+$Einstellungen                = Shop::getSettings([
     CONF_GLOBAL,
     CONF_ARTIKELUEBERSICHT,
     CONF_NAVIGATIONSFILTER,
@@ -98,10 +98,10 @@ $similarArticles = (int)$Einstellungen['artikeldetails']['artikeldetails_aehnlic
     : [];
 // Lade VariationKombiKind
 if (Shop::$kVariKindArtikel > 0) {
-    $oVariKindArtikel                            = new Artikel();
     $oArtikelOptionen                            = Artikel::getDetailOptions();
     $oArtikelOptionen->nKeinLagerbestandBeachten = 1;
-    $oVariKindArtikel->fuelleArtikel(Shop::$kVariKindArtikel, $oArtikelOptionen);
+
+    $oVariKindArtikel = (new Artikel())->fuelleArtikel(Shop::$kVariKindArtikel, $oArtikelOptionen);
     $AktuellerArtikel = fasseVariVaterUndKindZusammen($AktuellerArtikel, $oVariKindArtikel);
     $bCanonicalURL    = ($Einstellungen['artikeldetails']['artikeldetails_canonicalurl_varkombikind'] !== 'N');
     $cCanonicalURL    = $AktuellerArtikel->baueVariKombiKindCanonicalURL(SHOP_SEO, $AktuellerArtikel, $bCanonicalURL);
@@ -109,7 +109,7 @@ if (Shop::$kVariKindArtikel > 0) {
            ->assign('reset_button', '<ul><li><button type="button" ' .
                'class="btn submit reset_selection" onclick="location.href=\'' .
                $shopURL . $AktuellerArtikel->cVaterURL . '\';">' .
-               Shop::Lang()->get('resetSelection', 'global') . '</button></li></ul>');
+               Shop::Lang()->get('resetSelection') . '</button></li></ul>');
 }
 // Hat Artikel einen Preisverlauf?
 $smarty->assign('bPreisverlauf', Session::CustomerGroup()->mayViewPrices());
@@ -140,16 +140,14 @@ if (isset($_POST['fragezumprodukt']) && (int)$_POST['fragezumprodukt'] === 1) {
 } elseif (isset($_POST['benachrichtigung_verfuegbarkeit']) && (int)$_POST['benachrichtigung_verfuegbarkeit'] === 1) {
     bearbeiteBenachrichtigung();
 }
-// url
 $requestURL = baueURL($AktuellerArtikel, URLART_ARTIKEL);
 $sprachURL  = $AktuellerArtikel->getLanguageURLs();
 // hole aktuelle Kategorie, falls eine gesetzt
 $kKategorie             = $AktuellerArtikel->gibKategorie();
 $AktuelleKategorie      = new Kategorie($kKategorie);
-$AufgeklappteKategorien = new KategorieListe();
-$AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
-$startKat             = new Kategorie();
-$startKat->kKategorie = 0;
+$AufgeklappteKategorien = (new KategorieListe())->getOpenCategories($AktuelleKategorie);
+$startKat               = new Kategorie();
+$startKat->kKategorie   = 0;
 // Bewertungen holen
 $bewertung_seite    = verifyGPCDataInteger('btgseite');
 $bewertung_sterne   = verifyGPCDataInteger('btgsterne');
@@ -175,15 +173,15 @@ if ($AktuellerArtikel->Bewertungen === null || $bewertung_sterne > 0) {
     $AktuellerArtikel->holehilfreichsteBewertung(Shop::getLanguage());
 }
 
-if (isset($AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich) &&
-    isset($AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->kBewertung) &&
-    (int)$AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich > 0
+if (isset($AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich)
+    && isset($AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->kBewertung)
+    && (int)$AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich > 0
 ) {
     $oBewertung_arr = array_filter(
         $AktuellerArtikel->Bewertungen->oBewertung_arr,
         function ($oBewertung) use (&$AktuellerArtikel) {
-            return
-                (int)$AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->kBewertung !== (int)$oBewertung->kBewertung;
+            return (int)$AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->kBewertung
+                !== (int)$oBewertung->kBewertung;
         }
     );
 } else {
@@ -203,7 +201,7 @@ $pagination = (new Pagination('ratings'))
 
 $AktuellerArtikel->Bewertungen->Sortierung = $nSortierung;
 
-$nAnzahlBewertungen = ($bewertung_sterne === 0)
+$nAnzahlBewertungen = $bewertung_sterne === 0
     ? $AktuellerArtikel->Bewertungen->nAnzahlSprache
     : $AktuellerArtikel->Bewertungen->nSterne_arr[5 - $bewertung_sterne];
 // Baue Blaetter Navigation
@@ -228,7 +226,6 @@ if ($AktuellerArtikel->Variationen) {
         }
     }
 }
-//specific assigns
 $smarty->assign('Navigation', createNavigation($AktuelleSeite, $AufgeklappteKategorien, $AktuellerArtikel))
        ->assign('showMatrix', $AktuellerArtikel->showMatrix())
        ->assign('arNichtErlaubteEigenschaftswerte', $arNichtErlaubteEigenschaftswerte)

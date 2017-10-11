@@ -23,7 +23,6 @@ $cSuche           = null;
 $step             = null;
 $CWunschliste     = null;
 $action           = null;
-$action           = null;
 $kWunschlistePos  = null;
 $oWunschliste_arr = [];
 $linkHelper       = LinkHelper::getInstance();

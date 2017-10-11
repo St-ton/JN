@@ -68,8 +68,8 @@ if (isset($_GET['i'])) {
     if (empty($_SESSION['Zahlungsart']->nWaehrendBestellung)) {
         $_SESSION['Warenkorb']->loescheDeaktiviertePositionen();
         $wkChecksum = Warenkorb::getChecksum($_SESSION['Warenkorb']);
-        if (!empty($_SESSION['Warenkorb']->cChecksumme) &&
-            $wkChecksum != $_SESSION['Warenkorb']->cChecksumme
+        if (!empty($_SESSION['Warenkorb']->cChecksumme)
+            && $wkChecksum !== $_SESSION['Warenkorb']->cChecksumme
         ) {
             if (!$_SESSION['Warenkorb']->enthaltenSpezialPos(C_WARENKORBPOS_TYP_ARTIKEL)) {
                 loescheAlleSpezialPos();
@@ -82,14 +82,14 @@ if (isset($_GET['i'])) {
         $bestellid  = (isset($bestellung->kBestellung) && $bestellung->kBestellung > 0)
             ? Shop::DB()->select('tbestellid', 'kBestellung', $bestellung->kBestellung)
             : false;
-        if ($bestellung->Lieferadresse === null &&
-            isset($_SESSION['Lieferadresse']) &&
-            strlen($_SESSION['Lieferadresse']->cVorname) > 0
+        if ($bestellung->Lieferadresse === null
+            && isset($_SESSION['Lieferadresse'])
+            && strlen($_SESSION['Lieferadresse']->cVorname) > 0
         ) {
             $bestellung->Lieferadresse = gibLieferadresseAusSession();
         }
-        $orderCompleteURL  = $linkHelper->getStaticRoute('bestellabschluss.php', true);
-        $successPaymentURL = (!empty($bestellid->cId))
+        $orderCompleteURL  = $linkHelper->getStaticRoute('bestellabschluss.php');
+        $successPaymentURL = !empty($bestellid->cId)
             ? ($orderCompleteURL . '?i=' . $bestellid->cId)
             : Shop::getURL();
         $smarty->assign('Bestellung', $bestellung);
@@ -98,18 +98,16 @@ if (isset($_GET['i'])) {
     }
     setzeSmartyWeiterleitung($bestellung);
 }
-//hole aktuelle Kategorie, falls eine gesetzt
 $AktuelleKategorie      = new Kategorie(verifyGPCDataInteger('kategorie'));
-$AufgeklappteKategorien = new KategorieListe();
-$AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
-$startKat             = new Kategorie();
-$startKat->kKategorie = 0;
+$AufgeklappteKategorien = (new KategorieListe())->getOpenCategories($AktuelleKategorie);
+$startKat               = new Kategorie();
+$startKat->kKategorie   = 0;
 // Trusted Shops Kaeuferschutz Classic
 if (isset($Einstellungen['trustedshops']['trustedshops_nutzen']) && $Einstellungen['trustedshops']['trustedshops_nutzen'] === 'Y') {
     require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.TrustedShops.php';
     $oTrustedShops = new TrustedShops(-1, StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
 
-    if (strlen($oTrustedShops->tsId) > 0 && $oTrustedShops->nAktiv == 1) {
+    if ((int)$oTrustedShops->nAktiv === 1 && strlen($oTrustedShops->tsId) > 0) {
         $smarty->assign('oTrustedShops', $oTrustedShops);
     }
 }

@@ -24,32 +24,28 @@ $Einstellungen = Shop::getSettings([
     CONF_METAANGABEN
 ]);
 
-//hole alle OberKategorien
-$AufgeklappteKategorien = new KategorieListe();
+// hole alle OberKategorien
+$AufgeklappteKategorien = (new KategorieListe())->getOpenCategories($AktuelleKategorie);
 $AktuelleKategorie      = new Kategorie(verifyGPCDataInteger('kategorie'));
 $startKat               = new Kategorie();
+$startKat->kKategorie   = 0;
 $linkHelper             = LinkHelper::getInstance();
-$AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
-$startKat->kKategorie = 0;
-//hole Link
+// hole Link
 if (Shop::$isInitialized === true) {
     $kLink = Shop::$kLink;
 }
 if (!isset($link)) {
     $link = $linkHelper->getPageLink(Shop::$kLink);
 }
-if (isset($link->nLinkart) && $link->nLinkart == LINKTYP_EXTERNE_URL) {
+if (isset($link->nLinkart) && (int)$link->nLinkart === LINKTYP_EXTERNE_URL) {
     header('Location: ' . $link->cURL, true, 303);
     exit;
 }
-
 if (!isset($link->bHideContent) || !$link->bHideContent) {
     $link->Sprache = $linkHelper->getPageLinkLanguage($link->kLink);
 }
-//url
 $requestURL = baueURL($link, URLART_SEITE);
 $smarty->assign('cmsurl', $requestURL);
-// Canonical
 if ($link->nLinkart === LINKTYP_STARTSEITE) {
     // Work Around für die Startseite
     $cCanonicalURL = Shop::getURL() . '/';
@@ -210,7 +206,9 @@ $cMetaTitle = prepareMeta($cMetaTitle, null, (int)$Einstellungen['metaangaben'][
 $smarty->assign('meta_title', $cMetaTitle)
        ->assign('meta_description', $cMetaDescription)
        ->assign('meta_keywords', $cMetaKeywords);
+
 executeHook(HOOK_SEITE_PAGE);
+
 $smarty->display('layout/index.tpl');
 
 require PFAD_ROOT . PFAD_INCLUDES . 'profiler_inc.php';

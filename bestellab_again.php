@@ -23,11 +23,12 @@ $linkHelper    = LinkHelper::getInstance();
 $bestellung    = (new Bestellung($kBestellung))->fuelleBestellung();
 //abfragen, ob diese Bestellung dem Kunden auch gehoert
 //bei Gastbestellungen ist ggf das Kundenobjekt bereits entfernt bzw nRegistriert = 0
-if ($bestellung->oKunde !== null && (int)$bestellung->oKunde->nRegistriert === 1) {
-    if ((int)$bestellung->kKunde !== (int)$_SESSION['Kunde']->kKunde) {
-        header('Location: ' . $linkHelper->getStaticRoute('jtl.php'), true, 303);
-        exit;
-    }
+if ($bestellung->oKunde !== null
+    && (int)$bestellung->oKunde->nRegistriert === 1
+    && (int)$bestellung->kKunde !== (int)$_SESSION['Kunde']->kKunde
+) {
+    header('Location: ' . $linkHelper->getStaticRoute('jtl.php'), true, 303);
+    exit;
 }
 
 $bestellid         = Shop::DB()->select('tbestellid', 'kBestellung', $bestellung->kBestellung);
@@ -36,9 +37,8 @@ if ($bestellid->cId) {
     $orderCompleteURL  = $linkHelper->getStaticRoute('bestellabschluss.php');
     $successPaymentURL = $orderCompleteURL . '?i=' . $bestellid->cId;
 }
-if (!isset($obj)) {
-    $obj = new stdClass();
-}
+
+$obj              = new stdClass();
 $obj->tkunde      = $_SESSION['Kunde'];
 $obj->tbestellung = $bestellung;
 $smarty->assign('Bestellung', $bestellung);
@@ -115,7 +115,6 @@ if (verifyGPCDataInteger('zusatzschritt') === 1) {
 $kPlugin = gibkPluginAuscModulId($bestellung->Zahlungsart->cModulId);
 if ($kPlugin > 0) {
     $oPlugin = new Plugin($kPlugin);
-
     if ($oPlugin->kPlugin > 0) {
         require_once PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/' .
             PFAD_PLUGIN_VERSION . $oPlugin->nVersion . '/' . PFAD_PLUGIN_PAYMENTMETHOD .
@@ -245,10 +244,9 @@ elseif ($bestellung->Zahlungsart->cModulId === 'za_eos_dd_jtl') {
 }
 //hole aktuelle Kategorie, falls eine gesetzt
 $AktuelleKategorie      = new Kategorie(verifyGPCDataInteger('kategorie'));
-$AufgeklappteKategorien = new KategorieListe();
-$AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
-$startKat             = new Kategorie();
-$startKat->kKategorie = 0;
+$AufgeklappteKategorien = (new KategorieListe())->getOpenCategories($AktuelleKategorie);
+$startKat               = new Kategorie();
+$startKat->kKategorie   = 0;
 
 $smarty->assign('Navigation', createNavigation($AktuelleSeite))
        ->assign('Firma', Shop::DB()->query("SELECT * FROM tfirma", 1))

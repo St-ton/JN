@@ -24,14 +24,12 @@ if (isset($Link)) {
 }
 //hole aktuelle Kategorie, falls eine gesetzt
 $AktuelleKategorie      = new Kategorie(verifyGPCDataInteger('kategorie'));
-$AufgeklappteKategorien = new KategorieListe();
-$AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
-$startKat             = new Kategorie();
-$startKat->kKategorie = -1;
+$AufgeklappteKategorien = (new KategorieListe())->getOpenCategories($AktuelleKategorie);
+$startKat               = new Kategorie();
+$startKat->kKategorie   = -1;
 // VergleichslistePos in den Warenkorb adden
 if (isset($_GET['vlph']) && (int)$_GET['vlph'] === 1) {
     $kArtikel = verifyGPCDataInteger('a');
-
     if ($kArtikel > 0) {
         //redirekt zum artikel, um variation/en zu wählen / MBM beachten
         header('Location: ' . Shop::getURL() . '/?a=' . $kArtikel);
@@ -50,14 +48,13 @@ if (isset($_GET['vlph']) && (int)$_GET['vlph'] === 1) {
     }
 }
 
-if (isset($oVergleichsliste->oArtikel_arr)) {
+if ($oVergleichsliste !== null) {
     $oArtikel_arr     = [];
     $defaultOptions   = Artikel::getDefaultOptions();
     $linkHelper       = LinkHelper::getInstance();
     $baseURL          = $linkHelper->getStaticRoute('vergleichsliste.php');
     foreach ($oVergleichsliste->oArtikel_arr as $oArtikel) {
-        $artikel = new Artikel();
-        $artikel->fuelleArtikel($oArtikel->kArtikel, $defaultOptions);
+        $artikel = (new Artikel())->fuelleArtikel($oArtikel->kArtikel, $defaultOptions);
         $artikel->cURLDEL = $baseURL . '?vlplo=' . $oArtikel->kArtikel;
         if (isset($oArtikel->oVariationen_arr) && count($oArtikel->oVariationen_arr) > 0) {
             $artikel->Variationen = $oArtikel->oVariationen_arr;
@@ -75,7 +72,6 @@ $nBreiteArtikel = ($conf['vergleichsliste']['vergleichsliste_spaltengroesse'] > 
     ? (int)$conf['vergleichsliste']['vergleichsliste_spaltengroesse']
     : 200;
 $nBreiteTabelle = $nBreiteArtikel * count($oVergleichsliste->oArtikel_arr) + $nBreiteAttribut;
-//specific assigns
 $smarty->assign('nBreiteTabelle', $nBreiteTabelle)
        ->assign('cPrioSpalten_arr', $cExclude)
        ->assign('oMerkmale_arr', $oMerkVaria_arr[0])

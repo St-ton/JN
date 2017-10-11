@@ -9,23 +9,20 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
 /** @global JTLSmarty $smarty */
 Shop::run();
 Shop::setPageType(PAGE_UMFRAGE);
-$cParameter_arr       = Shop::getParameters();
-$cHinweis             = '';
-$cFehler              = '';
-$cCanonicalURL        = '';
-$step                 = 'umfrage_uebersicht';
-$nAktuelleSeite       = 1;
-$oUmfrageFrageTMP_arr = [];
-$Einstellungen        = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_UMFRAGE]);
-$linkHelper           = LinkHelper::getInstance();
-$kLink                = $linkHelper->getSpecialPageLinkKey(LINKTYP_UMFRAGE);
-
-//hole alle OberKategorien
-$AufgeklappteKategorien = new KategorieListe();
+$cParameter_arr         = Shop::getParameters();
+$cHinweis               = '';
+$cFehler                = '';
+$cCanonicalURL          = '';
+$step                   = 'umfrage_uebersicht';
+$nAktuelleSeite         = 1;
+$oUmfrageFrageTMP_arr   = [];
+$Einstellungen          = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_UMFRAGE]);
+$linkHelper             = LinkHelper::getInstance();
+$kLink                  = $linkHelper->getSpecialPageLinkKey(LINKTYP_UMFRAGE);
+$AufgeklappteKategorien = (new KategorieListe())->getOpenCategories($AktuelleKategorie);
 $startKat               = new Kategorie();
-$AktuelleKategorie      = new Kategorie(verifyGPCDataInteger('kategorie'));
 $startKat->kKategorie   = 0;
-$AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
+$AktuelleKategorie      = new Kategorie(verifyGPCDataInteger('kategorie'));
 
 // Umfrage durchführen
 if (isset($cParameter_arr['kUmfrage']) && $cParameter_arr['kUmfrage'] > 0) {
@@ -41,7 +38,6 @@ if (isset($cParameter_arr['kUmfrage']) && $cParameter_arr['kUmfrage'] > 0) {
                 // Auswertung
                 if (isset($_POST['end'])) {
                     speicherFragenInSession($_POST);
-
                     if (pruefeEingabe($_POST) > 0) {
                         $cFehler .= Shop::Lang()->get('pollRequired', 'errorMessages') . '<br>';
                     } elseif ($_SESSION['Umfrage']->nEnde == 0) {
@@ -53,7 +49,6 @@ if (isset($cParameter_arr['kUmfrage']) && $cParameter_arr['kUmfrage'] > 0) {
                         $step = 'umfrage_uebersicht';
                     }
                 }
-
                 if ($step === 'umfrage_durchfuehren') {
                     $oNavi_arr = [];
                     // Durchfuehrung
@@ -85,7 +80,7 @@ if (isset($cParameter_arr['kUmfrage']) && $cParameter_arr['kUmfrage'] > 0) {
             }
         }
     } else {
-        header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true) .
+        header('Location: ' . $linkHelper->getStaticRoute('jtl.php') .
             '?u=' . $cParameter_arr['kUmfrage'] . '&r=' . R_LOGIN_UMFRAGE);
         exit();
     }

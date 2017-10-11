@@ -2799,7 +2799,7 @@ function gibVersandZuschlag($versandart, $cISO, $plz)
  * @param String            $cISO
  * @param Artikel|stdClass  $oZusatzArtikel
  * @param Artikel|int       $Artikel
- * @return int
+ * @return int|string
  */
 function berechneVersandpreis($versandart, $cISO, $oZusatzArtikel, $Artikel = 0)
 {

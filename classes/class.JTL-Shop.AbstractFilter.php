@@ -241,6 +241,7 @@ abstract class AbstractFilter implements IFilter
             : array_filter(
                 $this->filterCollection,
                 function ($f) {
+                    /** @var $f IFilter */
                     return $f->getVisibility() !== self::SHOW_NEVER;
                 }
             );
@@ -305,7 +306,7 @@ abstract class AbstractFilter implements IFilter
     }
 
     /**
-     * @param string|null $idx
+     * @param string|array|null $idx
      * @return string|array
      */
     public function getUnsetFilterURL($idx = null)
@@ -615,9 +616,6 @@ abstract class AbstractFilter implements IFilter
      */
     public function getActiveValues($idx = null)
     {
-//        return $this->activeValues !== null
-//            ? $this->activeValues
-//            : $this;
         $activeValues = $this->activeValues !== null
             ? $this->activeValues
             : $this;

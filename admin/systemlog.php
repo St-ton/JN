@@ -60,7 +60,7 @@ if ($step === 'systemlog_uebersicht') {
         $oLog->setcLog($cLog, false);
     }
 
-    $nSystemlogFlag                 = getSytemlogFlag(false);
+    $nSystemlogFlag                 = Jtllog::getSytemlogFlag(false);
     $nFlag_arr[JTLLOG_LEVEL_ERROR]  = Jtllog::isBitFlagSet(JTLLOG_LEVEL_ERROR, $nSystemlogFlag);
     $nFlag_arr[JTLLOG_LEVEL_NOTICE] = Jtllog::isBitFlagSet(JTLLOG_LEVEL_NOTICE, $nSystemlogFlag);
     $nFlag_arr[JTLLOG_LEVEL_DEBUG]  = Jtllog::isBitFlagSet(JTLLOG_LEVEL_DEBUG, $nSystemlogFlag);

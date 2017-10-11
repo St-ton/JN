@@ -32,7 +32,110 @@ class Metadata
     {
         $this->navigationsfilter = $navigationsfilter;
         $this->conf              = $navigationsfilter->getConfig();
-        
+    }
+
+    /**
+     * Holt die Globalen Metaangaben und Return diese als Assoc Array wobei die Keys => kSprache sind
+     *
+     * @return array|mixed
+     * @former holeGlobaleMetaAngaben()
+     */
+    public static function getGlobalMetaData()
+    {
+        $cacheID = 'jtl_glob_meta';
+        if (($globalMeta = Shop::Cache()->get($cacheID)) !== false) {
+            return $globalMeta;
+        }
+        $globalMeta = [];
+        $globalTmp  = Shop::DB()->query("SELECT cName, kSprache, cWertName FROM tglobalemetaangaben ORDER BY kSprache", 2);
+        foreach ($globalTmp as $data) {
+            if (!isset($globalMeta[$data->kSprache])) {
+                $globalMeta[$data->kSprache] = new stdClass();
+            }
+            $cName                               = $data->cName;
+            $globalMeta[$data->kSprache]->$cName = $data->cWertName;
+        }
+        Shop::Cache()->set($cacheID, $globalMeta, [CACHING_GROUP_CORE]);
+
+        return $globalMeta;
+    }
+
+    /**
+     * @return array
+     * @former holeExcludedKeywords()
+     */
+    public static function getExcludes()
+    {
+        $exclude  = [];
+        $keyWords = Shop::DB()->query("SELECT * FROM texcludekeywords ORDER BY cISOSprache", 2);
+        foreach ($keyWords as $keyWord) {
+            $exclude[$keyWord->cISOSprache] = $keyWord;
+        }
+
+        return $exclude;
+    }
+
+    /**
+     * Erhält einen String aus dem alle nicht erlaubten Wörter rausgefiltert werden
+     *
+     * @param string $cString
+     * @param array  $oExcludesKeywords_arr
+     * @return string
+     * @former gibExcludesKeywordsReplace()
+     */
+    public static function getFilteredString($cString, $oExcludesKeywords_arr)
+    {
+        if (is_array($oExcludesKeywords_arr) && count($oExcludesKeywords_arr) > 0) {
+            return str_replace(array_map(
+                function ($k) {
+                    return ' ' . $k . ' ';
+                },
+                $oExcludesKeywords_arr
+            ), ' ', $cString);
+        }
+
+        return $cString;
+    }
+
+    /**
+     * Mapped die Suchspecial Einstellungen und liefert die Einstellungswerte als Assoc Array zurück.
+     * Das Array kann via kKey Assoc angesprochen werden.
+     *
+     * @param array $config
+     * @return array
+     * @former gibSuchspecialEinstellungMapping()
+     */
+    public static function getSearchSpecialConfigMapping($config)
+    {
+        $mapping = [];
+        if (is_array($config) && count($config) > 0) {
+            foreach ($config as $key => $oSuchspecialEinstellung) {
+                switch ($key) {
+                    case 'suchspecials_sortierung_bestseller':
+                        $mapping[SEARCHSPECIALS_BESTSELLER] = $oSuchspecialEinstellung;
+                        break;
+                    case 'suchspecials_sortierung_sonderangebote':
+                        $mapping[SEARCHSPECIALS_SPECIALOFFERS] = $oSuchspecialEinstellung;
+                        break;
+                    case 'suchspecials_sortierung_neuimsortiment':
+                        $mapping[SEARCHSPECIALS_NEWPRODUCTS] = $oSuchspecialEinstellung;
+                        break;
+                    case 'suchspecials_sortierung_topangebote':
+                        $mapping[SEARCHSPECIALS_TOPOFFERS] = $oSuchspecialEinstellung;
+                        break;
+                    case 'suchspecials_sortierung_inkuerzeverfuegbar':
+                        $mapping[SEARCHSPECIALS_UPCOMINGPRODUCTS] = $oSuchspecialEinstellung;
+                        break;
+                    case 'suchspecials_sortierung_topbewertet':
+                        $mapping[SEARCHSPECIALS_TOPREVIEWS] = $oSuchspecialEinstellung;
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        return $mapping;
     }
 
     /**
@@ -205,12 +308,12 @@ class Metadata
             shuffle($oArtikel_arr); // Shuffle alle Artikel
             $nCount                = min(6, count($oArtikel_arr));
             $cArtikelName          = '';
-            $excludes              = holeExcludedKeywords();
+            $excludes              = self::getExcludes();
             $oExcludesKeywords_arr = isset($excludes[$_SESSION['cISOSprache']]->cKeywords)
                 ? explode(' ', $excludes[$_SESSION['cISOSprache']]->cKeywords)
                 : [];
             for ($i = 0; $i < $nCount; ++$i) {
-                $cExcArtikelName = gibExcludesKeywordsReplace(
+                $cExcArtikelName = self::getFilteredString(
                     $oArtikel_arr[$i]->cName,
                     $oExcludesKeywords_arr
                 ); // Filter nicht erlaubte Keywords
@@ -957,7 +1060,7 @@ class Metadata
         // Suchspecial sortierung
         if ($this->navigationsfilter->hasSearchSpecial()) {
             // Gibt die Suchspecials als Assoc Array zurück, wobei die Keys des Arrays der kKey vom Suchspecial sind.
-            $oSuchspecialEinstellung_arr = gibSuchspecialEinstellungMapping($this->conf['suchspecials']);
+            $oSuchspecialEinstellung_arr = self::getSearchSpecialConfigMapping($this->conf['suchspecials']);
             // -1 = Keine spezielle Sortierung
             $ssConf = isset($oSuchspecialEinstellung_arr[$this->navigationsfilter->getSearchSpecial()->getValue()]) ?: null;
             if ($ssConf !== null && $ssConf !== -1 && count($oSuchspecialEinstellung_arr) > 0) {

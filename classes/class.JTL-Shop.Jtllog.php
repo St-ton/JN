@@ -148,7 +148,7 @@ class Jtllog
             $nSystemlogFlag = $GLOBALS['nSystemlogFlag'];
         }
         if ($nSystemlogFlag === 0) {
-            $nSystemlogFlag = getSytemlogFlag();
+            $nSystemlogFlag = self::getSytemlogFlag();
         }
 
         return self::isBitFlagSet($nSystemlogFlag, $nLevel) > 0;
@@ -501,5 +501,24 @@ class Jtllog
         }
 
         return false;
+    }
+
+    /**
+     * @param bool $cache
+     * @return int
+     * @former getSytemlogFlag()
+     */
+    public static function getSytemlogFlag($cache = true)
+    {
+        $conf = Shop::getSettings([CONF_GLOBAL]);
+        if ($cache === true && isset($conf['global']['systemlog_flag'])) {
+            return (int)$conf['global']['systemlog_flag'];
+        }
+        $conf = Shop::DB()->query("SELECT cWert FROM teinstellungen WHERE cName = 'systemlog_flag'", 1);
+        if (isset($conf->cWert)) {
+            return (int)$conf->cWert;
+        }
+
+        return 0;
     }
 }

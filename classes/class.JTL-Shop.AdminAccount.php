@@ -66,7 +66,7 @@ class AdminAccount
                 if ($secs > (60 * 60 * 24)) {
                     return false;
                 }
-                //check the submitted hash against the saved one
+                // check the submitted hash against the saved one
                 return password_verify($hash, $originalHash);
             }
         }
@@ -126,10 +126,11 @@ class AdminAccount
         if (!is_object($oAdmin)) {
             return -3;
         }
-        if (!$oAdmin->bAktiv && $oAdmin->kAdminlogingruppe != ADMINGROUP) {
+        $oAdmin->kAdminlogingruppe = (int)$oAdmin->kAdminlogingruppe;
+        if (!$oAdmin->bAktiv && $oAdmin->kAdminlogingruppe !== ADMINGROUP) {
             return -4;
         }
-        if ($oAdmin->dGueltigTS && $oAdmin->kAdminlogingruppe != ADMINGROUP) {
+        if ($oAdmin->dGueltigTS && $oAdmin->kAdminlogingruppe !== ADMINGROUP) {
             if ($oAdmin->dGueltigTS < time()) {
                 return -5;
             }
@@ -248,7 +249,7 @@ class AdminAccount
     public function redirectOnFailure()
     {
         if (!$this->logged()) {
-            $url = (strpos(basename($_SERVER['REQUEST_URI']), 'logout.php') === false)
+            $url = strpos(basename($_SERVER['REQUEST_URI']), 'logout.php') === false
                 ? '?uri=' . base64_encode(basename($_SERVER['REQUEST_URI']))
                 : '';
             header('Location: index.php' . $url);
@@ -279,9 +280,9 @@ class AdminAccount
         if ($this->account() !== false && $this->account()->oGroup->kAdminlogingruppe == ADMINGROUP) {
             return true;
         }
-        $bAccess = (isset($_SESSION['AdminAccount']->oGroup) && is_object($_SESSION['AdminAccount']->oGroup) &&
-            is_array($_SESSION['AdminAccount']->oGroup->oPermission_arr) &&
-            in_array($cRecht, $_SESSION['AdminAccount']->oGroup->oPermission_arr));
+        $bAccess = (isset($_SESSION['AdminAccount']->oGroup) && is_object($_SESSION['AdminAccount']->oGroup)
+            && is_array($_SESSION['AdminAccount']->oGroup->oPermission_arr)
+            && in_array($cRecht, $_SESSION['AdminAccount']->oGroup->oPermission_arr, true));
         if ($bShowNoAccessPage && !$bAccess) {
             Shop::Smarty()->display('tpl_inc/berechtigung.tpl');
             exit;
@@ -368,7 +369,7 @@ class AdminAccount
     private function _toSession($oAdmin)
     {
         $oGroup = $this->_getPermissionsByGroup($oAdmin->kAdminlogingruppe);
-        if (is_object($oGroup) || $oAdmin->kAdminlogingruppe == ADMINGROUP) {
+        if (is_object($oGroup) || (int)$oAdmin->kAdminlogingruppe === ADMINGROUP) {
             $_SESSION['AdminAccount']              = new stdClass();
             $_SESSION['AdminAccount']->cURL        = Shop::getURL();
             $_SESSION['AdminAccount']->kAdminlogin = $oAdmin->kAdminlogin;
@@ -400,9 +401,7 @@ class AdminAccount
      */
     private function _setLastLogin($cLogin)
     {
-        $_upd                = new stdClass();
-        $_upd->dLetzterLogin = 'now()';
-        Shop::DB()->update('tadminlogin', 'cLogin', $cLogin, $_upd);
+        Shop::DB()->update('tadminlogin', 'cLogin', $cLogin, (object)['dLetzterLogin' => 'now()']);
 
         return $this;
     }
@@ -415,9 +414,7 @@ class AdminAccount
     private function _setRetryCount($cLogin, $bReset = false)
     {
         if ($bReset) {
-            $_upd                = new stdClass();
-            $_upd->nLoginVersuch = 0;
-            Shop::DB()->update('tadminlogin', 'cLogin', $cLogin, $_upd);
+            Shop::DB()->update('tadminlogin', 'cLogin', $cLogin, (object)['nLoginVersuch' => 0]);
         } else {
             Shop::DB()->executeQueryPrepared("
                 UPDATE tadminlogin

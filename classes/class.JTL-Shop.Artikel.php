@@ -5084,7 +5084,10 @@ class Artikel
      */
     public function getFavourableShipping($countryCode, $shippingID = null)
     {
-        if (!empty($_SESSION['Versandart']->kVersandart) && $countryCode === $this->cCachedCountryCode) {
+        if (!empty($_SESSION['Versandart']->kVersandart)
+            && isset($_SESSION['Versandart']->nMinLiefertage)
+            && $countryCode === $this->cCachedCountryCode
+        ) {
             return $_SESSION['Versandart'];
         }
         // if nothing changed, return cached shipping-object
@@ -5711,8 +5714,7 @@ class Artikel
             }
         }
         // Existiert für diese Kundengruppe ein Rabatt?
-        $kdgrp = (isset($_SESSION['Kundengruppe']->fRabatt)
-            && Session::CustomerGroup()->getID() === $kKundengruppe)
+        $kdgrp = (isset($_SESSION['Kundengruppe']->fRabatt) && Session::CustomerGroup()->getID() === $kKundengruppe)
             ? $_SESSION['Kundengruppe']
             : new Kundengruppe($kKundengruppe);
         if ($kdgrp->getDiscount() > 0) {

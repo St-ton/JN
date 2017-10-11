@@ -44,7 +44,7 @@ class VersandartHelper
      */
     public static function getInstance()
     {
-        return (self::$_instance === null) ? new self() : self::$_instance;
+        return self::$_instance === null ? new self() : self::$_instance;
     }
 
     /**
@@ -52,7 +52,7 @@ class VersandartHelper
      */
     public function getShippingMethods()
     {
-        return ($this->shippingMethods === null) 
+        return $this->shippingMethods === null
             ? Shop::DB()->query("SELECT * FROM tversandart", 2) 
             : $this->shippingMethods;
     }
@@ -63,19 +63,16 @@ class VersandartHelper
      */
     public function filter($freeFromX)
     {
-        $res       = [];
         $freeFromX = (float)$freeFromX;
-        foreach ($this->shippingMethods as $_method) {
-            if ($_method->fVersandkostenfreiAbX !== '0.00' &&
-                (float)$_method->fVersandkostenfreiAbX > 0 &&
-                (float)$_method->fVersandkostenfreiAbX <= $freeFromX
 
-            ) {
-                $res[] = $_method;
+        return array_filter(
+            $this->shippingMethods,
+            function ($s) use($freeFromX) {
+                return $s->fVersandkostenfreiAbX !== '0.00'
+                    && (float)$s->fVersandkostenfreiAbX > 0
+                    && (float)$s->fVersandkostenfreiAbX <= $freeFromX;
             }
-        }
-
-        return $res;
+        );
     }
 
     /**
@@ -102,9 +99,9 @@ class VersandartHelper
         }
         $shippingFreeCountries = [];
         foreach ($this->countries[$kKundengruppe][$versandklasse] as $_method) {
-            if (isset($_method->fVersandkostenfreiAbX) &&
-                (float)$_method->fVersandkostenfreiAbX > 0 &&
-                (float)$_method->fVersandkostenfreiAbX < $wert
+            if (isset($_method->fVersandkostenfreiAbX)
+                && (float)$_method->fVersandkostenfreiAbX > 0
+                && (float)$_method->fVersandkostenfreiAbX < $wert
             ) {
                 foreach (explode(' ', $_method->cLaender) as $_country) {
                     if (strlen($_country) > 0) {
@@ -167,16 +164,15 @@ class VersandartHelper
     {
         /** @var array('Warenkorb' => Warenkorb) $_SESSION */
         $kSteuerklasse            = $_SESSION['Warenkorb']->gibVersandkostenSteuerklasse();
-        $moeglicheVersandarten    = [];
+        $possibleMethods          = [];
         $minVersand               = 10000;
         $cISO                     = $lieferland;
-        $cNurAbhaengigeVersandart = 'N';
         $hasSpecificShippingcosts = self::hasSpecificShippingcosts($lieferland);
         $vatNote                  = null;
-        if (self::normalerArtikelversand($lieferland) === false) {
-            $cNurAbhaengigeVersandart = 'Y';
-        }
-        $versandarten = Shop::DB()->query(
+        $cNurAbhaengigeVersandart = self::normalerArtikelversand($lieferland) === false
+            ? 'Y'
+            : 'N';
+        $methods                  = Shop::DB()->query(
             "SELECT * FROM tversandart
                 WHERE cNurAbhaengigeVersandart = '" . $cNurAbhaengigeVersandart . "'
                     AND cLaender LIKE '%" . addcslashes($cISO, '%_') . "%'
@@ -186,84 +182,85 @@ class VersandartHelper
                     OR FIND_IN_SET('{$kKundengruppe}', REPLACE(cKundengruppen, ';', ',')) > 0)
                 ORDER BY nSort", 2
         );
-        $cnt             = count($versandarten);
-        $netPricesActive = Session::CustomerGroup()->isMerchant();
+        $netPricesActive          = Session::CustomerGroup()->isMerchant();
 
-        for ($i = 0; $i < $cnt; $i++) {
-            $bSteuerPos                  = $versandarten[$i]->eSteuer !== 'netto';
-            $versandarten[$i]->Zuschlag  = gibVersandZuschlag($versandarten[$i], $cISO, $plz);
-            $versandarten[$i]->fEndpreis = berechneVersandpreis($versandarten[$i], $cISO, null);
-            if ($versandarten[$i]->fEndpreis == -1) {
-                unset($versandarten[$i]);
+        foreach ($methods as $i => $shippingMethod) {
+            $bSteuerPos = $shippingMethod->eSteuer !== 'netto';
+
+            $shippingMethod->kVersandart        = (int)$shippingMethod->kVersandart;
+            $shippingMethod->kVersandberechnung = (int)$shippingMethod->kVersandberechnung;
+            $shippingMethod->nSort              = (int)$shippingMethod->nSort;
+            $shippingMethod->nMinLiefertage     = (int)$shippingMethod->nMinLiefertage;
+            $shippingMethod->nMaxLiefertage     = (int)$shippingMethod->nMaxLiefertage;
+            $shippingMethod->Zuschlag           = gibVersandZuschlag($shippingMethod, $cISO, $plz);
+            $shippingMethod->fEndpreis          = berechneVersandpreis($shippingMethod, $cISO, null);
+            if ($shippingMethod->fEndpreis === -1) {
+                unset($methods[$i]);
                 continue;
             }
             if ($netPricesActive === true) {
-                if ($bSteuerPos) {
-                    $shippingCosts = $versandarten[$i]->fEndpreis / (100 + gibUst($kSteuerklasse)) * 100.0;
-                } else {
-                    $shippingCosts = round($versandarten[$i]->fEndpreis, 2);
-                }
-                $vatNote       = ' ' . Shop::Lang()->get('plus', 'productDetails') . ' ' . Shop::Lang()->get('vat', 'productDetails');
+                $shippingCosts = $bSteuerPos
+                    ? $shippingMethod->fEndpreis / (100 + gibUst($kSteuerklasse)) * 100.0
+                    : round($shippingMethod->fEndpreis, 2);
+                $vatNote       = ' ' . Shop::Lang()->get('plus', 'productDetails') . ' ' .
+                    Shop::Lang()->get('vat', 'productDetails');
             } else {
-                if ($bSteuerPos) {
-                    $shippingCosts = $versandarten[$i]->fEndpreis;
-                } else {
-                    $shippingCosts = round($versandarten[$i]->fEndpreis * (100 + gibUst($kSteuerklasse)) / 100, 2);
-                }
+                $shippingCosts = $bSteuerPos
+                    ? $shippingMethod->fEndpreis
+                    : round($shippingMethod->fEndpreis * (100 + gibUst($kSteuerklasse)) / 100, 2);
             }
-            //posname lokalisiert ablegen
-            $versandarten[$i]->angezeigterName           = [];
-            $versandarten[$i]->angezeigterHinweistext    = [];
-            $versandarten[$i]->cLieferdauer              = [];
-            $versandarten[$i]->specificShippingcosts_arr = null;
+            // posname lokalisiert ablegen
+            $shippingMethod->angezeigterName           = [];
+            $shippingMethod->angezeigterHinweistext    = [];
+            $shippingMethod->cLieferdauer              = [];
+            $shippingMethod->specificShippingcosts_arr = null;
             foreach ($_SESSION['Sprachen'] as $Sprache) {
                 $name_spr = Shop::DB()->select(
                     'tversandartsprache',
                     'kVersandart',
-                    (int)$versandarten[$i]->kVersandart,
+                    (int)$shippingMethod->kVersandart,
                     'cISOSprache',
                     $Sprache->cISO
                 );
                 if (isset($name_spr->cName)) {
-                    $versandarten[$i]->angezeigterName[$Sprache->cISO]        = $name_spr->cName;
-                    $versandarten[$i]->angezeigterHinweistext[$Sprache->cISO] = $name_spr->cHinweistextShop;
-                    $versandarten[$i]->cLieferdauer[$Sprache->cISO]           = $name_spr->cLieferdauer;
+                    $shippingMethod->angezeigterName[$Sprache->cISO]        = $name_spr->cName;
+                    $shippingMethod->angezeigterHinweistext[$Sprache->cISO] = $name_spr->cHinweistextShop;
+                    $shippingMethod->cLieferdauer[$Sprache->cISO]           = $name_spr->cLieferdauer;
                 }
             }
-            if ($versandarten[$i]->fEndpreis < $minVersand) {
-                $minVersand = $versandarten[$i]->fEndpreis;
+            if ($shippingMethod->fEndpreis < $minVersand) {
+                $minVersand = $shippingMethod->fEndpreis;
             }
             // lokalisieren
             // Versandart Versandkostenfrei
-            if ($versandarten[$i]->fEndpreis == 0) {
+            if ($shippingMethod->fEndpreis == 0) {
                 // Abfrage ob ein Artikel Artikelabhängige Versandkosten besitzt
-                $versandarten[$i]->cPreisLocalized = Shop::Lang()->get('freeshipping', 'global');
+                $shippingMethod->cPreisLocalized = Shop::Lang()->get('freeshipping');
                 if ($hasSpecificShippingcosts === true) {
-                    $versandarten[$i]->specificShippingcosts_arr = self::gibArtikelabhaengigeVersandkostenImWK(
+                    $shippingMethod->specificShippingcosts_arr = self::gibArtikelabhaengigeVersandkostenImWK(
                         $lieferland,
                         $_SESSION['Warenkorb']->PositionenArr
                     );
                 }
-            // Versandartkosten
             } else {
                 // Abfrage ob ein Artikel Artikelabhängige Versandkosten besitzt
-                $versandarten[$i]->cPreisLocalized = gibPreisStringLocalized($shippingCosts) . ($vatNote !== null
+                $shippingMethod->cPreisLocalized = gibPreisStringLocalized($shippingCosts) . ($vatNote !== null
                         ? $vatNote
                         : '');
                 if ($hasSpecificShippingcosts === true) {
-                    $versandarten[$i]->specificShippingcosts_arr = self::gibArtikelabhaengigeVersandkostenImWK(
+                    $shippingMethod->specificShippingcosts_arr = self::gibArtikelabhaengigeVersandkostenImWK(
                         $lieferland,
                         $_SESSION['Warenkorb']->PositionenArr
                     );
                 }
             }
-            //Abfrage ob die Zahlungsart/en zur Versandart gesetzt ist/sind
+            // Abfrage ob die Zahlungsart/en zur Versandart gesetzt ist/sind
             $zahlungsarten = Shop::DB()->query(
                 "SELECT tversandartzahlungsart.*, tzahlungsart.*
                      FROM tversandartzahlungsart, tzahlungsart
-                     WHERE tversandartzahlungsart.kVersandart = " . (int)$versandarten[$i]->kVersandart . "
+                     WHERE tversandartzahlungsart.kVersandart = " . (int)$shippingMethod->kVersandart . "
                          AND tversandartzahlungsart.kZahlungsart = tzahlungsart.kZahlungsart
-                         AND (tzahlungsart.cKundengruppen IS NULL OR tzahlungsart.cKundengruppen=''
+                         AND (tzahlungsart.cKundengruppen IS NULL OR tzahlungsart.cKundengruppen = ''
                          OR FIND_IN_SET('{$kKundengruppe}', REPLACE(tzahlungsart.cKundengruppen, ';', ',')) > 0)
                          AND tzahlungsart.nActive = 1
                          AND tzahlungsart.nNutzbar = 1
@@ -277,38 +274,27 @@ class VersandartHelper
                 }
             }
             if (!$bVersandGueltig) {
-                unset($versandarten[$i]);
+                unset($shippingMethod);
             }
         }
-        $versandarten = array_merge($versandarten);
-        //auf anzeige filtern
-        foreach ($versandarten as $versandart) {
-            switch ($versandart->cAnzeigen) {
-                case 'guenstigste' :
-                    if ($versandart->fEndpreis <= $minVersand) {
-                        $moeglicheVersandarten[] = $versandart;
-                    }
-                    break;
-
-                case 'immer' :
-                    $moeglicheVersandarten[] = $versandart;
-                    break;
-
-                default:
-                    break;
+        // auf anzeige filtern
+        $possibleMethods = array_filter(
+            array_merge($methods),
+            function ($p) use ($minVersand) {
+                return $p->cAnzeigen === 'immer'
+                    || ($p->cAnzeigen === 'guenstigste' && $p->fEndpreis <= $minVersand);
             }
-        }
-        //evtl. Versandkupon anwenden
+        );
+        // evtl. Versandkupon anwenden
         if (isset($_SESSION['VersandKupon']) && $_SESSION['VersandKupon']) {
-            $smCount = count($moeglicheVersandarten);
-            for ($i = 0; $i < $smCount; ++$i) {
-                $moeglicheVersandarten[$i]->fEndpreis = 0;
-                //lokalisieren
-                $moeglicheVersandarten[$i]->cPreisLocalized = gibPreisStringLocalized($versandarten[$i]->fEndpreis);
+            foreach ($possibleMethods as $method) {
+                $method->fEndpreis = 0;
+                // lokalisieren
+                $method->cPreisLocalized = gibPreisStringLocalized($method->fEndpreis);
             }
         }
 
-        return $moeglicheVersandarten;
+        return $possibleMethods;
     }
 
     /**
@@ -333,27 +319,23 @@ class VersandartHelper
                 $kKundengruppe
             );
             if (count($oVersandart_arr) > 0) {
-                Shop::Smarty()->assign('ArtikelabhaengigeVersandarten', self::gibArtikelabhaengigeVersandkostenImWK(
-                    $cLand,
-                    $_SESSION['Warenkorb']->PositionenArr
-                ))
+                Shop::Smarty()
+                    ->assign('ArtikelabhaengigeVersandarten', self::gibArtikelabhaengigeVersandkostenImWK(
+                        $cLand,
+                        $_SESSION['Warenkorb']->PositionenArr
+                    ))
                     ->assign('Versandarten', $oVersandart_arr)
                     ->assign('Versandland', ISO2land(StringHandler::filterXSS($cLand)))
                     ->assign('VersandPLZ', StringHandler::filterXSS($cPLZ));
             } else {
-                $cError = Shop::Lang()->get('noDispatchAvailable', 'global');
+                $cError = Shop::Lang()->get('noDispatchAvailable');
             }
             executeHook(HOOK_WARENKORB_PAGE_ERMITTLEVERSANDKOSTEN);
 
             return true;
         }
-        if ((strlen($cLand) === 0 && isset($_POST['versandrechnerBTN'])) ||
-            (strlen($cPLZ) === 0 && isset($_POST['versandrechnerBTN']))
-        ) {
-            return false;
-        }
 
-        return true;
+        return !(isset($_POST['versandrechnerBTN']) && (strlen($cLand) === 0 || strlen($cPLZ) === 0));
     }
 
     /**
@@ -675,7 +657,8 @@ class VersandartHelper
             // Artikelabhaengige Versandkosten
 
             return self::gibArtikelabhaengigeVersandkosten($cLandISO, $oArtikel, $fArtikelAnzahl, false);
-        } elseif ($nArtikelAbhaengigeVersandkosten == 2) {
+        }
+        if ($nArtikelAbhaengigeVersandkosten == 2) {
             // Artikelabhaengige Versandkosten Gestaffelt
 
             // Gib alle Artikel im Warenkorb, die Artikel abhaengige Versandkosten beinhalten

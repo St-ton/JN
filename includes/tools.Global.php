@@ -470,7 +470,7 @@ function getCurrencyConversion($fPreisNetto, $fPreisBrutto, $cClass = '', $bForc
  */
 function hasGPCDataInteger($var)
 {
-    return (isset($_POST[$var]) || isset($_GET[$var]) || isset($_COOKIE[$var]));
+    return isset($_POST[$var]) || isset($_GET[$var]) || isset($_COOKIE[$var]);
 }
 
 /**
@@ -544,7 +544,7 @@ function getRealIp()
     }
     $ip = filter_var($ip, FILTER_VALIDATE_IP);
 
-    return ($ip === false) ? '0.0.0.0' : $ip;
+    return $ip === false ? '0.0.0.0' : $ip;
 }
 
 /**
@@ -555,16 +555,16 @@ function gibIP($bBestellung = false)
 {
     $ip   = getRealIp();
     $conf = Shop::getSettings([CONF_KAUFABWICKLUNG, CONF_GLOBAL]);
-    if ($conf['global']['global_ips_speichern'] === 'Y' && !$bBestellung) {
+    if (!$bBestellung && $conf['global']['global_ips_speichern'] === 'Y') {
         return $ip;
     }
-    if ($conf['global']['global_ips_speichern'] === 'N' && !$bBestellung) {
+    if (!$bBestellung && $conf['global']['global_ips_speichern'] === 'N') {
         return substr($ip, 0, strpos($ip, '.', strpos($ip, '.') + 1) + 1) . '*.*';
     }
-    if ($conf['kaufabwicklung']['bestellabschluss_ip_speichern'] === 'Y' && $bBestellung) {
+    if ($bBestellung && $conf['kaufabwicklung']['bestellabschluss_ip_speichern'] === 'Y') {
         return $ip;
     }
-    if ($conf['kaufabwicklung']['bestellabschluss_ip_speichern'] === 'N' && $bBestellung) {
+    if ($bBestellung && $conf['kaufabwicklung']['bestellabschluss_ip_speichern'] === 'N') {
         return substr($ip, 0, strpos($ip, '.', strpos($ip, '.') + 1) + 1) . '*.*';
     }
 
@@ -984,128 +984,125 @@ function checkeWarenkorbEingang()
 function fuegeVariBoxInWK($variBoxAnzahl_arr, $kArtikel, $bIstVater, $bExtern = false)
 {
     /** @var array('Warenkorb' => Warenkorb) $_SESSION */
-    if (is_array($variBoxAnzahl_arr) && count($variBoxAnzahl_arr) > 0) {
-        $cKeys_arr            = array_keys($variBoxAnzahl_arr);
-        $kVaterArtikel        = $kArtikel;
-        $oAlleEigenschaft_arr = [];
-        unset($_SESSION['variBoxAnzahl_arr']);
-        // Es ist min. eine Anzahl vorhanden
-        foreach ($cKeys_arr as $cKeys) {
-            if ((float)$variBoxAnzahl_arr[$cKeys] > 0) {
-                // Switch zwischen 1 Vari und 2
-                if ($cKeys[0] === '_') { // 1
-                    $cVariation0                             = substr($cKeys, 1);
+    if (!is_array($variBoxAnzahl_arr) || count($variBoxAnzahl_arr) === 0) {
+        return;
+    }
+    $cKeys_arr            = array_keys($variBoxAnzahl_arr);
+    $kVaterArtikel        = $kArtikel;
+    $oAlleEigenschaft_arr = [];
+    unset($_SESSION['variBoxAnzahl_arr']);
+    // Es ist min. eine Anzahl vorhanden
+    foreach ($cKeys_arr as $cKeys) {
+        if ((float)$variBoxAnzahl_arr[$cKeys] > 0) {
+            // Switch zwischen 1 Vari und 2
+            if ($cKeys[0] === '_') { // 1
+                $cVariation0                             = substr($cKeys, 1);
+                list($kEigenschaft0, $kEigenschaftWert0) = explode(':', $cVariation0);
+                // In die Session einbauen
+                $oVariKombi                                 = new stdClass();
+                $oVariKombi->fAnzahl                        = (float)$variBoxAnzahl_arr[$cKeys];
+                $oVariKombi->cVariation0                    = StringHandler::filterXSS($cVariation0);
+                $oVariKombi->kEigenschaft0                  = (int)$kEigenschaft0;
+                $oVariKombi->kEigenschaftWert0              = (int)$kEigenschaftWert0;
+                $_SESSION['variBoxAnzahl_arr'][$cKeys]      = $oVariKombi;
+                $_POST['eigenschaftwert_' . $kEigenschaft0] = $kEigenschaftWert0;
+            } else {
+                if ($bExtern) {
+                    $cComb_arr                        = explode('_', $cKeys);
+                    $oVariKombi                       = new stdClass();
+                    $oVariKombi->fAnzahl              = (float)$variBoxAnzahl_arr[$cKeys];
+                    $oVariKombi->kEigenschaft_arr     = [];
+                    $oVariKombi->kEigenschaftWert_arr = [];
+                    foreach ($cComb_arr as $cComb) {
+                        list($kEigenschaft, $kEigenschaftWert)     = explode(':', $cComb);
+                        $oVariKombi->kEigenschaft_arr[]            = (int)$kEigenschaft;
+                        $oVariKombi->kEigenschaftWert_arr[]        = (int)$kEigenschaftWert;
+                        $_POST['eigenschaftwert_' . $kEigenschaft] = (int)$kEigenschaftWert;
+                    }
+                    $_SESSION['variBoxAnzahl_arr'][$cKeys] = $oVariKombi;
+                } else {
+                    list($cVariation0, $cVariation1)         = explode('_', $cKeys);
                     list($kEigenschaft0, $kEigenschaftWert0) = explode(':', $cVariation0);
+                    list($kEigenschaft1, $kEigenschaftWert1) = explode(':', $cVariation1);
                     // In die Session einbauen
                     $oVariKombi                                 = new stdClass();
                     $oVariKombi->fAnzahl                        = (float)$variBoxAnzahl_arr[$cKeys];
                     $oVariKombi->cVariation0                    = StringHandler::filterXSS($cVariation0);
+                    $oVariKombi->cVariation1                    = StringHandler::filterXSS($cVariation1);
                     $oVariKombi->kEigenschaft0                  = (int)$kEigenschaft0;
                     $oVariKombi->kEigenschaftWert0              = (int)$kEigenschaftWert0;
+                    $oVariKombi->kEigenschaft1                  = (int)$kEigenschaft1;
+                    $oVariKombi->kEigenschaftWert1              = (int)$kEigenschaftWert1;
                     $_SESSION['variBoxAnzahl_arr'][$cKeys]      = $oVariKombi;
                     $_POST['eigenschaftwert_' . $kEigenschaft0] = $kEigenschaftWert0;
-                } else {
-                    if ($bExtern) {
-                        $cComb_arr                        = explode('_', $cKeys);
-                        $oVariKombi                       = new stdClass();
-                        $oVariKombi->fAnzahl              = (float)$variBoxAnzahl_arr[$cKeys];
-                        $oVariKombi->kEigenschaft_arr     = [];
-                        $oVariKombi->kEigenschaftWert_arr = [];
-                        foreach ($cComb_arr as $cComb) {
-                            list($kEigenschaft, $kEigenschaftWert)     = explode(':', $cComb);
-                            $oVariKombi->kEigenschaft_arr[]            = (int)$kEigenschaft;
-                            $oVariKombi->kEigenschaftWert_arr[]        = (int)$kEigenschaftWert;
-                            $_POST['eigenschaftwert_' . $kEigenschaft] = (int)$kEigenschaftWert;
-                        }
-                        $_SESSION['variBoxAnzahl_arr'][$cKeys] = $oVariKombi;
-                    } else {
-                        list($cVariation0, $cVariation1)         = explode('_', $cKeys);
-                        list($kEigenschaft0, $kEigenschaftWert0) = explode(':', $cVariation0);
-                        list($kEigenschaft1, $kEigenschaftWert1) = explode(':', $cVariation1);
-                        // In die Session einbauen
-                        $oVariKombi                                 = new stdClass();
-                        $oVariKombi->fAnzahl                        = (float)$variBoxAnzahl_arr[$cKeys];
-                        $oVariKombi->cVariation0                    = StringHandler::filterXSS($cVariation0);
-                        $oVariKombi->cVariation1                    = StringHandler::filterXSS($cVariation1);
-                        $oVariKombi->kEigenschaft0                  = (int)$kEigenschaft0;
-                        $oVariKombi->kEigenschaftWert0              = (int)$kEigenschaftWert0;
-                        $oVariKombi->kEigenschaft1                  = (int)$kEigenschaft1;
-                        $oVariKombi->kEigenschaftWert1              = (int)$kEigenschaftWert1;
-                        $_SESSION['variBoxAnzahl_arr'][$cKeys]      = $oVariKombi;
-                        $_POST['eigenschaftwert_' . $kEigenschaft0] = $kEigenschaftWert0;
-                        $_POST['eigenschaftwert_' . $kEigenschaft1] = $kEigenschaftWert1;
-                    }
-                }
-                $oAlleEigenschaft_arr[$cKeys]                   = new stdClass();
-                $oAlleEigenschaft_arr[$cKeys]->oEigenschaft_arr = [];
-                $oAlleEigenschaft_arr[$cKeys]->kArtikel         = 0;
-
-                if ($bIstVater) {
-                    $kArtikel                                       = ArtikelHelper::getArticleForParent($kVaterArtikel);
-                    $oAlleEigenschaft_arr[$cKeys]->oEigenschaft_arr = ArtikelHelper::getSelectedPropertiesForVarCombiArticle($kArtikel);
-                    $oAlleEigenschaft_arr[$cKeys]->kArtikel         = $kArtikel;
-                } else {
-                    $oAlleEigenschaft_arr[$cKeys]->oEigenschaft_arr = ArtikelHelper::getSelectedPropertiesForArticle($kArtikel);
-                    $oAlleEigenschaft_arr[$cKeys]->kArtikel         = $kArtikel;
+                    $_POST['eigenschaftwert_' . $kEigenschaft1] = $kEigenschaftWert1;
                 }
             }
-        }
+            $oAlleEigenschaft_arr[$cKeys]                   = new stdClass();
+            $oAlleEigenschaft_arr[$cKeys]->oEigenschaft_arr = [];
+            $oAlleEigenschaft_arr[$cKeys]->kArtikel         = 0;
 
-        $nRedirectErr_arr = [];
-        if (is_array($oAlleEigenschaft_arr) && count($oAlleEigenschaft_arr) > 0) {
-            $defaultOptions = Artikel::getDefaultOptions();
-            foreach ($oAlleEigenschaft_arr as $i => $oAlleEigenschaftPre) {
-                $Artikel = new Artikel();
-                $Artikel->fuelleArtikel($oAlleEigenschaftPre->kArtikel, $defaultOptions);
-                // Prüfe ob er Artikel in den Warenkorb gelegt werden darf
-                $nRedirect_arr = pruefeFuegeEinInWarenkorb(
-                    $Artikel,
-                    (float)$variBoxAnzahl_arr[$i],
-                    $oAlleEigenschaftPre->oEigenschaft_arr
-                );
-
-                $_SESSION['variBoxAnzahl_arr'][$i]->bError = false;
-                if (count($nRedirect_arr) > 0) {
-                    foreach ($nRedirect_arr as $nRedirect) {
-                        $nRedirect = (int)$nRedirect;
-                        if (!in_array($nRedirect, $nRedirectErr_arr, true)) {
-                            $nRedirectErr_arr[] = $nRedirect;
-                        }
-                    }
-
-                    $_SESSION['variBoxAnzahl_arr'][$i]->bError = true;
-                }
-            }
-
-            if (count($nRedirectErr_arr) > 0) {
-                //redirekt zum artikel, um variation/en zu wählen / MBM beachten
-                $articleID = ($bIstVater)
-                    ? $kVaterArtikel
-                    : $kArtikel;
-                header('Location: index.php?a=' . $articleID . '&r=' . implode(',', $nRedirectErr_arr), true, 302);
-                exit();
+            if ($bIstVater) {
+                $kArtikel                                       = ArtikelHelper::getArticleForParent($kVaterArtikel);
+                $oAlleEigenschaft_arr[$cKeys]->oEigenschaft_arr = ArtikelHelper::getSelectedPropertiesForVarCombiArticle($kArtikel);
+                $oAlleEigenschaft_arr[$cKeys]->kArtikel         = $kArtikel;
             } else {
-                foreach ($oAlleEigenschaft_arr as $i => $oAlleEigenschaftPost) {
-                    if (!$_SESSION['variBoxAnzahl_arr'][$i]->bError) {
-                        //#8224, #7482 -> do not call setzePositionsPreise() in loop @ Wanrekob::fuegeEin()
-                        fuegeEinInWarenkorb(
-                            $oAlleEigenschaftPost->kArtikel,
-                            (float)$variBoxAnzahl_arr[$i],
-                            $oAlleEigenschaftPost->oEigenschaft_arr,
-                            0,
-                            false,
-                            0,
-                            null,
-                            false
-                        );
-                    }
-                }
-                $_SESSION['Warenkorb']->setzePositionsPreise();
-                unset($_SESSION['variBoxAnzahl_arr']);
-                $_SESSION['Warenkorb']->redirectTo();
+                $oAlleEigenschaft_arr[$cKeys]->oEigenschaft_arr = ArtikelHelper::getSelectedPropertiesForArticle($kArtikel);
+                $oAlleEigenschaft_arr[$cKeys]->kArtikel         = $kArtikel;
             }
         }
     }
+    $nRedirectErr_arr = [];
+    if (!is_array($oAlleEigenschaft_arr) || count($oAlleEigenschaft_arr) === 0) {
+        return;
+    }
+    $defaultOptions = Artikel::getDefaultOptions();
+    foreach ($oAlleEigenschaft_arr as $i => $oAlleEigenschaftPre) {
+        // Prüfe ob er Artikel in den Warenkorb gelegt werden darf
+        $nRedirect_arr = pruefeFuegeEinInWarenkorb(
+            (new Artikel())->fuelleArtikel($oAlleEigenschaftPre->kArtikel, $defaultOptions),
+            (float)$variBoxAnzahl_arr[$i],
+            $oAlleEigenschaftPre->oEigenschaft_arr
+        );
+
+        $_SESSION['variBoxAnzahl_arr'][$i]->bError = false;
+        if (count($nRedirect_arr) > 0) {
+            foreach ($nRedirect_arr as $nRedirect) {
+                $nRedirect = (int)$nRedirect;
+                if (!in_array($nRedirect, $nRedirectErr_arr, true)) {
+                    $nRedirectErr_arr[] = $nRedirect;
+                }
+            }
+            $_SESSION['variBoxAnzahl_arr'][$i]->bError = true;
+        }
+    }
+
+    if (count($nRedirectErr_arr) > 0) {
+        //redirekt zum artikel, um variation/en zu wählen / MBM beachten
+        $articleID = $bIstVater
+            ? $kVaterArtikel
+            : $kArtikel;
+        header('Location: index.php?a=' . $articleID . '&r=' . implode(',', $nRedirectErr_arr), true, 302);
+        exit();
+    }
+    foreach ($oAlleEigenschaft_arr as $i => $oAlleEigenschaftPost) {
+        if (!$_SESSION['variBoxAnzahl_arr'][$i]->bError) {
+            //#8224, #7482 -> do not call setzePositionsPreise() in loop @ Wanrekob::fuegeEin()
+            fuegeEinInWarenkorb(
+                $oAlleEigenschaftPost->kArtikel,
+                (float)$variBoxAnzahl_arr[$i],
+                $oAlleEigenschaftPost->oEigenschaft_arr,
+                0,
+                false,
+                0,
+                null,
+                false
+            );
+        }
+    }
+    $_SESSION['Warenkorb']->setzePositionsPreise();
+    unset($_SESSION['variBoxAnzahl_arr']);
+    $_SESSION['Warenkorb']->redirectTo();
 }
 
 /**
@@ -1288,7 +1285,9 @@ function pruefeFuegeEinInWarenkorb($Artikel, $anzahl, $oEigenschaftwerte_arr, $n
         $redirectParam[] = R_VORBESTELLUNG;
     }
     // Die maximale Bestellmenge des Artikels wurde überschritten
-    if (isset($Artikel->FunktionsAttribute[FKT_ATTRIBUT_MAXBESTELLMENGE]) && $Artikel->FunktionsAttribute[FKT_ATTRIBUT_MAXBESTELLMENGE] > 0) {
+    if (isset($Artikel->FunktionsAttribute[FKT_ATTRIBUT_MAXBESTELLMENGE])
+        && $Artikel->FunktionsAttribute[FKT_ATTRIBUT_MAXBESTELLMENGE] > 0
+    ) {
         if ($anzahl > $Artikel->FunktionsAttribute[FKT_ATTRIBUT_MAXBESTELLMENGE] ||
             ($_SESSION['Warenkorb']->gibAnzahlEinesArtikels($kArtikel) + $anzahl) >
                 $Artikel->FunktionsAttribute[FKT_ATTRIBUT_MAXBESTELLMENGE]
@@ -1310,9 +1309,9 @@ function pruefeFuegeEinInWarenkorb($Artikel, $anzahl, $oEigenschaftwerte_arr, $n
     ) {
         $Artikel->inWarenkorbLegbar = 1;
     }
-    if (($Artikel->bHasKonfig === false && empty($Artikel->isKonfigItem)) &&
-        (!isset($Artikel->Preise->fVKNetto) || $Artikel->Preise->fVKNetto == 0) &&
-        $conf['global']['global_preis0'] === 'N'
+    if (($Artikel->bHasKonfig === false && empty($Artikel->isKonfigItem))
+        && (!isset($Artikel->Preise->fVKNetto) || $Artikel->Preise->fVKNetto == 0)
+        && $conf['global']['global_preis0'] === 'N'
     ) {
         $redirectParam[] = R_AUFANFRAGE;
     }
@@ -1352,9 +1351,9 @@ function pruefeFuegeEinInWarenkorb($Artikel, $anzahl, $oEigenschaftwerte_arr, $n
                         break;
                     }
                     //schaue, ob genug auf Lager von jeder var
-                    if ($Artikel->cLagerBeachten === 'Y' &&
-                        $Artikel->cLagerVariation === 'Y' &&
-                        $Artikel->cLagerKleinerNull !== 'Y'
+                    if ($Artikel->cLagerBeachten === 'Y'
+                        && $Artikel->cLagerVariation === 'Y'
+                        && $Artikel->cLagerKleinerNull !== 'Y'
                     ) {
                         if ($EigenschaftWert->fPackeinheit == 0) {
                             $EigenschaftWert->fPackeinheit = 1;
@@ -1392,34 +1391,32 @@ function gibVarKombiEigenschaftsWerte($kArtikel, $bSichtbarkeitBeachten = true)
 {
     $oEigenschaftwerte_arr = [];
     $kArtikel              = (int)$kArtikel;
-    if ($kArtikel > 0) {
-        if (ArtikelHelper::isVariChild($kArtikel)) {
-            $oArtikel                            = new Artikel();
-            $oArtikelOptionen                    = new stdClass();
-            $oArtikelOptionen->nMerkmale         = 0;
-            $oArtikelOptionen->nAttribute        = 0;
-            $oArtikelOptionen->nArtikelAttribute = 0;
-            $oArtikelOptionen->nVariationKombi   = 1;
+    if ($kArtikel > 0 && ArtikelHelper::isVariChild($kArtikel)) {
+        $oArtikel                            = new Artikel();
+        $oArtikelOptionen                    = new stdClass();
+        $oArtikelOptionen->nMerkmale         = 0;
+        $oArtikelOptionen->nAttribute        = 0;
+        $oArtikelOptionen->nArtikelAttribute = 0;
+        $oArtikelOptionen->nVariationKombi   = 1;
 
-            if (!$bSichtbarkeitBeachten) {
-                $oArtikelOptionen->nKeineSichtbarkeitBeachten = 1;
-            }
+        if (!$bSichtbarkeitBeachten) {
+            $oArtikelOptionen->nKeineSichtbarkeitBeachten = 1;
+        }
 
-            $oArtikel->fuelleArtikel($kArtikel, $oArtikelOptionen);
+        $oArtikel->fuelleArtikel($kArtikel, $oArtikelOptionen);
 
-            if ($oArtikel->oVariationenNurKind_arr !== null &&
-                is_array($oArtikel->oVariationenNurKind_arr) &&
-                count($oArtikel->oVariationenNurKind_arr) > 0
-            ) {
-                foreach ($oArtikel->oVariationenNurKind_arr as $oVariationenNurKind) {
-                    $oEigenschaftwerte                       = new stdClass();
-                    $oEigenschaftwerte->kEigenschaftWert     = $oVariationenNurKind->Werte[0]->kEigenschaftWert;
-                    $oEigenschaftwerte->kEigenschaft         = $oVariationenNurKind->kEigenschaft;
-                    $oEigenschaftwerte->cEigenschaftName     = $oVariationenNurKind->cName;
-                    $oEigenschaftwerte->cEigenschaftWertName = $oVariationenNurKind->Werte[0]->cName;
+        if ($oArtikel->oVariationenNurKind_arr !== null
+            && is_array($oArtikel->oVariationenNurKind_arr)
+            && count($oArtikel->oVariationenNurKind_arr) > 0
+        ) {
+            foreach ($oArtikel->oVariationenNurKind_arr as $oVariationenNurKind) {
+                $oEigenschaftwerte                       = new stdClass();
+                $oEigenschaftwerte->kEigenschaftWert     = $oVariationenNurKind->Werte[0]->kEigenschaftWert;
+                $oEigenschaftwerte->kEigenschaft         = $oVariationenNurKind->kEigenschaft;
+                $oEigenschaftwerte->cEigenschaftName     = $oVariationenNurKind->cName;
+                $oEigenschaftwerte->cEigenschaftWertName = $oVariationenNurKind->Werte[0]->cName;
 
-                    $oEigenschaftwerte_arr[] = $oEigenschaftwerte;
-                }
+                $oEigenschaftwerte_arr[] = $oEigenschaftwerte;
             }
         }
     }
@@ -1442,84 +1439,83 @@ function fuegeEinInWarenkorb($kArtikel, $anzahl, $oEigenschaftwerte_arr = [], $n
 {
     /** @var array('Warenkorb' => Warenkorb) $_SESSION */
     $kArtikel = (int)$kArtikel;
-    if ($anzahl > 0 && ($kArtikel > 0 || $kArtikel === 0 && !empty($kKonfigitem) && !empty($cUnique))) {
-        $Artikel = new Artikel();
-        if ($oArtikelOptionen === null) {
-            $oArtikelOptionen = Artikel::getDefaultOptions();
-        }
-        $Artikel->fuelleArtikel($kArtikel, $oArtikelOptionen);
-        if ((int)$anzahl != $anzahl && $Artikel->cTeilbar !== 'Y') {
-            $anzahl = max((int)$anzahl, 1);
-        }
-        $redirectParam = pruefeFuegeEinInWarenkorb($Artikel, $anzahl, $oEigenschaftwerte_arr);
-        // verhindert, dass Konfigitems mit Preis=0 aus der Artikelkonfiguration fallen wenn 'Preis auf Anfrage' eingestellt ist
-        if (!empty($kKonfigitem) && isset($redirectParam[0]) && $redirectParam[0] === R_AUFANFRAGE) {
-            unset($redirectParam[0]);
-        }
-
-        if (count($redirectParam) > 0) {
-            if (isset($_SESSION['variBoxAnzahl_arr'])) {
-                return false;
-            }
-            if ($nWeiterleitung === 0) {
-                $con = (strpos($Artikel->cURLFull, '?') === false) ? '?' : '&';
-                if ($Artikel->kEigenschaftKombi > 0) {
-                    $url = (!empty($Artikel->cURLFull))
-                        ? ($Artikel->cURLFull . $con)
-                        : (Shop::getURL() . '/index.php?a=' . $Artikel->kVaterArtikel .
-                            '&a2=' . $Artikel->kArtikel . '&');
-                    header('Location: ' . $url . 'n=' . $anzahl . '&r=' . implode(',', $redirectParam), true, 302);
-                } else {
-                    $url = (!empty($Artikel->cURLFull))
-                        ? ($Artikel->cURLFull . $con)
-                        : (Shop::getURL() . '/index.php?a=' . $Artikel->kArtikel . '&');
-                    header('Location: ' . $url . 'n=' . $anzahl . '&r=' . implode(',', $redirectParam), true, 302);
-                }
-                exit;
-            } else {
-                return false;
-            }
-        }
-        $_SESSION['Warenkorb']->fuegeEin($kArtikel, $anzahl, $oEigenschaftwerte_arr, 1, $cUnique, $kKonfigitem, $setzePositionsPreise)
-                              ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS)
-                              ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDZUSCHLAG)
-                              ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSAND_ARTIKELABHAENGIG)
-                              ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART)
-                              ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZINSAUFSCHLAG)
-                              ->loescheSpezialPos(C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR)
-                              ->loescheSpezialPos(C_WARENKORBPOS_TYP_NEUKUNDENKUPON)
-                              ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR)
-                              ->loescheSpezialPos(C_WARENKORBPOS_TYP_TRUSTEDSHOPS);
-
-        resetNeuKundenKupon();
-        unset(
-            $_SESSION['VersandKupon'],
-            $_SESSION['Versandart'],
-            $_SESSION['Zahlungsart'],
-            $_SESSION['TrustedShops']
-        );
-        // Wenn Kupon vorhanden und der cWertTyp prozentual ist, dann verwerfen und neuanlegen
-        altenKuponNeuBerechnen();
-        setzeLinks();
-        // Persistenter Warenkorb
-        if (!isset($_POST['login']) && !isset($_REQUEST['basket2Pers'])) {
-            fuegeEinInWarenkorbPers($kArtikel, $anzahl, $oEigenschaftwerte_arr, $cUnique, $kKonfigitem);
-        }
-        // Hinweis
-        Shop::Smarty()->assign('hinweis', Shop::Lang()->get('basketAdded', 'messages'))
-            ->assign('bWarenkorbHinzugefuegt', true)
-            ->assign('bWarenkorbAnzahl', $anzahl);
-        // Kampagne
-        if (isset($_SESSION['Kampagnenbesucher'])) {
-            setzeKampagnenVorgang(KAMPAGNE_DEF_WARENKORB, $kArtikel, $anzahl);
-        }
-        // Warenkorb weiterleiten
-        $_SESSION['Warenkorb']->redirectTo((bool)$nWeiterleitung, $cUnique);
-
-        return true;
+    if (!($anzahl > 0 && ($kArtikel > 0 || $kArtikel === 0 && !empty($kKonfigitem) && !empty($cUnique)))) {
+        return false;
+    }
+    $Artikel = new Artikel();
+    if ($oArtikelOptionen === null) {
+        $oArtikelOptionen = Artikel::getDefaultOptions();
+    }
+    $Artikel->fuelleArtikel($kArtikel, $oArtikelOptionen);
+    if ((int)$anzahl != $anzahl && $Artikel->cTeilbar !== 'Y') {
+        $anzahl = max((int)$anzahl, 1);
+    }
+    $redirectParam = pruefeFuegeEinInWarenkorb($Artikel, $anzahl, $oEigenschaftwerte_arr);
+    // verhindert, dass Konfigitems mit Preis=0 aus der Artikelkonfiguration fallen wenn 'Preis auf Anfrage' eingestellt ist
+    if (!empty($kKonfigitem) && isset($redirectParam[0]) && $redirectParam[0] === R_AUFANFRAGE) {
+        unset($redirectParam[0]);
     }
 
-    return false;
+    if (count($redirectParam) > 0) {
+        if (isset($_SESSION['variBoxAnzahl_arr'])) {
+            return false;
+        }
+        if ($nWeiterleitung === 0) {
+            $con = (strpos($Artikel->cURLFull, '?') === false) ? '?' : '&';
+            if ($Artikel->kEigenschaftKombi > 0) {
+                $url = (!empty($Artikel->cURLFull))
+                    ? ($Artikel->cURLFull . $con)
+                    : (Shop::getURL() . '/index.php?a=' . $Artikel->kVaterArtikel .
+                        '&a2=' . $Artikel->kArtikel . '&');
+                header('Location: ' . $url . 'n=' . $anzahl . '&r=' . implode(',', $redirectParam), true, 302);
+            } else {
+                $url = (!empty($Artikel->cURLFull))
+                    ? ($Artikel->cURLFull . $con)
+                    : (Shop::getURL() . '/index.php?a=' . $Artikel->kArtikel . '&');
+                header('Location: ' . $url . 'n=' . $anzahl . '&r=' . implode(',', $redirectParam), true, 302);
+            }
+            exit;
+        }
+
+        return false;
+    }
+    $_SESSION['Warenkorb']->fuegeEin($kArtikel, $anzahl, $oEigenschaftwerte_arr, 1, $cUnique, $kKonfigitem, $setzePositionsPreise)
+                          ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS)
+                          ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDZUSCHLAG)
+                          ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSAND_ARTIKELABHAENGIG)
+                          ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART)
+                          ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZINSAUFSCHLAG)
+                          ->loescheSpezialPos(C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR)
+                          ->loescheSpezialPos(C_WARENKORBPOS_TYP_NEUKUNDENKUPON)
+                          ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR)
+                          ->loescheSpezialPos(C_WARENKORBPOS_TYP_TRUSTEDSHOPS);
+
+    resetNeuKundenKupon();
+    unset(
+        $_SESSION['VersandKupon'],
+        $_SESSION['Versandart'],
+        $_SESSION['Zahlungsart'],
+        $_SESSION['TrustedShops']
+    );
+    // Wenn Kupon vorhanden und der cWertTyp prozentual ist, dann verwerfen und neuanlegen
+    altenKuponNeuBerechnen();
+    setzeLinks();
+    // Persistenter Warenkorb
+    if (!isset($_POST['login']) && !isset($_REQUEST['basket2Pers'])) {
+        fuegeEinInWarenkorbPers($kArtikel, $anzahl, $oEigenschaftwerte_arr, $cUnique, $kKonfigitem);
+    }
+    // Hinweis
+    Shop::Smarty()->assign('hinweis', Shop::Lang()->get('basketAdded', 'messages'))
+        ->assign('bWarenkorbHinzugefuegt', true)
+        ->assign('bWarenkorbAnzahl', $anzahl);
+    // Kampagne
+    if (isset($_SESSION['Kampagnenbesucher'])) {
+        setzeKampagnenVorgang(KAMPAGNE_DEF_WARENKORB, $kArtikel, $anzahl);
+    }
+    // Warenkorb weiterleiten
+    $_SESSION['Warenkorb']->redirectTo((bool)$nWeiterleitung, $cUnique);
+
+    return true;
 }
 
 /**
@@ -1597,16 +1593,16 @@ function checkeKuponWKPos($oWKPosition, $Kupon)
                 AND (cKunden = '' OR cKunden = '-1' {$Kunden_qry})
                 AND kKupon = " . (int)$Kupon->kKupon, 1
     );
-    if (isset($kupons_mgl->kKupon) &&
-        $kupons_mgl->kKupon > 0 &&
-        $kupons_mgl->cWertTyp === 'prozent' &&
-        !$_SESSION['Warenkorb']->posTypEnthalten(C_WARENKORBPOS_TYP_KUPON)
+    if (isset($kupons_mgl->kKupon)
+        && $kupons_mgl->kKupon > 0
+        && $kupons_mgl->cWertTyp === 'prozent'
+        && !$_SESSION['Warenkorb']->posTypEnthalten(C_WARENKORBPOS_TYP_KUPON)
     ) {
         $oWKPosition->fPreisEinzelNetto -= ($oWKPosition->fPreisEinzelNetto / 100) * $Kupon->fWert;
         $oWKPosition->fPreis            -= ($oWKPosition->fPreis / 100) * $Kupon->fWert;
         $oWKPosition->cHinweis           = $Kupon->cName .
             ' (' . str_replace('.', ',', $Kupon->fWert) .
-            '% ' . Shop::Lang()->get('discount', 'global') . ')';
+            '% ' . Shop::Lang()->get('discount') . ')';
 
         if (is_array($oWKPosition->WarenkorbPosEigenschaftArr)) {
             foreach ($oWKPosition->WarenkorbPosEigenschaftArr as $oWarenkorbPosEigenschaft) {
@@ -1786,7 +1782,7 @@ function objectSort(&$data, $key, $bStringToLower = false)
  */
 function gibArtikelBildPfad($cPfad)
 {
-    return (strlen(trim($cPfad)) > 0)
+    return strlen(trim($cPfad)) > 0
         ? $cPfad
         : BILD_KEIN_ARTIKELBILD_VORHANDEN;
 }
@@ -1800,10 +1796,10 @@ function gibArtikelBildPfad($cPfad)
 function findeVariation($oVariation_arr, $kEigenschaft, $kEigenschaftWert)
 {
     foreach ($oVariation_arr as $oVariation) {
-        if ($oVariation->kEigenschaft == $kEigenschaft &&
-            isset($oVariation->Werte) &&
-            is_array($oVariation->Werte) &&
-            count($oVariation->Werte) > 0
+        if ($oVariation->kEigenschaft == $kEigenschaft
+            && isset($oVariation->Werte)
+            && is_array($oVariation->Werte)
+            && count($oVariation->Werte) > 0
         ) {
             foreach ($oVariation->Werte as $oWert) {
                 if ($oWert->kEigenschaftWert == $kEigenschaftWert) {
@@ -1914,9 +1910,9 @@ function gibUst($kSteuerklasse)
     if (!isset($_SESSION['Steuersatz']) || !is_array($_SESSION['Steuersatz']) || count($_SESSION['Steuersatz']) === 0) {
         setzeSteuersaetze();
     }
-    if (isset($_SESSION['Steuersatz']) &&
-        is_array($_SESSION['Steuersatz']) &&
-        !isset($_SESSION['Steuersatz'][$kSteuerklasse])
+    if (isset($_SESSION['Steuersatz'])
+        && is_array($_SESSION['Steuersatz'])
+        && !isset($_SESSION['Steuersatz'][$kSteuerklasse])
     ) {
         $nKey_arr      = array_keys($_SESSION['Steuersatz']);
         $kSteuerklasse = $nKey_arr[0];
@@ -2381,45 +2377,47 @@ function gibAlleKategorienNoHTML($nKategorieBox = 0)
     $oKategorienNoHTML_arr = [];
     $nTiefe                = 0;
 
-    if (K_KATEGORIE_TIEFE > 0) {
-        $oKategorien = new KategorieListe();
-        $oKategorien->getAllCategoriesOnLevel(0);
-        foreach ($oKategorien->elemente as $oKategorie) {
-            //Kategoriebox Filter
-            if ($nKategorieBox > 0 && $nTiefe === 0) {
-                if ($oKategorie->CategoryFunctionAttributes[KAT_ATTRIBUT_KATEGORIEBOX] != $nKategorieBox) {
-                    continue;
-                }
-            }
-            unset($oKategorienNoHTML);
-            $oKategorienNoHTML = $oKategorie;
-            unset($oKategorienNoHTML->Unterkategorien);
-            $oKategorienNoHTML->oUnterKat_arr               = [];
-            $oKategorienNoHTML_arr[$oKategorie->kKategorie] = $oKategorienNoHTML;
-            //nur wenn unterkategorien enthalten sind!
-            if (K_KATEGORIE_TIEFE > 1) {
-                $oAktKategorie = new Kategorie($oKategorie->kKategorie);
-                if ($oAktKategorie->bUnterKategorien) {
-                    $nTiefe           = 1;
-                    $oUnterKategorien = new KategorieListe();
-                    $oUnterKategorien->getAllCategoriesOnLevel($oAktKategorie->kKategorie);
-                    foreach ($oUnterKategorien->elemente as $oUKategorie) {
-                        unset($oKategorienNoHTML);
-                        $oKategorienNoHTML = $oUKategorie;
-                        unset($oKategorienNoHTML->Unterkategorien);
-                        $oKategorienNoHTML->oUnterKat_arr                                                        = [];
-                        $oKategorienNoHTML_arr[$oKategorie->kKategorie]->oUnterKat_arr[$oUKategorie->kKategorie] = $oKategorienNoHTML;
+    if (!K_KATEGORIE_TIEFE > 0) {
+        return [];
+    }
+    $oKategorien = new KategorieListe();
+    $oKategorien->getAllCategoriesOnLevel(0);
+    foreach ($oKategorien->elemente as $oKategorie) {
+        //Kategoriebox Filter
+        if ($nKategorieBox > 0
+            && $nTiefe === 0
+            && $oKategorie->CategoryFunctionAttributes[KAT_ATTRIBUT_KATEGORIEBOX] != $nKategorieBox
+        ) {
+            continue;
+        }
+        unset($oKategorienNoHTML);
+        $oKategorienNoHTML = $oKategorie;
+        unset($oKategorienNoHTML->Unterkategorien);
+        $oKategorienNoHTML->oUnterKat_arr               = [];
+        $oKategorienNoHTML_arr[$oKategorie->kKategorie] = $oKategorienNoHTML;
+        //nur wenn unterkategorien enthalten sind!
+        if (K_KATEGORIE_TIEFE > 1) {
+            $oAktKategorie = new Kategorie($oKategorie->kKategorie);
+            if ($oAktKategorie->bUnterKategorien) {
+                $nTiefe           = 1;
+                $oUnterKategorien = new KategorieListe();
+                $oUnterKategorien->getAllCategoriesOnLevel($oAktKategorie->kKategorie);
+                foreach ($oUnterKategorien->elemente as $oUKategorie) {
+                    unset($oKategorienNoHTML);
+                    $oKategorienNoHTML = $oUKategorie;
+                    unset($oKategorienNoHTML->Unterkategorien);
+                    $oKategorienNoHTML->oUnterKat_arr                                                        = [];
+                    $oKategorienNoHTML_arr[$oKategorie->kKategorie]->oUnterKat_arr[$oUKategorie->kKategorie] = $oKategorienNoHTML;
 
-                        if (K_KATEGORIE_TIEFE > 2) {
-                            $nTiefe                = 2;
-                            $oUnterUnterKategorien = new KategorieListe();
-                            $oUnterUnterKategorien->getAllCategoriesOnLevel($oUKategorie->kKategorie);
-                            foreach ($oUnterUnterKategorien->elemente as $oUUKategorie) {
-                                unset($oKategorienNoHTML);
-                                $oKategorienNoHTML = $oUUKategorie;
-                                unset($oKategorienNoHTML->Unterkategorien);
-                                $oKategorienNoHTML_arr[$oKategorie->kKategorie]->oUnterKat_arr[$oUKategorie->kKategorie]->oUnterKat_arr[$oUUKategorie->kKategorie] = $oKategorienNoHTML;
-                            }
+                    if (K_KATEGORIE_TIEFE > 2) {
+                        $nTiefe                = 2;
+                        $oUnterUnterKategorien = new KategorieListe();
+                        $oUnterUnterKategorien->getAllCategoriesOnLevel($oUKategorie->kKategorie);
+                        foreach ($oUnterUnterKategorien->elemente as $oUUKategorie) {
+                            unset($oKategorienNoHTML);
+                            $oKategorienNoHTML = $oUUKategorie;
+                            unset($oKategorienNoHTML->Unterkategorien);
+                            $oKategorienNoHTML_arr[$oKategorie->kKategorie]->oUnterKat_arr[$oUKategorie->kKategorie]->oUnterKat_arr[$oUUKategorie->kKategorie] = $oKategorienNoHTML;
                         }
                     }
                 }
@@ -3221,7 +3219,7 @@ function encodeCode($klartext)
 }
 
 /**
- * @param int $sec
+ * @param int|string $sec
  * @return stdClass|false
  */
 function generiereCaptchaCode($sec)
@@ -3238,12 +3236,12 @@ function generiereCaptchaCode($sec)
             $sec = $_sec;
         }
     }
-    if ($sec === '7' || $sec === 'Y') {
+    if ((int)$sec === 7 || $sec === 'Y') {
         return false;
     }
 
     $code = new stdClass();
-    if ($sec == 4) {
+    if ((int)$sec === 4) {
         $rnd       = time() % 4 + 1;
         $code->art = $rnd;
         switch ($rnd) {
@@ -3251,24 +3249,24 @@ function generiereCaptchaCode($sec)
                 $x1          = rand(1, 10);
                 $x2          = rand(1, 10);
                 $code->code  = $x1 + $x2;
-                $code->frage = Shop::Lang()->get('captchaMathQuestion', 'global') . ' ' . $x1 . ' ' .
-                    Shop::Lang()->get('captchaAddition', 'global') . ' ' . $x2 . '?';
+                $code->frage = Shop::Lang()->get('captchaMathQuestion') . ' ' . $x1 . ' ' .
+                    Shop::Lang()->get('captchaAddition') . ' ' . $x2 . '?';
                 break;
 
             case 2:
                 $x1          = rand(3, 10);
                 $x2          = rand(1, $x1 - 1);
                 $code->code  = $x1 - $x2;
-                $code->frage = Shop::Lang()->get('captchaMathQuestion', 'global') . ' ' . $x1 . ' ' .
-                    Shop::Lang()->get('captchaSubtraction', 'global') . ' ' . $x2 . '?';
+                $code->frage = Shop::Lang()->get('captchaMathQuestion') . ' ' . $x1 . ' ' .
+                    Shop::Lang()->get('captchaSubtraction') . ' ' . $x2 . '?';
                 break;
 
             case 3:
                 $x1          = rand(2, 5);
                 $x2          = rand(2, 5);
                 $code->code  = $x1 * $x2;
-                $code->frage = Shop::Lang()->get('captchaMathQuestion', 'global') . ' ' . $x1 . ' ' .
-                    Shop::Lang()->get('captchaMultiplication', 'global') . ' ' . $x2 . '?';
+                $code->frage = Shop::Lang()->get('captchaMathQuestion') . ' ' . $x1 . ' ' .
+                    Shop::Lang()->get('captchaMultiplication') . ' ' . $x2 . '?';
                 break;
 
             case 4:
@@ -3276,11 +3274,11 @@ function generiereCaptchaCode($sec)
                 $x2          = rand(2, 5);
                 $code->code  = $x1;
                 $x1         *= $x2;
-                $code->frage = Shop::Lang()->get('captchaMathQuestion', 'global') . ' ' . $x1 . ' ' .
-                    Shop::Lang()->get('captchaDivision', 'global') . ' ' . $x2 . '?';
+                $code->frage = Shop::Lang()->get('captchaMathQuestion') . ' ' . $x1 . ' ' .
+                    Shop::Lang()->get('captchaDivision') . ' ' . $x2 . '?';
                 break;
         }
-    } elseif ($sec == 5) { //unsichtbarer Token
+    } elseif ((int)$sec === 5) { //unsichtbarer Token
         $code->code              = '';
         $_SESSION['xcrsf_token'] = null;
     } else {
@@ -4240,9 +4238,6 @@ function holeAlleSuchspecialOverlays($kSprache = 0)
                         ],
                         $cSuchSpecial
                     );
-                    if (!isset($oSuchspecialOverlay_arr[$cSuchSpecial])) {
-                        $oSuchspecialOverlay_arr[$cSuchSpecial] = new stdClass();
-                    }
                     $oSuchspecialOverlay_arr[$cSuchSpecial]              = $oSuchspecialOverlayTMP;
                     $oSuchspecialOverlay_arr[$cSuchSpecial]->cPfadKlein  = PFAD_SUCHSPECIALOVERLAY_KLEIN .
                         $oSuchspecialOverlay_arr[$cSuchSpecial]->cBildPfad;
@@ -4760,61 +4755,56 @@ function pruefeEmailblacklist($cEmail)
 {
     $cEmail = strtolower(StringHandler::filterXSS($cEmail));
     if (valid_email($cEmail)) {
-        $Einstellungen = Shop::getSettings([CONF_EMAILBLACKLIST]);
-        if ($Einstellungen['emailblacklist']['blacklist_benutzen'] === 'Y') {
-            // Emailblacklist benutzen?
-            $oEmailBlackList_arr = Shop::DB()->query("SELECT cEmail FROM temailblacklist", 2);
-            if (is_array($oEmailBlackList_arr) && count($oEmailBlackList_arr) > 0) {
-                foreach ($oEmailBlackList_arr as $oEmailBlackList) {
-                    if (strpos($oEmailBlackList->cEmail, '*') !== false) {
-                        $cEmailBlackListRegEx = str_replace("*", "[a-z0-9\-\_\.\@\+]*", $oEmailBlackList->cEmail);
-                        preg_match('/' . $cEmailBlackListRegEx . '/', $cEmail, $cTreffer_arr);
-                        // Blocked
-                        if (isset($cTreffer_arr[0]) && strlen($cEmail) === strlen($cTreffer_arr[0])) {
-                            // Email schonmal geblockt worden?
-                            $oEmailblacklistBlock = Shop::DB()->select('temailblacklistblock', 'cEmail', $cEmail);
-                            if (!empty($oEmailblacklistBlock->cEmail)) {
-                                $_upd                = new stdClass();
-                                $_upd->dLetzterBlock = 'now()';
-                                Shop::DB()->update('temailblacklistblock', 'cEmail', $cEmail, $_upd);
-                            } else {
-                                // temailblacklistblock Eintrag
-                                $oEmailblacklistBlock                = new stdClass();
-                                $oEmailblacklistBlock->cEmail        = $cEmail;
-                                $oEmailblacklistBlock->dLetzterBlock = 'now()';
-                                Shop::DB()->insert('temailblacklistblock', $oEmailblacklistBlock);
-                            }
-
-                            return true;
-                        }
-                    } elseif (strtolower($oEmailBlackList->cEmail) === strtolower($cEmail)) {
-                        // Email schonmal geblockt worden?
-                        $oEmailblacklistBlock = Shop::DB()->select('temailblacklistblock', 'cEmail', $cEmail);
-
-                        if (!empty($oEmailblacklistBlock->cEmail)) {
-                            $_upd                = new stdClass();
-                            $_upd->dLetzterBlock = 'now()';
-                            Shop::DB()->update('temailblacklistblock', 'cEmail', $cEmail, $_upd);
-                        } else {
-                            // temailblacklistblock Eintrag
-                            $oEmailblacklistBlock                = new stdClass();
-                            $oEmailblacklistBlock->cEmail        = $cEmail;
-                            $oEmailblacklistBlock->dLetzterBlock = 'now()';
-                            Shop::DB()->insert('temailblacklistblock', $oEmailblacklistBlock);
-                        }
-
-                        return true;
-                    }
-                }
-            }
-
-            return false;
-        }
-
+        return true;
+    }
+    $Einstellungen = Shop::getSettings([CONF_EMAILBLACKLIST]);
+    if ($Einstellungen['emailblacklist']['blacklist_benutzen'] !== 'Y') {
         return false;
     }
+    $oEmailBlackList_arr = Shop::DB()->query("SELECT cEmail FROM temailblacklist", 2);
+    foreach ($oEmailBlackList_arr as $oEmailBlackList) {
+        if (strpos($oEmailBlackList->cEmail, '*') !== false) {
+            $cEmailBlackListRegEx = str_replace("*", "[a-z0-9\-\_\.\@\+]*", $oEmailBlackList->cEmail);
+            preg_match('/' . $cEmailBlackListRegEx . '/', $cEmail, $cTreffer_arr);
+            // Blocked
+            if (isset($cTreffer_arr[0]) && strlen($cEmail) === strlen($cTreffer_arr[0])) {
+                // Email schonmal geblockt worden?
+                $oEmailblacklistBlock = Shop::DB()->select('temailblacklistblock', 'cEmail', $cEmail);
+                if (!empty($oEmailblacklistBlock->cEmail)) {
+                    $_upd                = new stdClass();
+                    $_upd->dLetzterBlock = 'now()';
+                    Shop::DB()->update('temailblacklistblock', 'cEmail', $cEmail, $_upd);
+                } else {
+                    // temailblacklistblock Eintrag
+                    $oEmailblacklistBlock                = new stdClass();
+                    $oEmailblacklistBlock->cEmail        = $cEmail;
+                    $oEmailblacklistBlock->dLetzterBlock = 'now()';
+                    Shop::DB()->insert('temailblacklistblock', $oEmailblacklistBlock);
+                }
 
-    return true;
+                return true;
+            }
+        } elseif (strtolower($oEmailBlackList->cEmail) === strtolower($cEmail)) {
+            // Email schonmal geblockt worden?
+            $oEmailblacklistBlock = Shop::DB()->select('temailblacklistblock', 'cEmail', $cEmail);
+
+            if (!empty($oEmailblacklistBlock->cEmail)) {
+                $_upd                = new stdClass();
+                $_upd->dLetzterBlock = 'now()';
+                Shop::DB()->update('temailblacklistblock', 'cEmail', $cEmail, $_upd);
+            } else {
+                // temailblacklistblock Eintrag
+                $oEmailblacklistBlock                = new stdClass();
+                $oEmailblacklistBlock->cEmail        = $cEmail;
+                $oEmailblacklistBlock->dLetzterBlock = 'now()';
+                Shop::DB()->insert('temailblacklistblock', $oEmailblacklistBlock);
+            }
+
+            return true;
+        }
+    }
+
+    return false;
 }
 
 /**
@@ -4962,23 +4952,21 @@ function gibTrustedShopsBewertenButton($cMail, $cBestellNr)
 function holeGlobaleMetaAngaben()
 {
     $cacheID = 'jtl_glob_meta';
-    if (($oGlobaleMetaAngaben_arr = Shop::Cache()->get($cacheID)) !== false) {
-        return $oGlobaleMetaAngaben_arr;
+    if (($globalMeta = Shop::Cache()->get($cacheID)) !== false) {
+        return $globalMeta;
     }
-    $oGlobaleMetaAngaben_arr    = [];
-    $oGlobaleMetaAngabenTMP_arr = Shop::DB()->query("SELECT * FROM tglobalemetaangaben ORDER BY kSprache", 2);
-    if (is_array($oGlobaleMetaAngabenTMP_arr) && count($oGlobaleMetaAngabenTMP_arr) > 0) {
-        foreach ($oGlobaleMetaAngabenTMP_arr as $oGlobaleMetaAngabenTMP) {
-            if (!isset($oGlobaleMetaAngaben_arr[$oGlobaleMetaAngabenTMP->kSprache])) {
-                $oGlobaleMetaAngaben_arr[$oGlobaleMetaAngabenTMP->kSprache] = new stdClass();
-            }
-            $cName                                                              = $oGlobaleMetaAngabenTMP->cName;
-            $oGlobaleMetaAngaben_arr[$oGlobaleMetaAngabenTMP->kSprache]->$cName = $oGlobaleMetaAngabenTMP->cWertName;
+    $globalMeta = [];
+    $globalTmp  = Shop::DB()->query("SELECT cName, kSprache, cWertName FROM tglobalemetaangaben ORDER BY kSprache", 2);
+    foreach ($globalTmp as $data) {
+        if (!isset($globalMeta[$data->kSprache])) {
+            $globalMeta[$data->kSprache] = new stdClass();
         }
+        $cName                               = $data->cName;
+        $globalMeta[$data->kSprache]->$cName = $data->cWertName;
     }
-    Shop::Cache()->set($cacheID, $oGlobaleMetaAngaben_arr, [CACHING_GROUP_CORE]);
+    Shop::Cache()->set($cacheID, $globalMeta, [CACHING_GROUP_CORE]);
 
-    return $oGlobaleMetaAngaben_arr;
+    return $globalMeta;
 }
 
 /**
@@ -4986,15 +4974,13 @@ function holeGlobaleMetaAngaben()
  */
 function holeExcludedKeywords()
 {
-    $oExcludedKeywords_arr    = [];
-    $oExcludedKeywordsTMP_arr = Shop::DB()->query("SELECT * FROM texcludekeywords ORDER BY cISOSprache", 2);
-    if (is_array($oExcludedKeywordsTMP_arr) && count($oExcludedKeywordsTMP_arr) > 0) {
-        foreach ($oExcludedKeywordsTMP_arr as $oExcludedKeywordsTMP) {
-            $oExcludedKeywords_arr[$oExcludedKeywordsTMP->cISOSprache] = $oExcludedKeywordsTMP;
-        }
+    $exclude  = [];
+    $keyWords = Shop::DB()->query("SELECT * FROM texcludekeywords ORDER BY cISOSprache", 2);
+    foreach ($keyWords as $keyWord) {
+        $exclude[$keyWord->cISOSprache] = $keyWord;
     }
 
-    return $oExcludedKeywords_arr;
+    return $exclude;
 }
 
 /**
@@ -5069,10 +5055,8 @@ function gibAlleSprachen($nOption = 0)
  */
 function pruefeSOAP($cURL = '')
 {
-    if (strlen($cURL) > 0) {
-        if (!phpLinkCheck($cURL)) {
-            return false;
-        }
+    if (strlen($cURL) > 0 && !phpLinkCheck($cURL)) {
+        return false;
     }
 
     return class_exists('SoapClient');
@@ -5084,10 +5068,8 @@ function pruefeSOAP($cURL = '')
  */
 function pruefeCURL($cURL = '')
 {
-    if (strlen($cURL) > 0) {
-        if (!phpLinkCheck($cURL)) {
-            return false;
-        }
+    if (strlen($cURL) > 0 && !phpLinkCheck($cURL)) {
+        return false;
     }
 
     return function_exists('curl_init');
@@ -5107,11 +5089,10 @@ function pruefeALLOWFOPEN()
  */
 function pruefeSOCKETS($cSOCKETS = '')
 {
-    if (strlen($cSOCKETS) > 0) {
-        if (!phpLinkCheck($cSOCKETS)) {
-            return false;
-        }
+    if (strlen($cSOCKETS) > 0 && !phpLinkCheck($cSOCKETS)) {
+        return false;
     }
+
     return function_exists('fsockopen');
 }
 
@@ -5121,8 +5102,9 @@ function pruefeSOCKETS($cSOCKETS = '')
  */
 function phpLinkCheck($url)
 {
-    $url = parse_url(trim($url));
-    if (strtolower($url['scheme']) !== 'http' && strtolower($url['scheme']) !== 'https') {
+    $url    = parse_url(trim($url));
+    $scheme = strtolower($url['scheme']);
+    if ($scheme !== 'http' && $scheme !== 'https') {
         return false;
     }
     if (!isset($url['port'])) {
@@ -5131,13 +5113,10 @@ function phpLinkCheck($url)
     if (!isset($url['path'])) {
         $url['path'] = '/';
     }
-    $fp = fsockopen($url['host'], $url['port'], $errno, $errstr, 30);
 
-    if (!$fp) {
-        return false;
-    }
-
-    return true;
+    return !fsockopen($url['host'], $url['port'], $errno, $errstr, 30)
+        ? false
+        : true;
 }
 
 /**
@@ -5149,7 +5128,7 @@ function phpLinkCheck($url)
  */
 function gibKategoriepfad($Kategorie, $kKundengruppe, $kSprache, $bString = true)
 {
-    if (empty($Kategorie->cKategoriePfad_arr) || empty($Kategorie->kSprache) || ($Kategorie->kSprache != $kSprache)) {
+    if (empty($Kategorie->cKategoriePfad_arr) || empty($Kategorie->kSprache) || $Kategorie->kSprache != $kSprache) {
         if (empty($Kategorie->kKategorie)) {
             return $bString ? '' : [];
         }
@@ -5593,13 +5572,10 @@ function mappeSeitentyp($nSeitentyp)
  */
 function pruefeZahlungsartNutzbarkeit()
 {
-    $oZahlungsart_arr = Shop::DB()->selectAll('tzahlungsart', 'nActive', 1);
-    if (is_array($oZahlungsart_arr) && count($oZahlungsart_arr) > 0) {
-        foreach ($oZahlungsart_arr as $oZahlungsart) {
-            // Bei SOAP oder CURL => versuche die Zahlungsart auf nNutzbar = 1 zu stellen, falls nicht schon geschehen
-            if ($oZahlungsart->nSOAP == 1 || $oZahlungsart->nCURL == 1 || $oZahlungsart->nSOCKETS == 1) {
-                aktiviereZahlungsart($oZahlungsart);
-            }
+    foreach (Shop::DB()->selectAll('tzahlungsart', 'nActive', 1) as $oZahlungsart) {
+        // Bei SOAP oder CURL => versuche die Zahlungsart auf nNutzbar = 1 zu stellen, falls nicht schon geschehen
+        if ($oZahlungsart->nSOAP == 1 || $oZahlungsart->nCURL == 1 || $oZahlungsart->nSOCKETS == 1) {
+            aktiviereZahlungsart($oZahlungsart);
         }
     }
 }
@@ -5701,8 +5677,8 @@ function getSytemlogFlag($cache = true)
 function optionaleRundung($gesamtsumme)
 {
     $conf = Shop::getSettings([CONF_KAUFABWICKLUNG]);
-    if (isset($conf['kaufabwicklung']['bestellabschluss_runden5']) &&
-        (int)$conf['kaufabwicklung']['bestellabschluss_runden5'] === 1
+    if (isset($conf['kaufabwicklung']['bestellabschluss_runden5'])
+        && (int)$conf['kaufabwicklung']['bestellabschluss_runden5'] === 1
     ) {
         $int          = (int)$gesamtsumme * 100;
         $letzteStelle = $int % 10;
@@ -5978,24 +5954,22 @@ function doMainwordRedirect($NaviFilter, $nAnzahl, $bSeo = false)
         ]
     ];
 
-    if ((int)$nAnzahl === 0) {
-        $kSprache = Shop::getLanguage();
-        if (Shop::getNaviFilter()->getFilterCount() > 0) {
-            foreach ($cMainword_arr as $function => $cInfo_arr) {
-                $cKey   = $cInfo_arr['cKey'];
-                $cParam = $cInfo_arr['cParam'];
-                $data   = method_exists($NaviFilter, $function)
-                    ? $NaviFilter->$function()
-                    : null;
-                if (isset($data->$cKey) && (int)$data->$cKey > 0) {
-                    $cUrl = "index.php?{$cParam}={$data->$cKey}";
-                    if ($bSeo && isset($data->cSeo) && is_array($data->cSeo)) {
-                        $cUrl = "{$data->cSeo[$kSprache]}";
-                    }
-                    if (strlen($cUrl) > 0) {
-                        header("Location: {$cUrl}", true, 301);
-                        exit();
-                    }
+    $kSprache = Shop::getLanguage();
+    if ((int)$nAnzahl === 0 && Shop::getNaviFilter()->getFilterCount() > 0) {
+        foreach ($cMainword_arr as $function => $cInfo_arr) {
+            $cKey   = $cInfo_arr['cKey'];
+            $cParam = $cInfo_arr['cParam'];
+            $data   = method_exists($NaviFilter, $function)
+                ? $NaviFilter->$function()
+                : null;
+            if (isset($data->$cKey) && (int)$data->$cKey > 0) {
+                $cUrl = "index.php?{$cParam}={$data->$cKey}";
+                if ($bSeo && isset($data->cSeo) && is_array($data->cSeo)) {
+                    $cUrl = "{$data->cSeo[$kSprache]}";
+                }
+                if (strlen($cUrl) > 0) {
+                    header("Location: {$cUrl}", true, 301);
+                    exit();
                 }
             }
         }
@@ -6037,9 +6011,9 @@ function gibStuecklistenKomponente($kStueckliste, $bAssoc = false)
 function pruefeWarenkorbStueckliste($oArtikel, $fAnzahl)
 {
     $oStueckliste = ArtikelHelper::isStuecklisteKomponente($oArtikel->kArtikel, true);
-    if (is_object($oArtikel) && $oArtikel->cLagerBeachten === 'Y' &&
-        $oArtikel->cLagerKleinerNull !== 'Y' &&
-        ($oArtikel->kStueckliste > 0 || $oStueckliste)
+    if (is_object($oArtikel) && $oArtikel->cLagerBeachten === 'Y'
+        && $oArtikel->cLagerKleinerNull !== 'Y'
+        && ($oArtikel->kStueckliste > 0 || $oStueckliste)
     ) {
         $bKomponente                = false;
         $oStuecklisteKomponente_arr = null;
@@ -6525,9 +6499,7 @@ function gibSeitenTyp()
  */
 function getShopTemplate()
 {
-    $template = Template::getInstance();
-
-    return $template->getDir();
+    return Template::getInstance()->getDir();
 }
 
 /**
@@ -6555,8 +6527,7 @@ function pruefeIstVaterArtikel($kArtikel)
  */
 function setzeKundeInSession($Kunde)
 {
-    $session = Session::getInstance();
-    $session->setCustomer($Kunde);
+    Session::getInstance()->setCustomer($Kunde);
 }
 
 /**
@@ -6686,9 +6657,7 @@ function baueBoxen()
  */
 function gibBoxen()
 {
-    $boxes = Boxen::getInstance();
-
-    return $boxes->compatGet();
+    return Boxen::getInstance()->compatGet();
 }
 
 /**
@@ -6698,10 +6667,9 @@ function gibBoxen()
  */
 function boxAnzeigen($ePosition)
 {
-    $boxes      = Boxen::getInstance();
-    $visibility = $boxes->holeBoxAnzeige(Shop::getPageType());
+    $visibility = Boxen::getInstance()->holeBoxAnzeige(Shop::getPageType());
 
-    return (isset($visibility[$ePosition]) && $visibility[$ePosition] === true);
+    return isset($visibility[$ePosition]) && $visibility[$ePosition] === true;
 }
 
 /**
@@ -6736,9 +6704,7 @@ function ermittleVersandkosten($cLand, $cPLZ, &$cError = '')
  */
 function holUnterkategorien($kKategorie, $kKundengruppe, $kSprache, $all = false)
 {
-    $catList = new KategorieListe();
-
-    return $catList->holUnterkategorien($kKategorie, $kKundengruppe, $kSprache);
+    return (new KategorieListe())->holUnterkategorien($kKategorie, $kKundengruppe, $kSprache);
 }
 
 /**
@@ -6749,9 +6715,7 @@ function holUnterkategorien($kKategorie, $kKundengruppe, $kSprache, $all = false
  */
 function nichtLeer($kKategorie, $kKundengruppe)
 {
-    $catList = new KategorieListe();
-
-    return $catList->nichtLeer($kKategorie, $kKundengruppe);
+    return (new KategorieListe())->nichtLeer($kKategorie, $kKundengruppe);
 }
 
 /**
@@ -6762,9 +6726,7 @@ function nichtLeer($kKategorie, $kKundengruppe)
  */
 function artikelVorhanden($kKategorie, $kKundengruppe)
 {
-    $catList = new KategorieListe();
-
-    return $catList->artikelVorhanden($kKategorie, $kKundengruppe);
+    return (new KategorieListe())->artikelVorhanden($kKategorie, $kKundengruppe);
 }
 
 /**

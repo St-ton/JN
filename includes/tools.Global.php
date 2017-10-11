@@ -572,410 +572,6 @@ function gibIP($bBestellung = false)
 }
 
 /**
- *
- */
-function checkeWarenkorbEingang()
-{
-    /** @var array('Warenkorb' => Warenkorb) $_SESSION */
-    $fAnzahl = 0;
-    if (isset($_POST['anzahl'])) {
-        $_POST['anzahl'] = str_replace(',', '.', $_POST['anzahl']);
-    }
-    if (isset($_POST['anzahl']) && (float)$_POST['anzahl'] > 0) {
-        $fAnzahl = (float)$_POST['anzahl'];
-    } elseif (isset($_GET['anzahl']) && (float)$_GET['anzahl'] > 0) {
-        $fAnzahl = (float)$_GET['anzahl'];
-    }
-    if (isset($_POST['n']) && (float)$_POST['n'] > 0) {
-        $fAnzahl = (float)$_POST['n'];
-    } elseif (isset($_GET['n']) && (float)$_GET['n'] > 0) {
-        $fAnzahl = (float)$_GET['n'];
-    }
-    $kArtikel = isset($_POST['a']) ? (int)$_POST['a'] : verifyGPCDataInteger('a');
-    $conf     = Shop::getSettings([CONF_GLOBAL, CONF_VERGLEICHSLISTE]);
-    executeHook(HOOK_TOOLS_GLOBAL_CHECKEWARENKORBEINGANG_ANFANG, [
-        'kArtikel' => $kArtikel,
-        'fAnzahl'  => $fAnzahl
-    ]);
-    // Wunschliste?
-    if ((isset($_POST['Wunschliste']) || isset($_GET['Wunschliste']))
-        && $conf['global']['global_wunschliste_anzeigen'] === 'Y'
-    ) {
-        $linkHelper = LinkHelper::getInstance();
-        // Prüfe ob Kunde eingeloggt
-        if (!isset($_SESSION['Kunde']->kKunde) && !isset($_POST['login'])) {
-            //redirekt zum artikel, um variation/en zu wählen / MBM beachten
-            if ($fAnzahl <= 0) {
-                $fAnzahl = 1;
-            }
-            header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true) .
-                '?a=' . $kArtikel .
-                '&n=' . $fAnzahl .
-                '&r=' . R_LOGIN_WUNSCHLISTE, true, 302);
-            exit();
-        }
-
-        if ($kArtikel > 0 && isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
-            // Prüfe auf kArtikel
-            $oArtikelVorhanden = Shop::DB()->select(
-                'tartikel',
-                'kArtikel', $kArtikel,
-                null, null,
-                null, null,
-                false,
-                'kArtikel, cName'
-            );
-            // Falls Artikel vorhanden
-            if (isset($oArtikelVorhanden->kArtikel) && $oArtikelVorhanden->kArtikel > 0) {
-                $oEigenschaftwerte_arr = [];
-                // Sichtbarkeit Prüfen
-                $oSichtbarkeit = Shop::DB()->select(
-                    'tartikelsichtbarkeit',
-                    'kArtikel', $kArtikel,
-                    'kKundengruppe', Session::CustomerGroup()->getID(),
-                    null, null,
-                    false,
-                    'kArtikel'
-                );
-                if (!isset($oSichtbarkeit->kArtikel) || !$oSichtbarkeit->kArtikel) {
-                    // Prüfe auf Vater Artikel
-                    if (ArtikelHelper::isParent($kArtikel)) {
-                        // Falls die Wunschliste aus der Artikelübersicht ausgewählt wurde, muss zum Artikel weitergeleitet werden
-                        // um Variationen zu wählen
-                        if (verifyGPCDataInteger('overview') === 1) {
-                            header('Location: ' . Shop::getURL() . '/index.php?a=' . $kArtikel .
-                                '&n=' . $fAnzahl .
-                                '&r=' . R_VARWAEHLEN, true, 303);
-                            exit;
-                        }
-
-                        $kArtikel = ArtikelHelper::getArticleForParent($kArtikel);
-                        if ($kArtikel > 0) {
-                            $oEigenschaftwerte_arr = ArtikelHelper::getSelectedPropertiesForVarCombiArticle($kArtikel);
-                        }
-                    } else {
-                        $oEigenschaftwerte_arr = ArtikelHelper::getSelectedPropertiesForArticle($kArtikel);
-                    }
-                    // Prüfe ob die Session ein Wunschlisten Objekt hat
-                    if ($kArtikel > 0) {
-                        if (empty($_SESSION['Wunschliste']->kWunschliste)) {
-                            $_SESSION['Wunschliste'] = new Wunschliste();
-                            $_SESSION['Wunschliste']->schreibeDB();
-                        }
-                        if ($fAnzahl <= 0) {
-                            $fAnzahl = 1;
-                        }
-                        $kWunschlistePos = $_SESSION['Wunschliste']->fuegeEin(
-                            $kArtikel,
-                            $oArtikelVorhanden->cName,
-                            $oEigenschaftwerte_arr,
-                            $fAnzahl
-                        );
-                        // Kampagne
-                        if (isset($_SESSION['Kampagnenbesucher'])) {
-                            setzeKampagnenVorgang(KAMPAGNE_DEF_WUNSCHLISTE, $kWunschlistePos, $fAnzahl); // Wunschliste
-                        }
-
-                        $obj           = new stdClass();
-                        $obj->kArtikel = $kArtikel;
-                        executeHook(HOOK_TOOLS_GLOBAL_CHECKEWARENKORBEINGANG_WUNSCHLISTE, [
-                            'kArtikel'         => &$kArtikel,
-                            'fAnzahl'          => &$fAnzahl,
-                            'AktuellerArtikel' => &$obj
-                        ]);
-
-                        Shop::Smarty()->assign('hinweis', Shop::Lang()->get('wishlistProductadded', 'messages'));
-                        // Weiterleiten?
-                        if ($conf['global']['global_wunschliste_weiterleitung'] === 'Y') {
-                            header('Location: ' . $linkHelper->getStaticRoute('wunschliste.php', true), true, 302);
-                            exit;
-                        }
-                    }
-                }
-            }
-        }
-    } elseif (isset($_POST['Vergleichsliste'])) { // Vergleichsliste?
-        if ($kArtikel > 0) {
-            // Prüfen ob nicht schon die maximale Anzahl an Artikeln auf der Vergleichsliste ist
-            if (!isset($_SESSION['Vergleichsliste']->oArtikel_arr) ||
-                (int)$conf['vergleichsliste']['vergleichsliste_anzahl'] >
-                    count($_SESSION['Vergleichsliste']->oArtikel_arr)
-            ) {
-                // Prüfe auf kArtikel
-                $oArtikelVorhanden = Shop::DB()->select(
-                    'tartikel', '
-                    kArtikel', $kArtikel,
-                    null, null,
-                    null, null,
-                    false,
-                    'kArtikel, cName'
-                );
-                // Falls Artikel vorhanden
-                if (isset($oArtikelVorhanden->kArtikel)) {
-                    // Sichtbarkeit Prüfen
-                    $oSichtbarkeit = Shop::DB()->select(
-                        'tartikelsichtbarkeit',
-                        'kArtikel', $kArtikel,
-                        'kKundengruppe', Session::CustomerGroup()->getID(),
-                        null, null,
-                        false,
-                        'kArtikel'
-                    );
-                    if ($oSichtbarkeit === false || !isset($oSichtbarkeit->kArtikel) || !$oSichtbarkeit->kArtikel) {
-                        // Prüfe auf Vater Artikel
-                        $oVariationen_arr = 0;
-                        if (ArtikelHelper::isParent($kArtikel)) {
-                            $kArtikel         = ArtikelHelper::getArticleForParent($kArtikel);
-                            $oVariationen_arr = ArtikelHelper::getSelectedPropertiesForVarCombiArticle($kArtikel, 1);
-                        }
-                        // Prüfe auf Vater Artikel
-                        if (ArtikelHelper::isParent($kArtikel)) {
-                            $kArtikel = ArtikelHelper::getArticleForParent($kArtikel);
-                        }
-                        $oVergleichsliste = new Vergleichsliste($kArtikel, $oVariationen_arr);
-                        // Falls es eine Vergleichsliste in der Session gibt
-                        if (isset($_SESSION['Vergleichsliste'])) {
-                            // Falls Artikel vorhanden sind
-                            if (is_array($_SESSION['Vergleichsliste']->oArtikel_arr) &&
-                                count($_SESSION['Vergleichsliste']->oArtikel_arr) > 0
-                            ) {
-                                $bSchonVorhanden = false;
-                                foreach ($_SESSION['Vergleichsliste']->oArtikel_arr as $oArtikel) {
-                                    if ($oArtikel->kArtikel === $oVergleichsliste->oArtikel_arr[0]->kArtikel) {
-                                        $bSchonVorhanden = true;
-                                        break;
-                                    }
-                                }
-                                // Wenn der Artikel der eingetragen werden soll, nicht schon in der Session ist
-                                if (!$bSchonVorhanden) {
-                                    foreach ($_SESSION['Vergleichsliste']->oArtikel_arr as $oArtikel) {
-                                        $oVergleichsliste->oArtikel_arr[] = $oArtikel;
-                                    }
-                                    $_SESSION['Vergleichsliste'] = $oVergleichsliste;
-                                    Shop::Smarty()->assign('hinweis', Shop::Lang()->get('comparelistProductadded', 'messages'));
-                                } else {
-                                    Shop::Smarty()->assign('fehler', Shop::Lang()->get('comparelistProductexists', 'messages'));
-                                }
-                            }
-                        } else {
-                            // Vergleichsliste neu in der Session anlegen
-                            $_SESSION['Vergleichsliste'] = $oVergleichsliste;
-                            Shop::Smarty()->assign('hinweis', Shop::Lang()->get('comparelistProductadded', 'messages'));
-                            setzeLinks();
-                        }
-                    }
-                }
-            } else {
-                Shop::Smarty()->assign('fehler', Shop::Lang()->get('compareMaxlimit', 'errorMessages'));
-            }
-        }
-    } elseif (isset($_POST['wke'])
-        && (int)$_POST['wke'] === 1
-        && !isset($_POST['Vergleichsliste'])
-        && !isset($_POST['Wunschliste'])
-    ) { //warenkorbeingang?
-        // VariationsBox ist vorhanden => Prüfen ob Anzahl gesetzt wurde
-        if (isset($_POST['variBox']) && (int)$_POST['variBox'] === 1) {
-            if (pruefeVariBoxAnzahl($_POST['variBoxAnzahl'])) {
-                fuegeVariBoxInWK(
-                    $_POST['variBoxAnzahl'],
-                    $kArtikel,
-                    ArtikelHelper::isParent($kArtikel),
-                    isset($_POST['varimatrix'])
-                );
-            } else {
-                header('Location: index.php?a=' . $kArtikel . '&r=' . R_EMPTY_VARIBOX, true, 303);
-                exit;
-            }
-        } else {
-            if (ArtikelHelper::isParent($kArtikel)) { // Varikombi
-                $kArtikel              = ArtikelHelper::getArticleForParent($kArtikel);
-                $oEigenschaftwerte_arr = ArtikelHelper::getSelectedPropertiesForVarCombiArticle($kArtikel);
-            } else {
-                $oEigenschaftwerte_arr = ArtikelHelper::getSelectedPropertiesForArticle($kArtikel);
-            }
-            $isConfigArticle = false;
-            if (class_exists('Konfigurator')) {
-                if (!Konfigurator::validateKonfig($kArtikel)) {
-                    $isConfigArticle = false;
-                } else {
-                    $oGruppen_arr    = Konfigurator::getKonfig($kArtikel);
-                    $isConfigArticle = (is_array($oGruppen_arr) && count($oGruppen_arr) > 0);
-                }
-            }
-
-            if ($isConfigArticle) {
-                $bValid                  = true;
-                $aError_arr              = [];
-                $aItemError_arr          = [];
-                $oKonfigitem_arr         = [];
-                $nKonfiggruppe_arr       = (isset($_POST['item']) && is_array($_POST['item']))
-                    ? $_POST['item']
-                    : [];
-                $nKonfiggruppeAnzahl_arr = (isset($_POST['quantity']) && is_array($_POST['quantity']))
-                    ? $_POST['quantity']
-                    : [];
-                $nKonfigitemAnzahl_arr   = (isset($_POST['item_quantity']) && is_array($_POST['item_quantity']))
-                    ? $_POST['item_quantity']
-                    : false;
-                $bIgnoreLimits           = isset($_POST['konfig_ignore_limits']);
-
-                if (!function_exists('baueArtikelhinweise')) {
-                    require_once PFAD_ROOT . PFAD_INCLUDES . 'artikel_inc.php';
-                }
-                // Beim Bearbeiten die alten Positionen löschen
-                if (isset($_POST['kEditKonfig'])) {
-                    $kEditKonfig = (int)$_POST['kEditKonfig'];
-
-                    if (!function_exists('loescheWarenkorbPosition')) {
-                        require_once PFAD_ROOT . PFAD_INCLUDES . 'warenkorb_inc.php';
-                    }
-
-                    loescheWarenkorbPosition($kEditKonfig);
-                }
-
-                foreach ($nKonfiggruppe_arr as $nKonfigitem_arr) {
-                    foreach ($nKonfigitem_arr as $kKonfigitem) {
-                        $kKonfigitem = (int)$kKonfigitem;
-                        // Falls ungültig, ignorieren
-                        if ($kKonfigitem <= 0) {
-                            continue;
-                        }
-                        $oKonfigitem          = new Konfigitem($kKonfigitem);
-                        $oKonfigitem->fAnzahl = (float)(
-                            isset($nKonfiggruppeAnzahl_arr[$oKonfigitem->getKonfiggruppe()])
-                                ? $nKonfiggruppeAnzahl_arr[$oKonfigitem->getKonfiggruppe()]
-                                : $oKonfigitem->getInitial()
-                        );
-                        if ($nKonfigitemAnzahl_arr && isset($nKonfigitemAnzahl_arr[$oKonfigitem->getKonfigitem()])) {
-                            $oKonfigitem->fAnzahl = (float)$nKonfigitemAnzahl_arr[$oKonfigitem->getKonfigitem()];
-                        }
-                        // Todo: Mindestbestellanzahl / Abnahmeinterval beachten
-                        if ($oKonfigitem->fAnzahl < 1) {
-                            $oKonfigitem->fAnzahl = 1;
-                        }
-                        if ($fAnzahl < 1) {
-                            $fAnzahl = 1;
-                        }
-                        $oKonfigitem->fAnzahlWK = $oKonfigitem->fAnzahl;
-                        if (!$oKonfigitem->ignoreMultiplier()) {
-                            $oKonfigitem->fAnzahlWK *= $fAnzahl;
-                        }
-                        $oKonfigitem_arr[] = $oKonfigitem;
-                        // Alle Artikel können in den WK gelegt werden?
-                        if ($oKonfigitem->getPosTyp() === KONFIG_ITEM_TYP_ARTIKEL) {
-                            // Varikombi
-                            /** @var Artikel $oTmpArtikel */
-                            $oKonfigitem->oEigenschaftwerte_arr = [];
-                            $oTmpArtikel                        = $oKonfigitem->getArtikel();
-
-                            if ($oTmpArtikel->kVaterArtikel > 0) {
-                                if (isset($oTmpArtikel->kEigenschaftKombi) && $oTmpArtikel->kEigenschaftKombi > 0) {
-                                    $oKonfigitem->oEigenschaftwerte_arr = gibVarKombiEigenschaftsWerte($oTmpArtikel->kArtikel, false);
-                                }
-                            }
-                            if ($oTmpArtikel->cTeilbar !== 'Y' && (int)$fAnzahl != $fAnzahl) {
-                                $fAnzahl = (int)$fAnzahl;
-                            }
-                            $oTmpArtikel->isKonfigItem = true;
-                            $redirectParam             = pruefeFuegeEinInWarenkorb(
-                                $oTmpArtikel,
-                                $oKonfigitem->fAnzahlWK,
-                                $oKonfigitem->oEigenschaftwerte_arr
-                            );
-                            if (count($redirectParam) > 0) {
-                                $bValid            = false;
-                                $aArticleError_arr = baueArtikelhinweise(
-                                    $redirectParam,
-                                    true,
-                                    $oKonfigitem->getArtikel(),
-                                    $oKonfigitem->fAnzahlWK,
-                                    $oKonfigitem->getKonfigitem()
-                                );
-
-                                $aItemError_arr[$oKonfigitem->getKonfigitem()] = $aArticleError_arr[0];
-                            }
-                        }
-                    }
-                }
-                // Komplette Konfiguration validieren
-                if (!$bIgnoreLimits) {
-                    if (($aError_arr = Konfigurator::validateBasket($kArtikel, $oKonfigitem_arr)) !== true) {
-                        $bValid = false;
-                    }
-                }
-                // Alle Konfigurationsartikel können in den WK gelegt werden
-                if ($bValid) {
-                    // Eindeutige ID
-                    $cUnique = gibUID(10);
-                    // Hauptartikel in den WK legen
-                    fuegeEinInWarenkorb($kArtikel, $fAnzahl, $oEigenschaftwerte_arr, 0, $cUnique);
-                    // Konfigartikel in den WK legen
-                    /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
-                    foreach ($oKonfigitem_arr as $oKonfigitem) {
-                        $oKonfigitem->isKonfigItem = true;
-                        switch ($oKonfigitem->getPosTyp()) {
-                            case KONFIG_ITEM_TYP_ARTIKEL:
-                                $_SESSION['Warenkorb']->fuegeEin(
-                                    $oKonfigitem->getArtikelKey(),
-                                    $oKonfigitem->fAnzahlWK,
-                                    $oKonfigitem->oEigenschaftwerte_arr,
-                                    C_WARENKORBPOS_TYP_ARTIKEL,
-                                    $cUnique,
-                                    $oKonfigitem->getKonfigitem()
-                                );
-                                break;
-
-                            case KONFIG_ITEM_TYP_SPEZIAL:
-                                $_SESSION['Warenkorb']->erstelleSpezialPos(
-                                    $oKonfigitem->getName(),
-                                    $oKonfigitem->fAnzahlWK,
-                                    $oKonfigitem->getPreis(),
-                                    $oKonfigitem->getSteuerklasse(),
-                                    C_WARENKORBPOS_TYP_ARTIKEL,
-                                    false,
-                                    !Session::CustomerGroup()->isMerchant(),
-                                    '',
-                                    $cUnique,
-                                    $oKonfigitem->getKonfigitem(),
-                                    $oKonfigitem->getArtikelKey()
-                                );
-                                break;
-                        }
-
-                        fuegeEinInWarenkorbPers(
-                            $oKonfigitem->getArtikelKey(),
-                            $oKonfigitem->fAnzahlWK,
-                            isset($oKonfigitem->oEigenschaftwerte_arr) ? $oKonfigitem->oEigenschaftwerte_arr : [],
-                            $cUnique,
-                            $oKonfigitem->getKonfigitem()
-                        );
-                    }
-                    // Warenkorb weiterleiten
-                    $_SESSION['Warenkorb']->redirectTo();
-                } else {
-                    // Gesammelte Fehler anzeigen
-                    Shop::Smarty()->assign('aKonfigerror_arr', $aError_arr)
-                        ->assign('aKonfigitemerror_arr', $aItemError_arr)
-                        ->assign('fehler', Shop::Lang()->get('configError', 'productDetails'));
-                }
-
-                $nKonfigitem_arr = [];
-                foreach ($nKonfiggruppe_arr as $nTmpKonfigitem_arr) {
-                    $nKonfigitem_arr = array_merge($nKonfigitem_arr, $nTmpKonfigitem_arr);
-                }
-                Shop::Smarty()->assign('fAnzahl', $fAnzahl)
-                    ->assign('nKonfigitem_arr', $nKonfigitem_arr)
-                    ->assign('nKonfigitemAnzahl_arr', $nKonfigitemAnzahl_arr)
-                    ->assign('nKonfiggruppeAnzahl_arr', $nKonfiggruppeAnzahl_arr);
-            } else {
-                fuegeEinInWarenkorb($kArtikel, $fAnzahl, $oEigenschaftwerte_arr);
-            }
-        }
-    }
-}
-
-/**
  * @param array $variBoxAnzahl_arr
  * @param int   $kArtikel
  * @param bool  $bIstVater
@@ -1059,7 +655,7 @@ function fuegeVariBoxInWK($variBoxAnzahl_arr, $kArtikel, $bIstVater, $bExtern = 
     $defaultOptions = Artikel::getDefaultOptions();
     foreach ($oAlleEigenschaft_arr as $i => $oAlleEigenschaftPre) {
         // Prüfe ob er Artikel in den Warenkorb gelegt werden darf
-        $nRedirect_arr = pruefeFuegeEinInWarenkorb(
+        $nRedirect_arr = WarenkorbHelper::addToCartCheck(
             (new Artikel())->fuelleArtikel($oAlleEigenschaftPre->kArtikel, $defaultOptions),
             (float)$variBoxAnzahl_arr[$i],
             $oAlleEigenschaftPre->oEigenschaft_arr
@@ -1240,149 +836,6 @@ function findeKindArtikelZuEigenschaft($kArtikel, $kEigenschaft0, $kEigenschaftW
 }
 
 /**
- * @param Artikel|object $Artikel
- * @param int            $anzahl
- * @param array          $oEigenschaftwerte_arr
- * @param int            $nGenauigkeit
- * @return array
- */
-function pruefeFuegeEinInWarenkorb($Artikel, $anzahl, $oEigenschaftwerte_arr, $nGenauigkeit = 2)
-{
-    /** @var array('Warenkorb' => Warenkorb) $_SESSION */
-    $kArtikel      = $Artikel->kArtikel; // relevant für die Berechnung von Artikelsummen im Warenkorb
-    $redirectParam = [];
-    $conf          = Shop::getSettings([CONF_GLOBAL]);
-    // Abnahmeintervall
-    if ($Artikel->fAbnahmeintervall > 0) {
-        $dVielfache = function_exists('bcdiv')
-            ? round($Artikel->fAbnahmeintervall * ceil(bcdiv($anzahl, $Artikel->fAbnahmeintervall, $nGenauigkeit + 1)), 2)
-            : round($Artikel->fAbnahmeintervall * ceil($anzahl / $Artikel->fAbnahmeintervall), $nGenauigkeit);
-        if ($dVielfache != $anzahl) {
-            $redirectParam[] = R_ARTIKELABNAHMEINTERVALL;
-        }
-    }
-    if ((int)$anzahl != $anzahl && $Artikel->cTeilbar !== 'Y') {
-        $anzahl = max((int)$anzahl, 1);
-    }
-    //mbm
-    if ($Artikel->fMindestbestellmenge > $anzahl + $_SESSION['Warenkorb']->gibAnzahlEinesArtikels($kArtikel)) {
-        $redirectParam[] = R_MINDESTMENGE;
-    }
-    //lager beachten
-    if ($Artikel->cLagerBeachten === 'Y' &&
-        $Artikel->cLagerVariation !== 'Y' &&
-        $Artikel->cLagerKleinerNull !== 'Y' &&
-        $Artikel->fPackeinheit * ($anzahl + $_SESSION['Warenkorb']->gibAnzahlEinesArtikels($kArtikel)) > $Artikel->fLagerbestand
-    ) {
-        $redirectParam[] = R_LAGER;
-    }
-    //darf preise sehen und somit einkaufen?
-    if (!Session::CustomerGroup()->mayViewPrices() || !Session::CustomerGroup()->mayViewCategories()) {
-        $redirectParam[] = R_LOGIN;
-    }
-    //kein vorbestellbares Produkt, aber mit Erscheinungsdatum in Zukunft
-    if ($Artikel->nErscheinendesProdukt && $conf['global']['global_erscheinende_kaeuflich'] === 'N') {
-        $redirectParam[] = R_VORBESTELLUNG;
-    }
-    // Die maximale Bestellmenge des Artikels wurde überschritten
-    if (isset($Artikel->FunktionsAttribute[FKT_ATTRIBUT_MAXBESTELLMENGE])
-        && $Artikel->FunktionsAttribute[FKT_ATTRIBUT_MAXBESTELLMENGE] > 0
-    ) {
-        if ($anzahl > $Artikel->FunktionsAttribute[FKT_ATTRIBUT_MAXBESTELLMENGE] ||
-            ($_SESSION['Warenkorb']->gibAnzahlEinesArtikels($kArtikel) + $anzahl) >
-                $Artikel->FunktionsAttribute[FKT_ATTRIBUT_MAXBESTELLMENGE]
-        ) {
-            $redirectParam[] = R_MAXBESTELLMENGE;
-        }
-    }
-    // Der Artikel ist unverkäuflich
-    if (isset($Artikel->FunktionsAttribute[FKT_ATTRIBUT_UNVERKAEUFLICH]) &&
-        $Artikel->FunktionsAttribute[FKT_ATTRIBUT_UNVERKAEUFLICH] == 1
-    ) {
-        $redirectParam[] = R_UNVERKAEUFLICH;
-    }
-    // Preis auf Anfrage
-    // verhindert, dass Konfigitems mit Preis=0 aus der Artikelkonfiguration fallen wenn 'Preis auf Anfrage' eingestellt ist
-    if ($Artikel->bHasKonfig === false
-        && !empty($Artikel->isKonfigItem)
-        && $Artikel->inWarenkorbLegbar === INWKNICHTLEGBAR_PREISAUFANFRAGE
-    ) {
-        $Artikel->inWarenkorbLegbar = 1;
-    }
-    if (($Artikel->bHasKonfig === false && empty($Artikel->isKonfigItem))
-        && (!isset($Artikel->Preise->fVKNetto) || $Artikel->Preise->fVKNetto == 0)
-        && $conf['global']['global_preis0'] === 'N'
-    ) {
-        $redirectParam[] = R_AUFANFRAGE;
-    }
-    // Stücklistenkomponente oder Stückliste und ein Teil ist bereits im Warenkorb?
-    $xReturn = pruefeWarenkorbStueckliste($Artikel, $anzahl);
-    if ($xReturn !== null) {
-        $redirectParam[] = $xReturn;
-    }
-    if (is_array($Artikel->Variationen) && count($Artikel->Variationen) > 0) {
-        //fehlen zu einer Variation werte?
-        foreach ($Artikel->Variationen as $var) {
-            //min. 1 Problem?
-            if (count($redirectParam) > 0) {
-                break;
-            }
-            if ($var->cTyp === 'FREIFELD') {
-                continue;
-            }
-            //schau, ob diese Eigenschaft auch gewählt wurde
-            $bEigenschaftWertDa = false;
-            foreach ($oEigenschaftwerte_arr as $oEigenschaftwerte) {
-                $oEigenschaftwerte->kEigenschaft = (int)$oEigenschaftwerte->kEigenschaft;
-                if ($var->cTyp === 'PFLICHT-FREIFELD' && $oEigenschaftwerte->kEigenschaft === $var->kEigenschaft) {
-                    if (strlen($oEigenschaftwerte->cFreifeldWert) > 0) {
-                        $bEigenschaftWertDa = true;
-                    } else {
-                        $redirectParam[] = R_VARWAEHLEN;
-                        break;
-                    }
-                } elseif ($var->cTyp !== 'PFLICHT-FREIFELD' && $oEigenschaftwerte->kEigenschaft === $var->kEigenschaft) {
-                    $bEigenschaftWertDa = true;
-                    //schau, ob auch genug davon auf Lager
-                    $EigenschaftWert = new EigenschaftWert($oEigenschaftwerte->kEigenschaftWert);
-                    //ist der Eigenschaftwert überhaupt gültig?
-                    if ($EigenschaftWert->kEigenschaft !== $oEigenschaftwerte->kEigenschaft) {
-                        $redirectParam[] = R_VARWAEHLEN;
-                        break;
-                    }
-                    //schaue, ob genug auf Lager von jeder var
-                    if ($Artikel->cLagerBeachten === 'Y'
-                        && $Artikel->cLagerVariation === 'Y'
-                        && $Artikel->cLagerKleinerNull !== 'Y'
-                    ) {
-                        if ($EigenschaftWert->fPackeinheit == 0) {
-                            $EigenschaftWert->fPackeinheit = 1;
-                        }
-                        if ($EigenschaftWert->fPackeinheit *
-                            ($anzahl +
-                                $_SESSION['Warenkorb']->gibAnzahlEinerVariation(
-                                    $kArtikel,
-                                    $EigenschaftWert->kEigenschaftWert
-                                )
-                            ) > $EigenschaftWert->fLagerbestand
-                        ) {
-                            $redirectParam[] = R_LAGERVAR;
-                        }
-                    }
-                    break;
-                }
-            }
-            if (!$bEigenschaftWertDa) {
-                $redirectParam[] = R_VARWAEHLEN;
-                break;
-            }
-        }
-    }
-
-    return $redirectParam;
-}
-
-/**
  * @param int  $kArtikel
  * @param bool $bSichtbarkeitBeachten
  * @return array
@@ -1450,7 +903,7 @@ function fuegeEinInWarenkorb($kArtikel, $anzahl, $oEigenschaftwerte_arr = [], $n
     if ((int)$anzahl != $anzahl && $Artikel->cTeilbar !== 'Y') {
         $anzahl = max((int)$anzahl, 1);
     }
-    $redirectParam = pruefeFuegeEinInWarenkorb($Artikel, $anzahl, $oEigenschaftwerte_arr);
+    $redirectParam = WarenkorbHelper::addToCartCheck($Artikel, $anzahl, $oEigenschaftwerte_arr);
     // verhindert, dass Konfigitems mit Preis=0 aus der Artikelkonfiguration fallen wenn 'Preis auf Anfrage' eingestellt ist
     if (!empty($kKonfigitem) && isset($redirectParam[0]) && $redirectParam[0] === R_AUFANFRAGE) {
         unset($redirectParam[0]);
@@ -2660,51 +2113,6 @@ function valid_email($email)
 }
 
 /**
- * @param string         $lieferland
- * @param string         $versandklassen
- * @param int            $kKundengruppe
- * @param Artikel|object $oArtikel
- * @param bool           $checkProductDepedency
- * @return mixed
- */
-function gibGuenstigsteVersandart($lieferland, $versandklassen, $kKundengruppe, $oArtikel, $checkProductDepedency = true)
-{
-    $minVersand               = 10000;
-    $cISO                     = $lieferland;
-    $cNurAbhaengigeVersandart = ($checkProductDepedency && VersandartHelper::normalerArtikelversand($lieferland) === false)
-        ? 'Y'
-        : 'N';
-
-    $versandarten = Shop::DB()->query(
-        "SELECT *
-            FROM tversandart
-            WHERE cNurAbhaengigeVersandart = '" . $cNurAbhaengigeVersandart . "'
-                AND cLaender LIKE '%" . $cISO . "%'
-                AND (cVersandklassen = '-1' 
-                    OR cVersandklassen RLIKE '^([0-9 -]* )?" . $versandklassen . " ')
-                AND (cKundengruppen = '-1' 
-                    OR FIND_IN_SET('{$kKundengruppe}', REPLACE(cKundengruppen, ';', ',')) > 0) 
-            ORDER BY nSort", 2
-    );
-
-    $cnt                    = count($versandarten);
-    $nGuenstigsteVersandart = 0;
-    for ($i = 0; $i < $cnt; $i++) {
-        $versandarten[$i]->fEndpreis = berechneVersandpreis($versandarten[$i], $cISO, $oArtikel);
-        if ($versandarten[$i]->fEndpreis == -1) {
-            unset($versandarten[$i]);
-            continue;
-        }
-        if ($versandarten[$i]->fEndpreis < $minVersand) {
-            $minVersand             = $versandarten[$i]->fEndpreis;
-            $nGuenstigsteVersandart = $i;
-        }
-    }
-
-    return $versandarten[$nGuenstigsteVersandart];
-}
-
-/**
  * @param int $kKundengruppe
  * @return array
  */
@@ -3353,46 +2761,6 @@ function gibVerfuegbarkeitsformularAnzeigen($Artikel, $einstellung)
 }
 
 /**
- * Gibt von einem Artikel mit normalen Variationen, ein Array aller ausverkauften Variationen zurück
- *
- * @param int          $kArtikel
- * @param null|Artikel $oArtikel
- * @return array
- */
-function pruefeVariationAusverkauft($kArtikel = 0, $oArtikel = null)
-{
-    if ((int)$kArtikel > 0) {
-        $oArtikel = new Artikel();
-        $oArtikel->fuelleArtikel($kArtikel, Artikel::getDefaultOptions());
-    }
-
-    if (!isset($oArtikel->kArtikel) || $oArtikel->kArtikel == 0) {
-        return [];
-    }
-
-    $oVariationsAusverkauft_arr = [];
-    if ($oArtikel->kEigenschaftKombi == 0 &&
-        $oArtikel->nIstVater == 0 &&
-        isset($oArtikel->Variationen) &&
-        count($oArtikel->Variationen) > 0
-    ) {
-        foreach ($oArtikel->Variationen as $oVariation) {
-            if (isset($oVariation->Werte) && count($oVariation->Werte) > 0) {
-                foreach ($oVariation->Werte as $oVariationWert) {
-                    // Ist Variation ausverkauft?
-                    if ($oVariationWert->fLagerbestand <= 0) {
-                        $oVariationWert->cNameEigenschaft                      = $oVariation->cName;
-                        $oVariationsAusverkauft_arr[$oVariation->kEigenschaft] = $oVariationWert;
-                    }
-                }
-            }
-        }
-    }
-
-    return $oVariationsAusverkauft_arr;
-}
-
-/**
  * Gibt einen String für einen Header mit dem angegebenen Status-Code aus
  *
  * @param int $nStatusCode
@@ -3580,40 +2948,6 @@ function setzeTagFilter($nFilter_arr = [])
     }
 
     return $filter;
-}
-
-/**
- * Sortiert ein Array von Objekten anhand von einem bestimmten Member vom Objekt
- * z.B. sortiereFilter($NaviFilter->MerkmalFilter, "kMerkmalWert");
- *
- * @param array $oFilter_arr
- * @param string $cKey
- * @return array
- */
-function sortiereFilter($oFilter_arr, $cKey)
-{
-    $kKey_arr        = [];
-    $oFilterSort_arr = [];
-
-    if (is_array($oFilter_arr) && count($oFilter_arr) > 0) {
-        foreach ($oFilter_arr as $oFilter) {
-            // Baue das Array mit Keys auf, die sortiert werden sollen
-            $kKey_arr[] = (int)$oFilter->$cKey;
-        }
-        // Sortiere das Array
-        sort($kKey_arr, SORT_NUMERIC);
-        foreach ($kKey_arr as $kKey) {
-            foreach ($oFilter_arr as $oFilter) {
-                if ($oFilter->$cKey == $kKey) {
-                    // Baue das Array auf, welches sortiert zurueckgegeben wird
-                    $oFilterSort_arr[] = $oFilter;
-                    break;
-                }
-            }
-        }
-    }
-
-    return $oFilterSort_arr;
 }
 
 /**
@@ -4323,37 +3657,6 @@ function baueSuchSpecialURL($kKey)
 }
 
 /**
- * @param string $cZahlungsID
- */
-function checkeExterneZahlung($cZahlungsID)
-{
-    $cZahlungsID = Shop::DB()->escape(substr($cZahlungsID, 1));
-    // cZahlungsID / SessionID / z
-    list($cZahlungsID, $SessionID, $z) = explode(';', $cZahlungsID);
-    $oZahlungSession                   = Shop::DB()->select('tzahlungsession', 'cZahlungsID', $cZahlungsID);
-    if (isset($oZahlungSession->kBestellung) && $oZahlungSession->kBestellung > 0 && !$oZahlungSession->dNotify) {
-        $_upd                = new stdClass();
-        $_upd->dBezahltDatum = 'now()';
-        $_upd->cStatus       = BESTELLUNG_STATUS_BEZAHLT;
-        Shop::DB()->update('tbestellung', 'kBestellung', (int)$oZahlungSession->kBestellung, $_upd);
-        $bestellung = new Bestellung($oZahlungSession->kBestellung);
-        $bestellung->fuelleBestellung(0);
-        // process payment
-        $zahlungseingang                    = new stdClass();
-        $zahlungseingang->kBestellung       = $bestellung->kBestellung;
-        $zahlungseingang->cZahlungsanbieter = 'PayPal';
-        $zahlungseingang->fBetrag           = $_POST['mc_gross'];
-        $zahlungseingang->fZahlungsgebuehr  = $_POST['payment_fee'];
-        $zahlungseingang->cISO              = $_POST['mc_currency'];
-        $zahlungseingang->cEmpfaenger       = $_POST['receiver_email'];
-        $zahlungseingang->cZahler           = $_POST['payer_email'];
-        $zahlungseingang->cAbgeholt         = 'N';
-        $zahlungseingang->dZeit             = date_format(date_create($_POST['payment_date']), 'Y-m-d H:m:s');
-        Shop::DB()->insert('tzahlungseingang', $zahlungseingang);
-    }
-}
-
-/**
  * @param string      $cPasswort
  * @param null{string $cHashPasswort
  * @return bool|string
@@ -4702,13 +4005,9 @@ function gibUID($nAnzahlStellen = 40, $cString = '')
  */
 function verschluesselXTEA($cText)
 {
-    if (strlen($cText) > 0) {
-        $oXTEA = new XTEA(BLOWFISH_KEY);
-
-        return $oXTEA->encrypt($cText);
-    }
-
-    return $cText;
+    return strlen($cText) > 0
+        ? (new XTEA(BLOWFISH_KEY))->encrypt($cText)
+        : $cText;
 }
 
 /**
@@ -4717,13 +4016,9 @@ function verschluesselXTEA($cText)
  */
 function entschluesselXTEA($cText)
 {
-    if (strlen($cText) > 0) {
-        $oXTEA = new XTEA(BLOWFISH_KEY);
-
-        return $oXTEA->decrypt($cText);
-    }
-
-    return $cText;
+    return strlen($cText) > 0
+        ? (new XTEA(BLOWFISH_KEY))->decrypt($cText)
+        : $cText;
 }
 
 /**
@@ -4831,65 +4126,6 @@ function gibTrustedShopsBewertenButton($cMail, $cBestellNr)
 }
 
 /**
- * Holt die Globalen Metaangaben und Return diese als Assoc Array wobei die Keys => kSprache sind
- *
- * @return array|mixed
- */
-function holeGlobaleMetaAngaben()
-{
-    $cacheID = 'jtl_glob_meta';
-    if (($globalMeta = Shop::Cache()->get($cacheID)) !== false) {
-        return $globalMeta;
-    }
-    $globalMeta = [];
-    $globalTmp  = Shop::DB()->query("SELECT cName, kSprache, cWertName FROM tglobalemetaangaben ORDER BY kSprache", 2);
-    foreach ($globalTmp as $data) {
-        if (!isset($globalMeta[$data->kSprache])) {
-            $globalMeta[$data->kSprache] = new stdClass();
-        }
-        $cName                               = $data->cName;
-        $globalMeta[$data->kSprache]->$cName = $data->cWertName;
-    }
-    Shop::Cache()->set($cacheID, $globalMeta, [CACHING_GROUP_CORE]);
-
-    return $globalMeta;
-}
-
-/**
- * @return array
- */
-function holeExcludedKeywords()
-{
-    $exclude  = [];
-    $keyWords = Shop::DB()->query("SELECT * FROM texcludekeywords ORDER BY cISOSprache", 2);
-    foreach ($keyWords as $keyWord) {
-        $exclude[$keyWord->cISOSprache] = $keyWord;
-    }
-
-    return $exclude;
-}
-
-/**
- * Erhält einen String aus dem alle nicht erlaubten Wörter rausgefiltert werden
- *
- * @param string $cString
- * @param array  $oExcludesKeywords_arr
- * @return mixed
- */
-function gibExcludesKeywordsReplace($cString, $oExcludesKeywords_arr)
-{
-    if (is_array($oExcludesKeywords_arr) && count($oExcludesKeywords_arr) > 0) {
-        foreach ($oExcludesKeywords_arr as $i => $oExcludesKeywords) {
-            $oExcludesKeywords_arr[$i] = ' ' . $oExcludesKeywords . ' ';
-        }
-
-        return str_replace($oExcludesKeywords_arr, ' ', $cString);
-    }
-
-    return $cString;
-}
-
-/**
  * gibt alle Sprachen zurück
  *
  * @param int $nOption
@@ -4940,12 +4176,9 @@ function gibAlleSprachen($nOption = 0)
  * @return bool
  */
 function pruefeSOAP($cURL = '')
-{
-    if (strlen($cURL) > 0 && !phpLinkCheck($cURL)) {
-        return false;
-    }
-
-    return class_exists('SoapClient');
+{    return strlen($cURL) > 0 && !phpLinkCheck($cURL)
+        ? false
+        : class_exists('SoapClient');
 }
 
 /**
@@ -4954,11 +4187,9 @@ function pruefeSOAP($cURL = '')
  */
 function pruefeCURL($cURL = '')
 {
-    if (strlen($cURL) > 0 && !phpLinkCheck($cURL)) {
-        return false;
-    }
-
-    return function_exists('curl_init');
+    return strlen($cURL) > 0 && !phpLinkCheck($cURL)
+        ? false
+        : function_exists('curl_init');
 }
 
 /**
@@ -4975,11 +4206,9 @@ function pruefeALLOWFOPEN()
  */
 function pruefeSOCKETS($cSOCKETS = '')
 {
-    if (strlen($cSOCKETS) > 0 && !phpLinkCheck($cSOCKETS)) {
-        return false;
-    }
-
-    return function_exists('fsockopen');
+    return strlen($cSOCKETS) > 0 && !phpLinkCheck($cSOCKETS)
+        ? false
+        : function_exists('fsockopen');
 }
 
 /**
@@ -5029,70 +4258,6 @@ function gibKategoriepfad($Kategorie, $kKundengruppe, $kSprache, $bString = true
     }
 
     return $bString ? implode(' > ', $names) : $names;
-}
-
-/**
- * @param float $fSumme
- * @return string
- */
-function formatCurrency($fSumme)
-{
-    $fSumme    = (float)$fSumme;
-    $fSummeABS = null;
-    $fCents    = null;
-    if ($fSumme > 0) {
-        $fSummeABS = abs($fSumme);
-        $fSumme    = floor($fSumme * 100);
-        $fCents    = $fSumme % 100;
-        $fSumme    = (string)floor($fSumme / 100);
-        if ($fCents < 10) {
-            $fCents = '0' . $fCents;
-        }
-        for ($i = 0; $i < floor((strlen($fSumme) - (1 + $i)) / 3); $i++) {
-            $fSumme = substr($fSumme, 0, strlen($fSumme) - (4 * $i + 3)) . '.' .
-                substr($fSumme, 0, strlen($fSumme) - (4 * $i + 3));
-        }
-    }
-
-    return (($fSummeABS ? '' : '-') . $fSumme . ',' . $fCents);
-}
-
-/**
- * Mapped die Suchspecial Einstellungen und liefert die Einstellungswerte als Assoc Array zurück.
- * Das Array kann via kKey Assoc angesprochen werden.
- *
- * @param array $oSuchspecialEinstellung_arr
- * @return array
- */
-function gibSuchspecialEinstellungMapping($oSuchspecialEinstellung_arr)
-{
-    $oEinstellungen_arr = [];
-    if (is_array($oSuchspecialEinstellung_arr) && count($oSuchspecialEinstellung_arr) > 0) {
-        foreach ($oSuchspecialEinstellung_arr as $key => $oSuchspecialEinstellung) {
-            switch ($key) {
-                case 'suchspecials_sortierung_bestseller':
-                    $oEinstellungen_arr[SEARCHSPECIALS_BESTSELLER] = $oSuchspecialEinstellung;
-                    break;
-                case 'suchspecials_sortierung_sonderangebote':
-                    $oEinstellungen_arr[SEARCHSPECIALS_SPECIALOFFERS] = $oSuchspecialEinstellung;
-                    break;
-                case 'suchspecials_sortierung_neuimsortiment':
-                    $oEinstellungen_arr[SEARCHSPECIALS_NEWPRODUCTS] = $oSuchspecialEinstellung;
-                    break;
-                case 'suchspecials_sortierung_topangebote':
-                    $oEinstellungen_arr[SEARCHSPECIALS_TOPOFFERS] = $oSuchspecialEinstellung;
-                    break;
-                case 'suchspecials_sortierung_inkuerzeverfuegbar':
-                    $oEinstellungen_arr[SEARCHSPECIALS_UPCOMINGPRODUCTS] = $oSuchspecialEinstellung;
-                    break;
-                case 'suchspecials_sortierung_topbewertet':
-                    $oEinstellungen_arr[SEARCHSPECIALS_TOPREVIEWS] = $oSuchspecialEinstellung;
-                    break;
-            }
-        }
-    }
-
-    return $oEinstellungen_arr;
 }
 
 /**
@@ -5316,144 +4481,6 @@ function gibDatumTeile($cDatum)
 }
 
 /**
- * @param int $nSeitentyp
- * @return string
- */
-function mappeSeitentyp($nSeitentyp)
-{
-    $nSeitentyp = (int)$nSeitentyp;
-    if ($nSeitentyp > 0) {
-        switch ($nSeitentyp) {
-            case PAGE_UNBEKANNT:
-                return 'Unbekannt';
-                break;
-
-            case PAGE_ARTIKEL:
-                return 'Artikeldetails';
-                break;
-
-            case PAGE_ARTIKELLISTE:
-                return 'Artikelliste';
-                break;
-
-            case PAGE_WARENKORB:
-                return 'Warenkorb';
-                break;
-
-            case PAGE_MEINKONTO:
-                return 'Mein Konto';
-                break;
-
-            case PAGE_KONTAKT:
-                return 'Kontakt';
-                break;
-
-            case PAGE_UMFRAGE:
-                return 'Umfrage';
-                break;
-
-            case PAGE_NEWS:
-                return 'News';
-                break;
-
-            case PAGE_NEWSLETTER:
-                return 'Newsletter';
-                break;
-
-            case PAGE_LOGIN:
-                return 'Login';
-                break;
-
-            case PAGE_REGISTRIERUNG:
-                return 'Registrierung';
-                break;
-
-            case PAGE_BESTELLVORGANG:
-                return 'Bestellvorgang';
-                break;
-
-            case PAGE_BEWERTUNG:
-                return 'Bewertung';
-                break;
-
-            case PAGE_DRUCKANSICHT:
-                return 'Druckansicht';
-                break;
-
-            case PAGE_PASSWORTVERGESSEN:
-                return 'Passwort vergessen';
-                break;
-
-            case PAGE_WARTUNG:
-                return 'Wartung';
-                break;
-
-            case PAGE_WUNSCHLISTE:
-                return 'Wunschliste';
-                break;
-
-            case PAGE_VERGLEICHSLISTE:
-                return 'Vergleichsliste';
-                break;
-
-            case PAGE_STARTSEITE:
-                return 'Startseite';
-                break;
-
-            case PAGE_VERSAND:
-                return 'Versand';
-                break;
-
-            case PAGE_AGB:
-                return 'AGB';
-                break;
-
-            case PAGE_DATENSCHUTZ:
-                return 'Datenschutz';
-                break;
-
-            case PAGE_TAGGING:
-                return 'Tagging';
-                break;
-
-            case PAGE_LIVESUCHE:
-                return 'Livesuche';
-                break;
-
-            case PAGE_HERSTELLER:
-                return 'Hersteller';
-                break;
-
-            case PAGE_SITEMAP:
-                return 'Sitemap';
-                break;
-
-            case PAGE_GRATISGESCHENK:
-                return 'Gratis Geschenk ';
-                break;
-
-            case PAGE_WRB:
-                return 'WRB';
-                break;
-
-            case PAGE_PLUGIN:
-                return 'Plugin';
-                break;
-
-            case PAGE_NEWSLETTERARCHIV:
-                return 'Newsletterarchiv';
-                break;
-
-            case PAGE_EIGENE:
-                return 'Eigene Seite';
-                break;
-        }
-    }
-
-    return '';
-}
-
-/**
  *
  */
 function pruefeZahlungsartNutzbarkeit()
@@ -5536,24 +4563,6 @@ function gibSprachKeyISO($cISO = '', $kSprache = 0)
     }
 
     return false;
-}
-
-/**
- * @param bool $cache
- * @return int
- */
-function getSytemlogFlag($cache = true)
-{
-    $conf = Shop::getSettings([CONF_GLOBAL]);
-    if ($cache === true && isset($conf['global']['systemlog_flag'])) {
-        return (int)$conf['global']['systemlog_flag'];
-    }
-    $conf = Shop::DB()->query("SELECT cWert FROM teinstellungen WHERE cName = 'systemlog_flag'", 1);
-    if (isset($conf->cWert)) {
-        return (int)$conf->cWert;
-    }
-
-    return 0;
 }
 
 /**
@@ -6824,6 +5833,385 @@ function holePreisanzeigeEinstellungen()
 {
     trigger_error(__FUNCTION__ . ' is deprecated and does not return correct values anymore.', E_USER_DEPRECATED);
     return [];
+}
+
+/**
+ * @deprecated since 4.07
+ */
+function checkeWarenkorbEingang()
+{
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
+    WarenkorbHelper::checkAdditions();
+}
+
+/**
+ * @param Artikel|object $Artikel
+ * @param int            $anzahl
+ * @param array          $oEigenschaftwerte_arr
+ * @param int            $nGenauigkeit
+ * @return array
+ * @deprecated since 4.07
+ */
+function pruefeFuegeEinInWarenkorb($Artikel, $anzahl, $oEigenschaftwerte_arr, $nGenauigkeit = 2)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
+    return WarenkorbHelper::addToCartCheck($Artikel, $anzahl, $oEigenschaftwerte_arr, $nGenauigkeit);
+}
+
+/**
+ * @param string         $lieferland
+ * @param string         $versandklassen
+ * @param int            $kKundengruppe
+ * @param Artikel|object $oArtikel
+ * @param bool           $checkProductDepedency
+ * @return mixed
+ * @deprecated since 4.07
+ */
+function gibGuenstigsteVersandart($lieferland, $versandklassen, $kKundengruppe, $oArtikel, $checkProductDepedency = true)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
+    return VersandartHelper::getFavourableShippingMethod($lieferland, $versandklassen, $kKundengruppe, $oArtikel, $checkProductDepedency);
+}
+
+/**
+ * Gibt von einem Artikel mit normalen Variationen, ein Array aller ausverkauften Variationen zurück
+ *
+ * @param int          $kArtikel
+ * @param null|Artikel $oArtikel
+ * @return array
+ * @deprecated since 4.07 - not used in core
+ */
+function pruefeVariationAusverkauft($kArtikel = 0, $oArtikel = null)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
+    if ((int)$kArtikel > 0) {
+        $oArtikel = (new Artikel())->fuelleArtikel($kArtikel, Artikel::getDefaultOptions());
+    }
+
+    if (!isset($oArtikel->kArtikel) || $oArtikel->kArtikel === 0) {
+        return [];
+    }
+
+    $oVariationsAusverkauft_arr = [];
+    if ($oArtikel->kEigenschaftKombi === 0
+        && $oArtikel->nIstVater === 0
+        && $oArtikel->Variationen !== null
+        && count($oArtikel->Variationen) > 0
+    ) {
+        foreach ($oArtikel->Variationen as $oVariation) {
+            if (isset($oVariation->Werte) && count($oVariation->Werte) > 0) {
+                foreach ($oVariation->Werte as $oVariationWert) {
+                    // Ist Variation ausverkauft?
+                    if ($oVariationWert->fLagerbestand <= 0) {
+                        $oVariationWert->cNameEigenschaft                      = $oVariation->cName;
+                        $oVariationsAusverkauft_arr[$oVariation->kEigenschaft] = $oVariationWert;
+                    }
+                }
+            }
+        }
+    }
+
+    return $oVariationsAusverkauft_arr;
+}
+
+/**
+ * Sortiert ein Array von Objekten anhand von einem bestimmten Member vom Objekt
+ * z.B. sortiereFilter($NaviFilter->MerkmalFilter, "kMerkmalWert");
+ *
+ * @param array $oFilter_arr
+ * @param string $cKey
+ * @return array
+ * @deprecated since 4.07 - not used in core
+ */
+function sortiereFilter($oFilter_arr, $cKey)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
+    $kKey_arr        = [];
+    $oFilterSort_arr = [];
+
+    if (is_array($oFilter_arr) && count($oFilter_arr) > 0) {
+        foreach ($oFilter_arr as $oFilter) {
+            // Baue das Array mit Keys auf, die sortiert werden sollen
+            $kKey_arr[] = (int)$oFilter->$cKey;
+        }
+        // Sortiere das Array
+        sort($kKey_arr, SORT_NUMERIC);
+        foreach ($kKey_arr as $kKey) {
+            foreach ($oFilter_arr as $oFilter) {
+                if ($oFilter->$cKey == $kKey) {
+                    // Baue das Array auf, welches sortiert zurueckgegeben wird
+                    $oFilterSort_arr[] = $oFilter;
+                    break;
+                }
+            }
+        }
+    }
+
+    return $oFilterSort_arr;
+}
+
+/**
+ * Holt die Globalen Metaangaben und Return diese als Assoc Array wobei die Keys => kSprache sind
+ *
+ * @return array|mixed
+ * @deprecated since 4.07
+ */
+function holeGlobaleMetaAngaben()
+{
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
+    return Metadata::getGlobalMetaData();
+}
+
+/**
+ * @return array
+ * @deprecated since 4.07
+ */
+function holeExcludedKeywords()
+{
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
+    return Metadata::getExcludes();
+}
+
+/**
+ * Erhält einen String aus dem alle nicht erlaubten Wörter rausgefiltert werden
+ *
+ * @param string $cString
+ * @param array  $oExcludesKeywords_arr
+ * @return string
+ * @deprecated since 4.07
+ */
+function gibExcludesKeywordsReplace($cString, $oExcludesKeywords_arr)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
+    if (is_array($oExcludesKeywords_arr) && count($oExcludesKeywords_arr) > 0) {
+        foreach ($oExcludesKeywords_arr as $i => $oExcludesKeywords) {
+            $oExcludesKeywords_arr[$i] = ' ' . $oExcludesKeywords . ' ';
+        }
+
+        return str_replace($oExcludesKeywords_arr, ' ', $cString);
+    }
+
+    return $cString;
+}
+
+
+/**
+ * @param float $fSumme
+ * @return string
+ * @deprecated since 4.07 - not used in core
+ */
+function formatCurrency($fSumme)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
+    $fSumme    = (float)$fSumme;
+    $fSummeABS = null;
+    $fCents    = null;
+    if ($fSumme > 0) {
+        $fSummeABS = abs($fSumme);
+        $fSumme    = floor($fSumme * 100);
+        $fCents    = $fSumme % 100;
+        $fSumme    = (string)floor($fSumme / 100);
+        if ($fCents < 10) {
+            $fCents = '0' . $fCents;
+        }
+        for ($i = 0; $i < floor((strlen($fSumme) - (1 + $i)) / 3); $i++) {
+            $fSumme = substr($fSumme, 0, strlen($fSumme) - (4 * $i + 3)) . '.' .
+                substr($fSumme, 0, strlen($fSumme) - (4 * $i + 3));
+        }
+    }
+
+    return (($fSummeABS ? '' : '-') . $fSumme . ',' . $fCents);
+}
+
+/**
+ * Mapped die Suchspecial Einstellungen und liefert die Einstellungswerte als Assoc Array zurück.
+ * Das Array kann via kKey Assoc angesprochen werden.
+ *
+ * @param array $oSuchspecialEinstellung_arr
+ * @return array
+ * @deprecated since 4.07
+ */
+function gibSuchspecialEinstellungMapping($oSuchspecialEinstellung_arr)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
+    $oEinstellungen_arr = [];
+    if (is_array($oSuchspecialEinstellung_arr) && count($oSuchspecialEinstellung_arr) > 0) {
+        foreach ($oSuchspecialEinstellung_arr as $key => $oSuchspecialEinstellung) {
+            switch ($key) {
+                case 'suchspecials_sortierung_bestseller':
+                    $oEinstellungen_arr[SEARCHSPECIALS_BESTSELLER] = $oSuchspecialEinstellung;
+                    break;
+                case 'suchspecials_sortierung_sonderangebote':
+                    $oEinstellungen_arr[SEARCHSPECIALS_SPECIALOFFERS] = $oSuchspecialEinstellung;
+                    break;
+                case 'suchspecials_sortierung_neuimsortiment':
+                    $oEinstellungen_arr[SEARCHSPECIALS_NEWPRODUCTS] = $oSuchspecialEinstellung;
+                    break;
+                case 'suchspecials_sortierung_topangebote':
+                    $oEinstellungen_arr[SEARCHSPECIALS_TOPOFFERS] = $oSuchspecialEinstellung;
+                    break;
+                case 'suchspecials_sortierung_inkuerzeverfuegbar':
+                    $oEinstellungen_arr[SEARCHSPECIALS_UPCOMINGPRODUCTS] = $oSuchspecialEinstellung;
+                    break;
+                case 'suchspecials_sortierung_topbewertet':
+                    $oEinstellungen_arr[SEARCHSPECIALS_TOPREVIEWS] = $oSuchspecialEinstellung;
+                    break;
+            }
+        }
+    }
+
+    return $oEinstellungen_arr;
+}
+
+/**
+ * @param int $nSeitentyp
+ * @return string
+ * @deprecated since 4.07 - not used in core
+ */
+function mappeSeitentyp($nSeitentyp)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
+    $nSeitentyp = (int)$nSeitentyp;
+    if ($nSeitentyp > 0) {
+        switch ($nSeitentyp) {
+            case PAGE_UNBEKANNT:
+                return 'Unbekannt';
+                break;
+
+            case PAGE_ARTIKEL:
+                return 'Artikeldetails';
+                break;
+
+            case PAGE_ARTIKELLISTE:
+                return 'Artikelliste';
+                break;
+
+            case PAGE_WARENKORB:
+                return 'Warenkorb';
+                break;
+
+            case PAGE_MEINKONTO:
+                return 'Mein Konto';
+                break;
+
+            case PAGE_KONTAKT:
+                return 'Kontakt';
+                break;
+
+            case PAGE_UMFRAGE:
+                return 'Umfrage';
+                break;
+
+            case PAGE_NEWS:
+                return 'News';
+                break;
+
+            case PAGE_NEWSLETTER:
+                return 'Newsletter';
+                break;
+
+            case PAGE_LOGIN:
+                return 'Login';
+                break;
+
+            case PAGE_REGISTRIERUNG:
+                return 'Registrierung';
+                break;
+
+            case PAGE_BESTELLVORGANG:
+                return 'Bestellvorgang';
+                break;
+
+            case PAGE_BEWERTUNG:
+                return 'Bewertung';
+                break;
+
+            case PAGE_DRUCKANSICHT:
+                return 'Druckansicht';
+                break;
+
+            case PAGE_PASSWORTVERGESSEN:
+                return 'Passwort vergessen';
+                break;
+
+            case PAGE_WARTUNG:
+                return 'Wartung';
+                break;
+
+            case PAGE_WUNSCHLISTE:
+                return 'Wunschliste';
+                break;
+
+            case PAGE_VERGLEICHSLISTE:
+                return 'Vergleichsliste';
+                break;
+
+            case PAGE_STARTSEITE:
+                return 'Startseite';
+                break;
+
+            case PAGE_VERSAND:
+                return 'Versand';
+                break;
+
+            case PAGE_AGB:
+                return 'AGB';
+                break;
+
+            case PAGE_DATENSCHUTZ:
+                return 'Datenschutz';
+                break;
+
+            case PAGE_TAGGING:
+                return 'Tagging';
+                break;
+
+            case PAGE_LIVESUCHE:
+                return 'Livesuche';
+                break;
+
+            case PAGE_HERSTELLER:
+                return 'Hersteller';
+                break;
+
+            case PAGE_SITEMAP:
+                return 'Sitemap';
+                break;
+
+            case PAGE_GRATISGESCHENK:
+                return 'Gratis Geschenk ';
+                break;
+
+            case PAGE_WRB:
+                return 'WRB';
+                break;
+
+            case PAGE_PLUGIN:
+                return 'Plugin';
+                break;
+
+            case PAGE_NEWSLETTERARCHIV:
+                return 'Newsletterarchiv';
+                break;
+
+            case PAGE_EIGENE:
+                return 'Eigene Seite';
+                break;
+        }
+    }
+
+    return '';
+}
+
+/**
+ * @param bool $cache
+ * @return int
+ * @deprecated since 4.07
+ */
+function getSytemlogFlag($cache = true)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
+    return Jtllog::getSytemlogFlag($cache);
 }
 
 /**

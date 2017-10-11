@@ -566,7 +566,7 @@ class VersandartHelper
             count($_SESSION['Warenkorb']->PositionenArr) > 0
         ) {
             // Wenn etwas im Warenkorb ist, dann Vesandart vom Warenkorb rausfinden
-            $oVersandartNurWK                   = gibGuenstigsteVersandart(
+            $oVersandartNurWK                   = self::getFavourableShippingMethod(
                 $cLandISO,
                 $cVersandklassen,
                 $kKundengruppe,
@@ -585,7 +585,7 @@ class VersandartHelper
             }
 
             $oVersandartNurWK->fEndpreis += $fSumme;
-            $oVersandart = gibGuenstigsteVersandart($cLandISO, $cVersandklassen, $kKundengruppe, $oZusatzArtikel);
+            $oVersandart = self::getFavourableShippingMethod($cLandISO, $cVersandklassen, $kKundengruppe, $oZusatzArtikel);
             $oVersandart->fEndpreis += ($fSumme + $fSummeHinzukommendeArtikelabhaengigeVersandkosten);
         } else {
             $oVersandartNurWK            = new stdClass();
@@ -636,6 +636,52 @@ class VersandartHelper
          
         //Versand mit neuen Artikeln gleich oder guenstiger als ohne
         return Shop::Lang()->get('productNoExtraShippingNotice', 'global');
+    }
+
+    /**
+     * @param string         $deliveryCountry
+     * @param string         $shippingClasses
+     * @param int            $customerGroupID
+     * @param Artikel|object $article
+     * @param bool           $checkProductDepedency
+     * @return mixed
+     * @former gibGuenstigsteVersandart()
+     */
+    public static function getFavourableShippingMethod($deliveryCountry, $shippingClasses, $customerGroupID, $article, $checkProductDepedency = true)
+    {
+        $minVersand               = 10000;
+        $cISO                     = $deliveryCountry;
+        $cNurAbhaengigeVersandart = ($checkProductDepedency && self::normalerArtikelversand($deliveryCountry) === false)
+            ? 'Y'
+            : 'N';
+
+        $versandarten = Shop::DB()->query(
+            "SELECT *
+            FROM tversandart
+            WHERE cNurAbhaengigeVersandart = '" . $cNurAbhaengigeVersandart . "'
+                AND cLaender LIKE '%" . $cISO . "%'
+                AND (cVersandklassen = '-1' 
+                    OR cVersandklassen RLIKE '^([0-9 -]* )?" . $shippingClasses . " ')
+                AND (cKundengruppen = '-1' 
+                    OR FIND_IN_SET('{$customerGroupID}', REPLACE(cKundengruppen, ';', ',')) > 0) 
+            ORDER BY nSort", 2
+        );
+
+        $cnt                    = count($versandarten);
+        $nGuenstigsteVersandart = 0;
+        for ($i = 0; $i < $cnt; $i++) {
+            $versandarten[$i]->fEndpreis = berechneVersandpreis($versandarten[$i], $cISO, $article);
+            if ($versandarten[$i]->fEndpreis == -1) {
+                unset($versandarten[$i]);
+                continue;
+            }
+            if ($versandarten[$i]->fEndpreis < $minVersand) {
+                $minVersand             = $versandarten[$i]->fEndpreis;
+                $nGuenstigsteVersandart = $i;
+            }
+        }
+
+        return $versandarten[$nGuenstigsteVersandart];
     }
 
     /**

@@ -147,7 +147,7 @@ function pushToBasket($kArtikel, $anzahl, $oEigenschaftwerte_arr = '')
             $anzahl = max((int)$anzahl, 1);
         }
         // Prüfung
-        $errors = pruefeFuegeEinInWarenkorb($Artikel, $anzahl, $oEigenschaftwerte_arr);
+        $errors = WarenkorbHelper::addToCartCheck($Artikel, $anzahl, $oEigenschaftwerte_arr);
 
         if (count($errors) > 0) {
             $localizedErrors = baueArtikelhinweise($errors, true, $Artikel, $anzahl);
@@ -265,7 +265,7 @@ function pushToComparelist($kArtikel)
     $_POST['Vergleichsliste'] = 1;
     $_POST['a']               = $kArtikel;
 
-    checkeWarenkorbEingang();
+    WarenkorbHelper::checkAdditions();
     $error             = Shop::Smarty()->getTemplateVars('fehler');
     $notice            = Shop::Smarty()->getTemplateVars('hinweis');
     $oResponse->nType  = 2;

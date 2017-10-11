@@ -263,7 +263,7 @@ function fuegeEinInWarenkorbAjax($kArtikel, $anzahl, $oEigenschaftwerte_arr = ''
             $anzahl = max((int)$anzahl, 1);
         }
         // Prüfung
-        $redirectParam = pruefeFuegeEinInWarenkorb($Artikel, $anzahl, $oEigenschaftwerte_arr);
+        $redirectParam = WarenkorbHelper::addToCartCheck($Artikel, $anzahl, $oEigenschaftwerte_arr);
 
         if (count($redirectParam) > 0) {
             $cRedirectParam = implode(',', $redirectParam);

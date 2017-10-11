@@ -23,7 +23,7 @@ if (isset($_SESSION['bWarenkorbHinzugefuegt'], $_SESSION['bWarenkorbAnzahl'], $_
     unset($_SESSION['hinweis'], $_SESSION['bWarenkorbAnzahl'], $_SESSION['bWarenkorbHinzugefuegt']);
 }
 // wurde ein artikel in den Warenkorb gelegt?
-checkeWarenkorbEingang();
+WarenkorbHelper::checkAdditions();
 if (!$cParameter_arr['kWunschliste'] &&
     verifyGPDataString('error') === '' &&
     strlen(verifyGPDataString('wlid')) > 0

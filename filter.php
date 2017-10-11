@@ -275,7 +275,7 @@ $smarty->assign('SEARCHSPECIALS_TOPREVIEWS', SEARCHSPECIALS_TOPREVIEWS)
 
 executeHook(HOOK_FILTER_PAGE);
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
-$oGlobaleMetaAngabenAssoc_arr = holeGlobaleMetaAngaben();
+$oGlobaleMetaAngabenAssoc_arr = Metadata::getGlobalMetaData();
 $smarty->assign(
     'meta_title',
     $NaviFilter->getMetaData()->getMetaTitle(

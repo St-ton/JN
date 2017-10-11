@@ -446,14 +446,15 @@ function fuehreLoginAus($userLogin, $passLogin)
                 // welche für den aktuellen Kunden nicht mehr sichtbar sein duerfen
                 pruefeWarenkorbArtikelSichtbarkeit($_SESSION['Kunde']->kKundengruppe);
                 executeHook(HOOK_JTL_PAGE_REDIRECT);
-                checkeWarenkorbEingang();
+                WarenkorbHelper::checkAdditions();
                 if (strlen($cURL) > 0) {
                     if (strpos($cURL, 'http') !== 0) {
                         $cURL = Shop::getURL() . '/' . ltrim($cURL, '/');
                     }
                     header('Location: ' . $cURL, true, 301);
                     exit();
-                } elseif ($Einstellungen['global']['warenkorbpers_nutzen'] === 'Y' && !$bPersWarenkorbGeladen) {
+                }
+                if (!$bPersWarenkorbGeladen && $Einstellungen['global']['warenkorbpers_nutzen'] === 'Y') {
                     // Existiert ein pers. Warenkorb?
                     // Wenn ja => frag Kunde ob er einen eventuell vorhandenen Warenkorb mergen möchte
                     if ($Einstellungen['kaufabwicklung']['warenkorb_warenkorb2pers_merge'] === 'Y') {

@@ -2972,6 +2972,7 @@ function getLieferdaten($post)
  */
 function setzeInSession($name, $obj)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     //an die Session anhängen
     unset($_SESSION[$name]);
     $_SESSION[$name] = $obj;
@@ -4154,6 +4155,7 @@ function convertDate2German($datum)
  */
 function gibIloxxAufpreis($Zahlungsart)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     /** @var array('Warenkorb' => Warenkorb) $_SESSION */
     $fWarenwert = $_SESSION['Warenkorb']->gibGesamtsummeWaren(true);
     $fKosten    = 0;
@@ -4175,6 +4177,7 @@ function gibIloxxAufpreis($Zahlungsart)
  */
 function plausiZahlungsart($cPost_arr)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return pruefeZahlungsartwahlStep($cPost_arr);
 }
 
@@ -4186,6 +4189,7 @@ function plausiZahlungsart($cPost_arr)
  */
 function plausiVersandart($kVersandart, $cPost_arr)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return versandartKorrekt($kVersandart, $cPost_arr);
 }
 
@@ -4194,6 +4198,7 @@ function plausiVersandart($kVersandart, $cPost_arr)
  */
 function setzeSmartyZahlungsart()
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     gibStepZahlung();
 }
 
@@ -4204,6 +4209,7 @@ function setzeSmartyZahlungsart()
  */
 function gibFehlendeAngabenZahlungsart($Zahlungsart)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return checkAdditionalPayment($Zahlungsart);
 }
 
@@ -4213,15 +4219,17 @@ function gibFehlendeAngabenZahlungsart($Zahlungsart)
  */
 function setzeSessionZahlungsart($Zahlungsart)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
 }
 
 /**
  * @param Zahlungsart $Zahlungsart
  * @return null
- * @deprecated since 4.0.5
+ * @deprecated since 4.05
  */
 function gibSpecials($Zahlungsart)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return null;
 }
 
@@ -4233,5 +4241,6 @@ function gibSpecials($Zahlungsart)
  */
 function plausiRechnungsadresse($cPost_arr, $nUnreg = 0)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return $nUnreg ? checkKundenFormular(0) : checkKundenFormular(0, 1);
 }

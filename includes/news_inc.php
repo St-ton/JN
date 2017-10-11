@@ -281,6 +281,7 @@ function mappeDatumName($cMonat, $nJahr, $cISOSprache)
  */
 function baueNewsMetaTitle($oNewsNaviFilter, $oNewsUebersicht_arr)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $cMetaTitle = baueNewsMetaStart($oNewsNaviFilter);
     if (is_array($oNewsUebersicht_arr) && count($oNewsUebersicht_arr) > 0) {
         $nCount = 3;
@@ -307,6 +308,7 @@ function baueNewsMetaTitle($oNewsNaviFilter, $oNewsUebersicht_arr)
  */
 function baueNewsMetaDescription($oNewsNaviFilter, $oNewsUebersicht_arr)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $cMetaDescription = baueNewsMetaStart($oNewsNaviFilter);
     if (is_array($oNewsUebersicht_arr) && count($oNewsUebersicht_arr) > 0) {
         shuffle($oNewsUebersicht_arr);
@@ -358,6 +360,7 @@ function baueNewsMetaKeywords($oNewsNaviFilter, $oNewsUebersicht_arr)
  */
 function baueNewsMetaStart($oNewsNaviFilter)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $cMetaStart = Shop::Lang()->get('overview', 'news');
     // Datumfilter gesetzt
     if ($oNewsNaviFilter->cDatum != -1) {

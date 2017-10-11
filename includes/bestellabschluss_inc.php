@@ -783,6 +783,7 @@ function aktualisiereKomponenteLagerbestand($kKomponenteArtikel, $fLagerbestand,
  */
 function AktualisiereAndereStuecklisten($kArtikelKomponente, $nAnzahl, $kStueckliste = null)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $kArtikelKomponente = (int)$kArtikelKomponente;
 
     if ($kArtikelKomponente > 0) {
@@ -801,6 +802,7 @@ function AktualisiereAndereStuecklisten($kArtikelKomponente, $nAnzahl, $kStueckl
  */
 function AktualisiereStueckliste($kStueckliste, $fPackeinheitSt, $fLagerbestandSt, $nAnzahl)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $kStueckliste  = (int)$kStueckliste;
     $fLagerbestand = (float)$fLagerbestandSt;
     Shop::DB()->update('tartikel', 'kStueckliste', $kStueckliste, (object)['fLagerbestand' => $fLagerbestand]);
@@ -814,6 +816,7 @@ function AktualisiereStueckliste($kStueckliste, $fPackeinheitSt, $fLagerbestandS
  */
 function AktualisiereLagerStuecklisten($oArtikel, $nAnzahl = null, $bStueckliste = false)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     if (is_object($oArtikel) && isset($oArtikel->kArtikel) && $oArtikel->kArtikel > 0) {
         if ($bStueckliste) {
             aktualisiereStuecklistenLagerbestand($oArtikel, $nAnzahl);

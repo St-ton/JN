@@ -90,6 +90,7 @@ function gibMaxPrioSpalte($exclude)
  */
 function gibSuchspaltenKlassen($searchColumns)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return Shop::getNaviFilter()->Suchanfrage->getSearchColumnClasses($searchColumns);
 }
 
@@ -102,6 +103,7 @@ function gibSuchspaltenKlassen($searchColumns)
  */
 function pruefeSuchspaltenKlassen($searchColumns, $searchColumn, $nonAllowed)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return Shop::getNaviFilter()->Suchanfrage->checkColumnClasses($searchColumns, $searchColumn, $nonAllowed);
 }
 
@@ -116,6 +118,7 @@ function pruefeSuchspaltenKlassen($searchColumns, $searchColumn, $nonAllowed)
  */
 function suchanfragenSpeichern($cSuche, $nAnzahlTreffer, $bEchteSuche = false, $kSpracheExt = 0, $bSpamFilter = true)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return Shop::getNaviFilter()->Suche->saveQuery($nAnzahlTreffer, $cSuche, $bEchteSuche, $kSpracheExt, $bSpamFilter);
 }
 
@@ -127,6 +130,7 @@ function suchanfragenSpeichern($cSuche, $nAnzahlTreffer, $bEchteSuche = false, $
  */
 function mappingBeachten($Suchausdruck, $kSpracheExt = 0)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $kSprache = ((int)$kSpracheExt > 0) ? (int)$kSpracheExt : getDefaultLanguageID();
     if (strlen($Suchausdruck) > 0) {
         $SuchausdruckmappingTMP = Shop::DB()->select(
@@ -175,6 +179,7 @@ function mappingBeachten($Suchausdruck, $kSpracheExt = 0)
  */
 function suchausdruckVorbereiten($query)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return Shop::getNaviFilter()->Suchanfrage->prepareSearchQuery($query);
 }
 
@@ -185,6 +190,7 @@ function suchausdruckVorbereiten($query)
  */
 function suchausdruckAlleKombis($cSuch_arr)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $cSuchTMP_arr = [];
     $cnt          = count($cSuch_arr);
     if ($cnt > 3 || $cnt === 1) {

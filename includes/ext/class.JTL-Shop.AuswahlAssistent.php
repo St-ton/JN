@@ -435,6 +435,7 @@ class AuswahlAssistent
      */
     public static function getGroupsByLocation($cKey, $kKey, $kSprache)
     {
+        trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
         if ((int)$kKey > 0 && (int)$kSprache > 0 && strlen($cKey) > 0) {
             $oOrt = Shop::DB()->executeQueryPrepared(
                 'SELECT tao.kAuswahlAssistentGruppe

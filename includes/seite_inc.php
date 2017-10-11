@@ -874,6 +874,7 @@ function gibSeiteSitemap($Einstellungen, &$smarty)
  */
 function gibSitemapHersteller($Einstellungen)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return Hersteller::getAll();
 }
 
@@ -884,9 +885,8 @@ function gibSitemapHersteller($Einstellungen)
  */
 function holeSeitenLink($kLink)
 {
-    $linkHelper = LinkHelper::getInstance();
-
-    return $linkHelper->getPageLink($kLink);
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
+    return LinkHelper::getInstance()->getPageLink($kLink);
 }
 
 /**
@@ -896,9 +896,8 @@ function holeSeitenLink($kLink)
  */
 function holeSeitenLinkSprache($kLink)
 {
-    $linkHelper = LinkHelper::getInstance();
-
-    return $linkHelper->getPageLinkLanguage($kLink);
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
+    return LinkHelper::getInstance()->getPageLinkLanguage($kLink);
 }
 
 /**
@@ -907,6 +906,7 @@ function holeSeitenLinkSprache($kLink)
  */
 function gibNewsArchiv()
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return Shop::DB()->query("
         SELECT tnews.kNews, tnews.kSprache, tnews.cKundengruppe, tnews.cBetreff, tnews.cText, tnews.cVorschauText, 
             tnews.cMetaTitle, tnews.cMetaDescription, tnews.cMetaKeywords, tnews.nAktiv, tnews.dErstellt, tseo.cSeo,

@@ -909,6 +909,7 @@ function lokalisiereLieferadresse($oSprache, $oLieferadresse)
  */
 function bauePDFArrayZumVeschicken($cPDF)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $cPDFTMP_arr        = explode(';', $cPDF);
     $cPDF_arr           = [];
     $cUploadVerzeichnis = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_EMAILPDFS;
@@ -957,6 +958,7 @@ function getPDFAttachments($cPDFs, $cNames)
  */
 function baueDateinameArrayZumVeschicken($cDateiname)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $cDateinameTMP_arr = explode(';', $cDateiname);
     $cDateiname_arr    = [];
     if (count($cDateinameTMP_arr) > 0) {

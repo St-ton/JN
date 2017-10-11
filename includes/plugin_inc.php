@@ -296,5 +296,6 @@ function gibPluginExtendedTemplates()
  */
 function gibPluginHookListe()
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return Plugin::getHookList();
 }

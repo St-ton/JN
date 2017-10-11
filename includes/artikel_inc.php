@@ -368,10 +368,11 @@ function sendeProduktanfrage()
 }
 
 /**
- * @deprecated deprecated since version 4.3
+ * @deprecated deprecated since version 4.03
  */
 function sendeArtikelWeiterempfehlen()
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and does not return correct values anymore.', E_USER_DEPRECATED);
 }
 
 /**
@@ -397,12 +398,13 @@ function floodSchutzProduktanfrage($min = 0)
 }
 
 /**
- * @deprecated deprecated since version 4.3
+ * @deprecated deprecated since version 4.03
  * @param int $min
  * @return bool
  */
 function floodSchutzArtikelWeiterempfehlen($min = 0)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and does not return correct values anymore.', E_USER_DEPRECATED);
     return false;
 }
 
@@ -1414,6 +1416,7 @@ function buildConfig($kArtikel, $fAnzahl, $nVariation_arr, $nKonfiggruppe_arr, $
  */
 function gibMetaTitle($Artikel)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return $Artikel->getMetaTitle();
 }
 
@@ -1425,6 +1428,7 @@ function gibMetaTitle($Artikel)
  */
 function gibMetaDescription($Artikel, $KategorieListe)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return $Artikel->getMetaDescription($KategorieListe);
 }
 
@@ -1435,6 +1439,7 @@ function gibMetaDescription($Artikel, $KategorieListe)
  */
 function gibMetaKeywords($Artikel)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return $Artikel->getMetaKeywords();
 }
 
@@ -1445,22 +1450,25 @@ function gibMetaKeywords($Artikel)
  */
 function holeProduktTagging($AktuellerArtikel)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return $AktuellerArtikel->tags;
 }
 
 /**
- * @deprecated since version 4.3
+ * @deprecated since version 4.03
  */
 function bearbeiteArtikelWeiterempfehlen()
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and does not return correct values anymore.', E_USER_DEPRECATED);
 }
 
 /**
- * @deprecated since version 4.3
+ * @deprecated since version 4.03
  * @return array
  */
 function gibFehlendeEingabenArtikelWeiterempfehlenFormular()
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and does not return correct values anymore.', E_USER_DEPRECATED);
     return [];
 }
 

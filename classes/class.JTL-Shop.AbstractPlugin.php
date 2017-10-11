@@ -46,9 +46,7 @@ abstract class AbstractPlugin implements IPlugin
      */
     final public function addNotify($type, $title, $description = null)
     {
-        $notify = new NotificationEntry($type, $title, $description);
-        $notify->setPluginId($this->pluginId);
-        $this->notifications[] = $notify;
+        $this->notifications[] = (new NotificationEntry($type, $title, $description))->setPluginId($this->pluginId);
     }
 
     /**

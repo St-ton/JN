@@ -79,10 +79,13 @@ class NotificationEntry
 
     /**
      * @param string $pluginId
+     * @return $this
      */
     public function setPluginId($pluginId)
     {
         $this->pluginId = $pluginId;
+
+        return $this;
     }
 
     /**
@@ -95,10 +98,13 @@ class NotificationEntry
 
     /**
      * @param int $type
+     * @return $this
      */
     public function setType($type)
     {
         $this->type = $type;
+
+        return $this;
     }
 
     /**
@@ -111,10 +117,13 @@ class NotificationEntry
 
     /**
      * @param string $title
+     * @return $this
      */
     public function setTitle($title)
     {
         $this->title = $title;
+
+        return $this;
     }
 
     /**
@@ -127,10 +136,13 @@ class NotificationEntry
 
     /**
      * @param string $description
+     * @return $this
      */
     public function setDescription($description)
     {
         $this->description = $description;
+
+        return $this;
     }
 
     /**
@@ -151,10 +163,13 @@ class NotificationEntry
 
     /**
      * @param string $url
+     * @return $this
      */
     public function setUrl($url)
     {
         $this->url = $url;
+
+        return $this;
     }
 
     /**

@@ -54,7 +54,7 @@ class Status
      */
     protected function getSystemLogInfo()
     {
-        $flags = getSytemlogFlag(false);
+        $flags = Jtllog::getSytemlogFlag(false);
 
         return (object)[
             'error'  => Jtllog::isBitFlagSet(JTLLOG_LEVEL_ERROR, $flags) > 0,

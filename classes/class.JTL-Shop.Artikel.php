@@ -5092,7 +5092,10 @@ class Artikel
      */
     public function getFavourableShipping($countryCode, $shippingID = null)
     {
-        if (!empty($_SESSION['Versandart']->kVersandart) && $countryCode === $this->cCachedCountryCode) {
+        if (!empty($_SESSION['Versandart']->kVersandart)
+            && isset($_SESSION['Versandart']->nMinLiefertage)
+            && $countryCode === $this->cCachedCountryCode
+        ) {
             return $_SESSION['Versandart'];
         }
         // if nothing changed, return cached shipping-object

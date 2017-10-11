@@ -14,15 +14,14 @@ $Einstellungen                   = Shop::getSettings([CONF_GLOBAL, CONF_RSS]);
 $GLOBALS['GlobaleEinstellungen'] = array_merge($GLOBALS['GlobaleEinstellungen'], $Einstellungen);
 $linkHelper                      = LinkHelper::getInstance();
 $kLink                           = $linkHelper->getSpecialPageLinkKey(LINKTYP_PASSWORD_VERGESSEN);
-//hole alle OberKategorien
-$AktuelleKategorie      = new Kategorie(verifyGPCDataInteger('kategorie'));
-$AufgeklappteKategorien = new KategorieListe();
+$AktuelleKategorie               = new Kategorie(verifyGPCDataInteger('kategorie'));
+$AufgeklappteKategorien          = new KategorieListe();
+$startKat                        = new Kategorie();
+$startKat->kKategorie            = 0;
+$step                            = 'formular';
+$hinweis                         = '';
+$cFehler                         = '';
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
-$startKat             = new Kategorie();
-$startKat->kKategorie = 0;
-$step                 = 'formular';
-$hinweis              = '';
-$cFehler              = '';
 //loginbenutzer?
 if (isset($_POST['passwort_vergessen'], $_POST['email']) && (int)$_POST['passwort_vergessen'] === 1) {
     $kunde = Shop::DB()->select(

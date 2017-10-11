@@ -51,10 +51,10 @@ $Einstellungen = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_NEWSLETTER]);
 //hole alle OberKategorien
 $AktuelleKategorie      = new Kategorie(verifyGPCDataInteger('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
+$startKat               = new Kategorie();
+$startKat->kKategorie   = 0;
+$cOption                = 'eintragen';
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
-$startKat             = new Kategorie();
-$startKat->kKategorie = 0;
-$cOption              = 'eintragen';
 // Freischaltcode wurde übergeben
 if (isset($_GET['fc']) && strlen($_GET['fc']) > 0) {
     $cOption               = 'freischalten';

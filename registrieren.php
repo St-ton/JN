@@ -59,11 +59,12 @@ if (isset($_FILES['vcard']) &&
     gibKundeFromVCard($_FILES['vcard']['tmp_name']);
     @unlink($_FILES['vcard']['tmp_name']);
 }
-//hole aktuelle Kategorie, falls eine gesetzt
+// hole aktuelle Kategorie, falls eine gesetzt
 $AktuelleKategorie      = new Kategorie(verifyGPCDataInteger('kategorie'));
-$AufgeklappteKategorien = (new KategorieListe())->getOpenCategories($AktuelleKategorie);
+$AufgeklappteKategorien = new KategorieListe();
 $startKat               = new Kategorie();
 $startKat->kKategorie   = 0;
+$AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 //specific assigns
 $smarty->assign('Navigation', createNavigation($AktuelleSeite))
        ->assign('editRechnungsadresse', $editRechnungsadresse)

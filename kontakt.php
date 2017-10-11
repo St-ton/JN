@@ -16,10 +16,11 @@ $linkHelper    = LinkHelper::getInstance();
 $kLink         = $linkHelper->getSpecialPageLinkKey(LINKTYP_KONTAKT);
 //hole alle OberKategorien
 $AktuelleKategorie      = new Kategorie(verifyGPCDataInteger('kategorie'));
-$AufgeklappteKategorien = (new KategorieListe())->getOpenCategories($AktuelleKategorie);
+$AufgeklappteKategorien = new KategorieListe();
 $startKat               = new Kategorie();
 $startKat->kKategorie   = 0;
 $cCanonicalURL          = '';
+$AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 if (pruefeBetreffVorhanden()) {
     $step            = 'formular';
     $fehlendeAngaben = [];

@@ -125,22 +125,12 @@ function pushToBasket($kArtikel, $anzahl, $oEigenschaftwerte_arr = '')
         // Falls der Artikel ein Variationskombikind ist, hole direkt seine Eigenschaften
         if ($Artikel->kEigenschaftKombi > 0) {
             // Variationskombi-Artikel
-            $oEigenschaftwerte_arr = gibVarKombiEigenschaftsWerte($Artikel->kArtikel);
+            $_POST['eigenschaftwert'] = $oEigenschaftwerte_arr['eigenschaftwert'];
+            $oEigenschaftwerte_arr    = ArtikelHelper::getSelectedPropertiesForVarCombiArticle($kArtikel);
         } elseif (isset($oEigenschaftwerte_arr['eigenschaftwert']) && is_array($oEigenschaftwerte_arr['eigenschaftwert'])) {
             // einfache Variation - keine Varkombi
-            foreach ($Artikel->Variationen as $oVariation) {
-                if (array_key_exists($oVariation->kEigenschaft, $oEigenschaftwerte_arr['eigenschaftwert'])) {
-                    $value =& $oEigenschaftwerte_arr['eigenschaftwert'][$oVariation->kEigenschaft];
-
-                    $oEigenschaftwerte_arr[$oVariation->kEigenschaft] = (object)[
-                        'kEigenschaft'     => (int)$oVariation->kEigenschaft,
-                        'kEigenschaftWert' => ($oVariation->cTyp === 'FREIFELD' || $oVariation->cTyp === 'PFLICHT-FREIFELD') ? utf8_decode(StringHandler::filterXSS($value)) : (int)$value,
-                    ];
-                    if ($oVariation->cTyp === 'FREIFELD' || $oVariation->cTyp === 'PFLICHT-FREIFELD') {
-                        $oEigenschaftwerte_arr[$oVariation->kEigenschaft]->cFreifeldWert = &$oEigenschaftwerte_arr[$oVariation->kEigenschaft]->kEigenschaftWert;
-                    }
-                }
-            }
+            $_POST['eigenschaftwert'] = $oEigenschaftwerte_arr['eigenschaftwert'];
+            $oEigenschaftwerte_arr    = ArtikelHelper::getSelectedPropertiesForArticle($kArtikel);
         }
 
         if ((int)$anzahl != $anzahl && $Artikel->cTeilbar !== 'Y') {

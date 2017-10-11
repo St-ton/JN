@@ -2343,7 +2343,7 @@ function checkeSpracheWaehrung($lang = '')
 
     $waehrung = verifyGPDataString('curr');
     if ($waehrung) {
-        $Waehrungen = Shop::DB()->query("SELECT cISO FROM twaehrung", 2);
+        $Waehrungen = Shop::DB()->query("SELECT cISO, kWaehrung FROM twaehrung", 2);
         foreach ($Waehrungen as $Waehrung) {
             if ($Waehrung->cISO === $waehrung) {
                 setFsession($Waehrung->kWaehrung, 0, 0);

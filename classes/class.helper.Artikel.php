@@ -90,9 +90,8 @@ class ArtikelHelper
                 if (!self::hasSelectedVariationValue($i)) {
                     $nGueltig = 0;
                     break;
-                } else {
-                    $kVariationKombi_arr[$i] = self::getSelectedVariationValue($i);
                 }
+                $kVariationKombi_arr[$i] = self::getSelectedVariationValue($i);
             }
         }
         if ($nGueltig) {
@@ -243,17 +242,15 @@ class ArtikelHelper
             $cSQL1 = '';
             $cSQL2 = '';
             $j     = 0;
-            if (count($propertyValues) > 0) {
-                foreach ($propertyValues as $i => $kEigenschaftWertProEigenschaft) {
-                    if ($j > 0) {
-                        $cSQL1 .= ',' . $i;
-                        $cSQL2 .= ',' . $propertyValues[$i];
-                    } else {
-                        $cSQL1 .= $i;
-                        $cSQL2 .= $propertyValues[$i];
-                    }
-                    $j++;
+            foreach ($propertyValues as $i => $kEigenschaftWertProEigenschaft) {
+                if ($j > 0) {
+                    $cSQL1 .= ',' . $i;
+                    $cSQL2 .= ',' . $propertyValues[$i];
+                } else {
+                    $cSQL1 .= $i;
+                    $cSQL2 .= $propertyValues[$i];
                 }
+                $j++;
             }
             $kSprache                     = Shop::getLanguage();
             $oSQLEigenschaft              = new stdClass();
@@ -365,13 +362,12 @@ class ArtikelHelper
                                 '&n=' . (int)$_POST['anzahl'] .
                                 '&r=' . R_VARWAEHLEN, true, 302);
                             exit();
-                        } else {
-                            $oEigenschaftwerte                = new stdClass();
-                            $oEigenschaftwerte->cFreifeldWert = StringHandler::filterXSS(self::getSelectedVariationValue($oEigenschaft->kEigenschaft));
-                            $oEigenschaftwerte->kEigenschaft  = $oEigenschaft->kEigenschaft;
-                            $oEigenschaftwerte->cTyp          = $oEigenschaft->cTyp;
-                            $oProperties[]                    = $oEigenschaftwerte;
                         }
+                        $oEigenschaftwerte                = new stdClass();
+                        $oEigenschaftwerte->cFreifeldWert = StringHandler::filterXSS(self::getSelectedVariationValue($oEigenschaft->kEigenschaft));
+                        $oEigenschaftwerte->kEigenschaft  = $oEigenschaft->kEigenschaft;
+                        $oEigenschaftwerte->cTyp          = $oEigenschaft->cTyp;
+                        $oProperties[]                    = $oEigenschaftwerte;
                     }
                 }
             }
@@ -483,13 +479,12 @@ class ArtikelHelper
                             '&n=' . (int)$_POST['anzahl'] .
                             '&r=' . R_VARWAEHLEN, true, 302);
                         exit();
-                    } else {
-                        $oEigenschaftwerte                = new stdClass();
-                        $oEigenschaftwerte->cFreifeldWert = Shop::DB()->escape(StringHandler::filterXSS(self::getSelectedVariationValue($oEigenschaft->kEigenschaft)));
-                        $oEigenschaftwerte->kEigenschaft  = $oEigenschaft->kEigenschaft;
-                        $oEigenschaftwerte->cTyp          = $oEigenschaft->cTyp;
-                        $oProperties[]                    = $oEigenschaftwerte;
                     }
+                    $oEigenschaftwerte                = new stdClass();
+                    $oEigenschaftwerte->cFreifeldWert = Shop::DB()->escape(StringHandler::filterXSS(self::getSelectedVariationValue($oEigenschaft->kEigenschaft)));
+                    $oEigenschaftwerte->kEigenschaft  = $oEigenschaft->kEigenschaft;
+                    $oEigenschaftwerte->cTyp          = $oEigenschaft->cTyp;
+                    $oProperties[]                    = $oEigenschaftwerte;
                 }
             }
         }

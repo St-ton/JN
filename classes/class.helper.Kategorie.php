@@ -76,12 +76,14 @@ class KategorieHelper
             self::$fullCategories = null;
             unset($_SESSION['oKategorie_arr_new']);
         }
-        self::$cacheID       = 'allcategories_' . $kKundengruppe . '_' . $kSprache . '_' . $config['global']['kategorien_anzeigefilter'];
+        self::$cacheID       = 'allcategories_' . $kKundengruppe .
+            '_' . $kSprache .
+            '_' . $config['global']['kategorien_anzeigefilter'];
         self::$kSprache      = $kSprache;
         self::$kKundengruppe = $kKundengruppe;
         self::$config        = $config;
 
-        return (self::$instance === null) ? new self() : self::$instance;
+        return self::$instance === null ? new self() : self::$instance;
     }
 
     /**
@@ -92,7 +94,7 @@ class KategorieHelper
         if (self::$fullCategories !== null) {
             return self::$fullCategories;
         }
-        $filterEmpty = (self::$config['global']['kategorien_anzeigefilter'] == EINSTELLUNGEN_KATEGORIEANZEIGEFILTER_NICHTLEERE);
+        $filterEmpty = (int)self::$config['global']['kategorien_anzeigefilter'] === EINSTELLUNGEN_KATEGORIEANZEIGEFILTER_NICHTLEERE;
         $stockFilter = gibLagerfilter();
         $stockJoin   = '';
         $extended    = !empty($stockFilter);
@@ -120,36 +122,37 @@ class KategorieHelper
             $getDescription      = ($categoryCount < $categoryLimit || //always get description if there aren't that many categories
                 !(isset(self::$config['template']['megamenu']['show_maincategory_info']) && //otherwise check template config
                 isset(self::$config['template']['megamenu']['show_categories']) &&
-                (self::$config['template']['megamenu']['show_categories'] === 'N' || self::$config['template']['megamenu']['show_maincategory_info'] === 'N')));
+                (self::$config['template']['megamenu']['show_categories'] === 'N'
+                    || self::$config['template']['megamenu']['show_maincategory_info'] === 'N')));
 
             if ($getDescription === true) {
-                $descriptionSelect = ($isDefaultLang === true)
+                $descriptionSelect = $isDefaultLang === true
                     ? ", node.cBeschreibung" //no category description needed if we don't show category info in mega menu
                     : ", node.cBeschreibung, tkategoriesprache.cBeschreibung AS cBeschreibung_spr";
             }
-            $imageSelect          = ($categoryCount >= $categoryLimit &&
-                isset(self::$config['template']['megamenu']['show_category_images']) &&
-                self::$config['template']['megamenu']['show_category_images'] === 'N')
+            $imageSelect          = ($categoryCount >= $categoryLimit
+                && isset(self::$config['template']['megamenu']['show_category_images'])
+                && self::$config['template']['megamenu']['show_category_images'] === 'N')
                 ? ", '' AS cPfad" //select empty path if we don't need category images for the mega menu
                 : ", tkategoriepict.cPfad";
-            $imageJoin            = ($categoryCount >= $categoryLimit &&
-                isset(self::$config['template']['megamenu']['show_category_images']) &&
-                self::$config['template']['megamenu']['show_category_images'] === 'N')
+            $imageJoin            = ($categoryCount >= $categoryLimit
+                && isset(self::$config['template']['megamenu']['show_category_images'])
+                && self::$config['template']['megamenu']['show_category_images'] === 'N')
                 ? "" //the join is not needed if we don't select the category image path
                 : " LEFT JOIN tkategoriepict
                         ON tkategoriepict.kKategorie = node.kKategorie";
-            $nameSelect           = ($isDefaultLang === true)
+            $nameSelect           = $isDefaultLang === true
                 ? ", node.cName"
                 : ", node.cName, tkategoriesprache.cName AS cName_spr";
-            $seoSelect            = ($isDefaultLang === true)
+            $seoSelect            = $isDefaultLang === true
                 ? ", node.cSeo"
                 : ", tseo.cSeo";
-            $langJoin             = ($isDefaultLang === true)
+            $langJoin             = $isDefaultLang === true
                 ? ""
                 : " LEFT JOIN tkategoriesprache
                         ON tkategoriesprache.kKategorie = node.kKategorie
                             AND tkategoriesprache.kSprache = " . self::$kSprache . " ";
-            $seoJoin              = ($isDefaultLang === true)
+            $seoJoin              = $isDefaultLang === true
                 ? '' //tkategorie already has a cSeo field which we can use to avoid another join only if the default lang is active
                 : " LEFT JOIN tseo
                         ON tseo.cKey = 'kKategorie'
@@ -179,7 +182,8 @@ class KategorieHelper
                     $visibilityWhere      = "";
                 }
             }
-            $qry = "SELECT node.kKategorie, node.kOberKategorie" . $nameSelect . $descriptionSelect . $imageSelect . $seoSelect . $countSelect . "
+            $qry = "SELECT node.kKategorie, node.kOberKategorie" . $nameSelect .
+                    $descriptionSelect . $imageSelect . $seoSelect . $countSelect . "
                     FROM tkategorie AS node INNER JOIN tkategorie AS parent " . $langJoin . "                    
                     LEFT JOIN tkategoriesichtbarkeit
                         ON node.kKategorie = tkategoriesichtbarkeit.kKategorie
@@ -258,13 +262,13 @@ class KategorieHelper
                 $_cat->cKurzbezeichnung = isset($_cat->categoryAttributes[ART_ATTRIBUT_SHORTNAME])
                     ? $_cat->categoryAttributes[ART_ATTRIBUT_SHORTNAME]->cWert
                     : $_cat->cName;
-                if ($_cat->kOberKategorie == 0) {
+                if ($_cat->kOberKategorie === 0) {
                     $fullCats[$_cat->kKategorie] = $_cat;
                     $current                     = $_cat;
                     $currentParent               = $_cat;
                     $hierarchy                   = [$_cat->kKategorie];
                 } else {
-                    if ($current !== null && $_cat->kOberKategorie == $current->kKategorie) {
+                    if ($current !== null && $_cat->kOberKategorie === $current->kKategorie) {
                         $current->bUnterKategorien = 1;
                         if (!isset($current->Unterkategorien)) {
                             $current->Unterkategorien = [];
@@ -273,7 +277,7 @@ class KategorieHelper
                         $current                                     = $_cat;
                         $hierarchy[]                                 = $_cat->kOberKategorie;
                         $hierarchy                                   = array_unique($hierarchy);
-                    } elseif ($currentParent !== null && $_cat->kOberKategorie == $currentParent->kKategorie) {
+                    } elseif ($currentParent !== null && $_cat->kOberKategorie === $currentParent->kKategorie) {
                         $currentParent->bUnterKategorien                   = 1;
                         $currentParent->Unterkategorien[$_cat->kKategorie] = $_cat;
                         $current                                           = $_cat;
@@ -282,7 +286,7 @@ class KategorieHelper
                         $newCurrent = $fullCats;
                         $i          = 0;
                         foreach ($hierarchy as $_i) {
-                            if ($newCurrent[$_i]->kKategorie == $_cat->kOberKategorie) {
+                            if ($newCurrent[$_i]->kKategorie === $_cat->kOberKategorie) {
                                 $current                                     = $newCurrent[$_i];
                                 $current->Unterkategorien[$_cat->kKategorie] = $_cat;
                                 array_splice($hierarchy, $i);
@@ -298,6 +302,7 @@ class KategorieHelper
                     }
                 }
             }
+            unset($_cat);
             if ($filterEmpty) {
                 $this->filterEmpty($fullCats)->removeRelicts($fullCats);
             }
@@ -324,7 +329,7 @@ class KategorieHelper
      */
     public function getFallBackFlatTree($categoryID)
     {
-        $filterEmpty         = (self::$config['global']['kategorien_anzeigefilter'] == EINSTELLUNGEN_KATEGORIEANZEIGEFILTER_NICHTLEERE);
+        $filterEmpty         = (int)self::$config['global']['kategorien_anzeigefilter'] === EINSTELLUNGEN_KATEGORIEANZEIGEFILTER_NICHTLEERE;
         $stockFilter         = gibLagerfilter();
         $stockJoin           = '';
         $extended            = !empty($stockFilter);
@@ -338,36 +343,35 @@ class KategorieHelper
         $isDefaultLang       = standardspracheAktiv();
         $visibilityWhere     = " AND tartikelsichtbarkeit.kArtikel IS NULL";
         $getDescription      = (
-        !(isset(self::$config['template']['megamenu']['show_maincategory_info']) && //otherwise check template config
-            isset(self::$config['template']['megamenu']['show_categories']) &&
-            (self::$config['template']['megamenu']['show_categories'] === 'N' || self::$config['template']['megamenu']['show_maincategory_info'] === 'N')));
+        !(isset(self::$config['template']['megamenu']['show_maincategory_info']) //otherwise check template config
+            && isset(self::$config['template']['megamenu']['show_categories'])
+            && (self::$config['template']['megamenu']['show_categories'] === 'N'
+                || self::$config['template']['megamenu']['show_maincategory_info'] === 'N')));
 
         if ($getDescription === true) {
-            $descriptionSelect = ($isDefaultLang === true)
+            $descriptionSelect = $isDefaultLang === true
                 ? ", parent.cBeschreibung" //no category description needed if we don't show category info in mega menu
                 : ", parent.cBeschreibung, tkategoriesprache.cBeschreibung AS cBeschreibung_spr";
         }
-        $imageSelect          = (
-            isset(self::$config['template']['megamenu']['show_category_images']) &&
-            self::$config['template']['megamenu']['show_category_images'] === 'N')
+        $imageSelect          = (isset(self::$config['template']['megamenu']['show_category_images'])
+            && self::$config['template']['megamenu']['show_category_images'] === 'N')
             ? ", '' AS cPfad" //select empty path if we don't need category images for the mega menu
             : ", tkategoriepict.cPfad";
-        $imageJoin            = (
-            isset(self::$config['template']['megamenu']['show_category_images']) &&
-            self::$config['template']['megamenu']['show_category_images'] === 'N')
+        $imageJoin            = (isset(self::$config['template']['megamenu']['show_category_images'])
+            && self::$config['template']['megamenu']['show_category_images'] === 'N')
             ? "" //the join is not needed if we don't select the category image path
             : " LEFT JOIN tkategoriepict
                     ON tkategoriepict.kKategorie = node.kKategorie";
-        $nameSelect           = ($isDefaultLang === true)
+        $nameSelect           = $isDefaultLang === true
             ? ", parent.cName"
             : ", parent.cName, tkategoriesprache.cName AS cName_spr";
         $seoSelect            = ", parent.cSeo";
-        $langJoin             = ($isDefaultLang === true)
+        $langJoin             = $isDefaultLang === true
             ? ""
             : " LEFT JOIN tkategoriesprache
                     ON tkategoriesprache.kKategorie = node.kKategorie
                         AND tkategoriesprache.kSprache = " . self::$kSprache . " ";
-        $seoJoin              = ($isDefaultLang === true)
+        $seoJoin              = $isDefaultLang === true
             ? '' //tkategorie already has a cSeo field which we can use to avoid another join only if the default lang is active
             : " LEFT JOIN tseo
                     ON tseo.cKey = 'kKategorie'
@@ -475,6 +479,7 @@ class KategorieHelper
             $_cat->Unterkategorien  = [];
             $fullCats[] = $_cat;
         }
+        unset($_cat);
         if ($filterEmpty) {
             $this->filterEmpty($fullCats)->removeRelicts($fullCats);
         }
@@ -512,11 +517,11 @@ class KategorieHelper
     private function removeRelicts(&$catList)
     {
         foreach ($catList as $i => $_cat) {
-            if ($_cat->cnt == 0 && $_cat->bUnterKategorien === 1 && count($_cat->Unterkategorien) === 0) {
+            if ($_cat->cnt === 0 && $_cat->bUnterKategorien === 1 && count($_cat->Unterkategorien) === 0) {
                 unset($catList[$i]);
             } elseif ($_cat->bUnterKategorien === 1) {
                 $this->removeRelicts($_cat->Unterkategorien);
-                if (empty($_cat->Unterkategorien) && $_cat->cnt == 0) {
+                if (empty($_cat->Unterkategorien) && $_cat->cnt === 0) {
                     unset($catList[$i]);
                 }
             }

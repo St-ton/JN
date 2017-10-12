@@ -256,25 +256,22 @@ class LinkHelper
             if ($oLinkLvl_arr === null) {
                 $oLinkLvl_arr = $this->getMyLevel($oLink->kVaterLink);
             }
-            $linkCount = is_array($oLinkLvl_arr) ? count($oLinkLvl_arr) : 0;
-            if ($linkCount > 0) {
-                for ($i = 0; $i < $linkCount; $i++) {
-                    if ($oLinkLvl_arr[$i]->kLink === $oLink->kLink) {
-                        switch ($nEvent) {
-                            case 1: // Previous
-                                if (isset($oLinkLvl_arr[$i - 1])) {
-                                    return $oLinkLvl_arr[$i - 1];
-                                }
-                                break;
+            foreach ($oLinkLvl_arr as $i => $lvl) {
+                if ($lvl->kLink === $oLink->kLink) {
+                    switch ($nEvent) {
+                        case 1: // Previous
+                            if (isset($lvl[$i - 1])) {
+                                return $lvl[$i - 1];
+                            }
+                            break;
 
-                            case 2: // Next
-                                if (isset($oLinkLvl_arr[$i + 1])) {
-                                    return $oLinkLvl_arr[$i + 1];
-                                }
-                                break;
-                            default:
-                                break;
-                        }
+                        case 2: // Next
+                            if (isset($lvl[$i + 1])) {
+                                return $lvl[$i + 1];
+                            }
+                            break;
+                        default:
+                            break;
                     }
                 }
             }
@@ -1050,7 +1047,7 @@ class LinkHelper
         if (isset($this->linkGroups->staticRoutes[$id])) {
             $index = $this->linkGroups->staticRoutes[$id];
             if (is_array($index)) {
-                $language  = ($langISO !== null)
+                $language  = $langISO !== null
                     ? $langISO
                     : $_SESSION['cISOSprache'];
                 $localized = isset($index[$language])

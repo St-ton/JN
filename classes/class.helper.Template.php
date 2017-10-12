@@ -47,7 +47,7 @@ class TemplateHelper
     {
         $idx = $isAdmin ? 'admin' : 'frontend';
 
-        return (!empty(self::$instances[$idx])) ? self::$instances[$idx] : new self($isAdmin);
+        return !empty(self::$instances[$idx]) ? self::$instances[$idx] : new self($isAdmin);
     }
 
     /**

@@ -72,6 +72,7 @@ if (isset($_GET['updated_pw']) && $_GET['updated_pw'] === 'true') {
 //loginbenutzer?
 if (isset($_POST['login']) && (int)$_POST['login'] === 1 && !empty($_POST['email']) && !empty($_POST['passwort'])) {
     fuehreLoginAus($_POST['email'], $_POST['passwort']);
+    LinkHelper::getInstance()->buildLinkGroups(true);
 }
 
 $AktuelleKategorie      = new Kategorie(verifyGPCDataInteger('kategorie'));

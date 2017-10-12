@@ -95,7 +95,7 @@ class Template
      */
     public static function getInstance()
     {
-        return (self::$frontEndInstance !== null) ? self::$frontEndInstance : new self();
+        return self::$frontEndInstance !== null ? self::$frontEndInstance : new self();
     }
 
     /**
@@ -175,8 +175,8 @@ class Template
     public function getFrontendTemplate()
     {
         $frontendTemplate = Shop::DB()->select('ttemplate', 'eTyp', 'standard');
-        self::$cTemplate  = (!empty($frontendTemplate->cTemplate)) ? $frontendTemplate->cTemplate : null;
-        self::$parent     = (!empty($frontendTemplate->parent)) ? $frontendTemplate->parent : null;
+        self::$cTemplate  = empty($frontendTemplate->cTemplate) ? null : $frontendTemplate->cTemplate;
+        self::$parent     = empty($frontendTemplate->parent) ? null : $frontendTemplate->parent;
 
         return self::$cTemplate;
     }
@@ -304,17 +304,17 @@ class Template
             if (++$i === $iterations) {
                 switch ($_settingComparison) {
                     case '==':
-                        return ($conf == $_settingValue);
+                        return $conf == $_settingValue;
                     case '===':
-                        return ($conf === $_settingValue);
+                        return $conf === $_settingValue;
                     case '>=':
-                        return ($conf >= $_settingValue);
+                        return $conf >= $_settingValue;
                     case '<=':
-                        return ($conf <= $_settingValue);
+                        return $conf <= $_settingValue;
                     case '>':
-                        return ($conf > $_settingValue);
+                        return $conf > $_settingValue;
                     case '<':
-                        return ($conf < $_settingValue);
+                        return $conf < $_settingValue;
                     default:
                         return false;
                 }
@@ -356,11 +356,11 @@ class Template
                         /** @var SimpleXMLElement $oFile */
                         foreach ($oCSS->File as $oFile) {
                             $cFile     = (string)$oFile->attributes()->Path;
-                            $cFilePath = (self::$isAdmin === false)
+                            $cFilePath = self::$isAdmin === false
                                 ? PFAD_ROOT . PFAD_TEMPLATES . $oXML->Ordner . '/' . $cFile
                                 : PFAD_ROOT . PFAD_ADMIN . PFAD_TEMPLATES . $oXML->Ordner . '/' . $cFile;
-                            if (file_exists($cFilePath) &&
-                                (empty($oFile->attributes()->DependsOnSetting) || $this->checkCondition($oFile) === true)
+                            if (file_exists($cFilePath)
+                                && (empty($oFile->attributes()->DependsOnSetting) || $this->checkCondition($oFile) === true)
                             ) {
                                 $_file           = PFAD_TEMPLATES . $cOrdner . '/' . (string)$oFile->attributes()->Path;
                                 $cCustomFilePath = str_replace('.css', '_custom.css', $cFilePath);
@@ -406,8 +406,8 @@ class Template
                                     'rel' => $_file
                                 ];
                                 $found    = false;
-                                if (!empty($oFile->attributes()->override) &&
-                                    (string)$oFile->attributes()->override === 'true'
+                                if (!empty($oFile->attributes()->override)
+                                    && (string)$oFile->attributes()->override === 'true'
                                 ) {
                                     $idxToOverride = (string)$oFile->attributes()->Path;
                                     $max           = count($tplGroups_arr[$name]);
@@ -476,7 +476,7 @@ class Template
         foreach ($tplGroups_arr as $name => $_tplGroup) {
             $res[$name] = [];
             foreach ($_tplGroup as $_file) {
-                $res[$name][] = ($absolute === true) ? $_file['abs'] : $_file['rel'];
+                $res[$name][] = $absolute === true ? $_file['abs'] : $_file['rel'];
             }
         }
 
@@ -512,9 +512,7 @@ class Template
      */
     public function hasMobileTemplate()
     {
-        $oTemplate = $this->getMobileTemplate();
-
-        return $oTemplate ? true : false;
+        return $this->getMobileTemplate() !== false;
     }
 
     /**
@@ -526,7 +524,7 @@ class Template
     {
         $oTemplate = $this->getMobileTemplate();
 
-        return (isset($oTemplate->cTemplate) && $oTemplate->cTemplate === $_SESSION['cTemplate']);
+        return isset($oTemplate->cTemplate) && $oTemplate->cTemplate === $_SESSION['cTemplate'];
     }
 
     /**
@@ -657,7 +655,7 @@ class Template
                                 break;
                             }
                         }
-                        $oSetting->bEditable = (strlen($oSetting->bEditable) === 0)
+                        $oSetting->bEditable = strlen($oSetting->bEditable) === 0
                             ? true
                             : (boolean)(int)$oSetting->bEditable;
                         if ($oSetting->bEditable && isset($oDBSettings[$oSection->cKey][$oSetting->cKey])) {

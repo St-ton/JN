@@ -6304,7 +6304,7 @@ class Artikel
      */
     public function showMatrix()
     {
-        if (!$this->kArtikelVariKombi && !$this->kVariKindArtikel && !$this->nErscheinendesProdukt) {
+        if (verifyGPCDataInteger('quickView') === 0 && !$this->kArtikelVariKombi && !$this->kVariKindArtikel && !$this->nErscheinendesProdukt) {
             $conf = Shop::getSettings([CONF_ARTIKELDETAILS]);
             if ($conf['artikeldetails']['artikeldetails_warenkorbmatrix_anzeige'] === 'Y' ||
                 (!empty($this->FunktionsAttribute[FKT_ATTRIBUT_WARENKORBMATRIX]) &&

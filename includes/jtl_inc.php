@@ -442,6 +442,7 @@ function fuehreLoginAus($userLogin, $passLogin)
                         $bPersWarenkorbGeladen = true;
                     }
                 }
+                LinkHelper::getInstance()->buildLinkGroups(true);
                 // Pruefe, ob Artikel im Warenkorb vorhanden sind,
                 // welche für den aktuellen Kunden nicht mehr sichtbar sein duerfen
                 pruefeWarenkorbArtikelSichtbarkeit($_SESSION['Kunde']->kKundengruppe);

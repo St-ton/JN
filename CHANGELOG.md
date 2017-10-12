@@ -6,8 +6,8 @@
 
 #### Teilverschlüsselung wird nicht länger unterstützt
 JTL-Shop 4.06 unterstützt nicht länger die Option Teilverschlüsselung, also den automatischen Wechsel von http auf https z.B. beim Wechsel in den Warenkorb. 
-Ein Umstieg auf permanentes SSL ist generell empfehlenswert und sollte idealerweise bereits vor dem Update durchgeführt werden (Einstellung 192 im Shop-Backend).
-Sofern noch Teilverschlüsselung in den Einstellungen aktiv ist, wird beim Shop-Update permanentes SSL aktiviert. 
+Sofern zum Update-Zeitpunkt noch Teilverschlüsselung in den Shop-Einstellungen aktiv war, wird permanentes SSL aktiviert. 
+Tipps für einen reibungslosen Wechsel auf permanentes SSL finden Sie im JTL-Guide: http://jtl-url.de/iurf7
 
 #### Verkürzter Checkout mit 3 Schritten
 Der Bestellvorgang wurde von 5 auf nur noch 3 Schritte reduziert und benutzerfreundlicher umgestaltet. 
@@ -249,7 +249,7 @@ Bitte beachten Sie auch das aktualisierte Handbuch zum PayPal-Plugin: http://jtl
 * [SHOP-1660] - Template-Vererbung (Smarty-Blocks) über Plugins unterstützen
 * [SHOP-1667] - Backend Weiterleitungen nach Aufrufen filtern
 * [SHOP-1674] - Neue Smarty Blocks in snippets/shipping_tax_info.tpl und productdetails/price.tpl
-
+* [SHOP-1694] - Backstretch-Hintergrundbild verursacht Fehler bei geringer Netzgeschwindigkeit
 
 ## [4.05.3]
 

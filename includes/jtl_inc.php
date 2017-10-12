@@ -442,6 +442,7 @@ function fuehreLoginAus($userLogin, $passLogin)
                         $bPersWarenkorbGeladen = true;
                     }
                 }
+                LinkHelper::getInstance()->buildLinkGroups(true);
                 // Pruefe, ob Artikel im Warenkorb vorhanden sind,
                 // welche für den aktuellen Kunden nicht mehr sichtbar sein duerfen
                 pruefeWarenkorbArtikelSichtbarkeit($_SESSION['Kunde']->kKundengruppe);
@@ -453,7 +454,8 @@ function fuehreLoginAus($userLogin, $passLogin)
                     }
                     header('Location: ' . $cURL, true, 301);
                     exit();
-                } elseif ($Einstellungen['global']['warenkorbpers_nutzen'] === 'Y' && !$bPersWarenkorbGeladen) {
+                }
+                if ($Einstellungen['global']['warenkorbpers_nutzen'] === 'Y' && !$bPersWarenkorbGeladen) {
                     // Existiert ein pers. Warenkorb?
                     // Wenn ja => frag Kunde ob er einen eventuell vorhandenen Warenkorb mergen möchte
                     if ($Einstellungen['kaufabwicklung']['warenkorb_warenkorb2pers_merge'] === 'Y') {

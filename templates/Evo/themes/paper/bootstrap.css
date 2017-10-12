@@ -9162,6 +9162,9 @@ ul.filter_state li a.active:before {
   [data-touchcapable="false"] .gallery .product-cell.hover-enabled .quickview.badge {
     display: none;
   }
+  [data-touchcapable="false"] .gallery .product-cell.hover-enabled form {
+    margin-bottom: 23px;
+  }
   [data-touchcapable="false"] .gallery .product-cell.hover-enabled:hover,
   [data-touchcapable="false"] .gallery .product-cell.hover-enabled.active {
     position: absolute;
@@ -9186,6 +9189,10 @@ ul.filter_state li a.active:before {
   [data-touchcapable="false"] .gallery .product-cell.hover-enabled.active .quickview.badge {
     display: inline-block;
     opacity: 0.8;
+  }
+  [data-touchcapable="false"] .gallery .product-cell.hover-enabled:hover form,
+  [data-touchcapable="false"] .gallery .product-cell.hover-enabled.active form {
+    margin-bottom: 0;
   }
 }
 @media (min-width: 992px) {

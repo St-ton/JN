@@ -37,10 +37,23 @@ class LinkHelper
      */
     public function __construct()
     {
-        $this->cacheID    = 'linkgroups' . Shop::Cache()->getBaseID(false, false, true, true, true, false);
         self::$_langID    = isset($_SESSION['kSprache']) ? (int)$_SESSION['kSprache'] : 0;
+        $this->generateCacheID();
         $this->linkGroups = $this->getLinkGroups();
         self::$_instance  = $this;
+    }
+
+    /**
+     * @return string
+     */
+    private function generateCacheID()
+    {
+        $this->cacheID    = 'lnkgrps' .
+            Shop::Cache()->getBaseID(false, false, true, true, true, false) .
+            (isset($_SESSION['Kunde']->kKunde) ? 'k' : '');
+
+        return $this->cacheID;
+
     }
 
     /**
@@ -50,7 +63,7 @@ class LinkHelper
      */
     public static function getInstance()
     {
-        return (self::$_instance === null) ? new self() : self::$_instance;
+        return self::$_instance === null ? new self() : self::$_instance;
     }
 
     /**
@@ -62,7 +75,7 @@ class LinkHelper
             // update last used lang id
             self::$_langID = (int)$_SESSION['kSprache'];
             // create new cache ID with new lang ID
-            $this->cacheID = 'linkgroups' . Shop::Cache()->getBaseID(false, false, true, true, true, false);
+            $this->generateCacheID();
         } elseif ($this->linkGroups !== null) {
             // if we got matching language IDs, try to use class property
             return $this->linkGroups;
@@ -296,6 +309,9 @@ class LinkHelper
      */
     public function buildLinkGroups($force = false)
     {
+        if ($force === true) {
+            $this->generateCacheID();
+        }
         $linkGroups = $this->linkGroups;
         if ($linkGroups === null || !is_object($linkGroups) || $force === true) {
             $session = [];

@@ -122,14 +122,22 @@ class FilterItemCategory extends FilterBaseCategory
                     ->setOn('tkategorie.kKategorie = tkategorieartikel.kKategorie')
                     ->setOrigin(__CLASS__);
             }
-            $state->joins[] = (new FilterJoin())
-                ->setComment('join5 from FilterItemCategory::getOptions()')
-                ->setType('LEFT JOIN')
-                ->setTable('tkategoriesichtbarkeit')
-                ->setOn('tkategoriesichtbarkeit.kKategorie = tkategorie.kKategorie')
-                ->setOrigin(__CLASS__);
+            if (!Shop::has('checkCategoryVisibility')) {
+                Shop::set(
+                    'checkCategoryVisibility',
+                    Shop::DB()->query('SELECT kKategorie FROM tkategoriesichtbarkeit', 3) > 0
+                );
+            }
+            if (Shop::get('checkCategoryVisibility')) {
+                $state->joins[] = (new FilterJoin())
+                    ->setComment('join5 from FilterItemCategory::getOptions()')
+                    ->setType('LEFT JOIN')
+                    ->setTable('tkategoriesichtbarkeit')
+                    ->setOn('tkategoriesichtbarkeit.kKategorie = tkategorie.kKategorie')
+                    ->setOrigin(__CLASS__);
 
-            $state->conditions[] = 'tkategoriesichtbarkeit.kKategorie IS NULL';
+                $state->conditions[] = 'tkategoriesichtbarkeit.kKategorie IS NULL';
+            }
             // nicht Standardsprache? Dann hole Namen nicht aus tkategorie sondern aus tkategoriesprache
             $cSQLKategorieSprache        = new stdClass();
             $cSQLKategorieSprache->cJOIN = '';

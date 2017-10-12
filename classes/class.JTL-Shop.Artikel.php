@@ -5693,24 +5693,29 @@ class Artikel
         $kKundengruppe = (int)$kKundengruppe;
         $Rabatt_arr    = [];
         $maxRabatt     = 0;
+        if (!Shop::has('checkCategoryDiscount')) {
+            Shop::set('checkCategoryDiscount', Shop::DB()->query('SELECT kArtikel FROM tartikelkategorierabatt', 3) > 0);
+        }
         // Existiert für diese Kundengruppe ein Kategorierabatt?
-        if ($this->kEigenschaftKombi > 0) {
-            $oArtikelKatRabatt = Shop::DB()->select(
-                'tartikelkategorierabatt',
-                'kArtikel', $this->kVaterArtikel,
-                'kKundengruppe', $kKundengruppe
-            );
-            if (isset($oArtikelKatRabatt->kArtikel) && $oArtikelKatRabatt->kArtikel > 0) {
-                $Rabatt_arr[] = $oArtikelKatRabatt->fRabatt;
-            }
-        } else {
-            $oArtikelKatRabatt = Shop::DB()->select(
-                'tartikelkategorierabatt',
-                'kArtikel', $kArtikel,
-                'kKundengruppe', $kKundengruppe
-            );
-            if (isset($oArtikelKatRabatt->kArtikel) && $oArtikelKatRabatt->kArtikel > 0) {
-                $Rabatt_arr[] = $oArtikelKatRabatt->fRabatt;
+        if (Shop::get('checkCategoryDiscount')) {
+            if ($this->kEigenschaftKombi > 0) {
+                $oArtikelKatRabatt = Shop::DB()->select(
+                    'tartikelkategorierabatt',
+                    'kArtikel', $this->kVaterArtikel,
+                    'kKundengruppe', $kKundengruppe
+                );
+                if (isset($oArtikelKatRabatt->kArtikel) && $oArtikelKatRabatt->kArtikel > 0) {
+                    $Rabatt_arr[] = $oArtikelKatRabatt->fRabatt;
+                }
+            } else {
+                $oArtikelKatRabatt = Shop::DB()->select(
+                    'tartikelkategorierabatt',
+                    'kArtikel', $kArtikel,
+                    'kKundengruppe', $kKundengruppe
+                );
+                if (isset($oArtikelKatRabatt->kArtikel) && $oArtikelKatRabatt->kArtikel > 0) {
+                    $Rabatt_arr[] = $oArtikelKatRabatt->fRabatt;
+                }
             }
         }
         // Existiert für diese Kundengruppe ein Rabatt?

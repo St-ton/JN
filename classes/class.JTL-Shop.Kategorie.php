@@ -504,6 +504,15 @@ class Kategorie
      */
     public static function isVisible($categoryId, $customerGroupId)
     {
+        if (!Shop::has('checkCategoryVisibility')) {
+            Shop::set(
+                'checkCategoryVisibility',
+                Shop::DB()->query('SELECT kKategorie FROM tkategoriesichtbarkeit', 3) > 0
+            );
+        }
+        if (!Shop::get('checkCategoryVisibility')) {
+            return true;
+        }
         $obj = Shop::DB()->select(
             'tkategoriesichtbarkeit',
             'kKategorie', (int)$categoryId,

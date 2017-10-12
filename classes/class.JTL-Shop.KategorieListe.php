@@ -299,7 +299,7 @@ class KategorieListe
                         ON tkategoriesprache.kKategorie = tkategorie.kKategorie
                         AND tkategoriesprache.kSprache = " . $kSprache . "
                     LEFT JOIN tkategoriesichtbarkeit 
-                        ON tkategorie.kKategorie=tkategoriesichtbarkeit.kKategorie
+                        ON tkategorie.kKategorie = tkategoriesichtbarkeit.kKategorie
                     AND tkategoriesichtbarkeit.kKundengruppe = " . $kKundengruppe . "
                     LEFT JOIN tseo 
                         ON tseo.cKey = 'kKategorie'

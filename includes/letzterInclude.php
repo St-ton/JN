@@ -65,7 +65,7 @@ if (is_object($oGlobaleMetaAngaben)) {
         $cMetaKeywords = $oGlobaleMetaAngaben->Meta_Keywords;
     }
 }
-//Kategorielisten aufbauen
+// Kategorielisten aufbauen
 if (isset($AktuelleKategorie)) {
     baueKategorieListenHTML($startKat, $AufgeklappteKategorien, $AktuelleKategorie);
     baueUnterkategorieListeHTML($AktuelleKategorie);
@@ -75,7 +75,7 @@ if (isset($AktuelleKategorie)) {
 if (!isset($NaviFilter)) {
     $smarty->assign('NaviFilter', Shop::run());
 }
-//Standardassigns
+// Standardassigns
 $smarty->assign('cPluginCss_arr', $cMinify_arr['plugin_css'])
        ->assign('bMobilMoeglich', $bMobile)
        ->assign('cPluginCssConditional_arr', $cMinify_arr['plugin_css_conditional'])
@@ -177,9 +177,7 @@ $linkGroups = $pagetType ? $linkHelper->activate($pagetType) : $smarty->getTempl
 if (!isset($cParameter_arr)) {
     $cParameter_arr = [];
 }
-$oExtension = new ExtensionPoint($pagetType, $cParameter_arr, Shop::getLanguage(), $kKundengruppe);
-$oExtension->load();
-
+$oExtension = (new ExtensionPoint($pagetType, $cParameter_arr, Shop::getLanguage(), $kKundengruppe))->load();
 executeHook(HOOK_LETZTERINCLUDE_INC);
 $boxes       = Boxen::getInstance();
 $boxesToShow = $boxes->build($pagetType, true)->render();
@@ -188,7 +186,7 @@ if (isset($AktuellerArtikel->kArtikel) && $AktuellerArtikel->kArtikel > 0) {
     // Letzten angesehenden Artikel hinzufügen
     $boxes->addRecentlyViewed($AktuellerArtikel->kArtikel);
 }
-$besucherzaehler = ($Einstellungen['global']['global_zaehler_anzeigen'] === 'Y')
+$besucherzaehler = $Einstellungen['global']['global_zaehler_anzeigen'] === 'Y'
     ? Shop::DB()->query("SELECT * FROM tbesucherzaehler", 1)
     : null;
 $smarty->assign('bCookieErlaubt', isset($_COOKIE['JTLSHOP']))

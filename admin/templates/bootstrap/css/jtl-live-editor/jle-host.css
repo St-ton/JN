@@ -1,0 +1,25 @@
+html, body, #sidebar-panel, #iframe-panel, iframe {
+	height: 100%;
+	overflow: hidden;
+}
+
+#sidebar-panel, #iframe-panel {
+	position: absolute;
+	top: 0;
+}
+
+#sidebar-panel {
+	left: 0;
+	width: 256px;
+	background: #ccc;
+}
+
+#iframe-panel {
+	left: 256px;
+	right: 0;
+}
+
+iframe {
+	border: 0;
+	width: 100%;
+}

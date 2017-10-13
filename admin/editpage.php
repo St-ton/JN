@@ -11,7 +11,9 @@
 
 require_once __DIR__ . '/includes/admininclude.php';
 
-$oAccount->permission('DASHBOARD_VIEW', true, true);
+$oAccount->permission('CONTENT_PAGE_VIEW', true, true);
+
+$shopUrl = Shop::getURL();
 
 $smarty
     ->display('editpage.tpl');

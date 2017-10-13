@@ -18,6 +18,10 @@
 	background-color: rgba(0, 0, 255, 0.5);
 }
 
+.jle-dragged {
+	opacity: 0.5;
+}
+
 .jle-target-label {
 	display: block;
 	position: absolute;

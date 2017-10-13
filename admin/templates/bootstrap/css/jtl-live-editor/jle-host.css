@@ -1,25 +1,23 @@
-html, body, #sidebar-panel, #iframe-panel, iframe {
+html, body, #sidebar-panel, #iframe-panel, #iframe-panel iframe {
 	height: 100%;
 	overflow: hidden;
 }
 
 #sidebar-panel, #iframe-panel {
-	position: absolute;
-	top: 0;
+	float: left;
 }
 
-#sidebar-panel {
-	left: 0;
-	width: 256px;
-	background: #ccc;
-}
-
-#iframe-panel {
-	left: 256px;
-	right: 0;
-}
-
-iframe {
+#iframe-panel iframe {
 	border: 0;
 	width: 100%;
+}
+
+.gutter {
+	height: 100%;
+	background-color: #369;
+	float: left;
+	cursor: ew-resize;
+}
+
+.portlet-button {
 }

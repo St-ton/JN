@@ -1,3 +1,4 @@
+
 function JtlLiveEditor(selector)
 {
 	this.selectedElm = null;
@@ -7,8 +8,6 @@ function JtlLiveEditor(selector)
 	this.placeholderElm = $("<div>", { "class": "jle-placeholder" });
 	this.selectedLabelElm = $("<div>", { "class": "jle-selected-label" });
 	this.targetLabelElm = $("<div>", { "class": "jle-target-label" });
-	
-	this.draggedNewElm = null;
 	
 	this.rootElm.on("mouseover", this.onMouseOver.bind(this));
 	this.rootElm.on("dragstart", this.onDragStart.bind(this));
@@ -26,6 +25,7 @@ JtlLiveEditor.prototype.cleanUpDrag = function()
 	$(".jle-drop-after").removeClass("jle-drop-after");
 	$(".jle-drop-left").removeClass("jle-drop-left");
 	$(".jle-drop-right").removeClass("jle-drop-right");
+    $(".jle-dragged").removeClass("jle-dragged");
 }
 
 JtlLiveEditor.prototype.onMouseOver = function(e)
@@ -44,7 +44,7 @@ JtlLiveEditor.prototype.onMouseOver = function(e)
 		}
 		
 		this.selectedElm = elm;
-		this.selectedElm.attr("contenteditable", "true");
+		//this.selectedElm.attr("contenteditable", "true");
 		this.selectedElm.attr("draggable", "true");
 		this.selectedElm.addClass("jle-selected");
 		this.selectedElm.append(this.selectedLabelElm);
@@ -53,22 +53,28 @@ JtlLiveEditor.prototype.onMouseOver = function(e)
 			this.selectedElm.attr("class").split(" ").join(".")
 		);
 	}
-}
+};
 
 JtlLiveEditor.prototype.onDragStart = function(e)
 {
-	var elm = $(e.target);
+	console.log("dragstart", e);
+	this.draggedElm = $(e.target);
+    this.draggedElm.addClass('jle-dragged');
 
-	this.draggedElm = elm;
-}
+	// firefox needs this
+    e.originalEvent.dataTransfer.effectAllowed = 'move';
+    e.originalEvent.dataTransfer.setData('text/html', this.draggedElm.innerHTML);
+};
 
 JtlLiveEditor.prototype.onDragEnd = function(e)
 {
+    console.log("dragend");
 	this.cleanUpDrag();
-}
+};
 
 JtlLiveEditor.prototype.onDragOver = function(e)
 {
+    console.log("dragover");
 	var elm = $(e.target);
 	
 	var horiRatio = (e.clientX - elm.offset().left) / elm.outerWidth();
@@ -117,20 +123,21 @@ JtlLiveEditor.prototype.onDragOver = function(e)
 	}
 	
 	e.preventDefault();
-}
+};
 
 JtlLiveEditor.prototype.onDrop = function(e)
 {
+    console.log("drop");
 	var elm = $(e.target);
 	
 	this.placeholderElm.replaceWith(this.draggedElm);
-}
+};
 
 JtlLiveEditor.prototype.isSelectable = function(elm)
 {
 	return !isInline(elm) && !elm.is(this.rootElm) && !elm.is(this.selectedLabelElm) &&
 		!elm.is(this.targetLabelElm);
-}
+};
 
 function isInline(elm)
 {

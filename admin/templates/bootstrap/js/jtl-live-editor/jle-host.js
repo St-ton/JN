@@ -1,62 +1,66 @@
 
-function JLEHost()
+function JLEHost(iframeSelector, templateUrl)
 {
+	this.templateUrl = templateUrl;
+    this.iframeCtx = null;
+    this.editor = null;
+    this.iframe = $(iframeSelector);
+    this.iframe.on("load", this.iframeLoaded.bind(this));
 }
 
-var iframeCtx = null;
-var iframeJq = null;
-var editor = null;
-
-$(main);
-
-function main()
+JLEHost.prototype.iframeLoaded = function()
 {
-	$("iframe").on("load", iframeLoaded);
-}
+    this.iframeCtx = this.iframe[0].contentWindow;
 
-function iframeLoaded()
+    JLEHost.loadStylesheet(
+    	this.iframeCtx, this.templateUrl + "css/jtl-live-editor/jtl-live-editor.css"
+	);
+
+    JLEHost.loadScript(
+    	this.iframeCtx, this.templateUrl + "js/jtl-live-editor/jtl-live-editor.js", this.liveEditorLoaded.bind(this)
+	);
+};
+
+JLEHost.prototype.liveEditorLoaded = function()
 {
-	iframeCtx = $("iframe")[0].contentWindow;
-	iframeJq = iframeCtx.$;
-	
-	loadStylesheet(iframeCtx, "admin/templates/bootstrap/css/jtl-live-editor/jtl-live-editor.css");
-	loadScript(iframeCtx, "admin/templates/bootstrap/js/jtl-live-editor/jtl-live-editor.js", liveEditorLoaded);
-}
+    this.editor = new this.iframeCtx.JtlLiveEditor("#content");
 
-function liveEditorLoaded()
+    $(".portlet-button")
+        .attr("draggable", "true")
+        .on("dragstart", this.onDragStart.bind(this))
+        .on("dragend", this.onDragEnd.bind(this));
+};
+
+JLEHost.prototype.onDragStart = function(e)
 {
-	editor = new iframeCtx.JtlLiveEditor("#content");
-	
-	$("#sidebar-panel button").on("dragstart", onDragStart);
-	$("#sidebar-panel button").on("dragend", onDragEnd);
-}
+    var elm = $(e.target);
 
-function onDragStart(e)
+    this.editor.draggedElm = $(elm.data("content"));
+
+    // firefox needs this
+    e.originalEvent.dataTransfer.effectAllowed = 'move';
+    e.originalEvent.dataTransfer.setData('text/html', this.editor.draggedElm.innerHTML);
+};
+
+JLEHost.prototype.onDragEnd = function(e)
 {
-	var elm = $(e.target);
-	
-	editor.draggedElm = $(elm.data("content"));
-}
+    this.editor.cleanUpDrag();
+};
 
-function onDragEnd(e)
-{
-	editor.cleanUpDrag();
-}
-
-function loadScript(ctx, url, callback)
+JLEHost.loadScript = function(ctx, url, callback)
 {
 	var script = ctx.document.createElement("script");
 	
 	script.src = url;
 	script.addEventListener("load", callback);
 	ctx.document.head.appendChild(script);
-}
+};
 
-function loadStylesheet(ctx, url)
+JLEHost.loadStylesheet = function(ctx, url)
 {
 	var link = ctx.document.createElement("link");
 	
 	link.rel = "stylesheet";
 	link.href = url;
 	ctx.document.head.appendChild(link);
-}
+};

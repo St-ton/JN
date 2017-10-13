@@ -16,6 +16,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
      */
     function starteAuswahlAssistent($cKey, $kKey, $kSprache, &$smarty, $Einstellungen)
     {
+        trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
         $kMerkmalWert           = null;
         $kAuswahlAssistentFrage = null;
         $nFrage                 = null;
@@ -124,6 +125,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
      */
     function baueFilterSelectionWizard($kKategorie, &$NaviFilter, &$FilterSQL, &$oSuchergebnisse, &$nArtikelProSeite, &$nLimitN)
     {
+        trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
         require_once PFAD_ROOT . PFAD_INCLUDES . 'filter_inc.php';
         if (isset($_SESSION['AuswahlAssistent']->oAuswahl_arr)) {
             foreach ($_SESSION['AuswahlAssistent']->oAuswahl_arr as $i => $oAuswahl) {
@@ -162,6 +164,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
      */
     function filterSelectionWizard($oMerkmalFilter_arr, &$bMerkmalFilterVorhanden)
     {
+        trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
         // Naechste Antwortmoeglichkeiten in Abhaengigkeit der vorher ausgewaehlten
         foreach ($oMerkmalFilter_arr as $MerkmalFilter) {
             $MerkmalFilter->kMerkmal = (int)$MerkmalFilter->kMerkmal;
@@ -216,6 +219,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
      */
     function processSelectionWizard($kMerkmalWert, $nFrage, $kKategorie, &$bFragenEnde, &$oSuchergebnisse, &$NaviFilter, &$bMerkmalFilterVorhanden)
     {
+        trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
         $kMerkmalWert = (int)$kMerkmalWert;
         $nFrage       = (int)$nFrage;
         if (isset($_SESSION['AuswahlAssistent']->oAuswahlAssistent->oAuswahlAssistentFrage_arr[$nFrage]->oMerkmal->oMerkmalWert_arr)) {
@@ -261,6 +265,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
      */
     function setSelectionWizardAnswer($kMerkmalWert, $kAuswahlAssistentFrage, $nFrage, $kKategorie)
     {
+        trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
         global $smarty;
 
         $bMerkmalFilterVorhanden = false;
@@ -290,6 +295,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
      */
     function resetSelectionWizard($nFrage, $kKategorie)
     {
+        trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
         global $smarty, $bMerkmalFilterVorhanden;
 
         $_SESSION['AuswahlAssistent']->nFrage            = $nFrage;
@@ -323,6 +329,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
      */
     function extractAAURL($aaParams)
     {
+        trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
         $cParams         = base64_decode($aaParams);
         $cParams_arr     = explode(';', $cParams);
         $cParamAssoc_arr = [];

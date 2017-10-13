@@ -84,7 +84,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
                     $this->$cMember = $oObj->$cMember;
                 }
 
-                $this->oRMAStatus = new RMAStatus($this->kRMAStatus, $kSprache);
+                $this->oRMAStatus = new RMAStatus($this->kRMAStatus);
 
                 if ($bCustomer) {
                     require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Kunde.php';

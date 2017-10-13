@@ -324,7 +324,7 @@ class AuswahlAssistentOrt
                     AND tauswahlassistentort.kKey = " . (int)$kKategorie, 1
         );
 
-        return (isset($oOrt->kAuswahlAssistentOrt) && $oOrt->kAuswahlAssistentOrt > 0);
+        return isset($oOrt->kAuswahlAssistentOrt) && $oOrt->kAuswahlAssistentOrt > 0;
     }
 
     /**
@@ -353,7 +353,7 @@ class AuswahlAssistentOrt
                     AND tauswahlassistentort.kKey = " . (int)$kLink, 1
         );
 
-        return (isset($oOrt->kAuswahlAssistentOrt) && $oOrt->kAuswahlAssistentOrt > 0);
+        return isset($oOrt->kAuswahlAssistentOrt) && $oOrt->kAuswahlAssistentOrt > 0;
     }
 
     /**
@@ -382,7 +382,7 @@ class AuswahlAssistentOrt
                     AND tauswahlassistentort.kKey = 1", 1
         );
 
-        return (isset($oOrt->kAuswahlAssistentOrt) && $oOrt->kAuswahlAssistentOrt > 0);
+        return isset($oOrt->kAuswahlAssistentOrt) && $oOrt->kAuswahlAssistentOrt > 0;
     }
 
     /**

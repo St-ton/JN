@@ -202,6 +202,7 @@ Bitte beachten Sie auch das aktualisierte Handbuch zum PayPal-Plugin: http://jtl
 * [SHOP-1629] - Tabelle in "Ihre Konfigration" überschreitet bei langen Wörter den Boxrand
 * [SHOP-1653] - Die News-Anzeige auf der Startseite arbeitet nicht sauber mit dem "jtl_backenduser_extension"-Plugin zusammen
 * [SHOP-1666] - Backend: Kupon-Tabelle zusammenfassen
+* [SHOP-1754] - große Kategoriebilder ragen über die Seite hinaus
 
 
 #### Story / Feature

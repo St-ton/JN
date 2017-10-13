@@ -4776,7 +4776,7 @@ class Artikel
      */
     public function setzeSprache($kSprache)
     {
-        $oSprache = gibStandardsprache();
+        $oSprache = gibStandardsprache(false);
         if ($this->kArtikel > 0 && $kSprache != $oSprache->kSprache) {
             //auf aktuelle Sprache setzen
             $objSprache = Shop::DB()->query(

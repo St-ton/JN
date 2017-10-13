@@ -3208,9 +3208,7 @@ class Artikel
         $kKundengruppe                   = (int)$kKundengruppe;
         $kSprache                        = (int)$kSprache;
         $this->oVariationDetailPreis_arr = [];
-        // Leider wird durch dieses IF auch nVariationsAufpreisVorhanden bei mehr als einer Variation verworfen
-        // und man kann keine Aufpreise in der Artikeluebersicht mehr erkennen. So koennen wir kein "ab" schreiben
-        // sondern nur "nur" bei der Preisangabe => Abmahnung. TODO: Loesung dafuer finden
+
         if ($this->nVariationOhneFreifeldAnzahl === 1) {
             $oVariationDetailPreis_arr = Shop::DB()->query(
                 "SELECT tartikel.kArtikel, teigenschaftkombiwert.kEigenschaft, teigenschaftkombiwert.kEigenschaftWert

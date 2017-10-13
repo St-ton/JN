@@ -9590,8 +9590,10 @@ table.matrix tbody > tr > td {
 #shop-nav .dropdown-menu {
   padding: 15px;
 }
-#shop-nav .cart-dropdown li.table-responsive {
+.cart-dropdown {
   max-height: 800px;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 /* Navbar text fix */
 .navbar-text {

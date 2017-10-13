@@ -39,9 +39,6 @@ if (!empty($_FILES['file_data'])) {
 
         return 1;
     }
-
-    require_once PFAD_ROOT . PFAD_PCLZIP . 'pclzip.lib.php';
-
     $response                 = new stdClass();
     $response->status         = 'OK';
     $response->error          = null;

@@ -51,7 +51,6 @@ require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Template.php';
 require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Sprache.php';
 require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Jtllog.php';
 require_once PFAD_ROOT . PFAD_DBES . 'xml_tools.php';
-require_once PFAD_ROOT . PFAD_PCLZIP . 'pclzip.lib.php';
 require_once PFAD_ROOT . PFAD_DBES . 'mappings.php';
 
 //datenbankverbindung aufbauen

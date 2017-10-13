@@ -266,8 +266,7 @@ class JTLSmarty extends SmartyBC
                 mkdir($_compileDir);
             }
             $templatePaths[$this->context] = PFAD_ROOT . PFAD_TEMPLATES . $cTemplate . '/';
-            $pluginTemplatePaths           = Plugin::getTemplatePaths();
-            foreach ($pluginTemplatePaths as $moduleId => $path) {
+            foreach (Plugin::getTemplatePaths() as $moduleId => $path) {
                 $templateKey                 = 'plugin_' . $moduleId;
                 $templatePaths[$templateKey] = $path;
             }
@@ -311,19 +310,17 @@ class JTLSmarty extends SmartyBC
                 $this->cache_lifetime = (isset($cacheOptions['expiration']) && ((int)$cacheOptions['expiration'] > 0))
                     ? $cacheOptions['expiration']
                     : 86400;
-                //assign variables moved from $_SESSION to cache to smarty
+                // assign variables moved from $_SESSION to cache to smarty
                 $linkHelper = LinkHelper::getInstance();
                 $linkGroups = $linkHelper->getLinkGroups();
                 if ($linkGroups === null) {
-                    //this can happen when there is a $_SESSION active and object cache is being flushed
-                    //since setzeLinks() is only executed in class.core.Session.php
+                    // this can happen when there is a $_SESSION active and object cache is being flushed
+                    // since setzeLinks() is only executed in class.core.Session.php
                     $linkGroups = setzeLinks();
                 }
                 require_once PFAD_ROOT . PFAD_CLASSES . 'class.helper.Hersteller.php';
-                $manufacturerHelper = HerstellerHelper::getInstance();
-                $manufacturers      = $manufacturerHelper->getManufacturers();
                 $this->assign('linkgroups', $linkGroups)
-                     ->assign('manufacturers', $manufacturers);
+                     ->assign('manufacturers', HerstellerHelper::getInstance()->getManufacturers());
                 $this->template_class = 'jtlTplClass';
             }
             if (!$isAdmin) {
@@ -353,15 +350,14 @@ class JTLSmarty extends SmartyBC
      */
     public function setCachingParams($config = null)
     {
-        //instantiate new cache - we use different options here
+        // instantiate new cache - we use different options here
         if ($config === null) {
             $config = Shop::getSettings([CONF_CACHING]);
         }
-        $compileCheck = !(isset($config['caching']['compile_check']) && $config['caching']['compile_check'] === 'N');
-        $this->setCaching(self::CACHING_OFF)
-             ->setCompileCheck($compileCheck);
 
-        return $this;
+        return $this->setCaching(self::CACHING_OFF)
+                    ->setCompileCheck(!(isset($config['caching']['compile_check'])
+                        && $config['caching']['compile_check'] === 'N'));
     }
 
     /**
@@ -371,7 +367,7 @@ class JTLSmarty extends SmartyBC
      */
     public static function getInstance($fast_init = false, $isAdmin = false)
     {
-        return (self::$_instance === null) ? new self($fast_init, $isAdmin) : self::$_instance;
+        return self::$_instance === null ? new self($fast_init, $isAdmin) : self::$_instance;
     }
 
     /**
@@ -385,30 +381,26 @@ class JTLSmarty extends SmartyBC
         $hookList = Plugin::getHookList();
         $isMobile = $this->template->isMobileTemplateActive();
         if ($isMobile ||
-            (isset($hookList[HOOK_SMARTY_OUTPUTFILTER]) &&
-                is_array($hookList[HOOK_SMARTY_OUTPUTFILTER]) &&
-                count($hookList[HOOK_SMARTY_OUTPUTFILTER]) > 0)
+            (isset($hookList[HOOK_SMARTY_OUTPUTFILTER])
+                && is_array($hookList[HOOK_SMARTY_OUTPUTFILTER])
+                && count($hookList[HOOK_SMARTY_OUTPUTFILTER]) > 0)
         ) {
             $this->unregisterFilter('output', [$this, '__outputFilter']);
-            $GLOBALS['doc'] = phpQuery::newDocumentHTML($tplOutput, JTL_CHARSET);
-            if ($isMobile) {
-                executeHook(HOOK_SMARTY_OUTPUTFILTER_MOBILE);
-            } else {
-                executeHook(HOOK_SMARTY_OUTPUTFILTER);
-            }
-            $tplOutput = $GLOBALS['doc']->htmlOuter();
-        }
-        if (isset($this->config['template']['general']['minify_html'])
-            && $this->config['template']['general']['minify_html'] === 'Y'
-        ) {
-            $minifyCSS = (isset($this->config['template']['general']['minify_html_css'])
-                && $this->config['template']['general']['minify_html_css'] === 'Y');
-            $minifyJS  = (isset($this->config['template']['general']['minify_html_js'])
-                && $this->config['template']['general']['minify_html_js'] === 'Y');
-            $tplOutput = $this->minify_html($tplOutput, $minifyCSS, $minifyJS);
+            $doc = phpQuery::newDocumentHTML($tplOutput, JTL_CHARSET);
+            executeHook($isMobile ? HOOK_SMARTY_OUTPUTFILTER_MOBILE : HOOK_SMARTY_OUTPUTFILTER);
+            $tplOutput = $doc->htmlOuter();
         }
 
-        return $tplOutput;
+        return isset($this->config['template']['general']['minify_html'])
+        && $this->config['template']['general']['minify_html'] === 'Y'
+            ? $this->minify_html(
+                $tplOutput,
+                isset($this->config['template']['general']['minify_html_css'])
+                && $this->config['template']['general']['minify_html_css'] === 'Y',
+                isset($this->config['template']['general']['minify_html_js'])
+                && $this->config['template']['general']['minify_html_js'] === 'Y'
+            )
+            : $tplOutput;
     }
 
     /**
@@ -464,9 +456,8 @@ class JTLSmarty extends SmartyBC
         if ($minifyJS === true) {
             $options['jsMinifier'] = ['JSMin', 'minify'];
         }
-        $minify = new Minify_HTML($html, $options);
         try {
-            $res = $minify->process();
+            $res = (new Minify_HTML($html, $options))->process();
         } catch (JSMin_UnterminatedStringException $e) {
             $res = $html;
         }
@@ -603,11 +594,11 @@ class JTLSmarty extends SmartyBC
      */
     public function getCustomFile($cFilename)
     {
-        if (self::$isChildTemplate === true ||
-            !isset($this->config['template']['general']['use_customtpl']) ||
-            $this->config['template']['general']['use_customtpl'] !== 'Y'
+        if (self::$isChildTemplate === true
+            || !isset($this->config['template']['general']['use_customtpl'])
+            || $this->config['template']['general']['use_customtpl'] !== 'Y'
         ) {
-            //disabled on child templates for now
+            // disabled on child templates for now
             return $cFilename;
         }
         $cFile       = basename($cFilename, '.tpl');
@@ -627,11 +618,10 @@ class JTLSmarty extends SmartyBC
      */
     public function getFallbackFile($cFilename)
     {
-        if (
-            !self::$isChildTemplate &&
-            TEMPLATE_COMPATIBILITY === true &&
-            isset(self::$_replacer[$cFilename]) &&
-            !file_exists($this->getTemplateDir($this->context) . $cFilename)
+        if (!self::$isChildTemplate
+            && TEMPLATE_COMPATIBILITY === true
+            && isset(self::$_replacer[$cFilename])
+            && !file_exists($this->getTemplateDir($this->context) . $cFilename)
         ) {
             $cFilename = self::$_replacer[$cFilename];
         }
@@ -653,12 +643,12 @@ class JTLSmarty extends SmartyBC
      */
     public function fetch($template = null, $cache_id = null, $compile_id = null, $parent = null)
     {
-        $_debug = (!empty($this->_debug->template_data))
+        $_debug = !empty($this->_debug->template_data)
             ? $this->_debug->template_data
             : null;
-        $res = parent::fetch($this->getResourceName($template), $cache_id, $compile_id, $parent);
+        $res    = parent::fetch($this->getResourceName($template), $cache_id, $compile_id, $parent);
         if ($_debug !== null) {
-            //fetch overwrites the old debug data so we have to merge it with our previously saved data
+            // fetch overwrites the old debug data so we have to merge it with our previously saved data
             $this->_debug->template_data = array_merge($_debug, $this->_debug->template_data);
         }
 
@@ -736,7 +726,7 @@ class JTLSmarty extends SmartyBC
                     $this->assign($templateVar, $oPlugin);
                 }
 
-                $file        = $this->_realpath($pluginTemplatePath . $resource_cfb_name, true);
+                $file = $this->_realpath($pluginTemplatePath . $resource_cfb_name, true);
                 if (file_exists($file)) {
                     $pluginTemplateExtends[] = sprintf('[%s]%s', $templateKey, $resource_cfb_name);
                 }

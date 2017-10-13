@@ -4561,16 +4561,21 @@ function setzeSpracheUndWaehrungLink()
                 }
             } elseif ($kLink > 0) {
                 $_SESSION['Waehrungen'][$i]->cURL = 'navi.php?s=' . $kLink .
-                    '&lang=' . $_SESSION['cISOSprache'] . '&amp;curr=' . $oWaehrung->cISO;
+                    '&lang=' . $_SESSION['cISOSprache'] . '&curr=' . $oWaehrung->cISO;
             } else {
                 $_SESSION['Waehrungen'][$i]->cURL = gibNaviURL(
                     $NaviFilter,
                     true,
                     $oZusatzFilter,
                     $_SESSION['kSprache']
-                ) . '?curr=' . $oWaehrung->cISO;
+                );
+                $_SESSION['Waehrungen'][$i]->cURL .= strpos($_SESSION['Waehrungen'][$i]->cURL, '?') === false
+                    ? ('?curr=' . $oWaehrung->cISO)
+                    : ('&curr=' . $oWaehrung->cISO);
             }
-            $_SESSION['Waehrungen'][$i]->cURLFull = $shopURL . $_SESSION['Waehrungen'][$i]->cURL;
+            $_SESSION['Waehrungen'][$i]->cURLFull = strpos($_SESSION['Waehrungen'][$i]->cURL, $shopURL) === false
+                ? ($shopURL . $_SESSION['Waehrungen'][$i]->cURL)
+                : $_SESSION['Waehrungen'][$i]->cURL;
         }
     }
     executeHook(HOOK_TOOLSGLOBAL_INC_SETZESPRACHEUNDWAEHRUNG_WAEHRUNG, [

@@ -162,7 +162,9 @@
                         {/if}
                     {/block}
                     </div>
-                    {if $hasOnlyListableVariations > 0 && !$Artikel->bHasKonfig}
+                    {assign var="readyForCart" value=($Artikel->inWarenkorbLegbar === 1 || ($Artikel->nErscheinendesProdukt === 1 && $Einstellungen.global.global_erscheinende_kaeuflich === 'Y')) &&
+                        (($Artikel->nIstVater === 0 && $Artikel->Variationen|@count === 0) || $hasOnlyListableVariations === 1) && !$Artikel->bHasKonfig}
+                    {if $readyForCart}
                         <div class="hidden-xs basket-variations">
                             {assign var="singleVariation" value=true}
                             {include file="productdetails/variation.tpl" simple=$Artikel->isSimpleVariation showMatrix=false smallView=true ohneFreifeld=($hasOnlyListableVariations == 2)}
@@ -170,9 +172,7 @@
                     {/if}
                     <div class="hidden-xs basket-details">
                         {block name="basket-details"}
-                            {if ($Artikel->inWarenkorbLegbar === 1 || ($Artikel->nErscheinendesProdukt === 1 && $Einstellungen.global.global_erscheinende_kaeuflich === 'Y')) &&
-                                (($Artikel->nIstVater === 0 && $Artikel->Variationen|@count === 0) || $hasOnlyListableVariations === 1) && !$Artikel->bHasKonfig
-                            }
+                            {if $readyForCart}
                                 <div class="quantity-wrapper form-group top7">
                                     {if $Artikel->cEinheit}
                                         <div class="input-group input-group-sm">

@@ -107,16 +107,16 @@ function gibBot()
     $bot   = '';
     $agent = strtolower($_SERVER['HTTP_USER_AGENT']);
     if (
-        strpos($agent, 'googlebot') !== false ||
-        strpos($agent, 'bingbot') !== false ||
-        strpos($agent, 'inktomi.com') !== false ||
-        strpos($agent, 'yahoo! slurp') !== false ||
-        strpos($agent, 'msnbot') !== false ||
-        strpos($agent, 'teoma') !== false ||
-        strpos($agent, 'crawler') !== false ||
-        strpos($agent, 'scooter') !== false ||
-        strpos($agent, 'ask jeeves') !== false ||
-        strpos($agent, 'fireball')
+        strpos($agent, 'googlebot') !== false
+        || strpos($agent, 'bingbot') !== false
+        || strpos($agent, 'inktomi.com') !== false
+        || strpos($agent, 'yahoo! slurp') !== false
+        || strpos($agent, 'msnbot') !== false
+        || strpos($agent, 'teoma') !== false
+        || strpos($agent, 'crawler') !== false
+        || strpos($agent, 'scooter') !== false
+        || strpos($agent, 'ask jeeves') !== false
+        || strpos($agent, 'fireball')
     ) {
         $bot = 'unbekannter Bot';
         if (strpos($agent, 'googlebot') !== false) {
@@ -157,15 +157,15 @@ function werteRefererAus($kBesucher, $referer)
     $ausdruck->kBesucher = $kBesucher;
     $ausdruck->cRohdaten = StringHandler::filterXSS($_SERVER['HTTP_REFERER']);
     $param               = '';
-    if (strpos($referer, '.google.') !== false ||
-        strpos($referer, 'suche.t-online.') !== false ||
-        strpos($referer, 'search.live.') !== false ||
-        strpos($referer, '.aol.') !== false ||
-        strpos($referer, '.aolsvc.') !== false ||
-        strpos($referer, '.ask.') !== false ||
-        strpos($referer, 'search.icq.') !== false ||
-        strpos($referer, 'search.msn.') !== false ||
-        strpos($referer, '.exalead.') !== false
+    if (strpos($referer, '.google.') !== false
+        || strpos($referer, 'suche.t-online.') !== false
+        || strpos($referer, 'search.live.') !== false
+        || strpos($referer, '.aol.') !== false
+        || strpos($referer, '.aolsvc.') !== false
+        || strpos($referer, '.ask.') !== false
+        || strpos($referer, 'search.icq.') !== false
+        || strpos($referer, 'search.msn.') !== false
+        || strpos($referer, '.exalead.') !== false
     ) {
         $param = 'q';
     } elseif (strpos($referer, 'suche.web') !== false) {
@@ -195,17 +195,17 @@ function istSuchmaschine($referer)
     if (!$referer) {
         return 0;
     }
-    if (strpos($referer, '.google.') !== false ||
-        strpos($referer, '.bing.') !== false ||
-        strpos($referer, 'suche.') !== false ||
-        strpos($referer, 'search.') !== false ||
-        strpos($referer, '.yahoo.') !== false ||
-        strpos($referer, '.fireball.') !== false ||
-        strpos($referer, '.seekport.') !== false ||
-        strpos($referer, '.keywordspy.') !== false ||
-        strpos($referer, '.hotfrog.') !== false ||
-        strpos($referer, '.altavista.') !== false ||
-        strpos($referer, '.ask.') !== false
+    if (strpos($referer, '.google.') !== false
+        || strpos($referer, '.bing.') !== false
+        || strpos($referer, 'suche.') !== false
+        || strpos($referer, 'search.') !== false
+        || strpos($referer, '.yahoo.') !== false
+        || strpos($referer, '.fireball.') !== false
+        || strpos($referer, '.seekport.') !== false
+        || strpos($referer, '.keywordspy.') !== false
+        || strpos($referer, '.hotfrog.') !== false
+        || strpos($referer, '.altavista.') !== false
+        || strpos($referer, '.ask.') !== false
     ) {
         return 1;
     }

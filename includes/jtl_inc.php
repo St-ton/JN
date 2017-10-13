@@ -236,16 +236,15 @@ function setzeWarenkorbPersInWarenkorb($kKunde)
                                 $_SESSION['Warenkorb']->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true), 1
                 );
                 if (isset($oArtikelGeschenk->kArtikel) && $oArtikelGeschenk->kArtikel > 0) {
-                    if ($oArtikelGeschenk->fLagerbestand <= 0 &&
-                        $oArtikelGeschenk->cLagerKleinerNull === 'N' &&
-                        $oArtikelGeschenk->cLagerBeachten === 'Y'
+                    if ($oArtikelGeschenk->fLagerbestand <= 0
+                        && $oArtikelGeschenk->cLagerKleinerNull === 'N'
+                        && $oArtikelGeschenk->cLagerBeachten === 'Y'
                     ) {
                         break;
-                    } else {
-                        executeHook(HOOK_WARENKORB_PAGE_GRATISGESCHENKEINFUEGEN);
-                        $_SESSION['Warenkorb']->loescheSpezialPos(C_WARENKORBPOS_TYP_GRATISGESCHENK)
-                                              ->fuegeEin($kArtikelGeschenk, 1, [], C_WARENKORBPOS_TYP_GRATISGESCHENK);
                     }
+                    executeHook(HOOK_WARENKORB_PAGE_GRATISGESCHENKEINFUEGEN);
+                    $_SESSION['Warenkorb']->loescheSpezialPos(C_WARENKORBPOS_TYP_GRATISGESCHENK)
+                                          ->fuegeEin($kArtikelGeschenk, 1, [], C_WARENKORBPOS_TYP_GRATISGESCHENK);
                 }
             } else {
                 fuegeEinInWarenkorb(
@@ -271,9 +270,9 @@ function setzeWarenkorbPersInWarenkorb($kKunde)
 function pruefeWarenkorbArtikelSichtbarkeit($kKundengruppe)
 {
     $kKundengruppe = (int)$kKundengruppe;
-    if ($kKundengruppe > 0 &&
-        isset($_SESSION['Warenkorb']->PositionenArr) &&
-        count($_SESSION['Warenkorb']->PositionenArr) > 0
+    if ($kKundengruppe > 0
+        && isset($_SESSION['Warenkorb']->PositionenArr)
+        && count($_SESSION['Warenkorb']->PositionenArr) > 0
     ) {
         foreach ($_SESSION['Warenkorb']->PositionenArr as $i => $oPosition) {
             // Wenn die Position ein Artikel ist
@@ -287,9 +286,9 @@ function pruefeWarenkorbArtikelSichtbarkeit($kKundengruppe)
                             AND kKundengruppe = " . $kKundengruppe, 1
                 );
 
-                if (isset($oArtikelSichtbarkeit->kArtikel) &&
-                    $oArtikelSichtbarkeit->kArtikel > 0 &&
-                    (int)$_SESSION['Warenkorb']->PositionenArr[$i]->kKonfigitem === 0
+                if (isset($oArtikelSichtbarkeit->kArtikel)
+                    && $oArtikelSichtbarkeit->kArtikel > 0
+                    && (int)$_SESSION['Warenkorb']->PositionenArr[$i]->kKonfigitem === 0
                 ) {
                     unset($_SESSION['Warenkorb']->PositionenArr[$i]);
                 }
@@ -505,22 +504,22 @@ function fuehreLoginAus($userLogin, $passLogin)
                     Shop::Lang()->setzeSprache($oISOSprache->cISO);
                 }
             } else {
-                $cHinweis .= Shop::Lang()->get('loginNotActivated', 'global');
+                $cHinweis .= Shop::Lang()->get('loginNotActivated');
             }
         } elseif ($nReturnValue === 2) { // Kunde ist gesperrt
-            $cHinweis .= Shop::Lang()->get('accountLocked', 'global');
+            $cHinweis .= Shop::Lang()->get('accountLocked');
         } elseif ($nReturnValue === 3) { // Kunde ist nicht aktiv
-            $cHinweis .= Shop::Lang()->get('accountInactive', 'global');
+            $cHinweis .= Shop::Lang()->get('accountInactive');
         } else {
-            if (isset($Einstellungen['kunden']['kundenlogin_max_loginversuche']) &&
-                $Einstellungen['kunden']['kundenlogin_max_loginversuche'] !== ''
+            if (isset($Einstellungen['kunden']['kundenlogin_max_loginversuche'])
+                && $Einstellungen['kunden']['kundenlogin_max_loginversuche'] !== ''
             ) {
                 $maxAttempts = (int)$Einstellungen['kunden']['kundenlogin_max_loginversuche'];
                 if ($maxAttempts > 1 && $nLoginversuche >= $maxAttempts) {
                     $_SESSION['showLoginCaptcha'] = true;
                 }
             }
-            $cHinweis .= Shop::Lang()->get('incorrectLogin', 'global');
+            $cHinweis .= Shop::Lang()->get('incorrectLogin');
         }
     }
 }

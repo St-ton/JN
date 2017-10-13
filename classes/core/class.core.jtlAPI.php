@@ -72,10 +72,7 @@ final class jtlAPI
 }
 
 /**
- * CommunicationAPI Class
- *
- * @access public
- * @author Daniel Boehmer
+ * Class CommunicationAPI
  */
 final class CommunicationAPI
 {
@@ -131,11 +128,9 @@ final class CommunicationAPI
      */
     public static function postData($xData_arr = [], $bPost = true, $bForceUrl = null)
     {
-        if (is_array($xData_arr)) {
-            return self::doCall($xData_arr, $bPost, $bForceUrl);
-        }
-
-        return '';
+        return is_array($xData_arr)
+            ? self::doCall($xData_arr, $bPost, $bForceUrl)
+            : '';
     }
 
     /**
@@ -162,10 +157,7 @@ final class CommunicationAPI
 }
 
 /**
- * SecurityAPI Class
- *
- * @access public
- * @author Daniel Boehmer
+ * Class SecurityAPI
  */
 final class SecurityAPI
 {
@@ -208,11 +200,9 @@ final class SecurityAPI
             }
             $this->cSHA1Key = sha1($this->cSHA1Key);
 
-            if ($bReturnKey) {
-                return $this->cSHA1Key;
-            }
-
-            return true;
+            return $bReturnKey
+                ? $this->cSHA1Key
+                : true;
         }
 
         return false;

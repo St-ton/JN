@@ -79,10 +79,8 @@ final class EventDispatcher
             if (isset($this->wildcards[$eventName])) {
                 unset($this->wildcards[$eventName]);
             }
-        } else {
-            if (isset($this->listeners[$eventName])) {
-                unset($this->listeners[$eventName]);
-            }
+        } elseif (isset($this->listeners[$eventName])) {
+            unset($this->listeners[$eventName]);
         }
     }
 

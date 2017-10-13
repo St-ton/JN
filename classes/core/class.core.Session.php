@@ -43,14 +43,11 @@ class Session
      */
     public static function getInstance($start = true, $force = false, $sessionName = self::DefaultSession)
     {
-        if (self::$_sessionName !== $sessionName) {
+        if ($force === false && self::$_sessionName !== $sessionName) {
             $force = true;
         }
-        if ($force === true) {
-            return new self($start, $sessionName);
-        }
 
-        return self::$_instance === null
+        return ($force === true || self::$_instance === null)
             ? new self($start, $sessionName)
             : self::$_instance;
     }
@@ -152,8 +149,8 @@ class Session
         }
         if (isset($_SESSION['Globals_TS'])) {
             $globalsAktualisieren = false;
-            $ts                   = Shop::DB()->executeQueryPrepared("
-                  SELECT dLetzteAenderung 
+            $ts                   = Shop::DB()->executeQueryPrepared(
+                  "SELECT dLetzteAenderung 
                       FROM tglobals 
                       WHERE dLetzteAenderung > :ts",
                 ['ts' => $_SESSION['Globals_TS']],
@@ -184,8 +181,8 @@ class Session
             checkeSpracheWaehrung($lang);
             $checked = true;
         }
-        if ($globalsAktualisieren ||
-            !isset($_SESSION['cISOSprache'], $_SESSION['kSprache'], $_SESSION['Kundengruppe'])
+        if ($globalsAktualisieren
+            || !isset($_SESSION['cISOSprache'], $_SESSION['kSprache'], $_SESSION['Kundengruppe'])
         ) {
             //Kategorie
             unset($_SESSION['cTemplate'], $_SESSION['template'], $_SESSION['oKategorie_arr_new']);
@@ -367,9 +364,9 @@ class Session
     {
         $kVergleichlistePos = verifyGPCDataInteger('vlplo');
         if ($kVergleichlistePos !== 0) {
-            if (isset($_SESSION['Vergleichsliste']->oArtikel_arr) &&
-                is_array($_SESSION['Vergleichsliste']->oArtikel_arr) &&
-                count($_SESSION['Vergleichsliste']->oArtikel_arr) > 0
+            if (isset($_SESSION['Vergleichsliste']->oArtikel_arr)
+                && is_array($_SESSION['Vergleichsliste']->oArtikel_arr)
+                && count($_SESSION['Vergleichsliste']->oArtikel_arr) > 0
             ) {
                 // Wunschliste Position aus der Session löschen
                 foreach ($_SESSION['Vergleichsliste']->oArtikel_arr as $i => $oArtikel) {

@@ -16,29 +16,28 @@ function lang_warenkorb_warenkorbEnthaeltXArtikel($warenkorb)
     if ($warenkorb->hatTeilbareArtikel()) {
         $nPositionen = $warenkorb->gibAnzahlPositionenExt([C_WARENKORBPOS_TYP_ARTIKEL]);
         $ret         = Shop::Lang()->get('yourbasketcontains', 'checkout') . ' ' . $nPositionen . ' ';
-        if ($nPositionen == 1) {
-            $ret .= Shop::Lang()->get('position', 'global');
+        if ($nPositionen === 1) {
+            $ret .= Shop::Lang()->get('position');
         } else {
-            $ret .= Shop::Lang()->get('positions', 'global');
+            $ret .= Shop::Lang()->get('positions');
         }
 
         return $ret;
-    } else {
-        $nArtikel = (get_class($warenkorb) === 'Warenkorb')
-            ? $warenkorb->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL])
-            : 0;
-        $nArtikel = str_replace('.', ',', $nArtikel);
-        if ($nArtikel == 1) {
-            return Shop::Lang()->get('yourbasketcontains', 'checkout') . ' ' .
-                $nArtikel . ' ' . Shop::Lang()->get('product', 'global');
-        }
-        if ($nArtikel > 1) {
-            return Shop::Lang()->get('yourbasketcontains', 'checkout') . ' ' .
-                $nArtikel . ' ' . Shop::Lang()->get('products', 'global');
-        }
-        if ($nArtikel == 0) {
-            return Shop::Lang()->get('emptybasket', 'checkout');
-        }
+    }
+    $nArtikel = get_class($warenkorb) === 'Warenkorb'
+        ? $warenkorb->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL])
+        : 0;
+    $nArtikel = str_replace('.', ',', $nArtikel);
+    if ($nArtikel == 1) {
+        return Shop::Lang()->get('yourbasketcontains', 'checkout') . ' ' .
+            $nArtikel . ' ' . Shop::Lang()->get('product');
+    }
+    if ($nArtikel > 1) {
+        return Shop::Lang()->get('yourbasketcontains', 'checkout') . ' ' .
+            $nArtikel . ' ' . Shop::Lang()->get('products');
+    }
+    if ($nArtikel == 0) {
+        return Shop::Lang()->get('emptybasket', 'checkout');
     }
 
     return '';
@@ -70,22 +69,15 @@ function lang_warenkorb_bestellungEnthaeltXArtikel($warenkorb)
 {
     $ret = Shop::Lang()->get('yourordercontains', 'checkout') . ' ' . count($warenkorb->PositionenArr) . ' ';
     if (count($warenkorb->PositionenArr) === 1) {
-        $ret .= Shop::Lang()->get('position', 'global');
+        $ret .= Shop::Lang()->get('position');
     } else {
-        $ret .= Shop::Lang()->get('positions', 'global');
+        $ret .= Shop::Lang()->get('positions');
     }
-    $ret .= ' ' . Shop::Lang()->get('with', 'global') . ' ' .
-        (isset($_SESSION['Warenkorb']->kWarenkorb)
-            ? $warenkorb->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL])
-            : 0
-        ) . ' ';
-    if (isset($anzahlArtikel) && $anzahlArtikel == 1) {
-        $ret .= Shop::Lang()->get('product', 'global');
-    } else {
-        $ret .= Shop::Lang()->get('products', 'global');
-    }
+    $positionCount = isset($_SESSION['Warenkorb']->kWarenkorb)
+        ? $warenkorb->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL])
+        : 0;
 
-    return $ret;
+    return $ret . ' ' . Shop::Lang()->get('with') . ' ' . lang_warenkorb_Artikelanzahl($positionCount);
 }
 
 /**
@@ -94,11 +86,9 @@ function lang_warenkorb_bestellungEnthaeltXArtikel($warenkorb)
  */
 function lang_warenkorb_Artikelanzahl($anzahlArtikel)
 {
-    if ($anzahlArtikel == 1) {
-        return $anzahlArtikel . ' ' . Shop::Lang()->get('product', 'global');
-    }
-
-    return $anzahlArtikel . ' ' . Shop::Lang()->get('products', 'global');
+    return $anzahlArtikel == 1
+        ? ($anzahlArtikel . ' ' . Shop::Lang()->get('product'))
+        : ($anzahlArtikel . ' ' . Shop::Lang()->get('products'));
 }
 
 /**
@@ -132,10 +122,10 @@ function lang_steuerposition($ust, $netto)
  */
 function lang_suche_mindestanzahl($suchausdruck, $anzahl)
 {
-    return Shop::Lang()->get('expressionHasTo', 'global') . ' ' .
+    return Shop::Lang()->get('expressionHasTo') . ' ' .
         $anzahl . ' ' .
-        Shop::Lang()->get('characters', 'global') . '<br />' .
-        Shop::Lang()->get('yourSearch', 'global') . ': ' . $suchausdruck;
+        Shop::Lang()->get('characters') . '<br />' .
+        Shop::Lang()->get('yourSearch') . ': ' . $suchausdruck;
 }
 
 /**
@@ -147,22 +137,16 @@ function lang_bestellstatus($status)
     switch ($status) {
         case BESTELLUNG_STATUS_OFFEN:
             return Shop::Lang()->get('statusPending', 'order');
-            break;
         case BESTELLUNG_STATUS_IN_BEARBEITUNG:
             return Shop::Lang()->get('statusProcessing', 'order');
-            break;
         case BESTELLUNG_STATUS_BEZAHLT:
             return Shop::Lang()->get('statusPaid', 'order');
-            break;
         case BESTELLUNG_STATUS_VERSANDT:
             return Shop::Lang()->get('statusShipped', 'order');
-            break;
         case BESTELLUNG_STATUS_STORNO:
             return Shop::Lang()->get('statusCancelled', 'order');
-            break;
         case BESTELLUNG_STATUS_TEILVERSANDT:
             return Shop::Lang()->get('statusPartialShipped', 'order');
-            break;
         default:
             return '';
     }
@@ -180,12 +164,11 @@ function lang_mindestbestellmenge($Artikel, $beabsichtigteKaufmenge, $kKonfigite
         $Artikel->cEinheit = ' ' . $Artikel->cEinheit;
     }
     $cName = $Artikel->cName;
-    if (class_exists('Konfigitem') && (int)$kKonfigitem > 0) {
-        $oKonfigitem = new Konfigitem($kKonfigitem);
-        $cName       = $oKonfigitem->getName();
+    if ((int)$kKonfigitem > 0 && class_exists('Konfigitem')) {
+        $cName = (new Konfigitem($kKonfigitem))->getName();
     }
 
-    return Shop::Lang()->get('product', 'global') . ' &quot;' . $cName . '&quot; ' .
+    return Shop::Lang()->get('product') . ' &quot;' . $cName . '&quot; ' .
         Shop::Lang()->get('hasMbm', 'messages') . ' (' .
         $Artikel->fMindestbestellmenge . $Artikel->cEinheit . '). ' .
         Shop::Lang()->get('yourQuantity', 'messages') . ' ' .

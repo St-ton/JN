@@ -38,7 +38,6 @@ if (verifyGPCDataInteger('kK') > 0 && verifyGPCDataInteger('kN') > 0 && verifyGP
         if ($kNewsletterTrack > 0) {
             $oKampagne = new Kampagne($kKampagne);
             // Kampagnenbesucher in die Session
-            $_SESSION['Kampagnenbesucher'] = new stdClass();
             $_SESSION['Kampagnenbesucher'] = $oKampagne;
 
             setzeKampagnenVorgang(KAMPAGNE_DEF_NEWSLETTER, $kNewsletterTrack, 1);

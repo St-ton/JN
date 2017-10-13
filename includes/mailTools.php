@@ -28,8 +28,8 @@ function includeMailTemplate($params, &$smarty)
             $res = Shop::DB()->query(
                 "SELECT " . $row . " AS content
                     FROM temailvorlagesprache
-                    WHERE kSprache = " . (int)$currenLanguage->kSprache . "
-                    AND kEmailvorlage = " . (int)$vorlage->kEmailvorlage, 1
+                    WHERE kSprache = " . (int)$currenLanguage->kSprache .
+                    " AND kEmailvorlage = " . (int)$vorlage->kEmailvorlage, 1
             );
         }
         if (isset($res->content)) {
@@ -82,7 +82,6 @@ function sendeMail($ModulId, $Object, $mail = null)
         $Object->tkunde = new stdClass();
     }
     if (!isset($Object->tkunde->kKundengruppe) || !$Object->tkunde->kKundengruppe) {
-        require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Kundengruppe.php';
         $Object->tkunde->kKundengruppe = Kundengruppe::getDefaultGroupID();
     }
     $Object->tfirma        = Shop::DB()->query("SELECT * FROM tfirma", 1);

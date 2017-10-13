@@ -650,8 +650,9 @@ class Warenkorb
         }
         $anz = 0;
         foreach ($this->PositionenArr as $i => $Position) {
-            if (in_array($Position->nPosTyp, $postyp_arr) && (($Position->cUnique == false) ||
-                    (strlen($Position->cUnique) > 0 && $Position->kKonfigitem == 0))) {
+            if (in_array($Position->nPosTyp, $postyp_arr) &&
+                (($Position->cUnique == false) || (strlen($Position->cUnique) > 0 && $Position->kKonfigitem == 0))
+            ) {
                 $anz += ($Position->Artikel->cTeilbar === 'Y') ? 1 : $Position->nAnzahl;
             }
         }
@@ -672,9 +673,10 @@ class Warenkorb
         }
         $anz = 0;
         foreach ($this->PositionenArr as $i => $Position) {
-            if (in_array($Position->nPosTyp, $postyp_arr) && (($Position->cUnique == false) ||
-                    (strlen($Position->cUnique) > 0 && $Position->kKonfigitem == 0))) {
-                $anz++;
+            if (in_array($Position->nPosTyp, $postyp_arr)
+                && ($Position->cUnique == false || (strlen($Position->cUnique) > 0 && $Position->kKonfigitem == 0))
+            ) {
+                ++$anz;
             }
         }
 

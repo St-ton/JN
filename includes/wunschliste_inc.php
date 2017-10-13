@@ -66,10 +66,10 @@ function wunschlisteLoeschen($kWunschliste)
                 // Neue Wunschliste holen (falls vorhanden) und nStandard=1 neu setzen
                 $oWunschliste = Shop::DB()->select('twunschliste', 'kKunde', (int)$_SESSION['Kunde']->kKunde);
                 if (isset($oWunschliste->kWunschliste)) {
-                    Shop::DB()->query("
-                        UPDATE twunschliste 
+                    Shop::DB()->query(
+                        'UPDATE twunschliste 
                             SET nStandard = 1 
-                            WHERE kWunschliste = " . (int)$oWunschliste->kWunschliste, 3
+                            WHERE kWunschliste = ' . (int)$oWunschliste->kWunschliste, 3
                     );
                     // Neue Standard Wunschliste in die Session laden
                     $_SESSION['Wunschliste'] = new Wunschliste($oWunschliste->kWunschliste);

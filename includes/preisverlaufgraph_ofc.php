@@ -25,7 +25,7 @@ if (!isset($_GET['kSteuerklasse'])) {
 function expandPriceArray($data, $max)
 {
     for ($i = 1; $i <= $max; $i++) {
-        if (!isset($data[$i]) && $i > 1) {
+        if ($i > 1 && !isset($data[$i])) {
             $data[$i] = $data[$i - 1];
         }
     }
@@ -47,8 +47,7 @@ if (isset($_GET['kArtikel'])) {
         $oPreisConfig->Netto    = Session::CustomerGroup()->isMerchant()
             ? 0
             : $_GET['fMwSt'];
-        $oVerlauf     = new Preisverlauf();
-        $oVerlauf_arr = $oVerlauf->gibPreisverlauf($kArtikel, $kKundengruppe, $nMonat);
+        $oVerlauf_arr = (new Preisverlauf())->gibPreisverlauf($kArtikel, $kKundengruppe, $nMonat);
         // Array drehen :D
         $oVerlauf_arr = array_reverse($oVerlauf_arr);
         $data         = [];

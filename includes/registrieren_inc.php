@@ -159,8 +159,8 @@ function kundeSpeichern($cPost_arr)
             }
             // Guthaben des Neukunden aufstocken insofern er geworben wurde
             if (isset($oNeukunde->kKundenWerbenKunden) && $oNeukunde->kKundenWerbenKunden > 0) {
-                Shop::DB()->query("
-                    UPDATE tkunde
+                Shop::DB()->query(
+                    "UPDATE tkunde
                         SET fGuthaben = fGuthaben + " . (float)$Einstellungen['kundenwerbenkunden']['kwk_neukundenguthaben'] . "
                         WHERE kKunde = " . (int)$knd->kKunde, 3
                 );
@@ -269,7 +269,7 @@ function gibKundeFromVCard($vCardFile)
             $Kunde = $vCard->selectVCard(0)->asKunde();
             $smarty->assign('Kunde', $Kunde);
         } catch (Exception $e) {
-            $hinweis = Shop::Lang()->get('uploadError', 'global');
+            $hinweis = Shop::Lang()->get('uploadError');
         }
     }
 }

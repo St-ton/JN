@@ -135,9 +135,9 @@ function gibMaxPrioSpalteV($cExclude, $config)
  */
 function setzeVergleich($oVergleichsliste)
 {
-    if (isset($oVergleichsliste->oArtikel_arr) &&
-        is_array($oVergleichsliste->oArtikel_arr) &&
-        count($oVergleichsliste->oArtikel_arr) > 0
+    if (isset($oVergleichsliste->oArtikel_arr)
+        && is_array($oVergleichsliste->oArtikel_arr)
+        && count($oVergleichsliste->oArtikel_arr) > 0
     ) {
         $nVergleiche = Shop::DB()->query(
             "SELECT count(kVergleichsliste) AS nVergleiche

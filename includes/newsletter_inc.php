@@ -49,7 +49,7 @@ function fuegeNewsletterEmpfaengerEin($oKunde, $bPruefeDaten = false)
     $oPlausi->nPlausi_arr       = [];
     $oNewsletterEmpfaengerKunde = null;
 
-    if (valid_email($oKunde->cEmail) || !$bPruefeDaten) {
+    if (!$bPruefeDaten || valid_email($oKunde->cEmail)) {
         $oPlausi->nPlausi_arr = newsletterAnmeldungPlausi($oKunde);
         $kKundengruppe        = Session::CustomerGroup()->getID();
         // CheckBox Plausi
@@ -66,7 +66,7 @@ function fuegeNewsletterEmpfaengerEin($oKunde, $bPruefeDaten = false)
         $oPlausi->cPost_arr['captcha']   = isset($_POST['captcha'])
             ? StringHandler::htmlentities(StringHandler::filterXSS($_POST['captcha']))
             : null;
-        if (count($oPlausi->nPlausi_arr) === 0 || !$bPruefeDaten) {
+        if (!$bPruefeDaten || count($oPlausi->nPlausi_arr) === 0) {
             // Pruefen ob Email bereits vorhanden
             $oNewsletterEmpfaenger = Shop::DB()->select('tnewsletterempfaenger', 'cEmail', $oKunde->cEmail);
             if (!empty($oNewsletterEmpfaenger->dEingetragen)) {
@@ -81,8 +81,8 @@ function fuegeNewsletterEmpfaengerEin($oKunde, $bPruefeDaten = false)
                     (int)$_SESSION['Kunde']->kKunde
                 );
             }
-            if ((isset($oNewsletterEmpfaenger->cEmail) && strlen($oNewsletterEmpfaenger->cEmail) > 0) ||
-                (isset($oNewsletterEmpfaengerKunde->kKunde) && $oNewsletterEmpfaengerKunde->kKunde > 0)
+            if ((isset($oNewsletterEmpfaenger->cEmail) && strlen($oNewsletterEmpfaenger->cEmail) > 0)
+                || (isset($oNewsletterEmpfaengerKunde->kKunde) && $oNewsletterEmpfaengerKunde->kKunde > 0)
             ) {
                 $cFehler = Shop::Lang()->get('newsletterExists', 'errorMessages');
             } else {
@@ -156,9 +156,9 @@ function fuegeNewsletterEmpfaengerEin($oKunde, $bPruefeDaten = false)
                     'oNewsletterEmpfaengerHistory' => $oNewsletterEmpfaengerHistory
                 ]);
 
-                if (($Einstellungen['newsletter']['newsletter_doubleopt'] === 'U' &&
-                        !$_SESSION['Kunde']->kKunde) ||
-                    $Einstellungen['newsletter']['newsletter_doubleopt'] === 'A'
+                if (($Einstellungen['newsletter']['newsletter_doubleopt'] === 'U'
+                        && !$_SESSION['Kunde']->kKunde)
+                    || $Einstellungen['newsletter']['newsletter_doubleopt'] === 'A'
                 ) {
                     $oNewsletterEmpfaenger->cLoeschURL     = Shop::getURL() .
                         '/newsletter.php?lang=' . $_SESSION['cISOSprache'] . '&lc=' .
@@ -166,9 +166,7 @@ function fuegeNewsletterEmpfaengerEin($oKunde, $bPruefeDaten = false)
                     $oNewsletterEmpfaenger->cFreischaltURL = Shop::getURL() .
                         '/newsletter.php?lang=' . $_SESSION['cISOSprache'] . '&fc=' .
                         $oNewsletterEmpfaenger->cOptCode;
-                    if (!isset($oObjekt)) {
-                        $oObjekt = new stdClass();
-                    }
+                    $oObjekt = new stdClass();
                     $oObjekt->tkunde               = isset($_SESSION['Kunde'])
                         ? $_SESSION['Kunde']
                         : null;

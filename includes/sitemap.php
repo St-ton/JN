@@ -78,11 +78,9 @@ function getRequestFile($cDatei)
 
     $cDatei = $cDateiInfo_arr['basename'];
 
-    if (!file_exists(PFAD_ROOT . PFAD_EXPORT . $cDatei)) {
-        return null;
-    }
-
-    return $cDatei;
+    return file_exists(PFAD_ROOT . PFAD_EXPORT . $cDatei)
+        ? $cDatei
+        : null;
 }
 
 /**

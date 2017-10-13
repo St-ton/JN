@@ -17,8 +17,8 @@ function loescheWarenkorbPositionen($nPos_arr)
         if (!isset($_SESSION['Warenkorb']->PositionenArr[$nPos])) {
             return;
         }
-        if ($_SESSION['Warenkorb']->PositionenArr[$nPos]->nPosTyp != C_WARENKORBPOS_TYP_ARTIKEL &&
-            $_SESSION['Warenkorb']->PositionenArr[$nPos]->nPosTyp != C_WARENKORBPOS_TYP_GRATISGESCHENK
+        if ($_SESSION['Warenkorb']->PositionenArr[$nPos]->nPosTyp != C_WARENKORBPOS_TYP_ARTIKEL
+            && $_SESSION['Warenkorb']->PositionenArr[$nPos]->nPosTyp != C_WARENKORBPOS_TYP_GRATISGESCHENK
         ) {
             return;
         }
@@ -46,8 +46,8 @@ function loescheWarenkorbPositionen($nPos_arr)
         if (strlen($cUnique) > 0) {
             $positionCount = count($_SESSION['Warenkorb']->PositionenArr);
             for ($i = 0; $i < $positionCount; $i++) {
-                if (isset($_SESSION['Warenkorb']->PositionenArr[$i]->cUnique) &&
-                    $_SESSION['Warenkorb']->PositionenArr[$i]->cUnique == $cUnique
+                if (isset($_SESSION['Warenkorb']->PositionenArr[$i]->cUnique)
+                    && $_SESSION['Warenkorb']->PositionenArr[$i]->cUnique == $cUnique
                 ) {
                     unset($_SESSION['Warenkorb']->PositionenArr[$i]);
                     $_SESSION['Warenkorb']->PositionenArr = array_merge($_SESSION['Warenkorb']->PositionenArr);
@@ -66,15 +66,13 @@ function loescheWarenkorbPositionen($nPos_arr)
     freeGiftStillValid();
     // Lösche Position aus dem WarenkorbPersPos
     if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']->kKunde > 0) {
-        $oWarenkorbPers = new WarenkorbPers($_SESSION['Kunde']->kKunde);
-        $oWarenkorbPers->entferneAlles()
-            ->bauePersVonSession();
+        (new WarenkorbPers($_SESSION['Kunde']->kKunde))->entferneAlles()->bauePersVonSession();
     }
 }
 
 /**
  * @param int $nPos
- * @return null|void
+ * @return void
  */
 function loescheWarenkorbPosition($nPos)
 {

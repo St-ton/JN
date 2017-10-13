@@ -24,9 +24,9 @@ if (isset($_SESSION['bWarenkorbHinzugefuegt'], $_SESSION['bWarenkorbAnzahl'], $_
 }
 // wurde ein artikel in den Warenkorb gelegt?
 WarenkorbHelper::checkAdditions();
-if (!$cParameter_arr['kWunschliste'] &&
-    verifyGPDataString('error') === '' &&
-    strlen(verifyGPDataString('wlid')) > 0
+if (!$cParameter_arr['kWunschliste']
+    && verifyGPDataString('error') === ''
+    && strlen(verifyGPDataString('wlid')) > 0
 ) {
     header(
         'Location: ' . $linkHelper->getStaticRoute('wunschliste.php') .

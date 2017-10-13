@@ -260,7 +260,6 @@ $smarty->assign('SEARCHSPECIALS_TOPREVIEWS', SEARCHSPECIALS_TOPREVIEWS)
            true,
            $oSuchergebnisse->Seitenzahlen,
            $Einstellungen['artikeluebersicht']['artikeluebersicht_max_seitenzahl']))
-       ->assign('PFAD_ART_ABNAHMEINTERVALL', PFAD_ART_ABNAHMEINTERVALL)
        ->assign('ArtikelProSeite', $nArtikelProSeite_arr)
        ->assign('Navigation', $cBrotNavi)
        ->assign('Sortierliste', $NaviFilter->getMetaData()->getSortingOptions())

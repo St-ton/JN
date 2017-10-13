@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Event handling class.
  *
@@ -20,7 +21,7 @@ abstract class phpQueryEvents
      * @TODO global events (test)
      * @TODO support more than event in $type (space-separated)
      */
-    public static function trigger($document, $type, $data = array(), $node = null)
+    public static function trigger($document, $type, $data = [], $node = null)
     {
         // trigger: function(type, data, elem, donative, extra) {
         $documentID = phpQuery::getDocumentID($document);
@@ -44,15 +45,12 @@ abstract class phpQueryEvents
                 $event->target        = $node;
                 $data                 = array_slice($data, 1);
             } else {
-                $event = new DOMEvent(
-                    array(
-                        'type'      => $type,
-                        'target'    => $node,
-                        'timeStamp' => time(),
-                    )
-                );
+                $event = new DOMEvent([
+                    'type'      => $type,
+                    'target'    => $node,
+                    'timeStamp' => time(),
+                ]);
             }
-            $i = 0;
             while ($node) {
                 $event->currentTarget = $node;
                 $eventNode            = self::getNode($documentID, $node);
@@ -74,7 +72,7 @@ abstract class phpQueryEvents
                             $event->data = $handler['data']
                                 ? $handler['data']
                                 : null;
-                            $params      = array_merge(array($event), $data);
+                            $params      = array_merge([$event], $data);
                             $return      = phpQuery::callbackRun($handler['callback'], $params);
                             if ($return === false) {
                                 $event->bubbles = false;
@@ -87,7 +85,6 @@ abstract class phpQueryEvents
                     break;
                 }
                 $node = $node->parentNode;
-                $i++;
             }
         }
     }
@@ -109,17 +106,17 @@ abstract class phpQueryEvents
     public static function add($document, $node, $type, $data, $callback = null)
     {
         $documentID = phpQuery::getDocumentID($document);
-        $eventNode = self::getNode($documentID, $node);
+        $eventNode  = self::getNode($documentID, $node);
         if (!$eventNode) {
             $eventNode = self::setNode($documentID, $node);
         }
         if (!isset($eventNode->eventHandlers[$type])) {
-            $eventNode->eventHandlers[$type] = array();
+            $eventNode->eventHandlers[$type] = [];
         }
-        $eventNode->eventHandlers[$type][] = array(
+        $eventNode->eventHandlers[$type][] = [
             'callback' => $callback,
             'data'     => $data,
-        );
+        ];
     }
 
     /**

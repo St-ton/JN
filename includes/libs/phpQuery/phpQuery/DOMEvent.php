@@ -1,4 +1,5 @@
 <?php
+
 /**
  * DOMEvent class.
  *
@@ -102,7 +103,7 @@ class DOMEvent
     /**
      * @var null
      */
-    public $data = null;
+    public $data;
 
     /**
      * DOMEvent constructor.

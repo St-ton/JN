@@ -162,7 +162,7 @@
                         {/if}
                     {/block}
                     </div>
-                    {if $hasOnlyListableVariations > 0 && !$Artikel->bHasKonfig}
+                    {if $hasOnlyListableVariations > 0 && !$Artikel->bHasKonfig && $Artikel->kEigenschaftKombi === 0}
                         <div class="hidden-xs basket-variations">
                             {assign var="singleVariation" value=true}
                             {include file="productdetails/variation.tpl" simple=$Artikel->isSimpleVariation showMatrix=false smallView=true ohneFreifeld=($hasOnlyListableVariations == 2)}

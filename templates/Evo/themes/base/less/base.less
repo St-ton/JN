@@ -1342,10 +1342,12 @@ table.matrix tbody > tr > td {
     .dropdown-menu {
         padding: @modal-inner-padding;
     }
+}
 
-    .cart-dropdown li.table-responsive {
-        max-height: 800px;
-    }
+.cart-dropdown{
+    max-height: 800px;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 /* Navbar text fix */

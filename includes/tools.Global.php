@@ -3815,19 +3815,20 @@ function setzeSpracheUndWaehrungLink()
     }
     // Währungsauswahl
     if (count($_SESSION['Waehrungen']) > 1) {
-        if (isset($AktuellerArtikel->kArtikel) &&
-            $AktuellerArtikel->kArtikel > 0 &&
-            empty($AktuellerArtikel->cSprachURL_arr)
+        if (isset($AktuellerArtikel->kArtikel)
+            && $AktuellerArtikel->kArtikel > 0
+            && empty($AktuellerArtikel->cSprachURL_arr)
         ) {
             $AktuellerArtikel->baueArtikelSprachURL(false);
         }
-        foreach ($_SESSION['Waehrungen'] as $i => $oWaehrung) {
-            if (isset($AktuellerArtikel->kArtikel)
+        foreach ($_SESSION['Waehrungen'] as $i => $currency) {
+            $url = '';
+            if (
+                isset($AktuellerArtikel->kArtikel, $_SESSION['kSprache'], $AktuellerArtikel->cSprachURL_arr[$_SESSION['cISOSprache']])
                 && $AktuellerArtikel->kArtikel > 0
-                && isset($_SESSION['kSprache'], $AktuellerArtikel->cSprachURL_arr[$_SESSION['cISOSprache']])
             ) {
-                $_SESSION['Waehrungen'][$i]->setURL($AktuellerArtikel->cSprachURL_arr[$_SESSION['cISOSprache']] .
-                    '?curr=' . $oWaehrung->getCode());
+                $url = $AktuellerArtikel->cSprachURL_arr[$_SESSION['cISOSprache']] .
+                    '?curr=' . $currency->getCode();
             } elseif ($AktuelleSeite === 'WARENKORB'
                 || $AktuelleSeite === 'KONTAKT'
                 || $AktuelleSeite === 'REGISTRIEREN'
@@ -3885,30 +3886,30 @@ function setzeSpracheUndWaehrungLink()
                         break;
                 }
                 if ($id !== null) {
-                    $url = $helper->getStaticRoute($id, false, false);
+                    $url = $helper->getStaticRoute($id, false);
                     //check if there is a SEO link for the given file
                     if ($url === $id) { //no SEO link - fall back to php file with GET param
-                        $url = $shopURL . $id . '?lang=' . $_SESSION['cISOSprache'] . '&curr=' . $oWaehrung->getCode();
+                        $url = $shopURL . $id . '?lang=' . $_SESSION['cISOSprache'] . '&curr=' . $currency->getCode();
                     } else { //there is a SEO link - make it a full URL
-                        $url = $helper->getStaticRoute($id, true, false) . '?curr=' . $oWaehrung->getCode();
+                        $url = $helper->getStaticRoute($id) . '?curr=' . $currency->getCode();
                     }
-                    $_SESSION['Waehrungen'][$i]->setURL($url);
                 }
             } elseif ($kLink > 0) {
-                $_SESSION['Waehrungen'][$i]->setURL('index.php?s=' . $kLink .
-                    '&lang=' . $_SESSION['cISOSprache'] . '&amp;curr=' . $oWaehrung->getCode()
-                );
+                $url = 'index.php?s=' . $kLink . '&lang=' . $_SESSION['cISOSprache'] . '&curr=' . $currency->getCode();
             } else {
-                $_SESSION['Waehrungen'][$i]->setURL(
-                    $NaviFilter->getURL(
-                        true,
-                        $oZusatzFilter
-                    ) . '?curr=' . $oWaehrung->getCode()
-                );
+                $url = $NaviFilter->getURL(true, $oZusatzFilter);
+                $url .= strpos($url, '?') === false
+                    ? ('?curr=' . $currency->getCode())
+                    : ('&curr=' . $currency->getCode());
             }
-            $_SESSION['Waehrungen'][$i]->setURLFull($shopURL . $_SESSION['Waehrungen'][$i]->getURL());
+            $currency->setURL($url);
+            $url = strpos($url, Shop::getURL()) === false
+                ? ($shopURL . $url)
+                : $url;
+            $currency->setURLFull($url);
         }
     }
+    
     executeHook(HOOK_TOOLSGLOBAL_INC_SETZESPRACHEUNDWAEHRUNG_WAEHRUNG, [
         'oNaviFilter'       => &$NaviFilter,
         'oZusatzFilter'     => &$oZusatzFilter,

@@ -1,7 +1,0 @@
-[2017-10-16 10:02:11] [E_NOTICE] [8] Undefined index: method in /home/danny/Projekte/shop4/admin/frontedit.php:29
-[2017-10-16 10:02:11] [E_NOTICE] [8] Undefined index: action in /home/danny/Projekte/shop4/admin/frontedit.php:43
-[2017-10-16 10:02:11] [E_NOTICE] [8] Undefined index: cKey in /home/danny/Projekte/shop4/admin/frontedit.php:111
-[2017-10-16 10:02:11] [E_NOTICE] [8] Undefined index: kKey in /home/danny/Projekte/shop4/admin/frontedit.php:112
-[2017-10-16 10:02:11] [E_NOTICE] [8] Undefined index: kSprache in /home/danny/Projekte/shop4/admin/frontedit.php:113
-[2017-10-16 10:02:11] [E_NOTICE] [8] Undefined index: method in /home/danny/Projekte/shop4/admin/frontedit.php:114
-[2017-10-16 10:02:11] [E_NOTICE] [8] Undefined index: cSeo in /home/danny/Projekte/shop4/admin/frontedit.php:115

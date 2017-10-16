@@ -125,7 +125,7 @@ abstract class AbstractFilter implements IFilter
     protected $inputType = self::INPUT_SELECT;
 
     /**
-     * @var FilterExtra|FilterExtra[]
+     * @var FilterExtra[]
      */
     protected $activeValues;
 

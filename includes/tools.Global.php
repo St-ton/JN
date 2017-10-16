@@ -4031,7 +4031,7 @@ function entschluesselXTEA($cText)
 function pruefeEmailblacklist($cEmail)
 {
     $cEmail = strtolower(StringHandler::filterXSS($cEmail));
-    if (valid_email($cEmail)) {
+    if (!valid_email($cEmail)) {
         return true;
     }
     $Einstellungen = Shop::getSettings([CONF_EMAILBLACKLIST]);

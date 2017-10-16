@@ -21,9 +21,9 @@
 
     <script>
         $(function () {
-            jleHost = new JLEHost('#iframe-panel iframe', '{$templateUrl}');
+            jleHost = new JLEHost('#right-panel iframe', '{$templateUrl}');
             Split(
-                ['#sidebar-panel', '#iframe-panel'],
+                ['#sidebar-panel', '#right-panel'],
                 {
                     sizes: [25, 75],
                     gutterSize: 4
@@ -56,8 +56,8 @@
             </div>
         </div>
     </div>
-    <div id="iframe-panel">
-        <iframe src="{URL_SHOP}">
+    <div id="right-panel">
+        <iframe src="{URL_SHOP}"></iframe>
     </div>
 </body>
 </html>

@@ -182,19 +182,6 @@ class Navigationsfilter
 
     /**
      * @var array
-     */
-    private $advancedAttributeFilters = [];
-
-    /**
-     * temp. workaround
-     * @todo: remove usages
-     *
-     * @var bool
-     */
-    private $attributeFiltersAreInitialized = false;
-
-    /**
-     * @var array
      * @todo: fix working with arrays
      * @see https://stackoverflow.com/questions/13421661/getting-indirect-modification-of-overloaded-property-has-no-effect-notice
      */
@@ -1503,16 +1490,10 @@ class Navigationsfilter
     public function getProducts($forProductListing = true, $currentCategory = null, $fillArticles = true, $limit = 0)
     {
         $_SESSION['nArtikelUebersichtVLKey_arr'] = []; // Nur Artikel, die auch wirklich auf der Seite angezeigt werden
-//        $hash            = $this->getHash();
-        $limitPerPage    = $limit > 0 ? $limit : $this->getArticlesPerPageLimit();
-        $nLimitN         = ($this->nSeite - 1) * $limitPerPage;
-        $paginationLimit = $nLimitN >= 50 // 50 nach links und 50 nach rechts für Artikeldetails blättern
-            ? $nLimitN - 50
-            : 0;
-        $offsetEnd       = max(100, $limitPerPage + 50) - $paginationLimit;
-        $nLimitN         = $limitPerPage * ($this->nSeite - 1);
-        $max             = (int)$this->conf['artikeluebersicht']['artikeluebersicht_max_seitenzahl'];
-//        if (($searchResults = Shop::Cache()->get($hash)) === false) {
+
+        $limitPerPage = $limit > 0 ? $limit : $this->getArticlesPerPageLimit();
+        $nLimitN      = $limitPerPage * ($this->nSeite - 1);
+        $max          = (int)$this->conf['artikeluebersicht']['artikeluebersicht_max_seitenzahl'];
         if ($this->searchResults === null) {
             $this->searchResults                       = new stdClass();
             $this->searchResults->Artikel              = new stdClass();
@@ -1550,7 +1531,6 @@ class Navigationsfilter
             $this->searchResults = $this->setFilterOptions($this->searchResults, $currentCategory);
             // Header bauen
             $this->searchResults->SuchausdruckWrite = $this->metaData->getHeader();
-//            Shop::Cache()->set($hash, $this->searchResults, [CACHING_GROUP_CATEGORY]);
         }
         if ($fillArticles === true) {
             // @todo: slice list of IDs when not filling?
@@ -1577,8 +1557,6 @@ class Navigationsfilter
         $this->createUnsetFilterURLs(true);
         $_SESSION['oArtikelUebersichtKey_arr']   = $this->searchResults->Artikel->articleKeys;
         $_SESSION['nArtikelUebersichtVLKey_arr'] = [];
-
-//        Shop::Cache()->set($this->getHash(), $this, ['jtl_mmf']);
 
         return $forProductListing === true
             ? $this->searchResults
@@ -1724,12 +1702,12 @@ class Navigationsfilter
             } elseif ($count === 1) {
                 /** @var array(IFilter) $filters */
                 if ($ignore === null
-                    || (is_string($ignore) && $filters[0]->getClassName() !== $ignore)
                     || (is_object($ignore) && $filters[0] !== $ignore)
+                    || (is_string($ignore) && $filters[0]->getClassName() !== $ignore)
                 ) {
-                    $itemJoin = $filters[0]->getSQLJoin();
+                    $itemJoin    = $filters[0]->getSQLJoin();
+                    $_condition  = $filters[0]->getSQLCondition();
                     $data->joins = array_merge($data->joins, is_array($itemJoin) ? $itemJoin : [$itemJoin]);
-                    $_condition = $filters[0]->getSQLCondition();
                     if (!empty($_condition)) {
                         $data->conditions[] = "\n#condition from filter " . $type . "\n" . $_condition;
                     }
@@ -1738,9 +1716,9 @@ class Navigationsfilter
                 // this is the most clean and usual behaviour.
                 // 'misc' and custom contain clean new filters that can be calculated by just iterating over the array
                 foreach ($filters as $filter) {
-                    $itemJoin = $filter->getSQLJoin();
+                    $itemJoin    = $filter->getSQLJoin();
+                    $_condition  = $filter->getSQLCondition();
                     $data->joins = array_merge($data->joins, is_array($itemJoin) ? $itemJoin : [$itemJoin]);
-                    $_condition = $filter->getSQLCondition();
                     if (!empty($_condition)) {
                         $data->conditions[] = "\n#condition from filter " . $type . "\n" . $_condition;
                     }
@@ -1876,13 +1854,13 @@ class Navigationsfilter
      * @throws InvalidArgumentException
      */
     public function getBaseQuery(
-        $select = ['tartikel.kArtikel'],
+        array $select = ['tartikel.kArtikel'],
         array $joins,
         array $conditions,
         array $having = [],
         $order = '',
         $limit = '',
-        $groupBy = ['tartikel.kArtikel']
+        array $groupBy = ['tartikel.kArtikel']
     ) {
         $joins[] = (new FilterJoin())
             ->setComment('article visiblity join from getBaseQuery')
@@ -1969,9 +1947,9 @@ class Navigationsfilter
         if (!empty($conditionsString)) {
             $conditionsString = ' WHERE ' . $conditionsString;
         }
-        $groupByString = !empty($groupBy)
-            ? 'GROUP BY ' . implode(', ', $groupBy)
-            : '';
+        $groupByString = empty($groupBy)
+            ? ''
+            : 'GROUP BY ' . implode(', ', $groupBy);
 
         return 'SELECT ' . implode(', ', $select) . '
             FROM tartikel ' . $joinString . "\n" .
@@ -2222,7 +2200,7 @@ class Navigationsfilter
                 return 0;
             }
             // manufacturer filters before others
-            if (isset($a[0]->sep) && isset($b[0]->sep)) {
+            if (isset($a[0]->sep, $b[0]->sep)) {
                 if ($a[0]->param === 'hf') {
                     return -1;
                 }

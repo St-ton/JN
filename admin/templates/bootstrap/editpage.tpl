@@ -22,7 +22,7 @@
 
     <script>
         $(function () {
-            jleHost = new JLEHost('#right-panel iframe', '{$templateUrl}');
+            jleHost = new JLEHost('#iframe-panel iframe', '{$templateUrl}');
             Split(
                 ['#sidebar-panel', '#iframe-panel'],
                 {
@@ -78,7 +78,7 @@
         </div>
     </div>
     <div id="iframe-panel">
-        <iframe src="{URL_SHOP}/{$oSeo->cSeo}"></iframe>
+        <iframe src="{URL_SHOP}/{$oSeo->cSeo}?editpage=1"></iframe>
     </div>
 </body>
 </html>

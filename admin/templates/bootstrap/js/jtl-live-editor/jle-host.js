@@ -23,7 +23,7 @@ JLEHost.prototype.iframeLoaded = function()
 
 JLEHost.prototype.liveEditorLoaded = function()
 {
-    this.editor = new this.iframeCtx.JtlLiveEditor(".editorpage-box");
+    this.editor = new this.iframeCtx.JtlLiveEditor(".jle-editable");
 
     $(".portlet-button")
         .attr("draggable", "true")

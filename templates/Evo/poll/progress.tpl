@@ -11,12 +11,15 @@
     <div class="alert alert-danger">{$fehler}</div>
 {/if}
 
+{include file='snippets/live_edit.tpl' id='editor_poll_content_prepend'}
+
 {if $oUmfrage->oUmfrageFrage_arr|@count > 0 && $oUmfrage->oUmfrageFrage_arr}
     <form method="post" action="{get_static_route id='umfrage.php'}">
         {$jtl_token}
         <input name="u" type="hidden" value="{$oUmfrage->kUmfrage}" />
         {foreach name=umfragefrage from=$oUmfrage->oUmfrageFrage_arr item=oUmfrageFrage}
             {assign var=kUmfrageFrage value=$oUmfrageFrage->kUmfrageFrage}
+            {include file='snippets/live_edit.tpl' id='editor_poll_question_'|cat:$oUmfrageFrage->kUmfrageFrage}
             <input name="kUmfrageFrage[]" type="hidden" value="{$oUmfrageFrage->kUmfrageFrage}">
             <div {if $oUmfrageFrage->nNotwendig == 1}class="required"{/if}>
                 <div class="panel panel-default">

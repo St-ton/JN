@@ -1,29 +1,22 @@
-html, body, #sidebar-panel, #right-panel, #right-panel iframe {
+html, body, #sidebar-panel, #iframe-panel, #iframe-panel iframe {
     height: 100%;
     overflow: hidden;
 }
 
-#sidebar-panel, #right-panel {
+#sidebar-panel, #iframe-panel {
     float: left;
     position: relative;
 }
 
-#right-panel iframe {
-    border: 0;
-    width: 100%;
-}
-
-#toolbar-panel {
-    background-color: #369;
-    height: 64px;
-}
-
 #iframe-panel {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    top: 64px;
+	text-align: center;
+	background: #ddd;
+}
+
+#iframe-panel iframe {
+	border: 0;
+	width: 100%;
+	transition: all .2s ease-in-out;
 }
 
 .gutter {
@@ -34,4 +27,8 @@ html, body, #sidebar-panel, #right-panel, #right-panel iframe {
 }
 
 .portlet-button {
+}
+
+#editor-top-nav {
+	margin-bottom: 0;
 }

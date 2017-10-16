@@ -10,6 +10,7 @@
 
     <link rel="stylesheet" href="{$templateUrl}css/bootstrap.min.css">
     <link rel="stylesheet" href="{$templateUrl}css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="{$templateUrl}css/font-awesome.min.css">
 
     <script src="{$templateUrl}js/jquery-1.12.4.min.js"></script>
     <script src="{$templateUrl}js/bootstrap.min.js"></script>
@@ -23,7 +24,7 @@
         $(function () {
             jleHost = new JLEHost('#right-panel iframe', '{$templateUrl}');
             Split(
-                ['#sidebar-panel', '#right-panel'],
+                ['#sidebar-panel', '#iframe-panel'],
                 {
                     sizes: [25, 75],
                     gutterSize: 4
@@ -33,6 +34,26 @@
     </script>
 </head>
 <body>
+    <nav id="editor-top-nav" class="navbar navbar-inverse">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="collapsed navbar-toggle" data-toggle="collapse"
+                        data-target="#le-navbar-collapse" aria-expanded="false"><span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span></button>
+                <a href="#" class="navbar-brand">Live Editor</a></div>
+            <div class="collapse navbar-collapse" id="le-navbar-collapse">
+                <ul class="nav navbar-nav">
+                    <li><a href="#" onclick="$('#iframe-panel iframe').width('100%');"><i class="fa fa-television"></i></a></li>
+                    <li><a href="#" onclick="$('#iframe-panel iframe').width('768px');"><i class="fa fa-tablet"></i></a></li>
+                    <li><a href="#" onclick="$('#iframe-panel iframe').width('375px');"><i class="fa fa-mobile"></i></a></li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="#"><i class="fa fa-save"></i></a></li>
+                    <li><a href="#"><i class="fa fa-close"></i></a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
     <div id="sidebar-panel">
         <div class="panel panel-primary">
             <div class="panel-heading">
@@ -56,7 +77,7 @@
             </div>
         </div>
     </div>
-    <div id="right-panel">
+    <div id="iframe-panel">
         <iframe src="{URL_SHOP}/{$oSeo->cSeo}"></iframe>
     </div>
 </body>

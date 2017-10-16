@@ -330,7 +330,7 @@ class FilterItemAttribute extends FilterBaseAttribute
             $state->having,
             '', // $order->orderBy,
             '',
-            '' // ['tartikelmerkmal.kMerkmalWert', 'tartikel.kArtikel']
+            [] // ['tartikelmerkmal.kMerkmalWert', 'tartikel.kArtikel']
         );
         $qryRes                = Shop::DB()->executeQuery(
             "SELECT ssMerkmal.cSeo, ssMerkmal.kMerkmal, ssMerkmal.kMerkmalWert, ssMerkmal.cMMWBildPfad, 

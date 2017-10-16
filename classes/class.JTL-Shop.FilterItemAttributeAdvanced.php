@@ -465,8 +465,7 @@ class FilterItemAttributeAdvanced extends FilterBaseAttribute
             $state->having,
             $order->orderBy,
             '',
-            ['z.kMerkmalWert', 'tartikel.kArtikel'],
-            true
+            ['z.kMerkmalWert', 'tartikel.kArtikel']
         );
         $qry     = "SELECT ssMerkmal.cSeo, ssMerkmal.kMerkmal, ssMerkmal.kMerkmalWert, ssMerkmal.cMMWBildPfad, 
             ssMerkmal.nMehrfachauswahl,

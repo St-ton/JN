@@ -1449,13 +1449,16 @@ class Navigationsfilter
             function ($e) {
                 return (int)$e->kArtikel;
             },
-            Shop::DB()->query($this->getBaseQuery(
-                ['tartikel.kArtikel'],
-                $state->joins,
-                $state->conditions,
-                $state->having,
-                $order->orderBy
-            ), 2)
+            Shop::DB()->query(
+                $this->getBaseQuery(
+                    ['tartikel.kArtikel'],
+                    $state->joins,
+                    $state->conditions,
+                    $state->having,
+                    $order->orderBy
+                ),
+                2
+            )
         );
     }
 

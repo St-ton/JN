@@ -127,6 +127,11 @@
     {/if}
     
     {block name="header"}
+        {*TODO Editor: 'true' durch bIsEditable ersetzen, also prüfen od auf dieser seite editiert werden darf*}
+        {if !empty($bLiveEditMode) && true}
+            {include file='layout/header_editor_init.tpl'}
+        {/if}
+
         <header class="hidden-print {if isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout === 'fluid'}container-block{/if}{if $Einstellungen.template.theme.static_header === 'Y'} fixed-navbar{/if}" id="evo-nav-wrapper">
             <div class="container">
                 {block name="header-container-inner"}

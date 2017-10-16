@@ -6964,3 +6964,57 @@ if (!function_exists('array_flatten')) {
         return $result;
     }
 }
+
+/**
+ * @param int kSprache
+ * @return params
+ */
+function getLiveEditParameters($kSprache)
+{
+    $params = Shop::getParameters();
+    $oLiveEditParams = new stdClass();
+    foreach ($params as $k => $i) {
+        if (($k === 'kArtikel' || $k === 'kHersteller'
+                || $k === 'kKategorie' || $k === 'kLink'
+                || $k === 'kMerkmalWert' || $k === 'kNews'
+                || $k === 'kNewsKategorie' || $k === 'kNewsUebersicht'
+                || $k === 'kSuchanfrage' || $k === 'kTag'
+                || $k === 'kUmfrage' || $k === 'suchspecial')
+                && !empty($i)
+        ) {
+            $oLiveEditParams->cKey = $k;
+            $oLiveEditParams->kKey = $i;
+
+            $oSeo = Shop::DB()->executeQueryPrepared(
+                'SELECT 
+                        tseo.cSeo, teditorpage.kEditorPage, teditorpage.nEditorContent, teditorpage.cJSON 
+                    FROM 
+                        tseo LEFT JOIN teditorpage ON tseo.kKey = teditorpage.kKey AND tseo.kSprache = teditorpage.kSprache AND tseo.cKey = teditorpage.cKey
+                    WHERE
+                        tseo.kKey = :kKey AND tseo.kSprache = :kSprache AND tseo.cKey = :cKey',
+                ['kKey' => $i, 'kSprache' => $kSprache, 'cKey' => $k], 1
+            );
+            $content = '';
+            if (!empty($oSeo->nSeoContent)) {
+                $content = Shop::DB()->executeQueryPrepared(
+                    'SELECT cAreaID, cContent FROM teditorpagecontent WHERE keditorPage = :kEditorPage',
+                    ['kEditorPage' => $oSeo->kEditorPage],
+                    2
+                );
+                foreach ($content as $val) {
+                    if (!empty($val->cContent)) {
+                        $tmp = $val->cAreaID;
+                        unset($val->cAreaID);
+                        $oLiveEditParams->oContent[$tmp] = $val;
+                    }
+                }
+            }
+
+            $oLiveEditParams->cSeo           = $oSeo->cSeo;
+            $oLiveEditParams->cJSON          = $oSeo->cJSON;
+            $oLiveEditParams->nEditorContent = $oSeo->nEditorContent;
+        }
+    }
+
+    return $oLiveEditParams;
+}

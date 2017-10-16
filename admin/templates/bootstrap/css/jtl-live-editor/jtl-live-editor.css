@@ -1,81 +1,81 @@
 .jle-placeholder {
-	display: none;
+    display: none;
 }
 
 .jle-selected {
-	border: 2px dashed blue !important;
-	cursor: pointer;
-	position: relative;
+    border: 2px dashed blue !important;
+    cursor: pointer;
+    position: relative;
 }
 
 .jle-selected-label {
-	display: block;
-	position: absolute;
-	top: 0;
-	right: 0;
-	font-size: 0.75em;
-	color: white;
-	background-color: rgba(0, 0, 255, 0.5);
+    display: block;
+    position: absolute;
+    top: 0;
+    right: 0;
+    font-size: 0.75em;
+    color: white;
+    background-color: rgba(0, 0, 255, 0.5);
 }
 
 .jle-dragged {
-	opacity: 0.5;
+    opacity: 0.5;
 }
 
 .jle-target-label {
-	display: block;
-	position: absolute;
-	font-size: 0.75em;
-	color: white;
-	background-color: rgba(255, 0, 0, 0.5);
+    display: block;
+    position: absolute;
+    font-size: 0.75em;
+    color: white;
+    background-color: rgba(255, 0, 0, 0.5);
 }
 
 .jle-drop-target {
-	border: 2px dashed red !important;
-	position: relative;
+    border: 2px dashed red !important;
+    position: relative;
 }
 
 .jle-drop-target .jle-target-label {
-	top: 0;
-	right: 0;
+    top: 0;
+    right: 0;
 }
 
 .jle-drop-before {
-	border-top: 2px dashed red !important;
-	position: relative;
+    border-top: 2px dashed red !important;
+    position: relative;
 }
 
 .jle-drop-before .jle-target-label {
-	top: 0;
-	right: 0;
+    top: 0;
+    right: 0;
 }
 
 .jle-drop-after {
-	border-bottom: 2px dashed red !important;
-	position: relative;
+    border-bottom: 2px dashed red !important;
+    position: relative;
 }
 
 .jle-drop-after .jle-target-label {
-	bottom: 0;
-	right: 0;
+    bottom: 0;
+    right: 0;
 }
 
 .jle-drop-left {
-	border-left: 2px dashed red !important;
-	position: relative;
+    border-left: 2px dashed red !important;
+    position: relative;
 }
 
 .jle-drop-left .jle-target-label {
-	top: 0;
-	left: 0;
+    top: 0;
+    left: 0;
 }
 
 .jle-drop-right {
-	border-right: 2px dashed red !important;
-	position: relative;
+    border-right: 2px dashed red !important;
+    position: relative;
 }
 
 .jle-drop-right .jle-target-label {
-	top: 0;
-	right: 0;
+    top: 0;
+    right: 0;
 }

@@ -13,7 +13,11 @@ require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('CONTENT_PAGE_VIEW', true, true);
 
-$shopUrl = Shop::getURL();
+$cKey     = verifyGPDataString('cKey');
+$kKey     = verifyGPCDataInteger('kKey');
+$kSprache = verifyGPCDataInteger('kSprache');
+$oSeo     = Shop::DB()->select('tseo', ['cKey', 'kKey', 'kSprache'], [$cKey, $kKey, $kSprache]);
 
 $smarty
+    ->assign('oSeo', $oSeo)
     ->display('editpage.tpl');

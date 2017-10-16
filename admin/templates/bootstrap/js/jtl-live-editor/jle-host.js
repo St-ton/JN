@@ -1,7 +1,7 @@
 
 function JLEHost(iframeSelector, templateUrl)
 {
-	this.templateUrl = templateUrl;
+    this.templateUrl = templateUrl;
     this.iframeCtx = null;
     this.editor = null;
     this.iframe = $(iframeSelector);
@@ -18,12 +18,12 @@ JLEHost.prototype.iframeLoaded = function()
 
     JLEHost.loadScript(
     	this.iframeCtx, this.templateUrl + "js/jtl-live-editor/jtl-live-editor.js", this.liveEditorLoaded.bind(this)
-	);
+    );
 };
 
 JLEHost.prototype.liveEditorLoaded = function()
 {
-    this.editor = new this.iframeCtx.JtlLiveEditor("#content");
+    this.editor = new this.iframeCtx.JtlLiveEditor(".editorpage-box");
 
     $(".portlet-button")
         .attr("draggable", "true")
@@ -49,18 +49,18 @@ JLEHost.prototype.onDragEnd = function(e)
 
 JLEHost.loadScript = function(ctx, url, callback)
 {
-	var script = ctx.document.createElement("script");
-	
-	script.src = url;
-	script.addEventListener("load", callback);
-	ctx.document.head.appendChild(script);
+    var script = ctx.document.createElement("script");
+
+    script.src = url;
+    script.addEventListener("load", callback);
+    ctx.document.head.appendChild(script);
 };
 
 JLEHost.loadStylesheet = function(ctx, url)
 {
-	var link = ctx.document.createElement("link");
-	
-	link.rel = "stylesheet";
-	link.href = url;
-	ctx.document.head.appendChild(link);
+    var link = ctx.document.createElement("link");
+
+    link.rel = "stylesheet";
+    link.href = url;
+    ctx.document.head.appendChild(link);
 };

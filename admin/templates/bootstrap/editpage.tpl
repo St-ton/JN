@@ -57,7 +57,7 @@
         </div>
     </div>
     <div id="right-panel">
-        <iframe src="{URL_SHOP}"></iframe>
+        <iframe src="{URL_SHOP}/{$oSeo->cSeo}"></iframe>
     </div>
 </body>
 </html>

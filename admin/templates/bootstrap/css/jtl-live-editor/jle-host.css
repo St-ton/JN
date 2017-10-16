@@ -1,36 +1,36 @@
 html, body, #sidebar-panel, #right-panel, #right-panel iframe {
-	height: 100%;
-	overflow: hidden;
+    height: 100%;
+    overflow: hidden;
 }
 
 #sidebar-panel, #right-panel {
-	float: left;
-	position: relative;
+    float: left;
+    position: relative;
 }
 
 #right-panel iframe {
-	border: 0;
-	width: 100%;
+    border: 0;
+    width: 100%;
 }
 
 #toolbar-panel {
-	background-color: #369;
-	height: 64px;
+    background-color: #369;
+    height: 64px;
 }
 
 #iframe-panel {
-	position: absolute;
-	bottom: 0;
-	left: 0;
-	right: 0;
-	top: 64px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: 64px;
 }
 
 .gutter {
-	height: 100%;
-	background-color: #369;
-	float: left;
-	cursor: ew-resize;
+    height: 100%;
+    background-color: #369;
+    float: left;
+    cursor: ew-resize;
 }
 
 .portlet-button {

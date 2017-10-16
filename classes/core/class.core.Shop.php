@@ -314,7 +314,7 @@ final class Shop
     private static $_settings;
 
     /**
-     * @var array
+     * @var IFilter[]
      */
     public static $customFilters = [];
 
@@ -536,11 +536,10 @@ final class Shop
     /**
      * @param string $eventName
      * @param array  $arguments
-     * @return array|null
      */
     public static function fire($eventName, array $arguments = [])
     {
-        return self::Event()->fire($eventName, $arguments);
+        self::Event()->fire($eventName, $arguments);
     }
 
     /**
@@ -742,11 +741,11 @@ final class Shop
 
         $_SESSION['cTemplate'] = Template::$cTemplate;
 
-        self::Event()->fire('shop.run');
 
         self::$NaviFilter = new Navigationsfilter(self::Lang()->getLangArray(), self::$kSprache, null, NiceDB::getInstance());
 
         self::seoCheck();
+        self::Event()->fire('shop.run');
 
         return self::buildNaviFilter(self::getParameters());
     }

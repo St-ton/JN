@@ -146,9 +146,7 @@ if (!JTL_INCLUDE_ONLY_DB) {
         }
         $bAdminWartungsmodus = true;
     }
-    if (Shop::isAdmin()) {
-        $bLiveEditMode = true;
-    }
+    $bLiveEditMode = Shop::isAdmin();
 
     $GLOBALS['oSprache'] = Sprache::getInstance();
 }

@@ -6,7 +6,13 @@
     {if $step === 'umfrage_uebersicht'}
         {include file='poll/overview.tpl'}
     {elseif $step === 'umfrage_durchfuehren'}
-        {include file='poll/progress.tpl'}
+        {if (!empty($oLiveEditParams->oContent['editor_replace_all']->cContent) && empty($smarty.get.editpage))}
+            {$oLiveEditParams->oContent['editor_replace_all']->cContent}
+        {elseif (!empty($smarty.get.editpage) && !empty($smarty.get.action) && $smarty.get.action === 'replace')}
+            <div id="editor_replace_all" class="sortable ui-sortable"></div>
+        {else}
+            {include file='poll/progress.tpl'}
+        {/if}
     {elseif $step === 'umfrage_ergebnis'}
         {include file='poll/result.tpl'}
     {/if}

@@ -7,9 +7,15 @@ html, body, #sidebar-panel, #iframe-panel, #iframe-panel iframe {
 	float: left;
 }
 
+#iframe-panel {
+	text-align: center;
+	background: #ddd;
+}
+
 #iframe-panel iframe {
 	border: 0;
 	width: 100%;
+	transition: all .2s ease-in-out;
 }
 
 .gutter {
@@ -20,4 +26,8 @@ html, body, #sidebar-panel, #iframe-panel, #iframe-panel iframe {
 }
 
 .portlet-button {
+}
+
+#editor-top-nav {
+	margin-bottom: 0;
 }

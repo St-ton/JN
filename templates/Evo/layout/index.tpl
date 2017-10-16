@@ -10,18 +10,26 @@
     {/block}
     
     {block name="content"}
-        {if !empty($Link->Sprache->cTitle)}
-            <h1>{$Link->Sprache->cTitle}</h1>
-        {elseif isset($bAjaxRequest) && $bAjaxRequest}
-            <h1>{if !empty($Link->Sprache->cMetaTitle)}{$Link->Sprache->cMetaTitle}{else}{$Link->Sprache->cName}{/if}</h1>
-        {/if}
-    
-        {include file="snippets/extension.tpl"}
-    
-        {if !empty($Link->Sprache->cContent)}
+        {if (!empty($oLiveEditParams->oContent['editor_replace_all']->cContent) && empty($smarty.get.editpage))}
+            {$oLiveEditParams->oContent['editor_replace_all']->cContent}
+        {elseif (!empty($smarty.get.editpage) && !empty($smarty.get.action) && $smarty.get.action === 'replace')}
+            <div id="editor_replace_all" class="sortable ui-sortable"></div>
+        {else}
+            {if !empty($Link->Sprache->cTitle)}
+                <h1>{$Link->Sprache->cTitle}</h1>
+            {elseif isset($bAjaxRequest) && $bAjaxRequest}
+                <h1>{if !empty($Link->Sprache->cMetaTitle)}{$Link->Sprache->cMetaTitle}{else}{$Link->Sprache->cName}{/if}</h1>
+            {/if}
+
+            {include file="snippets/extension.tpl"}
+
+            {include file='snippets/live_edit.tpl' id='editor_link_content_prepend'}
+
             {$Link->Sprache->cContent}
+
+            {include file='snippets/live_edit.tpl' id='editor_link_content_append'}
         {/if}
-    
+
         {if $Link->nLinkart == $smarty.const.LINKTYP_AGB}
             <div id="tos" class="well well-sm">
                 {if $AGB->cAGBContentHtml}

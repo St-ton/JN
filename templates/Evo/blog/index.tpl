@@ -15,7 +15,13 @@
     {elseif $step === 'news_kategorieuebersicht'}
         {include file='blog/overview.tpl'}
     {elseif $step === 'news_detailansicht'}
-        {include file='blog/details.tpl'}
+        {if (!empty($oLiveEditParams->oContent['editor_replace_all']->cContent) && empty($smarty.get.editpage))}
+            {$oLiveEditParams->oContent['editor_replace_all']->cContent}
+        {elseif (!empty($smarty.get.editpage) && !empty($smarty.get.action) && $smarty.get.action === 'replace')}
+            <div id="editor_replace_all" class="sortable ui-sortable"></div>
+        {else}
+            {include file='blog/details.tpl'}
+        {/if}
     {/if}
 {/block}
 

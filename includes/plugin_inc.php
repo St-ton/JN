@@ -13,8 +13,7 @@ function executeHook($nHook, $args_arr = [])
 {
     global $smarty;
 
-    $dispatcher = EventDispatcher::getInstance();
-    $dispatcher->fire("shop.hook.{$nHook}", array_merge((array)$nHook, $args_arr));
+    EventDispatcher::getInstance()->fire("shop.hook.{$nHook}", array_merge((array)$nHook, $args_arr));
 
     $hookList = Plugin::getHookList();
     if (!empty($hookList[$nHook]) && is_array($hookList[$nHook])) {

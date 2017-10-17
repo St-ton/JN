@@ -2,13 +2,16 @@
     display: none;
 }
 
-.jle-editable {
+.jle-editable, .jle-editable .row > * {
     min-height: 2em;
-    border: 1px dashed #ccc;
+    /*border: 1px dashed #ccc;*/
+    box-shadow: inset 0 0 8px #ccc;
+    /*background-color: rgba(128, 128, 128, 0.25);*/
 }
 
 .jle-hovered {
-    border: 1px dashed #0f0 !important;
+    box-shadow: inset 0 0 8px #0f0 !important;
+    /*border: 1px dashed #0f0 !important;*/
     cursor: pointer;
 }
 
@@ -23,91 +26,39 @@
 }
 
 .jle-droptarget {
-    border: 1px dashed #f00 !important;
+    box-shadow: inset 0 0 8px #f00 !important;
+    /*border: 1px dashed #f00 !important;*/
     /*position: relative;*/
 }
 
 .jle-adjacent-left {
-    border-left: 1px dashed #f0f !important;
+    border-left: 2px dashed #f0f !important;
 }
 
 .jle-adjacent-right {
-    border-right: 1px dashed #f0f !important;
+    border-right: 2px dashed #f0f !important;
 }
 
 .jle-adjacent-above {
-    border-top: 1px dashed #f0f !important;
+    border-top: 2px dashed #f0f !important;
 }
 
 .jle-adjacent-below {
-    border-bottom: 1px dashed #f0f !important;
+    border-bottom: 2px dashed #f0f !important;
+}
+
+.jle-label {
+    position: absolute;
+    background-color: #090;
+    color: #fff;
+    min-width: 1em;
+    min-height: 1em;
+    opacity: 0.75;
+    font-size: 0.75em;
 }
 
 .jle-pinbar {
     position: absolute;
-    background-color: #00f;
-    color: #fff;
-}
-
-/*.jle-selected-label {*/
-    /*display: block;*/
-    /*position: absolute;*/
-    /*top: 0;*/
-    /*right: 0;*/
-    /*font-size: 0.75em;*/
-    /*color: white;*/
-    /*background-color: rgba(0, 0, 255, 0.5);*/
-/*}*/
-
-/*.jle-target-label {*/
-    /*display: block;*/
-    /*position: absolute;*/
-    /*font-size: 0.75em;*/
-    /*color: white;*/
-    /*background-color: rgba(255, 0, 0, 0.5);*/
-/*}*/
-
-/*.jle-drop-target .jle-target-label {*/
-    /*top: 0;*/
-    /*right: 0;*/
-/*}*/
-
-/*.jle-drop-before {*/
-    /*border-top: 2px dashed red !important;*/
-    /*position: relative;*/
-/*}*/
-
-/*.jle-drop-before .jle-target-label {*/
-    /*top: 0;*/
-    /*right: 0;*/
-/*}*/
-
-/*.jle-drop-after {*/
-    /*border-bottom: 2px dashed red !important;*/
-    /*position: relative;*/
-/*}*/
-
-/*.jle-drop-after .jle-target-label {*/
-    /*bottom: 0;*/
-    /*right: 0;*/
-/*}*/
-
-/*.jle-drop-left {*/
-    /*border-left: 2px dashed red !important;*/
-    /*position: relative;*/
-/*}*/
-
-/*.jle-drop-left .jle-target-label {*/
-    /*top: 0;*/
-    /*left: 0;*/
-/*}*/
-
-/*.jle-drop-right {*/
-    /*border-right: 2px dashed red !important;*/
-    /*position: relative;*/
-/*}*/
-
-/*.jle-drop-right .jle-target-label {*/
-    /*top: 0;*/
-    /*right: 0;*/
+    min-width: 1em;
+    min-height: 1em;
 }

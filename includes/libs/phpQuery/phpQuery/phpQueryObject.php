@@ -1142,20 +1142,18 @@ class phpQueryObject implements Iterator, Countable, ArrayAccess
                 break;
             case 'parent':
                 $this->elements = $this->map(
-                    create_function(
-                        '$node', '
-                         return $node instanceof DOMElement && $node->childNodes->length
-                             ? $node : null;'
-                    )
+                    function ($node) {
+                        return $node instanceof DOMElement && $node->childNodes->length
+                            ? $node : null;
+                    }
                 )->elements;
                 break;
             case 'empty':
                 $this->elements = $this->map(
-                    create_function(
-                        '$node', '
+                    function ($node) {
                         return $node instanceof DOMElement && $node->childNodes->length
-                            ? null : $node;'
-                    )
+                            ? null : $node;
+                    }
                 )->elements;
                 break;
             case 'disabled':
@@ -1168,41 +1166,42 @@ class phpQueryObject implements Iterator, Countable, ArrayAccess
                 break;
             case 'enabled':
                 $this->elements = $this->map(
-                    create_function(
-                        '$node', '
-						return pq($node)->not(":disabled") ? $node : null;'
-                    )
+                    function ($node) {
+                        return pq($node)->not(":disabled") ? $node : null;
+                    }
                 )->elements;
                 break;
             case 'header':
                 $this->elements = $this->map(
-                    create_function(
-                        '$node',
-                        '$isHeader = isset($node->tagName) && in_array($node->tagName, [
-							"h1", "h2", "h3", "h4", "h5", "h6", "h7"
-						]);
-						return $isHeader
-							? $node
-							: null;'
-                    )
+                    function($node) {
+                        $isHeader = isset($node->tagName) 
+                            && in_array($node->tagName, ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'h7'], true);
+
+                        return $isHeader
+                            ? $node
+                            : null;
+                    }
                 )->elements;
                 break;
             case 'only-child':
                 $this->elements = $this->map(
-                    create_function(
-                        '$node',
-                        'return pq($node)->siblings()->size() == 0 ? $node : null;'
-                    )
+                    function($node) {
+                        return pq($node)->siblings()->size() === 0 ? $node : null;
+                    }
                 )->elements;
                 break;
             case 'first-child':
                 $this->elements = $this->map(
-                    create_function('$node', 'return pq($node)->prevAll()->size() == 0 ? $node : null;')
+                    function ($node) {
+                        return pq($node)->prevAll()->size() === 0 ? $node : null;
+                    }
                 )->elements;
                 break;
             case 'last-child':
                 $this->elements = $this->map(
-                    create_function('$node', 'return pq($node)->nextAll()->size() == 0 ? $node : null;')
+                    function ($node) {
+                        return pq($node)->nextAll()->size() === 0 ? $node : null;
+                    }
                 )->elements;
                 break;
             case 'nth-child':
@@ -1217,68 +1216,66 @@ class phpQueryObject implements Iterator, Countable, ArrayAccess
                 // :nth-child(index/even/odd/equation)
                 if ($param === 'even' || $param === 'odd') {
                     $mapped = $this->map(
-                        create_function(
-                            '$node, $param',
-                            '$index = pq($node)->prevAll()->size()+1;
-							if ($param == "even" && ($index%2) === 0)
-								return $node;
-							elseif ($param === "odd" && $index%2 === 1)
-								return $node;
-							else
-								return null;'
-                        ),
+                        function ($node, $param) {
+                            $index = pq($node)->prevAll()->size() + 1;
+                            if ($param === 'even' && ($index % 2) === 0) {
+                                return $node;
+                            }
+                            if ($param === 'odd' && ($index) % 2 === 1) {
+                                return $node;
+                            }
+
+                            return null;
+                        },
                         new CallbackParam(), $param
                     );
                 } else {
                     if (mb_strlen($param) > 1 && strpos($param, 'n') !== false) {
                         // an+b
                         $mapped = $this->map(
-                            create_function(
-                                '$node, $param',
-                                '$prevs = pq($node)->prevAll()->size();
-							$index = 1+$prevs;
-							$bStart = strpos($param, "+");
-							if ($bStart === false) {
-							    $bStart = strpos($param, "-");
-							}
-							$b = $bStart !== false
-							        ? (int)(substr($param, $bStart))
-							        : 0;
-							$a = (int)(substr($param, 0, strpos($param, "n")));
-							if ($a > 0) {
-								return ($index-$b)%$a === 0
-									? $node
-									: null;
-								phpQuery::debug($a."*".floor($index/$a)."+$b-1 == ".($a*floor($index/$a)+$b-1)." ?= $prevs");
-								return $a*floor($index/$a)+$b-1 == $prevs
-										? $node
-										: null;
-							} else if ($a === 0)
-								return $index == $b
-										? $node
-										: null;
-							else
-								// negative value
-								return $index <= $b
-										? $node
-										: null;
-							'
-                            ),
+                            function ($node, $param) {
+                                $prevs  = pq($node)->prevAll()->size();
+                                $index  = 1 + $prevs;
+                                $bStart = strpos($param, '+');
+                                if ($bStart === false) {
+                                    $bStart = strpos($param, '-');
+                                }
+                                $b = $bStart !== false
+                                    ? (int)substr($param, $bStart)
+                                    : 0;
+                                $a = (int)substr($param, 0, strpos($param, 'n'));
+                                if ($a > 0) {
+                                    return ($index - $b) % $a === 0
+                                        ? $node
+                                        : null;
+                                }
+                                if ($a === 0) {
+                                    return $index == $b
+                                        ? $node
+                                        : null;
+                                }
+
+                                // negative value
+                                return $index <= $b
+                                    ? $node
+                                    : null;
+                            },
                             new CallbackParam(), $param
                         );
                     } else {
                         // index
                         $mapped = $this->map(
-                            create_function(
-                                '$node, $index',
-                                '$prevs = pq($node)->prevAll()->size();
-							if ($prevs && $prevs == $index-1)
-								return $node;
-							else if (! $prevs && $index == 1)
-								return $node;
-							else
-								return null;'
-                            ),
+                            function ($node, $index) {
+                                $prevs = pq($node)->prevAll()->size();
+                                if ($prevs && $prevs == $index - 1) {
+                                    return $node;
+                                }
+                                if (!$prevs && $index == 1) {
+                                    return $node;
+                                }
+
+                                return null;
+                            },
                             new CallbackParam(), $param
                         );
                     }
@@ -1379,7 +1376,7 @@ class phpQueryObject implements Iterator, Countable, ArrayAccess
                 break;
             }
             // avoid first space or /
-            if (in_array($selector[0], $notSimpleSelector)) {
+            if (in_array($selector[0], $notSimpleSelector, true)) {
                 $selector = array_slice($selector, 1);
             }
             // PER NODE selector chunks
@@ -1403,7 +1400,7 @@ class phpQueryObject implements Iterator, Countable, ArrayAccess
                         // DOMElement only
                         // ID
                         if ($s[0] === '#') {
-                            if ($node->getAttribute('id') != substr($s, 1)) {
+                            if ($node->getAttribute('id') !== substr($s, 1)) {
                                 $break = true;
                             }
                             // CLASSES

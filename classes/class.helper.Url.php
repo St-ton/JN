@@ -183,9 +183,13 @@ class UrlHelper
         $unreserved[] = dechex(ord('~'));
 
         return preg_replace_callback(array_map(
-            create_function('$str', 'return "/%" . strtoupper( $str ) . "/x";'),
+            function ($str) {
+                return '/%' . strtoupper($str) . '/x';
+            },
             $unreserved
-        ), create_function('$matches', 'return chr( hexdec( $matches[0] ));'), $string);
+        ), function ($matches) {
+            return chr(hexdec($matches[0]));
+        }, $string);
     }
 
     /**

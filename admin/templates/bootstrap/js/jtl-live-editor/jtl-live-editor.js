@@ -1,4 +1,3 @@
-
 function JtlLiveEditor(selector)
 {
     this.hoveredElm = null;
@@ -8,10 +7,8 @@ function JtlLiveEditor(selector)
     this.adjacentElm = null;
     this.adjacentDir = ''; // 'left', 'right', 'above', 'below'
     this.rootElm = $(selector);
-    this.pinbarElm = $('<div>FOO</div>', { 'class': 'jle-pinbar' });
-
-    // this.selectedLabelElm = $("<div>", { "class": "jle-selected-label" });
-    // this.targetLabelElm = $("<div>", { "class": "jle-target-label" });
+    this.labelElm = $('<div>', { 'class': 'jle-label' }).appendTo('body').hide();
+    this.pinbarElm = this.createPinbar().appendTo('body').hide();
 
     this.rootElm.on('mouseover', this.onMouseOver.bind(this));
     this.rootElm.on('click', this.onClick.bind(this));
@@ -25,29 +22,15 @@ JtlLiveEditor.prototype.onMouseOver = function(e)
 {
     var elm = $(e.target);
 
-    this.setHovered();
-
     while(!this.isSelectable(elm) && !elm.is(this.rootElm)) {
         elm = elm.parent();
     }
 
     if(this.isSelectable(elm)) {
         this.setHovered(elm);
-        // if(this.selectedElm !== null && !this.selectedElm.is(elm)) {
-        //     this.selectedElm.attr("contenteditable", "inherit");
-        //     this.selectedElm.attr("draggable", "false");
-        //     this.selectedElm.removeClass("jle-selected");
-        // }
-        //
-        // this.selectedElm = elm;
-        // //this.selectedElm.attr("contenteditable", "true");
-        // this.selectedElm.attr("draggable", "true");
-        // this.selectedElm.addClass("jle-selected");
-        // //this.selectedElm.append(this.selectedLabelElm);
-        // this.selectedLabelElm.text(
-        //     this.selectedElm.prop("tagName").toLowerCase() + "." +
-        //     this.selectedElm.attr("class").split(" ").join(".")
-        // );
+    }
+    else {
+        this.setHovered();
     }
 };
 
@@ -61,6 +44,9 @@ JtlLiveEditor.prototype.onClick = function(e)
 
     if(this.isSelectable(elm)) {
         this.setSelected(elm);
+    }
+    else {
+        this.setSelected();
     }
 };
 
@@ -112,80 +98,6 @@ JtlLiveEditor.prototype.onDragOver = function(e)
     this.setDropTarget(elm);
 
     e.preventDefault();
-
-    // if(elm.is(this.rootElm)) {
-    //     this.setDropTarget(elm);
-    // }
-    // else if(this.isDropTarget(elm)) {
-    //
-    // }
-
-    // var horiRatio = (e.clientX - elm.offset().left) / elm.outerWidth();
-    // var vertRatio = (e.clientY - elm.offset().top) / elm.outerHeight();
-    //
-    // if(vertRatio < 0.33 || horiRatio < 0.33) {
-    // }
-    // else if(
-    //     vertRatio >= 0.33 && vertRatio <= 0.66 && horiRatio >= 0.33 && horiRatio <= 0.66
-    // ) {
-    //     console.log('joo');
-    //     if(this.isDropTarget(elm)) {
-    //         console.log('joo');
-    //         e.preventDefault();
-    //     }
-    // }
-    // else if(vertRatio > 0.66 || horiRatio > 0.66) {
-    // }
-
-    // console.log("dragover");
-    // var elm = $(e.target);
-    //
-    // var horiRatio = (e.clientX - elm.offset().left) / elm.outerWidth();
-    // var vertRatio = (e.clientY - elm.offset().top) / elm.outerHeight();
-    //
-    // $(".jle-drop-target").removeClass("jle-drop-target");
-    // $(".jle-drop-before").removeClass("jle-drop-before");
-    // $(".jle-drop-after").removeClass("jle-drop-after");
-    // $(".jle-drop-left").removeClass("jle-drop-left");
-    // $(".jle-drop-right").removeClass("jle-drop-right");
-    //
-    // this.targetElm = null;
-    //
-    // if(!isDescendant(elm, this.draggedElm)) {
-    //     if(vertRatio < 0.33 || horiRatio < 0.33) {
-    //         if(!elm.is(this.rootElm)) {
-    //             this.targetElm = elm;
-    //             this.placeholderElm.insertBefore(elm);
-    //             elm.addClass(vertRatio < 0.33 ? "jle-drop-before" : "jle-drop-left");
-    //         }
-    //     }
-    //     else if(
-    //         vertRatio >= 0.33 && vertRatio <= 0.66 && horiRatio >= 0.33 && horiRatio <= 0.66
-    //     ) {
-    //         if(!this.draggedElm.is(elm)) {
-    //             this.targetElm = elm;
-    //             this.placeholderElm.appendTo(elm);
-    //             elm.addClass("jle-drop-target");
-    //         }
-    //     }
-    //     else if(vertRatio > 0.66 || horiRatio > 0.66) {
-    //         if(!elm.is(this.rootElm)) {
-    //             this.targetElm = elm;
-    //             this.placeholderElm.insertAfter(elm);
-    //             elm.addClass(vertRatio > 0.66 ? "jle-drop-after" : "jle-drop-right");
-    //         }
-    //     }
-    // }
-    //
-    // if(this.targetElm !== null) {
-    //     //this.targetElm.append(this.targetLabelElm);
-    //     this.targetLabelElm.text(
-    //         this.targetElm.prop("tagName").toLowerCase() + "." +
-    //         this.targetElm.attr("class").split(" ").join(".")
-    //     );
-    // }
-    //
-    // e.preventDefault();
 };
 
 JtlLiveEditor.prototype.onDrop = function(e)
@@ -204,12 +116,11 @@ JtlLiveEditor.prototype.onDrop = function(e)
         else {
             this.draggedElm.appendTo(this.targetElm);
         }
-    }
 
-    // console.log("drop");
-    // var elm = $(e.target);
-    //
-    // this.placeholderElm.replaceWith(this.draggedElm);
+        var selectedElm = this.selectedElm;
+        this.setSelected();
+        this.setSelected(selectedElm);
+    }
 };
 
 JtlLiveEditor.prototype.onDragEnd = function(e)
@@ -219,6 +130,24 @@ JtlLiveEditor.prototype.onDragEnd = function(e)
     this.cleanUpDrag();
 };
 
+JtlLiveEditor.prototype.onBold = function(e)
+{
+    document.execCommand('bold');
+};
+
+JtlLiveEditor.prototype.onItalic = function(e)
+{
+    document.execCommand('italic');
+};
+
+JtlLiveEditor.prototype.onTrash = function(e)
+{
+    if(this.selectedElm !== null) {
+        this.selectedElm.remove();
+        this.setSelected();
+    }
+};
+
 JtlLiveEditor.prototype.setHovered = function(elm)
 {
     elm = elm || null;
@@ -226,6 +155,7 @@ JtlLiveEditor.prototype.setHovered = function(elm)
     if(this.hoveredElm !== null) {
         this.hoveredElm.removeClass('jle-hovered');
         this.hoveredElm.attr('draggable', 'false');
+        this.labelElm.hide();
     }
 
     this.hoveredElm = elm;
@@ -233,6 +163,17 @@ JtlLiveEditor.prototype.setHovered = function(elm)
     if(this.hoveredElm !== null) {
         this.hoveredElm.addClass('jle-hovered');
         this.hoveredElm.attr('draggable', 'true');
+        var labelText = (
+            this.hoveredElm.prop('tagName').toLowerCase() + "." +
+            this.hoveredElm.attr('class').split(' ').join('.')
+        );
+        this.labelElm
+            .text(labelText)
+            .show()
+            .css({
+                left: elm.offset().left + 'px',
+                top: elm.offset().top - this.labelElm.outerHeight() + 'px'
+            })
     }
 };
 
@@ -240,10 +181,11 @@ JtlLiveEditor.prototype.setSelected = function(elm)
 {
     elm = elm || null;
 
-    if(!elm.is(this.selectedElm)) {
+    if(elm === null || !elm.is(this.selectedElm)) {
         if(this.selectedElm !== null) {
             this.selectedElm.removeClass('jle-selected');
             this.selectedElm.attr('contenteditable', 'false');
+            this.pinbarElm.hide();
         }
 
         this.selectedElm = elm;
@@ -251,6 +193,12 @@ JtlLiveEditor.prototype.setSelected = function(elm)
         if(this.selectedElm !== null) {
             this.selectedElm.addClass('jle-selected');
             this.selectedElm.attr('contenteditable', 'true');
+            this.pinbarElm
+                .show()
+                .css({
+                    left: elm.offset().left + elm.outerWidth() - this.pinbarElm.outerWidth() + 'px',
+                    top: elm.offset().top - this.pinbarElm.outerHeight() + 'px'
+                })
         }
     }
 };
@@ -300,44 +248,62 @@ JtlLiveEditor.prototype.setAdjacent = function(elm, dir)
     this.adjacentElm = elm;
     this.adjacentDir = dir;
 
-    if(this.adjacentElm !== null) {
+    if(this.adjacentElm !== null && this.adjacentDir !== '') {
         this.adjacentElm.addClass('jle-adjacent-' + dir);
     }
 };
+
+JtlLiveEditor.prototype.createPinbar = function()
+{
+    var pinbarElm = $('<div class="jle-pinbar btn-group">');
+
+    pinbarElm.append(
+        $('<button class="btn btn-default"><i class="fa fa-bold"></i></button>')
+            .click(this.onBold.bind(this))
+    );
+    pinbarElm.append(
+        $('<button class="btn btn-default"><i class="fa fa-italic"></i></button>')
+            .click(this.onItalic.bind(this))
+    );
+    pinbarElm.append(
+        $('<button class="btn btn-default"><i class="fa fa-trash"></i></button>')
+            .click(this.onTrash.bind(this))
+    );
+    // pinbarElm.append(
+    //     $('<button class="btn btn-default"><i class="fa fa-trash"></i></button>')
+    //         .click(this.onTrash.bind(this))
+    // );
+
+    return pinbarElm;
+}
 
 JtlLiveEditor.prototype.cleanUpDrag = function()
 {
     this.setDragged();
     this.setDropTarget();
     this.setAdjacent();
-    // this.placeholderElm.remove();
-    // this.targetLabelElm.remove();
-    // $(".jle-drop-target").removeClass("jle-drop-target");
-    // $(".jle-drop-before").removeClass("jle-drop-before");
-    // $(".jle-drop-after").removeClass("jle-drop-after");
-    // $(".jle-drop-left").removeClass("jle-drop-left");
-    // $(".jle-drop-right").removeClass("jle-drop-right");
-    // $(".jle-dragged").removeClass("jle-dragged");
 };
 
 JtlLiveEditor.prototype.isSelectable = function(elm)
 {
     // return elm.is(this.rootElm);
-    return !this.isInline(elm) && !elm.is(this.rootElm);
+    return !this.isInline(elm) && !elm.is(this.rootElm) && !elm.parent().is('.row');
     // && !elm.is(this.selectedLabelElm) && !elm.is(this.targetLabelElm);
 };
 
 JtlLiveEditor.prototype.isDropTarget = function(elm)
 {
-    return elm.is(this.rootElm);//!isInline(elm);
+    return !this.isDescendant(elm, this.draggedElm) && (
+        elm.is(this.rootElm) || elm.parent().is('.row')
+    );
 };
 
 JtlLiveEditor.prototype.isInline = function(elm)
 {
     return elm.css('display') === 'inline' || elm.css('display') === 'inline-block';
 };
-//
-// function isDescendant(descendant, tree)
-// {
-//     return tree.has(descendant).length > 0;
-// }
+
+JtlLiveEditor.prototype.isDescendant = function(descendant, tree)
+{
+    return tree.has(descendant).length > 0;
+};

@@ -1,3 +1,7 @@
+#switcher{
+    display: none;
+}
+
 .jle-editable, .jle-editable .row > * {
     min-height: 2em;
     /*border: 1px dashed #ccc;*/

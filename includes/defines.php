@@ -122,6 +122,7 @@ ifndef('PFAD_EXPORT_BACKUP', PFAD_EXPORT . 'backup/');
 ifndef('PFAD_EXPORT_YATEGO', PFAD_EXPORT . 'yatego/');
 ifndef('PFAD_UPDATE', 'update/');
 ifndef('PFAD_WIDGETS', 'widgets/');
+ifndef('PFAD_PORTLETS', 'portlets/');
 ifndef('PFAD_INSTALL', 'install/');
 ifndef('PFAD_SHOPMD5', 'shopmd5files/');
 ifndef('PFAD_NUSOAP', 'nusoap/');

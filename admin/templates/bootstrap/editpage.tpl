@@ -51,7 +51,7 @@
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li><a href="#"><i class="fa fa-save"></i></a></li>
-                    <li><a href="#"><i class="fa fa-close"></i></a></li>
+                    <li><a href="{$URL_SHOP}/{$oSeo->cSeo}"><i class="fa fa-close"></i></a></li>
                 </ul>
             </div>
         </div>
@@ -63,19 +63,17 @@
         </ul>
         <div class="tab-content">
             <div class="tab-pane active" id="elements">
-                <div class="list-group">
-                    <a href="#" class="portlet-button list-group-item" data-content="<h1>Heading</h1>">
-                        <h1>Heading 1</h1>
-                    </a>
-                    <a href="#" class="portlet-button list-group-item" data-content="<h2>Heading</h2>">
-                        <h2>Heading 2</h2>
-                    </a>
-                    <a href="#" class="portlet-button list-group-item" data-content="<h3>Heading</h3>">
-                        <h3>Heading 3</h3>
-                    </a>
-                    <a href="#" class="portlet-button list-group-item" data-content="<p>Paragraph</p>">
-                        <p>Paragraph</p>
-                    </a>
+                <h3>Basic HTML</h3>
+                <div class="row">
+                    {foreach from=$oPortlet_arr item=oPortlet}
+                        <div class="col-xs-6">
+                            <p>
+                                <a href="#" class="portlet-button" data-content="{$oPortlet->cPreviewContent}">
+                                    <button class="btn btn-default">{$oPortlet->cTitle}</button>
+                                </a>
+                            </p>
+                        </div>
+                    {/foreach}
                 </div>
             </div>
             <div class="tab-pane" id="templates">

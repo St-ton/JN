@@ -31,6 +31,14 @@ class FilterItemCategory extends FilterBaseCategory
      */
     public function getSQLCondition()
     {
+        if ($this->getIncludeSubCategories() === true) {
+            return ' tkategorieartikel.kKategorie IN (
+                        SELECT tchild.kKategorie FROM tkategorie AS tparent
+                            JOIN tkategorie AS tchild
+                                ON tchild.lft BETWEEN tparent.lft AND tparent.rght
+                                WHERE tparent.kKategorie = ' . $this->getValue() . ')';
+        }
+
         return $this->getConfig()['navigationsfilter']['kategoriefilter_anzeigen_als'] === 'HF'
             ? '(tkategorieartikelgesamt.kOberKategorie = ' . $this->getValue() .
                 ' OR tkategorieartikelgesamt.kKategorie = ' . $this->getValue() . ') '
@@ -43,6 +51,7 @@ class FilterItemCategory extends FilterBaseCategory
     public function getSQLJoin()
     {
         $join = (new FilterJoin())
+            ->setOrigin(__CLASS__)
             ->setComment('join from FilterItemCategory')
             ->setType('JOIN');
         if ($this->getConfig()['navigationsfilter']['kategoriefilter_anzeigen_als'] === 'HF') {

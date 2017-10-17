@@ -15,6 +15,11 @@ class FilterBaseCategory extends AbstractFilter
     public $kKategorie;
 
     /**
+     * @var bool
+     */
+    private $includeSubCategories = false;
+
+    /**
      * FilterBaseCategory constructor.
      *
      * @param Navigationsfilter $naviFilter
@@ -25,6 +30,26 @@ class FilterBaseCategory extends AbstractFilter
         $this->isCustom    = false;
         $this->urlParam    = 'k';
         $this->urlParamSEO = SEP_KAT;
+    }
+
+
+    /**
+     * @return bool
+     */
+    public function getIncludeSubCategories()
+    {
+        return $this->includeSubCategories;
+    }
+
+    /**
+     * @param bool $includeSubCategories
+     * @return FilterItemCategory
+     */
+    public function setIncludeSubCategories($includeSubCategories)
+    {
+        $this->includeSubCategories = (bool)$includeSubCategories;
+
+        return $this;
     }
 
     /**
@@ -110,7 +135,13 @@ class FilterBaseCategory extends AbstractFilter
      */
     public function getSQLCondition()
     {
-        return 'tkategorieartikel.kKategorie = ' . $this->getValue();
+        return $this->getIncludeSubCategories() === true
+            ? ' tkategorieartikel.kKategorie IN (
+                        SELECT tchild.kKategorie FROM tkategorie AS tparent
+                            JOIN tkategorie AS tchild
+                                ON tchild.lft BETWEEN tparent.lft AND tparent.rght
+                                WHERE tparent.kKategorie = ' . $this->getValue() . ')'
+            : 'tkategorieartikel.kKategorie = ' . $this->getValue();
     }
 
     /**

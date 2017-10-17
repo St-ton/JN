@@ -1973,9 +1973,9 @@ class Navigationsfilter
      * @return IFilter
      * @throws InvalidArgumentException
      */
-    private function convertExtraFilter($extraFilter)
+    private function convertExtraFilter($extraFilter = null)
     {
-        if (get_class($extraFilter) !== 'stdClass') {
+        if ($extraFilter === null || get_class($extraFilter) !== 'stdClass') {
             return $extraFilter;
         }
         $filter = null;

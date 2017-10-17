@@ -8,6 +8,10 @@ html, body, #sidebar-panel, #iframe-panel, #iframe-panel iframe {
     position: relative;
 }
 
+#sidebar-panel{
+    padding: 10px 15px;
+}
+
 #iframe-panel {
 	text-align: center;
 	background: #ddd;

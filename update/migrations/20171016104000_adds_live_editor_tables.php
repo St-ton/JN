@@ -43,11 +43,25 @@ class Migration_20171016104000 extends Migration implements IMigration
                                   PRIMARY KEY (`kEditorPageContent`),
                                   UNIQUE INDEX `ContentID` (`kEditorPageContent` ASC, `kEditorPage` ASC, `cAreaID` ASC));
         ");
+
+        $this->execute("CREATE TABLE `teditorportlets` (
+                                  `kPortlet` INT(10) NOT NULL AUTO_INCREMENT,
+                                  `kPlugin` INT(10) NOT NULL,
+                                  `cTitle` VARCHAR(255) NOT NULL,
+                                  `cClass` VARCHAR(255) NOT NULL,
+                                  `cGroup` VARCHAR(255) NOT NULL,
+                                  PRIMARY KEY (`kPortlet`));");
+
+        $this->execute("INSERT INTO `teditorportlets` (`kPlugin`, `cTitle`, `cClass`, `cGroup`) 
+                                  VALUES ('0', 'Heading', 'Heading', 'Basic HTML');");
+        $this->execute("INSERT INTO `teditorportlets` (`kPlugin`, `cTitle`, `cClass`, `cGroup`) 
+                                  VALUES ('0', 'Column', 'Column', 'Basic HTML');");
     }
 
     public function down()
     {
         $this->execute("DROP TABLE `teditorpage`;");
         $this->execute("DROP TABLE `teditorpagecontent`;");
+        $this->execute("DROP TABLE `teditorportlets`;");
     }
 }

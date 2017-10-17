@@ -9,7 +9,35 @@
  */
 function getPortlets()
 {
-    $oPortlet_arr   = [];
+    $oPortlet_arr = Shop::DB()->selectAll('teditorportlets', 'kPlugin', 0, '*', 'cGroup');
+
+    foreach ($oPortlet_arr as $i => $oPortlet) {
+        $oPortlet_arr[$i]->cContent = '';
+        $cClass                     = 'Portlet' . $oPortlet->cClass;
+        $cClassFile                 = 'class.' . $cClass . '.php';
+        $cClassPath                 = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_PORTLETS . $cClassFile;
+        $oPortlet->cTitle           = str_replace(['--', ' '], '-', $oPortlet->cTitle);
+
+        // Plugin?
+        $oPlugin = null;
+        /*
+        if (isset($oWidget->kPlugin) && $oWidget->kPlugin > 0) {
+            $oPlugin    = new Plugin($oWidget->kPlugin);
+            $cClass     = 'Widget' . $oPlugin->oPluginAdminWidgetAssoc_arr[$oWidget->kWidget]->cClass;
+            $cClassPath = $oPlugin->oPluginAdminWidgetAssoc_arr[$oWidget->kWidget]->cClassAbs;
+        }*/
+        if (file_exists($cClassPath)) {
+            require_once $cClassPath;
+            if (class_exists($cClass)) {
+                /** @var WidgetBase $oClassObj */
+                $oClassObj                  = new $cClass(null, null, $oPlugin);
+                $oPortlet_arr[$i]->cPreviewContent = $oClassObj->getPreviewContent();
+            }
+        }
+    }
+
+
+    /*$oPortlet_arr   = [];
     $oH1            = new stdClass();
     $oH1->title     = 'Heading 1';
     $oH1->content   = '<h1>Heading</h1>';
@@ -28,9 +56,7 @@ function getPortlets()
     $oPa            = new stdClass();
     $oPa->title     = 'Paragraph';
     $oPa->content   = '<p>paragraph</p>';
-    $oPortlet_arr[] = $oPa;
-
-
+    $oPortlet_arr[] = $oPa;*/
 
     return $oPortlet_arr;
 }

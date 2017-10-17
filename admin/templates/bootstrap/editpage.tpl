@@ -63,11 +63,16 @@
         </ul>
         <div class="tab-content">
             <div class="tab-pane active" id="elements">
-                <div class="list-group">
+                <h3>Basic HTML</h3>
+                <div class="row">
                     {foreach from=$oPortlet_arr item=oPortlet}
-                    <a href="#" class="portlet-button list-group-item" data-content="{$oPortlet->content}">
-                        <button class="btn btn-default">{$oPortlet->title}</button>
-                    </a>
+                        <div class="col-xs-6">
+                            <p>
+                                <a href="#" class="portlet-button" data-content="{$oPortlet->cPreviewContent}">
+                                    <button class="btn btn-default">{$oPortlet->cTitle}</button>
+                                </a>
+                            </p>
+                        </div>
                     {/foreach}
                 </div>
             </div>

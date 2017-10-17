@@ -34,20 +34,20 @@ class PortletBase
         $this->oSmarty = Shop::Smarty();
         $this->oDB     = Shop::DB();
         $this->oPlugin = $oPlugin;
-        $this->init();
-    }
-
-    /**
-     *
-     */
-    public function init()
-    {
     }
 
     /**
      * @return string
      */
-    public function getContent()
+    public function getPreviewContent()
+    {
+        return '';
+    }
+
+    /**
+     * @return string
+     */
+    public function getHTMLContent()
     {
         return '';
     }

@@ -147,6 +147,7 @@ function loadContent(url)
         if (typeof $.evo.article === 'function') {
             $.evo.article().onLoad();
             $.evo.article().register();
+            addValidationListener();
         }
 
         $('html,body').animate({
@@ -269,7 +270,7 @@ $(document).ready(function () {
         }
     });
 
-    $('.footnote-vat a, .versand, .popup').click(function(e) {
+    $(document).on('click', '.footnote-vat a, .versand, .popup', function(e) {
         var url = e.currentTarget.href;
         url += (url.indexOf('?') === -1) ? '?isAjax=true' : '&isAjax=true';
         eModal.ajax({

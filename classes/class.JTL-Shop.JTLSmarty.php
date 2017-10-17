@@ -380,10 +380,12 @@ class JTLSmarty extends SmartyBC
     {
         $hookList = Plugin::getHookList();
         $isMobile = $this->template->isMobileTemplateActive();
-        if ($isMobile ||
-            (isset($hookList[HOOK_SMARTY_OUTPUTFILTER])
+        if ($isMobile
+            || ((isset($hookList[HOOK_SMARTY_OUTPUTFILTER])
                 && is_array($hookList[HOOK_SMARTY_OUTPUTFILTER])
                 && count($hookList[HOOK_SMARTY_OUTPUTFILTER]) > 0)
+                || count(EventDispatcher::getInstance()->getListeners('shop.hook.' . HOOK_SMARTY_OUTPUTFILTER)) > 0
+            )
         ) {
             $this->unregisterFilter('output', [$this, '__outputFilter']);
             $doc = phpQuery::newDocumentHTML($tplOutput, JTL_CHARSET);

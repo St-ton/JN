@@ -9,7 +9,7 @@
  */
 function getPortlets()
 {
-    $oPortlet_arr = Shop::DB()->selectAll('teditorportlets', 'kPlugin', 0, '*', 'cGroup');
+    $oPortlet_arr = Shop::DB()->selectAll('teditorportlets', [], [], '*', 'cGroup');
 
     foreach ($oPortlet_arr as $i => $oPortlet) {
         $oPortlet_arr[$i]->cContent = '';
@@ -20,17 +20,16 @@ function getPortlets()
 
         // Plugin?
         $oPlugin = null;
-        /*
-        if (isset($oWidget->kPlugin) && $oWidget->kPlugin > 0) {
-            $oPlugin    = new Plugin($oWidget->kPlugin);
-            $cClass     = 'Widget' . $oPlugin->oPluginAdminWidgetAssoc_arr[$oWidget->kWidget]->cClass;
-            $cClassPath = $oPlugin->oPluginAdminWidgetAssoc_arr[$oWidget->kWidget]->cClassAbs;
-        }*/
+        if (isset($oPortlet->kPlugin) && $oPortlet->kPlugin > 0) {
+            $oPlugin    = new Plugin($oPortlet->kPlugin);
+            $cClass     = 'Portlet' . $oPlugin->oPluginEditorPortletAssoc_arr[$oPortlet->kPortlet]->cClass;
+            $cClassPath = $oPlugin->oPluginEditorPortletAssoc_arr[$oPortlet->kPortlet]->cClassAbs;
+        }
         if (file_exists($cClassPath)) {
             require_once $cClassPath;
             if (class_exists($cClass)) {
                 /** @var WidgetBase $oClassObj */
-                $oClassObj                  = new $cClass(null, null, $oPlugin);
+                $oClassObj                         = new $cClass(null, null, $oPlugin);
                 $oPortlet_arr[$i]->cPreviewContent = $oClassObj->getPreviewContent();
             }
         }

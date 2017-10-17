@@ -6153,11 +6153,11 @@ a.label:focus {
   top: -1px;
 }
 .label-default {
-  background-color: transparent;
+  background-color: #797979;
 }
 .label-default[href]:hover,
 .label-default[href]:focus {
-  background-color: rgba(0, 0, 0, 0);
+  background-color: #606060;
 }
 .label-primary {
   background-color: #bc3726;
@@ -10421,7 +10421,7 @@ div#add-to-cart {
   color: #ffffff;
 }
 .label.label-default {
-  background: transparent;
+  background: #797979;
 }
 .label.label-primary {
   background: #bc3726;

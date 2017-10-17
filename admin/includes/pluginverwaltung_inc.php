@@ -421,6 +421,12 @@ function pluginPlausi($kPlugin, $cVerzeichnis = '')
 // 129  = OptionsSource-Datei existiert nicht
 // 130  = Bootstrap-Klasse existiert nicht
 // 131  = Bootstrap-Klasse muss das Interface IPlugin implementieren
+// 132  = Keine Portlets vorhanden
+// 133  = Portlet Title entspricht nicht der Konvention
+// 134  = Portlet Class entspricht nicht der Konvention
+// 135  = Die Datei für die Klasse des Portlet existiert nicht
+// 136  = Group im Portlet entspricht nicht der Konvention
+// 136  = Active im Portlet entspricht nicht der Konvention
 */
 
 /**
@@ -1666,6 +1672,63 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
                     }
                 }
 
+                // Plausi EditorPortlets (falls vorhanden)
+                if (isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['EditorPortlet']) &&
+                    is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['EditorPortlet'])
+                ) {
+                    if (isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['EditorPortlet'][0]['Portlet']) &&
+                        is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['EditorPortlet'][0]['Portlet']) &&
+                        count($XML_arr['jtlshop3plugin'][0]['Install'][0]['EditorPortlet'][0]['Portlet']) > 0
+                    ) {
+                        foreach ($XML_arr['jtlshop3plugin'][0]['Install'][0]['EditorPortlet'][0]['Portlet'] as $u => $Portlet_arr) {
+                            preg_match("/[0-9]+\sattr/", $u, $cTreffer1_arr);
+                            preg_match("/[0-9]+/", $u, $cTreffer2_arr);
+                            if (strlen($cTreffer2_arr[0]) === strlen($u)) {
+                                // Portlet Title prüfen
+                                preg_match(
+                                    "/[a-zA-Z0-9\/_\-äÄüÜöÖß" . utf8_decode('äÄüÜöÖß') . "\(\) ]+/",
+                                    $Portlet_arr['Title'],
+                                    $cTreffer1_arr
+                                );
+                                if (strlen($cTreffer1_arr[0]) !== strlen($Portlet_arr['Title'])) {
+                                    return 133;// Portlet Title entspricht nicht der Konvention
+                                }
+                                // Portlet Class prüfen
+                                preg_match("/[a-zA-Z0-9\/_\-.]+/", $Portlet_arr['Class'], $cTreffer1_arr);
+                                if (strlen($cTreffer1_arr[0]) === strlen($Portlet_arr['Class'])) {
+                                    if (!file_exists(
+                                        $cVerzeichnis . '/' . PFAD_PLUGIN_VERSION . $cVersionsnummer . '/' .
+                                        PFAD_PLUGIN_ADMINMENU . PFAD_PLUGIN_PORTLET .
+                                        'class.Portlet' . $Portlet_arr['Class'] . '_' .
+                                        $XML_arr['jtlshop3plugin'][0]['PluginID'] . '.php'
+                                    )
+                                    ) {
+                                        return 135;// Die Datei für die Klasse des Portlets existiert nicht
+                                    }
+                                } else {
+                                    return 134;// Portlet Class entspricht nicht der Konvention
+                                }
+                                // Portlet Group prüfen
+                                preg_match(
+                                    "/[a-zA-Z0-9\/_\-äÄüÜöÖß" . utf8_decode('äÄüÜöÖß') . "\(\) ]+/",
+                                    $Portlet_arr['Group'],
+                                    $cTreffer1_arr
+                                );
+                                if (strlen($cTreffer1_arr[0]) !== strlen($Portlet_arr['Group'])) {
+                                    return 136;// Portlet Group entspricht nicht der Konvention
+                                }
+                                // Portlet Active prüfen
+                                preg_match("/[0-1]{1}/", $Portlet_arr['Active'], $cTreffer1_arr);
+                                if (strlen($cTreffer1_arr[0]) !== strlen($Portlet_arr['Active'])) {
+                                    return 137;// Active im Portlet entspricht nicht der Konvention
+                                }
+                            }
+                        }
+                    } else {
+                        return 132;// Keine Portlets vorhanden
+                    }
+                }
+
                 // Plausi Exportformate (falls vorhanden)
                 if (isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['ExportFormat']) &&
                     is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['ExportFormat'])
@@ -1913,6 +1976,7 @@ function installierePluginVorbereitung($cVerzeichnis, $oPluginOld = 0)
 // 16 = Ein Exportformat konnte nicht in die Datenbank gespeichert werden
 // 17 = Ein Template konnte nicht in die Datenbank gespeichert werden
 // 18 = Eine Uninstall Datei konnte nicht in die Datenbank gespeichert werden
+// 19 = Ein EditorPortlet konnte nicht in die Datenbank gespeichert werden
 
 // ### logikSQLDatei
 // 22 = Plugindaten fehlen
@@ -3140,6 +3204,30 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
             }
         }
     }
+    // EditorPortlets teditorportlets fuellen
+    if (isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['EditorPortlet']) &&
+        is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['EditorPortlet']) &&
+        isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['EditorPortlet'][0]['Portlet']) &&
+        is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['EditorPortlet'][0]['Portlet']) &&
+        count($XML_arr['jtlshop3plugin'][0]['Install'][0]['EditorPortlet'][0]['Portlet']) > 0
+    ) {
+        foreach ($XML_arr['jtlshop3plugin'][0]['Install'][0]['EditorPortlet'][0]['Portlet'] as $u => $Portlet_arr) {
+            preg_match("/[0-9]+/", $u, $cTreffer2_arr);
+            if (strlen($cTreffer2_arr[0]) === strlen($u)) {
+                $oEditorPortlet          = new stdClass();
+                $oEditorPortlet->kPlugin = $kPlugin;
+                $oEditorPortlet->cTitle  = $Portlet_arr['Title'];
+                $oEditorPortlet->cClass  = $Portlet_arr['Class'] . '_' . $oPlugin->cPluginID;
+                $oEditorPortlet->cGroup  = $Portlet_arr['Group'];
+                $oEditorPortlet->bActive = $Portlet_arr['Active'];
+                $kPortlet                = Shop::DB()->insert('teditorportlets', $oEditorPortlet);
+
+                if (!$kPortlet) {
+                    return 19;// Ein EditorPortlet konnte nicht in die Datenbank gespeichert werden
+                }
+            }
+        }
+    }
     // ExportFormate in texportformat fuellen
     if (isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['ExportFormat']) &&
         is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['ExportFormat']) &&
@@ -3368,6 +3456,7 @@ function syncPluginUpdate($kPlugin, $oPluginOld, $nXMLVersion)
         Shop::DB()->update('tpluginadminmenu', 'kPlugin', $kPlugin, $upd);
         Shop::DB()->update('tpluginsprachvariable', 'kPlugin', $kPlugin, $upd);
         Shop::DB()->update('tadminwidgets', 'kPlugin', $kPlugin, $upd);
+        Shop::DB()->update('teditorportlets', 'kPlugin', $kPlugin, $upd);
         Shop::DB()->update('tpluginsprachvariablecustomsprache', 'kPlugin', $kPlugin, $upd);
         Shop::DB()->update('tplugin_resources', 'kPlugin', $kPlugin, $upd);
         Shop::DB()->update('tplugincustomtabelle', 'kPlugin', $kPlugin, $upd);
@@ -3754,6 +3843,7 @@ function doSQLDelete($kPlugin, $bUpdate, $kPluginNew = null)
     Shop::DB()->delete('tplugintemplate', 'kPlugin', $kPlugin);
     Shop::DB()->delete('tcheckboxfunktion', 'kPlugin', $kPlugin);
     Shop::DB()->delete('tadminwidgets', 'kPlugin', $kPlugin);
+    Shop::DB()->delete('teditorportlets', 'kPlugin', $kPlugin);
     Shop::DB()->query(
         "DELETE texportformateinstellungen, texportformatqueuebearbeitet, texportformat
             FROM texportformat
@@ -3817,6 +3907,10 @@ function aktivierePlugin($kPlugin)
                 $_upd_wdg->bActive = 1;
                 Shop::DB()->update('tadminwidgets', 'kPlugin', $kPlugin, $_upd_wdg);
 
+                $_upd_prt          = new stdClass();
+                $_upd_prt->bActive = 1;
+                Shop::DB()->update('teditorportlets', 'kPlugin', $kPlugin, $_upd_prt);
+
                 $_upd_lnk            = new stdClass();
                 $_upd_lnk->bIsActive = 1;
                 Shop::DB()->update('tlink', 'kPlugin', $kPlugin, $_upd_lnk);
@@ -3862,6 +3956,10 @@ function deaktivierePlugin($kPlugin)
         $_upd_wdg          = new stdClass();
         $_upd_wdg->bActive = 0;
         Shop::DB()->update('tadminwidgets', 'kPlugin', $kPlugin, $_upd_wdg);
+
+        $_upd_prt          = new stdClass();
+        $_upd_prt->bActive = 0;
+        Shop::DB()->update('teditorportlets', 'kPlugin', $kPlugin, $_upd_wdg);
 
         $_upd_lnk            = new stdClass();
         $_upd_lnk->bIsActive = 0;
@@ -4347,6 +4445,13 @@ function gibSprachVariablenALT($kPlugin)
 // 127  = Benoetigt ionCube, Extension wurde aber nicht geladen
 // 128  = OptionsSource-Datei wurde nicht angegeben
 // 129  = OptionsSource-Datei existiert nicht
+
+// 132  = Keine Portlets vorhanden
+// 133  = Portlet Title entspricht nicht der Konvention
+// 134  = Portlet Class entspricht nicht der Konvention
+// 135  = Die Datei für die Klasse des Portlet existiert nicht
+// 136  = Group im Portlet entspricht nicht der Konvention
+// 137  = Active im Portlet entspricht nicht der Konvention
 */
 
 /**
@@ -4745,6 +4850,24 @@ function mappePlausiFehler($nFehlerCode, $oPlugin)
                 break;
             case 131:
                 $return = 'Fehler: Bootstrap-Klasse "%cPluginID%\\Bootstrap" muss das Interface "IPlugin" implementieren';
+                break;
+            case 132:
+                $return = 'Fehler: Keine Portlets vorhanden';
+                break;
+            case 133:
+                $return = 'Fehler: Portlet Title entspricht nicht der Konvention';
+                break;
+            case 134:
+                $return = 'Fehler: ortlet Class entspricht nicht der Konvention';
+                break;
+            case 135:
+                $return = 'Fehler: Die Datei für die Klasse des Portlet existiert nicht';
+                break;
+            case 136:
+                $return = 'Fehler: Group im Portlet entspricht nicht der Konvention';
+                break;
+            case 137:
+                $return = 'Fehler: Active im Portlet entspricht nicht der Konvention';
                 break;
         }
     }

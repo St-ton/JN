@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding="ISO-8859-1"?>
+<jtlshop3plugin>
+    <Name>JTL Portlets</Name>
+    <Description>Fügt dem Liveeditor verschiedene Portlets hinzu.</Description>
+    <Author>JTL-Software-GmbH</Author>
+    <URL>http://www.jtl-software.de</URL>
+    <XMLVersion>100</XMLVersion>
+    <Shop4Version>400</Shop4Version>
+    <PluginID>jtl_portlets</PluginID>
+    <Install>
+        <Version nr="100">
+            <CreateDate>2017-17-10</CreateDate>
+        </Version>
+        <EditorPortlet>
+            <Portlet>
+                <Title>Paragraph</Title>
+                <Class>Paragraph</Class>
+                <Group>Basic HTML</Group>
+                <Active>1</Active>
+            </Portlet>
+        </EditorPortlet>
+    </Install>
+</jtlshop3plugin>

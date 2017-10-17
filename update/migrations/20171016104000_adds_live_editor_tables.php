@@ -50,12 +50,13 @@ class Migration_20171016104000 extends Migration implements IMigration
                                   `cTitle` VARCHAR(255) NOT NULL,
                                   `cClass` VARCHAR(255) NOT NULL,
                                   `cGroup` VARCHAR(255) NOT NULL,
+                                  `bActive` TINYINT(1) NOT NULL DEFAULT '1',
                                   PRIMARY KEY (`kPortlet`));");
 
-        $this->execute("INSERT INTO `teditorportlets` (`kPlugin`, `cTitle`, `cClass`, `cGroup`) 
-                                  VALUES ('0', 'Heading', 'Heading', 'Basic HTML');");
-        $this->execute("INSERT INTO `teditorportlets` (`kPlugin`, `cTitle`, `cClass`, `cGroup`) 
-                                  VALUES ('0', 'Column', 'Column', 'Basic HTML');");
+        $this->execute("INSERT INTO `teditorportlets` (`kPlugin`, `cTitle`, `cClass`, `cGroup`, `bActive`) 
+                                  VALUES ('0', 'Heading', 'Heading', 'Basic HTML', '1');");
+        $this->execute("INSERT INTO `teditorportlets` (`kPlugin`, `cTitle`, `cClass`, `cGroup`, `bActive`) 
+                                  VALUES ('0', 'Column', 'Column', 'Basic HTML', '1');");
     }
 
     public function down()

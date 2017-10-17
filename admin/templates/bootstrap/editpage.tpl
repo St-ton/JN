@@ -14,11 +14,10 @@
 
     <script src="{$templateUrl}js/jquery-1.12.4.min.js"></script>
     <script src="{$templateUrl}js/bootstrap.min.js"></script>
+    <script src="https://unpkg.com/split.js/split.min.js"></script>
 
     <link rel="stylesheet" href="{$templateUrl}css/jtl-live-editor/jle-host.css">
     <script src="{$templateUrl}js/jtl-live-editor/jle-host.js"></script>
-
-    <script src="https://unpkg.com/split.js/split.min.js"></script>
 
     <script>
         $(function () {
@@ -38,9 +37,12 @@
         <div class="container-fluid">
             <div class="navbar-header">
                 <button type="button" class="collapsed navbar-toggle" data-toggle="collapse"
-                        data-target="#le-navbar-collapse" aria-expanded="false"><span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span></button>
-                <a href="#" class="navbar-brand">Live Editor</a></div>
+                        data-target="#le-navbar-collapse" aria-expanded="false">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+                </button>
+                <a href="#" class="navbar-brand">Live Editor</a>
+            </div>
             <div class="collapse navbar-collapse" id="le-navbar-collapse">
                 <ul class="nav navbar-nav">
                     <li><a href="#" onclick="$('#iframe-panel iframe').width('100%');"><i class="fa fa-television"></i></a></li>
@@ -55,11 +57,12 @@
         </div>
     </nav>
     <div id="sidebar-panel">
-        <div class="panel panel-primary">
-            <div class="panel-heading">
-                <h3 class="panel-title">Standard Blocks</h3>
-            </div>
-            <div class="panel-body">
+        <ul class="nav nav-tabs">
+            <li class="active"><a href="#elements" data-toggle="tab">Elemente</a></li>
+            <li><a href="#templates" data-toggle="tab">Templates</a></li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane active" id="elements">
                 <div class="list-group">
                     {foreach from=$oPortlet_arr item=oPortlet}
                     <a href="#" class="portlet-button list-group-item" data-content="{$oPortlet->content}">
@@ -67,6 +70,9 @@
                     </a>
                     {/foreach}
                 </div>
+            </div>
+            <div class="tab-pane" id="templates">
+                Comign soon...
             </div>
         </div>
     </div>

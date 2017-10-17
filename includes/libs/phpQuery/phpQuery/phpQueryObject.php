@@ -819,7 +819,7 @@ class phpQueryObject implements Iterator, Countable, ArrayAccess
      * @param      $selectors
      * @param null $context
      * @param bool $noHistory
-     * @return @return phpQueryObject
+     * @return phpQueryObject
      */
     public function find($selectors, $context = null, $noHistory = false)
     {
@@ -1006,7 +1006,7 @@ class phpQueryObject implements Iterator, Countable, ArrayAccess
                 $delimiterBefore = $delimiterBefore === 2;
             }
             // run query if any
-            if ($XQuery && $XQuery != '//') {
+            if ($XQuery && $XQuery !== '//') {
                 $this->runQuery($XQuery);
                 $XQuery = '';
             }
@@ -1221,7 +1221,7 @@ class phpQueryObject implements Iterator, Countable, ArrayAccess
                             if ($param === 'even' && ($index % 2) === 0) {
                                 return $node;
                             }
-                            if ($param === 'odd' && ($index) % 2 === 1) {
+                            if ($param === 'odd' && ($index % 2) === 1) {
                                 return $node;
                             }
 

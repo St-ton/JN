@@ -1,5 +1,7 @@
 function JtlLiveEditor(selector)
 {
+    jle = this;
+
     this.hoveredElm = null;
     this.selectedElm = null;
     this.draggedElm = null;
@@ -9,6 +11,7 @@ function JtlLiveEditor(selector)
     this.rootElm = $(selector);
     this.labelElm = $('<div>', { 'class': 'jle-label' }).appendTo('body').hide();
     this.pinbarElm = this.createPinbar().appendTo('body').hide();
+    this.editingText = false;
 
     this.rootElm.on('mouseover', this.onMouseOver.bind(this));
     this.rootElm.on('click', this.onClick.bind(this));
@@ -16,6 +19,7 @@ function JtlLiveEditor(selector)
     this.rootElm.on('dragend', this.onDragEnd.bind(this));
     this.rootElm.on('dragover', this.onDragOver.bind(this));
     this.rootElm.on('drop', this.onDrop.bind(this));
+    this.rootElm.on('keydown', this.onKeyDown.bind(this));
 }
 
 JtlLiveEditor.prototype.onMouseOver = function(e)
@@ -130,6 +134,42 @@ JtlLiveEditor.prototype.onDragEnd = function(e)
     this.cleanUpDrag();
 };
 
+JtlLiveEditor.prototype.onKeyDown = function(e)
+{
+    if(this.editingText) {
+        if(e.key === 'Enter' && !e.shiftKey) {
+            if(this.selectedElm[0].lastChild.nodeName !== 'BR') {
+                this.selectedElm.append($('<br>'));
+            }
+
+            var sel = getSelection();
+            var range = sel.getRangeAt(0);
+            var br = document.createElement('br');
+            
+            range.deleteContents();
+            range.insertNode(br);
+            range.setStartAfter(br);
+            range.setEndAfter(br);
+
+            e.preventDefault();
+        }
+    }
+};
+
+JtlLiveEditor.prototype.onFocus = function(e)
+{
+    console.log('focus', this.selectedElm);
+
+    this.editingText = true;
+};
+
+JtlLiveEditor.prototype.onBlur = function(e)
+{
+    console.log('blur', this.selectedElm);
+
+    this.editingText = false;
+};
+
 JtlLiveEditor.prototype.onBold = function(e)
 {
     document.execCommand('bold');
@@ -193,12 +233,14 @@ JtlLiveEditor.prototype.setSelected = function(elm)
         if(this.selectedElm !== null) {
             this.selectedElm.addClass('jle-selected');
             this.selectedElm.attr('contenteditable', 'true');
+            this.selectedElm.off('blur').on('blur', this.onBlur.bind(this));
+            this.selectedElm.off('focus').on('focus', this.onFocus.bind(this));
             this.pinbarElm
                 .show()
                 .css({
                     left: elm.offset().left + elm.outerWidth() - this.pinbarElm.outerWidth() + 'px',
                     top: elm.offset().top - this.pinbarElm.outerHeight() + 'px'
-                })
+                });
         }
     }
 };
@@ -258,15 +300,15 @@ JtlLiveEditor.prototype.createPinbar = function()
     var pinbarElm = $('<div class="jle-pinbar btn-group">');
 
     pinbarElm.append(
-        $('<button class="btn btn-default"><i class="fa fa-bold"></i></button>')
+        $('<button class="btn btn-default" id="jle-btn-bold"><i class="fa fa-bold"></i></button>')
             .click(this.onBold.bind(this))
     );
     pinbarElm.append(
-        $('<button class="btn btn-default"><i class="fa fa-italic"></i></button>')
+        $('<button class="btn btn-default" id="jle-btn-italic"><i class="fa fa-italic"></i></button>')
             .click(this.onItalic.bind(this))
     );
     pinbarElm.append(
-        $('<button class="btn btn-default"><i class="fa fa-trash"></i></button>')
+        $('<button class="btn btn-default" id="jle-btn-trash"><i class="fa fa-trash"></i></button>')
             .click(this.onTrash.bind(this))
     );
     // pinbarElm.append(

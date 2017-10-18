@@ -349,3 +349,40 @@ JtlLiveEditor.prototype.isDescendant = function(descendant, tree)
 {
     return tree.has(descendant).length > 0;
 };
+
+JtlLiveEditor.prototype.toJson = function(elm)
+{
+    if(elm === undefined) {
+        var result = [];
+
+        for(var i=0; i<this.rootElm.length; i++) {
+            result.push(
+                this.toJson($(this.rootElm[i]))
+            );
+        }
+
+        return result;
+    }
+    else {
+        var result = { };
+        var children = [];
+
+        if(elm.hasClass('jle-editable')) {
+            result.type = 'jle-editable';
+            result.id = elm.attr('id');
+        }
+
+        if(elm.hasClass('jle-editable')) {
+            result.children = [];
+
+            elm.children().each(function(index, child) {
+                result.children.push(child.outerHTML);
+            });
+        }
+        else {
+
+        }
+
+        return result;
+    }
+};

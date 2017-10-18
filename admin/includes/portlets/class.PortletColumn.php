@@ -10,7 +10,7 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_PORTLETS . 'class.Por
  */
 class PortletColumn extends PortletBase
 {
-    public function getPreviewContent()
+    public function getPreviewContent($settings = null)
     {
         return htmlspecialchars('<div class="row"><div class="col-xs-6 jle-editable"></div><div class="col-xs-6 jle-editable"></div></div>');
     }

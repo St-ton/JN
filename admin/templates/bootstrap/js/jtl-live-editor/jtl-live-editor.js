@@ -1,6 +1,8 @@
-function JtlLiveEditor(selector)
+function JtlLiveEditor(selector, jleHost)
 {
     jle = this;
+
+    this.jleHost = jleHost;
 
     this.hoveredElm = null;
     this.selectedElm = null;
@@ -81,8 +83,8 @@ JtlLiveEditor.prototype.onDragOver = function(e)
     }
 
     if(adjacent !== null) {
-        var horiRatio = (e.clientX - adjacent.offset().left) / adjacent.outerWidth();
-        var vertRatio = (e.clientY - adjacent.offset().top) / adjacent.outerHeight();
+        var horiRatio = (e.clientX - adjacent.offset().left) / adjacent.innerWidth();
+        var vertRatio = (e.clientY - adjacent.offset().top) / adjacent.innerHeight();
 
         if(vertRatio < 0.33) {
             dir = 'above';
@@ -186,6 +188,11 @@ JtlLiveEditor.prototype.onTrash = function(e)
         this.selectedElm.remove();
         this.setSelected();
     }
+};
+
+JtlLiveEditor.prototype.onConfig = function(e)
+{
+    this.jleHost.showSettings(1);
 };
 
 JtlLiveEditor.prototype.setHovered = function(elm)
@@ -311,10 +318,10 @@ JtlLiveEditor.prototype.createPinbar = function()
         $('<button class="btn btn-default" id="jle-btn-trash"><i class="fa fa-trash"></i></button>')
             .click(this.onTrash.bind(this))
     );
-    // pinbarElm.append(
-    //     $('<button class="btn btn-default"><i class="fa fa-trash"></i></button>')
-    //         .click(this.onTrash.bind(this))
-    // );
+    pinbarElm.append(
+        $('<button class="btn btn-default"><i class="fa fa-cog"></i></button>')
+            .click(this.onConfig.bind(this))
+    );
 
     return pinbarElm;
 }

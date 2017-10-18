@@ -29,7 +29,7 @@ class PortletBase
      * @param NiceDB    $oDB
      * @param Plugin    $oPlugin
      */
-    public function __construct($oSmarty = null, $oDB = null, &$oPlugin)
+    public function __construct($oSmarty = null, $oDB = null, $oPlugin = null)
     {
         $this->oSmarty = Shop::Smarty();
         $this->oDB     = Shop::DB();
@@ -39,7 +39,7 @@ class PortletBase
     /**
      * @return string
      */
-    public function getPreviewContent()
+    public function getPreviewContent($settings = null)
     {
         return '';
     }
@@ -48,6 +48,14 @@ class PortletBase
      * @return string
      */
     public function getHTMLContent()
+    {
+        return '';
+    }
+
+    /**
+     * @return string
+     */
+    public function getSettingsHTML()
     {
         return '';
     }

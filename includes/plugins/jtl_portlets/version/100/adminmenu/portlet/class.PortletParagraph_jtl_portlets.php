@@ -10,7 +10,7 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_PORTLETS . 'class.Por
  */
 class PortletParagraph_jtl_portlets extends PortletBase
 {
-    public function getPreviewContent()
+    public function getPreviewContent($settings = null)
     {
         return htmlspecialchars('<p class="jle-editable">ein neuer Paragraph</p>');
     }

@@ -15,11 +15,14 @@
     <script src="{$templateUrl}js/jquery-1.12.4.min.js"></script>
     <script src="{$templateUrl}js/bootstrap.min.js"></script>
     <script src="https://unpkg.com/split.js/split.min.js"></script>
+    <script src="{$templateUrl}js/global.js"></script>
 
     <link rel="stylesheet" href="{$templateUrl}css/jtl-live-editor/jle-host.css">
     <script src="{$templateUrl}js/jtl-live-editor/jle-host.js"></script>
 
     <script>
+        var jtlToken = '{$smarty.session.jtl_token}';
+
         $(function () {
             jleHost = new JLEHost('#iframe-panel iframe', '{$templateUrl}');
             Split(
@@ -28,6 +31,12 @@
                     sizes: [25, 75],
                     gutterSize: 4
                 }
+            );
+
+            ioCall(
+                'getPortletPreviewContent',
+                [1, { level: 6 }],
+                console.log
             );
         });
     </script>
@@ -77,5 +86,30 @@
     <div id="iframe-panel">
         <iframe src="{URL_SHOP}/{$oSeo->cSeo}?editpage=1&action={$cEditorAction}"></iframe>
     </div>
+
+    <!-- Button trigger modal -->
+    <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
+        Launch demo modal
+    </button>
+
+    <!-- Modal -->
+    <div class="modal fade" id="settings-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+                </div>
+                <div class="modal-body">
+                    ...
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="jle-btn-save">Speichern</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </body>
 </html>

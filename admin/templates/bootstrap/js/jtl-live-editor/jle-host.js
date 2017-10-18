@@ -6,6 +6,10 @@ function JLEHost(iframeSelector, templateUrl)
     this.editor = null;
     this.iframe = $(iframeSelector);
     this.iframe.on("load", this.iframeLoaded.bind(this));
+
+    this.curPortletId = 0;
+
+    $('#jle-btn-save').click(this.onSettingsSave.bind(this));
 }
 
 JLEHost.prototype.iframeLoaded = function()
@@ -23,7 +27,7 @@ JLEHost.prototype.iframeLoaded = function()
 
 JLEHost.prototype.liveEditorLoaded = function()
 {
-    this.editor = new this.iframeCtx.JtlLiveEditor(".jle-editable");
+    this.editor = new this.iframeCtx.JtlLiveEditor(".jle-editable", this);
 
     $(".portlet-button")
         .attr("draggable", "true")
@@ -45,6 +49,33 @@ JLEHost.prototype.onDragStart = function(e)
 JLEHost.prototype.onDragEnd = function(e)
 {
     this.editor.cleanUpDrag();
+};
+
+JLEHost.prototype.showSettings = function(kPortlet)
+{
+    var self = this;
+
+    ioCall('getPortletSettingsHtml', [kPortlet], function(settingsHtml) {
+        $('#settings-modal .modal-body').html(settingsHtml);
+        $('#settings-modal').modal('show');
+        self.curPortletId = kPortlet;
+    });
+};
+
+JLEHost.prototype.onSettingsSave = function (e)
+{
+    var self = this;
+    var settingsArray = $('#portlet-settings-form').serializeArray();
+    var settings = { };
+
+    settingsArray.forEach(function (setting) {
+        settings[setting.name] = setting.value;
+    });
+
+    ioCall('getPortletPreviewContent', [this.curPortletId, settings], function(newHtml) {
+        self.editor.selectedElm.replaceWith(newHtml);
+        $('#settings-modal').modal('hide');
+    });
 };
 
 JLEHost.loadScript = function(ctx, url, callback)

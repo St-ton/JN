@@ -28,7 +28,7 @@ function getPortlets()
         if (file_exists($cClassPath)) {
             require_once $cClassPath;
             if (class_exists($cClass)) {
-                /** @var WidgetBase $oClassObj */
+                /** @var PortletBase $oClassObj */
                 $oClassObj                         = new $cClass(null, null, $oPlugin);
                 $oPortlet_arr[$i]->cPreviewContent = $oClassObj->getPreviewContent();
             }
@@ -36,4 +36,34 @@ function getPortlets()
     }
 
     return $oPortlet_arr;
+}
+
+function getPortletPreviewContent($kPortlet, $data)
+{
+    $oPortlet   = Shop::DB()->select('teditorportlets', 'kPortlet', $kPortlet);
+    $cClass     = 'Portlet' . $oPortlet->cClass;
+    $cClassFile = 'class.' . $cClass . '.php';
+    $cClassPath = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_PORTLETS . $cClassFile;
+
+    require_once $cClassPath;
+
+    /** @var PortletBase $portletInst */
+    $portletInst = new $cClass(Shop::Smarty(), Shop::DB(), null);
+
+    return $portletInst->getPreviewContent($data);
+}
+
+function getPortletSettingsHtml($kPortlet)
+{
+    $oPortlet   = Shop::DB()->select('teditorportlets', 'kPortlet', $kPortlet);
+    $cClass     = 'Portlet' . $oPortlet->cClass;
+    $cClassFile = 'class.' . $cClass . '.php';
+    $cClassPath = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_PORTLETS . $cClassFile;
+
+    require_once $cClassPath;
+
+    /** @var PortletBase $portletInst */
+    $portletInst = new $cClass(Shop::Smarty(), Shop::DB(), null);
+
+    return $portletInst->getSettingsHTML();
 }

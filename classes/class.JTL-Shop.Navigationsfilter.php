@@ -1488,7 +1488,7 @@ class Navigationsfilter
      * @param Kategorie|null $currentCategory
      * @param bool           $fillArticles - if true, return Artikel class instances, otherwise keys only
      * @param int            $limit
-     * @return stdClass
+     * @return stdClass|Collection
      */
     public function getProducts($forProductListing = true, $currentCategory = null, $fillArticles = true, $limit = 0)
     {

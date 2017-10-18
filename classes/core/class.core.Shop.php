@@ -534,10 +534,10 @@ final class Shop
     }
 
     /**
-     * @param string $eventName
-     * @param array  $arguments
+     * @param string       $eventName
+     * @param array|object $arguments
      */
-    public static function fire($eventName, array $arguments = [])
+    public static function fire($eventName, $arguments = [])
     {
         self::Event()->fire($eventName, $arguments);
     }

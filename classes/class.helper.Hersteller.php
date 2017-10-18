@@ -123,4 +123,20 @@ class HerstellerHelper
 
         return $this->manufacturers;
     }
+
+    /**
+     * @param string        $attribute
+     * @param string        $value
+     * @param callable|null $callback
+     * @return mixed
+     * @since 4.07
+     */
+    public static function getDataByAttribute($attribute, $value, callable $callback = null)
+    {
+        $res = Shop::DB()->select('thersteller', $attribute, $value);
+
+        return is_callable($callback)
+            ? $callback($res)
+            : $res;
+    }
 }

@@ -19,14 +19,14 @@
                     {if !empty($oLiveEditParams->oContent)}
                         <p>
                             {*todo editor: standard herstellen prüfen*}
-                            <button type="submit" name="action" class="btn btn-default" value="restore_default">Standardinhalt wiederherstellen</button>
+                            <button type="submit" name="cAction" class="btn btn-default" value="restore_default">Standardinhalt wiederherstellen</button>
                         </p>
                     {/if}
                     <p>
-                        <button type="submit" name="action" class="btn btn-primary" value="extend">Inhalt erweitern</button>
+                        <button type="submit" name="cAction" class="btn btn-primary" value="extend">Inhalt erweitern</button>
                     </p>
                     <p>
-                        <button type="submit" name="action" class="btn btn-primary" value="replace">Inhalt ersetzen</button>
+                        <button type="submit" name="cAction" class="btn btn-primary" value="replace">Inhalt ersetzen</button>
                     </p>
                 </form>
             </div>

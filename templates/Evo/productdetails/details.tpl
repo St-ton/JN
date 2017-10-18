@@ -36,6 +36,8 @@
 
 <div class="h1 visible-xs text-center">{$Artikel->cName}</div>
 
+{include file='snippets/live_edit.tpl' id='editor_article_content_prepend'}
+
 <form id="buy_form" method="post" action="{$Artikel->cURLFull}" >
     {$jtl_token}
     <div class="row product-primary" id="product-offer">
@@ -200,6 +202,8 @@
     {/block}
 </form>
 
+{include file='snippets/live_edit.tpl' id='editor_article_content_append'}
+
 {if !isset($smarty.get.quickView) || $smarty.get.quickView != 1}
     <div class="clearfix"></div>
 
@@ -208,6 +212,8 @@
     {/block}
 
     <div class="clearfix"></div>
+
+    {include file='snippets/live_edit.tpl' id='editor_article_tabs_prepend'}
 
     {*SLIDERS*}
     {if isset($Einstellungen.artikeldetails.artikeldetails_stueckliste_anzeigen) && $Einstellungen.artikeldetails.artikeldetails_stueckliste_anzeigen === 'Y' && isset($Artikel->oStueckliste_arr) && $Artikel->oStueckliste_arr|@count > 0

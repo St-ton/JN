@@ -17,6 +17,7 @@ $oAccount->permission('CONTENT_PAGE_VIEW', true, true);
 $cKey     = verifyGPDataString('cKey');
 $kKey     = verifyGPCDataInteger('kKey');
 $kSprache = verifyGPCDataInteger('kSprache');
+$cAction  = verifyGPDataString('cAction');
 $oSeo     = Shop::DB()->select('tseo', ['cKey', 'kKey', 'kSprache'], [$cKey, $kKey, $kSprache]);
 
 $oPortlet_arr = getPortlets();
@@ -24,4 +25,5 @@ $oPortlet_arr = getPortlets();
 $smarty
     ->assign('oSeo', $oSeo)
     ->assign('oPortlet_arr', $oPortlet_arr)
+    ->assign('cEditorAction', $cAction)
     ->display('editpage.tpl');

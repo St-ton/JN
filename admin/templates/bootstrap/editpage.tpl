@@ -75,7 +75,7 @@
         </div>
     </div>
     <div id="iframe-panel">
-        <iframe src="{URL_SHOP}/{$oSeo->cSeo}?editpage=1"></iframe>
+        <iframe src="{URL_SHOP}/{$oSeo->cSeo}?editpage=1&action={$cEditorAction}"></iframe>
     </div>
 </body>
 </html>

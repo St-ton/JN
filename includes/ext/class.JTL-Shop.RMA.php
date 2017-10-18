@@ -399,7 +399,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
                 ) {
                     $kArtikel_arr = RMAArtikel::getProductsByOrder($kBestellung);
                     foreach ($oBestellung->Positionen as $i => $oPosition) {
-                        $oBestellung->Positionen[$i]->cAnzahl = Trennzeichen::getUnit(JTLSEPARATER_AMOUNT, $_SESSION['kSprache'], $oPosition->nAnzahl);
+                        $oBestellung->Positionen[$i]->cAnzahl = Trennzeichen::getUnit(JTL_SEPARATOR_AMOUNT, $_SESSION['kSprache'], $oPosition->nAnzahl);
                         $oBestellung->Positionen[$i]->bRMA    = false;
 
                         if ($oPosition->nPosTyp != C_WARENKORBPOS_TYP_ARTIKEL || !isset($oPosition->Artikel->kArtikel) || !$oPosition->Artikel->kArtikel) {
@@ -415,7 +415,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
                                         $oBestellung->Positionen[$i]->bRMA = true;
                                     }
 
-                                    $oBestellung->Positionen[$i]->cRMAArtikelQuantity = Trennzeichen::getUnit(JTLSEPARATER_AMOUNT, $_SESSION['kSprache'], $fRMAArtikelQuantity);
+                                    $oBestellung->Positionen[$i]->cRMAArtikelQuantity = Trennzeichen::getUnit(JTL_SEPARATOR_AMOUNT, $_SESSION['kSprache'], $fRMAArtikelQuantity);
                                 }
                             }
                         }

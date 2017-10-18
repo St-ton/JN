@@ -3888,11 +3888,11 @@ class Artikel
             }
         }
         // Gewichtoptionen beachten
-        $this->cGewicht        = Trennzeichen::getUnit(JTLSEPARATER_WEIGHT, $kSprache, $this->fGewicht);
-        $this->cArtikelgewicht = Trennzeichen::getUnit(JTLSEPARATER_WEIGHT, $kSprache, $this->fArtikelgewicht);
+        $this->cGewicht        = Trennzeichen::getUnit(JTL_SEPARATOR_WEIGHT, $kSprache, $this->fGewicht);
+        $this->cArtikelgewicht = Trennzeichen::getUnit(JTL_SEPARATOR_WEIGHT, $kSprache, $this->fArtikelgewicht);
 
         if ($this->fMassMenge != 0) {
-            $this->cMassMenge = Trennzeichen::getUnit(JTLSEPARATER_WEIGHT, $kSprache, $this->fMassMenge);
+            $this->cMassMenge = Trennzeichen::getUnit(JTL_SEPARATOR_WEIGHT, $kSprache, $this->fMassMenge);
         }
 
         if ($this->fPackeinheit == 0) {
@@ -6495,7 +6495,7 @@ class Artikel
             foreach ($fDimension_arr as $key => $val) {
                 if (!empty($val)) {
                     $cValue_arr[Shop::Lang()->get('dimension_' . $key, 'productDetails')] =
-                        Trennzeichen::getUnit(JTLSEPARATER_LENGTH, $kSprache, $val);
+                        Trennzeichen::getUnit(JTL_SEPARATOR_LENGTH, $kSprache, $val);
                 }
             }
         }

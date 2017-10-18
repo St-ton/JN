@@ -526,8 +526,8 @@ function checkDependencies($aValues)
                 ? $currentValue->cArtNr
                 : $oArtikel->cArtNr;
         }
-        $weightTotal        = Trennzeichen::getUnit(JTLSEPARATER_WEIGHT, Shop::getLanguage(), $oArtikel->fGewicht + $weightDiff);
-        $weightArticleTotal = Trennzeichen::getUnit(JTLSEPARATER_WEIGHT, Shop::getLanguage(), $oArtikel->fArtikelgewicht + $weightDiff);
+        $weightTotal        = Trennzeichen::getUnit(JTL_SEPARATOR_WEIGHT, Shop::getLanguage(), $oArtikel->fGewicht + $weightDiff);
+        $weightArticleTotal = Trennzeichen::getUnit(JTL_SEPARATOR_WEIGHT, Shop::getLanguage(), $oArtikel->fArtikelgewicht + $weightDiff);
         $cUnitWeightLabel   = Shop::Lang()->get('weightUnit');
 
         // Alle Variationen ohne Freifeld

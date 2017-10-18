@@ -438,14 +438,14 @@ class Trennzeichen
 
         if (is_array($oSprache_arr) && count($oSprache_arr) > 0) {
             Shop::DB()->query("TRUNCATE ttrennzeichen", 3);
-            $nEinheit_arr = [JTLSEPARATER_WEIGHT, JTLSEPARATER_AMOUNT];
+            $nEinheit_arr = [JTL_SEPARATOR_WEIGHT, JTL_SEPARATOR_AMOUNT];
             foreach ($oSprache_arr as $oSprache) {
                 foreach ($nEinheit_arr as $nEinheit) {
                     $oTrennzeichen = new self();
                     $oTrennzeichen->setSprache($oSprache->kSprache);
                     $oTrennzeichen->setEinheit($nEinheit);
 
-                    if ($nEinheit == JTLSEPARATER_WEIGHT) {
+                    if ($nEinheit == JTL_SEPARATOR_WEIGHT) {
                         if (isset($oEinstellungen['artikeldetails']['artikeldetails_gewicht_stellenanzahl']) &&
                             strlen($oEinstellungen['artikeldetails']['artikeldetails_gewicht_stellenanzahl']) > 0) {
                             $oTrennzeichen->setDezimalstellen($oEinstellungen['artikeldetails']['artikeldetails_gewicht_stellenanzahl']);

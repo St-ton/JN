@@ -994,7 +994,7 @@ function baueArtikelDetail($oArtikel, $xPost_arr)
         $conf['bewertung']['bewertung_anzahlseite']
     );
     // Baue Gewichte für Smarty
-    $oTrennzeichen = Trennzeichen::getUnit(JTLSEPARATER_WEIGHT, Shop::getLanguage());
+    $oTrennzeichen = Trennzeichen::getUnit(JTL_SEPARATOR_WEIGHT, Shop::getLanguage());
     $shopURL       = Shop::getURL() . '/';
     baueGewicht([$oArtikel], $oTrennzeichen->getDezimalstellen(), $oTrennzeichen->getDezimalstellen());
 

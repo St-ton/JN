@@ -454,6 +454,9 @@ define('JTLLOG_LEVEL_DEBUG', 4); // 0100
 define('JTLSEPARATER_WEIGHT', 1);
 define('JTLSEPARATER_LENGTH', 2);
 define('JTLSEPARATER_AMOUNT', 3);
+define('JTL_SEPARATOR_WEIGHT', 1);
+define('JTL_SEPARATOR_LENGTH', 2);
+define('JTL_SEPARATOR_AMOUNT', 3);
 // Globale Arten von generierte Nummern (z.b. Bestellnummer)
 define('JTL_GENNUMBER_ORDERNUMBER', 1);
 define('JTL_GENNUMBER_RMANUMBER', 2);

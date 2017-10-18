@@ -74,13 +74,13 @@ class MediaImageRequest
      */
     public function copy(&$mixed, MediaImageRequest $new)
     {
-        $mixed = (object) $mixed;
+        $mixed = (object)$mixed;
         foreach ($mixed as $property => &$value) {
             $new->$property = &$value;
             unset($mixed->$property);
         }
         unset($value);
-        $mixed = (unset) $mixed;
+        $mixed = null;
 
         return $new;
     }

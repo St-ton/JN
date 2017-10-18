@@ -13,7 +13,7 @@
         {if (!empty($oLiveEditParams->oContent['editor_replace_all']->cContent) && empty($smarty.get.editpage))}
             {$oLiveEditParams->oContent['editor_replace_all']->cContent}
         {elseif (!empty($smarty.get.editpage) && !empty($smarty.get.action) && $smarty.get.action === 'replace')}
-            <div id="editor_replace_all" class="sortable ui-sortable"></div>
+            <div id="editor_replace_all" class="jle-editable"></div>
         {else}
             {if !empty($Link->Sprache->cTitle)}
                 <h1>{$Link->Sprache->cTitle}</h1>

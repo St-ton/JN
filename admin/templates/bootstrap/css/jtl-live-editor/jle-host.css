@@ -30,7 +30,12 @@ html, body, #sidebar-panel, #iframe-panel, #iframe-panel iframe {
     cursor: ew-resize;
 }
 
+#elements {
+    padding: 15px 0;
+}
+
 .portlet-button {
+    margin-right: 15px;
 }
 
 #editor-top-nav {

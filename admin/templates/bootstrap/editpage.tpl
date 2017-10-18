@@ -63,26 +63,19 @@
         </ul>
         <div class="tab-content">
             <div class="tab-pane active" id="elements">
-                <h3>Basic HTML</h3>
-                <div class="row">
-                    {foreach from=$oPortlet_arr item=oPortlet}
-                        <div class="col-xs-6">
-                            <p>
-                                <a href="#" class="portlet-button" data-content="{$oPortlet->cPreviewContent}">
-                                    <button class="btn btn-default">{$oPortlet->cTitle}</button>
-                                </a>
-                            </p>
-                        </div>
-                    {/foreach}
-                </div>
+                {foreach from=$oPortlet_arr item=oPortlet}
+                    <a href="#" class="portlet-button btn btn-default" role="button" data-content="{$oPortlet->cPreviewContent}">
+                        {$oPortlet->cTitle}
+                    </a>
+                {/foreach}
             </div>
             <div class="tab-pane" id="templates">
-                Comign soon...
+                Coming soon...
             </div>
         </div>
     </div>
     <div id="iframe-panel">
-        <iframe src="{URL_SHOP}/{$oSeo->cSeo}?editpage=1"></iframe>
+        <iframe src="{URL_SHOP}/{$oSeo->cSeo}?editpage=1&action={$cEditorAction}"></iframe>
     </div>
 </body>
 </html>

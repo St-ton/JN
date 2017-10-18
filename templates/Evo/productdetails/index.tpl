@@ -26,12 +26,18 @@
     {else}
         <div id="result-wrapper" itemprop="mainEntity" itemscope  itemtype="http://schema.org/Product" itemid="{$ShopURL}/{$Artikel->cSeo}">
             <meta itemprop="url" content="{$ShopURL}/{$Artikel->cSeo}">
-        {include file="snippets/extension.tpl"}
-        {if isset($Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ARTIKELDETAILS_TPL]) && $currentTemplateDirFullPath|cat:'productdetails/'|cat:$Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ARTIKELDETAILS_TPL]|file_exists}
-            {include file='productdetails/'|cat:$Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ARTIKELDETAILS_TPL]}
-        {else}
-            {include file='productdetails/details.tpl'}
-        {/if}
+            {if (!empty($oSeoEditParams->oContent['editor_replace_all']->cContent) && empty($smarty.get.frontedit))}
+                {$oSeoEditParams->oContent['editor_replace_all']->cContent}
+            {elseif (!empty($smarty.get.frontedit) && !empty($smarty.get.method) && $smarty.get.method === 'replace')}
+                <div id="editor_replace_all" class="jle-editable"></div>
+            {else}
+                {include file="snippets/extension.tpl"}
+                {if isset($Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ARTIKELDETAILS_TPL]) && $currentTemplateDirFullPath|cat:'productdetails/'|cat:$Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ARTIKELDETAILS_TPL]|file_exists}
+                    {include file='productdetails/'|cat:$Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ARTIKELDETAILS_TPL]}
+                {else}
+                    {include file='productdetails/details.tpl'}
+                {/if}
+            {/if}
         </div>
     {/if}
 {/block}

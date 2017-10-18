@@ -55,6 +55,7 @@
         
         {block name="productlist-footer"}
         {include file='productlist/footer.tpl'}
+        {include file='snippets/live_edit.tpl' id='editor_productlist_footer'}
         {/block}
     </div>
 {/block}

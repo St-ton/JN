@@ -9,9 +9,8 @@
 {if !empty($cNewsErr)}
     <div class="alert alert-danger">{lang key='newsRestricted' section='news'}</div>
 {else}
-{if (!empty($oSeoEditParams->oContent) && empty($smarty.get.frontedit))}
-        {include file='snippets/live_edit.tpl' id='editor_news_article_prepend'}
-        <article itemprop="mainEntity" itemscope itemtype="https://schema.org/BlogPosting">
+    {include file='snippets/live_edit.tpl' id='editor_news_article_prepend'}
+    <article itemprop="mainEntity" itemscope itemtype="https://schema.org/BlogPosting">
         <meta itemprop="mainEntityOfPage" content="{$ShopURL}/{$oNewsArchiv->cSeo}">
         <h1 itemprop="headline">
             {$oNewsArchiv->cBetreff}

@@ -58,7 +58,6 @@ JLEHost.prototype.onDragEnd = function(e)
 JLEHost.prototype.openConfigurator = function(portletId, settings)
 {
     var self = this;
-    console.log(portletId, settings);
 
     ioCall('getPortletSettingsHtml', [portletId, settings], function(settingsHtml) {
         $('#settings-modal .modal-body').html(settingsHtml);
@@ -69,7 +68,9 @@ JLEHost.prototype.openConfigurator = function(portletId, settings)
 
 JLEHost.prototype.onSettingsSave = function (e)
 {
-    var self = this;
+    var children = this.editor.selectedElm
+        // select direct descendant subareas or non-nested subareas
+        .find('> .jle-subarea') ; //, :not(.jle-subarea) .jle-subarea');
     var settingsArray = $('#portlet-settings-form').serializeArray();
     var settings = { };
 
@@ -77,14 +78,27 @@ JLEHost.prototype.onSettingsSave = function (e)
         settings[setting.name] = setting.value;
     });
 
-    ioCall('getPortletPreviewContent', [this.curPortletId, settings], function(newHtml) {
+    ioCall('getPortletPreviewContent', [this.curPortletId, settings], onNewHtml.bind(this));
+
+    function onNewHtml(newHtml)
+    {
         var newElm = $(newHtml);
-        self.editor.selectedElm.replaceWith(newElm);
-        self.editor.setSelected(newElm);
-        self.editor.selectedElm.attr('data-portletid', self.curPortletId);
-        self.editor.selectedElm.attr('data-settings', JSON.stringify(settings));
+
+        this.editor.selectedElm.replaceWith(newElm);
+        this.editor.setSelected(newElm);
+        this.editor.selectedElm.attr('data-portletid', this.curPortletId);
+        this.editor.selectedElm.attr('data-settings', JSON.stringify(settings));
+
+        this.editor.selectedElm
+            .find('.jle-subarea')
+            .each(function(index, subarea) {
+                if(index < children.length) {
+                    $(subarea).html($(children[index]).html());
+                }
+            });
+
         $('#settings-modal').modal('hide');
-    });
+    }
 };
 
 JLEHost.loadScript = function(ctx, url, callback)

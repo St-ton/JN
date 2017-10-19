@@ -17,8 +17,8 @@ class PortletColumn extends PortletBase
 
         $res = '<div class="row">';
 
-        foreach ($layout as $col) {
-            $res .= '<div class="col-xs-' . $col . '"></div>';
+        foreach ($layout as $i => $col) {
+            $res .= '<div class="col-xs-' . $col . ' jle-subarea"></div>';
         }
 
         $res .= '</div>';

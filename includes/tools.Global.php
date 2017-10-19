@@ -7017,4 +7017,4 @@ function getLiveEditParameters($kSprache)
     }
 
     return $oLiveEditParams;
-}#
+}

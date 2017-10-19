@@ -8,6 +8,147 @@ require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'plugin_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'admin_tools.php';
 
+define('PLUGIN_CODE_OK', 1);
+define('PLUGIN_CODE_WRONG_PARAM', 2);
+define('PLUGIN_CODE_DIR_DOES_NOT_EXIST', 3);
+define('PLUGIN_CODE_INFO_XML_MISSING', 4);
+define('PLUGIN_CODE_NO_PLUGIN_FOUND', 5);
+define('PLUGIN_CODE_INVALID_NAME', 6);
+define('PLUGIN_CODE_INVALID_PLUGIN_ID', 7);
+define('PLUGIN_CODE_INSTALL_NODE_MISSING', 8);
+define('PLUGIN_CODE_INVALID_XML_VERSION_NUMBER', 9);
+define('PLUGIN_CODE_INVALID_VERSION_NUMBER', 10);
+define('PLUGIN_CODE_INVALID_DATE', 11);
+define('PLUGIN_CODE_MISSING_SQL_FILE', 12);
+define('PLUGIN_CODE_MISSING_HOOKS', 13);
+define('PLUGIN_CODE_INVALID_HOOK', 14);
+define('PLUGIN_CODE_INVALID_CUSTOM_LINK_NAME', 15);
+define('PLUGIN_CODE_INVALID_CUSTOM_LINK_FILE_NAME', 16);
+define('PLUGIN_CODE_MISSING_CUSTOM_LINK_FILE', 17);
+define('PLUGIN_CODE_INVALID_CONFIG_LINK_NAME', 18);
+define('PLUGIN_CODE_MISSING_CONFIG', 19);
+define('PLUGIN_CODE_INVALID_CONFIG_TYPE', 20);
+define('PLUGIN_CODE_INVALID_CONFIG_INITIAL_VALUE', 21);
+define('PLUGIN_CODE_INVALID_CONFIG_SORT_VALUE', 22);
+define('PLUGIN_CODE_INVALID_CONFIG_NAME', 23);
+define('PLUGIN_CODE_MISSING_CONFIG_SELECTBOX_OPTIONS', 24);
+define('PLUGIN_CODE_INVALID_CONFIG_OPTION', 25);
+define('PLUGIN_CODE_MISSING_LANG_VARS', 26);
+define('PLUGIN_CODE_INVALID_LANG_VAR_NAME', 27);
+define('PLUGIN_CODE_MISSING_LOCALIZED_LANG_VAR', 28);
+define('PLUGIN_CODE_INVALID_LANG_VAR_ISO', 29);
+define('PLUGIN_CODE_INVALID_LOCALIZED_LANG_VAR_NAME', 30);
+define('PLUGIN_CODE_MISSING_HOOK_FILE', 31);
+define('PLUGIN_CODE_MISSING_VERSION_DIR', 32);
+define('PLUGIN_CODE_INVALID_CONF', 33);
+define('PLUGIN_CODE_INVALID_CONF_VALUE_NAME', 34);
+define('PLUGIN_CODE_INVALID_XML_VERSION', 35);
+//@tod: 35 vs 9
+define('PLUGIN_CODE_INVALID_SHOP_VERSION', 36);
+define('PLUGIN_CODE_SHOP_VERSION_COMPATIBILITY', 37);
+define('PLUGIN_CODE_MISSING_FRONTEND_LINKS', 38);
+define('PLUGIN_CODE_INVALID_FRONTEND_LINK_FILENAME', 39);
+define('PLUGIN_CODE_INVALID_FRONTEND_LINK_NAME', 40);
+define('PLUGIN_CODE_INVALID_FRONEND_LINK_VISIBILITY', 41);
+define('PLUGIN_CODE_INVALID_FRONEND_LINK_PRINT', 42);
+define('PLUGIN_CODE_INVALID_FRONEND_LINK_ISO', 43);
+define('PLUGIN_CODE_INVALID_FRONEND_LINK_SEO', 44);
+define('PLUGIN_CODE_INVALID_FRONEND_LINK_NAME', 45);
+define('PLUGIN_CODE_INVALID_FRONEND_LINK_TITLE', 46);
+define('PLUGIN_CODE_INVALID_FRONEND_LINK_META_TITLE', 47);
+define('PLUGIN_CODE_INVALID_FRONEND_LINK_META_KEYWORDS', 48);
+define('PLUGIN_CODE_INVALID_FRONEND_LINK_META_DESCRIPTION', 49);
+define('PLUGIN_CODE_INVALID_PAYMENT_METHOD_NAME', 50);
+define('PLUGIN_CODE_INVALID_PAYMENT_METHOD_MAIL', 51);
+define('PLUGIN_CODE_INVALID_PAYMENT_METHOD_TSCODE', 52);
+define('PLUGIN_CODE_INVALID_PAYMENT_METHOD_PRE_ORDER', 53);
+define('PLUGIN_CODE_INVALID_PAYMENT_METHOD_CLASS_FILE', 54);
+define('PLUGIN_CODE_MISSING_PAYMENT_METHOD_FILE', 55);
+define('PLUGIN_CODE_INVALID_PAYMENT_METHOD_TEMPLATE', 56);
+define('PLUGIN_CODE_MISSING_PAYMENT_METHOD_TEMPLATE', 57);
+define('PLUGIN_CODE_MISSING_PAYMENT_METHOD_LANGUAGES',58 );
+define('PLUGIN_CODE_INVALID_PAYMENT_METHOD_LANGUAGE_ISO', 59);
+define('PLUGIN_CODE_INVALID_PAYMENT_METHOD_NAME_LOCALIZED', 60);
+define('PLUGIN_CODE_INVALID_PAYMENT_METHOD_CHARGE_NAME', 61);
+define('PLUGIN_CODE_INVALID_PAYMENT_METHOD_INFO_TEXT', 62);
+define('PLUGIN_CODE_INVALID_PAYMENT_METHOD_CONFIG_TYPE', 63);
+define('PLUGIN_CODE_INVALID_PAYMENT_METHOD_CONFIG_INITITAL_VALUE', 64);
+define('PLUGIN_CODE_INVALID_PAYMENT_METHOD_CONFIG_SORT', 65);
+define('PLUGIN_CODE_INVALID_PAYMENT_METHOD_CONFIG_CONF', 66);
+define('PLUGIN_CODE_INVALID_PAYMENT_METHOD_CONFIG_NAME', 67);
+define('PLUGIN_CODE_INVALID_PAYMENT_METHOD_VALUE_NAME', 68);
+define('PLUGIN_CODE_MISSING_PAYMENT_METHOD_SELECTBOX_OPTIONS', 69); //@todo
+define('PLUGIN_CODE_INVALID_PAYMENT_METHOD_OPTION', 70);
+define('PLUGIN_CODE_INVALID_PAYMENT_METHOD_SORT', 71);
+define('PLUGIN_CODE_INVALID_PAYMENT_METHOD_SOAP', 72);
+define('PLUGIN_CODE_INVALID_PAYMENT_METHOD_CURL', 73);
+define('PLUGIN_CODE_INVALID_PAYMENT_METHOD_SOCKETS', 74);
+define('PLUGIN_CODE_INVALID_PAYMENT_METHOD_CLASS_NAME', 75);
+define('PLUGIN_CODE_INVALID_FULLSCREEN_TEMPLATE', 76);
+define('PLUGIN_CODE_MISSING_FRONTEND_LINK_TEMPLATE', 77);
+define('PLUGIN_CODE_TOO_MANY_FULLSCREEN_TEMPLATE_NAMES', 78);
+define('PLUGIN_CODE_INVALID_FULLSCREEN_TEMPLATE_NAME', 79);
+define('PLUGIN_CODE_MISSING_FULLSCREEN_TEMPLATE_FILE', 80);
+define('PLUGIN_CODE_INVALID_FRONTEND_LINK_TEMPLATE_FULLSCREEN_TEMPLATE', 81);
+define('PLUGIN_CODE_MISSING_BOX', 82);
+define('PLUGIN_CODE_INVALID_BOX_NAME', 83);
+define('PLUGIN_CODE_INVALID_BOX_TEMPLATE', 84);
+define('PLUGIN_CODE_MISSING_BOX_TEMPLATE_FILE', 85);
+define('PLUGIN_CODE_MISSING_LICENCE_FILE', 86);
+define('PLUGIN_CODE_INVALID_LICENCE_FILE_NAME', 87);
+define('PLUGIN_CODE_MISSING_LICENCE', 88);
+define('PLUGIN_CODE_MISSING_LICENCE_CHECKLICENCE_METHOD', 89);
+define('PLUGIN_CODE_DUPLICATE_PLUGIN_ID', 90);
+define('PLUGIN_CODE_MISSING_EMAIL_TEMPLATES', 91);
+define('PLUGIN_CODE_INVALID_TEMPLATE_NAME', 92);
+define('PLUGIN_CODE_INVALID_TEMPLATE_TYPE', 93);
+define('PLUGIN_CODE_INVALID_TEMPLATE_MODULE_ID', 94);
+define('PLUGIN_CODE_INVALID_TEMPLATE_ACTIVE', 95);
+define('PLUGIN_CODE_INVALID_TEMPLATE_AKZ', 96);
+define('PLUGIN_CODE_INVALID_TEMPLATE_AGB', 97);
+define('PLUGIN_CODE_INVALID_TEMPLATE_WRB', 98);
+define('PLUGIN_CODE_INVALID_EMAIL_TEMPLATE_ISO', 99);
+define('PLUGIN_CODE_INVALID_EMAIL_TEMPLATE_SUBJECT', 100);
+define('PLUGIN_CODE_MISSING_EMAIL_TEMPLATE_LANGUAGE', 101);
+define('PLUGIN_CODE_INVALID_CHECKBOX_FUNCTION_NAME', 102);
+define('PLUGIN_CODE_INVALID_CHECKBOX_FUNCTION_ID', 103);
+define('PLUGIN_CODE_INVALID_FRONTEND_LINK_NO_FOLLOW', 104);
+define('PLUGIN_CODE_MISSING_WIDGETS', 105);
+define('PLUGIN_CODE_INVALID_WIDGET_TITLE', 106);
+define('PLUGIN_CODE_INVALID_WIDGET_CLASS', 107);
+define('PLUGIN_CODE_MISSING_WIDGET_CLASS_FILE', 108);
+define('PLUGIN_CODE_INVALID_WIDGET_CONTAINER', 109);
+define('PLUGIN_CODE_INVALID_WIDGET_POS', 110);
+define('PLUGIN_CODE_INVALID_WIDGET_EXPANDED', 111);
+define('PLUGIN_CODE_INVALID_WIDGET_ACTIVE', 112);
+define('PLUGIN_CODE_INVALID_PAYMENT_METHOD_ADDITIONAL_STEP_TEMPLATE_FILE', 113);
+define('PLUGIN_CODE_MISSING_PAYMENT_METHOD_ADDITIONAL_STEP_FILE', 114);
+define('PLUGIN_CODE_MISSING_FORMATS', 115);
+define('PLUGIN_CODE_INVALID_FORMAT_NAME', 116);
+define('PLUGIN_CODE_INVALID_FORMAT_FILE_NAME', 117);
+define('PLUGIN_CODE_MISSING_FORMAT_CONTENT', 118);
+define('PLUGIN_CODE_INVALID_FORMAT_ENCODING', 119);
+define('PLUGIN_CODE_INVALID_FORMAT_SHIPPING_COSTS_DELIVERY_COUNTRY', 120);
+define('PLUGIN_CODE_INVALID_FORMAT_CONTENT_FILE', 121);
+define('PLUGIN_CODE_MISSING_EXTENDED_TEMPLATE', 122);
+define('PLUGIN_CODE_INVALID_EXTENDED_TEMPLATE_FILE_NAME', 123);
+define('PLUGIN_CODE_MISSING_EXTENDED_TEMPLATE_FILE', 124);
+define('PLUGIN_CODE_MISSING_UNINSTALL_FILE', 125);
+define('PLUGIN_CODE_OK_BUT_NOT_SHOP4_COMPATIBLE', 126);
+define('PLUGIN_CODE_IONCUBE_REQUIRED', 127);
+define('PLUGIN_CODE_INVALID_OPTIONS_SOURE_FILE', 128);
+define('PLUGIN_CODE_MISSING_OPTIONS_SOURE_FILE', 129);
+define('PLUGIN_CODE_MISSING_BOOTSTRAP_CLASS', 130);
+define('PLUGIN_CODE_INVALID_BOOTSTRAP_IMPLEMENTATION', 131);
+define('PLUGIN_CODE_INVALID_AUTHOR', 132);
+
+define('PLUGIN_CODE_SQL_MISSING_DATA', 2);
+define('PLUGIN_CODE_SQL_ERROR', 3);
+define('PLUGIN_CODE_SQL_WRONG_TABLE_NAME_DELETE', 4);
+define('PLUGIN_CODE_SQL_WRONG_TABLE_NAME_CREATE', 5);
+define('PLUGIN_CODE_SQL_INVALID_FILE_CONTENT', 6);
+
+
 /**
  * @return array
  */
@@ -74,7 +215,7 @@ function gibAllePlugins($PluginInstalliert_arr)
                     $XML_arr      = XML_unserialize($xml, 'ISO-8859-1');
                     $XML_arr      = getArrangedArray($XML_arr);
                     $nReturnValue = pluginPlausi(0, $cPfad . $cVerzeichnis);
-                    if ($nReturnValue === 90 && in_array($cVerzeichnis, $cInstalledPlugins, true)) {
+                    if ($nReturnValue === PLUGIN_CODE_DUPLICATE_PLUGIN_ID && in_array($cVerzeichnis, $cInstalledPlugins, true)) {
                         $XML_arr['cVerzeichnis']       = $cVerzeichnis;
                         $XML_arr['shop4compatible']    = isset($XML_arr['jtlshop3plugin'][0]['Shop4Version']);
                         $Plugins->index[$cVerzeichnis] = makeXMLToObj($XML_arr);
@@ -109,137 +250,6 @@ function gibAllePlugins($PluginInstalliert_arr)
     return $Plugins;
 }
 
-/*
-// Plugin Plausi
-// Prüft das Plugin auf Plausibilität und ändert gegebenenfalls den Status (insofern es installiert ist)
-// Parameter:   kPlugin, falls vorhanden, ansonsten muss eine 0 übergeben werden
-//              cVerzeichnis, gib das Verzeichnis zum Plugin an.
-// Return:
-// 1    = Alles O.K.
-// 2    = Falsche Übergabeparameter
-// 3    = Verzeichnis existiert nicht
-// 4    = info.xml existiert nicht
-// 5    = Kein Plugin in der DB anhand von kPlugin gefunden
-// 6    = Der Pluginname entspricht nicht der Konvention
-// 7    = Die PluginID entspricht nicht der Konvention
-// 8    = Der Installationsknoten ist nicht vorhanden
-// 9    = Erste Versionsnummer entspricht nicht der Konvention
-// 10   = Die Versionsnummer entspricht nicht der Konvention
-// 11   = Das Versionsdatum entspricht nicht der Konvention
-// 12   = SQL Datei für die aktuelle Version existiert nicht
-// 13   = Keine Hooks vorhanden
-// 14   = Die Hook Werte entsprechen nicht den Konventionen
-// 15   = CustomLink Name entspricht nicht der Konvention
-// 16   = CustomLink Dateiname entspricht nicht der Konvention
-// 17   = CustomLink Datei existiert nicht
-// 18   = EinstellungsLink Name entspricht nicht der Konvention
-// 19   = Einstellungen fehlen
-// 20   = Einstellungen type entspricht nicht der Konvention
-// 21   = Einstellungen initialValue entspricht nicht der Konvention
-// 22   = Einstellungen sort entspricht nicht der Konvention
-// 23   = Einstellungen Name entspricht nicht der Konvention
-// 24   = Keine SelectboxOptionen vorhanden
-// 25   = Die Option entspricht nicht der Konvention
-// 26   = Keine Sprachvariablen vorhanden
-// 27   = Variable Name entspricht nicht der Konvention
-// 28   = Keine lokalisierte Sprachvariable vorhanden
-// 29   = Die ISO der lokalisierten Sprachvariable entspricht nicht der Konvention
-// 30   = Der Name der lokalisierten Sprachvariable entspricht nicht der Konvention
-// 31   = Die Hook Datei ist nicht vorhanden
-// 33   = Einstellungen conf entspricht nicht der Konvention
-// 34   = Einstellungen ValueName entspricht nicht der Konvention
-// 35   = XML Version entspricht nicht der Konvention
-// 36   = Shop Version entspricht nicht der Konvention
-// 37   = Shop Version ist zu niedrig
-// 38   = Keine Frontendlinks vorhanden, obwohl der Node angelegt wurde
-// 39   = Link Filename entspricht nicht der Konvention
-// 40   = LinkName entspricht nicht der Konvention
-// 41   = Angabe ob erst Sichtbar nach Login entspricht nicht der Konvention
-// 42   = Abgabe ob eine Druckbutton gezeigt werden soll entspricht nicht der Konvention
-// 43   = Die ISO der Linksprache entspricht nicht der Konvention
-// 44   = Der Seo Name entspricht nicht der Konvention
-// 45   = Der Name entspricht nicht der Konvention
-// 46   = Der Title entspricht nicht der Konvention
-// 47   = Der MetaTitle entspricht nicht der Konvention
-// 48   = Die MetaKeywords entsprechen nicht der Konvention
-// 49   = Die MetaDescription entspricht nicht der Konvention
-// 50   = Der Name in den Zahlungsmethoden entspricht nicht der Konvention
-// 51   = Sende Mail in den Zahlungsmethoden entspricht nicht der Konvention
-// 52   = TSCode in den Zahlungsmethoden entspricht nicht der Konvention
-// 53   = PreOrder in den Zahlungsmethoden entspricht nicht der Konvention
-// 54   = ClassFile in den Zahlungsmethoden entspricht nicht der Konvention
-// 55   = Die Datei für die Klasse der Zahlungsmethode existiert nicht
-// 56   = TemplateFile in den Zahlungsmethoden entspricht nicht der Konvention
-// 57   = Die Datei für das Template der Zahlungsmethode existiert nicht
-// 58   = Keine Sprachen in den Zahlungsmethoden hinterlegt
-// 59   = Die ISO der Sprache in der Zahlungsmethode entspricht nicht der Konvention
-// 60   = Der Name in den Zahlungsmethoden Sprache entspricht nicht der Konvention
-// 61   = Der ChargeName in den Zahlungsmethoden Sprache entspricht nicht der Konvention
-// 62   = Der InfoText in den Zahlungsmethoden Sprache entspricht nicht der Konvention
-// 63   = Zahlungsmethode Einstellungen type entspricht nicht der Konvention
-// 64   = Zahlungsmethode Einstellungen initialValue entspricht nicht der Konvention
-// 65   = Zahlungsmethode Einstellungen sort entspricht nicht der Konvention
-// 66   = Zahlungsmethode Einstellungen conf entspricht nicht der Konvention
-// 67   = Zahlungsmethode Einstellungen Name entspricht nicht der Konvention
-// 68   = Zahlungsmethode Einstellungen ValueName entspricht nicht der Konvention
-// 69   = Keine SelectboxOptionen vorhanden
-// 70   = Die Option entspricht nicht der Konvention
-// 71   = Die Sortierung in den Zahlungsmethoden entspricht nicht der Konvention
-// 72   = Soap in den Zahlungsmethoden entspricht nicht der Konvention
-// 73   = Curl in den Zahlungsmethoden entspricht nicht der Konvention
-// 74   = Sockets in den Zahlungsmethoden entspricht nicht der Konvention
-// 75	= ClassName in den Zahlungsmethoden entspricht nicht der Konvention
-// 76	= Der Templatename entspricht nicht der Konvention
-// 77	= Die Templatedatei für den Frontend Link existiert nicht
-// 78	= Es darf nur ein Templatename oder ein Fullscreen Templatename existieren
-// 79	= Der Fullscreen Templatename entspricht nicht der Konvention
-// 80	= Die Fullscreen Templatedatei für den Frontend Link existiert nicht
-// 81	= Für ein Frontend Link muss ein Templatename oder Fullscreen Templatename angegeben werden
-// 82 	= Keine Box vorhanden
-// 83 	= Box Name entspricht nicht der Konvention
-// 84 	= Box Templatedatei entspricht nicht der Konvention
-// 85 	= Box Templatedatei existiert nicht
-// 86	= Lizenzklasse existiert nicht
-// 87	= Name der Lizenzklasse entspricht nicht der konvention
-// 88	= Lizenklasse ist nicht definiert
-// 89	= Methode checkLicence in der Lizenzklasse ist nicht definiert
-// 90	= PluginID bereits in der Datenbank vorhanden
-// 91	= Keine Emailtemplates vorhanden, obwohl der Node angelegt wurde
-// 92	= Template Name entspricht nicht der Konvention
-// 93	= Template Type entspricht nicht der Konvention
-// 94 	= Template ModulId entspricht nicht der Konvention
-// 95 	= Template Active entspricht nicht der Konvention
-// 96 	= Template AKZ entspricht nicht der Konvention
-// 97 	= Template AGB entspricht nicht der Konvention
-// 98	= Template WRB entspricht nicht der Konvention
-// 99	= Die ISO der Emailtemplate Sprache entspricht nicht der Konvention
-// 100	= Der Subject Name entspricht nicht der Konvention
-// 101	= Keine Templatesprachen vorhanden
-// 102  = CheckBoxFunction Name entspricht nicht der Konvention
-// 103  = CheckBoxFunction ID entspricht nicht der Konvention
-// 104  = Frontend Link Attribut NoFollow entspricht nicht der Konvention
-// 105  = Keine Widgets vorhanden
-// 106  = Widget Title entspricht nicht der Konvention
-// 107  = Widget Class entspricht nicht der Konvention
-// 108  = Die Datei für die Klasse des AdminWidgets existiert nicht
-// 109  = Container im Widget entspricht nicht der Konvention
-// 110  = Pos im Widget entspricht nicht der Konvention
-// 111  = Expanded im Widget entspricht nicht der Konvention
-// 112  = Active im Widget entspricht nicht der Konvention
-// 113  = AdditionalTemplateFile in den Zahlungsmethoden entspricht nicht der Konvention
-// 114  = Die Datei für das Zusatzschritt-Template der Zahlungsmethode existiert nicht
-// 115  = Keine Formate vorhanden
-// 116  = Format Name entspricht nicht der Konvention
-// 117  = Format Filename entspricht nicht der Konvention
-// 118  = Format enthaelt weder Content, noch eine Contentdatei
-// 119  = Format Encoding entspricht nicht der Konvention
-// 120  = Format ShippingCostsDeliveryCountry entspricht nicht der Konvention
-// 121  = Format ContenFile entspricht nicht der Konvention
-// 122 	= Kein Template vorhanden
-// 123 	= Templatedatei entspricht nicht der Konvention
-// 124 	= Templatedatei existiert nicht
-// 125  = Uninstall File existiert nicht
-*/
 /**
  * @param int    $kPlugin
  * @param string $cVerzeichnis
@@ -252,176 +262,40 @@ function pluginPlausi($kPlugin, $cVerzeichnis = '')
     if ($kPlugin > 0) {
         // Plugin aus der DB holen
         $oPlugin = Shop::DB()->select('tplugin', 'kPlugin', $kPlugin);
-        if (isset($oPlugin->kPlugin) && $oPlugin->kPlugin > 0) {
-            $cPfad = PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis;
-            if (is_dir($cPfad)) {
-                $cInfofile = "{$cPfad}/" . PLUGIN_INFO_FILE;
-                if (file_exists($cInfofile)) {
-                    $xml     = StringHandler::convertISO(file_get_contents($cInfofile));
-                    $XML_arr = XML_unserialize($xml, 'ISO-8859-1');
-                    $XML_arr = getArrangedArray($XML_arr);
-                    // Interne Plugin Plausi
-                    return pluginPlausiIntern($XML_arr, PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis);
-                }
-
-                return 4; // info.xml existiert nicht
-            }
-
-            return 3; // Verzeichnis existiert nicht
+        if (empty($oPlugin->kPlugin)) {
+            return PLUGIN_CODE_NO_PLUGIN_FOUND; // Kein Plugin in der DB anhand von kPlugin gefunden
         }
-
-        return 5; // Kein Plugin in der DB anhand von kPlugin gefunden
-    } elseif (strlen($cVerzeichnis) > 0) { // Plugin wird anhand des Verzeichnisses geprüft
-        if (is_dir($cVerzeichnis)) {
-            $cInfofile = "{$cVerzeichnis}/" . PLUGIN_INFO_FILE;
-            if (file_exists($cInfofile)) {
-                $xml     = StringHandler::convertISO(file_get_contents($cInfofile));
-                $XML_arr = XML_unserialize($xml, 'ISO-8859-1');
-                $XML_arr = getArrangedArray($XML_arr);
-                // Interne Plugin Plausi
-                return pluginPlausiIntern($XML_arr, $cVerzeichnis);
-            }
-
-            return 4; // info.xml existiert nicht
+        $basePath = PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis;
+        if (!is_dir($basePath)) {
+            return PLUGIN_CODE_DIR_DOES_NOT_EXIST;
         }
-
-        return 3; // Verzeichnis existiert nicht
+        $cInfofile = $basePath . '/' . PLUGIN_INFO_FILE;
+        if (!file_exists($cInfofile)) {
+            return PLUGIN_CODE_INFO_XML_MISSING;
+        }
+        $xml     = StringHandler::convertISO(file_get_contents($cInfofile));
+        $XML_arr = XML_unserialize($xml, 'ISO-8859-1');
+        $XML_arr = getArrangedArray($XML_arr);
+        // Interne Plugin Plausi
+        return pluginPlausiIntern($XML_arr, $basePath);
     }
-
-    return 2; // Falsche Übergabeparameter
+    if (empty($cVerzeichnis)) {
+        return PLUGIN_CODE_WRONG_PARAM;
+    }
+    // Plugin wird anhand des Verzeichnisses geprüft
+    if (!is_dir($cVerzeichnis)) {
+        return PLUGIN_CODE_DIR_DOES_NOT_EXIST;
+    }
+    $cInfofile = "{$cVerzeichnis}/" . PLUGIN_INFO_FILE;
+    if (!file_exists($cInfofile)) {
+        return PLUGIN_CODE_INFO_XML_MISSING;
+    }
+    $xml     = StringHandler::convertISO(file_get_contents($cInfofile));
+    $XML_arr = XML_unserialize($xml, 'ISO-8859-1');
+    $XML_arr = getArrangedArray($XML_arr);
+    // Interne Plugin Plausi
+    return pluginPlausiIntern($XML_arr, $cVerzeichnis);
 }
-
-/*
-// Prüft die XML Struktur des Plugins
-// Return:
-// 1    = Alles O.K.
-// 6    = Der Pluginname entspricht nicht der Konvention
-// 7    = Die PluginID entspricht nicht der Konvention
-// 8    = Der Installationsknoten ist nicht vorhanden
-// 9    = Erste Versionsnummer entspricht nicht der Konvention
-// 10   = Die Versionsnummer entspricht nicht der Konvention
-// 11   = Das Versionsdatum entspricht nicht der Konvention
-// 12   = SQL Datei für die aktuelle Version existiert nicht
-// 13   = Keine Hooks vorhanden
-// 14   = Die Hook Werte entsprechen nicht den Konventionen
-// 15   = CustomLink Name entspricht nicht der Konvention
-// 16   = CustomLink Dateiname entspricht nicht der Konvention
-// 17   = CustomLink Datei existiert nicht
-// 18   = EinstellungsLink Name entspricht nicht der Konvention
-// 19   = Einstellungen fehlen
-// 20   = Einstellungen type entspricht nicht der Konvention
-// 21   = Einstellungen initialValue entspricht nicht der Konvention
-// 22   = Einstellungen sort entspricht nicht der Konvention
-// 23   = Einstellungen Name entspricht nicht der Konvention
-// 24   = Keine SelectboxOptionen vorhanden
-// 25   = Die Option entspricht nicht der Konvention
-// 26   = Keine Sprachvariablen vorhanden
-// 27   = Variable Name entspricht nicht der Konvention
-// 28   = Keine lokalisierte Sprachvariable vorhanden
-// 29   = Die ISO der lokalisierten Sprachvariable entspricht nicht der Konvention
-// 30   = Der Name der lokalisierten Sprachvariable entspricht nicht der Konvention
-// 31   = Die Hook Datei ist nicht vorhanden
-// 32   = Version existiert nicht im Versionsordner
-// 33   = Einstellungen conf entspricht nicht der Konvention
-// 34   = Einstellungen ValueName entspricht nicht der Konvention
-// 35   = XML Version entspricht nicht der Konvention
-// 36   = Shop Version entspricht nicht der Konvention
-// 37   = Shop Version ist zu niedrig
-// 38   = Keine Frontendlinks vorhanden, obwohl der Node angelegt wurde
-// 39   = Link Filename entspricht nicht der Konvention
-// 40   = LinkName entspricht nicht der Konvention
-// 41   = Angabe ob erst Sichtbar nach Login entspricht nicht der Konvention
-// 42   = Abgabe ob eine Druckbutton gezeigt werden soll entspricht nicht der Konvention
-// 43   = Die ISO der Linksprache entspricht nicht der Konvention
-// 44   = Der Seo Name entspricht nicht der Konvention
-// 45   = Der Name entspricht nicht der Konvention
-// 46   = Der Title entspricht nicht der Konvention
-// 47   = Der MetaTitle entspricht nicht der Konvention
-// 48   = Die MetaKeywords entsprechen nicht der Konvention
-// 49   = Die MetaDescription entspricht nicht der Konvention
-// 50   = Der Name in den Zahlungsmethoden entspricht nicht der Konvention
-// 51   = Sende Mail in den Zahlungsmethoden entspricht nicht der Konvention
-// 52   = TSCode in den Zahlungsmethoden entspricht nicht der Konvention
-// 53   = PreOrder in den Zahlungsmethoden entspricht nicht der Konvention
-// 54   = ClassFile in den Zahlungsmethoden entspricht nicht der Konvention
-// 55   = Die Datei für die Klasse der Zahlungsmethode existiert nicht
-// 56   = TemplateFile in den Zahlungsmethoden entspricht nicht der Konvention
-// 57   = Die Datei für das Template der Zahlungsmethode existiert nicht
-// 58   = Keine Sprachen in den Zahlungsmethoden hinterlegt
-// 59   = Die ISO der Sprache in der Zahlungsmethode entspricht nicht der Konvention
-// 60   = Der Name in den Zahlungsmethoden Sprache entspricht nicht der Konvention
-// 61   = Der ChargeName in den Zahlungsmethoden Sprache entspricht nicht der Konvention
-// 62   = Der InfoText in den Zahlungsmethoden Sprache entspricht nicht der Konvention
-// 63   = Zahlungsmethode Einstellungen type entspricht nicht der Konvention
-// 64   = Zahlungsmethode Einstellungen initialValue entspricht nicht der Konvention
-// 65   = Zahlungsmethode Einstellungen sort entspricht nicht der Konvention
-// 66   = Zahlungsmethode Einstellungen conf entspricht nicht der Konvention
-// 67   = Zahlungsmethode Einstellungen Name entspricht nicht der Konvention
-// 68   = Zahlungsmethode Einstellungen ValueName entspricht nicht der Konvention
-// 69   = Keine SelectboxOptionen vorhanden
-// 70   = Die Option entspricht nicht der Konvention
-// 71   = Die Sortierung in den Zahlungsmethoden entspricht nicht der Konvention
-// 72   = Soap in den Zahlungsmethoden entspricht nicht der Konvention
-// 73   = Curl in den Zahlungsmethoden entspricht nicht der Konvention
-// 74   = Sockets in den Zahlungsmethoden entspricht nicht der Konvention
-// 75	= ClassName in den Zahlungsmethoden entspricht nicht der Konvention
-// 76	= Der Templatename entspricht nicht der Konvention
-// 77	= Die Templatedatei für den Frontend Link existiert nicht
-// 78	= Es darf nur ein Templatename oder ein Fullscreen Templatename existieren
-// 79	= Der Fullscreen Templatename entspricht nicht der Konvention
-// 80	= Die Fullscreen Templatedatei für den Frontend Link existiert nicht
-// 81	= Für ein Frontend Link muss ein Templatename oder Fullscreen Templatename angegeben werden
-// 82 	= Keine Box vorhanden
-// 83 	= Box Name entspricht nicht der Konvention
-// 84 	= Box Templatedatei entspricht nicht der Konvention
-// 85 	= Box Templatedatei existiert nicht
-// 86	= Lizenzklasse existiert nicht
-// 87	= Name der Lizenzklasse entspricht nicht der konvention
-// 88	= Lizenklasse ist nicht definiert
-// 89	= Methode checkLicence in der Lizenzklasse ist nicht definiert
-// 90	= PluginID bereits in der Datenbank vorhanden
-// 91	= Keine Emailtemplates vorhanden, obwohl der Node angelegt wurde
-// 92	= Template Name entspricht nicht der Konvention
-// 93	= Template Type entspricht nicht der Konvention
-// 94 	= Template ModulId entspricht nicht der Konvention
-// 95 	= Template Active entspricht nicht der Konvention
-// 96 	= Template AKZ entspricht nicht der Konvention
-// 97 	= Template AGB entspricht nicht der Konvention
-// 98	= Template WRB entspricht nicht der Konvention
-// 99	= Die ISO der Emailtemplate Sprache entspricht nicht der Konvention
-// 100	= Der Subject Name entspricht nicht der Konvention
-// 101	= Keine Templatesprachen vorhanden
-// 102  = CheckBoxFunction Name entspricht nicht der Konvention
-// 103  = CheckBoxFunction ID entspricht nicht der Konvention
-// 104  = Frontend Link Attribut NoFollow entspricht nicht der Konvention
-// 105  = Keine Widgets vorhanden
-// 106  = Widget Title entspricht nicht der Konvention
-// 107  = Widget Class entspricht nicht der Konvention
-// 108  = Die Datei für die Klasse des AdminWidgets existiert nicht
-// 109  = Container im Widget entspricht nicht der Konvention
-// 110  = Pos im Widget entspricht nicht der Konvention
-// 111  = Expanded im Widget entspricht nicht der Konvention
-// 112  = Active im Widget entspricht nicht der Konvention
-// 113  = AdditionalTemplateFile in den Zahlungsmethoden entspricht nicht der Konvention
-// 114  = Die Datei für das Zusatzschritt-Template der Zahlungsmethode existiert nicht
-// 115  = Keine Formate vorhanden
-// 116  = Format Name entspricht nicht der Konvention
-// 117  = Format Filename entspricht nicht der Konvention
-// 118  = Format enthaelt weder Content, noch eine Contentdatei
-// 119  = Format Encoding entspricht nicht der Konvention
-// 120  = Format ShippingCostsDeliveryCountry entspricht nicht der Konvention
-// 121  = Format ContenFile entspricht nicht der Konvention
-// 122 	= Kein Template vorhanden
-// 123 	= Templatedatei entspricht nicht der Konvention
-// 124 	= Templatedatei existiert nicht
-// 125  = Uninstall File existiert nicht
-// 126  = Nicht Shop4-kompatibel, aber evtl. lauffähig
-// 127  = Plugin benoetig Ioncube
-// 128  = OptionsSource-Datei wurde nicht angegeben
-// 129  = OptionsSource-Datei existiert nicht
-// 130  = Bootstrap-Klasse existiert nicht
-// 131  = Bootstrap-Klasse muss das Interface IPlugin implementieren
-*/
 
 /**
  * @param array  $XML_arr
@@ -435,6 +309,7 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
     $requiresMissingIoncube = false;
     $nXMLShopVersion        = 0; // Shop-Version die das Plugin braucht um zu laufen
     $nShopVersion           = 0; // Aktuelle Shop-Version
+    $baseNode                = $XML_arr['jtlshop3plugin'][0];
     // Shopversion holen
     $oVersion = Shop::DB()->query("SELECT nVersion FROM tversion LIMIT 1", 1);
 
@@ -442,1332 +317,1283 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
         $nShopVersion = (int)$oVersion->nVersion;
     }
     // XML-Versionsnummer
-    preg_match('/[0-9]{3}/', $XML_arr['jtlshop3plugin'][0]['XMLVersion'], $cTreffer_arr);
-    if (count($cTreffer_arr) === 0) {
-        return 35;
+    if (!isset($baseNode['XMLVersion'])) {
+        return PLUGIN_CODE_INVALID_XML_VERSION;
     }
-    if (strlen($cTreffer_arr[0]) !== strlen($XML_arr['jtlshop3plugin'][0]['XMLVersion']) &&
-        (int)$XML_arr['jtlshop3plugin'][0]['XMLVersion'] >= 100) {
-        return 35; //XML-Version entspricht nicht der Konvention
+    preg_match('/[0-9]{3}/', $baseNode['XMLVersion'], $cTreffer_arr);
+    if (count($cTreffer_arr) === 0
+        || (strlen($cTreffer_arr[0]) !== strlen($baseNode['XMLVersion']) && (int)$baseNode['XMLVersion'] >= 100)
+    ) {
+        return PLUGIN_CODE_INVALID_XML_VERSION;
     }
     $nXMLVersion = (int)$XML_arr['jtlshop3plugin'][0]['XMLVersion'];
-    // XML-ShopVersionsnummer
-    if (empty($XML_arr['jtlshop3plugin'][0]['ShopVersion']) && empty($XML_arr['jtlshop3plugin'][0]['Shop4Version'])) {
-        return 36;
+    if (empty($baseNode['ShopVersion']) && empty($baseNode['Shop4Version'])) {
+        return PLUGIN_CODE_INVALID_SHOP_VERSION;
     }
-    if ((isset($XML_arr['jtlshop3plugin'][0]['ShopVersion']) &&
-            strlen($cTreffer_arr[0]) !== strlen($XML_arr['jtlshop3plugin'][0]['ShopVersion']) &&
-            (int)$XML_arr['jtlshop3plugin'][0]['ShopVersion'] >= 300) ||
-        (isset($XML_arr['jtlshop3plugin'][0]['Shop4Version']) &&
-            strlen($cTreffer_arr[0]) !== strlen($XML_arr['jtlshop3plugin'][0]['Shop4Version']) &&
-            (int)$XML_arr['jtlshop3plugin'][0]['Shop4Version'] >= 300)) {
-        return 36; //Shop-Version entspricht nicht der Konvention
+    if ((isset($baseNode['ShopVersion']) 
+            && strlen($cTreffer_arr[0]) !== strlen($baseNode['ShopVersion']) 
+            && (int)$baseNode['ShopVersion'] >= 300
+        ) 
+        || (isset($baseNode['Shop4Version']) 
+            && strlen($cTreffer_arr[0]) !== strlen($baseNode['Shop4Version']) 
+            && (int)$baseNode['Shop4Version'] >= 300)
+    ) {
+        return PLUGIN_CODE_INVALID_SHOP_VERSION; //Shop-Version entspricht nicht der Konvention
+    }
+    if (isset($baseNode['Shop4Version'])) {
+        $nXMLShopVersion   = (int)$baseNode['Shop4Version'];
+        $isShop4Compatible = true;
     } else {
-        if (isset($XML_arr['jtlshop3plugin'][0]['Shop4Version'])) {
-            $nXMLShopVersion   = (int)$XML_arr['jtlshop3plugin'][0]['Shop4Version'];
-            $isShop4Compatible = true;
-        } else {
-            $nXMLShopVersion = (int)$XML_arr['jtlshop3plugin'][0]['ShopVersion'];
-        }
-        //check if plugin need ioncube loader but extension is not loaded
-        if (isset($XML_arr['jtlshop3plugin'][0]['LicenceClassFile']) && !extension_loaded('ionCube Loader')) {
-            //ioncube is not loaded
-            $nLastVersionKey    = count($XML_arr['jtlshop3plugin'][0]['Install'][0]['Version']) / 2 - 1;
-            $nLastPluginVersion = (int)$XML_arr['jtlshop3plugin'][0]['Install'][0]['Version'][$nLastVersionKey . ' attr']['nr'];
-            //try to read license file
-            if (file_exists($cVerzeichnis . '/' . PFAD_PLUGIN_VERSION . $nLastPluginVersion . '/' .
-                PFAD_PLUGIN_LICENCE . $XML_arr['jtlshop3plugin'][0]['LicenceClassFile'])
-            ) {
-                $content = file_get_contents($cVerzeichnis . '/' .
-                    PFAD_PLUGIN_VERSION . $nLastPluginVersion . '/' .
-                    PFAD_PLUGIN_LICENCE . $XML_arr['jtlshop3plugin'][0]['LicenceClassFile']);
-                //ioncube encoded files usually have a header that checks loaded extions itself
-                //but it can also be in short form, where there are no opening php tags
-                if ((strpos($content, 'ionCube') !== false &&
-                        strpos($content, 'extension_loaded') !== false) ||
-                    strpos($content, '<?php') === false) {
-                    $requiresMissingIoncube = true;
-                }
-            }
+        $nXMLShopVersion = (int)$baseNode['ShopVersion'];
+    }
+    $installNode = $baseNode['Install'][0];
+    //check if plugin need ioncube loader but extension is not loaded
+    if (isset($baseNode['LicenceClassFile']) && !extension_loaded('ionCube Loader')) {
+        //ioncube is not loaded
+        $nLastVersionKey    = count($installNode['Version']) / 2 - 1;
+        $nLastPluginVersion = (int)$installNode['Version'][$nLastVersionKey . ' attr']['nr'];
+        //try to read license file
+        if (file_exists($cVerzeichnis . '/' . PFAD_PLUGIN_VERSION . $nLastPluginVersion . '/' .
+            PFAD_PLUGIN_LICENCE . $baseNode['LicenceClassFile'])
+        ) {
+            $content = file_get_contents($cVerzeichnis . '/' .
+                PFAD_PLUGIN_VERSION . $nLastPluginVersion . '/' .
+                PFAD_PLUGIN_LICENCE . $baseNode['LicenceClassFile']);
+            //ioncube encoded files usually have a header that checks loaded extions itself
+            //but it can also be in short form, where there are no opening php tags
+            $requiresMissingIoncube = ((strpos($content, 'ionCube') !== false
+                    && strpos($content, 'extension_loaded') !== false)
+                || strpos($content, '<?php') === false);
         }
     }
     // Shop-Version ausreichend?
     if (!$nShopVersion || !$nXMLShopVersion || $nXMLShopVersion > $nShopVersion) {
-        return 37; //Shop-Version ist zu niedrig
+        return PLUGIN_CODE_SHOP_VERSION_COMPATIBILITY; //Shop-Version ist zu niedrig
+    }
+    if (!isset($baseNode['Author'])) {
+        return PLUGIN_CODE_INVALID_AUTHOR;
     }
     // Prüfe Pluginname
-    preg_match(
-        "/[a-zA-Z0-9äÄüÜöÖß" . utf8_decode('äÄüÜöÖß') . "\(\)_ -]+/",
-        $XML_arr['jtlshop3plugin'][0]['Name'],
+    if (!isset($baseNode['Name'])) {
+        return PLUGIN_CODE_INVALID_NAME;
+    }
+    preg_match("/[a-zA-Z0-9äÄüÜöÖß" . utf8_decode('äÄüÜöÖß') . "\(\)_ -]+/",
+        $baseNode['Name'],
         $cTreffer_arr
     );
-    if (strlen($cTreffer_arr[0]) === strlen($XML_arr['jtlshop3plugin'][0]['Name'])) {
-        // Prüfe PluginID
-        preg_match("/[a-zA-Z0-9_]+/", $XML_arr['jtlshop3plugin'][0]['PluginID'], $cTreffer_arr);
-        if (strlen($cTreffer_arr[0]) === strlen($XML_arr['jtlshop3plugin'][0]['PluginID'])) {
-            // Existiert die PluginID bereits?
-            $oPluginTMP = Shop::DB()->select('tplugin', 'cPluginID', $XML_arr['jtlshop3plugin'][0]['PluginID']);
+    if (!isset($cTreffer_arr[0]) || strlen($cTreffer_arr[0]) !== strlen($baseNode['Name'])) {
+        return PLUGIN_CODE_INVALID_NAME;
+    }
+    // Prüfe PluginID
+    preg_match("/[a-zA-Z0-9_]+/", $baseNode['PluginID'], $cTreffer_arr);
+    if (empty($baseNode['PluginID']) || strlen($cTreffer_arr[0]) !== strlen($baseNode['PluginID'])) {
+        return PLUGIN_CODE_INVALID_PLUGIN_ID;
+    }
+    // Existiert die PluginID bereits?
+    $oPluginTMP = Shop::DB()->select('tplugin', 'cPluginID', $baseNode['PluginID']);
 
-            if (isset($oPluginTMP->kPlugin) && $oPluginTMP->kPlugin > 0) {
-                return 90; //PluginID bereits in der Datenbank vorhanden
+    if (isset($oPluginTMP->kPlugin) && $oPluginTMP->kPlugin > 0) {
+        return PLUGIN_CODE_DUPLICATE_PLUGIN_ID;
+    }
+    if (!isset($installNode['Version']) || !is_array($installNode['Version'])) {
+        return PLUGIN_CODE_INVALID_VERSION_NUMBER;
+    }
+
+    //Finde aktuelle Version
+    $nLastVersionKey    = count($installNode['Version']) / 2 - 1;
+    $nLastPluginVersion = (int)$installNode['Version'][$nLastVersionKey . ' attr']['nr'];
+
+    if (isset($baseNode['LicenceClassFile'])
+        && strlen($baseNode['LicenceClassFile']) > 0
+    ) {
+        //Existiert die Lizenzdatei?
+        if (!file_exists($cVerzeichnis . '/' . PFAD_PLUGIN_VERSION . $nLastPluginVersion . '/' .
+            PFAD_PLUGIN_LICENCE . $baseNode['LicenceClassFile'])
+        ) {
+            return PLUGIN_CODE_MISSING_LICENCE_FILE;
+        }
+        //Klassenname gesetzt?
+        if (empty($baseNode['LicenceClass'])
+            || $baseNode['LicenceClass'] !== $baseNode['PluginID'] . PLUGIN_LICENCE_CLASS
+        ) {
+            return PLUGIN_CODE_INVALID_LICENCE_FILE_NAME;
+        }
+        if ($requiresMissingIoncube) {
+            return PLUGIN_CODE_IONCUBE_REQUIRED;
+        }
+        require_once $cVerzeichnis . '/' . PFAD_PLUGIN_VERSION . $nLastPluginVersion . '/' .
+                PFAD_PLUGIN_LICENCE . $baseNode['LicenceClassFile'];
+        // Existiert die Klasse?
+        if (!class_exists($baseNode['LicenceClass'])) {
+            return PLUGIN_CODE_MISSING_LICENCE;
+        }
+        //Methode checkLicence defininiert?
+        $cClassMethod_arr = get_class_methods($baseNode['LicenceClass']);
+        $bClassMethod     = (is_array($cClassMethod_arr)
+            && count($cClassMethod_arr) > 0
+            && in_array(PLUGIN_LICENCE_METHODE, $cClassMethod_arr, true));
+        if (!$bClassMethod) {
+            return PLUGIN_CODE_MISSING_LICENCE_CHECKLICENCE_METHOD;
+        }
+    }
+
+    //Prüfe Bootstrapper
+    $cBootstrapNamespace = $baseNode['PluginID'];
+    $cBootstrapClassFile = $cVerzeichnis . '/' . PFAD_PLUGIN_VERSION .
+        $nLastPluginVersion . '/' . PLUGIN_BOOTSTRAPPER;
+
+    if (is_file($cBootstrapClassFile)) {
+        $cClass = sprintf('%s\\%s', $cBootstrapNamespace, 'Bootstrap');
+
+        require_once $cBootstrapClassFile;
+
+        if (!class_exists($cClass)) {
+            return PLUGIN_CODE_MISSING_BOOTSTRAP_CLASS;
+        }
+
+        $bootstrapper = new $cClass($cBootstrapNamespace);
+
+        if (!is_subclass_of($bootstrapper, 'AbstractPlugin')) {
+            return PLUGIN_CODE_INVALID_BOOTSTRAP_IMPLEMENTATION;
+        }
+    }
+
+    //Prüfe Install Knoten
+    if (!isset($baseNode['Install']) || !is_array($baseNode['Install'])) {
+        return PLUGIN_CODE_INSTALL_NODE_MISSING;
+    }
+    // Versionen definiert?
+    if (isset($installNode['Version'])
+        && is_array($installNode['Version'])
+        && count($installNode['Version']) > 0
+    ) {
+        //Ist die 1. Versionsnummer korrekt?
+        if ((int)$installNode['Version']['0 attr']['nr'] !== 100) {
+            return PLUGIN_CODE_INVALID_XML_VERSION_NUMBER;
+        }
+        //Laufe alle Versionen durch
+        foreach ($installNode['Version'] as $i => $Version) {
+            preg_match("/[0-9]+\sattr/", $i, $cTreffer1_arr);
+            preg_match("/[0-9]+/", $i, $cTreffer2_arr);
+            if (isset($cTreffer1_arr[0]) && strlen($cTreffer1_arr[0]) === strlen($i)) {
+                $cVersionsnummer = $Version['nr'];
+                // Entpricht die Versionsnummer
+                preg_match("/[0-9]+/", $Version['nr'], $cTreffer_arr);
+                if (strlen($cTreffer_arr[0]) !== strlen($Version['nr'])) {
+                    return PLUGIN_CODE_INVALID_VERSION_NUMBER;
+                }
+            } elseif (strlen($cTreffer2_arr[0]) === strlen($i)) {
+                // Prüfe SQL und CreateDate
+                if (isset($Version['SQL']) &&
+                    strlen($Version['SQL']) > 0 &&
+                    !file_exists($cVerzeichnis . '/' . PFAD_PLUGIN_VERSION . $cVersionsnummer . '/' .
+                        PFAD_PLUGIN_SQL . $Version['SQL'])
+                 ) {
+                    return PLUGIN_CODE_MISSING_SQL_FILE;
+                }
+                // Prüfe Versionsordner
+                if (!is_dir($cVerzeichnis . '/' . PFAD_PLUGIN_VERSION . $cVersionsnummer)) {
+                    return PLUGIN_CODE_MISSING_VERSION_DIR;
+                }
+                preg_match('/[0-9]{4}-[0-1]{1}[0-9]{1}-[0-3]{1}[0-9]{1}/',
+                    $Version['CreateDate'],
+                    $cTreffer_arr
+                );
+                if (!isset($cTreffer_arr[0]) || strlen($cTreffer_arr[0]) !== strlen($Version['CreateDate'])) {
+                    return PLUGIN_CODE_INVALID_DATE;
+                }
             }
-
-            //Finde aktuelle Version
-            $nLastVersionKey    = count($XML_arr['jtlshop3plugin'][0]['Install'][0]['Version']) / 2 - 1;
-            $nLastPluginVersion = (int)$XML_arr['jtlshop3plugin'][0]['Install'][0]['Version'][$nLastVersionKey . ' attr']['nr'];
-
-            if (isset($XML_arr['jtlshop3plugin'][0]['LicenceClassFile']) &&
-                strlen($XML_arr['jtlshop3plugin'][0]['LicenceClassFile']) > 0) {
-                //Existiert die Lizenzdatei?
-                if (!file_exists($cVerzeichnis . '/' . PFAD_PLUGIN_VERSION . $nLastPluginVersion . '/' .
-                    PFAD_PLUGIN_LICENCE . $XML_arr['jtlshop3plugin'][0]['LicenceClassFile'])
-                ) {
-                    return 86; //Datei der Lizenzklasse existiert nicht
-                }
-                //Klassenname gesetzt?
-                if (!isset($XML_arr['jtlshop3plugin'][0]['LicenceClass']) ||
-                    strlen($XML_arr['jtlshop3plugin'][0]['LicenceClass']) === 0
-                ) {
-                    return 87; //Name der Lizenzklasse entspricht nicht der konvention
-                }
-                if ($XML_arr['jtlshop3plugin'][0]['LicenceClass'] !==
-                    $XML_arr['jtlshop3plugin'][0]['PluginID'] . PLUGIN_LICENCE_CLASS
-                ) {
-                    return 87; //Name der Lizenzklasse entspricht nicht der konvention
-                }
-                if (!$requiresMissingIoncube) {
-                    require_once $cVerzeichnis . '/' . PFAD_PLUGIN_VERSION . $nLastPluginVersion . '/' .
-                        PFAD_PLUGIN_LICENCE . $XML_arr['jtlshop3plugin'][0]['LicenceClassFile'];
-                } else {
-                    return 127;
-                }
-                // Existiert die Klasse?
-                if (!class_exists($XML_arr['jtlshop3plugin'][0]['LicenceClass'])) {
-                    return 88; // Lizenklasse ist nicht definiert
-                }
-                //Methode checkLicence defininiert?
-                $cClassMethod_arr = get_class_methods($XML_arr['jtlshop3plugin'][0]['LicenceClass']);
-                $bClassMethod     = false;
-                if (is_array($cClassMethod_arr) &&
-                    count($cClassMethod_arr) > 0 &&
-                    in_array(PLUGIN_LICENCE_METHODE, $cClassMethod_arr, true)
-                ) {
-                    $bClassMethod = true;
-                }
-                if (!$bClassMethod) {
-                    return 89;// Methode checkLicence in der Lizenzklasse ist nicht definiert
-                }
-            }
-
-            //Prüfe Bootstrapper
-            $cBootstrapNamespace = $XML_arr['jtlshop3plugin'][0]['PluginID'];
-            $cBootstrapClassFile = $cVerzeichnis . '/' . PFAD_PLUGIN_VERSION .
-                $nLastPluginVersion . '/' . PLUGIN_BOOTSTRAPPER;
-
-            if (is_file($cBootstrapClassFile)) {
-                $cClass = sprintf('%s\\%s', $cBootstrapNamespace, 'Bootstrap');
-
-                require_once $cBootstrapClassFile;
-
-                if (!class_exists($cClass)) {
-                    return 130;
-                }
-
-                $bootstrapper = new $cClass($cBootstrapNamespace);
-
-                if (!is_subclass_of($bootstrapper, 'AbstractPlugin')) {
-                    return 131;
-                }
-            }
-
-            //Prüfe Install Knoten
-            if (isset($XML_arr['jtlshop3plugin'][0]['Install']) && is_array($XML_arr['jtlshop3plugin'][0]['Install'])) {
-                //Gibts Versionen
-                if (isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['Version']) &&
-                    is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['Version']) &&
-                    count($XML_arr['jtlshop3plugin'][0]['Install'][0]['Version']) > 0
-                ) {
-                    //Ist die 1. Versionsnummer korrekt?
-                    if ((int)$XML_arr['jtlshop3plugin'][0]['Install'][0]['Version']['0 attr']['nr'] !== 100) {
-                        return 9;//Erste Versionsnummer entspricht nicht der Konvention
+        }
+    }
+    //Auf Hooks prüfen
+    if (isset($installNode['Hooks'])
+        && is_array($installNode['Hooks'])
+    ) {
+        if (count($installNode['Hooks'][0]) === 1) {
+            //Es gibt mehr als einen Hook
+            foreach ($installNode['Hooks'][0]['Hook'] as $i => $Hook_arr) {
+                preg_match("/[0-9]+\sattr/", $i, $cTreffer1_arr);
+                preg_match("/[0-9]+/", $i, $cTreffer2_arr);
+                if (isset($cTreffer1_arr[0]) && strlen($cTreffer1_arr[0]) === strlen($i)) {
+                    if (strlen($Hook_arr['id']) === 0) {
+                        return PLUGIN_CODE_INVALID_HOOK;
                     }
-                    //Laufe alle Versionen durch
-                    foreach ($XML_arr['jtlshop3plugin'][0]['Install'][0]['Version'] as $i => $Version) {
-                        preg_match("/[0-9]+\sattr/", $i, $cTreffer1_arr);
-                        preg_match("/[0-9]+/", $i, $cTreffer2_arr);
-                        if (isset($cTreffer1_arr[0]) && strlen($cTreffer1_arr[0]) === strlen($i)) {
-                            $cVersionsnummer = $Version['nr'];
-                            // Entpricht die Versionsnummer
-                            preg_match("/[0-9]+/", $Version['nr'], $cTreffer_arr);
-                            if (strlen($cTreffer_arr[0]) !== strlen($Version['nr'])) {
-                                return 10; //Die Versionsnummer entspricht nicht der Konvention
-                            }
-                        } elseif (strlen($cTreffer2_arr[0]) === strlen($i)) {
-                            // Prüfe SQL und CreateDate
-                            if (isset($Version['SQL']) &&
-                                strlen($Version['SQL']) > 0 &&
-                                !file_exists($cVerzeichnis . '/' . PFAD_PLUGIN_VERSION . $cVersionsnummer . '/' .
-                                    PFAD_PLUGIN_SQL . $Version['SQL'])
-                             ) {
-                                return 12;//SQL Datei für die aktuelle Version existiert nicht
-                            }
-                            // Prüfe Versionsordner
-                            if (!is_dir($cVerzeichnis . '/' . PFAD_PLUGIN_VERSION . $cVersionsnummer)) {
-                                return 32;//Version existiert nicht im Versionsordner
-                            }
-                            preg_match(
-                                '/[0-9]{4}-[0-1]{1}[0-9]{1}-[0-3]{1}[0-9]{1}/',
-                                $Version['CreateDate'],
-                                $cTreffer_arr
-                            );
-                            if (strlen($cTreffer_arr[0]) !== strlen($Version['CreateDate'])) {
-                                return 11;//Das Versionsdatum entspricht nicht der Konvention
-                            }
-                        }
+                } elseif (isset($cTreffer2_arr[0]) && strlen($cTreffer2_arr[0]) === strlen($i)) {
+                    if (strlen($Hook_arr) === 0) {
+                        return PLUGIN_CODE_INVALID_HOOK;
+                    }
+                    //Hook include Datei vorhanden?
+                    if (!file_exists($cVerzeichnis . '/' .
+                        PFAD_PLUGIN_VERSION . $cVersionsnummer . '/' .
+                        PFAD_PLUGIN_FRONTEND . $Hook_arr)
+                    ) {
+                        return PLUGIN_CODE_MISSING_HOOK_FILE;
                     }
                 }
-                //Auf Hooks prüfen
-                if (isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['Hooks']) &&
-                    is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['Hooks'])) {
-                    if (count($XML_arr['jtlshop3plugin'][0]['Install'][0]['Hooks'][0]) === 1) {
-                        //Es gibt mehr als einen Hook
-                        foreach ($XML_arr['jtlshop3plugin'][0]['Install'][0]['Hooks'][0]['Hook'] as $i => $Hook_arr) {
-                            preg_match("/[0-9]+\sattr/", $i, $cTreffer1_arr);
-                            preg_match("/[0-9]+/", $i, $cTreffer2_arr);
-                            if (isset($cTreffer1_arr[0]) && strlen($cTreffer1_arr[0]) === strlen($i)) {
-                                if (strlen($Hook_arr['id']) === 0) {
-                                    return 14;//Die Hook -erte entsprechen nicht den Konventionen
-                                }
-                            } elseif (isset($cTreffer2_arr[0]) && strlen($cTreffer2_arr[0]) === strlen($i)) {
-                                if (strlen($Hook_arr) === 0) {
-                                    return 14;//Die Hook-Werte entsprechen nicht den Konventionen
-                                }
-                                //Hook include Datei vorhanden?
-                                if (!file_exists($cVerzeichnis . '/' .
-                                    PFAD_PLUGIN_VERSION . $cVersionsnummer . '/' .
-                                    PFAD_PLUGIN_FRONTEND . $Hook_arr)
+            }
+        } elseif (count($installNode['Hooks'][0]) > 1) {
+            //Es gibt nur einen Hook
+            $Hook_arr = $installNode['Hooks'][0];
+            //Hook-Name und ID prüfen
+            if ((int)$Hook_arr['Hook attr']['id'] === 0 || strlen($Hook_arr['Hook']) === 0) {
+                return PLUGIN_CODE_INVALID_HOOK;
+            }
+            //Hook include Datei vorhanden?
+            if (!file_exists($cVerzeichnis . '/' .
+                PFAD_PLUGIN_VERSION . $cVersionsnummer . '/' .
+                PFAD_PLUGIN_FRONTEND . $Hook_arr['Hook'])
+            ) {
+                return PLUGIN_CODE_MISSING_HOOK_FILE;
+            }
+        }
+    }
+    //Plausi Adminmenü & Einstellungen (falls vorhanden)
+    if (isset($installNode['Adminmenu'])
+        && is_array($installNode['Adminmenu'])
+    ) {
+        //Adminsmenüs vorhanden?
+        if (isset($installNode['Adminmenu'][0]['Customlink'])
+            && is_array($installNode['Adminmenu'][0]['Customlink'])
+            && count($installNode['Adminmenu'][0]['Customlink']) > 0
+        ) {
+            $nSort = 0;
+            foreach ($installNode['Adminmenu'][0]['Customlink'] as $i => $Customlink_arr) {
+                preg_match("/[0-9]+\sattr/", $i, $cTreffer1_arr);
+                preg_match("/[0-9]+/", $i, $cTreffer2_arr);
+
+                if (isset($cTreffer1_arr[0]) && strlen($cTreffer1_arr[0]) === strlen($i)) {
+                    $nSort = (int)$Customlink_arr['sort'];
+                } elseif (strlen($cTreffer2_arr[0]) === strlen($i)) {
+                    // Name prüfen
+                    preg_match("/[a-zA-Z0-9äÄüÜöÖß" . utf8_decode('äÄüÜöÖß') . "\_\- ]+/",
+                        $Customlink_arr['Name'],
+                        $cTreffer_arr
+                    );
+                    if (strlen($cTreffer_arr[0]) !== strlen($Customlink_arr['Name']) || empty($Customlink_arr['Name'])) {
+                        return PLUGIN_CODE_INVALID_CUSTOM_LINK_NAME;
+                    }
+                    if (empty($Customlink_arr['Filename'])) {
+                        return PLUGIN_CODE_INVALID_CUSTOM_LINK_FILE_NAME;
+                    }
+                    if (!file_exists($cVerzeichnis . '/' .
+                        PFAD_PLUGIN_VERSION . $cVersionsnummer . '/' .
+                        PFAD_PLUGIN_ADMINMENU . $Customlink_arr['Filename'])
+                    ) {
+                        return PLUGIN_CODE_MISSING_CUSTOM_LINK_FILE;
+                    }
+                }
+            }
+        }
+        // Einstellungen vorhanden?
+        if (isset($installNode['Adminmenu'][0]['Settingslink'])
+            && is_array($installNode['Adminmenu'][0]['Settingslink'])
+            && count($installNode['Adminmenu'][0]['Settingslink']) > 0
+        ) {
+            $nSort = 0;
+            foreach ($installNode['Adminmenu'][0]['Settingslink'] as $i => $Settingslink_arr) {
+                preg_match("/[0-9]+\sattr/", $i, $cTreffer1_arr);
+                preg_match("/[0-9]+/", $i, $cTreffer2_arr);
+
+                if (isset($cTreffer1_arr[0]) && strlen($cTreffer1_arr[0]) === strlen($i)) {
+                    $nSort = (int)$Settingslink_arr['sort'];
+                } elseif (strlen($cTreffer2_arr[0]) === strlen($i)) {
+                    // EinstellungsLink Name prüfen
+                    if (empty($Settingslink_arr['Name'])) {
+                        return PLUGIN_CODE_INVALID_CONFIG_LINK_NAME;
+                    }
+                    // Einstellungen prüfen
+                    $cTyp = '';
+                    if (!isset($Settingslink_arr['Setting'])
+                        || !is_array($Settingslink_arr['Setting'])
+                        || count($Settingslink_arr['Setting']) === 0
+                    ) {
+                        return PLUGIN_CODE_MISSING_CONFIG;
+                    }
+                    foreach ($Settingslink_arr['Setting'] as $j => $Setting_arr) {
+                        preg_match("/[0-9]+\sattr/", $j, $cTreffer3_arr);
+                        preg_match("/[0-9]+/", $j, $cTreffer4_arr);
+
+                        if (isset($cTreffer3_arr[0]) && strlen($cTreffer3_arr[0]) === strlen($j)) {
+                            $cTyp = $Setting_arr['type'];
+
+                            // Einstellungen type prüfen
+                            if (strlen($Setting_arr['type']) === 0) {
+                                return PLUGIN_CODE_INVALID_CONFIG_TYPE;
+                            }
+                            // Einstellungen initialValue prüfen
+                            //if(strlen($Setting_arr['initialValue']) == 0)
+                            //return 21;  // Einstellungen initialValue entspricht nicht der Konvention
+
+                            // Einstellungen sort prüfen
+                            if (strlen($Setting_arr['sort']) === 0) {
+                                return PLUGIN_CODE_INVALID_CONFIG_SORT_VALUE;
+                            }
+                            // Einstellungen conf prüfen
+                            if (strlen($Setting_arr['conf']) === 0) {
+                                return PLUGIN_CODE_INVALID_CONF;
+                            }
+                        } elseif (strlen($cTreffer4_arr[0]) === strlen($j)) {
+                            // Einstellungen Name prüfen
+                            if (strlen($Setting_arr['Name']) === 0) {
+                                return PLUGIN_CODE_INVALID_CONFIG_NAME;
+                            }
+                            // Einstellungen ValueName prüfen
+                            if (!isset($Setting_arr['ValueName'])
+                                || !is_string($Setting_arr['ValueName'])
+                                || strlen($Setting_arr['ValueName']) === 0
+                            ) {
+                                return PLUGIN_CODE_INVALID_CONF_VALUE_NAME;//Einstellungen ValueName entspricht nicht der Konvention
+                            }
+                            // Ist der Typ eine Selectbox => Es müssen SelectboxOptionen vorhanden sein
+                            if ($cTyp === 'selectbox') {
+                                // SelectboxOptions prüfen
+                                if (isset($Setting_arr['OptionsSource'])
+                                    && is_array($Setting_arr['OptionsSource'])
+                                    && count($Setting_arr['OptionsSource']) > 0
                                 ) {
-                                    return 31;// Die Hook-Datei ist nicht vorhanden
+                                    if (empty($Setting_arr['OptionsSource'][0]['File'])) {
+                                        return PLUGIN_CODE_INVALID_OPTIONS_SOURE_FILE;
+                                    }
+                                    if (!file_exists($cVerzeichnis . '/' .
+                                        PFAD_PLUGIN_VERSION . $cVersionsnummer . '/' .
+                                        PFAD_PLUGIN_ADMINMENU . $Setting_arr['OptionsSource'][0]['File'])
+                                    ) {
+                                        return PLUGIN_CODE_MISSING_OPTIONS_SOURE_FILE;
+                                    }
+                                } elseif (isset($Setting_arr['SelectboxOptions'])
+                                    && is_array($Setting_arr['SelectboxOptions'])
+                                    && count($Setting_arr['SelectboxOptions']) > 0
+                                ) {
+                                    // Es gibt mehr als 1 Option
+                                    if (count($Setting_arr['SelectboxOptions'][0]) === 1) {
+                                        foreach ($Setting_arr['SelectboxOptions'][0]['Option'] as $y => $Option_arr) {
+                                            preg_match("/[0-9]+\sattr/", $y, $cTreffer6_arr);
+                                            preg_match("/[0-9]+/", $y, $cTreffer7_arr);
+
+                                            if (isset($cTreffer6_arr[0]) && strlen($cTreffer6_arr[0]) === strlen($y)) {
+                                                if (strlen($Option_arr['value']) === 0) {
+                                                    return PLUGIN_CODE_INVALID_CONFIG_OPTION;
+                                                }
+                                                if (strlen($Option_arr['sort']) === 0) {
+                                                    return PLUGIN_CODE_INVALID_CONFIG_OPTION;
+                                                }
+                                            } elseif (strlen($cTreffer7_arr[0]) === strlen($y)) {
+                                                // Name prüfen
+                                                if (strlen($Option_arr) === 0) {
+                                                    return PLUGIN_CODE_INVALID_CONFIG_OPTION;
+                                                }
+                                            }
+                                        }
+                                    } elseif (count($Setting_arr['SelectboxOptions'][0]) === 2) {
+                                        //Es gibt nur 1 Option
+                                        if (strlen($Setting_arr['SelectboxOptions'][0]['Option attr']['value']) === 0) {
+                                            return PLUGIN_CODE_INVALID_CONFIG_OPTION;
+                                        }
+                                        if (strlen($Setting_arr['SelectboxOptions'][0]['Option attr']['sort']) === 0) {
+                                            return PLUGIN_CODE_INVALID_CONFIG_OPTION;
+                                        }
+                                        if (strlen($Setting_arr['SelectboxOptions'][0]['Option']) === 0) {
+                                            return PLUGIN_CODE_INVALID_CONFIG_OPTION;
+                                        }
+                                    }
+                                } else {
+                                    return PLUGIN_CODE_MISSING_CONFIG_SELECTBOX_OPTIONS;
+                                }
+                            } elseif ($cTyp === 'radio') {
+                                //radioOptions prüfen
+                                if (isset($Setting_arr['OptionsSource'])
+                                    && is_array($Setting_arr['OptionsSource'])
+                                    && count($Setting_arr['OptionsSource']) > 0
+                                ) {
+                                    //do nothing for now
+                                } elseif (isset($Setting_arr['RadioOptions'])
+                                    && is_array($Setting_arr['RadioOptions'])
+                                    && count($Setting_arr['RadioOptions']) > 0
+                                ) {
+                                    // Es gibt mehr als 1 Option
+                                    if (count($Setting_arr['RadioOptions'][0]) === 1) {
+                                        foreach ($Setting_arr['RadioOptions'][0]['Option'] as $y => $Option_arr) {
+                                            preg_match("/[0-9]+\sattr/", $y, $cTreffer6_arr);
+                                            preg_match("/[0-9]+/", $y, $cTreffer7_arr);
+                                            if (isset($cTreffer6_arr[0]) && strlen($cTreffer6_arr[0]) === strlen($y)) {
+                                                if (strlen($Option_arr['value']) === 0) {
+                                                    return PLUGIN_CODE_INVALID_CONFIG_OPTION;
+                                                }
+                                                if (strlen($Option_arr['sort']) === 0) {
+                                                    return PLUGIN_CODE_INVALID_CONFIG_OPTION;
+                                                }
+                                            } elseif (strlen($cTreffer7_arr[0]) === strlen($y)) {
+                                                if (strlen($Option_arr) === 0) {
+                                                    return PLUGIN_CODE_INVALID_CONFIG_OPTION;
+                                                }
+                                            }
+                                        }
+                                    } elseif (count($Setting_arr['RadioOptions'][0]) === 2) {
+                                        // Es gibt nur 1 Option
+                                        if (strlen($Setting_arr['RadioOptions'][0]['Option attr']['value']) === 0) {
+                                            return PLUGIN_CODE_INVALID_CONFIG_OPTION;
+                                        }
+                                        if (strlen($Setting_arr['RadioOptions'][0]['Option attr']['sort']) === 0) {
+                                            return PLUGIN_CODE_INVALID_CONFIG_OPTION;
+                                        }
+                                        if (strlen($Setting_arr['RadioOptions'][0]['Option']) === 0) {
+                                            return PLUGIN_CODE_INVALID_CONFIG_OPTION;
+                                        }
+                                    }
+                                } else {
+                                    return PLUGIN_CODE_MISSING_CONFIG_SELECTBOX_OPTIONS;
                                 }
                             }
                         }
-                    } elseif (count($XML_arr['jtlshop3plugin'][0]['Install'][0]['Hooks'][0]) > 1) {
-                        //Es gibt nur einen Hook
-                        $Hook_arr = $XML_arr['jtlshop3plugin'][0]['Install'][0]['Hooks'][0];
-                        //Hook-Name und ID prüfen
-                        if ((int)$Hook_arr['Hook attr']['id'] === 0 || strlen($Hook_arr['Hook']) === 0) {
-                            return 14;//Die Hook-Werte entsprechen nicht den Konventionen
-                        }
-                        //Hook include Datei vorhanden?
+                    }
+                }
+            }
+        }
+    }
+    // Plausi FrontendLinks (falls vorhanden)
+    if (isset($installNode['FrontendLink'])
+        && is_array($installNode['FrontendLink'])
+    ) {
+        // Links prüfen
+        if (!isset($installNode['FrontendLink'][0]['Link'])
+            || !is_array($installNode['FrontendLink'][0]['Link'])
+            || count($installNode['FrontendLink'][0]['Link']) === 0
+        ) {
+            return PLUGIN_CODE_MISSING_FRONTEND_LINKS;
+        }
+        foreach ($installNode['FrontendLink'][0]['Link'] as $u => $Link_arr) {
+            preg_match("/[0-9]+\sattr/", $u, $cTreffer1_arr);
+            preg_match("/[0-9]+/", $u, $cTreffer2_arr);
+
+            if (strlen($cTreffer2_arr[0]) !== strlen($u)) {
+                continue;
+            }
+            // Filename prüfen
+            if (strlen($Link_arr['Filename']) === 0) {
+                return PLUGIN_CODE_INVALID_FRONTEND_LINK_FILENAME;
+            }
+            // LinkName prüfen
+            preg_match("/[a-zA-Z0-9äÄöÖüÜß" . utf8_decode('äÄüÜöÖß') . "\_\- ]+/",
+                $Link_arr['Name'],
+                $cTreffer1_arr
+            );
+            if (strlen($cTreffer1_arr[0]) !== strlen($Link_arr['Name'])) {
+                return PLUGIN_CODE_INVALID_FRONTEND_LINK_NAME;
+            }
+            // Templatename UND Fullscreen Templatename vorhanden?
+            // Es darf nur entweder oder geben
+            if (isset($Link_arr['Template'], $Link_arr['FullscreenTemplate'])
+                && strlen($Link_arr['Template']) > 0
+                && strlen($Link_arr['FullscreenTemplate']) > 0
+            ) {
+                return PLUGIN_CODE_TOO_MANY_FULLSCREEN_TEMPLATE_NAMES;
+            }
+            // Templatename prüfen
+            if (!isset($Link_arr['FullscreenTemplate'])
+                || strlen($Link_arr['FullscreenTemplate']) === 0
+            ) {
+                if (strlen($Link_arr['Template']) === 0) {
+                    return PLUGIN_CODE_INVALID_FRONTEND_LINK_TEMPLATE_FULLSCREEN_TEMPLATE;
+                }
+                preg_match("/[a-zA-Z0-9\/_\-.]+.tpl/", $Link_arr['Template'], $cTreffer1_arr);
+                if (strlen($cTreffer1_arr[0]) === strlen($Link_arr['Template'])) {
+                    if (!file_exists($cVerzeichnis . '/' .
+                        PFAD_PLUGIN_VERSION . $cVersionsnummer . '/' .
+                        PFAD_PLUGIN_FRONTEND . PFAD_PLUGIN_TEMPLATE . $Link_arr['Template'])
+                    ) {
+                        return PLUGIN_CODE_MISSING_FRONTEND_LINK_TEMPLATE;
+                    }
+                } else {
+                    return PLUGIN_CODE_INVALID_FULLSCREEN_TEMPLATE;
+                }
+            }
+
+            // Fullscreen Templatename prüfen
+            if (!isset($Link_arr['Template']) || strlen($Link_arr['Template']) === 0) {
+                if (strlen($Link_arr['FullscreenTemplate']) === 0) {
+                    return PLUGIN_CODE_INVALID_FRONTEND_LINK_TEMPLATE_FULLSCREEN_TEMPLATE;
+                }
+                preg_match("/[a-zA-Z0-9\/_\-.]+.tpl/", $Link_arr['FullscreenTemplate'], $cTreffer1_arr);
+                if (strlen($cTreffer1_arr[0]) === strlen($Link_arr['FullscreenTemplate'])) {
+                    if (!file_exists($cVerzeichnis . '/' .
+                        PFAD_PLUGIN_VERSION . $cVersionsnummer . '/' .
+                        PFAD_PLUGIN_FRONTEND . PFAD_PLUGIN_TEMPLATE . $Link_arr['FullscreenTemplate'])
+                    ) {
+                        return PLUGIN_CODE_MISSING_FULLSCREEN_TEMPLATE_FILE;
+                    }
+                } else {
+                    return PLUGIN_CODE_INVALID_FULLSCREEN_TEMPLATE_NAME;
+                }
+            }
+            // Angabe ob erst Sichtbar nach Login prüfen
+            preg_match("/[NY]{1,1}/", $Link_arr['VisibleAfterLogin'], $cTreffer2_arr);
+            if (strlen($cTreffer2_arr[0]) !== strlen($Link_arr['VisibleAfterLogin'])) {
+                return PLUGIN_CODE_INVALID_FRONEND_LINK_VISIBILITY;
+            }
+            // Abgabe ob ein Druckbutton gezeigt werden soll prüfen
+            preg_match("/[NY]{1,1}/", $Link_arr['PrintButton'], $cTreffer3_arr);
+            if (strlen($cTreffer3_arr[0]) !== strlen($Link_arr['PrintButton'])) {
+                return PLUGIN_CODE_INVALID_FRONEND_LINK_PRINT;
+            }
+            // Abgabe ob NoFollow Attribut gezeigt werden soll prüfen
+            if (isset($Link_arr['NoFollow'])) {
+                preg_match("/[NY]{1,1}/", $Link_arr['NoFollow'], $cTreffer3_arr);
+            } else {
+                $cTreffer3_arr = [];
+            }
+            if (isset($cTreffer3_arr[0]) && strlen($cTreffer3_arr[0]) !== strlen($Link_arr['NoFollow'])) {
+                return PLUGIN_CODE_INVALID_FRONTEND_LINK_NO_FOLLOW;
+            }
+            // LinkSprachen prüfen
+            if (!isset($Link_arr['LinkLanguage'])
+                || !is_array($Link_arr['LinkLanguage'])
+                || count($Link_arr['LinkLanguage']) === 0
+            ) {
+                return PLUGIN_CODE_INVALID_FRONEND_LINK_ISO;
+            }
+            foreach ($Link_arr['LinkLanguage'] as $l => $LinkLanguage_arr) {
+                preg_match("/[0-9]+\sattr/", $l, $cTreffer1_arr);
+                preg_match("/[0-9]+/", $l, $cTreffer2_arr);
+                if (isset($cTreffer1_arr[0]) && strlen($cTreffer1_arr[0]) === strlen($l)) {
+                    // ISO prüfen
+                    preg_match("/[A-Z]{3}/", $LinkLanguage_arr['iso'], $cTreffer_arr);
+                    if (strlen($LinkLanguage_arr['iso']) === 0
+                        || strlen($cTreffer_arr[0]) !== strlen($LinkLanguage_arr['iso'])
+                    ) {
+                        return PLUGIN_CODE_INVALID_FRONEND_LINK_ISO;
+                    }
+                } elseif (strlen($cTreffer2_arr[0]) === strlen($l)) {
+                    // Seo prüfen
+                    preg_match("/[a-zA-Z0-9- ]+/", $LinkLanguage_arr['Seo'], $cTreffer1_arr);
+                    if (strlen($LinkLanguage_arr['Seo']) === 0
+                        || strlen($cTreffer1_arr[0]) !== strlen($LinkLanguage_arr['Seo'])
+                    ) {
+                        return PLUGIN_CODE_INVALID_FRONEND_LINK_SEO;
+                    }
+                    // Name prüfen
+                    preg_match("/[a-zA-Z0-9äÄüÜöÖß" . utf8_decode('äÄüÜöÖß') . "\- ]+/",
+                        $LinkLanguage_arr['Name'],
+                        $cTreffer1_arr
+                    );
+                    if (strlen($LinkLanguage_arr['Name']) === 0
+                        || strlen($cTreffer1_arr[0]) !== strlen($LinkLanguage_arr['Name'])
+                    ) {
+                        return PLUGIN_CODE_INVALID_FRONEND_LINK_NAME;
+                    }
+                    // Title prüfen
+                    preg_match("/[a-zA-Z0-9äÄüÜöÖß" . utf8_decode('äÄüÜöÖß') . "\- ]+/",
+                        $LinkLanguage_arr['Title'],
+                        $cTreffer1_arr
+                    );
+                    if (strlen($LinkLanguage_arr['Title']) === 0
+                        || strlen($cTreffer1_arr[0]) !== strlen($LinkLanguage_arr['Title'])
+                    ) {
+                        return PLUGIN_CODE_INVALID_FRONEND_LINK_TITLE;
+                    }
+                    // MetaTitle prüfen
+                    preg_match("/[a-zA-Z0-9äÄüÜöÖß" . utf8_decode('äÄüÜöÖß') . "\,\.\- ]+/",
+                        $LinkLanguage_arr['MetaTitle'],
+                        $cTreffer1_arr
+                    );
+                    if ((strlen($LinkLanguage_arr['MetaTitle']) === 0
+                            || strlen($cTreffer1_arr[0]) !== strlen($LinkLanguage_arr['MetaTitle']))
+                        && strlen($LinkLanguage_arr['MetaTitle']) === 0
+                    ) {
+                        return PLUGIN_CODE_INVALID_FRONEND_LINK_META_TITLE;
+                    }
+                    // MetaKeywords prüfen
+                    preg_match("/[a-zA-Z0-9äÄüÜöÖß" . utf8_decode('äÄüÜöÖß') . "\,\- ]+/",
+                        $LinkLanguage_arr['MetaKeywords'],
+                        $cTreffer1_arr
+                    );
+                    if (strlen($LinkLanguage_arr['MetaKeywords']) === 0
+                        || strlen($cTreffer1_arr[0]) !== strlen($LinkLanguage_arr['MetaKeywords'])
+                    ) {
+                        return PLUGIN_CODE_INVALID_FRONEND_LINK_META_KEYWORDS;
+                    }
+                    // MetaDescription prüfen
+                    preg_match("/[a-zA-Z0-9äÄüÜöÖß" . utf8_decode('äÄüÜöÖß') . "\,\.\- ]+/",
+                        $LinkLanguage_arr['MetaDescription'],
+                        $cTreffer1_arr
+                    );
+                    if (strlen($LinkLanguage_arr['MetaDescription']) === 0
+                        || strlen($cTreffer1_arr[0]) !== strlen($LinkLanguage_arr['MetaDescription'])
+                    ) {
+                        return PLUGIN_CODE_INVALID_FRONEND_LINK_META_DESCRIPTION;
+                    }
+                }
+            }
+        }
+    }
+    // Plausi Zahlungsmethode (PaymentMethod) (falls vorhanden)
+    if (isset($installNode['PaymentMethod'][0]['Method'])
+        && is_array($installNode['PaymentMethod'])
+        && is_array($installNode['PaymentMethod'][0]['Method'])
+        && count($installNode['PaymentMethod'][0]['Method']) > 0
+    ) {
+        foreach ($installNode['PaymentMethod'][0]['Method'] as $u => $Method_arr) {
+            preg_match("/[0-9]+\sattr/", $u, $cTreffer1_arr);
+            preg_match("/[0-9]+/", $u, $cTreffer2_arr);
+            if (strlen($cTreffer2_arr[0]) === strlen($u)) {
+                // Name prüfen
+                preg_match("/[a-zA-Z0-9äÄöÖüÜß" . utf8_decode('äÄüÜöÖß') . "\.\,\!\"\§\$\%\&\/\(\)\=\`\´\+\~\*\'\;\-\_\?\{\}\[\] ]+/",
+                    $Method_arr['Name'],
+                    $cTreffer1_arr
+                );
+                if (strlen($cTreffer1_arr[0]) !== strlen($Method_arr['Name'])) {
+                    return PLUGIN_CODE_INVALID_PAYMENT_METHOD_NAME;
+                }
+                // Sort prüfen
+                preg_match("/[0-9]+/", $Method_arr['Sort'], $cTreffer1_arr);
+                if (strlen($cTreffer1_arr[0]) !== strlen($Method_arr['Sort'])) {
+                    return PLUGIN_CODE_INVALID_PAYMENT_METHOD_SORT;
+                }
+                // SendMail prüfen
+                preg_match("/[0-1]{1}/", $Method_arr['SendMail'], $cTreffer1_arr);
+                if (strlen($cTreffer1_arr[0]) !== strlen($Method_arr['SendMail'])) {
+                    return PLUGIN_CODE_INVALID_PAYMENT_METHOD_MAIL;
+                }
+                // TSCode prüfen
+                preg_match('/[A-Z_]+/', $Method_arr['TSCode'], $cTreffer1_arr);
+                if (strlen($cTreffer1_arr[0]) === strlen($Method_arr['TSCode'])) {
+                    $cTSCode_arr = [
+                        'DIRECT_DEBIT',
+                        'CREDIT_CARD',
+                        'INVOICE',
+                        'CASH_ON_DELIVERY',
+                        'PREPAYMENT',
+                        'CHEQUE',
+                        'PAYBOX',
+                        'PAYPAL',
+                        'CASH_ON_PICKUP',
+                        'FINANCING',
+                        'LEASING',
+                        'T_PAY',
+                        'CLICKANDBUY',
+                        'GIROPAY',
+                        'GOOGLE_CHECKOUT',
+                        'SHOP_CARD',
+                        'DIRECT_E_BANKING',
+                        'OTHER'
+                    ];
+                    if (!in_array($Method_arr['TSCode'], $cTSCode_arr, true)) {
+                        return PLUGIN_CODE_INVALID_PAYMENT_METHOD_TSCODE;
+                    }
+                } else {
+                    return PLUGIN_CODE_INVALID_PAYMENT_METHOD_TSCODE;
+                }
+                // PreOrder (nWaehrendbestellung) prüfen
+                preg_match("/[0-1]{1}/", $Method_arr['PreOrder'], $cTreffer1_arr);
+                if (strlen($cTreffer1_arr[0]) !== strlen($Method_arr['PreOrder'])) {
+                    return PLUGIN_CODE_INVALID_PAYMENT_METHOD_PRE_ORDER;
+                }
+                // Soap prüfen
+                preg_match("/[0-1]{1}/", $Method_arr['Soap'], $cTreffer1_arr);
+                if (strlen($cTreffer1_arr[0]) !== strlen($Method_arr['Soap'])) {
+                    return PLUGIN_CODE_INVALID_PAYMENT_METHOD_SOAP;
+                }
+                // Curl prüfen
+                preg_match("/[0-1]{1}/", $Method_arr['Curl'], $cTreffer1_arr);
+                if (strlen($cTreffer1_arr[0]) !== strlen($Method_arr['Curl'])) {
+                    return PLUGIN_CODE_INVALID_PAYMENT_METHOD_CURL;
+                }
+                // Sockets prüfen
+                preg_match('/[0-1]{1}/', $Method_arr['Sockets'], $cTreffer1_arr);
+                if (strlen($cTreffer1_arr[0]) !== strlen($Method_arr['Sockets'])) {
+                    return PLUGIN_CODE_INVALID_PAYMENT_METHOD_SOCKETS;
+                }
+                // ClassFile prüfen
+                if (isset($Method_arr['ClassFile'])) {
+                    preg_match('/[a-zA-Z0-9\/_\-.]+.php/', $Method_arr['ClassFile'], $cTreffer1_arr);
+                    if (strlen($cTreffer1_arr[0]) === strlen($Method_arr['ClassFile'])) {
                         if (!file_exists($cVerzeichnis . '/' .
                             PFAD_PLUGIN_VERSION . $cVersionsnummer . '/' .
-                            PFAD_PLUGIN_FRONTEND . $Hook_arr['Hook'])
+                            PFAD_PLUGIN_PAYMENTMETHOD . $Method_arr['ClassFile'])
                         ) {
-                            return 31;// Die Hook-Datei ist nicht vorhanden
-                        }
-                    }
-                }
-                //Plausi Adminmenü & Einstellungen (falls vorhanden)
-                if (isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['Adminmenu']) &&
-                    is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['Adminmenu'])) {
-                    //Adminsmenüs vorhanden?
-                    if (isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['Adminmenu'][0]['Customlink']) &&
-                        is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['Adminmenu'][0]['Customlink']) &&
-                        count($XML_arr['jtlshop3plugin'][0]['Install'][0]['Adminmenu'][0]['Customlink']) > 0
-                    ) {
-                        $nSort = 0;
-                        foreach ($XML_arr['jtlshop3plugin'][0]['Install'][0]['Adminmenu'][0]['Customlink'] as $i => $Customlink_arr) {
-                            preg_match("/[0-9]+\sattr/", $i, $cTreffer1_arr);
-                            preg_match("/[0-9]+/", $i, $cTreffer2_arr);
-
-                            if (isset($cTreffer1_arr[0]) && strlen($cTreffer1_arr[0]) === strlen($i)) {
-                                $nSort = (int)$Customlink_arr['sort'];
-                            } elseif (strlen($cTreffer2_arr[0]) === strlen($i)) {
-                                // Name prüfen
-                                preg_match(
-                                    "/[a-zA-Z0-9äÄüÜöÖß" . utf8_decode('äÄüÜöÖß') . "\_\- ]+/",
-                                    $Customlink_arr['Name'],
-                                    $cTreffer_arr
-                                );
-                                if (strlen($cTreffer_arr[0]) !== strlen($Customlink_arr['Name']) || strlen($Customlink_arr['Name']) === 0) {
-                                    return 15;//CustomLink Name entspricht nicht der Konvention
-                                }
-                                if (strlen($Customlink_arr['Filename']) > 0) {
-                                    if (!file_exists($cVerzeichnis . '/' .
-                                        PFAD_PLUGIN_VERSION . $cVersionsnummer . '/' .
-                                        PFAD_PLUGIN_ADMINMENU . $Customlink_arr['Filename'])
-                                    ) {
-                                        return 17;//CustomLink Datei existiert nicht
-                                    }
-                                } else {
-                                    return 16;//CustomLink Dateiname entspricht nicht der Konvention
-                                }
-                            }
-                        }
-                    }
-
-                    // Einstellungen vorhanden?
-                    if (isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['Adminmenu'][0]['Settingslink']) &&
-                        is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['Adminmenu'][0]['Settingslink']) &&
-                        count($XML_arr['jtlshop3plugin'][0]['Install'][0]['Adminmenu'][0]['Settingslink']) > 0
-                    ) {
-                        $nSort = 0;
-                        foreach ($XML_arr['jtlshop3plugin'][0]['Install'][0]['Adminmenu'][0]['Settingslink'] as $i => $Settingslink_arr) {
-                            preg_match("/[0-9]+\sattr/", $i, $cTreffer1_arr);
-                            preg_match("/[0-9]+/", $i, $cTreffer2_arr);
-
-                            if (isset($cTreffer1_arr[0]) && strlen($cTreffer1_arr[0]) === strlen($i)) {
-                                $nSort = (int)$Settingslink_arr['sort'];
-                            } elseif (strlen($cTreffer2_arr[0]) === strlen($i)) {
-                                // EinstellungsLink Name prüfen
-                                if (!empty($Settingslink_arr['Name']) && strlen($Settingslink_arr['Name']) > 0) {
-                                    // Einstellungen prüfen
-                                    $cTyp = '';
-                                    if (isset($Settingslink_arr['Setting']) &&
-                                        is_array($Settingslink_arr['Setting']) &&
-                                        count($Settingslink_arr['Setting']) > 0
-                                    ) {
-                                        foreach ($Settingslink_arr['Setting'] as $j => $Setting_arr) {
-                                            preg_match("/[0-9]+\sattr/", $j, $cTreffer3_arr);
-                                            preg_match("/[0-9]+/", $j, $cTreffer4_arr);
-
-                                            if (isset($cTreffer3_arr[0]) && strlen($cTreffer3_arr[0]) === strlen($j)) {
-                                                $cTyp = $Setting_arr['type'];
-
-                                                // Einstellungen type prüfen
-                                                if (strlen($Setting_arr['type']) === 0) {
-                                                    return 20;//Einstellungen type entspricht nicht der Konvention
-                                                }
-                                                // Einstellungen initialValue prüfen
-                                                //if(strlen($Setting_arr['initialValue']) == 0)
-                                                //return 21;  // Einstellungen initialValue entspricht nicht der Konvention
-
-                                                // Einstellungen sort prüfen
-                                                if (strlen($Setting_arr['sort']) === 0) {
-                                                    return 22;//Einstellungen sort entspricht nicht der Konvention
-                                                }
-                                                // Einstellungen conf prüfen
-                                                if (strlen($Setting_arr['conf']) === 0) {
-                                                    return 33;//Einstellungen conf entspricht nicht der Konvention
-                                                }
-                                            } elseif (strlen($cTreffer4_arr[0]) === strlen($j)) {
-                                                // Einstellungen Name prüfen
-                                                if (strlen($Setting_arr['Name']) === 0) {
-                                                    return 23;//Einstellungen Name entspricht nicht der Konvention
-                                                }
-                                                // Einstellungen ValueName prüfen
-                                                if (!isset($Setting_arr['ValueName']) ||
-                                                    !is_string($Setting_arr['ValueName']) ||
-                                                    strlen($Setting_arr['ValueName']) === 0) {
-                                                    return 34;//Einstellungen ValueName entspricht nicht der Konvention
-                                                }
-                                                // Ist der Typ eine Selectbox => Es müssen SelectboxOptionen vorhanden sein
-                                                if ($cTyp === 'selectbox') {
-                                                    // SelectboxOptions prüfen
-                                                    if (isset($Setting_arr['OptionsSource']) &&
-                                                        is_array($Setting_arr['OptionsSource']) &&
-                                                        count($Setting_arr['OptionsSource']) > 0) {
-                                                        if (empty($Setting_arr['OptionsSource'][0]['File'])) {
-                                                            return 128;
-                                                        }
-                                                        if (!file_exists($cVerzeichnis . '/' .
-                                                            PFAD_PLUGIN_VERSION . $cVersionsnummer . '/' .
-                                                            PFAD_PLUGIN_ADMINMENU . $Setting_arr['OptionsSource'][0]['File'])
-                                                        ) {
-                                                            return 129;
-                                                        }
-                                                    } elseif (isset($Setting_arr['SelectboxOptions']) &&
-                                                        is_array($Setting_arr['SelectboxOptions']) &&
-                                                        count($Setting_arr['SelectboxOptions']) > 0
-                                                    ) {
-                                                        // Es gibt mehr als 1 Option
-                                                        if (count($Setting_arr['SelectboxOptions'][0]) === 1) {
-                                                            foreach ($Setting_arr['SelectboxOptions'][0]['Option'] as $y => $Option_arr) {
-                                                                preg_match("/[0-9]+\sattr/", $y, $cTreffer6_arr);
-                                                                preg_match("/[0-9]+/", $y, $cTreffer7_arr);
-
-                                                                if (isset($cTreffer6_arr[0]) && strlen($cTreffer6_arr[0]) === strlen($y)) {
-                                                                    // Value prüfen
-                                                                    if (strlen($Option_arr['value']) === 0) {
-                                                                        return 25;//Die Option entspricht nicht der Konvention
-                                                                    }
-                                                                    // Sort prüfen
-                                                                    if (strlen($Option_arr['sort']) === 0) {
-                                                                        return 25;//Die Option entspricht nicht der Konvention
-                                                                    }
-                                                                } elseif (strlen($cTreffer7_arr[0]) === strlen($y)) {
-                                                                    // Name prüfen
-                                                                    if (strlen($Option_arr) === 0) {
-                                                                        return 25;//Die Option entspricht nicht der Konvention
-                                                                    }
-                                                                }
-                                                            }
-                                                        } elseif (count($Setting_arr['SelectboxOptions'][0]) === 2) { //Es gibt nur 1 Option
-                                                            // Value prüfen
-                                                            if (strlen($Setting_arr['SelectboxOptions'][0]['Option attr']['value']) === 0) {
-                                                                return 25;//Die Option entspricht nicht der Konvention
-                                                            }
-
-                                                            // Sort prüfen
-                                                            if (strlen($Setting_arr['SelectboxOptions'][0]['Option attr']['sort']) === 0) {
-                                                                return 25;//Die Option entspricht nicht der Konvention
-                                                            }
-                                                            // Name prüfen
-                                                            if (strlen($Setting_arr['SelectboxOptions'][0]['Option']) === 0) {
-                                                                return 25;//Die Option entspricht nicht der Konvention
-                                                            }
-                                                        }
-                                                    } else {
-                                                        return 24;//Keine SelectboxOptionen vorhanden
-                                                    }
-                                                } elseif ($cTyp === 'radio') {
-                                                    //radioOptions prüfen
-                                                    if (isset($Setting_arr['OptionsSource']) &&
-                                                        is_array($Setting_arr['OptionsSource']) &&
-                                                        count($Setting_arr['OptionsSource']) > 0
-                                                    ) {
-                                                        //do nothing for now
-                                                    } elseif (isset($Setting_arr['RadioOptions']) &&
-                                                        is_array($Setting_arr['RadioOptions']) &&
-                                                        count($Setting_arr['RadioOptions']) > 0
-                                                    ) {
-                                                        // Es gibt mehr als 1 Option
-                                                        if (count($Setting_arr['RadioOptions'][0]) === 1) {
-                                                            foreach ($Setting_arr['RadioOptions'][0]['Option'] as $y => $Option_arr) {
-                                                                preg_match("/[0-9]+\sattr/", $y, $cTreffer6_arr);
-                                                                preg_match("/[0-9]+/", $y, $cTreffer7_arr);
-                                                                if (isset($cTreffer6_arr[0]) && strlen($cTreffer6_arr[0]) === strlen($y)) {
-                                                                    // Value prüfen
-                                                                    if (strlen($Option_arr['value']) === 0) {
-                                                                        return 25;// Die Option entspricht nicht der Konvention
-                                                                    }
-                                                                    // Sort prüfen
-                                                                    if (strlen($Option_arr['sort']) === 0) {
-                                                                        return 25;// Die Option entspricht nicht der Konvention
-                                                                    }
-                                                                } elseif (strlen($cTreffer7_arr[0]) === strlen($y)) {
-                                                                    // Name prüfen
-                                                                    if (strlen($Option_arr) === 0) {
-                                                                        return 25;// Die Option entspricht nicht der Konvention
-                                                                    }
-                                                                }
-                                                            }
-                                                        } elseif (count($Setting_arr['RadioOptions'][0]) === 2) {
-                                                            // Es gibt nur 1 Option
-
-                                                            // Value prüfen
-                                                            if (strlen($Setting_arr['RadioOptions'][0]['Option attr']['value']) === 0) {
-                                                                return 25;// Die Option entspricht nicht der Konvention
-                                                            }
-                                                            // Sort prüfen
-                                                            if (strlen($Setting_arr['RadioOptions'][0]['Option attr']['sort']) === 0) {
-                                                                return 25;// Die Option entspricht nicht der Konvention
-                                                            }
-                                                            // Name prüfen
-                                                            if (strlen($Setting_arr['RadioOptions'][0]['Option']) === 0) {
-                                                                return 25;// Die Option entspricht nicht der Konvention
-                                                            }
-                                                        }
-                                                    } else {
-                                                        return 24;// Keine SelectboxOptionen vorhanden
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    } else {
-                                        return 19;//Einstellungen fehlen
-                                    }
-                                } else {
-                                    return 18;//EinstellungsLink Name entspricht nicht der Konvention
-                                }
-                            }
-                        }
-                    }
-                }
-                // Plausi FrontendLinks (falls vorhanden)
-                if (isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['FrontendLink']) &&
-                    is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['FrontendLink'])
-                ) {
-                    // Links prüfen
-                    if (isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['FrontendLink'][0]['Link']) &&
-                        is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['FrontendLink'][0]['Link']) &&
-                        count($XML_arr['jtlshop3plugin'][0]['Install'][0]['FrontendLink'][0]['Link']) > 0
-                    ) {
-                        foreach ($XML_arr['jtlshop3plugin'][0]['Install'][0]['FrontendLink'][0]['Link'] as $u => $Link_arr) {
-                            preg_match("/[0-9]+\sattr/", $u, $cTreffer1_arr);
-                            preg_match("/[0-9]+/", $u, $cTreffer2_arr);
-
-                            if (strlen($cTreffer2_arr[0]) === strlen($u)) {
-                                // Filename prüfen
-                                if (strlen($Link_arr['Filename']) === 0) {
-                                    return 39;// Link Filename entspricht nicht der Konvention
-                                }
-                                // LinkName prüfen
-                                preg_match(
-                                    "/[a-zA-Z0-9äÄöÖüÜß" . utf8_decode('äÄüÜöÖß') . "\_\- ]+/",
-                                    $Link_arr['Name'],
-                                    $cTreffer1_arr
-                                );
-                                if (strlen($cTreffer1_arr[0]) !== strlen($Link_arr['Name'])) {
-                                    return 40;// LinkName entspricht nicht der Konvention
-                                }
-                                // Templatename UND Fullscreen Templatename vorhanden?
-                                // Es darf nur entweder oder geben
-                                if (isset($Link_arr['Template'], $Link_arr['FullscreenTemplate']) &&
-                                    strlen($Link_arr['Template']) > 0 &&
-                                    strlen($Link_arr['FullscreenTemplate']) > 0
-                                ) {
-                                    return 78;// Es darf nur ein Templatename oder ein Fullscreen Templatename existieren
-                                }
-                                // Templatename prüfen
-                                if (!isset($Link_arr['FullscreenTemplate']) ||
-                                    strlen($Link_arr['FullscreenTemplate']) === 0
-                                ) {
-                                    if (strlen($Link_arr['Template']) === 0) {
-                                        return 81;// Für ein Frontend Link muss ein Templatename oder Fullscreen Templatename angegeben werden
-                                    }
-                                    preg_match("/[a-zA-Z0-9\/_\-.]+.tpl/", $Link_arr['Template'], $cTreffer1_arr);
-                                    if (strlen($cTreffer1_arr[0]) === strlen($Link_arr['Template'])) {
-                                        if (!file_exists($cVerzeichnis . '/' .
-                                            PFAD_PLUGIN_VERSION . $cVersionsnummer . '/' .
-                                            PFAD_PLUGIN_FRONTEND . PFAD_PLUGIN_TEMPLATE . $Link_arr['Template'])
-                                        ) {
-                                            return 77;// Die Templatedatei für den Frontend Link existiert nicht
-                                        }
-                                    } else {
-                                        return 76;// Der Templatename entspricht nicht der Konvention
-                                    }
-                                }
-
-                                // Fullscreen Templatename prüfen
-                                if (!isset($Link_arr['Template']) || strlen($Link_arr['Template']) === 0) {
-                                    if (strlen($Link_arr['FullscreenTemplate']) === 0) {
-                                        return 81;
-                                    }    // Für ein Frontend Link muss ein Templatename oder Fullscreen Templatename angegeben werden
-
-                                    preg_match("/[a-zA-Z0-9\/_\-.]+.tpl/", $Link_arr['FullscreenTemplate'], $cTreffer1_arr);
-                                    if (strlen($cTreffer1_arr[0]) === strlen($Link_arr['FullscreenTemplate'])) {
-                                        if (!file_exists($cVerzeichnis . '/' .
-                                            PFAD_PLUGIN_VERSION . $cVersionsnummer . '/' .
-                                            PFAD_PLUGIN_FRONTEND . PFAD_PLUGIN_TEMPLATE . $Link_arr['FullscreenTemplate'])
-                                        ) {
-                                            return 80;
-                                        }   // Die Fullscreen Templatedatei für den Frontend Link existiert nicht
-                                    } else {
-                                        return 79;
-                                    } // Der Fullscreen Templatename entspricht nicht der Konvention
-                                }
-                                // Angabe ob erst Sichtbar nach Login prüfen
-                                preg_match("/[NY]{1,1}/", $Link_arr['VisibleAfterLogin'], $cTreffer2_arr);
-                                if (strlen($cTreffer2_arr[0]) !== strlen($Link_arr['VisibleAfterLogin'])) {
-                                    return 41;// Angabe ob erst Sichtbar nach Login entspricht nicht der Konvention
-                                }
-                                // Abgabe ob ein Druckbutton gezeigt werden soll prüfen
-                                preg_match("/[NY]{1,1}/", $Link_arr['PrintButton'], $cTreffer3_arr);
-                                if (strlen($cTreffer3_arr[0]) !== strlen($Link_arr['PrintButton'])) {
-                                    return 42;// Abgabe ob eine Druckbutton gezeigt werden soll entspricht nicht der Konvention
-                                }
-                                // Abgabe ob NoFollow Attribut gezeigt werden soll prüfen
-                                if (isset($Link_arr['NoFollow'])) {
-                                    preg_match("/[NY]{1,1}/", $Link_arr['NoFollow'], $cTreffer3_arr);
-                                } else {
-                                    $cTreffer3_arr = [];
-                                }
-                                if (isset($cTreffer3_arr[0]) && strlen($cTreffer3_arr[0]) !== strlen($Link_arr['NoFollow'])) {
-                                    return 104;// Frontend Link Attribut NoFollow entspricht nicht der Konvention
-                                }
-                                // LinkSprachen prüfen
-                                if (isset($Link_arr['LinkLanguage']) &&
-                                    is_array($Link_arr['LinkLanguage']) &&
-                                    count($Link_arr['LinkLanguage']) > 0
-                                ) {
-                                    foreach ($Link_arr['LinkLanguage'] as $l => $LinkLanguage_arr) {
-                                        preg_match("/[0-9]+\sattr/", $l, $cTreffer1_arr);
-                                        preg_match("/[0-9]+/", $l, $cTreffer2_arr);
-                                        if (isset($cTreffer1_arr[0]) && strlen($cTreffer1_arr[0]) === strlen($l)) {
-                                            // ISO prüfen
-                                            preg_match("/[A-Z]{3}/", $LinkLanguage_arr['iso'], $cTreffer_arr);
-                                            if (strlen($LinkLanguage_arr['iso']) === 0 ||
-                                                strlen($cTreffer_arr[0]) !== strlen($LinkLanguage_arr['iso'])
-                                            ) {
-                                                return 43;//  Die ISO der Linksprache entspricht nicht der Konvention
-                                            }
-                                        } elseif (strlen($cTreffer2_arr[0]) === strlen($l)) {
-                                            // Seo prüfen
-                                            preg_match("/[a-zA-Z0-9- ]+/", $LinkLanguage_arr['Seo'], $cTreffer1_arr);
-                                            if (strlen($LinkLanguage_arr['Seo']) === 0 ||
-                                                strlen($cTreffer1_arr[0]) !== strlen($LinkLanguage_arr['Seo'])
-                                            ) {
-                                                return 44;// Der Seo Name entspricht nicht der Konvention
-                                            }
-                                            // Name prüfen
-                                            preg_match(
-                                                "/[a-zA-Z0-9äÄüÜöÖß" . utf8_decode('äÄüÜöÖß') . "\- ]+/",
-                                                $LinkLanguage_arr['Name'],
-                                                $cTreffer1_arr
-                                            );
-                                            if (strlen($LinkLanguage_arr['Name']) === 0 ||
-                                                strlen($cTreffer1_arr[0]) !== strlen($LinkLanguage_arr['Name'])
-                                            ) {
-                                                return 45;// Der Name entspricht nicht der Konvention
-                                            }
-                                            // Title prüfen
-                                            preg_match(
-                                                "/[a-zA-Z0-9äÄüÜöÖß" . utf8_decode('äÄüÜöÖß') . "\- ]+/",
-                                                $LinkLanguage_arr['Title'],
-                                                $cTreffer1_arr
-                                            );
-                                            if (strlen($LinkLanguage_arr['Title']) === 0 ||
-                                                strlen($cTreffer1_arr[0]) !== strlen($LinkLanguage_arr['Title'])
-                                            ) {
-                                                return 46;// Der Title entspricht nicht der Konvention
-                                            }
-                                            // MetaTitle prüfen
-                                            preg_match(
-                                                "/[a-zA-Z0-9äÄüÜöÖß" . utf8_decode('äÄüÜöÖß') . "\,\.\- ]+/",
-                                                $LinkLanguage_arr['MetaTitle'],
-                                                $cTreffer1_arr
-                                            );
-                                            if (strlen($LinkLanguage_arr['MetaTitle']) === 0 ||
-                                                strlen($cTreffer1_arr[0]) !== strlen($LinkLanguage_arr['MetaTitle'])
-                                            ) {
-                                                if (strlen($LinkLanguage_arr['MetaTitle']) === 0) {
-                                                    return 47;// Der MetaTitle entspricht nicht der Konvention
-                                                }
-                                            }
-                                            // MetaKeywords prüfen
-                                            preg_match(
-                                                "/[a-zA-Z0-9äÄüÜöÖß" . utf8_decode('äÄüÜöÖß') . "\,\- ]+/",
-                                                $LinkLanguage_arr['MetaKeywords'],
-                                                $cTreffer1_arr
-                                            );
-                                            if (strlen($LinkLanguage_arr['MetaKeywords']) === 0 ||
-                                                strlen($cTreffer1_arr[0]) !== strlen($LinkLanguage_arr['MetaKeywords'])
-                                            ) {
-                                                return 48;// Die MetaKeywords entsprechen nicht der Konvention
-                                            }
-                                            // MetaDescription prüfen
-                                            preg_match(
-                                                "/[a-zA-Z0-9äÄüÜöÖß" . utf8_decode('äÄüÜöÖß') . "\,\.\- ]+/",
-                                                $LinkLanguage_arr['MetaDescription'],
-                                                $cTreffer1_arr
-                                            );
-                                            if (strlen($LinkLanguage_arr['MetaDescription']) === 0 ||
-                                                strlen($cTreffer1_arr[0]) !== strlen($LinkLanguage_arr['MetaDescription'])
-                                            ) {
-                                                return 49;// Die MetaDescription entspricht nicht der Konvention
-                                            }
-                                        }
-                                    }
-                                } else {
-                                    return 43;// Keine Linksprachen vorhanden
-                                }
-                            }
+                            return PLUGIN_CODE_MISSING_PAYMENT_METHOD_FILE;
                         }
                     } else {
-                        return 38; // Keine Frontendlinks vorhanden, obwohl der Node angelegt wurde
+                        return PLUGIN_CODE_INVALID_PAYMENT_METHOD_CLASS_FILE;
                     }
                 }
-                // Plausi Zahlungsmethode (PaymentMethod) (falls vorhanden)
-                if (isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['PaymentMethod']) &&
-                    is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['PaymentMethod']) &&
-                    isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['PaymentMethod'][0]['Method']) &&
-                    is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['PaymentMethod'][0]['Method']) &&
-                    count($XML_arr['jtlshop3plugin'][0]['Install'][0]['PaymentMethod'][0]['Method']) > 0
-                ) {
-                    foreach ($XML_arr['jtlshop3plugin'][0]['Install'][0]['PaymentMethod'][0]['Method'] as $u => $Method_arr) {
-                        preg_match("/[0-9]+\sattr/", $u, $cTreffer1_arr);
-                        preg_match("/[0-9]+/", $u, $cTreffer2_arr);
-                        if (strlen($cTreffer2_arr[0]) === strlen($u)) {
-                            // Name prüfen
-                            preg_match(
-                                "/[a-zA-Z0-9äÄöÖüÜß" . utf8_decode('äÄüÜöÖß') . "\.\,\!\"\§\$\%\&\/\(\)\=\`\´\+\~\*\'\;\-\_\?\{\}\[\] ]+/",
-                                $Method_arr['Name'],
-                                $cTreffer1_arr
-                            );
-                            if (strlen($cTreffer1_arr[0]) !== strlen($Method_arr['Name'])) {
-                                return 50;// Der Name in den Zahlungsmethoden entspricht nicht der Konvention
-                            }
-                            // Sort prüfen
-                            preg_match("/[0-9]+/", $Method_arr['Sort'], $cTreffer1_arr);
-                            if (strlen($cTreffer1_arr[0]) !== strlen($Method_arr['Sort'])) {
-                                return 71;// Die Sortierung in den Zahlungsmethoden entspricht nicht der Konvention
-                            }
-                            // SendMail prüfen
-                            preg_match("/[0-1]{1}/", $Method_arr['SendMail'], $cTreffer1_arr);
-                            if (strlen($cTreffer1_arr[0]) !== strlen($Method_arr['SendMail'])) {
-                                return 51;// Sende Mail in den Zahlungsmethoden entspricht nicht der Konvention
-                            }
-                            // TSCode prüfen
-                            preg_match('/[A-Z_]+/', $Method_arr['TSCode'], $cTreffer1_arr);
-                            if (strlen($cTreffer1_arr[0]) === strlen($Method_arr['TSCode'])) {
-                                $cTSCode_arr = [
-                                    'DIRECT_DEBIT',
-                                    'CREDIT_CARD',
-                                    'INVOICE',
-                                    'CASH_ON_DELIVERY',
-                                    'PREPAYMENT',
-                                    'CHEQUE',
-                                    'PAYBOX',
-                                    'PAYPAL',
-                                    'CASH_ON_PICKUP',
-                                    'FINANCING',
-                                    'LEASING',
-                                    'T_PAY',
-                                    'CLICKANDBUY',
-                                    'GIROPAY',
-                                    'GOOGLE_CHECKOUT',
-                                    'SHOP_CARD',
-                                    'DIRECT_E_BANKING',
-                                    'OTHER'
-                                ];
-                                if (!in_array($Method_arr['TSCode'], $cTSCode_arr, true)) {
-                                    return 52;// TSCode in den Zahlungsmethoden entspricht nicht der Konvention
-                                }
-                            } else {
-                                return 52;// TSCode in den Zahlungsmethoden entspricht nicht der Konvention
-                            }
-                            // PreOrder (nWaehrendbestellung) prüfen
-                            preg_match("/[0-1]{1}/", $Method_arr['PreOrder'], $cTreffer1_arr);
-                            if (strlen($cTreffer1_arr[0]) !== strlen($Method_arr['PreOrder'])) {
-                                return 53;// PreOrder in den Zahlungsmethoden entspricht nicht der Konvention
-                            }
-                            // Soap prüfen
-                            preg_match("/[0-1]{1}/", $Method_arr['Soap'], $cTreffer1_arr);
-                            if (strlen($cTreffer1_arr[0]) !== strlen($Method_arr['Soap'])) {
-                                return 72;// Soap in den Zahlungsmethoden entspricht nicht der Konvention
-                            }
-                            // Curl prüfen
-                            preg_match("/[0-1]{1}/", $Method_arr['Curl'], $cTreffer1_arr);
-                            if (strlen($cTreffer1_arr[0]) !== strlen($Method_arr['Curl'])) {
-                                return 73;// Curl in den Zahlungsmethoden entspricht nicht der Konvention
-                            }
-                            // Sockets prüfen
-                            preg_match('/[0-1]{1}/', $Method_arr['Sockets'], $cTreffer1_arr);
-                            if (strlen($cTreffer1_arr[0]) !== strlen($Method_arr['Sockets'])) {
-                                return 74;// Sockets in den Zahlungsmethoden entspricht nicht der Konvention
-                            }
-                            // ClassFile prüfen
-                            if (isset($Method_arr['ClassFile'])) {
-                                preg_match('/[a-zA-Z0-9\/_\-.]+.php/', $Method_arr['ClassFile'], $cTreffer1_arr);
-                                if (strlen($cTreffer1_arr[0]) === strlen($Method_arr['ClassFile'])) {
-                                    if (!file_exists($cVerzeichnis . '/' .
-                                        PFAD_PLUGIN_VERSION . $cVersionsnummer . '/' .
-                                        PFAD_PLUGIN_PAYMENTMETHOD . $Method_arr['ClassFile'])
-                                    ) {
-                                        return 55;// Die Datei für die Klasse der Zahlungsmethode existiert nicht
-                                    }
-                                } else {
-                                    return 54;// ClassFile in den Zahlungsmethoden entspricht nicht der Konvention
-                                }
-                            }
-                            // ClassName prüfen
-                            if (isset($Method_arr['ClassName'])) {
-                                preg_match("/[a-zA-Z0-9\/_\-]+/", $Method_arr['ClassName'], $cTreffer1_arr);
-                                if (strlen($cTreffer1_arr[0]) !== strlen($Method_arr['ClassName'])) {
-                                    return 75;// ClassName in den Zahlungsmethoden entspricht nicht der Konvention
-                                }
-                            }
-                            // TemplateFile prüfen
-                            if (isset($Method_arr['TemplateFile']) && strlen($Method_arr['TemplateFile']) > 0) {
-                                preg_match(
-                                    '/[a-zA-Z0-9\/_\-.]+.tpl/',
-                                    $Method_arr['TemplateFile'],
-                                    $cTreffer1_arr
-                                );
-                                if (strlen($cTreffer1_arr[0]) === strlen($Method_arr['TemplateFile'])) {
-                                    if (!file_exists($cVerzeichnis . '/' .
-                                        PFAD_PLUGIN_VERSION . $cVersionsnummer . '/' .
-                                        PFAD_PLUGIN_PAYMENTMETHOD . $Method_arr['TemplateFile'])
-                                    ) {
-                                        return 57;// Die Datei für das Template der Zahlungsmethode existiert nicht
-                                    }
-                                } else {
-                                    return 56;// TemplateFile in den Zahlungsmethoden entspricht nicht der Konvention
-                                }
-                            }
-                            // Zusatzschritt-TemplateFile prüfen
-                            if (isset($Method_arr['AdditionalTemplateFile']) && strlen($Method_arr['AdditionalTemplateFile']) > 0) {
-                                preg_match(
-                                    '/[a-zA-Z0-9\/_\-.]+.tpl/',
-                                    $Method_arr['AdditionalTemplateFile'],
-                                    $cTreffer1_arr
-                                );
-                                if (strlen($cTreffer1_arr[0]) === strlen($Method_arr['AdditionalTemplateFile'])) {
-                                    if (!file_exists($cVerzeichnis . '/' .
-                                        PFAD_PLUGIN_VERSION . $cVersionsnummer . '/' .
-                                        PFAD_PLUGIN_PAYMENTMETHOD . $Method_arr['AdditionalTemplateFile'])
-                                    ) {
-                                        return 114;// Die Datei für das Zusatzschritt-Template der Zahlungsmethode existiert nicht
-                                    }
-                                } else {
-                                    return 113;// Zusatzschritt-TemplateFile in den Zahlungsmethoden entspricht nicht der Konvention
-                                }
-                            }
-                            // ZahlungsmethodeSprachen prüfen
-                            if (isset($Method_arr['MethodLanguage']) &&
-                                is_array($Method_arr['MethodLanguage']) &&
-                                count($Method_arr['MethodLanguage']) > 0
-                            ) {
-                                foreach ($Method_arr['MethodLanguage'] as $l => $MethodLanguage_arr) {
-                                    preg_match('/[0-9]+\sattr/', $l, $cTreffer1_arr);
-                                    preg_match('/[0-9]+/', $l, $cTreffer2_arr);
-                                    if (isset($cTreffer1_arr[0]) && strlen($cTreffer1_arr[0]) === strlen($l)) {
-                                        // ISO prüfen
-                                        preg_match("/[A-Z]{3}/", $MethodLanguage_arr['iso'], $cTreffer_arr);
-                                        if (strlen($MethodLanguage_arr['iso']) === 0 ||
-                                            strlen($cTreffer_arr[0]) !== strlen($MethodLanguage_arr['iso'])
-                                        ) {
-                                            return 59;//  Die ISO der Sprache in der Zahlungsmethode entspricht nicht der Konvention
-                                        }
-                                    } elseif (isset($cTreffer2_arr[0]) && strlen($cTreffer2_arr[0]) === strlen($l)) {
-                                        // Name prüfen
-                                        if (!isset($MethodLanguage_arr['Name'])) {
-                                            return 60;// Der Name in den Zahlungsmethoden Sprache entspricht nicht der Konvention
-                                        }
-                                        preg_match(
-                                            "/[a-zA-Z0-9äÄöÖüÜß" . utf8_decode('äÄüÜöÖß') . "\.\,\!\"\§\$\%\&\/\(\)\=\`\´\+\~\*\'\;\-\_\?\{\}\[\] ]+/",
-                                            $MethodLanguage_arr['Name'],
-                                            $cTreffer1_arr
-                                        );
-                                        if (strlen($cTreffer1_arr[0]) !== strlen($MethodLanguage_arr['Name'])) {
-                                            return 60;// Der Name in den Zahlungsmethoden Sprache entspricht nicht der Konvention
-                                        }
-                                        // ChargeName prüfen
-                                        if (!isset($MethodLanguage_arr['ChargeName'])) {
-                                            return 61;// Der ChargeName in den Zahlungsmethoden Sprache entspricht nicht der Konvention
-                                        }
-                                        preg_match(
-                                            "/[a-zA-Z0-9äÄöÖüÜß" . utf8_decode('äÄüÜöÖß') . "\.\,\!\"\§\$\%\&\/\(\)\=\`\´\+\~\*\'\;\-\_\?\{\}\[\] ]+/",
-                                            $MethodLanguage_arr['ChargeName'],
-                                            $cTreffer1_arr
-                                        );
-                                        if (strlen($cTreffer1_arr[0]) !== strlen($MethodLanguage_arr['ChargeName'])) {
-                                            return 61;// Der ChargeName in den Zahlungsmethoden Sprache entspricht nicht der Konvention
-                                        }
-                                        // InfoText prüfen
-                                        if (!isset($MethodLanguage_arr['InfoText'])) {
-                                            return 62;// Der InfoText in den Zahlungsmethoden Sprache entspricht nicht der Konvention
-                                        }
-                                        preg_match(
-                                            "/[a-zA-Z0-9äÄöÖüÜß" . utf8_decode('äÄüÜöÖß') . "\.\,\!\"\§\$\%\&\/\(\)\=\`\´\+\~\*\'\;\-\_\?\{\}\[\] ]+/",
-                                            $MethodLanguage_arr['InfoText'],
-                                            $cTreffer1_arr
-                                        );
-                                        if (isset($cTreffer1_arr[0]) &&
-                                            strlen($cTreffer1_arr[0]) !== strlen($MethodLanguage_arr['InfoText'])
-                                        ) {
-                                            return 62;// Der InfoText in den Zahlungsmethoden Sprache entspricht nicht der Konvention
-                                        }
-                                    }
-                                }
-                            } else {
-                                return 58;// Keine Sprachen in den Zahlungsmethoden hinterlegt
-                            }
-                            // Zahlungsmethode Einstellungen prüfen
-                            $cTyp = '';
-                            if (isset($Method_arr['Setting']) &&
-                                is_array($Method_arr['Setting']) &&
-                                count($Method_arr['Setting']) > 0
-                            ) {
-                                foreach ($Method_arr['Setting'] as $j => $Setting_arr) {
-                                    preg_match('/[0-9]+\sattr/', $j, $cTreffer3_arr);
-                                    preg_match('/[0-9]+/', $j, $cTreffer4_arr);
-                                    if (isset($cTreffer3_arr[0]) && strlen($cTreffer3_arr[0]) === strlen($j)) {
-                                        $cTyp = $Setting_arr['type'];
-                                        // Einstellungen type prüfen
-                                        if (strlen($Setting_arr['type']) === 0) {
-                                            return 63;// Einstellungen type entspricht nicht der Konvention
-                                        }
-                                        // Einstellungen initialValue prüfen
-                                        //if(strlen($Setting_arr['initialValue']) == 0)
-                                        //return 64;  // Einstellungen initialValue entspricht nicht der Konvention
-
-                                        // Einstellungen sort prüfen
-                                        if (strlen($Setting_arr['sort']) === 0) {
-                                            return 65;// Einstellungen sort entspricht nicht der Konvention
-                                        }
-                                        // Einstellungen conf prüfen
-                                        if (strlen($Setting_arr['conf']) === 0) {
-                                            return 66;// Einstellungen conf entspricht nicht der Konvention
-                                        }
-                                    } elseif (isset($cTreffer4_arr[0]) && strlen($cTreffer4_arr[0]) === strlen($j)) {
-                                        // Einstellungen Name prüfen
-                                        if (strlen($Setting_arr['Name']) === 0) {
-                                            return 67;// Einstellungen Name entspricht nicht der Konvention
-                                        }
-                                        // Einstellungen ValueName prüfen
-                                        if (strlen($Setting_arr['ValueName']) === 0) {
-                                            return 68;// Einstellungen ValueName entspricht nicht der Konvention
-                                        }
-                                        // Ist der Typ eine Selectbox => Es müssen SelectboxOptionen vorhanden sein
-                                        if ($cTyp === 'selectbox') {
-                                            // SelectboxOptions prüfen
-                                            if (isset($Setting_arr['SelectboxOptions']) &&
-                                                is_array($Setting_arr['SelectboxOptions']) &&
-                                                count($Setting_arr['SelectboxOptions']) > 0
-                                            ) {
-                                                // Es gibt mehr als 1 Option
-                                                if (count($Setting_arr['SelectboxOptions'][0]) === 1) {
-                                                    foreach ($Setting_arr['SelectboxOptions'][0]['Option'] as $y => $Option_arr) {
-                                                        preg_match('/[0-9]+\sattr/', $y, $cTreffer6_arr);
-                                                        preg_match('/[0-9]+/', $y, $cTreffer7_arr);
-                                                        if (isset($cTreffer6_arr[0]) && strlen($cTreffer6_arr[0]) === strlen($y)) {
-                                                            // Value prüfen
-                                                            if (strlen($Option_arr['value']) === 0) {
-                                                                return 70;// Die Option entspricht nicht der Konvention
-                                                            }
-                                                            // Sort prüfen
-                                                            if (strlen($Option_arr['sort']) === 0) {
-                                                                return 70;// Die Option entspricht nicht der Konvention
-                                                            }
-                                                        } elseif (isset($cTreffer7_arr[0]) && strlen($cTreffer7_arr[0]) === strlen($y)) {
-                                                            // Name prüfen
-                                                            if (strlen($Option_arr) === 0) {
-                                                                return 70;// Die Option entspricht nicht der Konvention
-                                                            }
-                                                        }
-                                                    }
-                                                } elseif (count($Setting_arr['SelectboxOptions'][0]) === 2) { //Es gibt nur 1 Option
-                                                    // Value prüfen
-                                                    if (strlen($Setting_arr['SelectboxOptions'][0]['Option attr']['value']) === 0) {
-                                                        return 70;// Die Option entspricht nicht der Konvention
-                                                    }
-                                                    // Sort prüfen
-                                                    if (strlen($Setting_arr['SelectboxOptions'][0]['Option attr']['sort']) === 0) {
-                                                        return 70;// Die Option entspricht nicht der Konvention
-                                                    }
-                                                    // Name prüfen
-                                                    if (strlen($Setting_arr['SelectboxOptions'][0]['Option']) === 0) {
-                                                        return 70;// Die Option entspricht nicht der Konvention
-                                                    }
-                                                }
-                                            } else {
-                                                return 69;// Keine SelectboxOptionen vorhanden
-                                            }
-                                        } elseif ($cTyp === 'radio') {
-                                            // SelectboxOptions prüfen
-                                            if (isset($Setting_arr['RadioOptions']) &&
-                                                is_array($Setting_arr['RadioOptions']) &&
-                                                count($Setting_arr['RadioOptions']) > 0
-                                            ) {
-                                                // Es gibt mehr als 1 Option
-                                                if (count($Setting_arr['RadioOptions'][0]) === 1) {
-                                                    foreach ($Setting_arr['RadioOptions'][0]['Option'] as $y => $Option_arr) {
-                                                        preg_match("/[0-9]+\sattr/", $y, $cTreffer6_arr);
-                                                        preg_match("/[0-9]+/", $y, $cTreffer7_arr);
-                                                        if (isset($cTreffer6_arr[0]) && strlen($cTreffer6_arr[0]) === strlen($y)) {
-                                                            // Value prüfen
-                                                            if (strlen($Option_arr['value']) === 0) {
-                                                                return 70;// Die Option entspricht nicht der Konvention
-                                                            }
-                                                            // Sort prüfen
-                                                            if (strlen($Option_arr['sort']) === 0) {
-                                                                return 70;// Die Option entspricht nicht der Konvention
-                                                            }
-                                                        } elseif (isset($cTreffer7_arr[0]) && strlen($cTreffer7_arr[0]) === strlen($y)) {
-                                                            // Name prüfen
-                                                            if (strlen($Option_arr) === 0) {
-                                                                return 70;// Die Option entspricht nicht der Konvention
-                                                            }
-                                                        }
-                                                    }
-                                                } elseif (count($Setting_arr['RadioOptions'][0]) === 2) { //Es gibt nur 1 Option
-                                                    // Value prüfen
-                                                    if (strlen($Setting_arr['RadioOptions'][0]['Option attr']['value']) === 0) {
-                                                        return 70;// Die Option entspricht nicht der Konvention
-                                                    }
-                                                    // Sort prüfen
-                                                    if (strlen($Setting_arr['RadioOptions'][0]['Option attr']['sort']) === 0) {
-                                                        return 70;// Die Option entspricht nicht der Konvention
-                                                    }
-                                                    // Name prüfen
-                                                    if (strlen($Setting_arr['RadioOptions'][0]['Option']) === 0) {
-                                                        return 70;// Die Option entspricht nicht der Konvention
-                                                    }
-                                                }
-                                            } else {
-                                                return 69;// Keine SelectboxOptionen vorhanden
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
+                // ClassName prüfen
+                if (isset($Method_arr['ClassName'])) {
+                    preg_match("/[a-zA-Z0-9\/_\-]+/", $Method_arr['ClassName'], $cTreffer1_arr);
+                    if (strlen($cTreffer1_arr[0]) !== strlen($Method_arr['ClassName'])) {
+                        return PLUGIN_CODE_INVALID_PAYMENT_METHOD_CLASS_NAME;
                     }
                 }
-
-                // Plausi Boxenvorlagen (falls vorhanden)
-                if (isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['Boxes']) &&
-                    is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['Boxes'])
-                ) {
-                    // Boxen prüfen
-                    if (isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['Boxes'][0]['Box']) &&
-                        is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['Boxes'][0]['Box']) &&
-                        count($XML_arr['jtlshop3plugin'][0]['Install'][0]['Boxes'][0]['Box']) > 0
-                    ) {
-                        foreach ($XML_arr['jtlshop3plugin'][0]['Install'][0]['Boxes'][0]['Box'] as $h => $Box_arr) {
-                            preg_match("/[0-9]+/", $h, $cTreffer3_arr);
-                            if (strlen($cTreffer3_arr[0]) === strlen($h)) {
-                                // Box Name prüfen
-                                if (strlen($Box_arr['Name']) === 0) {
-                                    return 83;// Box Name entspricht nicht der Konvention
-                                }
-                                // Box TemplateFile prüfen
-                                if (strlen($Box_arr['TemplateFile']) > 0) {
-                                    if (!file_exists($cVerzeichnis . '/' .
-                                        PFAD_PLUGIN_VERSION . $cVersionsnummer . '/' .
-                                        PFAD_PLUGIN_FRONTEND . PFAD_PLUGIN_BOXEN . $Box_arr['TemplateFile'])
-                                    ) {
-                                        return 85;// Box Templatedatei existiert nicht
-                                    }
-                                } else {
-                                    return 84;// Box Templatedatei entspricht nicht der Konvention
-                                }
-                            }
-                        }
-                    } else {
-                        return 82;// Keine Box vorhanden
+                // TemplateFile prüfen
+                if (isset($Method_arr['TemplateFile']) && strlen($Method_arr['TemplateFile']) > 0) {
+                    preg_match('/[a-zA-Z0-9\/_\-.]+.tpl/',
+                        $Method_arr['TemplateFile'],
+                        $cTreffer1_arr
+                    );
+                    if (strlen($cTreffer1_arr[0]) !== strlen($Method_arr['TemplateFile'])) {
+                        return PLUGIN_CODE_INVALID_PAYMENT_METHOD_TEMPLATE;
                     }
-                }
-
-                // Plausi Emailvorlagen (falls vorhanden)
-                if (isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['Emailtemplate']) &&
-                    is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['Emailtemplate'])
-                ) {
-                    // EmailTemplates prüfen
-                    if (isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['Emailtemplate'][0]['Template']) &&
-                        is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['Emailtemplate'][0]['Template']) &&
-                        count($XML_arr['jtlshop3plugin'][0]['Install'][0]['Emailtemplate'][0]['Template']) > 0
-                    ) {
-                        foreach ($XML_arr['jtlshop3plugin'][0]['Install'][0]['Emailtemplate'][0]['Template'] as $u => $Template_arr) {
-                            preg_match("/[0-9]+\sattr/", $u, $cTreffer1_arr);
-                            preg_match("/[0-9]+/", $u, $cTreffer2_arr);
-                            if (strlen($cTreffer2_arr[0]) === strlen($u)) {
-                                // Template Name prüfen
-                                preg_match(
-                                    "/[a-zA-Z0-9\/_\-äÄüÜöÖß" . utf8_decode('äÄüÜöÖß') . " ]+/",
-                                    $Template_arr['Name'],
-                                    $cTreffer1_arr
-                                );
-                                if (strlen($cTreffer1_arr[0]) !== strlen($Template_arr['Name'])) {
-                                    return 92;// Template Name entspricht nicht der Konvention
-                                }
-                                // Template Typ prüfen
-                                if ($Template_arr['Type'] !== 'text/html' && $Template_arr['Type'] !== 'text') {
-                                    return 93;// Template Type entspricht nicht der Konvention
-                                }
-                                // Template ModulId prüfen
-                                if (strlen($Template_arr['ModulId']) === 0) {
-                                    return 94;// Template ModulId entspricht nicht der Konvention
-                                }
-                                // Template Active prüfen
-                                if (strlen($Template_arr['Active']) === 0) {
-                                    return 95;// Template Active entspricht nicht der Konvention
-                                }
-                                // Template AKZ prüfen
-                                if (strlen($Template_arr['AKZ']) === 0) {
-                                    return 96;// Template AKZ entspricht nicht der Konvention
-                                }
-                                // Template AGB prüfen
-                                if (strlen($Template_arr['AGB']) === 0) {
-                                    return 97;// Template AGB entspricht nicht der Konvention
-                                }
-                                // Template WRB prüfen
-                                if (strlen($Template_arr['WRB']) === 0) {
-                                    return 98;// Template WRB entspricht nicht der Konvention
-                                }
-                                // Template Sprachen prüfen
-                                if (isset($Template_arr['TemplateLanguage']) &&
-                                    is_array($Template_arr['TemplateLanguage']) &&
-                                    count($Template_arr['TemplateLanguage']) > 0
-                                ) {
-                                    foreach ($Template_arr['TemplateLanguage'] as $l => $TemplateLanguage_arr) {
-                                        preg_match("/[0-9]+\sattr/", $l, $cTreffer1_arr);
-                                        preg_match("/[0-9]+/", $l, $cTreffer2_arr);
-                                        if (isset($cTreffer1_arr[0]) && strlen($cTreffer1_arr[0]) === strlen($l)) {
-                                            // ISO prüfen
-                                            preg_match("/[A-Z]{3}/", $TemplateLanguage_arr['iso'], $cTreffer_arr);
-                                            if (strlen($TemplateLanguage_arr['iso']) === 0 ||
-                                                strlen($cTreffer_arr[0]) !== strlen($TemplateLanguage_arr['iso'])
-                                            ) {
-                                                return 99;//Die ISO der Emailtemplate Sprache entspricht nicht der Konvention
-                                            }
-                                        } elseif (strlen($cTreffer2_arr[0]) === strlen($l)) {
-                                            // Subject prüfen
-                                            preg_match("/[a-zA-Z0-9\/_\-.#: ]+/", $TemplateLanguage_arr['Subject'], $cTreffer1_arr);
-                                            if (strlen($TemplateLanguage_arr['Subject']) === 0 ||
-                                                strlen($cTreffer1_arr[0]) !== strlen($TemplateLanguage_arr['Subject'])
-                                            ) {
-                                                return 100;// Der Subject Name entspricht nicht der Konvention
-                                            }
-                                        }
-                                    }
-                                } else {
-                                    return 101;// Keine Templatesprachen vorhanden
-                                }
-                            }
-                        }
-                    } else {
-                        return 91;// Keine Emailtemplates vorhanden, obwohl der Node angelegt wurde
-                    }
-                }
-                // Plausi Locales (falls vorhanden)
-                if (isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['Locales']) &&
-                    is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['Locales'])
-                ) {
-                    // Variablen prüfen
-                    if (isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['Locales'][0]['Variable']) &&
-                        is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['Locales'][0]['Variable']) &&
-                        count($XML_arr['jtlshop3plugin'][0]['Install'][0]['Locales'][0]['Variable']) > 0
-                    ) {
-                        foreach ($XML_arr['jtlshop3plugin'][0]['Install'][0]['Locales'][0]['Variable'] as $t => $Variable_arr) {
-                            preg_match("/[0-9]+/", $t, $cTreffer2_arr);
-                            if (strlen($cTreffer2_arr[0]) === strlen($t)) {
-                                // Variablen Name prüfen
-                                if (strlen($Variable_arr['Name']) === 0) {
-                                    return 27;// Variable Name entspricht nicht der Konvention
-                                }
-                                // Variable Localized prüfen
-                                // Nur eine Sprache vorhanden
-                                if (isset($Variable_arr['VariableLocalized attr']) &&
-                                    is_array($Variable_arr['VariableLocalized attr']) &&
-                                    count($Variable_arr['VariableLocalized attr']) > 0
-                                ) {
-                                    if (isset($Variable_arr['VariableLocalized attr']['iso'])) {
-                                        // ISO prüfen
-                                        preg_match("/[A-Z]{3}/", $Variable_arr['VariableLocalized attr']['iso'], $cTreffer_arr);
-                                        if (strlen($cTreffer_arr[0]) !== strlen($Variable_arr['VariableLocalized attr']['iso'])) {
-                                            return 29;//Die ISO der lokalisierten Sprachvariable entspricht nicht der Konvention
-                                        }
-                                        // Name prüfen
-                                        if (strlen($Variable_arr['VariableLocalized']) === 0) {
-                                            return 30;// Der Name der lokalisierten Sprachvariable entspricht nicht der Konvention
-                                        }
-                                    } else {
-                                        return 28;//Die ISO der lokalisierten Sprachvariable entspricht nicht der Konvention
-                                    }
-                                } // Mehr als eine Sprache vorhanden
-                                elseif (isset($Variable_arr['VariableLocalized']) &&
-                                    is_array($Variable_arr['VariableLocalized']) &&
-                                    count($Variable_arr['VariableLocalized']) > 0
-                                ) {
-                                    foreach ($Variable_arr['VariableLocalized'] as $i => $VariableLocalized_arr) {
-                                        preg_match("/[0-9]+\sattr/", $i, $cTreffer1_arr);
-                                        preg_match("/[0-9]+/", $i, $cTreffer2_arr);
-                                        if (isset($cTreffer1_arr[0]) && strlen($cTreffer1_arr[0]) === strlen($i)) {
-                                            // ISO prüfen
-                                            preg_match("/[A-Z]{3}/", $VariableLocalized_arr['iso'], $cTreffer_arr);
-                                            if (strlen($VariableLocalized_arr['iso']) === 0 ||
-                                                strlen($cTreffer_arr[0]) !== strlen($VariableLocalized_arr['iso'])
-                                            ) {
-                                                return 29;//Die ISO der lokalisierten Sprachvariable entspricht nicht der Konvention
-                                            }
-                                        } elseif (isset($cTreffer2_arr[0]) && strlen($cTreffer2_arr[0]) === strlen($i)) {
-                                            // Name prüfen
-                                            if (strlen($VariableLocalized_arr) === 0) {
-                                                return 30;//Der Name der lokalisierten Sprachvariable entspricht nicht der Konvention
-                                            }
-                                        }
-                                    }
-                                } else {
-                                    return 28;// Keine lokalisierte Sprachvariable vorhanden
-                                }
-                            }
-                        }
-                    } else {
-                        return 26;// Keine Sprachvariablen vorhanden
-                    }
-                }
-
-                // Plausi CheckBoxFunction (falls vorhanden)
-                if (isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['CheckBoxFunction']) &&
-                    is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['CheckBoxFunction']) &&
-                    isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['CheckBoxFunction'][0]['Function']) &&
-                    is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['CheckBoxFunction'][0]['Function']) &&
-                    count($XML_arr['jtlshop3plugin'][0]['Install'][0]['CheckBoxFunction'][0]['Function']) > 0
-                ) {
-                    foreach ($XML_arr['jtlshop3plugin'][0]['Install'][0]['CheckBoxFunction'][0]['Function'] as $t => $Function_arr) {
-                        preg_match("/[0-9]+/", $t, $cTreffer2_arr);
-                        if (strlen($cTreffer2_arr[0]) === strlen($t)) {
-                            // Function Name prüfen
-                            if (strlen($Function_arr['Name']) === 0) {
-                                return 102;// Funktion Name entspricht nicht der Konvention
-                            }
-                            // Function ID prüfen
-                            if (strlen($Function_arr['ID']) === 0) {
-                                return 103;// Funktion ID entspricht nicht der Konvention
-                            }
-                        }
-                    }
-                }
-                // Plausi AdminWidgets (falls vorhanden)
-                if (isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['AdminWidget']) &&
-                    is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['AdminWidget'])
-                ) {
-                    if (isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['AdminWidget'][0]['Widget']) &&
-                        is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['AdminWidget'][0]['Widget']) &&
-                        count($XML_arr['jtlshop3plugin'][0]['Install'][0]['AdminWidget'][0]['Widget']) > 0
-                    ) {
-                        foreach ($XML_arr['jtlshop3plugin'][0]['Install'][0]['AdminWidget'][0]['Widget'] as $u => $Widget_arr) {
-                            preg_match("/[0-9]+\sattr/", $u, $cTreffer1_arr);
-                            preg_match("/[0-9]+/", $u, $cTreffer2_arr);
-                            if (strlen($cTreffer2_arr[0]) === strlen($u)) {
-                                // Widget Title prüfen
-                                preg_match(
-                                    "/[a-zA-Z0-9\/_\-äÄüÜöÖß" . utf8_decode('äÄüÜöÖß') . "\(\) ]+/",
-                                    $Widget_arr['Title'],
-                                    $cTreffer1_arr
-                                );
-                                if (strlen($cTreffer1_arr[0]) !== strlen($Widget_arr['Title'])) {
-                                    return 106;// Widget Title entspricht nicht der Konvention
-                                }
-                                // Widget Class prüfen
-                                preg_match("/[a-zA-Z0-9\/_\-.]+/", $Widget_arr['Class'], $cTreffer1_arr);
-                                if (strlen($cTreffer1_arr[0]) === strlen($Widget_arr['Class'])) {
-                                    if (!file_exists(
-                                        $cVerzeichnis . '/' . PFAD_PLUGIN_VERSION . $cVersionsnummer . '/' .
-                                        PFAD_PLUGIN_ADMINMENU . PFAD_PLUGIN_WIDGET .
-                                        'class.Widget' . $Widget_arr['Class'] . '_' .
-                                        $XML_arr['jtlshop3plugin'][0]['PluginID'] . '.php'
-                                    )
-                                    ) {
-                                        return 108;// Die Datei für die Klasse des AdminWidgets existiert nicht
-                                    }
-                                } else {
-                                    return 107;// Widget Class entspricht nicht der Konvention
-                                }
-                                // Widget Container prüfen
-                                if ($Widget_arr['Container'] !== 'center' &&
-                                    $Widget_arr['Container'] !== 'left' &&
-                                    $Widget_arr['Container'] !== 'right'
-                                ) {
-                                    return 109;// Container im Widget entspricht nicht der Konvention
-                                }
-                                // Widget Pos prüfen
-                                preg_match("/[0-9]+/", $Widget_arr['Pos'], $cTreffer1_arr);
-                                if (strlen($cTreffer1_arr[0]) !== strlen($Widget_arr['Pos'])) {
-                                    return 110;// Pos im Widget entspricht nicht der Konvention
-                                }
-                                // Widget Expanded prüfen
-                                preg_match("/[0-1]{1}/", $Widget_arr['Expanded'], $cTreffer1_arr);
-                                if (strlen($cTreffer1_arr[0]) !== strlen($Widget_arr['Expanded'])) {
-                                    return 111;// Expanded im Widget entspricht nicht der Konvention
-                                }
-                                // Widget Active prüfen
-                                preg_match("/[0-1]{1}/", $Widget_arr['Active'], $cTreffer1_arr);
-                                if (strlen($cTreffer1_arr[0]) !== strlen($Widget_arr['Active'])) {
-                                    return 112;// Active im Widget entspricht nicht der Konvention
-                                }
-                            }
-                        }
-                    } else {
-                        return 105;// Keine Widgets vorhanden
-                    }
-                }
-
-                // Plausi Exportformate (falls vorhanden)
-                if (isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['ExportFormat']) &&
-                    is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['ExportFormat'])
-                ) {
-                    // Formate prüfen
-                    if (isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['ExportFormat'][0]['Format']) &&
-                        is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['ExportFormat'][0]['Format']) &&
-                        count($XML_arr['jtlshop3plugin'][0]['Install'][0]['ExportFormat'][0]['Format']) > 0
-                    ) {
-                        foreach ($XML_arr['jtlshop3plugin'][0]['Install'][0]['ExportFormat'][0]['Format'] as $h => $Format_arr) {
-                            preg_match("/[0-9]+\sattr/", $h, $cTreffer1_arr);
-                            preg_match("/[0-9]+/", $h, $cTreffer2_arr);
-                            if (strlen($cTreffer2_arr[0]) === strlen($h)) {
-                                // Name prüfen
-                                if (strlen($Format_arr['Name']) === 0) {
-                                    return 116;// Format Name entspricht nicht der Konvention
-                                }
-                                // Filename prüfen
-                                if (strlen($Format_arr['FileName']) === 0) {
-                                    return 117;// Format Filename entspricht nicht der Konvention
-                                }
-                                // Content prüfen
-                                if ((!isset($Format_arr['Content']) || strlen($Format_arr['Content']) === 0) &&
-                                    (!isset($Format_arr['ContentFile']) || strlen($Format_arr['ContentFile']) === 0)
-                                ) {
-                                    return 118;// Format enthaelt weder Content, noch eine Contentdatei
-                                }
-                                // Encoding prüfen
-                                if (strlen($Format_arr['Encoding']) === 0 || ($Format_arr['Encoding'] !== 'ASCII' && $Format_arr['Encoding'] !== 'UTF-8')) {
-                                    return 119;// Format Encoding entspricht nicht der Konvention
-                                }
-                                // Encoding prüfen
-                                if (strlen($Format_arr['ShippingCostsDeliveryCountry']) === 0) {
-                                    return 120;// Format ShippingCostsDeliveryCountry entspricht nicht der Konvention
-                                }
-                                // Encoding prüfen
-                                if (strlen($Format_arr['ContentFile']) > 0 && !file_exists(
-                                    $cVerzeichnis . '/' . PFAD_PLUGIN_VERSION . $cVersionsnummer . '/' .
-                                    PFAD_PLUGIN_ADMINMENU . PFAD_PLUGIN_EXPORTFORMAT . $Format_arr['ContentFile']
-                                )) {
-                                    return 121;// Format ContentFile entspricht nicht der Konvention
-                                }
-                            }
-                        }
-                    } else {
-                        return 115;// Keine Formate vorhanden
-                    }
-                }
-                // Plausi ExtendedTemplate (falls vorhanden)
-                if (isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['ExtendedTemplates']) &&
-                    is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['ExtendedTemplates'])
-                ) {
-                    // Template prüfen
-                    if (isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['ExtendedTemplates'][0]['Template'])) {
-                        $cTemplate_arr = (array)$XML_arr['jtlshop3plugin'][0]['Install'][0]['ExtendedTemplates'][0]['Template'];
-                        foreach ($cTemplate_arr as $cTemplate) {
-                            preg_match('/[a-zA-Z0-9\/_\-]+\.tpl/', $cTemplate, $cTreffer3_arr);
-                            if (strlen($cTreffer3_arr[0]) === strlen($cTemplate)) {
-                                if (!file_exists($cVerzeichnis . '/' .
-                                    PFAD_PLUGIN_VERSION . $cVersionsnummer . '/' .
-                                    PFAD_PLUGIN_FRONTEND . PFAD_PLUGIN_TEMPLATE . $cTemplate)
-                                ) {
-                                    return 124;// Templatedatei existiert nicht
-                                }
-                            } else {
-                                return 123;// Templatedatei entspricht nicht der Konvention
-                            }
-                        }
-                    } else {
-                        return 122;// Kein Template vorhanden
-                    }
-                }
-
-                // Plausi Uninstall (falls vorhanden)
-                if (isset($XML_arr['jtlshop3plugin'][0]['Uninstall']) &&
-                    strlen($XML_arr['jtlshop3plugin'][0]['Uninstall']) > 0 &&
-                    !file_exists($cVerzeichnis . '/' .
+                    if (!file_exists($cVerzeichnis . '/' .
                         PFAD_PLUGIN_VERSION . $cVersionsnummer . '/' .
-                        PFAD_PLUGIN_UNINSTALL . $XML_arr['jtlshop3plugin'][0]['Uninstall'])
-                ) {
-                    return 125;// Uninstall File existiert nicht
-                }
-                // Interne XML prüfung mit höheren XML Versionen
-                if ($nXMLVersion > 100) {
-                    $nReturnValue = pluginPlausiInterVersion($XML_arr, $nXMLVersion, $cVerzeichnis);
-                    if ($nReturnValue === 1) {
-                        return $isShop4Compatible ? 1 : 126;// Alles O.K./Warnung Shop4
+                        PFAD_PLUGIN_PAYMENTMETHOD . $Method_arr['TemplateFile'])
+                    ) {
+                        return PLUGIN_CODE_MISSING_PAYMENT_METHOD_TEMPLATE;
                     }
+                }
+                // Zusatzschritt-TemplateFile prüfen
+                if (isset($Method_arr['AdditionalTemplateFile']) && strlen($Method_arr['AdditionalTemplateFile']) > 0) {
+                    preg_match('/[a-zA-Z0-9\/_\-.]+.tpl/',
+                        $Method_arr['AdditionalTemplateFile'],
+                        $cTreffer1_arr
+                    );
+                    if (strlen($cTreffer1_arr[0]) !== strlen($Method_arr['AdditionalTemplateFile'])) {
+                        return PLUGIN_CODE_INVALID_PAYMENT_METHOD_ADDITIONAL_STEP_TEMPLATE_FILE;
+                    }
+                    if (!file_exists($cVerzeichnis . '/' .
+                        PFAD_PLUGIN_VERSION . $cVersionsnummer . '/' .
+                        PFAD_PLUGIN_PAYMENTMETHOD . $Method_arr['AdditionalTemplateFile'])
+                    ) {
+                        return PLUGIN_CODE_MISSING_PAYMENT_METHOD_ADDITIONAL_STEP_FILE;
+                    }
+                }
+                // ZahlungsmethodeSprachen prüfen
+                if (!isset($Method_arr['MethodLanguage']) 
+                    || !is_array($Method_arr['MethodLanguage']) 
+                    || count($Method_arr['MethodLanguage']) === 0
+                ) {
+                    return PLUGIN_CODE_MISSING_PAYMENT_METHOD_LANGUAGES;
+                }
+                foreach ($Method_arr['MethodLanguage'] as $l => $MethodLanguage_arr) {
+                    preg_match('/[0-9]+\sattr/', $l, $cTreffer1_arr);
+                    preg_match('/[0-9]+/', $l, $cTreffer2_arr);
+                    if (isset($cTreffer1_arr[0]) && strlen($cTreffer1_arr[0]) === strlen($l)) {
+                        // ISO prüfen
+                        preg_match("/[A-Z]{3}/", $MethodLanguage_arr['iso'], $cTreffer_arr);
+                        if (strlen($MethodLanguage_arr['iso']) === 0
+                            || strlen($cTreffer_arr[0]) !== strlen($MethodLanguage_arr['iso'])
+                        ) {
+                            return PLUGIN_CODE_INVALID_PAYMENT_METHOD_LANGUAGE_ISO;
+                        }
+                    } elseif (isset($cTreffer2_arr[0]) && strlen($cTreffer2_arr[0]) === strlen($l)) {
+                        // Name prüfen
+                        if (!isset($MethodLanguage_arr['Name'])) {
+                            return PLUGIN_CODE_INVALID_PAYMENT_METHOD_NAME_LOCALIZED;
+                        }
+                        preg_match("/[a-zA-Z0-9äÄöÖüÜß" . utf8_decode('äÄüÜöÖß') . "\.\,\!\"\§\$\%\&\/\(\)\=\`\´\+\~\*\'\;\-\_\?\{\}\[\] ]+/",
+                            $MethodLanguage_arr['Name'],
+                            $cTreffer1_arr
+                        );
+                        if (strlen($cTreffer1_arr[0]) !== strlen($MethodLanguage_arr['Name'])) {
+                            return PLUGIN_CODE_INVALID_PAYMENT_METHOD_NAME_LOCALIZED;
+                        }
+                        // ChargeName prüfen
+                        if (!isset($MethodLanguage_arr['ChargeName'])) {
+                            return PLUGIN_CODE_INVALID_PAYMENT_METHOD_CHARGE_NAME;
+                        }
+                        preg_match("/[a-zA-Z0-9äÄöÖüÜß" . utf8_decode('äÄüÜöÖß') . "\.\,\!\"\§\$\%\&\/\(\)\=\`\´\+\~\*\'\;\-\_\?\{\}\[\] ]+/",
+                            $MethodLanguage_arr['ChargeName'],
+                            $cTreffer1_arr
+                        );
+                        if (strlen($cTreffer1_arr[0]) !== strlen($MethodLanguage_arr['ChargeName'])) {
+                            return PLUGIN_CODE_INVALID_PAYMENT_METHOD_CHARGE_NAME;
+                        }
+                        // InfoText prüfen
+                        if (!isset($MethodLanguage_arr['InfoText'])) {
+                            return PLUGIN_CODE_INVALID_PAYMENT_METHOD_INFO_TEXT;
+                        }
+                        preg_match("/[a-zA-Z0-9äÄöÖüÜß" . utf8_decode('äÄüÜöÖß') . "\.\,\!\"\§\$\%\&\/\(\)\=\`\´\+\~\*\'\;\-\_\?\{\}\[\] ]+/",
+                            $MethodLanguage_arr['InfoText'],
+                            $cTreffer1_arr
+                        );
+                        if (isset($cTreffer1_arr[0])
+                            && strlen($cTreffer1_arr[0]) !== strlen($MethodLanguage_arr['InfoText'])
+                        ) {
+                            return PLUGIN_CODE_INVALID_PAYMENT_METHOD_INFO_TEXT;
+                        }
+                    }
+                }
+                // Zahlungsmethode Einstellungen prüfen
+                $cTyp = '';
+                if (isset($Method_arr['Setting'])
+                    && is_array($Method_arr['Setting'])
+                    && count($Method_arr['Setting']) > 0
+                ) {
+                    foreach ($Method_arr['Setting'] as $j => $Setting_arr) {
+                        preg_match('/[0-9]+\sattr/', $j, $cTreffer3_arr);
+                        preg_match('/[0-9]+/', $j, $cTreffer4_arr);
+                        if (isset($cTreffer3_arr[0]) && strlen($cTreffer3_arr[0]) === strlen($j)) {
+                            $cTyp = $Setting_arr['type'];
+                            // Einstellungen type prüfen
+                            if (strlen($Setting_arr['type']) === 0) {
+                                return PLUGIN_CODE_INVALID_PAYMENT_METHOD_CONFIG_TYPE;
+                            }
+                            // Einstellungen initialValue prüfen
+                            //if(strlen($Setting_arr['initialValue']) == 0)
+                            //return 64;  // Einstellungen initialValue entspricht nicht der Konvention
 
-                    return $nReturnValue;
-                } else {
-                    return $isShop4Compatible ? 1 : 126;
+                            // Einstellungen sort prüfen
+                            if (strlen($Setting_arr['sort']) === 0) {
+                                return PLUGIN_CODE_INVALID_PAYMENT_METHOD_CONFIG_SORT;
+                            }
+                            // Einstellungen conf prüfen
+                            if (strlen($Setting_arr['conf']) === 0) {
+                                return PLUGIN_CODE_INVALID_PAYMENT_METHOD_CONFIG_CONF;
+                            }
+                        } elseif (isset($cTreffer4_arr[0]) && strlen($cTreffer4_arr[0]) === strlen($j)) {
+                            // Einstellungen Name prüfen
+                            if (strlen($Setting_arr['Name']) === 0) {
+                                return PLUGIN_CODE_INVALID_PAYMENT_METHOD_CONFIG_NAME;
+                            }
+                            // Einstellungen ValueName prüfen
+                            if (strlen($Setting_arr['ValueName']) === 0) {
+                                return PLUGIN_CODE_INVALID_PAYMENT_METHOD_VALUE_NAME;
+                            }
+                            // Ist der Typ eine Selectbox => Es müssen SelectboxOptionen vorhanden sein
+                            if ($cTyp === 'selectbox') {
+                                // SelectboxOptions prüfen
+                                if (!isset($Setting_arr['SelectboxOptions']) 
+                                    || !is_array($Setting_arr['SelectboxOptions']) 
+                                    || count($Setting_arr['SelectboxOptions']) === 0
+                                ) {
+                                    return PLUGIN_CODE_MISSING_PAYMENT_METHOD_SELECTBOX_OPTIONS;
+                                }
+                                // Es gibt mehr als 1 Option
+                                if (count($Setting_arr['SelectboxOptions'][0]) === 1) {
+                                    foreach ($Setting_arr['SelectboxOptions'][0]['Option'] as $y => $Option_arr) {
+                                        preg_match('/[0-9]+\sattr/', $y, $cTreffer6_arr);
+                                        preg_match('/[0-9]+/', $y, $cTreffer7_arr);
+                                        if (isset($cTreffer6_arr[0]) && strlen($cTreffer6_arr[0]) === strlen($y)) {
+                                            // Value prüfen
+                                            if (strlen($Option_arr['value']) === 0) {
+                                                return PLUGIN_CODE_INVALID_PAYMENT_METHOD_OPTION;
+                                            }
+                                            // Sort prüfen
+                                            if (strlen($Option_arr['sort']) === 0) {
+                                                return PLUGIN_CODE_INVALID_PAYMENT_METHOD_OPTION;
+                                            }
+                                        } elseif (isset($cTreffer7_arr[0]) && strlen($cTreffer7_arr[0]) === strlen($y)) {
+                                            // Name prüfen
+                                            if (strlen($Option_arr) === 0) {
+                                                return PLUGIN_CODE_INVALID_PAYMENT_METHOD_OPTION;
+                                            }
+                                        }
+                                    }
+                                } elseif (count($Setting_arr['SelectboxOptions'][0]) === 2) { //Es gibt nur 1 Option
+                                    // Value prüfen
+                                    if (strlen($Setting_arr['SelectboxOptions'][0]['Option attr']['value']) === 0) {
+                                        return PLUGIN_CODE_INVALID_PAYMENT_METHOD_OPTION;
+                                    }
+                                    // Sort prüfen
+                                    if (strlen($Setting_arr['SelectboxOptions'][0]['Option attr']['sort']) === 0) {
+                                        return PLUGIN_CODE_INVALID_PAYMENT_METHOD_OPTION;
+                                    }
+                                    // Name prüfen
+                                    if (strlen($Setting_arr['SelectboxOptions'][0]['Option']) === 0) {
+                                        return PLUGIN_CODE_INVALID_PAYMENT_METHOD_OPTION;
+                                    }
+                                }
+                            } elseif ($cTyp === 'radio') {
+                                // SelectboxOptions prüfen
+                                if (!isset($Setting_arr['RadioOptions'])
+                                    || !is_array($Setting_arr['RadioOptions'])
+                                    || count($Setting_arr['RadioOptions']) === 0
+                                ) {
+                                    return PLUGIN_CODE_MISSING_PAYMENT_METHOD_SELECTBOX_OPTIONS;// Keine SelectboxOptionen vorhanden
+                                }
+                                // Es gibt mehr als 1 Option
+                                if (count($Setting_arr['RadioOptions'][0]) === 1) {
+                                    foreach ($Setting_arr['RadioOptions'][0]['Option'] as $y => $Option_arr) {
+                                        preg_match("/[0-9]+\sattr/", $y, $cTreffer6_arr);
+                                        preg_match("/[0-9]+/", $y, $cTreffer7_arr);
+                                        if (isset($cTreffer6_arr[0]) && strlen($cTreffer6_arr[0]) === strlen($y)) {
+                                            // Value prüfen
+                                            if (strlen($Option_arr['value']) === 0) {
+                                                return PLUGIN_CODE_INVALID_PAYMENT_METHOD_OPTION;
+                                            }
+                                            // Sort prüfen
+                                            if (strlen($Option_arr['sort']) === 0) {
+                                                return PLUGIN_CODE_INVALID_PAYMENT_METHOD_OPTION;
+                                            }
+                                        } elseif (isset($cTreffer7_arr[0]) && strlen($cTreffer7_arr[0]) === strlen($y)) {
+                                            // Name prüfen
+                                            if (strlen($Option_arr) === 0) {
+                                                return PLUGIN_CODE_INVALID_PAYMENT_METHOD_OPTION;
+                                            }
+                                        }
+                                    }
+                                } elseif (count($Setting_arr['RadioOptions'][0]) === 2) { //Es gibt nur 1 Option
+                                    // Value prüfen
+                                    if (strlen($Setting_arr['RadioOptions'][0]['Option attr']['value']) === 0) {
+                                        return PLUGIN_CODE_INVALID_PAYMENT_METHOD_OPTION;
+                                    }
+                                    // Sort prüfen
+                                    if (strlen($Setting_arr['RadioOptions'][0]['Option attr']['sort']) === 0) {
+                                        return PLUGIN_CODE_INVALID_PAYMENT_METHOD_OPTION;
+                                    }
+                                    // Name prüfen
+                                    if (strlen($Setting_arr['RadioOptions'][0]['Option']) === 0) {
+                                        return PLUGIN_CODE_INVALID_PAYMENT_METHOD_OPTION;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Plausi Boxenvorlagen (falls vorhanden)
+    if (isset($installNode['Boxes'])
+        && is_array($installNode['Boxes'])
+    ) {
+        // Boxen prüfen
+        if (!isset($installNode['Boxes'][0]['Box'])
+            || !is_array($installNode['Boxes'][0]['Box'])
+            || count($installNode['Boxes'][0]['Box']) === 0
+        ) {
+            return PLUGIN_CODE_MISSING_BOX;
+        }
+        foreach ($installNode['Boxes'][0]['Box'] as $h => $Box_arr) {
+            preg_match("/[0-9]+/", $h, $cTreffer3_arr);
+            if (strlen($cTreffer3_arr[0]) !== strlen($h)) {
+                continue;
+            }
+            // Box Name prüfen
+            if (empty($Box_arr['Name'])) {
+                return PLUGIN_CODE_INVALID_BOX_NAME;
+            }
+            // Box TemplateFile prüfen
+            if (empty($Box_arr['TemplateFile'])) {
+                return PLUGIN_CODE_INVALID_BOX_TEMPLATE;
+            }
+            if (!file_exists($cVerzeichnis . '/' .
+                PFAD_PLUGIN_VERSION . $cVersionsnummer . '/' .
+                PFAD_PLUGIN_FRONTEND . PFAD_PLUGIN_BOXEN . $Box_arr['TemplateFile'])
+            ) {
+                return PLUGIN_CODE_MISSING_BOX_TEMPLATE_FILE;
+            }
+        }
+    }
+
+    // Plausi Emailvorlagen (falls vorhanden)
+    if (isset($installNode['Emailtemplate'])
+        && is_array($installNode['Emailtemplate'])
+    ) {
+        // EmailTemplates prüfen
+        if (!isset($installNode['Emailtemplate'][0]['Template'])
+            || !is_array($installNode['Emailtemplate'][0]['Template'])
+            || count($installNode['Emailtemplate'][0]['Template']) === 0
+        ) {
+            return PLUGIN_CODE_MISSING_EMAIL_TEMPLATES;
+        }
+        foreach ($installNode['Emailtemplate'][0]['Template'] as $u => $Template_arr) {
+            preg_match("/[0-9]+\sattr/", $u, $cTreffer1_arr);
+            preg_match("/[0-9]+/", $u, $cTreffer2_arr);
+            if (strlen($cTreffer2_arr[0]) !== strlen($u)) {
+                continue;
+            }
+            // Template Name prüfen
+            preg_match("/[a-zA-Z0-9\/_\-äÄüÜöÖß" . utf8_decode('äÄüÜöÖß') . " ]+/",
+                $Template_arr['Name'],
+                $cTreffer1_arr
+            );
+            if (strlen($cTreffer1_arr[0]) !== strlen($Template_arr['Name'])) {
+                return PLUGIN_CODE_INVALID_TEMPLATE_NAME;
+            }
+            // Template Typ prüfen
+            if ($Template_arr['Type'] !== 'text/html' && $Template_arr['Type'] !== 'text') {
+                return PLUGIN_CODE_INVALID_TEMPLATE_TYPE;
+            }
+            // Template ModulId prüfen
+            if (strlen($Template_arr['ModulId']) === 0) {
+                return PLUGIN_CODE_INVALID_TEMPLATE_MODULE_ID;
+            }
+            // Template Active prüfen
+            if (strlen($Template_arr['Active']) === 0) {
+                return PLUGIN_CODE_INVALID_TEMPLATE_ACTIVE;
+            }
+            // Template AKZ prüfen
+            if (strlen($Template_arr['AKZ']) === 0) {
+                return PLUGIN_CODE_INVALID_TEMPLATE_AKZ;
+            }
+            // Template AGB prüfen
+            if (strlen($Template_arr['AGB']) === 0) {
+                return PLUGIN_CODE_INVALID_TEMPLATE_AGB;
+            }
+            // Template WRB prüfen
+            if (strlen($Template_arr['WRB']) === 0) {
+                return PLUGIN_CODE_INVALID_TEMPLATE_WRB;
+            }
+            // Template Sprachen prüfen
+            if (!isset($Template_arr['TemplateLanguage'])
+                || !is_array($Template_arr['TemplateLanguage'])
+                || count($Template_arr['TemplateLanguage']) === 0
+            ) {
+                return PLUGIN_CODE_MISSING_EMAIL_TEMPLATE_LANGUAGE;
+            }
+            foreach ($Template_arr['TemplateLanguage'] as $l => $TemplateLanguage_arr) {
+                preg_match("/[0-9]+\sattr/", $l, $cTreffer1_arr);
+                preg_match("/[0-9]+/", $l, $cTreffer2_arr);
+                if (isset($cTreffer1_arr[0]) && strlen($cTreffer1_arr[0]) === strlen($l)) {
+                    // ISO prüfen
+                    preg_match("/[A-Z]{3}/", $TemplateLanguage_arr['iso'], $cTreffer_arr);
+                    if (strlen($TemplateLanguage_arr['iso']) === 0
+                        || strlen($cTreffer_arr[0]) !== strlen($TemplateLanguage_arr['iso'])
+                    ) {
+                        return PLUGIN_CODE_INVALID_EMAIL_TEMPLATE_ISO;
+                    }
+                } elseif (strlen($cTreffer2_arr[0]) === strlen($l)) {
+                    // Subject prüfen
+                    preg_match("/[a-zA-Z0-9\/_\-.#: ]+/", $TemplateLanguage_arr['Subject'], $cTreffer1_arr);
+                    if (strlen($TemplateLanguage_arr['Subject']) === 0
+                        || strlen($cTreffer1_arr[0]) !== strlen($TemplateLanguage_arr['Subject'])
+                    ) {
+                        return PLUGIN_CODE_INVALID_EMAIL_TEMPLATE_SUBJECT;
+                    }
+                }
+            }
+        }
+    }
+    // Plausi Locales (falls vorhanden)
+    if (isset($installNode['Locales'])
+        && is_array($installNode['Locales'])
+    ) {
+        // Variablen prüfen
+        if (!isset($installNode['Locales'][0]['Variable'])
+            || !is_array($installNode['Locales'][0]['Variable'])
+            || count($installNode['Locales'][0]['Variable']) === 0
+        ) {
+            return PLUGIN_CODE_MISSING_LANG_VARS;
+        }
+        foreach ($installNode['Locales'][0]['Variable'] as $t => $Variable_arr) {
+            preg_match("/[0-9]+/", $t, $cTreffer2_arr);
+            if (strlen($cTreffer2_arr[0]) !== strlen($t)) {
+                continue;
+            }
+            // Variablen Name prüfen
+            if (strlen($Variable_arr['Name']) === 0) {
+                return PLUGIN_CODE_INVALID_LANG_VAR_NAME;
+            }
+            // Variable Localized prüfen
+            // Nur eine Sprache vorhanden
+            if (isset($Variable_arr['VariableLocalized attr'])
+                && is_array($Variable_arr['VariableLocalized attr'])
+                && count($Variable_arr['VariableLocalized attr']) > 0
+            ) {
+                if (!isset($Variable_arr['VariableLocalized attr']['iso'])) {
+                    return PLUGIN_CODE_MISSING_LOCALIZED_LANG_VAR;
+                }
+                // ISO prüfen
+                preg_match("/[A-Z]{3}/", $Variable_arr['VariableLocalized attr']['iso'], $cTreffer_arr);
+                if (strlen($cTreffer_arr[0]) !== strlen($Variable_arr['VariableLocalized attr']['iso'])) {
+                    return PLUGIN_CODE_INVALID_LANG_VAR_ISO;
+                }
+                // Name prüfen
+                if (strlen($Variable_arr['VariableLocalized']) === 0) {
+                    return PLUGIN_CODE_INVALID_LOCALIZED_LANG_VAR_NAME;
+                }
+            } elseif (isset($Variable_arr['VariableLocalized'])
+                && is_array($Variable_arr['VariableLocalized'])
+                && count($Variable_arr['VariableLocalized']) > 0
+            ) {
+                // Mehr als eine Sprache vorhanden
+                foreach ($Variable_arr['VariableLocalized'] as $i => $VariableLocalized_arr) {
+                    preg_match("/[0-9]+\sattr/", $i, $cTreffer1_arr);
+                    preg_match("/[0-9]+/", $i, $cTreffer2_arr);
+                    if (isset($cTreffer1_arr[0]) && strlen($cTreffer1_arr[0]) === strlen($i)) {
+                        // ISO prüfen
+                        preg_match("/[A-Z]{3}/", $VariableLocalized_arr['iso'], $cTreffer_arr);
+                        if (strlen($VariableLocalized_arr['iso']) === 0 ||
+                            strlen($cTreffer_arr[0]) !== strlen($VariableLocalized_arr['iso'])
+                        ) {
+                            return PLUGIN_CODE_INVALID_LANG_VAR_ISO;
+                        }
+                    } elseif (isset($cTreffer2_arr[0]) && strlen($cTreffer2_arr[0]) === strlen($i)) {
+                        // Name prüfen
+                        if (strlen($VariableLocalized_arr) === 0) {
+                            return PLUGIN_CODE_INVALID_LOCALIZED_LANG_VAR_NAME;
+                        }
+                    }
                 }
             } else {
-                return 8;// Der Installationsknoten ist nicht vorhanden
+                return PLUGIN_CODE_MISSING_LOCALIZED_LANG_VAR;
             }
-        } else {
-            return 7;// Die PluginID entspricht nicht der Konvention
         }
-    } else {
-        return 6;// Der Pluginname entspricht nicht der Konvention
     }
+
+    // Plausi CheckBoxFunction (falls vorhanden)
+    if (isset($installNode['CheckBoxFunction'][0]['Function'])
+        && is_array($installNode['CheckBoxFunction'])
+        && is_array($installNode['CheckBoxFunction'][0]['Function'])
+        && count($installNode['CheckBoxFunction'][0]['Function']) > 0
+    ) {
+        foreach ($installNode['CheckBoxFunction'][0]['Function'] as $t => $Function_arr) {
+            preg_match("/[0-9]+/", $t, $cTreffer2_arr);
+            if (strlen($cTreffer2_arr[0]) === strlen($t)) {
+                // Function Name prüfen
+                if (strlen($Function_arr['Name']) === 0) {
+                    return PLUGIN_CODE_INVALID_CHECKBOX_FUNCTION_NAME;
+                }
+                // Function ID prüfen
+                if (strlen($Function_arr['ID']) === 0) {
+                    return PLUGIN_CODE_INVALID_CHECKBOX_FUNCTION_ID;
+                }
+            }
+        }
+    }
+    // Plausi AdminWidgets (falls vorhanden)
+    if (isset($installNode['AdminWidget'])
+        && is_array($installNode['AdminWidget'])
+    ) {
+        if (!isset($installNode['AdminWidget'][0]['Widget'])
+            || !is_array($installNode['AdminWidget'][0]['Widget'])
+            || count($installNode['AdminWidget'][0]['Widget']) === 0
+        ) {
+            return PLUGIN_CODE_MISSING_WIDGETS;
+        }
+        foreach ($installNode['AdminWidget'][0]['Widget'] as $u => $Widget_arr) {
+            preg_match("/[0-9]+\sattr/", $u, $cTreffer1_arr);
+            preg_match("/[0-9]+/", $u, $cTreffer2_arr);
+            if (strlen($cTreffer2_arr[0]) !== strlen($u)) {
+                continue;
+            }
+            // Widget Title prüfen
+            preg_match("/[a-zA-Z0-9\/_\-äÄüÜöÖß" . utf8_decode('äÄüÜöÖß') . "\(\) ]+/",
+                $Widget_arr['Title'],
+                $cTreffer1_arr
+            );
+            if (strlen($cTreffer1_arr[0]) !== strlen($Widget_arr['Title'])) {
+                return PLUGIN_CODE_INVALID_WIDGET_TITLE;
+            }
+            // Widget Class prüfen
+            preg_match("/[a-zA-Z0-9\/_\-.]+/", $Widget_arr['Class'], $cTreffer1_arr);
+            if (strlen($cTreffer1_arr[0]) !== strlen($Widget_arr['Class'])) {
+                return PLUGIN_CODE_INVALID_WIDGET_CLASS;
+            }
+            if (!file_exists(
+                $cVerzeichnis . '/' . PFAD_PLUGIN_VERSION . $cVersionsnummer . '/' .
+                PFAD_PLUGIN_ADMINMENU . PFAD_PLUGIN_WIDGET .
+                'class.Widget' . $Widget_arr['Class'] . '_' .
+                $baseNode['PluginID'] . '.php'
+            )) {
+                return PLUGIN_CODE_MISSING_WIDGET_CLASS_FILE;
+            }
+            // Widget Container prüfen
+            if ($Widget_arr['Container'] !== 'center' &&
+                $Widget_arr['Container'] !== 'left' &&
+                $Widget_arr['Container'] !== 'right'
+            ) {
+                return PLUGIN_CODE_INVALID_WIDGET_CONTAINER;
+            }
+            // Widget Pos prüfen
+            preg_match("/[0-9]+/", $Widget_arr['Pos'], $cTreffer1_arr);
+            if (strlen($cTreffer1_arr[0]) !== strlen($Widget_arr['Pos'])) {
+                return PLUGIN_CODE_INVALID_WIDGET_POS;
+            }
+            // Widget Expanded prüfen
+            preg_match("/[0-1]{1}/", $Widget_arr['Expanded'], $cTreffer1_arr);
+            if (strlen($cTreffer1_arr[0]) !== strlen($Widget_arr['Expanded'])) {
+                return PLUGIN_CODE_INVALID_WIDGET_EXPANDED;
+            }
+            // Widget Active prüfen
+            preg_match("/[0-1]{1}/", $Widget_arr['Active'], $cTreffer1_arr);
+            if (strlen($cTreffer1_arr[0]) !== strlen($Widget_arr['Active'])) {
+                return PLUGIN_CODE_INVALID_WIDGET_ACTIVE;
+            }
+        }
+    }
+
+    // Plausi Exportformate (falls vorhanden)
+    if (isset($installNode['ExportFormat'])
+        && is_array($installNode['ExportFormat'])
+    ) {
+        // Formate prüfen
+        if (!isset($installNode['ExportFormat'][0]['Format'])
+            || !is_array($installNode['ExportFormat'][0]['Format'])
+            || count($installNode['ExportFormat'][0]['Format']) === 0
+        ) {
+            return PLUGIN_CODE_MISSING_FORMATS;
+        }
+        foreach ($installNode['ExportFormat'][0]['Format'] as $h => $Format_arr) {
+            preg_match("/[0-9]+\sattr/", $h, $cTreffer1_arr);
+            preg_match("/[0-9]+/", $h, $cTreffer2_arr);
+            if (strlen($cTreffer2_arr[0]) === strlen($h)) {
+                continue;
+            }
+            // Name prüfen
+            if (strlen($Format_arr['Name']) === 0) {
+                return PLUGIN_CODE_INVALID_FORMAT_NAME;
+            }
+            // Filename prüfen
+            if (strlen($Format_arr['FileName']) === 0) {
+                return PLUGIN_CODE_INVALID_FORMAT_FILE_NAME;
+            }
+            // Content prüfen
+            if ((!isset($Format_arr['Content']) || strlen($Format_arr['Content']) === 0) &&
+                (!isset($Format_arr['ContentFile']) || strlen($Format_arr['ContentFile']) === 0)
+            ) {
+                return PLUGIN_CODE_MISSING_FORMAT_CONTENT;
+            }
+            // Encoding prüfen
+            if (strlen($Format_arr['Encoding']) === 0 || ($Format_arr['Encoding'] !== 'ASCII' && $Format_arr['Encoding'] !== 'UTF-8')) {
+                return PLUGIN_CODE_INVALID_FORMAT_ENCODING;
+            }
+            // Encoding prüfen
+            if (strlen($Format_arr['ShippingCostsDeliveryCountry']) === 0) {
+                return PLUGIN_CODE_INVALID_FORMAT_SHIPPING_COSTS_DELIVERY_COUNTRY;
+            }
+            // Encoding prüfen
+            if (strlen($Format_arr['ContentFile']) > 0 && !file_exists(
+                $cVerzeichnis . '/' . PFAD_PLUGIN_VERSION . $cVersionsnummer . '/' .
+                PFAD_PLUGIN_ADMINMENU . PFAD_PLUGIN_EXPORTFORMAT . $Format_arr['ContentFile']
+            )) {
+                return PLUGIN_CODE_INVALID_FORMAT_CONTENT_FILE;
+            }
+        }
+    }
+    // Plausi ExtendedTemplate (falls vorhanden)
+    if (isset($installNode['ExtendedTemplates'])
+        && is_array($installNode['ExtendedTemplates'])
+    ) {
+        // Template prüfen
+        if (!isset($installNode['ExtendedTemplates'][0]['Template'])) {
+            return PLUGIN_CODE_MISSING_EXTENDED_TEMPLATE;
+        }
+        $cTemplate_arr = (array)$installNode['ExtendedTemplates'][0]['Template'];
+        foreach ($cTemplate_arr as $cTemplate) {
+            preg_match('/[a-zA-Z0-9\/_\-]+\.tpl/', $cTemplate, $cTreffer3_arr);
+            if (strlen($cTreffer3_arr[0]) !== strlen($cTemplate)) {
+                return PLUGIN_CODE_INVALID_EXTENDED_TEMPLATE_FILE_NAME;
+            }
+            if (!file_exists($cVerzeichnis . '/' .
+                PFAD_PLUGIN_VERSION . $cVersionsnummer . '/' .
+                PFAD_PLUGIN_FRONTEND . PFAD_PLUGIN_TEMPLATE . $cTemplate)
+            ) {
+                return PLUGIN_CODE_MISSING_EXTENDED_TEMPLATE_FILE;
+            }
+        }
+    }
+
+    // Plausi Uninstall (falls vorhanden)
+    if (isset($baseNode['Uninstall'])
+        && strlen($baseNode['Uninstall']) > 0
+        && !file_exists($cVerzeichnis . '/' .
+            PFAD_PLUGIN_VERSION . $cVersionsnummer . '/' .
+            PFAD_PLUGIN_UNINSTALL . $baseNode['Uninstall'])
+    ) {
+        return PLUGIN_CODE_MISSING_UNINSTALL_FILE;
+    }
+    // Interne XML prüfung mit höheren XML Versionen
+    if ($nXMLVersion > 100) {
+        $nReturnValue = pluginPlausiInterVersion($XML_arr, $nXMLVersion, $cVerzeichnis);
+        if ($nReturnValue === PLUGIN_CODE_OK) {
+            return $isShop4Compatible ? PLUGIN_CODE_OK : PLUGIN_CODE_OK_BUT_NOT_SHOP4_COMPATIBLE;
+        }
+
+        return $nReturnValue;
+    }
+
+    return $isShop4Compatible ? PLUGIN_CODE_OK : PLUGIN_CODE_OK_BUT_NOT_SHOP4_COMPATIBLE;
 }
 
 /**
@@ -1782,17 +1608,17 @@ function pluginPlausiInterVersion($XML_arr, $nXMLVersion, $cVerzeichnis)
     switch ($nXMLVersion) {
         case 101:
             // Teste etwas im XML
-            return 1; // Alles O.K.
+            return PLUGIN_CODE_OK;
             break;
 
         case 102:
             // Teste etwas im XML
-            return 1; // Alles O.K.
+            return PLUGIN_CODE_OK;
             break;
 
     }
 
-    return 1;
+    return PLUGIN_CODE_OK;
 }
 
 /**
@@ -1804,18 +1630,17 @@ function pluginPlausiInterVersion($XML_arr, $nXMLVersion, $cVerzeichnis)
 function updatePlugin($kPlugin)
 {
     $kPlugin = (int)$kPlugin;
-    if ($kPlugin > 0) {
-        $oPluginTMP = Shop::DB()->select('tplugin', 'kPlugin', $kPlugin);
-        if (isset($oPluginTMP->kPlugin) && $oPluginTMP->kPlugin > 0) {
-            $oPlugin = new Plugin($oPluginTMP->kPlugin);
+    if ($kPlugin <= 0) {
+        return PLUGIN_CODE_WRONG_PARAM;
+    }
+    $oPluginTMP = Shop::DB()->select('tplugin', 'kPlugin', $kPlugin);
+    if (isset($oPluginTMP->kPlugin) && $oPluginTMP->kPlugin > 0) {
+        $oPlugin = new Plugin($oPluginTMP->kPlugin);
 
-            return installierePluginVorbereitung($oPlugin->cVerzeichnis, $oPlugin);
-        }
-
-        return 3;// Es konnte kein Plugin in der Datenbank gefunden werden.
+        return installierePluginVorbereitung($oPlugin->cVerzeichnis, $oPlugin);
     }
 
-    return 2;// $kPlugin wurde nicht übergeben
+    return PLUGIN_CODE_NO_PLUGIN_FOUND;
 }
 
 /**
@@ -1827,70 +1652,67 @@ function updatePlugin($kPlugin)
  */
 function installierePluginVorbereitung($cVerzeichnis, $oPluginOld = 0)
 {
-    if (strlen($cVerzeichnis) > 0) {
-        // Plugin wurde schon installiert?
-        $oPluginTMP = new stdClass();
-        if (!isset($oPluginOld->kPlugin) || !$oPluginOld->kPlugin) {
-            $oPluginTMP = Shop::DB()->select('tplugin', 'cVerzeichnis', $cVerzeichnis);
-        }
-        if (!isset($oPluginTMP->kPlugin) || !$oPluginTMP->kPlugin || $oPluginOld->kPlugin > 0) {
-            $cPfad = PFAD_ROOT . PFAD_PLUGIN . $cVerzeichnis;
-            if (file_exists($cPfad . '/' . PLUGIN_INFO_FILE)) {
-                $xml     = StringHandler::convertISO(file_get_contents($cPfad . '/' . PLUGIN_INFO_FILE));
-                $XML_arr = XML_unserialize($xml, 'ISO-8859-1');
-                $XML_arr = getArrangedArray($XML_arr);
-                // Interne Plugin Plausi
-                $nReturnValue = pluginPlausiIntern($XML_arr, $cPfad);
-                // Work Around
-                if (isset($oPluginOld->kPlugin) && $oPluginOld->kPlugin > 0 && $nReturnValue === 90) {
-                    $nReturnValue = 1;
-                }
-                // Alles O.K. => installieren
-                if ($nReturnValue === 1 || $nReturnValue === 126) {
-                    // Plugin wird installiert
-                    $nReturnValue = installierePlugin($XML_arr, $cVerzeichnis, $oPluginOld);
-
-                    if ($nReturnValue === 1) {
-                        return 1;
-                    }
-                    $nSQLFehlerCode_arr = [
-                        2  => 152,
-                        3  => 153,
-                        4  => 154,
-                        5  => 155,
-                        6  => 156,
-                        7  => 157,
-                        8  => 158,
-                        9  => 159,
-                        10 => 160,
-                        11 => 161,
-                        12 => 162,
-                        13 => 163,
-                        14 => 164,
-                        15 => 165,
-                        16 => 166,
-                        22 => 202,
-                        23 => 203,
-                        24 => 204,
-                        25 => 205,
-                        26 => 206,
-                        27 => 207,
-                        28 => 208
-                    ];
-
-                    return $nSQLFehlerCode_arr[$nReturnValue];
-                }
-
-                return $nReturnValue;
-            }
-
-            return 3;// info.xml existiert nicht
-        }
-
+    if (empty($cVerzeichnis)) {
+        return PLUGIN_CODE_WRONG_PARAM;
+    }
+    // Plugin wurde schon installiert?
+    $oPluginTMP = new stdClass();
+    if (!isset($oPluginOld->kPlugin) || !$oPluginOld->kPlugin) {
+        $oPluginTMP = Shop::DB()->select('tplugin', 'cVerzeichnis', $cVerzeichnis);
+    }
+    if (!empty($oPluginTMP->kPlugin)) {
         return 4;// Plugin wurde schon installiert
     }
+    $cPfad = PFAD_ROOT . PFAD_PLUGIN . $cVerzeichnis;
+    if (!file_exists($cPfad . '/' . PLUGIN_INFO_FILE)) {
+        return 3;// info.xml existiert nicht
+    }
+    $xml     = StringHandler::convertISO(file_get_contents($cPfad . '/' . PLUGIN_INFO_FILE));
+    $XML_arr = XML_unserialize($xml, 'ISO-8859-1');
+    $XML_arr = getArrangedArray($XML_arr);
+    // Interne Plugin Plausi
+    $nReturnValue = pluginPlausiIntern($XML_arr, $cPfad);
+    // Work Around
+    if (isset($oPluginOld->kPlugin) && $oPluginOld->kPlugin > 0 && $nReturnValue === 90) {
+        $nReturnValue = PLUGIN_CODE_OK;
+    }
+    // Alles O.K. => installieren
+    if ($nReturnValue === PLUGIN_CODE_OK || $nReturnValue === 126) {
+        // Plugin wird installiert
+        $nReturnValue = installierePlugin($XML_arr, $cVerzeichnis, $oPluginOld);
 
-    return 2;// $cVerzeichnis wurde nicht übergeben}
+        if ($nReturnValue === PLUGIN_CODE_OK) {
+            return PLUGIN_CODE_OK;
+        }
+        $nSQLFehlerCode_arr = [
+            2  => 152,
+            3  => 153,
+            4  => 154,
+            5  => 155,
+            6  => 156,
+            7  => 157,
+            8  => 158,
+            9  => 159,
+            10 => 160,
+            11 => 161,
+            12 => 162,
+            13 => 163,
+            14 => 164,
+            15 => 165,
+            16 => 166,
+            22 => 202,
+            23 => 203,
+            24 => 204,
+            25 => 205,
+            26 => 206,
+            27 => 207,
+            28 => 208
+        ];
+
+        return $nSQLFehlerCode_arr[$nReturnValue];
+    }
+
+    return $nReturnValue;
 }
 
 /*
@@ -1934,55 +1756,51 @@ function installierePluginVorbereitung($cVerzeichnis, $oPluginOld = 0)
  */
 function installierePlugin($XML_arr, $cVerzeichnis, $oPluginOld)
 {
-    $nLastVersionKey   = count($XML_arr['jtlshop3plugin'][0]['Install'][0]['Version']) / 2 - 1; // Finde aktuelle Version
-    $nXMLVersion       = (int)$XML_arr['jtlshop3plugin'][0]['XMLVersion']; // XML Version
+    $baseNode          = $XML_arr['jtlshop3plugin'][0];
+    $versionNode       = $baseNode['Install'][0]['Version'];
+    $nLastVersionKey   = count($versionNode) / 2 - 1; // Finde aktuelle Version
+    $nXMLVersion       = (int)$baseNode['XMLVersion']; // XML Version
     $cLizenzKlasse     = '';
     $cLizenzKlasseName = '';
     $nStatus           = 2;
-    $_tags             = [];
     $tagsToFlush       = [];
-    if (isset($XML_arr['jtlshop3plugin'][0]['LicenceClass']) &&
-        strlen($XML_arr['jtlshop3plugin'][0]['LicenceClass']) > 0 &&
-        isset($XML_arr['jtlshop3plugin'][0]['LicenceClassFile']) &&
-        strlen($XML_arr['jtlshop3plugin'][0]['LicenceClassFile']) > 0
+    $basePath          = PFAD_ROOT . PFAD_PLUGIN . $cVerzeichnis . '/';
+    if (isset($baseNode['LicenceClass'], $baseNode['LicenceClassFile'])
+        && strlen($baseNode['LicenceClass']) > 0
+        && strlen($baseNode['LicenceClassFile']) > 0
     ) {
-        $cLizenzKlasse     = $XML_arr['jtlshop3plugin'][0]['LicenceClass'];
-        $cLizenzKlasseName = $XML_arr['jtlshop3plugin'][0]['LicenceClassFile'];
+        $cLizenzKlasse     = $baseNode['LicenceClass'];
+        $cLizenzKlasseName = $baseNode['LicenceClassFile'];
         $nStatus           = 5;
     }
     // tplugin füllen
     $oPlugin                       = new stdClass();
-    $oPlugin->cName                = $XML_arr['jtlshop3plugin'][0]['Name'];
-    $oPlugin->cBeschreibung        = $XML_arr['jtlshop3plugin'][0]['Description'];
-    $oPlugin->cAutor               = $XML_arr['jtlshop3plugin'][0]['Author'];
-    $oPlugin->cURL                 = $XML_arr['jtlshop3plugin'][0]['URL'];
-    $oPlugin->cIcon                = isset($XML_arr['jtlshop3plugin'][0]['Icon'])
-        ? $XML_arr['jtlshop3plugin'][0]['Icon']
+    $oPlugin->cName                = $baseNode['Name'];
+    $oPlugin->cBeschreibung        = $baseNode['Description'];
+    $oPlugin->cAutor               = $baseNode['Author'];
+    $oPlugin->cURL                 = $baseNode['URL'];
+    $oPlugin->cIcon                = isset($baseNode['Icon'])
+        ? $baseNode['Icon']
         : null;
     $oPlugin->cVerzeichnis         = $cVerzeichnis;
-    $oPlugin->cPluginID            = $XML_arr['jtlshop3plugin'][0]['PluginID'];
+    $oPlugin->cPluginID            = $baseNode['PluginID'];
     $oPlugin->cFehler              = '';
     $oPlugin->cLizenz              = '';
     $oPlugin->cLizenzKlasse        = $cLizenzKlasse;
     $oPlugin->cLizenzKlasseName    = $cLizenzKlasseName;
     $oPlugin->nStatus              = $nStatus;
-    $oPlugin->nVersion             = (int)$XML_arr['jtlshop3plugin'][0]['Install'][0]['Version'][$nLastVersionKey . ' attr']['nr'];
+    $oPlugin->nVersion             = (int)$versionNode[$nLastVersionKey . ' attr']['nr'];
     $oPlugin->nXMLVersion          = $nXMLVersion;
     $oPlugin->nPrio                = 0;
     $oPlugin->dZuletztAktualisiert = 'now()';
-    $oPlugin->dErstellt            = $XML_arr['jtlshop3plugin'][0]['Install'][0]['Version'][$nLastVersionKey]['CreateDate'];
-    $oPlugin->bBootstrap           = 0;
+    $oPlugin->dErstellt            = $versionNode[$nLastVersionKey]['CreateDate'];
+    $oPlugin->bBootstrap           = is_file($basePath . PFAD_PLUGIN_VERSION . $oPlugin->nVersion . '/' . 'bootstrap.php')
+        ? 1
+        : 0;
 
-    if (is_file(PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/' .
-        PFAD_PLUGIN_VERSION . $oPlugin->nVersion . '/' . 'bootstrap.php')
-    ) {
-        $oPlugin->bBootstrap = 1;
-    }
-
-    if (!empty($XML_arr['jtlshop3plugin'][0]['Install'][0]['FlushTags'])) {
-        $_tags = explode(',', $XML_arr['jtlshop3plugin'][0]['Install'][0]['FlushTags']);
-    }
-
+    $_tags = empty($baseNode['Install'][0]['FlushTags'])
+        ? []
+        : explode(',', $baseNode['Install'][0]['FlushTags']);
     foreach ($_tags as $_tag) {
         if (defined(trim($_tag))) {
             $tagsToFlush[] = constant(trim($_tag));
@@ -1991,17 +1809,15 @@ function installierePlugin($XML_arr, $cVerzeichnis, $oPluginOld)
     if (count($tagsToFlush) > 0) {
         Shop::Cache()->flushTags($tagsToFlush);
     }
-
-    if (isset($oPluginOld->cLizenz, $oPluginOld->nStatus) &&
-        (int)$oPluginOld->nStatus > 0 &&
-        strlen($oPluginOld->cLizenz) > 0 &&
-        is_file(PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/' .
-            PFAD_PLUGIN_VERSION . $oPlugin->nVersion . '/' .
-            PFAD_PLUGIN_LICENCE . $oPlugin->cLizenzKlasseName)
+    $licenceClassFile = $basePath .
+        PFAD_PLUGIN_VERSION . $oPlugin->nVersion . '/' .
+        PFAD_PLUGIN_LICENCE . $oPlugin->cLizenzKlasseName;
+    if (isset($oPluginOld->cLizenz, $oPluginOld->nStatus)
+        && (int)$oPluginOld->nStatus > 0
+        && strlen($oPluginOld->cLizenz) > 0
+        && is_file($licenceClassFile)
     ) {
-        require_once PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/' .
-            PFAD_PLUGIN_VERSION . $oPlugin->nVersion . '/' .
-            PFAD_PLUGIN_LICENCE . $oPlugin->cLizenzKlasseName;
+        require_once $licenceClassFile;
         $oPluginLicence = new $oPlugin->cLizenzKlasse();
         $cLicenceMethod = PLUGIN_LICENCE_METHODE;
         if ($oPluginLicence->$cLicenceMethod($oPluginOld->cLizenz)) {
@@ -2009,107 +1825,93 @@ function installierePlugin($XML_arr, $cVerzeichnis, $oPluginOld)
             $oPlugin->nStatus = $oPluginOld->nStatus;
         }
     }
-    $oPlugin->dInstalliert = (isset($oPluginOld->kPlugin) && $oPluginOld->kPlugin > 0) ?
-        $oPluginOld->dInstalliert :
-        'now()';
-    $kPlugin          = Shop::DB()->insert('tplugin', $oPlugin);
-    $nVersion         = (int)$XML_arr['jtlshop3plugin'][0]['Install'][0]['Version'][$nLastVersionKey . ' attr']['nr'];
-    $oPlugin->kPlugin = $kPlugin;
+    $oPlugin->dInstalliert = (isset($oPluginOld->kPlugin) && $oPluginOld->kPlugin > 0)
+        ? $oPluginOld->dInstalliert
+        : 'now()';
+    $kPlugin               = Shop::DB()->insert('tplugin', $oPlugin);
+    $nVersion              = (int)$versionNode[$nLastVersionKey . ' attr']['nr'];
+    $oPlugin->kPlugin      = $kPlugin;
 
-    if ($kPlugin > 0) {
-        $res = installPluginTables($XML_arr, $oPlugin, $oPluginOld);
+    if ($kPlugin <= 0) {
+        return PLUGIN_CODE_WRONG_PARAM;
+    }
+    $res = installPluginTables($XML_arr, $oPlugin, $oPluginOld);
 
-        if ($res > 0) {
-            deinstallierePlugin($kPlugin, $nXMLVersion);
+    if ($res > 0) {
+        deinstallierePlugin($kPlugin, $nXMLVersion);
 
-            return $res;
+        return $res;
+    }
+    // SQL installieren
+    $bSQLFehler   = false;
+    $nReturnValue = 1;
+    foreach ($versionNode as $i => $Version_arr) {
+        if ($nVersion > 0
+            && isset($oPluginOld->kPlugin, $Version_arr['nr'])
+            && $oPluginOld->nVersion >= (int)$Version_arr['nr']
+        ) {
+            continue;
         }
+        preg_match('/[0-9]+\sattr/', $i, $cTreffer1_arr);
 
-        // SQL installieren
-        $bSQLFehler   = false;
-        $nReturnValue = 1;
-        foreach ($XML_arr['jtlshop3plugin'][0]['Install'][0]['Version'] as $i => $Version_arr) {
-            if (isset($oPluginOld->kPlugin, $Version_arr['nr']) &&
-                $nVersion &&
-                $oPluginOld->nVersion >= (int)$Version_arr['nr']
-            ) {
-                continue;
-            }
-            preg_match('/[0-9]+\sattr/', $i, $cTreffer1_arr);
-
-            if (isset($cTreffer1_arr[0]) && strlen($cTreffer1_arr[0]) === strlen($i)) {
-                $nVersionTMP = (int)$Version_arr['nr'];
-                $xy          = trim(str_replace('attr', '', $i));
-                $cSQLDatei   = (isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['Version'][$xy]['SQL'])
-                    ? $XML_arr['jtlshop3plugin'][0]['Install'][0]['Version'][$xy]['SQL']
-                    : '');
-
-                if (strlen($cSQLDatei) === 0) {
-                    continue;
-                }
-
-                /*
-                // Führe aktuelle SQL Datei aus
-                // 1 = Alles O.K.
-                // 22 = Plugindaten fehlen
-                // 23 = SQL hat einen Fehler verursacht
-                // 24 = Versuch eine nicht Plugintabelle zu löschen
-                // 25 = Versuch eine nicht Plugintabelle anzulegen
-                // 26 = SQL Datei ist leer oder konnte nicht geparsed werden
-                */
-                $nReturnValue       = logikSQLDatei($cSQLDatei, $nVersionTMP, $oPlugin);
-                $nSQLFehlerCode_arr = [1 => 1, 2 => 22, 3 => 23, 4 => 24, 5 => 25, 6 => 26];
-                $nReturnValue       = $nSQLFehlerCode_arr[$nReturnValue];
-
-                if ($nReturnValue != 1) {
-                    Jtllog::writeLog(
-                        'SQL-Fehler bei der Plugin-Installation von kPlugin ' . $oPlugin->kPlugin . ', Fehlercode: ' .
-                        $nReturnValue,
-                        JTLLOG_LEVEL_ERROR,
-                        false,
-                        'kPlugin',
-                        $kPlugin
-                    );
-                    $bSQLFehler = true;
-                    break;
-                }
-            }
+        if (!isset($cTreffer1_arr[0]) || strlen($cTreffer1_arr[0]) !== strlen($i)) {
+            continue;
         }
-
-        // Ist ein SQL Fehler aufgetreten? Wenn ja, deinstalliere wieder alles
-        if ($bSQLFehler) {
-            deinstallierePlugin($oPlugin->kPlugin, $nXMLVersion);
+        $nVersionTMP = (int)$Version_arr['nr'];
+        $xy          = trim(str_replace('attr', '', $i));
+        $cSQLDatei   = isset($versionNode[$xy]['SQL'])
+            ? $versionNode[$xy]['SQL']
+            : '';
+        if ($cSQLDatei === '') {
+            continue;
         }
+        $nReturnValue       = logikSQLDatei($cSQLDatei, $nVersionTMP, $oPlugin);
+        $nSQLFehlerCode_arr = [1 => 1, 2 => 22, 3 => 23, 4 => 24, 5 => 25, 6 => 26];
+        $nReturnValue       = $nSQLFehlerCode_arr[$nReturnValue];
 
-        if ($nReturnValue === 1) {
-            if ($p = Plugin::bootstrapper($oPlugin->kPlugin)) {
-                $p->installed();
-            }
+        if ($nReturnValue !== PLUGIN_CODE_OK) {
+            Jtllog::writeLog(
+                'SQL-Fehler bei der Plugin-Installation von kPlugin ' . $oPlugin->kPlugin . ', Fehlercode: ' .
+                $nReturnValue,
+                JTLLOG_LEVEL_ERROR,
+                false,
+                'kPlugin',
+                $kPlugin
+            );
+            $bSQLFehler = true;
+            break;
         }
-
-        // Installation von höheren XML Versionen
-        if ($nXMLVersion > 100 && ($nReturnValue === 126 || $nReturnValue === 1)) {
-            $nReturnValue = installierePluginVersion($XML_arr, $cVerzeichnis, $oPluginOld, $nXMLVersion);
-            // Update
-            if (isset($oPluginOld->kPlugin) && $oPluginOld->kPlugin > 0 && $nReturnValue === 1) {
-                // Update erfolgreich => sync neue Version auf altes Plugin
-                $nReturnValue       = syncPluginUpdate($oPlugin->kPlugin, $oPluginOld, $nXMLVersion);
-                $nSQLFehlerCode_arr = [1 => 1, 2 => 27, 3 => 28];
-                $nReturnValue       = $nSQLFehlerCode_arr[$nReturnValue];
-            }
-        } else {
-            if (isset($oPluginOld->kPlugin) && $oPluginOld->kPlugin && ($nReturnValue === 126 || $nReturnValue === 1)) {
-                // Update erfolgreich => sync neue Version auf altes Plugin
-                $nReturnValue       = syncPluginUpdate($oPlugin->kPlugin, $oPluginOld, $nXMLVersion);
-                $nSQLFehlerCode_arr = [1 => 1, 2 => 27, 3 => 28];
-                $nReturnValue       = $nSQLFehlerCode_arr[$nReturnValue];
-            }
+    }
+    // Ist ein SQL Fehler aufgetreten? Wenn ja, deinstalliere wieder alles
+    if ($bSQLFehler) {
+        deinstallierePlugin($oPlugin->kPlugin, $nXMLVersion);
+    }
+    if ($nReturnValue === PLUGIN_CODE_OK && ($p = Plugin::bootstrapper($oPlugin->kPlugin)) !== null) {
+        $p->installed();
+    }
+    // Installation von höheren XML Versionen
+    if ($nXMLVersion > 100
+        && ($nReturnValue === PLUGIN_CODE_OK_BUT_NOT_SHOP4_COMPATIBLE || $nReturnValue ===  PLUGIN_CODE_OK)
+    ) {
+        $nReturnValue = installierePluginVersion($XML_arr, $cVerzeichnis, $oPluginOld, $nXMLVersion);
+        // Update
+        if (isset($oPluginOld->kPlugin) && $oPluginOld->kPlugin > 0 && $nReturnValue === 1) {
+            // Update erfolgreich => sync neue Version auf altes Plugin
+            $nReturnValue       = syncPluginUpdate($oPlugin->kPlugin, $oPluginOld, $nXMLVersion);
+            $nSQLFehlerCode_arr = [1 => 1, 2 => 27, 3 => 28];
+            $nReturnValue       = $nSQLFehlerCode_arr[$nReturnValue];
         }
-
-        return $nReturnValue;
+    } elseif (isset($oPluginOld->kPlugin)
+        && $oPluginOld->kPlugin
+        && ($nReturnValue === PLUGIN_CODE_OK_BUT_NOT_SHOP4_COMPATIBLE || $nReturnValue === PLUGIN_CODE_OK)
+    ) {
+        // Update erfolgreich => sync neue Version auf altes Plugin
+        $nReturnValue       = syncPluginUpdate($oPlugin->kPlugin, $oPluginOld, $nXMLVersion);
+        $nSQLFehlerCode_arr = [1 => 1, 2 => 27, 3 => 28];
+        $nReturnValue       = $nSQLFehlerCode_arr[$nReturnValue];
     }
 
-    return 2; // Main Plugindaten nicht korrekt
+    return $nReturnValue;
 }
 
 /**
@@ -2132,26 +1934,84 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
     $kSpracheStd      = $oSprache->kSprache;
     $kWaehrungStd     = gibStandardWaehrung();
 
+    $hooksNode      = isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['Hooks'])
+    && is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['Hooks'])
+        ? $XML_arr['jtlshop3plugin'][0]['Install'][0]['Hooks']
+        : null;
+    $uninstallNode  = !empty($XML_arr['jtlshop3plugin'][0]['Uninstall'])
+        ? $XML_arr['jtlshop3plugin'][0]['Uninstall']
+        : null;
+    $adminNode      = isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['Adminmenu'])
+    && is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['Adminmenu'])
+        ? $XML_arr['jtlshop3plugin'][0]['Install'][0]['Adminmenu']
+        : null;
+    $frontendNode   = isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['FrontendLink'][0]['Link'])
+    && is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['FrontendLink'][0]['Link'])
+        ? $XML_arr['jtlshop3plugin'][0]['Install'][0]['FrontendLink'][0]['Link']
+        : null;
+    $paymentNode    = isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['PaymentMethod'],
+        $XML_arr['jtlshop3plugin'][0]['Install'][0]['PaymentMethod'][0]['Method'])
+    && is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['PaymentMethod'][0]['Method'])
+    && is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['PaymentMethod'][0]['Method'][0]['Method'])
+    && count($XML_arr['jtlshop3plugin'][0]['Install'][0]['PaymentMethod'][0]['Method']) > 0
+        ? $XML_arr['jtlshop3plugin'][0]['Install'][0]['PaymentMethod'][0]['Method']
+        : [];
+    $boxesNode      = isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['Boxes'])
+    && is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['Boxes'])
+        ? $XML_arr['jtlshop3plugin'][0]['Install'][0]['Boxes'][0]['Box']
+        : [];
+    $checkboxesNode = isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['CheckBoxFunction'],
+        $XML_arr['jtlshop3plugin'][0]['Install'][0]['CheckBoxFunction'][0]['Function'])
+    && is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['CheckBoxFunction'])
+    && is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['CheckBoxFunction'][0]['Function'])
+    && count($XML_arr['jtlshop3plugin'][0]['Install'][0]['CheckBoxFunction'][0]['Function']) > 0
+        ? $XML_arr['jtlshop3plugin'][0]['Install'][0]['CheckBoxFunction'][0]['Function']
+        : [];
+    $cTemplate_arr  = isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['ExtendedTemplates']) &&
+    is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['ExtendedTemplates'])
+        ? (array)$XML_arr['jtlshop3plugin'][0]['Install'][0]['ExtendedTemplates'][0]['Template']
+        : [];
+    $mailNode       = isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['Emailtemplate'])
+    && is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['Emailtemplate'])
+        ? $XML_arr['jtlshop3plugin'][0]['Install'][0]['Emailtemplate']
+        : [];
+    $localeNode     = isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['Locales'][0]['Variable'])
+        ? $XML_arr['jtlshop3plugin'][0]['Install'][0]['Locales'][0]['Variable']
+        : [];
+    $widgetsNode    = isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['AdminWidget'][0]['Widget'])
+    && is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['AdminWidget'][0]['Widget'])
+        ? $XML_arr['jtlshop3plugin'][0]['Install'][0]['AdminWidget'][0]['Widget']
+        : [];
+    $exportNode     = isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['ExportFormat'][0]['Format'])
+    && is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['ExportFormat'][0]['Format'])
+        ? $XML_arr['jtlshop3plugin'][0]['Install'][0]['ExportFormat'][0]['Format']
+        : [];
+    $cssNode        = isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['CSS'][0]['file'])
+    && is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['CSS'][0]['file'])
+        ? $XML_arr['jtlshop3plugin'][0]['Install'][0]['CSS'][0]['file']
+        : [];
+    $jsNode         = isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['JS'][0]['file'])
+    && is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['JS'][0]['file'])
+        ? $XML_arr['jtlshop3plugin'][0]['Install'][0]['JS'][0]['file']
+        : [];
     // tpluginhook füllen
-    if (isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['Hooks']) &&
-        is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['Hooks'])
-    ) {
-        if (count($XML_arr['jtlshop3plugin'][0]['Install'][0]['Hooks'][0]) === 1) {
+    if ($hooksNode !== null) {
+        if (count($hooksNode[0]) === 1) {
             // Es gibt mehr als einen Hook
             $nHookID   = 0;
             $nPriority = 5;
-            foreach ($XML_arr['jtlshop3plugin'][0]['Install'][0]['Hooks'][0]['Hook'] as $i => $Hook_arr) {
+            foreach ($hooksNode[0]['Hook'] as $i => $hook) {
                 preg_match("/[0-9]+\sattr/", $i, $cTreffer1_arr);
                 preg_match("/[0-9]+/", $i, $cTreffer2_arr);
                 if (isset($cTreffer1_arr[0]) && strlen($cTreffer1_arr[0]) === strlen($i)) {
-                    $nHookID   = (int)$Hook_arr['id'];
-                    $nPriority = isset($Hook_arr['priority']) ? (int)$Hook_arr['priority'] : 5;
+                    $nHookID   = (int)$hook['id'];
+                    $nPriority = isset($hook['priority']) ? (int)$hook['priority'] : 5;
                 } elseif (isset($cTreffer2_arr[0]) && strlen($cTreffer2_arr[0]) === strlen($i)) {
                     $oPluginHook             = new stdClass();
                     $oPluginHook->kPlugin    = $kPlugin;
                     $oPluginHook->nHook      = $nHookID;
                     $oPluginHook->nPriority  = $nPriority;
-                    $oPluginHook->cDateiname = $Hook_arr;
+                    $oPluginHook->cDateiname = $hook;
 
                     $kPluginHook = Shop::DB()->insert('tpluginhook', $oPluginHook);
 
@@ -2160,17 +2020,17 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
                     }
                 }
             }
-        } elseif (count($XML_arr['jtlshop3plugin'][0]['Install'][0]['Hooks'][0]) > 1) {
+        } elseif (count($hooksNode[0]) > 1) {
             // Es gibt nur einen Hook
-            $Hook_arr = $XML_arr['jtlshop3plugin'][0]['Install'][0]['Hooks'][0];
+            $hook = $hooksNode[0];
 
             $oPluginHook             = new stdClass();
             $oPluginHook->kPlugin    = $kPlugin;
-            $oPluginHook->nHook      = (int)$Hook_arr['Hook attr']['id'];
-            $oPluginHook->nPriority  = isset($Hook_arr['Hook attr']['priority'])
-                ? (int)$Hook_arr['Hook attr']['priority']
+            $oPluginHook->nHook      = (int)$hook['Hook attr']['id'];
+            $oPluginHook->nPriority  = isset($hook['Hook attr']['priority'])
+                ? (int)$hook['Hook attr']['priority']
                 : 5;
-            $oPluginHook->cDateiname = $Hook_arr['Hook'];
+            $oPluginHook->cDateiname = $hook['Hook'];
 
             $kPluginHook = Shop::DB()->insert('tpluginhook', $oPluginHook);
 
@@ -2180,12 +2040,10 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
         }
     }
     // tpluginuninstall füllen
-    if (isset($XML_arr['jtlshop3plugin'][0]['Uninstall']) &&
-        strlen($XML_arr['jtlshop3plugin'][0]['Uninstall']) > 0
-    ) {
+    if ($uninstallNode !== null) {
         $oPluginUninstall             = new stdClass();
         $oPluginUninstall->kPlugin    = $kPlugin;
-        $oPluginUninstall->cDateiname = $XML_arr['jtlshop3plugin'][0]['Uninstall'];
+        $oPluginUninstall->cDateiname = $uninstallNode;
 
         $kPluginUninstall = Shop::DB()->insert('tpluginuninstall', $oPluginUninstall);
 
@@ -2194,26 +2052,24 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
         }
     }
     // tpluginadminmenu füllen
-    if (isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['Adminmenu']) &&
-        is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['Adminmenu'])
-    ) {
+    if ($adminNode !== null) {
         // Adminsmenüs vorhanden?
-        if (isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['Adminmenu'][0]['Customlink']) &&
-            is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['Adminmenu'][0]['Customlink']) &&
-            count($XML_arr['jtlshop3plugin'][0]['Install'][0]['Adminmenu'][0]['Customlink']) > 0
+        if (isset($adminNode[0]['Customlink']) 
+            && is_array($adminNode[0]['Customlink']) 
+            && count($adminNode[0]['Customlink']) > 0
         ) {
             $nSort = 0;
-            foreach ($XML_arr['jtlshop3plugin'][0]['Install'][0]['Adminmenu'][0]['Customlink'] as $i => $Customlink_arr) {
+            foreach ($adminNode[0]['Customlink'] as $i => $customLink) {
                 preg_match("/[0-9]+\sattr/", $i, $cTreffer1_arr);
                 preg_match("/[0-9]+/", $i, $cTreffer2_arr);
 
                 if (isset($cTreffer1_arr[0]) && strlen($cTreffer1_arr[0]) === strlen($i)) {
-                    $nSort = (int)$Customlink_arr['sort'];
+                    $nSort = (int)$customLink['sort'];
                 } elseif (strlen($cTreffer2_arr[0]) === strlen($i)) {
                     $oAdminMenu             = new stdClass();
                     $oAdminMenu->kPlugin    = $kPlugin;
-                    $oAdminMenu->cName      = $Customlink_arr['Name'];
-                    $oAdminMenu->cDateiname = $Customlink_arr['Filename'];
+                    $oAdminMenu->cName      = $customLink['Name'];
+                    $oAdminMenu->cDateiname = $customLink['Filename'];
                     $oAdminMenu->nSort      = $nSort;
                     $oAdminMenu->nConf      = 0;
 
@@ -2226,12 +2082,12 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
             }
         }
         // Einstellungen vorhanden?
-        if (isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['Adminmenu'][0]['Settingslink']) &&
-            is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['Adminmenu'][0]['Settingslink']) &&
-            count($XML_arr['jtlshop3plugin'][0]['Install'][0]['Adminmenu'][0]['Settingslink']) > 0
+        if (isset($adminNode[0]['Settingslink'])
+            && is_array($adminNode[0]['Settingslink'])
+            && count($adminNode[0]['Settingslink']) > 0
         ) {
             $nSort = 0;
-            foreach ($XML_arr['jtlshop3plugin'][0]['Install'][0]['Adminmenu'][0]['Settingslink'] as $i => $Settingslink_arr) {
+            foreach ($adminNode[0]['Settingslink'] as $i => $Settingslink_arr) {
                 preg_match("/[0-9]+\sattr/", $i, $cTreffer1_arr);
                 preg_match("/[0-9]+/", $i, $cTreffer2_arr);
                 if (isset($cTreffer1_arr[0]) && strlen($cTreffer1_arr[0]) === strlen($i)) {
@@ -2247,480 +2103,23 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
 
                     $kPluginAdminMenu = Shop::DB()->insert('tpluginadminmenu', $oAdminMenu);
 
-                    if ($kPluginAdminMenu > 0) {
-                        $cTyp          = '';
-                        $cInitialValue = '';
-                        $nSort         = 0;
-                        $cConf         = 'Y';
-                        $multiple      = false;
-                        foreach ($Settingslink_arr['Setting'] as $j => $Setting_arr) {
-                            preg_match("/[0-9]+\sattr/", $j, $cTreffer3_arr);
-                            preg_match("/[0-9]+/", $j, $cTreffer4_arr);
-
-                            if (isset($cTreffer3_arr[0]) && strlen($cTreffer3_arr[0]) === strlen($j)) {
-                                $cTyp          = $Setting_arr['type'];
-                                $multiple      = (isset($Setting_arr['multiple']) && $Setting_arr['multiple'] === 'Y' && $cTyp === 'selectbox');
-                                $cInitialValue = ($multiple === true) ?
-                                    serialize([$Setting_arr['initialValue']])
-                                    : $Setting_arr['initialValue'];
-                                $nSort         = $Setting_arr['sort'];
-                                $cConf         = $Setting_arr['conf'];
-                            } elseif (strlen($cTreffer4_arr[0]) === strlen($j)) {
-                                // tplugineinstellungen füllen
-                                $oPluginEinstellungen          = new stdClass();
-                                $oPluginEinstellungen->kPlugin = $kPlugin;
-                                $oPluginEinstellungen->cName   = is_array($Setting_arr['ValueName'])
-                                    ? $Setting_arr['ValueName']['0']
-                                    : $Setting_arr['ValueName'];
-                                $oPluginEinstellungen->cWert   = $cInitialValue;
-
-                                Shop::DB()->insert('tplugineinstellungen', $oPluginEinstellungen);
-                                // tplugineinstellungenconf füllen
-                                $oPluginEinstellungenConf                   = new stdClass();
-                                $oPluginEinstellungenConf->kPlugin          = $kPlugin;
-                                $oPluginEinstellungenConf->kPluginAdminMenu = $kPluginAdminMenu;
-                                $oPluginEinstellungenConf->cName            = $Setting_arr['Name'];
-                                $oPluginEinstellungenConf->cBeschreibung    = (!isset($Setting_arr['Description']) || is_array($Setting_arr['Description']))
-                                    ? ''
-                                    : $Setting_arr['Description'];
-                                $oPluginEinstellungenConf->cWertName = is_array($Setting_arr['ValueName'])
-                                    ? $Setting_arr['ValueName']['0']
-                                    : $Setting_arr['ValueName'];
-                                $oPluginEinstellungenConf->cInputTyp = $cTyp;
-                                $oPluginEinstellungenConf->nSort     = $nSort;
-                                $oPluginEinstellungenConf->cConf     = $cConf;
-                                //dynamic data source for selectbox/radio
-                                if ($cTyp === 'selectbox' || $cTyp === 'radio') {
-                                    if (isset($Setting_arr['OptionsSource'][0]['File'])) {
-                                        $oPluginEinstellungenConf->cSourceFile = $Setting_arr['OptionsSource'][0]['File'];
-                                    }
-                                    if ($multiple === true) {
-                                        $oPluginEinstellungenConf->cConf = 'M';
-                                    }
-                                }
-                                $kPluginEinstellungenConf = Shop::DB()->insert('tplugineinstellungenconf', $oPluginEinstellungenConf);
-                                // tplugineinstellungenconfwerte füllen
-                                if ($kPluginEinstellungenConf > 0) {
-                                    $nSort = 0;
-                                    // Ist der Typ eine Selectbox => Es müssen SelectboxOptionen vorhanden sein
-                                    if ($cTyp === 'selectbox') {
-                                        if (isset($Setting_arr['OptionsSource']) && is_array($Setting_arr['OptionsSource']) && count($Setting_arr['OptionsSource']) > 0) {
-                                            //do nothing for now
-                                        } elseif (count($Setting_arr['SelectboxOptions'][0]) === 1) { // Es gibt mehr als 1 Option
-                                            foreach ($Setting_arr['SelectboxOptions'][0]['Option'] as $y => $Option_arr) {
-                                                preg_match("/[0-9]+\sattr/", $y, $cTreffer6_arr);
-
-                                                if (isset($cTreffer6_arr[0]) && strlen($cTreffer6_arr[0]) === strlen($y)) {
-                                                    $cWert = $Option_arr['value'];
-                                                    $nSort = $Option_arr['sort'];
-                                                    $yx    = substr($y, 0, strpos($y, ' '));
-                                                    $cName = $Setting_arr['SelectboxOptions'][0]['Option'][$yx];
-
-                                                    $oPluginEinstellungenConfWerte                           = new stdClass();
-                                                    $oPluginEinstellungenConfWerte->kPluginEinstellungenConf = $kPluginEinstellungenConf;
-                                                    $oPluginEinstellungenConfWerte->cName                    = $cName;
-                                                    $oPluginEinstellungenConfWerte->cWert                    = $cWert;
-                                                    $oPluginEinstellungenConfWerte->nSort                    = $nSort;
-
-                                                    Shop::DB()->insert('tplugineinstellungenconfwerte', $oPluginEinstellungenConfWerte);
-                                                }
-                                            }
-                                        } elseif (count($Setting_arr['SelectboxOptions'][0]) === 2) {
-                                            // Es gibt nur eine Option
-                                            $oPluginEinstellungenConfWerte                           = new stdClass();
-                                            $oPluginEinstellungenConfWerte->kPluginEinstellungenConf = $kPluginEinstellungenConf;
-                                            $oPluginEinstellungenConfWerte->cName                    = $Setting_arr['SelectboxOptions'][0]['Option'];
-                                            $oPluginEinstellungenConfWerte->cWert                    = $Setting_arr['SelectboxOptions'][0]['Option attr']['value'];
-                                            $oPluginEinstellungenConfWerte->nSort                    = $Setting_arr['SelectboxOptions'][0]['Option attr']['sort'];
-
-                                            Shop::DB()->insert('tplugineinstellungenconfwerte', $oPluginEinstellungenConfWerte);
-                                        }
-                                    } elseif ($cTyp === 'radio') {
-                                        if (isset($Setting_arr['OptionsSource']) && is_array($Setting_arr['OptionsSource']) && count($Setting_arr['OptionsSource']) > 0) {
-
-                                        } elseif (count($Setting_arr['RadioOptions'][0]) === 1) { // Es gibt mehr als eine Option
-                                            foreach ($Setting_arr['RadioOptions'][0]['Option'] as $y => $Option_arr) {
-                                                preg_match("/[0-9]+\sattr/", $y, $cTreffer6_arr);
-                                                if (isset($cTreffer6_arr[0]) && strlen($cTreffer6_arr[0]) === strlen($y)) {
-                                                    $cWert = $Option_arr['value'];
-                                                    $nSort = $Option_arr['sort'];
-                                                    $yx    = substr($y, 0, strpos($y, ' '));
-                                                    $cName = $Setting_arr['RadioOptions'][0]['Option'][$yx];
-
-                                                    $oPluginEinstellungenConfWerte                           = new stdClass();
-                                                    $oPluginEinstellungenConfWerte->kPluginEinstellungenConf = $kPluginEinstellungenConf;
-                                                    $oPluginEinstellungenConfWerte->cName                    = $cName;
-                                                    $oPluginEinstellungenConfWerte->cWert                    = $cWert;
-                                                    $oPluginEinstellungenConfWerte->nSort                    = $nSort;
-
-                                                    Shop::DB()->insert('tplugineinstellungenconfwerte', $oPluginEinstellungenConfWerte);
-                                                }
-                                            }
-                                        } elseif (count($Setting_arr['RadioOptions'][0]) === 2) {
-                                            // Es gibt nur eine Option
-                                            $oPluginEinstellungenConfWerte                           = new stdClass();
-                                            $oPluginEinstellungenConfWerte->kPluginEinstellungenConf = $kPluginEinstellungenConf;
-                                            $oPluginEinstellungenConfWerte->cName                    = $Setting_arr['RadioOptions'][0]['Option'];
-                                            $oPluginEinstellungenConfWerte->cWert                    = $Setting_arr['RadioOptions'][0]['Option attr']['value'];
-                                            $oPluginEinstellungenConfWerte->nSort                    = $Setting_arr['RadioOptions'][0]['Option attr']['sort'];
-
-                                            Shop::DB()->insert('tplugineinstellungenconfwerte', $oPluginEinstellungenConfWerte);
-                                        }
-                                    }
-                                } else {
-                                    return 6;// Eine Einstellung konnte nicht in die Datenbank gespeichert werden
-                                }
-                            }
-                        }
-                    } else {
+                    if ($kPluginAdminMenu <= 0) {
                         return 5;// Ein Adminmenü Settingslink konnte nicht in die Datenbank gespeichert werden
                     }
-                }
-            }
-        }
-    }
-    // FrontendLinks (falls vorhanden)
-    if (isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['FrontendLink']) &&
-        is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['FrontendLink'])
-    ) {
-        foreach ($XML_arr['jtlshop3plugin'][0]['Install'][0]['FrontendLink'][0]['Link'] as $u => $Link_arr) {
-            preg_match("/[0-9]+\sattr/", $u, $cTreffer1_arr);
-            preg_match("/[0-9]+/", $u, $cTreffer2_arr);
-            $oLink       = new stdClass();
-            if (empty($Link_arr['LinkGroup'])) {
-                // linkgroup not set? default to 'hidden'
-                $Link_arr['LinkGroup'] = 'hidden';
-            }
-            $oLinkgruppe = Shop::DB()->select('tlinkgruppe', 'cName', $Link_arr['LinkGroup']);
-            if ($oLinkgruppe === null) {
-                // linkgroup not in database? create it anew
-                $oLinkgruppe                = new stdClass();
-                $oLinkgruppe->cName         = $Link_arr['LinkGroup'];
-                $oLinkgruppe->cTemplatename = $Link_arr['LinkGroup'];
-                $oLinkgruppe->kLinkgruppe   = Shop::DB()->insert('tlinkgruppe', $oLinkgruppe);
-            }
-            if (isset($oLinkgruppe->kLinkgruppe) && $oLinkgruppe->kLinkgruppe > 0) {
-                $kLinkgruppe = $oLinkgruppe->kLinkgruppe;
-            } else {
-                return 12; // Es konnte keine Linkgruppe im Shop gefunden werden
-            }
-
-            if (strlen($cTreffer2_arr[0]) === strlen($u)) {
-                $kLinkOld                  = (!empty($oPluginOld->kPlugin))
-                    ? Shop::DB()->select('tlink', 'kPlugin', $oPluginOld->kPlugin, 'cName', $Link_arr['Name'])
-                    : null;
-                $oLink->kLinkgruppe        = $kLinkgruppe;
-                $oLink->kPlugin            = $kPlugin;
-                $oLink->cName              = $Link_arr['Name'];
-                $oLink->nLinkart           = LINKTYP_PLUGIN;
-                $oLink->cSichtbarNachLogin = $Link_arr['VisibleAfterLogin'];
-                $oLink->cDruckButton       = $Link_arr['PrintButton'];
-                $oLink->cNoFollow          = isset($Link_arr['NoFollow']) ? $Link_arr['NoFollow'] : null;
-                $oLink->nSort              = LINKTYP_PLUGIN;
-                $oLink->bSSL               = isset($Link_arr['SSL'])
-                    ? (int)$Link_arr['SSL']
-                    : 0;
-                // tlink füllen
-                $kLink = Shop::DB()->insert('tlink', $oLink);
-
-                if ($kLink > 0) {
-                    $oLinkSprache        = new stdClass();
-                    $oLinkSprache->kLink = $kLink;
-                    // Hole alle Sprachen des Shops
-                    // Assoc cISO
-                    $oSprachAssoc_arr = gibAlleSprachen(2);
-                    // Ist der erste Standard Link gesetzt worden? => wird etwas weiter unten gebraucht
-                    // Falls Shopsprachen vom Plugin nicht berücksichtigt wurden, werden diese weiter unten
-                    // nachgetragen. Dafür wird die erste Sprache vom Plugin als Standard genutzt.
-                    $bLinkStandard   = false;
-                    $oLinkSpracheStd = new stdClass();
-
-                    foreach ($Link_arr['LinkLanguage'] as $l => $LinkLanguage_arr) {
-                        preg_match("/[0-9]+\sattr/", $l, $cTreffer1_arr);
-                        preg_match("/[0-9]+/", $l, $cTreffer2_arr);
-                        if (isset($cTreffer1_arr[0]) && strlen($cTreffer1_arr[0]) === strlen($l)) {
-                            $oLinkSprache->cISOSprache = strtolower($LinkLanguage_arr['iso']);
-                        } elseif (strlen($cTreffer2_arr[0]) === strlen($l)) {
-                            // tlinksprache füllen
-                            $oLinkSprache->cSeo             = checkSeo(getSeo($LinkLanguage_arr['Seo']));
-                            $oLinkSprache->cName            = $LinkLanguage_arr['Name'];
-                            $oLinkSprache->cTitle           = $LinkLanguage_arr['Title'];
-                            $oLinkSprache->cContent         = '';
-                            $oLinkSprache->cMetaTitle       = $LinkLanguage_arr['MetaTitle'];
-                            $oLinkSprache->cMetaKeywords    = $LinkLanguage_arr['MetaKeywords'];
-                            $oLinkSprache->cMetaDescription = $LinkLanguage_arr['MetaDescription'];
-
-                            Shop::DB()->insert('tlinksprache', $oLinkSprache);
-                            // Erste Linksprache vom Plugin als Standard setzen
-                            if (!$bLinkStandard) {
-                                $oLinkSpracheStd = $oLinkSprache;
-                                $bLinkStandard   = true;
-                            }
-
-                            if ($oSprachAssoc_arr[$oLinkSprache->cISOSprache]->kSprache > 0) {
-                                $or = isset($kLinkOld->kLink) ? (' OR kKey = ' . (int)$kLinkOld->kLink) : '';
-                                Shop::DB()->query(
-                                    "DELETE FROM tseo
-                                            WHERE cKey = 'kLink'
-                                                AND (kKey = " . (int)$kLink . $or . ")
-                                                AND kSprache = " . (int)$oSprachAssoc_arr[$oLinkSprache->cISOSprache]->kSprache, 4
-                                );
-                                // tseo füllen
-                                $oSeo           = new stdClass();
-                                $oSeo->cSeo     = checkSeo(getSeo($LinkLanguage_arr['Seo']));
-                                $oSeo->cKey     = 'kLink';
-                                $oSeo->kKey     = $kLink;
-                                $oSeo->kSprache = $oSprachAssoc_arr[$oLinkSprache->cISOSprache]->kSprache;
-
-                                Shop::DB()->insert('tseo', $oSeo);
-                            }
-
-                            if (isset($oSprachAssoc_arr[$oLinkSprache->cISOSprache])) {
-                                // Resette aktuelle Sprache
-                                unset($oSprachAssoc_arr[$oLinkSprache->cISOSprache]);
-                                $oSprachAssoc_arr = array_merge($oSprachAssoc_arr);
-                            }
-                        }
-                    }
-                    // Sind noch Sprachen im Shop die das Plugin nicht berücksichtigt?
-                    if (count($oSprachAssoc_arr) > 0) {
-                        foreach ($oSprachAssoc_arr as $oSprachAssoc) {
-                            //$oSprache = $oSprachAssoc;
-                            if ($oSprachAssoc->kSprache > 0) {
-                                Shop::DB()->delete(
-                                    'tseo',
-                                    ['cKey', 'kKey', 'kSprache'],
-                                    ['kLink', (int)$kLink, (int)$oSprachAssoc->kSprache]
-                                );
-                                // tseo füllen
-                                $oSeo           = new stdClass();
-                                $oSeo->cSeo     = checkSeo(getSeo($oLinkSpracheStd->cSeo));
-                                $oSeo->cKey     = 'kLink';
-                                $oSeo->kKey     = $kLink;
-                                $oSeo->kSprache = $oSprachAssoc->kSprache;
-
-                                Shop::DB()->insert('tseo', $oSeo);
-                                // tlinksprache füllen
-                                $oLinkSpracheStd->cSeo        = $oSeo->cSeo;
-                                $oLinkSpracheStd->cISOSprache = $oSprachAssoc->cISO;
-                                Shop::DB()->insert('tlinksprache', $oLinkSpracheStd);
-                            }
-                        }
-                    }
-                    // tpluginhook füllen (spezieller Ausnahmefall für Frontend Links)
-                    $oPluginHook             = new stdClass();
-                    $oPluginHook->kPlugin    = $kPlugin;
-                    $oPluginHook->nHook      = HOOK_SEITE_PAGE_IF_LINKART;
-                    $oPluginHook->cDateiname = PLUGIN_SEITENHANDLER;
-
-                    $kPluginHook = Shop::DB()->insert('tpluginhook', $oPluginHook);
-
-                    if (!$kPluginHook) {
-                        return 3; // Ein Hook konnte nicht in die Datenbank gespeichert werden
-                    }
-                    // tpluginlinkdatei füllen
-                    $oPluginLinkDatei                      = new stdClass();
-                    $oPluginLinkDatei->kPlugin             = $kPlugin;
-                    $oPluginLinkDatei->kLink               = $kLink;
-                    $oPluginLinkDatei->cDatei              = isset($Link_arr['Filename'])
-                        ? $Link_arr['Filename']
-                        : null;
-                    $oPluginLinkDatei->cTemplate           = isset($Link_arr['Template'])
-                        ? $Link_arr['Template']
-                        : null;
-                    $oPluginLinkDatei->cFullscreenTemplate = isset($Link_arr['FullscreenTemplate'])
-                        ? $Link_arr['FullscreenTemplate']
-                        : null;
-
-                    Shop::DB()->insert('tpluginlinkdatei', $oPluginLinkDatei);
-                } else {
-                    return 8; // Ein Link konnte nicht in die Datenbank gespeichert werden
-                }
-            }
-        }
-    }
-    // Zahlungsmethode (PaymentMethod) (falls vorhanden)
-    if (isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['PaymentMethod']) &&
-        is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['PaymentMethod']) &&
-        isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['PaymentMethod'][0]['Method']) &&
-        is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['PaymentMethod'][0]['Method']) &&
-        count($XML_arr['jtlshop3plugin'][0]['Install'][0]['PaymentMethod'][0]['Method']) > 0
-    ) {
-        $shopURL = Shop::getURL(true) . '/';
-        foreach ($XML_arr['jtlshop3plugin'][0]['Install'][0]['PaymentMethod'][0]['Method'] as $u => $Method_arr) {
-            preg_match("/[0-9]+\sattr/", $u, $cTreffer1_arr);
-            preg_match("/[0-9]+/", $u, $cTreffer2_arr);
-            if (strlen($cTreffer2_arr[0]) === strlen($u)) {
-                $oZahlungsart                         = new stdClass();
-                $oZahlungsart->cName                  = $Method_arr['Name'];
-                $oZahlungsart->cModulId               = gibPlugincModulId($kPlugin, $Method_arr['Name']);
-                $oZahlungsart->cKundengruppen         = '';
-                $oZahlungsart->cPluginTemplate        = isset($Method_arr['TemplateFile'])
-                    ? $Method_arr['TemplateFile']
-                    : null;
-                $oZahlungsart->cZusatzschrittTemplate = isset($Method_arr['AdditionalTemplateFile'])
-                    ? $Method_arr['AdditionalTemplateFile']
-                    : null;
-                $oZahlungsart->nSort                  = isset($Method_arr['Sort'])
-                    ? (int)$Method_arr['Sort']
-                    : 0;
-                $oZahlungsart->nMailSenden            = isset($Method_arr['SendMail'])
-                    ? (int)$Method_arr['SendMail']
-                    : 0;
-                $oZahlungsart->nActive                = 1;
-                $oZahlungsart->cAnbieter              = is_array($Method_arr['Provider'])
-                    ? ''
-                    : $Method_arr['Provider'];
-                $oZahlungsart->cTSCode                = is_array($Method_arr['TSCode'])
-                    ? ''
-                    : $Method_arr['TSCode'];
-                $oZahlungsart->nWaehrendBestellung    = (int)$Method_arr['PreOrder'];
-                $oZahlungsart->nCURL                  = (int)$Method_arr['Curl'];
-                $oZahlungsart->nSOAP                  = (int)$Method_arr['Soap'];
-                $oZahlungsart->nSOCKETS               = (int)$Method_arr['Sockets'];
-                $oZahlungsart->cBild                  = isset($Method_arr['PictureURL'])
-                    ? $shopURL . PFAD_PLUGIN . $cVerzeichnis . '/' .
-                        PFAD_PLUGIN_VERSION . $nVersion . '/' .
-                    PFAD_PLUGIN_PAYMENTMETHOD . $Method_arr['PictureURL']
-                    : '';
-                $oZahlungsart->nNutzbar = 0;
-                $bPruefen               = false;
-                if ($oZahlungsart->nCURL == 0 && $oZahlungsart->nSOAP == 0 && $oZahlungsart->nSOCKETS == 0) {
-                    $oZahlungsart->nNutzbar = 1;
-                } else {
-                    $bPruefen = true;
-                }
-                $kZahlungsart               = Shop::DB()->insert('tzahlungsart', $oZahlungsart);
-                $oZahlungsart->kZahlungsart = $kZahlungsart;
-
-                if ($bPruefen) {
-                    aktiviereZahlungsart($oZahlungsart);
-                }
-
-                $cModulId = $oZahlungsart->cModulId;
-
-                if (!$kZahlungsart) {
-                    return 9; //Eine Zahlungsmethode konnte nicht in die Datenbank gespeichert werden
-                }
-                // tpluginzahlungsartklasse füllen
-                $oPluginZahlungsartKlasse                         = new stdClass();
-                $oPluginZahlungsartKlasse->cModulId               = gibPlugincModulId($kPlugin, $Method_arr['Name']);
-                $oPluginZahlungsartKlasse->kPlugin                = $kPlugin;
-                $oPluginZahlungsartKlasse->cClassPfad             = isset($Method_arr['ClassFile'])
-                    ? $Method_arr['ClassFile']
-                    : null;
-                $oPluginZahlungsartKlasse->cClassName             = isset($Method_arr['ClassName'])
-                    ? $Method_arr['ClassName']
-                    : null;
-                $oPluginZahlungsartKlasse->cTemplatePfad          = isset($Method_arr['TemplateFile'])
-                    ? $Method_arr['TemplateFile']
-                    : null;
-                $oPluginZahlungsartKlasse->cZusatzschrittTemplate = isset($Method_arr['AdditionalTemplateFile'])
-                    ? $Method_arr['AdditionalTemplateFile']
-                    : null;
-
-                Shop::DB()->insert('tpluginzahlungsartklasse', $oPluginZahlungsartKlasse);
-
-                $cISOSprache = '';
-                // Hole alle Sprachen des Shops
-                // Assoc cISO
-                $oSprachAssoc_arr = gibAlleSprachen(2);
-                // Ist der erste Standard Link gesetzt worden? => wird etwas weiter unten gebraucht
-                // Falls Shopsprachen vom Plugin nicht berücksichtigt wurden, werden diese weiter unten
-                // nachgetragen. Dafür wird die erste Sprache vom Plugin als Standard genutzt.
-                $bZahlungsartStandard   = false;
-                $oZahlungsartSpracheStd = new stdClass();
-
-                foreach ($Method_arr['MethodLanguage'] as $l => $MethodLanguage_arr) {
-                    preg_match("/[0-9]+\sattr/", $l, $cTreffer1_arr);
-                    preg_match("/[0-9]+/", $l, $cTreffer2_arr);
-                    if (isset($cTreffer1_arr[0]) && strlen($cTreffer1_arr[0]) === strlen($l)) {
-                        $cISOSprache = strtolower($MethodLanguage_arr['iso']);
-                    } elseif (strlen($cTreffer2_arr[0]) === strlen($l)) {
-                        $oZahlungsartSprache               = new stdClass();
-                        $oZahlungsartSprache->kZahlungsart = $kZahlungsart;
-                        $oZahlungsartSprache->cISOSprache  = $cISOSprache;
-                        $oZahlungsartSprache->cName        = $MethodLanguage_arr['Name'];
-                        $oZahlungsartSprache->cGebuehrname = $MethodLanguage_arr['ChargeName'];
-                        $oZahlungsartSprache->cHinweisText = $MethodLanguage_arr['InfoText'];
-                        // Erste ZahlungsartSprache vom Plugin als Standard setzen
-                        if (!$bZahlungsartStandard) {
-                            $oZahlungsartSpracheStd = $oZahlungsartSprache;
-                            $bZahlungsartStandard   = true;
-                        }
-                        $kZahlungsartTMP = Shop::DB()->insert('tzahlungsartsprache', $oZahlungsartSprache);
-                        if (!$kZahlungsartTMP) {
-                            return 10; // Eine Sprache in den Zahlungsmethoden konnte nicht in die Datenbank gespeichert werden
-                        }
-
-                        if (isset($oSprachAssoc_arr[$oZahlungsartSprache->cISOSprache])) {
-                            // Resette aktuelle Sprache
-                            unset($oSprachAssoc_arr[$oZahlungsartSprache->cISOSprache]);
-                            $oSprachAssoc_arr = array_merge($oSprachAssoc_arr);
-                        }
-                    }
-                }
-
-                // Sind noch Sprachen im Shop die das Plugin nicht berücksichtigt?
-                if (count($oSprachAssoc_arr) > 0) {
-                    foreach ($oSprachAssoc_arr as $oSprachAssoc) {
-                        $oZahlungsartSpracheStd->cISOSprache = $oSprachAssoc->cISO;
-                        $kZahlungsartTMP                     = Shop::DB()->insert('tzahlungsartsprache', $oZahlungsartSpracheStd);
-                        if (!$kZahlungsartTMP) {
-                            return 10; // Eine Sprache in den Zahlungsmethoden konnte nicht in die Datenbank gespeichert werden
-                        }
-                    }
-                }
-                // Zahlungsmethode Einstellungen
-                // Vordefinierte Einstellungen
-                $cName_arr         = ['Anzahl Bestellungen n&ouml;tig', 'Mindestbestellwert', 'Maximaler Bestellwert'];
-                $cWertName_arr     = ['min_bestellungen', 'min', 'max'];
-                $cBeschreibung_arr = [
-                    'Nur Kunden, die min. soviele Bestellungen bereits durchgef&uuml;hrt haben, k&ouml;nnen diese Zahlungsart nutzen.',
-                    'Erst ab diesem Bestellwert kann diese Zahlungsart genutzt werden.',
-                    'Nur bis zu diesem Bestellwert wird diese Zahlungsart angeboten. (einschliesslich)'];
-                $nSort_arr         = [100, 101, 102];
-
-                for ($z = 0; $z < 3; $z++) {
-                    // tplugineinstellungen füllen
-                    $oPluginEinstellungen          = new stdClass();
-                    $oPluginEinstellungen->kPlugin = $kPlugin;
-                    $oPluginEinstellungen->cName   = $cModulId . '_' . $cWertName_arr[$z];
-                    $oPluginEinstellungen->cWert   = 0;
-
-                    Shop::DB()->insert('tplugineinstellungen', $oPluginEinstellungen);
-                    // tplugineinstellungenconf füllen
-                    $oPluginEinstellungenConf                   = new stdClass();
-                    $oPluginEinstellungenConf->kPlugin          = $kPlugin;
-                    $oPluginEinstellungenConf->kPluginAdminMenu = 0;
-                    $oPluginEinstellungenConf->cName            = $cName_arr[$z];
-                    $oPluginEinstellungenConf->cBeschreibung    = $cBeschreibung_arr[$z];
-                    $oPluginEinstellungenConf->cWertName        = $cModulId . '_' . $cWertName_arr[$z];
-                    $oPluginEinstellungenConf->cInputTyp        = 'zahl';
-                    $oPluginEinstellungenConf->nSort            = $nSort_arr[$z];
-                    $oPluginEinstellungenConf->cConf            = 'Y';
-
-                    Shop::DB()->insert('tplugineinstellungenconf', $oPluginEinstellungenConf);
-                }
-
-                if (isset($Method_arr['Setting']) &&
-                    is_array($Method_arr['Setting']) &&
-                    count($Method_arr['Setting']) > 0
-                ) {
                     $cTyp          = '';
                     $cInitialValue = '';
                     $nSort         = 0;
                     $cConf         = 'Y';
                     $multiple      = false;
-                    foreach ($Method_arr['Setting'] as $j => $Setting_arr) {
-                        preg_match('/[0-9]+\sattr/', $j, $cTreffer3_arr);
-                        preg_match('/[0-9]+/', $j, $cTreffer4_arr);
+                    foreach ($Settingslink_arr['Setting'] as $j => $Setting_arr) {
+                        preg_match("/[0-9]+\sattr/", $j, $cTreffer3_arr);
+                        preg_match("/[0-9]+/", $j, $cTreffer4_arr);
 
                         if (isset($cTreffer3_arr[0]) && strlen($cTreffer3_arr[0]) === strlen($j)) {
                             $cTyp          = $Setting_arr['type'];
                             $multiple      = (isset($Setting_arr['multiple']) && $Setting_arr['multiple'] === 'Y' && $cTyp === 'selectbox');
-                            $cInitialValue = ($multiple === true)
-                                ? serialize([$Setting_arr['initialValue']])
+                            $cInitialValue = ($multiple === true) ?
+                                serialize([$Setting_arr['initialValue']])
                                 : $Setting_arr['initialValue'];
                             $nSort         = $Setting_arr['sort'];
                             $cConf         = $Setting_arr['conf'];
@@ -2728,40 +2127,46 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
                             // tplugineinstellungen füllen
                             $oPluginEinstellungen          = new stdClass();
                             $oPluginEinstellungen->kPlugin = $kPlugin;
-                            $oPluginEinstellungen->cName   = $cModulId . '_' . $Setting_arr['ValueName'];
+                            $oPluginEinstellungen->cName   = is_array($Setting_arr['ValueName'])
+                                ? $Setting_arr['ValueName']['0']
+                                : $Setting_arr['ValueName'];
                             $oPluginEinstellungen->cWert   = $cInitialValue;
 
                             Shop::DB()->insert('tplugineinstellungen', $oPluginEinstellungen);
-
                             // tplugineinstellungenconf füllen
                             $oPluginEinstellungenConf                   = new stdClass();
                             $oPluginEinstellungenConf->kPlugin          = $kPlugin;
-                            $oPluginEinstellungenConf->kPluginAdminMenu = 0;
+                            $oPluginEinstellungenConf->kPluginAdminMenu = $kPluginAdminMenu;
                             $oPluginEinstellungenConf->cName            = $Setting_arr['Name'];
                             $oPluginEinstellungenConf->cBeschreibung    = (!isset($Setting_arr['Description']) || is_array($Setting_arr['Description']))
                                 ? ''
                                 : $Setting_arr['Description'];
-                            $oPluginEinstellungenConf->cWertName = $cModulId . '_' . $Setting_arr['ValueName'];
+                            $oPluginEinstellungenConf->cWertName = is_array($Setting_arr['ValueName'])
+                                ? $Setting_arr['ValueName']['0']
+                                : $Setting_arr['ValueName'];
                             $oPluginEinstellungenConf->cInputTyp = $cTyp;
                             $oPluginEinstellungenConf->nSort     = $nSort;
-                            $oPluginEinstellungenConf->cConf     = ($cTyp === 'selectbox' && $multiple === true)
-                                ? 'M'
-                                : $cConf;
-
+                            $oPluginEinstellungenConf->cConf     = $cConf;
+                            //dynamic data source for selectbox/radio
+                            if ($cTyp === 'selectbox' || $cTyp === 'radio') {
+                                if (isset($Setting_arr['OptionsSource'][0]['File'])) {
+                                    $oPluginEinstellungenConf->cSourceFile = $Setting_arr['OptionsSource'][0]['File'];
+                                }
+                                if ($multiple === true) {
+                                    $oPluginEinstellungenConf->cConf = 'M';
+                                }
+                            }
                             $kPluginEinstellungenConf = Shop::DB()->insert('tplugineinstellungenconf', $oPluginEinstellungenConf);
                             // tplugineinstellungenconfwerte füllen
                             if ($kPluginEinstellungenConf > 0) {
+                                $nSort = 0;
                                 // Ist der Typ eine Selectbox => Es müssen SelectboxOptionen vorhanden sein
                                 if ($cTyp === 'selectbox') {
-                                    if (isset($Setting_arr['OptionsSource']) &&
-                                        is_array($Setting_arr['OptionsSource']) &&
-                                        count($Setting_arr['OptionsSource']) > 0
-                                    ) {
+                                    if (isset($Setting_arr['OptionsSource']) && is_array($Setting_arr['OptionsSource']) && count($Setting_arr['OptionsSource']) > 0) {
                                         //do nothing for now
-                                    } elseif (count($Setting_arr['SelectboxOptions'][0]) === 1) {
-                                        // Es gibt mehr als eine Option
+                                    } elseif (count($Setting_arr['SelectboxOptions'][0]) === 1) { // Es gibt mehr als 1 Option
                                         foreach ($Setting_arr['SelectboxOptions'][0]['Option'] as $y => $Option_arr) {
-                                            preg_match('/[0-9]+\sattr/', $y, $cTreffer6_arr);
+                                            preg_match("/[0-9]+\sattr/", $y, $cTreffer6_arr);
 
                                             if (isset($cTreffer6_arr[0]) && strlen($cTreffer6_arr[0]) === strlen($y)) {
                                                 $cWert = $Option_arr['value'];
@@ -2789,15 +2194,12 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
                                         Shop::DB()->insert('tplugineinstellungenconfwerte', $oPluginEinstellungenConfWerte);
                                     }
                                 } elseif ($cTyp === 'radio') {
-                                    if (isset($Setting_arr['OptionsSource']) &&
-                                        is_array($Setting_arr['OptionsSource']) &&
-                                        count($Setting_arr['OptionsSource']) > 0
-                                    ) {
-                                        //do nothing for now
+                                    if (isset($Setting_arr['OptionsSource']) && is_array($Setting_arr['OptionsSource']) && count($Setting_arr['OptionsSource']) > 0) {
+
                                     } elseif (count($Setting_arr['RadioOptions'][0]) === 1) { // Es gibt mehr als eine Option
                                         foreach ($Setting_arr['RadioOptions'][0]['Option'] as $y => $Option_arr) {
-                                            preg_match('/[0-9]+\sattr/', $y, $cTreffer6_arr);
-                                            if (strlen($cTreffer6_arr[0]) === strlen($y)) {
+                                            preg_match("/[0-9]+\sattr/", $y, $cTreffer6_arr);
+                                            if (isset($cTreffer6_arr[0]) && strlen($cTreffer6_arr[0]) === strlen($y)) {
                                                 $cWert = $Option_arr['value'];
                                                 $nSort = $Option_arr['sort'];
                                                 $yx    = substr($y, 0, strpos($y, ' '));
@@ -2812,7 +2214,8 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
                                                 Shop::DB()->insert('tplugineinstellungenconfwerte', $oPluginEinstellungenConfWerte);
                                             }
                                         }
-                                    } elseif (count($Setting_arr['RadioOptions'][0]) === 2) { //Es gibt nur 1 Option
+                                    } elseif (count($Setting_arr['RadioOptions'][0]) === 2) {
+                                        // Es gibt nur eine Option
                                         $oPluginEinstellungenConfWerte                           = new stdClass();
                                         $oPluginEinstellungenConfWerte->kPluginEinstellungenConf = $kPluginEinstellungenConf;
                                         $oPluginEinstellungenConfWerte->cName                    = $Setting_arr['RadioOptions'][0]['Option'];
@@ -2823,7 +2226,445 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
                                     }
                                 }
                             } else {
-                                return 11; // Eine Einstellung der Zahlungsmethode konnte nicht in die Datenbank gespeichert werden
+                                return 6;// Eine Einstellung konnte nicht in die Datenbank gespeichert werden
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    // FrontendLinks (falls vorhanden)
+    foreach ($frontendNode as $u => $Link_arr) {
+        preg_match("/[0-9]+\sattr/", $u, $cTreffer1_arr);
+        preg_match("/[0-9]+/", $u, $cTreffer2_arr);
+        $oLink = new stdClass();
+        if (empty($Link_arr['LinkGroup'])) {
+            // linkgroup not set? default to 'hidden'
+            $Link_arr['LinkGroup'] = 'hidden';
+        }
+        $oLinkgruppe = Shop::DB()->select('tlinkgruppe', 'cName', $Link_arr['LinkGroup']);
+        if ($oLinkgruppe === null) {
+            // linkgroup not in database? create it anew
+            $oLinkgruppe                = new stdClass();
+            $oLinkgruppe->cName         = $Link_arr['LinkGroup'];
+            $oLinkgruppe->cTemplatename = $Link_arr['LinkGroup'];
+            $oLinkgruppe->kLinkgruppe   = Shop::DB()->insert('tlinkgruppe', $oLinkgruppe);
+        }
+        if (!isset($oLinkgruppe->kLinkgruppe) || $oLinkgruppe->kLinkgruppe <= 0) {
+            return 12; // Es konnte keine Linkgruppe im Shop gefunden werden
+        }
+        $kLinkgruppe = $oLinkgruppe->kLinkgruppe;
+        if (strlen($cTreffer2_arr[0]) === strlen($u)) {
+            $kLinkOld                  = (!empty($oPluginOld->kPlugin))
+                ? Shop::DB()->select('tlink', 'kPlugin', $oPluginOld->kPlugin, 'cName', $Link_arr['Name'])
+                : null;
+            $oLink->kLinkgruppe        = $kLinkgruppe;
+            $oLink->kPlugin            = $kPlugin;
+            $oLink->cName              = $Link_arr['Name'];
+            $oLink->nLinkart           = LINKTYP_PLUGIN;
+            $oLink->cSichtbarNachLogin = $Link_arr['VisibleAfterLogin'];
+            $oLink->cDruckButton       = $Link_arr['PrintButton'];
+            $oLink->cNoFollow          = isset($Link_arr['NoFollow']) ? $Link_arr['NoFollow'] : null;
+            $oLink->nSort              = LINKTYP_PLUGIN;
+            $oLink->bSSL               = isset($Link_arr['SSL'])
+                ? (int)$Link_arr['SSL']
+                : 0;
+            // tlink füllen
+            $kLink = Shop::DB()->insert('tlink', $oLink);
+
+            if ($kLink > 0) {
+                $oLinkSprache        = new stdClass();
+                $oLinkSprache->kLink = $kLink;
+                // Hole alle Sprachen des Shops
+                // Assoc cISO
+                $oSprachAssoc_arr = gibAlleSprachen(2);
+                // Ist der erste Standard Link gesetzt worden? => wird etwas weiter unten gebraucht
+                // Falls Shopsprachen vom Plugin nicht berücksichtigt wurden, werden diese weiter unten
+                // nachgetragen. Dafür wird die erste Sprache vom Plugin als Standard genutzt.
+                $bLinkStandard   = false;
+                $oLinkSpracheStd = new stdClass();
+
+                foreach ($Link_arr['LinkLanguage'] as $l => $LinkLanguage_arr) {
+                    preg_match("/[0-9]+\sattr/", $l, $cTreffer1_arr);
+                    preg_match("/[0-9]+/", $l, $cTreffer2_arr);
+                    if (isset($cTreffer1_arr[0]) && strlen($cTreffer1_arr[0]) === strlen($l)) {
+                        $oLinkSprache->cISOSprache = strtolower($LinkLanguage_arr['iso']);
+                    } elseif (strlen($cTreffer2_arr[0]) === strlen($l)) {
+                        // tlinksprache füllen
+                        $oLinkSprache->cSeo             = checkSeo(getSeo($LinkLanguage_arr['Seo']));
+                        $oLinkSprache->cName            = $LinkLanguage_arr['Name'];
+                        $oLinkSprache->cTitle           = $LinkLanguage_arr['Title'];
+                        $oLinkSprache->cContent         = '';
+                        $oLinkSprache->cMetaTitle       = $LinkLanguage_arr['MetaTitle'];
+                        $oLinkSprache->cMetaKeywords    = $LinkLanguage_arr['MetaKeywords'];
+                        $oLinkSprache->cMetaDescription = $LinkLanguage_arr['MetaDescription'];
+
+                        Shop::DB()->insert('tlinksprache', $oLinkSprache);
+                        // Erste Linksprache vom Plugin als Standard setzen
+                        if (!$bLinkStandard) {
+                            $oLinkSpracheStd = $oLinkSprache;
+                            $bLinkStandard   = true;
+                        }
+
+                        if ($oSprachAssoc_arr[$oLinkSprache->cISOSprache]->kSprache > 0) {
+                            $or = isset($kLinkOld->kLink) ? (' OR kKey = ' . (int)$kLinkOld->kLink) : '';
+                            Shop::DB()->query(
+                                "DELETE FROM tseo
+                                        WHERE cKey = 'kLink'
+                                            AND (kKey = " . (int)$kLink . $or . ")
+                                            AND kSprache = " . (int)$oSprachAssoc_arr[$oLinkSprache->cISOSprache]->kSprache, 4
+                            );
+                            // tseo füllen
+                            $oSeo           = new stdClass();
+                            $oSeo->cSeo     = checkSeo(getSeo($LinkLanguage_arr['Seo']));
+                            $oSeo->cKey     = 'kLink';
+                            $oSeo->kKey     = $kLink;
+                            $oSeo->kSprache = $oSprachAssoc_arr[$oLinkSprache->cISOSprache]->kSprache;
+
+                            Shop::DB()->insert('tseo', $oSeo);
+                        }
+
+                        if (isset($oSprachAssoc_arr[$oLinkSprache->cISOSprache])) {
+                            // Resette aktuelle Sprache
+                            unset($oSprachAssoc_arr[$oLinkSprache->cISOSprache]);
+                            $oSprachAssoc_arr = array_merge($oSprachAssoc_arr);
+                        }
+                    }
+                }
+                // Sind noch Sprachen im Shop die das Plugin nicht berücksichtigt?
+                if (count($oSprachAssoc_arr) > 0) {
+                    foreach ($oSprachAssoc_arr as $oSprachAssoc) {
+                        //$oSprache = $oSprachAssoc;
+                        if ($oSprachAssoc->kSprache > 0) {
+                            Shop::DB()->delete(
+                                'tseo',
+                                ['cKey', 'kKey', 'kSprache'],
+                                ['kLink', (int)$kLink, (int)$oSprachAssoc->kSprache]
+                            );
+                            // tseo füllen
+                            $oSeo           = new stdClass();
+                            $oSeo->cSeo     = checkSeo(getSeo($oLinkSpracheStd->cSeo));
+                            $oSeo->cKey     = 'kLink';
+                            $oSeo->kKey     = $kLink;
+                            $oSeo->kSprache = $oSprachAssoc->kSprache;
+
+                            Shop::DB()->insert('tseo', $oSeo);
+                            // tlinksprache füllen
+                            $oLinkSpracheStd->cSeo        = $oSeo->cSeo;
+                            $oLinkSpracheStd->cISOSprache = $oSprachAssoc->cISO;
+                            Shop::DB()->insert('tlinksprache', $oLinkSpracheStd);
+                        }
+                    }
+                }
+                // tpluginhook füllen (spezieller Ausnahmefall für Frontend Links)
+                $oPluginHook             = new stdClass();
+                $oPluginHook->kPlugin    = $kPlugin;
+                $oPluginHook->nHook      = HOOK_SEITE_PAGE_IF_LINKART;
+                $oPluginHook->cDateiname = PLUGIN_SEITENHANDLER;
+
+                $kPluginHook = Shop::DB()->insert('tpluginhook', $oPluginHook);
+
+                if (!$kPluginHook) {
+                    return 3; // Ein Hook konnte nicht in die Datenbank gespeichert werden
+                }
+                // tpluginlinkdatei füllen
+                $oPluginLinkDatei                      = new stdClass();
+                $oPluginLinkDatei->kPlugin             = $kPlugin;
+                $oPluginLinkDatei->kLink               = $kLink;
+                $oPluginLinkDatei->cDatei              = isset($Link_arr['Filename'])
+                    ? $Link_arr['Filename']
+                    : null;
+                $oPluginLinkDatei->cTemplate           = isset($Link_arr['Template'])
+                    ? $Link_arr['Template']
+                    : null;
+                $oPluginLinkDatei->cFullscreenTemplate = isset($Link_arr['FullscreenTemplate'])
+                    ? $Link_arr['FullscreenTemplate']
+                    : null;
+
+                Shop::DB()->insert('tpluginlinkdatei', $oPluginLinkDatei);
+            } else {
+                return 8; // Ein Link konnte nicht in die Datenbank gespeichert werden
+            }
+        }
+    }
+    // Zahlungsmethode (PaymentMethod) (falls vorhanden)
+    $shopURL = Shop::getURL(true) . '/';
+    foreach ($paymentNode as $u => $Method_arr) {
+        preg_match("/[0-9]+\sattr/", $u, $cTreffer1_arr);
+        preg_match("/[0-9]+/", $u, $cTreffer2_arr);
+        if (strlen($cTreffer2_arr[0]) === strlen($u)) {
+            $oZahlungsart                         = new stdClass();
+            $oZahlungsart->cName                  = $Method_arr['Name'];
+            $oZahlungsart->cModulId               = gibPlugincModulId($kPlugin, $Method_arr['Name']);
+            $oZahlungsart->cKundengruppen         = '';
+            $oZahlungsart->cPluginTemplate        = isset($Method_arr['TemplateFile'])
+                ? $Method_arr['TemplateFile']
+                : null;
+            $oZahlungsart->cZusatzschrittTemplate = isset($Method_arr['AdditionalTemplateFile'])
+                ? $Method_arr['AdditionalTemplateFile']
+                : null;
+            $oZahlungsart->nSort                  = isset($Method_arr['Sort'])
+                ? (int)$Method_arr['Sort']
+                : 0;
+            $oZahlungsart->nMailSenden            = isset($Method_arr['SendMail'])
+                ? (int)$Method_arr['SendMail']
+                : 0;
+            $oZahlungsart->nActive                = 1;
+            $oZahlungsart->cAnbieter              = is_array($Method_arr['Provider'])
+                ? ''
+                : $Method_arr['Provider'];
+            $oZahlungsart->cTSCode                = is_array($Method_arr['TSCode'])
+                ? ''
+                : $Method_arr['TSCode'];
+            $oZahlungsart->nWaehrendBestellung    = (int)$Method_arr['PreOrder'];
+            $oZahlungsart->nCURL                  = (int)$Method_arr['Curl'];
+            $oZahlungsart->nSOAP                  = (int)$Method_arr['Soap'];
+            $oZahlungsart->nSOCKETS               = (int)$Method_arr['Sockets'];
+            $oZahlungsart->cBild                  = isset($Method_arr['PictureURL'])
+                ? $shopURL . PFAD_PLUGIN . $cVerzeichnis . '/' .
+                    PFAD_PLUGIN_VERSION . $nVersion . '/' .
+                PFAD_PLUGIN_PAYMENTMETHOD . $Method_arr['PictureURL']
+                : '';
+            $oZahlungsart->nNutzbar = 0;
+            $bPruefen               = false;
+            if ($oZahlungsart->nCURL == 0 && $oZahlungsart->nSOAP == 0 && $oZahlungsart->nSOCKETS == 0) {
+                $oZahlungsart->nNutzbar = 1;
+            } else {
+                $bPruefen = true;
+            }
+            $kZahlungsart               = Shop::DB()->insert('tzahlungsart', $oZahlungsart);
+            $oZahlungsart->kZahlungsart = $kZahlungsart;
+
+            if ($bPruefen) {
+                aktiviereZahlungsart($oZahlungsart);
+            }
+
+            $cModulId = $oZahlungsart->cModulId;
+
+            if (!$kZahlungsart) {
+                return 9; //Eine Zahlungsmethode konnte nicht in die Datenbank gespeichert werden
+            }
+            // tpluginzahlungsartklasse füllen
+            $oPluginZahlungsartKlasse                         = new stdClass();
+            $oPluginZahlungsartKlasse->cModulId               = gibPlugincModulId($kPlugin, $Method_arr['Name']);
+            $oPluginZahlungsartKlasse->kPlugin                = $kPlugin;
+            $oPluginZahlungsartKlasse->cClassPfad             = isset($Method_arr['ClassFile'])
+                ? $Method_arr['ClassFile']
+                : null;
+            $oPluginZahlungsartKlasse->cClassName             = isset($Method_arr['ClassName'])
+                ? $Method_arr['ClassName']
+                : null;
+            $oPluginZahlungsartKlasse->cTemplatePfad          = isset($Method_arr['TemplateFile'])
+                ? $Method_arr['TemplateFile']
+                : null;
+            $oPluginZahlungsartKlasse->cZusatzschrittTemplate = isset($Method_arr['AdditionalTemplateFile'])
+                ? $Method_arr['AdditionalTemplateFile']
+                : null;
+
+            Shop::DB()->insert('tpluginzahlungsartklasse', $oPluginZahlungsartKlasse);
+
+            $cISOSprache = '';
+            // Hole alle Sprachen des Shops
+            // Assoc cISO
+            $oSprachAssoc_arr = gibAlleSprachen(2);
+            // Ist der erste Standard Link gesetzt worden? => wird etwas weiter unten gebraucht
+            // Falls Shopsprachen vom Plugin nicht berücksichtigt wurden, werden diese weiter unten
+            // nachgetragen. Dafür wird die erste Sprache vom Plugin als Standard genutzt.
+            $bZahlungsartStandard   = false;
+            $oZahlungsartSpracheStd = new stdClass();
+
+            foreach ($Method_arr['MethodLanguage'] as $l => $MethodLanguage_arr) {
+                preg_match("/[0-9]+\sattr/", $l, $cTreffer1_arr);
+                preg_match("/[0-9]+/", $l, $cTreffer2_arr);
+                if (isset($cTreffer1_arr[0]) && strlen($cTreffer1_arr[0]) === strlen($l)) {
+                    $cISOSprache = strtolower($MethodLanguage_arr['iso']);
+                } elseif (strlen($cTreffer2_arr[0]) === strlen($l)) {
+                    $oZahlungsartSprache               = new stdClass();
+                    $oZahlungsartSprache->kZahlungsart = $kZahlungsart;
+                    $oZahlungsartSprache->cISOSprache  = $cISOSprache;
+                    $oZahlungsartSprache->cName        = $MethodLanguage_arr['Name'];
+                    $oZahlungsartSprache->cGebuehrname = $MethodLanguage_arr['ChargeName'];
+                    $oZahlungsartSprache->cHinweisText = $MethodLanguage_arr['InfoText'];
+                    // Erste ZahlungsartSprache vom Plugin als Standard setzen
+                    if (!$bZahlungsartStandard) {
+                        $oZahlungsartSpracheStd = $oZahlungsartSprache;
+                        $bZahlungsartStandard   = true;
+                    }
+                    $kZahlungsartTMP = Shop::DB()->insert('tzahlungsartsprache', $oZahlungsartSprache);
+                    if (!$kZahlungsartTMP) {
+                        return 10; // Eine Sprache in den Zahlungsmethoden konnte nicht in die Datenbank gespeichert werden
+                    }
+
+                    if (isset($oSprachAssoc_arr[$oZahlungsartSprache->cISOSprache])) {
+                        // Resette aktuelle Sprache
+                        unset($oSprachAssoc_arr[$oZahlungsartSprache->cISOSprache]);
+                        $oSprachAssoc_arr = array_merge($oSprachAssoc_arr);
+                    }
+                }
+            }
+
+            // Sind noch Sprachen im Shop die das Plugin nicht berücksichtigt?
+            if (count($oSprachAssoc_arr) > 0) {
+                foreach ($oSprachAssoc_arr as $oSprachAssoc) {
+                    $oZahlungsartSpracheStd->cISOSprache = $oSprachAssoc->cISO;
+                    $kZahlungsartTMP                     = Shop::DB()->insert('tzahlungsartsprache', $oZahlungsartSpracheStd);
+                    if (!$kZahlungsartTMP) {
+                        return 10; // Eine Sprache in den Zahlungsmethoden konnte nicht in die Datenbank gespeichert werden
+                    }
+                }
+            }
+            // Zahlungsmethode Einstellungen
+            // Vordefinierte Einstellungen
+            $cName_arr         = ['Anzahl Bestellungen n&ouml;tig', 'Mindestbestellwert', 'Maximaler Bestellwert'];
+            $cWertName_arr     = ['min_bestellungen', 'min', 'max'];
+            $cBeschreibung_arr = [
+                'Nur Kunden, die min. soviele Bestellungen bereits durchgef&uuml;hrt haben, k&ouml;nnen diese Zahlungsart nutzen.',
+                'Erst ab diesem Bestellwert kann diese Zahlungsart genutzt werden.',
+                'Nur bis zu diesem Bestellwert wird diese Zahlungsart angeboten. (einschliesslich)'];
+            $nSort_arr         = [100, 101, 102];
+
+            for ($z = 0; $z < 3; $z++) {
+                // tplugineinstellungen füllen
+                $oPluginEinstellungen          = new stdClass();
+                $oPluginEinstellungen->kPlugin = $kPlugin;
+                $oPluginEinstellungen->cName   = $cModulId . '_' . $cWertName_arr[$z];
+                $oPluginEinstellungen->cWert   = 0;
+
+                Shop::DB()->insert('tplugineinstellungen', $oPluginEinstellungen);
+                // tplugineinstellungenconf füllen
+                $oPluginEinstellungenConf                   = new stdClass();
+                $oPluginEinstellungenConf->kPlugin          = $kPlugin;
+                $oPluginEinstellungenConf->kPluginAdminMenu = 0;
+                $oPluginEinstellungenConf->cName            = $cName_arr[$z];
+                $oPluginEinstellungenConf->cBeschreibung    = $cBeschreibung_arr[$z];
+                $oPluginEinstellungenConf->cWertName        = $cModulId . '_' . $cWertName_arr[$z];
+                $oPluginEinstellungenConf->cInputTyp        = 'zahl';
+                $oPluginEinstellungenConf->nSort            = $nSort_arr[$z];
+                $oPluginEinstellungenConf->cConf            = 'Y';
+
+                Shop::DB()->insert('tplugineinstellungenconf', $oPluginEinstellungenConf);
+            }
+
+            if (isset($Method_arr['Setting'])
+                && is_array($Method_arr['Setting'])
+                && count($Method_arr['Setting']) > 0
+            ) {
+                $cTyp          = '';
+                $cInitialValue = '';
+                $nSort         = 0;
+                $cConf         = 'Y';
+                $multiple      = false;
+                foreach ($Method_arr['Setting'] as $j => $Setting_arr) {
+                    preg_match('/[0-9]+\sattr/', $j, $cTreffer3_arr);
+                    preg_match('/[0-9]+/', $j, $cTreffer4_arr);
+
+                    if (isset($cTreffer3_arr[0]) && strlen($cTreffer3_arr[0]) === strlen($j)) {
+                        $cTyp          = $Setting_arr['type'];
+                        $multiple      = (isset($Setting_arr['multiple']) && $Setting_arr['multiple'] === 'Y' && $cTyp === 'selectbox');
+                        $cInitialValue = ($multiple === true)
+                            ? serialize([$Setting_arr['initialValue']])
+                            : $Setting_arr['initialValue'];
+                        $nSort         = $Setting_arr['sort'];
+                        $cConf         = $Setting_arr['conf'];
+                    } elseif (strlen($cTreffer4_arr[0]) === strlen($j)) {
+                        // tplugineinstellungen füllen
+                        $oPluginEinstellungen          = new stdClass();
+                        $oPluginEinstellungen->kPlugin = $kPlugin;
+                        $oPluginEinstellungen->cName   = $cModulId . '_' . $Setting_arr['ValueName'];
+                        $oPluginEinstellungen->cWert   = $cInitialValue;
+
+                        Shop::DB()->insert('tplugineinstellungen', $oPluginEinstellungen);
+
+                        // tplugineinstellungenconf füllen
+                        $oPluginEinstellungenConf                   = new stdClass();
+                        $oPluginEinstellungenConf->kPlugin          = $kPlugin;
+                        $oPluginEinstellungenConf->kPluginAdminMenu = 0;
+                        $oPluginEinstellungenConf->cName            = $Setting_arr['Name'];
+                        $oPluginEinstellungenConf->cBeschreibung    = (!isset($Setting_arr['Description']) || is_array($Setting_arr['Description']))
+                            ? ''
+                            : $Setting_arr['Description'];
+                        $oPluginEinstellungenConf->cWertName = $cModulId . '_' . $Setting_arr['ValueName'];
+                        $oPluginEinstellungenConf->cInputTyp = $cTyp;
+                        $oPluginEinstellungenConf->nSort     = $nSort;
+                        $oPluginEinstellungenConf->cConf     = ($cTyp === 'selectbox' && $multiple === true)
+                            ? 'M'
+                            : $cConf;
+
+                        $kPluginEinstellungenConf = Shop::DB()->insert('tplugineinstellungenconf', $oPluginEinstellungenConf);
+                        // tplugineinstellungenconfwerte füllen
+                        if ($kPluginEinstellungenConf <= 0) {
+                            return 11; // Eine Einstellung der Zahlungsmethode konnte nicht in die Datenbank gespeichert werden
+                        }
+                        // Ist der Typ eine Selectbox => Es müssen SelectboxOptionen vorhanden sein
+                        if ($cTyp === 'selectbox') {
+                            if (isset($Setting_arr['OptionsSource'])
+                                && is_array($Setting_arr['OptionsSource'])
+                                && count($Setting_arr['OptionsSource']) > 0
+                            ) {
+                                //do nothing for now
+                            } elseif (count($Setting_arr['SelectboxOptions'][0]) === 1) {
+                                // Es gibt mehr als eine Option
+                                foreach ($Setting_arr['SelectboxOptions'][0]['Option'] as $y => $Option_arr) {
+                                    preg_match('/[0-9]+\sattr/', $y, $cTreffer6_arr);
+
+                                    if (isset($cTreffer6_arr[0]) && strlen($cTreffer6_arr[0]) === strlen($y)) {
+                                        $cWert = $Option_arr['value'];
+                                        $nSort = $Option_arr['sort'];
+                                        $yx    = substr($y, 0, strpos($y, ' '));
+                                        $cName = $Setting_arr['SelectboxOptions'][0]['Option'][$yx];
+
+                                        $oPluginEinstellungenConfWerte                           = new stdClass();
+                                        $oPluginEinstellungenConfWerte->kPluginEinstellungenConf = $kPluginEinstellungenConf;
+                                        $oPluginEinstellungenConfWerte->cName                    = $cName;
+                                        $oPluginEinstellungenConfWerte->cWert                    = $cWert;
+                                        $oPluginEinstellungenConfWerte->nSort                    = $nSort;
+
+                                        Shop::DB()->insert('tplugineinstellungenconfwerte', $oPluginEinstellungenConfWerte);
+                                    }
+                                }
+                            } elseif (count($Setting_arr['SelectboxOptions'][0]) === 2) {
+                                // Es gibt nur eine Option
+                                $oPluginEinstellungenConfWerte                           = new stdClass();
+                                $oPluginEinstellungenConfWerte->kPluginEinstellungenConf = $kPluginEinstellungenConf;
+                                $oPluginEinstellungenConfWerte->cName                    = $Setting_arr['SelectboxOptions'][0]['Option'];
+                                $oPluginEinstellungenConfWerte->cWert                    = $Setting_arr['SelectboxOptions'][0]['Option attr']['value'];
+                                $oPluginEinstellungenConfWerte->nSort                    = $Setting_arr['SelectboxOptions'][0]['Option attr']['sort'];
+
+                                Shop::DB()->insert('tplugineinstellungenconfwerte', $oPluginEinstellungenConfWerte);
+                            }
+                        } elseif ($cTyp === 'radio') {
+                            if (isset($Setting_arr['OptionsSource'])
+                                && is_array($Setting_arr['OptionsSource'])
+                                && count($Setting_arr['OptionsSource']) > 0
+                            ) {
+                                //do nothing for now
+                            } elseif (count($Setting_arr['RadioOptions'][0]) === 1) { // Es gibt mehr als eine Option
+                                foreach ($Setting_arr['RadioOptions'][0]['Option'] as $y => $Option_arr) {
+                                    preg_match('/[0-9]+\sattr/', $y, $cTreffer6_arr);
+                                    if (strlen($cTreffer6_arr[0]) === strlen($y)) {
+                                        $cWert = $Option_arr['value'];
+                                        $nSort = $Option_arr['sort'];
+                                        $yx    = substr($y, 0, strpos($y, ' '));
+                                        $cName = $Setting_arr['RadioOptions'][0]['Option'][$yx];
+
+                                        $oPluginEinstellungenConfWerte                           = new stdClass();
+                                        $oPluginEinstellungenConfWerte->kPluginEinstellungenConf = $kPluginEinstellungenConf;
+                                        $oPluginEinstellungenConfWerte->cName                    = $cName;
+                                        $oPluginEinstellungenConfWerte->cWert                    = $cWert;
+                                        $oPluginEinstellungenConfWerte->nSort                    = $nSort;
+
+                                        Shop::DB()->insert('tplugineinstellungenconfwerte', $oPluginEinstellungenConfWerte);
+                                    }
+                                }
+                            } elseif (count($Setting_arr['RadioOptions'][0]) === 2) { //Es gibt nur 1 Option
+                                $oPluginEinstellungenConfWerte                           = new stdClass();
+                                $oPluginEinstellungenConfWerte->kPluginEinstellungenConf = $kPluginEinstellungenConf;
+                                $oPluginEinstellungenConfWerte->cName                    = $Setting_arr['RadioOptions'][0]['Option'];
+                                $oPluginEinstellungenConfWerte->cWert                    = $Setting_arr['RadioOptions'][0]['Option attr']['value'];
+                                $oPluginEinstellungenConfWerte->nSort                    = $Setting_arr['RadioOptions'][0]['Option attr']['sort'];
+
+                                Shop::DB()->insert('tplugineinstellungenconfwerte', $oPluginEinstellungenConfWerte);
                             }
                         }
                     }
@@ -2832,450 +2673,404 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
         }
     }
     // tboxvorlage füllen
-    if (isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['Boxes']) &&
-        is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['Boxes'])
-    ) {
-        foreach ($XML_arr['jtlshop3plugin'][0]['Install'][0]['Boxes'][0]['Box'] as $h => $Box_arr) {
-            preg_match("/[0-9]+/", $h, $cTreffer3_arr);
-            if (strlen($cTreffer3_arr[0]) === strlen($h)) {
-                $oBoxvorlage              = new stdClass();
-                $oBoxvorlage->kCustomID   = $kPlugin;
-                $oBoxvorlage->eTyp        = 'plugin';
-                $oBoxvorlage->cName       = $Box_arr['Name'];
-                $oBoxvorlage->cVerfuegbar = $Box_arr['Available'];
-                $oBoxvorlage->cTemplate   = $Box_arr['TemplateFile'];
+    foreach ($boxesNode as $h => $Box_arr) {
+        preg_match("/[0-9]+/", $h, $cTreffer3_arr);
+        if (strlen($cTreffer3_arr[0]) === strlen($h)) {
+            $oBoxvorlage              = new stdClass();
+            $oBoxvorlage->kCustomID   = $kPlugin;
+            $oBoxvorlage->eTyp        = 'plugin';
+            $oBoxvorlage->cName       = $Box_arr['Name'];
+            $oBoxvorlage->cVerfuegbar = $Box_arr['Available'];
+            $oBoxvorlage->cTemplate   = $Box_arr['TemplateFile'];
 
-                $kBoxvorlage = Shop::DB()->insert('tboxvorlage', $oBoxvorlage);
+            $kBoxvorlage = Shop::DB()->insert('tboxvorlage', $oBoxvorlage);
 
-                if (!$kBoxvorlage) {
-                    return 13; //Eine Boxvorlage konnte nicht in die Datenbank gespeichert werden
-                }
+            if (!$kBoxvorlage) {
+                return 13; //Eine Boxvorlage konnte nicht in die Datenbank gespeichert werden
             }
         }
     }
     // tplugintemplate füllen
-    if (isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['ExtendedTemplates']) &&
-        is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['ExtendedTemplates'])
-    ) {
-        $cTemplate_arr = (array)$XML_arr['jtlshop3plugin'][0]['Install'][0]['ExtendedTemplates'][0]['Template'];
+    foreach ($cTemplate_arr as $cTemplate) {
+        preg_match("/[a-zA-Z0-9\/_\-]+\.tpl/", $cTemplate, $cTreffer3_arr);
+        if (strlen($cTreffer3_arr[0]) === strlen($cTemplate)) {
+            $oPluginTemplate            = new stdClass();
+            $oPluginTemplate->kPlugin   = $kPlugin;
+            $oPluginTemplate->cTemplate = $cTemplate;
 
-        foreach ($cTemplate_arr as $cTemplate) {
-            preg_match("/[a-zA-Z0-9\/_\-]+\.tpl/", $cTemplate, $cTreffer3_arr);
-            if (strlen($cTreffer3_arr[0]) === strlen($cTemplate)) {
-                $oPluginTemplate            = new stdClass();
-                $oPluginTemplate->kPlugin   = $kPlugin;
-                $oPluginTemplate->cTemplate = $cTemplate;
+            $kPluginTemplate = Shop::DB()->insert('tplugintemplate', $oPluginTemplate);
 
-                $kPluginTemplate = Shop::DB()->insert('tplugintemplate', $oPluginTemplate);
-
-                if (!$kPluginTemplate) {
-                    return 17; //Ein Template konnte nicht in die Datenbank gespeichert werden
-                }
+            if (!$kPluginTemplate) {
+                return 17; //Ein Template konnte nicht in die Datenbank gespeichert werden
             }
         }
     }
     // Emailtemplates (falls vorhanden)
-    if (isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['Emailtemplate']) &&
-        is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['Emailtemplate'])
-    ) {
-        foreach ($XML_arr['jtlshop3plugin'][0]['Install'][0]['Emailtemplate'][0]['Template'] as $u => $Template_arr) {
-            preg_match("/[0-9]+\sattr/", $u, $cTreffer1_arr);
-            preg_match("/[0-9]+/", $u, $cTreffer2_arr);
+    foreach ($mailNode as $u => $Template_arr) {
+        preg_match("/[0-9]+\sattr/", $u, $cTreffer1_arr);
+        preg_match("/[0-9]+/", $u, $cTreffer2_arr);
 
-            $oTemplate = new stdClass();
-            if (strlen($cTreffer2_arr[0]) === strlen($u)) {
-                $oTemplate->kPlugin       = $kPlugin;
-                $oTemplate->cName         = $Template_arr['Name'];
-                $oTemplate->cBeschreibung = is_array($Template_arr['Description'])
-                    ? $Template_arr['Description'][0]
-                    : $Template_arr['Description'];
-                $oTemplate->cMailTyp      = isset($Template_arr['Type'])
-                    ? $Template_arr['Type']
-                    : 'text/html';
-                $oTemplate->cModulId      = $Template_arr['ModulId'];
-                $oTemplate->cDateiname    = isset($Template_arr['Filename'])
-                    ? $Template_arr['Filename']
+        $oTemplate = new stdClass();
+        if (strlen($cTreffer2_arr[0]) === strlen($u)) {
+            continue;
+        }
+        $oTemplate->kPlugin       = $kPlugin;
+        $oTemplate->cName         = $Template_arr['Name'];
+        $oTemplate->cBeschreibung = is_array($Template_arr['Description'])
+            ? $Template_arr['Description'][0]
+            : $Template_arr['Description'];
+        $oTemplate->cMailTyp      = isset($Template_arr['Type'])
+            ? $Template_arr['Type']
+            : 'text/html';
+        $oTemplate->cModulId      = $Template_arr['ModulId'];
+        $oTemplate->cDateiname    = isset($Template_arr['Filename'])
+            ? $Template_arr['Filename']
+            : null;
+        $oTemplate->cAktiv        = isset($Template_arr['Active'])
+            ? $Template_arr['Active']
+            : 'N';
+        $oTemplate->nAKZ          = isset($Template_arr['AKZ'])
+            ? $Template_arr['AKZ']
+            : 0;
+        $oTemplate->nAGB          = isset($Template_arr['AGB'])
+            ? $Template_arr['AGB']
+            : 0;
+        $oTemplate->nWRB          = isset($Template_arr['WRB'])
+            ? $Template_arr['WRB']
+            : 0;
+        $oTemplate->nWRBForm      = isset($Template_arr['WRBForm'])
+            ? $Template_arr['WRBForm']
+            : 0;
+        // tpluginemailvorlage füllen
+        $kEmailvorlage = Shop::DB()->insert('tpluginemailvorlage', $oTemplate);
+
+        if ($kEmailvorlage <= 0) {
+            return 14; //Eine Emailvorlage konnte nicht in die Datenbank gespeichert werden
+        }
+        $oTemplateSprache                = new stdClass();
+        $cISOSprache                     = '';
+        $oTemplateSprache->kEmailvorlage = $kEmailvorlage;
+        // Hole alle Sprachen des Shops
+        // Assoc cISO
+        $oSprachAssoc_arr = gibAlleSprachen(2);
+        // Ist das erste Standard Template gesetzt worden? => wird etwas weiter unten gebraucht
+        // Falls Shopsprachen vom Plugin nicht berücksichtigt wurden, werden diese weiter unten
+        // nachgetragen. Dafür wird die erste Sprache vom Plugin als Standard genutzt.
+        $bTemplateStandard   = false;
+        $oTemplateSpracheStd = new stdClass();
+
+        foreach ($Template_arr['TemplateLanguage'] as $l => $TemplateLanguage_arr) {
+            preg_match("/[0-9]+\sattr/", $l, $cTreffer1_arr);
+            preg_match("/[0-9]+/", $l, $cTreffer2_arr);
+            if (isset($cTreffer1_arr[0]) && strlen($cTreffer1_arr[0]) === strlen($l)) {
+                $cISOSprache = strtolower($TemplateLanguage_arr['iso']);
+            } elseif (isset($cTreffer2_arr[0]) && strlen($cTreffer2_arr[0]) === strlen($l)) {
+                // tpluginemailvorlagesprache füllen
+                $oTemplateSprache->kEmailvorlage = $kEmailvorlage;
+                $oTemplateSprache->kSprache      = $oSprachAssoc_arr[$cISOSprache]->kSprache;
+                $oTemplateSprache->cBetreff      = $TemplateLanguage_arr['Subject'];
+                $oTemplateSprache->cContentHtml  = $TemplateLanguage_arr['ContentHtml'];
+                $oTemplateSprache->cContentText  = $TemplateLanguage_arr['ContentText'];
+                $oTemplateSprache->cPDFS         = isset($TemplateLanguage_arr['PDFS'])
+                    ? $TemplateLanguage_arr['PDFS']
                     : null;
-                $oTemplate->cAktiv        = isset($Template_arr['Active'])
-                    ? $Template_arr['Active']
-                    : 'N';
-                $oTemplate->nAKZ          = isset($Template_arr['AKZ'])
-                    ? $Template_arr['AKZ']
-                    : 0;
-                $oTemplate->nAGB          = isset($Template_arr['AGB'])
-                    ? $Template_arr['AGB']
-                    : 0;
-                $oTemplate->nWRB          = isset($Template_arr['WRB'])
-                    ? $Template_arr['WRB']
-                    : 0;
-                $oTemplate->nWRBForm      = isset($Template_arr['WRBForm'])
-                    ? $Template_arr['WRBForm']
-                    : 0;
-                // tpluginemailvorlage füllen
-                $kEmailvorlage = Shop::DB()->insert('tpluginemailvorlage', $oTemplate);
+                $oTemplateSprache->cDateiname    = isset($TemplateLanguage_arr['Filename'])
+                    ? $TemplateLanguage_arr['Filename']
+                    : null;
 
-                if ($kEmailvorlage > 0) {
-                    $oTemplateSprache                = new stdClass();
-                    $cISOSprache                     = '';
-                    $oTemplateSprache->kEmailvorlage = $kEmailvorlage;
-                    // Hole alle Sprachen des Shops
-                    // Assoc cISO
-                    $oSprachAssoc_arr = gibAlleSprachen(2);
-                    // Ist das erste Standard Template gesetzt worden? => wird etwas weiter unten gebraucht
-                    // Falls Shopsprachen vom Plugin nicht berücksichtigt wurden, werden diese weiter unten
-                    // nachgetragen. Dafür wird die erste Sprache vom Plugin als Standard genutzt.
-                    $bTemplateStandard   = false;
-                    $oTemplateSpracheStd = new stdClass();
+                if (!isset($oPluginOld->kPlugin) || !$oPluginOld->kPlugin) {
+                    Shop::DB()->insert('tpluginemailvorlagesprache', $oTemplateSprache);
+                }
 
-                    foreach ($Template_arr['TemplateLanguage'] as $l => $TemplateLanguage_arr) {
-                        preg_match("/[0-9]+\sattr/", $l, $cTreffer1_arr);
-                        preg_match("/[0-9]+/", $l, $cTreffer2_arr);
-                        if (isset($cTreffer1_arr[0]) && strlen($cTreffer1_arr[0]) === strlen($l)) {
-                            $cISOSprache = strtolower($TemplateLanguage_arr['iso']);
-                        } elseif (isset($cTreffer2_arr[0]) && strlen($cTreffer2_arr[0]) === strlen($l)) {
-                            // tpluginemailvorlagesprache füllen
-                            $oTemplateSprache->kEmailvorlage = $kEmailvorlage;
-                            $oTemplateSprache->kSprache      = $oSprachAssoc_arr[$cISOSprache]->kSprache;
-                            $oTemplateSprache->cBetreff      = $TemplateLanguage_arr['Subject'];
-                            $oTemplateSprache->cContentHtml  = $TemplateLanguage_arr['ContentHtml'];
-                            $oTemplateSprache->cContentText  = $TemplateLanguage_arr['ContentText'];
-                            $oTemplateSprache->cPDFS         = isset($TemplateLanguage_arr['PDFS'])
-                                ? $TemplateLanguage_arr['PDFS']
-                                : null;
-                            $oTemplateSprache->cDateiname    = isset($TemplateLanguage_arr['Filename'])
-                                ? $TemplateLanguage_arr['Filename']
-                                : null;
+                Shop::DB()->insert('tpluginemailvorlagespracheoriginal', $oTemplateSprache);
+                // Erste Templatesprache vom Plugin als Standard setzen
+                if (!$bTemplateStandard) {
+                    $oTemplateSpracheStd = $oTemplateSprache;
+                    $bTemplateStandard   = true;
+                }
 
-                            if (!isset($oPluginOld->kPlugin) || !$oPluginOld->kPlugin) {
-                                Shop::DB()->insert('tpluginemailvorlagesprache', $oTemplateSprache);
-                            }
-
-                            Shop::DB()->insert('tpluginemailvorlagespracheoriginal', $oTemplateSprache);
-                            // Erste Templatesprache vom Plugin als Standard setzen
-                            if (!$bTemplateStandard) {
-                                $oTemplateSpracheStd = $oTemplateSprache;
-                                $bTemplateStandard   = true;
-                            }
-
-                            if (isset($oSprachAssoc_arr[$cISOSprache])) {
-                                // Resette aktuelle Sprache
-                                unset($oSprachAssoc_arr[$cISOSprache]);
-                                $oSprachAssoc_arr = array_merge($oSprachAssoc_arr);
-                            }
-                        }
-                    }
-                    // Sind noch Sprachen im Shop die das Plugin nicht berücksichtigt?
-                    if (count($oSprachAssoc_arr) > 0) {
-                        foreach ($oSprachAssoc_arr as $oSprachAssoc) {
-                            //$oSprache = $oSprachAssoc;
-                            if ($oSprachAssoc->kSprache > 0) {
-                                // tpluginemailvorlagesprache füllen
-                                $oTemplateSpracheStd->kSprache = $oSprachAssoc->kSprache;
-
-                                if (!isset($oPluginOld->kPlugin) || !$oPluginOld->kPlugin) {
-                                    Shop::DB()->insert('tpluginemailvorlagesprache', $oTemplateSpracheStd);
-                                }
-
-                                Shop::DB()->insert('tpluginemailvorlagespracheoriginal', $oTemplateSpracheStd);
-                            }
-                        }
-                    }
-                } else {
-                    return 14; //Eine Emailvorlage konnte nicht in die Datenbank gespeichert werden
+                if (isset($oSprachAssoc_arr[$cISOSprache])) {
+                    // Resette aktuelle Sprache
+                    unset($oSprachAssoc_arr[$cISOSprache]);
+                    $oSprachAssoc_arr = array_merge($oSprachAssoc_arr);
                 }
             }
         }
+        // Sind noch Sprachen im Shop die das Plugin nicht berücksichtigt?
+        if (count($oSprachAssoc_arr) > 0) {
+                foreach ($oSprachAssoc_arr as $oSprachAssoc) {
+                    //$oSprache = $oSprachAssoc;
+                    if ($oSprachAssoc->kSprache > 0) {
+                        // tpluginemailvorlagesprache füllen
+                        $oTemplateSpracheStd->kSprache = $oSprachAssoc->kSprache;
+
+                        if (!isset($oPluginOld->kPlugin) || !$oPluginOld->kPlugin) {
+                            Shop::DB()->insert('tpluginemailvorlagesprache', $oTemplateSpracheStd);
+                        }
+
+                        Shop::DB()->insert('tpluginemailvorlagespracheoriginal', $oTemplateSpracheStd);
+                    }
+                }
+            }
     }
     // tpluginsprachvariable + tpluginsprachvariablesprache füllen
-    if (isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['Locales']) &&
-        is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['Locales'])
-    ) {
-        // Hole alle Sprachen des Shops
-        // Assoc cISO
-        $oSprachStandardAssoc_arr = gibAlleSprachen(2);
+    $oSprachStandardAssoc_arr = gibAlleSprachen(2);
+    foreach ($localeNode as $t => $Variable_arr) {
+        $oSprachAssoc_arr = $oSprachStandardAssoc_arr;
+        preg_match("/[0-9]+/", $t, $cTreffer1_arr);
+        if (strlen($cTreffer1_arr[0]) !== strlen($t)) {
+            continue;
+        }
+        // tpluginsprachvariable füllen
+        $oPluginSprachVariable          = new stdClass();
+        $oPluginSprachVariable->kPlugin = $kPlugin;
+        $oPluginSprachVariable->cName   = $Variable_arr['Name'];
+        if (isset($Variable_arr['Description']) && is_array($Variable_arr['Description'])) {
+            $oPluginSprachVariable->cBeschreibung = '';
+        } else {
+            $oPluginSprachVariable->cBeschreibung = preg_replace('/\s+/', ' ', $Variable_arr['Description']);
+        }
 
-        foreach ($XML_arr['jtlshop3plugin'][0]['Install'][0]['Locales'][0]['Variable'] as $t => $Variable_arr) {
-            $oSprachAssoc_arr = $oSprachStandardAssoc_arr;
-            preg_match("/[0-9]+/", $t, $cTreffer1_arr);
-            if (strlen($cTreffer1_arr[0]) === strlen($t)) {
-                // tpluginsprachvariable füllen
-                $oPluginSprachVariable          = new stdClass();
-                $oPluginSprachVariable->kPlugin = $kPlugin;
-                $oPluginSprachVariable->cName   = $Variable_arr['Name'];
-                if (isset($Variable_arr['Description']) && is_array($Variable_arr['Description'])) {
-                    $oPluginSprachVariable->cBeschreibung = '';
-                } else {
-                    $oPluginSprachVariable->cBeschreibung = preg_replace('/\s+/', ' ', $Variable_arr['Description']);
+        $kPluginSprachvariable = Shop::DB()->insert('tpluginsprachvariable', $oPluginSprachVariable);
+
+        if ($kPluginSprachvariable <= 0) {
+            return 7; // Eine Sprachvariable konnte nicht in die Datenbank gespeichert werden
+        }
+        // Ist der erste Standard Link gesetzt worden? => wird etwas weiter unten gebraucht
+        // Falls Shopsprachen vom Plugin nicht berücksichtigt wurden, werden diese weiter unten
+        // nachgetragen. Dafür wird die erste Sprache vom Plugin als Standard genutzt.
+        $bVariableStandard   = false;
+        $oVariableSpracheStd = new stdClass();
+        // Nur eine Sprache vorhanden
+        if (isset($Variable_arr['VariableLocalized attr'])
+            && is_array($Variable_arr['VariableLocalized attr'])
+            && count($Variable_arr['VariableLocalized attr']) > 0
+        ) {
+            // tpluginsprachvariablesprache füllen
+            $oPluginSprachVariableSprache                        = new stdClass();
+            $oPluginSprachVariableSprache->kPluginSprachvariable = $kPluginSprachvariable;
+            $oPluginSprachVariableSprache->cISO                  = $Variable_arr['VariableLocalized attr']['iso'];
+            $oPluginSprachVariableSprache->cName                 = preg_replace('/\s+/', ' ', $Variable_arr['VariableLocalized']);
+
+            Shop::DB()->insert('tpluginsprachvariablesprache', $oPluginSprachVariableSprache);
+
+            // Erste PluginSprachVariableSprache vom Plugin als Standard setzen
+            if (!$bVariableStandard) {
+                $oVariableSpracheStd = $oPluginSprachVariableSprache;
+                $bVariableStandard   = true;
+            }
+
+            if (isset($oSprachAssoc_arr[strtolower($oPluginSprachVariableSprache->cISO)])) {
+                // Resette aktuelle Sprache
+                unset($oSprachAssoc_arr[strtolower($oPluginSprachVariableSprache->cISO)]);
+                $oSprachAssoc_arr = array_merge($oSprachAssoc_arr);
+            }
+        } elseif (isset($Variable_arr['VariableLocalized'])
+            && is_array($Variable_arr['VariableLocalized'])
+            && count($Variable_arr['VariableLocalized']) > 0
+        ) {
+            // Mehr Sprachen vorhanden
+            foreach ($Variable_arr['VariableLocalized'] as $i => $VariableLocalized_arr) {
+                preg_match("/[0-9]+\sattr/", $i, $cTreffer1_arr);
+
+                if (isset($cTreffer1_arr[0]) && strlen($cTreffer1_arr[0]) === strlen($i)) {
+                    $cISO = $VariableLocalized_arr['iso'];
+                    //$yx = substr($i, 0, 1);
+                    $yx    = substr($i, 0, strpos($i, ' '));
+                    $cName = $Variable_arr['VariableLocalized'][$yx];
+                    // tpluginsprachvariablesprache füllen
+                    $oPluginSprachVariableSprache                        = new stdClass();
+                    $oPluginSprachVariableSprache->kPluginSprachvariable = $kPluginSprachvariable;
+                    $oPluginSprachVariableSprache->cISO                  = $cISO;
+                    $oPluginSprachVariableSprache->cName                 = preg_replace('/\s+/', ' ', $cName);
+
+                    Shop::DB()->insert('tpluginsprachvariablesprache', $oPluginSprachVariableSprache);
+                    // Erste PluginSprachVariableSprache vom Plugin als Standard setzen
+                    if (!$bVariableStandard) {
+                        $oVariableSpracheStd = $oPluginSprachVariableSprache;
+                        $bVariableStandard   = true;
+                    }
+
+                    if (isset($oSprachAssoc_arr[strtolower($oPluginSprachVariableSprache->cISO)])) {
+                        // Resette aktuelle Sprache
+
+                        unset($oSprachAssoc_arr[strtolower($oPluginSprachVariableSprache->cISO)]);
+                        $oSprachAssoc_arr = array_merge($oSprachAssoc_arr);
+                    }
                 }
-
-                $kPluginSprachvariable = Shop::DB()->insert('tpluginsprachvariable', $oPluginSprachVariable);
-
-                if ($kPluginSprachvariable > 0) {
-                    // Ist der erste Standard Link gesetzt worden? => wird etwas weiter unten gebraucht
-                    // Falls Shopsprachen vom Plugin nicht berücksichtigt wurden, werden diese weiter unten
-                    // nachgetragen. Dafür wird die erste Sprache vom Plugin als Standard genutzt.
-                    $bVariableStandard   = false;
-                    $oVariableSpracheStd = new stdClass();
-                    // Nur eine Sprache vorhanden
-                    if (isset($Variable_arr['VariableLocalized attr']) &&
-                        is_array($Variable_arr['VariableLocalized attr']) &&
-                        count($Variable_arr['VariableLocalized attr']) > 0
-                    ) {
-                        // tpluginsprachvariablesprache füllen
-                        $oPluginSprachVariableSprache                        = new stdClass();
-                        $oPluginSprachVariableSprache->kPluginSprachvariable = $kPluginSprachvariable;
-                        $oPluginSprachVariableSprache->cISO                  = $Variable_arr['VariableLocalized attr']['iso'];
-                        $oPluginSprachVariableSprache->cName                 = preg_replace('/\s+/', ' ', $Variable_arr['VariableLocalized']);
-
-                        Shop::DB()->insert('tpluginsprachvariablesprache', $oPluginSprachVariableSprache);
-
-                        // Erste PluginSprachVariableSprache vom Plugin als Standard setzen
-                        if (!$bVariableStandard) {
-                            $oVariableSpracheStd = $oPluginSprachVariableSprache;
-                            $bVariableStandard   = true;
-                        }
-
-                        if (isset($oSprachAssoc_arr[strtolower($oPluginSprachVariableSprache->cISO)])) {
-                            // Resette aktuelle Sprache
-                            unset($oSprachAssoc_arr[strtolower($oPluginSprachVariableSprache->cISO)]);
-                            $oSprachAssoc_arr = array_merge($oSprachAssoc_arr);
-                        }
-                    } elseif (isset($Variable_arr['VariableLocalized']) &&
-                        is_array($Variable_arr['VariableLocalized']) &&
-                        count($Variable_arr['VariableLocalized']) > 0
-                    ) {
-                        // Mehr Sprachen vorhanden
-                        foreach ($Variable_arr['VariableLocalized'] as $i => $VariableLocalized_arr) {
-                            preg_match("/[0-9]+\sattr/", $i, $cTreffer1_arr);
-
-                            if (isset($cTreffer1_arr[0]) && strlen($cTreffer1_arr[0]) === strlen($i)) {
-                                $cISO = $VariableLocalized_arr['iso'];
-                                //$yx = substr($i, 0, 1);
-                                $yx    = substr($i, 0, strpos($i, ' '));
-                                $cName = $Variable_arr['VariableLocalized'][$yx];
-                                // tpluginsprachvariablesprache füllen
-                                $oPluginSprachVariableSprache                        = new stdClass();
-                                $oPluginSprachVariableSprache->kPluginSprachvariable = $kPluginSprachvariable;
-                                $oPluginSprachVariableSprache->cISO                  = $cISO;
-                                $oPluginSprachVariableSprache->cName                 = preg_replace('/\s+/', ' ', $cName);
-
-                                Shop::DB()->insert('tpluginsprachvariablesprache', $oPluginSprachVariableSprache);
-                                // Erste PluginSprachVariableSprache vom Plugin als Standard setzen
-                                if (!$bVariableStandard) {
-                                    $oVariableSpracheStd = $oPluginSprachVariableSprache;
-                                    $bVariableStandard   = true;
-                                }
-
-                                if (isset($oSprachAssoc_arr[strtolower($oPluginSprachVariableSprache->cISO)])) {
-                                    // Resette aktuelle Sprache
-
-                                    unset($oSprachAssoc_arr[strtolower($oPluginSprachVariableSprache->cISO)]);
-                                    $oSprachAssoc_arr = array_merge($oSprachAssoc_arr);
-                                }
-                            }
-                        }
-                    }
-                    // Sind noch Sprachen im Shop die das Plugin nicht berücksichtigt?
-                    if (count($oSprachAssoc_arr) > 0) {
-                        foreach ($oSprachAssoc_arr as $oSprachAssoc) {
-                            $oVariableSpracheStd->cISO = strtoupper($oSprachAssoc->cISO);
-                            $kPluginSprachVariableTMP  = Shop::DB()->insert('tpluginsprachvariablesprache', $oVariableSpracheStd);
-                            if (!$kPluginSprachVariableTMP) {
-                                return 7; // Eine Sprachvariable konnte nicht in die Datenbank gespeichert werden
-                            }
-                        }
-                    }
-                } else {
+            }
+        }
+        // Sind noch Sprachen im Shop die das Plugin nicht berücksichtigt?
+        if (count($oSprachAssoc_arr) > 0) {
+            foreach ($oSprachAssoc_arr as $oSprachAssoc) {
+                $oVariableSpracheStd->cISO = strtoupper($oSprachAssoc->cISO);
+                $kPluginSprachVariableTMP  = Shop::DB()->insert('tpluginsprachvariablesprache', $oVariableSpracheStd);
+                if (!$kPluginSprachVariableTMP) {
                     return 7; // Eine Sprachvariable konnte nicht in die Datenbank gespeichert werden
                 }
             }
         }
     }
     // CheckBox tcheckboxfunktion fuellen
-    if (isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['CheckBoxFunction']) &&
-        is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['CheckBoxFunction']) &&
-        isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['CheckBoxFunction'][0]['Function']) &&
-        is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['CheckBoxFunction'][0]['Function']) &&
-        count($XML_arr['jtlshop3plugin'][0]['Install'][0]['CheckBoxFunction'][0]['Function']) > 0
-    ) {
-        foreach ($XML_arr['jtlshop3plugin'][0]['Install'][0]['CheckBoxFunction'][0]['Function'] as $t => $Function_arr) {
-            preg_match("/[0-9]+/", $t, $cTreffer2_arr);
-            if (strlen($cTreffer2_arr[0]) === strlen($t)) {
-                $oCheckBoxFunktion          = new stdClass();
-                $oCheckBoxFunktion->kPlugin = $kPlugin;
-                $oCheckBoxFunktion->cName   = $Function_arr['Name'];
-                $oCheckBoxFunktion->cID     = $oPlugin->cPluginID . '_' . $Function_arr['ID'];
-                Shop::DB()->insert('tcheckboxfunktion', $oCheckBoxFunktion);
-            }
+    foreach ($checkboxesNode as $t => $Function_arr) {
+        preg_match("/[0-9]+/", $t, $cTreffer2_arr);
+        if (strlen($cTreffer2_arr[0]) === strlen($t)) {
+            $oCheckBoxFunktion          = new stdClass();
+            $oCheckBoxFunktion->kPlugin = $kPlugin;
+            $oCheckBoxFunktion->cName   = $Function_arr['Name'];
+            $oCheckBoxFunktion->cID     = $oPlugin->cPluginID . '_' . $Function_arr['ID'];
+            Shop::DB()->insert('tcheckboxfunktion', $oCheckBoxFunktion);
         }
     }
     // AdminWidgets tadminwidgets fuellen
-    if (isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['AdminWidget']) &&
-        is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['AdminWidget']) &&
-        isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['AdminWidget'][0]['Widget']) &&
-        is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['AdminWidget'][0]['Widget']) &&
-        count($XML_arr['jtlshop3plugin'][0]['Install'][0]['AdminWidget'][0]['Widget']) > 0
-    ) {
-        foreach ($XML_arr['jtlshop3plugin'][0]['Install'][0]['AdminWidget'][0]['Widget'] as $u => $Widget_arr) {
-            preg_match("/[0-9]+/", $u, $cTreffer2_arr);
-            if (strlen($cTreffer2_arr[0]) === strlen($u)) {
-                $oAdminWidget               = new stdClass();
-                $oAdminWidget->kPlugin      = $kPlugin;
-                $oAdminWidget->cTitle       = $Widget_arr['Title'];
-                $oAdminWidget->cClass       = $Widget_arr['Class'] . '_' . $oPlugin->cPluginID;
-                $oAdminWidget->eContainer   = $Widget_arr['Container'];
-                $oAdminWidget->cDescription = $Widget_arr['Description'];
-                if (is_array($oAdminWidget->cDescription)) {
-                    //@todo: when description is empty, this becomes an array with indices [0] => '' and [0 attr] => ''
-                    $oAdminWidget->cDescription = $oAdminWidget->cDescription[0];
-                }
-                $oAdminWidget->nPos      = $Widget_arr['Pos'];
-                $oAdminWidget->bExpanded = $Widget_arr['Expanded'];
-                $oAdminWidget->bActive   = $Widget_arr['Active'];
-                $kWidget                 = Shop::DB()->insert('tadminwidgets', $oAdminWidget);
+    foreach ($widgetsNode as $u => $Widget_arr) {
+        preg_match("/[0-9]+/", $u, $cTreffer2_arr);
+        if (strlen($cTreffer2_arr[0]) === strlen($u)) {
+            $oAdminWidget               = new stdClass();
+            $oAdminWidget->kPlugin      = $kPlugin;
+            $oAdminWidget->cTitle       = $Widget_arr['Title'];
+            $oAdminWidget->cClass       = $Widget_arr['Class'] . '_' . $oPlugin->cPluginID;
+            $oAdminWidget->eContainer   = $Widget_arr['Container'];
+            $oAdminWidget->cDescription = $Widget_arr['Description'];
+            if (is_array($oAdminWidget->cDescription)) {
+                //@todo: when description is empty, this becomes an array with indices [0] => '' and [0 attr] => ''
+                $oAdminWidget->cDescription = $oAdminWidget->cDescription[0];
+            }
+            $oAdminWidget->nPos      = $Widget_arr['Pos'];
+            $oAdminWidget->bExpanded = $Widget_arr['Expanded'];
+            $oAdminWidget->bActive   = $Widget_arr['Active'];
+            $kWidget                 = Shop::DB()->insert('tadminwidgets', $oAdminWidget);
 
-                if (!$kWidget) {
-                    return 15;// Ein AdminWidget konnte nicht in die Datenbank gespeichert werden
-                }
+            if (!$kWidget) {
+                return 15;// Ein AdminWidget konnte nicht in die Datenbank gespeichert werden
             }
         }
     }
     // ExportFormate in texportformat fuellen
-    if (isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['ExportFormat']) &&
-        is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['ExportFormat']) &&
-        isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['ExportFormat'][0]['Format']) &&
-        is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['ExportFormat'][0]['Format']) &&
-        count($XML_arr['jtlshop3plugin'][0]['Install'][0]['ExportFormat'][0]['Format']) > 0
-    ) {
-        foreach ($XML_arr['jtlshop3plugin'][0]['Install'][0]['ExportFormat'][0]['Format'] as $u => $Format_arr) {
-            preg_match("/[0-9]+/", $u, $cTreffer2_arr);
-            if (strlen($cTreffer2_arr[0]) === strlen($u)) {
-                $oExportformat                   = new stdClass();
-                $oExportformat->kKundengruppe    = $kKundengruppeStd;
-                $oExportformat->kSprache         = $kSpracheStd;
-                $oExportformat->kWaehrung        = $kWaehrungStd;
-                $oExportformat->kKampagne        = 0;
-                $oExportformat->kPlugin          = $kPlugin;
-                $oExportformat->cName            = $Format_arr['Name'];
-                $oExportformat->cDateiname       = $Format_arr['FileName'];
-                $oExportformat->cKopfzeile       = $Format_arr['Header'];
-                $oExportformat->cContent         = (isset($Format_arr['Content']) && strlen($Format_arr['Content']) > 0)
-                    ? $Format_arr['Content']
-                    : 'PluginContentFile_' . $Format_arr['ContentFile'];
-                $oExportformat->cFusszeile       = isset($Format_arr['Footer'])
-                    ? $Format_arr['Footer']
-                    : null;
-                $oExportformat->cKodierung       = isset($Format_arr['Encoding'])
-                    ? $Format_arr['Encoding']
-                    : 'ASCII';
-                $oExportformat->nSpecial         = 0;
-                $oExportformat->nVarKombiOption  = isset($Format_arr['VarCombiOption'])
-                    ? $Format_arr['VarCombiOption']
-                    : 1;
-                $oExportformat->nSplitgroesse    = isset($Format_arr['SplitSize'])
-                    ? $Format_arr['SplitSize']
-                    : 0;
-                $oExportformat->dZuletztErstellt = '0000-00-00 00:00:00';
-                if (is_array($oExportformat->cKopfzeile)) {
-                    //@todo: when cKopfzeile is empty, this becomes an array with indices [0] => '' and [0 attr] => ''
-                    $oExportformat->cKopfzeile = $oExportformat->cKopfzeile[0];
-                }
-                if (is_array($oExportformat->cContent)) {
-                    $oExportformat->cContent = $oExportformat->cContent[0];
-                }
-                if (is_array($oExportformat->cFusszeile)) {
-                    $oExportformat->cFusszeile = $oExportformat->cFusszeile[0];
-                }
-                $kExportformat = Shop::DB()->insert('texportformat', $oExportformat);
-
-                if (!$kExportformat) {
-                    return 16;// Ein Exportformat konnte nicht in die Datenbank gespeichert werden
-                } else {
-                    // Einstellungen
-                    // <OnlyStockGreaterZero>N</OnlyStockGreaterZero> => exportformate_lager_ueber_null
-                    $oExportformatEinstellungen                = new stdClass();
-                    $oExportformatEinstellungen->kExportformat = $kExportformat;
-                    $oExportformatEinstellungen->cName         = 'exportformate_lager_ueber_null';
-                    $oExportformatEinstellungen->cWert         = strlen($Format_arr['OnlyStockGreaterZero']) !== 0
-                        ? $Format_arr['OnlyStockGreaterZero']
-                        : 'N';
-                    Shop::DB()->insert('texportformateinstellungen', $oExportformatEinstellungen);
-                    // <OnlyPriceGreaterZero>N</OnlyPriceGreaterZero> => exportformate_preis_ueber_null
-                    $oExportformatEinstellungen                = new stdClass();
-                    $oExportformatEinstellungen->kExportformat = $kExportformat;
-                    $oExportformatEinstellungen->cName         = 'exportformate_preis_ueber_null';
-                    $oExportformatEinstellungen->cWert         = $Format_arr['OnlyPriceGreaterZero'] === 'Y'
-                        ? 'Y'
-                        : 'N';
-                    Shop::DB()->insert('texportformateinstellungen', $oExportformatEinstellungen);
-                    // <OnlyProductsWithDescription>N</OnlyProductsWithDescription> => exportformate_beschreibung
-                    $oExportformatEinstellungen                = new stdClass();
-                    $oExportformatEinstellungen->kExportformat = $kExportformat;
-                    $oExportformatEinstellungen->cName         = 'exportformate_beschreibung';
-                    $oExportformatEinstellungen->cWert         = $Format_arr['OnlyProductsWithDescription'] === 'Y'
-                        ? 'Y'
-                        : 'N';
-                    Shop::DB()->insert('texportformateinstellungen', $oExportformatEinstellungen);
-                    // <ShippingCostsDeliveryCountry>DE</ShippingCostsDeliveryCountry> => exportformate_lieferland
-                    $oExportformatEinstellungen                = new stdClass();
-                    $oExportformatEinstellungen->kExportformat = $kExportformat;
-                    $oExportformatEinstellungen->cName         = 'exportformate_lieferland';
-                    $oExportformatEinstellungen->cWert         = $Format_arr['ShippingCostsDeliveryCountry'];
-                    Shop::DB()->insert('texportformateinstellungen', $oExportformatEinstellungen);
-                    // <EncodingQuote>N</EncodingQuote> => exportformate_quot
-                    $oExportformatEinstellungen                = new stdClass();
-                    $oExportformatEinstellungen->kExportformat = $kExportformat;
-                    $oExportformatEinstellungen->cName         = 'exportformate_quot';
-                    $oExportformatEinstellungen->cWert         = $Format_arr['EncodingQuote'] === 'Y'
-                        ? 'Y'
-                        : 'N';
-                    Shop::DB()->insert('texportformateinstellungen', $oExportformatEinstellungen);
-                    // <EncodingDoubleQuote>N</EncodingDoubleQuote> => exportformate_equot
-                    $oExportformatEinstellungen                = new stdClass();
-                    $oExportformatEinstellungen->kExportformat = $kExportformat;
-                    $oExportformatEinstellungen->cName         = 'exportformate_equot';
-                    $oExportformatEinstellungen->cWert         = $Format_arr['EncodingDoubleQuote'] === 'Y'
-                        ? 'Y'
-                        : 'N';
-                    Shop::DB()->insert('texportformateinstellungen', $oExportformatEinstellungen);
-                    // <EncodingSemicolon>N</EncodingSemicolon> => exportformate_semikolon
-                    $oExportformatEinstellungen                = new stdClass();
-                    $oExportformatEinstellungen->kExportformat = $kExportformat;
-                    $oExportformatEinstellungen->cName         = 'exportformate_semikolon';
-                    $oExportformatEinstellungen->cWert         = $Format_arr['EncodingSemicolon'] === 'Y'
-                        ? 'Y'
-                        : 'N';
-                    Shop::DB()->insert('texportformateinstellungen', $oExportformatEinstellungen);
-                }
-            }
+    foreach ($exportNode as $u => $Format_arr) {
+        preg_match("/[0-9]+/", $u, $cTreffer2_arr);
+        if (strlen($cTreffer2_arr[0]) !== strlen($u)) {
+            continue;
         }
+        $oExportformat                   = new stdClass();
+        $oExportformat->kKundengruppe    = $kKundengruppeStd;
+        $oExportformat->kSprache         = $kSpracheStd;
+        $oExportformat->kWaehrung        = $kWaehrungStd;
+        $oExportformat->kKampagne        = 0;
+        $oExportformat->kPlugin          = $kPlugin;
+        $oExportformat->cName            = $Format_arr['Name'];
+        $oExportformat->cDateiname       = $Format_arr['FileName'];
+        $oExportformat->cKopfzeile       = $Format_arr['Header'];
+        $oExportformat->cContent         = (isset($Format_arr['Content']) && strlen($Format_arr['Content']) > 0)
+            ? $Format_arr['Content']
+            : 'PluginContentFile_' . $Format_arr['ContentFile'];
+        $oExportformat->cFusszeile       = isset($Format_arr['Footer'])
+            ? $Format_arr['Footer']
+            : null;
+        $oExportformat->cKodierung       = isset($Format_arr['Encoding'])
+            ? $Format_arr['Encoding']
+            : 'ASCII';
+        $oExportformat->nSpecial         = 0;
+        $oExportformat->nVarKombiOption  = isset($Format_arr['VarCombiOption'])
+            ? $Format_arr['VarCombiOption']
+            : 1;
+        $oExportformat->nSplitgroesse    = isset($Format_arr['SplitSize'])
+            ? $Format_arr['SplitSize']
+            : 0;
+        $oExportformat->dZuletztErstellt = '0000-00-00 00:00:00';
+        if (is_array($oExportformat->cKopfzeile)) {
+            //@todo: when cKopfzeile is empty, this becomes an array with indices [0] => '' and [0 attr] => ''
+            $oExportformat->cKopfzeile = $oExportformat->cKopfzeile[0];
+        }
+        if (is_array($oExportformat->cContent)) {
+            $oExportformat->cContent = $oExportformat->cContent[0];
+        }
+        if (is_array($oExportformat->cFusszeile)) {
+            $oExportformat->cFusszeile = $oExportformat->cFusszeile[0];
+        }
+        $kExportformat = Shop::DB()->insert('texportformat', $oExportformat);
+
+        if (!$kExportformat) {
+            return 16;// Ein Exportformat konnte nicht in die Datenbank gespeichert werden
+        }
+        // Einstellungen
+        // <OnlyStockGreaterZero>N</OnlyStockGreaterZero> => exportformate_lager_ueber_null
+        $oExportformatEinstellungen                = new stdClass();
+        $oExportformatEinstellungen->kExportformat = $kExportformat;
+        $oExportformatEinstellungen->cName         = 'exportformate_lager_ueber_null';
+        $oExportformatEinstellungen->cWert         = strlen($Format_arr['OnlyStockGreaterZero']) !== 0
+            ? $Format_arr['OnlyStockGreaterZero']
+            : 'N';
+        Shop::DB()->insert('texportformateinstellungen', $oExportformatEinstellungen);
+        // <OnlyPriceGreaterZero>N</OnlyPriceGreaterZero> => exportformate_preis_ueber_null
+        $oExportformatEinstellungen                = new stdClass();
+        $oExportformatEinstellungen->kExportformat = $kExportformat;
+        $oExportformatEinstellungen->cName         = 'exportformate_preis_ueber_null';
+        $oExportformatEinstellungen->cWert         = $Format_arr['OnlyPriceGreaterZero'] === 'Y'
+            ? 'Y'
+            : 'N';
+        Shop::DB()->insert('texportformateinstellungen', $oExportformatEinstellungen);
+        // <OnlyProductsWithDescription>N</OnlyProductsWithDescription> => exportformate_beschreibung
+        $oExportformatEinstellungen                = new stdClass();
+        $oExportformatEinstellungen->kExportformat = $kExportformat;
+        $oExportformatEinstellungen->cName         = 'exportformate_beschreibung';
+        $oExportformatEinstellungen->cWert         = $Format_arr['OnlyProductsWithDescription'] === 'Y'
+            ? 'Y'
+            : 'N';
+        Shop::DB()->insert('texportformateinstellungen', $oExportformatEinstellungen);
+        // <ShippingCostsDeliveryCountry>DE</ShippingCostsDeliveryCountry> => exportformate_lieferland
+        $oExportformatEinstellungen                = new stdClass();
+        $oExportformatEinstellungen->kExportformat = $kExportformat;
+        $oExportformatEinstellungen->cName         = 'exportformate_lieferland';
+        $oExportformatEinstellungen->cWert         = $Format_arr['ShippingCostsDeliveryCountry'];
+        Shop::DB()->insert('texportformateinstellungen', $oExportformatEinstellungen);
+        // <EncodingQuote>N</EncodingQuote> => exportformate_quot
+        $oExportformatEinstellungen                = new stdClass();
+        $oExportformatEinstellungen->kExportformat = $kExportformat;
+        $oExportformatEinstellungen->cName         = 'exportformate_quot';
+        $oExportformatEinstellungen->cWert         = $Format_arr['EncodingQuote'] === 'Y'
+            ? 'Y'
+            : 'N';
+        Shop::DB()->insert('texportformateinstellungen', $oExportformatEinstellungen);
+        // <EncodingDoubleQuote>N</EncodingDoubleQuote> => exportformate_equot
+        $oExportformatEinstellungen                = new stdClass();
+        $oExportformatEinstellungen->kExportformat = $kExportformat;
+        $oExportformatEinstellungen->cName         = 'exportformate_equot';
+        $oExportformatEinstellungen->cWert         = $Format_arr['EncodingDoubleQuote'] === 'Y'
+            ? 'Y'
+            : 'N';
+        Shop::DB()->insert('texportformateinstellungen', $oExportformatEinstellungen);
+        // <EncodingSemicolon>N</EncodingSemicolon> => exportformate_semikolon
+        $oExportformatEinstellungen                = new stdClass();
+        $oExportformatEinstellungen->kExportformat = $kExportformat;
+        $oExportformatEinstellungen->cName         = 'exportformate_semikolon';
+        $oExportformatEinstellungen->cWert         = $Format_arr['EncodingSemicolon'] === 'Y'
+            ? 'Y'
+            : 'N';
+        Shop::DB()->insert('texportformateinstellungen', $oExportformatEinstellungen);
     }
     // Resourcen in tplugin_ressources fuellen
-    if (isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['CSS'][0]['file'])) {
-        foreach ($XML_arr['jtlshop3plugin'][0]['Install'][0]['CSS'][0]['file'] as $file) {
-            if (isset($file['name'])) {
-                $oFile          = new stdClass();
-                $oFile->kPlugin = $kPlugin;
-                $oFile->type    = 'css';
-                $oFile->path     = $file['name'];
-                $oFile->priority = isset($file['priority']) ? $file['priority'] : 5;
-                Shop::DB()->insert('tplugin_resources', $oFile);
-                unset($oFile);
-            }
+    foreach ($cssNode as $file) {
+        if (isset($file['name'])) {
+            $oFile          = new stdClass();
+            $oFile->kPlugin = $kPlugin;
+            $oFile->type    = 'css';
+            $oFile->path     = $file['name'];
+            $oFile->priority = isset($file['priority']) ? $file['priority'] : 5;
+            Shop::DB()->insert('tplugin_resources', $oFile);
+            unset($oFile);
         }
     }
-    if (isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['JS'][0]['file'])) {
-        foreach ($XML_arr['jtlshop3plugin'][0]['Install'][0]['JS'][0]['file'] as $file) {
-            if (isset($file['name'])) {
-                $oFile          = new stdClass();
-                $oFile->kPlugin = $kPlugin;
-                $oFile->type    = 'js';
-                $oFile->path     = $file['name'];
-                $oFile->priority = isset($file['priority']) ? $file['priority'] : 5;
-                $oFile->position = isset($file['position']) ? $file['position'] : 'head';
-                Shop::DB()->insert('tplugin_resources', $oFile);
-                unset($oFile);
-            }
+    foreach ($jsNode as $file) {
+        if (isset($file['name'])) {
+            $oFile          = new stdClass();
+            $oFile->kPlugin = $kPlugin;
+            $oFile->type    = 'js';
+            $oFile->path     = $file['name'];
+            $oFile->priority = isset($file['priority']) ? $file['priority'] : 5;
+            $oFile->position = isset($file['position']) ? $file['position'] : 'head';
+            Shop::DB()->insert('tplugin_resources', $oFile);
+            unset($oFile);
         }
     }
 
@@ -3300,17 +3095,17 @@ function installierePluginVersion($XML_arr, $cVerzeichnis, $oPluginOld, $nXMLVer
     switch ($nXMLVersion) {
         case 101:
             // Installiere etwas
-            return 1;
+            return PLUGIN_CODE_OK;
             break;
 
         case 102:
             // Installiere etwas
-            return 1;
+            return PLUGIN_CODE_OK;
             break;
 
     }
 
-    return 1;
+    return PLUGIN_CODE_OK;
 }
 
 /**
@@ -3508,41 +3303,38 @@ function syncPluginUpdate($kPlugin, $oPluginOld, $nXMLVersion)
                 FROM tzahlungsart 
                 WHERE cModulId LIKE 'kPlugin_{$kPluginOld}_%'", 2
         );
-
-        if (is_array($oZahlungsartOld_arr) && count($oZahlungsartOld_arr) > 0) {
-            foreach ($oZahlungsartOld_arr as $oZahlungsartOld) {
-                $cModulIdNew     = str_replace("kPlugin_{$kPluginOld}_", "kPlugin_{$kPlugin}_", $oZahlungsartOld->cModulId);
-                $oZahlungsartNew = Shop::DB()->query("
-                      SELECT kZahlungsart 
-                          FROM tzahlungsart 
-                          WHERE cModulId LIKE '{$cModulIdNew}'", 1
-                );
-                $cNewSetSQL      = '';
-                if (isset($oZahlungsartOld->kZahlungsart, $oZahlungsartNew->kZahlungsart)) {
-                    Shop::DB()->query(
-                        "DELETE tzahlungsart, tzahlungsartsprache
-                            FROM tzahlungsart
-                            JOIN tzahlungsartsprache 
-                                ON tzahlungsartsprache.kZahlungsart = tzahlungsart.kZahlungsart
-                            WHERE tzahlungsart.kZahlungsart = " . $oZahlungsartOld->kZahlungsart, 3
-                    );
-
-                    $cNewSetSQL = " , kZahlungsart = " . $oZahlungsartOld->kZahlungsart;
-                    $upd = new stdClass();
-                    $upd->kZahlungsart = $oZahlungsartOld->kZahlungsart;
-                    Shop::DB()->update('tzahlungsartsprache', 'kZahlungsart', $oZahlungsartNew->kZahlungsart, $upd);
-                }
-
+        foreach ($oZahlungsartOld_arr as $oZahlungsartOld) {
+            $cModulIdNew     = str_replace("kPlugin_{$kPluginOld}_", "kPlugin_{$kPlugin}_", $oZahlungsartOld->cModulId);
+            $oZahlungsartNew = Shop::DB()->query("
+                  SELECT kZahlungsart 
+                      FROM tzahlungsart 
+                      WHERE cModulId LIKE '{$cModulIdNew}'", 1
+            );
+            $cNewSetSQL      = '';
+            if (isset($oZahlungsartOld->kZahlungsart, $oZahlungsartNew->kZahlungsart)) {
                 Shop::DB()->query(
-                    "UPDATE tzahlungsart
-                        SET cModulId = '{$oZahlungsartOld->cModulId}'
-                        " . $cNewSetSQL . "
-                        WHERE cModulId LIKE '{$cModulIdNew}'", 3
+                    "DELETE tzahlungsart, tzahlungsartsprache
+                        FROM tzahlungsart
+                        JOIN tzahlungsartsprache 
+                            ON tzahlungsartsprache.kZahlungsart = tzahlungsart.kZahlungsart
+                        WHERE tzahlungsart.kZahlungsart = " . $oZahlungsartOld->kZahlungsart, 3
                 );
+
+                $cNewSetSQL = " , kZahlungsart = " . $oZahlungsartOld->kZahlungsart;
+                $upd = new stdClass();
+                $upd->kZahlungsart = $oZahlungsartOld->kZahlungsart;
+                Shop::DB()->update('tzahlungsartsprache', 'kZahlungsart', $oZahlungsartNew->kZahlungsart, $upd);
             }
+
+            Shop::DB()->query(
+                "UPDATE tzahlungsart
+                    SET cModulId = '{$oZahlungsartOld->cModulId}'
+                    " . $cNewSetSQL . "
+                    WHERE cModulId LIKE '{$cModulIdNew}'", 3
+            );
         }
 
-        return 1;
+        return PLUGIN_CODE_OK;
     }
     deinstallierePlugin($kPlugin, $nXMLVersion);
 
@@ -3564,48 +3356,44 @@ function syncPluginUpdate($kPlugin, $oPluginOld, $nXMLVersion)
 function deinstallierePlugin($kPlugin, $nXMLVersion, $bUpdate = false, $kPluginNew = null)
 {
     $kPlugin = (int)$kPlugin;
-    if ($kPlugin > 0) {
-        $oPlugin = new Plugin($kPlugin, false, true); // suppress reload = true um Endlosrekursion zu verhindern
-        if ($oPlugin->kPlugin > 0) {
-            if (!$bUpdate) {
-                // Plugin wird vollständig deinstalliert
-                if (isset($oPlugin->oPluginUninstall->kPluginUninstall) &&
-                    (int)$oPlugin->oPluginUninstall->kPluginUninstall > 0
-                ) {
-                    try {
-                        include $oPlugin->cPluginUninstallPfad;
-                    } catch (Exception $exc) {
-                    }
-                }
-                // Custom Tables löschen
-                $oCustomTabelle_arr = Shop::DB()->selectAll('tplugincustomtabelle', 'kPlugin', $kPlugin);
-                if (is_array($oCustomTabelle_arr) && count($oCustomTabelle_arr) > 0) {
-                    foreach ($oCustomTabelle_arr as $j => $oCustomTabelle) {
-                        Shop::DB()->query("DROP TABLE IF EXISTS " . $oCustomTabelle->cTabelle, 4);
-                    }
-                }
-                doSQLDelete($kPlugin, $bUpdate, $kPluginNew);
-            } else {
-                // Plugin wird nur teilweise deinstalliert, weil es danach ein Update gibt
-                doSQLDelete($kPlugin, $bUpdate, $kPluginNew);
+    if ($kPlugin <= 0) {
+        return PLUGIN_CODE_WRONG_PARAM; // $kPlugin wurde nicht übergeben
+    }
+    $oPlugin = new Plugin($kPlugin, false, true); // suppress reload = true um Endlosrekursion zu verhindern
+    if (empty($oPlugin->kPlugin)) {
+        return PLUGIN_CODE_NO_PLUGIN_FOUND;
+    }
+    if (!$bUpdate) {
+        // Plugin wird vollständig deinstalliert
+        if (isset($oPlugin->oPluginUninstall->kPluginUninstall) &&
+            (int)$oPlugin->oPluginUninstall->kPluginUninstall > 0
+        ) {
+            try {
+                include $oPlugin->cPluginUninstallPfad;
+            } catch (Exception $exc) {
             }
-            Shop::Cache()->flushAll();
-            // Deinstallation für eine höhere XML Version
-            if ($nXMLVersion > 100) {
-                return deinstallierePluginVersion($kPlugin, $nXMLVersion, $bUpdate);
-            }
-
-            if ($p = Plugin::bootstrapper($kPlugin)) {
-                $p->uninstalled();
-            }
-
-            return 1; // Alles O.K.
         }
-
-        return 4;
+        // Custom Tables löschen
+        $oCustomTabelle_arr = Shop::DB()->selectAll('tplugincustomtabelle', 'kPlugin', $kPlugin);
+        foreach ($oCustomTabelle_arr as $j => $oCustomTabelle) {
+            Shop::DB()->query("DROP TABLE IF EXISTS " . $oCustomTabelle->cTabelle, 4);
+        }
+        doSQLDelete($kPlugin, $bUpdate, $kPluginNew);
+    } else {
+        // Plugin wird nur teilweise deinstalliert, weil es danach ein Update gibt
+        doSQLDelete($kPlugin, $bUpdate, $kPluginNew);
+    }
+    Shop::Cache()->flushAll();
+    // Deinstallation für eine höhere XML Version
+    if ($nXMLVersion > 100) {
+        return deinstallierePluginVersion($kPlugin, $nXMLVersion, $bUpdate);
     }
 
-    return 2;// $kPlugin wurde nicht übergeben
+    if (($p = Plugin::bootstrapper($kPlugin)) !== null) {
+        $p->uninstalled();
+    }
+
+    return PLUGIN_CODE_OK;
 }
 
 /**
@@ -3781,15 +3569,15 @@ function deinstallierePluginVersion($kPlugin, $nXMLVersion, $bUpdate)
     switch ($nXMLVersion) {
         case 101:
             // Deinstalliere etwas
-            return 1;
+            return PLUGIN_CODE_OK;
             break;
 
         case 102:
             // Deinstalliere etwas
-            return 1;
+            return PLUGIN_CODE_OK;
             break;
         default:
-            return 0;
+            return PLUGIN_CODE_OK;
     }
 }
 
@@ -3802,43 +3590,34 @@ function deinstallierePluginVersion($kPlugin, $nXMLVersion, $bUpdate)
 function aktivierePlugin($kPlugin)
 {
     $kPlugin = (int)$kPlugin;
-    if ($kPlugin > 0) {
-        $oPlugin = Shop::DB()->select('tplugin', 'kPlugin', $kPlugin);
-        if (isset($oPlugin->kPlugin) && $oPlugin->kPlugin > 0) {
-            $cPfad        = PFAD_ROOT . PFAD_PLUGIN;
-            $nReturnValue = pluginPlausi(0, $cPfad . $oPlugin->cVerzeichnis);
+    if ($kPlugin <= 0) {
+        return PLUGIN_CODE_WRONG_PARAM;
+    }
+    $oPlugin = Shop::DB()->select('tplugin', 'kPlugin', $kPlugin);
+    if (empty($oPlugin->kPlugin)) {
+        return PLUGIN_CODE_NO_PLUGIN_FOUND;
+    }
+    $cPfad        = PFAD_ROOT . PFAD_PLUGIN;
+    $nReturnValue = pluginPlausi(0, $cPfad . $oPlugin->cVerzeichnis);
 
-            if ($nReturnValue === 1 || $nReturnValue === 90 || $nReturnValue === 126) {
-                $_upd_plg          = new stdClass();
-                $_upd_plg->nStatus = 2;
-                $nRow              = Shop::DB()->update('tplugin', 'kPlugin', $kPlugin, $_upd_plg);
+    if ($nReturnValue === PLUGIN_CODE_OK
+        || $nReturnValue === PLUGIN_CODE_DUPLICATE_PLUGIN_ID
+        || $nReturnValue === PLUGIN_CODE_OK_BUT_NOT_SHOP4_COMPATIBLE
+    ) {
+        $nRow              = Shop::DB()->update('tplugin', 'kPlugin', $kPlugin, (object)['nStatus' => 2]);
+        Shop::DB()->update('tadminwidgets', 'kPlugin', $kPlugin, (object)['bActive' => 1]);
+        Shop::DB()->update('tlink', 'kPlugin', $kPlugin, (object)['bIsActive' => 1]);
 
-                $_upd_wdg          = new stdClass();
-                $_upd_wdg->bActive = 1;
-                Shop::DB()->update('tadminwidgets', 'kPlugin', $kPlugin, $_upd_wdg);
-
-                $_upd_lnk            = new stdClass();
-                $_upd_lnk->bIsActive = 1;
-                Shop::DB()->update('tlink', 'kPlugin', $kPlugin, $_upd_lnk);
-
-                if ($p = Plugin::bootstrapper($kPlugin)) {
-                    $p->enabled();
-                }
-
-                if ($nRow > 0) {
-                    return 1; // Alles O.K.
-                }
-
-                return 3; // Plugin wurde nicht in der Datenbank gefunden
-            }
-
-            return $nReturnValue; // Plugin konnte aufgrund eines Fehlers nicht aktiviert werden.
+        if (($p = Plugin::bootstrapper($kPlugin)) !== null) {
+            $p->enabled();
         }
 
-        return 3;
+        return $nRow > 0
+            ? PLUGIN_CODE_OK
+            : PLUGIN_CODE_NO_PLUGIN_FOUND;
     }
 
-    return 2; // $kPlugin wurde nicht übergeben
+    return $nReturnValue; // Plugin konnte aufgrund eines Fehlers nicht aktiviert werden.
 }
 
 /**
@@ -3850,29 +3629,19 @@ function aktivierePlugin($kPlugin)
 function deaktivierePlugin($kPlugin)
 {
     $kPlugin = (int)$kPlugin;
-    if ($kPlugin > 0) {
-        if ($p = Plugin::bootstrapper($kPlugin)) {
-            $p->disabled();
-        }
-
-        $_upd_plg          = new stdClass();
-        $_upd_plg->nStatus = 1;
-        Shop::DB()->update('tplugin', 'kPlugin', $kPlugin, $_upd_plg);
-
-        $_upd_wdg          = new stdClass();
-        $_upd_wdg->bActive = 0;
-        Shop::DB()->update('tadminwidgets', 'kPlugin', $kPlugin, $_upd_wdg);
-
-        $_upd_lnk            = new stdClass();
-        $_upd_lnk->bIsActive = 0;
-        Shop::DB()->update('tlink', 'kPlugin', $kPlugin, $_upd_lnk);
-
-        Shop::Cache()->flushTags([CACHING_GROUP_PLUGIN . '_' . $kPlugin]);
-
-        return 1;
+    if ($kPlugin <= 0) {
+        return PLUGIN_CODE_WRONG_PARAM;
     }
+    if (($p = Plugin::bootstrapper($kPlugin)) !== null) {
+        $p->disabled();
+    }
+    Shop::DB()->update('tplugin', 'kPlugin', $kPlugin, (object)['nStatus' => 1]);
+    Shop::DB()->update('tadminwidgets', 'kPlugin', $kPlugin, (object)['bActive' => 0]);
+    Shop::DB()->update('tlink', 'kPlugin', $kPlugin, (object)['bIsActive' => 0]);
 
-    return 2; // $kPlugin wurde nicht übergeben
+    Shop::Cache()->flushTags([CACHING_GROUP_PLUGIN . '_' . $kPlugin]);
+
+    return PLUGIN_CODE_OK;
 }
 
 /**
@@ -3891,26 +3660,23 @@ function makeXMLToObj($XML)
         if (!isset($XML['jtlshop3plugin'][0]['Name'])) {
             return $oObj;
         }
-        if (!isset($XML['jtlshop3plugin'][0]['Description'])) {
-            return $oObj;
-        }
-        if (!isset($XML['jtlshop3plugin'][0]['Author'])) {
-            return $oObj;
-        }
-        $nLastVersionKey = count($XML['jtlshop3plugin'][0]['Install'][0]['Version']) / 2 - 1;
+        $node            = $XML['jtlshop3plugin'][0];
+        $nLastVersionKey = count($node['Install'][0]['Version']) / 2 - 1;
 
-        $oObj->cName           = $XML['jtlshop3plugin'][0]['Name'];
-        $oObj->cDescription    = $XML['jtlshop3plugin'][0]['Description'];
-        $oObj->cAuthor         = $XML['jtlshop3plugin'][0]['Author'];
-        $oObj->cPluginID       = $XML['jtlshop3plugin'][0]['PluginID'];
-        $oObj->cIcon           = isset($XML['jtlshop3plugin'][0]['Icon'])
-            ? $XML['jtlshop3plugin'][0]['Icon'] 
+        $oObj->cName           = $node['Name'];
+        $oObj->cDescription    = isset($node['Description']) ? $node['Description'] : '';
+        $oObj->cAuthor         = isset($node['Author']) ? $node['Author'] : '';
+        $oObj->cPluginID       = $node['PluginID'];
+        $oObj->cIcon           = isset($node['Icon'])
+            ? $node['Icon'] 
             : null;
         $oObj->cVerzeichnis    = $XML['cVerzeichnis'];
-        $oObj->shop4compatible = (!empty($XML['shop4compatible'])) 
+        $oObj->shop4compatible = !empty($XML['shop4compatible'])
             ? $XML['shop4compatible'] 
             : false;
-        $oObj->nVersion        = (int)$XML['jtlshop3plugin'][0]['Install'][0]['Version'][$nLastVersionKey . ' attr']['nr'];
+        $oObj->nVersion        = $nLastVersionKey >= 0 && isset($node['Install'][0]['Version'][$nLastVersionKey . ' attr']['nr'])
+            ? (int)$node['Install'][0]['Version'][$nLastVersionKey . ' attr']['nr']
+            : 0;
         $oObj->cVersion        = number_format($oObj->nVersion / 100, 2);
     }
 
@@ -3935,77 +3701,70 @@ function makeXMLToObj($XML)
  * @param int           $nVersion
  * @param Plugin|object $oPlugin
  * @return int
-
- * 1 = Alles O.K.
- * 2 = Plugindaten fehlen
- * 3 = SQL hat einen Fehler verursacht
- * 4 = Versuch eine nicht Plugintabelle zu löschen
- * 5 = Versuch eine nicht Plugintabelle anzulegen
- * 6 = SQL Datei ist leer oder konnte nicht geparsed werden
  */
 function logikSQLDatei($cSQLDatei, $nVersion, $oPlugin)
 {
-    if (strlen($cSQLDatei) > 0 && (int)$nVersion >= 100 && (int)$oPlugin->kPlugin > 0 && strlen($oPlugin->cPluginID) > 0) {
-        $cSQL_arr = parseSQLDatei($cSQLDatei, $oPlugin->cVerzeichnis, $nVersion);
+    if (empty($cSQLDatei) || (int)$nVersion < 100 || (int)$oPlugin->kPlugin <= 0 || empty($oPlugin->cPluginID)) {
+        return PLUGIN_CODE_SQL_MISSING_DATA;
+    }
+    $cSQL_arr = parseSQLDatei($cSQLDatei, $oPlugin->cVerzeichnis, $nVersion);
 
-        if (is_array($cSQL_arr) && count($cSQL_arr) > 0) {
-            foreach ($cSQL_arr as $cSQL) {
-                $cSQL = removeNumerousWhitespaces($cSQL);
-                // SQL legt eine neue Tabelle an => fülle tplugincustomtabelle
-                if (strpos(strtolower($cSQL), 'create table') !== false) {
-                    //when using "create table if not exists" statement, the table name is at index 5, otherwise at 2
-                    $tableNameAtIndex = (strpos(strtolower($cSQL), 'create table if not exists') !== false) ? 5 : 2;
-                    $cSQLTMP_arr      = explode(' ', $cSQL);
-                    $cTabelle         = str_replace(["'", "`"], '', $cSQLTMP_arr[$tableNameAtIndex]);
-                    preg_match("/xplugin[_]{1}" . $oPlugin->cPluginID . "[_]{1}[a-zA-Z0-9_]+/", $cTabelle, $cTreffer_arr);
-                    if (!isset($cTreffer_arr[0]) || strlen($cTreffer_arr[0]) !== strlen($cTabelle)) {
-                        return 5;// Versuch eine nicht Plugintabelle anzulegen
-                    }
-                    // Prüfen, ob nicht bereits vorhanden => Wenn nein, anlegen
-                    $oPluginCustomTabelleTMP = Shop::DB()->select('tplugincustomtabelle', 'cTabelle', $cTabelle);
-                    if (!isset($oPluginCustomTabelleTMP->kPluginCustomTabelle) || !$oPluginCustomTabelleTMP->kPluginCustomTabelle) {
-                        $oPluginCustomTabelle           = new stdClass();
-                        $oPluginCustomTabelle->kPlugin  = $oPlugin->kPlugin;
-                        $oPluginCustomTabelle->cTabelle = $cTabelle;
-
-                        Shop::DB()->insert('tplugincustomtabelle', $oPluginCustomTabelle);
-                    }
-                } elseif (strpos(strtolower($cSQL), 'drop table') !== false) {
-                    // SQL versucht eine Tabelle zu löschen => prüfen ob es sich um eine Plugintabelle handelt
-                    //when using "drop table if exists" statement, the table name is at index 5, otherwise at 2
-                    $tableNameAtIndex = (strpos(strtolower($cSQL), 'drop table if exists') !== false) ? 4 : 2;
-                    $cSQLTMP_arr      = explode(' ', removeNumerousWhitespaces($cSQL));
-                    $cTabelle         = str_replace(["'", "`"], '', $cSQLTMP_arr[$tableNameAtIndex]);
-                    preg_match("/xplugin[_]{1}" . $oPlugin->cPluginID . "[_]{1}[a-zA-Z0-9]+/", $cTabelle, $cTreffer_arr);
-                    if (strlen($cTreffer_arr[0]) !== strlen($cTabelle)) {
-                        return 4;// Versuch eine nicht Plugintabelle zu löschen
-                    }
-                }
-
-                Shop::DB()->query($cSQL, 4);
-                $nErrno = Shop::DB()->getErrorCode();
-                // Es gab ein SQL Fehler => fülle tpluginsqlfehler
-                if ($nErrno) {
-                    Jtllog::writeLog(
-                        'SQL Fehler beim Installieren des Plugins (' . $oPlugin->cName . '): ' .
-                        str_replace("'", '', Shop::DB()->getErrorMessage()), 
-                        JTLLOG_LEVEL_ERROR, 
-                        false, 
-                        'kPlugin', 
-                        $oPlugin->kPlugin
-                    );
-
-                    return 3;// SQL hat einen Fehler verursacht
-                }
+    if (!is_array($cSQL_arr) || count($cSQL_arr) === 0) {
+        return PLUGIN_CODE_SQL_INVALID_FILE_CONTENT;
+    }
+    foreach ($cSQL_arr as $cSQL) {
+        $cSQL = removeNumerousWhitespaces($cSQL);
+        // SQL legt eine neue Tabelle an => fülle tplugincustomtabelle
+        if (stripos($cSQL, 'create table') !== false) {
+            // when using "create table if not exists" statement, the table name is at index 5, otherwise at 2
+            $tableNameAtIndex = (stripos($cSQL, 'create table if not exists') !== false) ? 5 : 2;
+            $cSQLTMP_arr      = explode(' ', $cSQL);
+            $cTabelle         = str_replace(["'", "`"], '', $cSQLTMP_arr[$tableNameAtIndex]);
+            preg_match("/xplugin[_]{1}" . $oPlugin->cPluginID . "[_]{1}[a-zA-Z0-9_]+/", $cTabelle, $cTreffer_arr);
+            if (!isset($cTreffer_arr[0]) || strlen($cTreffer_arr[0]) !== strlen($cTabelle)) {
+                return 5;// Versuch eine nicht Plugintabelle anzulegen
             }
+            // Prüfen, ob nicht bereits vorhanden => Wenn nein, anlegen
+            $oPluginCustomTabelleTMP = Shop::DB()->select('tplugincustomtabelle', 'cTabelle', $cTabelle);
+            if (!isset($oPluginCustomTabelleTMP->kPluginCustomTabelle)
+                || !$oPluginCustomTabelleTMP->kPluginCustomTabelle
+            ) {
+                $oPluginCustomTabelle           = new stdClass();
+                $oPluginCustomTabelle->kPlugin  = $oPlugin->kPlugin;
+                $oPluginCustomTabelle->cTabelle = $cTabelle;
 
-            return 1;// Alles O.K.
+                Shop::DB()->insert('tplugincustomtabelle', $oPluginCustomTabelle);
+            }
+        } elseif (stripos($cSQL, 'drop table') !== false) {
+            // SQL versucht eine Tabelle zu löschen => prüfen ob es sich um eine Plugintabelle handelt
+            // when using "drop table if exists" statement, the table name is at index 5, otherwise at 2
+            $tableNameAtIndex = (stripos($cSQL, 'drop table if exists') !== false) ? 4 : 2;
+            $cSQLTMP_arr      = explode(' ', removeNumerousWhitespaces($cSQL));
+            $cTabelle         = str_replace(["'", "`"], '', $cSQLTMP_arr[$tableNameAtIndex]);
+            preg_match("/xplugin[_]{1}" . $oPlugin->cPluginID . "[_]{1}[a-zA-Z0-9]+/", $cTabelle, $cTreffer_arr);
+            if (strlen($cTreffer_arr[0]) !== strlen($cTabelle)) {
+                return PLUGIN_CODE_SQL_WRONG_TABLE_NAME_DELETE;
+            }
         }
 
-        return 6;// SQL Datei ist leer oder konnte nicht geparsed werden
+        Shop::DB()->query($cSQL, 4);
+        $nErrno = Shop::DB()->getErrorCode();
+        // Es gab einen SQL Fehler => fülle tpluginsqlfehler
+        if ($nErrno) {
+            Jtllog::writeLog(
+                'SQL Fehler beim Installieren des Plugins (' . $oPlugin->cName . '): ' .
+                str_replace("'", '', Shop::DB()->getErrorMessage()),
+                JTLLOG_LEVEL_ERROR,
+                false,
+                'kPlugin',
+                $oPlugin->kPlugin
+            );
+
+            return PLUGIN_CODE_SQL_ERROR;
+        }
     }
 
-    return 2;// Plugindaten fehlen
+    return PLUGIN_CODE_OK;
 }
 
 /**
@@ -4039,36 +3798,32 @@ function parseSQLDatei($cSQLDatei, $cVerzeichnis, $nVersion)
         PFAD_PLUGIN_VERSION . $nVersion . '/' . 
         PFAD_PLUGIN_SQL;
 
-    if (file_exists($cSQLDateiPfad . $cSQLDatei)) {
-        $file_handle = fopen($cSQLDateiPfad . $cSQLDatei, 'r');
-        $cSQL_arr    = [];
-        $cLine       = '';
-        $i           = 0;
-        while (($cData = fgets($file_handle)) !== false) {
-            $cData = trim($cData);
-            if ($cData !== '' && strpos($cData, '--') !== 0) {
-                if (strpos($cData, 'CREATE TABLE') !== false) {
-                    $cLine .= trim($cData);
-                } elseif (strpos($cData, 'INSERT') !== false) {
-                    $cLine .= trim($cData);
-                } else {
-                    $cLine .= trim($cData);
-                }
-
-                if (substr($cData, strlen($cData) - 1, 1) === ';') {
-                    $cSQL_arr[] = $cLine;
-                    $cLine      = '';
-                }
+    if (!file_exists($cSQLDateiPfad . $cSQLDatei)) {
+        return [];// SQL Datei existiert nicht
+    }
+    $file_handle = fopen($cSQLDateiPfad . $cSQLDatei, 'r');
+    $cSQL_arr    = [];
+    $cLine       = '';
+    while (($cData = fgets($file_handle)) !== false) {
+        $cData = trim($cData);
+        if ($cData !== '' && strpos($cData, '--') !== 0) {
+            if (strpos($cData, 'CREATE TABLE') !== false) {
+                $cLine .= trim($cData);
+            } elseif (strpos($cData, 'INSERT') !== false) {
+                $cLine .= trim($cData);
+            } else {
+                $cLine .= trim($cData);
             }
 
-            $i++;
+            if (substr($cData, strlen($cData) - 1, 1) === ';') {
+                $cSQL_arr[] = $cLine;
+                $cLine      = '';
+            }
         }
-        fclose($file_handle);
-
-        return $cSQL_arr;
     }
+    fclose($file_handle);
 
-    return [];// SQL Datei existiert nicht
+    return $cSQL_arr;
 }
 
 /**
@@ -4118,7 +3873,7 @@ function pluginverwaltungcmp($a, $b)
         return 0;
     }
 
-    return ($a < $b) ? -1 : 1;
+    return $a < $b ? -1 : 1;
 }
 
 /**
@@ -4157,9 +3912,7 @@ function gibSprachVariablen($kPlugin)
                 $var->kPlugin                          = $_sv['kPlugin'];
                 $var->cName                            = $_sv['cName'];
                 $var->cBeschreibung                    = $_sv['cBeschreibung'];
-                $var->oPluginSprachvariableSprache_arr = [
-                    $_sv['cISO'] => $_sv['customValue']
-                ];
+                $var->oPluginSprachvariableSprache_arr = [$_sv['cISO'] => $_sv['customValue']];
                 $new[$_sv['kPluginSprachvariable']] = $var;
             } else {
                 $new[$_sv['kPluginSprachvariable']]->oPluginSprachvariableSprache_arr[$_sv['cISO']] = $_sv['customValue'];
@@ -4172,184 +3925,6 @@ function gibSprachVariablen($kPlugin)
 }
 
 /**
- * Holt alle PluginSprachvariablen (falls vorhanden)
- *
- * @param int $kPlugin
- * @return array
- */
-function gibSprachVariablenALT($kPlugin)
-{
-    $lvArr   = [];
-    $kPlugin = (int)$kPlugin;
-    if ($kPlugin > 0) {
-        // Hole PluginSprachvariablen
-        $lvArr = Shop::DB()->selectAll('tpluginsprachvariable', 'kPlugin', $kPlugin);
-        if (is_array($lvArr) && count($lvArr) > 0) {
-            foreach ($lvArr as $i => $oPluginSprachvariable) {
-                // Hole Custom Variablen
-                $oPluginSprachvariableCustomSprache_arr = Shop::DB()->selectAll(
-                    'tpluginsprachvariablecustomsprache',
-                    'cSprachvariable', 
-                    $oPluginSprachvariable->cName, 
-                    'kPlugin, cSprachvariable, cISO, cName AS cNameSprache'
-                );
-                if (count($oPluginSprachvariableCustomSprache_arr) > 0) {
-                    foreach ($oPluginSprachvariableCustomSprache_arr as $oPluginSprachvariableCustomSprache) {
-                        $lvArr[$i]->oPluginSprachvariableSprache_arr[$oPluginSprachvariableCustomSprache->cISO] = 
-                            $oPluginSprachvariableCustomSprache->cNameSprache;
-                    }
-                } else {
-                    $oPluginSprachvariableSprache_arr = Shop::DB()->selectAll(
-                        'tpluginsprachvariablesprache', 
-                        'kPluginSprachvariable', 
-                        (int)$oPluginSprachvariable->kPluginSprachvariable, 
-                        'cISO, cName AS cNameSprache'
-                    );
-                    if (count($oPluginSprachvariableSprache_arr) > 0) {
-                        foreach ($oPluginSprachvariableSprache_arr as $oPluginSprachvariableSprache) {
-                            $lvArr[$i]->oPluginSprachvariableSprache_arr[$oPluginSprachvariableSprache->cISO] = 
-                                $oPluginSprachvariableSprache->cNameSprache;
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    return $lvArr;
-}
-
-/*
-// 2    = Falsche Übergabeparameter
-// 3    = Verzeichnis existiert nicht
-// 4    = info.xml existiert nicht
-// 5    = Kein Plugin in der DB anhand von kPlugin gefunden
-// 6    = Der Pluginname entspricht nicht der Konvention
-// 7    = Die PluginID entspricht nicht der Konvention
-// 8    = Der Installationsknoten ist nicht vorhanden
-// 9    = Erste Versionsnummer entspricht nicht der Konvention
-// 10   = Die Versionsnummer entspricht nicht der Konvention
-// 11   = Das Versionsdatum entspricht nicht der Konvention
-// 12   = SQL Datei für die aktuelle Version existiert nicht
-// 13   = Keine Hooks vorhanden
-// 14   = Die Hook Werte entsprechen nicht den Konventionen
-// 15   = CustomLink Name entspricht nicht der Konvention
-// 16   = CustomLink Dateiname entspricht nicht der Konvention
-// 17   = CustomLink Datei existiert nicht
-// 18   = EinstellungsLink Name entspricht nicht der Konvention
-// 19   = Einstellungen fehlen
-// 20   = Einstellungen type entspricht nicht der Konvention
-// 21   = Einstellungen initialValue entspricht nicht der Konvention
-// 22   = Einstellungen sort entspricht nicht der Konvention
-// 23   = Einstellungen Name entspricht nicht der Konvention
-// 24   = Keine SelectboxOptionen vorhanden
-// 25   = Die Option entspricht nicht der Konvention
-// 26   = Keine Sprachvariablen vorhanden
-// 27   = Variable Name entspricht nicht der Konvention
-// 28   = Keine lokalisierte Sprachvariable vorhanden
-// 29   = Die ISO der lokalisierten Sprachvariable entspricht nicht der Konvention
-// 30   = Der Name der lokalisierten Sprachvariable entspricht nicht der Konvention
-// 31   = Die Hook Datei ist nicht vorhanden
-// 32   = Version existiert nicht im Versionsordner
-// 33   = Einstellungen conf entspricht nicht der Konvention
-// 34   = Einstellungen ValueName entspricht nicht der Konvention
-// 35   = XML Version entspricht nicht der Konvention
-// 36   = Shop Version entspricht nicht der Konvention
-// 37   = Shop Version ist zu niedrig
-// 38   = Keine Frontendlinks vorhanden, obwohl der Node angelegt wurde
-// 39   = Link Filename entspricht nicht der Konvention
-// 40   = LinkName entspricht nicht der Konvention
-// 41   = Angabe ob erst Sichtbar nach Login entspricht nicht der Konvention
-// 42   = Abgabe ob eine Druckbutton gezeigt werden soll entspricht nicht der Konvention
-// 43   = Die ISO der Linksprache entspricht nicht der Konvention
-// 44   = Der Seo Name entspricht nicht der Konvention
-// 45   = Der Name entspricht nicht der Konvention
-// 46   = Der Title entspricht nicht der Konvention
-// 47   = Der MetaTitle entspricht nicht der Konvention
-// 48   = Die MetaKeywords entsprechen nicht der Konvention
-// 49   = Die MetaDescription entspricht nicht der Konvention
-// 50   = Der Name in den Zahlungsmethoden entspricht nicht der Konvention
-// 51   = Sende Mail in den Zahlungsmethoden entspricht nicht der Konvention
-// 52   = TSCode in den Zahlungsmethoden entspricht nicht der Konvention
-// 53   = PreOrder in den Zahlungsmethoden entspricht nicht der Konvention
-// 54   = ClassFile in den Zahlungsmethoden entspricht nicht der Konvention
-// 55   = Die Datei für die Klasse der Zahlungsmethode existiert nicht
-// 56   = TemplateFile in den Zahlungsmethoden entspricht nicht der Konvention
-// 57   = Die Datei für das Template der Zahlungsmethode existiert nicht
-// 58   = Keine Sprachen in den Zahlungsmethoden hinterlegt
-// 59   = Die ISO der Sprache in der Zahlungsmethode entspricht nicht der Konvention
-// 60   = Der Name in den Zahlungsmethoden Sprache entspricht nicht der Konvention
-// 61   = Der ChargeName in den Zahlungsmethoden Sprache entspricht nicht der Konvention
-// 62   = Der InfoText in den Zahlungsmethoden Sprache entspricht nicht der Konvention
-// 63   = Zahlungsmethode Einstellungen type entspricht nicht der Konvention
-// 64   = Zahlungsmethode Einstellungen initialValue entspricht nicht der Konvention
-// 65   = Zahlungsmethode Einstellungen sort entspricht nicht der Konvention
-// 66   = Zahlungsmethode Einstellungen conf entspricht nicht der Konvention
-// 67   = Zahlungsmethode Einstellungen Name entspricht nicht der Konvention
-// 68   = Zahlungsmethode Einstellungen ValueName entspricht nicht der Konvention
-// 69   = Keine SelectboxOptionen vorhanden
-// 70   = Die Option entspricht nicht der Konvention
-// 71   = Die Sortierung in den Zahlungsmethoden entspricht nicht der Konvention
-// 72   = Soap in den Zahlungsmethoden entspricht nicht der Konvention
-// 73   = Curl in den Zahlungsmethoden entspricht nicht der Konvention
-// 74 	= Sockets in den Zahlungsmethoden entspricht nicht der Konvention
-// 75	= ClassName in den Zahlungsmethoden entspricht nicht der Konvention
-// 76	= Der Templatename entspricht nicht der Konvention
-// 77	= Die Templatedatei für den Frontend Link existiert nicht
-// 78	= Es darf nur ein Templatename oder ein Fullscreen Templatename existieren
-// 79	= Der Fullscreen Templatename entspricht nicht der Konvention
-// 80	= Die Fullscreen Templatedatei für den Frontend Link existiert nicht
-// 81	= Für ein Frontend Link muss ein Templatename oder Fullscreen Templatename angegeben werden
-// 82 	= Keine Box vorhanden
-// 83 	= Box Name entspricht nicht der Konvention
-// 84 	= Box Templatedatei entspricht nicht der Konvention
-// 85 	= Box Templatedatei existiert nicht
-// 86	= Lizenzklasse existiert nicht
-// 87	= Name der Lizenzklasse entspricht nicht der konvention
-// 88	= Lizenklasse ist nicht definiert
-// 89	= Methode checkLicence in der Lizenzklasse ist nicht definiert
-// 90	= PluginID bereits in der Datenbank vorhanden
-// 91	= Keine Emailtemplates vorhanden, obwohl der Node angelegt wurde
-// 92	= Template Name entspricht nicht der Konvention
-// 93	= Template Type entspricht nicht der Konvention
-// 94 	= Template ModulId entspricht nicht der Konvention
-// 95 	= Template Active entspricht nicht der Konvention
-// 96 	= Template AKZ entspricht nicht der Konvention
-// 97 	= Template AGB entspricht nicht der Konvention
-// 98	= Template WRB entspricht nicht der Konvention
-// 99	= Die ISO der Emailtemplate Sprache entspricht nicht der Konvention
-// 100	= Der Subject Name entspricht nicht der Konvention
-// 101	= Keine Templatesprachen vorhanden
-// 102  = CheckBoxFunction Name entspricht nicht der Konvention
-// 103  = CheckBoxFunction ID entspricht nicht der Konvention
-// 104  = Frontend Link Attribut NoFollow entspricht nicht der Konvention
-// 105  = Keine Widgets vorhanden
-// 106  = Widget Title entspricht nicht der Konvention
-// 107  = Widget Class entspricht nicht der Konvention
-// 108  = Die Datei für die Klasse des AdminWidgets existiert nicht
-// 109  = Container im Widget entspricht nicht der Konvention
-// 110  = Pos im Widget entspricht nicht der Konvention
-// 111  = Expanded im Widget entspricht nicht der Konvention
-// 112  = Active im Widget entspricht nicht der Konvention
-// 113  = AdditionalTemplateFile in den Zahlungsmethoden entspricht nicht der Konvention
-// 114  = Die Datei für das Zusatzschritt-Template der Zahlungsmethode existiert nicht
-// 115  = Keine Formate vorhanden
-// 116  = Format Name entspricht nicht der Konvention
-// 117  = Format Filename entspricht nicht der Konvention
-// 118  = Format enthaelt weder Content, noch eine Contentdatei
-// 119  = Format Encoding entspricht nicht der Konvention
-// 120  = Format ShippingCostsDeliveryCountry entspricht nicht der Konvention
-// 121  = Format ContenFile entspricht nicht der Konvention
-// 122 	= Kein Template vorhanden
-// 123 	= Templatedatei entspricht nicht der Konvention
-// 124 	= Templatedatei existiert nicht
-// 125  = Uninstall File existiert nicht
-// 127  = Benoetigt ionCube, Extension wurde aber nicht geladen
-// 128  = OptionsSource-Datei wurde nicht angegeben
-// 129  = OptionsSource-Datei existiert nicht
-*/
-
-/**
  * @param int    $nFehlerCode
  * @param object $oPlugin
  * @return string
@@ -4358,393 +3933,400 @@ function mappePlausiFehler($nFehlerCode, $oPlugin)
 {
     $return = '';
     if ($nFehlerCode > 0) {
+        $return = 'Fehler: ';
         switch ($nFehlerCode) {
-            case 2:
-                $return = 'Fehler: Die Plausibilität ist aufgrund fehlender Parameter abgebrochen.';
+            case PLUGIN_CODE_WRONG_PARAM:
+                $return .= 'Die Plausibilität ist aufgrund fehlender Parameter abgebrochen.';
                 break;
-            case 3:
-                $return = 'Fehler: Das Pluginverzeichnis existiert nicht.';
+            case PLUGIN_CODE_DIR_DOES_NOT_EXIST:
+                $return .= 'Das Pluginverzeichnis existiert nicht.';
                 break;
-            case 4:
-                $return = 'Fehler: Die Informations XML Datei existiert nicht.';
+            case PLUGIN_CODE_INFO_XML_MISSING:
+                $return .= 'Die Informations XML Datei existiert nicht.';
                 break;
-            case 5:
-                $return = 'Fehler: Das ausgewählte Plugin wurde nicht in der Datenbank gefunden.';
+            case PLUGIN_CODE_NO_PLUGIN_FOUND:
+                $return .= 'Das ausgewählte Plugin wurde nicht in der Datenbank gefunden.';
                 break;
-            case 6:
-                $return = 'Fehler: Der Pluginname entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_NAME:
+                $return .= 'Der Pluginname entspricht nicht der Konvention.';
                 break;
-            case 7:
-                $return = 'Fehler: Die PluginID entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_PLUGIN_ID:
+                $return .= 'Die PluginID entspricht nicht der Konvention.';
                 break;
-            case 8:
-                $return = 'Fehler: Der Installationsknoten ist nicht vorhanden.';
+            case PLUGIN_CODE_INSTALL_NODE_MISSING:
+                $return .= 'Der Installationsknoten ist nicht vorhanden.';
                 break;
-            case 9:
-                $return = 'Fehler: Erste Versionsnummer entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_XML_VERSION_NUMBER:
+                $return .= 'Erste Versionsnummer entspricht nicht der Konvention.';
                 break;
-            case 10:
-                $return = 'Fehler: Die Versionsnummer entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_VERSION_NUMBER:
+                $return .= 'Die Versionsnummer entspricht nicht der Konvention.';
                 break;
-            case 11:
-                $return = 'Fehler: Das Versionsdatum entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_DATE:
+                $return .= 'Das Versionsdatum entspricht nicht der Konvention.';
                 break;
-            case 12:
-                $return = 'Fehler: SQL-Datei für die aktuelle Version existiert nicht.';
+            case PLUGIN_CODE_MISSING_SQL_FILE:
+                $return .= 'SQL-Datei für die aktuelle Version existiert nicht.';
                 break;
-            case 13:
-                $return = 'Fehler: Keine Hooks vorhanden.';
+            case PLUGIN_CODE_MISSING_HOOKS:
+                $return .= 'Keine Hooks vorhanden.';
                 break;
-            case 14:
-                $return = 'Fehler: Die Hook-Werte entsprechen nicht den Konventionen.';
+            case PLUGIN_CODE_INVALID_HOOK:
+                $return .= 'Die Hook-Werte entsprechen nicht den Konventionen.';
                 break;
-            case 15:
-                $return = 'Fehler: CustomLink Name entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_CUSTOM_LINK_NAME:
+                $return .= 'CustomLink Name entspricht nicht der Konvention.';
                 break;
-            case 16:
-                $return = 'Fehler: Dateiname entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_CUSTOM_LINK_FILE_NAME:
+                $return .= 'Dateiname entspricht nicht der Konvention.';
                 break;
-            case 17:
-                $return = 'Fehler: CustomLink-Datei existiert nicht.';
+            case PLUGIN_CODE_MISSING_CUSTOM_LINK_FILE:
+                $return .= 'CustomLink-Datei existiert nicht.';
                 break;
-            case 18:
-                $return = 'Fehler: EinstellungsLink Name entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_CONFIG_LINK_NAME:
+                $return .= 'EinstellungsLink Name entspricht nicht der Konvention.';
                 break;
-            case 19:
-                $return = 'Fehler: Einstellungen fehlen.';
+            case PLUGIN_CODE_MISSING_CONFIG:
+                $return .= 'Einstellungen fehlen.';
                 break;
-            case 20:
-                $return = 'Fehler: Einstellungen type entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_CONFIG_TYPE:
+                $return .= 'Einstellungen type entspricht nicht der Konvention.';
                 break;
-            case 21:
-                $return = 'Fehler: Einstellungen initialValue entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_CONFIG_INITIAL_VALUE:
+                $return .= 'Einstellungen initialValue entspricht nicht der Konvention.';
                 break;
-            case 22:
-                $return = 'Fehler: Einstellungen sort entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_CONFIG_SORT_VALUE:
+                $return .= 'Einstellungen sort entspricht nicht der Konvention.';
                 break;
-            case 23:
-                $return = 'Fehler: Einstellungen Name entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_CONFIG_NAME:
+                $return .= 'Einstellungen Name entspricht nicht der Konvention.';
                 break;
-            case 24:
-                $return = 'Fehler: Keine SelectboxOptionen vorhanden.';
+            case PLUGIN_CODE_MISSING_CONFIG_SELECTBOX_OPTIONS:
+                $return .= 'Keine SelectboxOptionen vorhanden.';
                 break;
-            case 25:
-                $return = 'Fehler: Die Option entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_CONFIG_OPTION:
+                $return .= 'Die Option entspricht nicht der Konvention.';
                 break;
-            case 26:
-                $return = 'Fehler: Keine Sprachvariablen vorhanden.';
+            case PLUGIN_CODE_MISSING_LANG_VARS:
+                $return .= 'Keine Sprachvariablen vorhanden.';
                 break;
-            case 27:
-                $return = 'Fehler: Variable Name entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_LANG_VAR_NAME:
+                $return .= 'Variable Name entspricht nicht der Konvention.';
                 break;
-            case 28:
-                $return = 'Fehler: Keine lokalisierte Sprachvariable vorhanden.';
+            case PLUGIN_CODE_MISSING_LOCALIZED_LANG_VAR:
+                $return .= 'Keine lokalisierte Sprachvariable vorhanden.';
                 break;
-            case 29:
-                $return = 'Fehler: Die ISO der lokalisierten Sprachvariable entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_LANG_VAR_ISO:
+                $return .= 'Die ISO der lokalisierten Sprachvariable entspricht nicht der Konvention.';
                 break;
-            case 30:
-                $return = 'Fehler: Der Name der lokalisierten Sprachvariable entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_LOCALIZED_LANG_VAR_NAME:
+                $return .= 'Der Name der lokalisierten Sprachvariable entspricht nicht der Konvention.';
                 break;
-            case 31:
-                $return = 'Fehler: Die Hook-Datei ist nicht vorhanden.';
+            case PLUGIN_CODE_MISSING_HOOK_FILE:
+                $return .= 'Die Hook-Datei ist nicht vorhanden.';
                 break;
-            case 32:
-                $return = 'Fehler: Version existiert nicht im Versionsordner.';
+            case PLUGIN_CODE_MISSING_VERSION_DIR:
+                $return .= 'Version existiert nicht im Versionsordner.';
                 break;
-            case 33:
-                $return = 'Fehler: Einstellungen conf entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_CONF:
+                $return .= 'Einstellungen conf entspricht nicht der Konvention.';
                 break;
-            case 34:
-                $return = 'Fehler: Einstellungen ValueName entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_CONF_VALUE_NAME:
+                $return .= 'Einstellungen ValueName entspricht nicht der Konvention.';
                 break;
-            case 35:
-                $return = 'Fehler: XML-Version entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_XML_VERSION:
+                $return .= 'XML-Version entspricht nicht der Konvention.';
                 break;
-            case 36:
-                $return = 'Fehler: Shopversion entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_SHOP_VERSION:
+                $return .= 'Shopversion entspricht nicht der Konvention.';
                 break;
-            case 37:
-                $return = 'Fehler: Shopversion ist zu niedrig.';
+            case PLUGIN_CODE_SHOP_VERSION_COMPATIBILITY:
+                $return .= 'Shopversion ist zu niedrig.';
                 break;
-            case 38:
-                $return = 'Fehler: Keine Frontendlinks vorhanden, obwohl der Node angelegt wurde.';
+            case PLUGIN_CODE_MISSING_FRONTEND_LINKS:
+                $return .= 'Keine Frontendlinks vorhanden, obwohl der Node angelegt wurde.';
                 break;
-            case 39:
-                $return = 'Fehler: Link Filename entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_FRONTEND_LINK_FILENAME:
+                $return .= 'Link Filename entspricht nicht der Konvention.';
                 break;
-            case 40:
-                $return = 'Fehler: LinkName entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_FRONTEND_LINK_NAME:
+                $return .= 'LinkName entspricht nicht der Konvention.';
                 break;
-            case 41:
-                $return = 'Fehler: Angabe ob erst Sichtbar nach Login entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_FRONEND_LINK_VISIBILITY:
+                $return .= 'Angabe ob erst Sichtbar nach Login entspricht nicht der Konvention.';
                 break;
-            case 42:
-                $return = 'Fehler: Abgabe ob eine Druckbutton gezeigt werden soll entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_FRONEND_LINK_PRINT:
+                $return .= 'Abgabe ob eine Druckbutton gezeigt werden soll entspricht nicht der Konvention.';
                 break;
-            case 43:
-                $return = 'Fehler: Die ISO der Linksprache entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_FRONEND_LINK_ISO:
+                $return .= 'Die ISO der Linksprache entspricht nicht der Konvention.';
                 break;
-            case 44:
-                $return = 'Fehler: Der Seo Name entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_FRONEND_LINK_SEO:
+                $return .= 'Der Seo Name entspricht nicht der Konvention.';
                 break;
-            case 45:
-                $return = 'Fehler: Der Name entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_FRONEND_LINK_NAME:
+                $return .= 'Der Name entspricht nicht der Konvention.';
                 break;
-            case 46:
-                $return = 'Fehler: Der Title entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_FRONEND_LINK_TITLE:
+                $return .= 'Der Title entspricht nicht der Konvention.';
                 break;
-            case 47:
-                $return = 'Fehler: Der MetaTitle entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_FRONEND_LINK_META_TITLE:
+                $return .= 'Der MetaTitle entspricht nicht der Konvention.';
                 break;
-            case 48:
-                $return = 'Fehler: Die MetaKeywords entsprechen nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_FRONEND_LINK_META_KEYWORDS:
+                $return .= 'Die MetaKeywords entsprechen nicht der Konvention.';
                 break;
-            case 49:
-                $return = 'Fehler: Die MetaDescription entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_FRONEND_LINK_META_DESCRIPTION:
+                $return .= 'Die MetaDescription entspricht nicht der Konvention.';
                 break;
-            case 50:
-                $return = 'Fehler: Der Name in den Zahlungsmethoden entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_PAYMENT_METHOD_NAME:
+                $return .= 'Der Name in den Zahlungsmethoden entspricht nicht der Konvention.';
                 break;
-            case 51:
-                $return = 'Fehler: Sende Mail in den Zahlungsmethoden entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_PAYMENT_METHOD_MAIL:
+                $return .= 'Sende Mail in den Zahlungsmethoden entspricht nicht der Konvention.';
                 break;
-            case 52:
-                $return = 'Fehler: TSCode in den Zahlungsmethoden entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_PAYMENT_METHOD_TSCODE:
+                $return .= 'TSCode in den Zahlungsmethoden entspricht nicht der Konvention.';
                 break;
-            case 53:
-                $return = 'Fehler: PreOrder in den Zahlungsmethoden entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_PAYMENT_METHOD_PRE_ORDER:
+                $return .= 'PreOrder in den Zahlungsmethoden entspricht nicht der Konvention.';
                 break;
-            case 54:
-                $return = 'Fehler: ClassFile in den Zahlungsmethoden entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_PAYMENT_METHOD_CLASS_FILE:
+                $return .= 'ClassFile in den Zahlungsmethoden entspricht nicht der Konvention.';
                 break;
-            case 55:
-                $return = 'Fehler: Die Datei für die Klasse der Zahlungsmethode existiert nicht.';
+            case PLUGIN_CODE_MISSING_PAYMENT_METHOD_FILE:
+                $return .= 'Die Datei für die Klasse der Zahlungsmethode existiert nicht.';
                 break;
-            case 56:
-                $return = 'Fehler: TemplateFile in den Zahlungsmethoden entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_PAYMENT_METHOD_TEMPLATE:
+                $return .= 'TemplateFile in den Zahlungsmethoden entspricht nicht der Konvention.';
                 break;
-            case 57:
-                $return = 'Fehler: Die Datei für das Template der Zahlungsmethode existiert nicht.';
+            case PLUGIN_CODE_MISSING_PAYMENT_METHOD_TEMPLATE:
+                $return .= 'Die Datei für das Template der Zahlungsmethode existiert nicht.';
                 break;
-            case 58:
-                $return = 'Fehler: Keine Sprachen in den Zahlungsmethoden hinterlegt.';
+            case PLUGIN_CODE_MISSING_PAYMENT_METHOD_LANGUAGES:
+                $return .= 'Keine Sprachen in den Zahlungsmethoden hinterlegt.';
                 break;
-            case 59:
-                $return = 'Fehler: Die ISO der Sprache in der Zahlungsmethode entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_PAYMENT_METHOD_LANGUAGE_ISO:
+                $return .= 'Die ISO der Sprache in der Zahlungsmethode entspricht nicht der Konvention.';
                 break;
-            case 60:
-                $return = 'Fehler: Der Name in den Zahlungsmethoden Sprache entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_PAYMENT_METHOD_NAME_LOCALIZED:
+                $return .= 'Der Name in den Zahlungsmethoden Sprache entspricht nicht der Konvention.';
                 break;
-            case 61:
-                $return = 'Fehler: Der ChargeName in den Zahlungsmethoden Sprache entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_PAYMENT_METHOD_CHARGE_NAME:
+                $return .= 'Der ChargeName in den Zahlungsmethoden Sprache entspricht nicht der Konvention.';
                 break;
-            case 62:
-                $return = 'Fehler: Der InfoText in den Zahlungsmethoden Sprache entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_PAYMENT_METHOD_INFO_TEXT:
+                $return .= 'Der InfoText in den Zahlungsmethoden Sprache entspricht nicht der Konvention.';
                 break;
-            case 63:
-                $return = 'Fehler: Zahlungsmethode Einstellungen type entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_PAYMENT_METHOD_CONFIG_TYPE:
+                $return .= 'Zahlungsmethode Einstellungen type entspricht nicht der Konvention.';
                 break;
-            case 64:
-                $return = 'Fehler: Zahlungsmethode Einstellungen initialValue entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_PAYMENT_METHOD_CONFIG_INITITAL_VALUE:
+                $return .= 'Zahlungsmethode Einstellungen initialValue entspricht nicht der Konvention.';
                 break;
-            case 65:
-                $return = 'Fehler: Zahlungsmethode Einstellungen sort entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_PAYMENT_METHOD_CONFIG_SORT:
+                $return .= 'Zahlungsmethode Einstellungen sort entspricht nicht der Konvention.';
                 break;
-            case 66:
-                $return = 'Fehler: Zahlungsmethode Einstellungen conf entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_PAYMENT_METHOD_CONFIG_CONF:
+                $return .= 'Zahlungsmethode Einstellungen conf entspricht nicht der Konvention.';
                 break;
-            case 67:
-                $return = 'Fehler: Zahlungsmethode Einstellungen Name entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_PAYMENT_METHOD_CONFIG_NAME:
+                $return .= 'Zahlungsmethode Einstellungen Name entspricht nicht der Konvention.';
                 break;
-            case 68:
-                $return = 'Fehler: Zahlungsmethode Einstellungen ValueName entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_PAYMENT_METHOD_VALUE_NAME:
+                $return .= 'Zahlungsmethode Einstellungen ValueName entspricht nicht der Konvention.';
                 break;
-            case 69:
-                $return = 'Fehler: Keine SelectboxOptionen vorhanden.';
+            case PLUGIN_CODE_MISSING_PAYMENT_METHOD_SELECTBOX_OPTIONS:
+                $return .= 'Keine SelectboxOptionen vorhanden.';
                 break;
-            case 70:
-                $return = 'Fehler: Die Option entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_PAYMENT_METHOD_OPTION:
+                $return .= 'Die Option entspricht nicht der Konvention.';
                 break;
-            case 71:
-                $return = 'Fehler: Die Sortierung in den Zahlungsmethoden entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_PAYMENT_METHOD_SORT:
+                $return .= 'Die Sortierung in den Zahlungsmethoden entspricht nicht der Konvention.';
                 break;
-            case 72:
-                $return = 'Fehler: Soap in den Zahlungsmethoden entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_PAYMENT_METHOD_SOAP:
+                $return .= 'Soap in den Zahlungsmethoden entspricht nicht der Konvention.';
                 break;
-            case 73:
-                $return = 'Fehler: Curl in den Zahlungsmethoden entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_PAYMENT_METHOD_CURL:
+                $return .= 'Curl in den Zahlungsmethoden entspricht nicht der Konvention.';
                 break;
-            case 74:
-                $return = 'Fehler: Sockets in den Zahlungsmethoden entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_PAYMENT_METHOD_SOCKETS:
+                $return .= 'Sockets in den Zahlungsmethoden entspricht nicht der Konvention.';
                 break;
-            case 75:
-                $return = 'Fehler: ClassName in den Zahlungsmethoden entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_PAYMENT_METHOD_CLASS_NAME:
+                $return .= 'ClassName in den Zahlungsmethoden entspricht nicht der Konvention.';
                 break;
-            case 76:
-                $return = 'Fehler: Der Templatename entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_FULLSCREEN_TEMPLATE:
+                $return .= 'Der Fullscreen-Templatename entspricht nicht der Konvention.';
                 break;
-            case 77:
-                $return = 'Fehler: Die Templatedatei für den Frontend Link existiert nicht.';
+            case PLUGIN_CODE_MISSING_FRONTEND_LINK_TEMPLATE:
+                $return .= 'Die Templatedatei für den Frontend Link existiert nicht.';
                 break;
-            case 78:
-                $return = 'Fehler: Es darf nur ein Templatename oder ein Fullscreen Templatename existieren.';
+            case PLUGIN_CODE_TOO_MANY_FULLSCREEN_TEMPLATE_NAMES:
+                $return .= 'Es darf nur ein Templatename oder ein Fullscreen Templatename existieren.';
                 break;
-            case 79:
-                $return = 'Fehler: Der Fullscreen Templatename entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_FULLSCREEN_TEMPLATE_NAME:
+                $return .= 'Der Fullscreen Templatename entspricht nicht der Konvention.';
                 break;
-            case 80:
-                $return = 'Fehler: Die Fullscreen Templatedatei für den Frontend Link existiert nicht.';
+            case PLUGIN_CODE_MISSING_FULLSCREEN_TEMPLATE_FILE:
+                $return .= 'Die Fullscreen Templatedatei für den Frontend Link existiert nicht.';
                 break;
-            case 81:
-                $return = 'Fehler: Für ein Frontend Link muss ein Templatename oder Fullscreen Templatename angegeben werden.';
+            case PLUGIN_CODE_INVALID_FRONTEND_LINK_TEMPLATE_FULLSCREEN_TEMPLATE:
+                $return .= 'Für ein Frontend Link muss ein Templatename oder Fullscreen Templatename angegeben werden.';
                 break;
-            case 82:
-                $return = 'Fehler: Keine Box vorhanden.';
+            case PLUGIN_CODE_MISSING_BOX:
+                $return .= 'Keine Box vorhanden.';
                 break;
-            case 83:
-                $return = 'Fehler: Box Name entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_BOX_NAME:
+                $return .= 'Box Name entspricht nicht der Konvention.';
                 break;
-            case 84:
-                $return = 'Fehler: Box Templatedatei entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_BOX_TEMPLATE:
+                $return .= 'Box Templatedatei entspricht nicht der Konvention.';
                 break;
-            case 85:
-                $return = 'Fehler: Box Templatedatei existiert nicht.';
+            case PLUGIN_CODE_MISSING_BOX_TEMPLATE_FILE:
+                $return .= 'Box Templatedatei existiert nicht.';
                 break;
-            case 86:
-                $return = 'Fehler: Lizenzklasse existiert nicht.';
+            case PLUGIN_CODE_MISSING_LICENCE_FILE:
+                $return .= 'Lizenzklasse existiert nicht.';
                 break;
-            case 87:
-                $return = 'Fehler: Name der Lizenzklasse entspricht nicht der konvention.';
+            case PLUGIN_CODE_INVALID_LICENCE_FILE_NAME:
+                $return .= 'Name der Lizenzklasse entspricht nicht der konvention.';
                 break;
-            case 88:
-                $return = 'Fehler: Lizenklasse ist nicht definiert.';
+            case PLUGIN_CODE_MISSING_LICENCE:
+                $return .= 'Lizenklasse ist nicht definiert.';
                 break;
-            case 89:
-                $return = 'Fehler: Methode checkLicence in der Lizenzklasse ist nicht definiert.';
+            case PLUGIN_CODE_MISSING_LICENCE_CHECKLICENCE_METHOD:
+                $return .= 'Methode checkLicence in der Lizenzklasse ist nicht definiert.';
                 break;
-            case 90:
-                $return = 'Fehler: PluginID bereits in der Datenbank vorhanden.';
+            case PLUGIN_CODE_DUPLICATE_PLUGIN_ID:
+                $return .= 'PluginID bereits in der Datenbank vorhanden.';
                 break;
-            case 91:
-                $return = 'Fehler: Keine Emailtemplates vorhanden, obwohl der Node angelegt wurde.';
+            case PLUGIN_CODE_MISSING_EMAIL_TEMPLATES:
+                $return .= 'Keine Emailtemplates vorhanden, obwohl der Node angelegt wurde.';
                 break;
-            case 92:
-                $return = 'Fehler: Template Name entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_TEMPLATE_NAME:
+                $return .= 'Template Name entspricht nicht der Konvention.';
                 break;
-            case 93:
-                $return = 'Fehler: Template Type entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_TEMPLATE_TYPE:
+                $return .= 'Template Type entspricht nicht der Konvention.';
                 break;
-            case 94:
-                $return = 'Fehler: Template ModulId entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_TEMPLATE_MODULE_ID:
+                $return .= 'Template ModulId entspricht nicht der Konvention.';
                 break;
-            case 95:
-                $return = 'Fehler: Template Active entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_TEMPLATE_ACTIVE:
+                $return .= 'Template Active entspricht nicht der Konvention.';
                 break;
-            case 96:
-                $return = 'Fehler: Template AKZ entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_TEMPLATE_AKZ:
+                $return .= 'Template AKZ entspricht nicht der Konvention.';
                 break;
-            case 97:
-                $return = 'Fehler: Template AGB entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_TEMPLATE_AGB:
+                $return .= 'Template AGB entspricht nicht der Konvention.';
                 break;
-            case 98:
-                $return = 'Fehler: Template WRB entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_TEMPLATE_WRB:
+                $return .= 'Template WRB entspricht nicht der Konvention.';
                 break;
-            case 99:
-                $return = 'Fehler: Die ISO der Emailtemplate Sprache entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_EMAIL_TEMPLATE_ISO:
+                $return .= 'Die ISO der Emailtemplate Sprache entspricht nicht der Konvention.';
                 break;
-            case 100:
-                $return = 'Fehler: Der Subject Name entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_EMAIL_TEMPLATE_SUBJECT:
+                $return .= 'Der Subject Name entspricht nicht der Konvention.';
                 break;
-            case 101:
-                $return = 'Fehler: Keine Templatesprachen vorhanden.';
+            case PLUGIN_CODE_MISSING_EMAIL_TEMPLATE_LANGUAGE:
+                $return .= 'Keine Templatesprachen vorhanden.';
                 break;
-            case 102:
-                $return = 'Fehler: CheckBoxFunction Name entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_CHECKBOX_FUNCTION_NAME:
+                $return .= 'CheckBoxFunction Name entspricht nicht der Konvention.';
                 break;
-            case 103:
-                $return = 'Fehler: CheckBoxFunction ID entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_CHECKBOX_FUNCTION_ID:
+                $return .= 'CheckBoxFunction ID entspricht nicht der Konvention.';
                 break;
-            case 104:
-                $return = 'Fehler: Frontend Link Attribut NoFollow entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_FRONTEND_LINK_NO_FOLLOW:
+                $return .= 'Frontend Link Attribut NoFollow entspricht nicht der Konvention.';
                 break;
-            case 105:
-                $return = 'Fehler: Keine Widgets vorhanden.';
+            case PLUGIN_CODE_MISSING_WIDGETS:
+                $return .= 'Keine Widgets vorhanden.';
                 break;
-            case 106:
-                $return = 'Fehler: Widget Title entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_WIDGET_TITLE:
+                $return .= 'Widget Title entspricht nicht der Konvention.';
                 break;
-            case 107:
-                $return = 'Fehler: Widget Class entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_WIDGET_CLASS:
+                $return .= 'Widget Class entspricht nicht der Konvention.';
                 break;
-            case 108:
-                $return = 'Fehler: Die Datei für die Klasse des AdminWidgets existiert nicht.';
+            case PLUGIN_CODE_MISSING_WIDGET_CLASS_FILE:
+                $return .= 'Die Datei für die Klasse des AdminWidgets existiert nicht.';
                 break;
-            case 109:
-                $return = 'Fehler: Container im Widget entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_WIDGET_CONTAINER:
+                $return .= 'Container im Widget entspricht nicht der Konvention.';
                 break;
-            case 110:
-                $return = 'Fehler: Pos im Widget entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_WIDGET_POS:
+                $return .= 'Pos im Widget entspricht nicht der Konvention.';
                 break;
-            case 111:
-                $return = 'Fehler: Expanded im Widget entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_WIDGET_EXPANDED:
+                $return .= 'Expanded im Widget entspricht nicht der Konvention.';
                 break;
-            case 112:
-                $return = 'Fehler: Active im Widget entspricht nicht der Konvention.';
+            case PLUGIN_CODE_INVALID_WIDGET_ACTIVE:
+                $return .= 'Active im Widget entspricht nicht der Konvention.';
                 break;
-            case 113:
-                $return = 'Fehler: AdditionalTemplateFile in den Zahlungsmethoden entspricht nicht der Konvention';
+            case PLUGIN_CODE_INVALID_PAYMENT_METHOD_ADDITIONAL_STEP_TEMPLATE_FILE:
+                $return .= 'AdditionalTemplateFile in den Zahlungsmethoden entspricht nicht der Konvention';
                 break;
-            case 114:
-                $return = 'Die Datei für das Zusatzschritt-Template der Zahlungsmethode existiert nicht';
+            case PLUGIN_CODE_MISSING_PAYMENT_METHOD_ADDITIONAL_STEP_FILE:
+                $return .= 'Die Datei für das Zusatzschritt-Template der Zahlungsmethode existiert nicht';
                 break;
-            case 115:
-                $return = 'Keine Formate vorhanden';
+            case PLUGIN_CODE_MISSING_FORMATS:
+                $return .= 'Keine Formate vorhanden';
                 break;
-            case 116:
-                $return = 'Format Name entspricht nicht der Konvention';
+            case PLUGIN_CODE_INVALID_FORMAT_NAME:
+                $return .= 'Format Name entspricht nicht der Konvention';
                 break;
-            case 117:
-                $return = 'Format Filename entspricht nicht der Konvention';
+            case PLUGIN_CODE_INVALID_FORMAT_FILE_NAME:
+                $return .= 'Format Filename entspricht nicht der Konvention';
                 break;
-            case 118:
-                $return = 'Format enthaelt weder Content, noch eine Contentdatei';
+            case PLUGIN_CODE_MISSING_FORMAT_CONTENT:
+                $return .= 'Format enthält weder Content, noch eine Contentdatei';
                 break;
-            case 119:
-                $return = 'Format Encoding entspricht nicht der Konvention';
+            case PLUGIN_CODE_INVALID_FORMAT_ENCODING:
+                $return .= 'Format Encoding entspricht nicht der Konvention';
                 break;
-            case 120:
-                $return = 'Format ShippingCostsDeliveryCountry entspricht nicht der Konvention';
+            case PLUGIN_CODE_INVALID_FORMAT_SHIPPING_COSTS_DELIVERY_COUNTRY:
+                $return .= 'Format ShippingCostsDeliveryCountry entspricht nicht der Konvention';
                 break;
-            case 121:
-                $return = 'Format ContenFile entspricht nicht der Konvention';
+            case PLUGIN_CODE_INVALID_FORMAT_CONTENT_FILE:
+                $return .= 'Format ContenFile entspricht nicht der Konvention';
                 break;
-            case 122:
-                $return = 'Kein Template vorhanden';
+            case PLUGIN_CODE_MISSING_EXTENDED_TEMPLATE:
+                $return .= 'Kein Template vorhanden';
                 break;
-            case 123:
-                $return = 'Templatedatei entspricht nicht der Konvention';
+            case PLUGIN_CODE_INVALID_EXTENDED_TEMPLATE_FILE_NAME:
+                $return .= 'Templatedatei entspricht nicht der Konvention';
                 break;
-            case 124:
-                $return = 'Templatedatei existiert nicht';
+            case PLUGIN_CODE_MISSING_EXTENDED_TEMPLATE_FILE:
+                $return .= 'Templatedatei existiert nicht';
                 break;
-            case 125:
-                $return = 'Fehler: Uninstall File existiert nicht';
+            case PLUGIN_CODE_MISSING_UNINSTALL_FILE:
+                $return .= 'Uninstall File existiert nicht';
                 break;
-            case 127:
-                $return = 'Fehler: Das Plugin ben&ouml;tigt ionCube';
+            case PLUGIN_CODE_IONCUBE_REQUIRED:
+                $return .= 'Das Plugin ben&ouml;tigt ionCube';
                 break;
-            case 128:
-                $return = 'Fehler: OptionsSource-Datei wurde nicht angegeben';
+            case PLUGIN_CODE_INVALID_OPTIONS_SOURE_FILE:
+                $return .= 'OptionsSource-Datei wurde nicht angegeben';
                 break;
-            case 129:
-                $return = 'Fehler: OptionsSource-Datei existiert nicht';
+            case PLUGIN_CODE_MISSING_OPTIONS_SOURE_FILE:
+                $return .= 'OptionsSource-Datei existiert nicht';
                 break;
-            case 130:
-                $return = 'Fehler: Bootstrap-Klasse "%cPluginID%\\Bootstrap" existiert nicht';
+            case PLUGIN_CODE_MISSING_BOOTSTRAP_CLASS:
+                $return .= 'Bootstrap-Klasse "%cPluginID%\\Bootstrap" existiert nicht';
                 break;
-            case 131:
-                $return = 'Fehler: Bootstrap-Klasse "%cPluginID%\\Bootstrap" muss das Interface "IPlugin" implementieren';
+            case PLUGIN_CODE_INVALID_BOOTSTRAP_IMPLEMENTATION:
+                $return .= 'Bootstrap-Klasse "%cPluginID%\\Bootstrap" muss das Interface "IPlugin" implementieren';
+                break;
+            case PLUGIN_CODE_INVALID_AUTHOR:
+                $return .= 'Autor entspricht nicht der Konvention.';
+                break;
+            default:
+                $return = 'Unbekannter Fehler.';
                 break;
         }
     }
@@ -4753,8 +4335,5 @@ function mappePlausiFehler($nFehlerCode, $oPlugin)
         return sprintf('%%%s%%', $val);
     }, array_keys((array)$oPlugin));
 
-    $replace = array_values((array)$oPlugin);
-    $return  = str_replace($search, $replace, $return);
-
-    return utf8_decode($return);
+    return utf8_decode(str_replace($search, array_values((array)$oPlugin), $return));
 }

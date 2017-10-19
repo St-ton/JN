@@ -16,6 +16,7 @@
     <script src="{$templateUrl}js/bootstrap.min.js"></script>
     <script src="https://unpkg.com/split.js/split.min.js"></script>
     <script src="{$templateUrl}js/global.js"></script>
+    <script src="https://cdn.ckeditor.com/ckeditor5/1.0.0-alpha.1/classic/ckeditor.js"></script>
 
     <link rel="stylesheet" href="{$templateUrl}css/jtl-live-editor/jle-host.css">
     <script src="{$templateUrl}js/jtl-live-editor/jle-host.js"></script>

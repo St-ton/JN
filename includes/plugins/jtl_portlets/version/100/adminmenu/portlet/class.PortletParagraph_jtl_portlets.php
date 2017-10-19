@@ -12,11 +12,27 @@ class PortletParagraph_jtl_portlets extends PortletBase
 {
     public function getPreviewContent($settings = null)
     {
-        return htmlspecialchars('<p class="jle-editable">ein neuer Paragraph</p>');
+        $text = isset($settings['text']) ? $settings['text'] : 'ein neuer Abschnitt';
+
+        return "<p>$text</p>";
     }
 
     public function getHTMLContent()
     {
-        return htmlspecialchars('<p class="jle-editable">ein neuer Paragraph</p>');
+        return "<p>paragraph</p>";
+    }
+
+    public function getSettingsHTML($settings)
+    {
+        return $this->oSmarty
+            ->assign('settings', $settings)
+            ->fetch(__DIR__ . '/portletParagraphSettings.tpl');
+    }
+
+    public function getInitialSettings()
+    {
+        return [
+            'text' => 'ein neuer Abschnitt',
+        ];
     }
 }

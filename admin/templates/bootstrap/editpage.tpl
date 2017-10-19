@@ -67,7 +67,10 @@
         <div class="tab-content">
             <div class="tab-pane active" id="elements">
                 {foreach from=$oPortlet_arr item=oPortlet}
-                    <a href="#" class="portlet-button btn btn-default" role="button" data-content="{$oPortlet->cPreviewContent}">
+                    <a href="#" class="portlet-button btn btn-default" role="button"
+                       data-content="{$oPortlet->cPreviewContent}"
+                       data-portletid="{$oPortlet->kPortlet}"
+                       data-initialsettings="{$oPortlet->cInitialSettings|json_encode|escape:'htmlall'}">
                         {$oPortlet->cTitle}
                     </a>
                 {/foreach}

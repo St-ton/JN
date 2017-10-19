@@ -31,8 +31,9 @@ function getPortlets()
             require_once $cClassPath;
             if (class_exists($cClass)) {
                 /** @var PortletBase $oClassObj */
-                $oClassObj                         = new $cClass(null, null, $oPlugin);
-                $oPortlet_arr[$i]->cPreviewContent = $oClassObj->getPreviewContent();
+                $oClassObj                          = new $cClass(null, null, $oPlugin);
+                $oPortlet_arr[$i]->cPreviewContent  = $oClassObj->getPreviewContent();
+                $oPortlet_arr[$i]->cInitialSettings = $oClassObj->getInitialSettings();
             }
         }
     }
@@ -46,10 +47,10 @@ function getPortletPreviewContent($kPortlet, $data)
     return $portletInst->getPreviewContent($data);
 }
 
-function getPortletSettingsHtml($kPortlet)
+function getPortletSettingsHtml($kPortlet, $settings)
 {
     $portletInst = PortletBase::createInstance($kPortlet, Shop::Smarty(), Shop::DB());
-    return $portletInst->getSettingsHTML();
+    return $portletInst->getSettingsHTML($settings);
 }
 
 function getPortletInitialSettings($kPortlet)

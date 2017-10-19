@@ -5,7 +5,7 @@ function JLEHost(iframeSelector, templateUrl)
     this.iframeCtx = null;
     this.editor = null;
     this.iframe = $(iframeSelector);
-    this.iframe.on("load", this.iframeLoaded.bind(this));
+    this.iframe.on('load', this.iframeLoaded.bind(this));
 
     this.curPortletId = 0;
 
@@ -17,29 +17,33 @@ JLEHost.prototype.iframeLoaded = function()
     this.iframeCtx = this.iframe[0].contentWindow;
 
     JLEHost.loadStylesheet(
-    	this.iframeCtx, this.templateUrl + "css/jtl-live-editor/jtl-live-editor.css"
+    	this.iframeCtx, this.templateUrl + 'css/jtl-live-editor/jtl-live-editor.css'
 	);
 
     JLEHost.loadScript(
-    	this.iframeCtx, this.templateUrl + "js/jtl-live-editor/jtl-live-editor.js", this.liveEditorLoaded.bind(this)
+    	this.iframeCtx, this.templateUrl + 'js/jtl-live-editor/jtl-live-editor.js', this.liveEditorLoaded.bind(this)
     );
 };
 
 JLEHost.prototype.liveEditorLoaded = function()
 {
-    this.editor = new this.iframeCtx.JtlLiveEditor(".jle-editable", this);
+    this.editor = new this.iframeCtx.JtlLiveEditor('.jle-editable', this);
 
-    $(".portlet-button")
-        .attr("draggable", "true")
-        .on("dragstart", this.onDragStart.bind(this))
-        .on("dragend", this.onDragEnd.bind(this));
+    $('.portlet-button')
+        .attr('draggable', 'true')
+        .on('dragstart', this.onDragStart.bind(this))
+        .on('dragend', this.onDragEnd.bind(this));
 };
 
 JLEHost.prototype.onDragStart = function(e)
 {
     var elm = $(e.target);
+    var newElm = $(elm.data('content'));
 
-    this.editor.draggedElm = $(elm.data("content"));
+    newElm.attr('data-portletid', elm.data('portletid'));
+    newElm.attr('data-settings', JSON.stringify(elm.data('initialsettings')));
+
+    this.editor.draggedElm = newElm;
 
     // firefox needs this
     e.originalEvent.dataTransfer.effectAllowed = 'move';
@@ -51,14 +55,15 @@ JLEHost.prototype.onDragEnd = function(e)
     this.editor.cleanUpDrag();
 };
 
-JLEHost.prototype.showSettings = function(kPortlet)
+JLEHost.prototype.openConfigurator = function(portletId, settings)
 {
     var self = this;
+    console.log(portletId, settings);
 
-    ioCall('getPortletSettingsHtml', [kPortlet], function(settingsHtml) {
+    ioCall('getPortletSettingsHtml', [portletId, settings], function(settingsHtml) {
         $('#settings-modal .modal-body').html(settingsHtml);
         $('#settings-modal').modal('show');
-        self.curPortletId = kPortlet;
+        self.curPortletId = portletId;
     });
 };
 
@@ -73,25 +78,29 @@ JLEHost.prototype.onSettingsSave = function (e)
     });
 
     ioCall('getPortletPreviewContent', [this.curPortletId, settings], function(newHtml) {
-        self.editor.selectedElm.replaceWith(newHtml);
+        var newElm = $(newHtml);
+        self.editor.selectedElm.replaceWith(newElm);
+        self.editor.setSelected(newElm);
+        self.editor.selectedElm.attr('data-portletid', self.curPortletId);
+        self.editor.selectedElm.attr('data-settings', JSON.stringify(settings));
         $('#settings-modal').modal('hide');
     });
 };
 
 JLEHost.loadScript = function(ctx, url, callback)
 {
-    var script = ctx.document.createElement("script");
+    var script = ctx.document.createElement('script');
 
     script.src = url;
-    script.addEventListener("load", callback);
+    script.addEventListener('load', callback);
     ctx.document.head.appendChild(script);
 };
 
 JLEHost.loadStylesheet = function(ctx, url)
 {
-    var link = ctx.document.createElement("link");
+    var link = ctx.document.createElement('link');
 
-    link.rel = "stylesheet";
+    link.rel = 'stylesheet';
     link.href = url;
     ctx.document.head.appendChild(link);
 };

@@ -192,7 +192,11 @@ JtlLiveEditor.prototype.onTrash = function(e)
 
 JtlLiveEditor.prototype.onConfig = function(e)
 {
-    this.jleHost.showSettings(1);
+    this.jleHost.openConfigurator(
+        this.selectedElm.data('portletid'),
+        this.selectedElm.data('settings')
+    );
+    // this.jleHost.showSettings(1);
 };
 
 JtlLiveEditor.prototype.setHovered = function(elm)

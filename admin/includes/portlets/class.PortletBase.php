@@ -55,7 +55,7 @@ class PortletBase
     /**
      * @return string
      */
-    public function getSettingsHTML()
+    public function getSettingsHTML($settings)
     {
         return '';
     }

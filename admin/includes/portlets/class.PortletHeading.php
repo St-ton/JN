@@ -28,9 +28,11 @@ class PortletHeading extends PortletBase
         return '<h1>Heading</h1>';
     }
 
-    public function getSettingsHTML()
+    public function getSettingsHTML($settings)
     {
-        return $this->oSmarty->fetch('tpl_inc/portlets/settings.heading.tpl');
+        return $this->oSmarty
+            ->assign('settings', $settings)
+            ->fetch('tpl_inc/portlets/settings.heading.tpl');
     }
 
     public function getInitialSettings()

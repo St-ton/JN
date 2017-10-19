@@ -16,10 +16,12 @@ function JtlLiveEditor(selector, jleHost)
 
     this.rootElm.on('mouseover', this.onMouseOver.bind(this));
     this.rootElm.on('click', this.onClick.bind(this));
+    this.rootElm.on('dblclick', this.onConfig.bind(this));
     this.rootElm.on('dragstart', this.onDragStart.bind(this));
     this.rootElm.on('dragend', this.onDragEnd.bind(this));
     this.rootElm.on('dragover', this.onDragOver.bind(this));
     this.rootElm.on('drop', this.onDrop.bind(this));
+    $(document).on('keydown', this.onKeyDown.bind(this));
 }
 
 JtlLiveEditor.prototype.onMouseOver = function(e)
@@ -51,6 +53,13 @@ JtlLiveEditor.prototype.onClick = function(e)
     }
     else {
         this.setSelected();
+    }
+};
+
+JtlLiveEditor.prototype.onKeyDown = function(e)
+{
+    if(e.key === 'Delete' && this.selectedElm !== null) {
+        this.onTrash(e);
     }
 };
 

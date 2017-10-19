@@ -52,7 +52,7 @@ $notify = Notification::getInstance();
 $notify->buildDefault();
 
 Shop::bootstrap();
-Shop::fire('backend.notification', [&$notify]);
+Shop::fire('backend.notification', $notify);
 
 require PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'smartyinclude.php';
 

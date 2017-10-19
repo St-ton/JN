@@ -804,12 +804,12 @@ function generateSitemapXML()
             }
         }
     }
-    if (isset($conf['sitemap']['sitemap_globalemerkmale_anzeigen']) &&
-        $conf['sitemap']['sitemap_globalemerkmale_anzeigen'] === 'Y'
+    if (isset($conf['sitemap']['sitemap_globalemerkmale_anzeigen'])
+        && $conf['sitemap']['sitemap_globalemerkmale_anzeigen'] === 'Y'
     ) {
         // Merkmale STD Sprache
-        $res = Shop::DB()->query("
-            SELECT tmerkmal.cName, tmerkmal.kMerkmal, tmerkmalwertsprache.cWert, 
+        $res = Shop::DB()->query(
+            "SELECT tmerkmal.cName, tmerkmal.kMerkmal, tmerkmalwertsprache.cWert, 
                 tseo.cSeo, tmerkmalwert.kMerkmalWert
                 FROM tmerkmal
                 JOIN tmerkmalwert 
@@ -861,8 +861,8 @@ function generateSitemapXML()
             if ($SpracheTMP->kSprache == $Sprache->kSprache) {
                 continue;
             }
-            $res = Shop::DB()->query("
-                    SELECT tmerkmalsprache.cName, tmerkmalsprache.kMerkmal, tmerkmalwertsprache.cWert, 
+            $res = Shop::DB()->query(
+                    "SELECT tmerkmalsprache.cName, tmerkmalsprache.kMerkmal, tmerkmalwertsprache.cWert, 
                         tseo.cSeo, tmerkmalwert.kMerkmalWert
                         FROM tmerkmalsprache
                         JOIN tmerkmal 
@@ -918,8 +918,8 @@ function generateSitemapXML()
     }
     // News
     if (isset($conf['sitemap']['sitemap_news_anzeigen']) && $conf['sitemap']['sitemap_news_anzeigen'] === 'Y') {
-        $res = Shop::DB()->query("
-            SELECT tnews.*, tseo.cSeo
+        $res = Shop::DB()->query(
+            "SELECT tnews.*, tseo.cSeo
                 FROM tnews
                 LEFT JOIN tseo 
                     ON tseo.cKey = 'kNews'
@@ -1058,8 +1058,8 @@ function holeGoogleImage($artikel)
         strlen($oArtikel->FunktionsAttribute[ART_ATTRIBUT_BILDLINK]) > 0
     ) {
         $cArtNr = StringHandler::filterXSS($oArtikel->FunktionsAttribute[ART_ATTRIBUT_BILDLINK]);
-        $oBild  = Shop::DB()->query("
-            SELECT tartikelpict.cPfad
+        $oBild  = Shop::DB()->query(
+            "SELECT tartikelpict.cPfad
                 FROM tartikelpict
                 JOIN tartikel 
                     ON tartikel.cArtNr = '" . $cArtNr . "'
@@ -1071,8 +1071,8 @@ function holeGoogleImage($artikel)
     }
 
     if (empty($oBild->cPfad)) {
-        $oBild = Shop::DB()->query('
-            SELECT cPfad 
+        $oBild = Shop::DB()->query(
+            'SELECT cPfad 
                 FROM tartikelpict 
                 WHERE kArtikel = ' . (int)$oArtikel->kArtikel . ' 
                 GROUP BY cPfad 
@@ -1179,8 +1179,8 @@ function baueExportURL($kKey, $cKey, $dLetzteAktualisierung, $oSprach_arr, $kSpr
             $params['kSuchanfrage'] = $kKey;
             $naviFilter->initStates($params);
             if ($kKey > 0) {
-                $oSuchanfrage = Shop::DB()->query("
-                    SELECT cSuche
+                $oSuchanfrage = Shop::DB()->query(
+                    "SELECT cSuche
                         FROM tsuchanfrage
                         WHERE kSuchanfrage = " . $kKey . "
                         ORDER BY kSuchanfrage", 1

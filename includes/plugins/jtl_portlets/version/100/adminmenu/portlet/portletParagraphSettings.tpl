@@ -5,7 +5,13 @@
 </form>
 
 <script>
-    {literal}
+    jleHost.settingsSaveCallback = function() {
+        $('#editor').val(ckEditor.getData());
+        console.log("SAAVE");
+    };
+
+    var ckEditor = null;
+
     ClassicEditor
         .create( document.querySelector( '#editor' ),
             {
@@ -13,8 +19,10 @@
                 viewportTopOffset: 30
             }
         )
+        .then(function(editor) {
+            ckEditor = editor;
+        })
         .catch( error => {
             console.error( error );
         });
-    {/literal}
 </script>

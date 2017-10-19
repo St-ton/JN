@@ -9,6 +9,8 @@ function JLEHost(iframeSelector, templateUrl)
 
     this.curPortletId = 0;
 
+    this.settingsSaveCallback = $.noop;
+
     $('#jle-btn-save').click(this.onSettingsSave.bind(this));
 }
 
@@ -68,6 +70,8 @@ JLEHost.prototype.openConfigurator = function(portletId, settings)
 
 JLEHost.prototype.onSettingsSave = function (e)
 {
+    this.settingsSaveCallback();
+
     var children = this.editor.selectedElm
         // select direct descendant subareas or non-nested subareas
         .find('> .jle-subarea') ; //, :not(.jle-subarea) .jle-subarea');

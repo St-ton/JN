@@ -603,16 +603,10 @@ class Navigationsfilter
             }
         }
         executeHook(HOOK_NAVIGATIONSFILTER_INIT_STATES, [
-                'navifilter' => $this,
-                'params'     => $params
-            ]
-        );
+            'navifilter' => $this,
+            'params'     => $params
+        ]);
         $this->params = $params;
-        if (isset($_GET['cache']) && ($obj = Shop::Cache()->get($this->getHash())) !== false) {
-            foreach (get_object_vars($obj) as $i => $v) {
-                $this->$i = $v;
-            }
-        }
 
         return $this->validate();
     }
@@ -1548,11 +1542,11 @@ class Navigationsfilter
             $opt->nVariationDetailPreis = (int)$this->conf['artikeldetails']['artikel_variationspreisanzeige'] !== 0
                 ? 1
                 : 0;
-            foreach (array_slice($this->searchResults->Artikel->articleKeys, $nLimitN, $limitPerPage) as $i => $id) {
+            foreach (array_slice($this->searchResults->Artikel->articleKeys, $nLimitN, $limitPerPage) as $id) {
                 $article = (new Artikel())->fuelleArtikel($id, $opt);
                 // Aktuelle Artikelmenge in die Session (Keine Vaterartikel)
                 if ($article->nIstVater === 0) {
-                    $_SESSION['nArtikelUebersichtVLKey_arr'][] = $article->kArtikel;
+                    $_SESSION['nArtikelUebersichtVLKey_arr'][] = $id;
                 }
                 $this->searchResults->Artikel->elemente->addItem($article);
             }

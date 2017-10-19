@@ -29,9 +29,6 @@
                                         <span class="badge error">{if !empty($PluginFehlerhaft->cFehlercode)}{$PluginFehlerhaft->cFehlercode}{/if}</span>
                                         {if !empty($PluginFehlerhaft->cFehlerBeschreibung)}{$PluginFehlerhaft->cFehlerBeschreibung}{/if}
                                     </p>
-                                    {if isset($PluginFehlerhaft->shop4compatible) && $PluginFehlerhaft->shop4compatible === false}
-                                        <div class="alert alert-info"><strong>Achtung:</strong> Plugin ist nicht vollst&auml;ndig Shop4-kompatibel! Es k&ouml;nnen daher Probleme beim Betrieb entstehen.</div>
-                                    {/if}
                                 </td>
                                 <td class="tcenter">{if !empty($PluginFehlerhaft->cVersion)}{$PluginFehlerhaft->cVersion}{/if}</td>
                                 <td class="tcenter">{if !empty($PluginFehlerhaft->cVerzeichnis)}{$PluginFehlerhaft->cVerzeichnis}{/if}</td>

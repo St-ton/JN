@@ -1,17 +1,10 @@
 
 <label>Text</label>
 <form id="portlet-settings-form">
-    <textarea name="text" id="editor" class="form-control">{$settings.text}</textarea>
+    <textarea name="text" id="settings-text" class="form-control">{$settings.text}</textarea>
 </form>
 
 <script>
-    jleHost.settingsSaveCallback = function() {
-        $('#editor').val(ckEditor.getData());
-        console.log("SAAVE");
-    };
-
-    var ckEditor = null;
-
     ClassicEditor
         .create( document.querySelector( '#editor' ),
             {
@@ -20,9 +13,13 @@
             }
         )
         .then(function(editor) {
-            ckEditor = editor;
+            var ckEditor = editor;
+
+            jleHost.settingsSaveCallback = function() {
+                $('#settings-text').val(ckEditor.getData());
+            };
         })
-        .catch( error => {
+        .catch(function(error) {
             console.error( error );
         });
 </script>

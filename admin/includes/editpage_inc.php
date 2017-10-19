@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_PORTLETS . 'class.PortletBase.php';
+
 /**
  * @return mixed
  */
@@ -40,30 +42,18 @@ function getPortlets()
 
 function getPortletPreviewContent($kPortlet, $data)
 {
-    $oPortlet   = Shop::DB()->select('teditorportlets', 'kPortlet', $kPortlet);
-    $cClass     = 'Portlet' . $oPortlet->cClass;
-    $cClassFile = 'class.' . $cClass . '.php';
-    $cClassPath = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_PORTLETS . $cClassFile;
-
-    require_once $cClassPath;
-
-    /** @var PortletBase $portletInst */
-    $portletInst = new $cClass(Shop::Smarty(), Shop::DB(), null);
-
+    $portletInst = PortletBase::createInstance($kPortlet, Shop::Smarty(), Shop::DB());
     return $portletInst->getPreviewContent($data);
 }
 
 function getPortletSettingsHtml($kPortlet)
 {
-    $oPortlet   = Shop::DB()->select('teditorportlets', 'kPortlet', $kPortlet);
-    $cClass     = 'Portlet' . $oPortlet->cClass;
-    $cClassFile = 'class.' . $cClass . '.php';
-    $cClassPath = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_PORTLETS . $cClassFile;
-
-    require_once $cClassPath;
-
-    /** @var PortletBase $portletInst */
-    $portletInst = new $cClass(Shop::Smarty(), Shop::DB(), null);
-
+    $portletInst = PortletBase::createInstance($kPortlet, Shop::Smarty(), Shop::DB());
     return $portletInst->getSettingsHTML();
+}
+
+function getPortletInitialSettings($kPortlet)
+{
+    $portletInst = PortletBase::createInstance($kPortlet, Shop::Smarty(), Shop::DB());
+    return $portletInst->getInitialSettings();
 }

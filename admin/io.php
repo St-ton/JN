@@ -82,6 +82,7 @@ $io
     // Portlets
     ->register('getPortletPreviewContent', null, $portletInc, 'CONTENT_PAGE_VIEW')
     ->register('getPortletSettingsHtml', null, $portletInc, 'CONTENT_PAGE_VIEW')
+    ->register('getPortletInitialSettings', null, $portletInc, 'CONTENT_PAGE_VIEW')
     // Other
     ->register('getRandomPassword', 'getRandomPasswordIO', $accountInc, 'ACCOUNT_VIEW')
     ->register('saveBannerAreas', 'saveBannerAreasIO', $bannerInc, 'DISPLAY_BANNER_VIEW')

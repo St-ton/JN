@@ -14,12 +14,11 @@ class PortletHeading extends PortletBase
     public function getPreviewContent($settings = null)
     {
         $level = isset($settings['level']) ? (int)$settings['level'] : 1;
+        $text = isset($settings['text']) ? $settings['text'] : 'Heading Title';
 
         if ($level < 1 || $level > 6) {
             $level = 1;
         }
-
-        $text = isset($settings['text']) ? $settings['text'] : 'Unnamed Heading';
 
         return "<h$level>$text</h$level>";
     }
@@ -32,5 +31,13 @@ class PortletHeading extends PortletBase
     public function getSettingsHTML()
     {
         return $this->oSmarty->fetch('tpl_inc/portlets/settings.heading.tpl');
+    }
+
+    public function getInitialSettings()
+    {
+        return [
+            'level' => 1,
+            'text' => 'Heading Title',
+        ];
     }
 }

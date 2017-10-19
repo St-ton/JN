@@ -32,12 +32,6 @@
                     gutterSize: 4
                 }
             );
-
-            ioCall(
-                'getPortletPreviewContent',
-                [1, { level: 6 }],
-                console.log
-            );
         });
     </script>
 </head>

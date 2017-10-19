@@ -59,4 +59,31 @@ class PortletBase
     {
         return '';
     }
+
+    /**
+     * @return array - associative array that maps setting names to default values
+     */
+    public function getInitialSettings()
+    {
+        return [];
+    }
+
+    /**
+     * @param $kPortlet
+     * @param $smarty
+     * @param $shopDB
+     * @param null $plugin
+     * @return PortletBase
+     */
+    public static function createInstance($kPortlet, $smarty, $shopDB, $plugin = null)
+    {
+        $oPortlet   = Shop::DB()->select('teditorportlets', 'kPortlet', $kPortlet);
+        $cClass     = 'Portlet' . $oPortlet->cClass;
+        $cClassFile = 'class.' . $cClass . '.php';
+        $cClassPath = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_PORTLETS . $cClassFile;
+
+        require_once $cClassPath;
+
+        return new $cClass($smarty, $shopDB, $plugin);
+    }
 }

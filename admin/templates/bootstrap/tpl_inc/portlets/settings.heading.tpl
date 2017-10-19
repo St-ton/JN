@@ -8,4 +8,5 @@
         <option value="5">h5</option>
         <option value="6">h6</option>
     </select>
+    <input name="text" value="Heading Title">
 </form>

@@ -5,7 +5,7 @@
  */
 
 /**
- * Class WidgetBase
+ * Class PortletBase
  */
 class PortletBase
 {
@@ -81,6 +81,13 @@ class PortletBase
         $cClass     = 'Portlet' . $oPortlet->cClass;
         $cClassFile = 'class.' . $cClass . '.php';
         $cClassPath = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_PORTLETS . $cClassFile;
+
+        $oPlugin = null;
+        if (isset($oPortlet->kPlugin) && $oPortlet->kPlugin > 0) {
+            $oPlugin    = new Plugin($oPortlet->kPlugin);
+            $cClass     = 'Portlet' . $oPlugin->oPluginEditorPortletAssoc_arr[$oPortlet->kPortlet]->cClass;
+            $cClassPath = $oPlugin->oPluginEditorPortletAssoc_arr[$oPortlet->kPortlet]->cClassAbs;
+        }
 
         require_once $cClassPath;
 

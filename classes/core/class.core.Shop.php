@@ -1324,54 +1324,10 @@ final class Shop
 
     /**
      * @param null|Navigationsfilter $NaviFilter
+     * @deprecated since 4.07 - this is done in Navifilter:validate()
      */
     public static function checkNaviFilter($NaviFilter = null)
     {
-        if ($NaviFilter === null) {
-            $NaviFilter = self::$NaviFilter;
-        }
-        if ($NaviFilter->getFilterCount() > 0) {
-            if (!$NaviFilter->hasManufacturer()
-                && !$NaviFilter->hasCategory()
-                && !$NaviFilter->hasTag()
-                && !$NaviFilter->hasSearchQuery()
-                && !$NaviFilter->hasSearch()
-                && !$NaviFilter->hasAttributeValue()
-                && !$NaviFilter->hasSearchSpecial()
-            ) {
-                $manufacturerFilter = $NaviFilter->getManufacturerFilter();
-                // we have a manufacturer filter that doesn't filter anything
-                if (!empty($manufacturerFilter->cSeo[self::$kSprache])) {
-                    http_response_code(301);
-                    header('Location: ' . self::getURL() . '/' . $manufacturerFilter->cSeo[self::$kSprache]);
-                    exit();
-                }
-                $categoryFilter = $NaviFilter->getCategoryFilter();
-                // we have a category filter that doesn't filter anything
-                if (!empty($categoryFilter->cSeo[self::$kSprache])) {
-                    http_response_code(301);
-                    header('Location: ' . self::getURL() . '/' . $categoryFilter->cSeo[self::$kSprache]);
-                    exit();
-                }
-            } elseif (($NaviFilter->hasManufacturer() && $NaviFilter->hasManufacturerFilter())
-                || ($NaviFilter->hasCategory() && $NaviFilter->hasCategoryFilter())
-            ) {
-                $manufacturer = $NaviFilter->getManufacturer();
-                if (!empty($manufacturer->cSeo[self::$kSprache])) {
-                    //we have a manufacturer page with some manufacturer filter
-                    http_response_code(301);
-                    header('Location: ' . self::getURL() . '/' . $manufacturer->cSeo[self::$kSprache]);
-                    exit();
-                }
-                $category = $NaviFilter->getCategory();
-                if (!empty($category->cSeo[self::$kSprache])) {
-                    //we have a category page with some category filter
-                    http_response_code(301);
-                    header('Location: ' . self::getURL() . '/' . $category->cSeo[self::$kSprache]);
-                    exit();
-                }
-            }
-        }
     }
 
     /**

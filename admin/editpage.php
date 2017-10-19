@@ -26,4 +26,7 @@ $smarty
     ->assign('oSeo', $oSeo)
     ->assign('oPortlet_arr', $oPortlet_arr)
     ->assign('cEditorAction', $cAction)
+    ->assign('cKey', $cKey)
+    ->assign('kKey', $kKey)
+    ->assign('kSprache', $kSprache)
     ->display('editpage.tpl');

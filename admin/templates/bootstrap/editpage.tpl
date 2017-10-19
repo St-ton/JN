@@ -34,6 +34,14 @@
                 }
             );
         });
+
+        function saveLiveEditorContent()
+        {
+            ioCall('saveLiveEditorContent', [
+                '{$cKey}', {$kKey}, {$kSprache},
+                jleHost.editor.toJson()
+            ]);
+        }
     </script>
 </head>
 <body>
@@ -54,7 +62,11 @@
                     <li><a href="#" onclick="$('#iframe-panel iframe').width('375px');"><i class="fa fa-mobile"></i></a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
-                    <li><a href="#"><i class="fa fa-save"></i></a></li>
+                    <li>
+                        <a href="#" onclick="saveLiveEditorContent();return false;">
+                            <i class="fa fa-save"></i>
+                        </a>
+                    </li>
                     <li><a href="{$URL_SHOP}/{$oSeo->cSeo}"><i class="fa fa-close"></i></a></li>
                 </ul>
             </div>

@@ -58,3 +58,14 @@ function getPortletInitialSettings($kPortlet)
     $portletInst = PortletBase::createInstance($kPortlet, Shop::Smarty(), Shop::DB());
     return $portletInst->getInitialSettings();
 }
+
+/**
+ * @param $cKey
+ * @param $kKey
+ * @param $kSprache
+ * @param $contentData - object tree to be json encoded and saved in the DB
+ */
+function saveLiveEditorContent($cKey, $kKey, $kSprache, $contentData)
+{
+    // Save $contentData to Database
+}

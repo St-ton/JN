@@ -6,7 +6,7 @@
 
 <script>
     ClassicEditor
-        .create( document.querySelector( '#editor' ),
+        .create( document.querySelector( '#settings-text' ),
             {
                 toolbar: ['bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote'],
                 viewportTopOffset: 30

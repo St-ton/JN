@@ -14,12 +14,12 @@ class PortletParagraph_jtl_portlets extends PortletBase
     {
         $text = isset($settings['text']) ? $settings['text'] : 'ein neuer Abschnitt';
 
-        return "<p>$text</p>";
+        return "<div>$text</div>";
     }
 
     public function getHTMLContent()
     {
-        return "<p>paragraph</p>";
+        return "<div>paragraph</div>";
     }
 
     public function getSettingsHTML($settings)

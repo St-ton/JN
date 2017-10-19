@@ -299,15 +299,16 @@ JtlLiveEditor.prototype.cleanUpDrag = function()
 
 JtlLiveEditor.prototype.isSelectable = function(elm)
 {
+    return elm.attr('data-portletid') !== undefined;
     // return elm.is(this.rootElm);
-    return !this.isInline(elm) && !elm.is(this.rootElm) && !elm.parent().is('.row');
+    // return !this.isInline(elm) && !elm.is(this.rootElm) && !elm.parent().is('.row');
     // && !elm.is(this.selectedLabelElm) && !elm.is(this.targetLabelElm);
 };
 
 JtlLiveEditor.prototype.isDropTarget = function(elm)
 {
     return !this.isDescendant(elm, this.draggedElm) && (
-        elm.is(this.rootElm) || elm.parent().is('.row')
+        elm.is(this.rootElm) || elm.hasClass('jle-subarea')
     );
 };
 

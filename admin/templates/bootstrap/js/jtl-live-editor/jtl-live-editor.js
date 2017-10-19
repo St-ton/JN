@@ -13,7 +13,6 @@ function JtlLiveEditor(selector, jleHost)
     this.rootElm = $(selector);
     this.labelElm = $('<div>', { 'class': 'jle-label' }).appendTo('body').hide();
     this.pinbarElm = this.createPinbar().appendTo('body').hide();
-    this.editingText = false;
 
     this.rootElm.on('mouseover', this.onMouseOver.bind(this));
     this.rootElm.on('click', this.onClick.bind(this));
@@ -21,7 +20,6 @@ function JtlLiveEditor(selector, jleHost)
     this.rootElm.on('dragend', this.onDragEnd.bind(this));
     this.rootElm.on('dragover', this.onDragOver.bind(this));
     this.rootElm.on('drop', this.onDrop.bind(this));
-    this.rootElm.on('keydown', this.onKeyDown.bind(this));
 }
 
 JtlLiveEditor.prototype.onMouseOver = function(e)
@@ -136,50 +134,14 @@ JtlLiveEditor.prototype.onDragEnd = function(e)
     this.cleanUpDrag();
 };
 
-JtlLiveEditor.prototype.onKeyDown = function(e)
-{
-    if(this.editingText) {
-        if(e.key === 'Enter' && !e.shiftKey) {
-            if(this.selectedElm[0].lastChild.nodeName !== 'BR') {
-                this.selectedElm.append($('<br>'));
-            }
-
-            var sel = getSelection();
-            var range = sel.getRangeAt(0);
-            var br = document.createElement('br');
-            
-            range.deleteContents();
-            range.insertNode(br);
-            range.setStartAfter(br);
-            range.setEndAfter(br);
-
-            e.preventDefault();
-        }
-    }
-};
-
 JtlLiveEditor.prototype.onFocus = function(e)
 {
     console.log('focus', this.selectedElm);
-
-    this.editingText = true;
 };
 
 JtlLiveEditor.prototype.onBlur = function(e)
 {
     console.log('blur', this.selectedElm);
-
-    this.editingText = false;
-};
-
-JtlLiveEditor.prototype.onBold = function(e)
-{
-    document.execCommand('bold');
-};
-
-JtlLiveEditor.prototype.onItalic = function(e)
-{
-    document.execCommand('italic');
 };
 
 JtlLiveEditor.prototype.onTrash = function(e)
@@ -196,7 +158,6 @@ JtlLiveEditor.prototype.onConfig = function(e)
         this.selectedElm.data('portletid'),
         this.selectedElm.data('settings')
     );
-    // this.jleHost.showSettings(1);
 };
 
 JtlLiveEditor.prototype.setHovered = function(elm)
@@ -235,7 +196,6 @@ JtlLiveEditor.prototype.setSelected = function(elm)
     if(elm === null || !elm.is(this.selectedElm)) {
         if(this.selectedElm !== null) {
             this.selectedElm.removeClass('jle-selected');
-            this.selectedElm.attr('contenteditable', 'false');
             this.pinbarElm.hide();
         }
 
@@ -243,7 +203,6 @@ JtlLiveEditor.prototype.setSelected = function(elm)
 
         if(this.selectedElm !== null) {
             this.selectedElm.addClass('jle-selected');
-            this.selectedElm.attr('contenteditable', 'true');
             this.selectedElm.off('blur').on('blur', this.onBlur.bind(this));
             this.selectedElm.off('focus').on('focus', this.onFocus.bind(this));
             this.pinbarElm
@@ -311,14 +270,6 @@ JtlLiveEditor.prototype.createPinbar = function()
     var pinbarElm = $('<div class="jle-pinbar btn-group">');
 
     pinbarElm.append(
-        $('<button class="btn btn-default" id="jle-btn-bold"><i class="fa fa-bold"></i></button>')
-            .click(this.onBold.bind(this))
-    );
-    pinbarElm.append(
-        $('<button class="btn btn-default" id="jle-btn-italic"><i class="fa fa-italic"></i></button>')
-            .click(this.onItalic.bind(this))
-    );
-    pinbarElm.append(
         $('<button class="btn btn-default" id="jle-btn-trash"><i class="fa fa-trash"></i></button>')
             .click(this.onTrash.bind(this))
     );
@@ -328,7 +279,7 @@ JtlLiveEditor.prototype.createPinbar = function()
     );
 
     return pinbarElm;
-}
+};
 
 JtlLiveEditor.prototype.cleanUpDrag = function()
 {

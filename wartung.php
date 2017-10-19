@@ -4,8 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 require_once __DIR__ . '/includes/globalinclude.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
-/** @global JTLSmarty $smarty */
+
+$smarty        = require PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
 $AktuelleSeite = 'WARTUNG';
 $Einstellungen = Shop::getSettings([CONF_GLOBAL]);
 if ($Einstellungen['global']['wartungsmodus_aktiviert'] === 'N') {

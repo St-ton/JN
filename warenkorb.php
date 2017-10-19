@@ -6,8 +6,8 @@
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'warenkorb_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
-/** @global JTLSmarty $smarty */
+
+$smarty                   = require PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
 $AktuelleSeite            = 'WARENKORB';
 $MsgWarning               = '';
 $Einstellungen            = Shop::getSettings([
@@ -18,14 +18,13 @@ $Einstellungen            = Shop::getSettings([
     CONF_ARTIKELUEBERSICHT,
     CONF_SONSTIGES
 ]);
+Shop::setPageType(PAGE_WARENKORB);
 $Schnellkaufhinweis       = checkeSchnellkauf();
 $linkHelper               = LinkHelper::getInstance();
 $KuponcodeUngueltig       = false;
 $nVersandfreiKuponGueltig = false;
 $cart                     = $_SESSION['Warenkorb'];
-
-Shop::setPageType(PAGE_WARENKORB);
-$kLink = $linkHelper->getSpecialPageLinkKey(LINKTYP_WARENKORB);
+$kLink                    = $linkHelper->getSpecialPageLinkKey(LINKTYP_WARENKORB);
 // Warenkorbaktualisierung?
 uebernehmeWarenkorbAenderungen();
 // validiere Konfigurationen

@@ -6,8 +6,8 @@
  * @global $smarty
  */
 require_once __DIR__ . '/includes/globalinclude.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
 
+$smarty     = require PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
 $linkHelper = LinkHelper::getInstance();
 if (isset($_SESSION['Kunde']->kKunde)
     && $_SESSION['Kunde']->kKunde > 0
@@ -21,8 +21,9 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'newsletter_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'registrieren_inc.php';
 
-$AktuelleSeite = 'REGISTRIEREN';
-$Einstellungen = Shop::getSettings([
+Shop::setPageType(PAGE_REGISTRIERUNG);
+$AktuelleSeite        = 'REGISTRIEREN';
+$Einstellungen        = Shop::getSettings([
     CONF_GLOBAL,
     CONF_RSS,
     CONF_KUNDEN,
@@ -30,7 +31,6 @@ $Einstellungen = Shop::getSettings([
     CONF_KUNDENWERBENKUNDEN,
     CONF_NEWSLETTER
 ]);
-Shop::setPageType(PAGE_REGISTRIERUNG);
 $kLink                = $linkHelper->getSpecialPageLinkKey(LINKTYP_REGISTRIEREN);
 $step                 = 'formular';
 $hinweis              = '';

@@ -6,9 +6,9 @@
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Bestellung.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
-/** @global JTLSmarty $smarty */
+
 Shop::setPageType(PAGE_BESTELLSTATUS);
+$smarty        = require PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
 $AktuelleSeite = 'BESTELLSTATUS';
 $Einstellungen = Shop::getSettings([
     CONF_GLOBAL,

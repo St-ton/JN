@@ -5,10 +5,9 @@
  */
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_INCLUDES . 'bewertung_inc.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
-/** @global JTLSmarty $smarty */
-$AktuelleSeite = 'BEWERTUNG';
 
+$smarty        = require PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
+$AktuelleSeite = 'BEWERTUNG';
 Shop::run();
 Shop::setPageType(PAGE_BEWERTUNG);
 $cParameter_arr = Shop::getParameters();

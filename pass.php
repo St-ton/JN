@@ -4,10 +4,10 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 require_once __DIR__ . '/includes/globalinclude.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
-/** @global JTLSmarty $smarty */
+
 Shop::setPageType(PAGE_PASSWORTVERGESSEN);
+$smarty                          = require PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
 $AktuelleSeite                   = 'PASSWORT VERGESSEN';
 Shop::$AktuelleSeite             = 'PASSWORT VERGESSEN';
 $Einstellungen                   = Shop::getSettings([CONF_GLOBAL, CONF_RSS]);

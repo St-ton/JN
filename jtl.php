@@ -12,8 +12,8 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'jtl_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'wunschliste_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'kundenwerbenkeunden_inc.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
 
+$smarty        = require PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
 $AktuelleSeite = 'MEIN KONTO';
 $cBrotNavi     = '';
 $linkHelper    = LinkHelper::getInstance();

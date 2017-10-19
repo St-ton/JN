@@ -273,6 +273,19 @@ class WarenkorbHelper
      */
     public static function checkAdditions()
     {
+        // prg
+        if (isset($_SESSION['bWarenkorbHinzugefuegt'], $_SESSION['bWarenkorbAnzahl'], $_SESSION['hinweis'])) {
+            if (isset($_POST['a'])) {
+                require_once PFAD_ROOT . PFAD_INCLUDES . 'artikel_inc.php';
+            }
+            Shop::Smarty()
+                ->assign('bWarenkorbHinzugefuegt', $_SESSION['bWarenkorbHinzugefuegt'])
+                ->assign('bWarenkorbAnzahl', $_SESSION['bWarenkorbAnzahl'])
+                ->assign('hinweis', $_SESSION['hinweis'])
+                ->assign('Xselling', isset($_POST['a']) ? gibArtikelXSelling($_POST['a']) : null);
+            unset($_SESSION['hinweis'], $_SESSION['bWarenkorbAnzahl'], $_SESSION['bWarenkorbHinzugefuegt']);
+
+        }
         /** @var array('Warenkorb' => Warenkorb) $_SESSION */
         $fAnzahl = 0;
         if (isset($_POST['anzahl'])) {

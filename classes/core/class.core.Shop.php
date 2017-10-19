@@ -740,6 +740,24 @@ final class Shop
         }
         $_SESSION['cTemplate'] = Template::$cTemplate;
 
+        if (self::$kWunschliste === 0
+            && verifyGPDataString('error') === ''
+            && strlen(verifyGPDataString('wlid')) > 0
+        ) {
+            header(
+                'Location: ' . LinkHelper::getInstance()->getStaticRoute('wunschliste.php') .
+                '?wlid=' . StringHandler::filterXSS(verifyGPDataString('wlid')) . '&error=1',
+                true,
+                303
+            );
+            exit();
+        }
+        if ((self::$kArtikel > 0 || self::$kKategorie > 0) && !Session::CustomerGroup()->mayViewCategories()) {
+            // falls Artikel/Kategorien nicht gesehen werden duerfen -> login
+            header('Location: ' . LinkHelper::getInstance()->getStaticRoute('jtl.php') . '?li=1', true, 303);
+            exit;
+        }
+
         self::$NaviFilter = new Navigationsfilter(self::Lang()->getLangArray(), self::$kSprache, null, NiceDB::getInstance());
 
         self::seoCheck();

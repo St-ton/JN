@@ -12,41 +12,8 @@ $linkHelper     = LinkHelper::getInstance();
 if (Shop::$kLink > 0) {
     $link = $linkHelper->getPageLink(Shop::$kLink);
 }
-
 executeHook(HOOK_INDEX_NAVI_HEAD_POSTGET);
-// prg
-if (isset($_SESSION['bWarenkorbHinzugefuegt'], $_SESSION['bWarenkorbAnzahl'], $_SESSION['hinweis'])) {
-    $smarty->assign('bWarenkorbHinzugefuegt', $_SESSION['bWarenkorbHinzugefuegt'])
-           ->assign('bWarenkorbAnzahl', $_SESSION['bWarenkorbAnzahl'])
-           ->assign('hinweis', $_SESSION['hinweis']);
-    unset($_SESSION['hinweis'], $_SESSION['bWarenkorbAnzahl'], $_SESSION['bWarenkorbHinzugefuegt']);
-}
-// wurde ein artikel in den Warenkorb gelegt?
 WarenkorbHelper::checkAdditions();
-if (!$cParameter_arr['kWunschliste']
-    && verifyGPDataString('error') === ''
-    && strlen(verifyGPDataString('wlid')) > 0
-) {
-    header(
-        'Location: ' . $linkHelper->getStaticRoute('wunschliste.php') .
-        '?wlid=' . StringHandler::filterXSS(verifyGPDataString('wlid')) . '&error=1',
-        true,
-        303
-    );
-    exit();
-}
-// support for artikel_after_cart_add
-if (isset($_POST['a']) && $smarty->getTemplateVars('bWarenkorbHinzugefuegt')) {
-    require_once PFAD_ROOT . PFAD_INCLUDES . 'artikel_inc.php';
-    $smarty->assign('Xselling', gibArtikelXSelling($_POST['a']));
-}
-if (($cParameter_arr['kArtikel'] > 0 || $cParameter_arr['kKategorie'] > 0)
-    && !Session::CustomerGroup()->mayViewCategories()
-) {
-    // falls Artikel/Kategorien nicht gesehen werden duerfen -> login
-    header('Location: ' . $linkHelper->getStaticRoute('jtl.php') . '?li=1', true, 303);
-    exit;
-}
 Shop::getEntryPoint();
 if (Shop::$is404 === true) {
     $cParameter_arr['is404'] = true;

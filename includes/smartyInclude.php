@@ -4,6 +4,6 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 $smarty = JTLSmarty::getInstance(false, false);
-executeHook(HOOK_SMARTY_INC);
+Shop::dbg('req', false, 'req', 3);
 
 return $smarty;

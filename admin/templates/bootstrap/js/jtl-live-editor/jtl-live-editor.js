@@ -322,39 +322,49 @@ JtlLiveEditor.prototype.isDescendant = function(descendant, tree)
     return tree.has(descendant).length > 0;
 };
 
-JtlLiveEditor.prototype.toJson = function(elm)
+JtlLiveEditor.prototype.toJson = function()
 {
-    if(elm === undefined) {
-        var result = [];
+    var result = {};
 
-        for(var i=0; i<this.rootElm.length; i++) {
-            result.push(
-                this.toJson($(this.rootElm[i]))
-            );
-        }
+    this.rootElm.each(function(i, rootArea)
+    {
+        result[rootArea.id] = this.areaToJson($(rootArea));
 
-        return result;
-    }
-    else {
-        var result = { };
-        var children = [];
+    }.bind(this));
 
-        if(elm.hasClass('jle-editable')) {
-            result.type = 'jle-editable';
-            result.id = elm.attr('id');
-        }
+    return result;
+};
 
-        if(elm.hasClass('jle-editable')) {
-            result.children = [];
+JtlLiveEditor.prototype.areaToJson = function(rootArea)
+{
+    var result = [];
 
-            elm.children().each(function(index, child) {
-                result.children.push(child.outerHTML);
-            });
-        }
-        else {
+    rootArea.children().each(function(i, portletElm)
+    {
+        result.push(this.portletToJson($(portletElm)));
 
-        }
+    }.bind(this));
 
-        return result;
-    }
+    return result;
+};
+
+JtlLiveEditor.prototype.portletToJson = function(portletElm)
+{
+    var result = {};
+
+    result.portletId = portletElm.data('portletid');
+    result.settings = portletElm.data('settings');
+    result.subAreas = [];
+
+    var children = portletElm
+        // select direct descendant subareas or non-nested subareas
+        .find('> .jle-subarea') ; //, :not(.jle-subarea) .jle-subarea');
+
+    children.each(function (i, child)
+    {
+        result.subAreas.push(this.areaToJson($(child)));
+
+    }.bind(this));
+
+    return result;
 };

@@ -12,11 +12,36 @@ class PortletColumn extends PortletBase
 {
     public function getPreviewContent($settings = null)
     {
-        return htmlspecialchars('<div class="row"><div class="col-xs-6 jle-editable"></div><div class="col-xs-6 jle-editable"></div></div>');
+        $layout = isset($settings['layout']) ? $settings['layout'] : '6,6';
+        $layout = explode(',', $layout);
+
+        $res = '<div class="row">';
+
+        foreach ($layout as $col) {
+            $res .= '<div class="col-xs-' . $col . '"></div>';
+        }
+
+        $res .= '</div>';
+
+        return $res;
     }
 
     public function getHTMLContent()
     {
-        return htmlspecialchars('<div class="row"><div class="col-xs-6 jle-editable"></div><div class="col-xs-6 jle-editable"></div></div>');
+        return '';
+    }
+
+    public function getSettingsHTML($settings)
+    {
+        return $this->oSmarty
+            ->assign('settings', $settings)
+            ->fetch('tpl_inc/portlets/settings.column.tpl');
+    }
+
+    public function getInitialSettings()
+    {
+        return [
+            'layout' => '6,6',
+        ];
     }
 }

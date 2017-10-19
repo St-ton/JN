@@ -7,7 +7,7 @@
         <li>
             <a href="{$filter->getUnsetFilterURL()}" rel="nofollow" class="active {$itemClass}">
                 <span class="value">
-                    <i class="fa fa-check-square-o text-muted"></i> t{$filter->getType()} {$filter->getName()}
+                    <i class="fa fa-check-square-o text-muted"></i> {$filter->getType()} {$filter->getName()}
                 </span>
             </a>
         </li>
@@ -15,6 +15,7 @@
         {foreach $filter->getOptions() as $filterOption}
             <li class="filter-item{if $filterOption->isActive()} active{/if}">
                 <a rel="nofollow" href="{$filterOption->getURL()}" class="{$itemClass}{if $filterOption->isActive()} active{/if}">
+                    <span class="badge pull-right">{$filterOption->getCount()}</span>
                     <span class="value">
                         {if $filter->getIcon() !== null}
                             <i class="fa {$filter->getIcon()}"></i>
@@ -24,7 +25,7 @@
                         {if $filter->getClassName() === 'FilterItemRating'}
                             {include file='productdetails/rating.tpl' stars=$filterOption->getValue()}
                         {/if}
-                        {$filterOption->getName()}<span class="badge pull-right">{$filterOption->getCount()}</span>
+                        <span class="word-break">{$filterOption->getName()}</span>
                     </span>
                 </a>
             </li>

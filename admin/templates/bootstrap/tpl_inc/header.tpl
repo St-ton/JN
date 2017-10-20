@@ -64,7 +64,8 @@
         </div>
         <script>
         var $grid    = null;
-        var jtlToken = '{$smarty.session.jtl_token}';
+
+        setJtlToken('{$smarty.session.jtl_token}');
 
         $(function () {
             var lastQuery = null;

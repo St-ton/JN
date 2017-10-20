@@ -9,7 +9,7 @@ function JtlLiveEditor(selector, jleHost)
     this.draggedElm = null;
     this.targetElm = null;
     this.adjacentElm = null;
-    this.adjacentDir = ''; // 'left', 'right', 'above', 'below'
+    this.adjacentDir = ''; // 'above', 'below'
     this.rootElm = $(selector);
     this.labelElm = $('<div>', { 'class': 'jle-label' }).appendTo('body').hide();
     this.pinbarElm = this.createPinbar().appendTo('body').hide();
@@ -90,7 +90,6 @@ JtlLiveEditor.prototype.onDragOver = function(e)
     }
 
     if(adjacent !== null) {
-        var horiRatio = (e.clientX - adjacent.offset().left) / adjacent.innerWidth();
         var vertRatio = (e.clientY - adjacent.offset().top) / adjacent.innerHeight();
 
         if(vertRatio < 0.33) {
@@ -98,12 +97,6 @@ JtlLiveEditor.prototype.onDragOver = function(e)
         }
         else if(vertRatio > 0.66) {
             dir = 'below';
-        }
-        else if(horiRatio < 0.33) {
-            dir = 'left';
-        }
-        else if(horiRatio > 0.66) {
-            dir = 'right';
         }
     }
 
@@ -158,6 +151,17 @@ JtlLiveEditor.prototype.onTrash = function(e)
     if(this.selectedElm !== null) {
         this.selectedElm.remove();
         this.setSelected();
+    }
+};
+
+JtlLiveEditor.prototype.onClone = function(e)
+{
+    if(this.selectedElm !== null) {
+        var copiedElm = this.selectedElm.clone();
+        copiedElm.insertAfter(this.selectedElm);
+        copiedElm.removeClass('jle-selected');
+        copiedElm.removeClass('jle-hovered');
+        this.setSelected(this.selectedElm);
     }
 };
 
@@ -281,6 +285,10 @@ JtlLiveEditor.prototype.createPinbar = function()
     pinbarElm.append(
         $('<button class="btn btn-default" id="jle-btn-trash"><i class="fa fa-trash"></i></button>')
             .click(this.onTrash.bind(this))
+    );
+    pinbarElm.append(
+        $('<button class="btn btn-default"><i class="fa fa-clone"></i></button>')
+            .click(this.onClone.bind(this))
     );
     pinbarElm.append(
         $('<button class="btn btn-default"><i class="fa fa-cog"></i></button>')

@@ -177,7 +177,13 @@ function generateSitemapXML()
 {
     Jtllog::writeLog('Sitemap wird erstellt', JTLLOG_LEVEL_NOTICE);
     $nStartzeit = microtime(true);
-    $conf       = Shop::getSettings([CONF_ARTIKELUEBERSICHT, CONF_SITEMAP, CONF_GLOBAL]);
+    $conf       = Shop::getSettings([
+        CONF_ARTIKELUEBERSICHT,
+        CONF_SITEMAP,
+        CONF_GLOBAL,
+        CONF_NAVIGATIONSFILTER,
+        CONF_BOXEN
+    ]);
     require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Artikel.php';
     require_once PFAD_ROOT . PFAD_INCLUDES . 'filter_inc.php';
     if (!isset($conf['sitemap']['sitemap_insert_lastmod'])) {
@@ -231,6 +237,7 @@ function generateSitemapXML()
     $Sprache                 = Shop::DB()->select('tsprache', 'cShopStandard', 'Y');
     $_SESSION['kSprache']    = $Sprache->kSprache;
     $_SESSION['cISOSprache'] = $Sprache->cISO;
+    setzeSteuersaetze();
     if (!isset($_SESSION['Kundengruppe'])) {
         $_SESSION['Kundengruppe'] = new Kundengruppe();
     }
@@ -1144,12 +1151,13 @@ function baueSitemapReport($nAnzahlURL_arr, $fTotalZeit)
 }
 
 /**
- * @param int    $kKey
- * @param string $cKey
- * @param string $dLetzteAktualisierung
- * @param array  $oSprach_arr
- * @param int    $kSprache
- * @param int    $nArtikelProSeite
+ * @param int        $kKey
+ * @param string     $cKey
+ * @param string     $dLetzteAktualisierung
+ * @param array      $oSprach_arr
+ * @param int        $kSprache
+ * @param int        $nArtikelProSeite
+ * @param array|null $config
  * @return array
  */
 function baueExportURL($kKey, $cKey, $dLetzteAktualisierung, $oSprach_arr, $kSprache, $nArtikelProSeite, $config = null)

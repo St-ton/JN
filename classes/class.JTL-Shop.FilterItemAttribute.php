@@ -430,7 +430,6 @@ class FilterItemAttribute extends FilterBaseAttribute
                 }
                 // baue URL
                 $attributeValueURL = $this->naviFilter->getURL(
-                    true,
                     $additionalFilter->init($filterValue->kMerkmalWert)
                 );
                 // hack for #4815

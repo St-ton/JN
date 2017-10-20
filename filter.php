@@ -234,7 +234,7 @@ if (strpos(basename($NaviFilter->getURL()), '.php') === false) {
     if (isset($oSuchergebnisse->Seitenzahlen->AktuelleSeite) && $oSuchergebnisse->Seitenzahlen->AktuelleSeite > 1) {
         $cSeite = SEP_SEITE . $oSuchergebnisse->Seitenzahlen->AktuelleSeite;
     }
-    $cCanonicalURL = $NaviFilter->getURL(true, null, true) . $cSeite;
+    $cCanonicalURL = $NaviFilter->getURL(null, true) . $cSeite;
 }
 // Auswahlassistent
 if (TEMPLATE_COMPATIBILITY === true && function_exists('starteAuswahlAssistent')) {

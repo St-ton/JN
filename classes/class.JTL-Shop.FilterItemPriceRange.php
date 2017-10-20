@@ -493,10 +493,7 @@ class FilterItemPriceRange extends AbstractFilter
                        ->setValue($i)
                        ->setCount($count)
                        ->setSort(0)
-                       ->setURL($this->naviFilter->getURL(
-                           true,
-                           $additionalFilter->init($fe->nVon . '_' . $fe->nBis)
-                       ));
+                       ->setURL($this->naviFilter->getURL($additionalFilter->init($fe->nVon . '_' . $fe->nBis)));
                     $fe->nAnzahlArtikel = $fe->getCount();
 
                     $options[] = $fe;
@@ -577,7 +574,6 @@ class FilterItemPriceRange extends AbstractFilter
                                     ->setCount($fe->nAnzahlArtikel)
                                     ->setSort(0)
                                     ->setURL($this->naviFilter->getURL(
-                                        true,
                                         $additionalFilter->init($fe->nVon . '_' . $fe->nBis)
                                     ));
                 }

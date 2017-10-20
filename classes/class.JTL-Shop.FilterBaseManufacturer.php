@@ -167,7 +167,6 @@ class FilterBaseManufacturer extends AbstractFilter
                 $manufacturer->nAnzahl     = (int)$manufacturer->nAnzahl;
                 $manufacturer->nSortNr     = (int)$manufacturer->nSortNr;
                 $manufacturer->cURL        = $this->naviFilter->getURL(
-                    true,
                     $additionalFilter->init((int)$manufacturer->kHersteller)
                 );
 
@@ -180,7 +179,6 @@ class FilterBaseManufacturer extends AbstractFilter
                     ->setCount($manufacturer->nAnzahl)
                     ->setSort($manufacturer->nSortNr)
                     ->setURL($this->naviFilter->getURL(
-                        true,
                         $additionalFilter->init((int)$manufacturer->kHersteller)
                     ));
                 $fe->kHersteller = (int)$manufacturer->kHersteller;

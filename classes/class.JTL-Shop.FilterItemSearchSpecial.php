@@ -343,7 +343,6 @@ class FilterItemSearchSpecial extends AbstractFilter
                 ->setCount(count($qryRes))
                 ->setSort(0)
                 ->setURL($this->naviFilter->getURL(
-                    true,
                     $additionalFilter->init($i)
                 ));
             $fe->kKey = $i;

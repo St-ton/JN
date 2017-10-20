@@ -197,7 +197,6 @@ class FilterBaseTag extends AbstractFilter
                     ->setValue((int)$tag->kTag)
                     ->setCount($tag->nAnzahl)
                     ->setURL($this->naviFilter->getURL(
-                        true,
                         $additionalFilter->init((int)$tag->kTag)
                     ));
                 $fe->kTag           = (int)$tag->kTag;

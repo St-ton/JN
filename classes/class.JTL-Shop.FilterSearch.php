@@ -425,7 +425,6 @@ class FilterSearch extends AbstractFilter
                     ->setValue((int)$searchFilter->kSuchanfrage)
                     ->setCount($searchFilter->nAnzahl)
                     ->setURL($this->naviFilter->getURL(
-                        true,
                         $additionalFilter->init((int)$searchFilter->kSuchanfrage)
                     ));
                 $fe->cSuche       = $searchFilter->cSuche;

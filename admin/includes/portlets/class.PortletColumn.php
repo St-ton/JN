@@ -26,9 +26,31 @@ class PortletColumn extends PortletBase
         return $res;
     }
 
-    public function getHTMLContent()
+    public function getHTMLContent($portletData)
     {
-        return '';
+        $settings = $portletData['settings'];
+        $subareas = $portletData['subAreas'];
+        $layout   = isset($settings['layout']) ? $settings['layout'] : '6,6';
+        $layout   = explode(',', $layout);
+
+        $res = '<div class="row">';
+
+        foreach ($layout as $i => $col) {
+            $subArea  = $subareas[$i];
+            $res     .= '<div class="col-xs-' . $col . ' jle-subarea">';
+
+            foreach ($subArea as $subPortlet) {
+                $portlet        = PortletBase::createInstance($subPortlet['portletId'], $this->oSmarty, $this->oDB);
+                $subPortletHtml = $portlet->getHTMLContent($subPortlet);
+                $res           .= $subPortletHtml;
+            }
+
+            $res .= '</div>';
+        }
+
+        $res .= '</div>';
+
+        return $res;
     }
 
     public function getSettingsHTML($settings)

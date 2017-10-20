@@ -1,6 +1,9 @@
 
-function JLEHost(iframeSelector, templateUrl)
+function JLEHost(iframeSelector, templateUrl, cKey, kKey, kSprache)
 {
+    this.cKey = cKey;
+    this.kKey = kKey;
+    this.kSprache = kSprache;
     this.templateUrl = templateUrl;
     this.iframeCtx = null;
     this.editor = null;
@@ -23,7 +26,12 @@ JLEHost.prototype.iframeLoaded = function()
 	);
 
     JLEHost.loadScript(
-    	this.iframeCtx, this.templateUrl + 'js/jtl-live-editor/jtl-live-editor.js', this.liveEditorLoaded.bind(this)
+        this.iframeCtx, this.templateUrl + 'js/global.js', function() {
+            JLEHost.loadScript(
+                this.iframeCtx, this.templateUrl + 'js/jtl-live-editor/jtl-live-editor.js',
+                this.liveEditorLoaded.bind(this)
+            );
+        }.bind(this)
     );
 };
 
@@ -35,6 +43,12 @@ JLEHost.prototype.liveEditorLoaded = function()
         .attr('draggable', 'true')
         .on('dragstart', this.onDragStart.bind(this))
         .on('dragend', this.onDragEnd.bind(this));
+
+    // this.iframeCtx.jtlToken = jtlToken;
+
+    ioCall('loadLiveEditorContent', [this.cKey, this.kKey, this.kSprache], function(data) {
+        this.editor.loadFromJson(data, ioCall);
+    }.bind(this));
 };
 
 JLEHost.prototype.onDragStart = function(e)

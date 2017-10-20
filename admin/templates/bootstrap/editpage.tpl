@@ -19,13 +19,15 @@
     <script src="https://cdn.ckeditor.com/ckeditor5/1.0.0-alpha.1/classic/ckeditor.js"></script>
 
     <link rel="stylesheet" href="{$templateUrl}css/jtl-live-editor/jle-host.css">
+    {*<link rel="stylesheet" href="{$templateUrl}css/jtl-live-editor/jle-host.css">*}
     <script src="{$templateUrl}js/jtl-live-editor/jle-host.js"></script>
+    {*<script src="{$templateUrl}js/jtl-live-editor/jtl-live-editor.js"></script>*}
 
     <script>
-        var jtlToken = '{$smarty.session.jtl_token}';
+        setJtlToken('{$smarty.session.jtl_token}');
 
         $(function () {
-            jleHost = new JLEHost('#iframe-panel iframe', '{$templateUrl}');
+            jleHost = new JLEHost('#iframe-panel iframe', '{$templateUrl}', '{$cKey}', {$kKey}, {$kSprache});
             Split(
                 ['#sidebar-panel', '#iframe-panel'],
                 {

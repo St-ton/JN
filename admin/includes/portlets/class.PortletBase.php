@@ -47,7 +47,7 @@ class PortletBase
     /**
      * @return string
      */
-    public function getHTMLContent()
+    public function getHTMLContent($portletData)
     {
         return '';
     }

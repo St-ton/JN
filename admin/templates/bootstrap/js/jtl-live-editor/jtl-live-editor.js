@@ -368,3 +368,37 @@ JtlLiveEditor.prototype.portletToJson = function(portletElm)
 
     return result;
 };
+
+JtlLiveEditor.prototype.loadFromJson = function(data, ioCall)
+{
+    console.log(data);
+
+    for(var areaId in data) {
+        this.loadAreaFromJson(data[areaId], $('#' + areaId), ioCall);
+    }
+};
+
+JtlLiveEditor.prototype.loadAreaFromJson = function(data, areaElm, ioCall)
+{
+    data.forEach(function(portletData)
+    {
+        var portletElm = $('<div><i class="fa fa-spinner fa-pulse fa-2x"></i></div>');
+
+        areaElm.append(portletElm);
+
+        ioCall('getPortletPreviewContent', [portletData.portletId, portletData.settings], function (newHtml)
+        {
+            var newElm = $(newHtml);
+
+            portletElm.replaceWith(newElm);
+            newElm.attr('data-portletid', portletData.portletId);
+            newElm.attr('data-settings', JSON.stringify(portletData.settings));
+
+            newElm.find('.jle-subarea').each(function (index, subarea)
+            {
+                this.loadAreaFromJson(portletData.subAreas[index], $(subarea), ioCall);
+
+            }.bind(this));
+        }.bind(this));
+    }.bind(this));
+};

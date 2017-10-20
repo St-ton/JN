@@ -67,5 +67,39 @@ function getPortletInitialSettings($kPortlet)
  */
 function saveLiveEditorContent($cKey, $kKey, $kSprache, $contentData)
 {
-    // Save $contentData to Database
+    $oEditorPage = Shop::DB()->select('teditorpage', ['cKey', 'kKey', 'kSprache'], [$cKey, $kKey, $kSprache]);
+
+    if ($oEditorPage === null) {
+        $oEditorPage = (object)[
+            'cKey' => $cKey,
+            'kKey' => $kKey,
+            'kSprache' => $kSprache,
+            'nEditorContent' => '',
+            'cJSON' => json_encode($contentData),
+        ];
+        Shop::DB()->insert('teditorpage', $oEditorPage);
+    } else {
+        $oEditorPage->cJSON = json_encode($contentData);
+        Shop::DB()->update('teditorpage', ['cKey', 'kKey', 'kSprache'], [$cKey, $kKey, $kSprache], $oEditorPage);
+    }
+
+    $cRendered = '';
+
+    foreach ($contentData as $areaId => $areaData) {
+        foreach ($areaData as $portletData) {
+            $portlet    = PortletBase::createInstance($portletData['portletId'], Shop::Smarty(), Shop::DB());
+            $cRendered .= $portlet->getHTMLContent($portletData);
+        }
+    }
+}
+
+function loadLiveEditorContent($cKey, $kKey, $kSprache)
+{
+    $oEditorPage = Shop::DB()->select('teditorpage', ['cKey', 'kKey', 'kSprache'], [$cKey, $kKey, $kSprache]);
+
+    if ($oEditorPage === null) {
+        return (object)[];
+    }
+
+    return $oEditorPage->cJSON;
 }

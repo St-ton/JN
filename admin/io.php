@@ -84,6 +84,7 @@ $io
     ->register('getPortletSettingsHtml', null, $portletInc, 'CONTENT_PAGE_VIEW')
     ->register('getPortletInitialSettings', null, $portletInc, 'CONTENT_PAGE_VIEW')
     ->register('saveLiveEditorContent', null, $portletInc, 'CONTENT_PAGE_VIEW')
+    ->register('loadLiveEditorContent', null, $portletInc, 'CONTENT_PAGE_VIEW')
     // Other
     ->register('getRandomPassword', 'getRandomPasswordIO', $accountInc, 'ACCOUNT_VIEW')
     ->register('saveBannerAreas', 'saveBannerAreasIO', $bannerInc, 'DISPLAY_BANNER_VIEW')

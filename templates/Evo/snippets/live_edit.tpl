@@ -1,6 +1,6 @@
-{if (!empty($oSeoEditParams->oContent[$id]->cContent) && empty($smarty.get.editpage))}
+{if !empty($oLiveEditParams->oContent[$id]) && empty($smarty.get.editpage)}
     <div id="{$id}" class="jle-editable">
-        {$oSeoEditParams->oContent[$id]->cContent}
+        {$oLiveEditParams->oContent[$id]}
     </div>
 {elseif !empty($smarty.get.editpage)}
     <div id="{$id}" class="jle-editable"></div>

@@ -17,9 +17,11 @@ class PortletParagraph_jtl_portlets extends PortletBase
         return "<div>$text</div>";
     }
 
-    public function getHTMLContent()
+    public function getHTMLContent($portletData)
     {
-        return "<div>paragraph</div>";
+        $settings = $portletData['settings'];
+
+        return "<div>" . $settings['text'] . "</div>";
     }
 
     public function getSettingsHTML($settings)

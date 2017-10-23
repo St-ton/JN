@@ -1551,7 +1551,7 @@ class Navigationsfilter
                 $this->searchResults->Artikel->elemente->addItem($article);
             }
         }
-        $this->createUnsetFilterURLs(true);
+        $this->createUnsetFilterURLs();
         $_SESSION['oArtikelUebersichtKey_arr']   = $this->searchResults->Artikel->articleKeys;
         $_SESSION['nArtikelUebersichtVLKey_arr'] = [];
 
@@ -2200,11 +2200,10 @@ class Navigationsfilter
     /**
      * URLs generieren, die Filter lösen
      *
-     * @param bool     $bSeo
      * @param stdClass $searchResults
      * @return $this
      */
-    public function createUnsetFilterURLs($bSeo, $searchResults = null)
+    public function createUnsetFilterURLs($searchResults = null)
     {
         // @todo: remove bseo param?
         if ($searchResults === null) {

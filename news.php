@@ -7,7 +7,6 @@ require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'news_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'seite_inc.php';
 
-$smarty = require PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
 if (Shop::$directEntry === true) {
     $NaviFilter     = Shop::run();
     $cParameter_arr = Shop::getParameters();
@@ -80,7 +79,7 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
                 if (is_dir($cUploadVerzeichnis . $oNewsArchiv->kNews)) {
                     $oNewsArchiv->oDatei_arr     = holeNewsBilder($oNewsArchiv->kNews, $cUploadVerzeichnis);
                 }
-                $smarty->assign('oNewsArchiv', $oNewsArchiv);
+                Shop::Smarty()->assign('oNewsArchiv', $oNewsArchiv);
             }
             // Metas
             $cMetaTitle         = isset($oNewsArchiv->cMetaTitle)
@@ -99,8 +98,8 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
                     $oNewsKategorie_arr[$j]->cURL = baueURL($oNewsKategorie, URLART_NEWSKATEGORIE);
                 }
             }
-            $smarty->assign('R_LOGIN_NEWSCOMMENT', R_LOGIN_NEWSCOMMENT)
-                   ->assign('oNewsKategorie_arr', $oNewsKategorie_arr);
+            Shop::Smarty()->assign('R_LOGIN_NEWSCOMMENT', R_LOGIN_NEWSCOMMENT)
+                ->assign('oNewsKategorie_arr', $oNewsKategorie_arr);
 
             // Kommentar hinzufügen
             if (isset($_POST['kommentar_einfuegen'], $Einstellungen['news']['news_kommentare_nutzen']) &&
@@ -145,8 +144,8 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
                         }
                     } else {
                         $cFehler .= gibNewskommentarFehler($nPlausiValue_arr);
-                        $smarty->assign('nPlausiValue_arr', $nPlausiValue_arr)
-                               ->assign('cPostVar_arr', StringHandler::filterXSS($_POST));
+                        Shop::Smarty()->assign('nPlausiValue_arr', $nPlausiValue_arr)
+                            ->assign('cPostVar_arr', StringHandler::filterXSS($_POST));
                     }
                 } elseif ($Einstellungen['news']['news_kommentare_eingeloggt'] === 'N') {
                     if (is_array($nPlausiValue_arr) && count($nPlausiValue_arr) === 0) {
@@ -190,8 +189,8 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
                         }
                     } else {
                         $cFehler .= gibNewskommentarFehler($nPlausiValue_arr);
-                        $smarty->assign('nPlausiValue_arr', $nPlausiValue_arr)
-                               ->assign('cPostVar_arr', StringHandler::filterXSS($_POST));
+                        Shop::Smarty()->assign('nPlausiValue_arr', $nPlausiValue_arr)
+                            ->assign('cPostVar_arr', StringHandler::filterXSS($_POST));
                     }
                 }
             }
@@ -212,13 +211,13 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
 
             $oNewsKommentar_arr = getNewsComments($kNews, $oPagiComments->getLimitSQL());
 
-            $smarty->assign('oNewsKommentar_arr', $oNewsKommentar_arr)
-                   ->assign('oPagiComments', $oPagiComments);
+            Shop::Smarty()->assign('oNewsKommentar_arr', $oNewsKommentar_arr)
+                ->assign('oPagiComments', $oPagiComments);
             // Canonical
             if (strpos(baueURL($oNewsArchiv, URLART_NEWS), '.php') === false) {
                 $cCanonicalURL = Shop::getURL() . '/' . baueURL($oNewsArchiv, URLART_NEWS);
             }
-            $smarty->assign('Navigation', createNavigation(
+            Shop::Smarty()->assign('Navigation', createNavigation(
                 Shop::$AktuelleSeite,
                 0,
                 0,
@@ -230,8 +229,8 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
         } else {
             Shop::$AktuelleSeite = 'NEWS';
             $AktuelleSeite       = 'NEWS';
-            $smarty->assign('cNewsErr', 1);
-            baueNewsKruemel($smarty, Shop::$AktuelleSeite, $cCanonicalURL);
+            Shop::Smarty()->assign('cNewsErr', 1);
+            baueNewsKruemel(Shop::Smarty(), Shop::$AktuelleSeite, $cCanonicalURL);
         }
     } else { // Beitragsübersicht anzeigen
         if ($cParameter_arr['kNewsKategorie'] > 0) { // NewsKategorie Übersicht
@@ -244,7 +243,7 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
                 Shop::$AktuelleSeite = 'NEWS';
                 $cFehler .= Shop::Lang()->get('newsRestricted', 'news');
                 $_SESSION['NewsNaviFilter']->nNewsKat = -1;
-                baueNewsKruemel($smarty, Shop::$AktuelleSeite, $cCanonicalURL);
+                baueNewsKruemel(Shop::Smarty(), Shop::$AktuelleSeite, $cCanonicalURL);
             } else {
                 if (strlen($oNewsKategorie->cMetaTitle) > 0) {
                     $cMetaTitle = $oNewsKategorie->cMetaTitle;
@@ -255,7 +254,7 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
                 // Canonical
                 if (isset($oNewsKategorie->cSeo)) {
                     $cCanonicalURL = Shop::getURL() . '/' . $oNewsKategorie->cSeo;
-                    $smarty->assign('Navigation', createNavigation(
+                    Shop::Smarty()->assign('Navigation', createNavigation(
                             Shop::$AktuelleSeite,
                             0,
                             0,
@@ -278,7 +277,7 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
 
             if (isset($oNewsMonatsUebersicht->cSeo)) {
                 $cCanonicalURL = Shop::getURL() . '/' . $oNewsMonatsUebersicht->cSeo;
-                $smarty->assign('Navigation', createNavigation(
+                Shop::Smarty()->assign('Navigation', createNavigation(
                         Shop::$AktuelleSeite,
                         0,
                         0,
@@ -296,7 +295,7 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
         } else { // Startseite News Übersicht
             Shop::$AktuelleSeite = 'NEWS';
             $AktuelleSeite       = 'NEWS';
-            baueNewsKruemel($smarty, Shop::$AktuelleSeite, $cCanonicalURL);
+            baueNewsKruemel(Shop::Smarty(), Shop::$AktuelleSeite, $cCanonicalURL);
         }
 
         if (!isset($_SESSION['NewsNaviFilter'])) {
@@ -366,16 +365,16 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
             ? baueNewsMetaKeywords($_SESSION['NewsNaviFilter'], $oNewsUebersicht_arr)
             : $cMetaKeywords;
 
-        $smarty->assign('oNewsUebersicht_arr', $oNewsUebersicht_arr)
-               ->assign('oNewsKategorie_arr', holeNewsKategorien($oSQL->cDatumSQL, true))
-               ->assign('oDatum_arr', baueDatum($oDatum_arr))
-               ->assign('nSort', $_SESSION['NewsNaviFilter']->nSort)
-               ->assign('cDatum', $_SESSION['NewsNaviFilter']->cDatum)
-               ->assign('nNewsKat', $_SESSION['NewsNaviFilter']->nNewsKat)
-               ->assign('oPagination', $oPagination);
+        Shop::Smarty()->assign('oNewsUebersicht_arr', $oNewsUebersicht_arr)
+            ->assign('oNewsKategorie_arr', holeNewsKategorien($oSQL->cDatumSQL, true))
+            ->assign('oDatum_arr', baueDatum($oDatum_arr))
+            ->assign('nSort', $_SESSION['NewsNaviFilter']->nSort)
+            ->assign('cDatum', $_SESSION['NewsNaviFilter']->cDatum)
+            ->assign('nNewsKat', $_SESSION['NewsNaviFilter']->nNewsKat)
+            ->assign('oPagination', $oPagination);
 
         if (!isset($oNewsUebersicht_arr) || count($oNewsUebersicht_arr) === 0) {
-            $smarty->assign('noarchiv', 1);
+            Shop::Smarty()->assign('noarchiv', 1);
             $_SESSION['NewsNaviFilter']->nNewsKat = -1;
             $_SESSION['NewsNaviFilter']->cDatum   = -1;
         }
@@ -385,19 +384,19 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
 
     $cMetaTitle = prepareMeta($cMetaTitle, null, (int)$Einstellungen['metaangaben']['global_meta_maxlaenge_title']);
 
-    $smarty->assign('hinweis', $cHinweis)
-           ->assign('fehler', $cFehler)
-           ->assign('step', $step)
-           ->assign('code_news', generiereCaptchaCode(isset($Einstellungen['news']['news_sicherheitscode'])
-               ? $Einstellungen['news']['news_sicherheitscode']
-               : 'N')
-           );
+    Shop::Smarty()->assign('hinweis', $cHinweis)
+        ->assign('fehler', $cFehler)
+        ->assign('step', $step)
+        ->assign('code_news', generiereCaptchaCode(isset($Einstellungen['news']['news_sicherheitscode'])
+                ? $Einstellungen['news']['news_sicherheitscode']
+                : 'N')
+        );
 
     require_once PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
-    $smarty->assign('meta_title', $cMetaTitle)
-           ->assign('meta_description', $cMetaDescription)
-           ->assign('meta_keywords', $cMetaKeywords)
-           ->display('blog/index.tpl');
+    Shop::Smarty()->assign('meta_title', $cMetaTitle)
+        ->assign('meta_description', $cMetaDescription)
+        ->assign('meta_keywords', $cMetaKeywords)
+        ->display('blog/index.tpl');
     require PFAD_ROOT . PFAD_INCLUDES . 'profiler_inc.php';
 } else {
     $oLink                   = Shop::DB()->select('tlink', 'nLinkart', LINKTYP_404);

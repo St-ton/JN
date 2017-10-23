@@ -10,7 +10,6 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'warenkorb_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'trustedshops_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
-$smarty        = require PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
 $Einstellungen = Shop::getSettings([
     CONF_GLOBAL,
     CONF_RSS,

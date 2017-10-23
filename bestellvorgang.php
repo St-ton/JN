@@ -11,7 +11,6 @@ require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'wunschliste_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'jtl_inc.php';
 
-$smarty =  require PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
 Shop::setPageType(PAGE_BESTELLVORGANG);
 $AktuelleSeite = 'BESTELLVORGANG';
 $Einstellungen = Shop::getSettings([
@@ -239,7 +238,7 @@ if ($step === 'ZahlungZusatzschritt') {
 }
 if ($step === 'Bestaetigung') {
     plausiGuthaben($_POST);
-    $smarty->assign('cKuponfehler_arr', plausiKupon($_POST));
+    Shop::Smarty()->assign('cKuponfehler_arr', plausiKupon($_POST));
     //evtl genutztes guthaben anpassen
     pruefeGuthabenNutzen();
     gibStepBestaetigung($_GET);
@@ -252,7 +251,7 @@ if (isset($_SESSION['Zahlungsart']->cModulId)
     && $step === 'Bestaetigung'
 ) {
     require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'safetypay/safetypay.php';
-    $smarty->assign('safetypay_form', gib_safetypay_form(
+    Shop::Smarty()->assign('safetypay_form', gib_safetypay_form(
         $_SESSION['Kunde'],
         $_SESSION['Warenkorb'],
         $Einstellungen['zahlungsarten']
@@ -273,24 +272,24 @@ $startKat               = new Kategorie();
 $startKat->kKategorie   = 0;
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 WarenkorbHelper::addVariationPictures($_SESSION['Warenkorb']);
-$smarty->assign('Navigation', createNavigation($AktuelleSeite))
-       ->assign('AGB', gibAGBWRB(Shop::getLanguage(), Session::CustomerGroup()->getID()))
-       ->assign('Ueberschrift', Shop::Lang()->get('orderStep0Title', 'checkout'))
-       ->assign('UeberschriftKlein', Shop::Lang()->get('orderStep0Title2', 'checkout'))
-       ->assign('hinweis', $cHinweis)
-       ->assign('step', $step)
-       ->assign('editRechnungsadresse', verifyGPCDataInteger('editRechnungsadresse'))
-       ->assign('WarensummeLocalized', $_SESSION['Warenkorb']->gibGesamtsummeWarenLocalized())
-       ->assign('Warensumme', $_SESSION['Warenkorb']->gibGesamtsummeWaren())
-       ->assign('Steuerpositionen', $_SESSION['Warenkorb']->gibSteuerpositionen())
-       ->assign('bestellschritt', gibBestellschritt($step))
-       ->assign('requestURL', (isset($requestURL) ? $requestURL : null))
-       ->assign('C_WARENKORBPOS_TYP_ARTIKEL', C_WARENKORBPOS_TYP_ARTIKEL)
-       ->assign('C_WARENKORBPOS_TYP_GRATISGESCHENK', C_WARENKORBPOS_TYP_GRATISGESCHENK);
+Shop::Smarty()->assign('Navigation', createNavigation($AktuelleSeite))
+    ->assign('AGB', gibAGBWRB(Shop::getLanguage(), Session::CustomerGroup()->getID()))
+    ->assign('Ueberschrift', Shop::Lang()->get('orderStep0Title', 'checkout'))
+    ->assign('UeberschriftKlein', Shop::Lang()->get('orderStep0Title2', 'checkout'))
+    ->assign('hinweis', $cHinweis)
+    ->assign('step', $step)
+    ->assign('editRechnungsadresse', verifyGPCDataInteger('editRechnungsadresse'))
+    ->assign('WarensummeLocalized', $_SESSION['Warenkorb']->gibGesamtsummeWarenLocalized())
+    ->assign('Warensumme', $_SESSION['Warenkorb']->gibGesamtsummeWaren())
+    ->assign('Steuerpositionen', $_SESSION['Warenkorb']->gibSteuerpositionen())
+    ->assign('bestellschritt', gibBestellschritt($step))
+    ->assign('requestURL', (isset($requestURL) ? $requestURL : null))
+    ->assign('C_WARENKORBPOS_TYP_ARTIKEL', C_WARENKORBPOS_TYP_ARTIKEL)
+    ->assign('C_WARENKORBPOS_TYP_GRATISGESCHENK', C_WARENKORBPOS_TYP_GRATISGESCHENK);
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 executeHook(HOOK_BESTELLVORGANG_PAGE);
 
-$smarty->display('checkout/index.tpl');
+Shop::Smarty()->display('checkout/index.tpl');
 
 require PFAD_ROOT . PFAD_INCLUDES . 'profiler_inc.php';

@@ -2,12 +2,9 @@
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
- *
- * @global $smarty
  */
 require_once __DIR__ . '/includes/globalinclude.php';
 
-$smarty     = require PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
 $linkHelper = LinkHelper::getInstance();
 if (isset($_SESSION['Kunde']->kKunde)
     && $_SESSION['Kunde']->kKunde > 0
@@ -65,14 +62,13 @@ $AufgeklappteKategorien = new KategorieListe();
 $startKat               = new Kategorie();
 $startKat->kKategorie   = 0;
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
-//specific assigns
-$smarty->assign('Navigation', createNavigation($AktuelleSeite))
-       ->assign('editRechnungsadresse', $editRechnungsadresse)
-       ->assign('Ueberschrift', $titel)
-       ->assign('hinweis', $hinweis)
-       ->assign('step', $step)
-       ->assign('nAnzeigeOrt', CHECKBOX_ORT_REGISTRIERUNG)
-       ->assign('code_registrieren', generiereCaptchaCode($Einstellungen['kunden']['registrieren_captcha']));
+Shop::Smarty()->assign('Navigation', createNavigation($AktuelleSeite))
+    ->assign('editRechnungsadresse', $editRechnungsadresse)
+    ->assign('Ueberschrift', $titel)
+    ->assign('hinweis', $hinweis)
+    ->assign('step', $step)
+    ->assign('nAnzeigeOrt', CHECKBOX_ORT_REGISTRIERUNG)
+    ->assign('code_registrieren', generiereCaptchaCode($Einstellungen['kunden']['registrieren_captcha']));
 
 $cCanonicalURL = $linkHelper->getStaticRoute('registrieren.php');
 // Metaangaben
@@ -91,6 +87,6 @@ if (isset($Einstellungen['kunden']['kundenregistrierung_pruefen_zeit']) &&
 
 executeHook(HOOK_REGISTRIEREN_PAGE);
 
-$smarty->display('register/index.tpl');
+Shop::Smarty()->display('register/index.tpl');
 
 require PFAD_ROOT . PFAD_INCLUDES . 'profiler_inc.php';

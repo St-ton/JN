@@ -5,7 +5,6 @@
  */
 require __DIR__ . '/includes/globalinclude.php';
 
-$smarty         = require PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
 $NaviFilter     = Shop::run();
 $cParameter_arr = Shop::getParameters();
 $linkHelper     = LinkHelper::getInstance();
@@ -19,7 +18,7 @@ if (Shop::$is404 === true) {
     $cParameter_arr['is404'] = true;
     Shop::$fileName = null;
 }
-$smarty->assign('NaviFilter', $NaviFilter);
+Shop::Smarty()->assign('NaviFilter', $NaviFilter);
 if (Shop::$fileName !== null) {
     require PFAD_ROOT . Shop::$fileName;
 }

@@ -8,7 +8,6 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'newsletter_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'seite_inc.php';
 
 Shop::setPageType(PAGE_NEWSLETTER);
-$smarty        = require PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
 $AktuelleSeite = 'NEWSLETTER';
 $oLink         = Shop::DB()->select('tlink', 'nLinkart', LINKTYP_NEWSLETTER);
 if (isset($oLink->kLink)) {
@@ -30,9 +29,9 @@ if (isset($oLink->kLink) && $oLink->kLink > 0) {
         ? $Link->languageURLs
         : baueSprachURLS($Link, URLART_SEITE);
     $Link->Sprache = $linkHelper->getPageLinkLanguage($oLink->kLink);
-    $smarty->assign('Navigation', createNavigation($AktuelleSeite, 0, 0, $Link->Sprache->cName, $requestURL));
+    Shop::Smarty()->assign('Navigation', createNavigation($AktuelleSeite, 0, 0, $Link->Sprache->cName, $requestURL));
 } else {
-    $smarty->assign('Navigation',
+    Shop::Smarty()->assign('Navigation',
         createNavigation(
             $AktuelleSeite,
             0,
@@ -159,7 +158,7 @@ if (isset($_POST['abonnieren']) && (int)$_POST['abonnieren'] === 1) {
     $oKunde->cRegIp    = gibIP(); // IP of the current event-issuer
 
     if (!pruefeEmailblacklist($oKunde->cEmail)) {
-        $smarty->assign('oPlausi', fuegeNewsletterEmpfaengerEin($oKunde, true));
+        Shop::Smarty()->assign('oPlausi', fuegeNewsletterEmpfaengerEin($oKunde, true));
         Shop::DB()->delete('tnewsletterempfaengerblacklist', 'cMail', $oKunde->cEmail);
     } else {
         $cFehler .= valid_email($_POST['cEmail'])
@@ -167,13 +166,13 @@ if (isset($_POST['abonnieren']) && (int)$_POST['abonnieren'] === 1) {
             : (Shop::Lang()->get('invalidEmail', 'global') . '<br />');
     }
 
-    $smarty->assign('cPost_arr', StringHandler::filterXSS($_POST));
+    Shop::Smarty()->assign('cPost_arr', StringHandler::filterXSS($_POST));
 } elseif (isset($_POST['abonnieren']) && (int)$_POST['abonnieren'] === 2) {
     // weiterleitung vom Footer zu newsletter.php
     $oPlausi->cPost_arr['cEmail'] = isset($_POST['cEmail'])
         ? StringHandler::filterXSS(Shop::DB()->escape(strip_tags($_POST['cEmail'])))
         : null;
-    $smarty->assign('oPlausi', $oPlausi);
+    Shop::Smarty()->assign('oPlausi', $oPlausi);
 } elseif (isset($_POST['abmelden']) && (int)$_POST['abmelden'] === 1) { // Abmelden
     if (valid_email($_POST['cEmail'])) {
         // Pruefen, ob Email bereits vorhanden
@@ -229,7 +228,7 @@ if (isset($_POST['abonnieren']) && (int)$_POST['abonnieren'] === 1) {
         $cFehler          = Shop::Lang()->get('newsletterWrongemail', 'errorMessages');
         $oFehlendeAngaben = new stdClass();
         $oFehlendeAngaben->cUnsubscribeEmail = 1;
-        $smarty->assign('oFehlendeAngaben', $oFehlendeAngaben);
+        Shop::Smarty()->assign('oFehlendeAngaben', $oFehlendeAngaben);
     }
 } elseif (isset($_GET['show']) && (int)$_GET['show'] > 0) { // History anzeigen
     $cOption            = 'anzeigen';
@@ -247,15 +246,15 @@ if (isset($_POST['abonnieren']) && (int)$_POST['abonnieren'] === 1) {
     if ($oNewsletterHistory->kNewsletterHistory > 0) {
         // Prüfe Kundengruppe
         if (pruefeNLHistoryKundengruppe($kKundengruppe, $oNewsletterHistory->cKundengruppeKey)) {
-            $smarty->assign('oNewsletterHistory', $oNewsletterHistory);
+            Shop::Smarty()->assign('oNewsletterHistory', $oNewsletterHistory);
         }
     }
 }
 // Ist Kunde eingeloggt?
 if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
     $oKunde = new Kunde($_SESSION['Kunde']->kKunde);
-    $smarty->assign('bBereitsAbonnent', pruefeObBereitsAbonnent($oKunde->kKunde))
-           ->assign('oKunde', $oKunde);
+    Shop::Smarty()->assign('bBereitsAbonnent', pruefeObBereitsAbonnent($oKunde->kKunde))
+        ->assign('oKunde', $oKunde);
 }
 $cCanonicalURL    = Shop::getURL() . '/newsletter.php';
 $oMeta            = $linkHelper->buildSpecialPageMeta(LINKTYP_NEWSLETTER);
@@ -263,16 +262,16 @@ $cMetaTitle       = $oMeta->cTitle;
 $cMetaDescription = $oMeta->cDesc;
 $cMetaKeywords    = $oMeta->cKeywords;
 
-$smarty->assign('hinweis', $cHinweis)
-       ->assign('fehler', $cFehler)
-       ->assign('cOption', $cOption)
-       ->assign('nAnzeigeOrt', CHECKBOX_ORT_NEWSLETTERANMELDUNG)
-       ->assign('code_newsletter', generiereCaptchaCode($Einstellungen['newsletter']['newsletter_sicherheitscode']));
+Shop::Smarty()->assign('hinweis', $cHinweis)
+    ->assign('fehler', $cFehler)
+    ->assign('cOption', $cOption)
+    ->assign('nAnzeigeOrt', CHECKBOX_ORT_NEWSLETTERANMELDUNG)
+    ->assign('code_newsletter', generiereCaptchaCode($Einstellungen['newsletter']['newsletter_sicherheitscode']));
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 
 executeHook(HOOK_NEWSLETTER_PAGE);
 
-$smarty->display('newsletter/index.tpl');
+Shop::Smarty()->display('newsletter/index.tpl');
 
 require PFAD_ROOT . PFAD_INCLUDES . 'profiler_inc.php';

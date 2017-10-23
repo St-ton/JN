@@ -5,7 +5,6 @@
  */
 require_once __DIR__ . '/includes/globalinclude.php';
 
-$smarty         = require PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
 $NaviFilter     = Shop::run();
 $cParameter_arr = Shop::getParameters();
 if ($cParameter_arr['kLink'] > 0) {
@@ -13,6 +12,6 @@ if ($cParameter_arr['kLink'] > 0) {
 } elseif ($cParameter_arr['kArtikel'] > 0) {
     require_once __DIR__ . '/artikel.php';
 } else {
-    $smarty->assign('NaviFilter', $NaviFilter);
+    Shop::Smarty()->assign('NaviFilter', $NaviFilter);
     require_once __DIR__ . '/filter.php';
 }

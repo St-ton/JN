@@ -7,7 +7,7 @@ require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
 Shop::setPageType(PAGE_PASSWORTVERGESSEN);
-$smarty                          = require PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
+
 $AktuelleSeite                   = 'PASSWORT VERGESSEN';
 Shop::$AktuelleSeite             = 'PASSWORT VERGESSEN';
 $Einstellungen                   = Shop::getSettings([CONF_GLOBAL, CONF_RSS]);
@@ -40,7 +40,7 @@ if (isset($_POST['passwort_vergessen'], $_POST['email']) && (int)$_POST['passwor
         $oKunde = new Kunde($kunde->kKunde);
         $oKunde->prepareResetPassword($_POST['email']);
 
-        $smarty->assign('Kunde', $oKunde);
+        Shop::Smarty()->assign('Kunde', $oKunde);
     } elseif (isset($kunde->kKunde) && $kunde->kKunde > 0 && $kunde->cSperre === 'Y') {
         $hinweis = Shop::Lang()->get('accountLocked');
     } else {
@@ -75,11 +75,11 @@ if (isset($_POST['passwort_vergessen'], $_POST['email']) && (int)$_POST['passwor
         $cFehler = Shop::Lang()->get('passwordsMustBeEqual', 'account data');
     }
     $step = 'confirm';
-    $smarty->assign('fpwh', StringHandler::filterXSS($_POST['fpwh']))
-           ->assign('fpm', StringHandler::filterXSS($_POST['fpm']));
+    Shop::Smarty()->assign('fpwh', StringHandler::filterXSS($_POST['fpwh']))
+        ->assign('fpm', StringHandler::filterXSS($_POST['fpm']));
 } elseif (isset($_GET['fpwh'], $_GET['mail'])) {
-    $smarty->assign('fpwh', StringHandler::filterXSS($_GET['fpwh']))
-           ->assign('fpm', StringHandler::filterXSS($_GET['mail']));
+    Shop::Smarty()->assign('fpwh', StringHandler::filterXSS($_GET['fpwh']))
+        ->assign('fpm', StringHandler::filterXSS($_GET['mail']));
     $step = 'confirm';
 }
 $cCanonicalURL    = $linkHelper->getStaticRoute('pass.php');
@@ -87,14 +87,13 @@ $oMeta            = $linkHelper->buildSpecialPageMeta(LINKTYP_PASSWORD_VERGESSEN
 $cMetaTitle       = $oMeta->cTitle;
 $cMetaDescription = $oMeta->cDesc;
 $cMetaKeywords    = $oMeta->cKeywords;
-//specific assigns
-$smarty->assign('step', $step)
-       ->assign('hinweis', $hinweis)
-       ->assign('cFehler', $cFehler)
-       ->assign('Navigation', createNavigation($AktuelleSeite))
-       ->assign('requestURL', isset($requestURL) ? $requestURL : null);
+Shop::Smarty()->assign('step', $step)
+    ->assign('hinweis', $hinweis)
+    ->assign('cFehler', $cFehler)
+    ->assign('Navigation', createNavigation($AktuelleSeite))
+    ->assign('requestURL', isset($requestURL) ? $requestURL : null);
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
-$smarty->display('account/password.tpl');
+Shop::Smarty()->display('account/password.tpl');
 
 require PFAD_ROOT . PFAD_INCLUDES . 'profiler_inc.php';

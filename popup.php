@@ -5,7 +5,7 @@
  */
 require_once __DIR__ . '/includes/globalinclude.php';
 Shop::setPageType(PAGE_UNBEKANNT);
-$smarty        = require PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
+
 $Einstellungen = Shop::getSettings([CONF_GLOBAL, CONF_RSS]);
 $cAction       = strtolower($_GET['a']);
 $kCustom       = (int)$_GET['k'];
@@ -16,7 +16,7 @@ switch ($cAction) {
         if (class_exists('Download')) {
             $oDownload = new Download($kCustom);
             if ($oDownload->getDownload() > 0) {
-                $smarty->assign('oDownload', $oDownload);
+                Shop::Smarty()->assign('oDownload', $oDownload);
             } else {
                 $bNoData = true;
             }
@@ -27,9 +27,9 @@ switch ($cAction) {
         break;
 }
 
-$smarty->assign('bNoData', $bNoData)
-       ->assign('cAction', $cAction);
+Shop::Smarty()->assign('bNoData', $bNoData)
+    ->assign('cAction', $cAction);
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 
-$smarty->display('checkout/download_popup.tpl');
+Shop::Smarty()->display('checkout/download_popup.tpl');

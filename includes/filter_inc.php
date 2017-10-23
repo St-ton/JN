@@ -414,7 +414,7 @@ function gibHeaderAnzeige()
 function erstelleFilterLoesenURLs($bSeo, $oSuchergebnisse)
 {
     trigger_error('filter_inc.php: calling erstelleFilterLoesenURLs() is deprecated.', E_USER_DEPRECATED);
-    Shop::getNaviFilter()->createUnsetFilterURLs($bSeo, $oSuchergebnisse);
+    Shop::getNaviFilter()->createUnsetFilterURLs($oSuchergebnisse);
 }
 
 /**

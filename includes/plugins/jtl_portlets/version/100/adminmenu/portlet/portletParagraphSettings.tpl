@@ -8,7 +8,7 @@
     ClassicEditor
         .create( document.querySelector( '#settings-text' ),
             {
-                toolbar: ['bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote'],
+                toolbar: ['bold', 'italic', 'link', '|', 'bulletedList', 'numberedList', 'blockQuote', '|', 'undo', 'redo'],
                 viewportTopOffset: 30
             }
         )

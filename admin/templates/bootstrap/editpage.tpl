@@ -19,13 +19,15 @@
     <script src="https://cdn.ckeditor.com/ckeditor5/1.0.0-alpha.1/classic/ckeditor.js"></script>
 
     <link rel="stylesheet" href="{$templateUrl}css/jtl-live-editor/jle-host.css">
+    {*<link rel="stylesheet" href="{$templateUrl}css/jtl-live-editor/jle-host.css">*}
     <script src="{$templateUrl}js/jtl-live-editor/jle-host.js"></script>
+    {*<script src="{$templateUrl}js/jtl-live-editor/jtl-live-editor.js"></script>*}
 
     <script>
-        var jtlToken = '{$smarty.session.jtl_token}';
+        setJtlToken('{$smarty.session.jtl_token}');
 
         $(function () {
-            jleHost = new JLEHost('#iframe-panel iframe', '{$templateUrl}');
+            jleHost = new JLEHost('#iframe-panel iframe', '{$templateUrl}', '{$cKey}', {$kKey}, {$kSprache});
             Split(
                 ['#sidebar-panel', '#iframe-panel'],
                 {
@@ -34,6 +36,14 @@
                 }
             );
         });
+
+        function saveLiveEditorContent()
+        {
+            ioCall('saveLiveEditorContent', [
+                '{$cKey}', {$kKey}, {$kSprache},
+                jleHost.editor.toJson()
+            ]);
+        }
     </script>
 </head>
 <body>
@@ -54,7 +64,11 @@
                     <li><a href="#" onclick="$('#iframe-panel iframe').width('375px');"><i class="fa fa-mobile"></i></a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
-                    <li><a href="#"><i class="fa fa-save"></i></a></li>
+                    <li>
+                        <a href="#" onclick="saveLiveEditorContent();return false;">
+                            <i class="fa fa-save"></i>
+                        </a>
+                    </li>
                     <li><a href="{$URL_SHOP}/{$oSeo->cSeo}"><i class="fa fa-close"></i></a></li>
                 </ul>
             </div>

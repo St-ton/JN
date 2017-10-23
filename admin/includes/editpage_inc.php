@@ -58,3 +58,67 @@ function getPortletInitialSettings($kPortlet)
     $portletInst = PortletBase::createInstance($kPortlet, Shop::Smarty(), Shop::DB());
     return $portletInst->getInitialSettings();
 }
+
+/**
+ * @param $cKey
+ * @param $kKey
+ * @param $kSprache
+ * @param $contentData - object tree to be json encoded and saved in the DB
+ */
+function saveLiveEditorContent($cKey, $kKey, $kSprache, $contentData)
+{
+    $oEditorPage = Shop::DB()->select('teditorpage', ['cKey', 'kKey', 'kSprache'], [$cKey, $kKey, $kSprache]);
+
+    if ($oEditorPage === null) {
+        $oEditorPage = (object)[
+            'cKey' => $cKey,
+            'kKey' => $kKey,
+            'kSprache' => $kSprache,
+            'nEditorContent' => '',
+            'cJSON' => json_encode($contentData),
+        ];
+        $oEditorPage->kEditorPage = Shop::DB()->insert('teditorpage', $oEditorPage);
+    } else {
+        $oEditorPage->cJSON = json_encode($contentData);
+        Shop::DB()->update('teditorpage', ['cKey', 'kKey', 'kSprache'], [$cKey, $kKey, $kSprache], $oEditorPage);
+    }
+
+
+    foreach ($contentData as $areaId => $areaData) {
+        $cRendered = '';
+
+        foreach ($areaData as $portletData) {
+            $portlet    = PortletBase::createInstance($portletData['portletId'], Shop::Smarty(), Shop::DB());
+            $cRendered .= $portlet->getHTMLContent($portletData);
+        }
+
+        $oEditorPageContent = Shop::DB()->select(
+            'teditorpagecontent', ['kEditorPage', 'cAreaId'], [$oEditorPage->kEditorPage, $areaId]
+        );
+
+        if ($oEditorPageContent === null) {
+            $oEditorPageContent = (object)[
+                'kEditorPage' => $oEditorPage->kEditorPage,
+                'cAreaId' => $areaId,
+                'cContent' => $cRendered,
+            ];
+            $oEditorPageContent->kEditorPageContent = Shop::DB()->insert('teditorpagecontent', $oEditorPageContent);
+        } else {
+            $oEditorPageContent->cContent = $cRendered;
+            Shop::DB()->update(
+                'teditorpagecontent', 'kEditorPageContent', $oEditorPageContent->kEditorPageContent, $oEditorPageContent
+            );
+        }
+    }
+}
+
+function loadLiveEditorContent($cKey, $kKey, $kSprache)
+{
+    $oEditorPage = Shop::DB()->select('teditorpage', ['cKey', 'kKey', 'kSprache'], [$cKey, $kKey, $kSprache]);
+
+    if ($oEditorPage === null) {
+        return (object)[];
+    }
+
+    return $oEditorPage->cJSON;
+}

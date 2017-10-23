@@ -22,9 +22,11 @@ class PortletHeading extends PortletBase
         return "<h$level>$text</h$level>";
     }
 
-    public function getHTMLContent()
+    public function getHTMLContent($portletData)
     {
-        return '<h1>Heading</h1>';
+        $settings = $portletData['settings'];
+
+        return "<h" . $settings['level'] . ">" . $settings['text'] ."</h" . $settings['level'] . ">";
     }
 
     public function getSettingsHTML($settings)

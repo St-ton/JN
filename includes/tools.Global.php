@@ -6966,55 +6966,50 @@ if (!function_exists('array_flatten')) {
 }
 
 /**
- * @param int kSprache
- * @return params
+ * @param int $kSprache
+ * @return stdClass
  */
 function getLiveEditParameters($kSprache)
 {
-    $params = Shop::getParameters();
-    $oLiveEditParams = new stdClass();
-    foreach ($params as $k => $i) {
-        if (($k === 'kArtikel' || $k === 'kHersteller'
-                || $k === 'kKategorie' || $k === 'kLink'
-                || $k === 'kMerkmalWert' || $k === 'kNews'
-                || $k === 'kNewsKategorie' || $k === 'kNewsUebersicht'
-                || $k === 'kSuchanfrage' || $k === 'kTag'
-                || $k === 'kUmfrage' || $k === 'suchspecial')
-                && !empty($i)
-        ) {
-            $oLiveEditParams->cKey = $k;
-            $oLiveEditParams->kKey = $i;
+    $shopParams      = Shop::getParameters();
+    $oLiveEditParams = (object)[ 'cKey' => '', 'kKey' => 0, 'cSeo' => '', 'oContent' => [] ];
+    $possibleKeys    = [
+        'kArtikel', 'kHersteller', 'kKategorie', 'kLink', 'kMerkmalWert', 'kNews', 'kNewsKategorie',
+        'kNewsUebersicht', 'kSuchanfrage', 'kTag', 'kUmfrage', 'suchspecial'
+    ];
 
-            $oSeo = Shop::DB()->executeQueryPrepared(
-                'SELECT 
-                        tseo.cSeo, teditorpage.kEditorPage, teditorpage.nEditorContent, teditorpage.cJSON 
-                    FROM 
-                        tseo LEFT JOIN teditorpage ON tseo.kKey = teditorpage.kKey AND tseo.kSprache = teditorpage.kSprache AND tseo.cKey = teditorpage.cKey
-                    WHERE
-                        tseo.kKey = :kKey AND tseo.kSprache = :kSprache AND tseo.cKey = :cKey',
-                ['kKey' => $i, 'kSprache' => $kSprache, 'cKey' => $k], 1
-            );
-            $content = '';
-            if (!empty($oSeo->nSeoContent)) {
-                $content = Shop::DB()->executeQueryPrepared(
-                    'SELECT cAreaID, cContent FROM teditorpagecontent WHERE keditorPage = :kEditorPage',
-                    ['kEditorPage' => $oSeo->kEditorPage],
-                    2
-                );
-                foreach ($content as $val) {
-                    if (!empty($val->cContent)) {
-                        $tmp = $val->cAreaID;
-                        unset($val->cAreaID);
-                        $oLiveEditParams->oContent[$tmp] = $val;
-                    }
-                }
-            }
-
-            $oLiveEditParams->cSeo           = $oSeo->cSeo;
-            $oLiveEditParams->cJSON          = $oSeo->cJSON;
-            $oLiveEditParams->nEditorContent = $oSeo->nEditorContent;
+    foreach ($shopParams as $cKey => $kKey) {
+        if (!empty($kKey) && in_array($cKey, $possibleKeys, true)) {
+            $oLiveEditParams->cKey = $cKey;
+            $oLiveEditParams->kKey = $kKey;
+            break;
         }
     }
+
+    $oSeo = Shop::DB()->executeQueryPrepared(
+        'SELECT s.cSeo, ep.kEditorPage, ep.nEditorContent, ep.cJSON 
+            FROM tseo AS s
+                LEFT JOIN teditorpage AS ep
+                    ON s.kKey = ep.kKey
+                    AND s.kSprache = ep.kSprache
+                    AND s.cKey = ep.cKey
+            WHERE s.kKey = :kKey
+                AND s.kSprache = :kSprache
+                AND s.cKey = :cKey',
+        ['kKey' => $oLiveEditParams->kKey, 'kSprache' => $kSprache, 'cKey' => $oLiveEditParams->cKey], 1
+    );
+
+    if (!empty($oSeo->kEditorPage)) {
+        $oContent_arr = Shop()::DB()->selectAll('teditorpagecontent', 'kEditorPage', $oSeo->kEditorPage);
+
+        foreach ($oContent_arr as $oContent) {
+            $oLiveEditParams->oContent[$oContent->cAreaID] = $oContent->cContent;
+        }
+    }
+
+    $oLiveEditParams->cSeo           = $oSeo->cSeo;
+    $oLiveEditParams->cJSON          = $oSeo->cJSON;
+    $oLiveEditParams->nEditorContent = $oSeo->nEditorContent;
 
     return $oLiveEditParams;
 }

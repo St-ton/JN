@@ -9,7 +9,7 @@ function JtlLiveEditor(selector, jleHost)
     this.draggedElm = null;
     this.targetElm = null;
     this.adjacentElm = null;
-    this.adjacentDir = ''; // 'left', 'right', 'above', 'below'
+    this.adjacentDir = ''; // 'above', 'below'
     this.rootElm = $(selector);
     this.labelElm = $('<div>', { 'class': 'jle-label' }).appendTo('body').hide();
     this.pinbarElm = this.createPinbar().appendTo('body').hide();
@@ -90,7 +90,6 @@ JtlLiveEditor.prototype.onDragOver = function(e)
     }
 
     if(adjacent !== null) {
-        var horiRatio = (e.clientX - adjacent.offset().left) / adjacent.innerWidth();
         var vertRatio = (e.clientY - adjacent.offset().top) / adjacent.innerHeight();
 
         if(vertRatio < 0.33) {
@@ -98,12 +97,6 @@ JtlLiveEditor.prototype.onDragOver = function(e)
         }
         else if(vertRatio > 0.66) {
             dir = 'below';
-        }
-        else if(horiRatio < 0.33) {
-            dir = 'left';
-        }
-        else if(horiRatio > 0.66) {
-            dir = 'right';
         }
     }
 
@@ -158,6 +151,17 @@ JtlLiveEditor.prototype.onTrash = function(e)
     if(this.selectedElm !== null) {
         this.selectedElm.remove();
         this.setSelected();
+    }
+};
+
+JtlLiveEditor.prototype.onClone = function(e)
+{
+    if(this.selectedElm !== null) {
+        var copiedElm = this.selectedElm.clone();
+        copiedElm.insertAfter(this.selectedElm);
+        copiedElm.removeClass('jle-selected');
+        copiedElm.removeClass('jle-hovered');
+        this.setSelected(this.selectedElm);
     }
 };
 
@@ -283,6 +287,10 @@ JtlLiveEditor.prototype.createPinbar = function()
             .click(this.onTrash.bind(this))
     );
     pinbarElm.append(
+        $('<button class="btn btn-default"><i class="fa fa-clone"></i></button>')
+            .click(this.onClone.bind(this))
+    );
+    pinbarElm.append(
         $('<button class="btn btn-default"><i class="fa fa-cog"></i></button>')
             .click(this.onConfig.bind(this))
     );
@@ -367,4 +375,38 @@ JtlLiveEditor.prototype.portletToJson = function(portletElm)
     }.bind(this));
 
     return result;
+};
+
+JtlLiveEditor.prototype.loadFromJson = function(data, ioCall)
+{
+    console.log(data);
+
+    for(var areaId in data) {
+        this.loadAreaFromJson(data[areaId], $('#' + areaId), ioCall);
+    }
+};
+
+JtlLiveEditor.prototype.loadAreaFromJson = function(data, areaElm, ioCall)
+{
+    data.forEach(function(portletData)
+    {
+        var portletElm = $('<div><i class="fa fa-spinner fa-pulse fa-2x"></i></div>');
+
+        areaElm.append(portletElm);
+
+        ioCall('getPortletPreviewContent', [portletData.portletId, portletData.settings], function (newHtml)
+        {
+            var newElm = $(newHtml);
+
+            portletElm.replaceWith(newElm);
+            newElm.attr('data-portletid', portletData.portletId);
+            newElm.attr('data-settings', JSON.stringify(portletData.settings));
+
+            newElm.find('.jle-subarea').each(function (index, subarea)
+            {
+                this.loadAreaFromJson(portletData.subAreas[index], $(subarea), ioCall);
+
+            }.bind(this));
+        }.bind(this));
+    }.bind(this));
 };

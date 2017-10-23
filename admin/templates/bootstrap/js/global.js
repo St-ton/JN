@@ -1,3 +1,19 @@
+
+var JTL_TOKEN = null;
+
+/**
+ * Functions that communicate with the server like 'ioCall()' need the XSRF token to be set first.
+ * Call this function somewhere on your admin page before doing any ioCall's:
+ *
+ *  setJtlToken('{$smarty.session.jtl_token}');
+ *
+ * @param jtlToken
+ */
+function setJtlToken(jtlToken)
+{
+    JTL_TOKEN = jtlToken;
+}
+
 /**
  * @returns {jQuery.fn}
  */
@@ -721,6 +737,10 @@ function ioCall(name, args, success, error, context)
     error   = error || function () { };
     context = context || { };
 
+    if(JTL_TOKEN === null) {
+        throw 'Error: IO call not possible. JTL_TOKEN was not set on this page.';
+    }
+
     var evalInContext = function (code) { eval(code); }.bind(context);
 
     return $.ajax({
@@ -728,7 +748,7 @@ function ioCall(name, args, success, error, context)
         method: 'post',
         dataType: 'json',
         data: {
-            jtl_token: jtlToken,
+            jtl_token: JTL_TOKEN,
             io : JSON.stringify({
                 name: name,
                 params : args
@@ -769,7 +789,11 @@ function ioCall(name, args, success, error, context)
  */
 function ioDownload(name, args)
 {
-    window.location.href = 'io.php?token=' + jtlToken + '&io=' + encodeURIComponent(JSON.stringify({
+    if(JTL_TOKEN === null) {
+        throw 'Error: IO download not possible. JTL_TOKEN was not set on this page.';
+    }
+
+    window.location.href = 'io.php?token=' + JTL_TOKEN + '&io=' + encodeURIComponent(JSON.stringify({
         name: name,
         params: args
     }));

@@ -34,6 +34,9 @@
                         <thead>
                         <tr>
                             <th>Tabelle</th>
+                            <th>Engine</th>
+                            <th>Kollation</th>
+                            <th>Daten</th>
                             <th>Status</th>
                             <th>Aktion</th>
                         </tr>
@@ -46,6 +49,32 @@
                                         {$cTable}
                                     {else}
                                         <label for="check-{$smarty.foreach.datei.iteration}">{$cTable}</label>
+                                    {/if}
+                                </td>
+                                <td>
+                                    {if $cTable|array_key_exists:$cDBStruct_arr}
+                                        <span class="badge alert-{if $cDBStruct_arr.$cTable->ENGINE === 'InnoDB'}info{else}warning{/if}">{$cDBStruct_arr.$cTable->ENGINE}</span>
+                                    {/if}
+                                </td>
+                                <td>
+                                    {if $cTable|array_key_exists:$cDBStruct_arr}
+                                        <span class="badge alert-{if $cDBStruct_arr.$cTable->TABLE_COLLATION|strpos:'utf8' === 0}info{else}warning{/if}">{$cDBStruct_arr.$cTable->TABLE_COLLATION}</span>
+                                    {/if}
+                                </td>
+                                <td>
+                                    {if $cTable|array_key_exists:$cDBStruct_arr}
+                                        {assign var="teiler" value=1024}
+                                        {if $cDBStruct_arr.$cTable->DATA_SIZE > $teiler * 1024}
+                                            {assign var="teiler" value=$teiler * 1024}
+                                            {if $cDBStruct_arr.$cTable->DATA_SIZE > $teiler * 1024}
+                                                {assign var="teiler" value=$teiler * 1024}
+                                                {($cDBStruct_arr.$cTable->DATA_SIZE / $teiler)|round:0}&nbsp;GB
+                                            {else}
+                                                {($cDBStruct_arr.$cTable->DATA_SIZE / $teiler)|round:0}&nbsp;MB
+                                            {/if}
+                                        {else}
+                                            {($cDBStruct_arr.$cTable->DATA_SIZE / $teiler)|round:0}&nbsp;kB
+                                        {/if}
                                     {/if}
                                 </td>
                                 <td>

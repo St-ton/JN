@@ -2,16 +2,18 @@
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
+ * @global AdminAccount $oAccount
+ * @global JTLSmarty $smarty
  */
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('DBCHECK_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dbcheck_inc.php';
-/** @global JTLSmarty $smarty */
+
 $cHinweis          = '';
 $cFehler           = '';
-$cDBStruct_arr     = getDBStruct();
+$cDBStruct_arr     = getDBStruct(true);
 $cDBFileStruct_arr = getDBFileStruct();
 $cDBError_arr      = [];
 $maintenanceResult = null;
@@ -30,6 +32,7 @@ if (strlen($cFehler) === 0) {
 
 $smarty->assign('cFehler', $cFehler)
        ->assign('cDBFileStruct_arr', $cDBFileStruct_arr)
+       ->assign('cDBStruct_arr', $cDBStruct_arr)
        ->assign('cDBError_arr', $cDBError_arr)
        ->assign('JTL_VERSION', JTL_VERSION)
        ->assign('maintenanceResult', $maintenanceResult)

@@ -6921,14 +6921,20 @@ function dateAddWeekday($date, $weekdays)
         $resDate = new DateTime();
     }
 
-    $weekend = ((int)$resDate->format('w') + 1) % 6 === 1;
-    $pm      = (int)$resDate->format('G') > 12;
-
-    if ($weekend || $pm) {
+    if ((int)$resDate->format('w') === 0) {
+        // Add one weekday if startdate is on sunday
         $resDate->add(DateInterval::createFromDateString('1 weekday'));
     }
 
-    return $resDate->add(DateInterval::createFromDateString($weekdays . ' weekday'));
+    // Add $weekdays as normal days
+    $resDate->add(DateInterval::createFromDateString($weekdays . ' day'));
+
+    if ((int)$resDate->format('w') === 0) {
+        // Add one weekday if enddate is on sunday
+        $resDate->add(DateInterval::createFromDateString('1 weekday'));
+    }
+
+    return $resDate;
 }
 
 if (!function_exists('dd')) {

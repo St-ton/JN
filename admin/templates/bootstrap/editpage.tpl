@@ -10,18 +10,17 @@
 
     <link rel="stylesheet" href="{$templateUrl}css/bootstrap.min.css">
     <link rel="stylesheet" href="{$templateUrl}css/bootstrap-theme.min.css">
+    {*<link rel="stylesheet" href="{$templateUrl}css/custom.css">*}
     <link rel="stylesheet" href="{$templateUrl}css/font-awesome.min.css">
 
     <script src="{$templateUrl}js/jquery-1.12.4.min.js"></script>
     <script src="{$templateUrl}js/bootstrap.min.js"></script>
     <script src="https://unpkg.com/split.js/split.min.js"></script>
     <script src="{$templateUrl}js/global.js"></script>
-    <script src="https://cdn.ckeditor.com/ckeditor5/1.0.0-alpha.1/classic/ckeditor.js"></script>
+    <script src="//cdn.ckeditor.com/4.7.3/basic/ckeditor.js"></script>
 
     <link rel="stylesheet" href="{$templateUrl}css/jtl-live-editor/jle-host.css">
-    {*<link rel="stylesheet" href="{$templateUrl}css/jtl-live-editor/jle-host.css">*}
     <script src="{$templateUrl}js/jtl-live-editor/jle-host.js"></script>
-    {*<script src="{$templateUrl}js/jtl-live-editor/jtl-live-editor.js"></script>*}
 
     <script>
         setJtlToken('{$smarty.session.jtl_token}');
@@ -35,6 +34,19 @@
                     gutterSize: 4
                 }
             );
+            // Fix from: https://stackoverflow.com/questions/22637455/how-to-use-ckeditor-in-a-bootstrap-modal
+            $.fn.modal.Constructor.prototype.enforceFocus = function () {
+                var $modalElement = this.$element;
+                $(document).on('focusin.modal', function (e) {
+                    var $parent = $(e.target.parentNode);
+                    if ($modalElement[0] !== e.target && !$modalElement.has(e.target).length
+                        // add whatever conditions you need here:
+                        &&
+                        !$parent.hasClass('cke_dialog_ui_input_select') && !$parent.hasClass('cke_dialog_ui_input_text')) {
+                        $modalElement.focus()
+                    }
+                })
+            };
         });
 
         function saveLiveEditorContent()

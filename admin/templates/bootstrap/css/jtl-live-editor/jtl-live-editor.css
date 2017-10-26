@@ -16,7 +16,7 @@
 }
 
 .jle-selected {
-    border: 1px dashed #00f !important;
+    outline: 1px dashed #00f !important;
     cursor: pointer;
     /*position: relative;*/
 }

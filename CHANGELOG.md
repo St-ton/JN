@@ -1,13 +1,13 @@
 # JTL-Shop Changelog
 
-## [4.06] - 2017-08-xx
+## [4.06]
 
 ### Wichtige Änderungen
 
 #### Teilverschlüsselung wird nicht länger unterstützt
 JTL-Shop 4.06 unterstützt nicht länger die Option Teilverschlüsselung, also den automatischen Wechsel von http auf https z.B. beim Wechsel in den Warenkorb. 
-Ein Umstieg auf permanentes SSL ist generell empfehlenswert und sollte idealerweise bereits vor dem Update durchgeführt werden (Einstellung 192 im Shop-Backend).
-Sofern noch Teilverschlüsselung in den Einstellungen aktiv ist, wird beim Shop-Update permanentes SSL aktiviert. 
+Sofern zum Update-Zeitpunkt noch Teilverschlüsselung in den Shop-Einstellungen aktiv war, wird permanentes SSL aktiviert. 
+Tipps für einen reibungslosen Wechsel auf permanentes SSL finden Sie im JTL-Guide: http://jtl-url.de/iurf7
 
 #### Verkürzter Checkout mit 3 Schritten
 Der Bestellvorgang wurde von 5 auf nur noch 3 Schritte reduziert und benutzerfreundlicher umgestaltet. 
@@ -24,6 +24,13 @@ Der Kompatibilitätsmodus für die Nutzung eines Tiny-basierten Templates in JTL
 Shops mit Evo oder kompatiblen Shop4-Templates benötigen diesen Modus nicht und profitieren mit einem leichten Performancegewinn von der Deaktivierung.   
 Wer den Kompatibilitätsmodus zum Betrieb seines Templates benötigt, kann diesen mit einer zusätzlichen Zeile in der config.JTL-Shop.ini.php 
 aktivieren: define('TEMPLATE_COMPATIBILITY', true);
+
+#### Variationsauswahl und Detailvorschau in Artikelübersichten
+In den Artikelübersichten ist es jetzt möglich direkt Variationsauswahlen vorzunehmen und eine verkürzte Detailansicht als Popup in der Liste
+anzeigen zu lassen. Die Anzahl der möglichen Variationen und die Detailansicht lassen sich in der Templatekonfiguration einstellen.
+
+#### Evo-Templateänderungen
+Ein Template-Diff mit allen Änderungen zwischen v4.05 und v4.06 finden Sie [hier](https://gitlab.jtl-software.de/jtlshop/shop4/snippets/39). 
 
 #### Weitere Anpassungen
 Das PayPal-Plugin wird in Version 1.08 ausgeliefert und beinhaltet nun auch die Zahlart Ratenzahlung powered by PayPal. 
@@ -198,14 +205,18 @@ Bitte beachten Sie auch das aktualisierte Handbuch zum PayPal-Plugin: http://jtl
 * [SHOP-1629] - Tabelle in "Ihre Konfigration" überschreitet bei langen Wörter den Boxrand
 * [SHOP-1653] - Die News-Anzeige auf der Startseite arbeitet nicht sauber mit dem "jtl_backenduser_extension"-Plugin zusammen
 * [SHOP-1666] - Backend: Kupon-Tabelle zusammenfassen
+* [SHOP-1754] - große Kategoriebilder ragen über die Seite hinaus
 
 
 #### Story / Feature
 * [SHOP-3] - Hook in admin/shopzuruecksetzen.php
 * [SHOP-180] - Schnittstellenerweiterung: Wawi-Sync von Bestellattributen
+* [SHOP-204] - Verbesserung: Variationsauswahl für Varianten + Varkombis direkt in Artikelliste
+* [SHOP-336] - Neue Option, um Versandarten für Lieferzeitberechnung und günstigste Versandberechnung auszuschließen
 * [SHOP-355] - Backend-Feature: OpenGeoDB-Import
 * [SHOP-370] - Beschränkung auf max 5 Versandklassen aufheben, Darstellungsform ändern
 * [SHOP-380] - Refactoring des Auswahlassistenten
+* [SHOP-401] - Variationen per AJAX in WK legbar machen
 * [SHOP-410] - Neue Youtube Shortlinks (youtu.be) unterstützen
 * [SHOP-439] - FR: Kupons auf Hersteller beschränken
 * [SHOP-466] - Sprachverwaltung Benutzerfreundlichkeit verbessern
@@ -242,9 +253,7 @@ Bitte beachten Sie auch das aktualisierte Handbuch zum PayPal-Plugin: http://jtl
 * [SHOP-1660] - Template-Vererbung (Smarty-Blocks) über Plugins unterstützen
 * [SHOP-1667] - Backend Weiterleitungen nach Aufrufen filtern
 * [SHOP-1674] - Neue Smarty Blocks in snippets/shipping_tax_info.tpl und productdetails/price.tpl
-* [SHOP-336] - Neue Option, um Versandarten für Lieferzeitberechnung und günstigste Versandberechnung auszuschließen
-
-
+* [SHOP-1694] - Backstretch-Hintergrundbild verursacht Fehler bei geringer Netzgeschwindigkeit
 
 ## [4.05.3]
 

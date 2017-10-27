@@ -345,10 +345,6 @@
                 $('#content a[href="#tab-votes"]').tab('show');
             });
 
-            if ($('.switch-variations', $wrapper).length === 1) {
-                this.variationSwitch($('.switch-variations', $wrapper), false, '#' + $wrapper.attr('id'));
-            }
-
             this.registerProductActions($wrapper);
         },
 
@@ -1067,7 +1063,7 @@
                     $wrapper.addClass('loading');
                     $spinner = $.evo.extended().spinner();
                 } else {
-                    $('.variations .updatingStockInfo').show();
+                    $('.variations .updatingStockInfo', $wrapper).show();
                 }
 
                 $current.addClass('loading');
@@ -1081,7 +1077,7 @@
                     if (animation) {
                         $spinner.stop();
                     }
-                    $('.variations .updatingStockInfo').hide();
+                    $('.variations .updatingStockInfo', $wrapper).hide();
                     if (error) {
                         $.evo.error('checkVarkombiDependencies');
                     }

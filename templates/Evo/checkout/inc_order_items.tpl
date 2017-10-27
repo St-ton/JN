@@ -219,7 +219,7 @@
                                                             ({$oPosition->Artikel->cEinheit})
                                                         {/if}
                                                     </label>:
-                                                    <div id="quantity-grp" class="choose_quantity input-group">
+                                                    <div id="quantity-grp{$smarty.foreach.positionen.index}" class="choose_quantity input-group">
                                                         <input name="anzahl[{$smarty.foreach.positionen.index}]" id="quantity{$smarty.foreach.positionen.index}" class="form-control quantity form-control text-right" size="3" value="{$oPosition->nAnzahl}" />
                                                         <span class="input-group-btn">
                                                             <button type="submit" class="btn btn-default" title="{lang key='refresh' section='checkout'}"><i class="fa fa-refresh"></i></button>
@@ -233,7 +233,7 @@
                             {else}
                                 {if $oPosition->istKonfigVater()}
                                     <div class="qty-wrapper modify">
-                                        <div class="btn-group-vertical" role="group" id="quantity-grp">
+                                        <div class="btn-group-vertical" role="group" id="quantity-grp{$smarty.foreach.positionen.index}">
                                             <input name="anzahl[{$smarty.foreach.positionen.index}]" type="text" class="form-control text-center" value="{$oPosition->nAnzahl}" readonly />
                                             <span class="btn-group">
                                                 <a class="btn btn-default configurepos"
@@ -246,7 +246,7 @@
                                     </div>
                                 {else}
                                     <div class="form-inline">
-                                        <div class="btn-group-vertical" role="group" id="quantity-grp">
+                                        <div class="btn-group-vertical" role="group" id="quantity-grp{$smarty.foreach.positionen.index}">
                                             <input name="anzahl[{$smarty.foreach.positionen.index}]" id="quantity{$smarty.foreach.positionen.index}" class="btn-group form-control quantity text-right" size="3" value="{$oPosition->nAnzahl}" />
                                             {if $oPosition->Artikel->cEinheit}
                                                 <span class="btn-group unit input-group-addon hidden-xs">{$oPosition->Artikel->cEinheit}</span>

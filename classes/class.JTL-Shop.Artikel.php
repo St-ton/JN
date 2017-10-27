@@ -3208,9 +3208,7 @@ class Artikel
         $kKundengruppe                   = (int)$kKundengruppe;
         $kSprache                        = (int)$kSprache;
         $this->oVariationDetailPreis_arr = [];
-        // Leider wird durch dieses IF auch nVariationsAufpreisVorhanden bei mehr als einer Variation verworfen
-        // und man kann keine Aufpreise in der Artikeluebersicht mehr erkennen. So koennen wir kein "ab" schreiben
-        // sondern nur "nur" bei der Preisangabe => Abmahnung. TODO: Loesung dafuer finden
+
         if ($this->nVariationOhneFreifeldAnzahl === 1) {
             $oVariationDetailPreis_arr = Shop::DB()->query(
                 "SELECT tartikel.kArtikel, teigenschaftkombiwert.kEigenschaft, teigenschaftkombiwert.kEigenschaftWert
@@ -4778,7 +4776,7 @@ class Artikel
      */
     public function setzeSprache($kSprache)
     {
-        $oSprache = gibStandardsprache();
+        $oSprache = gibStandardsprache(false);
         if ($this->kArtikel > 0 && $kSprache != $oSprache->kSprache) {
             //auf aktuelle Sprache setzen
             $objSprache = Shop::DB()->query(
@@ -5092,7 +5090,10 @@ class Artikel
      */
     public function getFavourableShipping($countryCode, $shippingID = null)
     {
-        if (!empty($_SESSION['Versandart']->kVersandart) && $countryCode === $this->cCachedCountryCode) {
+        if (!empty($_SESSION['Versandart']->kVersandart)
+            && isset($_SESSION['Versandart']->nMinLiefertage)
+            && $countryCode === $this->cCachedCountryCode
+        ) {
             return $_SESSION['Versandart'];
         }
         // if nothing changed, return cached shipping-object
@@ -6309,7 +6310,7 @@ class Artikel
      */
     public function showMatrix()
     {
-        if (!$this->kArtikelVariKombi && !$this->kVariKindArtikel && !$this->nErscheinendesProdukt) {
+        if (verifyGPCDataInteger('quickView') === 0 && !$this->kArtikelVariKombi && !$this->kVariKindArtikel && !$this->nErscheinendesProdukt) {
             $conf = Shop::getSettings([CONF_ARTIKELDETAILS]);
             if ($conf['artikeldetails']['artikeldetails_warenkorbmatrix_anzeige'] === 'Y' ||
                 (!empty($this->FunktionsAttribute[FKT_ATTRIBUT_WARENKORBMATRIX]) &&

@@ -5,7 +5,9 @@
             <span class="text-muted">{$oAvailableWidget->cDescription}</span>
         </div>
         <div class="media-right text-vcenter">
-            <a href="#" data-widget="add" data-id="{$oAvailableWidget->kWidget}" class="badge badge-widget"><i class="fa fa-plus"></i></a>
+            <a href="#"
+               onclick="addWidget({$oAvailableWidget->kWidget})"
+               class="badge badge-widget"><i class="fa fa-plus"></i></a>
         </div>
     </div>
 {/foreach}

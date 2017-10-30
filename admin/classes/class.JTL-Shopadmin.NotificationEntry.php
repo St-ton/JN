@@ -63,10 +63,10 @@ class NotificationEntry
      */
     public function __construct($type, $title, $description = null, $url = null)
     {
-        $this->setType($type);
-        $this->setTitle($title);
-        $this->setDescription($description);
-        $this->setUrl($url);
+        $this->setType($type)
+             ->setTitle($title)
+             ->setDescription($description)
+             ->setUrl($url);
     }
 
     /**

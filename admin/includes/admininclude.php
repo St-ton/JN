@@ -11,10 +11,10 @@ if (!isset($bExtern) || !$bExtern) {
     require DEFINES_PFAD . 'defines.php';
     require PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'admindefines.php';
     // Existiert Konfiguration?
-    defined('DB_HOST') || die('Kein MySql-Datenbank Host angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
-    defined('DB_NAME') || die('Kein MySql Datenbanknamen angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
-    defined('DB_USER') || die('Kein MySql-Datenbank Benutzer angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
-    defined('DB_PASS') || die('Kein MySql-Datenbank Passwort angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
+    defined('DB_HOST') || die('Kein MySQL-Datenbank Host angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
+    defined('DB_NAME') || die('Kein MySQL Datenbanknamen angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
+    defined('DB_USER') || die('Kein MySQL-Datenbank Benutzer angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
+    defined('DB_PASS') || die('Kein MySQL-Datenbank Passwort angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
 }
 
 require PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
@@ -23,8 +23,6 @@ require PFAD_ROOT . PFAD_INCLUDES . 'plugin_inc.php';
 require PFAD_ROOT . PFAD_INCLUDES . 'autoload.php';
 require PFAD_ROOT . PFAD_INCLUDES . 'tools.Global.php';
 require PFAD_ROOT . PFAD_BLOWFISH . 'xtea.class.php';
-require PFAD_ROOT . PFAD_CLASSES_CORE . 'class.core.NiceDB.php';
-require PFAD_ROOT . PFAD_CLASSES_CORE . 'class.core.Nice.php';
 require PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'benutzerverwaltung_inc.php';
 require PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'admin_tools.php';
 
@@ -39,20 +37,12 @@ if (!function_exists('Shop')) {
 }
 
 // Datenbankverbindung aufbauen - ohne Debug Modus
-$DB = new NiceDB(DB_HOST, DB_USER, DB_PASS, DB_NAME, true);
-
-$cache = JTLCache::getInstance();
-$cache->setJtlCacheConfig();
-
+$DB      = new NiceDB(DB_HOST, DB_USER, DB_PASS, DB_NAME, true);
+$cache   = JTLCache::getInstance()->setJtlCacheConfig();
 $session = AdminSession::getInstance();
 
-/** @var Notification $notify */
-$notify = Notification::getInstance();
-/** @var Notification $notify */
-$notify->buildDefault();
-
 Shop::bootstrap();
-Shop::fire('backend.notification', $notify);
+Shop::fire('backend.notification', Notification::getInstance()->buildDefault());
 
 require PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'smartyinclude.php';
 

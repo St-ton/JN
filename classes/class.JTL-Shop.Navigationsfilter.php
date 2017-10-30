@@ -893,6 +893,10 @@ class Navigationsfilter
      */
     public function setManufacturer($filter)
     {
+        if (is_a($filter, 'stdClass') && !isset($filter->kHersteller)) {
+            // disallow setting manufacturer base to empty stdClass
+            return $this;
+        }
         $this->manufacturer = $filter;
 
         return $this;
@@ -933,6 +937,10 @@ class Navigationsfilter
      */
     public function setAttributeFilter(array $filter)
     {
+        if (is_a($filter, 'stdClass') && !isset($filter->kMerkmal)) {
+            // disallow setting attribute filter to empty stdClass
+            return $this;
+        }
         $this->attributeFilter = $filter;
 
         return $this;
@@ -971,6 +979,10 @@ class Navigationsfilter
      */
     public function setAttributeValue($filter)
     {
+        if (is_a($filter, 'stdClass') && !isset($filter->kMerkmalWert)) {
+            // disallow setting attribute value to empty stdClass
+            return $this;
+        }
         $this->attributeFilter = $filter;
 
         return $this;
@@ -1023,6 +1035,10 @@ class Navigationsfilter
      */
     public function setTag($filter)
     {
+        if (is_a($filter, 'stdClass') && !isset($filter->kTag)) {
+            // disallow setting tag filter to empty stdClass
+            return $this;
+        }
         $this->tagFilter = $filter;
 
         return $this;
@@ -1050,6 +1066,10 @@ class Navigationsfilter
      */
     public function setCategory($filter)
     {
+        if (is_a($filter, 'stdClass') && !isset($filter->kKategorie)) {
+            // disallow setting category base to empty stdClass
+            return $this;
+        }
         $this->category = $filter;
 
         return $this;
@@ -1077,6 +1097,10 @@ class Navigationsfilter
      */
     public function setCategoryFilter($filter)
     {
+        if (is_a($filter, 'stdClass') && !isset($filter->kKategorie)) {
+            // disallow setting category filter to empty stdClass
+            return $this;
+        }
         $this->categoryFilter = $filter;
 
         return $this;

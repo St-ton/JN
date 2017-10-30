@@ -493,7 +493,6 @@ class FilterItemAttributeAdvanced extends FilterBaseAttribute
                     : 0;
                 // baue URL
                 $attributeValues->cURL = $this->naviFilter->getURL(
-                    true,
                     $additionalFilter->setSeo($this->getAvailableLanguages())
                 );
                 // hack for #4815

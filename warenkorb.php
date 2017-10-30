@@ -6,11 +6,10 @@
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'warenkorb_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
-/** @global JTLSmarty $smarty */
-$AktuelleSeite            = 'WARENKORB';
-$MsgWarning               = '';
-$Einstellungen            = Shop::getSettings([
+
+$AktuelleSeite = 'WARENKORB';
+$MsgWarning    = '';
+$Einstellungen = Shop::getSettings([
     CONF_GLOBAL,
     CONF_RSS,
     CONF_KAUFABWICKLUNG,
@@ -18,14 +17,13 @@ $Einstellungen            = Shop::getSettings([
     CONF_ARTIKELUEBERSICHT,
     CONF_SONSTIGES
 ]);
+Shop::setPageType(PAGE_WARENKORB);
 $Schnellkaufhinweis       = checkeSchnellkauf();
 $linkHelper               = LinkHelper::getInstance();
 $KuponcodeUngueltig       = false;
 $nVersandfreiKuponGueltig = false;
 $cart                     = $_SESSION['Warenkorb'];
-
-Shop::setPageType(PAGE_WARENKORB);
-$kLink = $linkHelper->getSpecialPageLinkKey(LINKTYP_WARENKORB);
+$kLink                    = $linkHelper->getSpecialPageLinkKey(LINKTYP_WARENKORB);
 // Warenkorbaktualisierung?
 uebernehmeWarenkorbAenderungen();
 // validiere Konfigurationen
@@ -63,15 +61,15 @@ if ($cart !== null &&
                 $_SESSION['Warenkorb']->loescheSpezialPos(C_WARENKORBPOS_TYP_KUPON);
                 // Versandfrei Kupon
                 $_SESSION['oVersandfreiKupon'] = $Kupon;
-                $smarty->assign('cVersandfreiKuponLieferlaender_arr', explode(';', $Kupon->cLieferlaender));
+                Shop::Smarty()->assign('cVersandfreiKuponLieferlaender_arr', explode(';', $Kupon->cLieferlaender));
                 $nVersandfreiKuponGueltig = true;
             }
         } else {
-            $smarty->assign('cKuponfehler', $Kuponfehler['ungueltig']);
+            Shop::Smarty()->assign('cKuponfehler', $Kuponfehler['ungueltig']);
         }
     } else {
         $invalidCouponCode = true;
-        $smarty->assign('invalidCouponCode', $invalidCouponCode);
+        Shop::Smarty()->assign('invalidCouponCode', $invalidCouponCode);
     }
 }
 // Kupon nicht mehr verfügbar. Redirect im Bestellabschluss. Fehlerausgabe
@@ -79,7 +77,7 @@ if (isset($_SESSION['checkCouponResult'])) {
     $KuponcodeUngueltig = true;
     $Kuponfehler        = $_SESSION['checkCouponResult'];
     unset($_SESSION['checkCouponResult']);
-    $smarty->assign('cKuponfehler', $Kuponfehler['ungueltig']);
+    Shop::Smarty()->assign('cKuponfehler', $Kuponfehler['ungueltig']);
 }
 // Gratis Geschenk bearbeiten
 if (isset($_POST['gratis_geschenk'], $_POST['gratishinzufuegen']) && (int)$_POST['gratis_geschenk'] === 1) {
@@ -149,10 +147,10 @@ if (class_exists('Upload')) {
     $oUploadSchema_arr = Upload::gibWarenkorbUploads($cart);
     if ($oUploadSchema_arr) {
         $nMaxSize = Upload::uploadMax();
-        $smarty->assign('cSessionID', session_id())
-               ->assign('nMaxUploadSize', $nMaxSize)
-               ->assign('cMaxUploadSize', Upload::formatGroesse($nMaxSize))
-               ->assign('oUploadSchema_arr', $oUploadSchema_arr);
+        Shop::Smarty()->assign('cSessionID', session_id())
+            ->assign('nMaxUploadSize', $nMaxSize)
+            ->assign('cMaxUploadSize', Upload::formatGroesse($nMaxSize))
+            ->assign('oUploadSchema_arr', $oUploadSchema_arr);
     }
 }
 if (isset($_SESSION['Warenkorbhinweise']) && $_SESSION['Warenkorbhinweise']) {
@@ -161,35 +159,34 @@ if (isset($_SESSION['Warenkorbhinweise']) && $_SESSION['Warenkorbhinweise']) {
 }
 
 WarenkorbHelper::addVariationPictures($cart);
-//specific assigns
-$smarty->assign('Navigation', createNavigation($AktuelleSeite))
-       ->assign('MsgWarning', $MsgWarning)
-       ->assign('Schnellkaufhinweis', $Schnellkaufhinweis)
-       ->assign('requestURL', isset($requestURL) ? $requestURL : null)
-       ->assign('laender', gibBelieferbareLaender($kKundengruppe))
-       ->assign('KuponMoeglich', kuponMoeglich())
-       ->assign('currentCoupon', Shop::Lang()->get('currentCoupon', 'checkout'))
-       ->assign('currentCouponName', (!empty($_SESSION['Kupon']->translationList)
-           ? $_SESSION['Kupon']->translationList
-           : null))
-       ->assign('currentShippingCouponName', (!empty($_SESSION['oVersandfreiKupon']->translationList)
-           ? $_SESSION['oVersandfreiKupon']->translationList
-           : null))
-       ->assign('xselling', gibXSelling())
-       ->assign('oArtikelGeschenk_arr', gibGratisGeschenke($Einstellungen))
-       ->assign('BestellmengeHinweis', pruefeBestellMengeUndLagerbestand($Einstellungen))
-       ->assign('C_WARENKORBPOS_TYP_ARTIKEL', C_WARENKORBPOS_TYP_ARTIKEL)
-       ->assign('C_WARENKORBPOS_TYP_GRATISGESCHENK', C_WARENKORBPOS_TYP_GRATISGESCHENK)
-       ->assign('cErrorVersandkosten', isset($cErrorVersandkosten) ? $cErrorVersandkosten : null)
-       ->assign('KuponcodeUngueltig', $KuponcodeUngueltig)
-       ->assign('nVersandfreiKuponGueltig', $nVersandfreiKuponGueltig)
-       ->assign('Warenkorb', $cart)
-       ->assign('Warenkorbhinweise', $cartNotices);
+Shop::Smarty()->assign('Navigation', createNavigation($AktuelleSeite))
+    ->assign('MsgWarning', $MsgWarning)
+    ->assign('Schnellkaufhinweis', $Schnellkaufhinweis)
+    ->assign('requestURL', isset($requestURL) ? $requestURL : null)
+    ->assign('laender', gibBelieferbareLaender($kKundengruppe))
+    ->assign('KuponMoeglich', kuponMoeglich())
+    ->assign('currentCoupon', Shop::Lang()->get('currentCoupon', 'checkout'))
+    ->assign('currentCouponName', (!empty($_SESSION['Kupon']->translationList)
+        ? $_SESSION['Kupon']->translationList
+        : null))
+    ->assign('currentShippingCouponName', (!empty($_SESSION['oVersandfreiKupon']->translationList)
+        ? $_SESSION['oVersandfreiKupon']->translationList
+        : null))
+    ->assign('xselling', gibXSelling())
+    ->assign('oArtikelGeschenk_arr', gibGratisGeschenke($Einstellungen))
+    ->assign('BestellmengeHinweis', pruefeBestellMengeUndLagerbestand($Einstellungen))
+    ->assign('C_WARENKORBPOS_TYP_ARTIKEL', C_WARENKORBPOS_TYP_ARTIKEL)
+    ->assign('C_WARENKORBPOS_TYP_GRATISGESCHENK', C_WARENKORBPOS_TYP_GRATISGESCHENK)
+    ->assign('cErrorVersandkosten', isset($cErrorVersandkosten) ? $cErrorVersandkosten : null)
+    ->assign('KuponcodeUngueltig', $KuponcodeUngueltig)
+    ->assign('nVersandfreiKuponGueltig', $nVersandfreiKuponGueltig)
+    ->assign('Warenkorb', $cart)
+    ->assign('Warenkorbhinweise', $cartNotices);
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 
 executeHook(HOOK_WARENKORB_PAGE);
 
-$smarty->display('basket/index.tpl');
+Shop::Smarty()->display('basket/index.tpl');
 
 require PFAD_ROOT . PFAD_INCLUDES . 'profiler_inc.php';

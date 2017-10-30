@@ -617,7 +617,7 @@ class Metadata
         $oSeite_arr = [];
         $nVon       = 0; // Die aktuellen Seiten in der Navigation, die angezeigt werden sollen.
         $nBis       = 0; // Begrenzt durch $nMaxAnzeige.
-        $naviURL    = $this->navigationsfilter->getURL($bSeo);
+        $naviURL    = $this->navigationsfilter->getURL();
         $bSeo       = $bSeo && strpos($naviURL, '?') === false;
         if (isset($oSeitenzahlen->MaxSeiten, $oSeitenzahlen->AktuelleSeite)
             && $oSeitenzahlen->MaxSeiten > 0
@@ -847,7 +847,8 @@ class Metadata
             }
         }
         if (isset($_SESSION['oErweiterteDarstellung'])) {
-            $naviURL = $this->navigationsfilter->getURL(false) . '&amp;ed=';
+            $naviURL = $this->navigationsfilter->getURL();
+            $naviURL .= strpos($naviURL, '?') === false ? '?ed=' : '&amp;ed=';
 
             $_SESSION['oErweiterteDarstellung']->cURL_arr[ERWDARSTELLUNG_ANSICHT_LISTE]   = $naviURL .
                 ERWDARSTELLUNG_ANSICHT_LISTE;

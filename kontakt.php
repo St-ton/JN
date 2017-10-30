@@ -7,8 +7,7 @@ require_once __DIR__ . '/includes/globalinclude.php';
 $session = Session::getInstance();
 require_once PFAD_ROOT . PFAD_INCLUDES . 'kontakt_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
-/** @global JTLSmarty $smarty */
+
 Shop::setPageType(PAGE_KONTAKT);
 $AktuelleSeite = 'KONTAKT';
 $Einstellungen = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_KONTAKTFORMULAR]);
@@ -34,7 +33,7 @@ if (pruefeBetreffVorhanden()) {
             $oCheckBox->validateCheckBox(CHECKBOX_ORT_KONTAKT, $kKundengruppe, $_POST, true)
         );
         $nReturnValue    = eingabenKorrekt($fehlendeAngaben);
-        $smarty->assign('cPost_arr', StringHandler::filterXSS($_POST));
+        Shop::Smarty()->assign('cPost_arr', StringHandler::filterXSS($_POST));
         executeHook(HOOK_KONTAKT_PAGE_PLAUSI);
 
         if ($nReturnValue) {
@@ -92,27 +91,26 @@ if (pruefeBetreffVorhanden()) {
     $cMetaTitle       = $oMeta->cTitle;
     $cMetaDescription = $oMeta->cDesc;
     $cMetaKeywords    = $oMeta->cKeywords;
-    //specific assigns
-    $smarty->assign('step', $step)
-           ->assign('code', generiereCaptchaCode($Einstellungen['kontakt']['kontakt_abfragen_captcha']))
-           ->assign('betreffs', $subjects)
-           ->assign('hinweis', isset($hinweis) ? $hinweis : null)
-           ->assign('Vorgaben', $Vorgaben)
-           ->assign('fehlendeAngaben', $fehlendeAngaben)
-           ->assign('nAnzeigeOrt', CHECKBOX_ORT_KONTAKT);
+    Shop::Smarty()->assign('step', $step)
+        ->assign('code', generiereCaptchaCode($Einstellungen['kontakt']['kontakt_abfragen_captcha']))
+        ->assign('betreffs', $subjects)
+        ->assign('hinweis', isset($hinweis) ? $hinweis : null)
+        ->assign('Vorgaben', $Vorgaben)
+        ->assign('fehlendeAngaben', $fehlendeAngaben)
+        ->assign('nAnzeigeOrt', CHECKBOX_ORT_KONTAKT);
 } else {
     Jtllog::writeLog('Kein Kontaktbetreff vorhanden! Bitte im Backend unter ' .
         'Einstellungen -> Kontaktformular -> Betreffs einen Betreff hinzuf&uuml;gen.', JTLLOG_LEVEL_ERROR);
-    $smarty->assign('hinweis', Shop::Lang()->get('noSubjectAvailable', 'contact'));
+    Shop::Smarty()->assign('hinweis', Shop::Lang()->get('noSubjectAvailable', 'contact'));
     $SpezialContent = new stdClass();
 }
 
-$smarty->assign('Navigation', createNavigation($AktuelleSeite))
-       ->assign('Spezialcontent', $SpezialContent)
-       ->assign('requestURL', isset($requestURL) ? $requestURL : null);
+Shop::Smarty()->assign('Navigation', createNavigation($AktuelleSeite))
+    ->assign('Spezialcontent', $SpezialContent)
+    ->assign('requestURL', isset($requestURL) ? $requestURL : null);
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 executeHook(HOOK_KONTAKT_PAGE);
-$smarty->display('contact/index.tpl');
+Shop::Smarty()->display('contact/index.tpl');
 
 require PFAD_ROOT . PFAD_INCLUDES . 'profiler_inc.php';

@@ -144,7 +144,7 @@ class FilterItemSearchSpecial extends AbstractFilter
                                     AND " . $tasp . ".dStart <= now()
                                     AND (" . $tasp . ".dEnde >= curdate() 
                                         OR " . $tasp . ".dEnde = '0000-00-00')
-                                    AND " . $tsp . " .kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe;
+                                    AND " . $tsp . " .kKundengruppe = " . Session::CustomerGroup()->getID();
 //@todo:
 //                $oFilter->tasp = $tasp;
 //                $oFilter->tsp  = $tsp;
@@ -343,7 +343,6 @@ class FilterItemSearchSpecial extends AbstractFilter
                 ->setCount(count($qryRes))
                 ->setSort(0)
                 ->setURL($this->naviFilter->getURL(
-                    true,
                     $additionalFilter->init($i)
                 ));
             $fe->kKey = $i;

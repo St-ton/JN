@@ -4,8 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 require_once __DIR__ . '/includes/globalinclude.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
-/** @global JTLSmarty $smarty */
+
 $AktuelleSeite = 'WARTUNG';
 $Einstellungen = Shop::getSettings([CONF_GLOBAL]);
 if ($Einstellungen['global']['wartungsmodus_aktiviert'] === 'N') {
@@ -25,10 +24,10 @@ $AufgeklappteKategorien = new KategorieListe();
 $startKat               = new Kategorie();
 $startKat->kKategorie   = 0;
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
-$smarty->assign('Navigation', createNavigation($AktuelleSeite));
+Shop::Smarty()->assign('Navigation', createNavigation($AktuelleSeite));
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 
-$smarty->display('snippets/maintenance.tpl');
+Shop::Smarty()->display('snippets/maintenance.tpl');
 
 require PFAD_ROOT . PFAD_INCLUDES . 'profiler_inc.php';

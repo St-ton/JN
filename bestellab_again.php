@@ -7,8 +7,7 @@ require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellabschluss_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
-/** @global JTLSmarty $smarty */
+
 Shop::setPageType(PAGE_BESTELLABSCHLUSS);
 $AktuelleSeite = 'BESTELLVORGANG';
 $Einstellungen = Shop::getSettings([
@@ -41,7 +40,7 @@ if ($bestellid->cId) {
 $obj              = new stdClass();
 $obj->tkunde      = $_SESSION['Kunde'];
 $obj->tbestellung = $bestellung;
-$smarty->assign('Bestellung', $bestellung);
+Shop::Smarty()->assign('Bestellung', $bestellung);
 
 $oZahlungsInfo = new stdClass();
 if (verifyGPCDataInteger('zusatzschritt') === 1) {
@@ -108,7 +107,7 @@ if (verifyGPCDataInteger('zusatzschritt') === 1) {
             exit();
         }
     } else {
-        $smarty->assign('ZahlungsInfo', gibPostZahlungsInfo());
+        Shop::Smarty()->assign('ZahlungsInfo', gibPostZahlungsInfo());
     }
 }
 // Zahlungsart als Plugin
@@ -124,13 +123,13 @@ if ($kPlugin > 0) {
         $paymentMethod           = new $pluginName($bestellung->Zahlungsart->cModulId);
         $paymentMethod->cModulId = $bestellung->Zahlungsart->cModulId;
         $paymentMethod->preparePaymentProcess($bestellung);
-        $smarty->assign('oPlugin', $oPlugin);
+        Shop::Smarty()->assign('oPlugin', $oPlugin);
     }
 } elseif ($bestellung->Zahlungsart->cModulId === 'za_lastschrift_jtl') {
     // Wenn Zahlungsart = Lastschrift ist => versuche Kundenkontodaten zu holen
     $oKundenKontodaten = gibKundenKontodaten($_SESSION['Kunde']->kKunde);
     if ($oKundenKontodaten->kKunde > 0) {
-        $smarty->assign('oKundenKontodaten', $oKundenKontodaten);
+        Shop::Smarty()->assign('oKundenKontodaten', $oKundenKontodaten);
     }
 } elseif ($bestellung->Zahlungsart->cModulId === 'za_paypal_jtl') {
     require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'paypal/PayPal.class.php';
@@ -144,7 +143,7 @@ if ($kPlugin > 0) {
     $paymentMethod->preparePaymentProcess($bestellung);
 } elseif ($bestellung->Zahlungsart->cModulId === 'za_moneybookers_jtl') {
     require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'moneybookers/moneybookers.php';
-    $smarty->assign(
+    Shop::Smarty()->assign(
         'moneybookersform',
         gib_moneybookers_form(
             $bestellung,
@@ -194,7 +193,7 @@ if ($kPlugin > 0) {
     $paymentMethod->preparePaymentProcess($bestellung);
 } elseif ($bestellung->Zahlungsart->cModulId === 'za_safetypay') {
     require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'safetypay/confirmation.php';
-    $smarty->assign('safetypay_form', show_confirmation($bestellung));
+    Shop::Smarty()->assign('safetypay_form', show_confirmation($bestellung));
 } elseif ($bestellung->Zahlungsart->cModulId === 'za_wirecard_jtl') {
     require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'wirecard/Wirecard.class.php';
     $paymentMethod           = new Wirecard($bestellung->Zahlungsart->cModulId);
@@ -249,10 +248,10 @@ $startKat               = new Kategorie();
 $startKat->kKategorie   = 0;
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 
-$smarty->assign('Navigation', createNavigation($AktuelleSeite))
-       ->assign('Firma', Shop::DB()->query("SELECT * FROM tfirma", 1))
-       ->assign('WarensummeLocalized', $_SESSION['Warenkorb']->gibGesamtsummeWarenLocalized())
-       ->assign('Bestellung', $bestellung);
+Shop::Smarty()->assign('Navigation', createNavigation($AktuelleSeite))
+    ->assign('Firma', Shop::DB()->query("SELECT * FROM tfirma", 1))
+    ->assign('WarensummeLocalized', $_SESSION['Warenkorb']->gibGesamtsummeWarenLocalized())
+    ->assign('Bestellung', $bestellung);
 
 unset(
     $_SESSION['Zahlungsart'],
@@ -264,6 +263,6 @@ unset(
 );
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
-$smarty->display('checkout/order_completed.tpl');
+Shop::Smarty()->display('checkout/order_completed.tpl');
 
 require PFAD_ROOT . PFAD_INCLUDES . 'profiler_inc.php';

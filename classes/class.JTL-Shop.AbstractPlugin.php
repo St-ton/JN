@@ -1,4 +1,8 @@
 <?php
+/**
+ * @copyright (c) JTL-Software-GmbH
+ * @license http://jtl-url.de/jtlshoplicense
+ */
 
 /**
  * class AbstractPlugin
@@ -31,10 +35,8 @@ abstract class AbstractPlugin implements IPlugin
     {
         $dispatcher->listen('backend.notification', function (\Notification $notify) use (&$dispatcher) {
             $dispatcher->forget('backend.notification');
-            if (count($this->notifications) > 0) {
-                foreach ($this->notifications as $n) {
-                    $notify->addNotify($n);
-                }
+            foreach ($this->notifications as $n) {
+                $notify->addNotify($n);
             }
         });
     }

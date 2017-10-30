@@ -3724,10 +3724,7 @@ function setzeSpracheUndWaehrungLink()
                         $id               = null;
                         $originalLanguage = $NaviFilter->getLanguageID();
                         $NaviFilter->setLanguageID($oSprache->kSprache);
-                        $_SESSION['Sprachen'][$i]->cURL = $NaviFilter->getURL(
-                            true,
-                            $oZusatzFilter
-                        );
+                        $_SESSION['Sprachen'][$i]->cURL = $NaviFilter->getURL($oZusatzFilter);
                         $NaviFilter->setLanguageID($originalLanguage);
                         if ($_SESSION['Sprachen'][$i]->cURL === $shopURL) {
                             $_SESSION['Sprachen'][$i]->cURL .= '?lang=' . $oSprache->cISO;
@@ -3799,7 +3796,7 @@ function setzeSpracheUndWaehrungLink()
             } else {
                 $originalLanguage = $NaviFilter->getLanguageID();
                 $NaviFilter->setLanguageID($oSprache->kSprache);
-                $cUrl = $NaviFilter->getURL(true, $oZusatzFilter);
+                $cUrl = $NaviFilter->getURL($oZusatzFilter);
                 $NaviFilter->setLanguageID($originalLanguage);
                 if ($NaviFilter->getPage() > 1) {
                     if (strpos($sprachURL, 'navi.php') !== false) {
@@ -3897,7 +3894,7 @@ function setzeSpracheUndWaehrungLink()
             } elseif ($kLink > 0) {
                 $url = 'index.php?s=' . $kLink . '&lang=' . $_SESSION['cISOSprache'] . '&curr=' . $currency->getCode();
             } else {
-                $url = $NaviFilter->getURL(true, $oZusatzFilter);
+                $url = $NaviFilter->getURL($oZusatzFilter);
                 $url .= strpos($url, '?') === false
                     ? ('?curr=' . $currency->getCode())
                     : ('&curr=' . $currency->getCode());

@@ -147,6 +147,7 @@ if (!JTL_INCLUDE_ONLY_DB) {
         $bAdminWartungsmodus = true;
     }
     $GLOBALS['oSprache'] = Sprache::getInstance();
+    require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
 }
 
 Shop::bootstrap();

@@ -159,7 +159,6 @@ class FilterItemRating extends AbstractFilter
                 ->setValue((int)$row->nSterne)
                 ->setCount($nSummeSterne)
                 ->setURL($this->naviFilter->getURL(
-                    true,
                     $additionalFilter->init((int)$row->nSterne)
                 ));
             $fe->nStern = (int)$row->nSterne;

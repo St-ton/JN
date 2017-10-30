@@ -356,7 +356,7 @@ function mappeUsersortierung($nUsersortierung)
 function gibNaviURL($NaviFilter, $bSeo, $oZusatzFilter, $kSprache = 0, $bCanonical = false)
 {
     trigger_error('filter_inc.php: calling gibNaviURL() is deprecated.', E_USER_DEPRECATED);
-    return Shop::getNaviFilter()->getURL($bSeo, $oZusatzFilter, $bCanonical);
+    return Shop::getNaviFilter()->getURL($oZusatzFilter, $bCanonical);
 }
 
 /**
@@ -414,7 +414,7 @@ function gibHeaderAnzeige()
 function erstelleFilterLoesenURLs($bSeo, $oSuchergebnisse)
 {
     trigger_error('filter_inc.php: calling erstelleFilterLoesenURLs() is deprecated.', E_USER_DEPRECATED);
-    Shop::getNaviFilter()->createUnsetFilterURLs($bSeo, $oSuchergebnisse);
+    Shop::getNaviFilter()->createUnsetFilterURLs($oSuchergebnisse);
 }
 
 /**

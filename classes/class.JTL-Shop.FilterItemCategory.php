@@ -203,7 +203,6 @@ class FilterItemCategory extends FilterBaseCategory
                     ->setCount($category->nAnzahl)
                     ->setSort($category->nSort)
                     ->setURL($this->naviFilter->getURL(
-                        true,
                         $additionalFilter->init((int)$category->kKategorie)
                     ));
                 $fe->kKategorie = (int)$category->kKategorie;

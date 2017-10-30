@@ -5,10 +5,8 @@
  */
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_INCLUDES . 'bewertung_inc.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
-/** @global JTLSmarty $smarty */
-$AktuelleSeite = 'BEWERTUNG';
 
+$AktuelleSeite = 'BEWERTUNG';
 Shop::run();
 Shop::setPageType(PAGE_BEWERTUNG);
 $cParameter_arr = Shop::getParameters();
@@ -76,26 +74,26 @@ if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
     }
 
     if ($Einstellungen['bewertung']['bewertung_artikel_gekauft'] === 'Y') {
-        $smarty->assign('nArtikelNichtGekauft', pruefeKundeArtikelGekauft(
+        Shop::Smarty()->assign('nArtikelNichtGekauft', pruefeKundeArtikelGekauft(
             $AktuellerArtikel->kArtikel,
             $_SESSION['Kunde']->kKunde)
         );
     }
-    $smarty->assign('BereitsBewertet', pruefeKundeArtikelBewertet(
+    Shop::Smarty()->assign('BereitsBewertet', pruefeKundeArtikelBewertet(
         $AktuellerArtikel->kArtikel,
         $_SESSION['Kunde']->kKunde))
-           ->assign('Navigation', createNavigation(
-               $AktuelleSeite,
-               0,
-               0,
-               Shop::Lang()->get('bewertung', 'breadcrumb'),
-               'bewertung.php?a=' . $AktuellerArtikel->kArtikel . '&bfa=1'))
-           ->assign('Artikel', $AktuellerArtikel)
-           ->assign('requestURL', isset($requestURL) ? $requestURL : null)
-           ->assign('sprachURL', isset($sprachURL) ? $sprachURL : null);
+        ->assign('Navigation', createNavigation(
+            $AktuelleSeite,
+            0,
+            0,
+            Shop::Lang()->get('bewertung', 'breadcrumb'),
+            'bewertung.php?a=' . $AktuellerArtikel->kArtikel . '&bfa=1'))
+        ->assign('Artikel', $AktuellerArtikel)
+        ->assign('requestURL', isset($requestURL) ? $requestURL : null)
+        ->assign('sprachURL', isset($sprachURL) ? $sprachURL : null);
 
     require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
-    $smarty->display('productdetails/review_form.tpl');
+    Shop::Smarty()->display('productdetails/review_form.tpl');
 } else {
     header('Location: ' . Shop::getURL() . '/', true, 303);
     exit;

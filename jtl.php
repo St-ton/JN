@@ -3,7 +3,6 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  *
- * @global JTLSmarty $smarty
  * @global Session $session
  */
 require_once __DIR__ . '/includes/globalinclude.php';
@@ -12,7 +11,6 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'jtl_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'wunschliste_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'kundenwerbenkeunden_inc.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
 
 $AktuelleSeite = 'MEIN KONTO';
 $cBrotNavi     = '';
@@ -46,7 +44,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
 // wird dieser hier her umgeleitet und es werden die passenden Parameter erstellt.
 // Nach dem erfolgreichen einloggen wird die zuvor angestrebte Aktion durchgeführt.
 if (isset($_SESSION['JTL_REDIRECT']) || verifyGPCDataInteger('r') > 0) {
-    $smarty->assign('oRedirect', (isset($_SESSION['JTL_REDIRECT'])
+    Shop::Smarty()->assign('oRedirect', (isset($_SESSION['JTL_REDIRECT'])
         ? $_SESSION['JTL_REDIRECT']
         : gibRedirect(verifyGPCDataInteger('r'))));
     executeHook(HOOK_JTL_PAGE_REDIRECT_DATEN);
@@ -295,7 +293,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
                         $cHinweis  .= wunschlisteSenden($cEmail_arr, $kWunschliste);
                         // Wunschliste aufbauen und cPreis setzen (Artikelanzahl mit eingerechnet)
                         $CWunschliste = bauecPreis(new Wunschliste($kWunschliste));
-                        $smarty->assign('CWunschliste', $CWunschliste);
+                        Shop::Smarty()->assign('CWunschliste', $CWunschliste);
                         $cBrotNavi = createNavigation(
                             '',
                             0,
@@ -309,7 +307,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
                     $step = 'wunschliste versenden';
                     // Wunschliste aufbauen und cPreis setzen (Artikelanzahl mit eingerechnet)
                     $CWunschliste = bauecPreis(new Wunschliste($kWunschliste));
-                    $smarty->assign('CWunschliste', $CWunschliste);
+                    Shop::Smarty()->assign('CWunschliste', $CWunschliste);
                     $cBrotNavi = createNavigation(
                         '',
                         0,
@@ -352,10 +350,10 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
             $oWunschliste = new Wunschliste($kWunschliste);
             if ($oWunschliste->kKunde && $oWunschliste->kKunde == $_SESSION['Kunde']->kKunde) {
                 $step = 'wunschliste anzeigen';
-                $smarty->assign('wlsearch', $cSuche);
                 $oWunschlistePosSuche_arr          = $oWunschliste->sucheInWunschliste($cSuche);
                 $oWunschliste->CWunschlistePos_arr = $oWunschlistePosSuche_arr;
-                $smarty->assign('CWunschliste', $oWunschliste);
+                Shop::Smarty()->assign('wlsearch', $cSuche)
+                              ->assign('CWunschliste', $oWunschliste);
                 $cBrotNavi = createNavigation(
                     '',
                     0,
@@ -403,7 +401,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
                 // Wunschliste aufbauen und cPreis setzen (Artikelanzahl mit eingerechnet)
                 $CWunschliste = bauecPreis(new Wunschliste($oWunschliste->kWunschliste));
 
-                $smarty->assign('CWunschliste', $CWunschliste);
+                Shop::Smarty()->assign('CWunschliste', $CWunschliste);
                 $step      = 'wunschliste anzeigen';
                 $cBrotNavi = createNavigation(
                     '',
@@ -424,7 +422,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
     // Kundendaten speichern
     if (isset($_POST['edit']) && (int)$_POST['edit'] === 1) {
         $cPost_arr = StringHandler::filterXSS($_POST);
-        $smarty->assign('cPost_arr', $cPost_arr);
+        Shop::Smarty()->assign('cPost_arr', $cPost_arr);
 
         $fehlendeAngaben = checkKundenFormularArray($cPost_arr, 1, 0);
         $kKundengruppe   = Session::CustomerGroup()->getID();
@@ -503,7 +501,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
                 $_SESSION['Warenkorb']->gibGesamtsummeWarenLocalized();
             }
         } else {
-            $smarty->assign('fehlendeAngaben', $fehlendeAngaben);
+            Shop::Smarty()->assign('fehlendeAngaben', $fehlendeAngaben);
         }
     }
     if (isset($_POST['pass_aendern']) && (int)$_POST['pass_aendern'] && validateToken()) {
@@ -589,18 +587,18 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
             $step                               = 'bestellung';
             $_SESSION['Kunde']->angezeigtesLand = ISO2land($_SESSION['Kunde']->cLand);
             krsort($_SESSION['Kunde']->cKundenattribut_arr);
-            $smarty->assign('Bestellung', $bestellung)
-                   ->assign('Kunde', $bestellung->oRechnungsadresse)// Work Around Daten von trechnungsadresse
-                   ->assign('customerAttribute_arr', $_SESSION['Kunde']->cKundenattribut_arr)
-                   ->assign('Lieferadresse', (isset($bestellung->Lieferadresse) ? $bestellung->Lieferadresse : null));
+            Shop::Smarty()->assign('Bestellung', $bestellung)
+                ->assign('Kunde', $bestellung->oRechnungsadresse)// Work Around Daten von trechnungsadresse
+                ->assign('customerAttribute_arr', $_SESSION['Kunde']->cKundenattribut_arr)
+                ->assign('Lieferadresse', (isset($bestellung->Lieferadresse) ? $bestellung->Lieferadresse : null));
             if ($Einstellungen['trustedshops']['trustedshops_kundenbewertung_anzeigen'] === 'Y') {
-                $smarty->assign('oTrustedShopsBewertenButton', gibTrustedShopsBewertenButton(
+                Shop::Smarty()->assign('oTrustedShopsBewertenButton', gibTrustedShopsBewertenButton(
                     $bestellung->oRechnungsadresse->cMail,
                     $bestellung->cBestellNr
                 ));
             }
             if (isset($bestellung->oEstimatedDelivery->longestMin, $bestellung->oEstimatedDelivery->longestMax)) {
-                $smarty->assign(
+                Shop::Smarty()->assign(
                     'cEstimatedDeliveryEx',
                     dateAddWeekday($bestellung->dErstellt, $bestellung->oEstimatedDelivery->longestMin)->format('d.m.Y')
                     . ' - ' .
@@ -706,7 +704,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
         $oDownload_arr = [];
         if (class_exists('Download')) {
             $oDownload_arr = Download::getDownloads(['kKunde' => $_SESSION['Kunde']->kKunde], Shop::getLanguage());
-            $smarty->assign('oDownload_arr', $oDownload_arr);
+            Shop::Smarty()->assign('oDownload_arr', $oDownload_arr);
         }
         // Download wurde angefordert?
         if (verifyGPCDataInteger('dl') > 0) {
@@ -775,8 +773,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
             ->setItemsPerPage(10)
             ->assemble();
 
-        $smarty
-            ->assign('orderPagination', $orderPagination)
+        Shop::Smarty()->assign('orderPagination', $orderPagination)
             ->assign('Bestellungen', $Bestellungen);
     }
 
@@ -794,7 +791,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
         }
         // Pruefen, ob der Kunde Wunschlisten hat
         if (count($oWunschliste_arr) > 0) {
-            $smarty->assign('oWunschliste_arr', $oWunschliste_arr);
+            Shop::Smarty()->assign('oWunschliste_arr', $oWunschliste_arr);
         }
     }
 
@@ -812,7 +809,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
             }
         }
 
-        $smarty->assign('Lieferadressen', $Lieferadressen);
+        Shop::Smarty()->assign('Lieferadressen', $Lieferadressen);
 
         executeHook(HOOK_JTL_PAGE_MEINKKONTO);
     }
@@ -829,9 +826,9 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
             list($jahr, $monat, $tag) = explode('-', $knd->dGeburtstag);
             $knd->dGeburtstag         = $tag . '.' . $monat . '.' . $jahr;
         }
-        $smarty->assign('Kunde', $knd)
-               ->assign('cKundenattribut_arr', $cKundenattribut_arr)
-               ->assign('laender', gibBelieferbareLaender($_SESSION['Kunde']->kKundengruppe));
+        Shop::Smarty()->assign('Kunde', $knd)
+            ->assign('cKundenattribut_arr', $cKundenattribut_arr)
+            ->assign('laender', gibBelieferbareLaender($_SESSION['Kunde']->kKundengruppe));
         // selbstdef. Kundenfelder
         $oKundenfeld_arr = Shop::DB()->selectAll('tkundenfeld', 'kSprache', Shop::getLanguage(), '*', 'nSort DESC');
         if (is_array($oKundenfeld_arr) && count($oKundenfeld_arr) > 0) {
@@ -847,13 +844,13 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
             }
         }
 
-        $smarty->assign('oKundenfeld_arr', $oKundenfeld_arr);
+        Shop::Smarty()->assign('oKundenfeld_arr', $oKundenfeld_arr);
     }
     if (isset($_SESSION['Kunde']->kKunde) && (int)$_SESSION['Kunde']->kKunde > 0) {
         $_SESSION['Kunde']->cGuthabenLocalized = gibPreisStringLocalized($_SESSION['Kunde']->fGuthaben);
         krsort($_SESSION['Kunde']->cKundenattribut_arr);
-        $smarty->assign('Kunde', $_SESSION['Kunde'])
-               ->assign('customerAttribute_arr', $_SESSION['Kunde']->cKundenattribut_arr);
+        Shop::Smarty()->assign('Kunde', $_SESSION['Kunde'])
+            ->assign('customerAttribute_arr', $_SESSION['Kunde']->cKundenattribut_arr);
     }
 }
 if (empty($cBrotNavi)) {
@@ -866,19 +863,19 @@ $oMeta            = $linkHelper->buildSpecialPageMeta(LINKTYP_LOGIN);
 $cMetaTitle       = $oMeta->cTitle;
 $cMetaDescription = $oMeta->cDesc;
 $cMetaKeywords    = $oMeta->cKeywords;
-$smarty->assign('cHinweis', $cHinweis)
-       ->assign('cFehler', $cFehler)
-       ->assign('hinweis', $cHinweis)
-       ->assign('step', $step)
-       ->assign('Navigation', $cBrotNavi)
-       ->assign('requestURL', isset($requestURL) ? $requestURL : null)
-       ->assign('BESTELLUNG_STATUS_BEZAHLT', BESTELLUNG_STATUS_BEZAHLT)
-       ->assign('BESTELLUNG_STATUS_VERSANDT', BESTELLUNG_STATUS_VERSANDT)
-       ->assign('BESTELLUNG_STATUS_OFFEN', BESTELLUNG_STATUS_OFFEN)
-       ->assign('nAnzeigeOrt', CHECKBOX_ORT_KUNDENDATENEDITIEREN);
+Shop::Smarty()->assign('cHinweis', $cHinweis)
+    ->assign('cFehler', $cFehler)
+    ->assign('hinweis', $cHinweis)
+    ->assign('step', $step)
+    ->assign('Navigation', $cBrotNavi)
+    ->assign('requestURL', isset($requestURL) ? $requestURL : null)
+    ->assign('BESTELLUNG_STATUS_BEZAHLT', BESTELLUNG_STATUS_BEZAHLT)
+    ->assign('BESTELLUNG_STATUS_VERSANDT', BESTELLUNG_STATUS_VERSANDT)
+    ->assign('BESTELLUNG_STATUS_OFFEN', BESTELLUNG_STATUS_OFFEN)
+    ->assign('nAnzeigeOrt', CHECKBOX_ORT_KUNDENDATENEDITIEREN);
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 executeHook(HOOK_JTL_PAGE);
 
-$smarty->display('account/index.tpl');
+Shop::Smarty()->display('account/index.tpl');
 
 require PFAD_ROOT . PFAD_INCLUDES . 'profiler_inc.php';

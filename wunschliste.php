@@ -5,8 +5,7 @@
  */
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'wunschliste_inc.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
-/** @global JTLSmarty $smarty */
+
 Shop::run();
 $cParameter_arr   = Shop::getParameters();
 $cURLID           = StringHandler::filterXSS(verifyGPDataString('wlid'));
@@ -297,17 +296,17 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
         'dErstellt DESC'
     );
 }
-$smarty->assign('CWunschliste', $CWunschliste)
-       ->assign('oWunschliste_arr', $oWunschliste_arr)
-       ->assign('wlsearch', $cSuche)
-       ->assign('hasItems', !empty($CWunschliste->CWunschlistePos_arr))
-       ->assign('isCurrenctCustomer', isset($CWunschliste->kKunde) &&
-           isset($_SESSION['Kunde']->kKunde) &&
-           (int)$CWunschliste->kKunde === (int)$_SESSION['Kunde']->kKunde)
-       ->assign('cURLID', $cURLID)
-       ->assign('step', $step)
-       ->assign('cFehler', $cFehler)
-       ->assign('cHinweis', $cHinweis);
+Shop::Smarty()->assign('CWunschliste', $CWunschliste)
+    ->assign('oWunschliste_arr', $oWunschliste_arr)
+    ->assign('wlsearch', $cSuche)
+    ->assign('hasItems', !empty($CWunschliste->CWunschlistePos_arr))
+    ->assign('isCurrenctCustomer', isset($CWunschliste->kKunde) &&
+        isset($_SESSION['Kunde']->kKunde) &&
+        (int)$CWunschliste->kKunde === (int)$_SESSION['Kunde']->kKunde)
+    ->assign('cURLID', $cURLID)
+    ->assign('step', $step)
+    ->assign('cFehler', $cFehler)
+    ->assign('cHinweis', $cHinweis);
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 
@@ -331,6 +330,6 @@ if (isset($CWunschliste->kWunschliste) && $CWunschliste->kWunschliste > 0) {
     }
 }
 
-$smarty->display('snippets/wishlist.tpl');
+Shop::Smarty()->display('snippets/wishlist.tpl');
 
 require PFAD_ROOT . PFAD_INCLUDES . 'profiler_inc.php';

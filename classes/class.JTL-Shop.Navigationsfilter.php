@@ -203,7 +203,8 @@ class Navigationsfilter
         'BewertungFilter'    => 'RatingFilter',
         'PreisspannenFilter' => 'PriceRangeFilter',
         'Suche'              => 'Search',
-        'EchteSuche'         => 'RealSearch'
+        'EchteSuche'         => 'RealSearch',
+        'oSprache_arr'       => 'Languages'
     ];
 
     /**
@@ -241,6 +242,29 @@ class Navigationsfilter
         $this->metaData        = new Metadata($this);
         executeHook(HOOK_NAVIGATIONSFILTER_CREATE, ['navifilter' => $this]);
         $this->initBaseStates();
+    }
+
+    /**
+     * for compatibility reasons only - called when oSprache_arr is directly read from NaviFilter instance
+     *
+     * @return array
+     */
+    public function getLanguages()
+    {
+        return $this->languages;
+    }
+
+    /**
+     * for compatibility reasons only - called when oSprache_arr is directly set on NaviFilter instance
+     *
+     * @param array $languages
+     * @return mixed
+     */
+    public function setLanguages(array $languages)
+    {
+        $this->languages = $languages;
+
+        return $languages;
     }
 
     /**
@@ -449,9 +473,9 @@ class Navigationsfilter
 
         $this->priceRangeFilter = new FilterItemPriceRange($this);
 
-        $this->tagFilterCompat = new FilterItemTag($this);
+        $this->tagFilterCompat           = new FilterItemTag($this);
         $this->attributeFilterCollection = new FilterItemAttribute($this);
-        $this->searchFilterCompat = new FilterSearch($this);
+        $this->searchFilterCompat        = new FilterSearch($this);
 
         $this->search = new FilterSearch($this);
 
@@ -838,6 +862,10 @@ class Navigationsfilter
      */
     public function setManufacturerFilter($filter)
     {
+        if (is_a($filter, 'stdClass') && !isset($filter->kHersteller)) {
+            // disallow setting manufacturer filter to empty stdClass
+            return $this;
+        }
         $this->manufacturerFilter = $filter;
 
         return $this;
@@ -2212,17 +2240,16 @@ class Navigationsfilter
         $additionalFilter = (new FilterItemAttribute($this))->setDoUnset(true);
 
         foreach ($this->attributeFilter as $oMerkmal) {
-            if ($oMerkmal->kMerkmal > 0) {
-                $this->URL->cAlleMerkmale[$oMerkmal->kMerkmal] = $this->getURL(
-                    $additionalFilter->init($oMerkmal->kMerkmal)->setSeo($this->languages)
+            if ($oMerkmal->getAttributeID() > 0) {
+                $this->URL->cAlleMerkmale[$oMerkmal->getAttributeID()] = $this->getURL(
+                    $additionalFilter->init($oMerkmal->getAttributeID())->setSeo($this->languages)
                 );
                 $oMerkmal->setUnsetFilterURL($this->URL->cAlleMerkmale);
             }
-            if (is_array($oMerkmal->kMerkmalWert)) {
+            if (is_array($oMerkmal->getValue())) {
                 $urls = [];
-                foreach ($oMerkmal->kMerkmalWert as $mmw) {
-                    $additionalFilter->init($mmw);
-                    $additionalFilter->kMerkmalWert     = $mmw;
+                foreach ($oMerkmal->getValue() as $mmw) {
+                    $additionalFilter->init($mmw)->setValue($mmw);
                     $this->URL->cAlleMerkmalWerte[$mmw] = $this->getURL(
                         $additionalFilter
                     );
@@ -2230,8 +2257,8 @@ class Navigationsfilter
                 }
                 $oMerkmal->setUnsetFilterURL($urls);
             } else {
-                $this->URL->cAlleMerkmalWerte[$oMerkmal->kMerkmalWert] = $this->getURL(
-                    $additionalFilter->init($oMerkmal->kMerkmalWert)
+                $this->URL->cAlleMerkmalWerte[$oMerkmal->getValue()] = $this->getURL(
+                    $additionalFilter->init($oMerkmal->getValue())
                 );
                 $oMerkmal->setUnsetFilterURL($this->URL->cAlleMerkmalWerte);
             }

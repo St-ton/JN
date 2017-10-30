@@ -69,6 +69,7 @@ trait MagicCompatibilityTrait
 
             return $this->$method($value);
         }
+        trigger_error(__CLASS__ . ': setter could not find property ' . $name, E_USER_DEPRECATED);
         $this->data[$name] = $value;
 
         return $this;

@@ -231,15 +231,7 @@ class Navigationsfilter
             ? Shop::Lang()->getLangArray()
             : $languages;
         $this->conf            = $config === null
-            ? Shop::getSettings([
-                CONF_ARTIKELUEBERSICHT,
-                CONF_ARTIKELDETAILS,
-                CONF_NAVIGATIONSFILTER,
-                CONF_BOXEN,
-                CONF_GLOBAL,
-                CONF_SUCHSPECIAL,
-                CONF_METAANGABEN
-            ])
+            ? Shopsetting::getInstance()->getAll()
             : $config;
         $this->languageID      = $currentLanguageID === null
             ? Shop::getLanguage()
@@ -555,7 +547,7 @@ class Navigationsfilter
             $this->searchQuery->cSuche     = $this->search->cSuche;
             $oSuchanfrage                  = Shop::DB()->select(
                 'tsuchanfrage',
-                'cSuche', Shop::DB()->escape($this->search->cSuche),
+                'cSuche', $this->search->cSuche,
                 'kSprache', $this->getLanguageID(),
                 'nAktiv', 1,
                 false,
@@ -2205,7 +2197,6 @@ class Navigationsfilter
      */
     public function createUnsetFilterURLs($searchResults = null)
     {
-        // @todo: remove bseo param?
         if ($searchResults === null) {
             $searchResults = $this->searchResults;
         }

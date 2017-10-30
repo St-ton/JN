@@ -9,10 +9,14 @@
  */
 class FilterBaseCategory extends AbstractFilter
 {
+    use MagicCompatibilityTrait;
+
     /**
-     * @var int
+     * @var array
      */
-    public $kKategorie;
+    private static $mapping = [
+        'kKategorie' => 'ValueCompat'
+    ];
 
     /**
      * @var bool
@@ -31,7 +35,6 @@ class FilterBaseCategory extends AbstractFilter
         $this->urlParam    = 'k';
         $this->urlParamSEO = SEP_KAT;
     }
-
 
     /**
      * @return bool
@@ -58,17 +61,9 @@ class FilterBaseCategory extends AbstractFilter
      */
     public function setValue($id)
     {
-        $this->kKategorie = (int)$id;
+        $this->value = (int)$id;
 
         return $this;
-    }
-
-    /**
-     * @return int
-     */
-    public function getValue()
-    {
-        return $this->kKategorie;
     }
 
     /**

@@ -9,10 +9,14 @@
  */
 class FilterBaseTag extends AbstractFilter
 {
+    use MagicCompatibilityTrait;
+
     /**
-     * @var int
+     * @var array
      */
-    public $kTag = 0;
+    private static $mapping = [
+        'kTag' => 'ValueCompat'
+    ];
 
     /**
      * FilterBaseTag constructor.
@@ -32,17 +36,9 @@ class FilterBaseTag extends AbstractFilter
      */
     public function setValue($id)
     {
-        $this->kTag = (int)$id;
+        $this->value = (int)$id;
 
         return $this;
-    }
-
-    /**
-     * @return int
-     */
-    public function getValue()
-    {
-        return $this->kTag;
     }
 
     /**
@@ -199,11 +195,10 @@ class FilterBaseTag extends AbstractFilter
                     ->setURL($this->naviFilter->getURL(
                         $additionalFilter->init((int)$tag->kTag)
                     ));
-                $fe->kTag           = (int)$tag->kTag;
                 $fe->nAnzahlTagging = (int)$tag->nAnzahlTagging;
                 $class                      = '';
                 // generic attributes for new filter templates
-                if ($fe->kTag > 0) {
+                if ($fe->getValue() > 0) {
                     $class = $nPrioStep < 1
                         ? rand(1, 10)
                         : round(

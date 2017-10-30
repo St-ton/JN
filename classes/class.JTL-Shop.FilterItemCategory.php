@@ -205,7 +205,6 @@ class FilterItemCategory extends FilterBaseCategory
                     ->setURL($this->naviFilter->getURL(
                         $additionalFilter->init((int)$category->kKategorie)
                     ));
-                $fe->kKategorie = (int)$category->kKategorie;
                 $options[]      = $fe;
             }
             // neue Sortierung

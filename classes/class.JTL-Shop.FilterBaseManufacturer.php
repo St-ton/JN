@@ -9,10 +9,14 @@
  */
 class FilterBaseManufacturer extends AbstractFilter
 {
+    use MagicCompatibilityTrait;
+
     /**
-     * @var int
+     * @var array
      */
-    public $kHersteller = 0;
+    private static $mapping = [
+        'kHersteller' => 'ValueCompat'
+    ];
 
     /**
      * FilterBaseManufacturer constructor.
@@ -33,17 +37,9 @@ class FilterBaseManufacturer extends AbstractFilter
      */
     public function setValue($id)
     {
-        $this->kHersteller = (int)$id;
+        $this->value = (int)$id;
 
         return $this;
-    }
-
-    /**
-     * @return int
-     */
-    public function getValue()
-    {
-        return $this->kHersteller;
     }
 
     /**
@@ -181,7 +177,6 @@ class FilterBaseManufacturer extends AbstractFilter
                     ->setURL($this->naviFilter->getURL(
                         $additionalFilter->init((int)$manufacturer->kHersteller)
                     ));
-                $fe->kHersteller = (int)$manufacturer->kHersteller;
 
                 $options[] = $fe;
             }

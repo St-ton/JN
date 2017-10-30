@@ -9,10 +9,14 @@
  */
 class FilterBaseSearchSpecial extends AbstractFilter
 {
+    use MagicCompatibilityTrait;
+
     /**
-     * @var int
+     * @var array
      */
-    public $kKey = 0;
+    private static $mapping = [
+        'kKey' => 'ValueCompat'
+    ];
 
     /**
      * FilterBaseSearchSpecial constructor.
@@ -33,17 +37,9 @@ class FilterBaseSearchSpecial extends AbstractFilter
      */
     public function setValue($id)
     {
-        $this->kKey = (int)$id;
+        $this->value = (int)$id;
 
         return $this;
-    }
-
-    /**
-     * @return int
-     */
-    public function getValue()
-    {
-        return $this->kKey;
     }
 
     /**
@@ -119,7 +115,7 @@ class FilterBaseSearchSpecial extends AbstractFilter
      */
     public function getSQLCondition()
     {
-        switch ($this->kKey) {
+        switch ($this->value) {
             case SEARCHSPECIALS_BESTSELLER:
                 $nAnzahl = (($min = $this->getConfig()['global']['global_bestseller_minanzahl']) > 0)
                     ? (int)$min
@@ -178,7 +174,7 @@ class FilterBaseSearchSpecial extends AbstractFilter
      */
     public function getSQLJoin()
     {
-        switch ($this->kKey) {
+        switch ($this->value) {
             case SEARCHSPECIALS_BESTSELLER:
                 return (new FilterJoin())
                     ->setType('JOIN')

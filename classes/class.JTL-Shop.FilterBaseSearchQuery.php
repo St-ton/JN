@@ -10,11 +10,14 @@
 class FilterBaseSearchQuery extends AbstractFilter
 {
     use FilterItemTrait;
+    use MagicCompatibilityTrait;
 
     /**
-     * @var int
+     * @var array
      */
-    public $kSuchanfrage = 0;
+    private static $mapping = [
+        'kSuchanfrage' => 'ValueCompat'
+    ];
 
     /**
      * @var string
@@ -45,7 +48,7 @@ class FilterBaseSearchQuery extends AbstractFilter
      */
     public function setValue($id)
     {
-        $this->kSuchanfrage = (int)$id;
+        $this->value = (int)$id;
 
         return $this;
     }
@@ -59,7 +62,7 @@ class FilterBaseSearchQuery extends AbstractFilter
             return urlencode($this->naviFilter->getRealSearch()->cSuche);
         }
 
-        return $this->kSuchanfrage;
+        return $this->value;
     }
 
     /**

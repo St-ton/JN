@@ -9,10 +9,15 @@
  */
 class FilterBaseAttribute extends AbstractFilter
 {
+    use MagicCompatibilityTrait;
+
     /**
-     * @var int
+     * @var array
      */
-    public $kMerkmalWert = 0;
+    private static $mapping = [
+        'kMerkmal'     => 'AttributeIDCompat',
+        'kMerkmalWert' => 'ValueCompat'
+    ];
 
     /**
      * FilterBaseAttribute constructor.
@@ -27,22 +32,16 @@ class FilterBaseAttribute extends AbstractFilter
     }
 
     /**
+     * sets "kMerkmalWert"
+     *
      * @param int $id
      * @return $this
      */
     public function setValue($id)
     {
-        $this->kMerkmalWert = (int)$id;
+        $this->value = (int)$id;
 
         return $this;
-    }
-
-    /**
-     * @return int
-     */
-    public function getValue()
-    {
-        return $this->kMerkmalWert;
     }
 
     /**

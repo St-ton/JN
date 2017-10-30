@@ -17,14 +17,19 @@ class FilterItemAttribute extends FilterBaseAttribute
     public $cWert;
 
     /**
-     * @var int|array
+     * @var int
      */
-    public $kMerkmal;
+    private $attributeValueID;
 
     /**
      * @var int
      */
-    public $nMehrfachauswahl = 0;
+    private $attributeID;
+
+    /**
+     * @var bool
+     */
+    private $isMultiSelect;
 
     /**
      * FilterItemAttribute constructor.
@@ -41,6 +46,70 @@ class FilterItemAttribute extends FilterBaseAttribute
     }
 
     /**
+     * @return bool
+     */
+    public function isMultiSelect()
+    {
+        return $this->isMultiSelect;
+    }
+
+    /**
+     * @param bool $isMultiSelect
+     * @return FilterItemAttribute
+     */
+    public function setIsMultiSelect($isMultiSelect)
+    {
+        $this->isMultiSelect = $isMultiSelect;
+
+        return $this;
+    }
+
+    /**
+     * @param int $value
+     * @return $this
+     */
+    public function setAttributeIDCompat($value)
+    {
+        $this->attributeID = (int)$value;
+        if ($this->value > 0) {
+            $this->naviFilter->enableFilter($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getAttributeIDCompat()
+    {
+        return $this->attributeID;
+    }
+
+    /**
+     * sets "kMerkmal"
+     *
+     * @param int $value
+     * @return $this
+     */
+    public function setAttributeID($value)
+    {
+        $this->attributeID = (int)$value;
+
+        return $this;
+    }
+
+    /**
+     * returns "kMerkmal"
+     *
+     * @return int
+     */
+    public function getAttributeID()
+    {
+        return $this->attributeID;
+    }
+
+    /**
      * @param int|object $value
      * @return $this
      */
@@ -48,11 +117,11 @@ class FilterItemAttribute extends FilterBaseAttribute
     {
         $this->isInitialized = true;
         if (is_object($value)) {
-            $this->kMerkmal         = (int)$value->kMerkmal;
-            $this->kMerkmalWert     = (int)$value->kMerkmalWert;
-            $this->nMehrfachauswahl = (int)$value->nMehrfachauswahl;
+            $this->setValue($value->kMerkmalWert)
+                 ->setAttributeID($value->kMerkmal)
+                 ->setIsMultiSelect((int)$value->nMehrfachauswahl === 1);
 
-            return $this->setType($this->nMehrfachauswahl === 0
+            return $this->setType($this->isMultiSelect()
                 ? AbstractFilter::FILTER_TYPE_AND
                 : AbstractFilter::FILTER_TYPE_OR)
                         ->setSeo($this->getAvailableLanguages());
@@ -98,7 +167,8 @@ class FilterItemAttribute extends FilterBaseAttribute
             1
         );
         if (!empty($seo_obj->kMerkmal)) {
-            $this->kMerkmal = (int)$seo_obj->kMerkmal;
+//            $this->kMerkmal = (int)$seo_obj->kMerkmal;
+            $this->setAttributeID($seo_obj->kMerkmal);
             $this->cWert    = $seo_obj->cWert;
             $this->cName    = $seo_obj->cWert;
             $this->setFrontendName($this->cName);

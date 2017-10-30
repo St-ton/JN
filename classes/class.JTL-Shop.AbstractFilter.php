@@ -693,4 +693,30 @@ abstract class AbstractFilter implements IFilter
     {
         return $this->value;
     }
+
+    /**
+     * this is only called when someone tries to directly set $NaviFilter->Suchanfrage->kSuchanfrage,
+     * $NaviFilter-Kategorie->kKategorie etc.
+     * it implies that this filter has to be enabled afterwards
+     *
+     * @param int $value
+     * @return $this
+     */
+    public function setValueCompat($value)
+    {
+        $this->value = (int)$value;
+        if ($this->value > 0) {
+            $this->naviFilter->enableFilter($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getValueCompat()
+    {
+        return $this->value;
+    }
 }

@@ -163,8 +163,8 @@ class Billpay extends PaymentMethod
                     // set order status to paid
                     if ($this->getCoreSetting('aspaid') === 'Y') {
                         $oIncomingPayment          = new stdClass();
-                        $oIncomingPayment->fBetrag = $oBasketInfo->fTotal[AMT_GROSS];
-                        $oIncomingPayment->cISO    = $oBasketInfo->cCurrency->getCode();
+                        $oIncomingPayment->fBetrag = $oOrder->fGesamtsummeKundenwaehrung;
+                        $oIncomingPayment->cISO    = $oOrder->Waehrung->cISO;
                         $this->addIncomingPayment($oOrder, $oIncomingPayment);
                         $this->setOrderStatusToPaid($oOrder);
                     }

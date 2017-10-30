@@ -763,7 +763,9 @@ final class Shop
         self::seoCheck();
         self::Event()->fire('shop.run');
 
-        return self::buildNaviFilter(self::getParameters());
+        self::$NaviFilter = self::buildNaviFilter(self::getParameters());
+
+        return self::$NaviFilter;
     }
 
     /**
@@ -1325,11 +1327,14 @@ final class Shop
      */
     public static function buildNaviFilter($cParameter_arr, $NaviFilter = null)
     {
-        if (self::$NaviFilter === null) {
-            self::$NaviFilter = new Navigationsfilter(self::Lang()->getLangArray(), self::$kSprache);
+        $nf = new Navigationsfilter(self::Lang()->getLangArray(), self::$kSprache);
+        if ($NaviFilter !== null) {
+            foreach (get_object_vars($NaviFilter) as $k => $v) {
+                $nf->$k = $v;
+            }
         }
 
-        return self::$NaviFilter->initStates($cParameter_arr);
+        return $nf->initStates($cParameter_arr);
     }
 
     /**

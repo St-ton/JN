@@ -1389,7 +1389,7 @@ class Artikel
     public function holAttribute($kSprache = 0)
     {
         if (!$kSprache) {
-            $kSprache = Shop::$kSprache;
+            $kSprache = Shop::getLanguage();
         }
         $kSprache             = (int)$kSprache;
         $this->Attribute      = [];
@@ -1601,7 +1601,7 @@ class Artikel
     public function holeMedienDatei($kSprache = 0)
     {
         if (!$kSprache) {
-            $kSprache = Shop::$kSprache;
+            $kSprache = Shop::getLanguage();
         }
         $kSprache               = (int)$kSprache;
         $kDefaultLanguage       = (int)gibStandardsprache()->kSprache;
@@ -1849,7 +1849,7 @@ class Artikel
     public function holeBewertung($kSprache = 0, $nAnzahlSeite = 10, $nSeite = 1, $nSterne = 0, $cFreischalten = 'N', $nOption = 0)
     {
         if (!$kSprache) {
-            $kSprache = Shop::$kSprache;
+            $kSprache = Shop::getLanguage();
         }
         $this->Bewertungen = new Bewertung($this->kArtikel, $kSprache, $nAnzahlSeite, $nSeite, $nSterne, $cFreischalten, $nOption);
 
@@ -1904,7 +1904,7 @@ class Artikel
     public function holehilfreichsteBewertung($kSprache, $cFreischalten = 'N')
     {
         if (!$kSprache) {
-            $kSprache = Shop::$kSprache;
+            $kSprache = Shop::getLanguage();
         }
         $this->HilfreichsteBewertung = new Bewertung($this->kArtikel, $kSprache, 0, 0, 0, $cFreischalten, 1);
 
@@ -4011,7 +4011,7 @@ class Artikel
         }
         //hersteller holen
         if ($oArtikelTMP->kHersteller > 0) {
-            $oHersteller = new Hersteller($oArtikelTMP->kHersteller, Shop::$kSprache);
+            $oHersteller = new Hersteller($oArtikelTMP->kHersteller, Shop::getLanguage());
 
             $this->cHersteller         = $oArtikelTMP->cName_thersteller;
             $this->cHerstellerSeo      = $oHersteller->cSeo;
@@ -6016,7 +6016,7 @@ class Artikel
         $description          = str_replace(['<br>', '<br />', '</p>', '</li>', "\n", "\r", '.'], ' ', $description);
         $description          = StringHandler::htmlentitydecode(strip_tags($description));
         $confMinKeyLen        = (int)Shop::getSettings([CONF_METAANGABEN])['metaangaben']['global_meta_keywords_laenge'];
-        $cacheID              = 'meta_keywords_' . Shop::$kSprache;
+        $cacheID              = 'meta_keywords_' . Shop::getLanguage();
         $_descriptionKeywords = explode(' ', StringHandler::removeDoubleSpaces(
             preg_replace('/[^a-zA-Z0-9 ??¸?÷??-]/', ' ', $description))
         );
@@ -6060,7 +6060,7 @@ class Artikel
         // append global meta title
         if ($conf['metaangaben']['global_meta_title_anhaengen'] === 'Y') {
             $oGlobaleMetaAngabenAssoc_arr = Metadata::getGlobalMetaData();
-            if (!empty($oGlobaleMetaAngabenAssoc_arr[Shop::$kSprache]->Title)) {
+            if (!empty($oGlobaleMetaAngabenAssoc_arr[Shop::getLanguage()]->Title)) {
                 $cGlobalMetaTitle = ' - ' . $oGlobaleMetaAngabenAssoc_arr[Shop::getLanguage()]->Title;
             }
         }
@@ -6158,9 +6158,9 @@ class Artikel
             return $cDesc;
         }
         $globalMeta = Metadata::getGlobalMetaData();
-        $prefix     = (isset($globalMeta[Shop::$kSprache]->Meta_Description_Praefix) &&
-            strlen($globalMeta[Shop::$kSprache]->Meta_Description_Praefix) > 0)
-            ? $globalMeta[Shop::$kSprache]->Meta_Description_Praefix . ' '
+        $prefix     = (isset($globalMeta[Shop::getLanguage()]->Meta_Description_Praefix)
+            && strlen($globalMeta[Shop::getLanguage()]->Meta_Description_Praefix) > 0)
+            ? $globalMeta[Shop::getLanguage()]->Meta_Description_Praefix . ' '
             : '';
         $cDesc      = ($this->cName !== null && strlen($this->cName) > 0)
             ? ($prefix . $this->cName . ' in ')
@@ -6191,7 +6191,7 @@ class Artikel
         $nLimit    = (int)$conf['artikeldetails']['tagging_max_count'];
         $tag_limit = ($nLimit > 0) ? ' LIMIT ' . $nLimit : '';
         if ($kSprache === 0) {
-            if (Shop::$kSprache) {
+            if (Shop::getLanguage() > 0) {
                 $kSprache = Shop::getLanguage();
             } elseif (isset($_SESSION['kSprache'])) {
                 $kSprache = $_SESSION['kSprache'];
@@ -6491,7 +6491,7 @@ class Artikel
     {
         $cValue_arr = [];
         if (($fDimension_arr = $this->getDimension()) !== null) {
-            $kSprache   = Shop::$kSprache;
+            $kSprache   = Shop::getLanguage();
             foreach ($fDimension_arr as $key => $val) {
                 if (!empty($val)) {
                     $cValue_arr[Shop::Lang()->get('dimension_' . $key, 'productDetails')] =

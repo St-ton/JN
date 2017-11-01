@@ -464,7 +464,7 @@ function unhtmlSession()
     if ($_SESSION['Kunde']->kKundengruppe > 0) {
         $knd->kKundengruppe = $_SESSION['Kunde']->kKundengruppe;
     }
-    $knd->kSprache = Shop::$kSprache;
+    $knd->kSprache = Shop::getLanguage();
     if ($_SESSION['Kunde']->kSprache > 0) {
         $knd->kSprache = $_SESSION['Kunde']->kSprache;
     }

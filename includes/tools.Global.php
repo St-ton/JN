@@ -2554,7 +2554,7 @@ function baueKategorieListenHTML($startKat, $AufgeklappteKategorien, $AktuelleKa
 function baueUnterkategorieListeHTML($AktuelleKategorie)
 {
     if (isset($AktuelleKategorie->kKategorie) && $AktuelleKategorie->kKategorie > 0) {
-        $cacheID = 'ukl_' . $AktuelleKategorie->kKategorie . '_' . Shop::$kSprache;
+        $cacheID = 'ukl_' . $AktuelleKategorie->kKategorie . '_' . Shop::getLanguage();
         if (($UnterKatListe = Shop::Cache()->get($cacheID)) === false || !is_object($UnterKatListe)) {
             $UnterKatListe = new KategorieListe();
             $UnterKatListe->getAllCategoriesOnLevel($AktuelleKategorie->kKategorie);

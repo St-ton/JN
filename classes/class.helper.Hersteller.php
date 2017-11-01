@@ -54,7 +54,7 @@ class HerstellerHelper
      */
     public static function getInstance()
     {
-        return (self::$_instance === null || (int)Shop::$kSprache !== self::$langID)
+        return (self::$_instance === null || Shop::getLanguage() !== self::$langID)
             ? new self()
             : self::$_instance;
     }

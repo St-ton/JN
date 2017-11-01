@@ -411,7 +411,7 @@ class Wunschliste
                         FROM twunschlisteposeigenschaft
                         LEFT JOIN teigenschaftsprache 
                             ON teigenschaftsprache.kEigenschaft = twunschlisteposeigenschaft.kEigenschaft
-                            AND teigenschaftsprache.kSprache = " . (int)Shop::$kSprache . "
+                            AND teigenschaftsprache.kSprache = " . Shop::getLanguage() . "
                         LEFT JOIN teigenschaftwertsprache 
                                 ON teigenschaftwertsprache.kEigenschaftWert = twunschlisteposeigenschaft.kEigenschaftWert
                             AND teigenschaftwertsprache.kSprache = " . Shop::getLanguage() . "
@@ -427,7 +427,7 @@ class Wunschliste
                                         FROM teigenschaft
                                         LEFT JOIN teigenschaftsprache 
                                             ON teigenschaftsprache.kEigenschaft = teigenschaft.kEigenschaft
-                                            AND teigenschaftsprache.kSprache = " . (int)Shop::$kSprache . "
+                                            AND teigenschaftsprache.kSprache = " . Shop::getLanguage() . "
                                         WHERE teigenschaft.kEigenschaft = " . (int)$WunschlistePosEigenschaft->kEigenschaft, 1);
                                 $WunschlistePosEigenschaft->cName = $_cName->cName;
                             }

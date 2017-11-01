@@ -199,7 +199,7 @@ class Merkmal
         $oMerkmal_arr = [];
 
         if (is_array($kMerkmal_arr) && count($kMerkmal_arr) > 0) {
-            $kSprache = Shop::$kSprache;
+            $kSprache = Shop::getLanguage();
             if (!$kSprache) {
                 $oSprache = gibStandardsprache();
                 if ($oSprache->kSprache > 0) {

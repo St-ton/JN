@@ -345,7 +345,7 @@ function sendeProduktanfrage()
         sendeMail(MAILTEMPLATE_PRODUKTANFRAGE, $Objekt);
     }
     $ProduktanfrageHistory             = new stdClass();
-    $ProduktanfrageHistory->kSprache   = Shop::$kSprache;
+    $ProduktanfrageHistory->kSprache   = Shop::getLanguage();
     $ProduktanfrageHistory->kArtikel   = Shop::$kArtikel;
     $ProduktanfrageHistory->cAnrede    = $Objekt->tnachricht->cAnrede;
     $ProduktanfrageHistory->cVorname   = $Objekt->tnachricht->cVorname;

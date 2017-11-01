@@ -49,7 +49,7 @@ class KategorieListe
             $kKundengruppe = Session::CustomerGroup()->getID();
         }
         if (!$kSprache) {
-            $kSprache = Shop::$kSprache;
+            $kSprache = Shop::getLanguage();
         }
         if ($levels > 3) {
             $levels = 3;
@@ -99,7 +99,7 @@ class KategorieListe
             $kKundengruppe = Session::CustomerGroup()->getID();
         }
         if (!$kSprache) {
-            $kSprache = Shop::$kSprache;
+            $kSprache = Shop::getLanguage();
         }
         $conf   = Shop::getSettings([CONF_NAVIGATIONSFILTER]);
         $objArr = $this->holUnterkategorien($kKategorie, $kKundengruppe, $kSprache);
@@ -189,7 +189,7 @@ class KategorieListe
             $kKundengruppe = Session::CustomerGroup()->getID();
         }
         if (!$kSprache) {
-            $kSprache = Shop::$kSprache;
+            $kSprache = Shop::getLanguage();
         }
         $kSprache      = (int)$kSprache;
         $kKundengruppe = (int)$kKundengruppe;
@@ -226,7 +226,7 @@ class KategorieListe
             $kKundengruppe = Session::CustomerGroup()->getID();
         }
         if (!$kSprache) {
-            $kSprache = Shop::$kSprache;
+            $kSprache = Shop::getLanguage();
         }
         $zuDurchsuchen   = [];
         $zuDurchsuchen[] = $AktuelleKategorie;

@@ -757,9 +757,6 @@ final class Shop
             header('Location: ' . LinkHelper::getInstance()->getStaticRoute('jtl.php') . '?li=1', true, 303);
             exit;
         }
-
-        self::$NaviFilter = new Navigationsfilter(self::Lang()->getLangArray(), self::$kSprache, null, NiceDB::getInstance());
-
         self::seoCheck();
         self::Event()->fire('shop.run');
 

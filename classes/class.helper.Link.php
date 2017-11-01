@@ -705,12 +705,12 @@ class LinkHelper
             $bNoIndex = true;
         }
         if (!$bNoIndex) {
-            $shopsetting = Shopsetting::getInstance();
-            $bNoIndex    = $productFilter !== null
+            $conf     = Shop::getSettings([CONF_GLOBAL]);
+            $bNoIndex = $productFilter !== null
                 && $productFilter->hasAttributeValue()
                 && $productFilter->getAttributeValue()->getValue() > 0
-                && isset($shopsetting['global']['global_merkmalwert_url_indexierung'])
-                && $shopsetting['global']['global_merkmalwert_url_indexierung'] === 'N';
+                && isset($conf['global']['global_merkmalwert_url_indexierung'])
+                && $conf['global']['global_merkmalwert_url_indexierung'] === 'N';
         }
 
         return $bNoIndex;

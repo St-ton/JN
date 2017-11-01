@@ -757,10 +757,12 @@ final class Shop
             header('Location: ' . LinkHelper::getInstance()->getStaticRoute('jtl.php') . '?li=1', true, 303);
             exit;
         }
+        self::$NaviFilter = new Navigationsfilter(self::Lang()->getLangArray(), self::$kSprache);
+
         self::seoCheck();
         self::Event()->fire('shop.run');
 
-        self::$NaviFilter = self::buildNaviFilter(self::getParameters());
+        self::$NaviFilter->initStates(self::getParameters());
 
         return self::$NaviFilter;
     }

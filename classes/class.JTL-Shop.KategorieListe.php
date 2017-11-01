@@ -10,10 +10,7 @@
 class KategorieListe
 {
     /**
-     * Array mit Kategorien
-     *
-     * @access public
-     * @var array
+     * @var Kategorie[]
      */
     public $elemente;
 
@@ -104,16 +101,14 @@ class KategorieListe
         }
         $conf   = Shop::getSettings([CONF_NAVIGATIONSFILTER]);
         $objArr = $this->holUnterkategorien($kKategorie, $kKundengruppe, $kSprache);
-        if (is_array($objArr)) {
-            foreach ($objArr as $kategorie) {
-                $kategorie->bAktiv = (Shop::$kKategorie > 0 && (int)$kategorie->kKategorie === (int)Shop::$kKategorie);
-                if (isset($conf['navigationsfilter']['unterkategorien_lvl2_anzeigen'])
-                    && $conf['navigationsfilter']['unterkategorien_lvl2_anzeigen'] === 'Y'
-                ) {
-                    $kategorie->Unterkategorien = $this->holUnterkategorien($kategorie->kKategorie, $kKundengruppe, $kSprache);
-                }
-                $this->elemente[] = $kategorie;
+        foreach ($objArr as $kategorie) {
+            $kategorie->bAktiv = (Shop::$kKategorie > 0 && (int)$kategorie->kKategorie === (int)Shop::$kKategorie);
+            if (isset($conf['navigationsfilter']['unterkategorien_lvl2_anzeigen'])
+                && $conf['navigationsfilter']['unterkategorien_lvl2_anzeigen'] === 'Y'
+            ) {
+                $kategorie->Unterkategorien = $this->holUnterkategorien($kategorie->kKategorie, $kKundengruppe, $kSprache);
             }
+            $this->elemente[] = $kategorie;
         }
         if ($kKategorie === 0 && self::$wasModified === true) {
             $cacheID = CACHING_GROUP_CATEGORY . '_list_' . $kKundengruppe . '_' . $kSprache;
@@ -154,7 +149,7 @@ class KategorieListe
         }
 
         return [
-            'oKategorie_arr' => $_SESSION['oKategorie_arr'],
+            'oKategorie_arr'                   => $_SESSION['oKategorie_arr'],
             'kKategorieVonUnterkategorien_arr' => $_SESSION['kKategorieVonUnterkategorien_arr']
         ];
     }
@@ -276,7 +271,7 @@ class KategorieListe
         if ($subCategories !== null && is_array($subCategories)) {
             //nimm kats aus session
             foreach ($subCategories as $kUnterKategorie) {
-                $oKategorie_arr[$kUnterKategorie] = (!isset($categoryList['oKategorie_arr'][$kUnterKategorie]))
+                $oKategorie_arr[$kUnterKategorie] = !isset($categoryList['oKategorie_arr'][$kUnterKategorie])
                     ? new Kategorie($kUnterKategorie)
                     : $categoryList['oKategorie_arr'][$kUnterKategorie];
             }
@@ -286,15 +281,15 @@ class KategorieListe
             }
             //ist nicht im cache, muss holen
             $cSortSQLName = (!standardspracheAktiv())
-                ? "tkategoriesprache.cName, "
+                ? 'tkategoriesprache.cName, '
                 : '';
             if (!$kKategorie) {
                 $kKategorie = 0;
             }
-            $categorySQL = "
-                SELECT tkategorie.kKategorie, tkategorie.cName, tkategorie.cBeschreibung, tkategorie.kOberKategorie,
-                    tkategorie.nSort, tkategorie.dLetzteAktualisierung, tkategoriesprache.cName AS cName_spr,
-                    tkategoriesprache.cBeschreibung AS cBeschreibung_spr, tseo.cSeo, tkategoriepict.cPfad
+            $categorySQL = "SELECT tkategorie.kKategorie, tkategorie.cName, tkategorie.cBeschreibung, 
+                    tkategorie.kOberKategorie, tkategorie.nSort, tkategorie.dLetzteAktualisierung, 
+                    tkategoriesprache.cName AS cName_spr, tkategoriesprache.cBeschreibung AS cBeschreibung_spr, 
+                    tseo.cSeo, tkategoriepict.cPfad
                     FROM tkategorie
                     LEFT JOIN tkategoriesprache 
                         ON tkategoriesprache.kKategorie = tkategorie.kKategorie
@@ -335,14 +330,15 @@ class KategorieListe
                         $oKategorie->cBildURLFull = $shopURL . '/' . BILD_KEIN_KATEGORIEBILD_VORHANDEN;
                     }
                     //EXPERIMENTAL_MULTILANG_SHOP
-                    if ((!isset($oKategorie->cSeo) || $oKategorie->cSeo === null || $oKategorie->cSeo === '') &&
-                        defined('EXPERIMENTAL_MULTILANG_SHOP') && EXPERIMENTAL_MULTILANG_SHOP === true) {
-                        $kDefaultLang = $oSpracheTmp->kSprache;
-                        if ($kSprache != $kDefaultLang) {
+                    if ((!isset($oKategorie->cSeo) || $oKategorie->cSeo === null || $oKategorie->cSeo === '') 
+                        && defined('EXPERIMENTAL_MULTILANG_SHOP') && EXPERIMENTAL_MULTILANG_SHOP === true
+                    ) {
+                        $kDefaultLang = (int)$oSpracheTmp->kSprache;
+                        if ($kSprache !== $kDefaultLang) {
                             $oSeo = Shop::DB()->select(
                                 'tseo',
                                 'cKey', 'kKategorie',
-                                'kSprache', (int)$kDefaultLang,
+                                'kSprache', $kDefaultLang,
                                 'kKey', (int)$oKategorie->kKategorie
                             );
                             if (isset($oSeo->cSeo)) {
@@ -384,17 +380,20 @@ class KategorieListe
                     );
                     if (is_array($oKategorieAttribut_arr)) {
                         foreach ($oKategorieAttribut_arr as $oKategorieAttribut) {
+                            $id = strtolower($oKategorieAttribut->cName);
                             if ($oKategorieAttribut->bIstFunktionsAttribut) {
-                                $oKategorie->categoryFunctionAttributes[strtolower($oKategorieAttribut->cName)] = $oKategorieAttribut->cWert;
+                                $oKategorie->categoryFunctionAttributes[$id] = $oKategorieAttribut->cWert;
                             } else {
-                                $oKategorie->categoryAttributes[strtolower($oKategorieAttribut->cName)] = $oKategorieAttribut;
+                                $oKategorie->categoryAttributes[$id] = $oKategorieAttribut;
                             }
                         }
                     }
-                    /** @deprecated since version 4.05 - usage of KategorieAttribute is deprecated, use categoryFunctionAttributes instead */
+                    /** @deprecated since version 4.05
+                     * usage of KategorieAttribute is deprecated, use categoryFunctionAttributes instead */
                     $oKategorie->KategorieAttribute = &$oKategorie->categoryFunctionAttributes;
 
-                    $oKategorie->cKurzbezeichnung = (!empty($oKategorie->categoryAttributes[ART_ATTRIBUT_SHORTNAME]) && !empty($oKategorie->categoryAttributes[ART_ATTRIBUT_SHORTNAME]->cWert))
+                    $oKategorie->cKurzbezeichnung = (!empty($oKategorie->categoryAttributes[ART_ATTRIBUT_SHORTNAME]) 
+                        && !empty($oKategorie->categoryAttributes[ART_ATTRIBUT_SHORTNAME]->cWert))
                         ? $oKategorie->categoryAttributes[ART_ATTRIBUT_SHORTNAME]->cWert
                         : $oKategorie->cName;
 
@@ -433,14 +432,14 @@ class KategorieListe
     public function nichtLeer($kKategorie, $kKundengruppe)
     {
         $conf = Shop::getSettings([CONF_GLOBAL]);
-        if ($conf['global']['kategorien_anzeigefilter'] == EINSTELLUNGEN_KATEGORIEANZEIGEFILTER_ALLE) {
+        if ((int)$conf['global']['kategorien_anzeigefilter'] === EINSTELLUNGEN_KATEGORIEANZEIGEFILTER_ALLE) {
             return true;
         }
         $kKategorie    = (int)$kKategorie;
         $kKundengruppe = (int)$kKundengruppe;
         $oSpracheTmp   = gibStandardsprache();
         $kSprache      = (int)$oSpracheTmp->kSprache;
-        if ($conf['global']['kategorien_anzeigefilter'] == EINSTELLUNGEN_KATEGORIEANZEIGEFILTER_NICHTLEERE) {
+        if ((int)$conf['global']['kategorien_anzeigefilter'] === EINSTELLUNGEN_KATEGORIEANZEIGEFILTER_NICHTLEERE) {
             $categoryList = self::getCategoryList($kKundengruppe, $kSprache);
             if (isset($categoryList['ks'][$kKategorie])) {
                 if ($categoryList['ks'][$kKategorie] === 1) {

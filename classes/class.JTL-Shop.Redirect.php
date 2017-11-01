@@ -123,10 +123,11 @@ class Redirect
             $cSource = '/' . $cSource;
         }
 
-        if ($bForce || (self::checkAvailability($cDestination) &&
-                strlen($cSource) > 1 &&
-                strlen($cDestination) > 1 &&
-                $cSource !== $cDestination)
+        if ($bForce
+            || (self::checkAvailability($cDestination)
+                && strlen($cSource) > 1
+                && strlen($cDestination) > 1
+                && $cSource !== $cDestination)
         ) {
             if ($this->isDeadlock($cSource, $cDestination)) {
                 Shop::DB()->delete('tredirect', ['cToUrl', 'cFromUrl'], [$cSource, $cDestination]);
@@ -148,7 +149,7 @@ class Redirect
                 $oObj->cAvailable = 'y';
 
                 $kRedirect = Shop::DB()->insert('tredirect', $oObj);
-                if ((int)$kRedirect > 0) {
+                if ($kRedirect > 0) {
                     return true;
                 }
             } elseif ($this->normalize($oRedirect->cFromUrl) === $this->normalize($cSource)
@@ -261,26 +262,25 @@ class Redirect
      */
     public function getArtNrUrl($cArtNr, $cIso)
     {
-        if (strlen($cArtNr) > 0) {
-            $oObj = Shop::DB()->executeQueryPrepared(
-                "SELECT tartikel.kArtikel, tseo.cSeo
-                    FROM tartikel
-                    LEFT JOIN tsprache 
-                        ON tsprache.cISO = :iso
-                    LEFT JOIN tseo 
-                        ON tseo.kKey = tartikel.kArtikel
-                        AND tseo.cKey = 'kArtikel'
-                        AND tseo.kSprache = tsprache.kSprache
-                    WHERE tartikel.cArtNr = :artnr
-                    LIMIT 1",
-                ['iso' => strtolower($cIso), 'artnr' => $cArtNr],
-                1
-            );
-
-            return baueURL($oObj, URLART_ARTIKEL);
+        if (strlen($cArtNr) === 0) {
+            return null;
         }
+        $oObj = Shop::DB()->executeQueryPrepared(
+            "SELECT tartikel.kArtikel, tseo.cSeo
+                FROM tartikel
+                LEFT JOIN tsprache 
+                    ON tsprache.cISO = :iso
+                LEFT JOIN tseo 
+                    ON tseo.kKey = tartikel.kArtikel
+                    AND tseo.cKey = 'kArtikel'
+                    AND tseo.kSprache = tsprache.kSprache
+                WHERE tartikel.cArtNr = :artnr
+                LIMIT 1",
+            ['iso' => strtolower($cIso), 'artnr' => $cArtNr],
+            1
+        );
 
-        return null;
+        return baueURL($oObj, URLART_ARTIKEL);
     }
 
     /**
@@ -471,7 +471,6 @@ class Redirect
      */
     public function normalize($cUrl)
     {
-        require_once PFAD_ROOT . PFAD_CLASSES . 'class.helper.Url.php';
         $oUrl = new UrlHelper();
         $oUrl->setUrl($cUrl);
 

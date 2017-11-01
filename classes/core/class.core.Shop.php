@@ -219,7 +219,7 @@ final class Shop
     private static $_instance;
 
     /**
-     * @var Navigationsfilter
+     * @var ProductFilter
      */
     public static $NaviFilter;
 
@@ -757,7 +757,7 @@ final class Shop
             header('Location: ' . LinkHelper::getInstance()->getStaticRoute('jtl.php') . '?li=1', true, 303);
             exit;
         }
-        self::$NaviFilter = new Navigationsfilter(self::Lang()->getLangArray(), self::$kSprache);
+        self::$NaviFilter = new ProductFilter(self::Lang()->getLangArray(), self::$kSprache);
 
         self::seoCheck();
         self::Event()->fire('shop.run');
@@ -1318,15 +1318,27 @@ final class Shop
     /**
      * build navigation filter object from parameters
      *
-     * @param array $cParameter_arr
-     * @param object|null|Navigationsfilter $NaviFilter
-     * @return Navigationsfilter
+     * @param array                     $cParameter_arr
+     * @param object|null|ProductFilter $productFilter
+     * @return ProductFilter
      */
-    public static function buildNaviFilter($cParameter_arr, $NaviFilter = null)
+    public static function buildNaviFilter($cParameter_arr, $productFilter = null)
     {
-        $nf = new Navigationsfilter(self::Lang()->getLangArray(), self::$kSprache);
-        if ($NaviFilter !== null) {
-            foreach (get_object_vars($NaviFilter) as $k => $v) {
+        return self::buildProductFilter($cParameter_arr, $productFilter);
+    }
+
+    /**
+     * build navigation filter object from parameters
+     *
+     * @param array                     $cParameter_arr
+     * @param object|null|ProductFilter $productFilter
+     * @return ProductFilter
+     */
+    public static function buildProductFilter($cParameter_arr, $productFilter = null)
+    {
+        $nf = new ProductFilter(self::Lang()->getLangArray(), self::$kSprache);
+        if ($productFilter !== null) {
+            foreach (get_object_vars($productFilter) as $k => $v) {
                 $nf->$k = $v;
             }
         }
@@ -1335,16 +1347,24 @@ final class Shop
     }
 
     /**
-     * @return Navigationsfilter
+     * @return ProductFilter
      */
     public static function getNaviFilter()
+    {
+        return self::getProductFilter();
+    }
+
+    /**
+     * @return ProductFilter
+     */
+    public static function getProductFilter()
     {
         return self::$NaviFilter;
     }
 
     /**
-     * @param null|Navigationsfilter $NaviFilter
-     * @deprecated since 4.07 - this is done in Navifilter:validate()
+     * @param null|ProductFilter $NaviFilter
+     * @deprecated since 4.07 - this is done in ProductFilter:validate()
      */
     public static function checkNaviFilter($NaviFilter = null)
     {

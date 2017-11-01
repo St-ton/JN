@@ -85,7 +85,7 @@ function get_product_list($params, &$smarty)
         }
     } else {
         // Filter
-        $NaviFilter = new Navigationsfilter();
+        $NaviFilter = new ProductFilter();
         $NaviFilter->initStates($params);
         // Artikelliste
         $oArtikel_arr = $NaviFilter->getProducts(false, null, true, $nLimit);

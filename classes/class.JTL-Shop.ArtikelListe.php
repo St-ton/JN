@@ -113,8 +113,8 @@ class ArtikelListe
             $this->elemente = $res;
         } else {
             $hstSQL = '';
-            if (isset($GLOBALS['NaviFilter']->Hersteller->kHersteller) && $GLOBALS['NaviFilter']->Hersteller->kHersteller > 0) {
-                $hstSQL = ' AND tartikel.kHersteller = ' . (int)$GLOBALS['NaviFilter']->Hersteller->kHersteller . ' ';
+            if (Shop::getProductFilter() !== null && Shop::getProductFilter()->hasManufacturer()) {
+                $hstSQL = ' AND tartikel.kHersteller = ' . Shop::getProductFilter()->getManufacturer()->getValue() . ' ';
             }
             $lagerfilter = gibLagerfilter();
             $objArr      = Shop::DB()->query(

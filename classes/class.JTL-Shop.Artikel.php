@@ -2997,14 +2997,14 @@ class Artikel
             ) {
                 $nLimit = (int)$conf['artikeldetails']['artikeldetails_varikombi_anzahl'];
             }
-            $naviFilter = Shop::getNaviFilter();
+            $productFilter = Shop::getProductFilter();
             // Merkmalfilter gesetzt?
-            if ($naviFilter->hasAttributeFilter()) {
+            if ($productFilter->hasAttributeFilter()) {
                 $cSQL .= "JOIN tartikelmerkmal ON tartikelmerkmal.kArtikel = tartikel.kArtikel
                             AND tartikelmerkmal.kMerkmalWert IN(";
 
                 $kMerkmal_arr = [];
-                foreach ($naviFilter->getAttributeFilter() as $i => $oMerkmal) {
+                foreach ($productFilter->getAttributeFilter() as $i => $oMerkmal) {
                     if ($i > 0) {
                         $cSQL .= ',' . $oMerkmal->getValue();
                     } else {

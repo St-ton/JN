@@ -168,9 +168,9 @@ abstract class AbstractFilter implements IFilter
     private $filterCollection = [];
 
     /**
-     * @var Navigationsfilter
+     * @var ProductFilter
      */
-    protected $naviFilter;
+    protected $productFilter;
 
     /**
      * @var mixed
@@ -180,11 +180,11 @@ abstract class AbstractFilter implements IFilter
     /**
      * AbstractFilter constructor
      *
-     * @param Navigationsfilter $naviFilter
+     * @param ProductFilter $productFilter
      */
-    public function __construct($naviFilter)
+    public function __construct($productFilter)
     {
-        $this->setData($naviFilter)->setClassName(get_class($this));
+        $this->setData($productFilter)->setClassName(get_class($this));
     }
 
     /**
@@ -407,34 +407,34 @@ abstract class AbstractFilter implements IFilter
     }
 
     /**
-     * @param Navigationsfilter $naviFilter
+     * @param ProductFilter $productFilter
      * @return $this
      */
-    public function setNaviFilter($naviFilter)
+    public function setProductFilter($productFilter)
     {
-        $this->naviFilter = $naviFilter;
+        $this->productFilter = $productFilter;
 
         return $this;
     }
 
     /**
-     * @return Navigationsfilter
+     * @return ProductFilter
      */
-    public function getNaviFilter()
+    public function getProductFilter()
     {
-        return $this->naviFilter;
+        return $this->productFilter;
     }
 
     /**
-     * @param Navigationsfilter $naviFilter
+     * @param ProductFilter $productFilter
      * @return $this
      */
-    public function setData($naviFilter)
+    public function setData($productFilter)
     {
-        $this->naviFilter         = $naviFilter;
-        $this->languageID         = $naviFilter->getLanguageID();
-        $this->customerGroupID    = $naviFilter->getCustomerGroupID();
-        $this->availableLanguages = $naviFilter->getAvailableLanguages();
+        $this->productFilter      = $productFilter;
+        $this->languageID         = $productFilter->getLanguageID();
+        $this->customerGroupID    = $productFilter->getCustomerGroupID();
+        $this->availableLanguages = $productFilter->getAvailableLanguages();
 
         return $this;
     }
@@ -484,7 +484,7 @@ abstract class AbstractFilter implements IFilter
      */
     public function getConfig()
     {
-        return $this->naviFilter->getConfig();
+        return $this->productFilter->getConfig();
     }
 
     /**
@@ -519,9 +519,9 @@ abstract class AbstractFilter implements IFilter
      */
     public function __debugInfo()
     {
-        $res               = get_object_vars($this);
-        $res['config']     = '*truncated*';
-        $res['naviFilter'] = '*truncated*';
+        $res                  = get_object_vars($this);
+        $res['config']        = '*truncated*';
+        $res['productFilter'] = '*truncated*';
 
         return $res;
     }
@@ -706,7 +706,7 @@ abstract class AbstractFilter implements IFilter
     {
         $this->value = (int)$value;
         if ($this->value > 0) {
-            $this->naviFilter->enableFilter($this);
+            $this->productFilter->enableFilter($this);
         }
 
         return $this;

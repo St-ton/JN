@@ -91,6 +91,7 @@ class KategorieListe
      */
     public function getAllCategoriesOnLevel($kKategorie, $kKundengruppe = 0, $kSprache = 0)
     {
+        $kKategorie = (int)$kKategorie;
         $this->elemente = [];
         if (!Session::CustomerGroup()->mayViewCategories()) {
             return $this->elemente;
@@ -106,15 +107,15 @@ class KategorieListe
         if (is_array($objArr)) {
             foreach ($objArr as $kategorie) {
                 $kategorie->bAktiv = (Shop::$kKategorie > 0 && (int)$kategorie->kKategorie === (int)Shop::$kKategorie);
-                if (isset($conf['navigationsfilter']['unterkategorien_lvl2_anzeigen']) &&
-                    $conf['navigationsfilter']['unterkategorien_lvl2_anzeigen'] === 'Y'
+                if (isset($conf['navigationsfilter']['unterkategorien_lvl2_anzeigen'])
+                    && $conf['navigationsfilter']['unterkategorien_lvl2_anzeigen'] === 'Y'
                 ) {
                     $kategorie->Unterkategorien = $this->holUnterkategorien($kategorie->kKategorie, $kKundengruppe, $kSprache);
                 }
                 $this->elemente[] = $kategorie;
             }
         }
-        if ($kKategorie == 0 && self::$wasModified === true) {
+        if ($kKategorie === 0 && self::$wasModified === true) {
             $cacheID = CACHING_GROUP_CATEGORY . '_list_' . $kKundengruppe . '_' . $kSprache;
             $res     = Shop::Cache()->set($cacheID, self::$allCats[$cacheID], [CACHING_GROUP_CATEGORY]);
             if ($res === false) {

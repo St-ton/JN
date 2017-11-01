@@ -11,7 +11,7 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'filter_inc.php';
 Shop::setPageType(PAGE_ARTIKELLISTE);
 /** @global JTLSmarty $smarty */
 /** @global array $cParameter_arr */
-/** @global Navigationsfilter $NaviFilter*/
+/** @global ProductFilter $NaviFilter*/
 $Einstellungen          = Shop::getSettings([
     CONF_GLOBAL,
     CONF_RSS,
@@ -87,7 +87,7 @@ if ($hasError) {
     $oSuchergebnisse->Fehler              = $cFehler;
     $oSuchergebnisse->cSuche              = strip_tags(trim($cParameter_arr['cSuche']));
 }
-// @todo: this is already called in Navigationsfilter::getProduct() - remove line?
+// @todo: this is already called in ProductFilter::getProduct() - remove line?
 //$NaviFilter->Suche->kSuchanfrage = gibSuchanfrageKey($NaviFilter->Suche->cSuche, Shop::getLanguage());
 // Umleiten falls SEO keine Artikel ergibt
 doMainwordRedirect($NaviFilter, $oSuchergebnisse->Artikel->elemente->count(), true);

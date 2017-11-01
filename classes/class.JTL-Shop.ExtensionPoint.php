@@ -119,31 +119,31 @@ class ExtensionPoint
                 break;
 
             case PAGE_ARTIKELLISTE:
-                $oNaviFilter = Shop::getNaviFilter();
+                $productFilter = Shop::getProductFilter();
                 // MerkmalWert
-                if ($oNaviFilter->hasAttributeValue()) {
+                if ($productFilter->hasAttributeValue()) {
                     $oKey->cKey   = 'kMerkmalWert';
-                    $oKey->cValue = $oNaviFilter->getAttributeValue()->getValue();
-                } elseif ($oNaviFilter->hasCategory()) {
+                    $oKey->cValue = $productFilter->getAttributeValue()->getValue();
+                } elseif ($productFilter->hasCategory()) {
                     // Kategorie
                     $oKey->cKey   = 'kKategorie';
-                    $oKey->cValue = $oNaviFilter->getCategory()->getValue();
-                } elseif ($oNaviFilter->hasManufacturer()) {
+                    $oKey->cValue = $productFilter->getCategory()->getValue();
+                } elseif ($productFilter->hasManufacturer()) {
                     // Hersteller
                     $oKey->cKey   = 'kHersteller';
-                    $oKey->cValue = $oNaviFilter->getManufacturer()->getValue();
-                } elseif ($oNaviFilter->hasTag()) {
+                    $oKey->cValue = $productFilter->getManufacturer()->getValue();
+                } elseif ($productFilter->hasTag()) {
                     // Tag
                     $oKey->cKey   = 'kTag';
-                    $oKey->cValue = $oNaviFilter->getTag()->getValue();
-                } elseif ($oNaviFilter->hasSearch()) {
+                    $oKey->cValue = $productFilter->getTag()->getValue();
+                } elseif ($productFilter->hasSearch()) {
                     // Suchbegriff
                     $oKey->cKey   = 'cSuche';
-                    $oKey->cValue = $oNaviFilter->getSearch()->getValue();
-                } elseif ($oNaviFilter->hasSearchSpecial()) {
+                    $oKey->cValue = $productFilter->getSearch()->getValue();
+                } elseif ($productFilter->hasSearchSpecial()) {
                     // Suchspecial
                     $oKey->cKey   = 'kSuchspecial';
-                    $oKey->cValue = $oNaviFilter->getSearchSpecial()->getValue();
+                    $oKey->cValue = $productFilter->getSearchSpecial()->getValue();
                 }
 
                 break;

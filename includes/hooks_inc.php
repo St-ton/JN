@@ -1692,34 +1692,34 @@ define('HOOK_BESTELLABSCHLUSS_INC_WARENKORBINDB', 228);
 define('HOOK_BACKEND_SHOP_RESET_AFTER', 229);
 
 /**
- * in Navigationsfilter::initBaseStates() after initializing the base filters
+ * in ProductFilter::initBaseStates() after initializing the base filters
  *
- * @file class.JTL-Shop.Navigationsfilter.php
- * @param Navigationsfilter navifilter
+ * @file class.JTL-Shop.ProductFilter.php
+ * @param ProductFilter productFilter
  */
-define('HOOK_NAVIGATIONSFILTER_INIT', 250);
+define('HOOK_PRODUCTFILTER_INIT', 250);
 
 /**
- * in Navigationsfilter::initStates() after initializing the active filters
+ * in ProductFilter::initStates() after initializing the active filters
  *
- * @file class.JTL-Shop.Navigationsfilter.php
- * @param Navigationsfilter navifilter
+ * @file class.JTL-Shop.ProductFilter.php
+ * @param ProductFilter productFilter
  * @param array params
  */
-define('HOOK_NAVIGATIONSFILTER_INIT_STATES', 251);
+define('HOOK_PRODUCTFILTER_INIT_STATES', 251);
 
 /**
- * in Navigationsfilter::construct() when creating the instance
+ * in ProductFilter::construct() when creating the instance
  *
- * @file class.JTL-Shop.Navigationsfilter.php
- * @param Navigationsfilter navifilter
+ * @file class.JTL-Shop.ProductFilter.php
+ * @param ProductFilter productFilter
  */
-define('HOOK_NAVIGATIONSFILTER_CREATE', 252);
+define('HOOK_PRODUCTFILTER_CREATE', 252);
 
 /**
- * in Navigationsfilter::construct() when creating the instance
+ * in ProductFilter::construct() when creating the instance
  *
- * @file class.JTL-Shop.Navigationsfilter.php
+ * @file class.JTL-Shop.ProductFilter.php
  * @param array select
  * @param array joins
  * @param array conditions
@@ -1727,6 +1727,6 @@ define('HOOK_NAVIGATIONSFILTER_CREATE', 252);
  * @param array having
  * @param array order
  * @param array limit
- * @param Navigationsfilter navifilter
+ * @param ProductFilter productFilter
  */
-define('HOOK_NAVIGATIONSFILTER_GET_BASE_QUERY', 253);
+define('HOOK_PRODUCTFILTER_GET_BASE_QUERY', 253);

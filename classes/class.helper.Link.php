@@ -684,8 +684,8 @@ class LinkHelper
      */
     public function checkNoIndex()
     {
-        $NaviFilter = Shop::getNaviFilter();
-        $bNoIndex   = false;
+        $productFilter = Shop::getProductFilter();
+        $bNoIndex      = false;
         switch (basename($_SERVER['SCRIPT_NAME'])) {
             case 'wartung.php':
             case 'navi.php':
@@ -701,16 +701,16 @@ class LinkHelper
             default:
                 break;
         }
-        if ($NaviFilter !== null && $NaviFilter->hasSearch()) {
+        if ($productFilter !== null && $productFilter->hasSearch()) {
             $bNoIndex = true;
         }
         if (!$bNoIndex) {
             $shopsetting = Shopsetting::getInstance();
-            $bNoIndex    = $NaviFilter !== null
-                && $NaviFilter->hasAttributeValue()
-                && $NaviFilter->getAttributeValue()->getValue() > 0
+            $bNoIndex    = $productFilter !== null
+                && $productFilter->hasAttributeValue()
+                && $productFilter->getAttributeValue()->getValue() > 0
                 && isset($shopsetting['global']['global_merkmalwert_url_indexierung'])
-                && $shopsetting['global']['global_merkmalwert_url_indexierung'] === 'N';
+                && $productFilter['global']['global_merkmalwert_url_indexierung'] === 'N';
         }
 
         return $bNoIndex;

@@ -1263,7 +1263,7 @@ class Boxen
         }
         //check whether filters should be displayed after a box
         $filterAfter = (!empty($this->boxConfig) && isset($GLOBALS['NaviFilter'], $GLOBALS['oSuchergebnisse']))
-            ? $this->gibBoxenFilterNach(Shop::$NaviFilter, $GLOBALS['oSuchergebnisse'])
+            ? $this->gibBoxenFilterNach(Shop::getProductFilter(), $GLOBALS['oSuchergebnisse'])
             : 0;
         $path              = 'boxes/';
         $this->lagerFilter = gibLagerfilter();
@@ -1839,36 +1839,36 @@ class Boxen
     }
 
     /**
-     * @param Navigationsfilter $NaviFilter
-     * @param stdClass $oSuchergebnisse
+     * @param ProductFilter $productFilter
+     * @param stdClass      $oSuchergebnisse
      * @return bool
      */
-    public function gibBoxenFilterNach($NaviFilter, $oSuchergebnisse)
+    public function gibBoxenFilterNach($productFilter, $oSuchergebnisse)
     {
         $conf = Shop::getSettings([CONF_GLOBAL]);
 
         return (
-            ($NaviFilter->hasCategoryFilter()
+            ($productFilter->hasCategoryFilter()
                 && $this->boxConfig['navigationsfilter']['allgemein_kategoriefilter_benutzen'] === 'Y')
             ||
-            ($NaviFilter->hasManufacturerFilter()
+            ($productFilter->hasManufacturerFilter()
                 && $this->boxConfig['navigationsfilter']['allgemein_herstellerfilter_benutzen'] === 'Y')
             ||
-            ($NaviFilter->hasPriceRangeFilter()
+            ($productFilter->hasPriceRangeFilter()
                 && $this->boxConfig['navigationsfilter']['preisspannenfilter_benutzen'] !== 'N'
                 && (int)$conf['global']['global_sichtbarkeit'] === 1)
             ||
-            ($NaviFilter->hasRatingFilter()
+            ($productFilter->hasRatingFilter()
                 && $this->boxConfig['navigationsfilter']['bewertungsfilter_benutzen'] !== 'N')
             ||
-            ($NaviFilter->hasTagFilter()
+            ($productFilter->hasTagFilter()
                 && $this->boxConfig['navigationsfilter']['allgemein_tagfilter_benutzen'] === 'Y')
             ||
             (isset($oSuchergebnisse->MerkmalFilter)
                 && count($oSuchergebnisse->MerkmalFilter) > 0
                 && $this->boxConfig['navigationsfilter']['merkmalfilter_verwenden'] === 'box')
             ||
-            ($NaviFilter->hasAttributeFilter()
+            ($productFilter->hasAttributeFilter()
                 && $this->boxConfig['navigationsfilter']['merkmalfilter_verwenden'] === 'box')
             ||
             (isset($oSuchergebnisse->Bewertung)
@@ -1884,10 +1884,10 @@ class Boxen
                 && count($oSuchergebnisse->Suchspecialauswahl) > 0
                 && $this->boxConfig['navigationsfilter']['allgemein_suchspecialfilter_benutzen'] === 'Y')
             ||
-            ($NaviFilter->hasSearchSpecialFilter()
+            ($productFilter->hasSearchSpecialFilter()
                 && $this->boxConfig['navigationsfilter']['allgemein_suchspecialfilter_benutzen'] === 'Y')
             ||
-            ($NaviFilter->hasSearchFilter()
+            ($productFilter->hasSearchFilter()
                 && $this->boxConfig['navigationsfilter']['suchtrefferfilter_nutzen'] === 'Y')
         );
     }

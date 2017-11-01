@@ -187,7 +187,7 @@ class AuswahlAssistent
                 $cParameter_arr['MerkmalFilter_arr'] = array_slice($this->kSelection_arr, 1);
             }
         }
-        $NaviFilter                           = Shop::buildNaviFilter($cParameter_arr);
+        $NaviFilter                           = Shop::buildProductFilter($cParameter_arr);
         $oSuchergebnisse                      = new stdClass();
         $oSuchergebnisse->GesamtanzahlArtikel = 0;
         $AktuelleKategorie                    = isset($cParameter_arr['kKategorie'])
@@ -344,7 +344,7 @@ class AuswahlAssistent
     }
 
     /**
-     * @return Navigationsfilter
+     * @return ProductFilter
      */
     public function getNaviFilter()
     {

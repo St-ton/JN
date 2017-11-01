@@ -10,7 +10,7 @@
 class Metadata
 {
     /**
-     * @var Navigationsfilter
+     * @var ProductFilter
      */
     private $navigationsfilter;
 
@@ -26,9 +26,9 @@ class Metadata
 
     /**
      * Metadata constructor.
-     * @param Navigationsfilter $navigationsfilter
+     * @param ProductFilter $navigationsfilter
      */
-    public function __construct(Navigationsfilter $navigationsfilter)
+    public function __construct(ProductFilter $navigationsfilter)
     {
         $this->navigationsfilter = $navigationsfilter;
         $this->conf              = $navigationsfilter->getConfig();

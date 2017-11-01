@@ -74,7 +74,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
 
                             $bMerkmalFilterVorhanden = false;
                             if (!isset($NaviFilter)) {
-                                $NaviFilter = Shop::buildNaviFilter([]);
+                                $NaviFilter = Shop::buildProductFilter([]);
                             }
                             if (!isset($AktuelleKategorie)) {
                                 $AktuelleKategorie = null;
@@ -116,12 +116,12 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
 
     /**
      * @deprecated since 4.05
-     * @param int                        $kKategorie
-     * @param stdClass|Navigationsfilter $NaviFilter
-     * @param stdClass                   $FilterSQL
-     * @param stdClass                   $oSuchergebnisse
-     * @param int                        $nArtikelProSeite
-     * @param int                        $nLimitN
+     * @param int                    $kKategorie
+     * @param stdClass|ProductFilter $NaviFilter
+     * @param stdClass               $FilterSQL
+     * @param stdClass               $oSuchergebnisse
+     * @param int                    $nArtikelProSeite
+     * @param int                    $nLimitN
      */
     function baueFilterSelectionWizard($kKategorie, &$NaviFilter, &$FilterSQL, &$oSuchergebnisse, &$nArtikelProSeite, &$nLimitN)
     {
@@ -149,7 +149,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
             $oSuchergebnisse->GesamtanzahlArtikel = 0;
         }
         $cParameter_arr['MerkmalFilter_arr'] = setzeMerkmalFilter();
-        $NaviFilter                          = Shop::buildNaviFilter($cParameter_arr);
+        $NaviFilter                          = Shop::buildProductFilter($cParameter_arr);
         $AktuelleKategorie                   = new Kategorie($kKategorie);
 
         $oSuchergebnisse->MerkmalFilter = $NaviFilter->setFilterOptions($oSuchergebnisse, $AktuelleKategorie, true)->MerkmalFilter;
@@ -282,7 +282,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
                 unset($_POST['mf1']);
             }
             $cParameter_arr['MerkmalFilter_arr'] = setzeMerkmalFilter();
-            $NaviFilter                          = Shop::buildNaviFilter($cParameter_arr);
+            $NaviFilter                          = Shop::buildProductFilter($cParameter_arr);
             header('Location: ' . StringHandler::htmlentitydecode($NaviFilter->getURL()));
             exit();
         }

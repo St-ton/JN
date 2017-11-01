@@ -160,10 +160,10 @@ interface IFilter
     /**
      * set basic information for using this filter
      *
-     * @param Navigationsfilter|null $naviFilter
+     * @param ProductFilter|null $productFilter
      * @return $this
      */
-    public function setData($naviFilter);
+    public function setData($productFilter);
 
     /**
      * the language ID currently active in the shop

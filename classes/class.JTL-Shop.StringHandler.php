@@ -96,9 +96,9 @@ class StringHandler
             return $input;
         }
         $cString = trim(strip_tags($input));
-        $cString = ($nSuche == 1) ?
-            str_replace(['\\\'', '\\'], '', $cString) :
-            str_replace(['\"', '\\\'', '\\', '"', '\''], '', $cString);
+        $cString = $nSuche == 1
+            ? str_replace(['\\\'', '\\'], '', $cString)
+            : str_replace(['\"', '\\\'', '\\', '"', '\''], '', $cString);
 
         if (strlen($cString) > 10 && $nSuche == 1) {
             $cString = substr(str_replace(['(', ')', ';'], '', $cString), 0, 50);
@@ -221,7 +221,7 @@ class StringHandler
     {
         $cISO_arr = self::getISOMappings();
         foreach ($cISO_arr as $cISO639 => $cISO) {
-            if (strtolower($cISO) == strtolower($ISO)) {
+            if (strtolower($cISO) === strtolower($ISO)) {
                 return $cISO639;
             }
         }

@@ -6,9 +6,6 @@
 
 /**
  * Class NewsJson
- *
- * @access public
- * @author Daniel Böhmer
  */
 class NewsJson
 {
@@ -102,7 +99,7 @@ class NewsJson
 class NewsItem
 {
     /**
-     * @var
+     * @var string
      */
     public $startDate;
 

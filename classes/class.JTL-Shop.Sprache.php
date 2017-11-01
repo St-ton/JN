@@ -147,10 +147,8 @@ class Sprache
      */
     public function __call($method, $arguments)
     {
-        $mapping = self::map($method);
-
-        return ($mapping !== null) ?
-            call_user_func_array([$this, $mapping], $arguments)
+        return ($mapping = self::map($method)) !== null
+            ? call_user_func_array([$this, $mapping], $arguments)
             : null;
     }
 
@@ -164,9 +162,7 @@ class Sprache
      */
     public static function __callStatic($method, $arguments)
     {
-        $mapping = self::map($method);
-
-        return ($mapping !== null)
+        return ($mapping = self::map($method)) !== null
             ? call_user_func_array([self::$instance, $mapping], $arguments)
             : null;
     }
@@ -188,7 +184,7 @@ class Sprache
     public function generateLangVars()
     {
         if ($this->cacheID !== null) {
-            return (($this->langVars = Shop::Cache()->get($this->cacheID)) === false)
+            return ($this->langVars = Shop::Cache()->get($this->cacheID)) === false
                 ? []
                 : $this->langVars;
         }
@@ -276,12 +272,12 @@ class Sprache
         $_lv = $this->generateLangVars();
         if ($this->kSprachISO > 0 && $this->cISOSprache !== '' && !isset($_lv[$this->cISOSprache])) {
             $allLangVars = Shop::DB()->query(
-                "SELECT tsprachwerte.kSprachsektion, tsprachwerte.cWert, 
+                'SELECT tsprachwerte.kSprachsektion, tsprachwerte.cWert, 
                     tsprachwerte.cName, tsprachsektion.cName AS sectionName
                     FROM tsprachwerte 
                     LEFT JOIN tsprachsektion
                         ON tsprachwerte.kSprachsektion = tsprachsektion.kSprachsektion
-                    WHERE tsprachwerte.kSprachISO = " . $this->kSprachISO, 2
+                    WHERE tsprachwerte.kSprachISO = ' . $this->kSprachISO, 2
             );
             $this->langVars[$this->cISOSprache] = [];
             foreach ($allLangVars as $_langVar) {
@@ -355,9 +351,8 @@ class Sprache
      * @param string $cSektion
      * @param mixed [$arg1, ...]
      * @return string
-     * @todo: HTML verhindern
      */
-    public function gibWert($cName, $cSektion = 'global' /* ... */)
+    public function gibWert($cName, $cSektion = 'global')
     {
         if ($this->kSprachISO === 0) {
             return '';
@@ -468,9 +463,9 @@ class Sprache
      */
     public function clearLog($currentLang = true)
     {
-        $where = $currentLang === true ? " WHERE kSprachISO = " . (int)$this->kSprachISO : '';
+        $where = $currentLang === true ? ' WHERE kSprachISO = ' . (int)$this->kSprachISO : '';
 
-        return Shop::DB()->query("DELETE FROM tsprachlog" . $where, 3);
+        return Shop::DB()->query('DELETE FROM tsprachlog' . $where, 3);
     }
 
     /**
@@ -506,7 +501,7 @@ class Sprache
     public function gibInstallierteSprachen()
     {
         return array_filter(
-            Shop::DB()->query("SELECT * FROM tsprache", 2),
+            Shop::DB()->query('SELECT * FROM tsprache', 2),
             function ($l) {
                 return $this->mappekISO($l->cISO) > 0;
             }
@@ -518,7 +513,7 @@ class Sprache
      */
     public function gibVerfuegbareSprachen()
     {
-        return Shop::DB()->query("SELECT * FROM tsprache", 2);
+        return Shop::DB()->query('SELECT * FROM tsprache', 2);
     }
 
     /**
@@ -526,7 +521,7 @@ class Sprache
      */
     public function gibSektionen()
     {
-        return Shop::DB()->query("SELECT * FROM tsprachsektion ORDER BY cNAME ASC", 2);
+        return Shop::DB()->query('SELECT * FROM tsprachsektion ORDER BY cNAME ASC', 2);
     }
 
     /**
@@ -613,7 +608,7 @@ class Sprache
     public function suche($cSuchwort)
     {
         return Shop::DB()->executeQueryPrepared(
-            "SELECT tsprachwerte.kSprachsektion, tsprachwerte.cName, tsprachwerte.cWert, 
+            'SELECT tsprachwerte.kSprachsektion, tsprachwerte.cName, tsprachwerte.cWert, 
                 tsprachwerte.cStandard, tsprachwerte.bSystem, tsprachsektion.cName AS cSektionName
                 FROM tsprachwerte
                 LEFT JOIN tsprachsektion 
@@ -622,7 +617,7 @@ class Sprache
                     tsprachwerte.cWert LIKE :search 
                     OR tsprachwerte.cName LIKE :search
                 )
-                AND kSprachISO = :id",
+                AND kSprachISO = :id',
             [
                 'search' => '%' . Shop::DB()->escape($cSuchwort) . '%',
                 'id'     => $this->kSprachISO
@@ -644,36 +639,36 @@ class Sprache
             default:
             case 0: // Alle
                 $oWerte_arr = Shop::DB()->query(
-                    "SELECT tsprachsektion.cName AS cSektionName, tsprachwerte.cName, 
+                    'SELECT tsprachsektion.cName AS cSektionName, tsprachwerte.cName, 
                         tsprachwerte.cWert, tsprachwerte.bSystem
                         FROM tsprachwerte
                         LEFT JOIN tsprachsektion 
                             ON tsprachwerte.kSprachsektion = tsprachsektion.kSprachsektion
-                        WHERE kSprachISO = " . (int)$this->kSprachISO, 2
+                        WHERE kSprachISO = ' . (int)$this->kSprachISO, 2
                 );
                 break;
 
             case 1: // System
                 $oWerte_arr = Shop::DB()->query(
-                    "SELECT tsprachsektion.cName AS cSektionName, tsprachwerte.cName, 
+                    'SELECT tsprachsektion.cName AS cSektionName, tsprachwerte.cName, 
                         tsprachwerte.cWert, tsprachwerte.bSystem
                         FROM tsprachwerte
                         LEFT JOIN tsprachsektion 
                             ON tsprachwerte.kSprachsektion = tsprachsektion.kSprachsektion
-                        WHERE kSprachISO = " . (int)$this->kSprachISO . " 
-                            AND bSystem = 1", 2
+                        WHERE kSprachISO = ' . (int)$this->kSprachISO . ' 
+                            AND bSystem = 1', 2
                 );
                 break;
 
             case 2: // Eigene
                 $oWerte_arr = Shop::DB()->query(
-                    "SELECT tsprachsektion.cName AS cSektionName, tsprachwerte.cName, 
+                    'SELECT tsprachsektion.cName AS cSektionName, tsprachwerte.cName, 
                         tsprachwerte.cWert, tsprachwerte.bSystem
                         FROM tsprachwerte
                         LEFT JOIN tsprachsektion 
                           ON tsprachwerte.kSprachsektion = tsprachsektion.kSprachsektion
-                        WHERE kSprachISO = " . (int)$this->kSprachISO . " 
-                            AND bSystem = 0", 2
+                        WHERE kSprachISO = ' . (int)$this->kSprachISO . ' 
+                            AND bSystem = 0', 2
                 );
                 break;
         }
@@ -765,13 +760,13 @@ class Sprache
 
                     case 1: // Vorhandene Variablen überschreiben
                         Shop::DB()->executeQueryPrepared(
-                            "REPLACE INTO tsprachwerte
+                            'REPLACE INTO tsprachwerte
                                 SET kSprachISO = :iso, 
                                     kSprachsektion = :section,
                                     cName = :name, 
                                     cWert = :val, 
                                     cStandard = :val, 
-                                    bSystem = :sys",
+                                    bSystem = :sys',
                             [
                                 'iso'     => $kSprachISO,
                                 'section' => $kSprachsektion,
@@ -796,13 +791,13 @@ class Sprache
                         );
                         if (!$oWert) {
                             Shop::DB()->executeQueryPrepared(
-                                "REPLACE INTO tsprachwerte
+                                'REPLACE INTO tsprachwerte
                                     SET kSprachISO = :iso, 
                                         kSprachsektion = :section,
                                         cName = :name, 
                                         cWert = :val, 
                                         cStandard = :val, 
-                                        bSystem = :sys",
+                                        bSystem = :sys',
                                 [
                                     'iso'     => $kSprachISO,
                                     'section' => $kSprachsektion,
@@ -836,7 +831,7 @@ class Sprache
 
                         return $e;
                     },
-                    Shop::DB()->query("SELECT kSprache FROM tsprache", 2)
+                    Shop::DB()->query('SELECT kSprache FROM tsprache', 2)
                 );
                 Shop::Cache()->set($cacheID, $this->oSprache_arr, [CACHING_GROUP_LANGUAGE]);
             }

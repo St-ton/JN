@@ -194,7 +194,7 @@ class SimpleCSS
                 if (preg_match('/rgb(\s*)\(([\d\s]+),([\d\s]+),([\d\s]+)\)/', $cValue, $cMatch_arr)) {
                     return $this->rgb2html((int)$cMatch_arr[2], (int)$cMatch_arr[3], (int)$cMatch_arr[4]);
                 } // #fff or #ffffff
-                elseif (preg_match('/#([\w\d]+)/', $cValue, $cMatch_arr)) {
+                if (preg_match('/#([\w\d]+)/', $cValue, $cMatch_arr)) {
                     return trim($cMatch_arr[0]);
                 }
                 break;

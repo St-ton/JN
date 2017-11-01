@@ -167,14 +167,13 @@ class SimpleXML
         if (is_array($array)) {
             if ($array[0] && count($array) === 1) {
                 return $this->array_reindex($array[0]);
-            } else {
-                foreach ($array as $keys => $items) {
-                    if (is_array($items)) {
-                        if (is_numeric($keys)) {
-                            $array[$keys] = $this->array_reindex($items);
-                        } else {
-                            $array[$keys] = $this->array_reindex(array_merge([], $items));
-                        }
+            }
+            foreach ($array as $keys => $items) {
+                if (is_array($items)) {
+                    if (is_numeric($keys)) {
+                        $array[$keys] = $this->array_reindex($items);
+                    } else {
+                        $array[$keys] = $this->array_reindex(array_merge([], $items));
                     }
                 }
             }

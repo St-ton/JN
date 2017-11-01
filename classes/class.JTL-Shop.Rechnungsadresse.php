@@ -63,7 +63,7 @@ class Rechnungsadresse extends Adresse
     {
         $obj = Shop::DB()->select('trechnungsadresse', 'kRechnungsadresse', (int)$kRechnungsadresse);
 
-        if (!$obj->kRechnungsadresse) {
+        if (empty($obj->kRechnungsadresse)) {
             return 0;
         }
 

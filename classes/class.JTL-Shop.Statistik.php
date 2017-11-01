@@ -5,12 +5,6 @@
  */
 
 /**
- * Statistik Klasse
- *
- * @package eazySales.Shop.Basic
- */
-
-/**
  * Class Statistik
  */
 class Statistik

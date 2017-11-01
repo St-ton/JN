@@ -10,19 +10,16 @@
 class Nummern
 {
     /**
-     * @access protected
      * @var int
      */
     protected $nNummer;
 
     /**
-     * @access protected
      * @var int
      */
     protected $nArt;
 
     /**
-     * @access protected
      * @var string
      */
     protected $dAktualisiert;
@@ -31,7 +28,6 @@ class Nummern
      * Constructor
      *
      * @param int $nArt
-     * @access public
      */
     public function __construct($nArt = 0)
     {

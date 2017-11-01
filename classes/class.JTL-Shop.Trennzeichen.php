@@ -6,44 +6,35 @@
 
 /**
  * Class Trennzeichen
- *
- * @access public
- * @author Daniel Böhmer JTL-Software GmbH
  */
 class Trennzeichen
 {
     /**
-     * @access protected
      * @var int
      */
     public $kTrennzeichen;
 
     /**
-     * @access protected
      * @var int
      */
     protected $kSprache;
 
     /**
-     * @access protected
      * @var int
      */
     protected $nEinheit;
 
     /**
-     * @access protected
      * @var int
      */
     protected $nDezimalstellen;
 
     /**
-     * @access protected
      * @var string
      */
     protected $cDezimalZeichen;
 
     /**
-     * @access protected
      * @var string
      */
     protected $cTausenderZeichen;
@@ -56,8 +47,7 @@ class Trennzeichen
     /**
      * Constructor
      *
-     * @param int $kTrennzeichen primarykey
-     * @access public
+     * @param int $kTrennzeichen
      */
     public function __construct($kTrennzeichen = 0)
     {
@@ -71,7 +61,6 @@ class Trennzeichen
      *
      * @param int $kTrennzeichen primarykey
      * @return $this
-     * @access private
      */
     private function loadFromDB($kTrennzeichen = 0)
     {
@@ -141,9 +130,8 @@ class Trennzeichen
                 return ($fAmount >= 0) ?
                     number_format($fAmount, $oObj->nDezimalstellen, $oObj->cDezimalZeichen, $oObj->cTausenderZeichen) :
                     new self($oObj->kTrennzeichen);
-            } else {
-                self::insertMissingRow($nEinheit, $kSprache);
             }
+            self::insertMissingRow($nEinheit, $kSprache);
         }
 
         return $fAmount;
@@ -171,7 +159,11 @@ class Trennzeichen
         if ($nEinheit > 0 && $kSprache > 0) {
             if (!isset($xRowAssoc_arr[$kSprache][$nEinheit])) {
                 $xRowAssoc_arr[$kSprache]            = [];
-                $xRowAssoc_arr[$kSprache][$nEinheit] = ['nDezimalstellen' => 2, 'cDezimalZeichen' => ',', 'cTausenderZeichen' => '.'];
+                $xRowAssoc_arr[$kSprache][$nEinheit] = [
+                    'nDezimalstellen'   => 2,
+                    'cDezimalZeichen'   => ',',
+                    'cTausenderZeichen' => '.'
+                ];
             }
 
             return Shop::DB()->query(
@@ -188,10 +180,7 @@ class Trennzeichen
     }
 
     /**
-     * Loads database member into class member
-     *
-     * @access public
-     * @var int $kSprache
+     * @param int $kSprache
      * @return array
      */
     public static function getAll($kSprache)
@@ -206,11 +195,6 @@ class Trennzeichen
                     foreach ($oObjTMP_arr as $oObjTMP) {
                         if (isset($oObjTMP->kTrennzeichen) && $oObjTMP->kTrennzeichen > 0) {
                             $oTrennzeichen = new self($oObjTMP->kTrennzeichen);
-
-                            if (!isset($oObjAssoc_arr[$oTrennzeichen->getEinheit()])) {
-                                $oObjAssoc_arr[$oTrennzeichen->getEinheit()] = [];
-                            }
-
                             $oObjAssoc_arr[$oTrennzeichen->getEinheit()] = $oTrennzeichen;
                         }
                     }
@@ -223,11 +207,8 @@ class Trennzeichen
     }
 
     /**
-     * Store the class in the database
-     *
      * @param bool $bPrim - Controls the return of the method
      * @return bool|int
-     * @access public
      */
     public function save($bPrim = true)
     {
@@ -250,10 +231,7 @@ class Trennzeichen
     }
 
     /**
-     * Update the class in the database
-     *
      * @return int
-     * @access public
      */
     public function update()
     {
@@ -268,10 +246,7 @@ class Trennzeichen
     }
 
     /**
-     * Delete the class in the database
-     *
      * @return int
-     * @access public
      */
     public function delete()
     {
@@ -279,9 +254,6 @@ class Trennzeichen
     }
 
     /**
-     * Sets the kTrennzeichen
-     *
-     * @access public
      * @param int $kTrennzeichen
      * @return $this
      */
@@ -293,9 +265,6 @@ class Trennzeichen
     }
 
     /**
-     * Sets the kSprache
-     *
-     * @access public
      * @param int $kSprache
      * @return $this
      */
@@ -307,9 +276,6 @@ class Trennzeichen
     }
 
     /**
-     * Sets the nEinheit
-     *
-     * @access public
      * @param int $nEinheit
      * @return $this
      */
@@ -321,9 +287,6 @@ class Trennzeichen
     }
 
     /**
-     * Sets the nDezimalstellen
-     *
-     * @access public
      * @param int $nDezimalstellen
      * @return $this
      */
@@ -335,9 +298,6 @@ class Trennzeichen
     }
 
     /**
-     * Sets the cDezimalZeichen
-     *
-     * @access public
      * @param string $cDezimalZeichen
      * @return $this
      */
@@ -349,9 +309,6 @@ class Trennzeichen
     }
 
     /**
-     * Sets the cTausenderZeichen
-     *
-     * @access public
      * @param string $cTausenderZeichen
      * @return $this
      */
@@ -363,9 +320,6 @@ class Trennzeichen
     }
 
     /**
-     * Gets the kTrennzeichen
-     *
-     * @access public
      * @return int
      */
     public function getTrennzeichen()
@@ -374,9 +328,6 @@ class Trennzeichen
     }
 
     /**
-     * Gets the kSprache
-     *
-     * @access public
      * @return int
      */
     public function getSprache()
@@ -385,9 +336,6 @@ class Trennzeichen
     }
 
     /**
-     * Gets the nEinheit
-     *
-     * @access public
      * @return int
      */
     public function getEinheit()
@@ -396,9 +344,6 @@ class Trennzeichen
     }
 
     /**
-     * Gets the nDezimalstellen
-     *
-     * @access public
      * @return int
      */
     public function getDezimalstellen()
@@ -407,9 +352,6 @@ class Trennzeichen
     }
 
     /**
-     * Gets the cDezimalZeichen
-     *
-     * @access public
      * @return string
      */
     public function getDezimalZeichen()
@@ -418,9 +360,6 @@ class Trennzeichen
     }
 
     /**
-     * Gets the cTausenderZeichen
-     *
-     * @access public
      * @return string
      */
     public function getTausenderZeichen()
@@ -445,9 +384,10 @@ class Trennzeichen
                     $oTrennzeichen->setSprache($oSprache->kSprache);
                     $oTrennzeichen->setEinheit($nEinheit);
 
-                    if ($nEinheit == JTL_SEPARATOR_WEIGHT) {
-                        if (isset($oEinstellungen['artikeldetails']['artikeldetails_gewicht_stellenanzahl']) &&
-                            strlen($oEinstellungen['artikeldetails']['artikeldetails_gewicht_stellenanzahl']) > 0) {
+                    if ($nEinheit === JTL_SEPARATOR_WEIGHT) {
+                        if (isset($oEinstellungen['artikeldetails']['artikeldetails_gewicht_stellenanzahl'])
+                            && strlen($oEinstellungen['artikeldetails']['artikeldetails_gewicht_stellenanzahl']) > 0
+                        ) {
                             $oTrennzeichen->setDezimalstellen($oEinstellungen['artikeldetails']['artikeldetails_gewicht_stellenanzahl']);
                         } else {
                             $oTrennzeichen->setDezimalstellen(2);
@@ -456,15 +396,17 @@ class Trennzeichen
                         $oTrennzeichen->setDezimalstellen(2);
                     }
 
-                    if (isset($oEinstellungen['artikeldetails']['artikeldetails_zeichen_nachkommatrenner']) &&
-                        strlen($oEinstellungen['artikeldetails']['artikeldetails_zeichen_nachkommatrenner']) > 0) {
+                    if (isset($oEinstellungen['artikeldetails']['artikeldetails_zeichen_nachkommatrenner'])
+                        && strlen($oEinstellungen['artikeldetails']['artikeldetails_zeichen_nachkommatrenner']) > 0
+                    ) {
                         $oTrennzeichen->setDezimalZeichen($oEinstellungen['artikeldetails']['artikeldetails_zeichen_nachkommatrenner']);
                     } else {
                         $oTrennzeichen->setDezimalZeichen(',');
                     }
 
-                    if (isset($oEinstellungen['artikeldetails']['artikeldetails_zeichen_tausendertrenner']) &&
-                        strlen($oEinstellungen['artikeldetails']['artikeldetails_zeichen_tausendertrenner']) > 0) {
+                    if (isset($oEinstellungen['artikeldetails']['artikeldetails_zeichen_tausendertrenner'])
+                        && strlen($oEinstellungen['artikeldetails']['artikeldetails_zeichen_tausendertrenner']) > 0
+                    ) {
                         $oTrennzeichen->setTausenderZeichen($oEinstellungen['artikeldetails']['artikeldetails_zeichen_tausendertrenner']);
                     } else {
                         $oTrennzeichen->setTausenderZeichen('.');

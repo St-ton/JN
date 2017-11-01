@@ -115,11 +115,11 @@ class Template
 
             return $this;
         }
-        $bMobil  = (isset($_COOKIE['bMobil']) && $_COOKIE['bMobil']);
-        $cacheID = 'current_template_' . (($bMobil === true)
+        $bMobil  = isset($_COOKIE['bMobil']) && $_COOKIE['bMobil'];
+        $cacheID = 'current_template_' . ($bMobil === true
                 ? 'mobile'
                 : 'nonmobile') .
-            ((self::$isAdmin === true) ? '_admin' : '');
+            (self::$isAdmin === true ? '_admin' : '');
         if (($oTemplate = Shop::Cache()->get($cacheID)) !== false) {
             self::$cTemplate   = $oTemplate->cTemplate;
             self::$parent      = $oTemplate->parent;
@@ -187,7 +187,7 @@ class Template
      */
     public function leseXML($dir = null)
     {
-        $dir = ($dir !== null) ? $dir : self::$cTemplate;
+        $dir = $dir !== null ? $dir : self::$cTemplate;
 
         return self::$helper->getXML($dir);
     }
@@ -208,9 +208,6 @@ class Template
                     OR tplugin_resources.conditional = '')
                 ORDER BY tplugin_resources.priority DESC", 2
         );
-        if (!is_array($pluginResCSS)) {
-            $pluginResCSS = [];
-        }
         $pluginResCSSconditional = Shop::DB()->query(
             "SELECT * FROM tplugin_resources
                 JOIN tplugin ON tplugin.kPlugin = tplugin_resources.kPlugin
@@ -220,9 +217,6 @@ class Template
                     AND tplugin_resources.conditional != ''
                 ORDER BY tplugin_resources.priority DESC", 2
         );
-        if (!is_array($pluginResCSSconditional)) {
-            $pluginResCSSconditional = [];
-        }
         $pluginResJSHead = Shop::DB()->query(
             "SELECT * FROM tplugin_resources
                 JOIN tplugin
@@ -232,9 +226,6 @@ class Template
                     AND tplugin.nStatus = 2
                 ORDER BY tplugin_resources.priority DESC", 2
         );
-        if (!is_array($pluginResJSHead)) {
-            $pluginResJSHead = [];
-        }
         $pluginResJSBody = Shop::DB()->query(
             "SELECT * FROM tplugin_resources
                 JOIN tplugin
@@ -244,9 +235,6 @@ class Template
                     AND tplugin.nStatus = 2
                 ORDER BY tplugin_resources.priority DESC", 2
         );
-        if (!is_array($pluginResJSBody)) {
-            $pluginResJSBody = [];
-        }
 
         return [
             'css'             => $this->getPluginResourcesPath($pluginResCSS),
@@ -497,7 +485,7 @@ class Template
                 Shop::Cache()->set($cacheID, $oTemplate, [CACHING_GROUP_TEMPLATE]);
             }
         }
-        //workaround for saving bool values to cache
+        // workaround for saving bool values to cache
         if ($oTemplate === 'false') {
             $oTemplate = false;
         }
@@ -793,12 +781,18 @@ class Template
         $tplObject              = new stdClass();
         $tplObject->cTemplate   = $cOrdner;
         $tplObject->eTyp        = $eTyp;
-        $tplObject->parent      = !empty($tplConfig->Parent) ? (string)$tplConfig->Parent : '_DBNULL_';
+        $tplObject->parent      = !empty($tplConfig->Parent)
+            ? (string)$tplConfig->Parent
+            : '_DBNULL_';
         $tplObject->name        = (string)$tplConfig->Name;
         $tplObject->author      = (string)$tplConfig->Author;
         $tplObject->url         = (string)$tplConfig->URL;
-        $tplObject->version     = empty($tplConfig->Version) && $parentConfig ? (float)$parentConfig->Version : (float)$tplConfig->Version;
-        $tplObject->shopversion = empty($tplConfig->ShopVersion) && $parentConfig ? (int)$parentConfig->ShopVersion : (int)$tplConfig->ShopVersion;
+        $tplObject->version     = empty($tplConfig->Version) && $parentConfig
+            ? (float)$parentConfig->Version
+            : (float)$tplConfig->Version;
+        $tplObject->shopversion = empty($tplConfig->ShopVersion) && $parentConfig
+            ? (int)$parentConfig->ShopVersion
+            : (int)$tplConfig->ShopVersion;
         $tplObject->preview     = (string)$tplConfig->Preview;
         $bCheck                 = Shop::DB()->insert('ttemplate', $tplObject);
         if ($bCheck) {
@@ -840,11 +834,21 @@ class Template
      */
     public function setConfig($cOrdner, $cSektion, $cName, $cWert)
     {
-        $oSetting = Shop::DB()->select('ttemplateeinstellungen', 'cTemplate', $cOrdner, 'cSektion', $cSektion, 'cName', $cName);
+        $oSetting = Shop::DB()->select(
+            'ttemplateeinstellungen',
+            'cTemplate', $cOrdner,
+            'cSektion', $cSektion,
+            'cName', $cName
+        );
         if (isset($oSetting->cTemplate)) {
             $_upd        = new stdClass();
             $_upd->cWert = $cWert;
-            Shop::DB()->update('ttemplateeinstellungen', ['cTemplate', 'cSektion', 'cName'], [$cOrdner, $cSektion, $cName], $_upd);
+            Shop::DB()->update(
+                'ttemplateeinstellungen',
+                ['cTemplate', 'cSektion', 'cName'],
+                [$cOrdner, $cSektion, $cName],
+                $_upd
+            );
         } else {
             $_ins            = new stdClass();
             $_ins->cTemplate = $cOrdner;

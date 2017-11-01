@@ -366,7 +366,7 @@ function fuegeEinInWarenkorbAjax($kArtikel, $anzahl, $oEigenschaftwerte_arr = ''
 
 /**
  * @deprecated since 4.05
- * @param $nED
+ * @param int $nED
  * @return xajaxResponse
  */
 function setzeErweiterteDarstellung($nED)
@@ -377,7 +377,7 @@ function setzeErweiterteDarstellung($nED)
     require_once PFAD_ROOT . PFAD_INCLUDES . 'filter_inc.php';
 
     unset($NaviFilter);
-    $NaviFilter = Shop::buildNaviFilter([]);
+    $NaviFilter = Shop::buildProductFilter([]);
     gibErweiterteDarstellung($Einstellungen, $NaviFilter, $nED);
 
     return $objResponse;
@@ -387,8 +387,8 @@ function setzeErweiterteDarstellung($nED)
  * Kundenformular Ajax PLZ
  *
  * @deprecated since 4.05
- * @param $cFormValue - Textfeld Wert vom Kundenfomular input Feldes
- * @param $cLandISO - Ausgewähltes Land in der DropDown Box
+ * @param string $cFormValue - Textfeld Wert vom Kundenfomular input Feldes
+ * @param string $cLandISO - Ausgewähltes Land in der DropDown Box
  * @return xajaxResponse
  */
 function gibPLZInfo($cFormValue, $cLandISO)
@@ -1103,7 +1103,7 @@ function setSelectionWizardAnswerAjax($kMerkmalWert, $kAuswahlAssistentFrage, $n
             $cParameter_arr['kMerkmalWert'] = $NaviFilter->MerkmalWert->getValue();
         }
         $cParameter_arr['MerkmalFilter_arr'] = setzeMerkmalFilter();
-        $NaviFilter                          = Shop::buildNaviFilter($cParameter_arr, $NaviFilter);
+        $NaviFilter                          = Shop::buildProductFilter($cParameter_arr, $NaviFilter);
         $objResponse->script("window.location.href='" . StringHandler::htmlentitydecode($NaviFilter->getURL()) . "';");
         unset($_SESSION['AuswahlAssistent']);
     }

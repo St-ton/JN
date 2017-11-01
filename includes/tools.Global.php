@@ -5670,7 +5670,7 @@ function writeLog($logfile, $entry, $level)
 function baueNaviFilter($NaviFilter, $cParameter_arr)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Shop::buildNaviFilter($cParameter_arr, $NaviFilter);
+    return Shop::buildProductFilter($cParameter_arr, $NaviFilter);
 }
 
 /**

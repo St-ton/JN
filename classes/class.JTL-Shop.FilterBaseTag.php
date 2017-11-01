@@ -21,11 +21,11 @@ class FilterBaseTag extends AbstractFilter
     /**
      * FilterBaseTag constructor.
      *
-     * @param Navigationsfilter $naviFilter
+     * @param ProductFilter $productFilter
      */
-    public function __construct($naviFilter)
+    public function __construct($productFilter)
     {
-        parent::__construct($naviFilter);
+        parent::__construct($productFilter);
         $this->isCustom    = false;
         $this->urlParam    = 't';
     }
@@ -127,8 +127,8 @@ class FilterBaseTag extends AbstractFilter
         $options = [];
         if ($this->getConfig()['navigationsfilter']['allgemein_tagfilter_benutzen'] !== 'N') {
             $joinedTables = [];
-            $order        = $this->naviFilter->getOrder();
-            $state        = $this->naviFilter->getCurrentStateData();
+            $order        = $this->productFilter->getOrder();
+            $state        = $this->productFilter->getCurrentStateData();
 
             $state->joins[] = (new FilterJoin())
                 ->setComment('join1 from FilterBaseTag::getOptions()')
@@ -153,7 +153,7 @@ class FilterBaseTag extends AbstractFilter
             }
             $state->conditions[] = 'ttag.nAktiv = 1';
             $state->conditions[] = 'ttag.kSprache = ' . $this->getLanguageID();
-            $query               = $this->naviFilter->getBaseQuery(
+            $query               = $this->productFilter->getBaseQuery(
                 ['ttag.kTag',
                 'ttag.cName',
                 'ttagartikel.nAnzahlTagging',
@@ -177,7 +177,7 @@ class FilterBaseTag extends AbstractFilter
                     (int)$this->getConfig()['navigationsfilter']['tagfilter_max_anzeige'],
                 2
             );
-            $additionalFilter = new FilterItemTag($this->naviFilter);
+            $additionalFilter = new FilterItemTag($this->productFilter);
             // Priorität berechnen
             $nPrioStep = 0;
             $nCount    = count($tags);
@@ -192,7 +192,7 @@ class FilterBaseTag extends AbstractFilter
                     ->setName($tag->cName)
                     ->setValue((int)$tag->kTag)
                     ->setCount($tag->nAnzahl)
-                    ->setURL($this->naviFilter->getURL(
+                    ->setURL($this->productFilter->getURL(
                         $additionalFilter->init((int)$tag->kTag)
                     ));
                 $fe->nAnzahlTagging = (int)$tag->nAnzahlTagging;

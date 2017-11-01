@@ -32,11 +32,11 @@ class FilterItemAttributeAdvanced extends FilterBaseAttribute
     /**
      * FilterItemAttribute constructor.
      *
-     * @param Navigationsfilter $naviFilter
+     * @param ProductFilter $productFilter
      */
-    public function __construct($naviFilter)
+    public function __construct($productFilter)
     {
-        parent::__construct($naviFilter);
+        parent::__construct($productFilter);
         $this->isCustom    = false;
         $this->urlParam    = 'mf';
         $this->urlParamSEO = SEP_MERKMAL;
@@ -271,7 +271,7 @@ class FilterItemAttributeAdvanced extends FilterBaseAttribute
      */
     public function attributeValueIsActive($kMerkmalWert)
     {
-        foreach ($this->naviFilter->getAttributeFilter() as $i => $oMerkmalauswahl) {
+        foreach ($this->productFilter->getAttributeFilter() as $i => $oMerkmalauswahl) {
             $value = $oMerkmalauswahl->getValue();
             if ($oMerkmalauswahl->isInitialized()
                 && ((!is_array($value) && $value === $kMerkmalWert)
@@ -314,7 +314,7 @@ class FilterItemAttributeAdvanced extends FilterBaseAttribute
             && is_array($currentCategory->categoryFunctionAttributes)
             && count($currentCategory->categoryFunctionAttributes) > 0
             && !empty($currentCategory->categoryFunctionAttributes[KAT_ATTRIBUT_MERKMALFILTER])
-            && $this->naviFilter->hasCategoryFilter()
+            && $this->productFilter->hasCategoryFilter()
         ) {
             $catAttributeFilters = explode(
                 ';',
@@ -322,8 +322,8 @@ class FilterItemAttributeAdvanced extends FilterBaseAttribute
             );
         }
         $select = 'tmerkmal.cName';
-        $order  = $this->naviFilter->getOrder();
-        $state          = $this->naviFilter->getCurrentStateData($this);
+        $order  = $this->productFilter->getOrder();
+        $state          = $this->productFilter->getCurrentStateData($this);
         $state->joins[] = $order->join;
         if ($this->kMerkmal > 0) {
             $state->joins[] = (new FilterJoin())
@@ -392,9 +392,9 @@ class FilterItemAttributeAdvanced extends FilterBaseAttribute
                 ->setOrigin(__CLASS__);
         }
 
-        if ($this->naviFilter->hasAttributeFilter()) {
+        if ($this->productFilter->hasAttributeFilter()) {
             $activeAndFilterIDs = [];
-            foreach ($this->naviFilter->getAttributeFilter() as $filter) {
+            foreach ($this->productFilter->getAttributeFilter() as $filter) {
                 $values = $filter->getValue();
                 if (is_array($values)) {
                     $activeValues = $values;
@@ -448,7 +448,7 @@ class FilterItemAttributeAdvanced extends FilterBaseAttribute
             }
             $state->conditions[] = 'z.kMerkmalWert NOT IN (' . implode(', ', $filterValue) . ')';
         }
-        $baseQry = $this->naviFilter->getBaseQuery(
+        $baseQry = $this->productFilter->getBaseQuery(
             [
                 'z.kMerkmal',
                 'z.kMerkmalWert',
@@ -480,19 +480,19 @@ class FilterItemAttributeAdvanced extends FilterBaseAttribute
         $qryRes  = Shop::DB()->query($qry, 2);
         if (is_array($qryRes)) {
             foreach ($qryRes as $i => $oMerkmalFilterDB) {
-                $additionalFilter = (new self($this->naviFilter))->init((int)$oMerkmalFilterDB->kMerkmalWert);
+                $additionalFilter = (new self($this->productFilter))->init((int)$oMerkmalFilterDB->kMerkmalWert);
 
                 $attributeValues               = new stdClass();
                 $attributeValues->kMerkmalWert = (int)$oMerkmalFilterDB->kMerkmalWert;
                 $attributeValues->cWert        = $oMerkmalFilterDB->cWert;
                 $attributeValues->nAnzahl      = (int)$oMerkmalFilterDB->nAnzahl;
-                $attributeValues->nAktiv       = ($this->naviFilter->getAttributeValue()->getValue() ===
+                $attributeValues->nAktiv       = ($this->productFilter->getAttributeValue()->getValue() ===
                     $attributeValues->kMerkmalWert
                     || $this->attributeValueIsActive($attributeValues->kMerkmalWert))
                     ? 1
                     : 0;
                 // baue URL
-                $attributeValues->cURL = $this->naviFilter->getURL(
+                $attributeValues->cURL = $this->productFilter->getURL(
                     $additionalFilter->setSeo($this->getAvailableLanguages())
                 );
                 // hack for #4815

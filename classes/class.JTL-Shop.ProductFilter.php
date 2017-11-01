@@ -5,9 +5,9 @@
  */
 
 /**
- * Class Navigationsfilter
+ * Class ProductFilter
  */
-class Navigationsfilter
+class ProductFilter
 {
     use MagicCompatibilityTrait;
 
@@ -240,12 +240,12 @@ class Navigationsfilter
         $this->customerGroupID = Session::CustomerGroup()->getID();
         $this->baseURL         = Shop::getURL() . '/';
         $this->metaData        = new Metadata($this);
-        executeHook(HOOK_NAVIGATIONSFILTER_CREATE, ['navifilter' => $this]);
+        executeHook(HOOK_PRODUCTFILTER_CREATE, ['productFilter' => $this]);
         $this->initBaseStates();
     }
 
     /**
-     * for compatibility reasons only - called when oSprache_arr is directly read from NaviFilter instance
+     * for compatibility reasons only - called when oSprache_arr is directly read from ProductFilter instance
      *
      * @return array
      */
@@ -255,7 +255,7 @@ class Navigationsfilter
     }
 
     /**
-     * for compatibility reasons only - called when oSprache_arr is directly set on NaviFilter instance
+     * for compatibility reasons only - called when oSprache_arr is directly set on ProductFilter instance
      *
      * @param array $languages
      * @return mixed
@@ -481,7 +481,7 @@ class Navigationsfilter
 
         $this->baseState = new FilterDummyState($this);
 
-        executeHook(HOOK_NAVIGATIONSFILTER_INIT, ['navifilter' => $this]);
+        executeHook(HOOK_PRODUCTFILTER_INIT, ['productFilter' => $this]);
 
         $this->filters[] = $this->categoryFilter;
         $this->filters[] = $this->manufacturerFilter;
@@ -618,9 +618,9 @@ class Navigationsfilter
                 }
             }
         }
-        executeHook(HOOK_NAVIGATIONSFILTER_INIT_STATES, [
-            'navifilter' => $this,
-            'params'     => $params
+        executeHook(HOOK_PRODUCTFILTER_INIT_STATES, [
+            'productFilter' => $this,
+            'params'        => $params
         ]);
         $this->params = $params;
 
@@ -1933,15 +1933,15 @@ class Navigationsfilter
         $conditions[] = $this->getStorageFilterSQL();
         // remove empty conditions
         $conditions = array_filter($conditions);
-        executeHook(HOOK_NAVIGATIONSFILTER_GET_BASE_QUERY, [
-            'select'     => &$select,
-            'joins'      => &$joins,
-            'conditions' => &$conditions,
-            'groupBy'    => &$groupBy,
-            'having'     => &$having,
-            'order'      => &$order,
-            'limit'      => &$limit,
-            'navifilter' => $this
+        executeHook(HOOK_PRODUCTFILTER_GET_BASE_QUERY, [
+            'select'        => &$select,
+            'joins'         => &$joins,
+            'conditions'    => &$conditions,
+            'groupBy'       => &$groupBy,
+            'having'        => &$having,
+            'order'         => &$order,
+            'limit'         => &$limit,
+            'productFilter' => $this
         ]);
         // merge FilterQuery-Conditions
         $filterQueryIndices = [];

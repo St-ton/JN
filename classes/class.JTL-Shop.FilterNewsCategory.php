@@ -17,11 +17,11 @@ class FilterNewsCategory extends AbstractFilter
     /**
      * FilterNewsCategory constructor.
      *
-     * @param Navigationsfilter $naviFilter
+     * @param ProductFilter $productFilter
      */
-    public function __construct($naviFilter)
+    public function __construct($productFilter)
     {
-        parent::__construct($naviFilter);
+        parent::__construct($productFilter);
         $this->isCustom    = false;
         $this->urlParam    = 'nk';
         $this->urlParamSEO = null;

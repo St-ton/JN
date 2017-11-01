@@ -19,11 +19,11 @@ class FilterItemRating extends AbstractFilter
     /**
      * FilterItemRating constructor.
      *
-     * @param Navigationsfilter $naviFilter
+     * @param ProductFilter $productFilter
      */
-    public function __construct($naviFilter)
+    public function __construct($productFilter)
     {
-        parent::__construct($naviFilter);
+        parent::__construct($productFilter);
         $this->isCustom    = false;
         $this->urlParam    = 'bf';
         $this->urlParamSEO = null;
@@ -118,13 +118,13 @@ class FilterItemRating extends AbstractFilter
             return $this->options;
         }
         $options    = [];
-        $order      = $this->naviFilter->getOrder();
-        $state      = $this->naviFilter->getCurrentStateData();
+        $order      = $this->productFilter->getOrder();
+        $state      = $this->productFilter->getCurrentStateData();
 
         $state->joins[] = $order->join;
         $state->joins[] = $this->getSQLJoin();
 
-        $query = $this->naviFilter->getBaseQuery(
+        $query = $this->productFilter->getBaseQuery(
             [
                 'ROUND(tartikelext.fDurchschnittsBewertung, 0) AS nSterne',
                 'tartikel.kArtikel'
@@ -141,7 +141,7 @@ class FilterItemRating extends AbstractFilter
                 ORDER BY ssMerkmal.nSterne DESC', 2
         );
         $nSummeSterne     = 0;
-        $additionalFilter = new self($this->getNaviFilter());
+        $additionalFilter = new self($this->getProductFilter());
         foreach ($res as $row) {
             $nSummeSterne += (int)$row->nAnzahl;
 
@@ -158,7 +158,7 @@ class FilterItemRating extends AbstractFilter
                 )
                 ->setValue((int)$row->nSterne)
                 ->setCount($nSummeSterne)
-                ->setURL($this->naviFilter->getURL(
+                ->setURL($this->productFilter->getURL(
                     $additionalFilter->init((int)$row->nSterne)
                 ));
             $fe->nStern = (int)$row->nSterne;

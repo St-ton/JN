@@ -34,11 +34,11 @@ class FilterItemAttribute extends FilterBaseAttribute
     /**
      * FilterItemAttribute constructor.
      *
-     * @param Navigationsfilter $naviFilter
+     * @param ProductFilter $productFilter
      */
-    public function __construct($naviFilter)
+    public function __construct($productFilter)
     {
-        parent::__construct($naviFilter);
+        parent::__construct($productFilter);
         $this->isCustom    = false;
         $this->urlParam    = 'mf';
         $this->urlParamSEO = SEP_MERKMAL;
@@ -72,7 +72,7 @@ class FilterItemAttribute extends FilterBaseAttribute
     {
         $this->attributeID = (int)$value;
         if ($this->value > 0) {
-            $this->naviFilter->enableFilter($this);
+            $this->productFilter->enableFilter($this);
         }
 
         return $this;
@@ -217,7 +217,7 @@ class FilterItemAttribute extends FilterBaseAttribute
      */
     public function attributeValueIsActive($kMerkmalWert)
     {
-        return array_reduce($this->naviFilter->getAttributeFilter(),
+        return array_reduce($this->productFilter->getAttributeFilter(),
             function ($a, $b) use ($kMerkmalWert) {
                 /** @var FilterItemAttribute $b */
                 return $a || $b->getValue() === $kMerkmalWert;
@@ -258,7 +258,7 @@ class FilterItemAttribute extends FilterBaseAttribute
             && is_array($currentCategory->categoryFunctionAttributes)
             && count($currentCategory->categoryFunctionAttributes) > 0
             && !empty($currentCategory->categoryFunctionAttributes[KAT_ATTRIBUT_MERKMALFILTER])
-            && $this->naviFilter->hasCategory()
+            && $this->productFilter->hasCategory()
         ) {
             $catAttributeFilters = explode(
                 ';',
@@ -266,12 +266,12 @@ class FilterItemAttribute extends FilterBaseAttribute
             );
         }
         $select         = 'tmerkmal.cName';
-        $order          = $this->naviFilter->getOrder();
-        $state          = $this->naviFilter->getCurrentStateData('FilterItemAttribute');
+        $order          = $this->productFilter->getOrder();
+        $state          = $this->productFilter->getCurrentStateData('FilterItemAttribute');
         $state->joins[] = $order->join;
 
         // @todo?
-        if (true || (!$this->naviFilter->hasAttributeValue() && !$this->naviFilter->hasAttributeFilter())) {
+        if (true || (!$this->productFilter->hasAttributeValue() && !$this->productFilter->hasAttributeFilter())) {
             $state->joins[] = (new FilterJoin())
                 ->setComment('join1 from FilterItemAttribute::getOptions()')
                 ->setType('JOIN')
@@ -330,9 +330,9 @@ class FilterItemAttribute extends FilterBaseAttribute
                 ->setOrigin(__CLASS__);
         }
 
-        if ($this->naviFilter->hasAttributeFilter()) {
+        if ($this->productFilter->hasAttributeFilter()) {
             $activeAndFilterIDs = [];
-            foreach ($this->naviFilter->getAttributeFilter() as $filter) {
+            foreach ($this->productFilter->getAttributeFilter() as $filter) {
                 $values = $filter->getValue();
                 if (is_array($values)) {
                     $activeValues = $values;
@@ -383,7 +383,7 @@ class FilterItemAttribute extends FilterBaseAttribute
         } else {
             $select .= ', tartikel.kArtikel AS kArtikel';
         }
-        $baseQry               = $this->naviFilter->getBaseQuery(
+        $baseQry               = $this->productFilter->getBaseQuery(
             [
                 'tartikelmerkmal.kMerkmal',
                 'tartikelmerkmal.kMerkmalWert',
@@ -415,8 +415,8 @@ class FilterItemAttribute extends FilterBaseAttribute
             ORDER BY ssMerkmal.nSortMerkmal, ssMerkmal.nSort, ssMerkmal.cWert",
             2
         );
-        $currentAttributeValue = $this->naviFilter->getAttributeValue()->getValue();
-        $additionalFilter      = new self($this->naviFilter);
+        $currentAttributeValue = $this->productFilter->getAttributeValue()->getValue();
+        $additionalFilter      = new self($this->productFilter);
         // get unique attributes from query result
         $checked                   = [];
         $attributeFilterCollection = [];
@@ -499,7 +499,7 @@ class FilterItemAttribute extends FilterBaseAttribute
                     $attributeValue->cBildpfadGross = BILD_KEIN_MERKMALWERTBILD_VORHANDEN;
                 }
                 // baue URL
-                $attributeValueURL = $this->naviFilter->getURL(
+                $attributeValueURL = $this->productFilter->getURL(
                     $additionalFilter->init($filterValue->kMerkmalWert)
                 );
                 // hack for #4815

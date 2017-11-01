@@ -44,11 +44,11 @@ class FilterItemPriceRange extends AbstractFilter
     /**
      * FilterItemPriceRange constructor.
      *
-     * @param Navigationsfilter $naviFilter
+     * @param ProductFilter $productFilter
      */
-    public function __construct($naviFilter)
+    public function __construct($productFilter)
     {
-        parent::__construct($naviFilter);
+        parent::__construct($productFilter);
         $this->isCustom    = false;
         $this->urlParam    = 'pf';
         $this->setVisibility($this->getConfig()['navigationsfilter']['preisspannenfilter_benutzen'])
@@ -323,8 +323,8 @@ class FilterItemPriceRange extends AbstractFilter
             return $options;
         }
         $currency = Session::Currency();
-        $order    = $this->naviFilter->getOrder();
-        $state    = $this->naviFilter->getCurrentStateData();
+        $order    = $this->productFilter->getOrder();
+        $state    = $this->productFilter->getCurrentStateData();
 
         $state->joins[] = (new FilterJoin())
             ->setType('LEFT JOIN')
@@ -419,7 +419,7 @@ class FilterItemPriceRange extends AbstractFilter
                 $state->joins .
                 ' WHERE tartikelsichtbarkeit.kArtikel IS NULL
                     AND tartikel.kVaterArtikel = 0 ' .
-                    $this->naviFilter->getStorageFilterSQL() .
+                    $this->productFilter->getStorageFilterSQL() .
                     $state->conditions .
                 ' GROUP BY tartikel.kArtikel' .
                 $state->having .
@@ -448,7 +448,7 @@ class FilterItemPriceRange extends AbstractFilter
                         $state->joins .
                         ' WHERE tartikelsichtbarkeit.kArtikel IS NULL
                             AND tartikel.kVaterArtikel = 0' .
-                            $this->naviFilter->getStorageFilterSQL() .
+                            $this->productFilter->getStorageFilterSQL() .
                             $state->conditions .
                         ' GROUP BY tartikel.kArtikel' .
                         $state->having .
@@ -467,7 +467,7 @@ class FilterItemPriceRange extends AbstractFilter
                 $nPreisMax        = $oPreis->fMaxPreis;
                 $nPreisMin        = $oPreis->fMinPreis;
                 $nStep            = $oPreis->fStep;
-                $additionalFilter = new self($this->naviFilter);
+                $additionalFilter = new self($this->productFilter);
                 foreach ($priceRanges as $i => $count) {
                     $fe       = new FilterExtra();
                     $fe->nVon = $nPreisMin + $i * $nStep;
@@ -493,7 +493,7 @@ class FilterItemPriceRange extends AbstractFilter
                        ->setValue($i)
                        ->setCount($count)
                        ->setSort(0)
-                       ->setURL($this->naviFilter->getURL($additionalFilter->init($fe->nVon . '_' . $fe->nBis)));
+                       ->setURL($this->productFilter->getURL($additionalFilter->init($fe->nVon . '_' . $fe->nBis)));
                     $fe->nAnzahlArtikel = $fe->getCount();
 
                     $options[] = $fe;
@@ -534,7 +534,7 @@ class FilterItemPriceRange extends AbstractFilter
                                 FROM tartikel ' . implode("\n", $state->joins) . '
                                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
                                     AND tartikel.kVaterArtikel = 0
-                                    ' . $this->naviFilter->getStorageFilterSQL() . '
+                                    ' . $this->productFilter->getStorageFilterSQL() . '
                                     ' . $state->conditions . '
                                 GROUP BY tartikel.kArtikel
                                 ' . implode("\n", $state->having) . '
@@ -552,7 +552,7 @@ class FilterItemPriceRange extends AbstractFilter
                         $priceRanges[] = $priceRangeCounts['anz' . $i] - $sub;
                     }
                 }
-                $additionalFilter = new self($this->naviFilter);
+                $additionalFilter = new self($this->productFilter);
                 foreach ($oPreisspannenfilter_arr as $i => $oPreisspannenfilter) {
                     $fe                 = new FilterExtra();
                     $fe->nVon           = $oPreisspannenfilter->nVon;
@@ -573,7 +573,7 @@ class FilterItemPriceRange extends AbstractFilter
                                     ->setValue($i)
                                     ->setCount($fe->nAnzahlArtikel)
                                     ->setSort(0)
-                                    ->setURL($this->naviFilter->getURL(
+                                    ->setURL($this->productFilter->getURL(
                                         $additionalFilter->init($fe->nVon . '_' . $fe->nBis)
                                     ));
                 }

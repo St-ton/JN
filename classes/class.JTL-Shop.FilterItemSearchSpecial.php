@@ -19,11 +19,11 @@ class FilterItemSearchSpecial extends AbstractFilter
     /**
      * FilterItemSearchSpecial constructor.
      *
-     * @param Navigationsfilter $naviFilter
+     * @param ProductFilter $productFilter
      */
-    public function __construct($naviFilter)
+    public function __construct($productFilter)
     {
-        parent::__construct($naviFilter);
+        parent::__construct($productFilter);
         $this->isCustom = false;
         $this->urlParam = 'qf';
         $this->setFrontendName(Shop::Lang()->get('specificProducts'))
@@ -135,7 +135,7 @@ class FilterItemSearchSpecial extends AbstractFilter
             case SEARCHSPECIALS_SPECIALOFFERS:
                 $tasp = 'tartikelsonderpreis';
                 $tsp  = 'tsonderpreise';
-                if (!$this->naviFilter->hasPriceRangeFilter()) {
+                if (!$this->productFilter->hasPriceRangeFilter()) {
                     $tasp = 'tasp';
                     $tsp  = 'tsp';
                 }
@@ -167,7 +167,7 @@ class FilterItemSearchSpecial extends AbstractFilter
                 return 'now() < tartikel.dErscheinungsdatum';
 
             case SEARCHSPECIALS_TOPREVIEWS:
-                if (!$this->naviFilter->hasPriceRangeFilter()) {
+                if (!$this->productFilter->hasPriceRangeFilter()) {
                     $nMindestSterne = ((int)$conf['boxen']['boxen_topbewertet_minsterne'] > 0)
                         ? (int)$conf['boxen']['boxen_topbewertet_minsterne']
                         : 4;
@@ -198,7 +198,7 @@ class FilterItemSearchSpecial extends AbstractFilter
                     ->setOrigin(__CLASS__);
 
             case SEARCHSPECIALS_SPECIALOFFERS:
-                if (!$this->naviFilter->hasPriceRangeFilter()) {
+                if (!$this->productFilter->hasPriceRangeFilter()) {
                     return [
                         (new FilterJoin())
                             ->setType('JOIN')
@@ -223,7 +223,7 @@ class FilterItemSearchSpecial extends AbstractFilter
                 return [];
 
             case SEARCHSPECIALS_TOPREVIEWS:
-                return $this->naviFilter->hasRatingFilter()
+                return $this->productFilter->hasRatingFilter()
                     ? []
                     : (new FilterJoin())
                         ->setType('JOIN')
@@ -251,9 +251,9 @@ class FilterItemSearchSpecial extends AbstractFilter
         }
         $name             = '';
         $options          = [];
-        $additionalFilter = new self($this->naviFilter);
+        $additionalFilter = new self($this->productFilter);
         for ($i = 1; $i < 7; ++$i) {
-            $state = $this->naviFilter->getCurrentStateData();
+            $state = $this->productFilter->getCurrentStateData();
             switch ($i) {
                 case SEARCHSPECIALS_BESTSELLER:
                     $name    = Shop::Lang()->get('bestsellers');
@@ -314,7 +314,7 @@ class FilterItemSearchSpecial extends AbstractFilter
                     break;
                 case SEARCHSPECIALS_TOPREVIEWS:
                     $name = Shop::Lang()->get('topReviews');
-                    if (!$this->naviFilter->hasRatingFilter()) {
+                    if (!$this->productFilter->hasRatingFilter()) {
                         $state->joins[] = (new FilterJoin())
                             ->setComment('join from FilterItemSearchSpecial::getOptions() top reviews')
                             ->setType('JOIN')
@@ -326,7 +326,7 @@ class FilterItemSearchSpecial extends AbstractFilter
                         (int)$this->getConfig()['boxen']['boxen_topbewertet_minsterne'];
                     break;
             }
-            $qry    = $this->naviFilter->getBaseQuery(
+            $qry    = $this->productFilter->getBaseQuery(
                 ['tartikel.kArtikel'],
                 $state->joins,
                 $state->conditions,
@@ -342,7 +342,7 @@ class FilterItemSearchSpecial extends AbstractFilter
                 ->setValue($i)
                 ->setCount(count($qryRes))
                 ->setSort(0)
-                ->setURL($this->naviFilter->getURL(
+                ->setURL($this->productFilter->getURL(
                     $additionalFilter->init($i)
                 ));
             $fe->kKey = $i;

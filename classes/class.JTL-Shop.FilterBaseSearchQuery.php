@@ -32,11 +32,11 @@ class FilterBaseSearchQuery extends AbstractFilter
     /**
      * FilterBaseSearchQuery constructor.
      *
-     * @param Navigationsfilter $naviFilter
+     * @param ProductFilter $productFilter
      */
-    public function __construct($naviFilter)
+    public function __construct($productFilter)
     {
-        parent::__construct($naviFilter);
+        parent::__construct($productFilter);
         $this->isCustom    = false;
         $this->urlParam    = 'l';
         $this->urlParamSEO = null;
@@ -58,8 +58,8 @@ class FilterBaseSearchQuery extends AbstractFilter
      */
     public function getValue()
     {
-        if ($this->naviFilter->getRealSearch() !== null && !$this->naviFilter->hasSearchQuery()) {
-            return urlencode($this->naviFilter->getRealSearch()->cSuche);
+        if ($this->productFilter->getRealSearch() !== null && !$this->productFilter->hasSearchQuery()) {
+            return urlencode($this->productFilter->getRealSearch()->cSuche);
         }
 
         return $this->value;
@@ -70,7 +70,7 @@ class FilterBaseSearchQuery extends AbstractFilter
      */
     public function getUrlParam()
     {
-        if ($this->naviFilter->getRealSearch() !== null && !$this->naviFilter->hasSearchQuery()) {
+        if ($this->productFilter->getRealSearch() !== null && !$this->productFilter->hasSearchQuery()) {
             return 'suche';
         }
 
@@ -145,7 +145,7 @@ class FilterBaseSearchQuery extends AbstractFilter
     public function getSQLJoin()
     {
         $kSucheCache_arr = [];
-        $searchFilter    = $this->naviFilter->getBaseState();
+        $searchFilter    = $this->productFilter->getBaseState();
         if (is_array($searchFilter)) {
             $count = count($searchFilter);
             foreach ($searchFilter as $oSuchFilter) {
@@ -190,8 +190,8 @@ class FilterBaseSearchQuery extends AbstractFilter
                 ($limit = (int)$this->getConfig()['navigationsfilter']['suchtrefferfilter_anzahl']) > 0)
                 ? ' LIMIT ' . $limit
                 : '';
-            $order      = $this->naviFilter->getOrder();
-            $state      = $this->naviFilter->getCurrentStateData();
+            $order      = $this->productFilter->getOrder();
+            $state      = $this->productFilter->getCurrentStateData();
 
             $state->joins[] = $order->join;
             $state->joins[] = (new FilterJoin())
@@ -216,7 +216,7 @@ class FilterBaseSearchQuery extends AbstractFilter
 
             $state->conditions[] = 'tsuchanfrage.nAktiv = 1';
 
-            $query         = $this->naviFilter->getBaseQuery(
+            $query         = $this->productFilter->getBaseQuery(
                 ['tsuchanfrage.kSuchanfrage', 'tsuchanfrage.cSuche', 'tartikel.kArtikel'],
                 $state->joins,
                 $state->conditions,
@@ -233,11 +233,11 @@ class FilterBaseSearchQuery extends AbstractFilter
                 2
             );
             $kSuchanfrage_arr = [];
-            if ($this->naviFilter->hasSearch()) {
-                $kSuchanfrage_arr[] = (int)$this->naviFilter->getSearch()->getValue();
+            if ($this->productFilter->hasSearch()) {
+                $kSuchanfrage_arr[] = (int)$this->productFilter->getSearch()->getValue();
             }
-            if ($this->naviFilter->hasSearchFilter()) {
-                foreach ($this->naviFilter->getSearchFilter() as $oSuchFilter) {
+            if ($this->productFilter->hasSearchFilter()) {
+                foreach ($this->productFilter->getSearchFilter() as $oSuchFilter) {
                     if ($oSuchFilter->getValue() > 0) {
                         $kSuchanfrage_arr[] = (int)$oSuchFilter->getValue();
                     }
@@ -256,7 +256,7 @@ class FilterBaseSearchQuery extends AbstractFilter
                 $searchFilters = array_merge($searchFilters);
             }
             //baue URL
-            $additionalFilter = new self($this->naviFilter);
+            $additionalFilter = new self($this->productFilter);
             // Priorität berechnen
             $nPrioStep = 0;
             $nCount    = count($searchFilters);
@@ -271,7 +271,7 @@ class FilterBaseSearchQuery extends AbstractFilter
                     ->setName($searchFilter->cSuche)
                     ->setValue((int)$searchFilter->kSuchanfrage)
                     ->setCount($searchFilter->nAnzahl)
-                    ->setURL($this->naviFilter->getURL(
+                    ->setURL($this->productFilter->getURL(
                         $additionalFilter->init((int)$searchFilter->kSuchanfrage)
                     ))
                     ->setClass(rand(1, 10));

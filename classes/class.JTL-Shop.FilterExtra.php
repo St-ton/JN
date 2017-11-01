@@ -92,9 +92,9 @@ class FilterExtra extends AbstractFilter
 
     /**
      * FilterExtra constructor.
-     * @param null $naviFilter
+     * @param null $productFilter
      */
-    public function __construct($naviFilter = null)
+    public function __construct($productFilter = null)
     {
         $this->isInitialized = true;
     }

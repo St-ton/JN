@@ -14,11 +14,11 @@ class FilterItemTag extends FilterBaseTag
     /**
      * FilterItemTag constructor.
      *
-     * @param Navigationsfilter $naviFilter
+     * @param ProductFilter $productFilter
      */
-    public function __construct($naviFilter)
+    public function __construct($productFilter)
     {
-        parent::__construct($naviFilter);
+        parent::__construct($productFilter);
         $this->isCustom = false;
         $this->urlParam = 'tf';
     }

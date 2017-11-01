@@ -19,11 +19,11 @@ class FilterDummyState extends AbstractFilter
     /**
      * FilterDummyState constructor.
      *
-     * @param Navigationsfilter $naviFilter
+     * @param ProductFilter $productFilter
      */
-    public function __construct($naviFilter)
+    public function __construct($productFilter)
     {
-        parent::__construct($naviFilter);
+        parent::__construct($productFilter);
         $this->isCustom    = false;
         $this->urlParam    = 'ds';
         $this->urlParamSEO = null;

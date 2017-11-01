@@ -14,11 +14,11 @@ class FilterItemCategory extends FilterBaseCategory
     /**
      * FilterItemCategory constructor.
      *
-     * @param Navigationsfilter $naviFilter
+     * @param ProductFilter $productFilter
      */
-    public function __construct($naviFilter)
+    public function __construct($productFilter)
     {
-        parent::__construct($naviFilter);
+        parent::__construct($productFilter);
         $this->isCustom    = false;
         $this->urlParam    = 'kf';
         $this->urlParamSEO = SEP_KAT;
@@ -83,14 +83,14 @@ class FilterItemCategory extends FilterBaseCategory
         $options = [];
         if ($this->getConfig()['navigationsfilter']['allgemein_kategoriefilter_benutzen'] !== 'N') {
             $categoryFilterType = $this->getConfig()['navigationsfilter']['kategoriefilter_anzeigen_als'];
-            $order              = $this->naviFilter->getOrder();
-            $state              = $this->naviFilter->getCurrentStateData();
+            $order              = $this->productFilter->getOrder();
+            $state              = $this->productFilter->getCurrentStateData();
 
             $state->joins[] = $order->join;
             // Kategoriefilter anzeige
-            if ($categoryFilterType === 'HF' && (!$this->naviFilter->hasCategory())) {
+            if ($categoryFilterType === 'HF' && (!$this->productFilter->hasCategory())) {
                 //@todo: $this instead of $naviFilter->KategorieFilter?
-                $kKatFilter = $this->naviFilter->hasCategoryFilter()
+                $kKatFilter = $this->productFilter->hasCategoryFilter()
                     ? ''
                     : ' AND tkategorieartikelgesamt.kOberKategorie = 0';
 
@@ -116,7 +116,7 @@ class FilterItemCategory extends FilterBaseCategory
                     ->setOrigin(__CLASS__);
             } else {
                 // @todo: this instead of $naviFilter->Kategorie?
-                if (!$this->naviFilter->hasCategory()) {
+                if (!$this->productFilter->hasCategory()) {
                     $state->joins[] = (new FilterJoin())
                         ->setComment('join3 from FilterItemCategory::getOptions()')
                         ->setType('JOIN')
@@ -164,7 +164,7 @@ class FilterItemCategory extends FilterBaseCategory
                 $select[] = 'tkategorie.cName';
             }
 
-            $query            = $this->naviFilter->getBaseQuery(
+            $query            = $this->productFilter->getBaseQuery(
                 $select,
                 $state->joins,
                 $state->conditions,
@@ -184,7 +184,7 @@ class FilterItemCategory extends FilterBaseCategory
                         ORDER BY ssMerkmal.nSort, ssMerkmal.cName"
                     , 2
             );
-            $additionalFilter = new self($this->naviFilter);
+            $additionalFilter = new self($this->productFilter);
             foreach ($categories as $category) {
                 // Anzeigen als Kategoriepfad
                 if ($categoryFilterType === 'KP') {
@@ -202,7 +202,7 @@ class FilterItemCategory extends FilterBaseCategory
                     ->setValue((int)$category->kKategorie)
                     ->setCount($category->nAnzahl)
                     ->setSort($category->nSort)
-                    ->setURL($this->naviFilter->getURL(
+                    ->setURL($this->productFilter->getURL(
                         $additionalFilter->init((int)$category->kKategorie)
                     ));
                 $options[]      = $fe;

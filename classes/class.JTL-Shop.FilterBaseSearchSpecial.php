@@ -21,11 +21,11 @@ class FilterBaseSearchSpecial extends AbstractFilter
     /**
      * FilterBaseSearchSpecial constructor.
      *
-     * @param Navigationsfilter $naviFilter
+     * @param ProductFilter $productFilter
      */
-    public function __construct($naviFilter)
+    public function __construct($productFilter)
     {
-        parent::__construct($naviFilter);
+        parent::__construct($productFilter);
         $this->isCustom    = false;
         $this->urlParam    = 'q';
         $this->urlParamSEO = null;
@@ -125,7 +125,7 @@ class FilterBaseSearchSpecial extends AbstractFilter
             case SEARCHSPECIALS_SPECIALOFFERS:
                 $tasp = 'tartikelsonderpreis';
                 $tsp  = 'tsonderpreise';
-                if (!$this->naviFilter->hasPriceRangeFilter()) {
+                if (!$this->productFilter->hasPriceRangeFilter()) {
                     $tasp = 'tasp';
                     $tsp  = 'tsp';
                 }
@@ -153,7 +153,7 @@ class FilterBaseSearchSpecial extends AbstractFilter
                 return 'now() < tartikel.dErscheinungsdatum';
 
             case SEARCHSPECIALS_TOPREVIEWS:
-                if (!$this->naviFilter->hasRatingFilter()) {
+                if (!$this->productFilter->hasRatingFilter()) {
                     $nMindestSterne = ($min = $this->getConfig()['boxen']['boxen_topbewertet_minsterne']) > 0
                         ? (int)$min
                         : 4;
@@ -184,7 +184,7 @@ class FilterBaseSearchSpecial extends AbstractFilter
                     ->setOrigin(__CLASS__);
 
             case SEARCHSPECIALS_SPECIALOFFERS:
-                return $this->naviFilter->hasPriceRangeFilter()
+                return $this->productFilter->hasPriceRangeFilter()
                     ? []
                     : (new FilterJoin())
                         ->setType('JOIN')
@@ -200,7 +200,7 @@ class FilterBaseSearchSpecial extends AbstractFilter
                 return [];
 
             case SEARCHSPECIALS_TOPREVIEWS:
-                return $this->naviFilter->hasRatingFilter()
+                return $this->productFilter->hasRatingFilter()
                     ? []
                     : (new FilterJoin())
                         ->setType('JOIN')

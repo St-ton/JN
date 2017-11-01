@@ -48,7 +48,7 @@ if (isset($_POST['a']) &&
     Shop::$kArtikel = (int)$_POST['aBundle'];
 }
 $AktuellerArtikel = (new Artikel())->fuelleArtikel(Shop::$kArtikel, Artikel::getDetailOptions());
-if ($AktuellerArtikel->nIstVater === 1) {
+if ($AktuellerArtikel !== null && $AktuellerArtikel->nIstVater === 1) {
     $_SESSION['oVarkombiAuswahl']                               = new stdClass();
     $_SESSION['oVarkombiAuswahl']->kGesetzteEigeschaftWert_arr  = [];
     $_SESSION['oVarkombiAuswahl']->nVariationOhneFreifeldAnzahl = $AktuellerArtikel->nVariationOhneFreifeldAnzahl;
@@ -75,7 +75,7 @@ if (isset($AktuellerArtikel->FunktionsAttribute['warenkorbmatrixanzeigeformat'])
         $AktuellerArtikel->FunktionsAttribute['warenkorbmatrixanzeigeformat'];
 }
 //404
-if (!$AktuellerArtikel->kArtikel) {
+if (empty($AktuellerArtikel->kArtikel)) {
     //#6317 - send 301 redirect when filtered
     if (((int)$Einstellungen['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER) ||
         ((int)$Einstellungen['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL)

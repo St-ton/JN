@@ -1,25 +1,14 @@
 
-<label>Text</label>
 <form id="portlet-settings-form">
-    <textarea name="text" id="settings-text" class="form-control">{$settings.text}</textarea>
+    <textarea name="text" id="settingsText" class="form-control">{$settings.text|escape}</textarea>
 </form>
 
 <script>
-    ClassicEditor
-        .create( document.querySelector( '#settings-text' ),
-            {
-                toolbar: ['bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote'],
-                viewportTopOffset: 30
-            }
-        )
-        .then(function(editor) {
-            var ckEditor = editor;
+    CKEDITOR.replace('settingsText', {
+        baseFloatZIndex: 9000
+    });
 
-            jleHost.settingsSaveCallback = function() {
-                $('#settings-text').val(ckEditor.getData());
-            };
-        })
-        .catch(function(error) {
-            console.error( error );
-        });
+    jleHost.settingsSaveCallback = function() {
+        $('#settingsText').val(CKEDITOR.instances.settingsText.getData());
+    };
 </script>

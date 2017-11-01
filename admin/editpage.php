@@ -23,6 +23,7 @@ $oSeo     = Shop::DB()->select('tseo', ['cKey', 'kKey', 'kSprache'], [$cKey, $kK
 $oPortlet_arr = getPortlets();
 
 $smarty
+    ->assign('templateUrl', Shop::getURL() . '/' . PFAD_ADMIN . $currentTemplateDir)
     ->assign('oSeo', $oSeo)
     ->assign('oPortlet_arr', $oPortlet_arr)
     ->assign('cEditorAction', $cAction)

@@ -11,7 +11,7 @@
                 {*<div id="editForm">
                     <button id="btn-start-cms" class="btn btn-primary">Go Edit</button>
                 </div>*}
-                <form id="start-editor" action="admin/editpage.php" method="post" class="form-group" data-ed-sprache="{$smarty.session.kSprache}"
+                <form id="start-editor" action="admin/editpage.php" method="get" class="form-group" data-ed-sprache="{$smarty.session.kSprache}"
                       data-ed-cKey="{$oLiveEditParams->cKey}" data-ed-kKey="{$oLiveEditParams->kKey}">
                     <input type="hidden" name="cKey" value="{$oLiveEditParams->cKey}">
                     <input type="hidden" name="kKey" value="{$oLiveEditParams->kKey}">

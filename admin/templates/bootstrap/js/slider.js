@@ -281,7 +281,7 @@ function select_image( key ) {
     var id = key,
         shop_url = $('.shop_url').html(),
         kcfinder_path = $('.kcfinder_path').html();
-    
+
     window.KCFinder = {
         callBack: function(url) {
             $('#img'+id).attr('src', url);

@@ -710,7 +710,7 @@ class LinkHelper
                 && $productFilter->hasAttributeValue()
                 && $productFilter->getAttributeValue()->getValue() > 0
                 && isset($shopsetting['global']['global_merkmalwert_url_indexierung'])
-                && $productFilter['global']['global_merkmalwert_url_indexierung'] === 'N';
+                && $shopsetting['global']['global_merkmalwert_url_indexierung'] === 'N';
         }
 
         return $bNoIndex;

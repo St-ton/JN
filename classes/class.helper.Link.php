@@ -607,7 +607,7 @@ class LinkHelper
      */
     public function getSpecialPages()
     {
-        $cISO    = Shop::$cISO;
+        $cISO    = Shop::getLanguage(true);
         $cacheID = 'special_pages_b_' . $cISO;
         if (($oSpeziallinks = Shop::Cache()->get($cacheID)) !== false) {
             return $oSpeziallinks;

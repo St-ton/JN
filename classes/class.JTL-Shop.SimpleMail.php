@@ -104,14 +104,17 @@ class SimpleMail
     private $cErrorLog = [];
 
     /**
+     * @var bool
+     */
+    private $valid = true;
+
+    /**
      *
      * @param bool  $bShopMail
      * @param array $cMailEinstellungen_arr
      */
     public function __construct($bShopMail = true, $cMailEinstellungen_arr = [])
     {
-        $bValid = true;
-
         if ($bShopMail === true) {
             $Einstellungen = Shop::getSettings([CONF_EMAILS]);
 
@@ -127,7 +130,7 @@ class SimpleMail
             $this->cVerfasserMail = $Einstellungen['emails']['email_master_absender'];
         } elseif (!empty($cMailEinstellungen_arr)) {
             if (isset($cMailEinstellungen_arr['cMethod']) && !empty($cMailEinstellungen_arr['cMethod'])) {
-                $bValid = $this->setMethod($cMailEinstellungen_arr['cMethod']);
+                $this->valid = $this->setMethod($cMailEinstellungen_arr['cMethod']);
             }
 
             $this->cSendMailPfad = $cMailEinstellungen_arr['cSendMailPfad'];
@@ -142,17 +145,11 @@ class SimpleMail
             }
 
             if (isset($cMailEinstellungen_arr['cVerfasserMail']) && !empty($cMailEinstellungen_arr['cVerfasserMail'])) {
-                $bValid = $this->setVerfasserMail($cMailEinstellungen_arr['cVerfasserMail']);
+                $this->valid = $this->setVerfasserMail($cMailEinstellungen_arr['cVerfasserMail']);
             }
         } else {
-            $bValid = false;
+            $this->valid = false;
         }
-
-        if ($bValid === false) {
-            return $bValid;
-        }
-
-        return $this;
     }
 
     /**
@@ -189,18 +186,18 @@ class SimpleMail
      */
     public function validate()
     {
+        if (!$this->valid) {
+            $this->setErrorLog('cConfig', 'Konfiguration fehlerhaft');
+        }
         if (empty($this->cVerfasserMail) || empty($this->cVerfasserName)) {
             $this->setErrorLog('cVerfasserMail', 'Verfasser nicht gesetzt!');
         }
-
         if (empty($this->cBodyHTML) && empty($this->cBodyText)) {
             $this->setErrorLog('cBody', 'Inhalt der E-Mail nicht gesetzt!');
         }
-
         if (empty($this->cBetreff)) {
             $this->setErrorLog('cBetreff', 'Betreff nicht gesetzt!');
         }
-
         if (empty($this->cMethod)) {
             $this->setErrorLog('cMethod', 'Versandmethode nicht gesetzt!');
         } else {
@@ -222,11 +219,8 @@ class SimpleMail
         }
 
         $cErrorLog = $this->getErrorLog();
-        if (!empty($cErrorLog)) {
-            return false;
-        }
 
-        return true;
+        return empty($cErrorLog);
     }
 
     /**
@@ -243,7 +237,6 @@ class SimpleMail
         if ($this->validate() === true) {
             $oPHPMailer            = new PHPMailer();
             $oPHPMailer->Timeout   = SOCKET_TIMEOUT;
-            $oPHPMailer->PluginDir = PFAD_ROOT . PFAD_PHPMAILER;
             $oPHPMailer->From      = $this->cVerfasserMail;
             $oPHPMailer->Sender    = $this->cVerfasserMail;
             $oPHPMailer->FromName  = $this->cVerfasserName;
@@ -253,19 +246,16 @@ class SimpleMail
                     $oPHPMailer->addAddress($cEmpfaenger['cMail'], $cEmpfaenger['cName']);
                 }
             }
-
             if (!empty($cCC_arr)) {
                 foreach ($cCC_arr as $cCC) {
                     $oPHPMailer->addCC($cCC['cMail'], $cCC['cName']);
                 }
             }
-
             if (!empty($cBCC_arr)) {
                 foreach ($cBCC_arr as $cBCC) {
                     $oPHPMailer->addBCC($cBCC['cMail'], $cBCC['cName']);
                 }
             }
-
             if (!empty($cReply_arr)) {
                 foreach ($cReply_arr as $cReply) {
                     $oPHPMailer->addReplyTo($cReply['cMail'], $cReply['cName']);
@@ -463,7 +453,7 @@ class SimpleMail
      */
     public function setMethod($cMethod)
     {
-        if ($cMethod == 'QMail' || $cMethod == 'smtp' || $cMethod == 'PHP Mail()' || $cMethod == 'sendmail') {
+        if ($cMethod === 'QMail' || $cMethod === 'smtp' || $cMethod === 'PHP Mail()' || $cMethod === 'sendmail') {
             $this->cMethod = $cMethod;
 
             return true;

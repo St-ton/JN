@@ -37,7 +37,7 @@ class HerstellerHelper
         $lagerfilter   = gibLagerfilter();
         $this->cacheID = 'manuf_' . Shop::Cache()->getBaseID() . (($lagerfilter !== '') ? md5($lagerfilter) : '');
         self::$langID  = Shop::getLanguage();
-        if (!self::$langID > 0) {
+        if (self::$langID <= 0) {
             if (Shop::getLanguage() > 0) {
                 self::$langID = Shop::getLanguage();
             } else {

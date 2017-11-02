@@ -3010,8 +3010,8 @@ class Artikel
                     } else {
                         $cSQL .= $oMerkmal->getValue();
                     }
-                    if (isset($oMerkmal->kMerkmal) && !in_array($oMerkmal->kMerkmal, $kMerkmal_arr, true)) {
-                        $kMerkmal_arr[] = (int)$oMerkmal->kMerkmal;
+                    if (!in_array($oMerkmal->getAttributeID(), $kMerkmal_arr, true)) {
+                        $kMerkmal_arr[] = $oMerkmal->getAttributeID();
                     }
                 }
                 $cSQL .= ')';

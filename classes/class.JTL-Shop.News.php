@@ -414,7 +414,7 @@ class News extends MainModel
         $kKey = (int)$kKey;
         if ($kKey > 0) {
             $kSprache = Shop::getLanguage();
-            if (!$kSprache > 0) {
+            if ($kSprache <= 0) {
                 $oSprache = gibStandardsprache();
                 $kSprache = (int)$oSprache->kSprache;
             }
@@ -478,7 +478,7 @@ class News extends MainModel
             $kKundengruppe = Kundengruppe::getDefaultGroupID();
         }
         $kSprache = Shop::getLanguage();
-        if (!$kSprache > 0) {
+        if ($kSprache <= 0) {
             $oSprache = gibStandardsprache();
             $kSprache = (int)$oSprache->kSprache;
         }

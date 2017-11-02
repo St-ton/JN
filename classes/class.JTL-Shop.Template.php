@@ -65,7 +65,7 @@ class Template
     public $url;
 
     /**
-     * @var int
+     * @var string
      */
     public $version;
 
@@ -110,7 +110,7 @@ class Template
             $this->author      = $_SESSION['template']->author;
             $this->url         = $_SESSION['template']->url;
             $this->version     = $_SESSION['template']->version;
-            $this->shopVersion = $_SESSION['template']->shopversion;
+            $this->shopVersion = (int)$_SESSION['template']->shopversion;
             $this->preview     = $_SESSION['template']->preview;
 
             return $this;
@@ -127,7 +127,7 @@ class Template
             $this->author      = $oTemplate->author;
             $this->url         = $oTemplate->url;
             $this->version     = $oTemplate->version;
-            $this->shopVersion = $oTemplate->shopversion;
+            $this->shopVersion = (int)$oTemplate->shopversion;
             $this->preview     = $oTemplate->preview;
 
             return $this;
@@ -145,7 +145,7 @@ class Template
             $this->author      = $oTemplate->author;
             $this->url         = $oTemplate->url;
             $this->version     = $oTemplate->version;
-            $this->shopVersion = $oTemplate->shopversion;
+            $this->shopVersion = (int)$oTemplate->shopversion;
             $this->preview     = $oTemplate->preview;
 
             $tplObject              = new stdClass();
@@ -156,7 +156,7 @@ class Template
             $tplObject->version     = $this->version;
             $tplObject->author      = $this->author;
             $tplObject->url         = $this->url;
-            $tplObject->shopversion = $this->shopVersion;
+            $tplObject->shopversion = (int)$this->shopVersion;
             $tplObject->preview     = $this->preview;
             $_SESSION['template']   = $tplObject;
             $_SESSION['cTemplate']  = self::$cTemplate;
@@ -187,9 +187,7 @@ class Template
      */
     public function leseXML($dir = null)
     {
-        $dir = $dir !== null ? $dir : self::$cTemplate;
-
-        return self::$helper->getXML($dir);
+        return self::$helper->getXML($dir !== null ? $dir : self::$cTemplate);
     }
 
     /**

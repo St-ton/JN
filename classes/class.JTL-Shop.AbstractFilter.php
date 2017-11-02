@@ -67,7 +67,7 @@ abstract class AbstractFilter implements IFilter
     /**
      * @var string
      */
-    public $cName;
+    private $name;
 
     /**
      * @var array
@@ -383,7 +383,18 @@ abstract class AbstractFilter implements IFilter
      */
     public function getName()
     {
-        return $this->cName;
+        return $this->name;
+    }
+
+    /**
+     * @param string $name
+     * @return $this
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+
+        return $this;
     }
 
     /**

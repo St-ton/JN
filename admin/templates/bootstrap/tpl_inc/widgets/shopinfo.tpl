@@ -6,7 +6,7 @@
               {if $oSubscription->nDayDiff < 0}Subscription ist abgelaufen!{else}Subscription l&auml;uft{if $oSubscription->nDayDiff == 0} heute{else} in{if $oSubscription->nDayDiff > 1} {$oSubscription->nDayDiff} Tagen{else} einem Tag{/if}{/if} ab!{/if}
             </p>
             <p>
-              <a href="{$oSubscription->cUpdate}" class="btn btn-danger" target="_blank">Jetzt verl&auml;ngern</a>
+              <a href="{$oSubscription->cUpdate}" class="btn btn-danger" target="_blank" rel="noopener">Jetzt verl&auml;ngern</a>
             </p>
         </div>
     {/if}

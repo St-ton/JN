@@ -6,7 +6,7 @@
                 {foreach from=$oMarketplaceGroup->oExtension_arr item=oExtension}
                     <li {if $oExtension->bHighlight}class="highlight"{/if}>
                         <img src="{$oExtension->cLogoPfad}" />
-                        <p><a href="{$oExtension->cUrl}" target="_blank">
+                        <p><a href="{$oExtension->cUrl}" target="_blank" rel="noopener">
                             {$oExtension->cName|truncate:'50':'...'}
                             {if $oExtension->cKurzBeschreibung|strlen > 0}
                                 {$oExtension->cKurzBeschreibung|truncate:'50':'...'}

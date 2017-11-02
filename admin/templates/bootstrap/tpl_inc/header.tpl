@@ -203,11 +203,11 @@
                             </a>
                             <ul class="dropdown-menu" role="main">
                                 <li>
-                                    <a href="https://guide.jtl-software.de/jtl/JTL-Shop:Installation:Erste_Schritte" target="_blank">Erste Schritte</a>
-                                    <a href="https://guide.jtl-software.de/jtl/JTL-Shop" target="_blank">JTL Guide</a>
-                                    <a href="https://forum.jtl-software.de" target="_blank">JTL Forum</a>
-                                    <a href="https://www.jtl-software.de/Training" target="_blank">Training</a>
-                                    <a href="https://www.jtl-software.de/Servicepartner" target="_blank">Servicepartner</a>
+                                    <a href="https://guide.jtl-software.de/jtl/JTL-Shop:Installation:Erste_Schritte" target="_blank" rel="noopener">Erste Schritte</a>
+                                    <a href="https://guide.jtl-software.de/jtl/JTL-Shop" target="_blank" rel="noopener">JTL Guide</a>
+                                    <a href="https://forum.jtl-software.de" target="_blank" rel="noopener">JTL Forum</a>
+                                    <a href="https://www.jtl-software.de/Training" target="_blank" rel="noopener">Training</a>
+                                    <a href="https://www.jtl-software.de/Servicepartner" target="_blank" rel="noopener">Servicepartner</a>
                                 </li>
                             </ul>
                         </li>

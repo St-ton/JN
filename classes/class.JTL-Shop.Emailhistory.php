@@ -63,7 +63,7 @@ class Emailhistory
                 foreach ($cMember_arr as $cMember) {
                     $cMethod = 'set' . substr($cMember, 1);
                     if (method_exists($this, $cMethod)) {
-                        call_user_func([&$this, $cMethod], $oObj->$cMember);
+                        $this->$cMethod($oObj->$cMember);
                     }
                 }
             }
@@ -136,9 +136,8 @@ class Emailhistory
             $cQuery .= " WHERE kEmailhistory = {$this->getEmailhistory()}";
 
             return Shop::DB()->query($cQuery, 3);
-        } else {
-            throw new Exception('ERROR: Object has no members!');
         }
+        throw new Exception('ERROR: Object has no members!');
     }
 
     /**
@@ -206,7 +205,7 @@ class Emailhistory
     {
         // log that event!
         Jtllog::writeLog(utf8_decode('eMail-History gelöscht'), JTLLOG_LEVEL_NOTICE, true, 'Emailhistory');
-        return !(Shop::DB()->query('TRUNCATE TABLE temailhistory', 3));
+        return !Shop::DB()->query('TRUNCATE TABLE temailhistory', 3);
     }
 
     /**

@@ -76,7 +76,7 @@ class SimpleCSS
             }
         }
 
-        return (boolean) (count($this->cCSS_arr) > 0);
+        return count($this->cCSS_arr) > 0;
     }
 
     /**

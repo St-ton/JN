@@ -55,14 +55,13 @@ class AdminAccount
                 $timeStamp    = $timestampAndHash[0];
                 $originalHash = $timestampAndHash[1];
                 //check if the link is not expired (=24 hours valid)
-                $createdAt = new DateTime();
-                $createdAt->setTimestamp((int)$timeStamp);
-                $now  = new DateTime();
-                $diff = $now->diff($createdAt);
-                $secs = ($diff->format('%a') * (60 * 60 * 24)); //total days
-                $secs += (int)$diff->format('%h') * (60 * 60); //hours
-                $secs += (int)$diff->format('%i') * 60; //minutes
-                $secs += (int)$diff->format('%s'); //seconds
+                $createdAt = (new DateTime())->setTimestamp((int)$timeStamp);
+                $now       = new DateTime();
+                $diff      = $now->diff($createdAt);
+                $secs      = ($diff->format('%a') * (60 * 60 * 24)); //total days
+                $secs      += (int)$diff->format('%h') * (60 * 60); //hours
+                $secs      += (int)$diff->format('%i') * 60; //minutes
+                $secs      += (int)$diff->format('%s'); //seconds
                 if ($secs > (60 * 60 * 24)) {
                     return false;
                 }
@@ -277,7 +276,7 @@ class AdminAccount
             $this->redirectOnFailure();
         }
         // grant full access to admin
-        if ($this->account() !== false && $this->account()->oGroup->kAdminlogingruppe == ADMINGROUP) {
+        if ($this->account() !== false && (int)$this->account()->oGroup->kAdminlogingruppe === ADMINGROUP) {
             return true;
         }
         $bAccess = (isset($_SESSION['AdminAccount']->oGroup) && is_object($_SESSION['AdminAccount']->oGroup)
@@ -472,9 +471,9 @@ class AdminAccount
     private function checkAndUpdateHash($password)
     {
         //only update hash if the db update to 4.00+ was already executed
-        if (isset($_SESSION['AdminAccount']->cPass, $_SESSION['AdminAccount']->cLogin) &&
-            password_needs_rehash($_SESSION['AdminAccount']->cPass, PASSWORD_DEFAULT) &&
-            version_compare(Shop::getShopVersion(), 400, '>=') === true
+        if (isset($_SESSION['AdminAccount']->cPass, $_SESSION['AdminAccount']->cLogin)
+            && password_needs_rehash($_SESSION['AdminAccount']->cPass, PASSWORD_DEFAULT)
+            && version_compare(Shop::getShopVersion(), 400, '>=') === true
         ) {
             $_upd        = new stdClass();
             $_upd->cPass = password_hash($password, PASSWORD_DEFAULT);

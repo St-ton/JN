@@ -1601,12 +1601,13 @@ class Boxen
 
         $kBox = Shop::DB()->insert('tboxen', $oBox);
         if ($kBox) {
+            $cnt                = count($validPageTypes);
             $oBoxSichtbar       = new stdClass();
             $oBoxSichtbar->kBox = $kBox;
-            for ($i = 0; $i < count($validPageTypes); $i++) {
+            for ($i = 0; $i < $cnt; $i++) {
                 $oBoxSichtbar->nSort  = $this->letzteSortierID($nSeite, $ePosition, $kContainer);
                 $oBoxSichtbar->kSeite = $i;
-                $oBoxSichtbar->bAktiv = ($nSeite == $i || $nSeite == 0) ? 1 : 0;
+                $oBoxSichtbar->bAktiv = ($nSeite === $i || $nSeite === 0) ? 1 : 0;
                 Shop::DB()->insert('tboxensichtbar', $oBoxSichtbar);
             }
 

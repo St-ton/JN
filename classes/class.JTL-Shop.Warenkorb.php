@@ -1588,10 +1588,6 @@ class Warenkorb
      */
     public function hasDigitalProducts()
     {
-        if (class_exists('Download') && Download::hasDownloads($this)) {
-            return true;
-        }
-
-        return false;
+        return class_exists('Download') && Download::hasDownloads($this);
     }
 }

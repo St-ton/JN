@@ -434,7 +434,7 @@ class Kundengruppe
     {
         trigger_error('Kundengruppe::getStandard() is deprecated - use getDefault() instead', E_USER_DEPRECATED);
 
-        return $this->getDefault();
+        return $this->getIsDefault();
     }
 
     /**

@@ -482,9 +482,9 @@ class Metadata
         }
         // Tagfilter
         if ($this->navigationsfilter->hasTagFilter()
-            && $this->navigationsfilter->getTagFilter()[0]->cName !== null
+            && $this->navigationsfilter->getTagFilter()[0]->getName() !== null
         ) {
-            $cMetaTitle .= ' ' . $this->navigationsfilter->getTagFilter()[0]->cName;
+            $cMetaTitle .= ' ' . $this->navigationsfilter->getTagFilter()[0]->getName();
         }
         // Suchbegrifffilter
         if ($this->navigationsfilter->hasSearchFilter()) {
@@ -528,8 +528,8 @@ class Metadata
         // MerkmalWertfilter
         if ($this->navigationsfilter->hasAttributeFilter()) {
             foreach ($this->navigationsfilter->getAttributeFilter() as $oMerkmalFilter) {
-                if ($oMerkmalFilter->cName !== null) {
-                    $cMetaTitle .= ' ' . $oMerkmalFilter->cName;
+                if ($oMerkmalFilter->getName() !== null) {
+                    $cMetaTitle .= ' ' . $oMerkmalFilter->getName();
                 }
             }
         }
@@ -1043,7 +1043,7 @@ class Metadata
             $_SESSION['Usersortierung'] = (int)$this->conf['artikeluebersicht']['artikeluebersicht_artikelsortierung'];
         }
         // Eine Suche wurde ausgeführt und die Suche wird auf die Suchtreffersuche eingestellt
-        if ($this->navigationsfilter->getSearch()->kSuchCache > 0 && !isset($_SESSION['nUsersortierungWahl'])) {
+        if (!isset($_SESSION['nUsersortierungWahl']) && $this->navigationsfilter->getSearch()->kSuchCache > 0) {
             // nur bei initialsuche Sortierung zurücksetzen
             $_SESSION['UsersortierungVorSuche'] = $_SESSION['Usersortierung'];
             $_SESSION['Usersortierung']         = SEARCH_SORT_STANDARD;

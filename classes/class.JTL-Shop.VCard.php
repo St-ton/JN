@@ -322,9 +322,9 @@ class VCard
         }
 
         // prüfe auf zusätzliche Doppelpunk getrennte parameter (z.B. Apples "X-ABCROP-RECTANGLE" für photos)
-        if (isset($params['encoding']) &&
-            in_array($key, self::$elementsFile, true) &&
-            in_array($params['encoding'], ['b', 'base64'], true)
+        if (isset($params['encoding'])
+            && in_array($key, self::$elementsFile, true)
+            && in_array($params['encoding'], ['b', 'base64'], true)
         ) {
             // wenn ein Doppelpunkt vorhanden ist, dann gibt es zusätzliche Address Book paremeter,
             // da ein ":" kein gültiges Zeichen in Base64 ist
@@ -439,14 +439,16 @@ class VCard
         if (isset($propData[$property])) {
             if ($property === 'agent') {
                 return $propData[$property];
-            } elseif ($property === 'bday') {
+            }
+            if ($property === 'bday') {
                 $bDay = is_array($propData[$property]) && count($propData[$property]) > 0 ? $propData[$property][0] : $propData[$property];
                 if (is_numeric($bDay)) {
                     return DateTime::createFromFormat('YmdHis', (string)$bDay . '000000');
                 }
 
                 return DateTime::createFromFormat('Y-m-d H:i:s', $bDay . '00:00:00');
-            } elseif (in_array($property, self::$elementsFile)) {
+            }
+            if (in_array($property, self::$elementsFile, true)) {
                 $result = $propData[$property];
 
                 foreach ($result as $key => $value) {
@@ -586,7 +588,7 @@ class VCard
         $Kunde = new stdClass();
 
         if (isset($this->GENDER)) {
-            $Kunde->cAnrede = $this->GENDER == 'F' ? 'w' : 'm';
+            $Kunde->cAnrede = $this->GENDER === 'F' ? 'w' : 'm';
         }
 
         if (isset($this->N)) {

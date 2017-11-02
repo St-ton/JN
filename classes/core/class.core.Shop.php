@@ -221,7 +221,7 @@ final class Shop
     /**
      * @var ProductFilter
      */
-    public static $NaviFilter;
+    public static $productFilter;
 
     /**
      * @var string
@@ -757,14 +757,14 @@ final class Shop
             header('Location: ' . LinkHelper::getInstance()->getStaticRoute('jtl.php') . '?li=1', true, 303);
             exit;
         }
-        self::$NaviFilter = new ProductFilter(self::Lang()->getLangArray(), self::$kSprache);
+        self::$productFilter = new ProductFilter(self::Lang()->getLangArray(), self::$kSprache);
 
         self::seoCheck();
         self::Event()->fire('shop.run');
 
-        self::$NaviFilter->initStates(self::getParameters());
+        self::$productFilter->initStates(self::getParameters());
 
-        return self::$NaviFilter;
+        return self::$productFilter;
     }
 
     /**
@@ -857,7 +857,7 @@ final class Shop
         // Fremdparameter
         $seo = extFremdeParameter($seo);
         if ($seo) {
-            foreach (self::$NaviFilter->getCustomFilters() as $customFilter) {
+            foreach (self::$productFilter->getCustomFilters() as $customFilter) {
                 $seoParam = $customFilter->getUrlParamSEO();
                 if (empty($seoParam)) {
                     continue;
@@ -1141,8 +1141,8 @@ final class Shop
     private static function updateLanguage($languageID)
     {
         $languageID = (int)$languageID;
-        if (self::$NaviFilter->getLanguageID() !== $languageID) {
-            self::$NaviFilter->setLanguageID($languageID);
+        if (self::$productFilter->getLanguageID() !== $languageID) {
+            self::$productFilter->setLanguageID($languageID);
         }
         $spr   = self::Lang()->getIsoFromLangID($languageID);
         $cLang = isset($spr->cISO) ? $spr->cISO : null;
@@ -1195,7 +1195,7 @@ final class Shop
                 || self::$kSuchspecial > 0
                 || self::$kSuchFilter > 0)
                 || (self::$cPreisspannenFilter !== null && self::$cPreisspannenFilter > 0))
-            && (self::$isSeoMainword || self::$NaviFilter->getFilterCount() === 0 || !self::$bSeo)
+            && (self::$isSeoMainword || self::$productFilter->getFilterCount() === 0 || !self::$bSeo)
         ) {
             self::$fileName      = 'filter.php';
             self::$AktuelleSeite = 'ARTIKEL';
@@ -1359,14 +1359,22 @@ final class Shop
      */
     public static function getProductFilter()
     {
-        return self::$NaviFilter;
+        return self::$productFilter;
     }
 
     /**
-     * @param null|ProductFilter $NaviFilter
+     * @param ProductFilter $productFilter
+     */
+    public static function setProductFilter(ProductFilter $productFilter)
+    {
+        self::$productFilter = $productFilter;
+    }
+
+    /**
+     * @param null|ProductFilter $productFilter
      * @deprecated since 4.07 - this is done in ProductFilter:validate()
      */
-    public static function checkNaviFilter($NaviFilter = null)
+    public static function checkNaviFilter($productFilter = null)
     {
     }
 

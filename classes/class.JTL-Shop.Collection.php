@@ -139,7 +139,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
 
         while (($segment = array_shift($key)) !== null) {
             if ($segment === '*') {
-                if ($target instanceof Collection) {
+                if ($target instanceof self) {
                     $target = $target->getItems();
                 } elseif (!is_array($target)) {
                     return $default instanceof Closure ? $default() : $default;

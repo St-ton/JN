@@ -32,6 +32,13 @@ class FilterSearch extends AbstractFilter
     public $Fehler;
 
     /**
+     * @var array
+     */
+    private static $mapping = [
+        'kSuchanfrage' => 'ValueCompat'
+    ];
+
+    /**
      * FilterSearch constructor.
      *
      * @param ProductFilter $productFilter
@@ -87,7 +94,7 @@ class FilterSearch extends AbstractFilter
             }
         }
         if (!empty($oSeo_obj->cSuche)) {
-            $this->cName = $oSeo_obj->cSuche;
+            $this->setName($oSeo_obj->cSuche);
         }
 
         return $this;

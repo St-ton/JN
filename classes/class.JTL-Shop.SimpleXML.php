@@ -215,7 +215,7 @@ class SimpleXML
                         }
                     }
 
-                    if (isset($array[$i]['attributes']) && $array[$i]['attributes'] && $array[$i]['level'] != $this->ignore_level) {
+                    if (!empty($array[$i]['attributes']) && $array[$i]['level'] != $this->ignore_level) {
                         $tags[] = '@attributes';
                         foreach ($array[$i]['attributes'] as $attrkey => $attr) {
                             $tags[] = $attrkey;
@@ -250,7 +250,7 @@ class SimpleXML
                     }
 
                     if (isset($array[$i]['value']) && ($array[$i]['value'] || !$this->skip_empty_values)) {
-                        if (isset($array[$i]['attributes']) && $array[$i]['attributes']) {
+                        if (!empty($array[$i]['attributes'])) {
                             $tags[] = '@content';
                             $this->array_insert(count($tags), $tags, $array[$i]['value'], "complete");
                             array_pop($tags);
@@ -259,7 +259,7 @@ class SimpleXML
                         }
                     }
 
-                    if (isset($array[$i]['attributes']) && $array[$i]['attributes']) {
+                    if (!empty($array[$i]['attributes'])) {
                         $tags[] = '@attributes';
                         foreach ($array[$i]['attributes'] as $attrkey => $attr) {
                             $tags[] = $attrkey;

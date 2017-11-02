@@ -391,12 +391,12 @@ class Arr
                     return $default instanceof Closure ? $default() : $default;
                 }
 
-                $result = Arr::pluck($target, $key);
+                $result = self::pluck($target, $key);
 
-                return in_array('*', $key) ? Arr::collapse($result) : $result;
+                return in_array('*', $key, true) ? self::collapse($result) : $result;
             }
 
-            if (Arr::accessible($target) && Arr::exists($target, $segment)) {
+            if (self::accessible($target) && self::exists($target, $segment)) {
                 $target = $target[$segment];
             } elseif (is_object($target) && isset($target->{$segment})) {
                 $target = $target->{$segment};

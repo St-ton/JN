@@ -269,9 +269,6 @@ class ArtikelListe
             if (!Session::CustomerGroup()->mayViewCategories()) {
                 return $this->elemente;
             }
-            if (!isset($Einstellungen['artikeluebersicht'])) {
-                $Einstellungen = Shop::getSettings([CONF_ARTIKELUEBERSICHT]);
-            }
             $kKundengruppe = Session::CustomerGroup()->getID();
             //top artikel nicht nochmal in den bestsellen vorkommen lassen
             $sql_artikelExclude = '';
@@ -282,10 +279,10 @@ class ArtikelListe
                     }
                 }
             }
-            $cLimitSql = isset($Einstellungen['artikeluebersicht']['artikelubersicht_topbest_anzahl'])
-                ? ('LIMIT ' . (int)$Einstellungen['artikeluebersicht']['artikelubersicht_topbest_anzahl'])
+            $conf        = Shop::getSettings([CONF_ARTIKELUEBERSICHT]);
+            $cLimitSql   = isset($conf['artikeluebersicht']['artikelubersicht_topbest_anzahl'])
+                ? ('LIMIT ' . (int)$conf['artikeluebersicht']['artikelubersicht_topbest_anzahl'])
                 : 'LIMIT 6';
-            //top-Artikel
             $lagerfilter = gibLagerfilter();
             $objArr      = Shop::DB()->query("
                 SELECT DISTINCT (tartikel.kArtikel)
@@ -313,9 +310,7 @@ class ArtikelListe
         if (is_array($objArr)) {
             $defaultOptions = Artikel::getDefaultOptions();
             foreach ($objArr as $obj) {
-                $artikel = new Artikel();
-                $artikel->fuelleArtikel($obj->kArtikel, $defaultOptions);
-                $this->elemente[] = $artikel;
+                $this->elemente[] = (new Artikel())->fuelleArtikel($obj->kArtikel, $defaultOptions);
             }
         }
 

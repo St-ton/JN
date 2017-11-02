@@ -30,7 +30,7 @@ class Arr
      */
     public static function add($array, $key, $value)
     {
-        if (is_null(static::get($array, $key))) {
+        if (static::get($array, $key) === null) {
             static::set($array, $key, $value);
         }
 
@@ -133,7 +133,7 @@ class Arr
      */
     public static function first($array, callable $callback = null, $default = null)
     {
-        if (is_null($callback)) {
+        if ($callback === null) {
             if (empty($array)) {
                 return $default instanceof Closure ? $default() : $default;
             }
@@ -144,7 +144,7 @@ class Arr
         }
 
         foreach ($array as $key => $value) {
-            if (call_user_func($callback, $value, $key)) {
+            if ($callback($value, $key)) {
                 return $value;
             }
         }
@@ -162,7 +162,7 @@ class Arr
      */
     public static function last($array, callable $callback = null, $default = null)
     {
-        if (is_null($callback)) {
+        if ($callback === null) {
             return empty($array) ? ($default instanceof Closure ? $default() : $default) : end($array);
         }
 
@@ -183,11 +183,11 @@ class Arr
 
             if (!is_array($item)) {
                 return array_merge($result, [$item]);
-            } elseif ($depth === 1) {
-                return array_merge($result, array_values($item));
-            } else {
-                return array_merge($result, static::flatten($item, $depth - 1));
             }
+            if ($depth === 1) {
+                return array_merge($result, array_values($item));
+            }
+            return array_merge($result, static::flatten($item, $depth - 1));
         }, []);
     }
 
@@ -248,11 +248,9 @@ class Arr
         if (!static::accessible($array)) {
             return $default instanceof Closure ? $default() : $default;
         }
-
-        if (is_null($key)) {
+        if ($key === null) {
             return $array;
         }
-
         if (static::exists($array, $key)) {
             return $array[$key];
         }
@@ -277,7 +275,7 @@ class Arr
      */
     public static function has($array, $keys)
     {
-        if (is_null($keys)) {
+        if ($keys === null) {
             return false;
         }
 
@@ -357,7 +355,7 @@ class Arr
             // If the key is "null", we will just append the value to the array and keep
             // looping. Otherwise we will key the array using the value of the key we
             // received from the developer. Then we'll return the final array form.
-            if (is_null($key)) {
+            if ($key === null) {
                 $results[] = $itemValue;
             } else {
                 $itemKey = self::data_get($item, $key);
@@ -379,7 +377,7 @@ class Arr
      */
     protected static function data_get($target, $key, $default = null)
     {
-        if (is_null($key)) {
+        if ($key === null) {
             return $target;
         }
 
@@ -421,7 +419,7 @@ class Arr
     {
         $value = is_string($value) ? explode('.', $value) : $value;
 
-        $key = is_null($key) || is_array($key) ? $key : explode('.', $key);
+        $key = $key === null || is_array($key) ? $key : explode('.', $key);
 
         return [$value, $key];
     }
@@ -436,7 +434,7 @@ class Arr
      */
     public static function prepend($array, $value, $key = null)
     {
-        if (is_null($key)) {
+        if ($key === null) {
             array_unshift($array, $value);
         } else {
             $array = [$key => $value] + $array;
@@ -474,7 +472,7 @@ class Arr
      */
     public static function set(&$array, $key, $value)
     {
-        if (is_null($key)) {
+        if ($key === null) {
             return $array = $value;
         }
 

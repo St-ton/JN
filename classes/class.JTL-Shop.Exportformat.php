@@ -1006,9 +1006,10 @@ class Exportformat
     public function startExport($queueObject, $isAsync = false, $back = false, $isCron = false, $max = null)
     {
         if (!$this->isOK()) {
-            Jtllog::cronLog('Export is not ok.', 1);
+            Jtllog::cronLog('Export is not ok.');
             return false;
         }
+        $started = false;
         $this->setQueue($queueObject)->initSession()->initSmarty();
         if ($this->getPlugin() > 0 && strpos($this->getContent(), PLUGIN_EXPORTFORMAT_CONTENTFILE) !== false) {
             Jtllog::cronLog('Starting plugin exportformat "' . $this->getName() .
@@ -1124,6 +1125,7 @@ class Exportformat
             $replaceTwo[] = $this->config['exportformate_semikolon'];
         }
         foreach (Shop::DB()->query($this->getExportSQL(), 10) as $iterArticle) {
+            $started = true;
             $Artikel = new Artikel();
             $Artikel->fuelleArtikel(
                 $iterArticle['kArtikel'],
@@ -1258,8 +1260,8 @@ class Exportformat
                       SET nLimit_n = nLimit_n + " . $this->queue->nLimitM . " 
                       WHERE kExportqueue = " . (int)$this->queue->kExportqueue, 4
                 );
-                $protocol = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ||
-                    function_exists('pruefeSSL') && pruefeSSL() === 2)
+                $protocol = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on')
+                    || (function_exists('pruefeSSL') && pruefeSSL() === 2))
                     ? 'https://'
                     : 'http://';
                 if ($isAsync) {
@@ -1325,7 +1327,7 @@ class Exportformat
             $queueObject->updateExportformatQueueBearbeitet();
             $queueObject->setDZuletztGelaufen(date('Y-m-d H:i'))->setNInArbeit(0)->updateJobInDB();
             //finalize job when there are no more articles to export
-            if (($queueObject->nLimitN >= $max) || !(is_array($articles) && count($articles) > 0)) {
+            if (($queueObject->nLimitN >= $max) || $started === false) {
                 Jtllog::cronLog('Finalizing job.', 2);
                 Shop::DB()->update(
                     'texportformat',

@@ -91,7 +91,7 @@ function gibMaxPrioSpalte($exclude)
 function gibSuchspaltenKlassen($searchColumns)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Shop::getNaviFilter()->Suchanfrage->getSearchColumnClasses($searchColumns);
+    return Shop::getProductFilter()->Suchanfrage->getSearchColumnClasses($searchColumns);
 }
 
 /**
@@ -104,7 +104,7 @@ function gibSuchspaltenKlassen($searchColumns)
 function pruefeSuchspaltenKlassen($searchColumns, $searchColumn, $nonAllowed)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Shop::getNaviFilter()->Suchanfrage->checkColumnClasses($searchColumns, $searchColumn, $nonAllowed);
+    return Shop::getProductFilter()->Suchanfrage->checkColumnClasses($searchColumns, $searchColumn, $nonAllowed);
 }
 
 /**
@@ -119,7 +119,7 @@ function pruefeSuchspaltenKlassen($searchColumns, $searchColumn, $nonAllowed)
 function suchanfragenSpeichern($cSuche, $nAnzahlTreffer, $bEchteSuche = false, $kSpracheExt = 0, $bSpamFilter = true)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Shop::getNaviFilter()->Suche->saveQuery($nAnzahlTreffer, $cSuche, $bEchteSuche, $kSpracheExt, $bSpamFilter);
+    return Shop::getProductFilter()->Suche->saveQuery($nAnzahlTreffer, $cSuche, $bEchteSuche, $kSpracheExt, $bSpamFilter);
 }
 
 /**
@@ -180,7 +180,7 @@ function mappingBeachten($Suchausdruck, $kSpracheExt = 0)
 function suchausdruckVorbereiten($query)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Shop::getNaviFilter()->Suchanfrage->prepareSearchQuery($query);
+    return Shop::getProductFilter()->Suchanfrage->prepareSearchQuery($query);
 }
 
 /**

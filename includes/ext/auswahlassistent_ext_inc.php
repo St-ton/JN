@@ -23,7 +23,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
         $kKategorie             = null;
         if ($Einstellungen['auswahlassistent_nutzen'] === 'Y' && class_exists('AuswahlAssistent')) {
             // Work Around falls schon einmal der Auswahlassistent durchlaufen wurde
-            if (Shop::getNaviFilter()->getFilterCount() > 0) {
+            if (Shop::getProductFilter()->getFilterCount() > 0) {
                 return false;
             }
             if ((int)$kKey > 0 && (int)$kSprache > 0 && strlen($cKey) > 0) {

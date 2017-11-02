@@ -3685,7 +3685,7 @@ function setzeSpracheUndWaehrungLink()
     global $oZusatzFilter, $sprachURL, $AktuellerArtikel, $kSeite, $kLink, $AktuelleSeite;
     $shopURL    = Shop::getURL() . '/';
     $helper     = LinkHelper::getInstance();
-    $NaviFilter = Shop::getNaviFilter();
+    $NaviFilter = Shop::getProductFilter();
     if (isset($kSeite) && $kSeite > 0) {
         $kLink = $kSeite;
     }
@@ -4848,7 +4848,7 @@ function doMainwordRedirect($NaviFilter, $nAnzahl, $bSeo = false)
     ];
 
     $kSprache = Shop::getLanguage();
-    if ((int)$nAnzahl === 0 && Shop::getNaviFilter()->getFilterCount() > 0) {
+    if ((int)$nAnzahl === 0 && Shop::getProductFilter()->getFilterCount() > 0) {
         foreach ($cMainword_arr as $function => $cInfo_arr) {
             $cKey   = $cInfo_arr['cKey'];
             $cParam = $cInfo_arr['cParam'];

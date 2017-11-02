@@ -1054,7 +1054,7 @@ function setSelectionWizardAnswerAjax($kMerkmalWert, $kAuswahlAssistentFrage, $n
 
     require_once PFAD_ROOT . PFAD_INCLUDES_EXT . 'auswahlassistent_ext_inc.php';
 
-    $NaviFilter    = Shop::getNaviFilter();
+    $NaviFilter    = Shop::getProductFilter();
     $Einstellungen = Shop::getSettings([
         CONF_GLOBAL,
         CONF_RSS,

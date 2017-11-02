@@ -14,7 +14,7 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'suche_inc.php';
 function buildSearchResults($FilterSQL, $NaviFilter)
 {
     trigger_error('filter_inc.php: calling buildSearchResults() is deprecated.', E_USER_DEPRECATED);
-    return Shop::getNaviFilter()->getProducts();
+    return Shop::getProductFilter()->getProducts();
 }
 
 /**
@@ -43,7 +43,7 @@ function buildSearchResultPage(&$oSearchResult, $nProductCount, $nLimitN, $nPage
 function gibArtikelKeys($FilterSQL, $nArtikelProSeite, $NaviFilter, $bExtern, $oSuchergebnisse)
 {
     trigger_error('filter_inc.php: calling gibArtikelKeys() is deprecated.', E_USER_DEPRECATED);
-    return Shop::getNaviFilter()->getProducts(false, null, true, (int)$nArtikelProSeite);
+    return Shop::getProductFilter()->getProducts(false, null, true, (int)$nArtikelProSeite);
 }
 
 /**
@@ -54,7 +54,7 @@ function gibArtikelKeys($FilterSQL, $nArtikelProSeite, $NaviFilter, $bExtern, $o
 function gibAnzahlFilter($NaviFilter)
 {
     trigger_error('filter_inc.php: calling gibAnzahlFilter() is deprecated.', E_USER_DEPRECATED);
-    return Shop::getNaviFilter()->getFilterCount();
+    return Shop::getProductFilter()->getFilterCount();
 }
 
 /**
@@ -66,7 +66,7 @@ function gibAnzahlFilter($NaviFilter)
 function gibHerstellerFilterOptionen($FilterSQL, $NaviFilter)
 {
     trigger_error('filter_inc.php: calling gibHerstellerFilterOptionen() is deprecated.', E_USER_DEPRECATED);
-    return Shop::getNaviFilter()->getManufacturerFilter()->getOptions();
+    return Shop::getProductFilter()->getManufacturerFilter()->getOptions();
 }
 
 /**
@@ -78,7 +78,7 @@ function gibHerstellerFilterOptionen($FilterSQL, $NaviFilter)
 function gibKategorieFilterOptionen($FilterSQL, $NaviFilter)
 {
     trigger_error('filter_inc.php: calling gibKategorieFilterOptionen() is deprecated.', E_USER_DEPRECATED);
-    return Shop::getNaviFilter()->getCategoryFilter()->getOptions();
+    return Shop::getProductFilter()->getCategoryFilter()->getOptions();
 }
 
 /**
@@ -90,7 +90,7 @@ function gibKategorieFilterOptionen($FilterSQL, $NaviFilter)
 function gibSuchFilterOptionen($FilterSQL, $NaviFilter)
 {
     trigger_error('filter_inc.php: calling gibSuchFilterOptionen() is deprecated.', E_USER_DEPRECATED);
-    return Shop::getNaviFilter()->searchFilterCompat->getOptions();
+    return Shop::getProductFilter()->searchFilterCompat->getOptions();
 }
 
 /**
@@ -102,7 +102,7 @@ function gibSuchFilterOptionen($FilterSQL, $NaviFilter)
 function gibBewertungSterneFilterOptionen($FilterSQL, $NaviFilter)
 {
     trigger_error('filter_inc.php: calling gibBewertungSterneFilterOptionen() is deprecated.', E_USER_DEPRECATED);
-    return Shop::getNaviFilter()->getRatingFilter()->getOptions();
+    return Shop::getProductFilter()->getRatingFilter()->getOptions();
 }
 
 /**
@@ -115,7 +115,7 @@ function gibBewertungSterneFilterOptionen($FilterSQL, $NaviFilter)
 function gibPreisspannenFilterOptionen($FilterSQL, $NaviFilter, $oSuchergebnisse)
 {
     trigger_error('filter_inc.php: calling gibPreisspannenFilterOptionen() is deprecated.', E_USER_DEPRECATED);
-    return Shop::getNaviFilter()->getPriceRangeFilter()->getOptions();
+    return Shop::getProductFilter()->getPriceRangeFilter()->getOptions();
 }
 
 /**
@@ -127,7 +127,7 @@ function gibPreisspannenFilterOptionen($FilterSQL, $NaviFilter, $oSuchergebnisse
 function gibTagFilterOptionen($FilterSQL, $NaviFilter)
 {
     trigger_error('filter_inc.php: calling gibTagFilterOptionen() is deprecated.', E_USER_DEPRECATED);
-    return Shop::getNaviFilter()->tagFilterCompat->getOptions();
+    return Shop::getProductFilter()->tagFilterCompat->getOptions();
 }
 
 /**
@@ -175,7 +175,7 @@ function gibTagFilterJSONOptionen($FilterSQL, $NaviFilter)
 function gibMerkmalFilterOptionen($FilterSQL, $NaviFilter, $oAktuelleKategorie = null, $bForce = false)
 {
     trigger_error('filter_inc.php: calling gibMerkmalFilterOptionen() is deprecated.', E_USER_DEPRECATED);
-    return Shop::getNaviFilter()->getAttributeFilterCollection()->getOptions();
+    return Shop::getProductFilter()->getAttributeFilterCollection()->getOptions();
 }
 
 /**
@@ -202,7 +202,7 @@ function sortierMerkmalWerteNumerisch($a, $b)
 function gibSuchspecialFilterOptionen($FilterSQL, $NaviFilter)
 {
     trigger_error('filter_inc.php: calling gibSuchspecialFilterOptionen() is deprecated.', E_USER_DEPRECATED);
-    return Shop::getNaviFilter()->searchFilterCompat->getOptions();
+    return Shop::getProductFilter()->searchFilterCompat->getOptions();
 }
 
 /**
@@ -214,7 +214,7 @@ function gibSuchspecialFilterOptionen($FilterSQL, $NaviFilter)
 function bearbeiteSuchCache($NaviFilter, $kSpracheExt = 0)
 {
     trigger_error('filter_inc.php: calling bearbeiteSuchCache() is deprecated.', E_USER_DEPRECATED);
-    return Shop::getNaviFilter()->getSearchQuery()->editSearchCache($kSpracheExt);
+    return Shop::getProductFilter()->getSearchQuery()->editSearchCache($kSpracheExt);
 }
 
 /**
@@ -331,7 +331,7 @@ function checkMerkmalWertVorhanden($oMerkmalauswahl_arr, $kMerkmalWert)
 function gibArtikelsortierung($NaviFilter)
 {
     trigger_error('filter_inc.php: calling gibArtikelsortierung() is deprecated.', E_USER_DEPRECATED);
-    return Shop::getNaviFilter()->getOrder()->orderBy;
+    return Shop::getProductFilter()->getOrder()->orderBy;
 }
 
 /**
@@ -342,7 +342,7 @@ function gibArtikelsortierung($NaviFilter)
 function mappeUsersortierung($nUsersortierung)
 {
     trigger_error('filter_inc.php: calling mappeUsersortierung() is deprecated.', E_USER_DEPRECATED);
-    return Shop::getNaviFilter()->getMetaData()->mapUserSorting($nUsersortierung);
+    return Shop::getProductFilter()->getMetaData()->mapUserSorting($nUsersortierung);
 }
 
 /**
@@ -356,7 +356,7 @@ function mappeUsersortierung($nUsersortierung)
 function gibNaviURL($NaviFilter, $bSeo, $oZusatzFilter, $kSprache = 0, $bCanonical = false)
 {
     trigger_error('filter_inc.php: calling gibNaviURL() is deprecated.', E_USER_DEPRECATED);
-    return Shop::getNaviFilter()->getURL($oZusatzFilter, $bCanonical);
+    return Shop::getProductFilter()->getURL($oZusatzFilter, $bCanonical);
 }
 
 /**
@@ -368,7 +368,7 @@ function gibNaviURL($NaviFilter, $bSeo, $oZusatzFilter, $kSprache = 0, $bCanonic
 function berechnePreisspannenSQL($oPreis, $oPreisspannenfilter_arr = null)
 {
     trigger_error('filter_inc.php: calling berechnePreisspannenSQL() is deprecated.', E_USER_DEPRECATED);
-    return Shop::getNaviFilter()
+    return Shop::getProductFilter()
                ->getPriceRangeFilter()
                ->getPriceRangeSQL($oPreis, Session::Currency(), $oPreisspannenfilter_arr);
 }
@@ -381,7 +381,7 @@ function berechnePreisspannenSQL($oPreis, $oPreisspannenfilter_arr = null)
 function berechneMaxMinStep($fMax, $fMin)
 {
     trigger_error('filter_inc.php: calling berechneMaxMinStep() is deprecated.', E_USER_DEPRECATED);
-    return Shop::getNaviFilter()->getPriceRangeFilter()->calculateSteps($fMax, $fMin);
+    return Shop::getProductFilter()->getPriceRangeFilter()->calculateSteps($fMax, $fMin);
 }
 
 /**
@@ -391,7 +391,7 @@ function berechneMaxMinStep($fMax, $fMin)
 function gibBrotNaviName()
 {
     trigger_error('filter_inc.php: calling gibBrotNaviName() is deprecated.', E_USER_DEPRECATED);
-    $md = Shop::getNaviFilter()->getMetaData();
+    $md = Shop::getProductFilter()->getMetaData();
     $md->getHeader();
     return $md->getBreadCrumbName();
 }
@@ -403,7 +403,7 @@ function gibBrotNaviName()
 function gibHeaderAnzeige()
 {
     trigger_error('filter_inc.php: calling gibHeaderAnzeige() is deprecated.', E_USER_DEPRECATED);
-    return Shop::getNaviFilter()->getMetaData()->getHeader();
+    return Shop::getProductFilter()->getMetaData()->getHeader();
 }
 
 /**
@@ -414,7 +414,7 @@ function gibHeaderAnzeige()
 function erstelleFilterLoesenURLs($bSeo, $oSuchergebnisse)
 {
     trigger_error('filter_inc.php: calling erstelleFilterLoesenURLs() is deprecated.', E_USER_DEPRECATED);
-    Shop::getNaviFilter()->createUnsetFilterURLs($oSuchergebnisse);
+    Shop::getProductFilter()->createUnsetFilterURLs($oSuchergebnisse);
 }
 
 /**
@@ -426,7 +426,7 @@ function erstelleFilterLoesenURLs($bSeo, $oSuchergebnisse)
 function truncateMetaTitle($cTitle)
 {
     trigger_error('filter_inc.php: calling truncateMetaTitle() is deprecated.', E_USER_DEPRECATED);
-    return (new Metadata(Shop::getNaviFilter()))->truncateMetaTitle($cTitle);
+    return (new Metadata(Shop::getProductFilter()))->truncateMetaTitle($cTitle);
 }
 
 /**
@@ -440,7 +440,7 @@ function gibNaviMetaTitle($NaviFilter, $oSuchergebnisse, $GlobaleMetaAngaben_arr
 {
     trigger_error('filter_inc.php: calling gibNaviMetaTitle() is deprecated.', E_USER_DEPRECATED);
     global $oMeta;
-    return (new Metadata(Shop::getNaviFilter()))->getMetaTitle($oMeta, $oSuchergebnisse, $GlobaleMetaAngaben_arr);
+    return (new Metadata(Shop::getProductFilter()))->getMetaTitle($oMeta, $oSuchergebnisse, $GlobaleMetaAngaben_arr);
 }
 
 /**
@@ -455,7 +455,7 @@ function gibNaviMetaDescription($oArtikel_arr, $NaviFilter, $oSuchergebnisse, $G
 {
     trigger_error('filter_inc.php: calling gibNaviMetaDescription() is deprecated.', E_USER_DEPRECATED);
     global $oMeta;
-    return (new Metadata(Shop::getNaviFilter()))->getMetaDescription($oMeta, $oArtikel_arr, $oSuchergebnisse, $GlobaleMetaAngaben_arr);
+    return (new Metadata(Shop::getProductFilter()))->getMetaDescription($oMeta, $oArtikel_arr, $oSuchergebnisse, $GlobaleMetaAngaben_arr);
 }
 
 /**
@@ -469,7 +469,7 @@ function gibNaviMetaKeywords($oArtikel_arr, $NaviFilter, $oExcludesKeywords_arr 
 {
     trigger_error('filter_inc.php: calling gibNaviMetaKeywords() is deprecated.', E_USER_DEPRECATED);
     global $oMeta;
-    return (new Metadata(Shop::getNaviFilter()))->getMetaKeywords($oMeta, $oArtikel_arr);
+    return (new Metadata(Shop::getProductFilter()))->getMetaKeywords($oMeta, $oArtikel_arr);
 }
 
 /**
@@ -483,7 +483,7 @@ function gibNaviMetaKeywords($oArtikel_arr, $NaviFilter, $oExcludesKeywords_arr 
 function gibMetaStart($NaviFilter, $oSuchergebnisse)
 {
     trigger_error('filter_inc.php: calling gibMetaStart() is deprecated.', E_USER_DEPRECATED);
-    return (new Metadata(Shop::getNaviFilter()))->getMetaStart($oSuchergebnisse);
+    return (new Metadata(Shop::getProductFilter()))->getMetaStart($oSuchergebnisse);
 }
 
 /**
@@ -506,7 +506,7 @@ function setzeUsersortierung($NaviFilter)
 {
     trigger_error('filter_inc.php: calling setzeUsersortierung() is deprecated.', E_USER_DEPRECATED);
     global $AktuelleKategorie;
-    Shop::getNaviFilter()->getMetaData()->setUserSort($AktuelleKategorie);
+    Shop::getProductFilter()->getMetaData()->setUserSort($AktuelleKategorie);
 }
 
 /**
@@ -518,7 +518,7 @@ function setzeUsersortierung($NaviFilter)
 function gibErweiterteDarstellung($Einstellungen, $NaviFilter, $nDarstellung = 0)
 {
     trigger_error('filter_inc.php: calling gibErweiterteDarstellung() is deprecated.', E_USER_DEPRECATED);
-    Shop::getNaviFilter()->getMetaData()->getExtendedView($nDarstellung);
+    Shop::getProductFilter()->getMetaData()->getExtendedView($nDarstellung);
     if (isset($_SESSION['oErweiterteDarstellung'])) {
         global $smarty;
         $smarty->assign('oErweiterteDarstellung', $_SESSION['oErweiterteDarstellung']);
@@ -537,7 +537,7 @@ function gibErweiterteDarstellung($Einstellungen, $NaviFilter, $nDarstellung = 0
 function baueSeitenNaviURL($NaviFilter, $bSeo, $oSeitenzahlen, $nMaxAnzeige = 7, $cFilterShopURL = '')
 {
     trigger_error('filter_inc.php: calling baueSeitenNaviURL() is deprecated.', E_USER_DEPRECATED);
-    return Shop::getNaviFilter()->getMetaData()->buildPageNavigation($bSeo, $oSeitenzahlen, $nMaxAnzeige, $cFilterShopURL);
+    return Shop::getProductFilter()->getMetaData()->buildPageNavigation($bSeo, $oSeitenzahlen, $nMaxAnzeige, $cFilterShopURL);
 }
 
 /**
@@ -579,7 +579,7 @@ function sortierKategoriepfade($a, $b)
 function gibSortierliste($Einstellungen = null, $bExtendedJTLSearch = false)
 {
     trigger_error('filter_inc.php: calling gibSortierliste() is deprecated.', E_USER_DEPRECATED);
-    return Shop::getNaviFilter()->getMetaData()->getSortingOptions($bExtendedJTLSearch);
+    return Shop::getProductFilter()->getMetaData()->getSortingOptions($bExtendedJTLSearch);
 }
 
 /**
@@ -591,7 +591,7 @@ function gibSortierliste($Einstellungen = null, $bExtendedJTLSearch = false)
 function gibNextSortPrio($search, $Einstellungen = null)
 {
     trigger_error('filter_inc.php: calling gibNextSortPrio() is deprecated.', E_USER_DEPRECATED);
-    return Shop::getNaviFilter()->getMetaData()->getNextSearchPriority($search);
+    return Shop::getProductFilter()->getMetaData()->getNextSearchPriority($search);
 }
 
 /**

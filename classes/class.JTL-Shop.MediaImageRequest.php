@@ -264,6 +264,7 @@ class MediaImageRequest
     }
 
     /**
+     * @param string|null $path
      * @return string|null
      */
     protected function cachedPath($path = null)

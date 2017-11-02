@@ -301,7 +301,7 @@ class Versandart
                 }
                 $kKey = Shop::DB()->insert($table, $Obj);
 
-                if ((int)$kKey > 0 && $table === 'tversandzuschlag') {
+                if ($kKey > 0 && $table === 'tversandzuschlag') {
                     self::cloneShippingSectionSpecial($kKeyPrim, $kKey);
                 }
             }

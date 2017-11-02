@@ -62,7 +62,7 @@ class Kuponneukunde
                 foreach ($cMember_arr as $cMember) {
                     $cMethod = 'set' . substr($cMember, 1);
                     if (method_exists($this, $cMethod)) {
-                        call_user_func([&$this, $cMethod], $oObj->$cMember);
+                        $this->$cMethod($oObj->$cMember);
                     }
                 }
             }

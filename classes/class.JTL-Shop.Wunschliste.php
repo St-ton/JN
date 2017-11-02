@@ -211,18 +211,26 @@ class Wunschliste
                     foreach ($oWarenkorbpositionen_arr as $oArtikel) {
                         if ($oWunschlistePos->kArtikel == $oArtikel->kArtikel) {
                             //mehrfache Variationen beachten
-                            if (!empty($oWunschlistePos->CWunschlistePosEigenschaft_arr) && !empty($oArtikel->WarenkorbPosEigenschaftArr)) {
+                            if (!empty($oWunschlistePos->CWunschlistePosEigenschaft_arr)
+                                && !empty($oArtikel->WarenkorbPosEigenschaftArr)
+                            ) {
                                 $nMatchesFound = 0;
                                 $index = 0;
                                 foreach ($oWunschlistePos->CWunschlistePosEigenschaft_arr as $oWPEigenschaft){
                                     if ($index === $nMatchesFound) {
                                         foreach ($oArtikel->WarenkorbPosEigenschaftArr as $oAEigenschaft){
-                                            if ($oWPEigenschaft->kEigenschaftWert != 0 && $oWPEigenschaft->kEigenschaftWert === $oAEigenschaft->kEigenschaftWert){
+                                            if ($oWPEigenschaft->kEigenschaftWert != 0
+                                                && $oWPEigenschaft->kEigenschaftWert === $oAEigenschaft->kEigenschaftWert
+                                            ){
                                                 $nMatchesFound++;
                                                 break;
-                                            } elseif ($oWPEigenschaft->kEigenschaftWert === 0 && $oAEigenschaft->kEigenschaftWert === 0 &&
-                                                !empty($oWPEigenschaft->cFreifeldWert) && !empty($oAEigenschaft->cFreifeldWert) &&
-                                                $oWPEigenschaft->cFreifeldWert === $oAEigenschaft->cFreifeldWert) {
+                                            }
+                                            if ($oWPEigenschaft->kEigenschaftWert === 0
+                                                && $oAEigenschaft->kEigenschaftWert === 0
+                                                && !empty($oWPEigenschaft->cFreifeldWert)
+                                                && !empty($oAEigenschaft->cFreifeldWert)
+                                                && $oWPEigenschaft->cFreifeldWert === $oAEigenschaft->cFreifeldWert
+                                            ) {
                                                 $nMatchesFound++;
                                                 break;
                                             }

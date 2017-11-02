@@ -137,7 +137,7 @@ class Updater
      */
     public function getCurrentFileVersion()
     {
-        return (int)JTL_VERSION;
+        return JTL_VERSION;
     }
 
     /**

@@ -394,9 +394,8 @@ class Warenlager extends MainModel
             $cQuery .= " WHERE kWarenlager = {$this->kWarenlager}";
 
             return Shop::DB()->query($cQuery, 3);
-        } else {
-            throw new Exception('ERROR: Object has no members!');
         }
+        throw new Exception('ERROR: Object has no members!');
     }
 
     /**

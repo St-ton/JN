@@ -40,7 +40,7 @@ trait JTLCacheTrait
      */
     public static function getInstance($options)
     {
-        return (self::$instance !== null) ? self::$instance : new self($options);
+        return self::$instance !== null ? self::$instance : new self($options);
     }
 
     /**
@@ -181,7 +181,8 @@ trait JTLCacheTrait
             return isset($this->journal[$tags])
                 ? $this->journal[$tags]
                 : [];
-        } elseif (is_array($tags)) {
+        }
+        if (is_array($tags)) {
             $res = [];
             foreach ($tags as $tag) {
                 if (isset($this->journal[$tag])) {

@@ -213,8 +213,8 @@ class Slider implements IExtensionPoint
 
         $kSlider = Shop::DB()->insert('tslider', $oSlider);
 
-        if ((int)$kSlider > 0) {
-            $this->kSlider = (int)$kSlider;
+        if ($kSlider > 0) {
+            $this->kSlider = $kSlider;
 
             return true;
         }

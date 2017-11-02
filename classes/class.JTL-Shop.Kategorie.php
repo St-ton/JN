@@ -242,7 +242,7 @@ class Kategorie
                 $oSeo = Shop::DB()->select(
                     'tseo',
                     'cKey', 'kKategorie',
-                    'kSprache', (int)$kDefaultLang,
+                    'kSprache', $kDefaultLang,
                     'kKey', (int)$oKategorie->kKategorie
                 );
                 if (isset($oSeo->cSeo)) {

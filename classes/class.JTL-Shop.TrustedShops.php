@@ -613,18 +613,17 @@ class TrustedShops
                     Jtllog::writeLog(utf8_decode('Bei der Zertifikatsprüfung von TrustedShops ist ein Fehler aufgetreten! Error: ') . $errorText, JTLLOG_LEVEL_ERROR);
 
                     return 11; // SOAP Fehler
-                } else {
-                    writeLog(PFAD_LOGFILES . 'trustedshops.log', print_r($returnValue, 1), 1);
-                    Jtllog::writeLog(utf8_decode('Die Zertifikatsprüfung von TrustedShops ergab folgendes Ergebnis: ') . print_r($returnValue, true), JTLLOG_LEVEL_NOTICE);
+                }
+                writeLog(PFAD_LOGFILES . 'trustedshops.log', print_r($returnValue, 1), 1);
+                Jtllog::writeLog(utf8_decode('Die Zertifikatsprüfung von TrustedShops ergab folgendes Ergebnis: ') . print_r($returnValue, true), JTLLOG_LEVEL_NOTICE);
 
-                    $this->dChecked = date('Y-m-d H:i:s');
-                    if (!$bSaved) {
-                        Shop::DB()->query("
-                            UPDATE ttrustedshopszertifikat 
-                                SET dChecked = '{$this->dChecked}' 
-                                WHERE kTrustedShopsZertifikat = {$this->kTrustedShopsZertifikat}", 3
-                        );
-                    }
+                $this->dChecked = date('Y-m-d H:i:s');
+                if (!$bSaved) {
+                    Shop::DB()->query("
+                        UPDATE ttrustedshopszertifikat 
+                            SET dChecked = '{$this->dChecked}' 
+                            WHERE kTrustedShopsZertifikat = {$this->kTrustedShopsZertifikat}", 3
+                    );
                 }
             } else {
                 writeLog(PFAD_LOGFILES . 'trustedshops.log', 'SOAP could not be loaded.', 1);
@@ -886,9 +885,9 @@ class TrustedShops
                 } // SOAP Fehler
 
                 return -1;
-            } else {
-                return 9; // Zertifikat konnte nicht gespeichert werden
             }
+
+            return 9; // Zertifikat konnte nicht gespeichert werden
         }
 
         return 1;

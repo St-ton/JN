@@ -32,6 +32,13 @@ class FilterItemAttribute extends FilterBaseAttribute
     private $isMultiSelect;
 
     /**
+     * @var array
+     */
+    private static $mapping = [
+        'cName' => 'Name'
+    ];
+
+    /**
      * FilterItemAttribute constructor.
      *
      * @param ProductFilter $productFilter
@@ -119,11 +126,11 @@ class FilterItemAttribute extends FilterBaseAttribute
         if (is_object($value)) {
             $this->setValue($value->kMerkmalWert)
                  ->setAttributeID($value->kMerkmal)
-                 ->setIsMultiSelect((int)$value->nMehrfachauswahl === 1);
+                 ->setIsMultiSelect($value->nMehrfachauswahl === 1);
 
             return $this->setType($this->isMultiSelect()
-                ? AbstractFilter::FILTER_TYPE_AND
-                : AbstractFilter::FILTER_TYPE_OR)
+                ? AbstractFilter::FILTER_TYPE_OR
+                : AbstractFilter::FILTER_TYPE_AND)
                         ->setSeo($this->getAvailableLanguages());
 
         }
@@ -170,8 +177,8 @@ class FilterItemAttribute extends FilterBaseAttribute
 //            $this->kMerkmal = (int)$seo_obj->kMerkmal;
             $this->setAttributeID($seo_obj->kMerkmal);
             $this->cWert    = $seo_obj->cWert;
-            $this->cName    = $seo_obj->cWert;
-            $this->setFrontendName($this->cName);
+            $this->setName($seo_obj->cWert)
+                 ->setFrontendName($seo_obj->cWert);
         }
 
         return $this;
@@ -456,7 +463,6 @@ class FilterItemAttribute extends FilterBaseAttribute
                 ->setValue($attributeFilter->kMerkmal)
                 ->setCount(0)
                 ->setURL('');
-            $attribute->cName             = $attributeFilter->cName;
             $attribute->cTyp              = $attributeFilter->cTyp;
             $attribute->kMerkmal          = $attributeFilter->kMerkmal;
             $attribute->isInitialized     = in_array($attribute->kMerkmalWert, $activeValues, true);

@@ -128,6 +128,13 @@
                 <Option Value="3"><![CDATA[max. Drei]]></Option>
                 <Option Value="5"><![CDATA[max. F&uuml;nf]]></Option>
             </Setting>
+            <Setting Description="Anzahl der möglichen Variationswerte für Radio und Swatches. (Nur in Verbindung mit &quot;Variationsauswahl anzeigen&quot;)" Key="variation_max_werte_productlist" Type="select" Value="3">
+                <Option Value="3"><![CDATA[max. Drei]]></Option>
+                <Option Value="5"><![CDATA[max. F&uuml;nf]]></Option>
+                <Option Value="9"><![CDATA[max. 9]]></Option>
+                <Option Value="12"><![CDATA[max. 12]]></Option>
+                <Option Value="9999"><![CDATA[keine Beschr&auml;nckung]]></Option>
+            </Setting>
             <Setting Description="Quickview für Artikeldetails" Key="quickview_productlist" Type="select" Value="N">
                 <Option Value="Y">Ja</Option>
                 <Option Value="N">Nein</Option>

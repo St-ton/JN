@@ -442,7 +442,7 @@ class Session
     public function cleanUp()
     {
         // Unregistrierten Benutzer löschen
-        if (isset($_SESSION['Kunde']->nRegistriert) && $_SESSION['Kunde']->nRegistriert == 0) {
+        if (isset($_SESSION['Kunde']->nRegistriert) && (int)$_SESSION['Kunde']->nRegistriert === 0) {
             unset($_SESSION['Kunde']);
         }
 

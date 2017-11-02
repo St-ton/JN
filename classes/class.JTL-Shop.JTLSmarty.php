@@ -307,9 +307,7 @@ class JTLSmarty extends SmartyBC
                  ->registerPlugin('modifier', 'truncate', [$this, 'truncate']);
 
             if ($isAdmin === false) {
-                $this->cache_lifetime = (isset($cacheOptions['expiration']) && ((int)$cacheOptions['expiration'] > 0))
-                    ? $cacheOptions['expiration']
-                    : 86400;
+                $this->cache_lifetime = 86400;
                 // assign variables moved from $_SESSION to cache to smarty
                 $linkHelper = LinkHelper::getInstance();
                 $linkGroups = $linkHelper->getLinkGroups();

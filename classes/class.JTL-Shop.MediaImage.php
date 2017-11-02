@@ -225,10 +225,11 @@ class MediaImage implements IMedia
                 throw new Exception("No such product id: " . (int)$mediaReq->id);
             }
 
+            $thumbPath  = null;
             $matchFound = false;
 
             foreach ($imgNames as $imgName) {
-                $imgName->imgPath = MediaImage::getThumb(
+                $imgName->imgPath = self::getThumb(
                     $mediaReq->type, $mediaReq->id, $imgName, $mediaReq->size, $mediaReq->number
                 );
 
@@ -253,7 +254,7 @@ class MediaImage implements IMedia
             self::writeHttp($imanee);
         } catch (Exception $e) {
             $display = (string) strtolower(ini_get('display_errors'));
-            if (in_array($display, ['on', '1', 'true'])) {
+            if (in_array($display, ['on', '1', 'true'], true)) {
                 $imanee = Image::error($mediaReq, $e->getMessage());
 
                 self::writeHttp($imanee, true);
@@ -473,6 +474,11 @@ class MediaImage implements IMedia
         return MediaImageRequest::create($matches);
     }
 
+    /**
+     * @param string $type
+     * @param int    $id
+     * @return mixed|void
+     */
     public static function getPrimaryNumber($type, $id)
     {
         $prepared = self::getImageStmt($type, $id);

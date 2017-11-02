@@ -15,7 +15,8 @@ class FilterBaseManufacturer extends AbstractFilter
      * @var array
      */
     private static $mapping = [
-        'kHersteller' => 'ValueCompat'
+        'kHersteller' => 'ValueCompat',
+        'cName'       => 'Name'
     ];
 
     /**
@@ -67,7 +68,7 @@ class FilterBaseManufacturer extends AbstractFilter
             }
         }
         if (isset($oSeo_arr[0]->cName)) {
-            $this->cName = $oSeo_arr[0]->cName;
+            $this->setName($oSeo_arr[0]->cName);
         } else {
             // invalid manufacturer ID
             Shop::$kHersteller = 0;

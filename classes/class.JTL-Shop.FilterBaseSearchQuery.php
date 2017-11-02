@@ -101,7 +101,7 @@ class FilterBaseSearchQuery extends AbstractFilter
             }
         }
         if (!empty($oSeo_obj->cSuche)) {
-            $this->cName = $oSeo_obj->cSuche;
+            $this->setName($oSeo_obj->cSuche);
         }
 
         return $this;

@@ -56,12 +56,12 @@ class FilterItemRating extends AbstractFilter
      */
     public function setSeo($languages)
     {
-        $this->cName = Shop::Lang()->get('from', 'productDetails') . ' ' .
+        $this->setName(Shop::Lang()->get('from', 'productDetails') . ' ' .
             $this->getValue() . ' ' .
             ($this->getValue() > 0
                 ? Shop::Lang()->get('starPlural')
-                : Shop::Lang()->get('starSingular')
-            );
+                : Shop::Lang()->get('starSingular'))
+        );
 
         return $this;
     }

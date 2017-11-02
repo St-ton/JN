@@ -15,7 +15,8 @@ class FilterBaseCategory extends AbstractFilter
      * @var array
      */
     private static $mapping = [
-        'kKategorie' => 'ValueCompat'
+        'kKategorie' => 'ValueCompat',
+        'cName'      => 'Name'
     ];
 
     /**
@@ -97,9 +98,9 @@ class FilterBaseCategory extends AbstractFilter
             foreach ($oSeo_arr as $item) {
                 if ((int)$item->kSprache === Shop::getLanguage()) {
                     if (!empty($item->cName)) {
-                        $this->cName = $item->cName;
+                        $this->setName($item->cName);
                     } elseif (!empty($item->cKatName)) {
-                        $this->cName = $item->cKatName;
+                        $this->setName($item->cKatName);
                     }
                     break;
                 }

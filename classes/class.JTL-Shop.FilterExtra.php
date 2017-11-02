@@ -159,26 +159,6 @@ class FilterExtra extends AbstractFilter
         return $this;
     }
 
-
-    /**
-     * @param mixed $value
-     * @return $this
-     */
-    public function setValue($value)
-    {
-        $this->value = $value;
-
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getValue()
-    {
-        return $this->value;
-    }
-
     /**
      * @return int
      */
@@ -212,8 +192,7 @@ class FilterExtra extends AbstractFilter
      */
     public function setName($name)
     {
-        $this->name  = $name;
-        $this->cName = $name;
+        $this->name = $name;
 
         return $this;
     }
@@ -336,22 +315,6 @@ class FilterExtra extends AbstractFilter
     public function setSeo($languages)
     {
         return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getTableName()
-    {
-        return '';
-    }
-
-    /**
-     * @return string
-     */
-    public function getPrimaryKeyRow()
-    {
-        return '';
     }
 
     /**

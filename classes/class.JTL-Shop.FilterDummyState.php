@@ -69,22 +69,6 @@ class FilterDummyState extends AbstractFilter
     /**
      * @return string
      */
-    public function getPrimaryKeyRow()
-    {
-        return '';
-    }
-
-    /**
-     * @return string
-     */
-    public function getTableName()
-    {
-        return '';
-    }
-
-    /**
-     * @return string
-     */
     public function getSQLCondition()
     {
         return '';

@@ -42,6 +42,13 @@ class FilterItemPriceRange extends AbstractFilter
     private $oFilter;
 
     /**
+     * @var array
+     */
+    private static $mapping = [
+        'cName' => 'Name'
+    ];
+
+    /**
      * FilterItemPriceRange constructor.
      *
      * @param ProductFilter $productFilter
@@ -99,7 +106,7 @@ class FilterItemPriceRange extends AbstractFilter
         //localize prices
         $this->cVonLocalized = gibPreisLocalizedOhneFaktor($this->fVon);
         $this->cBisLocalized = gibPreisLocalizedOhneFaktor($this->fBis);
-        $this->cName         = $this->cVonLocalized . ' - ' . $this->cBisLocalized;
+        $this->setName($this->cVonLocalized . ' - ' . $this->cBisLocalized);
         $this->isInitialized = true;
         $conversionFactor    = Session::Currency()->getConversionFactor();
         $customerGroupID     = Session::CustomerGroup()->getID();
@@ -177,22 +184,6 @@ class FilterItemPriceRange extends AbstractFilter
         $this->isInitialized = true;
 
         return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getPrimaryKeyRow()
-    {
-        return '';
-    }
-
-    /**
-     * @return string
-     */
-    public function getTableName()
-    {
-        return '';
     }
 
     /**

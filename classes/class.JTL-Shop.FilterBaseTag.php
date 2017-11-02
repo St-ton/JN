@@ -15,7 +15,8 @@ class FilterBaseTag extends AbstractFilter
      * @var array
      */
     private static $mapping = [
-        'kTag' => 'ValueCompat'
+        'kTag'  => 'ValueCompat',
+        'cName' => 'Name'
     ];
 
     /**
@@ -64,7 +65,7 @@ class FilterBaseTag extends AbstractFilter
             }
         }
         if (!empty($oSeo_obj->cName)) {
-            $this->cName = $oSeo_obj->cName;
+            $this->setName($oSeo_obj->cName);
         }
 
         return $this;

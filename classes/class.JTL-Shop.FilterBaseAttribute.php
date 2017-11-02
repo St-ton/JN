@@ -16,7 +16,8 @@ class FilterBaseAttribute extends AbstractFilter
      */
     private static $mapping = [
         'kMerkmal'     => 'AttributeIDCompat',
-        'kMerkmalWert' => 'ValueCompat'
+        'kMerkmalWert' => 'ValueCompat',
+        'cName'        => 'Name'
     ];
 
     /**
@@ -90,17 +91,17 @@ class FilterBaseAttribute extends AbstractFilter
             $oMerkmalWert = $oMerkmalWert_arr[0];
             unset($oMerkmalWert_arr[0]);
             if (isset($oMerkmalWert->cWert) && strlen($oMerkmalWert->cWert) > 0) {
-                if (isset($oMerkmalWert->cName) && strlen($oMerkmalWert->cName) > 0) {
-                    $this->cName = $oMerkmalWert->cName . ': ' . $oMerkmalWert->cWert;
+                if (!empty($this->getName())) {
+                    $this->setName($oMerkmalWert->cName . ': ' . $oMerkmalWert->cWert);
                 } elseif (isset($oMerkmalWert->cMMName) && strlen($oMerkmalWert->cMMName) > 0) {
-                    $this->cName = $oMerkmalWert->cMMName . ': ' . $oMerkmalWert->cWert;
+                    $this->setName($oMerkmalWert->cMMName . ': ' . $oMerkmalWert->cWert);
                 }
                 if (count($oMerkmalWert_arr) > 0) {
                     foreach ($oMerkmalWert_arr as $oTmpMerkmal) {
                         if (isset($oTmpMerkmal->cName) && strlen($oTmpMerkmal->cName) > 0) {
-                            $this->cName .= ', ' . $oTmpMerkmal->cName . ': ' . $oTmpMerkmal->cWert;
+                            $this->setName($this->getName() . ', ' . $oTmpMerkmal->cName . ': ' . $oTmpMerkmal->cWert);
                         } elseif (isset($oTmpMerkmal->cMMName) && strlen($oTmpMerkmal->cMMName) > 0) {
-                            $this->cName .= ', ' . $oTmpMerkmal->cMMName . ': ' . $oTmpMerkmal->cWert;
+                            $this->setName($this->getName() . ', ' . $oTmpMerkmal->cMMName . ': ' . $oTmpMerkmal->cWert);
                         }
                     }
                 }

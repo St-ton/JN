@@ -17,6 +17,13 @@ class FilterItemSearchSpecial extends AbstractFilter
     public $kKey = 0;
 
     /**
+     * @var array
+     */
+    private static $mapping = [
+        'cName' => 'Name'
+    ];
+
+    /**
      * FilterItemSearchSpecial constructor.
      *
      * @param ProductFilter $productFilter
@@ -73,22 +80,22 @@ class FilterItemSearchSpecial extends AbstractFilter
         }
         switch ($this->getValue()) {
             case SEARCHSPECIALS_BESTSELLER:
-                $this->cName = Shop::Lang()->get('bestsellers');
+                $this->setName(Shop::Lang()->get('bestsellers'));
                 break;
             case SEARCHSPECIALS_SPECIALOFFERS:
-                $this->cName = Shop::Lang()->get('specialOffers');
+                $this->setName(Shop::Lang()->get('specialOffers'));
                 break;
             case SEARCHSPECIALS_NEWPRODUCTS:
-                $this->cName = Shop::Lang()->get('newProducts');
+                $this->setName(Shop::Lang()->get('newProducts'));
                 break;
             case SEARCHSPECIALS_TOPOFFERS:
-                $this->cName = Shop::Lang()->get('topOffers');
+                $this->setName(Shop::Lang()->get('topOffers'));
                 break;
             case SEARCHSPECIALS_UPCOMINGPRODUCTS:
-                $this->cName = Shop::Lang()->get('upcomingProducts');
+                $this->setName(Shop::Lang()->get('upcomingProducts'));
                 break;
             case SEARCHSPECIALS_TOPREVIEWS:
-                $this->cName = Shop::Lang()->get('topReviews');
+                $this->setName(Shop::Lang()->get('topReviews'));
                 break;
             default:
                 //invalid search special ID
@@ -106,15 +113,6 @@ class FilterItemSearchSpecial extends AbstractFilter
     public function getPrimaryKeyRow()
     {
         return 'kKey';
-    }
-
-    /**
-     * @return string
-     * @todo
-     */
-    public function getTableName()
-    {
-        return '';
     }
 
     /**

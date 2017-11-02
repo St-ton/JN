@@ -286,7 +286,7 @@ class VersandartHelper
             }
         );
         // evtl. Versandkupon anwenden
-        if (isset($_SESSION['VersandKupon']) && $_SESSION['VersandKupon']) {
+        if (!empty($_SESSION['VersandKupon'])) {
             foreach ($possibleMethods as $method) {
                 $method->fEndpreis = 0;
                 // lokalisieren
@@ -800,10 +800,8 @@ class VersandartHelper
             );
             $steuerSatz  = $steuerDaten->fSteuersatz;
         }
-        //gestaffelte
-        if (isset($Artikel->FunktionsAttribute[FKT_ATTRIBUT_VERSANDKOSTEN_GESTAFFELT]) &&
-            $Artikel->FunktionsAttribute[FKT_ATTRIBUT_VERSANDKOSTEN_GESTAFFELT]
-        ) {
+        // gestaffelte
+        if (!empty($Artikel->FunktionsAttribute[FKT_ATTRIBUT_VERSANDKOSTEN_GESTAFFELT])) {
             $arrVersand = explode(';', $Artikel->FunktionsAttribute[FKT_ATTRIBUT_VERSANDKOSTEN_GESTAFFELT]);
             foreach ($arrVersand as $cVersand) {
                 if ($cVersand) {
@@ -839,8 +837,8 @@ class VersandartHelper
                 }
             }
         }
-        //flache
-        if (isset($Artikel->FunktionsAttribute[FKT_ATTRIBUT_VERSANDKOSTEN]) && $Artikel->FunktionsAttribute[FKT_ATTRIBUT_VERSANDKOSTEN]) {
+        // flache
+        if (!empty($Artikel->FunktionsAttribute[FKT_ATTRIBUT_VERSANDKOSTEN])) {
             $arrVersand = explode(';', $Artikel->FunktionsAttribute[FKT_ATTRIBUT_VERSANDKOSTEN]);
             foreach ($arrVersand as $cVersand) {
                 if ($cVersand) {
@@ -892,7 +890,7 @@ class VersandartHelper
                         $Pos->nAnzahl,
                         $bCheckLieferadresse
                     );
-                    if (isset($oVersandPos->cName) && $oVersandPos->cName) {
+                    if (!empty($oVersandPos->cName)) {
                         $oVersandPos->kArtikel  = $Pos->Artikel->kArtikel;
                         $arrVersandpositionen[] = $oVersandPos;
                     }

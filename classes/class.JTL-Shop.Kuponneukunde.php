@@ -105,9 +105,7 @@ class Kuponneukunde
      */
     public function Delete()
     {
-        $effected = Shop::DB()->delete('tkuponneukunde', 'kKuponNeukunde', (int)$this->kKuponNeukunde);
-
-        return $effected == 1;
+        return Shop::DB()->delete('tkuponneukunde', 'kKuponNeukunde', (int)$this->kKuponNeukunde) === 1;
     }
 
     /**

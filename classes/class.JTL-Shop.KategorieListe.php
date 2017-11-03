@@ -46,7 +46,7 @@ class KategorieListe
             $kKundengruppe = Session::CustomerGroup()->getID();
         }
         if (!$kSprache) {
-            $kSprache = Shop::getLanguage();
+            $kSprache = Shop::getLanguageID();
         }
         if ($levels > 3) {
             $levels = 3;
@@ -97,7 +97,7 @@ class KategorieListe
             $kKundengruppe = Session::CustomerGroup()->getID();
         }
         if (!$kSprache) {
-            $kSprache = Shop::getLanguage();
+            $kSprache = Shop::getLanguageID();
         }
         $conf   = Shop::getSettings([CONF_NAVIGATIONSFILTER]);
         $objArr = $this->holUnterkategorien($kKategorie, $kKundengruppe, $kSprache);
@@ -185,7 +185,7 @@ class KategorieListe
             $kKundengruppe = Session::CustomerGroup()->getID();
         }
         if (!$kSprache) {
-            $kSprache = Shop::getLanguage();
+            $kSprache = Shop::getLanguageID();
         }
         $kSprache      = (int)$kSprache;
         $kKundengruppe = (int)$kKundengruppe;
@@ -222,7 +222,7 @@ class KategorieListe
             $kKundengruppe = Session::CustomerGroup()->getID();
         }
         if (!$kSprache) {
-            $kSprache = Shop::getLanguage();
+            $kSprache = Shop::getLanguageID();
         }
         $zuDurchsuchen   = [];
         $zuDurchsuchen[] = $AktuelleKategorie;
@@ -259,7 +259,7 @@ class KategorieListe
             $kKundengruppe = Session::CustomerGroup()->getID();
         }
         if (!$kSprache) {
-            $kSprache = Shop::getLanguage();
+            $kSprache = Shop::getLanguageID();
         }
         $kSprache      = (int)$kSprache;
         $kKundengruppe = (int)$kKundengruppe;
@@ -374,7 +374,7 @@ class KategorieListe
                             FROM tkategorieattribut
                             LEFT JOIN tkategorieattributsprache 
                                 ON tkategorieattributsprache.kAttribut = tkategorieattribut.kKategorieAttribut
-                                AND tkategorieattributsprache.kSprache = " . Shop::getLanguage() . "
+                                AND tkategorieattributsprache.kSprache = " . Shop::getLanguageID() . "
                             WHERE kKategorie = " . (int)$oKategorie->kKategorie . "
                             ORDER BY tkategorieattribut.bIstFunktionsAttribut DESC, tkategorieattribut.nSort", 2
                     );

@@ -170,9 +170,9 @@ class Kundendatenhistory extends MainModel
      */
     public function load($kKey, $oObj = null, $xOption = null)
     {
-        $oObj = Shop::DB()->select('tkundendatenhistory', 'kKundendatenHistory', (int)$kKey);
-        if (isset($oObj->kKundendatenHistory) && $oObj->kKundendatenHistory > 0) {
-            $this->loadObject($oObj);
+        $data = Shop::DB()->select('tkundendatenhistory', 'kKundendatenHistory', (int)$kKey);
+        if (isset($data->kKundendatenHistory) && $data->kKundendatenHistory > 0) {
+            $this->loadObject($data);
         }
 
         return $this;
@@ -213,10 +213,10 @@ class Kundendatenhistory extends MainModel
             foreach ($cMember_arr as $cMember) {
                 $cMethod = 'get' . substr($cMember, 1);
                 if (method_exists($this, $cMethod)) {
-                    $mValue = "'" . Shop::DB()->escape(call_user_func([&$this, $cMethod])) . "'";
-                    if (call_user_func([&$this, $cMethod]) === null) {
-                        $mValue = 'NULL';
-                    }
+                    $val        = $this->$cMethod();
+                    $mValue     = $val === null
+                        ? 'NULL'
+                        : ("'" . Shop::DB()->escape($val) . "'");
                     $cSet_arr[] = "{$cMember} = {$mValue}";
                 }
             }

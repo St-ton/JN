@@ -249,19 +249,19 @@ class Jtllog
             $cSQLWhere = " WHERE nLevel = " . (int)$nLevel;
         }
 
-        if (strlen($cFilter) > 0 && strlen($cSQLWhere) === 0) {
-            $cSQLWhere .= " WHERE cLog LIKE '%" . $cFilter . "%'";
-        } elseif (strlen($cFilter) > 0 && strlen($cSQLWhere) > 0) {
-            $cSQLWhere .= " AND cLog LIKE '%" . $cFilter . "%'";
+        if (strlen($cFilter) > 0) {
+            if (strlen($cSQLWhere) === 0) {
+                $cSQLWhere .= " WHERE cLog LIKE '%" . $cFilter . "%'";
+            } else {
+                $cSQLWhere .= " AND cLog LIKE '%" . $cFilter . "%'";
+            }
         }
 
         $oLog = Shop::DB()->query("SELECT count(*) AS nAnzahl FROM tjtllog" . $cSQLWhere, 1);
 
-        if (isset($oLog->nAnzahl) && $oLog->nAnzahl > 0) {
-            return (int)$oLog->nAnzahl;
-        }
-
-        return 0;
+        return isset($oLog->nAnzahl) && $oLog->nAnzahl > 0
+            ? (int)$oLog->nAnzahl
+            : 0;
     }
 
     /**
@@ -493,7 +493,7 @@ class Jtllog
      */
     public static function cronLog($string, $level = 1)
     {
-        if (defined('VERBOSE_CRONJOBS') && (int)VERBOSE_CRONJOBS >= $level && PHP_SAPI === 'cli') {
+        if (defined('VERBOSE_CRONJOBS') && VERBOSE_CRONJOBS >= $level && PHP_SAPI === 'cli') {
             $now = new DateTime();
             echo $now->format('Y-m-d H:i:s') . ' ' . $string . PHP_EOL;
 

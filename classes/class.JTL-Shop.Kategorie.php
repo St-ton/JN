@@ -159,7 +159,7 @@ class Kategorie
             }
         }
         if (!$kSprache) {
-            $kSprache = Shop::getLanguage();
+            $kSprache = Shop::getLanguageID();
             if (!$kSprache) {
                 $oSpracheTmp = gibStandardsprache();
                 $kSprache    = $oSpracheTmp->kSprache;

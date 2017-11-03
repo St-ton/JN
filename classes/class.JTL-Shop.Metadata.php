@@ -226,7 +226,7 @@ class Metadata
                     && $oSuchergebnisse->ArtikelVon > 0
                     && $oSuchergebnisse->ArtikelBis > 0
                 ) {
-                    $cMetaDescription .= ', ' . Shop::Lang()->get('products', 'global') .
+                    $cMetaDescription .= ', ' . Shop::Lang()->get('products') .
                         " {$oSuchergebnisse->ArtikelVon} - {$oSuchergebnisse->ArtikelBis}";
                 }
 
@@ -259,7 +259,7 @@ class Metadata
                 $oSuchergebnisse->ArtikelVon > 0 &&
                 $oSuchergebnisse->ArtikelBis > 0
             ) {
-                $cMetaDescription .= ', ' . Shop::Lang()->get('products', 'global') . ' ' .
+                $cMetaDescription .= ', ' . Shop::Lang()->get('products') . ' ' .
                     $oSuchergebnisse->ArtikelVon . ' - ' . $oSuchergebnisse->ArtikelBis;
             }
         }

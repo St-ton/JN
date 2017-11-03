@@ -42,14 +42,15 @@ class Bewertung
     public function __construct($kArtikel, $kSprache, $nAnzahlSeite = -1, $nSeite = 1, $nSterne = 0, $cFreischalten = 'N', $nOption = 0, $bAlleSprachen = false)
     {
         if (!$kSprache) {
-            $kSprache = Shop::getLanguage();
+            $kSprache = Shop::getLanguageID();
         }
         $kArtikel     = (int)$kArtikel;
         $kSprache     = (int)$kSprache;
         $nAnzahlSeite = (int)$nAnzahlSeite;
         $nSeite       = (int)$nSeite;
         $nSterne      = (int)$nSterne;
-        if ($nOption == 1) { // Hilfreich holen
+        $nOption      = (int)$nOption;
+        if ($nOption === 1) {
             $this->holeHilfreichsteBewertung($kArtikel, $kSprache);
         } else {
             $this->holeProduktBewertungen(

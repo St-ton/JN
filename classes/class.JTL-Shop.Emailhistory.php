@@ -125,10 +125,10 @@ class Emailhistory
             foreach ($cMember_arr as $cMember) {
                 $cMethod = 'get' . substr($cMember, 1);
                 if (method_exists($this, $cMethod)) {
-                    $mValue = "'" . Shop::DB()->realEscape(call_user_func([&$this, $cMethod])) . "'";
-                    if (call_user_func([&$this, $cMethod]) === null) {
-                        $mValue = 'NULL';
-                    }
+                    $val        = $this->$cMethod();
+                    $mValue     = $val === null
+                        ? 'NULL'
+                        : ("'" . Shop::DB()->escape($val) . "'");
                     $cSet_arr[] = "{$cMember} = {$mValue}";
                 }
             }

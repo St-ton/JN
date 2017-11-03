@@ -107,7 +107,7 @@ class MediaImageCompatibility implements IMedia
      */
     private function parse($request)
     {
-        if (!is_string($request) || strlen($request) === 0) {
+        if (!is_string($request) || $request === '') {
             return null;
         }
 

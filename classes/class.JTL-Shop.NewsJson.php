@@ -88,7 +88,8 @@ class NewsJson
     public static function buildThumbnail($cOptions_arr)
     {
         if (isset($cOptions_arr['filename'], $cOptions_arr['path'], $cOptions_arr['isdir']) && !$cOptions_arr['isdir']) {
-            $cOptions_arr['thumb'] = Shop::getURL() . '/' . PFAD_NEWSBILDER . "{$cOptions_arr['news']}/{$cOptions_arr['filename']}";
+            $cOptions_arr['thumb'] = Shop::getURL() . '/' .
+                PFAD_NEWSBILDER . "{$cOptions_arr['news']}/{$cOptions_arr['filename']}";
         }
     }
 }

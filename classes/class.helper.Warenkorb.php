@@ -215,11 +215,11 @@ class WarenkorbHelper
     }
 
     /**
-     * @return string
+     * @return null
      */
     public function getInvoiceID()
     {
-        return;
+        return null;
     }
 
     /**

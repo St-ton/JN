@@ -355,6 +355,8 @@ class FilterItemPriceRange extends AbstractFilter
             ->setOrigin(__CLASS__);
         // Automatisch
         if ($this->getConfig()['navigationsfilter']['preisspannenfilter_anzeige_berechnung'] === 'A') {
+            $fSteuersatzMax = 0.0;
+            $fSteuersatzMin = 0.0;
             // remove duplicate joins
             $joinedTables = [];
             foreach ($state->joins as $i => $stateJoin) {

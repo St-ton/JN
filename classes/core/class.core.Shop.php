@@ -579,6 +579,28 @@ final class Shop
     }
 
     /**
+     * get current language/language ISO
+     *
+     * @var bool $iso
+     * @return int
+     */
+    public static function getLanguageID()
+    {
+        return (int)self::$kSprache;
+    }
+
+    /**
+     * get current language/language ISO
+     *
+     * @var bool $iso
+     * @return string
+     */
+    public static function getLanguageCode()
+    {
+        return self::$cISO;
+    }
+
+    /**
      * set language/language ISO
      *
      * @param int $languageID

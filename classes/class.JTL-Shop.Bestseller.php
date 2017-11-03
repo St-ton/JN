@@ -207,9 +207,8 @@ class Bestseller
             $bestsellers    = [];
             $defaultOptions = Artikel::getDefaultOptions();
             foreach ($bestsellerkeys as $bestsellerkey) {
-                $product = new Artikel();
-                $product->fuelleArtikel($bestsellerkey, $defaultOptions);
-                if ($product->kArtikel > 0) {
+                $product = (new Artikel())->fuelleArtikel($bestsellerkey, $defaultOptions);
+                if ($product !== null && $product->kArtikel > 0) {
                     $bestsellers[] = $product;
                 }
             }
@@ -234,7 +233,7 @@ class Bestseller
                     break;
                 }
                 foreach ($bestsellers as $bestseller) {
-                    if ($product->kArtikel == $bestseller->kArtikel) {
+                    if ($product->kArtikel === $bestseller->kArtikel) {
                         unset($products[$i]);
                         $ignoredkeys[] = $bestseller->kArtikel;
                         break;

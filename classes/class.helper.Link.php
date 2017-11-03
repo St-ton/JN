@@ -999,7 +999,7 @@ class LinkHelper
     public function buildSpecialPageMeta($nLinkArt, $cISOSprache = '')
     {
         if ($cISOSprache === '') {
-            $shopISO = Shop::getLanguage(true);
+            $shopISO = Shop::getLanguageCode();
             if ($shopISO !== null && strlen($shopISO) > 0) {
                 $cISOSprache = $shopISO;
             } else {

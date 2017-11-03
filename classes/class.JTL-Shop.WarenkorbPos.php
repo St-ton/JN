@@ -75,7 +75,7 @@ class WarenkorbPos
     public $cEinheit = '';
 
     /**
-     * @var string
+     * @var array
      */
     public $cGesamtpreisLocalized;
 
@@ -145,7 +145,7 @@ class WarenkorbPos
     public $nAnzahlEinzel;
 
     /**
-     * @var string[]
+     * @var array
      */
     public $cEinzelpreisLocalized;
 
@@ -205,7 +205,7 @@ class WarenkorbPos
             'kEigenschaftWert',  (int)$NeueWarenkorbPosEigenschaft->kEigenschaftWert,
             'kKundengruppe',  Session::CustomerGroup()->getID()
         );
-        if (isset($Aufpreis_obj->fAufpreisNetto) && $Aufpreis_obj->fAufpreisNetto) {
+        if (!empty($Aufpreis_obj->fAufpreisNetto)) {
             if ($this->Artikel->Preise->rabatt > 0) {
                 $NeueWarenkorbPosEigenschaft->fAufpreis = $Aufpreis_obj->fAufpreisNetto - (($this->Artikel->Preise->rabatt / 100) * $Aufpreis_obj->fAufpreisNetto);
                 $Aufpreis_obj->fAufpreisNetto           = $NeueWarenkorbPosEigenschaft->fAufpreis;
@@ -228,7 +228,7 @@ class WarenkorbPos
                     'kEigenschaft', (int)$NeueWarenkorbPosEigenschaft->kEigenschaft,
                     'kSprache', (int)$Sprache->kSprache
                 );
-                if (isset($eigenschaft_spr->cName) && $eigenschaft_spr->cName) {
+                if (!empty($eigenschaft_spr->cName)) {
                     $NeueWarenkorbPosEigenschaft->cEigenschaftName[$Sprache->cISO] = $eigenschaft_spr->cName;
                 }
                 $eigenschaftwert_spr = Shop::DB()->select(
@@ -236,7 +236,7 @@ class WarenkorbPos
                     'kEigenschaftWert', (int)$NeueWarenkorbPosEigenschaft->kEigenschaftWert,
                     'kSprache', (int)$Sprache->kSprache
                 );
-                if (isset($eigenschaftwert_spr->cName) && $eigenschaftwert_spr->cName) {
+                if (!empty($eigenschaftwert_spr->cName)) {
                     $NeueWarenkorbPosEigenschaft->cEigenschaftWertName[$Sprache->cISO] = $eigenschaftwert_spr->cName;
                 }
             }
@@ -356,7 +356,7 @@ class WarenkorbPos
                 $nVaterPos    = null;
                 /** @var WarenkorbPos $oPosition */
                 foreach ($_SESSION['Warenkorb']->PositionenArr as $nPos => $oPosition) {
-                    if ($this->cUnique == $oPosition->cUnique) {
+                    if ($this->cUnique === $oPosition->cUnique) {
                         $fPreisNetto += $oPosition->fPreis * $oPosition->nAnzahl;
                         $fPreisBrutto += berechneBrutto($oPosition->fPreis * $oPosition->nAnzahl, gibUst($oPosition->kSteuerklasse), 4);
 

@@ -122,7 +122,7 @@ class VCard
      */
     protected function createInstance($vcardData)
     {
-        $className = get_called_class();
+        $className = static::class;
 
         return new $className($vcardData, $this->options);
     }
@@ -288,7 +288,7 @@ class VCard
         $key      = $keyParts[0];
         $encoding = false;
         $type     = false;
-        //$value    = null;
+        $params   = [];
 
         if (strpos($key, 'item') === 0) {
             $tmpKey  = explode('.', $key, 2);
@@ -343,7 +343,7 @@ class VCard
                 ? self::parseMultipleTextValue($rawValue)
                 : $rawValue;
 
-            if ($type && isset($value)) {
+            if ($type && $value !== null) {
                 $value = [
                     'Value' => $value,
                     'Type'  => $type
@@ -351,7 +351,7 @@ class VCard
             }
         }
 
-        if (isset($value) && is_array($value) && $encoding) {
+        if ($value !== null && is_array($value) && $encoding) {
             $value['Encoding'] = $encoding;
         }
 

@@ -102,7 +102,7 @@ class Exportformat
     /**
      * @var object|null
      */
-    protected $oldSession;
+    private $oldSession;
 
     /**
      * @var array
@@ -1200,7 +1200,7 @@ class Exportformat
                     !$this->useCache()
                 );
                 // calling gibKategoriepfad() should not be necessary since it has already been called in Kategorie::loadFromDB()
-                $Artikel->Kategoriepfad         = isset($Artikel->Kategorie->cKategoriePfad)
+                $Artikel->Kategoriepfad         = $Artikel->Kategorie->cKategoriePfad !== null
                     ? $Artikel->Kategorie->cKategoriePfad
                     : gibKategoriepfad($Artikel->Kategorie, $this->kKundengruppe, $this->kSprache);
                 $Artikel->Versandkosten         = gibGuenstigsteVersandkosten(

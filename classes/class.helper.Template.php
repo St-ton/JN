@@ -122,7 +122,7 @@ class TemplateHelper
             );
             foreach ($intersect as $dir) {
                 $d = $subTemplateDir . $version . DIRECTORY_SEPARATOR . $dir;
-                if ($data = $this->getData($d, false)) {
+                if (($data = $this->getData($d, false)) !== false) {
                     $storedTemplates[$dir][] = $data;
                 }
             }
@@ -176,9 +176,9 @@ class TemplateHelper
             return $result;
         }
 
-        foreach (scandir($path) as $key => $value) {
+        foreach (scandir($path, SCANDIR_SORT_ASCENDING) as $key => $value) {
             if (!in_array($value, ['.', '..'], true) && is_dir($path . DIRECTORY_SEPARATOR . $value)) {
-                $result[$value] = ($depht > 1)
+                $result[$value] = $depht > 1
                     ? $this->getFolders($path . DIRECTORY_SEPARATOR . $value, $depht - 1)
                     : [];
             }
@@ -196,7 +196,7 @@ class TemplateHelper
     public function getFrontendTemplateFolders($path = false)
     {
         $cOrdner_arr = [];
-        if ($nHandle = opendir(PFAD_ROOT . PFAD_TEMPLATES)) {
+        if (($nHandle = opendir(PFAD_ROOT . PFAD_TEMPLATES)) !== false) {
             while (false !== ($cFile = readdir($nHandle))) {
                 if ($cFile !== '.' && $cFile !== '..' && $cFile[0] !== '.') {
                     $cOrdner_arr[] = $path ? (PFAD_ROOT . PFAD_TEMPLATES . $cFile) : $cFile;
@@ -313,22 +313,22 @@ class TemplateHelper
             return false;
         }
 
-        $oTemplate->cName        = (string)trim($oXMLTemplate->Name);
+        $oTemplate->cName        = trim($oXMLTemplate->Name);
         $oTemplate->cOrdner      = (string)$cOrdner;
-        $oTemplate->cAuthor      = (string)trim($oXMLTemplate->Author);
-        $oTemplate->cURL         = (string)trim($oXMLTemplate->URL);
-        $oTemplate->cVersion     = (string)trim($oXMLTemplate->Version);
-        $oTemplate->cShopVersion = (string)trim($oXMLTemplate->ShopVersion);
-        $oTemplate->cPreview     = (string)trim($oXMLTemplate->Preview);
-        $oTemplate->cDokuURL     = (string)trim($oXMLTemplate->DokuURL);
+        $oTemplate->cAuthor      = trim($oXMLTemplate->Author);
+        $oTemplate->cURL         = trim($oXMLTemplate->URL);
+        $oTemplate->cVersion     = trim($oXMLTemplate->Version);
+        $oTemplate->cShopVersion = trim($oXMLTemplate->ShopVersion);
+        $oTemplate->cPreview     = trim($oXMLTemplate->Preview);
+        $oTemplate->cDokuURL     = trim($oXMLTemplate->DokuURL);
         $oTemplate->bChild       = !empty($oXMLTemplate->Parent);
-        $oTemplate->cParent      = !empty($oXMLTemplate->Parent) ? (string)trim($oXMLTemplate->Parent) : '';
+        $oTemplate->cParent      = !empty($oXMLTemplate->Parent) ? trim($oXMLTemplate->Parent) : '';
         $oTemplate->bResponsive  = empty($oXMLTemplate['isFullResponsive'])
             ? false
             : (strtolower((string)$oXMLTemplate['isFullResponsive']) === 'true');
         $oTemplate->bHasError    = false;
         $oTemplate->eTyp         = '';
-        $oTemplate->cDescription = (!empty($oXMLTemplate->Description)) ? (string)trim($oXMLTemplate->Description) : '';
+        $oTemplate->cDescription = (!empty($oXMLTemplate->Description)) ? trim($oXMLTemplate->Description) : '';
         if (StringHandler::is_utf8($oTemplate->cDescription)) {
             $oTemplate->cDescription = utf8_decode($oTemplate->cDescription);
         }

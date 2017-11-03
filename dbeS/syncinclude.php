@@ -33,31 +33,14 @@ error_reporting(SYNC_LOG_LEVEL);
 if (!is_writable(PFAD_SYNC_TMP)) {
     syncException('Fehler beim Abgleich: Das Shop-Verzeichnis dbeS/' . PFAD_SYNC_TMP . ' ist nicht durch den Web-User beschreibbar!', 8);
 }
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.ImageCloud.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Path.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.StringHandler.php';
-require_once PFAD_ROOT . PFAD_CLASSES_CORE . 'class.core.NiceDB.php';
-require_once PFAD_ROOT . PFAD_CLASSES_CORE . 'class.core.NiceMail.php';
-require_once PFAD_ROOT . PFAD_CLASSES_CORE . 'class.core.Nice.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Synclogin.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Shopsetting.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'tools.Global.php';
 require_once PFAD_ROOT . PFAD_BLOWFISH . 'xtea.class.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Kunde.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Lieferadresse.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Rechnungsadresse.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Template.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Sprache.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Jtllog.php';
 require_once PFAD_ROOT . PFAD_DBES . 'xml_tools.php';
 require_once PFAD_ROOT . PFAD_DBES . 'mappings.php';
 
-//datenbankverbindung aufbauen
-$DB = new NiceDB(DB_HOST, DB_USER, DB_PASS, DB_NAME);
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.JTLCache.php';
-$cache = JTLCache::getInstance();
-$cache->setJtlCacheConfig();
+$DB    = new NiceDB(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+$cache = JTLCache::getInstance()->setJtlCacheConfig();
 
 $GLOBALS['bSeo'] = true; //compatibility!
 // Liste aller Hooks, die momentan im Shop gebraucht werden könnten

@@ -610,13 +610,22 @@ class Kundengruppe
     public function initAttributes()
     {
         if ($this->id > 0) {
-            $attributes = Shop::DB()->selectAll('tkundengruppenattribut', 'kKundengruppe', (int)$this->id);
+            $this->Attribute = [];
+            $attributes      = Shop::DB()->selectAll('tkundengruppenattribut', 'kKundengruppe', (int)$this->id);
             foreach ($attributes as $attribute) {
                 $this->Attribute[strtolower($attribute->cName)] = $attribute->cWert;
             }
         }
 
         return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasAttributes()
+    {
+        return $this->Attribute !== null;
     }
 
     /**

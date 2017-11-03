@@ -373,40 +373,39 @@ class VersandartHelper
         // aber nur, wenn artikelabhaengiger Versand bei dem jeweiligen kArtikel
         $nArtikelAssoc_arr = [];
         foreach ($oArtikel_arr as $oArtikel) {
-            $kArtikel                     = $oArtikel['kArtikel'];
-            $nArtikelAssoc_arr[$kArtikel] = (!isset($nArtikelAssoc_arr[$kArtikel])) ? 0 : 1;
+            $kArtikel                     = (int)$oArtikel['kArtikel'];
+            $nArtikelAssoc_arr[$kArtikel] = isset($nArtikelAssoc_arr[$kArtikel]) ? 1 : 0;
         }
 
         $bMerge         = false;
         $defaultOptions = Artikel::getDefaultOptions();
         foreach ($nArtikelAssoc_arr as $kArtikel => $nArtikelAssoc) {
-            if ($nArtikelAssoc == 1) {
-                $oArtikelTMP = new Artikel();
-                $oArtikelTMP->fuelleArtikel($kArtikel, $defaultOptions);
-                // Normaler Variationsartikel
-                if (
-                    $oArtikelTMP->nIstVater == 0 &&
-                    $oArtikelTMP->kVaterArtikel == 0 &&
-                    count($oArtikelTMP->Variationen) > 0
-                ) {
-                    // Nur wenn artikelabhaengiger Versand gestaffelt als Funktionsattribut gesetzt ist
-                    if (self::pruefeArtikelabhaengigeVersandkosten($oArtikelTMP) == 2) {
-                        $fAnzahl      = 0;
-                        $nArrayAnzahl = count($oArtikel_arr);
-                        for ($i = 0; $i < $nArrayAnzahl; $i++) {
-                            if ($oArtikel_arr[$i]['kArtikel'] == $kArtikel) {
-                                $fAnzahl += $oArtikel_arr[$i]['fAnzahl'];
-                                unset($oArtikel_arr[$i]);
-                            }
-                        }
-
-                        $oArtikelMerged             = [];
-                        $oArtikelMerged['kArtikel'] = $kArtikel;
-                        $oArtikelMerged['fAnzahl']  = $fAnzahl;
-                        $oArtikel_arr[]             = $oArtikelMerged;
-                        $bMerge                     = true;
+            if ($nArtikelAssoc !== 1) {
+                continue;
+            }
+            $oArtikelTMP = (new Artikel())->fuelleArtikel($kArtikel, $defaultOptions);
+            // Normaler Variationsartikel
+            if ($oArtikelTMP !== null
+                && $oArtikelTMP->nIstVater === 0
+                && $oArtikelTMP->kVaterArtikel === 0
+                && count($oArtikelTMP->Variationen) > 0
+                && self::pruefeArtikelabhaengigeVersandkosten($oArtikelTMP) === 2
+            ) {
+                // Nur wenn artikelabhaengiger Versand gestaffelt als Funktionsattribut gesetzt ist
+                $fAnzahl      = 0;
+                $nArrayAnzahl = count($oArtikel_arr);
+                for ($i = 0; $i < $nArrayAnzahl; $i++) {
+                    if ($oArtikel_arr[$i]['kArtikel'] === $kArtikel) {
+                        $fAnzahl += $oArtikel_arr[$i]['fAnzahl'];
+                        unset($oArtikel_arr[$i]);
                     }
                 }
+
+                $oArtikelMerged             = [];
+                $oArtikelMerged['kArtikel'] = $kArtikel;
+                $oArtikelMerged['fAnzahl']  = $fAnzahl;
+                $oArtikel_arr[]             = $oArtikelMerged;
+                $bMerge                     = true;
             }
         }
 
@@ -416,154 +415,153 @@ class VersandartHelper
 
         $defaultOptions = Artikel::getDefaultOptions();
         foreach ($oArtikel_arr as $i => $oArtikel) {
-            $oArtikelTMP = new Artikel();
-            $oArtikelTMP->fuelleArtikel($oArtikel['kArtikel'], $defaultOptions);
+            $oArtikelTMP   = (new Artikel())->fuelleArtikel($oArtikel['kArtikel'], $defaultOptions);
+            if ($oArtikelTMP === null || $oArtikelTMP->kArtikel <= 0) {
+                continue;
+            }
             $kSteuerklasse = $oArtikelTMP->kSteuerklasse;
+            // Artikelabhaengige Versandkosten?
+            if ($oArtikelTMP->nIstVater === 0) {
+                //Summen pro Steuerklasse summieren
+                if ($oArtikelTMP->kSteuerklasse === null) {
+                    $fWarensummeProSteuerklasse_arr[$oArtikelTMP->kSteuerklasse] = 0;
+                }
 
-            if ($oArtikelTMP->kArtikel !== null && $oArtikelTMP->kArtikel > 0) {
-                // Artikelabhaengige Versandkosten?
-                if ($oArtikelTMP->nIstVater == 0) {
+                $fWarensummeProSteuerklasse_arr[$oArtikelTMP->kSteuerklasse] +=
+                    $oArtikelTMP->Preise->fVKNetto * $oArtikel['fAnzahl'];
+
+                $oVersandPos = self::gibHinzukommendeArtikelAbhaengigeVersandkosten(
+                    $oArtikelTMP,
+                    $cLandISO,
+                    $oArtikel['fAnzahl']
+                );
+                if ($oVersandPos !== false) {
+                    $fSummeHinzukommendeArtikelabhaengigeVersandkosten += $oVersandPos->fKosten;
+                    continue;
+                }
+            }
+            // Normaler Artikel oder Kind Artikel
+            if ($oArtikelTMP->kVaterArtikel > 0 || count($oArtikelTMP->Variationen) === 0) {
+                $oZusatzArtikel->fAnzahl += $oArtikel['fAnzahl'];
+                $oZusatzArtikel->fWarenwertNetto += $oArtikel['fAnzahl'] * $oArtikelTMP->Preise->fVKNetto;
+                $oZusatzArtikel->fGewicht += $oArtikel['fAnzahl'] * $oArtikelTMP->fGewicht;
+
+                if (strlen($cVersandklassen) > 0 && strpos($cVersandklassen, $oArtikelTMP->kVersandklasse) === false) {
+                    $cVersandklassen = '-' . $oArtikelTMP->kVersandklasse;
+                } elseif (strlen($cVersandklassen) === 0) {
+                    $cVersandklassen = $oArtikelTMP->kVersandklasse;
+                }
+            } elseif ($oArtikelTMP->nIstVater === 0
+                && $oArtikelTMP->kVaterArtikel === 0
+                && count($oArtikelTMP->Variationen) > 0
+            ) { // Normale Variation
+                if ($oArtikel['cInputData']{0} === '_') {
+                    // 1D
+                    $cVariation0                             = substr($oArtikel['cInputData'], 1);
+                    list($kEigenschaft0, $kEigenschaftWert0) = explode(':', $cVariation0);
+
+                    $oVariation = findeVariation($oArtikelTMP->Variationen, $kEigenschaft0, $kEigenschaftWert0);
+
+                    $oZusatzArtikel->fAnzahl += $oArtikel['fAnzahl'];
+                    $oZusatzArtikel->fWarenwertNetto += $oArtikel['fAnzahl'] *
+                        ($oArtikelTMP->Preise->fVKNetto + $oVariation->fAufpreisNetto);
+                    $oZusatzArtikel->fGewicht += $oArtikel['fAnzahl'] *
+                        ($oArtikelTMP->fGewicht + $oVariation->fGewichtDiff);
+                } else {
+                    // 2D
+                    list($cVariation0, $cVariation1)         = explode('_', $oArtikel['cInputData']);
+                    list($kEigenschaft0, $kEigenschaftWert0) = explode(':', $cVariation0);
+                    list($kEigenschaft1, $kEigenschaftWert1) = explode(':', $cVariation1);
+
+                    $oVariation0 = findeVariation($oArtikelTMP->Variationen, $kEigenschaft0, $kEigenschaftWert0);
+                    $oVariation1 = findeVariation($oArtikelTMP->Variationen, $kEigenschaft1, $kEigenschaftWert1);
+
+                    $oZusatzArtikel->fAnzahl += $oArtikel['fAnzahl'];
+                    $oZusatzArtikel->fWarenwertNetto += $oArtikel['fAnzahl'] *
+                        ($oArtikelTMP->Preise->fVKNetto + $oVariation0->fAufpreisNetto + $oVariation1->fAufpreisNetto);
+                    $oZusatzArtikel->fGewicht += $oArtikel['fAnzahl'] *
+                        ($oArtikelTMP->fGewicht + $oVariation0->fGewichtDiff + $oVariation1->fGewichtDiff);
+                }
+                if (strlen($cVersandklassen) > 0 && strpos($cVersandklassen, $oArtikelTMP->kVersandklasse) === false) {
+                    $cVersandklassen = '-' . $oArtikelTMP->kVersandklasse;
+                } elseif (strlen($cVersandklassen) === 0) {
+                    $cVersandklassen = $oArtikelTMP->kVersandklasse;
+                }
+            } elseif ($oArtikelTMP->nIstVater > 0) { // Variationskombination (Vater)
+                $oArtikelKind = new Artikel();
+                if ($oArtikel['cInputData']{0} === '_') {
+                    // 1D
+                    $cVariation0                             = substr($oArtikel['cInputData'], 1);
+                    list($kEigenschaft0, $kEigenschaftWert0) = explode(':', $cVariation0);
+                    $kKindArtikel                            = findeKindArtikelZuEigenschaft(
+                        $oArtikelTMP->kArtikel,
+                        $kEigenschaft0,
+                        $kEigenschaftWert0
+                    );
+                    $oArtikelKind->fuelleArtikel($kKindArtikel, $defaultOptions);
                     //Summen pro Steuerklasse summieren
-                    if ($oArtikelTMP->kSteuerklasse === null) {
-                        $fWarensummeProSteuerklasse_arr[$oArtikelTMP->kSteuerklasse] = 0;
+                    if (!array_key_exists($oArtikelKind->kSteuerklasse, $fWarensummeProSteuerklasse_arr)) {
+                        $fWarensummeProSteuerklasse_arr[$oArtikelKind->kSteuerklasse] = 0;
                     }
 
-                    $fWarensummeProSteuerklasse_arr[$oArtikelTMP->kSteuerklasse] +=
-                        $oArtikelTMP->Preise->fVKNetto * $oArtikel['fAnzahl'];
+                    $fWarensummeProSteuerklasse_arr[$oArtikelKind->kSteuerklasse] +=
+                        $oArtikelKind->Preise->fVKNetto * $oArtikel['fAnzahl'];
 
-                    $oVersandPos = self::gibHinzukommendeArtikelAbhaengigeVersandkosten(
-                        $oArtikelTMP,
+                    $fSumme = self::gibHinzukommendeArtikelAbhaengigeVersandkosten(
+                        $oArtikelKind,
                         $cLandISO,
                         $oArtikel['fAnzahl']
                     );
-                    if ($oVersandPos !== false) {
-                        $fSummeHinzukommendeArtikelabhaengigeVersandkosten += $oVersandPos->fKosten;
+                    if ($fSumme !== false) {
+                        $fSummeHinzukommendeArtikelabhaengigeVersandkosten += $fSumme;
                         continue;
                     }
-                }
-                // Normaler Artikel oder Kind Artikel
-                if ($oArtikelTMP->kVaterArtikel > 0 || count($oArtikelTMP->Variationen) === 0) {
+
                     $oZusatzArtikel->fAnzahl += $oArtikel['fAnzahl'];
-                    $oZusatzArtikel->fWarenwertNetto += $oArtikel['fAnzahl'] * $oArtikelTMP->Preise->fVKNetto;
-                    $oZusatzArtikel->fGewicht += $oArtikel['fAnzahl'] * $oArtikelTMP->fGewicht;
+                    $oZusatzArtikel->fWarenwertNetto += $oArtikel['fAnzahl'] * $oArtikelKind->Preise->fVKNetto;
+                    $oZusatzArtikel->fGewicht += $oArtikel['fAnzahl'] * $oArtikelKind->fGewicht;
+                } else {
+                    // 2D
+                    list($cVariation0, $cVariation1)         = explode('_', $oArtikel['cInputData']);
+                    list($kEigenschaft0, $kEigenschaftWert0) = explode(':', $cVariation0);
+                    list($kEigenschaft1, $kEigenschaftWert1) = explode(':', $cVariation1);
 
-                    if (strlen($cVersandklassen) > 0 && strpos($cVersandklassen, $oArtikelTMP->kVersandklasse) === false) {
-                        $cVersandklassen = '-' . $oArtikelTMP->kVersandklasse;
-                    } elseif (strlen($cVersandklassen) === 0) {
-                        $cVersandklassen = $oArtikelTMP->kVersandklasse;
+                    $kKindArtikel = findeKindArtikelZuEigenschaft(
+                        $oArtikelTMP->kArtikel,
+                        $kEigenschaft0,
+                        $kEigenschaftWert0,
+                        $kEigenschaft1,
+                        $kEigenschaftWert1
+                    );
+                    $oArtikelKind->fuelleArtikel($kKindArtikel, $defaultOptions);
+                    //Summen pro Steuerklasse summieren
+                    if (!array_key_exists($oArtikelKind->kSteuerklasse, $fWarensummeProSteuerklasse_arr)) {
+                        $fWarensummeProSteuerklasse_arr[$oArtikelKind->kSteuerklasse] = 0;
                     }
-                } elseif ($oArtikelTMP->nIstVater == 0 &&
-                    $oArtikelTMP->kVaterArtikel == 0 &&
-                    count($oArtikelTMP->Variationen) > 0
-                ) { // Normale Variation
-                    if ($oArtikel['cInputData']{0} == '_') {
-                        // 1D
-                        $cVariation0                             = substr($oArtikel['cInputData'], 1);
-                        list($kEigenschaft0, $kEigenschaftWert0) = explode(':', $cVariation0);
 
-                        $oVariation = findeVariation($oArtikelTMP->Variationen, $kEigenschaft0, $kEigenschaftWert0);
+                    $fWarensummeProSteuerklasse_arr[$oArtikelKind->kSteuerklasse] += $oArtikelKind->Preise->fVKNetto * $oArtikel['fAnzahl'];
 
-                        $oZusatzArtikel->fAnzahl += $oArtikel['fAnzahl'];
-                        $oZusatzArtikel->fWarenwertNetto += $oArtikel['fAnzahl'] *
-                            ($oArtikelTMP->Preise->fVKNetto + $oVariation->fAufpreisNetto);
-                        $oZusatzArtikel->fGewicht += $oArtikel['fAnzahl'] *
-                            ($oArtikelTMP->fGewicht + $oVariation->fGewichtDiff);
-                    } else {
-                        // 2D
-                        list($cVariation0, $cVariation1)         = explode('_', $oArtikel['cInputData']);
-                        list($kEigenschaft0, $kEigenschaftWert0) = explode(':', $cVariation0);
-                        list($kEigenschaft1, $kEigenschaftWert1) = explode(':', $cVariation1);
-
-                        $oVariation0 = findeVariation($oArtikelTMP->Variationen, $kEigenschaft0, $kEigenschaftWert0);
-                        $oVariation1 = findeVariation($oArtikelTMP->Variationen, $kEigenschaft1, $kEigenschaftWert1);
-
-                        $oZusatzArtikel->fAnzahl += $oArtikel['fAnzahl'];
-                        $oZusatzArtikel->fWarenwertNetto += $oArtikel['fAnzahl'] *
-                            ($oArtikelTMP->Preise->fVKNetto + $oVariation0->fAufpreisNetto + $oVariation1->fAufpreisNetto);
-                        $oZusatzArtikel->fGewicht += $oArtikel['fAnzahl'] *
-                            ($oArtikelTMP->fGewicht + $oVariation0->fGewichtDiff + $oVariation1->fGewichtDiff);
+                    $fSumme = self::gibHinzukommendeArtikelAbhaengigeVersandkosten($oArtikelKind, $cLandISO, $oArtikel['fAnzahl']);
+                    if ($fSumme !== false) {
+                        $fSummeHinzukommendeArtikelabhaengigeVersandkosten += $fSumme;
+                        continue;
                     }
-                    if (strlen($cVersandklassen) > 0 && strpos($cVersandklassen, $oArtikelTMP->kVersandklasse) === false) {
-                        $cVersandklassen = '-' . $oArtikelTMP->kVersandklasse;
-                    } elseif (strlen($cVersandklassen) === 0) {
-                        $cVersandklassen = $oArtikelTMP->kVersandklasse;
-                    }
-                } elseif ($oArtikelTMP->nIstVater > 0) { // Variationskombination (Vater)
-                    $oArtikelKind = new Artikel();
-                    if ($oArtikel['cInputData']{0} === '_') {
-                        // 1D
-                        $cVariation0                             = substr($oArtikel['cInputData'], 1);
-                        list($kEigenschaft0, $kEigenschaftWert0) = explode(':', $cVariation0);
-                        $kKindArtikel                            = findeKindArtikelZuEigenschaft(
-                            $oArtikelTMP->kArtikel,
-                            $kEigenschaft0,
-                            $kEigenschaftWert0
-                        );
-                        $oArtikelKind->fuelleArtikel($kKindArtikel, $defaultOptions);
-                        //Summen pro Steuerklasse summieren
-                        if (!array_key_exists($oArtikelKind->kSteuerklasse, $fWarensummeProSteuerklasse_arr)) {
-                            $fWarensummeProSteuerklasse_arr[$oArtikelKind->kSteuerklasse] = 0;
-                        }
 
-                        $fWarensummeProSteuerklasse_arr[$oArtikelKind->kSteuerklasse] +=
-                            $oArtikelKind->Preise->fVKNetto * $oArtikel['fAnzahl'];
-
-                        $fSumme = self::gibHinzukommendeArtikelAbhaengigeVersandkosten(
-                            $oArtikelKind,
-                            $cLandISO,
-                            $oArtikel['fAnzahl']
-                        );
-                        if ($fSumme !== false) {
-                            $fSummeHinzukommendeArtikelabhaengigeVersandkosten += $fSumme;
-                            continue;
-                        }
-
-                        $oZusatzArtikel->fAnzahl += $oArtikel['fAnzahl'];
-                        $oZusatzArtikel->fWarenwertNetto += $oArtikel['fAnzahl'] * $oArtikelKind->Preise->fVKNetto;
-                        $oZusatzArtikel->fGewicht += $oArtikel['fAnzahl'] * $oArtikelKind->fGewicht;
-                    } else {
-                        // 2D
-                        list($cVariation0, $cVariation1)         = explode('_', $oArtikel['cInputData']);
-                        list($kEigenschaft0, $kEigenschaftWert0) = explode(':', $cVariation0);
-                        list($kEigenschaft1, $kEigenschaftWert1) = explode(':', $cVariation1);
-
-                        $kKindArtikel = findeKindArtikelZuEigenschaft(
-                            $oArtikelTMP->kArtikel,
-                            $kEigenschaft0,
-                            $kEigenschaftWert0,
-                            $kEigenschaft1,
-                            $kEigenschaftWert1
-                        );
-                        $oArtikelKind->fuelleArtikel($kKindArtikel, $defaultOptions);
-                        //Summen pro Steuerklasse summieren
-                        if (!array_key_exists($oArtikelKind->kSteuerklasse, $fWarensummeProSteuerklasse_arr)) {
-                            $fWarensummeProSteuerklasse_arr[$oArtikelKind->kSteuerklasse] = 0;
-                        }
-
-                        $fWarensummeProSteuerklasse_arr[$oArtikelKind->kSteuerklasse] += $oArtikelKind->Preise->fVKNetto * $oArtikel['fAnzahl'];
-
-                        $fSumme = self::gibHinzukommendeArtikelAbhaengigeVersandkosten($oArtikelKind, $cLandISO, $oArtikel['fAnzahl']);
-                        if ($fSumme !== false) {
-                            $fSummeHinzukommendeArtikelabhaengigeVersandkosten += $fSumme;
-                            continue;
-                        }
-
-                        $oZusatzArtikel->fAnzahl += $oArtikel['fAnzahl'];
-                        $oZusatzArtikel->fWarenwertNetto += $oArtikel['fAnzahl'] * $oArtikelKind->Preise->fVKNetto;
-                        $oZusatzArtikel->fGewicht += $oArtikel['fAnzahl'] * $oArtikelKind->fGewicht;
-                    }
-                    if (strlen($cVersandklassen) > 0 && strpos($cVersandklassen, $oArtikelKind->kVersandklasse) === false) {
-                        $cVersandklassen = '-' . $oArtikelKind->kVersandklasse;
-                    } elseif (strlen($cVersandklassen) === 0) {
-                        $cVersandklassen = $oArtikelKind->kVersandklasse;
-                    }
+                    $oZusatzArtikel->fAnzahl += $oArtikel['fAnzahl'];
+                    $oZusatzArtikel->fWarenwertNetto += $oArtikel['fAnzahl'] * $oArtikelKind->Preise->fVKNetto;
+                    $oZusatzArtikel->fGewicht += $oArtikel['fAnzahl'] * $oArtikelKind->fGewicht;
+                }
+                if (strlen($cVersandklassen) > 0 && strpos($cVersandklassen, $oArtikelKind->kVersandklasse) === false) {
+                    $cVersandklassen = '-' . $oArtikelKind->kVersandklasse;
+                } elseif (strlen($cVersandklassen) === 0) {
+                    $cVersandklassen = $oArtikelKind->kVersandklasse;
                 }
             }
         }
 
-        if (isset($_SESSION['Warenkorb']->PositionenArr) &&
-            is_array($_SESSION['Warenkorb']->PositionenArr) &&
-            count($_SESSION['Warenkorb']->PositionenArr) > 0
+        if (isset($_SESSION['Warenkorb']->PositionenArr)
+            && is_array($_SESSION['Warenkorb']->PositionenArr)
+            && count($_SESSION['Warenkorb']->PositionenArr) > 0
         ) {
             // Wenn etwas im Warenkorb ist, dann Vesandart vom Warenkorb rausfinden
             $oVersandartNurWK                   = self::getFavourableShippingMethod(
@@ -629,13 +627,13 @@ class VersandartHelper
             }
 
             return sprintf(
-                Shop::Lang()->get('productExtraShippingNotice', 'global'),
+                Shop::Lang()->get('productExtraShippingNotice'),
                 gibPreisStringLocalized(berechneBrutto($oVersandart->fEndpreis, gibUst($kSteuerklasse)) . ' an.')
             );
         }
          
         //Versand mit neuen Artikeln gleich oder guenstiger als ohne
-        return Shop::Lang()->get('productNoExtraShippingNotice', 'global');
+        return Shop::Lang()->get('productNoExtraShippingNotice');
     }
 
     /**
@@ -696,15 +694,15 @@ class VersandartHelper
      */
     public static function gibHinzukommendeArtikelAbhaengigeVersandkosten($oArtikel, $cLandISO, $fArtikelAnzahl)
     {
+        $oArtikel->kArtikel = (int)$oArtikel->kArtikel;
         // Prueft, ob es Artikel abhaengige Versandkosten bei dem hinzukommenden Artikel gibt
         $nArtikelAbhaengigeVersandkosten = self::pruefeArtikelabhaengigeVersandkosten($oArtikel);
 
-        if ($nArtikelAbhaengigeVersandkosten == 1) {
+        if ($nArtikelAbhaengigeVersandkosten === 1) {
             // Artikelabhaengige Versandkosten
-
             return self::gibArtikelabhaengigeVersandkosten($cLandISO, $oArtikel, $fArtikelAnzahl, false);
         }
-        if ($nArtikelAbhaengigeVersandkosten == 2) {
+        if ($nArtikelAbhaengigeVersandkosten === 2) {
             // Artikelabhaengige Versandkosten Gestaffelt
 
             // Gib alle Artikel im Warenkorb, die Artikel abhaengige Versandkosten beinhalten
@@ -718,9 +716,10 @@ class VersandartHelper
                 $nAnzahl = $fArtikelAnzahl;
                 $fKosten = 0;
                 foreach ($oWarenkorbArtikelAbhaengigerVersand_arr as $oWarenkorbArtikelAbhaengigerVersand) {
+                    $oWarenkorbArtikelAbhaengigerVersand->kArtikel = (int)$oWarenkorbArtikelAbhaengigerVersand->kArtikel;
                     // Wenn es bereits den hinzukommenden Artikel im Warenkorb gibt
                     // zaehle die Anzahl vom Warenkorb hinzu und gib die Kosten fuer den Artikel im Warenkorb
-                    if ($oWarenkorbArtikelAbhaengigerVersand->kArtikel == $oArtikel->kArtikel) {
+                    if ($oWarenkorbArtikelAbhaengigerVersand->kArtikel === $oArtikel->kArtikel) {
                         // Zaehle die Anzahl des gleichen Artikels im Warenkorb auf die Anzahl die hinzukommen soll hinzu
                         $nAnzahl += $oWarenkorbArtikelAbhaengigerVersand->nAnzahl;
                         // Die Kosten vom Artikel im Warenkorb merken
@@ -841,29 +840,30 @@ class VersandartHelper
         if (!empty($Artikel->FunktionsAttribute[FKT_ATTRIBUT_VERSANDKOSTEN])) {
             $arrVersand = explode(';', $Artikel->FunktionsAttribute[FKT_ATTRIBUT_VERSANDKOSTEN]);
             foreach ($arrVersand as $cVersand) {
-                if ($cVersand) {
-                    list($cLandAttr, $fKosten) = explode(' ', $cVersand);
-                    if ($cLandAttr && ($cLand == $cLandAttr || $bCheckLieferadresse == false)) {
-                        $oVersandPos = new stdClass();
-                        //posname lokalisiert ablegen
-                        $oVersandPos->cName = [];
-                        foreach ($_SESSION['Sprachen'] as $Sprache) {
-                            $oVersandPos->cName[$Sprache->cISO] = Shop::Lang()->get('shippingFor', 'checkout') . ' ' .
-                                $Artikel->cName . ' (' . $cLandAttr . ')';
-                        }
-                        $oVersandPos->fKosten         = (float)str_replace(',', '.', $fKosten) * $nAnzahl;
-                        if ($netPricesActive === true) {
-                            $oVersandPos->cPreisLocalized = gibPreisStringLocalized(berechneNetto(
-                                    (float)$oVersandPos->fKosten,
-                                    $steuerSatz
-                                )) . ' ' .  Shop::Lang()->get('plus', 'productDetails') . ' ' .
-                                Shop::Lang()->get('vat', 'productDetails');
-                        } else {
-                            $oVersandPos->cPreisLocalized = gibPreisStringLocalized($oVersandPos->fKosten);
-                        }
-
-                        return $oVersandPos;
+                if (!$cVersand) {
+                    continue;
+                }
+                list($cLandAttr, $fKosten) = explode(' ', $cVersand);
+                if ($cLandAttr && ($cLand === $cLandAttr || $bCheckLieferadresse === false)) {
+                    $oVersandPos = new stdClass();
+                    //posname lokalisiert ablegen
+                    $oVersandPos->cName = [];
+                    foreach ($_SESSION['Sprachen'] as $Sprache) {
+                        $oVersandPos->cName[$Sprache->cISO] = Shop::Lang()->get('shippingFor', 'checkout') . ' ' .
+                            $Artikel->cName . ' (' . $cLandAttr . ')';
                     }
+                    $oVersandPos->fKosten         = (float)str_replace(',', '.', $fKosten) * $nAnzahl;
+                    if ($netPricesActive === true) {
+                        $oVersandPos->cPreisLocalized = gibPreisStringLocalized(berechneNetto(
+                                (float)$oVersandPos->fKosten,
+                                $steuerSatz
+                            )) . ' ' .  Shop::Lang()->get('plus', 'productDetails') . ' ' .
+                            Shop::Lang()->get('vat', 'productDetails');
+                    } else {
+                        $oVersandPos->cPreisLocalized = gibPreisStringLocalized($oVersandPos->fKosten);
+                    }
+
+                    return $oVersandPos;
                 }
             }
         }
@@ -910,8 +910,9 @@ class VersandartHelper
         $VKarr = [];
         if (isset($Warenkorb->PositionenArr) && is_array($Warenkorb->PositionenArr)) {
             foreach ($Warenkorb->PositionenArr as $pos) {
-                if ($pos->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL && !in_array($pos->kVersandklasse, $VKarr)) {
-                    if ((int)$pos->kVersandklasse > 0) {
+                $pos->kVersandklasse = (int)$pos->kVersandklasse;
+                if ($pos->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL && !in_array($pos->kVersandklasse, $VKarr, true)) {
+                    if ($pos->kVersandklasse > 0) {
                         $VKarr[] = $pos->kVersandklasse;
                     }
                 }

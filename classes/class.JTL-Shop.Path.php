@@ -20,7 +20,7 @@ class Path
     {
         $paths = func_get_args();
 
-        if (!is_array($paths) || count($paths) == 0) {
+        if (!is_array($paths) || count($paths) === 0) {
             throw new InvalidArgumentException('empty or invalid paths');
         }
 

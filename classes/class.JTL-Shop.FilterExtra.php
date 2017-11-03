@@ -26,11 +26,6 @@ class FilterExtra extends AbstractFilter
     /**
      * @var string
      */
-    private $name;
-
-    /**
-     * @var string
-     */
     private $param = '';
 
     /**
@@ -174,25 +169,6 @@ class FilterExtra extends AbstractFilter
     public function setParam($param)
     {
         $this->param = $param;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    /**
-     * @param string $name
-     * @return $this
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
 
         return $this;
     }

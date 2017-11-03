@@ -266,11 +266,9 @@ class Updater
      */
     public function update()
     {
-        if ($this->hasPendingUpdates()) {
-            return $this->updateToNextVersion();
-        }
-
-        return null;
+        return $this->hasPendingUpdates()
+            ? $this->updateToNextVersion()
+            : null;
     }
 
     /**
@@ -278,17 +276,14 @@ class Updater
      */
     protected function updateToNextVersion()
     {
-        $version = $this->getVersion();
-
+        $version        = $this->getVersion();
         $currentVersion = (int)$version->nVersion;
         $targetVersion  = (int)$this->getTargetVersion($currentVersion);
 
         if ($targetVersion < 403) {
-            if ($targetVersion <= $currentVersion) {
-                return $currentVersion;
-            }
-
-            return $this->updateBySqlFile($currentVersion, $targetVersion);
+            return $targetVersion <= $currentVersion
+                ? $currentVersion
+                : $this->updateBySqlFile($currentVersion, $targetVersion);
         }
 
         return $this->updateByMigration($targetVersion);
@@ -398,10 +393,7 @@ class Updater
      */
     protected function executeMigrations()
     {
-        $manager    = new MigrationManager();
-        $migrations = $manager->migrate(null);
-
-        foreach ($migrations as $migration) {
+        foreach ((new MigrationManager())->migrate() as $migration) {
             if ($migration->error !== null) {
                 throw new Exception($migration->error);
             }
@@ -427,16 +419,15 @@ class Updater
     public function error()
     {
         $version = $this->getVersion();
-        if ((int)$version->nFehler > 0) {
-            return (object) [
+
+        return (int)$version->nFehler > 0
+            ? (object)[
                 'code'  => $version->nTyp,
                 'error' => $version->cFehlerSQL,
                 'sql'   => $version->nVersion < 402 ?
                     $this->getErrorSqlByFile() : null
-            ];
-        }
-
-        return null;
+            ]
+            : null;
     }
 
     /**
@@ -448,13 +439,9 @@ class Updater
         $version = $this->getVersion();
         $sqls    = $this->getSqlUpdates($version->nVersion);
 
-        if ((int)$version->nFehler > 0) {
-            if (array_key_exists($version->nZeileBis, $sqls)) {
-                return trim($sqls[$version->nZeileBis]);
-            }
-        }
-
-        return null;
+        return ((int)$version->nFehler > 0 && array_key_exists($version->nZeileBis, $sqls))
+            ? trim($sqls[$version->nZeileBis])
+            : null;
     }
 
     /**
@@ -464,13 +451,12 @@ class Updater
     {
         $directories = [];
         $dir         = PFAD_ROOT . PFAD_UPDATE;
-        foreach (scandir($dir) as $key => $value) {
-            if (
-                is_numeric($value) &&
-                (int)$value > 300 &&
-                (int)$value < 500 &&
-                !in_array($value, ['.', '..'], true) &&
-                is_dir($dir . DIRECTORY_SEPARATOR . $value)
+        foreach (scandir($dir, SCANDIR_SORT_ASCENDING) as $key => $value) {
+            if (is_numeric($value)
+                && (int)$value > 300
+                && (int)$value < 500
+                && !in_array($value, ['.', '..'], true)
+                && is_dir($dir . DIRECTORY_SEPARATOR . $value)
             ) {
                 $directories[] = $value;
             }

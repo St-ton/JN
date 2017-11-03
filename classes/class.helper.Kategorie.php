@@ -65,7 +65,7 @@ class KategorieHelper
     public static function getInstance($kSprache = 0, $kKundengruppe = 0)
     {
         $kSprache      = $kSprache === 0
-            ? Shop::getLanguage()
+            ? Shop::getLanguageID()
             : (int)$kSprache;
         $kKundengruppe = $kKundengruppe === 0
             ? Session::CustomerGroup()->getID()
@@ -517,12 +517,14 @@ class KategorieHelper
     private function removeRelicts(&$catList)
     {
         foreach ($catList as $i => $_cat) {
-            if ($_cat->cnt === 0 && $_cat->bUnterKategorien === 1 && count($_cat->Unterkategorien) === 0) {
-                unset($catList[$i]);
-            } elseif ($_cat->bUnterKategorien === 1) {
-                $this->removeRelicts($_cat->Unterkategorien);
-                if (empty($_cat->Unterkategorien) && $_cat->cnt === 0) {
+            if ($_cat->bUnterKategorien === 1) {
+                if ($_cat->cnt === 0 && count($_cat->Unterkategorien) === 0) {
                     unset($catList[$i]);
+                } else {
+                    $this->removeRelicts($_cat->Unterkategorien);
+                    if (empty($_cat->Unterkategorien) && $_cat->cnt === 0) {
+                        unset($catList[$i]);
+                    }
                 }
             }
         }

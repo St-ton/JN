@@ -471,7 +471,7 @@ class NiceDB implements Serializable
             if (defined('NICEDB_EXCEPTION_ECHO') && NICEDB_EXCEPTION_ECHO === true) {
                 Shop::dbg($stmt, false, 'NiceDB exception when inserting row: ');
                 Shop::dbg($assigns, false, 'Bound params:');
-                Shop::dbg($e->getMessage(), false);
+                Shop::dbg($e->getMessage());
             }
             if (defined('NICEDB_EXCEPTION_BACKTRACE') && NICEDB_EXCEPTION_BACKTRACE === true) {
                 Shop::dbg(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS), false, 'Backtrace:');
@@ -673,7 +673,7 @@ class NiceDB implements Serializable
             if (defined('NICEDB_EXCEPTION_ECHO') && NICEDB_EXCEPTION_ECHO === true) {
                 Shop::dbg($stmt, false, 'NiceDB exception when updating row: ');
                 Shop::dbg($assigns, false, 'Bound params:');
-                Shop::dbg($e->getMessage(), false);
+                Shop::dbg($e->getMessage());
             }
             if (defined('NICEDB_EXCEPTION_BACKTRACE') && NICEDB_EXCEPTION_BACKTRACE === true) {
                 Shop::dbg(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS), false, 'Backtrace:');
@@ -782,7 +782,7 @@ class NiceDB implements Serializable
             if (defined('NICEDB_EXCEPTION_ECHO') && NICEDB_EXCEPTION_ECHO === true) {
                 Shop::dbg($stmt, false, 'NiceDB exception when selecting row: ');
                 Shop::dbg($assigns, false, 'Bound params:');
-                Shop::dbg($e->getMessage(), false);
+                Shop::dbg($e->getMessage());
             }
             if (defined('NICEDB_EXCEPTION_BACKTRACE') && NICEDB_EXCEPTION_BACKTRACE === true) {
                 Shop::dbg(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS), false, 'Backtrace:');
@@ -1161,7 +1161,7 @@ class NiceDB implements Serializable
         } catch (PDOException $e) {
             if (defined('NICEDB_EXCEPTION_ECHO') && NICEDB_EXCEPTION_ECHO === true) {
                 Shop::dbg($stmt, false, 'NiceDB exception when deleting row: ');
-                Shop::dbg($e->getMessage(), false);
+                Shop::dbg($e->getMessage());
             }
             if (defined('NICEDB_EXCEPTION_BACKTRACE') && NICEDB_EXCEPTION_BACKTRACE === true) {
                 Shop::dbg(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS), false, 'Backtrace:');
@@ -1207,7 +1207,7 @@ class NiceDB implements Serializable
         } catch (PDOException $e) {
             if (defined('NICEDB_EXCEPTION_ECHO') && NICEDB_EXCEPTION_ECHO === true) {
                 Shop::dbg($stmt, false, 'NiceDB exception when executing: ');
-                Shop::dbg($e->getMessage(), false);
+                Shop::dbg($e->getMessage());
             }
             if (defined('NICEDB_EXCEPTION_BACKTRACE') && NICEDB_EXCEPTION_BACKTRACE === true) {
                 Shop::dbg(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS), false, 'Backtrace:');
@@ -1424,7 +1424,7 @@ class NiceDB implements Serializable
                 : '[?]';
             $keys[] = '/' . $key . '/';
             $value  = is_int($value)
-                ? (int)$value
+                ? $value
                 : $this->quote($value);
 
             $values[] = $value;

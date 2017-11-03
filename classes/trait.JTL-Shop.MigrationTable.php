@@ -211,10 +211,10 @@ trait MigrationTableTrait
             unset($count);
 
             // $overwrite has to be set to true in order to create a new inputType
-            if (!in_array($inputType, $availableInputTypes) &&
-                (!is_object($additionalProperties) ||
-                    !isset($additionalProperties->cConf) ||
-                    $additionalProperties->cConf !== 'N')
+            if (!in_array($inputType, $availableInputTypes)
+                && (!is_object($additionalProperties)
+                    || !isset($additionalProperties->cConf)
+                    || $additionalProperties->cConf !== 'N')
             ) {
                 throw new Exception('inputType "' . $inputType .
                     '" not in available types and additionalProperties->cConf is not set to "N"');

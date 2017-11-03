@@ -473,7 +473,9 @@ class Arr
     public static function set(&$array, $key, $value)
     {
         if ($key === null) {
-            return $array = $value;
+            $array = $value;
+
+            return $array;
         }
 
         $keys = explode('.', $key);

@@ -121,9 +121,9 @@ class cache_advancedfile implements ICachingMethod
      */
     public function isAvailable()
     {
-        if (!is_dir($this->options['cache_dir']) &&
-            !mkdir($this->options['cache_dir']) &&
-            !is_dir($this->options['cache_dir']) // check again after creating
+        if (!is_dir($this->options['cache_dir'])
+            && !mkdir($this->options['cache_dir'])
+            && !is_dir($this->options['cache_dir']) // check again after creating
         ) {
             return false;
         }

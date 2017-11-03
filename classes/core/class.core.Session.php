@@ -63,7 +63,7 @@ class Session
         $bot                = false;
         $saveBotSession     = 0;
         if (defined('SAVE_BOT_SESSION') && isset($_SERVER['HTTP_USER_AGENT'])) {
-            $saveBotSession = (int)SAVE_BOT_SESSION;
+            $saveBotSession = SAVE_BOT_SESSION;
             $bot            = self::getIsCrawler($_SERVER['HTTP_USER_AGENT']);
         }
         session_name(self::$_sessionName);
@@ -274,7 +274,7 @@ class Session
                 $_SESSION['Kunde']->kSprache = $_SESSION['kSprache'];
                 $_SESSION['Kunde']->updateInDB();
             }
-            if (!isset($_SESSION['Kundengruppe']->Attribute)) {
+            if (!$_SESSION['Kundengruppe']->hasAttributes()) {
                 $_SESSION['Kundengruppe']->initAttributes();
             }
             $linkHelper = LinkHelper::getInstance();

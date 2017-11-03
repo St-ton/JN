@@ -1113,4 +1113,46 @@ function flushCustomerPriceCache($kKunde)
     return Shop::Cache()->flush('custprice_' . (int)$kKunde);
 }
 
+/**
+ * @param string $zipFile
+ * @param string $targetPath
+ * @return array|bool
+ */
+function unzipSyncFiles($zipFile, $targetPath)
+{
+    if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
+        Jtllog::writeLog('Entpacke: ' . $zipFile, JTLLOG_LEVEL_DEBUG, false, 'syncinclude');
+    }
+    $archive = new ZipArchive();
+    $open = $archive->open($zipFile);
+    if (!$open) {
+        return false;
+    }
+    $filenames = [];
+    if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
+        Jtllog::writeLog('unzipSyncFiles: Anzahl Dateien im Zip: ' . $archive->numFiles, JTLLOG_LEVEL_DEBUG, false, 'syncinclude');
+    }
+    if (is_dir($targetPath) || (mkdir($targetPath) && is_dir($targetPath))) {
+        for ($i = 0; $i < $archive->numFiles; ++$i) {
+            $filenames[] = $targetPath . $archive->getNameIndex($i);
+        }
+        if ($archive->numFiles > 0) {
+            if (!$archive->extractTo($targetPath)) {
+                return false;
+            }
+        }
+        if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
+            Jtllog::writeLog('unzipSyncFiles: Zip entpackt in ' . $targetPath, JTLLOG_LEVEL_DEBUG, false, 'syncinclude');
+        }
+
+        return array_filter(array_map(function ($e) {
+            return file_exists($e)
+                ? $e
+                : null;
+        }, $filenames));
+    }
+
+    return false;
+}
+
 ob_start('handleError');

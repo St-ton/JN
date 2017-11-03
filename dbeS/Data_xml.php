@@ -10,40 +10,30 @@ $return = 3;
 if (auth()) {
     checkFile();
     $return  = 2;
-    $archive = new PclZip($_FILES['data']['tmp_name']);
-    if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-        Jtllog::writeLog('Entpacke: ' . $_FILES['data']['tmp_name'], JTLLOG_LEVEL_DEBUG, false, 'Data_xml');
-    }
-    if ($list = $archive->listContent()) {
-        if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-            Jtllog::writeLog('Anzahl Dateien im Zip: ' . count($list), JTLLOG_LEVEL_DEBUG, false, 'Data_xml');
+    $zipFile = $_FILES['data']['tmp_name'];
+    if (($syncFiles = unzipSyncFiles($zipFile, PFAD_SYNC_TMP)) === false) {
+        if (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
+            Jtllog::writeLog('Error: Cannot extract zip file.', JTLLOG_LEVEL_ERROR, false, 'Data_xml');
         }
-        if ($archive->extract(PCLZIP_OPT_PATH, PFAD_SYNC_TMP)) {
-            $return = 0;
-            foreach ($list as $zip) {
-                if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                    Jtllog::writeLog('bearbeite: ' . PFAD_SYNC_TMP . $zip['filename'] . ' size: ' .
-                        filesize(PFAD_SYNC_TMP . $zip['filename']), JTLLOG_LEVEL_DEBUG, false, 'Data_xml');
-                }
-                $d   = file_get_contents(PFAD_SYNC_TMP . $zip['filename']);
-                $xml = XML_unserialize($d);
-                if ($zip['filename'] === 'ack_verfuegbarkeitsbenachrichtigungen.xml') {
-                    bearbeiteVerfuegbarkeitsbenachrichtigungenAck($xml);
-                } elseif ($zip['filename'] === 'ack_uploadqueue.xml') {
-                    bearbeiteUploadQueueAck($xml);
-                }
+        removeTemporaryFiles($zipFile);
+    } else {
+        $return = 0;
+        foreach ($syncFiles as $xmlFile) {
+            if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
+                Jtllog::writeLog('bearbeite: ' . $xmlFile . ' size: ' .
+                    filesize($xmlFile), JTLLOG_LEVEL_DEBUG, false, 'Data_xml');
             }
-        } elseif (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-            Jtllog::writeLog('Error : ' . $archive->errorInfo(true), JTLLOG_LEVEL_ERROR, false, 'Data_xml');
+            $d   = file_get_contents($xmlFile);
+            $xml = XML_unserialize($d);
+            if (strpos($xmlFile, 'ack_verfuegbarkeitsbenachrichtigungen.xml') !== false) {
+                bearbeiteVerfuegbarkeitsbenachrichtigungenAck($xml);
+            } elseif (strpos($xmlFile, 'ack_uploadqueue.xml') !== false) {
+                bearbeiteUploadQueueAck($xml);
+            }
         }
-    } elseif (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-        Jtllog::writeLog('Error : ' . $archive->errorInfo(true), JTLLOG_LEVEL_ERROR, false, 'Data_xml');
     }
 }
 
-if ($return === 2) {
-    syncException('Error : ' . $archive->errorInfo(true));
-}
 
 echo $return;
 

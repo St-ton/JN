@@ -8,68 +8,56 @@ require_once __DIR__ . '/syncinclude.php';
 
 $return  = 3;
 $archive = null;
+$zipFile = $_FILES['data']['tmp_name'];
 if (auth()) {
     $articleIDs = [];
     checkFile();
     $return  = 2;
-    $archive = new PclZip($_FILES['data']['tmp_name']);
     if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-        Jtllog::writeLog('Entpacke: ' . $_FILES['data']['tmp_name'], JTLLOG_LEVEL_DEBUG, false, 'Artikel_xml');
+        Jtllog::writeLog('Artikel - Entpacke: ' . $zipFile, JTLLOG_LEVEL_DEBUG, false, 'Artikel_xml');
     }
-    if ($list = $archive->listContent()) {
-        if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-            Jtllog::writeLog('Anzahl Dateien im Zip: ' . count($list), JTLLOG_LEVEL_DEBUG, false, 'Artikel_xml');
-        }
-        $entzippfad = PFAD_ROOT . PFAD_DBES . PFAD_SYNC_TMP . basename($_FILES['data']['tmp_name']) . '_' . date('dhis');
-        mkdir($entzippfad);
-        $entzippfad .= '/';
-        if ($archive->extract(PCLZIP_OPT_PATH, $entzippfad)) {
-            if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                Jtllog::writeLog('Zip entpackt in ' . $entzippfad, JTLLOG_LEVEL_DEBUG, false, 'Artikel_xml');
-            }
-            $return = 0;
-            $conf   = Shop::getSettings([CONF_GLOBAL]);
-            foreach ($list as $i => $zip) {
-                if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                    Jtllog::writeLog('bearbeite: ' . $entzippfad . $zip['filename'] . ' size: ' .
-                        filesize($entzippfad . $zip['filename']), JTLLOG_LEVEL_DEBUG, false, 'Artikel_xml');
-                }
-                $d   = file_get_contents($entzippfad . $zip['filename']);
-                $xml = XML_unserialize($d);
+    $unzipPath = PFAD_ROOT . PFAD_DBES . PFAD_SYNC_TMP . basename($zipFile) . '_' . date('dhis') . '/';
 
-                if ($zip['filename'] === 'artdel.xml') {
-                    $articleIDs = array_merge($articleIDs, bearbeiteDeletes($xml, $conf));
-                } else {
-                    foreach (bearbeiteInsert($xml, $conf) as $articleID) {
-                        $articleIDs[] = $articleID;
-                    }
-                }
-                if ($i === 0) {
-                    // Suchcachetimer setzen.
-                    Shop::DB()->query(
-                        "UPDATE tsuchcache
-                            SET dGueltigBis = DATE_ADD(now(), INTERVAL " . SUCHCACHE_LEBENSDAUER . " MINUTE)
-                            WHERE dGueltigBis IS NULL", 3
-                    );
-                }
-                removeTemporaryFiles($entzippfad . $zip['filename']);
-            }
-            removeTemporaryFiles(substr($entzippfad, 0, -1), true);
-            clearProductCaches($articleIDs);
-        } elseif (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-            Jtllog::writeLog('Error : ' . $archive->errorInfo(true), JTLLOG_LEVEL_ERROR, false, 'Artikel_xml');
+    if (($syncFiles = unzipSyncFiles($zipFile, $unzipPath)) === false) {
+        if (Jtllog::doLog()) {
+            Jtllog::writeLog('Error: Cannot extract zip file.', JTLLOG_LEVEL_ERROR, false, 'Artikel_xml');
         }
-    } elseif (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-        Jtllog::writeLog('Error : ' . $archive->errorInfo(true), JTLLOG_LEVEL_ERROR, false, 'Artikel_xml');
+        removeTemporaryFiles($zipFile);
+    } else {
+        $return = 0;
+        $conf   = Shop::getSettings([CONF_GLOBAL]);
+        foreach ($syncFiles as $i => $xmlFile) {
+            if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
+                Jtllog::writeLog('bearbeite: ' . $xmlFile . ' size: ' .
+                    filesize($xmlFile), JTLLOG_LEVEL_DEBUG, false, 'Artikel_xml');
+            }
+            $d   = file_get_contents($xmlFile);
+            $xml = XML_unserialize($d);
+
+            if (strpos($xmlFile, 'artdel.xml') !== false) {
+                $articleIDs = array_merge($articleIDs, bearbeiteDeletes($xml, $conf));
+            } else {
+                foreach (bearbeiteInsert($xml, $conf) as $articleID) {
+                    $articleIDs[] = $articleID;
+                }
+            }
+            if ($i === 0) {
+                // Suchcachetimer setzen.
+                Shop::DB()->query(
+                    "UPDATE tsuchcache
+                        SET dGueltigBis = DATE_ADD(now(), INTERVAL " . SUCHCACHE_LEBENSDAUER . " MINUTE)
+                        WHERE dGueltigBis IS NULL", 3
+                );
+            }
+        }
+        removeTemporaryFiles(substr($unzipPath, 0, -1), true);
+        clearProductCaches($articleIDs);
     }
-}
-if ($return === 2) {
-    syncException('Error : ' . $archive->errorInfo(true));
 }
 
 echo $return;
 if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-    Jtllog::writeLog('BEENDE: ' . $_FILES['data']['tmp_name'], JTLLOG_LEVEL_DEBUG, false, 'Artikel_xml');
+    Jtllog::writeLog('BEENDE: ' . $zipFile, JTLLOG_LEVEL_DEBUG, false, 'Artikel_xml');
 }
 
 /**

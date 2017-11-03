@@ -7,6 +7,7 @@ require_once __DIR__ . '/syncinclude.php';
 $return        = 3;
 $Einstellungen = null;
 $oBranding_arr = null;
+$zipFile       = '';
 if (auth()) {
     checkFile();
     $Einstellungen = Shop::getSettings([CONF_BILDER]);
@@ -126,73 +127,61 @@ if (auth()) {
         $cSQL = " AND tseo.kSprache = " . $oSprache->kSprache;
     }
     $return  = 2;
-    $archive = new PclZip($_FILES['data']['tmp_name']);
-    if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-        Jtllog::writeLog('Entpacke: ' . $_FILES['data']['tmp_name'], JTLLOG_LEVEL_DEBUG, false, 'Bilder_xml');
-    }
-    if ($list = $archive->listContent()) {
-        $unzipPath = PFAD_ROOT . PFAD_DBES . PFAD_SYNC_TMP . basename($_FILES['data']['tmp_name']) . '_' . date('dhis');
-        mkdir($unzipPath);
-        $unzipPath .= '/';
-        if ($archive->extract(PCLZIP_OPT_PATH, $unzipPath)) {
-            if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                Jtllog::writeLog('Zip entpackt in ' . $unzipPath, JTLLOG_LEVEL_DEBUG, false, 'Bilder_xml');
-            }
-            $return = 0;
-            foreach ($list as $zip) {
-                switch ($zip['filename']) {
-                    case 'bilder_ka.xml':
-                    case 'bilder_a.xml':
-                    case 'bilder_k.xml':
-                    case 'bilder_v.xml':
-                    case 'bilder_m.xml':
-                    case 'bilder_mw.xml':
-                    case 'bilder_h.xml':
-                        if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                            Jtllog::writeLog('bearbeite: ' . $unzipPath . $zip['filename'] . ' size: ' .
-                                filesize($unzipPath . $zip['filename']), JTLLOG_LEVEL_DEBUG, false, 'Bilder_xml');
-                        }
-                        $d   = file_get_contents($unzipPath . $zip['filename']);
-                        $xml = XML_unserialize($d);
-                        bearbeite($xml, $unzipPath);
-                        removeTemporaryFiles($unzipPath . $zip['filename']);
-                        break;
-
-                    case 'del_bilder_ka.xml':
-                    case 'del_bilder_a.xml':
-                    case 'del_bilder_k.xml':
-                    case 'del_bilder_v.xml':
-                    case 'del_bilder_m.xml':
-                    case 'del_bilder_mw.xml':
-                    case 'del_bilder_h.xml':
-                        if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                            Jtllog::writeLog('bearbeite: ' . $unzipPath . $zip['filename'] . ' size: ' .
-                                filesize($unzipPath . $zip['filename']), JTLLOG_LEVEL_DEBUG, false, 'Bilder_xml');
-                        }
-                        $d   = file_get_contents($unzipPath . $zip['filename']);
-                        $xml = XML_unserialize($d);
-                        bearbeiteDeletes($xml);
-                        removeTemporaryFiles($unzipPath . $zip['filename']);
-                        break;
-
-                }
-            }
-            removeTemporaryFiles(substr($unzipPath, 0, -1), true);
-        } elseif (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-            Jtllog::writeLog('EXTRACT Error : ' . $archive->errorInfo(true), JTLLOG_LEVEL_ERROR, false, 'Bilder_xml');
+    $zipFile = $_FILES['data']['tmp_name'];
+    $unzipPath = PFAD_ROOT . PFAD_DBES . PFAD_SYNC_TMP . basename($_FILES['data']['tmp_name']) . '_' . date('dhis');
+    if (($syncFiles = unzipSyncFiles($zipFile, $unzipPath)) === false) {
+        if (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
+            Jtllog::writeLog('Error: Cannot extract zip file.', JTLLOG_LEVEL_ERROR, false, 'Bilder_xml');
         }
-    } elseif (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-        Jtllog::writeLog('FILE LIST Error : ' . $archive->errorInfo(true), JTLLOG_LEVEL_ERROR, false, 'Bilder_xml');
+        removeTemporaryFiles($zipFile);
+    } else {
+        $return = 0;
+        foreach ($syncFiles as $xmlFile) {
+            switch (pathinfo($xmlFile)['basename']) {
+                case 'bilder_ka.xml':
+                case 'bilder_a.xml':
+                case 'bilder_k.xml':
+                case 'bilder_v.xml':
+                case 'bilder_m.xml':
+                case 'bilder_mw.xml':
+                case 'bilder_h.xml':
+                    if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
+                        Jtllog::writeLog('bearbeite: ' . $xmlFile . ' size: ' .
+                            filesize($xmlFile), JTLLOG_LEVEL_DEBUG, false, 'Bilder_xml');
+                    }
+                    $d   = file_get_contents($xmlFile);
+                    $xml = XML_unserialize($d);
+                    bearbeite($xml, $unzipPath);
+                    removeTemporaryFiles($xmlFile);
+                    break;
+
+                case 'del_bilder_ka.xml':
+                case 'del_bilder_a.xml':
+                case 'del_bilder_k.xml':
+                case 'del_bilder_v.xml':
+                case 'del_bilder_m.xml':
+                case 'del_bilder_mw.xml':
+                case 'del_bilder_h.xml':
+                    if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
+                        Jtllog::writeLog('bearbeite: ' . $xmlFile . ' size: ' .
+                            filesize($xmlFile), JTLLOG_LEVEL_DEBUG, false, 'Bilder_xml');
+                    }
+                    $d   = file_get_contents($xmlFile);
+                    $xml = XML_unserialize($d);
+                    bearbeiteDeletes($xml);
+                    removeTemporaryFiles($xmlFile);
+                    break;
+
+            }
+        }
+        removeTemporaryFiles(substr($unzipPath, 0, -1), true);
     }
 }
 
-if ($return === 2) {
-    syncException('RET Error : ' . $archive->errorInfo(true));
-}
 echo $return;
 
 if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-    Jtllog::writeLog('BEENDE: ' . $_FILES['data']['tmp_name'], JTLLOG_LEVEL_DEBUG, false, 'Bilder_xml');
+    Jtllog::writeLog('BEENDE: ' . $zipFile, JTLLOG_LEVEL_DEBUG, false, 'Bilder_xml');
 }
 
 /**

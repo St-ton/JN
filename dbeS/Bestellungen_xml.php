@@ -6,9 +6,6 @@
 
 require_once __DIR__ . '/syncinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Artikel.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Bestellung.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.KundenwerbenKunden.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
 require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
 
@@ -17,54 +14,42 @@ $return  = 3;
 if (auth()) {
     checkFile();
     $return  = 2;
-    $archive = new PclZip($_FILES['data']['tmp_name']);
-    if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-        Jtllog::writeLog('Entpacke: ' . $_FILES['data']['tmp_name'], JTLLOG_LEVEL_DEBUG, false, 'Bestellungen_xml');
-    }
-    if ($list = $archive->listContent()) {
-        if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-            Jtllog::writeLog('Anzahl Dateien im Zip: ' . count($list), JTLLOG_LEVEL_DEBUG, false, 'Bestellungen_xml');
+    $zipFile = $_FILES['data']['tmp_name'];
+    if (($syncFiles = unzipSyncFiles($zipFile, PFAD_SYNC_TMP)) === false) {
+        if (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
+            Jtllog::writeLog('Error: Cannot extract zip file.', JTLLOG_LEVEL_ERROR, false, 'Bestellungen_xml');
         }
-        if ($archive->extract(PCLZIP_OPT_PATH, PFAD_SYNC_TMP)) {
-            $return = 0;
-            foreach ($list as $zip) {
-                if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                    Jtllog::writeLog('bearbeite: ' . PFAD_SYNC_TMP . $zip['filename'] . ' size: ' .
-                        filesize(PFAD_SYNC_TMP . $zip['filename']), JTLLOG_LEVEL_DEBUG, false, 'Bestellungen_xml');
-                }
-                $d   = file_get_contents(PFAD_SYNC_TMP . $zip['filename']);
-                $xml = XML_unserialize($d);
-
-                if ($zip['filename'] === 'ack_bestellung.xml') {
-                    bearbeiteAck($xml);
-                } elseif ($zip['filename'] === 'del_bestellung.xml') {
-                    bearbeiteDel($xml);
-                } elseif ($zip['filename'] === 'delonly_bestellung.xml') {
-                    bearbeiteDelOnly($xml);
-                } elseif ($zip['filename'] === 'storno_bestellung.xml') {
-                    bearbeiteStorno($xml);
-                } elseif ($zip['filename'] === 'reaktiviere_bestellung.xml') {
-                    bearbeiteRestorno($xml);
-                } elseif ($zip['filename'] === 'ack_zahlungseingang.xml') {
-                    bearbeiteAckZahlung($xml);
-                } elseif ($zip['filename'] === 'set_bestellung.xml') {
-                    bearbeiteSet($xml);
-                } elseif ($zip['filename'] === 'upd_bestellung.xml') {
-                    bearbeiteUpdate($xml);
-                }
-
-                removeTemporaryFiles(PFAD_SYNC_TMP . $zip['filename']);
+        removeTemporaryFiles($zipFile);
+    } else {
+        $return = 0;
+        foreach ($syncFiles as $xmlFile) {
+            if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
+                Jtllog::writeLog('bearbeite: ' . PFAD_SYNC_TMP . $xmlFile . ' size: ' .
+                    filesize($xmlFile), JTLLOG_LEVEL_DEBUG, false, 'Bestellungen_xml');
             }
-        } elseif (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-            Jtllog::writeLog('Error: ' . $archive->errorInfo(true), JTLLOG_LEVEL_ERROR, false, 'Bestellungen_xml');
-        }
-    } elseif (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-        Jtllog::writeLog('Error: ' . $archive->errorInfo(true), JTLLOG_LEVEL_ERROR, false, 'Bestellungen_xml');
-    }
-}
+            $d   = file_get_contents($xmlFile);
+            $xml = XML_unserialize($d);
 
-if ($return === 2) {
-    syncException('Error : ' . $archive->errorInfo(true));
+            if (strpos($xmlFile, 'ack_bestellung.xml') !== false) {
+                bearbeiteAck($xml);
+            } elseif (strpos($xmlFile, 'del_bestellung.xml') !== false) {
+                bearbeiteDel($xml);
+            } elseif (strpos($xmlFile, 'delonly_bestellung.xml') !== false) {
+                bearbeiteDelOnly($xml);
+            } elseif (strpos($xmlFile, 'storno_bestellung.xml') !== false) {
+                bearbeiteStorno($xml);
+            } elseif (strpos($xmlFile, 'reaktiviere_bestellung.xml') !== false) {
+                bearbeiteRestorno($xml);
+            } elseif (strpos($xmlFile, 'ack_zahlungseingang.xml') !== false) {
+                bearbeiteAckZahlung($xml);
+            } elseif (strpos($xmlFile, 'set_bestellung.xml') !== false) {
+                bearbeiteSet($xml);
+            } elseif (strpos($xmlFile, 'upd_bestellung.xml') !== false) {
+                bearbeiteUpdate($xml);
+            }
+            removeTemporaryFiles($xmlFile);
+        }
+    }
 }
 
 echo $return;

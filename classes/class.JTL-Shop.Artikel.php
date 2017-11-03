@@ -1389,7 +1389,7 @@ class Artikel
     public function holAttribute($kSprache = 0)
     {
         if (!$kSprache) {
-            $kSprache = Shop::getLanguage();
+            $kSprache = Shop::getLanguageID();
         }
         $kSprache             = (int)$kSprache;
         $this->Attribute      = [];
@@ -1601,7 +1601,7 @@ class Artikel
     public function holeMedienDatei($kSprache = 0)
     {
         if (!$kSprache) {
-            $kSprache = Shop::getLanguage();
+            $kSprache = Shop::getLanguageID();
         }
         $kSprache               = (int)$kSprache;
         $kDefaultLanguage       = (int)gibStandardsprache()->kSprache;
@@ -1849,7 +1849,7 @@ class Artikel
     public function holeBewertung($kSprache = 0, $nAnzahlSeite = 10, $nSeite = 1, $nSterne = 0, $cFreischalten = 'N', $nOption = 0)
     {
         if (!$kSprache) {
-            $kSprache = Shop::getLanguage();
+            $kSprache = Shop::getLanguageID();
         }
         $this->Bewertungen = new Bewertung($this->kArtikel, $kSprache, $nAnzahlSeite, $nSeite, $nSterne, $cFreischalten, $nOption);
 
@@ -1904,7 +1904,7 @@ class Artikel
     public function holehilfreichsteBewertung($kSprache, $cFreischalten = 'N')
     {
         if (!$kSprache) {
-            $kSprache = Shop::getLanguage();
+            $kSprache = Shop::getLanguageID();
         }
         $this->HilfreichsteBewertung = new Bewertung($this->kArtikel, $kSprache, 0, 0, 0, $cFreischalten, 1);
 
@@ -1923,7 +1923,7 @@ class Artikel
             $kKundengruppe = Session::CustomerGroup()->getID();
         }
         if (!$kSprache) {
-            $kSprache = Shop::getLanguage();
+            $kSprache = Shop::getLanguageID();
         }
         $this->nVariationsAufpreisVorhanden = 0;
         $kSprache                           = (int)$kSprache;
@@ -2859,6 +2859,7 @@ class Artikel
                     && count($oVariationKombiKinderAssoc_arr) > 0
                     && count($oVariationKombiKinderAssoc_arr) <= ART_MATRIX_MAX
                 ) {
+                    $oTMP_arr = [];
                     foreach ($oVariationKombiKinderAssoc_arr as $i => $oVariationKombiKinderAssoc) {
                         if (!isset($oTMP_arr[$oVariationKombiKinderAssoc])) {
                             $oArtikelOptionen                            = new stdClass();
@@ -3507,7 +3508,7 @@ class Artikel
             Kundengruppe::reset($kKundengruppe);
         }
         if (!$kSprache) {
-            $kSprache = Shop::getLanguage();
+            $kSprache = Shop::getLanguageID();
         }
         if (!$kSprache) {
             $oSprache = gibStandardsprache();
@@ -4009,7 +4010,7 @@ class Artikel
         }
         //hersteller holen
         if ($oArtikelTMP->kHersteller > 0) {
-            $oHersteller = new Hersteller($oArtikelTMP->kHersteller, Shop::getLanguage());
+            $oHersteller = new Hersteller($oArtikelTMP->kHersteller, Shop::getLanguageID());
 
             $this->cHersteller         = $oArtikelTMP->cName_thersteller;
             $this->cHerstellerSeo      = $oHersteller->cSeo;
@@ -4252,7 +4253,7 @@ class Artikel
      */
     public function baueSuchspecialBildoverlay($kSprache = 0)
     {
-        $languageID        = $kSprache > 0 ? $kSprache : Shop::getLanguage();
+        $languageID        = $kSprache > 0 ? $kSprache : Shop::getLanguageID();
         $searchSpecial_arr = holeAlleSuchspecialOverlays($languageID);
         // Suchspecialbildoverlay
         // Kleinste Prio und somit die Wichtigste, steht immer im Element 0 vom Array (nPrio ASC)
@@ -4524,7 +4525,7 @@ class Artikel
     public function holWarenlager($kSprache = 0)
     {
         $conf        = Shop::getSettings([CONF_GLOBAL]);
-        $languageID  = $kSprache > 0 ? $kSprache : Shop::getLanguage();
+        $languageID  = $kSprache > 0 ? $kSprache : Shop::getLanguageID();
         $xOption_arr = [
             'cLagerBeachten'                => $this->cLagerBeachten,
             'cEinheit'                      => $this->cEinheit,
@@ -5237,8 +5238,8 @@ class Artikel
         }
         // product coming soon? then add remaining days. stocklevel doesnt matter, see #13604
         if ($this->nErscheinendesProdukt && new DateTime($this->dErscheinungsdatum) > new DateTime()) {
-            $minDeliveryDays += $this->calculateDaysBetween($this->dErscheinungsdatum, date('Y-m-d', time()));
-            $maxDeliveryDays += $this->calculateDaysBetween($this->dErscheinungsdatum, date('Y-m-d', time()));
+            $minDeliveryDays += $this->calculateDaysBetween($this->dErscheinungsdatum, date('Y-m-d'));
+            $maxDeliveryDays += $this->calculateDaysBetween($this->dErscheinungsdatum, date('Y-m-d'));
         } elseif ($this->cLagerBeachten === 'Y' && ($stockLevel <= 0 || ($stockLevel - $purchaseQuantity < 0))) {
             if (isset($this->FunktionsAttribute['deliverytime_outofstock']) && $this->FunktionsAttribute['deliverytime_outofstock'] > 0) {
                 //prio on attribute "deliverytime_outofstock" for simple deliverytimes
@@ -5256,8 +5257,8 @@ class Artikel
                 $maxDeliveryDays += $supplyTime;
             } elseif ($this->dZulaufDatum !== null && $this->fZulauf > 0 && new DateTime($this->dZulaufDatum) >= new DateTime()) {
                 // supplierOrder incoming?
-                $minDeliveryDays += $this->calculateDaysBetween($this->dZulaufDatum, date('Y-m-d', time()));
-                $maxDeliveryDays += $this->calculateDaysBetween($this->dZulaufDatum, date('Y-m-d', time()));
+                $minDeliveryDays += $this->calculateDaysBetween($this->dZulaufDatum, date('Y-m-d'));
+                $maxDeliveryDays += $this->calculateDaysBetween($this->dZulaufDatum, date('Y-m-d'));
             } elseif ($this->fLieferzeit > 0 && !$this->nErscheinendesProdukt) {
                 $minDeliveryDays += (int)$this->fLieferzeit;
                 $maxDeliveryDays += (int)$this->fLieferzeit;
@@ -5939,7 +5940,7 @@ class Artikel
         $diff = $d2->diff($d1);
         $days = (float)$diff->format('%a');
         if ($diff->invert === 1) {
-            $days = $days * -1;
+            $days *= -1;
         }
 
         return $days;
@@ -6015,7 +6016,7 @@ class Artikel
         $description          = str_replace(['<br>', '<br />', '</p>', '</li>', "\n", "\r", '.'], ' ', $description);
         $description          = StringHandler::htmlentitydecode(strip_tags($description));
         $confMinKeyLen        = (int)Shop::getSettings([CONF_METAANGABEN])['metaangaben']['global_meta_keywords_laenge'];
-        $cacheID              = 'meta_keywords_' . Shop::getLanguage();
+        $cacheID              = 'meta_keywords_' . Shop::getLanguageID();
         $_descriptionKeywords = explode(' ', StringHandler::removeDoubleSpaces(
             preg_replace('/[^a-zA-Z0-9 ??¸?÷??-]/', ' ', $description))
         );
@@ -6059,8 +6060,8 @@ class Artikel
         // append global meta title
         if ($conf['metaangaben']['global_meta_title_anhaengen'] === 'Y') {
             $oGlobaleMetaAngabenAssoc_arr = Metadata::getGlobalMetaData();
-            if (!empty($oGlobaleMetaAngabenAssoc_arr[Shop::getLanguage()]->Title)) {
-                $cGlobalMetaTitle = ' - ' . $oGlobaleMetaAngabenAssoc_arr[Shop::getLanguage()]->Title;
+            if (!empty($oGlobaleMetaAngabenAssoc_arr[Shop::getLanguageID()]->Title)) {
+                $cGlobalMetaTitle = ' - ' . $oGlobaleMetaAngabenAssoc_arr[Shop::getLanguageID()]->Title;
             }
         }
         $idx = Session::CustomerGroup()->getIsMerchant();
@@ -6118,9 +6119,9 @@ class Artikel
         }
 
         $globalMeta = Metadata::getGlobalMetaData();
-        $prefix     = (isset($globalMeta[Shop::getLanguage()]->Meta_Description_Praefix) &&
-            strlen($globalMeta[Shop::getLanguage()]->Meta_Description_Praefix) > 0)
-            ? $globalMeta[Shop::getLanguage()]->Meta_Description_Praefix . ' '
+        $prefix     = (isset($globalMeta[Shop::getLanguageID()]->Meta_Description_Praefix)
+            && strlen($globalMeta[Shop::getLanguageID()]->Meta_Description_Praefix) > 0)
+            ? $globalMeta[Shop::getLanguageID()]->Meta_Description_Praefix . ' '
             : '';
         // Hat der Artikel per Attribut eine MetaDescription gesetzt?
         if (!empty($this->AttributeAssoc[ART_ATTRIBUT_METADESCRIPTION])) {
@@ -6157,9 +6158,9 @@ class Artikel
             return $cDesc;
         }
         $globalMeta = Metadata::getGlobalMetaData();
-        $prefix     = (isset($globalMeta[Shop::getLanguage()]->Meta_Description_Praefix)
-            && strlen($globalMeta[Shop::getLanguage()]->Meta_Description_Praefix) > 0)
-            ? $globalMeta[Shop::getLanguage()]->Meta_Description_Praefix . ' '
+        $prefix     = (isset($globalMeta[Shop::getLanguageID()]->Meta_Description_Praefix)
+            && strlen($globalMeta[Shop::getLanguageID()]->Meta_Description_Praefix) > 0)
+            ? $globalMeta[Shop::getLanguageID()]->Meta_Description_Praefix . ' '
             : '';
         $cDesc      = ($this->cName !== null && strlen($this->cName) > 0)
             ? ($prefix . $this->cName . ' in ')
@@ -6190,8 +6191,8 @@ class Artikel
         $nLimit    = (int)$conf['artikeldetails']['tagging_max_count'];
         $tag_limit = ($nLimit > 0) ? ' LIMIT ' . $nLimit : '';
         if ($kSprache === 0) {
-            if (Shop::getLanguage() > 0) {
-                $kSprache = Shop::getLanguage();
+            if (Shop::getLanguageID() > 0) {
+                $kSprache = Shop::getLanguageID();
             } elseif (isset($_SESSION['kSprache'])) {
                 $kSprache = $_SESSION['kSprache'];
             }
@@ -6490,7 +6491,7 @@ class Artikel
     {
         $cValue_arr = [];
         if (($fDimension_arr = $this->getDimension()) !== null) {
-            $kSprache   = Shop::getLanguage();
+            $kSprache   = Shop::getLanguageID();
             foreach ($fDimension_arr as $key => $val) {
                 if (!empty($val)) {
                     $cValue_arr[Shop::Lang()->get('dimension_' . $key, 'productDetails')] =

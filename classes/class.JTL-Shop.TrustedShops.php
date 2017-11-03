@@ -122,7 +122,7 @@ class TrustedShops
     public $dChecked;
 
     /**
-     * @var string
+     * @var array
      */
     public $cBoxText;
 

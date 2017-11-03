@@ -794,7 +794,7 @@ class Template
         $tplObject->preview     = (string)$tplConfig->Preview;
         $bCheck                 = Shop::DB()->insert('ttemplate', $tplObject);
         if ($bCheck) {
-            if (!$dh = @opendir(PFAD_ROOT . PFAD_COMPILEDIR)) {
+            if (!$dh = opendir(PFAD_ROOT . PFAD_COMPILEDIR)) {
                 return false;
             }
             while (($obj = readdir($dh)) !== false) {

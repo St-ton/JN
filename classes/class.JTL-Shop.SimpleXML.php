@@ -103,8 +103,8 @@ class SimpleXML
                 }
             }
         }
-        $n = count($repeats_count);
-        for ($i = 0; $i < $n; $i++) {
+        $r = count($repeats_count);
+        for ($i = 0; $i < $r; $i++) {
             if ($repeats_count[$i] > 1) {
                 $repeats[] = $repeats_temp[$i];
             }

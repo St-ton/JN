@@ -155,18 +155,14 @@ class ArtikelHelper
     {
         $varCombinations = self::getPossibleVariationCombinations($kArtikel, $kKundengruppe);
         $properties      = [];
-        if (is_array($varCombinations) && count($varCombinations) > 0) {
-            foreach ($varCombinations as $oAlleVariationKombi) {
-                if (!isset($properties[$oAlleVariationKombi->kEigenschaft]) ||
-                    !is_array($properties[$oAlleVariationKombi->kEigenschaft])
-                ) {
-                    $properties[$oAlleVariationKombi->kEigenschaft] = [];
-                }
-                if (!isset($oAlleVariationKombi->kEigenschaftWert, $properties[$oAlleVariationKombi->kEigenschaft]) ||
-                    !in_array($oAlleVariationKombi->kEigenschaftWert, $properties[$oAlleVariationKombi->kEigenschaft])
-                ) {
-                    $properties[$oAlleVariationKombi->kEigenschaft][] = $oAlleVariationKombi->kEigenschaftWert;
-                }
+        foreach ($varCombinations as $comb) {
+            if (!isset($properties[$comb->kEigenschaft]) || !is_array($properties[$comb->kEigenschaft])) {
+                $properties[$comb->kEigenschaft] = [];
+            }
+            if (!isset($comb->kEigenschaftWert, $properties[$comb->kEigenschaft])
+                || !in_array($comb->kEigenschaftWert, $properties[$comb->kEigenschaft], true)
+            ) {
+                $properties[$comb->kEigenschaft][] = $comb->kEigenschaftWert;
             }
         }
 
@@ -177,7 +173,7 @@ class ArtikelHelper
      * @param int  $kVaterArtikel
      * @param int  $kKundengruppe
      * @param bool $bGroupBy
-     * @return mixed
+     * @return array
      */
     public static function getPossibleVariationCombinations($kVaterArtikel, $kKundengruppe = 0, $bGroupBy = false)
     {
@@ -186,8 +182,15 @@ class ArtikelHelper
         }
         $cGroupBy = $bGroupBy ? "GROUP BY teigenschaftkombiwert.kEigenschaftWert" : '';
 
-        return Shop::DB()->query(
-            "SELECT teigenschaftkombiwert.*
+        return array_map(function ($e) {
+            $e->kEigenschaft      = (int)$e->kEigenschaft;
+            $e->kEigenschaftKombi = (int)$e->kEigenschaftKombi;
+            $e->kEigenschaftWert  = (int)$e->kEigenschaftWert;
+
+            return $e;
+        },
+            Shop::DB()->query(
+                "SELECT teigenschaftkombiwert.*
                 FROM teigenschaftkombiwert
                 JOIN tartikel
                     ON tartikel.kVaterArtikel = " . (int)$kVaterArtikel . "
@@ -198,6 +201,7 @@ class ArtikelHelper
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
                 {$cGroupBy}
                 ORDER BY teigenschaftkombiwert.kEigenschaftWert", 2
+            )
         );
     }
 
@@ -574,14 +578,14 @@ class ArtikelHelper
      */
     protected static function getSelectedVariationValue($groupId)
     {
-        if (isset($_POST['eigenschaftwert_' . $groupId])) {
-            return $_POST['eigenschaftwert_' . $groupId];
-        }
-        if (isset($_POST['eigenschaftwert'][$groupId])) {
-            return $_POST['eigenschaftwert'][$groupId];
+        $idx = 'eigenschaftwert_' . $groupId;
+        if (isset($_POST[$idx])) {
+            return $_POST[$idx];
         }
 
-        return false;
+        return isset($_POST['eigenschaftwert'][$groupId])
+            ? $_POST['eigenschaftwert'][$groupId]
+            : false;
     }
 
     /**

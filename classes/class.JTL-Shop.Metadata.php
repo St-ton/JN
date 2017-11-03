@@ -12,7 +12,7 @@ class Metadata
     /**
      * @var ProductFilter
      */
-    private $navigationsfilter;
+    private $productFilter;
 
     /**
      * @var array
@@ -30,8 +30,8 @@ class Metadata
      */
     public function __construct(ProductFilter $navigationsfilter)
     {
-        $this->navigationsfilter = $navigationsfilter;
-        $this->conf              = $navigationsfilter->getConfig();
+        $this->productFilter = $navigationsfilter;
+        $this->conf          = $navigationsfilter->getConfig();
     }
 
     /**
@@ -163,11 +163,11 @@ class Metadata
         }
         // Kategorieattribut?
         $cKatDescription = '';
-        $languageID      = $this->navigationsfilter->getLanguageID();
-        if ($this->navigationsfilter->hasCategory()) {
+        $languageID      = $this->productFilter->getLanguageID();
+        if ($this->productFilter->hasCategory()) {
             $oKategorie = $oKategorie !== null
                 ? $oKategorie
-                : new Kategorie($this->navigationsfilter->getCategory()->getValue());
+                : new Kategorie($this->productFilter->getCategory()->getValue());
             if (!empty($oKategorie->cMetaDescription)) {
                 // meta description via new method
                 return prepareMeta(
@@ -284,10 +284,10 @@ class Metadata
         }
         // Kategorieattribut?
         $cKatKeywords = '';
-        if ($this->navigationsfilter->hasCategory()) {
+        if ($this->productFilter->hasCategory()) {
             $oKategorie = $oKategorie !== null
                 ? $oKategorie
-                : new Kategorie($this->navigationsfilter->getCategory()->getValue());
+                : new Kategorie($this->productFilter->getCategory()->getValue());
             if (!empty($oKategorie->cMetaKeywords)) {
                 // meta keywords via new method
                 return strip_tags($oKategorie->cMetaKeywords);
@@ -357,7 +357,7 @@ class Metadata
                 $oKategorieListe->getAllCategoriesOnLevel($oKategorie->kKategorie);
                 if (!empty($oKategorieListe->elemente) && count($oKategorieListe->elemente) > 0) {
                     foreach ($oKategorieListe->elemente as $i => $oUnterkat) {
-                        if (isset($oUnterkat->cName) && strlen($oUnterkat->cName) > 0) {
+                        if (!empty($oUnterkat->cName)) {
                             $cKatKeywords .= $i > 0
                                 ? ', ' . $oUnterkat->cName
                                 : $oUnterkat->cName;
@@ -386,7 +386,7 @@ class Metadata
     public function getMetaTitle($oMeta, $oSuchergebnisse, $globalMeta, $oKategorie = null)
     {
         executeHook(HOOK_FILTER_INC_GIBNAVIMETATITLE);
-        $languageID = $this->navigationsfilter->getLanguageID();
+        $languageID = $this->productFilter->getLanguageID();
         $append     = $this->conf['metaangaben']['global_meta_title_anhaengen'] === 'Y';
         // Pruefen ob bereits eingestellte Metas gesetzt sind
         if (strlen($oMeta->cMetaTitle) > 0) {
@@ -406,10 +406,10 @@ class Metadata
         $cMetaTitle = str_replace('"', "'", $cMetaTitle);
         $cMetaTitle = StringHandler::htmlentitydecode($cMetaTitle, ENT_NOQUOTES);
         // Kategorieattribute koennen Standard-Titles ueberschreiben
-        if ($this->navigationsfilter->hasCategory()) {
+        if ($this->productFilter->hasCategory()) {
             $oKategorie = $oKategorie !== null
                 ? $oKategorie
-                : new Kategorie($this->navigationsfilter->getCategory()->getValue());
+                : new Kategorie($this->productFilter->getCategory()->getValue());
             if (!empty($oKategorie->cTitleTag)) {
                 // meta title via new method
                 $cMetaTitle = strip_tags($oKategorie->cTitleTag);
@@ -453,50 +453,50 @@ class Metadata
         $cMetaTitle = '';
         // @todo: simplify
         // MerkmalWert
-        if ($this->navigationsfilter->hasAttributeValue()) {
-            $cMetaTitle .= $this->navigationsfilter->getAttributeValue()->getName();
-        } elseif ($this->navigationsfilter->hasCategory()) { // Kategorie
-            $cMetaTitle .= $this->navigationsfilter->getCategory()->getName();
-        } elseif ($this->navigationsfilter->hasManufacturer()) { // Hersteller
-            $cMetaTitle .= $this->navigationsfilter->getManufacturer()->getName();
-        } elseif ($this->navigationsfilter->hasTag()) { // Tag
-            $cMetaTitle .= $this->navigationsfilter->getTag()->getName();
-        } elseif ($this->navigationsfilter->hasSearch()) { // Suchebegriff
-            $cMetaTitle .= $this->navigationsfilter->getSearch()->getName();
+        if ($this->productFilter->hasAttributeValue()) {
+            $cMetaTitle .= $this->productFilter->getAttributeValue()->getName();
+        } elseif ($this->productFilter->hasCategory()) { // Kategorie
+            $cMetaTitle .= $this->productFilter->getCategory()->getName();
+        } elseif ($this->productFilter->hasManufacturer()) { // Hersteller
+            $cMetaTitle .= $this->productFilter->getManufacturer()->getName();
+        } elseif ($this->productFilter->hasTag()) { // Tag
+            $cMetaTitle .= $this->productFilter->getTag()->getName();
+        } elseif ($this->productFilter->hasSearch()) { // Suchebegriff
+            $cMetaTitle .= $this->productFilter->getSearch()->getName();
             //@todo: does this work?
             //$cMetaTitle .= $this->Suche->getName();
-        } elseif ($this->navigationsfilter->hasSearchQuery()) { // Suchebegriff
-            $cMetaTitle .= $this->navigationsfilter->getSearchQuery()->getName();
-        }  elseif ($this->navigationsfilter->hasSearchSpecial()) { // Suchspecial
-            $cMetaTitle .= $this->navigationsfilter->getSearchSpecial()->getName();
+        } elseif ($this->productFilter->hasSearchQuery()) { // Suchebegriff
+            $cMetaTitle .= $this->productFilter->getSearchQuery()->getName();
+        }  elseif ($this->productFilter->hasSearchSpecial()) { // Suchspecial
+            $cMetaTitle .= $this->productFilter->getSearchSpecial()->getName();
         }
         // Kategoriefilter
-        if ($this->navigationsfilter->hasCategoryFilter()) {
-            $cMetaTitle .= ' ' . $this->navigationsfilter->getCategoryFilter()->getName();
+        if ($this->productFilter->hasCategoryFilter()) {
+            $cMetaTitle .= ' ' . $this->productFilter->getCategoryFilter()->getName();
         }
         // Herstellerfilter
         if (!empty($oSuchergebnisse->Herstellerauswahl[0]->cName) 
-            && $this->navigationsfilter->hasManufacturerFilter()
+            && $this->productFilter->hasManufacturerFilter()
         ) {
-            $cMetaTitle .= ' ' . $this->navigationsfilter->getManufacturerFilter()->getName();
+            $cMetaTitle .= ' ' . $this->productFilter->getManufacturerFilter()->getName();
         }
         // Tagfilter
-        if ($this->navigationsfilter->hasTagFilter()
-            && $this->navigationsfilter->getTagFilter()[0]->getName() !== null
+        if ($this->productFilter->hasTagFilter()
+            && $this->productFilter->getTagFilter()[0]->getName() !== null
         ) {
-            $cMetaTitle .= ' ' . $this->navigationsfilter->getTagFilter()[0]->getName();
+            $cMetaTitle .= ' ' . $this->productFilter->getTagFilter()[0]->getName();
         }
         // Suchbegrifffilter
-        if ($this->navigationsfilter->hasSearchFilter()) {
-            foreach ($this->navigationsfilter->getSearchFilters() as $i => $oSuchFilter) {
+        if ($this->productFilter->hasSearchFilter()) {
+            foreach ($this->productFilter->getSearchFilters() as $i => $oSuchFilter) {
                 if ($oSuchFilter->cName !== null) {
                     $cMetaTitle .= ' ' . $oSuchFilter->getName();
                 }
             }
         }
         // Suchspecialfilter
-        if ($this->navigationsfilter->hasSearchSpecialFilter()) {
-            switch ($this->navigationsfilter->getSearchSpecialFilter()->getValue()) {
+        if ($this->productFilter->hasSearchSpecialFilter()) {
+            switch ($this->productFilter->getSearchSpecialFilter()->getValue()) {
                 case SEARCHSPECIALS_BESTSELLER:
                     $cMetaTitle .= ' ' . Shop::Lang()->get('bestsellers');
                     break;
@@ -526,8 +526,8 @@ class Metadata
             }
         }
         // MerkmalWertfilter
-        if ($this->navigationsfilter->hasAttributeFilter()) {
-            foreach ($this->navigationsfilter->getAttributeFilter() as $oMerkmalFilter) {
+        if ($this->productFilter->hasAttributeFilter()) {
+            foreach ($this->productFilter->getAttributeFilter() as $oMerkmalFilter) {
                 if ($oMerkmalFilter->getName() !== null) {
                     $cMetaTitle .= ' ' . $oMerkmalFilter->getName();
                 }
@@ -553,38 +553,38 @@ class Metadata
      */
     public function getHeader()
     {
-        if ($this->navigationsfilter->hasCategory()) {
-            $this->breadCrumb = $this->navigationsfilter->getCategory()->getName();
+        if ($this->productFilter->hasCategory()) {
+            $this->breadCrumb = $this->productFilter->getCategory()->getName();
 
             return $this->breadCrumb;
         }
-        if ($this->navigationsfilter->hasManufacturer()) {
-            $this->breadCrumb = $this->navigationsfilter->getManufacturer()->getName();
+        if ($this->productFilter->hasManufacturer()) {
+            $this->breadCrumb = $this->productFilter->getManufacturer()->getName();
 
             return Shop::Lang()->get('productsFrom') . ' ' . $this->breadCrumb;
         }
-        if ($this->navigationsfilter->hasAttributeValue()) {
-            $this->breadCrumb = $this->navigationsfilter->getAttributeValue()->getName();
+        if ($this->productFilter->hasAttributeValue()) {
+            $this->breadCrumb = $this->productFilter->getAttributeValue()->getName();
 
             return Shop::Lang()->get('productsWith') . ' ' . $this->breadCrumb;
         }
-        if ($this->navigationsfilter->hasTag()) {
-            $this->breadCrumb = $this->navigationsfilter->getTag()->getName();
+        if ($this->productFilter->hasTag()) {
+            $this->breadCrumb = $this->productFilter->getTag()->getName();
 
             return Shop::Lang()->get('showAllProductsTaggedWith') . ' ' . $this->breadCrumb;
         }
-        if ($this->navigationsfilter->hasSearchSpecial()) {
-            $this->breadCrumb = $this->navigationsfilter->getSearchSpecial()->getName();
+        if ($this->productFilter->hasSearchSpecial()) {
+            $this->breadCrumb = $this->productFilter->getSearchSpecial()->getName();
 
             return $this->breadCrumb;
         }
-        if ($this->navigationsfilter->hasSearch()) {
-            $this->breadCrumb = $this->navigationsfilter->getSearch()->getName();
-        } elseif ($this->navigationsfilter->getSearchQuery()->isInitialized()) {
-            $this->breadCrumb = $this->navigationsfilter->getSearchQuery()->getName();
+        if ($this->productFilter->hasSearch()) {
+            $this->breadCrumb = $this->productFilter->getSearch()->getName();
+        } elseif ($this->productFilter->getSearchQuery()->isInitialized()) {
+            $this->breadCrumb = $this->productFilter->getSearchQuery()->getName();
         }
-        if (!empty($this->navigationsfilter->getSearch()->cSuche)
-            || !empty($this->navigationsfilter->getSearchQuery()->cSuche)
+        if (!empty($this->productFilter->getSearch()->cSuche)
+            || !empty($this->productFilter->getSearchQuery()->cSuche)
         ) {
             return Shop::Lang()->get('for') . ' ' . $this->breadCrumb;
         }
@@ -617,7 +617,7 @@ class Metadata
         $oSeite_arr = [];
         $nVon       = 0; // Die aktuellen Seiten in der Navigation, die angezeigt werden sollen.
         $nBis       = 0; // Begrenzt durch $nMaxAnzeige.
-        $naviURL    = $this->navigationsfilter->getURL();
+        $naviURL    = $this->productFilter->getURL();
         $bSeo       = $bSeo && strpos($naviURL, '?') === false;
         if (isset($oSeitenzahlen->MaxSeiten, $oSeitenzahlen->AktuelleSeite)
             && $oSeitenzahlen->MaxSeiten > 0
@@ -748,8 +748,8 @@ class Metadata
             $_SESSION['oErweiterteDarstellung']->cURL_arr       = [];
             $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = ERWDARSTELLUNG_ANSICHT_ANZAHL_STD;
 
-            if ($this->navigationsfilter->hasCategory()) {
-                $oKategorie = new Kategorie($this->navigationsfilter->getCategory()->getValue());
+            if ($this->productFilter->hasCategory()) {
+                $oKategorie = new Kategorie($this->productFilter->getCategory()->getValue());
                 if (!empty($oKategorie->categoryFunctionAttributes[KAT_ATTRIBUT_DARSTELLUNG])) {
                     $nStdDarstellung = (int)$oKategorie->categoryFunctionAttributes[KAT_ATTRIBUT_DARSTELLUNG];
                 }
@@ -847,7 +847,7 @@ class Metadata
             }
         }
         if (isset($_SESSION['oErweiterteDarstellung'])) {
-            $naviURL = $this->navigationsfilter->getURL();
+            $naviURL = $this->productFilter->getURL();
             $naviURL .= strpos($naviURL, '?') === false ? '?ed=' : '&amp;ed=';
 
             $_SESSION['oErweiterteDarstellung']->cURL_arr[ERWDARSTELLUNG_ANSICHT_LISTE]   = $naviURL .
@@ -1043,7 +1043,7 @@ class Metadata
             $_SESSION['Usersortierung'] = (int)$this->conf['artikeluebersicht']['artikeluebersicht_artikelsortierung'];
         }
         // Eine Suche wurde ausgeführt und die Suche wird auf die Suchtreffersuche eingestellt
-        if (!isset($_SESSION['nUsersortierungWahl']) && $this->navigationsfilter->getSearch()->kSuchCache > 0) {
+        if (!isset($_SESSION['nUsersortierungWahl']) && $this->productFilter->getSearch()->kSuchCache > 0) {
             // nur bei initialsuche Sortierung zurücksetzen
             $_SESSION['UsersortierungVorSuche'] = $_SESSION['Usersortierung'];
             $_SESSION['Usersortierung']         = SEARCH_SORT_STANDARD;
@@ -1059,13 +1059,13 @@ class Metadata
             $_SESSION['Usersortierung'] = (int)$_SESSION['UsersortierungVorSuche'];
         }
         // Suchspecial sortierung
-        if ($this->navigationsfilter->hasSearchSpecial()) {
+        if ($this->productFilter->hasSearchSpecial()) {
             // Gibt die Suchspecials als Assoc Array zurück, wobei die Keys des Arrays der kKey vom Suchspecial sind.
             $oSuchspecialEinstellung_arr = self::getSearchSpecialConfigMapping($this->conf['suchspecials']);
             // -1 = Keine spezielle Sortierung
-            $ssConf = isset($oSuchspecialEinstellung_arr[$this->navigationsfilter->getSearchSpecial()->getValue()]) ?: null;
+            $ssConf = isset($oSuchspecialEinstellung_arr[$this->productFilter->getSearchSpecial()->getValue()]) ?: null;
             if ($ssConf !== null && $ssConf !== -1 && count($oSuchspecialEinstellung_arr) > 0) {
-                $_SESSION['Usersortierung'] = (int)$oSuchspecialEinstellung_arr[$this->navigationsfilter->getSearchSpecial()->getValue()];
+                $_SESSION['Usersortierung'] = (int)$oSuchspecialEinstellung_arr[$this->productFilter->getSearchSpecial()->getValue()];
             }
         }
         // Der User hat expliziet eine Sortierung eingestellt

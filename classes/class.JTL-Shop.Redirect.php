@@ -368,17 +368,17 @@ class Redirect
             $foundRedirectWithQuery = false;
             if (!empty($cUrlQueryString)) {
                 $oItem = $this->find($cUrl . '?' . $cUrlQueryString);
-                if (is_object($oItem)) {
+                if ($oItem !== null) {
                     $cUrl                   = $cUrl . '?' . $cUrlQueryString;
                     $foundRedirectWithQuery = true;
                 }
             } else {
                 $oItem = $this->find($cUrl);
             }
-            if (!is_object($oItem)) {
+            if ($oItem === null) {
                 $conf = Shop::getSettings([CONF_GLOBAL]);
-                if (!isset($_GET['notrack'])  &&
-                    (!isset($conf['global']['redirect_save_404']) || $conf['global']['redirect_save_404'] === 'Y')
+                if (!isset($_GET['notrack'])
+                    && (!isset($conf['global']['redirect_save_404']) || $conf['global']['redirect_save_404'] === 'Y')
                 ) {
                     $oItem           = new self();
                     $oItem->cFromUrl = $cUrl;
@@ -408,7 +408,7 @@ class Redirect
             );
             if ($oEntry === false || $oEntry === null || (is_object($oEntry) && (int)$oEntry->nCount === 0)) {
                 $oReferer               = new stdClass();
-                $oReferer->kRedirect    = isset($oItem->kRedirect) ? $oItem->kRedirect : 0;
+                $oReferer->kRedirect    = $oItem !== null ? $oItem->kRedirect : 0;
                 $oReferer->kBesucherBot = isset($_SESSION['oBesucher']->kBesucherBot)
                     ? (int)$_SESSION['oBesucher']->kBesucherBot
                     : 0;
@@ -416,10 +416,7 @@ class Redirect
                 $oReferer->cIP          = $cIP;
                 $oReferer->dDate        = time();
                 Shop::DB()->insert('tredirectreferer', $oReferer);
-                if (is_object($oItem)) {
-                    if (!isset($oItem->nCount)) {
-                        $oItem->nCount = 0;
-                    }
+                if ($oItem !== null) {
                     ++$oItem->nCount;
                     Shop::DB()->update('tredirect', 'kRedirect', $oItem->kRedirect, $oItem);
                 }

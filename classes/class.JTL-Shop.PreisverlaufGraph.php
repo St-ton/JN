@@ -691,7 +691,7 @@ class PreisverlaufGraph
                     $GridColor
                 );
             }
-        } elseif ($this->nAnzahlPreise == 1) {
+        } elseif ($this->nAnzahlPreise === 1) {
             // Grid X
             imagefttext(
                 $this->image,
@@ -779,7 +779,7 @@ class PreisverlaufGraph
                 $GraphColor
             ); // Rechts
             imageline($this->image, $nXEnd, $nYEnd, $nXEnd - 5, $nYEnd, $GraphColor); // Links
-        } elseif (is_array($this->oPreisverlaufData_arr) && count($this->oPreisverlaufData_arr) == 1) {
+        } elseif (is_array($this->oPreisverlaufData_arr) && count($this->oPreisverlaufData_arr) === 1) {
             imageline(
                 $this->image,
                 $this->nAussenRahmenLinks,
@@ -816,7 +816,7 @@ class PreisverlaufGraph
                 if (preg_match("/#[A-Fa-f0-9]{6}/", $oConfig->cWert) == 1) {
                     $nDecZahl_arr = [];
 
-                    $cWertSub       = substr($oConfig->cWert, 1, strlen($oConfig->cWert) - 1);
+                    $cWertSub       = substr($oConfig->cWert, 1);
                     $nDecZahl_arr[] = hexdec(substr($cWertSub, 0, 2));
                     $nDecZahl_arr[] = hexdec(substr($cWertSub, 2, 2));
                     $nDecZahl_arr[] = hexdec(substr($cWertSub, 4, 2));

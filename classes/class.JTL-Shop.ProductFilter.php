@@ -1350,7 +1350,7 @@ class ProductFilter
             $Artikelsortierung          = $this->metaData->mapUserSorting($_SESSION['Usersortierung']);
             $_SESSION['Usersortierung'] = $Artikelsortierung;
         }
-        if ($this->nSortierung > 0 && (int)$_SESSION['Usersortierung'] === 100) {
+        if ($this->nSortierung > 0 && $_SESSION['Usersortierung'] === 100) {
             $Artikelsortierung = $this->nSortierung;
         }
         $sort->orderBy = 'tartikel.nSort, tartikel.cName';
@@ -1360,7 +1360,7 @@ class ProductFilter
                 if ($this->category->getValue() > 0) {
                     $sort->orderBy = 'tartikel.nSort, tartikel.cName';
                 } elseif (isset($_SESSION['Usersortierung'])
-                    && (int)$_SESSION['Usersortierung'] === 100
+                    && $_SESSION['Usersortierung'] === 100
                     && $this->search->isInitialized()
                 ) {
                     $sort->orderBy = 'tsuchcachetreffer.nSort';
@@ -1433,7 +1433,7 @@ class ProductFilter
     public function getArticlesPerPageLimit()
     {
         if ($this->articleLimit > 0) {
-            $limit = (int)$this->articleLimit;
+            $limit = (int)$this->getArticleLimit();
         } elseif (isset($_SESSION['ArtikelProSeite']) && $_SESSION['ArtikelProSeite'] > 0) {
             $limit = (int)$_SESSION['ArtikelProSeite'];
         } elseif (isset($_SESSION['oErweiterteDarstellung']->nAnzahlArtikel)
@@ -1741,7 +1741,7 @@ class ProductFilter
                     }
                 }
             } elseif ($count === 1) {
-                /** @var array(IFilter) $filters */
+                /** @var IFilter[] $filters */
                 if ($ignore === null
                     || (is_object($ignore) && $filters[0] !== $ignore)
                     || (is_string($ignore) && $filters[0]->getClassName() !== $ignore)

@@ -789,7 +789,7 @@ class Plugin
                 count($oPluginHookListe_arr[HOOK_SEITE_PAGE_IF_LINKART]) > 0) {
                 $bHandlerEnthalten = false;
                 foreach ($oPluginHookListe_arr[HOOK_SEITE_PAGE_IF_LINKART] as $i => $oPluginHookListe) {
-                    if ($oPluginHookListe->cDateiname == PLUGIN_SEITENHANDLER) {
+                    if ($oPluginHookListe->cDateiname === PLUGIN_SEITENHANDLER) {
                         unset($oPluginHookListe_arr[HOOK_SEITE_PAGE_IF_LINKART][$i]);
                         $bHandlerEnthalten = true;
                     }

@@ -239,16 +239,16 @@ class FilterItemAttributeAdvanced extends FilterBaseAttribute
                                   ->setParams(['value' => $this->getValue()])
                                   ->setType('IN');
 
-        $value = $this->getValue();
-        if (is_array($value)) {
-            $value = implode(', ', $value);
-        }
-
-        return "\n" . ' #START condition from FilterItemAttribute::getSQLCondition() ' . $this->getName() . "\n" .
-            'tartikelmerkmal.kArtikel IN (' .
-            'SELECT kArtikel FROM ' . $this->getTableName() .
-            ' WHERE ' . $this->getPrimaryKeyRow() . ' IN (' . $value . '))' .
-            ' #END condition from FilterItemAttribute::getSQLCondition() ' . $this->getName() . "\n";
+//        $value = $this->getValue();
+//        if (is_array($value)) {
+//            $value = implode(', ', $value);
+//        }
+//
+//        return "\n" . ' #START condition from FilterItemAttribute::getSQLCondition() ' . $this->getName() . "\n" .
+//            'tartikelmerkmal.kArtikel IN (' .
+//            'SELECT kArtikel FROM ' . $this->getTableName() .
+//            ' WHERE ' . $this->getPrimaryKeyRow() . ' IN (' . $value . '))' .
+//            ' #END condition from FilterItemAttribute::getSQLCondition() ' . $this->getName() . "\n";
     }
 
     /**

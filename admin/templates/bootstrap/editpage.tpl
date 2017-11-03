@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>JTL Live-Editor</title>
+    <title>CMS Live Editor</title>
 
     <link rel="stylesheet" href="{$templateUrl}css/bootstrap.min.css">
     <link rel="stylesheet" href="{$templateUrl}css/bootstrap-theme.min.css">
@@ -69,11 +69,11 @@
         </ul>
         <div class="tab-content">
             <div class="tab-pane active" id="elements">
-                {foreach from=$oPortlet_arr item=oPortlet}
+                {foreach $oPortlet_arr as $oPortlet}
                     <a href="#" class="portlet-button btn btn-default"
-                       data-content="{$oPortlet->cPreviewContent|escape:'htmlall'}"
+                       data-content="{$oPortlet->getPreviewHtml()|escape:'htmlall'}"
                        data-portletid="{$oPortlet->kPortlet}"
-                       data-initialsettings="{$oPortlet->cInitialSettings|json_encode|escape:'htmlall'}">
+                       data-initialsettings="{$oPortlet->getDefaultProps()|json_encode|escape:'htmlall'}">
                         {$oPortlet->cTitle}
                     </a>
                 {/foreach}
@@ -100,7 +100,9 @@
                         Portlet Einstellungen
                     </h4>
                 </div>
-                <div class="modal-body"></div>
+                <div class="modal-body">
+                    <form id="settings-form"></form>
+                </div>
                 <div class="modal-footer">
                     <div class="btn-group">
                         <button type="button" class="btn btn-danger" data-dismiss="modal">Abbrechen</button>

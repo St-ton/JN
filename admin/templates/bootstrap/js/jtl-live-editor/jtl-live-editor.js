@@ -394,7 +394,7 @@ JtlLiveEditor.prototype.loadAreaFromJson = function(data, areaElm, ioCall)
 
         areaElm.append(portletElm);
 
-        ioCall('getPortletPreviewContent', [portletData.portletId, portletData.settings], function (newHtml)
+        ioCall('getPortletPreviewHtml', [portletData.portletId, portletData.settings], function (newHtml)
         {
             var newElm = $(newHtml);
 

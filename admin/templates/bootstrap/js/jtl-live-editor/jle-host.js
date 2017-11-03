@@ -68,7 +68,7 @@ JLEHost.prototype.liveEditorLoaded = function()
 
     // this.iframeCtx.jtlToken = jtlToken;
 
-    ioCall('loadLiveEditorContent', [this.cKey, this.kKey, this.kSprache], function(data) {
+    ioCall('loadCmsPage', [this.cKey, this.kKey, this.kSprache], function(data) {
         this.editor.loadFromJson(data, ioCall);
     }.bind(this));
 };
@@ -97,8 +97,8 @@ JLEHost.prototype.openConfigurator = function(portletId, settings)
 {
     var self = this;
 
-    ioCall('getPortletSettingsHtml', [portletId, settings], function(settingsHtml) {
-        $('#settings-modal .modal-body').html(settingsHtml);
+    ioCall('getPortletConfigPanelHtml', [portletId, settings], function(settingsHtml) {
+        $('#settings-form').html(settingsHtml);
         $('#settings-modal').modal('show');
         self.curPortletId = portletId;
     });
@@ -106,7 +106,7 @@ JLEHost.prototype.openConfigurator = function(portletId, settings)
 
 JLEHost.prototype.onEditorSave = function (e)
 {
-    ioCall('saveLiveEditorContent', [
+    ioCall('saveCmsPage', [
         this.cKey, this.kKey, this.kSprache,
         this.editor.toJson()
     ]);
@@ -121,14 +121,14 @@ JLEHost.prototype.onSettingsSave = function (e)
     var children = this.editor.selectedElm
         // select direct descendant subareas or non-nested subareas
         .find('> .jle-subarea') ; //, :not(.jle-subarea) .jle-subarea');
-    var settingsArray = $('#portlet-settings-form').serializeArray();
+    var settingsArray = $('#settings-form').serializeArray();
     var settings = { };
 
     settingsArray.forEach(function (setting) {
         settings[setting.name] = setting.value;
     });
 
-    ioCall('getPortletPreviewContent', [this.curPortletId, settings], onNewHtml.bind(this));
+    ioCall('getPortletPreviewHtml', [this.curPortletId, settings], onNewHtml.bind(this));
 
     function onNewHtml(newHtml)
     {

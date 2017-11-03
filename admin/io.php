@@ -28,7 +28,7 @@ $plzimportInc        = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'plz_ort_import_
 $redirectInc         = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'redirect_inc.php';
 $dbupdaterInc        = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dbupdater_inc.php';
 $sslcheckInc         = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'sslcheck_inc.php';
-$portletInc          = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'editpage_inc.php';
+$editpageInc         = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'editpage_inc.php';
 
 $io
     ->register('getPages', [$jsonApi, 'getPages'])
@@ -79,12 +79,12 @@ $io
     // Redirects
     ->register('redirectCheckAvailability', ['Redirect', 'checkAvailability'])
     ->register('updateRedirectState', null, $redirectInc, 'REDIRECT_VIEW')
-    // Portlets
-    ->register('getPortletPreviewContent', null, $portletInc, 'CONTENT_PAGE_VIEW')
-    ->register('getPortletSettingsHtml', null, $portletInc, 'CONTENT_PAGE_VIEW')
-    ->register('getPortletInitialSettings', null, $portletInc, 'CONTENT_PAGE_VIEW')
-    ->register('saveLiveEditorContent', null, $portletInc, 'CONTENT_PAGE_VIEW')
-    ->register('loadLiveEditorContent', null, $portletInc, 'CONTENT_PAGE_VIEW')
+    // CMS Live Editor
+    ->register('getPortletPreviewHtml', null, $editpageInc, 'CONTENT_PAGE_VIEW')
+    ->register('getPortletConfigPanelHtml', null, $editpageInc, 'CONTENT_PAGE_VIEW')
+    ->register('getPortletDefaultProps', null, $editpageInc, 'CONTENT_PAGE_VIEW')
+    ->register('saveCmsPage', null, $editpageInc, 'CONTENT_PAGE_VIEW')
+    ->register('loadCmsPage', null, $editpageInc, 'CONTENT_PAGE_VIEW')
     // Other
     ->register('getRandomPassword', 'getRandomPasswordIO', $accountInc, 'ACCOUNT_VIEW')
     ->register('saveBannerAreas', 'saveBannerAreasIO', $bannerInc, 'DISPLAY_BANNER_VIEW')

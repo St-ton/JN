@@ -1,7 +1,5 @@
 
-<form id="portlet-settings-form">
-    <textarea name="text" id="settingsText" class="form-control">{$settings.text|escape}</textarea>
-</form>
+<textarea name="text" id="settingsText" class="form-control">{$settings.text|escape}</textarea>
 
 <script>
     CKEDITOR.replace('settingsText', {

@@ -7,118 +7,147 @@
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_PORTLETS . 'class.PortletBase.php';
 
 /**
- * @return mixed
+ * @param int $kPortlet
+ * @return PortletBase
+ * @throws Exception
+ */
+function createPortlet($kPortlet)
+{
+    $oDbPortlet = Shop::DB()->select('tcmsportlet', 'kPortlet', $kPortlet);
+
+    if (!is_object($oDbPortlet)) {
+        throw new Exception('Portlet ID could not be found in the database.');
+    }
+
+    if (isset($oDbPortlet->kPlugin) && $oDbPortlet->kPlugin > 0) {
+        $oPlugin    = new Plugin($oDbPortlet->kPlugin);
+        $cClass     = 'Portlet' . $oPlugin->oPluginEditorPortletAssoc_arr[$kPortlet]->cClass;
+        $cClassPath = $oPlugin->oPluginEditorPortletAssoc_arr[$kPortlet]->cClassAbs;
+    } else {
+        $cClass     = 'Portlet' . $oDbPortlet->cClass;
+        $cClassFile = 'class.' . $cClass . '.php';
+        $cClassPath = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_PORTLETS . $cClassFile;
+    }
+
+    require_once $cClassPath;
+
+    return new $cClass($kPortlet);
+}
+
+/**
+ * @return PortletBase[]
  */
 function getPortlets()
 {
-    $oPortlet_arr = Shop::DB()->selectAll('teditorportlets', [], [], '*', 'cGroup');
+    $oDbPortlet_arr = Shop::DB()->selectAll('tcmsportlet', [], []);
+    $oPortlet_arr   = [];
 
-    foreach ($oPortlet_arr as $i => $oPortlet) {
-        $oPortlet_arr[$i]->cContent = '';
-        $cClass                     = 'Portlet' . $oPortlet->cClass;
-        $cClassFile                 = 'class.' . $cClass . '.php';
-        $cClassPath                 = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_PORTLETS . $cClassFile;
-        $oPortlet->cTitle           = str_replace(['--', ' '], '-', $oPortlet->cTitle);
-
-        // Plugin?
-        $oPlugin = null;
-        if (isset($oPortlet->kPlugin) && $oPortlet->kPlugin > 0) {
-            $oPlugin    = new Plugin($oPortlet->kPlugin);
-            $cClass     = 'Portlet' . $oPlugin->oPluginEditorPortletAssoc_arr[$oPortlet->kPortlet]->cClass;
-            $cClassPath = $oPlugin->oPluginEditorPortletAssoc_arr[$oPortlet->kPortlet]->cClassAbs;
-        }
-        if (file_exists($cClassPath)) {
-            require_once $cClassPath;
-            if (class_exists($cClass)) {
-                /** @var PortletBase $oClassObj */
-                $oClassObj                          = new $cClass(null, null, $oPlugin);
-                $oPortlet_arr[$i]->cPreviewContent  = $oClassObj->getPreviewContent();
-                $oPortlet_arr[$i]->cInitialSettings = $oClassObj->getInitialSettings();
-            }
-        }
+    foreach ($oDbPortlet_arr as $i => $oDbPortlet) {
+        $oPortlet_arr[] = createPortlet($oDbPortlet->kPortlet);
     }
 
     return $oPortlet_arr;
 }
 
-function getPortletPreviewContent($kPortlet, $data)
+/**
+ * @param int $kPortlet
+ * @param array $properties
+ * @return string
+ */
+function getPortletPreviewHtml($kPortlet, $properties)
 {
-    $portletInst = PortletBase::createInstance($kPortlet, Shop::Smarty(), Shop::DB());
-    return $portletInst->getPreviewContent($data);
-}
-
-function getPortletSettingsHtml($kPortlet, $settings)
-{
-    $portletInst = PortletBase::createInstance($kPortlet, Shop::Smarty(), Shop::DB());
-    return $portletInst->getSettingsHTML($settings);
-}
-
-function getPortletInitialSettings($kPortlet)
-{
-    $portletInst = PortletBase::createInstance($kPortlet, Shop::Smarty(), Shop::DB());
-    return $portletInst->getInitialSettings();
+    return createPortlet($kPortlet)
+        ->setProperties($properties)
+        ->getPreviewHtml();
 }
 
 /**
- * @param $cKey
- * @param $kKey
- * @param $kSprache
- * @param $contentData - object tree to be json encoded and saved in the DB
+ * @param int $kPortlet
+ * @param array $properties
+ * @return string
  */
-function saveLiveEditorContent($cKey, $kKey, $kSprache, $contentData)
+function getPortletConfigPanelHtml($kPortlet, $properties)
 {
-    $oEditorPage = Shop::DB()->select('teditorpage', ['cKey', 'kKey', 'kSprache'], [$cKey, $kKey, $kSprache]);
+    return createPortlet($kPortlet)
+        ->setProperties($properties)
+        ->getConfigPanelHtml();
+}
 
-    if ($oEditorPage === null) {
-        $oEditorPage = (object)[
+/**
+ * @param $kPortlet
+ * @return array[]
+ */
+function getPortletDefaultProps($kPortlet)
+{
+    return createPortlet($kPortlet)
+        ->getDefaultProps();
+}
+
+/**
+ * @param string $cKey
+ * @param int $kKey
+ * @param int $kSprache
+ * @param array|object $oCmsPageData - object tree to be json encoded and saved in the DB
+ */
+function saveCmsPage($cKey, $kKey, $kSprache, $oCmsPageData)
+{
+    $oCmsPage = Shop::DB()->select('tcmspage', ['cKey', 'kKey', 'kSprache'], [$cKey, $kKey, $kSprache]);
+
+    if ($oCmsPage === null) {
+        $oCmsPage = (object)[
             'cKey' => $cKey,
             'kKey' => $kKey,
             'kSprache' => $kSprache,
-            'nEditorContent' => '',
-            'cJSON' => json_encode($contentData),
+            'cJson' => json_encode($oCmsPageData),
         ];
-        $oEditorPage->kEditorPage = Shop::DB()->insert('teditorpage', $oEditorPage);
+        $oCmsPage->kPage = Shop::DB()->insert('tcmspage', $oCmsPage);
     } else {
-        $oEditorPage->cJSON = json_encode($contentData);
-        Shop::DB()->update('teditorpage', ['cKey', 'kKey', 'kSprache'], [$cKey, $kKey, $kSprache], $oEditorPage);
+        $oCmsPage->cJson = json_encode($oCmsPageData);
+        Shop::DB()->update('tcmspage', ['cKey', 'kKey', 'kSprache'], [$cKey, $kKey, $kSprache], $oCmsPage);
     }
 
 
-    foreach ($contentData as $areaId => $areaData) {
-        $cRendered = '';
+    foreach ($oCmsPageData as $areaId => $areaPortlets) {
+        $cHtml = '';
 
-        foreach ($areaData as $portletData) {
-            $portlet    = PortletBase::createInstance($portletData['portletId'], Shop::Smarty(), Shop::DB());
-            $cRendered .= $portlet->getHTMLContent($portletData);
+        foreach ($areaPortlets as $portlet) {
+            $cHtml .= createPortlet($portlet['portletId'])
+                ->setProperties($portlet['properties'])
+                ->setSubAreas($portlet['subAreas'])
+                ->getFinalHtml();
         }
 
-        $oEditorPageContent = Shop::DB()->select(
-            'teditorpagecontent', ['kEditorPage', 'cAreaId'], [$oEditorPage->kEditorPage, $areaId]
+        $oCmsPageContent = Shop::DB()->select(
+            'tcmspagecontent', ['kPage', 'cAreaId'], [$oCmsPage->kPage, $areaId]
         );
 
-        if ($oEditorPageContent === null) {
-            $oEditorPageContent = (object)[
-                'kEditorPage' => $oEditorPage->kEditorPage,
+        if ($oCmsPageContent === null) {
+            $oCmsPageContent = (object)[
+                'kPage' => $oCmsPage->kEditorPage,
                 'cAreaId' => $areaId,
-                'cContent' => $cRendered,
+                'cHtml' => $cHtml,
             ];
-            $oEditorPageContent->kEditorPageContent = Shop::DB()->insert('teditorpagecontent', $oEditorPageContent);
+            $oCmsPageContent->kEditorPageContent = Shop::DB()->insert('teditorpagecontent', $oCmsPageContent);
         } else {
-            $oEditorPageContent->cContent = $cRendered;
-            Shop::DB()->update(
-                'teditorpagecontent', 'kEditorPageContent', $oEditorPageContent->kEditorPageContent, $oEditorPageContent
-            );
+            $oCmsPageContent->cContent = $cHtml;
+            Shop::DB()->update('tcmspagecontent', 'kPageContent', $oCmsPageContent->kPageContent, $oCmsPageContent);
         }
     }
 }
 
-function loadLiveEditorContent($cKey, $kKey, $kSprache)
+/**
+ * @param int $cKey
+ * @param int $kKey
+ * @param int $kSprache
+ * @return object
+ */
+function loadCmsPage($cKey, $kKey, $kSprache)
 {
-    $oEditorPage = Shop::DB()->select('teditorpage', ['cKey', 'kKey', 'kSprache'], [$cKey, $kKey, $kSprache]);
+    $oCmsPage = Shop::DB()->select('tcmspage', ['cKey', 'kKey', 'kSprache'], [$cKey, $kKey, $kSprache]);
 
-    if ($oEditorPage === null) {
+    if ($oCmsPage === null) {
         return (object)[];
     }
 
-    return $oEditorPage->cJSON;
+    return $oCmsPage->cJson;
 }

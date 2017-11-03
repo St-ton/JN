@@ -6,13 +6,13 @@
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_PORTLETS . 'class.PortletBase.php';
 
 /**
- * Class PortletColumn
+ * Class PortletRow
  */
-class PortletColumn extends PortletBase
+class PortletRow extends PortletBase
 {
-    public function getPreviewContent($settings = null)
+    public function getPreviewHtml()
     {
-        $layout = isset($settings['layout']) ? $settings['layout'] : '6,6';
+        $layout = isset($this->properties['layout']) ? $this->properties['layout'] : '6,6';
         $layout = explode(',', $layout);
 
         $res = '<div class="row">';
@@ -53,14 +53,14 @@ class PortletColumn extends PortletBase
         return $res;
     }
 
-    public function getSettingsHTML($settings)
+    public function getConfigPanelHtml()
     {
-        return $this->oSmarty
-            ->assign('settings', $settings)
-            ->fetch('tpl_inc/portlets/settings.column.tpl');
+        return Shop::Smarty()
+            ->assign('properties', $this->properties)
+            ->fetch('tpl_inc/portlets/settings.row.tpl');
     }
 
-    public function getInitialSettings()
+    public function getDefaultProps()
     {
         return [
             'layout' => '6,6',

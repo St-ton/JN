@@ -101,7 +101,7 @@ class ArtikelListe
             $kKundengruppe = Session::CustomerGroup()->getID();
         }
         if (!$kSprache) {
-            $kSprache = Shop::getLanguage();
+            $kSprache = Shop::getLanguageID();
         }
         $kKategorie    = (int)$kKategorie;
         $kKundengruppe = (int)$kKundengruppe;

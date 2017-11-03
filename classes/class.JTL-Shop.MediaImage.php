@@ -156,7 +156,7 @@ class MediaImage implements IMedia
     {
         $directory = PFAD_ROOT . MediaImageRequest::getCachePath($type);
         if ($id !== null) {
-            $directory = $directory . '/' . (int) $id;
+            $directory = $directory . '/' . (int)$id;
         }
 
         try {
@@ -164,12 +164,12 @@ class MediaImage implements IMedia
 
             foreach (new RecursiveIteratorIterator($rdi, RecursiveIteratorIterator::CHILD_FIRST) as $value) {
                 $value->isFile()
-                    ? @unlink($value)
-                    : @rmdir($value);
+                    ? unlink($value)
+                    : rmdir($value);
             }
 
             if ($id !== null) {
-                @rmdir($directory);
+                rmdir($directory);
             }
         } catch (Exception $e) {
         }
@@ -253,7 +253,7 @@ class MediaImage implements IMedia
 
             self::writeHttp($imanee);
         } catch (Exception $e) {
-            $display = (string) strtolower(ini_get('display_errors'));
+            $display = strtolower(ini_get('display_errors'));
             if (in_array($display, ['on', '1', 'true'], true)) {
                 $imanee = Image::error($mediaReq, $e->getMessage());
 
@@ -393,9 +393,9 @@ class MediaImage implements IMedia
                 if ($limit !== null) {
                     $limitStmt = ' LIMIT ';
                     if ($offset !== null) {
-                        $limitStmt .= (int) $offset . ', ';
+                        $limitStmt .= (int)$offset . ', ';
                     }
-                    $limitStmt .= (int) $limit;
+                    $limitStmt .= (int)$limit;
                 }
                 $images = Shop::DB()->query('
                     SELECT tartikelpict.cPfad AS path, tartikelpict.nNr AS number, tartikelpict.kArtikel ' . $cols . '
@@ -408,7 +408,7 @@ class MediaImage implements IMedia
                 throw new Exception('Not implemented');
         }
 
-        while ($image = $images->fetch(PDO::FETCH_OBJ)) {
+        while (($image = $images->fetch(PDO::FETCH_OBJ)) !== false) {
             $req = MediaImageRequest::create([
                 'id'     => $image->kArtikel,
                 'type'   => $type,
@@ -448,18 +448,16 @@ class MediaImage implements IMedia
     private function parse($request)
     {
         if (!is_string($request) || strlen($request) === 0) {
-            return;
+            return null;
         }
 
         if ($request[0] === '/') {
             $request = substr($request, 1);
         }
 
-        if (preg_match(MEDIAIMAGE_REGEX, $request, $matches)) {
-            return array_intersect_key($matches, array_flip(array_filter(array_keys($matches), 'is_string')));
-        }
-
-        return;
+        return preg_match(MEDIAIMAGE_REGEX, $request, $matches)
+            ? array_intersect_key($matches, array_flip(array_filter(array_keys($matches), 'is_string')))
+            : null;
     }
 
     /**
@@ -477,7 +475,7 @@ class MediaImage implements IMedia
     /**
      * @param string $type
      * @param int    $id
-     * @return mixed|void
+     * @return int|null
      */
     public static function getPrimaryNumber($type, $id)
     {
@@ -485,11 +483,11 @@ class MediaImage implements IMedia
         if ($prepared !== null) {
             $primary = Shop::DB()->queryPrepared($prepared->stmt, $prepared->bind, 1);
             if (is_object($primary)) {
-                return max(1, (int) $primary->number);
+                return max(1, (int)$primary->number);
             }
         }
 
-        return;
+        return null;
     }
 
     /**
@@ -500,7 +498,7 @@ class MediaImage implements IMedia
      */
     public static function getImageStmt($type, $id)
     {
-        $id = (int) $id;
+        $id = (int)$id;
         switch ($type) {
             case Image::TYPE_PRODUCT:
                 $res = ['stmt' => 'SELECT kArtikel, nNr as number FROM tartikelpict WHERE kArtikel = :kArtikel GROUP BY cPfad ORDER BY nNr ASC', 'bind' => ['kArtikel' => $id]];
@@ -524,10 +522,10 @@ class MediaImage implements IMedia
                 $res = ['stmt' => 'SELECT cBildpfad FROM tmerkmalwert, 0 as number WHERE kMerkmalWert = :kMerkmalWert ORDER BY nSort ASC', 'bind' => ['kMerkmalWert' => $id]];
                 break;
             default:
-                return;
+                return null;
         }
 
-        return (object) $res;
+        return (object)$res;
     }
 
     /**
@@ -538,13 +536,13 @@ class MediaImage implements IMedia
      */
     public static function imageCount($type, $id)
     {
-        $id       = (int) $id;
+        $id       = (int)$id;
         $prepared = static::getImageStmt($type, $id);
 
         if ($prepared !== null) {
             $imageCount = Shop::DB()->queryPrepared($prepared->stmt, $prepared->bind, 3);
 
-            return is_numeric($imageCount) ? (int) $imageCount : 0;
+            return is_numeric($imageCount) ? (int)$imageCount : 0;
         }
 
         return 0;

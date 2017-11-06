@@ -236,4 +236,12 @@ class Hersteller
 
         return $results;
     }
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->cName;
+    }
 }

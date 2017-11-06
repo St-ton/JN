@@ -521,4 +521,12 @@ class Kategorie
 
         return empty($obj->kKategorie);
     }
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->cName;
+    }
 }

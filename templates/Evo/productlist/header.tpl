@@ -1,4 +1,4 @@
-{if !isset($oNavigationsinfo) || isset($Suchergebnisse) && isset($oNavigationsinfo) && empty($oNavigationsinfo->cName)}
+{if !isset($oNavigationsinfo) || isset($Suchergebnisse) && isset($oNavigationsinfo) && empty($oNavigationsinfo->getName())}
     <h1>{$Suchergebnisse->SuchausdruckWrite}</h1>
 {/if}
 
@@ -29,28 +29,31 @@
 {include file="snippets/extension.tpl"}
 
 {block name="productlist-header"}
-{if isset($oNavigationsinfo->cName) && $oNavigationsinfo->cName !== '' || isset($oNavigationsinfo->cBildURL) && !empty($oNavigationsinfo->cBildURL)}
-    <div class="title">{if $oNavigationsinfo->cName}<h1>{$oNavigationsinfo->cName}</h1>{/if}</div>
+{if $oNavigationsinfo->hasData()}
+    <div class="title">{if $oNavigationsinfo->getName()}<h1>{$oNavigationsinfo->getName()}</h1>{/if}</div>
     <div class="desc clearfix">
-        {if !empty($oNavigationsinfo->cBildURL) && $oNavigationsinfo->cBildURL !== 'gfx/keinBild.gif' && $oNavigationsinfo->cBildURL !== 'gfx/keinBild_kl.gif'}
+        {if $oNavigationsinfo->getImageURL() !== 'gfx/keinBild.gif' && $oNavigationsinfo->getImageURL() !== 'gfx/keinBild_kl.gif'}
           <div class="img pull-left">
-            <img class="img-responsive" src="{$oNavigationsinfo->cBildURL}" alt="{if isset($oNavigationsinfo->oKategorie->cBeschreibung)}{$oNavigationsinfo->oKategorie->cBeschreibung|strip_tags|truncate:40|escape:"html"}{elseif isset($oNavigationsinfo->oHersteller->cBeschreibung)}{$oNavigationsinfo->oHersteller->cBeschreibung|strip_tags|truncate:40|escape:"html"}{/if}" />
+            <img class="img-responsive" src="{$oNavigationsinfo->getImageURL()}" alt="{if $oNavigationsinfo->getCategory() !== null}{$oNavigationsinfo->getCategory()->cBeschreibung|strip_tags|truncate:40|escape:'html'}{elseif $oNavigationsinfo->getManufacturer() !== null}{$oNavigationsinfo->getManufacturer()->cBeschreibung|strip_tags|truncate:40|escape:'html'}{/if}" />
           </div>
         {/if}
         {if $Einstellungen.navigationsfilter.kategorie_beschreibung_anzeigen === 'Y'
-            && isset($oNavigationsinfo->oKategorie) && $oNavigationsinfo->oKategorie->cBeschreibung|strlen > 0
-            && $Einstellungen.navigationsfilter.kategorie_bild_anzeigen !== 'B'}
-            <div class="item_desc custom_content">{$oNavigationsinfo->oKategorie->cBeschreibung}</div>
+            && $Einstellungen.navigationsfilter.kategorie_bild_anzeigen !== 'B'
+            && $oNavigationsinfo->getCategory() !== null
+            && $oNavigationsinfo->getCategory()->cBeschreibung|strlen > 0}
+            <div class="item_desc custom_content">{$oNavigationsinfo->getCategory()->cBeschreibung}</div>
         {/if}
         {if $Einstellungen.navigationsfilter.hersteller_beschreibung_anzeigen === 'Y'
-            && isset($oNavigationsinfo->oHersteller) && $oNavigationsinfo->oHersteller->cBeschreibung|strlen > 0
-            && $Einstellungen.navigationsfilter.hersteller_bild_anzeigen !== 'B'}
-            <div class="item_desc custom_content">{$oNavigationsinfo->oHersteller->cBeschreibung}</div>
+            && $Einstellungen.navigationsfilter.hersteller_bild_anzeigen !== 'B'
+            && $oNavigationsinfo->getManufacturer() !== null
+            && $oNavigationsinfo->getManufacturer()->cBeschreibung|strlen > 0}
+            <div class="item_desc custom_content">{$oNavigationsinfo->getManufacturer()->cBeschreibung}</div>
         {/if}
         {if $Einstellungen.navigationsfilter.merkmalwert_beschreibung_anzeigen === 'Y'
-            && isset($oNavigationsinfo->oMerkmalWert) && $oNavigationsinfo->oMerkmalWert->cBeschreibung|strlen > 0
-            && $Einstellungen.navigationsfilter.merkmalwert_bild_anzeigen !== 'B'}
-            <div class="item_desc custom_content">{$oNavigationsinfo->oMerkmalWert->cBeschreibung}</div>
+            && $Einstellungen.navigationsfilter.merkmalwert_bild_anzeigen !== 'B'
+            && $oNavigationsinfo->getAttributeValue() !== null
+            && $oNavigationsinfo->getAttributeValue()->cBeschreibung|strlen > 0}
+            <div class="item_desc custom_content">{$oNavigationsinfo->getAttributeValue()->cBeschreibung}</div>
         {/if}
     </div>
 {/if}

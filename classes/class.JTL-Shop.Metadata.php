@@ -9,6 +9,8 @@
  */
 class Metadata
 {
+    use MagicCompatibilityTrait;
+
     /**
      * @var ProductFilter
      */
@@ -25,6 +27,61 @@ class Metadata
     private $breadCrumb;
 
     /**
+     * @var string
+     */
+    private $metaTitle = '';
+
+    /**
+     * @var string
+     */
+    private $metaDescription = '';
+
+    /**
+     * @var string
+     */
+    private $metaKeywords = '';
+
+    /**
+     * @var Kategorie
+     */
+    private $category;
+
+    /**
+     * @var Hersteller
+     */
+    private $manufacturer;
+
+    /**
+     * @var MerkmalWert
+     */
+    private $attributeValue;
+
+    /**
+     * @var string
+     */
+    private $name = '';
+
+    /**
+     * @var string
+     */
+    private $imageURL = '';
+
+    /**
+     * @var array
+     */
+    private static $mapping = [
+        'cMetaTitle'       => 'MetaTitle',
+        'cMetaDescription' => 'MetaDescription',
+        'cMetaKeywords'    => 'MetaKeywords',
+        'cName'            => 'Name',
+        'oHersteller'      => 'Manufacturer',
+        'cBildURL'         => 'ImageURL',
+        'oMerkmal'         => 'AttributeValue',
+        'oKategorie'       => 'Category',
+        'cBrotNavi'        => 'BreadCrumb'
+    ];
+
+    /**
      * Metadata constructor.
      * @param ProductFilter $navigationsfilter
      */
@@ -32,6 +89,185 @@ class Metadata
     {
         $this->productFilter = $navigationsfilter;
         $this->conf          = $navigationsfilter->getConfig();
+    }
+
+    /**
+     * @return string
+     */
+    public function getBreadCrumb()
+    {
+        return $this->breadCrumb;
+    }
+
+    /**
+     * @param string $breadCrumb
+     * @return $this
+     */
+    public function setBreadCrumb($breadCrumb)
+    {
+        $this->breadCrumb = $breadCrumb;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMetaTitle()
+    {
+        return $this->metaTitle;
+    }
+
+    /**
+     * @param string $metaTitle
+     * @return Metadata
+     */
+    public function setMetaTitle($metaTitle)
+    {
+        $this->metaTitle = $metaTitle;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMetaDescription()
+    {
+        return $this->metaDescription;
+    }
+
+    /**
+     * @param string $metaDescription
+     * @return Metadata
+     */
+    public function setMetaDescription($metaDescription)
+    {
+        $this->metaDescription = $metaDescription;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMetaKeywords()
+    {
+        return $this->metaKeywords;
+    }
+
+    /**
+     * @param string $metaKeywords
+     * @return Metadata
+     */
+    public function setMetaKeywords($metaKeywords)
+    {
+        $this->metaKeywords = $metaKeywords;
+
+        return $this;
+    }
+
+    /**
+     * @return Kategorie
+     */
+    public function getCategory()
+    {
+        return $this->category;
+    }
+
+    /**
+     * @param Kategorie $category
+     * @return Metadata
+     */
+    public function setCategory($category)
+    {
+        $this->category = $category;
+
+        return $this;
+    }
+
+    /**
+     * @return Hersteller
+     */
+    public function getManufacturer()
+    {
+        return $this->manufacturer;
+    }
+
+    /**
+     * @param Hersteller $manufacturer
+     * @return Metadata
+     */
+    public function setManufacturer($manufacturer)
+    {
+        $this->manufacturer = $manufacturer;
+
+        return $this;
+    }
+
+    /**
+     * @return MerkmalWert
+     */
+    public function getAttributeValue()
+    {
+        return $this->attributeValue;
+    }
+
+    /**
+     * @param MerkmalWert $attributeValue
+     * @return Metadata
+     */
+    public function setAttributeValue($attributeValue)
+    {
+        $this->attributeValue = $attributeValue;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param string $name
+     * @return Metadata
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getImageURL()
+    {
+        return $this->imageURL;
+    }
+
+    /**
+     * @param string $imageURL
+     * @return Metadata
+     */
+    public function setImageURL($imageURL)
+    {
+        $this->imageURL = $imageURL;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasData()
+    {
+        return !empty($this->imageURL) || !empty($this->name);
     }
 
     /**
@@ -47,7 +283,8 @@ class Metadata
             return $globalMeta;
         }
         $globalMeta = [];
-        $globalTmp  = Shop::DB()->query("SELECT cName, kSprache, cWertName FROM tglobalemetaangaben ORDER BY kSprache", 2);
+        $globalTmp  = Shop::DB()->query("SELECT cName, kSprache, cWertName FROM tglobalemetaangaben ORDER BY kSprache",
+            2);
         foreach ($globalTmp as $data) {
             if (!isset($globalMeta[$data->kSprache])) {
                 $globalMeta[$data->kSprache] = new stdClass();
@@ -139,24 +376,85 @@ class Metadata
     }
 
     /**
-     * @param stdClass       $oMeta
+     * @param Kategorie|null      $currentCategory
+     * @param KategorieListe|null $openCategories
+     * @return $this
+     */
+    public function getNavigationInfo($currentCategory = null, $openCategories = null)
+    {
+        if ($currentCategory !== null && $this->productFilter->hasCategory()) {
+            $this->category = $currentCategory;
+
+            if ($this->conf['navigationsfilter']['kategorie_bild_anzeigen'] === 'Y') {
+                $this->name = $this->category->getName();
+            } elseif ($this->conf['navigationsfilter']['kategorie_bild_anzeigen'] === 'BT') {
+                $this->name     = $this->category->getName();
+                $this->imageURL = $this->category->getKategorieBild();
+            } elseif ($this->conf['navigationsfilter']['kategorie_bild_anzeigen'] === 'B') {
+                $this->imageURL = $currentCategory->getKategorieBild();
+            }
+            $this->breadCrumb = createNavigation('PRODUKTE', $openCategories);
+        } elseif ($this->productFilter->hasManufacturer()) {
+            $this->manufacturer = new Hersteller($this->productFilter->getManufacturer()->getValue());
+
+            if ($this->conf['navigationsfilter']['hersteller_bild_anzeigen'] === 'Y') {
+                $this->name = $this->manufacturer->getName();
+            } elseif ($this->conf['navigationsfilter']['hersteller_bild_anzeigen'] === 'BT') {
+                $this->name     = $this->manufacturer->getName();
+                $this->imageURL = $this->manufacturer->cBildpfadNormal;
+            } elseif ($this->conf['navigationsfilter']['hersteller_bild_anzeigen'] === 'B') {
+                $this->imageURL = $this->manufacturer > cBildpfadNormal;
+            }
+            if ($this->manufacturer !== null) {
+                $this->setMetaTitle($this->manufacturer->cMetaTitle)
+                     ->setMetaDescription($this->manufacturerr->cMetaDescription)
+                     ->setMetaKeywords($this->manufacturer->cMetaKeywords);
+            }
+            $this->breadCrumb = createNavigation(
+                '',
+                '',
+                0,
+                $this->productFilter->getMetaData()->getBreadCrumbName(),
+                $this->productFilter->getURL()
+            );
+        } elseif ($this->productFilter->hasAttributeValue()) {
+            $this->attributeValue = new MerkmalWert($this->productFilter->getAttributeValue()->getValue());
+
+            if ($this->conf['navigationsfilter']['merkmalwert_bild_anzeigen'] === 'Y') {
+                $this->setName($this->attributeValue->cWert);
+            } elseif ($this->conf['navigationsfilter']['merkmalwert_bild_anzeigen'] === 'BT') {
+                $this->setName($this->attributeValue->cWert)
+                     ->setImageURL($this->attributeValue->cBildpfadNormal);
+            } elseif ($this->conf['navigationsfilter']['merkmalwert_bild_anzeigen'] === 'B') {
+                $this->setImageURL($this->attributeValue->cBildpfadNormal);
+            }
+            if ($this->attributeValue !== null) {
+                $this->setMetaTitle($this->attributeValue->cMetaTitle)
+                     ->setMetaDescription($this->attributeValue->cMetaDescription)
+                     ->setMetaKeywords($this->attributeValue->cMetaKeywords);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
      * @param array          $oArtikel_arr
      * @param stdClass       $oSuchergebnisse
      * @param array          $globalMeta
      * @param Kategorie|null $oKategorie
      * @return string
      */
-    public function getMetaDescription($oMeta, $oArtikel_arr, $oSuchergebnisse, $globalMeta, $oKategorie = null ) {
+    public function generateMetaDescription($oArtikel_arr, $oSuchergebnisse, $globalMeta, $oKategorie = null)
+    {
         executeHook(HOOK_FILTER_INC_GIBNAVIMETADESCRIPTION);
         $maxLength = !empty($this->conf['metaangaben']['global_meta_maxlaenge_description'])
             ? (int)$this->conf['metaangaben']['global_meta_maxlaenge_description']
             : 0;
         // Prüfen ob bereits eingestellte Metas gesetzt sind
-        if (strlen($oMeta->cMetaDescription) > 0) {
-            $oMeta->cMetaDescription = strip_tags($oMeta->cMetaDescription);
-
+        if (!empty($this->metaDescription)) {
             return prepareMeta(
-                $oMeta->cMetaDescription,
+                strip_tags($this->metaDescription),
                 null,
                 $maxLength
             );
@@ -268,19 +566,16 @@ class Metadata
     }
 
     /**
-     * @param stdClass       $oMeta
      * @param array          $oArtikel_arr
      * @param Kategorie|null $oKategorie
      * @return mixed|string
      */
-    public function getMetaKeywords($oMeta, $oArtikel_arr, $oKategorie = null)
+    public function generateMetaKeywords($oArtikel_arr, $oKategorie = null)
     {
         executeHook(HOOK_FILTER_INC_GIBNAVIMETAKEYWORDS);
         // Prüfen ob bereits eingestellte Metas gesetzt sind
-        if (strlen($oMeta->cMetaKeywords) > 0) {
-            $oMeta->cMetaKeywords = strip_tags($oMeta->cMetaKeywords);
-
-            return $oMeta->cMetaKeywords;
+        if (!empty($this->metaKeywords)) {
+            return strip_tags($this->metaKeywords);
         }
         // Kategorieattribut?
         $cKatKeywords = '';
@@ -325,7 +620,7 @@ class Metadata
                         foreach ($cSubNameTMP_arr as $j => $cSubNameTMP) {
                             if (strlen($cSubNameTMP) > 2) {
                                 $cSubNameTMP = str_replace(',', '', $cSubNameTMP);
-                                $cSubName .= $j > 0
+                                $cSubName    .= $j > 0
                                     ? ', ' . $cSubNameTMP
                                     : $cSubNameTMP;
                             }
@@ -377,29 +672,28 @@ class Metadata
     }
 
     /**
-     * @param stdClass       $oMeta
      * @param stdClass       $oSuchergebnisse
      * @param array          $globalMeta
      * @param Kategorie|null $oKategorie
      * @return string
      */
-    public function getMetaTitle($oMeta, $oSuchergebnisse, $globalMeta, $oKategorie = null)
+    public function generateMetaTitle($oSuchergebnisse, $globalMeta, $oKategorie = null)
     {
         executeHook(HOOK_FILTER_INC_GIBNAVIMETATITLE);
         $languageID = $this->productFilter->getLanguageID();
         $append     = $this->conf['metaangaben']['global_meta_title_anhaengen'] === 'Y';
         // Pruefen ob bereits eingestellte Metas gesetzt sind
-        if (strlen($oMeta->cMetaTitle) > 0) {
-            $oMeta->cMetaTitle = strip_tags($oMeta->cMetaTitle);
+        if (!empty($this->metaTitle)) {
+            $metaTitle = strip_tags($this->metaTitle);
             // Globalen Meta Title anhaengen
             if ($append === true && !empty($globalMeta[$languageID]->Title)) {
                 return $this->truncateMetaTitle(
-                    $oMeta->cMetaTitle . ' ' .
+                    $metaTitle . ' ' .
                     $globalMeta[$languageID]->Title
                 );
             }
 
-            return $this->truncateMetaTitle($oMeta->cMetaTitle);
+            return $this->truncateMetaTitle($metaTitle);
         }
         // Set Default Titles
         $cMetaTitle = $this->getMetaStart($oSuchergebnisse);
@@ -467,7 +761,7 @@ class Metadata
             //$cMetaTitle .= $this->Suche->getName();
         } elseif ($this->productFilter->hasSearchQuery()) { // Suchebegriff
             $cMetaTitle .= $this->productFilter->getSearchQuery()->getName();
-        }  elseif ($this->productFilter->hasSearchSpecial()) { // Suchspecial
+        } elseif ($this->productFilter->hasSearchSpecial()) { // Suchspecial
             $cMetaTitle .= $this->productFilter->getSearchSpecial()->getName();
         }
         // Kategoriefilter
@@ -475,7 +769,7 @@ class Metadata
             $cMetaTitle .= ' ' . $this->productFilter->getCategoryFilter()->getName();
         }
         // Herstellerfilter
-        if (!empty($oSuchergebnisse->Herstellerauswahl[0]->cName) 
+        if (!empty($oSuchergebnisse->Herstellerauswahl[0]->cName)
             && $this->productFilter->hasManufacturerFilter()
         ) {
             $cMetaTitle .= ' ' . $this->productFilter->getManufacturerFilter()->getName();

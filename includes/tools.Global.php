@@ -2599,7 +2599,7 @@ function gibStandardsprache($bShop = true)
     }
 
     $cacheID = 'shop_lang_' . (($bShop === true) ? 'b' : '');
-    if (($lang = Shop::Cache()->get($cacheID)) !== false) {
+    if (($lang = Shop::Cache()->get($cacheID)) !== false && $lang !== null) {
         return $lang;
     }
     $row  = $bShop ? 'cShopStandard' : 'cStandard';

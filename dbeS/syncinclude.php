@@ -1160,6 +1160,14 @@ function unzipSyncFiles($zipFile, $targetPath, $source = '')
         }
 
     } else {
+        if (Jtllog::doLog(JTLLOG_LEVEL_NOTICE)) {
+            Jtllog::writeLog(
+                utf8_decode('Achtung: Klasse ZipArchive wurde nicht gefunden, bitte PHP-Konfiguration überprüfen.'),
+                JTLLOG_LEVEL_NOTICE,
+                false,
+                'syncinclude'
+            );
+        }
         $archive = new PclZip($zipFile);
         if (($list = $archive->listContent()) !== 0 && $archive->extract(PCLZIP_OPT_PATH, $targetPath)) {
             $filenames = [];

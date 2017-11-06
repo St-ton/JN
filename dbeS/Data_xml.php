@@ -8,10 +8,10 @@ require_once __DIR__ . '/syncinclude.php';
 
 $return = 3;
 if (auth()) {
-    checkFile();
+    $zipFile = checkFile();
     $return  = 2;
     $zipFile = $_FILES['data']['tmp_name'];
-    if (($syncFiles = unzipSyncFiles($zipFile, PFAD_SYNC_TMP)) === false) {
+    if (($syncFiles = unzipSyncFiles($zipFile, PFAD_SYNC_TMP, __FILE__)) === false) {
         if (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
             Jtllog::writeLog('Error: Cannot extract zip file.', JTLLOG_LEVEL_ERROR, false, 'Data_xml');
         }

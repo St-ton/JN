@@ -11,14 +11,14 @@ $archive = null;
 $zipFile = $_FILES['data']['tmp_name'];
 if (auth()) {
     $articleIDs = [];
-    checkFile();
-    $return  = 2;
+    $zipFile    = checkFile();
+    $return     = 2;
     if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
         Jtllog::writeLog('Artikel - Entpacke: ' . $zipFile, JTLLOG_LEVEL_DEBUG, false, 'Artikel_xml');
     }
     $unzipPath = PFAD_ROOT . PFAD_DBES . PFAD_SYNC_TMP . basename($zipFile) . '_' . date('dhis') . '/';
 
-    if (($syncFiles = unzipSyncFiles($zipFile, $unzipPath)) === false) {
+    if (($syncFiles = unzipSyncFiles($zipFile, $unzipPath, __FILE__)) === false) {
         if (Jtllog::doLog()) {
             Jtllog::writeLog('Error: Cannot extract zip file.', JTLLOG_LEVEL_ERROR, false, 'Artikel_xml');
         }
@@ -160,7 +160,8 @@ function bearbeiteInsert($xml, array $conf)
                 $currentArticleCategories[] = (int)$obj->kKategorie;
             }
             // get list of all categories the article will be associated with after this update
-            $newArticleCategoriesObject = mapArray($xml['tartikel'], 'tkategorieartikel', $GLOBALS['mKategorieArtikel']);
+            $newArticleCategoriesObject = mapArray($xml['tartikel'], 'tkategorieartikel',
+                $GLOBALS['mKategorieArtikel']);
             foreach ($newArticleCategoriesObject as $newArticleCategory) {
                 $newArticleCategories[] = (int)$newArticleCategory->kKategorie;
             }
@@ -239,7 +240,7 @@ function bearbeiteInsert($xml, array $conf)
                                 LEFT JOIN tartikel
                                     ON tartikel.kArtikel = tkategorieartikel.kArtikel
                                 WHERE tkategorieartikel.kKategorie IN (" . implode(',', $newArticleCategories) . ") " .
-                                gibLagerfilter() . " 
+                            gibLagerfilter() . " 
                                 GROUP BY tkategorieartikel.kKategorie", 2
                         );
                         if (is_array($newArticleCategories) && !empty($newArticleCategories)) {
@@ -318,7 +319,7 @@ function bearbeiteInsert($xml, array $conf)
             if (isset($artikel_arr[0]->kVPEEinheit) && is_array($artikel_arr[0]->kVPEEinheit)) {
                 $artikel_arr[0]->kVPEEinheit = $artikel_arr[0]->kVPEEinheit[0];
             }
-            
+
             //any new orders since last wawi-sync? see https://gitlab.jtl-software.de/jtlshop/jtl-shop/issues/304
             if (isset($artikel_arr[0]->fLagerbestand) && $artikel_arr[0]->fLagerbestand > 0) {
                 $delta = Shop::DB()->query(
@@ -342,7 +343,7 @@ function bearbeiteInsert($xml, array $conf)
                     }
                 }
             }
-            
+
             DBUpdateInsert('tartikel', $artikel_arr, 'kArtikel');
             executeHook(HOOK_ARTIKEL_XML_BEARBEITEINSERT, ['oArtikel' => $artikel_arr[0]]);
             // Insert into tredirect weil sich das SEO vom Artikel geändert hat
@@ -396,7 +397,8 @@ function bearbeiteInsert($xml, array $conf)
                 Shop::DB()->insert('tseo', $oSeo);
                 // Insert into tredirect weil sich das SEO vom Artikel geändert hat
                 if (isset($oSeoAssoc_arr[$artikelsprache_arr[$i]->kSprache])) {
-                    checkDbeSXmlRedirect($oSeoAssoc_arr[$artikelsprache_arr[$i]->kSprache]->cSeo, $artikelsprache_arr[$i]->cSeo);
+                    checkDbeSXmlRedirect($oSeoAssoc_arr[$artikelsprache_arr[$i]->kSprache]->cSeo,
+                        $artikelsprache_arr[$i]->cSeo);
                 }
             }
         }
@@ -625,7 +627,8 @@ function bearbeiteInsert($xml, array $conf)
         updateXMLinDB($xml['tartikel'], 'tartikelsonderpreis', $GLOBALS['mArtikelSonderpreis'], 'kArtikelSonderpreis');
         updateXMLinDB($xml['tartikel'], 'tkategorieartikel', $GLOBALS['mKategorieArtikel'], 'kKategorieArtikel');
         updateXMLinDB($xml['tartikel'], 'tartikelattribut', $GLOBALS['mArtikelAttribut'], 'kArtikelAttribut');
-        updateXMLinDB($xml['tartikel'], 'tartikelsichtbarkeit', $GLOBALS['mArtikelSichtbarkeit'], 'kKundengruppe', 'kArtikel');
+        updateXMLinDB($xml['tartikel'], 'tartikelsichtbarkeit', $GLOBALS['mArtikelSichtbarkeit'], 'kKundengruppe',
+            'kArtikel');
         updateXMLinDB($xml['tartikel'], 'txsell', $GLOBALS['mXSell'], 'kXSell');
         updateXMLinDB($xml['tartikel'], 'tartikelmerkmal', $GLOBALS['mArtikelSichtbarkeit'], 'kMermalWert');
         if ($artikel_arr[0]->nIstVater == 1) {
@@ -718,7 +721,8 @@ function bearbeiteInsert($xml, array $conf)
         }
         $bTesteSonderpreis = false;
         if (isset($xml['tartikel']['tartikelsonderpreis']) && is_array($xml['tartikel']['tartikelsonderpreis'])) {
-            $ArtikelSonderpreis_arr = mapArray($xml['tartikel'], 'tartikelsonderpreis', $GLOBALS['mArtikelSonderpreis']);
+            $ArtikelSonderpreis_arr = mapArray($xml['tartikel'], 'tartikelsonderpreis',
+                $GLOBALS['mArtikelSonderpreis']);
             if ($ArtikelSonderpreis_arr[0]->cAktiv === 'Y') {
                 $specialPriceStart = explode('-', $ArtikelSonderpreis_arr[0]->dStart);
                 if (count($specialPriceStart) > 2) {
@@ -1017,7 +1021,8 @@ function loescheArtikel($kArtikel, $nIstVater = 0, $bForce = false, $conf = null
         }
     }
     if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-        Jtllog::writeLog('kArtikel: ' . $kArtikel . ' - nIstVater: ' . $nIstVater, JTLLOG_LEVEL_DEBUG, false, 'Artikel_xml loescheArtikel');
+        Jtllog::writeLog('kArtikel: ' . $kArtikel . ' - nIstVater: ' . $nIstVater, JTLLOG_LEVEL_DEBUG, false,
+            'Artikel_xml loescheArtikel');
     }
     if ($kArtikel > 0) {
         $manufacturerID = Shop::DB()->query("SELECT kHersteller FROM tartikel WHERE kArtikel = " . $kArtikel, 1);

@@ -8,11 +8,11 @@ require_once __DIR__ . '/syncinclude.php';
 $return  = 3;
 $zipFile = $_FILES['data']['tmp_name'];
 if (auth()) {
-    checkFile();
+    $zipFile   = checkFile();
     $return    = 2;
     $unzipPath = PFAD_ROOT . PFAD_DBES . PFAD_SYNC_TMP . basename($zipFile) . '_' . date('dhis') . '/';
-    if (($syncFiles = unzipSyncFiles($zipFile, $unzipPath)) === false) {
-        if (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
+    if (($syncFiles = unzipSyncFiles($zipFile, $unzipPath, __FILE__)) === false) {
+        if (Jtllog::doLog()) {
             Jtllog::writeLog('Error: Cannot extract zip file.', JTLLOG_LEVEL_ERROR, false, 'Kategorien_xml');
         }
         removeTemporaryFiles($zipFile);

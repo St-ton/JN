@@ -10,9 +10,9 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 $return  = 3;
 $zipFile = $_FILES['data']['tmp_name'];
 if (auth()) {
-    checkFile();
-    $return = 2;
-    if (($syncFiles = unzipSyncFiles($zipFile, PFAD_SYNC_TMP)) === false) {
+    $zipFile = checkFile();
+    $return  = 2;
+    if (($syncFiles = unzipSyncFiles($zipFile, PFAD_SYNC_TMP, __FILE__)) === false) {
         if (Jtllog::doLog()) {
             Jtllog::writeLog('Error: Cannot extract zip file.', JTLLOG_LEVEL_ERROR, false, 'Kunden_xml');
         }

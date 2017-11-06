@@ -92,7 +92,7 @@ function html2rgb($color)
 }
 
 /**
- *
+ * @return bool|string
  */
 function checkFile()
 {
@@ -132,12 +132,14 @@ function checkFile()
                 $cFehler = 'Dateiendung nicht akzeptiert, bitte an Hoster werden! [8]';
                 break;
         }
-
         syncException($cFehler . "\n" . print_r($_FILES, true), 8);
-    } else {
-        move_uploaded_file($_FILES['data']['tmp_name'], PFAD_SYNC_TMP . basename($_FILES['data']['tmp_name']));
-        $_FILES['data']['tmp_name'] = PFAD_SYNC_TMP . basename($_FILES['data']['tmp_name']);
+
+        return false;
     }
+    move_uploaded_file($_FILES['data']['tmp_name'], PFAD_SYNC_TMP . basename($_FILES['data']['tmp_name']));
+    $_FILES['data']['tmp_name'] = PFAD_SYNC_TMP . basename($_FILES['data']['tmp_name']);
+
+    return PFAD_SYNC_TMP . basename($_FILES['data']['tmp_name']);
 }
 
 /**
@@ -1116,40 +1118,57 @@ function flushCustomerPriceCache($kKunde)
 /**
  * @param string $zipFile
  * @param string $targetPath
+ * @param string $source
  * @return array|bool
  */
-function unzipSyncFiles($zipFile, $targetPath)
+function unzipSyncFiles($zipFile, $targetPath, $source = '')
 {
+    if ($zipFile === false) {
+        return false;
+    }
     if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
         Jtllog::writeLog('Entpacke: ' . $zipFile, JTLLOG_LEVEL_DEBUG, false, 'syncinclude');
     }
-    $archive = new ZipArchive();
-    $open = $archive->open($zipFile);
-    if (!$open) {
-        return false;
-    }
-    $filenames = [];
-    if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-        Jtllog::writeLog('unzipSyncFiles: Anzahl Dateien im Zip: ' . $archive->numFiles, JTLLOG_LEVEL_DEBUG, false, 'syncinclude');
-    }
-    if (is_dir($targetPath) || (mkdir($targetPath) && is_dir($targetPath))) {
-        for ($i = 0; $i < $archive->numFiles; ++$i) {
-            $filenames[] = $targetPath . $archive->getNameIndex($i);
+    if (class_exists('ZipArchive')) {
+        $archive = new ZipArchive();
+        $open    = $archive->open($zipFile);
+        if (!$open) {
+            return false;
         }
-        if ($archive->numFiles > 0) {
-            if (!$archive->extractTo($targetPath)) {
+        $filenames = [];
+        if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
+            Jtllog::writeLog('unzipSyncFiles: Anzahl Dateien im Zip: ' . $archive->numFiles, JTLLOG_LEVEL_DEBUG, false,
+                'syncinclude');
+        }
+        if (is_dir($targetPath) || (mkdir($targetPath) && is_dir($targetPath))) {
+            for ($i = 0; $i < $archive->numFiles; ++$i) {
+                $filenames[] = $targetPath . $archive->getNameIndex($i);
+            }
+            if ($archive->numFiles > 0 && !$archive->extractTo($targetPath)) {
                 return false;
             }
-        }
-        if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-            Jtllog::writeLog('unzipSyncFiles: Zip entpackt in ' . $targetPath, JTLLOG_LEVEL_DEBUG, false, 'syncinclude');
+            if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
+                Jtllog::writeLog('unzipSyncFiles: Zip entpackt in ' . $targetPath, JTLLOG_LEVEL_DEBUG, false,
+                    'syncinclude');
+            }
+
+            return array_filter(array_map(function ($e) {
+                return file_exists($e)
+                    ? $e
+                    : null;
+            }, $filenames));
         }
 
-        return array_filter(array_map(function ($e) {
-            return file_exists($e)
-                ? $e
-                : null;
-        }, $filenames));
+    } else {
+        $archive = new PclZip($zipFile);
+        if (($list = $archive->listContent()) !== 0 && $archive->extract(PCLZIP_OPT_PATH, $targetPath)) {
+            $filenames = [];
+            foreach ($list as $file) {
+                $filenames[] = $targetPath . $file['filename'];
+            }
+
+            return $filenames;
+        }
     }
 
     return false;

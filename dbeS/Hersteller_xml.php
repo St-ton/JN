@@ -9,12 +9,12 @@ require_once __DIR__ . '/syncinclude.php';
 $return  = 3;
 $zipFile = $_FILES['data']['tmp_name'];
 if (auth()) {
-    checkFile();
-    $return = 2;
+    $zipFile = checkFile();
+    $return  = 2;
     if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
         Jtllog::writeLog('Hersteller - Entpacke: ' . $zipFile, JTLLOG_LEVEL_DEBUG, false, 'Hersteller_xml');
     }
-    if (($syncFiles = unzipSyncFiles($zipFile, PFAD_SYNC_TMP)) === false) {
+    if (($syncFiles = unzipSyncFiles($zipFile, PFAD_SYNC_TMP, __FILE__)) === false) {
         if (Jtllog::doLog()) {
             Jtllog::writeLog('Error: Cannot extract zip file.', JTLLOG_LEVEL_ERROR, false, 'Hersteller_xml');
         }

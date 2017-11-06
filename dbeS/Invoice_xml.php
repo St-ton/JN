@@ -10,7 +10,7 @@ require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.SimpleXML.php';
 require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
 
 if (auth()) {
-    checkFile();
+    $zipFile = checkFile();
     if (isset($_POST['kBestellung'], $_POST['dRechnungErstellt'], $_POST['kSprache'])) {
         handleData($_POST['kBestellung'], $_POST['dRechnungErstellt'], $_POST['kSprache']);
     } else {

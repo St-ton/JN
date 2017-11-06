@@ -14,10 +14,10 @@ $kKunde  = 0;
 $res     = '';
 $zipFile = $_FILES['data']['tmp_name'];
 if (auth()) {
-    checkFile();
-    $return = 2;
+    $zipFile = checkFile();
+    $return  = 2;
 
-    if (($syncFiles = unzipSyncFiles($zipFile, PFAD_SYNC_TMP)) === false) {
+    if (($syncFiles = unzipSyncFiles($zipFile, PFAD_SYNC_TMP, __FILE__)) === false) {
         if (Jtllog::doLog()) {
             Jtllog::writeLog('Error: Cannot extract zip file.', JTLLOG_LEVEL_ERROR, false, 'SetKunde_xml');
         }

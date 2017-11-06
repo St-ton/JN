@@ -73,7 +73,7 @@
                     <a href="#" class="portlet-button btn btn-default"
                        data-content="{$oPortlet->getPreviewHtml()|escape:'htmlall'}"
                        data-portletid="{$oPortlet->kPortlet}"
-                       data-initialsettings="{$oPortlet->getDefaultProps()|json_encode|escape:'htmlall'}">
+                       data-defaultprops="{$oPortlet->getDefaultProps()|json_encode|escape:'htmlall'}">
                         {$oPortlet->cTitle}
                     </a>
                 {/foreach}
@@ -89,7 +89,7 @@
     <div id="iframe-panel">
         <iframe id="iframe" src="{URL_SHOP}/{$oSeo->cSeo}?editpage=1&action={$cEditorAction}"></iframe>
     </div>
-    <div class="modal fade" id="settings-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal fade" id="config-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -101,12 +101,12 @@
                     </h4>
                 </div>
                 <div class="modal-body">
-                    <form id="settings-form"></form>
+                    <form id="config-form"></form>
                 </div>
                 <div class="modal-footer">
                     <div class="btn-group">
                         <button type="button" class="btn btn-danger" data-dismiss="modal">Abbrechen</button>
-                        <button class="btn btn-primary" id="jle-btn-save-settings">Speichern</button>
+                        <button class="btn btn-primary" id="jle-btn-save-config">Speichern</button>
                     </div>
                 </div>
             </div>

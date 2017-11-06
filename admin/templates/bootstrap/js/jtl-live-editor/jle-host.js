@@ -9,7 +9,7 @@ function JLEHost(jtlToken, templateUrl, kcfinderPath, cKey, kKey, kSprache)
     this.iframeCtx = null;
     this.editor = null;
     this.curPortletId = 0;
-    this.settingsSaveCallback = $.noop;
+    this.configSaveCallback = $.noop;
     this.iframe = $('#iframe');
 
     setJtlToken(jtlToken);
@@ -18,7 +18,7 @@ function JLEHost(jtlToken, templateUrl, kcfinderPath, cKey, kKey, kSprache)
 
     this.iframe.on('load', this.iframeLoaded.bind(this));
 
-    $('#jle-btn-save-settings').click(this.onSettingsSave.bind(this));
+    $('#jle-btn-save-config').click(this.onSettingsSave.bind(this));
     $('#jle-btn-save-editor').click(this.onEditorSave.bind(this));
 
     // Fix from: https://stackoverflow.com/questions/22637455/how-to-use-ckeditor-in-a-bootstrap-modal
@@ -79,7 +79,7 @@ JLEHost.prototype.onDragStart = function(e)
     var newElm = $(elm.data('content'));
 
     newElm.attr('data-portletid', elm.data('portletid'));
-    newElm.attr('data-settings', JSON.stringify(elm.data('initialsettings')));
+    newElm.attr('data-properties', JSON.stringify(elm.data('defaultprops')));
 
     this.editor.draggedElm = newElm;
 
@@ -93,13 +93,13 @@ JLEHost.prototype.onDragEnd = function(e)
     this.editor.cleanUpDrag();
 };
 
-JLEHost.prototype.openConfigurator = function(portletId, settings)
+JLEHost.prototype.openConfigurator = function(portletId, properties)
 {
     var self = this;
 
-    ioCall('getPortletConfigPanelHtml', [portletId, settings], function(settingsHtml) {
-        $('#settings-form').html(settingsHtml);
-        $('#settings-modal').modal('show');
+    ioCall('getPortletConfigPanelHtml', [portletId, properties], function(configPanelHtml) {
+        $('#config-form').html(configPanelHtml);
+        $('#config-modal').modal('show');
         self.curPortletId = portletId;
     });
 };
@@ -116,19 +116,19 @@ JLEHost.prototype.onEditorSave = function (e)
 
 JLEHost.prototype.onSettingsSave = function (e)
 {
-    this.settingsSaveCallback();
+    this.configSaveCallback();
 
     var children = this.editor.selectedElm
         // select direct descendant subareas or non-nested subareas
         .find('> .jle-subarea') ; //, :not(.jle-subarea) .jle-subarea');
-    var settingsArray = $('#settings-form').serializeArray();
-    var settings = { };
+    var propertiesArray = $('#config-form').serializeArray();
+    var properties = { };
 
-    settingsArray.forEach(function (setting) {
-        settings[setting.name] = setting.value;
+    propertiesArray.forEach(function (setting) {
+        properties[setting.name] = setting.value;
     });
 
-    ioCall('getPortletPreviewHtml', [this.curPortletId, settings], onNewHtml.bind(this));
+    ioCall('getPortletPreviewHtml', [this.curPortletId, properties], onNewHtml.bind(this));
 
     function onNewHtml(newHtml)
     {
@@ -137,7 +137,7 @@ JLEHost.prototype.onSettingsSave = function (e)
         this.editor.selectedElm.replaceWith(newElm);
         this.editor.setSelected(newElm);
         this.editor.selectedElm.attr('data-portletid', this.curPortletId);
-        this.editor.selectedElm.attr('data-settings', JSON.stringify(settings));
+        this.editor.selectedElm.attr('data-properties', JSON.stringify(properties));
 
         this.editor.selectedElm
             .find('.jle-subarea')
@@ -147,7 +147,7 @@ JLEHost.prototype.onSettingsSave = function (e)
                 }
             });
 
-        $('#settings-modal').modal('hide');
+        $('#config-modal').modal('hide');
     }
 };
 

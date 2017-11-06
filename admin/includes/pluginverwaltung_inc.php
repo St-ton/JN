@@ -3204,7 +3204,7 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
             }
         }
     }
-    // EditorPortlets teditorportlets fuellen
+    // EditorPortlets tcmsportlets fuellen
     if (isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['EditorPortlet']) &&
         is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['EditorPortlet']) &&
         isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['EditorPortlet'][0]['Portlet']) &&
@@ -3215,12 +3215,12 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
             preg_match("/[0-9]+/", $u, $cTreffer2_arr);
             if (strlen($cTreffer2_arr[0]) === strlen($u)) {
                 $oEditorPortlet          = new stdClass();
-                $oEditorPortlet->kPlugin = $kPlugin;
+                $oEditorPortlet->kPlugin = (int)$kPlugin;
                 $oEditorPortlet->cTitle  = $Portlet_arr['Title'];
                 $oEditorPortlet->cClass  = $Portlet_arr['Class'] . '_' . $oPlugin->cPluginID;
                 $oEditorPortlet->cGroup  = $Portlet_arr['Group'];
-                $oEditorPortlet->bActive = $Portlet_arr['Active'];
-                $kPortlet                = Shop::DB()->insert('teditorportlets', $oEditorPortlet);
+                $oEditorPortlet->bActive = (int)$Portlet_arr['Active'];
+                $kPortlet                = Shop::DB()->insert('tcmsportlet', $oEditorPortlet);
 
                 if (!$kPortlet) {
                     return 19;// Ein EditorPortlet konnte nicht in die Datenbank gespeichert werden
@@ -3456,7 +3456,7 @@ function syncPluginUpdate($kPlugin, $oPluginOld, $nXMLVersion)
         Shop::DB()->update('tpluginadminmenu', 'kPlugin', $kPlugin, $upd);
         Shop::DB()->update('tpluginsprachvariable', 'kPlugin', $kPlugin, $upd);
         Shop::DB()->update('tadminwidgets', 'kPlugin', $kPlugin, $upd);
-        Shop::DB()->update('teditorportlets', 'kPlugin', $kPlugin, $upd);
+        Shop::DB()->update('tcmsportlet', 'kPlugin', $kPlugin, $upd);
         Shop::DB()->update('tpluginsprachvariablecustomsprache', 'kPlugin', $kPlugin, $upd);
         Shop::DB()->update('tplugin_resources', 'kPlugin', $kPlugin, $upd);
         Shop::DB()->update('tplugincustomtabelle', 'kPlugin', $kPlugin, $upd);
@@ -3843,7 +3843,7 @@ function doSQLDelete($kPlugin, $bUpdate, $kPluginNew = null)
     Shop::DB()->delete('tplugintemplate', 'kPlugin', $kPlugin);
     Shop::DB()->delete('tcheckboxfunktion', 'kPlugin', $kPlugin);
     Shop::DB()->delete('tadminwidgets', 'kPlugin', $kPlugin);
-    Shop::DB()->delete('teditorportlets', 'kPlugin', $kPlugin);
+    Shop::DB()->delete('tcmsportlet', 'kPlugin', $kPlugin);
     Shop::DB()->query(
         "DELETE texportformateinstellungen, texportformatqueuebearbeitet, texportformat
             FROM texportformat
@@ -3909,7 +3909,7 @@ function aktivierePlugin($kPlugin)
 
                 $_upd_prt          = new stdClass();
                 $_upd_prt->bActive = 1;
-                Shop::DB()->update('teditorportlets', 'kPlugin', $kPlugin, $_upd_prt);
+                Shop::DB()->update('tcmsportlet', 'kPlugin', $kPlugin, $_upd_prt);
 
                 $_upd_lnk            = new stdClass();
                 $_upd_lnk->bIsActive = 1;
@@ -3959,7 +3959,7 @@ function deaktivierePlugin($kPlugin)
 
         $_upd_prt          = new stdClass();
         $_upd_prt->bActive = 0;
-        Shop::DB()->update('teditorportlets', 'kPlugin', $kPlugin, $_upd_wdg);
+        Shop::DB()->update('tcmsportlet', 'kPlugin', $kPlugin, $_upd_wdg);
 
         $_upd_lnk            = new stdClass();
         $_upd_lnk->bIsActive = 0;

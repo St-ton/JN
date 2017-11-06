@@ -10,31 +10,30 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_PORTLETS . 'class.Por
  */
 class PortletImage extends PortletBase
 {
-    public function getPreviewContent($settings = null)
+    public function getPreviewHtml()
     {
-        $url = isset($settings['url']) ? $settings['url'] : '';
-        $alt = isset($settings['alt']) ? $settings['alt'] : '';
+        $url = $this->properties['url'];
+        $alt = $this->properties['alt'];
 
         return "<img src=\"$url\" alt=\"$alt\" style='min-width:2em;min-height: 2em;'>";
     }
 
-    public function getHTMLContent($portletData)
+    public function getFinalHtml()
     {
-        $settings = $portletData['settings'];
-        $url = isset($settings['url']) ? $settings['url'] : '';
-        $alt = isset($settings['alt']) ? $settings['alt'] : '';
+        $url = $this->properties['url'];
+        $alt = $this->properties['alt'];
 
         return "<img src=\"$url\" alt=\"$alt\">";
     }
 
-    public function getSettingsHTML($settings)
+    public function getConfigPanelHtml()
     {
-        return $this->oSmarty
-            ->assign('settings', $settings)
+        return Shop::Smarty()
+            ->assign('settings', $this->properties)
             ->fetch('tpl_inc/portlets/settings.image.tpl');
     }
 
-    public function getInitialSettings()
+    public function getDefaultProps()
     {
         return [
             'url' => '',

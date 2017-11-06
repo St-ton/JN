@@ -123,13 +123,13 @@ function saveCmsPage($cKey, $kKey, $kSprache, $oCmsPageData)
 
         if ($oCmsPageContent === null) {
             $oCmsPageContent = (object)[
-                'kPage' => $oCmsPage->kEditorPage,
+                'kPage' => $oCmsPage->kPage,
                 'cAreaId' => $areaId,
                 'cHtml' => $cHtml,
             ];
-            $oCmsPageContent->kEditorPageContent = Shop::DB()->insert('teditorpagecontent', $oCmsPageContent);
+            $oCmsPageContent->kPageContent = Shop::DB()->insert('tcmspagecontent', $oCmsPageContent);
         } else {
-            $oCmsPageContent->cContent = $cHtml;
+            $oCmsPageContent->cHtml = $cHtml;
             Shop::DB()->update('tcmspagecontent', 'kPageContent', $oCmsPageContent->kPageContent, $oCmsPageContent);
         }
     }

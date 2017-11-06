@@ -4,6 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_PORTLETS . 'class.PortletBase.php';
+require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'editpage_inc.php';
 
 /**
  * Class PortletRow
@@ -12,7 +13,7 @@ class PortletRow extends PortletBase
 {
     public function getPreviewHtml()
     {
-        $layout = isset($this->properties['layout']) ? $this->properties['layout'] : '6,6';
+        $layout = $this->properties['layout'];
         $layout = explode(',', $layout);
 
         $res = '<div class="row">';
@@ -26,22 +27,22 @@ class PortletRow extends PortletBase
         return $res;
     }
 
-    public function getHTMLContent($portletData)
+    public function getFinalHtml()
     {
-        $settings = $portletData['settings'];
-        $subareas = $portletData['subAreas'];
-        $layout   = isset($settings['layout']) ? $settings['layout'] : '6,6';
-        $layout   = explode(',', $layout);
+        $layout = $this->properties['layout'];
+        $layout = explode(',', $layout);
 
         $res = '<div class="row">';
 
         foreach ($layout as $i => $col) {
-            $subArea  = $subareas[$i];
+            $subArea  = $this->subAreas[$i];
             $res     .= '<div class="col-xs-' . $col . ' jle-subarea">';
 
             foreach ($subArea as $subPortlet) {
-                $portlet        = PortletBase::createInstance($subPortlet['portletId'], $this->oSmarty, $this->oDB);
-                $subPortletHtml = $portlet->getHTMLContent($subPortlet);
+                $portlet        = createPortlet($subPortlet['portletId'])
+                    ->setProperties($subPortlet['properties'])
+                    ->setSubAreas($subPortlet['subAreas']);
+                $subPortletHtml = $portlet->getFinalHtml();
                 $res           .= $subPortletHtml;
             }
 

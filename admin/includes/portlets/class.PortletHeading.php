@@ -10,37 +10,43 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_PORTLETS . 'class.Por
  */
 class PortletHeading extends PortletBase
 {
-    public function getPreviewContent($settings = null)
+    /**
+     * @return string
+     */
+    public function getPreviewHtml()
     {
-        $level = isset($settings['level']) ? (int)$settings['level'] : 1;
-        $text = isset($settings['text']) ? $settings['text'] : 'Heading Title';
-
-        if ($level < 1 || $level > 6) {
-            $level = 1;
-        }
+        $level = $this->properties['level'];
+        $text  = $this->properties['text'];
 
         return "<h$level>$text</h$level>";
     }
 
-    public function getHTMLContent($portletData)
+    /**
+     * @return string
+     */
+    public function getFinalHtml()
     {
-        $settings = $portletData['settings'];
-
-        return "<h" . $settings['level'] . ">" . $settings['text'] ."</h" . $settings['level'] . ">";
+        return $this->getPreviewHtml();
     }
 
-    public function getSettingsHTML($settings)
-    {
-        return $this->oSmarty
-            ->assign('settings', $settings)
-            ->fetch('tpl_inc/portlets/settings.heading.tpl');
-    }
-
-    public function getInitialSettings()
+    /**
+     * @return array
+     */
+    public function getDefaultProps()
     {
         return [
             'level' => 1,
-            'text' => 'Heading Title',
+            'text'  => 'Heading Title'
         ];
+    }
+
+    /**
+     * @return string
+     */
+    public function getConfigPanelHtml()
+    {
+        return Shop::Smarty()
+            ->assign('properties', $this->properties)
+            ->fetch('tpl_inc/portlets/settings.heading.tpl');
     }
 }

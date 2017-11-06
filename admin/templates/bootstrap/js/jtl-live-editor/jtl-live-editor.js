@@ -169,7 +169,7 @@ JtlLiveEditor.prototype.onConfig = function(e)
 {
     this.jleHost.openConfigurator(
         this.selectedElm.data('portletid'),
-        this.selectedElm.data('settings')
+        this.selectedElm.data('properties')
     );
 };
 
@@ -361,7 +361,7 @@ JtlLiveEditor.prototype.portletToJson = function(portletElm)
     var result = {};
 
     result.portletId = portletElm.data('portletid');
-    result.settings = portletElm.data('settings');
+    result.properties = portletElm.data('properties');
     result.subAreas = [];
 
     var children = portletElm
@@ -394,13 +394,13 @@ JtlLiveEditor.prototype.loadAreaFromJson = function(data, areaElm, ioCall)
 
         areaElm.append(portletElm);
 
-        ioCall('getPortletPreviewContent', [portletData.portletId, portletData.settings], function (newHtml)
+        ioCall('getPortletPreviewHtml', [portletData.portletId, portletData.properties], function (newHtml)
         {
             var newElm = $(newHtml);
 
             portletElm.replaceWith(newElm);
             newElm.attr('data-portletid', portletData.portletId);
-            newElm.attr('data-settings', JSON.stringify(portletData.settings));
+            newElm.attr('data-properties', JSON.stringify(portletData.properties));
 
             newElm.find('.jle-subarea').each(function (index, subarea)
             {

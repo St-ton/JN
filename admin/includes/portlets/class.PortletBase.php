@@ -7,90 +7,114 @@
 /**
  * Class PortletBase
  */
-class PortletBase
+abstract class PortletBase
 {
     /**
-     * @var JTLSmarty
+     * @var int
      */
-    public $oSmarty;
+    public $kPortlet = 0;
 
     /**
-     * @var NiceDB
+     * @var null|Plugin
      */
-    public $oDB;
+    public $oPlugin = null;
 
     /**
-     * @var Plugin
+     * @var string
      */
-    public $oPlugin;
+    public $cTitle = '';
 
     /**
-     * @param JTLSmarty $oSmarty
-     * @param NiceDB    $oDB
-     * @param Plugin    $oPlugin
+     * @var string
      */
-    public function __construct($oSmarty = null, $oDB = null, $oPlugin = null)
+    public $cGroup = '';
+
+    /**
+     * @var array
+     */
+    public $properties = [];
+
+    /**
+     * @var array
+     */
+    public $subAreas = [];
+
+    /**
+     * @param int $kPortlet
+     * @throws Exception
+     */
+    public function __construct($kPortlet)
     {
-        $this->oSmarty = Shop::Smarty();
-        $this->oDB     = Shop::DB();
-        $this->oPlugin = $oPlugin;
+        $kPortlet = (int)$kPortlet;
+
+        if ($kPortlet === 0) {
+            throw new Exception('Portlet ID is invalid.');
+        }
+
+        $oDbPortlet = Shop::DB()->select('tcmsportlet', 'kPortlet', $kPortlet);
+
+        if (!is_object($oDbPortlet)) {
+            throw new Exception('Portlet ID could not be found in the database.');
+        }
+
+        $this->kPortlet   = $oDbPortlet->kPortlet;
+        $this->oPlugin    = new Plugin($oDbPortlet->kPlugin);
+        $this->cTitle     = $oDbPortlet->cTitle;
+        $this->cGroup     = $oDbPortlet->cGroup;
+        $this->properties = $this->getDefaultProps();
     }
 
     /**
-     * @return string
+     * @return string - editor mode HTML content
      */
-    public function getPreviewContent($settings = null)
+    public function getPreviewHtml()
     {
         return '';
     }
 
     /**
-     * @return string
+     * @return string - front end-final HTML content
      */
-    public function getHTMLContent($portletData)
+    public function getFinalHtml()
     {
         return '';
     }
 
     /**
-     * @return string
+     * @return string - HTML for the portlet's configuration panel
      */
-    public function getSettingsHTML($settings)
+    public function getConfigPanelHtml()
     {
         return '';
     }
 
     /**
-     * @return array - associative array that maps setting names to default values
+     * @return array - assoc. array mapping property names to default values
      */
-    public function getInitialSettings()
+    public function getDefaultProps()
     {
         return [];
     }
 
     /**
-     * @param $kPortlet
-     * @param $smarty
-     * @param $shopDB
-     * @param null $plugin
-     * @return PortletBase
+     * @param array $properties
      */
-    public static function createInstance($kPortlet, $smarty, $shopDB, $plugin = null)
+    public function setProperties($properties)
     {
-        $oPortlet   = Shop::DB()->select('teditorportlets', 'kPortlet', $kPortlet);
-        $cClass     = 'Portlet' . $oPortlet->cClass;
-        $cClassFile = 'class.' . $cClass . '.php';
-        $cClassPath = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_PORTLETS . $cClassFile;
-
-        $oPlugin = null;
-        if (isset($oPortlet->kPlugin) && $oPortlet->kPlugin > 0) {
-            $oPlugin    = new Plugin($oPortlet->kPlugin);
-            $cClass     = 'Portlet' . $oPlugin->oPluginEditorPortletAssoc_arr[$oPortlet->kPortlet]->cClass;
-            $cClassPath = $oPlugin->oPluginEditorPortletAssoc_arr[$oPortlet->kPortlet]->cClassAbs;
+        foreach ($properties as $key => $val) {
+            $this->properties[$key] = $val;
         }
 
-        require_once $cClassPath;
+        return $this;
+    }
 
-        return new $cClass($smarty, $shopDB, $plugin);
+    /**
+     * @param array[] $subAreas
+     */
+    public function setSubAreas($subAreas)
+    {
+        $this->subAreas = $subAreas;
+
+        return $this;
     }
 }

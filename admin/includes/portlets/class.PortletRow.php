@@ -4,15 +4,16 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_PORTLETS . 'class.PortletBase.php';
+require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'editpage_inc.php';
 
 /**
- * Class PortletColumn
+ * Class PortletRow
  */
-class PortletColumn extends PortletBase
+class PortletRow extends PortletBase
 {
-    public function getPreviewContent($settings = null)
+    public function getPreviewHtml()
     {
-        $layout = isset($settings['layout']) ? $settings['layout'] : '6,6';
+        $layout = $this->properties['layout'];
         $layout = explode(',', $layout);
 
         $res = '<div class="row">';
@@ -26,22 +27,22 @@ class PortletColumn extends PortletBase
         return $res;
     }
 
-    public function getHTMLContent($portletData)
+    public function getFinalHtml()
     {
-        $settings = $portletData['settings'];
-        $subareas = $portletData['subAreas'];
-        $layout   = isset($settings['layout']) ? $settings['layout'] : '6,6';
-        $layout   = explode(',', $layout);
+        $layout = $this->properties['layout'];
+        $layout = explode(',', $layout);
 
         $res = '<div class="row">';
 
         foreach ($layout as $i => $col) {
-            $subArea  = $subareas[$i];
+            $subArea  = $this->subAreas[$i];
             $res     .= '<div class="col-xs-' . $col . ' jle-subarea">';
 
             foreach ($subArea as $subPortlet) {
-                $portlet        = PortletBase::createInstance($subPortlet['portletId'], $this->oSmarty, $this->oDB);
-                $subPortletHtml = $portlet->getHTMLContent($subPortlet);
+                $portlet        = createPortlet($subPortlet['portletId'])
+                    ->setProperties($subPortlet['properties'])
+                    ->setSubAreas($subPortlet['subAreas']);
+                $subPortletHtml = $portlet->getFinalHtml();
                 $res           .= $subPortletHtml;
             }
 
@@ -53,14 +54,14 @@ class PortletColumn extends PortletBase
         return $res;
     }
 
-    public function getSettingsHTML($settings)
+    public function getConfigPanelHtml()
     {
-        return $this->oSmarty
-            ->assign('settings', $settings)
-            ->fetch('tpl_inc/portlets/settings.column.tpl');
+        return Shop::Smarty()
+            ->assign('properties', $this->properties)
+            ->fetch('tpl_inc/portlets/settings.row.tpl');
     }
 
-    public function getInitialSettings()
+    public function getDefaultProps()
     {
         return [
             'layout' => '6,6',

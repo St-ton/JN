@@ -10,28 +10,26 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_PORTLETS . 'class.Por
  */
 class PortletParagraph_jtl_portlets extends PortletBase
 {
-    public function getPreviewContent($settings = null)
+    public function getPreviewHtml()
     {
-        $text = isset($settings['text']) ? $settings['text'] : 'ein neuer Abschnitt';
+        $text = $this->properties['text'];
 
         return "<div>$text</div>";
     }
 
-    public function getHTMLContent($portletData)
+    public function getFinalHtml()
     {
-        $settings = $portletData['settings'];
-
-        return "<div>" . $settings['text'] . "</div>";
+        return $this->getPreviewHtml();
     }
 
-    public function getSettingsHTML($settings)
+    public function getConfigPanelHtml()
     {
-        return $this->oSmarty
-            ->assign('settings', $settings)
+        return Shop::Smarty()
+            ->assign('properties', $this->properties)
             ->fetch(__DIR__ . '/portletParagraphSettings.tpl');
     }
 
-    public function getInitialSettings()
+    public function getDefaultProps()
     {
         return [
             'text' => 'ein neuer Abschnitt',

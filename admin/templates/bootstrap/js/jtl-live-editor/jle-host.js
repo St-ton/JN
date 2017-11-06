@@ -1,20 +1,42 @@
 
-function JLEHost(iframeSelector, templateUrl, cKey, kKey, kSprache)
+function JLEHost(jtlToken, templateUrl, kcfinderPath, cKey, kKey, kSprache)
 {
+    this.templateUrl = templateUrl;
+    this.kcfinderPath = kcfinderPath;
     this.cKey = cKey;
     this.kKey = kKey;
     this.kSprache = kSprache;
-    this.templateUrl = templateUrl;
     this.iframeCtx = null;
     this.editor = null;
-    this.iframe = $(iframeSelector);
+    this.curPortletId = 0;
+    this.configSaveCallback = $.noop;
+    this.iframe = $('#iframe');
+
+    setJtlToken(jtlToken);
+
+    Split(['#sidebar-panel', '#iframe-panel'], { sizes: [25, 75], gutterSize: 4 });
+
     this.iframe.on('load', this.iframeLoaded.bind(this));
 
-    this.curPortletId = 0;
+    $('#jle-btn-save-config').click(this.onSettingsSave.bind(this));
+    $('#jle-btn-save-editor').click(this.onEditorSave.bind(this));
 
-    this.settingsSaveCallback = $.noop;
+    // Fix from: https://stackoverflow.com/questions/22637455/how-to-use-ckeditor-in-a-bootstrap-modal
+    $.fn.modal.Constructor.prototype.enforceFocus = function ()
+    {
+        var $modalElement = this.$element;
 
-    $('#jle-btn-save').click(this.onSettingsSave.bind(this));
+        $(document).on('focusin.modal', function (e)
+        {
+            var $parent = $(e.target.parentNode);
+
+            if ($modalElement[0] !== e.target && !$modalElement.has(e.target).length &&
+                !$parent.hasClass('cke_dialog_ui_input_select') && !$parent.hasClass('cke_dialog_ui_input_text')
+            ) {
+                $modalElement.focus();
+            }
+        });
+    };
 }
 
 JLEHost.prototype.iframeLoaded = function()
@@ -46,7 +68,7 @@ JLEHost.prototype.liveEditorLoaded = function()
 
     // this.iframeCtx.jtlToken = jtlToken;
 
-    ioCall('loadLiveEditorContent', [this.cKey, this.kKey, this.kSprache], function(data) {
+    ioCall('loadCmsPage', [this.cKey, this.kKey, this.kSprache], function(data) {
         this.editor.loadFromJson(data, ioCall);
     }.bind(this));
 };
@@ -57,7 +79,7 @@ JLEHost.prototype.onDragStart = function(e)
     var newElm = $(elm.data('content'));
 
     newElm.attr('data-portletid', elm.data('portletid'));
-    newElm.attr('data-settings', JSON.stringify(elm.data('initialsettings')));
+    newElm.attr('data-properties', JSON.stringify(elm.data('defaultprops')));
 
     this.editor.draggedElm = newElm;
 
@@ -71,32 +93,42 @@ JLEHost.prototype.onDragEnd = function(e)
     this.editor.cleanUpDrag();
 };
 
-JLEHost.prototype.openConfigurator = function(portletId, settings)
+JLEHost.prototype.openConfigurator = function(portletId, properties)
 {
     var self = this;
 
-    ioCall('getPortletSettingsHtml', [portletId, settings], function(settingsHtml) {
-        $('#settings-modal .modal-body').html(settingsHtml);
-        $('#settings-modal').modal('show');
+    ioCall('getPortletConfigPanelHtml', [portletId, properties], function(configPanelHtml) {
+        $('#config-form').html(configPanelHtml);
+        $('#config-modal').modal('show');
         self.curPortletId = portletId;
     });
 };
 
+JLEHost.prototype.onEditorSave = function (e)
+{
+    ioCall('saveCmsPage', [
+        this.cKey, this.kKey, this.kSprache,
+        this.editor.toJson()
+    ]);
+
+    e.preventDefault();
+};
+
 JLEHost.prototype.onSettingsSave = function (e)
 {
-    this.settingsSaveCallback();
+    this.configSaveCallback();
 
     var children = this.editor.selectedElm
         // select direct descendant subareas or non-nested subareas
         .find('> .jle-subarea') ; //, :not(.jle-subarea) .jle-subarea');
-    var settingsArray = $('#portlet-settings-form').serializeArray();
-    var settings = { };
+    var propertiesArray = $('#config-form').serializeArray();
+    var properties = { };
 
-    settingsArray.forEach(function (setting) {
-        settings[setting.name] = setting.value;
+    propertiesArray.forEach(function (setting) {
+        properties[setting.name] = setting.value;
     });
 
-    ioCall('getPortletPreviewContent', [this.curPortletId, settings], onNewHtml.bind(this));
+    ioCall('getPortletPreviewHtml', [this.curPortletId, properties], onNewHtml.bind(this));
 
     function onNewHtml(newHtml)
     {
@@ -105,7 +137,7 @@ JLEHost.prototype.onSettingsSave = function (e)
         this.editor.selectedElm.replaceWith(newElm);
         this.editor.setSelected(newElm);
         this.editor.selectedElm.attr('data-portletid', this.curPortletId);
-        this.editor.selectedElm.attr('data-settings', JSON.stringify(settings));
+        this.editor.selectedElm.attr('data-properties', JSON.stringify(properties));
 
         this.editor.selectedElm
             .find('.jle-subarea')
@@ -115,8 +147,28 @@ JLEHost.prototype.onSettingsSave = function (e)
                 }
             });
 
-        $('#settings-modal').modal('hide');
+        $('#config-modal').modal('hide');
     }
+};
+
+JLEHost.prototype.onOpenKCFinder = function (t, callback)
+{
+    console.log(t);
+
+    window.KCFinder = {
+        callBack: function(url) {
+            console.log(url);
+            $(t).html('<img src="' + url + '">');
+            kcFinder.close();
+            callback(url);
+        }
+    };
+
+    var kcFinder = window.open(
+        this.kcfinderPath + 'browse.php?type=Bilder&lang=de', 'kcfinder_textbox',
+        'status=0, toolbar=0, location=0, menubar=0, directories=0, resizable=1, scrollbars=0,' +
+        'width=800, height=600'
+    );
 };
 
 JLEHost.loadScript = function(ctx, url, callback)

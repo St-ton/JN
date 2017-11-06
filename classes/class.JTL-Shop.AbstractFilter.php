@@ -178,6 +178,11 @@ abstract class AbstractFilter implements IFilter
     protected $options;
 
     /**
+     * @var string
+     */
+    protected $tableName = '';
+
+    /**
      * AbstractFilter constructor
      *
      * @param ProductFilter $productFilter
@@ -459,11 +464,33 @@ abstract class AbstractFilter implements IFilter
     }
 
     /**
+     * @param string $param
+     * @return $this
+     */
+    public function setUrlParam($param)
+    {
+        $this->urlParam = $param;
+
+        return $this;
+    }
+
+    /**
      * @return string
      */
     public function getUrlParamSEO()
     {
         return $this->urlParamSEO;
+    }
+
+    /**
+     * @param string $param
+     * @return $this
+     */
+    public function setUrlParamSEO($param)
+    {
+        $this->urlParamSEO = $param;
+
+        return $this;
     }
 
     /**
@@ -523,18 +550,6 @@ abstract class AbstractFilter implements IFilter
     public function getExtraFilter()
     {
         return new FilterExtra();
-    }
-
-    /**
-     * @return array
-     */
-    public function __debugInfo()
-    {
-        $res                  = get_object_vars($this);
-        $res['config']        = '*truncated*';
-        $res['productFilter'] = '*truncated*';
-
-        return $res;
     }
 
     /**
@@ -660,7 +675,18 @@ abstract class AbstractFilter implements IFilter
      */
     public function getTableName()
     {
-        return '';
+        return $this->tableName;
+    }
+
+    /**
+     * @param string $name
+     * @return $this
+     */
+    public function setTableName($name)
+    {
+        $this->tableName = $name;
+
+        return $this;
     }
 
     /**
@@ -687,6 +713,14 @@ abstract class AbstractFilter implements IFilter
     }
 
     /**
+     * @return array|int|string
+     */
+    public function getValue()
+    {
+        return $this->value;
+    }
+
+    /**
      * @param array|int|string $value
      * @return $this
      */
@@ -698,9 +732,9 @@ abstract class AbstractFilter implements IFilter
     }
 
     /**
-     * @return array|int|string
+     * @return int
      */
-    public function getValue()
+    public function getValueCompat()
     {
         return $this->value;
     }
@@ -724,10 +758,14 @@ abstract class AbstractFilter implements IFilter
     }
 
     /**
-     * @return int
+     * @return array
      */
-    public function getValueCompat()
+    public function __debugInfo()
     {
-        return $this->value;
+        $res                  = get_object_vars($this);
+        $res['config']        = '*truncated*';
+        $res['productFilter'] = '*truncated*';
+
+        return $res;
     }
 }

@@ -7,8 +7,6 @@ require_once PFAD_ROOT . PFAD_CLASSES . 'interface.JTL-Shop.ExtensionPoint.php';
 
 /**
  * Class Slider
- *
- * @access public
  */
 class Slider implements IExtensionPoint
 {

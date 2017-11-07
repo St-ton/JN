@@ -7000,7 +7000,7 @@ function getLiveEditParameters($kSprache)
     );
 
     if (!empty($oSeo->kPage)) {
-        $oContent_arr = Shop()::DB()->selectAll('tcmspagecontent', 'kPage', $oSeo->kPage);
+        $oContent_arr = Shop::DB()->selectAll('tcmspagecontent', 'kPage', $oSeo->kPage);
 
         foreach ($oContent_arr as $oContent) {
             $oLiveEditParams->oContent[$oContent->cAreaId] = $oContent->cHtml;

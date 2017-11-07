@@ -106,6 +106,7 @@ function saveCmsPage($cKey, $kKey, $kSprache, $oCmsPageData)
         Shop::DB()->update('tcmspage', ['cKey', 'kKey', 'kSprache'], [$cKey, $kKey, $kSprache], $oCmsPage);
     }
 
+    Shop::DB()->delete('tcmspagecontent', ['kPage'], [$oCmsPage->kPage]);
 
     foreach ($oCmsPageData as $areaId => $areaPortlets) {
         $cHtml = '';
@@ -117,21 +118,12 @@ function saveCmsPage($cKey, $kKey, $kSprache, $oCmsPageData)
                 ->getFinalHtml();
         }
 
-        $oCmsPageContent = Shop::DB()->select(
-            'tcmspagecontent', ['kPage', 'cAreaId'], [$oCmsPage->kPage, $areaId]
-        );
-
-        if ($oCmsPageContent === null) {
-            $oCmsPageContent = (object)[
-                'kPage' => $oCmsPage->kPage,
-                'cAreaId' => $areaId,
-                'cHtml' => $cHtml,
-            ];
-            $oCmsPageContent->kPageContent = Shop::DB()->insert('tcmspagecontent', $oCmsPageContent);
-        } else {
-            $oCmsPageContent->cHtml = $cHtml;
-            Shop::DB()->update('tcmspagecontent', 'kPageContent', $oCmsPageContent->kPageContent, $oCmsPageContent);
-        }
+        $oCmsPageContent = (object)[
+            'kPage' => $oCmsPage->kPage,
+            'cAreaId' => $areaId,
+            'cHtml' => $cHtml,
+        ];
+        $oCmsPageContent->kPageContent = Shop::DB()->insert('tcmspagecontent', $oCmsPageContent);
     }
 }
 

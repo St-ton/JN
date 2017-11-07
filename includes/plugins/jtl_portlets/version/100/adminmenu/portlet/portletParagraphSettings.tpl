@@ -3,7 +3,7 @@
 
 <script>
     CKEDITOR.replace('settingsText', {
-        baseFloatZIndex: 9000
+        baseFloatZIndex: 9000,
     });
 
     jleHost.configSaveCallback = function() {

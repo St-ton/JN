@@ -6987,7 +6987,7 @@ function getLiveEditParameters($kSprache)
     }
 
     $oSeo = Shop::DB()->executeQueryPrepared(
-        'SELECT s.cSeo, ep.kPage, ep.cJson
+        'SELECT s.cSeo, ep.kPage
             FROM tseo AS s
                 LEFT JOIN tcmspage AS ep
                     ON s.kKey = ep.kKey
@@ -7007,8 +7007,7 @@ function getLiveEditParameters($kSprache)
         }
     }
 
-    $oLiveEditParams->cSeo           = $oSeo->cSeo;
-    $oLiveEditParams->cJSON          = $oSeo->cJSON;
+    $oLiveEditParams->cSeo  = $oSeo->cSeo;
 
     return $oLiveEditParams;
 }

@@ -6,36 +6,31 @@
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_PORTLETS . 'class.PortletBase.php';
 
 /**
- * Class PortletImage
+ * Class PortletSlider
  */
-class PortletImage extends PortletBase
+class PortletSlider extends PortletBase
 {
     public function getPreviewHtml()
     {
-        $url = $this->properties['url'];
-        $alt = $this->properties['alt'];
-
-        return "<img src=\"$url\" alt=\"$alt\" style='min-width:2em;min-height: 2em;'>";
+        return "<div>Slider</div>";
     }
 
     public function getFinalHtml()
     {
-        $url = $this->properties['url'];
-        $alt = $this->properties['alt'];
-
-        return "<img src=\"$url\" alt=\"$alt\">";
+        return "<div>Slider</div>";
     }
 
     public function getConfigPanelHtml()
     {
         return Shop::Smarty()
             ->assign('properties', $this->properties)
-            ->fetch('tpl_inc/portlets/settings.image.tpl');
+            ->fetch('tpl_inc/portlets/settings.slider.tpl');
     }
 
     public function getDefaultProps()
     {
         return [
+            'urls' => [],
             'url' => Shop::getURL() . '/gfx/keinBild.gif',
             'alt' => '',
         ];

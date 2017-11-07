@@ -80,15 +80,14 @@
                                     {/if}
                                 </td>
                                 <td class="centered">
-                                    {if !$hasError}
-                                        <input id="check-{$smarty.foreach.datei.iteration}" type="checkbox" name="check[]" value="{$cTable}" />
-                                    {/if}
                                     {if $cDBStruct_arr.$cTable->Locked}
                                         <span title="Tabelle in Benutzung"><i class="fa fa-cog fa-spin fa-2x fa-fw"></i></span>
                                     {elseif $cDBStruct_arr.$cTable->ENGINE !== 'InnoDB' || $cDBStruct_arr.$cTable->TABLE_COLLATION|strpos:'utf8' === false}
                                         <a href="#" class="btn btn-default" data-action="migrate" data-table="{$cTable}" data-step="1"><i class="fa fa-cogs"></i></a>
                                     {elseif $cDBError_arr[$cTable]|strpos:'Inkonsistente Kollation' === 0}
                                         <a href="#" class="btn btn-default" data-action="migrate" data-table="{$cTable}" data-step="2"><i class="fa fa-cogs"></i></a>
+                                    {elseif !$hasError}
+                                        <input id="check-{$smarty.foreach.datei.iteration}" type="checkbox" name="check[]" value="{$cTable}" />
                                     {/if}
                                 </td>
                             </tr>
@@ -215,9 +214,10 @@
             $('h4 > span', $modalWait).text(msg);
         }
         if (typeof step !== 'undefined' && step !== null && step > 0) {
+            var progressMax     = $('.progress-bar', $modalWait).attr('aria-valuemax');
             var progressNow     = parseInt($('.progress-bar', $modalWait).attr('aria-valuenow')) + step;
-            var progressPercent = progressNow / $('.progress-bar', $modalWait).attr('aria-valuemax') * 100;
-            $('.progress-bar', $modalWait).attr('aria-valuenow', progressNow);
+            var progressPercent = progressNow > progressMax ? 100 : progressNow / progressMax * 100;
+            $('.progress-bar', $modalWait).attr('aria-valuenow', progressNow > progressMax ? progressMax : progressNow);
             $('.progress-bar', $modalWait).css('width', progressPercent + '%');
         }
     }

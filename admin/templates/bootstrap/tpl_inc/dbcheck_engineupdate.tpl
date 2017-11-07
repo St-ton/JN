@@ -51,7 +51,8 @@
                         ca. {($engineUpdate->estimated[1] / 3600)|ceil} Stunden
                     {/if} dauern. W&auml;hrend der Migration werden zudem wichtige Tabellen im Shop gesperrt, so dass es zu erheblichen Einschr&auml;nckungen im Frontend kommen kann.
                     Es wird deshalb empfohlen den <a title="Globale Einstellungen - Wartungsmodus" href="/admin/einstellungen.php?kSektion=1#wartungsmodus_aktiviert">Wartungsmodus</a> zu aktivieren,
-                    w&auml;hrend Sie die Migration durchf&uuml;hren!
+                    w&auml;hrend Sie die Migration durchf&uuml;hren!<br />
+                    Jede Tabelle wird einzeln in zwei Schritten migriert. Im ersten Schritt erfolgt die Verschiebung in den InnoDB-Tablespace und im Zweiten die Konvertierung der Daten in den UTF-8 Zeichensatz.
                 </p>
                 <div class="alert alert-warning">Erstellen Sie unbedingt ein Backup der gesamten Datenbank <strong>BEVOR</strong> Sie die Migration ausf&uuml;hren!</div>
                 <form method="post" action="dbcheck.php">
@@ -137,13 +138,13 @@
         if (typeof status === 'undefined' || status === null) {
             status = 'start';
         }
-        if (typeof step === 'undefined' || step === 0) {
+        if (typeof step === 'undefined' || step === null || step === 0) {
             step = 1;
         }
-        if (typeof table !== 'undefined' && table !== '') {
+        if (typeof table !== 'undefined' && table !== null && table !== '') {
             updateModalWait('Migrate ' + table + ' Schritt ' + step);
         }
-        if (typeof exclude === 'undefined') {
+        if (typeof exclude === 'undefined' && exclude !== null) {
             exclude = [];
         }
         if (status === ' finished') {
@@ -174,6 +175,9 @@
                                 updateModalWait('Migration wird beendet...', 1);
                                 window.location.reload(true);
                             }
+                        } else if (data.status === 'all done') {
+                            updateModalWait('Cache bereinigen...', 1);
+                            doAutoMigration('clear cache', null, null, exclude);
                         } else {
                             // Migration finished
                             updateModalWait('Migration wird beendet...', 1);
@@ -214,7 +218,7 @@
     $('form', '#update_automatic').on('submit', function (e) {
         if ($('#update_auto_backup').is(':checked')
             && ($('#update_auto_wartungsmodus_reject').is(':checked') || parseInt($('#update_auto_wartungsmodus').val()) === 1)) {
-            showModalWait('Starten der automatischen Migration...', {/literal}{$engineUpdate->tableCount}{literal});
+            showModalWait('Starten der automatischen Migration...', {/literal}{$engineUpdate->tableCount}{literal} + 1);
             doAutoMigration('start');
         } else {
             alert('Bitte bestätigen Sie den Wartungsmodus und das Backup!');

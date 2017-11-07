@@ -96,19 +96,20 @@
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <i class="fa fa-times"></i>
                     </button>
-                    <h4 class="modal-title" id="myModalLabel">
+                    <h4 class="modal-title">
                         Portlet Einstellungen
                     </h4>
                 </div>
-                <div class="modal-body">
-                    <form id="config-form"></form>
-                </div>
-                <div class="modal-footer">
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-danger" data-dismiss="modal">Abbrechen</button>
-                        <button class="btn btn-primary" id="jle-btn-save-config">Speichern</button>
+                <form id="config-form">
+                    <div class="modal-body" id="config-modal-body">
                     </div>
-                </div>
+                    <div class="modal-footer">
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">Abbrechen</button>
+                            <button class="btn btn-primary" id="jle-btn-save-config">Speichern</button>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

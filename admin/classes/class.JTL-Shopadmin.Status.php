@@ -35,10 +35,7 @@ class Status
      */
     protected function getObjectCache()
     {
-        $cache = JTLCache::getInstance();
-        $cache->setJtlCacheConfig();
-
-        return $cache;
+        return JTLCache::getInstance()->setJtlCacheConfig();
     }
 
     /**
@@ -76,11 +73,9 @@ class Status
         $current  = getDBStruct();
         $original = getDBFileStruct();
 
-        if (is_array($current) && is_array($original)) {
-            return count(compareDBStruct($original, $current)) === 0;
-        }
-
-        return false;
+        return (is_array($current) && is_array($original))
+            ? count(compareDBStruct($original, $current)) === 0
+            : false;
     }
 
     /**
@@ -94,11 +89,10 @@ class Status
         require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'filecheck_inc.php';
 
         $files = $stats = [];
-        if (getAllFiles($files, $stats) === 1) {
-            return end($stats) === 0;
-        }
 
-        return false;
+        return getAllFiles($files, $stats) === 1
+            ? end($stats) === 0
+            : false;
     }
 
     /**
@@ -106,9 +100,7 @@ class Status
      */
     protected function validFolderPermissions()
     {
-        $oFsCheck = new Systemcheck_Platform_Filesystem(PFAD_ROOT);
-
-        $permissionStat = $oFsCheck->getFolderStats();
+        $permissionStat = (new Systemcheck_Platform_Filesystem(PFAD_ROOT))->getFolderStats();
 
         return $permissionStat->nCountInValid === 0;
     }
@@ -153,9 +145,7 @@ class Status
      */
     protected function hasPendingUpdates()
     {
-        $updater = new Updater();
-
-        return $updater->hasPendingUpdates();
+        return (new Updater())->hasPendingUpdates();
     }
 
     /**
@@ -179,9 +169,7 @@ class Status
      */
     protected function hasDifferentTemplateVersion()
     {
-        $template = Template::getInstance();
-
-        return JTL_VERSION != $template->getShopVersion();
+        return JTL_VERSION != Template::getInstance()->getShopVersion();
     }
 
     /**
@@ -215,9 +203,7 @@ class Status
      */
     protected function hasStandardTemplateIssue()
     {
-        $oTemplate = Shop::DB()->select('ttemplate', 'eTyp', 'standard');
-
-        return $oTemplate === null;
+        return Shop::DB()->select('ttemplate', 'eTyp', 'standard') === null;
     }
 
     /**
@@ -228,14 +214,11 @@ class Status
         if (!isset($_SESSION['subscription'])) {
             $_SESSION['subscription'] = jtlAPI::getSubscription();
         }
-        if (is_object($_SESSION['subscription']) &&
-            isset($_SESSION['subscription']->kShop) &&
-            (int)$_SESSION['subscription']->kShop > 0
-        ) {
-            return $_SESSION['subscription'];
-        }
-
-        return null;
+        return (is_object($_SESSION['subscription'])
+            && isset($_SESSION['subscription']->kShop)
+            && (int)$_SESSION['subscription']->kShop > 0)
+            ? $_SESSION['subscription']
+            : null;
     }
 
     /**
@@ -254,9 +237,7 @@ class Status
      */
     protected function getEnvironmentTests()
     {
-        $systemcheck = new Systemcheck_Environment();
-
-        return $systemcheck->executeTestGroup('Shop4');
+        return (new Systemcheck_Environment())->executeTestGroup('Shop4');
     }
 
     /**
@@ -365,14 +346,14 @@ class Status
      */
     protected function getOrphanedCategories($has = true)
     {
-        $categories = Shop::DB()->query("
-            SELECT kKategorie, cName
+        $categories = Shop::DB()->query(
+            "SELECT kKategorie, cName
                 FROM tkategorie
                 WHERE kOberkategorie > 0
                     AND kOberkategorie NOT IN (SELECT DISTINCT kKategorie FROM tkategorie)", 2
         );
 
-        return ($has === true)
+        return $has === true
             ? count($categories) === 0
             : $categories;
     }

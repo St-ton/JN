@@ -20,12 +20,18 @@ abstract class AbstractPlugin implements IPlugin
     private $notifications = [];
 
     /**
-     * AbstractPlugin constructor.
-     * @param string $pluginId
+     * @var Plugin
      */
-    final public function __construct($pluginId)
+    private $plugin;
+
+    /**
+     * AbstractPlugin constructor.
+     * @param Plugin $plugin
+     */
+    final public function __construct($plugin)
     {
-        $this->pluginId = $pluginId;
+        $this->plugin   = $plugin;
+        $this->pluginId = $plugin->cPluginID;
     }
 
     /**
@@ -77,5 +83,13 @@ abstract class AbstractPlugin implements IPlugin
      */
     public function disabled()
     {
+    }
+
+    /**
+     * @return Plugin
+     */
+    public function getPlugin()
+    {
+        return $this->plugin;
     }
 }

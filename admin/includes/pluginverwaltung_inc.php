@@ -573,7 +573,7 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
                     return 130;
                 }
 
-                $bootstrapper = new $cClass($cBootstrapNamespace);
+                $bootstrapper = new $cClass((object)['cPluginID' => $cBootstrapNamespace]);
 
                 if (!is_subclass_of($bootstrapper, 'AbstractPlugin')) {
                     return 131;
@@ -2081,10 +2081,8 @@ function installierePlugin($XML_arr, $cVerzeichnis, $oPluginOld)
             deinstallierePlugin($oPlugin->kPlugin, $nXMLVersion);
         }
 
-        if ($nReturnValue === 1) {
-            if ($p = Plugin::bootstrapper($oPlugin->kPlugin)) {
-                $p->installed();
-            }
+        if ($nReturnValue === 1 && $oPluginOld === 0 && ($p = Plugin::bootstrapper($oPlugin->kPlugin)) !== null) {
+            $p->installed();
         }
 
         // Installation von höheren XML Versionen

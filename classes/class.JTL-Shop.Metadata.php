@@ -303,10 +303,15 @@ class Metadata
      */
     public static function getExcludes()
     {
-        $exclude  = [];
-        $keyWords = Shop::DB()->query("SELECT * FROM texcludekeywords ORDER BY cISOSprache", 2);
-        foreach ($keyWords as $keyWord) {
-            $exclude[$keyWord->cISOSprache] = $keyWord;
+        $cacheID = 'jtl_glob_excl';
+        if (($exclude = Shop::Cache()->get($cacheID)) === false) {
+            $exclude  = [];
+            $keyWords = Shop::DB()->query("SELECT * FROM texcludekeywords ORDER BY cISOSprache", 2);
+            foreach ($keyWords as $keyWord) {
+                $exclude[$keyWord->cISOSprache] = $keyWord;
+            }
+            // CACHING_GROUP_OPTION is flushed @ admin/keywording.php
+            Shop::Cache()->set($cacheID, $exclude, [CACHING_GROUP_OPTION]);
         }
 
         return $exclude;

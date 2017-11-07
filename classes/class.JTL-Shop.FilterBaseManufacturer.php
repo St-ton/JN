@@ -53,7 +53,7 @@ class FilterBaseManufacturer extends AbstractFilter
             $oSeo_arr = Shop::DB()->query(
                 "SELECT tseo.cSeo, tseo.kSprache, thersteller.cName
                     FROM tseo
-                        LEFT JOIN thersteller
+                        JOIN thersteller
                             ON thersteller.kHersteller = tseo.kKey
                     WHERE cKey = 'kHersteller' 
                         AND kKey = " . $val . "

@@ -334,12 +334,12 @@ class JTLSmarty extends SmartyBC
             } elseif ($parent !== null && file_exists(PFAD_ROOT . PFAD_TEMPLATES . $parent . '/php/functions.php')) {
                 require_once PFAD_ROOT . PFAD_TEMPLATES . $parent . '/php/functions.php';
             }
-            if (!$isAdmin) {
-                executeHook(HOOK_SMARTY_INC);
-            }
         }
         if ($context === 'frontend' || $context === 'backend') {
             self::$_instance = $this;
+        }
+        if ($isAdmin === false && $fast_init === false) {
+            executeHook(HOOK_SMARTY_INC);
         }
     }
 

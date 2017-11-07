@@ -1589,7 +1589,7 @@ class ProductFilter
             foreach (array_slice($this->searchResults->Artikel->articleKeys, $nLimitN, $limitPerPage) as $id) {
                 $article = (new Artikel())->fuelleArtikel($id, $opt);
                 // Aktuelle Artikelmenge in die Session (Keine Vaterartikel)
-                if ($article->nIstVater === 0) {
+                if ($article !== null && $article->nIstVater === 0) {
                     $_SESSION['nArtikelUebersichtVLKey_arr'][] = $id;
                 }
                 $this->searchResults->Artikel->elemente->addItem($article);

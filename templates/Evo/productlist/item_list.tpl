@@ -3,7 +3,7 @@
 {if $Einstellungen.template.productlist.variation_select_productlist === 'N'}
     {assign var="hasOnlyListableVariations" value=0}
 {else}
-    {hasOnlyListableVariations artikel=$Artikel maxVariationCount=$Einstellungen.template.productlist.variation_select_productlist assign="hasOnlyListableVariations"}
+    {hasOnlyListableVariations artikel=$Artikel maxVariationCount=$Einstellungen.template.productlist.variation_select_productlist maxWerteCount=$Einstellungen.template.productlist.variation_max_werte_productlist assign="hasOnlyListableVariations"}
 {/if}
 <div id="result-wrapper_buy_form_{$Artikel->kArtikel}" class="product-cell thumbnail">
     <div class="product-body row {if $tplscope !== 'list'} text-center{/if}">

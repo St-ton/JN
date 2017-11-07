@@ -29,14 +29,14 @@ class PortletImage extends PortletBase
     public function getConfigPanelHtml()
     {
         return Shop::Smarty()
-            ->assign('settings', $this->properties)
+            ->assign('properties', $this->properties)
             ->fetch('tpl_inc/portlets/settings.image.tpl');
     }
 
     public function getDefaultProps()
     {
         return [
-            'url' => '',
+            'url' => Shop::getURL() . '/gfx/keinBild.gif',
             'alt' => '',
         ];
     }

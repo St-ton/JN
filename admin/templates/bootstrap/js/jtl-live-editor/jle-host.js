@@ -18,8 +18,9 @@ function JLEHost(jtlToken, templateUrl, kcfinderPath, cKey, kKey, kSprache)
 
     this.iframe.on('load', this.iframeLoaded.bind(this));
 
-    $('#jle-btn-save-config').click(this.onSettingsSave.bind(this));
+    $('#config-modal').submit(this.onSettingsSave.bind(this));
     $('#jle-btn-save-editor').click(this.onEditorSave.bind(this));
+
 
     // Fix from: https://stackoverflow.com/questions/22637455/how-to-use-ckeditor-in-a-bootstrap-modal
     $.fn.modal.Constructor.prototype.enforceFocus = function ()
@@ -98,7 +99,7 @@ JLEHost.prototype.openConfigurator = function(portletId, properties)
     var self = this;
 
     ioCall('getPortletConfigPanelHtml', [portletId, properties], function(configPanelHtml) {
-        $('#config-form').html(configPanelHtml);
+        $('#config-modal-body').html(configPanelHtml);
         $('#config-modal').modal('show');
         self.curPortletId = portletId;
     });
@@ -149,18 +150,16 @@ JLEHost.prototype.onSettingsSave = function (e)
 
         $('#config-modal').modal('hide');
     }
+
+    e.preventDefault();
 };
 
-JLEHost.prototype.onOpenKCFinder = function (t, callback)
+JLEHost.prototype.onOpenKCFinder = function (callback)
 {
-    console.log(t);
-
     window.KCFinder = {
         callBack: function(url) {
-            console.log(url);
-            $(t).html('<img src="' + url + '">');
-            kcFinder.close();
             callback(url);
+            kcFinder.close();
         }
     };
 

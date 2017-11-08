@@ -21,54 +21,7 @@ if (isset($_SESSION['plugin_msg'])) {
     $cHinweis = StringHandler::filterXSS(base64_decode(verifyGPDataString('h')));
 }
 if (!empty($_FILES['file_data'])) {
-    /**
-     * sanitize names from plugins downloaded via gitlab
-     *
-     * @param array $p_event
-     * @param array $p_header
-     * @return int
-     */
-    function pluginPreExtractCallBack($p_event, &$p_header)
-    {
-        //plugins downloaded from gitlab have -[BRANCHNAME]-[COMMIT_ID] in their name.
-        //COMMIT_ID should be 40 characters
-        preg_match('/(.*)-master-([a-zA-Z0-9]{40})\/(.*)/', $p_header['filename'], $hits);
-        if (count($hits) >= 3) {
-            $p_header['filename'] = str_replace('-master-' . $hits[2], '', $p_header['filename']);
-        }
-
-        return 1;
-    }
-    $response                 = new stdClass();
-    $response->status         = 'OK';
-    $response->error          = null;
-    $response->files_unpacked = [];
-    $response->file_failed    = [];
-    $response->messages       = [];
-
-    $zip     = new PclZip($_FILES['file_data']['tmp_name']);
-    $content = $zip->listContent();
-    if (!is_array($content) || !isset($content[0]['filename']) || strpos($content[0]['filename'], '.') !== false) {
-        $response->status     = 'FAILED';
-        $response->messages[] = 'Invalid archive';
-    } else {
-        $unzipPath = PFAD_ROOT . PFAD_PLUGIN;
-        $res       = $zip->extract(PCLZIP_OPT_PATH, $unzipPath, PCLZIP_CB_PRE_EXTRACT, 'pluginPreExtractCallBack');
-        $success   = [];
-        $fail      = [];
-        if ($res !== 0) {
-            foreach ($res as $_file) {
-                if ($_file['status'] === 'ok' || $_file['status'] === 'already_a_directory') {
-                    $response->files_unpacked[] = $_file;
-                } else {
-                    $response->file_failed[] = $_file;
-                }
-            }
-        } else {
-            $response->status   = 'FAILED';
-            $response->errors[] = 'Got unzip error code: ' . $zip->errorCode();
-        }
-    }
+    $response                      = extractPlugin($_FILES['file_data']['tmp_name']);
     $PluginInstalliertByStatus_arr = [
         'status_1' => [],
         'status_2' => [],
@@ -77,8 +30,8 @@ if (!empty($_FILES['file_data'])) {
         'status_5' => [],
         'status_6' => []
     ];
-    $PluginInstalliert_arr = gibInstalliertePlugins();
-    $allPlugins            = gibAllePlugins($PluginInstalliert_arr);
+    $PluginInstalliert_arr         = gibInstalliertePlugins();
+    $allPlugins                    = gibAllePlugins($PluginInstalliert_arr);
     foreach ($PluginInstalliert_arr as $_plugin) {
         $PluginInstalliertByStatus_arr['status_' . $_plugin->nStatus][] = $_plugin;
     }

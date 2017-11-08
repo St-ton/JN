@@ -6,151 +6,125 @@
 
 /**
  * Class Kupon
- *
- * @access public
  */
 class Kupon
 {
     /**
-     * @access public
      * @var int
      */
     public $kKupon;
 
     /**
-     * @access public
      * @var int
      */
     public $kKundengruppe;
 
     /**
-     * @access public
      * @var int
      */
     public $kSteuerklasse;
 
     /**
-     * @access public
      * @var string
      */
     public $cName;
 
     /**
-     * @access public
      * @var float
      */
     public $fWert;
 
     /**
-     * @access public
      * @var string
      */
     public $cWertTyp;
 
     /**
-     * @access public
      * @var string
      */
     public $dGueltigAb;
 
     /**
-     * @access public
      * @var string
      */
     public $dGueltigBis;
 
     /**
-     * @access public
      * @var float
      */
     public $fMindestbestellwert;
 
     /**
-     * @access public
      * @var string
      */
     public $cCode;
 
     /**
-     * @access public
      * @var int
      */
     public $nVerwendungen;
 
     /**
-     * @access public
      * @var int
      */
     public $nVerwendungenBisher;
 
     /**
-     * @access public
      * @var int
      */
     public $nVerwendungenProKunde;
 
     /**
-     * @access public
      * @var string
      */
     public $cArtikel;
 
     /**
-     * @access public
      * @var string
      */
     public $cHersteller;
 
     /**
-     * @access public
      * @var string
      */
     public $cKategorien;
 
     /**
-     * @access public
      * @var string
      */
     public $cKunden;
 
     /**
-     * @access public
      * @var string
      */
     public $cKuponTyp;
 
     /**
-     * @access public
      * @var string
      */
     public $cLieferlaender;
 
     /**
-     * @access public
      * @var string
      */
     public $cZusatzgebuehren;
 
     /**
-     * @access public
      * @var string
      */
     public $cAktiv;
 
     /**
-     * @access public
      * @var string
      */
     public $dErstellt;
 
     /**
-     * @access public
      * @var int
      */
     public $nGanzenWKRabattieren;
 
     /**
-     * @access public
      * @var array
      */
     public $translationList;
@@ -159,7 +133,6 @@ class Kupon
      * Constructor
      *
      * @param int $kKupon - primarykey
-     * @access public
      */
     public function __construct($kKupon = 0)
     {
@@ -173,13 +146,12 @@ class Kupon
      *
      * @param int $kKupon
      * @return bool|Kupon
-     * @access private
      */
     private function loadFromDB($kKupon = 0)
     {
         $couponResult = Shop::DB()->select('tkupon', 'kKupon', (int)$kKupon);
 
-        if (isset($couponResult->kKupon) && $couponResult->kKupon > 0) {
+        if ($couponResult !== null && $couponResult->kKupon > 0) {
             $couponResult->translationList = $this->getTranslation($couponResult->kKupon);
             $cMember_arr                   = array_keys(get_object_vars($couponResult));
             foreach ($cMember_arr as $cMember) {
@@ -197,7 +169,6 @@ class Kupon
      *
      * @param bool $bPrim - Controls the return of the method
      * @return bool|int
-     * @access public
      */
     public function save($bPrim = true)
     {
@@ -224,7 +195,6 @@ class Kupon
      * Update the class in the database
      *
      * @return int
-     * @access public
      */
     public function update()
     {
@@ -259,7 +229,6 @@ class Kupon
      * Delete the class in the database
      *
      * @return int
-     * @access public
      */
     public function delete()
     {
@@ -267,9 +236,6 @@ class Kupon
     }
 
     /**
-     * Sets the kKupon
-     *
-     * @access public
      * @param int $kKupon
      * @return $this
      */
@@ -281,9 +247,6 @@ class Kupon
     }
 
     /**
-     * Sets the kKundengruppe
-     *
-     * @access public
      * @param int $kKundengruppe
      * @return $this
      */
@@ -295,9 +258,6 @@ class Kupon
     }
 
     /**
-     * Sets the kSteuerklasse
-     *
-     * @access public
      * @param int $kSteuerklasse
      * @return $this
      */
@@ -309,9 +269,6 @@ class Kupon
     }
 
     /**
-     * Sets the cName
-     *
-     * @access public
      * @param string $cName
      */
     public function setName($cName)
@@ -320,9 +277,6 @@ class Kupon
     }
 
     /**
-     * Sets the fWert
-     *
-     * @access public
      * @param float $fWert
      */
     public function setWert($fWert)
@@ -331,9 +285,6 @@ class Kupon
     }
 
     /**
-     * Sets the cWertTyp
-     *
-     * @access public
      * @param string $cWertTyp
      * @return $this
      */
@@ -345,9 +296,6 @@ class Kupon
     }
 
     /**
-     * Sets the dGueltigAb
-     *
-     * @access public
      * @param string $dGueltigAb
      * @return $this
      */
@@ -359,9 +307,6 @@ class Kupon
     }
 
     /**
-     * Sets the dGueltigBis
-     *
-     * @access public
      * @param string $dGueltigBis
      * @return $this
      */
@@ -373,9 +318,6 @@ class Kupon
     }
 
     /**
-     * Sets the fMindestbestellwert
-     *
-     * @access public
      * @param float $fMindestbestellwert
      * @return $this
      */
@@ -387,9 +329,6 @@ class Kupon
     }
 
     /**
-     * Sets the cCode
-     *
-     * @access public
      * @param string $cCode
      * @return $this
      */
@@ -401,9 +340,6 @@ class Kupon
     }
 
     /**
-     * Sets the nVerwendungen
-     *
-     * @access public
      * @param int $nVerwendungen
      * @return $this
      */
@@ -415,9 +351,6 @@ class Kupon
     }
 
     /**
-     * Sets the nVerwendungenBisher
-     *
-     * @access public
      * @param int $nVerwendungenBisher
      * @return $this
      */
@@ -429,9 +362,6 @@ class Kupon
     }
 
     /**
-     * Sets the nVerwendungenProKunde
-     *
-     * @access public
      * @param int $nVerwendungenProKunde
      * @return $this
      */
@@ -443,9 +373,6 @@ class Kupon
     }
 
     /**
-     * Sets the cArtikel
-     *
-     * @access public
      * @param string $cArtikel
      * @return $this
      */
@@ -457,9 +384,6 @@ class Kupon
     }
 
     /**
-     * Sets the cHersteller
-     *
-     * @access public
      * @param string $cHersteller
      * @return $this
      */
@@ -471,9 +395,6 @@ class Kupon
     }
 
     /**
-     * Sets the cKategorien
-     *
-     * @access public
      * @param string $cKategorien
      * @return $this
      */
@@ -485,9 +406,6 @@ class Kupon
     }
 
     /**
-     * Sets the cKunden
-     *
-     * @access public
      * @param string $cKunden
      * @return $this
      */
@@ -499,9 +417,6 @@ class Kupon
     }
 
     /**
-     * Sets the cKuponTyp
-     *
-     * @access public
      * @param string $cKuponTyp
      * @return $this
      */
@@ -513,9 +428,6 @@ class Kupon
     }
 
     /**
-     * Sets the cLieferlaender
-     *
-     * @access public
      * @param string $cLieferlaender
      * @return $this
      */
@@ -527,9 +439,6 @@ class Kupon
     }
 
     /**
-     * Sets the cZusatzgebuehren
-     *
-     * @access public
      * @param string $cZusatzgebuehren
      * @return $this
      */
@@ -541,9 +450,6 @@ class Kupon
     }
 
     /**
-     * Sets the cAktiv
-     *
-     * @access public
      * @param string $cAktiv
      * @return $this
      */
@@ -555,9 +461,6 @@ class Kupon
     }
 
     /**
-     * Sets the dErstellt
-     *
-     * @access public
      * @param string $dErstellt
      * @return $this
      */
@@ -569,9 +472,6 @@ class Kupon
     }
 
     /**
-     * Sets the nGanzenWKRabattieren
-     *
-     * @access public
      * @param int $nGanzenWKRabattieren
      * @return $this
      */
@@ -583,9 +483,6 @@ class Kupon
     }
 
     /**
-     * Gets the kKupon
-     *
-     * @access public
      * @return int
      */
     public function getKupon()
@@ -594,9 +491,6 @@ class Kupon
     }
 
     /**
-     * Gets the kKundengruppe
-     *
-     * @access public
      * @return int
      */
     public function getKundengruppe()
@@ -605,9 +499,6 @@ class Kupon
     }
 
     /**
-     * Gets the kSteuerklasse
-     *
-     * @access public
      * @return int
      */
     public function getSteuerklasse()
@@ -616,9 +507,6 @@ class Kupon
     }
 
     /**
-     * Gets the cName
-     *
-     * @access public
      * @return string
      */
     public function getName()
@@ -627,9 +515,6 @@ class Kupon
     }
 
     /**
-     * Gets the fWert
-     *
-     * @access public
      * @return float
      */
     public function getWert()
@@ -638,9 +523,6 @@ class Kupon
     }
 
     /**
-     * Gets the cWertTyp
-     *
-     * @access public
      * @return string
      */
     public function getWertTyp()
@@ -649,9 +531,6 @@ class Kupon
     }
 
     /**
-     * Gets the dGueltigAb
-     *
-     * @access public
      * @return string
      */
     public function getGueltigAb()
@@ -660,9 +539,6 @@ class Kupon
     }
 
     /**
-     * Gets the dGueltigBis
-     *
-     * @access public
      * @return string
      */
     public function getGueltigBis()
@@ -671,9 +547,6 @@ class Kupon
     }
 
     /**
-     * Gets the fMindestbestellwert
-     *
-     * @access public
      * @return float
      */
     public function getMindestbestellwert()
@@ -682,9 +555,6 @@ class Kupon
     }
 
     /**
-     * Gets the cCode
-     *
-     * @access public
      * @return string
      */
     public function getCode()
@@ -693,9 +563,6 @@ class Kupon
     }
 
     /**
-     * Gets the nVerwendungen
-     *
-     * @access public
      * @return int
      */
     public function getVerwendungen()
@@ -704,9 +571,6 @@ class Kupon
     }
 
     /**
-     * Gets the nVerwendungenBisher
-     *
-     * @access public
      * @return int
      */
     public function getVerwendungenBisher()
@@ -715,9 +579,6 @@ class Kupon
     }
 
     /**
-     * Gets the nVerwendungenProKunde
-     *
-     * @access public
      * @return int
      */
     public function getVerwendungenProKunde()
@@ -726,9 +587,6 @@ class Kupon
     }
 
     /**
-     * Gets the cArtikel
-     *
-     * @access public
      * @return string
      */
     public function getArtikel()
@@ -737,9 +595,6 @@ class Kupon
     }
 
     /**
-     * Gets the cHersteller
-     *
-     * @access public
      * @return string
      */
     public function getHersteller()
@@ -748,9 +603,6 @@ class Kupon
     }
 
     /**
-     * Gets the cKategorien
-     *
-     * @access public
      * @return string
      */
     public function getKategorien()
@@ -759,9 +611,6 @@ class Kupon
     }
 
     /**
-     * Gets the cKunden
-     *
-     * @access public
      * @return string
      */
     public function getKunden()
@@ -770,9 +619,6 @@ class Kupon
     }
 
     /**
-     * Gets the cKuponTyp
-     *
-     * @access public
      * @return string
      */
     public function getKuponTyp()
@@ -781,9 +627,6 @@ class Kupon
     }
 
     /**
-     * Gets the cLieferlaender
-     *
-     * @access public
      * @return string
      */
     public function getLieferlaender()
@@ -792,9 +635,6 @@ class Kupon
     }
 
     /**
-     * Gets the cZusatzgebuehren
-     *
-     * @access public
      * @return string
      */
     public function getZusatzgebuehren()
@@ -803,9 +643,6 @@ class Kupon
     }
 
     /**
-     * Gets the cAktiv
-     *
-     * @access public
      * @return string
      */
     public function getAktiv()
@@ -814,9 +651,6 @@ class Kupon
     }
 
     /**
-     * Gets the dErstellt
-     *
-     * @access public
      * @return string
      */
     public function getErstellt()
@@ -825,9 +659,6 @@ class Kupon
     }
 
     /**
-     * Gets the nGanzenWKRabattieren
-     *
-     * @access public
      * @return int
      */
     public function getGanzenWKRabattieren()
@@ -836,9 +667,6 @@ class Kupon
     }
 
     /**
-     * Gets coupon by cCode
-     *
-     * @access public
      * @param string $cCode
      * @return bool|Kupon
      */
@@ -860,9 +688,6 @@ class Kupon
     }
 
     /**
-     * Gets translation for Coupon
-     *
-     * @access public
      * @param int $kKupon
      * @return array $translationList
      */
@@ -890,9 +715,6 @@ class Kupon
     }
 
     /**
-     * Gets new customer coupon
-     *
-     * @access public
      * @return array|bool
      */
     public function getNewCustomerCoupon()

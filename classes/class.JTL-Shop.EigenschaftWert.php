@@ -70,7 +70,6 @@ class EigenschaftWert
     /**
      * Setzt EigenschaftWert mit Daten aus der DB mit spezifiziertem Primary Key
      *
-     * @access public
      * @param int $kEigenschaftWert
      * @return $this
      */

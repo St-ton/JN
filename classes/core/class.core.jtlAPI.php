@@ -162,21 +162,17 @@ final class CommunicationAPI
 final class SecurityAPI
 {
     /**
-     * @access private
      * @var string
      */
     private $cSHA1Key;
 
     /**
-     * @access private
      * @var array
      */
     private $cParam_arr;
 
     /**
      * Constructor
-     *
-     * @access public
      */
     public function __construct()
     {
@@ -187,7 +183,6 @@ final class SecurityAPI
     /**
      * Create SHA1 Key
      *
-     * @access public
      * @param bool $bReturnKey
      * @return string|bool
      */
@@ -209,9 +204,6 @@ final class SecurityAPI
     }
 
     /**
-     * Sets the cParam_arr
-     *
-     * @access public
      * @param array $cParam_arr
      * @return $this
      */
@@ -223,9 +215,6 @@ final class SecurityAPI
     }
 
     /**
-     * Gets the cSHA1Key
-     *
-     * @access public
      * @return string
      */
     public function getSHA1Key()
@@ -234,9 +223,6 @@ final class SecurityAPI
     }
 
     /**
-     * Gets the cParam_arr
-     *
-     * @access public
      * @return array
      */
     public function getParam_arr()

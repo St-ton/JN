@@ -576,6 +576,25 @@ class Profiler
                 }
                 ++$totalQueries;
             }
+            if (defined('FILTER_SQL_QUERIES') && FILTER_SQL_QUERIES === true) {
+                $hashes = [];
+                self::$sqlProfile = array_filter(self::$sqlProfile, function ($e) use (&$hashes) {
+                    if (!in_array($e->hash, $hashes, true)) {
+                        $hashes[] = $e->hash;
+
+                        return true;
+                    }
+
+                    return false;
+                });
+                uasort(self::$sqlProfile, function ($a, $b) {
+                    if ($a->time === $b->time) {
+                        return 0;
+                    }
+
+                    return $a->time < $b->time ? -1 : 1;
+                });
+            }
             echo '
                 <style>
                     #pfdbg{

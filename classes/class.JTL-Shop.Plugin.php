@@ -12,7 +12,6 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'plugin_inc.php';
 class Plugin
 {
     /**
-     * @access public
      * @var int
      */
     public $kPlugin;
@@ -329,7 +328,6 @@ class Plugin
     /**
      * Setzt Plugin mit Daten aus der DB mit spezifiziertem Primary Key
      *
-     * @access public
      * @param int  $kPlugin
      * @param bool $invalidateCache - set to true to invalidate plugin cache
      * @return null|$this
@@ -360,9 +358,10 @@ class Plugin
         $_shopURL    = Shop::getURL();
         $_shopURLSSL = Shop::getURL(true);
 
-        $this->kPlugin = (int)$this->kPlugin;
-        $this->nStatus = (int)$this->nStatus;
-        $this->nPrio   = (int)$this->nPrio;
+        $this->kPlugin    = (int)$this->kPlugin;
+        $this->nStatus    = (int)$this->nStatus;
+        $this->nPrio      = (int)$this->nPrio;
+        $this->bBootstrap = (int)$this->bBootstrap === 1;
         // Lokalisiere DateTimes nach DE
         $this->dInstalliert_DE         = $this->gibDateTimeLokalisiert($this->dInstalliert);
         $this->dZuletztAktualisiert_DE = $this->gibDateTimeLokalisiert($this->dZuletztAktualisiert);
@@ -603,7 +602,6 @@ class Plugin
      * Updatet Daten in der DB. Betroffen ist der Datensatz mit gleichem Primary Key
      *
      * @return int
-     * @access public
      */
     public function updateInDB()
     {
@@ -848,14 +846,13 @@ class Plugin
     public static function bootstrapper($kPlugin)
     {
         if (!isset(self::$bootstrapper[$kPlugin])) {
-            $plugin = Shop::DB()->select('tplugin', 'kPlugin', $kPlugin);
+            $plugin = new self($kPlugin);
 
-            if ($plugin === null || (bool)$plugin->bBootstrap === false) {
+            if ($plugin === null || $plugin->bBootstrap === false) {
                 return null;
             }
 
-            $file  = PFAD_ROOT . PFAD_PLUGIN . $plugin->cVerzeichnis . '/' .
-                PFAD_PLUGIN_VERSION . $plugin->nVersion . '/' . PLUGIN_BOOTSTRAPPER;
+            $file  = $plugin->cPluginPfad . PLUGIN_BOOTSTRAPPER;
             $class = sprintf('%s\\%s', $plugin->cPluginID, 'Bootstrap');
 
             if (!is_file($file)) {
@@ -868,7 +865,7 @@ class Plugin
                 return null;
             }
 
-            $bootstrapper = new $class($plugin->cPluginID);
+            $bootstrapper = new $class($plugin);
 
             if (!is_subclass_of($bootstrapper, 'AbstractPlugin')) {
                 return null;

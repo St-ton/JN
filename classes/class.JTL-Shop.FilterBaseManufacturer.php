@@ -49,30 +49,32 @@ class FilterBaseManufacturer extends AbstractFilter
      */
     public function setSeo($languages)
     {
-        $oSeo_arr = Shop::DB()->query(
-            "SELECT tseo.cSeo, tseo.kSprache, thersteller.cName
-                FROM tseo
-                    LEFT JOIN thersteller
-                        ON thersteller.kHersteller = tseo.kKey
-                WHERE cKey = 'kHersteller' 
-                    AND kKey = " . $this->getValue() . "
-                ORDER BY kSprache",
-            2
-        );
-        foreach ($languages as $language) {
-            $this->cSeo[$language->kSprache] = '';
-            foreach ($oSeo_arr as $oSeo) {
-                if ($language->kSprache === (int)$oSeo->kSprache) {
-                    $this->cSeo[$language->kSprache] = $oSeo->cSeo;
+        if (($val = $this->getValue()) > 0) {
+            $oSeo_arr = Shop::DB()->query(
+                "SELECT tseo.cSeo, tseo.kSprache, thersteller.cName
+                    FROM tseo
+                        JOIN thersteller
+                            ON thersteller.kHersteller = tseo.kKey
+                    WHERE cKey = 'kHersteller' 
+                        AND kKey = " . $val . "
+                    ORDER BY kSprache",
+                2
+            );
+            foreach ($languages as $language) {
+                $this->cSeo[$language->kSprache] = '';
+                foreach ($oSeo_arr as $oSeo) {
+                    if ($language->kSprache === (int)$oSeo->kSprache) {
+                        $this->cSeo[$language->kSprache] = $oSeo->cSeo;
+                    }
                 }
             }
-        }
-        if (isset($oSeo_arr[0]->cName)) {
-            $this->setName($oSeo_arr[0]->cName);
-        } else {
-            // invalid manufacturer ID
-            Shop::$kHersteller = 0;
-            Shop::$is404       = true;
+            if (isset($oSeo_arr[0]->cName)) {
+                $this->setName($oSeo_arr[0]->cName);
+            } else {
+                // invalid manufacturer ID
+                Shop::$kHersteller = 0;
+                Shop::$is404       = true;
+            }
         }
 
         return $this;

@@ -77,7 +77,7 @@
                                                 {elseif $oLog->getLevel() == 4}
                                                     <span class="label label-info info">{#systemlogDebug#}</span>
                                                 {else}
-                                                    <span class="label labe-default">Unbekannt</span>
+                                                    <span class="label label-default">Unbekannt</span>
                                                 {/if}
                                             </h4>
                                         </td>

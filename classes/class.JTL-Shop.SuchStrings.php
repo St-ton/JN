@@ -44,7 +44,6 @@ class SuchStrings
     /**
      * Setzt SuchStrings mit Daten aus der DB mit spezifiziertem Primary Key
      *
-     * @access public
      * @param int $kSuchStrings
      * @return $this
      */
@@ -52,7 +51,7 @@ class SuchStrings
     {
         $kSuchStrings = (int)$kSuchStrings;
         $obj          = Shop::DB()->select('tsuchstrings', 'kSuchStrings', $kSuchStrings);
-        if ($obj->kSuchStrings > 0) {
+        if ($obj !== null && $obj->kSuchStrings > 0) {
             $members = array_keys(get_object_vars($obj));
             foreach ($members as $member) {
                 $this->$member = $obj->$member;
@@ -66,7 +65,6 @@ class SuchStrings
      * Fügt Datensatz in DB ein. Primary Key wird in this gesetzt.
      *
      * @return int
-     * @access public
      */
     public function insertInDB()
     {

@@ -71,14 +71,13 @@ $nBreiteAttribut = ($conf['vergleichsliste']['vergleichsliste_spaltengroesseattr
 $nBreiteArtikel = ($conf['vergleichsliste']['vergleichsliste_spaltengroesse'] > 0)
     ? (int)$conf['vergleichsliste']['vergleichsliste_spaltengroesse']
     : 200;
-$nBreiteTabelle = $nBreiteArtikel * count($oVergleichsliste->oArtikel_arr) + $nBreiteAttribut;
-Shop::Smarty()->assign('nBreiteTabelle', $nBreiteTabelle)
+Shop::Smarty()->assign('nBreiteTabelle', $nBreiteArtikel * count($oVergleichsliste->oArtikel_arr) + $nBreiteAttribut)
     ->assign('cPrioSpalten_arr', $cExclude)
     ->assign('oMerkmale_arr', $oMerkVaria_arr[0])
     ->assign('oVariationen_arr', $oMerkVaria_arr[1])
     ->assign('print', (isset($_GET['print']) && (int)$_GET['print'] === 1) ? 1 : 0)
     ->assign('oVergleichsliste', $oVergleichsliste)
-    ->assign('Navigation', createNavigation($AktuelleSeite, 0, 0))
+    ->assign('Navigation', createNavigation($AktuelleSeite))
     ->assign('Einstellungen_Vergleichsliste', $conf);
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';

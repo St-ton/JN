@@ -248,7 +248,6 @@ class Exportformat
      * Update the class in the database
      *
      * @return int
-     * @access public
      */
     public function update()
     {
@@ -288,7 +287,6 @@ class Exportformat
      * Delete the class in the database
      *
      * @return int
-     * @access public
      */
     public function delete()
     {
@@ -504,9 +502,6 @@ class Exportformat
     }
 
     /**
-     * Gets the kKampagne
-     *
-     * @access public
      * @return int
      */
     public function getKampagne()
@@ -515,9 +510,6 @@ class Exportformat
     }
 
     /**
-     * Gets the kPlugin
-     *
-     * @access public
      * @return int
      */
     public function getPlugin()
@@ -526,9 +518,6 @@ class Exportformat
     }
 
     /**
-     * Gets the cName
-     *
-     * @access public
      * @return string
      */
     public function getName()
@@ -537,9 +526,6 @@ class Exportformat
     }
 
     /**
-     * Gets the cDateiname
-     *
-     * @access public
      * @return string
      */
     public function getDateiname()
@@ -548,9 +534,6 @@ class Exportformat
     }
 
     /**
-     * Gets the cKopfzeile
-     *
-     * @access public
      * @return string
      */
     public function getKopfzeile()
@@ -559,9 +542,6 @@ class Exportformat
     }
 
     /**
-     * Gets the cContent
-     *
-     * @access public
      * @return string
      */
     public function getContent()
@@ -719,7 +699,7 @@ class Exportformat
         $_SESSION['Kundengruppe']  = (new Kundengruppe($this->getKundengruppe()))
             ->setMayViewPrices(1)
             ->setMayViewCategories(1)
-            ->setIsMerchant($net->nNettoPreise);
+            ->setIsMerchant($net !== null ? $net->nNettoPreise : 0);
         $_SESSION['kKundengruppe'] = $this->getKundengruppe();
         $_SESSION['kSprache']      = $this->getSprache();
         $_SESSION['Sprachen']      = Shop::DB()->query("SELECT * FROM tsprache", 2);

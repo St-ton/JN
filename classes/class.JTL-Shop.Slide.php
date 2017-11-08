@@ -70,6 +70,17 @@ class Slide
     /**
      * @param int $kSlider
      * @param int $kSlide
+     */
+    public function __construct($kSlider = 0, $kSlide = 0)
+    {
+        if ($kSlider > 0 && $kSlide > 0) {
+            $this->load($kSlider, $kSlide);
+        }
+    }
+
+    /**
+     * @param int $kSlider
+     * @param int $kSlide
      * @return bool
      */
     public function load($kSlider = 0, $kSlide = 0)
@@ -88,8 +99,7 @@ class Slide
             $oSlide = Shop::DB()->select('tslide', 'kSlide', (int)$kSlide);
 
             if (is_object($oSlide)) {
-                $cSlide_arr = (array)$oSlide;
-                $this->set($cSlide_arr);
+                $this->set((array)$oSlide);
 
                 return true;
             }
@@ -110,9 +120,8 @@ class Slide
                 $this->$cField = $cData_arr[$cField];
             }
         }
-        $this->setAbsoluteImagePaths();
 
-        return $this;
+        return $this->setAbsoluteImagePaths();
     }
 
     /**

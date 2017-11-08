@@ -12,29 +12,8 @@ Shop::setPageType(PAGE_ARTIKELLISTE);
 /** @global JTLSmarty $smarty */
 /** @global array $cParameter_arr */
 /** @global ProductFilter $NaviFilter*/
-$Einstellungen          = Shop::getSettings([
-    CONF_GLOBAL,
-    CONF_RSS,
-    CONF_ARTIKELUEBERSICHT,
-    CONF_VERGLEICHSLISTE,
-    CONF_BEWERTUNG,
-    CONF_NAVIGATIONSFILTER,
-    CONF_BOXEN,
-    CONF_ARTIKELDETAILS,
-    CONF_METAANGABEN,
-    CONF_SUCHSPECIAL,
-    CONF_BILDER,
-    CONF_PREISVERLAUF,
-    CONF_SONSTIGES,
-    CONF_AUSWAHLASSISTENT
-]);
-$nArtikelProSeite_arr   = [
-    5,
-    10,
-    25,
-    50,
-    100
-];
+$Einstellungen          = Shopsetting::getInstance()->getAll();
+$nArtikelProSeite_arr   = [5, 10, 25, 50, 100];
 $suchanfrage            = '';
 $doSearch               = true;
 $AktuelleKategorie      = new stdClass();
@@ -49,7 +28,7 @@ $nMindestzeichen        = ((int)$Einstellungen['artikeluebersicht']['suche_min_z
 if (strlen($cParameter_arr['cSuche']) > 0 || (isset($_GET['qs']) && strlen($_GET['qs']) === 0)) {
     preg_match("/[\w" . utf8_decode('äÄüÜöÖß') . "\.\-]{" . $nMindestzeichen . ",}/",
         str_replace(' ', '', $cParameter_arr['cSuche']), $cTreffer_arr);
-    $hasError = (count($cTreffer_arr) === 0);
+    $hasError = count($cTreffer_arr) === 0;
 }
 // setze Kat in Session
 if (isset($cParameter_arr['kKategorie']) && $cParameter_arr['kKategorie'] > 0) {
@@ -117,8 +96,8 @@ if (verifyGPCDataInteger('zahl') > 0) {
     $_SESSION['ArtikelProSeite'] = verifyGPCDataInteger('zahl');
     setFsession(0, 0, $_SESSION['ArtikelProSeite']);
 }
-if (!isset($_SESSION['ArtikelProSeite']) &&
-    $Einstellungen['artikeluebersicht']['artikeluebersicht_erw_darstellung'] === 'N'
+if (!isset($_SESSION['ArtikelProSeite'])
+    && $Einstellungen['artikeluebersicht']['artikeluebersicht_erw_darstellung'] === 'N'
 ) {
     $_SESSION['ArtikelProSeite'] = min(
         (int)$Einstellungen['artikeluebersicht']['artikeluebersicht_artikelproseite'],
@@ -143,14 +122,14 @@ if ($oSuchergebnisse->Artikel->elemente->count() === 0) {
         $KategorieInhalt->Unterkategorien->getAllCategoriesOnLevel($NaviFilter->getCategory()->getValue());
         // wenn keine eigenen Artikel in dieser Kat, Top Angebote / Bestseller
         // aus unterkats + unterunterkats rausholen und anzeigen?
-        if ($Einstellungen['artikeluebersicht']['topbest_anzeigen'] === 'Top' ||
-            $Einstellungen['artikeluebersicht']['topbest_anzeigen'] === 'TopBest'
+        if ($Einstellungen['artikeluebersicht']['topbest_anzeigen'] === 'Top'
+            || $Einstellungen['artikeluebersicht']['topbest_anzeigen'] === 'TopBest'
         ) {
             $KategorieInhalt->TopArtikel = new ArtikelListe();
             $KategorieInhalt->TopArtikel->holeTopArtikel($KategorieInhalt->Unterkategorien);
         }
-        if ($Einstellungen['artikeluebersicht']['topbest_anzeigen'] === 'Bestseller' ||
-            $Einstellungen['artikeluebersicht']['topbest_anzeigen'] === 'TopBest'
+        if ($Einstellungen['artikeluebersicht']['topbest_anzeigen'] === 'Bestseller'
+            || $Einstellungen['artikeluebersicht']['topbest_anzeigen'] === 'TopBest'
         ) {
             $KategorieInhalt->BestsellerArtikel = new ArtikelListe();
             $KategorieInhalt->BestsellerArtikel->holeBestsellerArtikel(
@@ -164,76 +143,14 @@ if ($oSuchergebnisse->Artikel->elemente->count() === 0) {
         $oSuchergebnisse->SucheErfolglos = 1;
     }
 }
-// Mainword NaviBilder
-$oNavigationsinfo           = new stdClass();
-$oNavigationsinfo->cName    = '';
-$oNavigationsinfo->cBildURL = '';
 // Navigation
-$cBrotNavi               = '';
-$oMeta                   = new stdClass();
-$oMeta->cMetaTitle       = '';
-$oMeta->cMetaDescription = '';
-$oMeta->cMetaKeywords    = '';
-if ($NaviFilter->hasCategory()) {
-    $oNavigationsinfo->oKategorie = $AktuelleKategorie;
-
-    if ($Einstellungen['navigationsfilter']['kategorie_bild_anzeigen'] === 'Y') {
-        $oNavigationsinfo->cName = $AktuelleKategorie->cName;
-    } elseif ($Einstellungen['navigationsfilter']['kategorie_bild_anzeigen'] === 'BT') {
-        $oNavigationsinfo->cName    = $AktuelleKategorie->cName;
-        $oNavigationsinfo->cBildURL = $AktuelleKategorie->getKategorieBild();
-    } elseif ($Einstellungen['navigationsfilter']['kategorie_bild_anzeigen'] === 'B') {
-        $oNavigationsinfo->cBildURL = $AktuelleKategorie->getKategorieBild();
-    }
-    $cBrotNavi = createNavigation('PRODUKTE', $AufgeklappteKategorien);
-} elseif ($NaviFilter->hasManufacturer()) {
-    $oNavigationsinfo->oHersteller = new Hersteller($NaviFilter->getManufacturer()->getValue());
-
-    if ($Einstellungen['navigationsfilter']['hersteller_bild_anzeigen'] === 'Y') {
-        $oNavigationsinfo->cName = $oNavigationsinfo->oHersteller->cName;
-    } elseif ($Einstellungen['navigationsfilter']['hersteller_bild_anzeigen'] === 'BT') {
-        $oNavigationsinfo->cName    = $oNavigationsinfo->oHersteller->cName;
-        $oNavigationsinfo->cBildURL = $oNavigationsinfo->oHersteller->cBildpfadNormal;
-    } elseif ($Einstellungen['navigationsfilter']['hersteller_bild_anzeigen'] === 'B') {
-        $oNavigationsinfo->cBildURL = $oNavigationsinfo->oHersteller->cBildpfadNormal;
-    }
-    if (isset($oNavigationsinfo->oHersteller->cMetaTitle)) {
-        $oMeta->cMetaTitle = $oNavigationsinfo->oHersteller->cMetaTitle;
-    }
-    if (isset($oNavigationsinfo->oHersteller->cMetaDescription)) {
-        $oMeta->cMetaDescription = $oNavigationsinfo->oHersteller->cMetaDescription;
-    }
-    if (isset($oNavigationsinfo->oHersteller->cMetaKeywords)) {
-        $oMeta->cMetaKeywords = $oNavigationsinfo->oHersteller->cMetaKeywords;
-    }
-    $cBrotNavi = createNavigation('', '', 0, $NaviFilter->getMetaData()->getBreadCrumbName(), $NaviFilter->getURL());
-} elseif ($NaviFilter->hasAttributeValue()) {
-    $oNavigationsinfo->oMerkmalWert = new MerkmalWert($NaviFilter->getAttributeValue()->getValue());
-
-    if ($Einstellungen['navigationsfilter']['merkmalwert_bild_anzeigen'] === 'Y') {
-        $oNavigationsinfo->cName = $oNavigationsinfo->oMerkmalWert->cWert;
-    } elseif ($Einstellungen['navigationsfilter']['merkmalwert_bild_anzeigen'] === 'BT') {
-        $oNavigationsinfo->cName    = $oNavigationsinfo->oMerkmalWert->cWert;
-        $oNavigationsinfo->cBildURL = $oNavigationsinfo->oMerkmalWert->cBildpfadNormal;
-    } elseif ($Einstellungen['navigationsfilter']['merkmalwert_bild_anzeigen'] === 'B') {
-        $oNavigationsinfo->cBildURL = $oNavigationsinfo->oMerkmalWert->cBildpfadNormal;
-    }
-    if (isset($oNavigationsinfo->oMerkmalWert->cMetaTitle)) {
-        $oMeta->cMetaTitle = $oNavigationsinfo->oMerkmalWert->cMetaTitle;
-    }
-    if (isset($oNavigationsinfo->oMerkmalWert->cMetaDescription)) {
-        $oMeta->cMetaDescription = $oNavigationsinfo->oMerkmalWert->cMetaDescription;
-    }
-    if (isset($oNavigationsinfo->oMerkmalWert->cMetaKeywords)) {
-        $oMeta->cMetaKeywords = $oNavigationsinfo->oMerkmalWert->cMetaKeywords;
-    }
-}
+$oNavigationsinfo = $NaviFilter->getMetaData()->getNavigationInfo($AktuelleKategorie, $AufgeklappteKategorien);
 // Canonical
 if (strpos(basename($NaviFilter->getURL()), '.php') === false) {
-    $cSeite = '';
-    if (isset($oSuchergebnisse->Seitenzahlen->AktuelleSeite) && $oSuchergebnisse->Seitenzahlen->AktuelleSeite > 1) {
-        $cSeite = SEP_SEITE . $oSuchergebnisse->Seitenzahlen->AktuelleSeite;
-    }
+    $cSeite        = isset($oSuchergebnisse->Seitenzahlen->AktuelleSeite)
+    && $oSuchergebnisse->Seitenzahlen->AktuelleSeite > 1
+        ? SEP_SEITE . $oSuchergebnisse->Seitenzahlen->AktuelleSeite
+        : '';
     $cCanonicalURL = $NaviFilter->getURL(null, true) . $cSeite;
 }
 // Auswahlassistent
@@ -241,7 +158,7 @@ if (TEMPLATE_COMPATIBILITY === true && function_exists('starteAuswahlAssistent')
     starteAuswahlAssistent(
         AUSWAHLASSISTENT_ORT_KATEGORIE,
         $cParameter_arr['kKategorie'],
-        Shop::getLanguage(),
+        Shop::getLanguageID(),
         $smarty,
         $Einstellungen['auswahlassistent']
     );
@@ -249,19 +166,19 @@ if (TEMPLATE_COMPATIBILITY === true && function_exists('starteAuswahlAssistent')
     AuswahlAssistent::startIfRequired(
         AUSWAHLASSISTENT_ORT_KATEGORIE,
         $cParameter_arr['kKategorie'],
-        Shop::getLanguage(),
+        Shop::getLanguageID(),
         $smarty
     );
 }
 $smarty->assign('SEARCHSPECIALS_TOPREVIEWS', SEARCHSPECIALS_TOPREVIEWS)
        ->assign('code_benachrichtigung_verfuegbarkeit',
            generiereCaptchaCode($Einstellungen['artikeldetails']['benachrichtigung_abfragen_captcha']))
-       ->assign('oNaviSeite_arr', $NaviFilter->getMetaData()->buildPageNavigation(
+       ->assign('oNaviSeite_arr', $oNavigationsinfo->buildPageNavigation(
            true,
            $oSuchergebnisse->Seitenzahlen,
            $Einstellungen['artikeluebersicht']['artikeluebersicht_max_seitenzahl']))
        ->assign('ArtikelProSeite', $nArtikelProSeite_arr)
-       ->assign('Navigation', $cBrotNavi)
+       ->assign('Navigation', $oNavigationsinfo->getBreadCrumb())
        ->assign('Sortierliste', $NaviFilter->getMetaData()->getSortingOptions())
        ->assign('Suchergebnisse', $oSuchergebnisse)
        ->assign('requestURL', isset($requestURL) ? $requestURL : null)
@@ -277,8 +194,7 @@ require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 $oGlobaleMetaAngabenAssoc_arr = Metadata::getGlobalMetaData();
 $smarty->assign(
     'meta_title',
-    $NaviFilter->getMetaData()->getMetaTitle(
-        $oMeta,
+    $oNavigationsinfo->generateMetaTitle(
         $oSuchergebnisse,
         $oGlobaleMetaAngabenAssoc_arr,
         $AktuelleKategorie
@@ -286,8 +202,7 @@ $smarty->assign(
 );
 $smarty->assign(
     'meta_description',
-    $NaviFilter->getMetaData()->getMetaDescription(
-        $oMeta,
+    $oNavigationsinfo->generateMetaDescription(
         $oSuchergebnisse->Artikel->elemente->getItems(),
         $oSuchergebnisse,
         $oGlobaleMetaAngabenAssoc_arr,
@@ -296,8 +211,7 @@ $smarty->assign(
 );
 $smarty->assign(
     'meta_keywords',
-    $NaviFilter->getMetaData()->getMetaKeywords(
-        $oMeta,
+    $oNavigationsinfo->generateMetaKeywords(
         $oSuchergebnisse->Artikel->elemente->getItems(),
         $AktuelleKategorie
     )

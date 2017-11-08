@@ -619,8 +619,8 @@ class TrustedShops
 
                 $this->dChecked = date('Y-m-d H:i:s');
                 if (!$bSaved) {
-                    Shop::DB()->query("
-                        UPDATE ttrustedshopszertifikat 
+                    Shop::DB()->query(
+                        "UPDATE ttrustedshopszertifikat 
                             SET dChecked = '{$this->dChecked}' 
                             WHERE kTrustedShopsZertifikat = {$this->kTrustedShopsZertifikat}", 3
                     );

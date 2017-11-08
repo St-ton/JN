@@ -94,16 +94,17 @@ class Preisverlauf
     /**
      * Setzt Preisverlauf mit Daten aus der DB mit spezifiziertem Primary Key
      *
-     * @access public
      * @param int $kPreisverlauf
      * @return $this
      */
     public function loadFromDB($kPreisverlauf)
     {
-        $obj     = Shop::DB()->select('tpreisverlauf', 'kPreisverlauf', (int)$kPreisverlauf);
-        $members = array_keys(get_object_vars($obj));
-        foreach ($members as $member) {
-            $this->$member = $obj->$member;
+        $obj = Shop::DB()->select('tpreisverlauf', 'kPreisverlauf', (int)$kPreisverlauf);
+        if ($obj !== null) {
+            $members = array_keys(get_object_vars($obj));
+            foreach ($members as $member) {
+                $this->$member = $obj->$member;
+            }
         }
 
         return $this;
@@ -112,7 +113,6 @@ class Preisverlauf
     /**
      * Fügt Datensatz in DB ein. Primary Key wird in this gesetzt.
      *
-     * @access public
      * @return int
      */
     public function insertInDB()
@@ -128,7 +128,6 @@ class Preisverlauf
      * Updatet Daten in der DB. Betroffen ist der Datensatz mit gleichem Primary Key
      *
      * @return int
-     * @access public
      */
     public function updateInDB()
     {
@@ -150,6 +149,6 @@ class Preisverlauf
         $this->fPreisHaendler = (float)$_POST['ArtikelVKHaendlerBrutto'];
         $this->dDate          = 'now()';
 
-        return ($this->kArtikel > 0);
+        return $this->kArtikel > 0;
     }
 }

@@ -359,7 +359,7 @@ class Bestellung
     public function loadFromDB($kBestellung)
     {
         $obj = Shop::DB()->select('tbestellung', 'kBestellung', (int)$kBestellung);
-        if (isset($obj->kBestellung) && $obj->kBestellung > 0) {
+        if ($obj !== null && $obj->kBestellung > 0) {
             foreach (get_object_vars($obj) as $k => $v) {
                 $this->$k = $v;
             }

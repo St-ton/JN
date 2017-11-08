@@ -606,7 +606,7 @@ function setzePreisverlauf($kArtikel, $kKundengruppe, $fVKNetto)
             // return if there is no difference
             return;
         }
-        if(!empty($oPreis_arr[1]) && round($oPreis_arr[1]->fVKNetto * 100) === round($fVKNetto * 100)) {
+        if (!empty($oPreis_arr[1]) && round($oPreis_arr[1]->fVKNetto * 100) === round($fVKNetto * 100)) {
             // delete todays price if the new price for today is the same as the latest price
             Shop::DB()->delete('tpreisverlauf', 'kPreisverlauf', (int)$oPreis_arr[0]->kPreisverlauf);
         } else {
@@ -614,8 +614,6 @@ function setzePreisverlauf($kArtikel, $kKundengruppe, $fVKNetto)
             Shop::DB()->update('tpreisverlauf', 'kPreisverlauf', (int)$oPreis_arr[0]->kPreisverlauf, (object)[
                 'fVKNetto' => $fVKNetto,
             ]);
-            // Clear Artikel Cache
-            Shop::Cache()->flushTags([CACHING_GROUP_ARTICLE . '_' . $kArtikel]);
         }
     } else {
         // no price for today exists
@@ -629,9 +627,10 @@ function setzePreisverlauf($kArtikel, $kKundengruppe, $fVKNetto)
             'fVKNetto'      => $fVKNetto,
             'dDate'         => 'now()',
         ]);
-        // Clear Artikel Cache
-        Shop::Cache()->flushTags([CACHING_GROUP_ARTICLE . '_' . $kArtikel]);
     }
+
+    // Clear Artikel Cache
+    Shop::Cache()->flushTags([CACHING_GROUP_ARTICLE . '_' . $kArtikel]);
 }
 
 /**

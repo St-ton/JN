@@ -64,7 +64,6 @@ class Kampagne
     /**
      * Setzt Kampagne mit Daten aus der DB mit spezifiziertem Primary Key
      *
-     * @access public
      * @param int $kKampagne - Primary Key
      * @return $this
      */
@@ -89,7 +88,6 @@ class Kampagne
     /**
      * Fuegt Datensatz in DB ein. Primary Key wird in this gesetzt.
      *
-     * @access public
      * @return int
      */
     public function insertInDB()
@@ -113,7 +111,6 @@ class Kampagne
     /**
      * Updatet Daten in der DB. Betroffen ist der Datensatz mit gleichem Primary Key
      *
-     * @access public
      * @return int
      */
     public function updateInDB()

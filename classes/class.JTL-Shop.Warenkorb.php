@@ -1258,7 +1258,6 @@ class Warenkorb
     /**
      * Setzt Warenkorb mit Daten aus der DB mit spezifiziertem Primary Key
      *
-     * @access public
      * @param int $kWarenkorb Primary Key
      * @return $this
      */
@@ -1276,7 +1275,6 @@ class Warenkorb
     /**
      * Fuegt Datensatz in DB ein. Primary Key wird in this gesetzt.
      *
-     * @access public
      * @return int Key vom eingefuegten Warenkorb
      */
     public function insertInDB()
@@ -1298,7 +1296,6 @@ class Warenkorb
      * Updatet Daten in der DB. Betroffen ist der Datensatz mit gleichem Primary Key
      *
      * @return int
-     * @access public
      */
     public function updateInDB()
     {

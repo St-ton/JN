@@ -8,6 +8,7 @@ require_once PFAD_ROOT . PFAD_INCLUDES_EXT . 'umfrage_inc.php';
 
 Shop::run();
 Shop::setPageType(PAGE_UMFRAGE);
+$smarty                 = Shop::Smarty();
 $cParameter_arr         = Shop::getParameters();
 $cHinweis               = '';
 $cFehler                = '';
@@ -61,18 +62,18 @@ if (isset($cParameter_arr['kUmfrage']) && $cParameter_arr['kUmfrage'] > 0) {
                     );
                 }
                 $_SESSION['Umfrage']->kUmfrage = $oUmfrage->kUmfrage;
-                Shop::Smarty()->assign('oUmfrage', $oUmfrage)
-                    ->assign('Navigation', createNavigation(
-                            Shop::getPageType(),
-                            0,
-                            0,
-                            Shop::Lang()->get('umfrage', 'breadcrumb') .
-                            ' - ' . $oUmfrage->cName, baueURL($oUmfrage, URLART_UMFRAGE)
-                        )
-                    )
-                    ->assign('oNavi_arr', baueSeitenNavi($oUmfrageFrageTMP_arr, $oUmfrage->nAnzahlFragen))
-                    ->assign('nAktuelleSeite', $cParameter_arr['kSeite'])
-                    ->assign('nAnzahlSeiten', bestimmeAnzahlSeiten($oUmfrageFrageTMP_arr));
+                $smarty->assign('oUmfrage', $oUmfrage)
+                       ->assign('Navigation', createNavigation(
+                               Shop::getPageType(),
+                               0,
+                               0,
+                               Shop::Lang()->get('umfrage', 'breadcrumb') .
+                               ' - ' . $oUmfrage->cName, baueURL($oUmfrage, URLART_UMFRAGE)
+                           )
+                       )
+                       ->assign('oNavi_arr', baueSeitenNavi($oUmfrageFrageTMP_arr, $oUmfrage->nAnzahlFragen))
+                       ->assign('nAktuelleSeite', $cParameter_arr['kSeite'])
+                       ->assign('nAnzahlSeiten', bestimmeAnzahlSeiten($oUmfrageFrageTMP_arr));
 
                 executeHook(HOOK_UMFRAGE_PAGE_DURCHFUEHRUNG);
             } else {
@@ -99,7 +100,7 @@ if ($step === 'umfrage_uebersicht') {
     // Canonical
     $cCanonicalURL = Shop::getURL() . '/umfrage.php';
 
-    Shop::Smarty()->assign('Navigation', createNavigation(
+    $smarty->assign('Navigation', createNavigation(
             Shop::$AktuelleSeite,
             0,
             0,
@@ -111,14 +112,14 @@ if ($step === 'umfrage_uebersicht') {
     executeHook(HOOK_UMFRAGE_PAGE_UEBERSICHT);
 }
 
-Shop::Smarty()->assign('hinweis', $cHinweis)
-    ->assign('fehler', $cFehler)
-    ->assign('step', $step);
+$smarty->assign('hinweis', $cHinweis)
+       ->assign('fehler', $cFehler)
+       ->assign('step', $step);
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 
 executeHook(HOOK_UMFRAGE_PAGE);
 
-Shop::Smarty()->display('poll/index.tpl');
+$smarty->display('poll/index.tpl');
 
 require PFAD_ROOT . PFAD_INCLUDES . 'profiler_inc.php';

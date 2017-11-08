@@ -98,7 +98,6 @@ class ZahlungsInfo
     /**
      * Setzt ZahlungsInfo mit Daten aus der DB mit spezifiziertem Primary Key
      *
-     * @access public
      * @param int $kZahlungsInfo Primary Key
      * @param int $kBestellung
      * @return $this
@@ -167,7 +166,6 @@ class ZahlungsInfo
     /**
      * Fügt Datensatz in DB ein. Primary Key wird in this gesetzt.
      *
-     * @access public
      * @return int - Key von eingefügter ZahlungsInfo
      */
     public function insertInDB()
@@ -185,7 +183,6 @@ class ZahlungsInfo
     /**
      * Updatet Daten in der DB. Betroffen ist der Datensatz mit gleichem Primary Key
      *
-     * @access public
      * @return int
      */
     public function updateInDB()

@@ -6,44 +6,35 @@
 
 /**
  * Class Kuponneukunde
- *
- * @access public
- * @author Daniel Böhmer
  */
 class Kuponneukunde
 {
     /**
-     * @access public
      * @var int
      */
     public $kKuponNeukunde;
 
     /**
-     * @access public
      * @var int
      */
     public $kKupon;
 
     /**
-     * @access public
      * @var string
      */
     public $cEmail;
 
     /**
-     * @access public
      * @var string
      */
     public $cDatenHash;
 
     /**
-     * @access public
      * @var string
      */
     public $dErstellt;
 
     /**
-     * @access public
      * @var string
      */
     public $cVerwendet;
@@ -51,7 +42,6 @@ class Kuponneukunde
     /**
      * Constructor
      *
-     * @access public
      * @param object $oObj
      */
     public function __construct($oObj = null)
@@ -109,9 +99,6 @@ class Kuponneukunde
     }
 
     /**
-     * Sets the kKuponNeukunde
-     *
-     * @access public
      * @param int $kKuponNeukunde
      * @return $this
      */
@@ -123,9 +110,6 @@ class Kuponneukunde
     }
 
     /**
-     * Sets the kKupon
-     *
-     * @access public
      * @param int $kKupon
      * @return $this
      */
@@ -137,9 +121,6 @@ class Kuponneukunde
     }
 
     /**
-     * Sets the cEmail
-     *
-     * @access public
      * @param string $cEmail
      * @return $this
      */
@@ -151,9 +132,6 @@ class Kuponneukunde
     }
 
     /**
-     * Sets the cDatenHash
-     *
-     * @access public
      * @param string $cDatenHash
      * @return $this
      */
@@ -165,9 +143,6 @@ class Kuponneukunde
     }
 
     /**
-     * Sets the dErstellt
-     *
-     * @access public
      * @param string $dErstellt
      * @return $this
      */
@@ -181,9 +156,6 @@ class Kuponneukunde
     }
 
     /**
-     * Sets the cVerwendet
-     *
-     * @access public
      * @param string $cVerwendet
      * @return $this
      */
@@ -195,9 +167,6 @@ class Kuponneukunde
     }
 
     /**
-     * Gets the kKuponNeukunde
-     *
-     * @access public
      * @return int
      */
     public function getKuponNeukunde()
@@ -206,9 +175,6 @@ class Kuponneukunde
     }
 
     /**
-     * Gets the kKupon
-     *
-     * @access public
      * @return int
      */
     public function getKupon()
@@ -217,9 +183,6 @@ class Kuponneukunde
     }
 
     /**
-     * Gets the cEmail
-     *
-     * @access public
      * @return string
      */
     public function getEmail()
@@ -228,9 +191,6 @@ class Kuponneukunde
     }
 
     /**
-     * Gets the cDatenHash
-     *
-     * @access public
      * @return string
      */
     public function getDatenHash()
@@ -239,9 +199,6 @@ class Kuponneukunde
     }
 
     /**
-     * Gets the dErstellt
-     *
-     * @access public
      * @return string
      */
     public function getErstellt()

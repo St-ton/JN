@@ -422,7 +422,6 @@ class NiceDB implements Serializable
     /**
      * insert row into db
      *
-     * @access public
      * @param string   $tableName - table name
      * @param object   $object - object to insert
      * @param int|bool $echo - true -> print statement
@@ -590,7 +589,6 @@ class NiceDB implements Serializable
     /**
      * update table row
      *
-     * @access public
      * @param string           $tableName - table name
      * @param string|array     $keyname   - Name of Key which should be compared
      * @param int|string|array $keyvalue  - Value of Key which should be compared
@@ -725,7 +723,6 @@ class NiceDB implements Serializable
     /**
      * selects all (*) values in a single row from a table - gives just one row back!
      *
-     * @access public
      * @param string           $tableName - Tabellenname
      * @param string|array     $keyname - Name of Key which should be compared
      * @param string|int|array $keyvalue - Value of Key which should be compared
@@ -872,7 +869,6 @@ class NiceDB implements Serializable
     /**
      * executes query and returns misc data
      *
-     * @access public
      * @param string   $stmt - Statement to be executed
      * @param int      $return - what should be returned.
      * 1  - single fetched object
@@ -895,7 +891,6 @@ class NiceDB implements Serializable
     /**
      * executes query and returns misc data
      *
-     * @access public
      * @param string   $stmt - Statement to be executed
      * @param array    $params - An array of values with as many elements as there are bound parameters in the SQL statement being executed
      * @param int      $return - what should be returned.
@@ -956,7 +951,6 @@ class NiceDB implements Serializable
     /**
      * executes query and returns misc data
      *
-     * @access protected
      * @param int           $type - Type [0 => query, 1 => prepared]
      * @param string        $stmt - Statement to be executed
      * @param array         $params - An array of values with as many elements as there are bound parameters in the SQL statement being executed
@@ -1113,7 +1107,6 @@ class NiceDB implements Serializable
     /**
      * delete row from table
      *
-     * @access public
      * @param string           $tableName - table name
      * @param string|array     $keyname - Name of Key which should be compared
      * @param string|int|array $keyvalue - Value of Key which should be compared
@@ -1196,7 +1189,6 @@ class NiceDB implements Serializable
     /**
      * executes a query and gives back the result
      *
-     * @access public
      * @param string $stmt - Statement to be executed
      * @return PDOStatement|int
      */

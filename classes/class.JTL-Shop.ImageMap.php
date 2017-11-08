@@ -43,8 +43,7 @@ class ImageMap implements IExtensionPoint
     {
         $oImageMap = $this->fetch($kInitial, $fetch_all);
         if (is_object($oImageMap)) {
-            $smarty = Shop::Smarty();
-            $smarty->assign('oImageMap', $oImageMap);
+            Shop::Smarty()->assign('oImageMap', $oImageMap);
         }
 
         return $this;

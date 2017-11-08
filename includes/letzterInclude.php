@@ -3,7 +3,8 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-/** @global JTLSmarty $smarty */
+
+$smarty                = Shop::Smarty();
 $oBrowser              = getBrowser();
 $linkHelper            = LinkHelper::getInstance();
 $oTemplate             = Template::getInstance();
@@ -11,6 +12,8 @@ $bMobilAktiv           = $oTemplate->isMobileTemplateActive();
 $currentTemplateFolder = $oTemplate->getDir();
 $currentTemplateDir    = PFAD_TEMPLATES . $currentTemplateFolder . '/';
 $bMobile               = false;
+$shopLogo              = Shop::getLogo();
+$shopURL               = Shop::getURL();
 $cart                  = isset($_SESSION['Warenkorb']) ? $_SESSION['Warenkorb'] : new Warenkorb();
 $EinstellungenTmp      = Shopsetting::getInstance()->getAll();
 $Einstellungen         = isset($Einstellungen) ? array_merge($Einstellungen, $EinstellungenTmp) : $EinstellungenTmp;
@@ -85,16 +88,16 @@ $smarty->assign('cPluginCss_arr', $cMinify_arr['plugin_css'])
        ->assign('cJS_arr', $cJS_arr)
        ->assign('nTemplateVersion', $oTemplate->getVersion())
        ->assign('currentTemplateDir', $currentTemplateDir)
-       ->assign('currentTemplateDirFull', Shop::getURL() . '/' . $currentTemplateDir)
+       ->assign('currentTemplateDirFull', $shopURL . '/' . $currentTemplateDir)
        ->assign('currentTemplateDirFullPath', PFAD_ROOT . $currentTemplateDir)
        ->assign('currentThemeDir', $currentTemplateDir . 'themes/' . $themeDir . '/')
-       ->assign('currentThemeDirFull', Shop::getURL() . '/' . $currentTemplateDir . 'themes/' . $themeDir . '/')
+       ->assign('currentThemeDirFull', $shopURL . '/' . $currentTemplateDir . 'themes/' . $themeDir . '/')
        ->assign('session_name', session_name())
        ->assign('session_id', session_id())
        ->assign('SID', SID)
        ->assign('session_notwendig', false)
        ->assign('lang', $_SESSION['cISOSprache'])
-       ->assign('ShopURL', Shop::getURL())
+       ->assign('ShopURL', $shopURL)
        ->assign('ShopURLSSL', Shop::getURL(true))
        ->assign('NettoPreise', Session::CustomerGroup()->getIsMerchant())
        ->assign('PFAD_GFX_BEWERTUNG_STERNE', PFAD_GFX_BEWERTUNG_STERNE)
@@ -136,8 +139,8 @@ $smarty->assign('cPluginCss_arr', $cMinify_arr['plugin_css'])
        ->assign('PFAD_UPLOAD_CALLBACK', PFAD_UPLOAD_CALLBACK)
        ->assign('oSuchspecialoverlay_arr', holeAlleSuchspecialOverlays(Shop::getLanguage()))
        ->assign('oSuchspecial_arr', baueAlleSuchspecialURLs())
-       ->assign('ShopLogoURL', Shop::getLogo())
-       ->assign('ShopLogoURL_abs', Shop::getLogo(true))
+       ->assign('ShopLogoURL', $shopLogo)
+       ->assign('ShopLogoURL_abs', $shopLogo === '' ? '' : ($shopURL . $shopLogo))
        ->assign('TS_BUYERPROT_CLASSIC', TS_BUYERPROT_CLASSIC)
        ->assign('TS_BUYERPROT_EXCELLENCE', TS_BUYERPROT_EXCELLENCE)
        ->assign('CHECKBOX_ORT_REGISTRIERUNG', CHECKBOX_ORT_REGISTRIERUNG)
@@ -161,7 +164,7 @@ $smarty->assign('cPluginCss_arr', $cMinify_arr['plugin_css'])
        ->assign('cCanonicalURL', isset($cCanonicalURL) ? $cCanonicalURL : null)
        ->assign('AktuelleKategorie', $AktuelleKategorie)
        ->assign('showLoginCaptcha', isset($_SESSION['showLoginCaptcha']) ? $_SESSION['showLoginCaptcha'] : false)
-       ->assign('PFAD_SLIDER', Shop::getURL() . '/' . PFAD_BILDER_SLIDER)
+       ->assign('PFAD_SLIDER', $shopURL . '/' . PFAD_BILDER_SLIDER)
        ->assign('ERWDARSTELLUNG_ANSICHT_LISTE', ERWDARSTELLUNG_ANSICHT_LISTE)
        ->assign('ERWDARSTELLUNG_ANSICHT_GALERIE', ERWDARSTELLUNG_ANSICHT_GALERIE)
        ->assign('ERWDARSTELLUNG_ANSICHT_MOSAIK', ERWDARSTELLUNG_ANSICHT_MOSAIK);
@@ -181,7 +184,7 @@ if (!isset($cParameter_arr)) {
 $oExtension = (new ExtensionPoint($pagetType, $cParameter_arr, Shop::getLanguage(), $kKundengruppe))->load();
 executeHook(HOOK_LETZTERINCLUDE_INC);
 $boxes       = Boxen::getInstance();
-$boxesToShow = $boxes->build($pagetType, true)->render();
+$boxesToShow = $boxes->build($pagetType)->render();
 /* @global Artikel $AktuellerArtikel */
 if (isset($AktuellerArtikel->kArtikel) && $AktuellerArtikel->kArtikel > 0) {
     // Letzten angesehenden Artikel hinzufügen

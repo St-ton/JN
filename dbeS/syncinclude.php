@@ -1146,6 +1146,7 @@ function unzipSyncFiles($zipFile, $targetPath, $source = '')
             if ($archive->numFiles > 0 && !$archive->extractTo($targetPath)) {
                 return false;
             }
+            $archive->close();
             if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
                 Jtllog::writeLog('unzipSyncFiles: Zip entpackt in ' . $targetPath, JTLLOG_LEVEL_DEBUG, false,
                     'syncinclude');

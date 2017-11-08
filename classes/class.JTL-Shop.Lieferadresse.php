@@ -44,7 +44,6 @@ class Lieferadresse extends Adresse
     /**
      * Setzt Lieferadresse mit Daten aus der DB mit spezifiziertem Primary Key
      *
-     * @access public
      * @param int $kLieferadresse
      * @return Lieferadresse|int
      */
@@ -53,12 +52,11 @@ class Lieferadresse extends Adresse
         $kLieferadresse = (int)$kLieferadresse;
         $obj            = Shop::DB()->select('tlieferadresse', 'kLieferadresse', $kLieferadresse);
 
-        if (!isset($obj->kLieferadresse)) {
+        if ($obj === null) {
             return 0;
         }
 
         $this->fromObject($obj);
-
         // Anrede mappen
         $this->cAnredeLocalized = mappeKundenanrede($this->cAnrede, 0, $this->kKunde);
         $this->angezeigtesLand  = ISO2land($this->cLand);
@@ -74,7 +72,6 @@ class Lieferadresse extends Adresse
     /**
      * Fügt Datensatz in DB ein. Primary Key wird in this gesetzt.
      *
-     * @access public
      * @return int - Key von eingefügter Lieferadresse
      */
     public function insertInDB()
@@ -97,7 +94,6 @@ class Lieferadresse extends Adresse
     /**
      * Updatet Daten in der DB. Betroffen ist der Datensatz mit gleichem Primary Key
      *
-     * @access public
      * @return int
      */
     public function updateInDB()
@@ -125,10 +121,8 @@ class Lieferadresse extends Adresse
      */
     public function gibLieferadresseAssoc()
     {
-        if ($this->kLieferadresse > 0) {
-            return $this->toArray();
-        }
-
-        return [];
+        return $this->kLieferadresse > 0
+            ? $this->toArray()
+            : [];
     }
 }

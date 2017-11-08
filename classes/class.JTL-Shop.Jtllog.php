@@ -10,37 +10,31 @@
 class Jtllog
 {
     /**
-     * @access protected
      * @var int
      */
     protected $kLog;
 
     /**
-     * @access protected
      * @var int
      */
     protected $nLevel;
 
     /**
-     * @access protected
      * @var string
      */
     protected $cLog;
 
     /**
-     * @access protected
      * @var string
      */
     protected $cKey;
 
     /**
-     * @access protected
      * @var int
      */
     protected $kKey;
 
     /**
-     * @access protected
      * @var string
      */
     protected $dErstellt;
@@ -49,7 +43,6 @@ class Jtllog
      * Constructor
      *
      * @param int $kLog primarykey
-     * @access public
      */
     public function __construct($kLog = 0)
     {
@@ -63,7 +56,6 @@ class Jtllog
      *
      * @param int $kLog
      * @return $this
-     * @access private
      */
     private function loadFromDB($kLog)
     {
@@ -82,7 +74,6 @@ class Jtllog
      *
      * @param bool $bPrim - Controls the return of the method
      * @return bool|int
-     * @access public
      */
     public function save($bPrim = true)
     {
@@ -109,7 +100,6 @@ class Jtllog
      * Update the class in the database
      *
      * @return int
-     * @access public
      */
     public function update()
     {
@@ -157,7 +147,6 @@ class Jtllog
     /**
      * Write a Log into the database
      *
-     * @access public
      * @param string $cLog
      * @param int    $nLevel
      * @param bool   $bForce
@@ -193,7 +182,6 @@ class Jtllog
     /**
      * Get Logs from the database
      *
-     * @access public
      * @param string $cFilter
      * @param int    $nLevel
      * @param int    $nLimitN
@@ -237,7 +225,6 @@ class Jtllog
     /**
      * Get Logcount from the database
      *
-     * @access public
      * @param string $cFilter
      * @param int    $nLevel
      * @return int
@@ -268,7 +255,6 @@ class Jtllog
      * Write a Log into the database
      *
      * @return void
-     * @access public
      */
     public static function truncateLog()
     {
@@ -285,7 +271,6 @@ class Jtllog
      * Write a Log into the database
      *
      * @return int
-     * @access public
      */
     public static function deleteAll()
     {
@@ -296,7 +281,6 @@ class Jtllog
      * Delete the class in the database
      *
      * @return int
-     * @access public
      */
     public function delete()
     {
@@ -304,9 +288,6 @@ class Jtllog
     }
 
     /**
-     * Sets the kLog
-     *
-     * @access public
      * @param int $kLog
      * @return $this
      */
@@ -318,9 +299,6 @@ class Jtllog
     }
 
     /**
-     * Sets the nLevel
-     *
-     * @access public
      * @param int $nLevel
      * @return $this
      */
@@ -332,9 +310,6 @@ class Jtllog
     }
 
     /**
-     * Sets the cLog
-     *
-     * @access public
      * @param string $cLog
      * @param bool   $bFilter
      * @return $this
@@ -347,8 +322,6 @@ class Jtllog
     }
 
     /**
-     * Sets the cKey
-     *
      * @param string $cKey
      * @return $this
      */
@@ -360,9 +333,6 @@ class Jtllog
     }
 
     /**
-     * Sets the kKey
-     *
-     * @access public
      * @param int $kKey
      * @return $this
      */
@@ -374,9 +344,6 @@ class Jtllog
     }
 
     /**
-     * Sets the dErstellt
-     *
-     * @access public
      * @param string $dErstellt
      * @return $this
      */
@@ -388,9 +355,6 @@ class Jtllog
     }
 
     /**
-     * Sets BitFlag
-     *
-     * @access public
      * @param array $nFlag_arr
      * @return int
      */
@@ -408,9 +372,6 @@ class Jtllog
     }
 
     /**
-     * Gets the kLog
-     *
-     * @access public
      * @return int
      */
     public function getkLog()
@@ -419,9 +380,6 @@ class Jtllog
     }
 
     /**
-     * Gets the nLevel
-     *
-     * @access public
      * @return int
      */
     public function getLevel()
@@ -430,9 +388,6 @@ class Jtllog
     }
 
     /**
-     * Gets the cLog
-     *
-     * @access public
      * @return string
      */
     public function getcLog()
@@ -441,9 +396,6 @@ class Jtllog
     }
 
     /**
-     * Gets the cKey
-     *
-     * @access public
      * @return string
      */
     public function getcKey()
@@ -452,9 +404,6 @@ class Jtllog
     }
 
     /**
-     * Gets the kKey
-     *
-     * @access public
      * @return int
      */
     public function getkKey()
@@ -463,9 +412,6 @@ class Jtllog
     }
 
     /**
-     * Gets the dErstellt
-     *
-     * @access public
      * @return string
      */
     public function getErstellt()
@@ -474,11 +420,8 @@ class Jtllog
     }
 
     /**
-     * Gets the BitFlag
-     *
-     * @access public
-     * @param $nVal
-     * @param $nFlag
+     * @param int $nVal
+     * @param int $nFlag
      * @return int
      */
     public static function isBitFlagSet($nVal, $nFlag)

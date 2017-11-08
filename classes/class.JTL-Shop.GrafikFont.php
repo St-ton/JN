@@ -10,7 +10,6 @@
 class GrafikFont
 {
     /**
-     * @access private
      * @var string
      */
     public $m_strFontDir = '';
@@ -26,7 +25,6 @@ class GrafikFont
     public $m_strCentKleiner = '';
 
     /**
-     * @access protected
      * @var string
      */
     public $m_strInput;
@@ -37,7 +35,6 @@ class GrafikFont
     public $m_strHTML;
 
     /**
-     * @access protected
      * @var bool
      */
     public $m_bPrice = false;
@@ -67,7 +64,6 @@ class GrafikFont
      *
      * @param string $strInput
      * @return $this
-     * @access public
      */
     public function setInputString($strInput)
     {
@@ -79,7 +75,6 @@ class GrafikFont
     /**
      * Returns unmodified input string
      *
-     * @access public
      * @return string
      */
     public function getInputString()
@@ -88,11 +83,8 @@ class GrafikFont
     }
 
     /**
-     * Sets price bool
-     *
      * @param bool $bPrice
      * @return $this
-     * @access public
      */
     public function setPrice($bPrice)
     {
@@ -102,9 +94,6 @@ class GrafikFont
     }
 
     /**
-     * Returns price bool
-     *
-     * @access public
      * @return bool
      */
     public function getPrice()
@@ -115,7 +104,6 @@ class GrafikFont
     /**
      * Returns images with HTML
      *
-     * @access public
      * @return string
      */
     public function getHTML()
@@ -126,7 +114,6 @@ class GrafikFont
     /**
      * Wandelt String in aneinander gereihte Grafiken um
      *
-     * @access protected
      * @return bool
      */
     public function transform()

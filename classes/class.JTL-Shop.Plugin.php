@@ -12,7 +12,6 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'plugin_inc.php';
 class Plugin
 {
     /**
-     * @access public
      * @var int
      */
     public $kPlugin;
@@ -329,7 +328,6 @@ class Plugin
     /**
      * Setzt Plugin mit Daten aus der DB mit spezifiziertem Primary Key
      *
-     * @access public
      * @param int  $kPlugin
      * @param bool $invalidateCache - set to true to invalidate plugin cache
      * @return null|$this
@@ -604,7 +602,6 @@ class Plugin
      * Updatet Daten in der DB. Betroffen ist der Datensatz mit gleichem Primary Key
      *
      * @return int
-     * @access public
      */
     public function updateInDB()
     {

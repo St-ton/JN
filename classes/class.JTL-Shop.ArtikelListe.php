@@ -26,7 +26,6 @@ class ArtikelListe
     /**
      * Holt $anzahl an Top-Angebots Artikeln in die Liste
      *
-     * @access public
      * @param string $topneu
      * @param int    $anzahl wieviele Top-Angebot Artikel geholt werden sollen
      * @param int    $kKundengruppe
@@ -81,7 +80,6 @@ class ArtikelListe
     /**
      * Holt (max) $anzahl an Artikeln aus der angegebenen Kategorie in die Liste
      *
-     * @access public
      * @param int    $kKategorie  Kategorie Key
      * @param int    $limitStart
      * @param int    $limitAnzahl - wieviele Artikel geholt werden sollen. Sind nicht genug in der entsprechenden

@@ -388,7 +388,6 @@ class WarenkorbPos
     /**
      * Setzt WarenkorbPos mit Daten aus der DB mit spezifiziertem Primary Key
      *
-     * @access public
      * @param int $kWarenkorbPos
      * @return $this
      */
@@ -412,7 +411,6 @@ class WarenkorbPos
     /**
      * Fügt Datensatz in DB ein. Primary Key wird in this gesetzt.
      *
-     * @access public
      * @return int - Key von eingefügter WarenkorbPos
      */
     public function insertInDB()

@@ -100,7 +100,6 @@ class MerkmalWert
     /**
      * Setzt MerkmalWert mit Daten aus der DB mit spezifiziertem Primary Key
      *
-     * @access public
      * @param int $kMerkmalWert
      * @return $this
      */

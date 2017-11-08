@@ -8,7 +8,6 @@ trait MigrationTrait
     /**
      * executes query and returns misc data
      *
-     * @access public
      * @param string   $query - Statement to be executed
      * @param int      $return - what should be returned.
      * @param int|bool $echo print current stmt

@@ -423,7 +423,6 @@ class Preise
     /**
      * Setzt Preise mit Daten aus der DB mit spezifizierten Primary Keys
      *
-     * @access public
      * @param int $kKundengruppe
      * @param int $kArtikel
      * @return $this
@@ -586,7 +585,6 @@ class Preise
     /**
      * Fuegt Datensatz in DB ein. Primary Key wird in this gesetzt.
      *
-     * @access public
      * @retun int
      */
     public function insertInDB()

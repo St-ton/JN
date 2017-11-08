@@ -85,7 +85,6 @@ class Merkmal
     /**
      * Setzt Merkmal mit Daten aus der DB mit spezifiziertem Primary Key
      *
-     * @access public
      * @param int  $kMerkmal - Primary Key, bool $bMMW MerkmalWert Array holen
      * @param bool $bMMW
      * @return $this
@@ -95,7 +94,7 @@ class Merkmal
         $kSprache = Shop::getLanguage();
         if (!$kSprache) {
             $oSprache = Shop::DB()->select('tsprache', 'cShopStandard', 'Y');
-            if ($oSprache->kSprache > 0) {
+            if ($oSprache !== null && $oSprache->kSprache > 0) {
                 $kSprache = (int)$oSprache->kSprache;
             }
         }

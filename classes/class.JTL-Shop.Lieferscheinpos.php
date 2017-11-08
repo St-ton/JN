@@ -10,31 +10,26 @@
 class Lieferscheinpos
 {
     /**
-     * @access protected
      * @var int
      */
     protected $kLieferscheinPos;
 
     /**
-     * @access protected
      * @var int
      */
     protected $kLieferschein;
 
     /**
-     * @access protected
      * @var int
      */
     protected $kBestellPos;
 
     /**
-     * @access protected
      * @var int
      */
     protected $kWarenlager;
 
     /**
-     * @access protected
      * @var float
      */
     protected $fAnzahl;
@@ -48,7 +43,6 @@ class Lieferscheinpos
      * Constructor
      *
      * @param int $kLieferscheinPos primarykey
-     * @access public
      */
     public function __construct($kLieferscheinPos = 0)
     {
@@ -62,12 +56,11 @@ class Lieferscheinpos
      *
      * @param int $kLieferscheinPos
      * @return $this
-     * @access private
      */
     private function loadFromDB($kLieferscheinPos = 0)
     {
         $oObj = Shop::DB()->select('tlieferscheinpos', 'kLieferscheinPos', (int)$kLieferscheinPos);
-        if (!empty($oObj->kLieferscheinPos)) {
+        if ($oObj !== null && $oObj->kLieferscheinPos > 0) {
             $cMember_arr = array_keys(get_object_vars($oObj));
             foreach ($cMember_arr as $cMember) {
                 $this->$cMember = $oObj->$cMember;
@@ -80,7 +73,6 @@ class Lieferscheinpos
     /**
      * Store the class in the database
      *
-     * @access public
      * @param bool $bPrim - Controls the return of the method
      * @return bool|int
      */
@@ -107,7 +99,6 @@ class Lieferscheinpos
     /**
      * Update the class in the database
      *
-     * @access public
      * @return int
      */
     public function update()
@@ -124,7 +115,6 @@ class Lieferscheinpos
     /**
      * Delete the class in the database
      *
-     * @access public
      * @return int
      */
     public function delete()
@@ -133,9 +123,6 @@ class Lieferscheinpos
     }
 
     /**
-     * Sets the kLieferscheinPos
-     *
-     * @access public
      * @param int $kLieferscheinPos
      * @return $this
      */
@@ -147,9 +134,6 @@ class Lieferscheinpos
     }
 
     /**
-     * Sets the kLieferschein
-     *
-     * @access public
      * @param int $kLieferschein
      * @return $this
      */
@@ -161,9 +145,6 @@ class Lieferscheinpos
     }
 
     /**
-     * Sets the kBestellPos
-     *
-     * @access public
      * @param int $kBestellPos
      * @return $this
      */
@@ -175,9 +156,6 @@ class Lieferscheinpos
     }
 
     /**
-     * Sets the kWarenlager
-     *
-     * @access public
      * @param int $kWarenlager
      * @return $this
      */
@@ -189,9 +167,6 @@ class Lieferscheinpos
     }
 
     /**
-     * Sets the fAnzahl
-     *
-     * @access public
      * @param float $fAnzahl
      * @return $this
      */
@@ -203,9 +178,6 @@ class Lieferscheinpos
     }
 
     /**
-     * Gets the kLieferscheinPos
-     *
-     * @access public
      * @return int
      */
     public function getLieferscheinPos()
@@ -214,9 +186,6 @@ class Lieferscheinpos
     }
 
     /**
-     * Gets the kLieferschein
-     *
-     * @access public
      * @return int
      */
     public function getLieferschein()
@@ -225,9 +194,6 @@ class Lieferscheinpos
     }
 
     /**
-     * Gets the kBestellPos
-     *
-     * @access public
      * @return int
      */
     public function getBestellPos()
@@ -236,9 +202,6 @@ class Lieferscheinpos
     }
 
     /**
-     * Gets the kWarenlager
-     *
-     * @access public
      * @return int
      */
     public function getWarenlager()
@@ -247,9 +210,6 @@ class Lieferscheinpos
     }
 
     /**
-     * Gets the fAnzahl
-     *
-     * @access public
      * @return float
      */
     public function getAnzahl()

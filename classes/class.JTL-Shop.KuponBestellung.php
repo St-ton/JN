@@ -2,55 +2,45 @@
 
 /**
  * Class Kupon
- *
- * @access public
  */
 class KuponBestellung
 {
     /**
-     * @access public
      * @var int
      */
     public $kKupon;
 
     /**
-     * @access public
      * @var int
      */
     public $kBestellung;
 
     /**
-     * @access public
      * @var int
      */
     public $kKunde;
 
     /**
-     * @access public
      * @var string
      */
     public $cBestellNr;
 
     /**
-     * @access public
      * @var float
      */
     public $fGesamtsummeBrutto;
 
     /**
-     * @access public
      * @var float
      */
     public $fKuponwertBrutto;
 
     /**
-     * @access public
      * @var string
      */
     public $cKuponTyp;
 
     /**
-     * @access public
      * @var string
      */
     public $dErstellt;
@@ -60,7 +50,6 @@ class KuponBestellung
      *
      * @param int $kKupon - primarykey
      * @param int $kBestellung - primarykey
-     * @access public
      */
     public function __construct($kKupon = 0, $kBestellung = 0)
     {
@@ -75,7 +64,6 @@ class KuponBestellung
      * @param int $kKupon
      * @param int $kBestellung
      * @return $this
-     * @access private
      */
     private function loadFromDB($kKupon = 0, $kBestellung = 0)
     {
@@ -100,7 +88,6 @@ class KuponBestellung
      *
      * @param bool $bPrim - Controls the return of the method
      * @return bool|int
-     * @access public
      */
     public function save($bPrim = true)
     {
@@ -125,7 +112,6 @@ class KuponBestellung
      * Update the class in the database
      *
      * @return int
-     * @access public
      */
     public function update()
     {
@@ -151,7 +137,6 @@ class KuponBestellung
      * Delete the class in the database
      *
      * @return int
-     * @access public
      */
     public function delete()
     {
@@ -159,9 +144,6 @@ class KuponBestellung
     }
 
     /**
-     * Sets the kKupon
-     *
-     * @access public
      * @param int $kKupon
      * @return $this
      */
@@ -173,9 +155,6 @@ class KuponBestellung
     }
 
     /**
-     * Sets the kBestellung
-     *
-     * @access public
      * @param int $kBestellung
      * @return $this
      */
@@ -187,9 +166,6 @@ class KuponBestellung
     }
 
     /**
-     * Sets the kKunde
-     *
-     * @access public
      * @param int $kKunde
      * @return $this
      */
@@ -201,9 +177,6 @@ class KuponBestellung
     }
 
     /**
-     * Sets the cBestellNr
-     *
-     * @access public
      * @param string $cBestellNr
      * @return $this
      */
@@ -215,9 +188,6 @@ class KuponBestellung
     }
 
     /**
-     * Sets the fGesamtsummeBrutto
-     *
-     * @access public
      * @param float $fGesamtsummeBrutto
      * @return $this
      */
@@ -229,9 +199,6 @@ class KuponBestellung
     }
 
     /**
-     * Sets the fKuponwertBrutto
-     *
-     * @access public
      * @param float $fKuponwertBrutto
      * @return $this
      */
@@ -243,9 +210,6 @@ class KuponBestellung
     }
 
     /**
-     * Sets the cKuponTyp
-     *
-     * @access public
      * @param string $cKuponTyp
      * @return $this
      */
@@ -257,9 +221,6 @@ class KuponBestellung
     }
 
     /**
-     * Sets the dErstellt
-     *
-     * @access public
      * @param string $dErstellt
      * @return $this
      */
@@ -271,9 +232,6 @@ class KuponBestellung
     }
 
     /**
-     * Gets the kKupon
-     *
-     * @access public
      * @return int
      */
     public function getKupon()
@@ -282,9 +240,6 @@ class KuponBestellung
     }
 
     /**
-     * Gets the kBestellung
-     *
-     * @access public
      * @return int
      */
     public function getBestellung()
@@ -293,9 +248,6 @@ class KuponBestellung
     }
 
     /**
-     * Gets the kKunde
-     *
-     * @access public
      * @return int
      */
     public function getKunde()
@@ -304,9 +256,6 @@ class KuponBestellung
     }
 
     /**
-     * Gets the cBestellNr
-     *
-     * @access public
      * @return string
      */
     public function getBestellNr()
@@ -315,9 +264,6 @@ class KuponBestellung
     }
 
     /**
-     * Gets the fGesamtsummeBrutto
-     *
-     * @access public
      * @return float
      */
     public function getGesamtsummeBrutto()
@@ -326,9 +272,6 @@ class KuponBestellung
     }
 
     /**
-     * Gets the fKuponwertBrutto
-     *
-     * @access public
      * @return float
      */
     public function getKuponwertBrutto()
@@ -337,9 +280,6 @@ class KuponBestellung
     }
 
     /**
-     * Gets the cKuponTyp
-     *
-     * @access public
      * @return string
      */
     public function getKuponTyp()
@@ -348,9 +288,6 @@ class KuponBestellung
     }
 
     /**
-     * Gets the dErstellt
-     *
-     * @access public
      * @return string
      */
     public function getErstellt()
@@ -361,7 +298,6 @@ class KuponBestellung
     /**
      * Gets used coupons from orders
      *
-     * @access public
      * @param string $dStart
      * @param string $dEnd
      * @return array

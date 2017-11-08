@@ -412,7 +412,7 @@ class Metadata
             }
             if ($this->manufacturer !== null) {
                 $this->setMetaTitle($this->manufacturer->cMetaTitle)
-                     ->setMetaDescription($this->manufacturerr->cMetaDescription)
+                     ->setMetaDescription($this->manufacturer->cMetaDescription)
                      ->setMetaKeywords($this->manufacturer->cMetaKeywords);
             }
             $this->breadCrumb = createNavigation(

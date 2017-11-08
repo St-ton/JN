@@ -11,7 +11,6 @@ $return  = 3;
 $zipFile = $_FILES['data']['tmp_name'];
 if (auth()) {
     $zipFile   = checkFile();
-    $archive   = new PclZip($_FILES['data']['tmp_name']);
     $unzipPath = PFAD_SYNC_TMP . uniqid('check_') . '/';
     $return    = 2;
     if (($syncFiles = unzipSyncFiles($zipFile, $unzipPath, __FILE__)) === false) {

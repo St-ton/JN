@@ -444,7 +444,7 @@ class Boxen
                 if ($this->boxConfig['trustedshops']['trustedshops_nutzen'] === 'Y') {
                     $oTrustedShops    = new TrustedShops(-1, StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
                     $shopURL          = Shop::getURL(true) . '/';
-                    if ($oTrustedShops->nAktiv == 1 && strlen($oTrustedShops->tsId) > 0) {
+                    if ((int)$oTrustedShops->nAktiv === 1 && strlen($oTrustedShops->tsId) > 0) {
                         $oBox->anzeigen          = 'Y';
                         $oBox->cLogoURL          = $oTrustedShops->cLogoURL;
                         $oBox->cLogoSiegelBoxURL = $oTrustedShops->cLogoSiegelBoxURL[StringHandler::convertISO2ISO639($_SESSION['cISOSprache'])];
@@ -462,7 +462,7 @@ class Boxen
                     $oTrustedShops                = new TrustedShops(-1, StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
                     $oTrustedShopsKundenbewertung = $oTrustedShops->holeKundenbewertungsstatus(StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
                     if (isset($oTrustedShopsKundenbewertung->cTSID)
-                        && $oTrustedShopsKundenbewertung->nStatus == 1
+                        && (int)$oTrustedShopsKundenbewertung->nStatus === 1
                         && strlen($oTrustedShopsKundenbewertung->cTSID) > 0
                     ) {
                         $cURLSprachISO_arr = [

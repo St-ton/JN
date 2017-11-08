@@ -1086,7 +1086,7 @@ final class Shop
             // Link active?
             if (isset($oSeo->cKey) && $oSeo->cKey === 'kLink') {
                 $bIsActive = self::DB()->select('tlink', 'kLink', (int)$oSeo->kKey);
-                if (isset($bIsActive->bIsActive) && $bIsActive->bIsActive === '0') {
+                if ($bIsActive !== null && (int)$bIsActive->bIsActive === 0) {
                     $oSeo = false;
                 }
             }

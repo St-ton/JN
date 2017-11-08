@@ -699,7 +699,7 @@ class Exportformat
         $_SESSION['Kundengruppe']  = (new Kundengruppe($this->getKundengruppe()))
             ->setMayViewPrices(1)
             ->setMayViewCategories(1)
-            ->setIsMerchant($net->nNettoPreise);
+            ->setIsMerchant($net !== null ? $net->nNettoPreise : 0);
         $_SESSION['kKundengruppe'] = $this->getKundengruppe();
         $_SESSION['kSprache']      = $this->getSprache();
         $_SESSION['Sprachen']      = Shop::DB()->query("SELECT * FROM tsprache", 2);

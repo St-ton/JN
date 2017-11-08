@@ -50,7 +50,7 @@ class Preise
     public $cPreis5Localized;
 
     /**
-     * @var string
+     * @var array
      */
     public $cVKLocalized;
 

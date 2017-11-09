@@ -2253,137 +2253,138 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
             return 12; // Es konnte keine Linkgruppe im Shop gefunden werden
         }
         $kLinkgruppe = $oLinkgruppe->kLinkgruppe;
-        if (strlen($cTreffer2_arr[0]) === strlen($u)) {
-            $kLinkOld                  = (!empty($oPluginOld->kPlugin))
-                ? Shop::DB()->select('tlink', 'kPlugin', $oPluginOld->kPlugin, 'cName', $Link_arr['Name'])
-                : null;
-            $oLink->kLinkgruppe        = $kLinkgruppe;
-            $oLink->kPlugin            = $kPlugin;
-            $oLink->cName              = $Link_arr['Name'];
-            $oLink->nLinkart           = LINKTYP_PLUGIN;
-            $oLink->cSichtbarNachLogin = $Link_arr['VisibleAfterLogin'];
-            $oLink->cDruckButton       = $Link_arr['PrintButton'];
-            $oLink->cNoFollow          = isset($Link_arr['NoFollow']) ? $Link_arr['NoFollow'] : null;
-            $oLink->nSort              = LINKTYP_PLUGIN;
-            $oLink->bSSL               = isset($Link_arr['SSL'])
-                ? (int)$Link_arr['SSL']
-                : 0;
-            // tlink füllen
-            $kLink = Shop::DB()->insert('tlink', $oLink);
+        if (strlen($cTreffer2_arr[0]) !== strlen($u)) {
+            continue;
+        }
+        $kLinkOld                  = (!empty($oPluginOld->kPlugin))
+            ? Shop::DB()->select('tlink', 'kPlugin', $oPluginOld->kPlugin, 'cName', $Link_arr['Name'])
+            : null;
+        $oLink->kLinkgruppe        = $kLinkgruppe;
+        $oLink->kPlugin            = $kPlugin;
+        $oLink->cName              = $Link_arr['Name'];
+        $oLink->nLinkart           = LINKTYP_PLUGIN;
+        $oLink->cSichtbarNachLogin = $Link_arr['VisibleAfterLogin'];
+        $oLink->cDruckButton       = $Link_arr['PrintButton'];
+        $oLink->cNoFollow          = isset($Link_arr['NoFollow']) ? $Link_arr['NoFollow'] : null;
+        $oLink->nSort              = LINKTYP_PLUGIN;
+        $oLink->bSSL               = isset($Link_arr['SSL'])
+            ? (int)$Link_arr['SSL']
+            : 0;
+        // tlink füllen
+        $kLink = Shop::DB()->insert('tlink', $oLink);
 
-            if ($kLink > 0) {
-                $oLinkSprache        = new stdClass();
-                $oLinkSprache->kLink = $kLink;
-                // Hole alle Sprachen des Shops
-                // Assoc cISO
-                $oSprachAssoc_arr = gibAlleSprachen(2);
-                // Ist der erste Standard Link gesetzt worden? => wird etwas weiter unten gebraucht
-                // Falls Shopsprachen vom Plugin nicht berücksichtigt wurden, werden diese weiter unten
-                // nachgetragen. Dafür wird die erste Sprache vom Plugin als Standard genutzt.
-                $bLinkStandard   = false;
-                $oLinkSpracheStd = new stdClass();
+        if ($kLink > 0) {
+            $oLinkSprache        = new stdClass();
+            $oLinkSprache->kLink = $kLink;
+            // Hole alle Sprachen des Shops
+            // Assoc cISO
+            $oSprachAssoc_arr = gibAlleSprachen(2);
+            // Ist der erste Standard Link gesetzt worden? => wird etwas weiter unten gebraucht
+            // Falls Shopsprachen vom Plugin nicht berücksichtigt wurden, werden diese weiter unten
+            // nachgetragen. Dafür wird die erste Sprache vom Plugin als Standard genutzt.
+            $bLinkStandard   = false;
+            $oLinkSpracheStd = new stdClass();
 
-                foreach ($Link_arr['LinkLanguage'] as $l => $LinkLanguage_arr) {
-                    preg_match("/[0-9]+\sattr/", $l, $cTreffer1_arr);
-                    preg_match("/[0-9]+/", $l, $cTreffer2_arr);
-                    if (isset($cTreffer1_arr[0]) && strlen($cTreffer1_arr[0]) === strlen($l)) {
-                        $oLinkSprache->cISOSprache = strtolower($LinkLanguage_arr['iso']);
-                    } elseif (strlen($cTreffer2_arr[0]) === strlen($l)) {
-                        // tlinksprache füllen
-                        $oLinkSprache->cSeo             = checkSeo(getSeo($LinkLanguage_arr['Seo']));
-                        $oLinkSprache->cName            = $LinkLanguage_arr['Name'];
-                        $oLinkSprache->cTitle           = $LinkLanguage_arr['Title'];
-                        $oLinkSprache->cContent         = '';
-                        $oLinkSprache->cMetaTitle       = $LinkLanguage_arr['MetaTitle'];
-                        $oLinkSprache->cMetaKeywords    = $LinkLanguage_arr['MetaKeywords'];
-                        $oLinkSprache->cMetaDescription = $LinkLanguage_arr['MetaDescription'];
+            foreach ($Link_arr['LinkLanguage'] as $l => $LinkLanguage_arr) {
+                preg_match("/[0-9]+\sattr/", $l, $cTreffer1_arr);
+                preg_match("/[0-9]+/", $l, $cTreffer2_arr);
+                if (isset($cTreffer1_arr[0]) && strlen($cTreffer1_arr[0]) === strlen($l)) {
+                    $oLinkSprache->cISOSprache = strtolower($LinkLanguage_arr['iso']);
+                } elseif (strlen($cTreffer2_arr[0]) === strlen($l)) {
+                    // tlinksprache füllen
+                    $oLinkSprache->cSeo             = checkSeo(getSeo($LinkLanguage_arr['Seo']));
+                    $oLinkSprache->cName            = $LinkLanguage_arr['Name'];
+                    $oLinkSprache->cTitle           = $LinkLanguage_arr['Title'];
+                    $oLinkSprache->cContent         = '';
+                    $oLinkSprache->cMetaTitle       = $LinkLanguage_arr['MetaTitle'];
+                    $oLinkSprache->cMetaKeywords    = $LinkLanguage_arr['MetaKeywords'];
+                    $oLinkSprache->cMetaDescription = $LinkLanguage_arr['MetaDescription'];
 
-                        Shop::DB()->insert('tlinksprache', $oLinkSprache);
-                        // Erste Linksprache vom Plugin als Standard setzen
-                        if (!$bLinkStandard) {
-                            $oLinkSpracheStd = $oLinkSprache;
-                            $bLinkStandard   = true;
-                        }
+                    Shop::DB()->insert('tlinksprache', $oLinkSprache);
+                    // Erste Linksprache vom Plugin als Standard setzen
+                    if (!$bLinkStandard) {
+                        $oLinkSpracheStd = $oLinkSprache;
+                        $bLinkStandard   = true;
+                    }
 
-                        if ($oSprachAssoc_arr[$oLinkSprache->cISOSprache]->kSprache > 0) {
-                            $or = isset($kLinkOld->kLink) ? (' OR kKey = ' . (int)$kLinkOld->kLink) : '';
-                            Shop::DB()->query(
-                                "DELETE FROM tseo
-                                        WHERE cKey = 'kLink'
-                                            AND (kKey = " . (int)$kLink . $or . ")
-                                            AND kSprache = " . (int)$oSprachAssoc_arr[$oLinkSprache->cISOSprache]->kSprache, 4
-                            );
-                            // tseo füllen
-                            $oSeo           = new stdClass();
-                            $oSeo->cSeo     = checkSeo(getSeo($LinkLanguage_arr['Seo']));
-                            $oSeo->cKey     = 'kLink';
-                            $oSeo->kKey     = $kLink;
-                            $oSeo->kSprache = $oSprachAssoc_arr[$oLinkSprache->cISOSprache]->kSprache;
+                    if ($oSprachAssoc_arr[$oLinkSprache->cISOSprache]->kSprache > 0) {
+                        $or = isset($kLinkOld->kLink) ? (' OR kKey = ' . (int)$kLinkOld->kLink) : '';
+                        Shop::DB()->query(
+                            "DELETE FROM tseo
+                                    WHERE cKey = 'kLink'
+                                        AND (kKey = " . (int)$kLink . $or . ")
+                                        AND kSprache = " . (int)$oSprachAssoc_arr[$oLinkSprache->cISOSprache]->kSprache, 4
+                        );
+                        // tseo füllen
+                        $oSeo           = new stdClass();
+                        $oSeo->cSeo     = checkSeo(getSeo($LinkLanguage_arr['Seo']));
+                        $oSeo->cKey     = 'kLink';
+                        $oSeo->kKey     = $kLink;
+                        $oSeo->kSprache = $oSprachAssoc_arr[$oLinkSprache->cISOSprache]->kSprache;
 
-                            Shop::DB()->insert('tseo', $oSeo);
-                        }
+                        Shop::DB()->insert('tseo', $oSeo);
+                    }
 
-                        if (isset($oSprachAssoc_arr[$oLinkSprache->cISOSprache])) {
-                            // Resette aktuelle Sprache
-                            unset($oSprachAssoc_arr[$oLinkSprache->cISOSprache]);
-                            $oSprachAssoc_arr = array_merge($oSprachAssoc_arr);
-                        }
+                    if (isset($oSprachAssoc_arr[$oLinkSprache->cISOSprache])) {
+                        // Resette aktuelle Sprache
+                        unset($oSprachAssoc_arr[$oLinkSprache->cISOSprache]);
+                        $oSprachAssoc_arr = array_merge($oSprachAssoc_arr);
                     }
                 }
-                // Sind noch Sprachen im Shop die das Plugin nicht berücksichtigt?
-                if (count($oSprachAssoc_arr) > 0) {
-                    foreach ($oSprachAssoc_arr as $oSprachAssoc) {
-                        //$oSprache = $oSprachAssoc;
-                        if ($oSprachAssoc->kSprache > 0) {
-                            Shop::DB()->delete(
-                                'tseo',
-                                ['cKey', 'kKey', 'kSprache'],
-                                ['kLink', (int)$kLink, (int)$oSprachAssoc->kSprache]
-                            );
-                            // tseo füllen
-                            $oSeo           = new stdClass();
-                            $oSeo->cSeo     = checkSeo(getSeo($oLinkSpracheStd->cSeo));
-                            $oSeo->cKey     = 'kLink';
-                            $oSeo->kKey     = $kLink;
-                            $oSeo->kSprache = $oSprachAssoc->kSprache;
-
-                            Shop::DB()->insert('tseo', $oSeo);
-                            // tlinksprache füllen
-                            $oLinkSpracheStd->cSeo        = $oSeo->cSeo;
-                            $oLinkSpracheStd->cISOSprache = $oSprachAssoc->cISO;
-                            Shop::DB()->insert('tlinksprache', $oLinkSpracheStd);
-                        }
-                    }
-                }
-                // tpluginhook füllen (spezieller Ausnahmefall für Frontend Links)
-                $oPluginHook             = new stdClass();
-                $oPluginHook->kPlugin    = $kPlugin;
-                $oPluginHook->nHook      = HOOK_SEITE_PAGE_IF_LINKART;
-                $oPluginHook->cDateiname = PLUGIN_SEITENHANDLER;
-
-                $kPluginHook = Shop::DB()->insert('tpluginhook', $oPluginHook);
-
-                if (!$kPluginHook) {
-                    return 3; // Ein Hook konnte nicht in die Datenbank gespeichert werden
-                }
-                // tpluginlinkdatei füllen
-                $oPluginLinkDatei                      = new stdClass();
-                $oPluginLinkDatei->kPlugin             = $kPlugin;
-                $oPluginLinkDatei->kLink               = $kLink;
-                $oPluginLinkDatei->cDatei              = isset($Link_arr['Filename'])
-                    ? $Link_arr['Filename']
-                    : null;
-                $oPluginLinkDatei->cTemplate           = isset($Link_arr['Template'])
-                    ? $Link_arr['Template']
-                    : null;
-                $oPluginLinkDatei->cFullscreenTemplate = isset($Link_arr['FullscreenTemplate'])
-                    ? $Link_arr['FullscreenTemplate']
-                    : null;
-
-                Shop::DB()->insert('tpluginlinkdatei', $oPluginLinkDatei);
-            } else {
-                return 8; // Ein Link konnte nicht in die Datenbank gespeichert werden
             }
+            // Sind noch Sprachen im Shop die das Plugin nicht berücksichtigt?
+            if (count($oSprachAssoc_arr) > 0) {
+                foreach ($oSprachAssoc_arr as $oSprachAssoc) {
+                    //$oSprache = $oSprachAssoc;
+                    if ($oSprachAssoc->kSprache > 0) {
+                        Shop::DB()->delete(
+                            'tseo',
+                            ['cKey', 'kKey', 'kSprache'],
+                            ['kLink', (int)$kLink, (int)$oSprachAssoc->kSprache]
+                        );
+                        // tseo füllen
+                        $oSeo           = new stdClass();
+                        $oSeo->cSeo     = checkSeo(getSeo($oLinkSpracheStd->cSeo));
+                        $oSeo->cKey     = 'kLink';
+                        $oSeo->kKey     = $kLink;
+                        $oSeo->kSprache = $oSprachAssoc->kSprache;
+
+                        Shop::DB()->insert('tseo', $oSeo);
+                        // tlinksprache füllen
+                        $oLinkSpracheStd->cSeo        = $oSeo->cSeo;
+                        $oLinkSpracheStd->cISOSprache = $oSprachAssoc->cISO;
+                        Shop::DB()->insert('tlinksprache', $oLinkSpracheStd);
+                    }
+                }
+            }
+            // tpluginhook füllen (spezieller Ausnahmefall für Frontend Links)
+            $oPluginHook             = new stdClass();
+            $oPluginHook->kPlugin    = $kPlugin;
+            $oPluginHook->nHook      = HOOK_SEITE_PAGE_IF_LINKART;
+            $oPluginHook->cDateiname = PLUGIN_SEITENHANDLER;
+
+            $kPluginHook = Shop::DB()->insert('tpluginhook', $oPluginHook);
+
+            if (!$kPluginHook) {
+                return 3; // Ein Hook konnte nicht in die Datenbank gespeichert werden
+            }
+            // tpluginlinkdatei füllen
+            $oPluginLinkDatei                      = new stdClass();
+            $oPluginLinkDatei->kPlugin             = $kPlugin;
+            $oPluginLinkDatei->kLink               = $kLink;
+            $oPluginLinkDatei->cDatei              = isset($Link_arr['Filename'])
+                ? $Link_arr['Filename']
+                : null;
+            $oPluginLinkDatei->cTemplate           = isset($Link_arr['Template'])
+                ? $Link_arr['Template']
+                : null;
+            $oPluginLinkDatei->cFullscreenTemplate = isset($Link_arr['FullscreenTemplate'])
+                ? $Link_arr['FullscreenTemplate']
+                : null;
+
+            Shop::DB()->insert('tpluginlinkdatei', $oPluginLinkDatei);
+        } else {
+            return 8; // Ein Link konnte nicht in die Datenbank gespeichert werden
         }
     }
     // Zahlungsmethode (PaymentMethod) (falls vorhanden)
@@ -2391,279 +2392,280 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
     foreach ($paymentNode as $u => $Method_arr) {
         preg_match("/[0-9]+\sattr/", $u, $cTreffer1_arr);
         preg_match("/[0-9]+/", $u, $cTreffer2_arr);
-        if (strlen($cTreffer2_arr[0]) === strlen($u)) {
-            $oZahlungsart                         = new stdClass();
-            $oZahlungsart->cName                  = $Method_arr['Name'];
-            $oZahlungsart->cModulId               = gibPlugincModulId($kPlugin, $Method_arr['Name']);
-            $oZahlungsart->cKundengruppen         = '';
-            $oZahlungsart->cPluginTemplate        = isset($Method_arr['TemplateFile'])
-                ? $Method_arr['TemplateFile']
-                : null;
-            $oZahlungsart->cZusatzschrittTemplate = isset($Method_arr['AdditionalTemplateFile'])
-                ? $Method_arr['AdditionalTemplateFile']
-                : null;
-            $oZahlungsart->nSort                  = isset($Method_arr['Sort'])
-                ? (int)$Method_arr['Sort']
-                : 0;
-            $oZahlungsart->nMailSenden            = isset($Method_arr['SendMail'])
-                ? (int)$Method_arr['SendMail']
-                : 0;
-            $oZahlungsart->nActive                = 1;
-            $oZahlungsart->cAnbieter              = is_array($Method_arr['Provider'])
-                ? ''
-                : $Method_arr['Provider'];
-            $oZahlungsart->cTSCode                = is_array($Method_arr['TSCode'])
-                ? ''
-                : $Method_arr['TSCode'];
-            $oZahlungsart->nWaehrendBestellung    = (int)$Method_arr['PreOrder'];
-            $oZahlungsart->nCURL                  = (int)$Method_arr['Curl'];
-            $oZahlungsart->nSOAP                  = (int)$Method_arr['Soap'];
-            $oZahlungsart->nSOCKETS               = (int)$Method_arr['Sockets'];
-            $oZahlungsart->cBild                  = isset($Method_arr['PictureURL'])
-                ? $shopURL . PFAD_PLUGIN . $cVerzeichnis . '/' .
-                    PFAD_PLUGIN_VERSION . $nVersion . '/' .
-                PFAD_PLUGIN_PAYMENTMETHOD . $Method_arr['PictureURL']
-                : '';
-            $oZahlungsart->nNutzbar = 0;
-            $bPruefen               = false;
-            if ($oZahlungsart->nCURL == 0 && $oZahlungsart->nSOAP == 0 && $oZahlungsart->nSOCKETS == 0) {
-                $oZahlungsart->nNutzbar = 1;
-            } else {
-                $bPruefen = true;
-            }
-            $kZahlungsart               = Shop::DB()->insert('tzahlungsart', $oZahlungsart);
-            $oZahlungsart->kZahlungsart = $kZahlungsart;
+        if (strlen($cTreffer2_arr[0]) !== strlen($u)) {
+            continue;
+        }
+        $oZahlungsart                         = new stdClass();
+        $oZahlungsart->cName                  = $Method_arr['Name'];
+        $oZahlungsart->cModulId               = gibPlugincModulId($kPlugin, $Method_arr['Name']);
+        $oZahlungsart->cKundengruppen         = '';
+        $oZahlungsart->cPluginTemplate        = isset($Method_arr['TemplateFile'])
+            ? $Method_arr['TemplateFile']
+            : null;
+        $oZahlungsart->cZusatzschrittTemplate = isset($Method_arr['AdditionalTemplateFile'])
+            ? $Method_arr['AdditionalTemplateFile']
+            : null;
+        $oZahlungsart->nSort                  = isset($Method_arr['Sort'])
+            ? (int)$Method_arr['Sort']
+            : 0;
+        $oZahlungsart->nMailSenden            = isset($Method_arr['SendMail'])
+            ? (int)$Method_arr['SendMail']
+            : 0;
+        $oZahlungsart->nActive                = 1;
+        $oZahlungsart->cAnbieter              = is_array($Method_arr['Provider'])
+            ? ''
+            : $Method_arr['Provider'];
+        $oZahlungsart->cTSCode                = is_array($Method_arr['TSCode'])
+            ? ''
+            : $Method_arr['TSCode'];
+        $oZahlungsart->nWaehrendBestellung    = (int)$Method_arr['PreOrder'];
+        $oZahlungsart->nCURL                  = (int)$Method_arr['Curl'];
+        $oZahlungsart->nSOAP                  = (int)$Method_arr['Soap'];
+        $oZahlungsart->nSOCKETS               = (int)$Method_arr['Sockets'];
+        $oZahlungsart->cBild                  = isset($Method_arr['PictureURL'])
+            ? $shopURL . PFAD_PLUGIN . $cVerzeichnis . '/' .
+                PFAD_PLUGIN_VERSION . $nVersion . '/' .
+            PFAD_PLUGIN_PAYMENTMETHOD . $Method_arr['PictureURL']
+            : '';
+        $oZahlungsart->nNutzbar = 0;
+        $bPruefen               = false;
+        if ($oZahlungsart->nCURL == 0 && $oZahlungsart->nSOAP == 0 && $oZahlungsart->nSOCKETS == 0) {
+            $oZahlungsart->nNutzbar = 1;
+        } else {
+            $bPruefen = true;
+        }
+        $kZahlungsart               = Shop::DB()->insert('tzahlungsart', $oZahlungsart);
+        $oZahlungsart->kZahlungsart = $kZahlungsart;
 
-            if ($bPruefen) {
-                aktiviereZahlungsart($oZahlungsart);
-            }
+        if ($bPruefen) {
+            aktiviereZahlungsart($oZahlungsart);
+        }
 
-            $cModulId = $oZahlungsart->cModulId;
+        $cModulId = $oZahlungsart->cModulId;
 
-            if (!$kZahlungsart) {
-                return 9; //Eine Zahlungsmethode konnte nicht in die Datenbank gespeichert werden
-            }
-            // tpluginzahlungsartklasse füllen
-            $oPluginZahlungsartKlasse                         = new stdClass();
-            $oPluginZahlungsartKlasse->cModulId               = gibPlugincModulId($kPlugin, $Method_arr['Name']);
-            $oPluginZahlungsartKlasse->kPlugin                = $kPlugin;
-            $oPluginZahlungsartKlasse->cClassPfad             = isset($Method_arr['ClassFile'])
-                ? $Method_arr['ClassFile']
-                : null;
-            $oPluginZahlungsartKlasse->cClassName             = isset($Method_arr['ClassName'])
-                ? $Method_arr['ClassName']
-                : null;
-            $oPluginZahlungsartKlasse->cTemplatePfad          = isset($Method_arr['TemplateFile'])
-                ? $Method_arr['TemplateFile']
-                : null;
-            $oPluginZahlungsartKlasse->cZusatzschrittTemplate = isset($Method_arr['AdditionalTemplateFile'])
-                ? $Method_arr['AdditionalTemplateFile']
-                : null;
+        if (!$kZahlungsart) {
+            return 9; //Eine Zahlungsmethode konnte nicht in die Datenbank gespeichert werden
+        }
+        // tpluginzahlungsartklasse füllen
+        $oPluginZahlungsartKlasse                         = new stdClass();
+        $oPluginZahlungsartKlasse->cModulId               = gibPlugincModulId($kPlugin, $Method_arr['Name']);
+        $oPluginZahlungsartKlasse->kPlugin                = $kPlugin;
+        $oPluginZahlungsartKlasse->cClassPfad             = isset($Method_arr['ClassFile'])
+            ? $Method_arr['ClassFile']
+            : null;
+        $oPluginZahlungsartKlasse->cClassName             = isset($Method_arr['ClassName'])
+            ? $Method_arr['ClassName']
+            : null;
+        $oPluginZahlungsartKlasse->cTemplatePfad          = isset($Method_arr['TemplateFile'])
+            ? $Method_arr['TemplateFile']
+            : null;
+        $oPluginZahlungsartKlasse->cZusatzschrittTemplate = isset($Method_arr['AdditionalTemplateFile'])
+            ? $Method_arr['AdditionalTemplateFile']
+            : null;
 
-            Shop::DB()->insert('tpluginzahlungsartklasse', $oPluginZahlungsartKlasse);
+        Shop::DB()->insert('tpluginzahlungsartklasse', $oPluginZahlungsartKlasse);
 
-            $cISOSprache = '';
-            // Hole alle Sprachen des Shops
-            // Assoc cISO
-            $oSprachAssoc_arr = gibAlleSprachen(2);
-            // Ist der erste Standard Link gesetzt worden? => wird etwas weiter unten gebraucht
-            // Falls Shopsprachen vom Plugin nicht berücksichtigt wurden, werden diese weiter unten
-            // nachgetragen. Dafür wird die erste Sprache vom Plugin als Standard genutzt.
-            $bZahlungsartStandard   = false;
-            $oZahlungsartSpracheStd = new stdClass();
+        $cISOSprache = '';
+        // Hole alle Sprachen des Shops
+        // Assoc cISO
+        $oSprachAssoc_arr = gibAlleSprachen(2);
+        // Ist der erste Standard Link gesetzt worden? => wird etwas weiter unten gebraucht
+        // Falls Shopsprachen vom Plugin nicht berücksichtigt wurden, werden diese weiter unten
+        // nachgetragen. Dafür wird die erste Sprache vom Plugin als Standard genutzt.
+        $bZahlungsartStandard   = false;
+        $oZahlungsartSpracheStd = new stdClass();
 
-            foreach ($Method_arr['MethodLanguage'] as $l => $MethodLanguage_arr) {
-                preg_match("/[0-9]+\sattr/", $l, $cTreffer1_arr);
-                preg_match("/[0-9]+/", $l, $cTreffer2_arr);
-                if (isset($cTreffer1_arr[0]) && strlen($cTreffer1_arr[0]) === strlen($l)) {
-                    $cISOSprache = strtolower($MethodLanguage_arr['iso']);
-                } elseif (strlen($cTreffer2_arr[0]) === strlen($l)) {
-                    $oZahlungsartSprache               = new stdClass();
-                    $oZahlungsartSprache->kZahlungsart = $kZahlungsart;
-                    $oZahlungsartSprache->cISOSprache  = $cISOSprache;
-                    $oZahlungsartSprache->cName        = $MethodLanguage_arr['Name'];
-                    $oZahlungsartSprache->cGebuehrname = $MethodLanguage_arr['ChargeName'];
-                    $oZahlungsartSprache->cHinweisText = $MethodLanguage_arr['InfoText'];
-                    // Erste ZahlungsartSprache vom Plugin als Standard setzen
-                    if (!$bZahlungsartStandard) {
-                        $oZahlungsartSpracheStd = $oZahlungsartSprache;
-                        $bZahlungsartStandard   = true;
-                    }
-                    $kZahlungsartTMP = Shop::DB()->insert('tzahlungsartsprache', $oZahlungsartSprache);
-                    if (!$kZahlungsartTMP) {
-                        return 10; // Eine Sprache in den Zahlungsmethoden konnte nicht in die Datenbank gespeichert werden
-                    }
+        foreach ($Method_arr['MethodLanguage'] as $l => $MethodLanguage_arr) {
+            preg_match("/[0-9]+\sattr/", $l, $cTreffer1_arr);
+            preg_match("/[0-9]+/", $l, $cTreffer2_arr);
+            if (isset($cTreffer1_arr[0]) && strlen($cTreffer1_arr[0]) === strlen($l)) {
+                $cISOSprache = strtolower($MethodLanguage_arr['iso']);
+            } elseif (strlen($cTreffer2_arr[0]) === strlen($l)) {
+                $oZahlungsartSprache               = new stdClass();
+                $oZahlungsartSprache->kZahlungsart = $kZahlungsart;
+                $oZahlungsartSprache->cISOSprache  = $cISOSprache;
+                $oZahlungsartSprache->cName        = $MethodLanguage_arr['Name'];
+                $oZahlungsartSprache->cGebuehrname = $MethodLanguage_arr['ChargeName'];
+                $oZahlungsartSprache->cHinweisText = $MethodLanguage_arr['InfoText'];
+                // Erste ZahlungsartSprache vom Plugin als Standard setzen
+                if (!$bZahlungsartStandard) {
+                    $oZahlungsartSpracheStd = $oZahlungsartSprache;
+                    $bZahlungsartStandard   = true;
+                }
+                $kZahlungsartTMP = Shop::DB()->insert('tzahlungsartsprache', $oZahlungsartSprache);
+                if (!$kZahlungsartTMP) {
+                    return 10; // Eine Sprache in den Zahlungsmethoden konnte nicht in die Datenbank gespeichert werden
+                }
 
-                    if (isset($oSprachAssoc_arr[$oZahlungsartSprache->cISOSprache])) {
-                        // Resette aktuelle Sprache
-                        unset($oSprachAssoc_arr[$oZahlungsartSprache->cISOSprache]);
-                        $oSprachAssoc_arr = array_merge($oSprachAssoc_arr);
-                    }
+                if (isset($oSprachAssoc_arr[$oZahlungsartSprache->cISOSprache])) {
+                    // Resette aktuelle Sprache
+                    unset($oSprachAssoc_arr[$oZahlungsartSprache->cISOSprache]);
+                    $oSprachAssoc_arr = array_merge($oSprachAssoc_arr);
                 }
             }
+        }
 
-            // Sind noch Sprachen im Shop die das Plugin nicht berücksichtigt?
-            if (count($oSprachAssoc_arr) > 0) {
-                foreach ($oSprachAssoc_arr as $oSprachAssoc) {
-                    $oZahlungsartSpracheStd->cISOSprache = $oSprachAssoc->cISO;
-                    $kZahlungsartTMP                     = Shop::DB()->insert('tzahlungsartsprache', $oZahlungsartSpracheStd);
-                    if (!$kZahlungsartTMP) {
-                        return 10; // Eine Sprache in den Zahlungsmethoden konnte nicht in die Datenbank gespeichert werden
-                    }
+        // Sind noch Sprachen im Shop die das Plugin nicht berücksichtigt?
+        if (count($oSprachAssoc_arr) > 0) {
+            foreach ($oSprachAssoc_arr as $oSprachAssoc) {
+                $oZahlungsartSpracheStd->cISOSprache = $oSprachAssoc->cISO;
+                $kZahlungsartTMP                     = Shop::DB()->insert('tzahlungsartsprache', $oZahlungsartSpracheStd);
+                if (!$kZahlungsartTMP) {
+                    return 10; // Eine Sprache in den Zahlungsmethoden konnte nicht in die Datenbank gespeichert werden
                 }
             }
-            // Zahlungsmethode Einstellungen
-            // Vordefinierte Einstellungen
-            $cName_arr         = ['Anzahl Bestellungen n&ouml;tig', 'Mindestbestellwert', 'Maximaler Bestellwert'];
-            $cWertName_arr     = ['min_bestellungen', 'min', 'max'];
-            $cBeschreibung_arr = [
-                'Nur Kunden, die min. soviele Bestellungen bereits durchgef&uuml;hrt haben, k&ouml;nnen diese Zahlungsart nutzen.',
-                'Erst ab diesem Bestellwert kann diese Zahlungsart genutzt werden.',
-                'Nur bis zu diesem Bestellwert wird diese Zahlungsart angeboten. (einschliesslich)'];
-            $nSort_arr         = [100, 101, 102];
+        }
+        // Zahlungsmethode Einstellungen
+        // Vordefinierte Einstellungen
+        $cName_arr         = ['Anzahl Bestellungen n&ouml;tig', 'Mindestbestellwert', 'Maximaler Bestellwert'];
+        $cWertName_arr     = ['min_bestellungen', 'min', 'max'];
+        $cBeschreibung_arr = [
+            'Nur Kunden, die min. soviele Bestellungen bereits durchgef&uuml;hrt haben, k&ouml;nnen diese Zahlungsart nutzen.',
+            'Erst ab diesem Bestellwert kann diese Zahlungsart genutzt werden.',
+            'Nur bis zu diesem Bestellwert wird diese Zahlungsart angeboten. (einschliesslich)'];
+        $nSort_arr         = [100, 101, 102];
 
-            for ($z = 0; $z < 3; $z++) {
-                // tplugineinstellungen füllen
-                $oPluginEinstellungen          = new stdClass();
-                $oPluginEinstellungen->kPlugin = $kPlugin;
-                $oPluginEinstellungen->cName   = $cModulId . '_' . $cWertName_arr[$z];
-                $oPluginEinstellungen->cWert   = 0;
+        for ($z = 0; $z < 3; $z++) {
+            // tplugineinstellungen füllen
+            $oPluginEinstellungen          = new stdClass();
+            $oPluginEinstellungen->kPlugin = $kPlugin;
+            $oPluginEinstellungen->cName   = $cModulId . '_' . $cWertName_arr[$z];
+            $oPluginEinstellungen->cWert   = 0;
 
-                Shop::DB()->insert('tplugineinstellungen', $oPluginEinstellungen);
-                // tplugineinstellungenconf füllen
-                $oPluginEinstellungenConf                   = new stdClass();
-                $oPluginEinstellungenConf->kPlugin          = $kPlugin;
-                $oPluginEinstellungenConf->kPluginAdminMenu = 0;
-                $oPluginEinstellungenConf->cName            = $cName_arr[$z];
-                $oPluginEinstellungenConf->cBeschreibung    = $cBeschreibung_arr[$z];
-                $oPluginEinstellungenConf->cWertName        = $cModulId . '_' . $cWertName_arr[$z];
-                $oPluginEinstellungenConf->cInputTyp        = 'zahl';
-                $oPluginEinstellungenConf->nSort            = $nSort_arr[$z];
-                $oPluginEinstellungenConf->cConf            = 'Y';
+            Shop::DB()->insert('tplugineinstellungen', $oPluginEinstellungen);
+            // tplugineinstellungenconf füllen
+            $oPluginEinstellungenConf                   = new stdClass();
+            $oPluginEinstellungenConf->kPlugin          = $kPlugin;
+            $oPluginEinstellungenConf->kPluginAdminMenu = 0;
+            $oPluginEinstellungenConf->cName            = $cName_arr[$z];
+            $oPluginEinstellungenConf->cBeschreibung    = $cBeschreibung_arr[$z];
+            $oPluginEinstellungenConf->cWertName        = $cModulId . '_' . $cWertName_arr[$z];
+            $oPluginEinstellungenConf->cInputTyp        = 'zahl';
+            $oPluginEinstellungenConf->nSort            = $nSort_arr[$z];
+            $oPluginEinstellungenConf->cConf            = 'Y';
 
-                Shop::DB()->insert('tplugineinstellungenconf', $oPluginEinstellungenConf);
-            }
+            Shop::DB()->insert('tplugineinstellungenconf', $oPluginEinstellungenConf);
+        }
 
-            if (isset($Method_arr['Setting'])
-                && is_array($Method_arr['Setting'])
-                && count($Method_arr['Setting']) > 0
-            ) {
-                $cTyp          = '';
-                $cInitialValue = '';
-                $nSort         = 0;
-                $cConf         = 'Y';
-                $multiple      = false;
-                foreach ($Method_arr['Setting'] as $j => $Setting_arr) {
-                    preg_match('/[0-9]+\sattr/', $j, $cTreffer3_arr);
-                    preg_match('/[0-9]+/', $j, $cTreffer4_arr);
+        if (isset($Method_arr['Setting'])
+            && is_array($Method_arr['Setting'])
+            && count($Method_arr['Setting']) > 0
+        ) {
+            $cTyp          = '';
+            $cInitialValue = '';
+            $nSort         = 0;
+            $cConf         = 'Y';
+            $multiple      = false;
+            foreach ($Method_arr['Setting'] as $j => $Setting_arr) {
+                preg_match('/[0-9]+\sattr/', $j, $cTreffer3_arr);
+                preg_match('/[0-9]+/', $j, $cTreffer4_arr);
 
-                    if (isset($cTreffer3_arr[0]) && strlen($cTreffer3_arr[0]) === strlen($j)) {
-                        $cTyp          = $Setting_arr['type'];
-                        $multiple      = (isset($Setting_arr['multiple']) && $Setting_arr['multiple'] === 'Y' && $cTyp === 'selectbox');
-                        $cInitialValue = ($multiple === true)
-                            ? serialize([$Setting_arr['initialValue']])
-                            : $Setting_arr['initialValue'];
-                        $nSort         = $Setting_arr['sort'];
-                        $cConf         = $Setting_arr['conf'];
-                    } elseif (strlen($cTreffer4_arr[0]) === strlen($j)) {
-                        // tplugineinstellungen füllen
-                        $oPluginEinstellungen          = new stdClass();
-                        $oPluginEinstellungen->kPlugin = $kPlugin;
-                        $oPluginEinstellungen->cName   = $cModulId . '_' . $Setting_arr['ValueName'];
-                        $oPluginEinstellungen->cWert   = $cInitialValue;
+                if (isset($cTreffer3_arr[0]) && strlen($cTreffer3_arr[0]) === strlen($j)) {
+                    $cTyp          = $Setting_arr['type'];
+                    $multiple      = (isset($Setting_arr['multiple']) && $Setting_arr['multiple'] === 'Y' && $cTyp === 'selectbox');
+                    $cInitialValue = ($multiple === true)
+                        ? serialize([$Setting_arr['initialValue']])
+                        : $Setting_arr['initialValue'];
+                    $nSort         = $Setting_arr['sort'];
+                    $cConf         = $Setting_arr['conf'];
+                } elseif (strlen($cTreffer4_arr[0]) === strlen($j)) {
+                    // tplugineinstellungen füllen
+                    $oPluginEinstellungen          = new stdClass();
+                    $oPluginEinstellungen->kPlugin = $kPlugin;
+                    $oPluginEinstellungen->cName   = $cModulId . '_' . $Setting_arr['ValueName'];
+                    $oPluginEinstellungen->cWert   = $cInitialValue;
 
-                        Shop::DB()->insert('tplugineinstellungen', $oPluginEinstellungen);
+                    Shop::DB()->insert('tplugineinstellungen', $oPluginEinstellungen);
 
-                        // tplugineinstellungenconf füllen
-                        $oPluginEinstellungenConf                   = new stdClass();
-                        $oPluginEinstellungenConf->kPlugin          = $kPlugin;
-                        $oPluginEinstellungenConf->kPluginAdminMenu = 0;
-                        $oPluginEinstellungenConf->cName            = $Setting_arr['Name'];
-                        $oPluginEinstellungenConf->cBeschreibung    = (!isset($Setting_arr['Description']) || is_array($Setting_arr['Description']))
-                            ? ''
-                            : $Setting_arr['Description'];
-                        $oPluginEinstellungenConf->cWertName = $cModulId . '_' . $Setting_arr['ValueName'];
-                        $oPluginEinstellungenConf->cInputTyp = $cTyp;
-                        $oPluginEinstellungenConf->nSort     = $nSort;
-                        $oPluginEinstellungenConf->cConf     = ($cTyp === 'selectbox' && $multiple === true)
-                            ? 'M'
-                            : $cConf;
+                    // tplugineinstellungenconf füllen
+                    $oPluginEinstellungenConf                   = new stdClass();
+                    $oPluginEinstellungenConf->kPlugin          = $kPlugin;
+                    $oPluginEinstellungenConf->kPluginAdminMenu = 0;
+                    $oPluginEinstellungenConf->cName            = $Setting_arr['Name'];
+                    $oPluginEinstellungenConf->cBeschreibung    = (!isset($Setting_arr['Description']) || is_array($Setting_arr['Description']))
+                        ? ''
+                        : $Setting_arr['Description'];
+                    $oPluginEinstellungenConf->cWertName = $cModulId . '_' . $Setting_arr['ValueName'];
+                    $oPluginEinstellungenConf->cInputTyp = $cTyp;
+                    $oPluginEinstellungenConf->nSort     = $nSort;
+                    $oPluginEinstellungenConf->cConf     = ($cTyp === 'selectbox' && $multiple === true)
+                        ? 'M'
+                        : $cConf;
 
-                        $kPluginEinstellungenConf = Shop::DB()->insert('tplugineinstellungenconf', $oPluginEinstellungenConf);
-                        // tplugineinstellungenconfwerte füllen
-                        if ($kPluginEinstellungenConf <= 0) {
-                            return 11; // Eine Einstellung der Zahlungsmethode konnte nicht in die Datenbank gespeichert werden
+                    $kPluginEinstellungenConf = Shop::DB()->insert('tplugineinstellungenconf', $oPluginEinstellungenConf);
+                    // tplugineinstellungenconfwerte füllen
+                    if ($kPluginEinstellungenConf <= 0) {
+                        return 11; // Eine Einstellung der Zahlungsmethode konnte nicht in die Datenbank gespeichert werden
+                    }
+                    // Ist der Typ eine Selectbox => Es müssen SelectboxOptionen vorhanden sein
+                    if ($cTyp === 'selectbox') {
+                        if (isset($Setting_arr['OptionsSource'])
+                            && is_array($Setting_arr['OptionsSource'])
+                            && count($Setting_arr['OptionsSource']) > 0
+                        ) {
+                            //do nothing for now
+                        } elseif (count($Setting_arr['SelectboxOptions'][0]) === 1) {
+                            // Es gibt mehr als eine Option
+                            foreach ($Setting_arr['SelectboxOptions'][0]['Option'] as $y => $Option_arr) {
+                                preg_match('/[0-9]+\sattr/', $y, $cTreffer6_arr);
+
+                                if (isset($cTreffer6_arr[0]) && strlen($cTreffer6_arr[0]) === strlen($y)) {
+                                    $cWert = $Option_arr['value'];
+                                    $nSort = $Option_arr['sort'];
+                                    $yx    = substr($y, 0, strpos($y, ' '));
+                                    $cName = $Setting_arr['SelectboxOptions'][0]['Option'][$yx];
+
+                                    $oPluginEinstellungenConfWerte                           = new stdClass();
+                                    $oPluginEinstellungenConfWerte->kPluginEinstellungenConf = $kPluginEinstellungenConf;
+                                    $oPluginEinstellungenConfWerte->cName                    = $cName;
+                                    $oPluginEinstellungenConfWerte->cWert                    = $cWert;
+                                    $oPluginEinstellungenConfWerte->nSort                    = $nSort;
+
+                                    Shop::DB()->insert('tplugineinstellungenconfwerte', $oPluginEinstellungenConfWerte);
+                                }
+                            }
+                        } elseif (count($Setting_arr['SelectboxOptions'][0]) === 2) {
+                            // Es gibt nur eine Option
+                            $oPluginEinstellungenConfWerte                           = new stdClass();
+                            $oPluginEinstellungenConfWerte->kPluginEinstellungenConf = $kPluginEinstellungenConf;
+                            $oPluginEinstellungenConfWerte->cName                    = $Setting_arr['SelectboxOptions'][0]['Option'];
+                            $oPluginEinstellungenConfWerte->cWert                    = $Setting_arr['SelectboxOptions'][0]['Option attr']['value'];
+                            $oPluginEinstellungenConfWerte->nSort                    = $Setting_arr['SelectboxOptions'][0]['Option attr']['sort'];
+
+                            Shop::DB()->insert('tplugineinstellungenconfwerte', $oPluginEinstellungenConfWerte);
                         }
-                        // Ist der Typ eine Selectbox => Es müssen SelectboxOptionen vorhanden sein
-                        if ($cTyp === 'selectbox') {
-                            if (isset($Setting_arr['OptionsSource'])
-                                && is_array($Setting_arr['OptionsSource'])
-                                && count($Setting_arr['OptionsSource']) > 0
-                            ) {
-                                //do nothing for now
-                            } elseif (count($Setting_arr['SelectboxOptions'][0]) === 1) {
-                                // Es gibt mehr als eine Option
-                                foreach ($Setting_arr['SelectboxOptions'][0]['Option'] as $y => $Option_arr) {
-                                    preg_match('/[0-9]+\sattr/', $y, $cTreffer6_arr);
+                    } elseif ($cTyp === 'radio') {
+                        if (isset($Setting_arr['OptionsSource'])
+                            && is_array($Setting_arr['OptionsSource'])
+                            && count($Setting_arr['OptionsSource']) > 0
+                        ) {
+                            //do nothing for now
+                        } elseif (count($Setting_arr['RadioOptions'][0]) === 1) { // Es gibt mehr als eine Option
+                            foreach ($Setting_arr['RadioOptions'][0]['Option'] as $y => $Option_arr) {
+                                preg_match('/[0-9]+\sattr/', $y, $cTreffer6_arr);
+                                if (strlen($cTreffer6_arr[0]) === strlen($y)) {
+                                    $cWert = $Option_arr['value'];
+                                    $nSort = $Option_arr['sort'];
+                                    $yx    = substr($y, 0, strpos($y, ' '));
+                                    $cName = $Setting_arr['RadioOptions'][0]['Option'][$yx];
 
-                                    if (isset($cTreffer6_arr[0]) && strlen($cTreffer6_arr[0]) === strlen($y)) {
-                                        $cWert = $Option_arr['value'];
-                                        $nSort = $Option_arr['sort'];
-                                        $yx    = substr($y, 0, strpos($y, ' '));
-                                        $cName = $Setting_arr['SelectboxOptions'][0]['Option'][$yx];
+                                    $oPluginEinstellungenConfWerte                           = new stdClass();
+                                    $oPluginEinstellungenConfWerte->kPluginEinstellungenConf = $kPluginEinstellungenConf;
+                                    $oPluginEinstellungenConfWerte->cName                    = $cName;
+                                    $oPluginEinstellungenConfWerte->cWert                    = $cWert;
+                                    $oPluginEinstellungenConfWerte->nSort                    = $nSort;
 
-                                        $oPluginEinstellungenConfWerte                           = new stdClass();
-                                        $oPluginEinstellungenConfWerte->kPluginEinstellungenConf = $kPluginEinstellungenConf;
-                                        $oPluginEinstellungenConfWerte->cName                    = $cName;
-                                        $oPluginEinstellungenConfWerte->cWert                    = $cWert;
-                                        $oPluginEinstellungenConfWerte->nSort                    = $nSort;
-
-                                        Shop::DB()->insert('tplugineinstellungenconfwerte', $oPluginEinstellungenConfWerte);
-                                    }
+                                    Shop::DB()->insert('tplugineinstellungenconfwerte', $oPluginEinstellungenConfWerte);
                                 }
-                            } elseif (count($Setting_arr['SelectboxOptions'][0]) === 2) {
-                                // Es gibt nur eine Option
-                                $oPluginEinstellungenConfWerte                           = new stdClass();
-                                $oPluginEinstellungenConfWerte->kPluginEinstellungenConf = $kPluginEinstellungenConf;
-                                $oPluginEinstellungenConfWerte->cName                    = $Setting_arr['SelectboxOptions'][0]['Option'];
-                                $oPluginEinstellungenConfWerte->cWert                    = $Setting_arr['SelectboxOptions'][0]['Option attr']['value'];
-                                $oPluginEinstellungenConfWerte->nSort                    = $Setting_arr['SelectboxOptions'][0]['Option attr']['sort'];
-
-                                Shop::DB()->insert('tplugineinstellungenconfwerte', $oPluginEinstellungenConfWerte);
                             }
-                        } elseif ($cTyp === 'radio') {
-                            if (isset($Setting_arr['OptionsSource'])
-                                && is_array($Setting_arr['OptionsSource'])
-                                && count($Setting_arr['OptionsSource']) > 0
-                            ) {
-                                //do nothing for now
-                            } elseif (count($Setting_arr['RadioOptions'][0]) === 1) { // Es gibt mehr als eine Option
-                                foreach ($Setting_arr['RadioOptions'][0]['Option'] as $y => $Option_arr) {
-                                    preg_match('/[0-9]+\sattr/', $y, $cTreffer6_arr);
-                                    if (strlen($cTreffer6_arr[0]) === strlen($y)) {
-                                        $cWert = $Option_arr['value'];
-                                        $nSort = $Option_arr['sort'];
-                                        $yx    = substr($y, 0, strpos($y, ' '));
-                                        $cName = $Setting_arr['RadioOptions'][0]['Option'][$yx];
+                        } elseif (count($Setting_arr['RadioOptions'][0]) === 2) { //Es gibt nur 1 Option
+                            $oPluginEinstellungenConfWerte                           = new stdClass();
+                            $oPluginEinstellungenConfWerte->kPluginEinstellungenConf = $kPluginEinstellungenConf;
+                            $oPluginEinstellungenConfWerte->cName                    = $Setting_arr['RadioOptions'][0]['Option'];
+                            $oPluginEinstellungenConfWerte->cWert                    = $Setting_arr['RadioOptions'][0]['Option attr']['value'];
+                            $oPluginEinstellungenConfWerte->nSort                    = $Setting_arr['RadioOptions'][0]['Option attr']['sort'];
 
-                                        $oPluginEinstellungenConfWerte                           = new stdClass();
-                                        $oPluginEinstellungenConfWerte->kPluginEinstellungenConf = $kPluginEinstellungenConf;
-                                        $oPluginEinstellungenConfWerte->cName                    = $cName;
-                                        $oPluginEinstellungenConfWerte->cWert                    = $cWert;
-                                        $oPluginEinstellungenConfWerte->nSort                    = $nSort;
-
-                                        Shop::DB()->insert('tplugineinstellungenconfwerte', $oPluginEinstellungenConfWerte);
-                                    }
-                                }
-                            } elseif (count($Setting_arr['RadioOptions'][0]) === 2) { //Es gibt nur 1 Option
-                                $oPluginEinstellungenConfWerte                           = new stdClass();
-                                $oPluginEinstellungenConfWerte->kPluginEinstellungenConf = $kPluginEinstellungenConf;
-                                $oPluginEinstellungenConfWerte->cName                    = $Setting_arr['RadioOptions'][0]['Option'];
-                                $oPluginEinstellungenConfWerte->cWert                    = $Setting_arr['RadioOptions'][0]['Option attr']['value'];
-                                $oPluginEinstellungenConfWerte->nSort                    = $Setting_arr['RadioOptions'][0]['Option attr']['sort'];
-
-                                Shop::DB()->insert('tplugineinstellungenconfwerte', $oPluginEinstellungenConfWerte);
-                            }
+                            Shop::DB()->insert('tplugineinstellungenconfwerte', $oPluginEinstellungenConfWerte);
                         }
                     }
                 }
@@ -2922,25 +2924,26 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
     // AdminWidgets tadminwidgets fuellen
     foreach ($widgetsNode as $u => $Widget_arr) {
         preg_match("/[0-9]+/", $u, $cTreffer2_arr);
-        if (strlen($cTreffer2_arr[0]) === strlen($u)) {
-            $oAdminWidget               = new stdClass();
-            $oAdminWidget->kPlugin      = $kPlugin;
-            $oAdminWidget->cTitle       = $Widget_arr['Title'];
-            $oAdminWidget->cClass       = $Widget_arr['Class'] . '_' . $oPlugin->cPluginID;
-            $oAdminWidget->eContainer   = $Widget_arr['Container'];
-            $oAdminWidget->cDescription = $Widget_arr['Description'];
-            if (is_array($oAdminWidget->cDescription)) {
-                //@todo: when description is empty, this becomes an array with indices [0] => '' and [0 attr] => ''
-                $oAdminWidget->cDescription = $oAdminWidget->cDescription[0];
-            }
-            $oAdminWidget->nPos      = $Widget_arr['Pos'];
-            $oAdminWidget->bExpanded = $Widget_arr['Expanded'];
-            $oAdminWidget->bActive   = $Widget_arr['Active'];
-            $kWidget                 = Shop::DB()->insert('tadminwidgets', $oAdminWidget);
+        if (strlen($cTreffer2_arr[0]) !== strlen($u)) {
+            continue;
+        }
+        $oAdminWidget               = new stdClass();
+        $oAdminWidget->kPlugin      = $kPlugin;
+        $oAdminWidget->cTitle       = $Widget_arr['Title'];
+        $oAdminWidget->cClass       = $Widget_arr['Class'] . '_' . $oPlugin->cPluginID;
+        $oAdminWidget->eContainer   = $Widget_arr['Container'];
+        $oAdminWidget->cDescription = $Widget_arr['Description'];
+        if (is_array($oAdminWidget->cDescription)) {
+            //@todo: when description is empty, this becomes an array with indices [0] => '' and [0 attr] => ''
+            $oAdminWidget->cDescription = $oAdminWidget->cDescription[0];
+        }
+        $oAdminWidget->nPos      = $Widget_arr['Pos'];
+        $oAdminWidget->bExpanded = $Widget_arr['Expanded'];
+        $oAdminWidget->bActive   = $Widget_arr['Active'];
+        $kWidget                 = Shop::DB()->insert('tadminwidgets', $oAdminWidget);
 
-            if (!$kWidget) {
-                return 15;// Ein AdminWidget konnte nicht in die Datenbank gespeichert werden
-            }
+        if (!$kWidget) {
+            return 15;// Ein AdminWidget konnte nicht in die Datenbank gespeichert werden
         }
     }
     // ExportFormate in texportformat fuellen

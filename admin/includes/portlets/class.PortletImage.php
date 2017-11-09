@@ -6,7 +6,7 @@
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_PORTLETS . 'class.PortletBase.php';
 
 /**
- * Class PortletHeading
+ * Class PortletImage
  */
 class PortletImage extends PortletBase
 {

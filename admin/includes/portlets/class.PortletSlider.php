@@ -12,12 +12,27 @@ class PortletSlider extends PortletBase
 {
     public function getPreviewHtml()
     {
-        return "<div>Slider</div>";
+        return $this->getFinalHtml();
     }
 
     public function getFinalHtml()
     {
-        return "<div>Slider</div>";
+        $articleIds   = $this->properties['articleIds'];
+        $oArtikel_arr = [];
+
+        foreach ($articleIds as $kArtikel) {
+            $kArtikel = (int)$kArtikel;
+            $p = new Artikel($kArtikel);
+            $p->fuelleArtikel($kArtikel, null);
+            $oArtikel_arr[] = $p;
+        }
+
+        return Shop::Smarty()
+            ->assign('properties', $this->properties)
+            ->assign('productlist', $oArtikel_arr)
+            ->assign('title', 'Produkte')
+            ->assign('Einstellungen', Shop::getConfig([CONF_BEWERTUNG]))
+            ->fetch('tpl_inc/portlets/final.slider.tpl');
     }
 
     public function getConfigPanelHtml()
@@ -30,9 +45,7 @@ class PortletSlider extends PortletBase
     public function getDefaultProps()
     {
         return [
-            'urls' => [],
-            'url' => Shop::getURL() . '/gfx/keinBild.gif',
-            'alt' => '',
+            'articleIds' => [1]
         ];
     }
 }

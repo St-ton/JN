@@ -1,15 +1,35 @@
-<input type="hidden" id="img-url" name="url" value="{$properties.url}">
-<button type="button" class="btn btn-default jle-image-btn" onclick="jleHost.onOpenKCFinder(kcfinderCallback).bind(this, 42);">
-    {if isset($properties.url)}
-        <img src="{$properties.url}" id="image-btn-img">
-    {else}
-        Bild auswählen
-    {/if}
-</button>
+
+{include file='tpl_inc/searchpicker_modal.tpl'
+    searchPickerName='articlePicker'
+    modalTitle='Artikel ausw&auml;hlen'
+    searchInputLabel='Suche nach Artikelnamen'
+}
+
+<input type="hidden" name="articleIds" value="">
+
 <script>
-    function kcfinderCallback(num, url) {
-        console.log(num);
-        $('#img-url').val(url);
-        $('#image-btn-img').attr('src', url);
+    $(function () {
+        articlePicker = new SearchPicker({
+            searchPickerName:  'articlePicker',
+            getDataIoFuncName: 'getProducts',
+            keyName:           'cArtNr',
+            renderItemCb:      function (item) {
+                return '<p class="list-group-item-text">' + item.cName + ' <em>(' + item.cArtNr + ')</em></p>';
+            },
+            onApply:           onApplySelectedArticles,
+            selectedKeysInit:  [{$properties.articleIds|implode:','}]
+        });
+        onApplySelectedArticles(articlePicker.getSelection());
+        $('#articlePicker-modal').modal('show')
+    });
+    function onApplySelectedArticles(selectedArticles)
+    {
+        if (selectedArticles.length > 0) {
+//            $('#articleSelectionInfo').val(selectedArticles.length + ' Artikel');
+//            $('#cArtikel').val(selectedArticles.join(';') + ';');
+        } else {
+//            $('#articleSelectionInfo').val('Alle Artikel');
+//            $('#cArtikel').val('');
+        }
     }
 </script>

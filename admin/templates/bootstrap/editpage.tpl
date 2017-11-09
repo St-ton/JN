@@ -16,6 +16,7 @@
     <script src="{$templateUrl}js/bootstrap.min.js"></script>
     <script src="{$templateUrl}js/split.min.js"></script>
     <script src="{$templateUrl}js/global.js"></script>
+    <script src="{$templateUrl}js/searchpicker.js"></script>
     <script src="//cdn.ckeditor.com/4.7.3/basic/ckeditor.js"></script>
 
     <script src="{$templateUrl}js/jtl-live-editor/jle-host.js"></script>
@@ -23,7 +24,10 @@
     <script>
         $(function () {
             jleHost = new JLEHost(
-                '{$smarty.session.jtl_token}', '{$templateUrl}', '{$PFAD_KCFINDER}', '{$cKey}', {$kKey}, {$kSprache}
+                '{$smarty.session.jtl_token}',
+                '{$templateUrl}',
+                '{$PFAD_KCFINDER}',
+                '{$cKey}', {$kKey}, {$kSprache}
             );
         });
     </script>

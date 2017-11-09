@@ -8,16 +8,26 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_PORTLETS . 'class.Por
 /**
  * Class PortletHeading
  */
-class PortletImage extends PortletBase
+class PortletButton extends PortletBase
 {
+    /**
+     * @return string
+     */
     public function getPreviewHtml($renderLinks = false)
     {
+//        Shop::dbg($this->properties, false);
+
         // general
-        $url   = $this->properties['url'];
-        $alt   = StringHandler::filterXSS($this->properties['alt']);
-        $shape = StringHandler::filterXSS($this->properties['shape']);
-        $title = StringHandler::filterXSS($this->properties['title']);
-        $class = StringHandler::filterXSS($this->properties['class']);
+        $text          = $this->properties['button-text'];
+        $type          = $this->properties['button-type'];
+        $size          = $this->properties['button-size'];
+        $alignment     = $this->properties['button-alignment'];
+        $fullWidthflag = $this->properties['button-full-width-flag'];
+        $class         = $this->properties['button-class'];
+        // icon
+        $iconFlag      = $this->properties['button-icon-flag'];
+        $icon          = $this->properties['button-icon'];
+        $iconAlignment = $this->properties['button-icon-alignment'];
         // URL
         $linkFlag       = $this->properties['link-flag'];
         $linkUrl        = $this->properties['link-url'];
@@ -46,8 +56,39 @@ class PortletImage extends PortletBase
         $this->properties['style']['border-style']        = $this->properties['border-style'];
         $this->properties['style']['border-color']        = $this->properties['border-color'];
 
+        $previewButton  = "<a class='btn btn-$type btn-$size";
+        $previewButton .= !empty($class) ? " $class" : "";
+        $previewButton .= ($fullWidthflag == 'yes') ? " btn-block" : "";
+        $previewButton .= "'";
+
+        if ($renderLinks && $linkFlag == 'yes' && !empty($linkUrl)) {
+            $previewButton .= " href='$linkUrl' title='$linkTitle'";
+            $previewButton .= !empty($linkNewTabFlag) ? " target='_blank'" : "";
+        }
+
+        $previewButton .= $this->style_str() . ">";
+        if ($iconFlag == 'yes' && $icon != '') {
+            if ($iconAlignment == 'left') {
+                $previewButton .= "<i class='$icon' style='top:2px'></i> $text</a>";
+            } else {
+                $previewButton .= "$text <i class='$icon' style='top:2px'></i></a>";
+            }
+        } else {
+            $previewButton .= "$text</a>";
+        }
+        /*return $previewButton;*/
+
+        if (!empty($alignment)) {
+            if ($alignment != 'inline') {
+                $this->properties['attr']['class'] = ((!empty($class)) ? $class : '') . ' text-' . $alignment;
+            } else {
+                $this->properties['style']['display'] = 'inline-block';
+            }
+        }
+
+        $this->properties['attr']['class'] = (!empty($this->properties['attr']['class'])) ? $this->properties['attr']['class'] : '';
         if (!empty($animationStyle)){
-            $class .= ' wow '.$animationStyle;
+            $this->properties['attr']['class'] .= ' wow '.$animationStyle;
             if (!empty($animationDuration) && trim($animationDuration) != ''){
                 $this->properties['attr']['data-wow-duration'] = $animationDuration;
             }
@@ -62,39 +103,39 @@ class PortletImage extends PortletBase
             }
         }
 
-        $content = "<img class=\"img-responsive $shape $class\" src=\"$url\" alt=\"$alt\" title=\"$title\"" . $this->attr_str() . $this->style_str() .">";
-
-        if ($renderLinks && $linkFlag == 'yes' && !empty($linkUrl)) {
-            if ($linkNewTabFlag) {
-                $content = '<a href="' . $linkUrl . '" title="' . $linkTitle . '" target="_blank">' . $content . '</a>';
-            } else {
-                $content = '<a href="' . $linkUrl . '" title="' . $linkTitle . '">' . $content . '</a>';
-            }
-        }
+        $content  = '';
+        $content .= "<div".$this->attr_str()."> \n";
+        $content .= $previewButton."\n";
+        $content .= "</div> \n";
 
         return $content;
     }
 
+    /**
+     * @return string
+     */
     public function getFinalHtml()
     {
         return $this->getPreviewHtml(true);
     }
 
-    public function getConfigPanelHtml()
-    {
-        return Shop::Smarty()
-            ->assign('properties', $this->properties)
-            ->fetch('tpl_inc/portlets/settings.image.tpl');
-    }
-
+    /**
+     * @return array
+     */
     public function getDefaultProps()
     {
         return [
-            'url' => Shop::getURL() . '/gfx/keinBild.gif',
-            'alt' => '',
-            'shape' => '',
-            'title' => '',
-            'class' => '',
+            // general
+            'button-text'                => 'Button Text',
+            'button-type'                => 'default',
+            'button-size'                => 'md',
+            'button-alignment'           => 'inline',
+            'button-full-width-flag'     => 'no',
+            'button-class'               => '',
+            // icon
+            'button-icon-flag'           => 'no',
+            'button-icon'                => '',
+            'button-icon-alignment'      => 'left',
             // URL
             'link-flag'           => 'no',
             'link-url'            => '',
@@ -122,6 +163,17 @@ class PortletImage extends PortletBase
             'border-left-width'   => '',
             'border-style'        => '',
             'border-color'        => ''
+
         ];
+    }
+
+    /**
+     * @return string
+     */
+    public function getConfigPanelHtml()
+    {
+        return Shop::Smarty()
+            ->assign('properties', $this->properties)
+            ->fetch('tpl_inc/portlets/settings.button.tpl');
     }
 }

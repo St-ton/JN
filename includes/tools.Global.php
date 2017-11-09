@@ -7007,7 +7007,7 @@ function getLiveEditParameters($kSprache)
         }
     }
 
-    $oLiveEditParams->cSeo  = $oSeo->cSeo;
+    $oLiveEditParams->cSeo = !empty($oSeo->cSeo) ? $oSeo->cSeo : null;
 
     return $oLiveEditParams;
 }

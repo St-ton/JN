@@ -11,12 +11,13 @@
     <link rel="stylesheet" href="{$templateUrl}css/bootstrap-theme.min.css">
     <link rel="stylesheet" href="{$templateUrl}css/font-awesome.min.css">
     <link rel="stylesheet" href="{$templateUrl}css/jtl-live-editor/jle-host.css">
+    <link rel="stylesheet" href="{$templateUrl}js/bootstrap-colorpicker/css/bootstrap-colorpicker.min.css">
 
     <script src="{$templateUrl}js/jquery-1.12.4.min.js"></script>
     <script src="{$templateUrl}js/bootstrap.min.js"></script>
     <script src="{$templateUrl}js/split.min.js"></script>
     <script src="{$templateUrl}js/global.js"></script>
-    <script src="//cdn.ckeditor.com/4.7.3/basic/ckeditor.js"></script>
+    <script src="{$templateUrl}js/bootstrap-colorpicker/js/bootstrap-colorpicker.min.js"></script>
 
     <script src="{$templateUrl}js/jtl-live-editor/jle-host.js"></script>
 

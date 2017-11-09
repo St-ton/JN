@@ -10,13 +10,13 @@
 }
 
 .jle-hovered {
-    box-shadow: inset 0 0 8px #0f0 !important;
-    /*border: 1px dashed #0f0 !important;*/
+    box-shadow: inset 0 0 8px #5cbcf6 !important;
+    /*border: 1px dashed #5cbcf6 !important;*/
     cursor: pointer;
 }
 
 .jle-selected {
-    outline: 1px dashed #00f !important;
+    outline: 1px dashed #5cbcf6 !important;
     cursor: pointer;
     /*position: relative;*/
 }
@@ -26,30 +26,30 @@
 }
 
 .jle-droptarget {
-    box-shadow: inset 0 0 8px #f00 !important;
-    /*border: 1px dashed #f00 !important;*/
+    box-shadow: inset 0 0 8px #5cb85c !important;
+    /*border: 1px dashed #207e99 !important;*/
     /*position: relative;*/
 }
 
 .jle-adjacent-left {
-    border-left: 2px dashed #f0f !important;
+    border-left: 2px dashed #5cb85c !important;
 }
 
 .jle-adjacent-right {
-    border-right: 2px dashed #f0f !important;
+    border-right: 2px dashed #5cb85c !important;
 }
 
 .jle-adjacent-above {
-    border-top: 2px dashed #f0f !important;
+    border-top: 2px dashed #5cb85c !important;
 }
 
 .jle-adjacent-below {
-    border-bottom: 2px dashed #f0f !important;
+    border-bottom: 2px dashed #5cb85c !important;
 }
 
 .jle-label {
     position: absolute;
-    background-color: #090;
+    background-color: #5cbcf6;
     color: #fff;
     min-width: 1em;
     min-height: 1em;

@@ -14,7 +14,7 @@
                         <i class="fa fa-check-square-o text-muted"></i>
                         {if $Einstellungen.navigationsfilter.merkmal_anzeigen_als !== 'T' &&
                         !empty($MerkmalWert->cBildpfadKlein) &&
-                        $MerkmalWert->cBildpfadKlein !== $BILD_KEIN_MERKMALBILD_VORHANDEN}
+                        $MerkmalWert->cBildpfadKlein !== $BILD_KEIN_MERKMALWERTBILD_VORHANDEN}
                             <img src="{$MerkmalWert->cBildpfadKlein}" alt="{$MerkmalWert->cWert|escape:'html'}" class="vmiddle" />
                         {/if}
                         {if $Einstellungen.navigationsfilter.merkmal_anzeigen_als !== 'B'}
@@ -31,7 +31,7 @@
                         <i class="fa fa-square-o text-muted"></i>
                         {if $Einstellungen.navigationsfilter.merkmal_anzeigen_als !== 'T' &&
                         !empty($MerkmalWert->cBildpfadKlein) &&
-                        $MerkmalWert->cBildpfadKlein !== $BILD_KEIN_MERKMALBILD_VORHANDEN}
+                        $MerkmalWert->cBildpfadKlein !== $BILD_KEIN_MERKMALWERTBILD_VORHANDEN}
                             <img src="{$MerkmalWert->cBildpfadKlein}" alt="{$MerkmalWert->cWert|escape:'html'}" class="vmiddle" />
                         {/if}
                         {if $Einstellungen.navigationsfilter.merkmal_anzeigen_als !== 'B'}

@@ -1959,8 +1959,7 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
     && is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['Boxes'])
         ? $XML_arr['jtlshop3plugin'][0]['Install'][0]['Boxes'][0]['Box']
         : [];
-    $checkboxesNode = isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['CheckBoxFunction'],
-        $XML_arr['jtlshop3plugin'][0]['Install'][0]['CheckBoxFunction'][0]['Function'])
+    $checkboxesNode = isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['CheckBoxFunction'][0]['Function'])
     && is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['CheckBoxFunction'])
     && is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['CheckBoxFunction'][0]['Function'])
     && count($XML_arr['jtlshop3plugin'][0]['Install'][0]['CheckBoxFunction'][0]['Function']) > 0
@@ -1970,9 +1969,9 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
     is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['ExtendedTemplates'])
         ? (array)$XML_arr['jtlshop3plugin'][0]['Install'][0]['ExtendedTemplates'][0]['Template']
         : [];
-    $mailNode       = isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['Emailtemplate'])
-    && is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['Emailtemplate'])
-        ? $XML_arr['jtlshop3plugin'][0]['Install'][0]['Emailtemplate']
+    $mailNode       = isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['Emailtemplate'][0]['Template'])
+    && is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['Emailtemplate'][0]['Template'])
+        ? $XML_arr['jtlshop3plugin'][0]['Install'][0]['Emailtemplate'][0]['Template']
         : [];
     $localeNode     = isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['Locales'][0]['Variable'])
         ? $XML_arr['jtlshop3plugin'][0]['Install'][0]['Locales'][0]['Variable']
@@ -2710,7 +2709,7 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
         preg_match("/[0-9]+/", $u, $cTreffer2_arr);
 
         $oTemplate = new stdClass();
-        if (strlen($cTreffer2_arr[0]) === strlen($u)) {
+        if (strlen($cTreffer2_arr[0]) !== strlen($u)) {
             continue;
         }
         $oTemplate->kPlugin       = $kPlugin;
@@ -2757,7 +2756,6 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
         // nachgetragen. Dafür wird die erste Sprache vom Plugin als Standard genutzt.
         $bTemplateStandard   = false;
         $oTemplateSpracheStd = new stdClass();
-
         foreach ($Template_arr['TemplateLanguage'] as $l => $TemplateLanguage_arr) {
             preg_match("/[0-9]+\sattr/", $l, $cTreffer1_arr);
             preg_match("/[0-9]+/", $l, $cTreffer2_arr);
@@ -2797,20 +2795,20 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
         }
         // Sind noch Sprachen im Shop die das Plugin nicht berücksichtigt?
         if (count($oSprachAssoc_arr) > 0) {
-                foreach ($oSprachAssoc_arr as $oSprachAssoc) {
-                    //$oSprache = $oSprachAssoc;
-                    if ($oSprachAssoc->kSprache > 0) {
-                        // tpluginemailvorlagesprache füllen
-                        $oTemplateSpracheStd->kSprache = $oSprachAssoc->kSprache;
+            foreach ($oSprachAssoc_arr as $oSprachAssoc) {
+                //$oSprache = $oSprachAssoc;
+                if ($oSprachAssoc->kSprache > 0) {
+                    // tpluginemailvorlagesprache füllen
+                    $oTemplateSpracheStd->kSprache = $oSprachAssoc->kSprache;
 
-                        if (!isset($oPluginOld->kPlugin) || !$oPluginOld->kPlugin) {
-                            Shop::DB()->insert('tpluginemailvorlagesprache', $oTemplateSpracheStd);
-                        }
-
-                        Shop::DB()->insert('tpluginemailvorlagespracheoriginal', $oTemplateSpracheStd);
+                    if (!isset($oPluginOld->kPlugin) || !$oPluginOld->kPlugin) {
+                        Shop::DB()->insert('tpluginemailvorlagesprache', $oTemplateSpracheStd);
                     }
+
+                    Shop::DB()->insert('tpluginemailvorlagespracheoriginal', $oTemplateSpracheStd);
                 }
             }
+        }
     }
     // tpluginsprachvariable + tpluginsprachvariablesprache füllen
     $oSprachStandardAssoc_arr = gibAlleSprachen(2);

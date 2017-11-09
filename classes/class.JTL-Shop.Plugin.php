@@ -845,6 +845,7 @@ class Plugin
      */
     public static function bootstrapper($kPlugin)
     {
+        $kPlugin = (int)$kPlugin;
         if (!isset(self::$bootstrapper[$kPlugin])) {
             $plugin = new self($kPlugin);
 

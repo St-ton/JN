@@ -117,4 +117,35 @@ abstract class PortletBase
 
         return $this;
     }
+
+    protected function attr_str(){
+        $attr_str = '';
+        if (!empty($this->properties['attr']) && is_array($this->properties['attr'])) {
+            foreach ($this->properties['attr'] as $name => $value) {
+                if (trim($value) != '') {
+                    $attr_str .= $name . '="' . htmlspecialchars($value, ENT_QUOTES) . '" ';
+                }
+            }
+        }
+
+        return ($attr_str != '') ? ' ' . $attr_str : '';
+    }
+
+    protected function style_str(){
+        $style_str = '';
+        if (!empty($this->properties['style']) && is_array($this->properties['style'])) {
+            foreach ($this->properties['style'] as $name => $value) {
+                if (trim($value) != '') {
+                    if (stripos($name, 'margin-') !== false || stripos($name, 'padding-') !== false || stripos($name,
+                            '-width') !== false) {
+                        $style_str .= $name . ':' . htmlspecialchars($value, ENT_QUOTES) . 'px;';
+                    } else {
+                        $style_str .= $name . ':' . htmlspecialchars($value, ENT_QUOTES) . ';';
+                    }
+                }
+            }
+        }
+
+        return ($style_str != '') ? ' style="' . $style_str . '"' : '';
+    }
 }

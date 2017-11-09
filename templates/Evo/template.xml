@@ -168,6 +168,7 @@
         <CSS Name="evo.css">
             <File Path="themes/evo/bootstrap.css"/>
             <File Path="themes/base/offcanvas-menu.css"/>
+            <File Path="themes/base/animate.css"/>
             <File Path="themes/base/pnotify.custom.css"/>
             <File Path="themes/base/jquery-slider.css"/>
             <File Path="themes/evo/custom.css"/>
@@ -175,6 +176,7 @@
         <CSS Name="bootstrap.css">
             <File Path="themes/bootstrap/bootstrap.css"/>
             <File Path="themes/base/offcanvas-menu.css"/>
+            <File Path="themes/base/animate.css"/>
             <File Path="themes/base/pnotify.custom.css"/>
             <File Path="themes/base/jquery-slider.css"/>
             <File Path="themes/bootstrap/custom.css"/>
@@ -182,6 +184,7 @@
         <CSS Name="cerulean.css">
             <File Path="themes/cerulean/bootstrap.css"/>
             <File Path="themes/base/offcanvas-menu.css"/>
+            <File Path="themes/base/animate.css"/>
             <File Path="themes/base/pnotify.custom.css"/>
             <File Path="themes/base/jquery-slider.css"/>
             <File Path="themes/cerulean/custom.css"/>
@@ -189,6 +192,7 @@
         <CSS Name="cosmo.css">
             <File Path="themes/cosmo/bootstrap.css"/>
             <File Path="themes/base/offcanvas-menu.css"/>
+            <File Path="themes/base/animate.css"/>
             <File Path="themes/base/pnotify.custom.css"/>
             <File Path="themes/base/jquery-slider.css"/>
             <File Path="themes/cosmo/custom.css"/>
@@ -196,6 +200,7 @@
         <CSS Name="cyborg.css">
             <File Path="themes/cyborg/bootstrap.css"/>
             <File Path="themes/base/offcanvas-menu.css"/>
+            <File Path="themes/base/animate.css"/>
             <File Path="themes/base/pnotify.custom.css"/>
             <File Path="themes/base/jquery-slider.css"/>
             <File Path="themes/cyborg/custom.css"/>
@@ -203,6 +208,7 @@
         <CSS Name="darkly.css">
             <File Path="themes/darkly/bootstrap.css"/>
             <File Path="themes/base/offcanvas-menu.css"/>
+            <File Path="themes/base/animate.css"/>
             <File Path="themes/base/pnotify.custom.css"/>
             <File Path="themes/base/jquery-slider.css"/>
             <File Path="themes/darkly/custom.css"/>
@@ -210,6 +216,7 @@
         <CSS Name="flatly.css">
             <File Path="themes/flatly/bootstrap.css"/>
             <File Path="themes/base/offcanvas-menu.css"/>
+            <File Path="themes/base/animate.css"/>
             <File Path="themes/base/pnotify.custom.css"/>
             <File Path="themes/base/jquery-slider.css"/>
             <File Path="themes/flatly/custom.css"/>
@@ -217,6 +224,7 @@
         <CSS Name="journal.css">
             <File Path="themes/journal/bootstrap.css"/>
             <File Path="themes/base/offcanvas-menu.css"/>
+            <File Path="themes/base/animate.css"/>
             <File Path="themes/base/pnotify.custom.css"/>
             <File Path="themes/base/jquery-slider.css"/>
             <File Path="themes/journal/custom.css"/>
@@ -224,6 +232,7 @@
         <CSS Name="lumen.css">
             <File Path="themes/lumen/bootstrap.css"/>
             <File Path="themes/base/offcanvas-menu.css"/>
+            <File Path="themes/base/animate.css"/>
             <File Path="themes/base/pnotify.custom.css"/>
             <File Path="themes/base/jquery-slider.css"/>
             <File Path="themes/lumen/custom.css"/>
@@ -231,6 +240,7 @@
         <CSS Name="paper.css">
             <File Path="themes/paper/bootstrap.css"/>
             <File Path="themes/base/offcanvas-menu.css"/>
+            <File Path="themes/base/animate.css"/>
             <File Path="themes/base/pnotify.custom.css"/>
             <File Path="themes/base/jquery-slider.css"/>
             <File Path="themes/paper/custom.css"/>
@@ -238,6 +248,7 @@
         <CSS Name="sandstone.css">
             <File Path="themes/sandstone/bootstrap.css"/>
             <File Path="themes/base/offcanvas-menu.css"/>
+            <File Path="themes/base/animate.css"/>
             <File Path="themes/base/pnotify.custom.css"/>
             <File Path="themes/base/jquery-slider.css"/>
             <File Path="themes/sandstone/custom.css"/>
@@ -245,6 +256,7 @@
         <CSS Name="simplex.css">
             <File Path="themes/simplex/bootstrap.css"/>
             <File Path="themes/base/offcanvas-menu.css"/>
+            <File Path="themes/base/animate.css"/>
             <File Path="themes/base/pnotify.custom.css"/>
             <File Path="themes/base/jquery-slider.css"/>
             <File Path="themes/simplex/custom.css"/>
@@ -252,6 +264,7 @@
         <CSS Name="slate.css">
             <File Path="themes/slate/bootstrap.css"/>
             <File Path="themes/base/offcanvas-menu.css"/>
+            <File Path="themes/base/animate.css"/>
             <File Path="themes/base/pnotify.custom.css"/>
             <File Path="themes/base/jquery-slider.css"/>
             <File Path="themes/slate/custom.css"/>
@@ -259,6 +272,7 @@
         <CSS Name="spacelab.css">
             <File Path="themes/spacelab/bootstrap.css"/>
             <File Path="themes/base/offcanvas-menu.css"/>
+            <File Path="themes/base/animate.css"/>
             <File Path="themes/base/pnotify.custom.css"/>
             <File Path="themes/base/jquery-slider.css"/>
             <File Path="themes/spacelab/custom.css"/>
@@ -266,6 +280,7 @@
         <CSS Name="united.css">
             <File Path="themes/united/bootstrap.css"/>
             <File Path="themes/base/offcanvas-menu.css"/>
+            <File Path="themes/base/animate.css"/>
             <File Path="themes/base/pnotify.custom.css"/>
             <File Path="themes/base/jquery-slider.css"/>
             <File Path="themes/united/custom.css"/>
@@ -273,6 +288,7 @@
         <CSS Name="yeti.css">
             <File Path="themes/yeti/bootstrap.css"/>
             <File Path="themes/base/offcanvas-menu.css"/>
+            <File Path="themes/base/animate.css"/>
             <File Path="themes/base/pnotify.custom.css"/>
             <File Path="themes/base/jquery-slider.css"/>
             <File Path="themes/yeti/custom.css"/>
@@ -304,6 +320,7 @@
             <File Path="js/slick.js"/>
             <File Path="js/spin.js"/>
             <File Path="js/global.js"/>
+            <File Path="js/wow.min.js"/>
             <File Path="js/Chart.js" DependsOnSettingGroup="CONF_PREISVERLAUF" DependsOnSetting="preisverlauf.preisverlauf_anzeigen" DependsOnSettingValue="Y"/>
         </JS>
     </Minify>

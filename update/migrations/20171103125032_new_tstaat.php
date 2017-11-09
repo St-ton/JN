@@ -27,9 +27,9 @@ class Migration_20171103125032 extends Migration implements IMigration
 
     /**
      * ATTENTION:
-     * We're using here the Shop::DB-object, not this object, to evoid the utf8_convert_recursive()-function
-     * from the MigrationTrait (trait.JTL-Shop.Migration.php) which is currupting our strings.
-     *
+     * We're using here the Shop::DB-object to write into the database, not $this object,
+     * to avoid the utf8_convert_recursive()-function from the MigrationTrait
+     * (trait.JTL-Shop.Migration.php) which is currupting our strings.
      */
     public function up()
     {
@@ -1254,12 +1254,14 @@ SET NAMES latin1;
 
 SQL;
 
+		/*$this->execute($szSql);  see above for explanation*/
         Shop::DB()->executeQuery($szSql, 3);
     }
 
     public function down()
     {
 		$szSql = <<<SQL
+
 DROP TABLE IF EXISTS `tstaat`;
 
 CREATE TABLE IF NOT EXISTS `tstaat` (
@@ -1272,7 +1274,7 @@ CREATE TABLE IF NOT EXISTS `tstaat` (
     , KEY `cName` (`cName`)
     , KEY `cCode` (`cCode`)
 );
-/*let the appropiated client dicide here, which charset is used*/
+/*let the appropiated client decide here, which charset is used*/
 
 INSERT INTO
     `tstaat`(`kStaat`, `cLandIso`, `cName`, `cCode`)

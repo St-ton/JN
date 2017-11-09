@@ -25,9 +25,9 @@ class PortletButton extends PortletBase
         $fullWidthflag = $this->properties['button-full-width-flag'];
         $class         = $this->properties['button-class'];
         // icon
-        $iconFlag      = $this->properties['button-icon-flag'];
-        $icon          = $this->properties['button-icon'];
-        $iconAlignment = $this->properties['button-icon-alignment'];
+        $iconFlag      = $this->properties['icon-flag'];
+        $icon          = $this->properties['icon'];
+        $iconAlignment = $this->properties['icon-alignment'];
         // URL
         $linkFlag       = $this->properties['link-flag'];
         $linkUrl        = $this->properties['link-url'];
@@ -133,9 +133,9 @@ class PortletButton extends PortletBase
             'button-full-width-flag'     => 'no',
             'button-class'               => '',
             // icon
-            'button-icon-flag'           => 'no',
-            'button-icon'                => '',
-            'button-icon-alignment'      => 'left',
+            'icon-flag'           => 'no',
+            'icon'                => '',
+            'icon-alignment'      => 'left',
             // URL
             'link-flag'           => 'no',
             'link-url'            => '',

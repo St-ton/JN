@@ -951,9 +951,9 @@ class Template
             $cUrlShop_arr    = parse_url(Shop::getURL());
             $ref             = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
             $cUrlReferer_arr = parse_url($ref);
-            if ($bRedirect &&
-                $ref !== '' &&
-                (strtolower($cUrlShop_arr['host']) === strtolower($cUrlReferer_arr['host']))
+            if ($bRedirect
+                && $ref !== ''
+                && (strtolower($cUrlShop_arr['host']) === strtolower($cUrlReferer_arr['host']))
             ) {
                 $cReferer = preg_replace('/&?mt=[^&]*/', '', $_SERVER['HTTP_REFERER']);
                 header('Location: ' . $cReferer);

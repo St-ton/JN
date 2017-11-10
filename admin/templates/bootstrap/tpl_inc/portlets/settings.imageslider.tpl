@@ -260,10 +260,10 @@
         {function name=slide level=0}
             <tr class="text-vcenter" id="{$kSlide}">
                 <td class="tcenter">
-                    <input id="{$kSlide}-url" type="hidden" name="aSlide[{$kSlide}][url]"
+                    <input id="{$kSlide}-url" type="hidden" name="slides[{$kSlide}][url]"
                            value="{if isset($oSlide->cBild)}{$oSlide->cBild}{/if}"/>
-                    <input type="hidden" class="form-control" id="aSlide[{$kSlide}][nSort]"
-                           name="aSlide[{$kSlide}][nSort]" value="{if $kSlide}{$smarty.foreach.slide.iteration}{/if}"
+                    <input type="hidden" class="form-control" id="slides[{$kSlide}][nSort]"
+                           name="slides[{$kSlide}][nSort]" value="{if $kSlide}{$smarty.foreach.slide.iteration}{/if}"
                            autocomplete="off"/>
                     <i class="btn btn-primary fa fa-bars"></i>
                 </td>
@@ -273,12 +273,12 @@
                             alt="Slidergrafik" class="img-responsive" role="button"/></td>
                 <td class="tcenter">
                     <input class="form-control margin2" id="cTitel{$kSlide}" type="text"
-                           name="aSlide[{$kSlide}][cTitel]" value="{if isset($oSlide->cTitel)}{$oSlide->cTitel}{/if}"
+                           name="slides[{$kSlide}][cTitel]" value="{if isset($oSlide->cTitel)}{$oSlide->cTitel}{/if}"
                            placeholder="Titel"/>
-                    <input class="form-control margin2" id="cLink{$kSlide}" type="text" name="aSlide[{$kSlide}][cLink]"
+                    <input class="form-control margin2" id="cLink{$kSlide}" type="text" name="slides[{$kSlide}][cLink]"
                            value="{if isset($oSlide->cLink)}{$oSlide->cLink}{/if}" placeholder="Link"/>
                 </td>
-                <td><textarea class="form-control vheight" id="cText{$kSlide}" name="aSlide[{$kSlide}][cText]"
+                <td><textarea class="form-control vheight" id="cText{$kSlide}" name="slides[{$kSlide}][cText]"
                               maxlength="255"
                               placeholder="Text">{if isset($oSlide->cText)}{$oSlide->cText}{/if}</textarea></td>
                 <td class="vcenter">
@@ -305,39 +305,7 @@
                             </tr>
                             </thead>
                             <tbody>
-                                <tr class="text-vcenter" id="slide0">
-                                    <td class="tcenter">
-                                        <input id ="slide0-url" type="hidden" name="aSlide[0][url]" value="{if isset($oSlide->cBild)}{$oSlide->cBild}{/if}" />
-                                        <input type="hidden" class="form-control" id="aSlide[0][nSort]" name="aSlide[0][nSort]" value="0" autocomplete="off" />
-                                        <i class="btn btn-primary fa fa-bars"></i>
-                                    </td>
-                                    <td class="tcenter">
-                                        <img src="{if isset($oSlide->cBildAbsolut)}{$oSlide->cBildAbsolut}{else}templates/bootstrap/gfx/layout/upload.png{/if}"
-                                             id="slide0-img"
-                                             onclick="jleHost.onOpenKCFinder(kcfinderCallback.bind(this, 'slide0'));"
-                                             alt="Slidergrafik" class="img-responsive" role="button"/>
-                                    </td>
-                                    <td class="tcenter">
-                                        <input class="form-control margin2" id="cTitel0" type="text"
-                                               name="aSlide[0][cTitel]"
-                                               value="{if isset($oSlide->cTitel)}{$oSlide->cTitel}{/if}"
-                                               placeholder="Titel"/>
-                                        <input class="form-control margin2" id="cLink0" type="text"
-                                               name="aSlide[0][cLink]"
-                                               value="{if isset($oSlide->cLink)}{$oSlide->cLink}{/if}"
-                                               placeholder="Link"/>
-                                    </td>
-                                    <td><textarea class="form-control vheight" id="cText0" name="aSlide[0][cText]"
-                                                  maxlength="255"
-                                                  placeholder="Text">{if isset($oSlide->cText)}{$oSlide->cText}{/if}</textarea>
-                                    </td>
-                                    <td class="vcenter">
-                                        <button type="button"
-                                                onclick="$(this).parent().parent().remove();sortSlide();"
-                                                class="slide_delete btn btn-danger btn-block fa fa-trash"
-                                                title="L&ouml;schen"></button>
-                                    </td>
-                                </tr>
+                               {*slides werden hier hinzugefügt*}
                             </tbody>
                         </table>
                     </div>
@@ -352,7 +320,6 @@
         </div>
         <script>
             function kcfinderCallback(id, url) {
-                console.log(id, url);
                 $('#'+id+'-url').val(url);
                 $('#'+id+'-img').attr('src', url);
             }
@@ -360,20 +327,31 @@
             var count = 0;
             function addSlide(slide) {
                 var new_slide = $('#newSlide').html();
-                new_slide = new_slide.replace(/NEU/g, "neu"+count);
+                new_slide = new_slide.replace(/NEU/g, "slide"+count);
                 $('#tableSlide tbody').append( new_slide );
                 count++;
                 sortSlide();
             }
 
             function sortSlide() {
-                console.log('sort');
                 $("input[name*='\[nSort\]']").each(function(index) {
                     console.log(index);
                     $(this).val(index+1);
                 });
             }
-
+            $(function(){
+                $("#tableSlide tbody ").sortable({
+                    containerSelector: 'table',
+                    itemPath: '> tbody',
+                    itemSelector: 'tr',
+                    opacity : '0',
+                    axis : "y",
+                    cursor: "move",
+                    stop : function(item) {
+                        sortSlide();
+                    }
+                });
+            });
         </script>
     </div>
     {include file='./settings.tabcontent.style.tpl'}

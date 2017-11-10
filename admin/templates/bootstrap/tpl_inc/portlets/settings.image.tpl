@@ -50,6 +50,12 @@
                 </div>
             </div>
         </div>
+        <script>
+            function kcfinderCallback(url) {
+                $('#img-url').val(url);
+                $('#image-btn-img').attr('src', url);
+            }
+        </script>
     </div>
     {include file='./settings.tabcontent.url.tpl'}
     {include file='./settings.tabcontent.animation.tpl'}

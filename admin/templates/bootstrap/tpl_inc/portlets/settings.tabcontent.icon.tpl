@@ -154,6 +154,14 @@
                 $('#config-modal-body #span-button-icon').append($(this).addClass('fa-lg'));
                 $('#font-icons-container').toggle();
             });
+            $("#icons .fa").tooltip({
+                html : true,
+                title: function() {
+                    var ret = $(this).attr('class');
+
+                    return '<i class="' + ret + '" style="font-size: 50px;"></i>';
+                },
+            });
         });
     </script>
 </div>

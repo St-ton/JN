@@ -26,21 +26,7 @@ class PortletHeading extends PortletBase
         $animationOffset    = $this->properties['animation-offset'];
         $animationIteration = $this->properties['animation-iteration'];
         // style
-        $this->properties['style']['background-color']    = $this->properties['background-color'];
-        $this->properties['style']['margin-top']          = $this->properties['margin-top'];
-        $this->properties['style']['margin-right']        = $this->properties['margin-right'];
-        $this->properties['style']['margin-bottom']       = $this->properties['margin-bottom'];
-        $this->properties['style']['margin-left']         = $this->properties['margin-left'];
-        $this->properties['style']['padding-top']         = $this->properties['padding-top'];
-        $this->properties['style']['padding-right']       = $this->properties['padding-right'];
-        $this->properties['style']['padding-bottom']      = $this->properties['padding-bottom'];
-        $this->properties['style']['padding-left']        = $this->properties['padding-left'];
-        $this->properties['style']['border-top-width']    = $this->properties['border-top-width'];
-        $this->properties['style']['border-right-width']  = $this->properties['border-right-width'];
-        $this->properties['style']['border-bottom-width'] = $this->properties['border-bottom-width'];
-        $this->properties['style']['border-left-width']   = $this->properties['border-left-width'];
-        $this->properties['style']['border-style']        = $this->properties['border-style'];
-        $this->properties['style']['border-color']        = $this->properties['border-color'];
+        // $this->properties['style']
 
         if (!empty($animationStyle)){
             $class .= ' wow '.$animationStyle;
@@ -85,21 +71,23 @@ class PortletHeading extends PortletBase
             'animation-offset'    => '',
             'animation-iteration' => '',
             // style
-            'margin-top'          => '',
-            'margin-right'        => '',
-            'margin-bottom'       => '',
-            'margin-left'         => '',
-            'background-color'    => '',
-            'padding-top'         => '',
-            'padding-right'       => '',
-            'padding-bottom'      => '',
-            'padding-left'        => '',
-            'border-top-width'    => '',
-            'border-right-width'  => '',
-            'border-bottom-width' => '',
-            'border-left-width'   => '',
-            'border-style'        => '',
-            'border-color'        => ''
+            'style' => [
+                'margin-top'          => '',
+                'margin-right'        => '',
+                'margin-bottom'       => '',
+                'margin-left'         => '',
+                'background-color'    => '',
+                'padding-top'         => '',
+                'padding-right'       => '',
+                'padding-bottom'      => '',
+                'padding-left'        => '',
+                'border-top-width'    => '',
+                'border-right-width'  => '',
+                'border-bottom-width' => '',
+                'border-left-width'   => '',
+                'border-style'        => '',
+                'border-color'        => '',
+            ],
         ];
     }
 

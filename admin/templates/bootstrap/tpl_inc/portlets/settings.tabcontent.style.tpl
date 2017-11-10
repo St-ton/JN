@@ -3,7 +3,7 @@
         <label for="background-color" class="col-sm-4 form-control-static">Background color</label>
         <div class="col-sm-4">
             <div class="input-group background-color-picker colorpicker-element">
-                <input type="text" class="form-control" name="background-color" id="background-color" value="{$properties['background-color']}">
+                <input type="text" class="form-control" name="style[background-color]" id="background-color" value="{$properties['style']['background-color']}">
                 <span class="input-group-addon"><i style="margin-right: 0px;"></i></span>
             </div>
         </div>
@@ -15,28 +15,28 @@
             <div class="row">
                 <div class="col-sm-3">
                     <div class="input-group">
-                        <input type="text" class="form-control" name="margin-top" value="{$properties['margin-top']}">
+                        <input type="text" class="form-control" name="style[margin-top]" value="{$properties['style']['margin-top']}">
                         <span class="input-group-addon">px</span>
                     </div>
                     <span class="help-block">Top</span>
                 </div>
                 <div class="col-sm-3">
                     <div class="input-group">
-                        <input type="text" class="form-control" name="margin-right" value="{$properties['margin-right']}">
+                        <input type="text" class="form-control" name="style[margin-right]" value="{$properties['style']['margin-right']}">
                         <span class="input-group-addon">px</span>
                     </div>
                     <span class="help-block">Right</span>
                 </div>
                 <div class="col-sm-3">
                     <div class="input-group">
-                        <input type="text" class="form-control" name="margin-bottom" value="{$properties['margin-bottom']}">
+                        <input type="text" class="form-control" name="style[margin-bottom]" value="{$properties['style']['margin-bottom']}">
                         <span class="input-group-addon">px</span>
                     </div>
                     <span class="help-block">Bottom</span>
                 </div>
                 <div class="col-sm-3">
                     <div class="input-group">
-                        <input type="text" class="form-control" name="margin-left" value="{$properties['margin-left']}">
+                        <input type="text" class="form-control" name="style[margin-left]" value="{$properties['style']['margin-left']}">
                         <span class="input-group-addon">px</span>
                     </div>
                     <span class="help-block">Left</span>
@@ -50,28 +50,28 @@
             <div class="row">
                 <div class="col-sm-3">
                     <div class="input-group">
-                        <input type="text" class="form-control" name="padding-top" id="padding-top" value="{$properties['padding-top']}">
+                        <input type="text" class="form-control" name="style[padding-top]" id="padding-top" value="{$properties['style']['padding-top']}">
                         <span class="input-group-addon">px</span>
                     </div>
                     <span class="help-block">Top</span>
                 </div>
                 <div class="col-sm-3">
                     <div class="input-group">
-                        <input type="text" class="form-control" name="padding-right" id="padding-right" value="{$properties['padding-right']}">
+                        <input type="text" class="form-control" name="style[padding-right]" id="padding-right" value="{$properties['style']['padding-right']}">
                         <span class="input-group-addon">px</span>
                     </div>
                     <span class="help-block">Right</span>
                 </div>
                 <div class="col-sm-3">
                     <div class="input-group">
-                        <input type="text" class="form-control" name="padding-bottom" id="padding-bottom" value="{$properties['padding-bottom']}">
+                        <input type="text" class="form-control" name="style[padding-bottom]" id="padding-bottom" value="{$properties['style']['padding-bottom']}">
                         <span class="input-group-addon">px</span>
                     </div>
                     <span class="help-block">Bottom</span>
                 </div>
                 <div class="col-sm-3">
                     <div class="input-group">
-                        <input type="text" class="form-control" name="padding-left" id="padding-left" value="{$properties['padding-left']}">
+                        <input type="text" class="form-control" name="style[padding-left]" id="padding-left" value="{$properties['style']['padding-left']}">
                         <span class="input-group-addon">px</span>
                     </div>
                     <span class="help-block">Left</span>
@@ -86,28 +86,28 @@
             <div class="row">
                 <div class="col-sm-3">
                     <div class="input-group">
-                        <input type="text" class="form-control" name="border-top-width" id="border-top-width" value="{$properties['border-top-width']}">
+                        <input type="text" class="form-control" name="style[border-top-width]" id="border-top-width" value="{$properties['style']['border-top-width']}">
                         <span class="input-group-addon">px</span>
                     </div>
                     <span class="help-block">Top</span>
                 </div>
                 <div class="col-sm-3">
                     <div class="input-group">
-                        <input type="text" class="form-control" name="border-right-width" id="border-right-width" value="{$properties['border-right-width']}">
+                        <input type="text" class="form-control" name="style[border-right-width]" id="border-right-width" value="{$properties['style']['border-right-width']}">
                         <span class="input-group-addon">px</span>
                     </div>
                     <span class="help-block">Right</span>
                 </div>
                 <div class="col-sm-3">
                     <div class="input-group">
-                        <input type="text" class="form-control" name="border-bottom-width" id="border-bottom-width" value="{$properties['border-bottom-width']}">
+                        <input type="text" class="form-control" name="style[border-bottom-width]" id="border-bottom-width" value="{$properties['style']['border-bottom-width']}">
                         <span class="input-group-addon">px</span>
                     </div>
                     <span class="help-block">Bottom</span>
                 </div>
                 <div class="col-sm-3">
                     <div class="input-group">
-                        <input type="text" class="form-control" name="border-left-width" id="border-left-width" value="{$properties['border-left-width']}">
+                        <input type="text" class="form-control" name="style[border-left-width]" id="border-left-width" value="{$properties['style']['border-left-width']}">
                         <span class="input-group-addon">px</span>
                     </div>
                     <span class="help-block">Left</span>
@@ -118,25 +118,25 @@
     </div>
     <div class="row">
         <div class="col-sm-4 col-sm-offset-2">
-            <select  class="form-control" name="border-style" id="border-style">
+            <select  class="form-control" name="style[border-style]" id="border-style">
                 <option value=""></option>
-                <option value="none"{if $properties['border-style'] === 'none'} selected{/if}>none</option>
-                <option value="hidden"{if $properties['border-style'] === 'hidden'} selected{/if}>hidden</option>
-                <option value="dotted"{if $properties['border-style'] === 'dotted'} selected{/if}>dotted</option>
-                <option value="dashed"{if $properties['border-style'] === 'dashed'} selected{/if}>dashed</option>
-                <option value="solid"{if $properties['border-style'] === 'solid'} selected{/if}>solid</option>
-                <option value="double"{if $properties['border-style'] === 'double'} selected{/if}>double</option>
-                <option value="groove"{if $properties['border-style'] === 'groove'} selected{/if}>groove</option>
-                <option value="ridge"{if $properties['border-style'] === 'ridge'} selected{/if}>ridge</option>
-                <option value="inset"{if $properties['border-style'] === 'inset'} selected{/if}>inset</option>
-                <option value="outset"{if $properties['border-style'] === 'outset'} selected{/if}>outset</option>
-                <option value="initial"{if $properties['border-style'] === 'initial'} selected{/if}>initial</option>
-                <option value="inherit"{if $properties['border-style'] === 'inherit'} selected{/if}>inherit</option>
+                <option value="none"{if $properties['style']['border-style'] === 'none'} selected{/if}>none</option>
+                <option value="hidden"{if $properties['style']['border-style'] === 'hidden'} selected{/if}>hidden</option>
+                <option value="dotted"{if $properties['style']['border-style'] === 'dotted'} selected{/if}>dotted</option>
+                <option value="dashed"{if $properties['style']['border-style'] === 'dashed'} selected{/if}>dashed</option>
+                <option value="solid"{if $properties['style']['border-style'] === 'solid'} selected{/if}>solid</option>
+                <option value="double"{if $properties['style']['border-style'] === 'double'} selected{/if}>double</option>
+                <option value="groove"{if $properties['style']['border-style'] === 'groove'} selected{/if}>groove</option>
+                <option value="ridge"{if $properties['style']['border-style'] === 'ridge'} selected{/if}>ridge</option>
+                <option value="inset"{if $properties['style']['border-style'] === 'inset'} selected{/if}>inset</option>
+                <option value="outset"{if $properties['style']['border-style'] === 'outset'} selected{/if}>outset</option>
+                <option value="initial"{if $properties['style']['border-style'] === 'initial'} selected{/if}>initial</option>
+                <option value="inherit"{if $properties['style']['border-style'] === 'inherit'} selected{/if}>inherit</option>
             </select> <span class="help-block">Style</span>
         </div>
         <div class="col-sm-4">
             <div class="input-group border-color-picker colorpicker-element">
-                <input type="text" class="form-control" name="border-color" id="border-color" value="{$properties['border-color']}">
+                <input type="text" class="form-control" name="style[border-color]" id="border-color" value="{$properties['style']['border-color']}">
                 <span class="input-group-addon"><i style="margin-right: 0px;"></i></span>
             </div>
             <span class="help-block">Color</span>

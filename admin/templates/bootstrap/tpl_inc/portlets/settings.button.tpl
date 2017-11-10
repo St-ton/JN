@@ -60,7 +60,6 @@
                         <label class="radio-inline">
                             <input type="radio" name="button-full-width-flag" id="button-full-width-flag-1" value="yes"{if $properties['button-full-width-flag'] === 'yes'} checked="checked"{/if}> Yes
                         </label>
-
                     </div>
                 </div>
             </div>

@@ -59,7 +59,7 @@ class LinkHelper
     /**
      * singleton
      *
-     * @return LinkHelper|null
+     * @return LinkHelper
      */
     public static function getInstance()
     {

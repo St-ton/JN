@@ -3,7 +3,6 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once PFAD_ROOT . PFAD_CLASSES  . 'class.JTL-Shop.Warenkorb.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'artikel_inc.php';
 
 $io = IO::getInstance();
@@ -108,8 +107,6 @@ function pushToBasket($kArtikel, $anzahl, $oEigenschaftwerte_arr = '')
     /** @var array('Warenkorb' => Warenkorb) $_SESSION */
     global $Einstellungen, $smarty;
 
-    require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Artikel.php';
-    require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Sprache.php';
     require_once PFAD_ROOT . PFAD_INCLUDES . 'boxen.php';
     require_once PFAD_ROOT . PFAD_INCLUDES . 'artikel_inc.php';
     require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';

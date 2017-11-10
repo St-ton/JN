@@ -12,15 +12,6 @@ require_once __DIR__ . '/../includes/config.JTL-Shop.ini.php';
 require_once __DIR__ . '/../includes/defines.php';
 error_reporting(SYNC_LOG_LEVEL);
 // basic classes
-require_once PFAD_ROOT . PFAD_CLASSES_CORE . 'class.core.NiceDB.php';
-require_once PFAD_ROOT . PFAD_CLASSES_CORE . 'class.core.NiceMail.php';
-require_once PFAD_ROOT . PFAD_CLASSES_CORE . 'class.core.Nice.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Synclogin.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Template.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Sprache.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Path.php';
-// global helper
-require_once PFAD_ROOT . PFAD_INCLUDES . 'tools.Global.php';
 require_once PFAD_ROOT . PFAD_BLOWFISH . 'xtea.class.php';
 // database
 //$DB = new NiceDB(DB_HOST, DB_USER, DB_PASS, DB_NAME);

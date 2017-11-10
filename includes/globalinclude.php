@@ -91,7 +91,6 @@ if (!JTL_INCLUDE_ONLY_DB) {
     // An jedem Hook hängt ein Array mit Plugin die diesen Hook benutzen
     $oPluginHookListe_arr = Plugin::getHookList();
     $nSystemlogFlag       = Jtllog::getSytemlogFlag();
-    require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Jtllog.php';
     // Mobil-Template
     $template = Template::getInstance();
     $template->check(true);

@@ -3,8 +3,6 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once PFAD_ROOT . PFAD_CLASSES_CORE . 'class.core.NiceMail.php';
-require_once PFAD_ROOT . PFAD_PHPMAILER . 'PHPMailerAutoload.php';
 
 /**
  * @param array $params
@@ -248,7 +246,6 @@ function sendeMail($ModulId, $Object, $mail = null)
                 $langID = isset($_SESSION['cISOSprache'])
                     ? $_SESSION['cISOSprache']
                     : 'ger'; //workaround for testmails from backend
-                require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.TrustedShops.php';
                 $oTrustedShops                = new TrustedShops(-1, StringHandler::convertISO2ISO639($langID));
                 $oTrustedShopsKundenbewertung = $oTrustedShops->holeKundenbewertungsstatus(
                     StringHandler::convertISO2ISO639($langID)
@@ -285,7 +282,6 @@ function sendeMail($ModulId, $Object, $mail = null)
             }
             // Trusted Shops
             if ($Einstellungen['trustedshops']['trustedshops_kundenbewertung_anzeigen'] === 'Y') {
-                require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.TrustedShops.php';
                 $oTrustedShops                = new TrustedShops(
                     -1,
                     StringHandler::convertISO2ISO639($_SESSION['cISOSprache'])
@@ -329,7 +325,6 @@ function sendeMail($ModulId, $Object, $mail = null)
             $mailSmarty->assign('Bestellung', $Object->tbestellung);
             // Trusted Shops
             if ($Einstellungen['trustedshops']['trustedshops_kundenbewertung_anzeigen'] === 'Y') {
-                require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.TrustedShops.php';
                 $oTrustedShops                = new TrustedShops(
                     -1,
                     StringHandler::convertISO2ISO639($_SESSION['cISOSprache'])
@@ -398,7 +393,6 @@ function sendeMail($ModulId, $Object, $mail = null)
 
             // Trusted Shops
             if ($Einstellungen['trustedshops']['trustedshops_kundenbewertung_anzeigen'] === 'Y') {
-                require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.TrustedShops.php';
                 $oTrustedShops                = new TrustedShops(
                     -1,
                     StringHandler::convertISO2ISO639($_SESSION['cISOSprache'])

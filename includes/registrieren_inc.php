@@ -34,7 +34,6 @@ function kundeSpeichern($cPost_arr)
     $cKundenattribut_arr = getKundenattribute($cPost_arr);
     $kKundengruppe       = Session::CustomerGroup()->getID();
     // CheckBox Plausi
-    require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.CheckBox.php';
     $oCheckBox       = new CheckBox();
     $fehlendeAngaben = array_merge(
         $fehlendeAngaben,

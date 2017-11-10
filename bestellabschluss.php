@@ -104,7 +104,6 @@ $startKat->kKategorie   = 0;
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 // Trusted Shops Kaeuferschutz Classic
 if (isset($Einstellungen['trustedshops']['trustedshops_nutzen']) && $Einstellungen['trustedshops']['trustedshops_nutzen'] === 'Y') {
-    require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.TrustedShops.php';
     $oTrustedShops = new TrustedShops(-1, StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
 
     if ((int)$oTrustedShops->nAktiv === 1 && strlen($oTrustedShops->tsId) > 0) {

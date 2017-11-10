@@ -4091,8 +4091,6 @@ function gibTrustedShopsBewertenButton($cMail, $cBestellNr)
 {
     $oURLTrustedShopsBewerten = null;
     if (strlen($cMail) > 0 && strlen($cBestellNr) > 0) {
-        require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.TrustedShops.php';
-
         $cValidSprachISO_arr = ['de', 'en', 'fr', 'pl', 'es'];
         if (in_array(StringHandler::convertISO2ISO639($_SESSION['cISOSprache']), $cValidSprachISO_arr, true)) {
             $oTrustedShops                = new TrustedShops(-1, StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));

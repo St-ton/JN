@@ -688,7 +688,6 @@ function gibStepZahlung()
             if ($nZahglungsartStatus === 2) {
                 // Prüfen ab es ein Trusted Shops Zertifikat gibt
                 if ($conf['trustedshops']['trustedshops_nutzen'] === 'Y') {
-                    require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.TrustedShops.php';
                     $oTrustedShops = new TrustedShops(-1, StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
                 }
                 if (isset($oTrustedShops->tsId) &&

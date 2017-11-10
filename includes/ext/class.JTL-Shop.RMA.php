@@ -87,7 +87,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
                 $this->oRMAStatus = new RMAStatus($this->kRMAStatus);
 
                 if ($bCustomer) {
-                    require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Kunde.php';
                     $this->oKunde = new Kunde($this->kKunde);
                 }
 
@@ -383,9 +382,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         public static function getOrderProducts($kBestellung)
         {
-            require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Bestellung.php';
-            require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Trennzeichen.php';
-
             $kBestellung = (int)$kBestellung;
             $oBestellung = new Bestellung();
 
@@ -785,9 +781,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
                 $kBestellung = (int)$kBestellung;
 
                 if ($kBestellung > 0) {
-                    require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Bestellung.php';
                     $oPositionAssoc_arr = Bestellung::getOrderPositions($kBestellung);
-
                     foreach ($kArtikel_arr as $kArtikel) {
                         $kArtikel            = (int)$kArtikel;
                         $fRMAArtikelQuantity = RMAArtikel::getRMAQuantity($kBestellung, $kArtikel);

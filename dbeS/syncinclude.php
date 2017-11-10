@@ -26,7 +26,6 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'plugin_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'parameterhandler.php';
 require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'admin_tools.php';
-require_once PFAD_ROOT . PFAD_CLASSES_CORE . 'class.core.Shop.php';
 
 $shop = Shop::getInstance();
 error_reporting(SYNC_LOG_LEVEL);
@@ -538,13 +537,9 @@ function versendeVerfuegbarkeitsbenachrichtigung($oArtikel)
         );
         if (is_array($Benachrichtigungen) && count($Benachrichtigungen) > 0) {
             require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
-            require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Bestellung.php';
-            require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Artikel.php';
             require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
-            require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Kampagne.php';
 
-            $Artikel = new Artikel();
-            $Artikel->fuelleArtikel($oArtikel->kArtikel, Artikel::getDefaultOptions());
+            $Artikel = (new Artikel())->fuelleArtikel($oArtikel->kArtikel, Artikel::getDefaultOptions());
             // Kampagne
             $oKampagne = new Kampagne(KAMPAGNE_INTERN_VERFUEGBARKEIT);
             if (isset($oKampagne->kKampagne) && $oKampagne->kKampagne > 0) {
@@ -809,7 +804,6 @@ function checkDbeSXmlRedirect($cSeoOld, $cSeoNew)
 {
     // Insert into tredirect weil sich das SEO von der Kategorie geändert hat
     if ($cSeoOld !== $cSeoNew && strlen($cSeoOld) > 0 && strlen($cSeoNew) > 0) {
-        require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Redirect.php';
         $oRedirect = new Redirect();
         $xPath_arr = parse_url(Shop::getURL());
         if (isset($xPath_arr['path'])) {

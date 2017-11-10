@@ -108,9 +108,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
 
             // Load complete product object
             if ($bProductObject) {
-                require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Artikel.php';
-                $this->oArtikel = new Artikel();
-                $this->oArtikel->fuelleArtikel($kArtikel, Artikel::getDefaultOptions(), $kKundengruppe, $kSprache);
+                $this->oArtikel = (new Artikel())
+                    ->fuelleArtikel($kArtikel, Artikel::getDefaultOptions(), $kKundengruppe, $kSprache);
             }
         }
 
@@ -337,8 +336,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
                 count($kArtikel_arr) > 0 &&
                 count($cRMAPostAssoc_arr) > 0
             ) {
-                require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Bestellung.php';
-
                 foreach ($kArtikel_arr as $kArtikel) {
                     $fRMAArtikelQuantity = self::getRMAQuantity($kBestellung, $kArtikel); // Bereits zurueckgeschickte Anzahl
 

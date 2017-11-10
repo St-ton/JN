@@ -80,11 +80,11 @@ $io
     ->register('redirectCheckAvailability', ['Redirect', 'checkAvailability'])
     ->register('updateRedirectState', null, $redirectInc, 'REDIRECT_VIEW')
     // CMS Live Editor
-    ->register('getPortletPreviewHtml', null, $editpageInc, 'CONTENT_PAGE_VIEW')
-    ->register('getPortletConfigPanelHtml', null, $editpageInc, 'CONTENT_PAGE_VIEW')
-    ->register('getPortletDefaultProps', null, $editpageInc, 'CONTENT_PAGE_VIEW')
-    ->register('saveCmsPage', null, $editpageInc, 'CONTENT_PAGE_VIEW')
-    ->register('loadCmsPage', null, $editpageInc, 'CONTENT_PAGE_VIEW')
+    ->register('getPortletPreviewHtml', ['CMS', 'getPortletPreviewHtml'], null, 'CONTENT_PAGE_VIEW')
+    ->register('getPortletConfigPanelHtml', ['CMS', 'getPortletConfigPanelHtml'], null, 'CONTENT_PAGE_VIEW')
+    ->register('getPortletDefaultProps', ['CMS', 'getPortletDefaultProps'], null, 'CONTENT_PAGE_VIEW')
+    ->register('saveCmsPage', ['CMS', 'saveCmsPage'], null, 'CONTENT_PAGE_VIEW')
+    ->register('getCmsPageJson', ['CMS', 'getCmsPageJson'], null, 'CONTENT_PAGE_VIEW')
     // Other
     ->register('getRandomPassword', 'getRandomPasswordIO', $accountInc, 'ACCOUNT_VIEW')
     ->register('saveBannerAreas', 'saveBannerAreasIO', $bannerInc, 'DISPLAY_BANNER_VIEW')

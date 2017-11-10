@@ -11,12 +11,12 @@
                 {*<div id="editForm">
                     <button id="btn-start-cms" class="btn btn-primary">Go Edit</button>
                 </div>*}
-                <form id="start-editor" action="admin/editpage.php" method="get" class="form-group" data-ed-sprache="{$smarty.session.kSprache}"
-                      data-ed-cKey="{$oLiveEditParams->cKey}" data-ed-kKey="{$oLiveEditParams->kKey}">
-                    <input type="hidden" name="cKey" value="{$oLiveEditParams->cKey}">
-                    <input type="hidden" name="kKey" value="{$oLiveEditParams->kKey}">
-                    <input type="hidden" name="kSprache" value="{$smarty.session.kSprache}">
-                    {if !empty($oLiveEditParams->oContent)}
+                <form id="start-editor" action="admin/editpage.php" method="get" class="form-group" data-ed-sprache="{$oCMSPageParams->kSprache}"
+                      data-ed-cKey="{$oCMSPageParams->cKey}" data-ed-kKey="{$oCMSPageParams->kKey}">
+                    <input type="hidden" name="cKey" value="{$oCMSPageParams->cKey}">
+                    <input type="hidden" name="kKey" value="{$oCMSPageParams->kKey}">
+                    <input type="hidden" name="kSprache" value="{$oCMSPageParams->kSprache}">
+                    {if !empty($oCMSPage->cFinalHtml_arr)}
                         <p>
                             {*todo editor: standard herstellen prüfen*}
                             <button type="submit" name="cAction" class="btn btn-default" value="restore_default">Standardinhalt wiederherstellen</button>

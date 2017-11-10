@@ -19,6 +19,7 @@ function ShopAutoload($class)
 {
     $classPaths = [
         PFAD_ROOT . PFAD_CLASSES,
+        PFAD_ROOT . PFAD_CLASSES . PFAD_PORTLETS,
         PFAD_ROOT . PFAD_ADMIN . PFAD_CLASSES,
         PFAD_ROOT . PFAD_INCLUDES_EXT,
         PFAD_ROOT . PFAD_CLASSES_CORE

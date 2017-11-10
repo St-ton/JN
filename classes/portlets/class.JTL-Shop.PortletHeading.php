@@ -3,12 +3,11 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_PORTLETS . 'class.PortletBase.php';
 
 /**
  * Class PortletHeading
  */
-class PortletHeading extends PortletBase
+class PortletHeading extends CMSPortlet
 {
     /**
      * @return string

@@ -10,7 +10,6 @@
  */
 
 require_once __DIR__ . '/includes/admininclude.php';
-require_once __DIR__ . '/includes/editpage_inc.php';
 
 $oAccount->permission('CONTENT_PAGE_VIEW', true, true);
 
@@ -20,7 +19,7 @@ $kSprache = verifyGPCDataInteger('kSprache');
 $cAction  = verifyGPDataString('cAction');
 $oSeo     = Shop::DB()->select('tseo', ['cKey', 'kKey', 'kSprache'], [$cKey, $kKey, $kSprache]);
 
-$oPortlet_arr = getPortlets();
+$oPortlet_arr = CMS::getPortlets();
 
 $smarty
     ->assign('templateUrl', Shop::getURL() . '/' . PFAD_ADMIN . $currentTemplateDir)

@@ -29,13 +29,6 @@ class Migration_20171102121900 extends Migration implements IMigration
             cJson LONGTEXT
         )");
 
-        $this->execute("CREATE TABLE tcmspagecontent (
-            kPageContent INT AUTO_INCREMENT PRIMARY KEY,
-            kPage INT NOT NULL,
-            cAreaId VARCHAR(255) NOT NULL,
-            cHtml LONGTEXT
-        )");
-
         $this->execute("INSERT INTO tcmsportlet (kPlugin, cTitle, cClass, cGroup)
             VALUES (0, 'Heading', 'Heading', 'Elements')");
 
@@ -53,6 +46,5 @@ class Migration_20171102121900 extends Migration implements IMigration
     {
         $this->execute("DROP TABLE tcmsportlet");
         $this->execute("DROP TABLE tcmspage");
-        $this->execute("DROP TABLE tcmspagecontent");
     }
 }

@@ -69,7 +69,7 @@ JLEHost.prototype.liveEditorLoaded = function()
 
     // this.iframeCtx.jtlToken = jtlToken;
 
-    ioCall('loadCmsPage', [this.cKey, this.kKey, this.kSprache], function(data) {
+    ioCall('getCmsPageJson', [this.cKey, this.kKey, this.kSprache], function(data) {
         this.editor.loadFromJson(data, ioCall);
     }.bind(this));
 };

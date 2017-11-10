@@ -148,7 +148,7 @@
                         </section><section id="spinner">
                             <h4 class="page-header">Spinner Icons</h4>
                             <div class="fontawesome-icon-list">
-                                <i class="fa fa-circle-o-notch"></i><i class="fa fa-cog"></i><i class="fa fa-gear"></i><i class="fa fa-refresh"></i><i class="fa fa-spinner"></i>
+                                <i class="fa fa-circle-o-notch fa-spin"></i><i class="fa fa-cog"></i><i class="fa fa-gear"></i><i class="fa fa-refresh"></i><i class="fa fa-spinner"></i>
                             </div>
                         </section><section id="form-control">
                             <h4 class="page-header">Form Control Icons</h4>

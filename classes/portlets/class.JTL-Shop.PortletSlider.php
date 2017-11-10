@@ -3,12 +3,11 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_PORTLETS . 'class.PortletBase.php';
 
 /**
  * Class PortletSlider
  */
-class PortletSlider extends PortletBase
+class PortletSlider extends CMSPortlet
 {
     public function getPreviewHtml()
     {
@@ -19,6 +18,9 @@ class PortletSlider extends PortletBase
     {
         $articleIds   = $this->properties['articleIds'];
         $oArtikel_arr = [];
+
+//        $options = self::getDefaultOptions();
+//        $options->
 
         foreach ($articleIds as $kArtikel) {
             $kArtikel = (int)$kArtikel;

@@ -26,8 +26,8 @@
     {else}
         <div id="result-wrapper" itemprop="mainEntity" itemscope  itemtype="http://schema.org/Product" itemid="{$ShopURL}/{$Artikel->cSeo}">
             <meta itemprop="url" content="{$ShopURL}/{$Artikel->cSeo}">
-            {if (!empty($oLiveEditParams->oContent['editor_replace_all']) && empty($smarty.get.frontedit))}
-                {$oLiveEditParams->oContent['editor_replace_all']}
+            {if (!empty($oCMSPage->cFinalHtml_arr['editor_replace_all']) && empty($smarty.get.frontedit))}
+                {$oCMSPage->cFinalHtml_arr['editor_replace_all']}
             {elseif (!empty($smarty.get.frontedit) && !empty($smarty.get.method) && $smarty.get.method === 'replace')}
                 <div id="editor_replace_all" class="jle-editable"></div>
             {else}

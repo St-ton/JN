@@ -10,8 +10,8 @@
     {/block}
     
     {block name="content"}
-        {if (!empty($oLiveEditParams->oContent['editor_replace_all']) && empty($smarty.get.editpage))}
-            {$oLiveEditParams->oContent['editor_replace_all']}
+        {if !empty($oCMSPage->cFinalHtml_arr['editor_replace_all']) && empty($smarty.get.editpage)}
+            {$oCMSPage->cFinalHtml_arr['editor_replace_all']}
         {elseif (!empty($smarty.get.editpage) && !empty($smarty.get.action) && $smarty.get.action === 'replace')}
             <div id="editor_replace_all" class="jle-editable"></div>
         {else}

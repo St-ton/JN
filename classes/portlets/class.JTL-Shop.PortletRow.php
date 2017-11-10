@@ -3,13 +3,11 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_PORTLETS . 'class.PortletBase.php';
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'editpage_inc.php';
 
 /**
  * Class PortletRow
  */
-class PortletRow extends PortletBase
+class PortletRow extends CMSPortlet
 {
     public function getPreviewHtml()
     {
@@ -39,7 +37,7 @@ class PortletRow extends PortletBase
             $res     .= '<div class="col-xs-' . $col . ' jle-subarea">';
 
             foreach ($subArea as $subPortlet) {
-                $portlet        = createPortlet($subPortlet['portletId'])
+                $portlet        = CMS::createPortlet($subPortlet['portletId'])
                     ->setProperties($subPortlet['properties'])
                     ->setSubAreas($subPortlet['subAreas']);
                 $subPortletHtml = $portlet->getFinalHtml();

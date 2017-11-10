@@ -5,9 +5,9 @@
  */
 
 /**
- * Class PortletBase
+ * Class CMSPortlet
  */
-abstract class PortletBase
+abstract class CMSPortlet
 {
     /**
      * @var int
@@ -118,7 +118,8 @@ abstract class PortletBase
         return $this;
     }
 
-    protected function attr_str(){
+    protected function attr_str()
+    {
         $attr_str = '';
         if (!empty($this->properties['attr']) && is_array($this->properties['attr'])) {
             foreach ($this->properties['attr'] as $name => $value) {

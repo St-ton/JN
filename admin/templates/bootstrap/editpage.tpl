@@ -48,13 +48,13 @@
             <div class="collapse navbar-collapse" id="le-navbar-collapse">
                 <ul class="nav navbar-nav">
                     <li>
-                        <a href="#" onclick="$('#jle-iframe').width('100%');"><i class="fa fa-television"></i></a>
+                        <a href="#" onclick="$('#iframe').width('100%');"><i class="fa fa-television"></i></a>
                     </li>
                     <li>
-                        <a href="#" onclick="$('#jle-iframe').width('768px');"><i class="fa fa-tablet"></i></a>
+                        <a href="#" onclick="$('#iframe').width('768px');"><i class="fa fa-tablet"></i></a>
                     </li>
                     <li>
-                        <a href="#" onclick="$('#jle-iframe').width('375px');"><i class="fa fa-mobile"></i></a>
+                        <a href="#" onclick="$('#iframe').width('375px');"><i class="fa fa-mobile"></i></a>
                     </li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">

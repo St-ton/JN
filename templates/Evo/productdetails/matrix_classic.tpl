@@ -11,7 +11,7 @@
                         {if $Artikel->oVariBoxMatrixBild_arr|@count > 0 && (($Artikel->nIstVater == 1 && $Artikel->oVariBoxMatrixBild_arr[0]->nRichtung == 0) || $Artikel->nIstVater == 0)}
                             {foreach name="vorschaubild" from=$Artikel->oVariBoxMatrixBild_arr item=oVariBoxMatrixBild}
                                 {if $oVariBoxMatrixBild->kEigenschaftWert == $oVariationWertHead->kEigenschaftWert}
-                                    <img src="{$oVariBoxMatrixBild->cBild}" class=img-responsive" alt=""><br>
+                                    <img src="{$oVariBoxMatrixBild->cBild}" class="img-responsive" alt=""><br>
                                 {/if}
                             {/foreach}
                         {/if}

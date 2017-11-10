@@ -29,12 +29,12 @@ class PortletSlider extends CMSPortlet
             $oArtikel_arr[] = $p;
         }
 
-        return Shop::Smarty()
+        return (new JTLSmarty(true))
             ->assign('properties', $this->properties)
             ->assign('productlist', $oArtikel_arr)
             ->assign('title', 'Produkte')
             ->assign('Einstellungen', Shop::getConfig([CONF_BEWERTUNG]))
-            ->fetch('tpl_inc/portlets/final.slider.tpl');
+            ->fetch('portlets/final.slider.tpl');
     }
 
     public function getConfigPanelHtml()

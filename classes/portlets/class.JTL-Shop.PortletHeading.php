@@ -44,8 +44,8 @@ class PortletHeading extends CMSPortlet
      */
     public function getConfigPanelHtml()
     {
-        return Shop::Smarty()
+        return (new JTLSmarty(true))
             ->assign('properties', $this->properties)
-            ->fetch('tpl_inc/portlets/settings.heading.tpl');
+            ->fetch('portlets/settings.heading.tpl');
     }
 }

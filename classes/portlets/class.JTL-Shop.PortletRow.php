@@ -54,9 +54,9 @@ class PortletRow extends CMSPortlet
 
     public function getConfigPanelHtml()
     {
-        return Shop::Smarty()
+        return (new JTLSmarty(true))
             ->assign('properties', $this->properties)
-            ->fetch('tpl_inc/portlets/settings.row.tpl');
+            ->fetch('portlets/settings.row.tpl');
     }
 
     public function getDefaultProps()

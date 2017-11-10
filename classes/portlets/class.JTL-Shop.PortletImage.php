@@ -81,9 +81,9 @@ class PortletImage extends CMSPortlet
 
     public function getConfigPanelHtml()
     {
-        return Shop::Smarty()
+        return (new JTLSmarty(true))
             ->assign('properties', $this->properties)
-            ->fetch('tpl_inc/portlets/settings.image.tpl');
+            ->fetch('portlets/settings.image.tpl');
     }
 
     public function getDefaultProps()

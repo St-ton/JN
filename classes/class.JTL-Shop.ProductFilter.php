@@ -103,7 +103,7 @@ class ProductFilter
     /**
      * @var int
      */
-    private $articleLimit = 0;
+    private $productLimit = 0;
 
     /**
      * @var int
@@ -187,7 +187,7 @@ class ProductFilter
      */
     private static $mapping = [
         'nAnzahlFilter'      => 'FilterCount',
-        'nAnzahlProSeite'    => 'ArticleLimit',
+        'nAnzahlProSeite'    => 'ProductLimit',
         'Kategorie'          => 'Category',
         'KategorieFilter'    => 'CategoryFilter',
         'Hersteller'         => 'Manufacturer',
@@ -268,12 +268,12 @@ class ProductFilter
     }
 
     /**
-     * @param bool $articles
+     * @param bool $products
      * @return stdClass
      */
-    public function getSearchResults($articles = true)
+    public function getSearchResults($products = true)
     {
-        return $articles === true && isset($this->searchResults->Artikel->elemente)
+        return $products === true && isset($this->searchResults->Artikel->elemente)
             ? $this->searchResults->Artikel->elemente
             : $this->searchResults;
     }
@@ -381,18 +381,18 @@ class ProductFilter
     /**
      * @return int
      */
-    public function getArticleLimit()
+    public function getProductLimit()
     {
-        return $this->articleLimit;
+        return $this->productLimit;
     }
 
     /**
      * @param int $limit
      * @return $this
      */
-    public function setArticleLimit($limit)
+    public function setProductLimit($limit)
     {
-        $this->articleLimit = (int)$limit;
+        $this->productLimit = (int)$limit;
 
         return $this;
     }
@@ -550,7 +550,7 @@ class ProductFilter
             $this->nSortierung = (int)$params['nSortierung'];
         }
         if ($params['nArtikelProSeite'] > 0) {
-            $this->articleLimit = (int)$params['nArtikelProSeite'];
+            $this->productLimit = (int)$params['nArtikelProSeite'];
         }
         if ($params['kSuchanfrage'] > 0) {
             $oSuchanfrage = Shop::DB()->select('tsuchanfrage', 'kSuchanfrage', $params['kSuchanfrage']);
@@ -1430,10 +1430,10 @@ class ProductFilter
     /**
      * @return int
      */
-    public function getArticlesPerPageLimit()
+    public function getProductsPerPageLimit()
     {
-        if ($this->articleLimit > 0) {
-            $limit = (int)$this->getArticleLimit();
+        if ($this->productLimit > 0) {
+            $limit = (int)$this->getProductLimit();
         } elseif (isset($_SESSION['ArtikelProSeite']) && $_SESSION['ArtikelProSeite'] > 0) {
             $limit = (int)$_SESSION['ArtikelProSeite'];
         } elseif (isset($_SESSION['oErweiterteDarstellung']->nAnzahlArtikel)
@@ -1510,7 +1510,7 @@ class ProductFilter
             'state' => $state->getClassName() . $state->getValue(),
             'page'  => $this->nSeite,
             'order' => $this->getOrder(),
-            'app'   => $this->getArticlesPerPageLimit(),
+            'app'   => $this->getProductsPerPageLimit(),
             'lid'   => $this->getLanguageID(),
             'cgrp'  => $this->getCustomerGroupID()
         ];
@@ -1524,23 +1524,23 @@ class ProductFilter
     /**
      * @param bool           $forProductListing - if true, return $oSuchergebnisse object, otherwise keys only
      * @param Kategorie|null $currentCategory
-     * @param bool           $fillArticles - if true, return Artikel class instances, otherwise keys only
+     * @param bool           $fillProducts - if true, return Artikel class instances, otherwise keys only
      * @param int            $limit
      * @return stdClass|Collection
      */
-    public function getProducts($forProductListing = true, $currentCategory = null, $fillArticles = true, $limit = 0)
+    public function getProducts($forProductListing = true, $currentCategory = null, $fillProducts = true, $limit = 0)
     {
         $_SESSION['nArtikelUebersichtVLKey_arr'] = []; // Nur Artikel, die auch wirklich auf der Seite angezeigt werden
 
-        $limitPerPage = $limit > 0 ? $limit : $this->getArticlesPerPageLimit();
+        $limitPerPage = $limit > 0 ? $limit : $this->getProductsPerPageLimit();
         $nLimitN      = $limitPerPage * ($this->nSeite - 1);
         $max          = (int)$this->conf['artikeluebersicht']['artikeluebersicht_max_seitenzahl'];
         if ($this->searchResults === null) {
             $this->searchResults                       = new stdClass();
             $this->searchResults->Artikel              = new stdClass();
             $this->searchResults->Artikel->elemente    = new Collection();
-            $this->searchResults->Artikel->articleKeys = $this->getProductKeys();
-            $this->searchResults->GesamtanzahlArtikel  = count($this->searchResults->Artikel->articleKeys);
+            $this->searchResults->Artikel->productKeys = $this->getProductKeys();
+            $this->searchResults->GesamtanzahlArtikel  = count($this->searchResults->Artikel->productKeys);
 
             if (!empty($this->search->cSuche)) {
                 $this->search->saveQuery($this->searchResults->GesamtanzahlArtikel);
@@ -1573,7 +1573,7 @@ class ProductFilter
             // Header bauen
             $this->searchResults->SuchausdruckWrite = $this->metaData->getHeader();
         }
-        if ($fillArticles === true) {
+        if ($fillProducts === true) {
             // @todo: slice list of IDs when not filling?
             $opt                        = new stdClass();
             $opt->nMerkmale             = 1;
@@ -1586,17 +1586,17 @@ class ProductFilter
             $opt->nVariationDetailPreis = (int)$this->conf['artikeldetails']['artikel_variationspreisanzeige'] !== 0
                 ? 1
                 : 0;
-            foreach (array_slice($this->searchResults->Artikel->articleKeys, $nLimitN, $limitPerPage) as $id) {
-                $article = (new Artikel())->fuelleArtikel($id, $opt);
+            foreach (array_slice($this->searchResults->Artikel->productKeys, $nLimitN, $limitPerPage) as $id) {
+                $product = (new Artikel())->fuelleArtikel($id, $opt);
                 // Aktuelle Artikelmenge in die Session (Keine Vaterartikel)
-                if ($article !== null && $article->nIstVater === 0) {
+                if ($product !== null && $product->nIstVater === 0) {
                     $_SESSION['nArtikelUebersichtVLKey_arr'][] = $id;
                 }
-                $this->searchResults->Artikel->elemente->addItem($article);
+                $this->searchResults->Artikel->elemente->addItem($product);
             }
         }
         $this->createUnsetFilterURLs();
-        $_SESSION['oArtikelUebersichtKey_arr']   = $this->searchResults->Artikel->articleKeys;
+        $_SESSION['oArtikelUebersichtKey_arr']   = $this->searchResults->Artikel->productKeys;
         $_SESSION['nArtikelUebersichtVLKey_arr'] = [];
 
         return $forProductListing === true
@@ -1904,7 +1904,7 @@ class ProductFilter
         array $groupBy = ['tartikel.kArtikel']
     ) {
         $joins[] = (new FilterJoin())
-            ->setComment('article visiblity join from getBaseQuery')
+            ->setComment('product visiblity join from getBaseQuery')
             ->setType('LEFT JOIN')
             ->setTable('tartikelsichtbarkeit')
             ->setOrigin(__CLASS__)

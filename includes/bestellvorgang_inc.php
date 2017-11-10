@@ -4,6 +4,12 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --DEBUG--
+//include_once('/var/www/html/shop4_03/includes/vendor/apache/log4php/src/main/php/Logger.php');
+//Logger::configure('/var/www/html/shop4_03/_logging_conf.xml');
+$oLogger = Logger::getLogger('default');
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --DEBUG--
+
 /**
  *
  */
@@ -1990,6 +1996,7 @@ function angabenKorrekt($fehlendeAngaben)
  */
 function checkKundenFormularArray($data, $kundenaccount, $checkpass = 1)
 {
+    global $oLogger; // --DEBUG--
     $ret  = [];
     $conf = Shop::getSettings([CONF_KUNDEN, CONF_KUNDENFELD, CONF_GLOBAL]);
 
@@ -2076,6 +2083,7 @@ function checkKundenFormularArray($data, $kundenaccount, $checkpass = 1)
         if (!isset($_SESSION['Kunde']->cUSTID) ||
             (isset($_SESSION['Kunde']->cUSTID) && $_SESSION['Kunde']->cUSTID !== $data['ustid'])
         ) {
+/*
             $oUstID = new UstID(
                 $conf['kunden']['shop_ustid'],
                 StringHandler::filterXSS($data['ustid']),
@@ -2086,22 +2094,28 @@ function checkKundenFormularArray($data, $kundenaccount, $checkpass = 1)
                 'Nein',
                 (isset($data['hausnummer']) ? StringHandler::filterXSS($data['hausnummer']) : '')
             );
+*/
 
-
-            $oLogger->debug('data->ustid: '.print_r($data['ustid'],true )); // --DEBUG--
             //$VIES = new UstIDvies($data['ustid']); // --DEBUG--
+            //$oLogger->debug('data->ustid: '.print_r($data['ustid'],true )); // --DEBUG--
 
-            //$VIES = new UstIDvies('TEX2345678912345L'); // --DEBUG--
+            $VIES = new UstIDvies('TEX2345678912345L'); // --DEBUG--
             //$VIES = new UstIDvies('TELL345678912345L'); // --DEBUG--
-            $VIES = new UstIDvies('TELL34567891XL92B'); // --DEBUG--
+            //$VIES = new UstIDvies('TELL34567891XL92B'); // --DEBUG--
+            //$VIES = new UstIDvies('TEDL9949 99 9XLB'); // --DEBUG--
             if (true === ($result = $VIES->doCheckID())) {
                 $oLogger->debug('VIES result: '.$result); // --DEBUG--
             } else {
                 //$oLogger->debug('VIES result (else): '.$result); // --DEBUG--
                 $oLogger->debug('VIEW result (error): '.$VIES->getErrorStr()); // --DEBUG--
+
+                $ret['ustid']     = 2; // --DEVELOPMENT-- signalize "there was an error"
+                //$ret['ustid_err'] = $oReturn->cError; // --DEVELOPMENT--  displays the error-information (here only the number-pattern)
+                $ret['ustid_err'] = $VIES->getErrorStr(); // --DEVELOPMENT--  displays the error-information (here only the number-pattern)
+
             }
 
-
+/*
             $bBZStPruefung = false;
             //Admin-Einstellung BZST pruefen und checken ob Auslaendische USt-ID angegeben (deutsche USt-IDs koennen nicht geprueft werden)
             $ustLaendercode = strtolower(substr($data['ustid'], 0, 2));
@@ -2120,6 +2134,7 @@ function checkKundenFormularArray($data, $kundenaccount, $checkpass = 1)
             } elseif ($cUstPruefung !== 200 && $cUstPruefung !== 1) { // UstID ist durch BZSt ungültig
                 $ret['ustid'] = 5;
             }
+*/
         }
 // ------------------------------------------
     }

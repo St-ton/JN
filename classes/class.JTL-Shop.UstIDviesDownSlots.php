@@ -10,17 +10,27 @@ class UstIDviesDownSlots
     /**
      * array, time-slots of the VAT-databases of the members of the MIAS-system
      * MODIFY ONLY THIS ARRAY TO COVER NEW CIRCUMSTANCES!
+     *
+     * original source:
+     * http://ec.europa.eu/taxation_customs/vies/help.html
+     *
      */
     private $vDownTimeSlots = [
+        //
+        // array-item example:
+        //
         // 'country' => [
-        //       ['weekday', 'start-time', 'end-time']  // one day a week
-        //       [       '', 'start-time', 'end-time']  // all days a week
+        //       ['WEEKDAY', 'START', 'ENDING']  // one day a week
+        //       [       '', 'START', 'ENDING']  // all days a week
         //     , [...]
         // ]
+
+        // ---------------- TEST ------------------
         'TE' => [
               ['Fri', '09:00', '12:00']
             , ['Tue', '13:00', '16:30']
         ]
+        // ---------------- TEST ------------------
 
         // Unavailable almost daily around 06:00 AM for a few minutes (Oesterreich)
         , 'AT' => [
@@ -144,6 +154,12 @@ class UstIDviesDownSlots
     const ENDING  = 2;
 
 
+    /**
+     * __construct an instance of this object
+     *
+     * @param void
+     * @return void
+     */
     public function __construct()
     {
         // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --DEBUG--
@@ -155,18 +171,28 @@ class UstIDviesDownSlots
         $this->oNow = new DateTime();
     }
 
+    /**
+     * return a informational string, which tells the user why the
+     * vat-check is currently not possible and with which time-lot he has to calculate.
+     *
+     * @param void
+     * @return string  informational text
+     */
     public function getDownInfo()
     {
         return $this->szDownInfo;
     }
 
+    /**
+     * return the availablity  of a country vat-office
+     *
+     * @param string(2)  country-code
+     * @return boolean  'true'=>"service down", 'false'=>"service available"
+     */
     public function isDown($szCountryCode)
     {
           $this->oLogger->debug('checking country down-time: '.$szCountryCode); // --DEBUG--
 /*
- *        $this->oLogger->debug('AT start: '.$this->vDownTimeSlots['AT'][0][1]); // --DEBUG--
- *        $this->oLogger->debug('AT end  : '.$this->vDownTimeSlots['AT'][0][2]); // --DEBUG--
- *
  *        $date = DateTime::createFromFormat('H:i', $this->vDownTimeSlots['AT'][0][1]);
  *        $this->oLogger->debug('AT start OOP: '.print_r( $date ,true )); // --DEBUG--
  *
@@ -182,8 +208,6 @@ class UstIDviesDownSlots
         //$this->oLogger->debug('AT start OOP: '.print_r( $date ,true )); // --DEBUG--
 
         foreach ($this->vDownTimeSlots[$szCountryCode] as $vCountryDownTimes) {
-            //$this->oLogger->debug('+++++++ checking time-slot '.print_r($vCountryDownTimes,true)); // --DEBUG--
-
             // if no weekday was given (which means "every weekday"), we replace the weekday in the check-array with the current weekday here
             if ('' === $vCountryDownTimes[self::WEEKDAY]) {
                 $vCountryDownTimes[self::WEEKDAY] = $this->oNow->format('D');
@@ -193,12 +217,6 @@ class UstIDviesDownSlots
             $oEndTime   = DateTime::createFromFormat('D:H:i', $vCountryDownTimes[self::WEEKDAY] . ':' . $vCountryDownTimes[self::ENDING]);
 
             if ($oStartTime <= $this->oNow && $this->oNow <= $oEndTime) {
-                //$this->oLogger->debug('- - - - - - - - - - - - - - - - - - - - !!! IN DOWNTIME !!!'); // --DEBUG--
-                //$this->oLogger->debug('start  : '.print_r($oStartTime,true)); // --DEBUG--
-                //$this->oLogger->debug('NOW    : '.print_r($this->oNow,true)); // --DEBUG--
-                //$this->oLogger->debug('ending : '.print_r($oEndTime,true)); // --DEBUG--
-                //$this->oLogger->debug('- - - - - - - - - - - - - - - - - - - - '); // --DEBUG--
-
                 // inform the user and/or log this event
                 $this->oLogger->debug('service is down till '.$oEndTime->format('l y-m-d, H:i')); // --DEBUG--
                 $this->szDownInfo = 'Der Dienst dieses Landes ist bis '.$oEndTime->format('l y-m-d, H:i').' nicht erreichbar.';

@@ -10,18 +10,24 @@ class UstIDviesVatParser
      * pattern of the country-specitfic VAT-IDs
      * MODIFY ONLY THIS ARRAY TO COVER NEW CIRCUMSTANCES!
      *
+     * original source:
+     * http://ec.europa.eu/taxation_customs/vies/faq.html
+     *
      * "XX" - the first two chars are the country-code (e.g. "ES" for Spain)
      * "9"  - represents "any integer digit"
      * "X"  - any other char is a fixed given char and has to match
      * " "  - spaces has to match too
      */
     private $vCountryPattern = [
+
+        // ---------------- TEST ------------------
         'TE' => [
               'TELL99999999XL99B'
             , 'TELL9999 99 9XLB'
         ] // --DEBUG--
+        // ---------------- TEST ------------------
 
-        // AT-Oesterreich                ATU99999999          1 Block mit 9 Ziffern
+        // AT-Oesterreich                ATU99999999          1 Block mit 9 Ziffern    (comment: 8 !?)
         , 'AT' => ['ATU99999999']
 
         // BE-Belgien                    BE0999999999         1 Block mit 10 Ziffern
@@ -34,7 +40,7 @@ class UstIDviesVatParser
             ,'BG9999999999'
         ]
 
-        // CY-Zypern                     CY99999999L          1 Block mit 9 Ziffern
+        // CY-Zypern                     CY99999999L          1 Block mit 9 Ziffern    (comment: 8 with 1 char!?)
         , 'CY' => ['CY99999999L']
 
         // CZ-Tschechische Republik      CZ99999999 oder
@@ -58,8 +64,8 @@ class UstIDviesVatParser
         // EL-Griechenland               EL999999999          1 Block mit 9 Ziffern
         , 'EL' => ['EL999999999']
 
-        // ES-Spanien                    ESX9999999X4         1 Block mit 9 Ziffern
-        , 'ES' => ['ESX9999999X4']
+        // ES-Spanien                    ESX9999999X          1 Block mit 9 Ziffern    (comment: 8 with 1 char!?)
+        , 'ES' => ['ESX9999999X']
 
         // FI-Finnland                   FI99999999           1 Block mit 8 Ziffern
         , 'FI' => ['FI99999999']
@@ -68,14 +74,14 @@ class UstIDviesVatParser
         , 'FR' => ['FRXX 999999999']
 
         // GB-Vereinigtes Königreich     GB999 9999 99 oder
-        //                               GB999 9999 99 9995 oder
-        //                               GBGD9996 oder
-        //                               GBHA9997             1 Block mit 3 Ziffern, 1 Block mit 4 Ziffern und 1 Block mit 2 Ziffern; oder wie oben, gefolgt von einem Block mit 3 Ziffern; oder 1 Block mit 5 Ziffern
+        //                               GB999 9999 99 999 oder
+        //                               GBGD999 oder
+        //                               GBHA999              1 Block mit 3 Ziffern, 1 Block mit 4 Ziffern und 1 Block mit 2 Ziffern; oder wie oben, gefolgt von einem Block mit 3 Ziffern; oder 1 Block mit 5 Ziffern
         , 'GB' => [
               'GB999 9999 99'
-            , 'GB999 9999 99 9995'
-            , 'GBGD9996'
-            , 'GBHA9997'
+            , 'GB999 9999 99 999'
+            , 'GBGD999'
+            , 'GBHA999'
         ]
 
         // HR-Kroatien                   HR99999999999        1 Block mit 11 Ziffern
@@ -110,8 +116,8 @@ class UstIDviesVatParser
         // MT-Malta                      MT99999999           1 Block mit 8 Ziffern
         , 'MT' => ['MT99999999']
 
-        // NL-Niederlande                NL999999999B998      1 Block mit 12 Ziffern
-        , 'NL' => ['NL999999999B998']
+        // NL-Niederlande                NL999999999B99       1 Block mit 12 Ziffern
+        , 'NL' => ['NL999999999B99']
 
         // PL-Polen                      PL9999999999         1 Block mit 10 Ziffern
         , 'PL' => ['PL9999999999']
@@ -152,32 +158,44 @@ class UstIDviesVatParser
         //preg_match_all('/([A-z]+)(\d+)(.*)/', $szVATid, $vMatches);
         //$this->oLogger->debug('+++++ VAT-parts: '.print_r($vMatches ,true )); // --DEBUG--
 
-        $this->oLogger->debug('PATTERN: '.$szPattern); // --DEBUG--
         $this->oLogger->debug('VAT-ID : '.$szVATid); // --DEBUG--
-
+        $this->oLogger->debug('PATTERN: '.$szPattern); // --DEBUG--
 
         for($i=0; $i < strlen($szVATid); $i++) {
-            //$this->oLogger->debug('char '.$i.'. '.$szVATid[$i] . ' cmp: '.strcmp($szVATid[$i], $szPattern[$i])); // --DEBUG--
 
+            // compare each id-character to the appropriated pattern-character
+            /*
             $nCmpVal = strcmp($szVATid[$i], $szPattern[$i]);
             if (0 < $nCmpVal || -10 > $nCmpVal) {
                 $this->oLogger->debug('invalid'); // --DEBUG--
                 return false;
             }
-
-            /*
-             *switch (true) {
-             *    case (preg_match('/[A-Z]/', $szVATid[$i])):
-             *        $this->oLogger->debug('A-Z'); // --DEBUG--
-             *        break;
-             *    case (preg_match('/\d/', $szVATid[$i])):
-             *        $this->oLogger->debug('digit'); // --DEBUG--
-             *        break;
-             *    default:
-             *        $this->oLogger->debug('other'); // --DEBUG--
-             *        break;
-             *}
              */
+
+            // each character and white-space is compared exactly, while digits can be [1..9]
+            switch (true) {
+                case ctype_alpha($szPattern[$i]) :
+                    if ($szPattern[$i] === $szVATid[$i]) {
+                        $this->oLogger->debug('check ok        : '.$szPattern[$i].' => '.$szVATid[$i]); // --DEBUG--
+                        continue;
+                    }
+                    $this->oLogger->debug('check failed    : '.$szPattern[$i].' => '.$szVATid[$i]); // --DEBUG--
+                    return false;
+                case ctype_space($szPattern[$i]) :
+                    if ($szPattern[$i] === $szVATid[$i]) {
+                        $this->oLogger->debug('check space ok  : '.$szPattern[$i].' => '.$szVATid[$i]); // --DEBUG--
+                        continue;
+                    }
+                    $this->oLogger->debug('check space f   : '.$szPattern[$i].' => '.$szVATid[$i]); // --DEBUG--
+                    return false;
+                //case ctype_digit($szVATid[$i]) :
+                case is_numeric($szPattern[$i]) :
+                    $this->oLogger->debug('check num       : '.$szPattern[$i].' => '.$szVATid[$i]); // --DEBUG--
+                    continue;
+                default :
+                    $this->oLogger->debug('default hit!'); // --DEBUG--
+                    return false;
+            }
         }
 
         /*
@@ -194,16 +212,15 @@ class UstIDviesVatParser
         $this->szVATid = $szVATid; // optional
 
         // guess a country
+        // the first 2 characters are allways the country
         $nResult = preg_match('/([A-Z]{2})(.*)/', $szVATid, $vGuessedCode);
         if (0 === $nResult) {
-            return 110; // error: the number did not start with 2 big letters
+            return 110; // error: the id did not start with 2 big letters
         }
-
 
         $this->oLogger->debug('suggested country: '.print_r( $vGuessedCode[1] ,true )); // --DEBUG--
 
         foreach ($this->vCountryPattern[$vGuessedCode[1]] as $szPattern) {
-            $this->oLogger->debug('szPattern: '.print_r( $szPattern ,true )); // --DEBUG--
 
             // length-check (and go back, if nothing matches)
             if (strlen($szVATid) !== strlen($szPattern)) {
@@ -216,14 +233,28 @@ class UstIDviesVatParser
                     //return $vIdAsParams;
                     return [$vGuessedCode[1], $vGuessedCode[2]];
                 } else {
-                    return 130;
+                    return 130; // error: id matches not any pattern of this country
                 }
 
             }
         }
         $this->oLogger->debug('no length was matching!'); // --DEBUG--
+        //throw new ExceptionVies('wrong length!');
         return 120; // error: no length was matching
-
     }
 
 }
+
+
+/*
+ *class ExceptionVies extends Exception {
+ *
+ *    protected $message = '';
+ *
+ *    public function __construct($message, $code = 0, Exception $previous = null)
+ *    {
+ *        parent::__construct($message, $code, $previous);
+ *    }
+ *
+ *}
+ */

@@ -153,8 +153,6 @@ class UstIDvies
             $this->szErrorStr = $this->oDownTimes->getDownInfo();
             return false;
         }
-
-        // return
     }
 
 }

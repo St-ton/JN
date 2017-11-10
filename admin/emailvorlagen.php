@@ -268,8 +268,6 @@ if (isset($_POST['preview']) && (int)$_POST['preview'] > 0) {
     $bestellung->fWaehrungsFaktor = 1;
 
     //Lieferschein
-    require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Lieferschein.php';
-    require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Versand.php';
     $bestellung->oLieferschein_arr = [];
 
     $oLieferschein = new Lieferschein();

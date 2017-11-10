@@ -1377,10 +1377,7 @@ function GetKampTypeName($Type)
  */
 function PrepareLineChartKamp($Stats, $Type)
 {
-    require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Linechart.php';
-
     $chart = new Linechart(['active' => false]);
-
     if (is_array($Stats) && count($Stats) > 0) {
         $chart->setActive(true);
         $data = [];

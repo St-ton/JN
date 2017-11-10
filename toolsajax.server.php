@@ -662,7 +662,6 @@ function tauscheVariationKombi($aFormValues, $nVater = 0, $kEigenschaft = 0, $kE
             $oArtikelTMP = gibArtikelByVariationen($oVaterArtikel->kArtikel, $kVariationKombi_arr);
             if (isset($oArtikelTMP->kArtikel) && $oArtikelTMP->kArtikel > 0) {
                 require_once PFAD_ROOT . PFAD_INCLUDES . 'artikel_inc.php';
-                require_once PFAD_ROOT . PFAD_CLASSES_CORE . 'class.core.NiceMail.php';
                 $bKindVorhanden = true;
                 // Bewertungsguthaben
                 $fBelohnung = 0.0;

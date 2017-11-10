@@ -3,7 +3,6 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once PFAD_ROOT . PFAD_CLASSES_CORE . 'class.core.Shop.php';
 
 /**
  * @param string $nDatei
@@ -184,7 +183,6 @@ function generateSitemapXML()
         CONF_NAVIGATIONSFILTER,
         CONF_BOXEN
     ]);
-    require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Artikel.php';
     require_once PFAD_ROOT . PFAD_INCLUDES . 'filter_inc.php';
     if (!isset($conf['sitemap']['sitemap_insert_lastmod'])) {
         $conf['sitemap']['sitemap_insert_lastmod'] = 'N';

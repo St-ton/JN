@@ -9,8 +9,6 @@ set_time_limit(0);
 use JMS\Serializer\SerializerBuilder;
 /** @global JTLSmarty $smarty */
 require_once __DIR__ . '/includes/admininclude.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Updater.php';
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_CLASSES . 'class.JTL-Shopadmin.AjaxResponse.php';
 
 $hasPermission = $oAccount->permission('SHOP_UPDATE_VIEW', false, false);
 $action        = isset($_GET['action']) ? $_GET['action'] : null;

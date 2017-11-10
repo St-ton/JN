@@ -26,10 +26,7 @@ if (($action = verifyGPDataString('a')) !== '' &&
     $oZahlungsart = Shop::DB()->select('tzahlungsart', 'kZahlungsart', $kZahlungsart);
 
     if (isset($oZahlungsart->cModulId) && strlen($oZahlungsart->cModulId) > 0) {
-        require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.ZahlungsLog.php';
-        $oZahlungsLog = new ZahlungsLog($oZahlungsart->cModulId);
-        $oZahlungsLog->loeschen();
-
+        (new ZahlungsLog($oZahlungsart->cModulId))->loeschen();
         $hinweis = 'Der Fehlerlog von ' . $oZahlungsart->cName . ' wurde erfolgreich zur&uuml;ckgesetzt.';
     }
 }
@@ -262,14 +259,11 @@ if ($step === 'einstellen') {
                ->assign('ZAHLUNGSART_MAIL_STORNO', ZAHLUNGSART_MAIL_STORNO);
     }
 } elseif ($step === 'log') {
-    require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.ZahlungsLog.php';
-
     $kZahlungsart = verifyGPCDataInteger('kZahlungsart');
     $oZahlungsart = Shop::DB()->select('tzahlungsart', 'kZahlungsart', $kZahlungsart);
 
     if (isset($oZahlungsart->cModulId) && strlen($oZahlungsart->cModulId) > 0) {
-        $oZahlungsLog = new ZahlungsLog($oZahlungsart->cModulId);
-        $smarty->assign('oLog_arr', $oZahlungsLog->holeLog())
+        $smarty->assign('oLog_arr', (new ZahlungsLog($oZahlungsart->cModulId))->holeLog())
                ->assign('kZahlungsart', $kZahlungsart);
     }
 } elseif ($step === 'payments') {

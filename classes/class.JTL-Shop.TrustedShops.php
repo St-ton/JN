@@ -414,7 +414,6 @@ class TrustedShops
                     : $_SESSION['Kunde']->cLand;
             }
 
-            require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Warenkorb.php';
             unset($_SESSION['Warenkorb']);
             $_SESSION['Warenkorb'] = new Warenkorb();
             foreach ($this->oKaeuferschutzProdukte->item as $i => $oItem) {

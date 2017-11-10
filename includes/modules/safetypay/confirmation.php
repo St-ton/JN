@@ -1,6 +1,5 @@
 <?php
 
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Bestellung.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 

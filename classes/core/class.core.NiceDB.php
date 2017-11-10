@@ -304,9 +304,6 @@ class NiceDB
      */
     private function analyzeQuery($type, $stmt, $time = 0, $backtrace = null)
     {
-        if (!isset($type)) {
-            $type = '';
-        }
         $explain = 'EXPLAIN ' . $stmt;
         try {
             $res = $this->pdo->query($explain);

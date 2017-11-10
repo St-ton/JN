@@ -7,7 +7,6 @@ require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('ORDER_CUSTOMERFIELDS_VIEW', true, true);
 
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_CLASSES . 'class.JTL-Shopadmin.PlausiKundenfeld.php';
 /** @global JTLSmarty $smarty */
 $Einstellungen = Shop::getSettings([CONF_KUNDENFELD]);
 $cHinweis      = '';

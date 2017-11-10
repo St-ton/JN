@@ -1,7 +1,6 @@
 <?php
 
 include_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
-include_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.ZahlungsLog.php';
 require_once PFAD_ROOT . PFAD_INCLUDES_LIBS . PFAD_NUSOAP . 'nusoap.php';
 
 // Debug

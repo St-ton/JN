@@ -106,11 +106,10 @@ function get_product_list($params, $smarty)
 function get_static_route($params, $smarty)
 {
     if (isset($params['id'])) {
-        $helper = LinkHelper::getInstance();
         $full   = !isset($params['full']) || $params['full'] === true;
         $secure = isset($params['secure']) && $params['secure'] === true;
 
-        $url = $helper->getStaticRoute($params['id'], $full, $secure);
+        $url = LinkHelper::getInstance()->getStaticRoute($params['id'], $full, $secure);
 
         $qp = isset($params['params'])
             ? (array)$params['params']
@@ -141,9 +140,9 @@ function get_manufacturers($params, $smarty)
     if (isset($params['assign'])) {
         $smarty->assign($params['assign'], $manufacturers);
         return;
-    } else {
-        return $manufacturers;
     }
+
+    return $manufacturers;
 }
 
 /**
@@ -154,9 +153,7 @@ function get_manufacturers($params, $smarty)
 function load_boxes_raw($params, $smarty)
 {
     if (isset($params['array'], $params['assign']) && $params['array'] === true) {
-        $boxes   = Boxen::getInstance();
-        $rawData = $boxes->getRawData();
-
+        $rawData = Boxen::getInstance()->getRawData();
         $smarty->assign($params['assign'], (isset($rawData[$params['type']]) ? $rawData[$params['type']] : null));
     }
 }
@@ -192,9 +189,9 @@ function get_category_array($params, $smarty)
     if (isset($params['assign'])) {
         $smarty->assign($params['assign'], $list);
         return;
-    } else {
-        return $list;
     }
+
+    return $list;
 }
 
 /**
@@ -215,9 +212,9 @@ function get_category_parents($params, $smarty)
     if (isset($params['assign'])) {
         $smarty->assign($params['assign'], $list);
         return;
-    } else {
-        return $list;
     }
+
+    return $list;
 }
 
 /**
@@ -274,9 +271,7 @@ function load_boxes($params, $smarty)
                         $smarty->assign($oPluginVar, $oPlugin);
                     }
                 } elseif ($oBox->eTyp === 'link') {
-                    $LinkHelper = LinkHelper::getInstance();
-                    $linkGroups = $LinkHelper->getLinkGroups();
-                    foreach ($linkGroups as $oLinkTpl) {
+                    foreach (LinkHelper::getInstance()->getLinkGroups() as $oLinkTpl) {
                         if ($oLinkTpl->kLinkgruppe == $oBox->kCustomID) {
                             $oBox->oLinkGruppeTemplate = $oLinkTpl;
                             $oBox->oLinkGruppe         = $oLinkTpl;
@@ -312,9 +307,9 @@ function load_boxes($params, $smarty)
     if (isset($params['assign'])) {
         $smarty->assign($params['assign'], $cTplData);
         return;
-    } else {
-        return $cTplData;
     }
+
+    return $cTplData;
 }
 
 /**
@@ -545,8 +540,7 @@ function get_navigation($params, $smarty)
     $linkgroupIdentifier = $params['linkgroupIdentifier'];
     $oLinkGruppe         = null;
     if (strlen($linkgroupIdentifier) > 0) {
-        $LinkHelper  = LinkHelper::getInstance();
-        $linkGroups  = $LinkHelper->getLinkGroups();
+        $linkGroups  = LinkHelper::getInstance()->getLinkGroups();
         $oLinkGruppe = isset($linkGroups->{$linkgroupIdentifier})
             ? $linkGroups->{$linkgroupIdentifier}
             : null;
@@ -630,11 +624,9 @@ function prepare_image_details($params, $smarty)
 
     $result = (object)$result;
 
-    if (isset($params['json']) && $params['json']) {
-        return json_encode($result, JSON_FORCE_OBJECT);
-    }
-
-    return $result;
+    return (isset($params['json']) && $params['json'])
+        ? json_encode($result, JSON_FORCE_OBJECT)
+        : $result;
 }
 
 /**
@@ -718,20 +710,22 @@ function hasOnlyListableVariations($params, $smarty)
             $smarty->assign($params['assign'], 0);
 
             return null;
-        } else {
-            return 0;
         }
+
+        return 0;
     }
 
     $maxVariationCount = isset($params['maxVariationCount']) ? (int)$params['maxVariationCount'] : 1;
     $maxWerteCount     = isset($params['maxWerteCount']) ? (int)$params['maxWerteCount'] : 3;
     $variationCheck    = function ($Variationen, $maxVariationCount, $maxWerteCount) {
-        $result = true;
+        $result   = true;
+        $varCount = is_array($Variationen) ? count($Variationen) : 0;
 
-        if (is_array($Variationen) && count($Variationen) > 0 && count($Variationen) <= $maxVariationCount) {
+        if ($varCount > 0 && $varCount <= $maxVariationCount) {
             foreach ($Variationen as $oVariation) {
-                if ($oVariation->cTyp != 'SELECTBOX'
-                    && (!in_array($oVariation->cTyp, ['TEXTSWATCHES', 'IMGSWATCHES', 'RADIO']) || count($oVariation->Werte) > $maxWerteCount)) {
+                if ($oVariation->cTyp !== 'SELECTBOX'
+                    && (!in_array($oVariation->cTyp, ['TEXTSWATCHES', 'IMGSWATCHES', 'RADIO'], true)
+                        || count($oVariation->Werte) > $maxWerteCount)) {
                     $result = false;
                     break;
                 }

@@ -84,11 +84,7 @@ function get_product_list($params, $smarty)
             $oArtikel_arr[] = (new Artikel())->fuelleArtikel($kArtikel, Artikel::getDefaultOptions());
         }
     } else {
-        // Filter
-        $NaviFilter = new ProductFilter();
-        $NaviFilter->initStates($params);
-        // Artikelliste
-        $oArtikel_arr = $NaviFilter->getProducts(false, null, true, $nLimit);
+        $oArtikel_arr = (new ProductFilter())->initStates($params)->getProducts(false, null, true, $nLimit);
     }
 
     $smarty->assign($cAssign, $oArtikel_arr);
@@ -108,10 +104,8 @@ function get_static_route($params, $smarty)
     if (isset($params['id'])) {
         $full   = !isset($params['full']) || $params['full'] === true;
         $secure = isset($params['secure']) && $params['secure'] === true;
-
-        $url = LinkHelper::getInstance()->getStaticRoute($params['id'], $full, $secure);
-
-        $qp = isset($params['params'])
+        $url    = LinkHelper::getInstance()->getStaticRoute($params['id'], $full, $secure);
+        $qp     = isset($params['params'])
             ? (array)$params['params']
             : [];
 
@@ -135,8 +129,7 @@ function get_static_route($params, $smarty)
  */
 function get_manufacturers($params, $smarty)
 {
-    $helper        = HerstellerHelper::getInstance();
-    $manufacturers = $helper->getManufacturers();
+    $manufacturers = HerstellerHelper::getInstance()->getManufacturers();
     if (isset($params['assign'])) {
         $smarty->assign($params['assign'], $manufacturers);
         return;
@@ -202,9 +195,8 @@ function get_category_array($params, $smarty)
 function get_category_parents($params, $smarty)
 {
     $id         = isset($params['categoryId']) ? (int)$params['categoryId'] : 0;
-    $category   = new Kategorie($id);
     $categories = new KategorieListe();
-    $list       = $categories->getOpenCategories($category);
+    $list       = $categories->getOpenCategories(new Kategorie($id));
 
     array_shift($list);
     $list = array_reverse($list);
@@ -263,7 +255,7 @@ function load_boxes($params, $smarty)
                 $cTemplate  = 'tpl_inc/boxes/' . $oBox->cTemplate;
                 if ($oBox->eTyp === 'plugin') {
                     $oPlugin = new Plugin($oBox->kCustomID);
-                    if ($oPlugin->kPlugin > 0 && $oPlugin->nStatus == 2) {
+                    if ($oPlugin->kPlugin > 0 && $oPlugin->nStatus === 2) {
                         $cTemplate    = $oBox->cTemplate;
                         $cOldTplDir   = $cTemplateDir;
                         $cTemplateDir = $oPlugin->cFrontendPfad . PFAD_PLUGIN_BOXEN;
@@ -346,6 +338,9 @@ function truncate($text, $numb)
 function gibPreisStringLocalizedSmarty($params, $smarty)
 {
     $oAufpreis = new stdClass();
+    $oAufpreis->cAufpreisLocalized = '';
+    $oAufpreis->cPreisInklAufpreis = '';
+
     if ((float)$params['fAufpreisNetto'] != 0) {
         $fAufpreisNetto         = (float)$params['fAufpreisNetto'];
         $fVKNetto               = (float)$params['fVKNetto'];
@@ -422,12 +417,10 @@ function gibPreisStringLocalizedSmarty($params, $smarty)
  */
 function hasCheckBoxForLocation($params, $smarty)
 {
-    require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.CheckBox.php';
-
-    $oCheckBox     = new CheckBox();
-    $oCheckBox_arr = $oCheckBox->getCheckBoxFrontend((int)$params['nAnzeigeOrt'], 0, true, true);
-
-    $smarty->assign($params['bReturn'], count($oCheckBox_arr) > 0);
+    $smarty->assign(
+        $params['bReturn'],
+        count((new CheckBox())->getCheckBoxFrontend((int)$params['nAnzeigeOrt'], 0, true, true)) > 0
+    );
 }
 
 /**
@@ -437,13 +430,10 @@ function hasCheckBoxForLocation($params, $smarty)
  */
 function getCheckBoxForLocation($params, $smarty)
 {
-    $cid = 'cb_' . (int)$params['nAnzeigeOrt'] . '_' . (int)$_SESSION['kSprache'];
-    if (Shop::has($cid)) {
-        $oCheckBox_arr = Shop::get($cid);
-    } else {
-        $oCheckBox     = new CheckBox();
-        $oCheckBox_arr = $oCheckBox->getCheckBoxFrontend((int)$params['nAnzeigeOrt'], 0, true, true);
-    }
+    $cid           = 'cb_' . (int)$params['nAnzeigeOrt'] . '_' . (int)$_SESSION['kSprache'];
+    $oCheckBox_arr = Shop::has($cid)
+        ? Shop::get($cid)
+        : (new CheckBox())->getCheckBoxFrontend((int)$params['nAnzeigeOrt'], 0, true, true);
     if (count($oCheckBox_arr) > 0) {
         $linkHelper = LinkHelper::getInstance();
         foreach ($oCheckBox_arr as $oCheckBox) {
@@ -460,26 +450,18 @@ function getCheckBoxForLocation($params, $smarty)
                 }
             }
             // Fehlende Angaben
-            $bError              = isset($params['cPlausi_arr'][$oCheckBox->cID]);
-            $cPost_arr           = $params['cPost_arr'];
-            $oCheckBox->isActive = false;
-            if (isset($cPost_arr[$oCheckBox->cID])) {
-                $oCheckBox->isActive = true;
-            }
-
-            $oCheckBox->cName = $oCheckBox->oCheckBoxSprache_arr[$_SESSION['kSprache']]->cText;
-
-            if (strlen($cLinkURL) > 0) {
-                $oCheckBox->cLinkURL = $cLinkURL;
-            }
-            $oCheckBox->cLinkURLFull = $cLinkURLFull;
-            if (isset($oCheckBox->oCheckBoxSprache_arr[$_SESSION['kSprache']]->cBeschreibung) &&
-                strlen($oCheckBox->oCheckBoxSprache_arr[$_SESSION['kSprache']]->cBeschreibung) > 0) {
-                $oCheckBox->cBeschreibung = $oCheckBox->oCheckBoxSprache_arr[$_SESSION['kSprache']]->cBeschreibung;
-            }
-            if ($bError) {
-                $oCheckBox->cErrormsg = Shop::Lang()->get('pleasyAccept', 'account data');
-            }
+            $bError                   = isset($params['cPlausi_arr'][$oCheckBox->cID]);
+            $cPost_arr                = $params['cPost_arr'];
+            $oCheckBox->isActive      = isset($cPost_arr[$oCheckBox->cID]);
+            $oCheckBox->cName         = $oCheckBox->oCheckBoxSprache_arr[$_SESSION['kSprache']]->cText;
+            $oCheckBox->cLinkURL      = strlen($cLinkURL) > 0 ? $cLinkURL : '';
+            $oCheckBox->cLinkURLFull  = $cLinkURLFull;
+            $oCheckBox->cBeschreibung = !empty($oCheckBox->oCheckBoxSprache_arr[$_SESSION['kSprache']]->cBeschreibung)
+                ? $oCheckBox->oCheckBoxSprache_arr[$_SESSION['kSprache']]->cBeschreibung
+                : '';
+            $oCheckBox->cErrormsg     = $bError
+                ? Shop::Lang()->get('pleasyAccept', 'account data')
+                : '';
         }
         Shop::set($cid, $oCheckBox_arr);
         if (isset($params['assign'])) {
@@ -505,7 +487,6 @@ function aaURLEncode($params, $smarty)
             $cURL = substr($cURL, 0, $aaEnthalten);
             break;
         }
-
         $aaEnthalten = false;
     }
     if ($aaEnthalten !== false) {
@@ -522,13 +503,9 @@ function aaURLEncode($params, $smarty)
         }
     }
 
-    if (strpos($cURL, '?') !== false) {
-        $cURL .= $bReset ? '&aaReset=' : '&aaParams=';
-    } else {
-        $cURL .= $bReset ? '?aaReset=' : '?aaParams=';
-    }
+    $sep = (strpos($cURL, '?') === false) ? '?' : '&';
 
-    return $cURL . base64_encode($cParams);
+    return $cURL . $sep . ($bReset ? 'aaReset=' : 'aaParams=') . base64_encode($cParams);
 }
 
 /**
@@ -558,26 +535,26 @@ function get_navigation($params, $smarty)
  */
 function build_navigation_subs($oLink_arr, $kVaterLink = 0)
 {
-    $oNew_arr = [];
-    if ($oLink_arr->cName !== 'hidden') {
-        $cISO = $_SESSION['cISOSprache'];
-        foreach ($oLink_arr->Links as &$oLink) {
-            if ($oLink->kVaterLink == $kVaterLink) {
-                $oLink->oSub_arr = build_navigation_subs($oLink_arr, $oLink->kLink);
-                //append bIsActive property
-                $oLink->bIsActive = false;
-                if (isset($GLOBALS['kLink']) && $GLOBALS['kLink'] == $oLink->kLink) {
-                    $oLink->bIsActive = true;
-                }
-                //append cTitle property
-                $cTitle = '';
-                if (isset($oLink->cLocalizedTitle[$cISO]) && $oLink->cLocalizedTitle[$cISO] != $oLink->cLocalizedName[$cISO]) {
-                    $cTitle = StringHandler::htmlentities($oLink->cLocalizedTitle[$cISO], ENT_QUOTES);
-                }
-                $oLink->cTitle = $cTitle;
-                $oNew_arr[]    = $oLink;
-            }
+    $kVaterLink = (int)$kVaterLink;
+    $oNew_arr   = [];
+    if ($oLink_arr->cName === 'hidden') {
+        return $oNew_arr;
+    }
+    $cISO = $_SESSION['cISOSprache'];
+    foreach ($oLink_arr->Links as &$oLink) {
+        $oLink->kVaterLink = (int)$oLink->kVaterLink;
+        if ($oLink->kVaterLink !== $kVaterLink) {
+            continue;
         }
+        $oLink->oSub_arr = build_navigation_subs($oLink_arr, $oLink->kLink);
+        //append bIsActive property
+        $oLink->bIsActive = Shop::$kLink > 0 && Shop::$kLink === (int)$oLink->kLink;
+        //append cTitle property
+        $oLink->cTitle = (isset($oLink->cLocalizedTitle[$cISO])
+            && $oLink->cLocalizedTitle[$cISO] !== $oLink->cLocalizedName[$cISO])
+            ? StringHandler::htmlentities($oLink->cLocalizedTitle[$cISO], ENT_QUOTES)
+            : '';
+        $oNew_arr[]    = $oLink;
     }
 
     return $oNew_arr;
@@ -589,12 +566,11 @@ function build_navigation_subs($oLink_arr, $kVaterLink = 0)
  */
 function get_trustedshops_data($params, $smarty)
 {
-    require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.TrustedShops.php';
-    $oTrustedShops   = new TrustedShops(-1, StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
-    $value['tsId']   = $oTrustedShops->tsId;
-    $value['nAktiv'] = $oTrustedShops->nAktiv;
-
-    $smarty->assign($params['assign'], $value);
+    $oTrustedShops = new TrustedShops(-1, StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
+    $smarty->assign($params['assign'], [
+        'tsId'   => $oTrustedShops->tsId,
+        'nAktiv' => $oTrustedShops->nAktiv
+    ]);
 }
 
 /**
@@ -635,7 +611,7 @@ function prepare_image_details($params, $smarty)
  */
 function get_image_size($image)
 {
-    $path = (strpos($image, PFAD_BILDER) === 0)
+    $path = strpos($image, PFAD_BILDER) === 0
         ? PFAD_ROOT . $image
         : $image;
     if (!file_exists($path)) {

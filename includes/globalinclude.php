@@ -18,7 +18,7 @@ if (defined('PFAD_ROOT')) {
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'error_handler.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'autoload.php';
-
+// existiert Konfiguration?
 defined('DB_HOST') || die('Kein MySql-Datenbank Host angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
 defined('DB_NAME') || die('Kein MySql Datenbanknamen angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
 defined('DB_USER') || die('Kein MySql-Datenbank Benutzer angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
@@ -37,6 +37,7 @@ if (!function_exists('Shop')) {
         return Shop::getInstance();
     }
 }
+// PHP memory_limit work around
 if (!Shop()->PHPSettingsHelper()->hasMinLimit(64)) {
     ini_set('memory_limit', '64M');
 }
@@ -112,6 +113,5 @@ if (!JTL_INCLUDE_ONLY_DB) {
     }
     $GLOBALS['oSprache'] = Sprache::getInstance();
     require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
+    Shop::bootstrap();
 }
-
-Shop::bootstrap();

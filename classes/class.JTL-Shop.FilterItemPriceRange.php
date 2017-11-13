@@ -462,34 +462,36 @@ class FilterItemPriceRange extends AbstractFilter
                 $nStep            = $oPreis->fStep;
                 $additionalFilter = new self($this->productFilter);
                 foreach ($priceRanges as $i => $count) {
-                    $fe       = new FilterExtra();
-                    $fe->nVon = $nPreisMin + $i * $nStep;
-                    $fe->nBis = $nPreisMin + ($i + 1) * $nStep;
-                    if ($fe->nBis > $nPreisMax) {
-                        if ($fe->nVon >= $nPreisMax) {
-                            $fe->nVon = $nPreisMin + ($i - 1) * $nStep;
+                    $fe   = new FilterExtra();
+                    $nVon = $nPreisMin + $i * $nStep;
+                    $nBis = $nPreisMin + ($i + 1) * $nStep;
+                    if ($nBis > $nPreisMax) {
+                        if ($nVon >= $nPreisMax) {
+                            $nVon = $nPreisMin + ($i - 1) * $nStep;
                         }
-                        $fe->nBis = $nPreisMax;
+                        $nBis = $nPreisMax;
                     }
-                    $fe->cVonLocalized = gibPreisLocalizedOhneFaktor(
-                        $fe->nVon,
+                    $cVonLocalized     = gibPreisLocalizedOhneFaktor(
+                        $nVon,
                         $currency
                     );
-                    $fe->cBisLocalized = gibPreisLocalizedOhneFaktor(
-                        $fe->nBis,
+                    $cBisLocalized     = gibPreisLocalizedOhneFaktor(
+                        $nBis,
                         $currency
                     );
-                    $fe->setType($this->getType())
-                       ->setClassName($this->getClassName())
-                       ->setParam($this->getUrlParam())
-                       ->setName($fe->cVonLocalized . ' - ' . $fe->cBisLocalized)
-                       ->setValue($i)
-                       ->setCount($count)
-                       ->setSort(0)
-                       ->setURL($this->productFilter->getURL($additionalFilter->init($fe->nVon . '_' . $fe->nBis)));
-                    $fe->nAnzahlArtikel = $fe->getCount();
+                    $fe->nVon          = $nVon;
+                    $fe->nBis          = $nBis;
+                    $fe->cVonLocalized = $cVonLocalized;
+                    $fe->cBisLocalized = $cBisLocalized;
 
-                    $options[] = $fe;
+                    $options[] = $fe->setType($this->getType())
+                                    ->setClassName($this->getClassName())
+                                    ->setParam($this->getUrlParam())
+                                    ->setName($cVonLocalized . ' - ' . $cBisLocalized)
+                                    ->setValue($i)
+                                    ->setCount($count)
+                                    ->setSort(0)
+                                    ->setURL($this->productFilter->getURL($additionalFilter->init($nVon . '_' . $nBis)));
                 }
             }
         } else {

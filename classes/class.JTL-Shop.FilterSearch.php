@@ -23,6 +23,7 @@ class FilterSearch extends AbstractFilter
 
     /**
      * @var int
+     * @former kSuchanfrage
      */
     private $searchID;
 

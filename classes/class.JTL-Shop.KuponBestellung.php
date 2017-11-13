@@ -302,7 +302,7 @@ class KuponBestellung
      * @param string $dEnd
      * @return array
      */
-    public static function getOrdersWithUsedCoupons($dStart, $dEnd)
+    public static function getOrdersWithUsedCoupons($dStart, $dEnd, $kKupon = 0)
     {
         $ordersWithUsedCoupons = Shop::DB()->query(
             "SELECT kbs.*, wkp.cName, kp.kKupon
@@ -316,7 +316,8 @@ class KuponBestellung
                 WHERE kbs.dErstellt BETWEEN '" . $dStart . "'
                     AND '" . $dEnd . "'
                     AND bs.cStatus != " . BESTELLUNG_STATUS_STORNO . "
-                    AND (wkp.nPosTyp = 3 OR wkp.nPosTyp = 7)
+                    AND (wkp.nPosTyp = 3 OR wkp.nPosTyp = 7) " .
+                ((int)$kKupon > 0 ? " AND kp.kKupon = " . (int)$kKupon : '') . "
                 ORDER BY kbs.dErstellt DESC", 9
         );
 

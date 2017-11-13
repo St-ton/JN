@@ -22,6 +22,11 @@ class FilterSearch extends AbstractFilter
     public $Fehler;
 
     /**
+     * @var int
+     */
+    private $searchID;
+
+    /**
      * @var array
      */
     private static $mapping = [
@@ -48,7 +53,7 @@ class FilterSearch extends AbstractFilter
      */
     public function setValue($id)
     {
-        $this->kSuchanfrage = (int)$id;
+        $this->searchID = (int)$id;
 
         return $this;
     }
@@ -58,7 +63,7 @@ class FilterSearch extends AbstractFilter
      */
     public function getValue()
     {
-        return $this->kSuchanfrage;
+        return $this->searchID;
     }
 
     /**

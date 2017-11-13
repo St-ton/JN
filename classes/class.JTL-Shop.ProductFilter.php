@@ -558,7 +558,8 @@ class ProductFilter
                 $this->search->cSuche = $oSuchanfrage->cSuche;
             }
             // Suchcache beachten / erstellen
-            if (!empty($this->search->cSuche)) {
+            $search = $this->search->getName();
+            if (!empty($search)) {
                 $this->search->kSuchCache = $this->searchQuery->editSearchCache();
                 $this->searchQuery->init($oSuchanfrage->kSuchanfrage);
                 $this->searchQuery->kSuchCache = $this->search->kSuchCache;
@@ -1127,7 +1128,7 @@ class ProductFilter
      */
     public function hasSearch()
     {
-        return $this->search->kSuchanfrage > 0;
+        return $this->search->getValue() > 0;
     }
 
     /**

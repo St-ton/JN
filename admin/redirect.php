@@ -114,7 +114,7 @@ handleCsvExportAction(
         $cWhereSQL = $oFilter->getWhereSQL();
         $cOrderSQL = $oPagination->getOrderSQL();
 
-        for ($i=0; $i<$nRedirectCount; $i+=1000) {
+        for ($i = 0; $i < $nRedirectCount; $i += 1000) {
             $oRedirectIter = Shop::DB()->query(
                 "SELECT cFromUrl, cToUrl
                     FROM tredirect" .

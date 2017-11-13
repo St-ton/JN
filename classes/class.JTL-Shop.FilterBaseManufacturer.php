@@ -166,20 +166,17 @@ class FilterBaseManufacturer extends AbstractFilter
                 $manufacturer->nAnzahl     = (int)$manufacturer->nAnzahl;
                 $manufacturer->nSortNr     = (int)$manufacturer->nSortNr;
                 $manufacturer->cURL        = $this->productFilter->getURL(
-                    $additionalFilter->init((int)$manufacturer->kHersteller)
+                    $additionalFilter->init($manufacturer->kHersteller)
                 );
-
-                $fe              = (new FilterExtra())
+                $fe                        = (new FilterExtra())
                     ->setType($this->getType())
                     ->setClassName($this->getClassName())
                     ->setParam($this->getUrlParam())
                     ->setName($manufacturer->cName)
-                    ->setValue((int)$manufacturer->kHersteller)
+                    ->setValue($manufacturer->kHersteller)
                     ->setCount($manufacturer->nAnzahl)
                     ->setSort($manufacturer->nSortNr)
-                    ->setURL($this->productFilter->getURL(
-                        $additionalFilter->init((int)$manufacturer->kHersteller)
-                    ));
+                    ->setURL($manufacturer->cURL);
 
                 $options[] = $fe;
             }

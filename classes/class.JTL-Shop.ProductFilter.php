@@ -1793,8 +1793,8 @@ class ProductFilter
         ) {
             $searchResults->TagsJSON = Boxen::gibJSONString(array_map(
                 function ($e) {
-                    $e->cURL = StringHandler::htmlentitydecode($e->cURL);
-                    return $e;
+                    /** @var FilterExtra $e */
+                    return $e->setURL(StringHandler::htmlentitydecode($e->getURL()));
                 },
                 $searchResults->Tags
             ));

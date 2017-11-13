@@ -14,16 +14,6 @@ class FilterSearch extends AbstractFilter
     /**
      * @var int
      */
-    public $kSuchanfrage = 0;
-
-    /**
-     * @var string
-     */
-    public $cSuche;
-
-    /**
-     * @var int
-     */
     public $kSuchCache = 0;
 
     /**
@@ -35,7 +25,8 @@ class FilterSearch extends AbstractFilter
      * @var array
      */
     private static $mapping = [
-        'kSuchanfrage' => 'ValueCompat'
+        'kSuchanfrage' => 'Value',
+        'cSuche'       => 'Name'
     ];
 
     /**
@@ -166,7 +157,7 @@ class FilterSearch extends AbstractFilter
     public function saveQuery($hits, $query = '', $real = false, $languageIDExt = 0, $filterSpam = true)
     {
         if ($query === '') {
-            $query = $this->cSuche;
+            $query = $this->getName();
         }
         if (empty($query)) {
             return false;

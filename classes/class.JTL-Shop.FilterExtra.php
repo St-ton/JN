@@ -69,11 +69,12 @@ class FilterExtra extends AbstractFilter
      * @var array
      */
     private static $mapping = [
-        'cName'   => 'Name',
-        'nAnzahl' => 'Count',
-        'cURL'    => 'URL',
-        'Klasse'  => 'Class',
-        'nSortNr' => 'Sort'
+        'cName'          => 'Name',
+        'nAnzahl'        => 'Count',
+        'nAnzahlArtikel' => 'Count',
+        'cURL'           => 'URL',
+        'Klasse'         => 'Class',
+        'nSortNr'        => 'Sort'
     ];
 
     /**

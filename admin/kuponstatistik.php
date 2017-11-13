@@ -55,9 +55,7 @@ if (isset($_POST['formFilter']) && $_POST['formFilter'] > 0 && validateToken()) 
 $dStart = $startDate->format('Y-m-d 00:00:00');
 $dEnd   = $endDate->format('Y-m-d 23:59:59');
 
-$usedCouponsOrder = KuponBestellung::getOrdersWithUsedCoupons(
-    $dStart, $dEnd, verifyGPDataString('kKupon')
-);
+$usedCouponsOrder = KuponBestellung::getOrdersWithUsedCoupons($dStart, $dEnd, verifyGPDataString('kKupon'));
 
 $nCountOrders_arr = Shop::DB()->query(
     "SELECT count(*) AS nCount

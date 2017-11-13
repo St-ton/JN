@@ -201,8 +201,8 @@ class AuswahlAssistent
 
         foreach ($oMerkmalFilter_arr as $oMerkmalFilter) {
             /** @var FilterItemAttribute $oMerkmalFilter */
-            if (array_key_exists((int)$oMerkmalFilter->kMerkmal, $this->oFrage_assoc)) {
-                $oFrage                    = $this->oFrage_assoc[(int)$oMerkmalFilter->kMerkmal];
+            if (array_key_exists($oMerkmalFilter->getValue(), $this->oFrage_assoc)) {
+                $oFrage                    = $this->oFrage_assoc[$oMerkmalFilter->getValue()];
                 $oFrage->oWert_arr         = $oMerkmalFilter->getOptions();
                 $oFrage->nTotalResultCount = 0;
 
@@ -211,8 +211,6 @@ class AuswahlAssistent
                     $oFrage->oMerkmalWert_arr = $oFrage->oWert_arr;
                 }
                 foreach ($oMerkmalFilter->getOptions() as $oWert) {
-                    $oWert->kMerkmalWert                       = (int)$oWert->kMerkmalWert;
-                    $oWert->nAnzahl                            = (int)$oWert->nAnzahl;
                     $oFrage->nTotalResultCount                += $oWert->nAnzahl;
                     $oFrage->oWert_assoc[$oWert->kMerkmalWert] = $oWert;
                 }

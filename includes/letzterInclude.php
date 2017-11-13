@@ -76,7 +76,10 @@ if (isset($AktuelleKategorie)) {
     $AktuelleKategorie = null;
 }
 if (!isset($NaviFilter)) {
-    $smarty->assign('NaviFilter', Shop::run());
+    $NaviFilter = Shop::run();
+}
+if ($smarty->getTemplateVars('NaviFilter') === null) {
+    $smarty->assign('NaviFilter', $NaviFilter);
 }
 // Standardassigns
 $smarty->assign('cPluginCss_arr', $cMinify_arr['plugin_css'])

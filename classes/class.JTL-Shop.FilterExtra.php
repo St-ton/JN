@@ -258,10 +258,10 @@ class FilterExtra extends AbstractFilter
      */
     public function __set($name, $value)
     {
-        if (property_exists($this, $name)) {
-            $this->$name = $value;
+        if (($mapped = self::getMapping($name)) !== null) {
+            $method = 'set' . $mapped;
 
-            return $this;
+            return $this->$method($value);
         }
 
         $this->data[$name] = $value;

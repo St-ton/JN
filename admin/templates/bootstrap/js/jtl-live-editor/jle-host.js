@@ -38,6 +38,37 @@ function JLEHost(jtlToken, templateUrl, kcfinderPath, cKey, kKey, kSprache)
             }
         });
     };
+
+    $.fn.serializeControls = function() {
+        var data = {};
+
+        function buildInputObject(arr, val) {
+            if (arr.length < 1)
+                return val;
+            var objkey = arr[0];
+            if (objkey.slice(-1) == "]") {
+                objkey = objkey.slice(0,-1);
+            }
+            var result = {};
+            if (arr.length == 1){
+                result[objkey] = val;
+            } else {
+                arr.shift();
+                var nestedVal = buildInputObject(arr,val);
+                result[objkey] = nestedVal;
+            }
+            return result;
+        }
+
+        $.each(this.serializeArray(), function() {
+            var val = this.value;
+            var c = this.name.split("[");
+            var a = buildInputObject(c, val);
+            $.extend(true, data, a);
+        });
+
+        return data;
+    };
 }
 
 JLEHost.prototype.iframeLoaded = function()
@@ -122,12 +153,8 @@ JLEHost.prototype.onSettingsSave = function (e)
     var children = this.editor.selectedElm
         // select direct descendant subareas or non-nested subareas
         .find('> .jle-subarea') ; //, :not(.jle-subarea) .jle-subarea');
-    var propertiesArray = $('#config-form').serializeArray();
-    var properties = { };
 
-    propertiesArray.forEach(function (setting) {
-        properties[setting.name] = setting.value;
-    });
+    var properties = $('#config-form').serializeControls();
 
     ioCall('getPortletPreviewHtml', [this.curPortletId, properties], onNewHtml.bind(this));
 

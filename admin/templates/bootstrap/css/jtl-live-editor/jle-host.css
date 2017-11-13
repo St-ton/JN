@@ -53,3 +53,20 @@ html, body, #sidebar-panel, #iframe-panel, #iframe-panel iframe {
     max-width: 100%;
     max-height: 100%;
 }
+
+.text-vcenter,
+.table > thead > tr > th.text-vcenter,
+.table > tbody > tr > th.text-vcenter,
+.table > tfoot > tr > th.text-vcenter,
+.table > thead > tr > td.text-vcenter,
+.table > tbody > tr > td.text-vcenter,
+.table > tfoot > tr > td.text-vcenter {
+    vertical-align: middle;
+}
+tr.text-vcenter > td, tr.text-vcenter > th{
+    vertical-align: middle !important;
+}
+
+#icons .fa{
+    margin: 2px 5px 2px;
+}

@@ -118,21 +118,46 @@ abstract class CMSPortlet
         return $this;
     }
 
-    protected function attr_str()
+    protected function getAttribString()
     {
+        // animation
+        $animationStyle     = $this->properties['animation-style'];
+        $animationDuration  = $this->properties['animation-duration'];
+        $animationDelay     = $this->properties['animation-delay'];
+        $animationOffset    = $this->properties['animation-offset'];
+        $animationIteration = $this->properties['animation-iteration'];
+
+        if (!empty($animationStyle)){
+            $this->properties['attr']['class'] .= ' wow ' . $animationStyle;
+
+            if (!empty($animationDuration) && trim($animationDuration) != ''){
+                $this->properties['attr']['data-wow-duration'] = $animationDuration;
+            }
+            if (!empty($animationDelay) && trim($animationDelay) != ''){
+                $this->properties['attr']['data-wow-delay'] = $animationDelay;
+            }
+            if (!empty($animationOffset) && trim($animationOffset) != ''){
+                $this->properties['attr']['data-wow-offset'] = $animationOffset;
+            }
+            if (!empty($animationIteration) && trim($animationIteration) != ''){
+                $this->properties['attr']['data-wow-iteration'] = $animationIteration;
+            }
+        }
+
         $attr_str = '';
+
         if (!empty($this->properties['attr']) && is_array($this->properties['attr'])) {
             foreach ($this->properties['attr'] as $name => $value) {
-                if (trim($value) != '') {
+                if (trim($value) !== '') {
                     $attr_str .= $name . '="' . htmlspecialchars($value, ENT_QUOTES) . '" ';
                 }
             }
         }
 
-        return ($attr_str != '') ? ' ' . $attr_str : '';
+        return ($attr_str !== '') ? ' ' . $attr_str : '';
     }
 
-    protected function style_str(){
+    protected function getStyleString(){
         $style_str = '';
         if (!empty($this->properties['style']) && is_array($this->properties['style'])) {
             foreach ($this->properties['style'] as $name => $value) {

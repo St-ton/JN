@@ -39,9 +39,9 @@ class PortletSlider extends CMSPortlet
 
     public function getConfigPanelHtml()
     {
-        return Shop::Smarty()
+        return (new JTLSmarty(true))
             ->assign('properties', $this->properties)
-            ->fetch('tpl_inc/portlets/settings.slider.tpl');
+            ->fetch('portlets/settings.slider.tpl');
     }
 
     public function getDefaultProps()

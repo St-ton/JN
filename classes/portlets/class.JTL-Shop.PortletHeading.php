@@ -17,7 +17,7 @@ class PortletHeading extends CMSPortlet
         $level = $this->properties['level'];
         $text  = $this->properties['text'];
 
-        return "<h$level>$text</h$level>";
+        return "<h$level" . $this->getAttribString() . $this->getStyleString() . ">$text</h$level>";
     }
 
     /**
@@ -35,7 +35,35 @@ class PortletHeading extends CMSPortlet
     {
         return [
             'level' => 1,
-            'text'  => 'Heading Title'
+            'text'  => 'Heading Title',
+             // animation
+            'animation-style'     => '',
+            'animation-duration'  => '',
+            'animation-delay'     => '',
+            'animation-offset'    => '',
+            'animation-iteration' => '',
+            // attributes
+            'attr' => [
+                'class' => '',
+            ],
+            // style
+            'style' => [
+                'margin-top'          => '',
+                'margin-right'        => '',
+                'margin-bottom'       => '',
+                'margin-left'         => '',
+                'background-color'    => '',
+                'padding-top'         => '',
+                'padding-right'       => '',
+                'padding-bottom'      => '',
+                'padding-left'        => '',
+                'border-top-width'    => '',
+                'border-right-width'  => '',
+                'border-bottom-width' => '',
+                'border-left-width'   => '',
+                'border-style'        => '',
+                'border-color'        => '',
+            ],
         ];
     }
 

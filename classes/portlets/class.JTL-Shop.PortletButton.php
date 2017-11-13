@@ -24,9 +24,9 @@ class PortletButton extends CMSPortlet
         $fullWidthflag = $this->properties['button-full-width-flag'];
         $class         = $this->properties['button-class'];
         // icon
-        $iconFlag      = $this->properties['button-icon-flag'];
-        $icon          = $this->properties['button-icon'];
-        $iconAlignment = $this->properties['button-icon-alignment'];
+        $iconFlag      = $this->properties['icon-flag'];
+        $icon          = $this->properties['icon'];
+        $iconAlignment = $this->properties['icon-alignment'];
         // URL
         $linkFlag       = $this->properties['link-flag'];
         $linkUrl        = $this->properties['link-url'];
@@ -39,21 +39,7 @@ class PortletButton extends CMSPortlet
         $animationOffset    = $this->properties['animation-offset'];
         $animationIteration = $this->properties['animation-iteration'];
         // style
-        $this->properties['style']['background-color']    = $this->properties['background-color'];
-        $this->properties['style']['margin-top']          = $this->properties['margin-top'];
-        $this->properties['style']['margin-right']        = $this->properties['margin-right'];
-        $this->properties['style']['margin-bottom']       = $this->properties['margin-bottom'];
-        $this->properties['style']['margin-left']         = $this->properties['margin-left'];
-        $this->properties['style']['padding-top']         = $this->properties['padding-top'];
-        $this->properties['style']['padding-right']       = $this->properties['padding-right'];
-        $this->properties['style']['padding-bottom']      = $this->properties['padding-bottom'];
-        $this->properties['style']['padding-left']        = $this->properties['padding-left'];
-        $this->properties['style']['border-top-width']    = $this->properties['border-top-width'];
-        $this->properties['style']['border-right-width']  = $this->properties['border-right-width'];
-        $this->properties['style']['border-bottom-width'] = $this->properties['border-bottom-width'];
-        $this->properties['style']['border-left-width']   = $this->properties['border-left-width'];
-        $this->properties['style']['border-style']        = $this->properties['border-style'];
-        $this->properties['style']['border-color']        = $this->properties['border-color'];
+        // $this->properties['style']
 
         $previewButton  = "<a class='btn btn-$type btn-$size";
         $previewButton .= !empty($class) ? " $class" : "";
@@ -65,7 +51,7 @@ class PortletButton extends CMSPortlet
             $previewButton .= !empty($linkNewTabFlag) ? " target='_blank'" : "";
         }
 
-        $previewButton .= $this->style_str() . ">";
+        $previewButton .= $this->getStyleString() . ">";
         if ($iconFlag == 'yes' && $icon != '') {
             if ($iconAlignment == 'left') {
                 $previewButton .= "<i class='$icon' style='top:2px'></i> $text</a>";
@@ -103,7 +89,7 @@ class PortletButton extends CMSPortlet
         }
 
         $content  = '';
-        $content .= "<div".$this->attr_str()."> \n";
+        $content .= "<div".$this->getAttribString()."> \n";
         $content .= $previewButton."\n";
         $content .= "</div> \n";
 
@@ -132,9 +118,9 @@ class PortletButton extends CMSPortlet
             'button-full-width-flag'     => 'no',
             'button-class'               => '',
             // icon
-            'button-icon-flag'           => 'no',
-            'button-icon'                => '',
-            'button-icon-alignment'      => 'left',
+            'icon-flag'           => 'no',
+            'icon'                => '',
+            'icon-alignment'      => 'left',
             // URL
             'link-flag'           => 'no',
             'link-url'            => '',
@@ -147,21 +133,23 @@ class PortletButton extends CMSPortlet
             'animation-offset'    => '',
             'animation-iteration' => '',
             // style
-            'margin-top'          => '',
-            'margin-right'        => '',
-            'margin-bottom'       => '',
-            'margin-left'         => '',
-            'background-color'    => '',
-            'padding-top'         => '',
-            'padding-right'       => '',
-            'padding-bottom'      => '',
-            'padding-left'        => '',
-            'border-top-width'    => '',
-            'border-right-width'  => '',
-            'border-bottom-width' => '',
-            'border-left-width'   => '',
-            'border-style'        => '',
-            'border-color'        => ''
+            'style' => [
+                'margin-top'          => '',
+                'margin-right'        => '',
+                'margin-bottom'       => '',
+                'margin-left'         => '',
+                'background-color'    => '',
+                'padding-top'         => '',
+                'padding-right'       => '',
+                'padding-bottom'      => '',
+                'padding-left'        => '',
+                'border-top-width'    => '',
+                'border-right-width'  => '',
+                'border-bottom-width' => '',
+                'border-left-width'   => '',
+                'border-style'        => '',
+                'border-color'        => '',
+            ],
 
         ];
     }

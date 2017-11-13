@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="{$templateUrl}js/bootstrap-colorpicker/css/bootstrap-colorpicker.min.css">
 
     <script src="{$templateUrl}js/jquery-1.12.4.min.js"></script>
+    <script src="{$templateUrl}js/jquery-ui-1.11.4.min.js"></script>
     <script src="{$templateUrl}js/bootstrap.min.js"></script>
     <script src="{$templateUrl}js/split.min.js"></script>
     <script src="{$templateUrl}js/global.js"></script>

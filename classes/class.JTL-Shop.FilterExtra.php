@@ -34,19 +34,9 @@ class FilterExtra extends AbstractFilter
     private $count;
 
     /**
-     * @var int
-     */
-    public $nAnzahl;
-
-    /**
      * @var string
      */
     private $url;
-
-    /**
-     * @var string
-     */
-    public $cURL = '';
 
     /**
      * @var int
@@ -54,21 +44,11 @@ class FilterExtra extends AbstractFilter
     private $sort = 0;
 
     /**
-     * @var int
-     */
-    public $nSortNr = 0;
-
-    /**
      * if set to true, Navigationsfilter::getURL() will not return a SEO URL
      *
      * @var bool
      */
     private $disableSeoURLs = false;
-
-    /**
-     * @var string
-     */
-    public $Klasse = '';
 
     /**
      * @var string
@@ -86,12 +66,34 @@ class FilterExtra extends AbstractFilter
     protected $isActive = false;
 
     /**
+     * @var array
+     */
+    private static $mapping = [
+        'cName'   => 'Name',
+        'nAnzahl' => 'Count',
+        'cURL'    => 'URL',
+        'Klasse'  => 'Class',
+        'nSortNr' => 'Sort'
+    ];
+
+    /**
      * FilterExtra constructor.
      * @param null $productFilter
      */
     public function __construct($productFilter = null)
     {
         $this->isInitialized = true;
+    }
+
+    /**
+     * @param string $value
+     * @return string|null
+     */
+    private static function getMapping($value)
+    {
+        return isset(self::$mapping[$value])
+            ? self::$mapping[$value]
+            : null;
     }
 
     /**
@@ -128,8 +130,7 @@ class FilterExtra extends AbstractFilter
      */
     public function setSort($sort)
     {
-        $this->sort    = (int)$sort;
-        $this->nSortNr = (int)$sort;
+        $this->sort = (int)$sort;
 
         return $this;
     }
@@ -149,7 +150,6 @@ class FilterExtra extends AbstractFilter
     public function setClass($class)
     {
         $this->class = $class;
-        $this->Klasse = $class;
 
         return $this;
     }
@@ -187,8 +187,7 @@ class FilterExtra extends AbstractFilter
      */
     public function setCount($count)
     {
-        $this->count   = (int)$count;
-        $this->nAnzahl = (int)$count;
+        $this->count = (int)$count;
 
         return $this;
     }
@@ -207,8 +206,7 @@ class FilterExtra extends AbstractFilter
      */
     public function setURL($url)
     {
-        $this->url  = $url;
-        $this->cURL = $url;
+        $this->url = $url;
 
         return $this;
     }
@@ -259,6 +257,12 @@ class FilterExtra extends AbstractFilter
      */
     public function __set($name, $value)
     {
+        if (property_exists($this, $name)) {
+            $this->$name = $value;
+
+            return $this;
+        }
+
         $this->data[$name] = $value;
 
         return $this;
@@ -270,6 +274,12 @@ class FilterExtra extends AbstractFilter
      */
     public function __get($name)
     {
+        if (($mapped = self::getMapping($name)) !== null) {
+            $method = 'get' . $mapped;
+
+            return $this->$method();
+        }
+
         return isset($this->data[$name])
             ? $this->data[$name]
             : null;
@@ -281,7 +291,7 @@ class FilterExtra extends AbstractFilter
      */
     public function __isset($name)
     {
-        return isset($this->data[$name]);
+        return property_exists($this, $name) || self::getMapping($name) !== null || isset($this->data[$name]);
     }
 
     /**

@@ -168,127 +168,129 @@ class FilterSearch extends AbstractFilter
         if ($query === '') {
             $query = $this->cSuche;
         }
-        if (strlen($query) > 0) {
-            $Suchausdruck = str_replace(["'", "\\", "*", "%"], '', $query);
-            $languageID   = (int)$languageIDExt > 0 ? (int)$languageIDExt : $this->getLanguageID();
-            // db füllen für auswertugnen / suggest, dabei Blacklist beachten
-            $tempQueries = explode(';', $Suchausdruck);
-            $blacklist   = Shop::DB()->select(
-                'tsuchanfrageblacklist',
-                'kSprache',
-                $languageID,
-                'cSuche',
-                Shop::DB()->escape($tempQueries[0])
+        if (empty($query)) {
+            return false;
+        }
+        $Suchausdruck = str_replace(["'", "\\", "*", "%"], '', $query);
+        $languageID   = (int)$languageIDExt > 0 ? (int)$languageIDExt : $this->getLanguageID();
+        // db füllen für auswertugnen / suggest, dabei Blacklist beachten
+        $tempQueries = explode(';', $Suchausdruck);
+        $blacklist   = Shop::DB()->select(
+            'tsuchanfrageblacklist',
+            'kSprache',
+            $languageID,
+            'cSuche',
+            Shop::DB()->escape($tempQueries[0])
+        );
+        if ($filterSpam && !empty($blacklist->kSuchanfrageBlacklist)) {
+            return false;
+        }
+        // Ist MD5(IP) bereits X mal im Cache
+        $max_ip_count = (int)$this->getConfig()['artikeluebersicht']['livesuche_max_ip_count'] * 100;
+        $ip_cache_erg = Shop::DB()->executeQueryPrepared(
+            'SELECT count(*) AS anzahl
+                FROM tsuchanfragencache
+                WHERE kSprache = :lang
+                AND cIP = :ip',
+            ['lang' => $languageID, 'ip' => gibIP()],
+            1
+        );
+        $ipUsed       = Shop::DB()->select(
+            'tsuchanfragencache',
+            'kSprache',
+            $languageID,
+            'cSuche',
+            $Suchausdruck,
+            'cIP',
+            gibIP(),
+            false,
+            'kSuchanfrageCache'
+        );
+        if (!$filterSpam
+            || (isset($ip_cache_erg->anzahl) && $ip_cache_erg->anzahl < $max_ip_count
+                && (!isset($ipUsed->kSuchanfrageCache) || !$ipUsed->kSuchanfrageCache))
+        ) {
+            // Fülle Suchanfragencache
+            $searchQueryCache           = new stdClass();
+            $searchQueryCache->kSprache = $languageID;
+            $searchQueryCache->cIP      = gibIP();
+            $searchQueryCache->cSuche   = $Suchausdruck;
+            $searchQueryCache->dZeit    = 'now()';
+            Shop::DB()->insert('tsuchanfragencache', $searchQueryCache);
+            // Cacheeinträge die > 1 Stunde sind, löschen
+            Shop::DB()->query(
+                'DELETE 
+                    FROM tsuchanfragencache 
+                    WHERE dZeit < DATE_SUB(now(),INTERVAL 1 HOUR)', 4
             );
-            if (!$filterSpam || empty($blacklist->kSuchanfrageBlacklist)) {
-                // Ist MD5(IP) bereits X mal im Cache
-                $max_ip_count = (int)$this->getConfig()['artikeluebersicht']['livesuche_max_ip_count'] * 100;
-                $ip_cache_erg = Shop::DB()->executeQueryPrepared(
-                    'SELECT count(*) AS anzahl
-                        FROM tsuchanfragencache
-                        WHERE kSprache = :lang
-                        AND cIP = :ip',
-                    ['lang' => $languageID, 'ip' => gibIP()],
-                    1
-                );
-                $ipUsed = Shop::DB()->select(
-                    'tsuchanfragencache',
-                    'kSprache',
-                    $languageID,
-                    'cSuche',
-                    $Suchausdruck,
-                    'cIP',
-                    gibIP(),
+            if ($hits > 0) {
+                require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
+                $searchQuery = new stdClass();
+                $searchQuery->kSprache        = $languageID;
+                $searchQuery->cSuche          = $Suchausdruck;
+                $searchQuery->nAnzahlTreffer  = $hits;
+                $searchQuery->nAnzahlGesuche  = 1;
+                $searchQuery->dZuletztGesucht = 'now()';
+                $searchQuery->cSeo            = getSeo($Suchausdruck);
+                $searchQuery->cSeo            = checkSeo($searchQuery->cSeo);
+                $previuousQuery               = Shop::DB()->select(
+                    'tsuchanfrage',
+                    'kSprache', (int)$searchQuery->kSprache,
+                    'cSuche', $Suchausdruck,
+                    null, null,
                     false,
-                    'kSuchanfrageCache'
+                    'kSuchanfrage'
                 );
-                if (!$filterSpam
-                    || (isset($ip_cache_erg->anzahl) && $ip_cache_erg->anzahl < $max_ip_count
-                        && (!isset($ipUsed->kSuchanfrageCache) || !$ipUsed->kSuchanfrageCache))
-                ) {
-                    // Fülle Suchanfragencache
-                    $searchQueryCache           = new stdClass();
-                    $searchQueryCache->kSprache = $languageID;
-                    $searchQueryCache->cIP      = gibIP();
-                    $searchQueryCache->cSuche   = $Suchausdruck;
-                    $searchQueryCache->dZeit    = 'now()';
-                    Shop::DB()->insert('tsuchanfragencache', $searchQueryCache);
-                    // Cacheeinträge die > 1 Stunde sind, löschen
+                if ($real && $previuousQuery!== null && $previuousQuery->kSuchanfrage > 0) {
                     Shop::DB()->query(
-                        'DELETE 
-                            FROM tsuchanfragencache 
-                            WHERE dZeit < DATE_SUB(now(),INTERVAL 1 HOUR)', 4
+                        'UPDATE tsuchanfrage
+                            SET nAnzahlTreffer = ' . (int)$searchQuery->nAnzahlTreffer . ',
+                                nAnzahlGesuche = nAnzahlGesuche+1, 
+                                dZuletztGesucht = now()
+                            WHERE kSuchanfrage = ' . (int)$previuousQuery->kSuchanfrage, 4
                     );
-                    if ($hits > 0) {
-                        require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
-                        $searchQuery = new stdClass();
-                        $searchQuery->kSprache        = $languageID;
-                        $searchQuery->cSuche          = $Suchausdruck;
-                        $searchQuery->nAnzahlTreffer  = $hits;
-                        $searchQuery->nAnzahlGesuche  = 1;
-                        $searchQuery->dZuletztGesucht = 'now()';
-                        $searchQuery->cSeo            = getSeo($Suchausdruck);
-                        $searchQuery->cSeo            = checkSeo($searchQuery->cSeo);
-                        $previuousQuery              = Shop::DB()->select(
-                            'tsuchanfrage',
-                            'kSprache', (int)$searchQuery->kSprache,
-                            'cSuche', $Suchausdruck,
-                            null, null,
-                            false,
-                            'kSuchanfrage'
-                        );
-                        if ($real && isset($previuousQuery->kSuchanfrage) && $previuousQuery->kSuchanfrage > 0) {
-                            Shop::DB()->query(
-                                'UPDATE tsuchanfrage
-                                    SET nAnzahlTreffer = $searchQuery->nAnzahlTreffer, 
-                                        nAnzahlGesuche = nAnzahlGesuche+1, 
-                                        dZuletztGesucht = now()
-                                    WHERE kSuchanfrage = ' . (int)$previuousQuery->kSuchanfrage, 4
-                            );
-                        } elseif (!isset($previuousQuery->kSuchanfrage) || !$previuousQuery->kSuchanfrage) {
-                            Shop::DB()->delete(
-                                'tsuchanfrageerfolglos',
-                                ['kSprache', 'cSuche'],
-                                [(int)$searchQuery->kSprache, Shop::DB()->realEscape($Suchausdruck)]
-                            );
+                } elseif (!isset($previuousQuery->kSuchanfrage) || !$previuousQuery->kSuchanfrage) {
+                    Shop::DB()->delete(
+                        'tsuchanfrageerfolglos',
+                        ['kSprache', 'cSuche'],
+                        [(int)$searchQuery->kSprache, Shop::DB()->realEscape($Suchausdruck)]
+                    );
 
-                            return Shop::DB()->insert('tsuchanfrage', $searchQuery);
-                        }
-                    } else {
-                        $queryMiss                  = new stdClass();
-                        $queryMiss->kSprache        = $languageID;
-                        $queryMiss->cSuche          = $Suchausdruck;
-                        $queryMiss->nAnzahlGesuche  = 1;
-                        $queryMiss->dZuletztGesucht = 'now()';
-                        $queryMiss_old              = Shop::DB()->select(
-                            'tsuchanfrageerfolglos',
-                            'kSprache', (int)$queryMiss->kSprache,
-                            'cSuche', $Suchausdruck,
-                            null, null,
-                            false,
-                            'kSuchanfrageErfolglos'
-                        );
-                        if (isset($queryMiss_old->kSuchanfrageErfolglos)
-                            && $queryMiss_old->kSuchanfrageErfolglos > 0
-                            && $real
-                        ) {
-                            Shop::DB()->query(
-                                'UPDATE tsuchanfrageerfolglos
-                                    SET nAnzahlGesuche = nAnzahlGesuche+1, 
-                                        dZuletztGesucht = now()
-                                    WHERE kSuchanfrageErfolglos = ' .
-                                    (int)$queryMiss_old->kSuchanfrageErfolglos,
-                                4
-                            );
-                        } else {
-                            Shop::DB()->delete(
-                                'tsuchanfrage',
-                                ['kSprache', 'cSuche'],
-                                [(int)$queryMiss->kSprache, Shop::DB()->realEscape($Suchausdruck)]
-                            );
-                            Shop::DB()->insert('tsuchanfrageerfolglos', $queryMiss);
-                        }
-                    }
+                    return Shop::DB()->insert('tsuchanfrage', $searchQuery);
+                }
+            } else {
+                $queryMiss                  = new stdClass();
+                $queryMiss->kSprache        = $languageID;
+                $queryMiss->cSuche          = $Suchausdruck;
+                $queryMiss->nAnzahlGesuche  = 1;
+                $queryMiss->dZuletztGesucht = 'now()';
+                $queryMiss_old              = Shop::DB()->select(
+                    'tsuchanfrageerfolglos',
+                    'kSprache', (int)$queryMiss->kSprache,
+                    'cSuche', $Suchausdruck,
+                    null, null,
+                    false,
+                    'kSuchanfrageErfolglos'
+                );
+                if ($queryMiss_old !== null
+                    && $queryMiss_old->kSuchanfrageErfolglos > 0
+                    && $real
+                ) {
+                    Shop::DB()->query(
+                        'UPDATE tsuchanfrageerfolglos
+                            SET nAnzahlGesuche = nAnzahlGesuche+1, 
+                                dZuletztGesucht = now()
+                            WHERE kSuchanfrageErfolglos = ' .
+                            (int)$queryMiss_old->kSuchanfrageErfolglos,
+                        4
+                    );
+                } else {
+                    Shop::DB()->delete(
+                        'tsuchanfrage',
+                        ['kSprache', 'cSuche'],
+                        [(int)$queryMiss->kSprache, Shop::DB()->realEscape($Suchausdruck)]
+                    );
+                    Shop::DB()->insert('tsuchanfrageerfolglos', $queryMiss);
                 }
             }
         }
@@ -428,7 +430,7 @@ class FilterSearch extends AbstractFilter
                     ->setClassName($this->getClassName())
                     ->setClass($class)
                     ->setParam($this->getUrlParam())
-                    ->setName('@todo: setName for FilterSearch')
+                    ->setName($searchFilter->cSuche)
                     ->setValue((int)$searchFilter->kSuchanfrage)
                     ->setCount($searchFilter->nAnzahl)
                     ->setURL($this->productFilter->getURL(

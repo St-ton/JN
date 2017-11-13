@@ -1,4 +1,8 @@
 <?php
+/**
+ * @copyright (c) JTL-Software-GmbH
+ * @license http://jtl-url.de/jtlshoplicense
+ */
 
 /**
  * Class Kupon
@@ -300,11 +304,12 @@ class KuponBestellung
      *
      * @param string $dStart
      * @param string $dEnd
+     * @param int    $kKupon
      * @return array
      */
     public static function getOrdersWithUsedCoupons($dStart, $dEnd, $kKupon = 0)
     {
-        $ordersWithUsedCoupons = Shop::DB()->query(
+        return Shop::DB()->query(
             "SELECT kbs.*, wkp.cName, kp.kKupon
                 FROM tkuponbestellung AS kbs
                 LEFT JOIN tbestellung AS bs 
@@ -320,7 +325,5 @@ class KuponBestellung
                 ((int)$kKupon > 0 ? " AND kp.kKupon = " . (int)$kKupon : '') . "
                 ORDER BY kbs.dErstellt DESC", 9
         );
-
-        return $ordersWithUsedCoupons;
     }
 }

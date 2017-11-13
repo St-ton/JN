@@ -174,7 +174,6 @@ class FilterItemAttribute extends FilterBaseAttribute
             1
         );
         if (!empty($seo_obj->kMerkmal)) {
-//            $this->kMerkmal = (int)$seo_obj->kMerkmal;
             $this->setAttributeID($seo_obj->kMerkmal);
             $this->cWert    = $seo_obj->cWert;
             $this->setName($seo_obj->cWert)
@@ -479,6 +478,7 @@ class FilterItemAttribute extends FilterBaseAttribute
                 : AbstractFilter::FILTER_TYPE_AND
             );
             foreach ($attributeFilter->attributeValues as $filterValue) {
+                $filterValue->kMerkmalWert = (int)$filterValue->kMerkmalWert;
                 $attributeValue = (new FilterExtra())
                     ->setType($attributeFilter->nMehrfachauswahl === 1
                         ? AbstractFilter::FILTER_TYPE_OR
@@ -489,11 +489,11 @@ class FilterItemAttribute extends FilterBaseAttribute
                     ->setValue($filterValue->cWert)
                     ->setCount($filterValue->nAnzahl);
 
-                $attributeValue->kMerkmalWert = (int)$filterValue->kMerkmalWert;
+                $attributeValue->kMerkmalWert = $filterValue->kMerkmalWert;
                 $attributeValue->kMerkmal     = (int)$attributeFilter->kMerkmal;
                 $attributeValue->cWert        = $filterValue->cWert;
-                $attributeValue->setIsActive($currentAttributeValue === $attributeValue->kMerkmalWert
-                    || $this->attributeValueIsActive($attributeValue->kMerkmalWert));
+                $attributeValue->setIsActive($currentAttributeValue === $filterValue->kMerkmalWert
+                    || $this->attributeValueIsActive($filterValue->kMerkmalWert));
                 if ($attributeValue->isActive()) {
                     $attribute->setIsActive(true);
                 }

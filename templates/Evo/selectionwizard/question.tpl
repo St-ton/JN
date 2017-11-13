@@ -18,11 +18,9 @@
     {elseif $nQuestion === $AWA->getCurQuestion()}
         {if $AWA->getConf('auswahlassistent_anzeigeformat') === 'S'}
             <label for="kMerkmalWert-{$nQuestion}" class="sr-only">{lang key="pleaseChoose" section="global"}</label>
-            <select id="kMerkmalWert-{$nQuestion}"
-                    onchange="return setSelectionWizardAnswerJS($(this).val());" class="form-control">
+            <select id="kMerkmalWert-{$nQuestion}" onchange="return setSelectionWizardAnswerJS($(this).val());" class="form-control">
                 <option value="-1">{lang key="pleaseChoose" section="global"}</option>
                 {foreach $oFrage->oWert_arr as $oWert}
-                    $oWert: {$oWert|@var_dump}
                     {if isset($oWert->nAnzahl)}
                         <option value="{$oWert->kMerkmalWert}">
                             {$oWert->getValue()}
@@ -36,8 +34,7 @@
         {else}
             {foreach $oFrage->oWert_arr as $oWert}
                 {if isset($oWert->nAnzahl)}
-                    <a class="selection-wizard-answer" href="#"
-                       onclick="return setSelectionWizardAnswerJS({$oWert->kMerkmalWert});">
+                    <a class="selection-wizard-answer" href="#" onclick="return setSelectionWizardAnswerJS({$oWert->kMerkmalWert});">
                         {if $AWA->getConf('auswahlassistent_anzeigeformat')|in_array:['B', 'BT']:true && $oWert->cBildpfadKlein !== ''}
                             <img src="{$oWert->cBildpfadKlein}" alt="{$oWert->getValue()}" title="{$oWert->getValue()}">
                         {/if}

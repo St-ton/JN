@@ -29,7 +29,6 @@ if (isset($_POST['formFilter']) && $_POST['formFilter'] > 0 && validateToken()) 
         }
     }
 
-    $dateRange_arr = [];
     $dateRange_arr = explode(' - ', $_POST['daterange']);
     $endDate       = (DateTime::createFromFormat('Y-m-j', $dateRange_arr[1])
         && (DateTime::createFromFormat('Y-m-j', $dateRange_arr[1]) > $startDate)
@@ -56,7 +55,8 @@ if (isset($_POST['formFilter']) && $_POST['formFilter'] > 0 && validateToken()) 
 $dStart = $startDate->format('Y-m-d 00:00:00');
 $dEnd   = $endDate->format('Y-m-d 23:59:59');
 
-$usedCouponsOrder = KuponBestellung::getOrdersWithUsedCoupons($dStart, $dEnd);
+$usedCouponsOrder = KuponBestellung::getOrdersWithUsedCoupons($dStart, $dEnd, verifyGPDataString('kKupon'));
+
 $nCountOrders_arr = Shop::DB()->query(
     "SELECT count(*) AS nCount
         FROM tbestellung

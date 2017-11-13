@@ -925,7 +925,7 @@ class NiceDB implements Serializable
                 $this->_bind($res, $k, $v);
             }
             if ($res->execute() === false) {
-                return 0;
+                return;
             }
         } catch (PDOException $e) {
             if (defined('NICEDB_EXCEPTION_ECHO') && NICEDB_EXCEPTION_ECHO === true) {
@@ -941,7 +941,7 @@ class NiceDB implements Serializable
                 throw $e;
             }
 
-            return 0;
+            return;
         }
         while (($row = $res->fetchObject()) !== false) {
             yield $row;

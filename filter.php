@@ -89,7 +89,8 @@ if ($Einstellungen['artikeluebersicht']['artikelubersicht_bestseller_gruppieren'
         $limit,
         $minsells
     );
-    Bestseller::ignoreProducts($oSuchergebnisse->Artikel->elemente->getItems(), $bestsellers);
+    $products = $oSuchergebnisse->Artikel->elemente->getItems();
+    Bestseller::ignoreProducts($products, $bestsellers);
     $smarty->assign('oBestseller_arr', $bestsellers);
 }
 if (verifyGPCDataInteger('zahl') > 0) {

@@ -2113,7 +2113,8 @@ class ProductFilter
             'custom' => [],
             'misc'   => []
         ];
-        if (($baseState = $this->getBaseState())->isInitialized()) {
+        $baseState = $this->getBaseState();
+        if ($baseState->isInitialized()) {
             $filterSeoUrl = $baseState->getSeo($this->getLanguageID());
             if (!empty($filterSeoUrl)) {
                 $seoParam          = new stdClass();

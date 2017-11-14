@@ -20,9 +20,9 @@ function kundeSpeichern($cPost_arr)
            $cKundenattribut_arr;
 
     unset($_SESSION['Lieferadresse'], $_SESSION['Versandart'], $_SESSION['Zahlungsart']);
-    /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
-    $_SESSION['Warenkorb']->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS)
-                          ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART);
+    $cart = Session::Cart();
+    $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS)
+         ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART);
 
     $editRechnungsadresse = (int)$cPost_arr['editRechnungsadresse'];
     $step                 = 'formular';
@@ -168,20 +168,20 @@ function kundeSpeichern($cPost_arr)
                 Shop::DB()->update('tkundenwerbenkunden', 'cEmail', $knd->cMail, $_upd);
             }
         }
-        if (isset($_SESSION['Warenkorb']->kWarenkorb) &&
-            $_SESSION['Warenkorb']->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]) > 0
-        ) {
+        if (isset($cart->kWarenkorb) && $cart->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]) > 0) {
             setzeSteuersaetze();
-            $_SESSION['Warenkorb']->gibGesamtsummeWarenLocalized();
+            $cart->gibGesamtsummeWarenLocalized();
         }
         if ((int)$cPost_arr['checkout'] === 1) {
             //weiterleitung zum chekout
             $linkHelper = LinkHelper::getInstance();
             header('Location: ' . $linkHelper->getStaticRoute('bestellvorgang.php', true) . '?reg=1', true, 303);
             exit;
-        } elseif (isset($cPost_arr['ajaxcheckout_return']) && (int)$cPost_arr['ajaxcheckout_return'] === 1) {
+        }
+        if (isset($cPost_arr['ajaxcheckout_return']) && (int)$cPost_arr['ajaxcheckout_return'] === 1) {
             return 1;
-        } elseif ($GlobaleEinstellungen['global']['global_kundenkonto_aktiv'] !== 'A') {
+        }
+        if ($GlobaleEinstellungen['global']['global_kundenkonto_aktiv'] !== 'A') {
             //weiterleitung zu mein Konto
             $linkHelper = LinkHelper::getInstance();
             header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true) . '?reg=1', true, 303);

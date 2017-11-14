@@ -149,7 +149,7 @@ function setzeVergleich($oVergleichsliste)
         if ($nVergleiche->nVergleiche < 3) {
             $oVergleichslisteTable        = new stdClass();
             $oVergleichslisteTable->cIP   = gibIP();
-            $oVergleichslisteTable->dDate = date('Y-m-d H:i:s', time());
+            $oVergleichslisteTable->dDate = date('Y-m-d H:i:s');
 
             $kVergleichsliste = Shop::DB()->insert('tvergleichsliste', $oVergleichslisteTable);
             foreach ($oVergleichsliste->oArtikel_arr as $oArtikel) {

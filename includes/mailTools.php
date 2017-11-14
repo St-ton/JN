@@ -492,21 +492,21 @@ function sendeMail($ModulId, $Object, $mail = null)
         $bodyText .= "\n\n" . $akzText;
     }
     if ($Emailvorlage->nWRB == 1) {
-        $cUeberschrift = Shop::Lang()->get('wrb', 'global');
+        $cUeberschrift = Shop::Lang()->get('wrb');
         if (strlen($bodyHtml) > 0) {
             $bodyHtml .= "<br /><br /><h3>{$cUeberschrift}</h3>" . $WRB->cContentHtml;
         }
         $bodyText .= "\n\n" . $cUeberschrift . "\n\n" . $WRB->cContentText;
     }
     if ($Emailvorlage->nWRBForm == 1) {
-        $cUeberschrift = Shop::Lang()->get('wrbform', 'global');
+        $cUeberschrift = Shop::Lang()->get('wrbform');
         if (strlen($bodyHtml) > 0) {
             $bodyHtml .= "<br /><br /><h3>{$cUeberschrift}</h3>" . $WRBForm->cContentHtml;
         }
         $bodyText .= "\n\n" . $cUeberschrift . "\n\n" . $WRBForm->cContentText;
     }
     if ($Emailvorlage->nAGB == 1) {
-        $cUeberschrift = Shop::Lang()->get('agb', 'global');
+        $cUeberschrift = Shop::Lang()->get('agb');
         if (strlen($bodyHtml) > 0) {
             $bodyHtml .= "<br /><br /><h3>{$cUeberschrift}</h3>" . $AGB->cContentHtml;
         }
@@ -835,11 +835,11 @@ function lokalisiereKunde($sprache, $kunde)
     // Anrede mappen
     if (isset($kunde->cAnrede)) {
         if ($kunde->cAnrede === 'w') {
-            $kunde->cAnredeLocalized = Shop::Lang()->get('salutationW', 'global');
+            $kunde->cAnredeLocalized = Shop::Lang()->get('salutationW');
         } elseif ($kunde->cAnrede === 'm') {
-            $kunde->cAnredeLocalized = Shop::Lang()->get('salutationM', 'global');
+            $kunde->cAnredeLocalized = Shop::Lang()->get('salutationM');
         } else {
-            $kunde->cAnredeLocalized = Shop::Lang()->get('salutationGeneral', 'global');
+            $kunde->cAnredeLocalized = Shop::Lang()->get('salutationGeneral');
         }
     }
     $kunde = deepCopy($kunde);

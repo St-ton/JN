@@ -146,14 +146,13 @@ function pushToBasket($kArtikel, $anzahl, $oEigenschaftwerte_arr = '')
             $localizedErrors = baueArtikelhinweise($errors, true, $Artikel, $anzahl);
 
             $oResponse->nType  = 0;
-            $oResponse->cLabel = Shop::Lang()->get('basket', 'global');
+            $oResponse->cLabel = Shop::Lang()->get('basket');
             $oResponse->cHints = utf8_convert_recursive($localizedErrors);
             $objResponse->script('this.response = ' . json_encode($oResponse) . ';');
 
             return $objResponse;
         }
-        /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
-        $cart = $_SESSION['Warenkorb'];
+        $cart = Session::Cart();
         WarenkorbHelper::addVariationPictures($cart);
         /** @var Warenkorb $cart */
         $cart->fuegeEin($kArtikel, $anzahl, $oEigenschaftwerte_arr)
@@ -210,8 +209,8 @@ function pushToBasket($kArtikel, $anzahl, $oEigenschaftwerte_arr = '')
                ->assign('Steuerpositionen', $cart->gibSteuerpositionen());
 
         $oResponse->nType           = 2;
-        $oResponse->cWarenkorbText  = utf8_encode(lang_warenkorb_warenkorbEnthaeltXArtikel($_SESSION['Warenkorb']));
-        $oResponse->cWarenkorbLabel = utf8_encode(lang_warenkorb_warenkorbLabel($_SESSION['Warenkorb']));
+        $oResponse->cWarenkorbText  = utf8_encode(lang_warenkorb_warenkorbEnthaeltXArtikel($cart));
+        $oResponse->cWarenkorbLabel = utf8_encode(lang_warenkorb_warenkorbLabel($cart));
         $oResponse->cPopup          = utf8_encode($smarty->fetch('productdetails/pushed.tpl'));
         $oResponse->cWarenkorbMini  = utf8_encode($smarty->fetch('basket/cart_dropdown.tpl'));
         $oResponse->oArtikel        = utf8_convert_recursive($Artikel, true);
@@ -263,7 +262,7 @@ function pushToComparelist($kArtikel)
     $notice            = Shop::Smarty()->getTemplateVars('hinweis');
     $oResponse->nType  = 2;
     $oResponse->nCount = count($_SESSION['Vergleichsliste']->oArtikel_arr);
-    $oResponse->cTitle = utf8_encode(Shop::Lang()->get('compare', 'global'));
+    $oResponse->cTitle = utf8_encode(Shop::Lang()->get('compare'));
     $buttons           = [
         (object)[
             'href'    => '#',
@@ -278,7 +277,7 @@ function pushToComparelist($kArtikel)
         array_unshift($buttons, (object)[
             'href'  => 'vergleichsliste.php',
             'fa'    => 'fa-tasks',
-            'title' => Shop::Lang()->get('compare', 'global')
+            'title' => Shop::Lang()->get('compare')
         ]);
     }
 
@@ -338,7 +337,7 @@ function removeFromComparelist($kArtikel)
     Session::getInstance()->setStandardSessionVars();
     $oResponse->nType     = 2;
     $oResponse->nCount    = count($_SESSION['Vergleichsliste']->oArtikel_arr);
-    $oResponse->cTitle    = utf8_encode(Shop::Lang()->get('compare', 'global'));
+    $oResponse->cTitle    = utf8_encode(Shop::Lang()->get('compare'));
     $oResponse->cNavBadge = '';
 
     if ($oResponse->nCount > 1) {
@@ -375,17 +374,18 @@ function getBasketItems($nTyp)
     require_once PFAD_ROOT . PFAD_INCLUDES . 'artikel_inc.php';
     require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
 
+    $cart        = Session::Cart();
     $oResponse   = new stdClass();
     $objResponse = new IOResponse();
 
     $GLOBALS['oSprache'] = Sprache::getInstance();
-    WarenkorbHelper::addVariationPictures($_SESSION['Warenkorb']);
+    WarenkorbHelper::addVariationPictures($cart);
 
     switch ((int)$nTyp) {
         default:
         case 0:
             $kKundengruppe = Session::CustomerGroup()->getID();
-            $nAnzahl       = $_SESSION['Warenkorb']->gibAnzahlPositionenExt([C_WARENKORBPOS_TYP_ARTIKEL]);
+            $nAnzahl       = $cart->gibAnzahlPositionenExt([C_WARENKORBPOS_TYP_ARTIKEL]);
             $cLand         = isset($_SESSION['cLieferlandISO']) ? $_SESSION['cLieferlandISO'] : '';
             $cPLZ          = '*';
 
@@ -396,20 +396,18 @@ function getBasketItems($nTyp)
             }
 
             $versandkostenfreiAb = gibVersandkostenfreiAb($kKundengruppe, $cLand);
-            /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
-            $smarty->assign('WarensummeLocalized', $_SESSION['Warenkorb']->gibGesamtsummeWarenLocalized())
-                   ->assign('Warensumme', $_SESSION['Warenkorb']->gibGesamtsummeWaren())
-                   ->assign('Steuerpositionen', $_SESSION['Warenkorb']->gibSteuerpositionen())
+            $smarty->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())
+                   ->assign('Warensumme', $cart->gibGesamtsummeWaren())
+                   ->assign('Steuerpositionen', $cart->gibSteuerpositionen())
                    ->assign('Einstellungen', $Einstellungen)
                    ->assign('WarenkorbArtikelPositionenanzahl', $nAnzahl)
-                   ->assign('WarenkorbArtikelanzahl',
-                       $_SESSION['Warenkorb']->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]))
-                   ->assign('zuletztInWarenkorbGelegterArtikel', $_SESSION['Warenkorb']->gibLetztenWKArtikel())
-                   ->assign('WarenkorbGesamtgewicht', $_SESSION['Warenkorb']->getWeight())
-                   ->assign('Warenkorbtext', lang_warenkorb_warenkorbEnthaeltXArtikel($_SESSION['Warenkorb']))
+                   ->assign('WarenkorbArtikelanzahl', $cart->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]))
+                   ->assign('zuletztInWarenkorbGelegterArtikel', $cart->gibLetztenWKArtikel())
+                   ->assign('WarenkorbGesamtgewicht', $cart->getWeight())
+                   ->assign('Warenkorbtext', lang_warenkorb_warenkorbEnthaeltXArtikel($cart))
                    ->assign('NettoPreise', Session::CustomerGroup()->getIsMerchant())
                    ->assign('WarenkorbVersandkostenfreiHinweis', baueVersandkostenfreiString($versandkostenfreiAb,
-                       $_SESSION['Warenkorb']->gibGesamtsummeWarenExt(
+                       $cart->gibGesamtsummeWarenExt(
                            [C_WARENKORBPOS_TYP_ARTIKEL, C_WARENKORBPOS_TYP_KUPON, C_WARENKORBPOS_TYP_NEUKUNDENKUPON],
                            true)
                    ))
@@ -420,7 +418,7 @@ function getBasketItems($nTyp)
             break;
 
         case 1:
-            $oResponse->cItems = utf8_convert_recursive($_SESSION['Warenkorb']->PositionenArr);
+            $oResponse->cItems = utf8_convert_recursive($cart->PositionenArr);
             break;
     }
 
@@ -789,15 +787,16 @@ function checkVarkombiDependencies($aValues, $kEigenschaft = 0, $kEigenschaftWer
                             $kMoeglicheEigeschaftWert_arr
                         );
 
-                        if ($oKindArtikel !== null && $oKindArtikel->status == 0) {
-                            if (!in_array($kVerfuegbareEigenschaftWert, $kGesetzteEigeschaftWert_arr)) {
-                                $objResponse->jsfunc(
-                                    '$.evo.article().variationInfo',
-                                    $kVerfuegbareEigenschaftWert,
-                                    $oKindArtikel->status,
-                                    $oKindArtikel->text
-                                );
-                            }
+                        if ($oKindArtikel !== null
+                            && $oKindArtikel->status == 0
+                            && !in_array($kVerfuegbareEigenschaftWert, $kGesetzteEigeschaftWert_arr)
+                        ) {
+                            $objResponse->jsfunc(
+                                '$.evo.article().variationInfo',
+                                $kVerfuegbareEigenschaftWert,
+                                $oKindArtikel->status,
+                                $oKindArtikel->text
+                            );
                         }
                     }
                 }

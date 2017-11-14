@@ -54,7 +54,7 @@ function speicherBewertung($kArtikel, $kKunde, $kSprache, $cTitel, $cText, $nSte
         $oBewertung->nNichtHilfreich = 0;
         $oBewertung->nSterne         = $nSterne;
         $oBewertung->nAktiv          = ($conf['bewertung']['bewertung_freischalten'] === 'N') ? 1 : 0;
-        $oBewertung->dDatum          = date('Y-m-d H:i:s', time());
+        $oBewertung->dDatum          = date('Y-m-d H:i:s');
 
         executeHook(HOOK_BEWERTUNG_INC_SPEICHERBEWERTUNG, ['rating' => &$oBewertung]);
         // Speicher Bewertung

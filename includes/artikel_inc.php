@@ -196,7 +196,7 @@ function bearbeiteFrageZumProdukt()
             }
         } else {
             if (isset($fehlendeAngaben['email']) && $fehlendeAngaben['email'] === 3) {
-                $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('blockedEmail', 'global');
+                $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('blockedEmail');
             } else {
                 Shop::Smarty()->assign('Anfrage', baueProduktanfrageFormularVorgaben());
                 $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('fillOutQuestion', 'messages');
@@ -274,9 +274,9 @@ function baueProduktanfrageFormularVorgaben()
     $msg->cMobil     = isset($_POST['mobil']) ? StringHandler::filterXSS($_POST['mobil']) : null;
     if (strlen($msg->cAnrede) === 1) {
         if ($msg->cAnrede === 'm') {
-            $msg->cAnredeLocalized = Shop::Lang()->get('salutationM', 'global');
+            $msg->cAnredeLocalized = Shop::Lang()->get('salutationM');
         } elseif ($msg->cAnrede === 'w') {
-            $msg->cAnredeLocalized = Shop::Lang()->get('salutationW', 'global');
+            $msg->cAnredeLocalized = Shop::Lang()->get('salutationW');
         }
     }
 
@@ -473,7 +473,7 @@ function bearbeiteBenachrichtigung()
             }
         } else {
             if (isset($fehlendeAngaben['email']) && $fehlendeAngaben['email'] === 3) {
-                $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('blockedEmail', 'global');
+                $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('blockedEmail');
             } else {
                 Shop::Smarty()->assign('Benachrichtigung', baueFormularVorgabenBenachrichtigung());
                 $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('fillOutNotification', 'messages');
@@ -597,19 +597,16 @@ function gibNaviBlaettern($kArtikel, $kKategorie)
         }
         // Nächster Artikel
         if ($kArtikelNaechster > 0) {
-            $navi->naechsterArtikel = new Artikel();
-            $navi->naechsterArtikel->fuelleArtikel($kArtikelNaechster, Artikel::getDefaultOptions());
+            $navi->naechsterArtikel = (new Artikel())->fuelleArtikel($kArtikelNaechster, Artikel::getDefaultOptions());
 
-            if (!$navi->naechsterArtikel->kArtikel > 0) {
+            if ($navi->naechsterArtikel === null) {
                 unset($navi->naechsterArtikel);
             }
         }
         // Vorheriger Artikel
         if ($kArtikelVorheriger > 0) {
-            $navi->vorherigerArtikel = new Artikel();
-            $navi->vorherigerArtikel->fuelleArtikel($kArtikelVorheriger, Artikel::getDefaultOptions());
-
-            if (!$navi->vorherigerArtikel->kArtikel > 0) {
+            $navi->vorherigerArtikel = (new Artikel())->fuelleArtikel($kArtikelVorheriger, Artikel::getDefaultOptions());
+            if ($navi->vorherigerArtikel->kArtikel === null) {
                 unset($navi->vorherigerArtikel);
             }
         }
@@ -649,13 +646,11 @@ function gibNaviBlaettern($kArtikel, $kKategorie)
                 LIMIT 1", 1
         );
 
-        if (isset($objArr_pre->kArtikel) && $objArr_pre->kArtikel) {
-            $navi->vorherigerArtikel = new Artikel();
-            $navi->vorherigerArtikel->fuelleArtikel($objArr_pre->kArtikel, Artikel::getDefaultOptions());
+        if (!empty($objArr_pre->kArtikel)) {
+            $navi->vorherigerArtikel = (new Artikel())->fuelleArtikel($objArr_pre->kArtikel, Artikel::getDefaultOptions());
         }
-        if (isset($objArr_next->kArtikel) && $objArr_next->kArtikel) {
-            $navi->naechsterArtikel = new Artikel();
-            $navi->naechsterArtikel->fuelleArtikel($objArr_next->kArtikel, Artikel::getDefaultOptions());
+        if (!empty($objArr_next->kArtikel)) {
+            $navi->naechsterArtikel = (new Artikel())->fuelleArtikel($objArr_next->kArtikel, Artikel::getDefaultOptions());
         }
     }
 
@@ -896,9 +891,9 @@ function bearbeiteProdukttags($AktuellerArtikel)
                 '?a=' . (int)$_POST['a'] . '&r=' . R_LOGIN_TAG, true, 303);
             exit();
         } else {
-            $url = (!empty($AktuellerArtikel->cURLFull))
-                ? ($AktuellerArtikel->cURLFull . '?')
-                : (Shop::getURL() . '/?a=' . (int)$_POST['a'] . '&');
+            $url = empty($AktuellerArtikel->cURLFull)
+                ? (Shop::getURL() . '/?a=' . (int)$_POST['a'] . '&')
+                : ($AktuellerArtikel->cURLFull . '?');
             header('Location: ' . $url . 'r=' . R_EMPTY_TAG, true, 303);
             exit();
         }
@@ -1046,7 +1041,7 @@ function fasseVariVaterUndKindZusammen($oVaterArtikel, $oKindArtikel)
     $oArtikel                                   = $oKindArtikel;
     $kVariKindArtikel                           = (int)$oKindArtikel->kArtikel;
     $oArtikel->kArtikel                         = (int)$oVaterArtikel->kArtikel;
-    $oArtikel->kVariKindArtikel                 = (int)$kVariKindArtikel;
+    $oArtikel->kVariKindArtikel                 = $kVariKindArtikel;
     $oArtikel->nIstVater                        = 1;
     $oArtikel->kVaterArtikel                    = (int)$oVaterArtikel->kArtikel;
     $oArtikel->kEigenschaftKombi                = $oVaterArtikel->kEigenschaftKombi;
@@ -1402,7 +1397,7 @@ function buildConfig($kArtikel, $fAnzahl, $nVariation_arr, $nKonfiggruppe_arr, $
             gibPreisStringLocalized($oKonfig->fGesamtpreis[1])
         ];
     } else {
-        $oKonfig->cPreisLocalized = [Shop::Lang()->get('priceHidden', 'global')];
+        $oKonfig->cPreisLocalized = [Shop::Lang()->get('priceHidden')];
     }
     $oKonfig->nNettoPreise = Session::CustomerGroup()->getIsMerchant();
 

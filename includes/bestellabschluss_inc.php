@@ -70,7 +70,8 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
     //erstelle neue Bestellung
     $Bestellung = new Bestellung();
     //setze InetBestellNummer
-    $Bestellung->cBestellNr = empty($cBestellNr) ? baueBestellnummer() : $cBestellNr;
+    $Bestellung->cBestellNr   = empty($cBestellNr) ? baueBestellnummer() : $cBestellNr;
+    $oWarenkorbpositionen_arr = [];
     //füge Kunden ein, falls er nicht schon existiert ( loginkunde)
     if (!$_SESSION['Kunde']->kKunde) {
         // Kundenattribute sichern
@@ -264,7 +265,7 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
     $Bestellung->kVersandart       = $_SESSION['Versandart']->kVersandart;
     $Bestellung->kSprache          = Shop::getLanguage();
     $Bestellung->kWaehrung         = Session::Currency()->getID();
-    $Bestellung->fGesamtsumme      = $_SESSION['Warenkorb']->gibGesamtsummeWaren(1);
+    $Bestellung->fGesamtsumme      = Session::Cart()->gibGesamtsummeWaren(1);
     $Bestellung->cVersandartName   = $_SESSION['Versandart']->angezeigterName[$_SESSION['cISOSprache']];
     $Bestellung->cZahlungsartName  = $_SESSION['Zahlungsart']->angezeigterName[$_SESSION['cISOSprache']];
     $Bestellung->cSession          = session_id();
@@ -307,7 +308,7 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
     ) {
         $oTrustedShops                    = new TrustedShops(-1, StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
         $oTrustedShops->tsProductId       = $_SESSION['TrustedShops']->cKaeuferschutzProdukt;
-        $oTrustedShops->amount            = Session::Currency()->getConversionFactor() * $_SESSION['Warenkorb']->gibGesamtsummeWaren(true);
+        $oTrustedShops->amount            = Session::Currency()->getConversionFactor() * Session::Cart()->gibGesamtsummeWaren(true);
         $oTrustedShops->currency          = Session::Currency()->getCode();
         $oTrustedShops->paymentType       = $_SESSION['Zahlungsart']->cTSCode;
         $oTrustedShops->buyerEmail        = $_SESSION['Kunde']->cMail;
@@ -316,13 +317,13 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
         $oTrustedShops->orderDate         = date('Y-m-d') . 'T' . date('H:i:s');
         $oTrustedShops->shopSystemVersion = 'JTL-Shop ' . JTL_VERSION;
 
-        if (strlen($oTrustedShops->tsProductId) > 0 &&
-            strlen($oTrustedShops->amount) > 0 &&
-            strlen($oTrustedShops->currency) > 0 &&
-            strlen($oTrustedShops->paymentType) > 0 &&
-            strlen($oTrustedShops->buyerEmail) > 0 &&
-            strlen($oTrustedShops->shopCustomerID) > 0 &&
-            strlen($oTrustedShops->shopOrderID) > 0
+        if (strlen($oTrustedShops->tsProductId) > 0
+            && strlen($oTrustedShops->amount) > 0
+            && strlen($oTrustedShops->currency) > 0
+            && strlen($oTrustedShops->paymentType) > 0
+            && strlen($oTrustedShops->buyerEmail) > 0
+            && strlen($oTrustedShops->shopCustomerID) > 0
+            && strlen($oTrustedShops->shopOrderID) > 0
         ) {
             $oTrustedShops->sendeBuchung();
         }
@@ -653,7 +654,11 @@ function aktualisiereLagerbestand($Artikel, $nAnzahl, $WarenkorbPosEigenschaftAr
                 }
                 // Stücklisten Komponente
                 if (ArtikelHelper::isStuecklisteKomponente($Artikel->kArtikel)) {
-                    aktualisiereKomponenteLagerbestand($Artikel->kArtikel, $artikelBestand, isset($Artikel->cLagerKleinerNull) && $Artikel->cLagerKleinerNull === 'Y' ? true : false);
+                    aktualisiereKomponenteLagerbestand(
+                        $Artikel->kArtikel,
+                        $artikelBestand,
+                        isset($Artikel->cLagerKleinerNull) && $Artikel->cLagerKleinerNull === 'Y'
+                    );
                 }
             }
             // Aktualisiere Merkmale in tartikelmerkmal vom Vaterartikel
@@ -716,7 +721,7 @@ function aktualisiereStuecklistenLagerbestand($oStueckListeArtikel, $nAnzahl)
             if ($bestandUeberverkauf === $bestandNeu) {
                 // Es gibt auch keine Komponenten mit Überverkäufen, die den Bestand verringern, deshalb wird
                 // der Bestand des Stücklistenartikels anhand des Verkaufs verringert
-                $bestandNeu = $bestandNeu - $nAnzahl * $oStueckListeArtikel->fPackeinheit;
+                $bestandNeu -= $nAnzahl * $oStueckListeArtikel->fPackeinheit;
             } else {
                 // Da keine lagerrelevanten Komponenten vorhanden sind, wird der kleinste Bestand der
                 // Komponentent mit Überverkauf verwendet.
@@ -1116,7 +1121,7 @@ function fakeBestellung()
     $bestellung->kVersandart      = $_SESSION['Versandart']->kVersandart;
     $bestellung->kSprache         = Shop::getLanguage();
     $bestellung->kWaehrung        = Session::Currency()->getID();
-    $bestellung->fGesamtsumme     = $_SESSION['Warenkorb']->gibGesamtsummeWaren(1);
+    $bestellung->fGesamtsumme     = Session::Cart()->gibGesamtsummeWaren(1);
     $bestellung->fWarensumme      = $bestellung->fGesamtsumme;
     $bestellung->cVersandartName  = $_SESSION['Versandart']->angezeigterName[$_SESSION['cISOSprache']];
     $bestellung->cZahlungsartName = $_SESSION['Zahlungsart']->angezeigterName[$_SESSION['cISOSprache']];

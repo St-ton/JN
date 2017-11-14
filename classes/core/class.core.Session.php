@@ -555,6 +555,14 @@ class Session
     }
 
     /**
+     * @return Warenkorb
+     */
+    public static function Cart()
+    {
+        return $_SESSION['Warenkorb'];
+    }
+
+    /**
      * @return Currency[]
      */
     public static function Currencies()
@@ -573,7 +581,7 @@ class Session
     /**
      * @return Wunschliste
      */
-    public function WishList()
+    public static function WishList()
     {
         return $_SESSION['Wunschliste'];
     }
@@ -581,7 +589,7 @@ class Session
     /**
      * @return Vergleichsliste
      */
-    public function CompareList()
+    public static function CompareList()
     {
         return $_SESSION['Vergleichsliste'];
     }

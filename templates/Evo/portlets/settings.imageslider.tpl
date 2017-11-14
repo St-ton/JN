@@ -49,10 +49,10 @@
                     <label for="slider-start">zufälliger Start?</label>
                     <div class="radio" id="slider-start">
                         <label class="radio-inline">
-                            <input type="radio" name="slider-start" id="slider-start-0" value="no"{if $properties['slider-start'] === 'no'} checked="checked"{/if}> No
+                            <input type="radio" name="slider-start" id="slider-start-0" value="false"{if $properties['slider-start'] === 'false'} checked="checked"{/if}> No
                         </label>
                         <label class="radio-inline">
-                            <input type="radio" name="slider-start" id="slider-start-1" value="yes"{if $properties['slider-start'] === 'yes'} checked="checked"{/if}> Yes
+                            <input type="radio" name="slider-start" id="slider-start-1" value="true"{if $properties['slider-start'] === 'true'} checked="checked"{/if}> Yes
                         </label>
                     </div>
                 </div>
@@ -62,10 +62,10 @@
                     <label for="slider-pause">Pause bei Hover</label>
                     <div class="radio" id="slider-pause">
                         <label class="radio-inline">
-                            <input type="radio" name="slider-pause" id="slider-pause-0" value="no"{if $properties['slider-pause'] === 'no'} checked="checked"{/if}> No
+                            <input type="radio" name="slider-pause" id="slider-pause-0" value="false"{if $properties['slider-pause'] === 'false'} checked="checked"{/if}> No
                         </label>
                         <label class="radio-inline">
-                            <input type="radio" name="slider-pause" id="slider-pause-1" value="yes"{if $properties['slider-pause'] === 'yes'} checked="checked"{/if}> Yes
+                            <input type="radio" name="slider-pause" id="slider-pause-1" value="true"{if $properties['slider-pause'] === 'true'} checked="checked"{/if}> Yes
                         </label>
                     </div>
                 </div>
@@ -75,23 +75,10 @@
                     <label for="slider-navigation">Navigation</label>
                     <div class="radio" id="slider-navigation">
                         <label class="radio-inline">
-                            <input type="radio" name="slider-navigation" id="slider-navigation-0" value="no"{if $properties['slider-navigation'] === 'no'} checked="checked"{/if}> No
+                            <input type="radio" name="slider-navigation" id="slider-navigation-0" value="false"{if $properties['slider-navigation'] === 'false'} checked="checked"{/if}> No
                         </label>
                         <label class="radio-inline">
-                            <input type="radio" name="slider-navigation" id="slider-navigation-1" value="yes"{if $properties['slider-navigation'] === 'yes'} checked="checked"{/if}> Yes
-                        </label>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-6">
-                <div class="form-group">
-                    <label for="slider-thumb-navigation">Navigation - Thumbnail</label>
-                    <div class="radio" id="slider-thumb-navigation">
-                        <label class="radio-inline">
-                            <input type="radio" name="slider-thumb-navigation" id="slider-thumb-navigation-0" value="no"{if $properties['slider-thumb-navigation'] === 'no'} checked="checked"{/if}> No
-                        </label>
-                        <label class="radio-inline">
-                            <input type="radio" name="slider-thumb-navigation" id="slider-thumb-navigation-1" value="yes"{if $properties['slider-thumb-navigation'] === 'yes'} checked="checked"{/if}> Yes
+                            <input type="radio" name="slider-navigation" id="slider-navigation-1" value="true"{if $properties['slider-navigation'] === 'true'} checked="checked"{/if}> Yes
                         </label>
                     </div>
                 </div>
@@ -101,10 +88,10 @@
                     <label for="slider-direction-navigation">Navigation - Richtung</label>
                     <div class="radio" id="slider-direction-navigation">
                         <label class="radio-inline">
-                            <input type="radio" name="slider-direction-navigation" id="slider-direction-navigation-0" value="no"{if $properties['slider-direction-navigation'] === 'no'} checked="checked"{/if}> No
+                            <input type="radio" name="slider-direction-navigation" id="slider-direction-navigation-0" value="false"{if $properties['slider-direction-navigation'] === 'false'} checked="checked"{/if}> No
                         </label>
                         <label class="radio-inline">
-                            <input type="radio" name="slider-direction-navigation" id="slider-direction-navigation-1" value="yes"{if $properties['slider-direction-navigation'] === 'yes'} checked="checked"{/if}> Yes
+                            <input type="radio" name="slider-direction-navigation" id="slider-direction-navigation-1" value="true"{if $properties['slider-direction-navigation'] === 'true'} checked="checked"{/if}> Yes
                         </label>
                     </div>
                 </div>
@@ -114,10 +101,10 @@
                     <label for="slider-kenburns">Ken-Burns-Effekt</label>
                     <div class="radio" id="slider-kenburns">
                         <label class="radio-inline">
-                            <input type="radio" name="slider-kenburns" id="slider-kenburns-0" value="no"{if $properties['slider-kenburns'] === 'no'} checked="checked"{/if}> No
+                            <input type="radio" name="slider-kenburns" id="slider-kenburns-0" value="false"{if $properties['slider-kenburns'] === 'false'} checked="checked"{/if}> No
                         </label>
                         <label class="radio-inline">
-                            <input type="radio" name="slider-kenburns" id="slider-kenburns-1" value="yes"{if $properties['slider-kenburns'] === 'yes'} checked="checked"{/if}> Yes
+                            <input type="radio" name="slider-kenburns" id="slider-kenburns-1" value="true"{if $properties['slider-kenburns'] === 'true'} checked="checked"{/if}> Yes
                         </label>
                     </div>
                     <span class="help-block"><i class="fa fa-warning"></i> Wenn diese Option aktiviert ist, überschreibt sie andere <a href="#" data-toggle="tooltip" title="" data-original-title="Es werden überschrieben: zufälliger Start, Pause bei Hover, Navigation, Thumbnail Navigation, Navigation (Richtung), Effekte.">Einstellungen</a>.</span>
@@ -130,120 +117,152 @@
                     <label for="slider-effects-random">zufällige Effekte</label>
                     <div class="radio" id="slider-effects-random">
                         <label class="radio-inline">
-                            <input type="radio" name="slider-effects-random" id="slider-effects-random-0" value="no"{if $properties['slider-effects-random'] === 'no'} checked="checked"{/if}> No
+                            <input type="radio" name="slider-effects-random" id="slider-effects-random-0" value="false"{if $properties['slider-effects-random'] === 'false'} checked="checked"{/if}> No
                         </label>
                         <label class="radio-inline">
-                            <input type="radio" name="slider-effects-random" id="slider-effects-random-1" value="yes"{if $properties['slider-effects-random'] === 'yes'} checked="checked"{/if}> Yes
+                            <input type="radio" name="slider-effects-random" id="slider-effects-random-1" value="true"{if $properties['slider-effects-random'] === 'true'} checked="checked"{/if}> Yes
                         </label>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="well" id="slider-effects-container"{if $properties['slider-effects-random'] === 'yes'} style="display:none;"{/if}>
+        <div class="well" id="slider-effects-container"{if $properties['slider-effects-random'] === 'true'} style="display:none;"{/if}>
             <div id="effects">
                 <div class="row">
                     <div class="col-sm-4">
                         <div class="checkbox">
                             <label>
-                                <input type="checkbox" id="slider-effects-sliceDown" name="slider-effects-sliceDown" value="yes" {if $properties['slider-effects-sliceDown'] === 'yes'} checked="checked"{/if}> sliceDown
+                                <input type="checkbox" id="slider-effects-sliceDown" name="effects[sliceDown]"
+                                       value="sliceDown" {if !empty($properties['effects']['sliceDown']) && $properties['effects']['sliceDown'] === 'sliceDown'} checked="checked"{/if}>
+                                sliceDown
                             </label>
                         </div>
                     </div>
                     <div class="col-sm-4">
                         <div class="checkbox">
                             <label>
-                                <input type="checkbox" id="slider-effects-sliceDownLeft" name="slider-effects-sliceDownLeft" value="yes" {if $properties['slider-effects-sliceDownLeft'] === 'yes'} checked="checked"{/if}> sliceDownLeft
+                                <input type="checkbox" id="slider-effects-sliceDownLeft" name="effects[sliceDownLeft]"
+                                       value="sliceDownLeft" {if !empty($properties['effects']['sliceDownLeft']) && $properties['effects']['sliceDownLeft'] === 'sliceDownLeft'} checked="checked"{/if}>
+                                sliceDownLeft
                             </label>
                         </div>
                     </div>
                     <div class="col-sm-4">
                         <div class="checkbox">
                             <label>
-                                <input type="checkbox" id="slider-effects-sliceUp" name="slider-effects-sliceUp" value="yes" {if $properties['slider-effects-sliceUp'] === 'yes'} checked="checked"{/if}> sliceUp
+                                <input type="checkbox" id="slider-effects-sliceUp" name="effects[sliceUp]"
+                                       value="sliceUp" {if !empty($properties['effects']['sliceUp']) && $properties['effects']['sliceUp'] === 'sliceUp'} checked="checked"{/if}>
+                                sliceUp
                             </label>
                         </div>
                     </div>
                     <div class="col-sm-4">
                         <div class="checkbox">
                             <label>
-                                <input type="checkbox" id="slider-effects-sliceUpLeft" name="slider-effects-sliceUpLeft" value="yes" {if $properties['slider-effects-sliceUpLeft'] === 'yes'} checked="checked"{/if}> sliceUpLeft
+                                <input type="checkbox" id="slider-effects-sliceUpLeft" name="effects[sliceUpLeft]"
+                                       value="sliceUpLeft" {if !empty($properties['effects']['sliceUpLeft']) && $properties['effects']['sliceUpLeft'] === 'sliceUpLeft'} checked="checked"{/if}>
+                                sliceUpLeft
                             </label>
                         </div>
                     </div>
                     <div class="col-sm-4">
                         <div class="checkbox">
                             <label>
-                                <input type="checkbox" id="slider-effects-sliceUpDown" name="slider-effects-sliceUpDown" value="yes" {if $properties['slider-effects-sliceUpDown'] === 'yes'} checked="checked"{/if}> sliceUpDown
+                                <input type="checkbox" id="slider-effects-sliceUpDown" name="effects[sliceUpDown]"
+                                       value="sliceUpDown" {if !empty($properties['effects']['sliceUpDown']) && $properties['effects']['sliceUpDown'] === 'sliceUpDown'} checked="checked"{/if}>
+                                sliceUpDown
                             </label>
                         </div>
                     </div>
                     <div class="col-sm-4">
                         <div class="checkbox">
                             <label>
-                                <input type="checkbox" id="slider-effects-sliceUpDownLeft" name="slider-effects-sliceUpDownLeft" value="yes" {if $properties['slider-effects-sliceUpDownLeft'] === 'yes'} checked="checked"{/if}> sliceUpDownLeft
+                                <input type="checkbox" id="slider-effects-sliceUpDownLeft"
+                                       name="effects[sliceUpDownLeft]"
+                                       value="sliceUpDownLeft" {if !empty($properties['effects']['sliceUpDownLeft']) && $properties['effects']['sliceUpDownLeft'] === 'sliceUpDownLeft'} checked="checked"{/if}>
+                                sliceUpDownLeft
                             </label>
                         </div>
                     </div>
                     <div class="col-sm-4">
                         <div class="checkbox">
                             <label>
-                                <input type="checkbox" id="slider-effects-fold" name="slider-effects-fold" value="yes" {if $properties['slider-effects-fold'] === 'yes'} checked="checked"{/if}> fold
+                                <input type="checkbox" id="slider-effects-fold" name="effects[fold]"
+                                       value="fold" {if !empty($properties['effects']['fold']) && $properties['effects']['fold'] === 'fold'} checked="checked"{/if}>
+                                fold
                             </label>
                         </div>
                     </div>
                     <div class="col-sm-4">
                         <div class="checkbox">
                             <label>
-                                <input type="checkbox" id="slider-effects-fade" name="slider-effects-fade" value="yes" {if $properties['slider-effects-fade'] === 'yes'} checked="checked"{/if}> fade
+                                <input type="checkbox" id="slider-effects-fade" name="effects[fade]"
+                                       value="fade" {if !empty($properties['effects']['fade']) && $properties['effects']['fade'] === 'fade'} checked="checked"{/if}>
+                                fade
                             </label>
                         </div>
                     </div>
                     <div class="col-sm-4">
                         <div class="checkbox">
                             <label>
-                                <input type="checkbox" id="slider-effects-slideInRight" name="slider-effects-slideInRight" value="yes" {if $properties['slider-effects-slideInRight'] === 'yes'} checked="checked"{/if}> slideInRight
+                                <input type="checkbox" id="slider-effects-slideInRight" name="effects[slideInRight]"
+                                       value="slideInRight" {if !empty($properties['effects']['slideInRight']) && $properties['effects']['slideInRight'] === 'slideInRight'} checked="checked"{/if}>
+                                slideInRight
                             </label>
                         </div>
                     </div>
                     <div class="col-sm-4">
                         <div class="checkbox">
                             <label>
-                                <input type="checkbox" id="slider-effects-slideInLeft" name="slider-effects-slideInLeft" value="yes" {if $properties['slider-effects-slideInLeft'] === 'yes'} checked="checked"{/if}> slideInLeft
+                                <input type="checkbox" id="slider-effects-slideInLeft" name="effects[slideInLeft]"
+                                       value="slideInLeft" {if !empty($properties['effects']['slideInLeft']) && $properties['effects']['slideInLeft'] === 'slideInLeft'} checked="checked"{/if}>
+                                slideInLeft
                             </label>
                         </div>
                     </div>
                     <div class="col-sm-4">
                         <div class="checkbox">
                             <label>
-                                <input type="checkbox" id="slider-effects-boxRandom" name="slider-effects-boxRandom" value="yes" {if $properties['slider-effects-boxRandom'] === 'yes'} checked="checked"{/if}> boxRandom
+                                <input type="checkbox" id="slider-effects-boxRandom" name="effects[boxRandom]"
+                                       value="boxRandom" {if !empty($properties['effects']['boxRandom']) && $properties['effects']['boxRandom'] === 'boxRandom'} checked="checked"{/if}>
+                                boxRandom
                             </label>
                         </div>
                     </div>
                     <div class="col-sm-4">
                         <div class="checkbox">
                             <label>
-                                <input type="checkbox" id="slider-effects-boxRain" name="slider-effects-boxRain" value="yes" {if $properties['slider-effects-boxRain'] === 'yes'} checked="checked"{/if}> boxRain
+                                <input type="checkbox" id="slider-effects-boxRain" name="effects[boxRain]"
+                                       value="boxRain" {if !empty($properties['effects']['boxRain']) && $properties['effects']['boxRain'] === 'boxRain'} checked="checked"{/if}>
+                                boxRain
                             </label>
                         </div>
                     </div>
                     <div class="col-sm-4">
                         <div class="checkbox">
                             <label>
-                                <input type="checkbox" id="slider-effects-boxRainReverse" name="slider-effects-boxRainReverse" value="yes" {if $properties['slider-effects-boxRainReverse'] === 'yes'} checked="checked"{/if}> boxRainReverse
+                                <input type="checkbox" id="slider-effects-boxRainReverse" name="effects[boxRainReverse]"
+                                       value="boxRainReverse" {if !empty($properties['effects']['boxRainReverse']) && $properties['effects']['boxRainReverse'] === 'boxRainReverse'} checked="checked"{/if}>
+                                boxRainReverse
                             </label>
                         </div>
                     </div>
                     <div class="col-sm-4">
                         <div class="checkbox">
                             <label>
-                                <input type="checkbox" id="slider-effects-boxRainGrow" name="slider-effects-boxRainGrow" value="yes" {if $properties['slider-effects-boxRainGrow'] === 'yes'} checked="checked"{/if}> boxRainGrow
+                                <input type="checkbox" id="slider-effects-boxRainGrow" name="effects[boxRainGrow]"
+                                       value="boxRainGrow" {if !empty($properties['effects']['boxRainGrow']) && $properties['effects']['boxRainGrow'] === 'boxRainGrow'} checked="checked"{/if}>
+                                boxRainGrow
                             </label>
                         </div>
                     </div>
                     <div class="col-sm-4">
                         <div class="checkbox">
                             <label>
-                                <input type="checkbox" id="slider-effects-boxRainGrowReverse" name="slider-effects-boxRainGrowReverse" value="yes" {if $properties['slider-effects-boxRainGrowReverse'] === 'yes'} checked="checked"{/if}> boxRainGrowReverse
+                                <input type="checkbox" id="slider-effects-boxRainGrowReverse"
+                                       name="effects[boxRainGrowReverse]"
+                                       value="boxRainGrowReverse" {if !empty($properties['effects']['boxRainGrowReverse']) && $properties['effects']['boxRainGrowReverse'] === 'boxRainGrowReverse'} checked="checked"{/if}>
+                                boxRainGrowReverse
                             </label>
                         </div>
                     </div>
@@ -253,7 +272,7 @@
         <script>
             $(function(){
                 $('input[name="slider-effects-random"]').click(function(){
-                    if ($(this).val() == 'no'){
+                    if ($(this).val() == 'false'){
                         $('#slider-effects-container').show();
                     }else{
                         $('#slider-effects-container').hide();

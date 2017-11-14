@@ -20,6 +20,8 @@ class PortletImageSlider extends CMSPortlet
         return (new JTLSmarty(true))
             ->assign('properties', $this->properties)
             ->assign('noImageUrl', Shop::getURL() . "/gfx/keinBild.gif")
+            ->assign('styleString', $this->getStyleString())
+            ->assign('renderLinks', false)
             ->fetch('portlets/final.imageslider.tpl');
 
 
@@ -39,6 +41,8 @@ class PortletImageSlider extends CMSPortlet
         return Shop::Smarty()
             ->assign('properties', $this->properties)
             ->assign('noImageUrl', Shop::getURL() . "/gfx/keinBild.gif")
+            ->assign('styleString', $this->getStyleString())
+            ->assign('renderLinks', true)
             ->fetch('portlets/final.imageslider.tpl');
     }
 
@@ -57,28 +61,29 @@ class PortletImageSlider extends CMSPortlet
             'slider-theme' => 'default',
             'slider-animation-speed' => '',
             'slider-animation-pause' => '',
-            'slider-start' => 'no',
-            'slider-pause' => 'no',
-            'slider-navigation' => 'no',
-            'slider-thumb-navigation' => 'no',
-            'slider-direction-navigation' => 'no',
-            'slider-kenburns' => 'no',
-            'slider-effects-random' => 'yes',
-            'slider-effects-sliceDown' => '',
-            'slider-effects-sliceDownLeft' => '',
-            'slider-effects-sliceUp' => '',
-            'slider-effects-sliceUpLeft' => '',
-            'slider-effects-sliceUpDown' => '',
-            'slider-effects-sliceUpDownLeft' => '',
-            'slider-effects-fold' => '',
-            'slider-effects-fade' => '',
-            'slider-effects-slideInRight' => '',
-            'slider-effects-slideInLeft' => '',
-            'slider-effects-boxRandom' => '',
-            'slider-effects-boxRain' => '',
-            'slider-effects-boxRainReverse' => '',
-            'slider-effects-boxRainGrow' => '',
-            'slider-effects-boxRainGrowReverse' => '',
+            'slider-start' => 'false',
+            'slider-pause' => 'false',
+            'slider-navigation' => 'false',
+            'slider-direction-navigation' => 'false',
+            'slider-kenburns' => 'false',
+            'slider-effects-random' => 'true',
+            'effects' => [
+                'sliceDown' => '',
+                'sliceDownLeft' => '',
+                'sliceUp' => '',
+                'sliceUpLeft' => '',
+                'sliceUpDown' => '',
+                'sliceUpDownLeft' => '',
+                'fold' => '',
+                'fade' => '',
+                'slideInRight' => '',
+                'slideInLeft' => '',
+                'boxRandom' => '',
+                'boxRain' => '',
+                'boxRainReverse' => '',
+                'boxRainGrow' => '',
+                'boxRainGrowReverse' => '',
+            ],
             'slides' => [],
             // attributes
             'attr' => [

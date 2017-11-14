@@ -295,7 +295,7 @@ $(document).ready(function () {
         window.addEventListener('popstate', function(e) {
             loadContent(document.location.href);
         }, false);
-    };
+    }
 
     $('.dropdown .dropdown-menu.keepopen').on('click touchstart', function(e) {
         e.stopPropagation();

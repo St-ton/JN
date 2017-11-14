@@ -65,44 +65,44 @@
                 var durationFactor = 1.25;                      // firstslide pausetime adjustment factor
 
                 function KBInit () {ldelim}
-                    $('.nivoSlider img').css('visibility', 'hidden');
-                    $('.nivoSlider .nivo-nextNav').trigger('click');
-                    $('.nivoSlider, .nivo-control').css('opacity',1);
+                    $('#slider-{$properties["slider-id"]}  img').css('visibility', 'hidden');
+                    $('#slider-{$properties["slider-id"]}  .nivo-nextNav').trigger('click');
+                    $('#slider-{$properties["slider-id"]} , .nivo-control').css('opacity',1);
                     setTimeout (function(){ldelim}
-                        $('.nivoSlider, .nivo-control').animate({ldelim}opacity: 1{rdelim},animSpeed);
+                        $('#slider-{$properties["slider-id"]} , .nivo-control').animate({ldelim}opacity: 1{rdelim},animSpeed);
                         {rdelim},0);
-                    $('.nivo-control').on('click', function() {ldelim}
+                    $('#slider-{$properties["slider-id"]} .nivo-control').on('click', function() {ldelim}
                         setTimeout (function(){ldelim}
-                            $('.nivo-main-image').css('opacity',0);
+                            $('#slider-{$properties["slider-id"]} .nivo-main-image').css('opacity',0);
                             {rdelim},0);
                         durationFactor = 1.25;
                         {rdelim});
-                    $('.nivo-prevNav, .nivo-nextNav').on('click', function() {ldelim}
+                    $('#slider-{$properties["slider-id"]} .nivo-prevNav, #slider-{$properties["slider-id"]} .nivo-nextNav').on('click', function() {ldelim}
                         setTimeout (function(){ldelim}
-                            $('.nivo-main-image').css('opacity',0);
+                            $('#slider-{$properties["slider-id"]} .nivo-main-image').css('opacity',0);
                             {rdelim},20);
                         durationFactor = 1.25;
                         {rdelim});
                     {rdelim}
 
                 function NivoKenBurns () {ldelim}
-                    $('.nivo-main-image').css('opacity',1);
+                    $('#slider-{$properties["slider-id"]} .nivo-main-image').css('opacity',1);
                     setTimeout (function(){ldelim}
-                        $('.nivoSlider .nivo-slice img').css('width',100+zoomFactor+'%');
+                        $('#slider-{$properties["slider-id"]}  .nivo-slice img').css('width',100+zoomFactor+'%');
                         {rdelim},10);
                     setTimeout (function(){ldelim}
-                        var nivoWidth=$('.nivoSlider').width(), nivoHeight=$('.nivoSlider').height();
+                        var nivoWidth=$('#slider-{$properties["slider-id"]} ').width(), nivoHeight=$('#slider-{$properties["slider-id"]} ').height();
                         var xScope=nivoWidth*zoomFactor/100, yScope=nivoHeight*zoomFactor/105;
                         var xStart=-xScope*Math.floor(Math.random()*2);
                         var yStart=-yScope*Math.floor(Math.random()*2);
-                        $('.nivoSlider .nivo-slice img').css('left',xStart).css('top',yStart).animate({ldelim}width:'100%', left:0, top:0{rdelim},pauseTime*durationFactor);durationFactor=1.02;
-                        $('.nivo-main-image').css('cssText','left:0 !important;top:0 !important;');
+                        $('#slider-{$properties["slider-id"]}  .nivo-slice img').css('left',xStart).css('top',yStart).animate({ldelim}width:'100%', left:0, top:0{rdelim},pauseTime*durationFactor);durationFactor=1.02;
+                        $('#slider-{$properties["slider-id"]} .nivo-main-image').css('cssText','left:0 !important;top:0 !important;');
                         {rdelim},10);
                     {rdelim}
 
                 jtl.ready(function () {ldelim}
                     var slider = $('#slider-{$properties['slider-id']}');
-                    var endSlide=$('.nivoSlider img').length-1;
+                    var endSlide=$('#slider-{$properties["slider-id"]}  img').length-1;
                     $('a.slide').click(function() {ldelim}
                         if (!this.href.match(new RegExp('^'+location.protocol+'\\/\\/'+location.host))) {ldelim}
                             this.target = '_blank';

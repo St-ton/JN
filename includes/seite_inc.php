@@ -82,7 +82,7 @@ function gibAuswahlAssistentFragen($Einstellungen)
         require_once PFAD_ROOT . PFAD_INCLUDES_EXT . 'auswahlassistent_inc.php';
 
         if (function_exists('gibAAFrage')) {
-            $oSpracheStd            = gibStandardsprache(true);
+            $oSpracheStd = gibStandardsprache(true);
 
             return gibAAFrage($_SESSION['AuswahlAssistent']['nFrage'], Shop::getLanguage(), (int)$oSpracheStd->kSprache);
         }
@@ -830,7 +830,7 @@ function gibSeiteSitemap($Einstellungen, &$smarty)
     $linkHelper             = LinkHelper::getInstance();
     $linkGroups             = $linkHelper->getLinkGroups();
     $cLinkgruppenMember_arr = [];
-    if (isset($linkGroups) && is_object($linkGroups)) {
+    if ($linkGroups !== null && is_object($linkGroups)) {
         $cLinkgruppenMemberTMP_arr = get_object_vars($linkGroups);
         if (is_array($cLinkgruppenMemberTMP_arr) && count($cLinkgruppenMemberTMP_arr) > 0) {
             foreach ($cLinkgruppenMemberTMP_arr as $cLinkgruppe => $cLinkgruppenMemberTMP) {

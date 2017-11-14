@@ -29,7 +29,7 @@ class WarenkorbHelper
         $info->items     = [];
         $info->currency  = $this->getCurrency();
 
-        foreach ($_SESSION['Warenkorb']->PositionenArr as $oPosition) {
+        foreach (Session::Cart()->PositionenArr as $oPosition) {
             $amountItem = $oPosition->fPreisEinzelNetto;
             if (isset($oPosition->WarenkorbPosEigenschaftArr) && is_array($oPosition->WarenkorbPosEigenschaftArr) &&
                 (!isset($oPosition->Artikel->kVaterArtikel) || (int)$oPosition->Artikel->kVaterArtikel === 0)
@@ -617,12 +617,11 @@ class WarenkorbHelper
                         // Hauptartikel in den WK legen
                         fuegeEinInWarenkorb($kArtikel, $fAnzahl, $attributes, 0, $cUnique);
                         // Konfigartikel in den WK legen
-                        /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
                         foreach ($oKonfigitem_arr as $oKonfigitem) {
                             $oKonfigitem->isKonfigItem = true;
                             switch ($oKonfigitem->getPosTyp()) {
                                 case KONFIG_ITEM_TYP_ARTIKEL:
-                                    $_SESSION['Warenkorb']->fuegeEin(
+                                    Session::Cart()->fuegeEin(
                                         $oKonfigitem->getArtikelKey(),
                                         $oKonfigitem->fAnzahlWK,
                                         $oKonfigitem->oEigenschaftwerte_arr,
@@ -633,7 +632,7 @@ class WarenkorbHelper
                                     break;
 
                                 case KONFIG_ITEM_TYP_SPEZIAL:
-                                    $_SESSION['Warenkorb']->erstelleSpezialPos(
+                                    Session::Cart()->erstelleSpezialPos(
                                         $oKonfigitem->getName(),
                                         $oKonfigitem->fAnzahlWK,
                                         $oKonfigitem->getPreis(),
@@ -658,7 +657,7 @@ class WarenkorbHelper
                             );
                         }
                         // Warenkorb weiterleiten
-                        $_SESSION['Warenkorb']->redirectTo();
+                        Session::Cart()->redirectTo();
                     } else {
                         // Gesammelte Fehler anzeigen
                         Shop::Smarty()->assign('aKonfigerror_arr', $aError_arr)
@@ -691,7 +690,7 @@ class WarenkorbHelper
      */
     public static function addToCartCheck($article, $qty, $attributes, $accuracy = 2)
     {
-        /** @var array('Warenkorb' => Warenkorb) $_SESSION */
+        $cart          = Session::Cart();
         $kArtikel      = $article->kArtikel; // relevant für die Berechnung von Artikelsummen im Warenkorb
         $redirectParam = [];
         $conf          = Shop::getSettings([CONF_GLOBAL]);
@@ -708,14 +707,14 @@ class WarenkorbHelper
             $qty = max((int)$qty, 1);
         }
         // mbm
-        if ($article->fMindestbestellmenge > $qty + $_SESSION['Warenkorb']->gibAnzahlEinesArtikels($kArtikel)) {
+        if ($article->fMindestbestellmenge > $qty + $cart->gibAnzahlEinesArtikels($kArtikel)) {
             $redirectParam[] = R_MINDESTMENGE;
         }
         // lager beachten
         if ($article->cLagerBeachten === 'Y' &&
             $article->cLagerVariation !== 'Y' &&
             $article->cLagerKleinerNull !== 'Y' &&
-            $article->fPackeinheit * ($qty + $_SESSION['Warenkorb']->gibAnzahlEinesArtikels($kArtikel)) > $article->fLagerbestand
+            $article->fPackeinheit * ($qty + $cart->gibAnzahlEinesArtikels($kArtikel)) > $article->fLagerbestand
         ) {
             $redirectParam[] = R_LAGER;
         }
@@ -732,7 +731,7 @@ class WarenkorbHelper
             && $article->FunktionsAttribute[FKT_ATTRIBUT_MAXBESTELLMENGE] > 0
         ) {
             if ($qty > $article->FunktionsAttribute[FKT_ATTRIBUT_MAXBESTELLMENGE] ||
-                ($_SESSION['Warenkorb']->gibAnzahlEinesArtikels($kArtikel) + $qty) >
+                ($cart->gibAnzahlEinesArtikels($kArtikel) + $qty) >
                 $article->FunktionsAttribute[FKT_ATTRIBUT_MAXBESTELLMENGE]
             ) {
                 $redirectParam[] = R_MAXBESTELLMENGE;
@@ -803,7 +802,7 @@ class WarenkorbHelper
                             }
                             if ($EigenschaftWert->fPackeinheit *
                                 ($qty +
-                                    $_SESSION['Warenkorb']->gibAnzahlEinerVariation(
+                                    $cart->gibAnzahlEinerVariation(
                                         $kArtikel,
                                         $EigenschaftWert->kEigenschaftWert
                                     )

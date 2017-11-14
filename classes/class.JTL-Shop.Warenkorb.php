@@ -1476,12 +1476,11 @@ class Warenkorb
      */
     public function updateCouponValue()
     {
-        /** @var array('Warenkorb' => Warenkorb) $_SESSION */
         if (isset($_SESSION['Kupon']) && $_SESSION['Kupon']->cWertTyp === 'festpreis') {
             $Kupon         = $_SESSION['Kupon'];
             $maxPreisKupon = $Kupon->fWert;
-            if ($Kupon->fWert > $_SESSION['Warenkorb']->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true)) {
-                $maxPreisKupon = $_SESSION['Warenkorb']->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true);
+            if ($Kupon->fWert > $this->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true)) {
+                $maxPreisKupon = $this->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true);
             }
             $Spezialpos = new stdClass();
             $Spezialpos->cName = [];
@@ -1496,8 +1495,8 @@ class Warenkorb
                 );
                 $Spezialpos->cName[$Sprache->cISO] = $name_spr->cName;
             }
-            $_SESSION['Warenkorb']->loescheSpezialPos(C_WARENKORBPOS_TYP_KUPON);
-            $_SESSION['Warenkorb']->erstelleSpezialPos(
+            $this->loescheSpezialPos(C_WARENKORBPOS_TYP_KUPON);
+            $this->erstelleSpezialPos(
                 $Spezialpos->cName,
                 1,
                 $maxPreisKupon * -1,

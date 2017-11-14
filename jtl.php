@@ -495,10 +495,10 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
             // $step = 'mein Konto';
             $cHinweis .= Shop::Lang()->get('dataEditSuccessful', 'login');
             setzeSteuersaetze();
-            if (isset($_SESSION['Warenkorb']->kWarenkorb) &&
-                $_SESSION['Warenkorb']->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]) > 0
+            if (isset($_SESSION['Warenkorb']->kWarenkorb)
+                && Session::Cart()->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]) > 0
             ) {
-                $_SESSION['Warenkorb']->gibGesamtsummeWarenLocalized();
+                Session::Cart()->gibGesamtsummeWarenLocalized();
             }
         } else {
             Shop::Smarty()->assign('fehlendeAngaben', $fehlendeAngaben);

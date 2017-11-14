@@ -24,6 +24,7 @@ $Einstellungen = Shop::getSettings([
 ]);
 $step          = 'accountwahl';
 $cHinweis      = '';
+$cart          = Session::Cart();
 // Kill Ajaxcheckout falls vorhanden
 unset($_SESSION['ajaxcheckout']);
 // Loginbenutzer?
@@ -38,15 +39,15 @@ if (verifyGPCDataInteger('basket2Pers') === 1) {
     exit();
 }
 // Ist Bestellung moeglich?
-if ($_SESSION['Warenkorb']->istBestellungMoeglich() !== 10) {
+if ($cart->istBestellungMoeglich() !== 10) {
     pruefeBestellungMoeglich();
 }
 // Pflicht-Uploads vorhanden?
-if (class_exists('Upload') && !Upload::pruefeWarenkorbUploads($_SESSION['Warenkorb'])) {
+if (class_exists('Upload') && !Upload::pruefeWarenkorbUploads($cart)) {
     Upload::redirectWarenkorb(UPLOAD_ERROR_NEED_UPLOAD);
 }
 // Download-Artikel vorhanden?
-if (class_exists('Download') && Download::hasDownloads($_SESSION['Warenkorb'])) {
+if (class_exists('Download') && Download::hasDownloads($cart)) {
     // Nur registrierte Benutzer
     $Einstellungen['kaufabwicklung']['bestellvorgang_unregistriert'] = 'N';
 }
@@ -156,7 +157,7 @@ if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']) {
         $oVersandart_arr        = VersandartHelper::getPossibleShippingMethods(
             $land,
             $plz,
-            VersandartHelper::getShippingClasses($_SESSION['Warenkorb']),
+            VersandartHelper::getShippingClasses($cart),
             $kKundengruppe
         );
         $activeVersandart       = gibAktiveVersandart($oVersandart_arr);
@@ -182,10 +183,10 @@ if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']) {
     }
 }
 // Download-Artikel vorhanden?
-if ($step !== 'accountwahl' &&
-    empty($_SESSION['Kunde']->cPasswort) &&
-    class_exists('Download') &&
-    Download::hasDownloads($_SESSION['Warenkorb'])
+if ($step !== 'accountwahl'
+    && empty($_SESSION['Kunde']->cPasswort)
+    && class_exists('Download')
+    && Download::hasDownloads($cart)
 ) {
     // Falls unregistrierter Kunde bereits im Checkout war und einen Downloadartikel hinzugefuegt hat
     $step      = 'accountwahl';
@@ -230,11 +231,11 @@ if ($step === 'edit_customer_address' || $step === 'Lieferadresse') {
 if ($step === 'Versand' || $step === 'Zahlung') {
     gibStepVersand();
     gibStepZahlung();
-    Warenkorb::refreshChecksum($_SESSION['Warenkorb']);
+    Warenkorb::refreshChecksum($cart);
 }
 if ($step === 'ZahlungZusatzschritt') {
     gibStepZahlungZusatzschritt($_POST);
-    Warenkorb::refreshChecksum($_SESSION['Warenkorb']);
+    Warenkorb::refreshChecksum($cart);
 }
 if ($step === 'Bestaetigung') {
     plausiGuthaben($_POST);
@@ -242,8 +243,8 @@ if ($step === 'Bestaetigung') {
     //evtl genutztes guthaben anpassen
     pruefeGuthabenNutzen();
     gibStepBestaetigung($_GET);
-    $_SESSION['Warenkorb']->cEstimatedDelivery = $_SESSION['Warenkorb']->getEstimatedDeliveryTime();
-    Warenkorb::refreshChecksum($_SESSION['Warenkorb']);
+    $cart->cEstimatedDelivery = $cart->getEstimatedDeliveryTime();
+    Warenkorb::refreshChecksum($cart);
 }
 // SafetyPay Work Around
 if (isset($_SESSION['Zahlungsart']->cModulId)
@@ -253,7 +254,7 @@ if (isset($_SESSION['Zahlungsart']->cModulId)
     require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'safetypay/safetypay.php';
     Shop::Smarty()->assign('safetypay_form', gib_safetypay_form(
         $_SESSION['Kunde'],
-        $_SESSION['Warenkorb'],
+        $cart,
         $Einstellungen['zahlungsarten']
     ));
 }
@@ -271,7 +272,7 @@ $AufgeklappteKategorien = new KategorieListe();
 $startKat               = new Kategorie();
 $startKat->kKategorie   = 0;
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
-WarenkorbHelper::addVariationPictures($_SESSION['Warenkorb']);
+WarenkorbHelper::addVariationPictures($cart);
 Shop::Smarty()->assign('Navigation', createNavigation($AktuelleSeite))
     ->assign('AGB', gibAGBWRB(Shop::getLanguage(), Session::CustomerGroup()->getID()))
     ->assign('Ueberschrift', Shop::Lang()->get('orderStep0Title', 'checkout'))
@@ -279,9 +280,9 @@ Shop::Smarty()->assign('Navigation', createNavigation($AktuelleSeite))
     ->assign('hinweis', $cHinweis)
     ->assign('step', $step)
     ->assign('editRechnungsadresse', verifyGPCDataInteger('editRechnungsadresse'))
-    ->assign('WarensummeLocalized', $_SESSION['Warenkorb']->gibGesamtsummeWarenLocalized())
-    ->assign('Warensumme', $_SESSION['Warenkorb']->gibGesamtsummeWaren())
-    ->assign('Steuerpositionen', $_SESSION['Warenkorb']->gibSteuerpositionen())
+    ->assign('WarensummeLocalized', $cPost_arr->gibGesamtsummeWarenLocalized())
+    ->assign('Warensumme', $cPost_arr->gibGesamtsummeWaren())
+    ->assign('Steuerpositionen', $cPost_arr->gibSteuerpositionen())
     ->assign('bestellschritt', gibBestellschritt($step))
     ->assign('requestURL', (isset($requestURL) ? $requestURL : null))
     ->assign('C_WARENKORBPOS_TYP_ARTIKEL', C_WARENKORBPOS_TYP_ARTIKEL)

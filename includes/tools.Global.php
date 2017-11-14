@@ -1794,6 +1794,7 @@ function checkeSpracheWaehrung($lang = '')
     $waehrung = verifyGPDataString('curr');
     if ($waehrung) {
         $Waehrungen = Shop::DB()->query("SELECT cISO, kWaehrung FROM twaehrung", 2);
+        $cart       = Session::Cart();
         foreach ($Waehrungen as $Waehrung) {
             if ($Waehrung->cISO === $waehrung) {
                 setFsession($Waehrung->kWaehrung, 0, 0);
@@ -1810,10 +1811,10 @@ function checkeSpracheWaehrung($lang = '')
                 }
                 // Trusted Shops Kaeuferschutz raus falls vorhanden
                 unset($_SESSION['TrustedShops']);
-                if (isset($_SESSION['Warenkorb'])) {
-                    Session::Cart()->loescheSpezialPos(C_WARENKORBPOS_TYP_TRUSTEDSHOPS);
-                    if (count(Session::Cart()->PositionenArr) > 0) {
-                        Session::Cart()->setzePositionsPreise();
+                if ($cart !== null) {
+                    $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_TRUSTEDSHOPS);
+                    if (count($cart->PositionenArr) > 0) {
+                        $cart->setzePositionsPreise();
                     }
                 }
             }

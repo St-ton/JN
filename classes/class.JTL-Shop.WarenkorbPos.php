@@ -355,7 +355,7 @@ class WarenkorbPos
                 $fPreisBrutto = 0;
                 $nVaterPos    = null;
                 /** @var WarenkorbPos $oPosition */
-                foreach ($_SESSION['Warenkorb']->PositionenArr as $nPos => $oPosition) {
+                foreach (Session::Cart()->PositionenArr as $nPos => $oPosition) {
                     if ($this->cUnique === $oPosition->cUnique) {
                         $fPreisNetto += $oPosition->fPreis * $oPosition->nAnzahl;
                         $fPreisBrutto += berechneBrutto($oPosition->fPreis * $oPosition->nAnzahl, gibUst($oPosition->kSteuerklasse), 4);
@@ -366,7 +366,7 @@ class WarenkorbPos
                     }
                 }
                 if ($nVaterPos !== null) {
-                    $oVaterPos = $_SESSION['Warenkorb']->PositionenArr[$nVaterPos];
+                    $oVaterPos = Session::Cart()->PositionenArr[$nVaterPos];
                     if (is_object($oVaterPos)) {
                         if (!$this->isIgnoreMultiplier()) {
                             $this->nAnzahlEinzel = $this->nAnzahl / $oVaterPos->nAnzahl;

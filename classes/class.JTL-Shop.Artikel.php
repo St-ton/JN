@@ -5280,8 +5280,9 @@ class Artikel
     public function getPurchaseQuantityFromCart()
     {
         $purchaseQuantity = 0;
-        if (is_array($_SESSION['Warenkorb']->PositionenArr) && count($_SESSION['Warenkorb']->PositionenArr) > 0) {
-            foreach ($_SESSION['Warenkorb']->PositionenArr as $i => $oPosition) {
+        $cart             = Session::Cart();
+        if ($cart !== null && is_array($cart->PositionenArr) && count($cart->PositionenArr) > 0) {
+            foreach ($cart->PositionenArr as $i => $oPosition) {
                 if ($oPosition->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL && $oPosition->Artikel->kArtikel == $this->kArtikel) {
                     $purchaseQuantity += $oPosition->nAnzahl;
                 }

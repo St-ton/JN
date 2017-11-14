@@ -262,6 +262,7 @@ function gibkPluginAuscPluginID($cPluginID)
  */
 function gibPluginExtendedTemplates()
 {
+    $cTemplate_arr = [];
     $oTemplate_arr = Shop::DB()->query(
         "SELECT tplugintemplate.cTemplate, tplugin.cVerzeichnis, tplugin.nVersion
             FROM tplugintemplate

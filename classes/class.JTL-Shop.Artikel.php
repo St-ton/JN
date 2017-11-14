@@ -5202,7 +5202,7 @@ class Artikel
                 "SELECT COUNT(tstueckliste.kArtikel) AS nAnzahl
                     FROM tstueckliste
                     LEFT JOIN tartikel ON tartikel.kArtikel = tstueckliste.kArtikel
-                    WHERE tstueckliste.kStueckliste = 34
+                    WHERE tstueckliste.kStueckliste = " . (int)$this->kStueckliste . "
 	                    AND tartikel.kArtikel IS NULL", 1
             );
 

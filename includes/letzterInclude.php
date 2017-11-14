@@ -81,7 +81,6 @@ if (!isset($NaviFilter)) {
 if ($smarty->getTemplateVars('NaviFilter') === null) {
     $smarty->assign('NaviFilter', $NaviFilter);
 }
-// Standardassigns
 $smarty->assign('cPluginCss_arr', $cMinify_arr['plugin_css'])
        ->assign('bMobilMoeglich', $bMobile)
        ->assign('cPluginCssConditional_arr', $cMinify_arr['plugin_css_conditional'])

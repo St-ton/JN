@@ -650,4 +650,114 @@ class KategorieHelper
             ? $callback($res)
             : $res;
     }
+
+    /**
+     * @param Kategorie $currentCategory
+     * @param bool      $assign
+     * @return array
+     * @former baueUnterkategorieListeHTML()
+     */
+    public static function getSubcategoryList($currentCategory, $assign = true)
+    {
+        if ($currentCategory !== null && !empty($currentCategory->kKategorie)) {
+            $cacheID = 'ukl_' . $currentCategory->kKategorie . '_' . Shop::getLanguage();
+            if (($UnterKatListe = Shop::Cache()->get($cacheID)) === false || !is_object($UnterKatListe)) {
+                $UnterKatListe = new KategorieListe();
+                $UnterKatListe->getAllCategoriesOnLevel($currentCategory->kKategorie);
+                // Bildpfad vorbereiten
+                if (is_array($UnterKatListe->elemente) && count($UnterKatListe->elemente) > 0) {
+                    foreach ($UnterKatListe->elemente as $i => $oUnterKat) {
+                        // Relativen Pfad uebergeben.
+                        if (!empty($oUnterKat->cPfad)) {
+                            $UnterKatListe->elemente[$i]->cBildPfad = 'bilder/kategorien/' . $oUnterKat->cPfad;
+                        }
+                    }
+                }
+                Shop::Cache()->set(
+                    $cacheID,
+                    $UnterKatListe,
+                    [CACHING_GROUP_CATEGORY, CACHING_GROUP_CATEGORY . '_' . $currentCategory->kKategorie]
+                );
+            }
+            if ($assign === true) {
+                Shop::Smarty()->assign('oUnterKategorien_arr', $UnterKatListe->elemente);
+            }
+
+            return $UnterKatListe->elemente;
+        }
+        if ($assign === true) {
+            Shop::Smarty()->assign('oUnterKategorien_arr', []);
+        }
+
+        return [];
+    }
+
+    /**
+     * @param Kategorie      $startCat
+     * @param KategorieListe $expanded
+     * @param Kategorie      $currentCategory
+     * @former baueKategorieListenHTML()
+     * @deprecated since 4.07
+     */
+    public static function buildCategoryListHTML($startCat, $expanded, $currentCategory)
+    {
+        $cKategorielistenHTML_arr = [];
+        if (function_exists('gibKategorienHTML')) {
+            $cacheID = 'jtl_clh_' .
+                $startCat->kKategorie . '_' .
+                (isset($currentCategory->kKategorie) ? (int)$currentCategory->kKategorie : 0);
+
+            if (isset($expanded->elemente)) {
+                foreach ($expanded->elemente as $_elem) {
+                    if (isset($_elem->kKategorie)) {
+                        $cacheID .= '_' . (int)$_elem->kKategorie;
+                    }
+                }
+            }
+            $conf = Shop::getSettings([CONF_TEMPLATE]);
+            if ((!isset($conf['template']['categories']['sidebox_categories_full_category_tree'])
+                    || $conf['template']['categories']['sidebox_categories_full_category_tree'] !== 'Y')
+                && (($cKategorielistenHTML_arr = Shop::Cache()->get($cacheID)) === false
+                    || !isset($cKategorielistenHTML_arr[0]))
+            ) {
+                $cKategorielistenHTML_arr = [];
+                //globale Liste
+                $cKategorielistenHTML_arr[0] = function_exists('gibKategorienHTML')
+                    ? gibKategorienHTML(
+                        $startCat,
+                        isset($expanded->elemente)
+                            ? $expanded->elemente
+                            : null,
+                        0,
+                        isset($currentCategory->kKategorie)
+                            ? (int)$currentCategory->kKategorie
+                            : 0
+                    )
+                    : '';
+
+                $dist_kategorieboxen = Shop::DB()->query(
+                    "SELECT DISTINCT(cWert) 
+                    FROM tkategorieattribut 
+                    WHERE cName = '" . KAT_ATTRIBUT_KATEGORIEBOX . "'", 2
+                );
+                foreach ($dist_kategorieboxen as $katboxNr) {
+                    $nr = (int)$katboxNr->cWert;
+                    if ($nr > 0) {
+                        $cKategorielistenHTML_arr[$nr] = function_exists('gibKategorienHTML')
+                            ? gibKategorienHTML(
+                                $startCat,
+                                $expanded->elemente,
+                                0,
+                                (int)$currentCategory->kKategorie,
+                                $nr
+                            )
+                            : '';
+                    }
+                }
+                Shop::Cache()->set($cacheID, $cKategorielistenHTML_arr, [CACHING_GROUP_CATEGORY]);
+            }
+        }
+
+        Shop::Smarty()->assign('cKategorielistenHTML_arr', $cKategorielistenHTML_arr);
+    }
 }

@@ -52,8 +52,8 @@ $warensumme[1]         = gibPreisStringLocalized($cart->gibGesamtsummeWarenExt([
 $gesamtsumme[0]        = gibPreisStringLocalized($cart->gibGesamtsummeWaren(true, true));
 $gesamtsumme[1]        = gibPreisStringLocalized($cart->gibGesamtsummeWaren(false, true));
 $oVersandartKostenfrei = gibVersandkostenfreiAb($kKundengruppe, $cKundenherkunft);
-$oGlobaleMetaAngaben   = isset($oGlobaleMetaAngabenAssoc_arr[Shop::getLanguage()])
-    ? $oGlobaleMetaAngabenAssoc_arr[Shop::getLanguage()]
+$oGlobaleMetaAngaben   = isset($oGlobaleMetaAngabenAssoc_arr[Shop::getLanguageID()])
+    ? $oGlobaleMetaAngabenAssoc_arr[Shop::getLanguageID()]
     : null;
 $pagetType             = Shop::getPageType();
 
@@ -69,10 +69,7 @@ if (is_object($oGlobaleMetaAngaben)) {
     }
 }
 // Kategorielisten aufbauen
-if (isset($AktuelleKategorie)) {
-    baueKategorieListenHTML($startKat, $AufgeklappteKategorien, $AktuelleKategorie);
-    baueUnterkategorieListeHTML($AktuelleKategorie);
-} else {
+if (!isset($AktuelleKategorie)) {
     $AktuelleKategorie = null;
 }
 if (!isset($NaviFilter)) {
@@ -82,6 +79,7 @@ if ($smarty->getTemplateVars('NaviFilter') === null) {
     $smarty->assign('NaviFilter', $NaviFilter);
 }
 $smarty->assign('cPluginCss_arr', $cMinify_arr['plugin_css'])
+       ->assign('oUnterKategorien_arr', KategorieHelper::getSubcategoryList($AktuelleKategorie, false))
        ->assign('bMobilMoeglich', $bMobile)
        ->assign('cPluginCssConditional_arr', $cMinify_arr['plugin_css_conditional'])
        ->assign('cPluginJsHead_arr', $cMinify_arr['plugin_js_head'])
@@ -106,8 +104,8 @@ $smarty->assign('cPluginCss_arr', $cMinify_arr['plugin_css'])
        ->assign('PFAD_BILDER_BANNER', PFAD_BILDER_BANNER)
        ->assign('Anrede_m', Shop::Lang()->get('salutationM'))
        ->assign('Anrede_w', Shop::Lang()->get('salutationW'))
-       ->assign('oTrennzeichenGewicht', Trennzeichen::getUnit(JTL_SEPARATOR_WEIGHT, Shop::getLanguage()))
-       ->assign('oTrennzeichenMenge', Trennzeichen::getUnit(JTL_SEPARATOR_AMOUNT, Shop::getLanguage()))
+       ->assign('oTrennzeichenGewicht', Trennzeichen::getUnit(JTL_SEPARATOR_WEIGHT, Shop::getLanguageID()))
+       ->assign('oTrennzeichenMenge', Trennzeichen::getUnit(JTL_SEPARATOR_AMOUNT, Shop::getLanguageID()))
        ->assign('cShopName', $cShopName)
        ->assign('KaufabwicklungsURL', $linkHelper->getStaticRoute('bestellvorgang.php'))
        ->assign('WarenkorbArtikelanzahl', $cart->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]))
@@ -139,7 +137,7 @@ $smarty->assign('cPluginCss_arr', $cMinify_arr['plugin_css'])
        ->assign('PFAD_MINIFY', PFAD_MINIFY)
        ->assign('PFAD_UPLOADIFY', PFAD_UPLOADIFY)
        ->assign('PFAD_UPLOAD_CALLBACK', PFAD_UPLOAD_CALLBACK)
-       ->assign('oSuchspecialoverlay_arr', holeAlleSuchspecialOverlays(Shop::getLanguage()))
+       ->assign('oSuchspecialoverlay_arr', holeAlleSuchspecialOverlays(Shop::getLanguageID()))
        ->assign('oSuchspecial_arr', baueAlleSuchspecialURLs())
        ->assign('ShopLogoURL', $shopLogo)
        ->assign('ShopLogoURL_abs', $shopLogo === '' ? '' : ($shopURL . $shopLogo))
@@ -183,7 +181,7 @@ $linkGroups = $pagetType ? $linkHelper->activate($pagetType) : $smarty->getTempl
 if (!isset($cParameter_arr)) {
     $cParameter_arr = [];
 }
-$oExtension = (new ExtensionPoint($pagetType, $cParameter_arr, Shop::getLanguage(), $kKundengruppe))->load();
+$oExtension = (new ExtensionPoint($pagetType, $cParameter_arr, Shop::getLanguageID(), $kKundengruppe))->load();
 executeHook(HOOK_LETZTERINCLUDE_INC);
 $boxes       = Boxen::getInstance();
 $boxesToShow = $boxes->build($pagetType)->render();

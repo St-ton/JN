@@ -2482,104 +2482,6 @@ function gibBelieferbareLaender($kKundengruppe = 0, $bIgnoreSetting = false, $bF
 }
 
 /**
- * @param object $startKat
- * @param object $AufgeklappteKategorien
- * @param object $AktuelleKategorie
- */
-function baueKategorieListenHTML($startKat, $AufgeklappteKategorien, $AktuelleKategorie)
-{
-    $cKategorielistenHTML_arr = [];
-    if (function_exists('gibKategorienHTML')) {
-        $cacheID = 'jtl_clh_' .
-            $startKat->kKategorie . '_' .
-            (isset($AktuelleKategorie->kKategorie) ? $AktuelleKategorie->kKategorie : 0);
-
-        if (isset($AufgeklappteKategorien->elemente)) {
-            foreach ($AufgeklappteKategorien->elemente as $_elem) {
-                if (isset($_elem->kKategorie)) {
-                    $cacheID .= '_' . $_elem->kKategorie;
-                }
-            }
-        }
-        $conf = Shop::getSettings([CONF_TEMPLATE]);
-        if ((!isset($conf['template']['categories']['sidebox_categories_full_category_tree']) ||
-                $conf['template']['categories']['sidebox_categories_full_category_tree'] !== 'Y') &&
-            ($cKategorielistenHTML_arr = Shop::Cache()->get($cacheID)) === false ||
-            !isset($cKategorielistenHTML_arr[0])
-        ) {
-            $cKategorielistenHTML_arr = [];
-            //globale Liste
-            $cKategorielistenHTML_arr[0] = function_exists('gibKategorienHTML')
-                ? gibKategorienHTML(
-                    $startKat,
-                    isset($AufgeklappteKategorien->elemente)
-                        ? $AufgeklappteKategorien->elemente
-                        : null,
-                    0,
-                    isset($AktuelleKategorie->kKategorie)
-                        ? $AktuelleKategorie->kKategorie
-                        : 0
-                )
-                : '';
-
-            $dist_kategorieboxen = Shop::DB()->query(
-                "SELECT DISTINCT(cWert) 
-                    FROM tkategorieattribut 
-                    WHERE cName = '" . KAT_ATTRIBUT_KATEGORIEBOX . "'", 2
-            );
-            foreach ($dist_kategorieboxen as $katboxNr) {
-                $nr = (int)$katboxNr->cWert;
-                if ($nr > 0) {
-                    $cKategorielistenHTML_arr[$nr] = function_exists('gibKategorienHTML')
-                        ? gibKategorienHTML(
-                            $startKat,
-                            $AufgeklappteKategorien->elemente,
-                            0,
-                            $AktuelleKategorie->kKategorie,
-                            $nr
-                        )
-                        : '';
-                }
-            }
-            Shop::Cache()->set($cacheID, $cKategorielistenHTML_arr, [CACHING_GROUP_CATEGORY]);
-        }
-    }
-
-    Shop::Smarty()->assign('cKategorielistenHTML_arr', $cKategorielistenHTML_arr);
-}
-
-/**
- * @param Kategorie $AktuelleKategorie
- */
-function baueUnterkategorieListeHTML($AktuelleKategorie)
-{
-    if (isset($AktuelleKategorie->kKategorie) && $AktuelleKategorie->kKategorie > 0) {
-        $cacheID = 'ukl_' . $AktuelleKategorie->kKategorie . '_' . Shop::getLanguage();
-        if (($UnterKatListe = Shop::Cache()->get($cacheID)) === false || !is_object($UnterKatListe)) {
-            $UnterKatListe = new KategorieListe();
-            $UnterKatListe->getAllCategoriesOnLevel($AktuelleKategorie->kKategorie);
-            // Bildpfad vorbereiten
-            if (is_array($UnterKatListe->elemente) && count($UnterKatListe->elemente) > 0) {
-                foreach ($UnterKatListe->elemente as $i => $oUnterKat) {
-                    // Relativen Pfad uebergeben.
-                    if (!empty($oUnterKat->cPfad)) {
-                        $UnterKatListe->elemente[$i]->cBildPfad = 'bilder/kategorien/' . $oUnterKat->cPfad;
-                    }
-                }
-            }
-            Shop::Cache()->set(
-                $cacheID,
-                $UnterKatListe,
-                [CACHING_GROUP_CATEGORY, CACHING_GROUP_CATEGORY . '_' . $AktuelleKategorie->kKategorie]
-            );
-        }
-        Shop::Smarty()->assign('oUnterKategorien_arr', $UnterKatListe->elemente);
-    } else {
-        Shop::Smarty()->assign('oUnterKategorien_arr', []);
-    }
-}
-
-/**
  * @param int $sec
  * @return string
  */
@@ -6208,6 +6110,29 @@ function getSytemlogFlag($cache = true)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return Jtllog::getSytemlogFlag($cache);
+}
+
+
+/**
+ * @param object $startKat
+ * @param object $AufgeklappteKategorien
+ * @param object $AktuelleKategorie
+ * @deprecated since 4.07
+ */
+function baueKategorieListenHTML($startKat, $AufgeklappteKategorien, $AktuelleKategorie)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
+    KategorieHelper::buildCategoryListHTML($startKat, $AktuelleKategorie, $AktuelleKategorie);
+}
+
+/**
+ * @param Kategorie $AktuelleKategorie
+ * @deprecated since 4.07
+ */
+function baueUnterkategorieListeHTML($AktuelleKategorie)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
+    KategorieHelper::getSubcategoryList($AktuelleKategorie);
 }
 
 /**

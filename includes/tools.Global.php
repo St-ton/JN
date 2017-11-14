@@ -696,9 +696,9 @@ function fuegeVariBoxInWK($variBoxAnzahl_arr, $kArtikel, $bIstVater, $bExtern = 
             );
         }
     }
-    $_SESSION['Warenkorb']->setzePositionsPreise();
+    Session::getInstance()->Basket()->setzePositionsPreise();
     unset($_SESSION['variBoxAnzahl_arr']);
-    $_SESSION['Warenkorb']->redirectTo();
+    Session::getInstance()->Basket()->redirectTo();
 }
 
 /**
@@ -890,7 +890,6 @@ function gibVarKombiEigenschaftsWerte($kArtikel, $bSichtbarkeitBeachten = true)
  */
 function fuegeEinInWarenkorb($kArtikel, $anzahl, $oEigenschaftwerte_arr = [], $nWeiterleitung = 0, $cUnique = false, $kKonfigitem = 0, $oArtikelOptionen = null, $setzePositionsPreise = true)
 {
-    /** @var array('Warenkorb' => Warenkorb) $_SESSION */
     $kArtikel = (int)$kArtikel;
     if (!($anzahl > 0 && ($kArtikel > 0 || $kArtikel === 0 && !empty($kKonfigitem) && !empty($cUnique)))) {
         return false;
@@ -916,15 +915,15 @@ function fuegeEinInWarenkorb($kArtikel, $anzahl, $oEigenschaftwerte_arr = [], $n
         if ($nWeiterleitung === 0) {
             $con = (strpos($Artikel->cURLFull, '?') === false) ? '?' : '&';
             if ($Artikel->kEigenschaftKombi > 0) {
-                $url = (!empty($Artikel->cURLFull))
-                    ? ($Artikel->cURLFull . $con)
-                    : (Shop::getURL() . '/index.php?a=' . $Artikel->kVaterArtikel .
-                        '&a2=' . $Artikel->kArtikel . '&');
+                $url = empty($Artikel->cURLFull)
+                    ? (Shop::getURL() . '/index.php?a=' . $Artikel->kVaterArtikel .
+                        '&a2=' . $Artikel->kArtikel . '&')
+                    : ($Artikel->cURLFull . $con);
                 header('Location: ' . $url . 'n=' . $anzahl . '&r=' . implode(',', $redirectParam), true, 302);
             } else {
-                $url = (!empty($Artikel->cURLFull))
-                    ? ($Artikel->cURLFull . $con)
-                    : (Shop::getURL() . '/index.php?a=' . $Artikel->kArtikel . '&');
+                $url = empty($Artikel->cURLFull)
+                    ? (Shop::getURL() . '/index.php?a=' . $Artikel->kArtikel . '&')
+                    : ($Artikel->cURLFull . $con);
                 header('Location: ' . $url . 'n=' . $anzahl . '&r=' . implode(',', $redirectParam), true, 302);
             }
             exit;
@@ -932,16 +931,17 @@ function fuegeEinInWarenkorb($kArtikel, $anzahl, $oEigenschaftwerte_arr = [], $n
 
         return false;
     }
-    $_SESSION['Warenkorb']->fuegeEin($kArtikel, $anzahl, $oEigenschaftwerte_arr, 1, $cUnique, $kKonfigitem, $setzePositionsPreise)
-                          ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS)
-                          ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDZUSCHLAG)
-                          ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSAND_ARTIKELABHAENGIG)
-                          ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART)
-                          ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZINSAUFSCHLAG)
-                          ->loescheSpezialPos(C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR)
-                          ->loescheSpezialPos(C_WARENKORBPOS_TYP_NEUKUNDENKUPON)
-                          ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR)
-                          ->loescheSpezialPos(C_WARENKORBPOS_TYP_TRUSTEDSHOPS);
+    Session::getInstance()->Basket()
+           ->fuegeEin($kArtikel, $anzahl, $oEigenschaftwerte_arr, 1, $cUnique, $kKonfigitem, $setzePositionsPreise)
+           ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS)
+           ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDZUSCHLAG)
+           ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSAND_ARTIKELABHAENGIG)
+           ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART)
+           ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZINSAUFSCHLAG)
+           ->loescheSpezialPos(C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR)
+           ->loescheSpezialPos(C_WARENKORBPOS_TYP_NEUKUNDENKUPON)
+           ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR)
+           ->loescheSpezialPos(C_WARENKORBPOS_TYP_TRUSTEDSHOPS);
 
     resetNeuKundenKupon();
     unset(
@@ -958,7 +958,8 @@ function fuegeEinInWarenkorb($kArtikel, $anzahl, $oEigenschaftwerte_arr = [], $n
         fuegeEinInWarenkorbPers($kArtikel, $anzahl, $oEigenschaftwerte_arr, $cUnique, $kKonfigitem);
     }
     // Hinweis
-    Shop::Smarty()->assign('hinweis', Shop::Lang()->get('basketAdded', 'messages'))
+    Shop::Smarty()
+        ->assign('hinweis', Shop::Lang()->get('basketAdded', 'messages'))
         ->assign('bWarenkorbHinzugefuegt', true)
         ->assign('bWarenkorbAnzahl', $anzahl);
     // Kampagne
@@ -966,7 +967,7 @@ function fuegeEinInWarenkorb($kArtikel, $anzahl, $oEigenschaftwerte_arr = [], $n
         setzeKampagnenVorgang(KAMPAGNE_DEF_WARENKORB, $kArtikel, $anzahl);
     }
     // Warenkorb weiterleiten
-    $_SESSION['Warenkorb']->redirectTo((bool)$nWeiterleitung, $cUnique);
+    Session::getInstance()->Basket()->redirectTo((bool)$nWeiterleitung, $cUnique);
 
     return true;
 }
@@ -981,7 +982,7 @@ function altenKuponNeuBerechnen()
     if (isset($_SESSION['Kupon']) && $_SESSION['Kupon']->cWertTyp === 'prozent') {
         $oKupon = $_SESSION['Kupon'];
         unset($_SESSION['Kupon']);
-        $_SESSION['Warenkorb']->setzePositionsPreise();
+        Session::getInstance()->Basket()->setzePositionsPreise();
         require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';
         kuponAnnehmen($oKupon);
     }
@@ -1034,7 +1035,7 @@ function checkeKuponWKPos($oWKPosition, $Kupon)
             WHERE cAktiv = 'Y'
                 AND dGueltigAb <= now()
                 AND (dGueltigBis > now() OR dGueltigBis = '0000-00-00 00:00:00')
-                AND fMindestbestellwert <= " . $_SESSION['Warenkorb']->gibGesamtsummeWaren(true, false) . "
+                AND fMindestbestellwert <= " . Session::getInstance()->Basket()->gibGesamtsummeWaren(true, false) . "
                 AND (kKundengruppe = -1 
                     OR kKundengruppe = 0 
                     OR kKundengruppe = " . Session::CustomerGroup()->getID() . ")
@@ -1049,7 +1050,7 @@ function checkeKuponWKPos($oWKPosition, $Kupon)
     if (isset($kupons_mgl->kKupon)
         && $kupons_mgl->kKupon > 0
         && $kupons_mgl->cWertTyp === 'prozent'
-        && !$_SESSION['Warenkorb']->posTypEnthalten(C_WARENKORBPOS_TYP_KUPON)
+        && !Session::getInstance()->Basket()->posTypEnthalten(C_WARENKORBPOS_TYP_KUPON)
     ) {
         $oWKPosition->fPreisEinzelNetto -= ($oWKPosition->fPreisEinzelNetto / 100) * $Kupon->fWert;
         $oWKPosition->fPreis            -= ($oWKPosition->fPreis / 100) * $Kupon->fWert;
@@ -1140,7 +1141,7 @@ function checkSetPercentCouponWKPos($oWKPosition, $Kupon)
             WHERE cAktiv = 'Y'
                 AND dGueltigAb <= now()
                 AND (dGueltigBis > now() OR dGueltigBis = '0000-00-00 00:00:00')
-                AND fMindestbestellwert <= " . $_SESSION['Warenkorb']->gibGesamtsummeWaren(true, false) . "
+                AND fMindestbestellwert <= " . Session::getInstance()->Basket()->gibGesamtsummeWaren(true, false) . "
                 AND (kKundengruppe = -1 
                     OR kKundengruppe = 0 
                     OR kKundengruppe = " . Session::CustomerGroup()->getID() . ")
@@ -1349,8 +1350,7 @@ function setzeSteuersaetze($steuerland = 0)
         }
     }
     if (isset($_SESSION['Warenkorb']) && get_class($_SESSION['Warenkorb']) === 'Warenkorb') {
-        /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
-        $_SESSION['Warenkorb']->setzePositionsPreise();
+        Session::getInstance()->Basket()->setzePositionsPreise();
     }
 }
 
@@ -1810,10 +1810,10 @@ function checkeSpracheWaehrung($lang = '')
                 // Trusted Shops Kaeuferschutz raus falls vorhanden
                 unset($_SESSION['TrustedShops']);
                 if (isset($_SESSION['Warenkorb'])) {
-                    $_SESSION['Warenkorb']->loescheSpezialPos(C_WARENKORBPOS_TYP_TRUSTEDSHOPS);
-                }
-                if ($_SESSION['Warenkorb'] && count($_SESSION['Warenkorb']->PositionenArr) > 0) {
-                    $_SESSION['Warenkorb']->setzePositionsPreise();
+                    Session::getInstance()->Basket()->loescheSpezialPos(C_WARENKORBPOS_TYP_TRUSTEDSHOPS);
+                    if (count(Session::getInstance()->Basket()->PositionenArr) > 0) {
+                        Session::getInstance()->Basket()->setzePositionsPreise();
+                    }
                 }
             }
         }
@@ -1830,7 +1830,7 @@ function gibAlleKategorienNoHTML($nKategorieBox = 0)
     $oKategorienNoHTML_arr = [];
     $nTiefe                = 0;
 
-    if (!K_KATEGORIE_TIEFE > 0) {
+    if (K_KATEGORIE_TIEFE <= 0) {
         return [];
     }
     $oKategorien = new KategorieListe();
@@ -2119,7 +2119,7 @@ function valid_email($email)
 function gibMoeglicheVerpackungen($kKundengruppe)
 {
     /** @var array('Warenkorb' => Warenkorb) $_SESSION */
-    $fSummeWarenkorb = $_SESSION['Warenkorb']->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true);
+    $fSummeWarenkorb = Session::getInstance()->Basket()->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true);
     $oVerpackung_arr = Shop::DB()->query(
         "SELECT * FROM tverpackung
             JOIN tverpackungsprache 
@@ -2217,7 +2217,6 @@ function berechneVersandpreis($versandart, $cISO, $oZusatzArtikel, $Artikel = 0)
         $oZusatzArtikel->fWarenwertNetto = 0;
         $oZusatzArtikel->fGewicht        = 0;
     }
-    /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
     $versandberechnung = Shop::DB()->select(
         'tversandberechnung',
         'kVersandberechnung',
@@ -2232,7 +2231,7 @@ function berechneVersandpreis($versandart, $cISO, $oZusatzArtikel, $Artikel = 0)
         case 'vm_versandberechnung_gewicht_jtl':
             $warenkorbgewicht  = $Artikel
                 ? $Artikel->fGewicht
-                : $_SESSION['Warenkorb']->getWeight();
+                : Session::getInstance()->Basket()->getWeight();
             $warenkorbgewicht += $oZusatzArtikel->fGewicht;
             $versand           = Shop::DB()->query(
                 "SELECT *
@@ -2251,7 +2250,7 @@ function berechneVersandpreis($versandart, $cISO, $oZusatzArtikel, $Artikel = 0)
         case 'vm_versandberechnung_warenwert_jtl':
             $warenkorbwert  = $Artikel
                 ? $Artikel->Preise->fVKNetto
-                : $_SESSION['Warenkorb']->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true);
+                : Session::getInstance()->Basket()->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true);
             $warenkorbwert += $oZusatzArtikel->fWarenwertNetto;
             $versand        = Shop::DB()->query(
                 "SELECT *
@@ -2271,7 +2270,7 @@ function berechneVersandpreis($versandart, $cISO, $oZusatzArtikel, $Artikel = 0)
             $artikelanzahl = 1;
             if (!$Artikel) {
                 $artikelanzahl = isset($_SESSION['Warenkorb'])
-                    ? $_SESSION['Warenkorb']->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL])
+                    ? Session::getInstance()->Basket()->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL])
                     : 0;
             }
             $artikelanzahl += $oZusatzArtikel->fAnzahl;
@@ -2319,11 +2318,11 @@ function berechneVersandpreis($versandart, $cISO, $oZusatzArtikel, $Artikel = 0)
             }
             if (isset($_SESSION['Warenkorb'])) {
                 $fGesamtsummeWaren = berechneNetto(
-                    $_SESSION['Warenkorb']->gibGesamtsummeWarenExt(
+                    Session::getInstance()->Basket()->gibGesamtsummeWarenExt(
                         [C_WARENKORBPOS_TYP_ARTIKEL],
                         1
                     ),
-                    gibUst($_SESSION['Warenkorb']->gibVersandkostenSteuerklasse())
+                    Session::getInstance()->Basket()->gibVersandkostenSteuerklasse())
                 );
             }
             break;
@@ -2333,7 +2332,7 @@ function berechneVersandpreis($versandart, $cISO, $oZusatzArtikel, $Artikel = 0)
                 $fArtikelPreis = berechneBrutto($Artikel->Preise->fVKNetto, gibUst($Artikel->kSteuerklasse));
             }
             if (isset($_SESSION['Warenkorb'])) {
-                $fGesamtsummeWaren = $_SESSION['Warenkorb']->gibGesamtsummeWarenExt(
+                $fGesamtsummeWaren = Session::getInstance()->Basket()->gibGesamtsummeWarenExt(
                     [C_WARENKORBPOS_TYP_ARTIKEL],
                     1
                 );
@@ -2911,7 +2910,7 @@ function baueGewicht($oArtikel_arr, $nEinstArtGewicht = 2, $nEinstVerGewicht = 2
 function gibVersandkostenfreiAb($kKundengruppe, $cLand = '')
 {
     // Ticket #1018
-    $versandklassen = VersandartHelper::getShippingClasses($_SESSION['Warenkorb']);
+    $versandklassen = VersandartHelper::getShippingClasses(Session::getInstance()->Basket());
     $cacheID        = 'vkfrei_' . $kKundengruppe . '_' .
         $cLand . '_' . $versandklassen . '_' . $_SESSION['cISOSprache'];
     if (($oVersandart = Shop::Cache()->get($cacheID)) === false) {
@@ -2962,9 +2961,9 @@ function gibVersandkostenfreiAb($kKundengruppe, $cLand = '')
  */
 function baueVersandkostenfreiString($oVersandart, $fWarenkorbSumme)
 {
-    if (is_object($oVersandart) &&
-        (float)$oVersandart->fVersandkostenfreiAbX > 0 &&
-        isset($_SESSION['Warenkorb'], $_SESSION['Steuerland'])
+    if (is_object($oVersandart)
+        && (float)$oVersandart->fVersandkostenfreiAbX > 0
+        && isset($_SESSION['Warenkorb'], $_SESSION['Steuerland'])
     ) {
         $fSummeDiff = (float)$oVersandart->fVersandkostenfreiAbX - (float)$fWarenkorbSumme;
         //check if vkfreiabx is calculated net or gross
@@ -4815,31 +4814,35 @@ function pruefeWarenkorbStueckliste($oArtikel, $fAnzahl)
         } else {
             $oStuecklisteKomponente_arr = gibStuecklistenKomponente($oArtikel->kStueckliste, true);
         }
-        /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
-        foreach ($_SESSION['Warenkorb']->PositionenArr as $oPosition) {
-            if ($oPosition->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL) {
-                // Komponente soll hinzugefügt werden aber die Stückliste ist bereits im Warenkorb
-                // => Prüfen ob der Lagebestand nicht unterschritten wird
-                if ($bKomponente && isset($oPosition->Artikel->kStueckliste) && $oPosition->Artikel->kStueckliste > 0 &&
-                    ($oPosition->nAnzahl * $oStueckliste->fAnzahl + $fAnzahl) > $oArtikel->fLagerbestand) {
-                    return R_LAGER;
-                }
-                if (!$bKomponente && count($oStuecklisteKomponente_arr) > 0) {
-                    //Test auf Stücklistenkomponenten in der aktuellen Position
-                    if (isset($oPosition->Artikel->kStueckliste) && $oPosition->Artikel->kStueckliste) {
-                        $oPositionKomponenten_arr = gibStuecklistenKomponente($oPosition->Artikel->kStueckliste, true);
-                        foreach ($oPositionKomponenten_arr as $oKomponente) {
-                            $desiredComponentQuantity = $fAnzahl * $oStuecklisteKomponente_arr[$oKomponente->kArtikel]->fAnzahl;
-                            $currentComponentStock    = $oPosition->Artikel->fLagerbestand * $oKomponente->fAnzahl;
-                            if ($desiredComponentQuantity > $currentComponentStock) {
-                                return R_LAGER;
-                            }
+        foreach (Session::getInstance()->Basket()->PositionenArr as $oPosition) {
+            if ($oPosition->nPosTyp != C_WARENKORBPOS_TYP_ARTIKEL) {
+                continue;
+            }
+            // Komponente soll hinzugefügt werden aber die Stückliste ist bereits im Warenkorb
+            // => Prüfen ob der Lagebestand nicht unterschritten wird
+            if ($bKomponente
+                && isset($oPosition->Artikel->kStueckliste)
+                && $oPosition->Artikel->kStueckliste > 0
+                && ($oPosition->nAnzahl * $oStueckliste->fAnzahl + $fAnzahl) > $oArtikel->fLagerbestand
+            ) {
+                return R_LAGER;
+            }
+            if (!$bKomponente && count($oStuecklisteKomponente_arr) > 0) {
+                //Test auf Stücklistenkomponenten in der aktuellen Position
+                if (isset($oPosition->Artikel->kStueckliste) && $oPosition->Artikel->kStueckliste) {
+                    $oPositionKomponenten_arr = gibStuecklistenKomponente($oPosition->Artikel->kStueckliste, true);
+                    foreach ($oPositionKomponenten_arr as $oKomponente) {
+                        $desiredComponentQuantity = $fAnzahl * $oStuecklisteKomponente_arr[$oKomponente->kArtikel]->fAnzahl;
+                        $currentComponentStock    = $oPosition->Artikel->fLagerbestand * $oKomponente->fAnzahl;
+                        if ($desiredComponentQuantity > $currentComponentStock) {
+                            return R_LAGER;
                         }
-                    } elseif (isset($oStuecklisteKomponente_arr[$oPosition->kArtikel])
-                        && (($oPosition->nAnzahl * $oStuecklisteKomponente_arr[$oPosition->kArtikel]->fAnzahl) +
-                            ($oStuecklisteKomponente_arr[$oPosition->kArtikel]->fAnzahl * $fAnzahl)) > $oPosition->Artikel->fLagerbestand) {
-                        return R_LAGER;
                     }
+                } elseif (isset($oStuecklisteKomponente_arr[$oPosition->kArtikel])
+                    && (($oPosition->nAnzahl * $oStuecklisteKomponente_arr[$oPosition->kArtikel]->fAnzahl) +
+                        ($oStuecklisteKomponente_arr[$oPosition->kArtikel]->fAnzahl * $fAnzahl)) > $oPosition->Artikel->fLagerbestand
+                ) {
+                    return R_LAGER;
                 }
             }
         }
@@ -4969,9 +4972,9 @@ function resetNeuKundenKupon()
     }
 
     unset($_SESSION['NeukundenKupon'], $_SESSION['NeukundenKuponAngenommen']);
-    /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
-    $_SESSION['Warenkorb']->loescheSpezialPos(C_WARENKORBPOS_TYP_NEUKUNDENKUPON)
-                          ->setzePositionsPreise();
+    Session::getInstance()->Basket()
+           ->loescheSpezialPos(C_WARENKORBPOS_TYP_NEUKUNDENKUPON)
+           ->setzePositionsPreise();
 }
 
 /**
@@ -4980,10 +4983,9 @@ function resetNeuKundenKupon()
  */
 function holeKonfigBearbeitenModus($kKonfig, &$smarty)
 {
-    /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
     if (isset($_SESSION['Warenkorb']->PositionenArr[$kKonfig]) && class_exists('Konfigitem')) {
         /** @var WarenkorbPos $oBasePosition */
-        $oBasePosition = $_SESSION['Warenkorb']->PositionenArr[$kKonfig];
+        $oBasePosition = Session::getInstance()->Basket()->PositionenArr[$kKonfig];
         /** @var WarenkorbPos $oBasePosition */
         if ($oBasePosition->istKonfigVater()) {
             $nKonfigitem_arr         = [];
@@ -4991,7 +4993,7 @@ function holeKonfigBearbeitenModus($kKonfig, &$smarty)
             $nKonfiggruppeAnzahl_arr = [];
 
             /** @var WarenkorbPos $oPosition */
-            foreach ($_SESSION['Warenkorb']->PositionenArr as &$oPosition) {
+            foreach (Session::getInstance()->Basket()->PositionenArr as &$oPosition) {
                 if ($oPosition->cUnique === $oBasePosition->cUnique && $oPosition->istKonfigKind()) {
                     $oKonfigitem                                              = new Konfigitem($oPosition->kKonfigitem);
                     $nKonfigitem_arr[]                                        = $oKonfigitem->getKonfigitem();
@@ -5929,32 +5931,30 @@ function formatCurrency($fSumme)
  * @return array
  * @deprecated since 4.07
  */
-function gibSuchspecialEinstellungMapping($oSuchspecialEinstellung_arr)
+function gibSuchspecialEinstellungMapping(array $oSuchspecialEinstellung_arr)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $oEinstellungen_arr = [];
-    if (is_array($oSuchspecialEinstellung_arr) && count($oSuchspecialEinstellung_arr) > 0) {
-        foreach ($oSuchspecialEinstellung_arr as $key => $oSuchspecialEinstellung) {
-            switch ($key) {
-                case 'suchspecials_sortierung_bestseller':
-                    $oEinstellungen_arr[SEARCHSPECIALS_BESTSELLER] = $oSuchspecialEinstellung;
-                    break;
-                case 'suchspecials_sortierung_sonderangebote':
-                    $oEinstellungen_arr[SEARCHSPECIALS_SPECIALOFFERS] = $oSuchspecialEinstellung;
-                    break;
-                case 'suchspecials_sortierung_neuimsortiment':
-                    $oEinstellungen_arr[SEARCHSPECIALS_NEWPRODUCTS] = $oSuchspecialEinstellung;
-                    break;
-                case 'suchspecials_sortierung_topangebote':
-                    $oEinstellungen_arr[SEARCHSPECIALS_TOPOFFERS] = $oSuchspecialEinstellung;
-                    break;
-                case 'suchspecials_sortierung_inkuerzeverfuegbar':
-                    $oEinstellungen_arr[SEARCHSPECIALS_UPCOMINGPRODUCTS] = $oSuchspecialEinstellung;
-                    break;
-                case 'suchspecials_sortierung_topbewertet':
-                    $oEinstellungen_arr[SEARCHSPECIALS_TOPREVIEWS] = $oSuchspecialEinstellung;
-                    break;
-            }
+    foreach ($oSuchspecialEinstellung_arr as $key => $oSuchspecialEinstellung) {
+        switch ($key) {
+            case 'suchspecials_sortierung_bestseller':
+                $oEinstellungen_arr[SEARCHSPECIALS_BESTSELLER] = $oSuchspecialEinstellung;
+                break;
+            case 'suchspecials_sortierung_sonderangebote':
+                $oEinstellungen_arr[SEARCHSPECIALS_SPECIALOFFERS] = $oSuchspecialEinstellung;
+                break;
+            case 'suchspecials_sortierung_neuimsortiment':
+                $oEinstellungen_arr[SEARCHSPECIALS_NEWPRODUCTS] = $oSuchspecialEinstellung;
+                break;
+            case 'suchspecials_sortierung_topangebote':
+                $oEinstellungen_arr[SEARCHSPECIALS_TOPOFFERS] = $oSuchspecialEinstellung;
+                break;
+            case 'suchspecials_sortierung_inkuerzeverfuegbar':
+                $oEinstellungen_arr[SEARCHSPECIALS_UPCOMINGPRODUCTS] = $oSuchspecialEinstellung;
+                break;
+            case 'suchspecials_sortierung_topbewertet':
+                $oEinstellungen_arr[SEARCHSPECIALS_TOPREVIEWS] = $oSuchspecialEinstellung;
+                break;
         }
     }
 
@@ -6142,14 +6142,15 @@ function baueUnterkategorieListeHTML($AktuelleKategorie)
 function formatSize($size)
 {
     $units = ['b', 'Kb', 'Mb', 'Gb', 'Tb', 'Pb', 'Eb', 'Zb', 'Yb'];
+    $res   = '';
     foreach ($units as $n => $unit) {
-        $div = pow(1024, $n);
+        $div = 1024 ** 2;
         if ($size > $div) {
             $res = sprintf('%s %s', number_format($size / $div, 2), $unit);
         }
     }
 
-    return isset($res) ? $res : '';
+    return $res;
 }
 
 /**
@@ -6172,7 +6173,7 @@ function dateAddWeekday($date, $weekdays)
             $resDate = new DateTime();
         }
     } catch (Exception $e) {
-        Jtllog::writeLog($e->getMessage(), JTLLOG_LEVEL_ERROR);
+        Jtllog::writeLog($e->getMessage());
         $resDate = new DateTime();
     }
 

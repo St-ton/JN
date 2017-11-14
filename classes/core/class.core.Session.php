@@ -571,6 +571,22 @@ class Session
     }
 
     /**
+     * @return Wunschliste
+     */
+    public function WishList()
+    {
+        return $_SESSION['Wunschliste'];
+    }
+
+    /**
+     * @return Vergleichsliste
+     */
+    public function CompareList()
+    {
+        return $_SESSION['Vergleichsliste'];
+    }
+
+    /**
      * @return array
      * @deprecated since 4.00
      */

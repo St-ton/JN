@@ -8,6 +8,12 @@
         <div class="row">
             <div class="col-sm-6">
                 <div class="form-group">
+                    <label for="slider-id">Slider ID</label>
+                    <input type="text" id="slider-id" name="slider-id" class="form-control" value="{$properties['slider-id']}">
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="form-group">
                     <label for="slider-theme">Theme</label>
                     <select class="form-control" id="slider-theme" name="slider-theme">
                         <option value="default"{if $properties['slider-theme'] === 'default'} selected{/if}>Default</option>
@@ -33,7 +39,7 @@
             <div class="col-sm-6">
                 <div class="form-group">
                     <label for="slider-class">Class name</label>
-                    <input type="text" id="slider-class" name="slider-class" class="form-control" value="{$properties['slider-class']}">
+                    <input type="text" id="slider-class" name="attr[class]" class="form-control" value="{$properties.attr['class']}">
                 </div>
             </div>
         </div>
@@ -261,26 +267,26 @@
             <tr class="text-vcenter" id="{$kSlide}">
                 <td class="tcenter">
                     <input id="{$kSlide}-url" type="hidden" name="slides[{$kSlide}][url]"
-                           value="{if isset($oSlide->cBild)}{$oSlide->cBild}{/if}"/>
+                           value=""/>
                     <input type="hidden" class="form-control" id="slides[{$kSlide}][nSort]"
                            name="slides[{$kSlide}][nSort]" value="{if $kSlide}{$smarty.foreach.slide.iteration}{/if}"
                            autocomplete="off"/>
                     <i class="btn btn-primary fa fa-bars"></i>
                 </td>
                 <td class="tcenter"><img
-                            src="{if isset($oSlide->cBildAbsolut)}{$oSlide->cBildAbsolut}{else}templates/bootstrap/gfx/layout/upload.png{/if}"
+                            src="templates/bootstrap/gfx/layout/upload.png"
                             id="{$kSlide}-img" onclick="jleHost.onOpenKCFinder(kcfinderCallback.bind(this, '{$kSlide}'));"
                             alt="Slidergrafik" class="img-responsive" role="button"/></td>
                 <td class="tcenter">
-                    <input class="form-control margin2" id="cTitel{$kSlide}" type="text"
-                           name="slides[{$kSlide}][cTitel]" value="{if isset($oSlide->cTitel)}{$oSlide->cTitel}{/if}"
+                    <input class="form-control margin2" id="cTitle{$kSlide}" type="text"
+                           name="slides[{$kSlide}][cTitle]" value=""
                            placeholder="Titel"/>
                     <input class="form-control margin2" id="cLink{$kSlide}" type="text" name="slides[{$kSlide}][cLink]"
-                           value="{if isset($oSlide->cLink)}{$oSlide->cLink}{/if}" placeholder="Link"/>
+                           value="" placeholder="Link"/>
                 </td>
                 <td><textarea class="form-control vheight" id="cText{$kSlide}" name="slides[{$kSlide}][cText]"
                               maxlength="255"
-                              placeholder="Text">{if isset($oSlide->cText)}{$oSlide->cText}{/if}</textarea></td>
+                              placeholder="Text"></textarea></td>
                 <td class="vcenter">
                     <button type="button" onclick="$(this).parent().parent().remove();sortSlide();"
                             class="slide_delete btn btn-danger btn-block fa fa-trash" title="L&ouml;schen"></button>
@@ -305,7 +311,38 @@
                             </tr>
                             </thead>
                             <tbody>
-                               {*slides werden hier hinzugefügt*}
+                               {foreach from=$properties['slides'] item=slide}
+                                   {if !empty($slide['url'])}
+                                       <tr class="text-vcenter" id="slide{$slide.nSort}">
+                                           <td class="tcenter">
+                                               <input id="slide{$slide.nSort}-url" type="hidden" name="slides[slide{$slide.nSort}][url]"
+                                                      value="{if isset($slide['url'])}{$slide['url']}{/if}"/>
+                                               <input type="hidden" class="form-control" id="slides[slide{$slide.nSort}][nSort]"
+                                                      name="slides[slide{$slide.nSort}][nSort]" value="{$slide.nSort}"
+                                                      autocomplete="off"/>
+                                               <i class="btn btn-primary fa fa-bars"></i>
+                                           </td>
+                                           <td class="tcenter"><img
+                                                       src="{if isset($slide['url'])}{$slide['url']}{else}templates/bootstrap/gfx/layout/upload.png{/if}"
+                                                       id="slide{$slide.nSort}-img" onclick="jleHost.onOpenKCFinder(kcfinderCallback.bind(this, '{$slide.nSort}'));"
+                                                       alt="Slidergrafik" class="img-responsive" role="button"/></td>
+                                           <td class="tcenter">
+                                               <input class="form-control margin2" id="title{$slide.nSort}" type="text"
+                                                      name="slides[slide{$slide.nSort}][cTitle]" value="{if isset($slide['cTitle'])}{$slide['cTitle']}{/if}"
+                                                      placeholder="Title"/>
+                                               <input class="form-control margin2" id="cLink{$slide.nSort}" type="text" name="slides[slide{$slide.nSort}][cLink]"
+                                                      value="{if isset($slide['cLink'])}{$slide['cLink']}{/if}" placeholder="Link"/>
+                                           </td>
+                                           <td><textarea class="form-control vheight" id="cText{$slide.nSort}" name="slides[slide{$slide.nSort}][cText]"
+                                                         maxlength="255"
+                                                         placeholder="Text">{if isset($slide.cText)}{$slide.cText}{/if}</textarea></td>
+                                           <td class="vcenter">
+                                               <button type="button" onclick="$(this).parent().parent().remove();sortSlide();"
+                                                       class="slide_delete btn btn-danger btn-block fa fa-trash" title="L&ouml;schen"></button>
+                                           </td>
+                                       </tr>
+                                   {/if}
+                               {/foreach}
                             </tbody>
                         </table>
                     </div>
@@ -324,7 +361,7 @@
                 $('#'+id+'-img').attr('src', url);
             }
 
-            var count = 0;
+            var count = {if isset($properties.slides)}{$properties.slides|@count}{else}0{/if};
             function addSlide(slide) {
                 var new_slide = $('#newSlide').html();
                 new_slide = new_slide.replace(/NEU/g, "slide"+count);
@@ -335,7 +372,6 @@
 
             function sortSlide() {
                 $("input[name*='\[nSort\]']").each(function(index) {
-                    console.log(index);
                     $(this).val(index+1);
                 });
             }

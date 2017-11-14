@@ -19,7 +19,7 @@
             <div class="col-sm-6">
                 <div class="form-group">
                     <label for="config-heading-class">Class</label>
-                    <input name="class" value="{$properties.class}" class="form-control" id="config-heading-class">
+                    <input name="attr[class]" value="{$properties.attr['class']}" class="form-control" id="config-heading-class">
                 </div>
             </div>
         </div>

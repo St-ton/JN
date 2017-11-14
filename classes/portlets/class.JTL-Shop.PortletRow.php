@@ -13,33 +13,9 @@ class PortletRow extends CMSPortlet
     {
         $layout = $this->properties['layout'];
         $layout = explode(',', $layout);
-        $class = StringHandler::filterXSS($this->properties['class']);
-        // animation
-        $animationStyle     = $this->properties['animation-style'];
-        $animationDuration  = $this->properties['animation-duration'];
-        $animationDelay     = $this->properties['animation-delay'];
-        $animationOffset    = $this->properties['animation-offset'];
-        $animationIteration = $this->properties['animation-iteration'];
-        // style
-        // $this->properties['style']
 
-        if (!empty($animationStyle)){
-            $class .= ' wow '.$animationStyle;
-            if (!empty($animationDuration) && trim($animationDuration) != ''){
-                $this->properties['attr']['data-wow-duration'] = $animationDuration;
-            }
-            if (!empty($animationDelay) && trim($animationDelay) != ''){
-                $this->properties['attr']['data-wow-delay'] = $animationDelay;
-            }
-            if (!empty($animationOffset) && trim($animationOffset) != ''){
-                $this->properties['attr']['data-wow-offset'] = $animationOffset;
-            }
-            if (!empty($animationIteration) && trim($animationIteration) != ''){
-                $this->properties['attr']['data-wow-iteration'] = $animationIteration;
-            }
-        }
-
-        $res = '<div class="row ' . $class . '"' . $this->getAttribString() . $this->getStyleString() . '>';
+        $this->properties['attr']['class'] .= " row";
+        $res = '<div' . $this->getAttribString() . $this->getStyleString() . '>';
 
         foreach ($layout as $i => $col) {
             $res .= '<div class="col-xs-' . $col . ' jle-subarea"></div>';
@@ -54,33 +30,9 @@ class PortletRow extends CMSPortlet
     {
         $layout = $this->properties['layout'];
         $layout = explode(',', $layout);
-        $class = StringHandler::filterXSS($this->properties['class']);
-        // animation
-        $animationStyle     = $this->properties['animation-style'];
-        $animationDuration  = $this->properties['animation-duration'];
-        $animationDelay     = $this->properties['animation-delay'];
-        $animationOffset    = $this->properties['animation-offset'];
-        $animationIteration = $this->properties['animation-iteration'];
-        // style
-        // $this->properties['style']
 
-        if (!empty($animationStyle)){
-            $class .= ' wow '.$animationStyle;
-            if (!empty($animationDuration) && trim($animationDuration) != ''){
-                $this->properties['attr']['data-wow-duration'] = $animationDuration;
-            }
-            if (!empty($animationDelay) && trim($animationDelay) != ''){
-                $this->properties['attr']['data-wow-delay'] = $animationDelay;
-            }
-            if (!empty($animationOffset) && trim($animationOffset) != ''){
-                $this->properties['attr']['data-wow-offset'] = $animationOffset;
-            }
-            if (!empty($animationIteration) && trim($animationIteration) != ''){
-                $this->properties['attr']['data-wow-iteration'] = $animationIteration;
-            }
-        }
-
-        $res = '<div class="row ' . $class . '"' . $this->getAttribString() . $this->getStyleString() . '>';
+        $this->properties['attr']['class'] .= " row";
+        $res = '<div' . $this->getAttribString() . $this->getStyleString() . '>';
 
         foreach ($layout as $i => $col) {
             $subArea  = $this->subAreas[$i];
@@ -114,13 +66,16 @@ class PortletRow extends CMSPortlet
         return [
             // general
             'layout' => '6,6',
-            'class'  => '',
             // animation
             'animation-style'     => '',
-            'animation-duration'  => '',
-            'animation-delay'     => '',
-            'animation-offset'    => '',
-            'animation-iteration' => '',
+            // attributes
+            'attr' => [
+                'class'               => '',
+                'data-wow-duration'  => '',
+                'data-wow-delay'     => '',
+                'data-wow-offset'    => '',
+                'data-wow-iteration' => '',
+            ],
             // style
             'style' => [
                 'margin-top'          => '',

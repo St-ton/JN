@@ -22,7 +22,6 @@ class PortletButton extends CMSPortlet
         $size          = $this->properties['button-size'];
         $alignment     = $this->properties['button-alignment'];
         $fullWidthflag = $this->properties['button-full-width-flag'];
-        $class         = $this->properties['button-class'];
         // icon
         $iconFlag      = $this->properties['icon-flag'];
         $icon          = $this->properties['icon'];
@@ -32,26 +31,26 @@ class PortletButton extends CMSPortlet
         $linkUrl        = $this->properties['link-url'];
         $linkTitle      = $this->properties['link-title'];
         $linkNewTabFlag = $this->properties['link-new-tab-flag'];
-        // animation
-        $animationStyle     = $this->properties['animation-style'];
-        $animationDuration  = $this->properties['animation-duration'];
-        $animationDelay     = $this->properties['animation-delay'];
-        $animationOffset    = $this->properties['animation-offset'];
-        $animationIteration = $this->properties['animation-iteration'];
-        // style
-        // $this->properties['style']
 
-        $previewButton  = "<a class='btn btn-$type btn-$size";
-        $previewButton .= !empty($class) ? " $class" : "";
-        $previewButton .= ($fullWidthflag == 'yes') ? " btn-block" : "";
-        $previewButton .= "'";
+        $this->properties['attr']['class']  .= " btn btn-$type btn-$size";
+        $this->properties['attr']['class']  .= ($fullWidthflag == 'yes') ? " btn-block" : "";
 
+        $previewButton = "<a ";
         if ($renderLinks && $linkFlag == 'yes' && !empty($linkUrl)) {
             $previewButton .= " href='$linkUrl' title='$linkTitle'";
             $previewButton .= !empty($linkNewTabFlag) ? " target='_blank'" : "";
         }
 
-        $previewButton .= $this->getStyleString() . ">";
+        $wrapperClass = '';
+        if (!empty($alignment)) {
+            if ($alignment != 'inline') {
+                $wrapperClass .= ' text-' . $alignment;
+            } else {
+                $wrapperClass = 'inline-block';
+            }
+        }
+
+        $previewButton .= $this->getStyleString() . $this->getAttribString() . ">";
         if ($iconFlag == 'yes' && $icon != '') {
             if ($iconAlignment == 'left') {
                 $previewButton .= "<i class='$icon' style='top:2px'></i> $text</a>";
@@ -61,37 +60,8 @@ class PortletButton extends CMSPortlet
         } else {
             $previewButton .= "$text</a>";
         }
-        /*return $previewButton;*/
 
-        if (!empty($alignment)) {
-            if ($alignment != 'inline') {
-                $this->properties['attr']['class'] = ((!empty($class)) ? $class : '') . ' text-' . $alignment;
-            } else {
-                $this->properties['style']['display'] = 'inline-block';
-            }
-        }
-
-        $this->properties['attr']['class'] = (!empty($this->properties['attr']['class'])) ? $this->properties['attr']['class'] : '';
-        if (!empty($animationStyle)){
-            $this->properties['attr']['class'] .= ' wow '.$animationStyle;
-            if (!empty($animationDuration) && trim($animationDuration) != ''){
-                $this->properties['attr']['data-wow-duration'] = $animationDuration;
-            }
-            if (!empty($animationDelay) && trim($animationDelay) != ''){
-                $this->properties['attr']['data-wow-delay'] = $animationDelay;
-            }
-            if (!empty($animationOffset) && trim($animationOffset) != ''){
-                $this->properties['attr']['data-wow-offset'] = $animationOffset;
-            }
-            if (!empty($animationIteration) && trim($animationIteration) != ''){
-                $this->properties['attr']['data-wow-iteration'] = $animationIteration;
-            }
-        }
-
-        $content  = '';
-        $content .= "<div".$this->getAttribString()."> \n";
-        $content .= $previewButton."\n";
-        $content .= "</div> \n";
+        $content = "<div class='" . $wrapperClass . "'>" . $previewButton . "</div>";
 
         return $content;
     }
@@ -116,7 +86,6 @@ class PortletButton extends CMSPortlet
             'button-size'                => 'md',
             'button-alignment'           => 'inline',
             'button-full-width-flag'     => 'no',
-            'button-class'               => '',
             // icon
             'icon-flag'           => 'no',
             'icon'                => '',
@@ -128,10 +97,14 @@ class PortletButton extends CMSPortlet
             'link-new-tab-flag'   => 'no',
             // animation
             'animation-style'     => '',
-            'animation-duration'  => '',
-            'animation-delay'     => '',
-            'animation-offset'    => '',
-            'animation-iteration' => '',
+            // attributes
+            'attr' => [
+                'class'               => '',
+                'data-wow-duration'  => '',
+                'data-wow-delay'     => '',
+                'data-wow-offset'    => '',
+                'data-wow-iteration' => '',
+            ],
             // style
             'style' => [
                 'margin-top'          => '',

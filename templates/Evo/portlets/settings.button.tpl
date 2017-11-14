@@ -67,7 +67,7 @@
 
         <div class="form-group">
             <label for="class">Class name</label>
-            <input type="text"  id="button-class" name="button-class" class="form-control" value="{$properties['button-class']}">
+            <input type="text"  id="button-class" name="attr[class]" class="form-control" value="{$properties.attr['class']}">
         </div>
     </div>
     {include file='./settings.tabcontent.icon.tpl'}

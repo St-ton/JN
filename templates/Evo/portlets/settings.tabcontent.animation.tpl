@@ -81,8 +81,8 @@
         </div>
         <div class="col-sm-6">
             <div class="form-group">
-                <label for="animation-duration">Duration</label>
-                <input type="text" class="form-control" id="animation-duration" name="animation-duration" value="{$properties['animation-duration']}">
+                <label for="data-wow-duration">Duration</label>
+                <input type="text" class="form-control" id="data-wow-duration" name="attr[data-wow-duration]" value="{$properties.attr['data-wow-duration']}">
                 <span class="help-block">Change the animation duration.</span>
             </div>
         </div>
@@ -90,15 +90,15 @@
     <div class="row">
         <div class="col-sm-6">
             <div class="form-group">
-                <label for="animation-delay">Delay</label>
-                <input type="text" class="form-control" id="animation-delay" name="animation-delay" value="{$properties['animation-delay']}">
+                <label for="data-wow-delay">Delay</label>
+                <input type="text" class="form-control" id="data-wow-delay" name="attr[data-wow-delay]" value="{$properties.attr['data-wow-delay']}">
                 <span class="help-block">Delay before the animation starts.</span>
             </div>
         </div>
         <div class="col-sm-6">
             <div class="form-group">
-                <label for="animation-offset">Offset</label>
-                <input type="text" class="form-control" id="animation-offset" name="animation-offset" value="{$properties['animation-offset']}">
+                <label for="data-wow-offset">Offset</label>
+                <input type="text" class="form-control" id="data-wow-offset" name="attr[data-wow-offset]" value="{$properties.attr['data-wow-offset']}">
                 <span class="help-block">Distance to start the animation.</span>
             </div>
         </div>
@@ -106,8 +106,8 @@
     <div class="row">
         <div class="col-sm-6">
             <div class="form-group">
-                <label for="animation-iteration">Iteration</label>
-                <input type="text" class="form-control" id="animation-iteration" name="animation-iteration" value="{$properties['animation-iteration']}">
+                <label for="data-wow-iteration">Iteration</label>
+                <input type="text" class="form-control" id="data-wow-iteration" name="attr[data-wow-iteration]" value="{$properties.attr['data-wow-iteration']}">
                 <span class="help-block">The animation number times is repeated.</span>
             </div>
         </div>

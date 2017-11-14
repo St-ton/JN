@@ -11,52 +11,17 @@ class PortletImageSlider extends CMSPortlet
 {
     public function getPreviewHtml($renderLinks = false)
     {
-        // general
-        $theme = $this->properties['slider-theme'];
-        $animationSpeed = $this->properties['slider-animation-speed'];
-        $animationPause = $this->properties['slider-animation-pause'];
-        $class = StringHandler::filterXSS($this->properties['slider-class']);
-        $start = $this->properties['slider-start'];
-        $pause = $this->properties['slider-pause'];
-        $navigation = $this->properties['slider-navigation'];
-        $thumbNavigation = $this->properties['slider-thumb-navigation'];
-        $directionNavigation = $this->properties['slider-direction-navigation'];
-        $kenburns = $this->properties['slider-kenburns'];
-        $effectsRandom = $this->properties['slider-effects-random'];
-        $effectsSliceDown = $this->properties['slider-effects-sliceDown'];
-        $effectsSliceDownLeft = $this->properties['slider-effects-sliceDownLeft'];
-        $effectsSliceUp = $this->properties['slider-effects-sliceUp'];
-        $effectsSliceUpLeft = $this->properties['slider-effects-sliceUpLeft'];
-        $effectsSliceUpDown = $this->properties['slider-effects-sliceUpDown'];
-        $effectsSliceUpDownLeft = $this->properties['slider-effects-sliceUpDownLeft'];
-        $effectsFold = $this->properties['slider-effects-fold'];
-        $effectsFade = $this->properties['slider-effects-fade'];
-        $effectsSlideInRight = $this->properties['slider-effects-slideInRight'];
-        $effectsSlideInLeft = $this->properties['slider-effects-slideInLeft'];
-        $effectsBoxRandom = $this->properties['slider-effects-boxRandom'];
-        $effectsBoxRain = $this->properties['slider-effects-boxRain'];
-        $effectsBoxRainReverse = $this->properties['slider-effects-boxRainReverse'];
-        $effectsBoxRainGrow = $this->properties['slider-effects-boxRainGrow'];
-        $effectsBoxRainGrowReverse = $this->properties['slider-effects-boxRainGrowReverse'];
-
-        // style
-        // $this->properties['style']
-
-        if (!empty($animationStyle)){
-            $class .= ' wow '.$animationStyle;
-            if (!empty($animationDuration) && trim($animationDuration) != ''){
-                $this->properties['attr']['data-wow-duration'] = $animationDuration;
-            }
-            if (!empty($animationDelay) && trim($animationDelay) != ''){
-                $this->properties['attr']['data-wow-delay'] = $animationDelay;
-            }
-            if (!empty($animationOffset) && trim($animationOffset) != ''){
-                $this->properties['attr']['data-wow-offset'] = $animationOffset;
-            }
-            if (!empty($animationIteration) && trim($animationIteration) != ''){
-                $this->properties['attr']['data-wow-iteration'] = $animationIteration;
-            }
+        if (!empty($this->properties['slides'])) {
+            usort($this->properties['slides'], function($a,$b) {
+                return $a['nSort']>$b['nSort'];
+            });
         }
+
+        return (new JTLSmarty(true))
+            ->assign('properties', $this->properties)
+            ->assign('noImageUrl', Shop::getURL() . "/gfx/keinBild.gif")
+            ->fetch('portlets/final.imageslider.tpl');
+
 
         $content = "<img class=\"img-responsive\" src=\"".Shop::getURL() . "/gfx/keinBild.gif\" >";
 
@@ -65,7 +30,16 @@ class PortletImageSlider extends CMSPortlet
 
     public function getFinalHtml()
     {
-        return $this->getPreviewHtml();
+        if (!empty($this->properties['slides'])) {
+            usort($this->properties['slides'], function($a,$b) {
+                return $a['nSort']>$b['nSort'];
+            });
+        }
+
+        return Shop::Smarty()
+            ->assign('properties', $this->properties)
+            ->assign('noImageUrl', Shop::getURL() . "/gfx/keinBild.gif")
+            ->fetch('portlets/final.imageslider.tpl');
     }
 
     public function getConfigPanelHtml()
@@ -79,10 +53,10 @@ class PortletImageSlider extends CMSPortlet
     {
         return [
             // general
+            'slider-id' => '',
             'slider-theme' => 'default',
             'slider-animation-speed' => '',
             'slider-animation-pause' => '',
-            'slider-class' => '',
             'slider-start' => 'no',
             'slider-pause' => 'no',
             'slider-navigation' => 'no',
@@ -105,6 +79,11 @@ class PortletImageSlider extends CMSPortlet
             'slider-effects-boxRainReverse' => '',
             'slider-effects-boxRainGrow' => '',
             'slider-effects-boxRainGrowReverse' => '',
+            'slides' => [],
+            // attributes
+            'attr' => [
+                'class'               => '',
+            ],
             // style
             'style' => [
                 'margin-top'          => '',

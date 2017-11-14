@@ -122,26 +122,9 @@ abstract class CMSPortlet
     {
         // animation
         $animationStyle     = $this->properties['animation-style'];
-        $animationDuration  = $this->properties['animation-duration'];
-        $animationDelay     = $this->properties['animation-delay'];
-        $animationOffset    = $this->properties['animation-offset'];
-        $animationIteration = $this->properties['animation-iteration'];
 
         if (!empty($animationStyle)){
             $this->properties['attr']['class'] .= ' wow ' . $animationStyle;
-
-            if (!empty($animationDuration) && trim($animationDuration) != ''){
-                $this->properties['attr']['data-wow-duration'] = $animationDuration;
-            }
-            if (!empty($animationDelay) && trim($animationDelay) != ''){
-                $this->properties['attr']['data-wow-delay'] = $animationDelay;
-            }
-            if (!empty($animationOffset) && trim($animationOffset) != ''){
-                $this->properties['attr']['data-wow-offset'] = $animationOffset;
-            }
-            if (!empty($animationIteration) && trim($animationIteration) != ''){
-                $this->properties['attr']['data-wow-iteration'] = $animationIteration;
-            }
         }
 
         $attr_str = '';
@@ -161,7 +144,7 @@ abstract class CMSPortlet
         $style_str = '';
         if (!empty($this->properties['style']) && is_array($this->properties['style'])) {
             foreach ($this->properties['style'] as $name => $value) {
-                if (trim($value) != '') {
+                if (trim($value) !== '') {
                     if (stripos($name, 'margin-') !== false || stripos($name, 'padding-') !== false || stripos($name,
                             '-width') !== false) {
                         $style_str .= $name . ':' . htmlspecialchars($value, ENT_QUOTES) . 'px;';

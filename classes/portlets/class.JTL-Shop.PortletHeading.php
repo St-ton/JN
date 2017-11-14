@@ -38,13 +38,13 @@ class PortletHeading extends CMSPortlet
             'text'  => 'Heading Title',
              // animation
             'animation-style'     => '',
-            'animation-duration'  => '',
-            'animation-delay'     => '',
-            'animation-offset'    => '',
-            'animation-iteration' => '',
             // attributes
             'attr' => [
-                'class' => '',
+                'class'              => '',
+                'data-wow-duration'  => '',
+                'data-wow-delay'     => '',
+                'data-wow-offset'    => '',
+                'data-wow-iteration' => '',
             ],
             // style
             'style' => [

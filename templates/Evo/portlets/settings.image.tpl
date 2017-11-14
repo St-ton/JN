@@ -8,10 +8,10 @@
     <div id="general" class="tab-pane fade active in" role="general" aria-labelledby="general-tab">
         <div class="form-group">
             <label for="image-btn-img">Bild</label>
-            <input type="hidden" id="img-url" name="url" value="{$properties.url}">
+            <input type="hidden" id="img-url" name="attr[src]" value="{$properties.attr['src']}">
             <button type="button" class="btn btn-default jle-image-btn" onclick="jleHost.onOpenKCFinder(kcfinderCallback);">
-                {if isset($properties.url)}
-                    <img src="{$properties.url}" id="image-btn-img" alt="einzufügendes Bild">
+                {if isset($properties.attr['src'])}
+                    <img src="{$properties.attr['src']}" id="image-btn-img" alt="einzufügendes Bild">
                 {else}
                     Bild auswählen
                 {/if}
@@ -21,13 +21,13 @@
             <div class="col-sm-6">
                 <div class="form-group">
                     <label for="config-image-alt">Alternativtext</label>
-                    <input name="alt" value="{$properties.alt}" class="form-control" id="config-img-alt">
+                    <input name="attr[alt]" value="{$properties.attr['alt']}" class="form-control" id="config-img-alt">
                 </div>
             </div>
             <div class="col-sm-6">
                 <div class="form-group">
                     <label for="config-image-title">Bildtitel</label>
-                    <input name="title" value="{$properties.title}" class="form-control" id="config-img-title">
+                    <input name="attr[title]" value="{$properties.attr['title']}" class="form-control" id="config-img-title">
                 </div>
             </div>
         </div>
@@ -46,7 +46,7 @@
             <div class="col-sm-6">
                 <div class="form-group">
                     <label for="class">Class name</label>
-                    <input type="text"  id="class" name="class" class="form-control" value="{$properties.class}">
+                    <input type="text"  id="class" name="attr[class]" class="form-control" value="{$properties.attr['class']}">
                 </div>
             </div>
         </div>

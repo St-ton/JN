@@ -114,7 +114,7 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
     if ($kKundenfeld > 0) {
         $oKundenfeld = Shop::DB()->select('tkundenfeld', 'kKundenfeld', $kKundenfeld);
         if (isset($oKundenfeld->kKundenfeld) && $oKundenfeld->kKundenfeld > 0) {
-            $oKundenfeldWert_arr = Shop::DB()->selectAll('tkundenfeldwert', 'kKundenfeld', (int)$kKundenfeld);
+            $oKundenfeldWert_arr = Shop::DB()->selectAll('tkundenfeldwert', 'kKundenfeld', $kKundenfeld);
 
             $oKundenfeld->oKundenfeldWert_arr = $oKundenfeldWert_arr;
             $smarty->assign('oKundenfeld', $oKundenfeld);

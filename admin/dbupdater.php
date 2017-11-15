@@ -174,7 +174,7 @@ switch ($action) {
             $direction = isset($_GET['dir']) ? $_GET['dir'] : null;
 
             try {
-                $migration = new MigrationManager($version);
+                $migration = new MigrationManager();
 
                 if ($id !== null && in_array($direction, [IMigration::UP, IMigration::DOWN], true)) {
                     $migration->executeMigrationById($id, $direction);

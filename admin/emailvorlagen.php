@@ -686,13 +686,12 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage']) && (int)$_POST['Aendern'] 
             ? $_POST['cContentText_' . $Sprache->kSprache]
             : null;
 
+        $Emailvorlagesprache->cPDFS = '';
         if (count($cPDFS_arr) > 0) {
             $Emailvorlagesprache->cPDFS = ';' . implode(';', $cPDFS_arr) . ';';
         } elseif (isset($oEmailvorlageSprache_arr[$Sprache->kSprache]->cPDFS) &&
             strlen($oEmailvorlageSprache_arr[$Sprache->kSprache]->cPDFS) > 0) {
             $Emailvorlagesprache->cPDFS = $oEmailvorlageSprache_arr[$Sprache->kSprache]->cPDFS;
-        } else {
-            $Emailvorlagesprache->cPDFS = '';
         }
         if (count($cDateiname_arr) > 0) {
             $Emailvorlagesprache->cDateiname = ';' . implode(';', $cDateiname_arr) . ';';
@@ -840,7 +839,7 @@ if ((isset($_POST['kEmailvorlage']) && (int)$_POST['kEmailvorlage'] > 0 && $cont
         // PDF Name und Dateiname vorbereiten
         $cPDFS_arr      = [];
         $cDateiname_arr = [];
-        if (!empty($Emailvorlagesprache[$Sprache->kSprache]->cPDFS) > 0) {
+        if (!empty($Emailvorlagesprache[$Sprache->kSprache]->cPDFS)) {
             $cPDFSTMP_arr = bauePDFArray($Emailvorlagesprache[$Sprache->kSprache]->cPDFS);
             foreach ($cPDFSTMP_arr as $cPDFSTMP) {
                 $cPDFS_arr[] = $cPDFSTMP;

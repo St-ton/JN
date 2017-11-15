@@ -82,9 +82,11 @@ if (isset($_POST['eintragen']) && (int)$_POST['eintragen'] === 1 && validateToke
     }
 } elseif (isset($_POST['bearbeiten']) && (int)$_POST['bearbeiten'] === 1 && validateToken()) {
     // Verpackungen bearbeiten (aktualisieren / loeschen)
-    if (isset($_POST['loeschen']) && ($_POST['loeschen'] === 'Löschen' ||
-            utf8_decode($_POST['loeschen'] === 'Löschen') ||
-            $_POST['loeschen'] === utf8_decode('Löschen'))) {
+    if (isset($_POST['loeschen'])
+        && ($_POST['loeschen'] === 'Löschen'
+            || utf8_decode($_POST['loeschen']) === 'Löschen'
+            || $_POST['loeschen'] === utf8_decode('Löschen'))
+    ) {
         if (is_array($_POST['kVerpackung']) && count($_POST['kVerpackung']) > 0) {
             foreach ($_POST['kVerpackung'] as $kVerpackung) {
                 $kVerpackung = (int)$kVerpackung;

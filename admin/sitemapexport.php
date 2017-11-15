@@ -19,7 +19,7 @@ if (!is_writable(PFAD_ROOT . PFAD_EXPORT . 'sitemap_index.xml')) {
         ' kann nicht geschrieben werden. Bitte achten Sie darauf, ' .
         'dass diese Datei ausreichende Schreibrechte besitzt. ' .
         'Ansonsten kann keine Sitemap erstellt werden.';
-} elseif (isset($_REQUEST['update']) && $_REQUEST['update'] == '1') {
+} elseif (isset($_REQUEST['update']) && (int)$_REQUEST['update'] === 1) {
     $cHinweis = '<i>' . PFAD_ROOT . PFAD_EXPORT . 'sitemap_index.xml</i> wurde erfolgreich aktualisiert.';
 }
 // Tabs

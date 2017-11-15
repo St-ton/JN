@@ -31,14 +31,13 @@ if (($action = verifyGPDataString('a')) !== '' &&
     }
 }
 if (verifyGPCDataInteger('kZahlungsart') > 0 && $action !== 'logreset' && validateToken()) {
+    $step = 'einstellen';
     if ($action === 'payments') {
         // Zahlungseingaenge
         $step = 'payments';
     } elseif ($action === 'log') {
         // Log einsehen
         $step = 'log';
-    } else {
-        $step = 'einstellen';
     }
 }
 
@@ -300,7 +299,7 @@ if ($step === 'einstellen') {
                     ON ze.kBestellung = b.kBestellung
                 JOIN tkunde AS k
                     ON b.kKunde = k.kKunde
-            WHERE b.kZahlungsart = " . (int)$kZahlungsart . "
+            WHERE b.kZahlungsart = " . $kZahlungsart . "
                 " . ($oFilter->getWhereSQL() !== '' ? " AND " . $oFilter->getWhereSQL() : "") . "
             ORDER BY dZeit DESC",
         2);

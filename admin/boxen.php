@@ -125,7 +125,7 @@ if (isset($_REQUEST['action']) && validateToken()) {
                 $oBoxen->filterBoxVisibility((int)$kBox, $nPage, isset($_POST[$idx]) ? $_POST[$idx] : '');
             }
             // see jtlshop/jtl-shop/issues#544 && jtlshop/shop4#41
-            if ($ePosition !== 'left' || (int)$nPage > 0) {
+            if ($ePosition !== 'left' || $nPage > 0) {
                 $oBoxen->setzeBoxAnzeige($nPage, $ePosition, isset($_REQUEST['box_show']));
             }
             $cHinweis = 'Die Boxen wurden aktualisiert.';

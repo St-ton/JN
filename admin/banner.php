@@ -102,7 +102,7 @@ if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && 
 
         $ins = Shop::DB()->insert('textensionpoint', $oExtension);
         // saved?
-        if ($kImageMap && (int)$ins > 0) {
+        if ($kImageMap && $ins > 0) {
             $cAction  = 'view';
             $cHinweis = 'Banner wurde erfolgreich gespeichert.';
         } else {

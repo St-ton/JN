@@ -34,7 +34,7 @@ if (isset($_POST['del']) && (int)$_POST['del'] > 0 && validateToken() && Versand
     $cHinweis .= 'Versandart erfolgreich gel&ouml;scht!';
     Shop::Cache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
 }
-if (isset($_POST['edit']) && intval($_POST['edit']) > 0 && validateToken()) {
+if (isset($_POST['edit']) && (int)$_POST['edit'] > 0 && validateToken()) {
     $step                        = 'neue Versandart';
     $Versandart                  = Shop::DB()->select('tversandart', 'kVersandart', (int)$_POST['edit']);
     $VersandartZahlungsarten     = Shop::DB()->selectAll('tversandartzahlungsart', 'kVersandart', (int)$_POST['edit'], '*', 'kZahlungsart');

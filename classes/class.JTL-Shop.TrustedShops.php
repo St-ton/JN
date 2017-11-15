@@ -828,7 +828,7 @@ class TrustedShops
             $this->nAktiv        = 0;
             $oZertifikat->nAktiv = 0;
 
-            if ($nReturnValue == 1) {
+            if ($nReturnValue === 1) {
                 if ($this->eType === TS_BUYERPROT_CLASSIC) {
                     $this->nAktiv        = 0;
                     $oZertifikat->nAktiv = 0;
@@ -858,28 +858,28 @@ class TrustedShops
                     $this->holeKaeuferschutzProdukte($kTrustedShopsZertifikat);
                 }
 
-                if ($nReturnValue == 2) {
+                if ($nReturnValue === 2) {
                     return 2;
                 } // Das Zertifikat existiert nich
-                if ($nReturnValue == 3) {
+                if ($nReturnValue === 3) {
                     return 3;
                 } // Das Zertifikat ist abgelaufen
-                if ($nReturnValue == 4) {
+                if ($nReturnValue === 4) {
                     return 4;
                 } // Das Zertifikat ist gesperrt
-                if ($nReturnValue == 5) {
+                if ($nReturnValue === 5) {
                     return 5;
                 } // Shop befindet sich in der Zertifizierung
-                if ($nReturnValue == 6) {
+                if ($nReturnValue === 6) {
                     return 6;
                 } // Keine Excellence-Variante mit Käuferschutz im Checkout-Prozess
-                if ($nReturnValue == 7) {
+                if ($nReturnValue === 7) {
                     return 7;
                 } // Falsche Sprache
-                if ($nReturnValue == 10) {
+                if ($nReturnValue === 10) {
                     return 10;
                 } // Falsche Variante
-                if ($nReturnValue == 11) {
+                if ($nReturnValue === 11) {
                     return 11;
                 } // SOAP Fehler
 

@@ -1659,7 +1659,7 @@ function checkeSpracheWaehrung($lang = '')
             }
         }
         // Suchspecialoverlays
-        $GLOBALS['oSuchspecialoverlay_arr'] = holeAlleSuchspecialOverlays(Shop::getLanguageID());
+        holeAlleSuchspecialOverlays(Shop::getLanguageID());
         if (!$bSpracheDa) { //lang mitgegeben, aber nicht mehr in db vorhanden -> alter Sprachlink
             $kArtikel              = verifyGPCDataInteger('a');
             $kKategorie            = verifyGPCDataInteger('k');
@@ -3419,56 +3419,53 @@ function holeAlleSuchspecialOverlays($kSprache = 0)
     $kSprache = (int)$kSprache;
     $cacheID  = 'haso_' . $kSprache;
     if (($overlays = Shop::Cache()->get($cacheID)) === false) {
-        global $overlays;
-        if ($overlays === null || count($overlays) === 0) {
-            $ssoList = Shop::DB()->query(
-                "SELECT tsuchspecialoverlay.*, tsuchspecialoverlaysprache.kSprache, 
-                    tsuchspecialoverlaysprache.cBildPfad, tsuchspecialoverlaysprache.nAktiv,
-                    tsuchspecialoverlaysprache.nPrio, tsuchspecialoverlaysprache.nMargin, 
-                    tsuchspecialoverlaysprache.nTransparenz,
-                    tsuchspecialoverlaysprache.nGroesse, tsuchspecialoverlaysprache.nPosition
-                    FROM tsuchspecialoverlay
-                    JOIN tsuchspecialoverlaysprache 
-                        ON tsuchspecialoverlaysprache.kSuchspecialOverlay = tsuchspecialoverlay.kSuchspecialOverlay
-                        AND tsuchspecialoverlaysprache.kSprache = " . $kSprache . "
-                    WHERE tsuchspecialoverlaysprache.nAktiv = 1
-                        AND tsuchspecialoverlaysprache.nPrio > 0
-                    ORDER BY tsuchspecialoverlaysprache.nPrio DESC", 2
+        $ssoList = Shop::DB()->query(
+            "SELECT tsuchspecialoverlay.*, tsuchspecialoverlaysprache.kSprache, 
+                tsuchspecialoverlaysprache.cBildPfad, tsuchspecialoverlaysprache.nAktiv,
+                tsuchspecialoverlaysprache.nPrio, tsuchspecialoverlaysprache.nMargin, 
+                tsuchspecialoverlaysprache.nTransparenz,
+                tsuchspecialoverlaysprache.nGroesse, tsuchspecialoverlaysprache.nPosition
+                FROM tsuchspecialoverlay
+                JOIN tsuchspecialoverlaysprache 
+                    ON tsuchspecialoverlaysprache.kSuchspecialOverlay = tsuchspecialoverlay.kSuchspecialOverlay
+                    AND tsuchspecialoverlaysprache.kSprache = " . $kSprache . "
+                WHERE tsuchspecialoverlaysprache.nAktiv = 1
+                    AND tsuchspecialoverlaysprache.nPrio > 0
+                ORDER BY tsuchspecialoverlaysprache.nPrio DESC", 2
+        );
+
+        $overlays = [];
+        foreach ($ssoList as $sso) {
+            $sso->kSuchspecialOverlay = (int)$sso->kSuchspecialOverlay;
+            $sso->nAktiv              = (int)$sso->nAktiv;
+            $sso->nPrio               = (int)$sso->nPrio;
+            $sso->nMargin             = (int)$sso->nMargin;
+            $sso->nTransparenz        = (int)$sso->nTransparenz;
+            $sso->nGroesse            = (int)$sso->nGroesse;
+            $sso->nPosition           = (int)$sso->nPosition;
+
+            $idx = strtolower(str_replace([' ', '-', '_'], '', $sso->cSuchspecial));
+            $idx = preg_replace(
+                ['/Ä/', '/Ö/', '/Ü/', '/ä/', '/ö/', '/ü/', '/ß/',
+                 utf8_decode('/Ä/'),
+                 utf8_decode('/Ö/'),
+                 utf8_decode('/Ü/'),
+                 utf8_decode('/ä/'),
+                 utf8_decode('/ö/'),
+                 utf8_decode('/ü/'),
+                 utf8_decode('/ß/')
+                ],
+                ['ae', 'oe', 'ue', 'ae', 'oe', 'ue', 'ss',
+                 'ae', 'oe', 'ue', 'ae', 'oe', 'ue', 'ss'
+                ],
+                $idx
             );
-
-            $overlays = [];
-            foreach ($ssoList as $sso) {
-                $sso->kSuchspecialOverlay = (int)$sso->kSuchspecialOverlay;
-                $sso->nAktiv              = (int)$sso->nAktiv;
-                $sso->nPrio               = (int)$sso->nPrio;
-                $sso->nMargin             = (int)$sso->nMargin;
-                $sso->nTransparenz        = (int)$sso->nTransparenz;
-                $sso->nGroesse            = (int)$sso->nGroesse;
-                $sso->nPosition           = (int)$sso->nPosition;
-
-                $idx = strtolower(str_replace([' ', '-', '_'], '', $sso->cSuchspecial));
-                $idx = preg_replace(
-                    ['/Ä/', '/Ö/', '/Ü/', '/ä/', '/ö/', '/ü/', '/ß/',
-                     utf8_decode('/Ä/'),
-                     utf8_decode('/Ö/'),
-                     utf8_decode('/Ü/'),
-                     utf8_decode('/ä/'),
-                     utf8_decode('/ö/'),
-                     utf8_decode('/ü/'),
-                     utf8_decode('/ß/')
-                    ],
-                    ['ae', 'oe', 'ue', 'ae', 'oe', 'ue', 'ss',
-                     'ae', 'oe', 'ue', 'ae', 'oe', 'ue', 'ss'
-                    ],
-                    $idx
-                );
-                $overlays[$idx]              = $sso;
-                $overlays[$idx]->cPfadKlein  = PFAD_SUCHSPECIALOVERLAY_KLEIN . $overlays[$idx]->cBildPfad;
-                $overlays[$idx]->cPfadNormal = PFAD_SUCHSPECIALOVERLAY_NORMAL . $overlays[$idx]->cBildPfad;
-                $overlays[$idx]->cPfadGross  = PFAD_SUCHSPECIALOVERLAY_GROSS . $overlays[$idx]->cBildPfad;
-            }
-            Shop::Cache()->set($cacheID, $overlays, [CACHING_GROUP_OPTION]);
+            $overlays[$idx]              = $sso;
+            $overlays[$idx]->cPfadKlein  = PFAD_SUCHSPECIALOVERLAY_KLEIN . $overlays[$idx]->cBildPfad;
+            $overlays[$idx]->cPfadNormal = PFAD_SUCHSPECIALOVERLAY_NORMAL . $overlays[$idx]->cBildPfad;
+            $overlays[$idx]->cPfadGross  = PFAD_SUCHSPECIALOVERLAY_GROSS . $overlays[$idx]->cBildPfad;
         }
+        Shop::Cache()->set($cacheID, $overlays, [CACHING_GROUP_OPTION]);
     }
 
     return $overlays;

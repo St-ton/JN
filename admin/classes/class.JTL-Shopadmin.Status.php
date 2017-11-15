@@ -178,8 +178,8 @@ class Status
     protected function hasMobileTemplateIssue()
     {
         $oTemplate = Shop::DB()->select('ttemplate', 'eTyp', 'standard');
-        if (isset($oTemplate->cTemplate)) {
-            $oTplData = TemplateHelper::getInstance(false)->getData($oTemplate->cTemplate);
+        if ($oTemplate !== null && isset($oTemplate->cTemplate)) {
+            $oTplData = TemplateHelper::getInstance()->getData($oTemplate->cTemplate);
             if ($oTplData->bResponsive) {
                 $oMobileTpl = Shop::DB()->select('ttemplate', 'eTyp', 'mobil');
                 if ($oMobileTpl !== null) {
@@ -258,11 +258,10 @@ class Status
         $lines = explode('  ', $stats);
 
         $lines = array_map(function ($v) {
-            @list($key, $value) = @explode(':', $v, 2);
+            list($key, $value) = explode(':', $v, 2);
 
             return ['key' => trim($key), 'value' => trim($value)];
         }, $lines);
-
         $lines = array_merge([['key' => 'Version', 'value' => $info]], $lines);
 
         return $lines;

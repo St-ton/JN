@@ -63,7 +63,7 @@ class FilterSelectField extends FilterField
         $cValue  = $this->oOption_arr[(int)$this->cValue]->getValue();
         $nTestOp = $this->oOption_arr[(int)$this->cValue]->getTestOp();
 
-        if ($cValue !== '' || $nTestOp == 4 || $nTestOp == 9) {
+        if ($cValue !== '' || $nTestOp === 4 || $nTestOp === 9) {
             switch ($nTestOp) {
                 case 1: return $this->cColumn . " LIKE '%" . Shop::DB()->escape($cValue) . "%'";
                 case 2: return $this->cColumn . " LIKE '" . Shop::DB()->escape($cValue) . "%'";

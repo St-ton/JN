@@ -108,19 +108,15 @@ class TwoFA
     {
         // store a google-authenticator-object instance
         // (only if we check any credential! (something like lazy loading))
-        //
         $this->oGA = new PHPGangsta_GoogleAuthenticator();
-
         // codes with a length over 6 chars are emergency-codes
         if (6 < strlen($szCode)) {
             // try to find this code in the emergency-code-pool
             $o2FAemergency = new TwoFAEmergency();
 
             return $o2FAemergency->isValidEmergencyCode($this->oUserTuple->kAdminlogin, $szCode);
-        } else {
-
-            return $this->oGA->verifyCode($this->oUserTuple->c2FAauthSecret, $szCode);
         }
+        return $this->oGA->verifyCode($this->oUserTuple->c2FAauthSecret, $szCode);
     }
 
 
@@ -139,7 +135,7 @@ class TwoFA
             $nOverhang = strlen($szTotpUrl) - 63;
             if (0 < $nOverhang) {
                 for ($i=0; $i < $nOverhang; $i++) {
-                    if ('%' == $szTotpUrl[strlen($szTotpUrl)-3]) {
+                    if ('%' === $szTotpUrl[strlen($szTotpUrl)-3]) {
                         $szTotpUrl  = substr($szTotpUrl, 0, -3); // shorten by 3 byte..
                         $nOverhang -= 2;                         // ..and correct the counter (here nOverhang)
                     } else {
@@ -184,7 +180,7 @@ class TwoFA
         // write at least the user's name we get via e.g. ajax
         $this->oUserTuple->cLogin = $szUserName;
         // check if we know that user yet
-        if ($oTuple = Shop::DB()->select('tadminlogin', 'cLogin', $szUserName)) {
+        if (($oTuple = Shop::DB()->select('tadminlogin', 'cLogin', $szUserName)) !== null) {
             $this->oUserTuple = $oTuple;
         }
     }
@@ -196,7 +192,7 @@ class TwoFA
      */
     public function getUserTuple()
     {
-        return $this->oUserTuple ? $this->oUserTuple : null;
+        return $this->oUserTuple ?: null;
     }
 
     /**
@@ -208,7 +204,7 @@ class TwoFA
     {
         if ('' === $this->szShopName) {
             $oResult          = Shop::DB()->select('teinstellungen', 'cName', 'global_shopname');
-            $this->szShopName = ('' !== $oResult->cWert) ? $oResult->cWert : '';
+            $this->szShopName = $oResult->cWert;
         }
 
         return trim($this->szShopName);

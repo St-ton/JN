@@ -45,6 +45,7 @@ class TwoFAEmergency
      */
     public function createNewCodes($oUserTuple)
     {
+        $vAnalogyArray  = [];
         $szSqlRowValues = '';
         $iValCount      = 'a';
         for ($i = 0; $i < $this->iCodeCount; $i++) {
@@ -87,7 +88,7 @@ class TwoFAEmergency
         $iEffectedRows = Shop::DB()->deleteRow('tadmin2facodes', 'kAdminlogin', $oUserTuple->kAdminlogin);
         if ($this->iCodeCount !== $iEffectedRows) {
             // write this error into shop-system-log
-            Jtllog::writeLog('2FA-Notfall-Codes für diesen Account konnten nicht entfernt werden.', JTLLOG_LEVEL_ERROR, false);
+            Jtllog::writeLog('2FA-Notfall-Codes für diesen Account konnten nicht entfernt werden.');
         }
     }
 
@@ -116,7 +117,7 @@ class TwoFAEmergency
                     , 3
                 );
                 if (1 !== $iEffectedRows) {
-                    Jtllog::writeLog('2FA-Notfall-Code konnte nicht gelöscht werden.', JTLLOG_LEVEL_ERROR, false);
+                    Jtllog::writeLog('2FA-Notfall-Code konnte nicht gelöscht werden.');
                 }
 
                 return true;

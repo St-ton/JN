@@ -872,4 +872,20 @@ class Kunde
 
         return false;
     }
+
+    /**
+     * @return int
+     */
+    public function getID()
+    {
+        return (int)$this->kKunde;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isLoggedIn()
+    {
+        return $this->kKunde > 0;
+    }
 }

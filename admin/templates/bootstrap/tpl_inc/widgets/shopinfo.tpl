@@ -1,5 +1,5 @@
 <div class="widget-custom-data">
-    {if isset($oSubscription->kShop) && $oSubscription->kShop > 0 && isset($oSubscription->cUpdate)}
+    {if isset($oSubscription->kShop) && $oSubscription->kShop > 0 && isset($oSubscription->cUpdate) && $oSubscription->eTyp !== 'dev'}
         <div class="alert alert-danger">
             <p>
               <i class="fa fa-warning"></i>

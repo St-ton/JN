@@ -17,7 +17,7 @@ function bearbeiteTrustedShopsKundenbewertung($oJobQueue)
         unset($oTrustedShops);
         $oTrustedShops                = new TrustedShops(-1, $cValidSprachISO);
         $oTrustedShopsKundenbewertung = $oTrustedShops->holeKundenbewertungsstatus($cValidSprachISO);
-        if ($oTrustedShopsKundenbewertung->nStatus == 1 && strlen($oTrustedShopsKundenbewertung->cTSID) > 0) {
+        if ((int)$oTrustedShopsKundenbewertung->nStatus === 1 && strlen($oTrustedShopsKundenbewertung->cTSID) > 0) {
             $returnValue = $oTrustedShops->aenderKundenbewertungsstatus(
                 $oTrustedShopsKundenbewertung->cTSID,
                 1,
@@ -36,5 +36,4 @@ function bearbeiteTrustedShopsKundenbewertung($oJobQueue)
     $oJobQueue->nInArbeit        = 0;
     $oJobQueue->updateJobInDB();
     $oJobQueue->deleteJobInDB();
-    unset($oJobQueue);
 }

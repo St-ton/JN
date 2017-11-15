@@ -14,6 +14,9 @@ function bearbeiteNewsletterversand($oJobQueue)
 {
     $oJobQueue->nInArbeit = 1;
     $oNewsletter          = $oJobQueue->holeJobArt();
+    if ($oNewsletter === null) {
+        return false;
+    }
     $Einstellungen        = Shop::getSettings([CONF_NEWSLETTER]);
     $mailSmarty           = bereiteNewsletterVor($Einstellungen);
     // Baue Arrays mit kKeys
@@ -27,7 +30,6 @@ function bearbeiteNewsletterversand($oJobQueue)
         $oJobQueue->deleteJobInDB();
         // NewsletterQueue löschen
         Shop::DB()->delete('tnewsletterqueue', 'kNewsletter', $oJobQueue->kKey);
-        unset($oJobQueue);
 
         return false;
     }
@@ -124,7 +126,6 @@ function bearbeiteNewsletterversand($oJobQueue)
         $oJobQueue->deleteJobInDB();
         // NewsletterQueue löschen
         Shop::DB()->delete('tnewsletterqueue', 'kNewsletter', (int)$oJobQueue->kKey);
-        unset($oJobQueue);
     }
 
     return true;

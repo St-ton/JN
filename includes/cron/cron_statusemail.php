@@ -62,8 +62,8 @@ function bearbeiteStatusemail($oJobQueue)
             if ($oMailObjekt) {
                 $oMailObjekt->cIntervall = utf8_decode($cIntervalAdj . ' Status-Email');
                 sendeMail(MAILTEMPLATE_STATUSEMAIL, $oMailObjekt, $oMailObjekt->mail);
-                Shop::DB()->query("
-                    UPDATE tstatusemail
+                Shop::DB()->query(
+                    "UPDATE tstatusemail
                         SET " . $dLetzterVersandCol . " = now()
                         WHERE nAktiv = " . (int)$oJobQueue->kKey,
                     4);
@@ -79,6 +79,4 @@ function bearbeiteStatusemail($oJobQueue)
     if ($bAusgefuehrt === true) {
         $oJobQueue->deleteJobInDB();
     }
-
-    unset($oJobQueue);
 }

@@ -16,6 +16,7 @@ class PortletImageSlider extends CMSPortlet
                 return $a['nSort']>$b['nSort'];
             });
         }
+        $this->properties['slider-id'] = uniqid();
 
         return (new JTLSmarty(true))
             ->assign('properties', $this->properties)
@@ -37,6 +38,7 @@ class PortletImageSlider extends CMSPortlet
                 return $a['nSort']>$b['nSort'];
             });
         }
+        $this->properties['slider-id'] = uniqid();
 
         return Shop::Smarty()
             ->assign('properties', $this->properties)

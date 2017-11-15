@@ -8,12 +8,6 @@
         <div class="row">
             <div class="col-sm-6">
                 <div class="form-group">
-                    <label for="slider-id">Slider ID</label>
-                    <input type="text" id="slider-id" name="slider-id" class="form-control" value="{$properties['slider-id']}">
-                </div>
-            </div>
-            <div class="col-sm-6">
-                <div class="form-group">
                     <label for="slider-theme">Theme</label>
                     <select class="form-control" id="slider-theme" name="slider-theme">
                         <option value="default"{if $properties['slider-theme'] === 'default'} selected{/if}>Default</option>

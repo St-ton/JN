@@ -38,6 +38,7 @@ class UstIDvies
     private $szViesWSDL = 'http://ec.europa.eu/taxation_customs/vies/checkVatService.wsdl';
 
     /**
+     * --TODO-- may be --OBSOLETE--
      * array
      * answers of the MIAS-system  --TO-CHECK-- may it's not needed here this way
      */
@@ -51,22 +52,6 @@ class UstIDvies
     ];
 
     /**
-     * array
-     * errors of the internal pre-check (length, starting chars, aso.)
-     */
-    private $vPreCheckErrors = [
-          100 => 'Es wurde keine UstID übergeben!'
-        , 110 => 'Die UstID beginnt nicht mit zwei Großbuchstaben als Länderkennung!'
-        , 120 => 'Die UstID hat eine ungültige Länge!'
-        , 130 => 'Die UstID entspricht nicht den Vorschriften des betreffenden Landes!'
-    ];
-
-    /**
-     * string zero-terminated
-     */
-    private $szErrorStr = '';
-
-    /**
      * object
      * UstIDviesDownSlots
      */
@@ -78,11 +63,15 @@ class UstIDvies
     private $szVATid;
 
 
+
     /* --DEBUG-- */
     private $oLogger = null; // --DEBUG--
 
 
-    public function __construct($szUstID = '')
+    /**
+     * __construct an instance of this object
+     */
+    public function __construct()
     {
         // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --DEBUG--
         include_once('/var/www/html/shop4_07/includes/vendor/apache/log4php/src/main/php/Logger.php');
@@ -90,68 +79,84 @@ class UstIDvies
         $this->oLogger = Logger::getLogger('default');
         // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --DEBUG--
 
-        $this->szVATid = $szUstID;
         $this->oDownTimes = new UstIDviesDownSlots();
     }
 
 
-    public function getErrorStr()
-    {
-        return $this->szErrorStr;
-    }
-
     /**
      * ask the remote APIs of the VIES-online-system
      *
-     * @param $szUstID
-     * @return bool
+     * return a array of check-results
+     * [
+     *        success   : boolean, "true" = all checks were fine, "false" somthing went wrong
+     *      , errortype : string, which type of error was occure, time- or parse-error
+     *      , errorstr  : string, descriptive string of the error
+     * ]
+     *
+     * @param string  the VAT-ID
+     * @return array  array containing information about the check-results
      */
     public function doCheckID($szUstID = '')
     {
-        $szMWstID = '';
-        if ('' === $szUstID && '' === $this->szVATid) {
-            // error: no szUstID was given
-            $this->szErrorStr = $this->vPreCheckErrors[100];
-            return false;
-        } else {
-            $szMWstID = ('' === $szUstID)
-                ? $this->szVATid
-                : $szUstID
-            ;
+        if ('' === $szUstID) {
+            return [
+                  'success'   => false
+                , 'errortype' => 'parse'
+                , 'errorcode' => 1          // error: no szUstID was given
+            ];
         }
-        $this->oLogger->debug('internal MwStID: '.$szMWstID); // --DEBUG--
 
-
-        // --TO-CHECK--
         // 2 character, 9 digits is the specification,
         // but if we scan it hard this way (and cut out overhangs), we can not inform the user to correct his input ...
-        $oVatParser = new UstIDviesVatParser();
-        $vParams    = $oVatParser->getIdAsParams($szMWstID); // --TODO-- build it multiple-call-resistent
-        if (!is_array($vParams)) {
-            // error-handling (in the case, we got a number, it is a error-code)
-            if (is_int($vParams)) {
-                $this->szErrorStr = (isset($this->vPreCheckErrors[$vParams])) ? ($this->vPreCheckErrors[$vParams]) : '';
-                return false;
-            }
+        $oVatParser = new UstIDviesVatParser($szUstID);
+        if (true === $oVatParser->parseVatId()) {
+            list($szCountryCode, $szVatNumber) = $oVatParser->getIdAsParams();
+            $this->oLogger->debug('VAT as PARAMS: '.print_r($oVatParser->getIdAsParams(),true )); // --DEBUG--
+        } else {
+            return [
+                  'success'   => false
+                , 'errortype' => 'parse'
+                , 'errorcode' => $oVatParser->getErrorCode() // --TODO-- return the error-position....
+                , 'errorinfo' => ('' !== ($szErrorInfo = $oVatParser->getErrorInfo()) ? $szErrorInfo : '')
+            ];
         }
-        $this->oLogger->debug('VAT as PARAMS: '.print_r($vParams ,true )); // --DEBUG--
 
-        list($szCountryCode, $szVatNumber) = $vParams;
         if (false === $this->oDownTimes->isDown($szCountryCode)) {
 
             // asking the remote service
             $this->oLogger->debug('asking the remote service..'); // --DEBUG--
-            /*
-             *$oSoapClient = new SoapClient($this->szViesWSDL);
-             *$result = $oSoapClient->checkVat(['countryCode' => $szCountryCode, 'vatNumber' => $szVatNumber]); // --TODO--
-             */
+
+            $oSoapClient = new SoapClient($this->szViesWSDL);
+            $oViesResult = $oSoapClient->checkVat(['countryCode' => $szCountryCode, 'vatNumber' => $szVatNumber]); // --TODO--
+            $this->oLogger->debug('VIES-RESULT (SOAP) : '.print_r( $oViesResult ,true )); // --DEBUG--
+            //$this->oLogger->debug('VIES-RESULT (SOAP) : '.var_export( $oViesResult, true )); // --DEBUG--
+            //return true; // --TODO-- return errors of the VIES-system or handle them ...
+
+            if (true === $oViesResult->valid) {
+                //Jtllog::writeLog('MwStID valid. ('.print_r($oViesResult, true).')', JTLLOG_LEVEL_NOTICE);  // success, logging optional
+                return [
+                      'success'   => true
+                    , 'errortype' => 'vies'
+                    , 'errorcode'  => ''
+                ];
+            } else {
+                Jtllog::writeLog('MwStID invalid! ('.print_r($oViesResult, true).')', JTLLOG_LEVEL_NOTICE);
+                return [
+                      'success'   => false
+                    , 'errortype' => 'vies'
+                    , 'errorcode'  => 'Die angegebene MwStID ist nicht gültig.'
+                ];
+            }
 
         } else {
-            // --TODO-- : inform the user, the VAT-office in this country has closed this time
+            // --TODO-- : inform the user, the VAT-office in this country has closed this time.
             // log that event, and offer a methode to fetch it elsewhere
             // (maybe write a specified Exception ...)
-            $this->szErrorStr = $this->oDownTimes->getDownInfo();
-            return false;
+            return [
+                  'success'   => false
+                , 'errortype' => 'time'
+                , 'errorcode'  => $this->oDownTimes->getDownInfo()
+            ];
         }
     }
 

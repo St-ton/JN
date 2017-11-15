@@ -2094,24 +2094,52 @@ function checkKundenFormularArray($data, $kundenaccount, $checkpass = 1)
                 'Nein',
                 (isset($data['hausnummer']) ? StringHandler::filterXSS($data['hausnummer']) : '')
             );
-*/
+ */
 
-            //$VIES = new UstIDvies($data['ustid']); // --DEBUG--
-            //$oLogger->debug('data->ustid: '.print_r($data['ustid'],true )); // --DEBUG--
+            // ATTENTION, NOTE: this one logger goes into the frontend!!!! (why ever)
+            // --TODO-- ...the setting "force remote" from backend!
+            $oLogger->debug('backend-setting "UstPrüf aktiv": '.print_r( $conf['kunden']['shop_ustid_bzstpruefung'] ,true )); // --DEBUG--
+            $oLogger->debug('backend-setting "force remote" : '.print_r( $conf['kunden']['shop_ustid_force_remote_check'] ,true )); // --DEBUG--
 
-            $VIES = new UstIDvies('TEX2345678912345L'); // --DEBUG--
-            //$VIES = new UstIDvies('TELL345678912345L'); // --DEBUG--
-            //$VIES = new UstIDvies('TELL34567891XL92B'); // --DEBUG--
-            //$VIES = new UstIDvies('TEDL9949 99 9XLB'); // --DEBUG--
-            if (true === ($result = $VIES->doCheckID())) {
-                $oLogger->debug('VIES result: '.$result); // --DEBUG--
+            $oVies = new UstIDvies(); // --DEBUG--
+            //$vViesResult = $oVies->doCheckID('TELG2949-99 9XLB'); // --DEVELOPMENT--
+            $vViesResult = $oVies->doCheckID($data['ustid']); // --TO-CHECK-- trim() needed?
+            if (true === $vViesResult['success']) {
+                // "all was fine"
+                $ret['ustid'] = 0;
             } else {
-                //$oLogger->debug('VIES result (else): '.$result); // --DEBUG--
-                $oLogger->debug('VIEW result (error): '.$VIES->getErrorStr()); // --DEBUG--
+                $oLogger->debug('VIEW result : '.print_r($vViesResult, true)); // --DEBUG--
 
-                $ret['ustid']     = 2; // --DEVELOPMENT-- signalize "there was an error"
-                //$ret['ustid_err'] = $oReturn->cError; // --DEVELOPMENT--  displays the error-information (here only the number-pattern)
-                $ret['ustid_err'] = $VIES->getErrorStr(); // --DEVELOPMENT--  displays the error-information (here only the number-pattern)
+                switch ($vViesResult['errortype']) {
+                    case 'vies' :
+                        $oLogger->debug('time-error: '.$vViesResult['errorcode']); // --DEBUG--
+                        // vies-error: the number is invalid according to the VIES-system
+                        $ret['ustid'] = 5;
+                        break;
+                    case 'parse' :
+                        $oLogger->debug('parse-error: '.$vViesResult['errorcode']); // --DEBUG--
+                        if (1 === $vViesResult['errorcode']) {
+                            // parse-error: no id was given
+                            $ret['ustid'] = 1;
+                        } elseif (1 < $vViesResult['errorcode']) {
+                            // parse-error: with the position of error in given ID
+                            $ret['ustid'] = 2;
+                            // --TODO-- ...
+                            // --DEVELOPMENT-- should only contain the string with the mark of the parse-error ...
+                            $ret['ustid_err'] = $vViesResult['errorcode'];
+                        }
+                        break;
+                    case 'time' :
+                        $oLogger->debug('time-error: '.$vViesResult['errorcode']); // --DEBUG--
+                        if ('Y' === $conf['kunden']['shop_ustid_force_remote_check']) {
+                            $ret['ustid'] = 4; // parsing ok, but remote not reachable
+                            // --TODO--
+                            // this should ony contain the informational string of the time-slot from the downtime-obj.
+                            $ret['ustid_err'] = $vViesResult['errorstr'];
+                        }
+                        $ret['ustid'] = 4; // ? --TO-CHECK--
+                        break;
+                }
 
             }
 

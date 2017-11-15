@@ -42,7 +42,12 @@ function suggestions($keyword)
               WHERE SOUNDEX(cSuche) LIKE CONCAT(TRIM(TRAILING '0' FROM SOUNDEX(:keyword)), '%')
                   AND nAktiv = 1
                   AND kSprache = :lang
-            ORDER BY nAnzahlGesuche DESC, cSuche
+            ORDER BY CASE
+                WHEN cSuche = :keyword THEN 0
+                WHEN cSuche LIKE CONCAT(:keyword, '%') THEN 1
+                WHEN cSuche LIKE CONCAT('%', :keyword, '%') THEN 2
+                ELSE 99
+                END, nAnzahlGesuche DESC, cSuche
             LIMIT :maxres",
             [
                 'keyword' => $keyword,
@@ -55,6 +60,7 @@ function suggestions($keyword)
         if (is_array($results) && count($results) > 0) {
             foreach ($results as &$result) {
                 $result->suggestion = utf8_encode($smarty->assign('result', $result)->fetch('snippets/suggestion.tpl'));
+                $result->keyword    = utf8_encode($result->keyword);
             }
         }
     }

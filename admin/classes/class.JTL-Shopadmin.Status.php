@@ -377,4 +377,16 @@ class Status
             ? count($categories) === 0
             : $categories;
     }
+
+    /**
+     * @return bool
+     */
+    protected function hasFullTextIndexError()
+    {
+        $conf = Shop::getSettings([CONF_ARTIKELUEBERSICHT]);
+
+        return $conf['artikeluebersicht']['suche_fulltext'] === 'Y'
+            && (!Shop::DB()->query("SHOW INDEX FROM tartikel WHERE KEY_NAME = 'idx_tartikel_fulltext'", 1)
+                || !Shop::DB()->query("SHOW INDEX FROM tartikelsprache WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'", 1));
+    }
 }

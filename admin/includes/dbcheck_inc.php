@@ -229,7 +229,7 @@ function doEngineUpdateScript($fileName, $shopTables)
 
         $result .= "$nl--$nl";
 
-        if ($oTable->ENGINE !== 'InnoDB' && $oTable->TABLE_COLLATION !== 'utf8_general_ci') {
+        if ($oTable->ENGINE !== 'InnoDB' && $oTable->TABLE_COLLATION !== 'utf8_unicode_ci') {
             $result .= "-- update engine and collation for {$oTable->TABLE_NAME}$nl";
         } elseif ($oTable->ENGINE !== 'InnoDB') {
             $result .= "-- update engine for {$oTable->TABLE_NAME}$nl";

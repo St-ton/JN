@@ -24,7 +24,7 @@ class DBMigrationHelper
                 FROM information_schema.tables
                 WHERE TABLE_SCHEMA = :schema
                     AND TABLE_NAME NOT LIKE 'xplugin_%'
-                    AND (`ENGINE` != 'InnoDB' OR TABLE_COLLATION != 'utf8_general_ci')
+                    AND (`ENGINE` != 'InnoDB' OR TABLE_COLLATION != 'utf8_unicode_ci')
                 ORDER BY `TABLE_NAME`", [
                     'schema' => $database
                 ], 2
@@ -47,7 +47,7 @@ class DBMigrationHelper
                 WHERE TABLE_SCHEMA = :schema
                     AND TABLE_NAME NOT LIKE 'xplugin_%'
                     " . (!empty($excludeStr) ? "AND TABLE_NAME NOT IN ('" . $excludeStr . "')" : '') . "
-                    AND (`ENGINE` != 'InnoDB' OR TABLE_COLLATION != 'utf8_general_ci')
+                    AND (`ENGINE` != 'InnoDB' OR TABLE_COLLATION != 'utf8_unicode_ci')
                 ORDER BY `TABLE_NAME` LIMIT 1", [
                     'schema' => $database
                 ], 1
@@ -87,7 +87,7 @@ class DBMigrationHelper
             $oTable = self::getTable($oTable);
         }
 
-        return (is_object($oTable) && ($oTable->ENGINE != 'InnoDB' || $oTable->TABLE_COLLATION != 'utf8_general_ci'));
+        return (is_object($oTable) && ($oTable->ENGINE != 'InnoDB' || $oTable->TABLE_COLLATION != 'utf8_unicode_ci'));
     }
 
     /**
@@ -122,7 +122,7 @@ class DBMigrationHelper
                 WHERE TABLE_SCHEMA = :schema
                     AND TABLE_NAME = :table
                     AND CHARACTER_SET_NAME IS NOT NULL
-                    AND (CHARACTER_SET_NAME != 'utf8' OR COLLATION_NAME != 'utf8_general_ci')
+                    AND (CHARACTER_SET_NAME != 'utf8' OR COLLATION_NAME != 'utf8_unicode_ci')
                 ORDER BY ORDINAL_POSITION", [
                     'schema' => $database,
                     'table'  => $cTable,
@@ -138,12 +138,12 @@ class DBMigrationHelper
      */
     public static function sqlMoveToInnoDB($oTable)
     {
-        if ($oTable->ENGINE !== 'InnoDB' && $oTable->TABLE_COLLATION !== 'utf8_general_ci') {
-            $sql = "ALTER TABLE `{$oTable->TABLE_NAME}` CHARACTER SET='utf8' COLLATE='utf8_general_ci' ENGINE= 'InnoDB'";
+        if ($oTable->ENGINE !== 'InnoDB' && $oTable->TABLE_COLLATION !== 'utf8_unicode_ci') {
+            $sql = "ALTER TABLE `{$oTable->TABLE_NAME}` CHARACTER SET='utf8' COLLATE='utf8_unicode_ci' ENGINE= 'InnoDB'";
         } elseif ($oTable->ENGINE !== 'InnoDB') {
             $sql = "ALTER TABLE `{$oTable->TABLE_NAME}` ENGINE= 'InnoDB'";
         } else {
-            $sql = "ALTER TABLE `{$oTable->TABLE_NAME}` CHARACTER SET='utf8' COLLATE='utf8_general_ci'";
+            $sql = "ALTER TABLE `{$oTable->TABLE_NAME}` CHARACTER SET='utf8' COLLATE='utf8_unicode_ci'";
         }
         $sql .= ', LOCK EXCLUSIVE';
 
@@ -164,7 +164,7 @@ class DBMigrationHelper
 
             $columChange = [];
             foreach ($oColumn_arr as $key => $oColumn) {
-                $columChange[] = "    CHANGE COLUMN `{$oColumn->COLUMN_NAME}` `{$oColumn->COLUMN_NAME}` {$oColumn->COLUMN_TYPE} CHARACTER SET 'utf8' COLLATE 'utf8_general_ci'"
+                $columChange[] = "    CHANGE COLUMN `{$oColumn->COLUMN_NAME}` `{$oColumn->COLUMN_NAME}` {$oColumn->COLUMN_TYPE} CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci'"
                     . ($oColumn->IS_NULLABLE === 'YES' ? ' NULL' : ' NOT NULL')
                     . ($oColumn->IS_NULLABLE === 'NO' && $oColumn->COLUMN_DEFAULT === null ? '' : " DEFAULT " . ($oColumn->COLUMN_DEFAULT === null ? 'NULL' : "'{$oColumn->COLUMN_DEFAULT}'"));
             }

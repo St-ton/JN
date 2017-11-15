@@ -208,7 +208,21 @@ function addValidationListener() {
 
     for (var i = 0; i < inputs.length; i++) {
         inputs[i].addEventListener('blur', function (event) {
-            $(event.target).closest('.form-group').find('div.form-error-msg').remove();
+            var $target = $(event.target);
+            $target.closest('.form-group').find('div.form-error-msg').remove();
+
+            if ($target.data('must-equal-to') !== undefined) {
+                var $equalsTo = $($target.data('must-equal-to'));
+                if ($equalsTo.length === 1) {
+                    var theOther = $equalsTo[0];
+                    if (theOther.value !== '' && theOther.value !== event.target.value && event.target.value !== '') {
+                        event.target.setCustomValidity($target.data('custom-message') !== undefined ? $target.data('custom-message') : event.target.validationMessage);
+                    } else {
+                        event.target.setCustomValidity('');
+                    }
+                }
+            }
+
             if (event.target.validity.valid) {
                 $(event.target).closest('.form-group').removeClass('has-error');
             } else {

@@ -18,8 +18,8 @@ function loescheWarenkorbPositionen($nPos_arr)
         if (!isset($cart->PositionenArr[$nPos])) {
             return;
         }
-        if ($cart->PositionenArr[$nPos]->nPosTyp != C_WARENKORBPOS_TYP_ARTIKEL
-            && $cart->PositionenArr[$nPos]->nPosTyp != C_WARENKORBPOS_TYP_GRATISGESCHENK
+        if ($cart->PositionenArr[$nPos]->nPosTyp !== C_WARENKORBPOS_TYP_ARTIKEL
+            && $cart->PositionenArr[$nPos]->nPosTyp !== C_WARENKORBPOS_TYP_GRATISGESCHENK
         ) {
             return;
         }
@@ -121,7 +121,7 @@ function uebernehmeWarenkorbAenderungen()
     //variationen wurden gesetzt oder anzahl der positionen verändert?
     $kArtikelGratisgeschenk = 0;
     foreach ($cart->PositionenArr as $i => $position) {
-        if ($position->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL) {
+        if ($position->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL) {
             if ($position->kArtikel == 0) {
                 continue;
             }
@@ -226,8 +226,8 @@ function uebernehmeWarenkorbAenderungen()
                 }
             }
             // Grundpreise bei Staffelpreisen
-            if (isset($position->Artikel->fVPEWert) &&
-                $position->Artikel->fVPEWert > 0
+            if (isset($position->Artikel->fVPEWert)
+                && $position->Artikel->fVPEWert > 0
             ) {
                 $nLast = 0;
                 for ($j = 1; $j <= 5; $j++) {
@@ -246,7 +246,7 @@ function uebernehmeWarenkorbAenderungen()
                     $position->Artikel->baueVPE();
                 }
             }
-        } elseif ($position->nPosTyp == C_WARENKORBPOS_TYP_GRATISGESCHENK) { // Gratisgeschenk?
+        } elseif ($position->nPosTyp === C_WARENKORBPOS_TYP_GRATISGESCHENK) {
             $kArtikelGratisgeschenk = $position->kArtikel;
         }
     }
@@ -260,8 +260,9 @@ function uebernehmeWarenkorbAenderungen()
     if ($bMindestensEinePosGeaendert) {
         $oKuponTmp = null;
         //existiert ein proz. Kupon, der auf die neu eingefügte Pos greift?
-        if (isset($_SESSION['Kupon']) && $_SESSION['Kupon']->cWertTyp === 'prozent' &&
-            $_SESSION['Kupon']->nGanzenWKRabattieren == 0
+        if (isset($_SESSION['Kupon'])
+            && $_SESSION['Kupon']->cWertTyp === 'prozent'
+            && $_SESSION['Kupon']->nGanzenWKRabattieren == 0
         ) {
             if ($cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true) >= $_SESSION['Kupon']->fMindestbestellwert) {
                 $oKuponTmp = $_SESSION['Kupon'];
@@ -343,7 +344,8 @@ function checkeSchnellkauf()
  */
 function loescheAlleSpezialPos()
 {
-    Session::Cart()->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART)
+    Session::Cart()
+           ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART)
            ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZINSAUFSCHLAG)
            ->loescheSpezialPos(C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR)
            ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS)
@@ -486,11 +488,11 @@ function pruefeBestellMengeUndLagerbestand($Einstellungen = [])
     }
     if (is_array($cart->PositionenArr) && count($cart->PositionenArr) > 0) {
         foreach ($cart->PositionenArr as $i => $oPosition) {
-            if ($oPosition->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL) {
+            if ($oPosition->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL) {
                 // Mit Lager arbeiten und Lagerbestand darf < 0 werden?
-                if (isset($oPosition->Artikel) && $oPosition->Artikel->cLagerBeachten === 'Y' &&
-                    $oPosition->Artikel->cLagerKleinerNull === 'Y' &&
-                    $Einstellungen['global']['global_lieferverzoegerung_anzeigen'] === 'Y'
+                if (isset($oPosition->Artikel) && $oPosition->Artikel->cLagerBeachten === 'Y'
+                    && $oPosition->Artikel->cLagerKleinerNull === 'Y'
+                    && $Einstellungen['global']['global_lieferverzoegerung_anzeigen'] === 'Y'
                 ) {
                     if ($oPosition->nAnzahl > $oPosition->Artikel->fLagerbestand) {
                         $bVorhanden    = true;

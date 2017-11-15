@@ -55,7 +55,7 @@ class WarenkorbPers
      * @param float      $fAnzahl
      * @param string     $cUnique
      * @param int        $kKonfigitem
-     * @param int|string $nPosTyp
+     * @param int        $nPosTyp
      * @return $this
      */
     public function fuegeEin($kArtikel, $cArtikelName, $oEigenschaftwerte_arr, $fAnzahl, $cUnique = '', $kKonfigitem = 0, $nPosTyp = C_WARENKORBPOS_TYP_ARTIKEL)
@@ -63,7 +63,7 @@ class WarenkorbPers
         $bBereitsEnthalten = false;
         $nPosition         = 0;
         $kArtikel          = (int)$kArtikel;
-
+        $nPosTyp           = (int)$nPosTyp;
         if (is_array($this->oWarenkorbPersPos_arr) && count($this->oWarenkorbPersPos_arr) > 0) {
             foreach ($this->oWarenkorbPersPos_arr as $i => $oWarenkorbPersPos) {
                 $oWarenkorbPersPos->kArtikel = (int)$oWarenkorbPersPos->kArtikel;
@@ -215,7 +215,7 @@ class WarenkorbPers
     {
         if (is_array($this->oWarenkorbPersPos_arr) && count($this->oWarenkorbPersPos_arr) > 0) {
             foreach ($this->oWarenkorbPersPos_arr as $oWarenkorbPersPos) {
-                if ((int)$oWarenkorbPersPos->nPosTyp === (int)C_WARENKORBPOS_TYP_GRATISGESCHENK) {
+                if ((int)$oWarenkorbPersPos->nPosTyp === C_WARENKORBPOS_TYP_GRATISGESCHENK) {
                     $this->entfernePos($oWarenkorbPersPos->kWarenkorbPersPos);
                 }
             }
@@ -427,37 +427,38 @@ class WarenkorbPers
      */
     public function bauePersVonSession()
     {
-        if (is_array($_SESSION['Warenkorb']->PositionenArr) && count($_SESSION['Warenkorb']->PositionenArr) > 0) {
-            foreach ($_SESSION['Warenkorb']->PositionenArr as $oPosition) {
-                if ($oPosition->nPosTyp != C_WARENKORBPOS_TYP_ARTIKEL) {
-                    continue;
-                }
-                $oEigenschaftwerte_arr = [];
-                if (is_array($oPosition->WarenkorbPosEigenschaftArr) && count($oPosition->WarenkorbPosEigenschaftArr) > 0) {
-                    foreach ($oPosition->WarenkorbPosEigenschaftArr as $oWarenkorbPosEigenschaft) {
-                        unset($oEigenschaftwerte);
-                        $oEigenschaftwerte                       = new stdClass();
-                        $oEigenschaftwerte->kEigenschaftWert     = $oWarenkorbPosEigenschaft->kEigenschaftWert;
-                        $oEigenschaftwerte->kEigenschaft         = $oWarenkorbPosEigenschaft->kEigenschaft;
-                        $oEigenschaftwerte->cEigenschaftName     = $oWarenkorbPosEigenschaft->cEigenschaftName[$_SESSION['cISOSprache']];
-                        $oEigenschaftwerte->cEigenschaftWertName = $oWarenkorbPosEigenschaft->cEigenschaftWertName[$_SESSION['cISOSprache']];
-                        if ($oWarenkorbPosEigenschaft->cTyp === 'FREIFELD' || $oWarenkorbPosEigenschaft->cTyp === 'PFLICHT-FREIFELD') {
-                            $oEigenschaftwerte->cFreifeldWert = $oWarenkorbPosEigenschaft->cEigenschaftWertName[$_SESSION['cISOSprache']];
-                        }
-
-                        $oEigenschaftwerte_arr[] = $oEigenschaftwerte;
-                    }
-                }
-
-                $this->fuegeEin(
-                    $oPosition->kArtikel,
-                    isset($oPosition->Artikel->cName) ? $oPosition->Artikel->cName : null,
-                    $oEigenschaftwerte_arr,
-                    $oPosition->nAnzahl,
-                    $oPosition->cUnique,
-                    $oPosition->kKonfigitem
-                );
+        if (!is_array($_SESSION['Warenkorb']->PositionenArr) || count($_SESSION['Warenkorb']->PositionenArr) === 0) {
+            return $this;
+        }
+        foreach ($_SESSION['Warenkorb']->PositionenArr as $oPosition) {
+            if ($oPosition->nPosTyp !== C_WARENKORBPOS_TYP_ARTIKEL) {
+                continue;
             }
+            $oEigenschaftwerte_arr = [];
+            if (is_array($oPosition->WarenkorbPosEigenschaftArr) && count($oPosition->WarenkorbPosEigenschaftArr) > 0) {
+                foreach ($oPosition->WarenkorbPosEigenschaftArr as $oWarenkorbPosEigenschaft) {
+                    unset($oEigenschaftwerte);
+                    $oEigenschaftwerte                       = new stdClass();
+                    $oEigenschaftwerte->kEigenschaftWert     = $oWarenkorbPosEigenschaft->kEigenschaftWert;
+                    $oEigenschaftwerte->kEigenschaft         = $oWarenkorbPosEigenschaft->kEigenschaft;
+                    $oEigenschaftwerte->cEigenschaftName     = $oWarenkorbPosEigenschaft->cEigenschaftName[$_SESSION['cISOSprache']];
+                    $oEigenschaftwerte->cEigenschaftWertName = $oWarenkorbPosEigenschaft->cEigenschaftWertName[$_SESSION['cISOSprache']];
+                    if ($oWarenkorbPosEigenschaft->cTyp === 'FREIFELD' || $oWarenkorbPosEigenschaft->cTyp === 'PFLICHT-FREIFELD') {
+                        $oEigenschaftwerte->cFreifeldWert = $oWarenkorbPosEigenschaft->cEigenschaftWertName[$_SESSION['cISOSprache']];
+                    }
+
+                    $oEigenschaftwerte_arr[] = $oEigenschaftwerte;
+                }
+            }
+
+            $this->fuegeEin(
+                $oPosition->kArtikel,
+                isset($oPosition->Artikel->cName) ? $oPosition->Artikel->cName : null,
+                $oEigenschaftwerte_arr,
+                $oPosition->nAnzahl,
+                $oPosition->cUnique,
+                $oPosition->kKonfigitem
+            );
         }
 
         return $this;

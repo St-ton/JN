@@ -5283,7 +5283,9 @@ class Artikel
         $cart             = Session::Cart();
         if ($cart !== null && is_array($cart->PositionenArr) && count($cart->PositionenArr) > 0) {
             foreach ($cart->PositionenArr as $i => $oPosition) {
-                if ($oPosition->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL && $oPosition->Artikel->kArtikel == $this->kArtikel) {
+                if ((int)$oPosition->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL
+                    && (int)$oPosition->Artikel->kArtikel === $this->kArtikel
+                ) {
                     $purchaseQuantity += $oPosition->nAnzahl;
                 }
             }

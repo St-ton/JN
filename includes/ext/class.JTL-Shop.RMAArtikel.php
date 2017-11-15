@@ -373,11 +373,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
                         FROM trmaartikel
                         WHERE kBestellung = " . $kBestellung, 2
                 );
-
-                if (is_array($oObj_arr) && count($oObj_arr) > 0) {
-                    foreach ($oObj_arr as $oObj) {
-                        $kArtikel_arr[] = $oObj->kArtikel;
-                    }
+                foreach ($oObj_arr as $oObj) {
+                    $kArtikel_arr[] = (int)$oObj->kArtikel;
                 }
             }
 

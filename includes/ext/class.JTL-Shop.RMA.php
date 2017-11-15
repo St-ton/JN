@@ -388,21 +388,25 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
             if ($kBestellung > 0) {
                 $oBestellung = new Bestellung($kBestellung, true);
 
-                if (isset($oBestellung->kBestellung, $oBestellung->Positionen) &&
-                    $oBestellung->kBestellung > 0 &&
-                    is_array($oBestellung->Positionen) &&
-                    count($oBestellung->Positionen) > 0
+                if (isset($oBestellung->kBestellung, $oBestellung->Positionen)
+                    && $oBestellung->kBestellung > 0
+                    && is_array($oBestellung->Positionen)
+                    && count($oBestellung->Positionen) > 0
                 ) {
                     $kArtikel_arr = RMAArtikel::getProductsByOrder($kBestellung);
                     foreach ($oBestellung->Positionen as $i => $oPosition) {
-                        $oBestellung->Positionen[$i]->cAnzahl = Trennzeichen::getUnit(JTL_SEPARATOR_AMOUNT, $_SESSION['kSprache'], $oPosition->nAnzahl);
-                        $oBestellung->Positionen[$i]->bRMA    = false;
+                        $oPosition->kArtikel = (int)$oPosition->kArtikel;
+                        $oPosition->cAnzahl  = Trennzeichen::getUnit(JTL_SEPARATOR_AMOUNT, $_SESSION['kSprache'], $oPosition->nAnzahl);
+                        $oPosition->bRMA     = false;
 
-                        if ($oPosition->nPosTyp != C_WARENKORBPOS_TYP_ARTIKEL || !isset($oPosition->Artikel->kArtikel) || !$oPosition->Artikel->kArtikel) {
+                        if ($oPosition->nPosTyp !== C_WARENKORBPOS_TYP_ARTIKEL
+                            || !isset($oPosition->Artikel->kArtikel)
+                            || !$oPosition->Artikel->kArtikel
+                        ) {
                             unset($oBestellung->Positionen[$i]);
                         } elseif (count($kArtikel_arr) > 0) {
                             // Pruefe ob Artikel bereits vollstaendig zurueckgeschickt wurde
-                            if (in_array($oPosition->kArtikel, $kArtikel_arr)) {
+                            if (in_array($oPosition->kArtikel, $kArtikel_arr, true)) {
                                 $fRMAArtikelQuantity = RMAArtikel::getRMAQuantity($kBestellung, $oPosition->kArtikel);
                                 if ($fRMAArtikelQuantity && $fRMAArtikelQuantity > 0) {
                                     $fAnzahlBestellung = Bestellung::getProductAmount($kBestellung, $oPosition->kArtikel);

@@ -2610,8 +2610,8 @@ function warenkorbKuponFaehigArtikel($Kupon, $PositionenArr)
 {
     if (is_array($PositionenArr)) {
         foreach ($PositionenArr as $Pos) {
-            if ($Pos->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL &&
-                preg_match('/;' . preg_quote($Pos->Artikel->cArtNr, '/') . ';/i', $Kupon->cArtikel)
+            if ($Pos->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL
+                && preg_match('/;' . preg_quote($Pos->Artikel->cArtNr, '/') . ';/i', $Kupon->cArtikel)
             ) {
                 return true;
             }
@@ -2626,13 +2626,13 @@ function warenkorbKuponFaehigArtikel($Kupon, $PositionenArr)
  * @param array $PositionenArr
  * @return bool
  */
-function warenkorbKuponFaehigHersteller($Kupon, $PositionenArr)
+function warenkorbKuponFaehigHersteller($Kupon, array $PositionenArr)
 {
-    if (is_array($PositionenArr)) {
-        foreach ($PositionenArr as $Pos) {
-            if ($Pos->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL && preg_match('/;' . preg_quote($Pos->Artikel->kHersteller, '/') . ';/i', $Kupon->cHersteller)) {
-                return true;
-            }
+    foreach ($PositionenArr as $Pos) {
+        if ($Pos->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL
+            && preg_match('/;' . preg_quote($Pos->Artikel->kHersteller, '/') . ';/i', $Kupon->cHersteller)
+        ) {
+            return true;
         }
     }
 
@@ -2644,25 +2644,24 @@ function warenkorbKuponFaehigHersteller($Kupon, $PositionenArr)
  * @param array $PositionenArr
  * @return bool
  */
-function warenkorbKuponFaehigKategorien($Kupon, $PositionenArr)
+function warenkorbKuponFaehigKategorien($Kupon, array $PositionenArr)
 {
     $Kats = [];
-    if (is_array($PositionenArr)) {
-        foreach ($PositionenArr as $Pos) {
-            if (!empty($Pos->Artikel)) {
-                $kArtikel = $Pos->Artikel->kArtikel;
-                // Kind?
-                if (ArtikelHelper::isVariChild($kArtikel)) {
-                    $kArtikel = ArtikelHelper::getParent($kArtikel);
-                }
-                $Kats_arr = Shop::DB()->selectAll('tkategorieartikel', 'kArtikel', (int)$kArtikel, 'kKategorie');
-                if (is_array($Kats_arr)) {
-                    foreach ($Kats_arr as $Kat) {
-                        $Kat->kKategorie = (int)$Kat->kKategorie;
-                        if (!in_array($Kat->kKategorie, $Kats, true)) {
-                            $Kats[] = $Kat->kKategorie;
-                        }
-                    }
+    foreach ($PositionenArr as $Pos) {
+        if (empty($Pos->Artikel)) {
+            continue;
+        }
+        $kArtikel = $Pos->Artikel->kArtikel;
+        // Kind?
+        if (ArtikelHelper::isVariChild($kArtikel)) {
+            $kArtikel = ArtikelHelper::getParent($kArtikel);
+        }
+        $Kats_arr = Shop::DB()->selectAll('tkategorieartikel', 'kArtikel', (int)$kArtikel, 'kKategorie');
+        if (is_array($Kats_arr)) {
+            foreach ($Kats_arr as $Kat) {
+                $Kat->kKategorie = (int)$Kat->kKategorie;
+                if (!in_array($Kat->kKategorie, $Kats, true)) {
+                    $Kats[] = $Kat->kKategorie;
                 }
             }
         }
@@ -3031,7 +3030,7 @@ function kuponMoeglich()
                     str_replace('%', '\%', Shop::DB()->escape($Pos->Artikel->kHersteller))
                     . "', REPLACE(cHersteller, ';', ',')) > 0";
             }
-            if ($Pos->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL) {
+            if ($Pos->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL) {
                 if (isset($Pos->Artikel->kArtikel) && $Pos->Artikel->kArtikel > 0) {
                     $kArtikel = $Pos->Artikel->kArtikel;
                     // Kind?
@@ -3094,9 +3093,8 @@ function freeGiftStillValid()
 {
     $cart  = Session::Cart();
     $valid = true;
-    /** @var array('Warenkorb' => Warenkorb) $_SESSION */
     foreach ($cart->PositionenArr as $oPosition) {
-        if ($oPosition->nPosTyp == C_WARENKORBPOS_TYP_GRATISGESCHENK) {
+        if ($oPosition->nPosTyp === C_WARENKORBPOS_TYP_GRATISGESCHENK) {
             // Prüfen ob der Artikel wirklich ein Gratisgeschenk ist und ob die Mindestsumme erreicht wird
             $oArtikelGeschenk = Shop::DB()->query(
                 "SELECT kArtikel
@@ -3480,7 +3478,6 @@ function plausiAccountwahlLogin($cUserLogin, $cUserPass)
  */
 function setzeSesssionAccountwahlLogin($oKunde)
 {
-    /** @var array('Warenkorb' => Warenkorb) $_SESSION */
     if (isset($oKunde->kKunde) && $oKunde->kKunde > 0) {
         //in tbesucher kKunde setzen
         if (isset($_SESSION['oBesucher']->kBesucher) && $_SESSION['oBesucher']->kBesucher > 0) {
@@ -3489,9 +3486,9 @@ function setzeSesssionAccountwahlLogin($oKunde)
             Shop::DB()->update('tbesucher', 'kBesucher', (int)$_SESSION['oBesucher']->kBesucher, $_upd);
         }
         Session::Cart()->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR)
-               ->loescheSpezialPos(C_WARENKORBPOS_TYP_NEUKUNDENKUPON)
-               ->loescheSpezialPos(C_WARENKORBPOS_TYP_KUPON)
-               ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR);
+                       ->loescheSpezialPos(C_WARENKORBPOS_TYP_NEUKUNDENKUPON)
+                       ->loescheSpezialPos(C_WARENKORBPOS_TYP_KUPON)
+                       ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR);
         unset(
             $_SESSION['Zahlungsart'],
             $_SESSION['Versandart'],
@@ -3691,11 +3688,11 @@ function plausiLieferadresse($cPost_arr)
         }
         if ($delVersand) {
             Session::Cart()->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS)
-                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDZUSCHLAG)
-                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR)
-                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART)
-                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZINSAUFSCHLAG)
-                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR);
+                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDZUSCHLAG)
+                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR)
+                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART)
+                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZINSAUFSCHLAG)
+                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR);
             unset($_SESSION['Versandart'], $_SESSION['Zahlungsart']);
         }
         if (!$delVersand) {
@@ -4011,13 +4008,13 @@ function loescheSession($nStep)
                 $_SESSION['TrustedShops']
             );
             Session::Cart()->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS)
-                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDZUSCHLAG)
-                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSAND_ARTIKELABHAENGIG)
-                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART)
-                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZINSAUFSCHLAG)
-                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR)
-                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR)
-                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_TRUSTEDSHOPS);
+                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDZUSCHLAG)
+                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSAND_ARTIKELABHAENGIG)
+                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART)
+                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZINSAUFSCHLAG)
+                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR)
+                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR)
+                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_TRUSTEDSHOPS);
             break;
 
         case 1:
@@ -4029,25 +4026,25 @@ function loescheSession($nStep)
                 $_SESSION['TrustedShops']
             );
             Session::Cart()->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS)
-                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDZUSCHLAG)
-                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSAND_ARTIKELABHAENGIG)
-                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART)
-                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZINSAUFSCHLAG)
-                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR)
-                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR)
-                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_TRUSTEDSHOPS);
+                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDZUSCHLAG)
+                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSAND_ARTIKELABHAENGIG)
+                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART)
+                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZINSAUFSCHLAG)
+                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR)
+                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR)
+                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_TRUSTEDSHOPS);
             break;
 
         case 2:
             unset($_SESSION['Lieferadresse'], $_SESSION['Versandart'], $_SESSION['oVersandfreiKupon']);
             Session::Cart()->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS)
-                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDZUSCHLAG)
-                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSAND_ARTIKELABHAENGIG)
-                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART)
-                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZINSAUFSCHLAG)
-                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR)
-                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR)
-                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_TRUSTEDSHOPS);
+                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDZUSCHLAG)
+                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSAND_ARTIKELABHAENGIG)
+                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART)
+                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZINSAUFSCHLAG)
+                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR)
+                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR)
+                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_TRUSTEDSHOPS);
             unset($_SESSION['TrustedShops'], $_SESSION['Zahlungsart']);
             break;
 
@@ -4059,22 +4056,22 @@ function loescheSession($nStep)
                 $_SESSION['TrustedShops']
             );
             Session::Cart()->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS)
-                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDZUSCHLAG)
-                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSAND_ARTIKELABHAENGIG)
-                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART)
-                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZINSAUFSCHLAG)
-                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR)
-                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR)
-                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_TRUSTEDSHOPS);
+                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDZUSCHLAG)
+                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSAND_ARTIKELABHAENGIG)
+                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART)
+                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZINSAUFSCHLAG)
+                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR)
+                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR)
+                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_TRUSTEDSHOPS);
             break;
 
         case 4:
             unset($_SESSION['Zahlungsart'], $_SESSION['TrustedShops']);
             Session::Cart()->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART)
-                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZINSAUFSCHLAG)
-                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR)
-                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR)
-                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_TRUSTEDSHOPS);
+                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZINSAUFSCHLAG)
+                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR)
+                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR)
+                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_TRUSTEDSHOPS);
             break;
 
         default:

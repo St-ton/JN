@@ -146,7 +146,7 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
         $nArtikelAnzeigefilter = (int)$conf['global']['artikel_artikelanzeigefilter'];
         /** @var WarenkorbPos $Position */
         foreach ($_SESSION['Warenkorb']->PositionenArr as $i => $Position) {
-            if ($Position->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL) {
+            if ($Position->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL) {
                 $Position->fLagerbestandVorAbschluss = isset($Position->Artikel->fLagerbestand)
                     ? (double)$Position->Artikel->fLagerbestand
                     : 0;
@@ -186,7 +186,7 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
                 }
             }
             //bestseller tabelle füllen
-            if ($Position->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL) {
+            if ($Position->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL) {
                 //Lagerbestand verringern
                 aktualisiereLagerbestand(
                     $Position->Artikel,
@@ -197,14 +197,14 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
                 aktualisiereBestseller($Position->kArtikel, $Position->nAnzahl);
                 //xsellkauf füllen
                 foreach ($_SESSION['Warenkorb']->PositionenArr as $pos) {
-                    if ($pos->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL && $pos->kArtikel != $Position->kArtikel) {
+                    if ($pos->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL && $pos->kArtikel != $Position->kArtikel) {
                         aktualisiereXselling($Position->kArtikel, $pos->kArtikel);
                     }
                 }
                 $oWarenkorbpositionen_arr[] = $Position;
                 // Clear Cache
                 Shop::Cache()->flushTags([CACHING_GROUP_ARTICLE . '_' . $Position->kArtikel]);
-            } elseif ($Position->nPosTyp == C_WARENKORBPOS_TYP_GRATISGESCHENK) {
+            } elseif ($Position->nPosTyp === C_WARENKORBPOS_TYP_GRATISGESCHENK) {
                 aktualisiereLagerbestand(
                     $Position->Artikel,
                     $Position->nAnzahl,
@@ -1236,19 +1236,17 @@ function gibLieferadresseAusSession()
  */
 function pruefeVerfuegbarkeit()
 {
-    $xResult_arr   = ['cArtikelName_arr' => []];
-    $Einstellungen = Shop::getSettings([CONF_GLOBAL]);
-    if (is_array($_SESSION['Warenkorb']->PositionenArr) && count($_SESSION['Warenkorb']->PositionenArr) > 0) {
-        foreach ($_SESSION['Warenkorb']->PositionenArr as $i => $oPosition) {
-            if ($oPosition->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL) {
-                // Mit Lager arbeiten und Lagerbestand darf < 0 werden?
-                if (isset($oPosition->Artikel->cLagerBeachten) && $oPosition->Artikel->cLagerBeachten === 'Y' &&
-                    $oPosition->Artikel->cLagerKleinerNull === 'Y' &&
-                    $Einstellungen['global']['global_lieferverzoegerung_anzeigen'] === 'Y'
-                ) {
-                    if ($oPosition->nAnzahl > $oPosition->Artikel->fLagerbestand) {
-                        $xResult_arr['cArtikelName_arr'][] = $oPosition->Artikel->cName;
-                    }
+    $xResult_arr = ['cArtikelName_arr' => []];
+    $conf        = Shop::getSettings([CONF_GLOBAL]);
+    foreach (Session::Cart()->PositionenArr as $i => $oPosition) {
+        if ($oPosition->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL) {
+            // Mit Lager arbeiten und Lagerbestand darf < 0 werden?
+            if (isset($oPosition->Artikel->cLagerBeachten) && $oPosition->Artikel->cLagerBeachten === 'Y'
+                && $oPosition->Artikel->cLagerKleinerNull === 'Y'
+                && $conf['global']['global_lieferverzoegerung_anzeigen'] === 'Y'
+            ) {
+                if ($oPosition->nAnzahl > $oPosition->Artikel->fLagerbestand) {
+                    $xResult_arr['cArtikelName_arr'][] = $oPosition->Artikel->cName;
                 }
             }
         }

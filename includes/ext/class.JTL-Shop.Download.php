@@ -277,13 +277,12 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
          */
         public static function hasDownloads($oWarenkorb)
         {
-            if (count($oWarenkorb->PositionenArr) > 0) {
-                foreach ($oWarenkorb->PositionenArr as &$oPosition) {
-                    if ($oPosition->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL) {
-                        if (isset($oPosition->Artikel->oDownload_arr) && count($oPosition->Artikel->oDownload_arr) > 0) {
-                            return true;
-                        }
-                    }
+            foreach ($oWarenkorb->PositionenArr as &$oPosition) {
+                if ($oPosition->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL
+                    && isset($oPosition->Artikel->oDownload_arr)
+                    && count($oPosition->Artikel->oDownload_arr) > 0
+                ) {
+                    return true;
                 }
             }
 
@@ -305,12 +304,12 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
                 $oDownload = new self($kDownload, 0, false);
                 $nReturn   = $oDownload::checkFile($oDownload->kDownload, $kKunde, $kBestellung);
                 if ($nReturn === 1) {
-                    $oDownloadHistory = new DownloadHistory();
-                    $oDownloadHistory->setDownload($kDownload);
-                    $oDownloadHistory->setKunde($kKunde);
-                    $oDownloadHistory->setBestellung($kBestellung);
-                    $oDownloadHistory->setErstellt('now()');
-                    $oDownloadHistory->save();
+                    (new DownloadHistory())
+                        ->setDownload($kDownload)
+                        ->setKunde($kKunde)
+                        ->setBestellung($kBestellung)
+                        ->setErstellt('now()')
+                        ->save();
 
                     self::send_file_to_browser(
                         PFAD_DOWNLOADS . $oDownload->getPfad(),

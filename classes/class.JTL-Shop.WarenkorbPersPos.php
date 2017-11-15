@@ -91,8 +91,8 @@ class WarenkorbPersPos
         $this->dHinzugefuegt  = 'now()';
         $this->kWarenkorbPers = (int)$kWarenkorbPers;
         $this->cUnique        = $cUnique;
-        $this->kKonfigitem    = $kKonfigitem;
-        $this->nPosTyp        = $nPosTyp;
+        $this->kKonfigitem    = (int)$kKonfigitem;
+        $this->nPosTyp        = (int)$nPosTyp;
     }
 
     /**

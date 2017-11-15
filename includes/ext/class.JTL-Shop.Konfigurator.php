@@ -94,7 +94,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 $beDeletednPos_arr = [];
                 foreach ($oBasket->PositionenArr as $nPos => $oPosition) {
                     $bDeleted = false;
-                    if ($oPosition->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL) {
+                    if ($oPosition->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL) {
                         // Konfigvater
                         if ($oPosition->cUnique && $oPosition->kKonfigitem == 0) {
                             $oKonfigitem_arr = [];
@@ -102,8 +102,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                             // Alle Kinder suchen
                             foreach ($oBasket->PositionenArr as $oChildPosition) {
                                 if ($oChildPosition->cUnique &&
-                                    $oChildPosition->cUnique == $oPosition->cUnique &&
-                                    $oChildPosition->kKonfigitem > 0
+                                    $oChildPosition->cUnique === $oPosition->cUnique
+                                    && $oChildPosition->kKonfigitem > 0
                                 ) {
                                     $oKonfigitem_arr[] = new Konfigitem($oChildPosition->kKonfigitem);
                                 }

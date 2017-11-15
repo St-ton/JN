@@ -49,8 +49,8 @@ class BestellungHelper extends WarenkorbHelper
             // floating-point precission bug
             $amountGross = (float)(string)$amountGross;
 
-            switch ($oPosition->nPosTyp) {
-                case C_WARENKORBPOS_TYP_ARTIKEL: {
+            switch ((int)$oPosition->nPosTyp) {
+                case C_WARENKORBPOS_TYP_ARTIKEL:
                     $item = (object)[
                         'name'     => '',
                         'quantity' => 1,
@@ -82,7 +82,6 @@ class BestellungHelper extends WarenkorbHelper
 
                     $info->items[] = $item;
                     break;
-                }
 
                 case C_WARENKORBPOS_TYP_VERSANDPOS:
                 case C_WARENKORBPOS_TYP_VERSANDZUSCHLAG:

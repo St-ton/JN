@@ -276,7 +276,7 @@ function pruefeWarenkorbArtikelSichtbarkeit($kKundengruppe)
         foreach ($cart->PositionenArr as $i => $oPosition) {
             // Wenn die Position ein Artikel ist
             $bKonfig = (isset($oPosition->cUnique) && strlen($oPosition->cUnique) === 10);
-            if ($oPosition->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL && !$bKonfig) {
+            if ($oPosition->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL && !$bKonfig) {
                 // Artikelsichtbarkeit prüfen
                 $oArtikelSichtbarkeit = Shop::DB()->query(
                     "SELECT kArtikel
@@ -381,7 +381,7 @@ function fuehreLoginAus($userLogin, $passLogin)
                         foreach ($oWarenkorbPers->oWarenkorbPersPos_arr as $oWarenkorbPersPos) {
                             if (empty($oWarenkorbPers->Artikel->bHasKonfig)) {
                                 // Gratisgeschenk in Warenkorb legen
-                                if ((int)$oWarenkorbPersPos->nPosTyp === (int)C_WARENKORBPOS_TYP_GRATISGESCHENK) {
+                                if ((int)$oWarenkorbPersPos->nPosTyp === C_WARENKORBPOS_TYP_GRATISGESCHENK) {
                                     $kArtikelGeschenk = (int)$oWarenkorbPersPos->kArtikel;
                                     $oArtikelGeschenk = Shop::DB()->query(
                                         "SELECT tartikelattribut.kArtikel, tartikel.fLagerbestand, 

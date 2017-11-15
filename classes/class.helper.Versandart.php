@@ -128,9 +128,9 @@ class VersandartHelper
         $bNoetig = false;
         $cart    = Session::Cart();
         if ($cart !== null) {
-            foreach ($cart->PositionenArr as $Pos) {
-                if ($Pos->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL) {
-                    if (!self::gibArtikelabhaengigeVersandkosten($cLand, $Pos->Artikel, $Pos->nAnzahl)) {
+            foreach ($cart->PositionenArr as $pos) {
+                if ((int)$pos->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL) {
+                    if (!self::gibArtikelabhaengigeVersandkosten($cLand, $pos->Artikel, $pos->nAnzahl)) {
                         $bNoetig = true;
                         break;
                     }
@@ -598,7 +598,7 @@ class VersandartHelper
             //Steuerklasse bestimmen
             if (is_array($cart->PositionenArr)) {
                 foreach ($cart->PositionenArr as $oPosition) {
-                    if ($oPosition->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL) {
+                    if ((int)$oPosition->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL) {
                         //Summen pro Steuerklasse summieren
                         if (!array_key_exists($oPosition->Artikel->kSteuerklasse, $fWarensummeProSteuerklasse_arr)) {
                             $fWarensummeProSteuerklasse_arr[$oPosition->Artikel->kSteuerklasse] = 0;
@@ -873,25 +873,25 @@ class VersandartHelper
 
     /**
      * @param string $cLand
-     * @param array  $PositionenArr
+     * @param array  $positionenArr
      * @param bool   $bCheckLieferadresse
      * @return array
      */
-    public static function gibArtikelabhaengigeVersandkostenImWK($cLand, $PositionenArr, $bCheckLieferadresse = true)
+    public static function gibArtikelabhaengigeVersandkostenImWK($cLand, $positionenArr, $bCheckLieferadresse = true)
     {
         $arrVersandpositionen = [];
-        if (is_array($PositionenArr)) {
-            foreach ($PositionenArr as $Pos) {
-                if ($Pos->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL) {
+        if (is_array($positionenArr)) {
+            foreach ($positionenArr as $pos) {
+                if ((int)$pos->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL) {
                     unset($oVersandPos);
                     $oVersandPos = self::gibArtikelabhaengigeVersandkosten(
                         $cLand,
-                        $Pos->Artikel,
-                        $Pos->nAnzahl,
+                        $pos->Artikel,
+                        $pos->nAnzahl,
                         $bCheckLieferadresse
                     );
                     if (!empty($oVersandPos->cName)) {
-                        $oVersandPos->kArtikel  = $Pos->Artikel->kArtikel;
+                        $oVersandPos->kArtikel  = $pos->Artikel->kArtikel;
                         $arrVersandpositionen[] = $oVersandPos;
                     }
                 }
@@ -911,7 +911,7 @@ class VersandartHelper
         if (isset($Warenkorb->PositionenArr) && is_array($Warenkorb->PositionenArr)) {
             foreach ($Warenkorb->PositionenArr as $pos) {
                 $pos->kVersandklasse = (int)$pos->kVersandklasse;
-                if ($pos->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL && !in_array($pos->kVersandklasse, $VKarr, true)) {
+                if ((int)$pos->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL && !in_array($pos->kVersandklasse, $VKarr, true)) {
                     if ($pos->kVersandklasse > 0) {
                         $VKarr[] = $pos->kVersandklasse;
                     }

@@ -30,7 +30,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
                     $oUploadDatei                = isset($_SESSION['Uploader'][$oUpload->cUnique])
                         ? $_SESSION['Uploader'][$oUpload->cUnique]
                         : null;
-                    if (is_object($oUploadDatei)) {
+                    if ($oUploadDatei !== null && is_object($oUploadDatei)) {
                         $oUpload->cDateiname    = $oUploadDatei->cName;
                         $oUpload->cDateigroesse = self::formatGroesse($oUploadDatei->nBytes);
                     }
@@ -65,31 +65,29 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
 
         /**
          * @param Warenkorb $oWarenkorb
-         * @return array|null
+         * @return array
          */
         public static function gibWarenkorbUploads($oWarenkorb)
         {
-            $oUploads_arr = null;
-            if (count($oWarenkorb->PositionenArr) > 0) {
-                foreach ($oWarenkorb->PositionenArr as &$oPosition) {
-                    if ($oPosition->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL && isset($oPosition->Artikel->kArtikel)) {
-                        $eigenschaftArr = [];
-                        if (!empty($oPosition->WarenkorbPosEigenschaftArr)) {
-                            foreach ($oPosition->WarenkorbPosEigenschaftArr as $eigenschaft) {
-                                $eigenschaftArr[$eigenschaft->kEigenschaft] = is_string($eigenschaft->cEigenschaftWertName)
-                                    ? $eigenschaft->cEigenschaftWertName
-                                    : reset($eigenschaft->cEigenschaftWertName);
-                            }
+            $oUploads_arr = [];
+            foreach ($oWarenkorb->PositionenArr as &$oPosition) {
+                if ($oPosition->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL && isset($oPosition->Artikel->kArtikel)) {
+                    $eigenschaftArr = [];
+                    if (!empty($oPosition->WarenkorbPosEigenschaftArr)) {
+                        foreach ($oPosition->WarenkorbPosEigenschaftArr as $eigenschaft) {
+                            $eigenschaftArr[$eigenschaft->kEigenschaft] = is_string($eigenschaft->cEigenschaftWertName)
+                                ? $eigenschaft->cEigenschaftWertName
+                                : reset($eigenschaft->cEigenschaftWertName);
                         }
-                        $oUpload              = new stdClass();
-                        $oUpload->cName       = $oPosition->Artikel->cName;
-                        if (!empty($oPosition->WarenkorbPosEigenschaftArr)) {
-                            $oUpload->WarenkorbPosEigenschaftArr = $oPosition->WarenkorbPosEigenschaftArr;
-                        }
-                        $oUpload->oUpload_arr = self::gibArtikelUploads($oPosition->Artikel->kArtikel, $eigenschaftArr);
-                        if ($oUpload->oUpload_arr) {
-                            $oUploads_arr[] = $oUpload;
-                        }
+                    }
+                    $oUpload              = new stdClass();
+                    $oUpload->cName       = $oPosition->Artikel->cName;
+                    if (!empty($oPosition->WarenkorbPosEigenschaftArr)) {
+                        $oUpload->WarenkorbPosEigenschaftArr = $oPosition->WarenkorbPosEigenschaftArr;
+                    }
+                    $oUpload->oUpload_arr = self::gibArtikelUploads($oPosition->Artikel->kArtikel, $eigenschaftArr);
+                    if ($oUpload->oUpload_arr) {
+                        $oUploads_arr[] = $oUpload;
                     }
                 }
             }
@@ -114,13 +112,10 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
          */
         public static function pruefeWarenkorbUploads($oWarenkorb)
         {
-            $oUploadSchema_arr = self::gibWarenkorbUploads($oWarenkorb);
-            if (is_array($oUploadSchema_arr)) {
-                foreach ($oUploadSchema_arr as &$oUploadSchema) {
-                    foreach ($oUploadSchema->oUpload_arr as &$oUpload) {
-                        if ($oUpload->nPflicht && !$oUpload->bVorhanden) {
-                            return false;
-                        }
+            foreach (self::gibWarenkorbUploads($oWarenkorb) as &$oUploadSchema) {
+                foreach ($oUploadSchema->oUpload_arr as &$oUpload) {
+                    if ($oUpload->nPflicht && !$oUpload->bVorhanden) {
+                        return false;
                     }
                 }
             }
@@ -143,29 +138,26 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
          */
         public static function speicherUploadDateien($oWarenkorb, $kBestellung)
         {
-            $kBestellung       = (int)$kBestellung;
-            $oUploadSchema_arr = self::gibWarenkorbUploads($oWarenkorb);
-            if (is_array($oUploadSchema_arr)) {
-                foreach ($oUploadSchema_arr as &$oUploadSchema) {
-                    foreach ($oUploadSchema->oUpload_arr as &$oUploadDatei) {
-                        $oUploadInfo = isset($_SESSION['Uploader'][$oUploadDatei->cUnique])
-                            ? $_SESSION['Uploader'][$oUploadDatei->cUnique]
-                            : null;
-                        if (is_object($oUploadInfo)) {
-                            self::setzeUploadQueue($kBestellung, $oUploadDatei->kCustomID);
-                            self::setzeUploadDatei(
-                                $kBestellung,
-                                UPLOAD_TYP_BESTELLUNG,
-                                $oUploadInfo->cName,
-                                $oUploadDatei->cUnique,
-                                $oUploadInfo->nBytes
-                            );
-                        }
-                        unset($_SESSION['Uploader'][$oUploadDatei->cUnique]);
+            $kBestellung = (int)$kBestellung;
+            foreach (self::gibWarenkorbUploads($oWarenkorb) as &$oUploadSchema) {
+                foreach ($oUploadSchema->oUpload_arr as &$oUploadDatei) {
+                    $oUploadInfo = isset($_SESSION['Uploader'][$oUploadDatei->cUnique])
+                        ? $_SESSION['Uploader'][$oUploadDatei->cUnique]
+                        : null;
+                    if ($oUploadInfo !== null && is_object($oUploadInfo)) {
+                        self::setzeUploadQueue($kBestellung, $oUploadDatei->kCustomID);
+                        self::setzeUploadDatei(
+                            $kBestellung,
+                            UPLOAD_TYP_BESTELLUNG,
+                            $oUploadInfo->cName,
+                            $oUploadDatei->cUnique,
+                            $oUploadInfo->nBytes
+                        );
                     }
+                    unset($_SESSION['Uploader'][$oUploadDatei->cUnique]);
                 }
-                session_regenerate_id();
             }
+            session_regenerate_id();
             unset($_SESSION['Uploader']);
         }
 
@@ -289,15 +281,14 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
         public static function vorschauTyp($cName)
         {
             $cPath_arr = pathinfo($cName);
-            if (is_array($cPath_arr)) {
-                return in_array(
+
+            return is_array($cPath_arr)
+                 ? in_array(
                     $cPath_arr['extension'],
                     ['gif', 'png', 'jpg', 'jpeg', 'bmp', 'jpe'],
                     true
-                );
-            }
-
-            return false;
+                )
+                : false;
         }
     }
 }

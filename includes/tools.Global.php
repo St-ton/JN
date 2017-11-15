@@ -715,12 +715,12 @@ function pruefeVariBoxAnzahl($variBoxAnzahl_arr)
 }
 
 /**
- * @param int        $kArtikel
- * @param float      $fAnzahl
- * @param array      $oEigenschaftwerte_arr
- * @param bool       $cUnique
- * @param int        $kKonfigitem
- * @param int|string $nPosTyp
+ * @param int   $kArtikel
+ * @param float $fAnzahl
+ * @param array $oEigenschaftwerte_arr
+ * @param bool  $cUnique
+ * @param int   $kKonfigitem
+ * @param int   $nPosTyp
  */
 function fuegeEinInWarenkorbPers($kArtikel, $fAnzahl, $oEigenschaftwerte_arr, $cUnique = false, $kKonfigitem = 0, $nPosTyp = C_WARENKORBPOS_TYP_ARTIKEL)
 {
@@ -733,6 +733,7 @@ function fuegeEinInWarenkorbPers($kArtikel, $fAnzahl, $oEigenschaftwerte_arr, $c
     if ($conf['global']['warenkorbpers_nutzen'] !== 'Y') {
         return;
     }
+    $nPosTyp  = (int)$nPosTyp;
     $kArtikel = (int)$kArtikel;
     // Persistenter Warenkorb
     if ($kArtikel > 0) {
@@ -758,7 +759,7 @@ function fuegeEinInWarenkorbPers($kArtikel, $fAnzahl, $oEigenschaftwerte_arr, $c
             );
             if (empty($oSichtbarkeit) || !isset($oSichtbarkeit->kArtikel) || !$oSichtbarkeit->kArtikel) {
                 $oWarenkorbPers = new WarenkorbPers(Session::Customer()->getID());
-                if ($nPosTyp === (int)C_WARENKORBPOS_TYP_GRATISGESCHENK) {
+                if ($nPosTyp === C_WARENKORBPOS_TYP_GRATISGESCHENK) {
                     $oWarenkorbPers->loescheGratisGeschenkAusWarenkorbPers();
                 }
                 $oWarenkorbPers->fuegeEin(
@@ -989,7 +990,8 @@ function altenKuponNeuBerechnen()
  */
 function checkeKuponWKPos($oWKPosition, $Kupon)
 {
-    if ($oWKPosition->nPosTyp != C_WARENKORBPOS_TYP_ARTIKEL) {
+    $oWKPosition->nPosTyp = (int)$oWKPosition->nPosTyp;
+    if ($oWKPosition->nPosTyp !== C_WARENKORBPOS_TYP_ARTIKEL) {
         return $oWKPosition;
     }
     $Artikel_qry    = " OR FIND_IN_SET('" .
@@ -1002,7 +1004,7 @@ function checkeKuponWKPos($oWKPosition, $Kupon)
     $Kunden_qry     = '';
     $kKategorie_arr = [];
 
-    if ($oWKPosition->Artikel->kArtikel > 0 && $oWKPosition->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL) {
+    if ($oWKPosition->Artikel->kArtikel > 0 && $oWKPosition->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL) {
         $kArtikel = (int)$oWKPosition->Artikel->kArtikel;
         // Kind?
         if (ArtikelHelper::isVariChild($kArtikel)) {
@@ -1089,10 +1091,11 @@ function checkeKuponWKPos($oWKPosition, $Kupon)
  */
 function checkSetPercentCouponWKPos($oWKPosition, $Kupon)
 {
-    $wkPos         = new stdClass();
-    $wkPos->fPreis = (float)0;
-    $wkPos->cName  = '';
-    if ($oWKPosition->nPosTyp != C_WARENKORBPOS_TYP_ARTIKEL) {
+    $wkPos                = new stdClass();
+    $wkPos->fPreis        = (float)0;
+    $wkPos->cName         = '';
+    $oWKPosition->nPosTyp = (int)$oWKPosition->nPosTyp;
+    if ($oWKPosition->nPosTyp !== C_WARENKORBPOS_TYP_ARTIKEL) {
         return $wkPos;
     }
     $Artikel_qry    = " OR FIND_IN_SET('" .
@@ -1105,7 +1108,7 @@ function checkSetPercentCouponWKPos($oWKPosition, $Kupon)
     $Kunden_qry     = '';
     $kKategorie_arr = [];
 
-    if ($oWKPosition->Artikel->kArtikel > 0 && $oWKPosition->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL) {
+    if ($oWKPosition->Artikel->kArtikel > 0 && $oWKPosition->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL) {
         $kArtikel = (int)$oWKPosition->Artikel->kArtikel;
         // Kind?
         if (ArtikelHelper::isVariChild($kArtikel)) {
@@ -4783,7 +4786,7 @@ function pruefeWarenkorbStueckliste($oArtikel, $fAnzahl)
         $oStuecklisteKomponente_arr = gibStuecklistenKomponente($oArtikel->kStueckliste, true);
     }
     foreach (Session::Cart()->PositionenArr as $oPosition) {
-        if ($oPosition->nPosTyp != C_WARENKORBPOS_TYP_ARTIKEL) {
+        if ($oPosition->nPosTyp !== C_WARENKORBPOS_TYP_ARTIKEL) {
             continue;
         }
         // Komponente soll hinzugefügt werden aber die Stückliste ist bereits im Warenkorb

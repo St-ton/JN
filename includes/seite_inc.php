@@ -94,24 +94,24 @@ function gibAuswahlAssistentFragen($Einstellungen)
 }
 
 /**
- * @param array $Einstellungen
+ * @param array $conf
  * @return array|mixed
  */
-function gibNews($Einstellungen)
+function gibNews($conf)
 {
     $cSQL      = '';
     $oNews_arr = [];
     // Sollen keine News auf der Startseite angezeigt werden?
-    if (!isset($Einstellungen['news']['news_anzahl_content']) ||
-        (int)$Einstellungen['news']['news_anzahl_content'] === 0
+    if (!isset($conf['news']['news_anzahl_content']) ||
+        (int)$conf['news']['news_anzahl_content'] === 0
     ) {
         return $oNews_arr;
     }
-    $cacheID = 'news_' . md5(json_encode($Einstellungen['news']) . '_' . Shop::getLanguage());
+    $cacheID = 'news_' . md5(json_encode($conf['news']) . '_' . Shop::getLanguage());
 
     if (($oNews_arr = Shop::Cache()->get($cacheID)) === false) {
-        if ((int)$Einstellungen['news']['news_anzahl_content'] > 0) {
-            $cSQL = ' LIMIT ' . (int)$Einstellungen['news']['news_anzahl_content'];
+        if ((int)$conf['news']['news_anzahl_content'] > 0) {
+            $cSQL = ' LIMIT ' . (int)$conf['news']['news_anzahl_content'];
         }
         $oNews_arr = Shop::DB()->query("
             SELECT tnews.kNews, tnews.kSprache, tnews.cKundengruppe, tnews.cBetreff, tnews.cText, 
@@ -180,62 +180,62 @@ function gibNews($Einstellungen)
 
 /**
  * @param array $search
- * @param array $Einstellungen
+ * @param array $conf
  * @return null|stdClass
  */
-function gibNextBoxPrio($search, $Einstellungen)
+function gibNextBoxPrio($search, $conf)
 {
     $max       = -1;
     $obj       = new stdClass();
     $obj->name = '';
-    if ($max < (int)$Einstellungen['startseite']['startseite_bestseller_sortnr']
-        && (int)$Einstellungen['startseite']['startseite_bestseller_anzahl'] > 0
+    if ($max < (int)$conf['startseite']['startseite_bestseller_sortnr']
+        && (int)$conf['startseite']['startseite_bestseller_anzahl'] > 0
         && !in_array('Bestseller', $search, true)
     ) {
         $obj->name   = 'Bestseller';
-        $obj->anzahl = (int)$Einstellungen['startseite']['startseite_bestseller_anzahl'];
-        $obj->sort   = (int)$Einstellungen['startseite']['startseite_bestseller_sortnr'];
-        $max         = (int)$Einstellungen['startseite']['startseite_bestseller_sortnr'];
+        $obj->anzahl = (int)$conf['startseite']['startseite_bestseller_anzahl'];
+        $obj->sort   = (int)$conf['startseite']['startseite_bestseller_sortnr'];
+        $max         = (int)$conf['startseite']['startseite_bestseller_sortnr'];
     }
-    if ($max < (int)$Einstellungen['startseite']['startseite_sonderangebote_sortnr']
-        && (int)$Einstellungen['startseite']['startseite_sonderangebote_anzahl'] > 0
+    if ($max < (int)$conf['startseite']['startseite_sonderangebote_sortnr']
+        && (int)$conf['startseite']['startseite_sonderangebote_anzahl'] > 0
         && !in_array('Sonderangebote', $search, true)
     ) {
         $obj->name   = 'Sonderangebote';
-        $obj->anzahl = (int)$Einstellungen['startseite']['startseite_sonderangebote_anzahl'];
-        $obj->sort   = (int)$Einstellungen['startseite']['startseite_sonderangebote_sortnr'];
-        $max         = (int)$Einstellungen['startseite']['startseite_sonderangebote_sortnr'];
+        $obj->anzahl = (int)$conf['startseite']['startseite_sonderangebote_anzahl'];
+        $obj->sort   = (int)$conf['startseite']['startseite_sonderangebote_sortnr'];
+        $max         = (int)$conf['startseite']['startseite_sonderangebote_sortnr'];
     }
-    if ($max < (int)$Einstellungen['startseite']['startseite_topangebote_sortnr']
-        && (int)$Einstellungen['startseite']['startseite_topangebote_anzahl'] > 0
+    if ($max < (int)$conf['startseite']['startseite_topangebote_sortnr']
+        && (int)$conf['startseite']['startseite_topangebote_anzahl'] > 0
         && !in_array('TopAngebot', $search, true)
     ) {
         $obj->name   = 'TopAngebot';
-        $obj->anzahl = (int)$Einstellungen['startseite']['startseite_topangebote_anzahl'];
-        $obj->sort   = (int)$Einstellungen['startseite']['startseite_topangebote_sortnr'];
-        $max         = (int)$Einstellungen['startseite']['startseite_topangebote_sortnr'];
+        $obj->anzahl = (int)$conf['startseite']['startseite_topangebote_anzahl'];
+        $obj->sort   = (int)$conf['startseite']['startseite_topangebote_sortnr'];
+        $max         = (int)$conf['startseite']['startseite_topangebote_sortnr'];
     }
-    if ($max < (int)$Einstellungen['startseite']['startseite_neuimsortiment_sortnr']
-        && (int)$Einstellungen['startseite']['startseite_neuimsortiment_anzahl'] > 0
+    if ($max < (int)$conf['startseite']['startseite_neuimsortiment_sortnr']
+        && (int)$conf['startseite']['startseite_neuimsortiment_anzahl'] > 0
         && !in_array('NeuImSortiment', $search, true)
     ) {
         $obj->name   = 'NeuImSortiment';
-        $obj->anzahl = (int)$Einstellungen['startseite']['startseite_neuimsortiment_anzahl'];
-        $obj->sort   = (int)$Einstellungen['startseite']['startseite_neuimsortiment_sortnr'];
+        $obj->anzahl = (int)$conf['startseite']['startseite_neuimsortiment_anzahl'];
+        $obj->sort   = (int)$conf['startseite']['startseite_neuimsortiment_sortnr'];
     }
 
     return (strlen($obj->name) > 0) ? $obj : null;
 }
 
 /**
- * @param array $Einstellungen
+ * @param array $conf
  * @return array
  */
-function gibLivesucheTop($Einstellungen)
+function gibLivesucheTop($conf)
 {
-    $limit          = (isset($Einstellungen['sonstiges']['sonstiges_livesuche_all_top_count'])
-        && (int)$Einstellungen['sonstiges']['sonstiges_livesuche_all_top_count'] > 0)
-        ? (int)$Einstellungen['sonstiges']['sonstiges_livesuche_all_top_count']
+    $limit          = (isset($conf['sonstiges']['sonstiges_livesuche_all_top_count'])
+        && (int)$conf['sonstiges']['sonstiges_livesuche_all_top_count'] > 0)
+        ? (int)$conf['sonstiges']['sonstiges_livesuche_all_top_count']
         : 100;
     $suchwolke_objs = Shop::DB()->query("
         SELECT tsuchanfrage.kSuchanfrage, tsuchanfrage.kSprache, tsuchanfrage.cSuche, tseo.cSeo, 
@@ -280,22 +280,21 @@ function wolkesort($a, $b)
     if ($a->nAnzahlGesuche < $b->nAnzahlGesuche) {
         return 1;
     }
-    if ($a->nAnzahlGesuche > $b->nAnzahlGesuche) {
-        return -1;
-    }
 
-    return 0;
+    return $a->nAnzahlGesuche > $b->nAnzahlGesuche
+        ? -1
+        : 0;
 }
 
 /**
- * @param array $Einstellungen
+ * @param array $conf
  * @return array
  */
-function gibLivesucheLast($Einstellungen)
+function gibLivesucheLast($conf)
 {
-    $limit          = (isset($Einstellungen['sonstiges']['sonstiges_livesuche_all_last_count'])
-        && (int)$Einstellungen['sonstiges']['sonstiges_livesuche_all_last_count'] > 0)
-        ? (int)$Einstellungen['sonstiges']['sonstiges_livesuche_all_last_count']
+    $limit          = (isset($conf['sonstiges']['sonstiges_livesuche_all_last_count'])
+        && (int)$conf['sonstiges']['sonstiges_livesuche_all_last_count'] > 0)
+        ? (int)$conf['sonstiges']['sonstiges_livesuche_all_last_count']
         : 100;
     $suchwolke_objs = Shop::DB()->query(
         "SELECT tsuchanfrage.kSuchanfrage, tsuchanfrage.kSprache, tsuchanfrage.cSuche, tseo.cSeo, 
@@ -331,14 +330,14 @@ function gibLivesucheLast($Einstellungen)
 }
 
 /**
- * @param array $Einstellungen
+ * @param array $conf
  * @return array
  */
-function gibTagging($Einstellungen)
+function gibTagging($conf)
 {
-    $limit         = (isset($Einstellungen['sonstiges']['sonstiges_tagging_all_count'])
-        && (int)$Einstellungen['sonstiges']['sonstiges_tagging_all_count'] > 0)
-        ? (int)$Einstellungen['sonstiges']['sonstiges_tagging_all_count']
+    $limit         = (isset($conf['sonstiges']['sonstiges_tagging_all_count'])
+        && (int)$conf['sonstiges']['sonstiges_tagging_all_count'] > 0)
+        ? (int)$conf['sonstiges']['sonstiges_tagging_all_count']
         : 100;
     $tagwolke_objs = Shop::DB()->query(
         "SELECT ttag.kTag, ttag.cName, tseo.cSeo, sum(ttagartikel.nAnzahlTagging) AS Anzahl
@@ -451,60 +450,33 @@ function gibSitemapGlobaleMerkmale()
                 GROUP BY tmerkmalwertsprache.kMerkmalWert
                 ORDER BY tmerkmal.nSort, {$cMerkmalTabelle}.cName, tmerkmalwert.nSort, tmerkmalwertsprache.cWert", 2
         );
-        $nPos = 0;
-        if (is_array($oMerkmalTMP_arr) && count($oMerkmalTMP_arr) > 0) {
-            $shopURL = Shop::getURL() . '/';
-            foreach ($oMerkmalTMP_arr as $i => &$oMerkmalTMP) {
-                $oMerkmalWert = new stdClass();
-                $oMerkmal     = new stdClass();
-                if ($i > 0) {
-                    // Alle weiteren Durchläufe
-                    if ($oMerkmal_arr[$nPos]->kMerkmal == $oMerkmalTMP->kMerkmal) {
-                        $oMerkmalWert->kMerkmalWert = $oMerkmalTMP->kMerkmalWert;
-                        $oMerkmalWert->cWert        = $oMerkmalTMP->cWert;
-                        $oMerkmalWert->cSeo         = $oMerkmalTMP->cSeo;
-                        $oMerkmalWert->cBildPfadMW  = $oMerkmalTMP->cBildPfadMW;
+        $nPos    = 0;
+        $shopURL = Shop::getURL() . '/';
+        foreach ($oMerkmalTMP_arr as $i => &$oMerkmalTMP) {
+            $oMerkmalWert = new stdClass();
+            $oMerkmal     = new stdClass();
+            if ($i > 0) {
+                // Alle weiteren Durchläufe
+                if ($oMerkmal_arr[$nPos]->kMerkmal == $oMerkmalTMP->kMerkmal) {
+                    $oMerkmalWert->kMerkmalWert = $oMerkmalTMP->kMerkmalWert;
+                    $oMerkmalWert->cWert        = $oMerkmalTMP->cWert;
+                    $oMerkmalWert->cSeo         = $oMerkmalTMP->cSeo;
+                    $oMerkmalWert->cBildPfadMW  = $oMerkmalTMP->cBildPfadMW;
 
-                        verarbeiteMerkmalWertBild($oMerkmalWert);
-                        // cURL bauen
-                        $oMerkmalWert->cURL = (strlen($oMerkmalWert->cSeo) > 0)
-                            ? $shopURL . $oMerkmalWert->cSeo
-                            : $shopURL . $cDatei . '?m=' . $oMerkmalWert->kMerkmalWert;
+                    verarbeiteMerkmalWertBild($oMerkmalWert);
+                    // cURL bauen
+                    $oMerkmalWert->cURL = strlen($oMerkmalWert->cSeo) > 0
+                        ? $shopURL . $oMerkmalWert->cSeo
+                        : $shopURL . $cDatei . '?m=' . $oMerkmalWert->kMerkmalWert;
 
-                        $oMerkmal_arr[$nPos]->oMerkmalWert_arr[] = $oMerkmalWert;
-                    } else {
-                        $oMerkmal->kMerkmal  = $oMerkmalTMP->kMerkmal;
-                        $oMerkmal->cName     = $oMerkmalTMP->cName;
-                        $oMerkmal->nSort     = $oMerkmalTMP->nSort;
-                        $oMerkmal->nGlobal   = $oMerkmalTMP->nGlobal;
-                        $oMerkmal->cBildpfad = $oMerkmalTMP->cBildpfad;
-                        $oMerkmal->cTyp      = $oMerkmalTMP->cTyp;
-
-                        verarbeiteMerkmalBild($oMerkmal);
-                        $oMerkmalWert->kMerkmalWert = $oMerkmalTMP->kMerkmalWert;
-                        $oMerkmalWert->cWert        = $oMerkmalTMP->cWert;
-                        $oMerkmalWert->cSeo         = $oMerkmalTMP->cSeo;
-                        $oMerkmalWert->cBildPfadMW  = $oMerkmalTMP->cBildPfadMW;
-
-                        verarbeiteMerkmalWertBild($oMerkmalWert);
-                        // cURL bauen
-                        $oMerkmalWert->cURL = (strlen($oMerkmalWert->cSeo) > 0)
-                            ? $shopURL . $oMerkmalWert->cSeo
-                            : $shopURL . $cDatei . '?m=' . $oMerkmalWert->kMerkmalWert;
-
-                        $oMerkmal->oMerkmalWert_arr[] = $oMerkmalWert;
-                        $oMerkmal_arr[]               = $oMerkmal;
-
-                        ++$nPos;
-                    }
-                } else { // Erster Durchlauf
-                    $oMerkmal->kMerkmal         = isset($oMerkmalTMP->kMerkmal) ? $oMerkmalTMP->kMerkmal : null;
-                    $oMerkmal->cName            = isset($oMerkmalTMP->cName) ? $oMerkmalTMP->cName : null;
-                    $oMerkmal->nSort            = isset($oMerkmalTMP->nSort) ? $oMerkmalTMP->nSort : null;
-                    $oMerkmal->nGlobal          = isset($oMerkmalTMP->nGlobal) ? $oMerkmalTMP->nGlobal : null;
-                    $oMerkmal->cBildpfad        = isset($oMerkmalTMP->cBildpfad) ? $oMerkmalTMP->cBildpfad : null;
-                    $oMerkmal->cTyp             = isset($oMerkmalTMP->cTyp) ? $oMerkmalTMP->cTyp : null;
-                    $oMerkmal->oMerkmalWert_arr = [];
+                    $oMerkmal_arr[$nPos]->oMerkmalWert_arr[] = $oMerkmalWert;
+                } else {
+                    $oMerkmal->kMerkmal  = $oMerkmalTMP->kMerkmal;
+                    $oMerkmal->cName     = $oMerkmalTMP->cName;
+                    $oMerkmal->nSort     = $oMerkmalTMP->nSort;
+                    $oMerkmal->nGlobal   = $oMerkmalTMP->nGlobal;
+                    $oMerkmal->cBildpfad = $oMerkmalTMP->cBildpfad;
+                    $oMerkmal->cTyp      = $oMerkmalTMP->cTyp;
 
                     verarbeiteMerkmalBild($oMerkmal);
                     $oMerkmalWert->kMerkmalWert = $oMerkmalTMP->kMerkmalWert;
@@ -517,14 +489,39 @@ function gibSitemapGlobaleMerkmale()
                     $oMerkmalWert->cURL = (strlen($oMerkmalWert->cSeo) > 0)
                         ? $shopURL . $oMerkmalWert->cSeo
                         : $shopURL . $cDatei . '?m=' . $oMerkmalWert->kMerkmalWert;
+
                     $oMerkmal->oMerkmalWert_arr[] = $oMerkmalWert;
                     $oMerkmal_arr[]               = $oMerkmal;
+
+                    ++$nPos;
                 }
+            } else { // Erster Durchlauf
+                $oMerkmal->kMerkmal         = isset($oMerkmalTMP->kMerkmal) ? $oMerkmalTMP->kMerkmal : null;
+                $oMerkmal->cName            = isset($oMerkmalTMP->cName) ? $oMerkmalTMP->cName : null;
+                $oMerkmal->nSort            = isset($oMerkmalTMP->nSort) ? $oMerkmalTMP->nSort : null;
+                $oMerkmal->nGlobal          = isset($oMerkmalTMP->nGlobal) ? $oMerkmalTMP->nGlobal : null;
+                $oMerkmal->cBildpfad        = isset($oMerkmalTMP->cBildpfad) ? $oMerkmalTMP->cBildpfad : null;
+                $oMerkmal->cTyp             = isset($oMerkmalTMP->cTyp) ? $oMerkmalTMP->cTyp : null;
+                $oMerkmal->oMerkmalWert_arr = [];
+
+                verarbeiteMerkmalBild($oMerkmal);
+                $oMerkmalWert->kMerkmalWert = $oMerkmalTMP->kMerkmalWert;
+                $oMerkmalWert->cWert        = $oMerkmalTMP->cWert;
+                $oMerkmalWert->cSeo         = $oMerkmalTMP->cSeo;
+                $oMerkmalWert->cBildPfadMW  = $oMerkmalTMP->cBildPfadMW;
+
+                verarbeiteMerkmalWertBild($oMerkmalWert);
+                // cURL bauen
+                $oMerkmalWert->cURL = (strlen($oMerkmalWert->cSeo) > 0)
+                    ? $shopURL . $oMerkmalWert->cSeo
+                    : $shopURL . $cDatei . '?m=' . $oMerkmalWert->kMerkmalWert;
+                $oMerkmal->oMerkmalWert_arr[] = $oMerkmalWert;
+                $oMerkmal_arr[]               = $oMerkmal;
             }
-            unset($oMerkmalTMP);
         }
-        Shop::Cache()->set($cacheID, $oMerkmal_arr, [CACHING_GROUP_CATEGORY]);
+        unset($oMerkmalTMP);
     }
+    Shop::Cache()->set($cacheID, $oMerkmal_arr, [CACHING_GROUP_CATEGORY]);
 
     return $oMerkmal_arr;
 }
@@ -572,13 +569,13 @@ function verarbeiteMerkmalWertBild(&$oMerkmalWert)
 }
 
 /**
- * @param array $BoxenEinstellungen
+ * @param array $conf
  * @return mixed
  */
-function gibBoxNews($BoxenEinstellungen)
+function gibBoxNews($conf)
 {
-    $nBoxenLimit = (int)$BoxenEinstellungen['news']['news_anzahl_box'] > 0
-        ? (int)$BoxenEinstellungen['news']['news_anzahl_box']
+    $nBoxenLimit = (int)$conf['news']['news_anzahl_box'] > 0
+        ? (int)$conf['news']['news_anzahl_box']
         : 3;
 
     return Shop::DB()->query(
@@ -604,8 +601,8 @@ function gibBoxNews($BoxenEinstellungen)
 function gibSitemapNews()
 {
     $cacheID = 'sitemap_news';
-    if (($oNewsMonatsUebersicht_arr = Shop::Cache()->get($cacheID)) === false) {
-        $oNewsMonatsUebersicht_arr = Shop::DB()->query(
+    if (($overview = Shop::Cache()->get($cacheID)) === false) {
+        $overview = Shop::DB()->query(
             "SELECT tseo.cSeo, tnewsmonatsuebersicht.cName, tnewsmonatsuebersicht.kNewsMonatsUebersicht, 
                 month(tnews.dGueltigVon) AS nMonat, year(tnews.dGueltigVon) AS nJahr, count(*) AS nAnzahl
                 FROM tnews
@@ -621,51 +618,46 @@ function gibSitemapNews()
                 GROUP BY year(tnews.dGueltigVon) , month(tnews.dGueltigVon)
                 ORDER BY tnews.dGueltigVon DESC", 2
         );
-        if (is_array($oNewsMonatsUebersicht_arr) && count($oNewsMonatsUebersicht_arr) > 0) {
-            foreach ($oNewsMonatsUebersicht_arr as $i => $oNewsMonatsUebersicht) {
-                $oNews_arr = Shop::DB()->query(
-                    "SELECT tnews.kNews, tnews.kSprache, tnews.cKundengruppe, tnews.cBetreff, tnews.cText, 
-                        tnews.cVorschauText, tnews.cMetaTitle, tnews.cMetaDescription, tnews.cMetaKeywords,
-                        tnews.nAktiv, tnews.dErstellt, tseo.cSeo,
-                        count(tnewskommentar.kNewsKommentar) AS nNewsKommentarAnzahl, 
-                        DATE_FORMAT(tnews.dGueltigVon, '%d.%m.%Y  %H:%i') AS dGueltigVon_de
-                        FROM tnews
-                        LEFT JOIN tnewskommentar 
-                            ON tnews.kNews = tnewskommentar.kNews
-                        LEFT JOIN tseo 
-                            ON tseo.cKey = 'kNews'
-                            AND tseo.kKey = tnews.kNews
-                            AND tseo.kSprache = " . Shop::getLanguage() . "
-                        WHERE tnews.kSprache = " . Shop::getLanguage() . "
-                            AND tnews.nAktiv = 1
-                            AND (
-                                tnews.cKundengruppe LIKE '%;-1;%' 
-                                OR FIND_IN_SET('" . Session::CustomerGroup()->getID()
-                                    . "', REPLACE(tnews.cKundengruppe, ';', ',')) > 0
-                                )
-                            AND (MONTH(tnews.dGueltigVon) = '" . $oNewsMonatsUebersicht->nMonat . "') 
-                            && (tnews.dGueltigVon <= now())
-                            AND (YEAR(tnews.dGueltigVon) = '" . $oNewsMonatsUebersicht->nJahr . "') 
-                            && (tnews.dGueltigVon <= now())
-                        GROUP BY tnews.kNews
-                        ORDER BY dGueltigVon DESC", 2
-                );
-                // cURL bauen
-                if (is_array($oNews_arr) && count($oNews_arr) > 0) {
-                    foreach ($oNews_arr as $j => $oNews) {
-                        $oNews_arr[$j]->cURL     = baueURL($oNews, URLART_NEWS);
-                        $oNews_arr[$j]->cURLFull = baueURL($oNews, URLART_NEWS, 0, false, true);
-                    }
-                }
-                $oNewsMonatsUebersicht_arr[$i]->oNews_arr = $oNews_arr;
-                $oNewsMonatsUebersicht_arr[$i]->cURL      = baueURL($oNewsMonatsUebersicht, URLART_NEWSMONAT);
-                $oNewsMonatsUebersicht_arr[$i]->cURLFull  = baueURL($oNewsMonatsUebersicht, URLART_NEWSMONAT, 0, false, true);
+        foreach ($overview as $i => $news) {
+            $entries = Shop::DB()->query(
+                "SELECT tnews.kNews, tnews.kSprache, tnews.cKundengruppe, tnews.cBetreff, tnews.cText, 
+                    tnews.cVorschauText, tnews.cMetaTitle, tnews.cMetaDescription, tnews.cMetaKeywords,
+                    tnews.nAktiv, tnews.dErstellt, tseo.cSeo,
+                    count(tnewskommentar.kNewsKommentar) AS nNewsKommentarAnzahl, 
+                    DATE_FORMAT(tnews.dGueltigVon, '%d.%m.%Y  %H:%i') AS dGueltigVon_de
+                    FROM tnews
+                    LEFT JOIN tnewskommentar 
+                        ON tnews.kNews = tnewskommentar.kNews
+                    LEFT JOIN tseo 
+                        ON tseo.cKey = 'kNews'
+                        AND tseo.kKey = tnews.kNews
+                        AND tseo.kSprache = " . Shop::getLanguage() . "
+                    WHERE tnews.kSprache = " . Shop::getLanguage() . "
+                        AND tnews.nAktiv = 1
+                        AND (
+                            tnews.cKundengruppe LIKE '%;-1;%' 
+                            OR FIND_IN_SET('" . Session::CustomerGroup()->getID()
+                                . "', REPLACE(tnews.cKundengruppe, ';', ',')) > 0
+                            )
+                        AND (MONTH(tnews.dGueltigVon) = '" . $news->nMonat . "') 
+                        && (tnews.dGueltigVon <= now())
+                        AND (YEAR(tnews.dGueltigVon) = '" . $news->nJahr . "') 
+                        && (tnews.dGueltigVon <= now())
+                    GROUP BY tnews.kNews
+                    ORDER BY dGueltigVon DESC", 2
+            );
+            foreach ($entries as $j => $oNews) {
+                $oNews->cURL     = baueURL($oNews, URLART_NEWS);
+                $oNews->cURLFull = baueURL($oNews, URLART_NEWS, 0, false, true);
             }
+            $news->oNews_arr = $entries;
+            $news->cURL      = baueURL($news, URLART_NEWSMONAT);
+            $news->cURLFull  = baueURL($news, URLART_NEWSMONAT, 0, false, true);
         }
-        Shop::Cache()->set($cacheID, $oNewsMonatsUebersicht_arr, [CACHING_GROUP_NEWS]);
+        Shop::Cache()->set($cacheID, $overview, [CACHING_GROUP_NEWS]);
     }
 
-    return $oNewsMonatsUebersicht_arr;
+    return $overview;
 }
 
 /**
@@ -674,8 +666,8 @@ function gibSitemapNews()
 function gibNewsKategorie()
 {
     $cacheID = 'news_category_' . Shop::getLanguage() . '_' . Session::CustomerGroup()->getID();
-    if (($oNewsKategorie_arr = Shop::Cache()->get($cacheID)) === false) {
-        $oNewsKategorie_arr = Shop::DB()->query(
+    if (($newsCategories = Shop::Cache()->get($cacheID)) === false) {
+        $newsCategories = Shop::DB()->query(
             "SELECT tnewskategorie.kNewsKategorie, tnewskategorie.kSprache, tnewskategorie.cName,
                 tnewskategorie.cBeschreibung, tnewskategorie.cMetaTitle, tnewskategorie.cMetaDescription,
                 tnewskategorie.nSort, tnewskategorie.nAktiv, tnewskategorie.dLetzteAktualisierung, 
@@ -702,67 +694,60 @@ function gibNewsKategorie()
                 GROUP BY tnewskategorienews.kNewsKategorie
                 ORDER BY tnewskategorie.nSort DESC", 2
         );
-        if (is_array($oNewsKategorie_arr) && count($oNewsKategorie_arr) > 0) {
-            foreach ($oNewsKategorie_arr as $i => $oNewsKategorie) {
-                $oNewsKategorie_arr[$i]->oNews_arr = [];
-                $oNewsKategorie_arr[$i]->cURL      = baueURL($oNewsKategorie, URLART_NEWSKATEGORIE);
-                $oNewsKategorie_arr[$i]->cURLFull  = baueURL($oNewsKategorie, URLART_NEWSKATEGORIE, 0, false, true);
+        foreach ($newsCategories as $newsCategory) {
+            $newsCategory->cURL      = baueURL($newsCategory, URLART_NEWSKATEGORIE);
+            $newsCategory->cURLFull  = baueURL($newsCategory, URLART_NEWSKATEGORIE, 0, false, true);
 
-                $oNews_arr = Shop::DB()->query(
-                    "SELECT tnews.kNews, tnews.kSprache, tnews.cKundengruppe, tnews.cBetreff, tnews.cText, tnews.cVorschauText, 
-                        tnews.cMetaTitle, tnews.cMetaDescription, tnews.cMetaKeywords, tnews.nAktiv, tnews.dErstellt, 
-                        tseo.cSeo, DATE_FORMAT(tnews.dGueltigVon, '%d.%m.%Y  %H:%i') AS dGueltigVon_de
-                        FROM tnews
-                        JOIN tnewskategorienews 
-                            ON tnewskategorienews.kNews = tnews.kNews
-                        LEFT JOIN tseo 
-                            ON tseo.cKey = 'kNews'
-                            AND tseo.kKey = tnews.kNews
-                            AND tseo.kSprache = " . Shop::getLanguage() . "
-                        WHERE tnews.kSprache = " . Shop::getLanguage() . "
-                            AND tnewskategorienews.kNewsKategorie = " . (int)$oNewsKategorie->kNewsKategorie . "
-                            AND tnews.nAktiv = 1
-                            AND tnews.dGueltigVon <= now()
-                            AND (
-                                tnews.cKundengruppe LIKE '%;-1;%' 
-                                OR FIND_IN_SET('" . Session::CustomerGroup()->getID()
-                                    . "', REPLACE(tnews.cKundengruppe, ';', ',')) > 0
-                                )
-                        GROUP BY tnews.kNews
-                        ORDER BY tnews.dGueltigVon DESC", 2
-                );
-                // Baue cURL
-                if (is_array($oNews_arr) && count($oNews_arr) > 0) {
-                    foreach ($oNews_arr as $j => $oNews) {
-                        $oNews_arr[$j]->cURL     = baueURL($oNews, URLART_NEWS);
-                        $oNews_arr[$j]->cURLFull = baueURL($oNews, URLART_NEWS, 0, false, true);
-                    }
-                }
-
-                $oNewsKategorie_arr[$i]->oNews_arr = $oNews_arr;
+            $entries = Shop::DB()->query(
+                "SELECT tnews.kNews, tnews.kSprache, tnews.cKundengruppe, tnews.cBetreff, tnews.cText, tnews.cVorschauText, 
+                    tnews.cMetaTitle, tnews.cMetaDescription, tnews.cMetaKeywords, tnews.nAktiv, tnews.dErstellt, 
+                    tseo.cSeo, DATE_FORMAT(tnews.dGueltigVon, '%d.%m.%Y  %H:%i') AS dGueltigVon_de
+                    FROM tnews
+                    JOIN tnewskategorienews 
+                        ON tnewskategorienews.kNews = tnews.kNews
+                    LEFT JOIN tseo 
+                        ON tseo.cKey = 'kNews'
+                        AND tseo.kKey = tnews.kNews
+                        AND tseo.kSprache = " . Shop::getLanguage() . "
+                    WHERE tnews.kSprache = " . Shop::getLanguage() . "
+                        AND tnewskategorienews.kNewsKategorie = " . (int)$newsCategory->kNewsKategorie . "
+                        AND tnews.nAktiv = 1
+                        AND tnews.dGueltigVon <= now()
+                        AND (
+                            tnews.cKundengruppe LIKE '%;-1;%' 
+                            OR FIND_IN_SET('" . Session::CustomerGroup()->getID()
+                                . "', REPLACE(tnews.cKundengruppe, ';', ',')) > 0
+                            )
+                    GROUP BY tnews.kNews
+                    ORDER BY tnews.dGueltigVon DESC", 2
+            );
+            foreach ($entries as $entry) {
+                $entry->cURL     = baueURL($entry, URLART_NEWS);
+                $entry->cURLFull = baueURL($entry, URLART_NEWS, 0, false, true);
             }
+            $newsCategory->oNews_arr = $entries;
         }
-        Shop::Cache()->set($cacheID, $oNewsKategorie_arr, [CACHING_GROUP_NEWS]);
+        Shop::Cache()->set($cacheID, $newsCategories, [CACHING_GROUP_NEWS]);
     }
 
-    return $oNewsKategorie_arr;
+    return $newsCategories;
 }
 
 /**
- * @param array $Einstellungen
+ * @param array $conf
  * @return array
  */
-function gibGratisGeschenkArtikel($Einstellungen)
+function gibGratisGeschenkArtikel($conf)
 {
     $oArtikelGeschenk_arr = [];
     $cSQLSort             = " ORDER BY CAST(tartikelattribut.cWert AS DECIMAL) DESC";
-    if ($Einstellungen['sonstiges']['sonstiges_gratisgeschenk_sortierung'] === 'N') {
+    if ($conf['sonstiges']['sonstiges_gratisgeschenk_sortierung'] === 'N') {
         $cSQLSort = " ORDER BY tartikel.cName";
-    } elseif ($Einstellungen['sonstiges']['sonstiges_gratisgeschenk_sortierung'] === 'L') {
+    } elseif ($conf['sonstiges']['sonstiges_gratisgeschenk_sortierung'] === 'L') {
         $cSQLSort = " ORDER BY tartikel.fLagerbestand DESC";
     }
-    $cSQLLimit = ((int)$Einstellungen['sonstiges']['sonstiges_gratisgeschenk_anzahl'] > 0)
-        ? " LIMIT " . (int)$Einstellungen['sonstiges']['sonstiges_gratisgeschenk_anzahl']
+    $cSQLLimit = ((int)$conf['sonstiges']['sonstiges_gratisgeschenk_anzahl'] > 0)
+        ? " LIMIT " . (int)$conf['sonstiges']['sonstiges_gratisgeschenk_anzahl']
         : '';
     $oArtikelGeschenkTMP_arr = Shop::DB()->query(
         "SELECT tartikel.kArtikel, tartikelattribut.cWert
@@ -786,9 +771,9 @@ function gibGratisGeschenkArtikel($Einstellungen)
             $oArtikel->fuelleArtikel($oArtikelGeschenkTMP->kArtikel, $defaultOptions);
             $oArtikel->cBestellwert = gibPreisStringLocalized((float)$oArtikelGeschenkTMP->cWert);
 
-            if ($oArtikel->kEigenschaftKombi > 0 ||
-                !is_array($oArtikel->Variationen) ||
-                count($oArtikel->Variationen) === 0
+            if ($oArtikel->kEigenschaftKombi > 0
+                || !is_array($oArtikel->Variationen)
+                || count($oArtikel->Variationen) === 0
             ) {
                 $oArtikelGeschenk_arr[] = $oArtikel;
             }
@@ -821,10 +806,10 @@ function pruefeSpezialseite($nLinkart)
 }
 
 /**
- * @param array $Einstellungen
+ * @param array $conf
  * @param JTLSmarty $smarty
  */
-function gibSeiteSitemap($Einstellungen, &$smarty)
+function gibSeiteSitemap($conf, &$smarty)
 {
     Shop::setPageType(PAGE_SITEMAP);
     $linkHelper             = LinkHelper::getInstance();
@@ -841,19 +826,19 @@ function gibSeiteSitemap($Einstellungen, &$smarty)
     // Smarty Hilfe um die Linksgruppen dynamisch zu bauen
     $smarty->assign('cLinkgruppenMember_arr', $cLinkgruppenMember_arr);
 
-    if ($Einstellungen['sitemap']['sitemap_kategorien_anzeigen'] === 'Y') {
+    if ($conf['sitemap']['sitemap_kategorien_anzeigen'] === 'Y') {
         $smarty->assign('oKategorieliste', gibSitemapKategorien());
     }
-    if ($Einstellungen['sitemap']['sitemap_globalemerkmale_anzeigen'] === 'Y') {
+    if ($conf['sitemap']['sitemap_globalemerkmale_anzeigen'] === 'Y') {
         $smarty->assign('oGlobaleMerkmale_arr', gibSitemapGlobaleMerkmale());
     }
-    if ($Einstellungen['sitemap']['sitemap_hersteller_anzeigen'] === 'Y') {
+    if ($conf['sitemap']['sitemap_hersteller_anzeigen'] === 'Y') {
         $smarty->assign('oHersteller_arr', Hersteller::getAll());
     }
-    if ($Einstellungen['news']['news_benutzen'] === 'Y' && $Einstellungen['sitemap']['sitemap_news_anzeigen'] === 'Y') {
+    if ($conf['news']['news_benutzen'] === 'Y' && $conf['sitemap']['sitemap_news_anzeigen'] === 'Y') {
         $smarty->assign('oNewsMonatsUebersicht_arr', gibSitemapNews());
     }
-    if ($Einstellungen['sitemap']['sitemap_newskategorien_anzeigen'] === 'Y') {
+    if ($conf['sitemap']['sitemap_newskategorien_anzeigen'] === 'Y') {
         $smarty->assign('oNewsKategorie_arr', gibNewsKategorie());
     }
 }

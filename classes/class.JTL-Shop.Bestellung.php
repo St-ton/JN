@@ -510,6 +510,7 @@ class Bestellung
             $_SESSION['kSprache'] = $kSprache;
         }
         foreach ($this->Positionen as $i => $position) {
+            $position->nPosTyp = (int)$position->nPosTyp;
             if ($position->nAnzahl == (int)$position->nAnzahl) {
                 $position->nAnzahl = (int)$position->nAnzahl;
             }
@@ -658,8 +659,10 @@ class Bestellung
             /** @var Lieferscheinpos $_lieferscheinPos */
             foreach ($_lieferschein->oLieferscheinPos_arr as &$_lieferscheinPos) {
                 foreach ($this->Positionen as &$oPosition) {
-                    if (in_array($oPosition->nPosTyp, [C_WARENKORBPOS_TYP_ARTIKEL, C_WARENKORBPOS_TYP_GRATISGESCHENK])) {
-                        if ($_lieferscheinPos->getBestellPos() == $oPosition->kBestellpos) {
+                    $oPosition->nPosTyp     = (int)$oPosition->nPosTyp;
+                    $oPosition->kBestellpos = (int)$oPosition->kBestellpos;
+                    if (in_array($oPosition->nPosTyp, [C_WARENKORBPOS_TYP_ARTIKEL, C_WARENKORBPOS_TYP_GRATISGESCHENK], true)) {
+                        if ($_lieferscheinPos->getBestellPos() === $oPosition->kBestellpos) {
                             $oPosition->kLieferschein_arr[] = $_lieferschein->getLieferschein();
                             $oPosition->nAusgeliefert       = $_lieferscheinPos->getAnzahl();
                             $oPosition->nAusgeliefertGesamt += $oPosition->nAusgeliefert;
@@ -668,7 +671,7 @@ class Bestellung
                             if (!isset($_lieferscheinPos->oPosition) || !is_object($_lieferscheinPos->oPosition)) {
                                 $_lieferscheinPos->oPosition = &$oPosition;
                             }
-                            if ($oPosition->nOffenGesamt == 0) {
+                            if ((int)$oPosition->nOffenGesamt === 0) {
                                 $oPosition->bAusgeliefert = true;
                             }
                         }
@@ -745,6 +748,7 @@ class Bestellung
     {
         $positionCount = count($this->Positionen);
         foreach ($this->Positionen as $position) {
+            $position->nPosTyp = (int)$position->nPosTyp;
             if ($position->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL && $position->kArtikel > 0) {
                 $artikel                = new Artikel();
                 $artikel->kArtikel      = $position->kArtikel;
@@ -979,6 +983,7 @@ class Bestellung
             //Lookup language iso
             $lang = Shop::DB()->select('tsprache', 'kSprache', (int)$this->kSprache);
             foreach ($this->Positionen as $i => $oPosition) {
+                $oPosition->nPosTyp = (int)$oPosition->nPosTyp;
                 if ($oPosition->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL
                     && isset($oPosition->Artikel)
                     && get_class($oPosition->Artikel) === 'Artikel'

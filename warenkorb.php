@@ -105,7 +105,7 @@ if (isset($_POST['gratis_geschenk'], $_POST['gratishinzufuegen']) && (int)$_POST
             executeHook(HOOK_WARENKORB_PAGE_GRATISGESCHENKEINFUEGEN);
             $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_GRATISGESCHENK)
                  ->fuegeEin($kArtikelGeschenk, 1, [], C_WARENKORBPOS_TYP_GRATISGESCHENK);
-            fuegeEinInWarenkorbPers($kArtikelGeschenk, 1, [], null, null, (int)C_WARENKORBPOS_TYP_GRATISGESCHENK);
+            fuegeEinInWarenkorbPers($kArtikelGeschenk, 1, [], null, null, C_WARENKORBPOS_TYP_GRATISGESCHENK);
         }
     }
 }

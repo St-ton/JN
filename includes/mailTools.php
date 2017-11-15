@@ -793,9 +793,9 @@ function injectSubject($Object, $Betreff)
                 $keys2 = array_keys(get_object_vars($Object->$obj));
                 if (is_array($keys2)) {
                     foreach ($keys2 as $member) {
-                        if ($member{0} !== 'k' &&
-                            !is_array($Object->$obj->$member) &&
-                            !is_object($Object->$obj->$member)
+                        if ($member{0} !== 'k'
+                            && !is_array($Object->$obj->$member)
+                            && !is_object($Object->$obj->$member)
                         ) {
                             $a[] = '#' . strtolower(substr($obj, 1)) . '.' . strtolower(substr($member, 1)) . '#';
                             $b[] = $Object->$obj->$member;

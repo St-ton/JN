@@ -165,12 +165,6 @@ class UstIDviesDownSlots
      */
     public function __construct()
     {
-        // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --DEBUG--
-        include_once('/var/www/html/shop4_07/includes/vendor/apache/log4php/src/main/php/Logger.php');
-        Logger::configure('/var/www/html/shop4_07/_logging_conf.xml');
-        $this->oLogger = Logger::getLogger('default');
-        // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --DEBUG--
-
         $this->oNow = new DateTime();
     }
 
@@ -194,10 +188,6 @@ class UstIDviesDownSlots
      */
     public function isDown($szCountryCode)
     {
-        $this->oLogger->debug('checking country down-time: '.$szCountryCode); // --DEBUG--
-        //$date = DateTime::createFromFormat('H:i', $this->vDownTimeSlots['AT'][self::WEEKDAY][self::START]);
-        //$this->oLogger->debug('AT start OOP: '.print_r( $date ,true )); // --DEBUG--
-
         foreach ($this->vDownTimeSlots[$szCountryCode] as $vCountryDownTimes) {
             // if no weekday was given (which means "every weekday"), we replace the weekday in the check-array with the current weekday here
             if ('' === $vCountryDownTimes[self::WEEKDAY]) {
@@ -209,15 +199,12 @@ class UstIDviesDownSlots
 
             if ($oStartTime <= $this->oNow && $this->oNow <= $oEndTime) {
                 // inform the user about this event
-                $this->oLogger->debug('service is down till '.$oEndTime->format('l y-m-d, H:i')); // --DEBUG--
-                //$this->szDownInfo = 'Der Dienst dieses Landes ist bis '.$oEndTime->format('l y-m-d, H:i').' nicht erreichbar.';
-                $this->szDownInfo = $oEndTime->format('H:i');
+                $this->szDownInfo = $oEndTime->format('H:i'); // the VAT-service of this country is down till this time
 
                 // if we see ANY VALID DOWNTIME, we go back with TRUE (what means "service is DOWN NOW")
                 return true;
             }
         }
-
         // the service is not down. all is fine to proceed normally.
         return false;
     }

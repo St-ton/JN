@@ -57,6 +57,7 @@ class UstIDviesVatParser
 
         // DK-Dänemark                   DK99 99 99 99        4 Blöcke mit 2 Ziffern
         , 'DK' => ['DK99 99 99 99']
+        , 'DK' => ['DK99999999']         // alternation, because the VIES can not handle spaces
 
         // EE-Estland                    EE999999999          1 Block mit 9 Ziffern
         , 'EE' => ['EE999999999']
@@ -164,16 +165,8 @@ class UstIDviesVatParser
     private $szErrorInfo = '';
 
 
-    public $oLogger = null; // --DEBUG--
-
     public function __construct($szVATid)
     {
-        // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --DEBUG--
-        include_once('/var/www/html/shop4_07/includes/vendor/apache/log4php/src/main/php/Logger.php');
-        Logger::configure('/var/www/html/shop4_07/_logging_conf.xml');
-        $this->oLogger = Logger::getLogger('default');
-        // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --DEBUG--
-
         $this->szVATid = $szVATid;
     }
 
@@ -187,36 +180,25 @@ class UstIDviesVatParser
      */
     private function isIdPatternValid($szVATid, $szPattern)
     {
-        $this->oLogger->debug('VAT-ID : '.$szVATid); // --DEBUG--
-        $this->oLogger->debug('PATTERN: '.$szPattern); // --DEBUG--
-
         for($i=0; $i < strlen($szVATid); $i++) {
-
             // each character and white-space is compared exactly, while digits can be [1..9]
             switch (true) {
                 case ctype_alpha($szPattern[$i]) :
                     if ($szPattern[$i] === $szVATid[$i]) {
-                        $this->oLogger->debug('check ok        : '.$szPattern[$i].' => '.$szVATid[$i]); // --DEBUG--
-                        continue;
+                        continue; // check-letter OK
                     }
-                    $this->oLogger->debug('check failed    : '.$szPattern[$i].' => '.$szVATid[$i]); // --DEBUG--
-                    break 2;
+                    break 2; // check-letter FAIL
                 case ctype_space($szPattern[$i]) :
                     if ($szPattern[$i] === $szVATid[$i]) {
-                        $this->oLogger->debug('check space ok  : '.$szPattern[$i].' => '.$szVATid[$i]); // --DEBUG--
-                        continue;
+                        continue; // check-space OK
                     }
-                    $this->oLogger->debug('check space f   : '.$szPattern[$i].' => '.$szVATid[$i]); // --DEBUG--
-                    break 2;
-                //case ctype_digit($szVATid[$i]) :
+                    break 2; // check-space FAIL
                 case is_numeric($szPattern[$i]) :
-                    $this->oLogger->debug('check num       : '.$szPattern[$i].' => '.$szVATid[$i]); // --DEBUG--
                     if (is_numeric($szVATid[$i])) {
-                        continue;
+                        continue; // check-num OK
                     }
-                    break 2;
+                    break 2; // check-num FAIL
                 default :
-                    $this->oLogger->debug('default hit!     ('.$szPattern[$i].' => '.$szVATid[$i].')'); // --DEBUG--
                     if ('_' === $szPattern[$i]) {
                         continue;
                     }
@@ -234,7 +216,7 @@ class UstIDviesVatParser
 
 
     /**
-     * regulate the parsing of the VAT-ID
+     * controlls the parsing of the VAT-ID
      * ("comparing against multiple patterns of one country")
      *
      * @param void
@@ -242,14 +224,13 @@ class UstIDviesVatParser
      */
     public function parseVatId()
     {
-        // guess a country (the first 2 characters should allways be the country-code)
+        // guess a country - the first 2 characters should allways be the country-code
+        // (store the result-array in this object, $this->vIdParts)
         $nResult = preg_match('/([A-Z]{2})(.*)/', $this->szVATid, $this->vIdParts);
         if (0 === $nResult) {
             $this->nErrorCode = 100; // error: the ID did not start with 2 big letters
             return false;
         }
-        $this->oLogger->debug('suggested country: '.print_r( $this->vIdParts[1] ,true )); // --DEBUG--
-
         // there is no country starting with this 2 letters
         if (! isset($this->vCountryPattern[$this->vIdParts[1]])) {
             $this->nErrorCode  = 130; // error: no pattern for such a country
@@ -261,15 +242,12 @@ class UstIDviesVatParser
         foreach ($this->vCountryPattern[$this->vIdParts[1]] as $szPattern) {
             // length-check (and go back, if nothing matches)
             if (strlen($this->szVATid) !== strlen($szPattern)) {
-                $this->oLogger->debug('skip pattern '.$szPattern); // --DEBUG--
                 continue; // skipt this pattern, if the length did not match. try the next one
             } else {
                 // checking the given pattern (return a possible interrupt-position)
                 $nParseResult = $this->isIdPatternValid($this->szVATid, $szPattern);
-                $this->oLogger->debug('interrupt-position: '.print_r( $nParseResult ,true )); // --DEBUG--
                 if (0 === $nParseResult) {
-                    // if we found a valid pattern-match, we've done our job here
-                    return true;
+                    return true; // if we found a valid pattern-match, we've done our job here
                 } else {
                     $this->nErrorCode  = 120; // error: id did not match any pattern of this country
                     $this->szErrorInfo = $nParseResult; // interrupt-/error-position
@@ -278,8 +256,6 @@ class UstIDviesVatParser
 
             }
         }
-        $this->oLogger->debug('no length was matching!'); // --DEBUG--
-
         $this->nErrorCode = 110; // error: no length was matching
         return false;
     }
@@ -287,8 +263,10 @@ class UstIDviesVatParser
 
     /**
      * return the ID splitted into the two pieces:
-     * - 2 characters country code
-     * - n characters or digits as the rest of the ID
+     * - 2 (big) letters of country code
+     * - n letters or digits as the rest of the ID
+     *
+     * NOTE: should called after '->parseVatId()'
      *
      * @param void
      * @return array  the pieces of the VAT-ID as described above

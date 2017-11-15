@@ -334,13 +334,6 @@
                         {if $errorinfo[0] == 110}{lang key="ustIDError110" section="global"}{/if}
                         {if $errorinfo[0] == 120}{lang key="ustIDError120" section="global"}{$errorinfo[1]}{/if}
                         {if $errorinfo[0] == 130}{lang key="ustIDError130" section="global"}{$errorinfo[1]}{/if}
-
-                        {*
-                        <br>oldstuff:
-                        {lang key="ustIDCaseTwo" section="global"}.
-                        {if $fehlendeAngaben.ustid_err|count > 0 && $fehlendeAngaben.ustid_err !== false}{lang key="ustIDCaseTwoB" section="global"}: {$fehlendeAngaben.ustid_err}{/if}
-                        *}
-
                     {elseif $fehlendeAngaben.ustid == 4}
                         {assign var=errorinfo value=","|explode:$fehlendeAngaben.ustid_err}
                         {lang key="ustIDError200" section="global"}{$errorinfo[1]}

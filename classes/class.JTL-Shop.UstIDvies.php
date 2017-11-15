@@ -54,22 +54,12 @@ class UstIDvies
         , 50 => 'Zeitüberschreitung. Bitte wiederholen Sie Ihre Anfrage später.'
     ];
 
-    /* --DEBUG-- */
-    private $oLogger = null; // --DEBUG--
-
-
 
     /**
      * __construct an instance of this object
      */
     public function __construct()
     {
-        // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --DEBUG--
-        include_once('/var/www/html/shop4_07/includes/vendor/apache/log4php/src/main/php/Logger.php');
-        Logger::configure('/var/www/html/shop4_07/_logging_conf.xml');
-        $this->oLogger = Logger::getLogger('default');
-        // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --DEBUG--
-
         $this->oDownTimes = new UstIDviesDownSlots();
     }
 
@@ -94,16 +84,14 @@ class UstIDvies
             return [
                   'success'   => false
                 , 'errortype' => 'parse'
-                , 'errorcode' => 1          // error: no szUstID was given
+                , 'errorcode' => 1 // error: no $szUstID was given
             ];
         }
 
-        // 2 character, 9 digits is the specification,
-        // but if we scan it hard this way (and cut out overhangs), we can not inform the user to correct his input ...
+        // parse the ID-string
         $oVatParser = new UstIDviesVatParser($szUstID);
         if (true === $oVatParser->parseVatId()) {
             list($szCountryCode, $szVatNumber) = $oVatParser->getIdAsParams();
-            $this->oLogger->debug('VAT as PARAMS: '.print_r($oVatParser->getIdAsParams(),true )); // --DEBUG--
         } else {
             return [
                   'success'   => false
@@ -113,20 +101,16 @@ class UstIDvies
             ];
         }
 
+        // asking the remote service, if the VAT-office is reachable
         if (false === $this->oDownTimes->isDown($szCountryCode)) {
 
-            $this->oLogger->debug('asking the remote service..'); // --DEBUG--
-
-            // asking the remote service
             $oSoapClient = new SoapClient($this->szViesWSDL);
             $oViesResult = null;
             try {
                 $oViesResult = $oSoapClient->checkVat(['countryCode' => $szCountryCode, 'vatNumber' => $szVatNumber]); // --TODO--
             } catch (Exception $e) {
-                $this->oLogger->debug('MwStID Problem: '. $e->getMessage()); // --DEBUG--
                 Jtllog::writeLog('MwStID Problem: '.$e->getMessage(), JTLLOG_LEVEL_ERROR);
             }
-            $this->oLogger->debug('VIES-RESULT (SOAP) : '.print_r( $oViesResult ,true )); // --DEBUG--
 
             if (null !== $oViesResult && true === $oViesResult->valid) {
                 //Jtllog::writeLog('MwStID valid. ('.print_r($oViesResult, true).')', JTLLOG_LEVEL_NOTICE);  // success, logging optional
@@ -145,7 +129,7 @@ class UstIDvies
             }
 
         } else {
-            // inform the user, the VAT-office in this country has closed this time.
+            // inform the user:"The VAT-office in this country has closed this time."
             Jtllog::writeLog('MIAS-Amt aktuell nicht erreichbar. (ID: '.$szUstID.')', JTLLOG_LEVEL_NOTICE);
             return [
                   'success'   => false

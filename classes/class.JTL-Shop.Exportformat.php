@@ -1076,6 +1076,7 @@ class Exportformat
         $oArtikelOptionen->nKeinLagerbestandBeachten = 1;
         $oArtikelOptionen->nMedienDatei              = 1;
 
+        $helper     = KategorieHelper::getInstance($this->getSprache(), $this->getKundengruppe());
         $shopURL    = Shop::getURL();
         $find       = ['<br />', '<br>', '</'];
         $replace    = [' ', ' ', ' </'];
@@ -1182,7 +1183,7 @@ class Exportformat
                 // calling gibKategoriepfad() should not be necessary since it has already been called in Kategorie::loadFromDB()
                 $Artikel->Kategoriepfad         = $Artikel->Kategorie->cKategoriePfad !== null
                     ? $Artikel->Kategorie->cKategoriePfad
-                    : gibKategoriepfad($Artikel->Kategorie, $this->kKundengruppe, $this->kSprache);
+                    : $helper->getPath($Artikel->Kategorie);
                 $Artikel->Versandkosten         = gibGuenstigsteVersandkosten(
                     isset($this->config['exportformate_lieferland'])
                         ? $this->config['exportformate_lieferland']

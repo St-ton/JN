@@ -652,6 +652,33 @@ class KategorieHelper
     }
 
     /**
+     * @param Kategorie $Kategorie
+     * @param bool      $bString
+     * @return array|string
+     * @former gibKategoriepfad()
+     */
+    public function getPath($Kategorie, $bString = true)
+    {
+        if (empty($Kategorie->cKategoriePfad_arr)
+            || empty($Kategorie->kSprache)
+            || (int)$Kategorie->kSprache !== self::$kSprache
+        ) {
+            if (empty($Kategorie->kKategorie)) {
+                return $bString ? '' : [];
+            }
+            $tree  = $this->getFlatTree($Kategorie->kKategorie);
+            $names = [];
+            foreach ($tree as $item) {
+                $names[] = $item->cName;
+            }
+        } else {
+            $names = $Kategorie->cKategoriePfad_arr;
+        }
+
+        return $bString ? implode(' > ', $names) : $names;
+    }
+
+    /**
      * @param Kategorie $currentCategory
      * @param bool      $assign
      * @return array

@@ -13,7 +13,7 @@ require_once PFAD_ROOT . PFAD_INCLUDES_EXT . 'class.JTL-Shop.UploadDatei.php';
  */
 function retCode($bOk)
 {
-    die($bOk ? json_encode(['status' => 'ok']) : json_encode(['status' => 'error']));
+    die(json_encode(['status' => $bOk ? 'ok' : 'error']));
 }
 
 // session

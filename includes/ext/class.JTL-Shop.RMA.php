@@ -11,45 +11,35 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
 
     /**
      * Class RMA
-     *
-     * @access public
-     * @author
-     * @copyright
      */
     class RMA
     {
         /**
-         * @access public
          * @var int
          */
         public $kRMA;
 
         /**
-         * @access public
          * @var int
          */
         public $kKunde;
 
         /**
-         * @access public
          * @var int
          */
         public $kRMAStatus;
 
         /**
-         * @access public
          * @var string
          */
         public $cRMANumber;
 
         /**
-         * @access public
          * @var string
          */
         public $dErstellt;
 
         /**
-         * @access public
          * @var array
          */
         public $oRMAArtikel_arr;
@@ -70,10 +60,10 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         /**
          * Loads database member into class member
          *
-         * @param $kRMA
-         * @param $bCustomer
-         * @param $bRMAArtikel
-         * @param $kSprache
+         * @param int  $kRMA
+         * @param bool $bCustomer
+         * @param bool $bRMAArtikel
+         * @param int  $kSprache
          */
         private function loadFromDB($kRMA, $bCustomer, $bRMAArtikel, $kSprache)
         {
@@ -119,7 +109,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          *
          * @param bool $bPrim - Controls the return of the method
          * @return bool|int
-         * @access public
          */
         public function save($bPrim = true)
         {
@@ -151,7 +140,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          * Update the class in the database
          *
          * @return int
-         * @access public
          */
         public function update()
         {
@@ -170,7 +158,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          * Delete the class in the database
          *
          * @return int
-         * @access public
          */
         public function delete()
         {
@@ -178,9 +165,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         }
 
         /**
-         * Sets the kRMA
-         *
-         * @access public
          * @param int $kRMA
          * @return $this
          */
@@ -192,9 +176,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         }
 
         /**
-         * Sets the kKunde
-         *
-         * @access public
          * @param int $kKunde
          * @return $this
          */
@@ -206,9 +187,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         }
 
         /**
-         * Sets the kRMAStatus
-         *
-         * @access public
          * @param int $kRMAStatus
          * @return $this
          */
@@ -220,9 +198,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         }
 
         /**
-         * Sets the cRMANumber
-         *
-         * @access public
          * @param string $cRMANumber
          * @return $this
          */
@@ -234,9 +209,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         }
 
         /**
-         * Sets the dErstellt
-         *
-         * @access public
          * @param string $dErstellt
          * @return $this
          */
@@ -252,9 +224,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         }
 
         /**
-         * Gets the kRMA
-         *
-         * @access public
          * @return int
          */
         public function getRMA()
@@ -263,9 +232,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         }
 
         /**
-         * Gets the kKunde
-         *
-         * @access public
          * @return int
          */
         public function getKunde()
@@ -274,9 +240,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         }
 
         /**
-         * Gets the kRMAStatus
-         *
-         * @access public
          * @return int
          */
         public function getRMAStatus()
@@ -285,9 +248,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         }
 
         /**
-         * Gets the cRMANumber
-         *
-         * @access public
          * @return string
          */
         public function getRMANumber()
@@ -296,9 +256,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         }
 
         /**
-         * Gets the dErstellt
-         *
-         * @access public
          * @return string
          */
         public function getErstellt()
@@ -879,9 +836,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
                     if (!is_array($cEinstellung_arr) || count($cEinstellung_arr) === 0) {
                         $cEinstellung_arr = Shop::getSettings([CONF_RMA]);
                     }
-                    if (!isset($oObj)) {
-                        $oObj = new stdClass();
-                    }
+                    $oObj = new stdClass();
                     $oObj->tkunde              = $_SESSION['Kunde'];
                     $oObj->cRMAEinstellung_arr = $cEinstellung_arr['rma'];
                     $oObj->oRMA                = $oRMA;

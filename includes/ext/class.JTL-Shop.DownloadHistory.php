@@ -51,7 +51,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
         private function loadFromDB($kDownloadHistory)
         {
             $oDownloadHistory = Shop::DB()->select('tdownloadhistory', 'kDownloadHistory', (int)$kDownloadHistory);
-            if (isset($oDownloadHistory->kDownloadHistory) && (int)$oDownloadHistory->kDownloadHistory > 0) {
+            if ($oDownloadHistory !== null && (int)$oDownloadHistory->kDownloadHistory > 0) {
                 $cMember_arr = array_keys(get_object_vars($oDownloadHistory));
                 if (is_array($cMember_arr) && count($cMember_arr) > 0) {
                     foreach ($cMember_arr as $cMember) {
@@ -98,9 +98,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
             $kKunde       = (int)$kKunde;
             $oHistory_arr = [];
             if ($kBestellung > 0 || $kKunde > 0) {
-                $cSQLWhere = "kBestellung = " . $kBestellung;
+                $cSQLWhere = 'kBestellung = ' . $kBestellung;
                 if ($kBestellung > 0) {
-                    $cSQLWhere .= " AND kKunde = " . $kKunde;
+                    $cSQLWhere .= ' AND kKunde = ' . $kKunde;
                 }
 
                 $oHistoryTMP_arr = Shop::DB()->query(
@@ -111,8 +111,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
                 );
                 if (is_array($oHistoryTMP_arr) && count($oHistoryTMP_arr) > 0) {
                     foreach ($oHistoryTMP_arr as $oHistoryTMP) {
-                        if (!isset($oHistory_arr[$oHistoryTMP->kDownload]) ||
-                            !is_array($oHistory_arr[$oHistoryTMP->kDownload])
+                        if (!isset($oHistory_arr[$oHistoryTMP->kDownload])
+                            || !is_array($oHistory_arr[$oHistoryTMP->kDownload])
                         ) {
                             $oHistory_arr[$oHistoryTMP->kDownload] = [];
                         }

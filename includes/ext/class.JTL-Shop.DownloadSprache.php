@@ -54,7 +54,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
                 'kSprache',
                 (int)$kSprache
             );
-            if (isset($oDownloadSprache->kDownload) && (int)$oDownloadSprache->kDownload > 0) {
+            if ($oDownloadSprache !== null && (int)$oDownloadSprache->kDownload > 0) {
                 $cMember_arr = array_keys(get_object_vars($oDownloadSprache));
                 if (is_array($cMember_arr) && count($cMember_arr) > 0) {
                     foreach ($cMember_arr as $cMember) {

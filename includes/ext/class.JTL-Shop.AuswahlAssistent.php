@@ -77,7 +77,7 @@ class AuswahlAssistent
     /**
      * @var array
      */
-    private $config = [];
+    private $config;
 
     /**
      * AuswahlAssistent constructor.
@@ -95,7 +95,7 @@ class AuswahlAssistent
         $this->config = Shop::getSettings(CONF_AUSWAHLASSISTENT)['auswahlassistent'];
 
         if ($kSprache === 0) {
-            $kSprache = Shop::getLanguage();
+            $kSprache = Shop::getLanguageID();
         }
 
         if ($kKey > 0 && $kSprache > 0 && !empty($cKey) && $oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {

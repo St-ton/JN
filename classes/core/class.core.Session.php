@@ -494,7 +494,9 @@ class Session
      */
     public static function Customer()
     {
-        return $_SESSION['Kunde'];
+        return isset($_SESSION['Kunde'])
+            ? $_SESSION['Kunde']
+            : new Kunde();
     }
 
     /**
@@ -523,9 +525,11 @@ class Session
     /**
      * @return array
      */
-    public function Languages()
+    public static function Languages()
     {
-        return $_SESSION['Sprachen'];
+        return isset($_SESSION['Sprachen'])
+            ? $_SESSION['Sprachen']
+            : [];
     }
 
     /**
@@ -559,7 +563,9 @@ class Session
      */
     public static function Cart()
     {
-        return $_SESSION['Warenkorb'];
+        return isset($_SESSION['Warenkorb'])
+            ? $_SESSION['Warenkorb']
+            : new Warenkorb();
     }
 
     /**
@@ -567,7 +573,9 @@ class Session
      */
     public static function Currencies()
     {
-        return $_SESSION['Waehrungen'];
+        return isset($_SESSION['Waehrungen'])
+            ? $_SESSION['Waehrungen']
+            : [];
     }
 
     /**

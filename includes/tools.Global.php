@@ -3984,18 +3984,18 @@ function gibTrustedShopsBewertenButton($cMail, $cBestellNr)
                 && $tsRating->kTrustedshopsKundenbewertung > 0
                 && (int)$tsRating->nStatus === 1
             ) {
-                $button    = new stdClass();
-                $shopUrl   = Shop::getURL();
-                $template  = Template::getInstance();
-                $cTemplate = $template->getDir();
-                $basePath  = $shopUrl . '/' . PFAD_TEMPLATES . $cTemplate . '/themes/base/images/trustedshops/';
-                $images    = [
-                    'de' => $basePath . 'rate_now_de.png',
-                    'en' => $basePath . 'rate_now_en.png',
-                    'fr' => $basePath . 'rate_now_fr.png',
-                    'es' => $basePath . 'rate_now_es.png',
-                    'nl' => $basePath . 'rate_now_nl.png',
-                    'pl' => $basePath . 'rate_now_pl.png'
+                $button   = new stdClass();
+                $basePath = Shop::getURL() . '/' .
+                    PFAD_TEMPLATES .
+                    Template::getInstance()->getDir() .
+                    '/themes/base/images/trustedshops/rate_now_';
+                $images   = [
+                    'de' => $basePath . 'de.png',
+                    'en' => $basePath . 'en.png',
+                    'fr' => $basePath . 'fr.png',
+                    'es' => $basePath . 'es.png',
+                    'nl' => $basePath . 'nl.png',
+                    'pl' => $basePath . 'pl.png'
                 ];
 
                 $button->cURL    = 'https://www.trustedshops.com/buyerrating/rate_' .

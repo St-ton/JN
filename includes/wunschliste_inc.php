@@ -33,7 +33,8 @@ function wunschlisteLoeschen($kWunschliste)
     if ($kWunschliste > 0) {
         // Prüfe ob die Wunschliste dem eingeloggten Kunden gehört
         $oWunschliste = Shop::DB()->select('twunschliste', 'kWunschliste', $kWunschliste);
-        if (isset($oWunschliste->kKunde) && $oWunschliste->kKunde == $_SESSION['Kunde']->kKunde) {
+        $customer     = Session::Customer();
+        if (isset($oWunschliste->kKunde) && (int)$oWunschliste->kKunde === $customer->getID()) {
             // Hole alle Positionen der Wunschliste
             $oWunschlistePos_arr = Shop::DB()->selectAll(
                 'twunschlistepos',
@@ -41,30 +42,28 @@ function wunschlisteLoeschen($kWunschliste)
                 $kWunschliste,
                 'kWunschlistePos'
             );
-            if (count($oWunschlistePos_arr) > 0) {
-                // Alle Eigenschaften und Positionen aus DB löschen
-                foreach ($oWunschlistePos_arr as $oWunschlistePos) {
-                    Shop::DB()->delete(
-                        'twunschlisteposeigenschaft',
-                        'kWunschlistePos',
-                        $oWunschlistePos->kWunschlistePos
-                    );
-                }
+            // Alle Eigenschaften und Positionen aus DB löschen
+            foreach ($oWunschlistePos_arr as $oWunschlistePos) {
+                Shop::DB()->delete(
+                    'twunschlisteposeigenschaft',
+                    'kWunschlistePos',
+                    $oWunschlistePos->kWunschlistePos
+                );
             }
             // Lösche alle Positionen mit $kWunschliste
             Shop::DB()->delete('twunschlistepos', 'kWunschliste', $kWunschliste);
             // Lösche Wunschliste aus der DB
             Shop::DB()->delete('twunschliste', 'kWunschliste', $kWunschliste);
             // Lösche Wunschliste aus der Session (falls Wunschliste = Standard)
-            if (isset($_SESSION['Wunschliste']->kWunschliste) &&
-                $_SESSION['Wunschliste']->kWunschliste == $kWunschliste
+            if (isset($_SESSION['Wunschliste']->kWunschliste)
+                && (int)$_SESSION['Wunschliste']->kWunschliste === $kWunschliste
             ) {
                 unset($_SESSION['Wunschliste']);
             }
             // Wenn die gelöschte Wunschliste nStandard = 1 war => neue setzen
-            if ($oWunschliste->nStandard == 1) {
+            if ((int)$oWunschliste->nStandard === 1) {
                 // Neue Wunschliste holen (falls vorhanden) und nStandard=1 neu setzen
-                $oWunschliste = Shop::DB()->select('twunschliste', 'kKunde', (int)$_SESSION['Kunde']->kKunde);
+                $oWunschliste = Shop::DB()->select('twunschliste', 'kKunde', $customer->getID());
                 if (isset($oWunschliste->kWunschliste)) {
                     Shop::DB()->query(
                         'UPDATE twunschliste 
@@ -92,15 +91,11 @@ function wunschlisteAktualisieren($kWunschliste)
 {
     $hinweis      = '';
     $kWunschliste = (int)$kWunschliste;
-    // Ist ein Wunschlisten Name gesetzt
     if (isset($_POST['WunschlisteName']) && strlen($_POST['WunschlisteName']) > 0) {
         $cName = StringHandler::htmlentities(StringHandler::filterXSS(substr($_POST['WunschlisteName'], 0, 254)));
-        // Name der Wunschliste updaten
-        $_upd        = new stdClass();
-        $_upd->cName = $cName;
-        Shop::DB()->update('twunschliste', 'kWunschliste', $kWunschliste, $_upd);
+        Shop::DB()->update('twunschliste', 'kWunschliste', $kWunschliste, (object)['cName' => $cName]);
     }
-    //aktualisiere positionen
+    // aktualisiere Positionen
     $oWunschlistePos_arr = Shop::DB()->selectAll('twunschlistepos', 'kWunschliste', $kWunschliste, 'kWunschlistePos');
     // Prüfen ab Positionen vorhanden
     if (count($oWunschlistePos_arr) > 0) {
@@ -142,7 +137,7 @@ function wunschlisteStandard($kWunschliste)
     if ($kWunschliste > 0) {
         // Prüfe ob die Wunschliste dem eingeloggten Kunden gehört
         $oWunschliste = Shop::DB()->select('twunschliste', 'kWunschliste', $kWunschliste);
-        if ($oWunschliste->kKunde == $_SESSION['Kunde']->kKunde && $oWunschliste->kKunde) {
+        if ($oWunschliste !== null && (int)$oWunschliste->kKunde === Session::Customer()->getID()) {
             // Wunschliste auf Standard setzen
             Shop::DB()->update(
                 'twunschliste',
@@ -320,7 +315,6 @@ function giboWunschlistePos($kWunschlistePos)
     $kWunschlistePos = (int)$kWunschlistePos;
     if ($kWunschlistePos > 0) {
         $oWunschlistePos = Shop::DB()->select('twunschlistepos', 'kWunschlistePos', $kWunschlistePos);
-
         if (!empty($oWunschlistePos->kWunschliste)) {
             $oArtikel = new Artikel();
             $oArtikel->fuelleArtikel($oWunschlistePos->kArtikel, Artikel::getDefaultOptions());

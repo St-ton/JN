@@ -4127,18 +4127,16 @@ function phpLinkCheck($url)
  * @param string $cKey
  * @return array
  */
-function baueAssocArray($oObjekt_arr, $cKey)
+function baueAssocArray(array $oObjekt_arr, $cKey)
 {
     $oObjektAssoc_arr = [];
-    if (is_array($oObjekt_arr) && count($oObjekt_arr) > 0 && strlen($cKey) > 0) {
-        foreach ($oObjekt_arr as $oObjekt) {
-            if (is_object($oObjekt)) {
-                $oMember_arr = array_keys(get_object_vars($oObjekt));
-                if (is_array($oMember_arr) && count($oMember_arr) > 0) {
-                    $oObjektAssoc_arr[$oObjekt->$cKey] = new stdClass();
-                    foreach ($oMember_arr as $oMember) {
-                        $oObjektAssoc_arr[$oObjekt->$cKey]->$oMember = $oObjekt->$oMember;
-                    }
+    foreach ($oObjekt_arr as $oObjekt) {
+        if (is_object($oObjekt)) {
+            $oMember_arr = array_keys(get_object_vars($oObjekt));
+            if (is_array($oMember_arr) && count($oMember_arr) > 0) {
+                $oObjektAssoc_arr[$oObjekt->$cKey] = new stdClass();
+                foreach ($oMember_arr as $oMember) {
+                    $oObjektAssoc_arr[$oObjekt->$cKey]->$oMember = $oObjekt->$oMember;
                 }
             }
         }
@@ -4305,7 +4303,7 @@ function setzeKampagnenVorgang($kKampagneDef, $kKey, $fWert, $cCustomData = null
         $oKampagnenVorgang->cParamWert   = $_SESSION['Kampagnenbesucher']->cWert;
         $oKampagnenVorgang->dErstellt    = 'now()';
 
-        if (isset($cCustomData)) {
+        if ($cCustomData !== null) {
             $oKampagnenVorgang->cCustomData = strlen($cCustomData) > 255 ? substr($cCustomData, 0, 255) : $cCustomData;
         }
 

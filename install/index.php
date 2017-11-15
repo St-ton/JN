@@ -226,4 +226,3 @@ $smarty->assign('cHinweis', $cHinweis)
        ->assign('PFAD_ADMIN_TEMPLATE', PFAD_ADMIN . PFAD_TEMPLATES . 'bootstrap/')
        ->assign('oTests', $vTests)
        ->display('install.tpl');
-

@@ -9,22 +9,14 @@ Shop::setPageType(PAGE_UNBEKANNT);
 $Einstellungen = Shop::getSettings([CONF_GLOBAL, CONF_RSS]);
 $cAction       = strtolower($_GET['a']);
 $kCustom       = (int)$_GET['k'];
-$bNoData       = false;
+$bNoData       = true;
 
-switch ($cAction) {
-    case 'download_vorschau':
-        if (class_exists('Download')) {
-            $oDownload = new Download($kCustom);
-            if ($oDownload->getDownload() > 0) {
-                Shop::Smarty()->assign('oDownload', $oDownload);
-            } else {
-                $bNoData = true;
-            }
-        }
-        break;
-    default:
-        $bNoData = true;
-        break;
+if ($cAction === 'download_vorschau' && class_exists('Download')) {
+    $oDownload = new Download($kCustom);
+    if ($oDownload->getDownload() > 0) {
+        $bNoData = false;
+        Shop::Smarty()->assign('oDownload', $oDownload);
+    }
 }
 
 Shop::Smarty()->assign('bNoData', $bNoData)

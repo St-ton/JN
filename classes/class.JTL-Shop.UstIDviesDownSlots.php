@@ -5,10 +5,15 @@
  */
 
 
+/**
+ * class UstIDviesDownSlots
+ *
+ */
 class UstIDviesDownSlots
 {
     /**
-     * array, time-slots of the VAT-databases of the members of the MIAS-system
+     * @var array
+     * array of "down-time-slots" of the VIES-system of all member-countries
      * MODIFY ONLY THIS ARRAY TO COVER NEW CIRCUMSTANCES!
      *
      * original source:
@@ -20,20 +25,13 @@ class UstIDviesDownSlots
         // array-item example:
         //
         // 'country' => [
-        //       ['WEEKDAY', 'START', 'ENDING']  // one day a week
-        //       [       '', 'START', 'ENDING']  // all days a week
+        //       ['WEEKDAY', 'START', 'ENDING']  // means "one day a week, from start-time to end-time"
+        //       [       '', 'START', 'ENDING']  // means "all days a week, from start-time to end-time"
         //     , [...]
         // ]
 
-        // ---------------- TEST ------------------
-        'TE' => [
-              ['Fri', '09:00', '12:00']
-            , ['Tue', '13:00', '16:30']
-        ]
-        // ---------------- TEST ------------------
-
         // Unavailable almost daily around 06:00 AM for a few minutes (Oesterreich)
-        , 'AT' => [
+          'AT' => [
             ['', '05:59', '06:15']
         ]
 
@@ -139,16 +137,21 @@ class UstIDviesDownSlots
     ];
 
     /**
-     * object DateTime
+     * @var object DateTime
      * current date and time, "now" at runtime
      */
     private $oNow = null;
 
     /**
-     * string
+     * @var string zero-terminated
+     * information, which can shown in the frontend "how long is the office closed"
      */
     private $szDownInfo = '';
 
+    /**
+     * @const integer
+     * in this object used constants
+     */
     const WEEKDAY = 0;
     const START   = 1;
     const ENDING  = 2;
@@ -173,10 +176,10 @@ class UstIDviesDownSlots
 
     /**
      * return a informational string, which tells the user why the
-     * vat-check is currently not possible and with which time-lot he has to calculate.
+     * VAT-check is currently not possible and with which time-slot he has to calculate.
      *
      * @param void
-     * @return string  informational text
+     * @return string  the time, till which the office has closed
      */
     public function getDownInfo()
     {
@@ -184,27 +187,15 @@ class UstIDviesDownSlots
     }
 
     /**
-     * return the availablity  of a country vat-office
+     * return the availablity  of a country VAT-office
      *
      * @param string(2)  country-code
-     * @return boolean  'true'=>"service down", 'false'=>"service available"
+     * @return boolean  'true' = "service down", 'false' = "service available"
      */
     public function isDown($szCountryCode)
     {
-          $this->oLogger->debug('checking country down-time: '.$szCountryCode); // --DEBUG--
-/*
- *        $date = DateTime::createFromFormat('H:i', $this->vDownTimeSlots['AT'][0][1]);
- *        $this->oLogger->debug('AT start OOP: '.print_r( $date ,true )); // --DEBUG--
- *
- *           $oNow = new DateTime(); // --DEBUG--
- *           //$oLogger->debug('now? : '.print_r($oNow  ,true )); // --DEBUG--
- *           $oLogger->debug(''.print_r( $oNow->format('l') ,true )); // --DEBUG--
- *           $oLogger->debug(''.print_r( $oNow->format('D') ,true )); // --DEBUG--
- *           $oLogger->debug(''.print_r( $oNow->format('w') ,true )); // --DEBUG--
- *           //$oLogger->debug(''.print_r( new DateInterval('P2D') ,true )); // --DEBUG--
- */
-
-        $date = DateTime::createFromFormat('H:i', $this->vDownTimeSlots['AT'][self::WEEKDAY][self::START]);
+        $this->oLogger->debug('checking country down-time: '.$szCountryCode); // --DEBUG--
+        //$date = DateTime::createFromFormat('H:i', $this->vDownTimeSlots['AT'][self::WEEKDAY][self::START]);
         //$this->oLogger->debug('AT start OOP: '.print_r( $date ,true )); // --DEBUG--
 
         foreach ($this->vDownTimeSlots[$szCountryCode] as $vCountryDownTimes) {
@@ -217,9 +208,10 @@ class UstIDviesDownSlots
             $oEndTime   = DateTime::createFromFormat('D:H:i', $vCountryDownTimes[self::WEEKDAY] . ':' . $vCountryDownTimes[self::ENDING]);
 
             if ($oStartTime <= $this->oNow && $this->oNow <= $oEndTime) {
-                // inform the user and/or log this event
+                // inform the user about this event
                 $this->oLogger->debug('service is down till '.$oEndTime->format('l y-m-d, H:i')); // --DEBUG--
-                $this->szDownInfo = 'Der Dienst dieses Landes ist bis '.$oEndTime->format('l y-m-d, H:i').' nicht erreichbar.';
+                //$this->szDownInfo = 'Der Dienst dieses Landes ist bis '.$oEndTime->format('l y-m-d, H:i').' nicht erreichbar.';
+                $this->szDownInfo = $oEndTime->format('H:i');
 
                 // if we see ANY VALID DOWNTIME, we go back with TRUE (what means "service is DOWN NOW")
                 return true;

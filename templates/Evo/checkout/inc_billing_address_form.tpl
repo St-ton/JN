@@ -329,16 +329,21 @@
                     {if $fehlendeAngaben.ustid == 1}
                         {lang key="fillOut" section="global"}
                     {elseif $fehlendeAngaben.ustid == 2}
-                        {$fehlendeAngaben.ustid_err|dump}
-                        {if $fehlendeAngaben.ustid_err == 100}{lang key="ustIDError100" section="global"}{/if}
-                        {if $fehlendeAngaben.ustid_err == 110}{lang key="ustIDError110" section="global"}{/if}
-                        {if $fehlendeAngaben.ustid_err == 120}{lang key="ustIDError120" section="global"}{/if}
-                        {if $fehlendeAngaben.ustid_err == 130}{lang key="ustIDError130" section="global"}{/if}
+                        {assign var=errorinfo value=","|explode:$fehlendeAngaben.ustid_err}
+                        {if $errorinfo[0] == 100}{lang key="ustIDError100" section="global"}{/if}
+                        {if $errorinfo[0] == 110}{lang key="ustIDError110" section="global"}{/if}
+                        {if $errorinfo[0] == 120}{lang key="ustIDError120" section="global"}{$errorinfo[1]}{/if}
+                        {if $errorinfo[0] == 130}{lang key="ustIDError130" section="global"}{$errorinfo[1]}{/if}
 
+                        {*
                         <br>oldstuff:
-
                         {lang key="ustIDCaseTwo" section="global"}.
                         {if $fehlendeAngaben.ustid_err|count > 0 && $fehlendeAngaben.ustid_err !== false}{lang key="ustIDCaseTwoB" section="global"}: {$fehlendeAngaben.ustid_err}{/if}
+                        *}
+
+                    {elseif $fehlendeAngaben.ustid == 4}
+                        {assign var=errorinfo value=","|explode:$fehlendeAngaben.ustid_err}
+                        {lang key="ustIDError200" section="global"}{$errorinfo[1]}
                     {elseif $fehlendeAngaben.ustid == 5}
                         {lang key="ustIDCaseFive" section="global"}
                     {/if}

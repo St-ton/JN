@@ -4,16 +4,22 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+/**
+ * class UstIDviesVatParser
+ *
+ */
 class UstIDviesVatParser
 {
     /**
+     * @var array
      * pattern of the country-specitfic VAT-IDs
      * MODIFY ONLY THIS ARRAY TO COVER NEW CIRCUMSTANCES!
      *
      * original source:
      * http://ec.europa.eu/taxation_customs/vies/faq.html
      *
-     * "XX" - the first two chars are the country-code (e.g. "ES" for Spain)
+     * pattern-modifiers:
+     * "XX" - the first two letters are the country-code (e.g. "ES" for Spain)
      * "9"  - represents "any integer digit"
      * "X"  - any other letter is a fixed given letter and has to match
      * " "  - spaces has to match too
@@ -21,15 +27,8 @@ class UstIDviesVatParser
      */
     private $vCountryPattern = [
 
-        // ---------------- TEST ------------------
-        'TE' => [
-              'TELL99999999XL99B'
-            , 'TEL_9999 99 9XLB'
-        ] // --DEBUG--
-        // ---------------- TEST ------------------
-
         // AT-Oesterreich                ATU99999999          1 Block mit 9 Ziffern    (comment: 8 !?)
-        , 'AT' => ['AT_99999999']
+          'AT' => ['AT_99999999']
 
         // BE-Belgien                    BE0999999999         1 Block mit 10 Ziffern
         , 'BE' => ['BE0999999999']
@@ -140,12 +139,28 @@ class UstIDviesVatParser
     ];
 
 
+    /**
+     * @var string zero-terminated
+     * given VAT-ID
+     */
     private $szVATid = '';
 
+    /**
+     * @var array
+     * the two parts of the VAT-ID: 2 letters of country-code, rest of the string
+     */
     private $vIdParts = [];
 
+    /**
+     * @var integer
+     * numerical error-code
+     */
     private $nErrorCode = 0;
 
+    /**
+     * @var string zero-terminated
+     * additional error-information
+     */
     private $szErrorInfo = '';
 
 
@@ -164,7 +179,7 @@ class UstIDviesVatParser
 
 
     /**
-     * parses the VAT-ID
+     * parses the VAT-ID-string
      *
      * @param string  VAT-ID
      * @param string  country-specific VAT-ID-pattern
@@ -176,15 +191,6 @@ class UstIDviesVatParser
         $this->oLogger->debug('PATTERN: '.$szPattern); // --DEBUG--
 
         for($i=0; $i < strlen($szVATid); $i++) {
-
-            // compare each id-character to the appropriated pattern-character
-            /*
-            $nCmpVal = strcmp($szVATid[$i], $szPattern[$i]);
-            if (0 < $nCmpVal || -10 > $nCmpVal) {
-                $this->oLogger->debug('invalid'); // --DEBUG--
-                return false;
-            }
-             */
 
             // each character and white-space is compared exactly, while digits can be [1..9]
             switch (true) {
@@ -217,7 +223,6 @@ class UstIDviesVatParser
                     break 2;
             }
         }
-
         // check, if we iterate the whole given VAT-ID,
         // and if not, return the position, at which we sopped
         if (strlen($szVATid) !== $i) {
@@ -238,18 +243,15 @@ class UstIDviesVatParser
     public function parseVatId()
     {
         // guess a country (the first 2 characters should allways be the country-code)
-        // store the result in this object instance
         $nResult = preg_match('/([A-Z]{2})(.*)/', $this->szVATid, $this->vIdParts);
         if (0 === $nResult) {
-            //$this->nErrorCode = $this->vParseErrors[100]; // error: the id did not start with 2 big letters
-            $this->nErrorCode = 100; // error: the id did not start with 2 big letters
+            $this->nErrorCode = 100; // error: the ID did not start with 2 big letters
             return false;
         }
         $this->oLogger->debug('suggested country: '.print_r( $this->vIdParts[1] ,true )); // --DEBUG--
 
         // there is no country starting with this 2 letters
         if (! isset($this->vCountryPattern[$this->vIdParts[1]])) {
-            //$this->nErrorCode = $this->vParseErrors[130].$this->vIdParts[1]; // error: no pattern for such a country
             $this->nErrorCode  = 130; // error: no pattern for such a country
             $this->szErrorInfo = $this->vIdParts[1];
             return false;
@@ -257,7 +259,6 @@ class UstIDviesVatParser
 
         // compare our VAT-ID to all pattern of the guessed country
         foreach ($this->vCountryPattern[$this->vIdParts[1]] as $szPattern) {
-
             // length-check (and go back, if nothing matches)
             if (strlen($this->szVATid) !== strlen($szPattern)) {
                 $this->oLogger->debug('skip pattern '.$szPattern); // --DEBUG--
@@ -270,10 +271,6 @@ class UstIDviesVatParser
                     // if we found a valid pattern-match, we've done our job here
                     return true;
                 } else {
-
-                    // --TODO-- build a nice string with the position of interrupt
-
-                    //$this->nErrorCode = $this->vParseErrors[120]; // error: id did not match any pattern of this country
                     $this->nErrorCode  = 120; // error: id did not match any pattern of this country
                     $this->szErrorInfo = $nParseResult; // interrupt-/error-position
                     return false;
@@ -282,8 +279,7 @@ class UstIDviesVatParser
             }
         }
         $this->oLogger->debug('no length was matching!'); // --DEBUG--
-        //throw new ExceptionVies('wrong length!');
-        //$this->nErrorCode = $this->vParseErrors[110]; // error: no length was matching
+
         $this->nErrorCode = 110; // error: no length was matching
         return false;
     }
@@ -315,6 +311,12 @@ class UstIDviesVatParser
     }
 
 
+    /**
+     * return additional informations of the occurred error
+     *
+     * @param void
+     * @return string  additional error-information
+     */
     public function getErrorInfo()
     {
         return $this->szErrorInfo;
@@ -333,16 +335,3 @@ class UstIDviesVatParser
 
 }
 
-
-/*
- *class ExceptionVies extends Exception {
- *
- *    protected $message = '';
- *
- *    public function __construct($message, $code = 0, Exception $previous = null)
- *    {
- *        parent::__construct($message, $code, $previous);
- *    }
- *
- *}
- */

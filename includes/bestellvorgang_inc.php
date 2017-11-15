@@ -2101,10 +2101,13 @@ function checkKundenFormularArray($data, $kundenaccount, $checkpass = 1)
             $oLogger->debug('backend-setting "UstPrüf aktiv": '.print_r( $conf['kunden']['shop_ustid_bzstpruefung'] ,true )); // --DEBUG--
             $oLogger->debug('backend-setting "force remote" : '.print_r( $conf['kunden']['shop_ustid_force_remote_check'] ,true )); // --DEBUG--
 
-            $oVies = new UstIDvies(); // --DEBUG--
-            //$vViesResult = $oVies->doCheckID('TELG2949-99 9XLB'); // --DEVELOPMENT--
-            $vViesResult = $oVies->doCheckID($data['ustid']); // --TO-CHECK-- trim() needed?
-            if (true === $vViesResult['success']) {
+            $bAnalizeCheck = false; // flag to signalize further analization
+            if ('Y' === $conf['kunden']['shop_ustid_bzstpruefung']) { // backend-setting: "Einstellungen -> Formulareinstellungen ->"
+                $oVies         = new UstIDvies();
+                $vViesResult   = $oVies->doCheckID(trim($data['ustid']));
+                $bAnalizeCheck = true; // flag to signalize further analization
+            }
+            if (true === $bAnalizeCheck && true === $vViesResult['success']) {
                 // "all was fine"
                 $ret['ustid'] = 0;
             } else {
@@ -2112,9 +2115,9 @@ function checkKundenFormularArray($data, $kundenaccount, $checkpass = 1)
 
                 switch ($vViesResult['errortype']) {
                     case 'vies' :
-                        $oLogger->debug('time-error: '.$vViesResult['errorcode']); // --DEBUG--
-                        // vies-error: the number is invalid according to the VIES-system
-                        $ret['ustid'] = 5;
+                        $oLogger->debug('vies-error: '.$vViesResult['errorcode']); // --DEBUG--
+                        // vies-error: the ID is invalid according to the VIES-system
+                        $ret['ustid'] = $vViesResult['errorcode']; // (old value 5)
                         break;
                     case 'parse' :
                         $oLogger->debug('parse-error: '.$vViesResult['errorcode']); // --DEBUG--
@@ -2122,22 +2125,41 @@ function checkKundenFormularArray($data, $kundenaccount, $checkpass = 1)
                             // parse-error: no id was given
                             $ret['ustid'] = 1;
                         } elseif (1 < $vViesResult['errorcode']) {
-                            // parse-error: with the position of error in given ID
+                            // parse-error: with the position of error in given ID-string
                             $ret['ustid'] = 2;
-                            // --TODO-- ...
-                            // --DEVELOPMENT-- should only contain the string with the mark of the parse-error ...
-                            $ret['ustid_err'] = $vViesResult['errorcode'];
+                            switch ($vViesResult['errorcode']) {
+                                case 120:
+                                    // build a string with error-code and error-information
+                                    $ret['ustid_err'] = $vViesResult['errorcode']
+                                        .','
+                                        .substr($data['ustid'], 0, $vViesResult['errorinfo'])
+                                        .'<span style="color:red;">'
+                                        .substr($data['ustid'], $vViesResult['errorinfo'])
+                                        .'</span>'
+                                    ;
+                                    break;
+                                case 130 :
+                                    $ret['ustid_err'] = $vViesResult['errorcode']
+                                        .','
+                                        .$vViesResult['errorinfo']
+                                    ;
+                                    break;
+                                default:
+                                    $ret['ustid_err'] = $vViesResult['errorcode'];
+                                    break;
+                            }
                         }
                         break;
                     case 'time' :
                         $oLogger->debug('time-error: '.$vViesResult['errorcode']); // --DEBUG--
-                        if ('Y' === $conf['kunden']['shop_ustid_force_remote_check']) {
-                            $ret['ustid'] = 4; // parsing ok, but remote not reachable
-                            // --TODO--
-                            // this should ony contain the informational string of the time-slot from the downtime-obj.
-                            $ret['ustid_err'] = $vViesResult['errorstr'];
+                        if ('Y' === $conf['kunden']['shop_ustid_force_remote_check']) { // backend-setting: "Einstellungen -> Formulareinstellungen ->"
+                            // parsing ok, but remote-service in "down-slot" and unreachable
+                            $ret['ustid'] = 4;
+                            $ret['ustid_err'] = $vViesResult['errorcode']
+                                .','
+                                .$vViesResult['errorinfo']
+                            ;
                         }
-                        $ret['ustid'] = 4; // ? --TO-CHECK--
                         break;
                 }
 

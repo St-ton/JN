@@ -80,141 +80,143 @@ class FilterItemCategory extends FilterBaseCategory
         if ($this->options !== null) {
             return $this->options;
         }
-        $options = [];
-        if ($this->getConfig()['navigationsfilter']['allgemein_kategoriefilter_benutzen'] !== 'N') {
-            $categoryFilterType = $this->getConfig()['navigationsfilter']['kategoriefilter_anzeigen_als'];
-            $order              = $this->productFilter->getOrder();
-            $state              = $this->productFilter->getCurrentStateData();
+        if ($this->getConfig()['navigationsfilter']['allgemein_kategoriefilter_benutzen'] === 'N') {
+            $this->options = [];
 
-            $state->joins[] = $order->join;
-            // Kategoriefilter anzeige
-            if ($categoryFilterType === 'HF' && (!$this->productFilter->hasCategory())) {
-                //@todo: $this instead of $naviFilter->KategorieFilter?
-                $kKatFilter = $this->productFilter->hasCategoryFilter()
-                    ? ''
-                    : ' AND tkategorieartikelgesamt.kOberKategorie = 0';
+            return $this->options;
+        }
+        $categoryFilterType = $this->getConfig()['navigationsfilter']['kategoriefilter_anzeigen_als'];
+        $order              = $this->productFilter->getOrder();
+        $state              = $this->productFilter->getCurrentStateData();
+        $options            = [];
 
+        $state->joins[] = $order->join;
+        // Kategoriefilter anzeige
+        if ($categoryFilterType === 'HF' && (!$this->productFilter->hasCategory())) {
+            //@todo: $this instead of $naviFilter->KategorieFilter?
+            $kKatFilter = $this->productFilter->hasCategoryFilter()
+                ? ''
+                : ' AND tkategorieartikelgesamt.kOberKategorie = 0';
+
+            $state->joins[] = (new FilterJoin())
+                ->setComment('join1 from FilterItemCategory::getOptions()')
+                ->setType('JOIN')
+                ->setTable('(
+            SELECT tkategorieartikel.kArtikel, oberkategorie.kOberKategorie, oberkategorie.kKategorie
+            FROM tkategorieartikel
+            INNER JOIN tkategorie 
+                ON tkategorie.kKategorie = tkategorieartikel.kKategorie
+            INNER JOIN tkategorie oberkategorie 
+                ON tkategorie.lft BETWEEN oberkategorie.lft 
+                AND oberkategorie.rght
+            ) tkategorieartikelgesamt')
+                ->setOn('tartikel.kArtikel = tkategorieartikelgesamt.kArtikel ' . $kKatFilter)
+                ->setOrigin(__CLASS__);
+            $state->joins[] = (new FilterJoin())
+                ->setComment('join2 from FilterItemCategory::getOptions()')
+                ->setType('JOIN')
+                ->setTable('tkategorie')
+                ->setOn('tkategorie.kKategorie = tkategorieartikelgesamt.kKategorie')
+                ->setOrigin(__CLASS__);
+        } else {
+            // @todo: this instead of $naviFilter->Kategorie?
+            if (!$this->productFilter->hasCategory()) {
                 $state->joins[] = (new FilterJoin())
-                    ->setComment('join1 from FilterItemCategory::getOptions()')
+                    ->setComment('join3 from FilterItemCategory::getOptions()')
                     ->setType('JOIN')
-                    ->setTable('(
-                SELECT tkategorieartikel.kArtikel, oberkategorie.kOberKategorie, oberkategorie.kKategorie
-                FROM tkategorieartikel
-                INNER JOIN tkategorie 
-                    ON tkategorie.kKategorie = tkategorieartikel.kKategorie
-                INNER JOIN tkategorie oberkategorie 
-                    ON tkategorie.lft BETWEEN oberkategorie.lft 
-                    AND oberkategorie.rght
-                ) tkategorieartikelgesamt')
-                    ->setOn('tartikel.kArtikel = tkategorieartikelgesamt.kArtikel ' . $kKatFilter)
-                    ->setOrigin(__CLASS__);
-                $state->joins[] = (new FilterJoin())
-                    ->setComment('join2 from FilterItemCategory::getOptions()')
-                    ->setType('JOIN')
-                    ->setTable('tkategorie')
-                    ->setOn('tkategorie.kKategorie = tkategorieartikelgesamt.kKategorie')
-                    ->setOrigin(__CLASS__);
-            } else {
-                // @todo: this instead of $naviFilter->Kategorie?
-                if (!$this->productFilter->hasCategory()) {
-                    $state->joins[] = (new FilterJoin())
-                        ->setComment('join3 from FilterItemCategory::getOptions()')
-                        ->setType('JOIN')
-                        ->setTable('tkategorieartikel')
-                        ->setOn('tartikel.kArtikel = tkategorieartikel.kArtikel')
-                        ->setOrigin(__CLASS__);
-                }
-                $state->joins[] = (new FilterJoin())
-                    ->setComment('join4 from FilterItemCategory::getOptions()')
-                    ->setType('JOIN')
-                    ->setTable('tkategorie')
-                    ->setOn('tkategorie.kKategorie = tkategorieartikel.kKategorie')
+                    ->setTable('tkategorieartikel')
+                    ->setOn('tartikel.kArtikel = tkategorieartikel.kArtikel')
                     ->setOrigin(__CLASS__);
             }
-            if (!Shop::has('checkCategoryVisibility')) {
-                Shop::set(
-                    'checkCategoryVisibility',
-                    Shop::DB()->query('SELECT kKategorie FROM tkategoriesichtbarkeit', 3) > 0
-                );
-            }
-            if (Shop::get('checkCategoryVisibility')) {
-                $state->joins[] = (new FilterJoin())
-                    ->setComment('join5 from FilterItemCategory::getOptions()')
-                    ->setType('LEFT JOIN')
-                    ->setTable('tkategoriesichtbarkeit')
-                    ->setOn('tkategoriesichtbarkeit.kKategorie = tkategorie.kKategorie')
-                    ->setOrigin(__CLASS__);
-
-                $state->conditions[] = 'tkategoriesichtbarkeit.kKategorie IS NULL';
-            }
-            // nicht Standardsprache? Dann hole Namen nicht aus tkategorie sondern aus tkategoriesprache
-            $cSQLKategorieSprache        = new stdClass();
-            $cSQLKategorieSprache->cJOIN = '';
-            $select                      = ['tkategorie.kKategorie', 'tkategorie.nSort'];
-            if (!standardspracheAktiv()) {
-                $select[] = "IF(tkategoriesprache.cName = '', tkategorie.cName, tkategoriesprache.cName) AS cName";
-                $state->joins[] = (new FilterJoin())
-                    ->setComment('join5 from FilterItemCategory::getOptions()')
-                    ->setType('JOIN')
-                    ->setTable('tkategoriesprache')
-                    ->setOn('tkategoriesprache.kKategorie = tkategorie.kKategorie 
-                                AND tkategoriesprache.kSprache = ' . $this->getLanguageID())
-                    ->setOrigin(__CLASS__);
-            } else {
-                $select[] = 'tkategorie.cName';
-            }
-
-            $query            = $this->productFilter->getBaseQuery(
-                $select,
-                $state->joins,
-                $state->conditions,
-                $state->having,
-                $order->orderBy,
-                '',
-                ['tkategorie.kKategorie', 'tartikel.kArtikel']
+            $state->joins[] = (new FilterJoin())
+                ->setComment('join4 from FilterItemCategory::getOptions()')
+                ->setType('JOIN')
+                ->setTable('tkategorie')
+                ->setOn('tkategorie.kKategorie = tkategorieartikel.kKategorie')
+                ->setOrigin(__CLASS__);
+        }
+        if (!Shop::has('checkCategoryVisibility')) {
+            Shop::set(
+                'checkCategoryVisibility',
+                Shop::DB()->query('SELECT kKategorie FROM tkategoriesichtbarkeit', 3) > 0
             );
-            $categories       = Shop::DB()->executeQuery(
-                "SELECT tseo.cSeo, ssMerkmal.kKategorie, ssMerkmal.cName, 
-                    ssMerkmal.nSort, COUNT(*) AS nAnzahl
-                    FROM (" . $query . " ) AS ssMerkmal
-                        LEFT JOIN tseo ON tseo.kKey = ssMerkmal.kKategorie
-                            AND tseo.cKey = 'kKategorie'
-                            AND tseo.kSprache = " . $this->getLanguageID() . "
-                        GROUP BY ssMerkmal.kKategorie
-                        ORDER BY ssMerkmal.nSort, ssMerkmal.cName"
-                    , 2
-            );
-            $additionalFilter = new self($this->productFilter);
-            foreach ($categories as $category) {
-                // Anzeigen als Kategoriepfad
-                if ($categoryFilterType === 'KP') {
-                    $category->cName = gibKategoriepfad(
-                        new Kategorie($category->kKategorie, $this->getLanguageID(), $this->getCustomerGroupID()),
-                        $this->getCustomerGroupID(),
-                        $this->getLanguageID()
-                    );
-                }
-                $fe             = (new FilterExtra())
-                    ->setType($this->getType())
-                    ->setClassName($this->getClassName())
-                    ->setParam($this->getUrlParam())
-                    ->setName($category->cName)
-                    ->setValue((int)$category->kKategorie)
-                    ->setCount($category->nAnzahl)
-                    ->setSort($category->nSort)
-                    ->setURL($this->productFilter->getURL(
-                        $additionalFilter->init((int)$category->kKategorie)
-                    ));
-                $options[]      = $fe;
-            }
-            // neue Sortierung
+        }
+        if (Shop::get('checkCategoryVisibility')) {
+            $state->joins[] = (new FilterJoin())
+                ->setComment('join5 from FilterItemCategory::getOptions()')
+                ->setType('LEFT JOIN')
+                ->setTable('tkategoriesichtbarkeit')
+                ->setOn('tkategoriesichtbarkeit.kKategorie = tkategorie.kKategorie')
+                ->setOrigin(__CLASS__);
+
+            $state->conditions[] = 'tkategoriesichtbarkeit.kKategorie IS NULL';
+        }
+        // nicht Standardsprache? Dann hole Namen nicht aus tkategorie sondern aus tkategoriesprache
+        $cSQLKategorieSprache        = new stdClass();
+        $cSQLKategorieSprache->cJOIN = '';
+        $select                      = ['tkategorie.kKategorie', 'tkategorie.nSort'];
+        if (!standardspracheAktiv()) {
+            $select[] = "IF(tkategoriesprache.cName = '', tkategorie.cName, tkategoriesprache.cName) AS cName";
+            $state->joins[] = (new FilterJoin())
+                ->setComment('join5 from FilterItemCategory::getOptions()')
+                ->setType('JOIN')
+                ->setTable('tkategoriesprache')
+                ->setOn('tkategoriesprache.kKategorie = tkategorie.kKategorie 
+                            AND tkategoriesprache.kSprache = ' . $this->getLanguageID())
+                ->setOrigin(__CLASS__);
+        } else {
+            $select[] = 'tkategorie.cName';
+        }
+
+        $query            = $this->productFilter->getBaseQuery(
+            $select,
+            $state->joins,
+            $state->conditions,
+            $state->having,
+            $order->orderBy,
+            '',
+            ['tkategorie.kKategorie', 'tartikel.kArtikel']
+        );
+        $categories       = Shop::DB()->executeQuery(
+            "SELECT tseo.cSeo, ssMerkmal.kKategorie, ssMerkmal.cName, 
+                ssMerkmal.nSort, COUNT(*) AS nAnzahl
+                FROM (" . $query . " ) AS ssMerkmal
+                    LEFT JOIN tseo ON tseo.kKey = ssMerkmal.kKategorie
+                        AND tseo.cKey = 'kKategorie'
+                        AND tseo.kSprache = " . $this->getLanguageID() . "
+                    GROUP BY ssMerkmal.kKategorie
+                    ORDER BY ssMerkmal.nSort, ssMerkmal.cName"
+                , 2
+        );
+        $langID           = $this->getLanguageID();
+        $customerGroupID  = $this->getCustomerGroupID();
+        $additionalFilter = new self($this->productFilter);
+        $helper           = KategorieHelper::getInstance($langID, $customerGroupID);
+        foreach ($categories as $category) {
+            // Anzeigen als Kategoriepfad
             if ($categoryFilterType === 'KP') {
-                usort($options, function ($a, $b) {
-                    /** @var FilterExtra $a */
-                    /** @var FilterExtra $b */
-                    return strcmp($a->getName(), $b->getName());
-                });
+                $category->cName = $helper->getPath(new Kategorie($category->kKategorie, $langID, $customerGroupID));
             }
+            $fe             = (new FilterExtra())
+                ->setType($this->getType())
+                ->setClassName($this->getClassName())
+                ->setParam($this->getUrlParam())
+                ->setName($category->cName)
+                ->setValue((int)$category->kKategorie)
+                ->setCount($category->nAnzahl)
+                ->setSort($category->nSort)
+                ->setURL($this->productFilter->getURL(
+                    $additionalFilter->init((int)$category->kKategorie)
+                ));
+            $options[]      = $fe;
+        }
+        // neue Sortierung
+        if ($categoryFilterType === 'KP') {
+            usort($options, function ($a, $b) {
+                /** @var FilterExtra $a */
+                /** @var FilterExtra $b */
+                return strcmp($a->getName(), $b->getName());
+            });
         }
         $this->options = $options;
 

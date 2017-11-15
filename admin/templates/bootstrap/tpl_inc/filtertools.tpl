@@ -75,10 +75,10 @@
                                             var $datepicker = $('#{$oFilter->getId()}_{$oField->getId()}');
                                             $datepicker.daterangepicker({
                                                 locale: {
-                                                    format: 'DD.MM.YYYY', separator: ' - ', applyLabel: 'Übernehmen',
+                                                    format: 'DD.MM.YYYY', separator: ' - ', applyLabel: 'ï¿½bernehmen',
                                                     cancelLabel: 'Abbrechen', customRangeLabel: 'Benutzerdefiniert',
                                                     daysOfWeek: ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'],
-                                                    monthNames: ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni',
+                                                    monthNames: ['Januar', 'Februar', 'Mï¿½rz', 'April', 'Mai', 'Juni',
                                                         'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
                                                     firstDay: 1
                                                 },
@@ -121,7 +121,7 @@
                                                         + picker.endDate.format('DD.MM.YYYY'));
                                             });
                                             var curDateRange = '{$oField->getValue()}'.split(' - ');
-                                            if (curDateRange.length == 2) {
+                                            if (curDateRange.length === 2) {
                                                 $datepicker.val(curDateRange[0] + ' - ' + curDateRange[1]);
                                                 $datepicker.data('daterangepicker').setStartDate(curDateRange[0]);
                                                 $datepicker.data('daterangepicker').setEndDate(curDateRange[1]);

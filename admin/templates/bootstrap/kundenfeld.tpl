@@ -51,7 +51,7 @@
     {rdelim}
 
     function selectCheck(selectBox) {ldelim}
-        if (selectBox.selectedIndex == 3) {ldelim}
+        if (selectBox.selectedIndex === 3) {ldelim}
             startKundenfeldwertEdit();
         {rdelim} else {ldelim}
             stopKundenfeldwertEdit();

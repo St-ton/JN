@@ -5,7 +5,7 @@
     var bManuell = false;
 
     function selectCheck(selectBox) {ldelim}
-        if (selectBox.selectedIndex == 1) {ldelim}
+        if (selectBox.selectedIndex === 1) {ldelim}
             // Laden falls vorhanden
             {if isset($oPreisspannenfilter_arr) && $oPreisspannenfilter_arr|@count > 0}
             {assign var=i value=1}
@@ -17,7 +17,7 @@
 
             document.getElementById('Werte').style.display = 'block';
             bManuell = true;
-            {rdelim} else if (selectBox.selectedIndex == 0) {ldelim}
+            {rdelim} else if (selectBox.selectedIndex === 0) {ldelim}
             document.getElementById('Werte').style.display = 'none';
             bManuell = false;
             {rdelim}
@@ -25,10 +25,10 @@
 
     // Plausibilitaetspruefung
     function speicherDaten() {ldelim}
-        if (bManuell == true) {ldelim}
+        if (bManuell === true) {ldelim}
             var bCheck = true,
-                    cFehler = '',
-                    j;
+                cFehler = '',
+                j;
             // Resetten
             for (j = 0; j < 10; j++) {ldelim}
                 document.getElementById('nVon_' + j).style.background = '#FFFFFF';

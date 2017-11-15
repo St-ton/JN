@@ -1,7 +1,7 @@
 <script type="text/javascript">
     function append_file_selector() {ldelim}
-        var file_input = $('<input type="file" name="Bilder[]" maxlength="2097152" accept="image/*" />');
-        var container = $('<p class="multi_input vmiddle"><a href="#" title="Entfernen"><img src="{$currentTemplateDir}/gfx/layout/delete.png" class="vmiddle" /></a></p>').prepend(file_input);
+        var file_input = $('<input type="file" name="Bilder[]" maxlength="2097152" accept="image/*" />'),
+            container = $('<p class="multi_input vmiddle"><a href="#" title="Entfernen"><img src="{$currentTemplateDir}/gfx/layout/delete.png" class="vmiddle" /></a></p>').prepend(file_input);
         $('#file_input_wrapper').append(container);
         $(container).find('img').bind('click', function () {ldelim}
             $(file_input).parent().remove();
@@ -31,12 +31,11 @@
         }).trigger('change');
 
         $('#content_template_type ul li a').click(function () {
-
             $('#content_template_type ul li a').parent().removeClass('active');
             $(this).parent().addClass('active');
 
             var tpl = $(this).parent().attr('rel');
-            if (tpl.length == 0)
+            if (tpl.length === 0)
                 tpl = 'default';
 
             xajax_getContentTemplate(tpl);
@@ -53,8 +52,9 @@
 
     function set_editor(id) {
         var instance = CKEDITOR.instances[id];
-        if (instance)
+        if (instance) {
             CKEDITOR.remove(instance);
+        }
         CKEDITOR.replace(id);
     }
     {/literal}

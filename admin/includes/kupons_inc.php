@@ -123,16 +123,19 @@ function normalizeDate($string)
  * @param string $cLimitSQL
  * @return array|int|object
  */
-function getRawCoupons($cKuponTyp = 'standard', $columns = [], $cWhereSQL = '', $cOrderSQL = '', $cLimitSQL = '')
+function getRawCoupons($cKuponTyp = 'standard', $cWhereSQL = '', $cOrderSQL = '', $cLimitSQL = '')
 {
-    return Shop::DB()->query("
-        SELECT " . (count($columns) > 0 ? implode(',', $columns) : '*') . "
-            FROM tkupon
+    return Shop::DB()->query(
+        "SELECT k.*, max(kk.dErstellt) as dLastUse
+            FROM tkupon AS k
+            JOIN tkuponkunde AS kk ON kk.kKupon = k.kKupon
             WHERE cKuponTyp = '" . Shop::DB()->escape($cKuponTyp) . "' " .
             ($cWhereSQL !== '' ? " AND " . $cWhereSQL : "") .
+            "GROUP BY k.kKupon" .
             ($cOrderSQL !== '' ? " ORDER BY " . $cOrderSQL : "") .
             ($cLimitSQL !== '' ? " LIMIT " . $cLimitSQL : ""),
-        2);
+        2
+    );
 }
 
 /**
@@ -146,7 +149,7 @@ function getRawCoupons($cKuponTyp = 'standard', $columns = [], $cWhereSQL = '', 
  */
 function getCoupons($cKuponTyp = 'standard', $cWhereSQL = '', $cOrderSQL = '', $cLimitSQL = '')
 {
-    $oKuponDB_arr = getRawCoupons($cKuponTyp, ['kKupon'], $cWhereSQL, $cOrderSQL, $cLimitSQL);
+    $oKuponDB_arr = getRawCoupons($cKuponTyp, $cWhereSQL, $cOrderSQL, $cLimitSQL);
     $oKupon_arr   = [];
 
     if (is_array($oKuponDB_arr)) {
@@ -165,7 +168,7 @@ function getCoupons($cKuponTyp = 'standard', $cWhereSQL = '', $cOrderSQL = '', $
  */
 function getExportableCoupons($cKuponTyp = 'standard', $cWhereSQL = '')
 {
-    $coupons = getRawCoupons($cKuponTyp, [], $cWhereSQL);
+    $coupons = getRawCoupons($cKuponTyp, $cWhereSQL);
 
     foreach ($coupons as $rawCoupon) {
         foreach (getCouponNames($rawCoupon->kKupon) as $iso => $name) {

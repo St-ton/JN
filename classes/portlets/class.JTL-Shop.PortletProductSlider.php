@@ -5,22 +5,20 @@
  */
 
 /**
- * Class PortletSlider
+ * Class PortletProductSlider
  */
-class PortletSlider extends CMSPortlet
+class PortletProductSlider extends CMSPortlet
 {
     public function getPreviewHtml()
     {
-        return $this->getFinalHtml();
+        return '<div>Produkt-Slider</div>';
+        //return $this->getFinalHtml();
     }
 
     public function getFinalHtml()
     {
-        $articleIds   = $this->properties['articleIds'];
+        $articleIds   = explode(',', $this->properties['articleIds']);
         $oArtikel_arr = [];
-
-//        $options = self::getDefaultOptions();
-//        $options->
 
         foreach ($articleIds as $kArtikel) {
             $kArtikel = (int)$kArtikel;
@@ -34,20 +32,20 @@ class PortletSlider extends CMSPortlet
             ->assign('productlist', $oArtikel_arr)
             ->assign('title', 'Produkte')
             ->assign('Einstellungen', Shop::getConfig([CONF_BEWERTUNG]))
-            ->fetch('portlets/final.slider.tpl');
+            ->fetch('portlets/final.productslider.tpl');
     }
 
     public function getConfigPanelHtml()
     {
-        return (new JTLSmarty(true))
+        return Shop::Smarty()
             ->assign('properties', $this->properties)
-            ->fetch('portlets/settings.slider.tpl');
+            ->fetch(PFAD_ROOT . PFAD_TEMPLATES . 'Evo/portlets/settings.productslider.tpl');
     }
 
     public function getDefaultProps()
     {
         return [
-            'articleIds' => [1]
+            'articleIds' => '1,2',
         ];
     }
 }

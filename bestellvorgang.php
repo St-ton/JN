@@ -230,6 +230,8 @@ if ($step === 'Bestaetigung') {
     $smarty->assign('cKuponfehler_arr', plausiKupon($_POST));
     //evtl genutztes guthaben anpassen
     pruefeGuthabenNutzen();
+    // Eventuellen Zahlungsarten Aufpreis/Rabatt neusetzen
+    getPaymentSurchageDiscount($_SESSION['Zahlungsart']);
     gibStepBestaetigung($_GET);
     $_SESSION['Warenkorb']->cEstimatedDelivery = $_SESSION['Warenkorb']->getEstimatedDeliveryTime();
     Warenkorb::refreshChecksum($_SESSION['Warenkorb']);

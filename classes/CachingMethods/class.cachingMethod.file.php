@@ -48,7 +48,7 @@ class cache_file implements ICachingMethod
     public function store($cacheID, $content, $expiration = null)
     {
         $dir = $this->options['cache_dir'];
-        if (!is_dir($dir) && mkdir($dir) === false) {
+        if (!is_dir($dir) && mkdir($dir) === false && !is_dir($dir)) {
             return false;
         }
         $fileName = $this->getFileName($cacheID);
@@ -56,7 +56,7 @@ class cache_file implements ICachingMethod
             return false;
         }
 
-        return (file_put_contents(
+        return file_put_contents(
                 $fileName,
                 serialize(
                     [
@@ -66,7 +66,7 @@ class cache_file implements ICachingMethod
                             : $expiration
                     ]
                 )
-            ) !== false);
+            ) !== false;
     }
 
     /**
@@ -120,10 +120,9 @@ class cache_file implements ICachingMethod
      */
     public function isAvailable()
     {
-        $res = true;
-        if (!is_dir($this->options['cache_dir'])) {
-            $res = mkdir($this->options['cache_dir']);
-        }
+        $res = !is_dir($this->options['cache_dir'])
+            ? mkdir($this->options['cache_dir']) && is_dir($this->options['cache_dir'])
+            : true;
 
         return $res && is_writable($this->options['cache_dir']);
     }

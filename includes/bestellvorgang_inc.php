@@ -1222,9 +1222,8 @@ function zahlungsartKorrekt($kZahlungsart)
             }
         }
         /** @var array('Warenkorb' => Warenkorb) $_SESSION */
-        if ($Zahlungsart->fAufpreis != 0) {
-            getPaymentSurchageDiscount($Zahlungsart);
-        }
+        getPaymentSurchageDiscount($Zahlungsart);
+
         //posname lokalisiert ablegen
         if (!isset($Spezialpos)) {
             $Spezialpos = new stdClass();
@@ -1326,81 +1325,83 @@ function zahlungsartKorrekt($kZahlungsart)
 
 function getPaymentSurchageDiscount($Zahlungsart)
 {
-    $_SESSION['Warenkorb']
-        ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART)
-        ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR);
-    //lokalisieren
-    $Zahlungsart->cPreisLocalized = gibPreisStringLocalized($Zahlungsart->fAufpreis);
-    $Aufpreis                     = $Zahlungsart->fAufpreis;
-    if ($Zahlungsart->cAufpreisTyp === 'prozent') {
-        $fGuthaben = isset($_SESSION['Bestellung']->fGuthabenGenutzt) ? $_SESSION['Bestellung']->fGuthabenGenutzt : 0;
-        $Aufpreis = (($_SESSION['Warenkorb']->gibGesamtsummeWarenExt(
-                    [
-                        C_WARENKORBPOS_TYP_ARTIKEL,
-                        C_WARENKORBPOS_TYP_VERSANDPOS,
-                        C_WARENKORBPOS_TYP_KUPON,
-                        C_WARENKORBPOS_TYP_GUTSCHEIN,
-                        C_WARENKORBPOS_TYP_VERSANDZUSCHLAG,
-                        C_WARENKORBPOS_TYP_NEUKUNDENKUPON,
-                        C_WARENKORBPOS_TYP_VERSAND_ARTIKELABHAENGIG,
-                        C_WARENKORBPOS_TYP_VERPACKUNG,
-                        C_WARENKORBPOS_TYP_TRUSTEDSHOPS
-                    ],
-                    true
-                ) - $fGuthaben) * $Zahlungsart->fAufpreis) / 100.0;
+    if ($Zahlungsart->fAufpreis != 0) {
+        $_SESSION['Warenkorb']
+            ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART)
+            ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR);
+        //lokalisieren
+        $Zahlungsart->cPreisLocalized = gibPreisStringLocalized($Zahlungsart->fAufpreis);
+        $Aufpreis = $Zahlungsart->fAufpreis;
+        if ($Zahlungsart->cAufpreisTyp === 'prozent') {
+            $fGuthaben = isset($_SESSION['Bestellung']->fGuthabenGenutzt) ? $_SESSION['Bestellung']->fGuthabenGenutzt : 0;
+            $Aufpreis = (($_SESSION['Warenkorb']->gibGesamtsummeWarenExt(
+                            [
+                                C_WARENKORBPOS_TYP_ARTIKEL,
+                                C_WARENKORBPOS_TYP_VERSANDPOS,
+                                C_WARENKORBPOS_TYP_KUPON,
+                                C_WARENKORBPOS_TYP_GUTSCHEIN,
+                                C_WARENKORBPOS_TYP_VERSANDZUSCHLAG,
+                                C_WARENKORBPOS_TYP_NEUKUNDENKUPON,
+                                C_WARENKORBPOS_TYP_VERSAND_ARTIKELABHAENGIG,
+                                C_WARENKORBPOS_TYP_VERPACKUNG,
+                                C_WARENKORBPOS_TYP_TRUSTEDSHOPS
+                            ],
+                            true
+                        ) - $fGuthaben) * $Zahlungsart->fAufpreis) / 100.0;
 
-        $Zahlungsart->cPreisLocalized = gibPreisStringLocalized($Aufpreis);
-    }
-    //posname lokalisiert ablegen
-    if (!isset($Spezialpos)) {
-        $Spezialpos = new stdClass();
-    }
-    $Spezialpos->cGebuehrname = [];
-    foreach ($_SESSION['Sprachen'] as $Sprache) {
-        if ($Zahlungsart->kZahlungsart > 0) {
-            $name_spr = Shop::DB()->select(
-                'tzahlungsartsprache',
-                'kZahlungsart',
-                (int)$Zahlungsart->kZahlungsart,
-                'cISOSprache', $Sprache->cISO,
-                null,
-                null,
-                false,
-                'cGebuehrname'
-            );
-            if (isset($name_spr->cGebuehrname)) {
-                $Spezialpos->cGebuehrname[$Sprache->cISO] = $name_spr->cGebuehrname;
-            }
-            if ($Zahlungsart->cAufpreisTyp === 'prozent') {
-                if ($Zahlungsart->fAufpreis > 0) {
-                    $Spezialpos->cGebuehrname[$Sprache->cISO] .= ' +';
+            $Zahlungsart->cPreisLocalized = gibPreisStringLocalized($Aufpreis);
+        }
+        //posname lokalisiert ablegen
+        if (!isset($Spezialpos)) {
+            $Spezialpos = new stdClass();
+        }
+        $Spezialpos->cGebuehrname = [];
+        foreach ($_SESSION['Sprachen'] as $Sprache) {
+            if ($Zahlungsart->kZahlungsart > 0) {
+                $name_spr = Shop::DB()->select(
+                    'tzahlungsartsprache',
+                    'kZahlungsart',
+                    (int)$Zahlungsart->kZahlungsart,
+                    'cISOSprache', $Sprache->cISO,
+                    null,
+                    null,
+                    false,
+                    'cGebuehrname'
+                );
+                if (isset($name_spr->cGebuehrname)) {
+                    $Spezialpos->cGebuehrname[$Sprache->cISO] = $name_spr->cGebuehrname;
                 }
-                $Spezialpos->cGebuehrname[$Sprache->cISO] .= $Zahlungsart->fAufpreis . '%';
+                if ($Zahlungsart->cAufpreisTyp === 'prozent') {
+                    if ($Zahlungsart->fAufpreis > 0) {
+                        $Spezialpos->cGebuehrname[$Sprache->cISO] .= ' +';
+                    }
+                    $Spezialpos->cGebuehrname[$Sprache->cISO] .= $Zahlungsart->fAufpreis . '%';
+                }
             }
         }
-    }
-    if ($Zahlungsart->cModulId === 'za_nachnahme_jtl') {
-        $_SESSION['Warenkorb']->erstelleSpezialPos(
-            $Spezialpos->cGebuehrname,
-            1,
-            $Aufpreis,
-            $_SESSION['Warenkorb']->gibVersandkostenSteuerklasse($_SESSION['Lieferadresse']->cLand),
-            C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR,
-            true,
-            true,
-            $Zahlungsart->cHinweisText
-        );
-    } else {
-        $_SESSION['Warenkorb']->erstelleSpezialPos(
-            $Spezialpos->cGebuehrname,
-            1,
-            $Aufpreis,
-            $_SESSION['Warenkorb']->gibVersandkostenSteuerklasse($_SESSION['Lieferadresse']->cLand),
-            C_WARENKORBPOS_TYP_ZAHLUNGSART,
-            true,
-            true,
-            $Zahlungsart->cHinweisText
-        );
+        if ($Zahlungsart->cModulId === 'za_nachnahme_jtl') {
+            $_SESSION['Warenkorb']->erstelleSpezialPos(
+                $Spezialpos->cGebuehrname,
+                1,
+                $Aufpreis,
+                $_SESSION['Warenkorb']->gibVersandkostenSteuerklasse($_SESSION['Lieferadresse']->cLand),
+                C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR,
+                true,
+                true,
+                $Zahlungsart->cHinweisText
+            );
+        } else {
+            $_SESSION['Warenkorb']->erstelleSpezialPos(
+                $Spezialpos->cGebuehrname,
+                1,
+                $Aufpreis,
+                $_SESSION['Warenkorb']->gibVersandkostenSteuerklasse($_SESSION['Lieferadresse']->cLand),
+                C_WARENKORBPOS_TYP_ZAHLUNGSART,
+                true,
+                true,
+                $Zahlungsart->cHinweisText
+            );
+        }
     }
 }
 

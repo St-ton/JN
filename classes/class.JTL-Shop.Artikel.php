@@ -5198,14 +5198,30 @@ class Artikel
             unset($this->oStueckliste_arr);
             $this->holeStueckliste($_SESSION['Kundengruppe']->kKundengruppe, true);
         }
-        if (!empty($this->oStueckliste_arr) && !empty($this->kStueckliste)) {
-            foreach ($this->oStueckliste_arr as $piece) {
-                $piece->getDeliveryTime($countryCode, $purchaseQuantity * (float)$piece->fAnzahl_stueckliste, null, null, $shippingID);
-                if (isset($piece->nMaxDeliveryDays)) {
-                    $maxDeliveryDays = max($maxDeliveryDays, $piece->nMaxDeliveryDays);
-                }
-                if (isset($piece->nMinDeliveryDays)) {
-                    $minDeliveryDays = max($minDeliveryDays, $piece->nMinDeliveryDays);
+        $isPartsList = !empty($this->oStueckliste_arr) && !empty($this->kStueckliste);
+        if ($isPartsList) {
+            $oPiecesNotInShop = Shop::DB()->query(
+                "SELECT COUNT(tstueckliste.kArtikel) AS nAnzahl
+                    FROM tstueckliste
+                    LEFT JOIN tartikel ON tartikel.kArtikel = tstueckliste.kArtikel
+                    WHERE tstueckliste.kStueckliste = " . (int)$this->kStueckliste . "
+	                    AND tartikel.kArtikel IS NULL", 1
+            );
+
+            if (is_object($oPiecesNotInShop) && (int)$oPiecesNotInShop->nAnzahl > 0) {
+                // this list has potentially invisible parts and can't calculated correctly
+                // handle this parts list as an normal product
+                $isPartsList = false;
+            } else {
+                // all parts of this list are accessible
+                foreach ($this->oStueckliste_arr as $piece) {
+                    $piece->getDeliveryTime($countryCode, $purchaseQuantity * (float)$piece->fAnzahl_stueckliste, null, null, $shippingID);
+                    if (isset($piece->nMaxDeliveryDays) && $piece->nMaxDeliveryDays > $maxDeliveryDays) {
+                        $maxDeliveryDays = $piece->nMaxDeliveryDays;
+                    }
+                    if (isset($piece->nMinDeliveryDays) && $piece->nMinDeliveryDays > $minDeliveryDays) {
+                        $minDeliveryDays = $piece->nMinDeliveryDays;
+                    }
                 }
             }
             if (!empty($resetArray)) {
@@ -5236,7 +5252,7 @@ class Artikel
                 }
             }
         }
-        if ($this->nBearbeitungszeit > 0 ||
+        if ((!$isPartsList && $this->nBearbeitungszeit > 0) ||
             (isset($this->FunktionsAttribute['processingtime']) && $this->FunktionsAttribute['processingtime'] > 0)
         ) {
             $processingTime   = ($this->nBearbeitungszeit > 0)
@@ -5247,9 +5263,21 @@ class Artikel
         }
         // product coming soon? then add remaining days. stocklevel doesnt matter, see #13604
         if ($this->nErscheinendesProdukt && new DateTime($this->dErscheinungsdatum) > new DateTime()) {
-            $minDeliveryDays += $this->calculateDaysBetween($this->dErscheinungsdatum, date('Y-m-d', time()));
-            $maxDeliveryDays += $this->calculateDaysBetween($this->dErscheinungsdatum, date('Y-m-d', time()));
-        } elseif ($this->cLagerBeachten === 'Y' && ($stockLevel <= 0 || ($stockLevel - $purchaseQuantity < 0))) {
+            $daysToRelease = $this->calculateDaysBetween($this->dErscheinungsdatum, date('Y-m-d', time()));
+
+            if ($isPartsList) {
+                // if this is a parts list...
+                if ($minDeliveryDays < $daysToRelease) {
+                    // ...and release date is after min delivery date from list parts, then release date is the new min delivery date
+                    $offset          = $maxDeliveryDays - $minDeliveryDays;
+                    $minDeliveryDays = $daysToRelease;
+                    $maxDeliveryDays = $minDeliveryDays + $offset;
+                }
+            } else {
+                $minDeliveryDays += $daysToRelease;
+                $maxDeliveryDays += $daysToRelease;
+            }
+        } elseif (!$isPartsList && ($this->cLagerBeachten === 'Y' && ($stockLevel <= 0 || ($stockLevel - $purchaseQuantity < 0)))) {
             if (isset($this->FunktionsAttribute['deliverytime_outofstock']) && $this->FunktionsAttribute['deliverytime_outofstock'] > 0) {
                 //prio on attribute "deliverytime_outofstock" for simple deliverytimes
                 $deliverytime_outofstock = (int)$this->FunktionsAttribute['deliverytime_outofstock'];
@@ -5259,7 +5287,7 @@ class Artikel
                 (isset($this->FunktionsAttribute['supplytime']) && $this->FunktionsAttribute['supplytime'] > 0)
             ) {
                 //attribute "supplytime" for merchants who do not use JTL-Wawis purchase-system
-                $supplyTime = ($this->nLiefertageWennAusverkauft > 0)
+                $supplyTime       = ($this->nLiefertageWennAusverkauft > 0)
                     ? $this->nLiefertageWennAusverkauft
                     : (int)$this->FunktionsAttribute['supplytime'];
                 $minDeliveryDays += $supplyTime;

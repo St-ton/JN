@@ -555,7 +555,7 @@ class LinkHelper
                     : explode(';', $sr->cKundengruppen);
 
                 foreach ($customerGroups as $idx => &$customerGroup) {
-                    if ($customerGroup === 'NULL') {
+                    if ($customerGroup === null || $customerGroup === 'NULL') {
                         $customerGroup = 0;
                     } elseif (empty($customerGroup)) {
                         unset($customerGroups[$idx]);

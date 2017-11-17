@@ -84,7 +84,7 @@ class FilterBaseSearchSpecial extends AbstractFilter
                 $this->setName(Shop::Lang()->get('topReviews'));
                 break;
             default:
-                //invalid search special ID
+                // invalid search special ID
                 Shop::$is404        = true;
                 Shop::$kSuchspecial = 0;
                 break;

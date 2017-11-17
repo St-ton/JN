@@ -131,6 +131,7 @@
             </div>
         {/block}
     {else}
+        <div class="alert alert-info">{lang key='emptybasket' section='checkout'}</div>
         <a href="{$ShopURL}" class="submit btn btn-primary">{lang key="continueShopping" section="checkout"}</a>
     {/if}
 {/block}

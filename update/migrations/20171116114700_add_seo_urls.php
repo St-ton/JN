@@ -2,7 +2,7 @@
 /**
  * Add SEO URLs
  *
- * @author Felxi Moche
+ * @author Felix Moche
  * @created Thu, 16 Nov 2017 11:47:00 +0200
  */
 

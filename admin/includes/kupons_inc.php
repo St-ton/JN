@@ -126,9 +126,9 @@ function normalizeDate($string)
 function getRawCoupons($cKuponTyp = 'standard', $cWhereSQL = '', $cOrderSQL = '', $cLimitSQL = '')
 {
     return Shop::DB()->query(
-        "SELECT k.*, max(kk.dErstellt) as dLastUse
+        "SELECT k.*, max(kk.dErstellt) AS dLastUse
             FROM tkupon AS k
-            JOIN tkuponkunde AS kk ON kk.kKupon = k.kKupon
+            LEFT JOIN tkuponkunde AS kk ON kk.kKupon = k.kKupon
             WHERE cKuponTyp = '" . Shop::DB()->escape($cKuponTyp) . "' " .
             ($cWhereSQL !== '' ? " AND " . $cWhereSQL : "") .
             "GROUP BY k.kKupon" .

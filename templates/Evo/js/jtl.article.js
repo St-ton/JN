@@ -345,7 +345,7 @@
                 $('#content a[href="#tab-votes"]').tab('show');
             });
 
-            if ($('.switch-variations .form-group').length == 1) {
+            if ($('#buy_form .switch-variations .form-group').length == 1) {
                 this.variationSwitch($('.switch-variations'), false, $wrapper);
             }
 
@@ -886,6 +886,7 @@
                 $.evo.extended().loadContent(url + (url.indexOf('?') >= 0 ? '&' : '?') + 'isListStyle=' + listStyle, function (content) {
                     $.evo.extended().imagebox(wrapper);
                     $.evo.article().register(wrapper);
+                    $.evo.extended().register();
 
                     $('[data-toggle="basket-add"]', $(wrapper)).on('submit', function(event) {
                         event.preventDefault();

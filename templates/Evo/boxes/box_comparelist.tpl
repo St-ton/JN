@@ -7,7 +7,7 @@
         {assign var=nAnzahl value=$smarty.session.Vergleichsliste->oArtikel_arr|@count}
     {/if}
     {if isset($from)}
-        <section class="panel panel-default box box-compare" id="sidebox{$oBox->kBox}">
+        <section class="panel panel-default box box-compare" id="sidebox{if !empty($oBox->kBox)}{$oBox->kBox}{/if}">
             <div class="panel-heading">
                 <h5 class="panel-title"><i class="fa fa-tasks"></i> {lang key="compare" section="global"}</h5>
             </div>{* /panel-heading *}

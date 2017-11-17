@@ -199,8 +199,11 @@ abstract class AbstractFilter implements IFilter
     public function init($value)
     {
         $this->isInitialized = true;
+        if ($value !== null) {
+            $this->setValue($value)->setSeo($this->availableLanguages);
+        }
 
-        return $this->setValue($value)->setSeo($this->availableLanguages);
+        return $this;
     }
 
     /**

@@ -345,7 +345,7 @@
                 $('#content a[href="#tab-votes"]').tab('show');
             });
             var that = this;
-            $('#product-list .switch-variations .form-group:only-of-type').click(function (el) {
+            $('#product-list .switch-variations .form-group:only-of-type').hover(function (el) {
                 if (!$(this).hasClass('varLoaded')) {
                     $wrapper = $(this).closest('form').attr('id');
                     that.variationSwitch($(this), false, $('#'+$wrapper));

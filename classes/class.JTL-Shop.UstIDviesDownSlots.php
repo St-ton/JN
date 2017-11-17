@@ -41,6 +41,9 @@ class UstIDviesDownSlots
         // Unknown (Bulgarien)
         , 'BG' => [ ]
 
+        // Unknown (Kroatien)
+        , 'HR' => [ ]
+
         // Available 24/7 (Zypern)
         , 'CY' => [ ]
 
@@ -188,6 +191,11 @@ class UstIDviesDownSlots
      */
     public function isDown($szCountryCode)
     {
+        if (! isset($this->vDownTimeSlots[$szCountryCode])) {
+            // at the moment, we skip unknown countries (use string-parsing only)
+            return false;
+        }
+
         foreach ($this->vDownTimeSlots[$szCountryCode] as $vCountryDownTimes) {
             // if no weekday was given (which means "every weekday"), we replace the weekday in the check-array with the current weekday here
             if ('' === $vCountryDownTimes[self::WEEKDAY]) {

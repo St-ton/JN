@@ -63,6 +63,17 @@ class UstIDvies
         $this->oDownTimes = new UstIDviesDownSlots();
     }
 
+    /**
+     * spaces can't handled by the VIES-system,
+     * so we condense the ID-string here and let them out
+     *
+     * @param string  with spaces
+     * @return string  condensed string witout spaces
+     */
+    public function condenseSpaces($szString) {
+        return str_replace(' ', '', $szString);
+    }
+
 
     /**
      * ask the remote APIs of the VIES-online-system
@@ -89,7 +100,7 @@ class UstIDvies
         }
 
         // parse the ID-string
-        $oVatParser = new UstIDviesVatParser($szUstID);
+        $oVatParser = new UstIDviesVatParser($this->condenseSpaces($szUstID));
         if (true === $oVatParser->parseVatId()) {
             list($szCountryCode, $szVatNumber) = $oVatParser->getIdAsParams();
         } else {
@@ -113,7 +124,7 @@ class UstIDvies
             }
 
             if (null !== $oViesResult && true === $oViesResult->valid) {
-                //Jtllog::writeLog('MwStID valid. ('.print_r($oViesResult, true).')', JTLLOG_LEVEL_NOTICE);  // success, logging optional
+                Jtllog::writeLog('MwStID valid. ('.print_r($oViesResult, true).')', JTLLOG_LEVEL_NOTICE); // sometimes we get the address too
                 return [
                       'success'   => true
                     , 'errortype' => 'vies'

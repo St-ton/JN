@@ -105,4 +105,14 @@ class CMSPage
             );
         }
     }
+
+    /**
+     * removes this CMS page instance from the database
+     */
+    public function remove()
+    {
+        $oCmsPageDB = Shop::DB()->delete(
+            'tcmspage', ['cKey', 'kKey', 'kSprache'], [$this->cKey, $this->kKey, $this->kSprache]
+        );
+    }
 }

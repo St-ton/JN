@@ -27,10 +27,11 @@ class PortletProductSlider extends CMSPortlet
             $oArtikel_arr[] = $p;
         }
 
-        return (new JTLSmarty(true))
+        return Shop::Smarty()
             ->assign('properties', $this->properties)
             ->assign('productlist', $oArtikel_arr)
-            ->assign('title', 'Produkte')
+            ->assign('styleString', $this->getStyleString())
+            ->assign('title', $this->properties['title'])
             ->assign('Einstellungen', Shop::getConfig([CONF_BEWERTUNG]))
             ->fetch('portlets/final.productslider.tpl');
     }
@@ -45,7 +46,29 @@ class PortletProductSlider extends CMSPortlet
     public function getDefaultProps()
     {
         return [
-            'articleIds' => '1,2',
+            'title' => '',
+            'articleIds' => '',
+            'attr' => [
+                'class'               => '',
+            ],
+            // style
+            'style' => [
+                'margin-top'          => '',
+                'margin-right'        => '',
+                'margin-bottom'       => '',
+                'margin-left'         => '',
+                'background-color'    => '',
+                'padding-top'         => '',
+                'padding-right'       => '',
+                'padding-bottom'      => '',
+                'padding-left'        => '',
+                'border-top-width'    => '',
+                'border-right-width'  => '',
+                'border-bottom-width' => '',
+                'border-left-width'   => '',
+                'border-style'        => '',
+                'border-color'        => '',
+            ],
         ];
     }
 }

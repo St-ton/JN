@@ -4,8 +4,8 @@
     {/if}
     <section class="panel{if $title|strlen > 0} panel-default{/if}
                     panel-slider{if $tplscope === 'box'} box box-slider{/if}
-                    {if isset($class) && $class|strlen > 0} {$class}{/if}"
-             {if isset($id) && $id|strlen > 0} id="{$id}"{/if}>
+                    {if !empty($properties.attr.class)} {$properties.attr.class}{/if}"
+             {if isset($id) && $id|strlen > 0} id="{$id}"{/if}{$styleString}>
         <div class="panel-heading">
             {if $title|strlen > 0}
                 <h5 class="panel-title">

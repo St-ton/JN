@@ -111,8 +111,6 @@ class CMSPage
      */
     public function remove()
     {
-        $oCmsPageDB = Shop::DB()->delete(
-            'tcmspage', ['cKey', 'kKey', 'kSprache'], [$this->cKey, $this->kKey, $this->kSprache]
-        );
+        Shop::DB()->delete('tcmspage', ['cKey', 'kKey', 'kSprache'], [$this->cKey, $this->kKey, $this->kSprache]);
     }
 }

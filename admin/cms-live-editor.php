@@ -21,7 +21,8 @@ $oSeo     = Shop::DB()->select('tseo', ['cKey', 'kKey', 'kSprache'], [$cKey, $kK
 
 if ($cAction === 'restore_default') {
     $oCMSPage = CMS::getCMSPage($cKey, $kKey, $kSprache);
-    if($oCMSPage->remove() !== -1) {
+
+    if ($oCMSPage->remove() !== -1) {
         // erfolg
     } else {
         //fehler
@@ -31,15 +32,14 @@ if ($cAction === 'restore_default') {
     exit();
 }
 
-
 $oPortlet_arr = CMS::getPortlets();
 
 $smarty
     ->assign('templateUrl', Shop::getURL() . '/' . PFAD_ADMIN . $currentTemplateDir)
     ->assign('oSeo', $oSeo)
     ->assign('oPortlet_arr', $oPortlet_arr)
-    ->assign('cEditorAction', $cAction)
+    ->assign('cAction', $cAction)
     ->assign('cKey', $cKey)
     ->assign('kKey', $kKey)
     ->assign('kSprache', $kSprache)
-    ->display('editpage.tpl');
+    ->display('cms-live-editor.tpl');

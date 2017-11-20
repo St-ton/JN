@@ -10,8 +10,8 @@
     <link rel="stylesheet" href="{$templateUrl}css/bootstrap.min.css">
     <link rel="stylesheet" href="{$templateUrl}css/bootstrap-theme.min.css">
     <link rel="stylesheet" href="{$templateUrl}css/font-awesome.min.css">
-    <link rel="stylesheet" href="{$templateUrl}css/jtl-live-editor/jle-host.css">
-    <link rel="stylesheet" href="{$templateUrl}js/bootstrap-colorpicker/css/bootstrap-colorpicker.min.css">
+    <link rel="stylesheet" href="{$templateUrl}css/bootstrap-colorpicker.min.css">
+    <link rel="stylesheet" href="{$templateUrl}css/cms-live-editor-host.css">
 
     <script src="{$templateUrl}js/jquery-1.12.4.min.js"></script>
     <script src="{$templateUrl}js/jquery-ui-1.11.4.min.js"></script>
@@ -19,19 +19,20 @@
     <script src="{$templateUrl}js/split.min.js"></script>
     <script src="{$templateUrl}js/global.js"></script>
     <script src="{$templateUrl}js/searchpicker.js"></script>
-    <script src="//cdn.ckeditor.com/4.7.3/basic/ckeditor.js"></script>
+    <script src="{$templateUrl}js/ckeditor-4.7.3-basic.min.js"></script>
     <script src="{$templateUrl}js/bootstrap-colorpicker/js/bootstrap-colorpicker.min.js"></script>
-
-    <script src="{$templateUrl}js/jtl-live-editor/jle-host.js"></script>
+    <script src="{$templateUrl}js/cms-live-editor.js"></script>
 
     <script>
-        $(function () {
-            jleHost = new JLEHost(
-                '{$smarty.session.jtl_token}',
-                '{$templateUrl}',
-                '{$PFAD_KCFINDER}',
-                '{$cKey}', {$kKey}, {$kSprache}
-            );
+        var cmsLiveEditor = new CmsLiveEditor({
+            jtlToken: '{$smarty.session.jtl_token}',
+            templateUrl: '{$templateUrl}',
+            kcfinderUrl: '{$PFAD_KCFINDER}',
+            pageUrl: '{URL_SHOP}/{$oSeo->cSeo}',
+            cAction: '{$cAction}',
+            cKey: '{$cKey}',
+            kKey: {$kKey},
+            kSprache: {$kSprache},
         });
     </script>
 </head>
@@ -94,9 +95,9 @@
         </div>
     </div>
     <div id="iframe-panel">
-        <iframe id="iframe" src="{URL_SHOP}/{$oSeo->cSeo}?editpage=1&action={$cEditorAction}"></iframe>
+        <iframe id="iframe"></iframe>
     </div>
-    <div class="modal fade" id="config-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div id="config-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">

@@ -12,7 +12,7 @@ class PortletRow extends CMSPortlet
     public function getPreviewHtml()
     {
         $layout = $this->properties['layout'];
-        $layout = explode(',', $layout);
+        $layout = explode('+', $layout);
 
         $this->properties['attr']['class'] .= " row";
         $res = '<div' . $this->getAttribString() . $this->getStyleString() . '>';
@@ -29,7 +29,7 @@ class PortletRow extends CMSPortlet
     public function getFinalHtml()
     {
         $layout = $this->properties['layout'];
-        $layout = explode(',', $layout);
+        $layout = explode('+', $layout);
 
         $this->properties['attr']['class'] .= " row";
         $res = '<div' . $this->getAttribString() . $this->getStyleString() . '>';
@@ -65,7 +65,7 @@ class PortletRow extends CMSPortlet
     {
         return [
             // general
-            'layout' => '6,6',
+            'layout' => '6+6',
             // animation
             'animation-style'     => '',
             // attributes

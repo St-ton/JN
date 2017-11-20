@@ -9,11 +9,8 @@
             <div class="col-sm-6">
                 <div class="form-group">
                     <label for="config-row-layout">Layout</label>
-                    <select name="layout" class="form-control" id="config-row-layout">
-                        <option value="6,6"{if $properties.layout === '6,6'} selected{/if}>6+6</option>
-                        <option value="4,4,4"{if $properties.layout === '4,4,4'} selected{/if}>4+4+4</option>
-                        <option value="3,3,3,3"{if $properties.layout === '3,3,3,3'} selected{/if}>3+3+3+3</option>
-                    </select>
+                    <input type="text" id="config-row-layout" name="layout" class="form-control" placeholder="6+6" value="{$properties.layout}">
+                    <span class="help-block">Geben Sie die Spaltenbreiten in der Form '6+3+3' oder '4+4+4' an. Werte von 1 bis 12 sind möglich.</span>
                 </div>
             </div>
             <div class="col-sm-6">

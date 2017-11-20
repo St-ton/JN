@@ -44,8 +44,8 @@
                     slider.nivoSlider({
                         effect: {if $properties['slider-effects-random'] === 'true'}'random'
                         {else}'{foreach name="effects" from=$properties['effects'] item=effect}{$effect}{if !$smarty.foreach.effects.last},{/if}{/foreach}'{/if},
-                        animSpeed: {$properties['slider-animation-speed']},
-                        pauseTime: {$properties['slider-animation-pause']},
+                        animSpeed: {if !empty($properties['slider-animation-speed'])}{$properties['slider-animation-speed']}{else}500{/if},
+                        pauseTime: {if !empty($properties['slider-animation-pause'])}{$properties['slider-animation-pause']}{else}3000{/if},
                         directionNav: {$properties['slider-direction-navigation']},
                         controlNav: {$properties['slider-navigation']},
                         controlNavThumbs: false,

@@ -20,14 +20,14 @@
             <div class="col-sm-6">
                 <div class="form-group">
                     <label for="slider-animation-speed">Animation Geschwindigkeit (in ms)</label>
-                    <input type="text" id="slider-animation-speed" name="slider-animation-speed" class="form-control" value="{$properties['slider-animation-speed']}">
+                    <input type="text" id="slider-animation-speed" name="slider-animation-speed" class="form-control" placeholder="500" value="{$properties['slider-animation-speed']}">
                     <span class="help-block">Der Wert von "Animations Geschwindigkeit" darf den Wert von "Pause Zeit" nicht überschreiten!</span>
                 </div>
             </div>
             <div class="col-sm-6">
                 <div class="form-group">
                     <label for="slider-animation-pause">Pause Zeit (in ms)</label>
-                    <input type="text" id="slider-animation-pause" name="slider-animation-pause" class="form-control" value="{$properties['slider-animation-pause']}">
+                    <input type="text" id="slider-animation-pause" name="slider-animation-pause" class="form-control" placeholder="3000" value="{$properties['slider-animation-pause']}">
                 </div>
             </div>
             <div class="col-sm-6">

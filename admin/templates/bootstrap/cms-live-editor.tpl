@@ -19,7 +19,7 @@
     <script src="{$templateUrl}js/split.min.js"></script>
     <script src="{$templateUrl}js/global.js"></script>
     <script src="{$templateUrl}js/searchpicker.js"></script>
-    <script src="{$templateUrl}js/ckeditor-4.7.3-basic.min.js"></script>
+    <script src="{$templateUrl}js/ckeditor_4.7.3_basic/ckeditor.js"></script>
     <script src="{$templateUrl}js/bootstrap-colorpicker/js/bootstrap-colorpicker.min.js"></script>
     <script src="{$templateUrl}js/cms-live-editor.js"></script>
 

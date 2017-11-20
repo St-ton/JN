@@ -2,7 +2,15 @@ function JtlLiveEditor(selector, jleHost)
 {
     jle = this;
 
+    this.thisJq = $;
     this.jleHost = jleHost;
+
+    this.newPortlet = {
+        content: '',
+        portletId: 0,
+        defaultProps: {}
+    };
+    this.newPortletDragging = false;
 
     this.hoveredElm = null;
     this.selectedElm = null;
@@ -109,6 +117,15 @@ JtlLiveEditor.prototype.onDragOver = function(e)
 JtlLiveEditor.prototype.onDrop = function(e)
 {
     console.log('drop');
+
+    if(this.newPortletDragging) {
+        var newElm = $(this.newPortlet.content);
+
+        newElm.attr('data-portletid', this.newPortlet.portletId);
+        newElm.attr('data-properties', this.newPortlet.defaultProps);
+
+        this.setDragged(newElm);
+    }
 
     if(this.targetElm !== null) {
         if(this.adjacentElm !== null && this.adjacentDir !== '') {
@@ -409,4 +426,10 @@ JtlLiveEditor.prototype.loadAreaFromJson = function(data, areaElm, ioCall)
             }.bind(this));
         }.bind(this));
     }.bind(this));
+};
+
+JtlLiveEditor.prototype.initNewPortletDrop = function(content, portletId, defaultProps)
+{
+    this.newPortlet = {content: content, portletId: portletId, defaultProps: defaultProps};
+    this.newPortletDragging = true;
 };

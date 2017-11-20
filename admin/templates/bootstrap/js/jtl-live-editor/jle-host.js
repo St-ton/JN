@@ -108,16 +108,12 @@ JLEHost.prototype.liveEditorLoaded = function()
 JLEHost.prototype.onDragStart = function(e)
 {
     var elm = $(e.target);
-    var newElm = $(elm.data('content'));
-
-    newElm.attr('data-portletid', elm.data('portletid'));
-    newElm.attr('data-properties', JSON.stringify(elm.data('defaultprops')));
-
-    this.editor.draggedElm = newElm;
+    this.editor.initNewPortletDrop(elm.data('content'), elm.data('portletid'), JSON.stringify(elm.data('defaultprops')));
+    this.editor.setDragged($('<div>'));
 
     // firefox needs this
     e.originalEvent.dataTransfer.effectAllowed = 'move';
-    e.originalEvent.dataTransfer.setData('text/html', this.editor.draggedElm.innerHTML);
+    e.originalEvent.dataTransfer.setData('text/html', '');
 };
 
 JLEHost.prototype.onDragEnd = function(e)
@@ -160,7 +156,7 @@ JLEHost.prototype.onSettingsSave = function (e)
 
     function onNewHtml(newHtml)
     {
-        var newElm = $(newHtml);
+        var newElm = this.editor.thisJq(newHtml);
 
         this.editor.selectedElm.replaceWith(newElm);
         this.editor.setSelected(newElm);

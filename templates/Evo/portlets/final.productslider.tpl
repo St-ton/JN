@@ -24,7 +24,6 @@
                         {else}{block name="product-slider-class"}evo-slider{/block}{/if}">
                 {foreach $productlist as $Artikel}
                     <div class="product-wrapper{if isset($style)} {$style}{/if}">
-                        {*{include file='productlist/item_slider.tpl' Artikel=$product tplscope=$tplscope class=''}*}
                         {* template to display products in slider *}
 
                         <div class="product-cell text-center{if isset($class)} {$class}{/if} thumbnail">
@@ -46,17 +45,22 @@
                                 <h4 class="title word-break">
                                     {if isset($showPartsList) && $showPartsList === true && isset($Artikel->fAnzahl_stueckliste)}
                                         <span class="article-bundle-info">
-                                            <span class="bundle-amount">{$Artikel->fAnzahl_stueckliste}</span> <span class="bundle-times">x</span>
+                                            <span class="bundle-amount">{$Artikel->fAnzahl_stueckliste}</span>
+                                            <span class="bundle-times">x</span>
                                         </span>
                                     {/if}
                                     <a href="{$Artikel->cURL}">{$Artikel->cKurzbezeichnung}</a>
                                 </h4>
-                                {if $Einstellungen.bewertung.bewertung_anzeigen === 'Y' && $Artikel->fDurchschnittsBewertung > 0}<small>{include file='productdetails/rating.tpl' stars=$Artikel->fDurchschnittsBewertung}</small>{/if}
-                                {*{if isset($Artikel->Preise->strPreisGrafik_Suche)}*}
-                                    {*{include file="productdetails/price.tpl" Artikel=$Artikel price_image=$Artikel->Preise->strPreisGrafik_Suche tplscope=$tplscope}*}
-                                {*{else}*}
-                                    {*{include file="productdetails/price.tpl" Artikel=$Artikel price_image=null tplscope=$tplscope}*}
-                                {*{/if}*}
+                                {if $Einstellungen.bewertung.bewertung_anzeigen === 'Y' && $Artikel->fDurchschnittsBewertung > 0}
+                                    <small>
+                                        {include file='productdetails/rating.tpl' stars=$Artikel->fDurchschnittsBewertung}
+                                    </small>
+                                {/if}
+                                {if isset($Artikel->Preise->strPreisGrafik_Suche)}
+                                    {include file="productdetails/price.tpl" Artikel=$Artikel price_image=$Artikel->Preise->strPreisGrafik_Suche tplscope=$tplscope}
+                                {else}
+                                    {include file="productdetails/price.tpl" Artikel=$Artikel price_image=null tplscope=$tplscope}
+                                {/if}
                             </div>
                         </div>{* /product-cell *}
 

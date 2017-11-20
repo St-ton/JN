@@ -1,10 +1,22 @@
 <ul role="tablist" class="nav nav-tabs" id="portlet-design-tab">
-    <li class="active" role="presentation"><a aria-expanded="true" aria-controls="general" data-toggle="tab" role="tab" id="general-tab" href="#general">General</a></li>
-    <li role="presentation"><a aria-controls="slides" data-toggle="tab" role="tab" id="slides-tab" href="#slides">Slides</a></li>
-    <li role="presentation"><a aria-controls="style-design" data-toggle="tab" id="style-design-tab" role="tab" href="#style-design" aria-expanded="false">Style</a></li>
+    <li class="active" role="presentation">
+        <a aria-expanded="true" aria-controls="general" data-toggle="tab" role="tab" id="general-tab" href="#general">
+            General
+        </a>
+    </li>
+    <li role="presentation">
+        <a aria-controls="slides" data-toggle="tab" role="tab" id="slides-tab" href="#slides">
+            Slides
+        </a>
+    </li>
+    <li role="presentation">
+        <a aria-controls="style-design" data-toggle="tab" id="style-design-tab" role="tab" href="#style-design" aria-expanded="false">
+            Style
+        </a>
+    </li>
 </ul>
 <div class="tab-content" id="portlet-design-tab-content">
-    <div id="general" class="tab-pane fade active in" role="general" aria-labelledby="general-tab">
+    <div id="general" class="tab-pane fade active in" role="tabpanel" aria-labelledby="general-tab">
         <div class="row">
             <div class="col-sm-6">
                 <div class="form-group">
@@ -275,7 +287,7 @@
             });
         </script>
     </div>
-    <div id="slides" class="tab-pane fade" role="slides" aria-labelledby="slides-tab">
+    <div id="slides" class="tab-pane fade" role="tabpanel" aria-labelledby="slides-tab">
         {function name=slide level=0}
             <tr class="text-vcenter" id="{$kSlide}">
                 <td class="tcenter">

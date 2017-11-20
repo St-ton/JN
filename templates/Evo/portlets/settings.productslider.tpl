@@ -52,7 +52,7 @@
         });
     });
 
-    jleHost.configSaveCallback = function ()
+    cmsLiveEditor.configSaveCallback = function ()
     {
         console.log(articlePicker.getSelection());
         $('#articleIds').val(articlePicker.getSelection().join(','));

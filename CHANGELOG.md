@@ -29,6 +29,9 @@ aktivieren: define('TEMPLATE_COMPATIBILITY', true);
 In den Artikelübersichten ist es jetzt möglich direkt Variationsauswahlen vorzunehmen und eine verkürzte Detailansicht als Popup in der Liste
 anzeigen zu lassen. Die Anzahl der möglichen Variationen und die Detailansicht lassen sich in der Templatekonfiguration einstellen.
 
+#### Evo-Templateänderungen
+Ein Template-Diff mit allen Änderungen zwischen v4.05 und v4.06 finden Sie [hier](https://gitlab.jtl-software.de/jtlshop/shop4/snippets/39). 
+
 #### Weitere Anpassungen
 Das PayPal-Plugin wird in Version 1.08 ausgeliefert und beinhaltet nun auch die Zahlart Ratenzahlung powered by PayPal. 
 Bitte beachten Sie auch das aktualisierte Handbuch zum PayPal-Plugin: http://jtl-url.de/paypaldocs

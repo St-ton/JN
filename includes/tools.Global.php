@@ -2599,7 +2599,7 @@ function gibStandardsprache($bShop = true)
     }
 
     $cacheID = 'shop_lang_' . (($bShop === true) ? 'b' : '');
-    if (($lang = Shop::Cache()->get($cacheID)) !== false) {
+    if (($lang = Shop::Cache()->get($cacheID)) !== false && $lang !== null) {
         return $lang;
     }
     $row  = $bShop ? 'cShopStandard' : 'cStandard';
@@ -4561,16 +4561,21 @@ function setzeSpracheUndWaehrungLink()
                 }
             } elseif ($kLink > 0) {
                 $_SESSION['Waehrungen'][$i]->cURL = 'navi.php?s=' . $kLink .
-                    '&lang=' . $_SESSION['cISOSprache'] . '&amp;curr=' . $oWaehrung->cISO;
+                    '&lang=' . $_SESSION['cISOSprache'] . '&curr=' . $oWaehrung->cISO;
             } else {
                 $_SESSION['Waehrungen'][$i]->cURL = gibNaviURL(
                     $NaviFilter,
                     true,
                     $oZusatzFilter,
                     $_SESSION['kSprache']
-                ) . '?curr=' . $oWaehrung->cISO;
+                );
+                $_SESSION['Waehrungen'][$i]->cURL .= strpos($_SESSION['Waehrungen'][$i]->cURL, '?') === false
+                    ? ('?curr=' . $oWaehrung->cISO)
+                    : ('&curr=' . $oWaehrung->cISO);
             }
-            $_SESSION['Waehrungen'][$i]->cURLFull = $shopURL . $_SESSION['Waehrungen'][$i]->cURL;
+            $_SESSION['Waehrungen'][$i]->cURLFull = strpos($_SESSION['Waehrungen'][$i]->cURL, $shopURL) === false
+                ? ($shopURL . $_SESSION['Waehrungen'][$i]->cURL)
+                : $_SESSION['Waehrungen'][$i]->cURL;
         }
     }
     executeHook(HOOK_TOOLSGLOBAL_INC_SETZESPRACHEUNDWAEHRUNG_WAEHRUNG, [
@@ -6916,14 +6921,20 @@ function dateAddWeekday($date, $weekdays)
         $resDate = new DateTime();
     }
 
-    $weekend = ((int)$resDate->format('w') + 1) % 6 === 1;
-    $pm      = (int)$resDate->format('G') > 12;
-
-    if ($weekend || $pm) {
+    if ((int)$resDate->format('w') === 0) {
+        // Add one weekday if startdate is on sunday
         $resDate->add(DateInterval::createFromDateString('1 weekday'));
     }
 
-    return $resDate->add(DateInterval::createFromDateString($weekdays . ' weekday'));
+    // Add $weekdays as normal days
+    $resDate->add(DateInterval::createFromDateString($weekdays . ' day'));
+
+    if ((int)$resDate->format('w') === 0) {
+        // Add one weekday if enddate is on sunday
+        $resDate->add(DateInterval::createFromDateString('1 weekday'));
+    }
+
+    return $resDate;
 }
 
 if (!function_exists('dd')) {

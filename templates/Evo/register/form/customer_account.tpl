@@ -34,7 +34,7 @@
         <div class="col-xs-6">
             <div class="form-group float-label-control{if isset($fehlendeAngaben.pass_ungleich)} has-error{/if} required">
                 <label for="password2" class="control-label">{lang key="passwordRepeat" section="account data"}</label>
-                <input type="password" name="pass2" maxlength="20" id="password2" class="form-control" placeholder="{lang key="passwordRepeat" section="account data"}" required autocomplete="off" aria-autocomplete="none">
+                <input type="password" name="pass2" maxlength="20" id="password2" class="form-control" placeholder="{lang key="passwordRepeat" section="account data"}" required data-must-equal-to="#create_account_data input[name='pass']" data-custom-message="{lang key="passwordsMustBeEqual" section="account data"}" autocomplete="off" aria-autocomplete="none">
                 {if isset($fehlendeAngaben.pass_ungleich)}
                     <div class="form-error-msg text-danger"><i class="fa fa-warning"></i> {lang key="passwordsMustBeEqual" section="account data"}</div>
                 {/if}

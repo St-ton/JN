@@ -25,8 +25,8 @@ $smarty
     ->assign('templateUrl', Shop::getURL() . '/' . PFAD_ADMIN . $currentTemplateDir)
     ->assign('oSeo', $oSeo)
     ->assign('oPortlet_arr', $oPortlet_arr)
-    ->assign('cEditorAction', $cAction)
+    ->assign('cAction', $cAction)
     ->assign('cKey', $cKey)
     ->assign('kKey', $kKey)
     ->assign('kSprache', $kSprache)
-    ->display('editpage.tpl');
+    ->display('cms-live-editor.tpl');

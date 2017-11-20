@@ -2,7 +2,7 @@
     Parameters:
         searchPickerName - page unique id for the search picker instance (e.g. 'customer', 'product')
 *}
-<div id="searchpicker-articlePicker" class="tab-pane fade" role="tabpanel">
+<div id="searchpicker-{$searchPickerName}" class="tab-pane fade active in" role="tabpanel">
     <div class="input-group">
         <label for="{$searchPickerName}-search-input" class="sr-only">Suche:</label>
         <input type="text" class="form-control" id="{$searchPickerName}-search-input" placeholder="Suche"

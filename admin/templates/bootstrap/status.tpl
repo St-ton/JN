@@ -2,29 +2,27 @@
 {config_load file="$lang.conf" section='systemcheck'}
 
 <script>
-{literal}
-$(function() {
-    $('.table tr[data-href]').each(function(){
-        $(this).css('cursor','pointer').hover(
-            function(){
-                $(this).addClass('active');
-            },
-            function(){
-                $(this).removeClass('active');
-            }).click( function(){
-                document.location = $(this).attr('data-href');
-            }
-        );
-    });
+    $(function() {
+        $('.table tr[data-href]').each(function(){
+            $(this).css('cursor','pointer').hover(
+                function(){
+                    $(this).addClass('active');
+                },
+                function(){
+                    $(this).removeClass('active');
+                }).click( function(){
+                    document.location = $(this).attr('data-href');
+                }
+            );
+        });
 
-    $('.grid').masonry({
-        itemSelector: '.grid-item',
-        columnWidth: '.grid-item',
-        percentPosition: true
-    });
+        $('.grid').masonry({
+            itemSelector: '.grid-item',
+            columnWidth: '.grid-item',
+            percentPosition: true
+        });
 
-});
-{/literal}
+    });
 </script>
 
 {function render_item title=null desc=null val=null more=null}

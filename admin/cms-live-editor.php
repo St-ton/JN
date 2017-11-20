@@ -19,6 +19,19 @@ $kSprache = verifyGPCDataInteger('kSprache');
 $cAction  = verifyGPDataString('cAction');
 $oSeo     = Shop::DB()->select('tseo', ['cKey', 'kKey', 'kSprache'], [$cKey, $kKey, $kSprache]);
 
+if ($cAction === 'restore_default') {
+    $oCMSPage = CMS::getCMSPage($cKey, $kKey, $kSprache);
+    if($oCMSPage->remove() !== -1) {
+        // erfolg
+    } else {
+        //fehler
+    }
+
+    header('Location: ' . URL_SHOP . '/' . $oSeo->cSeo);
+    exit();
+}
+
+
 $oPortlet_arr = CMS::getPortlets();
 
 $smarty

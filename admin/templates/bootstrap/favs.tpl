@@ -61,7 +61,8 @@
 {/function}
 
 <div id="content" class="container-fluid">
-    <form method="POST">
+    <form method="post">
+        {$jtl_token}
         <div class="panel panel-default">
             <div class="table-responsive">
                 <table class="list table table-hover" id="favs">
@@ -84,7 +85,9 @@
             </div>
             <div class="panel-footer">
                 <div class="save btn-group">
-                    <button type="submit" class="btn btn-success">Aktualisieren</button>
+                    <button type="submit" name="action" value="save" class="btn btn-primary">
+                        <i class="fa fa-save"></i> {#save#}
+                    </button>
                 </div>
             </div>
         </div>

@@ -24,11 +24,6 @@ class PortletImageSlider extends CMSPortlet
             ->assign('styleString', $this->getStyleString())
             ->assign('renderLinks', false)
             ->fetch('portlets/final.imageslider.tpl');
-
-
-        $content = "<img class=\"img-responsive\" src=\"".Shop::getURL() . "/gfx/keinBild.gif\" >";
-
-        return $content;
     }
 
     public function getFinalHtml()

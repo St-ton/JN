@@ -69,8 +69,10 @@ CmsLiveEditor.prototype = {
         injectJqueryFixes();
 
         this.iframeElm = this.hostJq('#iframe');
-        this.iframeElm.on('load', this.onIframeLoad.bind(this));
-        this.iframeElm.attr('src', this.pageUrl + '?editpage=1&action=' + this.cAction);
+
+        this.iframeElm
+            .on('load', this.onIframeLoad.bind(this))
+            .attr('src', this.pageUrl + '?editpage=1&action=' + this.cAction);
     },
 
     onIframeLoad: function()
@@ -79,12 +81,11 @@ CmsLiveEditor.prototype = {
             throw 'Iframe-URL has changed.';
         }
 
+        this.iframeLoaded = true;
         this.iframeCtx = this.iframeElm[0].contentWindow;
         this.iframeJq = this.iframeCtx.$;
 
         loadStylesheet(this.iframeCtx, this.templateUrl + 'css/cms-live-editor-iframe.css');
-
-        this.iframeLoaded = true;
 
         this.initEditor();
     },
@@ -94,41 +95,42 @@ CmsLiveEditor.prototype = {
         this.rootElm = this.iframeJq('.jle-editable');
         this.labelElm = this.iframeJq('<div>', { 'class': 'jle-label' }).appendTo('body').hide();
         this.pinbarElm = this.createPinbar().appendTo('body').hide();
-
-        this.rootElm.on('mouseover', this.onMouseOver.bind(this));
-        this.rootElm.on('click', this.onClick.bind(this));
-        this.rootElm.on('dblclick', this.onConfig.bind(this));
-        this.rootElm.on('dragstart', this.onDragStart.bind(this));
-        this.rootElm.on('dragend', this.onDragEnd.bind(this));
-        this.rootElm.on('dragover', this.onDragOver.bind(this));
-        this.rootElm.on('drop', this.onDrop.bind(this));
-        this.iframeJq(this.iframeCtx.document).on('keydown', this.onKeyDown.bind(this));
-
         this.portletBtnElms = this.hostJq('.portlet-button');
-        this.portletBtnElms.attr('draggable', 'true');
-        this.portletBtnElms.on('dragstart', this.onPortletBtnDragStart.bind(this));
-        this.portletBtnElms.on('dragend', this.onPortletBtnDragEnd.bind(this));
-
         this.configModalElm = this.hostJq('#config-modal');
-        this.configModalElm.submit(this.onSettingsSave.bind(this));
         this.configModalBodyElm = this.hostJq('#config-modal-body');
         this.configFormElm = this.hostJq('#config-form');
-
         this.editorSaveBtnElm = this.hostJq('#jle-btn-save-editor');
-        this.editorSaveBtnElm.click(this.onEditorSave.bind(this));
 
-        ioCall(
-            'getCmsPageJson',
-            [this.cKey, this.kKey, this.kSprache],
-            function(data) {
-                this.loadFromJson(data);
-            }.bind(this)
-        );
+        this.rootElm
+            .on('mouseover', this.onMouseOver.bind(this))
+            .on('click', this.onClick.bind(this))
+            .on('dblclick', this.onConfig.bind(this))
+            .on('dragstart', this.onDragStart.bind(this))
+            .on('dragend', this.onDragEnd.bind(this))
+            .on('dragover', this.onDragOver.bind(this))
+            .on('drop', this.onDrop.bind(this));
+
+        this.iframeJq(this.iframeCtx.document)
+            .on('keydown', this.onKeyDown.bind(this));
+
+        this.portletBtnElms
+            .attr('draggable', 'true')
+            .on('dragstart', this.onPortletBtnDragStart.bind(this))
+            .on('dragend', this.onPortletBtnDragEnd.bind(this));
+
+        this.configModalElm
+            .submit(this.onSettingsSave.bind(this));
+
+        this.editorSaveBtnElm
+            .click(this.onEditorSave.bind(this));
+
+        ioCall('getCmsPageJson', [this.cKey, this.kKey, this.kSprache], this.loadFromJson.bind(this));
     },
 
     onPortletBtnDragStart: function(e)
     {
         var elm = this.hostJq(e.target);
+
         this.initNewPortletDrop(elm.data('content'), elm.data('portletid'), JSON.stringify(elm.data('defaultprops')));
         this.setDragged(this.iframeJq('<div>'));
 

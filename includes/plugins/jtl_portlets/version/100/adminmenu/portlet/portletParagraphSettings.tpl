@@ -19,7 +19,7 @@
                             baseFloatZIndex: 9000,
                         });
 
-                        jleHost.configSaveCallback = function() {
+                        cmsLiveEditor.configSaveCallback = function() {
                             $('#settingsText').val(CKEDITOR.instances.settingsText.getData());
                         };
                     </script>

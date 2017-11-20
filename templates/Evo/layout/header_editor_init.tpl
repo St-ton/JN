@@ -22,12 +22,16 @@
                             <button type="submit" name="cAction" class="btn btn-default" value="restore_default">Standardinhalt wiederherstellen</button>
                         </p>
                     {/if}
-                    <p>
-                        <button type="submit" name="cAction" class="btn btn-primary" value="extend">Inhalt erweitern</button>
-                    </p>
-                    <p>
-                        <button type="submit" name="cAction" class="btn btn-primary" value="replace">Inhalt ersetzen</button>
-                    </p>
+                    {if empty($oCMSPage->cFinalHtml_arr['editor_replace_all'])}
+                        <p>
+                            <button type="submit" name="cAction" class="btn btn-primary" value="extend">Inhalt erweitern</button>
+                        </p>
+                    {/if}
+                    {if empty($oCMSPage->cFinalHtml_arr) || !empty($oCMSPage->cFinalHtml_arr['editor_replace_all'])}
+                        <p>
+                            <button type="submit" name="cAction" class="btn btn-primary" value="replace">Inhalt ersetzen</button>
+                        </p>
+                    {/if}
                 </form>
             </div>
         </div>

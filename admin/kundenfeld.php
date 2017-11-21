@@ -41,7 +41,7 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
         }
     } elseif (isset($_POST['aktualisieren']) && validateToken()) { // Aktualisieren
         // Kundenfelder auslesen und in Smarty assignen
-        $oKundenfeld_arr = Shop::DB()->selectAll('tkundenfeld', 'kSprache', (int)$_SESSION['kSprache'], '*', 'nSort DESC');
+        $oKundenfeld_arr = Shop::DB()->selectAll('tkundenfeld', 'kSprache', (int)$_SESSION['kSprache'], '*', 'nSort ASC');
 
         if (is_array($oKundenfeld_arr) && count($oKundenfeld_arr) > 0) {
             foreach ($oKundenfeld_arr as $oKundenfeld) {
@@ -146,7 +146,7 @@ for ($i = 0; $i < $configCount; $i++) {
     $oConfig_arr[$i]->gesetzterWert = (isset($oSetValue->cWert) ? $oSetValue->cWert : null);
 }
 // Kundenfelder auslesen und in Smarty assignen
-$oKundenfeld_arr = Shop::DB()->selectAll('tkundenfeld', 'kSprache', (int)$_SESSION['kSprache'], '*', 'nSort DESC');
+$oKundenfeld_arr = Shop::DB()->selectAll('tkundenfeld', 'kSprache', (int)$_SESSION['kSprache'], '*', 'nSort ASC');
 if (is_array($oKundenfeld_arr) && count($oKundenfeld_arr) > 0) {
     // tkundenfeldwert nachschauen ob dort Werte fuer tkundenfeld enthalten sind
     foreach ($oKundenfeld_arr as $i => $oKundenfeld) {

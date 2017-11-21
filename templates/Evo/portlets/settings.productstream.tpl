@@ -18,6 +18,17 @@
     <div id="general" class="tab-pane fade active in" role="tabpanel" aria-labelledby="general-tab">
         <div class="row">
             <div class="col-sm-6">
+                <label for="list-style">Artikeldarstellung</label>
+                <div class="radio" id="list-style">
+                    <label class="radio-inline">
+                        <input type="radio" name="listStyle" value="gallery"{if $properties['listStyle'] === 'gallery'} checked="checked"{/if}> Galerie
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="listStyle" value="list"{if $properties['listStyle'] === 'list'} checked="checked"{/if}> Liste
+                    </label>
+                </div>
+            </div>
+            <div class="col-sm-6">
                 <div class="form-group">
                     <label for="product-slider-title">Class</label>
                     <input type="text" id="product-slider-title" name="attr[class]" class="form-control" value="{$properties.attr['class']}">

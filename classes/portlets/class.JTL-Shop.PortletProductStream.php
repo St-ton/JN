@@ -11,7 +11,10 @@ class PortletProductStream extends CMSPortlet
 {
     public function getPreviewHtml()
     {
-        return '<div>Produkt-Stream</div>';
+        $style = $this->properties['listStyle'];
+        $styleString = $this->getStyleString();
+
+        return '<div class="text-center"' . $styleString . '><img src="' . PFAD_TEMPLATES . 'Evo/portlets/preview.productstream.' . $style . '.png" style="margin-top: 4px; width: 98%;filter: grayscale() opacity(60%)"/>Product-Stream</div>';
         //return $this->getFinalHtml();
     }
 
@@ -27,13 +30,20 @@ class PortletProductStream extends CMSPortlet
             $oArtikel_arr[] = $p;
         }
 
+        $style = $this->properties['listStyle'];
+        $grid = 'col-xs-12';
+
+        if ($style === 'gallery') {
+            $grid = 'col-xs-6 col-lg-4';
+        }
+
         return Shop::Smarty()
             ->assign('properties', $this->properties)
             ->assign('productlist', $oArtikel_arr)
             ->assign('styleString', $this->getStyleString())
-            ->assign('style', 'gallery')
-            ->assign('grid', 'col-xs-6 col-lg-4')
-            ->assign('Einstellungen', Shop::getConfig([CONF_BEWERTUNG, CONF_ARTIKELUEBERSICHT, CONF_TEMPLATE, CONF_ARTIKELDETAILS]))
+            ->assign('style', $style)
+            ->assign('grid', $grid)
+            ->assign('Einstellungen', Shop::getConfig([CONF_BEWERTUNG, CONF_ARTIKELUEBERSICHT, CONF_TEMPLATE, CONF_ARTIKELDETAILS, CONF_GLOBAL]))
             ->fetch('portlets/final.productstream.tpl');
     }
 
@@ -47,6 +57,7 @@ class PortletProductStream extends CMSPortlet
     public function getDefaultProps()
     {
         return [
+            'listStyle' => 'gallery',
             'articleIds' => '',
             'attr' => [
                 'class'               => '',

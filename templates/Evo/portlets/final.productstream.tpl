@@ -1,5 +1,5 @@
 {if $productlist|@count > 0}
-    <div id="result-wrapper"> {*muss ne klasse werden, da mehrere auf einer seite sein können*}
+    <div id="result-wrapper"{$styleString}> {*muss ne klasse werden, da mehrere auf einer seite sein können*}
         <div class="row {if $style !== 'list'}row-eq-height row-eq-img-height{/if} {$style}" id="product-list">
             {foreach name=artikel from=$productlist item=Artikel}
                 <div class="product-wrapper {$grid}">

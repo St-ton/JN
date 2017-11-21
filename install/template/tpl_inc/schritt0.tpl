@@ -82,9 +82,41 @@
                     && summary('summary_folders', 'ok');
     }
 
+    function copyToClipboard(element) {
+        var temp = $("<input>");
+        $("body").append(temp);
+        temp.val($(element).text()).select();
+        document.execCommand("copy");
+        temp.remove();
+
+        // change the text-color, for a short time-period,
+        // as a user-feedback
+        var currentColor = $(element).css("color"); // get as "rgb(255, 255, 255)"
+        var vals = currentColor
+            .replace('rgb','')
+            .replace('(','')
+            .replace(')','')
+            .replace(/ /g,'')
+            .split(',')
+        ;
+        for(i = 0; i < vals.length; i++) {
+            // dimm the color by one third
+            newColorVal = parseInt(vals[i] - (parseInt(vals[i] / 3)));
+            vals[i] = newColorVal;
+        }
+        $(element).css("color", 'rgb(' + vals.join(',') + ')');
+        // restore the original color after 500ms
+        setTimeout(function(){$(element).css("color", currentColor)}, 500);
+    }
+
 
     $(document).ready(function() {
         closeAllCanvas();
+
+        $('.copy2clipboard').bind('click', function(element) {
+            copyToClipboard(element.target);
+        });
+
     });
 
 {/literal}
@@ -237,9 +269,9 @@
                     {if $bBeschreibbar}
                     <span class="label label-success"><i class="fa fa-check"></i></span>
                     {else}
-                    <span class="label label-danger"><i class="fa fa-exclamation-triangle"></i></span>
+                    <span class="label label-danger"><i class="fa fa-exclamation-triangle" title="copy to clipboard"></i></span>
                     {/if}
-                    <span style="margin-left:10px;">{$cVerzeichnis}</span>
+                    <span style="margin-left:10px;{if !$bBeschreibbar}cursor:pointer;{/if}" {if !$bBeschreibbar}title="copy to clipboard" class="copy2clipboard"{/if}>{$cVerzeichnis}</span>
                 </span>
             </li>
         {/foreach}

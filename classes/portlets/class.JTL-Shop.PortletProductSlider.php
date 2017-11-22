@@ -11,7 +11,9 @@ class PortletProductSlider extends CMSPortlet
 {
     public function getPreviewHtml()
     {
-        return '<div>Produkt-Slider</div>';
+        $styleString = $this->getStyleString();
+
+        return '<div class="text-center"' . $styleString . '><img src="' . PFAD_TEMPLATES . 'Evo/portlets/preview.productslider.png" style="margin-top: 4px; width: 98%;filter: grayscale() opacity(60%)"/>Produkt-Slider<p><small>preview images mit transparenten rand anlegen, graustufen, img responsive nutzen</small></p></div>';
         //return $this->getFinalHtml();
     }
 

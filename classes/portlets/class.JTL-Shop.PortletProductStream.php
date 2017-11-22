@@ -14,7 +14,7 @@ class PortletProductStream extends CMSPortlet
         $style = $this->properties['listStyle'];
         $styleString = $this->getStyleString();
 
-        return '<div class="text-center"' . $styleString . '><img src="' . PFAD_TEMPLATES . 'Evo/portlets/preview.productstream.' . $style . '.png" style="margin-top: 4px; width: 98%;filter: grayscale() opacity(60%)"/>Product-Stream</div>';
+        return '<div class="text-center"' . $styleString . '><img src="' . PFAD_TEMPLATES . 'Evo/portlets/preview.productstream.' . $style . '.png" style="margin-top: 4px; width: 98%;filter: grayscale() opacity(60%)"/>Product-Stream<p><small>preview images mit transparenten rand anlegen, graustufen, img responsive nutzen</small></p></div>';
         //return $this->getFinalHtml();
     }
 

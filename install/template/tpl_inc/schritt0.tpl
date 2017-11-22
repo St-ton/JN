@@ -125,9 +125,9 @@
 
 <h2 class="welcome">Herzlich Willkommen bei der Installation Ihres neuen JTL-Shops</h2>
 <div class="well">
-    <p>Wir freuen uns, dass Sie sich für JTL-Shop entschieden haben. Bei dieser Installation führen wir Sie Schritt für Schritt durch die Installation Ihres neuen Shops.</p>
-    <p>Tipps und Hilfestellungen zur Installation finden Sie in unserem <a href="http://jtl-url.de/shop3inst" target="_blank"><i class="fa fa-external-link"></i> Installationsguide</a>. Bei offenen Fragen können Sie eine Anfrage im <a href="http://kundencenter.jtl-software.de/" target="_blank"><i class="fa fa-external-link"></i> Kundencenter</a> stellen. Einer unserer Mitarbeiter hilft Ihnen gerne weiter.</p>
-    {if isset($versionAbort) && $versionAbort === false }<p><strong>Wir wünschen Ihnen viel Erfolg und viel Freude mit Ihrem neuen JTL-Shop!</strong></p> {/if}
+    <p>Wir freuen uns, dass Sie sich fr JTL-Shop entschieden haben. Bei dieser Installation fhren wir Sie Schritt fr Schritt durch die Installation Ihres neuen Shops.</p>
+    <p>Tipps und Hilfestellungen zur Installation finden Sie in unserem <a href="http://jtl-url.de/shop3inst" target="_blank"><i class="fa fa-external-link"></i> Installationsguide</a>. Bei offenen Fragen knnen Sie eine Anfrage im <a href="http://kundencenter.jtl-software.de/" target="_blank"><i class="fa fa-external-link"></i> Kundencenter</a> stellen. Einer unserer Mitarbeiter hilft Ihnen gerne weiter.</p>
+    {if isset($versionAbort) && $versionAbort === false }<p><strong>Wir wnschen Ihnen viel Erfolg und viel Freude mit Ihrem neuen JTL-Shop!</strong></p> {/if}
 </div>
 
 {if isset($cHinweis) && $cHinweis|@count_characters > 0}
@@ -143,7 +143,7 @@
         <div style="width:100%;text-align:right;">
             <h3 class="panel-title" style="float:left;">
                 <span id="summary_server_span" class="label"><i class="fa" id="summary_server"></i></span>
-                <span style="margin-left:10px;">Erfüllt der Server alle Anforderungen?</span>
+                <span style="margin-left:10px;">Erfllt der Server alle Anforderungen?</span>
             </h3>
             <span class="glyphicon glyphicon-chevron-down" id="canvas_server_arrow"></span>
         </div>
@@ -256,7 +256,7 @@
         <div style="width:100%;text-align:right;">
             <h3 class="panel-title" style="float:left;">
                 <span id="summary_folders_span" class="label"><i id="summary_folders" class="fa"></i></span>
-                <span style="margin-left:10px;">Überprüfe Schreibrechte</span>
+                <span style="margin-left:10px;">berprfe Schreibrechte</span>
             </h3>
             <span class="glyphicon glyphicon-chevron-down" id="canvas_folders_arrow"></span>
         </div>
@@ -269,9 +269,9 @@
                     {if $bBeschreibbar}
                     <span class="label label-success"><i class="fa fa-check"></i></span>
                     {else}
-                    <span class="label label-danger"><i class="fa fa-exclamation-triangle" title="copy to clipboard"></i></span>
+                    <span class="label label-danger"><i class="fa fa-exclamation-triangle" title="in Zwischenablage kopieren"></i></span>
                     {/if}
-                    <span style="margin-left:10px;{if !$bBeschreibbar}cursor:pointer;{/if}" {if !$bBeschreibbar}title="in Zwischenablage" class="copy2clipboard"{/if}>{$cVerzeichnis}</span>
+                    <span style="margin-left:10px;{if !$bBeschreibbar}cursor:pointer;{/if}" {if !$bBeschreibbar}title="in Zwischenablage kopieren" class="copy2clipboard"{/if}>{$cVerzeichnis}</span>
                 </span>
             </li>
         {/foreach}
@@ -286,15 +286,15 @@
             </div>
             <div class="panel-body">
                 <div class="well">
-                    <p>Für die Installation des JTL-Shops benötigen wir eine MySQL-Datenbank.</p>
+                    <p>Fr die Installation des JTL-Shops bentigen wir eine MySQL-Datenbank.</p>
 
-                    <p>Meistens müssen der Benutzer und die Datenbank erst manuell erstellt werden. Bei Problemen wenden Sie sich
-                        bitte an Ihren Administrator bzw. Webhoster, da dieser Vorgang von Hoster zu Hoster unterschiedlich ist und von der eingesetzten Software abhängt.</p>
+                    <p>Meistens mssen der Benutzer und die Datenbank erst manuell erstellt werden. Bei Problemen wenden Sie sich
+                        bitte an Ihren Administrator bzw. Webhoster, da dieser Vorgang von Hoster zu Hoster unterschiedlich ist und von der eingesetzten Software abhngt.</p>
 
-                    <p>Der Benutzer benötigt Lese-, Schreib- und Löschrechte (<i>Create, Insert, Update, Delete</i>) für diese Datenbank.</p>
+                    <p>Der Benutzer bentigt Lese-, Schreib- und Lschrechte (<i>Create, Insert, Update, Delete</i>) fr diese Datenbank.</p>
 
                     <p>Als <strong>Host</strong> ist "localhost" zumeist die richtige Einstellung. Diese Information bekommen Sie ebenfalls von Ihrem Webhoster.</p>
-                    <p>Das Feld <strong>Socket</strong> füllen Sie bitte nur aus, wenn Sie ganz sicher sind, dass Ihre Datenbank über einen Socket erreichbar ist. In diesem Fall tragen Sie bitte den absoluten Pfad zum Socket ein.</p>
+                    <p>Das Feld <strong>Socket</strong> fllen Sie bitte nur aus, wenn Sie ganz sicher sind, dass Ihre Datenbank ber einen Socket erreichbar ist. In diesem Fall tragen Sie bitte den absoluten Pfad zum Socket ein.</p>
                 </div>
                 <div class="col-xs-12">
                     <div class="form-group">

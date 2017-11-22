@@ -4816,7 +4816,7 @@ class Artikel
         $oArtikel = ($oArtikel !== null) ? $oArtikel : $this;
 
         if ((int)$conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER) {
-            if ($oArtikel->cLagerVariation === 'Y') {
+            if (isset($oArtikel->cLagerVariation) && $oArtikel->cLagerVariation === 'Y') {
                 return true;
             }
             if ($oArtikel->fLagerbestand <= 0 && $oArtikel->cLagerBeachten === 'Y') {
@@ -4824,7 +4824,7 @@ class Artikel
             }
         }
         if ((int)$conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL) {
-            if ($oArtikel->cLagerVariation === 'Y' || $oArtikel->cLagerKleinerNull === 'Y') {
+            if (isset($oArtikel->cLagerVariation) && $oArtikel->cLagerVariation === 'Y' || $oArtikel->cLagerKleinerNull === 'Y') {
                 return true;
             }
             if ($oArtikel->fLagerbestand <= 0 && $oArtikel->cLagerBeachten === 'Y') {

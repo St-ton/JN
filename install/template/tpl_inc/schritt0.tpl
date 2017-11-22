@@ -269,9 +269,9 @@
                     {if $bBeschreibbar}
                     <span class="label label-success"><i class="fa fa-check"></i></span>
                     {else}
-                    <span class="label label-danger"><i class="fa fa-exclamation-triangle" title="copy to clipboard"></i></span>
+                    <span class="label label-danger"><i class="fa fa-exclamation-triangle" title="in Zwischenablage kopieren"></i></span>
                     {/if}
-                    <span style="margin-left:10px;{if !$bBeschreibbar}cursor:pointer;{/if}" {if !$bBeschreibbar}title="in Zwischenablage" class="copy2clipboard"{/if}>{$cVerzeichnis}</span>
+                    <span style="margin-left:10px;{if !$bBeschreibbar}cursor:pointer;{/if}" {if !$bBeschreibbar}title="in Zwischenablage kopieren" class="copy2clipboard"{/if}>{$cVerzeichnis}</span>
                 </span>
             </li>
         {/foreach}

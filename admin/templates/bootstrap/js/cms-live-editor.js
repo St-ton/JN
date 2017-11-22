@@ -265,6 +265,10 @@ CmsLiveEditor.prototype = {
     {
         var elm = this.iframeJq(e.target);
 
+        while(!this.isSelectable(elm) && !elm.is(this.rootElm)) {
+            elm = elm.parent();
+        }
+
         this.setDragged(elm);
 
         // firefox needs this

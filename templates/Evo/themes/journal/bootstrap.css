@@ -9399,8 +9399,8 @@ aside .badge {
   line-height: 3;
 }
 .updatingStockInfo {
-  position: absolute;
   display: none;
+  margin-bottom: -20px;
 }
 #sortierenID {
   margin-bottom: 20px;

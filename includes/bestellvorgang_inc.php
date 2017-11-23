@@ -974,6 +974,16 @@ function plausiNeukundenKupon()
                 $verwendet = Shop::DB()->select('tkuponneukunde', 'cEmail', $_SESSION['Kunde']->cMail);
                 $verwendet = !empty($verwendet) ? $verwendet->cVerwendet : null;
                 foreach ($NeukundenKupons as $NeukundenKupon) {
+                    // teste ob Kunde mit cMail den Neukundenkupon schon verwendet hat...
+                    $oDbKuponKunde = Shop::DB()->select(
+                        'tkuponkunde',
+                        ['kKupon', 'cMail'],
+                        [$NeukundenKupon->kKupon, $_SESSION['Kunde']->cMail]
+                    );
+                    if (is_object($oDbKuponKunde)) {
+                        // ...falls ja, versuche nächsten Neukundenkupon
+                        continue;
+                    }
                     if ((empty($verwendet) || $verwendet === 'N') && angabenKorrekt(checkeKupon($NeukundenKupon))) {
                         kuponAnnehmen($NeukundenKupon);
                         if (empty($verwendet)) {

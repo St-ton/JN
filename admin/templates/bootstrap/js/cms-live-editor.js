@@ -92,6 +92,14 @@ CmsLiveEditor.prototype = {
 
     initEditor: function()
     {
+        this.iframeJq('a, button')
+            .off('click')
+            .attr('onclick', '')
+            .click(function(e) {
+                console.log('link click prevented');
+                e.preventDefault();
+            });
+
         this.rootElm = this.iframeJq('.jle-editable');
         this.labelElm = this.iframeJq('<div>', { 'class': 'jle-label' }).appendTo('body').hide();
         this.pinbarElm = this.createPinbar().appendTo('body').hide();
@@ -100,6 +108,7 @@ CmsLiveEditor.prototype = {
         this.configModalBodyElm = this.hostJq('#config-modal-body');
         this.configFormElm = this.hostJq('#config-form');
         this.editorSaveBtnElm = this.hostJq('#jle-btn-save-editor');
+        this.loaderBackdrop = this.hostJq('#loader-backdrop');
 
         this.rootElm
             .on('mouseover', this.onMouseOver.bind(this))
@@ -113,14 +122,6 @@ CmsLiveEditor.prototype = {
         this.iframeJq(this.iframeCtx.document)
             .on('keydown', this.onKeyDown.bind(this));
 
-        this.iframeJq('a, button')
-            .off('click')
-            .attr('onclick', '')
-            .click(function(e) {
-                console.log('link click prevented');
-                e.preventDefault();
-            });
-
         this.portletBtnElms
             .attr('draggable', 'true')
             .on('dragstart', this.onPortletBtnDragStart.bind(this))
@@ -131,6 +132,9 @@ CmsLiveEditor.prototype = {
 
         this.editorSaveBtnElm
             .click(this.onEditorSave.bind(this));
+
+        this.loaderBackdrop
+            .hide();
 
         ioCall('getCmsPageJson', [this.cKey, this.kKey, this.kSprache], this.loadFromJson.bind(this));
     },
@@ -169,10 +173,17 @@ CmsLiveEditor.prototype = {
 
     onEditorSave: function (e)
     {
-        ioCall('saveCmsPage', [
-            this.cKey, this.kKey, this.kSprache,
-            this.toJson()
-        ]);
+        this.loaderBackdrop.show();
+
+        ioCall(
+            'saveCmsPage',
+            [
+                this.cKey, this.kKey, this.kSprache,
+                this.toJson()
+            ],
+            function() {
+                this.loaderBackdrop.hide();
+            }.bind(this));
 
         e.preventDefault();
     },

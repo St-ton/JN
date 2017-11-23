@@ -60,11 +60,7 @@
                     </li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
-                    <li>
-                        <a href="#" id="jle-btn-save-editor">
-                            <i class="fa fa-save"></i>
-                        </a>
-                    </li>
+                    <li><a href="#" id="jle-btn-save-editor"><i class="fa fa-save"></i></a></li>
                     <li><a href="{$URL_SHOP}/{$oSeo->cSeo}"><i class="fa fa-close"></i></a></li>
                 </ul>
             </div>
@@ -118,5 +114,6 @@
             </div>
         </div>
     </div>
+    <div class="modal-backdrop" id="loader-backdrop"></div>
 </body>
 </html>

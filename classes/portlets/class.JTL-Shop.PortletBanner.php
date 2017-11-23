@@ -26,11 +26,53 @@ class PortletBanner extends CMSPortlet
         $oImageMap = new stdClass();
         $oImageMap->cTitel    = $this->properties['data']['kImageMap'];
         $oImageMap->cBildPfad = $this->properties['attr']['src'];
-        $oImageMap->oArea_arr = $zones['oArea_arr'];
+        $oImageMap->oArea_arr = $zones->oArea_arr;
+        $isFluid   = false;
 
+        $cBildPfad            = PFAD_ROOT . $this->properties['attr']['src'];
+        $oImageMap->cBildPfad = Shop::getURL() . $oImageMap->cBildPfad;
+        $cParse_arr           = parse_url($oImageMap->cBildPfad);
+        $oImageMap->cBild     = substr($cParse_arr['path'], strrpos($cParse_arr['path'], '/') + 1);
+        list($width, $height) = getimagesize($cBildPfad);
+        $oImageMap->fWidth    = $width;
+        $oImageMap->fHeight   = $height;
+        $defaultOptions       = Artikel::getDefaultOptions();
+        $fill = true;
 
+        foreach ($oImageMap->oArea_arr as &$oArea) {
+            $oArea->oArtikel = null;
+            if ((int)$oArea->kArtikel > 0) {
+                $oArea->oArtikel = new Artikel();
+                if ($fill === true) {
+                    $oArea->oArtikel->fuelleArtikel(
+                        $oArea->kArtikel,
+                        $defaultOptions
+                    );
+                } else {
+                    $oArea->oArtikel->kArtikel = $oArea->kArtikel;
+                    $oArea->oArtikel->cName    = utf8_encode(
+                        Shop::DB()->select(
+                            'tartikel', 'kArtikel', $oArea->kArtikel, null, null, null, null, false, 'cName'
+                        )->cName
+                    );
+                }
+                if (strlen($oArea->cTitel) === 0) {
+                    $oArea->cTitel = $oArea->oArtikel->cName;
+                }
+                if (strlen($oArea->cUrl) === 0) {
+                    $oArea->cUrl = $oArea->oArtikel->cURL;
+                }
+                if (strlen($oArea->cBeschreibung) === 0) {
+                    $oArea->cBeschreibung = $oArea->oArtikel->cKurzBeschreibung;
+                }
+            }
+        }
 
-        return $this->getPreviewHtml(true);
+        return Shop::Smarty()->assign('properties', $this->properties)
+            ->assign('oBanner', $oImageMap)
+            ->assign('isFluidBanner', false)
+            ->assign('isFluid', $isFluid)
+            ->fetch('portlets/final.banner.tpl');
     }
 
     public function getConfigPanelHtml()

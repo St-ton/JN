@@ -4816,7 +4816,7 @@ class Artikel
         $oArtikel = ($oArtikel !== null) ? $oArtikel : $this;
 
         if ((int)$conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER) {
-            if ($oArtikel->cLagerVariation === 'Y') {
+            if (isset($oArtikel->cLagerVariation) && $oArtikel->cLagerVariation === 'Y') {
                 return true;
             }
             if ($oArtikel->fLagerbestand <= 0 && $oArtikel->cLagerBeachten === 'Y') {
@@ -4824,7 +4824,7 @@ class Artikel
             }
         }
         if ((int)$conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL) {
-            if ($oArtikel->cLagerVariation === 'Y' || $oArtikel->cLagerKleinerNull === 'Y') {
+            if (isset($oArtikel->cLagerVariation) && $oArtikel->cLagerVariation === 'Y' || $oArtikel->cLagerKleinerNull === 'Y') {
                 return true;
             }
             if ($oArtikel->fLagerbestand <= 0 && $oArtikel->cLagerBeachten === 'Y') {
@@ -6416,7 +6416,6 @@ class Artikel
     public function getPossibleVariationsBySelection($nEigenschaft_arr, $kGesetzteEigeschaftWert_arr)
     {
         $nPossibleVariation_arr = [];
-        $conf                   = Shop::getSettings([CONF_GLOBAL]);
         foreach ($nEigenschaft_arr as $kEigenschaft => $nEigenschaftWert_arr) {
             $i            = 2;
             $cSQL         = [];
@@ -6449,12 +6448,8 @@ class Artikel
                 }
                 //aufLagerSichtbarkeit() betrachtet allgemein alle Artikel, hier muss zusätzlich geprüft werden
                 //ob die entsprechende VarKombi verfügbar ist, auch wenn global "alle Artikel anzeigen" aktiv ist
-                if ($this->aufLagerSichtbarkeit($oEigenschaft) &&
-                    ((int)$conf['global']['artikel_artikelanzeigefilter'] !== EINSTELLUNGEN_ARTIKELANZEIGEFILTER_ALLE ||
-                    (int)$conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_ALLE &&
-                    !($oEigenschaft->fLagerbestand <= 0 && $oEigenschaft->cLagerBeachten === 'Y' &&
-                    $oEigenschaft->cLagerKleinerNull === 'N')) &&
-                    !in_array($oEigenschaft->kEigenschaftWert, $nPossibleVariation_arr[$oEigenschaft->kEigenschaft], true)
+                if ($this->aufLagerSichtbarkeit($oEigenschaft)
+                    && !in_array($oEigenschaft->kEigenschaftWert, $nPossibleVariation_arr[$oEigenschaft->kEigenschaft], true)
                 ) {
                     $nPossibleVariation_arr[$oEigenschaft->kEigenschaft][] = $oEigenschaft->kEigenschaftWert;
                 }

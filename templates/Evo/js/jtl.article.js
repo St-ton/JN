@@ -344,8 +344,16 @@
             $('#jump-to-votes-tab', $wrapper).click(function () {
                 $('#content a[href="#tab-votes"]').tab('show');
             });
+            var that = this;
+            $('#product-list .switch-variations .form-group:only-of-type').hover(function (el) {
+                if (!$(this).hasClass('varLoaded')) {
+                    $wrapper = $(this).closest('form').attr('id');
+                    that.variationSwitch($(this), false, $('#'+$wrapper));
+                    $(this).addClass('varLoaded');
+                }
+            });
 
-            if ($('.switch-variations .form-group').length == 1) {
+            if ($('#buy_form .switch-variations .form-group').length == 1) {
                 this.variationSwitch($('.switch-variations'), false, $wrapper);
             }
 
@@ -886,6 +894,7 @@
                 $.evo.extended().loadContent(url + (url.indexOf('?') >= 0 ? '&' : '?') + 'isListStyle=' + listStyle, function (content) {
                     $.evo.extended().imagebox(wrapper);
                     $.evo.article().register(wrapper);
+                    $.evo.extended().register();
 
                     $('[data-toggle="basket-add"]', $(wrapper)).on('submit', function(event) {
                         event.preventDefault();
@@ -998,57 +1007,55 @@
         },
 
         variationInfo: function(value, status, note) {
-            if (this.isSingleArticle()) {
-                var $item = $('[data-value="' + value + '"].variation'),
-                    type = $item.attr('data-type'),
-                    text,
-                    content,
-                    $wrapper,
-                    label;
+            var $item = $('[data-value="' + value + '"].variation'),
+                type = $item.attr('data-type'),
+                text,
+                content,
+                $wrapper,
+                label;
 
-                $item.attr('data-stock', _stock_info[status]);
+            $item.attr('data-stock', _stock_info[status]);
 
-                switch (type) {
-                    case 'option':
-                        text     = ' (' + note + ')';
-                        content  = $item.data('content');
-                        $wrapper = $('<div />');
+            switch (type) {
+                case 'option':
+                    text     = ' (' + note + ')';
+                    content  = $item.data('content');
+                    $wrapper = $('<div />');
 
-                        $wrapper.append(content);
-                        $wrapper
-                            .find('.label-not-available')
-                            .remove();
+                    $wrapper.append(content);
+                    $wrapper
+                        .find('.label-not-available')
+                        .remove();
 
-                        label = $('<span />')
-                            .addClass('label label-default label-not-available')
-                            .text(note);
+                    label = $('<span />')
+                        .addClass('label label-default label-not-available')
+                        .text(note);
 
-                        $wrapper.append(label);
+                    $wrapper.append(label);
 
-                        $item.data('content', $wrapper.html())
-                            .attr('data-content', $wrapper.html());
+                    $item.data('content', $wrapper.html())
+                        .attr('data-content', $wrapper.html());
 
-                        $item.closest('select')
-                            .selectpicker('refresh');
-                        break;
-                    case 'radio':
-                        $item.find('.label-not-available')
-                            .remove();
+                    $item.closest('select')
+                        .selectpicker('refresh');
+                    break;
+                case 'radio':
+                    $item.find('.label-not-available')
+                        .remove();
 
-                        label = $('<span />')
-                            .addClass('label label-default label-not-available')
-                            .text(note);
+                    label = $('<span />')
+                        .addClass('label label-default label-not-available')
+                        .text(note);
 
-                        $item.append(label);
-                        break;
-                    case 'swatch':
-                        $item.tooltip({
-                            title: note,
-                            trigger: 'hover',
-                            container: 'body'
-                        });
-                        break;
-                }
+                    $item.append(label);
+                    break;
+                case 'swatch':
+                    $item.tooltip({
+                        title: note,
+                        trigger: 'hover',
+                        container: 'body'
+                    });
+                    break;
             }
         },
 
@@ -1067,7 +1074,7 @@
                     $wrapper.addClass('loading');
                     $spinner = $.evo.extended().spinner();
                 } else {
-                    $('.variations .updatingStockInfo', $wrapper).show();
+                    $('.updatingStockInfo', $wrapper).show();
                 }
 
                 $current.addClass('loading');
@@ -1081,7 +1088,7 @@
                     if (animation) {
                         $spinner.stop();
                     }
-                    $('.variations .updatingStockInfo', $wrapper).hide();
+                    $('.updatingStockInfo', $wrapper).hide();
                     if (error) {
                         $.evo.error('checkVarkombiDependencies');
                     }

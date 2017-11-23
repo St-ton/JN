@@ -113,6 +113,14 @@ CmsLiveEditor.prototype = {
         this.iframeJq(this.iframeCtx.document)
             .on('keydown', this.onKeyDown.bind(this));
 
+        this.iframeJq('a, button')
+            .off('click')
+            .attr('onclick', '')
+            .click(function(e) {
+                console.log('link click prevented');
+                e.preventDefault();
+            });
+
         this.portletBtnElms
             .attr('draggable', 'true')
             .on('dragstart', this.onPortletBtnDragStart.bind(this))

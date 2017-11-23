@@ -92,6 +92,14 @@ CmsLiveEditor.prototype = {
 
     initEditor: function()
     {
+        this.iframeJq('a, button')
+            .off('click')
+            .attr('onclick', '')
+            .click(function(e) {
+                console.log('link click prevented');
+                e.preventDefault();
+            });
+
         this.rootElm = this.iframeJq('.jle-editable');
         this.labelElm = this.iframeJq('<div>', { 'class': 'jle-label' }).appendTo('body').hide();
         this.pinbarElm = this.createPinbar().appendTo('body').hide();
@@ -100,6 +108,7 @@ CmsLiveEditor.prototype = {
         this.configModalBodyElm = this.hostJq('#config-modal-body');
         this.configFormElm = this.hostJq('#config-form');
         this.editorSaveBtnElm = this.hostJq('#jle-btn-save-editor');
+        this.loaderBackdrop = this.hostJq('#loader-backdrop');
 
         this.rootElm
             .on('mouseover', this.onMouseOver.bind(this))
@@ -123,6 +132,9 @@ CmsLiveEditor.prototype = {
 
         this.editorSaveBtnElm
             .click(this.onEditorSave.bind(this));
+
+        this.loaderBackdrop
+            .hide();
 
         ioCall('getCmsPageJson', [this.cKey, this.kKey, this.kSprache], this.loadFromJson.bind(this));
     },
@@ -161,10 +173,17 @@ CmsLiveEditor.prototype = {
 
     onEditorSave: function (e)
     {
-        ioCall('saveCmsPage', [
-            this.cKey, this.kKey, this.kSprache,
-            this.toJson()
-        ]);
+        this.loaderBackdrop.show();
+
+        ioCall(
+            'saveCmsPage',
+            [
+                this.cKey, this.kKey, this.kSprache,
+                this.toJson()
+            ],
+            function() {
+                this.loaderBackdrop.hide();
+            }.bind(this));
 
         e.preventDefault();
     },
@@ -265,6 +284,10 @@ CmsLiveEditor.prototype = {
     {
         var elm = this.iframeJq(e.target);
 
+        while(!this.isSelectable(elm) && !elm.is(this.rootElm)) {
+            elm = elm.parent();
+        }
+
         this.setDragged(elm);
 
         // firefox needs this
@@ -277,6 +300,7 @@ CmsLiveEditor.prototype = {
         var elm = this.iframeJq(e.target);
         var adjacent = null;
         var dir = '';
+        var elmDir = '';
 
         while(!this.isDropTarget(elm)) {
             adjacent = elm;
@@ -292,6 +316,24 @@ CmsLiveEditor.prototype = {
             else if(vertRatio > 0.66) {
                 dir = 'below';
             }
+        }
+
+        var elmVertRatio = (e.clientY - elm.offset().top) / elm.innerHeight();
+
+        if(elmVertRatio < 0.33) {
+            elmDir = 'above';
+        }
+        else if(elmVertRatio > 0.66) {
+            elmDir = 'below';
+        }
+
+        if(elmDir !== '' && !elm.is(this.rootElm)) {
+            do {
+                adjacent = elm;
+                elm = elm.parent();
+            } while(!this.isDropTarget(elm) && !elm.is(this.rootElm));
+
+            dir = elmDir;
         }
 
         this.setAdjacent(adjacent, dir);

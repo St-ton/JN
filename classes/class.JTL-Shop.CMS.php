@@ -93,7 +93,7 @@ class CMS
         $oDbPortlet = Shop::DB()->select('tcmsportlet', 'kPortlet', $kPortlet);
 
         if (!is_object($oDbPortlet)) {
-            throw new Exception('Portlet ID could not be found in the database.');
+            throw new Exception("Portlet ID $kPortlet could not be found in the database.");
         }
 
         if (isset($oDbPortlet->kPlugin) && $oDbPortlet->kPlugin > 0) {

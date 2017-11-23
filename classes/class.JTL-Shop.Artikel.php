@@ -6058,8 +6058,8 @@ class Artikel
         $confMinKeyLen        = (int)Shop::getSettings([CONF_METAANGABEN])['metaangaben']['global_meta_keywords_laenge'];
         $cacheID              = 'meta_keywords_' . Shop::$kSprache;
         $_descriptionKeywords = explode(' ', StringHandler::removeDoubleSpaces(
-            preg_replace('/[^a-zA-Z0-9 ??¸?÷??-]/', ' ', $description))
-        );
+            preg_replace('/[^a-zA-Z0-9üÜäÄöÖß-]/', ' ', $description)
+        ));
         $descriptionKeywords  = array_filter($_descriptionKeywords, function ($value) use ($confMinKeyLen) {
             return strlen($value) >= $confMinKeyLen;
         });

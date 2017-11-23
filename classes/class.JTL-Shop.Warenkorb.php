@@ -50,6 +50,11 @@ class Warenkorb
     public $Waehrung;
 
     /**
+     * @var Versandart
+     */
+    public $oFavourableShipping;
+
+    /**
      * @var array
      */
     public static $updatedPositions = [];
@@ -1537,5 +1542,91 @@ class Warenkorb
         }
 
         return false;
+    }
+
+    /**
+     * @return Versandart - cheapest shipping except shippings that offer cash payment
+     */
+    public function getFavourableShipping()
+    {
+        if (!empty($_SESSION['Versandart']->kVersandart)
+            && isset($_SESSION['Versandart']->nMinLiefertage)) {
+            return null;
+        }
+
+        if (isset($_SESSION['Kunde']->kKundengruppe) && $_SESSION['Kunde']->kKundengruppe > 0) {
+            $countryCode = $_SESSION['Kunde']->cLand;
+        } else {
+            $countryCode = $_SESSION['cLieferlandISO'];
+        }
+
+        // if nothing changed, return cached shipping-object
+        if ($this->oFavourableShipping !== null && $this->oFavourableShipping->cCountryCode === $_SESSION['cLieferlandISO']) {
+            return $this->oFavourableShipping;
+        }
+
+        $maxPrices       = 0;
+        $totalWeight     = 0;
+        $shippingClasses = [];
+
+        foreach ($this->PositionenArr as $Position) {
+            $totalWeight      += $Position->fGesamtgewicht;
+            $shippingClasses[] = $Position->kVersandklasse;
+            $maxPrices        += $Position->Artikel->Preise->fVKNetto;
+        }
+
+        // cheapest shipping except shippings that offer cash payment
+        $shipping = Shop::DB()->query(
+            "SELECT va.kVersandart, IF(vas.fPreis IS NOT NULL, vas.fPreis, va.fPreis) AS minPrice, va.nSort
+                FROM tversandart va
+                LEFT JOIN tversandartstaffel vas
+                    ON vas.kVersandart = va.kVersandart
+                WHERE va.cLaender LIKE '%{$countryCode}%'
+                AND (va.cVersandklassen = '-1'
+                    OR va.cVersandklassen IN (" . implode(',', $shippingClasses) . "))
+                AND (va.cKundengruppen = '-1'
+                    OR FIND_IN_SET('{$_SESSION['Kundengruppe']->kKundengruppe}', REPLACE(va.cKundengruppen, ';', ',')) > 0)
+                AND va.kVersandart NOT IN (
+                    SELECT vaza.kVersandart
+                        FROM tversandartzahlungsart vaza
+                        WHERE kZahlungsart = 6)
+                AND (
+                    va.kVersandberechnung = 1 OR va.kVersandberechnung = 4
+                    OR ( va.kVersandberechnung = 2 AND vas.fBis > 0 AND {$totalWeight} <= vas.fBis )
+                    OR ( va.kVersandberechnung = 3 AND vas.fBis > 0 AND {$maxPrices} <= vas.fBis )
+                    )
+                ORDER BY minPrice, nSort ASC LIMIT 1", 1
+        );
+
+        if (isset($shipping->kVersandart)) {
+            $oFavourableShipping               = new Versandart($shipping->kVersandart);
+            $oFavourableShipping->cCountryCode = $countryCode;
+
+            if ($oFavourableShipping->eSteuer === "brutto") {
+                $oFavourableShipping->cPriceLocalized[0] = gibPreisStringLocalized($oFavourableShipping->fPreis);
+                $oFavourableShipping->cPriceLocalized[1] = gibPreisStringLocalized(
+                    berechneNetto(
+                        $oFavourableShipping->fPreis,
+                        $_SESSION['Steuersatz'][(int)$_SESSION['Warenkorb']->gibVersandkostenSteuerklasse()]
+                    )
+                );
+            } else {
+                $oFavourableShipping->cPriceLocalized[0] = gibPreisStringLocalized(
+                    berechneBrutto(
+                        $oFavourableShipping->fPreis,
+                        $_SESSION['Steuersatz'][(int)$_SESSION['Warenkorb']->gibVersandkostenSteuerklasse()]
+                    )
+                );
+                $oFavourableShipping->cPriceLocalized[1] = gibPreisStringLocalized($oFavourableShipping->fPreis);
+            }
+
+            $this->oFavourableShipping = $oFavourableShipping;
+
+            return $oFavourableShipping;
+        } else {
+            $this->oFavourableShipping = null;
+
+            return null;
+        }
     }
 }

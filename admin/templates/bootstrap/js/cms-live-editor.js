@@ -281,6 +281,7 @@ CmsLiveEditor.prototype = {
         var elm = this.iframeJq(e.target);
         var adjacent = null;
         var dir = '';
+        var elmDir = '';
 
         while(!this.isDropTarget(elm)) {
             adjacent = elm;
@@ -296,6 +297,24 @@ CmsLiveEditor.prototype = {
             else if(vertRatio > 0.66) {
                 dir = 'below';
             }
+        }
+
+        var elmVertRatio = (e.clientY - elm.offset().top) / elm.innerHeight();
+
+        if(elmVertRatio < 0.33) {
+            elmDir = 'above';
+        }
+        else if(elmVertRatio > 0.66) {
+            elmDir = 'below';
+        }
+
+        if(elmDir !== '' && !elm.is(this.rootElm)) {
+            do {
+                adjacent = elm;
+                elm = elm.parent();
+            } while(!this.isDropTarget(elm) && !elm.is(this.rootElm));
+
+            dir = elmDir;
         }
 
         this.setAdjacent(adjacent, dir);

@@ -88,9 +88,6 @@
             </div>
             <div class="tab-pane" id="templates">
                 Coming soon...
-
-                <button onclick="openKCFinder()">KC</button>
-
             </div>
         </div>
     </div>

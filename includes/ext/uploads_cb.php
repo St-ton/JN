@@ -29,18 +29,27 @@ if (!validateToken()) {
 }
 // upload file
 if (!empty($_FILES)) {
-    $cUnique     = isset($_REQUEST['uniquename'])
-        ? $_REQUEST['uniquename']
-        : null;
+    if (!isset($_REQUEST['uniquename'])) {
+        retCode(0);
+    }
+    $cUnique     = $_REQUEST['uniquename'];
     $cTargetFile = PFAD_UPLOADS . $cUnique;
     $fileData    = isset($_FILES['Filedata']['tmp_name'])
         ? $_FILES['Filedata']
         : $_FILES['file_data'];
     $cTempFile   = $fileData['tmp_name'];
-
-    if (isset($fileData['error']) && (int)$fileData['error'] === 0 && move_uploaded_file($cTempFile, $cTargetFile)) {
+    $info        = pathinfo($cTargetFile);
+    $realPath    = realpath($info['dirname']);
+    if (isset($fileData['error'])
+        && (int)$fileData['error'] === 0
+        && (!isset($info['extension'])
+            || !in_array($info['extension'], ['php', 'php4', 'php5', 'htaccess', 'ini', 'conf', 'load'], true))
+        && strpos($realPath . '/', PFAD_UPLOADS) === 0
+        && !file_exists($cTargetFile)
+        && move_uploaded_file($cTempFile, $cTargetFile)
+    ) {
         $oFile         = new stdClass();
-        $oFile->cName = !empty($_REQUEST['variation'])
+        $oFile->cName  = !empty($_REQUEST['variation'])
             ? $_REQUEST['cname'] . '_' . $_REQUEST['variation'] . '_' . $fileData['name']
             : $_REQUEST['cname'] . '_' . $fileData['name'];
         $oFile->nBytes = $fileData['size'];
@@ -54,24 +63,35 @@ if (!empty($_FILES)) {
             die(json_encode($oFile));
         }
         retCode(1);
+    } else {
+        retCode(0);
     }
 }
+
 // handle file
 if (!empty($_REQUEST['action'])) {
     switch ($_REQUEST['action']) {
         case 'remove':
             $cUnique   = $_REQUEST['uniquename'];
             $cFilePath = PFAD_UPLOADS . $cUnique;
-
-            unset($_SESSION['Uploader'][$cUnique]);
-            if (file_exists($cFilePath)) {
-                retCode(@unlink($cFilePath));
+            $info        = pathinfo($cFilePath);
+            $realPath    = realpath($info['dirname']);
+            if ($info['extension'] !== 'htaccess'
+                && isset($_SESSION['Uploader'][$cUnique])
+                && strpos($realPath . '/', PFAD_UPLOADS) === 0
+            ) {
+                unset($_SESSION['Uploader'][$cUnique]);
+                if (file_exists($cFilePath)) {
+                    retCode(@unlink($cFilePath));
+                }
+            } else {
+                retCode(0);
             }
             break;
 
         case 'exists':
             $cFilePath = PFAD_UPLOADS . $_REQUEST['uniquename'];
-            retCode(file_exists($cFilePath));
+            retCode(file_exists(realpath($cFilePath)));
             break;
 
         case 'preview':

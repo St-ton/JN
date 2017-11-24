@@ -1,6 +1,26 @@
 # JTL-Shop Changelog
 
-## [4.06]
+## [4.06.1]
+
+* [SHOP-1345] - Kupon-Statistikfilter liefert inkorrekte Ergebnisse
+* [SHOP-1579] - VarKombi Artikeldetails des Kinds nicht erreichbar, wenn Kind nicht in Warenkorb legbar
+* [SHOP-1610] - Upload geht nach Login verloren
+* [SHOP-1784] - Lieferzeitraum-Angaben in Bestelldetails (Mein Konto) und Bestellbestätigung zu hoch bei > 14 Tagen
+* [SHOP-1788] - Billpay Ratenzahlung Zahlung wird nicht vollständig gesetzt
+* [SHOP-1789] - Bei 1 dimensionalen Varkombis fehlt die direkte Verfügbarkeitsinfo an den Variationen
+* [SHOP-1803] - Falsche Berechnung von Lieferzeit bei Stücklisten
+* [SHOP-1809] - Umlautproblem in der Suchvorschau
+* [SHOP-1824] - Plugins, die den EventListener nutzen, lassen sich nicht aktualisieren
+* [SHOP-1829] - Merkmalwertfilter prüfen auf falsche Bild-URL
+* [SHOP-1836] - Die Formularvalidierung bei der Registrierung im Checkout leitet auf die falsche Seite
+* [SHOP-1837] - Mailbenachrichtigung / Verfügbarkeitsanfrage bei nichtvorhandener Varkombi in Listenansicht nicht möglich
+* [SHOP-1849] - Kupons nach "Zuletzt verwendet"-Sortieren nicht möglich
+* [SHOP-1858] - Verfügbarkeitsanfrage bei ausverkauften Artikeln wird nicht in der DB gespeichert
+* [SHOP-1860] - Fehlende Lagerbestands-Neuberechnung bei Stücklisten mit unsichtbaren Komponenten
+* [SHOP-1760] - Label in Variationswahl nicht sichtbar
+
+
+## [4.06] - 2017-10-17
 
 ### Wichtige Änderungen
 

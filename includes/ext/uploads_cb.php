@@ -29,9 +29,10 @@ if (!validateToken()) {
 }
 // upload file
 if (!empty($_FILES)) {
-    $cUnique     = isset($_REQUEST['uniquename'])
-        ? $_REQUEST['uniquename']
-        : null;
+    if (!isset($_REQUEST['uniquename'])) {
+        retCode(0);
+    }
+    $cUnique     = $_REQUEST['uniquename'];
     $cTargetFile = PFAD_UPLOADS . $cUnique;
     $fileData    = isset($_FILES['Filedata']['tmp_name'])
         ? $_FILES['Filedata']

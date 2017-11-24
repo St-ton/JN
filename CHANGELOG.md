@@ -275,6 +275,12 @@ Bitte beachten Sie auch das aktualisierte Handbuch zum PayPal-Plugin: http://jtl
 * [SHOP-1674] - Neue Smarty Blocks in snippets/shipping_tax_info.tpl und productdetails/price.tpl
 * [SHOP-1694] - Backstretch-Hintergrundbild verursacht Fehler bei geringer Netzgeschwindigkeit
 
+
+## [4.05.4]
+
+* Schutzfunktion im Uploadmodul verbessert
+
+
 ## [4.05.3]
 
 ### Bugfixes

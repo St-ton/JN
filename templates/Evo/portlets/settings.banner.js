@@ -16,7 +16,6 @@
                 $(options.save).click(function() {
                     saveEditor();
                     var data = JSON.stringify(options.data);
-                    console.log('zonen speichern');
                     $('#zones').val(data);
                     // ioCall('saveBannerAreas', [data]);
                     showInfo('Zonen wurden erfolgreich gespeichert');
@@ -35,8 +34,9 @@
                     $(options.id).find('img').bind("load", function () {
                         loadImage();
                     });
-                } else
+                } else {
                     loadImage();
+                }
 
                 $(options.id).click(function() {
                     releaseAreas();
@@ -51,10 +51,11 @@
                     'width' : width,
                     'height' : height
                 });
-
-                $(options.data.oArea_arr).each(function(idx, item) {
-                    addAreaItem(item, false);
-                });
+                setTimeout(function(){
+                    $(options.data.oArea_arr).each(function(idx, item) {
+                        addAreaItem(item, false);
+                    });
+                }, 1000);
             };
 
             function releaseAreas() {
@@ -172,6 +173,7 @@
             }
 
             function addArea() {
+                factor = ($('#clickarea').prop("naturalWidth") / $('#clickarea').prop("width")).toFixed(2);
                 var item = {
                     oCoords : {w : Math.round(100*factor), h: Math.round(100*factor), x : Math.round(15*factor), y : Math.round(15*factor)},
                     cBeschreibung : '',
@@ -183,11 +185,15 @@
                     kArtikel : 0,
                     cStyle : ''
                 };
+                if (options.data.oArea_arr === undefined || options.data.oArea_arr === null){
+                    options.data.oArea_arr = new Array();
+                }
                 options.data.oArea_arr.push(item);
                 addAreaItem(item, true);
             }
 
             function addAreaItem(item, select) {
+                factor = ($('#clickarea').prop("naturalWidth") / $('#clickarea').prop("width")).toFixed(2);
                 var id = getUID();
                 item.uid = id;
                 var area = $('<div />')

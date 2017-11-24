@@ -26,7 +26,7 @@
                 </div>
             </div>
         </div>
-        <div id="banner-zones-container" {if empty($properties.attr['src']) || strpos($properties.attr['src'], 'gfx/keinBild.gif') !== 0 }style="display:none;"{/if}>
+        <div id="banner-zones-container" {if strpos($properties.attr['src'], 'gfx/keinBild.gif') !== false }style="display:none;"{/if}>
             <div class="row">
                 <div class="col-xs-12">
                     <label>Zonen</label>
@@ -148,27 +148,30 @@
                     $('#area_wrapper img').attr('src', url);
                     if ($('#img-url').val().length !== 0){
                         $('#banner-zones-container').show();
-                        $.clickareas({
-                            'id': '#area_wrapper',
-                            'editor': '#area_editor',
-                            'save': '#area_save',
-                            'add': '#area_new',
-                            'info': '#area_info',
-                            'data': {$properties['data']|@json_encode nofilter}
-                        });
-
-                        $('#article_unlink').click(function () {
-                            $('#article_id').val(0);
-                            $('#article_name').val('');
-                            return false;
-                        });
-
-                        enableTypeahead('#article_name', 'getProducts', 'cName', null, function (e, item) {
-                            $('#article_name').val(item.cName);
-                            $('#article_id').val(item.kArtikel);
-                        });
                     }
                 }
+
+                $(function () {
+                    $.clickareas({
+                        'id': '#area_wrapper',
+                        'editor': '#area_editor',
+                        'save': '#area_save',
+                        'add': '#area_new',
+                        'info': '#area_info',
+                        'data': {$properties['data']|@json_encode nofilter}
+                    });
+
+                    $('#article_unlink').click(function () {
+                        $('#article_id').val(0);
+                        $('#article_name').val('');
+                        return false;
+                    });
+
+                    enableTypeahead('#article_name', 'getProducts', 'cName', null, function (e, item) {
+                        $('#article_name').val(item.cName);
+                        $('#article_id').val(item.kArtikel);
+                    });
+                });
             </script>
         </div>
     </div>

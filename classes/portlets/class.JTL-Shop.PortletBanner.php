@@ -12,7 +12,6 @@ class PortletBanner extends CMSPortlet
     public function getPreviewHtml($renderLinks = false)
     {
         $zones = !empty($this->properties['zones']) ? json_decode($this->properties['zones']) : '';
-//        Shop::dbg($zones, true);
         $styleString = $this->getStyleString();
         if (!empty($this->properties['attr']['src']) && strpos($this->properties['attr']['src'], 'gfx/keinBild.gif') === false) {
             return '<div class="text-center"' . $styleString . '><img src="' . $this->properties['attr']['src'] . '" style="margin-top: 4px; width: 98%;filter: grayscale() opacity(60%)"/>Banner<p><small>preview images mit transparenten rand anlegen, graustufen, img responsive nutzen</small></p></div>';
@@ -77,6 +76,9 @@ class PortletBanner extends CMSPortlet
 
     public function getConfigPanelHtml()
     {
+        $oArea_arr = json_decode($this->properties['zones']);
+        $this->properties['data']['oArea_arr'] = $oArea_arr->oArea_arr;
+
         return (new JTLSmarty(true))
             ->assign('properties', $this->properties)
             ->assign('frontendPfad', PFAD_TEMPLATES . 'Evo')

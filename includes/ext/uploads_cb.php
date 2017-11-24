@@ -42,7 +42,8 @@ if (!empty($_FILES)) {
     $realPath    = realpath($info['dirname']);
     if (isset($fileData['error'])
         && (int)$fileData['error'] === 0
-        && !in_array($info['extension'], ['php', 'php4', 'php5', 'htaccess', 'ini', 'conf', 'load'], true)
+        && (!isset($info['extension'])
+            || !in_array($info['extension'], ['php', 'php4', 'php5', 'htaccess', 'ini', 'conf', 'load'], true))
         && strpos($realPath . '/', PFAD_UPLOADS) === 0
         && !file_exists($cTargetFile)
         && move_uploaded_file($cTempFile, $cTargetFile)

@@ -134,13 +134,7 @@ switch ($cAction) {
             $cAction = 'view';
             break;
         }
-        $oBanner->cTitel = utf8_encode($oBanner->cTitel);
-        foreach ($oBanner->oArea_arr as &$oArea) {
-            $oArea->cTitel        = utf8_encode($oArea->cTitel);
-            $oArea->cUrl          = utf8_encode($oArea->cUrl);
-            $oArea->cBeschreibung = utf8_encode($oArea->cBeschreibung);
-            $oArea->cStyle        = utf8_encode($oArea->cStyle);
-        }
+
         $smarty->assign('oBanner', $oBanner)
                ->assign('cBannerLocation', Shop::getURL() . '/' . PFAD_BILDER_BANNER);
         break;

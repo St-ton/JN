@@ -624,9 +624,9 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
 
             if (isset($oBestellung->countBestellung) && $oBestellung->countBestellung == 0) {
                 // Keine Bestellungen die noch nicht verschickt oder storniert wurden mehr vorhanden - die Kundendaten werden gelöscht
-                $cText = utf8_decode('Der Kunde ' . $_SESSION['Kunde']->cVorname . ' ' .
+                $cText = 'Der Kunde ' . $_SESSION['Kunde']->cVorname . ' ' .
                     $_SESSION['Kunde']->cNachname . ' (' . $_SESSION['Kunde']->kKunde . ') hat am ' . date('d.m.Y') .
-                    ' um ' . date('H:m:i') . ' Uhr sein Kundenkonto gelöscht. Es gab keine offenen Bestellungen mehr');
+                    ' um ' . date('H:m:i') . ' Uhr sein Kundenkonto gelöscht. Es gab keine offenen Bestellungen mehr';
 
                 Shop::DB()->delete('tlieferadresse', 'kKunde', (int)$_SESSION['Kunde']->kKunde);
                 Shop::DB()->delete('trechnungsadresse', 'kKunde', (int)$_SESSION['Kunde']->kKunde);
@@ -634,11 +634,11 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
                 Shop::DB()->delete('tkunde', 'kKunde', (int)$_SESSION['Kunde']->kKunde);
             } else {
                 // Es gibt noch Bestellungen, die noch nicht versandt oder storniert wurden - der Account wird in einen Gastzugang umgewandelt
-                $cText = utf8_decode('Der Kunde ' . $_SESSION['Kunde']->cVorname . ' ' .
+                $cText = 'Der Kunde ' . $_SESSION['Kunde']->cVorname . ' ' .
                     $_SESSION['Kunde']->cNachname . ' (' . $_SESSION['Kunde']->kKunde . ') hat am ' . date('d.m.Y') .
                     ' um ' . date('H:m:i') . ' Uhr sein Kundenkonto gelöscht. Es gab noch ' .
                     $oBestellung->countBestellung . ' offene Bestellungen.' .
-                    ' Der Account wurde deshalb in einen temporären Gastzugang umgewandelt.');
+                    ' Der Account wurde deshalb in einen temporären Gastzugang umgewandelt.';
 
                 Shop::DB()->update('tkunde', 'kKunde', (int)$_SESSION['Kunde']->kKunde, (object)[
                     'cPasswort'    => '',

@@ -124,8 +124,8 @@ if (!empty($pluginID)) {
         $sp->cLogoPfad             = $baseURL . 'agws_ts_features_logo.png';
         $sp->cFirma                = 'Trusted Shops GmbH';
         $sp->cPLZ                  = '50823';
-        $sp->cOrt                  = utf8_decode('Köln');
-        $sp->cStrasse              = utf8_decode('Subbelrather Straße 15c');
+        $sp->cOrt                  = 'Köln';
+        $sp->cStrasse              = 'Subbelrather Straße 15c';
         $sp->cWWW                  = 'http://www.trustbadge.com/de/';
         $sp->cMail                 = 'welcome@trustbadge.com';
         $sp->cAdresszusatz         = '';

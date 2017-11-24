@@ -135,7 +135,7 @@ class Redirect
             if (!empty($oTarget)) {
                 $this->saveExt($oTarget->cFromUrl, $cDestination);
                 $oObj             = new stdClass();
-                $oObj->cToUrl     = StringHandler::convertISO($cDestination);
+                $oObj->cToUrl     = StringHandler::convertUTF8($cDestination);
                 $oObj->cAvailable = 'y';
                 Shop::DB()->update('tredirect', 'cToUrl', $cSource, $oObj);
             }
@@ -143,8 +143,8 @@ class Redirect
             $oRedirect = $this->find($cSource);
             if (empty($oRedirect)) {
                 $oObj             = new stdClass();
-                $oObj->cFromUrl   = StringHandler::convertISO($cSource);
-                $oObj->cToUrl     = StringHandler::convertISO($cDestination);
+                $oObj->cFromUrl   = StringHandler::convertUTF8($cSource);
+                $oObj->cToUrl     = StringHandler::convertUTF8($cDestination);
                 $oObj->cAvailable = 'y';
 
                 $kRedirect = Shop::DB()->insert('tredirect', $oObj);
@@ -155,7 +155,7 @@ class Redirect
                 && empty($oRedirect->cToUrl)
                 && (int)Shop::DB()->update(
                     'tredirect', 'cFromUrl', $this->normalize($cSource),
-                    (object)['cToUrl' => StringHandler::convertISO($cDestination)]
+                    (object)['cToUrl' => StringHandler::convertUTF8($cDestination)]
                 ) > 0
             ) {
                 // the redirect already exists but has an empty cToUrl => update it

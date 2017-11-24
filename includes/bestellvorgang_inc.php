@@ -311,7 +311,7 @@ function pruefeRechnungsadresseStep($cGet_arr)
         if (isset($_SESSION['checkout.fehlendeAngaben'])) {
             setzeFehlendeAngaben($_SESSION['checkout.fehlendeAngaben']);
             unset($_SESSION['checkout.fehlendeAngaben']);
-            $step = 'edit_customer_address';
+            $step = 'accountwahl';
         }
         if (isset($_SESSION['checkout.cPost_arr'])) {
             $Kunde                      = getKundendaten($_SESSION['checkout.cPost_arr'], 0, 0);
@@ -977,6 +977,16 @@ function plausiNeukundenKupon()
                 $verwendet = Shop::DB()->select('tkuponneukunde', 'cEmail', $_SESSION['Kunde']->cMail);
                 $verwendet = !empty($verwendet) ? $verwendet->cVerwendet : null;
                 foreach ($NeukundenKupons as $NeukundenKupon) {
+                    // teste ob Kunde mit cMail den Neukundenkupon schon verwendet hat...
+                    $oDbKuponKunde = Shop::DB()->select(
+                        'tkuponkunde',
+                        ['kKupon', 'cMail'],
+                        [$NeukundenKupon->kKupon, $_SESSION['Kunde']->cMail]
+                    );
+                    if (is_object($oDbKuponKunde)) {
+                        // ...falls ja, versuche nächsten Neukundenkupon
+                        continue;
+                    }
                     if ((empty($verwendet) || $verwendet === 'N') && angabenKorrekt(checkeKupon($NeukundenKupon))) {
                         kuponAnnehmen($NeukundenKupon);
                         if (empty($verwendet)) {

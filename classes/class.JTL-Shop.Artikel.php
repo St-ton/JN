@@ -4808,7 +4808,7 @@ class Artikel
         $oArtikel = ($oArtikel !== null) ? $oArtikel : $this;
 
         if ((int)$conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER) {
-            if ($oArtikel->cLagerVariation === 'Y') {
+            if (isset($oArtikel->cLagerVariation) && $oArtikel->cLagerVariation === 'Y') {
                 return true;
             }
             if ($oArtikel->fLagerbestand <= 0 && $oArtikel->cLagerBeachten === 'Y') {
@@ -4816,7 +4816,7 @@ class Artikel
             }
         }
         if ((int)$conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL) {
-            if ($oArtikel->cLagerVariation === 'Y' || $oArtikel->cLagerKleinerNull === 'Y') {
+            if (isset($oArtikel->cLagerVariation) && $oArtikel->cLagerVariation === 'Y' || $oArtikel->cLagerKleinerNull === 'Y') {
                 return true;
             }
             if ($oArtikel->fLagerbestand <= 0 && $oArtikel->cLagerBeachten === 'Y') {
@@ -5189,14 +5189,30 @@ class Artikel
             unset($this->oStueckliste_arr);
             $this->holeStueckliste(Session::CustomerGroup()->getID(), true);
         }
-        if (!empty($this->oStueckliste_arr) && !empty($this->kStueckliste)) {
-            foreach ($this->oStueckliste_arr as $piece) {
-                $piece->getDeliveryTime($countryCode, $purchaseQuantity * (float)$piece->fAnzahl_stueckliste, null, null, $shippingID);
-                if (isset($piece->nMaxDeliveryDays)) {
-                    $maxDeliveryDays = max($maxDeliveryDays, $piece->nMaxDeliveryDays);
-                }
-                if (isset($piece->nMinDeliveryDays)) {
-                    $minDeliveryDays = max($minDeliveryDays, $piece->nMinDeliveryDays);
+        $isPartsList = !empty($this->oStueckliste_arr) && !empty($this->kStueckliste);
+        if ($isPartsList) {
+            $oPiecesNotInShop = Shop::DB()->query(
+                "SELECT COUNT(tstueckliste.kArtikel) AS nAnzahl
+                    FROM tstueckliste
+                    LEFT JOIN tartikel ON tartikel.kArtikel = tstueckliste.kArtikel
+                    WHERE tstueckliste.kStueckliste = " . (int)$this->kStueckliste . "
+	                    AND tartikel.kArtikel IS NULL", 1
+            );
+
+            if (is_object($oPiecesNotInShop) && (int)$oPiecesNotInShop->nAnzahl > 0) {
+                // this list has potentially invisible parts and can't calculated correctly
+                // handle this parts list as an normal product
+                $isPartsList = false;
+            } else {
+                // all parts of this list are accessible
+                foreach ($this->oStueckliste_arr as $piece) {
+                    $piece->getDeliveryTime($countryCode, $purchaseQuantity * (float)$piece->fAnzahl_stueckliste, null, null, $shippingID);
+                    if (isset($piece->nMaxDeliveryDays) && $piece->nMaxDeliveryDays > $maxDeliveryDays) {
+                        $maxDeliveryDays = $piece->nMaxDeliveryDays;
+                    }
+                    if (isset($piece->nMinDeliveryDays) && $piece->nMinDeliveryDays > $minDeliveryDays) {
+                        $minDeliveryDays = $piece->nMinDeliveryDays;
+                    }
                 }
             }
             if (!empty($resetArray)) {
@@ -5227,7 +5243,7 @@ class Artikel
                 }
             }
         }
-        if ($this->nBearbeitungszeit > 0 ||
+        if ((!$isPartsList && $this->nBearbeitungszeit > 0) ||
             (isset($this->FunktionsAttribute['processingtime']) && $this->FunktionsAttribute['processingtime'] > 0)
         ) {
             $processingTime   = ($this->nBearbeitungszeit > 0)
@@ -5238,9 +5254,21 @@ class Artikel
         }
         // product coming soon? then add remaining days. stocklevel doesnt matter, see #13604
         if ($this->nErscheinendesProdukt && new DateTime($this->dErscheinungsdatum) > new DateTime()) {
-            $minDeliveryDays += $this->calculateDaysBetween($this->dErscheinungsdatum, date('Y-m-d'));
-            $maxDeliveryDays += $this->calculateDaysBetween($this->dErscheinungsdatum, date('Y-m-d'));
-        } elseif ($this->cLagerBeachten === 'Y' && ($stockLevel <= 0 || ($stockLevel - $purchaseQuantity < 0))) {
+            $daysToRelease = $this->calculateDaysBetween($this->dErscheinungsdatum, date('Y-m-d'));
+
+            if ($isPartsList) {
+                // if this is a parts list...
+                if ($minDeliveryDays < $daysToRelease) {
+                    // ...and release date is after min delivery date from list parts, then release date is the new min delivery date
+                    $offset          = $maxDeliveryDays - $minDeliveryDays;
+                    $minDeliveryDays = $daysToRelease;
+                    $maxDeliveryDays = $minDeliveryDays + $offset;
+                }
+            } else {
+                $minDeliveryDays += $daysToRelease;
+                $maxDeliveryDays += $daysToRelease;
+            }
+        } elseif (!$isPartsList && ($this->cLagerBeachten === 'Y' && ($stockLevel <= 0 || ($stockLevel - $purchaseQuantity < 0)))) {
             if (isset($this->FunktionsAttribute['deliverytime_outofstock']) && $this->FunktionsAttribute['deliverytime_outofstock'] > 0) {
                 //prio on attribute "deliverytime_outofstock" for simple deliverytimes
                 $deliverytime_outofstock = (int)$this->FunktionsAttribute['deliverytime_outofstock'];
@@ -5250,7 +5278,7 @@ class Artikel
                 (isset($this->FunktionsAttribute['supplytime']) && $this->FunktionsAttribute['supplytime'] > 0)
             ) {
                 //attribute "supplytime" for merchants who do not use JTL-Wawis purchase-system
-                $supplyTime = ($this->nLiefertageWennAusverkauft > 0)
+                $supplyTime       = ($this->nLiefertageWennAusverkauft > 0)
                     ? $this->nLiefertageWennAusverkauft
                     : (int)$this->FunktionsAttribute['supplytime'];
                 $minDeliveryDays += $supplyTime;
@@ -6383,7 +6411,6 @@ class Artikel
     public function getPossibleVariationsBySelection($nEigenschaft_arr, $kGesetzteEigeschaftWert_arr)
     {
         $nPossibleVariation_arr = [];
-        $conf                   = Shop::getSettings([CONF_GLOBAL]);
         foreach ($nEigenschaft_arr as $kEigenschaft => $nEigenschaftWert_arr) {
             $i            = 2;
             $cSQL         = [];
@@ -6417,10 +6444,6 @@ class Artikel
                 //aufLagerSichtbarkeit() betrachtet allgemein alle Artikel, hier muss zusätzlich geprüft werden
                 //ob die entsprechende VarKombi verfügbar ist, auch wenn global "alle Artikel anzeigen" aktiv ist
                 if ($this->aufLagerSichtbarkeit($oEigenschaft)
-                    && ((int)$conf['global']['artikel_artikelanzeigefilter'] !== EINSTELLUNGEN_ARTIKELANZEIGEFILTER_ALLE
-                        || (int)$conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_ALLE
-                        && !($oEigenschaft->fLagerbestand <= 0 && $oEigenschaft->cLagerBeachten === 'Y'
-                            && $oEigenschaft->cLagerKleinerNull === 'N'))
                     && !in_array($oEigenschaft->kEigenschaftWert, $nPossibleVariation_arr[$oEigenschaft->kEigenschaft], true)
                 ) {
                     $nPossibleVariation_arr[$oEigenschaft->kEigenschaft][] = $oEigenschaft->kEigenschaftWert;

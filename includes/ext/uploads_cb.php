@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
  */
-require_once '../globalinclude.php';
+require_once __DIR__ . '/../globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES_EXT . 'class.JTL-Shop.UploadDatei.php';
 
 /**
@@ -29,33 +29,31 @@ if (!validateToken()) {
 }
 // upload file
 if (!empty($_FILES)) {
-    $cUnique     = (isset($_REQUEST['uniquename']))
+    $cUnique     = isset($_REQUEST['uniquename'])
         ? $_REQUEST['uniquename']
         : null;
     $cTargetFile = PFAD_UPLOADS . $cUnique;
-    $fileData    = (isset($_FILES['Filedata']['tmp_name']))
+    $fileData    = isset($_FILES['Filedata']['tmp_name'])
         ? $_FILES['Filedata']
         : $_FILES['file_data'];
     $cTempFile   = $fileData['tmp_name'];
 
-    if (isset($fileData['error']) && $fileData['error'] == 0) {
-        if (move_uploaded_file($cTempFile, $cTargetFile)) {
-            $oFile         = new stdClass();
-            $oFile->cName = !empty($_REQUEST['variation'])
-                ? $_REQUEST['cname'] . '_' . $_REQUEST['variation'] . '_' . $fileData['name']
-                : $_REQUEST['cname'] . '_' . $fileData['name'];
-            $oFile->nBytes = $fileData['size'];
-            $oFile->cKB    = round($fileData['size'] / 1024, 2);
+    if (isset($fileData['error']) && (int)$fileData['error'] === 0 && move_uploaded_file($cTempFile, $cTargetFile)) {
+        $oFile         = new stdClass();
+        $oFile->cName = !empty($_REQUEST['variation'])
+            ? $_REQUEST['cname'] . '_' . $_REQUEST['variation'] . '_' . $fileData['name']
+            : $_REQUEST['cname'] . '_' . $fileData['name'];
+        $oFile->nBytes = $fileData['size'];
+        $oFile->cKB    = round($fileData['size'] / 1024, 2);
 
-            if (!isset($_SESSION['Uploader'])) {
-                $_SESSION['Uploader'] = [];
-            }
-            $_SESSION['Uploader'][$cUnique] = $oFile;
-            if (isset($_REQUEST['uploader'])) {
-                die(json_encode($oFile));
-            }
-            retCode(1);
+        if (!isset($_SESSION['Uploader'])) {
+            $_SESSION['Uploader'] = [];
         }
+        $_SESSION['Uploader'][$cUnique] = $oFile;
+        if (isset($_REQUEST['uploader'])) {
+            die(json_encode($oFile));
+        }
+        retCode(1);
     }
 }
 // handle file
@@ -78,9 +76,9 @@ if (!empty($_REQUEST['action'])) {
 
         case 'preview':
             $oUpload   = new UploadDatei();
-            $kKunde    = intval($_SESSION['Kunde']->kKunde);
+            $kKunde    = (int)$_SESSION['Kunde']->kKunde;
             $cFilePath = PFAD_ROOT . BILD_UPLOAD_ZUGRIFF_VERWEIGERT;
-            $kUpload   = intval(entschluesselXTEA(rawurldecode($_REQUEST['secret'])));
+            $kUpload   = (int)entschluesselXTEA(rawurldecode($_REQUEST['secret']));
 
             if ($kUpload > 0 && $kKunde > 0 && $oUpload->loadFromDB($kUpload)) {
                 $cTmpFilePath = PFAD_UPLOADS . $oUpload->cPfad;

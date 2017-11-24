@@ -17,12 +17,35 @@
         addKundenfeldWert();
     {rdelim}
 
+    function recommendSort() {ldelim}
+        var retval = 0;
+        var vSortValues = $('[name^=nWertSort]')
+            .map(function() {ldelim}
+                return this.value;
+            {rdelim})
+            .get()
+        ;
+        if (0 < vSortValues.length) {ldelim}
+            vSortValues
+                .sort(function(val1, val2) {ldelim}
+                    if(Number(val1) == Number(val2)) return 0;
+                    else return Number(val1) < Number(val2) ? 1 : -1;
+                {rdelim})
+            ;
+            retval = Number(vSortValues[0]) +1;
+        {rdelim}
+
+        return(retval);
+    {rdelim}
+
     function addKundenfeldWert() {ldelim}
         $('#formtable tbody').append($('<tr class="kundenfeld_wert"></tr>').append(
                 '<td class="kundenfeld_wert_label">Wert ' + (countKundenfeldwert() + 1) + ':</td>',
                 $('<td class="row"></td>').append(
                     $('<div class="col-lg-3 jtl-list-group"></div>').append(
                         '<input name="cWert[]" type="text" class="field form-control" value="" />'),
+                    $('<div class="col-lg-1 jtl-list-group"></div>').append(
+                        '<input name="nWertSort[]" type="text" class="field form-control" value="' + recommendSort() + '" />'),
                     $('<div class="btn-group"></div>').append(
                         $('<button name="delete" type="button" class="btn btn-danger" value="Entfernen"></button>')
                             .click(function() {ldelim}
@@ -188,6 +211,9 @@
                                             <div class="col-lg-3 jtl-list-group">
                                                 <input name="cWert[]" type="text" class="field form-control" value="{$oKundenfeldWert->cWert}" />
                                             </div>
+                                            <div class="col-lg-1 jtl-list-group">
+                                                <input name="nWertSort[]" type="text" class="field form-control" value="{$oKundenfeldWert->nSort}" />
+                                            </div>
                                             <div class="btn-group">
                                                 <button name="delete" type="button" class="btn btn-danger" value="Entfernen" onclick="delKundenfeldWert(this)"><i class="fa fa-trash"></i> Entfernen</button>
                                             </div>
@@ -203,6 +229,9 @@
                                         <td class="row">
                                             <div class="col-lg-3 jtl-list-group">
                                                 <input name="cWert[]" type="text" class="field form-control" value="{$cKundenfeldWert}" />
+                                            </div>
+                                            <div class="col-lg-1 jtl-list-group">
+                                                <input name="nWertSort[]" type="text" class="field form-control" value="{$xPostVar_arr.nWertSort.$key}" />
                                             </div>
                                             <div class="btn-group">
                                                 <button name="delete" type="button" class="btn btn-danger" value="Entfernen" onclick="delKundenfeldWert(this)"><i class="fa fa-trash"></i> Entfernen</button>

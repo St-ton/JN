@@ -59,6 +59,7 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
         $nPflicht        = $_POST['nPflicht'];
         $nEdit           = $_POST['nEdit'];
         $cWert_arr       = isset($_POST['cWert']) ? $_POST['cWert'] : null;
+        $nWertSort_arr   = isset($_POST['nWertSort']) ? $_POST['nWertSort'] : null;
         $oKundenfeld_arr = [];
 
         // Plausi
@@ -92,11 +93,12 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
             }
 
             if ($cTyp === 'auswahl' && is_array($cWert_arr) && count($cWert_arr) > 0) {
-                foreach ($cWert_arr as $cWert) {
+                for($i = 0; $i < count($cWert_arr); $i++) {
                     unset($oKundenfeldWert);
                     $oKundenfeldWert              = new stdClass();
                     $oKundenfeldWert->kKundenfeld = $kKundenfeld;
-                    $oKundenfeldWert->cWert       = $cWert;
+                    $oKundenfeldWert->cWert       = $cWert_arr[$i];
+                    $oKundenfeldWert->nSort       = $nWertSort_arr[$i];
 
                     Shop::DB()->insert('tkundenfeldwert', $oKundenfeldWert);
                 }
@@ -120,7 +122,7 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
     if ($kKundenfeld > 0) {
         $oKundenfeld = Shop::DB()->select('tkundenfeld', 'kKundenfeld', $kKundenfeld);
         if (isset($oKundenfeld->kKundenfeld) && $oKundenfeld->kKundenfeld > 0) {
-            $oKundenfeldWert_arr = Shop::DB()->selectAll('tkundenfeldwert', 'kKundenfeld', (int)$kKundenfeld, '*', 'kKundenfeldWert ASC');
+            $oKundenfeldWert_arr = Shop::DB()->selectAll('tkundenfeldwert', 'kKundenfeld', (int)$kKundenfeld, '*', 'nSort, kKundenfeldWert ASC');
 
             $oKundenfeld->oKundenfeldWert_arr = $oKundenfeldWert_arr;
             $smarty->assign('oKundenfeld', $oKundenfeld);
@@ -156,7 +158,7 @@ if (is_array($oKundenfeld_arr) && count($oKundenfeld_arr) > 0) {
     // tkundenfeldwert nachschauen ob dort Werte fuer tkundenfeld enthalten sind
     foreach ($oKundenfeld_arr as $i => $oKundenfeld) {
         if ($oKundenfeld->cTyp === 'auswahl') {
-            $oKundenfeldWert_arr = Shop::DB()->selectAll('tkundenfeldwert', 'kKundenfeld', (int)$oKundenfeld->kKundenfeld, '*', 'kKundenfeldWert ASC');
+            $oKundenfeldWert_arr = Shop::DB()->selectAll('tkundenfeldwert', 'kKundenfeld', (int)$oKundenfeld->kKundenfeld, '*', 'nSort, kKundenfeldWert ASC');
             $oKundenfeld_arr[$i]->oKundenfeldWert_arr = $oKundenfeldWert_arr;
         }
     }
@@ -169,13 +171,14 @@ $nHighestSortValue = (false !== $oLastElement) ? $oLastElement->nSort : 0;
 $oPreLastElement = prev($oKundenfeld_arr);
 if (false === $oPreLastElement) {
     if (false !== $oLastElement) {
-        $nHighestSortDiff = (0 !== $oLastElement->nSort) ? $oLastElement->nSort : 1; // 0 is not a good starting point
+        $nHighestSortDiff = (0 !== $oLastElement->nSort) ? $oLastElement->nSort : 1;
     } else {
         $nHighestSortDiff = 1;
     }
 } else {
     $nHighestSortDiff = $oLastElement->nSort - $oPreLastElement->nSort;
 }
+reset($oKundenfeld_arr); // we leave the array in a safe state
 
 
 $smarty->assign('oKundenfeld_arr', $oKundenfeld_arr)
@@ -187,3 +190,4 @@ $smarty->assign('oKundenfeld_arr', $oKundenfeld_arr)
        ->assign('fehler', $cFehler)
        ->assign('step', $step)
        ->display('kundenfeld.tpl');
+

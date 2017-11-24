@@ -3314,14 +3314,14 @@ function gibSelbstdefKundenfelder()
         "SELECT *
             FROM tkundenfeld
             WHERE kSprache = " . Shop::getLanguage(). "
-            ORDER BY nSort DESC", 2
+            ORDER BY nSort ASC", 2
     );
 
     if (is_array($oKundenfeld_arr) && count($oKundenfeld_arr) > 0) {
         // tkundenfeldwert nachschauen ob dort Werte für tkundenfeld enthalten sind
         foreach ($oKundenfeld_arr as $i => $oKundenfeld) {
             if ($oKundenfeld->cTyp === 'auswahl') {
-                $oKundenfeldWert_arr = Shop::DB()->selectAll('tkundenfeldwert', 'kKundenfeld', (int)$oKundenfeld->kKundenfeld);
+                $oKundenfeldWert_arr = Shop::DB()->selectAll('tkundenfeldwert', 'kKundenfeld', (int)$oKundenfeld->kKundenfeld, '*', '`kKundenfeld`, `nSort`, `kKundenfeldWert` ASC');
 
                 $oKundenfeld_arr[$i]->oKundenfeldWert_arr = $oKundenfeldWert_arr;
             }

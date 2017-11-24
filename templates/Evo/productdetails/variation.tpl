@@ -9,6 +9,9 @@
         {assign var="VariationsSource" value="VariationenOhneFreifeld"}
     {/if}
     {assign var="oVariationKombi_arr" value=$Artikel->getChildVariations()}
+    <div class="row">
+        <div class="updatingStockInfo col-xs-12 text-center"><i class="fa fa-spinner fa-spin" title="{lang key="updatingStockInformation" section="productDetails"}"></i></div>
+    </div>
     <div class="variations {if $simple}simple{else}switch{/if}-variations top15 row">
         <div class="col-xs-12">
             <dl>
@@ -158,6 +161,5 @@
             {/foreach}
             </dl>
         </div>
-        <div class="updatingStockInfo col-xs-12 text-center"><i class="fa fa-spinner fa-spin" title="{lang key="updatingStockInformation" section="productDetails"}"></i></div>
     </div>
 {/if}

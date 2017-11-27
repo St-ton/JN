@@ -67,11 +67,10 @@ if (!empty($_FILES)) {
             }
         }
     }
-    if ($allowed
+    if ($allowed === true
         && isset($fileData['error'])
         && (int)$fileData['error'] === 0
         && strpos($realPath . '/', PFAD_UPLOADS) === 0
-        && !file_exists($cTargetFile)
         && move_uploaded_file($cTempFile, $cTargetFile)
     ) {
         $oFile         = new stdClass();

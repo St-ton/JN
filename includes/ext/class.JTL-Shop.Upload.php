@@ -128,8 +128,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
          */
         public static function redirectWarenkorb($nErrorCode)
         {
-            $linkHelper = LinkHelper::getInstance();
-            header('Location: ' . $linkHelper->getStaticRoute('warenkorb.php') . '?fillOut=' . $nErrorCode, true, 303);
+            header('Location: ' .
+                LinkHelper::getInstance()->getStaticRoute('warenkorb.php') .
+                '?fillOut=' . $nErrorCode, true, 303);
         }
 
         /**
@@ -254,7 +255,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
         private static function getSessionKey()
         {
             if (!isset($_SESSION['Uploader']['sessionKey'])) {
-                $_SESSION['Uploader']['sessionKey'] = uniqid();
+                $_SESSION['Uploader']['sessionKey'] = uniqid('sk', true);
             }
 
             return $_SESSION['Uploader']['sessionKey'];

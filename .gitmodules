@@ -27,7 +27,7 @@
 	url = git@gitlab.jtl-software.de:Pluginzertifizierungen/pluginzertifizierung-amazon-payments.git
 [submodule "includes/plugins/agws_ts_features"]
 	path = includes/plugins/agws_ts_features
-	url = https://gitlab.ag-websolutions.de/plugins_public/agws_ts_features.git
+	url = https://gitlab.ag-websolutions.de/ag-websolutions.de/plugins_public/agws_ts_features.git
 [submodule "includes/plugins/jtl_themebar"]
 	path = includes/plugins/jtl_themebar
 	url = git@gitlab.jtl-software.de:jtlshop/jtl_themebar.git

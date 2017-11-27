@@ -23,27 +23,39 @@ if (!isset($_REQUEST['sid'])) {
 
 $_COOKIE['JTLSHOP'] = $_REQUEST['sid'];
 $session            = Session::getInstance();
-
 if (!validateToken()) {
     retCode(0);
 }
 // upload file
 if (!empty($_FILES)) {
-    if (!isset($_REQUEST['uniquename'])) {
+    if (!isset($_REQUEST['uniquename'], $_POST['kUploadSchema'])) {
         retCode(0);
     }
-    $cUnique     = $_REQUEST['uniquename'];
-    $cTargetFile = PFAD_UPLOADS . $cUnique;
-    $fileData    = isset($_FILES['Filedata']['tmp_name'])
+    $kUploadSchema = (int)$_POST['kUploadSchema'];
+    $schema        = new UploadSchema($kUploadSchema);
+    if ($schema->kUploadSchema === null) {
+        retCode(0);
+    }
+    $allowedExtensions = explode(',', $schema->cDateiTyp);
+    $cUnique           = $_REQUEST['uniquename'];
+    $cTargetFile       = PFAD_UPLOADS . $cUnique;
+    $fileData          = isset($_FILES['Filedata']['tmp_name'])
         ? $_FILES['Filedata']
         : $_FILES['file_data'];
-    $cTempFile   = $fileData['tmp_name'];
-    $info        = pathinfo($cTargetFile);
-    $realPath    = realpath($info['dirname']);
-    if (isset($fileData['error'])
+    $cTempFile         = $fileData['tmp_name'];
+    $info              = pathinfo($cTargetFile);
+    $realPath          = realpath($info['dirname']);
+    $allowed           = false;
+    $check             = strrev($fileData['name']);
+    foreach ($allowedExtensions as $extension) {
+        if (strpos($check, strrev($extension)) === 0) {
+            $allowed = true;
+            break;
+        }
+    }
+    if ($allowed
+        && isset($fileData['error'])
         && (int)$fileData['error'] === 0
-        && (!isset($info['extension'])
-            || !in_array($info['extension'], ['php', 'php4', 'php5', 'htaccess', 'ini', 'conf', 'load'], true))
         && strpos($realPath . '/', PFAD_UPLOADS) === 0
         && !file_exists($cTargetFile)
         && move_uploaded_file($cTempFile, $cTargetFile)
@@ -63,9 +75,8 @@ if (!empty($_FILES)) {
             die(json_encode($oFile));
         }
         retCode(1);
-    } else {
-        retCode(0);
     }
+    retCode(0);
 }
 
 // handle file

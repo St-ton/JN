@@ -152,6 +152,7 @@ function generateImageCache($type, $index)
     while (count($images) === 0 && $index < $total) {
         $index += 10;
         $images = MediaImage::getImages($type, true, $index, IMAGE_PRELOAD_LIMIT);
+        //$images = MediaImage::getImages($type, true, $index); // --TRY-OUT-- 
     }
     foreach ($images as $image) {
         $seconds = time() - $started;

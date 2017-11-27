@@ -27,12 +27,7 @@ if (!validateToken()) {
 }
 // upload file
 if (!empty($_FILES)) {
-    if (!isset($_REQUEST['uniquename'], $_REQUEST['kUploadSchema'])) {
-        retCode(0);
-    }
-    $kUploadSchema = (int)$_REQUEST['kUploadSchema'];
-    $schema        = new UploadSchema($kUploadSchema);
-    if ($schema->kUploadSchema === null) {
+    if (!isset($_REQUEST['uniquename'])) {
         retCode(0);
     }
     $cUnique     = $_REQUEST['uniquename'];
@@ -44,31 +39,11 @@ if (!empty($_FILES)) {
     $targetInfo  = pathinfo($cTargetFile);
     $sourceInfo  = pathinfo($fileData['name']);
     $realPath    = realpath($targetInfo['dirname']);
-    $allowed     = false;
-    if (!isset($sourceInfo['extension'])) {
+    // legitimate uploads do not have an extension for the destination file name
+    if (!isset($sourceInfo['extension']) || isset($targetInfo['extension'])) {
         retCode(0);
     }
-    $allowedExtensions = explode(',', $schema->cDateiTyp);
-    $realExtension     = '.' . $sourceInfo['extension'];
-    // check file extension provided by uploading legitimate files
-    foreach ($allowedExtensions as $allowedExtension) {
-        if ($allowedExtension === $realExtension) {
-            $allowed = true;
-            break;
-        }
-    }
-    // default file names will not have an extension, but malicious ones may have one
-    if ($allowed === true && isset($targetInfo['extension'])) {
-        $allowed = false;
-        foreach ($allowedExtensions as $allowedExtension) {
-            if ($allowedExtension === $targetInfo['extension']) {
-                $allowed = true;
-                break;
-            }
-        }
-    }
-    if ($allowed === true
-        && isset($fileData['error'])
+    if (isset($fileData['error'])
         && (int)$fileData['error'] === 0
         && strpos($realPath . '/', PFAD_UPLOADS) === 0
         && move_uploaded_file($cTempFile, $cTargetFile)

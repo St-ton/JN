@@ -28,27 +28,31 @@ if (!validateToken()) {
 }
 // upload file
 if (!empty($_FILES)) {
-    if (!isset($_REQUEST['uniquename'], $_POST['kUploadSchema'])) {
+    if (!isset($_REQUEST['uniquename'], $_REQUEST['kUploadSchema'])) {
         retCode(0);
     }
-    $kUploadSchema = (int)$_POST['kUploadSchema'];
+    $kUploadSchema = (int)$_REQUEST['kUploadSchema'];
     $schema        = new UploadSchema($kUploadSchema);
     if ($schema->kUploadSchema === null) {
         retCode(0);
     }
-    $allowedExtensions = explode(',', $schema->cDateiTyp);
-    $cUnique           = $_REQUEST['uniquename'];
-    $cTargetFile       = PFAD_UPLOADS . $cUnique;
-    $fileData          = isset($_FILES['Filedata']['tmp_name'])
+    $cUnique     = $_REQUEST['uniquename'];
+    $cTargetFile = PFAD_UPLOADS . $cUnique;
+    $fileData    = isset($_FILES['Filedata']['tmp_name'])
         ? $_FILES['Filedata']
         : $_FILES['file_data'];
-    $cTempFile         = $fileData['tmp_name'];
-    $info              = pathinfo($cTargetFile);
-    $realPath          = realpath($info['dirname']);
-    $allowed           = false;
-    $check             = strrev($fileData['name']);
-    foreach ($allowedExtensions as $extension) {
-        if (strpos($check, strrev($extension)) === 0) {
+    $cTempFile   = $fileData['tmp_name'];
+    $targetInfo  = pathinfo($cTargetFile);
+    $sourceInfo  = pathinfo($fileData['name']);
+    $realPath    = realpath($targetInfo['dirname']);
+    $allowed     = false;
+    if (!isset($sourceInfo['extension'])) {
+        retCode(0);
+    }
+    $allowedExtensions = explode(',', $schema->cDateiTyp);
+    $realExtension     = '.' . $sourceInfo['extension'];
+    foreach ($allowedExtensions as $allowedExtension) {
+        if ($allowedExtension === $realExtension) {
             $allowed = true;
             break;
         }
@@ -83,11 +87,11 @@ if (!empty($_FILES)) {
 if (!empty($_REQUEST['action'])) {
     switch ($_REQUEST['action']) {
         case 'remove':
-            $cUnique   = $_REQUEST['uniquename'];
-            $cFilePath = PFAD_UPLOADS . $cUnique;
-            $info        = pathinfo($cFilePath);
-            $realPath    = realpath($info['dirname']);
-            if ($info['extension'] !== 'htaccess'
+            $cUnique    = $_REQUEST['uniquename'];
+            $cFilePath  = PFAD_UPLOADS . $cUnique;
+            $targetInfo = pathinfo($cFilePath);
+            $realPath   = realpath($targetInfo['dirname']);
+            if ($targetInfo['extension'] !== 'htaccess'
                 && isset($_SESSION['Uploader'][$cUnique])
                 && strpos($realPath . '/', PFAD_UPLOADS) === 0
             ) {

@@ -1,5 +1,9 @@
 # JTL-Shop Changelog
 
+## [4.05.5]
+
+* Sicherheitsupdate
+
 ## [4.05.4]
 
 * Schutzfunktion im Uploadmodul verbessert

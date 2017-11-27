@@ -20,7 +20,6 @@ function retCode($bOk)
 if (!isset($_REQUEST['sid'])) {
     retCode(0);
 }
-
 $_COOKIE['JTLSHOP'] = $_REQUEST['sid'];
 $session            = Session::getInstance();
 if (!validateToken()) {
@@ -51,10 +50,21 @@ if (!empty($_FILES)) {
     }
     $allowedExtensions = explode(',', $schema->cDateiTyp);
     $realExtension     = '.' . $sourceInfo['extension'];
+    // check file extension provided by uploading legitimate files
     foreach ($allowedExtensions as $allowedExtension) {
         if ($allowedExtension === $realExtension) {
             $allowed = true;
             break;
+        }
+    }
+    // default file names will not have an extension, but malicious ones may have one
+    if ($allowed === true && isset($targetInfo['extension'])) {
+        $allowed = false;
+        foreach ($allowedExtensions as $allowedExtension) {
+            if ($allowedExtension === $targetInfo['extension']) {
+                $allowed = true;
+                break;
+            }
         }
     }
     if ($allowed

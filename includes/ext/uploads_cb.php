@@ -39,12 +39,12 @@ if (!empty($_FILES)) {
     $targetInfo  = pathinfo($cTargetFile);
     $sourceInfo  = pathinfo($fileData['name']);
     $realPath    = realpath($targetInfo['dirname']);
-    // legitimate uploads do not have an extension for the destination file name
+    // legitimate uploads do not have an extension for the destination file name - but for the originally uploaded file
     if (!isset($sourceInfo['extension']) || isset($targetInfo['extension'])) {
         retCode(0);
     }
     if (isset($fileData['error'])
-        && (int)$fileData['error'] === 0
+        && (int)$fileData['error'] === UPLOAD_ERR_OK
         && strpos($realPath . '/', PFAD_UPLOADS) === 0
         && move_uploaded_file($cTempFile, $cTargetFile)
     ) {

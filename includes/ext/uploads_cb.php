@@ -27,7 +27,7 @@ if (!validateToken()) {
 }
 // upload file
 if (!empty($_FILES)) {
-    if (!isset($_REQUEST['uniquename'])) {
+    if (!isset($_REQUEST['uniquename'], $_REQUEST['cname'])) {
         retCode(0);
     }
     $cUnique     = $_REQUEST['uniquename'];
@@ -43,7 +43,7 @@ if (!empty($_FILES)) {
     if (!isset($sourceInfo['extension']) || isset($targetInfo['extension'])) {
         retCode(0);
     }
-    if (isset($fileData['error'])
+    if (isset($fileData['error'], $fileData['name'])
         && (int)$fileData['error'] === UPLOAD_ERR_OK
         && strpos($realPath . '/', PFAD_UPLOADS) === 0
         && move_uploaded_file($cTempFile, $cTargetFile)

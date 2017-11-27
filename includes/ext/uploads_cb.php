@@ -75,7 +75,7 @@ if (!empty($_REQUEST['action'])) {
             $cFilePath  = PFAD_UPLOADS . $cUnique;
             $targetInfo = pathinfo($cFilePath);
             $realPath   = realpath($targetInfo['dirname']);
-            if ($targetInfo['extension'] !== 'htaccess'
+            if (!isset($targetInfo['extension'])
                 && isset($_SESSION['Uploader'][$cUnique])
                 && strpos($realPath . '/', PFAD_UPLOADS) === 0
             ) {
@@ -90,7 +90,8 @@ if (!empty($_REQUEST['action'])) {
 
         case 'exists':
             $cFilePath = PFAD_UPLOADS . $_REQUEST['uniquename'];
-            retCode(file_exists(realpath($cFilePath)));
+            $info      = pathinfo($cFilePath);
+            retCode(!isset($info['extension']) && file_exists(realpath($cFilePath)));
             break;
 
         case 'preview':

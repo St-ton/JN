@@ -20,7 +20,7 @@ $smarty->registerPlugin('function', 'getCurrencyConversionSmarty', 'getCurrencyC
  * @param JTLSmarty $smarty
  * @return mixed
  */
-function getRevisions($params, $smarty)
+function getRevisions($params, &$smarty)
 {
     $secondary = isset($params['secondary'])
         ? $params['secondary']
@@ -42,7 +42,7 @@ function getRevisions($params, $smarty)
  * @param JTLSmarty $smarty
  * @return string
  */
-function getCurrencyConversionSmarty($params, $smarty)
+function getCurrencyConversionSmarty($params, &$smarty)
 {
     $bForceSteuer = !(isset($params['bSteuer']) && $params['bSteuer'] === false);
     if (!isset($params['fPreisBrutto'])) {
@@ -63,7 +63,7 @@ function getCurrencyConversionSmarty($params, $smarty)
  * @param JTLSmarty $smarty
  * @return string
  */
-function getCurrencyConversionTooltipButton($params, $smarty)
+function getCurrencyConversionTooltipButton($params, &$smarty)
 {
     $placement = isset($params['placement'])
         ? $params['placement']
@@ -85,7 +85,7 @@ function getCurrencyConversionTooltipButton($params, $smarty)
  * @param array $params
  * @param JTLSmarty $smarty
  */
-function getCurrentPage($params, $smarty)
+function getCurrentPage($params, &$smarty)
 {
     $path = $_SERVER['SCRIPT_NAME'];
     $page = basename($path, '.php');
@@ -100,7 +100,7 @@ function getCurrentPage($params, $smarty)
  * @param JTLSmarty $smarty
  * @return string
  */
-function getHelpDesc($params, $smarty)
+function getHelpDesc($params, &$smarty)
 {
     $placement   = isset($params['placement']) ? $params['placement'] : 'left';
     $cID         = !empty($params['cID']) ? $params['cID'] : null;
@@ -149,7 +149,7 @@ function permission($cRecht)
  * @param JTLSmarty $smarty
  * @return string
  */
-function SmartyConvertDate($params, $smarty)
+function SmartyConvertDate($params, &$smarty)
 {
     if (isset($params['date']) && strlen($params['date']) > 0) {
         $oDateTime = new DateTime($params['date']);
@@ -175,7 +175,7 @@ function SmartyConvertDate($params, $smarty)
  * @param array $params
  * @param JTLSmarty $smarty
  */
-function getExtensionCategory($params, $smarty)
+function getExtensionCategory($params, &$smarty)
 {
     if (!isset($params['cat'])) {
         return;
@@ -202,7 +202,7 @@ function getExtensionCategory($params, $smarty)
  * @param JTLSmarty $smarty
  * @return string|null
  */
-function formatVersion($params, $smarty)
+function formatVersion($params, &$smarty)
 {
     if (!isset($params['value'])) {
         return null;
@@ -225,7 +225,7 @@ function formatVersion($params, $smarty)
  * @source https://gravatar.com/site/implement/images/php/
  * @return string
  */
-function gravatarImage($params, $smarty)
+function gravatarImage($params, &$smarty)
 {
     $email = isset($params['email']) ? $params['email'] : null;
     if ($email === null) {

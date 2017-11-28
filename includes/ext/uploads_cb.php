@@ -15,13 +15,7 @@ function retCode($bOk)
 {
     die(json_encode(['status' => $bOk ? 'ok' : 'error']));
 }
-
-// session
-if (!isset($_REQUEST['sid'])) {
-    retCode(0);
-}
-$_COOKIE['JTLSHOP'] = $_REQUEST['sid'];
-$session            = Session::getInstance();
+$session = Session::getInstance();
 if (!validateToken()) {
     retCode(0);
 }

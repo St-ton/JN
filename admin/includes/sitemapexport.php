@@ -62,15 +62,15 @@ function baueSitemapIndex($nDatei, $bGZ)
     for ($i = 0; $i <= $nDatei; ++$i) {
         if ($bGZ) {
             $cIndex .= '<sitemap><loc>' .
-                StringHandler::htmlentities(utf8_encode($shopURL . '/' . PFAD_EXPORT . 'sitemap_' . $i . '.xml.gz')) .
+                StringHandler::htmlentities($shopURL . '/' . PFAD_EXPORT . 'sitemap_' . $i . '.xml.gz') .
                 '</loc>' .
                 ((!isset($conf['sitemap']['sitemap_insert_lastmod']) || $conf['sitemap']['sitemap_insert_lastmod'] === 'Y')
                     ? ('<lastmod>' . StringHandler::htmlentities(date('Y-m-d')) . '</lastmod>') :
                     '') .
                 '</sitemap>' . "\n";
         } else {
-            $cIndex .= '<sitemap><loc>' . StringHandler::htmlentities(utf8_encode($shopURL . '/' .
-                    PFAD_EXPORT . 'sitemap_' . $i . '.xml')) . '</loc>' .
+            $cIndex .= '<sitemap><loc>' . StringHandler::htmlentities($shopURL . '/' .
+                    PFAD_EXPORT . 'sitemap_' . $i . '.xml') . '</loc>' .
                 ((!isset($conf['sitemap']['sitemap_insert_lastmod']) || $conf['sitemap']['sitemap_insert_lastmod'] === 'Y')
                     ? ('<lastmod>' . StringHandler::htmlentities(date('Y-m-d')) . '</lastmod>')
                     : '') .
@@ -101,12 +101,12 @@ function makeURL(
     $ssl = false
 ) {
     $strRet = "  <url>\n" .
-        '     <loc>' . StringHandler::htmlentities(utf8_encode(Shop::getURL($ssl))) . '/' .
-        StringHandler::htmlentities(utf8_encode($strLoc)) . "</loc>\n";
+        '     <loc>' . StringHandler::htmlentities(Shop::getURL($ssl)) . '/' .
+        StringHandler::htmlentities($strLoc) . "</loc>\n";
     if (strlen($cGoogleImageURL) > 0) {
         $strRet .=
             "     <image:image>\n" .
-            '        <image:loc>' . StringHandler::htmlentities(utf8_encode($cGoogleImageURL)) . "</image:loc>\n" .
+            '        <image:loc>' . StringHandler::htmlentities($cGoogleImageURL) . "</image:loc>\n" .
             "     </image:image>\n";
     }
     if ($strLastMod) {

@@ -583,6 +583,10 @@ class VCard
      */
     public function asKunde()
     {
+        $Einstellungen = Shop::getSettings([
+            CONF_KUNDEN
+        ]);
+
         $Kunde = new stdClass();
 
         if (isset($this->GENDER)) {
@@ -616,6 +620,10 @@ class VCard
             $Kunde->cNachname = isset($this->N->LastName) ? $this->N->LastName : '';
         }
 
+        if (empty($Kunde->cVorname) && isset($this->FN)) {
+            $Kunde->cVorname = $this->FN;
+        }
+
         if (isset($this->ADR)) {
             $adr = self::getValue($this->ADR, ['home', 'work', '*'], null, true);
 
@@ -625,6 +633,14 @@ class VCard
             $Kunde->cOrt          = isset($adr->Locality) ? $adr->Locality : '';
             $Kunde->cBundesland   = isset($adr->Region) ? $adr->Region : '';
             $Kunde->cLand         = isset($adr->Country) ? landISO($adr->Country) : '';
+
+            if (empty($adr->Country) && !empty($adr->Region)) {
+                $Kunde->cLand = landISO($adr->Region);
+            }
+
+            if ($Kunde->cLand == 'noISO') {
+                $Kunde->cLand = $Einstellungen['kunden']['kundenregistrierung_standardland'];
+            }
 
             if (preg_match('/^(.*)[\. ]*([0-9]+[a-zA-Z]?)$/U', $Kunde->cStrasse, $hits)) {
                 $Kunde->cStrasse    = $hits[1];
@@ -654,7 +670,7 @@ class VCard
 
         // vCard-Daten liegen hier immer in UTF8 vor
         foreach ($Kunde as $property => $data) {
-            $Kunde->$property = StringHandler::filterXSS(utf8_decode($data));
+            $Kunde->$property = StringHandler::filterXSS($data);
         }
 
         return $Kunde;

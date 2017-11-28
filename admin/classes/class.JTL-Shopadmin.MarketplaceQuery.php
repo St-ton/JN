@@ -74,7 +74,7 @@ final class MarketplaceQuery
             $query .= "&extension={$this->id}";
         }
         if (!empty($this->searchTerm)) {
-            $query .= "&search=" . utf8_encode($this->searchTerm);
+            $query .= "&search={$this->searchTerm}";
         }
         if (!empty($this->servicepartnerId)) {
             $query .= "&servicepartner={$this->servicepartnerId}";

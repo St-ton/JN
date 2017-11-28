@@ -595,7 +595,7 @@ class Template
                     }
                     if (!$exists) {
                         $oSection                = new stdClass();
-                        $oSection->cName         = utf8_decode((string)$oXMLSection->attributes()->Name);
+                        $oSection->cName         = (string)$oXMLSection->attributes()->Name;
                         $oSection->cKey          = $sectionID;
                         $oSection->oSettings_arr = [];
                     }
@@ -615,8 +615,8 @@ class Template
                         if ((string)$XMLSetting->attributes()->override === 'true') {
                             $ignoredSettings[] = $key;
                         }
-                        $oSetting->cName        = utf8_decode((string)$XMLSetting->attributes()->Description);
-                        $oSetting->cKey         = utf8_decode($key);
+                        $oSetting->cName        = (string)$XMLSetting->attributes()->Description;
+                        $oSetting->cKey         = $key;
                         $oSetting->cType        = (string)$XMLSetting->attributes()->Type;
                         $oSetting->cValue       = (string)$XMLSetting->attributes()->Value;
                         $oSetting->bEditable    = (string)$XMLSetting->attributes()->Editable;

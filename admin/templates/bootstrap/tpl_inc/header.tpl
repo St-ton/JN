@@ -4,7 +4,7 @@
 <html lang="de">
 <head>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta charset="windows-1252" />
+    <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noindex,nofollow" />
     <title>JTL Shop Administration</title>

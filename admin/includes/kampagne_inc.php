@@ -1389,7 +1389,7 @@ function PrepareLineChartKamp($Stats, $Type)
                 $x = '';
                 foreach ($Dates as $Key => $Stat) {
                     if (strpos($Key, 'cDatum') !== false) {
-                        $x = utf8_encode($Dates[$Key]);
+                        $x = $Dates[$Key];
                     }
 
                     if ($Key == $Type) {

@@ -23,13 +23,17 @@ if (!isset($_REQUEST['sid'])) {
 
 $_COOKIE['JTLSHOP'] = $_REQUEST['sid'];
 $session            = Session::getInstance();
-
 if (!validateToken()) {
     retCode(0);
 }
 // upload file
 if (!empty($_FILES)) {
-    if (!isset($_REQUEST['uniquename'])) {
+    if (!isset($_REQUEST['uniquename'], $_REQUEST['kUploadSchema'])) {
+        retCode(0);
+    }
+    $kUploadSchema = (int)$_REQUEST['kUploadSchema'];
+    $schema        = new UploadSchema($kUploadSchema);
+    if ($schema->kUploadSchema === null) {
         retCode(0);
     }
     $cUnique     = $_REQUEST['uniquename'];
@@ -38,12 +42,24 @@ if (!empty($_FILES)) {
         ? $_FILES['Filedata']
         : $_FILES['file_data'];
     $cTempFile   = $fileData['tmp_name'];
-    $info        = pathinfo($cTargetFile);
-    $realPath    = realpath($info['dirname']);
-    if (isset($fileData['error'])
+    $targetInfo  = pathinfo($cTargetFile);
+    $sourceInfo  = pathinfo($fileData['name']);
+    $realPath    = realpath($targetInfo['dirname']);
+    $allowed     = false;
+    if (!isset($sourceInfo['extension'])) {
+        retCode(0);
+    }
+    $allowedExtensions = explode(',', $schema->cDateiTyp);
+    $realExtension     = '.' . $sourceInfo['extension'];
+    foreach ($allowedExtensions as $allowedExtension) {
+        if ($allowedExtension === $realExtension) {
+            $allowed = true;
+            break;
+        }
+    }
+    if ($allowed
+        && isset($fileData['error'])
         && (int)$fileData['error'] === 0
-        && (!isset($info['extension'])
-            || !in_array($info['extension'], ['php', 'php4', 'php5', 'htaccess', 'ini', 'conf', 'load'], true))
         && strpos($realPath . '/', PFAD_UPLOADS) === 0
         && !file_exists($cTargetFile)
         && move_uploaded_file($cTempFile, $cTargetFile)
@@ -63,20 +79,19 @@ if (!empty($_FILES)) {
             die(json_encode($oFile));
         }
         retCode(1);
-    } else {
-        retCode(0);
     }
+    retCode(0);
 }
 
 // handle file
 if (!empty($_REQUEST['action'])) {
     switch ($_REQUEST['action']) {
         case 'remove':
-            $cUnique   = $_REQUEST['uniquename'];
-            $cFilePath = PFAD_UPLOADS . $cUnique;
-            $info        = pathinfo($cFilePath);
-            $realPath    = realpath($info['dirname']);
-            if ($info['extension'] !== 'htaccess'
+            $cUnique    = $_REQUEST['uniquename'];
+            $cFilePath  = PFAD_UPLOADS . $cUnique;
+            $targetInfo = pathinfo($cFilePath);
+            $realPath   = realpath($targetInfo['dirname']);
+            if ($targetInfo['extension'] !== 'htaccess'
                 && isset($_SESSION['Uploader'][$cUnique])
                 && strpos($realPath . '/', PFAD_UPLOADS) === 0
             ) {

@@ -20,7 +20,6 @@ function retCode($bOk)
 if (!isset($_REQUEST['sid'])) {
     retCode(0);
 }
-
 $_COOKIE['JTLSHOP'] = $_REQUEST['sid'];
 $session            = Session::getInstance();
 if (!validateToken()) {
@@ -28,12 +27,7 @@ if (!validateToken()) {
 }
 // upload file
 if (!empty($_FILES)) {
-    if (!isset($_REQUEST['uniquename'], $_REQUEST['kUploadSchema'])) {
-        retCode(0);
-    }
-    $kUploadSchema = (int)$_REQUEST['kUploadSchema'];
-    $schema        = new UploadSchema($kUploadSchema);
-    if ($schema->kUploadSchema === null) {
+    if (!isset($_REQUEST['uniquename'], $_REQUEST['cname'])) {
         retCode(0);
     }
     $cUnique     = $_REQUEST['uniquename'];
@@ -45,23 +39,13 @@ if (!empty($_FILES)) {
     $targetInfo  = pathinfo($cTargetFile);
     $sourceInfo  = pathinfo($fileData['name']);
     $realPath    = realpath($targetInfo['dirname']);
-    $allowed     = false;
-    if (!isset($sourceInfo['extension'])) {
+    // legitimate uploads do not have an extension for the destination file name - but for the originally uploaded file
+    if (!isset($sourceInfo['extension']) || isset($targetInfo['extension'])) {
         retCode(0);
     }
-    $allowedExtensions = explode(',', $schema->cDateiTyp);
-    $realExtension     = '.' . $sourceInfo['extension'];
-    foreach ($allowedExtensions as $allowedExtension) {
-        if ($allowedExtension === $realExtension) {
-            $allowed = true;
-            break;
-        }
-    }
-    if ($allowed
-        && isset($fileData['error'])
-        && (int)$fileData['error'] === 0
+    if (isset($fileData['error'], $fileData['name'])
+        && (int)$fileData['error'] === UPLOAD_ERR_OK
         && strpos($realPath . '/', PFAD_UPLOADS) === 0
-        && !file_exists($cTargetFile)
         && move_uploaded_file($cTempFile, $cTargetFile)
     ) {
         $oFile         = new stdClass();
@@ -91,7 +75,7 @@ if (!empty($_REQUEST['action'])) {
             $cFilePath  = PFAD_UPLOADS . $cUnique;
             $targetInfo = pathinfo($cFilePath);
             $realPath   = realpath($targetInfo['dirname']);
-            if ($targetInfo['extension'] !== 'htaccess'
+            if (!isset($targetInfo['extension'])
                 && isset($_SESSION['Uploader'][$cUnique])
                 && strpos($realPath . '/', PFAD_UPLOADS) === 0
             ) {
@@ -106,7 +90,8 @@ if (!empty($_REQUEST['action'])) {
 
         case 'exists':
             $cFilePath = PFAD_UPLOADS . $_REQUEST['uniquename'];
-            retCode(file_exists(realpath($cFilePath)));
+            $info      = pathinfo($cFilePath);
+            retCode(!isset($info['extension']) && file_exists(realpath($cFilePath)));
             break;
 
         case 'preview':

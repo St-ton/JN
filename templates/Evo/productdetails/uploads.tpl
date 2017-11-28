@@ -75,14 +75,13 @@
                                         allowedFileExtensions: [{$oUpload->cDateiListe|replace:'*.':'\''|replace:';':'\','|cat:'\''}],
                                         language:              '{$uploaderLang}',
                                         uploadExtraData:       {
-                                            sid:           "{$cSessionID}",
-                                            jtl_token:     "{$smarty.session.jtl_token}",
-                                            uniquename:    "{$oUpload->cUnique}",
-                                            uploader:      "4.00",
-                                            kUploadSchema: {$oUpload->kUploadSchema},
-                                            cname:         "{$oUploadSchema->cName|replace:" ":"_"}"
+                                            sid:        "{$cSessionID}",
+                                            jtl_token:  "{$smarty.session.jtl_token}",
+                                            uniquename: "{$oUpload->cUnique}",
+                                            uploader:   "4.00",
+                                            cname:      "{$oUploadSchema->cName|replace:" ":"_"}"
                                             {if !empty($oUploadSchema->WarenkorbPosEigenschaftArr)},
-                                            variation:     "{strip}
+                                            variation:  "{strip}
                                             {foreach name=variationen from=$oUploadSchema->WarenkorbPosEigenschaftArr item=Variation}_{$Variation->cEigenschaftWertName|trans|replace:" ":"_"}{/foreach}
                                                 "{/strip}
                                             {/if}

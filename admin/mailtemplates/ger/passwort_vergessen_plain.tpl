@@ -2,11 +2,11 @@
 
 Sie haben Ihre Zugangsdaten zu unserem Shop vergessen oder verlegt?
 Kein Problem! Klicken Sie bitte den folgenden Link, um Ihr Passwort
-zurückzusetzen.
+zurÃ¼ckzusetzen.
 
 {$passwordResetLink}
 
-Wir empfehlen Ihnen, Ihr Passwort in regelmäßigen Abständen zu ändern,
-um möglichem Mißbrauch vorzubeugen
+Wir empfehlen Ihnen, Ihr Passwort in regelmÃ¤ÃŸigen AbstÃ¤nden zu Ã¤ndern,
+um mÃ¶glichem MiÃŸbrauch vorzubeugen
 
 {includeMailTemplate template=footer type=plain}

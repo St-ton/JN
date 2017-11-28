@@ -686,6 +686,7 @@ function verschickeMail($mail)
         $phpmailer = new PHPMailer();
         $lang      = ($mail->lang === 'DE' || $mail->lang === 'ger') ? 'de' : 'end';
         $phpmailer->setLanguage($lang, PFAD_ROOT . PFAD_PHPMAILER . 'language/');
+        $phpmailer->CharSet  = JTL_CHARSET;
         $phpmailer->Timeout  = SOCKET_TIMEOUT;
         $phpmailer->From     = $mail->fromEmail;
         $phpmailer->Sender   = $mail->fromEmail;
